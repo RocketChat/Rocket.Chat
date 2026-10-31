@@ -1,4 +1,4 @@
-import { Box } from '@rocket.chat/fuselage';
+import { ItemGroupHeader, ItemGroupTitle } from '@rocket.chat/fuselage';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -33,9 +33,9 @@ const NavBarSearchRoomSection = ({
 		<>
 			{itemCount === 0 && !isLoading && !isFetching && <NavBarAISearchNoResults suggestAISearch={suggestAISearch} />}
 			{rooms.length > 0 && (
-				<Box color='titles-labels' fontScale='c1' fontWeight='bold' paddingInline={12} marginBlockEnd={4} role='presentation' aria-hidden>
-					{filterText ? t('Results') : t('Recent')}
-				</Box>
+				<ItemGroupHeader inset='md' aria-hidden>
+					<ItemGroupTitle>{filterText ? t('Results') : t('Recent')}</ItemGroupTitle>
+				</ItemGroupHeader>
 			)}
 			{rooms.map((item) => (
 				<NavBarSearchRow key={item._id} room={item} onClick={onSelect} />

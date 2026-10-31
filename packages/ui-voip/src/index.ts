@@ -7,12 +7,13 @@ export {
 	usePeekMediaSessionState,
 	usePeekMediaSessionPeerInfo,
 	usePeekMediaSessionFeatures,
+	usePeekMediaSessionHidden,
 } from './context';
 export type { PeekMediaSessionStateReturn } from './context';
 export type { PeerInfo } from './context';
 export { useMediaCallAction, useMediaCallOpenRoomTracker } from './hooks';
 
-export { CallHistoryContextualBar, MediaCallRoomActivity, InlineMediaCallWidget } from './views';
+export { CallHistoryContextualBar, MediaCallRoomActivity, InlineMediaCallWidget, getCallHistoryMenuItems } from './views';
 export type { CallHistoryData } from './views';
 export * from './definitions/callHistoryContacts';
 

@@ -1,3 +1,4 @@
+import type { PresenceScope } from '@rocket.chat/core-services';
 import { type IUser, ROOM_ROLE_PRIORITY_MAP, type ISubscription, type UserStatus } from '@rocket.chat/core-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/tools';
@@ -9,7 +10,7 @@ import { effectiveStatusExpression, effectiveStatusFilter } from './statusVisibi
 type FindUsersParam = {
 	rid: string;
 	status?: UserStatus[];
-	hidden?: Set<IUser['_id']>;
+	hidden: PresenceScope;
 	skip?: number;
 	limit?: number;
 	filter?: string;
@@ -65,7 +66,7 @@ export async function findUsersOfRoomOrderedByRole({
 		],
 	};
 
-	const visibleStatus = hidden?.size ? effectiveStatusExpression(hidden) : '$status';
+	const visibleStatus = effectiveStatusExpression(hidden);
 
 	const membersResult = Users.col.aggregate<UserWithRoleAndSubscriptionData>(
 		[

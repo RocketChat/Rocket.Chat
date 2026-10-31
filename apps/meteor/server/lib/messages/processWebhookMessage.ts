@@ -1,6 +1,6 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IMessage, IUser, RequiredField, MessageAttachment, IRoom } from '@rocket.chat/core-typings';
 import { removeEmpty } from '@rocket.chat/tools';
-import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { sendMessage, validateMessage } from './sendMessage';
@@ -90,7 +90,7 @@ const getRoomWithOptionToJoin = async (channelType: string, channelValue: string
 			}
 
 			// No room, so throw an error
-			throw new Meteor.Error('invalid-channel');
+			throw new ClientSafeError('invalid-channel');
 	}
 };
 
@@ -155,6 +155,9 @@ export async function processWebhookMessage(
 	const sentData: WebhookResponseItem[] = [];
 
 	const channels: Array<string> = [...new Set(ensureArray(messageObj.channel || messageObj.roomId || defaultValues.channel))];
+	if (!channels.length) {
+		throw new ClientSafeError('invalid-channel');
+	}
 
 	if (messageObj.attachments && !Array.isArray(messageObj.attachments)) {
 		SystemLogger.warn({
@@ -178,7 +181,11 @@ export async function processWebhookMessage(
 			await validateRoomMessagePermissionsAsync(room, { uid: user._id, ...user });
 			await validateWebhookMessage(message, room, user);
 			rooms.push({ room, channel });
-		} catch (_error: any) {
+		} catch (caught: any) {
+			// A room the user cannot access must look the same as one that does not exist.
+			const _error = ['error-not-allowed', 'invalid-channel'].includes(caught?.error ?? caught?.message)
+				? new Error('error-invalid-room')
+				: caught;
 			if (messageObj.separateResponse) {
 				const { error, message } = _error || {};
 				const errorMessage = error || message || 'unknown-error';

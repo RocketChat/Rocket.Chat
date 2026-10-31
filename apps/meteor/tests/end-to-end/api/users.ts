@@ -1,27 +1,32 @@
 import crypto from 'crypto';
+import { after, afterEach, before, beforeEach, describe, it } from 'node:test';
 
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IRoom, ISubscription, ITeam, IUser } from '@rocket.chat/core-typings';
+import { UserStatus } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import type { IGetRoomRoles, PaginatedResult, DefaultUserInfo } from '@rocket.chat/rest-typings';
 import { assert, expect } from 'chai';
-import { after, afterEach, before, beforeEach, describe, it } from 'mocha';
 import { MongoClient } from 'mongodb';
 import speakeasy from 'speakeasy';
 import type { Response } from 'supertest';
 
+import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials, apiEmail, apiUsername, wait, reservedWords } from '../../data/api-data';
+import { withDatabase } from '../../data/database.helper';
 import { imgURL, tiffURL } from '../../data/interactions';
 import { createAgent, makeAgentAvailable } from '../../data/livechat/rooms';
 import { removeAgent, getAgent } from '../../data/livechat/users';
 import { updatePermission, updateSetting, restorePermissionToRoles, getSettingValueById } from '../../data/permissions.helper';
+import { retry } from '../../data/retry';
 import type { ActionRoomParams } from '../../data/rooms.helper';
 import { actionRoom, createRoom, deleteRoom } from '../../data/rooms.helper';
 import { createTeam, deleteTeam } from '../../data/teams.helper';
 import type { IUserWithCredentials } from '../../data/user';
 import { adminEmail, password, adminUsername } from '../../data/user';
 import type { TestUser } from '../../data/users.helper';
-import { createUser, login, deleteUser, getUserByUsername } from '../../data/users.helper';
+import { createUser, login, deleteUser, deleteUserIfExists, findUserByUsername, getUserByUsername } from '../../data/users.helper';
+import { withTimeout } from '../../data/utils';
 import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 
 const MAX_BIO_LENGTH = 260;
@@ -188,9 +193,9 @@ describe('[Users]', () => {
 	let targetUser: { _id: IUser['_id']; username: string; emails: { address: string }[] };
 	let userCredentials: Credentials;
 
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
-	before('should create a new user', async () => {
+	before(async () => {
 		const user = await createUser({
 			active: true,
 			roles: ['user'],
@@ -384,7 +389,7 @@ describe('[Users]', () => {
 				await Promise.all(users.map((user) => deleteUser(user)));
 			});
 
-			it('should create a new user with default roles', (done) => {
+			it('should create a new user with default roles', (_t, done) => {
 				const username = `defaultUserRole_${apiUsername}${Date.now()}`;
 				const email = `defaultUserRole_${apiEmail}${Date.now()}`;
 
@@ -412,7 +417,7 @@ describe('[Users]', () => {
 					.end(done);
 			});
 
-			it('should create a new user with only the role provided', (done) => {
+			it('should create a new user with only the role provided', (_t, done) => {
 				const username = `defaultUserRole_${apiUsername}${Date.now()}`;
 				const email = `defaultUserRole_${apiEmail}${Date.now()}`;
 
@@ -608,7 +613,7 @@ describe('[Users]', () => {
 			});
 
 			it('should create a user with a voice call extension', async () => {
-				const freeSwitchExtension = '888999';
+				const sipExtension = '888999';
 				let user: TestUser<IUser>;
 				await request
 					.post(api('users.create'))
@@ -622,13 +627,13 @@ describe('[Users]', () => {
 						roles: ['user'],
 						joinDefaultChannels: true,
 						verified: true,
-						freeSwitchExtension,
+						sipExtension,
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.nested.property('user.freeSwitchExtension', freeSwitchExtension);
+						expect(res.body).to.have.nested.property('user.sipExtension', sipExtension);
 						user = res.body.user;
 					});
 
@@ -638,8 +643,8 @@ describe('[Users]', () => {
 			});
 
 			it('should not create a user with a voice call extension that is already in use', async () => {
-				const freeSwitchExtension = '123123';
-				const user = await createUser({ freeSwitchExtension });
+				const sipExtension = '123123';
+				const user = await createUser({ sipExtension });
 				await request
 					.post(api('users.create'))
 					.set(credentials)
@@ -652,7 +657,7 @@ describe('[Users]', () => {
 						roles: ['user'],
 						joinDefaultChannels: true,
 						verified: true,
-						freeSwitchExtension,
+						sipExtension,
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(400)
@@ -678,7 +683,7 @@ describe('[Users]', () => {
 						roles: ['user'],
 						joinDefaultChannels: true,
 						verified: true,
-						freeSwitchExtension: '999',
+						sipExtension: '999',
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(400)
@@ -690,13 +695,18 @@ describe('[Users]', () => {
 		});
 
 		describe('default email2fa auto opt in configuration', () => {
-			let user: IUser;
+			let user: IUser | undefined;
 
 			afterEach(async () => {
-				await deleteUser(user);
 				await updateSetting('Accounts_TwoFactorAuthentication_By_Email_Enabled', true);
 				await updateSetting('Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In', true);
 				await updateSetting('Accounts_TwoFactorAuthentication_Enabled', true);
+
+				const createdUser = user;
+				user = undefined;
+				if (createdUser) {
+					await deleteUser(createdUser);
+				}
 			});
 
 			const dummyUser = {
@@ -829,7 +839,114 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
+				});
+		});
+
+		it('should create a new user with multiple phones', async () => {
+			const username = `phones_create_${apiUsername}_${Date.now()}`;
+			const email = `phones_create_${Date.now()}_${apiEmail}`;
+
+			const res = await request
+				.post(api('users.create'))
+				.set(credentials)
+				.send({
+					email,
+					name: username,
+					username,
+					password,
+					phones: [
+						{ number: '+15551234567', label: 'Work' },
+						{ number: '+15557654321', label: 'Mobile' },
+					],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.nested.property('user.phones').that.is.an('array').with.lengthOf(2);
+			expect(res.body).to.have.nested.property('user.phones[0].number', '+15551234567');
+			expect(res.body).to.have.nested.property('user.phones[0].label', 'Work');
+			expect(res.body).to.have.nested.property('user.phones[1].number', '+15557654321');
+
+			await deleteUser(res.body.user);
+		});
+
+		it('should trim whitespaces from phone numbers before validating and saving them', async () => {
+			const username = `phones_create_whitespace_${apiUsername}_${Date.now()}`;
+			const email = `phones_create_whitespace_${Date.now()}_${apiEmail}`;
+
+			const res = await request
+				.post(api('users.create'))
+				.set(credentials)
+				.send({
+					email,
+					name: username,
+					username,
+					password,
+					phones: [
+						{ number: ' +1 555 123 4567 ', label: 'Work' },
+						{ number: '+1  555  765  4321', label: 'Mobile' },
+					],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.nested.property('user.phones').that.is.an('array').with.lengthOf(2);
+			expect(res.body).to.have.nested.property('user.phones[0].number', '+15551234567');
+			expect(res.body).to.have.nested.property('user.phones[1].number', '+15557654321');
+
+			await request
+				.get(api('users.info'))
+				.set(credentials)
+				.query({ userId: res.body.user._id })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.nested.property('user.phones[0].number', '+15551234567');
+					expect(res.body).to.have.nested.property('user.phones[1].number', '+15557654321');
+				});
+
+			await deleteUser(res.body.user);
+		});
+
+		it('should fail to create a user when phone number format is invalid', async () => {
+			await request
+				.post(api('users.create'))
+				.set(credentials)
+				.send({
+					email: `phones_create_invalid_${Date.now()}_${apiEmail}`,
+					name: `phones_create_invalid_${apiUsername}`,
+					username: `phones_create_invalid_${apiUsername}_${Date.now()}`,
+					password,
+					phones: [{ number: 'invalid-number' }],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
+				});
+		});
+
+		it('should fail to create a user when a phone label has more than 50 characters', async () => {
+			await request
+				.post(api('users.create'))
+				.set(credentials)
+				.send({
+					email: `phones_create_invalid_label_${Date.now()}_${apiEmail}`,
+					name: `phones_create_invalid_label_${apiUsername}`,
+					username: `phones_create_invalid_label_${apiUsername}_${Date.now()}`,
+					password,
+					phones: [{ number: '+15551234567', label: 'a'.repeat(51) }],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 				});
 		});
 
@@ -888,6 +1005,21 @@ describe('[Users]', () => {
 
 			expect(res.body).to.have.property('success', false);
 			expect(res.body).to.have.property('error').and.to.be.equal('The username provided is not valid');
+		});
+
+		it('should return an error when trying register new user without an email', async () => {
+			const res = await request
+				.post(api('users.register'))
+				.send({
+					name: 'name',
+					username: `no-email-${Date.now()}`,
+					pass: password,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('errorType', 'error-invalid-params');
 		});
 
 		it('should return an error when trying register new user with an existing username', async () => {
@@ -970,7 +1102,7 @@ describe('[Users]', () => {
 						expect(res.body).to.have.property('errorType', 'error-user-registration-disabled');
 					});
 
-				const user = await getUserByUsername(username);
+				const user = await findUserByUsername(username);
 				expect(user).to.be.undefined;
 			});
 		});
@@ -1017,7 +1149,7 @@ describe('[Users]', () => {
 						expect(res.body).to.have.property('errorType', 'error-user-registration-secret');
 					});
 
-				const user = await getUserByUsername(username);
+				const user = await findUserByUsername(username);
 				expect(user).to.be.undefined;
 			});
 
@@ -1041,7 +1173,7 @@ describe('[Users]', () => {
 						expect(res.body).to.have.property('errorType', 'error-user-registration-secret');
 					});
 
-				const user = await getUserByUsername(username);
+				const user = await findUserByUsername(username);
 				expect(user).to.be.undefined;
 			});
 
@@ -1141,7 +1273,7 @@ describe('[Users]', () => {
 						expect(res.body).to.have.property('errorType', 'error-invalid-domain');
 					});
 
-				const user = await getUserByUsername(username);
+				const user = await findUserByUsername(username);
 				expect(user).to.be.undefined;
 			});
 
@@ -1205,7 +1337,7 @@ describe('[Users]', () => {
 						expect(res.body).to.have.nested.property('body.error', 'error-user-registration-custom-field');
 					});
 
-				const user = await getUserByUsername(username);
+				const user = await findUserByUsername(username);
 				expect(user).to.be.undefined;
 			});
 
@@ -1348,6 +1480,46 @@ describe('[Users]', () => {
 			expect(res.body).to.not.have.nested.property('user.e2e');
 		});
 
+		it('should return phones information for a user with multiple phone numbers', async () => {
+			const username = `phones_info_${Date.now()}`;
+			const email = `${username}@rocket.chat`;
+
+			const createResponse = await request
+				.post(api('users.create'))
+				.set(credentials)
+				.send({
+					email,
+					name: username,
+					username,
+					password,
+					phones: [
+						{ number: '+5511911111111', label: 'Work' },
+						{ number: '+5511922222222', label: 'Home' },
+					],
+				})
+				.expect(200);
+
+			const createdUser = createResponse.body.user;
+
+			await request
+				.get(api('users.info'))
+				.set(credentials)
+				.query({
+					userId: createdUser._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('user.phones').that.is.an('array').with.lengthOf(2);
+					expect(res.body).to.have.nested.property('user.phones[0].number', '+5511911111111');
+					expect(res.body).to.have.nested.property('user.phones[0].label', 'Work');
+					expect(res.body).to.have.nested.property('user.phones[1].number', '+5511922222222');
+				});
+
+			await deleteUser(createdUser);
+		});
+
 		it('should return "rooms" property when user request it and the user has the necessary permission (admin, "view-other-user-channels")', async () => {
 			const res = await request
 				.get(api('users.info'))
@@ -1405,7 +1577,7 @@ describe('[Users]', () => {
 				.set(credentials)
 				.query({
 					userId: targetUser._id,
-					fields: JSON.stringify({ userRooms: 1 }),
+					includeUserRooms: true,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200);
@@ -1572,14 +1744,14 @@ describe('[Users]', () => {
 			});
 		});
 
-		(IS_EE ? describe : describe.skip)('querying by freeSwitch extension', () => {
+		(IS_EE ? describe : describe.skip)('querying by SIP extension', () => {
 			let previousVoipSetting: boolean;
 			let targetUser: IUser;
 
 			before(async () => {
 				previousVoipSetting = (await getSettingValueById('VoIP_TeamCollab_SIP_Integration_Enabled')) as boolean;
 				await updateSetting('VoIP_TeamCollab_SIP_Integration_Enabled', true);
-				targetUser = await createUser({ freeSwitchExtension: '123123' });
+				targetUser = await createUser({ sipExtension: '123123' });
 			});
 
 			after(async () => {
@@ -1598,7 +1770,7 @@ describe('[Users]', () => {
 						.get(api('users.info'))
 						.set(credentials)
 						.query({
-							freeSwitchExtension: targetUser.freeSwitchExtension,
+							sipExtension: targetUser.sipExtension,
 						})
 						.expect('Content-Type', 'application/json')
 						.expect(200)
@@ -1606,7 +1778,7 @@ describe('[Users]', () => {
 							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.nested.property('user.username', targetUser.username);
 							expect(res.body).to.have.nested.property('user._id', targetUser._id);
-							expect(res.body).to.have.nested.property('user.freeSwitchExtension', targetUser.freeSwitchExtension);
+							expect(res.body).to.have.nested.property('user.sipExtension', targetUser.sipExtension);
 						});
 				});
 				it('should return an error when user does not exist', async () => {
@@ -1614,7 +1786,7 @@ describe('[Users]', () => {
 						.get(api('users.info'))
 						.set(credentials)
 						.query({
-							freeSwitchExtension: 'this_is_a_fake_extension_that_does_not_exist',
+							sipExtension: 'this_is_a_fake_extension_that_does_not_exist',
 						})
 						.expect('Content-Type', 'application/json')
 						.expect(400)
@@ -1635,14 +1807,14 @@ describe('[Users]', () => {
 						.get(api('users.info'))
 						.set(credentials)
 						.query({
-							freeSwitchExtension: targetUser.freeSwitchExtension,
+							sipExtension: targetUser.sipExtension,
 						})
 						.expect('Content-Type', 'application/json')
 						.expect(200)
 						.expect((res) => {
 							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.nested.property('user.username', targetUser.username);
-							expect(res.body).to.have.nested.property('user.freeSwitchExtension', targetUser.freeSwitchExtension);
+							expect(res.body).to.have.nested.property('user.sipExtension', targetUser.sipExtension);
 						});
 				});
 			});
@@ -1704,7 +1876,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 	});
@@ -1714,7 +1887,7 @@ describe('[Users]', () => {
 			it('should return 401 unauthorized', async () => {
 				const res = await request.get(api('users.presence')).expect('Content-Type', 'application/json').expect(401);
 
-				expect(res.body).to.have.property('message');
+				expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 			});
 		});
 		describe('Logged in:', () => {
@@ -1784,7 +1957,7 @@ describe('[Users]', () => {
 				expect(res.body.users.map((u: IUser) => u._id)).to.include('rocket.cat');
 			});
 
-			it('should return full list of online users for more than 10 minutes in the past', (done) => {
+			it('should return full list of online users for more than 10 minutes in the past', (_t, done) => {
 				const date = new Date();
 				date.setMinutes(date.getMinutes() - 11);
 
@@ -1904,7 +2077,7 @@ describe('[Users]', () => {
 			user3Credentials = await login(user3.username, password);
 		});
 
-		before('Create a group', async () => {
+		before(async () => {
 			group = (
 				await createRoom({
 					type: 'p',
@@ -1913,7 +2086,7 @@ describe('[Users]', () => {
 			).body.group;
 		});
 
-		before('Create invite link', async () => {
+		before(async () => {
 			inviteToken = (
 				await request.post(api('findOrCreateInvite')).set(credentials).send({
 					rid: group._id,
@@ -1923,7 +2096,7 @@ describe('[Users]', () => {
 			).body._id;
 		});
 
-		after('Remove invite link', async () =>
+		after(async () =>
 			request
 				.delete(api(`removeInvite/${inviteToken}`))
 				.set(credentials)
@@ -1943,6 +2116,22 @@ describe('[Users]', () => {
 			]),
 		);
 
+		it("should reject the removed 'query' and 'fields' parameters", async () => {
+			await Promise.all(
+				[{ query: JSON.stringify({ type: 'user' }) }, { fields: JSON.stringify({ services: 1 }) }].map((params) =>
+					request
+						.get(api('users.list'))
+						.set(credentials)
+						.query(params)
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+						}),
+				),
+			);
+		});
+
 		it('should query all users in the system', async () => {
 			const res = await request.get(api('users.list')).set(credentials).expect('Content-Type', 'application/json').expect(200);
 
@@ -1953,14 +2142,8 @@ describe('[Users]', () => {
 			expect(myself).to.not.have.property('e2e');
 		});
 
-		it('should sort for user statuses and check if deactivated user is correctly sorted', (done) => {
+		it('should sort for user statuses and check if deactivated user is correctly sorted', (_t, done) => {
 			const query = {
-				fields: JSON.stringify({
-					username: 1,
-					_id: 1,
-					active: 1,
-					status: 1,
-				}),
 				sort: JSON.stringify({
 					status: 1,
 				}),
@@ -1981,6 +2164,178 @@ describe('[Users]', () => {
 					expect(firstUser).to.have.property('active', false);
 				})
 				.end(done);
+		});
+
+		describe('custom fields filter', () => {
+			let cfUser: TestUser<IUser>;
+			const cfValue = `ext-${Date.now()}`;
+
+			before(async () => {
+				await updateSetting('Accounts_CustomFields', JSON.stringify({ externalId: { type: 'text', required: false } }));
+
+				cfUser = await createUser();
+
+				await request
+					.post(api('users.update'))
+					.set(credentials)
+					.send({ userId: cfUser._id, data: { customFields: { externalId: cfValue } } })
+					.expect(200);
+			});
+
+			after(async () => {
+				await Promise.all([
+					updateSetting('Accounts_CustomFields', ''),
+					restorePermissionToRoles('view-full-other-user-info'),
+					deleteUser(cfUser),
+				]);
+			});
+
+			it('should return only the user whose custom field matches the whole value', async () => {
+				const response = await request
+					.get(api('users.list'))
+					.set(credentials)
+					.query(`customFields[externalId]=${cfValue}`)
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(response.body).to.have.property('total', 1);
+				expect(response.body.users[0]).to.have.property('_id', cfUser._id);
+
+				const partial = await request
+					.get(api('users.list'))
+					.set(credentials)
+					.query({ customFields: { externalId: cfValue.slice(0, -1) } })
+					.expect(200);
+
+				expect(partial.body).to.have.property('total', 0);
+			});
+
+			it('should reject an operator in the value', async () => {
+				await request
+					.get(api('users.list'))
+					.set(credentials)
+					.query({ customFields: { externalId: { $ne: null } } })
+					.expect(400);
+			});
+
+			it('should reject an empty parameter and the JSON string form', async () => {
+				await request.get(api('users.list')).set(credentials).query('customFields=').expect(400);
+				await request
+					.get(api('users.list'))
+					.set(credentials)
+					.query({ customFields: JSON.stringify({ externalId: cfValue }) })
+					.expect(400);
+			});
+
+			it('should return the custom fields only when includeCustomFields is true', async () => {
+				const withFields = await request
+					.get(api('users.list'))
+					.set(credentials)
+					.query({ customFields: { externalId: cfValue }, includeCustomFields: true })
+					.expect(200);
+				expect(withFields.body.users[0]).to.have.nested.property('customFields.externalId', cfValue);
+
+				const withoutFields = await request
+					.get(api('users.list'))
+					.set(credentials)
+					.query({ customFields: { externalId: cfValue } })
+					.expect(200);
+				expect(withoutFields.body.users[0]).to.not.have.property('customFields');
+			});
+
+			it('should reject an empty includeCustomFields instead of treating it as false', async () => {
+				await request.get(api('users.list')).set(credentials).query('includeCustomFields=').expect(400);
+			});
+
+			it('should forbid both filtering and reading without view-full-other-user-info', async () => {
+				await updatePermission('view-full-other-user-info', ['admin']);
+
+				await request
+					.get(api('users.list'))
+					.set(user2Credentials)
+					.query({ customFields: { externalId: cfValue } })
+					.expect(403);
+
+				await request.get(api('users.list')).set(user2Credentials).query({ includeCustomFields: true }).expect(403);
+
+				const response = await request.get(api('users.list')).set(user2Credentials).query({ includeCustomFields: false }).expect(200);
+				expect(response.body.users[0]).to.not.have.property('customFields');
+			});
+		});
+
+		describe('username filter', () => {
+			const prefix = `ulf${Date.now()}`;
+			let lowerUser: TestUser<IUser>;
+			let mixedUser: TestUser<IUser>;
+			let dottedUser: TestUser<IUser>;
+
+			before(async () => {
+				[lowerUser, mixedUser, dottedUser] = await Promise.all([
+					createUser({ username: `${prefix}.john` }),
+					createUser({ username: `x.${prefix.toUpperCase()}.joanna` }),
+					createUser({ username: `${prefix}.bob` }),
+				]);
+			});
+
+			after(async () => {
+				await Promise.all([deleteUser(lowerUser), deleteUser(mixedUser), deleteUser(dottedUser)]);
+			});
+
+			const listUsernames = async (query: Record<string, string>, creds: Credentials = credentials): Promise<string[]> => {
+				const response = await request
+					.get(api('users.list'))
+					.set(creds)
+					.query({ count: 50, ...query })
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(response.body).to.have.property('success', true);
+				return response.body.users.map((user: IUser) => user.username);
+			};
+
+			it('should match any part of the username, ignoring case', async () => {
+				expect(await listUsernames({ username: `${prefix}.jo` })).to.have.members([lowerUser.username, mixedUser.username]);
+				expect(await listUsernames({ username: prefix })).to.have.members([lowerUser.username, mixedUser.username, dottedUser.username]);
+			});
+
+			it('should treat regex metacharacters literally', async () => {
+				expect(await listUsernames({ username: `${prefix}.*` })).to.be.empty;
+				expect(await listUsernames({ username: `${prefix}\\.bob` })).to.be.empty;
+				expect(await listUsernames({ username: `${prefix}.bob` })).to.have.members([dottedUser.username]);
+			});
+
+			it('should combine with the email filter', async () => {
+				expect(await listUsernames({ username: prefix, email: lowerUser.emails[0].address })).to.have.members([lowerUser.username]);
+				expect(await listUsernames({ username: `${prefix}.bob`, email: lowerUser.emails[0].address })).to.be.empty;
+			});
+
+			it('should not require view-full-other-user-info', async () => {
+				await updatePermission('view-full-other-user-info', ['admin']);
+
+				try {
+					expect(await listUsernames({ username: `${prefix}.bob` }, user2Credentials)).to.have.members([dottedUser.username]);
+				} finally {
+					await restorePermissionToRoles('view-full-other-user-info');
+				}
+			});
+
+			it('should reject an empty username instead of ignoring it', async () => {
+				await request
+					.get(api('users.list'))
+					.set(credentials)
+					.query({ username: '' })
+					.expect('Content-Type', 'application/json')
+					.expect(400);
+			});
+
+			it('should reject a username that is not a plain string', async () => {
+				await request
+					.get(api('users.list'))
+					.set(credentials)
+					.query('username[$ne]=x')
+					.expect('Content-Type', 'application/json')
+					.expect(400);
+			});
 		});
 
 		it('should query all users in the system when logged as normal user and `view-outside-room` not granted', async () => {
@@ -2022,7 +2377,6 @@ describe('[Users]', () => {
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.query({
-					fields: JSON.stringify({ inviteToken: 1 }),
 					sort: JSON.stringify({ inviteToken: -1 }),
 					count: 100,
 				})
@@ -2054,7 +2408,6 @@ describe('[Users]', () => {
 				.set(user3Credentials)
 				.expect('Content-Type', 'application/json')
 				.query({
-					fields: JSON.stringify({ inviteToken: 1 }),
 					sort: JSON.stringify({ inviteToken: -1 }),
 					count: 100,
 				})
@@ -2122,7 +2475,7 @@ describe('[Users]', () => {
 						.expect(403)
 						.expect((res) => {
 							expect(res.body).to.have.property('success', false);
-							expect(res.body).to.have.property('error', 'unauthorized');
+							expect(res.body).to.have.property('errorType', 'error-forbidden');
 						});
 				});
 			});
@@ -2134,7 +2487,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 	});
@@ -2213,7 +2567,7 @@ describe('[Users]', () => {
 					.attach('image', imgURL)
 					.field({ userId: credentials['X-User-Id'] })
 					.expect('Content-Type', 'application/json')
-					.expect(400);
+					.expect(403);
 
 				expect(res.body).to.have.property('success', false);
 			});
@@ -2252,7 +2606,8 @@ describe('[Users]', () => {
 					.expect('Content-Type', 'application/json')
 					.expect(401)
 					.expect((res: Response) => {
-						expect(res.body).to.have.property('status', 'error');
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 					});
 			});
 		});
@@ -2321,7 +2676,7 @@ describe('[Users]', () => {
 						userId: credentials['X-User-Id'],
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400);
+					.expect(403);
 
 				expect(res.body).to.have.property('success', false);
 			});
@@ -2348,7 +2703,8 @@ describe('[Users]', () => {
 					.expect('Content-Type', 'application/json')
 					.expect(401)
 					.expect((res: Response) => {
-						expect(res.body).to.have.property('status', 'error');
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 					});
 			});
 		});
@@ -2375,7 +2731,7 @@ describe('[Users]', () => {
 		});
 
 		describe('[/users.getAvatarSuggestion]', () => {
-			it('should return 401 unauthorized when user is not logged in', (done) => {
+			it('should return 401 unauthorized when user is not logged in', (_t, done) => {
 				void request.get(api('users.getAvatarSuggestion')).expect('Content-Type', 'application/json').expect(401).end(done);
 			});
 
@@ -2444,6 +2800,152 @@ describe('[Users]', () => {
 			expect(res.body).to.not.have.nested.property('user.e2e');
 		});
 
+		it("should update a user's phones by userId", async () => {
+			const user = await createUser();
+
+			await request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: user._id,
+					data: {
+						phones: [
+							{ number: '+15551234567', label: 'Work' },
+							{ number: '+15557654321', label: 'Mobile' },
+						],
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('user.phones').that.is.an('array').with.lengthOf(2);
+					expect(res.body).to.have.nested.property('user.phones[0].number', '+15551234567');
+					expect(res.body).to.have.nested.property('user.phones[1].label', 'Mobile');
+				});
+
+			await request
+				.get(api('users.info'))
+				.set(credentials)
+				.query({ userId: user._id })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.nested.property('user.phones').that.is.an('array').with.lengthOf(2);
+				});
+
+			await deleteUser(user);
+		});
+
+		it("should trim whitespaces from a user's phone number when updating by userId", async () => {
+			const user = await createUser();
+
+			await request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: user._id,
+					data: {
+						phones: [{ number: ' +1 555 123 4567 ', label: 'Work' }],
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('user.phones[0].number', '+15551234567');
+				});
+
+			await request
+				.get(api('users.info'))
+				.set(credentials)
+				.query({ userId: user._id })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.nested.property('user.phones[0].number', '+15551234567');
+				});
+
+			await deleteUser(user);
+		});
+
+		it("should clear a user's phones when updating with an empty phones array", async () => {
+			const user = await createUser();
+
+			await request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: user._id,
+					data: {
+						phones: [{ number: '+15551234567', label: 'Work' }],
+					},
+				})
+				.expect(200);
+
+			await request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: user._id,
+					data: {
+						phones: [],
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.user).to.not.have.property('phones');
+				});
+
+			await request
+				.get(api('users.info'))
+				.set(credentials)
+				.query({ userId: user._id })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body.user).to.not.have.property('phones');
+				});
+
+			await deleteUser(user);
+		});
+
+		it('should fail when updating own basic info with a phone label longer than 50 characters', async () => {
+			await request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: credentials['X-User-Id'],
+					data: {
+						phones: [{ number: '+15551234567', label: Random.hexString(51) }],
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
+				});
+		});
+
+		it('should fail when updating a user with an invalid phone number format', async () => {
+			await request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: targetUser._id,
+					data: {
+						phones: [{ number: 'invalid-number' }],
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
+				});
+		});
+
 		it("should update a user's email by userId", async () => {
 			const res = await request
 				.post(api('users.update'))
@@ -2499,6 +3001,24 @@ describe('[Users]', () => {
 			expect(res.body).to.not.have.nested.property('user.e2e');
 		});
 
+		it("should keep a user's bio and nickname when the update omits them", async () => {
+			const res = await request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: targetUser._id,
+					data: {
+						statusText: 'edited-status-text-test',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.nested.property('user.bio', 'edited-bio-test');
+			expect(res.body).to.have.nested.property('user.nickname', 'edited-nickname-test');
+		});
+
 		it(`should return an error when trying to set a nickname longer than ${MAX_NICKNAME_LENGTH} characters`, async () => {
 			const res = await request
 				.post(api('users.update'))
@@ -2533,8 +3053,8 @@ describe('[Users]', () => {
 			expect(res.body).to.have.property('error', `Bio size exceeds ${MAX_BIO_LENGTH} characters [error-bio-size-exceeded]`);
 		});
 
-		it('should return an error when trying to upsert a user by sending an empty userId', () => {
-			return request
+		it('should return an error when trying to upsert a user by sending an empty userId', async () => {
+			await request
 				.post(api('users.update'))
 				.set(credentials)
 				.send({
@@ -2545,13 +3065,13 @@ describe('[Users]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 					expect(res.body).to.have.property('error', 'must NOT have fewer than 1 characters');
 				});
 		});
 
-		it('should return an error when trying to use the joinDefaultChannels param, which is not intended for updates', () => {
-			return request
+		it('should return an error when trying to use the joinDefaultChannels param, which is not intended for updates', async () => {
+			await request
 				.post(api('users.update'))
 				.set(credentials)
 				.send({
@@ -2564,7 +3084,7 @@ describe('[Users]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 					expect(res.body).to.have.property('error', 'must NOT have additional properties');
 				});
 		});
@@ -2638,6 +3158,29 @@ describe('[Users]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				});
+		});
+
+		it('should record a username-only change in the audit log', async () => {
+			const username = `audited.name.${Date.now()}`;
+
+			await request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: targetUser._id,
+					data: { username },
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			await retry('wait for the user.changed audit event', async () => {
+				const event = await withDatabase((db) =>
+					db
+						.collection('rocketchat_server_events')
+						.findOne({ t: 'user.changed', data: { $elemMatch: { 'key': 'operation', 'value.$set.username': username } } }),
+				);
+				expect(event).to.not.be.null;
+			});
 		});
 
 		it('should return an error when trying update user real name and it is not allowed', async () => {
@@ -3130,13 +3673,13 @@ describe('[Users]', () => {
 					.send({
 						userId: user._id,
 						data: {
-							freeSwitchExtension: '999',
+							sipExtension: '999',
 						},
 					})
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.nested.property('user.freeSwitchExtension', '999');
+						expect(res.body).to.have.nested.property('user.sipExtension', '999');
 					});
 			});
 
@@ -3147,7 +3690,7 @@ describe('[Users]', () => {
 					.send({
 						userId: targetUser._id,
 						data: {
-							freeSwitchExtension: '999',
+							sipExtension: '999',
 						},
 					})
 					.expect(400)
@@ -3165,7 +3708,7 @@ describe('[Users]', () => {
 					.send({
 						userId: user._id,
 						data: {
-							freeSwitchExtension: '9998',
+							sipExtension: '9998',
 						},
 					})
 					.expect(400)
@@ -3176,13 +3719,84 @@ describe('[Users]', () => {
 			});
 		});
 
+		describe('status message', () => {
+			let statusUser: TestUser<IUser>;
+			let statusUserCredentials: Credentials;
+
+			const findStatusFields = async () => {
+				const connection = await MongoClient.connect(URL_MONGODB);
+				const fields = await connection
+					.db()
+					.collection<IUser>('users')
+					.findOne(
+						{ _id: statusUser._id },
+						{ projection: { _id: 0, statusText: 1, statusDefault: 1, statusSource: 1, statusExpiresAt: 1 } },
+					);
+				await connection.close();
+
+				return fields;
+			};
+
+			const waitForStatusFields = (predicate: (fields: Partial<IUser>) => boolean) =>
+				withTimeout(async (signal) => {
+					for (;;) {
+						const fields = await findStatusFields();
+						if ((fields && predicate(fields)) || signal.aborted) {
+							return fields;
+						}
+						await sleep(200);
+					}
+				}, 15000);
+
+			const updateStatusText = (statusText: string) =>
+				request.post(api('users.update')).set(credentials).send({ userId: statusUser._id, data: { statusText } }).expect(200);
+
+			before(() => updateSetting('Accounts_AllowUserStatusMessageChange', true));
+
+			beforeEach(async () => {
+				statusUser = await createUser();
+				statusUserCredentials = await login(statusUser.username, password);
+			});
+
+			afterEach(() => deleteUser(statusUser));
+
+			it('should replace an expiring status with a manual one that keeps the status the user chose', async () => {
+				await request
+					.post(api('users.setStatus'))
+					.set(statusUserCredentials)
+					.send({ status: 'busy', message: 'focus time', expiresAt: new Date(Date.now() + 60 * 60 * 1000).toISOString() })
+					.expect(200);
+
+				const { body } = await updateStatusText('set by an admin');
+				expect(body.user).to.have.property('statusText', 'set by an admin');
+
+				const fields = await waitForStatusFields(({ statusText }) => statusText === 'set by an admin');
+				expect(fields).to.deep.equal({ statusText: 'set by an admin', statusDefault: 'busy', statusSource: 'manual' });
+			});
+
+			it('should not leave the user busy when the message is replaced during a meeting', async () => {
+				await updateUserInDb(statusUser._id, {
+					statusDefault: UserStatus.BUSY,
+					statusText: 'Outlook: In a meeting',
+					statusSource: 'external',
+					statusExpiresAt: new Date(Date.now() + 60 * 60 * 1000),
+				});
+
+				await updateStatusText('set by an admin');
+
+				const fields = await waitForStatusFields(({ statusText }) => statusText === 'set by an admin');
+				expect(fields).to.deep.equal({ statusText: 'set by an admin', statusDefault: 'online', statusSource: 'manual' });
+			});
+		});
+
 		it('should return 401 when not authenticated', async () => {
 			await request
 				.post(api('users.update'))
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 	});
@@ -3250,6 +3864,127 @@ describe('[Users]', () => {
 			expect(user.username).to.be.equal(editedUsername);
 			expect(user.name).to.be.equal(editedName);
 			expect(user).to.not.have.property('e2e');
+		});
+
+		it('should update the user own phones', async () => {
+			await request
+				.post(api('users.updateOwnBasicInfo'))
+				.set(userCredentials)
+				.send({
+					data: {
+						phones: [
+							{ number: '+5511911111111', label: 'Work' },
+							{ number: '+5511922222222', label: 'Home' },
+						],
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('user.phones').that.is.an('array').with.lengthOf(2);
+					expect(res.body).to.have.nested.property('user.phones[0].number', '+5511911111111');
+					expect(res.body).to.have.nested.property('user.phones[0].label', 'Work');
+				});
+		});
+
+		it('should trim whitespaces from the user own phone number when updating', async () => {
+			await request
+				.post(api('users.updateOwnBasicInfo'))
+				.set(userCredentials)
+				.send({
+					data: {
+						phones: [{ number: ' +5511 91111 1111 ', label: 'Work' }],
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('user.phones[0].number', '+5511911111111');
+				});
+
+			await request
+				.get(api('users.info'))
+				.set(userCredentials)
+				.query({ userId: user._id })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.nested.property('user.phones[0].number', '+5511911111111');
+				});
+		});
+
+		it('should clear the user own phones when an empty array is sent', async () => {
+			await request
+				.post(api('users.updateOwnBasicInfo'))
+				.set(userCredentials)
+				.send({
+					data: {
+						phones: [{ number: '+5511911111111', label: 'Work' }],
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('user.phones[0].number', '+5511911111111');
+				});
+
+			await request
+				.post(api('users.updateOwnBasicInfo'))
+				.set(userCredentials)
+				.send({
+					data: {
+						phones: [],
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).not.have.nested.property('user.phones');
+				});
+
+			await request
+				.get(api('users.info'))
+				.set(userCredentials)
+				.query({ userId: user._id })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).not.have.nested.property('user.phones');
+				});
+		});
+
+		it('should fail when updating own basic info with invalid phone number format', async () => {
+			await request
+				.post(api('users.updateOwnBasicInfo'))
+				.set(userCredentials)
+				.send({
+					data: { phones: [{ number: 'invalid-number' }] },
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
+				});
+		});
+
+		it('should fail when updating own basic info with a phone label longer than 50 characters', async () => {
+			await request
+				.post(api('users.updateOwnBasicInfo'))
+				.set(userCredentials)
+				.send({
+					data: { phones: [{ number: '+5511911111111', label: 'a'.repeat(51) }] },
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
+				});
 		});
 
 		it('should update the user name only', async () => {
@@ -3714,7 +4449,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 	});
@@ -3723,7 +4459,7 @@ describe('[Users]', () => {
 	describe('[/users.setPreferences]', () => {
 		after(() => updatePermission('edit-other-user-info', ['admin']));
 
-		it('should return an error when the user try to update info of another user and does not have the necessary permission', (done) => {
+		it('should return an error when the user try to update info of another user and does not have the necessary permission', (_t, done) => {
 			const userPreferences = {
 				userId: 'rocket.cat',
 				data: {
@@ -3745,7 +4481,7 @@ describe('[Users]', () => {
 					.end(done);
 			});
 		});
-		it('should return an error when the user try to update info of an nonexistent user', (done) => {
+		it('should return an error when the user try to update info of an nonexistent user', (_t, done) => {
 			const userPreferences = {
 				userId: 'invalid-id',
 				data: {
@@ -3770,7 +4506,7 @@ describe('[Users]', () => {
 					.end(done);
 			});
 		});
-		it('should set some preferences of another user successfully', (done) => {
+		it('should set some preferences of another user successfully', (_t, done) => {
 			const userPreferences = {
 				userId: 'rocket.cat',
 				data: {
@@ -3793,7 +4529,7 @@ describe('[Users]', () => {
 					.end(done);
 			});
 		});
-		it('should set some preferences by user when execute successfully', (done) => {
+		it('should set some preferences by user when execute successfully', (_t, done) => {
 			const userPreferences = {
 				userId: credentials['X-User-Id'],
 				data: {
@@ -3813,7 +4549,7 @@ describe('[Users]', () => {
 				})
 				.end(done);
 		});
-		it('should set some preferences and language preference by user when execute successfully', (done) => {
+		it('should set some preferences and language preference by user when execute successfully', (_t, done) => {
 			const userPreferences = {
 				userId: credentials['X-User-Id'],
 				data: {
@@ -3864,7 +4600,7 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 				});
 		});
 
@@ -3874,7 +4610,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 
@@ -3892,7 +4629,7 @@ describe('[Users]', () => {
 	});
 
 	describe('[/users.getPreferences]', () => {
-		it('should return all preferences when execute successfully', (done) => {
+		it('should return all preferences when execute successfully', (_t, done) => {
 			const userPreferences = {
 				...preferences.data,
 				language: 'en',
@@ -3915,7 +4652,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 	});
@@ -3966,7 +4704,7 @@ describe('[Users]', () => {
 			const res = await request.post(api('users.forgotPassword')).send({}).expect('Content-Type', 'application/json').expect(400);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('errorType', 'invalid-params');
+			expect(res.body).to.have.property('errorType', 'error-invalid-params');
 			expect(res.body).to.have.property('error', "must have required property 'email'");
 		});
 	});
@@ -4038,8 +4776,8 @@ describe('[Users]', () => {
 		it('should return 401 when not authenticated', async () => {
 			const res = await request.get(api('users.getUsernameSuggestion')).expect('Content-Type', 'application/json').expect(401);
 
-			expect(res.body).to.have.property('status', 'error');
-			expect(res.body).to.have.property('message');
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 		});
 	});
 
@@ -4057,7 +4795,7 @@ describe('[Users]', () => {
 		it('should return 401 unauthorized when user is not logged in', async () => {
 			const res = await request.get(api('users.checkUsernameAvailability')).expect('Content-Type', 'application/json').expect(401);
 
-			expect(res.body).to.have.property('message');
+			expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 		});
 
 		it('should return true if the username is the same user username set', async () => {
@@ -4109,9 +4847,9 @@ describe('[Users]', () => {
 			userCredentials = await login(targetUser.username, password);
 		});
 
-		after(async () => deleteUser(targetUser));
+		after(async () => deleteUserIfExists(targetUser));
 
-		it('Enable "Accounts_AllowDeleteOwnAccount" setting...', (done) => {
+		it('Enable "Accounts_AllowDeleteOwnAccount" setting...', (_t, done) => {
 			void request
 				.post('/api/v1/settings/Accounts_AllowDeleteOwnAccount')
 				.set(credentials)
@@ -4151,8 +4889,6 @@ describe('[Users]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				});
-
-			await deleteUser(user);
 		});
 
 		describe('last owner cases', () => {
@@ -4177,7 +4913,7 @@ describe('[Users]', () => {
 
 			afterEach(async () => {
 				await deleteRoom({ type: 'c', roomId: room._id });
-				await deleteUser(user);
+				await deleteUserIfExists(user);
 			});
 
 			it('should return an error when trying to delete user own account if user is the last room owner', async () => {
@@ -4239,7 +4975,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 
@@ -4264,8 +5001,8 @@ describe('[Users]', () => {
 		});
 
 		after(async () => {
-			await deleteUser(newUser);
 			await updatePermission('delete-user', ['admin']);
+			await deleteUserIfExists(newUser);
 		});
 
 		it('should return an error when trying delete user account without "delete-user" permission', async () => {
@@ -4280,7 +5017,7 @@ describe('[Users]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
 				});
 		});
 
@@ -4315,7 +5052,10 @@ describe('[Users]', () => {
 				await removeRoomOwner({ type: 'c', roomId: room._id, userId: credentials['X-User-Id'] });
 			});
 
-			afterEach(() => Promise.all([deleteRoom({ type: 'c', roomId: room._id }), deleteUser(targetUser, { confirmRelinquish: true })]));
+			afterEach(async () => {
+				await deleteRoom({ type: 'c', roomId: room._id });
+				await deleteUserIfExists(targetUser, { confirmRelinquish: true });
+			});
 
 			it('should return an error when trying to delete user account if the user is the last room owner', async () => {
 				await updatePermission('delete-user', ['admin']);
@@ -4423,7 +5163,8 @@ describe('[Users]', () => {
 						.expect('Content-Type', 'application/json')
 						.expect(401)
 						.expect((res: Response) => {
-							expect(res.body).to.have.property('status', 'error');
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 						});
 				});
 			});
@@ -4461,7 +5202,8 @@ describe('[Users]', () => {
 						.expect('Content-Type', 'application/json')
 						.expect(401)
 						.expect((res: Response) => {
-							expect(res.body).to.have.property('status', 'error');
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 						});
 				});
 
@@ -4510,7 +5252,8 @@ describe('[Users]', () => {
 						.expect('Content-Type', 'application/json')
 						.expect(401)
 						.expect((res: Response) => {
-							expect(res.body).to.have.property('status', 'error');
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 						});
 				});
 
@@ -4570,7 +5313,8 @@ describe('[Users]', () => {
 						.expect('Content-Type', 'application/json')
 						.expect(401)
 						.expect((res: Response) => {
-							expect(res.body).to.have.property('status', 'error');
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 						});
 				});
 
@@ -4600,10 +5344,10 @@ describe('[Users]', () => {
 							tokenName,
 						})
 						.expect('Content-Type', 'application/json')
-						.expect(400);
+						.expect(403);
 
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('not-authorized');
+					expect(res.body.errorType).to.be.equal('error-forbidden');
 				});
 				it('/users.regeneratePersonalAccessToken', async () => {
 					const res = await request
@@ -4613,10 +5357,10 @@ describe('[Users]', () => {
 							tokenName,
 						})
 						.expect('Content-Type', 'application/json')
-						.expect(400);
+						.expect(403);
 
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('not-authorized');
+					expect(res.body.errorType).to.be.equal('error-forbidden');
 				});
 				it('/users.getPersonalAccessTokens', async () => {
 					const res = await request
@@ -4626,7 +5370,7 @@ describe('[Users]', () => {
 						.expect(403);
 
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+					expect(res.body.errorType).to.be.equal('error-forbidden');
 				});
 				it('/users.removePersonalAccessToken', async () => {
 					const res = await request
@@ -4636,10 +5380,10 @@ describe('[Users]', () => {
 							tokenName,
 						})
 						.expect('Content-Type', 'application/json')
-						.expect(400);
+						.expect(403);
 
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('not-authorized');
+					expect(res.body.errorType).to.be.equal('error-forbidden');
 				});
 				it('should throw an error when user tries remove a token that does not exist', async () => {
 					const res = await request
@@ -4649,10 +5393,10 @@ describe('[Users]', () => {
 							tokenName: 'tokenthatdoesnotexist',
 						})
 						.expect('Content-Type', 'application/json')
-						.expect(400);
+						.expect(403);
 
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('not-authorized');
+					expect(res.body.errorType).to.be.equal('error-forbidden');
 				});
 			});
 		});
@@ -4738,7 +5482,7 @@ describe('[Users]', () => {
 				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
 		});
 		it('should return an error when trying to set user own active status and has not the necessary permission(edit-other-user-active-status)', async () => {
 			const res = await request
@@ -4752,7 +5496,7 @@ describe('[Users]', () => {
 				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
 		});
 		it('should set user own active status to false when the user has the necessary permission(edit-other-user-active-status)', async () => {
 			await updatePermission('edit-other-user-active-status', ['admin']);
@@ -4768,7 +5512,7 @@ describe('[Users]', () => {
 				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
 		});
 		it('users should retain their roles when they are deactivated', async () => {
 			const testUser = await createUser({ roles: ['user', 'livechat-agent'] });
@@ -4962,7 +5706,7 @@ describe('[Users]', () => {
 		let testUser: TestUser<IUser>;
 		const testRoleId = 'guest';
 
-		before('Create test user', async () => {
+		before(async () => {
 			testUser = await createUser();
 			await request
 				.post(api('roles.addUserToRole'))
@@ -4993,7 +5737,7 @@ describe('[Users]', () => {
 				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
 		});
 		it('should deactivate no users when no users in time range', async () => {
 			await updatePermission('edit-other-user-active-status', ['admin']);
@@ -5125,26 +5869,28 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 	});
 
-	describe('[/users.logoutOtherClients]', function () {
+	describe('[/users.logoutOtherClients]', () => {
 		let user: TestUser<IUser>;
 		let userCredentials: Credentials;
 		let newCredentials: Credentials;
 
-		this.timeout(20000);
+		before(
+			async () => {
+				user = await createUser({ joinDefaultChannels: false });
+				userCredentials = await login(user.username, password);
+				newCredentials = await login(user.username, password);
+			},
+			{ timeout: 20000 },
+		);
+		after(() => deleteUser(user), { timeout: 20000 });
 
-		before(async () => {
-			user = await createUser({ joinDefaultChannels: false });
-			userCredentials = await login(user.username, password);
-			newCredentials = await login(user.username, password);
-		});
-		after(() => deleteUser(user));
-
-		it('should invalidate all active sesions', (done) => {
+		it('should invalidate all active sesions', { timeout: 20000 }, (_t, done) => {
 			/* We want to validate that the login with the "old" credentials fails
 				However, the removal of the tokens is done asynchronously.
 				Thus, we check that within the next seconds, at least one try to
@@ -5178,7 +5924,7 @@ describe('[Users]', () => {
 				.then(tryAuthentication);
 		});
 
-		it('should remove only logged out session push tokens', async () => {
+		it('should remove only logged out session push tokens', { timeout: 20000 }, async () => {
 			const credentials1 = await login(user.username, password);
 			const credentials2 = await login(user.username, password);
 
@@ -5241,13 +5987,14 @@ describe('[Users]', () => {
 				});
 		});
 
-		it('should return 401 when not authenticated', async () => {
+		it('should return 401 when not authenticated', { timeout: 20000 }, async () => {
 			await request
 				.post(api('users.logoutOtherClients'))
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 	});
@@ -5298,7 +6045,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 	});
@@ -5306,39 +6054,44 @@ describe('[Users]', () => {
 	describe('[/users.autocomplete]', () => {
 		after(() => updatePermission('view-outside-room', ['admin', 'owner', 'moderator', 'user']));
 
-		describe('[without permission]', function () {
+		describe('[without permission]', () => {
 			let user: TestUser<IUser>;
 			let userCredentials: Credentials;
 			let user2: TestUser<IUser>;
 			let user2Credentials: Credentials;
 			let roomId: IRoom['_id'];
 
-			this.timeout(20000);
+			before(
+				async () => {
+					const users = await Promise.all([createUser({ joinDefaultChannels: false }), createUser({ joinDefaultChannels: false })]);
 
-			before(async () => {
-				const users = await Promise.all([createUser({ joinDefaultChannels: false }), createUser({ joinDefaultChannels: false })]);
+					user = users[0];
+					user2 = users[1];
 
-				user = users[0];
-				user2 = users[1];
+					const credentials = await Promise.all([
+						login(user.username, password),
+						login(user2.username, password),
+						await updatePermission('view-outside-room', []),
+					]);
 
-				const credentials = await Promise.all([
-					login(user.username, password),
-					login(user2.username, password),
-					await updatePermission('view-outside-room', []),
-				]);
+					userCredentials = credentials[0];
+					user2Credentials = credentials[1];
 
-				userCredentials = credentials[0];
-				user2Credentials = credentials[1];
+					roomId = (await createRoom({ type: 'c', credentials: userCredentials, name: `channel.autocomplete.${Date.now()}` })).body.channel
+						._id;
+				},
+				{ timeout: 20000 },
+			);
 
-				roomId = (await createRoom({ type: 'c', credentials: userCredentials, name: `channel.autocomplete.${Date.now()}` })).body.channel
-					._id;
-			});
+			after(
+				async () => {
+					await deleteRoom({ type: 'c', roomId });
+					await Promise.all([deleteUser(user), deleteUser(user2)]);
+				},
+				{ timeout: 20000 },
+			);
 
-			after(async () => {
-				await Promise.all([deleteRoom({ type: 'c', roomId }), deleteUser(user), deleteUser(user2)]);
-			});
-
-			it('should return an empty list when the user does not have any subscription', async () => {
+			it('should return an empty list when the user does not have any subscription', { timeout: 20000 }, async () => {
 				const res = await request
 					.get(api('users.autocomplete'))
 					.query({ selector: '{}' })
@@ -5350,7 +6103,7 @@ describe('[Users]', () => {
 				expect(res.body).to.have.property('items').and.to.be.an('array').that.has.lengthOf(0);
 			});
 
-			it('should return users that are subscribed to the same rooms as the requester', async () => {
+			it('should return users that are subscribed to the same rooms as the requester', { timeout: 20000 }, async () => {
 				await joinChannel({ overrideCredentials: user2Credentials, roomId });
 
 				void request
@@ -5391,18 +6144,18 @@ describe('[Users]', () => {
 				expect(res.body).to.have.property('items').and.to.be.an('array');
 			});
 
-			(IS_EE ? it : it.skip)('should return users filtered by freeSwitchExtension and display it', async () => {
-				const user = await createUser({ joinDefaultChannels: false, freeSwitchExtension: '1234567890' });
+			(IS_EE ? it : it.skip)('should return users filtered by sipExtension and display it', async () => {
+				const user = await createUser({ joinDefaultChannels: false, sipExtension: '1234567890' });
 				await request
 					.get(api('users.autocomplete'))
-					.query({ selector: JSON.stringify({ conditions: { freeSwitchExtension: '1234567890' } }) })
+					.query({ selector: JSON.stringify({ conditions: { sipExtension: '1234567890' } }) })
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('items').and.to.be.an('array').with.lengthOf(1);
-						expect(res.body.items[0]).to.have.property('freeSwitchExtension', '1234567890');
+						expect(res.body.items[0]).to.have.property('sipExtension', '1234567890');
 					});
 
 				await deleteUser(user);
@@ -5468,7 +6221,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 	});
@@ -5500,7 +6254,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 	});
@@ -5524,11 +6279,10 @@ describe('[Users]', () => {
 					message: 'test',
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400);
+				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.errorType).to.be.equal('error-not-allowed');
-			expect(res.body.error).to.be.equal('Change status is not allowed [error-not-allowed]');
+			expect(res.body.errorType).to.be.equal('error-forbidden');
 		});
 		it('should update my own status', async () => {
 			await updateSetting('Accounts_AllowUserStatusMessageChange', true);
@@ -5544,7 +6298,9 @@ describe('[Users]', () => {
 				.expect(200);
 
 			expect(res.body).to.have.property('success', true);
-			void getUserStatus(credentials['X-User-Id']).then((status) => expect(status.status).to.be.equal('busy'));
+			const status = await getUserStatus(credentials['X-User-Id']);
+			expect(status.status).to.be.equal('offline');
+			expect(status).to.have.property('statusSource', 'manual');
 		});
 		it('should return an error when trying to update other user status without the required permission', async () => {
 			await updatePermission('edit-other-user-info', []);
@@ -5561,7 +6317,7 @@ describe('[Users]', () => {
 				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.error).to.be.equal('unauthorized');
+			expect(res.body.errorType).to.be.equal('error-forbidden');
 		});
 		it('should update another user status succesfully', async () => {
 			await updatePermission('edit-other-user-info', ['admin']);
@@ -5578,9 +6334,9 @@ describe('[Users]', () => {
 				.expect(200);
 
 			expect(res.body).to.have.property('success', true);
-			void getUserStatus(credentials['X-User-Id']).then((status) => {
-				expect(status.status).to.be.equal('busy');
-			});
+			const status = await getUserStatus(user._id);
+			expect(status.status).to.be.equal('offline');
+			expect(status).to.have.property('statusSource', 'manual');
 		});
 		it('should return an error when the user try to update user status with an invalid status', async () => {
 			const res = await request
@@ -5593,7 +6349,7 @@ describe('[Users]', () => {
 				.expect(400);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.errorType).to.be.equal('invalid-params');
+			expect(res.body.errorType).to.be.equal('error-invalid-params');
 			expect(res.body.error).to.include('must be equal to one of the allowed values');
 		});
 		it('should return an error when user changes status to offline and "Accounts_AllowInvisibleStatusOption" is disabled', async () => {
@@ -5650,7 +6406,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 
@@ -5743,7 +6500,7 @@ describe('[Users]', () => {
 		});
 		after(() => deleteUser(user));
 
-		it('should invalidate all active sesions', (done) => {
+		it('should invalidate all active sesions', (_t, done) => {
 			/* We want to validate that the login with the "old" credentials fails
 				However, the removal of the tokens is done asynchronously.
 				Thus, we check that within the next seconds, at least one try to
@@ -5774,7 +6531,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 	});
@@ -5784,7 +6542,7 @@ describe('[Users]', () => {
 		const teamName2 = `team-name-2-${Date.now()}`;
 		let testUser: TestUser<IUser>;
 
-		before('create team 1', (done) => {
+		before((_t, done) => {
 			void request
 				.post(api('teams.create'))
 				.set(credentials)
@@ -5802,7 +6560,7 @@ describe('[Users]', () => {
 				.end(done);
 		});
 
-		before('create team 2', (done) => {
+		before((_t, done) => {
 			void request
 				.post(api('teams.create'))
 				.set(credentials)
@@ -5820,11 +6578,11 @@ describe('[Users]', () => {
 				.end(done);
 		});
 
-		before('create new user', async () => {
+		before(async () => {
 			testUser = await createUser({ joinDefaultChannels: false });
 		});
 
-		before('add test user to team 1', (done) => {
+		before((_t, done) => {
 			void request
 				.post(api('teams.addMembers'))
 				.set(credentials)
@@ -5845,7 +6603,7 @@ describe('[Users]', () => {
 				.then(() => done());
 		});
 
-		before('add test user to team 2', (done) => {
+		before((_t, done) => {
 			void request
 				.post(api('teams.addMembers'))
 				.set(credentials)
@@ -5893,7 +6651,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 
@@ -5944,7 +6703,7 @@ describe('[Users]', () => {
 				.expect(200);
 		});
 
-		it('should logout the requester', (done) => {
+		it('should logout the requester', (_t, done) => {
 			void updatePermission('logout-other-user', []).then(() => {
 				void request.post(api('users.logout')).set(userCredentials).expect('Content-Type', 'application/json').expect(200).end(done);
 			});
@@ -5999,7 +6758,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 	});
@@ -6161,7 +6921,7 @@ describe('[Users]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+					expect(res.body.errorType).to.be.equal('error-forbidden');
 				});
 		});
 
@@ -6175,7 +6935,7 @@ describe('[Users]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+					expect(res.body.errorType).to.be.equal('error-forbidden');
 				});
 		});
 	});
@@ -6234,7 +6994,7 @@ describe('[Users]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 					expect(res.body).to.have.property('error', "must have required property 'email'");
 				});
 		});
@@ -6261,7 +7021,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 	});
@@ -6273,7 +7034,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 
@@ -6297,7 +7059,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 
@@ -6321,7 +7084,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 
@@ -6345,7 +7109,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 	});
@@ -6357,7 +7122,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 	});
@@ -6373,19 +7139,100 @@ describe('[Users]', () => {
 					expect(res.body).to.have.property('success', false);
 				});
 		});
+
+		describe('when the user has email two-factor authentication', () => {
+			let user: TestUser<IUser>;
+
+			const seedPendingCode = (sentAt: Date) =>
+				updateUserInDb(user._id, {
+					'services.emailCode': { code: 'pending-code', expire: new Date(Date.now() + 3_600_000), attempts: 0, sentAt },
+				} as unknown as Partial<IUser>);
+
+			const storedCode = async () => {
+				const stored = await withDatabase((db) =>
+					db.collection<IUser>('users').findOne({ _id: user._id }, { projection: { 'services.emailCode.code': 1 } }),
+				);
+				return stored?.services?.emailCode?.code;
+			};
+
+			before(async () => {
+				user = await createUser({ verified: true });
+				await updateUserInDb(user._id, { 'services.email2fa': { enabled: true, changedAt: new Date() } } as unknown as Partial<IUser>);
+			});
+
+			after(() => deleteUser(user));
+
+			it('should keep the pending code when another one is requested within a minute', async () => {
+				await seedPendingCode(new Date());
+
+				await request.post(api('users.2fa.sendEmailCode')).send({ emailOrUsername: user.username }).expect(200);
+
+				expect(await storedCode()).to.equal('pending-code');
+			});
+
+			it('should replace the pending code once a minute has passed', async () => {
+				await seedPendingCode(new Date(Date.now() - 61_000));
+
+				await request.post(api('users.2fa.sendEmailCode')).send({ emailOrUsername: user.username }).expect(200);
+
+				expect(await storedCode()).to.not.equal('pending-code');
+			});
+		});
+	});
+
+	describe('[/twoFactorChallenges.verifyChallenge]', () => {
+		const insertChallenge = (challenge: Record<string, unknown>) =>
+			withDatabase((db) =>
+				db.collection('rocketchat_two_factor_challenges').insertOne({
+					userId: credentials['X-User-Id'],
+					method: 'email',
+					createdAt: new Date(),
+					expireAt: new Date(Date.now() + 60_000),
+					...challenge,
+				} as any),
+			);
+
+		it('should not log in with a challenge that only allows resending the code', async () => {
+			const challengeId = `resend-${Date.now()}`;
+			await insertChallenge({ _id: challengeId, purpose: 'resend' });
+
+			await request
+				.post(api('twoFactorChallenges.verifyChallenge'))
+				.send({ challengeId, code: '123456' })
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('errorType', 'error-challenge-not-found');
+				});
+		});
+
+		it('should still check the code of a challenge stored before challenges had a purpose', async () => {
+			const challengeId = `legacy-${Date.now()}`;
+			await insertChallenge({ _id: challengeId });
+
+			await request
+				.post(api('twoFactorChallenges.verifyChallenge'))
+				.send({ challengeId, code: '123456' })
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('error', 'error-invalid-code');
+				});
+		});
 	});
 
 	describe('[/users.verifyEmail]', () => {
-		it('should fail with 400 when the token is not provided', () => request.post(api('users.verifyEmail')).send({}).expect(400));
+		it('should fail with 400 when the token is not provided', async () => {
+			await request.post(api('users.verifyEmail')).send({}).expect(400);
+		});
 
-		it('should fail with 403 when the token does not match any user', () =>
-			request
+		it('should fail with 403 when the token does not match any user', async () => {
+			await request
 				.post(api('users.verifyEmail'))
 				.send({ token: 'this-token-does-not-exist' })
 				.expect(403)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-				}));
+				});
+		});
 
 		describe('when a valid token is provided', () => {
 			let user: TestUser<IUser>;
@@ -6447,10 +7294,12 @@ describe('[Users]', () => {
 		after(async () => deleteUser(totpUser));
 
 		describe('[/users.enableTotp]', () => {
-			it('should fail when unauthenticated', () => request.post(api('users.enableTotp')).expect(401));
+			it('should fail when unauthenticated', async () => {
+				await request.post(api('users.enableTotp')).expect(401);
+			});
 
-			it('should return a secret and an otpauth url', () =>
-				request
+			it('should return a secret and an otpauth url', async () => {
+				await request
 					.post(api('users.enableTotp'))
 					.set(totpCredentials)
 					.expect(200)
@@ -6462,17 +7311,21 @@ describe('[Users]', () => {
 							.that.is.a('string')
 							.and.match(/^otpauth:\/\//);
 						secret = res.body.secret;
-					}));
+					});
+			});
 		});
 
 		describe('[/users.validateTotp]', () => {
-			it('should fail when unauthenticated', () => request.post(api('users.validateTotp')).send({ code: '000000' }).expect(401));
+			it('should fail when unauthenticated', async () => {
+				await request.post(api('users.validateTotp')).send({ code: '000000' }).expect(401);
+			});
 
-			it('should fail with 400 when the code is missing', () =>
-				request.post(api('users.validateTotp')).set(totpCredentials).send({}).expect(400));
+			it('should fail with 400 when the code is missing', async () => {
+				await request.post(api('users.validateTotp')).set(totpCredentials).send({}).expect(400);
+			});
 
-			it('should enable totp and return backup codes for a valid code', () =>
-				request
+			it('should enable totp and return backup codes for a valid code', async () => {
+				await request
 					.post(api('users.validateTotp'))
 					.set(totpCredentials)
 					.send({ code: totpCode() })
@@ -6480,41 +7333,49 @@ describe('[Users]', () => {
 					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('codes').that.is.an('array');
-					}));
+					});
+			});
 		});
 
 		describe('[/users.totpCodesRemaining]', () => {
-			it('should fail when unauthenticated', () => request.get(api('users.totpCodesRemaining')).expect(401));
+			it('should fail when unauthenticated', async () => {
+				await request.get(api('users.totpCodesRemaining')).expect(401);
+			});
 
-			it('should return the number of remaining backup codes', () =>
-				request
+			it('should return the number of remaining backup codes', async () => {
+				await request
 					.get(api('users.totpCodesRemaining'))
 					.set(totpCredentials)
 					.expect(200)
 					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('remaining').that.is.a('number');
-					}));
+					});
+			});
 		});
 
 		describe('[/users.regenerateTotpCodes]', () => {
-			it('should fail when unauthenticated', () => request.post(api('users.regenerateTotpCodes')).send({ code: '000000' }).expect(401));
+			it('should fail when unauthenticated', async () => {
+				await request.post(api('users.regenerateTotpCodes')).send({ code: '000000' }).expect(401);
+			});
 
-			it('should fail with 400 when the code is missing', () =>
-				request.post(api('users.regenerateTotpCodes')).set(totpCredentials).send({}).expect(400));
+			it('should fail with 400 when the code is missing', async () => {
+				await request.post(api('users.regenerateTotpCodes')).set(totpCredentials).send({}).expect(400);
+			});
 
-			it('should fail with 400 when the code is invalid', () =>
-				request
+			it('should fail with 400 when the code is invalid', async () => {
+				await request
 					.post(api('users.regenerateTotpCodes'))
 					.set(totpCredentials)
 					.send({ code: '000000' })
 					.expect(400)
 					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', false);
-					}));
+					});
+			});
 
-			it('should return a fresh set of backup codes for a valid code', () =>
-				request
+			it('should return a fresh set of backup codes for a valid code', async () => {
+				await request
 					.post(api('users.regenerateTotpCodes'))
 					.set(totpCredentials)
 					.send({ code: totpCode() })
@@ -6522,17 +7383,21 @@ describe('[Users]', () => {
 					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('codes').that.is.an('array');
-					}));
+					});
+			});
 		});
 
 		describe('[/users.disableTotp]', () => {
-			it('should fail when unauthenticated', () => request.post(api('users.disableTotp')).send({ code: '000000' }).expect(401));
+			it('should fail when unauthenticated', async () => {
+				await request.post(api('users.disableTotp')).send({ code: '000000' }).expect(401);
+			});
 
-			it('should fail with 400 when the code is missing', () =>
-				request.post(api('users.disableTotp')).set(totpCredentials).send({}).expect(400));
+			it('should fail with 400 when the code is missing', async () => {
+				await request.post(api('users.disableTotp')).set(totpCredentials).send({}).expect(400);
+			});
 
-			it('should disable totp for a valid code', () =>
-				request
+			it('should disable totp for a valid code', async () => {
+				await request
 					.post(api('users.disableTotp'))
 					.set(totpCredentials)
 					.send({ code: totpCode() })
@@ -6540,7 +7405,8 @@ describe('[Users]', () => {
 					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('disabled', true);
-					}));
+					});
+			});
 		});
 	});
 });

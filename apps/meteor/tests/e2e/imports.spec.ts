@@ -92,7 +92,7 @@ test.describe.serial('imports', () => {
 
 		await poAdminImports.btnImportNewFile.click();
 
-		await (await poAdminImports.getOptionFileType("Slack's Users CSV")).click();
+		await (await poAdminImports.getOptionFileType("Slack's users CSV")).click();
 
 		await poAdminImports.inputFile.setInputFiles(slackCsvDir);
 		await poAdminImports.btnImport.click();

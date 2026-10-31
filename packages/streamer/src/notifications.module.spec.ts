@@ -1,13 +1,14 @@
-import { MediaCall, VideoConf } from '@rocket.chat/core-services';
-import { Subscriptions } from '@rocket.chat/models';
+import { api, MediaCall, Settings, VideoConf } from '@rocket.chat/core-services';
+import { Subscriptions, Users } from '@rocket.chat/models';
 
 import { NotificationsModule } from './notifications.module';
-import { Streamer, StreamerCentral } from './streamer.module';
+import { Streamer } from './streamer.module';
 
 jest.mock('@rocket.chat/core-services', () => ({
 	...jest.requireActual('@rocket.chat/core-services'),
 	VideoConf: { validateAction: jest.fn() },
 	MediaCall: { processSerializedSignal: jest.fn() },
+	Settings: { get: jest.fn() },
 }));
 
 jest.mock('@rocket.chat/models', () => ({
@@ -15,6 +16,9 @@ jest.mock('@rocket.chat/models', () => ({
 	Subscriptions: {
 		countByRoomIdAndUserId: jest.fn(),
 		findByRoomIdAndNotUserId: jest.fn(),
+	},
+	Users: {
+		findOneById: jest.fn(),
 	},
 }));
 
@@ -25,12 +29,14 @@ jest.mock('@rocket.chat/logger', () => ({
 }));
 
 class TestStreamer extends Streamer<any> {
+	static methods: Record<string, (this: unknown, eventName: string, ...args: unknown[]) => Promise<void>> = {};
+
 	registerPublication(): void {
 		// noop
 	}
 
-	registerMethod(): void {
-		// noop
+	registerMethod(methods: typeof TestStreamer.methods): void {
+		Object.assign(TestStreamer.methods, methods);
 	}
 
 	changedPayload(): string {
@@ -47,13 +53,13 @@ describe('NotificationsModule', () => {
 	let notifications: NotificationsModule;
 
 	beforeEach(() => {
-		notifications = new NotificationsModule(TestStreamer as any);
+		jest.spyOn(api, 'broadcast').mockResolvedValue();
+		notifications = new NotificationsModule(TestStreamer as any, 'self');
 		notifications.configure();
 	});
 
 	afterEach(() => {
 		jest.restoreAllMocks();
-		Object.keys(StreamerCentral.instances).forEach((name) => delete StreamerCentral.instances[name]);
 	});
 
 	describe('notify-user allowWrite', () => {
@@ -153,6 +159,89 @@ describe('NotificationsModule', () => {
 				expect(findByRoomIdAndNotUserId).toHaveBeenCalled();
 				expect(emitSpy).toHaveBeenCalled();
 			});
+		});
+	});
+
+	describe('stream relay', () => {
+		it('relays a broadcasting emit to the other processes, tagged with this origin', () => {
+			const broadcast = jest.mocked(api.broadcast);
+
+			notifications.streamCannedResponses.emit('canned-responses', { type: 'removed', _id: 'c1' });
+
+			expect(broadcast).toHaveBeenCalledTimes(1);
+			expect(broadcast).toHaveBeenCalledWith('stream', {
+				stream: 'canned-responses',
+				eventName: 'canned-responses',
+				args: [{ type: 'removed', _id: 'c1' }],
+				origin: 'self',
+			});
+		});
+
+		it('relays emits on the presence stream too', () => {
+			const broadcast = jest.mocked(api.broadcast);
+
+			notifications.streamPresence.emit('uid1', ['alice', 1] as any);
+
+			expect(broadcast).toHaveBeenCalledWith('stream', expect.objectContaining({ stream: 'user-presence', eventName: 'uid1' }));
+		});
+
+		it('does not relay an emit meant for this instance only', () => {
+			const broadcast = jest.mocked(api.broadcast);
+
+			notifications.notifyRoomInThisInstance('room1', 'user-activity', 'alice', []);
+
+			expect(broadcast).not.toHaveBeenCalled();
+		});
+
+		it('delivers relayed events without relaying them again', () => {
+			const broadcast = jest.mocked(api.broadcast);
+			const emit = jest.spyOn(notifications.streamRoom, '_emit');
+
+			notifications.deliverRelayed({ stream: 'notify-room', eventName: 'room1/user-activity', args: ['alice', []], origin: 'other' });
+
+			expect(emit).toHaveBeenCalledWith('room1/user-activity', ['alice', []], undefined, false);
+			expect(broadcast).not.toHaveBeenCalled();
+		});
+
+		it('ignores relayed events for a stream this process does not host', () => {
+			expect(() => notifications.deliverRelayed({ stream: 'no-such-stream', eventName: 'x', args: [], origin: 'other' })).not.toThrow();
+		});
+	});
+
+	describe('user activity', () => {
+		const writeRoom = (userId: string | null, eventName: string, ...args: unknown[]) =>
+			TestStreamer.methods['stream-notify-room'].call({ userId, connection: {} }, eventName, ...args);
+
+		let emitToOne: jest.SpyInstance;
+
+		beforeEach(() => {
+			jest.mocked(Settings.get).mockResolvedValue(false);
+			jest.mocked(Users.findOneById).mockResolvedValue({ username: 'alice' } as any);
+			emitToOne = jest.spyOn(api, 'emitToOne').mockResolvedValue();
+		});
+
+		it('reports an accepted user-activity write to one instance of each listening service', async () => {
+			await writeRoom('u1', 'room1/user-activity', 'alice', ['user-typing'], {});
+
+			expect(emitToOne).toHaveBeenCalledTimes(1);
+			expect(emitToOne).toHaveBeenCalledWith('room.user-activity', { rid: 'room1', uid: 'u1', activities: ['user-typing'] });
+		});
+
+		it('does not report a write the stream rejects', async () => {
+			await writeRoom('u1', 'room1/user-activity', 'mallory', ['user-typing'], {});
+
+			expect(emitToOne).not.toHaveBeenCalled();
+		});
+
+		it('does not report activity relayed from another process', () => {
+			notifications.deliverRelayed({
+				stream: 'notify-room',
+				eventName: 'room1/user-activity',
+				args: ['alice', ['user-typing']],
+				origin: 'other',
+			});
+
+			expect(emitToOne).not.toHaveBeenCalled();
 		});
 	});
 });

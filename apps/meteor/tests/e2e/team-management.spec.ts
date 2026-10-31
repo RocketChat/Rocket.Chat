@@ -143,7 +143,7 @@ test.describe.serial('teams-management', () => {
 		await poHomeTeam.tabs.editRoom.checkboxReadOnly.click();
 		await poHomeTeam.tabs.editRoom.btnSave.click();
 
-		await expect(poHomeTeam.content.getSystemMessageByText('set room to read only')).toBeVisible();
+		await expect(poHomeTeam.content.getSystemMessageByText('set room to read-only')).toBeVisible();
 	});
 
 	test.describe('without move-room-to-team permission', () => {

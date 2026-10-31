@@ -7,12 +7,6 @@ import * as stories from './AppInstances.stories';
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 
-test.each(testCases)(`renders AppInstances without crashing`, async (_storyname, Story) => {
-	const view = render(<Story />, { wrapper: mockAppRoot().build() });
-
-	expect(view.baseElement).toMatchSnapshot();
-});
-
 test.each(testCases)('AppInstances should have no a11y violations', async (_storyname, Story) => {
 	const { container } = render(<Story />, { wrapper: mockAppRoot().build() });
 

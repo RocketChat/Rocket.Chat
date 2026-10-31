@@ -46,10 +46,11 @@ const isPlaceholderBr = (br: Node): boolean => {
 // newline (blocks only when preceded by content, matching innerText's `a\nb` for `<div>a</div><div>b</div>`);
 // inline elements contribute nothing themselves. getSelectionRange and setSelectionRange both consume
 // this single model, so the offset measured on the typing DOM always maps back onto the rendered DOM.
-const buildOffsetMap = (input: HTMLElement): { entries: OffsetEntry[]; length: number } => {
+const buildOffsetMap = (input: HTMLElement): { entries: OffsetEntry[]; length: number; endsWithNewline: boolean } => {
 	const entries: OffsetEntry[] = [];
 	let offset = 0;
 	let hasContent = false;
+	let endsWithNewline = false;
 
 	const walk = (node: Node): void => {
 		const start = offset;
@@ -59,6 +60,7 @@ const buildOffsetMap = (input: HTMLElement): { entries: OffsetEntry[]; length: n
 			offset += len;
 			if (len > 0) {
 				hasContent = true;
+				endsWithNewline = node.nodeValue?.endsWith('\n') ?? false;
 			}
 		} else if (node.nodeType === Node.ELEMENT_NODE) {
 			const tag = (node as HTMLElement).tagName.toLowerCase();
@@ -67,11 +69,13 @@ const buildOffsetMap = (input: HTMLElement): { entries: OffsetEntry[]; length: n
 				if (!isPlaceholderBr(node)) {
 					offset += 1;
 					hasContent = true;
+					endsWithNewline = true;
 				}
 			} else {
 				const isInline = INLINE_TAGS.has(tag);
 				if (!isInline && hasContent) {
 					offset += 1;
+					endsWithNewline = true;
 				}
 				node.childNodes.forEach(walk);
 			}
@@ -82,7 +86,16 @@ const buildOffsetMap = (input: HTMLElement): { entries: OffsetEntry[]; length: n
 
 	input.childNodes.forEach(walk);
 
-	return { entries, length: offset };
+	return { entries, length: offset, endsWithNewline };
+};
+
+// The offset the composer treats as "end of the text". The markup renderer closes every paragraph
+// with a '\n' the source does not carry, so the last addressable offset sits on an empty trailing
+// line; parking the caret there would push appended text onto a line of its own.
+export const getContentEndOffset = (input: HTMLDivElement): number => {
+	const { length, endsWithNewline } = buildOffsetMap(input);
+
+	return endsWithNewline ? Math.max(0, length - 1) : length;
 };
 
 /* Use Selection API to get the selectionStart and selectionEnd from contenteditable div */
@@ -92,8 +105,8 @@ export const getSelectionRange = (input: HTMLDivElement): { selectionStart: numb
 	// When the composer is blurred the DOM selection lives outside the input; fall back to the end of
 	// the text so inserts (e.g. emoji picker) append instead of collapsing to offset 0.
 	if (!selection?.rangeCount || !selection.anchorNode || !input.contains(selection.anchorNode)) {
-		const { length } = buildOffsetMap(input);
-		return { selectionStart: length, selectionEnd: length };
+		const end = getContentEndOffset(input);
+		return { selectionStart: end, selectionEnd: end };
 	}
 
 	const { entries, length } = buildOffsetMap(input);

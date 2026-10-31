@@ -1,8 +1,8 @@
 import { AccordionItem, Box } from '@rocket.chat/fuselage';
+import { useTimeAgo } from '@rocket.chat/ui-client';
 import DOMPurify from 'dompurify';
 import { useTranslation } from 'react-i18next';
 
-import { useTimeAgo } from '../../../../../hooks/useTimeAgo';
 import { purifyOptions } from '../../../lib/purifyOptions';
 
 type IRelease = {

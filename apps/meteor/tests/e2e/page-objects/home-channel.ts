@@ -21,6 +21,8 @@ import {
 	EditRoomFlexTab,
 	UserInfoFlexTab,
 	FilesFlexTab,
+	ABACAttributesFlexTab,
+	ABACManageAttributesFlexTab,
 } from './fragments';
 import { SidebarRail } from './fragments/siderail';
 import { RoomToolbar } from './fragments/toolbar';
@@ -56,6 +58,8 @@ export class HomeChannel extends RoutedPage {
 		searchMessages: SearchMessagesFlexTab;
 		threads: ThreadsFlexTab;
 		files: FilesFlexTab;
+		abacAttributes: ABACAttributesFlexTab;
+		abacManageAttributes: ABACManageAttributesFlexTab;
 	};
 
 	readonly roomToolbar: RoomToolbar;
@@ -92,6 +96,8 @@ export class HomeChannel extends RoutedPage {
 			searchMessages: new SearchMessagesFlexTab(page),
 			threads: new ThreadsFlexTab(page),
 			files: new FilesFlexTab(page),
+			abacAttributes: new ABACAttributesFlexTab(page),
+			abacManageAttributes: new ABACManageAttributesFlexTab(page),
 		};
 		this.roomToolbar = new RoomToolbar(page);
 		this.voiceCalls = new VoiceCalls(page);
@@ -114,6 +120,11 @@ export class HomeChannel extends RoutedPage {
 
 	async gotoGroup(name: string): Promise<void> {
 		await this.navigateTo(`/group/${name}`, () => this.content.waitForChannel());
+	}
+
+	/** Opens a DM by username in the embedded layout, which hides the room header. */
+	async gotoDirectEmbedded(username: string): Promise<void> {
+		await this.navigateTo(`/direct/${username}?layout=embedded`, this.content.mainMessageList);
 	}
 
 	/** Opens a channel scrolled to a message. Pass `isThread` when the message lives in a thread. */
@@ -144,10 +155,6 @@ export class HomeChannel extends RoutedPage {
 		return this.page.locator('[data-qa="ContextualbarActionClose"]');
 	}
 
-	get userCardToolbar(): Locator {
-		return this.page.locator('[role=toolbar][aria-label="User card actions"]');
-	}
-
 	getRoomHeaderFavoriteBtn(isEnterprise: boolean): Locator {
 		return isEnterprise ? this.btnCategorySelector : this.roomHeaderFavoriteBtn;
 	}
@@ -166,11 +173,11 @@ export class HomeChannel extends RoutedPage {
 	}
 
 	get roomHeaderToolbar(): Locator {
-		return this.page.locator('[role=toolbar][aria-label="Primary Room actions"]');
+		return this.page.locator('[role=toolbar][aria-label="Primary room actions"]');
 	}
 
 	get markUnread(): Locator {
-		return this.page.locator('role=menuitem[name="Mark Unread"]');
+		return this.page.locator('role=menuitem[name="Mark unread"]');
 	}
 
 	get dialogEnterE2EEPassword(): Locator {

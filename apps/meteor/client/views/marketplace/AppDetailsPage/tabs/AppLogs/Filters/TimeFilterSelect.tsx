@@ -7,8 +7,8 @@ import { format } from 'date-fns/format';
 import { startOfDay } from 'date-fns/startOfDay';
 import { startOfWeek } from 'date-fns/startOfWeek';
 import { subMinutes } from 'date-fns/subMinutes';
-import { useState, type ComponentProps } from 'react';
-import { Controller } from 'react-hook-form';
+import type { ComponentProps } from 'react';
+import { Controller, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import type { DateTimeModalFormData } from './DateTimeModal';
@@ -20,7 +20,8 @@ type DateRange = {
 	end: Date;
 };
 
-type DateRangeAction = 'all' | 'today' | 'last5Minutes' | 'last15Minutes' | 'last30Minutes' | 'last1Hour' | 'thisWeek' | 'custom';
+type DateRangeAction =
+	'all' | 'today' | 'last5Minutes' | 'last15Minutes' | 'last30Minutes' | 'last1Hour' | 'thisWeek' | 'custom' | 'pickCustomRange';
 
 export type TimeFilterSelectProps = { compactView?: boolean } & Omit<ComponentProps<typeof Select>, 'onChange' | 'options'>;
 
@@ -30,7 +31,10 @@ export const TimeFilterSelect = ({ compactView = false, ...props }: TimeFilterSe
 
 	const setModal = useSetModal();
 
-	const [customTimeRangeLabel, setCustomTimeRangeOptionLabel] = useState<string>(t('Custom_time_range'));
+	const [timeFilter, startDate, startTime, endDate, endTime] = useWatch({
+		control,
+		name: ['timeFilter', 'startDate', 'startTime', 'endDate', 'endTime'],
+	});
 
 	const getTimeZoneOffset = (): string => {
 		const offset = new Date().getTimezoneOffset();
@@ -84,48 +88,44 @@ export const TimeFilterSelect = ({ compactView = false, ...props }: TimeFilterSe
 		const { startDate, startTime, endDate, endTime } = values;
 
 		if (!startDate || !endDate) {
-			setCustomTimeRangeOptionLabel(t('Custom_time_range'));
 			setModal(null);
 			return;
 		}
 
-		setValue('startDate', startDate);
-		setValue('startTime', startTime || '00:00');
-		setValue('endDate', endDate);
-		setValue('endTime', endTime || '00:00');
-
-		const startIso = new Date(`${startDate}T${startTime || '00:00'}${getTimeZoneOffset()}`);
-		const endIso = new Date(`${endDate}T${endTime || '00:00'}${getTimeZoneOffset()}`);
-		const formattedStartDate = format(new Date(startIso), 'MMM dd, yyyy');
-		const formattedEndDate = format(new Date(endIso), 'MMM dd, yyyy');
-
-		setCustomTimeRangeOptionLabel(
-			`${formattedStartDate}${startTime && startTime !== '00:00' ? `, ${startTime}` : ''} - ${formattedEndDate}${endTime && endTime !== '00:00' ? `, ${endTime}` : ''}`,
-		);
-
+		const range = { startDate, startTime: startTime || '00:00', endDate, endTime: endTime || '00:00' };
+		setValue('lastCustomRange', range);
+		setValue('timeFilter', 'custom');
+		setValue('startDate', range.startDate);
+		setValue('startTime', range.startTime);
+		setValue('endDate', range.endDate);
+		setValue('endTime', range.endTime);
 		setModal(null);
 	};
 
-	const onModalClose = (): void => {
-		setValue('timeFilter', 'all');
-		setCustomTimeRangeOptionLabel(t('Custom_time_range'));
-		setModal(null);
+	const getCustomTimeRangeLabel = (): string => {
+		const startIso = new Date(`${startDate}T${startTime || '00:00'}${getTimeZoneOffset()}`);
+		const endIso = new Date(`${endDate}T${endTime || '00:00'}${getTimeZoneOffset()}`);
+		const formattedStartDate = format(startIso, 'MMM dd, yyyy');
+		const formattedEndDate = format(endIso, 'MMM dd, yyyy');
+
+		return `${formattedStartDate}${startTime && startTime !== '00:00' ? `, ${startTime}` : ''} - ${formattedEndDate}${endTime && endTime !== '00:00' ? `, ${endTime}` : ''}`;
 	};
 
 	const handleChange = (action: DateRangeAction): void => {
+		if (action === 'pickCustomRange') {
+			const { startDate = '', startTime = '00:00', endDate = '', endTime = '00:00' } = getValues('lastCustomRange') ?? {};
+			setModal(
+				<DateTimeModal onSave={onModalSave} onClose={() => setModal(null)} defaultValues={{ startDate, startTime, endDate, endTime }} />,
+			);
+			return;
+		}
+
 		setValue('timeFilter', action);
 		if (action === 'all') {
 			setValue('startTime', undefined);
 			setValue('startDate', undefined);
 			setValue('endTime', undefined);
 			setValue('endDate', undefined);
-			return;
-		}
-
-		if (action === 'custom') {
-			const { startDate = '', startTime = '00:00', endDate = '', endTime = '00:00' } = getValues();
-			// Doing this since the modal is not in the form context, and it is simpler just to pass the default values to a new useForm call
-			setModal(<DateTimeModal onSave={onModalSave} onClose={onModalClose} defaultValues={{ startDate, startTime, endDate, endTime }} />);
 			return;
 		}
 
@@ -149,7 +149,8 @@ export const TimeFilterSelect = ({ compactView = false, ...props }: TimeFilterSe
 		['last30Minutes', t('Last_30_minutes')],
 		['last1Hour', t('Last_1_hour')],
 		['thisWeek', t('This_week')],
-		...(compactView ? [] : [['custom', customTimeRangeLabel]]),
+		...(timeFilter === 'custom' && startDate && endDate ? [['custom', getCustomTimeRangeLabel()]] : []),
+		...(compactView ? [] : [['pickCustomRange', t('Custom_time_range')]]),
 	] as SelectOption[];
 
 	return (

@@ -1,0 +1,72 @@
+/* stylelint-disable selector-class-pattern -- styles BEM classes owned by Fuselage and the emoji renderer */
+
+/* Emoji fonts are rescaled so each paints its glyphs 1em tall, as Apple Color Emoji
+already does; that lets a native emoji fill the same box as a custom image. */
+
+/* Segoe UI Emoji also paints its ink low relative to its metric midpoint, which the
+ascent/descent overrides recenter. Only exists on Windows, so other platforms skip it
+in the fallback list. */
+@font-face {
+	font-family: rc-emoji-segoe;
+	src: local('Segoe UI Emoji');
+	ascent-override: 90%;
+	descent-override: 25%;
+	size-adjust: 75%;
+}
+
+@font-face {
+	font-family: rc-emoji-noto;
+	src: local('Noto Color Emoji');
+	size-adjust: 88%;
+}
+
+/* Native and custom emojis share one fixed box per context, sized by --emoji-size, so
+both render the same size and an emoji never grows the line it sits in. The default
+matches the message body's line height. The doubled selectors outrank Fuselage's
+emoji boxes, which load after this file. */
+.emoji.emoji {
+	font-family: 'Apple Color Emoji', rc-emoji-segoe, rc-emoji-noto, 'Noto Color Emoji', 'Twemoji Mozilla', 'Android Emoji', sans-serif;
+	font-size: var(--emoji-size, 1.25rem);
+
+	/* Flex centering keeps a glyph wider than its box centered, where text-align would
+	spill it all to the right and into the line's clip edge. */
+	display: inline-flex;
+	justify-content: center;
+	overflow: visible;
+	width: var(--emoji-size, 1.25rem);
+	height: var(--emoji-size, 1.25rem);
+	margin: 0 2px;
+	vertical-align: top;
+	line-height: var(--emoji-size, 1.25rem);
+}
+
+.emoji.emoji--custom {
+	display: inline-block;
+	overflow: hidden;
+	white-space: nowrap;
+	text-indent: 100%;
+	background-position: 50%;
+	background-repeat: no-repeat;
+	background-size: contain;
+}
+
+.rcx-message__emoji--big {
+	--emoji-size: 3rem;
+}
+
+.rcx-message-reactions__reaction {
+	--emoji-size: 0.875rem;
+}
+
+/* The box is shorter than the preview line, so it is centered rather than pinned to
+the top, where the line's overflow: hidden would cut glyphs that paint above it. */
+.rcx-message-thread__emoji.emoji {
+	--emoji-size: 0.75rem;
+
+	vertical-align: middle;
+}
+
+/* emoji picker */
+.rcx-button {
+	--emoji-size: 1.5rem;
+}

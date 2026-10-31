@@ -1,7 +1,7 @@
 /**
  * Stands in for `mime-type/with-db` in stories.
  *
- * Any story that renders the message composer reaches `app/utils/lib/mimeTypes`, which loads the full MIME
+ * Any story that renders the message composer reaches `lib/mimeTypes`, which loads the full MIME
  * database. That package's own dependencies — `micromatch` and `path.js` — are written for Node: they read
  * `process.platform` and `require('path')` at module scope. Meteor's bundler shims Node's built-ins, webpack 5
  * does not, so a story that got there rendered `process is not defined` instead of the component.
@@ -10,12 +10,12 @@
  * teaching webpack to fake `process` and `path` for the whole preview — pulls Node's shape into every story to
  * satisfy one dependency of one module. The same reason `meteor` and the server tree are replaced above it.
  *
- * `app/utils/lib/mimeTypes` keeps its own logic: only the lookup table below is stubbed, with the types a
+ * `lib/mimeTypes` keeps its own logic: only the lookup table below is stubbed, with the types a
  * story is plausibly built around — including the ones that module registers itself through `define`, since the
  * `define` here accepts the call and drops it.
  */
 const types: Record<string, string> = {
-	// `aac` and `ico` are `app/utils/lib/mimeTypes`' own registrations. Its last `define` for `ico` overwrites,
+	// `aac` and `ico` are `lib/mimeTypes`' own registrations. Its last `define` for `ico` overwrites,
 	// so `image/x-icon` is the one that wins there and the one that belongs here.
 	aac: 'audio/aac',
 	csv: 'text/csv',

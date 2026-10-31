@@ -2,7 +2,7 @@ import { type RoomType, isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { AutoComplete, Box, Option, OptionAvatar, OptionContent, Chip } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useStableArray } from '@rocket.chat/fuselage-hooks';
 import { escapeRegExp } from '@rocket.chat/tools';
-import { RoomAvatar } from '@rocket.chat/ui-avatar';
+import { ITEM_MEDIA_SIZE, RoomAvatar } from '@rocket.chat/ui-avatar';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useUser, useUserSubscriptions } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
@@ -105,7 +105,7 @@ const UserAndRoomAutoCompleteMultiple = ({
 			setFilter={setFilter}
 			multiple
 			renderSelected={({ selected: { value, label }, onRemove, ...props }) => (
-				<Chip {...props} height='x20' value={value} onClick={onRemove} marginInlineEnd={4}>
+				<Chip {...props} value={value} onClick={onRemove}>
 					<RoomAvatar size='x20' room={{ ...label, _id: value }} />
 					<Box is='span' margin='none' marginInlineStart={4}>
 						{label.name}
@@ -115,7 +115,7 @@ const UserAndRoomAutoCompleteMultiple = ({
 			renderItem={({ value, label, ...props }) => (
 				<Option key={value} {...props}>
 					<OptionAvatar>
-						<RoomAvatar size='x20' room={{ ...label, _id: value }} />
+						<RoomAvatar size={ITEM_MEDIA_SIZE.condensed} room={{ ...label, _id: value }} />
 					</OptionAvatar>
 					<OptionContent>{label.name}</OptionContent>
 				</Option>

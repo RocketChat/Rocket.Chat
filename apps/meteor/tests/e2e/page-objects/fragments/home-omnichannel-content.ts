@@ -39,6 +39,6 @@ export class HomeOmnichannelContent extends HomeContent {
 		const popup = this.composer.boxPopup;
 		await popup.waitFor({ state: 'visible' });
 		await this.composer.inputMessage.pressSequentially(cannedResponseName);
-		await popup.getByText(cannedResponseName, { exact: true }).click();
+		await popup.getByRole('option').filter({ hasText: cannedResponseName }).click();
 	}
 }

@@ -4,9 +4,9 @@ import { Users } from '@rocket.chat/models';
 
 import { settings } from '../../settings';
 import { hasPermissionAsync } from '../authorization/hasPermission';
-import { getUsersHiddenFrom } from '../statusVisibility/hiddenUsers';
-import { redactStatus } from '../statusVisibility/redactStatus';
+import { getUsersHiddenFrom, redactHiddenUser } from '../statusVisibility/hiddenUsers';
 import { resolveUsersByIds } from '../statusVisibility/resolveUsers';
+import { isAdminHidingAllowed, isUserHidingAllowed } from '../statusVisibility/settings';
 
 const logger = new Logger('getFullUserData');
 
@@ -27,13 +27,14 @@ export const defaultFields = {
 	federated: 1,
 	statusLivechat: 1,
 	abacAttributes: 1,
-	freeSwitchExtension: 1,
+	sipExtension: 1,
 } as const;
 
 export const fullFields = {
 	emails: 1,
-	phone: 1,
+	phones: 1,
 	statusConnection: 1,
+	presenceDisabledByAdmin: 1,
 	bio: 1,
 	createdAt: 1,
 	lastLogin: 1,
@@ -83,16 +84,16 @@ const getFields = (canViewAllInfo: boolean): Record<string, 0 | 1> => ({
 const findTargetUser = (type: string, value: string, opts: any) => {
 	if (type === 'importId') return Users.findOneByImportId(value, opts);
 	if (type === 'email') return Users.findOneByEmailAddress(value, opts);
-	if (type === 'freeSwitchExtension') return Users.findOneByFreeSwitchExtension(value, opts);
+	if (type === 'sipExtension') return Users.findOneBySipExtension(value, opts);
 	return Users.findOneByIdOrUsername(value, opts);
 };
 
 export async function getFullUserDataByUniqueSearchTerm(
 	userId: string,
 	searchValue: string,
-	searchType: 'id' | 'username' | 'importId' | 'email' | 'freeSwitchExtension',
+	searchType: 'id' | 'username' | 'importId' | 'email' | 'sipExtension',
 ): Promise<IUser | null> {
-	const caller = await Users.findOneById(userId, { projection: { username: 1, importIds: 1, emails: 1, freeSwitchExtension: 1 } });
+	const caller = await Users.findOneById(userId, { projection: { username: 1, importIds: 1, emails: 1, sipExtension: 1 } });
 
 	if (!caller) {
 		return null;
@@ -102,11 +103,12 @@ export async function getFullUserDataByUniqueSearchTerm(
 		(searchType === 'id' && searchValue === userId) ||
 		(searchType === 'username' && searchValue === caller.username) ||
 		(searchType === 'importId' && caller.importIds?.includes(searchValue)) ||
-		(searchType === 'freeSwitchExtension' && caller.freeSwitchExtension === searchValue) ||
+		(searchType === 'sipExtension' && caller.sipExtension === searchValue) ||
 		(searchType === 'email' &&
 			caller.emails?.some((email: IUserEmail) => email.address.trim().toLowerCase() === searchValue.trim().toLowerCase()));
 
-	const canViewAllInfo = !!myself || (await hasPermissionAsync(userId, 'view-full-other-user-info'));
+	const canViewFullOtherUserInfo = await hasPermissionAsync(userId, 'view-full-other-user-info');
+	const canViewAllInfo = !!myself || canViewFullOtherUserInfo;
 
 	// Only search for importId/email if the user has permission to view them
 	if (['importId', 'email'].includes(searchType) && !canViewAllInfo) {
@@ -123,9 +125,10 @@ export async function getFullUserDataByUniqueSearchTerm(
 	const options = {
 		projection: {
 			...fields,
+			...(canViewFullOtherUserInfo && isAdminHidingAllowed() && { statusVisibilityDeniedByAdmin: 1 }),
 			...(myself && {
 				services: 1,
-				...(settings.get<boolean>('Accounts_StatusVisibility_Enabled') && { 'settings.preferences.statusVisibilityDenied': 1 }),
+				...(isUserHidingAllowed() && { 'settings.preferences.statusVisibilityDenied': 1 }),
 			}),
 		},
 	};
@@ -146,13 +149,29 @@ export async function getFullUserDataByUniqueSearchTerm(
 	delete user?.services?.resume;
 	delete user?.services?.email;
 
-	const ownBlockList = myself ? user.settings?.preferences?.statusVisibilityDenied : undefined;
+	const ownBlockList =
+		myself && isUserHidingAllowed() && user.settings?.preferences ? user.settings.preferences.statusVisibilityDenied : undefined;
+	const adminBlockList = user.statusVisibilityDeniedByAdmin;
 
-	if (settings.get<boolean>('Accounts_StatusVisibility_Enabled') && ownBlockList?.length && user.settings?.preferences) {
-		user.settings.preferences.statusVisibilityDenied = (await resolveUsersByIds(ownBlockList)).usernames;
+	if (ownBlockList?.length || adminBlockList?.length) {
+		const { ids, usernames } = await resolveUsersByIds([...new Set([...(ownBlockList ?? []), ...(adminBlockList ?? [])])]);
+		const usernameById = new Map(ids.map((id, index) => [id, usernames[index]]));
+		const toUsernames = (list: string[]) => list.map((id) => usernameById.get(id)).filter((name): name is string => Boolean(name));
+
+		if (ownBlockList?.length && user.settings?.preferences) {
+			user.settings.preferences.statusVisibilityDenied = toUsernames(ownBlockList);
+		}
+
+		if (adminBlockList?.length) {
+			user.statusVisibilityDeniedByAdmin = toUsernames(adminBlockList);
+		}
+	}
+
+	if (myself) {
+		return user;
 	}
 
 	const hidden = await getUsersHiddenFrom(userId);
 
-	return hidden?.has(user._id) ? redactStatus(user) : user;
+	return redactHiddenUser(user, hidden);
 }

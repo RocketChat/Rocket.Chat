@@ -42,7 +42,7 @@ setting was left at, so turning the window off puts a workspace back exactly whe
 The provider has no say in it. A thread off the call's message is *our* chat panel's, not the provider's
 feature, and an iframed provider renders inside our page — so a Jitsi call in our window threads exactly like a
 call we run ourselves. The provider's `persistentChat` capability decides only the discussion of main-room mode
-(see [Persistent chat](#persistent-chat)), which is what it decided before the window existed.
+(see [Provider Requirements](#provider-requirements)), which is what it decided before the window existed.
 
 `VideoConfService.chatLivesInAThread` is where the server applies exactly that, and `autoFollowCallThread` and
 the thread's title both ask it; `useConferenceEmbedded` mirrors it from the two public settings.
@@ -78,6 +78,12 @@ The room's call button goes straight there. It used to open a popup to confirm a
 preflight now does with the user able to see what they are joining — two confirmations for one call. That popup
 remains the only place to set devices when there is no preflight, so it is still what a workspace without the
 call window gets.
+
+A room open only as a preview — a channel or a team's room the user can read but hasn't joined — shows the button
+**disabled**, with "Join this room to start a call": a call is its room's members', and the preflight has no
+subscription to start one from. Omnichannel rooms are left out, since agents serve them without joining. Where the
+room can't hold a call at all (federated, archived, read-only without `post-readonly`), that is what the button says
+instead, as joining wouldn't help.
 
 **Joining one that exists** (`joinCall`) emits `call/join`:
 
@@ -132,7 +138,8 @@ Same-origin (in-product) conferences share a named window, `rocketchat-conferenc
 | showing a different conference | navigated to the new one |
 | closed, or never opened | opened fresh as a popout |
 
-Whether it is showing this conference is decided by reading the window's actual `location.pathname`, not the URL we last passed — those differ in string form between the start and join paths.
+Whether it is showing this conference is decided by reading the window's actual `location` (path and query), not the URL we last passed — those differ in string form between the start and join paths.
+
 
 External provider URLs get their own popout each time, unnamed.
 
@@ -265,7 +272,9 @@ rather than a taste, so `AppLayoutThemeWrapper` lets it through even where a lay
 
 The conference is a column: a top bar carrying the call's name and its controls, then a row holding the call and the chat panel.
 
-`CallTopBar` keeps the members and chat toggles (the chat one carrying an unread badge while its panel is closed), away from wherever the provider puts its own toolbar. A provider running the call in here rather than in an iframe brings mic, camera and hang-up of its own; where those go is that provider's to decide, and is not guessed at here.
+`CallTopBar` keeps the members and chat toggles (the chat one carrying an unread badge while its panel is closed), away from wherever the provider puts its own toolbar. It keeps them for **both** kinds of provider: they are about this window rather than about the call, so they belong in one place regardless of who is drawing the call itself.
+
+A provider running the call in here rather than in an iframe brings mic, camera, screen and hang-up of its own. Those go in `CallBar`, the bottom strip, which `ConferenceWindow` renders for such a call and fills with the package's own `CallControls` — drawn from the call state and actions the provider supplies around the window — so there is one bar for the call rather than the provider's strip stacked above the window's. `CallBar` exists only for those controls: an iframe provider keeps its controls inside the frame and gets no bottom strip at all, because an empty one would say there is something down there to use. Nothing else goes in it — the panel toggles are in the top bar, and putting them in both showed the same two buttons twice, once above the call and once below it.
 
 `CallPanel` is the product's own `Contextualbar`, so a panel beside a call has the same edges and elevation as one beside a room; it is a **sibling of the call area, not a child of the bar**. That is what makes toggling the chat animate its own width without ever reflowing the bar — the bar stays full width and fixed in place by construction, not by careful sizing. Its inner box keeps full width while the outer collapses, so content slides instead of reflowing mid-animation. On viewports narrower than `md` it floats over the call instead of taking width from it.
 
@@ -287,7 +296,7 @@ else would — the conference renders outside the main app, so the sidebar's own
 |-----------|---------|------|
 | `?callUrl=` present | `ConferencePage` — hands off to the provider's external URL | `guest` allowed |
 | `:id` is `new`, with `?rid=` | `ConferenceStartPage` — the preflight for a conference that doesn't exist yet | authentication required (`guest={false}`) |
-| `:id` present | `ConferenceEmbeddedPage` — call + chat split view | authentication required (`guest={false}`) |
+| `:id` present | `ConferenceWindow` (`@rocket.chat/ui-conference`), assembled by `ConferenceProvider` — call + chat split view | authentication required (`guest={false}`) |
 | neither | `ConferencePageError` | — |
 
 Guests can't be members of the conference's room, so the embedded page requires a real account. A user without access to the conference's room gets `ConferenceUnauthorizedPage`, which logs out **without navigating away**, so re-login returns to the same conference. It and `ConferencePageError` are the same `ConferenceStatePage` with different words: the window is all the user has, so both keep the conference header and carry whatever way out they have.
@@ -501,20 +510,16 @@ after an admin toggled it and end a call still running in Jitsi. The cost is tha
 URL provider stays outside the sweep, waiting on the 24-hour TTL cron; closing that needs the call to carry how
 it was opened rather than the sweep guessing from a setting that can have changed since.
 
-This is deliberately **provider-agnostic**: the renewing window is ours whether the call renders inside it or is
-handed to an iframe, so it needs no cooperation from Pexip, Jitsi or anyone else. Where a provider *can* be asked
-who is in a room it may register a **presence probe** (`videoConfPresence`), whose answer renews the same leases
-from the server side — which matters because browsers throttle a background window's timers to roughly one a
-minute, and a call is usually something you listen to while looking at something else. LiveKit registers one; a
-provider reached by URL registers nothing and loses nothing but that. A probe returning `undefined` means "no
-answer", which is what an unreachable provider says, and it is never read as "nobody is there" — our own network
-trouble must not empty someone else's call.
+This is deliberately **provider-agnostic**, and deliberately the *only* source of presence: the renewing window is
+ours whether the call renders inside it or is handed to an iframe, so it needs no cooperation from Pexip, Jitsi,
+LiveKit or anyone else. Who is in a call is answered in one place, by evidence we own — a second source that could
+disagree with the roster is how a call ends up counted as occupied by one half of the code and empty by the other.
 
-**Known limitation.** For a provider with no probe, presence means *"still has the conference window open on this
-call"*. Hang up inside the iframe and leave the tab open and you stay listed until the window closes. Closing that
-gap needs the provider to report it (the `postMessage` bridge described in [Deferred to
-follow-ups](#deferred-to-follow-ups)) or a management API to ask — both per-provider, which is why the lease is the
-floor rather than the ceiling.
+**Known limitation.** Presence means *"still has the conference window open on this call"*. Hang up inside the
+iframe and leave the tab open and you stay listed until the window closes; a window whose timers the browser has
+throttled hard enough to miss `PRESENCE_LEASE_MS` of renewals reads as gone until it renews again. Both are the
+cost of a single source of truth, and the lease is long enough — three minutes against a thirty-second heartbeat —
+that the second needs five missed renewals in a row.
 
 ### The window that opened the call watches it
 
@@ -611,7 +616,7 @@ Every conference endpoint authorizes through one `canAccessConference` check, wh
 
 Because all of them share that check, `add-participants` no longer disagrees with `join` and `info` about who is allowed in. `loadAccessibleConference` is the shared prologue: it reads the call, applies the check, and answers both failures the same way — `invalid-params`, deliberately vague about which of the two it was, so a stranger can't use an endpoint to learn that a call id is real.
 
-The check lives in `server/lib/videoConfAccess.ts` rather than beside these endpoints, because a provider's own endpoints need it too and two versions of "may this person be here" drift into two answers for the same person. That is not hypothetical: the LiveKit transport endpoint originally checked room access instead, so a member added to a call in a DM was refused the credentials for the very call they had just joined — a window showing them alone, with inert controls, because a refused token looks exactly like one that hasn't arrived yet.
+The check lives on the authorization service (`Authorization.canAccessConference`) rather than beside these endpoints, because a provider's own endpoints need it too and two versions of "may this person be here" drift into two answers for the same person. That is not hypothetical: the LiveKit transport endpoint originally checked room access instead, so a member added to a call in a DM was refused the credentials for the very call they had just joined — a window showing them alone, with inert controls, because a refused token looks exactly like one that hasn't arrived yet.
 
 ## Reaching a call without a ring
 
@@ -1018,7 +1023,7 @@ whoever added them, which their client would read as their own call being turned
 Manual cases live in [`qa/`](./qa/README.md) — 70 of them, in Qase import format, split along the setting the
 way the code is. Its README also records where this document is ahead of the code.
 
-The cheap runners were used deliberately: mocha under `apps/meteor/tests/unit/**` (~2s for the whole config) and
+We used the cheap runners on purpose: `node:test` for the `apps/meteor` unit tests (`*.test.{ts,js}`) and
 package-level jest. The specs sit beside what they test, so the file names say where to look; enumerating them
 here only produced a list that went stale on its own.
 
@@ -1029,7 +1034,7 @@ reason. The same split runs end to end: `tests/e2e/video-conference-ring.spec.ts
 off, untouched from before the feature, and `tests/e2e/video-conference-call-window.spec.ts` turns it on in a
 `beforeAll` and back off in an `afterAll`.
 
-Two things about the arrangement are worth knowing. `apps/meteor/tests/unit/server/services/video-conference/testHarness.ts`
+Two things about the arrangement are worth knowing. `apps/meteor/server/services/video-conference/testHarness.ts`
 is what makes the service testable at all: `createService` proxyquires it with ~25 inert module stubs (one of
 which would otherwise open a Mongo driver at import time) and a models map each spec narrows to the collections
 it exercises. And the decisions worth pinning down were deliberately moved *out* of the service into pure
@@ -1174,19 +1179,19 @@ as the last read. A member removed from the room *during* a call still has the r
 | Stream typings | `packages/ddp-client/src/types/streams.ts` |
 | Conference model | `packages/models/src/models/VideoConference.ts` |
 | Route + viewport | `apps/meteor/client/views/conference/ConferenceRoute.tsx`, `ConferenceViewport.tsx` |
-| Call chrome | `apps/meteor/client/views/conference/ConferenceEmbeddedPage.tsx`, `components/ConferenceIframe.tsx`, `components/CallTopBar.tsx`, `components/CallPanel.tsx` |
+| Call chrome | `packages/ui-conference/src/views/ConferenceWindow.tsx`, `src/components/ConferenceIframe.tsx`, `src/components/CallTopBar.tsx`, `src/components/CallBar.tsx`, `src/components/CallPanel.tsx`; assembled by `apps/meteor/client/views/conference/providers/ConferenceProvider.tsx` |
 | Chat panel | `apps/meteor/client/views/conference/ConferenceChat.tsx`, `ConferenceRoomPanel.tsx`, `ConferenceThreadChat.tsx`, `ConferenceThreadModal.tsx`, `ConferenceStoresReady.tsx`, `components/CallPanelHeader.tsx`, `components/ConferenceChatNotShared.tsx` |
 | Nothing to show | `apps/meteor/client/views/conference/ConferenceStatePage.tsx`, `ConferencePageError.tsx`, `ConferenceUnauthorizedPage.tsx` |
 | Conference data | `apps/meteor/client/views/conference/hooks/useConferenceEmbedded.tsx` |
 | Confined navigation | `apps/meteor/client/views/conference/hooks/useConfinedNavigation.ts` (+ `.spec.ts`) |
 | Add participants | `apps/meteor/client/views/conference/AddParticipantsModal.tsx` |
 | Chat access | `apps/meteor/client/views/conference/ChatAccessNotice.tsx`, `ChatAccessModal.tsx` |
-| Preflight | `apps/meteor/client/views/conference/ConferencePreflight.tsx`, `ConferenceStartPage.tsx`, `hooks/useStartConference.ts`, `hooks/useCallPreferences.ts` |
+| Preflight | `packages/ui-conference/src/views/ConferencePreflight.tsx`, `src/hooks/useCallDevicesInitialState.ts`; `apps/meteor/client/views/conference/ConferenceStartPage.tsx`, `hooks/useStartConference.ts`, `lib/conferencePreflightMedia.ts` |
 | Members panel | `apps/meteor/client/views/conference/CallMembersPanel.tsx`, `CallMemberItem.tsx`, `client/hooks/useRingingExpiry.ts` |
 | Membership rules (shared) | `apps/meteor/lib/videoConference/memberStatus.ts`, `callHistory.ts`, `chatAccess.ts`, `constants.ts` |
 | Reaching a call | `apps/meteor/client/components/OngoingCalls/` (`CallListItem` over the sidebar's own room item, its two rows, `OngoingCallsList` and `useOngoingCalls`), `client/sidebar/hooks/useRoomList.ts` and `RoomList/RoomList.tsx` (where the group is), `client/navbar/NavBarItemOngoingCalls.tsx` (the stand-in), `client/views/conference/hooks/useJoinableCalls.ts`, `hooks/useJoinCall.tsx` |
 | Leaving | `apps/meteor/client/views/conference/hooks/useLeaveConferenceOnClose.ts` |
-| Presence leases | `apps/meteor/lib/videoConference/presence.ts`, `client/views/conference/hooks/useConferencePresenceLease.ts`, `server/lib/videoConfPresence.ts`, `server/cron/videoConferences.ts` |
+| Presence leases | `apps/meteor/lib/videoConference/presence.ts`, `client/views/conference/hooks/useConferencePresenceLease.ts`, `server/cron/videoConferences.ts` |
 | Ringing popups | `apps/meteor/client/views/room/contextualBar/VideoConference/VideoConfPopups/VideoConfPopup/` |
 | Join routing | `apps/meteor/client/providers/VideoConfProvider.tsx`, `client/views/room/contextualBar/VideoConference/hooks/useVideoConfOpenCall.tsx` |
 | Room opening | `apps/meteor/client/views/room/hooks/useOpenRoomById.tsx`, `client/lib/utils/mapRoomFromApi.ts` |

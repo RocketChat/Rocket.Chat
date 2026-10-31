@@ -1,8 +1,11 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
+import { LayoutContext } from '@rocket.chat/ui-contexts';
 import { renderHook, waitFor } from '@testing-library/react';
+import { createElement, useContext, type ReactNode } from 'react';
 
 import { useOpenRoom } from './useOpenRoom';
 import { createFakeRoom, createFakeSubscription } from '../../../../tests/mocks/data';
+import { LegacyRoomManager } from '../../../lib/LegacyRoomManager';
 import { RoomNotFoundError } from '../../../lib/errors/RoomNotFoundError';
 import { Rooms, Subscriptions } from '../../../stores';
 
@@ -17,6 +20,9 @@ jest.mock('../../../lib/RoomManager', () => ({
 jest.mock('./useOpenRoomMutation', () => ({
 	useOpenRoomMutation: () => ({ mutateAsync: jest.fn() }),
 }));
+
+const EmbeddedLayout = ({ children }: { children: ReactNode }) =>
+	createElement(LayoutContext.Provider, { value: { ...useContext(LayoutContext), isEmbedded: true } }, children);
 
 afterEach(() => {
 	Subscriptions.state.replaceAll([]);
@@ -76,6 +82,30 @@ describe('useOpenRoom', () => {
 			await waitFor(() => expect(result.current.isSuccess).toBe(true));
 			expect(result.current.data?.rid).toBe(dmRid);
 		});
+	});
+
+	it('stores a missing subscription before opening the room', async () => {
+		const dmRid = 'dm-rid-embedded';
+		const subscribedWhenOpened = jest.fn();
+		(LegacyRoomManager.open as jest.Mock).mockImplementationOnce(({ rid }) =>
+			subscribedWhenOpened(!!Subscriptions.state.find((record) => record.rid === rid)),
+		);
+
+		const { result } = renderHook(() => useOpenRoom({ type: 'd', reference: dmRid }), {
+			wrapper: mockAppRoot()
+				.withJohnDoe()
+				.withMethod('getRoomByTypeAndName', () => createFakeRoom({ _id: dmRid, t: 'd' }) as any)
+				.withEndpoint(
+					'GET',
+					'/v1/subscriptions.getOne',
+					() => ({ subscription: { _id: 'sub-id', rid: dmRid, t: 'd', name: 'bob', u: { _id: 'john.doe' }, open: true } }) as any,
+				)
+				.wrap((children) => createElement(EmbeddedLayout, null, children))
+				.build(),
+		});
+
+		await waitFor(() => expect(result.current.isSuccess).toBe(true));
+		expect(subscribedWhenOpened).toHaveBeenCalledWith(true);
 	});
 
 	describe('error classification', () => {

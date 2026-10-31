@@ -5,7 +5,7 @@ import * as jsonrpc from '../jsonrpc';
 
 /**
  * The optional slots (`params`, `meta`, `error.data`) must stay ABSENT rather
- * than present-and-undefined. The msgpack codec distinguishes the two, so every
+ * than present-and-undefined. The IPC channel carries the key either way, so every
  * assertion below uses `in` instead of comparing to `undefined`.
  */
 describe('jsonrpc', () => {
@@ -86,9 +86,9 @@ describe('jsonrpc', () => {
 			assert.ok(new jsonrpc.JsonRpcError('boom', jsonrpc.SERVER_ERROR) instanceof jsonrpc.JsonRpcError);
 		});
 
-		it('should expose message and code as own enumerable properties, so msgpack keeps them', () => {
-			// This is why the class does not extend `Error`: an `Error`'s `message` is
-			// non-enumerable, and msgpack would drop it at the process boundary.
+		it('should expose message and code as own enumerable properties, so the IPC channel keeps them', () => {
+			// This is why the class does not extend `Error`: the IPC channel clones an
+			// `Error` by its own rules and drops `code` and `data` at the process boundary.
 			const payload = new jsonrpc.JsonRpcError('boom', jsonrpc.SERVER_ERROR);
 
 			assert.deepStrictEqual(Object.keys(payload), ['message', 'code']);
@@ -148,7 +148,7 @@ describe('jsonrpc', () => {
 
 		it('should reject an id that is a number but not finite', () => {
 			// These pass `typeof value === 'number'`, so the loop above cannot cover them.
-			// msgpack carries them; JSON cannot, and `JSON.stringify({ id: NaN })` yields
+			// The IPC channel carries them; JSON cannot, and `JSON.stringify({ id: NaN })` yields
 			// `{"id":null}` — an id that changes meaning at a JSON boundary cannot route.
 			for (const id of [NaN, Infinity, -Infinity]) {
 				assertCategorizesAs('none', { jsonrpc: '2.0', id, method: 'app:getStatus' });

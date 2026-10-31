@@ -1,18 +1,21 @@
 import { AutoComplete, Box, Option, Chip } from '@rocket.chat/fuselage';
-import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { RoomAvatar } from '@rocket.chat/ui-avatar';
+import { useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { ITEM_MEDIA_SIZE, RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import type { ComponentProps } from 'react';
-import { memo, useMemo, useState } from 'react';
+import { memo, useMemo, useRef, useState } from 'react';
 
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 
-export type RoomsAvailableForTeamsAutoCompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'>;
+export type RoomsAvailableForTeamsAutoCompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'> & {
+	onAbacRoomsChange?: (roomNames: string[]) => void;
+};
 
-const RoomsAvailableForTeamsAutoComplete = ({ value, onChange, ...props }: RoomsAvailableForTeamsAutoCompleteProps) => {
+const RoomsAvailableForTeamsAutoComplete = ({ value, onChange, onAbacRoomsChange, ...props }: RoomsAvailableForTeamsAutoCompleteProps) => {
 	const [filter, setFilter] = useState('');
 	const debouncedFilter = useDebouncedValue(filter, 1000);
+	const abacRoomNames = useRef(new Map<string, string>());
 
 	const roomsAvailableForTeamsAutoCompleteEndpoint = useEndpoint('GET', '/v1/rooms.autocomplete.availableForTeams');
 
@@ -33,20 +36,36 @@ const RoomsAvailableForTeamsAutoComplete = ({ value, onChange, ...props }: Rooms
 				name: roomCoordinator.getRoomName(room.t, { _id: room._id, name: room.name, fname: room.fname, prid: room.prid }),
 				type: room.t,
 				avatarETag: room.avatarETag,
+				hasAbacAttributes: room.hasAbacAttributes,
 			},
 		}));
 	}, [data]);
+
+	const handleChange = useStableCallback((selected: string | string[]) => {
+		const selectedIds = Array.isArray(selected) ? selected : [selected];
+
+		for (const { value, label } of options) {
+			if (label.hasAbacAttributes) {
+				abacRoomNames.current.set(value, label.name);
+			} else {
+				abacRoomNames.current.delete(value);
+			}
+		}
+
+		onAbacRoomsChange?.(selectedIds.flatMap((id) => abacRoomNames.current.get(id) ?? []));
+		onChange(selected);
+	});
 
 	return (
 		<AutoComplete
 			{...props}
 			multiple
 			value={value}
-			onChange={onChange}
+			onChange={handleChange}
 			filter={filter}
 			setFilter={setFilter}
 			renderSelected={({ selected: { value, label }, onRemove }) => (
-				<Chip key={value} height='x20' value={value} onClick={onRemove} marginBlock={2} marginInlineEnd={4}>
+				<Chip key={value} value={value} onClick={onRemove}>
 					<RoomAvatar size='x20' room={{ ...label, type: label?.type || 'c', _id: value }} />
 					<Box is='span' margin='none' marginInlineStart={4}>
 						{label.name}
@@ -58,7 +77,7 @@ const RoomsAvailableForTeamsAutoComplete = ({ value, onChange, ...props }: Rooms
 					key={value}
 					{...props}
 					label={label.name}
-					avatar={<RoomAvatar room={{ _id: value, type: label.type, avatarETag: label.avatarETag }} size='x20' />}
+					avatar={<RoomAvatar room={{ _id: value, type: label.type, avatarETag: label.avatarETag }} size={ITEM_MEDIA_SIZE.condensed} />}
 				/>
 			)}
 			options={options}

@@ -53,6 +53,37 @@ describe('Publication', () => {
 		expect(second).toHaveBeenCalledTimes(1);
 	});
 
+	it('removes its session close listener when stopped', () => {
+		expect(session.listenerCount('close')).toBe(1);
+
+		publication.stop();
+
+		expect(session.listenerCount('close')).toBe(0);
+	});
+
+	it('does not accumulate session close listeners across subscription churn', () => {
+		publication.stop();
+
+		for (let i = 0; i < 51; i++) {
+			new Publication(session, { ...makeSubscription(), id: `sub-${i}` }).stop();
+		}
+
+		expect(session.listenerCount('close')).toBe(0);
+		expect(session.subscriptions.size).toBe(0);
+	});
+
+	it('keeps stopping the remaining publications on disconnect after one of them stops', () => {
+		const other = new Publication(session, { ...makeSubscription(), id: 'other-id' });
+		const onOtherStop = jest.fn();
+		other.onStop(onOtherStop);
+
+		publication.stop();
+		session.emit('close');
+
+		expect(onOtherStop).toHaveBeenCalledTimes(1);
+		expect(session.subscriptions.size).toBe(0);
+	});
+
 	it('notifies the session that its subscription is ready', () => {
 		publication.ready();
 

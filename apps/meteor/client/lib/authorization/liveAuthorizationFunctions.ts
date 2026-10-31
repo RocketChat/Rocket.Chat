@@ -1,5 +1,5 @@
-import type { AuthorizationDeps } from '../../../app/authorization/lib/createAuthorizationFunctions';
-import { createAuthorizationFunctions } from '../../../app/authorization/lib/createAuthorizationFunctions';
+import type { AuthorizationDeps } from './createAuthorizationFunctions';
+import { createAuthorizationFunctions } from './createAuthorizationFunctions';
 import { PermissionsCachedStore } from '../../cachedStores';
 import { Permissions, Roles, Subscriptions, Users } from '../../stores';
 import { userIdStore } from '../user';
@@ -14,11 +14,7 @@ const liveDeps: AuthorizationDeps = {
 	getUserRoles: (userId) => Users.use.getState().get(userId)?.roles,
 	getPermission: (permissionId) => Permissions.use.getState().get(permissionId),
 	getRoleScope: (roleId) => Roles.use.getState().get(roleId)?.scope,
-	hasSubscriptionRole: (rid, roleId) =>
-		Subscriptions.use
-			.getState()
-			.find((s) => s.rid === rid)
-			?.roles?.includes(roleId) ?? false,
+	getSubscriptionRoles: (rid) => Subscriptions.use.getState().find((s) => s.rid === rid)?.roles ?? [],
 	isReady: () => PermissionsCachedStore.useReady.getState(),
 };
 

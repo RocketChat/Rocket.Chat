@@ -1,5 +1,5 @@
 import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
-import { ButtonGroup, Button, IconButton, Divider } from '@rocket.chat/fuselage';
+import { Box, ButtonGroup, Button, IconButton, Divider, Stack } from '@rocket.chat/fuselage';
 import { Field, FieldLabel, FieldRow, FieldError, TextInput } from '@rocket.chat/fuselage-forms';
 import { validateEmail } from '@rocket.chat/tools';
 import {
@@ -219,57 +219,71 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 				</Field>
 				<Field>
 					<FieldLabel>{t('Email')}</FieldLabel>
-					{emailFields.map((field, index) => (
-						<Fragment key={field.id}>
-							<FieldRow>
-								<Controller
-									name={`emails.${index}.address`}
-									control={control}
-									rules={{
-										required: t('Required_field', { field: t('Email') }),
-										validate: validateEmailFormat,
-									}}
-									render={({ field }) => <TextInput {...field} error={errors.emails?.[index]?.address?.message} aria-required='true' />}
-								/>
-								<IconButton title={t('Remove_email')} small onClick={() => removeEmail(index)} marginInlineStart={8} icon='trash' />
-							</FieldRow>
-							{errors.emails?.[index]?.address && <FieldError>{errors.emails?.[index]?.address?.message}</FieldError>}
-						</Fragment>
-					))}
-					<Button
-						marginBlockStart={8}
-						onClick={validateMultipleFields(emailFields.length, hasLicense) ? handleOpenUpSellModal : () => appendEmail({ address: '' })}
-					>
-						{t('Add_email')}
-					</Button>
+					<Stack gap={8}>
+						<Box display='flex' flexDirection='column'>
+							{emailFields.map((field, index) => (
+								<Fragment key={field.id}>
+									<FieldRow>
+										<Stack direction='row' align='center' justify='space-between' grow gap={8}>
+											<Controller
+												name={`emails.${index}.address`}
+												control={control}
+												rules={{
+													required: t('Required_field', { field: t('Email') }),
+													validate: validateEmailFormat,
+												}}
+												render={({ field }) => (
+													<TextInput {...field} error={errors.emails?.[index]?.address?.message} aria-required='true' />
+												)}
+											/>
+											<IconButton title={t('Remove_email')} size='small' onClick={() => removeEmail(index)} icon='trash' />
+										</Stack>
+									</FieldRow>
+									{errors.emails?.[index]?.address && <FieldError>{errors.emails?.[index]?.address?.message}</FieldError>}
+								</Fragment>
+							))}
+						</Box>
+						<Button
+							onClick={validateMultipleFields(emailFields.length, hasLicense) ? handleOpenUpSellModal : () => appendEmail({ address: '' })}
+						>
+							{t('Add_email')}
+						</Button>
+					</Stack>
 				</Field>
 				<Field>
 					<FieldLabel>{t('Phone')}</FieldLabel>
-					{phoneFields.map((field, index) => (
-						<Fragment key={field.id}>
-							<FieldRow>
-								<Controller
-									name={`phones.${index}.phoneNumber`}
-									control={control}
-									rules={{
-										required: t('Required_field', { field: t('Phone') }),
-										validate: validatePhone,
-									}}
-									render={({ field }) => <TextInput {...field} error={errors.phones?.[index]?.phoneNumber?.message} aria-required='true' />}
-								/>
-								<IconButton title={t('Remove_phone')} small onClick={() => removePhone(index)} marginInlineStart={8} icon='trash' />
-							</FieldRow>
-							{errors.phones?.[index]?.phoneNumber && <FieldError>{errors.phones?.[index]?.phoneNumber?.message}</FieldError>}
-						</Fragment>
-					))}
-					<Button
-						marginBlockStart={8}
-						onClick={
-							validateMultipleFields(phoneFields.length, hasLicense) ? handleOpenUpSellModal : () => appendPhone({ phoneNumber: '' })
-						}
-					>
-						{t('Add_phone')}
-					</Button>
+					<Stack gap={8}>
+						<Box display='flex' flexDirection='column'>
+							{phoneFields.map((field, index) => (
+								<Fragment key={field.id}>
+									<FieldRow>
+										<Stack direction='row' align='center' justify='space-between' grow gap={8}>
+											<Controller
+												name={`phones.${index}.phoneNumber`}
+												control={control}
+												rules={{
+													required: t('Required_field', { field: t('Phone') }),
+													validate: validatePhone,
+												}}
+												render={({ field }) => (
+													<TextInput {...field} error={errors.phones?.[index]?.phoneNumber?.message} aria-required='true' />
+												)}
+											/>
+											<IconButton title={t('Remove_phone')} size='small' onClick={() => removePhone(index)} icon='trash' />
+										</Stack>
+									</FieldRow>
+									{errors.phones?.[index]?.phoneNumber && <FieldError>{errors.phones?.[index]?.phoneNumber?.message}</FieldError>}
+								</Fragment>
+							))}
+						</Box>
+						<Button
+							onClick={
+								validateMultipleFields(phoneFields.length, hasLicense) ? handleOpenUpSellModal : () => appendPhone({ phoneNumber: '' })
+							}
+						>
+							{t('Add_phone')}
+						</Button>
+					</Stack>
 				</Field>
 				<Field>
 					<FieldLabel>{t('Contact_Manager')}</FieldLabel>
@@ -287,7 +301,7 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={onCancel}>{t('Cancel')}</Button>
-					<Button type='submit' form={formId} loading={isSubmitting} primary>
+					<Button type='submit' form={formId} loading={isSubmitting} variant='primary'>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

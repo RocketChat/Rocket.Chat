@@ -1,3 +1,4 @@
+import { isClientSafeError } from '@rocket.chat/core-services';
 import type { IIncomingIntegration, IIntegration, IOutgoingIntegration, IUser, RequiredField } from '@rocket.chat/core-typings';
 import { Integrations, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
@@ -8,10 +9,18 @@ import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
 import { WebApp } from 'meteor/webapp';
 import _ from 'underscore';
 
-import { APIClass } from './ApiClass';
+import { APIClass, refusalErrorCodes } from './ApiClass';
 import type { RateLimiterOptions } from './api';
 import { API, defaultRateLimiterOptions } from './api';
-import type { FailureResult, GenericRouteExecutionContext, SuccessResult, UnavailableResult } from './definition';
+import type {
+	FailureResult,
+	ForbiddenResult,
+	GenericRouteExecutionContext,
+	InternalError,
+	NotFoundResult,
+	SuccessResult,
+	UnavailableResult,
+} from './definition';
 import type { APIActionContext } from './router';
 import { isPlainObject } from '../../lib/utils/isPlainObject';
 import { hasPermissionAsync } from '../lib/authorization/hasPermission';
@@ -104,13 +113,13 @@ async function createIntegration(options: IntegrationOptions, user: IUser): Prom
 	}
 }
 
-async function removeIntegration(options: { target_url: string }, user: IUser): Promise<SuccessResult<void> | FailureResult<string>> {
+async function removeIntegration(options: { target_url: string }, user: IUser): Promise<SuccessResult<void> | NotFoundResult> {
 	incomingLogger.info('Remove integration');
 	incomingLogger.debug({ options });
 
 	const integrationToRemove = await Integrations.findOneByUrl(options.target_url);
 	if (!integrationToRemove) {
-		return API.v1.failure('integration-not-found');
+		return API.v1.notFound('integration-not-found');
 	}
 
 	await deleteOutgoingIntegration(integrationToRemove._id, user._id);
@@ -160,6 +169,9 @@ async function executeIntegrationRest(
 	| SuccessResult<Record<string, string> | { responses: WebhookResponseItem[] } | undefined | void>
 	| FailureResult<string>
 	| FailureResult<{ responses: WebhookResponseItem[] }>
+	| ForbiddenResult
+	| NotFoundResult
+	| InternalError<string>
 	| UnavailableResult<string>
 > {
 	incomingLogger.info({ msg: 'Post integration:', integration: this.request.integration.name });
@@ -175,7 +187,7 @@ async function executeIntegrationRest(
 			integration: this.request.integration.name,
 			error: 'The assigned user from the integration must have the message-impersonate permission.',
 		});
-		return API.v1.failure('error-user-lacks-message-impersonate-permission');
+		return API.v1.forbidden('error-user-lacks-message-impersonate-permission');
 	}
 
 	const defaultValues = {
@@ -229,12 +241,12 @@ async function executeIntegrationRest(
 			},
 		};
 
-		const result = await scriptEngine.processIncomingRequest({
-			integration: this.request.integration,
-			request,
-		});
-
 		try {
+			const result = await scriptEngine.processIncomingRequest({
+				integration: this.request.integration,
+				request,
+			});
+
 			if (!result) {
 				incomingLogger.debug({
 					msg: 'Process Incoming Request result of Trigger has no data',
@@ -269,7 +281,7 @@ async function executeIntegrationRest(
 				script: this.request.integration.scriptCompiled,
 				err,
 			});
-			return API.v1.failure('error-running-script');
+			return API.v1.internalError('error-running-script');
 		}
 	}
 
@@ -278,7 +290,7 @@ async function executeIntegrationRest(
 	}
 
 	if ((bodyParams.channel || bodyParams.roomId) && !this.request.integration.overrideDestinationChannelEnabled) {
-		return API.v1.failure('overriding destination channel is disabled for this integration');
+		return API.v1.forbidden('overriding destination channel is disabled for this integration');
 	}
 
 	bodyParams.bot = { i: this.request.integration._id };
@@ -286,7 +298,7 @@ async function executeIntegrationRest(
 	try {
 		const messageResponse = await processWebhookMessage(bodyParams, this.user, defaultValues);
 		if (_.isEmpty(messageResponse)) {
-			return API.v1.failure('unknown-error');
+			return API.v1.internalError('unknown-error');
 		}
 
 		if (scriptResponse) {
@@ -303,7 +315,14 @@ async function executeIntegrationRest(
 		return API.v1.success();
 	} catch (err: any) {
 		incomingLogger.error({ msg: 'Error processing webhook message', err });
-		return API.v1.failure(err?.error || err?.message || 'Unknown error');
+		const code = err?.error || err?.message || 'Unknown error';
+		if (code === 'error-invalid-room') {
+			return API.v1.notFound(code);
+		}
+		if (refusalErrorCodes.has(code)) {
+			return API.v1.forbidden(isClientSafeError(err) ? err.reason : code);
+		}
+		return API.v1.failure(code);
 	}
 }
 
@@ -532,7 +551,7 @@ Api.addRoute(
 		async post() {
 			const result = await removeIntegration(this.bodyParams, this.user);
 
-			return API.v1.success(result || {});
+			return result;
 		},
 	},
 );
@@ -544,7 +563,7 @@ Api.addRoute(
 		async post() {
 			const result = await removeIntegration(this.bodyParams, this.user);
 
-			return API.v1.success(result || {});
+			return result;
 		},
 	},
 );

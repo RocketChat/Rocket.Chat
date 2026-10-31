@@ -11,13 +11,13 @@ import {
 	InfoPanelField,
 	InfoPanelLabel,
 	InfoPanelText,
+	useFormatDateAndTime,
 } from '@rocket.chat/ui-client';
 import { useRoute, useUserPresence } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useDeviceLogout } from '../../../../hooks/useDeviceLogout';
-import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 
 export type DeviceManagementInfoProps = DeviceManagementPopulatedSession;
 
@@ -91,7 +91,7 @@ const DeviceManagementInfo = ({ device, sessionId, loginAt, ip, userId, _user }:
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button primary onClick={() => handleDeviceLogout()}>
+					<Button variant='primary' onClick={() => handleDeviceLogout()}>
 						{t('Logout_Device')}
 					</Button>
 				</ButtonGroup>

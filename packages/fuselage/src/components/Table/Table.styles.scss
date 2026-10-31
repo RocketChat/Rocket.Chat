@@ -1,0 +1,151 @@
+@use '../../styles/colors.scss';
+@use '../../styles/lengths.scss';
+@use '../../styles/typography.scss' as *;
+@use '../../styles/mixins/interactivity.scss' as *;
+@use '../../styles/functions.scss' as *;
+
+$table-selected-border-radius: theme('table-selected-border-radius', lengths.border-radius(medium));
+
+.rcx-table {
+	display: table;
+
+	width: 100%;
+
+	border-spacing: lengths.padding(none) lengths.padding(2);
+
+	border-collapse: collapse;
+
+	&--fixed {
+		table-layout: fixed;
+	}
+
+	&__selection {
+		color: colors.font(titles-labels);
+		border-radius: $table-selected-border-radius;
+		background-color: colors.surface(neutral);
+	}
+
+	&__selection-button {
+		flex-shrink: 0;
+	}
+
+	&__wrapper {
+		position: relative;
+	}
+
+	&__head {
+		display: table-header-group;
+	}
+
+	&__body {
+		display: table-row-group;
+	}
+
+	&__foot {
+		display: table-footer-group;
+	}
+
+	&--striped {
+		.rcx-table__row:nth-child(even) {
+			background-color: colors.surface(tint);
+		}
+	}
+
+	&--sticky {
+		.rcx-table__cell--header {
+			position: sticky;
+			z-index: 10;
+			top: 0;
+
+			background-color: colors.surface(light);
+		}
+	}
+
+	&__row {
+		display: table-row;
+
+		&--selected {
+			background-color: colors.surface(tint);
+
+			&.rcx-table__row--action {
+				&:hover,
+				&:focus {
+					background-color: colors.surface(hover);
+				}
+			}
+		}
+
+		&--action:hover,
+		&--action:focus {
+			@include clickable;
+			background-color: colors.surface(hover);
+		}
+	}
+
+	&__cell {
+		display: table-cell;
+
+		padding: lengths.padding(8);
+
+		user-select: text;
+		text-align: unset;
+		vertical-align: middle;
+
+		color: colors.font(secondary-info);
+		@include use-font-scale(p2);
+
+		&--header {
+			position: relative;
+
+			@include use-font-scale(c2);
+			color: colors.font(secondary-info);
+
+			&::after {
+				position: absolute;
+				bottom: 0;
+				inset-inline: lengths.inset(none);
+				left: 0;
+				right: 0;
+
+				display: flex;
+
+				content: '';
+				border-block-end: lengths.border-width(default) solid colors.stroke(light);
+			}
+		}
+
+		&--row-header {
+			word-break: break-word;
+
+			color: colors.font(hint);
+			background-color: colors.surface(light);
+			@include use-font-scale(p2m);
+		}
+
+		&--clickable {
+			@include clickable;
+		}
+
+		&--truncate {
+			@include use-with-truncated-text;
+		}
+
+		&--color-default {
+			color: colors.font(default);
+		}
+
+		&--color-hint {
+			color: colors.font(hint);
+		}
+
+		&--strong {
+			@include use-font-scale(p2m);
+		}
+
+		@each $align in (start, end, center, justify) {
+			&--align-#{$align} {
+				text-align: $align;
+			}
+		}
+	}
+}

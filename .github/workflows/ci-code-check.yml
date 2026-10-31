@@ -64,6 +64,7 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Install Meteor
+        if: matrix.check == 'ts'
         shell: bash
         run: |
           # Restore bin from cache
@@ -94,31 +95,26 @@ jobs:
           path: ./apps/meteor/tsconfig.typecheck.tsbuildinfo
           key: typecheck-cache-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
 
-      - name: Restore ESLint cache
-        id: restore-eslint
-        if: matrix.check == 'lint'
-        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ./apps/meteor/.eslintcache
-          key: eslintcache-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            eslintcache-${{ runner.os }}-
-
-      - name: Cache observability (eslint)
-        if: matrix.check == 'lint'
-        run: |
-          {
-            echo "### ESLint cache"
-            echo "- **exact hit**: \`${{ steps.restore-eslint.outputs.cache-hit }}\`"
-          } >> "$GITHUB_STEP_SUMMARY"
-
       - name: Lint
         if: matrix.check == 'lint'
-        run: yarn lint
+        run: yarn oxlint
 
-      - name: Save ESLint cache
-        if: matrix.check == 'lint' && github.ref == 'refs/heads/develop' && github.event_name == 'push'
-        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ./apps/meteor/.eslintcache
-          key: eslintcache-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
+      - name: Styling props on Fuselage components
+        if: matrix.check == 'lint'
+        run: node scripts/scan-style-props.mjs --max 0 "$RUNNER_TEMP/style-props-findings.json"
+
+      - name: Raw layout elements in screens
+        if: matrix.check == 'lint'
+        run: node scripts/scan-raw-layout.mjs --max 1268 "$RUNNER_TEMP/raw-layout-findings.json"
+
+      - name: Spacing scale
+        if: matrix.check == 'lint'
+        run: yarn lint:spacing
+
+      - name: Stylelint
+        if: matrix.check == 'lint'
+        run: yarn workspaces foreach -A run stylelint
+
+      - name: i18n check
+        if: matrix.check == 'lint'
+        run: yarn workspace @rocket.chat/i18n run check

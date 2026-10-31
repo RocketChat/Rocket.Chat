@@ -1,87 +1,55 @@
-import type { ICustomUserStatus, IUser, UserStatus as UserStatusEnum } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
+import { UserStatus as UserStatusEnum } from '@rocket.chat/core-typings';
 import { Box, Icon, RadioButton } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
-import { clientCallbacks } from '@rocket.chat/ui-client';
-import { useEndpoint, useSetting, useStream } from '@rocket.chat/ui-contexts';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useSetting } from '@rocket.chat/ui-contexts';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useCustomStatusModalHandler } from './useCustomStatusModalHandler';
 import { useStatusVisibilityModalHandler } from './useStatusVisibilityModalHandler';
 import MarkdownText from '../../../../components/MarkdownText';
 import { UserStatus } from '../../../../components/UserStatus';
+import UserStatusDisabledInfo from '../../../../components/UserStatusDisabledInfo';
 import { useExpirationText } from '../../../../hooks/useExpirationText';
-import { useFireGlobalEvent } from '../../../../hooks/useFireGlobalEvent';
+import { useSetUserStatus } from '../../../../hooks/useSetUserStatus';
+import { useUserStatuses } from '../../../../hooks/useUserStatuses';
 import { userStatuses } from '../../../../lib/userStatuses';
-import type { UserStatusDescriptor } from '../../../../lib/userStatuses';
-import { mapCustomUserStatusFromApi } from '../../../../lib/utils/mapCustomUserStatusFromApi';
 import { useStatusDisabledModal } from '../../../../views/admin/customUserStatus/hooks/useStatusDisabledModal';
 
 export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
-	// We should lift this up to somewhere else if we want to use it in other places
-
-	userStatuses.invisibleAllowed = useSetting('Accounts_AllowInvisibleStatusOption', true);
-
-	const queryClient = useQueryClient();
-	const stream = useStream('notify-logged');
-	const listCustomUserStatusEndpoint = useEndpoint('GET', '/v1/custom-user-status.list');
-	const listCustomUserStatus = useCallback(async (): Promise<ICustomUserStatus[]> => {
-		const all: ICustomUserStatus[] = [];
-		const count = 100;
-		let offset = 0;
-		// REST endpoint is paginated; loop until total reached.
-		while (true) {
-			const { statuses, total } = await listCustomUserStatusEndpoint({ count, offset });
-			all.push(...statuses.map(mapCustomUserStatusFromApi));
-			if (all.length >= total || statuses.length === 0) break;
-			offset += statuses.length;
-		}
-		return all;
-	}, [listCustomUserStatusEndpoint]);
-
-	useEffect(
-		() =>
-			userStatuses.watch(stream, () => {
-				queryClient.setQueryData(['user-statuses'], Array.from(userStatuses));
-			}),
-		[queryClient, stream],
-	);
+	const invisibleAllowed = useSetting('Accounts_AllowInvisibleStatusOption', true);
 
 	const { t } = useTranslation();
 
 	const presenceDisabled = useSetting('Presence_broadcast_disabled', false);
 	const allowUserStatusMessageChange = useSetting('Accounts_AllowUserStatusMessageChange', true);
 
-	const fireGlobalStatusEvent = useFireGlobalEvent('user-status-manually-set');
-	const setStatus = useEndpoint('POST', '/v1/users.setStatus');
-	const setStatusMutation = useMutation({
-		mutationFn: async (status: UserStatusDescriptor) => {
-			void setStatus({
-				status: status.statusType,
-				...(allowUserStatusMessageChange && { message: userStatuses.isValidType(status.id) ? '' : status.name }),
-			});
-			void clientCallbacks.run('userStatusManuallySet', status);
-			await fireGlobalStatusEvent.mutateAsync(status);
-		},
-	});
+	const setStatusMutation = useSetUserStatus();
 
-	const { data: statuses } = useQuery({
-		queryKey: ['user-statuses'],
-		queryFn: async () => {
-			await userStatuses.sync(listCustomUserStatus);
-			return Array.from(userStatuses);
-		},
-		staleTime: Infinity,
-	});
+	const statuses = useUserStatuses();
 
+	const workspacePresenceDisabled = useSetting('Accounts_UserStatus_Enabled', true) === false;
+	const adminStatusHidingEnabled = useSetting('Accounts_StatusVisibility_Admin_Enabled', false);
+	const userPresenceDisabled = user?.presenceDisabledByAdmin === true && adminStatusHidingEnabled;
 	const handleStatusDisabledModal = useStatusDisabledModal();
 	const handleCustomStatus = useCustomStatusModalHandler();
 	const handleStatusVisibility = useStatusVisibilityModalHandler();
-	const statusVisibilityEnabled = useSetting('Accounts_StatusVisibility_Enabled', false);
+	const statusVisibilityEnabled = useSetting('Accounts_StatusVisibility_Enabled', false) && adminStatusHidingEnabled;
 	const customStatusExpiration = useExpirationText(user?.statusExpiresAt);
 
 	return useMemo<GenericMenuItemProps[]>(() => {
+		if (userPresenceDisabled || workspacePresenceDisabled) {
+			return [
+				{
+					id: 'user-status-disabled',
+					status: <UserStatus status={UserStatusEnum.OFFLINE} />,
+					content: t('Offline'),
+					addon: <UserStatusDisabledInfo workspace={workspacePresenceDisabled} />,
+				},
+			];
+		}
+
 		if (presenceDisabled) {
 			return [
 				{
@@ -112,8 +80,8 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 					<>
 						{contentValue && <MarkdownText withTruncatedText content={contentValue} parseEmoji variant='inline' />}
 						{customStatusExpiration && (
-							<Box color='secondary-info' display='flex' alignItems='center'>
-								<Icon name='clock' size='x16' marginInlineEnd={4} />
+							<Box color='secondary-info' display='flex' alignItems='center' gap={4}>
+								<Icon name='clock' size='x16' />
 								{customStatusExpiration}
 							</Box>
 						)}
@@ -135,7 +103,9 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 
 		const isPresetSelected = (statusType: UserStatusEnum): boolean =>
 			!user?.statusText && !customStatusExpiration && user?.status === statusType;
-		const presetItems = (statuses ?? [])
+		const availableStatuses = (statuses ?? []).filter((status) => invisibleAllowed || status.statusType !== UserStatusEnum.OFFLINE);
+
+		const presetItems = availableStatuses
 			.filter((s) => userStatuses.isValidType(s.id))
 			.map((status): GenericMenuItemProps => ({
 				id: status.id,
@@ -147,7 +117,7 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 
 		// Admin-defined custom statuses
 		const customItems = allowUserStatusMessageChange
-			? (statuses ?? [])
+			? availableStatuses
 					.filter((s) => !userStatuses.isValidType(s.id))
 					.map((status): GenericMenuItemProps => ({
 						id: status.id,
@@ -174,6 +144,8 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 		return [...items, ...presetItems, ...customItems, ...actionItems];
 	}, [
 		presenceDisabled,
+		userPresenceDisabled,
+		workspacePresenceDisabled,
 		allowUserStatusMessageChange,
 		t,
 		handleStatusDisabledModal,
@@ -181,6 +153,7 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 		user?.statusText,
 		customStatusExpiration,
 		statuses,
+		invisibleAllowed,
 		handleCustomStatus,
 		handleStatusVisibility,
 		statusVisibilityEnabled,

@@ -1,7 +1,8 @@
+import { after, before, describe, it } from 'node:test';
+
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { before, describe, it, after } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { password } from '../../data/user';
@@ -11,7 +12,7 @@ import { createUser, deleteUser, login } from '../../data/users.helper';
 describe('licenses', () => {
 	let createdUser: TestUser<IUser>;
 
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 	let unauthorizedUserCredentials: Credentials;
 
 	before(async () => {
@@ -31,8 +32,8 @@ describe('licenses', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401);
 
-			expect(res.body).to.have.property('status', 'error');
-			expect(res.body).to.have.property('message');
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 		});
 
 		it('should fail if user is unauthorized', async () => {
@@ -46,7 +47,7 @@ describe('licenses', () => {
 				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
 		});
 
 		it('should fail if license is invalid', async () => {
@@ -68,8 +69,8 @@ describe('licenses', () => {
 		it('should fail if not logged in', async () => {
 			const res = await request.get(api('licenses.info')).expect('Content-Type', 'application/json').expect(401);
 
-			expect(res.body).to.have.property('status', 'error');
-			expect(res.body).to.have.property('message');
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 		});
 
 		it('should return limited information if user is unauthorized', async () => {

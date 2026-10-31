@@ -1,5 +1,194 @@
 # Change Log
 
+## 36.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [5f3c7c2426a29a0f8237a1ec0d72192b2ef1f0a4]:</summary>
+  - @rocket.chat/ui-avatar@32.0.0-rc.1
+  - @rocket.chat/fuselage@1.0.0-rc.1
+  - @rocket.chat/gazzodown@36.0.0-rc.1
+  - @rocket.chat/ui-video-conf@36.0.0-rc.1
+  - @rocket.chat/core-typings@9.0.0-rc.3
+
+  </details>
+
+## 36.0.0-rc.0
+
+### Minor Changes
+
+- ([#42818](https://github.com/RocketChat/Rocket.Chat/pull/42818)) Renders autocompletes, UiKit selects, room members, banned users, team channels and call member lists with the `Item` rows, and names the icons of user and room options for assistive technology
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds `accessibility_label` to UiKit buttons: screen readers announce it instead of the button text, for buttons whose visible text is ambiguous on its own.
+
+- ([#42854](https://github.com/RocketChat/Rocket.Chat/pull/42854)) Adds the UiKit `context_actions` block: a compact row of icon buttons attached to the end of a message, for actions about it.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds `filter.include` and `default_to_current_conversation` to the UiKit conversations selects: apps can list only public channels, private groups or direct messages, and start with the room the view was opened from already selected.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds rendering for the UiKit `conversations_select` and `multi_conversations_select` elements. They list the conversations the user belongs to (channels, private groups and direct messages), and their value is the room id or the list of room ids. Both elements now also accept a `placeholder`.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds the UiKit `datetimepicker` element, which picks a date and a time together in `actions` and `input` blocks. Its `initial_date_time` and value are Unix timestamps in seconds, shown in the user's time zone.
+
+- ([#42854](https://github.com/RocketChat/Rocket.Chat/pull/42854)) Adds the UiKit `feedback_buttons` element to `context_actions`: a thumbs up and a thumbs down button that send the chosen value to the app, to rate a message such as an answer.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds `focus_on_load` to the UiKit users, channels and conversations selects (single and multi), checkboxes and radio buttons.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds `focus_on_load` to UiKit text, number, email, URL, date, time and date-time inputs, so an app can choose which field has focus when a modal or contextual bar opens.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds the UiKit `number_input`, `email_text_input` and `url_text_input` elements for `input` blocks. `number_input` supports `is_decimal_allowed`, `min_value` and `max_value`; all three accept `placeholder` and `initial_value`, and submit their value as a string.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds the UiKit `header` block: a large plain-text title that separates sections of messages, modals and contextual bars.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds the UiKit `markdown` block: a longer piece of Markdown, rendered like a chat message, in messages, modals and contextual bars.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds `max_selected_items` to the UiKit multi users, channels and conversations selects; once that many entries are selected, no others can be picked.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Lets UiKit `section` blocks take checkboxes, radio buttons, a time picker and the users, channels and conversations selects (single and multi) as their accessory.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds initial selections to the UiKit users, channels and conversations selects: `initial_user`/`initial_users` (usernames), `initial_channel`/`initial_channels` and `initial_conversation`/`initial_conversations` (room ids). Selected entries now keep their chips even when the current search does not return them.
+
+- ([#42854](https://github.com/RocketChat/Rocket.Chat/pull/42854)) Adds the UiKit `table` block: rows of plain or formatted cells, with a header row and per-column alignment and wrapping, in messages, modals and contextual bars.
+
+- ([#42854](https://github.com/RocketChat/Rocket.Chat/pull/42854)) Adds the UiKit `video` block: a video shown as its thumbnail with a title, description and provider, which plays in place from an `https` embeddable page once clicked, in messages, modals and contextual bars.
+
+### Patch Changes
+
+- ([#42640](https://github.com/RocketChat/Rocket.Chat/pull/42640)) Fixes UiKit image URLs not being sanitized before CSS interpolation.
+
+- ([#42975](https://github.com/RocketChat/Rocket.Chat/pull/42975)) Fixes `chat.sendMessage` accepting message fields that only the server may set, and malformed message blocks that made a room unreadable
+
+- ([#42974](https://github.com/RocketChat/Rocket.Chat/pull/42974)) Fuselage components no longer take Box styling props from their callers: containers own layout through `gap`, and components declare the variations they support.
+
+  **fuselage**
+
+  - `Button` accepts `compact`, which lowers its minimum width so a label of one or two characters fits.
+  - `ButtonGroup` accepts `stretch='equal'`, which stretches its buttons and gives them all the same width.
+  - Square buttons, such as `IconButton`, keep their size inside a `ButtonGroup` with `stretch` instead of growing with the other buttons.
+  - The icon inside a `Button` takes its spacing from the Button styles instead of a styling prop.
+  - `CardGrid` accepts `CardGridItem` children with their own column spans and a `minRowHeight`, and skips empty children instead of rendering empty cells.
+  - `CardGrid` stretches each card to the height of its row, so cards no longer need `height='full'`.
+  - `Chip` accepts `label`, which renders its text in uppercase for chips that categorize rather than select.
+  - `Chip` accepts `small`, which renders a 20px tall chip.
+  - Inputs with an addon have the same minimum height as the other inputs.
+  - `AutoComplete` and `MultiSelect` space their input and selected items with a 4px gap instead of wrapping them in `Margins`, so a `renderSelected` item no longer needs to forward its class name or bring its own margin to be spaced.
+  - Button and IconButton render only as a button or a link: `is` accepts `'button'` or `'a'`.
+  - Button and IconButton rendered as links no longer carry `type="button"`, and IconButton accepts `external` to open its link in a new tab.
+  - `Chip` has a fixed 28px height, so chips holding an inline avatar no longer grow past it; `small` chips stay 20px.
+  - Date and time inputs match the other inputs' height
+  - Adds a `flush` prop to `Divider` that removes its own margin, so its container sets the spacing.
+  - Adds a `light` variation to `Divider`, drawn with the `stroke-light` color.
+  - A vertical `Divider` with `variation='danger'` is drawn in the error colour instead of the default grey.
+  - Adds `small` and `stretch` props to the vertical `Divider`: `small` uses a 4px inline margin, `stretch` makes it as tall as its container.
+  - Adds a `justify='end'` variation to `FieldRow` that packs the row's content at the end of the line.
+  - Declares `color` on `Icon`, `MenuItemIcon` and `MessageStatusIndicatorItem`, restricted to the semantic text and status font tokens.
+  - Icons no longer shrink in a flex container.
+  - Adds `endAddonFlush` to `InputBox` and the inputs built on it, so a button in `endAddon` sits flush with the input edge without negative margins
+  - Adds a `transparent` flag to `ModalBackdrop` that drops its overlay colour.
+  - Declares `width` and `height` on `ModalHeroImage`, the size the image renders at.
+  - Adds a `variant` (`danger`, `warning`, `info`, `success`) to `ModalIcon` that tints the icon, and a `subtle` flag to `ModalTagline` that mutes its colour.
+  - Declares `width` and `height` on `Modal`, makes its `hidden` attribute hide it while keeping it mounted, and adds a `fill` mode to `ModalContent` that stretches the content to the modal's height.
+  - Adds `PopoverSurface`, the raised and scrolling surface of a dropdown or popover, which takes `maxHeight`, `flush` and `elevation` instead of `Box` styling props.
+  - Adds the `inverted` variation to `Skeleton`, for placeholders on a dark surface such as a tooltip.
+  - Adds `Stack`, a flex container that lays out its children in a row or a column spaced by `gap`, without taking `Box` styling props.
+  - TableCell renders only as a data or header cell: `is` accepts `'td'` or `'th'`.
+  - `Tag` now spaces its `icon` from the label, so the icon no longer needs a margin of its own.
+  - Adds a `flush` flag to `Tile` that drops its default padding, for surfaces whose content brings its own.
+  - Adds `badgePosition` to `IconButton`, which pins the badge to the top end (default) or bottom end corner.
+  - Fixes the `IconButton` badge jumping toward the button's center while the button is pressed; it now keeps its corner and moves 1px with the icon.
+  - `IconButton` accepts `color`, `'default'` or `'danger'`, which paints the icon with that font color.
+  - A Divider with a label no longer adds 20px of inline padding, so its bars run from edge to edge of its container.
+  - `SelectLegacy`, `SelectFiltered`, `PaginatedSelectFiltered` and `PaginatedMultiSelectFiltered` put `id` on their focusable control, so clicking a `FieldLabel` whose `htmlFor` points to that `id` focuses the field.
+  - `SelectLegacy`, `SelectFiltered`, `PaginatedSelectFiltered` and `PaginatedMultiSelectFiltered` put `aria-labelledby`, `aria-describedby` and `aria-invalid` on their focusable control instead of the wrapper, so screen readers announce the field's label instead of its placeholder.
+  - `MessageGenericPreviewIcon` takes its icon colour from the preview's styles and no longer accepts a `color` prop.
+  - Fixes `Select` adding an extra gap before its trigger when placed directly inside a container that spaces its children with `gap`.
+  - `TableCell` accepts `rowHeader`, which renders the cell as the header of its row, styled as the label of a key/value pair.
+  - `Table` accepts `columns`, which declares the width of each column once instead of on every cell.
+  - `Tabs` accepts `stretch`, which grows its items to fill the whole width.
+
+  **fuselage-ui-kit**
+
+  - The `context` block spaces its elements with an 8px column gap instead of margins, so it no longer overhangs the surface edges and its images sit 8px from their neighbours.
+  - The `linear_scale` element spaces its buttons with the button group's gap alone, so they sit 8px apart instead of 12px.
+  - UiKit surfaces space their blocks with a 16px gap instead of per-block margins, so blocks sit 16px apart, divider and tabs no longer add their own 24px margins, and only the message surface keeps 16px of space after its last block.
+  - Colours UiKit icon elements with `danger`, `warning` and `secondary` variants through Fuselage's `Icon` `color`; `secondary` now uses the hint colour.
+
+  **layout**
+
+  - `Form` renders a form element that wraps its `Tile`, instead of rendering the `Tile` itself as the form.
+  - Narrows `ListItem`'s `iconColor` to a status (`hint`, `info`, `danger`, `warning` or `success`); without one the icon follows the item's text colour, as it already did.
+  - `VerticalWizardLayoutForm` sizes its `Tile` with a full-width wrapper instead of a `width` prop on `Tile`.
+
+  **meteor**
+
+  - When an app has no price, its status tags on the details page sit 8px closer to the Buy button.
+  - The author row of quote and message attachments spaces its avatar, name, timestamp and jump link 4px apart.
+  - Audited messages on the Message auditing page no longer inherit an extra vertical margin, so each one is 8px shorter.
+  - The contact details panel no longer draws a divider above the custom fields; they follow the other fields with the same spacing.
+  - The custom emoji upload button and the canned response preview toggle sit next to their label in a `FieldRow` instead of inside the label.
+  - Form labels in the thread composer, the workspace registration terms, the onboarding terms and the new-user password options use the default field label typography, and the close-chat modal note is shown as a field hint.
+  - Fixes the "Counters" header of the import history table so it also spans the "Total" column.
+  - Fixes the instances modal announcing each property name as a column header instead of a row header
+  - Colours the icons of the room priority menu like the priority icon shown in the room, by the priority's status.
+  - The room header leaves 4px instead of 8px after the encrypted and translated status icons.
+  - Fixes the user menu button so screen readers announce the user's current status and its changes.
+
+  **onboarding-ui**
+
+  - The cloud workspace form spaces its server region and language fields with padding around the grid instead of a margin on it, which adds 24 to 32px of height to the form.
+
+  **ui-client**
+
+  - Fixes the warning and success icons of `GenericModal` showing in the default text colour instead of their status colours.
+  - `HeaderTagIcon` no longer carries a trailing margin; pass it to `HeaderTag`'s `icon` prop, which spaces it from the text.
+  - Page header spaces its sidebar toggler and back button with gap; `SidebarToggler` no longer carries a trailing margin.
+  - `HeaderContentRow` spaces its items 4px apart, and `HeaderState` no longer adds its own trailing margin.
+  - The `MultiSelectCustom` list is drawn on Fuselage's `PopoverSurface`, so its corners are rounded like the other dropdowns.
+
+  **ui-composer**
+
+  - `MessageFooterCallout` spaces its children with an 8px gap instead of margins on `MessageComposerIcon`, `MessageFooterCalloutContent`, `MessageFooterCalloutDivider` and `MessageFooterCalloutAction`, so the action button now sits flush with the callout padding.
+
+  **ui-voip**
+
+  - Call history footer buttons lay out their icon and label with gap.
+  - The keypad keys take their size and corner radius from their own class instead of styling props on `Button`.
+  - Call widget info slots lay out their icon and text with gap.
+
+  **web-ui-registration**
+
+  - The desktop app's "Log in on the web" button sits in the same button group as the login services.
+  - The login services divider takes its spacing from a padded container.
+  - The login language switch buttons are spaced with an 8px gap instead of a trailing margin, so they are centred in the footer.
+
+- ([#43047](https://github.com/RocketChat/Rocket.Chat/pull/43047)) Spaces the elements of actions blocks and info card rows with a container gap instead of a negative margin offset by per-element margins
+
+- ([#42853](https://github.com/RocketChat/Rocket.Chat/pull/42853)) Fixes UiKit `icon_button` elements showing no tooltip and having no accessible name: their `label` now shows on hover and names the button.
+
+- ([#42564](https://github.com/RocketChat/Rocket.Chat/pull/42564)) Fixes UiKit input block labels not being associated with text, date and time inputs, so screen readers announced those fields without a name and clicking the label did not focus them.
+
+- ([#42567](https://github.com/RocketChat/Rocket.Chat/pull/42567)) Fixes UiKit checkboxes and radio buttons ignoring each option's `description` and not linking their labels to the inputs: descriptions now show under the option text, and clicking the text selects the option.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Fixes UiKit users, channels and conversations selects (single and multi) rendering nothing inside `actions` blocks; they were only drawn inside `input` blocks.
+
+- ([#42564](https://github.com/RocketChat/Rocket.Chat/pull/42564)) Fixes UiKit `callout` blocks not rendering in banners and in messages. Each UiKit surface now has a single list of accepted layout blocks, exported by `@rocket.chat/ui-kit` (`messageSurfaceLayoutBlockTypes`, `modalSurfaceLayoutBlockTypes`, `bannerSurfaceLayoutBlockTypes`, `contextualBarSurfaceLayoutBlockTypes`, `attachmentSurfaceLayoutBlockTypes`) and shared by the surface types, the `UiKitParser*` classes and the Fuselage renderers. The surface types now also include every block the web client already rendered: `input` and `info_card` in messages, `preview` in modals, `preview` and `info_card` in banners, and `callout`, `preview` and `tab_navigation` in the contextual bar.
+
+- ([#42560](https://github.com/RocketChat/Rocket.Chat/pull/42560)) Fixes UiKit buttons, icon buttons and overflow options opening `javascript:`, `data:` and `vbscript:` URLs sent by apps. Those URLs are now ignored; every other URL, including app deep links and relative URLs, still opens. Overflow options in the web client, which never opened their URL, now open it in a new tab without access to the opener. `@rocket.chat/ui-kit` exports the check as `isSafeUrl`.
+
+- <details><summary>Updated dependencies [4f350b4ffb76024d9bf44c02f3322c8f9071f1cf, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 80dceecf12fd1216dc3fdb9a4f42e51afbf23a75, 80dceecf12fd1216dc3fdb9a4f42e51afbf23a75, 53bf8feb0c2075ee243d90c42ca2934098b93709, 6bb0d3bca9b5da401050697d51bc99e89871bbb7, 6be3614cd2660ab4024635802fdf9cd7dd7b502f, 7fbb5676fe0d2c034f4c52586ab858b3796e5dc6, 5c7b25f68d677d8bdbde3ed4c56ad0bba60ce71d, 5c7b25f68d677d8bdbde3ed4c56ad0bba60ce71d, 4c379a0d016fcf010bab86ddd94a22ff2401606e, 766ac93fba3c991c79c9bfcb404f6ec7fd1e30f8, 7fbb5676fe0d2c034f4c52586ab858b3796e5dc6, 4c379a0d016fcf010bab86ddd94a22ff2401606e, ad08045f56e3921e88ed021aa2945c9ba670e5f5, cea4d4428a0d86c6fc868542d4fb00a36ffaa27d, 7fbb5676fe0d2c034f4c52586ab858b3796e5dc6, 4c379a0d016fcf010bab86ddd94a22ff2401606e, 25fd477c2c38f71e9a16b7e2896d39efd43bfc61, 05e9b38a001919252360351f0bc3e46cc990a6ac, 25fd477c2c38f71e9a16b7e2896d39efd43bfc61, 2184b09b0bdacdb0bced60dc054a818a92c98131, e1b509fbca35eba10e21e4aa3bc15c56f44a2845, 0285f08c086dae6beb0f1365a85f522fb4818435, 6b86dffd3a05f65fff000bb697fbb40350664629, 5e6b6bd25ea82b9c884d49871870f71dc532a061, 588311c49bfce08e7106e7c0bb32741334fa5321, 10b4e00e08951ace8f9c27d83fc0c48be010bdc7, 80dceecf12fd1216dc3fdb9a4f42e51afbf23a75, e1b509fbca35eba10e21e4aa3bc15c56f44a2845, 2d3331be63dde3449245963c33444dcb15fa8869, 5e82e67eaa4c998870d3eb0597f485b30c244f02, a9b2bb76d88e4d2743e0817b15e6447e7c9c46eb, c9aa43916295df79a799e53b8e09c58011991a97, cdd948cb67ecf282f6cc8f411615c3de0db0b9f1, 6b3ec3e667c99015e381a4e8ea43146accb5f7f7, 80dceecf12fd1216dc3fdb9a4f42e51afbf23a75, 80dceecf12fd1216dc3fdb9a4f42e51afbf23a75, 80dceecf12fd1216dc3fdb9a4f42e51afbf23a75, 80dceecf12fd1216dc3fdb9a4f42e51afbf23a75, 80dceecf12fd1216dc3fdb9a4f42e51afbf23a75, 80dceecf12fd1216dc3fdb9a4f42e51afbf23a75, 80dceecf12fd1216dc3fdb9a4f42e51afbf23a75, 9e401e55fbd71b95dc7c4b273024219ce2564856, a11ffff8acb74fd016e9ddb972da6eebda0c3e5e, e2f037838f6226f4894faa28613cc86f6d6f8e2d, a838cc5af0652f59d0ab30aa1a488abded0622b1, f3fa7abd6b9d311f76619d0fe27793ac68f6d208, daa677895dad92d6aab1e84a09f190efd2755ef9, 642d9e528a8572208e2f0bb51f45ea78400bcea3, bd92e8abc5a8f0161f3de5308979a0f88d09f351, 39a6e6e1397e1e89bc631fe4ab1cc10fa93b59e8, 87667dcb84de0ce97f4ace88c900801254fa6535, 87667dcb84de0ce97f4ace88c900801254fa6535, 87667dcb84de0ce97f4ace88c900801254fa6535, 87667dcb84de0ce97f4ace88c900801254fa6535, 87667dcb84de0ce97f4ace88c900801254fa6535, cd88334c72f7f2310706abc4d481a2712019e373, a39b03fe5c248079365162e31994e1dece63e7c2, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, 9dfedc72439d12f5d2985b9dd54daccd97e11e74, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, 9dfedc72439d12f5d2985b9dd54daccd97e11e74, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, bb586dc723b3dccdf725d28f530b28cfa857020a, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, 23698f9d08d34d3c145f116b5303b542e8342f9e, 9dfedc72439d12f5d2985b9dd54daccd97e11e74, e1070288debfecc5e49e118c3dc535f95936281f, 9dfedc72439d12f5d2985b9dd54daccd97e11e74, 982270a515cc061aafccb82a0605a36ce929d56c, 8fddbd4ebf2e4ac77a716b22a676077054506b7b]:</summary>
+  - @rocket.chat/core-typings@9.0.0-rc.0
+  - @rocket.chat/apps-engine@1.68.0-rc.0
+  - @rocket.chat/fuselage@1.0.0-rc.0
+  - @rocket.chat/ui-contexts@36.0.0-rc.0
+  - @rocket.chat/fuselage-hooks@0.44.0-rc.0
+  - @rocket.chat/icons@0.52.0-rc.0
+  - @rocket.chat/gazzodown@36.0.0-rc.0
+  - @rocket.chat/ui-kit@2.0.0-rc.0
+  - @rocket.chat/styled@0.34.2-rc.0
+  - @rocket.chat/ui-avatar@32.0.0-rc.0
+  - @rocket.chat/ui-video-conf@36.0.0-rc.0
+
+  </details>
+
 ## 35.0.0
 
 ### Minor Changes

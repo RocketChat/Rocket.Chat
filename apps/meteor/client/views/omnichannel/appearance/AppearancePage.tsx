@@ -93,7 +93,7 @@ const AppearancePage = ({ settings }: AppearancePageProps) => {
 			<PageFooter isDirty={isDirty}>
 				<ButtonGroup>
 					<Button onClick={() => reset()}>{t('Cancel')}</Button>
-					<Button form={formId} type='submit' primary>
+					<Button form={formId} type='submit' variant='primary'>
 						{t('Save_changes')}
 					</Button>
 				</ButtonGroup>

@@ -78,11 +78,11 @@ const uploadsDeleteEndpoint = API.v1.post(
 		const user = await Users.findOneById(this.userId);
 		// Safeguard, can't really happen
 		if (!user) {
-			return API.v1.forbidden('forbidden');
+			return API.v1.forbidden();
 		}
 
 		if (!(await Upload.canDeleteFile(user, file, msg))) {
-			return API.v1.forbidden('forbidden');
+			return API.v1.forbidden();
 		}
 
 		const { deletedFiles } = await Upload.deleteFile(user, fileId, msg);
@@ -95,6 +95,6 @@ const uploadsDeleteEndpoint = API.v1.post(
 type UploadsEndpoints = ExtractRoutesFromAPI<typeof uploadsDeleteEndpoint>;
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
 	interface Endpoints extends UploadsEndpoints {}
 }

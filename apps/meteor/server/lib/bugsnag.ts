@@ -2,7 +2,7 @@ import Bugsnag from '@bugsnag/js';
 import { Logger } from '@rocket.chat/logger';
 import { Meteor } from 'meteor/meteor';
 
-import { Info } from '../../app/utils/rocketchat.info';
+import { Info } from '../../rocketchat.info';
 import { settings } from '../settings';
 
 const logger = new Logger('bugsnag');

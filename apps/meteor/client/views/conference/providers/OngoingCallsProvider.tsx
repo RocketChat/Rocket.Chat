@@ -1,3 +1,4 @@
+import { useShortTimeAgo } from '@rocket.chat/ui-client';
 import type { OngoingCallsContextValue } from '@rocket.chat/ui-conference';
 import { OngoingCallsContext, useRinging } from '@rocket.chat/ui-conference';
 import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
@@ -6,7 +7,6 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 
-import { useShortTimeAgo } from '../../../hooks/useTimeAgo';
 import { videoConferenceQueryKeys } from '../../../lib/queryKeys';
 import { useJoinOrSwitchCallModal } from '../hooks/useJoinOrSwitchCallModal';
 import { useJoinableCalls } from '../hooks/useJoinableCalls';

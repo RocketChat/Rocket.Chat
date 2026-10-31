@@ -1,12 +1,11 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
+import { ActionButton, ToggleButton } from '@rocket.chat/ui-media';
 import type { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ActionStrip from './ActionStrip';
-import ActionButton from '../ActionButton';
 import Timer from '../Timer';
-import ToggleButton from '../ToggleButton';
 import ActionToggleChat from './ActionToggleChat';
 
 export default {

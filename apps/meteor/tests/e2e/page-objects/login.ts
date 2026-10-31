@@ -48,13 +48,17 @@ export class LoginPage {
 		const localStorageItems = userState.state.origins[0].localStorage.filter((item) => options.except.indexOf(item.name) === -1);
 
 		// Injects the login token to the local storage
-		await this.page.evaluate((items) => {
-			items.forEach(({ name, value }) => {
-				window.localStorage.setItem(name, value);
-			});
+		await this.page.evaluate(
+			({ items, loginToken }) => {
+				items.forEach(({ name, value }) => {
+					window.localStorage.setItem(name, value);
+				});
 
-			require('meteor/accounts-base').Accounts._pollStoredLoginToken();
-		}, localStorageItems);
+				// The page already loaded without a session, so the injected token has to be logged in explicitly.
+				return (window as any).__rocketChatLoginWithToken(loginToken);
+			},
+			{ items: localStorageItems, loginToken: userState.data.loginToken },
+		);
 
 		await this.waitForLogin();
 	}

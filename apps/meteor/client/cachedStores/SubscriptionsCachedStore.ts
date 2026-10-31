@@ -65,6 +65,7 @@ class SubscriptionsCachedStore extends PrivateCachedStore<SubscriptionWithRoom, 
 			source: (room as IOmnichannelRoom | undefined)?.source,
 			queuedAt: (room as IOmnichannelRoom | undefined)?.queuedAt,
 			federated: room?.federated,
+			xmppFederation: room?.xmppFederation,
 
 			...(room &&
 				isRoomNativeFederated(room) && {
@@ -86,7 +87,7 @@ class SubscriptionsCachedStore extends PrivateCachedStore<SubscriptionWithRoom, 
 			deserialized.lastMessage._updatedAt = new Date(deserialized.lastMessage._updatedAt);
 		}
 
-		return deserialized;
+		return deserialized && Rooms.use.getState().has(deserialized.rid) ? this.mapRecord(deserialized) : deserialized;
 	}
 }
 

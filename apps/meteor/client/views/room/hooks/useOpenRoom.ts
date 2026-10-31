@@ -1,11 +1,13 @@
 import { isPublicRoom, type IRoom, type RoomType } from '@rocket.chat/core-typings';
 import { getObjectKeys } from '@rocket.chat/tools';
+import { useEmbeddedLayout } from '@rocket.chat/ui-client';
 import { useEndpoint, useMethod, usePermission, useRoute, useSetting, useUser } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect } from 'react';
 
 import { useOpenRoomMutation } from './useOpenRoomMutation';
 import { roomFields } from '../../../../lib/publishFields';
+import { SubscriptionsCachedStore } from '../../../cachedStores';
 import { LegacyRoomManager } from '../../../lib/LegacyRoomManager';
 import { RoomManager } from '../../../lib/RoomManager';
 import { NotAuthorizedError } from '../../../lib/errors/NotAuthorizedError';
@@ -13,6 +15,7 @@ import { NotSubscribedToRoomError } from '../../../lib/errors/NotSubscribedToRoo
 import { OldUrlRoomError } from '../../../lib/errors/OldUrlRoomError';
 import { RoomNotFoundError } from '../../../lib/errors/RoomNotFoundError';
 import { roomsQueryKeys } from '../../../lib/queryKeys';
+import { mapSubscriptionFromApi } from '../../../lib/utils/mapSubscriptionFromApi';
 import { Rooms, Subscriptions } from '../../../stores';
 
 export function useOpenRoom({ type, reference }: { type: RoomType; reference: string }) {
@@ -21,6 +24,8 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead', true);
 	const getRoomByTypeAndName = useMethod('getRoomByTypeAndName');
 	const createDirectMessage = useEndpoint('POST', '/v1/im.create');
+	const getSubscription = useEndpoint('GET', '/v1/subscriptions.getOne');
+	const isEmbeddedLayout = useEmbeddedLayout();
 	const directRoute = useRoute('direct');
 	const openRoom = useOpenRoomMutation();
 
@@ -119,6 +124,13 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 
 			if (!room) {
 				throw new TypeError('room is undefined');
+			}
+
+			if (isEmbeddedLayout && user?._id && !Subscriptions.state.find((record) => record.rid === room._id)) {
+				const { subscription } = await getSubscription({ roomId: room._id });
+				if (subscription) {
+					SubscriptionsCachedStore.upsertSubscription(mapSubscriptionFromApi(subscription));
+				}
 			}
 
 			const sub = Subscriptions.state.find((record) => record.t === type && (record.rid === reference || record.name === reference));

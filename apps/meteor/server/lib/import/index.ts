@@ -4,7 +4,7 @@ import { SelectionChannel } from './classes/ImporterSelectionChannel';
 import { SelectionUser } from './classes/ImporterSelectionUser';
 import { ImporterWebsocket } from './classes/ImporterWebsocket';
 import { ImportersContainer } from './classes/ImportersContainer';
-import { ProgressStep } from '../../../app/importer/lib/ImporterProgressStep';
+import { ProgressStep } from '../../../lib/importer/ImporterProgressStep';
 import './startup/setImportsToInvalid';
 import './startup/store';
 

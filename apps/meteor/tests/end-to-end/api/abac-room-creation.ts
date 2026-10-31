@@ -1,0 +1,663 @@
+import { after, before, describe, it } from 'node:test';
+
+import type { Credentials } from '@rocket.chat/api-client';
+import type { IPermission, IRoom, ISetting, IUser } from '@rocket.chat/core-typings';
+import { expect } from 'chai';
+import { MongoClient } from 'mongodb';
+
+import { addAbacAttributesToUserDirectly } from '../../data/abac.helper';
+import { api, credentials, getCredentials, request } from '../../data/api-data';
+import { sleep } from '../../data/livechat/utils';
+import { getSettingValueById, updatePermission, updateSetting } from '../../data/permissions.helper';
+import { retry } from '../../data/retry';
+import { deleteTeam } from '../../data/teams.helper';
+import { password } from '../../data/user';
+import { createUser, deleteUser, login } from '../../data/users.helper';
+import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
+
+(IS_EE ? describe : describe.skip)('[ABAC Room Creation] (Enterprise Only)', () => {
+	const v1 = '/api/v1';
+	const SETTLE_MS = 500;
+	const suffix = Date.now();
+
+	const dept = `rc-dept-${suffix}`;
+	const clearance = `rc-clearance-${suffix}`;
+
+	const settingIds = [
+		'ABAC_Enabled',
+		'ABAC_Enforce_All_Rooms',
+		'ABAC_Required_Attributes',
+		'ABAC_Restrict_To_Owned_Attributes',
+		'API_User_Limit',
+	];
+	const permissionIds = ['create-abac-managed-room', 'bypass-abac-store-validation'];
+	const savedSettings = new Map<string, ISetting['value']>();
+	const savedPermissions = new Map<string, string[]>();
+
+	const createdRoomIds: IRoom['_id'][] = [];
+	const createdTeamNames: string[] = [];
+	const createdAttributeIds: string[] = [];
+
+	let adminId: IUser['_id'];
+	let creator: IUser;
+	let creatorCredentials: Credentials;
+	let unattributedUser: IUser;
+	let connection: MongoClient;
+
+	const setSetting = async (id: string, value: ISetting['value']) => {
+		await updateSetting(id, value);
+		await sleep(SETTLE_MS);
+	};
+
+	const getPermissionRoles = async (id: string): Promise<string[]> => {
+		const res = await request.get(api('permissions.listAll')).set(credentials).expect(200);
+		return (res.body.update as IPermission[]).find(({ _id }) => _id === id)?.roles ?? [];
+	};
+
+	const createGroup = (body: Record<string, unknown>, as: Credentials = credentials) =>
+		request
+			.post(api('groups.create'))
+			.set(as)
+			.send({ name: `abac-rc-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, ...body });
+
+	const track = (roomId?: IRoom['_id']) => roomId && createdRoomIds.push(roomId);
+
+	const creatorSubscription = async (roomId: IRoom['_id']) =>
+		(await request.get(api('subscriptions.getOne')).set(creatorCredentials).query({ roomId }).expect(200)).body.subscription;
+
+	type AuditEvent = { t: string; actor?: { username?: string }; data: Array<{ key: string; value: any }> };
+
+	const waitForAuditEntry = async (matches: (event: AuditEvent) => boolean): Promise<AuditEvent | undefined> => {
+		let entry: AuditEvent | undefined;
+		await retry(
+			'the audit entry is written',
+			async () => {
+				const audit = await request.get(`${v1}/abac/audit`).set(credentials).query({ count: 100 }).expect(200);
+				entry = (audit.body.events as AuditEvent[]).find(matches);
+				expect(entry, 'audit entry').to.exist;
+			},
+			{ retries: 10, delayMs: 200 },
+		);
+		return entry;
+	};
+
+	before((_t, done) => getCredentials(done));
+
+	before(
+		async () => {
+			connection = await MongoClient.connect(URL_MONGODB);
+
+			for (const id of settingIds) {
+				savedSettings.set(id, await getSettingValueById(id));
+			}
+			for (const id of permissionIds) {
+				savedPermissions.set(id, await getPermissionRoles(id));
+			}
+
+			await setSetting('ABAC_Enabled', true);
+
+			for (const [key, values] of [
+				[dept, ['eng', 'sales', 'ops']],
+				[clearance, ['secret']],
+			] as const) {
+				await request.post(`${v1}/abac/attributes`).set(credentials).send({ key, values }).expect(200);
+				const res = await request.get(`${v1}/abac/attributes`).query({ key }).set(credentials).expect(200);
+				createdAttributeIds.push(res.body.attributes.find((attribute: { key: string }) => attribute.key === key)._id);
+			}
+
+			adminId = credentials['X-User-Id'];
+			await addAbacAttributesToUserDirectly(connection, adminId, [
+				{ key: dept, values: ['eng', 'sales'] },
+				{ key: clearance, values: ['secret'] },
+			]);
+
+			creator = await createUser();
+			creatorCredentials = await login(creator.username, password);
+			await addAbacAttributesToUserDirectly(connection, creator._id, [{ key: dept, values: ['eng'] }]);
+
+			unattributedUser = await createUser();
+		},
+		{ timeout: 20000 },
+	);
+
+	after(
+		async () => {
+			await setSetting('ABAC_Enforce_All_Rooms', false);
+
+			for (const teamName of createdTeamNames) {
+				await deleteTeam(credentials, teamName);
+			}
+			for (const roomId of createdRoomIds) {
+				await request.post(api('rooms.delete')).set(credentials).send({ roomId }).expect(200);
+			}
+
+			await addAbacAttributesToUserDirectly(connection, adminId, []);
+			await deleteUser(creator);
+			await deleteUser(unattributedUser);
+
+			for (const attributeId of createdAttributeIds) {
+				await request.delete(`${v1}/abac/attributes/${attributeId}`).set(credentials).expect(200);
+			}
+
+			for (const [id, roles] of savedPermissions) {
+				await updatePermission(id, roles);
+			}
+			for (const [id, value] of savedSettings) {
+				await setSetting(id, value);
+			}
+
+			await connection.close();
+		},
+		{ timeout: 30000 },
+	);
+
+	describe('a room created with attributes', () => {
+		before(async () => {
+			await updatePermission('create-abac-managed-room', ['admin', 'user']);
+			await setSetting('ABAC_Restrict_To_Owned_Attributes', true);
+		});
+
+		it('is created with the attributes, normalized, by a creator who is not an administrator', async () => {
+			const res = await createGroup({ abacAttributes: { [dept]: ['eng'] } }, creatorCredentials).expect(200);
+			track(res.body.group._id);
+
+			expect(res.body.group.abacAttributes).to.deep.equal([{ key: dept, values: ['eng'] }]);
+			expect(res.body.skippedMembers).to.deep.equal([]);
+		});
+
+		it('is refused to a creator without the permission', async () => {
+			await updatePermission('create-abac-managed-room', ['admin']);
+
+			try {
+				await createGroup({ abacAttributes: { [dept]: ['eng'] } }, creatorCredentials)
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.include({ error: 'error-abac-attributes-not-allowed', errorType: 'error-abac-attributes-not-allowed' });
+					});
+			} finally {
+				await updatePermission('create-abac-managed-room', ['admin', 'user']);
+			}
+		});
+
+		it('names the attribute a creator does not hold', async () => {
+			await createGroup({ abacAttributes: { [dept]: ['eng', 'sales'] } }, creatorCredentials)
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.include({ error: 'error-abac-attribute-not-assignable', errorType: 'error-abac-attribute-not-assignable' });
+					expect(res.body.details.attributes).to.deep.equal([{ key: dept, values: ['sales'] }]);
+				});
+		});
+
+		describe('once restricting to owned attributes is off', () => {
+			before(async () => {
+				await setSetting('ABAC_Restrict_To_Owned_Attributes', false);
+			});
+
+			after(async () => {
+				await setSetting('ABAC_Restrict_To_Owned_Attributes', true);
+			});
+
+			it('admits values the creator does not hold, for a room the creator leaves', async () => {
+				const res = await createGroup({ abacAttributes: { [dept]: ['sales'] }, excludeSelf: true }, creatorCredentials).expect(200);
+				track(res.body.group._id);
+
+				expect(res.body.group.abacAttributes).to.deep.equal([{ key: dept, values: ['sales'] }]);
+				expect(await creatorSubscription(res.body.group._id)).to.be.null;
+			});
+
+			it('is refused to a creator who would not be admitted to the room', async () => {
+				await createGroup({ abacAttributes: { [dept]: ['sales'] } }, creatorCredentials)
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.include({ error: 'error-abac-creator-not-admitted', errorType: 'error-abac-creator-not-admitted' });
+					});
+			});
+		});
+
+		it('leaves administrator writes through ABAC > Rooms unaffected by restricting to owned attributes', async () => {
+			const res = await createGroup({ abacAttributes: { [dept]: ['eng'] } }).expect(200);
+			const roomId = res.body.group._id;
+			track(roomId);
+
+			await request
+				.post(`${v1}/abac/rooms/${roomId}/attributes`)
+				.set(credentials)
+				.send({ attributes: { [dept]: ['eng', 'ops'] } })
+				.expect(200);
+		});
+
+		it('answers an attribute the workspace does not define as it answers one the creator does not hold', async () => {
+			await createGroup({ abacAttributes: { [`rc-undefined-${suffix}`]: ['x'] } })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.include({ error: 'error-abac-attribute-not-assignable', errorType: 'error-abac-attribute-not-assignable' });
+				});
+		});
+
+		it('is refused when there is nothing to assign', async () => {
+			await createGroup({ abacAttributes: { [dept]: [] } }).expect(400);
+			await createGroup({ abacAttributes: {} }).expect(400);
+		});
+
+		it('is refused on a public channel, whose request does not accept attributes', async () => {
+			await request
+				.post(api('channels.create'))
+				.set(credentials)
+				.send({ name: `abac-rc-public-${Date.now()}`, abacAttributes: { [dept]: ['eng'] } })
+				.expect(400);
+		});
+
+		it('is refused while ABAC is disabled', async () => {
+			await setSetting('ABAC_Enabled', false);
+
+			try {
+				await createGroup({ abacAttributes: { [dept]: ['eng'] } })
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.include({ error: 'error-abac-not-enabled', errorType: 'error-abac-not-enabled' });
+					});
+			} finally {
+				await setSetting('ABAC_Enabled', true);
+			}
+		});
+
+		it('skips the members who do not carry the attributes, and says who', async () => {
+			const res = await createGroup({
+				abacAttributes: { [dept]: ['eng'] },
+				members: [creator.username, unattributedUser.username],
+			}).expect(200);
+			const roomId = res.body.group._id;
+			track(roomId);
+
+			expect(res.body.skippedMembers).to.deep.equal([unattributedUser.username]);
+
+			const members = await request.get(api('groups.members')).set(credentials).query({ roomId }).expect(200);
+			const usernames = (members.body.members as IUser[]).map(({ username }) => username);
+			expect(usernames).to.include(creator.username);
+			expect(usernames).to.not.include(unattributedUser.username);
+		});
+
+		it('writes the attributes to the audit log', async () => {
+			const res = await createGroup({ abacAttributes: { [dept]: ['eng'] } }).expect(200);
+			const roomId = res.body.group._id;
+			track(roomId);
+
+			const entry = await waitForAuditEntry(
+				(e) =>
+					e.t === 'abac.object.attribute.changed' &&
+					e.data.some(({ key, value }) => key === 'room' && value?._id === roomId) &&
+					e.data.some(({ key, value }) => key === 'change' && value === 'created'),
+			);
+
+			expect(entry?.data.find(({ key }) => key === 'current')?.value).to.deep.equal([{ key: dept, values: ['eng'] }]);
+		});
+
+		describe('by a holder of bypass-abac-store-validation', () => {
+			before(async () => {
+				await updatePermission('bypass-abac-store-validation', ['user']);
+			});
+
+			after(async () => {
+				await updatePermission('bypass-abac-store-validation', savedPermissions.get('bypass-abac-store-validation') ?? []);
+			});
+
+			it('admits values the creator does not hold, for a room the creator leaves', async () => {
+				const res = await createGroup({ abacAttributes: { [dept]: ['ops'] }, excludeSelf: true }, creatorCredentials).expect(200);
+				track(res.body.group._id);
+
+				expect(res.body.group.abacAttributes).to.deep.equal([{ key: dept, values: ['ops'] }]);
+				expect(await creatorSubscription(res.body.group._id)).to.be.null;
+			});
+
+			it('is still refused when the creator would not be admitted to the room', async () => {
+				await createGroup({ abacAttributes: { [dept]: ['ops'] } }, creatorCredentials)
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.include({ error: 'error-abac-creator-not-admitted', errorType: 'error-abac-creator-not-admitted' });
+					});
+			});
+		});
+	});
+
+	describe('a team created with attributes', () => {
+		before(async () => {
+			await updatePermission('create-abac-managed-room', ['admin', 'user']);
+			await setSetting('ABAC_Restrict_To_Owned_Attributes', true);
+		});
+
+		it('carries the attributes on its main room and keeps team membership in step with the room', async () => {
+			const name = `abac-rc-team-${Date.now()}`;
+			const res = await request
+				.post(api('teams.create'))
+				.set(credentials)
+				.send({ name, type: 1, members: [creator._id, unattributedUser._id], abacAttributes: { [dept]: ['eng'] } })
+				.expect(200);
+			createdTeamNames.push(name);
+
+			expect(res.body.skippedMembers).to.deep.equal([unattributedUser.username]);
+
+			const info = await request.get(api('groups.info')).set(credentials).query({ roomId: res.body.team.roomId }).expect(200);
+			expect(info.body.group.abacAttributes).to.deep.equal([{ key: dept, values: ['eng'] }]);
+
+			const members = await request.get(api('teams.members')).set(credentials).query({ teamName: name }).expect(200);
+			const ids = (members.body.members as Array<{ user: IUser }>).map(({ user }) => user._id);
+			expect(ids).to.include(creator._id);
+			expect(ids).to.not.include(unattributedUser._id);
+		});
+
+		it('is refused when the owner is not the caller', async () => {
+			await request
+				.post(api('teams.create'))
+				.set(credentials)
+				.send({ name: `abac-rc-team-${Date.now()}`, type: 1, owner: creator._id, abacAttributes: { [dept]: ['eng'] } })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.include({
+						error: 'error-abac-attributes-owner-must-be-caller',
+						errorType: 'error-abac-attributes-owner-must-be-caller',
+					});
+				});
+		});
+
+		it('is refused on a public team', async () => {
+			await request
+				.post(api('teams.create'))
+				.set(credentials)
+				.send({ name: `abac-rc-team-${Date.now()}`, type: 0, abacAttributes: { [dept]: ['eng'] } })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.include({
+						error: 'error-abac-attributes-private-rooms-only',
+						errorType: 'error-abac-attributes-private-rooms-only',
+					});
+				});
+		});
+
+		it('is refused when converting an existing room', async () => {
+			const group = await createGroup({}).expect(200);
+			track(group.body.group._id);
+
+			await request
+				.post(api('teams.create'))
+				.set(credentials)
+				.send({ name: `abac-rc-team-${Date.now()}`, type: 1, room: { id: group.body.group._id }, abacAttributes: { [dept]: ['eng'] } })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.include({
+						error: 'error-abac-attributes-room-conversion',
+						errorType: 'error-abac-attributes-room-conversion',
+					});
+				});
+		});
+
+		it('reports a denial by its own code rather than error-team-creation', async () => {
+			await request
+				.post(api('teams.create'))
+				.set(creatorCredentials)
+				.send({ name: `abac-rc-team-${Date.now()}`, type: 1, abacAttributes: { [dept]: ['sales'] } })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.include({ error: 'error-abac-attribute-not-assignable', errorType: 'error-abac-attribute-not-assignable' });
+				});
+		});
+	});
+
+	describe('under enforcement', () => {
+		before(async () => {
+			await setSetting('ABAC_Required_Attributes', [clearance]);
+			await setSetting('ABAC_Enforce_All_Rooms', true);
+		});
+
+		after(async () => {
+			await setSetting('ABAC_Enforce_All_Rooms', false);
+			await setSetting('ABAC_Required_Attributes', []);
+		});
+
+		it('refuses a private room that would be born locked', async () => {
+			await createGroup({})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.include({ error: 'error-abac-attributes-required', errorType: 'error-abac-attributes-required' });
+				});
+		});
+
+		it('refuses a private room missing a required attribute', async () => {
+			await createGroup({ abacAttributes: { [dept]: ['eng'] } })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.include({ error: 'error-abac-attributes-required', errorType: 'error-abac-attributes-required' });
+				});
+		});
+
+		it('creates a private room carrying every required attribute', async () => {
+			const res = await createGroup({ abacAttributes: { [clearance]: ['secret'] } }).expect(200);
+			track(res.body.group._id);
+		});
+
+		it('refuses a private team that would be born locked, by its own code', async () => {
+			await request
+				.post(api('teams.create'))
+				.set(credentials)
+				.send({ name: `abac-rc-team-${Date.now()}`, type: 1 })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.include({ error: 'error-abac-attributes-required', errorType: 'error-abac-attributes-required' });
+				});
+		});
+	});
+
+	describe('GET /abac/attributes.listAssignable', () => {
+		const assignable = (as: Credentials = creatorCredentials) => request.get(`${v1}/abac/attributes.listAssignable`).set(as);
+
+		const ownKeys = (attributes: { key: string; values: string[] }[]) => attributes.filter(({ key }) => key === dept || key === clearance);
+
+		before(async () => {
+			await updatePermission('create-abac-managed-room', ['admin', 'user']);
+			await setSetting('ABAC_Restrict_To_Owned_Attributes', true);
+		});
+
+		it('requires create-abac-managed-room', async () => {
+			await updatePermission('create-abac-managed-room', ['admin']);
+
+			try {
+				await assignable().expect(403);
+			} finally {
+				await updatePermission('create-abac-managed-room', ['admin', 'user']);
+			}
+		});
+
+		it('offers a creator who is not an administrator only the values they hold, and no key they hold nothing of', async () => {
+			const res = await assignable().expect(200);
+
+			expect(res.body.attributes).to.deep.equal([{ key: dept, values: ['eng'] }]);
+		});
+
+		it('offers only what creation then accepts', async () => {
+			const res = await assignable().expect(200);
+			const [offered] = ownKeys(res.body.attributes);
+
+			const created = await createGroup({ abacAttributes: { [offered.key]: offered.values } }, creatorCredentials).expect(200);
+			track(created.body.group._id);
+		});
+
+		it('offers every defined value once restricting to owned attributes is off', async () => {
+			await setSetting('ABAC_Restrict_To_Owned_Attributes', false);
+
+			try {
+				const res = await assignable().expect(200);
+
+				expect(ownKeys(res.body.attributes)).to.deep.equal([
+					{ key: clearance, values: ['secret'] },
+					{ key: dept, values: ['eng', 'sales', 'ops'] },
+				]);
+			} finally {
+				await setSetting('ABAC_Restrict_To_Owned_Attributes', true);
+			}
+		});
+
+		it('returns no required keys while enforcement is off', async () => {
+			await setSetting('ABAC_Required_Attributes', [clearance]);
+
+			try {
+				const res = await assignable().expect(200);
+
+				expect(res.body.requiredKeys).to.deep.equal([]);
+			} finally {
+				await setSetting('ABAC_Required_Attributes', []);
+			}
+		});
+
+		it('returns the required keys while enforcement is on', async () => {
+			await setSetting('ABAC_Required_Attributes', [clearance]);
+			await setSetting('ABAC_Enforce_All_Rooms', true);
+
+			try {
+				const res = await assignable().expect(200);
+
+				expect(res.body.requiredKeys).to.deep.equal([clearance]);
+			} finally {
+				await setSetting('ABAC_Enforce_All_Rooms', false);
+				await setSetting('ABAC_Required_Attributes', []);
+			}
+		});
+
+		it('is refused while ABAC is disabled', async () => {
+			await setSetting('ABAC_Enabled', false);
+
+			try {
+				await assignable().expect(400);
+			} finally {
+				await setSetting('ABAC_Enabled', true);
+			}
+		});
+	});
+
+	describe('POST /abac/rooms.evaluateMembership', () => {
+		const preview = (body: Record<string, unknown>, as: Credentials = creatorCredentials) =>
+			request.post(`${v1}/abac/rooms.evaluateMembership`).set(as).send(body);
+
+		const usernamesOf = (members: IUser[]) => members.map(({ username }) => username);
+
+		before(async () => {
+			await updatePermission('create-abac-managed-room', ['admin', 'user']);
+			await setSetting('ABAC_Restrict_To_Owned_Attributes', true);
+		});
+
+		it('requires create-abac-managed-room', async () => {
+			await updatePermission('create-abac-managed-room', ['admin']);
+
+			try {
+				await preview({ members: [], attributes: { [dept]: ['eng'] } }).expect(403);
+			} finally {
+				await updatePermission('create-abac-managed-room', ['admin', 'user']);
+			}
+		});
+
+		it('rejects anything but a list of usernames and a set of attributes', async () => {
+			await preview({ rid: 'GENERAL', members: [], attributes: { [dept]: ['eng'] } }).expect(400);
+			await preview({ members: [{ $ne: null }], attributes: { [dept]: ['eng'] } }).expect(400);
+			await preview({ members: [], attributes: { [dept]: [] } }).expect(400);
+			await preview({ members: [], attributes: {} }).expect(400);
+		});
+
+		it('refuses more members than API_User_Limit', async () => {
+			await setSetting('API_User_Limit', 1);
+
+			try {
+				await preview({ members: [unattributedUser.username], attributes: { [dept]: ['eng'] } })
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.include({
+							error: 'error-abac-preview-too-many-members',
+							errorType: 'error-abac-preview-too-many-members',
+						});
+					});
+				await preview({ members: [unattributedUser.username], attributes: { [dept]: ['eng'] }, excludeSelf: true }).expect(200);
+			} finally {
+				await setSetting('API_User_Limit', savedSettings.get('API_User_Limit'));
+			}
+		});
+
+		it('counts the creator when no one else is named', async () => {
+			const res = await preview({ members: [], attributes: { [dept]: ['eng'] } }).expect(200);
+
+			expect(usernamesOf(res.body.compliant)).to.deep.equal([creator.username]);
+			expect(res.body.creator).to.equal('compliant');
+		});
+
+		it('refuses values the creator does not hold, as creation does', async () => {
+			await preview({ members: [unattributedUser.username], attributes: { [dept]: ['sales'] } })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.include({ error: 'error-abac-attribute-not-assignable', errorType: 'error-abac-attribute-not-assignable' });
+					expect(res.body.details.attributes).to.deep.equal([{ key: dept, values: ['sales'] }]);
+				});
+		});
+
+		it('refuses a joining creator who would not be admitted, as creation does, and reports one who stays out', async () => {
+			await setSetting('ABAC_Restrict_To_Owned_Attributes', false);
+
+			try {
+				await preview({ members: [], attributes: { [dept]: ['sales'] } })
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.include({ error: 'error-abac-creator-not-admitted', errorType: 'error-abac-creator-not-admitted' });
+					});
+
+				const res = await preview({ members: [], attributes: { [dept]: ['sales'] }, excludeSelf: true }).expect(200);
+
+				expect(res.body.compliant).to.deep.equal([]);
+				expect(res.body.nonCompliant).to.deep.equal([]);
+				expect(res.body.inconclusive).to.deep.equal([]);
+				expect(res.body.creator).to.equal('nonCompliant');
+			} finally {
+				await setSetting('ABAC_Restrict_To_Owned_Attributes', true);
+			}
+		});
+
+		it('names the members creation then skips', async () => {
+			const members = [unattributedUser.username];
+			const attributes = { [dept]: ['eng'] };
+
+			const answer = await preview({ members, attributes }).expect(200);
+			const creation = await createGroup({ abacAttributes: attributes, members }, creatorCredentials).expect(200);
+			track(creation.body.group._id);
+
+			expect(usernamesOf(answer.body.compliant)).to.deep.equal([creator.username]);
+			expect([...usernamesOf(answer.body.nonCompliant), ...usernamesOf(answer.body.inconclusive)]).to.deep.equal(
+				creation.body.skippedMembers,
+			);
+		});
+
+		it('records who was evaluated against which attributes in the audit log', async () => {
+			await preview({ members: [unattributedUser.username], attributes: { [dept]: ['eng'] } }).expect(200);
+
+			const entry = await waitForAuditEntry(
+				(e) =>
+					e.t === 'abac.membership.evaluated' &&
+					e.actor?.username === creator.username &&
+					e.data.some(({ key, value }) => key === 'subjects' && value?.[0]?.username === unattributedUser.username),
+			);
+
+			expect(entry, 'membership evaluation audit entry').to.exist;
+			expect(entry?.data.find(({ key }) => key === 'attributes')?.value).to.deep.equal([{ key: dept, values: ['eng'] }]);
+			expect(entry?.data.find(({ key }) => key === 'subjects')?.value).to.deep.equal([
+				{ _id: unattributedUser._id, username: unattributedUser.username },
+			]);
+		});
+
+		it('is refused while ABAC is disabled', async () => {
+			await setSetting('ABAC_Enabled', false);
+
+			try {
+				await preview({ members: [], attributes: { [dept]: ['eng'] } })
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.include({ error: 'error-abac-not-enabled', errorType: 'error-abac-not-enabled' });
+					});
+			} finally {
+				await setSetting('ABAC_Enabled', true);
+			}
+		});
+	});
+});

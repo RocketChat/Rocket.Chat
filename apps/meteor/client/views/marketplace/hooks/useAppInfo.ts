@@ -3,7 +3,7 @@ import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useState, useEffect } from 'react';
 
 import { useApps } from './useApps';
-import { AppClientOrchestratorInstance } from '../../../apps/orchestrator';
+import { AppClientOrchestratorInstance } from '../../../lib/apps/orchestrator';
 import type { AppInfo } from '../definitions/AppInfo';
 import type { ISettings } from '../definitions/ISettings';
 

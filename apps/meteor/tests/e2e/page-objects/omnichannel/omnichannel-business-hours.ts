@@ -6,7 +6,7 @@ import { Listbox } from '../fragments/listbox';
 export class OmnichannelBusinessHours extends OmnichannelAdmin {
 	protected readonly route = OmnichannelSectionsHref.businessHours;
 
-	protected readonly title = 'Business Hours';
+	protected readonly title = 'Business hours';
 
 	readonly listbox: Listbox;
 
@@ -31,12 +31,8 @@ export class OmnichannelBusinessHours extends OmnichannelAdmin {
 		return this.page.getByRole('textbox', { name: 'Name', exact: true });
 	}
 
-	get fieldDepartment(): Locator {
-		return this.page.getByLabel('Departments', { exact: true });
-	}
-
 	get inputDepartments(): Locator {
-		return this.fieldDepartment.getByRole('textbox');
+		return this.page.getByLabel('Departments', { exact: true });
 	}
 
 	async deleteBusinessHour(name: string) {
@@ -49,7 +45,7 @@ export class OmnichannelBusinessHours extends OmnichannelAdmin {
 	}
 
 	findDepartmentsChipOption(name: string) {
-		return this.fieldDepartment.getByRole('option', { name, exact: true });
+		return this.page.getByRole('listbox').filter({ has: this.inputDepartments }).getByRole('option', { name, exact: true });
 	}
 
 	async selectDepartment(name: string) {

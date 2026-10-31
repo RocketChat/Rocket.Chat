@@ -63,7 +63,8 @@ export class TimeoutControl
 		});
 
 		timeoutControl.on('timeout', () => {
-			connection.close();
+			// Drop only the socket: connection.close() marks the connection as 'closed', which disables the retry logic.
+			connection.ws?.close();
 		});
 
 		ddp.onMessage(() => timeoutControl.reset());

@@ -83,6 +83,7 @@ export class OmnichannelLiveChat extends RoutedPage {
 		await this.btnOptions.click();
 		await this.btnCloseChat.click();
 		await this.btnCloseChatConfirm.click();
+		await expect(this.livechatModal).not.toBeVisible();
 	}
 
 	async openLiveChat(): Promise<void> {

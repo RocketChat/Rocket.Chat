@@ -1,4 +1,4 @@
-import { MeteorError } from '@rocket.chat/core-services';
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { License, MockedLicenseBuilder } from '@rocket.chat/license';
 
 import { validateUserRoles } from './validateUserRoles';
@@ -43,7 +43,7 @@ describe('Operating after activeUsers Limits', () => {
 				roles: ['user'],
 			};
 
-			await expect(validateUserRoles(user)).rejects.toThrow(MeteorError);
+			await expect(validateUserRoles(user)).rejects.toThrow(ClientSafeError);
 		});
 
 		it('should not throw error when user is not active', async () => {
@@ -88,7 +88,7 @@ describe('Operating after activeUsers Limits', () => {
 				active: true,
 				type: 'user',
 			};
-			await expect(validateUserRoles(user)).rejects.toThrow(MeteorError);
+			await expect(validateUserRoles(user)).rejects.toThrow(ClientSafeError);
 		});
 	});
 
@@ -109,7 +109,7 @@ describe('Operating after activeUsers Limits', () => {
 				active: false,
 				type: 'user',
 			};
-			await expect(validateUserRoles(user, currentUser)).rejects.toThrow(MeteorError);
+			await expect(validateUserRoles(user, currentUser)).rejects.toThrow(ClientSafeError);
 		});
 
 		it('should not throw an error when we try to deactivate a user', async () => {
@@ -145,7 +145,7 @@ describe('Operating after activeUsers Limits', () => {
 				active: true,
 				type: 'bot',
 			};
-			await expect(validateUserRoles(user, currentUser)).rejects.toThrow(MeteorError);
+			await expect(validateUserRoles(user, currentUser)).rejects.toThrow(ClientSafeError);
 		});
 	});
 });
@@ -165,7 +165,7 @@ describe('Operating after guestUsers Limits', () => {
 			active: true,
 			type: 'user',
 		};
-		await expect(validateUserRoles(user, currentUser)).rejects.toThrow(MeteorError);
+		await expect(validateUserRoles(user, currentUser)).rejects.toThrow(ClientSafeError);
 	});
 
 	it('should  throw an error when we try to convert app to guest', async () => {
@@ -178,7 +178,7 @@ describe('Operating after guestUsers Limits', () => {
 			active: true,
 			type: 'app',
 		};
-		await expect(validateUserRoles(user, currentUser)).rejects.toThrow(MeteorError);
+		await expect(validateUserRoles(user, currentUser)).rejects.toThrow(ClientSafeError);
 	});
 
 	it('should not throw an error when we try to edit a guest', async () => {

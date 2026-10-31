@@ -68,12 +68,21 @@ export class RoomSidebar extends Sidebar {
 		return this.root.getByTestId('virtuoso-item-list');
 	}
 
+	/** The whole row, so tests reach the badges, avatar, preview and menu that sit beside the room link. */
 	getSidebarItemByName(name: string) {
-		return this.channelsList.getByRole('link', { name }).filter({ has: this.page.getByText(name, { exact: true }) });
+		return this.channelsList.getByRole('listitem').filter({ has: this.getRoomLink(name) });
+	}
+
+	getSidebarItemLinkByName(name: string) {
+		return this.channelsList.locator(this.getRoomLink(name));
+	}
+
+	private getRoomLink(name: string) {
+		return this.page.getByRole('link', { name }).filter({ has: this.page.getByText(name, { exact: true }) });
 	}
 
 	getFilterItemByName(name: string): Locator {
-		return this.root.getByRole('button', { name }).filter({ has: this.page.getByText(name, { exact: true }) });
+		return this.root.getByRole('link', { name }).filter({ has: this.page.getByText(name, { exact: true }) });
 	}
 
 	getSidebarListItem(name: string): Locator {
@@ -81,7 +90,7 @@ export class RoomSidebar extends Sidebar {
 	}
 
 	get firstCollapser(): Locator {
-		return this.channelsList.getByRole('group').first().getByRole('button').first();
+		return this.channelsList.getByRole('listitem').first().getByRole('button').first();
 	}
 
 	get teamsCollapser(): Locator {
@@ -102,13 +111,14 @@ export class RoomSidebar extends Sidebar {
 
 	async markItemAsUnread(item: Locator): Promise<void> {
 		await item.hover();
-		await item.focus();
+		await item.getByRole('link').focus();
 		await item.getByRole('button', { name: 'Options', exact: true }).click();
-		await this.page.getByRole('menuitem', { name: 'Mark Unread' }).click();
+		await this.page.getByRole('menuitem', { name: 'Mark unread' }).click();
 	}
 
 	getCollapseGroupByName(name: string): Locator {
-		return this.root.getByRole('button').filter({ has: this.page.getByRole('heading', { name, exact: true }) });
+		const escapedName = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+		return this.root.getByRole('listitem', { name: new RegExp(`^(Collapse|Expand) ${escapedName}$`) });
 	}
 
 	getItemUnreadBadge(item: Locator): Locator {
@@ -122,17 +132,17 @@ export class RoomSidebar extends Sidebar {
 	async selectPriority(name: string, priority: string) {
 		const sidebarItem = this.getSidebarItemByName(name);
 		await sidebarItem.hover();
-		await sidebarItem.focus();
+		await sidebarItem.getByRole('link').focus();
 		await sidebarItem.getByRole('button', { name: 'Options', exact: true }).click();
 		await this.page.getByRole('menuitem', { name: priority }).click();
 	}
 
 	getSidebarListItemByName(name: string): Locator {
-		return this.channelsList.getByRole('listitem').filter({ has: this.getSidebarItemByName(name) });
+		return this.getSidebarItemByName(name);
 	}
 
 	getCategoryCollapser(name: string): Locator {
-		return this.root.getByRole('group', { name: `Collapse ${name}`, exact: true }).first();
+		return this.root.getByRole('listitem', { name: `Collapse ${name}`, exact: true }).first();
 	}
 
 	getCategoryKebab(name: string): Locator {
@@ -163,7 +173,7 @@ export class RoomSidebar extends Sidebar {
 	async openRoomMenu(name: string): Promise<void> {
 		const item = this.getSidebarItemByName(name);
 		await item.hover();
-		await item.focus();
+		await item.getByRole('link').focus();
 		await item.getByRole('button', { name: 'Options', exact: true }).click();
 		await this.menuOptions.waitForDisplay();
 	}

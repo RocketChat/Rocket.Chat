@@ -1,0 +1,54 @@
+@use 'sass:map';
+@use '../lengths.scss';
+@use '../functions.scss' as *;
+@use './states.scss' as *;
+@use './shadows.scss' as *;
+@use '../variables/button-colors.scss';
+
+$button-border-width: theme('button-border-width', lengths.border-width(default));
+$button-border-radius: theme('button-border-radius', lengths.border-radius(medium));
+
+@mixin kind-variant($colors) {
+	color: map.get($colors, color);
+	border-width: $button-border-width;
+	border-style: solid;
+	border-color: map.get($colors, border-color);
+	border-radius: $button-border-radius;
+	background-color: map.get($colors, background-color);
+
+	appearance: none;
+
+	@include on-focus-visible {
+		border-color: map.get($colors, focus-border-color);
+		background-color: map.get($colors, focus-background-color);
+		@include use-focus-shadow(map.get($colors, focus-shadow-color));
+	}
+
+	@include on-hover {
+		border-color: map.get($colors, hover-border-color);
+		background-color: map.get($colors, hover-background-color);
+		box-shadow: none;
+	}
+
+	@include on-active {
+		border-color: map.get($colors, active-border-color);
+		background-color: map.get($colors, active-background-color);
+		box-shadow: none;
+	}
+
+	&-pressed {
+		color: map.get($colors, pressed-color);
+		border-color: map.get($colors, pressed-border-color);
+		background-color: map.get($colors, pressed-background-color);
+	}
+
+	@include on-disabled {
+		color: map.get($colors, disabled-color);
+		border-color: map.get($colors, disabled-border-color);
+		background-color: map.get($colors, disabled-background-color);
+
+		.rcx-button--content {
+			transform: none !important;
+		}
+	}
+}

@@ -6,7 +6,7 @@ import fileSize from 'filesize';
 import { getErrorMessage } from '../errorHandling';
 import type { UploadsAPI, EncryptedFileUploadContent } from './ChatAPI';
 import { isEncryptedUpload, type Upload } from './Upload';
-import { i18n } from '../../../app/utils/lib/i18n';
+import { i18n } from '../../../lib/i18n';
 import { sdk } from '../SDKClient';
 import { USER_ACTIVITIES, UserAction } from '../UserAction';
 import { settings } from '../settings';
@@ -185,7 +185,7 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 							return;
 						}
 
-						if (xhr.status === 400) {
+						if (xhr.status === 400 || xhr.status === 403) {
 							const error = JSON.parse(xhr.responseText);
 							this.updateUpload(id, { percentage: 0, error: new Error(error.error) });
 							return;

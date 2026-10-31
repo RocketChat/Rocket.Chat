@@ -1,5 +1,55 @@
 # @rocket.chat/abac
 
+## 0.4.0-rc.0
+
+### Minor Changes
+
+- ([#42850](https://github.com/RocketChat/Rocket.Chat/pull/42850)) Adds an optional `nonAbacBanner` list to the ABAC classification banners configuration, so rooms that are not ABAC managed, such as DMs, discussions and federated rooms, can show a configured banner. The list must include an enabled default entry that applies to any room. Omnichannel rooms never show a banner.
+
+- ([#42677](https://github.com/RocketChat/Rocket.Chat/pull/42677)) Stops exposing the ABAC classification banner configuration publicly; `rooms.info` now returns, as `classificationBanner`, only the banner that applies to the requested ABAC room
+
+- ([#42850](https://github.com/RocketChat/Rocket.Chat/pull/42850)) Adds workspace-wide ABAC enforcement. Turning on **Enforce ABAC across all workspace rooms** locks every public channel and discussion, and every private channel and team that has no ABAC attributes or is missing one listed in **Attributes required in all ABAC rooms**. Nobody can post in a locked room or be added to one, and a callout in place of the composer explains why. Direct messages, Omnichannel conversations and federated rooms are never locked.
+
+  While enforcement is on, new non-federated public channels, discussions, and private rooms without the required attributes cannot be created, and **Discussion > Enable** is switched off, then restored to its earlier value when enforcement ends. Removing the ABAC license turns enforcement off, and switching the attribute store clears the required attributes. `GET /v1/abac/attributes.listKeys` lists the keys available for the required attributes, and `GET /v1/rooms.info` returns `abacRequiredAttributes` while enforcement is on.
+
+- ([#42850](https://github.com/RocketChat/Rocket.Chat/pull/42850)) Returns every ABAC room creation, enforcement, member preview and room attribute editing error in one shape, with the error key in both `error` and `errorType`, and the refused attribute in `details` where one is at fault. The keys are listed in `ee/packages/abac/docs/error-contract.md`.
+
+- ([#42850](https://github.com/RocketChat/Rocket.Chat/pull/42850)) Blocks assigning ABAC attributes to federated rooms and discussions through the room attribute endpoints.
+
+- ([#42850](https://github.com/RocketChat/Rocket.Chat/pull/42850)) Adds the **Edit room ABAC attributes** permission, scoped to a room and held by administrators and room owners by default. In private channels and teams that carry attributes or are locked by enforcement, its holders and ABAC administrators get an **Attribute-based access control** panel to view and change the room's attributes, and a locked room offers them **Manage attributes** in place of the composer. Before anything is saved, this panel and editing a room in **Administration > ABAC > Rooms** preview which members lose or keep access.
+
+  With the local Policy Decision Point and **Restrict room creators and editors to attributes they hold** on, the default, holders can only add values they hold. While enforcement is on and attributes are required, they cannot remove a required attribute or every attribute. ABAC administrators are not restricted by either rule. `POST /v1/abac/rooms/:rid/attributes` accepts an empty set to clear a room, and `attributes.listAssignable` and `rooms.evaluateMembership` accept a room id. With Virtru, an attribute change by a user also removes members whose access cannot be decided.
+
+- ([#42850](https://github.com/RocketChat/Rocket.Chat/pull/42850)) Allows private rooms and teams to be created with ABAC attributes. **Create channel** and **Create team** get an **ABAC managed** option that walks the user through choosing attributes and previewing which members will be added, and `groups.create` and `teams.create` accept an `abacAttributes` map. This requires the new **Create ABAC-managed rooms** permission, granted to users by default, and every such room is recorded in the ABAC audit log.
+
+  Users can only assign values they hold, or, with Virtru, values Virtru entitles them to. Members who do not qualify are not added and are listed in `skippedMembers`. While enforcement is on, new private channels and teams must be ABAC-managed and carry the workspace's required attributes.
+
+  Adds `GET /v1/abac/attributes.listAssignable` and `POST /v1/abac/rooms.evaluateMembership`. Apps with room write access and the new `abac.write` permission can create attributed private rooms under the same rules, and the audit log names the app.
+
+- ([#42850](https://github.com/RocketChat/Rocket.Chat/pull/42850)) Removes a room's ABAC attributes when it is converted to a team, when a team is converted to a channel (the team's own room only), and when it is moved into a team; moving a room out of a team keeps them. The removal applies whether ABAC is enabled or not, is recorded in the audit log, and leaves the room locked while ABAC enforcement is on. The UI warns before each of these actions, and before making an ABAC-managed room or team public while ABAC is disabled.
+
+  While ABAC is enabled, `POST /v1/teams.update` now refuses to make an ABAC-managed team public with `error-action-not-allowed`, as **Edit team** does, and the **Private** toggle is disabled for ABAC-managed rooms.
+
+- ([#42850](https://github.com/RocketChat/Rocket.Chat/pull/42850)) Allows default and team default rooms to carry ABAC attributes. Assigning attributes to a default room, making an ABAC room a default and making an attributed team channel a team default no longer return `error-cannot-convert-default-room-to-abac`, `error-action-not-allowed` or `error-room-is-abac-managed`. With ABAC enabled, new users, team joins and new team defaults only add members to the attributed rooms they qualify for, and skip rooms locked by enforcement.
+
+  `/invite-all-to` and `/invite-all-from` likewise add only the members an ABAC-managed room allows and name the ones they skipped, instead of failing on the first refusal. A locked target room, or one whose access cannot be decided, is refused and nobody is added.
+
+### Patch Changes
+
+- ([#42565](https://github.com/RocketChat/Rocket.Chat/pull/42565)) Fixes the ABAC audit log entry showing an empty room name when the last attribute of a room is removed
+
+- ([#42556](https://github.com/RocketChat/Rocket.Chat/pull/42556)) Fixes ABAC audit log entries showing an empty room name when a user is removed by the Virtru sync or by attribute re-evaluation
+
+- <details><summary>Updated dependencies [4f350b4ffb76024d9bf44c02f3322c8f9071f1cf, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 6bb0d3bca9b5da401050697d51bc99e89871bbb7, 857482ad1e0c6330fb57f96db40d2b08676bbf7e, 575d467b826f8057995e4cabad4c8369cfd45409, 575d467b826f8057995e4cabad4c8369cfd45409, 6be3614cd2660ab4024635802fdf9cd7dd7b502f, 588311c49bfce08e7106e7c0bb32741334fa5321, 10b4e00e08951ace8f9c27d83fc0c48be010bdc7, 5e82e67eaa4c998870d3eb0597f485b30c244f02, a9b2bb76d88e4d2743e0817b15e6447e7c9c46eb, cdd948cb67ecf282f6cc8f411615c3de0db0b9f1, 6b3ec3e667c99015e381a4e8ea43146accb5f7f7, a11ffff8acb74fd016e9ddb972da6eebda0c3e5e, 150b84030665fbf0e0c2ab59801825a96b27305a, eaf5cedcce9f8e800415b4c49bce242f661462ea, 1df95ff2d31f1e077084596f0024c3e2c53ca1df, f3fa7abd6b9d311f76619d0fe27793ac68f6d208, 40243c4ba0ed19120a571d37883aec203af1b747, daa677895dad92d6aab1e84a09f190efd2755ef9, 642d9e528a8572208e2f0bb51f45ea78400bcea3, bd92e8abc5a8f0161f3de5308979a0f88d09f351, 39a6e6e1397e1e89bc631fe4ab1cc10fa93b59e8, eb808dd70cfbd41a127d8655c62a21c4658fd2c0, 857482ad1e0c6330fb57f96db40d2b08676bbf7e, 01204df7088b1362f14438d99c44bc4f6d6e840e, a39b03fe5c248079365162e31994e1dece63e7c2]:</summary>
+  - @rocket.chat/core-typings@9.0.0-rc.0
+  - @rocket.chat/core-services@1.0.0-rc.0
+  - @rocket.chat/models@3.0.0-rc.0
+  - @rocket.chat/tools@0.5.0-rc.0
+  - @rocket.chat/server-fetch@0.2.6-rc.0
+  - @rocket.chat/logger@1.0.2-rc.0
+
+  </details>
+
 ## 0.3.3
 
 ### Patch Changes

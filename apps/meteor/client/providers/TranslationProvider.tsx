@@ -18,8 +18,8 @@ import type { ReactNode } from 'react';
 import { useEffect, useMemo } from 'react';
 import { I18nextProvider, initReactI18next, useTranslation } from 'react-i18next';
 
-import { i18n } from '../../app/utils/lib/i18n';
-import { AppClientOrchestratorInstance } from '../apps/orchestrator';
+import { i18n } from '../../lib/i18n';
+import { AppClientOrchestratorInstance } from '../lib/apps/orchestrator';
 import { getURL } from '../lib/getURL';
 import { onLoggedIn } from '../lib/loggedIn';
 import { isRTLScriptLanguage } from '../lib/utils/isRTLScriptLanguage';
@@ -118,13 +118,12 @@ const useI18next = (lng: string): typeof i18next => {
 
 		// In some cases, the language will require a word to be in a different position than the default
 		// This enables the capitalization of words that are moved to the start of the sentence directly in the translation file
-		i18n.on('initialized', () => {
-			i18n.services.formatter?.add('capitalize', (value) => {
-				if (typeof value !== 'string') {
-					return value;
-				}
-				return capitalize(value);
-			});
+		// Registered right after init(), not on 'initialized': with English bundled, init completes synchronously and that event has already fired.
+		i18n.services.formatter?.add('capitalize', (value) => {
+			if (typeof value !== 'string') {
+				return value;
+			}
+			return capitalize(value);
 		});
 	}
 
@@ -243,7 +242,7 @@ const TranslationProvider = ({ children }: TranslationProviderProps) => {
  * the only way to invalidate after changing the language in a safe way is using the useTranslation from i8next
  * and invalidating the provider content
  */
-// eslint-disable-next-line react/no-multi-comp
+// oxlint-disable-next-line react/no-multi-comp
 const TranslationProviderInner = ({
 	children,
 	availableLanguages,

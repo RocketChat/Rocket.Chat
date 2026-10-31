@@ -1,17 +1,22 @@
-import type { IEmojiCustom } from '@rocket.chat/core-typings';
+import { after, before, describe, it } from 'node:test';
+
+import type { Credentials } from '@rocket.chat/api-client';
+import type { IEmojiCustom, IUser } from '@rocket.chat/core-typings';
 import { assert, expect } from 'chai';
-import { before, describe, it, after } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { imgURL } from '../../data/interactions';
 import { updateSetting } from '../../data/permissions.helper';
+import { password } from '../../data/user';
+import type { TestUser } from '../../data/users.helper';
+import { createUser, deleteUser, login } from '../../data/users.helper';
 
 describe('[EmojiCustom]', () => {
 	const customEmojiName = `my-custom-emoji-${Date.now()}`;
 
 	let withoutAliases: IEmojiCustom;
 
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	after(() =>
 		request.post(api('emoji-custom.delete')).set(credentials).send({
@@ -67,7 +72,7 @@ describe('[EmojiCustom]', () => {
 	let createdCustomEmoji: IEmojiCustom;
 
 	describe('[/emoji-custom.update]', () => {
-		before((done) => {
+		before((_t, done) => {
 			void request
 				.get(api('emoji-custom.list'))
 				.set(credentials)
@@ -368,6 +373,55 @@ describe('[EmojiCustom]', () => {
 			expect(res.headers).to.have.property('content-type', 'image/png');
 			expect(res.headers).to.have.property('cache-control', 'public, max-age=31536000');
 			expect(res.headers).to.have.property('content-disposition', 'inline');
+		});
+	});
+
+	describe('Permission checks', () => {
+		let user: TestUser<IUser>;
+		let userCredentials: Credentials;
+
+		before(async () => {
+			user = await createUser();
+			userCredentials = await login(user.username, password);
+		});
+
+		after(() => deleteUser(user));
+
+		it('should refuse to create a custom emoji when the user lacks manage-emoji', async () => {
+			const res = await request
+				.post(api('emoji-custom.create'))
+				.set(userCredentials)
+				.attach('emoji', imgURL)
+				.field({ name: `${customEmojiName}-refused` })
+				.expect('Content-Type', 'application/json')
+				.expect(403);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
+		});
+
+		it('should refuse to update a custom emoji when the user lacks manage-emoji', async () => {
+			const res = await request
+				.post(api('emoji-custom.update'))
+				.set(userCredentials)
+				.field({ _id: createdCustomEmoji._id, name: customEmojiName })
+				.expect('Content-Type', 'application/json')
+				.expect(403);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
+		});
+
+		it('should refuse to delete a custom emoji when the user lacks manage-emoji', async () => {
+			const res = await request
+				.post(api('emoji-custom.delete'))
+				.set(userCredentials)
+				.send({ emojiId: createdCustomEmoji._id })
+				.expect('Content-Type', 'application/json')
+				.expect(403);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
 		});
 	});
 

@@ -66,8 +66,37 @@ const openExternalCallWindow = (url: string): Window | null => {
 };
 
 /**
+ * The conference window as it is now: the one this page opened, or — when this page never held a handle on it, as
+ * after a reload of this page, which loses the handle and not the window — the one with its name. Opening a name
+ * with no URL navigates nothing: it is that window as it is, or a new blank one when there is none.
+ */
+const findConferenceWindow = (): Window | null => {
+	if (conferenceWindow) {
+		return isBlocked(conferenceWindow) ? null : conferenceWindow;
+	}
+
+	const found = window.open('', CONFERENCE_WINDOW_NAME, popoutFeatures());
+
+	return isBlocked(found) ? null : found;
+};
+
+/**
+ * Whether a conference window is showing the conference at `url`, by what it actually shows rather than the URL it
+ * was last given, which can differ in string form between the start and join paths. The search as well as the path:
+ * a conference the user is *about to start* is identified by the room in its query string.
+ */
+const showsConference = (target: Window, url: URL): boolean => {
+	try {
+		return target.location.pathname === url.pathname && target.location.search === url.search;
+	} catch {
+		// Navigated cross-origin: not our in-product conference.
+		return false;
+	}
+};
+
+/**
  * The conference window: one window shared by every in-product conference, focused rather than reloaded when
- * the conference it already shows is asked for again.
+ * the conference it already shows is asked for again — reloading it would leave the call and join it again.
  */
 const openConferenceWindow = (callUrl: string): Window | null => {
 	const url = asCallUrl(callUrl);
@@ -81,25 +110,13 @@ const openConferenceWindow = (callUrl: string): Window | null => {
 		return openExternalCallWindow(callUrl);
 	}
 
-	const target = url;
+	// Already on this conference: focus it without reloading (empty URL = no navigation) and without passing
+	// features, which would otherwise resize and recentre a window the user may have arranged.
+	const existing = findConferenceWindow();
 
-	// The conference window is same-origin, so check what it's *actually* showing rather than the URL we last
-	// passed (which can differ in string form between the start/join paths). If it's already on this conference,
-	// focus it without reloading (empty URL = no navigation) and without passing features, which would otherwise
-	// resize and recentre a window the user may have arranged.
-	if (!isBlocked(conferenceWindow)) {
-		let showsSameConference = false;
-		try {
-			// The search too, not only the path: a conference the user is *about to start* is identified by the
-			// room in its query string, so two of those differ there and nowhere else.
-			showsSameConference = conferenceWindow?.location.pathname === target.pathname && conferenceWindow?.location.search === target.search;
-		} catch {
-			// Conference window navigated cross-origin (not our in-product conference).
-		}
-
-		if (showsSameConference) {
-			return window.open('', CONFERENCE_WINDOW_NAME) ?? conferenceWindow;
-		}
+	if (existing && showsConference(existing, url)) {
+		conferenceWindow = existing;
+		return window.open('', CONFERENCE_WINDOW_NAME) ?? existing;
 	}
 
 	// New or different conference → open/navigate the shared window and focus it.

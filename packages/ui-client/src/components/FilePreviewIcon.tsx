@@ -9,14 +9,15 @@ const FilePreviewIcon = ({ format }: FilePreviewIconProps) => {
 			height='x48'
 			borderRadius='medium'
 			backgroundColor='surface-neutral'
+			color='default'
 			justifyContent='center'
 			display='flex'
 			flexDirection='column'
 			alignItems='center'
 			flexShrink={0}
 		>
-			<Icon name='attachment-file' color='default' size={32} />
-			<Box withTruncatedText fontScale='micro' maxWidth='x40' color='default' textTransform='uppercase'>
+			<Icon name='attachment-file' size={32} />
+			<Box withTruncatedText fontScale='micro' maxWidth='x40' textTransform='uppercase'>
 				{format}
 			</Box>
 		</Box>

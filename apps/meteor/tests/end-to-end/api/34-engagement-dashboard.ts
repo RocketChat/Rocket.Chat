@@ -1,6 +1,7 @@
+import { after, before, describe, it } from 'node:test';
+
 import type { IRoom } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
@@ -8,12 +9,10 @@ import { sendSimpleMessage } from '../../data/chat.helper';
 import { updatePermission } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 
-describe('[Engagement Dashboard]', function () {
-	this.retries(0);
-
+describe('[Engagement Dashboard]', () => {
 	const isEnterprise = Boolean(process.env.IS_EE);
 
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	before(() => updatePermission('view-engagement-dashboard', ['admin']));
 
@@ -48,7 +47,7 @@ describe('[Engagement Dashboard]', function () {
 				.expect(403)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+					expect(res.body.errorType).to.be.equal('error-forbidden');
 				});
 		});
 

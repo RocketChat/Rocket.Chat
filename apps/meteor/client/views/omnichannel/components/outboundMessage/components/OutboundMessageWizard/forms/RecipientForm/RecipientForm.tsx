@@ -186,38 +186,40 @@ const RecipientForm = (props: RecipientFormProps) => {
 	return (
 		<Form id={recipientFormId} onSubmit={handleSubmit(submit)} noValidate>
 			<Scrollable vertical>
-				<FieldGroup justifyContent='start' paddingInline={2}>
-					<ContactField
-						control={control}
-						isError={isErrorContact || isContactNotFound}
-						isFetching={isFetchingContact}
-						onRetry={refetchContact}
-					/>
+				<Box>
+					<FieldGroup>
+						<ContactField
+							control={control}
+							isError={isErrorContact || isContactNotFound}
+							isFetching={isFetchingContact}
+							onRetry={refetchContact}
+						/>
 
-					<ChannelField
-						control={control}
-						contact={contact}
-						disabled={!contactId}
-						isFetching={isFetchingProvider}
-						isError={isErrorProvider || isProviderNotFound}
-						onRetry={refetchProvider}
-					/>
+						<ChannelField
+							control={control}
+							contact={contact}
+							disabled={!contactId}
+							isFetching={isFetchingProvider}
+							isError={isErrorProvider || isProviderNotFound}
+							onRetry={refetchProvider}
+						/>
 
-					<RecipientField
-						control={control}
-						contact={contact}
-						type={provider?.providerType || 'phone'}
-						disabled={!providerId || !contact}
-						isLoading={isFetchingContact}
-					/>
+						<RecipientField
+							control={control}
+							contact={contact}
+							type={provider?.providerType || 'phone'}
+							disabled={!providerId || !contact}
+							isLoading={isFetchingContact}
+						/>
 
-					<SenderField control={control} provider={provider} disabled={!recipient || !provider} isLoading={isFetchingProvider} />
-				</FieldGroup>
+						<SenderField control={control} provider={provider} disabled={!recipient || !provider} isLoading={isFetchingProvider} />
+					</FieldGroup>
+				</Box>
 			</Scrollable>
 
 			{customActions ?? (
 				<Box marginBlockStart={24} display='flex' justifyContent='end' flexGrow={0} flexShrink={0}>
-					<Button type='submit' primary loading={isSubmitting}>
+					<Button type='submit' variant='primary' loading={isSubmitting}>
 						{t('Submit')}
 					</Button>
 				</Box>

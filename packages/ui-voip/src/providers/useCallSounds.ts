@@ -13,6 +13,7 @@ export const useCallSounds = (state: State, subscribeCallEnded: (callback: () =>
 		if (state === 'ringing') {
 			return voipSounds.playRinger();
 		}
+		return undefined;
 	}, [voipSounds, state]);
 
 	useEffect(() => {

@@ -1,6 +1,6 @@
 import type { OptionType } from '@rocket.chat/fuselage';
 import { IconButton, PositionAnimated, Options, useCursor } from '@rocket.chat/fuselage';
-import type * as UiKit from '@rocket.chat/ui-kit';
+import * as UiKit from '@rocket.chat/ui-kit';
 import { useRef, useCallback, useMemo } from 'react';
 
 import { useStringFromTextObject } from '../hooks/useStringFromTextObject';
@@ -33,9 +33,9 @@ const OverflowElement = ({ block, context }: OverflowElementProps) => {
 	}, [show]);
 
 	const handleSelection = useCallback(
-		([value, _label, _selected, _type, url]: OptionType) => {
-			if (url) {
-				window.open(url);
+		([value, _label, _selected, _disabled, _type, url]: OptionType) => {
+			if (url && UiKit.isSafeUrl(url)) {
+				window.open(url, '_blank', 'noopener');
 			}
 			void action({ target: { value: String(value) } });
 			reset();
@@ -48,7 +48,7 @@ const OverflowElement = ({ block, context }: OverflowElementProps) => {
 		<>
 			<IconButton
 				ref={ref}
-				small
+				size='small'
 				onClick={onClick}
 				onBlur={hide}
 				onKeyUp={handleKeyUp}
@@ -56,7 +56,7 @@ const OverflowElement = ({ block, context }: OverflowElementProps) => {
 				disabled={loading}
 				icon='kebab'
 			/>
-			<PositionAnimated width='auto' visible={visible} anchor={ref} placement='bottom-start'>
+			<PositionAnimated visible={visible} anchor={ref} placement='bottom-start'>
 				<Options onSelect={handleSelection} options={options} cursor={cursor} />
 			</PositionAnimated>
 		</>

@@ -22,7 +22,6 @@ import type {
 	IBanner,
 	LicenseLimitKind,
 	ICustomUserStatus,
-	IWebdavAccount,
 	MessageAttachment,
 	ISession,
 	PresenceStatusCode,
@@ -166,10 +165,6 @@ export interface StreamerEvents {
 
 		{ key: `${string}/message`; args: [IMessage] },
 		{ key: `${string}/force_logout`; args: [ISession['sessionId'] | undefined] },
-		{
-			key: `${string}/webdav`;
-			args: [{ type: 'changed'; account: Partial<IWebdavAccount> } | { type: 'removed'; account: { _id: IWebdavAccount['_id'] } }];
-		},
 		{ key: `${string}/e2ekeyRequest`; args: [string, string] },
 		{ key: `${string}/notification`; args: [INotificationDesktop] },
 		{ key: `${string}/call.hangup`; args: [{ roomId: string }] },
@@ -442,35 +437,6 @@ export interface StreamerEvents {
 				| [key: 'actions/changed', args: []],
 			];
 		},
-	];
-
-	'apps-engine': [
-		{ key: 'app/added'; args: [string] },
-		{ key: 'app/removed'; args: [string] },
-		{ key: 'app/updated'; args: [string] },
-		{
-			key: 'app/statusUpdate';
-			args: [
-				{
-					appId: string;
-					status: AppStatus;
-				},
-			];
-		},
-		{
-			key: 'app/settingUpdated';
-			args: [
-				{
-					appId: string;
-					setting: AppsSetting;
-				},
-			];
-		},
-		{ key: 'command/added'; args: [string] },
-		{ key: 'command/disabled'; args: [string] },
-		{ key: 'command/updated'; args: [string] },
-		{ key: 'command/removed'; args: [string] },
-		{ key: 'actions/changed'; args: [] },
 	];
 
 	'video-conference': [{ key: `${string}/updated`; args: [] }];

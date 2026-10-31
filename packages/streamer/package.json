@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/streamer",
-	"version": "0.1.1",
+	"version": "0.1.2-rc.0",
 	"private": true,
 	"description": "Streamer seam, stream catalogue and broker-event listeners shared by apps/meteor and ddp-streamer",
 	"keywords": [
@@ -14,8 +14,8 @@
 	],
 	"scripts": {
 		"build": "tsc -p tsconfig.build.json",
-		"lint": "eslint .",
-		"lint:fix": "eslint --fix .",
+		"lint": "yarn run -T oxlint",
+		"lint:fix": "yarn run -T oxlint --fix",
 		"test": "jest",
 		"testunit": "jest",
 		"typecheck": "tsc --noEmit -p tsconfig.json"
@@ -35,11 +35,9 @@
 		"@rocket.chat/ddp-client": "workspace:^",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/media-signaling": "workspace:^",
-		"@types/jest": "~30.0.0",
-		"@types/node": "~24.13.2",
-		"eslint": "~9.39.5",
-		"jest": "~30.2.0",
-		"typescript": "~5.9.3"
+		"@types/node": "~24.13.6",
+		"jest": "~30.5.2",
+		"typescript": "~7.0.2"
 	},
 	"volta": {
 		"extends": "../../package.json"

@@ -3,9 +3,8 @@ import { TeamType } from '@rocket.chat/core-typings';
 import { useUserId } from '@rocket.chat/ui-contexts';
 
 import { useTeamInfoQuery } from '../../../../hooks/useTeamInfoQuery';
+import { isForbiddenError } from '../../../../lib/utils/isForbiddenError';
 import { useUserTeamsQuery } from '../../../room/hooks/useUserTeamsQuery';
-
-type APIErrorResult = { success: boolean; error: string };
 
 export const useParentTeamData = (teamId?: ITeam['_id']) => {
 	const userId = useUserId();
@@ -22,7 +21,7 @@ export const useParentTeamData = (teamId?: ITeam['_id']) => {
 		data: teamInfo,
 		isLoading: teamInfoLoading,
 		isError: teamInfoError,
-	} = useTeamInfoQuery(teamId, { retry: (_, error) => (error as unknown as APIErrorResult)?.error !== 'unauthorized' });
+	} = useTeamInfoQuery(teamId, { retry: (_, error) => !isForbiddenError(error) });
 
 	const { data: userTeams, isLoading: userTeamsLoading } = useUserTeamsQuery(userId);
 

@@ -8,7 +8,7 @@ class OmnichannelEditAgentFlexTab extends FlexTab {
 	readonly listbox: Listbox;
 
 	constructor(page: Page) {
-		super(page.getByRole('dialog', { name: 'Edit User' }));
+		super(page.getByRole('dialog', { name: 'Edit user' }));
 		this.listbox = new Listbox(page);
 	}
 
@@ -17,7 +17,7 @@ class OmnichannelEditAgentFlexTab extends FlexTab {
 	}
 
 	get inputDepartment(): Locator {
-		return this.root.getByLabel('Departments').getByRole('textbox');
+		return this.root.getByLabel('Departments');
 	}
 
 	getDepartmentOption(name: string) {
@@ -34,11 +34,14 @@ class OmnichannelEditAgentFlexTab extends FlexTab {
 	}
 
 	findSelectedDepartment(name: string) {
-		return this.root.getByLabel('Departments', { exact: true }).getByRole('option', { name });
+		return this.root
+			.getByRole('listbox')
+			.filter({ has: this.root.page().getByLabel('Departments', { exact: true }) })
+			.getByRole('option', { name });
 	}
 
 	private get inputStatus(): Locator {
-		return this.root.getByText('Status', { exact: true });
+		return this.root.getByRole('combobox', { name: 'Status', exact: true });
 	}
 
 	async selectStatus(status: string) {
@@ -49,7 +52,7 @@ class OmnichannelEditAgentFlexTab extends FlexTab {
 
 class OmnichannelAgentInfoFlexTab extends FlexTab {
 	constructor(page: Page) {
-		super(page.getByRole('dialog', { name: 'User Info' }));
+		super(page.getByRole('dialog', { name: 'User info' }));
 	}
 
 	get btnEdit(): Locator {

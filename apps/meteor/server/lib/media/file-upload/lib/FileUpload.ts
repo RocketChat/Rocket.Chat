@@ -12,20 +12,20 @@ import { isArrayBufferView } from 'node:util/types';
 import { hashLoginToken } from '@rocket.chat/account-utils';
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { isE2EEUpload, type IUpload } from '@rocket.chat/core-typings';
 import { Users, Avatars, UserDataFiles, Uploads, Settings, Subscriptions, Messages, Rooms } from '@rocket.chat/models';
 import { streamToBuffer } from '@rocket.chat/tools';
 import type { NextFunction } from 'connect';
+import { parseCookie } from 'cookie';
 import filesize from 'filesize';
 import { Match } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
-import { Cookies } from 'meteor/ostrio:cookies';
 import type { ClientSession, OptionalId } from 'mongodb';
 import sharp from 'sharp';
 import type { WritableStreamBuffer } from 'stream-buffers';
 import streamBuffers from 'stream-buffers';
 
-import { mime } from '../../../../../app/utils/lib/mimeTypes';
+import { mime } from '../../../../../lib/mimeTypes';
 import { isRenderableImageType } from '../../../../../lib/renderableImageTypes';
 import { MultipartUploadHandler } from '../../../../api/lib/MultipartUploadHandler';
 import { settings } from '../../../../settings';
@@ -36,10 +36,9 @@ import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization
 import { i18n } from '../../../i18n';
 import { SystemLogger } from '../../../logger/system';
 import { roomCoordinator } from '../../../rooms/roomCoordinator';
+import { getURL } from '../../../utils/getURL';
 import { validateAndDecodeJWT, generateJWT } from '../../../utils/lib/JWTHelper';
 import { fileUploadIsValidContentType } from '../../../utils/restrictions';
-
-const cookie = new Cookies();
 
 // Caps GIF frames decoded per thumbnail; limitInputPixels doesn't bound frame count.
 const MAX_ANIMATED_THUMBNAIL_PAGES = 100;
@@ -67,16 +66,6 @@ const defaults: Record<string, () => Partial<StoreOptions>> = {
 				return `${settings.get('uniqueID')}/uploads/${file.rid}/${file.userId}/${file._id}`;
 			},
 			onValidate: FileUpload.uploadsOnValidate,
-			async onRead(_fileId: string, file: IUpload, req: http.IncomingMessage, res: http.ServerResponse) {
-				// Deprecated: Remove support to usf path
-				if (!(await FileUpload.requestCanAccessFiles(req, file))) {
-					res.writeHead(403);
-					return false;
-				}
-
-				res.setHeader('content-disposition', `attachment; filename="${encodeURIComponent(file.name || '')}"`);
-				return true;
-			},
 		};
 	},
 
@@ -102,17 +91,6 @@ const defaults: Record<string, () => Partial<StoreOptions>> = {
 				return `${settings.get('uniqueID')}/uploads/userData/${file.userId}/${file._id}`;
 			},
 			onValidate: FileUpload.uploadsOnValidate,
-			async onRead(_fileId: string, file: IUpload, req: http.IncomingMessage, res: http.ServerResponse) {
-				// UserDataFiles are GDPR data exports — only the owner of the export may download it.
-				const uid = await FileUpload.getRequestUserId(req);
-				if (!uid || uid !== file.userId) {
-					res.writeHead(403);
-					return false;
-				}
-
-				res.setHeader('content-disposition', `attachment; filename="${encodeURIComponent(file.name || '')}"`);
-				return true;
-			},
 		};
 	},
 };
@@ -165,12 +143,12 @@ export const FileUpload = {
 		const language = user?.language || 'en';
 		if (!fileUploadAllowed) {
 			const reason = i18n.t('FileUpload_Disabled', { lng: language });
-			throw new Meteor.Error('error-file-upload-disabled', reason);
+			throw new ClientSafeError('error-file-upload-disabled', reason);
 		}
 
 		if (room && !directMessageAllowed && room.t === 'd') {
 			const reason = i18n.t('File_not_allowed_direct_messages', { lng: language });
-			throw new Meteor.Error('error-direct-message-file-upload-not-allowed', reason);
+			throw new ClientSafeError('error-direct-message-file-upload-not-allowed', reason);
 		}
 
 		// -1 maxFileSize means there is no limit
@@ -179,12 +157,12 @@ export const FileUpload = {
 				size: filesize(maxFileSize),
 				lng: language,
 			});
-			throw new Meteor.Error('error-file-too-large', reason);
+			throw new ClientSafeError('error-file-too-large', reason);
 		}
 
 		if (!settings.get('E2E_Enable_Encrypt_Files') && isE2EEUpload(file)) {
 			const reason = i18n.t('Encrypted_file_not_allowed', { lng: language });
-			throw new Meteor.Error('error-invalid-file-type', reason);
+			throw new ClientSafeError('error-invalid-file-type', reason);
 		}
 
 		// E2EE files should be of type application/octet-stream. no information about them should be disclosed on upload if they are encrypted
@@ -195,7 +173,7 @@ export const FileUpload = {
 		// E2EE files are of type application/octet-stream, which is whitelisted for E2EE files
 		if (!fileUploadIsValidContentType(file?.type, isE2EEUpload(file) ? 'application/octet-stream' : undefined)) {
 			const reason = i18n.t('File_type_is_not_accepted', { lng: language });
-			throw new Meteor.Error('error-invalid-file-type', reason);
+			throw new ClientSafeError('error-invalid-file-type', reason);
 		}
 
 		// App IPreFileUpload event hook
@@ -203,7 +181,7 @@ export const FileUpload = {
 			await Apps.self?.triggerEvent(AppEvents.IPreFileUpload, { file, content });
 		} catch (error: any) {
 			if (error.name === AppsEngineException.name) {
-				throw new Meteor.Error('error-app-prevented', error.message);
+				throw new ClientSafeError('error-app-prevented', error.message);
 			}
 
 			throw error;
@@ -223,7 +201,7 @@ export const FileUpload = {
 		// accept only images the browser can display as an avatar
 		if (!isRenderableImageType(file.type)) {
 			const reason = i18n.t('File_type_is_not_accepted', { lng: language });
-			throw new Meteor.Error('error-invalid-file-type', reason);
+			throw new ClientSafeError('error-invalid-file-type', reason);
 		}
 
 		// -1 maxFileSize means there is no limit
@@ -232,7 +210,7 @@ export const FileUpload = {
 				size: filesize(maxFileSize),
 				lng: language,
 			});
-			throw new Meteor.Error('error-file-too-large', reason);
+			throw new ClientSafeError('error-file-too-large', reason);
 		}
 
 		return true;
@@ -446,13 +424,13 @@ export const FileUpload = {
 		}
 
 		if (!file.userId) {
-			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
+			throw new ClientSafeError('error-not-allowed', 'Change avatar is not allowed');
 		}
 
 		// update file record to match user's username
 		const user = await Users.findOneById(file.userId);
 		if (!user?.username) {
-			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
+			throw new ClientSafeError('error-not-allowed', 'Change avatar is not allowed');
 		}
 		const oldAvatar = await Avatars.findOneByName(user.username);
 		if (oldAvatar) {
@@ -471,8 +449,7 @@ export const FileUpload = {
 		let { rc_uid, rc_token } = query as Record<string, string | undefined>;
 
 		if (!rc_uid && headers.cookie) {
-			rc_uid = cookie.get('rc_uid', headers.cookie);
-			rc_token = cookie.get('rc_token', headers.cookie);
+			({ rc_uid, rc_token } = parseCookie(headers.cookie));
 		}
 
 		const uid = rc_uid || (headers['x-user-id'] as string);
@@ -497,10 +474,7 @@ export const FileUpload = {
 		const { token } = query;
 
 		if (!rc_uid && headers.cookie) {
-			rc_uid = cookie.get('rc_uid', headers.cookie);
-			rc_token = cookie.get('rc_token', headers.cookie);
-			rc_rid = cookie.get('rc_rid', headers.cookie);
-			rc_room_type = cookie.get('rc_room_type', headers.cookie);
+			({ rc_uid, rc_token, rc_rid, rc_room_type } = parseCookie(headers.cookie));
 		}
 
 		const isAuthorizedByRoom = async () =>
@@ -947,10 +921,42 @@ export class FileUploadClass {
 				throw new Error('Invalid file type');
 			}
 
-			return ufsComplete(fileId, this.name, { session: options?.session });
+			const file = await ufsComplete(fileId, this.name, { session: options?.session });
+
+			// `/ufs` used to serve every store generically; it was replaced by per-store routes.
+			// Persist the store-aware public path/url so anything reading `IUpload.url`/`.path`
+			// (apps, integrations, …) keeps getting a link that resolves.
+			const path = this.getPublicPath(file);
+			if (path) {
+				const url = getURL(path, { cdn: false, full: true });
+				await this.model.updateOne({ _id: file._id }, { $set: { path, url } }, { session: options?.session });
+				file.path = path;
+				file.url = url;
+			}
+
+			return file;
 		} catch (e) {
 			throw e;
 		}
+	}
+
+	// The modern route depends on which store the file lives in (the old `/ufs` path served all of them).
+	private getPublicPath(file: IUpload): string | undefined {
+		if (this.model === Uploads) {
+			return FileUpload.getPath(`${file._id}/${encodeURIComponent(file.name || '')}`);
+		}
+		if (this.model === UserDataFiles) {
+			return `/data-export/${file._id}`;
+		}
+		if (this.model === Avatars) {
+			if (file.rid) {
+				return `/avatar/room/${file.rid}`;
+			}
+			if (file.userId) {
+				return `/avatar/uid/${file.userId}`;
+			}
+		}
+		return undefined;
 	}
 
 	async insert(

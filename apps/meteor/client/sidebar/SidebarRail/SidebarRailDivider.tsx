@@ -1,3 +1,4 @@
+import { Box } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
 
 import HorizontalDivider from '../../components/HorizontalDivider';
@@ -5,7 +6,9 @@ import HorizontalDivider from '../../components/HorizontalDivider';
 type SidebarRailDividerProps = ComponentProps<typeof HorizontalDivider>;
 
 const SidebarRailDivider = (props: SidebarRailDividerProps) => (
-	<HorizontalDivider marginBlock={16} marginInline={4} borderBlockStartColor='stroke-light' {...props} />
+	<Box paddingBlock={16} paddingInline={4}>
+		<HorizontalDivider flush variation='light' {...props} />
+	</Box>
 );
 
 export default SidebarRailDivider;

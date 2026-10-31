@@ -1,6 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 
-import { t } from '../../../../app/utils/lib/i18n';
+import { t } from '../../../../lib/i18n';
 import { closeUnclosedCodeBlock } from '../../../../lib/utils/closeUnclosedCodeBlock';
 import { Messages, Rooms } from '../../../stores';
 import { onClientBeforeSendMessage } from '../../onClientBeforeSendMessage';

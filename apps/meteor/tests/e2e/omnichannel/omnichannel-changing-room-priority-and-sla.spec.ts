@@ -95,7 +95,7 @@ test.describe.serial('omnichannel-changing-room-priority-and-sla', () => {
 		});
 
 		await expect(agent.poHomeChannel.content.lastSystemMessageBody).toHaveText(
-			`SLA Policy changed: ${ADMIN_CREDENTIALS.username} changed the SLA Policy to ${sla.name}`,
+			`SLA policy changed: ${ADMIN_CREDENTIALS.username} changed the SLA policy to ${sla.name}`,
 		);
 
 		await test.step('cleanup SLA', async () => {

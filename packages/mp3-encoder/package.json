@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/mp3-encoder",
-	"version": "0.31.26",
+	"version": "0.31.27-rc.0",
 	"description": "A LAME encoder to be used in web workers",
 	"keywords": [
 		"rocket.chat",
@@ -28,9 +28,8 @@
 	],
 	"scripts": {
 		"build": "rollup -c",
-		"docs": "typedoc",
-		"lint": "eslint .",
-		"lint:fix": "eslint --fix .",
+		"lint": "yarn run -T oxlint",
+		"lint:fix": "yarn run -T oxlint --fix",
 		"start": "rollup -c -w",
 		"test": "jest",
 		"testunit": "jest",
@@ -42,12 +41,8 @@
 		"@rollup/plugin-commonjs": "~29.0.3",
 		"@rollup/plugin-node-resolve": "~16.0.3",
 		"@rollup/plugin-typescript": "~12.3.0",
-		"eslint": "~9.39.5",
-		"jest": "~30.2.0",
-		"jest-environment-jsdom": "~30.2.0",
+		"jest": "~30.5.2",
 		"rollup": "~4.62.5",
-		"ts-jest": "~29.4.12",
-		"typedoc": "~0.28.20",
 		"typescript": "~5.9.3"
 	}
 }

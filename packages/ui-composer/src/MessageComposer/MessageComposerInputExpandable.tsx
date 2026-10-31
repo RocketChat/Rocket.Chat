@@ -38,7 +38,7 @@ const MessageComposerInputExpandable = forwardRef<HTMLTextAreaElement, ExpandCom
 						`}
 					>
 						<IconButton
-							small
+							size='small'
 							icon={expanded ? 'arrow-collapse' : 'arrow-expand'}
 							title={expanded ? t('Collapse') : t('Expand')}
 							onClick={() => setExpanded(!expanded)}

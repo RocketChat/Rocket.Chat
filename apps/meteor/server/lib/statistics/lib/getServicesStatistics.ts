@@ -1,10 +1,8 @@
 import { Users } from '@rocket.chat/models';
-import { MongoInternals } from 'meteor/mongo';
 
 import { readSecondaryPreferred } from '../../../database/readSecondaryPreferred';
+import { db } from '../../../database/utils';
 import { settings } from '../../../settings';
-
-const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
 async function getCustomOAuthServices(): Promise<
 	Record<
@@ -89,25 +87,9 @@ export async function getServicesStatistics(): Promise<Record<string, unknown>> 
 				enabled: settings.get('Accounts_OAuth_Apple'),
 				users: await Users.countActiveUsersByService('apple', { readPreference }),
 			},
-			dolphin: {
-				enabled: settings.get('Accounts_OAuth_Dolphin'),
-				users: await Users.countActiveUsersByService('dolphin', { readPreference }),
-			},
-			drupal: {
-				enabled: settings.get('Accounts_OAuth_Drupal'),
-				users: await Users.countActiveUsersByService('drupal', { readPreference }),
-			},
-			facebook: {
-				enabled: settings.get('Accounts_OAuth_Facebook'),
-				users: await Users.countActiveUsersByService('facebook', { readPreference }),
-			},
 			github: {
 				enabled: settings.get('Accounts_OAuth_Github'),
 				users: await Users.countActiveUsersByService('github', { readPreference }),
-			},
-			githubEnterprise: {
-				enabled: settings.get('Accounts_OAuth_GitHub_Enterprise'),
-				users: await Users.countActiveUsersByService('github_enterprise', { readPreference }),
 			},
 			gitlab: {
 				enabled: settings.get('Accounts_OAuth_Gitlab'),
@@ -117,25 +99,9 @@ export async function getServicesStatistics(): Promise<Record<string, unknown>> 
 				enabled: settings.get('Accounts_OAuth_Google'),
 				users: await Users.countActiveUsersByService('google', { readPreference }),
 			},
-			linkedin: {
-				enabled: settings.get('Accounts_OAuth_Linkedin'),
-				users: await Users.countActiveUsersByService('linkedin', { readPreference }),
-			},
-			meteor: {
-				enabled: settings.get('Accounts_OAuth_Meteor'),
-				users: await Users.countActiveUsersByService('meteor', { readPreference }),
-			},
 			nextcloud: {
 				enabled: settings.get('Accounts_OAuth_Nextcloud'),
 				users: await Users.countActiveUsersByService('nextcloud', { readPreference }),
-			},
-			twitter: {
-				enabled: settings.get('Accounts_OAuth_Twitter'),
-				users: await Users.countActiveUsersByService('twitter', { readPreference }),
-			},
-			wordpress: {
-				enabled: settings.get('Accounts_OAuth_Wordpress'),
-				users: await Users.countActiveUsersByService('wordpress', { readPreference }),
 			},
 			custom: await getCustomOAuthServices(),
 		},

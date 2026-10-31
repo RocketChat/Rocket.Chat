@@ -41,7 +41,7 @@ const RoomSidePanelItem = ({ room, openedRoom, isRoomFilter, ...props }: RoomSid
 	const parentRoomId = Boolean(room.prid || (room.teamId && !room.teamMain));
 
 	const titleIcon = getSubscriptionDraft(room) ? (
-		<Icon name='pencil' size='x12' title={room.draft ? t('Unfinished_message') : t('Unfinished_thread_message')} />
+		<Icon name='pencil' size='x12' title={room.draft ? t('Draft') : t('Thread_draft')} />
 	) : undefined;
 
 	const menu =

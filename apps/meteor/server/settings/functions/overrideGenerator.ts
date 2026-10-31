@@ -4,7 +4,7 @@ import { convertValue } from './convertValue';
 
 const compareSettingsValue = (a: ISetting['value'], b: ISetting['value'], type?: ISetting['type']): boolean => {
 	if (Array.isArray(a) && Array.isArray(b)) {
-		if (type === 'multiSelect') {
+		if (type === 'multiSelect' || type === 'multiLookup') {
 			a = a as SettingValueMultiSelect;
 			b = b as SettingValueMultiSelect;
 			return a.length === b.length && a.every((value, index) => compareSettingsValue(value, (b as SettingValueMultiSelect)[index]));

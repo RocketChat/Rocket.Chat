@@ -43,7 +43,7 @@ export default baseConfig({
 			new webpack.NormalModuleReplacementPlugin(/^meteor/, require.resolve('./mocks/meteor.ts')),
 			new webpack.NormalModuleReplacementPlugin(/(app)\/*.*\/(server)\/*/, require.resolve('./mocks/empty.ts')),
 			new webpack.NormalModuleReplacementPlugin(/rocketchat\.info$/, require.resolve('./mocks/rocketchat.info.ts')),
-			// The MIME database, which `app/utils/lib/mimeTypes` loads and every story that reaches the message
+			// The MIME database, which `lib/mimeTypes` loads and every story that reaches the message
 			// composer therefore loads too. Its own dependencies are written for Node — see the mock for why that
 			// is replaced here rather than shimmed for the whole preview.
 			new webpack.NormalModuleReplacementPlugin(/^mime-type\/with-db$/, require.resolve('./mocks/mimeType.ts')),

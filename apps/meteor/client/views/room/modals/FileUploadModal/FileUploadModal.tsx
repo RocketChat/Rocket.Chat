@@ -25,7 +25,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import FilePreview from './FilePreview';
-import { getMimeTypeFromFileName } from '../../../../../app/utils/lib/mimeTypes';
+import { getMimeTypeFromFileName } from '../../../../../lib/mimeTypes';
 import { fileUploadIsValidContentType } from '../../../../lib/utils/restrictions';
 
 export type FileUploadModalProps = {
@@ -104,10 +104,10 @@ const FileUploadModal = ({ onClose, file, fileName, fileAltText = '', onSubmit }
 				</ModalContent>
 				<ModalFooter>
 					<ModalFooterControllers>
-						<Button secondary onClick={onClose}>
+						<Button variant='secondary' onClick={onClose}>
 							{t('Cancel')}
 						</Button>
-						<Button primary type='submit' disabled={!isDirty} loading={isSubmitting}>
+						<Button variant='primary' type='submit' disabled={!isDirty} loading={isSubmitting}>
 							{t('Update')}
 						</Button>
 					</ModalFooterControllers>

@@ -3,5 +3,5 @@
 	"compilerOptions": {
 		"rootDirs": ["./src", "./"]
 	},
-	"include": ["./src/**/*"]
+	"include": ["./src/**/*", "./jest.config.ts"]
 }

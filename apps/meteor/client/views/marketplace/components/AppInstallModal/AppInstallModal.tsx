@@ -80,7 +80,7 @@ const AppInstallationModal = ({
 				<ModalFooter>
 					<ModalFooterControllers>
 						<Button onClick={handleEnableUnlimitedApps}>{t('Enable_unlimited_apps')}</Button>
-						<Button {...(enabled < limit && { primary: true })} onClick={handleConfirm}>
+						<Button variant={enabled < limit ? 'primary' : undefined} onClick={handleConfirm}>
 							{enabled < limit ? t('Next') : confirmButtonOverLimitLabel}
 						</Button>
 					</ModalFooterControllers>

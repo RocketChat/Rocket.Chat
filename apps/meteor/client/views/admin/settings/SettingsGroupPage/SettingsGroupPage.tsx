@@ -135,7 +135,7 @@ const SettingsGroupPage = ({
 		return <Page>{children}</Page>;
 	}
 
-	const isTranslationKey = (key: string): key is TranslationKey => (key as TranslationKey) !== undefined;
+	const isTranslationKey = (key: string): key is TranslationKey => key !== undefined;
 
 	return (
 		<Page is='form' action='#' method='post' onSubmit={handleSubmit}>
@@ -165,7 +165,7 @@ const SettingsGroupPage = ({
 							{t('Cancel')}
 						</Button>
 					)}
-					<Button className='save' disabled={isSaveDisabled} primary type='submit' onClick={handleSaveClick}>
+					<Button className='save' disabled={isSaveDisabled} variant='primary' type='submit' onClick={handleSaveClick}>
 						{t('Save_changes')}
 					</Button>
 				</ButtonGroup>

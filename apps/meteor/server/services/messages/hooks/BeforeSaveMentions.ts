@@ -1,4 +1,4 @@
-import { api, Team, MeteorError } from '@rocket.chat/core-services';
+import { api, Team, ClientSafeError } from '@rocket.chat/core-services';
 import type { IMessage, IUser, IRoom } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 
@@ -79,7 +79,7 @@ export const mentionServer = new MentionsServer({
 		});
 
 		// Also throw to stop propagation of 'sendMessage'.
-		throw new MeteorError('error-action-not-allowed', msg, {
+		throw new ClientSafeError('error-action-not-allowed', msg, {
 			method: 'filterATAllTag',
 			action: msg,
 		});

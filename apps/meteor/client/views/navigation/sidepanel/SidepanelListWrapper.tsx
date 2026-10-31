@@ -8,7 +8,7 @@ import { useSidebarListNavigation } from '../sidebar/RoomList/useSidebarListNavi
 
 const SidepanelListWrapper: Components['List'] = forwardRef(function SidepanelListWrapper(props, ref) {
 	const { t } = useTranslation();
-	const { sidebarListRef } = useSidebarListNavigation();
+	const sidebarListRef = useSidebarListNavigation();
 	const mergedRefs = useMergedRefsV2(ref, sidebarListRef);
 
 	return <SidepanelList aria-label={t('Channels')} ref={mergedRefs} {...props} />;

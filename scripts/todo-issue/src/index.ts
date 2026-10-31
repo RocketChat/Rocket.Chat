@@ -1,7 +1,8 @@
 #!/usr/bin/env bun
 
-import type { Config, TodoItem } from './types';
+import type { Config } from './types';
 import { extractTodos } from './diff';
+import { groupTodos } from './grouping';
 import { matchTodos } from './matcher';
 import { isSimilar } from './similarity';
 import { fetchExistingIssues, getDiffFromApi, createIssue, closeIssue, updateIssue, addReferenceToIssue } from './github';
@@ -104,33 +105,23 @@ async function run(): Promise<void> {
 				return !existingIssues.find((i) => i.title === todo.title || isSimilar(i.title, todo.title));
 			});
 
-		const byTitle = new Map<string, TodoItem[]>();
-		for (const todo of added) {
-			const list = byTitle.get(todo.title) ?? [];
-			list.push(todo);
-			byTitle.set(todo.title, list);
-		}
+		const groups = groupTodos(added);
 
-		console.log(`[INFO] Import: ${byTitle.size} new issues to create (${added.length} TODOs grouped by title)`);
+		console.log(`[INFO] Import: ${groups.length} new issues to create (${added.length} TODOs grouped)`);
 
-		for (const group of byTitle.values()) {
+		for (const group of groups) {
 			await createIssue(group, config, resolvedHeadSha);
 		}
 	} else {
 		const { toCreate, toClose, toUpdate, toReference } = matchTodos(todos, existingIssues);
 
-		const createByTitle = new Map<string, TodoItem[]>();
-		for (const todo of toCreate) {
-			const list = createByTitle.get(todo.title) ?? [];
-			list.push(todo);
-			createByTitle.set(todo.title, list);
-		}
+		const createGroups = groupTodos(toCreate);
 
 		console.log(
-			`[INFO] Actions: ${createByTitle.size} create, ${toClose.length} close, ${toUpdate.length} update, ${toReference.length} reference`,
+			`[INFO] Actions: ${createGroups.length} create (${toCreate.length} TODOs grouped), ${toClose.length} close, ${toUpdate.length} update, ${toReference.length} reference`,
 		);
 
-		for (const group of createByTitle.values()) {
+		for (const group of createGroups) {
 			await createIssue(group, config, resolvedHeadSha);
 		}
 

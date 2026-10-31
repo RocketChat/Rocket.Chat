@@ -230,7 +230,6 @@ test.describe.serial('Presence', () => {
 				await poAccountProfile.chooseClearStatusAfter('30 minutes');
 				await Promise.all([
 					page.waitForResponse((r) => r.url().endsWith('/v1/users.setStatus') && r.ok()),
-					page.waitForResponse((r) => r.url().endsWith('/v1/users.updateOwnBasicInfo') && r.ok()),
 					poAccountProfile.btnSaveChanges.click(),
 				]);
 				await expect(page.getByText('Profile saved successfully')).toBeVisible();

@@ -1,3 +1,4 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import type { Updater } from '@rocket.chat/models';
 import { Users } from '@rocket.chat/models';
@@ -34,7 +35,7 @@ const _sendEmailChangeNotification = async function (to: string, newEmail: strin
 	try {
 		await Mailer.send(email);
 	} catch (error: any) {
-		throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${error.message}`, {
+		throw new ClientSafeError('error-email-send-failed', `Error trying to send email: ${error.message}`, {
 			function: 'setEmail',
 			message: error.message,
 		});
@@ -51,18 +52,18 @@ export const setEmail = async function (
 ) {
 	email = email.trim();
 	if (!userId) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', { function: '_setEmail' });
+		throw new ClientSafeError('error-invalid-user', 'Invalid user', { function: '_setEmail' });
 	}
 
 	if (!email) {
-		throw new Meteor.Error('error-invalid-email', 'Invalid email', { function: '_setEmail' });
+		throw new ClientSafeError('error-invalid-email', 'Invalid email', { function: '_setEmail' });
 	}
 
 	await validateEmailDomain(email);
 
 	const user = await Users.findOneById(userId, { session });
 	if (!user) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', { function: '_setEmail' });
+		throw new ClientSafeError('error-invalid-user', 'Invalid user', { function: '_setEmail' });
 	}
 
 	// User already has desired username, return
@@ -72,7 +73,7 @@ export const setEmail = async function (
 
 	// Check email availability
 	if (!(await checkEmailAvailability(email))) {
-		throw new Meteor.Error('error-field-unavailable', `${email} is already in use :(`, {
+		throw new ClientSafeError('error-field-unavailable', `${email} is already in use :(`, {
 			function: '_setEmail',
 			field: email,
 		});

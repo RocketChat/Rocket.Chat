@@ -12,7 +12,7 @@ import { StartLine } from './StartLine';
 import { Takehiro } from './Takehiro';
 import { VbrMode } from './VbrMode';
 import { copyArray, fillArray, sortArray } from './arrays';
-import { assert } from './assert';
+import { assert, assertDefined } from './assert';
 import { PSFB12, PSFB21, SBMAX_l, SBMAX_s, SBPSY_l, SBPSY_s, SFBMAX, SHORT_TYPE } from './constants';
 import { isCloseToEachOther } from './math';
 
@@ -54,7 +54,7 @@ export class Quantize {
 		let sum = 0;
 		const upper = Math.trunc(cod_info.max_nonzero_coeff);
 
-		assert(xrpow !== null);
+		assertDefined(xrpow);
 		cod_info.xrpow_max = 0;
 
 		assert(upper >= 0 && upper <= 575);
@@ -290,7 +290,7 @@ export class Quantize {
 			j += width;
 			if (distort[sfb] >= 1.0) continue;
 
-			sortArray(work, j - width, width);
+			sortArray(work, j - width, j);
 			if (isCloseToEachOther(work[j - 1], 0.0)) continue;
 
 			allowedNoise = (1.0 - distort[sfb]) * l3_xmin[sfb];
@@ -336,7 +336,7 @@ export class Quantize {
 		return Math.max(1e-20, klemm_noise);
 	}
 
-	// eslint-disable-next-line complexity
+	// oxlint-disable-next-line complexity
 	private quant_compare(quant_comp: number, best: CalcNoiseResult, calc: CalcNoiseResult, gi: GrInfo, distort: Float32Array) {
 		let better;
 
@@ -362,7 +362,7 @@ export class Quantize {
 			case 8:
 				calc.max_noise = this.get_klemm_noise(distort, gi);
 
-			// eslint-disable-next-line no-fallthrough
+			// oxlint-disable-next-line no-fallthrough
 			case 1:
 				better = calc.max_noise < best.max_noise;
 				break;
@@ -581,7 +581,7 @@ export class Quantize {
 		return !status;
 	}
 
-	// eslint-disable-next-line complexity
+	// oxlint-disable-next-line complexity
 	outer_loop(gfp: LameGlobalFlags, cod_info: GrInfo, l3_xmin: Float32Array, xrpow: Float32Array, ch: number, targ_bits: number) {
 		const gfc = gfp.internal_flags;
 		const cod_info_w = new GrInfo();

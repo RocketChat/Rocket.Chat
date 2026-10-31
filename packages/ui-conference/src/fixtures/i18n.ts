@@ -1,5 +1,5 @@
 import en from '@rocket.chat/i18n/dist/resources/en.i18n.json';
-import i18next from 'i18next';
+import i18next, { type i18n } from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
 /**
@@ -12,7 +12,7 @@ import { initReactI18next } from 'react-i18next';
  * `keySeparator` and `nsSeparator` are off so the dotted keys in the file are treated as the flat names they
  * are, rather than as paths to hang objects off strings that are already there.
  */
-export const storybookI18n = i18next.createInstance();
+export const storybookI18n: i18n = i18next.createInstance();
 
 void storybookI18n.use(initReactI18next).init({
 	lng: 'en',

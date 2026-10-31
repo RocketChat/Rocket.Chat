@@ -9,7 +9,6 @@ export type GroupsMessagesProps = PaginatedRequest<
 		mentionIds?: string;
 		starredIds?: string;
 		pinned?: boolean;
-		query?: Record<string, any>;
 	}
 >;
 
@@ -38,10 +37,6 @@ const GroupsMessagesPropsSchema = withGroupBaseProperties({
 		nullable: true,
 	},
 	sort: {
-		type: 'string',
-		nullable: true,
-	},
-	query: {
 		type: 'string',
 		nullable: true,
 	},

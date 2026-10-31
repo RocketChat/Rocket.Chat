@@ -24,7 +24,7 @@ export abstract class SurfaceRenderer<
 > implements BlockRenderers<TOutputObject> {
 	protected readonly allowedLayoutBlockTypes: Set<TAllowedLayoutBlock['type']>;
 
-	public constructor(allowedLayoutBlockTypes: TAllowedLayoutBlock['type'][]) {
+	public constructor(allowedLayoutBlockTypes: readonly TAllowedLayoutBlock['type'][]) {
 		this.allowedLayoutBlockTypes = new Set(allowedLayoutBlockTypes);
 	}
 

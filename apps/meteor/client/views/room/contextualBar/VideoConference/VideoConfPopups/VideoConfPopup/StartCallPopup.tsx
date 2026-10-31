@@ -2,10 +2,8 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { useOutsideClick, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	VideoConfButton,
-	VideoConfController,
 	VideoConfPopup,
 	VideoConfPopupContent,
-	VideoConfPopupControllers,
 	VideoConfPopupFooter,
 	VideoConfPopupFooterButtons,
 	VideoConfPopupHeader,
@@ -19,6 +17,7 @@ import {
 import { useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import VideoConfPopupDeviceControllers from './VideoConfPopupDeviceControllers';
 import VideoConfPopupRoomInfo from './VideoConfPopupRoomInfo';
 import { useVideoConfRoomName } from '../../hooks/useVideoConfRoomName';
 
@@ -79,33 +78,20 @@ const StartCallPopup = ({ id, loading, room, onClose, onConfirm }: StartCallPopu
 		<VideoConfPopup ref={callbackRef} id={id} aria-label={dialogLabel}>
 			<VideoConfPopupHeader>
 				<VideoConfPopupTitle text={t('Start_a_call')} />
-				{(showCam || showMic) && (
-					<VideoConfPopupControllers>
-						{showCam && (
-							<VideoConfController
-								active={controllersConfig.cam}
-								title={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
-								icon={controllersConfig.cam ? 'video' : 'video-off'}
-								onClick={handleToggleCam}
-							/>
-						)}
-						{showMic && (
-							<VideoConfController
-								active={controllersConfig.mic}
-								title={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
-								icon={controllersConfig.mic ? 'mic' : 'mic-off'}
-								onClick={handleToggleMic}
-							/>
-						)}
-					</VideoConfPopupControllers>
-				)}
+				<VideoConfPopupDeviceControllers
+					showCam={showCam}
+					showMic={showMic}
+					config={controllersConfig}
+					onToggleCam={handleToggleCam}
+					onToggleMic={handleToggleMic}
+				/>
 			</VideoConfPopupHeader>
 			<VideoConfPopupContent>
 				<VideoConfPopupRoomInfo room={room} />
 			</VideoConfPopupContent>
 			<VideoConfPopupFooter>
 				<VideoConfPopupFooterButtons>
-					<VideoConfButton disabled={loading} primary onClick={handleStartCall}>
+					<VideoConfButton disabled={loading} variant='primary' onClick={handleStartCall}>
 						{t('Start_call')}
 					</VideoConfButton>
 				</VideoConfPopupFooterButtons>

@@ -162,7 +162,7 @@ export class ConferenceWindow {
 
 	/** The provider's page, framed rather than handed a tab of its own. Named with `aria-label`, never `title`. */
 	get frameProvider(): Locator {
-		return this.page.getByLabel('Conference Call', { exact: true });
+		return this.page.getByLabel('Conference call', { exact: true });
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
@@ -201,17 +201,17 @@ export class ConferenceWindow {
 		return this.page.getByRole('button', { name: 'Add people', exact: true });
 	}
 
-	get textInCall(): Locator {
-		return this.page.getByText('In call', { exact: true });
+	get listInCall(): Locator {
+		return this.groupMembers.getByRole('list', { name: 'In call', exact: true });
 	}
 
-	get textNotInTheCall(): Locator {
-		return this.page.getByText('Not in the call', { exact: true });
+	get listNotInTheCall(): Locator {
+		return this.groupMembers.getByRole('list', { name: 'Not in the call', exact: true });
 	}
 
 	/**
 	 * Everything the People panel lists. A `group` rather than a list: the panel holds one list per section —
-	 * `In call` and `Not in the call` — because the dividers between them are not list items.
+	 * `In call` and `Not in the call` — because the headings between them are not list items.
 	 */
 	get groupMembers(): Locator {
 		return this.page.getByRole('group', { name: 'Members', exact: true });

@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/message-types",
-	"version": "0.1.2",
+	"version": "0.2.0-rc.0",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -9,22 +9,21 @@
 	],
 	"scripts": {
 		"build": "rm -rf dist && tsc -p tsconfig.build.json",
-		"lint": "eslint .",
+		"lint": "yarn run -T oxlint",
 		"test": "jest",
 		"testunit": "jest"
 	},
 	"devDependencies": {
 		"@rocket.chat/core-typings": "workspace:~",
 		"date-fns": "~4.1.0",
-		"eslint": "~9.39.5",
 		"i18next": "~26.4.2",
-		"jest": "~30.2.0",
-		"moment": "^2.30.1",
-		"typescript": "~5.9.3"
+		"jest": "~30.5.2",
+		"moment": "^2.31.0",
+		"typescript": "~7.0.2"
 	},
 	"peerDependencies": {
 		"date-fns": "~4.1.0",
-		"moment": "^2.30.1"
+		"moment": "^2.31.0"
 	},
 	"volta": {
 		"extends": "../../package.json"

@@ -96,10 +96,10 @@ const TeamsChannels = ({
 					endAddon={<Icon name='magnifier' size='x20' />}
 				/>
 				<Box width='x144' marginInlineStart={8}>
-					<Select onChange={(val) => setType(val as 'all' | 'autoJoin')} value={type} options={options} />
+					<Select aria-label={t('Filter')} onChange={(val) => setType(val)} value={type} options={options} />
 				</Box>
 			</ContextualbarSection>
-			<ContextualbarContent padding={12}>
+			<ContextualbarContent flush spaced>
 				{loading && (
 					<Box paddingInline={24} paddingBlock={12}>
 						<Throbber size='x12' />
@@ -108,13 +108,9 @@ const TeamsChannels = ({
 				{!loading && channels.length === 0 && <ContextualbarEmptyContent title={t('No_channels_in_team')} />}
 				{!loading && channels.length > 0 && (
 					<>
-						<Box paddingInline={18} paddingBlock={12}>
+						<Box paddingInline={24} paddingBlockStart={4} paddingBlockEnd={8}>
 							<Box is='span' color='hint' fontScale='p2'>
-								{t('Showing')}: {channels.length}
-							</Box>
-
-							<Box is='span' color='hint' fontScale='p2' marginInlineStart={8}>
-								{t('Total')}: {total}
+								{t('Showing_current_of_total', { current: channels.length, total })}
 							</Box>
 						</Box>
 						<Box width='full' height='full' role='list' overflow='hidden' flexShrink={1}>
@@ -122,7 +118,6 @@ const TeamsChannels = ({
 								<Virtuoso
 									totalCount={total}
 									data={channels}
-									// eslint-disable-next-line react/no-multi-comp
 									components={{ Footer: () => <InfiniteListAnchor loadMore={loadMoreChannels} /> }}
 									itemContent={(index, data) => (
 										<TeamsChannelItem onClickView={onClickView} room={data} mainRoom={mainRoom} reload={reload} key={index} />
@@ -135,17 +130,9 @@ const TeamsChannels = ({
 			</ContextualbarContent>
 			{(onClickAddExisting || onClickCreateNew) && (
 				<ContextualbarFooter>
-					<ButtonGroup stretch>
-						{onClickAddExisting && (
-							<Button onClick={onClickAddExisting} width='50%'>
-								{t('Team_Add_existing')}
-							</Button>
-						)}
-						{onClickCreateNew && (
-							<Button onClick={onClickCreateNew} width='50%'>
-								{t('Create_new')}
-							</Button>
-						)}
+					<ButtonGroup stretch='equal'>
+						{onClickAddExisting && <Button onClick={onClickAddExisting}>{t('Team_Add_existing')}</Button>}
+						{onClickCreateNew && <Button onClick={onClickCreateNew}>{t('Create_new')}</Button>}
 					</ButtonGroup>
 				</ContextualbarFooter>
 			)}
