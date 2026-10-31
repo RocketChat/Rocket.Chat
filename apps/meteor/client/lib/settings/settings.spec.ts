@@ -46,6 +46,28 @@ describe('settings.observe', () => {
 		stop();
 	});
 
+	it('should notify keyed and wildcard observers when an undefined setting is added only once', () => {
+		const keyedCallback = jest.fn();
+		const wildcardCallback = jest.fn();
+		const stopKeyed = settings.observe('Undefined_Setting', keyedCallback);
+		const stopWildcard = settings.observe('*', wildcardCallback);
+
+		try {
+			PublicSettings.state.store(createSetting('Undefined_Setting', undefined));
+
+			expect(keyedCallback.mock.calls).toEqual([['Undefined_Setting', undefined]]);
+			expect(wildcardCallback.mock.calls).toEqual([['Undefined_Setting', undefined]]);
+
+			PublicSettings.state.store(createSetting('Undefined_Setting', undefined));
+
+			expect(keyedCallback).toHaveBeenCalledTimes(1);
+			expect(wildcardCallback).toHaveBeenCalledTimes(1);
+		} finally {
+			stopKeyed();
+			stopWildcard();
+		}
+	});
+
 	it('should not call the callback when another setting changes', () => {
 		const callback = jest.fn();
 		const stop = settings.observe('Test_Setting', callback);
@@ -77,7 +99,10 @@ describe('settings.observe', () => {
 
 		PublicSettings.state.replaceAll([createSetting('Setting_A', 1), createSetting('Setting_B', 2), createSetting('Setting_C', 1)]);
 
-		expect(callback).toHaveBeenCalledTimes(2);
+		expect(callback.mock.calls).toEqual([
+			['Setting_B', 2],
+			['Setting_C', 1],
+		]);
 		stop();
 	});
 
