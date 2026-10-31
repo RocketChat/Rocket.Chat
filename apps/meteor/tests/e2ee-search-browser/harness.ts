@@ -34,6 +34,8 @@ export const startHarnessServer = async ({
 		'/test/refuse-storage.mjs':
 			"StorageManager.prototype.getDirectory = () => Promise.reject(new DOMException('The storage is refused', 'SecurityError'));",
 		'/test/refused-storage-worker.mjs': "import './refuse-storage.mjs';\nimport '../workers/e2ee-search/worker.mjs';",
+		'/test/persistent-crashable-worker.mjs':
+			"import '../workers/e2ee-search/worker.mjs';\nself.addEventListener('message', ({ data }) => { if (data.op === 'testCrash') throw new Error('Test worker failure'); });",
 		'/test/crashable-worker.mjs':
 			"import './refused-storage-worker.mjs';\nself.addEventListener('message', ({ data }) => { if (data.op === 'testCrash') throw new Error('Test worker failure'); });",
 	};

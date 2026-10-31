@@ -81,6 +81,37 @@ test('signals memory-only index loss and clears checkpoints after leader replace
 	await follower.close();
 });
 
+test('retains saved documents but invalidates restored checkpoints after persistent worker replacement', async ({ page, browserName }) => {
+	test.skip(browserName === 'webkit', 'Playwright WebKit cannot persist the device key');
+	await load(page);
+	const id = await page.evaluate(async (doc) => {
+		const NativeWorker = Worker;
+		const workers: Worker[] = [];
+		window.Worker = class extends NativeWorker {
+			constructor(url: string | URL, options?: WorkerOptions) {
+				super(url, options);
+				workers.push(this);
+			}
+		};
+		const api = (window as unknown as TestWindow).e2eeSearchTest;
+		const id = api.create('persistent-worker-failure', '/test/persistent-crashable-worker.mjs');
+		const state = await api.call(id, 'open', [{ userId: 'u', wrapKey: new Uint8Array(32).fill(7) }]);
+		if (!(state as { encryptedAtRest: boolean }).encryptedAtRest) throw new Error('Persistent storage is required');
+		await api.call(id, 'upsert', [[doc]]);
+		await api.call(id, 'setRoomState', ['r', { backfillDone: true }]);
+		api.watch(id);
+		workers[0].postMessage({ op: 'testCrash' });
+		return id;
+	}, document);
+	await expect
+		.poll(() => page.evaluate((id) => (window as unknown as TestWindow).e2eeSearchTest.events(id), id))
+		.toContainEqual({ type: 'lost' });
+	await expect(call(page, id, 'getRoomState', 'r')).resolves.toBeUndefined();
+	await expect(call(page, id, 'search', { text: 'needle' })).resolves.toMatchObject([{ id: 'm' }]);
+	await call(page, id, 'wipe');
+	await call(page, id, 'close');
+});
+
 test('signals a real worker failure, replaces the memory-only worker, and invalidates checkpoints', async ({ page }) => {
 	await load(page);
 	const id = await page.evaluate(async (doc) => {

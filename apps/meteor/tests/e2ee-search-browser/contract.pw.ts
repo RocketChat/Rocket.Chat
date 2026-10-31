@@ -27,23 +27,33 @@ test.afterAll(async () => {
 });
 
 let backendCount = 0;
+const activeBackends: ISearchIndexBackend[] = [];
+
+test.afterEach(async () => {
+	await Promise.all(activeBackends.splice(0).map((backend) => backend.close?.()));
+});
 
 // A backend in the Chrome page, called from Node: each method call runs in the page and its worker. Each backend has
 // its own namespace, so no test sees the encrypted copy that an earlier test left on disk.
 const createBackend = async (): Promise<ISearchIndexBackend> => {
 	const namespace = `contract-${backendCount++}`;
 	const id = await page.evaluate((name) => (window as unknown as TestWindow).e2eeSearchTest.create(name), namespace);
-	return new Proxy({} as ISearchIndexBackend, {
+	const backend = new Proxy({} as ISearchIndexBackend, {
 		get: (_target, method) =>
 			method === 'then' || method === 'onIndexEvent' || typeof method !== 'string'
 				? undefined
 				: (...args: unknown[]) =>
-						page.evaluate(([backendId, name, list]) => (window as unknown as TestWindow).e2eeSearchTest.call(backendId, name, list), [
-							id,
-							method,
-							args,
-						] as const),
+						page.evaluate(
+							([backendId, name, list]) => {
+								const api = (window as unknown as TestWindow).e2eeSearchTest;
+								if (name === 'close') api.unwatch(backendId);
+								return api.call(backendId, name, list);
+							},
+							[id, method, args] as const,
+						),
 	});
+	activeBackends.push(backend);
+	return backend;
 };
 
 // Playwright's WebKit cannot store a CryptoKey in IndexedDB (UnknownError), so there the index is memory only. Its
