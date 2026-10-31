@@ -8,7 +8,7 @@ It does not need a Rocket.Chat server.
 The driver runs ports of the Playwright specs in the parent folder:
 
 - The search index backend contract.
-- Persistence: the encrypted copy, plaintext in OPFS, the stored key, and wipe.
+- Persistence: the encrypted copy, absence of plaintext in the encrypted OPFS index, the stored key, and wipe.
 - Storage: persistent storage requests, eviction, and refused storage.
 - Multi-tab: leader election, lock handover, and a second worker on the same copy.
 
@@ -68,7 +68,9 @@ The script writes everything to `out/`, which git ignores:
 
 - `results-<browser>.json`: every check, with its status and timing.
 - `<browser>.log`: the console output of the run.
-- The built test page and the throwaway browser profiles.
+- The built test page.
+
+The driver creates temporary browser profiles and removes them during cleanup.
 
 Each run replaces the results file of the browser that it runs.
 

@@ -24,7 +24,6 @@ const runDriver = (browser) =>
 		const log = createWriteStream(join(OUT, `${browser}.log`));
 		const child = spawn(process.execPath, [join(HERE, 'driver.mjs'), browser], { stdio: ['ignore', 'pipe', 'pipe'] });
 		child.stdout.on('data', (chunk) => {
-			process.stdout.write(chunk);
 			log.write(chunk);
 		});
 		child.stderr.on('data', (chunk) => {
