@@ -165,15 +165,15 @@ export const ImageGallery = ({
 							/>
 						</ButtonGroup>
 						<IconButton
-							icon='chevron-right'
-							aria-label={t('Next_image')}
+							icon='chevron-left'
+							aria-label={t('Previous_image')}
 							className='rcx-swiper-prev-button'
 							variant='secondary'
 							onClick={preventPropagation}
 						/>
 						<IconButton
-							icon='chevron-left'
-							aria-label={t('Previous_image')}
+							icon='chevron-right'
+							aria-label={t('Next_image')}
 							className='rcx-swiper-next-button'
 							variant='secondary'
 							onClick={preventPropagation}
