@@ -46,6 +46,23 @@ describe('settings.observe', () => {
 		stop();
 	});
 
+	it('should notify the keyed observer when an undefined setting is added only once', () => {
+		const callback = jest.fn();
+		const stop = settings.observe('Undefined_Setting', callback);
+
+		try {
+			PublicSettings.state.store(createSetting('Undefined_Setting', undefined));
+
+			expect(callback.mock.calls).toEqual([['Undefined_Setting', undefined]]);
+
+			PublicSettings.state.store(createSetting('Undefined_Setting', undefined));
+
+			expect(callback).toHaveBeenCalledTimes(1);
+		} finally {
+			stop();
+		}
+	});
+
 	it('should not call the callback when another setting changes', () => {
 		const callback = jest.fn();
 		const stop = settings.observe('Test_Setting', callback);
