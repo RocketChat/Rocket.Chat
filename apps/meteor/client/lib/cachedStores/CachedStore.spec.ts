@@ -69,16 +69,58 @@ describe('CachedStore', () => {
 	it('handles a rejected scheduled sync without an unhandled rejection', async () => {
 		jest.useFakeTimers();
 		const error = new Error('not-allowed');
-		const warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+		const log = jest.spyOn(console, 'error').mockImplementation(() => undefined);
 		const cachedStore = new TestCachedStore();
 		const scheduled = cachedStore as unknown as { trySync(): void; sync(): Promise<boolean> };
 		jest.spyOn(scheduled, 'sync').mockRejectedValue(error);
 		try {
 			scheduled.trySync();
 			await jest.advanceTimersByTimeAsync(10);
-			expect(warn).toHaveBeenCalledWith('CachedCollection subscriptions: could not synchronize', error);
+			expect(log).toHaveBeenCalledWith('CachedCollection subscriptions: could not synchronize or save', error);
 		} finally {
-			warn.mockRestore();
+			log.mockRestore();
+			jest.useRealTimers();
+		}
+	});
+
+	it('retries a scheduled sync when there are pending methods', async () => {
+		jest.useFakeTimers();
+		const cachedStore = new TestCachedStore();
+		const scheduled = cachedStore as unknown as { trySync(): void; sync(): Promise<boolean> };
+		const sync = jest.spyOn(scheduled, 'sync').mockResolvedValueOnce(false).mockResolvedValueOnce(true);
+		try {
+			scheduled.trySync();
+			await jest.advanceTimersByTimeAsync(10);
+			expect(sync).toHaveBeenCalledTimes(1);
+			await jest.advanceTimersByTimeAsync(10);
+			expect(sync).toHaveBeenCalledTimes(2);
+		} finally {
+			jest.useRealTimers();
+		}
+	});
+
+	it('owns a rejected save after a successful scheduled sync', async () => {
+		jest.useFakeTimers();
+		const error = new Error('storage unavailable');
+		const log = jest.spyOn(console, 'error').mockImplementation(() => undefined);
+		const cachedStore = new TestCachedStore();
+		const scheduled = cachedStore as unknown as {
+			trySync(): void;
+			sync(): Promise<boolean>;
+			save: (() => Promise<void>) & { cancel(): void };
+		};
+		jest.spyOn(scheduled, 'sync').mockResolvedValue(true);
+		const { save } = scheduled;
+		const { cancel } = save;
+		const rejectedSave = Object.assign(jest.fn().mockRejectedValue(error), { cancel });
+		scheduled.save = rejectedSave;
+		try {
+			scheduled.trySync();
+			await jest.advanceTimersByTimeAsync(10);
+			expect(log).toHaveBeenCalledWith('CachedCollection subscriptions: could not synchronize or save', error);
+		} finally {
+			scheduled.save = save;
+			log.mockRestore();
 			jest.useRealTimers();
 		}
 	});
