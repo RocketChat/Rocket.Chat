@@ -23,6 +23,7 @@ const useDidUpdate = (func: () => void, deps: DependencyList | undefined) => {
 			fn();
 		}
 		didMount.current = true;
+		// oxlint-disable-next-line react-hooks/exhaustive-deps
 	}, deps || []);
 };
 
@@ -53,14 +54,14 @@ function SelectLegacy({
 	error,
 	disabled,
 	options = [],
-	'anchor': Anchor = SelectFocus,
-	onChange = () => {},
+	'anchor': AnchorComponent = SelectFocus,
+	onChange = () => undefined,
 	getValue = ([value] = ['', '']) => value,
 	getLabel = ([, label] = ['', '']) => label,
 	placeholder = '',
 	renderItem,
-	'renderSelected': RenderSelected,
-	'renderOptions': _Options = Options,
+	'renderSelected': SelectedComponent,
+	'renderOptions': OptionsComponent = Options,
 	addonIcon,
 	customEmpty,
 	id,
@@ -140,8 +141,8 @@ function SelectLegacy({
 		>
 			<Box is='div' rcx-select__wrapper display='flex' marginInline='neg-x4' rcx-select__wrapper--hidden={!!visibleText}>
 				{visibleText &&
-					(RenderSelected ? (
-						<RenderSelected
+					(SelectedComponent ? (
+						<SelectedComponent
 							role='option'
 							value={getValue(option)}
 							label={valueLabel}
@@ -153,7 +154,7 @@ function SelectLegacy({
 							{visibleText}
 						</Box>
 					))}
-				<Anchor
+				<AnchorComponent
 					ref={anchorRef}
 					id={id}
 					aria-labelledby={ariaLabelledBy}
@@ -166,13 +167,13 @@ function SelectLegacy({
 					onKeyUp={handleKeyUp}
 				>
 					{!value ? option || placeholder : null}
-				</Anchor>
+				</AnchorComponent>
 				<SelectAddon>
 					<Icon name={visible === AnimatedVisibility.VISIBLE ? 'chevron-up' : addonIcon || 'chevron-down'} size='x20' />
 				</SelectAddon>
 			</Box>
 			<PositionAnimated visible={visible} anchor={containerRef}>
-				<_Options
+				<OptionsComponent
 					width={borderBoxSize.inlineSize}
 					role='listbox'
 					filter={filter}

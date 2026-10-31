@@ -109,7 +109,7 @@ export const States: Story = {
 		<>
 			<PropsVariationSection
 				component={SearchInput}
-				common={{ 'onChange': () => {}, 'aria-label': 'search' }}
+				common={{ 'onChange': () => undefined, 'aria-label': 'search' }}
 				xAxis={{
 					'default': {},
 					'with placeholder': { placeholder: 'Placeholder' },
@@ -133,7 +133,7 @@ export const States: Story = {
 			/>
 			<PropsVariationSection
 				component={SearchInput}
-				common={{ 'onChange': () => {}, 'small': true, 'aria-label': 'search' }}
+				common={{ 'onChange': () => undefined, 'small': true, 'aria-label': 'search' }}
 				xAxis={{
 					'small': {},
 					'with placeholder': { placeholder: 'Placeholder' },

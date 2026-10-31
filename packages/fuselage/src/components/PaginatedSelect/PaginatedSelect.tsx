@@ -34,10 +34,10 @@ export const PaginatedSelect = ({
 	error,
 	disabled,
 	options = [],
-	'anchor': Anchor = SelectFocus,
-	onChange = () => {},
+	'anchor': AnchorComponent = SelectFocus,
+	onChange = () => undefined,
 	placeholder,
-	'renderOptions': _Options = OptionsPaginated,
+	'renderOptions': OptionsComponent = OptionsPaginated,
 	renderItem = Option,
 	endReached,
 	id,
@@ -96,7 +96,7 @@ export const PaginatedSelect = ({
 						{visibleText}
 					</Box>
 				)}
-				<Anchor
+				<AnchorComponent
 					disabled={disabled}
 					rcx-input-box--undecorated
 					filter={filter}
@@ -114,7 +114,7 @@ export const PaginatedSelect = ({
 				</SelectAddon>
 			</Box>
 			<PositionAnimated visible={visible} anchor={containerRef}>
-				<_Options
+				<OptionsComponent
 					withTitle={withTitle}
 					width={borderBoxSize.inlineSize}
 					role='listbox'

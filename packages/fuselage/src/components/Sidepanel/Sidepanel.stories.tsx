@@ -72,8 +72,10 @@ const render: Story['render'] = (args) => (
 												Team title
 											</Tag>
 										</Box>
-										<SidebarItemBadge title='unread messages' children={index + 3} />
-										<SidebarItemMenu children={<MenuTemplate />} />
+										<SidebarItemBadge title='unread messages'>{index + 3}</SidebarItemBadge>
+										<SidebarItemMenu>
+											<MenuTemplate />
+										</SidebarItemMenu>
 									</SidebarItemRow>
 								</SidebarItemCol>
 							</SidebarItem>

@@ -364,24 +364,6 @@
 			}
 		},
 		{
-			"files": ["packages/fuselage/src/**/*.{ts,tsx}"],
-			"rules": {
-				"react/display-name": "warn",
-				"react-js/jsx-key": [
-					"warn",
-					{
-						"checkFragmentShorthand": true,
-						"checkKeyMustBeforeSpread": true,
-						"warnOnDuplicates": true
-					}
-				],
-				"react/no-children-prop": "warn",
-				"react/no-multi-comp": "warn",
-				"no-empty-function": "warn",
-				"react/exhaustive-deps": "warn"
-			}
-		},
-		{
 			"files": ["packages/mp3-encoder/src/lame/**/*.ts"],
 			"rules": {
 				"new-cap": "off"
