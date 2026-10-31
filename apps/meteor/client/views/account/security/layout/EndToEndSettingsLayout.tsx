@@ -4,7 +4,7 @@ import type { ReactNode } from 'react';
 export type EndToEndSettingsLayoutProps = { children: ReactNode };
 
 const EndToEndSettingsLayout = ({ children }: EndToEndSettingsLayoutProps) => (
-	<Box display='flex' flexDirection='column' gap={32}>
+	<Box display='flex' flexDirection='column' alignItems='flex-start' gap='x32'>
 		{children}
 	</Box>
 );

@@ -8,7 +8,7 @@ export type ResetPassphraseSectionProps = {
 };
 
 const ResetPassphraseSection = ({ title, description, children }: ResetPassphraseSectionProps) => (
-	<Box display='flex' flexDirection='column' gap={12}>
+	<Box display='flex' flexDirection='column' gap='x12'>
 		<Box is='h4' fontScale='h4'>
 			{title}
 		</Box>
