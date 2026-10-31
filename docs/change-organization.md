@@ -36,7 +36,7 @@ Before leaving draft, plan how the work reaches `develop`: a table in the descri
 - a refactor other work needs,
 - a change large or risky enough that reviewing it inside the feature would stall the feature.
 
-Everything else stays in the feature pull request as its own commit. Squash merge folds those commits into the feature's, so they are reverted together with it; that is accepted for changes small enough to stay. Extracted pull requests target `develop`, never another feature branch, and are merged before the feature leaves draft.
+Everything else stays in the feature pull request as its own commit. Squash merge folds those commits into the feature's, so they are reverted together with it; that is accepted for changes small enough to stay. Extracted pull requests target `develop` by default and are merged before the feature leaves draft. Stacking a pull request on another branch is fine when a person decided it: its description says what it is stacked on and why ("Stacked on #<PR>").
 
 The pull request is ready to leave draft when its definition and decisions are in it, the gaps left are ones a person accepted, the feature notes are updated, the extractions are merged and CI is green. Until then it is a POC.
 
@@ -46,11 +46,12 @@ If the POC is dropped, the fixes and refactors that meet the criteria above are 
 
 When a large mixed pull request already exists, propose the distribution before touching it.
 
-## Rebasing after an extraction merges
+## Rebasing after an extraction or a parent merges
 
-Pull requests are squash-merged, so once an extraction lands, the feature branch still carries the extraction's original commits:
+Pull requests are squash-merged, so once an extraction or a stacked parent lands, the branch above it still carries its original commits:
 
-- Rebase the feature onto `develop` from the extraction's **old** tip: `git rebase --onto origin/develop <old-extraction-tip> <feature>`. Merging `develop` into a branch that still carries the original commits can produce conflicts (renames, moved files) that have nothing to do with the feature.
+- Rebase onto `develop` from the merged branch's **old** tip: `git rebase --onto origin/develop <old-tip> <branch>`. Merging `develop` into a branch that still carries the original commits can produce conflicts (renames, moved files) that have nothing to do with it.
+- When a stacked parent is rewritten, retarget or rebase its children so their diffs show only their own changes.
 - After a rebase that resolved conflicts automatically, check the tree: the pull request's own files are unchanged, and every other file matches the new base. A replayed older commit can silently revert newer base content (dependency bumps, other teams' changes).
 - If `develop` changed one of the pull request's files for an unrelated reason, merge that file three ways (`git merge-file`) instead of copying either side.
 - Rebase before asking for review, not after approval: in this repository, branch protection dismisses existing approvals when new commits are pushed, and a rebase is a push.
