@@ -6,12 +6,13 @@ import type { IBaseUploadsModel } from './IBaseUploadsModel';
 import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
 
 export interface IUploadsModel extends IBaseUploadsModel<IUpload> {
-	findPaginatedWithoutThumbs(query: Filter<IUpload>, options?: any): FindPaginated<FindCursor<WithId<IUpload>>>;
+	findPaginatedWithoutThumbs(query: Filter<IUpload>, options?: any, uploadedSince?: Date): FindPaginated<FindCursor<WithId<IUpload>>>;
 
 	findImagesByRoomId(
 		rid: IRoom['_id'],
 		uploadedAt?: Date,
 		options?: Omit<FindOptions<IUpload>, 'sort'>,
+		uploadedSince?: Date,
 	): FindPaginated<FindCursor<WithId<IUpload>>>;
 
 	findByFederationMediaIdAndServerName(mediaId: string, serverName: string): Promise<IUpload | null>;

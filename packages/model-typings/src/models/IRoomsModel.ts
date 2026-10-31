@@ -283,6 +283,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		userId: string,
 		options?: O,
 	): FindCursor<DocumentWithProjection<T, O>>;
+	setHideHistoryForNewMembersById(_id: IRoom['_id'], hideHistoryForNewMembers: boolean): Promise<UpdateResult>;
 	setAllowReactingWhenReadOnlyById(
 		roomId: string,
 		allowReactingWhenReadOnly: NonNullable<IRoom['reactWhenReadOnly']>,
@@ -454,6 +455,11 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	removeByIds(rids: string[]): Promise<DeleteResult>;
 	removeDirectRoomContainingUsername(username: string): Promise<DeleteResult>;
 	countDiscussions(): Promise<number>;
+	findPaginatedDiscussionsByParentId(
+		prid: IRoom['_id'],
+		createdSince?: Date,
+		options?: FindOptions<IRoom>,
+	): FindPaginated<FindCursor<IRoom>>;
 	addUserIdToE2EEQueueByRoomIds(roomIds: IRoom['_id'][], uid: IUser['_id']): Promise<Document | UpdateResult>;
 	getSubscribedRoomIdsWithoutE2EKeys(uid: IUser['_id']): Promise<IRoom['_id'][]>;
 	removeUsersFromE2EEQueueByRoomId(roomId: IRoom['_id'], uids: IUser['_id'][]): Promise<Document | UpdateResult>;

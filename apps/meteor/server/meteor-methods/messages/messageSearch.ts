@@ -5,6 +5,7 @@ import { Match, check } from 'meteor/check';
 
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
+import { getHiddenMessageIds, restrictToVisibleHistory } from '../../lib/messages/historyVisibility';
 import { parseMessageSearchQuery } from '../../lib/parseMessageSearchQuery';
 import type { IRawSearchResult } from '../../lib/search/model/ISearchResult';
 import { settings } from '../../settings';
@@ -79,13 +80,18 @@ export const messageSearch = async function (
 	}
 
 	try {
+		const docs = await Messages.find(rid ? await restrictToVisibleHistory(userId, rid, query) : query, {
+			// @ts-expect-error col.s.db is not typed
+			readPreference: readSecondaryPreferred(Messages.col.s.db),
+			...options,
+		}).toArray();
+
+		// Without a room, results span rooms with different restrictions, which one query can't express.
+		const hiddenMessageIds = rid ? new Set() : await getHiddenMessageIds(userId, docs);
+
 		return {
 			message: {
-				docs: await Messages.find(query, {
-					// @ts-expect-error col.s.db is not typed
-					readPreference: readSecondaryPreferred(Messages.col.s.db),
-					...options,
-				}).toArray(),
+				docs: docs.filter(({ _id }) => !hiddenMessageIds.has(_id)),
 			},
 		};
 	} catch (error) {

@@ -19,6 +19,7 @@ import type { AISearchResult, SearchAnswer } from '@rocket.chat/rest-typings';
 
 import { getSettingPermissionId } from '../../../lib/authorization';
 import { hasAllPermissionAsync, hasAtLeastOnePermissionAsync } from '../../lib/authorization/hasPermission';
+import { getHiddenMessageIds, historyCheckedMessageProjection } from '../../lib/messages/historyVisibility';
 import { normalizeMessagesForUser } from '../../lib/utils/lib/normalizeMessagesForUser';
 import { API } from '../api';
 
@@ -202,13 +203,19 @@ const getSearchAnswerMessagesForUser = async (userId: string, messages: SearchAn
 	}
 
 	const docs = await Messages.findVisibleByIds(messageIds, {
-		projection: { _id: 1, rid: 1, msg: 1, ts: 1, u: 1 },
+		projection: { ...historyCheckedMessageProjection, msg: 1, u: 1 },
 	}).toArray();
-	const subscribedRoomIds = await getSubscribedRoomIds(
-		userId,
-		docs.map((message) => message.rid),
-	);
-	if (docs.length !== messageIds.length || docs.some((message) => !subscribedRoomIds.has(message.rid))) {
+	const [subscribedRoomIds, hiddenMessageIds] = await Promise.all([
+		getSubscribedRoomIds(
+			userId,
+			docs.map((message) => message.rid),
+		),
+		getHiddenMessageIds(userId, docs),
+	]);
+	if (
+		docs.length !== messageIds.length ||
+		docs.some((message) => !subscribedRoomIds.has(message.rid) || hiddenMessageIds.has(message._id))
+	) {
 		throw new ClientSafeError('error-invalid-search-answer-sources');
 	}
 

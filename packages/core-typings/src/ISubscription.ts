@@ -82,6 +82,9 @@ export interface ISubscription extends IRocketChatRecord {
 	inviter?: Required<Pick<IUser, '_id' | 'username'>> & Pick<IUser, 'name'>;
 
 	abacLastTimeChecked?: Date;
+
+	// Messages sent before this date are hidden from the member; absent means full history
+	historyVisibleFrom?: Date;
 }
 
 export interface IInviteSubscription extends ISubscription {

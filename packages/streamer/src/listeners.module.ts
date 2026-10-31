@@ -19,6 +19,7 @@ import { parse } from '@rocket.chat/message-parser';
 
 import { statusVisibilityGate } from './StatusVisibilityGate';
 import { refreshVisibility } from './StreamPresence';
+import { updateHistoryCutoff } from './historyVisibility';
 import type { NotificationsModule } from './notifications.module';
 
 /** Synchronous view of setting values; `undefined` when the host has no value cached. */
@@ -276,6 +277,8 @@ export class ListenersModule {
 			if (!subscription.u?._id) {
 				return;
 			}
+
+			updateHistoryCutoff(subscription);
 
 			// emit a removed event on msg stream to remove the user's stream-room-messages subscription when the user is removed from room
 			if (clientAction === 'removed') {

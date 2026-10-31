@@ -4,6 +4,7 @@ import { TeamType } from '@rocket.chat/core-typings';
 import { Rooms, Users } from '@rocket.chat/models';
 
 import { RoomSettingsEnum } from '../../../definition/IRoomTypeConfig';
+import { canRestrictMessageHistory } from '../../../lib/rooms/canRestrictMessageHistory';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { isABACManagedRoom } from '../../lib/authorization/isABACManagedRoom';
 import { SystemLogger } from '../../lib/logger/system';
@@ -16,6 +17,7 @@ import { saveRoomAnnouncement } from '../../lib/rooms/settings/saveRoomAnnouncem
 import { saveRoomCustomFields } from '../../lib/rooms/settings/saveRoomCustomFields';
 import { saveRoomDescription } from '../../lib/rooms/settings/saveRoomDescription';
 import { saveRoomEncrypted } from '../../lib/rooms/settings/saveRoomEncrypted';
+import { saveRoomHideHistoryForNewMembers } from '../../lib/rooms/settings/saveRoomHideHistoryForNewMembers';
 import { saveRoomName } from '../../lib/rooms/settings/saveRoomName';
 import { saveRoomReadOnly } from '../../lib/rooms/settings/saveRoomReadOnly';
 import { saveRoomSystemMessages } from '../../lib/rooms/settings/saveRoomSystemMessages';
@@ -34,6 +36,7 @@ type RoomSettings = {
 	roomType: IRoom['t'];
 	readOnly: boolean;
 	reactWhenReadOnly: boolean;
+	hideHistoryForNewMembers: boolean;
 	systemMessages: MessageTypesValues[];
 	default: boolean;
 	joinCode: string;
@@ -87,6 +90,14 @@ const guardABACManagedField = (room: IRoom, value: string | undefined, current: 
 };
 
 const validators: RoomSettingsValidators = {
+	async hideHistoryForNewMembers({ room }) {
+		if (!settings.get<boolean>('Restricted_Message_History_Enabled') || !canRestrictMessageHistory(room)) {
+			throw new ClientSafeError('error-action-not-allowed', 'Hiding message history is not allowed in this room', {
+				method: 'saveRoomSettings',
+				action: 'Hide_history_for_new_members',
+			});
+		}
+	},
 	async default({ userId }) {
 		if (!(await hasPermissionAsync(userId, 'view-room-administration'))) {
 			throw new ClientSafeError('error-action-not-allowed', 'Viewing room administration is not allowed', {
@@ -324,6 +335,11 @@ const settingSavers: RoomSettingsSavers = {
 			await saveReactWhenReadOnly(rid, value, user);
 		}
 	},
+	async hideHistoryForNewMembers({ value, room, rid, user }) {
+		if (value !== Boolean(room.hideHistoryForNewMembers)) {
+			await saveRoomHideHistoryForNewMembers(rid, value, user);
+		}
+	},
 	async systemMessages({ value, room, rid }) {
 		if (JSON.stringify(value) !== JSON.stringify(room.sysMes)) {
 			await saveRoomSystemMessages(rid, value);
@@ -385,6 +401,7 @@ const fields: (keyof RoomSettings)[] = [
 	'roomType',
 	'readOnly',
 	'reactWhenReadOnly',
+	'hideHistoryForNewMembers',
 	'systemMessages',
 	'default',
 	'joinCode',

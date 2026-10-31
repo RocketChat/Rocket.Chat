@@ -5,6 +5,8 @@ import { Messages, Subscriptions, Rooms } from '@rocket.chat/models';
 
 import { settings } from '../../../settings';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../authorization';
+import type { HistoryCheckedMessage } from '../../messages/historyVisibility';
+import { canSeeMessage, historyCheckedMessageProjection } from '../../messages/historyVisibility';
 import { isTheLastMessage } from '../../messages/isTheLastMessage';
 import { notifyOnRoomChangedById, notifyOnMessageChange } from '../../notifyListener';
 
@@ -22,7 +24,10 @@ export const starMessage = async (user: IUser, message: Pick<IMessage, 'rid' | '
 	if (!subscription) {
 		return false;
 	}
-	if (!(await Messages.findOneByRoomIdAndMessageId(message.rid, message._id))) {
+	const storedMessage = await Messages.findOneByRoomIdAndMessageId<HistoryCheckedMessage>(message.rid, message._id, {
+		projection: historyCheckedMessageProjection,
+	});
+	if (!storedMessage || !(await canSeeMessage(user._id, storedMessage))) {
 		return false;
 	}
 

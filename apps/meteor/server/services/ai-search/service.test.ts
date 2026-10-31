@@ -32,6 +32,8 @@ const Users = {
 
 const serverFetch = sinon.stub();
 
+const getHiddenMessageIds = sinon.stub();
+
 const { AISearchService } = proxyquire.noCallThru().load('./service', {
 	'@rocket.chat/core-services': {
 		License,
@@ -57,6 +59,10 @@ const { AISearchService } = proxyquire.noCallThru().load('./service', {
 	},
 	'@rocket.chat/server-fetch': {
 		serverFetch,
+	},
+	'../../lib/messages/historyVisibility': {
+		getHiddenMessageIds,
+		historyCheckedMessageProjection: { _id: 1, rid: 1, ts: 1, tmid: 1, tshow: 1, replies: 1 },
 	},
 });
 
@@ -101,8 +107,10 @@ describe('AISearchService', () => {
 		Subscriptions.findByUserIdAndRoomIds.reset();
 		Users.findOneById.reset();
 		serverFetch.reset();
+		getHiddenMessageIds.reset();
 
 		License.hasModule.resolves(true);
+		getHiddenMessageIds.resolves(new Set());
 		cachedSettings.get.callsFake((key: string) => settings[key]);
 		Users.findOneById.resolves({ roles: ['admin'] });
 		Rooms.findByIds.callsFake((roomIds: string[]) =>
@@ -613,7 +621,7 @@ describe('AISearchService', () => {
 			expect(results[0]).to.include({ _id: 'general-msg', rid: 'room-general', score: 0.8 });
 			expect(
 				Messages.findVisibleByIds.calledWith(['general-msg', 'blocked-msg'], {
-					projection: { _id: 1, rid: 1, msg: 1, ts: 1, u: 1 },
+					projection: { _id: 1, rid: 1, ts: 1, tmid: 1, tshow: 1, replies: 1, msg: 1, u: 1 },
 				}),
 			).to.be.true;
 
@@ -664,6 +672,22 @@ describe('AISearchService', () => {
 			Messages.findVisibleByIds.returns(cursor([]));
 
 			expect(await createService().search({ query: 'fruit', userId: 'user-id', limit: 5 })).to.deep.equal([]);
+		});
+
+		it('drops pipeline hits sent before the user can read the room', async () => {
+			Subscriptions.findByUserId.returns(cursor([{ rid: 'allowed' }]));
+			serverFetch.resolves({
+				ok: true,
+				status: 200,
+				json: async () => ({
+					results: [{ metadata: { room_id: 'allowed', msg_id: 'earlier-msg' }, text: 'pipeline text should not leak', similarity: 0.8 }],
+				}),
+				text: async () => '',
+			});
+			getHiddenMessageIds.resolves(new Set(['earlier-msg']));
+
+			expect(await createService().search({ query: 'fruit', userId: 'user-id', limit: 5 })).to.deep.equal([]);
+			expect(getHiddenMessageIds.calledWith('user-id')).to.be.true;
 		});
 
 		it('drops pipeline hits from rooms where the user subscription is banned', async () => {

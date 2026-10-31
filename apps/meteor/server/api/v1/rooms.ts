@@ -61,6 +61,7 @@ import * as dataExport from '../../lib/dataExport';
 import { eraseRoom } from '../../lib/eraseRoom';
 import { findUsersOfRoomOrderedByRole } from '../../lib/findUsersOfRoomOrderedByRole';
 import { FileUpload } from '../../lib/media/file-upload';
+import { canSeeMessage, getHistoryVisibleFrom } from '../../lib/messages/historyVisibility';
 import { loadRoomHistory, type RoomHistoryResult } from '../../lib/messages/loadRoomHistory';
 import { notifyOnSubscriptionChanged } from '../../lib/notifyListener';
 import { openRoom } from '../../lib/openRoom';
@@ -647,9 +648,7 @@ API.v1.get(
 			return API.v1.forbidden('User does not have access to the room');
 		}
 
-		const ourQuery = { prid: room._id };
-
-		const { cursor, totalCount } = await Rooms.findPaginated(ourQuery, {
+		const { cursor, totalCount } = Rooms.findPaginatedDiscussionsByParentId(room._id, await getHistoryVisibleFrom(this.userId, room._id), {
 			sort: sort || { fname: 1 },
 			skip: offset,
 			limit: count,
@@ -697,20 +696,31 @@ API.v1.get(
 			return API.v1.forbidden();
 		}
 
+		const historyVisibleFrom = await getHistoryVisibleFrom(this.userId, room._id);
+
 		let initialImage: IUpload | null = null;
 		if (this.queryParams.startingFromId) {
 			initialImage = await Uploads.findOneById(this.queryParams.startingFromId);
-			if (initialImage && initialImage.rid !== room._id) {
+			if (
+				initialImage &&
+				(initialImage.rid !== room._id ||
+					(historyVisibleFrom && (!initialImage.uploadedAt || initialImage.uploadedAt < historyVisibleFrom)))
+			) {
 				initialImage = null;
 			}
 		}
 
 		const { offset, count } = await getPaginationItems(this.queryParams);
 
-		const { cursor, totalCount } = Uploads.findImagesByRoomId(room._id, initialImage?.uploadedAt, {
-			skip: offset,
-			limit: count,
-		});
+		const { cursor, totalCount } = Uploads.findImagesByRoomId(
+			room._id,
+			initialImage?.uploadedAt,
+			{
+				skip: offset,
+				limit: count,
+			},
+			historyVisibleFrom,
+		);
 
 		const [files, total] = await Promise.all([cursor.toArray(), totalCount]);
 
@@ -1816,7 +1826,7 @@ export const roomEndpoints = API.v1
 			let around: IMessage | undefined;
 			if (aroundId) {
 				const message = await Messages.findOneVisibleByRoomIdAndMessageId(roomId, aroundId);
-				if (!message) {
+				if (!message || !(await canSeeMessage(this.userId, message))) {
 					return API.v1.notFound();
 				}
 				around = message;

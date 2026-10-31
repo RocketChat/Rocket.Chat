@@ -6,6 +6,7 @@ import { filterDefaultChannelsForUser } from './filterDefaultChannelsForUser';
 import { getDefaultChannels } from './getDefaultChannels';
 import { callbacks } from '../callbacks';
 import { getSubscriptionAutotranslateDefaultConfig } from '../getSubscriptionAutotranslateDefaultConfig';
+import { getHistoryVisibleFromForNewMember } from '../messages/historyVisibility';
 import { notifyOnSubscriptionChangedById } from '../notifyListener';
 import { getDefaultSubscriptionPref } from '../utils/lib/getDefaultSubscriptionPref';
 
@@ -16,10 +17,13 @@ export const addUserToDefaultChannels = async function (user: IUser, silenced?: 
 	for (const room of defaultRooms) {
 		if (!(await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, { projection: { _id: 1 } }))) {
 			const autoTranslateConfig = getSubscriptionAutotranslateDefaultConfig(user);
+			const joinedAt = new Date();
+			const historyVisibleFrom = await getHistoryVisibleFromForNewMember(room, joinedAt);
 
 			// Add a subscription to this user
 			const { insertedId } = await Subscriptions.createWithRoomAndUser(room, user, {
-				ts: new Date(),
+				ts: joinedAt,
+				...(historyVisibleFrom && { historyVisibleFrom }),
 				open: true,
 				alert: true,
 				unread: 1,
