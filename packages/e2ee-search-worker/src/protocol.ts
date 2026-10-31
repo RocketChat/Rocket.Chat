@@ -8,7 +8,7 @@ export type ScopeState = { persistent: boolean; restored: boolean; evicted?: boo
 
 export type WorkerRequest = { id: number } & (
 	| { op: 'open'; scopeId: string; wrapKey?: CryptoKey }
-	| { op: 'wipe'; scopeId?: string }
+	| { op: 'wipe'; scopeId: string }
 	| { op: 'close'; scopeId: string }
 	| { op: 'flush' }
 	| ({ op: 'exec' } & SqlStatement)
