@@ -9,6 +9,7 @@ import type { ILivechatVisitor } from '../ILivechatVisitor';
 import type { IOmnichannelServiceLevelAgreements } from '../IOmnichannelServiceLevelAgreements';
 import type { IRocketChatRecord } from '../IRocketChatRecord';
 import type { IRoom } from '../IRoom';
+import type { ISecurityLabel } from '../ISecurityLabel';
 import type { IUser } from '../IUser';
 import type { FileProp } from './MessageAttachment/Files/FileProp';
 import type { MessageAttachment } from './MessageAttachment/MessageAttachment';
@@ -240,6 +241,8 @@ export interface IMessage extends IRocketChatRecord {
 	customFields?: Record<string, any>;
 
 	content?: EncryptedContent;
+
+	securityLabel?: ISecurityLabel;
 
 	// Read receipts migration flag
 	receiptsArchived?: boolean;

@@ -1,6 +1,7 @@
 import type { IAbacAttributeDefinition } from './IAbacAttribute';
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IRole } from './IRole';
+import type { ISecurityClearance } from './ISecurityLabel';
 import type { PresenceSource, UserStatus } from './UserStatus';
 import type { Serialized } from './utils';
 
@@ -279,6 +280,8 @@ export interface IUser extends IRocketChatRecord {
 	inactiveReason?: 'deactivated' | 'pending_approval' | 'idle_too_long';
 	providerId?: string;
 	abacAttributes?: IAbacAttributeDefinition[];
+	// One clearance per security policy the user is cleared under
+	securityClearances?: ISecurityClearance[];
 }
 
 export interface IRegisterUser extends IUser {

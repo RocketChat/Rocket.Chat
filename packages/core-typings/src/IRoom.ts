@@ -5,6 +5,7 @@ import type { ILivechatVisitor } from './ILivechatVisitor';
 import type { IMessage, MessageTypesValues } from './IMessage';
 import type { IOmnichannelServiceLevelAgreements } from './IOmnichannelServiceLevelAgreements';
 import type { IRocketChatRecord } from './IRocketChatRecord';
+import type { ISecurityClearance, ISecurityLabel } from './ISecurityLabel';
 import type { IUser } from './IUser';
 import type { RoomType } from './RoomType';
 import type { Branded } from './utils';
@@ -25,6 +26,9 @@ export interface IRoom extends IRocketChatRecord {
 	encrypted?: boolean;
 	// The existence of an abac attribute definition indicates that ABAC is enabled for the room
 	abacAttributes?: IAbacAttributeDefinition[];
+	// The labels the room may carry; its presence puts the room under data-centric security
+	securityClearance?: ISecurityClearance;
+	defaultSecurityLabel?: Pick<ISecurityLabel, 'policyId' | 'classification' | 'categories'>;
 	topic?: string;
 
 	reactWhenReadOnly?: boolean;
