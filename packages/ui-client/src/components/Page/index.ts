@@ -6,3 +6,4 @@ export { default as PageScrollableContent } from './PageScrollableContent';
 export { default as PageScrollableContentWithShadow } from './PageScrollableContentWithShadow';
 export { default as PageHeaderNoShadow } from './PageHeaderNoShadow';
 export { default as PageBlockWithBorder } from './PageBlockWithBorder';
+export { default as PageCloseContext } from './PageCloseContext';
