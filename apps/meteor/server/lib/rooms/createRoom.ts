@@ -157,10 +157,6 @@ async function createUsersSubscriptions({
 	const { insertedIds } = await Subscriptions.createWithRoomAndManyUsers(room, subs);
 	await Users.assignRoomRolePrioritiesByUserIdPriorityMap(memberIdAndRolePriorityMap, room._id);
 
-	Object.values(insertedIds).forEach((subId) => notifyOnSubscriptionChangedById(subId, 'inserted'));
-
-	await Rooms.incUsersCountById(room._id, subs.length);
-
 	// Members added after creation enter the E2EE key queue in addUserToRoom; the initial members must
 	// enter it here, so that any member who holds the room key can hand it to them.
 	if (room.encrypted && settings.get('E2E_Enable')) {
@@ -170,6 +166,10 @@ async function createUsersSubscriptions({
 			void notifyOnRoomChangedById(room._id);
 		}
 	}
+
+	Object.values(insertedIds).forEach((subId) => notifyOnSubscriptionChangedById(subId, 'inserted'));
+
+	await Rooms.incUsersCountById(room._id, subs.length);
 
 	return skippedMembers;
 }
