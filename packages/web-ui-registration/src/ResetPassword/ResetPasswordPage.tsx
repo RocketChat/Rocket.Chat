@@ -106,6 +106,7 @@ const ResetPasswordPage = () => {
 									aria-invalid={errors.password ? 'true' : 'false'}
 									aria-required='true'
 									id={passwordId}
+									autoComplete='new-password'
 									placeholder={passwordPlaceholder || t('Create_a_password')}
 									aria-describedby={`${passwordVerifierId} ${passwordId}-error`}
 								/>
@@ -134,6 +135,7 @@ const ResetPasswordPage = () => {
 										aria-invalid={errors.passwordConfirmation ? 'true' : 'false'}
 										aria-describedby={`${passwordConfirmationId}-error`}
 										id={passwordConfirmationId}
+										autoComplete='new-password'
 										placeholder={passwordConfirmationPlaceholder || t('Confirm_password')}
 										disabled={!passwordIsValid}
 									/>
