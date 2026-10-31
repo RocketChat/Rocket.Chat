@@ -641,7 +641,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 				stop();
 				if (this.userId === userId) this.userId = undefined;
 			}
-			console.warn('[VideoConf] Could not connect the user subscription', error);
+			this.warnLog('[VideoConf] Could not connect the user subscription', error);
 		}
 	}
 
