@@ -499,6 +499,31 @@ describe('handleCursorPagination with messages that share one timestamp', () => 
 		expect(await crawl('UPDATED', 'previous', `${sameMs.getTime() + 2}_`)).to.deep.equal(['after', ...[...ids].reverse(), 'before']);
 	});
 
+	for (const type of ['UPDATED', 'DELETED'] as const) {
+		it(`should preserve compound ${type} cursors and timestamp ties when next is empty`, async () => {
+			const seen: string[] = [];
+			let previous: string | null = `${sameMs.getTime() + 2}_`;
+
+			for (let page = 0; previous && page < 10; page++) {
+				const result: { updated: IMessage[]; deleted: IMessage[]; cursor: Record<'next' | 'previous', string | null> } =
+					await getMessageHistory('roomId', 'userId', { type, count: 2, next: '', previous });
+				if (page === 0) {
+					expect(result.cursor).to.deep.equal({ next: `${sameMs.getTime() + 1}_after`, previous: `${sameMs.getTime()}_a5` });
+				}
+				for (const cursor of Object.values(result.cursor)) {
+					if (cursor !== null) {
+						expect(cursor).to.be.a('string').and.include('_');
+					}
+				}
+				seen.push(...(type === 'UPDATED' ? result.updated : result.deleted).map((message: IMessage) => message._id));
+				previous = result.cursor.previous;
+			}
+
+			expect(previous).to.equal(null);
+			expect(seen).to.deep.equal(['after', ...[...ids].reverse(), 'before']);
+		});
+	}
+
 	it('should return compound cursors only when the request cursor is compound', async () => {
 		const compound = await handleCursorPagination('UPDATED', 'roomId', 2, '0_');
 		expect(compound.cursor.next).to.equal(`${sameMs.getTime()}_a1`);
