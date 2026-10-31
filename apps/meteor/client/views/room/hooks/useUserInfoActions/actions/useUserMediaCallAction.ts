@@ -41,7 +41,7 @@ export const useUserMediaCallAction = (user: Pick<IUser, '_id' | 'username' | 'n
 
 	return {
 		type: 'communication',
-		title: t('Voice_call__user_', { user: user.name || user.username || '' }),
+		content: t('Voice_call'),
 		icon: 'phone',
 		onClick: () => {
 			closeUserCard();

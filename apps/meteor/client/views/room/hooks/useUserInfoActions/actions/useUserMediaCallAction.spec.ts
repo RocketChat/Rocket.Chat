@@ -89,7 +89,7 @@ describe('useUserMediaCallAction', () => {
 				.withRoom(createFakeRoom())
 				.withSubscription(createFakeSubscription())
 				.withTranslations('en', 'core', {
-					Voice_call__user_: 'Voice call {{user}}',
+					Voice_call: 'Voice call',
 				})
 				.build(),
 		});
@@ -98,7 +98,7 @@ describe('useUserMediaCallAction', () => {
 			expect.objectContaining({
 				type: 'communication',
 				icon: 'phone',
-				title: `Voice call ${fakeUser.name}`,
+				content: 'Voice call',
 				disabled: false,
 			}),
 		);
