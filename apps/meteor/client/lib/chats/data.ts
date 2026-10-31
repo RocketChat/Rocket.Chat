@@ -101,7 +101,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 				(tmid ? record.tmid === tmid : !record.tmid) &&
 				record.u._id === uid &&
 				record._hidden !== true &&
-				record.ts.getTime() < (message?.ts.getTime() ?? Date.now()),
+				(!message || record.ts.getTime() < message.ts.getTime()),
 			(a, b) => b.ts.getTime() - a.ts.getTime(),
 		);
 
