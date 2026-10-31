@@ -28,8 +28,7 @@ const payloadLinter = linter((view: EditorView) => {
 		});
 		return diagnostics;
 	}
-	head = head.firstChild;
-	if (!head?.matchContext(['ArrayExpression'])) {
+	if (head?.name !== 'ArrayExpression') {
 		diagnostics.push({
 			from: 0,
 			to: 0,
@@ -38,8 +37,9 @@ const payloadLinter = linter((view: EditorView) => {
 		});
 		return diagnostics;
 	}
-	// while (head.nextSibling && head.nextSibling.name !== ']') {
-	// }
+	head = head.firstChild;
+	if (!head) return diagnostics;
+
 	do {
 		if (head.name !== '[' && head.name !== ',' && head.name !== ']' && head.name !== 'ObjectExpression') {
 			diagnostics.push({
