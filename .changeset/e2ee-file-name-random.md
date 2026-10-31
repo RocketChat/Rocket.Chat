@@ -2,4 +2,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-Stores an encrypted file under a random name instead of a hash of its name, so the server learns nothing about the file name
+Use random filenames instead of filename hashes for new encrypted uploads from the web client. This change does not rename existing uploads or change mobile clients.
