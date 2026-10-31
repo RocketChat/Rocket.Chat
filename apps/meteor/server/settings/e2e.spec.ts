@@ -27,23 +27,6 @@ const expectedDefaults: Record<string, number | boolean> = {
 	E2E_Local_Search_Backoff_Max: 600,
 };
 
-const adminKeys = [
-	'E2E_Enable_Local_Search',
-	'E2E_Enable_Local_Search_Description',
-	'E2E_Local_Search_Backfill_Months',
-	'E2E_Local_Search_Backfill_Months_Description',
-	'E2E_Local_Search_Backfill_Max_Messages_Per_Room',
-	'E2E_Local_Search_Backfill_Max_Messages_Per_Room_Description',
-	'E2E_Local_Search_Backfill_Page_Size',
-	'E2E_Local_Search_Backfill_Page_Size_Description',
-	'E2E_Local_Search_Backfill_Pause',
-	'E2E_Local_Search_Backfill_Pause_Description',
-	'E2E_Local_Search_Backoff_Min',
-	'E2E_Local_Search_Backoff_Min_Description',
-	'E2E_Local_Search_Backoff_Max',
-	'E2E_Local_Search_Backoff_Max_Description',
-];
-
 describe('E2E server settings', () => {
 	let registered: Array<{ _id: string; value: number | boolean; options: Record<string, unknown> }>;
 
@@ -94,10 +77,16 @@ describe('E2E server settings', () => {
 		}
 	});
 
-	it('defines all admin labels and descriptions in the English locale', async () => {
+	it.each(localSearchSettingIds)('registers the expected English label and description for %s', async (id) => {
+		await createE2ESettings();
+		const setting = registered.find(({ _id }) => _id === id);
+		const expectedKeys = { i18nLabel: id, i18nDescription: `${id}_Description` };
+
+		expect(setting?.options).toMatchObject(expectedKeys);
+
 		const locale = await import('../../../../packages/i18n/src/locales/en.i18n.json');
-		for (const key of adminKeys) {
-			expect(locale.default).toHaveProperty(key);
+		for (const key of Object.values(expectedKeys)) {
+			expect(locale.default).toHaveProperty(key, expect.any(String));
 		}
 	});
 });
