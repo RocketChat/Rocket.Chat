@@ -82,11 +82,16 @@ describe('E2E password modal', () => {
 });
 
 describe('E2E requestSubscriptionKeys', () => {
+	beforeEach(async () => {
+		await e2e.stopClient();
+		(sdk.rest.post as jest.Mock).mockReset().mockResolvedValue({});
+	});
+
 	afterEach(() => {
 		jest.clearAllMocks();
 	});
 
-	it('should share one request between concurrent callers', async () => {
+	it('shares the active request and follows up once for concurrent callers', async () => {
 		let resolve!: () => void;
 		(sdk.rest.post as jest.Mock).mockReturnValueOnce(
 			new Promise<void>((r) => {
@@ -96,11 +101,58 @@ describe('E2E requestSubscriptionKeys', () => {
 
 		const first = e2e.requestSubscriptionKeys();
 		const second = e2e.requestSubscriptionKeys();
+		expect(second).toBe(first);
+		expect(sdk.rest.post).toHaveBeenCalledTimes(1);
 		resolve();
 		await Promise.all([first, second]);
 
-		expect(sdk.rest.post).toHaveBeenCalledTimes(1);
+		expect(sdk.rest.post).toHaveBeenCalledTimes(2);
 		expect(sdk.rest.post).toHaveBeenCalledWith('/v1/e2e.requestSubscriptionKeys');
+	});
+
+	it('admits a room that starts waiting after the first server read', async () => {
+		const waiting = new Set(['early-room']);
+		const admitted = new Set<string>();
+		let resolve!: () => void;
+		(sdk.rest.post as jest.Mock)
+			.mockImplementationOnce(() => {
+				waiting.forEach((room) => admitted.add(room));
+				return new Promise<void>((done) => {
+					resolve = done;
+				});
+			})
+			.mockImplementationOnce(async () => {
+				waiting.forEach((room) => admitted.add(room));
+			});
+		const first = e2e.requestSubscriptionKeys();
+		waiting.add('later-room');
+		const later = e2e.requestSubscriptionKeys();
+		resolve();
+		await Promise.all([first, later]);
+
+		expect(admitted).toEqual(new Set(['early-room', 'later-room']));
+		expect(sdk.rest.post).toHaveBeenCalledTimes(2);
+	});
+
+	it('cancels a dirty follow-up when the session stops', async () => {
+		let resolve!: () => void;
+		(sdk.rest.post as jest.Mock).mockReturnValueOnce(
+			new Promise<void>((done) => {
+				resolve = done;
+			}),
+		);
+		const first = e2e.requestSubscriptionKeys();
+		e2e.requestSubscriptionKeys();
+		await e2e.stopClient();
+		resolve();
+		await first;
+		expect(sdk.rest.post).toHaveBeenCalledTimes(1);
+	});
+
+	it('retries admission once after a transient failure', async () => {
+		(sdk.rest.post as jest.Mock).mockRejectedValueOnce(new Error('network'));
+		await e2e.requestSubscriptionKeys();
+		expect(sdk.rest.post).toHaveBeenCalledTimes(2);
 	});
 
 	it('should send a new request after the previous one settles', async () => {
@@ -113,12 +165,12 @@ describe('E2E requestSubscriptionKeys', () => {
 	});
 
 	it('should send a new request after the previous one fails', async () => {
-		(sdk.rest.post as jest.Mock).mockRejectedValueOnce(new Error('network')).mockResolvedValueOnce({});
+		(sdk.rest.post as jest.Mock).mockRejectedValueOnce(new Error('network')).mockRejectedValueOnce(new Error('network'));
 
 		await expect(e2e.requestSubscriptionKeys()).rejects.toThrow('network');
 		await e2e.requestSubscriptionKeys();
 
-		expect(sdk.rest.post).toHaveBeenCalledTimes(2);
+		expect(sdk.rest.post).toHaveBeenCalledTimes(3);
 	});
 
 	it('should not share the request of the previous user after stopClient', async () => {

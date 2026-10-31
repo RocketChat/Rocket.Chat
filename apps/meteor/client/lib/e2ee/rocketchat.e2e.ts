@@ -106,15 +106,20 @@ class E2E extends Emitter {
 		return this.state === 'READY' || this.state === 'SAVE_PASSWORD';
 	}
 
-	async onE2EEReady() {
+	async onE2EEReady(generation = this.startGeneration) {
+		if (this.isStale(generation)) return;
 		this.initiateHandshake();
-		await this.handleAsyncE2EESuggestedKey();
-		await this.decryptSubscriptions();
-		await this.initiateKeyDistribution();
-		this.observeSubscriptions();
+		await this.handleAsyncE2EESuggestedKey(generation);
+		if (this.isStale(generation)) return;
+		await this.decryptSubscriptions(generation);
+		if (this.isStale(generation)) return;
+		await this.initiateKeyDistribution(generation);
+		if (this.isStale(generation)) return;
+		this.observeSubscriptions(generation);
 	}
 
-	async onSubscriptionChanged(sub: SubscriptionWithRoom): Promise<void> {
+	async onSubscriptionChanged(sub: SubscriptionWithRoom, generation = this.startGeneration): Promise<void> {
+		if (this.isStale(generation)) return;
 		const span = log.span('onSubscriptionChanged').set('subscription_id', sub._id).set('room_id', sub.rid).set('encrypted', sub.encrypted);
 		if (!sub.encrypted && !sub.E2EKey) {
 			this.removeInstanceByRoomId(sub.rid);
@@ -122,18 +127,23 @@ class E2E extends Emitter {
 		}
 
 		const e2eRoom = await this.getInstanceByRoomId(sub.rid);
+		if (this.isStale(generation)) return;
 		if (!e2eRoom) {
 			span.warn('no e2eRoom found');
 			return;
 		}
 
 		if (sub.E2ESuggestedKey) {
-			if (await e2eRoom.importGroupKey(sub.E2ESuggestedKey)) {
+			const imported = await e2eRoom.importGroupKey(sub.E2ESuggestedKey);
+			if (this.isStale(generation)) return;
+			if (imported) {
 				await this.acceptSuggestedKey(sub.rid);
+				if (this.isStale(generation)) return;
 				e2eRoom.keyReceived();
 			} else {
 				span.warn('rejected');
 				await this.rejectSuggestedKey(sub.rid);
+				if (this.isStale(generation)) return;
 			}
 		}
 
@@ -159,17 +169,19 @@ class E2E extends Emitter {
 		}
 
 		if (sub.lastMessage?.e2e !== 'done') {
-			await e2eRoom.decryptSubscription();
+			await e2eRoom.decryptSubscription(() => !this.isStale(generation));
 		}
 	}
 
 	private unsubscribeFromSubscriptions: (() => void) | undefined;
 
-	observeSubscriptions() {
+	observeSubscriptions(generation = this.startGeneration) {
+		if (this.isStale(generation)) return;
 		const span = log.span('observeSubscriptions');
 		this.unsubscribeFromSubscriptions?.();
 
 		this.unsubscribeFromSubscriptions = Subscriptions.use.subscribe((state) => {
+			if (this.isStale(generation)) return;
 			const subscriptions = Array.from(state.records.values()).filter((sub) => sub.encrypted || sub.E2EKey);
 
 			const subscribed = new Set(subscriptions.map((sub) => sub.rid));
@@ -182,7 +194,7 @@ class E2E extends Emitter {
 			}
 
 			for (const sub of subscriptions) {
-				void this.onSubscriptionChanged(sub);
+				void this.onSubscriptionChanged(sub, generation);
 			}
 		});
 	}
@@ -199,29 +211,29 @@ class E2E extends Emitter {
 		this.emit(nextState);
 	}
 
-	async handleAsyncE2EESuggestedKey() {
+	async handleAsyncE2EESuggestedKey(generation = this.startGeneration) {
+		if (this.isStale(generation)) return;
 		const span = log.span('handleAsyncE2EESuggestedKey');
 		const subs = Subscriptions.state.filter((sub) => typeof sub.E2ESuggestedKey !== 'undefined');
 		await Promise.all(
 			subs
 				.filter((sub) => sub.E2ESuggestedKey && !sub.E2EKey)
 				.map(async (sub) => {
-					const e2eRoom = await e2e.getInstanceByRoomId(sub.rid);
+					const e2eRoom = await this.getInstanceByRoomId(sub.rid);
 					span.set('subscription_id', sub._id).set('room_id', sub.rid);
-
-					if (!e2eRoom) {
-						return;
-					}
-
-					if (sub.E2ESuggestedKey && (await e2eRoom.importGroupKey(sub.E2ESuggestedKey))) {
+					if (!e2eRoom || this.isStale(generation)) return;
+					const imported = sub.E2ESuggestedKey && (await e2eRoom.importGroupKey(sub.E2ESuggestedKey));
+					if (this.isStale(generation)) return;
+					if (imported) {
 						span.info('importedE2ESuggestedKey');
-						await e2e.acceptSuggestedKey(sub.rid);
+						await this.acceptSuggestedKey(sub.rid);
+						if (this.isStale(generation)) return;
 						e2eRoom.keyReceived();
 					} else {
 						span.error('invalidE2ESuggestedKey');
-						await e2e.rejectSuggestedKey(sub.rid);
+						await this.rejectSuggestedKey(sub.rid);
+						if (this.isStale(generation)) return;
 					}
-
 					if (sub.encrypted) {
 						e2eRoom.resume();
 					} else {
@@ -232,19 +244,21 @@ class E2E extends Emitter {
 		span.info('handledAsyncE2ESuggestedKey');
 	}
 
-	private waitForRoom(rid: IRoom['_id']): Promise<IRoom> {
+	private waitForRoom(rid: IRoom['_id']): Promise<IRoom | null> {
+		const room = Rooms.state.get(rid);
+		if (room) return Promise.resolve(room);
 		return new Promise((resolve) => {
-			const room = Rooms.state.get(rid);
-
-			if (room) resolve(room);
-
+			const finish = (room: IRoom | null) => {
+				unsubscribe();
+				this.off('DISABLED', onStop);
+				resolve(room);
+			};
+			const onStop = () => finish(null);
 			const unsubscribe = Rooms.use.subscribe((state) => {
 				const room = state.get(rid);
-				if (room) {
-					unsubscribe();
-					resolve(room);
-				}
+				if (room) finish(room);
 			});
+			this.once('DISABLED', onStop);
 		});
 	}
 
@@ -253,7 +267,9 @@ class E2E extends Emitter {
 			return null;
 		}
 
+		const generation = this.startGeneration;
 		const room = await this.waitForRoom(rid);
+		if (!room || this.isStale(generation)) return null;
 
 		if (room.t !== 'd' && room.t !== 'p') {
 			return null;
@@ -445,6 +461,8 @@ class E2E extends Emitter {
 			if (this.isStale(generation)) {
 				return;
 			}
+			await this.requestSubscriptionKeys();
+			if (this.isStale(generation)) return;
 		}
 
 		const randomPassword = getStoredItem(STORAGE_KEYS.E2EE_RANDOM_PASSWORD);
@@ -486,6 +504,7 @@ class E2E extends Emitter {
 		}
 		this.keyDistributionInterval = null;
 		this.pendingSubscriptionKeysRequest = undefined;
+		this.subscriptionKeysRequestDirty = false;
 		this.setState('DISABLED');
 	}
 
@@ -614,22 +633,35 @@ class E2E extends Emitter {
 
 	private pendingSubscriptionKeysRequest: Promise<void> | undefined;
 
-	// Asks the server to queue this user for the keys of every encrypted room where the user has no key.
-	// The server checks all the rooms in one call, so concurrent callers share the request in flight.
+	private subscriptionKeysRequestDirty = false;
+
+	// A caller that arrives after the server read needs another admission pass, not another pending request.
 	requestSubscriptionKeys(): Promise<void> {
 		if (this.pendingSubscriptionKeysRequest) {
+			this.subscriptionKeysRequestDirty = true;
 			return this.pendingSubscriptionKeysRequest;
 		}
 
-		const request: Promise<void> = sdk.rest
-			.post('/v1/e2e.requestSubscriptionKeys')
-			.then(() => undefined)
-			.finally(() => {
-				// After stopClient, a newer request can be in flight. Only the request that set the field clears it.
-				if (this.pendingSubscriptionKeysRequest === request) {
-					this.pendingSubscriptionKeysRequest = undefined;
+		const generation = this.startGeneration;
+		const admit = async () => {
+			let retries = 1;
+			do {
+				this.subscriptionKeysRequestDirty = false;
+				try {
+					await sdk.rest.post('/v1/e2e.requestSubscriptionKeys');
+				} catch (error) {
+					if (this.isStale(generation)) return;
+					if (retries-- === 0) throw error;
+					this.subscriptionKeysRequestDirty = true;
 				}
-			});
+			} while (!this.isStale(generation) && this.subscriptionKeysRequestDirty);
+		};
+		const request = admit().finally(() => {
+			if (this.pendingSubscriptionKeysRequest === request) {
+				this.pendingSubscriptionKeysRequest = undefined;
+				if (!this.isStale(generation) && this.subscriptionKeysRequestDirty) return this.requestSubscriptionKeys();
+			}
+		});
 		this.pendingSubscriptionKeysRequest = request;
 
 		return request;
@@ -802,9 +834,11 @@ class E2E extends Emitter {
 		return message;
 	}
 
-	async decryptSubscription(subscription: SubscriptionWithRoom): Promise<void> {
+	async decryptSubscription(subscription: SubscriptionWithRoom, generation = this.startGeneration): Promise<void> {
+		if (this.isStale(generation)) return;
 		const span = log.span('decryptSubscription');
 		const e2eRoom = await this.getInstanceByRoomId(subscription.rid);
+		if (this.isStale(generation)) return;
 		span.info(subscription._id);
 
 		if (!e2eRoom) {
@@ -814,22 +848,24 @@ class E2E extends Emitter {
 
 		if (e2eRoom.isReady()) {
 			span.info('e2e room ready');
-			await e2eRoom.decryptSubscription();
+			await e2eRoom.decryptSubscription(() => !this.isStale(generation));
 			return;
 		}
 
 		e2eRoom.once('READY', async () => {
+			if (this.isStale(generation)) return;
 			span.info('e2e room ready');
-			await e2eRoom.decryptSubscription();
+			await e2eRoom.decryptSubscription(() => !this.isStale(generation));
 		});
 	}
 
-	async decryptSubscriptions(): Promise<void> {
+	async decryptSubscriptions(generation = this.startGeneration): Promise<void> {
+		if (this.isStale(generation)) return;
 		const subscriptions = Subscriptions.state.filter((subscription) => !!subscription.encrypted);
 
 		await Promise.all(
 			subscriptions.map(async (subscription) => {
-				await this.decryptSubscription(subscription);
+				await this.decryptSubscription(subscription, generation);
 			}),
 		);
 	}
@@ -902,22 +938,22 @@ class E2E extends Emitter {
 		return message;
 	}
 
-	async getSuggestedE2EEKeys(usersWaitingForE2EKeys: Record<IRoom['_id'], { _id: IUser['_id']; public_key: string }[]>) {
+	async getSuggestedE2EEKeys(
+		usersWaitingForE2EKeys: Record<IRoom['_id'], { _id: IUser['_id']; public_key: string }[]>,
+		generation = this.startGeneration,
+	) {
 		const roomIds = Object.keys(usersWaitingForE2EKeys);
 		return Object.fromEntries(
 			(
 				await Promise.all(
 					roomIds.map(async (room) => {
+						if (this.isStale(generation)) return;
 						const e2eRoom = await this.getInstanceByRoomId(room);
 
-						if (!e2eRoom) {
-							return;
-						}
+						if (!e2eRoom || this.isStale(generation)) return;
 						const usersWithKeys = await e2eRoom.encryptGroupKeyForParticipantsWaitingForTheKeys(usersWaitingForE2EKeys[room]);
 
-						if (!usersWithKeys) {
-							return;
-						}
+						if (!usersWithKeys?.length || this.isStale(generation)) return;
 
 						return [room, usersWithKeys];
 					}),
@@ -926,27 +962,18 @@ class E2E extends Emitter {
 		);
 	}
 
-	async getSample(roomIds: string[], limit = 3): Promise<string[]> {
-		if (limit === 0) {
-			return [];
-		}
-
+	async getSample(roomIds: string[], limit = 3, generation = this.startGeneration): Promise<string[]> {
+		if (limit === 0 || this.isStale(generation)) return [];
 		const randomRoomIds = sampleSize(roomIds, ROOM_KEY_EXCHANGE_SIZE);
-
 		const sampleIds: string[] = [];
 		for await (const roomId of randomRoomIds) {
+			if (this.isStale(generation)) return [];
 			const e2eroom = await this.getInstanceByRoomId(roomId);
-			if (!e2eroom?.hasSessionKey()) {
-				continue;
-			}
-
+			if (this.isStale(generation)) return [];
+			if (!e2eroom?.hasSessionKey()) continue;
 			sampleIds.push(roomId);
 		}
-
-		if (!sampleIds.length) {
-			return this.getSample(roomIds, limit - 1);
-		}
-
+		if (!sampleIds.length) return this.getSample(roomIds, limit - 1, generation);
 		return sampleIds;
 	}
 
@@ -957,51 +984,40 @@ class E2E extends Emitter {
 		return this.userId;
 	}
 
-	async initiateKeyDistribution() {
-		if (this.keyDistributionInterval) {
-			return;
-		}
+	async initiateKeyDistribution(generation = this.startGeneration) {
+		if (this.isStale(generation) || this.keyDistributionInterval) return;
 
 		const predicate = (record: IRoom) =>
 			Boolean('usersWaitingForE2EKeys' in record && record.usersWaitingForE2EKeys?.every((user) => user.userId !== this.getUserId()));
 
 		const span = log.span('initiateKeyDistribution');
+		let running = false;
 		const keyDistribution = async () => {
-			const roomIds = Rooms.state.filter(predicate).map((room) => room._id);
-
-			if (!roomIds.length) {
-				return;
-			}
-
-			// Prevent function from running and doing nothing when theres something to do
-			const sampleIds = await this.getSample(roomIds);
-
-			if (!sampleIds.length) {
-				return;
-			}
-
-			const { usersWaitingForE2EKeys = {} } = await sdk.rest.get('/v1/e2e.fetchUsersWaitingForGroupKey', { roomIds: sampleIds });
-
-			if (!Object.keys(usersWaitingForE2EKeys).length) {
-				return;
-			}
-
-			const userKeysWithRooms = await this.getSuggestedE2EEKeys(usersWaitingForE2EKeys);
-
-			if (!Object.keys(userKeysWithRooms).length) {
-				return;
-			}
-
+			if (running || this.isStale(generation)) return;
+			running = true;
 			try {
+				const roomIds = Rooms.state.filter(predicate).map((room) => room._id);
+				if (!roomIds.length) return;
+
+				const sampleIds = await this.getSample(roomIds, 3, generation);
+				if (!sampleIds.length || this.isStale(generation)) return;
+
+				const { usersWaitingForE2EKeys = {} } = await sdk.rest.get('/v1/e2e.fetchUsersWaitingForGroupKey', { roomIds: sampleIds });
+				if (this.isStale(generation) || !Object.keys(usersWaitingForE2EKeys).length) return;
+
+				const userKeysWithRooms = await this.getSuggestedE2EEKeys(usersWaitingForE2EKeys, generation);
+				if (this.isStale(generation) || !Object.keys(userKeysWithRooms).length) return;
+
 				await sdk.rest.post('/v1/e2e.provideUsersSuggestedGroupKeys', { usersSuggestedGroupKeys: userKeysWithRooms });
 			} catch (error) {
-				return span.error('provideUsersSuggestedGroupKeys', error);
+				span.error('provideUsersSuggestedGroupKeys', error);
+			} finally {
+				running = false;
 			}
 		};
 
-		// Run first call right away, then schedule for 10s in the future
-		await keyDistribution();
 		this.keyDistributionInterval = setInterval(keyDistribution, 10000);
+		await keyDistribution();
 	}
 }
 
