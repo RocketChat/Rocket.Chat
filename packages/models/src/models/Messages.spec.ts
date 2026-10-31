@@ -17,7 +17,7 @@ describe('findForUpdates', () => {
 
 	beforeEach(() => find.mockReset().mockReturnValue({}));
 
-	it('should include visible messages and hidden messages that are not replies', () => {
+	it('should include visible messages and hidden messages that are not history copies', () => {
 		model.findForUpdates('rid', { updatedAt: { $gt: boundary } });
 
 		expect(find.mock.calls[0][0]).toEqual({
