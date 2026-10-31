@@ -336,7 +336,7 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 				}
 				await this.save();
 			} catch (error) {
-				console.warn(`CachedCollection ${this.name}: could not synchronize`, error);
+				console.error(`CachedCollection ${this.name}: could not synchronize or save`, error);
 			}
 		}, delay);
 	}
