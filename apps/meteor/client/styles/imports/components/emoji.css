@@ -1,81 +1,72 @@
-/* Wrapper for Segoe UI Emoji correcting its metrics: it paints its ink low
-relative to its metric midpoint (so vertical-align: middle sits glyphs ~2px
-below the text center) and ~15% larger than the other platform emoji fonts.
-Only exists on Windows, so other platforms skip it in the fallback list. */
+/* stylelint-disable selector-class-pattern -- styles BEM classes owned by Fuselage and the emoji renderer */
+
+/* Emoji fonts are rescaled so each paints its glyphs 1em tall, as Apple Color Emoji
+already does; that lets a native emoji fill the same box as a custom image. */
+
+/* Segoe UI Emoji also paints its ink low relative to its metric midpoint, which the
+ascent/descent overrides recenter. Only exists on Windows, so other platforms skip it
+in the fallback list. */
 @font-face {
 	font-family: rc-emoji-segoe;
 	src: local('Segoe UI Emoji');
 	ascent-override: 90%;
 	descent-override: 25%;
-	size-adjust: 85%;
+	size-adjust: 75%;
 }
 
-/* Global emoji styles */
-.emoji {
-	font-family: 'Apple Color Emoji', rc-emoji-segoe, 'Noto Color Emoji', 'Twemoji Mozilla', 'Android Emoji', sans-serif;
-	font-size: 1.375rem;
+@font-face {
+	font-family: rc-emoji-noto;
+	src: local('Noto Color Emoji');
+	size-adjust: 88%;
+}
 
-	/* Must exceed the emoji fonts' ink height — ~1.13em on Noto Color Emoji and on
-	size-adjusted Segoe UI Emoji (rc-emoji-segoe) — otherwise the glyph paints outside
-	the line box and gets cut by overflow: hidden ancestors (message body, announcement
-	banner). */
-	line-height: 1.2;
+/* Native and custom emojis share one fixed box per context, sized by --emoji-size, so
+both render the same size and an emoji never grows the line it sits in. The default
+matches the message body's line height. The doubled selectors outrank Fuselage's
+emoji boxes, which load after this file. */
+.emoji.emoji {
+	font-family: 'Apple Color Emoji', rc-emoji-segoe, rc-emoji-noto, 'Noto Color Emoji', 'Twemoji Mozilla', 'Android Emoji', sans-serif;
+	font-size: var(--emoji-size, 1.25rem);
+
+	/* Flex centering keeps a glyph wider than its box centered, where text-align would
+	spill it all to the right and into the line's clip edge. */
+	display: inline-flex;
+	justify-content: center;
+	overflow: visible;
+	width: var(--emoji-size, 1.25rem);
+	height: var(--emoji-size, 1.25rem);
+	margin: 0 2px;
+	vertical-align: top;
+	line-height: var(--emoji-size, 1.25rem);
+}
+
+.emoji.emoji--custom {
+	display: inline-block;
+	overflow: hidden;
+	white-space: nowrap;
+	text-indent: 100%;
+	background-position: 50%;
+	background-repeat: no-repeat;
+	background-size: contain;
+}
+
+.rcx-message__emoji--big {
+	--emoji-size: 3rem;
+}
+
+.rcx-message-reactions__reaction {
+	--emoji-size: 0.875rem;
+}
+
+/* The box is shorter than the preview line, so it is centered rather than pinned to
+the top, where the line's overflow: hidden would cut glyphs that paint above it. */
+.rcx-message-thread__emoji.emoji {
+	--emoji-size: 0.75rem;
+
 	vertical-align: middle;
-
-	/* custom emojis */
-	&--custom {
-		height: 1.375rem;
-		width: 1.375rem;
-		overflow: hidden;
-		position: relative;
-		white-space: nowrap;
-		text-indent: 100%;
-		vertical-align: bottom;
-		display: inline-block;
-		margin: 0 .15em;
-		background-position: 50%;
-		background-repeat: no-repeat;
-		background-size: contain;
-	}
 }
 
 /* emoji picker */
-.rcx-button .emoji {
-	font-size: 1.375rem;
-	line-height: 1.5rem;
-}
-
-.rcx-message {
-	/* emojis on messages */
-	&__emoji {
-		font-family: 'Apple Color Emoji', rc-emoji-segoe, 'Noto Color Emoji', 'Twemoji Mozilla', 'Android Emoji', sans-serif;
-
-		/* Fuselage fixes this box at 1.5rem inline-block, sized for image emojis. Native
-		glyphs on Segoe UI Emoji/Noto Color Emoji paint taller and wider than that box, and
-		the overhang gets clipped by the message body's overflow: hidden — so let the box
-		grow to the glyph. inline-block also aligns by geometric box while the announcement
-		banner's .emoji span (plain inline) aligns by font metrics; Segoe UI Emoji's
-		asymmetric metrics make those disagree by ~2px, leaving message glyphs off-center.
-		Use the same inline model everywhere. */
-		&:not(&--custom) {
-			display: inline;
-			width: auto;
-			height: auto;
-			line-height: 1.2;
-		}
-	}
-}
-
-.rcx-message-reactions {
-	&__emoji {
-		/* Can't be written as `&--custom` like the .rcx-message rule above: custom emojis here
-		carry the renderer's global `.emoji--custom` class, not a block modifier. */
-		/* stylelint-disable-next-line selector-class-pattern */
-		&:not(.emoji--custom) {
-			width: auto;
-			height: auto;
-			font-size: 1rem;
-			line-height: 1.2;
-		}
-	}
+.rcx-button {
+	--emoji-size: 1.5rem;
 }
