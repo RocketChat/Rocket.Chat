@@ -22,7 +22,8 @@ Local search cannot recover messages that the client cannot decrypt.
 
 The browser backend uses SQLite FTS5 in a worker.
 When persistent storage is available, the backend saves encrypted snapshots and uses a non-extractable device key.
-The browser coordinates tabs so that one tab owns the database writer.
+With Web Locks and BroadcastChannel support, the browser coordinates tabs so that one tab owns the database writer.
+If either API is unavailable, each tab uses its own runner. Cross-tab coordination is not available.
 A memory-only result means that the current index will not survive the end of that browser session.
 
 Encrypted snapshots protect stored index contents.
@@ -44,8 +45,8 @@ Room removal deletes the room's documents after the client learns that its subsc
 
 Recent results sort by descending message time, then descending UTF-8 binary message ID.
 A compound cursor preserves timestamp ties between pages.
-Each page retains the original filters.
-Pagination does not provide snapshot isolation while the index changes.
+Each page keeps the original filters.
+Pagination does not offer snapshot isolation while the index changes.
 
 ## Synchronization
 
@@ -57,8 +58,9 @@ An index-loss event clears crawler progress before synchronization restarts.
 The default page size is 100 messages.
 The default pause between requests is 12 seconds.
 The default history depth is 12 months, with no per-room message cap.
-Retry delays range from 10 to 600 seconds.
-A server `Retry-After` value takes precedence over the local retry maximum.
+The retry base starts at 10 seconds and doubles after each error up to the 600-second cap.
+The client picks each delay at random between half and all of the current base. The first delay ranges from 5 to 10 seconds.
+A server `Retry-After` value takes precedence over the local delay.
 Administrators can change these settings.
 
 The client records the last completed catch-up time for each workspace and user.
