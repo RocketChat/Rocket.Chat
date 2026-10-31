@@ -1,6 +1,7 @@
 import * as Rsa from './crypto/rsa';
 import { Keychain } from './keychain';
 import { e2e } from './rocketchat.e2e';
+import { Rooms, Subscriptions } from '../../stores';
 import { sdk } from '../SDKClient';
 import { STORAGE_KEYS, getStoredItem, setStoredItem } from '../sdk/storage';
 
@@ -12,7 +13,10 @@ jest.mock('@rocket.chat/ui-client', () => ({
 }));
 
 jest.mock('./rocketchat.e2e.room', () => ({}));
-jest.mock('../../stores', () => ({}));
+jest.mock('../../stores', () => ({
+	Rooms: { state: { get: jest.fn(), filter: jest.fn(() => []) }, use: { subscribe: jest.fn(() => jest.fn()) } },
+	Subscriptions: { state: { filter: jest.fn(() => []) }, use: { subscribe: jest.fn(() => jest.fn()) } },
+}));
 jest.mock('../settings', () => ({ settings: { peek: jest.fn() } }));
 jest.mock('../../views/e2e/EnterE2EPasswordModal', () => ({}));
 jest.mock('../../views/e2e/SaveE2EPasswordModal', () => ({}));
@@ -41,6 +45,9 @@ jest.mock('../SDKClient', () => ({
 
 jest.mock('./crypto/rsa', () => ({
 	importPrivateKey: jest.fn(async (jwk: { owner: string }) => ({ owner: jwk.owner })),
+	generate: jest.fn(async () => ({ publicKey: {}, privateKey: { owner: 'user-a' } })),
+	exportPublicKey: jest.fn(async () => JSON.parse(publicKeyOf('user-a'))),
+	exportPrivateKey: jest.fn(async () => JSON.parse(privateKeyOf('user-a'))),
 }));
 
 // startClient runs only in a secure context (HTTPS), which jsdom does not report.
@@ -82,6 +89,7 @@ describe('E2E client on a user switch with no logout', () => {
 			.spyOn(e2e, 'decodePrivateKey')
 			.mockImplementation(async (encrypted: string) => privateKeyOf(encrypted.replace('encrypted-private-key-of-', '')));
 		(sdk.rest.get as jest.Mock).mockImplementation(async () => serverKeysOf(loggedInUser));
+		(sdk.rest.post as jest.Mock).mockResolvedValue({});
 
 		await e2e.stopClient();
 		window.localStorage.clear();
@@ -92,7 +100,8 @@ describe('E2E client on a user switch with no logout', () => {
 		setStoredItem(STORAGE_KEYS.E2EE_PRIVATE_KEY, privateKeyOf('user-a'));
 	});
 
-	afterEach(() => {
+	afterEach(async () => {
+		await e2e.stopClient();
 		jest.restoreAllMocks();
 		jest.clearAllMocks();
 	});
@@ -295,6 +304,126 @@ describe('E2E client on a user switch with no logout', () => {
 		await changingPassword;
 
 		expect(getStoredItem(STORAGE_KEYS.E2EE_RANDOM_PASSWORD)).toBe('password-b');
+	});
+
+	it('stops real ready work paused during distribution without a stale observer, timer, or POST', async () => {
+		await e2e.startClient('user-a');
+		(e2e.onE2EEReady as jest.Mock).mockRestore();
+		jest.useFakeTimers();
+		const response = deferred<{ usersWaitingForE2EKeys: Record<string, { _id: string; public_key: string }[]> }>();
+		(sdk.rest.get as jest.Mock).mockClear().mockReturnValue(response.promise);
+		jest.spyOn(Rooms.state, 'filter').mockReturnValue([{ _id: 'room', usersWaitingForE2EKeys: [{ userId: 'other' }] }] as never);
+		jest.spyOn(e2e, 'getInstanceByRoomId').mockResolvedValue({ hasSessionKey: () => true } as never);
+		const observing = jest.spyOn(e2e, 'observeSubscriptions');
+		const ready = e2e.onE2EEReady();
+		for (let i = 0; i < 20; i++) await Promise.resolve();
+		expect(sdk.rest.get).toHaveBeenCalledWith('/v1/e2e.fetchUsersWaitingForGroupKey', { roomIds: ['room'] });
+		await jest.advanceTimersByTimeAsync(30_000);
+		expect(sdk.rest.get).toHaveBeenCalledTimes(1);
+
+		await e2e.stopClient();
+		response.resolve({ usersWaitingForE2EKeys: { room: [{ _id: 'other', public_key: 'public' }] } });
+		await ready;
+
+		expect(sdk.rest.post).not.toHaveBeenCalled();
+		expect(observing).not.toHaveBeenCalled();
+		expect(jest.getTimerCount()).toBe(0);
+		jest.useRealTimers();
+	});
+
+	it('stops real suggested-key processing before an old session accepts a key', async () => {
+		await e2e.startClient('user-a');
+		(e2e.onE2EEReady as jest.Mock).mockRestore();
+		const importing = deferred<boolean>();
+		const room = { importGroupKey: jest.fn(() => importing.promise), keyReceived: jest.fn(), resume: jest.fn() };
+		jest.spyOn(Subscriptions.state, 'filter').mockReturnValue([{ rid: 'room', E2ESuggestedKey: 'suggestion', encrypted: true }] as never);
+		jest.spyOn(e2e, 'getInstanceByRoomId').mockResolvedValue(room as never);
+		const observing = jest.spyOn(e2e, 'observeSubscriptions');
+		const distributing = jest.spyOn(e2e, 'initiateKeyDistribution');
+		const ready = e2e.onE2EEReady();
+		await untilCalled(room.importGroupKey);
+
+		await e2e.stopClient();
+		importing.resolve(true);
+		await ready;
+
+		expect(sdk.rest.post).not.toHaveBeenCalled();
+		expect(room.keyReceived).not.toHaveBeenCalled();
+		expect(room.resume).not.toHaveBeenCalled();
+		expect(distributing).not.toHaveBeenCalled();
+		expect(observing).not.toHaveBeenCalled();
+	});
+
+	it('cancels room publication waits when the session stops', async () => {
+		await e2e.startClient('user-a');
+		const unsubscribe = jest.fn();
+		(Rooms.use.subscribe as jest.Mock).mockReturnValueOnce(unsubscribe);
+		(Rooms.state.get as jest.Mock).mockReturnValue(undefined);
+		const room = e2e.getInstanceByRoomId('missing');
+
+		await e2e.stopClient();
+
+		await expect(room).resolves.toBeNull();
+		expect(unsubscribe).toHaveBeenCalledTimes(1);
+	});
+
+	it('omits an empty encrypted room batch', async () => {
+		jest.spyOn(e2e, 'getInstanceByRoomId').mockResolvedValue({
+			encryptGroupKeyForParticipantsWaitingForTheKeys: async () => [],
+		} as never);
+		expect(await e2e.getSuggestedE2EEKeys({ room: [{ _id: 'bad', public_key: 'bad' }] })).toEqual({});
+	});
+
+	it.each(['success', 'failure'])('ignores deferred private-key decode %s after a user switch', async (outcome) => {
+		window.localStorage.clear();
+		const decoding = deferred<string>();
+		(e2e.decodePrivateKey as jest.Mock).mockImplementationOnce(() => decoding.promise);
+		const starting = e2e.startClient('user-a');
+		await untilCalled(e2e.decodePrivateKey as jest.Mock);
+
+		loggedInUser = 'user-b';
+		await e2e.startClient('user-b');
+		const alert = jest.spyOn(e2e, 'openAlert');
+		if (outcome === 'success') decoding.resolve(privateKeyOf('user-a'));
+		else decoding.reject(new Error('wrong password'));
+		await starting;
+
+		expect(loadedKeyOwner()).toBe('user-b');
+		expect(getStoredItem(STORAGE_KEYS.E2EE_PRIVATE_KEY)).toBe(privateKeyOf('user-b'));
+		expect(e2e.getState()).toBe('READY');
+		expect(alert).not.toHaveBeenCalled();
+	});
+
+	it('requests admission after the new public key persists, even when early admission succeeds', async () => {
+		window.localStorage.clear();
+		(sdk.rest.get as jest.Mock).mockResolvedValueOnce({});
+		jest.spyOn(e2e, 'createRandomPassword').mockResolvedValue('password-a');
+		jest.spyOn(Keychain.prototype, 'encryptKey').mockResolvedValue({ iv: 'iv', ciphertext: 'cipher', salt: 'salt', iterations: 100_000 });
+		const persistence = deferred<void>();
+		let persisted = false;
+		const admissions: boolean[] = [];
+		(sdk.rest.post as jest.Mock).mockImplementation((path: string) => {
+			if (path === '/v1/e2e.setUserPublicAndPrivateKeys')
+				return persistence.promise.then(() => {
+					persisted = true;
+				});
+			admissions.push(persisted);
+			return Promise.resolve({});
+		});
+
+		const starting = e2e.startClient('user-a');
+		for (
+			let i = 0;
+			i < 30 && !(sdk.rest.post as jest.Mock).mock.calls.some(([path]) => path === '/v1/e2e.setUserPublicAndPrivateKeys');
+			i++
+		) {
+			await Promise.resolve();
+		}
+		expect(sdk.rest.post).toHaveBeenCalledWith('/v1/e2e.setUserPublicAndPrivateKeys', expect.anything());
+		expect(admissions).toEqual([false]);
+		persistence.resolve();
+		await starting;
+		expect(admissions).toEqual([false, true]);
 	});
 
 	it('does not stop the client when the same user starts it again', async () => {
