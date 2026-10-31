@@ -345,7 +345,7 @@ const openScope = async (scopeId: string, wrapKey: CryptoKey | undefined): Promi
 	const open = scope ?? memoryScope;
 	if (open?.id === scopeId && db && wrapKey && (await opensScope(wrapKey, open)))
 		return { persistent: scope !== undefined, restored: false };
-	await queueSave().catch(warnUnsaved);
+	await queueSave();
 	db?.close();
 	db = undefined;
 	scope = undefined;
@@ -354,63 +354,74 @@ const openScope = async (scopeId: string, wrapKey: CryptoKey | undefined): Promi
 	dirty = false;
 	dropFileLock();
 
-	const keyWrapKey = await keyWrapKeyOf(wrapKey);
-	dbScope = scopeId;
-
-	if (!canPersist()) return openMemoryDb(keyWrapKey, scopeId);
-
-	const fileName = await fileNameFor(scopeId);
-	await takeFileLock(fileName);
-	let storeKey: CryptoKey;
-	let saved: boolean;
-	let file: Uint8Array<ArrayBuffer> | undefined;
+	storageRefused = false;
 	try {
-		file = (await readFile(fileName)) as Uint8Array<ArrayBuffer> | undefined;
-		({ key: storeKey, saved } = await getOrCreateKey(scopeId));
-	} catch (error) {
-		console.warn('E2EE search index cannot be saved in this browser, keeping it in memory only:', messageOf(error));
-		storageRefused = true;
-		dropFileLock();
-		return openMemoryDb(keyWrapKey, scopeId);
-	}
-	if (file) {
-		let otherKey = false;
+		const keyWrapKey = await keyWrapKeyOf(wrapKey);
+		dbScope = scopeId;
+
+		if (!canPersist()) return await openMemoryDb(keyWrapKey, scopeId);
+
+		const fileName = await fileNameFor(scopeId);
+		await takeFileLock(fileName);
+		let storeKey: CryptoKey;
+		let saved: boolean;
+		let file: Uint8Array<ArrayBuffer> | undefined;
 		try {
-			const opened = await openFile(file, storeKey, keyWrapKey, scopeId);
-			if (opened === 'otherKey') {
-				otherKey = true;
-			} else {
-				const { plain, ...keys } = opened;
-				db = await loadDb(plain);
-				scope = { id: scopeId, fileName, ...keys, saved: true };
-				return { persistent: true, restored: true, evicted: false };
-			}
+			file = (await readFile(fileName)) as Uint8Array<ArrayBuffer> | undefined;
+			({ key: storeKey, saved } = await getOrCreateKey(scopeId));
 		} catch (error) {
-			console.warn('E2EE search index file could not be opened, starting empty:', messageOf(error));
-			await removeFile(fileName);
+			console.warn('E2EE search index cannot be saved in this browser, keeping it in memory only:', messageOf(error));
+			storageRefused = true;
+			dropFileLock();
+			return await openMemoryDb(keyWrapKey, scopeId);
 		}
-		if (otherKey) {
-			console.warn('E2EE search index was sealed under another E2EE key, starting empty');
+		if (file) {
+			let otherKey = false;
 			try {
+				const opened = await openFile(file, storeKey, keyWrapKey, scopeId);
+				if (opened === 'otherKey') {
+					otherKey = true;
+				} else {
+					const { plain, ...keys } = opened;
+					db = await loadDb(plain);
+					scope = { id: scopeId, fileName, ...keys, saved: true };
+					return { persistent: true, restored: true, evicted: false };
+				}
+			} catch (error) {
+				console.warn('E2EE search index file could not be opened, starting empty:', messageOf(error));
+				await removeFile(fileName);
+			}
+			if (otherKey) {
+				console.warn('E2EE search index was sealed under another E2EE key, starting empty');
 				await removeStored(scopeId);
 				({ key: storeKey } = await getOrCreateKey(scopeId));
-			} catch (error) {
-				dbScope = undefined;
-				dropFileLock();
-				throw error;
+				scope = { id: scopeId, fileName, ...(await createDataKey(keyWrapKey, storeKey, scopeId)), saved: false };
+				db = await newMemoryDb();
+				return { persistent: true, restored: false, evicted: false };
 			}
-			scope = { id: scopeId, fileName, ...(await createDataKey(keyWrapKey, storeKey, scopeId)), saved: false };
-			db = await newMemoryDb();
-			return { persistent: true, restored: false, evicted: false };
 		}
+		scope = { id: scopeId, fileName, ...(await createDataKey(keyWrapKey, storeKey, scopeId)), saved: saved || Boolean(file) };
+		db = await newMemoryDb();
+		return { persistent: true, restored: false, evicted: Boolean(file) || saved };
+	} catch (error) {
+		try {
+			db?.close();
+		} finally {
+			db = undefined;
+			scope = undefined;
+			memoryScope = undefined;
+			dbScope = undefined;
+			dirty = false;
+			storageRefused = false;
+			dropFileLock();
+		}
+		throw error;
 	}
-	scope = { id: scopeId, fileName, ...(await createDataKey(keyWrapKey, storeKey, scopeId)), saved: saved || Boolean(file) };
-	db = await newMemoryDb();
-	return { persistent: true, restored: false, evicted: Boolean(file) || saved };
 };
 
-const wipeScope = async (scopeId: string | undefined): Promise<void> => {
-	if (dbScope === scopeId || scopeId === undefined) {
+const wipeScope = async (scopeId: string): Promise<void> => {
+	if (typeof scopeId !== 'string') throw new Error('E2EE search index wipe requires a scope ID');
+	if (dbScope === scopeId) {
 		clearTimeout(saveTimer);
 		saveTimer = undefined;
 		dirty = false;
@@ -422,7 +433,7 @@ const wipeScope = async (scopeId: string | undefined): Promise<void> => {
 		dbScope = undefined;
 		dropFileLock();
 	}
-	if (scopeId === undefined || !canStore()) return;
+	if (!canStore()) return;
 	try {
 		await removeStored(scopeId);
 	} catch (error) {
@@ -472,9 +483,18 @@ const run = async (request: WorkerRequest): Promise<SqlRow[] | [ScopeState]> => 
 	const open = db;
 	switch (request.op) {
 		case 'exec': {
-			const rows = open.exec({ sql: request.sql, bind: request.bind, rowMode: 'object', returnValue: 'resultRows' }) as SqlRow[];
-			if (isWrite(request.sql)) markDirty();
-			return rows;
+			const statements: string[] = [];
+			try {
+				return open.exec({
+					sql: request.sql,
+					bind: request.bind,
+					rowMode: 'object',
+					returnValue: 'resultRows',
+					saveSql: statements,
+				}) as SqlRow[];
+			} finally {
+				if (statements.some(isWrite)) markDirty();
+			}
 		}
 		case 'batch':
 			open.transaction(() => {
