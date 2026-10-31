@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ui-conference",
-	"version": "3.0.0-rc.1",
+	"version": "3.0.0-rc.2",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -60,8 +60,8 @@
 		"@react-aria/visually-hidden": "*",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/css-in-js": "workspace:^",
-		"@rocket.chat/fuselage": "1.0.0-rc.0",
-		"@rocket.chat/fuselage-forms": "2.0.0-rc.0",
+		"@rocket.chat/fuselage": "1.0.0-rc.1",
+		"@rocket.chat/fuselage-forms": "2.0.0-rc.1",
 		"@rocket.chat/fuselage-hooks": "0.44.0-rc.0",
 		"@rocket.chat/icons": "0.52.0-rc.0",
 		"@rocket.chat/styled": "0.34.2-rc.0",

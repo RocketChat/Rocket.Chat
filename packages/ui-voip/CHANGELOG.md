@@ -1,5 +1,18 @@
 # @rocket.chat/ui-voip
 
+## 26.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [5f3c7c2426a29a0f8237a1ec0d72192b2ef1f0a4]:</summary>
+  - @rocket.chat/ui-avatar@32.0.0-rc.1
+  - @rocket.chat/fuselage@1.0.0-rc.1
+  - @rocket.chat/ui-client@36.0.0-rc.1
+  - @rocket.chat/fuselage-ui-kit@36.0.0-rc.1
+  - @rocket.chat/ui-media@1.0.0-rc.1
+
+  </details>
+
 ## 26.0.0-rc.0
 
 ### Major Changes

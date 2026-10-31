@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.0.0-rc.1
+
+### Patch Changes
+
+- ([#43234](https://github.com/RocketChat/Rocket.Chat/pull/43234)) Fixes native and custom emojis rendering at different sizes, and inline emojis making message lines and reaction pills taller
+
 ## 1.0.0-rc.0
 
 ### Minor Changes

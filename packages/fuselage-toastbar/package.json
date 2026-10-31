@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/fuselage-toastbar",
-	"version": "1.0.0-rc.0",
+	"version": "1.0.0-rc.1",
 	"description": "Fuselage ToastBar component",
 	"keywords": [
 		"rocketchat",
@@ -61,7 +61,7 @@
 		"typescript": "~7.0.2"
 	},
 	"peerDependencies": {
-		"@rocket.chat/fuselage": "1.0.0-rc.0",
+		"@rocket.chat/fuselage": "1.0.0-rc.1",
 		"@rocket.chat/styled": "0.34.2-rc.0",
 		"react": "*",
 		"react-dom": "*"

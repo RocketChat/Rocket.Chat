@@ -1,5 +1,18 @@
 # Change Log
 
+## 36.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [5f3c7c2426a29a0f8237a1ec0d72192b2ef1f0a4]:</summary>
+  - @rocket.chat/ui-avatar@32.0.0-rc.1
+  - @rocket.chat/fuselage@1.0.0-rc.1
+  - @rocket.chat/gazzodown@36.0.0-rc.1
+  - @rocket.chat/ui-video-conf@36.0.0-rc.1
+  - @rocket.chat/core-typings@9.0.0-rc.3
+
+  </details>
+
 ## 36.0.0-rc.0
 
 ### Minor Changes

@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/fuselage-forms",
-	"version": "2.0.0-rc.0",
+	"version": "2.0.0-rc.1",
 	"description": "A set of component wrappers to provide ease of use and accessibility out-of-box.",
 	"keywords": [
 		"rocketchat",
@@ -63,7 +63,7 @@
 		"typescript": "~7.0.2"
 	},
 	"peerDependencies": {
-		"@rocket.chat/fuselage": "1.0.0-rc.0",
+		"@rocket.chat/fuselage": "1.0.0-rc.1",
 		"@rocket.chat/fuselage-hooks": "0.44.0-rc.0",
 		"react": "*",
 		"react-dom": "*"
