@@ -10890,6 +10890,7 @@ __metadata:
     "@rocket.chat/mongo-adapter": "workspace:^"
     "@rocket.chat/mp3-encoder": "workspace:~"
     "@rocket.chat/network-broker": "workspace:^"
+    "@rocket.chat/ntlm": "workspace:^"
     "@rocket.chat/omni-core": "workspace:^"
     "@rocket.chat/omni-core-ee": "workspace:^"
     "@rocket.chat/omnichannel-services": "workspace:^"
@@ -11326,6 +11327,17 @@ __metadata:
     moleculer: "npm:^0.14.36"
     pino: "npm:10.3.1"
     sinon: "npm:^19.0.5"
+    typescript: "npm:~7.0.2"
+  languageName: unknown
+  linkType: soft
+
+"@rocket.chat/ntlm@workspace:^, @rocket.chat/ntlm@workspace:packages/ntlm":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/ntlm@workspace:packages/ntlm"
+  dependencies:
+    "@rocket.chat/jest-presets": "workspace:~"
+    "@rocket.chat/tsconfig": "workspace:*"
+    jest: "npm:~30.5.2"
     typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
