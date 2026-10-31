@@ -41,7 +41,7 @@ const server = createServer((request, response) => {
 	if (request.url === '/') {
 		response.setHeader('Content-Type', 'text/html');
 		response.end(
-			'<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Local search preview</title><link rel="stylesheet" href="/preview.css"></head><body><div id="root"></div><script src="/preview.js"></script></body></html>',
+			'<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Local search preview</title><link rel="icon" href="data:,"><link rel="stylesheet" href="/preview.css"></head><body><div id="root"></div><script src="/preview.js"></script></body></html>',
 		);
 		return;
 	}
@@ -59,7 +59,11 @@ try {
 	browser = await chromium.launch({ channel: 'chrome', headless: true });
 	const page = await browser.newPage({ viewport: { width: 520, height: 720 }, timezoneId: 'UTC' });
 	const errors = [];
+	const consoleErrors = [];
 	page.on('pageerror', (error) => errors.push(error.message));
+	page.on('console', (message) => {
+		if (message.type() === 'error') consoleErrors.push(message.text());
+	});
 	await page.goto(`http://127.0.0.1:${server.address().port}`);
 	await page.getByText('Alice Doe', { exact: true }).waitFor();
 	assert.equal(await page.locator('[data-qa="local-message-search-hit"]').count(), 3);
@@ -79,6 +83,7 @@ try {
 	await page.waitForFunction(() => document.querySelectorAll('[data-qa="local-message-search-hit"]').length === 0);
 	await page.screenshot({ path: resolve(outputDirectory, 'empty.png'), fullPage: true });
 	assert.deepEqual(errors, []);
+	assert.deepEqual(consoleErrors, []);
 	const evidence = {
 		mode: 'production components with rebuilt workspace packages and controlled providers',
 		stories: 3,
@@ -86,6 +91,7 @@ try {
 		keyboard: 'PASS',
 		activation: 'PASS',
 		pageErrors: errors,
+		consoleErrors,
 	};
 	await writeFile(resolve(outputDirectory, 'evidence.json'), JSON.stringify(evidence, null, 2));
 	console.log(JSON.stringify({ ...evidence, outputDirectory }));
