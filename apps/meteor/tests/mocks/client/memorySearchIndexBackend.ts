@@ -18,7 +18,7 @@ export const createMemorySearchIndexBackend = () => {
 			}
 			states.delete(rid);
 		},
-		listRooms: async () => [...new Set([...documents.values()].map(({ rid }) => rid))],
+		listRooms: async () => [...new Set([...documents.values()].map(({ rid }) => rid).concat([...states.keys()]))].sort(),
 		async search() {
 			throw new Error('Search is not available in indexing tests');
 		},
@@ -35,5 +35,5 @@ export const createMemorySearchIndexBackend = () => {
 			states.clear();
 		},
 	};
-	return Object.assign(backend, { documents });
+	return Object.assign(backend, { documents, states });
 };

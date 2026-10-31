@@ -28,7 +28,13 @@ export const createFakeSearchIndexBackend = (): ISearchIndexBackend => {
 		if (!userId) throw new Error('E2EE search index is not open');
 	};
 	const changed = () => {
-		for (const listener of [...listeners]) listener({ type: 'changed' });
+		for (const listener of [...listeners]) {
+			try {
+				listener({ type: 'changed' });
+			} catch (error) {
+				console.error('E2EE search index listener failed', error);
+			}
+		}
 	};
 	const hits = (query: E2EESearchQuery): E2EESearchHit[] => {
 		assertOpen();

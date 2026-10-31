@@ -20,7 +20,10 @@ const decrypted = (fields: Partial<IMessage> & Record<string, unknown> = {}): IM
 
 describe('toSearchDoc', () => {
 	it('copies text, identity, and timestamps without changing the message', () => {
-		const message = decrypted();
+		const message = decrypted({
+			content: { algorithm: 'rc.v2.aes-sha2', ciphertext: 'encrypted text', iv: 'iv', kid: 'key' },
+		});
+		expect(message.content).toMatchObject({ algorithm: 'rc.v2.aes-sha2' });
 		const before = JSON.stringify(message);
 		expect(toSearchDoc(message)).toEqual({
 			id: 'm1',
@@ -44,7 +47,18 @@ describe('toSearchDoc', () => {
 	});
 
 	it('indexes legacy decrypted messages without content', () => {
-		expect(toSearchDoc(decrypted())).toMatchObject({ kind: 'text', body: 'hello world' });
+		const message = decrypted();
+		expect(message).not.toHaveProperty('content');
+		expect(toSearchDoc(message)).toEqual({
+			id: 'm1',
+			rid: 'r1',
+			uid: 'u1',
+			username: 'alice',
+			ts: ts.getTime(),
+			updatedAt: updatedAt.getTime(),
+			kind: 'text',
+			body: 'hello world',
+		});
 	});
 
 	it('puts captions before deduplicated filenames', () => {

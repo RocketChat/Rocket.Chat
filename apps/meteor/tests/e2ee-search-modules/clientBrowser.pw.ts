@@ -22,9 +22,10 @@ test('uses client indexing, catch-up, queries and session handles with the real 
 		Buffer.compare(Buffer.from(b, 'utf8'), Buffer.from(a, 'utf8')),
 	);
 	expect(result.before).toEqual(expected);
-	expect(result.after).toHaveLength(203);
-	for (const removed of ['m000', 'm001', 'm002']) expect(result.after).not.toContain(removed);
-	expect(result.after).toContain('new');
+	const expectedAfter = [...expected.filter((id) => !['m000', 'm001', 'm002'].includes(id)), 'new'].sort((a, b) =>
+		Buffer.compare(Buffer.from(b, 'utf8'), Buffer.from(a, 'utf8')),
+	);
+	expect(result.after).toEqual(expectedAfter);
 	expect(result.state).toEqual({ backfillDone: true, lastUpdate: 3000 });
 	expect(result.calls).toEqual([
 		{ type: 'UPDATED', next: '1000_' },

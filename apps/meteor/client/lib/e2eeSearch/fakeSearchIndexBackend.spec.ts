@@ -30,6 +30,23 @@ describe('development memory backend', () => {
 		await expect(backend.searchRecentPage!({ text: 'needle', cursor: { ts: NaN, id: 'm' } })).rejects.toThrow('cursor');
 	});
 
+	it('isolates listener failures after applying a mutation', async () => {
+		const backend = createFakeSearchIndexBackend();
+		await backend.open({ userId: 'u' });
+		const recordChange = jest.fn();
+		const reportError = jest.spyOn(console, 'error').mockImplementation(() => undefined);
+		backend.onIndexEvent!(() => {
+			throw new Error('listener failed');
+		});
+		backend.onIndexEvent!(recordChange);
+
+		await expect(backend.upsert([doc('m')])).resolves.toBeUndefined();
+		await expect(backend.stats()).resolves.toMatchObject({ docs: 1 });
+		expect(recordChange).toHaveBeenCalledTimes(1);
+		expect(reportError).toHaveBeenCalledWith('E2EE search index listener failed', expect.any(Error));
+		reportError.mockRestore();
+	});
+
 	it('retains only the same user across close and scopes wipe to its owner', async () => {
 		const backend = createFakeSearchIndexBackend();
 		await backend.open({ userId: 'a' });

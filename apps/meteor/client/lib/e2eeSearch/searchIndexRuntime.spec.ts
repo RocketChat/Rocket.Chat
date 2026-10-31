@@ -210,13 +210,14 @@ describe('createSearchIndexRuntime', () => {
 describe('createSearchIndexRuntime after the server dropped old deletion records', () => {
 	const DAY = 24 * 60 * 60 * 1000;
 
-	const setup = async (syncedAt: number | undefined, { failRemove = false } = {}) => {
+	const setup = async (syncedAt: number | undefined, { failRemove = false, checkpointOnlyRoom = false } = {}) => {
 		const backend = createFakeSearchIndexBackend();
 		await backend.open({ userId: 'u1' });
 		await backend.upsert([
 			{ id: 'm1', rid: 'r1', uid: 'u2', username: 'bob', ts: NOW - DAY, updatedAt: NOW - DAY, kind: 'text', body: 'deleted long ago' },
 		]);
 		await backend.setRoomState('r1', { lastUpdate: NOW - 40 * DAY, backfillDone: true });
+		if (checkpointOnlyRoom) await backend.setRoomState('checkpoint-only', { lastUpdate: NOW - 40 * DAY, backfillDone: true });
 		if (failRemove) jest.spyOn(backend, 'removeRoom').mockRejectedValue(new Error('disk full'));
 
 		const saved: number[] = [];
@@ -277,9 +278,12 @@ describe('createSearchIndexRuntime after the server dropped old deletion records
 		expect([...backend.documents.values()]).toEqual([]);
 	});
 
-	it('empties every room of an index with no known catch-up time', async () => {
-		const { backend } = await setup(undefined);
+	it('empties every room of an index with no known catch-up time, including checkpoint-only rooms', async () => {
+		const { backend, scheduler, roomsAtStart } = await setup(undefined, { checkpointOnlyRoom: true });
 
+		expect(scheduler.start).toHaveBeenCalledTimes(1);
+		expect(roomsAtStart).toEqual([[]]);
+		expect(await backend.getRoomState('checkpoint-only')).toBeUndefined();
 		expect(await backend.listRooms()).toEqual([]);
 	});
 

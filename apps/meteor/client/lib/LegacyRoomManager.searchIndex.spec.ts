@@ -41,6 +41,7 @@ describe('room deletion search notifications', () => {
 		const off = roomMessageDeletes.on('deleteMessage', listener);
 		try {
 			await mockHandlers.get('r/deleteMessage')!({ _id: 'm' });
+			expect(listener).toHaveBeenCalledTimes(1);
 			expect(listener).toHaveBeenCalledWith({ _id: 'm' });
 		} finally {
 			off();
@@ -57,6 +58,7 @@ describe('room deletion search notifications', () => {
 		const off = roomMessageDeletes.on('deleteMessageBulk', listener);
 		try {
 			await mockHandlers.get('r/deleteMessageBulk')!(params);
+			expect(listener).toHaveBeenCalledTimes(1);
 			expect(listener).toHaveBeenCalledWith(params);
 		} finally {
 			off();
