@@ -24,16 +24,12 @@ export const getSubscriptions = async (
 			update: records.filter((record) => {
 				return record._updatedAt > updatedAt;
 			}),
-			remove: await Subscriptions.findDeletedAfterByUserId(
-				uid,
-				updatedAt,
-				{
-					projection: {
-						_id: 1,
-						_deletedAt: 1,
-					},
+			remove: await Subscriptions.findDeletedAfterByUserId(uid, updatedAt, {
+				projection: {
+					_id: 1,
+					_deletedAt: 1,
 				},
-			).toArray(),
+			}).toArray(),
 		};
 	}
 
