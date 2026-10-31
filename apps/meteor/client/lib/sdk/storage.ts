@@ -143,7 +143,6 @@ const moveLoginKeys = (backend: StorageBackend): boolean => {
 			continue;
 		}
 	}
-	sourceStorage.clear();
 
 	return true;
 };
