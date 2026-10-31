@@ -1,4 +1,4 @@
-import type { IMessage } from '@rocket.chat/core-typings';
+import { isQuoteAttachment, type IMessage } from '@rocket.chat/core-typings';
 
 import { t } from '../../../../lib/i18n';
 import { closeUnclosedCodeBlock } from '../../../../lib/utils/closeUnclosedCodeBlock';
@@ -143,13 +143,12 @@ export const sendMessage = async (
 			originalMessage: mid ? await chat.data.findMessageByID(mid) : null,
 		});
 
-		// When editing an encrypted message with files, preserve the original attachments/files
-		// This ensures they're included in the re-encryption process
 		if (mid) {
 			const originalMessage = await chat.data.findMessageByID(mid);
 
 			if (originalMessage?.t === 'e2e' && originalMessage.attachments && originalMessage.attachments.length > 0) {
-				message.attachments = originalMessage.attachments;
+				// Keep retained attachments without persisting quote previews from the original message.
+				message.attachments = originalMessage.attachments.filter((attachment) => !isQuoteAttachment(attachment));
 				message.file = originalMessage.file;
 			}
 		}
