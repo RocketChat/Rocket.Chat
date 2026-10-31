@@ -1,5 +1,16 @@
 # @rocket.chat/ui-avatar
 
+## 32.0.0-rc.1
+
+### Patch Changes
+
+- ([#43234](https://github.com/RocketChat/Rocket.Chat/pull/43234)) Fixes native and custom emojis rendering at different sizes, and inline emojis making message lines and reaction pills taller
+
+- <details><summary>Updated dependencies [5f3c7c2426a29a0f8237a1ec0d72192b2ef1f0a4]:</summary>
+  - @rocket.chat/fuselage@1.0.0-rc.1
+
+  </details>
+
 ## 32.0.0-rc.0
 
 ### Patch Changes

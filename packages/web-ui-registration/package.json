@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/web-ui-registration",
-	"version": "36.0.0-rc.0",
+	"version": "36.0.0-rc.1",
 	"private": true,
 	"homepage": "https://rocket.chat",
 	"main": "./dist/index.js",
@@ -52,7 +52,7 @@
 		"typescript": "~7.0.2"
 	},
 	"peerDependencies": {
-		"@rocket.chat/layout": "1.0.0-rc.0",
+		"@rocket.chat/layout": "1.0.0-rc.1",
 		"@rocket.chat/tools": "workspace:^",
 		"@rocket.chat/ui-contexts": "workspace:^",
 		"@tanstack/react-query": "*",

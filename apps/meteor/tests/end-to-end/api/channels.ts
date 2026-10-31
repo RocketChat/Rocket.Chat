@@ -844,6 +844,22 @@ describe('[Channels]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('errorType', 'error-forbidden');
+					expect(res.body).to.have.property('error', 'unauthorized');
+				});
+		});
+
+		it('should fail creating a channel when the user lacks the create-c permission', async () => {
+			const guestCredentials = await login(guestUser.username, password);
+
+			await request
+				.post(api('channels.create'))
+				.set(guestCredentials)
+				.send({ name: `guest-channel-${Date.now()}` })
+				.expect(403)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
+					expect(res.body).to.have.property('error', 'unauthorized');
 				});
 		});
 

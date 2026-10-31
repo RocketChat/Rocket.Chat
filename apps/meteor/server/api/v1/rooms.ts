@@ -91,6 +91,7 @@ import { composeRoomWithLastMessage } from '../lib/composeRoomWithLastMessage';
 import { getPaginationItems } from '../lib/getPaginationItems';
 import { getRoomClassificationBanner } from '../lib/getRoomClassificationBanner';
 import { getUserFromParams } from '../lib/getUserFromParams';
+import { normalizeLegacyUfsLocation } from '../lib/normalizeLegacyUfsLocation';
 import {
 	findAdminRoom,
 	findAdminRooms,
@@ -719,7 +720,7 @@ API.v1.get(
 		}
 
 		return API.v1.success({
-			files,
+			files: files.map(normalizeLegacyUfsLocation),
 			count,
 			offset,
 			total,

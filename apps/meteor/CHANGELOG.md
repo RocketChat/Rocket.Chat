@@ -1,5 +1,57 @@
 # @rocket.chat/meteor
 
+## 9.0.0-rc.3
+
+### Major Changes
+
+- ([#43214](https://github.com/RocketChat/Rocket.Chat/pull/43214)) **Breaking:** the REST refusals that the API error switch maps answer **403** with one body shape: `{ success: false, error: '<message>', errorType: 'error-forbidden' }`. `errorType` is always `error-forbidden`; `error` carries the refusal message.
+
+  - `error-not-allowed`, `not-allowed`, the unprefixed `not-authorized`, `not_authorized`, `no-permission` and `error-not-authorized-federation` now answer 403 instead of 400, whether the endpoint throws them as a Rocket.Chat error or as a plain `Error` whose message is the code. This covers, among others, `chat.pinMessage`, `chat.unPinMessage`, `chat.starMessage`, `chat.unStarMessage`, `chat.react`, the thread and message endpoints refused by settings or room access, `rooms.info` and `rooms.getDiscussions` without room access, `chat.delete` with `asUser` without `force-delete-message`, `statistics`, the integrations endpoints (including `integrations.create` and `integrations.clearHistory`), `custom-user-status.create`, `custom-user-status.update`, `custom-user-status.delete`, `emoji-custom.delete`, and `users.generatePersonalAccessToken`, `users.regeneratePersonalAccessToken` and `users.removePersonalAccessToken`.
+  - Clients that read the original code from `errorType` (`error-not-allowed`, `not-authorized`, `error-not-authorized`, …) now get `error-forbidden`. The permission check declared on a route answers `User does not have the permissions required for this action`, without the `[error-unauthorized]` suffix, and a thrown Rocket.Chat error answers its reason (`Threads Disabled`) without the `[error-not-allowed]` suffix.
+  - `chat.postMessage` to a room the caller cannot access answers 400 `error-invalid-room`, the same as a room that does not exist, instead of 400 `error-not-allowed`.
+  - 403 bodies carry no `details` or `stack`.
+  - The DDP methods keep throwing their original error codes, except that adding a user without `access-federation` to a federated room now throws `error-not-authorized-federation` instead of an error whose code is the full message.
+
+- ([#43214](https://github.com/RocketChat/Rocket.Chat/pull/43214)) **Breaking:** the `/hooks` endpoints answer with the status code that matches the failure instead of 400 for all of them.
+
+  - 403 when the integration user lacks `message-impersonate`, or when a `channel` or `roomId` override is disabled.
+  - 404 `error-invalid-room` when the destination room does not exist or the integration user cannot access it, so a private room is not revealed. With `separateResponse`, the room error is reported per channel inside `responses` of a regular response instead. It replaces 400 `invalid-channel` and 400 `error-not-allowed`.
+  - 404 from `/hooks/remove/...` when no integration matches `target_url`. The body is now `{ success: false, error: 'integration-not-found' }` instead of a 200 that wraps the failure.
+  - 500 when the integration script throws (`error-running-script`) or the message produces no result (`unknown-error`).
+  - Malformed payloads and errors returned by the script keep answering 400.
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#43234](https://github.com/RocketChat/Rocket.Chat/pull/43234)) Fixes native and custom emojis rendering at different sizes, and inline emojis making message lines and reaction pills taller
+
+- ([#43355](https://github.com/RocketChat/Rocket.Chat/pull/43355)) Fixes a stray divider at the start of the top navigation bar when there are no ongoing calls to show
+
+- ([#43355](https://github.com/RocketChat/Rocket.Chat/pull/43355)) Removes the empty space above the divider at the bottom of the sidebar
+
+- <details><summary>Updated dependencies [5f3c7c2426a29a0f8237a1ec0d72192b2ef1f0a4]:</summary>
+  - @rocket.chat/ui-avatar@32.0.0-rc.1
+  - @rocket.chat/fuselage@1.0.0-rc.1
+  - @rocket.chat/ui-client@36.0.0-rc.1
+  - @rocket.chat/fuselage-forms@2.0.0-rc.1
+  - @rocket.chat/fuselage-toastbar@1.0.0-rc.1
+  - @rocket.chat/fuselage-ui-kit@36.0.0-rc.1
+  - @rocket.chat/gazzodown@36.0.0-rc.1
+  - @rocket.chat/layout@1.0.0-rc.1
+  - @rocket.chat/onboarding-ui@1.0.0-rc.1
+  - @rocket.chat/ui-account@1.0.0-rc.1
+  - @rocket.chat/ui-composer@7.0.0-rc.1
+  - @rocket.chat/ui-conference@3.0.0-rc.2
+  - @rocket.chat/ui-media@1.0.0-rc.1
+  - @rocket.chat/ui-video-conf@36.0.0-rc.1
+  - @rocket.chat/ui-voip@26.0.0-rc.1
+  - @rocket.chat/web-ui-registration@36.0.0-rc.1
+  - @rocket.chat/core-typings@9.0.0-rc.3
+  - @rocket.chat/rest-typings@9.0.0-rc.3
+
+  </details>
+
 ## 9.0.0-rc.2
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ui-client",
-	"version": "36.0.0-rc.0",
+	"version": "36.0.0-rc.1",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -62,7 +62,7 @@
 	"peerDependencies": {
 		"@react-aria/toolbar": "*",
 		"@rocket.chat/css-in-js": "workspace:^",
-		"@rocket.chat/fuselage": "1.0.0-rc.0",
+		"@rocket.chat/fuselage": "1.0.0-rc.1",
 		"@rocket.chat/fuselage-hooks": "0.44.0-rc.0",
 		"@rocket.chat/icons": "0.52.0-rc.0",
 		"@rocket.chat/ui-avatar": "workspace:^",

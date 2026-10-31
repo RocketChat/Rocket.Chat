@@ -1,5 +1,14 @@
 # @rocket.chat/fuselage-forms
 
+## 2.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [5f3c7c2426a29a0f8237a1ec0d72192b2ef1f0a4]:</summary>
+  - @rocket.chat/fuselage@1.0.0-rc.1
+
+  </details>
+
 ## 2.0.0-rc.0
 
 ### Patch Changes

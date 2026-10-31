@@ -78,10 +78,10 @@ describe('[Incoming Integrations]', () => {
 						channel: '#general',
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400);
+					.expect(403);
 
 				expect(res.body).to.have.property('success', false);
-				expect(res.body).to.have.property('errorType', 'not_authorized');
+				expect(res.body).to.have.property('errorType', 'error-forbidden');
 			});
 
 			it('should return an error when the user DOES NOT have the permission "manage-own-incoming-integrations" to add an incoming integration', async () => {
@@ -99,10 +99,10 @@ describe('[Incoming Integrations]', () => {
 						channel: '#general',
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400);
+					.expect(403);
 
 				expect(res.body).to.have.property('success', false);
-				expect(res.body).to.have.property('errorType', 'not_authorized');
+				expect(res.body).to.have.property('errorType', 'error-forbidden');
 			});
 		});
 
@@ -353,6 +353,35 @@ describe('[Incoming Integrations]', () => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('messages').and.to.be.an('array');
 						expect(!!(res.body.messages as IMessage[]).find((m) => m.msg === successfulMessage)).to.be.true;
+					});
+			});
+
+			it('should return 400 when the channel override is an empty list', async () => {
+				await request
+					.put(api('integrations.update'))
+					.set(credentials)
+					.send({
+						type: 'webhook-incoming',
+						overrideDestinationChannelEnabled: true,
+						integrationId: integration._id,
+						username: 'rocket.cat',
+						channel: '#general',
+						scriptEnabled: true,
+						enabled: true,
+						name: integration.name,
+					})
+					.expect(200);
+
+				await request
+					.post(`/hooks/${integration._id}/${integration.token}`)
+					.send({
+						text: 'no destination',
+						channel: [],
+					})
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'invalid-channel');
 					});
 			});
 
@@ -903,6 +932,27 @@ describe('[Incoming Integrations]', () => {
 			expect(res.body.integration._id).to.be.equal(integration._id);
 			expect(res.body.integration.name).to.be.equal('Incoming test updated');
 			expect(res.body.integration.alias).to.be.equal('test updated');
+		});
+
+		it('should refuse to update an integration when the user lacks the integration permissions', async () => {
+			const res = await request
+				.put(api('integrations.update'))
+				.set(sendUserCredentials)
+				.send({
+					type: 'webhook-incoming',
+					name: 'Incoming test refused',
+					enabled: true,
+					username: senderUser.username,
+					scriptEnabled: false,
+					channel: '#general',
+					integrationId: integration._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(403);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
+			expect(res.body).to.have.property('error', 'Unauthorized');
 		});
 
 		it("should update an integration's username and associated userId correctly and return the new data", async () => {
