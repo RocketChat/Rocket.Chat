@@ -13,7 +13,7 @@ const HTML_ESCAPES: Record<string, string> = {
 
 const escapeHtml = (text: string): string => text.replace(/[&<>"']/g, (char) => HTML_ESCAPES[char]);
 
-// Match unicode61 case folding, including word-final sigma.
+// Keep compatibility forms, accents and word-final sigma equivalent in search.
 export const fold = (word: string): string =>
 	word
 		.normalize('NFKD')
@@ -21,8 +21,10 @@ export const fold = (word: string): string =>
 		.toLowerCase()
 		.replace(/\u03C2/gu, '\u03C3');
 
+export const indexText = (text: string): string => (text.normalize('NFKC').match(WORD) ?? []).map(fold).filter(Boolean).join(' ');
+
 export const queryTokens = (text: string): string[] =>
-	(text.normalize('NFKC').match(WORD) ?? []).map(fold).filter(Boolean).slice(0, E2EE_SEARCH_LIMITS.maxQueryTokens);
+	indexText(text).split(' ').filter(Boolean).slice(0, E2EE_SEARCH_LIMITS.maxQueryTokens);
 
 export const utf8Length = (text: string): number => {
 	let bytes = 0;
@@ -42,8 +44,8 @@ export const clampLimit = (limit: number | undefined): number => {
 };
 
 const matchesAny = (word: string, tokens: string[]): boolean => {
-	const folded = fold(word);
-	return tokens.some((token) => folded.startsWith(token));
+	const words = indexText(word).split(' ');
+	return tokens.some((token) => words.some((folded) => folded.startsWith(token)));
 };
 
 // Return escaped text with only <mark> elements as highlight markup.

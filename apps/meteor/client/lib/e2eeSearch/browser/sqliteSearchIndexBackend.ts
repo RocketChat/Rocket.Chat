@@ -9,7 +9,7 @@ import type {
 	ISearchIndexBackend,
 } from '@rocket.chat/desktop-api';
 
-import { clampLimit, queryTokens, toFilterOnlySnippet, toSnippet, utf8Length } from '../searchIndexText';
+import { clampLimit, indexText, queryTokens, toFilterOnlySnippet, toSnippet, utf8Length } from '../searchIndexText';
 import type { SqlRow, SqlRunner } from './workerSqlRunner';
 
 const SCHEMA = `
@@ -24,20 +24,19 @@ CREATE TABLE IF NOT EXISTS docs (
 	bytes INTEGER NOT NULL
 );
 CREATE INDEX IF NOT EXISTS docs_rid_ts ON docs (rid, ts);
-CREATE VIRTUAL TABLE IF NOT EXISTS docs_fts USING fts5 (
+DROP TRIGGER IF EXISTS docs_ai;
+DROP TRIGGER IF EXISTS docs_ad;
+DROP TABLE IF EXISTS docs_fts;
+CREATE VIRTUAL TABLE IF NOT EXISTS docs_fts_normalized USING fts5 (
 	body,
-	content = 'docs',
-	content_rowid = 'rowid',
 	tokenize = 'unicode61 remove_diacritics 2'
 );
-CREATE TRIGGER IF NOT EXISTS docs_ai AFTER INSERT ON docs BEGIN
-	INSERT INTO docs_fts (rowid, body) VALUES (new.rowid, new.body);
-END;
-CREATE TRIGGER IF NOT EXISTS docs_ad AFTER DELETE ON docs BEGIN
-	INSERT INTO docs_fts (docs_fts, rowid, body) VALUES ('delete', old.rowid, old.body);
+CREATE TRIGGER IF NOT EXISTS docs_normalized_ad AFTER DELETE ON docs BEGIN
+	DELETE FROM docs_fts_normalized WHERE rowid = old.rowid;
 END;
 CREATE TABLE IF NOT EXISTS room_state (rid TEXT PRIMARY KEY, state TEXT NOT NULL);
 `;
+const INDEX_MIGRATION_BATCH_SIZE = 100;
 const WRAP_KEY_BYTES = 32;
 const LOCKED_RESULT = { schemaVersion: 1, encryptedAtRest: false, locked: true } as const;
 const importWrapKey = async (wrapKey: Uint8Array | undefined): Promise<CryptoKey | undefined> => {
@@ -124,6 +123,25 @@ export const createSqliteSearchIndexBackend = (runner: SqlRunner, { namespace }:
 	const changed = (current: number) => {
 		if (current === session) emit({ type: 'changed' });
 	};
+	const migrateIndex = async (current: number) => {
+		while (true) {
+			if (current !== session) throw new Error('E2EE search index is closed');
+			const rows = await runner.exec({
+				sql: `SELECT d.rowid AS rowid, d.body FROM docs d
+					LEFT JOIN docs_fts_normalized f ON f.rowid = d.rowid
+					WHERE f.rowid IS NULL LIMIT ?`,
+				bind: [INDEX_MIGRATION_BATCH_SIZE],
+			});
+			if (rows.length === 0) break;
+			await runner.batch(
+				rows.map((row) => ({
+					sql: 'INSERT OR REPLACE INTO docs_fts_normalized (rowid, body) SELECT rowid, ? FROM docs WHERE rowid = ? AND body = ?',
+					bind: [indexText(String(row.body)), row.rowid, row.body],
+				})),
+			);
+			await runner.flush();
+		}
+	};
 	const searchRows = async (query: E2EESearchQuery | E2EESearchRecentQuery, paged: boolean) => {
 		const cursor = 'cursor' in query ? query.cursor : undefined;
 		if (cursor !== undefined && (!cursor || !Number.isFinite(cursor.ts) || typeof cursor.id !== 'string' || cursor.id.length === 0)) {
@@ -135,7 +153,7 @@ export const createSqliteSearchIndexBackend = (runner: SqlRunner, { namespace }:
 		const where: string[] = [];
 		const bind: (string | number)[] = [];
 		if (tokens.length > 0) {
-			where.push('docs_fts MATCH ?');
+			where.push('docs_fts_normalized MATCH ?');
 			bind.push(tokens.map((token) => `"${token}"*`).join(' '));
 		}
 		for (const [field, column, operator] of [
@@ -156,8 +174,8 @@ export const createSqliteSearchIndexBackend = (runner: SqlRunner, { namespace }:
 		}
 		bind.push(clampLimit(query.limit) + (paged ? 1 : 0));
 		const ranked = !paged && tokens.length > 0 && (!('order' in query) || query.order !== 'recent');
-		const from = tokens.length > 0 ? 'docs_fts JOIN docs d ON d.rowid = docs_fts.rowid' : 'docs d';
-		const order = `${ranked ? 'bm25(docs_fts), ' : ''}d.ts DESC${paged ? ', d.id COLLATE BINARY DESC' : ''}`;
+		const from = tokens.length > 0 ? 'docs_fts_normalized JOIN docs d ON d.rowid = docs_fts_normalized.rowid' : 'docs d';
+		const order = `${ranked ? 'bm25(docs_fts_normalized), ' : ''}d.ts DESC${paged ? ', d.id COLLATE BINARY DESC' : ''}`;
 		const rows = await runner.exec({ sql: `SELECT d.* FROM ${from} WHERE ${where.join(' AND ')} ORDER BY ${order} LIMIT ?`, bind });
 		return { rows, tokens };
 	};
@@ -177,6 +195,8 @@ export const createSqliteSearchIndexBackend = (runner: SqlRunner, { namespace }:
 				runnerScope = scopeIdOf(targetUserId);
 				if (current !== session) throw new Error('E2EE search index is closed');
 				if (state.locked) return { ...LOCKED_RESULT };
+				await migrateIndex(current);
+				if (current !== session) throw new Error('E2EE search index is closed');
 				userId = targetUserId;
 				lost = Boolean(state.evicted);
 				if (lost) console.warn('E2EE search index: the saved copy is gone, the index is built again');
@@ -225,6 +245,10 @@ export const createSqliteSearchIndexBackend = (runner: SqlRunner, { namespace }:
 						{
 							sql: 'INSERT INTO docs (id, rid, tmid, uid, username, ts, body, bytes) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
 							bind: [doc.id, doc.rid, doc.tmid ?? null, doc.uid, doc.username, doc.ts, doc.body, utf8Length(doc.body)],
+						},
+						{
+							sql: 'INSERT INTO docs_fts_normalized (rowid, body) SELECT rowid, ? FROM docs WHERE id = ?',
+							bind: [indexText(doc.body), doc.id],
 						},
 					]),
 				);

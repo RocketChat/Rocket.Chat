@@ -19,7 +19,7 @@ const setup = (events = true) => {
 	const runner = {
 		open: jest.fn<ReturnType<SqlRunner['open']>, Parameters<SqlRunner['open']>>(async () => ({ persistent: false, restored: false })),
 		exec: jest.fn<ReturnType<SqlRunner['exec']>, Parameters<SqlRunner['exec']>>(async () => []),
-		batch: jest.fn(async () => undefined),
+		batch: jest.fn<ReturnType<SqlRunner['batch']>, Parameters<SqlRunner['batch']>>(async () => undefined),
 		flush: jest.fn<ReturnType<SqlRunner['flush']>, Parameters<SqlRunner['flush']>>(async () => undefined),
 		wipe: jest.fn<ReturnType<SqlRunner['wipe']>, Parameters<SqlRunner['wipe']>>(async () => undefined),
 		close: jest.fn(async () => undefined),
@@ -31,13 +31,36 @@ const setup = (events = true) => {
 		}),
 	};
 	const backend = createSqliteSearchIndexBackend(runner, { namespace: 'n' });
-	return { runner, backend, callbacks, open: () => backend.open({ userId: 'u', wrapKey: new Uint8Array(32).fill(1) }) };
+	return {
+		runner,
+		backend,
+		callbacks,
+		open: async () => {
+			const state = await backend.open({ userId: 'u', wrapKey: new Uint8Array(32).fill(1) });
+			runner.exec.mockClear();
+			return state;
+		},
+	};
 };
 
 describe('SQLite search backend B1 additions', () => {
 	it('announces capabilities only with runner lifecycle events', async () => {
 		await expect(setup().open()).resolves.toHaveProperty('capabilities', { recentCursor: 1, lifecycleEvents: 1, close: 1 });
 		await expect(setup(false).open()).resolves.not.toHaveProperty('capabilities');
+	});
+	it('does not save a snapshot when a new empty index opens', async () => {
+		const { backend, runner } = setup();
+		await backend.open({ userId: 'u', wrapKey: new Uint8Array(32).fill(1) });
+		expect(runner.exec).toHaveBeenCalledTimes(1);
+		expect(runner.batch).not.toHaveBeenCalled();
+		expect(runner.flush).not.toHaveBeenCalled();
+	});
+	it('flushes each migration batch without an extra empty completion save', async () => {
+		const { backend, runner } = setup();
+		runner.exec.mockResolvedValueOnce([{ rowid: 1, body: 'oﬃce' }]);
+		await backend.open({ userId: 'u', wrapKey: new Uint8Array(32).fill(1) });
+		expect(runner.batch).toHaveBeenCalledTimes(1);
+		expect(runner.flush).toHaveBeenCalledTimes(1);
 	});
 	it('keeps a locked open free of schema writes and rejects reads and writes', async () => {
 		const { backend, runner } = setup();
@@ -64,6 +87,7 @@ describe('SQLite search backend B1 additions', () => {
 		expect(page.hits.map((hit) => hit.id)).toEqual(['z', 'y']);
 		expect(page.nextCursor).toEqual({ ts: 10, id: 'y' });
 		const [statement] = runner.exec.mock.calls.at(-1)!;
+		expect(statement.sql).toContain('WHERE docs_fts_normalized MATCH ? AND d.rid = ? AND d.uid = ? AND d.ts >= ? AND d.ts <= ?');
 		expect(statement.sql).toContain('(d.ts < ? OR (d.ts = ? AND d.id COLLATE BINARY < ?))');
 		expect(statement.sql).toContain('ORDER BY d.ts DESC, d.id COLLATE BINARY DESC');
 		expect(statement.bind).toEqual(['"needle"*', 'r', 'u', 1, 20, 10, 10, 'zz', 3]);
@@ -81,7 +105,7 @@ describe('SQLite search backend B1 additions', () => {
 		const { backend, runner, open } = setup();
 		await open();
 		await backend.search({ text: 'needle' });
-		expect(runner.exec.mock.calls.at(-1)![0].sql).toContain('ORDER BY bm25(docs_fts), d.ts DESC LIMIT ?');
+		expect(runner.exec.mock.calls.at(-1)![0].sql).toContain('ORDER BY bm25(docs_fts_normalized), d.ts DESC LIMIT ?');
 		expect(runner.exec.mock.calls.at(-1)![0].bind).toEqual(['"needle"*', E2EE_SEARCH_LIMITS.defaultResults]);
 	});
 	it('enforces all shared upsert limits before starting a transaction', async () => {
@@ -260,6 +284,34 @@ describe('SQLite search backend B1 additions', () => {
 			'DELETE FROM room_state',
 			'SELECT state FROM room_state WHERE rid = ?',
 		]);
+	});
+
+	it('writes normalized index text and the unchanged body in one transaction', async () => {
+		const { backend, runner, open } = setup();
+		await open();
+		const body = '한글 oﬃce Ｆｕｌｌ Άλφα café ΟΣ';
+		await backend.upsert([document(body)]);
+		expect(runner.batch).toHaveBeenCalledTimes(1);
+		const [statements] = runner.batch.mock.calls[0];
+		expect(statements).toEqual([
+			{ sql: 'DELETE FROM docs WHERE id = ?', bind: ['a'] },
+			{
+				sql: 'INSERT INTO docs (id, rid, tmid, uid, username, ts, body, bytes) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+				bind: ['a', 'r', null, 'u', 'user', 10, body, new TextEncoder().encode(body).length],
+			},
+			{
+				sql: 'INSERT INTO docs_fts_normalized (rowid, body) SELECT rowid, ? FROM docs WHERE id = ?',
+				bind: ['한글 office full αλφα cafe οσ', 'a'],
+			},
+		]);
+	});
+	it('keeps reads unavailable if normalized index migration fails', async () => {
+		const { backend, runner } = setup();
+		runner.exec.mockResolvedValueOnce([{ rowid: 1, body: 'oﬃce' }]);
+		runner.batch.mockRejectedValueOnce(new Error('migration failed'));
+		await expect(backend.open({ userId: 'u', wrapKey: new Uint8Array(32).fill(1) })).rejects.toThrow('migration failed');
+		await expect(backend.search({ text: 'off' })).rejects.toThrow('not open');
+		expect(runner.wipe).not.toHaveBeenCalled();
 	});
 
 	it('does not run queued old-session writes after a replacement open', async () => {
