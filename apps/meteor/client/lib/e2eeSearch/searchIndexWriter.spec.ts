@@ -57,6 +57,82 @@ describe('createSearchIndexWriter', () => {
 		expect(ids(backend)).toEqual(['m1']);
 	});
 
+	it.each([
+		{ olderBody: 'old history', flushFirst: false },
+		{ olderBody: '', flushFirst: false },
+		{ olderBody: 'old history', flushFirst: true },
+		{ olderBody: '', flushFirst: true },
+	])('rejects stale decrypts with body "$olderBody", flushFirst=$flushFirst', async ({ olderBody, flushFirst }) => {
+		const backend = createMemorySearchIndexBackend();
+		const writer = createSearchIndexWriter({ getBackend: () => backend });
+		const historyDecrypt = writer.bindToOpenIndex();
+		writer.index(message('edited', { msg: 'new live edit', _updatedAt: new Date('2026-10-26T12:01:00Z') }));
+		if (flushFirst) await writer.flush();
+		historyDecrypt(message('edited', { msg: olderBody }));
+		await writer.flush();
+		expect(backend.documents.get('edited')?.body).toBe('new live edit');
+		writer.dispose();
+	});
+
+	it.each(['old history', ''])('preserves a newer live write when an older crawler page decrypts to "%s"', async (olderBody) => {
+		const backend = createMemorySearchIndexBackend();
+		const writer = createSearchIndexWriter({ getBackend: () => backend });
+		const started = deferred();
+		const release = deferred();
+		const crawler = createSearchIndexCrawler({
+			backend,
+			writer,
+			syncMessages: async () => ({ updated: [message('edited', { msg: olderBody })], deleted: [] }),
+			decryptMessage: async (encrypted) => {
+				const index = writer.bindToOpenIndex();
+				started.resolve();
+				await release.promise;
+				index(encrypted);
+				return encrypted;
+			},
+		});
+		const page = crawler.backfillRoomPage('room1');
+		await started.promise;
+		writer.index(message('edited', { msg: 'new live edit', _updatedAt: new Date('2026-10-26T12:01:00Z') }));
+		await writer.flush();
+		release.resolve();
+		await page;
+		expect(backend.documents.get('edited')?.body).toBe('new live edit');
+		writer.dispose();
+	});
+
+	it('retains empty-edit revisions across flushes without weakening deletion tombstones', async () => {
+		const backend = createMemorySearchIndexBackend();
+		const writer = createSearchIndexWriter({ getBackend: () => backend });
+		writer.index(message('edited', { msg: '', _updatedAt: new Date('2026-10-26T12:01:00Z') }));
+		await writer.flush();
+		writer.index(message('edited'));
+		await writer.flush();
+		expect(backend.documents.has('edited')).toBe(false);
+		writer.index(message('edited', { _updatedAt: new Date('2026-10-26T12:02:00Z') }));
+		await writer.flush();
+		expect(backend.documents.has('edited')).toBe(true);
+		writer.index(message('edited', { t: 'rm' }));
+		writer.index(message('edited', { _updatedAt: new Date('2026-10-26T12:03:00Z') }));
+		await writer.flush();
+		expect(backend.documents.has('edited')).toBe(false);
+		writer.dispose();
+	});
+
+	it('scopes accepted revisions to each open backend', async () => {
+		const first = createMemorySearchIndexBackend();
+		const second = createMemorySearchIndexBackend();
+		let active: ISearchIndexBackend = first;
+		const writer = createSearchIndexWriter({ getBackend: () => active });
+		writer.index(message('edited', { msg: 'new edit', _updatedAt: new Date('2026-10-26T12:01:00Z') }));
+		await writer.flush();
+		active = second;
+		writer.index(message('edited'));
+		await writer.flush();
+		expect(second.documents.get('edited')?.body).toBe('secret words edited');
+		writer.dispose();
+	});
+
 	it('does not retain work before open or send queued work after close', async () => {
 		const backend = createBackend();
 		let active: ISearchIndexBackend | undefined;
@@ -145,7 +221,7 @@ describe('createSearchIndexWriter', () => {
 		await writer.flush();
 		const before = { lastUpdate: 1, backfillDone: phase === 'catch-up' };
 		await backend.setRoomState('room1', before);
-		const emptyEdit = message('edited', { msg: '', _updatedAt: new Date(2) });
+		const emptyEdit = message('edited', { msg: '', _updatedAt: new Date('2026-10-26T12:01:00Z') });
 		const syncMessages = jest.fn(async () => ({ updated: [emptyEdit], deleted: [] }));
 		const crawler = createSearchIndexCrawler({
 			backend,

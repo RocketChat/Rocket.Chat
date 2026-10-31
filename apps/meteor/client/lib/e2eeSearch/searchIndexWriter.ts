@@ -62,6 +62,7 @@ export const createSearchIndexWriter = ({
 	let queueBackend: ISearchIndexBackend | undefined;
 	let timer: ReturnType<typeof setTimeout> | undefined;
 	let deletedIds = new WeakMap<ISearchIndexBackend, Set<string>>();
+	let acceptedRevisions = new WeakMap<ISearchIndexBackend, Map<string, number>>();
 	let calls: Promise<void> = Promise.resolve();
 	let version = 0;
 	let disposed = false;
@@ -187,6 +188,18 @@ export const createSearchIndexWriter = ({
 		}
 
 		const doc = toSearchDoc(message);
+		if (message._id && (doc || isDecryptedE2EEMessage(message))) {
+			const toTimestamp = (value: unknown) =>
+				value === undefined || value === null ? NaN : new Date(value as string | number | Date).getTime();
+			const updatedAt = toTimestamp(message._updatedAt);
+			const revision = doc?.updatedAt ?? (Number.isFinite(updatedAt) ? updatedAt : toTimestamp(message.ts));
+			if (Number.isFinite(revision)) {
+				const revisions = acceptedRevisions.get(backend) ?? new Map<string, number>();
+				if (revision < (revisions.get(message._id) ?? -Infinity)) return;
+				revisions.set(message._id, revision);
+				acceptedRevisions.set(backend, revisions);
+			}
+		}
 		if (!doc) {
 			if (message._id && isDecryptedE2EEMessage(message)) void remove([message._id], { deleted: false });
 			return;
@@ -226,6 +239,7 @@ export const createSearchIndexWriter = ({
 			queue = new Map();
 			queueBackend = undefined;
 			deletedIds = new WeakMap();
+			acceptedRevisions = new WeakMap();
 			unreportedFailure = undefined;
 			listeners.clear();
 		},

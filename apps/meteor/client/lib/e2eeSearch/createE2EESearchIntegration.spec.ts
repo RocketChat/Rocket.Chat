@@ -89,10 +89,15 @@ it('connects scoped consent, writes, stream deletes, room removal, and logout re
 		await integration.runtime.whenSettled();
 		expect((await mockBackend.stats()).docs).toBe(1);
 
+		await mockBackend.setRoomState('r', { backfillDone: true, lastUpdate: 1 });
+		const removed = jest.spyOn(integration.runtime, 'onRoomRemoved');
 		mockSubscriptions.clear();
 		subscriptionRemovals.emit('removed', { rid: 'r' });
-		await integration.runtime.onRoomRemoved('r');
+		expect(removed).toHaveBeenCalledTimes(1);
+		expect(removed).toHaveBeenCalledWith('r');
+		await removed.mock.results[0].value;
 		expect((await mockBackend.stats()).docs).toBe(0);
+		expect(await mockBackend.getRoomState('r')).toBeUndefined();
 		expect(error).not.toHaveBeenCalled();
 	} finally {
 		integration.runtime.dispose();

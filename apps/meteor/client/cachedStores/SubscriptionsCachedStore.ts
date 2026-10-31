@@ -91,6 +91,11 @@ class SubscriptionsCachedStore extends PrivateCachedStore<SubscriptionWithRoom, 
 		return deserialized && Rooms.use.getState().has(deserialized.rid) ? this.mapRecord(deserialized) : deserialized;
 	}
 
+	protected override async handleRecordEvent(action: 'removed' | 'changed', record: ISubscription) {
+		await super.handleRecordEvent(action, record);
+		if (action === 'removed' && record.rid) subscriptionRemovals.emit('removed', { rid: record.rid });
+	}
+
 	protected override handleSyncEvent(action: 'removed' | 'changed', record: SubscriptionWithRoom) {
 		if (action === 'removed' && record.rid) subscriptionRemovals.emit('removed', { rid: record.rid });
 	}
