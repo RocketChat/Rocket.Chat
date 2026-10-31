@@ -22,7 +22,6 @@ const DeleteMessageConfirmModal = ({
 	onCancel: () => void;
 }) => {
 	const { t } = useTranslation();
-	const mid = chat.currentEditingMessage.getMID();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const deleteMessageMutation = useMutation({
@@ -33,10 +32,8 @@ const DeleteMessageConfirmModal = ({
 
 			await chat.data.deleteMessage(message);
 		},
-		onSuccess: () => {
-			if (mid === message._id) {
-				chat.currentEditingMessage.stop();
-			}
+		onSuccess: async () => {
+			await chat.currentEditingMessage.stopAfterDeletion(message._id);
 			chat.composer?.focus();
 
 			dispatchToastMessage({ type: 'success', message: t('Your_entry_has_been_deleted') });
