@@ -1,7 +1,8 @@
 {
 	"extends": "@rocket.chat/tsconfig/base.json",
 	"compilerOptions": {
-		"module": "preserve",
+		"module": "nodenext",
+		"moduleResolution": "nodenext",
 		"target": "es2024",
 		"lib": ["ES2024"],
 

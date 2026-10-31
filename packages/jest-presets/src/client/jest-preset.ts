@@ -35,6 +35,9 @@ export default {
 	moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node', 'mjs'],
 
 	moduleNameMapper: {
+		// jest-resolve doesn't apply TypeScript's `.js` → `.ts` mapping for the explicit
+		// extensions that `moduleResolution: nodenext` requires in the sources.
+		'^(\\.{1,2}/.*)\\.js$': '$1',
 		'\\.css$': 'identity-obj-proxy',
 	},
 
