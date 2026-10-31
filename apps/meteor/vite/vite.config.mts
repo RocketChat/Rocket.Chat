@@ -119,6 +119,7 @@ const nativeModules = (): Plugin => {
 	const replacements = new Map(
 		Object.entries({
 			'client/lib/getURL.ts': 'getURL.ts',
+			'client/views/root/hooks/loggedIn/useRootUrlChange.tsx': 'useRootUrlChange.ts',
 		}).map(([original, native]) => [join(appRoot, original), join(here, 'native', native)]),
 	);
 
