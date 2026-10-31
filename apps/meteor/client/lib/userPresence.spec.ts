@@ -118,17 +118,20 @@ describe('UserPresence', () => {
 
 	it('handles a rejected presence request and retries after reconnect', async () => {
 		const warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
-		const { rerender } = render();
-		goOnline.mockRejectedValueOnce(new Error('Connection lost before the method result arrived'));
-		dropConnection(rerender);
-		restoreConnection(rerender);
-		await jest.advanceTimersByTimeAsync(0);
-		expect(warn).toHaveBeenCalledWith('Could not update user presence', expect.any(Error));
-		dropConnection(rerender);
-		restoreConnection(rerender);
-		await jest.advanceTimersByTimeAsync(0);
-		expect(goOnline).toHaveBeenCalledTimes(2);
-		warn.mockRestore();
+		try {
+			const { rerender } = render();
+			goOnline.mockRejectedValueOnce(new Error('Connection lost before the method result arrived'));
+			dropConnection(rerender);
+			restoreConnection(rerender);
+			await jest.advanceTimersByTimeAsync(0);
+			expect(warn).toHaveBeenCalledWith('Could not update user presence', expect.any(Error));
+			dropConnection(rerender);
+			restoreConnection(rerender);
+			await jest.advanceTimersByTimeAsync(0);
+			expect(goOnline).toHaveBeenCalledTimes(2);
+		} finally {
+			warn.mockRestore();
+		}
 	});
 
 	it('does not send queued activity after logout', async () => {
