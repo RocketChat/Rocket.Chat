@@ -19,7 +19,7 @@
   - I have added tests that prove my fix is effective or that my feature works (if applicable)
   - I have added necessary documentation (if applicable)
   - Comments state intent, not mechanism, and none explains code in another file - https://github.com/RocketChat/Rocket.Chat/blob/develop/docs/code-comments.md
-  - This pull request carries one concern and can be reverted on its own - https://github.com/RocketChat/Rocket.Chat/blob/develop/docs/change-organization.md
+  - The body says what, why and what is out of scope; decisions and gaps are listed; extractions were planned and merged before leaving draft - https://github.com/RocketChat/Rocket.Chat/blob/develop/docs/change-organization.md
   - Any dependent changes have been merged and published in downstream modules
 -->
 
@@ -29,6 +29,13 @@
   If it fixes a bug or resolves a feature request, be sure to link to that issue below.
   This description won't be displayed to our end users in the release notes, so feel free to add as much technical context as needed.
   If the changes introduced in this pull request must be presented in the release notes, make sure to add a changeset file. Check our guidelines for adding a changeset to your pull request: https://developer.rocket.chat/contribute-to-rocket.chat/modes-of-contribution/participate-in-rocket.chat-development/development-workflow#4.-adding-changeset-to-your-pull-request 
+-->
+
+## Decisions and gaps
+<!--
+  Decisions: the choices a person made, why, and the alternatives dropped. A choice an agent made alone goes under gaps until a person confirms it.
+  Gaps: what is known to be missing or wrong, and open questions.
+  While in draft, add the distribution table: each concern, its commits, its size, what it depends on, and whether it is extracted or stays.
 -->
 
 ## Issue(s)
