@@ -65,4 +65,85 @@ describe('useSearchItems', () => {
 			expect(result.current.items).toHaveLength(2);
 		});
 	});
+
+	it('should keep a user the server matched on a field other than the name', async () => {
+		const wrapper = mockAppRoot()
+			.withSubscriptions([])
+			.withEndpoint('GET', '/v1/spotlight', () => ({
+				users: [{ _id: 'user_id_456', username: 'john.doe', name: 'John Doe' }],
+				rooms: [],
+			}))
+			.build();
+
+		const { result } = renderHook(() => useSearchItems('5511'), { wrapper });
+
+		await waitFor(() => {
+			expect(result.current.items).toHaveLength(1);
+		});
+
+		expect(result.current.items[0].name).toBe('john.doe');
+	});
+
+	it('should hide a match on another field until the server answers the new search', async () => {
+		let answerNewSearch: () => void = () => undefined;
+		const newSearch = new Promise<void>((resolve) => {
+			answerNewSearch = resolve;
+		});
+		const newSearchRequested = jest.fn();
+
+		const wrapper = mockAppRoot()
+			.withSubscriptions([])
+			.withEndpoint('GET', '/v1/spotlight', async ({ query }) => {
+				if (query !== '5511') {
+					newSearchRequested();
+					await newSearch;
+				}
+
+				return { users: [{ _id: 'user_id_456', username: 'john.doe', name: 'John Doe' }], rooms: [] };
+			})
+			.build();
+
+		const { result, rerender } = renderHook(({ filterText }) => useSearchItems(filterText), {
+			initialProps: { filterText: '5511' },
+			wrapper,
+		});
+
+		await waitFor(() => {
+			expect(result.current.items).toHaveLength(1);
+		});
+
+		rerender({ filterText: '55119' });
+
+		expect(result.current.items).toEqual([]);
+
+		await waitFor(() => expect(newSearchRequested).toHaveBeenCalled(), { timeout: 2000 });
+
+		expect(result.current.items).toEqual([]);
+
+		answerNewSearch();
+
+		await waitFor(() => {
+			expect(result.current.items).toHaveLength(1);
+		});
+	});
+
+	it('should report loading while the new search waits for the debounce', async () => {
+		const wrapper = mockAppRoot()
+			.withSubscriptions([])
+			.withEndpoint('GET', '/v1/spotlight', () => ({ users: [], rooms: [] }))
+			.build();
+
+		const { result, rerender } = renderHook(({ filterText }) => useSearchItems(filterText), {
+			initialProps: { filterText: '5511' },
+			wrapper,
+		});
+
+		await waitFor(() => {
+			expect(result.current.isLoading).toBe(false);
+		});
+
+		rerender({ filterText: '55119' });
+
+		expect(result.current.isLoading).toBe(true);
+	});
 });

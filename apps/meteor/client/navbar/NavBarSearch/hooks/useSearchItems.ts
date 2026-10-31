@@ -125,6 +125,7 @@ export const useSearchItems = (filterText = ''): { items: SubscriptionWithRoom[]
 		// Server results are keyed on the *debounced* term, so while the user is still typing
 		// (or via placeholderData) they may belong to a previous search. Drop the ones that no
 		// longer match the current text so stale, non-matching results aren't rendered.
+		const isCurrentSearch = name === debouncedName && !isPlaceholderData;
 		const filterRegex = new RegExp(escapeRegExp(name), 'i');
 		const matchesFilter = ({ name, fname }: { name?: string; fname?: string }) =>
 			(name && filterRegex.test(name)) || (fname && filterRegex.test(fname));
@@ -145,15 +146,17 @@ export const useSearchItems = (filterText = ''): { items: SubscriptionWithRoom[]
 		// When local subscriptions already fill the limit the server query is disabled, but React Query
 		// keeps the last results around — ignore them so a full local list isn't padded with stale rows.
 		const candidates = localRooms.length < LIMIT ? (serverResults ?? []) : [];
-		const fromServer = candidates.filter((item) => matchesFilter(item) && !isLocalDuplicate(item));
+		const fromServer = candidates.filter((item) => (isCurrentSearch || matchesFilter(item)) && !isLocalDuplicate(item));
 		const exact = fromServer.filter((item) => [item.name, item.fname].includes(name));
 		return Array.from(new Set([...exact, ...localRooms, ...fromServer])) as SubscriptionWithRoom[];
-	}, [serverResults, localRooms, name]);
+	}, [serverResults, localRooms, name, debouncedName, isPlaceholderData]);
 
 	// `isFetching` is also true for silent background revalidations (after staleTime) of results we
 	// already show — only surface loading while there's no usable data for the current term yet, i.e.
-	// the very first fetch (serverResults undefined) or a new term still showing placeholder data.
-	const isLoading = isFetching && (isPlaceholderData || serverResults === undefined);
+	// a debounce still pending, the very first fetch (serverResults undefined) or a new term still
+	// showing placeholder data.
+	const isDebouncing = name !== debouncedName && localRooms.length < LIMIT;
+	const isLoading = isDebouncing || (isFetching && (isPlaceholderData || serverResults === undefined));
 
 	return { items, isLoading };
 };
