@@ -12,7 +12,7 @@ import {
 	ContextualbarEmptyContent,
 } from '@rocket.chat/ui-client';
 import { useRoomToolbox, useUserPreference, useSetting } from '@rocket.chat/ui-contexts';
-import { useState, memo, Fragment, useId } from 'react';
+import { useState, memo, Fragment, useId, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
@@ -66,6 +66,7 @@ const MessageSearchTab = () => {
 	const localResults = useLocalSearchHits(localQuery.data);
 	useLocalSearchIndexRoomCatchUp(room._id, !!localBackend);
 	const canLoadMoreLocal = canLoadMoreLocalHits(localQuery, limit);
+	const loadMoreLocal = useCallback(() => setLimit((limit) => limit + pageSize), [pageSize]);
 	const {
 		isSuccess,
 		data: messageSearchData,
@@ -90,7 +91,7 @@ const MessageSearchTab = () => {
 						provider={providerQuery.data}
 						onSearch={handleSearch}
 						searchListId={searchListId}
-						isSuccess={localSearch ? localQuery.isSuccess : isSuccess}
+						isSuccess={localSearch ? localQuery.isSuccess && localQuery.data.length > 0 : isSuccess}
 						localSearch={localSearch}
 					/>
 				</ContextualbarSection>
@@ -117,7 +118,7 @@ const MessageSearchTab = () => {
 								hits={localResults.hits}
 								showUserAvatar={showUserAvatar}
 								onOpenHit={localResults.onOpenHit}
-								onEndReached={canLoadMoreLocal ? () => setLimit((limit) => limit + pageSize) : undefined}
+								onEndReached={canLoadMoreLocal ? loadMoreLocal : undefined}
 							/>
 						)}
 					</>
@@ -175,7 +176,7 @@ const MessageSearchTab = () => {
 						)}
 					</>
 				)}
-				{providerQuery.isError && !localSearch && (
+				{providerQuery.isError && (
 					<ContextualbarSection>
 						<Callout type='danger'>{t('Search_current_provider_not_active')}</Callout>
 					</ContextualbarSection>

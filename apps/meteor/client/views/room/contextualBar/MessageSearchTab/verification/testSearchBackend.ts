@@ -1,6 +1,13 @@
 import type { E2EESearchQuery, ISearchIndexBackend } from '@rocket.chat/desktop-api';
 
 import { createMemorySearchIndexBackend } from '../../../../../../tests/mocks/client/memorySearchIndexBackend';
+import { toFilterOnlySnippet, toSnippet, queryTokens } from '../../../../../lib/e2eeSearch/searchIndexText';
+
+const compareIds = (left: string, right: string): number => {
+	const a = Buffer.from(left, 'utf8');
+	const b = Buffer.from(right, 'utf8');
+	return Buffer.compare(a, b);
+};
 
 /** Provide deterministic query pages for controller tests, without browser storage. */
 export const createTestSearchBackend = (): ISearchIndexBackend => {
@@ -15,17 +22,19 @@ export const createTestSearchBackend = (): ISearchIndexBackend => {
 					doc.ts <= (query.to ?? Number.MAX_SAFE_INTEGER) &&
 					doc.body.toLowerCase().includes(query.text.toLowerCase()),
 			)
-			.sort((a, b) => b.ts - a.ts || b.id.localeCompare(a.id))
+			.sort((a, b) => b.ts - a.ts || compareIds(b.id, a.id))
 			.map(({ body, ...doc }) => ({
 				...doc,
-				snippet: query.text ? body.replace(query.text, `<mark>${query.text}</mark>`) : body,
+				snippet: query.text ? toSnippet(body, queryTokens(query.text)) : toFilterOnlySnippet(body),
 			}));
 	return {
 		...backend,
 		open: async () => ({ schemaVersion: 1, encryptedAtRest: false, capabilities: { recentCursor: 1, lifecycleEvents: 1, close: 1 } }),
 		search: async (query) => hits(query).slice(0, query.limit ?? 50),
 		searchRecentPage: async ({ cursor, ...query }) => {
-			const selected = hits(query).filter((hit) => !cursor || hit.ts < cursor.ts || (hit.ts === cursor.ts && hit.id < cursor.id));
+			const selected = hits(query).filter(
+				(hit) => !cursor || hit.ts < cursor.ts || (hit.ts === cursor.ts && compareIds(hit.id, cursor.id) < 0),
+			);
 			const page = selected.slice(0, query.limit ?? 50);
 			const last = page.at(-1);
 			return { hits: page, ...(last && selected.length > page.length && { nextCursor: { ts: last.ts, id: last.id } }) };

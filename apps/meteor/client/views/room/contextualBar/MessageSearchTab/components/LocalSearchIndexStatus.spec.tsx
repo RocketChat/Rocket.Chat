@@ -1,6 +1,6 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { composeStories } from '@storybook/react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import { axe } from 'jest-axe';
 
 import * as stories from './LocalSearchIndexStatus.stories';
@@ -20,9 +20,12 @@ it.each([Closed, Complete, Stopped])('hides the status when there is no incomple
 	expect(container).toBeEmptyDOMElement();
 });
 
-it.each([Locked, Unavailable])('announces unavailable local search without indexing progress (%#)', async (Story) => {
+it.each([
+	['locked', Locked, 'E2E_Local_Search_Locked'],
+	['unavailable', Unavailable, 'E2E_Local_Search_Unavailable'],
+] as const)('announces %s local search without indexing progress', async (_status, Story, expectedCopy) => {
 	const { container } = render(<Story />, { wrapper });
-	expect(screen.getByRole('status')).toHaveTextContent(/E2E_Local_Search_(Locked|Unavailable)/);
+	expect(within(screen.getByRole('status')).getByText(expectedCopy, { exact: true })).toBeInTheDocument();
 	expect(screen.queryByText(/Indexing encrypted history/)).not.toBeInTheDocument();
 	expect(await axe(container)).toHaveNoViolations();
 });

@@ -75,7 +75,7 @@ const server = createServer((request, response) => {
 	if (request.url === '/') {
 		response.setHeader('Content-Type', 'text/html');
 		response.end(
-			'<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Message search controller preview</title><link rel="stylesheet" href="/preview.css"><link rel="stylesheet" href="/text.css"><style>html,body{margin:0;height:100%;background:#fff}#root{height:720px;display:flex;justify-content:center}body{font-family:Arial,sans-serif}</style></head><body><div id="root"></div><script src="/preview.js"></script></body></html>',
+			'<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Message search controller preview</title><link rel="icon" href="data:,"><link rel="stylesheet" href="/preview.css"><link rel="stylesheet" href="/text.css"><style>html,body{margin:0;height:100%;background:#fff}#root{height:720px;display:flex;justify-content:center}body{font-family:Arial,sans-serif}</style></head><body><div id="root"></div><script src="/preview.js"></script></body></html>',
 		);
 		return;
 	}
@@ -208,7 +208,7 @@ try {
 		lockedStatus: 'PASS',
 		unavailableStatus: 'PASS',
 		queryErrorFeedback: 'PASS',
-		retryRecovery: 'PASS',
+		controlledQueryRecovery: 'PASS',
 		legacyUnsupportedView: 'PASS',
 		iconFontLoaded: true,
 		rowPaint: paint,

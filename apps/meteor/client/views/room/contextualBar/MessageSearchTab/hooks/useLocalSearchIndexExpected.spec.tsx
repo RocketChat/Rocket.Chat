@@ -1,13 +1,19 @@
 import type { E2EESearchOpenResult, ISearchIndexBackend } from '@rocket.chat/desktop-api';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { renderHook } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react';
 
 import { useLocalSearchIndexExpected } from './useLocalSearchIndexExpected';
 import { createTestSearchBackend } from '../verification/testSearchBackend';
 
 let mockBackend: ISearchIndexBackend | undefined;
 let mockOptedIn = true;
-const mockSubscribe = jest.fn((_workspace: string, _listener: () => void) => () => undefined);
+let mockListener: (() => void) | undefined;
+const mockSubscribe = jest.fn((_workspace: string, listener: () => void) => {
+	mockListener = listener;
+	return () => {
+		mockListener = undefined;
+	};
+});
 const mockConsent = jest.fn((_workspace: string, _userId: string | undefined) => mockOptedIn);
 jest.mock('../../../../../lib/absoluteUrl', () => ({ absoluteUrl: () => 'https://workspace.example/chat/' }));
 jest.mock('../../../../../lib/e2eeSearch/getSearchIndexBackend', () => ({ getSearchIndexBackend: () => mockBackend }));
@@ -39,6 +45,27 @@ it('does not expect a local index without device consent', () => {
 	mockOptedIn = false;
 	const { result } = renderHook(useLocalSearchIndexExpected, { wrapper: wrapper() });
 	expect(result.current).toBe(false);
+});
+
+it('updates when device consent changes without remounting', () => {
+	const { result, unmount } = renderHook(useLocalSearchIndexExpected, { wrapper: wrapper() });
+	expect(result.current).toBe(true);
+	expect(mockListener).toEqual(expect.any(Function));
+
+	act(() => {
+		mockOptedIn = false;
+		mockListener!();
+	});
+	expect(result.current).toBe(false);
+
+	act(() => {
+		mockOptedIn = true;
+		mockListener!();
+	});
+	expect(result.current).toBe(true);
+
+	unmount();
+	expect(mockListener).toBeUndefined();
 });
 
 it.each(['searchRecentPage', 'onIndexEvent', 'close'] as const)('preserves the legacy path when desktop lacks %s', (method) => {

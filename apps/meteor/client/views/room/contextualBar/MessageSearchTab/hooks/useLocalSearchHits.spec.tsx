@@ -7,16 +7,19 @@ import { useLocalSearchHits } from './useLocalSearchHits';
 import { setMessageJumpQueryStringParameter } from '../../../../../lib/utils/setMessageJumpQueryStringParameter';
 
 let mockMessages = new Map<string, Pick<IMessage, 'u'>>();
+let mockUsers = new Map<string, IMessage['u']>();
 const mockGoToThread = jest.fn();
 jest.mock('../../../hooks/useGoToThread', () => ({ useGoToThread: () => mockGoToThread }));
 jest.mock('../../../../../lib/utils/setMessageJumpQueryStringParameter', () => ({ setMessageJumpQueryStringParameter: jest.fn() }));
 jest.mock('../../../../../stores', () => ({
 	Messages: { use: (selector: (state: { records: typeof mockMessages }) => unknown) => selector({ records: mockMessages }) },
+	Users: { use: (selector: (state: { records: typeof mockUsers }) => unknown) => selector({ records: mockUsers }) },
 }));
 
 const hit: E2EESearchHit = { id: 'message', rid: 'room', uid: 'alice', username: 'alice', ts: 1, snippet: 'needle' };
 afterEach(() => {
 	mockMessages = new Map();
+	mockUsers = new Map();
 	jest.clearAllMocks();
 });
 
@@ -29,6 +32,19 @@ it('uses the locally loaded real name when the setting is on', () => {
 	mockMessages = new Map();
 	rerender();
 	expect(result.current.hits[0]).toMatchObject({ username: 'alice', displayName: 'alice' });
+});
+
+it('uses the same reactive user identity for loaded and unloaded hits', () => {
+	mockMessages.set(hit.id, { u: { _id: hit.uid, username: 'old-alice', name: 'Old name' } });
+	mockUsers.set(hit.uid, { _id: hit.uid, username: 'alice-new', name: 'Alice Doe' });
+	const hits = [hit, { ...hit, id: 'unloaded' }];
+	const { result, rerender } = renderHook(() => useLocalSearchHits(hits), {
+		wrapper: mockAppRoot().withSetting('UI_Use_Real_Name', true).build(),
+	});
+	expect(result.current.hits.map(({ displayName }) => displayName)).toEqual(['Alice Doe', 'Alice Doe']);
+	mockUsers = new Map([[hit.uid, { _id: hit.uid, username: 'alice-new', name: 'Updated name' }]]);
+	rerender();
+	expect(result.current.hits.map(({ displayName }) => displayName)).toEqual(['Updated name', 'Updated name']);
 });
 
 it('keeps the username when the real-name setting is off', () => {

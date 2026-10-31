@@ -3,10 +3,11 @@ import type { ServerMethodName, ServerMethodParameters, ServerMethodReturn } fro
 import type { E2EESearchDoc, ISearchIndexBackend } from '@rocket.chat/desktop-api';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { ServerContextValue } from '@rocket.chat/ui-contexts';
-import { act, render, screen, waitFor, within } from '@testing-library/react';
+import { act, render, renderHook, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import MessageSearchTab from './MessageSearchTab';
+import { useLocalSearchIndexOpenResult } from './hooks/useLocalSearchIndexBackend';
 import { createTestSearchBackend } from './verification/testSearchBackend';
 import type { SearchIndexProgress } from '../../../../lib/e2eeSearch/searchIndexScheduler';
 import { toSearchDoc } from '../../../../lib/e2eeSearch/toSearchDoc';
@@ -14,9 +15,11 @@ import { toSearchDoc } from '../../../../lib/e2eeSearch/toSearchDoc';
 let mockBackend: ISearchIndexBackend | undefined;
 let mockProgress: SearchIndexProgress | undefined;
 let mockEncryptedAtRest: boolean | undefined;
+let mockOpenResultMissing = false;
 let mockIndexExpected = false;
 let mockCapabilities = true;
 let mockStatus = 'idle';
+let mockProviderError = false;
 const mockRoomCatchUp = jest.fn();
 const mockIndexVersion = {
 	value: 0,
@@ -36,7 +39,11 @@ const provider: IMessageSearchProvider = {
 } as unknown as IMessageSearchProvider;
 
 jest.mock('./hooks/useMessageSearchProviderQuery', () => ({
-	useMessageSearchProviderQuery: () => ({ data: provider, isSuccess: true, isError: false }),
+	useMessageSearchProviderQuery: () => ({
+		data: mockProviderError ? undefined : provider,
+		isSuccess: !mockProviderError,
+		isError: mockProviderError,
+	}),
 }));
 
 jest.mock('./hooks/useLocalSearchIndexBackend', () => ({
@@ -44,11 +51,13 @@ jest.mock('./hooks/useLocalSearchIndexBackend', () => ({
 	useLocalSearchIndexBackend: () => mockBackend,
 	useLocalSearchIndexStatus: () => (mockBackend ? 'ready' : mockStatus),
 	useLocalSearchIndexOpenResult: () =>
-		mockBackend && {
-			schemaVersion: 1,
-			encryptedAtRest: mockEncryptedAtRest,
-			...(mockCapabilities && { capabilities: { recentCursor: 1, lifecycleEvents: 1, close: 1 } }),
-		},
+		mockBackend && !mockOpenResultMissing
+			? {
+					schemaVersion: 1,
+					encryptedAtRest: mockEncryptedAtRest,
+					...(mockCapabilities && { capabilities: { recentCursor: 1, lifecycleEvents: 1, close: 1 } }),
+				}
+			: undefined,
 }));
 
 jest.mock('../../../../lib/e2ee/rocketchat.e2e', () => ({ e2eSearchIndexSession: {} }));
@@ -79,7 +88,10 @@ jest.mock('../../contexts/RoomContext', () => ({
 }));
 
 jest.mock('../../../../stores', () => ({
-	Users: { state: { find: () => undefined } },
+	Users: {
+		state: { find: () => undefined },
+		use: (selector: (state: { records: Map<string, IUser> }) => unknown) => selector({ records: new Map() }),
+	},
 	Messages: {
 		state: { find: () => undefined },
 		use: (selector: (state: { records: Map<string, IMessage> }) => unknown) => selector({ records: new Map() }),
@@ -155,7 +167,36 @@ describe('MessageSearchTab local search', () => {
 		mockBackend = undefined;
 		mockProgress = undefined;
 		mockEncryptedAtRest = undefined;
+		mockOpenResultMissing = false;
+		mockProviderError = false;
 		jest.restoreAllMocks();
+	});
+
+	it('shows provider failure feedback while local search is active', () => {
+		mockProviderError = true;
+		renderTab();
+		expect(screen.getByText('Search_current_provider_not_active')).toBeInTheDocument();
+	});
+
+	it('omits aria-controls when a successful local query has no results list', async () => {
+		renderTab();
+		const input = screen.getByRole('textbox', { name: 'Search_Messages' });
+		await userEvent.type(input, 'notpresent');
+		await waitFor(() => expect(screen.getByText('No_results_found')).toBeInTheDocument());
+		expect(input).not.toHaveAttribute('aria-controls');
+	});
+
+	it('does not load another page when only indexing progress changes', async () => {
+		await mockBackend?.upsert(
+			Array.from({ length: 20 }, (_, index) => message(`progress-${index}`, 'u-self', new Date(2025, 5, index + 1), 'needle')),
+		);
+		const { rerender } = renderTab();
+		await userEvent.type(screen.getByRole('textbox', { name: 'Search_Messages' }), 'needle');
+		await waitFor(() => expect(screen.getAllByText('needle', { selector: 'mark' })).toHaveLength(10));
+		const requests = jest.mocked(mockBackend!.searchRecentPage!).mock.calls.length;
+		mockProgress = progress('indexing', 1);
+		rerender(<MessageSearchTab />);
+		expect(jest.mocked(mockBackend!.searchRecentPage!)).toHaveBeenCalledTimes(requests);
 	});
 
 	it('sends a text with only filters to the local index and shows the hits, newest first', async () => {
@@ -266,13 +307,32 @@ describe('MessageSearchTab local search', () => {
 
 	it.each([
 		['the index is encrypted at rest', true],
-		['the open result is not known', undefined],
+		['an existing open result has an unknown encryption flag', undefined],
 	])('shows no memory-only note when %s', async (_case, value) => {
 		mockEncryptedAtRest = value;
+		const { result } = renderHook(useLocalSearchIndexOpenResult);
+		expect(result.current).toBeDefined();
+		expect(result.current?.encryptedAtRest).toBe(value);
 		renderTab();
 
 		expect(await screen.findByRole('textbox', { name: 'Search_Messages' })).toBeInTheDocument();
 		expect(screen.queryByText(/in memory only/)).not.toBeInTheDocument();
+	});
+
+	it('shows no memory-only note when the open result is absent', async () => {
+		mockOpenResultMissing = true;
+		mockIndexExpected = true;
+		mockEncryptedAtRest = false;
+		try {
+			const { result } = renderHook(useLocalSearchIndexOpenResult);
+			expect(result.current).toBeUndefined();
+			renderTab();
+
+			expect(await screen.findByRole('textbox', { name: 'Search_Messages' })).toBeInTheDocument();
+			expect(screen.queryByText(/in memory only/)).not.toBeInTheDocument();
+		} finally {
+			mockIndexExpected = false;
+		}
 	});
 });
 

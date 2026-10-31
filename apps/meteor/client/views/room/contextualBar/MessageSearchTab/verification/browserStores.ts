@@ -9,4 +9,8 @@ export const Messages = {
 	state: { find: () => undefined },
 	use: <T>(selector: (state: { records: typeof records }) => T) => selector({ records }),
 };
-export const Users = { state: { find: () => undefined } };
+const users = new Map([...records.values()].map(({ u }) => [u._id, u]));
+export const Users = {
+	state: { find: () => undefined },
+	use: <T>(selector: (state: { records: typeof users }) => T) => selector({ records: users }),
+};
