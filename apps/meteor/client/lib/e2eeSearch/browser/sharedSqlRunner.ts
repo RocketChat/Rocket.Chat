@@ -235,6 +235,21 @@ export const createSharedSqlRunner = (name: string, createLocal: () => SqlRunner
 			else channel?.postMessage({ kind: 'request', from: self, id, request } satisfies Message);
 		});
 
+	const close = async (scopeId: string) => {
+		const keyId = tabKeyId();
+		if (tabScope === scopeId) tabScope = undefined;
+		if (tabKey?.scopeId === scopeId) tabKey = undefined;
+		try {
+			if (channel) await send({ op: 'close', scopeId, keyId });
+		} finally {
+			unsubscribeLocal?.();
+			unsubscribeLocal = undefined;
+			local = undefined;
+			localScope = undefined;
+			stop();
+		}
+	};
+
 	return {
 		onIndexEvent(listener) {
 			listeners.add(listener);
@@ -245,6 +260,8 @@ export const createSharedSqlRunner = (name: string, createLocal: () => SqlRunner
 		isLeader: () => leader,
 		open: async (scopeId, wrapKey, schema) => {
 			if (!wrapKey) {
+				const previousScope = localScope ?? tabScope ?? tabKey?.scopeId;
+				if (previousScope !== undefined) await close(previousScope);
 				tabKey = undefined;
 				tabScope = undefined;
 				return { persistent: false, restored: false, locked: true };
@@ -278,19 +295,6 @@ export const createSharedSqlRunner = (name: string, createLocal: () => SqlRunner
 			await send({ op: 'wipe', scopeId, keyId });
 			if (tabKey?.scopeId === scopeId) tabKey = undefined;
 		},
-		close: async (scopeId) => {
-			const keyId = tabKeyId();
-			if (tabScope === scopeId) tabScope = undefined;
-			if (tabKey?.scopeId === scopeId) tabKey = undefined;
-			try {
-				if (channel) await send({ op: 'close', scopeId, keyId });
-			} finally {
-				unsubscribeLocal?.();
-				unsubscribeLocal = undefined;
-				local = undefined;
-				localScope = undefined;
-				stop();
-			}
-		},
+		close,
 	};
 };

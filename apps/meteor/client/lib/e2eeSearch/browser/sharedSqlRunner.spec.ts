@@ -15,14 +15,15 @@ const wrapKeyOf = (byte: number) => crypto.subtle.importKey('raw', new Uint8Arra
 // until `call` settles.
 const relay = async (from: number, to: number, call: Promise<unknown>) => {
 	const outcome = outcomeOf(call);
-	let sent = 0;
-	let replied = channels[to].postMessage.mock.calls.length;
+	channels[to].delivered ??= channels[to].postMessage.mock.calls.length;
 	while (!outcome.settled) {
-		const requests = channels[from]?.postMessage.mock.calls.slice(sent) ?? [];
-		sent += requests.length;
-		for (const [data] of requests) channels[to].onmessage?.({ data } as MessageEvent);
-		const replies = channels[to].postMessage.mock.calls.slice(replied);
-		replied += replies.length;
+		const source = channels[from];
+		const target = channels[to];
+		const requests = source?.postMessage.mock.calls.slice(source.delivered ?? 0) ?? [];
+		if (source) source.delivered = (source.delivered ?? 0) + requests.length;
+		for (const [data] of requests) target.onmessage?.({ data } as MessageEvent);
+		const replies = target.postMessage.mock.calls.slice(target.delivered);
+		target.delivered = (target.delivered ?? 0) + replies.length;
 		for (const [data] of replies) channels[from]?.onmessage?.({ data } as MessageEvent);
 		await new Promise((resolve) => realSetTimeout(resolve, 1));
 	}
@@ -30,6 +31,8 @@ const relay = async (from: number, to: number, call: Promise<unknown>) => {
 };
 
 class SilentChannel {
+	delivered: number | undefined;
+
 	onmessage: ((event: MessageEvent) => void) | null = null;
 
 	postMessage = jest.fn();
@@ -183,6 +186,33 @@ describe('createSharedSqlRunner', () => {
 		expect(local.close).toHaveBeenCalledWith('scope');
 	});
 
+	it.each(['scope', 'other'])('closes the unlocked local scope before a keyless open of %s without wiping it', async (scopeId) => {
+		useLocks(true);
+		const local = memoryRunner();
+		const unsubscribe = jest.fn();
+		const onIndexEvent = jest.fn(() => unsubscribe);
+		const createLocal = jest.fn(() => ({ ...local, onIndexEvent }));
+		const runner = createSharedSqlRunner('keyless', createLocal);
+		const key = await wrapKeyOf(1);
+		await runner.open('scope', key, SCHEMA);
+		const [channel] = channels;
+
+		await expect(runner.open(scopeId)).resolves.toEqual({ persistent: false, restored: false, locked: true });
+		expect(local.close).toHaveBeenCalledTimes(1);
+		expect(local.close).toHaveBeenCalledWith('scope');
+		expect(local.wipe).not.toHaveBeenCalled();
+		expect(unsubscribe).toHaveBeenCalledTimes(1);
+		expect(channel.close).toHaveBeenCalledTimes(1);
+		expect(runner.isLeader()).toBe(false);
+		expect(jest.getTimerCount()).toBe(0);
+
+		local.open.mockResolvedValueOnce({ persistent: true, restored: true });
+		await expect(runner.open('scope', key, SCHEMA)).resolves.toEqual({ persistent: true, restored: true });
+		expect(createLocal).toHaveBeenCalledTimes(2);
+		expect(local.open).toHaveBeenLastCalledWith('scope', key, SCHEMA);
+		expect(jest.getTimerCount()).toBe(0);
+	});
+
 	it('sends no call to the scope that this tab opened before, while the open of another scope fails', async () => {
 		useLocks(false);
 		const runner = createSharedSqlRunner('rc-e2ee-search:test', stalledRunner);
@@ -267,6 +297,14 @@ describe('createSharedSqlRunner', () => {
 		const follower = createSharedSqlRunner('rc-e2ee-search:test', () => memoryRunner());
 		await expect(relay(1, 0, follower.open('scope', await wrapKeyOf(1), SCHEMA))).resolves.toEqual({ persistent: false, restored: false });
 		await expect(relay(1, 0, follower.exec({ sql: 'SELECT n FROM t' }))).resolves.toEqual([{ n: 1 }]);
+		await relay(1, 0, follower.batch([{ sql: 'INSERT INTO t VALUES (2)' }]));
+		await relay(1, 0, follower.flush());
+		expect(local.open).toHaveBeenCalledTimes(2);
+		expect(local.exec).toHaveBeenCalledTimes(1);
+		expect(local.batch).toHaveBeenCalledTimes(1);
+		expect(local.flush).toHaveBeenCalledTimes(1);
+		expect(channels[0].postMessage.mock.calls.filter(([data]) => data.kind === 'reply')).toHaveLength(4);
+		expect(jest.getTimerCount()).toBe(0);
 	});
 
 	it('filters channel events by scope and key and ignores an old channel after close', async () => {
