@@ -175,6 +175,11 @@ export const createMessageSettings = () =>
 			type: 'boolean',
 			public: true,
 		});
+		await this.add('Message_Scheduling_Enabled', true, {
+			type: 'boolean',
+			public: true,
+			alert: 'Message_Scheduling_Enabled_Alert',
+		});
 		await this.add('Message_GroupingPeriod', 300, {
 			type: 'int',
 			public: true,

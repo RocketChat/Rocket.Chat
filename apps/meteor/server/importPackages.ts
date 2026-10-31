@@ -40,6 +40,7 @@ import './lib/debug';
 import './lib/auth/loginErrorMessageOverride';
 import './hooks/messages/mentionUserNotInChannel';
 import './hooks/afterUserActions';
+import './hooks/scheduledMessages';
 import './hooks/messages/notifyUsersOnMessage';
 import './lib/auth/token-login';
 import './lib/notifications/email/api';

@@ -9,6 +9,7 @@ import MainLayout from '../views/root/MainLayout';
 const IndexRoute = lazy(() => import('../views/root/IndexRoute'));
 const HomePage = lazy(() => import('../views/home/HomePage'));
 const DirectoryPage = lazy(() => import('../views/directory'));
+const ScheduledMessagesPage = lazy(() => import('../views/scheduledMessages/ScheduledMessagesPage'));
 const OmnichannelDirectoryRouter = lazy(() => import('../views/omnichannel/directory/OmnichannelDirectoryRouter'));
 const OmnichannelQueueList = lazy(() => import('../views/omnichannel/queueList'));
 const CMSPage = lazy(() => import('@rocket.chat/web-ui-registration').then(({ CMSPage }) => ({ default: CMSPage })));
@@ -53,6 +54,10 @@ declare module '@rocket.chat/ui-contexts' {
 		'directory': {
 			pathname: `/directory${`/${'users' | 'channels' | 'teams' | 'external'}` | ''}`;
 			pattern: '/directory/:tab?';
+		};
+		'scheduled-messages': {
+			pathname: '/scheduled-messages';
+			pattern: '/scheduled-messages';
 		};
 		'omnichannel-directory': {
 			pathname: `/omnichannel-directory${`/${string}` | ''}${`/${string}` | ''}${`/${string}` | ''}`;
@@ -158,6 +163,15 @@ router.defineRoutes([
 		element: appLayout.wrap(
 			<MainLayout>
 				<DirectoryPage />
+			</MainLayout>,
+		),
+	},
+	{
+		path: '/scheduled-messages',
+		id: 'scheduled-messages',
+		element: appLayout.wrap(
+			<MainLayout>
+				<ScheduledMessagesPage />
 			</MainLayout>,
 		),
 	},

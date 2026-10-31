@@ -67,6 +67,7 @@ export const permissions = [
 	{ _id: 'set-moderator', roles: ['admin', 'owner'] },
 	{ _id: 'set-owner', roles: ['admin', 'owner'] },
 	{ _id: 'send-many-messages', roles: ['admin', 'bot', 'app'] },
+	{ _id: 'schedule-message', roles: ['admin', 'user'] },
 	{ _id: 'set-leader', roles: ['admin', 'owner'] },
 	{ _id: 'start-discussion', roles: ['admin', 'user', 'federated-external', 'guest', 'app'] },
 	{ _id: 'start-discussion-other-user', roles: ['admin', 'user', 'federated-external', 'owner', 'app'] },

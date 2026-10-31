@@ -120,6 +120,7 @@ export type UploadsAPI = {
 	getProcessingUploads(): boolean;
 	setProcessingUploads(processing: boolean): void;
 	cancel(id: Upload['id']): void;
+	add(upload: Upload): void;
 	removeUpload(id: Upload['id']): void;
 	editUploadFileName: (id: Upload['id'], fileName: string) => void;
 	editUploadAltText: (id: Upload['id'], altText: string) => void;
