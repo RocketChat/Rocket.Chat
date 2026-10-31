@@ -55,6 +55,19 @@ A thread belongs to the side of the date its first message is on:
 Mentioning a restricted member inside a hidden thread doesn't make them follow it and doesn't notify
 them.
 
+## UI
+
+- **Administration → Settings → Message → Restricted message history** turns the feature on; it carries
+  the Enterprise badge and stays off without the license.
+- **Edit Room → Advanced settings** shows "Hide earlier messages from new members" while the feature is
+  on, for the room types above.
+- **Members list.** People who can manage it get "Hide earlier messages" / "Show earlier messages" in a
+  member's menu, and see an icon next to restricted members. Hiding asks for confirmation; restoring
+  doesn't. The user info panel doesn't offer the action, because it doesn't know the member's state.
+- **Restricted member.** The start of the timeline says from which date messages are available. A reply
+  sent to the channel from a hidden thread says the thread isn't available instead of quoting it, and
+  opening such a thread, or a link to a hidden message, says so instead of failing silently.
+
 ## Adding a path that returns messages
 
 Nothing below the server code enforces the restriction: the database, the models and the client

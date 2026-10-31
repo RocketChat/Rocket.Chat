@@ -60,6 +60,10 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 
 	const handleThreadClick = () => {
 		if (!isSelecting) {
+			if (parentMessage.isError) {
+				return;
+			}
+
 			if (!sequential) {
 				return parentMessage.isSuccess && goToThread({ rid: message.rid, tmid: message.tmid, msg: parentMessage.data?._id });
 			}
@@ -106,6 +110,7 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 							)}
 							{messageType?.text(t, message)}
 							{parentMessage.isLoading && <Skeleton />}
+							{parentMessage.isError && t('Thread_not_available')}
 						</ThreadMessageOrigin>
 						<ThreadMessageUnfollow />
 					</ThreadMessageContainer>
