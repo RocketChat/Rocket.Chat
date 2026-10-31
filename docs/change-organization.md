@@ -2,21 +2,16 @@
 
 Every change should be easy to review on its own and easy to revert on its own. A feature that takes long to validate should not hold fixes and refactors hostage, and it should not stall behind one huge review. With more code being generated, this matters more, not less. Splitting every small step into its own pull request is the opposite failure: more pull requests to review, rebase and keep green, each with less context.
 
-## Start from the intent
+## Start from a clear definition
 
-Before writing code, and especially when an agent writes it, state in the draft pull request description:
+Before writing code, and especially when an agent writes it, the draft pull request description says clearly what is wanted, why, what is out of scope, and how a reviewer can tell it works. It doesn't need to be formal. As the work goes on, it keeps two lists:
 
-- **Intent**: what is wanted and why, and what is out of scope.
-- **Spec**: the behavior that must hold once it's done, in terms a reviewer or a test can observe.
-
-Keep two lists there as the work goes on:
-
-- **Decisions**: each choice made, why, and the alternatives dropped.
+- **Decisions**: the choices a person made, why, and the alternatives dropped. A choice an agent made on its own is not a decision yet: it goes under gaps until a person confirms it.
 - **Gaps**: behavior known to be missing or wrong, and open questions.
 
-When the work spans more than one pull request or outlives it, the intent and spec go to `docs/proposals/<slug>.md` instead, and a decision that constrains future work becomes an ADR in `docs/adr/`. The XMPP server package runs the full version of this loop: [ee/packages/xmpp-server/docs](../ee/packages/xmpp-server/docs/README.md).
+A pull request whose definition and decisions a reviewer cannot find is still a POC, however much code it has.
 
-A pull request whose intent, decisions and gaps a reviewer cannot find is still a POC, however much code it has.
+A feature that changes how something works also changes its notes in `docs/features/`, in the same pull request. When the work spans more than one pull request, its definition goes to `docs/proposals/<slug>.md`, and a decision that constrains future work becomes an ADR in `docs/adr/`.
 
 ## Classify each change
 
@@ -41,11 +36,11 @@ Before leaving draft, plan how the work reaches `develop`: a table in the descri
 - a refactor other work needs,
 - a change large or risky enough that reviewing it inside the feature would stall the feature.
 
-Everything else stays in the feature pull request as its own commit. Extracted pull requests target `develop`, never another feature branch, and are merged before the feature leaves draft.
+Everything else stays in the feature pull request as its own commit. Squash merge folds those commits into the feature's, so they are reverted together with it; that is accepted for changes small enough to stay. Extracted pull requests target `develop`, never another feature branch, and are merged before the feature leaves draft.
 
-The pull request is ready to leave draft when the intent, spec, decisions and gaps are in it, the extractions are merged and CI is green. Until then it is a POC.
+The pull request is ready to leave draft when its definition and decisions are in it, the gaps left are ones a person accepted, the feature notes are updated, the extractions are merged and CI is green. Until then it is a POC.
 
-Agents may iterate on their own in loops while the work is a POC, or once the intent and spec define the expected behavior. Opening a pull request, the feature's or an extraction's, and taking one out of draft are a person's decisions. An agent proposes the distribution table; it does not do either on its own.
+Agents may iterate on their own in loops while the work is a POC, or once the definition settles the expected behavior. Opening a pull request, the feature's or an extraction's, and taking one out of draft are a person's decisions. An agent proposes the distribution table; it does not do either on its own. When an agent finds a fix users would notice while the feature is still a POC, it asks the developer whether to extract it right away, so it can ship or be backported without waiting for the feature. Claude Code asks for confirmation before `gh pr create` and `gh pr ready` in this repository (`.claude/settings.json`).
 
 If the POC is dropped, the fixes and refactors that meet the criteria above are still extracted: that work isn't lost with the feature.
 
