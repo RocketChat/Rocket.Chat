@@ -253,4 +253,10 @@ export class SettingsRaw extends BaseRaw<ISetting> implements ISettingsModel {
 	findEnterpriseSettings(): FindCursor<ISetting> {
 		return this.find({ enterprise: true });
 	}
+
+	insertIfNotExists(setting: ISetting): Promise<WithId<ISetting> | null> {
+		const { _id, _updatedAt, ...fields } = setting;
+
+		return this.findOneAndUpdate({ _id }, { $setOnInsert: fields }, { upsert: true, returnDocument: 'after' });
+	}
 }
