@@ -180,7 +180,7 @@ export async function handleCursorPagination(
 	};
 }> {
 	const { query, idTieBreaker, options } = mountCursorQuery({ next, previous, count, type });
-	const compound = isCompoundCursor(next ?? previous);
+	const compound = isCompoundCursor(next || previous);
 
 	const response =
 		type === 'UPDATED'
