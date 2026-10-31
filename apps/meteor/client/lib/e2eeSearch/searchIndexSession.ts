@@ -163,6 +163,8 @@ export const createSearchIndexSession = (
 		openedFor = userId;
 		const attempt = { raw: backend, userId };
 		opening = attempt;
+		let ownsOpen = false;
+		let activating: ActiveIndex | undefined;
 		try {
 			if (!isAllowed()) {
 				setActive(undefined);
@@ -186,14 +188,19 @@ export const createSearchIndexSession = (
 			}
 
 			const opened = await backend.open({ userId, wrapKey });
+			ownsOpen = !opened.locked;
 			if (!isCurrent(run, userId)) {
-				if (!opened.locked) await close(backend);
+				if (ownsOpen) {
+					ownsOpen = false;
+					await close(backend);
+				}
 				return;
 			}
 			if (!isAllowed()) {
 				openedFor = undefined;
 				setActive(undefined);
 				await backend.wipe({ userId });
+				ownsOpen = false;
 				wipedFor = userId;
 				return;
 			}
@@ -205,18 +212,25 @@ export const createSearchIndexSession = (
 			if (!supportsSession(backend, opened)) {
 				openedFor = undefined;
 				setActive(undefined, opened, 'unsupported');
+				ownsOpen = false;
 				await close(backend);
 				return;
 			}
 
 			wipedFor = undefined;
-			setActive({ ...createSearchIndexSessionBackend(backend), raw: backend, userId, opened });
+			activating = { ...createSearchIndexSessionBackend(backend), raw: backend, userId, opened };
+			setActive(activating);
 		} catch (error) {
-			if (isCurrent(run, userId)) {
-				openedFor = undefined;
-				setActive(undefined, undefined, isAllowed() ? 'unavailable' : 'idle');
+			const closeFailedOpen = ownsOpen && (!activating || active === activating);
+			try {
+				if (isCurrent(run, userId)) {
+					openedFor = undefined;
+					setActive(undefined, undefined, isAllowed() ? 'unavailable' : 'idle');
+				}
+			} finally {
+				if (closeFailedOpen) await close(backend);
+				onError(error);
 			}
-			onError(error);
 		} finally {
 			if (opening === attempt) opening = undefined;
 		}

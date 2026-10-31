@@ -400,6 +400,63 @@ describe('search index session', () => {
 		expect(session.getActiveBackend()).toBeDefined();
 		expect(session.getStatus()).toBe('ready');
 	});
+	it.each(['subscriber', 'event-registration'] as const)(
+		'closes an unlocked backend after %s setup fails and permits retry',
+		async (failure) => {
+			const { session, raw, setState, onError } = setup();
+			const error = new Error('post-open setup failed');
+			let failedHandle: ISearchIndexBackend | undefined;
+			if (failure === 'event-registration')
+				raw.onIndexEvent.mockImplementationOnce(() => {
+					throw error;
+				});
+			const off = session.subscribe(() => {
+				const backend = session.getActiveBackend();
+				if (!backend) return;
+				failedHandle = backend;
+				if (failure === 'subscriber') throw error;
+				backend.onIndexEvent!(() => undefined);
+			});
+			setState('READY');
+			await session.whenSettled();
+			expect(raw.close).toHaveBeenCalledTimes(1);
+			expect(session.getActiveBackend()).toBeUndefined();
+			expect(session.getStatus()).toBe('unavailable');
+			expect(onError).toHaveBeenCalledWith(error);
+			await expect(failedHandle!.stats()).rejects.toThrow('session has ended');
+			off();
+			session.recheck();
+			await session.whenSettled();
+			expect(raw.open).toHaveBeenCalledTimes(2);
+			expect(session.getActiveBackend()).toBeDefined();
+			expect(raw.close).toHaveBeenCalledTimes(1);
+			session.dispose();
+			await session.whenSettled();
+		},
+	);
+
+	it('does not close a newer login twice when a subscriber stops the failed activation', async () => {
+		const { session, raw, setState, state } = setup();
+		let fail = true;
+		session.subscribe(() => {
+			if (!session.getActiveBackend() || !fail) return;
+			fail = false;
+			setState('DISABLED');
+			state.userId = 'u2';
+			setState('READY');
+			throw new Error('old subscriber failed');
+		});
+		setState('READY');
+		await session.whenSettled();
+		await session.whenSettled();
+		expect(raw.close).toHaveBeenCalledTimes(1);
+		expect(raw.open.mock.calls.map(([scope]) => scope.userId)).toEqual(['u1', 'u2']);
+		expect(session.getActiveBackend()).toBeDefined();
+		expect(raw.close.mock.invocationCallOrder[0]).toBeLessThan(raw.open.mock.invocationCallOrder[1]);
+		session.dispose();
+		await session.whenSettled();
+	});
+
 	it('reports close errors but keeps ended handles revoked', async () => {
 		const { session, raw, setState, onError } = setup();
 		setState('READY');
