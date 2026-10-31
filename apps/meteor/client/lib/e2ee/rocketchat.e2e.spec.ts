@@ -11,6 +11,13 @@ jest.mock('@rocket.chat/ui-client', () => ({
 	},
 }));
 
+jest.mock('./rocketchat.e2e.room', () => ({}));
+jest.mock('../../stores', () => ({}));
+jest.mock('../settings', () => ({ settings: { peek: jest.fn() } }));
+jest.mock('../../views/e2e/EnterE2EPasswordModal', () => ({ __esModule: true, default: () => null }));
+jest.mock('../../views/e2e/SaveE2EPasswordModal', () => ({ __esModule: true, default: () => null }));
+jest.mock('../sdk/ddpSdk', () => ({ getDdpSdk: () => ({ account: { onLogout: jest.fn() } }) }));
+
 jest.mock('../../../client/lib/getUserAvatarURL', () => ({
 	getUserAvatarURL: jest.fn(),
 }));
@@ -66,5 +73,12 @@ describe('E2E password modal', () => {
 		expect(dispatchToastMessage).toHaveBeenCalledWith({ type: 'success', message: 'E2E_encryption_enabled' });
 		expect(imperativeModal.close).toHaveBeenCalledTimes(1);
 		expect(banners.closeById).toHaveBeenCalledWith('e2e');
+	});
+
+	it('omits an empty encrypted room batch', async () => {
+		jest.spyOn(e2e, 'getInstanceByRoomId').mockResolvedValue({
+			encryptGroupKeyForParticipantsWaitingForTheKeys: async () => [],
+		} as never);
+		expect(await e2e.getSuggestedE2EEKeys({ room: [{ _id: 'bad', public_key: 'bad' }] })).toEqual({});
 	});
 });

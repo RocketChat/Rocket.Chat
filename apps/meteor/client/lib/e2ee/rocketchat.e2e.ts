@@ -787,7 +787,7 @@ class E2E extends Emitter {
 						}
 						const usersWithKeys = await e2eRoom.encryptGroupKeyForParticipantsWaitingForTheKeys(usersWaitingForE2EKeys[room]);
 
-						if (!usersWithKeys) {
+						if (!usersWithKeys?.length) {
 							return;
 						}
 

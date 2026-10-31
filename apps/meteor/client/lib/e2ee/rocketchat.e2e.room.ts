@@ -838,6 +838,7 @@ export class E2ERoom extends Emitter {
 			users.map(async (user) => {
 				const { _id, public_key } = user;
 				const key = await this.encryptGroupKeyForParticipant(public_key);
+				if (!key) return;
 				if (decryptedOldGroupKeys) {
 					const oldKeys = await this.encryptOldKeysForParticipant(public_key, decryptedOldGroupKeys);
 					return { _id, key, oldKeys };
@@ -846,6 +847,6 @@ export class E2ERoom extends Emitter {
 			}),
 		);
 
-		return usersWithKeys;
+		return usersWithKeys.filter((user): user is NonNullable<typeof user> => !!user);
 	}
 }

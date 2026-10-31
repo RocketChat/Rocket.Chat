@@ -1,8 +1,13 @@
 import * as Aes from './crypto/aes';
+import { e2e } from './rocketchat.e2e';
 import { E2ERoom } from './rocketchat.e2e.room';
 import { sdk } from '../SDKClient';
 
 jest.mock('./crypto/aes');
+jest.mock('./rocketchat.e2e', () => ({ e2e: { isReady: jest.fn() } }));
+jest.mock('../rooms/roomCoordinator', () => ({ roomCoordinator: {} }));
+jest.mock('../../stores', () => ({ Messages: {}, Rooms: { state: { get: jest.fn() } }, Subscriptions: { state: { find: jest.fn() } } }));
+jest.mock('../../../lib/i18n', () => ({ t: (key: string) => key }));
 jest.mock('../../../client/lib/SDKClient', () => ({
 	sdk: { rest: { post: jest.fn(), get: jest.fn() } },
 }));
@@ -104,6 +109,7 @@ describe('E2ERoom.encryptKeyForOtherParticipants', () => {
 
 		await makeRoom().encryptKeyForOtherParticipants();
 
+		expect(sdk.rest.get).toHaveBeenCalledWith('/v1/e2e.getUsersOfRoomWithoutKey', { rid: 'room-1' });
 		expect(sdk.rest.post).toHaveBeenCalledTimes(1);
 		expect(sdk.rest.post).toHaveBeenCalledWith('/v1/e2e.provideUsersSuggestedGroupKeys', {
 			usersSuggestedGroupKeys: {
@@ -122,5 +128,27 @@ describe('E2ERoom.encryptKeyForOtherParticipants', () => {
 		await makeRoom().encryptKeyForOtherParticipants();
 
 		expect(sdk.rest.post).not.toHaveBeenCalled();
+	});
+});
+
+describe('E2ERoom queued participant encryption', () => {
+	afterEach(() => {
+		jest.restoreAllMocks();
+		jest.clearAllMocks();
+	});
+
+	it('omits a failed participant and keeps that participant eligible for retry', async () => {
+		(e2e.isReady as jest.Mock).mockReturnValue(false);
+		const room = makeRoom();
+		room.state = 'READY';
+		const encrypt = jest.spyOn(room, 'encryptGroupKeyForParticipant').mockResolvedValueOnce(undefined).mockResolvedValue('valid-key');
+		const users = [
+			{ _id: 'bad', public_key: 'bad-key' },
+			{ _id: 'good', public_key: 'good-key' },
+		];
+
+		expect(await room.encryptGroupKeyForParticipantsWaitingForTheKeys(users)).toEqual([{ _id: 'good', key: 'valid-key' }]);
+		expect(await room.encryptGroupKeyForParticipantsWaitingForTheKeys(users.slice(0, 1))).toEqual([{ _id: 'bad', key: 'valid-key' }]);
+		expect(encrypt).toHaveBeenCalledTimes(3);
 	});
 });
