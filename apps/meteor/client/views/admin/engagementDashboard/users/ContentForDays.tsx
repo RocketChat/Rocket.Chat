@@ -5,6 +5,7 @@ import { formatDate } from '@rocket.chat/ui-client';
 import { format } from 'date-fns/format';
 import { subDays } from 'date-fns/subDays';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useWeeklyChatActivity } from './useWeeklyChatActivity';
 
@@ -16,6 +17,7 @@ export type ContentForDaysProps = {
 };
 
 const ContentForDays = ({ displacement, onPreviousDateClick, onNextDateClick, timezone }: ContentForDaysProps) => {
+	const { t } = useTranslation();
 	const utc = timezone === 'utc';
 	const { data } = useWeeklyChatActivity({ displacement, utc });
 
