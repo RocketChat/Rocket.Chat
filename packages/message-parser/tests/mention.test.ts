@@ -3,7 +3,14 @@ import { paragraph, plain, mentionUser, mentionChannel } from './helpers';
 
 test.each([
 	['@guilherme.gazzo', [paragraph([mentionUser('guilherme.gazzo')])]],
-	['@guilherme.gazzo. ', [paragraph([mentionUser('guilherme.gazzo.'), plain(' ')])]],
+	['@guilherme.gazzo. ', [paragraph([mentionUser('guilherme.gazzo'), plain('. ')])]],
+	['thanks @john.', [paragraph([plain('thanks '), mentionUser('john'), plain('.')])]],
+	['@john...', [paragraph([mentionUser('john'), plain('...')])]],
+	['@user:server.com.', [paragraph([mentionUser('user:server.com'), plain('.')])]],
+	['@username@example.com.', [paragraph([mentionUser('username@example.com'), plain('.')])]],
+	['@john_', [paragraph([mentionUser('john_')])]],
+	['see #general.', [paragraph([plain('see '), mentionChannel('general'), plain('.')])]],
+	['#a.b.', [paragraph([mentionChannel('a.b'), plain('.')])]],
 	['#GENERAL', [paragraph([mentionChannel('GENERAL')])]],
 	['@user:server.com', [paragraph([mentionUser('user:server.com')])]],
 	['@marcos.defendi:matrix.org', [paragraph([mentionUser('marcos.defendi:matrix.org')])]],
