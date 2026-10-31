@@ -201,9 +201,13 @@ export function prepareMessageObject(
 	}
 
 	const { _id, username, name } = user;
+	if (!username) {
+		throw new Error('error-invalid-user');
+	}
+
 	message.u = {
 		_id,
-		username: username as string, // FIXME: this is wrong but I don't want to change it now
+		username,
 		name,
 	};
 	message.rid = rid;
