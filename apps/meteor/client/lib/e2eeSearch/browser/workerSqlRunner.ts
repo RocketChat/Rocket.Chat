@@ -70,8 +70,9 @@ export const createWorkerSqlRunner = (workerUrl: string | URL): SqlRunner => {
 		};
 		return started;
 	};
-	const post = (target: Worker, request: WorkerRequest): Promise<SqlRow[]> =>
-		new Promise((resolve, reject) => {
+	const post = (target: Worker, request: WorkerRequest): Promise<SqlRow[]> => {
+		if (worker !== target) return Promise.reject(new Error('E2EE search index is closed'));
+		return new Promise((resolve, reject) => {
 			const id = nextId++;
 			const timer = setTimeout(
 				() => fail(target, `E2EE search worker did not answer the ${request.op} call in ${CALL_TIMEOUT_MS / 1000} s`),
@@ -84,6 +85,7 @@ export const createWorkerSqlRunner = (workerUrl: string | URL): SqlRunner => {
 				settle(id, undefined, error instanceof Error ? error.message : String(error));
 			}
 		});
+	};
 	const send = (request: WorkerRequest): Promise<SqlRow[]> => {
 		if (!worker) {
 			worker = start();
@@ -131,6 +133,7 @@ export const createWorkerSqlRunner = (workerUrl: string | URL): SqlRunner => {
 		open: (scopeId, wrapKey, schema) => {
 			const current = ++generation;
 			const run = async () => {
+				if (recovering) await recovering.catch(ignore);
 				opened = undefined;
 				const state = (await send({ op: 'open', scopeId, wrapKey }))[0] as unknown as SqlScopeState;
 				if (!state.locked && schema !== undefined) await send({ op: 'exec', sql: schema });
@@ -170,6 +173,8 @@ export const createWorkerSqlRunner = (workerUrl: string | URL): SqlRunner => {
 				forget(scopeId);
 				worker?.terminate();
 				worker = undefined;
+				recovering = undefined;
+				for (const id of [...pending.keys()]) settle(id, undefined, 'E2EE search index is closed');
 			}
 		},
 	};
