@@ -1,5 +1,6 @@
 import type { IRoom, VideoConference } from '@rocket.chat/core-typings';
 import { registerModel } from '@rocket.chat/models';
+import { fakeCursor } from '@rocket.chat/models/testing';
 
 import { Authorization } from './Authorization';
 import { canAccessRoom } from './canAccessRoom';
@@ -26,8 +27,6 @@ const user = { _id: 'user-id', username: 'john.doe', roles: ['user'] };
 
 const room = (_id: IRoom['_id']): Pick<IRoom, '_id' | 't'> => ({ _id, t: 'c' });
 
-const cursorOf = (rooms: unknown[]) => ({ toArray: jest.fn().mockResolvedValue(rooms) });
-
 describe('Authorization service', () => {
 	let service: Authorization;
 
@@ -39,21 +38,21 @@ describe('Authorization service', () => {
 
 	describe('canAccessRoomIds', () => {
 		it('should return true when every room is accessible', async () => {
-			roomsModel.findByIds.mockReturnValue(cursorOf([room('rid-1'), room('rid-2')]));
+			roomsModel.findByIds.mockReturnValue(fakeCursor([room('rid-1'), room('rid-2')]));
 
 			expect(await service.canAccessRoomIds(['rid-1', 'rid-2'], user)).toBe(true);
 			expect(canAccessRoomMock).toHaveBeenCalledTimes(2);
 		});
 
 		it('should return false when a single room is not accessible', async () => {
-			roomsModel.findByIds.mockReturnValue(cursorOf([room('rid-1'), room('rid-2')]));
+			roomsModel.findByIds.mockReturnValue(fakeCursor([room('rid-1'), room('rid-2')]));
 			canAccessRoomMock.mockImplementation(async (r) => r?._id !== 'rid-2');
 
 			expect(await service.canAccessRoomIds(['rid-1', 'rid-2'], user)).toBe(false);
 		});
 
 		it('should forward the given user to each room check', async () => {
-			roomsModel.findByIds.mockReturnValue(cursorOf([room('rid-1')]));
+			roomsModel.findByIds.mockReturnValue(fakeCursor([room('rid-1')]));
 
 			await service.canAccessRoomIds(['rid-1'], user);
 
@@ -62,7 +61,7 @@ describe('Authorization service', () => {
 		});
 
 		it('should deduplicate the given ids before querying', async () => {
-			roomsModel.findByIds.mockReturnValue(cursorOf([room('rid-1')]));
+			roomsModel.findByIds.mockReturnValue(fakeCursor([room('rid-1')]));
 
 			expect(await service.canAccessRoomIds(['rid-1', 'rid-1', 'rid-1'], user)).toBe(true);
 			expect(roomsModel.findByIds).toHaveBeenCalledTimes(1);
@@ -81,14 +80,14 @@ describe('Authorization service', () => {
 		});
 
 		it('should return false when any id does not resolve to a room', async () => {
-			roomsModel.findByIds.mockReturnValue(cursorOf([room('rid-1')]));
+			roomsModel.findByIds.mockReturnValue(fakeCursor([room('rid-1')]));
 
 			expect(await service.canAccessRoomIds(['rid-1', 'does-not-exist'], user)).toBe(false);
 			expect(canAccessRoomMock).not.toHaveBeenCalled();
 		});
 
 		it('should query only the attributes the room access validators need', async () => {
-			roomsModel.findByIds.mockReturnValue(cursorOf([room('rid-1')]));
+			roomsModel.findByIds.mockReturnValue(fakeCursor([room('rid-1')]));
 
 			await service.canAccessRoomIds(['rid-1'], user);
 

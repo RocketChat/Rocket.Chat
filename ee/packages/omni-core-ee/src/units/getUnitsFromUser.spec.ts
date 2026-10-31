@@ -1,5 +1,6 @@
 import { Authorization } from '@rocket.chat/core-services';
 import { LivechatUnit, LivechatDepartmentAgents } from '@rocket.chat/models';
+import { fakeCursor } from '@rocket.chat/models/testing';
 
 import { getUnitsFromUser } from './getUnitsFromUser';
 import { defaultLogger } from '../utils/logger';
@@ -33,9 +34,6 @@ describe('getUnitsFromUser', () => {
 
 		// Setup default mock implementations
 		mockLivechatUnit.findByMonitorId.mockResolvedValue(['unit1', 'unit2']);
-		mockLivechatDepartmentAgents.findByAgentId.mockReturnValue({
-			toArray: jest.fn().mockResolvedValue([{ departmentId: 'dept1' }, { departmentId: 'dept2' }]),
-		} as any);
 		mockLivechatUnit.countUnits.mockResolvedValue(5);
 
 		mockAuthorization.hasAnyRole.mockResolvedValue(false);
@@ -121,9 +119,7 @@ describe('getUnitsFromUser', () => {
 				.mockResolvedValueOnce(true); // livechat-monitor/agent check
 
 			mockLivechatUnit.findByMonitorId.mockResolvedValue(['unit1', 'unit2']);
-			mockLivechatDepartmentAgents.findByAgentId.mockReturnValue({
-				toArray: jest.fn().mockResolvedValue([{ departmentId: 'dept1' }, { departmentId: 'dept2' }]),
-			} as any);
+			mockLivechatDepartmentAgents.findByAgentId.mockReturnValue(fakeCursor([{ departmentId: 'dept1' }, { departmentId: 'dept2' }]));
 
 			const result = await getUnitsFromUser(userId);
 
@@ -146,9 +142,7 @@ describe('getUnitsFromUser', () => {
 				.mockResolvedValueOnce(true); // livechat-monitor/agent check
 
 			mockLivechatUnit.findByMonitorId.mockResolvedValue(['unit3']);
-			mockLivechatDepartmentAgents.findByAgentId.mockReturnValue({
-				toArray: jest.fn().mockResolvedValue([{ departmentId: 'dept3' }, { departmentId: 'dept4' }]),
-			} as any);
+			mockLivechatDepartmentAgents.findByAgentId.mockReturnValue(fakeCursor([{ departmentId: 'dept3' }, { departmentId: 'dept4' }]));
 
 			const result = await getUnitsFromUser(userId);
 
@@ -166,9 +160,7 @@ describe('getUnitsFromUser', () => {
 				.mockResolvedValueOnce(true); // livechat-monitor/agent check
 
 			mockLivechatUnit.findByMonitorId.mockResolvedValue([]);
-			mockLivechatDepartmentAgents.findByAgentId.mockReturnValue({
-				toArray: jest.fn().mockResolvedValue([]),
-			} as any);
+			mockLivechatDepartmentAgents.findByAgentId.mockReturnValue(fakeCursor([]));
 
 			const result = await getUnitsFromUser(userId);
 
@@ -182,9 +174,7 @@ describe('getUnitsFromUser', () => {
 				.mockResolvedValueOnce(true); // livechat-monitor/agent check
 
 			mockLivechatUnit.findByMonitorId.mockResolvedValue(['unit1', 'unit2']);
-			mockLivechatDepartmentAgents.findByAgentId.mockReturnValue({
-				toArray: jest.fn().mockResolvedValue([]),
-			} as any);
+			mockLivechatDepartmentAgents.findByAgentId.mockReturnValue(fakeCursor([]));
 
 			const result = await getUnitsFromUser(userId);
 
@@ -198,9 +188,7 @@ describe('getUnitsFromUser', () => {
 				.mockResolvedValueOnce(true); // livechat-monitor/agent check
 
 			mockLivechatUnit.findByMonitorId.mockResolvedValue([]);
-			mockLivechatDepartmentAgents.findByAgentId.mockReturnValue({
-				toArray: jest.fn().mockResolvedValue([{ departmentId: 'dept1' }, { departmentId: 'dept2' }]),
-			} as any);
+			mockLivechatDepartmentAgents.findByAgentId.mockReturnValue(fakeCursor([{ departmentId: 'dept1' }, { departmentId: 'dept2' }]));
 
 			const result = await getUnitsFromUser(userId);
 
@@ -216,9 +204,7 @@ describe('getUnitsFromUser', () => {
 				.mockResolvedValueOnce(true); // livechat-monitor/agent check
 
 			mockLivechatUnit.findByMonitorId.mockResolvedValue(['unit1']);
-			mockLivechatDepartmentAgents.findByAgentId.mockReturnValue({
-				toArray: jest.fn().mockResolvedValue([{ departmentId: 'dept1' }]),
-			} as any);
+			mockLivechatDepartmentAgents.findByAgentId.mockReturnValue(fakeCursor([{ departmentId: 'dept1' }]));
 
 			const result = await getUnitsFromUser(userId);
 

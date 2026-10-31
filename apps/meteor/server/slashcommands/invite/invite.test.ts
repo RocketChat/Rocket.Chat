@@ -2,6 +2,7 @@ import { beforeEach, describe, it } from 'node:test';
 
 import { ClientSafeError, isClientSafeError } from '@rocket.chat/core-services';
 import { isBannedSubscription } from '@rocket.chat/core-typings';
+import { fakeCursor } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
@@ -14,7 +15,6 @@ describe('/invite', () => {
 	const external = { _id: 'external-id', username: '@remote:example.org' };
 	let findRoom: sinon.SinonStub;
 	let findUsers: sinon.SinonStub;
-	let toArray: sinon.SinonStub;
 	let findActor: sinon.SinonStub;
 	let subscription: sinon.SinonStub;
 	let addUsers: sinon.SinonStub;
@@ -26,8 +26,7 @@ describe('/invite', () => {
 
 	beforeEach(() => {
 		findRoom = sinon.stub().resolves({ _id: 'current-room', t: 'c' });
-		toArray = sinon.stub().resolves([bob]);
-		findUsers = sinon.stub().returns({ toArray });
+		findUsers = sinon.stub().returns(fakeCursor([bob]));
 		findActor = sinon.stub().resolves(actor);
 		subscription = sinon.stub().resolves(null);
 		addUsers = sinon.stub().resolves();
@@ -58,7 +57,7 @@ describe('/invite', () => {
 	});
 
 	it('splits comma and whitespace separated usernames and invites each user with the actor', async () => {
-		toArray.resolves([bob, carol]);
+		findUsers.returns(fakeCursor([bob, carol]));
 		await slashCommand.runCommand('invite', { params: ' @bob,\n @carol ' });
 		sinon.assert.calledOnceWithExactly(findUsers, ['bob', 'carol']);
 		sinon.assert.calledWithExactly(subscription, 'current-room', 'bob-id', { projection: { _id: 1, status: 1 } });
@@ -93,7 +92,7 @@ describe('/invite', () => {
 	});
 
 	it('reports unknown invitees without changing membership', async () => {
-		toArray.resolves([]);
+		findUsers.returns(fakeCursor([]));
 		await slashCommand.runCommand('invite', { params: '@bob @carol' });
 		slashCommand.expectTranslatedFeedback('User_doesnt_exist');
 		expect(slashCommand.translate.firstCall.args[1]).to.include({ username: 'bob @carol', lng: 'en' });
@@ -101,7 +100,7 @@ describe('/invite', () => {
 	});
 
 	it('skips existing members while inviting users without subscriptions', async () => {
-		toArray.resolves([bob, carol]);
+		findUsers.returns(fakeCursor([bob, carol]));
 		subscription.withArgs('current-room', bob._id).resolves({ _id: 'subscription' });
 		await slashCommand.runCommand('invite', { params: '@bob @carol' });
 		slashCommand.expectTranslatedFeedback('Username_is_already_in_here');
@@ -124,7 +123,7 @@ describe('/invite', () => {
 	});
 
 	it('ensures federated users exist locally before querying and inviting them', async () => {
-		toArray.resolves([external]);
+		findUsers.returns(fakeCursor([external]));
 		await slashCommand.runCommand('invite', { params: external.username });
 		sinon.assert.calledOnceWithExactly(ensureFederatedUsers, [external.username]);
 		sinon.assert.callOrder(ensureFederatedUsers, findUsers);
@@ -163,7 +162,7 @@ describe('/invite', () => {
 		{ error: { error: 'other-invitation-error' }, key: 'other-invitation-error' },
 	].forEach(({ error, key }) => {
 		it(`reports ${error.error} while allowing other invitees to proceed`, async () => {
-			toArray.resolves([bob, carol]);
+			findUsers.returns(fakeCursor([bob, carol]));
 			addUsers.onFirstCall().rejects(error);
 			slashCommand.settings.get.withArgs('Language').returns('pt');
 			await slashCommand.runCommand('invite', { params: '@bob @carol' });
@@ -176,7 +175,7 @@ describe('/invite', () => {
 	});
 
 	it('reports a Meteor error under its own code when that code is translatable', async () => {
-		toArray.resolves([bob, carol]);
+		findUsers.returns(fakeCursor([bob, carol]));
 		const error = new ClientSafeError('error-only-compliant-users-can-be-added-to-abac-rooms', 'ABAC failure');
 		addUsers.onFirstCall().rejects(error);
 		slashCommand.translationExists.withArgs('error-only-compliant-users-can-be-added-to-abac-rooms').returns(true);
@@ -191,7 +190,7 @@ describe('/invite', () => {
 	});
 
 	it('keeps an untranslatable Meteor error server-side and reports a generic failure', async () => {
-		toArray.resolves([bob, carol]);
+		findUsers.returns(fakeCursor([bob, carol]));
 		const error = new ClientSafeError('connect ECONNREFUSED 10.0.0.1:27017', 'Not allowed');
 		addUsers.onFirstCall().rejects(error);
 		slashCommand.settings.get.withArgs('Language').returns('pt');
@@ -211,7 +210,7 @@ describe('/invite', () => {
 	});
 
 	it("reports an app's reason when an app prevents the invitation", async () => {
-		toArray.resolves([bob, carol]);
+		findUsers.returns(fakeCursor([bob, carol]));
 		addUsers.onFirstCall().rejects(new ClientSafeError('error-app-prevented', 'Guests cannot join this room'));
 		await slashCommand.runCommand('invite', { params: '@bob @carol' });
 		sinon.assert.calledOnceWithExactly(broadcast, 'notify.ephemeralMessage', 'actor', 'current-room', {

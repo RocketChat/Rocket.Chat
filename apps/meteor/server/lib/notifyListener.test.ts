@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, it } from 'node:test';
 
 import type { IMessage } from '@rocket.chat/core-typings';
+import { fakeCursor } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -241,7 +242,7 @@ describe('Message Broadcast Tests', () => {
 							username,
 							name: username === message.u.username ? message.u.name : `Name for ${username}`,
 						}));
-						usersFindByUsernamesStub.returns({ toArray: () => Promise.resolve(users) });
+						usersFindByUsernamesStub.returns(fakeCursor(users));
 					}
 				}
 

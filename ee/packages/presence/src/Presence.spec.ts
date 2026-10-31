@@ -4,6 +4,7 @@ import type { IUser, SettingValue } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import { cronJobs } from '@rocket.chat/cron';
 import { registerModel } from '@rocket.chat/models';
+import { fakeCursor } from '@rocket.chat/models/testing';
 
 import { Presence } from './Presence';
 
@@ -328,7 +329,7 @@ describe('Presence', () => {
 
 	describe('lost instances', () => {
 		it('should take offline the users of an instance that went away, unless its connections were already removed', async () => {
-			sessionsModel.findByInstanceId.mockReturnValue({ toArray: async () => [{ _id: 'alice' }] });
+			sessionsModel.findByInstanceId.mockReturnValue(fakeCursor([{ _id: 'alice' }]));
 			sessionsModel.removeConnectionsFromInstanceId.mockImplementation(async (instanceId: string) => ({
 				modifiedCount: instanceId === 'instance-already-cleaned' ? 0 : 1,
 			}));
@@ -346,9 +347,9 @@ describe('Presence', () => {
 		});
 
 		it('should drop connections held by instances that are no longer alive', async () => {
-			sessionsModel.findByOtherInstanceIds.mockImplementation((liveInstanceIds: string[]) => ({
-				toArray: async () => (liveInstanceIds.join() === 'instance-a' ? [{ _id: 'bob' }] : []),
-			}));
+			sessionsModel.findByOtherInstanceIds.mockImplementation((liveInstanceIds: string[]) =>
+				fakeCursor(liveInstanceIds.join() === 'instance-a' ? [{ _id: 'bob' }] : []),
+			);
 			sessionsModel.removeConnectionsFromOtherInstanceIds.mockResolvedValue({ modifiedCount: 1 });
 
 			const nodeList = jest.spyOn(api, 'nodeList').mockResolvedValue([
@@ -403,7 +404,7 @@ describe('Presence', () => {
 		await instanceConnections('instance-a', 10);
 		expect(presence.getConnectionCount()).toEqual({ current: 60, max: 200 });
 
-		sessionsModel.findByInstanceId.mockReturnValue({ toArray: async () => [] });
+		sessionsModel.findByInstanceId.mockReturnValue(fakeCursor([]));
 		sessionsModel.removeConnectionsFromInstanceId.mockResolvedValue({ modifiedCount: 0 });
 		await emit('watch.instanceStatus', { clientAction: 'removed', id: 'instance-b' });
 

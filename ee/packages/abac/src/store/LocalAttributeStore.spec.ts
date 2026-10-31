@@ -1,3 +1,5 @@
+import { fakeCursor } from '@rocket.chat/models/testing';
+
 import { LocalAttributeStore } from './LocalAttributeStore';
 
 const ensureMock = jest.fn();
@@ -44,7 +46,7 @@ describe('LocalAttributeStore', () => {
 
 	it('list queries AbacAttributes paginated (no filters)', async () => {
 		const docs = [{ _id: 'id1', key: 'k', values: ['v'] }];
-		findPaginated.mockReturnValue({ cursor: { toArray: async () => docs }, totalCount: Promise.resolve(1) });
+		findPaginated.mockReturnValue({ cursor: fakeCursor(docs), totalCount: Promise.resolve(1) });
 		const r = await new LocalAttributeStore().list(actor, { offset: 0, count: 25 });
 		expect(findPaginated).toHaveBeenCalledWith({}, { projection: { key: 1, values: 1 }, skip: 0, limit: 25 });
 		expect(r).toEqual({ attributes: docs, offset: 0, count: 1, total: 1 });
@@ -57,7 +59,7 @@ describe('LocalAttributeStore', () => {
 	});
 
 	it('list builds $or query when key and values filters provided', async () => {
-		findPaginated.mockReturnValue({ cursor: { toArray: async () => [] }, totalCount: Promise.resolve(0) });
+		findPaginated.mockReturnValue({ cursor: fakeCursor([]), totalCount: Promise.resolve(0) });
 		await new LocalAttributeStore().list(actor, { key: 'foo', values: 'bar', offset: 5, count: 10 });
 		expect(findPaginated).toHaveBeenCalledWith(
 			{ $or: [{ key: /foo/i }, { values: /bar/i }] },
