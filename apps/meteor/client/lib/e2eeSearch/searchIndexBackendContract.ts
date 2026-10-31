@@ -48,6 +48,7 @@ export const describeSearchIndexBackendContract = (
 			await expect(backend.upsert([doc({ id: 'm1', body: 'needle' })])).rejects.toThrow('E2EE search index is not open');
 			await expect(backend.remove(['m1'])).rejects.toThrow('E2EE search index is not open');
 			await expect(backend.removeRoom('r1')).rejects.toThrow('E2EE search index is not open');
+			await expect(backend.listRooms()).rejects.toThrow('E2EE search index is not open');
 			await expect(backend.search({ text: 'needle' })).rejects.toThrow('E2EE search index is not open');
 			await expect(backend.getRoomState('r1')).rejects.toThrow('E2EE search index is not open');
 			await expect(backend.setRoomState('r1', { backfillDone: true })).rejects.toThrow('E2EE search index is not open');
