@@ -1,0 +1,19 @@
+.changeset/own-http-server.md
+  s_f3e7af0b0e6bc5::t_f4f9d7c1f58422 5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "1ba0a14ddbcc38745c664746a81264562b95a841",
+  "prompts": {},
+  "sessions": {
+    "s_f3e7af0b0e6bc5": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b8028d69-1c86-4683-80b4-6ab4042b0851",
+        "model": "unknown"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

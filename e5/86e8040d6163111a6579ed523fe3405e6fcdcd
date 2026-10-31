@@ -1,0 +1,34 @@
+apps/meteor/server/bridges/slack/RocketAdapter.ts
+  s_98e86448e875bc::t_0a74d8edbab140 18,209
+apps/meteor/server/lib/auth/oauth2-server/oauth2-server.ts
+  s_98e86448e875bc::t_0a74d8edbab140 15,75
+apps/meteor/server/bridges/slack/SlackAdapter.ts
+  s_98e86448e875bc::t_0a74d8edbab140 28,847
+apps/meteor/server/bridges/smarsh/functions/generateEml.ts
+  s_98e86448e875bc::t_0a74d8edbab140 7,25
+apps/meteor/server/api/v1/omnichannel/lib/livechat.ts
+  s_98e86448e875bc::t_0a74d8edbab140 9,116
+apps/meteor/server/modules/core-apps/mention.module.ts
+  s_98e86448e875bc::t_0a74d8edbab140 9,92
+apps/meteor/server/lib/cors/cors.ts
+  s_98e86448e875bc::t_0a74d8edbab140 11
+  s_98e86448e875bc::t_46b61ff91deed0 42
+apps/meteor/server/lib/cas/middleware.ts
+  s_98e86448e875bc::t_0a74d8edbab140 11,33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "e586e8040d6163111a6579ed523fe3405e6fcdcd",
+  "prompts": {},
+  "sessions": {
+    "s_98e86448e875bc": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "28162618-a4e3-4537-8399-6d8e98c7da03",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

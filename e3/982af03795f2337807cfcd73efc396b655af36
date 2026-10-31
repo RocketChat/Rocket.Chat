@@ -1,0 +1,20 @@
+apps/meteor/server/lib/realtime/ddpServer.ts
+  s_29c461251ce55f::t_dbfc8652c049de 14
+  s_29c461251ce55f::t_bdcf58a369b861 50-58
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "e3982af03795f2337807cfcd73efc396b655af36",
+  "prompts": {},
+  "sessions": {
+    "s_29c461251ce55f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "98ca5981-8946-4d8b-820e-c90a203f06a2",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

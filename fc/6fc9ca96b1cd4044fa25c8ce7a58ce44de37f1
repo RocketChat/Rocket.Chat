@@ -1,0 +1,24 @@
+apps/meteor/server/bridges/smarsh/functions/generateEml.ts
+  s_12cc3b8e53a32f::t_bebedb7a5cd54b 25
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "fc6fc9ca96b1cd4044fa25c8ce7a58ce44de37f1",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_12cc3b8e53a32f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "2313f05a-7da5-454d-b6c2-5c921aaf1a1f",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
