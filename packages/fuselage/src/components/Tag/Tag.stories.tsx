@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import { useState } from 'react';
 import { action } from 'storybook/actions';
 
 import { Box } from '../Box';
@@ -58,6 +59,13 @@ export default {
 		href: {
 			control: 'text',
 			description: 'Renders the tag as a link to this address.',
+			table: { category: 'Polymorphism' },
+		},
+		is: {
+			control: 'select',
+			options: ['span', 'a', 'button'],
+			description:
+				'Element to render. Defaults to `a` with `href` and `span` otherwise; `button` makes a tag that acts, such as a filter toggled with `aria-pressed`.',
 			table: { category: 'Polymorphism' },
 		},
 		onClick: {
@@ -178,6 +186,37 @@ export const Pill: Story = {
 		pill: true,
 		variant: 'secondary-info',
 		onClick: action('click'),
+	},
+};
+
+const ToggleFilter = () => {
+	const [pressed, setPressed] = useState(true);
+
+	return (
+		<Box display='inline-flex'>
+			<Tag
+				is='button'
+				pill
+				variant={pressed ? 'secondary-info' : 'secondary'}
+				icon={<Icon name='clock' size='x12' />}
+				aria-pressed={pressed}
+				onClick={() => setPressed((value) => !value)}
+			>
+				7 days
+			</Tag>
+		</Box>
+	);
+};
+
+export const AsToggleButton: Story = {
+	render: () => <ToggleFilter />,
+	parameters: {
+		docs: {
+			description: {
+				story:
+					"A filter the user turns on and off: `is='button'` renders a `<button>` and `aria-pressed` tells assistive technology its state. The caller picks the variant for each state.",
+			},
+		},
 	},
 };
 

@@ -1,0 +1,66 @@
+import { Icon } from '@rocket.chat/fuselage';
+import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import type { TFunction } from 'i18next';
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import { useSetActivityFilterHours } from './useActivityFilter';
+
+// The windows the menus offer. Any whole number of hours is a valid filter; these are just the choices.
+const ACTIVITY_FILTER_PRESETS: { hours: number | undefined; label: TranslationKey }[] = [
+	{ hours: undefined, label: 'All' },
+	{ hours: 24, label: 'Last_24_hours' },
+	{ hours: 24 * 7, label: 'Last_7_days' },
+	{ hours: 24 * 30, label: 'Last_30_days' },
+];
+
+/** The window on its own, short enough for a chip: "24 hours", "7 days", "36 hours", … */
+export const getActivityFilterWindowLabel = (t: TFunction, hours: number): string =>
+	hours >= 48 && hours % 24 === 0 ? t('Days_count', { count: hours / 24 }) : t('Hours_count', { count: hours });
+
+/** The filter as the menus name it: "All", "Last 7 days", … — or the bare window for a value no preset matches. */
+export const getActivityFilterLabel = (t: TFunction, hours: number | undefined): string => {
+	const preset = ACTIVITY_FILTER_PRESETS.find((option) => option.hours === hours);
+	return preset ? t(preset.label) : getActivityFilterWindowLabel(t, hours ?? 0);
+};
+
+export const useActivityFilterWindowLabel = (hours: number): string => {
+	const { t } = useTranslation();
+	return getActivityFilterWindowLabel(t, hours);
+};
+
+export const useActivityFilterLabel = (hours: number | undefined): string => {
+	const { t } = useTranslation();
+	return getActivityFilterLabel(t, hours);
+};
+
+/** The menu item id of a filter, `all` when there is none. */
+export const getActivityFilterItemId = (hours: number | undefined): string => `activity-filter-${hours ?? 'all'}`;
+
+/**
+ * One menu item per preset for a group, the current one checked. Choosing one stores it and reports the choice
+ * to `onChoose`, so the owner can close the menu and announce the outcome.
+ */
+export const useActivityFilterItems = (
+	groupId: string,
+	activityFilterHours: number | undefined,
+	onChoose?: (hours: number | undefined) => void,
+): GenericMenuItemProps[] => {
+	const { t } = useTranslation();
+	const setActivityFilterHours = useSetActivityFilterHours();
+
+	return useMemo(
+		() =>
+			ACTIVITY_FILTER_PRESETS.map(({ hours, label }) => ({
+				id: getActivityFilterItemId(hours),
+				content: t(label),
+				onClick: () => {
+					onChoose?.(hours);
+					setActivityFilterHours(groupId, hours);
+				},
+				addon: hours === activityFilterHours ? <Icon name='check' size='x16' /> : undefined,
+			})),
+		[t, groupId, activityFilterHours, onChoose, setActivityFilterHours],
+	);
+};

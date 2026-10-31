@@ -8,10 +8,12 @@ import { useVideoConfIncomingCalls, useVideoConfWindowEnabled } from '@rocket.ch
 import { useMemo } from 'react';
 
 import { filterGroupVisibility, getRoomCategory, useCategoryList } from './useCategoryList';
+import type { LiftedActivityFilters } from './useLiftedActivityFilters';
 import { useSortQueryOptions } from '../../hooks/useSortQueryOptions';
 import { useOpenedRoom } from '../../lib/RoomManager';
 import { useOmnichannelEnabled } from '../../views/omnichannel/hooks/useOmnichannelEnabled';
 import { useQueuedInquiries } from '../../views/omnichannel/hooks/useQueuedInquiries';
+import { HOUR, useActivityFilterClock, useActivityFilterHours } from '../categories/hooks/useActivityFilter';
 import { useToggleUnreads } from '../categories/hooks/useToggleUnreads';
 import { useUserSidebarCategories } from '../categories/hooks/useUserSidebarCategories';
 
@@ -34,6 +36,10 @@ export type SidebarRoomListGroup = {
 	category?: ISidebarCategory;
 	showUnreads: boolean;
 	keepUnreadsOnTop: boolean;
+	activityFilterHours?: number;
+	/** Rooms the activity filter leaves out of the expanded group, counted whether or not they are being shown. */
+	inactiveCount: number;
+	showingInactive: boolean;
 	collapsed: boolean;
 	rooms: SubscriptionWithRoom[];
 	unreadInfo: GroupUnreadInfo;
@@ -49,13 +55,32 @@ type useRoomListReturnType = {
 export const isUnreadRoom = (room: SubscriptionWithRoom): boolean =>
 	!room.hideUnreadStatus && Boolean(room.alert || room.unread || room.tunread?.length);
 
-export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] }): useRoomListReturnType => {
+/**
+ * When the room was last active, as the activity filter judges it: the sidebar's activity date, or for a room
+ * that has none (common on old direct messages), the last time the user read, saw or joined it.
+ */
+export const getLastActivity = (room: SubscriptionWithRoom): number | undefined => {
+	const dates = room.lm ? [room.lm] : [room.lr, room.ls, room.ts];
+	const times = dates.map((date) => (date ? new Date(date).getTime() : NaN)).filter((time) => Number.isFinite(time));
+	return times.length ? Math.max(...times) : undefined;
+};
+
+export const useRoomList = ({
+	collapsedGroups,
+	liftedFilters,
+}: {
+	collapsedGroups?: string[];
+	/** The groups showing their inactive rooms this session, each at the window it was lifted at. */
+	liftedFilters?: LiftedActivityFilters;
+}): useRoomListReturnType => {
 	const showOmnichannel = useOmnichannelEnabled();
 
 	const { data: { isEnterprise = false } = {} } = useIsEnterprise();
 
 	const { customCategories } = useUserSidebarCategories();
 	const { isShowUnreads, isKeepUnreadsOnTop } = useToggleUnreads();
+	const { getActivityFilterHours, hasActivityFilters } = useActivityFilterHours();
+	const now = useActivityFilterClock(hasActivityFilters);
 
 	const options = useSortQueryOptions();
 
@@ -141,11 +166,35 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 				const showUnreads = category ? Boolean(category.showUnreads) : showUnreadsForGroup;
 				const keepUnreadsOnTopForGroup = isEnterprise ? isKeepUnreadsOnTop(key) : false;
 				const keepUnreadsOnTop = category ? Boolean(category.keepUnreadsOnTop) : keepUnreadsOnTopForGroup;
+				const activityFilterHours = getActivityFilterHours(key);
+				const showingInactive = activityFilterHours !== undefined && liftedFilters?.[key] === activityFilterHours;
 				const allRooms = [...set];
 				// A collapsed group still shows the room currently open, so the user can locate themselves in the
 				// sidebar, plus its unread rooms when "Show unreads" is enabled.
 				const isVisibleWhileCollapsed = (room: SubscriptionWithRoom) => room.rid === openedRoom || (showUnreads && isUnreadRoom(room));
-				let displayRooms = collapsed ? allRooms.filter(isVisibleWhileCollapsed) : allRooms;
+				// The activity filter only thins out read rooms: unread ones and the one currently open always stay
+				// listed. A room with no date at all is kept rather than guessed at. The inactive rooms are counted
+				// even while they are shown or the group is collapsed, so the chip and the announcement can say how
+				// many the filter hides.
+				const activeSince = activityFilterHours ? now - activityFilterHours * HOUR : undefined;
+				const isInactive = (room: SubscriptionWithRoom) =>
+					activeSince !== undefined && room.rid !== openedRoom && !isUnreadRoom(room) && (getLastActivity(room) ?? Infinity) < activeSince;
+				const activeRooms: SubscriptionWithRoom[] = [];
+				let inactiveCount = 0;
+				for (const room of allRooms) {
+					if (isInactive(room)) {
+						inactiveCount += 1;
+					} else {
+						activeRooms.push(room);
+					}
+				}
+
+				let displayRooms = allRooms;
+				if (collapsed) {
+					displayRooms = allRooms.filter(isVisibleWhileCollapsed);
+				} else if (!showingInactive) {
+					displayRooms = activeRooms;
+				}
 
 				// "Keep unreads on top": stable-partition so unread rooms come first, each partition keeping the
 				// configured sort (activity / a-z) it already has from the subscription query.
@@ -160,6 +209,9 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 					category,
 					showUnreads,
 					keepUnreadsOnTop,
+					activityFilterHours,
+					inactiveCount,
+					showingInactive,
 					collapsed,
 					rooms: displayRooms,
 					// The header total badge only accounts for what the collapsed group hides. Rooms kept visible
@@ -184,6 +236,9 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 			customCategories,
 			isShowUnreads,
 			isKeepUnreadsOnTop,
+			getActivityFilterHours,
+			liftedFilters,
+			now,
 			openedRoom,
 		]),
 		50,

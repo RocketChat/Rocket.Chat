@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import { useState } from 'react';
 import { action } from 'storybook/actions';
 
 import {
@@ -18,7 +19,7 @@ import {
 	SidebarSection,
 	SidebarFooter,
 } from '.';
-import { IconButton, TextInput, Icon, Box } from '../..';
+import { IconButton, TextInput, Icon, Box, Tag } from '../..';
 import { SidebarCollapseGroupMenu } from './SidebarCollapseGroupMenu';
 import { CondensedItems as Condensed } from './SidebarItem/SidebarItem.stories';
 import { GenericNoAvatarItem, MenuTemplate } from './helpers';
@@ -167,4 +168,55 @@ export const Default: Story = {
 			</Sidebar>
 		</Box>
 	),
+};
+
+const FilteredGroup = () => {
+	const [filtered, setFiltered] = useState(true);
+
+	return (
+		<SidebarCollapseGroup
+			title='Channels'
+			defaultExpanded
+			actions={
+				<Tag
+					is='button'
+					pill
+					variant={filtered ? 'secondary-info' : 'secondary'}
+					icon={<Icon name='clock' size='x12' />}
+					aria-label='Filter: Last 7 days'
+					aria-pressed={filtered}
+					onClick={() => setFiltered((value) => !value)}
+				>
+					7 days
+				</Tag>
+			}
+			menu={
+				<SidebarCollapseGroupMenu>
+					<MenuTemplate />
+				</SidebarCollapseGroupMenu>
+			}
+		>
+			{Array.from({ length: filtered ? 2 : 4 }).map((_, i) => (
+				<GenericNoAvatarItem key={i} i={i} />
+			))}
+		</SidebarCollapseGroup>
+	);
+};
+
+export const CollapseGroupWithActions: Story = {
+	render: () => (
+		<Box maxWidth='x300'>
+			<Sidebar>
+				<FilteredGroup />
+			</Sidebar>
+		</Box>
+	),
+	parameters: {
+		docs: {
+			description: {
+				story:
+					'`actions` puts controls right after the group title, outside the button that collapses the group, such as a filter the user toggles. The menu keeps to the end of the header.',
+			},
+		},
+	},
 };

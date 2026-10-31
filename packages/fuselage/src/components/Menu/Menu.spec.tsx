@@ -9,7 +9,8 @@ import { render } from '../../testing';
 
 withResizeObserverMock();
 
-const { Simple, Complex, WithSections, WithSubmenu, WithRichSubmenuTrigger, WithItemParts, WithItemAliases } = composeStories(stories);
+const { Simple, Complex, WithSections, WithSubmenu, WithRichSubmenuTrigger, WithRadioSubmenu, WithItemParts, WithItemAliases } =
+	composeStories(stories);
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 
@@ -205,6 +206,25 @@ describe('[Menu Component]', () => {
 
 			// ...while the remaining children are NOT rendered as items of the parent menu
 			expect(screen.queryByRole('menuitem', { name: 'Inbox' })).not.toBeInTheDocument();
+		});
+
+		it('should render the items of a single-selection submenu as radio items checked from selectedKeys', async () => {
+			const onAction = jest.fn();
+			render(<WithRadioSubmenu {...WithRadioSubmenu.args} onAction={onAction} />);
+
+			await userEvent.click(screen.getByRole('button'));
+			await userEvent.click(await screen.findByRole('menuitem', { name: 'Sort by' }));
+
+			const submenu = (await screen.findAllByRole('menu'))[1];
+			expect(submenu).toBeInTheDocument();
+			expect(screen.getByRole('menuitemradio', { name: 'Name' })).toHaveAttribute('aria-checked', 'true');
+			expect(screen.getByRole('menuitemradio', { name: 'Activity' })).toHaveAttribute('aria-checked', 'false');
+			expect(screen.getByRole('menuitemradio', { name: 'Size' })).toHaveAttribute('aria-checked', 'false');
+			// the parent menu's items keep their own role
+			expect(screen.getByRole('menuitem', { name: 'Rename' })).toBeInTheDocument();
+
+			await userEvent.click(screen.getByRole('menuitemradio', { name: 'Activity' }));
+			expect(onAction).toHaveBeenCalledWith('activity');
 		});
 
 		it('should close nested submenus one level at a time when navigating back, keeping the root open', async () => {

@@ -1,5 +1,6 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import type { HTMLAttributes, ReactNode } from 'react';
 
 import RoomList from './RoomList';
@@ -33,10 +34,16 @@ const makeGroup = (key: string, groupRooms: typeof rooms, unread: number): Sideb
 	}) as unknown as SidebarRoomListGroup;
 
 const groups = [
-	makeGroup('Channels', [rooms[0], rooms[1]], 3),
+	{ ...makeGroup('Channels', [rooms[0], rooms[1]], 3), activityFilterHours: 24 },
 	makeGroup('Direct_Messages', [rooms[2]], 1),
 	makeGroup('Empty_Group', [], 0),
 ];
+
+const mockUseRoomList = jest.fn((_options: { collapsedGroups?: string[]; liftedFilters?: Record<string, number> }) => ({
+	groups,
+	groupsCount: [2, 1, 0],
+	totalCount: 3,
+}));
 
 type MockSidebarVirtualListProps = {
 	groups: {
@@ -114,11 +121,7 @@ jest.mock('../hooks/usePreventDefault', () => ({
 
 jest.mock('../hooks/useRoomList', () => ({
 	...jest.requireActual('../hooks/useRoomList'),
-	useRoomList: () => ({
-		groups,
-		groupsCount: [2, 1, 0],
-		totalCount: 3,
-	}),
+	useRoomList: (options: { collapsedGroups?: string[]; liftedFilters?: Record<string, number> }) => mockUseRoomList(options),
 }));
 
 jest.mock('../hooks/useShortcutOpenMenu', () => ({
@@ -127,8 +130,21 @@ jest.mock('../hooks/useShortcutOpenMenu', () => ({
 
 jest.mock('./RoomListCollapser', () => ({
 	__esModule: true,
-	default: ({ group }: { group: SidebarRoomListGroup }) => (
-		<button type='button' data-testid='group-header'>{`${group.title}:${group.unreadInfo.unread}`}</button>
+	default: ({
+		group,
+		onToggleInactive,
+		onActivityFilterChange,
+	}: {
+		group: SidebarRoomListGroup;
+		onToggleInactive: () => void;
+		onActivityFilterChange: (hours: number | undefined) => void;
+	}) => (
+		<>
+			<button type='button' data-testid='group-header'>{`${group.title}:${group.unreadInfo.unread}`}</button>
+			<button type='button' onClick={onToggleInactive}>{`toggle ${group.key}`}</button>
+			<button type='button' onClick={() => onActivityFilterChange(24 * 7)}>{`filter ${group.key} by 7 days`}</button>
+			<button type='button' onClick={() => onActivityFilterChange(undefined)}>{`clear ${group.key} filter`}</button>
+		</>
 	),
 }));
 
@@ -175,5 +191,77 @@ describe('RoomList', () => {
 		expect(screen.getAllByTestId('room-row-wrapper')).toHaveLength(3);
 		expect(screen.getAllByTestId('room-row-wrapper').map((element) => element.getAttribute('data-index'))).toEqual(['1', '2', '4']);
 		expect(screen.getAllByTestId('room-row').map((element) => element.textContent)).toEqual(['general', 'support', 'alice']);
+	});
+
+	it("lifts and restores a group's activity filter for the session from its header", async () => {
+		render(<RoomList />, { wrapper: appRoot });
+
+		expect(mockUseRoomList).toHaveBeenLastCalledWith(expect.objectContaining({ liftedFilters: {} }));
+
+		await userEvent.click(screen.getByRole('button', { name: 'toggle Channels' }));
+		expect(mockUseRoomList).toHaveBeenLastCalledWith(expect.objectContaining({ liftedFilters: { Channels: 24 } }));
+
+		await userEvent.click(screen.getByRole('button', { name: 'toggle Channels' }));
+		expect(mockUseRoomList).toHaveBeenLastCalledWith(expect.objectContaining({ liftedFilters: {} }));
+	});
+
+	it('drops the lift of a group when a window is chosen for it', async () => {
+		render(<RoomList />, { wrapper: appRoot });
+
+		await userEvent.click(screen.getByRole('button', { name: 'toggle Channels' }));
+		expect(mockUseRoomList).toHaveBeenLastCalledWith(expect.objectContaining({ liftedFilters: { Channels: 24 } }));
+
+		await userEvent.click(screen.getByRole('button', { name: 'filter Channels by 7 days' }));
+		expect(mockUseRoomList).toHaveBeenLastCalledWith(expect.objectContaining({ liftedFilters: {} }));
+	});
+
+	it('announces the outcome of a chosen activity filter once the groups reflect it', async () => {
+		const announcingAppRoot = mockAppRoot()
+			.withJohnDoe()
+			.withUserPreference('sidebarViewMode', 'extended')
+			.withTranslations('en', 'core', {
+				Channels: 'Channels',
+				Last_7_days: 'Last 7 days',
+				Inactive_rooms_hidden_in_group_one: '{{filter}}: {{count}} inactive room hidden in {{group}}',
+				Inactive_rooms_hidden_in_group_other: '{{filter}}: {{count}} inactive rooms hidden in {{group}}',
+				Activity_filter_cleared_in_group: 'Filter cleared in {{group}}',
+			})
+			.build();
+		const { rerender } = render(<RoomList />, { wrapper: announcingAppRoot });
+
+		expect(screen.getByRole('status')).toHaveTextContent('');
+
+		await userEvent.click(screen.getByRole('button', { name: 'filter Channels by 7 days' }));
+		expect(screen.getByRole('status')).toHaveTextContent('');
+
+		mockUseRoomList.mockReturnValue({
+			groups: [{ ...groups[0], activityFilterHours: 24 * 7, inactiveCount: 3 }, groups[1], groups[2]],
+			groupsCount: [2, 1, 0],
+			totalCount: 3,
+		});
+		rerender(<RoomList />);
+		expect(screen.getByRole('status')).toHaveTextContent('Last 7 days: 3 inactive rooms hidden in Channels');
+
+		await userEvent.click(screen.getByRole('button', { name: 'clear Channels filter' }));
+		mockUseRoomList.mockReturnValue({
+			groups: [{ ...groups[0], activityFilterHours: undefined, inactiveCount: 0 }, groups[1], groups[2]],
+			groupsCount: [2, 1, 0],
+			totalCount: 3,
+		});
+		rerender(<RoomList />);
+		expect(screen.getByRole('status')).toHaveTextContent('Filter cleared in Channels');
+	});
+
+	it('stays quiet when a filter changes without a choice made here', () => {
+		const { rerender } = render(<RoomList />, { wrapper: appRoot });
+
+		mockUseRoomList.mockReturnValue({
+			groups: [{ ...groups[0], activityFilterHours: 24 * 7, inactiveCount: 3 }, groups[1], groups[2]],
+			groupsCount: [2, 1, 0],
+			totalCount: 3,
+		});
+		rerender(<RoomList />);
+
+		expect(screen.getByRole('status')).toHaveTextContent('');
 	});
 });

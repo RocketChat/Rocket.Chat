@@ -3,6 +3,7 @@
 @use '../../styles/typography.scss' as *;
 @use '../../styles/mixins/templates.scss';
 @use '../../styles/mixins/interactivity.scss' as *;
+@use '../../styles/mixins/states.scss' as *;
 @use '../../styles/functions.scss' as *;
 @use '../../styles/mixins/link.scss' as *;
 @use '../../styles/primitives/link.scss';
@@ -93,9 +94,22 @@ $tag-border-radius: theme('tag-border-radius', lengths.border-radius(small));
 	@include use-font-scale(micro);
 	@include templates.focus-state;
 
+	// The focus state resets the radius; a pill stays a pill while focused.
+	@include on-focus-visible {
+		border-radius: $tag-border-radius;
+	}
+
 	&--clickable {
 		@include clickable;
 		@include use-clickable-colors($tag-colors-default-color, $tag-colors-default-hover-background-color);
+	}
+
+	// Only the UA button styling goes; the border stays, since the focus ring is drawn on it.
+	&--button {
+		margin: 0;
+
+		font-family: inherit;
+		appearance: none;
 	}
 
 	&__inner {

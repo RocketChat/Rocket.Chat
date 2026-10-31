@@ -179,8 +179,23 @@ $sidebar-color-stroke-extra-light: theme('sidebar-color-stroke-extra-light', col
 			}
 		}
 
-		&__bar:has(&__bar-button:hover) {
+		// A click anywhere on the header toggles the group, except on the actions and the menu, so the hover shows there too.
+		&__bar:has(&__bar-button:hover),
+		&__bar--with-actions:hover:not(:has(&__actions:hover, &__menu-wrapper:hover)) {
 			background-color: $sidebar-color-surface-hover;
+		}
+
+		// With actions, the title only takes the room it needs so the actions follow it; the menu keeps to the end.
+		&__bar--with-actions &__bar-button {
+			flex: 0 1 auto;
+		}
+
+		&__actions {
+			display: flex;
+			align-items: center;
+			flex-shrink: 0;
+
+			margin-inline-end: auto;
 		}
 
 		&__bar.rcx-item-group-header {

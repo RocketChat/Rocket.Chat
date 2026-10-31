@@ -566,6 +566,8 @@
   "ActiveSessionsPeak": "Active sessions peak",
   "ActiveSessionsPeak_InfoText": "Highest amount of active connections in the past 30 days",
   "Activity": "Activity",
+  "Activity_filter_cleared_in_group": "Filter cleared in {{group}}",
+  "Activity_filter_label": "Filter: {{filter}}",
   "Actor": "Actor",
   "Add": "Add",
   "Add_a_Message": "Add a message",
@@ -2091,6 +2093,10 @@
   "Daylight_savings_time": "Timezone observes daylight saving time",
   "Days": "Days",
   "days": "days",
+  "Days_count": {
+    "one": "{{count}} day",
+    "other": "{{count}} days"
+  },
   "DB_Migration": "Database migration",
   "DB_Migration_Date": "Database migration date",
   "DDP_Rate_Limit_Connection_By_Method_Enabled": "Limit by connection per method: enabled",
@@ -3269,6 +3275,7 @@
   "Hide_counter": "Hide counter",
   "Hide_flextab": "Hide contextual bar by clicking outside of it",
   "Hide_Group_Warning": "Are you sure you want to hide the group \"{{roomName}}\"?",
+  "Hide_inactive": "Hide inactive",
   "Hide_Livechat_Warning": "Are you sure you want to hide the chat with \"{{roomName}}\"?",
   "Hide_On_Workspace": "Hide on workspace",
   "Hide_Private_Warning": "Are you sure you want to hide the discussion with \"{{roomName}}\"?",
@@ -3303,6 +3310,10 @@
   "Host": "Host",
   "Hours": "Hours",
   "hours": "hours",
+  "Hours_count": {
+    "one": "{{count}} hour",
+    "other": "{{count}} hours"
+  },
   "How_and_why_we_collect_usage_data": "How and why usage data is collected",
   "How_friendly_was_the_chat_agent": "How friendly was the chat agent?",
   "How_knowledgeable_was_the_chat_agent": "How knowledgeable was the chat agent?",
@@ -3402,6 +3413,10 @@
   "Importing_users": "Importing users",
   "In_call": "In call",
   "In_progress": "In progress",
+  "Inactive_rooms_hidden_in_group": {
+    "one": "{{filter}}: {{count}} inactive room hidden in {{group}}",
+    "other": "{{filter}}: {{count}} inactive rooms hidden in {{group}}"
+  },
   "Inactivity_Time": "Inactivity time",
   "Inbound": "Inbound",
   "Inbox_Info": "Inbox info",
@@ -3688,6 +3703,7 @@
   "Last_1_hour": "Last 1 hour",
   "Last_15_days": "Last 15 days",
   "Last_15_minutes": "Last 15 minutes",
+  "Last_24_hours": "Last 24 hours",
   "Last_30_days": "Last 30 days",
   "Last_30_minutes": "Last 30 minutes",
   "Last_5_minutes": "Last 5 minutes",
@@ -4807,6 +4823,7 @@
   "No_history": "No history",
   "No_history_yet": "No history yet",
   "No_history_yet_description": "The entire message history with this contact will appear here.",
+  "No_inactive_rooms_hidden": "No inactive rooms hidden",
   "No_installed_app_matches": "No installed app matches",
   "No_integration_found": "No integration found by the provided id.",
   "No_Limit": "No limit",
@@ -6303,6 +6320,10 @@
   "Show_default_content": "Show default content",
   "Show_email_field": "Show email field",
   "Show_fewer": "Show fewer",
+  "Show_inactive": {
+    "one": "Show {{count}} inactive",
+    "other": "Show {{count}} inactive"
+  },
   "Show_mentions": "Show badge for mentions",
   "Show_more": "Show more",
   "Show_more_messages": "Show more messages",

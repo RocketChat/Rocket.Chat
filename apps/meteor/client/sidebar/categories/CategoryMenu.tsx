@@ -1,12 +1,14 @@
 import type { ISidebarCategory } from '@rocket.chat/core-typings';
 import { Menu, MenuItem, MenuSection, MenuSubmenuTrigger, ToggleSwitch } from '@rocket.chat/fuselage';
-import { useToggle } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback, useToggle } from '@rocket.chat/fuselage-hooks';
 import { GenericMenuItem, useHandleMenuAction } from '@rocket.chat/ui-client';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
-import { memo } from 'react';
+import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { isActivityFilterable } from './hooks/useActivityFilter';
+import { getActivityFilterItemId, useActivityFilterItems } from './hooks/useActivityFilterItems';
 import { useCategoryModals } from './hooks/useCategoryModals';
 import { useMoveRoomCategory } from './hooks/useMoveRoomCategory';
 import { useToggleUnreads } from './hooks/useToggleUnreads';
@@ -17,10 +19,13 @@ type CategoryMenuProps = {
 	groupKey: string;
 	showUnreads: boolean;
 	keepUnreadsOnTop: boolean;
+	activityFilterHours?: number;
 	canMoveUp: boolean;
 	canMoveDown: boolean;
 	onMoveUp: () => void;
 	onMoveDown: () => void;
+	/** The user chose a window from the Filter submenu; `undefined` means "All". */
+	onActivityFilterChange?: (activityFilterHours: number | undefined) => void;
 };
 
 const CategoryMenu = ({
@@ -28,14 +33,16 @@ const CategoryMenu = ({
 	groupKey,
 	showUnreads,
 	keepUnreadsOnTop,
+	activityFilterHours,
 	canMoveUp,
 	canMoveDown,
 	onMoveUp,
 	onMoveDown,
+	onActivityFilterChange,
 }: CategoryMenuProps) => {
 	const { t } = useTranslation();
 	const [isOpen, toggleOpen] = useToggle(false);
-	const close = () => toggleOpen(false);
+	const close = useCallback(() => toggleOpen(false), [toggleOpen]);
 
 	const { openManage, openDelete } = useCategoryModals();
 	const moveRoomCategory = useMoveRoomCategory();
@@ -124,7 +131,15 @@ const CategoryMenu = ({
 		},
 	];
 
-	const allItems = [...orderItems, ...(category ? manageItems : []), ...createItems, ...unreadItems];
+	// Stable, so the filter items are rebuilt only when the group or its filter changes, not on every render.
+	const handleActivityFilterChoice = useStableCallback((hours: number | undefined) => {
+		close();
+		onActivityFilterChange?.(hours);
+	});
+	const filterItems = useActivityFilterItems(groupKey, activityFilterHours, handleActivityFilterChoice);
+	const activityFilterItems = isActivityFilterable(groupKey) ? filterItems : [];
+
+	const allItems = [...orderItems, ...(category ? manageItems : []), ...createItems, ...activityFilterItems, ...unreadItems];
 	const disabledKeys = allItems.filter(({ disabled }) => disabled).map(({ id }) => id);
 
 	const handleAction = useHandleMenuAction(allItems);
@@ -168,6 +183,25 @@ const CategoryMenu = ({
 									<GenericMenuItem {...item} />
 								</MenuItem>
 							))}
+						{activityFilterItems.length > 0 && (
+							<MenuSubmenuTrigger
+								key='activity-filter'
+								textValue={t('Filter')}
+								selectionMode='single'
+								selectedKeys={[getActivityFilterItemId(activityFilterHours)]}
+							>
+								<MenuItem aria-label={t('Filter')}>
+									<GenericMenuItem id='activity-filter' icon='clock' content={t('Filter')} />
+								</MenuItem>
+								<MenuSection items={activityFilterItems}>
+									{(item) => (
+										<MenuItem key={item.id} textValue={typeof item.content === 'string' ? item.content : undefined}>
+											<GenericMenuItem {...item} />
+										</MenuItem>
+									)}
+								</MenuSection>
+							</MenuSubmenuTrigger>
+						)}
 					</>
 				</MenuSection>,
 				<MenuSection key='unreads' title={t('Unreads')} items={unreadItems}>
