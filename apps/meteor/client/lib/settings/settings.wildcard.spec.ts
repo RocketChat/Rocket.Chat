@@ -27,6 +27,22 @@ describe('settings wildcard observers', () => {
 		}
 	});
 
+	it('reports the actual IDs and values for setting change notifications', () => {
+		const callback = jest.fn();
+		const stop = settings.observe('*', callback);
+		try {
+			settings['handleChange']('Setting_B', 2);
+			settings['handleChange']('Setting_C', 1);
+
+			expect(callback.mock.calls).toEqual([
+				['Setting_B', 2],
+				['Setting_C', 1],
+			]);
+		} finally {
+			stop();
+		}
+	});
+
 	it('keeps keyed observers scoped to their setting', () => {
 		PublicSettings.state.replaceAll([createSetting('Setting_A'), createSetting('Setting_B')]);
 		const callback = jest.fn();
