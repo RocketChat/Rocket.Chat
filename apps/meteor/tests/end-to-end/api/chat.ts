@@ -2574,6 +2574,30 @@ describe('[Chat]', () => {
 			expect(res.body).to.have.property('success', true);
 		});
 
+		describe('as another user', () => {
+			let user: TestUser<IUser>;
+			let userCredentials: Credentials;
+
+			before(async () => {
+				user = await createUser();
+				userCredentials = await login(user.username, password);
+			});
+
+			after(() => deleteUser(user));
+
+			it('should refuse to delete the message of another user as that user without the permission', async () => {
+				const { body } = await sendSimpleMessage({ roomId: testChannel._id });
+
+				await request
+					.post(api('chat.delete'))
+					.set(userCredentials)
+					.send({ roomId: testChannel._id, msgId: body.message._id, asUser: true })
+					.expect(403);
+
+				await request.get(api('chat.getMessage')).set(credentials).query({ msgId: body.message._id }).expect(200);
+			});
+		});
+
 		describe('when deleting by fileId', () => {
 			const uploadFile = async (): Promise<string> => {
 				const { body } = await request
