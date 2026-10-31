@@ -11,6 +11,7 @@ export interface IUpload extends IRocketChatRecord {
 	extension?: string;
 	complete?: boolean;
 	rid?: string;
+	contactId?: string;
 	uid?: string;
 	uploading?: boolean;
 	userId?: string;

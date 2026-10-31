@@ -24,7 +24,7 @@ const ResetPasswordPage = lazy(() =>
 const OAuthAuthorizationPage = lazy(() => import('../views/oauth/OAuthAuthorizationPage'));
 const OAuthErrorPage = lazy(() => import('../views/oauth/OAuthErrorPage'));
 const NotFoundPage = lazy(() => import('../views/notFound/NotFoundPage'));
-const CallHistoryPage = lazy(() => import('../views/mediaCallHistory/CallHistoryPage'));
+const CallHistoryRoute = lazy(() => import('../views/mediaCallHistory/CallHistoryRoute'));
 const SidebarRailCallPanel = lazy(() => import('../sidebar/SidebarRail/SidebarRailCallPanel'));
 const SearchPage = lazy(() => import('../views/search/SearchPage'));
 
@@ -111,8 +111,8 @@ declare module '@rocket.chat/ui-contexts' {
 			pattern: '/saml/:token';
 		};
 		'call-history': {
-			pathname: `/call-history${`/details/${string}` | ''}`;
-			pattern: '/call-history/:tab?/:historyId?';
+			pathname: `/call-history${`/details/${string}` | '/contacts' | `/contacts/${string}` | '/favorites' | `/favorites/${string}` | ''}`;
+			pattern: '/call-history/:tab?/:historyId?/:context?';
 		};
 		'search': {
 			pathname: '/search';
@@ -245,11 +245,11 @@ router.defineRoutes([
 		element: appLayout.wrap(<SAMLLoginRoute />),
 	},
 	{
-		path: '/call-history/:tab?/:historyId?',
+		path: '/call-history/:tab?/:historyId?/:context?',
 		id: 'call-history',
 		element: appLayout.wrap(
 			<MainLayout>
-				<CallHistoryPage />
+				<CallHistoryRoute />
 				<SidebarRailCallPanel />
 			</MainLayout>,
 		),

@@ -1,3 +1,4 @@
+import type { IContact } from './IContact';
 import type { IMessage } from './IMessage/IMessage';
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IRoom } from './IRoom';
@@ -50,6 +51,9 @@ export interface IExternalMediaCallHistoryItem extends IMediaCallHistoryItem {
 	external: true;
 
 	contactExtension: string;
+
+	externalContactId?: IContact['_id'];
+	externalContactName?: IContact['displayName'];
 }
 
 export type CallHistoryItem = IInternalMediaCallHistoryItem | IExternalMediaCallHistoryItem;
