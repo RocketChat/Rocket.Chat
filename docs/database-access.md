@@ -78,8 +78,9 @@ async create(banner: IBanner) {
 ## Existing code
 
 Many inline queries, models that import other models from `../index`, and models that
-validate their input predate these rules. Don't add new ones. When you touch one, move the
-logic to where it belongs as its own refactor commit, below the change that needed it
+validate their input predate these rules. Don't add new ones. When your change modifies one,
+move the logic to where it belongs as its own refactor commit, below the change that needed
+it. That commit stays in the same pull request unless the distribution plan extracts it
 ([change organization](change-organization.md)).
 
 ## Migrations
