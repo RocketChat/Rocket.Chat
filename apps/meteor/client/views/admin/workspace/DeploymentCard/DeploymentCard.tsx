@@ -7,6 +7,7 @@ import { useSetModal } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { Info } from '../../../../../rocketchat.info';
 import WorkspaceCardSection from '../components/WorkspaceCardSection';
 import InstancesModal from './components/InstancesModal';
 import WorkspaceCardSectionTitle from '../components/WorkspaceCardSectionTitle';
@@ -27,6 +28,7 @@ const DeploymentCard = ({
 	const setModal = useSetModal();
 
 	const { commit = {}, marketplaceApiVersion: appsEngineVersion } = info || {};
+	const clientCommit = Info.commit?.hash !== commit.hash ? Info.commit : undefined;
 
 	const handleInstancesModal = useStableCallback(() => {
 		setModal(<InstancesModal instances={instances} onClose={(): void => setModal()} />);
@@ -91,6 +93,13 @@ const DeploymentCard = ({
 						{t('Branch')}: {commit.branch} <br />
 						{commit.subject}
 					</WorkspaceCardSection>
+					{clientCommit?.hash && (
+						<WorkspaceCardSection>
+							<WorkspaceCardSectionTitle title={t('Web_client_commit_details')} />
+							{t('github_HEAD')}: ({clientCommit.hash.slice(0, 9)}) <br />
+							{t('Branch')}: {clientCommit.branch}
+						</WorkspaceCardSection>
+					)}
 					<WorkspaceCardSection>
 						<WorkspaceCardSectionTitle title={t('PID')} />
 						{statistics.process.pid}

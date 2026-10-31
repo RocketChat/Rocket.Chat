@@ -7640,6 +7640,7 @@
   "We_Could_not_retrive_any_data": "We couldn't retrive any data",
   "We_have_sent_password_email": "We have sent you an email with password reset instructions. If you do not receive an email shortly, please come back and try again.",
   "We_have_sent_registration_email": "We have sent you an email to confirm your registration. If you do not receive an email shortly, please come back and try again.",
+  "Web_client_commit_details": "Web client commit details",
   "Webdav Integration": "Webdav integration",
   "Webdav Integration_Description": "A framework for users to create, change and move documents on a server. Used to link WebDAV servers such as Nextcloud.",
   "Webdav_account_removed": "WebDAV account removed",
