@@ -70,6 +70,7 @@ describe('VideoConfManager subscription lifecycle', () => {
 		const error = new Error('not-allowed');
 		const stop = jest.fn();
 		const warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+		VideoConfManager.setLogLevel(1);
 		(sdk.stream as jest.Mock).mockReturnValueOnce({ stop, ready: () => Promise.reject(error) });
 		try {
 			VideoConfManager.updateUser('subscription-user', false, true);
@@ -81,6 +82,7 @@ describe('VideoConfManager subscription lifecycle', () => {
 			expect(sdk.stream).toHaveBeenCalledTimes(2);
 		} finally {
 			VideoConfManager.updateUser(null, false, true);
+			VideoConfManager.setLogLevel(0);
 			warn.mockRestore();
 		}
 	});
@@ -100,6 +102,33 @@ describe('VideoConfManager subscription lifecycle', () => {
 		expect(stop).toHaveBeenCalledTimes(1);
 		ready();
 		await flushPromises();
+		expect(stop).toHaveBeenCalledTimes(1);
+	});
+
+	it('stops a rejected old subscription after logout and reconnect without clearing the new connection', async () => {
+		const oldError = new Error('old connection rejected');
+		const oldStop = jest.fn();
+		const newStop = jest.fn();
+		const warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+		VideoConfManager.setLogLevel(1);
+		(sdk.stream as jest.Mock)
+			.mockReturnValueOnce({ stop: oldStop, ready: () => Promise.reject(oldError) })
+			.mockReturnValueOnce({ stop: newStop, ready: () => new Promise<void>(() => undefined) });
+		try {
+			VideoConfManager.updateUser('old-user', false, true);
+			VideoConfManager.updateUser(null, false, true);
+			VideoConfManager.updateUser('new-user', false, true);
+			await flushPromises();
+
+			expect(warn).toHaveBeenCalledWith('[VideoConf] Could not connect the user subscription', oldError);
+			expect(oldStop).toHaveBeenCalledTimes(1);
+			expect(newStop).not.toHaveBeenCalled();
+			expect(manager.userId).toBe('new-user');
+		} finally {
+			VideoConfManager.updateUser(null, false, true);
+			VideoConfManager.setLogLevel(0);
+			warn.mockRestore();
+		}
 	});
 });
 
