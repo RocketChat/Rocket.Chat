@@ -156,6 +156,75 @@ describe('createWorkerSqlRunner', () => {
 		await expect(search).rejects.toThrow('E2EE search index is not open');
 	});
 
+	it('opens another scope after delayed crash recovery is cancelled', async () => {
+		jest.useFakeTimers();
+		try {
+			const runner = createWorkerSqlRunner('/worker.mjs');
+			const opened = runner.open('a', {} as CryptoKey);
+			workers[0].reply({ rows: [{ persistent: true, restored: true }] });
+			await opened;
+			await jest.advanceTimersByTimeAsync(0);
+			workers[0].fail('out of memory');
+
+			const search = runner.exec({ sql: 'SELECT n FROM t' });
+			const rejectedSearch = expect(search).rejects.toThrow('E2EE search index is closed');
+			const recovery = workers[1];
+			expect(recovery.ops()).toEqual(['open']);
+			const key = {} as CryptoKey;
+			const opening = runner.open('b', key, 'CREATE TABLE IF NOT EXISTS t (n)');
+			expect(recovery.ops()).toEqual(['open']);
+
+			recovery.reply({ rows: [{ persistent: true, restored: true }] });
+			await rejectedSearch;
+			await jest.advanceTimersByTimeAsync(0);
+			expect(recovery.terminate).toHaveBeenCalledTimes(1);
+			expect(workers).toHaveLength(3);
+			const replacement = workers[2];
+			expect(replacement.postMessage).toHaveBeenLastCalledWith(expect.objectContaining({ op: 'open', scopeId: 'b', wrapKey: key }));
+			replacement.reply({ rows: [{ persistent: true, restored: true }] });
+			await jest.advanceTimersByTimeAsync(0);
+			expect(replacement.ops()).toEqual(['open', 'exec']);
+			replacement.reply({ rows: [] });
+			await expect(opening).resolves.toEqual({ persistent: true, restored: true });
+
+			const listed = runner.exec({ sql: 'SELECT n FROM t' });
+			replacement.reply({ rows: [{ n: 2 }] });
+			await expect(listed).resolves.toEqual([{ n: 2 }]);
+			expect(jest.getTimerCount()).toBe(0);
+		} finally {
+			jest.useRealTimers();
+		}
+	});
+
+	it('rejects SQL waiting when close terminates the worker and clears every timer', async () => {
+		jest.useFakeTimers();
+		try {
+			const runner = createWorkerSqlRunner('/worker.mjs');
+			const opened = runner.open('scope', {} as CryptoKey);
+			const [worker] = workers;
+			worker.reply({ rows: [{ persistent: true, restored: true }] });
+			await opened;
+			await jest.advanceTimersByTimeAsync(0);
+			const beforeClose = runner.exec({ sql: 'SELECT 1' });
+			const rejectedBefore = expect(beforeClose).rejects.toThrow('E2EE search index is closed');
+			const closed = runner.close('scope');
+			const afterClose = runner.exec({ sql: 'SELECT 2' });
+			const rejectedAfter = expect(afterClose).rejects.toThrow('E2EE search index is closed');
+			expect(worker.ops()).toEqual(['open', 'exec', 'close', 'exec']);
+			expect(jest.getTimerCount()).toBe(3);
+			worker.replyTo(2, { rows: [] });
+			await closed;
+			await rejectedBefore;
+			await rejectedAfter;
+			expect(worker.terminate).toHaveBeenCalledTimes(1);
+			expect(jest.getTimerCount()).toBe(0);
+			worker.replyTo(3, { rows: [{ n: 2 }] });
+			expect(jest.getTimerCount()).toBe(0);
+		} finally {
+			jest.useRealTimers();
+		}
+	});
+
 	it('sends no other call between an open and its schema', async () => {
 		const runner = createWorkerSqlRunner('/worker.mjs');
 		const opened = runner.open('scope', {} as CryptoKey, 'CREATE TABLE IF NOT EXISTS t (n)');
