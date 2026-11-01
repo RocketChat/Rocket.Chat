@@ -111,6 +111,13 @@ class POP3Intercepter {
 			console.log(`Current command has not finished yet. You tried calling ${cmd}`);
 		});
 	}
+
+	stop() {
+		this.pop3.removeAllListeners();
+		this.pop3.on('error', () => {});
+		this.pop3.once('close', () => this.pop3.removeAllListeners());
+		this.pop3.destroy();
+	}
 }
 
 export class POP3Helper {
@@ -145,6 +152,9 @@ export class POP3Helper {
 		if (this.isActive()) {
 			clearInterval(this.running);
 		}
+		this.running = false;
+		this.POP3?.stop();
+		this.POP3 = undefined;
 		callback();
 		this.log('POP3 stopped');
 	}
