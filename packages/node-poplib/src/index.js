@@ -130,6 +130,14 @@ function POP3Client(port, host, options) {
 		socket.end();
 	};
 
+	this.destroy = function () {
+		if (!socket) return;
+
+		var activeSocket = socket;
+		socket = null;
+		activeSocket.destroy();
+	};
+
 	// Upgrades a standard unencrypted TCP connection to use TLS
 	// Liberally copied and modified from https://gist.github.com/848444
 	// starttls() should be a private function, but I can't figure out
