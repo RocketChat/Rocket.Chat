@@ -61,6 +61,7 @@ describe('Agenda with an invalid repeat interval', () => {
 	});
 
 	afterEach(async () => {
+		jest.restoreAllMocks();
 		await agenda.stop();
 	});
 
@@ -114,6 +115,27 @@ describe('Agenda with an invalid repeat interval', () => {
 		const job = await findJob('re-registered');
 		expect(job?.repeatInterval).toBe('5 minutes');
 		expect(job?.nextRunAt.getTime()).toBe(job?.lastRunAt.getTime() + 5 * 60 * 1000);
+	});
+
+	it('should never make a failed job due again while it still has its invalid interval', async () => {
+		await agenda.every('0 0 1 12 *', 're-registered', {}, {});
+		await runControlJob();
+
+		// what another scheduler polling the collection could claim between the writes of the re-registration
+		const collection = agenda['getCollection']();
+		const findOneAndUpdate = collection.findOneAndUpdate.bind(collection);
+		const beforeUpsert: { nextRunAt?: Date | null; repeatInterval?: string } = {};
+		jest.spyOn(collection, 'findOneAndUpdate').mockImplementationOnce(async (...args: Parameters<typeof collection.findOneAndUpdate>) => {
+			const stored = await findJob('re-registered');
+			beforeUpsert.nextRunAt = stored?.nextRunAt;
+			beforeUpsert.repeatInterval = stored?.repeatInterval;
+			return findOneAndUpdate(...args);
+		});
+
+		await agenda.every('5 minutes', 're-registered', {}, {});
+
+		expect(beforeUpsert.repeatInterval).toBeDefined();
+		expect(beforeUpsert).not.toMatchObject({ nextRunAt: expect.any(Date), repeatInterval: '0 0 1 12 *' });
 	});
 
 	it('should stop re-running a job already stored as due with an invalid interval', async () => {
