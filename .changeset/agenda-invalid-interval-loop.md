@@ -3,4 +3,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-Fixes background jobs running nonstop when their schedule can't be parsed, such as a cron expression with month `12` or a step of `0`. These jobs are now marked as failed and stop running instead of starting again as soon as each run finishes.
+Fixes background jobs running nonstop when their repeat interval can't be scheduled, such as a cron expression whose month is outside the `0`–`11` range used by the scheduler's cron library, a step of `0`, or an interval shorter than 1 ms. These jobs are now marked as failed and stop running instead of starting again as soon as each run finishes.
