@@ -82,9 +82,14 @@ export class Job {
 		} catch (error) {
 			// Nope, humanInterval then!
 			try {
-				const numberInterval = (typeof interval === 'number' ? interval : humanInterval(interval)) || 0;
+				const numberInterval = typeof interval === 'number' ? interval : humanInterval(interval);
 
-				if (!this.attrs.lastRunAt && numberInterval) {
+				// a job that is due again as soon as it runs would run nonstop, so it fails instead
+				if (!numberInterval || numberInterval < 0) {
+					return;
+				}
+
+				if (!this.attrs.lastRunAt) {
 					this.attrs.nextRunAt = new Date(lastRun.valueOf());
 					debug('[%s:%s] nextRunAt set to [%s]', this.attrs.name, this.attrs._id, this.attrs.nextRunAt.toISOString());
 				} else {
