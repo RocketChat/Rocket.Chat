@@ -137,6 +137,7 @@ export class POP3Helper {
 		this.running = setInterval(
 			() => {
 				// get new emails and process
+				this.POP3?.stop();
 				this.POP3 = new POP3Intercepter();
 			},
 			Math.max(this.frequency * 60 * 1000, 2 * 60 * 1000),
