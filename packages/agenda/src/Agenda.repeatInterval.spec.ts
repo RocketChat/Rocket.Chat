@@ -6,7 +6,7 @@ import { Agenda } from './Agenda';
 
 const COLLECTION = 'agenda_spec_jobs';
 const INVALID_INTERVAL = 'failed to calculate nextRunAt due to invalid repeat interval';
-const JOB_NAMES = ['invalid-cron', 'zero-step', 'sub-millisecond', 'human-interval', 'stored-invalid', 'control'];
+const JOB_NAMES = ['invalid-cron', 'zero-step', 'sub-millisecond', 'human-interval', 'stored-invalid', 're-registered', 'control'];
 
 jest.setTimeout(20000);
 
@@ -87,6 +87,33 @@ describe('Agenda with an invalid repeat interval', () => {
 		const job = await findJob('human-interval');
 		expect(job?.nextRunAt.getTime()).toBe(job?.lastRunAt.getTime() + 5 * 60 * 1000);
 		expect(job?.failReason).toBeUndefined();
+
+		await agenda.every('5 minutes', 'human-interval', {}, {});
+		await runControlJob();
+
+		expect(runs['human-interval']).toBe(1);
+		expect((await findJob('human-interval'))?.nextRunAt).toEqual(job?.nextRunAt);
+	});
+
+	it('should run a failed job right away once it is registered again with a valid interval', async () => {
+		await agenda.every('0 0 1 12 *', 're-registered', {}, {});
+		await runControlJob();
+
+		expect(runs['re-registered']).toBe(0);
+		expect((await findJob('re-registered'))?.nextRunAt).toBeNull();
+
+		await agenda.every('5 minutes', 're-registered', {}, {});
+		await waitFor(
+			async () => runs['re-registered'] === 1 && (await findJob('re-registered'))?.lastFinishedAt instanceof Date,
+			'the re-registered job to run',
+		);
+		await runControlJob();
+
+		expect(runs['re-registered']).toBe(1);
+		expect(await db.collection(COLLECTION).countDocuments({ name: 're-registered' })).toBe(1);
+		const job = await findJob('re-registered');
+		expect(job?.repeatInterval).toBe('5 minutes');
+		expect(job?.nextRunAt.getTime()).toBe(job?.lastRunAt.getTime() + 5 * 60 * 1000);
 	});
 
 	it('should stop re-running a job already stored as due with an invalid interval', async () => {

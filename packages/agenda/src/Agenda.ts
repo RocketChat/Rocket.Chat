@@ -513,6 +513,11 @@ export class Agenda extends EventEmitter {
 		// Try an upsert
 		debug('calling findOneAndUpdate() with job name and type of "single" as query');
 		try {
+			if ($setOnInsert.nextRunAt) {
+				// a job left unscheduled, e.g. after failing on an invalid interval, is scheduled again by this registration
+				await this.getCollection().updateOne({ name: props.name, type: 'single', nextRunAt: null }, { $set: { nextRunAt } });
+			}
+
 			const result = await this.getCollection().findOneAndUpdate(
 				{
 					name: props.name,
