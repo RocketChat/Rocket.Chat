@@ -8,7 +8,9 @@ const COLLECTION = 'agenda_spec_jobs';
 const INVALID_INTERVAL = 'failed to calculate nextRunAt due to invalid repeat interval';
 const JOB_NAMES = ['invalid-cron', 'zero-step', 'sub-millisecond', 'human-interval', 'stored-invalid', 'control'];
 
-const waitFor = async (condition: () => boolean | Promise<boolean>, description: string, timeout = 10000) => {
+jest.setTimeout(20000);
+
+const waitFor = async (condition: () => boolean | Promise<boolean>, description: string, timeout = 5000) => {
 	const deadline = Date.now() + timeout;
 	while (!(await condition())) {
 		if (Date.now() > deadline) {
