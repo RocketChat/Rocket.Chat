@@ -16,6 +16,8 @@ export interface IBaseUploadsModel<T extends IUpload> extends IBaseModel<T> {
 
 	findOneByRoomId(rid: string): Promise<T | null>;
 
+	findOneByIdAndRoomId(fileId: string, rid: string, options?: FindOptions<T>): Promise<T | null>;
+
 	findExpiredTemporaryFiles(options?: FindOptions<T>): FindCursor<T>;
 
 	updateFileNameById(fileId: string, name: string): Promise<Document | UpdateResult>;

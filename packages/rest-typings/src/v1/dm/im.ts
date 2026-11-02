@@ -14,11 +14,11 @@ type DmKickProps = {
 	roomId: string;
 };
 
+type DmCreateResult = Pick<IRoom, '_id' | 't' | 'usernames'> & { rid: IRoom['_id'] };
+
 export type ImEndpoints = {
 	'/v1/im.create': {
-		POST: (params: DmCreateProps) => {
-			room: IRoom & { rid: IRoom['_id'] };
-		};
+		POST: (params: DmCreateProps) => { room: DmCreateResult };
 	};
 	'/v1/im.kick': {
 		POST: (params: DmKickProps) => void;
