@@ -278,7 +278,14 @@ export class ConferenceWindow {
 				response.url().includes('/v1/users.autocomplete') && decodeURIComponent(response.url()).includes(`"term":"${username}"`),
 		);
 		await this.inputAddPeople.fill(username);
-		const { items } = (await (await searched).json()) as { items: unknown[] };
+		const { items } = (await (await searched).json()) as { items: { username: string }[] };
+		expect(items.map((item) => item.username)).toContain(username);
+
+		// Reopens the list if it closed while the search was pending.
+		if ((await this.inputAddPeople.getAttribute('aria-expanded')) !== 'true') {
+			await this.inputAddPeople.press('ArrowDown');
+		}
+		await expect(this.inputAddPeople).toHaveAttribute('aria-expanded', 'true');
 
 		await expect(this.listboxPeople.root.getByRole('option')).toHaveCount(items.length);
 		await this.listboxPeople.selectOption(username, true);
