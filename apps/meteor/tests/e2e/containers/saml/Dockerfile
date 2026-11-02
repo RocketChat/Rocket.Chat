@@ -1,4 +1,4 @@
-FROM php:7.4-apache
+FROM php:8.2-apache-bookworm
 
 # Utilities
 RUN apt-get update && \
