@@ -1,5 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
+import { Listbox } from './fragments/listbox';
 import { expect } from '../utils/test';
 
 /**
@@ -263,20 +264,24 @@ export class ConferenceWindow {
 		return this.dialogAddPeople.getByRole('button', { name: 'Add', exact: true });
 	}
 
-	/** Picks `username` and confirms, typing the name again whenever the list it was picked from closes first. */
-	async addPeople(username: string): Promise<void> {
-		const option = this.page.getByRole('option', { name: username, exact: true });
+	get listboxPeople(): Listbox {
+		return new Listbox(this.page);
+	}
 
+	/** Picks `username` from the results of searching for it, never from an earlier search's, and confirms. */
+	async addPeople(username: string): Promise<void> {
 		await this.btnAddPeople.click();
 		await this.inputAddPeople.click();
 
-		await expect(async () => {
-			if (!(await option.isVisible())) {
-				await this.inputAddPeople.fill('');
-				await this.inputAddPeople.fill(username);
-			}
-			await option.click({ timeout: 5_000 });
-		}).toPass({ timeout: 30_000 });
+		const searched = this.page.waitForResponse(
+			(response) =>
+				response.url().includes('/v1/users.autocomplete') && decodeURIComponent(response.url()).includes(`"term":"${username}"`),
+		);
+		await this.inputAddPeople.fill(username);
+		const { items } = (await (await searched).json()) as { items: unknown[] };
+
+		await expect(this.listboxPeople.root.getByRole('option')).toHaveCount(items.length);
+		await this.listboxPeople.selectOption(username, true);
 
 		await expect(this.btnConfirmAddPeople).toBeEnabled();
 		await this.btnConfirmAddPeople.click();
