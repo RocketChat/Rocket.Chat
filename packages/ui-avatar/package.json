@@ -24,7 +24,7 @@
 		"@rocket.chat/ui-contexts": "workspace:^",
 		"@types/react": "~18.3.28",
 		"@types/react-dom": "~18.3.7",
-		"eslint": "~9.39.5",
+		"eslint": "~9.39.4",
 		"react": "~18.3.1",
 		"react-dom": "~18.3.1",
 		"react-virtuoso": "~4.12.8",
