@@ -4852,7 +4852,7 @@ export type OmnichannelEndpoints = {
 	'/v1/omnichannel/contact': {
 		POST: (params: POSTOmnichannelContactProps) => { contact: string };
 
-		GET: (params: GETOmnichannelContactProps) => { contact: ILivechatVisitor | null };
+		GET: (params: GETOmnichannelContactProps) => { contact: Omit<ILivechatVisitor, 'token'> | null };
 	};
 
 	'/v1/omnichannel/contacts': {
@@ -4880,7 +4880,7 @@ export type OmnichannelEndpoints = {
 		GET: (params: GETOmnichannelContactsChannelsProps) => { channels: ILivechatContactChannel[] | null };
 	};
 	'/v1/omnichannel/contact.search': {
-		GET: (params: GETOmnichannelContactSearchProps) => { contact: ILivechatVisitor | null };
+		GET: (params: GETOmnichannelContactSearchProps) => { contact: Omit<ILivechatVisitor, 'token'> | null };
 	};
 	'/v1/livechat/agent.info/:rid/:token': {
 		GET: () => { agent: ILivechatAgent | { hiddenInfo: true } };
