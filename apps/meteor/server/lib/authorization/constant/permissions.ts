@@ -21,6 +21,7 @@ export const permissions = [
 	{ _id: 'change-livechat-room-visitor', roles: ['admin', 'livechat-manager', 'livechat-agent'] },
 	{ _id: 'create-c', roles: ['admin', 'user', 'federated-external', 'bot', 'app'] },
 	{ _id: 'create-d', roles: ['admin', 'user', 'federated-external', 'bot', 'app'] },
+	{ _id: 'create-d-other-users', roles: ['admin', 'bot', 'app'] },
 	{ _id: 'create-p', roles: ['admin', 'user', 'federated-external', 'bot', 'app'] },
 	{ _id: 'create-personal-access-tokens', roles: ['admin', 'user'] },
 	{ _id: 'create-user', roles: ['admin'] },
