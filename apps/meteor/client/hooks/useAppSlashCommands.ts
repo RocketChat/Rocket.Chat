@@ -7,7 +7,10 @@ import { useEffect } from 'react';
 import { slashCommands } from '../../app/utils/client/slashCommand';
 import { appsQueryKeys } from '../lib/queryKeys';
 
-type SlashCommandBasicInfo = Pick<SlashCommand, 'clientOnly' | 'command' | 'description' | 'params' | 'providesPreview' | 'appId'>;
+type SlashCommandBasicInfo = Pick<
+	SlashCommand,
+	'clientOnly' | 'command' | 'description' | 'params' | 'permission' | 'providesPreview' | 'appId'
+>;
 
 export const useAppSlashCommands = () => {
 	const queryClient = useQueryClient();
@@ -34,7 +37,7 @@ export const useAppSlashCommands = () => {
 				return;
 			}
 
-			if (['command/removed', 'command/disabled'].includes(key) && typeof command === 'string') {
+			if (['command/removed', 'command/disabled', 'command/updated'].includes(key) && typeof command === 'string') {
 				delete slashCommands.commands[command];
 			}
 
@@ -84,5 +87,5 @@ export const useAppSlashCommands = () => {
 	 *
 	 * @TODO the `slashCommands` singleton should be refactored to fit the React data flow
 	 */
-	data?.forEach((command) => slashCommands.add(command));
+	data?.forEach((command) => slashCommands.add({ ...command, options: { permission: command.permission } }));
 };
