@@ -41,14 +41,14 @@
 		"@testing-library/react": "~16.3.3",
 		"@types/react": "~18.3.28",
 		"@types/react-dom": "~18.3.7",
-		"eslint": "~9.39.5",
+		"eslint": "~9.39.4",
 		"i18next": "~23.4.9",
 		"react": "~18.3.1",
 		"react-dom": "~18.3.1",
 		"react-hook-form": "~7.45.4",
 		"react-i18next": "~13.2.2",
 		"react-virtuoso": "~4.12.8",
-		"storybook": "^9.1.20",
+		"storybook": "^9.1.13",
 		"typescript": "~5.9.3"
 	},
 	"peerDependencies": {
