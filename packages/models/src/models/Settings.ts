@@ -257,6 +257,12 @@ export class SettingsRaw extends BaseRaw<ISetting> implements ISettingsModel {
 	insertIfNotExists(setting: ISetting): Promise<WithId<ISetting> | null> {
 		const { _id, _updatedAt, ...fields } = setting;
 
-		return this.findOneAndUpdate({ _id }, { $setOnInsert: fields }, { upsert: true, returnDocument: 'after' });
+		// Goes straight to the driver: `BaseRaw.findOneAndUpdate` adds `$set: { _updatedAt }` to every update,
+		// which would make this a write on a setting that already exists. The timestamp is only set on insert.
+		return this.col.findOneAndUpdate(
+			{ _id },
+			{ $setOnInsert: { ...fields, _updatedAt: new Date() } },
+			{ upsert: true, returnDocument: 'after' },
+		);
 	}
 }
