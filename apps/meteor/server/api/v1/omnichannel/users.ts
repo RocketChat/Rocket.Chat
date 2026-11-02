@@ -4,7 +4,7 @@ import { check } from 'meteor/check';
 
 import { API } from '../..';
 import { findAgents, findManagers } from './lib/users';
-import { hasAtLeastOnePermissionAsync } from '../../../lib/authorization/hasPermission';
+import { hasAtLeastOnePermissionAsync, hasPermissionAsync } from '../../../lib/authorization/hasPermission';
 import { addManager, addAgent, removeAgent, removeManager } from '../../../lib/omnichannel/omni-users';
 import { getPaginationItems } from '../../lib/getPaginationItems';
 
@@ -14,10 +14,6 @@ API.v1.addRoute(
 	'livechat/users/:type',
 	{
 		authRequired: true,
-		permissionsRequired: {
-			'POST': ['view-livechat-manager'],
-			'*': emptyStringArray,
-		},
 		validateParams: {
 			GET: isLivechatUsersManagerGETProps,
 			POST: isPOSTLivechatUsersTypeProps,
@@ -72,11 +68,19 @@ API.v1.addRoute(
 		},
 		async post() {
 			if (this.urlParams.type === 'agent') {
+				if (!(await hasPermissionAsync(this.userId, 'manage-livechat-agents'))) {
+					return API.v1.forbidden();
+				}
+
 				const user = await addAgent(this.bodyParams.username);
 				if (user) {
 					return API.v1.success({ user });
 				}
 			} else if (this.urlParams.type === 'manager') {
+				if (!(await hasPermissionAsync(this.userId, 'manage-livechat-managers'))) {
+					return API.v1.forbidden();
+				}
+
 				const user = await addManager(this.bodyParams.username);
 				if (user) {
 					return API.v1.success({ user });
@@ -92,7 +96,13 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/users/:type/:_id',
-	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
+	{
+		authRequired: true,
+		permissionsRequired: {
+			'GET': ['view-livechat-manager'],
+			'*': emptyStringArray,
+		},
+	},
 	{
 		async get() {
 			if (!['agent', 'manager'].includes(this.urlParams.type)) {
@@ -109,10 +119,18 @@ API.v1.addRoute(
 		},
 		async delete() {
 			if (this.urlParams.type === 'agent') {
+				if (!(await hasPermissionAsync(this.userId, 'manage-livechat-agents'))) {
+					return API.v1.forbidden();
+				}
+
 				if (await removeAgent(this.urlParams._id)) {
 					return API.v1.success();
 				}
 			} else if (this.urlParams.type === 'manager') {
+				if (!(await hasPermissionAsync(this.userId, 'manage-livechat-managers'))) {
+					return API.v1.forbidden();
+				}
+
 				if (await removeManager(this.urlParams._id)) {
 					return API.v1.success();
 				}

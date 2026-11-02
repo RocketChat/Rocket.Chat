@@ -256,11 +256,12 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.findPaginated(query, options);
 	}
 
-	async findOneByEmailAndPhoneAndCustomField(
+	async findOneByEmailAndPhoneAndCustomField<P extends Document = ILivechatVisitor>(
 		email: string | null | undefined,
 		phone: string | null | undefined,
 		customFields?: { [key: string]: RegExp },
-	): Promise<ILivechatVisitor | null> {
+		options?: FindOptions<P extends ILivechatVisitor ? ILivechatVisitor : P>,
+	): Promise<P | null> {
 		const query = Object.assign(
 			{
 				disabled: { $ne: true },
@@ -276,7 +277,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			return null;
 		}
 
-		return this.findOne(query);
+		return this.findOne<P>(query, options);
 	}
 
 	updateAllLivechatDataByToken(token: string, livechatDataToUpdate: Record<string, string>): Promise<UpdateResult> {
