@@ -60,7 +60,7 @@ describe('emoji', () => {
 			type: 'BIG_EMOJI',
 			value: [
 				{ type: 'EMOJI', value: plain(':)'), shortCode: 'slight_smile' },
-				{ type: 'EMOJI', unicode: '😄' },
+				{ type: 'EMOJI', value: undefined, unicode: '😄' },
 			],
 			separators: [separator],
 		};

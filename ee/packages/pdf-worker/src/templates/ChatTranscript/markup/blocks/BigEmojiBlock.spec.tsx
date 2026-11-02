@@ -13,10 +13,12 @@ it.each([undefined, '\n', '\r\n', '\r', '\n\n'])('preserves separator %j in tran
 			emoji={[
 				{ type: 'EMOJI', value: { type: 'PLAIN_TEXT', value: 'smile' }, shortCode: 'smile' },
 				{ type: 'EMOJI', value: { type: 'PLAIN_TEXT', value: 'heart' }, shortCode: 'heart' },
+				{ type: 'EMOJI', value: { type: 'PLAIN_TEXT', value: 'rocket' }, shortCode: 'rocket' },
 			]}
-			separators={separator === undefined ? undefined : [separator]}
+			separators={separator === undefined ? undefined : [separator, separator]}
 		/>,
 	);
 
-	expect(container.textContent).toBe(`:smile:${separator?.replace(/\r\n|\r/g, '\n') ?? ''}:heart:`);
+	const normalizedSeparator = separator?.replace(/\r\n|\r/g, '\n') ?? '';
+	expect(container.textContent).toBe(`:smile:${normalizedSeparator}:heart:${normalizedSeparator}:rocket:`);
 });

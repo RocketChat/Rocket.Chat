@@ -14,8 +14,8 @@ it('keeps multiline large emoji previews compact', () => {
 				{
 					type: 'BIG_EMOJI',
 					value: [
-						{ type: 'EMOJI', unicode: '😀' },
-						{ type: 'EMOJI', unicode: '🚀' },
+						{ type: 'EMOJI', value: undefined, unicode: '😀' },
+						{ type: 'EMOJI', value: undefined, unicode: '🚀' },
 					],
 					separators: ['\n'],
 				},

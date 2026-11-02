@@ -81,9 +81,9 @@ it.each([
 				{
 					type: 'BIG_EMOJI',
 					value: [
-						{ type: 'EMOJI', unicode: '😀' },
-						{ type: 'EMOJI', unicode: '🚀' },
-						{ type: 'EMOJI', unicode: '🌈' },
+						{ type: 'EMOJI', value: undefined, unicode: '😀' },
+						{ type: 'EMOJI', value: undefined, unicode: '🚀' },
+						{ type: 'EMOJI', value: undefined, unicode: '🌈' },
 					],
 					separators: [separator, ' '],
 				},
