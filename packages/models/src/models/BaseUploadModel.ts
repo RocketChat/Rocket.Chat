@@ -110,6 +110,10 @@ export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUplo
 		return this.findOne({ rid });
 	}
 
+	async findOneByIdAndRoomId(fileId: string, rid: string, options?: FindOptions<T>): Promise<T | null> {
+		return this.findOne({ _id: fileId, rid }, options);
+	}
+
 	findExpiredTemporaryFiles(options?: FindOptions<T>): FindCursor<T> {
 		return this.find(
 			{
