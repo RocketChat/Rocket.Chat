@@ -75,6 +75,7 @@ export type Color = {
 export type BigEmoji = {
 	type: 'BIG_EMOJI';
 	value: [Emoji] | [Emoji, Emoji] | [Emoji, Emoji, Emoji];
+	separators?: string[];
 };
 
 export type Emoji =

@@ -7,6 +7,26 @@ it('renders empty', () => {
 	expect(container).toBeEmptyDOMElement();
 });
 
+it('keeps multiline large emoji previews compact', () => {
+	const { container } = render(
+		<PreviewMarkup
+			tokens={[
+				{
+					type: 'BIG_EMOJI',
+					value: [
+						{ type: 'EMOJI', unicode: '😀' },
+						{ type: 'EMOJI', unicode: '🚀' },
+					],
+					separators: ['\n'],
+				},
+			]}
+		/>,
+	);
+
+	expect(container.textContent).toBe('😀🚀');
+	expect(container.querySelector('br')).toBeNull();
+});
+
 it('renders the first block with content when the message starts with a horizontal rule', () => {
 	render(
 		<PreviewMarkup

@@ -29,7 +29,7 @@ export const Markup = ({ tokens }: MarkupProps) => (
 						return <OrderedListBlock key={index} items={child.value} />;
 
 					case 'BIG_EMOJI':
-						return <BigEmojiBlock key={index} emoji={child.value} />;
+						return <BigEmojiBlock key={index} emoji={child.value} separators={child.separators} />;
 
 					case 'CODE':
 						return <CodeBlock key={index} lines={child.value} />;

@@ -51,9 +51,10 @@ export const code = (value: Code['value'], language?: Code['language']): Code =>
 	value,
 });
 
-export const bigEmoji = (value: BigEmoji['value']): BigEmoji => ({
+export const bigEmoji = (value: BigEmoji['value'], separators: string[] = []): BigEmoji => ({
 	type: 'BIG_EMOJI',
 	value,
+	...(separators.some((separator) => /[\r\n]/.test(separator)) && { separators }),
 });
 
 export const task = (value: Task['value'], status: boolean, nested?: NestedList[] | null): Task => ({

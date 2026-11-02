@@ -6,12 +6,16 @@ import { unicodeToShortname } from '../emoji';
 
 export type BigEmojiBlockProps = {
 	emoji: MessageParser.Emoji[];
+	separators?: MessageParser.BigEmoji['separators'];
 };
 
-const BigEmojiBlock = ({ emoji }: BigEmojiBlockProps): ReactElement => (
+const BigEmojiBlock = ({ emoji, separators }: BigEmojiBlockProps): ReactElement => (
 	<Text>
 		{emoji.map((emoji, index) => (
-			<Text key={index}>{emoji.value ? `:${emoji.value?.value}:` : unicodeToShortname(emoji.unicode)}</Text>
+			<Text key={index}>
+				{separators?.[index - 1]?.replace(/\r\n|\r/g, '\n')}
+				{emoji.value ? `:${emoji.value?.value}:` : unicodeToShortname(emoji.unicode)}
+			</Text>
 		))}
 	</Text>
 );

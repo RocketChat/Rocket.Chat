@@ -55,6 +55,19 @@ describe('emoji', () => {
 		expect(sourceOf(node, '')).toBe(':smile:');
 	});
 
+	it.each(['\n', '\r\n', '\r', '\n\n', ' \n  '])('restores %j between large emojis', (separator) => {
+		const node: MessageParser.BigEmoji = {
+			type: 'BIG_EMOJI',
+			value: [
+				{ type: 'EMOJI', value: plain(':)'), shortCode: 'slight_smile' },
+				{ type: 'EMOJI', unicode: '😄' },
+			],
+			separators: [separator],
+		};
+
+		expect(sourceOf(node, '')).toBe(`:)${separator}😄`);
+	});
+
 	it('restores a big emoji block by concatenating its emoji', () => {
 		const node: MessageParser.BigEmoji = {
 			type: 'BIG_EMOJI',

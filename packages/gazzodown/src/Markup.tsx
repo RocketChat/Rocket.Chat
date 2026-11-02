@@ -27,7 +27,7 @@ const Markup = ({ tokens, source }: MarkupProps) => (
 		{tokens.map((block, index) => {
 			switch (block.type) {
 				case 'BIG_EMOJI':
-					return <BigEmojiBlock key={index} emoji={block.value} />;
+					return <BigEmojiBlock key={index} emoji={block.value} separators={block.separators} />;
 
 				case 'PARAGRAPH':
 					return <ParagraphBlock key={index}>{block.value}</ParagraphBlock>;

@@ -48,6 +48,8 @@ const ast = parse('Hello *world*, @john! See #general :smile:');
 
 Every node has a `type` and a `value`; some carry extra fields, such as `level` on `HEADING`, `language` on `CODE` or `status` on `TASK`. A message made of one to three emoji and nothing else parses as a single `BIG_EMOJI` node, so it can be shown larger.
 
+When those emojis span multiple lines, `BIG_EMOJI` also carries an optional `separators` array containing the whitespace between consecutive emojis. Its length is one less than the emoji count. Renderers can use it to preserve line breaks while keeping the emojis large. Single-line nodes omit this field.
+
 ### Options
 
 ```ts

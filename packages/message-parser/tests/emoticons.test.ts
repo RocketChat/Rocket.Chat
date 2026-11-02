@@ -32,7 +32,7 @@ test.each([
 		`:)
   :)
   `,
-		[bigEmoji([emoticon(':)', 'slight_smile'), emoticon(':)', 'slight_smile')])],
+		[{ ...bigEmoji([emoticon(':)', 'slight_smile'), emoticon(':)', 'slight_smile')]), separators: ['\n  '] }],
 	],
 	[':):):)', [bigEmoji([emoticon(':)', 'slight_smile'), emoticon(':)', 'slight_smile'), emoticon(':)', 'slight_smile')])]],
 

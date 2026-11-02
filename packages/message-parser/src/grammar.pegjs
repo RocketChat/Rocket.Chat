@@ -707,7 +707,9 @@ ChannelMention
  * Emoticon: :D :P :( :/
  *
  */
-BigEmoji = (EndOfLine / Space)* es:(@(Emoji / Emoticon) (EndOfLine / Space)*) |1..3| { return [bigEmoji(es)]; }
+BigEmoji = (EndOfLine / Space)* entries:(value:(Emoji / Emoticon) separator:$(EndOfLine / Space)* { return { value, separator }; }) |1..3| {
+  return [bigEmoji(entries.map(entry => entry.value), entries.slice(0, -1).map(entry => entry.separator))];
+}
 
 Emoji = EmojiShortCode / ch:UnicodeEmoji { return emojiUnicode(ch); }
 

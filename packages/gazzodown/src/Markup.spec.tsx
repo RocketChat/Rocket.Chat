@@ -69,6 +69,32 @@ it('renders a big emoji block with ASCII emoji', () => {
 	expect(screen.getAllByRole('img', { name: ':slight_smile:' })).toHaveLength(1);
 });
 
+it.each([
+	['\n', 1],
+	['\r\n', 1],
+	['\r', 1],
+	['\n\n', 2],
+])('preserves %j between large emojis', (separator, breaks) => {
+	const { container } = render(
+		<Markup
+			tokens={[
+				{
+					type: 'BIG_EMOJI',
+					value: [
+						{ type: 'EMOJI', unicode: '😀' },
+						{ type: 'EMOJI', unicode: '🚀' },
+						{ type: 'EMOJI', unicode: '🌈' },
+					],
+					separators: [separator, ' '],
+				},
+			]}
+		/>,
+	);
+
+	expect(container.querySelectorAll('br')).toHaveLength(breaks);
+	expect(screen.getByRole('presentation')).toHaveTextContent('😀🚀🌈');
+});
+
 it('renders a paragraph', () => {
 	render(
 		<Markup
