@@ -1184,7 +1184,7 @@ describe('[Direct Messages]', () => {
 			roomIds = { ...roomIds, multipleDm: res.body.room._id };
 		});
 
-		it('creates a DM between two other parties (excluding self)', async () => {
+		it('allows users with create-d-other-users to create a DM between two other parties', async () => {
 			const res = await request
 				.post(api('im.create'))
 				.set(credentials)
@@ -1199,6 +1199,77 @@ describe('[Direct Messages]', () => {
 			expect(res.body).to.have.property('room').and.to.be.an('object');
 			expect(res.body.room).to.have.property('usernames').and.to.have.members([user.username, otherUser.username]);
 			roomIds = { ...roomIds, dm: res.body.room._id };
+		});
+
+		it('rejects users without create-d-other-users creating a DM between two other parties', async () => {
+			const res = await request
+				.post(api('im.create'))
+				.set(thirdUserCredentials)
+				.send({
+					usernames: [user.username, otherUser.username].join(','),
+					excludeSelf: true,
+				})
+				.expect(400)
+				.expect('Content-Type', 'application/json');
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('errorType', 'error-not-allowed');
+		});
+
+		it('rejects users with view-room-administration but without create-d-other-users', async () => {
+			await updatePermission('view-room-administration', ['admin', 'user']);
+
+			try {
+				const res = await request
+					.post(api('im.create'))
+					.set(thirdUserCredentials)
+					.send({
+						usernames: [user.username, otherUser.username].join(','),
+						excludeSelf: true,
+					})
+					.expect(400)
+					.expect('Content-Type', 'application/json');
+
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('errorType', 'error-not-allowed');
+			} finally {
+				await updatePermission('view-room-administration', ['admin']);
+			}
+		});
+
+		it('allows users with create-d-other-users but without view-room-administration', async () => {
+			await updatePermission('create-d-other-users', ['admin', 'user']);
+
+			try {
+				const res = await request
+					.post(api('im.create'))
+					.set(thirdUserCredentials)
+					.send({
+						usernames: [user.username, otherUser.username].join(','),
+						excludeSelf: true,
+					})
+					.expect(200)
+					.expect('Content-Type', 'application/json');
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body.room).to.have.property('usernames').and.to.have.members([user.username, otherUser.username]);
+			} finally {
+				await updatePermission('create-d-other-users', ['admin', 'bot', 'app']);
+			}
+		});
+
+		it('returns only creation metadata for an existing DM', async () => {
+			const res = await request
+				.post(api('im.create'))
+				.set(credentials)
+				.send({
+					usernames: [user.username, otherUser.username].join(','),
+					excludeSelf: true,
+				})
+				.expect(200)
+				.expect('Content-Type', 'application/json');
+
+			expect(res.body.room).to.have.all.keys('_id', 'rid', 't', 'usernames');
 		});
 
 		it('should create a self-DM', async () => {

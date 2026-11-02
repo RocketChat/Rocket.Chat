@@ -112,6 +112,14 @@ export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUplo
 		return this.findOne({ rid });
 	}
 
+	async findOneByIdAndRoomId<T_ extends Document = T, O extends FindOptionsWithProjection<T_> = FindOptionsWithProjection<T_>>(
+		fileId: string,
+		rid: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T_, O> | null> {
+		return this.findOne<T_, O>({ _id: fileId, rid }, options);
+	}
+
 	findExpiredTemporaryFiles<T_ extends Document = T, O extends FindOptionsWithProjection<T_> = FindOptionsWithProjection<T_>>(
 		options?: O,
 	): FindCursor<DocumentWithProjection<T_, O>> {
