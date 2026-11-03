@@ -1,4 +1,5 @@
 import { Users } from './fixtures/userStates';
+import { HomeChannel } from './page-objects';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -12,9 +13,7 @@ test.describe('sidebar-menu', () => {
 			await route.continue();
 		});
 
-		await page.goto('/home', { waitUntil: 'domcontentloaded' });
-		await page.getByRole('button', { name: 'Create new' }).waitFor();
-		await expect(page).toHaveTitle(/^Home/);
+		await new HomeChannel(page).goto();
 
 		await page.keyboard.press('Tab');
 		await page.keyboard.press('Tab');
