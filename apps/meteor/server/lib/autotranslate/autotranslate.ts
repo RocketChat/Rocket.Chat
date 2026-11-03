@@ -9,7 +9,6 @@ import type {
 import { Logger } from '@rocket.chat/logger';
 import { Messages, Subscriptions } from '@rocket.chat/models';
 import { escapeHTML, isTruthy } from '@rocket.chat/tools';
-import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { settings } from '../../settings';
@@ -371,17 +370,15 @@ export abstract class AutoTranslate {
 	abstract _translateAttachmentDescriptions(attachment: MessageAttachment, targetLanguages: string[]): Promise<ITranslationResult>;
 }
 
-Meteor.startup(() => {
-	/** Register the active service provider on the 'AfterSaveMessage' callback.
-	 *  So the registered provider will be invoked when a message is saved.
-	 *  All the other inactive service provider must be deactivated.
-	 */
-	settings.watch<string>('AutoTranslate_ServiceProvider', (providerName) => {
-		TranslationProviderRegistry.setCurrentProvider(providerName);
-	});
+/** Register the active service provider on the 'AfterSaveMessage' callback.
+ *  So the registered provider will be invoked when a message is saved.
+ *  All the other inactive service provider must be deactivated.
+ */
+settings.watch<string>('AutoTranslate_ServiceProvider', (providerName) => {
+	TranslationProviderRegistry.setCurrentProvider(providerName);
+});
 
-	// Get Auto Translate Active flag
-	settings.watch<boolean>('AutoTranslate_Enabled', (value) => {
-		TranslationProviderRegistry.setEnable(value);
-	});
+// Get Auto Translate Active flag
+settings.watch<boolean>('AutoTranslate_Enabled', (value) => {
+	TranslationProviderRegistry.setEnable(value);
 });

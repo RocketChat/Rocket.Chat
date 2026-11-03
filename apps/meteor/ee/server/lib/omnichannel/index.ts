@@ -1,6 +1,5 @@
 import { License } from '@rocket.chat/license';
 import { patchOmniCore } from '@rocket.chat/omni-core-ee';
-import { Meteor } from 'meteor/meteor';
 
 import '../../hooks/omnichannel/afterTakeInquiry';
 import '../../hooks/omnichannel/beforeNewInquiry';
@@ -31,9 +30,7 @@ await License.onLicense('livechat-enterprise', async () => {
 	const { createSettings } = await import('./settings');
 	await import('./unit');
 
-	Meteor.startup(() => {
-		void createSettings();
-		void createPermissions();
-		void createDefaultPriorities();
-	});
+	void createSettings();
+	void createPermissions();
+	void createDefaultPriorities();
 });
