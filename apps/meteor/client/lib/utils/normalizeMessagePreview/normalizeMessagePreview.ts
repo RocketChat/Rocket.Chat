@@ -13,22 +13,20 @@ const transformCustomEmoji = (key: string): string | undefined => {
 	}
 };
 
-export const normalizeMessagePreview = (message: IMessage, t: TFunction): string | undefined => {
+export const getMessagePreviewText = (message: IMessage, t: TFunction): string | undefined => {
 	if (message.msg) {
-		return escapeHTML(filterMarkdown(shortnameToUnicode(message.msg, transformCustomEmoji)));
+		return filterMarkdown(shortnameToUnicode(message.msg, transformCustomEmoji));
 	}
 
 	if (message.attachments) {
 		const attachment = message.attachments.find((attachment) => attachment.title || attachment.description);
 
-		if (attachment?.description) {
-			return escapeHTML(attachment.description);
-		}
-
-		if (attachment?.title) {
-			return escapeHTML(attachment.title);
-		}
-
-		return t('Sent_an_attachment');
+		return attachment?.description || attachment?.title || t('Sent_an_attachment');
 	}
+};
+
+export const normalizeMessagePreview = (message: IMessage, t: TFunction): string | undefined => {
+	const text = getMessagePreviewText(message, t);
+
+	return text && escapeHTML(text);
 };
