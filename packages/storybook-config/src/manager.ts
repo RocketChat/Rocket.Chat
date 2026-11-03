@@ -1,7 +1,7 @@
 import { addons } from 'storybook/manager-api';
 
 import logo from './logo.svg';
-import { createBrandTitle, readThemeGlobalFromUrl, resolveThemeMode, subscribeToThemeMode, themes, type ThemeMode } from './theme';
+import { createBrandTitle, readThemeGlobalFromUrl, resolveThemeMode, subscribeToThemeMode, themes, type ThemeMode } from './theme.js';
 
 const createManagerTheme = (mode: ThemeMode) => ({
 	...themes[mode],

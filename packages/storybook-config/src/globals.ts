@@ -1,4 +1,4 @@
-import type { ThemeGlobal } from './theme';
+import type { ThemeGlobal } from './theme.js';
 
 /** The toolbar control that picks which Fuselage palette stories, docs and the manager use. */
 export const globalTypes = {

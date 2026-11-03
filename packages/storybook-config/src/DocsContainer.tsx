@@ -2,7 +2,7 @@ import { DocsContainer as BaseContainer } from '@storybook/addon-docs/blocks';
 import type { ComponentPropsWithoutRef } from 'react';
 import { useEffect, useState } from 'react';
 
-import { readThemeGlobalFromUrl, resolveThemeMode, subscribeToThemeMode, themes } from './theme';
+import { readThemeGlobalFromUrl, resolveThemeMode, subscribeToThemeMode, themes } from './theme.js';
 
 const DocsContainer = (props: ComponentPropsWithoutRef<typeof BaseContainer>) => {
 	const [mode, setMode] = useState(() => resolveThemeMode(readThemeGlobalFromUrl()));

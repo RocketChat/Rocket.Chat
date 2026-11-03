@@ -1,12 +1,16 @@
 import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 import type { Options } from 'storybook/internal/types';
 
-/** Dresses a Storybook in the Fuselage theme picked from the toolbar, branded with the name of the package it documents. */
-export const managerEntries = (entries: string[] = []): string[] => [...entries, require.resolve('./manager')];
+const require = createRequire(import.meta.url);
 
-export const previewAnnotations = (entries: string[] = []): string[] => [...entries, require.resolve('./globals')];
+/** Dresses a Storybook in the Fuselage theme picked from the toolbar, branded with the name of the package it documents. */
+export const managerEntries = (entries: string[] = []): string[] => [...entries, fileURLToPath(import.meta.resolve('./manager.js'))];
+
+export const previewAnnotations = (entries: string[] = []): string[] => [...entries, fileURLToPath(import.meta.resolve('./globals.js'))];
 
 export const env = (config: Record<string, string> = {}, { configDir }: Options): Record<string, string> => ({
 	...config,

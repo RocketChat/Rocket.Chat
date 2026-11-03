@@ -1,8 +1,12 @@
+import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 import type { StorybookConfig } from '@storybook/react-webpack5';
 
-function getAbsolutePath(value: any): string {
+const require = createRequire(import.meta.url);
+
+function getAbsolutePath(value: string): string {
 	return dirname(require.resolve(join(value, 'package.json')));
 }
 
@@ -12,7 +16,7 @@ const baseConfig = ({ staticDirs = [], ...customConfig }: Partial<StorybookConfi
 		addons: [
 			getAbsolutePath('@storybook/addon-a11y'),
 			getAbsolutePath('@storybook/addon-docs'),
-			require.resolve('./preset'),
+			fileURLToPath(import.meta.resolve('./preset.js')),
 			getAbsolutePath('@storybook/addon-webpack5-compiler-swc'),
 			getAbsolutePath('@storybook/addon-styling-webpack'),
 		],

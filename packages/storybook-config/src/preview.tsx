@@ -2,8 +2,8 @@ import { PaletteStyleTag } from '@rocket.chat/fuselage';
 import type { Parameters, Decorator } from '@storybook/react';
 import { useSyncExternalStore } from 'react';
 
-import DocsContainer from './DocsContainer';
-import { resolveThemeMode, subscribeToSystemColorScheme, type ThemeMode } from './theme';
+import DocsContainer from './DocsContainer.js';
+import { resolveThemeMode, subscribeToSystemColorScheme, type ThemeMode } from './theme.js';
 
 import '@rocket.chat/fuselage/dist/fuselage.css';
 import '@rocket.chat/icons/dist/rocketchat.css';

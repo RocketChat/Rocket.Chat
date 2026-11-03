@@ -1,7 +1,10 @@
-import { dirname, join, resolve } from 'path';
+import { createRequire } from 'node:module';
+import { dirname, join, resolve } from 'node:path';
 
 import baseConfig from '@rocket.chat/storybook-config/main';
 import webpack from 'webpack';
+
+const require = createRequire(import.meta.url);
 
 export default baseConfig({
 	stories: ['../client/**/*.stories.{js,tsx}'],
@@ -28,7 +31,7 @@ export default baseConfig({
 				'swiper/modules/zoom.css$': join(swiperRoot, 'modules/zoom.css'),
 			},
 			// This is only needed because of Rocket.Chat's icon font.
-			roots: [...(config.resolve?.roots ?? []), resolve(__dirname, '../../../apps/meteor/public')],
+			roots: [...(config.resolve?.roots ?? []), resolve(import.meta.dirname, '../../../apps/meteor/public')],
 		};
 
 		// Strip the `env` option that addon-webpack5-compiler-swc injects on swc-loader;
