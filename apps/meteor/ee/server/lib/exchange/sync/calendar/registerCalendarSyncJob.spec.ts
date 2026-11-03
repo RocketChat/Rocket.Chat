@@ -60,7 +60,7 @@ describe('configureCalendarSyncJob', () => {
 
 		await configureCalendarSyncJob();
 
-		expect(add).toHaveBeenCalledWith(CALENDAR_SYNC_JOB, schedule, expect.any(Function));
+		expect(add).toHaveBeenCalledWith(CALENDAR_SYNC_JOB, schedule, expect.any(Function), { renewLock: true });
 	});
 
 	it.each([
@@ -73,7 +73,7 @@ describe('configureCalendarSyncJob', () => {
 
 		await configureCalendarSyncJob();
 
-		expect(add).toHaveBeenCalledWith(CALENDAR_SYNC_JOB, schedule, expect.any(Function));
+		expect(add).toHaveBeenCalledWith(CALENDAR_SYNC_JOB, schedule, expect.any(Function), { renewLock: true });
 	});
 
 	it.each([0, -5, NaN, 0.5])('falls back to the default interval for %p', async (hours) => {
@@ -81,7 +81,7 @@ describe('configureCalendarSyncJob', () => {
 
 		await configureCalendarSyncJob();
 
-		expect(add).toHaveBeenCalledWith(CALENDAR_SYNC_JOB, `0 */${DEFAULT_INTERVAL_HOURS} * * *`, expect.any(Function));
+		expect(add).toHaveBeenCalledWith(CALENDAR_SYNC_JOB, `0 */${DEFAULT_INTERVAL_HOURS} * * *`, expect.any(Function), { renewLock: true });
 	});
 
 	it.each([
@@ -101,7 +101,7 @@ describe('configureCalendarSyncJob', () => {
 		await configureCalendarSyncJob();
 
 		expect(remove).toHaveBeenCalledWith(CALENDAR_SYNC_JOB);
-		expect(add).toHaveBeenCalledWith(CALENDAR_SYNC_JOB, expect.anything(), expect.any(Function));
+		expect(add).toHaveBeenCalledWith(CALENDAR_SYNC_JOB, expect.anything(), expect.any(Function), { renewLock: true });
 	});
 });
 

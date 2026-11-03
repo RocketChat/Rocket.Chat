@@ -49,6 +49,10 @@ export class ExchangeCalendarSyncStateRaw extends BaseRaw<IExchangeCalendarSyncS
 		);
 	}
 
+	public async renewSyncLease(uid: IUser['_id'], token: string, until: Date): Promise<UpdateResult> {
+		return this.updateOne({ uid, syncLeaseToken: token }, { $set: { syncLeaseUntil: until } });
+	}
+
 	public async releaseSyncLease(uid: IUser['_id'], token: string): Promise<UpdateResult> {
 		return this.updateOne({ uid, syncLeaseToken: token }, { $unset: { syncLeaseToken: 1, syncLeaseUntil: 1 } });
 	}
