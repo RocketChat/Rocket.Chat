@@ -1,5 +1,6 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import p from 'proxyquire';
 import sinon from 'sinon';
@@ -27,7 +28,6 @@ const businessHourManagerMock = {
 const { getSecondsWhenOfficeHoursIsDisabled, parseDays, getSecondsSinceLastAgentResponse, onCloseRoom } = p
 	.noCallThru()
 	.load('./processRoomAbandonment.ts', {
-		'@rocket.chat/models': models,
 		'../../lib/callbacks': {
 			callbacks: { add: sinon.stub(), priority: { HIGH: 'high' } },
 		},
@@ -38,6 +38,13 @@ const { getSecondsWhenOfficeHoursIsDisabled, parseDays, getSecondsSinceLastAgent
 	});
 
 describe('processRoomAbandonment', () => {
+	before(() => {
+		mockModel('LivechatDepartment', models.LivechatDepartment);
+		mockModel('LivechatBusinessHours', models.LivechatBusinessHours);
+		mockModel('Messages', models.Messages);
+		mockModel('LivechatRooms', models.LivechatRooms);
+	});
+
 	describe('getSecondsWhenOfficeHoursIsDisabled', () => {
 		it('should return the seconds since the agents last message till room was closed', () => {
 			const room = {

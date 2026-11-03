@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, it } from 'node:test';
 
 import type { IMessage } from '@rocket.chat/core-typings';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -53,8 +54,12 @@ describe('Message Broadcast Tests', () => {
 		broadcastStub = sinon.stub();
 		memStub = sinon.stub().callsFake((fn: any) => fn);
 
+		const models = modelsStubs();
+		mockModel('Messages', models.Messages);
+		mockModel('Users', models.Users);
+		mockModel('Settings', models.Settings);
+
 		const proxyMock = proxyquire.noPreserveCache().load('./notifyListener', {
-			'@rocket.chat/models': modelsStubs(),
 			'@rocket.chat/core-services': coreStubs(),
 			'mem': memStub,
 		});
@@ -265,7 +270,6 @@ describe('Message Broadcast Tests', () => {
 	describe('notifyOnMessageChange', () => {
 		const setupProxyMock = () => {
 			const proxyMock = proxyquire.noCallThru().load('./notifyListener', {
-				'@rocket.chat/models': modelsStubs(),
 				'@rocket.chat/core-services': coreStubs(),
 				'mem': memStub,
 			});

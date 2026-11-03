@@ -1,5 +1,6 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -7,17 +8,18 @@ import sinon from 'sinon';
 const findStub = sinon.stub();
 
 const { beforeNewRoomPatched } = proxyquire.noCallThru().load('./beforeNewRoom.ts', {
-	'@rocket.chat/models': {
-		OmnichannelServiceLevelAgreements: {
-			findOneByIdOrName: findStub,
-		},
-	},
 	'../../../../server/lib/omnichannel/hooks': {
 		beforeNewRoom: { patch: sinon.stub() },
 	},
 });
 
 describe('beforeRoom', () => {
+	before(() => {
+		mockModel('OmnichannelServiceLevelAgreements', {
+			findOneByIdOrName: findStub,
+		});
+	});
+
 	beforeEach(() => findStub.withArgs('high').resolves({ _id: 'high' }).withArgs('invalid').resolves(null));
 
 	it('should return roomInfo with customFields when provided', async () => {

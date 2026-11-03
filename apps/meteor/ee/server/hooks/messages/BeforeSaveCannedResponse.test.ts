@@ -1,6 +1,7 @@
 import { before, describe, it } from 'node:test';
 
-import { registerModel, BaseRaw } from '@rocket.chat/models';
+import { BaseRaw } from '@rocket.chat/models';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
@@ -53,8 +54,8 @@ const db = {
 
 describe('Omnichannel canned responses', () => {
 	before(() => {
-		registerModel('ILivechatVisitorsModel', () => new LivechatVisitorsModel(db as unknown as any, 'visitor'));
-		registerModel('IUsersModel', () => new UsersModel(db as unknown as any, 'user'));
+		mockModel('LivechatVisitors', new LivechatVisitorsModel(db as unknown as any, 'visitor'));
+		mockModel('Users', new UsersModel(db as unknown as any, 'user'));
 	});
 
 	it('should do nothing if canned response is disabled', async () => {
@@ -133,7 +134,7 @@ describe('Omnichannel canned responses', () => {
 		const usersModel = new UsersModel(db as unknown as any, 'user');
 		const spy = sinon.spy(usersModel, 'findOneById');
 
-		registerModel('IUsersModel', () => usersModel);
+		mockModel('Users', usersModel);
 
 		const canned = new BeforeSaveCannedResponse();
 
@@ -153,7 +154,7 @@ describe('Omnichannel canned responses', () => {
 		const usersModel = new UsersModel(db as unknown as any, 'user');
 		const spy = sinon.spy(usersModel, 'findOneById');
 
-		registerModel('IUsersModel', () => usersModel);
+		mockModel('Users', usersModel);
 
 		const canned = new BeforeSaveCannedResponse();
 

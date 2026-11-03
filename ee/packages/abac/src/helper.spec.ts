@@ -1,3 +1,5 @@
+import { mockModel } from '@rocket.chat/models/testing';
+
 import {
 	validateAndNormalizeAttributes,
 	MAX_ABAC_ATTRIBUTE_KEYS,
@@ -10,15 +12,6 @@ import {
 } from './helper';
 
 const attributesFindMock = jest.fn();
-jest.mock('@rocket.chat/models', () => {
-	return {
-		AbacAttributes: {
-			find: jest.fn().mockReturnValue({
-				toArray: () => attributesFindMock(),
-			}),
-		},
-	};
-});
 
 describe('validateAndNormalizeAttributes', () => {
 	it('normalizes keys and merges duplicate values from multiple entries', () => {
@@ -88,6 +81,14 @@ describe('validateAndNormalizeAttributes', () => {
 });
 
 describe('ensureAttributeDefinitionsExist', () => {
+	beforeAll(() => {
+		mockModel('AbacAttributes', {
+			find: jest.fn().mockReturnValue({
+				toArray: () => attributesFindMock(),
+			}),
+		});
+	});
+
 	afterEach(() => {
 		attributesFindMock.mockReset();
 	});

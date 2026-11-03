@@ -1,7 +1,7 @@
 import { hashLoginToken } from '@rocket.chat/account-utils';
 import { AI_LICENSE_MODULE } from '@rocket.chat/ai-search';
 import type { IUser } from '@rocket.chat/core-typings';
-import { Users } from '@rocket.chat/models';
+import { mockModel } from '@rocket.chat/models/testing';
 
 import { checkMcpCredentials, handleMcpGet, handleMcpPost } from './index';
 import { handleRpcMessage } from './server';
@@ -13,9 +13,11 @@ import { license } from '../v1/middlewares/license';
 
 jest.mock('@rocket.chat/account-utils', () => ({ hashLoginToken: jest.fn((token: string) => `hashed-${token}`) }));
 
-jest.mock('@rocket.chat/models', () => ({
-	Users: { findPersonalAccessTokenByHashedTokenAndUserId: jest.fn() },
-}));
+const usersModel = { findPersonalAccessTokenByHashedTokenAndUserId: jest.fn() };
+
+const registerModels = () => {
+	mockModel('Users', usersModel);
+};
 
 jest.mock('./metadata', () => ({
 	getProtectedResourceMetadataUrl: () => 'https://chat.example.com/.well-known/oauth-protected-resource/api/v1/mcp',
@@ -81,14 +83,13 @@ const user = { _id: 'user-id', username: 'user' } as IUser;
 const challenge = 'Bearer resource_metadata="https://chat.example.com/.well-known/oauth-protected-resource/api/v1/mcp"';
 
 describe('MCP HTTP route', () => {
+	beforeAll(registerModels);
+
 	beforeEach(() => {
 		jest.mocked(settings.get).mockReturnValue(true);
 		jest.mocked(handleRpcMessage).mockReset();
 		jest.mocked(API.v1.enforceRateLimitForRoute).mockReset().mockResolvedValue(undefined);
-		jest
-			.mocked(Users.findPersonalAccessTokenByHashedTokenAndUserId)
-			.mockReset()
-			.mockResolvedValue({ _id: 'user-id' } as never);
+		usersModel.findPersonalAccessTokenByHashedTokenAndUserId.mockReset().mockResolvedValue({ _id: 'user-id' } as never);
 	});
 
 	it('applies the API rate limiter to the authenticated user before handling MCP requests', async () => {
@@ -337,7 +338,7 @@ describe('MCP HTTP route', () => {
 
 	it('returns method not allowed for GET requests', () => {
 		expect(handleMcpGet(context)).toMatchObject({ statusCode: 405, headers: { Allow: 'POST' } });
-		expect(Users.findPersonalAccessTokenByHashedTokenAndUserId).not.toHaveBeenCalled();
+		expect(usersModel.findPersonalAccessTokenByHashedTokenAndUserId).not.toHaveBeenCalled();
 	});
 
 	it('rejects final encoded responses that exceed the MCP response limit', async () => {
@@ -390,15 +391,14 @@ describe('MCP HTTP route', () => {
 });
 
 describe('MCP credentials', () => {
+	beforeAll(registerModels);
+
 	const mcpRequest = (headers: Record<string, string>, url = 'http://localhost/api/v1/mcp') =>
 		new Request(url, { method: 'POST', headers });
 
 	beforeEach(() => {
 		jest.mocked(settings.get).mockReturnValue(true);
-		jest
-			.mocked(Users.findPersonalAccessTokenByHashedTokenAndUserId)
-			.mockReset()
-			.mockResolvedValue({ _id: 'user-id' } as never);
+		usersModel.findPersonalAccessTokenByHashedTokenAndUserId.mockReset().mockResolvedValue({ _id: 'user-id' } as never);
 	});
 
 	it('challenges a request without credentials, pointing at the protected resource metadata', async () => {
@@ -412,14 +412,14 @@ describe('MCP credentials', () => {
 	it('accepts a Personal Access Token', async () => {
 		await expect(checkMcpCredentials(mcpRequest({ 'x-user-id': 'user-id', 'x-auth-token': 'auth-token' }), user)).resolves.toBeUndefined();
 		expect(hashLoginToken).toHaveBeenCalledWith('auth-token');
-		expect(Users.findPersonalAccessTokenByHashedTokenAndUserId).toHaveBeenCalledWith({
+		expect(usersModel.findPersonalAccessTokenByHashedTokenAndUserId).toHaveBeenCalledWith({
 			userId: 'user-id',
 			hashedToken: 'hashed-auth-token',
 		});
 	});
 
 	it('refuses a login session token', async () => {
-		jest.mocked(Users.findPersonalAccessTokenByHashedTokenAndUserId).mockResolvedValue(null);
+		usersModel.findPersonalAccessTokenByHashedTokenAndUserId.mockResolvedValue(null);
 
 		await expect(checkMcpCredentials(mcpRequest({ 'x-user-id': 'user-id', 'x-auth-token': 'session-token' }), user)).resolves.toMatchObject(
 			{
@@ -434,12 +434,12 @@ describe('MCP credentials', () => {
 		const request = new Request('http://localhost/api/v1/mcp', { headers: { 'x-user-id': 'user-id', 'x-auth-token': 'session-token' } });
 
 		await expect(checkMcpCredentials(request, user)).resolves.toBeUndefined();
-		expect(Users.findPersonalAccessTokenByHashedTokenAndUserId).not.toHaveBeenCalled();
+		expect(usersModel.findPersonalAccessTokenByHashedTokenAndUserId).not.toHaveBeenCalled();
 	});
 
 	it('accepts an OAuth access token sent as a Bearer credential', async () => {
 		await expect(checkMcpCredentials(mcpRequest({ authorization: 'Bearer access-token' }), user)).resolves.toBeUndefined();
-		expect(Users.findPersonalAccessTokenByHashedTokenAndUserId).not.toHaveBeenCalled();
+		expect(usersModel.findPersonalAccessTokenByHashedTokenAndUserId).not.toHaveBeenCalled();
 	});
 
 	it('marks an access token the REST authentication did not accept as invalid', async () => {

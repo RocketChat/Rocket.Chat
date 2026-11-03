@@ -1,5 +1,6 @@
 import { beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
@@ -18,8 +19,9 @@ describe('/create', () => {
 		findUser = sinon.stub().resolves(actor);
 		createChannel = sinon.stub().resolves();
 		createPrivateGroup = sinon.stub().resolves();
+		mockModel('Rooms', { findOneByName: findRoom });
+		mockModel('Users', { findOneById: findUser });
 		slashCommand = loadSlashCommand('create/server', {
-			'@rocket.chat/models': { Rooms: { findOneByName: findRoom }, Users: { findOneById: findUser } },
 			'../../meteor-methods/rooms/createChannel': { createChannelMethod: createChannel },
 			'../../meteor-methods/rooms/createPrivateGroup': { createPrivateGroupMethod: createPrivateGroup },
 		});

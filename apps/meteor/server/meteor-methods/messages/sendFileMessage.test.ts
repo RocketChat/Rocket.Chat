@@ -1,5 +1,6 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -11,11 +12,6 @@ const isImagePreviewSupported = sinon.stub().returns(false);
 const getFileExtension = sinon.stub().returns('txt');
 
 const { parseFileIntoMessageAttachments } = proxyquire.noCallThru().load('./sendFileMessage', {
-	'@rocket.chat/models': {
-		Uploads: { findOneByIdAndUserIdAndRoomId, updateFileMetadata },
-		Rooms: { findOneById: sinon.stub() },
-		Users: { findOneById: sinon.stub() },
-	},
 	'meteor/check': {
 		check: sinon.stub(),
 		Match: {
@@ -43,6 +39,10 @@ const { parseFileIntoMessageAttachments } = proxyquire.noCallThru().load('./send
 describe('sendFileMessage - Mass Assignment & Type Pollution Prevention', () => {
 	const mockUser = { _id: 'user123' };
 	const roomId = 'room123';
+
+	before(() => {
+		mockModel('Uploads', { findOneByIdAndUserIdAndRoomId, updateFileMetadata });
+	});
 
 	beforeEach(() => {
 		findOneByIdAndUserIdAndRoomId.reset();

@@ -1,5 +1,5 @@
 import type { IRoom, VideoConference } from '@rocket.chat/core-typings';
-import { registerModel } from '@rocket.chat/models';
+import { mockModel } from '@rocket.chat/models/testing';
 
 import { Authorization } from './Authorization';
 import { canAccessRoom } from './canAccessRoom';
@@ -18,8 +18,6 @@ const canAccessRoomMock = jest.mocked(canAccessRoom);
 
 const roomsModel = { findOneById: jest.fn(), findByIds: jest.fn() };
 
-registerModel('IRoomsModel', roomsModel as any);
-
 type Call = Pick<VideoConference, 'rid' | 'discussionRid' | 'users'>;
 
 const user = { _id: 'user-id', username: 'john.doe', roles: ['user'] };
@@ -29,6 +27,10 @@ const room = (_id: IRoom['_id']): Pick<IRoom, '_id' | 't'> => ({ _id, t: 'c' });
 const cursorOf = (rooms: unknown[]) => ({ toArray: jest.fn().mockResolvedValue(rooms) });
 
 describe('Authorization service', () => {
+	beforeAll(() => {
+		mockModel('Rooms', roomsModel);
+	});
+
 	let service: Authorization;
 
 	beforeEach(() => {

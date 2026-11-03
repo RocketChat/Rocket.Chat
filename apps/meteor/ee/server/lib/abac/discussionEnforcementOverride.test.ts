@@ -1,5 +1,6 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import p from 'proxyquire';
 import sinon from 'sinon';
@@ -16,7 +17,6 @@ const { applyDiscussionEnforcementOverride, restoreDiscussionEnabled, restoreDis
 	.load('./discussionEnforcementOverride.ts', {
 		'@rocket.chat/license': { License: { hasModule: hasModuleMock } },
 		'@rocket.chat/logger': { Logger: sinon.stub().returns(loggerMock) },
-		'@rocket.chat/models': { Settings: { updateValueById: updateValueByIdMock, findOneById: findOneByIdMock } },
 		'../../../../server/lib/notifyListener': { notifyOnSettingChangedById: notifyOnSettingChangedByIdMock },
 		'../../../../server/settings': { settings: { get: settingsGetMock } },
 	}) as {
@@ -48,6 +48,10 @@ const workspace = ({
 };
 
 describe('discussionEnforcementOverride (ABAC)', () => {
+	before(() => {
+		mockModel('Settings', { updateValueById: updateValueByIdMock, findOneById: findOneByIdMock });
+	});
+
 	beforeEach(() => {
 		updateValueByIdMock.reset();
 		findOneByIdMock.reset();

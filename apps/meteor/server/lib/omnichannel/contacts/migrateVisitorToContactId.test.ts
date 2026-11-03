@@ -1,5 +1,6 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -26,7 +27,6 @@ const { migrateVisitorToContactId } = proxyquire.noCallThru().load('./migrateVis
 			mergeVisitorIntoContact,
 		},
 	},
-	'@rocket.chat/models': modelsMock,
 	'../logger': {
 		livechatContactsLogger: {
 			debug: sinon.stub(),
@@ -35,6 +35,11 @@ const { migrateVisitorToContactId } = proxyquire.noCallThru().load('./migrateVis
 });
 
 describe('migrateVisitorToContactId', () => {
+	before(() => {
+		mockModel('LivechatContacts', modelsMock.LivechatContacts);
+		mockModel('LivechatRooms', modelsMock.LivechatRooms);
+	});
+
 	beforeEach(() => {
 		modelsMock.LivechatContacts.findContactMatchingVisitor.reset();
 		modelsMock.LivechatRooms.setContactByVisitorAssociation.reset();

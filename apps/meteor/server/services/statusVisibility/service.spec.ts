@@ -1,3 +1,4 @@
+import { mockModel } from '@rocket.chat/models/testing';
 import { hiddenIds, isHiddenFor } from '@rocket.chat/streamer';
 import EJSON from 'ejson';
 
@@ -23,14 +24,6 @@ jest.mock('@rocket.chat/core-services', () => ({
 		}
 	},
 }));
-jest.mock('@rocket.chat/models', () => ({
-	Users: {
-		findPresenceUsersByIds: (...args: unknown[]) => findPresenceUsersByIds(...args),
-		findWithStatusVisibilityConfig: (...args: unknown[]) => findWithStatusVisibilityConfig(...args),
-		findPresenceDisabledByAdmin: (...args: unknown[]) => findPresenceDisabledByAdmin(...args),
-		findUsersNotOffline: (...args: unknown[]) => findUsersNotOffline(...args),
-	},
-}));
 
 const cursor = (users: object[]) => ({ toArray: async () => users });
 const flush = () => new Promise((resolve) => setImmediate(resolve));
@@ -41,6 +34,15 @@ const hiddenFrom = async (service: StatusVisibilityService, viewer: string | nul
 };
 
 describe('status visibility service', () => {
+	beforeAll(() => {
+		mockModel('Users', {
+			findPresenceUsersByIds: (...args: unknown[]) => findPresenceUsersByIds(...args),
+			findWithStatusVisibilityConfig: (...args: unknown[]) => findWithStatusVisibilityConfig(...args),
+			findPresenceDisabledByAdmin: (...args: unknown[]) => findPresenceDisabledByAdmin(...args),
+			findUsersNotOffline: (...args: unknown[]) => findUsersNotOffline(...args),
+		});
+	});
+
 	let service: StatusVisibilityService;
 
 	beforeEach(async () => {

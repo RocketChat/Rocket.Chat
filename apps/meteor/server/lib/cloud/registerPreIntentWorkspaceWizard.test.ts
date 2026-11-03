@@ -1,5 +1,6 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -11,7 +12,6 @@ const buildRegistrationDataStub = sinon.stub();
 
 const { registerPreIntentWorkspaceWizard } = proxyquire.noCallThru().load('./registerPreIntentWorkspaceWizard.ts', {
 	'@rocket.chat/license': { License: { hasOfflineLicense: hasOfflineLicenseStub } },
-	'@rocket.chat/models': { Users: { getOldest: getOldestStub } },
 	'@rocket.chat/server-fetch': { serverFetch: fetchStub },
 	'./buildRegistrationData': { buildWorkspaceRegistrationData: buildRegistrationDataStub },
 	'../../settings': { settings: { get: sinon.stub().returns('https://cloud.rocket.chat') } },
@@ -19,6 +19,10 @@ const { registerPreIntentWorkspaceWizard } = proxyquire.noCallThru().load('./reg
 });
 
 describe('registerPreIntentWorkspaceWizard', () => {
+	before(() => {
+		mockModel('Users', { getOldest: getOldestStub });
+	});
+
 	beforeEach(() => {
 		hasOfflineLicenseStub.reset();
 		getOldestStub.reset();

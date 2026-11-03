@@ -11,16 +11,6 @@ jest.mock('../../../rocketchat.info', () => ({
 	},
 }));
 
-jest.mock('@rocket.chat/models', () => ({
-	Users: {
-		findOneById: jest.fn().mockResolvedValue({
-			id: '123',
-			name: 'Test User',
-			emails: [{ address: 'test@example.com' }],
-		}),
-	},
-}));
-
 const settings = new Map<string, unknown>();
 
 jest.mock('../../settings', () => ({

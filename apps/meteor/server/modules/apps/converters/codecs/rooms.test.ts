@@ -1,10 +1,12 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
 import type { IAppServerOrchestrator } from '@rocket.chat/apps';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 import * as z from 'zod';
+
+import { appRoomToRocketChat, decodeRoomRaw, createRoomCodec } from './rooms';
 
 const sandbox = sinon.createSandbox();
 
@@ -16,10 +18,6 @@ const models = {
 	Users: { findOneById: sandbox.stub() },
 	LivechatContacts: { findOneEnabledById: sandbox.stub() },
 };
-
-const { appRoomToRocketChat, decodeRoomRaw, createRoomCodec } = proxyquire.noCallThru().load('./rooms', {
-	'@rocket.chat/models': models,
-});
 
 describe('decodeRoomRaw', () => {
 	it('maps the agents that served and responded in the room', async () => {
@@ -36,6 +34,13 @@ describe('decodeRoomRaw', () => {
 });
 
 describe('appRoomToRocketChat', () => {
+	before(() => {
+		mockModel('LivechatVisitors', models.LivechatVisitors);
+		mockModel('LivechatDepartment', models.LivechatDepartment);
+		mockModel('Users', models.Users);
+		mockModel('LivechatContacts', models.LivechatContacts);
+	});
+
 	beforeEach(() => {
 		sandbox.reset();
 		visitor = { _id: 'visitor-1', username: 'guest', token: 'tok-1', status: 'online' };

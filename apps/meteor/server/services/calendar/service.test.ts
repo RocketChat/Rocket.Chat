@@ -1,6 +1,7 @@
-import { afterEach, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it } from 'node:test';
 
 import { api } from '@rocket.chat/core-services';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import type { DeleteResult, UpdateResult } from 'mongodb';
 import proxyquire from 'proxyquire';
@@ -45,7 +46,6 @@ const serviceMocks = {
 		Presence: PresenceMock,
 	},
 	'@rocket.chat/cron': { cronJobs: cronJobsMock },
-	'@rocket.chat/models': { CalendarEvent: CalendarEventMock, Users: UsersMock },
 	'../../lib/utils/lib/getUserPreference': { getUserPreference: getUserPreferenceMock },
 	'../../lib/i18n': { i18n: { t: sinon.stub().returns('Outlook: In a meeting') } },
 };
@@ -63,6 +63,11 @@ describe('CalendarService', () => {
 	const fakeSubject = 'Test Meeting';
 	const fakeDescription = 'This is a test meeting';
 	const fakeMeetingUrl = 'https://meet.test/123';
+
+	before(() => {
+		mockModel('CalendarEvent', CalendarEventMock);
+		mockModel('Users', UsersMock);
+	});
 
 	beforeEach(() => {
 		sandbox = sinon.createSandbox();

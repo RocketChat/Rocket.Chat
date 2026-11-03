@@ -1,5 +1,6 @@
-import { afterEach, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -41,12 +42,6 @@ const { checkCodeForUser } = proxyquire.noCallThru().load('./index', {
 	'./PasswordCheckFallback': { PasswordCheckFallback: class extends DisabledCheckMock {} },
 	'../../shared/getModifiedHttpHeaders': { normalizeHeaders: (headers: unknown) => headers },
 	'../../../settings': { settings: { get: settingsMock } },
-	'@rocket.chat/models': {
-		Users: {
-			findOneById: async () => null,
-			setTwoFactorAuthorizationHashAndUntilForUserIdAndToken: async () => undefined,
-		},
-	},
 	'meteor/accounts-base': { Accounts: { _getLoginToken: getLoginTokenStub } },
 });
 
@@ -142,12 +137,6 @@ describe('checkCodeForUser - remembered two-factor authorization', () => {
 		'./PasswordCheckFallback': { PasswordCheckFallback: class extends DisabledCheckMock {} },
 		'../../shared/getModifiedHttpHeaders': { normalizeHeaders: (headers: unknown) => headers },
 		'../../../settings': { settings: { get: settingsGet } },
-		'@rocket.chat/models': {
-			Users: {
-				findOneById: async () => null,
-				setTwoFactorAuthorizationHashAndUntilForUserIdAndToken: setTwoFactorAuthorization,
-			},
-		},
 		'meteor/accounts-base': { Accounts: { _getLoginToken: () => TOKEN } },
 	});
 
@@ -173,6 +162,12 @@ describe('checkCodeForUser - remembered two-factor authorization', () => {
 	});
 
 	let testMode: string | undefined;
+
+	before(() => {
+		mockModel('Users', {
+			setTwoFactorAuthorizationHashAndUntilForUserIdAndToken: setTwoFactorAuthorization,
+		});
+	});
 
 	beforeEach(() => {
 		testMode = process.env.TEST_MODE;

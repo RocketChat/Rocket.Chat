@@ -1,8 +1,9 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
 import { suppliesAbacAttributes } from '@rocket.chat/apps/dist/server/bridges/RoomBridge';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -14,9 +15,6 @@ const getSetting = sinon.stub();
 
 const { AppRoomBridge } = proxyquire.noCallThru().load('./rooms', {
 	'@rocket.chat/apps/dist/server/bridges/RoomBridge': { RoomBridge: class {}, suppliesAbacAttributes },
-	'@rocket.chat/models': {
-		Users: { findOneById: async (_id: string) => ({ _id, username: 'creator' }) },
-	},
 	'../../../lib/rooms/addUserToRoom': {},
 	'../../../lib/rooms/deleteRoom': {},
 	'../../../lib/rooms/removeUserFromRoom': {},
@@ -47,6 +45,10 @@ const buildRoom = (type: RoomType, attributes?: IRoom['abacAttributes']): IRoom 
 
 describe('AppRoomBridge.create', () => {
 	let bridge: InstanceType<typeof AppRoomBridge>;
+
+	before(() => {
+		mockModel('Users', { findOneById: async (_id: string) => ({ _id, username: 'creator' }) });
+	});
 
 	beforeEach(() => {
 		for (const stub of [createPrivateGroupMethod, createChannelMethod, createDirectMessage]) {
