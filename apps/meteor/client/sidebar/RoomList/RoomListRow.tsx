@@ -11,6 +11,7 @@ export type RoomListRowProps = {
 		t: TFunction;
 		viewMode: RoomListItemViewMode;
 		showAvatar: boolean;
+		formatTime: (time: Date | string) => string;
 		openedRoom: string;
 		isAnonymous: boolean;
 		userId?: string;
@@ -21,12 +22,13 @@ export type RoomListRowProps = {
 };
 
 const RoomListRow = ({ data, item, videoConfActions }: RoomListRowProps) => {
-	const { t, viewMode, showAvatar, openedRoom, userId } = data;
+	const { t, viewMode, showAvatar, formatTime, openedRoom, userId } = data;
 
 	return (
 		<SidebarItemTemplateWithData
 			viewMode={viewMode}
 			showAvatar={showAvatar}
+			formatTime={formatTime}
 			selected={item.rid === openedRoom}
 			t={t}
 			room={item}
