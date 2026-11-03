@@ -1,22 +1,63 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { css } from '@rocket.chat/css-in-js';
-import { useDebouncedCallback, useSafely } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import type { CSSProperties, MutableRefObject } from 'react';
 import { useRef, useState } from 'react';
 
 import { useDateListController } from '../providers/DateListProvider';
 
+export type BubbleDateState = {
+	date: string;
+	show: boolean;
+	style?: CSSProperties;
+	showDivider: boolean;
+};
+
+export type BubbleDateStore = {
+	get: () => BubbleDateState;
+	subscribe: (onChange: () => void) => () => void;
+	set: (update: (current: BubbleDateState) => BubbleDateState) => void;
+};
+
 type useDateScrollReturn = {
 	handleDateScroll: (topMessage: IMessage | undefined, offset: number) => void;
 	bubbleRef: MutableRefObject<HTMLElement | null>;
-	listStyle?: ReturnType<typeof css>;
-} & BubbleDateProps;
+	bubbleDateStore: BubbleDateStore;
+};
 
-export type BubbleDateProps = {
-	bubbleDate: string | undefined;
-	bubbleDateClassName?: ReturnType<typeof css>;
-	showBubble: boolean;
-	bubbleDateStyle?: CSSProperties;
+const isSameStyle = (a: CSSProperties | undefined, b: CSSProperties | undefined) => {
+	if (a === b) {
+		return true;
+	}
+	if (!a || !b) {
+		return false;
+	}
+	const keys = Object.keys(a) as (keyof CSSProperties)[];
+	return keys.length === Object.keys(b).length && keys.every((key) => a[key] === b[key]);
+};
+
+const isSameState = (a: BubbleDateState, b: BubbleDateState) =>
+	a.date === b.date && a.show === b.show && a.showDivider === b.showDivider && isSameStyle(a.style, b.style);
+
+// Scrolling updates the bubble many times per second; keeping its state out of React state lets only the bubble re-render.
+const createBubbleDateStore = (): BubbleDateStore => {
+	let state: BubbleDateState = { date: '', show: false, style: undefined, showDivider: true };
+	const listeners = new Set<() => void>();
+
+	return {
+		get: () => state,
+		subscribe: (onChange) => {
+			listeners.add(onChange);
+			return () => listeners.delete(onChange);
+		},
+		set: (update) => {
+			const next = update(state);
+			if (isSameState(state, next)) {
+				return;
+			}
+			state = next;
+			listeners.forEach((onChange) => onChange());
+		},
+	};
 };
 
 // The threshold in pixels to consider a date divider as "visible" when scrolling.
@@ -26,23 +67,8 @@ const DATE_DIVIDER_VISIBILITY_THRESHOLD = 100;
 type Matched = [date: string, divider: HTMLElement | undefined, style: { [key: string]: string | number }, showDivider: boolean] | [];
 
 export const useDateScroll = (margin = 8): useDateScrollReturn => {
-	const [bubbleDate, setBubbleDate] = useSafely(
-		useState<{
-			date: string;
-			show: boolean;
-			style?: CSSProperties;
-			bubbleDateClassName?: ReturnType<typeof css>;
-			offset: number;
-			showDivider: boolean;
-		}>({
-			date: '',
-			show: false,
-			style: undefined,
-			bubbleDateClassName: undefined,
-			offset: 0,
-			showDivider: true,
-		}),
-	);
+	const [bubbleDateStore] = useState(createBubbleDateStore);
+	const setBubbleDate = bubbleDateStore.set;
 
 	const { list } = useDateListController();
 
@@ -136,13 +162,6 @@ export const useDateScroll = (margin = 8): useDateScrollReturn => {
 				show: Boolean(date),
 				style,
 				showDivider: showDivider ?? true,
-				bubbleDateClassName: css`
-					opacity: 0;
-					transition: opacity 0.6s;
-					&.bubble-visible {
-						opacity: 1;
-					}
-				`,
 			}));
 
 			if (divider) {
@@ -165,24 +184,6 @@ export const useDateScroll = (margin = 8): useDateScrollReturn => {
 		5,
 		[list, margin, setBubbleDate],
 	);
-	// FIXME: This should be handled at the component level
-	const listStyle =
-		bubbleDate.show && bubbleDate.date && !bubbleDate.showDivider
-			? css`
-					position: relative;
-					& [data-time='${bubbleDate.date.replaceAll(/[-T:.]/g, '').substring(0, 8)}'] {
-						opacity: 0;
-					}
-				`
-			: undefined;
 
-	return {
-		handleDateScroll,
-		bubbleRef,
-		listStyle,
-		bubbleDate: bubbleDate.date,
-		bubbleDateStyle: bubbleDate.style,
-		showBubble: Boolean(bubbleDate.show),
-		bubbleDateClassName: bubbleDate.bubbleDateClassName,
-	};
+	return { handleDateScroll, bubbleRef, bubbleDateStore };
 };

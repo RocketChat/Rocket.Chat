@@ -108,7 +108,7 @@ const RoomBody = () => {
 		debouncedMessageRead,
 	} = useHandleUnread(room, subscription);
 
-	const { handleDateScroll, bubbleRef, listStyle, ...bubbleDate } = useDateScroll();
+	const { handleDateScroll, bubbleRef, bubbleDateStore } = useDateScroll();
 
 	const { innerRef: getMoreInnerRef } = useGetMore(room._id, isJumpingToMessage);
 
@@ -185,7 +185,7 @@ const RoomBody = () => {
 	return (
 		<>
 			{!isLayoutEmbedded && room.announcement && <RoomAnnouncement announcement={room.announcement} />}
-			<Box key={room._id} className={['main-content-flex', listStyle]}>
+			<Box key={room._id} className='main-content-flex'>
 				<section
 					role='presentation'
 					className={`messages-container flex-tab-main-content ${admin ? 'admin' : ''}`}
@@ -204,7 +204,7 @@ const RoomBody = () => {
 										onMarkAsReadButtonClick={handleMarkAsReadButtonClick}
 									/>
 								)}
-								<BubbleDate ref={bubbleRef} {...bubbleDate} />
+								<BubbleDate ref={bubbleRef} store={bubbleDateStore} dividerScope={`[id='chat-window-${room._id}']`} />
 							</Box>
 							<div ref={userScrollIntentRef} className={['messages-box'].filter(isTruthy).join(' ')}>
 								<JumpToRecentMessageButton visible={hasNewMessages} onClick={handleNewMessageButtonClick} text={t('New_messages')} />
