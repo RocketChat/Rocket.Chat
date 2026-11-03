@@ -77,15 +77,24 @@ export function onToggledFeature(
 	};
 
 	const disable = () => {
-		void down?.();
-
 		const cleanup = pendingCleanup;
 		pendingCleanup = undefined;
 		// A rejected `up` was already reported when it ran; there is nothing to clean up after it.
-		void cleanup?.then(
-			(fn) => fn?.(),
-			() => undefined,
-		);
+		const runCleanup = () =>
+			cleanup?.then(
+				(fn) => fn?.(),
+				() => undefined,
+			);
+
+		let downResult: Promise<void> | void;
+		try {
+			downResult = down?.();
+		} catch (error) {
+			void runCleanup();
+			throw error;
+		}
+
+		void Promise.resolve(downResult).finally(runCleanup);
 	};
 
 	const offValidFeature = onValidFeature.bind(this)(feature, () => {
@@ -97,8 +106,8 @@ export function onToggledFeature(
 
 	const offInvalidFeature = onInvalidFeature.bind(this)(feature, () => {
 		if (enabled) {
-			disable();
 			enabled = false;
+			disable();
 		}
 	});
 
