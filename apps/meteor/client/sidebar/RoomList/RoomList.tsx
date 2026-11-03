@@ -17,6 +17,7 @@ import { SIDEBAR_DYNAMIC_GROUP_KEYS } from '../hooks/useCategoryList';
 import { useCollapsedGroups } from '../hooks/useCollapsedGroups';
 import { useOffscreenUnreads } from '../hooks/useOffscreenUnreads';
 import { usePreventDefault } from '../hooks/usePreventDefault';
+import { useRingingCalls } from '../hooks/useRingingCalls';
 import { useRoomList } from '../hooks/useRoomList';
 import { useShortcutOpenMenu } from '../hooks/useShortcutOpenMenu';
 
@@ -47,6 +48,7 @@ const RoomList = () => {
 	const virtualizerRef = useRef<VirtualizerHandle>(null);
 	const { previousUnread, nextUnread, handleRangeChange } = useOffscreenUnreads({ groups });
 	const openedRoom = useOpenedRoom() ?? '';
+	const ringingCalls = useRingingCalls();
 	const sidebarViewMode = useUserPreference<SidebarViewMode>('sidebarViewMode') || 'extended';
 	const sidebarDisplayAvatar = !!useUserPreference<boolean>('sidebarDisplayAvatar');
 	const bufferSize = sidebarRowHeight[sidebarViewMode] * SIDEBAR_VIRTUAL_BUFFER_ROWS;
@@ -104,7 +106,7 @@ const RoomList = () => {
 				)}
 				renderItem={(item, _itemIndex, _group, _groupIndex, rowIndex) => (
 					<RoomListRowWrapper data-index={rowIndex}>
-						<RoomListRow data={itemData} item={item} />
+						<RoomListRow data={itemData} item={item} videoConfActions={ringingCalls.get(item.rid)} />
 					</RoomListRowWrapper>
 				)}
 			/>
