@@ -1,8 +1,8 @@
+import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { useIsEnterprise } from '@rocket.chat/ui-client';
+import { useUserId } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useState } from 'react';
 
-import { useUpsertGroupEntry } from './useUpsertGroupEntry';
-import { useUserSidebarCategories } from './useUserSidebarCategories';
 import { SIDEBAR_DYNAMIC_GROUP_KEYS } from '../../hooks/useCategoryList';
 
 export const HOUR = 60 * 60 * 1000;
@@ -13,33 +13,45 @@ const CLOCK_INTERVAL = 5 * 60 * 1000;
 // them may be hidden for being quiet.
 export const isActivityFilterable = (groupKey: string): boolean => !SIDEBAR_DYNAMIC_GROUP_KEYS.includes(groupKey);
 
+type StoredActivityFilters = Record<string, number>;
+
+/**
+ * UI-PREVIEW ONLY: the filters live in this browser's `localStorage`, one map per user, instead of the user's
+ * `sidebarCategories` preference, so the web client can be previewed against a server without the server side
+ * of RocketChat/Rocket.Chat#42525. Not for merging.
+ */
+const useStoredActivityFilters = () => {
+	const userId = useUserId();
+	return useLocalStorage<StoredActivityFilters>(`sidebarActivityFilters-${userId ?? 'anonymous'}`, {});
+};
+
 /**
  * Reads the activity filter of each group. Like the custom categories, it needs an enterprise license: without
  * one the stored filters read as none, so no caller has to check the license itself. A dynamic group never has
- * one either, whatever its entry says.
+ * one either, whatever is stored.
  */
 export const useActivityFilterHours = () => {
 	const { data: { isEnterprise = false } = {} } = useIsEnterprise();
-	const { rawCategories } = useUserSidebarCategories();
+	const [filters] = useStoredActivityFilters();
 
 	const getActivityFilterHours = useCallback(
-		(id: string): number | undefined =>
-			isEnterprise && isActivityFilterable(id) ? rawCategories.find((entry) => entry._id === id)?.activityFilterHours : undefined,
-		[isEnterprise, rawCategories],
+		(id: string): number | undefined => (isEnterprise && isActivityFilterable(id) ? filters[id] : undefined),
+		[isEnterprise, filters],
 	);
 
-	const hasActivityFilters = isEnterprise && rawCategories.some((entry) => entry.activityFilterHours && isActivityFilterable(entry._id));
+	const hasActivityFilters = isEnterprise && Object.entries(filters).some(([id, hours]) => hours && isActivityFilterable(id));
 
 	return { getActivityFilterHours, hasActivityFilters };
 };
 
-/** Stores a group's activity filter on its `sidebarCategories` entry; `undefined` clears it. */
+/** Stores a group's activity filter in this browser; `undefined` clears it. */
 export const useSetActivityFilterHours = () => {
-	const upsertGroupEntry = useUpsertGroupEntry();
+	const [, setFilters] = useStoredActivityFilters();
 
 	return useCallback(
-		(id: string, activityFilterHours: number | undefined) => upsertGroupEntry(id, { activityFilterHours }),
-		[upsertGroupEntry],
+		(id: string, activityFilterHours: number | undefined) =>
+			setFilters(({ [id]: _previous, ...others }) => (activityFilterHours ? { ...others, [id]: activityFilterHours } : others)),
+		[setFilters],
 	);
 };
 
