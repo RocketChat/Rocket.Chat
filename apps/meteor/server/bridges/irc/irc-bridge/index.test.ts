@@ -73,6 +73,33 @@ describe('IRC Bridge', () => {
 			expect(bridge.server).to.be.null;
 			expect(callbacksRemoveMock.calledWith('afterSaveMessage', 'irc-on-save-message')).to.be.true;
 		});
+
+		it('should keep processing the queue when the reset lookup fails', async () => {
+			const bridge = createBridge(new Date());
+			findOneByIdMock.reset();
+			const lookup = findOneByIdMock.withArgs('IRC_Bridge_Reset_Time');
+			lookup.resolves(null);
+			lookup.onFirstCall().rejects(new Error('lookup failed'));
+
+			await bridge.runQueue();
+			await clock.tickAsync(bridge.queueTimeout);
+
+			expect(lookup.calledTwice).to.be.true;
+		});
+
+		it('should not process a queued command once removed during the reset lookup', async () => {
+			const bridge = createBridge(new Date());
+			findOneByIdMock.reset();
+			findOneByIdMock.withArgs('IRC_Bridge_Reset_Time').callsFake(async () => {
+				bridge.remove();
+				return null;
+			});
+			bridge.onMessageReceived('peer', 'PING');
+
+			await bridge.runQueue();
+
+			expect(bridge.queue.isEmpty()).to.be.false;
+		});
 	});
 
 	describe('stop and remove', () => {

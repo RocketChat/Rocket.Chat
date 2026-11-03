@@ -122,7 +122,17 @@ class Bridge {
 			return;
 		}
 
-		const lastResetTime = await Settings.findOneById('IRC_Bridge_Reset_Time');
+		let lastResetTime;
+		try {
+			lastResetTime = await Settings.findOneById('IRC_Bridge_Reset_Time');
+		} catch (e) {
+			this.logQueue(e);
+		}
+
+		if (!this.server) {
+			return;
+		}
+
 		if (lastResetTime && lastResetTime.value > this.initTime) {
 			this.stop();
 			this.remove();
