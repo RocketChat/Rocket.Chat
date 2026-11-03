@@ -1,0 +1,76 @@
+apps/meteor/server/lib/omnichannel/business-hour/index.ts
+  s_e3002615d8094d::t_36f0a401dc3495 12,22
+apps/meteor/server/lib/import/startup/setImportsToInvalid.js
+  s_e3002615d8094d::t_36f0a401dc3495 5,15
+apps/meteor/server/startup/initialData.ts
+  s_e3002615d8094d::t_36f0a401dc3495 88,257
+apps/meteor/server/settings/theme/server.ts
+  s_e3002615d8094d::t_36f0a401dc3495 18,22
+apps/meteor/server/lib/statistics/startup/monitor.ts
+  s_e3002615d8094d::t_36f0a401dc3495 6,20
+apps/meteor/server/main.ts
+  s_e3002615d8094d::t_687996c13ef183 45-46
+  s_e3002615d8094d::t_a91ff48e12ff9b 47
+apps/meteor/ee/server/settings/settings.ts
+  s_e3002615d8094d::t_36f0a401dc3495 58,64
+apps/meteor/server/lib/integrations/startup.ts
+  s_e3002615d8094d::t_36f0a401dc3495 6,10
+apps/meteor/server/lib/messaging/markdown.ts
+  s_e3002615d8094d::t_36f0a401dc3495 7,13
+apps/meteor/server/lib/omnichannel/startup.ts
+  s_e3002615d8094d::t_36f0a401dc3495 69,148
+apps/meteor/server/startup/serverRunning.ts
+  s_e3002615d8094d::t_58113cc93375f8 44
+  s_e3002615d8094d::t_36f0a401dc3495 32,130
+apps/meteor/server/lib/messaging/discussions/permissions.ts
+  s_e3002615d8094d::t_36f0a401dc3495 3,13
+apps/meteor/ee/server/configuration/videoConference.ts
+  s_e3002615d8094d::t_36f0a401dc3495 28,75
+apps/meteor/server/ufs/ufs-server.ts
+  s_e3002615d8094d::t_36f0a401dc3495 7,28
+apps/meteor/ee/server/configuration/outlookCalendar.ts
+  s_e3002615d8094d::t_5997588e1fe805 6-7,13
+  s_e3002615d8094d::t_58113cc93375f8 12
+apps/meteor/server/lib/cloud/version-check/index.ts
+  s_e3002615d8094d::t_36f0a401dc3495 16,22
+apps/meteor/server/startup/startupTasks.ts
+  s_e3002615d8094d::t_c911ae362374e8 1-2
+  s_e3002615d8094d::t_687996c13ef183 23
+  s_e3002615d8094d::t_95cdd1e8535541 3-22,24-61
+apps/meteor/server/api/ApiClass.refusals.spec.ts
+  s_e3002615d8094d::t_c023c3ee655a8d 7
+apps/meteor/ee/server/api/apps/uikit.ts
+  s_e3002615d8094d::t_36f0a401dc3495 47,58
+apps/meteor/ee/server/configuration/ldap.ts
+  s_e3002615d8094d::t_36f0a401dc3495 15,126
+apps/meteor/server/lib/metrics/lib/collectMetrics.ts
+  s_e3002615d8094d::t_36f0a401dc3495 209,211
+apps/meteor/server/startup/initialData.test.ts
+  s_e3002615d8094d::t_dcf4232a84bfd3 37,44,252
+apps/meteor/server/api/webhooks.spec.ts
+  s_e3002615d8094d::t_c023c3ee655a8d 55
+apps/meteor/server/lib/cloud/index.ts
+  s_e3002615d8094d::t_36f0a401dc3495 12,56
+apps/meteor/server/lib/autotranslate/permissions.ts
+  s_e3002615d8094d::t_36f0a401dc3495 3,7
+apps/meteor/server/features/EmailInbox/EmailInbox.ts
+  s_e3002615d8094d::t_36f0a401dc3495 93,97
+apps/meteor/ee/server/startup/upsell.ts
+  s_e3002615d8094d::t_36f0a401dc3495 19,21
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "d0a1824cf6ce012c6f5925f57be70306c8d35d08",
+  "prompts": {},
+  "sessions": {
+    "s_e3002615d8094d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0a134f4b-3f50-4292-89c0-ab1883858227",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
