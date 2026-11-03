@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Palette } from '@rocket.chat/fuselage';
+import { Box, Palette, borderRadius } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 import { useEffect, useRef, useState } from 'react';
 
@@ -85,10 +85,11 @@ const CallPanel = ({ visible, sheet = false, children }: CallPanelProps) => {
 					visibility 0s linear ${visible ? 0 : CLOSE_MS}ms;
 				will-change: transform;
 			`
-		: // Rounded only where it meets the call: the borderRadius prop names whole-box tokens, not corners.
+		: // Rounded only where it meets the call, as round as the tiles beside it: the borderRadius prop names
+			// whole-box tokens, not corners.
 			css`
-				border-start-start-radius: 0.25rem;
-				border-end-start-radius: 0.25rem;
+				border-start-start-radius: ${borderRadius('large')};
+				border-end-start-radius: ${borderRadius('large')};
 
 				visibility: ${visible ? 'visible' : 'hidden'};
 				transition:
