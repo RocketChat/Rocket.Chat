@@ -27,7 +27,7 @@ const checkJSON = (value: string) => {
 
 const assertValidSettingValue = (isValid: boolean, value: ISetting['value']) => {
 	if (!isValid) {
-		throw new ClientSafeError('error-invalid-setting-value', `Invalid setting value ${value}`, {
+		throw new ClientSafeError('error-invalid-setting-value', `Invalid setting value ${JSON.stringify(value)}`, {
 			method: 'saveSettings',
 		});
 	}
