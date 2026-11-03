@@ -1,0 +1,26 @@
+apps/meteor/server/lib/import/slack/SlackImporter.test.ts
+  s_8232fe67fa9b24::t_a8342ebf160919 3
+apps/meteor/server/services/team/service.test.ts
+  s_8232fe67fa9b24::t_a8342ebf160919 3
+apps/meteor/ee/server/lib/ldap/EEManager.test.ts
+  s_8232fe67fa9b24::t_a8342ebf160919 3
+apps/meteor/server/services/video-conference/testHarness.ts
+  s_8232fe67fa9b24::t_3dd11c072a9377 143
+  s_8232fe67fa9b24::t_223548494bb706 9-10,111-112,139-142,144-152
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "ab7ee81281b4c84a5d27908e24875be9aa9677a9",
+  "prompts": {},
+  "sessions": {
+    "s_8232fe67fa9b24": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "67584a8c-029e-4ca3-9a90-7290d449a77d",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": null
+    }
+  }
+}
