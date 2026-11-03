@@ -105,6 +105,11 @@ export const validateSidebarCategories = (categories: ISidebarCategory[]): void 
 };
 
 export const saveUserPreferences = async (settings: Partial<UserPreferences>, userId: string): Promise<void> => {
+	const nullPreference = Object.keys(settings).find((key) => settings[key as keyof UserPreferences] === null);
+	if (nullPreference) {
+		throw new ClientSafeError('error-invalid-param', `Invalid value for preference ${nullPreference}`);
+	}
+
 	if (settings.sidebarCategories) {
 		validateSidebarCategories(settings.sidebarCategories);
 	}
