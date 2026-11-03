@@ -78,6 +78,7 @@ describe('loadSamlServiceProviders', () => {
 		await loadSamlServiceProviders();
 
 		sinon.assert.calledOnceWithMatch(createOrUpdateService, 'saml');
+		sinon.assert.calledOnceWithMatch(setServiceProvidersList, [sinon.match({ provider: 'test-saml' })]);
 		sinon.assert.notCalled(removeByService);
 	});
 });
