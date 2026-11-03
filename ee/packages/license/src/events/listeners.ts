@@ -94,7 +94,16 @@ export function onToggledFeature(
 			throw error;
 		}
 
-		void Promise.resolve(downResult).finally(runCleanup);
+		// Not `finally`: a rejected cleanup would replace the rejection of `down`.
+		void Promise.resolve(downResult).then(
+			() => {
+				void runCleanup();
+			},
+			(error) => {
+				void runCleanup();
+				throw error;
+			},
+		);
 	};
 
 	const offValidFeature = onValidFeature.bind(this)(feature, () => {
