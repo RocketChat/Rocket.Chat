@@ -32,8 +32,8 @@ const isUnitPayload = ajv.compile<OmnichannelBusinessUnitPayload>({
 		unitData: {
 			type: 'object',
 			properties: {
-				name: { type: 'string' },
-				visibility: { type: 'string' },
+				name: { type: 'string', isNotEmpty: true },
+				visibility: { type: 'string', isNotEmpty: true },
 				enabled: { type: 'boolean' },
 				description: { type: 'string' },
 				email: { type: 'string' },
@@ -48,6 +48,7 @@ const isUnitPayload = ajv.compile<OmnichannelBusinessUnitPayload>({
 				type: 'object',
 				properties: { monitorId: { type: 'string' }, username: { type: 'string' } },
 				required: ['monitorId', 'username'],
+				additionalProperties: false,
 			},
 		},
 		unitDepartments: {
@@ -56,10 +57,12 @@ const isUnitPayload = ajv.compile<OmnichannelBusinessUnitPayload>({
 				type: 'object',
 				properties: { departmentId: { type: 'string' } },
 				required: ['departmentId'],
+				additionalProperties: false,
 			},
 		},
 	},
 	required: ['unitData', 'unitMonitors', 'unitDepartments'],
+	additionalProperties: false,
 });
 
 API.v1.addRoute(
