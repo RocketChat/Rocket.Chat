@@ -15,7 +15,7 @@ import { memo, useCallback, useEffect } from 'react';
 
 import { SubscriptionCalloutLimits } from './SubscriptionCalloutLimits';
 import SubscriptionPageSkeleton from './SubscriptionPageSkeleton';
-import LicenseDiagnosticsCard from './components/LicenseDiagnostics/LicenseDiagnosticsCard';
+import LicenseDiagnosticsDebug from './components/LicenseDiagnostics/LicenseDiagnosticsDebug';
 import UpgradeButton from './components/UpgradeButton';
 import UpgradeToGetMore from './components/UpgradeToGetMore';
 import ActiveSessionsCard from './components/cards/ActiveSessionsCard';
@@ -121,7 +121,7 @@ const SubscriptionPage = () => {
 						<Box marginBlock='none' marginInline='auto' width='full' color='default'>
 							<Box padding={8}>
 								<Stack gap={16}>
-									{licenseDiagnostics && <LicenseDiagnosticsCard diagnostics={licenseDiagnostics} />}
+									<LicenseDiagnosticsDebug diagnostics={licenseDiagnostics} />
 									<CardGrid minRowHeight={260}>
 										<CardGridItem lg={4} xs={4}>
 											<PlanCard license={license} licenseLimits={{ activeUsers: seatsLimit }} />
