@@ -11,15 +11,20 @@ export default baseConfig({
 		config.resolve = {
 			...config.resolve,
 			roots: [...(config.resolve?.roots ?? []), resolve(__dirname, '../../../../apps/meteor/public')],
+			alias: {
+				...config.resolve?.alias,
+				// The npm `path` package installed in the monorepo needs Node's `process`, so the browser build
+				// must get `path-browserify` even though `path` resolves.
+				path$: require.resolve('path-browserify'),
+			},
 			fallback: {
 				...config.resolve?.fallback,
 				buffer: require.resolve('buffer/'),
-				path: require.resolve('path-browserify'),
 			},
 		};
 
 		// Webpack 5 does not handle `node:` URI imports out of the box. Strip the
-		// prefix so the corresponding `resolve.fallback` entries (above) kick in.
+		// prefix so the `resolve.alias` and `resolve.fallback` entries (above) kick in.
 		config.plugins = [
 			...(config.plugins ?? []),
 			new webpack.NormalModuleReplacementPlugin(/^node:/, (resource: { request: string }) => {
