@@ -14,6 +14,7 @@ test.describe('sidebar-menu', () => {
 
 		await page.goto('/home', { waitUntil: 'domcontentloaded' });
 		await page.getByRole('button', { name: 'Create new' }).waitFor();
+		await expect(page).toHaveTitle(/^Home/);
 
 		await page.keyboard.press('Tab');
 		await page.keyboard.press('Tab');
