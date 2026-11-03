@@ -595,6 +595,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	removeSamlServiceSession(userId: string): Promise<UpdateResult>;
 	setSamlInResponseTo(userId: string, inResponseTo: string): Promise<UpdateResult>;
 	create(data: Partial<IUser>): Promise<InsertOneResult<IUser>>;
+	createIfNotExists(data: Partial<IUser> & Pick<IUser, '_id'>): Promise<UpdateResult>;
 	removeById(userId: string): Promise<DeleteResult>;
 	countActiveUsersByService(service: string, options?: FindOptions<IUser>): Promise<number>;
 	getActiveLocalUserCount(): Promise<number>;
