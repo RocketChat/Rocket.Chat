@@ -67,6 +67,7 @@ export type * from './models/ICalendarEventModel';
 export type * from './models/IContactsModel';
 export type * from './models/IExchangeCalendarSyncStateModel';
 export type * from './models/IExchangeContactSyncStateModel';
+export type * from './models/IExchangeSyncLeaseModel';
 export type * from './models/IOmnichannelServiceLevelAgreementsModel';
 export type * from './models/IAppLogsModel';
 export type * from './models/IAppsModel';

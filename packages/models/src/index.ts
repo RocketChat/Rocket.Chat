@@ -67,6 +67,7 @@ import type {
 	IContactsModel,
 	IExchangeCalendarSyncStateModel,
 	IExchangeContactSyncStateModel,
+	IExchangeSyncLeaseModel,
 	IOmnichannelServiceLevelAgreementsModel,
 	IAppsModel,
 	IAppsPersistenceModel,
@@ -205,6 +206,7 @@ export const CalendarEvent = proxify<ICalendarEventModel>('ICalendarEventModel')
 export const Contacts = proxify<IContactsModel>('IContactsModel');
 export const ExchangeCalendarSyncState = proxify<IExchangeCalendarSyncStateModel>('IExchangeCalendarSyncStateModel');
 export const ExchangeContactSyncState = proxify<IExchangeContactSyncStateModel>('IExchangeContactSyncStateModel');
+export const ExchangeSyncLease = proxify<IExchangeSyncLeaseModel>('IExchangeSyncLeaseModel');
 export const OmnichannelServiceLevelAgreements = proxify<IOmnichannelServiceLevelAgreementsModel>(
 	'IOmnichannelServiceLevelAgreementsModel',
 );

@@ -2,12 +2,12 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
 import { applyDeferredSideEffects } from './applyDeferredSideEffects';
-import { acquireCalendarSyncLease } from './calendarSyncLease';
 import { resolveMailbox } from '../resolveMailboxes';
 import type { CalendarSyncOutcome } from './syncCalendarWindow';
 import { syncCalendarWindow } from './syncCalendarWindow';
 import { getExchangeProvider, getCalendarSyncWindow } from '../../ExchangeProviderRegistry';
 import { ExchangeError } from '../../errors';
+import { acquireSyncLease } from '../syncLease';
 
 export const syncCalendarForUser = async (uid: IUser['_id']): Promise<CalendarSyncOutcome> => {
 	const provider = getExchangeProvider();
@@ -26,7 +26,7 @@ export const syncCalendarForUser = async (uid: IUser['_id']): Promise<CalendarSy
 		throw new ExchangeError('mailbox-not-found', 'No mailbox could be resolved for this user');
 	}
 
-	const release = await acquireCalendarSyncLease(uid);
+	const release = await acquireSyncLease('calendar', uid);
 
 	if (!release) {
 		throw new ExchangeError('rate-limited', 'A sync for this mailbox is already in progress');
