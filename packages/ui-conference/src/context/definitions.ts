@@ -87,6 +87,15 @@ export type ConferenceRoom = {
 		variant?: ComponentProps<typeof Badge>['variant'];
 		title?: string;
 	};
+	subscribeToIncomingMessages?: (listener: (message: ConferenceIncomingMessage) => void) => () => void;
+	jumpToMessage?: (mid: string) => void;
+};
+
+export type ConferenceIncomingMessage = {
+	_id: string;
+	username: string;
+	name?: string;
+	preview?: string;
 };
 
 /** This window's own standing with the call: whether it holds a session, and what it has to show for one. */

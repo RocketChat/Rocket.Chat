@@ -15,6 +15,7 @@ import EmbeddedCallMembersPanel from '../call/EmbeddedCallMembersPanel.js';
 import CallDiagnosticsPanel from '../call/diagnostics/CallDiagnosticsPanel.js';
 import CallBar from '../components/CallBar.js';
 import CallMembersPanel from '../components/CallMembersPanel/CallMembersPanel.js';
+import CallMessagePreviews from '../components/CallMessagePreviews/CallMessagePreviews.js';
 import CallPanel from '../components/CallPanel.js';
 import CallTopBar from '../components/CallTopBar.js';
 import ChatAccessNotice from '../components/ChatAccessNotice/ChatAccessNotice.js';
@@ -114,6 +115,16 @@ const ConferenceWindow = () => {
 					<Box display='flex' flexGrow={1} minHeight={0} position='relative'>
 						<Box flexGrow={1} minWidth={0} display='flex' flexDirection='column' position='relative'>
 							{session.url ? <ConferenceIframe url={session.url} /> : <CallStageArea layout={stageLayout} />}
+							{room.subscribeToIncomingMessages && (
+								<CallMessagePreviews
+									subscribe={room.subscribeToIncomingMessages}
+									chatVisible={chatVisible}
+									onOpen={(mid) => {
+										setActivePanel('chat');
+										room.jumpToMessage?.(mid);
+									}}
+								/>
+							)}
 						</Box>
 
 						<CallPanel visible={!!activePanel} sheet={sheetPanel}>
