@@ -1,5 +1,4 @@
 import { escapeHTML } from '@rocket.chat/tools';
-import { Meteor } from 'meteor/meteor';
 
 import { ltrim } from '../../../../lib/utils/stringUtils';
 import { settings } from '../../../settings';
@@ -12,13 +11,11 @@ import * as Mailer from '../email/api';
 
 let advice = '';
 let goToMessage = '';
-Meteor.startup(() => {
-	settings.watch('email_style', () => {
-		goToMessage = Mailer.inlinecss('<p><a class=\'btn\' href="[room_path]">{Offline_Link_Message}</a></p>');
-	});
-	Mailer.getTemplate('Email_Footer_Direct_Reply', (value) => {
-		advice = value;
-	});
+settings.watch('email_style', () => {
+	goToMessage = Mailer.inlinecss('<p><a class=\'btn\' href="[room_path]">{Offline_Link_Message}</a></p>');
+});
+Mailer.getTemplate('Email_Footer_Direct_Reply', (value) => {
+	advice = value;
 });
 
 export async function getEmailContent({ message, user, room }) {

@@ -11,7 +11,6 @@ import { Message, ClientSafeError } from '@rocket.chat/core-services';
 import { Messages, Rooms, Users } from '@rocket.chat/models';
 import { App as SlackApp } from '@slack/bolt';
 import { RTMClient } from '@slack/rtm-api';
-import { Meteor } from 'meteor/meteor';
 
 import { SlackAPI } from './SlackAPI';
 import { slackLogger } from './logger';
@@ -53,17 +52,15 @@ export default class SlackAdapter {
 			if (connectResult) {
 				slackLogger.info({ msg: 'Connected to Slack' });
 				slackLogger.debug({ msg: 'Slack connection result', connectResult });
-				Meteor.startup(async () => {
-					try {
-						await this.populateMembershipChannelMap(); // If run outside of Meteor.startup, HTTP is not defined
-					} catch (err) {
-						slackLogger.error({ msg: 'Error attempting to connect to Slack', err });
-						if (err.data.error === 'invalid_auth') {
-							slackLogger.error('The provided token is invalid');
-						}
-						this.slackBridge.disconnect();
+				try {
+					await this.populateMembershipChannelMap();
+				} catch (err) {
+					slackLogger.error({ msg: 'Error attempting to connect to Slack', err });
+					if (err.data.error === 'invalid_auth') {
+						slackLogger.error('The provided token is invalid');
 					}
-				});
+					this.slackBridge.disconnect();
+				}
 			}
 		} catch (err) {
 			slackLogger.error({ msg: 'Error attempting to connect to Slack', err });

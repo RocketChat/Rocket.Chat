@@ -29,22 +29,19 @@ const models = {
 };
 const setPasswordAsync = sinon.stub();
 const settingsGet = sinon.stub();
-const meteorStartup = sinon.stub();
 const avatarStore = {
 	deleteByName: sinon.stub(),
 	insert: sinon.stub(),
 };
 
-const { insertAdminUserFromEnv } = proxyquire.noCallThru().load('./initialData', {
+const { insertAdminUserFromEnv, insertInitialData } = proxyquire.noCallThru().load('./initialData', {
 	'meteor/accounts-base': {
 		Accounts: {
 			setPasswordAsync,
 		},
 	},
 	'meteor/meteor': {
-		Meteor: {
-			startup: meteorStartup,
-		},
+		Meteor: {},
 	},
 	'../lib/media/file-upload': {
 		FileUpload: { getStore: () => avatarStore },
@@ -252,7 +249,7 @@ describe('insertAdminUserFromEnv', () => {
 });
 
 describe('initial data startup', () => {
-	const runStartup = meteorStartup.firstCall.args[0];
+	const runStartup = insertInitialData;
 	const { TEST_MODE } = process.env;
 
 	beforeEach(() => {

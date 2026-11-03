@@ -6,7 +6,6 @@ import { LivechatContacts, LivechatRooms } from '@rocket.chat/models';
 import { registerGuest } from '@rocket.chat/omni-core';
 import { validateEmail, wrapExceptions } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
-import { Meteor } from 'meteor/meteor';
 
 import { businessHourManager } from './business-hour';
 import { createDefaultBusinessHourIfNotExists } from './business-hour/Helper';
@@ -67,7 +66,7 @@ registerGuest.patch(async (originalFn, newData, options) => {
 	return visitor;
 });
 
-Meteor.startup(async () => {
+export const startOmnichannel = async (): Promise<void> => {
 	roomCoordinator.setRoomFind('l', async (id) => maybeMigrateLivechatRoom(await LivechatRooms.findOneById(id)));
 
 	beforeLeaveRoomCallback.add(
@@ -146,4 +145,4 @@ Meteor.startup(async () => {
 			},
 		});
 	});
-});
+};
