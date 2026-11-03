@@ -1,3 +1,4 @@
+import en from '@rocket.chat/i18n/dist/resources/en.i18n.json';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { TranslationContext } from '@rocket.chat/ui-contexts';
 import i18next, { type TOptions } from 'i18next';
@@ -17,7 +18,7 @@ const TranslationContextMock = ({ children }: TranslationContextMockProps) => {
 			defaultNS: 'project',
 			resources: {
 				en: {
-					project: require('../../../packages/rocketchat-i18n/i18n/en.i18n.json'),
+					project: en,
 				},
 			},
 			interpolation: {
