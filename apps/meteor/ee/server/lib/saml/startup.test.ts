@@ -59,16 +59,20 @@ const setup = () => {
 		normalizeCert: (cert: string) => cert,
 	};
 
+	const LoginServiceConfiguration = {
+		createOrUpdateService: sinon.stub().resolves(),
+		removeByService: sinon.stub().resolves({ _id: 'saml-service-id' }),
+	};
+	const notifyOnLoginServiceConfigurationChanged = sinon.stub();
+
 	const samlSettings = proxyquire.noCallThru().load('./lib/settings', {
 		'@rocket.chat/license': { License },
-		'@rocket.chat/models': {
-			LoginServiceConfiguration: { createOrUpdateService: sinon.stub().resolves(), removeByService: sinon.stub().resolves(null) },
-		},
+		'@rocket.chat/models': { LoginServiceConfiguration },
 		'meteor/meteor': { Meteor: { absoluteUrl: (path: string) => `http://localhost:3000/${path}` } },
 		'./Utils': { SAMLUtils },
 		'../../../../../server/lib/logger/system': { SystemLogger: { warn: sinon.stub() } },
 		'../../../../../server/lib/notifyListener': {
-			notifyOnLoginServiceConfigurationChanged: sinon.stub(),
+			notifyOnLoginServiceConfigurationChanged,
 			notifyOnLoginServiceConfigurationChangedByService: sinon.stub(),
 		},
 		'../../../../../server/settings': { settings, settingsRegistry: {} },
@@ -95,7 +99,7 @@ const setup = () => {
 		},
 	});
 
-	return { SAMLUtils, changeSetting, toggleSamlModule };
+	return { SAMLUtils, LoginServiceConfiguration, notifyOnLoginServiceConfigurationChanged, changeSetting, toggleSamlModule };
 };
 
 describe('SAML startup', () => {
@@ -123,23 +127,57 @@ describe('SAML startup', () => {
 		}
 	});
 
-	it('clears the providers and stops reacting to SAML settings when the license loses the module', async () => {
+	it('clears the providers, removes the SAML login service and stops reacting to SAML settings when the license loses the module', async () => {
 		const clock = sinon.useFakeTimers();
 		try {
-			const { SAMLUtils, changeSetting, toggleSamlModule } = setup();
+			const { SAMLUtils, LoginServiceConfiguration, notifyOnLoginServiceConfigurationChanged, changeSetting, toggleSamlModule } = setup();
 
 			await toggleSamlModule(true);
 			await clock.tickAsync(500);
 			expect(SAMLUtils.setServiceProvidersList.lastCall.args[0]).to.have.lengthOf(1);
 
 			await toggleSamlModule(false);
+			await clock.tickAsync(0);
 			expect(SAMLUtils.setServiceProvidersList.lastCall.args[0]).to.deep.equal([]);
+			expect(LoginServiceConfiguration.removeByService.calledWith('saml')).to.equal(true);
+			expect(notifyOnLoginServiceConfigurationChanged.calledWith({ _id: 'saml-service-id' }, 'removed')).to.equal(true);
 
 			SAMLUtils.setServiceProvidersList.resetHistory();
 			changeSetting('SAML_Custom_Default_entry_point', 'https://other-idp.example.com/sso');
 			await clock.tickAsync(500);
 
 			expect(SAMLUtils.setServiceProvidersList.called).to.equal(false);
+		} finally {
+			clock.restore();
+		}
+	});
+
+	it('does not publish the providers of a build that finishes after the license lost the module', async () => {
+		const clock = sinon.useFakeTimers();
+		try {
+			const { SAMLUtils, LoginServiceConfiguration, toggleSamlModule } = setup();
+			let finishStoringService: () => void = () => undefined;
+			LoginServiceConfiguration.createOrUpdateService.returns(
+				new Promise<void>((resolve) => {
+					finishStoringService = resolve;
+				}),
+			);
+
+			await toggleSamlModule(true);
+			// The debounced build starts and waits on the login service write.
+			await clock.tickAsync(500);
+
+			await toggleSamlModule(false);
+			await clock.tickAsync(0);
+			LoginServiceConfiguration.removeByService.resetHistory();
+
+			finishStoringService();
+			await clock.tickAsync(0);
+
+			expect(SAMLUtils.setServiceProvidersList.lastCall.args[0]).to.deep.equal([]);
+			expect(SAMLUtils.setServiceProvidersList.args.some(([providers]) => providers.length > 0)).to.equal(false);
+			// The write that finished late recreated the login service, so it is removed again.
+			expect(LoginServiceConfiguration.removeByService.calledWith('saml')).to.equal(true);
 		} finally {
 			clock.restore();
 		}

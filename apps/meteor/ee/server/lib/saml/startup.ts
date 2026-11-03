@@ -26,7 +26,7 @@ License.onToggledFeature('saml-enterprise', {
 		stopWatchingProviderSettings?.();
 		stopWatchingProviderSettings = undefined;
 		reloadServiceProviders.cancel();
-		SAMLUtils.setServiceProvidersList([]);
+		void loadSamlServiceProviders();
 	},
 });
 

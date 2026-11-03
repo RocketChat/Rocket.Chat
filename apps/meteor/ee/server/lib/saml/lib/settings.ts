@@ -129,11 +129,28 @@ const configureSamlService = function (samlConfigs: Record<string, any>): IServi
 	};
 };
 
+const removeLoginService = async function (serviceName: string): Promise<void> {
+	const service = await LoginServiceConfiguration.removeByService(serviceName);
+	if (service) {
+		void notifyOnLoginServiceConfigurationChanged({ _id: service._id }, 'removed');
+	}
+};
+
+// Without the module SAML must disappear from the login screen too, not only from the providers list.
+const unloadSamlServiceProviders = async function (serviceName: string): Promise<void> {
+	SAMLUtils.setServiceProvidersList([]);
+	await removeLoginService(serviceName);
+};
+
 export const loadSamlServiceProviders = async function (): Promise<void> {
 	const serviceName = 'saml';
 	const services = settings.getByRegexp(/^(SAML_Custom_)[a-z]+$/i);
 
-	if (!services || !License.hasModule('saml-enterprise')) {
+	if (!License.hasModule('saml-enterprise')) {
+		return unloadSamlServiceProviders(serviceName);
+	}
+
+	if (!services) {
 		return SAMLUtils.setServiceProvidersList([]);
 	}
 
@@ -153,17 +170,16 @@ export const loadSamlServiceProviders = async function (): Promise<void> {
 					SAMLUtils.logger?.warn({ msg: 'SAML Provider not loaded due to invalid configuration', key });
 				}
 
-				const service = await LoginServiceConfiguration.removeByService(serviceName);
-				if (!service) {
-					return false;
-				}
-
-				void notifyOnLoginServiceConfigurationChanged({ _id: service._id }, 'removed');
-
+				await removeLoginService(serviceName);
 				return false;
 			}),
 		)
 	).filter((e) => e) as IServiceProviderOptions[];
+
+	// The license may have lost the module while the providers were being stored.
+	if (!License.hasModule('saml-enterprise')) {
+		return unloadSamlServiceProviders(serviceName);
+	}
 
 	SAMLUtils.setServiceProvidersList(providers);
 };
