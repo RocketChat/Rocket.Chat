@@ -40,7 +40,6 @@ const initializeCustomSoundsStorage = () => {
 };
 
 Meteor.startup(() => {
-	initializeCustomSoundsStorage();
 	return WebApp.connectHandlers.use('/custom-sounds/', async (req, res /* , next*/) => {
 		const fileId = decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, ''));
 

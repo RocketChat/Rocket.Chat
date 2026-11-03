@@ -70,7 +70,6 @@ const initializeEmojiCustomStorage = () => {
 };
 
 Meteor.startup(() => {
-	initializeEmojiCustomStorage();
 	return WebApp.connectHandlers.use('/emoji-custom/', async (req, res /* , next*/) => {
 		const params = { emoji: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, '')) };
 
