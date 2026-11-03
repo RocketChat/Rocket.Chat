@@ -1,47 +1,145 @@
+import { EventEmitter } from 'node:events';
 import { describe, it } from 'node:test';
 
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
+const setup = () => {
+	const store = new Map<string, unknown>([
+		['SAML_Custom_Default', true],
+		['SAML_Custom_Default_provider', 'adfs'],
+		['SAML_Custom_Default_entry_point', 'https://idp.example.com/sso'],
+		['SAML_Custom_Default_signature_validation_type', 'None'],
+		['SAML_Custom_Default_custom_authn_context', 'urn:test:custom'],
+		['SAML_Custom_Default_authn_context_comparison', 'minimum'],
+	]);
+	const watchers = new Set<{ regex: RegExp; cb: () => void }>();
+	const settings = {
+		get: (key: string) => store.get(key),
+		getByRegexp: (regex: RegExp) => [...store.entries()].filter(([key]) => regex.test(key)),
+		// The settings cache is ready: a new watcher runs right away for the stored settings it matches.
+		watchByRegex: (regex: RegExp, cb: () => void) => {
+			const watcher = { regex, cb };
+			watchers.add(watcher);
+			if ([...store.keys()].some((key) => regex.test(key))) {
+				cb();
+			}
+			return () => watchers.delete(watcher);
+		},
+	};
+	const changeSetting = (key: string, value: unknown) => {
+		store.set(key, value);
+		watchers.forEach(({ regex, cb }) => regex.test(key) && cb());
+	};
+
+	let samlModuleActive = false;
+	const toggles: Array<{ up?: () => unknown; down?: () => unknown }> = [];
+	const License = {
+		hasModule: (module: string) => module === 'saml-enterprise' && samlModuleActive,
+		onToggledFeature: (module: string, toggle: { up?: () => unknown; down?: () => unknown }) => {
+			if (module === 'saml-enterprise') {
+				toggles.push(toggle);
+			}
+			return () => undefined;
+		},
+	};
+	const toggleSamlModule = async (active: boolean) => {
+		samlModuleActive = active;
+		await Promise.all(toggles.map((toggle) => (active ? toggle.up?.() : toggle.down?.())));
+	};
+
+	const SAMLUtils = {
+		events: new EventEmitter(),
+		setServiceProvidersList: sinon.stub(),
+		updateGlobalSettings: sinon.stub(),
+		setLoggerInstance: sinon.stub(),
+		log: sinon.stub(),
+		error: sinon.stub(),
+		normalizeCert: (cert: string) => cert,
+	};
+
+	const samlSettings = proxyquire.noCallThru().load('./lib/settings', {
+		'@rocket.chat/license': { License },
+		'@rocket.chat/models': {
+			LoginServiceConfiguration: { createOrUpdateService: sinon.stub().resolves(), removeByService: sinon.stub().resolves(null) },
+		},
+		'meteor/meteor': { Meteor: { absoluteUrl: (path: string) => `http://localhost:3000/${path}` } },
+		'./Utils': { SAMLUtils },
+		'../../../../../server/lib/logger/system': { SystemLogger: { warn: sinon.stub() } },
+		'../../../../../server/lib/notifyListener': {
+			notifyOnLoginServiceConfigurationChanged: sinon.stub(),
+			notifyOnLoginServiceConfigurationChangedByService: sinon.stub(),
+		},
+		'../../../../../server/settings': { settings, settingsRegistry: {} },
+	});
+
+	proxyquire.noCallThru().load('./startup', {
+		'@rocket.chat/logger': { Logger: class {} },
+		'@rocket.chat/license': { License },
+		'meteor/meteor': { Meteor: { startup: sinon.stub() } },
+		'./lib/Utils': { SAMLUtils },
+		'./lib/settings': { ...samlSettings, addSettings: sinon.stub() },
+		'../../../../server/settings': { settings },
+	});
+
+	// Same listener ee/server/configuration/saml.ts registers once the module is licensed.
+	toggles.push({
+		up: () => {
+			SAMLUtils.events.on('loadConfigs', (service: string, configs: Record<string, unknown>) => {
+				Object.assign(configs, {
+					customAuthnContext: settings.get(`${service}_custom_authn_context`),
+					authnContextComparison: settings.get(`${service}_authn_context_comparison`),
+				});
+			});
+		},
+	});
+
+	return { SAMLUtils, changeSetting, toggleSamlModule };
+};
+
 describe('SAML startup', () => {
-	it('reloads the service providers when the saml-enterprise module becomes active after the first load', async () => {
+	it('registers the enabled provider with its enterprise settings once the license loads after startup', async () => {
 		const clock = sinon.useFakeTimers();
 		try {
-			const loadSamlServiceProviders = sinon.stub().resolves();
-			const licenseCallbacks: Array<() => unknown> = [];
+			const { SAMLUtils, toggleSamlModule } = setup();
 
-			proxyquire.noCallThru().load('./startup', {
-				'@rocket.chat/logger': { Logger: class {} },
-				'@rocket.chat/license': {
-					License: {
-						onLicense: (module: string, cb: () => unknown) => {
-							if (module === 'saml-enterprise') {
-								licenseCallbacks.push(cb);
-							}
-							return Promise.resolve();
-						},
-					},
-				},
-				'meteor/meteor': { Meteor: { startup: sinon.stub() } },
-				'./lib/Utils': { SAMLUtils: { setLoggerInstance: sinon.stub() } },
-				'./lib/settings': { loadSamlServiceProviders, addSettings: sinon.stub(), updateGlobalSettings: sinon.stub() },
-				'../../../../server/settings': {
-					settings: {
-						// The settings cache is ready: the watcher runs right away for the stored SAML settings.
-						watchByRegex: (_regex: RegExp, cb: () => void) => cb(),
-					},
-				},
+			await clock.tickAsync(500);
+			expect(SAMLUtils.setServiceProvidersList.lastCall?.args[0] ?? []).to.deep.equal([]);
+
+			await toggleSamlModule(true);
+			await clock.tickAsync(500);
+
+			const providers = SAMLUtils.setServiceProvidersList.lastCall.args[0];
+			expect(providers).to.have.lengthOf(1);
+			expect(providers[0]).to.include({
+				provider: 'adfs',
+				entryPoint: 'https://idp.example.com/sso',
+				customAuthnContext: 'urn:test:custom',
+				authnContextComparison: 'minimum',
 			});
+		} finally {
+			clock.restore();
+		}
+	});
 
+	it('clears the providers and stops reacting to SAML settings when the license loses the module', async () => {
+		const clock = sinon.useFakeTimers();
+		try {
+			const { SAMLUtils, changeSetting, toggleSamlModule } = setup();
+
+			await toggleSamlModule(true);
 			await clock.tickAsync(500);
-			expect(loadSamlServiceProviders.callCount).to.equal(1);
+			expect(SAMLUtils.setServiceProvidersList.lastCall.args[0]).to.have.lengthOf(1);
 
-			// The license finishes applying only after that first load.
-			await Promise.all(licenseCallbacks.map((cb) => cb()));
+			await toggleSamlModule(false);
+			expect(SAMLUtils.setServiceProvidersList.lastCall.args[0]).to.deep.equal([]);
+
+			SAMLUtils.setServiceProvidersList.resetHistory();
+			changeSetting('SAML_Custom_Default_entry_point', 'https://other-idp.example.com/sso');
 			await clock.tickAsync(500);
 
-			expect(loadSamlServiceProviders.callCount).to.equal(2);
+			expect(SAMLUtils.setServiceProvidersList.called).to.equal(false);
 		} finally {
 			clock.restore();
 		}

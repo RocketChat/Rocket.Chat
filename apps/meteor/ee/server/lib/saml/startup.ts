@@ -15,10 +15,19 @@ Meteor.startup(async () => {
 });
 
 const reloadServiceProviders = debounce(loadSamlServiceProviders, 500);
+let stopWatchingProviderSettings: (() => void) | undefined;
 
-settings.watchByRegex(/^SAML_.+/, reloadServiceProviders);
-
-// The license can finish applying after the settings watcher has already built the providers.
-void License.onLicense('saml-enterprise', reloadServiceProviders);
+// Providers are only built while the module is licensed, so a license applied after startup cannot leave them stale.
+License.onToggledFeature('saml-enterprise', {
+	up: () => {
+		stopWatchingProviderSettings = settings.watchByRegex(/^SAML_.+/, reloadServiceProviders);
+	},
+	down: () => {
+		stopWatchingProviderSettings?.();
+		stopWatchingProviderSettings = undefined;
+		reloadServiceProviders.cancel();
+		SAMLUtils.setServiceProvidersList([]);
+	},
+});
 
 settings.watchByRegex(/^SAML_Custom_Default_/, updateGlobalSettings);
