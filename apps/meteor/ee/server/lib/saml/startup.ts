@@ -1,3 +1,4 @@
+import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
 import debounce from 'lodash.debounce';
 import { Meteor } from 'meteor/meteor';
@@ -13,6 +14,11 @@ Meteor.startup(async () => {
 	await addSettings('Default');
 });
 
-settings.watchByRegex(/^SAML_.+/, debounce(loadSamlServiceProviders, 500));
+const reloadServiceProviders = debounce(loadSamlServiceProviders, 500);
+
+settings.watchByRegex(/^SAML_.+/, reloadServiceProviders);
+
+// The license can finish applying after the settings watcher has already built the providers.
+void License.onLicense('saml-enterprise', reloadServiceProviders);
 
 settings.watchByRegex(/^SAML_Custom_Default_/, updateGlobalSettings);
