@@ -14,7 +14,8 @@ copies:
 `yarn build:ci` runs it before `meteor build`, so both end up in the server bundle.
 
 Meteor still builds a `web.browser` program, but its main module (`client/meteorShell.ts`) is empty: Meteor only
-renders the page. Everything the server already did for that page keeps working:
+renders the page. Meteor bundles every CSS file under `client/` whether or not a module imports it, so
+`.meteorignore` hides them; otherwise the page would load a second copy of the client's styles. Everything the server already did for that page keeps working:
 
 - the head and body injections of `server/lib/ui-master` (title, metas, favicons, theme variables, custom CSS and the
   `Custom_Script_*` scripts);
