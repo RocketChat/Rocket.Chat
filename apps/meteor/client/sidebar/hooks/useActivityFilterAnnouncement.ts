@@ -1,3 +1,4 @@
+import { useLanguage } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -14,6 +15,7 @@ type PendingChoice = { groupKey: string; activityFilterHours: number | undefined
  */
 export const useActivityFilterAnnouncement = (groups: SidebarRoomListGroup[]) => {
 	const { t } = useTranslation();
+	const language = useLanguage();
 	const [pending, setPending] = useState<PendingChoice>();
 	const [announcement, setAnnouncement] = useState('');
 
@@ -37,11 +39,11 @@ export const useActivityFilterAnnouncement = (groups: SidebarRoomListGroup[]) =>
 				? t('Inactive_rooms_hidden_in_group', {
 						count: group.inactiveCount,
 						group: title,
-						filter: getActivityFilterLabel(t, group.activityFilterHours),
+						filter: getActivityFilterLabel(t, language, group.activityFilterHours),
 					})
 				: t('Activity_filter_cleared_in_group', { group: title }),
 		);
-	}, [groups, pending, t]);
+	}, [groups, pending, t, language]);
 
 	return { announcement, announceActivityFilter };
 };

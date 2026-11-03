@@ -1,6 +1,7 @@
 import { Icon } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useLanguage } from '@rocket.chat/ui-contexts';
 import type { TFunction } from 'i18next';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -15,24 +16,39 @@ const ACTIVITY_FILTER_PRESETS: { hours: number | undefined; label: TranslationKe
 	{ hours: 24 * 30, label: 'Last_30_days' },
 ];
 
-/** The window on its own, short enough for a chip: "24 hours", "7 days", "36 hours", … */
-export const getActivityFilterWindowLabel = (t: TFunction, hours: number): string =>
-	hours >= 48 && hours % 24 === 0 ? t('Days_count', { count: hours / 24 }) : t('Hours_count', { count: hours });
+/** The window as a count of days when it is a whole number of days, two or more; of hours otherwise. */
+const getActivityFilterWindow = (hours: number): { unit: 'day' | 'hour'; value: number } =>
+	hours >= 48 && hours % 24 === 0 ? { unit: 'day', value: hours / 24 } : { unit: 'hour', value: hours };
 
-/** The filter as the menus name it: "All", "Last 7 days", … — or the bare window for a value no preset matches. */
-export const getActivityFilterLabel = (t: TFunction, hours: number | undefined): string => {
+/** Words a count of days or hours in the user's language, with the CLDR unit names; English as the fallback for a tag `Intl` rejects. */
+const formatActivityFilterWindow = (language: string, hours: number, unitDisplay: 'narrow' | 'long'): string => {
+	const { unit, value } = getActivityFilterWindow(hours);
+	try {
+		return new Intl.NumberFormat(language, { style: 'unit', unit, unitDisplay }).format(value);
+	} catch {
+		return new Intl.NumberFormat('en', { style: 'unit', unit, unitDisplay }).format(value);
+	}
+};
+
+/**
+ * The window on its own, as short as the language abbreviates it, for the chip: "24h", "7d" in English, "24 h",
+ * "7 dias" in Portuguese. Where the CLDR has no short form the language's full word is the shortest there is.
+ */
+export const getActivityFilterWindowLabel = (language: string, hours: number): string =>
+	formatActivityFilterWindow(language, hours, 'narrow');
+
+/** The filter as the menus name it: "All", "Last 7 days", … — or the window spelled out ("36 hours") for a value no preset matches. */
+export const getActivityFilterLabel = (t: TFunction, language: string, hours: number | undefined): string => {
 	const preset = ACTIVITY_FILTER_PRESETS.find((option) => option.hours === hours);
-	return preset ? t(preset.label) : getActivityFilterWindowLabel(t, hours ?? 0);
+	return preset ? t(preset.label) : formatActivityFilterWindow(language, hours ?? 0, 'long');
 };
 
-export const useActivityFilterWindowLabel = (hours: number): string => {
-	const { t } = useTranslation();
-	return getActivityFilterWindowLabel(t, hours);
-};
+export const useActivityFilterWindowLabel = (hours: number): string => getActivityFilterWindowLabel(useLanguage(), hours);
 
 export const useActivityFilterLabel = (hours: number | undefined): string => {
 	const { t } = useTranslation();
-	return getActivityFilterLabel(t, hours);
+	const language = useLanguage();
+	return getActivityFilterLabel(t, language, hours);
 };
 
 /** The menu item id of a filter, `all` when there is none. */

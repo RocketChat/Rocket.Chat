@@ -146,13 +146,9 @@ const makeFilteredGroup = (overrides: Partial<SidebarRoomListGroup> = {}): Sideb
 
 const FilterAppRoot = mockAppRoot()
 	.withTranslations('en', 'core', {
-		Activity_filter_label: 'Filter: {{filter}}',
+		Activity_filter_label: '{{window}}, filter: {{filter}}',
 		Last_24_hours: 'Last 24 hours',
 		Last_7_days: 'Last 7 days',
-		Days_count_one: '{{count}} day',
-		Days_count_other: '{{count}} days',
-		Hours_count_one: '{{count}} hour',
-		Hours_count_other: '{{count}} hours',
 		Show_inactive_one: 'Show {{count}} inactive',
 		Show_inactive_other: 'Show {{count}} inactive',
 		Hide_inactive: 'Hide inactive',
@@ -184,29 +180,29 @@ const renderFilteredCollapser = (overrides: Partial<SidebarRoomListGroup> = {}) 
 	return handlers;
 };
 
-const getChip = () => screen.getByRole('button', { name: 'Filter: Last 7 days' });
+const getChip = () => screen.getByRole('button', { name: '7d, filter: Last 7 days' });
 
 describe('the activity filter chip', () => {
 	it('names the window the group is filtered by', () => {
 		renderFilteredCollapser();
 
-		expect(getChip()).toHaveTextContent('7 days');
+		expect(getChip()).toHaveTextContent('7d');
 	});
 
 	it('shortens a one-day window to hours', () => {
 		renderFilteredCollapser({ activityFilterHours: 24 });
 
-		expect(screen.getByRole('button', { name: 'Filter: Last 24 hours' })).toHaveTextContent('24 hours');
+		expect(screen.getByRole('button', { name: '24h, filter: Last 24 hours' })).toHaveTextContent('24h');
 	});
 
 	it('names a window no preset matches by its length', () => {
 		renderFilteredCollapser({ activityFilterHours: 36 });
-		expect(screen.getByRole('button', { name: 'Filter: 36 hours' })).toHaveTextContent('36 hours');
+		expect(screen.getByRole('button', { name: '36h, filter: 36 hours' })).toHaveTextContent('36h');
 	});
 
 	it('counts a whole number of days in days', () => {
 		renderFilteredCollapser({ activityFilterHours: 72 });
-		expect(screen.getByRole('button', { name: 'Filter: 3 days' })).toHaveTextContent('3 days');
+		expect(screen.getByRole('button', { name: '3d, filter: 3 days' })).toHaveTextContent('3d');
 	});
 
 	it('is pressed while the filter is applied, and tells how many rooms it hides', () => {

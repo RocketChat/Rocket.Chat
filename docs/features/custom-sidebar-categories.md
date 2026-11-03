@@ -182,8 +182,10 @@ What it does, in `makeGroup` (`useRoomList.ts`):
 #### Filter chip — `RoomListActivityFilterChip`
 
 When an expanded group has a filter, a chip right after the group name shows the
-window ("24 hours", "7 days", "30 days" — `Hours_count` / `Days_count`; a whole number of days of 48 hours or
-more reads in days, anything else in hours) with a clock. Clicking it lifts the
+window with a clock, as short as the user's language abbreviates it: `Intl.NumberFormat` with `style: 'unit'` and
+`unitDisplay: 'narrow'` gives "24h", "7d", "30d" in English and "24 h", "7 dias", "30 dias" in Portuguese, from the
+CLDR data the browser (or Electron) ships, so no translation key is involved; a whole number of days of 48 hours or
+more reads in days, anything else in hours. Clicking it lifts the
 filter for this session and clicking again puts it back. The lifts live in `useLiftedActivityFilters`
 (`RoomList` state, so they reset on reload and never touch the saved preference) as one entry per group with
 the window it was lifted at, e.g. `{ Channels: 168 }`: the group shows its inactive rooms only while its
@@ -193,9 +195,13 @@ group's normal sort order.
 
 - A toggle button (`aria-pressed`): pressed (`secondary-info`, blue text) while the filter is applied,
   released (`secondary`, gray text) while it is lifted, on the same background — the state is told apart by
-  the text colour and, for assistive technology, by `aria-pressed`. Accessible name "Filter: Last 7 days"
-  (`Activity_filter_label`); the tooltip says what a click does — "Show N inactive" / "Hide inactive" — and
+  the text colour and, for assistive technology, by `aria-pressed`. Accessible name "7d, filter: Last 7 days"
+  (`Activity_filter_label`): it opens with the visible text, so a speech user can say what they see, and goes
+  on with the menu's full name; the tooltip says what a click does — "Show N inactive" / "Hide inactive" — and
   is the only place the count appears. The pill shape is Tag's `pill` variant.
+- At rest only the clock shows; the window ("7d") appears while the pointer, the keyboard focus or an open
+  menu is on the group header, the way the header's kebab reveals (`RoomListActivityFilterChip` hides
+  `.rcx-tag__inner` otherwise). The accessible name always carries the window.
 - Shown whenever the expanded group has a filter, so the filter is seen even when it hides nothing right now
   (a group whose only rooms are unread, say). With nothing hidden there is nothing to lift, so the chip is
   disabled and its tooltip says "No inactive rooms hidden"; `inactiveCount` keeps counting while the rooms
