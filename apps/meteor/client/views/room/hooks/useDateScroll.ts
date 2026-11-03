@@ -1,7 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import type { CSSProperties, MutableRefObject } from 'react';
-import { useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
 import { useDateListController } from '../providers/DateListProvider';
 
@@ -22,6 +22,8 @@ type useDateScrollReturn = {
 	handleDateScroll: (topMessage: IMessage | undefined, offset: number) => void;
 	bubbleRef: MutableRefObject<HTMLElement | null>;
 	bubbleDateStore: BubbleDateStore;
+	/** Brings the bubble back to its initial state, dropping any pending update for the list it was showing. */
+	resetBubbleDate: () => void;
 };
 
 const isSameStyle = (a: CSSProperties | undefined, b: CSSProperties | undefined) => {
@@ -39,8 +41,10 @@ const isSameState = (a: BubbleDateState, b: BubbleDateState) =>
 	a.date === b.date && a.show === b.show && a.showDivider === b.showDivider && isSameStyle(a.style, b.style);
 
 // Scrolling updates the bubble many times per second; keeping its state out of React state lets only the bubble re-render.
+const initialBubbleDateState: BubbleDateState = { date: '', show: false, style: undefined, showDivider: true };
+
 const createBubbleDateStore = (): BubbleDateStore => {
-	let state: BubbleDateState = { date: '', show: false, style: undefined, showDivider: true };
+	let state = initialBubbleDateState;
 	const listeners = new Set<() => void>();
 
 	return {
@@ -185,5 +189,16 @@ export const useDateScroll = (margin = 8): useDateScrollReturn => {
 		[list, margin, setBubbleDate],
 	);
 
-	return { handleDateScroll, bubbleRef, bubbleDateStore };
+	const cancelDateScroll = handleDateScroll.cancel;
+
+	const resetBubbleDate = useCallback(() => {
+		cancelDateScroll();
+		if (hideBubbleTimeoutRef.current) {
+			clearTimeout(hideBubbleTimeoutRef.current);
+			hideBubbleTimeoutRef.current = null;
+		}
+		setBubbleDate(() => initialBubbleDateState);
+	}, [cancelDateScroll, setBubbleDate]);
+
+	return { handleDateScroll, bubbleRef, bubbleDateStore, resetBubbleDate };
 };

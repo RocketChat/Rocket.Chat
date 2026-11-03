@@ -108,7 +108,10 @@ const RoomBody = () => {
 		debouncedMessageRead,
 	} = useHandleUnread(room, subscription);
 
-	const { handleDateScroll, bubbleRef, bubbleDateStore } = useDateScroll();
+	const { handleDateScroll, bubbleRef, bubbleDateStore, resetBubbleDate } = useDateScroll();
+
+	// RoomBody persists across room switches, so the bubble of the room being left must not carry over.
+	useEffect(() => resetBubbleDate, [room._id, resetBubbleDate]);
 
 	const { innerRef: getMoreInnerRef } = useGetMore(room._id, isJumpingToMessage);
 
