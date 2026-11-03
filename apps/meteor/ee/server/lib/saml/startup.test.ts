@@ -5,7 +5,7 @@ import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
-const setup = () => {
+const setup = ({ samlModuleActiveAtStartup = false } = {}) => {
 	const store = new Map<string, unknown>([
 		['SAML_Custom_Default', true],
 		['SAML_Custom_Default_provider', 'adfs'],
@@ -33,13 +33,17 @@ const setup = () => {
 		watchers.forEach(({ regex, cb }) => regex.test(key) && cb());
 	};
 
-	let samlModuleActive = false;
+	let samlModuleActive = samlModuleActiveAtStartup;
 	const toggles: Array<{ up?: () => unknown; down?: () => unknown }> = [];
 	const License = {
 		hasModule: (module: string) => module === 'saml-enterprise' && samlModuleActive,
+		// Like the real one: `up` runs right away when the module is already active.
 		onToggledFeature: (module: string, toggle: { up?: () => unknown; down?: () => unknown }) => {
 			if (module === 'saml-enterprise') {
 				toggles.push(toggle);
+				if (samlModuleActive) {
+					void toggle.up?.();
+				}
 			}
 			return () => undefined;
 		},
@@ -88,7 +92,7 @@ const setup = () => {
 	});
 
 	// Same listener ee/server/configuration/saml.ts registers once the module is licensed.
-	toggles.push({
+	License.onToggledFeature('saml-enterprise', {
 		up: () => {
 			SAMLUtils.events.on('loadConfigs', (service: string, configs: Record<string, unknown>) => {
 				Object.assign(configs, {
@@ -103,6 +107,25 @@ const setup = () => {
 };
 
 describe('SAML startup', () => {
+	it('registers the enabled provider with its enterprise settings when the module is already licensed at startup', async () => {
+		const clock = sinon.useFakeTimers();
+		try {
+			const { samlStartup, SAMLUtils, LoginServiceConfiguration } = setup({ samlModuleActiveAtStartup: true });
+
+			await clock.tickAsync(500);
+
+			const providers = SAMLUtils.setServiceProvidersList.lastCall.args[0];
+			expect(providers).to.have.lengthOf(1);
+			expect(providers[0]).to.include({ provider: 'adfs', customAuthnContext: 'urn:test:custom', authnContextComparison: 'minimum' });
+			expect(LoginServiceConfiguration.createOrUpdateService.calledWith('saml')).to.equal(true);
+
+			await samlStartup.unloadSamlServiceProvidersWithoutLicense();
+			expect(LoginServiceConfiguration.removeByService.called).to.equal(false);
+		} finally {
+			clock.restore();
+		}
+	});
+
 	it('registers the enabled provider with its enterprise settings once the license loads after startup', async () => {
 		const clock = sinon.useFakeTimers();
 		try {
