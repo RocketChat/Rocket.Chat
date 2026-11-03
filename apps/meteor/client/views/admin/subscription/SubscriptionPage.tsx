@@ -1,4 +1,4 @@
-import { Accordion, AccordionItem, Box, Button, ButtonGroup, Callout, CardGrid, CardGridItem } from '@rocket.chat/fuselage';
+import { Accordion, AccordionItem, Box, Button, ButtonGroup, Callout, CardGrid, CardGridItem, Stack } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useSessionStorage } from '@rocket.chat/fuselage-hooks';
 import {
 	Page,
@@ -16,6 +16,7 @@ import tinykeys from 'tinykeys';
 
 import { SubscriptionCalloutLimits } from './SubscriptionCalloutLimits';
 import SubscriptionPageSkeleton from './SubscriptionPageSkeleton';
+import LicenseDiagnosticsCard from './components/LicenseDiagnostics/LicenseDiagnosticsCard';
 import UpgradeButton from './components/UpgradeButton';
 import UpgradeToGetMore from './components/UpgradeToGetMore';
 import ActiveSessionsCard from './components/cards/ActiveSessionsCard';
@@ -28,6 +29,7 @@ import MACCard from './components/cards/MACCard';
 import PlanCard from './components/cards/PlanCard';
 import SeatsCard from './components/cards/SeatsCard';
 import { useCancelSubscriptionModal } from './hooks/useCancelSubscriptionModal';
+import { useLicenseDiagnostics } from './hooks/useLicenseDiagnostics';
 import { useWorkspaceSync } from './hooks/useWorkspaceSync';
 import UiKitSubscriptionLicense from './surface/UiKitSubscriptionLicense';
 import { useRegistrationStatus } from '../../../hooks/useRegistrationStatus';
@@ -55,6 +57,7 @@ const SubscriptionPage = () => {
 	const { data: enterpriseData } = useIsEnterprise();
 	const { canViewRegistrationStatus } = useRegistrationStatus();
 	const { data: licensesData, isLoading: isLicenseLoading } = useLicenseWithCloudAnnouncement({ loadValues: true });
+	const { data: licenseDiagnostics } = useLicenseDiagnostics();
 	const syncLicenseUpdate = useWorkspaceSync();
 	const invalidateLicenseQuery = useInvalidateLicense();
 
@@ -143,52 +146,55 @@ const SubscriptionPage = () => {
 						)}
 						<Box marginBlock='none' marginInline='auto' width='full' color='default'>
 							<Box padding={8}>
-								<CardGrid minRowHeight={260}>
-									<CardGridItem lg={4} xs={4}>
-										<PlanCard license={license} licenseLimits={{ activeUsers: seatsLimit }} />
-									</CardGridItem>
-
-									<CardGridItem lg={8} xs={4}>
-										<FeaturesCard activeModules={activeModules} isEnterprise={isEnterprise} />
-									</CardGridItem>
-
-									{seatsLimit.value !== undefined && (
-										<CardGridItem lg={6} xs={4}>
-											{seatsLimit.max !== Infinity ? (
-												<SeatsCard value={seatsLimit.value} max={seatsLimit.max} hideManageSubscription={licensesData?.trial} />
-											) : (
-												<CountSeatsCard activeUsers={seatsLimit?.value} />
-											)}
-										</CardGridItem>
-									)}
-
-									{macLimit.value !== undefined && (
-										<CardGridItem lg={6} xs={4}>
-											{macLimit.max !== Infinity ? (
-												<MACCard max={macLimit.max} value={macLimit.value} hideManageSubscription={licensesData?.trial} />
-											) : (
-												<CountMACCard macsCount={macLimit.value} />
-											)}
-										</CardGridItem>
-									)}
-
-									{!license && limits?.marketplaceApps !== undefined && (
+								<Stack gap={16}>
+									{licenseDiagnostics && <LicenseDiagnosticsCard diagnostics={licenseDiagnostics} />}
+									<CardGrid minRowHeight={260}>
 										<CardGridItem lg={4} xs={4}>
-											<AppsUsageCard privateAppsLimit={limits?.privateApps} marketplaceAppsLimit={limits.marketplaceApps} />
+											<PlanCard license={license} licenseLimits={{ activeUsers: seatsLimit }} />
 										</CardGridItem>
-									)}
 
-									{!license && (
-										<CardGridItem lg={4} xs={4}>
-											<ActiveSessionsCard />
+										<CardGridItem lg={8} xs={4}>
+											<FeaturesCard activeModules={activeModules} isEnterprise={isEnterprise} />
 										</CardGridItem>
-									)}
-									{!license && (
-										<CardGridItem lg={4} xs={4}>
-											<ActiveSessionsPeakCard />
-										</CardGridItem>
-									)}
-								</CardGrid>
+
+										{seatsLimit.value !== undefined && (
+											<CardGridItem lg={6} xs={4}>
+												{seatsLimit.max !== Infinity ? (
+													<SeatsCard value={seatsLimit.value} max={seatsLimit.max} hideManageSubscription={licensesData?.trial} />
+												) : (
+													<CountSeatsCard activeUsers={seatsLimit?.value} />
+												)}
+											</CardGridItem>
+										)}
+
+										{macLimit.value !== undefined && (
+											<CardGridItem lg={6} xs={4}>
+												{macLimit.max !== Infinity ? (
+													<MACCard max={macLimit.max} value={macLimit.value} hideManageSubscription={licensesData?.trial} />
+												) : (
+													<CountMACCard macsCount={macLimit.value} />
+												)}
+											</CardGridItem>
+										)}
+
+										{!license && limits?.marketplaceApps !== undefined && (
+											<CardGridItem lg={4} xs={4}>
+												<AppsUsageCard privateAppsLimit={limits?.privateApps} marketplaceAppsLimit={limits.marketplaceApps} />
+											</CardGridItem>
+										)}
+
+										{!license && (
+											<CardGridItem lg={4} xs={4}>
+												<ActiveSessionsCard />
+											</CardGridItem>
+										)}
+										{!license && (
+											<CardGridItem lg={4} xs={4}>
+												<ActiveSessionsPeakCard />
+											</CardGridItem>
+										)}
+									</CardGrid>
+								</Stack>
 							</Box>
 							<UpgradeToGetMore activeModules={activeModules} isEnterprise={isEnterprise}>
 								{Boolean(licensesData?.license?.information.cancellable) && (
