@@ -129,11 +129,25 @@ const configureSamlService = function (samlConfigs: Record<string, any>): IServi
 	};
 };
 
+const removeSamlLoginService = async function (serviceName: string): Promise<void> {
+	const service = await LoginServiceConfiguration.removeByService(serviceName);
+	if (!service) {
+		return;
+	}
+
+	void notifyOnLoginServiceConfigurationChanged({ _id: service._id }, 'removed');
+};
+
 export const loadSamlServiceProviders = async function (): Promise<void> {
 	const serviceName = 'saml';
 	const services = settings.getByRegexp(/^(SAML_Custom_)[a-z]+$/i);
 
-	if (!services || !License.hasModule('saml-enterprise')) {
+	if (!License.hasModule('saml-enterprise')) {
+		await removeSamlLoginService(serviceName);
+		return SAMLUtils.setServiceProvidersList([]);
+	}
+
+	if (!services) {
 		return SAMLUtils.setServiceProvidersList([]);
 	}
 
@@ -153,12 +167,7 @@ export const loadSamlServiceProviders = async function (): Promise<void> {
 					SAMLUtils.logger?.warn({ msg: 'SAML Provider not loaded due to invalid configuration', key });
 				}
 
-				const service = await LoginServiceConfiguration.removeByService(serviceName);
-				if (!service) {
-					return false;
-				}
-
-				void notifyOnLoginServiceConfigurationChanged({ _id: service._id }, 'removed');
+				await removeSamlLoginService(serviceName);
 
 				return false;
 			}),

@@ -1,3 +1,4 @@
+import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
 import debounce from 'lodash.debounce';
 import { Meteor } from 'meteor/meteor';
@@ -13,6 +14,10 @@ Meteor.startup(async () => {
 	await addSettings('Default');
 });
 
-settings.watchByRegex(/^SAML_.+/, debounce(loadSamlServiceProviders, 500));
+const reloadSamlServiceProviders = debounce(loadSamlServiceProviders, 500);
+
+settings.watchByRegex(/^SAML_.+/, reloadSamlServiceProviders);
 
 settings.watchByRegex(/^SAML_Custom_Default_/, updateGlobalSettings);
+
+License.onToggledFeature('saml-enterprise', { up: reloadSamlServiceProviders, down: reloadSamlServiceProviders });
