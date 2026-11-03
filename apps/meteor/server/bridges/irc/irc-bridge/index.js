@@ -59,6 +59,10 @@ class Bridge {
 		this.loggedInUsers = [];
 
 		const lastPing = await Settings.findOneById('IRC_Bridge_Last_Ping');
+		if (!this.server) {
+			return;
+		}
+
 		if (lastPing) {
 			if (Math.abs(moment(lastPing.value).diff()) < 1000 * 30) {
 				this.log('Not trying to connect.');

@@ -51,6 +51,22 @@ describe('IRC Bridge', () => {
 		sandbox.resetHistory();
 	});
 
+	describe('init', () => {
+		it('should not connect once removed during the last ping lookup', async () => {
+			const bridge = createBridge(new Date());
+			const { server } = bridge;
+			findOneByIdMock.reset();
+			findOneByIdMock.withArgs('IRC_Bridge_Last_Ping').callsFake(async () => {
+				bridge.remove();
+				return null;
+			});
+
+			await bridge.init();
+
+			expect(server.register.called).to.be.false;
+		});
+	});
+
 	describe('runQueue', () => {
 		// A bridge that keeps running reschedules runQueue forever; fake timers keep that from holding the test process open.
 		let clock: sinon.SinonFakeTimers;
