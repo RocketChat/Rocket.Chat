@@ -47,7 +47,7 @@ describe('[Engagement Dashboard]', () => {
 				.expect(403)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+					expect(res.body.errorType).to.be.equal('error-forbidden');
 				});
 		});
 

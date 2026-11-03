@@ -16,7 +16,7 @@ const UserCardSkeleton = () => {
 						<Skeleton width='75%' />
 					</Box>
 				</Box>
-				<Box display='flex' flexDirection='column' marginBlockStart='x18'>
+				<Box display='flex' flexDirection='column' marginBlockStart='x16'>
 					{Array.from({ length: 3 }).map((_, i) => (
 						<Skeleton key={i} width='100%' />
 					))}

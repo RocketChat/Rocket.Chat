@@ -1,4 +1,4 @@
-import { Box, Button, Icon, Margins, Pagination, Select, TextInput, Stack } from '@rocket.chat/fuselage';
+import { Box, Button, Icon, Margins, Pagination, Select, TextInput, Stack, type TableColumnWidth } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
@@ -67,6 +67,8 @@ const RoomsPage = () => {
 		...(isExternalStore && { staleTime: 0, gcTime: 0 }),
 	});
 
+	const columns: TableColumnWidth[] = ['auto', 'auto', 'auto', 'auto', 40];
+
 	return (
 		<>
 			<Margins block={24}>
@@ -79,6 +81,7 @@ const RoomsPage = () => {
 					/>
 					<Box maxWidth={192}>
 						<Select
+							aria-label={t('Filter')}
 							options={[
 								['all', t('All'), true],
 								['roomName', t('Rooms'), false],
@@ -89,7 +92,7 @@ const RoomsPage = () => {
 							onChange={(value) => setFilterType(value)}
 						/>
 					</Box>
-					<Button onClick={handleNewAttribute} primary disabled={isABACAvailable !== true}>
+					<Button onClick={handleNewAttribute} variant='primary' disabled={isABACAvailable !== true}>
 						{t('Add_room')}
 					</Button>
 				</Stack>
@@ -100,30 +103,30 @@ const RoomsPage = () => {
 				</Box>
 			) : (
 				<>
-					<GenericTable>
+					<GenericTable columns={columns}>
 						<GenericTableHeader>
 							<GenericTableHeaderCell>{t('Room')}</GenericTableHeaderCell>
 							<GenericTableHeaderCell>{t('Members')}</GenericTableHeaderCell>
 							<GenericTableHeaderCell>{t('ABAC_Attributes')}</GenericTableHeaderCell>
 							<GenericTableHeaderCell>{t('ABAC_Attribute_Values')}</GenericTableHeaderCell>
-							<GenericTableHeaderCell key='spacer' width={40} />
+							<GenericTableHeaderCell key='spacer' />
 						</GenericTableHeader>
 						<GenericTableBody>
 							{data?.rooms?.map((room) => (
 								<GenericTableRow key={room._id}>
-									<GenericTableCell withTruncatedText>
+									<GenericTableCell truncate>
 										<Margins inline={8}>
 											<RoomIcon room={room} size='x20' />
 										</Margins>
 										{room.fname || room.name}
 									</GenericTableCell>
 									<GenericTableCell>{room.usersCount}</GenericTableCell>
-									<GenericTableCell withTruncatedText>
+									<GenericTableCell truncate>
 										{room.abacAttributesRedacted
 											? t('ABAC_Redacted_Placeholder')
 											: room.abacAttributes?.flatMap((attribute) => attribute.key ?? []).join(', ')}
 									</GenericTableCell>
-									<GenericTableCell withTruncatedText>
+									<GenericTableCell truncate>
 										{room.abacAttributesRedacted
 											? t('ABAC_Redacted_Placeholder')
 											: room.abacAttributes?.flatMap((attribute) => attribute.values ?? []).join(', ')}

@@ -92,7 +92,6 @@ export const CheckOptionStory: Story = {
 	name: 'CheckOption',
 	args: {
 		renderItem: CheckOption,
-		value: ['1'],
 		cursor: 0,
 		options,
 	},

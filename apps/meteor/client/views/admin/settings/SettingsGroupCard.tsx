@@ -42,7 +42,7 @@ const SettingsGroupCard = ({ id, title, description, ...props }: SettingsGroupCa
 						pattern: '/admin/settings/:group?',
 						params: { group: id },
 					})}
-					medium
+					size='medium'
 				>
 					{t('Open')}
 				</Button>

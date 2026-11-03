@@ -1,7 +1,6 @@
 import { VisuallyHidden } from '@react-aria/visually-hidden';
 import type { AvatarObject } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
-import { css } from '@rocket.chat/css-in-js';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Button, Divider, Icon, InputBox, Stack } from '@rocket.chat/fuselage';
 import {
@@ -34,6 +33,7 @@ import { Controller, useFormContext } from 'react-hook-form';
 import type { AccountProfileFormValues } from './getProfileInitialValues';
 import { useAccountProfileSettings } from './useAccountProfileSettings';
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
+import PhoneNumberFieldList, { getPersistedPhones } from '../../../components/PhoneNumberFieldList';
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
 import { UserStatus as UserStatusIndicator } from '../../../components/UserStatus';
 import UserStatusDisabledInfo from '../../../components/UserStatusDisabledInfo';
@@ -157,6 +157,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 			bio,
 			customFields,
 			statusVisibilityDenied,
+			phones,
 		} = values;
 
 		const expiresAt = STATUS_DURATION_OPTIONS.find((o) => o.value === statusDuration)?.getExpiresAt?.({
@@ -180,6 +181,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 			...(dirtyFields.username && { username }),
 			...(dirtyFields.nickname && { nickname }),
 			...(dirtyFields.bio && { bio }),
+			...(dirtyFields.phones && { phones: getPersistedPhones(phones) }),
 		};
 		const customFieldsDirty = Boolean(dirtyFields.customFields);
 		const basicInfoDirty = Object.keys(basicInfoData).length > 0 || customFieldsDirty;
@@ -242,45 +244,49 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 				</Field>
 				<Stack gap={16}>
 					<Box display='flex' flexDirection={isMobile ? 'column' : 'row'} style={{ gap: '16px' }}>
-						<Field flexShrink={1}>
-							<FieldLabel required={requireName}>{t('Name')}</FieldLabel>
-							<FieldRow>
-								<Controller
-									control={control}
-									name='name'
-									rules={{ required: requireName && t('Required_field', { field: t('Name') }) }}
-									render={({ field }) => (
-										<TextInput {...field} disabled={!allowRealNameChange} error={errors.name?.message} aria-required={true} />
-									)}
-								/>
-							</FieldRow>
-							{errors.name && <FieldError>{errors.name.message}</FieldError>}
-							{!allowRealNameChange && <FieldHint>{t('RealName_Change_Disabled')}</FieldHint>}
-						</Field>
-						<Field flexShrink={1}>
-							<FieldLabel required>{t('Username')}</FieldLabel>
-							<FieldRow>
-								<Controller
-									control={control}
-									name='username'
-									rules={{
-										required: t('Required_field', { field: t('Username') }),
-										validate: validateUsername,
-									}}
-									render={({ field }) => (
-										<TextInput
-											{...field}
-											aria-required={true}
-											disabled={!canChangeUsername}
-											endAddon={<Icon name='at' size='x20' />}
-											error={errors.username?.message}
-										/>
-									)}
-								/>
-							</FieldRow>
-							{errors.username && <FieldError>{errors.username.message}</FieldError>}
-							{!canChangeUsername && <FieldHint>{t('Username_Change_Disabled')}</FieldHint>}
-						</Field>
+						<Box width='full' flexShrink={1}>
+							<Field>
+								<FieldLabel required={requireName}>{t('Name')}</FieldLabel>
+								<FieldRow>
+									<Controller
+										control={control}
+										name='name'
+										rules={{ required: requireName && t('Required_field', { field: t('Name') }) }}
+										render={({ field }) => (
+											<TextInput {...field} disabled={!allowRealNameChange} error={errors.name?.message} aria-required={true} />
+										)}
+									/>
+								</FieldRow>
+								{errors.name && <FieldError>{errors.name.message}</FieldError>}
+								{!allowRealNameChange && <FieldHint>{t('RealName_Change_Disabled')}</FieldHint>}
+							</Field>
+						</Box>
+						<Box width='full' flexShrink={1}>
+							<Field>
+								<FieldLabel required>{t('Username')}</FieldLabel>
+								<FieldRow>
+									<Controller
+										control={control}
+										name='username'
+										rules={{
+											required: t('Required_field', { field: t('Username') }),
+											validate: validateUsername,
+										}}
+										render={({ field }) => (
+											<TextInput
+												{...field}
+												aria-required={true}
+												disabled={!canChangeUsername}
+												endAddon={<Icon name='at' size='x20' />}
+												error={errors.username?.message}
+											/>
+										)}
+									/>
+								</FieldRow>
+								{errors.username && <FieldError>{errors.username.message}</FieldError>}
+								{!canChangeUsername && <FieldHint>{t('Username_Change_Disabled')}</FieldHint>}
+							</Field>
+						</Box>
 					</Box>
 					<Divider />
 					<Stack gap={24}>
@@ -301,7 +307,6 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 											{...field}
 											placeholder={t('StatusMessage_Placeholder')}
 											disabled={!allowUserStatusMessageChange || presenceDisabledByAdmin}
-											flexGrow={1}
 											error={errors.statusText?.message}
 											endAddon={presenceDisabledByAdmin ? <UserStatusDisabledInfo workspace={workspacePresenceDisabled} /> : undefined}
 											startAddon={
@@ -406,7 +411,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 							<Controller
 								control={control}
 								name='nickname'
-								render={({ field }) => <TextInput {...field} flexGrow={1} endAddon={<Icon name='edit' size='x20' />} />}
+								render={({ field }) => <TextInput {...field} endAddon={<Icon name='edit' size='x20' />} />}
 							/>
 						</FieldRow>
 					</Field>
@@ -421,7 +426,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 								maxLength: { value: BIO_TEXT_MAX_LENGTH, message: t('Max_length_is', { limit: BIO_TEXT_MAX_LENGTH }) },
 							}}
 							render={({ field }) => (
-								<TextAreaInput {...field} rows={3} flexGrow={1} error={errors.bio?.message} endAddon={<Icon name='edit' size='x20' />} />
+								<TextAreaInput {...field} rows={3} error={errors.bio?.message} endAddon={<Icon name='edit' size='x20' />} />
 							)}
 						/>
 					</FieldRow>
@@ -429,43 +434,46 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 				</Field>
 				<Field>
 					<FieldLabel required>{t('Email')}</FieldLabel>
-					<FieldRow
-						flexDirection={isMobile ? 'column' : 'row'}
-						alignItems='stretch'
-						className={css`
-							gap: 8px;
-						`}
-					>
-						<Controller
-							control={control}
-							name='email'
-							rules={{
-								required: t('Required_field', { field: t('Email') }),
-								validate: {
-									validateEmail: (email) => (validateEmail(email) ? undefined : t('error-invalid-email-address')),
-								},
-							}}
-							render={({ field }) => (
-								<TextInput
-									{...field}
-									aria-required={true}
-									flexGrow={1}
-									disabled={!allowEmailChange}
-									endAddon={<Icon name={isUserVerified ? 'circle-check' : 'mail'} size='x20' />}
-									error={errors.email?.message}
-								/>
+					<FieldRow>
+						<Box display='flex' flexDirection={isMobile ? 'column' : 'row'} alignItems='stretch' gap={8} flexGrow={1}>
+							<Controller
+								control={control}
+								name='email'
+								rules={{
+									required: t('Required_field', { field: t('Email') }),
+									validate: {
+										validateEmail: (email) => (validateEmail(email) ? undefined : t('error-invalid-email-address')),
+									},
+								}}
+								render={({ field }) => (
+									<TextInput
+										{...field}
+										aria-required={true}
+										disabled={!allowEmailChange}
+										endAddon={<Icon name={isUserVerified ? 'circle-check' : 'mail'} size='x20' />}
+										error={errors.email?.message}
+									/>
+								)}
+							/>
+							{!isUserVerified && (
+								<Button disabled={email !== previousEmail} onClick={handleSendConfirmationEmail}>
+									{t('Resend_verification_email')}
+								</Button>
 							)}
-						/>
-						{!isUserVerified && (
-							<Button disabled={email !== previousEmail} onClick={handleSendConfirmationEmail}>
-								{t('Resend_verification_email')}
-							</Button>
-						)}
+						</Box>
 					</FieldRow>
 					{errors.email && <FieldError>{errors.email.message}</FieldError>}
 					{!allowEmailChange && <FieldHint>{t('Email_Change_Disabled')}</FieldHint>}
 				</Field>
-				{customFieldsMetadata && <CustomFieldsForm formName='customFields' formControl={control} metadata={customFieldsMetadata} />}
+
+				<Divider flush />
+				<PhoneNumberFieldList control={control} />
+				<Divider flush />
+				{!!customFieldsMetadata.length && (
+					<>
+						<CustomFieldsForm formName='customFields' formControl={control} metadata={customFieldsMetadata} />
+					</>
+				)}
 			</FieldGroup>
 		</Box>
 	);

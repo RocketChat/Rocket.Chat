@@ -8,6 +8,7 @@ import { Files } from './Files';
 import { MessageHeader } from './MessageHeader';
 import Quotes from './Quotes';
 import { isSystemMessage, markupEntriesGreaterThan10, messageLongerThanPage, splitByTens } from './utils';
+import { canRenderMarkup } from '../markup/canRenderMarkup';
 
 const { fontScale } = typography;
 
@@ -34,7 +35,7 @@ const processMd = (message: PDFMessage) =>
 	));
 
 const processMessage = (message: PDFMessage) => {
-	if (message.md) {
+	if (message.md && canRenderMarkup(message.md)) {
 		if (markupEntriesGreaterThan10(message.md)) {
 			return processMd(message);
 		}

@@ -77,7 +77,7 @@ const middleware = async function (req: express.Request, res: ServerResponse, ne
 	}
 };
 
-// eslint-disable-next-line new-cap
+// oxlint-disable-next-line new-cap
 const samlRouter = express.Router().use(
 	bodyParser.json(),
 	express.urlencoded({

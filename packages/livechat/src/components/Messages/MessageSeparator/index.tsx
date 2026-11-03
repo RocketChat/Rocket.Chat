@@ -14,7 +14,6 @@ export type MessageSeparatorProps = {
 };
 
 // TODO: find a better way to pass `use` and do not default to a string
-// eslint-disable-next-line @typescript-eslint/naming-convention
 const MessageSeparator = ({ date, unread, use: Element = 'div', className, style = {} }: MessageSeparatorProps) => {
 	const { t } = useTranslation();
 

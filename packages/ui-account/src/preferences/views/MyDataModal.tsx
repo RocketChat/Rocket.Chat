@@ -36,7 +36,7 @@ const MyDataModal = ({ onCancel, title, text, ...props }: MyDataModalProps) => {
 			)}
 			<ModalFooter>
 				<ModalFooterControllers>
-					<Button primary onClick={onCancel}>
+					<Button variant='primary' onClick={onCancel}>
 						{t('Ok')}
 					</Button>
 				</ModalFooterControllers>

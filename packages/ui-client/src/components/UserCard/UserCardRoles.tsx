@@ -4,7 +4,7 @@ import type { ReactNode } from 'react';
 export type UserCardRolesProps = { children: ReactNode };
 
 const UserCardRoles = ({ children }: UserCardRolesProps) => (
-	<Box display='flex' flexWrap='wrap' margin='neg-x2'>
+	<Box display='flex' flexWrap='wrap' gap='x4'>
 		{children}
 	</Box>
 );

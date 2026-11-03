@@ -1,8 +1,8 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { ISetting, ISettingColor } from '@rocket.chat/core-typings';
 import { isSettingCode, isSettingColor } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 
 import { settings } from '..';
 import { updateAuditedByUser } from './auditedSettingUpdates';
@@ -18,13 +18,13 @@ const validJSON = Match.Where((value: string) => {
 		value === '' || JSON.parse(value);
 		return true;
 	} catch (_) {
-		throw new Meteor.Error('Invalid JSON provided');
+		throw new ClientSafeError('Invalid JSON provided');
 	}
 });
 
 const checkInteger = (value: ISetting['value']) => {
 	if (!Number.isInteger(value)) {
-		throw new Meteor.Error('error-invalid-setting-value', `Invalid setting value ${value}`, {
+		throw new ClientSafeError('error-invalid-setting-value', `Invalid setting value ${value}`, {
 			method: 'saveSettings',
 		});
 	}
@@ -63,8 +63,6 @@ export const saveSettingsBulk = async (
 
 	await Promise.all(
 		params.map(async ({ _id, value }) => {
-			// Verify the _id passed in is a string.
-			check(_id, String);
 			if (!editPrivilegedSetting && !(manageSelectedSettings && (await hasPermissionAsync(uid, getSettingPermissionId(_id))))) {
 				return settingsNotAllowed.push(_id);
 			}
@@ -108,7 +106,7 @@ export const saveSettingsBulk = async (
 	);
 
 	if (settingsNotAllowed.length) {
-		throw new Meteor.Error('error-action-not-allowed', 'Editing settings is not allowed', {
+		throw new ClientSafeError('error-action-not-allowed', 'Editing settings is not allowed', {
 			method: 'saveSettings',
 			settingIds: settingsNotAllowed,
 		});

@@ -5,13 +5,13 @@ import type { AllHTMLAttributes, ComponentPropsWithoutRef, MouseEventHandler } f
 export type HeaderStateProps =
 	| (Pick<ComponentPropsWithoutRef<typeof IconButton>, 'color' | 'title' | 'icon'> & {
 			onClick: MouseEventHandler;
-	  } & Omit<AllHTMLAttributes<HTMLButtonElement>, 'is'>)
+	  } & Omit<AllHTMLAttributes<HTMLButtonElement>, 'is' | 'size'>)
 	| (Omit<ComponentPropsWithoutRef<typeof Icon>, 'name' | 'onClick'> & {
 			icon: IconName;
 			onClick?: undefined;
 	  });
 
 const HeaderState = (props: HeaderStateProps) =>
-	props.onClick ? <IconButton tiny {...props} /> : <Icon size='x16' name={props.icon} {...props} />;
+	props.onClick ? <IconButton size='tiny' {...props} /> : <Icon size='x16' name={props.icon} {...props} />;
 
 export default HeaderState;

@@ -7,6 +7,7 @@ import {
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
 	ContextualbarDialog,
+	useHasLicenseModule,
 } from '@rocket.chat/ui-client';
 import { usePermission } from '@rocket.chat/ui-contexts';
 import { format } from 'date-fns/format';
@@ -14,7 +15,6 @@ import { useId } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
 import { CurrentChatTags } from '../../additionalForms';
 import AutoCompleteUnits from '../../additionalForms/AutoCompleteUnits';
 import AutoCompleteDepartmentMultiple from '../../components/AutoCompleteDepartmentMultiple';
@@ -113,13 +113,11 @@ const ChatsFiltersContextualBar = ({ onClose }: ChatsFiltersContextualBarProps) 
 					</Field>
 				)}
 				<Field>
-					<FieldLabel id={statusFieldId}>{t('Status')}</FieldLabel>
+					<FieldLabel htmlFor={statusFieldId}>{t('Status')}</FieldLabel>
 					<Controller
 						name='status'
 						control={control}
-						render={({ field }) => (
-							<Select {...field} aria-labelledby={statusFieldId} options={statusOptions} placeholder={t('Select_an_option')} />
-						)}
+						render={({ field }) => <Select {...field} id={statusFieldId} options={statusOptions} placeholder={t('Select_an_option')} />}
 					/>
 				</Field>
 				<Field>
@@ -163,7 +161,7 @@ const ChatsFiltersContextualBar = ({ onClose }: ChatsFiltersContextualBarProps) 
 						if (customField.type === 'select') {
 							return (
 								<Field key={customField._id}>
-									<FieldLabel id={customField._id}>{customField.label}</FieldLabel>
+									<FieldLabel htmlFor={customField._id}>{customField.label}</FieldLabel>
 									<FieldRow>
 										<Controller
 											name={customField._id}
@@ -171,7 +169,7 @@ const ChatsFiltersContextualBar = ({ onClose }: ChatsFiltersContextualBarProps) 
 											render={({ field }) => (
 												<Select
 													{...field}
-													aria-labelledby={customField._id}
+													id={customField._id}
 													value={field.value as string}
 													options={(customField.options || '').split(',').map((item) => [item, item])}
 												/>
@@ -201,7 +199,7 @@ const ChatsFiltersContextualBar = ({ onClose }: ChatsFiltersContextualBarProps) 
 					<Button disabled={!hasAppliedFilters} onClick={handleResetFilters}>
 						{t('Clear_filters')}
 					</Button>
-					<Button type='submit' form={formId} primary>
+					<Button type='submit' form={formId} variant='primary'>
 						{t('Apply')}
 					</Button>
 				</ButtonGroup>

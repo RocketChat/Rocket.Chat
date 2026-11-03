@@ -22,7 +22,7 @@ export class OmnichannelUnitFlexTab extends FlexTab {
 	}
 
 	get inputVisibility(): Locator {
-		return this.root.getByText('Visibility');
+		return this.root.getByRole('combobox', { name: 'Visibility' });
 	}
 
 	findDepartmentsChipOption(name: string) {

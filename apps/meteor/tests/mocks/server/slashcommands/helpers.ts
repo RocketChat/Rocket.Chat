@@ -1,4 +1,4 @@
-import { ClientSafeError } from '@rocket.chat/core-services';
+import { ClientSafeError, isClientSafeError } from '@rocket.chat/core-services';
 import type { SlashCommandCallbackParams, SlashCommandOptions } from '@rocket.chat/core-typings';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -29,12 +29,11 @@ export function loadSlashCommand(path: string, dependencies: Dependencies = {}) 
 		.noCallThru()
 		.noPreserveCache()
 		.load(`../../../../server/slashcommands/${path}`, {
-			'meteor/meteor': { Meteor: { Error: ClientSafeError } },
 			'@rocket.chat/logger': { Logger: sinon.stub().returns(logger) },
 			'../../lib/i18n': { i18n: { t: translate, exists: translationExists } },
 			'../../settings': { settings },
 			...dependencies,
-			'@rocket.chat/core-services': { ...coreServices, api: { ...coreServices?.api, broadcast } },
+			'@rocket.chat/core-services': { ClientSafeError, isClientSafeError, ...coreServices, api: { ...coreServices?.api, broadcast } },
 			'../../lib/utils/slashCommand': {
 				slashCommands: { add: (registration: Registration) => registeredCommands.set(registration.command, registration) },
 			},

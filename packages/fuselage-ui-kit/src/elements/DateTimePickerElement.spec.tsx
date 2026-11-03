@@ -33,7 +33,7 @@ it('reports the picked local date and time as a Unix timestamp in seconds', () =
 	const updateState = jest.fn();
 	renderPicker(updateState);
 
-	// eslint-disable-next-line testing-library/prefer-user-event -- jsdom cannot type into datetime-local inputs
+	// oxlint-disable-next-line testing-library/prefer-user-event -- jsdom cannot type into datetime-local inputs
 	fireEvent.input(screen.getByDisplayValue('2026-10-05T14:30'), { target: { value: '2026-10-06T09:15' } });
 
 	expect(updateState).toHaveBeenCalledWith(

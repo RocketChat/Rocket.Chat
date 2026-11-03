@@ -41,7 +41,7 @@ class OmnichannelEditAgentFlexTab extends FlexTab {
 	}
 
 	private get inputStatus(): Locator {
-		return this.root.getByText('Status', { exact: true });
+		return this.root.getByRole('combobox', { name: 'Status', exact: true });
 	}
 
 	async selectStatus(status: string) {

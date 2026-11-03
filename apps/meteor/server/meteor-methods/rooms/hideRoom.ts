@@ -1,14 +1,11 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { Subscriptions } from '@rocket.chat/models';
-import { check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 
 import { notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../lib/notifyListener';
 
 export const hideRoomMethod = async (userId: string, rid: string): Promise<number> => {
-	check(rid, String);
-
 	if (!userId) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+		throw new ClientSafeError('error-unauthenticated', 'Unauthenticated', {
 			method: 'hideRoom',
 		});
 	}

@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/layout",
-	"version": "0.36.3",
+	"version": "1.0.0-rc.1",
 	"description": "Shared Application Layout Components",
 	"homepage": "https://github.com/RocketChat/Rocket.Chat#readme",
 	"bugs": {
@@ -48,7 +48,6 @@
 		"@testing-library/react": "~16.3.3",
 		"@types/react": "~19.2.18",
 		"@types/react-dom": "~19.2.7",
-		"eslint": "~10.12.0",
 		"i18next": "~26.4.2",
 		"jest": "~30.5.2",
 		"react": "~19.2.8",
@@ -58,7 +57,7 @@
 		"typescript": "~7.0.2"
 	},
 	"peerDependencies": {
-		"@rocket.chat/fuselage": "*",
+		"@rocket.chat/fuselage": "1.0.0-rc.1",
 		"react": ">=19",
 		"react-dom": ">=19",
 		"react-i18next": "*"

@@ -21,6 +21,11 @@ export default {
 			} satisfies SWC.Config,
 		],
 	},
+	moduleNameMapper: {
+		// jest-resolve doesn't apply TypeScript's `.js` → `.ts` mapping for the explicit
+		// extensions that `moduleResolution: nodenext` requires in the sources.
+		'^(\\.{1,2}/.*)\\.js$': '$1',
+	},
 	transformIgnorePatterns: [
 		'<rootDir>/node_modules/@babel',
 		'<rootDir>/node_modules/@jest',

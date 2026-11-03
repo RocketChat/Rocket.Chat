@@ -1,6 +1,7 @@
-import { Box, type BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
+import { Box } from '../Box';
 
-export type ModalFooterAnnotationProps = BoxProps;
+export type ModalFooterAnnotationProps = ElementProps<HTMLDivElement>;
 
 const ModalFooterAnnotation = ({ children }: ModalFooterAnnotationProps) => <Box rcx-modal__footer-annotation>{children}</Box>;
 

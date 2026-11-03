@@ -15,7 +15,6 @@
 	"devDependencies": {
 		"@changesets/types": "^6.0.0",
 		"@types/node": "~24.13.6",
-		"eslint": "~10.12.0",
 		"typescript": "~7.0.2"
 	},
 	"volta": {

@@ -171,7 +171,7 @@ const EditCustomEmoji = ({ close, onChange, data, ...props }: EditCustomEmojiPro
 					<Field>
 						<FieldRow>
 							<FieldLabel id={emojiLabelId}>{t('Custom_Emoji')}</FieldLabel>
-							<IconButton aria-labelledby={emojiLabelId} icon='upload' secondary onClick={clickUpload} />
+							<IconButton aria-labelledby={emojiLabelId} icon='upload' variant='secondary' onClick={clickUpload} />
 						</FieldRow>
 						{newEmojiPreview && (
 							<Box display='flex' flexDirection='row' marginBlockStart='none' justifyContent='center'>
@@ -186,13 +186,13 @@ const EditCustomEmoji = ({ close, onChange, data, ...props }: EditCustomEmojiPro
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={close}>{t('Cancel')}</Button>
-					<Button primary onClick={handleSave} disabled={!hasUnsavedChanges}>
+					<Button variant='primary' onClick={handleSave} disabled={!hasUnsavedChanges}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
 				<Box marginBlockStart={8}>
 					<ButtonGroup stretch>
-						<Button icon='trash' danger onClick={handleDeleteButtonClick}>
+						<Button icon='trash' variant='danger' onClick={handleDeleteButtonClick}>
 							{t('Delete')}
 						</Button>
 					</ButtonGroup>

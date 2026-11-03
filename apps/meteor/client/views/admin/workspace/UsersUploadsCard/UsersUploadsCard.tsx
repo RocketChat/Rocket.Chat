@@ -1,12 +1,12 @@
 import type { IStats } from '@rocket.chat/core-typings';
 import { Button, Card, CardBody, CardControls, Margins } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { useHasLicenseModule } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useFormatMemorySize } from '../../../../hooks/useFormatMemorySize';
-import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
 import WorkspaceCardSection from '../components/WorkspaceCardSection';
 import WorkspaceCardSectionTitle from '../components/WorkspaceCardSectionTitle';
 import WorkspaceCardTextSeparator from '../components/WorkspaceCardTextSeparator';
@@ -60,7 +60,7 @@ const UsersUploadsCard = ({ statistics }: UsersUploadsCardProps) => {
 			</CardBody>
 
 			<CardControls>
-				<Button disabled={!canViewEngagement} medium onClick={handleEngagement}>
+				<Button disabled={!canViewEngagement} size='medium' onClick={handleEngagement}>
 					{t('See_on_Engagement_Dashboard')}
 				</Button>
 			</CardControls>

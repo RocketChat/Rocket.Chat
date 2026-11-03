@@ -57,7 +57,7 @@ const BannedUsersUnbanModal = ({ onClose, onConfirm }: BannedUsersUnbanModalProp
 					</Box>
 				)}
 			</ModalContent>
-			<ModalFooter justifyContent='space-between'>
+			<ModalFooter justify='space-between'>
 				<ModalFooterAnnotation>
 					<Stack direction='row' align='center' gap={8}>
 						<CheckBox checked={unbanConfirmed} onChange={() => setUnbanConfirmed((prev) => !prev)} id={checkboxId} />
@@ -66,7 +66,7 @@ const BannedUsersUnbanModal = ({ onClose, onConfirm }: BannedUsersUnbanModalProp
 				</ModalFooterAnnotation>
 				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button primary onClick={handleConfirm} disabled={!unbanConfirmed} loading={loading}>
+					<Button variant='primary' onClick={handleConfirm} disabled={!unbanConfirmed} loading={loading}>
 						{t('Add_users')}
 					</Button>
 				</ModalFooterControllers>

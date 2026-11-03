@@ -1,6 +1,8 @@
-import { Box, type BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
+import { Box } from '../Box';
 
-export type TableRowProps = Omit<BoxProps, 'action'> & {
+export type TableRowProps = ElementProps<HTMLTableRowElement> & {
+	selected?: boolean;
 	action?: boolean;
 	hasAction?: boolean;
 };

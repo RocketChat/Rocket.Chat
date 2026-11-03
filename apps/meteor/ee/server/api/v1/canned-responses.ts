@@ -9,7 +9,6 @@ import { saveCannedResponse } from '../../meteor-methods/saveCannedResponse';
 import { findAllCannedResponses, findAllCannedResponsesFilter, findOneCannedResponse } from '../lib/canned-responses';
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Endpoints {
 		'/v1/canned-responses': {
 			GET: (

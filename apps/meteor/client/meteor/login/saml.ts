@@ -8,7 +8,7 @@ import { settings } from '../../lib/settings';
 import { callLoginMethod, registerLoginWithMethod } from '../accounts';
 
 declare module 'meteor/accounts-base' {
-	// eslint-disable-next-line @typescript-eslint/no-namespace
+	// oxlint-disable-next-line @typescript-eslint/no-namespace
 	namespace Accounts {
 		/**
 		 * There is one case where the onlogout event is triggered with no user:
@@ -19,7 +19,6 @@ declare module 'meteor/accounts-base' {
 }
 
 declare module 'meteor/service-configuration' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Configuration {
 		logoutBehaviour?: 'SAML' | 'Local';
 		idpSLORedirectURL?: string;

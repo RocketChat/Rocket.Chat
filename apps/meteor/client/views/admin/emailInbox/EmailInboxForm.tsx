@@ -603,13 +603,13 @@ const EmailInboxForm = ({ inboxData }: EmailInboxFormProps) => {
 							<Box display='flex' flexDirection='column' flexGrow={1} gap={22}>
 								<ButtonGroup stretch>
 									<Button onClick={handleBack}>{t('Cancel')}</Button>
-									<Button disabled={!isDirty} primary onClick={handleSubmit(handleSave)}>
+									<Button disabled={!isDirty} variant='primary' onClick={handleSubmit(handleSave)}>
 										{t('Save')}
 									</Button>
 								</ButtonGroup>
 								<ButtonGroup stretch>
 									{inboxData?._id && (
-										<Button danger onClick={handleDelete}>
+										<Button variant='danger' onClick={handleDelete}>
 											{t('Delete')}
 										</Button>
 									)}

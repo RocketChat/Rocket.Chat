@@ -3,15 +3,18 @@ import { ApiBridge } from '@rocket.chat/apps/dist/server/bridges/ApiBridge';
 import type { AppApi } from '@rocket.chat/apps/dist/server/managers/AppApi';
 import type { RequestMethod } from '@rocket.chat/apps-engine/definition/accessors';
 import type { IApiRequest, IApiEndpoint, IApi } from '@rocket.chat/apps-engine/definition/api';
+import { nodeHandler } from '@rocket.chat/http-router';
 import type { Response, Request, IRouter, RequestHandler } from 'express';
 import express from 'express';
 import { Meteor } from 'meteor/meteor';
-import { WebApp } from 'meteor/webapp';
 
 import { apiServer } from './router';
 import { authenticationMiddleware } from '../../../api/v1/middlewares/authentication';
+import { httpApp } from '../../../lib/http/httpServer';
 
-WebApp.rawConnectHandlers.use(apiServer);
+const apiHandler = nodeHandler(apiServer);
+httpApp.use('/api/apps/private/*', apiHandler);
+httpApp.use('/api/apps/public/*', apiHandler);
 
 interface IRequestWithPrivateHash extends Request {
 	_privateHash?: string;
@@ -59,7 +62,7 @@ export class AppApisBridge extends ApiBridge {
 		let router = this.appRouters.get(appId);
 
 		if (!router) {
-			router = express.Router(); // eslint-disable-line new-cap
+			router = express.Router(); // oxlint-disable-line new-cap
 			this.appRouters.set(appId, router);
 		}
 

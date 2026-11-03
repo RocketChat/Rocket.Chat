@@ -45,7 +45,7 @@ const UserInfoCopyableText = ({ text, label, children, ...props }: UserInfoCopya
 			</Box>
 			<IconButton
 				className='rcx-user-info-copy'
-				tiny
+				size='tiny'
 				icon='copy'
 				title={label ? t('Copy_field', { field: label }) : t('Copy')}
 				aria-label={label ? t('Copy_field', { field: label }) : t('Copy')}

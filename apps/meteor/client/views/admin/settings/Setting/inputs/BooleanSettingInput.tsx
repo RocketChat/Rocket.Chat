@@ -29,8 +29,8 @@ function BooleanSettingInput({
 				<FieldLabel htmlFor={_id} title={_id} required={required}>
 					{label}
 				</FieldLabel>
-				<Box display='flex' alignItems='center'>
-					{hasResetButton && <ResetSettingButton marginInlineEnd={8} onClick={onResetButtonClick} />}
+				<Box display='flex' alignItems='center' gap={8}>
+					{hasResetButton && <ResetSettingButton onClick={onResetButtonClick} />}
 					<ToggleSwitch id={_id} checked={value === true} disabled={disabled || readonly} onChange={handleChange} />
 				</Box>
 			</FieldRow>

@@ -1,10 +1,8 @@
 import { Users } from '@rocket.chat/models';
-import { MongoInternals } from 'meteor/mongo';
 
 import { readSecondaryPreferred } from '../../../database/readSecondaryPreferred';
+import { db } from '../../../database/utils';
 import { settings } from '../../../settings';
-
-const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
 async function getCustomOAuthServices(): Promise<
 	Record<

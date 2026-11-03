@@ -125,7 +125,7 @@ const AdminUsersPage = () => {
 					<UsersPageHeaderContent isSeatsCapExceeded={isSeatsCapExceeded} seatsCap={seatsCap} />
 				</PageHeader>
 				{preventAction?.includes('activeUsers') && (
-					<Box paddingInline={24} paddingBlockEnd={19}>
+					<Box paddingInline='x24' paddingBlockEnd='x20'>
 						<Callout type='danger' title={t('subscription.callout.servicesDisruptionsOccurring')}>
 							<Trans
 								i18nKey='subscription.callout.description.limitsExceeded'

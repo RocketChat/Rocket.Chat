@@ -1,7 +1,7 @@
 import type { IWorkspaceInfo, IStats } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, Callout, CardGrid } from '@rocket.chat/fuselage';
 import type { IInstance } from '@rocket.chat/rest-typings';
-import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
+import { Page, PageHeader, PageScrollableContentWithShadow, useIsEnterprise } from '@rocket.chat/ui-client';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -9,7 +9,6 @@ import DeploymentCard from './DeploymentCard/DeploymentCard';
 import MessagesRoomsCard from './MessagesRoomsCard/MessagesRoomsCard';
 import UsersUploadsCard from './UsersUploadsCard/UsersUploadsCard';
 import VersionCard from './VersionCard/VersionCard';
-import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 
 type WorkspaceStatusPageProps = {
 	canViewStatistics: boolean;
@@ -55,7 +54,7 @@ const WorkspacePage = ({
 					<Box>
 						<VersionCard serverInfo={serverInfo} />
 					</Box>
-					<CardGrid breakpoints={{ lg: 4, xs: 4, padding: 8 }}>
+					<CardGrid breakpoints={{ lg: 4, xs: 4 }}>
 						<DeploymentCard serverInfo={serverInfo} statistics={statistics} instances={instances} />
 						<UsersUploadsCard statistics={statistics} />
 						<MessagesRoomsCard statistics={statistics} />

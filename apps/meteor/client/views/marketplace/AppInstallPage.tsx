@@ -49,7 +49,7 @@ const AppInstallPage = () => {
 											value={field.value?.name || ''}
 											endAddonFlush
 											endAddon={
-												<Button icon='upload' small primary onClick={handleUploadButtonClick}>
+												<Button icon='upload' size='small' variant='primary' onClick={handleUploadButtonClick}>
 													{t('Browse_Files')}
 												</Button>
 											}

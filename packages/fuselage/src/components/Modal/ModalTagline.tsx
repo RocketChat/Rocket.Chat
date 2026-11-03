@@ -1,6 +1,7 @@
-import { Box, type BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
+import { Box } from '../Box';
 
-export type ModalTaglineProps = BoxProps & {
+export type ModalTaglineProps = ElementProps<HTMLDivElement> & {
 	/** Mutes the tagline, so it reads as a category above the title. */
 	subtle?: boolean;
 };

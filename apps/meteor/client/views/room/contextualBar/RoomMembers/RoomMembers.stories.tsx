@@ -1,4 +1,5 @@
 import { UserStatus } from '@rocket.chat/core-typings';
+import { Box } from '@rocket.chat/fuselage';
 import { Contextualbar } from '@rocket.chat/ui-client';
 import type { Meta } from '@storybook/react';
 import { action } from 'storybook/actions';
@@ -11,7 +12,13 @@ export default {
 		layout: 'fullscreen',
 		actions: { argTypesRegex: '^on.*' },
 	},
-	decorators: [(fn) => <Contextualbar height='100vh'>{fn()}</Contextualbar>],
+	decorators: [
+		(fn) => (
+			<Box height='100vh'>
+				<Contextualbar>{fn()}</Contextualbar>
+			</Box>
+		),
+	],
 	args: {
 		text: 'filter',
 		type: 'online',

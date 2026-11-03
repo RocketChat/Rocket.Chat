@@ -53,7 +53,7 @@ const EnterpriseDepartmentsModal = ({ closeModal }: { closeModal: () => void }) 
 			</ModalHeader>
 			<ModalContent>
 				<ModalHeroImage src='/images/departments.svg' />
-				<Box fontScale='h3' marginBlockEnd={28}>
+				<Box fontScale='h3' marginBlockEnd='x24'>
 					{t('Premium_Departments_title')}
 				</Box>
 				{t('Premium_Departments_description_upgrade')}
@@ -61,7 +61,7 @@ const EnterpriseDepartmentsModal = ({ closeModal }: { closeModal: () => void }) 
 			<ModalFooter>
 				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button onClick={goToManageSubscriptionPage} primary>
+					<Button onClick={goToManageSubscriptionPage} variant='primary'>
 						{t('Upgrade')}
 					</Button>
 				</ModalFooterControllers>

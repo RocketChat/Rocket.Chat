@@ -100,7 +100,7 @@ const TwoFactorEmailModal = ({ onConfirm, onClose, invalidAttempt, emailOrUserna
 			<Stack gap={24}>
 				<FieldGroup>
 					<Field>
-						<FieldLabel alignSelf='stretch'>{t('Enter_the_code_we_just_emailed_you')}</FieldLabel>
+						<FieldLabel>{t('Enter_the_code_we_just_emailed_you')}</FieldLabel>
 						<FieldRow>
 							<Controller
 								name='code'
@@ -126,7 +126,7 @@ const TwoFactorEmailModal = ({ onConfirm, onClose, invalidAttempt, emailOrUserna
 					</Field>
 				</FieldGroup>
 				<ButtonGroup>
-					<Button onClick={onClickResendCode} small>
+					<Button onClick={onClickResendCode} size='small'>
 						{t('Cloud_resend_email')}
 					</Button>
 				</ButtonGroup>

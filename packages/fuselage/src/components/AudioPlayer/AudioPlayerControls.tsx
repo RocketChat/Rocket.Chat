@@ -49,8 +49,8 @@ const AudioPlayerControls = ({
 }: AudioPlayerControlsProps) => (
 	<Box display='flex' alignItems='center' width='full'>
 		<IconButton
-			primary
-			medium
+			variant='primary'
+			size='medium'
 			onClick={onTogglePlay}
 			aria-label={isPlaying ? pauseLabel : playLabel}
 			icon={isPlaying ? 'pause-shape-filled' : 'play-shape-filled'}
@@ -69,14 +69,14 @@ const AudioPlayerControls = ({
 				/>
 			</Box>
 
-			<Button secondary small onClick={onChangePlaybackSpeed} aria-label={changePlaybackSpeedLabel}>
+			<Button variant='secondary' size='small' onClick={onChangePlaybackSpeed} aria-label={changePlaybackSpeedLabel}>
 				{playbackSpeed}x
 			</Button>
 		</Box>
 		{download && (
 			<IconButton
-				primary
-				medium
+				variant='primary'
+				size='medium'
 				is='a'
 				href={downloadHref}
 				download

@@ -41,10 +41,10 @@ const AppUpdateModal = ({ confirm, cancel, ...props }: AppUpdateModalProps) => {
 			<ModalContent>{t('Apps_Manual_Update_Modal_Body')}</ModalContent>
 			<ModalFooter>
 				<ModalFooterControllers>
-					<Button secondary onClick={handleCancelButtonClick}>
+					<Button variant='secondary' onClick={handleCancelButtonClick}>
 						{t('No')}
 					</Button>
-					<Button danger onClick={handleConfirmButtonClick}>
+					<Button variant='danger' onClick={handleConfirmButtonClick}>
 						{t('Yes')}
 					</Button>
 				</ModalFooterControllers>

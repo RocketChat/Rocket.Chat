@@ -1,4 +1,5 @@
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { useHasLicenseModule } from '@rocket.chat/ui-client';
 import {
 	useSetModal,
 	useToastMessageDispatch,
@@ -14,7 +15,6 @@ import { useCallback, useState, useEffect } from 'react';
 
 import { usePutChatOnHoldMutation } from './usePutChatOnHoldMutation';
 import { useReturnChatToQueueMutation } from './useReturnChatToQueueMutation';
-import { useHasLicenseModule } from '../../../../../../hooks/useHasLicenseModule';
 import { useLivechatInquiryStore } from '../../../../../../hooks/useLivechatInquiryStore';
 import { LegacyRoomManager } from '../../../../../../lib/LegacyRoomManager';
 import { quickActionHooks } from '../../../../../../ui';

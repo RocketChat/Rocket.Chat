@@ -1,13 +1,27 @@
-import type { RefAttributes } from 'react';
 import { memo } from 'react';
 
-import { Box, type BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
+import { Box } from '../Box';
 
-export type ContextualbarContentProps = Omit<BoxProps, 'ref'> & RefAttributes<HTMLElement>;
+export type ContextualbarContentProps = ElementProps<HTMLElement> & {
+	/** Drops the inline padding, for content such as a list whose items bring their own. */
+	flush?: boolean;
+	/** Adds a 12px block padding, so the first and last items keep clear of the header and footer. */
+	spaced?: boolean;
+};
 
-function ContextualbarContent(props: ContextualbarContentProps) {
+function ContextualbarContent({ flush, spaced, ...props }: ContextualbarContentProps) {
 	return (
-		<Box rcx-vertical-bar__content paddingInline={24} display='flex' flexDirection='column' overflowY='hidden' height='full' {...props} />
+		<Box
+			rcx-vertical-bar__content
+			paddingInline={flush ? 0 : 24}
+			paddingBlock={spaced ? 12 : undefined}
+			display='flex'
+			flexDirection='column'
+			overflowY='hidden'
+			height='full'
+			{...props}
+		/>
 	);
 }
 

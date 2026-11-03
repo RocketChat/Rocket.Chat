@@ -50,7 +50,7 @@ export const WithButtonsAtTheHeader: StoryObj<typeof Page> = {
 		<Page>
 			<PageHeader title='Page Title'>
 				<ButtonGroup>
-					<Button primary type='button'>
+					<Button variant='primary' type='button'>
 						Perform action
 					</Button>
 				</ButtonGroup>

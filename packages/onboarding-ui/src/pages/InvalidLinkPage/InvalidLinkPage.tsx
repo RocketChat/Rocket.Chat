@@ -29,7 +29,7 @@ const InvalidLinkPage = ({ onRequestNewLink }: InvalidLinkPageProps) => {
 
 				<Box fontScale='p1'>{t('page.invalidLink.content')}</Box>
 
-				<Button onClick={onRequestNewLink} primary>
+				<Button onClick={onRequestNewLink} variant='primary'>
 					{t('page.invalidLink.button.text')}
 				</Button>
 			</Box>

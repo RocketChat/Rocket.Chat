@@ -20,7 +20,7 @@ export const QueueListFilter = ({ setFilter, ...props }: QueueListFilterProps) =
 	];
 
 	const servedByLabelId = useId();
-	const statusLabelId = useId();
+	const statusField = useId();
 	const departmentLabelId = useId();
 
 	const [servedBy, setServedBy] = useLocalStorage('servedBy', 'all');
@@ -63,15 +63,9 @@ export const QueueListFilter = ({ setFilter, ...props }: QueueListFilterProps) =
 				</Box>
 				<Box flexGrow={1}>
 					<Field>
-						<FieldLabel id={statusLabelId}>{t('Status')}</FieldLabel>
+						<FieldLabel htmlFor={statusField}>{t('Status')}</FieldLabel>
 						<FieldRow>
-							<Select
-								aria-labelledby={statusLabelId}
-								options={statusOptions}
-								value={status}
-								onChange={handleStatus}
-								placeholder={t('Status')}
-							/>
+							<Select id={statusField} options={statusOptions} value={status} onChange={handleStatus} placeholder={t('Status')} />
 						</FieldRow>
 					</Field>
 				</Box>

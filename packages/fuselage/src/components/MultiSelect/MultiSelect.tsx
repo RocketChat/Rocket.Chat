@@ -3,8 +3,9 @@ import type { ElementType, MouseEventHandler, ReactNode, RefAttributes } from 'r
 import { useState, useRef, useEffect } from 'react';
 
 import { prevent } from '../../helpers/prevent';
+import type { ElementProps } from '../../types/ElementProps';
 import { AnimatedVisibility } from '../AnimatedVisibility';
-import { Box, type BoxProps } from '../Box';
+import { Box } from '../Box';
 import { FlexContainer, FlexItem } from '../Flex';
 import type { IconProps } from '../Icon';
 import { Icon } from '../Icon';
@@ -18,8 +19,12 @@ import type { MultiSelectAnchorParams } from './MultiSelectAnchorParams';
 import { SelectedOptions } from './SelectedOptions';
 import SelectAddon from '../Select/SelectAddon';
 
-export type MultiSelectProps = Omit<BoxProps, 'ref' | 'onChange' | 'value'> &
+export type MultiSelectProps = Omit<ElementProps<HTMLDivElement>, 'ref' | 'onChange'> &
 	RefAttributes<HTMLInputElement> & {
+		name?: string;
+		disabled?: boolean;
+		placeholder?: string;
+		filter?: string;
 		value?: SelectOption[0][];
 		error?: string;
 		options: SelectOption[];

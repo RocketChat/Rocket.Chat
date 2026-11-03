@@ -1,6 +1,6 @@
 import type { AppStatus } from '@rocket.chat/apps';
 import { AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
-import { Box, Tag } from '@rocket.chat/fuselage';
+import { Box, Tag, type TableColumnWidth } from '@rocket.chat/fuselage';
 import {
 	GenericMenu,
 	CustomScrollbars,
@@ -41,6 +41,8 @@ const AppInstances = ({ id }: AppInstanceProps) => {
 		);
 	};
 
+	const columns: TableColumnWidth[] = ['auto', 'auto', 64];
+
 	return (
 		<Box height='full' width='full' marginInline='auto' color='default' paddingBlockStart={24}>
 			{isLoading && <AccordionLoading />}
@@ -51,11 +53,11 @@ const AppInstances = ({ id }: AppInstanceProps) => {
 			)}
 			{isSuccess && data.clusterStatus && data.clusterStatus.length > 0 && (
 				<CustomScrollbars>
-					<GenericTable width='full'>
+					<GenericTable columns={columns}>
 						<GenericTableHeader>
 							<GenericTableHeaderCell key='instanceId'>{t('Workspace_instance')}</GenericTableHeaderCell>
 							<GenericTableHeaderCell key='status'>{t('Status')}</GenericTableHeaderCell>
-							<GenericTableHeaderCell key='actions' width={64} />
+							<GenericTableHeaderCell key='actions' />
 						</GenericTableHeader>
 						<GenericTableBody>
 							{data?.clusterStatus?.map((instance) => (

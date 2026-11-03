@@ -40,7 +40,7 @@ API.v1.post(
 	},
 	async function action() {
 		if (!this.userId) {
-			throw new Error('error-invalid-user');
+			throw new Error('error-unauthenticated');
 		}
 
 		if (settings.get<boolean>('LDAP_Enable') !== true) {
@@ -84,7 +84,7 @@ API.v1.post(
 	},
 	async function action() {
 		if (!this.userId) {
-			throw new Error('error-invalid-user');
+			throw new Error('error-unauthenticated');
 		}
 
 		if (settings.get<boolean>('LDAP_Enable') !== true) {

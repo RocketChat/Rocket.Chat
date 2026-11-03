@@ -4,10 +4,6 @@ import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
-class CookiesMock {
-	public get = (_key: any, value: any) => value;
-}
-
 const mocks = {
 	settingsGet: sinon.stub(),
 	findOneByIdAndLoginToken: sinon.stub(),
@@ -25,9 +21,6 @@ const {
 	serveSvgAvatarInRequestedFormat,
 	serveAvatarFile,
 } = proxyquire.noCallThru().load('./utils', {
-	'meteor/ostrio:cookies': {
-		Cookies: CookiesMock,
-	},
 	'@rocket.chat/models': {
 		Users: {
 			findOneByIdAndLoginToken: mocks.findOneByIdAndLoginToken,
@@ -235,6 +228,7 @@ describe('#userCanAccessAvatar()', async () => {
 
 		await expect(userCanAccessAvatar({ query: { rc_token: 'token', rc_uid: 'id' } })).to.eventually.equal(true);
 		await expect(userCanAccessAvatar({ headers: { cookie: 'rc_token=token; rc_uid=id' } })).to.eventually.equal(true);
+		expect(mocks.findOneByIdAndLoginToken.lastCall.args[0]).to.equal('id');
 	});
 	it('should return false and warn if user is unauthenticated', async (t) => {
 		const clock = sinon.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });

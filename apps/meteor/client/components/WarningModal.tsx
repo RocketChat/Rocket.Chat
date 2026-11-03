@@ -33,10 +33,10 @@ const WarningModal = ({ text, confirmText, close, cancel, cancelText, confirm, .
 			<ModalContent>{text}</ModalContent>
 			<ModalFooter>
 				<ModalFooterControllers>
-					<Button secondary onClick={cancel || close}>
+					<Button variant='secondary' onClick={cancel || close}>
 						{cancelText || t('Cancel')}
 					</Button>
-					<Button danger onClick={confirm}>
+					<Button variant='danger' onClick={confirm}>
 						{confirmText}
 					</Button>
 				</ModalFooterControllers>

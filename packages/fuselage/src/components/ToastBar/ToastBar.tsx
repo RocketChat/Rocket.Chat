@@ -83,7 +83,7 @@ function ToastBar({
 				</div>
 				{onClose && (
 					<div className='rcx-toastbar-close'>
-						<IconButton tiny aria-label={buttonLabel} onClick={() => onClose(toastId)} icon='cross' />
+						<IconButton size='tiny' aria-label={buttonLabel} onClick={() => onClose(toastId)} icon='cross' />
 					</div>
 				)}
 			</div>

@@ -1,10 +1,10 @@
 import { beforeEach, describe, it } from 'node:test';
 
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { expect } from 'chai';
 import p from 'proxyquire';
 import sinon from 'sinon';
 
-const meteorMethodsMock = sinon.stub();
 const emojiList: Record<string, any> = {};
 const modelsMock = {
 	EmojiCustom: {
@@ -30,16 +30,10 @@ const notifyOnMessageChangeMock = sinon.stub();
 const hasPermissionAsyncMock = sinon.stub();
 const i18nMock = { t: sinon.stub() };
 const callbacksRunMock = sinon.stub();
-const meteorErrorMock = class extends Error {
-	constructor(message: string) {
-		super(message);
-	}
-};
 
 const { removeUserReaction, executeSetReaction, setReaction } = p.noCallThru().load('./setReaction.ts', {
 	'@rocket.chat/models': modelsMock,
-	'@rocket.chat/core-services': { Message: { beforeReacted: sinon.stub() } },
-	'meteor/meteor': { Meteor: { methods: meteorMethodsMock, Error: meteorErrorMock } },
+	'@rocket.chat/core-services': { Message: { beforeReacted: sinon.stub() }, ClientSafeError },
 	'../../callbacks': { callbacks: { run: callbacksRunMock } },
 	'../../i18n': { i18n: i18nMock },
 	'../../authorization': { canAccessRoomAsync: canAccessRoomAsyncMock },

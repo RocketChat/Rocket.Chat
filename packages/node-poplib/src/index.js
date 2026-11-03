@@ -24,11 +24,11 @@
 
 */
 
-var net = require('net'),
-	tls = require('tls'),
-	util = require('util'),
-	crypto = require('crypto'),
-	events = require('events');
+import crypto from 'node:crypto';
+import events from 'node:events';
+import net from 'node:net';
+import tls from 'node:tls';
+import util from 'node:util';
 
 // Constructor
 function POP3Client(port, host, options) {
@@ -142,7 +142,7 @@ function POP3Client(port, host, options) {
 		s.removeAllListeners('error');
 		socket = null;
 
-		var sslcontext = require('crypto').createCredentials(options);
+		var sslcontext = crypto.createCredentials(options);
 		var pair = tls.createSecurePair(sslcontext, false);
 		var cleartext = pipe(pair);
 
@@ -534,7 +534,7 @@ POP3Client.prototype.stat = function () {
 			self.setCallback(function () {});
 
 			if (resp !== false) {
-				listitem = data.split(' ');
+				var listitem = data.split(' ');
 				returnValue = {
 					count: listitem[1].trim(),
 					octets: listitem[2].trim(),
@@ -727,4 +727,4 @@ POP3Client.prototype.quit = function () {
 	}
 };
 
-module.exports = POP3Client;
+export default POP3Client;

@@ -457,7 +457,7 @@ describe('RecipientForm', () => {
 		await userEvent.click(screen.getByLabelText('To*'));
 		await userEvent.click(await screen.findByRole('option', { name: /\+1 212-555-4567/ }));
 
-		expect(screen.getByLabelText('To*')).not.toHaveAccessibleDescription('Required_field');
+		expect(screen.getByRole('combobox', { name: /To/ })).not.toHaveAccessibleDescription('Required_field');
 		await waitFor(() => expect(handleSubmit).not.toHaveBeenCalled());
 	});
 
@@ -478,7 +478,7 @@ describe('RecipientForm', () => {
 		await userEvent.click(screen.getByLabelText('From*'));
 		await userEvent.click(await screen.findByRole('option', { name: /\+1 212-777-4567/ }));
 
-		expect(screen.getByLabelText('From*')).not.toHaveAccessibleDescription('Required_field');
+		expect(screen.getByRole('combobox', { name: /From/ })).not.toHaveAccessibleDescription('Required_field');
 		await waitFor(() => expect(handleSubmit).not.toHaveBeenCalled());
 	});
 });

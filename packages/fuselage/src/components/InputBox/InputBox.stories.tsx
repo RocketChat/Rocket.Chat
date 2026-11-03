@@ -154,7 +154,7 @@ export const WithFlushEndAddon: Story = {
 		'aria-label': 'Value',
 		'endAddonFlush': true,
 		'endAddon': (
-			<Button icon='upload' small primary>
+			<Button icon='upload' size='small' variant='primary'>
 				Browse
 			</Button>
 		),

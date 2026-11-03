@@ -1,20 +1,10 @@
 import { afterEach, beforeEach, describe, it } from 'node:test';
 
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
-
-const mockMeteorError = class extends Error {
-	constructor(
-		public error: string,
-		public reason: string,
-		public details: any,
-	) {
-		super(reason);
-		this.name = 'Meteor.Error';
-	}
-};
 
 const messagesMock = {
 	findForUpdates: sinon.stub(),
@@ -47,10 +37,10 @@ const {
 	'meteor/meteor': {
 		'Meteor': {
 			methods: sinon.stub(),
-			Error: mockMeteorError,
 		},
 		'@global': true,
 	},
+	'@rocket.chat/core-services': { ClientSafeError },
 	'@rocket.chat/models': {
 		Messages: messagesMock,
 	},
@@ -125,7 +115,7 @@ describe('mountCursorFromMessage', () => {
 			_updatedAt: new Date('2024-01-01T00:00:00Z'),
 		};
 
-		expect(() => mountCursorFromMessage(message, 'DELETED')).to.throw(mockMeteorError, 'Cursor not found');
+		expect(() => mountCursorFromMessage(message, 'DELETED')).to.throw(ClientSafeError, 'Cursor not found');
 	});
 });
 

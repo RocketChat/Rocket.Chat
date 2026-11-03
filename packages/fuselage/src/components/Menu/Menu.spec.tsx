@@ -316,32 +316,18 @@ describe('[Menu Component]', () => {
 			expect(button).toHaveClass('rcx-button--small-square');
 		});
 
-		it('should accept large size prop', () => {
-			render(<Simple {...Simple.args} large />);
+		it.each(['large', 'medium', 'small', 'tiny', 'mini'] as const)('should size the trigger %s', (size) => {
+			render(<Simple {...Simple.args} size={size} />);
 
-			const button = screen.getByRole('button');
-			expect(button).toHaveClass('rcx-button--large-square');
+			expect(screen.getByRole('button')).toHaveClass(`rcx-button--${size}-square`);
 		});
 
-		it('should accept medium size prop', () => {
-			render(<Simple {...Simple.args} medium />);
+		it('should pass the size to a custom trigger', () => {
+			const trigger = jest.fn((_props: Record<string, unknown>) => <button type='button' aria-label='trigger' />);
+			render(<Simple {...Simple.args} is={trigger} size='tiny' />);
 
-			const button = screen.getByRole('button');
-			expect(button).toHaveClass('rcx-button--medium-square');
-		});
-
-		it('should accept tiny size prop', () => {
-			render(<Simple {...Simple.args} tiny />);
-
-			const button = screen.getByRole('button');
-			expect(button).toHaveClass('rcx-button--tiny-square');
-		});
-
-		it('should accept mini size prop', () => {
-			render(<Simple {...Simple.args} mini />);
-
-			const button = screen.getByRole('button');
-			expect(button).toHaveClass('rcx-button--mini-square');
+			expect(trigger.mock.calls[0][0]).toMatchObject({ size: 'tiny' });
+			expect(trigger.mock.calls[0][0]).not.toHaveProperty('small');
 		});
 	});
 });

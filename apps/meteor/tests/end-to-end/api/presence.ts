@@ -28,8 +28,8 @@ describe('[Presence]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
-					expect(res.body).to.have.property('message');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 
@@ -82,8 +82,8 @@ describe('[Presence]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
-					expect(res.body).to.have.property('message');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 

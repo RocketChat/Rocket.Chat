@@ -1,15 +1,14 @@
-import { api, Message } from '@rocket.chat/core-services';
+import { api, Message, ClientSafeError } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { isRegisterUser } from '@rocket.chat/core-typings';
 import { Avatars, Rooms } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { RocketChatFile } from '../media/file';
 import { FileUpload } from '../media/file-upload';
 
 export const setRoomAvatar = async function (rid: string, dataURI: string, user: IUser): Promise<void> {
 	if (!isRegisterUser(user)) {
-		throw new Meteor.Error('invalid-user', 'Invalid user', {
+		throw new ClientSafeError('invalid-user', 'Invalid user', {
 			function: 'RocketChat.setRoomAvatar',
 		});
 	}

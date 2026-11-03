@@ -41,7 +41,7 @@ const NavBarSearchIntelligentSection = ({ items, onSelect, onClose }: NavBarSear
 					<IconButton
 						is='a'
 						href={searchHref}
-						small
+						size='small'
 						icon='new-window'
 						title={t('View_all_results')}
 						aria-label={t('View_all_results')}

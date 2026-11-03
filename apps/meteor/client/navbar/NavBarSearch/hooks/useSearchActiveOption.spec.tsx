@@ -10,7 +10,7 @@ const Option = ({ id, onClick }: { id: string; onClick?: () => void }) => {
 	const { focusVisible, onPointerMove, tabIndex, 'aria-selected': selected } = useSearchOptionProps(id);
 
 	return (
-		// eslint-disable-next-line jsx-a11y/click-events-have-key-events -- the combobox handles the keyboard for its options
+		// oxlint-disable-next-line jsx-a11y/click-events-have-key-events -- the combobox handles the keyboard for its options
 		<div
 			role='option'
 			id={id}
@@ -137,6 +137,22 @@ describe('useSearchActiveOption', () => {
 
 		await user.keyboard('{ArrowDown}{ArrowDown}{Enter}');
 		expect(onSelect).toHaveBeenCalledWith('second');
+	});
+
+	it('should keep the Cmd/Ctrl key on the click of the active option so a link opens in a new tab', async () => {
+		const user = userEvent.setup();
+		render(<Search onSelect={jest.fn()} />);
+		const onClick = jest.fn();
+
+		await user.click(screen.getByRole('combobox'));
+		await user.keyboard('{ArrowDown}');
+		screen.getByRole('option', { name: 'first' }).addEventListener('click', onClick);
+
+		await user.keyboard('{Meta>}{Enter}{/Meta}');
+		await user.keyboard('{Control>}{Enter}{/Control}');
+
+		expect(onClick).toHaveBeenNthCalledWith(1, expect.objectContaining({ metaKey: true, ctrlKey: false }));
+		expect(onClick).toHaveBeenNthCalledWith(2, expect.objectContaining({ metaKey: false, ctrlKey: true }));
 	});
 
 	it('should clear the active option when its result disappears', async () => {

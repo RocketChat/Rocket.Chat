@@ -1,19 +1,20 @@
 import {
-	Modal,
-	Button,
 	Box,
+	Button,
 	Callout,
-	ModalHeader,
-	ModalHeaderText,
-	ModalTagline,
-	ModalTitle,
+	Modal,
 	ModalClose,
 	ModalContent,
-	ModalHeroImage,
 	ModalFooter,
 	ModalFooterAnnotation,
 	ModalFooterControllers,
+	ModalHeader,
+	ModalHeaderText,
+	ModalHeroImage,
+	ModalTagline,
+	ModalTitle,
 	Stack,
+	Text,
 } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
@@ -37,7 +38,7 @@ const VideoConfConfigModal = ({ onClose, onConfirm, isAdmin }: VideoConfConfigMo
 			</ModalHeader>
 			<ModalContent>
 				<ModalHeroImage src='/images/conf-call-config.svg' />
-				<Box fontScale='h3'>{t('Premium_capabilities')}</Box>
+				<Text fontScale='h3'>{t('Premium_capabilities')}</Text>
 				<Box withRichContent>
 					<Box is='ul' paddingInlineStart={24}>
 						<li>{t('Ringtones_and_visual_indicators_notify_people_of_incoming_calls')}</li>
@@ -45,7 +46,7 @@ const VideoConfConfigModal = ({ onClose, onConfirm, isAdmin }: VideoConfConfigMo
 					</Box>
 				</Box>
 				<Stack gap={12}>
-					<Box fontScale='h3'>{t('Conference_call_apps')}</Box>
+					<Text fontScale='h3'>{t('Conference_call_apps')}</Text>
 					<Callout icon='team' title={isAdmin ? t('Jitsi_included_with_Community') : 'Jitsi'}>
 						{t('Open-source_conference_call_solution')}
 					</Callout>
@@ -57,7 +58,7 @@ const VideoConfConfigModal = ({ onClose, onConfirm, isAdmin }: VideoConfConfigMo
 					</Callout>
 				</Stack>
 				<Box display='flex' flexDirection='column' gap={12} marginBlock={24}>
-					<Box fontScale='h3'>{t('Required_action')}</Box>
+					<Text fontScale='h3'>{t('Required_action')}</Text>
 					<Callout title={t('Missing_configuration')} type='warning'>
 						{isAdmin
 							? t('An_app_needs_to_be_installed_and_configured')
@@ -65,7 +66,7 @@ const VideoConfConfigModal = ({ onClose, onConfirm, isAdmin }: VideoConfConfigMo
 					</Callout>
 				</Box>
 			</ModalContent>
-			<ModalFooter justifyContent='space-between'>
+			<ModalFooter justify='space-between'>
 				<ModalFooterAnnotation>
 					{isAdmin
 						? t('Configure_video_conference_to_make_it_available_on_this_workspace')
@@ -74,7 +75,7 @@ const VideoConfConfigModal = ({ onClose, onConfirm, isAdmin }: VideoConfConfigMo
 				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Close')}</Button>
 					{onConfirm && isAdmin && (
-						<Button primary onClick={onConfirm}>
+						<Button variant='primary' onClick={onConfirm}>
 							{t('Open_settings')}
 						</Button>
 					)}

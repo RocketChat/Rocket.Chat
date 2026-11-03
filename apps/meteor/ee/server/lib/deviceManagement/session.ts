@@ -1,3 +1,4 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { ISocketConnection } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
@@ -110,7 +111,7 @@ export const listenSessionLogin = () => {
 				data: mailData,
 			});
 		} catch ({ message }: any) {
-			throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${message}`, {
+			throw new ClientSafeError('error-email-send-failed', `Error trying to send email: ${message}`, {
 				method: 'listenSessionLogin',
 				message,
 			});

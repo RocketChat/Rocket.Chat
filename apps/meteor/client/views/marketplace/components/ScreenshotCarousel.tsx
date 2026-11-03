@@ -53,17 +53,17 @@ const ScreenshotCarousel = ({
 
 	return (
 		<>
-			<Box position='fixed' width='100%' height='100vh' backgroundColor='font-pure-black' opacity='0.7' marginBlock='-0.75px' zIndex='2' />
+			<Box position='fixed' width='100%' height='100vh' backgroundColor='font-pure-black' opacity='0.7' marginBlock='0' zIndex='2' />
 
 			{!isFirstSlide && (
 				<Box position='absolute' zIndex={3} style={{ top: '50%', left: '10px', transform: 'translateY(-50%)' }}>
-					<IconButton secondary icon='chevron-right' onClick={handlePrevSlide} />
+					<IconButton variant='secondary' icon='chevron-right' onClick={handlePrevSlide} />
 				</Box>
 			)}
 
 			{!isLastSlide && (
 				<Box position='absolute' zIndex={3} style={{ top: '50%', right: '10px', transform: 'translateY(-50%)' }}>
-					<IconButton secondary icon='chevron-left' onClick={handleNextSlide} />
+					<IconButton variant='secondary' icon='chevron-left' onClick={handleNextSlide} />
 				</Box>
 			)}
 
@@ -76,7 +76,7 @@ const ScreenshotCarousel = ({
 				justifyContent='center'
 				alignItems='center'
 				zIndex='2'
-				marginInline={38}
+				marginInline='x40'
 			>
 				{handleScreenshotRender()}
 			</Box>

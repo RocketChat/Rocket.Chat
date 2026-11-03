@@ -81,7 +81,7 @@ function DiscussionsList({
 					endAddon={<Icon name='magnifier' size='x20' />}
 				/>
 			</ContextualbarSection>
-			<ContextualbarContent paddingInline={0}>
+			<ContextualbarContent flush>
 				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={itemCount} />
 				{isPending && (
 					<Box paddingInline={24} paddingBlock={12}>

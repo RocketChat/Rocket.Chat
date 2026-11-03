@@ -24,7 +24,6 @@ const SidebarNavigationItem = ({
 	currentPath,
 	tag,
 	externalUrl,
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	badge: Badge,
 }: SidebarNavigationItemProps) => {
 	const path = pathSection;

@@ -1,8 +1,9 @@
 import WithErrorWrapper from '../../helpers/WithErrorWrapper';
-import { Box, type BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
+import { Box } from '../Box';
 import { FieldContext } from './Field';
 
-export type FieldRowProps = BoxProps & {
+export type FieldRowProps = ElementProps<HTMLSpanElement> & {
 	/** Packs the row's content at the end of the line. */
 	justify?: 'end';
 };

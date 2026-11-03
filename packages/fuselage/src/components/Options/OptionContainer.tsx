@@ -1,10 +1,9 @@
-import type { RefAttributes } from 'react';
-
-import { Box, type BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
+import { Box } from '../Box';
 import { PopoverSurface } from '../PopoverSurface';
 import { Scrollable } from '../Scrollable';
 
-export type OptionContainerProps = Omit<BoxProps, 'ref'> & RefAttributes<HTMLElement>;
+export type OptionContainerProps = ElementProps<HTMLElement>;
 
 function OptionContainer(props: OptionContainerProps) {
 	return (

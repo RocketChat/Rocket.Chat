@@ -23,12 +23,9 @@ const modelsMock = {
 };
 const meteorMock = { Meteor: { startup: sinon.stub() } };
 const createIndexStub = sinon.stub();
-const mongoMock = {
-	MongoInternals: {
-		defaultRemoteCollectionDriver: sinon.stub().returns({
-			mongo: { db: { collection: sinon.stub().returns({ createIndex: createIndexStub }) }, client: { db: sinon.stub() } },
-		}),
-	},
+const databaseUtilsMock = {
+	db: { collection: sinon.stub().returns({ createIndex: createIndexStub }) },
+	client: { db: sinon.stub() },
 };
 const livechatMock = { closeRoom: sinon.stub() };
 const settingsMock = { settings: { get: sinon.stub() } };
@@ -39,7 +36,7 @@ const { OmnichannelQueueInactivityMonitorClass } = proxyquire.noCallThru().load(
 	},
 	'@rocket.chat/models': modelsMock,
 	'meteor/meteor': meteorMock,
-	'meteor/mongo': mongoMock,
+	'../../../../server/database/utils': databaseUtilsMock,
 	'../../../../server/lib/omnichannel/closeRoom': livechatMock,
 	'../../../../server/settings': settingsMock,
 	'../../../../server/lib/i18n': { i18n: { t: sinon.stub().returns('Closed automatically') } },

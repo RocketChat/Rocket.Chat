@@ -1,4 +1,4 @@
-/* eslint-disable testing-library/no-await-sync-queries -- accessor read methods are not testing-library DOM queries */
+/* oxlint-disable testing-library/no-await-sync-queries -- accessor read methods are not testing-library DOM queries */
 import * as assert from 'node:assert';
 import { describe, it } from 'node:test';
 

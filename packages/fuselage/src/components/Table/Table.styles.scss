@@ -126,6 +126,22 @@ $table-selected-border-radius: theme('table-selected-border-radius', lengths.bor
 			@include clickable;
 		}
 
+		&--truncate {
+			@include use-with-truncated-text;
+		}
+
+		&--color-default {
+			color: colors.font(default);
+		}
+
+		&--color-hint {
+			color: colors.font(hint);
+		}
+
+		&--strong {
+			@include use-font-scale(p2m);
+		}
+
 		@each $align in (start, end, center, justify) {
 			&--align-#{$align} {
 				text-align: $align;

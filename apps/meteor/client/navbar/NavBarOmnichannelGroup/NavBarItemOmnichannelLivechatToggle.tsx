@@ -13,7 +13,7 @@ const NavBarItemOmnichannelLivechatToggle = (props: NavBarItemOmnichannelLivecha
 			{...props}
 			id='omnichannel-status-toggle'
 			title={title}
-			success={isSuccess}
+			variant={isSuccess ? 'success' : undefined}
 			icon={icon}
 			onClick={handleAvailableStatusChange}
 		/>

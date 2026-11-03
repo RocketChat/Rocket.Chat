@@ -58,7 +58,7 @@ const ContactInfoHistoryMessages = ({ chatId, onBack, onOpenRoom }: ContactHisto
 
 	return (
 		<>
-			<ContextualbarContent paddingInline={0}>
+			<ContextualbarContent flush>
 				<Box
 					display='flex'
 					flexDirection='row'
@@ -75,7 +75,7 @@ const ContactInfoHistoryMessages = ({ chatId, onBack, onOpenRoom }: ContactHisto
 							onChange={handleSearchChange}
 							endAddon={<Icon name='magnifier' size='x20' />}
 						/>
-						<IconButton title={t('Back')} small icon='back' onClick={onBack} />
+						<IconButton title={t('Back')} size='small' icon='back' onClick={onBack} />
 					</Stack>
 				</Box>
 				{isPending && (

@@ -75,7 +75,6 @@ const RoomFormAttributeField = ({
 					<SelectFiltered
 						{...keyField}
 						options={options}
-						required={required}
 						aria-required={required}
 						aria-labelledby={labelId}
 						aria-invalid={keyFieldState.error ? 'true' : 'false'}
@@ -96,7 +95,6 @@ const RoomFormAttributeField = ({
 				)}
 				<FieldRow>
 					<MultiSelectFiltered
-						required={required}
 						aria-required={required}
 						aria-labelledby={labelId}
 						aria-invalid={valuesFieldState.error ? 'true' : 'false'}

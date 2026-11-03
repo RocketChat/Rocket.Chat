@@ -39,7 +39,7 @@ $message-toolbar-border-radius: theme('message-toolbar-border-radius', lengths.b
 	@at-root .rcx-message & {
 		position: absolute;
 		z-index: 10;
-		top: lengths.margin(-24);
+		top: lengths.inset(-24);
 		inset-inline-end: 0;
 	}
 }

@@ -16,6 +16,7 @@ const testSetting = getSettingDefaults({
 
 describe('Settings', () => {
 	beforeEach(() => {
+		Settings.data.clear();
 		Settings.insertCalls = 0;
 		Settings.upsertCalls = 0;
 		process.env = {};
@@ -83,6 +84,35 @@ describe('Settings', () => {
 
 		expect(Settings.findOne({ _id: 'my_setting' }).value).to.be.equal(true);
 		expect(Settings.findOne({ _id: 'my_setting2' }).value).to.be.equal(false);
+	});
+
+	it('should keep the stored setting when another instance inserted it after the cache was loaded', async () => {
+		const settings = new CachedSettings();
+		Settings.settings = settings;
+		settings.initialized();
+		Settings.data.set(
+			'my_concurrent_setting',
+			getSettingDefaults({ _id: 'my_concurrent_setting', type: 'string', value: 'from another instance' }),
+		);
+		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
+
+		await settingsRegistry.add('my_concurrent_setting', 'from this instance', { type: 'string' });
+
+		expect(Settings.findOne({ _id: 'my_concurrent_setting' }).value).to.be.equal('from another instance');
+		expect(settings.get('my_concurrent_setting')).to.be.equal('from another instance');
+	});
+
+	it('should keep the stored group when another instance inserted it after the cache was loaded', async () => {
+		const settings = new CachedSettings();
+		Settings.settings = settings;
+		settings.initialized();
+		Settings.data.set('my_concurrent_group', { _id: 'my_concurrent_group', type: 'group', i18nLabel: 'from another instance' });
+		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
+
+		await settingsRegistry.addGroup('my_concurrent_group');
+
+		expect(Settings.findOne({ _id: 'my_concurrent_group' }).i18nLabel).to.be.equal('from another instance');
+		expect(settings.getSetting('my_concurrent_group')?.i18nLabel).to.be.equal('from another instance');
 	});
 
 	it('should keep the schema option in memory instead of persisting it', async () => {

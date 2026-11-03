@@ -88,7 +88,7 @@ export class OmnichannelEditRoomFlexTab extends EditRoomFlexTab {
 	}
 
 	get inputSLAPolicy(): Locator {
-		return this.root.getByRole('button', { name: 'SLA policy', exact: true });
+		return this.root.getByRole('combobox', { name: 'SLA policy', exact: true });
 	}
 
 	optionTag(name: string): Locator {

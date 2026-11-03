@@ -38,7 +38,7 @@ const BannedUsers = ({ loading, error, bannedUsers, useRealName = false, onClick
 				<ContextualbarTitle>{t('Banned_Users')}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClickClose} />
 			</ContextualbarHeader>
-			<ContextualbarContent padding={0} paddingBlock={12}>
+			<ContextualbarContent flush spaced>
 				{loading && (
 					<Box paddingInline={24} paddingBlock={12}>
 						<Throbber size='x12' />

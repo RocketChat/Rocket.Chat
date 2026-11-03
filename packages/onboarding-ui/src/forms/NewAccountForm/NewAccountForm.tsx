@@ -123,7 +123,7 @@ const NewAccountForm = ({ validateEmail, validatePassword, validateConfirmationP
 			</FormContainer>
 			<FormFooter>
 				<ButtonGroup>
-					<Button type='submit' primary loading={isValidating || isSubmitting} disabled={!isValid}>
+					<Button type='submit' variant='primary' loading={isValidating || isSubmitting} disabled={!isValid}>
 						{t('component.form.action.next')}
 					</Button>
 				</ButtonGroup>

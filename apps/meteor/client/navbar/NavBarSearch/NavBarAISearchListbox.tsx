@@ -78,7 +78,7 @@ const NavBarAISearchListBox = ({
 						{aiSearchAvailable && (
 							<>
 								<Box display='flex' justifyContent='space-between' alignItems='center' paddingInline={12}>
-									<Stack direction='row' align='center' gap={2}>
+									<Stack direction='row' align='center' gap='x4'>
 										<Box is='span' id={aiSearchLabelId}>
 											{t('AI_Search')}
 										</Box>
@@ -106,14 +106,14 @@ const NavBarAISearchListBox = ({
 										<Divider flush />
 									</Box>
 									{hasAISearchProblem && (
-										<AISearchErrorCallout
-											role='alert'
-											error={aiItems.error}
-											notConfigured={aiItems.notConfigured}
-											onRetry={refetchAISearch}
-											marginInline={12}
-											marginBlockStart={8}
-										/>
+										<Box marginInline={12} marginBlockStart={8}>
+											<AISearchErrorCallout
+												role='alert'
+												error={aiItems.error}
+												notConfigured={aiItems.notConfigured}
+												onRetry={refetchAISearch}
+											/>
+										</Box>
 									)}
 								</>
 							)}

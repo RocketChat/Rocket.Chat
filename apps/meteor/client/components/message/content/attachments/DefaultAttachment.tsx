@@ -68,7 +68,7 @@ const DefaultAttachment = ({ collapseKey, ...attachment }: DefaultAttachmentProp
 							})}
 						>
 							{attachment.title}
-						</AttachmentTitle>{' '}
+						</AttachmentTitle>
 						<CollapsibleContent key='collapsible-content-action' collapsed={collapsed} onClick={toggleCollapse} />
 					</AttachmentRow>
 				)}

@@ -611,9 +611,9 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 	private getCommandFromDataChannelMessage(message: string): P2PCommand | null {
 		try {
-			const obj = JSON.parse(message);
-			if (obj.command && this.isValidCommand(obj.command)) {
-				return obj.command;
+			const command: unknown = JSON.parse(message).command;
+			if (typeof command === 'string' && this.isValidCommand(command)) {
+				return command;
 			}
 		} catch {
 			this.config.logger?.debug('Failed to parse Data Channel Command');

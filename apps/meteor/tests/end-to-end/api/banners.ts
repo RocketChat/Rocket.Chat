@@ -20,15 +20,16 @@ describe('banners', () => {
 				})
 				.expect(401);
 
-			expect(res.body).to.have.property('status', 'error');
-			expect(res.body).to.have.property('message');
+			expect(res.body).to.have.property('success', false);
+
+			expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 		});
 
 		it('should fail if missing bannerId key', async () => {
 			const res = await request.post(api('banners.dismiss')).set(credentials).send({}).expect(400);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('errorType', 'invalid-params');
+			expect(res.body).to.have.property('errorType', 'error-invalid-params');
 		});
 
 		it('should fail if bannerId is empty', async () => {
@@ -158,8 +159,8 @@ describe('banners', () => {
 				})
 				.expect(401)
 				.expect((res) => {
-					expect(res.body).to.have.property('status', 'error');
-					expect(res.body).to.have.property('message');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 
@@ -227,8 +228,8 @@ describe('banners', () => {
 				})
 				.expect(401)
 				.expect((res) => {
-					expect(res.body).to.have.property('status', 'error');
-					expect(res.body).to.have.property('message');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 

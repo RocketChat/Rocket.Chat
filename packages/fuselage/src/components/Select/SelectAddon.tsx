@@ -1,8 +1,7 @@
-import type { RefAttributes } from 'react';
+import type { ElementProps } from '../../types/ElementProps';
+import { Box } from '../Box';
 
-import { Box, type BoxProps } from '../Box';
-
-type AddonProps = Omit<BoxProps, 'ref'> & RefAttributes<HTMLDivElement>;
+type AddonProps = ElementProps<HTMLDivElement>;
 
 function SelectAddon(props: AddonProps) {
 	return <Box is='div' rcx-select__addon {...props} />;

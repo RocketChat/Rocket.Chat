@@ -1,23 +1,28 @@
-import type { RefAttributes } from 'react';
 import { memo } from 'react';
 
-import { Box, type BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
+import { Box } from '../Box';
 
-export type ContextualbarProps = Omit<BoxProps, 'ref'> & RefAttributes<HTMLElement>;
+export type ContextualbarProps = ElementProps<HTMLElement> & {
+	/** Makes the bar as wide as its container, as when it is positioned over the room. */
+	stretch?: boolean;
+	/** How the bar is placed: in the flow beside the room, or over it. */
+	position?: 'static' | 'relative' | 'absolute' | 'fixed';
+};
 
 /**
  * The `Contextualbar` has the purpose to persist and input information about the scope of the related page.
  */
-function Contextualbar({ width, position, backgroundColor = 'room', ...props }: ContextualbarProps) {
+function Contextualbar({ stretch, position, ...props }: ContextualbarProps) {
 	return (
 		<Box
 			rcx-vertical-bar
-			backgroundColor={backgroundColor}
+			backgroundColor='room'
 			color='default'
 			display='flex'
 			flexDirection='column'
 			flexShrink={0}
-			width={width}
+			width={stretch ? '100%' : undefined}
 			borderInlineStartWidth='default'
 			borderInlineStartColor='extra-light'
 			borderInlineStartStyle='solid'

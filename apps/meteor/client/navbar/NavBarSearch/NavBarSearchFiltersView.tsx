@@ -31,12 +31,12 @@ const NavBarSearchFiltersView = ({ id, filters, onBack }: NavBarSearchFiltersVie
 		>
 			<Box display='flex' alignItems='center' justifyContent='space-between' gap={8}>
 				<Box display='flex' alignItems='center' gap={4} minWidth={0} flexGrow={1} flexBasis='0'>
-					<IconButton mini icon='arrow-back' aria-label={t('Back')} onClick={onBack} />
+					<IconButton size='mini' icon='arrow-back' aria-label={t('Back')} onClick={onBack} />
 					<Box is='h3' id={headingId} fontScale='h5' withTruncatedText>
 						{t('Search_filters_with_count', { count: filters.length })}
 					</Box>
 				</Box>
-				<Button small secondary icon='cross' onClick={clearFilters}>
+				<Button size='small' variant='secondary' icon='cross' onClick={clearFilters}>
 					{t('Clear_all')}
 				</Button>
 			</Box>

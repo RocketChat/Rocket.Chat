@@ -2,8 +2,9 @@ import { useStableCallback, useResizeObserver } from '@rocket.chat/fuselage-hook
 import { useState, useRef, type ComponentType, type ReactNode, type MouseEvent, type CSSProperties } from 'react';
 
 import { prevent } from '../../helpers/prevent';
+import type { ElementProps } from '../../types/ElementProps';
 import { AnimatedVisibility } from '../AnimatedVisibility';
-import { Box, type BoxProps } from '../Box';
+import { Box } from '../Box';
 import { Chip } from '../Chip';
 import { FlexContainer, FlexItem } from '../Flex';
 import { Icon } from '../Icon';
@@ -20,8 +21,11 @@ export type PaginatedMultiSelectOption = {
 	label: string;
 };
 
-export type PaginatedMultiSelectProps = Omit<BoxProps, 'onChange' | 'value'> & {
+export type PaginatedMultiSelectProps = Omit<ElementProps<HTMLDivElement>, 'onChange'> & {
 	error?: boolean;
+	name?: string;
+	disabled?: boolean;
+	filter?: string;
 	options: PaginatedMultiSelectOption[];
 	withTitle?: boolean;
 	placeholder?: string;

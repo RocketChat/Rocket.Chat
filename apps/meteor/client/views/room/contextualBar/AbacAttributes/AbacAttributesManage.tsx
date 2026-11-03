@@ -143,7 +143,7 @@ const AbacAttributesManage = ({ room, requiredKeys, onBack, onClose, onSaved }: 
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={onBack}>{t('Back')}</Button>
-					<Button primary type='submit' form={formId} disabled={!canReview}>
+					<Button variant='primary' type='submit' form={formId} disabled={!canReview}>
 						{t('ABAC_Review_changes')}
 					</Button>
 				</ButtonGroup>

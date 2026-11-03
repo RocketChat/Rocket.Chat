@@ -4,14 +4,7 @@ import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
-// const getCookie = sinon.stub();
-class CookiesMock {
-	public get = (_key: any, value: any) => value;
-}
 const { handleBrowserVersionCheck, isIEOlderThan11 } = proxyquire.noCallThru().load('./browserVersion', {
-	'meteor/ostrio:cookies': {
-		Cookies: CookiesMock,
-	},
 	'../../../lib/utils/getURL': {
 		getURL: () => '',
 	},
@@ -44,7 +37,8 @@ describe('#handleBrowserVersionCheck()', () => {
 		const next = sinon.spy();
 		const request = {
 			headers: {
-				cookie: 'bypass',
+				'cookie': 'browser_version_check=bypass',
+				'user-agent': 'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 7.0; InfoPath.3; .NET CLR 3.1.40767; Trident/6.0; en-IN)',
 			},
 		};
 		handleBrowserVersionCheck(request as any, {} as any, next);
@@ -56,13 +50,33 @@ describe('#handleBrowserVersionCheck()', () => {
 		const next = sinon.spy();
 		const request = {
 			headers: {
-				'cookie': 'anything',
+				'cookie': 'browser_version_check=anything',
 				'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36',
 			},
 		};
 		handleBrowserVersionCheck(request as any, {} as any, next);
 
 		expect(next.calledOnce).to.be.true;
+	});
+
+	it('should respond with Browser not supported if browser_version_check cookie is set to "force"', async () => {
+		const next = sinon.spy();
+		const request = {
+			headers: {
+				'cookie': 'browser_version_check=force',
+				'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36',
+			},
+		};
+
+		const response = {
+			setHeader: sinon.spy(),
+			write: sinon.spy(),
+			end: sinon.spy(),
+		};
+		handleBrowserVersionCheck(request as any, response as any, next);
+
+		expect(next.called).to.be.false;
+		expect(response.write.calledWith(sinon.match('Browser not supported'))).to.be.true;
 	});
 
 	it('should respond with Browser not supported', async () => {

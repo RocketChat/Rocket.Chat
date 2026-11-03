@@ -1,10 +1,11 @@
 import { createContext } from 'react';
 
-import { Box, type BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
+import { Box } from '../Box';
 
 export const FieldContext = createContext(false);
 
-export type FieldProps = BoxProps;
+export type FieldProps = ElementProps<HTMLDivElement>;
 
 /**
  * A `Field` is a wrapper representing an entry in a form.

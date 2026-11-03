@@ -47,7 +47,6 @@ import type { TwoFactorChallengesEndpoints } from './v1/twoFactorChallenges';
 import type { UsersEndpoints } from './v1/users';
 import type { VideoConferenceEndpoints } from './v1/videoConference';
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export interface Endpoints
 	extends
 		AISearchEndpoints,

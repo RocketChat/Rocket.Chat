@@ -1,18 +1,19 @@
 import {
-	Modal,
 	Box,
 	Field,
 	FieldLabel,
 	FieldRow,
-	TextInput,
+	Modal,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
 	ModalHeader,
 	ModalHeaderText,
 	ModalTagline,
 	ModalTitle,
-	ModalClose,
-	ModalContent,
-	ModalFooter,
 	Stack,
+	Text,
+	TextInput,
 } from '@rocket.chat/fuselage';
 import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect } from 'react';
@@ -87,14 +88,14 @@ const RegisterWorkspaceSetupStepTwoModal = ({ email, step, setStep, onClose, int
 						<Trans i18nKey='cloud.RegisterWorkspace_Setup_Email_Confirmation'>
 							<Box is='p'>
 								Email sent to{' '}
-								<Box is='span' fontScale='p2b'>
+								<Text is='span' fontScale='p2b'>
 									{email}{' '}
-								</Box>
+								</Text>
 								with a confirmation link.
 							</Box>
 						</Trans>
 					</Box>
-					<Stack gap={10}>
+					<Stack gap='x8'>
 						<Box is='p'>{t('RegisterWorkspace_Setup_Email_Verification')}</Box>
 						<Field>
 							<FieldLabel>{t('Security_code')}</FieldLabel>

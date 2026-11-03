@@ -409,7 +409,7 @@ jobs:
         arch: [arm64, amd64]
         service:
           [
-            [authorization-service, queue-worker-service, ddp-streamer-service],
+            [authorization-service, queue-worker-service, ddp-streamer-service, xmpp-server-service],
             [account-service, presence-service, omnichannel-transcript-service],
             [rocketchat],
           ]

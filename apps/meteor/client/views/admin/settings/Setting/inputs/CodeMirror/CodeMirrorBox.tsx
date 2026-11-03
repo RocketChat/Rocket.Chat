@@ -50,7 +50,7 @@ const CodeMirrorBox = ({ label, children, error }: CodeMirrorBoxProps) => {
 				)}
 				<Box marginBlockStart={8}>
 					<ButtonGroup>
-						<Button primary onClick={(): void => toggleFullScreen()}>
+						<Button variant='primary' onClick={(): void => toggleFullScreen()}>
 							{t('Exit_Full_Screen')}
 						</Button>
 					</ButtonGroup>
@@ -81,7 +81,7 @@ const CodeMirrorBox = ({ label, children, error }: CodeMirrorBoxProps) => {
 			)}
 			<Box marginBlockStart={8}>
 				<ButtonGroup>
-					<Button primary onClick={(): void => toggleFullScreen()}>
+					<Button variant='primary' onClick={(): void => toggleFullScreen()}>
 						{t('Full_Screen')}
 					</Button>
 				</ButtonGroup>

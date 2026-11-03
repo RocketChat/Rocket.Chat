@@ -51,10 +51,10 @@ export const Default: Story = {
 				</NavBarGroup>
 				<NavBarGroup role='toolbar'>
 					<NavBarItem>
-						<MenuDisplayExample small icon='sort' title='sort' />
+						<MenuDisplayExample size='small' icon='sort' title='sort' />
 					</NavBarItem>
 					<NavBarItem icon='magnifier' title='search' />
-					<Menu icon='pencil-box' small title='create new'>
+					<Menu icon='pencil-box' size='small' title='create new'>
 						<MenuSection title='Create new'>
 							<MenuItem key='direct-message'>Direct message</MenuItem>
 							<MenuItem key='discussion'>Discussion</MenuItem>
@@ -74,7 +74,7 @@ export const Default: Story = {
 				<NavBarGroup>
 					<NavBarItem icon='cog' title='preferences' />
 					<NavBarItem>
-						<Menu small icon={<Avatar url={avatarUrl} alt='user avatar' size='x28' />} title='profile'>
+						<Menu size='small' icon={<Avatar url={avatarUrl} alt='user avatar' size='x28' />} title='profile'>
 							<MenuItem key='1'>Profile</MenuItem>
 							<MenuItem key='2'>Chats</MenuItem>
 							<MenuItem key='3'>Settings</MenuItem>

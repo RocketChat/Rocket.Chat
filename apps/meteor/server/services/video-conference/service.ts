@@ -44,7 +44,6 @@ import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import { wrapExceptions } from '@rocket.chat/tools';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { Meteor } from 'meteor/meteor';
-import { MongoInternals } from 'meteor/mongo';
 
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 import { resolveChatAccessMode } from '../../../lib/videoConference/chatAccess';
@@ -53,6 +52,7 @@ import { availabilityErrors, CALL_FACES_SHOWN, EMPTY_CALL_GRACE_MS, shouldRingRe
 import { canRingConferenceMember, isUnaskedConferenceMember } from '../../../lib/videoConference/memberStatus';
 import { expiredPresenceLeases, INFERRED_LEAVE_REASONS } from '../../../lib/videoConference/presence';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
+import { db } from '../../database/utils';
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
 import { hasAtLeastOnePermissionAsync } from '../../lib/authorization/hasPermission';
 import { callbacks } from '../../lib/callbacks';
@@ -74,8 +74,6 @@ import { videoConfProviders } from '../../lib/videoConfProviders';
 import { videoConfTypes } from '../../lib/videoConfTypes';
 import { addUsersToRoomMethod } from '../../meteor-methods/rooms/addUsersToRoom';
 import { settings } from '../../settings';
-
-const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
 const logger = new Logger('VideoConference');
 

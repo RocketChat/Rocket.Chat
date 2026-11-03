@@ -20,6 +20,7 @@ Screens compose named layout containers. They don't lay themselves out with `Box
 | a grid of cards                         | `CardGrid` › `Card`                                                                                                         |
 | a dropdown or popover surface           | `PopoverSurface` (`elevation`, `maxHeight`, `flush`)                                                                        |
 | nothing to show yet                     | `GenericNoResults`, `Skeleton`                                                                                              |
+| text in a font scale or a text colour   | `Text` (`fontScale`, `color`, `truncate`, and `is` for the element: `p`, `h2`, `label`…)                                    |
 | a look a component offers               | its declared variation: `Button size='small'`, `Icon color='danger'`, `Divider variation='light'`, `FieldRow justify='end'` |
 
 When the table has no row for what you need, the answer is a new container, not a `Box` in the screen (see below).
@@ -70,4 +71,4 @@ Create one, named for what it is, and grow it as it gets reused:
 
 Name it for its role (`SettingsSection`, `ChatsFilterBar`, `EmptyState`), not its shape (`FlexRow`, `Wrapper`, `Container`). A container that only renames `Stack` isn't one; use `Stack`.
 
-Typography is the largest gap today: about 350 `Box`es in screens exist only to set `fontScale`, a text color or truncation. A `Text` component over the existing font-scale and text-color tokens is planned; until then, keep those `Box`es inside named containers.
+Text that only sets a font scale, a text colour or truncation is a `Text`, not a `Box`. `Text` is a plain element: it takes no outer spacing, and it ignores a surrounding `Margins`, which only reaches `Box`es. The space around it comes from its container, usually a `Stack` with a `gap`.

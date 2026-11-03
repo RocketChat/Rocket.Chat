@@ -1,12 +1,11 @@
 import type { OverlayTriggerState } from '@react-stately/overlays';
 import { AI_LICENSE_MODULE, getAISearchButtonTooltip } from '@rocket.chat/ai-search';
 import type { NavBarSearchFormValues } from '@rocket.chat/ai-search';
+import { useHasLicenseModule } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useState } from 'react';
 import type { UseFormSetFocus } from 'react-hook-form';
 import type { useTranslation } from 'react-i18next';
-
-import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 
 type TranslationFn = ReturnType<typeof useTranslation>['t'];
 

@@ -48,7 +48,7 @@ export const Disabled: Story = {
 
 export const InsideButton: Story = {
 	render: () => (
-		<Button minHeight='x40'>
+		<Button>
 			<Throbber size='x12' />
 		</Button>
 	),
@@ -56,11 +56,11 @@ export const InsideButton: Story = {
 
 export const InsideButtonInheritColor: Story = {
 	render: () => (
-		<Box>
-			<Button primary danger minHeight='x40' marginInlineEnd='5px'>
+		<Box display='flex' gap={4}>
+			<Button variant='primary'>
 				<Throbber size='x12' inheritColor />
 			</Button>
-			<Button primary minHeight='x40'>
+			<Button variant='primary'>
 				<Throbber size='x12' inheritColor />
 			</Button>
 		</Box>

@@ -125,7 +125,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps) {
 				<Field>
 					<FieldLabel>{t('Sound File')}</FieldLabel>
 					<Box display='flex' flexDirection='row' marginBlockStart='none' alignItems='center' gap={4} paddingInlineStart={4}>
-						<IconButton secondary small icon='upload' onClick={clickUpload} />
+						<IconButton variant='secondary' size='small' icon='upload' onClick={clickUpload} />
 						{file?.name || (data?.name && data?.extension && `${data.name}.${data.extension}`) || t('None')}
 					</Box>
 				</Field>
@@ -133,13 +133,13 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps) {
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={close}>{t('Cancel')}</Button>
-					<Button primary onClick={handleSave} disabled={!hasUnsavedChanges}>
+					<Button variant='primary' onClick={handleSave} disabled={!hasUnsavedChanges}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
 				<Box marginBlockStart={8}>
 					<ButtonGroup stretch>
-						<Button icon='trash' danger onClick={handleDeleteButtonClick}>
+						<Button icon='trash' variant='danger' onClick={handleDeleteButtonClick}>
 							{t('Delete')}
 						</Button>
 					</ButtonGroup>

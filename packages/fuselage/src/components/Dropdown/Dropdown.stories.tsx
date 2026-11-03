@@ -60,7 +60,7 @@ export const Default: Story = {
 
 		return (
 			<Box width='400px' height='500px' display='flex' justifyContent='center' alignItems='center'>
-				<IconButton secondary small ref={anchor} icon='doner' data-testid='dropdown-anchor' />
+				<IconButton variant='secondary' size='small' ref={anchor} icon='doner' data-testid='dropdown-anchor' />
 				<Dropdown ref={target} reference={anchor} placement='bottom-end'>
 					{list.map((_, i) => (
 						<Option key={i}>Example {i + 1}</Option>

@@ -23,7 +23,9 @@ const FramedIcon = ({ info, success, warning, danger, neutral, icon, className, 
 			warning && 'rcx-framed-icon--warning',
 			danger && 'rcx-framed-icon--danger',
 			(neutral || (!info && !success && !warning && !danger)) && 'rcx-framed-icon--neutral',
-		]}
+		]
+			.filter(Boolean)
+			.join(' ')}
 		name={icon}
 		size={20}
 	/>

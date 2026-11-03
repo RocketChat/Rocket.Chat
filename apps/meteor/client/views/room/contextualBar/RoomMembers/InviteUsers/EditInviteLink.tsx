@@ -69,7 +69,7 @@ const EditInviteLink = ({ daysAndMaxUses, onClickNewLink }: EditInviteLinkProps)
 				</FieldRow>
 			</Field>
 			<Box marginBlockStart={8}>
-				<Button loading={isSubmitting} disabled={!isDirty} primary onClick={handleSubmit(onClickNewLink)}>
+				<Button loading={isSubmitting} disabled={!isDirty} variant='primary' onClick={handleSubmit(onClickNewLink)}>
 					{t('Generate_New_Link')}
 				</Button>
 			</Box>

@@ -75,7 +75,9 @@ const SidePanelItem = ({
 					{parentRoom}
 					{titleIcon}
 					{badges}
-					{menu && <SidebarItemMenu>{menuVisibility ? menu : <IconButton tabIndex={-1} aria-hidden mini icon='kebab' />}</SidebarItemMenu>}
+					{menu && (
+						<SidebarItemMenu>{menuVisibility ? menu : <IconButton tabIndex={-1} aria-hidden size='mini' icon='kebab' />}</SidebarItemMenu>
+					)}
 				</SidebarItemRow>
 			</SidebarItemCol>
 		</SidebarItem>

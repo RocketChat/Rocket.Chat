@@ -7,7 +7,7 @@ const EndToEnd = () => {
 	return (
 		<Box display='flex' flexDirection='column' alignItems='flex-start'>
 			<ChangePassphrase />
-			<Box alignSelf='stretch' paddingBlock={36}>
+			<Box alignSelf='stretch' paddingBlock='x32'>
 				<Divider flush />
 			</Box>
 			<ResetPassphrase />

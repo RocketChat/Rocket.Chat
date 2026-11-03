@@ -1,11 +1,11 @@
 import { memo } from 'react';
 
-import { Box, type BoxProps } from '../Box';
+import { Box } from '../Box';
 import { Skeleton } from '../Skeleton';
-import Contextualbar from './Contextualbar';
+import Contextualbar, { type ContextualbarProps } from './Contextualbar';
 import ContextualbarHeader from './ContextualbarHeader';
 
-export type ContextualbarSkeletonProps = BoxProps;
+export type ContextualbarSkeletonProps = ContextualbarProps;
 
 const ContextualbarSkeleton = (props: ContextualbarSkeletonProps) => (
 	<Contextualbar {...props}>

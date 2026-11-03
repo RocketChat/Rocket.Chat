@@ -16,7 +16,6 @@
 @use './Chevron/Chevron.styles.scss';
 @use './Chip/Chip.styles.scss';
 @use './CodeSnippet/CodeSnippet.styles.scss';
-@use './Contextualbar/Contextualbar.styles.scss';
 @use './Divider/Divider.styles.scss';
 @use './Dropdown/Dropdown.styles.scss';
 @use './Field/Field.styles.scss';
@@ -46,6 +45,7 @@
 @use './Table/Table.styles.scss';
 @use './Tabs/Tabs.styles.scss';
 @use './Tag/Tag.styles.scss';
+@use './Text/Text.styles.scss';
 @use './Throbber/Throbber.styles.scss';
 @use './Tile/Tile.styles.scss';
 @use './ToastBar/ToastBar.styles.scss';

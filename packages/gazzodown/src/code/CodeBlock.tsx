@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { IconButton, Box } from '@rocket.chat/fuselage';
+import { IconButton, Box, useStyle } from '@rocket.chat/fuselage';
 import type * as MessageParser from '@rocket.chat/message-parser';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import hljs from 'highlight.js';
@@ -25,6 +25,7 @@ const onHoverStyle = css`
 
 const CodeBlock = ({ lines = [], language }: CodeBlockProps) => {
 	const ref = useRef<HTMLElement>(null);
+	const onHoverClassName = useStyle(onHoverStyle);
 
 	const { highlightRegex } = useContext(MarkupInteractionContext);
 	const { t } = useTranslation();
@@ -87,8 +88,8 @@ const CodeBlock = ({ lines = [], language }: CodeBlockProps) => {
 			<Box is='span' position='absolute' insetInlineEnd={0} margin={8}>
 				<IconButton
 					icon='copy'
-					small
-					className={onHoverStyle}
+					size='small'
+					className={onHoverClassName}
 					title={t('Copy')}
 					onClick={() => {
 						void handleCopy();

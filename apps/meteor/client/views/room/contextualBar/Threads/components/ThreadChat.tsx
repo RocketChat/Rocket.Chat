@@ -93,7 +93,7 @@ const ThreadChat = ({ mainMessage, onEscape, ...boxProps }: ThreadChatProps) => 
 
 	return (
 		// The caller's own props before the drop target's, so no caller can take `onDragEnter` off it by accident.
-		<ContextualbarContent flexShrink={1} flexGrow={1} paddingInline={0} {...boxProps} {...fileUploadTriggerProps}>
+		<ContextualbarContent flush {...boxProps} {...fileUploadTriggerProps}>
 			<DateListProvider>
 				<DropTargetOverlay {...fileUploadOverlayProps} />
 				<Box

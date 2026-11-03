@@ -79,7 +79,7 @@ export const Header: Story = {
 	render: () => (
 		<Stack direction='row' align='center' justify='space-between' gap={16}>
 			<Box fontScale='h4'>Title</Box>
-			<Button small>Action</Button>
+			<Button size='small'>Action</Button>
 		</Stack>
 	),
 };

@@ -222,7 +222,7 @@ const AdminInfoForm = ({
 			</FormContainer>
 			<FormFooter>
 				<ButtonGroup>
-					<Button type='submit' primary loading={isValidating || isSubmitting}>
+					<Button type='submit' variant='primary' loading={isValidating || isSubmitting}>
 						{t('component.form.action.next')}
 					</Button>
 				</ButtonGroup>

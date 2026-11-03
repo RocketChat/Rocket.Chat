@@ -54,6 +54,14 @@ describe('room types', () => {
 		expect(isRoomAbacLocked(room({ t: 'c', federated: true }), enforcing(['nationality']))).to.be.false;
 	});
 
+	it('should never lock an XMPP federated room, even a public one', () => {
+		const hosted = { version: 1, role: 'host-muc', muc: 'room@conference.example.com', origin: 'example.com' } as const;
+		const remote = { version: 1, role: 'remote-muc', muc: 'room@conference.remote.org', origin: 'remote.org' } as const;
+
+		expect(isRoomAbacLocked(room({ t: 'c', xmppFederation: hosted }), enforcing(['nationality']))).to.be.false;
+		expect(isRoomAbacLocked(room({ xmppFederation: remote }), enforcing(['nationality']))).to.be.false;
+	});
+
 	it('should lock a room whose federated flag is explicitly false', () => {
 		expect(isRoomAbacLocked(room({ t: 'c', federated: false }), enforcing())).to.be.true;
 	});

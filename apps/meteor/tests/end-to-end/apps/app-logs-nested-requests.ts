@@ -33,7 +33,7 @@ import { IS_EE } from '../../e2e/config/constants';
 
 		expect(targetMessage, 'Target message from nested request not found').to.exist;
 
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- we're checking existence above
+		// oxlint-disable-next-line @typescript-eslint/no-non-null-assertion -- we're checking existence above
 		const { _id: messageId } = targetMessage!;
 
 		const logsRes = await request.get(apps(`/${app.id}/logs`)).set(credentials);

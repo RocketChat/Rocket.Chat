@@ -164,7 +164,7 @@ const EditOauthApp = ({ onChange, data, ...props }: EditOauthAppProps) => {
 						<FieldRow>
 							<ButtonGroup stretch>
 								<Button onClick={close}>{t('Cancel')}</Button>
-								<Button primary onClick={handleSubmit(onSubmit)}>
+								<Button variant='primary' onClick={handleSubmit(onSubmit)}>
 									{t('Save')}
 								</Button>
 							</ButtonGroup>
@@ -173,7 +173,7 @@ const EditOauthApp = ({ onChange, data, ...props }: EditOauthAppProps) => {
 					<Field>
 						<FieldRow>
 							<ButtonGroup stretch>
-								<Button icon='trash' danger onClick={openConfirmDelete}>
+								<Button icon='trash' variant='danger' onClick={openConfirmDelete}>
 									{t('Delete')}
 								</Button>
 							</ButtonGroup>

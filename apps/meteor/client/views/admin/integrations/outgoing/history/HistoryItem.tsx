@@ -61,7 +61,7 @@ const HistoryItem = ({ data }: HistoryItemProps) => {
 						<Icon name='info-circled' size='x16' />
 						{formatDateAndTime(_createdAt)}
 					</Stack>
-					<Button secondary onClick={handleClickReplay}>
+					<Button variant='secondary' onClick={handleClickReplay}>
 						{t('Replay')}
 					</Button>
 				</Box>

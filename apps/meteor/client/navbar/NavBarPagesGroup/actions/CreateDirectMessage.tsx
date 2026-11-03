@@ -24,6 +24,7 @@ export type CreateDirectMessageProps = { onClose: () => void; onSuccess?: (rid: 
 const CreateDirectMessage = ({ onClose, onSuccess }: CreateDirectMessageProps) => {
 	const t = useTranslation();
 	const directMaxUsers = useSetting('DirectMesssage_maxUsers', 1);
+	const xmppEnabled = useSetting('XMPP_Server_Enabled', false);
 	const createDMFormId = useId();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -65,44 +66,43 @@ const CreateDirectMessage = ({ onClose, onSuccess }: CreateDirectMessageProps) =
 				<ModalClose tabIndex={-1} onClick={onClose} />
 			</ModalHeader>
 			<ModalContent>
-				<Box paddingBlockEnd={2}>
-					<FieldGroup>
-						<Field>
-							<FieldLabel>{t('Direct_message_creation_description')}</FieldLabel>
-							<FieldRow>
-								<Controller
-									name='users'
-									rules={{
-										required: t('Direct_message_creation_error'),
-										validate: (users) =>
-											users.length + 1 > directMaxUsers
-												? t('error-direct-message-max-user-exceeded', { maxUsers: directMaxUsers })
-												: undefined,
-									}}
-									control={control}
-									render={({ field: { name, onChange, value, onBlur } }) => (
-										<UserAutoCompleteMultiple
-											name={name}
-											onChange={onChange}
-											value={value}
-											onBlur={onBlur}
-											federated
-											aria-required='true'
-											error={errors.users?.message}
-										/>
-									)}
-								/>
-							</FieldRow>
-							{errors.users && <FieldError>{errors.users.message}</FieldError>}
-							<FieldHint>{t('Direct_message_creation_description_hint')}</FieldHint>
-						</Field>
-					</FieldGroup>
-				</Box>
+				<FieldGroup>
+					<Field>
+						<FieldLabel>{t('Direct_message_creation_description')}</FieldLabel>
+						<FieldRow>
+							<Controller
+								name='users'
+								rules={{
+									required: t('Direct_message_creation_error'),
+									validate: (users) =>
+										users.length + 1 > directMaxUsers
+											? t('error-direct-message-max-user-exceeded', { maxUsers: directMaxUsers })
+											: undefined,
+								}}
+								control={control}
+								render={({ field: { name, onChange, value, onBlur } }) => (
+									<UserAutoCompleteMultiple
+										name={name}
+										onChange={onChange}
+										value={value}
+										onBlur={onBlur}
+										federated
+										xmpp={xmppEnabled}
+										aria-required='true'
+										error={errors.users?.message}
+									/>
+								)}
+							/>
+						</FieldRow>
+						{errors.users && <FieldError>{errors.users.message}</FieldError>}
+						<FieldHint>{t('Direct_message_creation_description_hint')}</FieldHint>
+					</Field>
+				</FieldGroup>
 			</ModalContent>
 			<ModalFooter>
 				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button loading={isSubmitting || isValidating} type='submit' primary>
+					<Button loading={isSubmitting || isValidating} type='submit' variant='primary'>
 						{t('Create')}
 					</Button>
 				</ModalFooterControllers>

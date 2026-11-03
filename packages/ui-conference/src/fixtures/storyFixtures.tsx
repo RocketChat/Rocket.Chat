@@ -1,5 +1,5 @@
 /* One story harness; the wrappers below are three lines each and read as a unit. */
-/* eslint-disable react/no-multi-comp */
+/* oxlint-disable react/no-multi-comp */
 import type { VideoConferenceCapabilities } from '@rocket.chat/core-typings';
 import { VIDEO_CONF_RINGING_WINDOW_MS } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
@@ -53,7 +53,7 @@ const CallActions = ({ children }: { children: ReactNode }) => {
 export const withCallProviders = (builder: Builder): Decorator => {
 	const Providers = builder.build();
 
-	// eslint-disable-next-line react/display-name
+	// oxlint-disable-next-line react/display-name
 	return (Story) => (
 		<Providers>
 			{/* Inside `Providers`, which installs an i18next instance with no resources: the nearest one wins. */}
@@ -113,7 +113,7 @@ export const buildConferenceContext = ({
 export const withConference = (value?: ConferenceFixture): Decorator => {
 	const conference = buildConferenceContext(value);
 
-	// eslint-disable-next-line react/display-name
+	// oxlint-disable-next-line react/display-name
 	return (Story) => (
 		<ConferenceContext.Provider value={conference}>
 			<Story />
@@ -143,7 +143,7 @@ const LiveConference = ({ value, children }: { value: ConferenceFixture; childre
 /** A conference whose rings stay rings — see {@link useLiveRingingAt}. */
 export const withLiveConference =
 	(value: ConferenceFixture): Decorator =>
-	// eslint-disable-next-line react/display-name
+	// oxlint-disable-next-line react/display-name
 	(Story) => (
 		<LiveConference value={value}>
 			<Story />
@@ -182,7 +182,7 @@ export const buildOngoingCallsContext = ({
 export const withOngoingCalls = (value?: OngoingCallsFixture): Decorator => {
 	const calls = buildOngoingCallsContext(value);
 
-	// eslint-disable-next-line react/display-name
+	// oxlint-disable-next-line react/display-name
 	return (Story) => (
 		<OngoingCallsContext.Provider value={calls}>
 			<Story />
@@ -209,7 +209,7 @@ const LiveOngoingCalls = ({ value, children }: { value: OngoingCallsFixture; chi
 /** The same, with every ring in the list kept ringing — see {@link useLiveRingingAt}. */
 export const withLiveOngoingCalls =
 	(value: OngoingCallsFixture): Decorator =>
-	// eslint-disable-next-line react/display-name
+	// oxlint-disable-next-line react/display-name
 	(Story) => (
 		<LiveOngoingCalls value={value}>
 			<Story />
@@ -280,7 +280,7 @@ export const withLiveRings =
 	// Unparameterized `Decorator`: a `Decorator<TArgs>` alongside plain ones in `meta.decorators` widens the
 	// array to a union `composeStories` cannot read the stories out of.
 	<TArgs,>(restamp: (args: TArgs, ringingAt: Date) => Partial<TArgs>): Decorator =>
-		// eslint-disable-next-line react/display-name
+		// oxlint-disable-next-line react/display-name
 		(Story, { args }) => (
 			// Spread: `args` on a story replaces rather than merges.
 			<LiveRing>{(ringingAt) => <Story args={{ ...args, ...restamp(args as unknown as TArgs, ringingAt) }} />}</LiveRing>

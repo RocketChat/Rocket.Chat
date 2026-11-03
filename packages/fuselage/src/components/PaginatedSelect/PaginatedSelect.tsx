@@ -10,7 +10,6 @@ import { Option } from '../Option';
 import { useVisible } from '../Options/useVisible';
 import { OptionsPaginated } from '../OptionsPaginated';
 import { PositionAnimated } from '../PositionAnimated';
-import PaginatedSelectWrapper from './PaginatedSelectWrapper';
 import SelectAddon from '../Select/SelectAddon';
 import SelectFocus from '../Select/SelectFocus';
 
@@ -91,7 +90,7 @@ export const PaginatedSelect = ({
 			className={useMemo(() => [error && 'invalid', disabled && 'disabled'], [error, disabled])}
 			{...props}
 		>
-			<PaginatedSelectWrapper display='flex' marginInline='neg-x4' rcx-select__wrapper--hidden={!!visibleText}>
+			<Box is='div' rcx-select__wrapper display='flex' marginInline='neg-x4' rcx-select__wrapper--hidden={!!visibleText}>
 				{visibleText && (
 					<Box flexGrow={1} is='span' marginInline={4} rcx-select__item fontScale='p2m' color={valueLabel ? 'titles-labels' : 'hint'}>
 						{visibleText}
@@ -113,7 +112,7 @@ export const PaginatedSelect = ({
 				<SelectAddon>
 					<Icon name={visible === AnimatedVisibility.VISIBLE ? 'chevron-up' : 'chevron-down'} size='x20' />
 				</SelectAddon>
-			</PaginatedSelectWrapper>
+			</Box>
 			<PositionAnimated visible={visible} anchor={containerRef}>
 				<_Options
 					withTitle={withTitle}

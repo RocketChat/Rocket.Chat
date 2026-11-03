@@ -7,7 +7,7 @@ import { forwardRef, useEffect, useId, useImperativeHandle } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { ComposerBoxPopupProps } from './ComposerBoxPopup';
-import { getActiveDescendantOptionProps } from '../../../hooks/useActiveDescendant';
+import { getActiveDescendantOptionProps } from '../../../hooks/getActiveDescendantOptionProps';
 import { useChat } from '../contexts/ChatContext';
 
 type ComposerBoxPopupPreviewItem = { _id: string; type: 'image' | 'video' | 'audio' | 'text' | 'other'; value: string; sort?: number };

@@ -75,8 +75,20 @@ const SidebarItemTemplateWithData = ({
 		() =>
 			videoConfActions && (
 				<SidebarItemActions>
-					<IconButton onClick={videoConfActions.acceptCall} mini secondary success icon='phone' aria-label={t('Accept_Call')} />
-					<IconButton onClick={videoConfActions.rejectCall} mini secondary danger icon='phone-off' aria-label={t('Reject_call')} />
+					<IconButton
+						onClick={videoConfActions.acceptCall}
+						size='mini'
+						variant='secondary-success'
+						icon='phone'
+						aria-label={t('Accept_Call')}
+					/>
+					<IconButton
+						onClick={videoConfActions.rejectCall}
+						size='mini'
+						variant='secondary-danger'
+						icon='phone-off'
+						aria-label={t('Reject_call')}
+					/>
 				</SidebarItemActions>
 			),
 		[t, videoConfActions],

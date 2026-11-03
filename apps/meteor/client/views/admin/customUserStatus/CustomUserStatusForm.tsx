@@ -24,6 +24,7 @@ const CustomUserStatusForm = ({ onClose, onReload, status }: CustomUserStatusFor
 	const route = useRoute('user-status');
 	const dispatchToastMessage = useToastMessageDispatch();
 	const formId = useId();
+	const presenceField = useId();
 
 	const {
 		register,
@@ -107,13 +108,13 @@ const CustomUserStatusForm = ({ onClose, onReload, status }: CustomUserStatusFor
 							{errors.name && <FieldError>{errors.name.message}</FieldError>}
 						</Field>
 						<Field>
-							<FieldLabel>{t('Presence')}</FieldLabel>
+							<FieldLabel htmlFor={presenceField}>{t('Presence')}</FieldLabel>
 							<FieldRow>
 								<Controller
 									name='statusType'
 									control={control}
 									rules={{ required: t('Required_field', { field: t('Presence') }) }}
-									render={({ field }) => <Select {...field} placeholder={t('Presence')} options={presenceOptions} />}
+									render={({ field }) => <Select id={presenceField} {...field} placeholder={t('Presence')} options={presenceOptions} />}
 								/>
 							</FieldRow>
 							{errors.statusType && <FieldError>{errors.statusType.message}</FieldError>}
@@ -124,14 +125,14 @@ const CustomUserStatusForm = ({ onClose, onReload, status }: CustomUserStatusFor
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button form={formId} primary type='submit'>
+					<Button form={formId} variant='primary' type='submit'>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
 				{_id && (
 					<Box marginBlockStart={8}>
 						<ButtonGroup stretch>
-							<Button icon='trash' danger onClick={handleDeleteStatus}>
+							<Button icon='trash' variant='danger' onClick={handleDeleteStatus}>
 								{t('Delete')}
 							</Button>
 						</ButtonGroup>
