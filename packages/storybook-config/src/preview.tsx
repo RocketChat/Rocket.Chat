@@ -1,11 +1,10 @@
 import { PaletteStyleTag } from '@rocket.chat/fuselage';
-import surface from '@rocket.chat/fuselage-tokens/dist/surface.json';
 import { useDarkMode } from '@rocket.chat/storybook-dark-mode';
 import type { Parameters, Decorator } from '@storybook/react';
-import { themes } from 'storybook/theming';
 
 import DocsContainer from './DocsContainer';
 import logo from './logo.svg';
+import { darkTheme, lightTheme } from './theme';
 
 import '@rocket.chat/fuselage/dist/fuselage.css';
 import '@rocket.chat/icons/dist/rocketchat.css';
@@ -29,17 +28,12 @@ export const parameters: Parameters = {
 	},
 	darkMode: {
 		dark: {
-			...themes.dark,
-			appBg: surface.dark.sidebar,
-			appContentBg: surface.dark.light,
-			appPreviewBg: 'transparent',
-			barBg: surface.dark.light,
+			...darkTheme,
 			brandTitle: process.env.STORYBOOK_PACKAGE_NAME,
 			brandImage: logo,
 		},
 		light: {
-			...themes.normal,
-			appPreviewBg: 'transparent',
+			...lightTheme,
 			brandTitle: process.env.STORYBOOK_PACKAGE_NAME,
 			brandImage: logo,
 		},

@@ -75,6 +75,19 @@ const config: StorybookConfig = {
 
 	stories: ['../src/**/*.stories.{mdx,js,tsx}', '../src/**/*.mdx'],
 
+	staticDirs: [{ from: '../src/fonts', to: '/fuselage-fonts' }],
+
+	managerHead: (head) => `${head}
+		<style>
+			@font-face {
+				font-family: 'Inter';
+				font-weight: 100 900;
+				font-style: normal;
+				font-display: swap;
+				src: url('./fuselage-fonts/InterVariable.woff2') format('woff2');
+			}
+		</style>`,
+
 	framework: {
 		name: getAbsolutePath('@storybook/react-webpack5'),
 		options: {},

@@ -3,7 +3,8 @@ import { DocsContainer as BaseContainer } from '@storybook/addon-docs/blocks';
 import type { ComponentPropsWithoutRef } from 'react';
 import { useEffect, useState } from 'react';
 import { addons } from 'storybook/preview-api';
-import { themes } from 'storybook/theming';
+
+import { darkTheme, lightTheme } from './theme';
 
 const channel = addons.getChannel();
 
@@ -15,7 +16,7 @@ const DocsContainer = (props: ComponentPropsWithoutRef<typeof BaseContainer>) =>
 		return () => channel.removeListener(DARK_MODE_EVENT_NAME, setDark);
 	}, [setDark]);
 
-	return <BaseContainer {...props} theme={isDark ? themes.dark : themes.light} />;
+	return <BaseContainer {...props} theme={isDark ? darkTheme : lightTheme} />;
 };
 
 export default DocsContainer;

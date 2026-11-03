@@ -1,13 +1,12 @@
 import breakpointTokens from '@rocket.chat/fuselage-tokens/dist/breakpoints.json';
-import surface from '@rocket.chat/fuselage-tokens/dist/surface.json';
 import { useDarkMode } from '@rocket.chat/storybook-dark-mode';
 import type { Preview } from '@storybook/react-webpack5';
-import { themes } from 'storybook/theming';
 
 import manifest from '../package.json';
 import { PaletteStyleTag } from '../src';
 import DocsContainer from './DocsContainer';
 import logo from './logo.svg';
+import { darkTheme, lightTheme } from './theme';
 
 import 'normalize.css/normalize.css';
 import '@rocket.chat/icons/dist/rocketchat.css';
@@ -46,18 +45,13 @@ export default {
 		},
 		darkMode: {
 			dark: {
-				...themes.dark,
-				appBg: surface.dark.sidebar,
-				appContentBg: surface.dark.light,
-				appPreviewBg: 'transparent',
-				barBg: surface.dark.light,
+				...darkTheme,
 				brandTitle: manifest.name,
 				brandImage: logo,
 				brandUrl: manifest.homepage,
 			},
 			light: {
-				...themes.normal,
-				appPreviewBg: 'transparent',
+				...lightTheme,
 				brandTitle: manifest.name,
 				brandImage: logo,
 				brandUrl: manifest.homepage,
