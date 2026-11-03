@@ -8,6 +8,7 @@ import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useMergedRefsV2 } from '../../../hooks/useMergedRefsV2';
 import { RoomHistoryManager } from '../../../lib/RoomHistoryManager';
 import { BubbleDate } from '../BubbleDate';
+import { BubbleDateScope } from '../BubbleDate/BubbleDateScope';
 import { MessageList } from '../MessageList';
 import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessageButton from './JumpToRecentMessageButton';
@@ -188,7 +189,7 @@ const RoomBody = () => {
 	return (
 		<>
 			{!isLayoutEmbedded && room.announcement && <RoomAnnouncement announcement={room.announcement} />}
-			<Box key={room._id} className='main-content-flex'>
+			<BubbleDateScope key={room._id} store={bubbleDateStore} className='main-content-flex'>
 				<section
 					role='presentation'
 					className={`messages-container flex-tab-main-content ${admin ? 'admin' : ''}`}
@@ -207,7 +208,7 @@ const RoomBody = () => {
 										onMarkAsReadButtonClick={handleMarkAsReadButtonClick}
 									/>
 								)}
-								<BubbleDate ref={bubbleRef} store={bubbleDateStore} dividerScope={`[id='chat-window-${room._id}']`} />
+								<BubbleDate ref={bubbleRef} store={bubbleDateStore} />
 							</Box>
 							<div ref={userScrollIntentRef} className={['messages-box'].filter(isTruthy).join(' ')}>
 								<JumpToRecentMessageButton visible={hasNewMessages} onClick={handleNewMessageButtonClick} text={t('New_messages')} />
@@ -272,7 +273,7 @@ const RoomBody = () => {
 						</div>
 					</div>
 				</section>
-			</Box>
+			</BubbleDateScope>
 		</>
 	);
 };

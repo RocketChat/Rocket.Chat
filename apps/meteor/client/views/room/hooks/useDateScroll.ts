@@ -1,22 +1,11 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
-import type { CSSProperties, MutableRefObject } from 'react';
+import type { MutableRefObject } from 'react';
 import { useCallback, useRef, useState } from 'react';
 
+import type { BubbleDateStore } from '../BubbleDate/bubbleDateStore';
+import { createBubbleDateStore, initialBubbleDateState } from '../BubbleDate/bubbleDateStore';
 import { useDateListController } from '../providers/DateListProvider';
-
-export type BubbleDateState = {
-	date: string;
-	show: boolean;
-	style?: CSSProperties;
-	showDivider: boolean;
-};
-
-export type BubbleDateStore = {
-	get: () => BubbleDateState;
-	subscribe: (onChange: () => void) => () => void;
-	set: (update: (current: BubbleDateState) => BubbleDateState) => void;
-};
 
 type useDateScrollReturn = {
 	handleDateScroll: (topMessage: IMessage | undefined, offset: number) => void;
@@ -24,44 +13,6 @@ type useDateScrollReturn = {
 	bubbleDateStore: BubbleDateStore;
 	/** Brings the bubble back to its initial state, dropping any pending update for the list it was showing. */
 	resetBubbleDate: () => void;
-};
-
-const isSameStyle = (a: CSSProperties | undefined, b: CSSProperties | undefined) => {
-	if (a === b) {
-		return true;
-	}
-	if (!a || !b) {
-		return false;
-	}
-	const keys = Object.keys(a) as (keyof CSSProperties)[];
-	return keys.length === Object.keys(b).length && keys.every((key) => a[key] === b[key]);
-};
-
-const isSameState = (a: BubbleDateState, b: BubbleDateState) =>
-	a.date === b.date && a.show === b.show && a.showDivider === b.showDivider && isSameStyle(a.style, b.style);
-
-// Scrolling updates the bubble many times per second; keeping its state out of React state lets only the bubble re-render.
-const initialBubbleDateState: BubbleDateState = { date: '', show: false, style: undefined, showDivider: true };
-
-const createBubbleDateStore = (): BubbleDateStore => {
-	let state = initialBubbleDateState;
-	const listeners = new Set<() => void>();
-
-	return {
-		get: () => state,
-		subscribe: (onChange) => {
-			listeners.add(onChange);
-			return () => listeners.delete(onChange);
-		},
-		set: (update) => {
-			const next = update(state);
-			if (isSameState(state, next)) {
-				return;
-			}
-			state = next;
-			listeners.forEach((onChange) => onChange());
-		},
-	};
 };
 
 // The threshold in pixels to consider a date divider as "visible" when scrolling.
