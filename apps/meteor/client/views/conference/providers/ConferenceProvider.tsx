@@ -8,6 +8,7 @@ import { Suspense, useCallback, useMemo, useState } from 'react';
 import { ReactiveUserStatus } from '../../../components/UserStatus';
 import { videoConferenceQueryKeys } from '../../../lib/queryKeys';
 import { isRefusal } from '../../../lib/utils/isRefusal';
+import { setMessageJumpQueryStringParameter } from '../../../lib/utils/setMessageJumpQueryStringParameter';
 import { embeddedCallProviders } from '../../../lib/videoConference/embeddedCallProviders';
 import { useUnreadDisplay } from '../../../sidebar/hooks/useUnreadDisplay';
 import PageLoading from '../../root/PageLoading';
@@ -21,6 +22,7 @@ import { useConferenceSubscription } from '../hooks/useConferenceSubscription';
 import { useConfinedNavigation } from '../hooks/useConfinedNavigation';
 import { useLeaveConferenceOnClose } from '../hooks/useLeaveConferenceOnClose';
 import { useProviderPlugin } from '../hooks/useProviderPlugin';
+import { useSubscribeToIncomingMessages } from '../hooks/useSubscribeToIncomingMessages';
 import { conferencePreflightMedia } from '../lib/conferencePreflightMedia';
 
 const emptyUnreadData = { alert: false, userMentions: 0, unread: 0, groupMentions: 0 } as const;
@@ -75,6 +77,12 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 	// its reader asked not to be told about it at all — is the product's business rather than the window's.
 	const subscription = useUserSubscription(room.rid ?? '');
 	const { showUnread, unreadCount, unreadVariant, unreadTitle } = useUnreadDisplay(subscription ?? emptyUnreadData);
+
+	const subscribeToIncomingMessages = useSubscribeToIncomingMessages({
+		rid: room.rid,
+		tmid: room.tmid,
+		since: call.members.find(({ _id }) => _id === uid)?.joinedAt,
+	});
 
 	/**
 	 * Which panel the window is showing, held here rather than in the window because a provider's page can carry
@@ -182,6 +190,8 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 					variant: unreadVariant,
 					title: unreadTitle,
 				},
+				subscribeToIncomingMessages,
+				jumpToMessage: (mid) => void setMessageJumpQueryStringParameter(mid),
 			},
 			session: {
 				url: conference.url,
@@ -224,6 +234,7 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 			uid,
 			useRealName,
 			showUnread,
+			subscribeToIncomingMessages,
 			subscription,
 			thread,
 			unreadCount.total,

@@ -8,6 +8,7 @@ export type {
 	ConferenceCall,
 	ConferenceChatAccess,
 	ConferenceFailure,
+	ConferenceIncomingMessage,
 	ConferenceMember,
 	ConferenceRoom,
 	ConferenceSession,
