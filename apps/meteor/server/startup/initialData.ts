@@ -117,25 +117,31 @@ Meteor.startup(async () => {
 	Meteor.settings.public.packages['dynamic-import'] = dynamicImport['dynamic-import'];
 
 	if (!settings.get('Initial_Channel_Created')) {
-		await Rooms.createWithIdTypeAndNameIfNotExists('GENERAL', 'c', 'general', { default: true });
+		if (!(await Rooms.findOneById('GENERAL', { projection: { _id: 1 } }))) {
+			await Rooms.createWithIdTypeAndNameIfNotExists('GENERAL', 'c', 'general', { default: true });
+		}
 
 		(await Settings.updateValueById('Initial_Channel_Created', true)).modifiedCount &&
 			void notifyOnSettingChangedById('Initial_Channel_Created');
 	}
 
 	try {
-		const { upsertedCount } = await Users.createIfNotExists({
-			_id: 'rocket.cat',
-			name: 'Rocket.Cat',
-			username: 'rocket.cat',
-			status: UserStatus.ONLINE,
-			statusDefault: UserStatus.ONLINE,
-			utcOffset: 0,
-			active: true,
-			type: 'bot',
-		});
+		const createdRocketCat =
+			!(await Users.findOneById('rocket.cat', { projection: { _id: 1 } })) &&
+			(
+				await Users.createIfNotExists({
+					_id: 'rocket.cat',
+					name: 'Rocket.Cat',
+					username: 'rocket.cat',
+					status: UserStatus.ONLINE,
+					statusDefault: UserStatus.ONLINE,
+					utcOffset: 0,
+					active: true,
+					type: 'bot',
+				})
+			).upsertedCount > 0;
 
-		if (upsertedCount) {
+		if (createdRocketCat) {
 			await addUserRolesAsync('rocket.cat', ['bot']);
 
 			const buffer = await readPrivateAsset('avatars/rocketcat.png');
