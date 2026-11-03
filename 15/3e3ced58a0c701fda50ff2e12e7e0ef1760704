@@ -1,0 +1,28 @@
+apps/meteor/server/startup/migrations/v353.test.ts
+  s_4732cc49f8dcd1::t_99ab14349d4cbc 19
+  s_4732cc49f8dcd1::t_f401e305df373e 1-2,4-18,20-55
+  s_4732cc49f8dcd1::t_45d1c68f90ad96 3
+apps/meteor/server/startup/migrations/v353.ts
+  s_4732cc49f8dcd1::t_528064378d2ff2 1-19,23-26
+  s_4732cc49f8dcd1::t_6bcf94209072af 20-22
+apps/meteor/server/startup/migrations/index.ts
+  s_4732cc49f8dcd1::t_fa11af0601b8c7 61
+.changeset/stale-oauth-login-buttons.md
+  s_4732cc49f8dcd1::t_11190a41d453b4 1-5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "153e3ced58a0c701fda50ff2e12e7e0ef1760704",
+  "prompts": {},
+  "sessions": {
+    "s_4732cc49f8dcd1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "36131ff5-a1ff-456b-baf5-122346e068a8",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
