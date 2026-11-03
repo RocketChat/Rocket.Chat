@@ -225,11 +225,13 @@ jobs:
       # API call fails, tests run.
       - name: Check if this commit already passed tests
         id: check
-        if: github.event_name == 'push'
         continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
+        # TEMP: skip every test job except the SAML startup unit test, revert before leaving draft
         run: |
+          echo "skip-tests=true" >> "$GITHUB_OUTPUT"
+          exit 0
           # --paginate applies the jq filter per page, so emit names and count with
           # wc -l to get a single integer across pages
           passed=$(gh api "repos/${{ github.repository }}/commits/${{ github.sha }}/check-runs" --paginate \
@@ -374,6 +376,8 @@ jobs:
   build:
     name: 📦 Meteor Build (${{ matrix.type }})
     needs: [release-versions, packages-build]
+    # TEMP: no image needed while only the SAML startup unit test runs, revert before leaving draft
+    if: false
     runs-on: ubuntu-24.04-arm
 
     strategy:
@@ -658,7 +662,6 @@ jobs:
   test-unit:
     name: 🔨 Test Unit
     needs: [packages-build, release-versions, test-guard]
-    if: needs.test-guard.outputs.skip-tests != 'true'
 
     uses: ./.github/workflows/ci-test-unit.yml
     with:
