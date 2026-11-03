@@ -18,7 +18,7 @@ registerModel('IUsersModel', {
 registerModel('IUsersSessionsModel', {
 	findOneById: findSessionMock,
 	addConnectionById: jest.fn(),
-	removeConnectionByConnectionId: jest.fn(),
+	removeConnectionById: jest.fn(),
 	updateConnectionStatusById: jest.fn(),
 } as any);
 

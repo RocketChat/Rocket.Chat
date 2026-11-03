@@ -60,11 +60,9 @@ export class UsersSessionsRaw extends BaseRaw<IUserSession> implements IUsersSes
 		);
 	}
 
-	async removeConnectionByConnectionId(connectionId: string): ReturnType<BaseRaw<IUserSession>['updateMany']> {
-		return this.updateMany(
-			{
-				'connections.id': connectionId,
-			},
+	removeConnectionById(uid: string, connectionId: string): ReturnType<BaseRaw<IUserSession>['updateOne']> {
+		return this.updateOne(
+			{ _id: uid },
 			{
 				$pull: {
 					connections: {
