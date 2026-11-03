@@ -1,12 +1,10 @@
 import breakpointTokens from '@rocket.chat/fuselage-tokens/dist/breakpoints.json';
-import { useDarkMode } from '@rocket.chat/storybook-dark-mode';
 import type { Preview } from '@storybook/react-webpack5';
+import { useSyncExternalStore } from 'react';
 
-import manifest from '../package.json';
 import { PaletteStyleTag } from '../src';
 import DocsContainer from './DocsContainer';
-import logo from './logo.svg';
-import { createBrandTitle, darkTheme, lightTheme } from './theme';
+import { initialThemeGlobal, resolveThemeMode, subscribeToSystemColorScheme, themeGlobalType } from './theme';
 
 import 'normalize.css/normalize.css';
 import '@rocket.chat/icons/dist/rocketchat.css';
@@ -43,25 +41,19 @@ export default {
 				]),
 			),
 		},
-		darkMode: {
-			dark: {
-				...darkTheme,
-				brandTitle: createBrandTitle('dark', { logo, name: manifest.name }),
-				brandUrl: manifest.homepage,
-			},
-			light: {
-				...lightTheme,
-				brandTitle: createBrandTitle('light', { logo, name: manifest.name }),
-				brandUrl: manifest.homepage,
-			},
-		},
+	},
+	globalTypes: {
+		theme: themeGlobalType,
+	},
+	initialGlobals: {
+		theme: initialThemeGlobal,
 	},
 	// Stories that place elements by their measured size, like tooltips, must be measured in the final fonts,
 	// or the visual regression snapshots render where the fallback font left them.
 	loaders: [() => Promise.all([...document.fonts].map((font) => font.load()))],
 	decorators: [
-		(Story) => {
-			const dark = useDarkMode();
+		function PaletteDecorator(Story, { globals }) {
+			const mode = useSyncExternalStore(subscribeToSystemColorScheme, () => resolveThemeMode(globals.theme));
 
 			return (
 				<>
@@ -70,7 +62,7 @@ export default {
 							background-color: var(--rcx-color-surface-light);
 						}
 					`}</style>
-					<PaletteStyleTag theme={dark ? 'dark' : 'light'} />
+					<PaletteStyleTag theme={mode} />
 					<Story />
 				</>
 			);

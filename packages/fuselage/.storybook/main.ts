@@ -13,7 +13,6 @@ const config: StorybookConfig = {
 	},
 	addons: [
 		getAbsolutePath('@storybook/addon-a11y'),
-		getAbsolutePath('@rocket.chat/storybook-dark-mode'),
 		getAbsolutePath('@storybook/addon-webpack5-compiler-swc'),
 		{
 			name: getAbsolutePath('@storybook/addon-styling-webpack'),

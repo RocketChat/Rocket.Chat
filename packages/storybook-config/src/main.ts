@@ -25,7 +25,7 @@ const baseConfig = ({ staticDirs = [], managerHead, ...customConfig }: Partial<S
 		addons: [
 			getAbsolutePath('@storybook/addon-a11y'),
 			getAbsolutePath('@storybook/addon-docs'),
-			getAbsolutePath('@rocket.chat/storybook-dark-mode'),
+			require.resolve('./preset'),
 			getAbsolutePath('@storybook/addon-webpack5-compiler-swc'),
 			getAbsolutePath('@storybook/addon-styling-webpack'),
 		],

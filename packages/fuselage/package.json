@@ -58,7 +58,6 @@
 		"@rocket.chat/fuselage-hooks": "workspace:^",
 		"@rocket.chat/icons": "workspace:~",
 		"@rocket.chat/jest-presets": "workspace:~",
-		"@rocket.chat/storybook-dark-mode": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:~",
 		"@rocket.chat/visual-regression": "workspace:~",
 		"@storybook/addon-a11y": "~9.1.21",

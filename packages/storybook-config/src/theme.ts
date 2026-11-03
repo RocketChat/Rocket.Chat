@@ -4,17 +4,20 @@ import font from '@rocket.chat/fuselage-tokens/dist/font.json';
 import stroke from '@rocket.chat/fuselage-tokens/dist/stroke.json';
 import surface from '@rocket.chat/fuselage-tokens/dist/surface.json';
 import typography from '@rocket.chat/fuselage-tokens/dist/typography.json';
+import { GLOBALS_UPDATED, SET_GLOBALS } from 'storybook/internal/core-events';
 import type { ThemeVars } from 'storybook/theming';
 import { create } from 'storybook/theming';
 
+export type ThemeMode = 'light' | 'dark' | 'high-contrast';
+
+export type ThemeGlobal = ThemeMode | 'system';
+
 const fontStack = (families: readonly string[]) => families.map((family) => (family.includes(' ') ? `"${family}"` : family)).join(', ');
 
-type Mode = 'light' | 'dark';
-
 /** Builds a Storybook theme that dresses the manager and docs in Fuselage's palette, type and radii. */
-const createFuselageTheme = (mode: Mode): ThemeVars =>
+const createFuselageTheme = (mode: ThemeMode): ThemeVars =>
 	create({
-		base: mode,
+		base: mode === 'dark' ? 'dark' : 'light',
 
 		colorPrimary: button[mode].backgroundPrimaryDefault,
 		colorSecondary: stroke[mode].highlight,
@@ -49,14 +52,93 @@ const createFuselageTheme = (mode: Mode): ThemeVars =>
 		inputBorderRadius: border.radius.medium,
 	});
 
-export const lightTheme = createFuselageTheme('light');
-
-export const darkTheme = createFuselageTheme('dark');
+export const themes: Record<ThemeMode, ThemeVars> = {
+	'light': createFuselageTheme('light'),
+	'dark': createFuselageTheme('dark'),
+	'high-contrast': createFuselageTheme('high-contrast'),
+};
 
 /** Brands the sidebar header with the logo and the name of the package the Storybook documents. */
-export const createBrandTitle = (mode: Mode, { logo, name }: { logo: string; name?: string }): string => `
+export const createBrandTitle = (mode: ThemeMode, { logo, name }: { logo: string; name?: string }): string => `
 	<span style="display: flex; flex-direction: column; gap: 4px;">
-		<img src="${logo}" alt="Rocket.Chat" style="display: block; width: 128px; height: auto;" />
+		<img src="${logo.replaceAll('"', '%22')}" alt="Rocket.Chat" style="display: block; width: 128px; height: auto;" />
 		${name ? `<span style="font-size: 12px; font-weight: 700; line-height: 16px; color: ${font[mode].hint};">${name}</span>` : ''}
 	</span>
 `;
+
+/** The toolbar control that picks which Fuselage palette stories, docs and the manager use. */
+export const themeGlobalType = {
+	name: 'Theme',
+	description: 'Fuselage palette',
+	toolbar: {
+		title: 'Theme',
+		icon: 'paintbrush',
+		dynamicTitle: true,
+		items: [
+			{ value: 'system', title: 'Match system', icon: 'mirror' },
+			{ value: 'light', title: 'Light', icon: 'sun' },
+			{ value: 'dark', title: 'Dark', icon: 'moon' },
+			{ value: 'high-contrast', title: 'High contrast', icon: 'contrast' },
+		],
+	},
+};
+
+export const initialThemeGlobal: ThemeGlobal = 'system';
+
+const systemColorScheme = () => window.matchMedia('(prefers-color-scheme: dark)');
+
+/** Picks the palette in effect for a theme global, deferring to the OS color scheme when it is set to match the system. */
+export const resolveThemeMode = (global: unknown): ThemeMode => {
+	if (global === 'light' || global === 'dark' || global === 'high-contrast') {
+		return global;
+	}
+
+	return systemColorScheme().matches ? 'dark' : 'light';
+};
+
+/** Notifies when the OS color scheme changes. */
+export const subscribeToSystemColorScheme = (callback: () => void): (() => void) => {
+	const query = systemColorScheme();
+	query.addEventListener('change', callback);
+	return () => query.removeEventListener('change', callback);
+};
+
+/** Reads the theme global from the page URL, where Storybook keeps globals so that shared links reproduce them. */
+export const readThemeGlobalFromUrl = (): string | undefined =>
+	new URL(window.location.href).searchParams
+		.get('globals')
+		?.split(';')
+		.map((entry) => entry.split(':'))
+		.find(([key]) => key === 'theme')?.[1];
+
+type Channel = {
+	on(eventName: string, listener: (payload: { globals?: Record<string, unknown> }) => void): void;
+	off(eventName: string, listener: (payload: { globals?: Record<string, unknown> }) => void): void;
+};
+
+/** Follows the palette in effect as the theme global and the OS color scheme change. */
+export const subscribeToThemeMode = (channel: Channel, initialGlobal: unknown, callback: (mode: ThemeMode) => void): (() => void) => {
+	let global = initialGlobal;
+
+	const notify = () => callback(resolveThemeMode(global));
+
+	const handleGlobals = ({ globals }: { globals?: Record<string, unknown> }) => {
+		if (!globals || !('theme' in globals)) {
+			return;
+		}
+
+		global = globals.theme;
+		notify();
+	};
+
+	notify();
+	channel.on(SET_GLOBALS, handleGlobals);
+	channel.on(GLOBALS_UPDATED, handleGlobals);
+	const unsubscribeFromSystem = subscribeToSystemColorScheme(notify);
+
+	return () => {
+		channel.off(SET_GLOBALS, handleGlobals);
+		channel.off(GLOBALS_UPDATED, handleGlobals);
+		unsubscribeFromSystem();
+	};
+};

@@ -1,22 +1,15 @@
-import { DARK_MODE_EVENT_NAME } from '@rocket.chat/storybook-dark-mode';
 import { DocsContainer as BaseContainer } from '@storybook/addon-docs/blocks';
 import type { ComponentPropsWithoutRef } from 'react';
 import { useEffect, useState } from 'react';
-import { addons } from 'storybook/preview-api';
 
-import { darkTheme, lightTheme } from './theme';
-
-const channel = addons.getChannel();
+import { readThemeGlobalFromUrl, resolveThemeMode, subscribeToThemeMode, themes } from './theme';
 
 const DocsContainer = (props: ComponentPropsWithoutRef<typeof BaseContainer>) => {
-	const [isDark, setDark] = useState(false);
+	const [mode, setMode] = useState(() => resolveThemeMode(readThemeGlobalFromUrl()));
 
-	useEffect(() => {
-		channel.on(DARK_MODE_EVENT_NAME, setDark);
-		return () => channel.removeListener(DARK_MODE_EVENT_NAME, setDark);
-	}, [setDark]);
+	useEffect(() => subscribeToThemeMode(props.context.channel, readThemeGlobalFromUrl(), setMode), [props.context.channel]);
 
-	return <BaseContainer {...props} theme={isDark ? darkTheme : lightTheme} />;
+	return <BaseContainer {...props} theme={themes[mode]} />;
 };
 
 export default DocsContainer;
