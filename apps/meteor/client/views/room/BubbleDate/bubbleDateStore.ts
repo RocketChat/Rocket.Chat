@@ -10,8 +10,8 @@ export type BubbleDateState = {
 
 /**
  * The floating date of a message list. Scrolling updates it many times per second, so it lives outside React state:
- * `useDateScroll` writes it, the bubble reads it with `useBubbleDate`, and the list reads only the day divider it
- * hides with `useHiddenDayDivider`, so neither the list nor its parent re-render while scrolling.
+ * `useDateScroll` writes it, the bubble reads it with `useBubbleDate`, and `BubbleDateScope` reads only the day divider
+ * it hides with `useHiddenDayDivider`, so the list and the room body do not re-render while scrolling.
  */
 export type BubbleDateStore = {
 	get: () => BubbleDateState;
