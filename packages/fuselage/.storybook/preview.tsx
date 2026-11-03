@@ -73,6 +73,11 @@ export default {
 
 			return (
 				<>
+					<style>{`
+						body {
+							background-color: var(--rcx-color-surface-light);
+						}
+					`}</style>
 					<PaletteStyleTag theme={dark ? 'dark' : 'light'} />
 					<Story />
 				</>
