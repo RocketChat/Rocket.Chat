@@ -21,6 +21,7 @@ const data = {
 	t: ((key: string) => key) as unknown as TFunction,
 	viewMode: 'condensed' as const,
 	showAvatar: false,
+	formatTime: () => '',
 	openedRoom: '',
 	isAnonymous: false,
 	userId: 'uid',
