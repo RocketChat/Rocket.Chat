@@ -1,4 +1,5 @@
-import { acquireMailbox } from '../mailboxLock';
+import { MongoServerError } from 'mongodb';
+
 import { runCalendarSync } from './runCalendarSync';
 import { ExchangeError } from '../../errors';
 import { MAILBOX_CONCURRENCY } from '../limits';
@@ -10,7 +11,15 @@ const getExchangeProvider = jest.fn();
 const isServerSyncEnabled = jest.fn();
 const getCalendarSyncWindow = jest.fn();
 const candidates = jest.fn();
+const acquireSyncLease = jest.fn();
+const releaseSyncLease = jest.fn();
 
+jest.mock('@rocket.chat/models', () => ({
+	ExchangeCalendarSyncState: {
+		acquireSyncLease: (...args: unknown[]) => acquireSyncLease(...args),
+		releaseSyncLease: (...args: unknown[]) => releaseSyncLease(...args),
+	},
+}));
 jest.mock('./syncCalendarWindow', () => ({ syncCalendarWindow: (...args: unknown[]) => syncCalendarWindow(...args) }));
 jest.mock('./applyDeferredSideEffects', () => ({
 	applyDeferredSideEffects: (...args: unknown[]) => applyDeferredSideEffects(...args),
@@ -57,6 +66,8 @@ describe('runCalendarSync', () => {
 		syncCalendarWindow.mockResolvedValue(outcome());
 		applyDeferredSideEffects.mockResolvedValue(undefined);
 		candidates.mockImplementation(from([{ uid: 'a', mailbox: 'a@corp.example' }]));
+		acquireSyncLease.mockResolvedValue({ upsertedCount: 1, modifiedCount: 0 });
+		releaseSyncLease.mockResolvedValue({ modifiedCount: 1 });
 	});
 
 	it('counts a user with no resolvable mailbox as skipped and syncs the rest', async () => {
@@ -110,25 +121,35 @@ describe('runCalendarSync', () => {
 		expect(syncCalendarWindow.mock.calls.length).toBe(1);
 	});
 
-	it('leaves a mailbox alone while an on-demand sync holds it', async () => {
+	it('leaves a mailbox alone while another sync holds its lease', async () => {
 		candidates.mockImplementation(
 			from([
 				{ uid: 'a', mailbox: 'a@x' },
 				{ uid: 'b', mailbox: 'b@x' },
 			]),
 		);
+		acquireSyncLease.mockImplementation(async (uid: string) => {
+			if (uid === 'a') {
+				throw new MongoServerError({ code: 11000, message: 'E11000 duplicate key error' });
+			}
+			return { upsertedCount: 1, modifiedCount: 0 };
+		});
 
-		const release = acquireMailbox('calendar', 'a');
+		const summary = await runCalendarSync();
 
-		try {
-			const summary = await runCalendarSync();
+		expect(syncCalendarWindow).toHaveBeenCalledTimes(1);
+		expect(syncCalendarWindow.mock.calls[0][1]).toBe('b');
+		expect(summary).toMatchObject({ mailboxes: 1, skipped: 1 });
+		expect(releaseSyncLease).toHaveBeenCalledTimes(1);
+		expect(releaseSyncLease).toHaveBeenCalledWith('b', acquireSyncLease.mock.calls.find(([uid]) => uid === 'b')?.[1]);
+	});
 
-			expect(syncCalendarWindow).toHaveBeenCalledTimes(1);
-			expect(syncCalendarWindow.mock.calls[0][1]).toBe('b');
-			expect(summary).toMatchObject({ mailboxes: 1, skipped: 1 });
-		} finally {
-			release?.();
-		}
+	it('releases the lease even when the mailbox sync throws', async () => {
+		syncCalendarWindow.mockRejectedValue(new Error('boom'));
+
+		await expect(runCalendarSync()).rejects.toThrow('boom');
+
+		expect(releaseSyncLease).toHaveBeenCalledWith('a', acquireSyncLease.mock.calls[0][1]);
 	});
 
 	it('stops pulling candidates once one fails fatally, not just syncing them', async () => {

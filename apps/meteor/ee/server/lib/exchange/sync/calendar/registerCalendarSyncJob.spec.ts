@@ -9,7 +9,7 @@ const watchMultiple = jest.fn();
 const stopWatching = jest.fn();
 const discardImportedBySource = jest.fn();
 const removeAll = jest.fn();
-const whenMailboxesIdle = jest.fn();
+const whenCalendarSyncsIdle = jest.fn();
 const findAllUserIds = jest.fn();
 
 jest.mock('../../../../../../server/settings', () => ({
@@ -23,7 +23,7 @@ jest.mock('@rocket.chat/cron', () => ({
 	},
 }));
 jest.mock('./runCalendarSync', () => ({ runCalendarSync: jest.fn() }));
-jest.mock('../mailboxLock', () => ({ whenMailboxesIdle: () => whenMailboxesIdle() }));
+jest.mock('./calendarSyncLease', () => ({ whenCalendarSyncsIdle: (...args: unknown[]) => whenCalendarSyncsIdle(...args) }));
 jest.mock('@rocket.chat/core-services', () => ({
 	Calendar: { discardImportedBySource: (...args: unknown[]) => discardImportedBySource(...args) },
 }));
@@ -116,7 +116,7 @@ describe('registerCalendarSyncJob', () => {
 		watchMultiple.mockReturnValue(stopWatching);
 		discardImportedBySource.mockResolvedValue(0);
 		removeAll.mockResolvedValue(undefined);
-		whenMailboxesIdle.mockResolvedValue(undefined);
+		whenCalendarSyncsIdle.mockResolvedValue(undefined);
 		findAllUserIds.mockResolvedValue([]);
 		get.mockImplementation((key: string) => ({ Outlook_Calendar_Enabled: true, Exchange_Mode: 'server' })[key]);
 	});
