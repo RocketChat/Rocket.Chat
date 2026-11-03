@@ -368,10 +368,13 @@ export class MediaCallServer implements IMediaCallServer {
 			throw new CallRejectedError('invalid-call-params');
 		}
 
+		const contactName =
+			params.callee.type === 'sip' && caller.type === 'user' ? await this.resolveCalleeContactName(caller.id, params.callee.id) : undefined;
 		// The callee contact type will determine if the call is going to go through SIP or directly to another rocket.chat user
 		const callee = await mediaCallDirector.cast.getContactForActor(
 			params.callee,
 			params.requiredCalleeType ? { requiredType: params.requiredCalleeType } : this.getCalleeContactOptions(),
+			contactName ? { displayName: contactName } : undefined,
 		);
 		if (!callee) {
 			logger.debug('Failed to load callee contact information');
@@ -419,6 +422,17 @@ export class MediaCallServer implements IMediaCallServer {
 			callee,
 			...(requestedBy && { requestedBy }),
 		};
+	}
+
+	private async resolveCalleeContactName(uid: IUser['_id'], number: string): Promise<string | undefined> {
+		if (!number) {
+			return undefined;
+		}
+
+		return this.settings.resolveCallerName(uid, number).catch((err) => {
+			logger.warn({ msg: 'Failed to resolve a callee name from the contacts of the calling user', err });
+			return undefined;
+		});
 	}
 
 	private async parseRequesterContact(requestedBy: MediaCallSignedContact, caller: MediaCallContact): Promise<MediaCallSignedContact> {
