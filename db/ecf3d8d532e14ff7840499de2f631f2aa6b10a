@@ -1,0 +1,21 @@
+apps/meteor/server/bridges/irc/irc-bridge/index.test.ts
+  s_1d3eed3661609f::t_1acb5516812c42 54-69
+apps/meteor/server/bridges/irc/irc-bridge/index.js
+  s_1d3eed3661609f::t_3c7b4bbdf66c90 62-65
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "dbecf3d8d532e14ff7840499de2f631f2aa6b10a",
+  "prompts": {},
+  "sessions": {
+    "s_1d3eed3661609f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1b18336d-ed9a-4109-a41e-60e39918c04a",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
