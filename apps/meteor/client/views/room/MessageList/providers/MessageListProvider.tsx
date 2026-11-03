@@ -14,6 +14,7 @@ import { useChat } from '../../contexts/ChatContext';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import { useAutoTranslate } from '../hooks/useAutoTranslate';
 import { useKatex } from '../hooks/useKatex';
+import { useRolesByUser } from '../hooks/useRolesByUser';
 
 export type MessageListProviderProps = {
 	children: ReactNode;
@@ -50,6 +51,7 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 	const displayRolesGlobal = useSetting('UI_DisplayRoles', true);
 	const hideRolesPreference = Boolean(!useUserPreference<boolean>('hideRoles') && !isMobile);
 	const showRoles = displayRolesGlobal && hideRolesPreference;
+	const userRoles = useRolesByUser(room._id, showRoles);
 	const showUsername = Boolean(!useUserPreference<boolean>('hideUsernames') && !isMobile);
 	const highlights = useUserPreference<string[]>('highlights');
 
@@ -112,6 +114,7 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 			apiEmbedEnabled,
 			autoLinkDomains,
 			showRoles,
+			userRoles,
 			showRealName,
 			showUsername,
 			jumpToMessageParam: msgParameter,
@@ -137,6 +140,7 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 			autoTranslate,
 			hasSubscription,
 			showRoles,
+			userRoles,
 			showRealName,
 			showUsername,
 			katex,
