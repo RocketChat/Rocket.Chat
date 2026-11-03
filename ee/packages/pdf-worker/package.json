@@ -35,7 +35,7 @@
 		"@storybook/react": "^9.1.13",
 		"@storybook/react-webpack5": "^9.1.13",
 		"@testing-library/dom": "~10.4.1",
-		"@testing-library/react": "~16.3.2",
+		"@testing-library/react": "~16.3.3",
 		"@types/emojione": "^2.2.9",
 		"@types/jest": "~30.0.0",
 		"@types/react": "~18.3.28",
