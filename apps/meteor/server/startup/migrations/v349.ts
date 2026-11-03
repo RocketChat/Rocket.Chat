@@ -3,6 +3,7 @@ import { Settings, Users } from '@rocket.chat/models';
 import type { UpdateFilter } from 'mongodb';
 
 import { addMigration } from '../../lib/migrations';
+import { notifyOnSettingChanged } from '../../lib/notifyListener';
 import { settings } from '../../settings';
 
 addMigration({
@@ -16,6 +17,7 @@ addMigration({
 		);
 		if (sectionsOrder) {
 			settings.set(sectionsOrder);
+			void notifyOnSettingChanged(sectionsOrder);
 		}
 
 		await Users.updateMany(
