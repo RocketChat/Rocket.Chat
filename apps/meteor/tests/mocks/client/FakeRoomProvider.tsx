@@ -2,7 +2,7 @@ import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import type { ReactNode } from 'react';
 import { useMemo } from 'react';
 
-import { RoomContext } from '../../../client/views/room/contexts/RoomContext';
+import { RoomContext, RoomSubscriptionContext } from '../../../client/views/room/contexts/RoomContext';
 import { createFakeRoom, createFakeSubscription } from '../data';
 
 export type FakeRoomProviderProps = {
@@ -12,20 +12,13 @@ export type FakeRoomProviderProps = {
 };
 
 const FakeRoomProvider = ({ children, roomOverrides, subscriptionOverrides }: FakeRoomProviderProps) => {
-	return (
-		<RoomContext.Provider
-			value={useMemo(() => {
-				const room = createFakeRoom(roomOverrides);
-				const subscription = createFakeSubscription(subscriptionOverrides);
+	const room = useMemo(() => createFakeRoom(roomOverrides), [roomOverrides]);
+	const subscription = useMemo(() => createFakeSubscription(subscriptionOverrides), [subscriptionOverrides]);
+	const context = useMemo(() => ({ rid: room._id, room, subscribed: true }), [room]);
 
-				return {
-					rid: room._id,
-					room,
-					subscription,
-				};
-			}, [roomOverrides, subscriptionOverrides])}
-		>
-			{children}
+	return (
+		<RoomContext.Provider value={context}>
+			<RoomSubscriptionContext.Provider value={subscription}>{children}</RoomSubscriptionContext.Provider>
 		</RoomContext.Provider>
 	);
 };

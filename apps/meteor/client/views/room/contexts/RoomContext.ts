@@ -9,10 +9,13 @@ export interface IRoomWithFederationOriginalName extends IRoom {
 type RoomContextValue = {
 	rid: IRoom['_id'];
 	room: IRoomWithFederationOriginalName;
-	subscription?: ISubscription;
+	subscribed: boolean;
 };
 
 export const RoomContext = createContext<RoomContextValue | null>(null);
+
+// Kept apart from the room so that read marks and unread counters only re-render what reads the subscription.
+export const RoomSubscriptionContext = createContext<ISubscription | undefined>(undefined);
 
 export const useUserIsSubscribed = (): boolean => {
 	const context = useContext(RoomContext);
@@ -21,7 +24,7 @@ export const useUserIsSubscribed = (): boolean => {
 		throw new Error('use useRoom only inside opened rooms');
 	}
 
-	return !!context.subscription;
+	return context.subscribed;
 };
 
 export const useRoom = (): IRoom => {
@@ -36,12 +39,13 @@ export const useRoom = (): IRoom => {
 
 export const useRoomSubscription = (): ISubscription | undefined => {
 	const context = useContext(RoomContext);
+	const subscription = useContext(RoomSubscriptionContext);
 
 	if (!context) {
 		throw new Error('use useRoomSubscription only inside opened rooms');
 	}
 
-	return context.subscription;
+	return subscription;
 };
 
 export const useOmnichannelRoom = (): IOmnichannelRoom => {
