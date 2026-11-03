@@ -1,7 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 
 import { applyDeferredSideEffects } from './applyDeferredSideEffects';
-import { acquireMailbox } from './mailboxLock';
+import { acquireCalendarSyncLease } from './calendarSyncLease';
 import { forEachWithConcurrency } from '../forEachWithConcurrency';
 import { MAILBOX_CONCURRENCY } from '../limits';
 import { iterateMailboxCandidates } from '../resolveMailboxes';
@@ -65,16 +65,20 @@ export const runCalendarSync = async (): Promise<CalendarSyncRunSummary> => {
 				return;
 			}
 
-			const release = acquireMailbox(uid);
+			const release = await acquireCalendarSyncLease(uid);
 
 			if (!release) {
 				summary.skipped++;
 				return;
 			}
 
-			summary.mailboxes++;
-
 			try {
+				if (summary.aborted) {
+					return;
+				}
+
+				summary.mailboxes++;
+
 				const outcome = await syncCalendarWindow(provider, uid, mailbox, getCalendarSyncWindow(now, utcOffset));
 
 				summary.upserted += outcome.upserted;
@@ -96,7 +100,7 @@ export const runCalendarSync = async (): Promise<CalendarSyncRunSummary> => {
 					await candidates.return(undefined);
 				}
 			} finally {
-				release();
+				await release();
 			}
 		});
 

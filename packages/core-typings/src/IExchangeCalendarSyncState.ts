@@ -11,4 +11,7 @@ export interface IExchangeCalendarSyncState extends IRocketChatRecord {
 	lastSyncAt?: Date;
 	lastError?: string;
 	lastErrorAt?: Date;
+	/** The sync holding this user's calendar on some instance, until `syncLeaseUntil` */
+	syncLeaseToken?: string;
+	syncLeaseUntil?: Date;
 }

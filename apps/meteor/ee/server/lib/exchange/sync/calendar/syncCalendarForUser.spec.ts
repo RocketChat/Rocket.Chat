@@ -1,3 +1,5 @@
+import { MongoServerError } from 'mongodb';
+
 import { syncCalendarForUser } from './syncCalendarForUser';
 import type { CalendarSyncOutcome } from './syncCalendarWindow';
 import { ExchangeError } from '../../errors';
@@ -7,8 +9,17 @@ const syncCalendarWindow = jest.fn();
 const applyDeferredSideEffects = jest.fn();
 const resolveMailbox = jest.fn();
 const getExchangeProvider = jest.fn();
+const acquireSyncLease = jest.fn();
+const releaseSyncLease = jest.fn();
+const leases = new Map<string, string>();
 
-jest.mock('@rocket.chat/models', () => ({ Users: { findOneById: (...args: unknown[]) => findOneById(...args) } }));
+jest.mock('@rocket.chat/models', () => ({
+	Users: { findOneById: (...args: unknown[]) => findOneById(...args) },
+	ExchangeCalendarSyncState: {
+		acquireSyncLease: (...args: unknown[]) => acquireSyncLease(...args),
+		releaseSyncLease: (...args: unknown[]) => releaseSyncLease(...args),
+	},
+}));
 jest.mock('./syncCalendarWindow', () => ({ syncCalendarWindow: (...args: unknown[]) => syncCalendarWindow(...args) }));
 jest.mock('./applyDeferredSideEffects', () => ({
 	applyDeferredSideEffects: (...args: unknown[]) => applyDeferredSideEffects(...args),
@@ -40,6 +51,36 @@ describe('syncCalendarForUser', () => {
 		findOneById.mockResolvedValue(verified);
 		syncCalendarWindow.mockResolvedValue(outcome());
 		applyDeferredSideEffects.mockResolvedValue(undefined);
+		leases.clear();
+		acquireSyncLease.mockImplementation(async (uid: string, token: string) => {
+			if (leases.has(uid)) {
+				throw new MongoServerError({ code: 11000, message: 'E11000 duplicate key error' });
+			}
+			leases.set(uid, token);
+			return { upsertedCount: 1, modifiedCount: 0 };
+		});
+		releaseSyncLease.mockImplementation(async (uid: string, token: string) => {
+			if (leases.get(uid) !== token) {
+				return { modifiedCount: 0 };
+			}
+			leases.delete(uid);
+			return { modifiedCount: 1 };
+		});
+	});
+
+	it('refuses while another sync holds the lease', async () => {
+		leases.set('uid', 'held-elsewhere');
+
+		await expect(syncCalendarForUser('uid')).rejects.toMatchObject({ code: 'rate-limited' });
+		expect(syncCalendarWindow).not.toHaveBeenCalled();
+		expect(leases.get('uid')).toBe('held-elsewhere');
+	});
+
+	it('releases the lease once the sync is over, failed or not', async () => {
+		syncCalendarWindow.mockResolvedValue(outcome({ failed: true, error: new Error('boom') }));
+
+		await expect(syncCalendarForUser('uid')).rejects.toThrow('boom');
+		expect(releaseSyncLease).toHaveBeenCalledWith('uid', acquireSyncLease.mock.calls[0][1]);
 	});
 
 	it('syncs the mailbox resolved for the user', async () => {
