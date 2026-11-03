@@ -3,7 +3,7 @@ import { cronJobs } from '@rocket.chat/cron';
 import { ExchangeCalendarSyncState } from '@rocket.chat/models';
 import { isValidCron } from 'cron-validator';
 
-import { whenMailboxesIdle } from './mailboxLock';
+import { whenCalendarSyncsIdle } from './calendarSyncLease';
 import { runCalendarSync } from './runCalendarSync';
 import { settings } from '../../../../../../server/settings';
 import { getCalendarSyncIntervalHours } from '../../../../../lib/exchange/calendarSyncSchedule';
@@ -96,7 +96,7 @@ export const registerCalendarSyncJob = (): (() => void) => {
 
 			if (turnedOff) {
 				// In case a sync is in process
-				await whenMailboxesIdle();
+				await whenCalendarSyncsIdle(stillOff);
 
 				await discardServerSyncedCalendarEvents(stillOff);
 			}
