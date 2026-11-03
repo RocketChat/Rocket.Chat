@@ -1,4 +1,3 @@
-import { faker } from '@faker-js/faker';
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import type { ReactNode } from 'react';
 import { useMemo } from 'react';
@@ -22,9 +21,6 @@ const FakeRoomProvider = ({ children, roomOverrides, subscriptionOverrides }: Fa
 				return {
 					rid: room._id,
 					room,
-					hasMoreNextMessages: faker.datatype.boolean(),
-					hasMorePreviousMessages: faker.datatype.boolean(),
-					isLoadingMoreMessages: faker.datatype.boolean(),
 					subscription,
 				};
 			}, [roomOverrides, subscriptionOverrides])}

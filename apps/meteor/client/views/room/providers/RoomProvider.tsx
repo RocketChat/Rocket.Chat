@@ -11,7 +11,7 @@ import { useUsersNameChanged } from './hooks/useUsersNameChanged';
 import { omit } from '../../../../lib/utils/omit';
 import { useFireGlobalEvent } from '../../../hooks/useFireGlobalEvent';
 import { useRoomRolesQuery } from '../../../hooks/useRoomRolesQuery';
-import { RoomHistoryManager, useRoomHistoryState } from '../../../lib/RoomHistoryManager';
+import { RoomHistoryManager } from '../../../lib/RoomHistoryManager';
 import { RoomManager } from '../../../lib/RoomManager';
 import { UserAction } from '../../../lib/UserAction';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
@@ -68,10 +68,6 @@ const RoomProvider = ({ rid, children, embedded }: RoomProviderProps) => {
 		};
 	}, [room, subscritionFromLocal]);
 
-	const hasMorePreviousMessages = useRoomHistoryState(rid, (state) => state.hasMore);
-	const hasMoreNextMessages = useRoomHistoryState(rid, (state) => state.hasMoreNext);
-	const isLoadingMoreMessages = useRoomHistoryState(rid, (state) => state.isLoading);
-
 	const context = useMemo((): ContextType<typeof RoomContext> => {
 		if (!pseudoRoom) {
 			return null;
@@ -81,11 +77,8 @@ const RoomProvider = ({ rid, children, embedded }: RoomProviderProps) => {
 			rid,
 			room: pseudoRoom,
 			subscription: subscritionFromLocal ?? undefined,
-			hasMorePreviousMessages,
-			hasMoreNextMessages,
-			isLoadingMoreMessages,
 		};
-	}, [hasMoreNextMessages, hasMorePreviousMessages, isLoadingMoreMessages, pseudoRoom, rid, subscritionFromLocal]);
+	}, [pseudoRoom, rid, subscritionFromLocal]);
 
 	const { mutate: fireRoomOpenedEvent } = useFireGlobalEvent('room-opened', rid);
 
