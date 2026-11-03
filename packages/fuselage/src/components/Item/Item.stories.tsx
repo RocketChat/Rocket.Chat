@@ -230,7 +230,7 @@ const RoomBadge = ({ room }: { room: Room }) =>
 	) : null;
 
 const RoomMenu = ({ room }: { room: Room }) => (
-	<Menu mini aria-label={`Options for ${room.name}`} title='Options'>
+	<Menu size='mini' aria-label={`Options for ${room.name}`} title='Options'>
 		<MenuItem key='hide'>Hide</MenuItem>
 		<MenuItem key='read'>Mark as read</MenuItem>
 		<MenuItem key='favorite'>Favorite</MenuItem>

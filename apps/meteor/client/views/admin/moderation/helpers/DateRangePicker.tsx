@@ -9,9 +9,13 @@ import type { Key } from 'react';
 import { useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
+export type DateRangePreset = 'today' | 'yesterday' | 'thisWeek' | 'previousWeek' | 'thisMonth' | 'alldates';
+
 export type DateRangePickerProps = {
 	onChange(range: { start: string; end: string }): void;
-	defaultSelectedKey?: 'today' | 'yesterday' | 'thisWeek' | 'previousWeek' | 'thisMonth' | 'alldates';
+	defaultSelectedKey?: DateRangePreset;
+	value?: DateRangePreset | null;
+	onPresetChange?(preset: DateRangePreset): void;
 };
 
 const formatToDateInput = (date: Date) => format(date, 'yyyy-MM-dd');
@@ -34,7 +38,7 @@ const getWeekRange = (daysToSubtractFromStart: number, daysToSubtractFromEnd: nu
 	};
 };
 
-const DateRangePicker = ({ onChange, defaultSelectedKey = 'alldates' }: DateRangePickerProps) => {
+const DateRangePicker = ({ onChange, defaultSelectedKey = 'alldates', value, onPresetChange }: DateRangePickerProps) => {
 	const { t } = useTranslation();
 
 	const handleRange = useStableCallback((range: { start: string; end: string }) => {
@@ -76,8 +80,9 @@ const DateRangePicker = ({ onChange, defaultSelectedKey = 'alldates' }: DateRang
 				});
 				break;
 			default:
-				break;
+				return;
 		}
+		onPresetChange?.(action);
 	});
 
 	useEffect(() => {
@@ -86,7 +91,14 @@ const DateRangePicker = ({ onChange, defaultSelectedKey = 'alldates' }: DateRang
 
 	return (
 		<Box flexGrow={0}>
-			<Select aria-label={t('Select_period')} defaultSelectedKey={defaultSelectedKey} options={timeOptions} onChange={handleOptionClick} />
+			<Select
+				aria-label={t('Select_period')}
+				placeholder={t('Custom')}
+				defaultSelectedKey={defaultSelectedKey}
+				value={value}
+				options={timeOptions}
+				onChange={handleOptionClick}
+			/>
 		</Box>
 	);
 };

@@ -1,4 +1,5 @@
 import { settingsRegistry } from '.';
+import { validCron } from './functions/validationRuleBuilders';
 import { MessageTypesValues } from '../../lib/MessageTypes';
 
 export const createMessageSettings = () =>
@@ -87,6 +88,7 @@ export const createMessageSettings = () =>
 			});
 			await this.add('Message_Read_Receipt_Archive_Cron', '0 2 * * *', {
 				type: 'string',
+				validation: [validCron()],
 				enterprise: true,
 				invalidValue: '0 2 * * *',
 				modules: ['message-read-receipt'],

@@ -1,5 +1,5 @@
 import type { ICustomSound } from '@rocket.chat/core-typings';
-import { Box, IconButton } from '@rocket.chat/fuselage';
+import { IconButton, Text } from '@rocket.chat/fuselage';
 import { GenericTableCell, GenericTableRow } from '@rocket.chat/ui-client';
 import { useCustomSound } from '@rocket.chat/ui-contexts';
 import { useCallback, useState } from 'react';
@@ -41,7 +41,7 @@ const CustomSoundRow = ({ onClick, sound }: CustomSoundRowProps) => {
 			qa-emoji-id={sound._id}
 		>
 			<GenericTableCell>
-				<Box withTruncatedText>{sound.name}</Box>
+				<Text truncate>{sound.name}</Text>
 			</GenericTableCell>
 			<GenericTableCell>
 				<IconButton

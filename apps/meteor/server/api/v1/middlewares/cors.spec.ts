@@ -1,15 +1,19 @@
-import { Router } from '@rocket.chat/http-router';
+import { Router, createNodeServer, createRootApp, mountRouter } from '@rocket.chat/http-router';
 import Ajv from 'ajv';
-import express from 'express';
 import request from 'supertest';
 
 import { cors } from './cors';
 import { CachedSettings } from '../../../settings/CachedSettings';
 
+const serve = (router: Parameters<typeof mountRouter>[1]) => {
+	const app = createRootApp();
+	mountRouter(app, router);
+	return createNodeServer(app);
+};
+
 describe('Cors middleware', () => {
 	it('should return allow-origin header for GET if CORS enabled', async () => {
 		const ajv = new Ajv();
-		const app = express();
 		const api = new Router('/api');
 		const settings = new CachedSettings();
 
@@ -44,7 +48,7 @@ describe('Cors middleware', () => {
 			},
 		);
 
-		app.use(api.router);
+		const app = serve(api);
 
 		const response = await request(app).get('/api/test').set('origin', 'http://localhost');
 
@@ -57,7 +61,6 @@ describe('Cors middleware', () => {
 
 	it('should return allow-origin header for GET if CORS disabled', async () => {
 		const ajv = new Ajv();
-		const app = express();
 		const api = new Router('/api');
 		const settings = new CachedSettings();
 
@@ -88,7 +91,7 @@ describe('Cors middleware', () => {
 			},
 		);
 
-		app.use(api.router);
+		const app = serve(api);
 
 		const response = await request(app).get('/api/test').set('origin', 'http://localhost');
 
@@ -101,7 +104,6 @@ describe('Cors middleware', () => {
 
 	it('should handle CORS if enabled to *', async () => {
 		const ajv = new Ajv();
-		const app = express();
 		const api = new Router('/api');
 		const settings = new CachedSettings();
 
@@ -140,7 +142,7 @@ describe('Cors middleware', () => {
 			},
 		);
 
-		app.use(api.router);
+		const app = serve(api);
 
 		const response = await request(app)
 			.options('/api/test')
@@ -160,7 +162,6 @@ describe('Cors middleware', () => {
 
 	it('should handle CORS if enabled to specific origin', async () => {
 		const ajv = new Ajv();
-		const app = express();
 		const api = new Router('/api');
 		const settings = new CachedSettings();
 
@@ -199,7 +200,7 @@ describe('Cors middleware', () => {
 			},
 		);
 
-		app.use(api.router);
+		const app = serve(api);
 
 		const response = await request(app)
 			.options('/api/test')
@@ -219,7 +220,6 @@ describe('Cors middleware', () => {
 
 	it('should not advertise the MCP protocol header while MCP is disabled', async () => {
 		const ajv = new Ajv();
-		const app = express();
 		const api = new Router('/api');
 		const settings = new CachedSettings();
 
@@ -230,7 +230,7 @@ describe('Cors middleware', () => {
 		api
 			.use(cors(settings))
 			.get('/test', { response: { 200: ajv.compile({ type: 'object' }) } }, async () => ({ statusCode: 200, body: {} }));
-		app.use(api.router);
+		const app = serve(api);
 
 		const response = await request(app).options('/api/test').set('origin', 'http://localhost').set('access-control-request-method', 'POST');
 
@@ -240,7 +240,6 @@ describe('Cors middleware', () => {
 
 	it('should not handle CORS if origin is not allowed', async () => {
 		const ajv = new Ajv();
-		const app = express();
 		const api = new Router('/api');
 		const settings = new CachedSettings();
 
@@ -275,7 +274,7 @@ describe('Cors middleware', () => {
 			},
 		);
 
-		app.use(api.router);
+		const app = serve(api);
 
 		const response = await request(app).options('/api/test').set('origin', 'http://example.com');
 
@@ -284,7 +283,6 @@ describe('Cors middleware', () => {
 
 	it('should not handle CORS if disabled', async () => {
 		const ajv = new Ajv();
-		const app = express();
 		const api = new Router('/api');
 		const settings = new CachedSettings();
 
@@ -315,7 +313,7 @@ describe('Cors middleware', () => {
 			},
 		);
 
-		app.use(api.router);
+		const app = serve(api);
 
 		const response = await request(app).options('/api/test').set('origin', 'http://localhost');
 

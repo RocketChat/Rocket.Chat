@@ -59,19 +59,19 @@ const AppsFilters = ({
 		<Box paddingInline={24}>
 			<FilterByText value={text} onChange={(event) => setText(event.target.value)} placeholder={appsSearchPlaceholders[context]}>
 				{!isPrivateAppsPage && (
-					<Box display='flex' flexDirection='column' flexGrow={1} {...fixFiltersSize}>
+					<Box display='flex' flexGrow={1} {...fixFiltersSize}>
 						<RadioDropDown group={freePaidFilterStructure} onSelected={freePaidFilterOnSelected} />
 					</Box>
 				)}
-				<Box display='flex' flexDirection='column' flexGrow={1} {...fixFiltersSize}>
+				<Box display='flex' flexGrow={1} {...fixFiltersSize}>
 					<RadioDropDown group={statusFilterStructure} onSelected={statusFilterOnSelected} />
 				</Box>
 				{!isPrivateAppsPage && (
-					<Box display='flex' flexDirection='column' flexGrow={1}>
+					<Box display='flex' flexGrow={1}>
 						<CategoryDropDown categories={categories} selectedCategories={selectedCategories} onSelected={onSelected} />
 					</Box>
 				)}
-				<Box display='flex' flexDirection='column' flexGrow={1} {...fixFiltersSize}>
+				<Box display='flex' flexGrow={1} {...fixFiltersSize}>
 					<RadioDropDown group={sortFilterStructure} onSelected={sortFilterOnSelected} />
 				</Box>
 			</FilterByText>

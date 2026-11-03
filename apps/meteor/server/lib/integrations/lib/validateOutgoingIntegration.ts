@@ -13,18 +13,13 @@ const scopedChannels = ['all_public_channels', 'all_private_groups', 'all_direct
 const validChannelChars = ['@', '#'];
 
 function _verifyRequiredFields(integration: INewOutgoingIntegration | IUpdateOutgoingIntegration): void {
-	if (
-		!integration.event ||
-		!Match.test(integration.event, String) ||
-		integration.event.trim() === '' ||
-		!outgoingEvents[integration.event]
-	) {
+	if (!integration.event || integration.event.trim() === '' || !outgoingEvents[integration.event]) {
 		throw new ClientSafeError('error-invalid-event-type', 'Invalid event type', {
 			function: 'validateOutgoing._verifyRequiredFields',
 		});
 	}
 
-	if (!integration.username || !Match.test(integration.username, String) || integration.username.trim() === '') {
+	if (!integration.username || integration.username.trim() === '') {
 		throw new ClientSafeError('error-invalid-username', 'Invalid username', {
 			function: 'validateOutgoing._verifyRequiredFields',
 		});

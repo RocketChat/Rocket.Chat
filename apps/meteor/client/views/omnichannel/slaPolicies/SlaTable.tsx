@@ -11,6 +11,7 @@ import {
 	usePagination,
 	useSort,
 	GenericNoResults,
+	links,
 } from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery, hashKey } from '@tanstack/react-query';
@@ -19,7 +20,6 @@ import { useMemo, useState, useEffect } from 'react';
 
 import RemoveSlaButton from './RemoveSlaButton';
 import FilterByText from '../../../components/FilterByText';
-import { links } from '../../../lib/links';
 
 const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 	const t = useTranslation();

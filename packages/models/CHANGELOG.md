@@ -1,5 +1,49 @@
 # @rocket.chat/models
 
+## 3.0.0-rc.0
+
+### Major Changes
+
+- ([#40697](https://github.com/RocketChat/Rocket.Chat/pull/40697) by [@aleksandernsilva](https://github.com/aleksandernsilva)) Adds support for registering multiple phone numbers with labels per user. **Breaking:** the `phone` user field is replaced by the `phones` array (`{ number, label? }[]`); existing numbers are migrated automatically on upgrade.
+
+- ([#41986](https://github.com/RocketChat/Rocket.Chat/pull/41986)) Removes the Atlassian Crowd integration. Atlassian has announced the end-of-life of Crowd, and workspaces that need directory-backed authentication can use the LDAP integration instead — Crowd itself exposes an LDAP interface. All `CROWD_*` settings, the Crowd login handler, the background user-sync job, and the Admin > Settings > Atlassian Crowd section are removed; on upgrade the settings and any scheduled sync job are deleted from the database. Users previously provisioned through Crowd keep their accounts, profile data, roles, and room memberships, but must sign in through another authentication method (such as LDAP or local password, using the "Forgot password" flow if needed).
+
+- ([#41974](https://github.com/RocketChat/Rocket.Chat/pull/41974)) Removes unused indexes: `activity` on `rocketchat_livechat_visitor`, `ip_1_loginAt_-1` on `rocketchat_sessions`, `desktopNotifications`, `mobilePushNotifications` and `emailNotifications` on `rocketchat_subscription`, `roomId_1_userId_1_messageId_1` on `rocketchat_read_receipts` and `ts_1_reports.ts_1`, `message.u._id_1_ts_1`, `reportedUser._id_1_ts_1`, `message.rid_1_ts_1`, `message._id_1_ts_1` and `userId_1_ts_1` on `rocketchat_moderation_reports`.
+
+- ([#42568](https://github.com/RocketChat/Rocket.Chat/pull/42568)) Renames the user `freeSwitchExtension` attribute to `sipExtension`, since the VoIP extension is no longer tied to FreeSWITCH and works with any SIP router. Existing users are migrated automatically on upgrade. REST API integrations must switch to the new name: the `users.create` and `users.update` parameters, the `users.info` query parameter, and the `sipExtension` field returned on user objects.
+
+### Minor Changes
+
+- ([#42850](https://github.com/RocketChat/Rocket.Chat/pull/42850)) Adds workspace-wide ABAC enforcement. Turning on **Enforce ABAC across all workspace rooms** locks every public channel and discussion, and every private channel and team that has no ABAC attributes or is missing one listed in **Attributes required in all ABAC rooms**. Nobody can post in a locked room or be added to one, and a callout in place of the composer explains why. Direct messages, Omnichannel conversations and federated rooms are never locked.
+
+  While enforcement is on, new non-federated public channels, discussions, and private rooms without the required attributes cannot be created, and **Discussion > Enable** is switched off, then restored to its earlier value when enforcement ends. Removing the ABAC license turns enforcement off, and switching the attribute store clears the required attributes. `GET /v1/abac/attributes.listKeys` lists the keys available for the required attributes, and `GET /v1/rooms.info` returns `abacRequiredAttributes` while enforcement is on.
+
+- ([#42850](https://github.com/RocketChat/Rocket.Chat/pull/42850)) Allows default and team default rooms to carry ABAC attributes. Assigning attributes to a default room, making an ABAC room a default and making an attributed team channel a team default no longer return `error-cannot-convert-default-room-to-abac`, `error-action-not-allowed` or `error-room-is-abac-managed`. With ABAC enabled, new users, team joins and new team defaults only add members to the attributed rooms they qualify for, and skip rooms locked by enforcement.
+
+  `/invite-all-to` and `/invite-all-from` likewise add only the members an ABAC-managed room allows and name the ones they skipped, instead of failing on the first refusal. A locked target room, or one whose access cannot be decided, is refused and nobody is added.
+
+- ([#42050](https://github.com/RocketChat/Rocket.Chat/pull/42050)) Adds admin control over user status (Enterprise only): from **Administration > Status and presence**, or while editing a user, an admin can turn someone's status off or hide it from chosen people, and a **Show status** setting turns status off for the whole workspace. A user whose status is turned off always appears offline and can no longer change it; a user who is only hidden from chosen people keeps control of their own status. The feature is off by default, behind the new **Manage user status** setting.
+
+- ([#42501](https://github.com/RocketChat/Rocket.Chat/pull/42501)) Adds a native XMPP server (Enterprise, federation module) that federates directly with other XMPP servers over server-to-server connections. Rocket.Chat users can message any XMPP address, exchange presence with remote contacts, and join rooms on remote servers; remote XMPP users can join dedicated XMPP rooms hosted by Rocket.Chat. It runs as the `xmpp-server-service` microservice and is configured under **Administration → Settings → Federation → XMPP Server (Native)**.
+
+- ([#42735](https://github.com/RocketChat/Rocket.Chat/pull/42735)) Limits two-factor authentication email codes to one for each user each minute. A password login that needs an email code now returns a `challengeId`, which clients can use to resend the code through `twoFactorChallenges.sendEmailCode`.
+
+### Patch Changes
+
+- ([#41382](https://github.com/RocketChat/Rocket.Chat/pull/41382)) Indexes the push token string by storing each token as a flat `tokenValue`/`tokenType` pair, with VoIP tokens now kept in their own document instead of as an extra field on the device token. Changes the `POST /v1/push.token` response to return flat `tokenValue` and `tokenType` fields instead of the nested `token` object.
+
+- ([#42410](https://github.com/RocketChat/Rocket.Chat/pull/42410)) Fixes the retention policy failing to prune rooms with a large backlog. Messages are now removed in batches and their trash copies written in bulk, a room that fails to prune no longer stops the rest of the run, the room's message counter is decremented by the right amount, read receipts of pruned messages are removed, and deleting a room with a very large history no longer fails
+
+- <details><summary>Updated dependencies [4f350b4ffb76024d9bf44c02f3322c8f9071f1cf, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 12f0c0a9d48ded61bd12ba2e3dcee7b3d877e860, 6bb0d3bca9b5da401050697d51bc99e89871bbb7, 6be3614cd2660ab4024635802fdf9cd7dd7b502f, 588311c49bfce08e7106e7c0bb32741334fa5321, 10b4e00e08951ace8f9c27d83fc0c48be010bdc7, a11ffff8acb74fd016e9ddb972da6eebda0c3e5e, 5e82e67eaa4c998870d3eb0597f485b30c244f02, a9b2bb76d88e4d2743e0817b15e6447e7c9c46eb, cdd948cb67ecf282f6cc8f411615c3de0db0b9f1, 6b3ec3e667c99015e381a4e8ea43146accb5f7f7, a11ffff8acb74fd016e9ddb972da6eebda0c3e5e, cc5554d63e7341925dd7fd5844d77bd51834b572, 2559423eb2c897c5f1fe8c968c02380009a97df9, eaf5cedcce9f8e800415b4c49bce242f661462ea, 9a520fcd54321e154374182698c825aa09e87cc7, f3fa7abd6b9d311f76619d0fe27793ac68f6d208, daa677895dad92d6aab1e84a09f190efd2755ef9, 642d9e528a8572208e2f0bb51f45ea78400bcea3, bd92e8abc5a8f0161f3de5308979a0f88d09f351, 39a6e6e1397e1e89bc631fe4ab1cc10fa93b59e8, eb808dd70cfbd41a127d8655c62a21c4658fd2c0, 61bdf0d5afb6714ea3cef087758f1d0eb3bfef45, 01204df7088b1362f14438d99c44bc4f6d6e840e, a39b03fe5c248079365162e31994e1dece63e7c2, 6c23db12912236374f41ae8f43ca7409b7b8b56c, 5feb08c8d83883c4142fda5d98cd1e1435d5d3b8]:</summary>
+  - @rocket.chat/core-typings@9.0.0-rc.0
+  - @rocket.chat/rest-typings@9.0.0-rc.0
+  - @rocket.chat/model-typings@3.0.0-rc.0
+  - @rocket.chat/tools@0.5.0-rc.0
+  - @rocket.chat/random@1.2.4
+  - @rocket.chat/sha256@1.0.13
+
+  </details>
+
 ## 2.6.0
 
 ### Minor Changes

@@ -7,13 +7,13 @@ import { Facts } from 'meteor/facts-base';
 import { Meteor } from 'meteor/meteor';
 import client from 'prom-client';
 import gcStats from 'prometheus-gc-stats';
-import _ from 'underscore';
 
 import { metrics } from './metrics';
 import { Info } from '../../../../rocketchat.info';
 import { settings } from '../../../settings';
 import { SystemLogger } from '../../logger/system';
 import { getControl } from '../../migrations';
+import { sessions } from '../../realtime/sessions';
 import { getAppsStatistics } from '../../statistics/lib/getAppsStatistics';
 
 Facts.incrementServerFact = function (pkg: 'pkg' | 'fact', fact: string | number, increment: number): void {
@@ -30,11 +30,10 @@ const setPrometheusData = async (): Promise<void> => {
 		1,
 	);
 
-	const sessions = Array.from<{ userId: string }>(Meteor.server.sessions.values());
-	const authenticatedSessions = sessions.filter((s) => s.userId);
-	metrics.ddpSessions.set(Meteor.server.sessions.size);
-	metrics.ddpAuthenticatedSessions.set(authenticatedSessions.length);
-	metrics.ddpConnectedUsers.set(_.unique(authenticatedSessions.map((s) => s.userId)).length);
+	const userIds = sessions.userIds();
+	metrics.ddpSessions.set(sessions.size);
+	metrics.ddpAuthenticatedSessions.set(userIds.length);
+	metrics.ddpConnectedUsers.set(new Set(userIds).size);
 
 	// Apps metrics
 	const { totalInstalled, totalActive, totalFailed } = await getAppsStatistics();

@@ -11,6 +11,7 @@ import { fixWorkspaceVersionsBeforePublish } from './fixWorkspaceVersionsBeforeP
 import { checkoutBranch, commitChanges, createTag, getCurrentBranch, mergeBranch, pushChanges } from './gitUtils';
 import { setupOctokit } from './setupOctokit';
 import {
+	MAX_RELEASE_BODY_LENGTH,
 	bumpFileVersions,
 	createBumpFile,
 	getChangelogEntry,
@@ -18,6 +19,7 @@ import {
 	getReleaseName,
 	isPreRelease,
 	readPackageJson,
+	truncateReleaseNotes,
 } from './utils';
 
 export async function publishRelease({
@@ -129,7 +131,7 @@ export async function publishRelease({
 	await octokit.rest.repos.createRelease({
 		name: getReleaseName(newVersion, ltsVersions),
 		tag_name: newVersion,
-		body: releaseBody,
+		body: truncateReleaseNotes(releaseBody, MAX_RELEASE_BODY_LENGTH),
 		prerelease,
 		make_latest: isLatestRelease ? 'true' : 'false',
 		...github.context.repo,

@@ -9,6 +9,7 @@ import { Meteor } from 'meteor/meteor';
 import { addCallHistoryTestData } from './callHistoryTestData';
 import { FileUpload } from '../lib/media/file-upload';
 import { notifyOnSettingChangedById } from '../lib/notifyListener';
+import { readPrivateAsset } from '../lib/privateAssets';
 import { addUserRolesAsync } from '../lib/roles/addUserRoles';
 import { addUserToDefaultChannels } from '../lib/rooms/addUserToDefaultChannels';
 import { checkUsernameAvailability } from '../lib/users/checkUsernameAvailability';
@@ -142,22 +143,19 @@ Meteor.startup(async () => {
 
 			await addUserRolesAsync('rocket.cat', ['bot']);
 
-			const asset = await Assets.getBinaryAsync('avatars/rocketcat.png');
-			if (asset) {
-				const buffer = Buffer.from(asset);
+			const buffer = await readPrivateAsset('avatars/rocketcat.png');
 
-				const fileStore = FileUpload.getStore('Avatars');
-				await fileStore.deleteByName('rocket.cat');
+			const fileStore = FileUpload.getStore('Avatars');
+			await fileStore.deleteByName('rocket.cat');
 
-				const file = {
-					userId: 'rocket.cat',
-					type: 'image/png',
-					size: buffer.length,
-				};
+			const file = {
+				userId: 'rocket.cat',
+				type: 'image/png',
+				size: buffer.length,
+			};
 
-				const upload = await fileStore.insert(file, buffer);
-				await Users.setAvatarData('rocket.cat', 'local', upload.etag);
-			}
+			const upload = await fileStore.insert(file, buffer);
+			await Users.setAvatarData('rocket.cat', 'local', upload.etag);
 		}
 	} catch (error) {
 		console.log(

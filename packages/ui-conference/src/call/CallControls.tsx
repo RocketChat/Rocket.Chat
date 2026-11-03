@@ -235,6 +235,7 @@ const CallControls = ({ layout, onLayoutChange, onOpenDiagnostics }: CallControl
 					titles={[t('Send_reaction'), t('Send_reaction')]}
 					pressed={reactionPickerOpen}
 					aria-expanded={reactionPickerOpen}
+					info
 					size='large'
 					onToggle={() => setReactionPickerOpen((p) => !p)}
 				/>

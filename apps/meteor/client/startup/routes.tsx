@@ -1,4 +1,4 @@
-import { SetupWizardRoute } from '@rocket.chat/ui-client';
+import { SetupWizardRoute } from '@rocket.chat/ui-setup-wizard';
 import { createElement, lazy, useEffect } from 'react';
 
 import { appLayout } from '../lib/appLayout';
@@ -85,10 +85,6 @@ declare module '@rocket.chat/ui-contexts' {
 		'conference': {
 			pathname: `/conference/${string}`;
 			pattern: '/conference/:id';
-		};
-		'setup-wizard': {
-			pathname: `/setup-wizard${`/${string}` | ''}`;
-			pattern: '/setup-wizard/:step?';
 		};
 		'mailer-unsubscribe': {
 			pathname: `/mailer/unsubscribe/${string}/${string}`;

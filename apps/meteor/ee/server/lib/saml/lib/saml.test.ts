@@ -14,6 +14,7 @@ import { LogoutResponse } from './generators/LogoutResponse';
 import { LogoutRequestParser } from './parsers/LogoutRequest';
 import { LogoutResponseParser } from './parsers/LogoutResponse';
 import { ResponseParser } from './parsers/Response';
+import { getURLWithoutSettings } from '../../../../../lib/getURL';
 import {
 	serviceProviderOptions,
 	simpleMetadata,
@@ -50,20 +51,19 @@ import {
 	makeLogoutResponseEnvelope,
 } from '../../../../../tests/mocks/server/lib/saml/helpers';
 
-const meteorStub = {
-	'meteor/meteor': {
-		'@global': true,
-		'Meteor': {
-			absoluteUrl() {
-				return 'http://localhost:3000/';
-			},
-		},
-	},
+const getURLStub = {
+	'@global': true,
+	'getWorkspaceURL': (path = '') => getURLWithoutSettings(path, { full: true, cdn: false }, '', 'http://localhost:3000', ''),
 };
 
-const { ServiceProviderMetadata } = proxyquire.noCallThru().load('./generators/ServiceProviderMetadata', meteorStub);
+const getURLStubs = {
+	'../../../../../server/lib/utils/getURL': getURLStub,
+	'../../../../../../server/lib/utils/getURL': getURLStub,
+};
 
-const { SAMLServiceProvider } = proxyquire.noCallThru().load('./ServiceProvider', meteorStub);
+const { ServiceProviderMetadata } = proxyquire.noCallThru().load('./generators/ServiceProviderMetadata', getURLStubs);
+
+const { SAMLServiceProvider } = proxyquire.noCallThru().load('./ServiceProvider', getURLStubs);
 
 describe('SAML', () => {
 	describe('[AuthorizeRequest]', () => {
@@ -1209,7 +1209,7 @@ describe('SAML', () => {
 				'@rocket.chat/random': { Random: { id: () => '__credentialToken__' } },
 				'@rocket.chat/tools': { escapeRegExp: (s: string) => s, escapeHTML: (s: string) => s },
 				'meteor/accounts-base': { Accounts: { _generateStampedLoginToken: () => ({ token: 't' }) } },
-				'meteor/meteor': { Meteor: { absoluteUrl: (path = '') => `http://localhost:3000/${path}` } },
+				...getURLStubs,
 				'./ServiceProvider': {
 					SAMLServiceProvider: class {
 						validateResponse(_envelope: unknown, cb: (err: Error | null, profile: any) => Promise<void>) {

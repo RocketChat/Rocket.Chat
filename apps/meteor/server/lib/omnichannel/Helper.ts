@@ -60,13 +60,6 @@ import {
 
 const logger = new Logger('LivechatHelper');
 export const allowAgentSkipQueue = (agent: SelectedAgent) => {
-	check(
-		agent,
-		Match.ObjectIncluding({
-			agentId: String,
-		}),
-	);
-
 	return hasRoleAsync(agent.agentId, 'bot');
 };
 export const prepareLivechatRoom = async (
@@ -75,17 +68,6 @@ export const prepareLivechatRoom = async (
 	roomInfo: IOmnichannelRoomInfo = { source: { type: OmnichannelSourceType.OTHER } },
 	extraData?: IOmnichannelRoomExtraData,
 ): Promise<InsertionModel<IOmnichannelRoom>> => {
-	check(rid, String);
-	check(
-		guest,
-		Match.ObjectIncluding({
-			_id: String,
-			username: String,
-			status: Match.Maybe(String),
-			department: Match.Maybe(String),
-		}),
-	);
-
 	const extraRoomInfo = await beforeNewRoom(roomInfo, extraData);
 	const { _id, username, token, department: departmentId, status = 'online' } = guest;
 	const newRoomAt = new Date();
@@ -187,7 +169,6 @@ export const createLivechatInquiry = async ({
 	extraData?: IOmnichannelInquiryExtraData;
 	session?: ClientSession;
 }) => {
-	check(rid, String);
 	check(name, String);
 	check(
 		guest,
@@ -267,24 +248,6 @@ export const createLivechatSubscription = async (
 	agent: SelectedAgent,
 	department?: string,
 ) => {
-	check(rid, String);
-	check(name, String);
-	check(
-		guest,
-		Match.ObjectIncluding({
-			_id: String,
-			username: String,
-			status: Match.Maybe(String),
-		}),
-	);
-	check(
-		agent,
-		Match.ObjectIncluding({
-			agentId: String,
-			username: String,
-		}),
-	);
-
 	const existingSubscription = await Subscriptions.findOneByRoomIdAndUserId(rid, agent.agentId);
 	if (existingSubscription?._id) {
 		return existingSubscription;
@@ -853,7 +816,6 @@ export const updateDepartmentAgents = async (
 	},
 	departmentEnabled: boolean,
 ) => {
-	check(departmentId, String);
 	check(agents, {
 		upsert: Match.Maybe([
 			Match.ObjectIncluding({

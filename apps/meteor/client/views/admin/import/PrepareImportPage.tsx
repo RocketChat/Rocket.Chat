@@ -1,5 +1,5 @@
 import type { IImport, IImporterSelection, IImporterSelectionContact, Serialized } from '@rocket.chat/core-typings';
-import { Badge, Box, Button, ButtonGroup, ProgressBar, Throbber, Tabs, TabsItem } from '@rocket.chat/fuselage';
+import { Badge, Box, Button, ButtonGroup, ProgressBar, Tabs, TabsItem, Text, Throbber } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useSafely } from '@rocket.chat/fuselage-hooks';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import { useEndpoint, useStream, useRouter } from '@rocket.chat/ui-contexts';
@@ -213,9 +213,9 @@ function PrepareImportPage() {
 					paddingBlockEnd={24}
 				>
 					<Box>
-						<Box is='h2' fontScale='p2m'>
+						<Text is='h2' fontScale='p2m'>
 							{statusDebounced && t(statusDebounced.replace('importer_', 'importer_status_'))}
-						</Box>
+						</Text>
 						{!isPreparing && (
 							<Tabs>
 								<TabsItem selected={tab === 'users'} onClick={handleTabClick('users')}>

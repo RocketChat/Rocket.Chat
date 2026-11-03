@@ -3,7 +3,11 @@ import { Abac } from '@rocket.chat/core-services';
 import type { AbacRoomAttributesGrant } from '@rocket.chat/core-services';
 import type { IServerEvents, IUser } from '@rocket.chat/core-typings';
 import { ServerEvents } from '@rocket.chat/models';
-import { validateBadRequestErrorResponse, validateUnauthorizedErrorResponse } from '@rocket.chat/rest-typings/src/v1/Ajv';
+import {
+	validateBadRequestErrorResponse,
+	validateForbiddenErrorResponse,
+	validateUnauthorizedErrorResponse,
+} from '@rocket.chat/rest-typings/src/v1/Ajv';
 import { convertSubObjectsIntoPaths } from '@rocket.chat/tools';
 
 import {
@@ -68,7 +72,7 @@ const abacEndpoints = API.v1
 				200: GenericSuccessSchema,
 				401: validateUnauthorizedErrorResponse,
 				400: GenericErrorSchema,
-				403: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
 			},
 			license: ['abac'],
 		},
@@ -78,7 +82,7 @@ const abacEndpoints = API.v1
 
 			const grant = await getRoomAttributesGrant(this.userId, rid);
 			if (!grant) {
-				return API.v1.forbidden('User does not have the permissions required for this action [error-unauthorized]');
+				return API.v1.forbidden('User does not have the permissions required for this action');
 			}
 
 			if (!settings.get('ABAC_Enabled')) {
@@ -100,7 +104,7 @@ const abacEndpoints = API.v1
 				200: GenericSuccessSchema,
 				401: validateUnauthorizedErrorResponse,
 				400: GenericErrorSchema,
-				403: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
 			},
 		},
 		async function action() {
@@ -125,7 +129,7 @@ const abacEndpoints = API.v1
 				200: GenericSuccessSchema,
 				401: validateUnauthorizedErrorResponse,
 				400: GenericErrorSchema,
-				403: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
 			},
 		},
 		async function action() {
@@ -151,7 +155,7 @@ const abacEndpoints = API.v1
 				200: GenericSuccessSchema,
 				401: validateUnauthorizedErrorResponse,
 				400: GenericErrorSchema,
-				403: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
 			},
 			license: ['abac'],
 		},
@@ -177,7 +181,7 @@ const abacEndpoints = API.v1
 				200: GenericSuccessSchema,
 				401: validateUnauthorizedErrorResponse,
 				400: GenericErrorSchema,
-				403: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
 			},
 		},
 		async function action() {
@@ -199,7 +203,7 @@ const abacEndpoints = API.v1
 				200: GETAbacAttributesResponseSchema,
 				401: validateUnauthorizedErrorResponse,
 				400: GenericErrorSchema,
-				403: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
 			},
 		},
 		async function action() {
@@ -231,7 +235,7 @@ const abacEndpoints = API.v1
 				200: GenericSuccessSchema,
 				401: validateUnauthorizedErrorResponse,
 				400: GenericErrorSchema,
-				403: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
 			},
 		},
 		async function action() {
@@ -257,7 +261,7 @@ const abacEndpoints = API.v1
 				200: GenericSuccessSchema,
 				401: validateUnauthorizedErrorResponse,
 				400: GenericErrorSchema,
-				403: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
 			},
 		},
 		async function action() {
@@ -283,7 +287,7 @@ const abacEndpoints = API.v1
 				200: GenericSuccessSchema,
 				401: validateUnauthorizedErrorResponse,
 				400: GenericErrorSchema,
-				403: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
 			},
 		},
 		async function action() {
@@ -308,7 +312,7 @@ const abacEndpoints = API.v1
 				200: GETAbacAttributeByIdResponseSchema,
 				401: validateUnauthorizedErrorResponse,
 				400: GenericErrorSchema,
-				403: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
 			},
 		},
 		async function action() {
@@ -330,7 +334,7 @@ const abacEndpoints = API.v1
 				200: GenericSuccessSchema,
 				401: validateUnauthorizedErrorResponse,
 				400: GenericErrorSchema,
-				403: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
 			},
 		},
 		async function action() {
@@ -352,7 +356,7 @@ const abacEndpoints = API.v1
 				200: GETAbacAttributeIsInUseResponseSchema,
 				401: validateUnauthorizedErrorResponse,
 				400: GenericErrorSchema,
-				403: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
 			},
 		},
 		async function action() {
@@ -373,7 +377,7 @@ const abacEndpoints = API.v1
 				200: GETAbacRoomsResponseValidator,
 				401: validateUnauthorizedErrorResponse,
 				400: GenericErrorSchema,
-				403: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
 			},
 			query: GETAbacRoomsListQueryValidator,
 		},
@@ -407,7 +411,7 @@ const abacEndpoints = API.v1
 				200: GETAbacPdpHealthResponseSchema,
 				400: GETAbacPdpHealthErrorResponseSchema,
 				401: validateUnauthorizedErrorResponse,
-				403: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
 			},
 		},
 		async function action() {
@@ -426,7 +430,7 @@ const abacEndpoints = API.v1
 				200: GETAbacAuditEventsResponseSchema,
 				400: GenericErrorSchema,
 				401: validateUnauthorizedErrorResponse,
-				403: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
 			},
 			query: GETAbacAuditEventsQuerySchema,
 			authRequired: true,
@@ -494,7 +498,7 @@ const abacEndpoints = API.v1
 				200: GETAbacAttributeKeysResponseSchema,
 				400: GenericErrorSchema,
 				401: validateUnauthorizedErrorResponse,
-				403: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
 			},
 		},
 		async function action() {
@@ -513,7 +517,7 @@ const abacEndpoints = API.v1
 				200: GETAbacAssignableAttributesResponseSchema,
 				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
-				403: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
 			},
 		},
 		async function action() {
@@ -528,7 +532,7 @@ const abacEndpoints = API.v1
 			if (rid) {
 				const grant = await getRoomAttributesGrant(this.userId, rid);
 				if (!grant) {
-					return API.v1.forbidden('User does not have the permissions required for this action [error-unauthorized]');
+					return API.v1.forbidden('User does not have the permissions required for this action');
 				}
 
 				return API.v1.success({
@@ -538,7 +542,7 @@ const abacEndpoints = API.v1
 			}
 
 			if (!(await hasPermissionAsync(this.userId, 'create-abac-managed-room'))) {
-				return API.v1.forbidden('User does not have the permissions required for this action [error-unauthorized]');
+				return API.v1.forbidden('User does not have the permissions required for this action');
 			}
 
 			return API.v1.success({
@@ -562,7 +566,7 @@ const abacEndpoints = API.v1
 				200: POSTAbacMembershipPreviewResponseSchema,
 				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
-				403: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
 			},
 		},
 		async function action() {
@@ -574,14 +578,14 @@ const abacEndpoints = API.v1
 				const { rid, attributes, filter, after, group } = this.bodyParams;
 				const grant = await getRoomAttributesGrant(this.userId, rid);
 				if (!grant) {
-					return API.v1.forbidden('User does not have the permissions required for this action [error-unauthorized]');
+					return API.v1.forbidden('User does not have the permissions required for this action');
 				}
 
 				return API.v1.success(await Abac.previewRoomMembers(rid, attributes, toAbacActor(this.user), { filter, after, group }, grant));
 			}
 
 			if (!(await hasPermissionAsync(this.userId, 'create-abac-managed-room'))) {
-				return API.v1.forbidden('User does not have the permissions required for this action [error-unauthorized]');
+				return API.v1.forbidden('User does not have the permissions required for this action');
 			}
 
 			const { members, attributes, excludeSelf = false } = this.bodyParams;

@@ -1,5 +1,7 @@
 import {
 	Box,
+	Button,
+	ButtonGroup,
 	Field,
 	FieldError,
 	FieldGroup,
@@ -7,8 +9,7 @@ import {
 	FieldLabel,
 	FieldRow,
 	PasswordInput,
-	Button,
-	ButtonGroup,
+	Text,
 } from '@rocket.chat/fuselage';
 import { PasswordVerifierList } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, usePasswordPolicy } from '@rocket.chat/ui-contexts';
@@ -109,13 +110,13 @@ export const ChangePassphrase = () => {
 
 	return (
 		<>
-			<Box is='p' fontScale='p1' id={e2ePasswordExplanationId}>
+			<Text is='p' fontScale='p1' id={e2ePasswordExplanationId}>
 				<Trans i18nKey='E2E_Encryption_Password_Explanation' />
-			</Box>
+			</Text>
 			<Box marginBlockStart='x32' width='full' display='flex' flexDirection='column' gap='x12'>
-				<Box is='h3' fontScale='h4'>
+				<Text is='h3' fontScale='h4'>
 					{t('Change_E2EE_password')}
-				</Box>
+				</Text>
 				<FieldGroup>
 					<Field>
 						<FieldLabel htmlFor={passphraseId}>{t('New_E2EE_password')}</FieldLabel>
