@@ -1,14 +1,11 @@
 import { ClientSafeError } from '@rocket.chat/core-services';
 import { isRegisterUser } from '@rocket.chat/core-typings';
 import { Users, Rooms } from '@rocket.chat/models';
-import { check } from 'meteor/check';
 
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { unarchiveRoom } from '../../lib/rooms/unarchiveRoom';
 
 export const executeUnarchiveRoom = async (userId: string, rid: string) => {
-	check(rid, String);
-
 	const user = await Users.findOneById(userId, { projection: { username: 1, name: 1 } });
 	if (!user || !isRegisterUser(user)) {
 		throw new ClientSafeError('error-invalid-user', 'Invalid user', { method: 'archiveRoom' });

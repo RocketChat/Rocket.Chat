@@ -55,7 +55,6 @@ export async function setUserActiveStatus(
 	confirmRelinquish = false,
 	executedBy?: string,
 ): Promise<boolean | undefined> {
-	check(userId, String);
 	check(active, Boolean);
 
 	const user = await Users.findOneById(userId);

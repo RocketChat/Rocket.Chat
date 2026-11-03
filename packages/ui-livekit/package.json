@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ui-livekit",
-	"version": "0.0.1",
+	"version": "1.0.0-rc.1",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -29,6 +29,7 @@
 		"@rocket.chat/ui-contexts": "workspace:^",
 		"@rocket.chat/ui-media": "workspace:^",
 		"@rocket.chat/ui-video-conf": "workspace:^",
+		"@sapphi-red/web-noise-suppressor": "^0.4.0",
 		"@tanstack/react-query": "~5.65.1",
 		"@testing-library/dom": "~10.4.2",
 		"@testing-library/react": "~16.3.3",
@@ -43,12 +44,13 @@
 		"typescript": "~7.0.2"
 	},
 	"peerDependencies": {
-		"@rocket.chat/fuselage-hooks": "*",
+		"@rocket.chat/fuselage-hooks": "0.44.0-rc.0",
 		"@rocket.chat/ui-client": "workspace:^",
 		"@rocket.chat/ui-conference": "workspace:^",
 		"@rocket.chat/ui-contexts": "workspace:^",
 		"@rocket.chat/ui-media": "workspace:^",
 		"@rocket.chat/ui-video-conf": "workspace:^",
+		"@sapphi-red/web-noise-suppressor": "*",
 		"@tanstack/react-query": "*",
 		"react": "*",
 		"react-dom": "*",

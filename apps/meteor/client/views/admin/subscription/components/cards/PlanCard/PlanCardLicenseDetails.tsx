@@ -1,4 +1,4 @@
-import { IconButton, Divider, Box } from '@rocket.chat/fuselage';
+import { Box, Divider, IconButton, Text } from '@rocket.chat/fuselage';
 import { ActionLink } from '@rocket.chat/layout';
 import { useClipboardWithToast } from '@rocket.chat/ui-client';
 import { usePermission, useSetModal, useSetting } from '@rocket.chat/ui-contexts';
@@ -41,9 +41,9 @@ const PlanCardLicenseDetails = () => {
 						<IconButton title={t('Copy')} icon='clipboard' size='mini' onClick={() => !hasCopiedSiteURL && copySiteURL()} />
 					)}
 				</Box>
-				<Box withTruncatedText fontScale='p2'>
+				<Text truncate fontScale='p2'>
 					{siteURL}
-				</Box>
+				</Text>
 			</Box>
 			<Box>
 				<Box display='flex'>
@@ -54,9 +54,9 @@ const PlanCardLicenseDetails = () => {
 						<IconButton title={t('Copy')} icon='clipboard' size='mini' onClick={() => !hasCopiedHashed && copyHashed()} />
 					)}
 				</Box>
-				<Box withTruncatedText fontScale='p2'>
+				<Text truncate fontScale='p2'>
 					{hashedSiteURL}
-				</Box>
+				</Text>
 			</Box>
 			<ActionLink onClick={handleOpenModal}>{t('Manage_license')}</ActionLink>
 		</>

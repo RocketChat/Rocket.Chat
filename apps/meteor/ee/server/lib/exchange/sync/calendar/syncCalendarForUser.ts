@@ -10,6 +10,22 @@ import { getExchangeProvider, getCalendarSyncWindow } from '../../ExchangeProvid
 import { ExchangeError } from '../../errors';
 
 export const syncCalendarForUser = async (uid: IUser['_id']): Promise<CalendarSyncOutcome> => {
+	const provider = getExchangeProvider();
+
+	const user = await Users.findOneById<Pick<IUser, '_id' | 'emails' | 'utcOffset'>>(uid, {
+		projection: { emails: 1, utcOffset: 1 },
+	});
+
+	const mailbox = user && resolveMailbox(user);
+
+	if (!mailbox) {
+		if (user) {
+			throw new ExchangeError('email-not-verified', 'The user has no verified email address to use as a mailbox');
+		}
+
+		throw new ExchangeError('mailbox-not-found', 'No mailbox could be resolved for this user');
+	}
+
 	const release = await acquireCalendarSyncLease(uid);
 
 	if (!release) {
@@ -19,22 +35,6 @@ export const syncCalendarForUser = async (uid: IUser['_id']): Promise<CalendarSy
 	let changed = false;
 
 	try {
-		const provider = getExchangeProvider();
-
-		const user = await Users.findOneById<Pick<IUser, '_id' | 'emails' | 'utcOffset'>>(uid, {
-			projection: { emails: 1, utcOffset: 1 },
-		});
-
-		const mailbox = user && resolveMailbox(user);
-
-		if (!mailbox) {
-			if (user) {
-				throw new ExchangeError('email-not-verified', 'The user has no verified email address to use as a mailbox');
-			}
-
-			throw new ExchangeError('mailbox-not-found', 'No mailbox could be resolved for this user');
-		}
-
 		const outcome = await syncCalendarWindow(provider, uid, mailbox, getCalendarSyncWindow(new Date(), user.utcOffset));
 
 		changed = outcome.changed;

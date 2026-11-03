@@ -21,6 +21,7 @@ import { OmnichannelService } from './omnichannel/service';
 import { OmnichannelAnalyticsService } from './omnichannel-analytics/service';
 import { OmnichannelIntegrationService } from './omnichannel-integrations/service';
 import { PushService } from './push/service';
+import { RealtimeService } from './realtime/service';
 import { RoomService } from './room/service';
 import { SAUMonitorService } from './sauMonitor/service';
 import { SettingsService } from './settings/service';
@@ -41,6 +42,7 @@ export const registerServices = async (): Promise<void> => {
 	api.registerService(new CalendarService());
 	api.registerService(new MediaService());
 	api.registerService(new MeteorService());
+	api.registerService(new RealtimeService());
 	api.registerService(new NPSService());
 	api.registerService(new RoomService());
 	api.registerService(new SAUMonitorService());

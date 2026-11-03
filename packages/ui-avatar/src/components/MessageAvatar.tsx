@@ -11,11 +11,11 @@ export type MessageAvatarProps = {
 	size?: ComponentProps<typeof UserAvatar>['size'];
 } & Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
-const DEFAULT_EMOJI_FONT_SIZE = '2.25rem';
+const DEFAULT_EMOJI_SIZE = '2.25rem';
 
-const getEmojiFontSize = (size: ComponentProps<typeof UserAvatar>['size']): string => {
+const getEmojiSize = (size: ComponentProps<typeof UserAvatar>['size']): string => {
 	const px = Number(size?.slice(1));
-	return Number.isFinite(px) && px > 0 ? `${px / 16}rem` : DEFAULT_EMOJI_FONT_SIZE;
+	return Number.isFinite(px) && px > 0 ? `${px / 16}rem` : DEFAULT_EMOJI_SIZE;
 };
 
 const MessageAvatar = ({ emoji, avatarUrl, username, size = 'x36', ...props }: MessageAvatarProps) => {
@@ -23,18 +23,10 @@ const MessageAvatar = ({ emoji, avatarUrl, username, size = 'x36', ...props }: M
 		const styleMessageAvatar = css`
 			overflow: hidden;
 			min-width: 0;
-			font-size: ${getEmojiFontSize(size)};
-			line-height: 1;
+			--emoji-size: ${getEmojiSize(size)};
 
 			.emoji {
-				font-size: inherit;
-				line-height: inherit;
-			}
-
-			.emoji:not(.emoji--custom) {
-				display: flex;
-				align-items: center;
-				justify-content: center;
+				margin: 0;
 			}
 		`;
 

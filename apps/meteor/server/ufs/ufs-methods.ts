@@ -2,15 +2,11 @@ import fs from 'node:fs';
 
 import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IUpload } from '@rocket.chat/core-typings';
-import { check } from 'meteor/check';
 import type { ClientSession } from 'mongodb';
 
 import { UploadFS } from './ufs';
 
 export async function ufsComplete(fileId: string, storeName: string, options?: { session?: ClientSession }): Promise<IUpload> {
-	check(fileId, String);
-	check(storeName, String);
-
 	// Get store
 	const store = UploadFS.getStore(storeName);
 	if (!store) {

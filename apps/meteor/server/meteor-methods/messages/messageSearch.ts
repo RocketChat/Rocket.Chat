@@ -20,7 +20,6 @@ export const messageSearch = async function (
 	check(text, String);
 	check(rid, Match.Maybe(String));
 	check(limit, Match.Optional(Number));
-	check(offset, Match.Optional(Number));
 
 	// Don't process anything else if the user can't access the room
 	if (rid) {

@@ -6,19 +6,6 @@ import type { ElementProps } from '../../types/ElementProps';
 import { Box } from '../Box';
 import { Icon } from '../Icon';
 
-export type IconButtonSize = {
-	/** @deprecated Use `size="large"` instead. */
-	large?: boolean;
-	/** @deprecated Use `size="medium"` instead. */
-	medium?: boolean;
-	/** @deprecated Use `size="small"` instead. */
-	small?: boolean;
-	/** @deprecated Use `size="tiny"` instead. */
-	tiny?: boolean;
-	/** @deprecated Use `size="mini"` instead. */
-	mini?: boolean;
-};
-
 export type IconButtonProps = {
 	icon: IconName | ReactElement<any>;
 	/**
@@ -34,18 +21,6 @@ export type IconButtonProps = {
 	variant?:
 		'primary' | 'secondary' | 'info' | 'danger' | 'warning' | 'success' | 'secondary-danger' | 'secondary-warning' | 'secondary-success';
 	size?: 'mini' | 'tiny' | 'small' | 'medium' | 'large';
-	/** @deprecated Use `variant="primary"` instead. */
-	primary?: boolean;
-	/** @deprecated Use `variant="secondary"` instead. */
-	secondary?: boolean;
-	/** @deprecated Use `variant="info"` instead. */
-	info?: boolean;
-	/** @deprecated Use `variant="danger"` instead. */
-	danger?: boolean;
-	/** @deprecated Use `variant="warning"` instead. */
-	warning?: boolean;
-	/** @deprecated Use `variant="success"` instead. */
-	success?: boolean;
 	pressed?: boolean;
 	/** Renders a link instead of a button, for actions that navigate or download. */
 	is?: 'button' | 'a';
@@ -53,8 +28,7 @@ export type IconButtonProps = {
 	external?: boolean;
 	/** Paints the glyph with a font token, for icon-only actions on light surfaces. */
 	color?: 'default' | 'danger';
-} & IconButtonSize &
-	Omit<ElementProps<HTMLButtonElement | HTMLAnchorElement, AllHTMLAttributes<HTMLButtonElement | HTMLAnchorElement>>, 'ref'> &
+} & Omit<ElementProps<HTMLButtonElement | HTMLAnchorElement, AllHTMLAttributes<HTMLButtonElement | HTMLAnchorElement>>, 'ref'> &
 	RefAttributes<Element>;
 
 const iconSizes = {
@@ -83,18 +57,7 @@ function IconButton({
 	badge,
 	badgePosition = 'top-end',
 	variant: variantProp,
-	size: sizeProp,
-	primary,
-	info,
-	secondary,
-	danger,
-	warning,
-	success,
-	mini,
-	large,
-	tiny,
-	small,
-	medium,
+	size = 'large',
 	pressed,
 	is = 'button',
 	external,
@@ -102,22 +65,8 @@ function IconButton({
 	children,
 	...props
 }: IconButtonProps) {
-	const variant = useMemo(
-		() =>
-			(variantProp === 'primary' ? 'secondary-info' : variantProp) ||
-			(secondary && danger && 'secondary-danger') ||
-			(secondary && warning && 'secondary-warning') ||
-			(secondary && success && 'secondary-success') ||
-			(secondary && info && 'secondary-info') ||
-			(info && 'info') ||
-			(success && 'success') ||
-			(warning && 'warning') ||
-			(danger && 'danger') ||
-			(primary && 'secondary-info') ||
-			(secondary && 'secondary') ||
-			'',
-		[variantProp, danger, info, primary, secondary, success, warning],
-	);
+	// `secondary-info` is the class that paints the primary palette.
+	const variant = variantProp === 'primary' ? 'secondary-info' : (variantProp ?? '');
 
 	const kindAndVariantProps = useMemo(() => {
 		const variantProp = {} as any;
@@ -130,21 +79,7 @@ function IconButton({
 		return variantProp;
 	}, [variant, pressed]);
 
-	const size = useMemo(
-		() => sizeProp || (mini && 'mini') || (tiny && 'tiny') || (small && 'small') || (medium && 'medium') || (large && 'large') || 'large',
-		[sizeProp, medium, mini, small, tiny, large],
-	);
-
 	const getSizeClass = () => ({ [`rcx-button--${size}-square`]: true });
-
-	const getIconSize = () =>
-		(sizeProp && iconSizes[sizeProp]) ||
-		(large && 'x28') ||
-		(medium && 'x24') ||
-		(small && 'x20') ||
-		(tiny && 'x16') ||
-		(mini && 'x12') ||
-		'x28';
 
 	return (
 		<Box
@@ -162,7 +97,7 @@ function IconButton({
 			color={color}
 			{...props}
 		>
-			{isValidElement<any>(icon) ? icon : <Icon name={icon} size={getIconSize()} />}
+			{isValidElement<any>(icon) ? icon : <Icon name={icon} size={iconSizes[size]} />}
 			{Boolean(badge) && (
 				<span className={`rcx-button__badge rcx-button__badge--${badgePosition}`} aria-hidden='true'>
 					{badge}

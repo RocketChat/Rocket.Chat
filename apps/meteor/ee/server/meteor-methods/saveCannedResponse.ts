@@ -1,7 +1,6 @@
 import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IOmnichannelCannedResponse, ILivechatDepartment } from '@rocket.chat/core-typings';
 import { LivechatDepartment, CannedResponse, Users } from '@rocket.chat/models';
-import { Match, check } from 'meteor/check';
 
 import { hasPermissionAsync } from '../../../server/lib/authorization/hasPermission';
 import notifications from '../../../server/lib/notifications/core/lib/Notifications';
@@ -22,16 +21,6 @@ export const saveCannedResponse = async (
 	if (!(await hasPermissionAsync(userId, 'save-canned-responses'))) {
 		throw new ClientSafeError('error-not-allowed', 'Not allowed', { method: 'saveCannedResponse' });
 	}
-
-	check(_id, Match.Maybe(String));
-
-	check(responseData, {
-		shortcut: String,
-		text: String,
-		scope: String,
-		tags: Match.Maybe([String]),
-		departmentId: Match.Maybe(String),
-	});
 
 	const canSaveAll = await hasPermissionAsync(userId, 'save-all-canned-responses');
 	if (!canSaveAll && ['global'].includes(responseData.scope)) {

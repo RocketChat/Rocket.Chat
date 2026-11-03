@@ -43,7 +43,7 @@ export type PreflightDeviceMenuButtonProps = MenuTriggerProps & {
 
 /** The device icon, its name, and the chevron at the far end. */
 const PreflightDeviceMenuButton = forwardRef<HTMLButtonElement, PreflightDeviceMenuButtonProps>(function PreflightDeviceMenuButton(
-	{ kind, label, current, pressed, icon: _icon, title: _title, className: _className, small: _small, ...menuProps },
+	{ kind, label, current, pressed, icon: _icon, title: _title, className: _className, size: _size, ...menuProps },
 	ref,
 ) {
 	const triggerClassName = useStyle(triggerStyles);
