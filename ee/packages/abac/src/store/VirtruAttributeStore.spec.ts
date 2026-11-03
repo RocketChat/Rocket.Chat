@@ -1,7 +1,11 @@
+import { mockModel } from '@rocket.chat/models/testing';
+
 import { VirtruAttributeStore } from './VirtruAttributeStore';
 
 const usersFindOneById = jest.fn();
-jest.mock('@rocket.chat/models', () => ({ Users: { findOneById: (...a: unknown[]) => usersFindOneById(...a) } }));
+const registerModels = () => {
+	mockModel('Users', { findOneById: (...a: unknown[]) => usersFindOneById(...a) });
+};
 
 const cfg = {
 	baseUrl: 'http://pdp',
@@ -25,6 +29,8 @@ beforeEach(() =>
 );
 
 describe('VirtruAttributeStore.entitlementsOf / list', () => {
+	beforeAll(registerModels);
+
 	it('parses FQN map keys into grouped {key,values}', async () => {
 		const apiCall = jest.fn().mockResolvedValue({
 			entitlements: [
@@ -229,6 +235,8 @@ describe('VirtruAttributeStore.entitlementsOf / list', () => {
 });
 
 describe('VirtruAttributeStore.scopeRoomsPage', () => {
+	beforeAll(registerModels);
+
 	const rooms = [
 		{ _id: 'rPermit', abacAttributes: [{ key: 'clearance', values: ['secret'] }] },
 		{ _id: 'rDeny', abacAttributes: [{ key: 'clearance', values: ['topsecret'] }] },
@@ -271,6 +279,8 @@ describe('VirtruAttributeStore.scopeRoomsPage', () => {
 });
 
 describe('VirtruAttributeStore.assertCanModifyRoom', () => {
+	beforeAll(registerModels);
+
 	it("resolves when PDP PERMITs the room's current attributes", async () => {
 		const apiCall = jest
 			.fn()

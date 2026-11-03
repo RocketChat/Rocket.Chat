@@ -1,6 +1,5 @@
 import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IUser, OAuthConfiguration } from '@rocket.chat/core-typings';
-import type { IUsersModel } from '@rocket.chat/model-typings';
 import type { Accounts } from 'meteor/accounts-base';
 import type { OAuth2 } from 'oauth';
 
@@ -94,8 +93,8 @@ function setup() {
 		jest.doMock('meteor/accounts-base', () => ({ Accounts: accounts }), { virtual: true });
 		jest.doMock('@rocket.chat/core-services', () => ({ LDAP: { loginAuthenticatedUserRequest: ldapLogin }, ClientSafeError }));
 		jest.doMock('@rocket.chat/logger', () => ({ Logger: jest.fn(() => ({ debug: jest.fn() })) }));
-		const { registerModel } = jest.requireActual<typeof import('@rocket.chat/models')>('@rocket.chat/models');
-		registerModel('IUsersModel', users as unknown as IUsersModel);
+		const { mockModel } = jest.requireActual<typeof import('@rocket.chat/models/testing')>('@rocket.chat/models/testing');
+		mockModel('Users', users);
 		jest.doMock('../../../database/utils', () => ({ client: { startSession } }));
 		jest.doMock('../../../settings/cached', () => ({ settings }));
 		jest.doMock('../../callbacks', () => ({ callbacks: { run: runCallback } }));

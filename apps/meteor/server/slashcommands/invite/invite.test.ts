@@ -2,6 +2,7 @@ import { beforeEach, describe, it } from 'node:test';
 
 import { ClientSafeError, isClientSafeError } from '@rocket.chat/core-services';
 import { isBannedSubscription } from '@rocket.chat/core-typings';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
@@ -39,6 +40,9 @@ describe('/invite', () => {
 		sanitize.withArgs('@carol').returns('carol');
 		sanitize.withArgs(external.username).returns(external.username);
 		broadcast = sinon.stub().resolves();
+		mockModel('Rooms', { findOneById: findRoom });
+		mockModel('Users', { findByUsernames: findUsers, findOneById: findActor });
+		mockModel('Subscriptions', { findOneByRoomIdAndUserId: subscription });
 		slashCommand = loadSlashCommand('invite/server', {
 			'@rocket.chat/core-services': {
 				api: { broadcast },
@@ -47,11 +51,6 @@ describe('/invite', () => {
 			},
 			'@rocket.chat/core-typings': { isBannedSubscription },
 			'@rocket.chat/federation-matrix': { validateFederatedUsername: (username: string) => username === external.username },
-			'@rocket.chat/models': {
-				Rooms: { findOneById: findRoom },
-				Users: { findByUsernames: findUsers, findOneById: findActor },
-				Subscriptions: { findOneByRoomIdAndUserId: subscription },
-			},
 			'../../meteor-methods/rooms/addUsersToRoom': { addUsersToRoomMethod: addUsers, sanitizeUsername: sanitize },
 			'../../services/room/hooks/BeforeFederationActions': { FederationActions: { shouldPerformFederationAction: shouldFederate } },
 		});

@@ -1,16 +1,15 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import p from 'proxyquire';
 import sinon from 'sinon';
 
 const modelsMock = {
-	'NpsVote': {},
-	'Nps': {
+	Nps: {
 		findOne: sinon.stub(),
 		save: sinon.stub(),
 	},
-	'@noCallThru': true,
 };
 
 const servicesMock = {
@@ -25,7 +24,6 @@ const servicesMock = {
 const getbannerforadminsMock = sinon.stub();
 
 const { NPSService } = p('./service.ts', {
-	'@rocket.chat/models': modelsMock,
 	'@rocket.chat/core-services': servicesMock,
 	'./sendNpsResults': { 'sendNpsResults': sinon.stub(), '@noCallThru': true },
 	'../../lib/logger/system': { 'SystemLogger': { error: sinon.stub() }, '@noCallThru': true },
@@ -33,6 +31,10 @@ const { NPSService } = p('./service.ts', {
 });
 
 describe('NPS Service', () => {
+	before(() => {
+		mockModel('Nps', modelsMock.Nps);
+	});
+
 	it('should instantiate properly', () => {
 		expect(new NPSService()).to.be.an('object');
 	});

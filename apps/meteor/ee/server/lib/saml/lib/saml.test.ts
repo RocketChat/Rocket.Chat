@@ -1,7 +1,8 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 import zlib from 'node:zlib';
 
 import { ClientSafeError } from '@rocket.chat/core-services';
+import { mockModel } from '@rocket.chat/models/testing';
 import { isTruthy } from '@rocket.chat/tools';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
@@ -52,8 +53,7 @@ import {
 } from '../../../../../tests/mocks/server/lib/saml/helpers';
 
 const getURLStub = {
-	'@global': true,
-	'getWorkspaceURL': (path = '') => getURLWithoutSettings(path, { full: true, cdn: false }, '', 'http://localhost:3000', ''),
+	getWorkspaceURL: (path = '') => getURLWithoutSettings(path, { full: true, cdn: false }, '', 'http://localhost:3000', ''),
 };
 
 const getURLStubs = {
@@ -63,7 +63,9 @@ const getURLStubs = {
 
 const { ServiceProviderMetadata } = proxyquire.noCallThru().load('./generators/ServiceProviderMetadata', getURLStubs);
 
-const { SAMLServiceProvider } = proxyquire.noCallThru().load('./ServiceProvider', getURLStubs);
+const { SAMLServiceProvider } = proxyquire
+	.noCallThru()
+	.load('./ServiceProvider', { ...getURLStubs, './generators/ServiceProviderMetadata': { ServiceProviderMetadata } });
 
 describe('SAML', () => {
 	describe('[AuthorizeRequest]', () => {
@@ -164,9 +166,9 @@ describe('SAML', () => {
 					expect(data).to.be.an('object');
 					expect(data).to.have.property('idpSession');
 					expect(data).to.have.property('nameID');
-					// @ts-ignore -- chai already ensured the object exists
+					// @ts-expect-error -- chai already ensured the object exists
 					expect(data.idpSession).to.be.equal('_d6ad0e25459aaddd0433a81e159aa79e55dc52c280');
-					// @ts-ignore -- chai already ensured the object exists
+					// @ts-expect-error -- chai already ensured the object exists
 					expect(data.nameID).to.be.equal('_ab7e1d9a603473e92148d569d50176bafa60bcb2e9');
 				});
 			});
@@ -1198,13 +1200,6 @@ describe('SAML', () => {
 
 		const loadSAML = () =>
 			proxyquire.noCallThru().load('./SAML', {
-				'@rocket.chat/models': {
-					SamlUsedAssertions: { markUsed },
-					CredentialTokens: { create: credentialCreate },
-					Users: {},
-					Rooms: {},
-					Roles: {},
-				},
 				'@rocket.chat/core-services': { ClientSafeError },
 				'@rocket.chat/random': { Random: { id: () => '__credentialToken__' } },
 				'@rocket.chat/tools': { escapeRegExp: (s: string) => s, escapeHTML: (s: string) => s },
@@ -1240,6 +1235,11 @@ describe('SAML', () => {
 
 		const service = { ...serviceProviderOptions } as any;
 		const samlObject = { actionName: 'validate', serviceName: 'test-sp', credentialToken: '' } as any;
+
+		before(() => {
+			mockModel('SamlUsedAssertions', { markUsed });
+			mockModel('CredentialTokens', { create: credentialCreate });
+		});
 
 		beforeEach(() => {
 			markUsed.reset();
