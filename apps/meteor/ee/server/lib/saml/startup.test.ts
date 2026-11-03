@@ -78,7 +78,7 @@ const setup = () => {
 		'../../../../../server/settings': { settings, settingsRegistry: {} },
 	});
 
-	proxyquire.noCallThru().load('./startup', {
+	const samlStartup = proxyquire.noCallThru().load('./startup', {
 		'@rocket.chat/logger': { Logger: class {} },
 		'@rocket.chat/license': { License },
 		'meteor/meteor': { Meteor: { startup: sinon.stub() } },
@@ -99,7 +99,7 @@ const setup = () => {
 		},
 	});
 
-	return { SAMLUtils, LoginServiceConfiguration, notifyOnLoginServiceConfigurationChanged, changeSetting, toggleSamlModule };
+	return { samlStartup, SAMLUtils, LoginServiceConfiguration, notifyOnLoginServiceConfigurationChanged, changeSetting, toggleSamlModule };
 };
 
 describe('SAML startup', () => {
@@ -147,6 +147,34 @@ describe('SAML startup', () => {
 			await clock.tickAsync(500);
 
 			expect(SAMLUtils.setServiceProvidersList.called).to.equal(false);
+		} finally {
+			clock.restore();
+		}
+	});
+
+	it('removes a SAML login service kept from before when the server starts without the module', async () => {
+		const { samlStartup, SAMLUtils, LoginServiceConfiguration, notifyOnLoginServiceConfigurationChanged } = setup();
+
+		await samlStartup.unloadSamlServiceProvidersWithoutLicense();
+
+		expect(LoginServiceConfiguration.removeByService.calledWith('saml')).to.equal(true);
+		expect(notifyOnLoginServiceConfigurationChanged.calledWith({ _id: 'saml-service-id' }, 'removed')).to.equal(true);
+		expect(LoginServiceConfiguration.createOrUpdateService.called).to.equal(false);
+		expect(SAMLUtils.setServiceProvidersList.lastCall.args[0]).to.deep.equal([]);
+	});
+
+	it('keeps the SAML login service when the server starts with the module', async () => {
+		const clock = sinon.useFakeTimers();
+		try {
+			const { samlStartup, LoginServiceConfiguration, toggleSamlModule } = setup();
+
+			await toggleSamlModule(true);
+			await clock.tickAsync(500);
+			LoginServiceConfiguration.removeByService.resetHistory();
+
+			await samlStartup.unloadSamlServiceProvidersWithoutLicense();
+
+			expect(LoginServiceConfiguration.removeByService.called).to.equal(false);
 		} finally {
 			clock.restore();
 		}

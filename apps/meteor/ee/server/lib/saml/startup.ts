@@ -40,3 +40,8 @@ License.onToggledFeature('saml-enterprise', {
 });
 
 settings.watchByRegex(/^SAML_Custom_Default_/, updateGlobalSettings);
+
+// onToggledFeature runs neither up nor down when booting without the module; call after the license is applied
+// so a SAML login service kept from an unlicensed upgrade stops being offered on the login screen.
+export const unloadSamlServiceProvidersWithoutLicense = (): Promise<void> =>
+	License.hasModule('saml-enterprise') ? Promise.resolve() : loadServiceProviders();
