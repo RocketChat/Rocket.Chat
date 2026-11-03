@@ -4,7 +4,7 @@ import type { Parameters, Decorator } from '@storybook/react';
 
 import DocsContainer from './DocsContainer';
 import logo from './logo.svg';
-import { darkTheme, lightTheme } from './theme';
+import { createBrandTitle, darkTheme, lightTheme } from './theme';
 
 import '@rocket.chat/fuselage/dist/fuselage.css';
 import '@rocket.chat/icons/dist/rocketchat.css';
@@ -29,13 +29,11 @@ export const parameters: Parameters = {
 	darkMode: {
 		dark: {
 			...darkTheme,
-			brandTitle: process.env.STORYBOOK_PACKAGE_NAME,
-			brandImage: logo,
+			brandTitle: createBrandTitle('dark', { logo, name: process.env.STORYBOOK_PACKAGE_NAME }),
 		},
 		light: {
 			...lightTheme,
-			brandTitle: process.env.STORYBOOK_PACKAGE_NAME,
-			brandImage: logo,
+			brandTitle: createBrandTitle('light', { logo, name: process.env.STORYBOOK_PACKAGE_NAME }),
 		},
 	},
 };

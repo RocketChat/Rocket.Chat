@@ -6,7 +6,7 @@ import manifest from '../package.json';
 import { PaletteStyleTag } from '../src';
 import DocsContainer from './DocsContainer';
 import logo from './logo.svg';
-import { darkTheme, lightTheme } from './theme';
+import { createBrandTitle, darkTheme, lightTheme } from './theme';
 
 import 'normalize.css/normalize.css';
 import '@rocket.chat/icons/dist/rocketchat.css';
@@ -46,14 +46,12 @@ export default {
 		darkMode: {
 			dark: {
 				...darkTheme,
-				brandTitle: manifest.name,
-				brandImage: logo,
+				brandTitle: createBrandTitle('dark', { logo, name: manifest.name }),
 				brandUrl: manifest.homepage,
 			},
 			light: {
 				...lightTheme,
-				brandTitle: manifest.name,
-				brandImage: logo,
+				brandTitle: createBrandTitle('light', { logo, name: manifest.name }),
 				brandUrl: manifest.homepage,
 			},
 		},

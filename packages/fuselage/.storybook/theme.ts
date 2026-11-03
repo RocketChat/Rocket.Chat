@@ -52,3 +52,11 @@ const createFuselageTheme = (mode: Mode): ThemeVars =>
 export const lightTheme = createFuselageTheme('light');
 
 export const darkTheme = createFuselageTheme('dark');
+
+/** Brands the sidebar header with the logo and the name of the package the Storybook documents. */
+export const createBrandTitle = (mode: Mode, { logo, name }: { logo: string; name?: string }): string => `
+	<span style="display: flex; flex-direction: column; gap: 4px;">
+		<img src="${logo}" alt="Rocket.Chat" style="display: block; width: 128px; height: auto;" />
+		${name ? `<span style="font-size: 12px; font-weight: 700; line-height: 16px; color: ${font[mode].hint};">${name}</span>` : ''}
+	</span>
+`;
