@@ -8,7 +8,6 @@ import type { IUIKitErrorInteractionParam } from '../accessors/IUIController';
 export type IUIKitModalViewParam = Omit<IUIKitSurface, 'appId' | 'id' | 'type'> & Partial<Pick<IUIKitSurface, 'id'>>;
 export type IUIKitContextualBarViewParam = Omit<IUIKitSurface, 'appId' | 'id' | 'type'> & Partial<Pick<IUIKitSurface, 'id'>>;
 
-// eslint-disable-next-line @typescript-eslint/naming-convention -- We need to keep the old class name so we can hide the new method behind an experimental interface
 export interface UIKitInteractionResponder {
 	successResponse(): IUIKitResponse;
 	errorResponse(): IUIKitResponse;
