@@ -429,7 +429,6 @@ export class IncomingSipCall extends BaseSipCall {
 		if (contact) {
 			return {
 				...contact,
-				...(contactName && { displayName: contactName }),
 				contractId: sessionId,
 			} as MediaCallSignedContact<'sip'>;
 		}
