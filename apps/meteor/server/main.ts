@@ -42,6 +42,9 @@ try {
 
 	await startupApp();
 	await startRestAPI();
+	// not a static import: it would evaluate the modules it needs ahead of importPackages and reorder their side effects
+	const { runStartupTasks } = await import('./startup/startupTasks');
+	await runStartupTasks();
 } catch (err) {
 	// a server that failed to boot would otherwise stay up without ever listening
 	SystemLogger.fatal({ msg: 'Server failed to start', err });

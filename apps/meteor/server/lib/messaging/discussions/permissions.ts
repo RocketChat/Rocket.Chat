@@ -1,7 +1,6 @@
 import { Permissions } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
-Meteor.startup(async () => {
+export const createDiscussionPermissions = async (): Promise<void> => {
 	// Add permissions for discussion
 	const permissions = [
 		{ _id: 'start-discussion', roles: ['admin', 'user', 'guest', 'app'] },
@@ -11,4 +10,4 @@ Meteor.startup(async () => {
 	for (const permission of permissions) {
 		await Permissions.create(permission._id, permission.roles);
 	}
-});
+};

@@ -85,7 +85,7 @@ export async function insertAdminUserFromEnv() {
 	}
 }
 
-Meteor.startup(async () => {
+export const insertInitialData = async (): Promise<void> => {
 	const dynamicImport = {
 		'dynamic-import': {
 			useLocationOrigin: true,
@@ -254,4 +254,4 @@ Meteor.startup(async () => {
 		// Create sample call history for API tests
 		return addCallHistoryTestData('rocketchat.internal.admin.test', 'rocket.cat');
 	}
-});
+};
