@@ -53,8 +53,31 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 	const showUsername = Boolean(!useUserPreference<boolean>('hideUsernames') && !isMobile);
 	const highlights = useUserPreference<string[]>('highlights');
 
-	const { showAutoTranslate, autoTranslateLanguage, autoTranslateEnabled } = useAutoTranslate(subscription);
+	const autoTranslate = useAutoTranslate(subscription);
 	const { katexEnabled, katexDollarSyntaxEnabled, katexParenthesisSyntaxEnabled } = useKatex();
+
+	const katex = useMemo(
+		() =>
+			katexEnabled ? { dollarSyntaxEnabled: katexDollarSyntaxEnabled, parenthesisSyntaxEnabled: katexParenthesisSyntaxEnabled } : undefined,
+		[katexEnabled, katexDollarSyntaxEnabled, katexParenthesisSyntaxEnabled],
+	);
+
+	const parsedHighlights = useMemo(
+		() =>
+			highlights
+				?.map((str) => str.trim())
+				.map((highlight) => ({
+					highlight,
+					regex: getRegexHighlight(highlight),
+					urlRegex: getRegexHighlightUrl(highlight),
+				})),
+		[highlights],
+	);
+
+	const readReceipts = useMemo(
+		() => ({ enabled: readReceiptsEnabled, storeUsers: readReceiptsStoreUsers }),
+		[readReceiptsEnabled, readReceiptsStoreUsers],
+	);
 
 	const formatDateAndTime = useFormatDateAndTime();
 	const formatTime = useFormatTime();
@@ -77,11 +100,7 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 						Boolean(message.replies && message.replies.indexOf(uid) > -1 && !isThreadMainMessage(message))
 				: (): boolean => false,
 
-			autoTranslate: {
-				autoTranslateEnabled,
-				autoTranslateLanguage,
-				showAutoTranslate,
-			},
+			autoTranslate,
 			useShowStarred: hasSubscription
 				? ({ message }: { message: IMessage }): boolean =>
 						Boolean(Array.isArray(message.starred) && message.starred.find((star) => star._id === uid))
@@ -96,19 +115,8 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 			showRealName,
 			showUsername,
 			jumpToMessageParam: msgParameter,
-			...(katexEnabled && {
-				katex: {
-					dollarSyntaxEnabled: katexDollarSyntaxEnabled,
-					parenthesisSyntaxEnabled: katexParenthesisSyntaxEnabled,
-				},
-			}),
-			highlights: highlights
-				?.map((str) => str.trim())
-				.map((highlight) => ({
-					highlight,
-					regex: getRegexHighlight(highlight),
-					urlRegex: getRegexHighlightUrl(highlight),
-				})),
+			...(katex && { katex }),
+			highlights: parsedHighlights,
 
 			useOpenEmojiPicker: uid
 				? (message: IMessage) =>
@@ -118,10 +126,7 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 						}
 				: () => (): void => undefined,
 			username,
-			readReceipts: {
-				enabled: readReceiptsEnabled,
-				storeUsers: readReceiptsStoreUsers,
-			},
+			readReceipts,
 			formatDateAndTime,
 			formatTime,
 			formatDate,
@@ -129,23 +134,18 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 		[
 			username,
 			uid,
-			showAutoTranslate,
-			autoTranslateEnabled,
+			autoTranslate,
 			hasSubscription,
-			autoTranslateLanguage,
 			showRoles,
 			showRealName,
 			showUsername,
-			katexEnabled,
-			katexDollarSyntaxEnabled,
-			katexParenthesisSyntaxEnabled,
-			highlights,
+			katex,
+			parsedHighlights,
 			reactToMessage,
 			showColors,
 			msgParameter,
 			chat?.emojiPicker,
-			readReceiptsEnabled,
-			readReceiptsStoreUsers,
+			readReceipts,
 			apiEmbedEnabled,
 			autoLinkDomains,
 			formatDateAndTime,
