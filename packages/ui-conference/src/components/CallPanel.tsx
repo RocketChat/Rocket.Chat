@@ -85,8 +85,7 @@ const CallPanel = ({ visible, sheet = false, children }: CallPanelProps) => {
 					visibility 0s linear ${visible ? 0 : CLOSE_MS}ms;
 				will-change: transform;
 			`
-		: // Rounded only where it meets the call, as round as the tiles beside it: the borderRadius prop names
-			// whole-box tokens, not corners.
+		: // Rounded only where it meets the call: the borderRadius prop names whole-box tokens, not corners.
 			css`
 				border-start-start-radius: ${borderRadius('large')};
 				border-end-start-radius: ${borderRadius('large')};

@@ -56,7 +56,6 @@ const leftIndicatorRowStyles = css`
 	align-items: center;
 	gap: 0.25rem;
 	pointer-events: none;
-	/* Over the speaking ring, which grows into the corners at full volume. */
 	z-index: 2;
 `;
 
@@ -75,7 +74,6 @@ const indicatorRowStyles = css`
 	display: flex;
 	gap: 0.25rem;
 	pointer-events: none;
-	/* Over the speaking ring, which grows into the corners at full volume. */
 	z-index: 2;
 `;
 

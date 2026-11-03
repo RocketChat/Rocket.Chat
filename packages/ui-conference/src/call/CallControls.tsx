@@ -79,7 +79,6 @@ const reactionButtonStyles = css`
 	}
 `;
 
-/** Drawn as fuselage's Chip: a neutral nudge, not an error. */
 const speakingWhileMutedTooltip = css`
 	@keyframes swm-fade-in {
 		from {
