@@ -7,8 +7,10 @@ import { sleep } from '../../../../../../lib/utils/sleep';
 import { logger } from '../../logger';
 import { scrubForLog } from '../../scrub';
 
-/** Longer than any one mailbox's sync; a lease left behind by an instance that died frees itself after it */
+/** A lease left behind by an instance that died frees itself after it */
 const LEASE_MS = 15 * 60 * 1000;
+
+const LEASE_RENEWAL_MS = LEASE_MS / 5;
 
 const IDLE_POLL_MS = 5000;
 
@@ -38,7 +40,17 @@ export const acquireCalendarSyncLease = async (uid: IUser['_id']): Promise<(() =
 		return undefined;
 	}
 
+	const renewal = setInterval(async () => {
+		try {
+			await ExchangeCalendarSyncState.renewSyncLease(uid, token, new Date(Date.now() + LEASE_MS));
+		} catch (err) {
+			logger.warn({ msg: 'Could not renew the calendar sync lease', uid, err: scrubForLog(err) });
+		}
+	}, LEASE_RENEWAL_MS);
+
 	return async () => {
+		clearInterval(renewal);
+
 		try {
 			await ExchangeCalendarSyncState.releaseSyncLease(uid, token);
 		} catch (err) {

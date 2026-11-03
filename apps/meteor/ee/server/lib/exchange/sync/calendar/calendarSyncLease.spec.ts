@@ -3,6 +3,7 @@ import { MongoServerError } from 'mongodb';
 import { acquireCalendarSyncLease, whenCalendarSyncsIdle } from './calendarSyncLease';
 
 const acquireSyncLease = jest.fn();
+const renewSyncLease = jest.fn();
 const releaseSyncLease = jest.fn();
 const countActiveSyncLeases = jest.fn();
 const sleep = jest.fn();
@@ -10,6 +11,7 @@ const sleep = jest.fn();
 jest.mock('@rocket.chat/models', () => ({
 	ExchangeCalendarSyncState: {
 		acquireSyncLease: (...args: unknown[]) => acquireSyncLease(...args),
+		renewSyncLease: (...args: unknown[]) => renewSyncLease(...args),
 		releaseSyncLease: (...args: unknown[]) => releaseSyncLease(...args),
 		countActiveSyncLeases: (...args: unknown[]) => countActiveSyncLeases(...args),
 	},
@@ -20,7 +22,13 @@ jest.mock('../../logger', () => ({ logger: { warn: jest.fn() } }));
 describe('acquireCalendarSyncLease', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
+		jest.useFakeTimers();
+		renewSyncLease.mockResolvedValue({ modifiedCount: 1 });
 		releaseSyncLease.mockResolvedValue({ modifiedCount: 1 });
+	});
+
+	afterEach(() => {
+		jest.useRealTimers();
 	});
 
 	it('releases with the token it took the lease under', async () => {
@@ -34,7 +42,29 @@ describe('acquireCalendarSyncLease', () => {
 		expect(releaseSyncLease).toHaveBeenCalledWith('uid', token);
 	});
 
-	it('takes over a lease that has expired', async () => {
+	it('stops renewing once released', async () => {
+		acquireSyncLease.mockResolvedValue({ upsertedCount: 1, modifiedCount: 0 });
+
+		const release = await acquireCalendarSyncLease('uid');
+		await release?.();
+		await jest.advanceTimersByTimeAsync(20 * 60 * 1000);
+
+		expect(renewSyncLease).not.toHaveBeenCalled();
+	});
+
+	it('tries again at the next renewal when one fails', async () => {
+		acquireSyncLease.mockResolvedValue({ upsertedCount: 1, modifiedCount: 0 });
+		renewSyncLease.mockRejectedValueOnce(new Error('mongo is down'));
+
+		const release = await acquireCalendarSyncLease('uid');
+		await jest.advanceTimersByTimeAsync(7 * 60 * 1000);
+
+		expect(renewSyncLease).toHaveBeenCalledTimes(2);
+
+		await release?.();
+	});
+
+	it('returns the release when the store reports it took over an expired lease', async () => {
 		acquireSyncLease.mockResolvedValue({ upsertedCount: 0, modifiedCount: 1 });
 
 		await expect(acquireCalendarSyncLease('uid')).resolves.toBeInstanceOf(Function);

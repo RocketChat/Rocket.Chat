@@ -69,7 +69,7 @@ export const configureCalendarSyncJob = async (isCurrent: () => boolean = () => 
 
 	logger.info({ msg: 'Scheduling the Exchange calendar sync job', schedule });
 
-	await cronJobs.add(CALENDAR_SYNC_JOB, schedule, async () => runCalendarSync());
+	await cronJobs.add(CALENDAR_SYNC_JOB, schedule, async () => runCalendarSync(), { renewLock: true });
 
 	// A guard to avoid race conditions
 	if (!isCurrent()) {

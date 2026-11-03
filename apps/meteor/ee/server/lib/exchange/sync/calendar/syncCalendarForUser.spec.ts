@@ -117,12 +117,14 @@ describe('syncCalendarForUser', () => {
 
 		await expect(syncCalendarForUser('uid')).rejects.toMatchObject({ code: 'email-not-verified' });
 		expect(syncCalendarWindow).not.toHaveBeenCalled();
+		expect(acquireSyncLease).not.toHaveBeenCalled();
 	});
 
 	it('reports a missing mailbox for a user that no longer exists', async () => {
 		findOneById.mockResolvedValue(null);
 
 		await expect(syncCalendarForUser('uid')).rejects.toMatchObject({ code: 'mailbox-not-found' });
+		expect(acquireSyncLease).not.toHaveBeenCalled();
 	});
 
 	it('refuses a second sync while one is already running for the same user', async () => {
