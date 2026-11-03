@@ -51,7 +51,6 @@ const UserInfoActions = ({ user, rid, isInvited, backToList }: UserInfoActionsPr
 				key='menu'
 				sections={menuOptions}
 				placement='bottom-end'
-				small={false}
 			/>
 		);
 	}, [menuOptions, t]);

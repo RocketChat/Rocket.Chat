@@ -29,7 +29,7 @@ describe('[OAuthApps]', () => {
 			const res = await request.get(api('oauth-apps.list')).set(credentials).expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+			expect(res.body.errorType).to.be.equal('error-forbidden');
 		});
 
 		it('should return an array of oauth apps', async () => {
@@ -58,7 +58,7 @@ describe('[OAuthApps]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+					expect(res.body.errorType).to.be.equal('error-forbidden');
 				});
 			await updatePermission('manage-oauth-apps', ['admin']);
 		});
@@ -358,7 +358,7 @@ describe('[OAuthApps]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+					expect(res.body.errorType).to.be.equal('error-forbidden');
 				});
 		});
 	});
@@ -414,7 +414,7 @@ describe('[OAuthApps]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+					expect(res.body.errorType).to.be.equal('error-forbidden');
 				});
 		});
 	});

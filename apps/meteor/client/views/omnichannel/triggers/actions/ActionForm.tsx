@@ -10,6 +10,7 @@ import {
 	Tag,
 	type SelectOption,
 } from '@rocket.chat/fuselage';
+import { useHasLicenseModule } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import { useCallback, useId, useMemo } from 'react';
@@ -17,7 +18,6 @@ import type { Control, UseFormTrigger } from 'react-hook-form';
 import { Controller, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
 import type { TriggersPayload } from '../EditTrigger';
 import { getActionFormFields } from '../utils';
 

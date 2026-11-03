@@ -38,7 +38,7 @@ export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 	},
 	{
 		name: 'roomToolboxLayout',
-		i18n: 'Room_Toolbox_Layout',
+		i18n: 'Room_toolbox_layout',
 		description: 'Room_Toolbox_Layout_description',
 		group: 'Room',
 		value: false,

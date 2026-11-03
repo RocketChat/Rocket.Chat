@@ -1,6 +1,7 @@
-import express from 'express';
-import { WebApp } from 'meteor/webapp';
+import { createNodeServer } from '@rocket.chat/http-router';
 import request from 'supertest';
+
+import { httpApp } from '../lib/http/httpServer';
 
 const mockIntegrations = {
 	findOneByIdAndToken: jest.fn(),
@@ -60,7 +61,7 @@ jest.mock(
 	}),
 	{ virtual: true },
 );
-jest.mock('meteor/webapp', () => ({ WebApp: { rawConnectHandlers: { use: jest.fn() } } }), { virtual: true });
+jest.mock('../lib/http/httpServer', () => ({ httpApp: jest.requireActual('@rocket.chat/http-router').createRootApp() }));
 jest.mock('meteor/rate-limit', () => ({ RateLimiter: MockRateLimiter }), { virtual: true });
 jest.mock('meteor/accounts-base', () => ({ Accounts: { _accountData: {} as Record<string, unknown> } }), { virtual: true });
 jest.mock('meteor/ddp', () => ({ DDP: {} }), { virtual: true });
@@ -85,7 +86,7 @@ jest.mock('@rocket.chat/models', () => ({
 	Users: mockUsers,
 }));
 
-jest.mock('meteor/email', () => ({ Email: {} }), { virtual: true });
+jest.mock('../lib/notifications/email/transport', () => ({ sendMail: jest.fn() }));
 jest.mock('../lib/authorization/hasPermission', () => ({ hasPermissionAsync: mockHasPermissionAsync }));
 jest.mock('../lib/messages/processWebhookMessage', () => ({ processWebhookMessage: mockProcessWebhookMessage }));
 jest.mock('../meteor-methods/integrations/outgoing/addOutgoingIntegration', () => ({
@@ -117,7 +118,13 @@ const LEGACY_HOOK_URL = '/hooks/integration-id/legacy-user-id/the-token';
 jest.requireActual('./api');
 jest.requireActual('./webhooks');
 
-const app = express().use(jest.mocked(WebApp.rawConnectHandlers.use).mock.calls[0][0] as unknown as express.RequestHandler);
+const { ClientSafeError } = jest.requireActual<typeof import('@rocket.chat/core-services')>('@rocket.chat/core-services');
+
+const app = createNodeServer(httpApp).listen(0);
+
+afterAll(() => {
+	app.close();
+});
 
 describe('Webhooks API', () => {
 	beforeEach(() => {
@@ -310,7 +317,7 @@ describe('Webhooks API', () => {
 
 			const response = await request(app).post(HOOK_URL).send({ text: 'hello' });
 
-			expect(response.statusCode).toBe(400);
+			expect(response.statusCode).toBe(403);
 			expect(response.body.error).toBe('error-user-lacks-message-impersonate-permission');
 			expect(mockProcessWebhookMessage).not.toHaveBeenCalled();
 		});
@@ -346,7 +353,7 @@ describe('Webhooks API', () => {
 		it('refuses a `channel` override when overriding is disabled', async () => {
 			const response = await request(app).post(HOOK_URL).send({ text: 'hello', channel: '#other' });
 
-			expect(response.statusCode).toBe(400);
+			expect(response.statusCode).toBe(403);
 			expect(response.body.error).toBe('overriding destination channel is disabled for this integration');
 			expect(mockProcessWebhookMessage).not.toHaveBeenCalled();
 		});
@@ -354,7 +361,7 @@ describe('Webhooks API', () => {
 		it('refuses a `roomId` override when overriding is disabled', async () => {
 			const response = await request(app).post(HOOK_URL).send({ text: 'hello', roomId: 'room-id' });
 
-			expect(response.statusCode).toBe(400);
+			expect(response.statusCode).toBe(403);
 			expect(response.body.error).toBe('overriding destination channel is disabled for this integration');
 			expect(mockProcessWebhookMessage).not.toHaveBeenCalled();
 		});
@@ -377,7 +384,7 @@ describe('Webhooks API', () => {
 
 			const response = await request(app).post(HOOK_URL).send({ text: 'hello' });
 
-			expect(response.statusCode).toBe(400);
+			expect(response.statusCode).toBe(500);
 			expect(response.body.error).toBe('unknown-error');
 		});
 
@@ -386,8 +393,47 @@ describe('Webhooks API', () => {
 
 			const response = await request(app).post(HOOK_URL).send({ text: 'hello' });
 
-			expect(response.statusCode).toBe(400);
+			expect(response.statusCode).toBe(404);
 			expect(response.body.error).toBe('error-invalid-room');
+		});
+
+		it.each(['error-not-allowed', 'error-not-authorized', 'not-authorized', 'not_authorized', 'no-permission', 'error-forbidden'])(
+			'answers 403 when message processing rejects with the refusal code %s',
+			async (code) => {
+				mockProcessWebhookMessage.mockRejectedValue(Object.assign(new Error('boom'), { error: code }));
+
+				const response = await request(app).post(HOOK_URL).send({ text: 'hello' });
+
+				expect(response.statusCode).toBe(403);
+				expect(response.body).toEqual({ success: false, error: code, errorType: 'error-forbidden' });
+			},
+		);
+
+		it('answers a refusal thrown as a ClientSafeError with its reason, without the code suffix', async () => {
+			mockProcessWebhookMessage.mockRejectedValue(new ClientSafeError('error-not-allowed', 'Not allowed'));
+
+			const response = await request(app).post(HOOK_URL).send({ text: 'hello' });
+
+			expect(response.statusCode).toBe(403);
+			expect(response.body).toEqual({ success: false, error: 'Not allowed', errorType: 'error-forbidden' });
+		});
+
+		it('answers a refusal thrown as a ClientSafeError without a reason with the default message', async () => {
+			mockProcessWebhookMessage.mockRejectedValue(new ClientSafeError('not_authorized'));
+
+			const response = await request(app).post(HOOK_URL).send({ text: 'hello' });
+
+			expect(response.statusCode).toBe(403);
+			expect(response.body).toEqual({ success: false, error: 'You are not allowed to do this', errorType: 'error-forbidden' });
+		});
+
+		it('answers 400 with the code when message processing rejects with a ClientSafeError that is not a refusal', async () => {
+			mockProcessWebhookMessage.mockRejectedValue(new ClientSafeError('invalid-channel'));
+
+			const response = await request(app).post(HOOK_URL).send({ text: 'hello' });
+
+			expect(response.statusCode).toBe(400);
+			expect(response.body.error).toBe('invalid-channel');
 		});
 
 		it('surfaces the message when message processing rejects without an error code', async () => {
@@ -513,7 +559,7 @@ describe('Webhooks API', () => {
 
 			const response = await request(app).post(HOOK_URL).send({ text: 'hello' });
 
-			expect(response.statusCode).toBe(400);
+			expect(response.statusCode).toBe(500);
 			expect(response.body.error).toBe('error-running-script');
 			expect(mockProcessWebhookMessage).not.toHaveBeenCalled();
 		});
@@ -523,7 +569,7 @@ describe('Webhooks API', () => {
 
 			const response = await request(app).post(HOOK_URL).send({ text: 'hello' });
 
-			expect(response.statusCode).toBe(400);
+			expect(response.statusCode).toBe(500);
 			expect(response.body.error).toBe('error-running-script');
 			expect(mockProcessWebhookMessage).not.toHaveBeenCalled();
 		});
@@ -720,7 +766,8 @@ describe('Webhooks API', () => {
 				.post('/hooks/remove/integration-id/legacy-user-id/the-token')
 				.send({ target_url: 'https://example.com/missing' });
 
-			expect(JSON.stringify(response.body)).toContain('integration-not-found');
+			expect(response.statusCode).toBe(404);
+			expect(response.body.error).toBe('integration-not-found');
 			expect(mockDeleteOutgoingIntegration).not.toHaveBeenCalled();
 		});
 	});
@@ -788,6 +835,26 @@ describe('Webhooks API', () => {
 			expect(firstOnB.statusCode).toBe(200);
 			expect(firstOnLegacy.statusCode).toBe(200);
 			expect(secondOnA.statusCode).toBe(429);
+		});
+
+		it('counts a webhook url against one budget whatever host it is called on', async () => {
+			enableRateLimiter();
+
+			const first = await request(app).post(HOOK_URL).set('Host', 'chat.example.com').send({ text: 'a' });
+			const second = await request(app).post(HOOK_URL).set('Host', 'internal.example.com:3000').send({ text: 'b' });
+
+			expect(first.statusCode).toBe(200);
+			expect(second.statusCode).toBe(429);
+		});
+
+		it('counts a webhook url against one budget whatever query string it carries', async () => {
+			enableRateLimiter();
+
+			const first = await post(`${HOOK_URL}?attempt=1`, 'a');
+			const second = await post(`${HOOK_URL}?attempt=2`, 'b');
+
+			expect(first.statusCode).toBe(200);
+			expect(second.statusCode).toBe(429);
 		});
 	});
 });

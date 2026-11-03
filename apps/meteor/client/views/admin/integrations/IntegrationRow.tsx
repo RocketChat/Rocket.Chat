@@ -1,5 +1,5 @@
 import type { IIntegration, Serialized } from '@rocket.chat/core-typings';
-import { Box } from '@rocket.chat/fuselage';
+import { Text } from '@rocket.chat/fuselage';
 import { GenericTableCell, GenericTableRow, useFormatDateAndTime } from '@rocket.chat/ui-client';
 
 export type IntegrationRowProps = {
@@ -15,21 +15,21 @@ const IntegrationRow = ({ integration, onClick, isMobile }: IntegrationRowProps)
 	return (
 		<GenericTableRow key={_id} onKeyDown={onClick(_id, type)} onClick={onClick(_id, type)} tabIndex={0} role='link' action>
 			<GenericTableCell>
-				<Box withTruncatedText>{name}</Box>
+				<Text truncate>{name}</Text>
 			</GenericTableCell>
 			<GenericTableCell>
-				<Box withTruncatedText>{channel.join(', ')}</Box>
+				<Text truncate>{channel.join(', ')}</Text>
 			</GenericTableCell>
 			<GenericTableCell>
-				<Box withTruncatedText>{_createdBy?.username}</Box>
+				<Text truncate>{_createdBy?.username}</Text>
 			</GenericTableCell>
 			{!isMobile && (
 				<GenericTableCell>
-					<Box withTruncatedText>{formatDateAndTime(_createdAt)}</Box>
+					<Text truncate>{formatDateAndTime(_createdAt)}</Text>
 				</GenericTableCell>
 			)}
 			<GenericTableCell>
-				<Box withTruncatedText>{username}</Box>
+				<Text truncate>{username}</Text>
 			</GenericTableCell>
 		</GenericTableRow>
 	);

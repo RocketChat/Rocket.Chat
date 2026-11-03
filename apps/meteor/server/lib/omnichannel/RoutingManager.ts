@@ -239,15 +239,6 @@ export const RoutingManager: Routing = {
 			}),
 		);
 
-		check(
-			inquiry,
-			Match.ObjectIncluding({
-				_id: String,
-				rid: String,
-				status: String,
-			}),
-		);
-
 		logger.debug({ msg: 'Attempting to take Inquiry', inquiryId: inquiry._id, agentId: agent.agentId });
 
 		const { _id, rid } = inquiry;

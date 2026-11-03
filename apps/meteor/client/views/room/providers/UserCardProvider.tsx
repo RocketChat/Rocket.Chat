@@ -20,7 +20,7 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 	const hoverCard = useHoverCard<string>();
 	const { open, dismiss, shownKey: username } = hoverCard;
 
-	const { openTab } = useRoomToolbox();
+	const { actions, openTab } = useRoomToolbox();
 
 	const openUserInfo = useStableCallback((username?: string) => {
 		switch (room.t) {
@@ -33,7 +33,7 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 				break;
 
 			default:
-				openTab('members-list', username);
+				openTab(actions.some(({ id }) => id === 'members-list') ? 'members-list' : 'user-info', username);
 				break;
 		}
 	});

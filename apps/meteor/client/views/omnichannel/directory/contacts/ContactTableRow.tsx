@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, useStyle } from '@rocket.chat/fuselage';
+import { Box, Text, useStyle } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { ILivechatContactWithManagerData } from '@rocket.chat/rest-typings';
 import { GenericTableCell, GenericTableRow } from '@rocket.chat/ui-client';
@@ -69,10 +69,10 @@ const ContactTableRow = ({ _id, name, contactManager, lastChat, channels }: ILiv
 			<GenericTableCell truncate>
 				{lastChat && (
 					<Box display='flex' flexDirection='column'>
-						<Box fontScale='p2m' withTruncatedText color='default'>
+						<Text fontScale='p2m' truncate color='default'>
 							{formatDate(lastChat.ts)}
-						</Box>
-						<Box withTruncatedText>{getTimeFromNow(lastChat.ts)}</Box>
+						</Text>
+						<Text truncate>{getTimeFromNow(lastChat.ts)}</Text>
 					</Box>
 				)}
 			</GenericTableCell>

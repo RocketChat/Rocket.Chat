@@ -220,12 +220,15 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 	}
 
 	&-body {
-		@extend %rcx-margins-block;
 		@include use-font-scale(p2);
 
 		overflow: hidden;
 
 		flex-shrink: 1;
+
+		// Padding rather than margin, so overflow: hidden leaves room for emoji glyphs
+		// that paint slightly past their line box.
+		padding-block: lengths.padding(2);
 
 		transition: opacity 0.3s linear;
 

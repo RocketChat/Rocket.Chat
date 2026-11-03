@@ -1,22 +1,23 @@
-import type { IncomingMessage, ServerResponse } from 'node:http';
 import { monitorEventLoopDelay } from 'node:perf_hooks';
 import { getHeapStatistics } from 'node:v8';
 
-import { WebApp } from 'meteor/webapp';
+import type { Context } from 'hono';
+import type { ContentfulStatusCode } from 'hono/utils/http-status';
 
 import { db } from '../database/utils';
+import { httpApp } from '../lib/http/httpServer';
 import { SystemLogger } from '../lib/logger/system';
 
 export function pingMongo() {
 	return db.command({ ping: 1 });
 }
 
-function setDefaultHeaders(res: ServerResponse) {
-	// Set headers to prevent any caching of the health check response.
-	res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-	res.setHeader('Pragma', 'no-cache');
-	res.setHeader('Expires', '0');
-	res.setHeader('Content-Type', 'application/json');
+function respondUncached(c: Context, statusCode: ContentfulStatusCode, body: object) {
+	return c.json(body, statusCode, {
+		'Cache-Control': 'no-cache, no-store, must-revalidate',
+		'Pragma': 'no-cache',
+		'Expires': '0',
+	});
 }
 
 /**
@@ -24,12 +25,7 @@ function setDefaultHeaders(res: ServerResponse) {
  * Maintained for backward compatibility. Behaves like a simple liveness probe.
  * @deprecated Update infrastructure to use /livez and /readyz.
  */
-WebApp.rawHandlers.use('/health', (_req: IncomingMessage, res: ServerResponse) => {
-	setDefaultHeaders(res);
-
-	res.writeHead(200);
-	res.end(JSON.stringify({ status: 'ok' }));
-});
+httpApp.all('/health/*', (c) => respondUncached(c, 200, { status: 'ok' }));
 
 /**
  * Readiness Probe Configuration
@@ -102,7 +98,7 @@ async function performHealthChecks(histogram: ReturnType<typeof monitorEventLoop
 	};
 
 	const isHealthy = checks.memory.status === 'ok' && checks.eventLoop.status === 'ok' && checks.mongo.status === 'ok';
-	const statusCode = isHealthy ? 200 : 503;
+	const statusCode: ContentfulStatusCode = isHealthy ? 200 : 503;
 
 	const body = {
 		status: isHealthy ? 'ok' : 'unavailable',
@@ -117,17 +113,14 @@ async function performHealthChecks(histogram: ReturnType<typeof monitorEventLoop
  * Performs a non-destructive health check. A failure here indicates a pod is
  * unrecoverable and should be restarted.
  */
-WebApp.rawHandlers.use('/livez', async (_req: IncomingMessage, res: ServerResponse) => {
+httpApp.all('/livez/*', async (c) => {
 	const { statusCode, body, isHealthy } = await performHealthChecks(eventLoopHistogramLiveness);
 
 	if (!isHealthy) {
 		SystemLogger.error({ msg: 'Liveness check failed', details: body });
 	}
 
-	setDefaultHeaders(res);
-
-	res.writeHead(statusCode);
-	res.end(JSON.stringify(body));
+	return respondUncached(c, statusCode, body);
 });
 
 /**
@@ -135,15 +128,12 @@ WebApp.rawHandlers.use('/livez', async (_req: IncomingMessage, res: ServerRespon
  * Performs a destructive health check, resetting the histogram for the next interval.
  * A failure tells the orchestrator to stop sending traffic to this instance.
  */
-WebApp.rawHandlers.use('/readyz', async (_req: IncomingMessage, res: ServerResponse) => {
+httpApp.all('/readyz/*', async (c) => {
 	const { statusCode, body, isHealthy } = await performHealthChecks(eventLoopHistogramReadiness);
 
 	if (!isHealthy) {
 		SystemLogger.warn({ msg: 'Readiness check failed', details: body });
 	}
 
-	setDefaultHeaders(res);
-
-	res.writeHead(statusCode);
-	res.end(JSON.stringify(body));
+	return respondUncached(c, statusCode, body);
 });

@@ -6,7 +6,7 @@ import type { Db } from 'mongodb';
 
 const logger = new Logger('Cron');
 
-const runCronJobFunctionAndPersistResult = async (fn: () => Promise<any>, jobName: string): Promise<void> => {
+const runCronJobFunctionAndPersistResult = async (fn: () => Promise<unknown>, jobName: string): Promise<unknown> => {
 	const { insertedId } = await CronHistory.insertOne({
 		_id: Random.id(),
 		intendedAt: new Date(),
@@ -192,7 +192,7 @@ export class AgendaCronJobs {
 		this.reservedJobs = this.reservedJobs.filter(({ name }) => name !== jobName);
 	}
 
-	private async define(jobName: string, callback: () => any | Promise<any>, { renewLock = false }: CronJobOptions = {}): Promise<void> {
+	private async define(jobName: string, callback: () => unknown, { renewLock = false }: CronJobOptions = {}): Promise<void> {
 		if (!this.scheduler) {
 			throw new Error('Scheduler is not running.');
 		}

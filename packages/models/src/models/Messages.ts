@@ -1484,7 +1484,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		users: string[] = [],
 		ignoreThreads = true,
 		selectedMessageIds: string[] = [],
-	): Promise<number> {
+	): Promise<{ count: number; deletedIds: string[] }> {
 		const query: Filter<IMessage> = {
 			rid,
 			ts,
@@ -1510,10 +1510,13 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			$or: [{ _hidden: true }, { editedAt: { $exists: true }, editedBy: { $exists: true }, t: 'rm' }],
 		});
 
-		if (!limit) {
-			const count = (await this.deleteMany(query)).deletedCount - notCountedMessages;
+		const deletedIds: string[] = [];
+		const onTrash = ({ _id }: IMessage) => deletedIds.push(_id);
 
-			return count;
+		if (!limit) {
+			const count = (await this.deleteMany(query, { onTrash })).deletedCount - notCountedMessages;
+
+			return { count, deletedIds };
 		}
 
 		const count =
@@ -1525,11 +1528,11 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 							$in: selectedMessageIds,
 						},
 					},
-					{ bulkTrash: true },
+					{ bulkTrash: true, onTrash },
 				)
 			).deletedCount - notCountedMessages;
 
-		return count;
+		return { count, deletedIds };
 	}
 
 	removeByUserId(userId: string): Promise<DeleteResult> {

@@ -203,7 +203,7 @@ const DateRangePicker = ({ value, onChange, ...props }: DateRangePickerProps) =>
 		<Box display='flex' gap={8} alignItems='center' {...props}>
 			<InputBox type='date' value={startDate} max={maxStartDate} onChange={handleChangeStart} />
 			<InputBox type='date' min={minEndDate} value={endDate} max={maxEndDate} onChange={handleChangeEnd} />
-			<GenericMenu title={t('Date_range_presets')} items={presets} small />
+			<GenericMenu title={t('Date_range_presets')} items={presets} size='small' />
 		</Box>
 	);
 };

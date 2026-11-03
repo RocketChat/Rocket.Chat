@@ -87,7 +87,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
 				});
 		});
 
@@ -3090,7 +3090,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				updateSetting('LDAP_AD_User_Search_Field', ''),
 				updateSetting('LDAP_AD_Username_Field', ''),
 				updateSetting('LDAP_Background_Sync_ABAC_Attributes', false),
-				updateSetting('LDAP_Background_Sync_ABAC_Attributes_Interval', ''),
+				updateSetting('LDAP_Background_Sync_ABAC_Attributes_Interval', '0 0 * * *'),
 				updateSetting('LDAP_ABAC_AttributeMap', ''),
 			]);
 		});
@@ -3411,9 +3411,9 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				.send({ values: ['secret'] })
 				.expect(200);
 
-			const res = await request.get(`${v1}/rooms.info`).set(credentials).query({ roomId: adminReadableRoom._id }).expect(400);
+			const res = await request.get(`${v1}/rooms.info`).set(credentials).query({ roomId: adminReadableRoom._id }).expect(403);
 
-			expect(res.body).to.have.property('error', 'not-allowed');
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
 		});
 	});
 

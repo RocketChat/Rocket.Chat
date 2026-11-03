@@ -2,9 +2,9 @@ import crypto from 'node:crypto';
 
 import { Settings } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
-import { WebApp } from 'meteor/webapp';
 
 import { settings } from '..';
+import { httpApp } from '../../lib/http/httpServer';
 import { addStyle } from '../../lib/ui-master/inject';
 
 settings.watch('theme-custom-css', (value) => {
@@ -22,22 +22,14 @@ Meteor.startup(async () => {
 	await Settings.deleteOne({ _id: 'css' });
 });
 
-WebApp.rawConnectHandlers.use((req, res, next) => {
-	const path = req.url?.split('?')[0];
-	const prefix = __meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '';
-
-	if (path !== `${prefix}/theme.css`) {
-		next();
-		return;
-	}
-
+httpApp.all(`${__meteor_runtime_config__.ROOT_URL_PATH_PREFIX || ''}/theme.css`, (c) => {
 	const style = settings.get('theme-custom-css');
 	if (typeof style !== 'string') {
 		throw new Error('Invalid theme-custom-css setting');
 	}
 
-	res.setHeader('Content-Type', 'text/css; charset=UTF-8');
-	res.setHeader('Content-Length', style.length);
-	res.setHeader('ETag', `"${crypto.createHash('sha1').update(style).digest('hex')}"`);
-	res.end(style, 'utf-8');
+	return c.body(style, 200, {
+		'Content-Type': 'text/css; charset=UTF-8',
+		'ETag': `"${crypto.createHash('sha1').update(style).digest('hex')}"`,
+	});
 });

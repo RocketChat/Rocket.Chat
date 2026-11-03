@@ -1952,13 +1952,6 @@ API.v1
 			},
 		},
 		async function action() {
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					userId: Match.Maybe(String),
-				}),
-			);
-
 			const { userId } = this.queryParams;
 
 			// If the caller has permission to view all teams, there's no need to filter the teams

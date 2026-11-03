@@ -2,7 +2,6 @@ import { isIMessageInbox } from '@rocket.chat/core-typings';
 import type { IEmailInbox, IUser, IOmnichannelRoom, SlashCommandCallbackParams, IUpload } from '@rocket.chat/core-typings';
 import { Messages, Uploads, LivechatRooms, Rooms, Users } from '@rocket.chat/models';
 import { isTruthy } from '@rocket.chat/tools';
-import { Match } from 'meteor/check';
 import type Mail from 'nodemailer/lib/mailer';
 
 import { inboxes } from './EmailInbox';
@@ -107,7 +106,7 @@ async function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): Promi
 slashCommands.add({
 	command: 'sendEmailAttachment',
 	callback: async ({ command, params }: SlashCommandCallbackParams<'sendEmailAttachment'>) => {
-		if (command !== 'sendEmailAttachment' || !Match.test(params, String)) {
+		if (command !== 'sendEmailAttachment') {
 			return;
 		}
 

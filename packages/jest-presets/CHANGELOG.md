@@ -1,5 +1,11 @@
 # @rocket.chat/jest-presets
 
+## 0.0.4-rc.0
+
+### Patch Changes
+
+- ([#42599](https://github.com/RocketChat/Rocket.Chat/pull/42599)) Bumps `@faker-js/faker` from 8.0.2 to 10.5.0 to fix CVE-2026-73231. Updates tests to the faker 10 API and makes the Jest presets transform the ESM-only package.
+
 ## 0.0.3
 
 ### Patch Changes

@@ -1,4 +1,4 @@
-import { Box } from '@rocket.chat/fuselage';
+import { Box, Text } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type { ComponentProps } from 'react';
 
@@ -21,7 +21,7 @@ const UserColumn = ({ name, username, fontSize, size }: UserColumnProps) => {
 			)}
 			<Box display='flex' marginInline={8} withTruncatedText>
 				<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
-					<Box fontScale='p2m' color='default' withTruncatedText>
+					<Text fontScale='p2m' color='default' truncate>
 						{name && username ? (
 							<>
 								{name}{' '}
@@ -32,7 +32,7 @@ const UserColumn = ({ name, username, fontSize, size }: UserColumnProps) => {
 						) : (
 							name || username
 						)}{' '}
-					</Box>
+					</Text>
 				</Box>
 			</Box>
 		</Box>

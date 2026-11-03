@@ -70,7 +70,10 @@ describe('cleanRoomHistory', () => {
 
 		modelsMock.Messages.findFilesByRoomIdPinnedTimestampAndUsers.returns(cursorOf([]));
 		modelsMock.Messages.findByIdPinnedTimestampLimitAndUsers.resolves([]);
-		modelsMock.Messages.removeByIdPinnedTimestampLimitAndUsers.callsFake(async (...args: unknown[]) => (args[7] as string[]).length);
+		modelsMock.Messages.removeByIdPinnedTimestampLimitAndUsers.callsFake(async (...args: unknown[]) => ({
+			count: (args[7] as string[]).length,
+			deletedIds: args[7],
+		}));
 	});
 
 	it('deletes the whole backlog in bounded batches, together with their read receipts', async () => {
@@ -87,6 +90,18 @@ describe('cleanRoomHistory', () => {
 		expect(modelsMock.ReadReceipts.removeByMessageIds.getCalls().map((call) => call.args[0])).to.deep.equal(batches);
 		expect(modelsMock.ReadReceiptsArchive.removeByMessageIds.getCalls().map((call) => call.args[0])).to.deep.equal(batches);
 		expect(broadcastMock.getCalls().map((call) => call.args[2].ids)).to.deep.equal(batches);
+	});
+
+	it('keeps read receipts of selected messages that the delete spared', async () => {
+		modelsMock.Messages.findByIdPinnedTimestampLimitAndUsers.onCall(0).resolves(['deleted', 'pinnedMeanwhile']);
+		modelsMock.Messages.removeByIdPinnedTimestampLimitAndUsers.resolves({ count: 1, deletedIds: ['deleted'] });
+
+		const count = await cleanRoomHistory({ rid: 'rid' });
+
+		expect(count).to.equal(1);
+		expect(modelsMock.ReadReceipts.removeByMessageIds.calledOnceWithExactly(['deleted'])).to.be.true;
+		expect(modelsMock.ReadReceiptsArchive.removeByMessageIds.calledOnceWithExactly(['deleted'])).to.be.true;
+		expect(broadcastMock.calledOnceWith('notify.deleteMessageBulk', 'rid', sinon.match({ ids: ['deleted'] }))).to.be.true;
 	});
 
 	it('never selects more messages than the requested limit', async () => {
