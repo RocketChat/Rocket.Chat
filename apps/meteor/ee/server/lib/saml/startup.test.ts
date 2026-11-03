@@ -152,6 +152,57 @@ describe('SAML startup', () => {
 		}
 	});
 
+	it('logs a failure to remove the SAML login service when the license loses the module', async () => {
+		const clock = sinon.useFakeTimers();
+		try {
+			const { SAMLUtils, LoginServiceConfiguration, toggleSamlModule } = setup();
+
+			await toggleSamlModule(true);
+			await clock.tickAsync(500);
+
+			const failure = new Error('database unavailable');
+			LoginServiceConfiguration.removeByService.rejects(failure);
+			await toggleSamlModule(false);
+			await clock.tickAsync(0);
+
+			expect(SAMLUtils.error.calledWithMatch({ err: failure })).to.equal(true);
+		} finally {
+			clock.restore();
+		}
+	});
+
+	it('waits for the removal from a license loss before storing the login service again', async () => {
+		const clock = sinon.useFakeTimers();
+		try {
+			const { SAMLUtils, LoginServiceConfiguration, toggleSamlModule } = setup();
+
+			await toggleSamlModule(true);
+			await clock.tickAsync(500);
+
+			let finishRemoval: () => void = () => undefined;
+			LoginServiceConfiguration.removeByService.returns(
+				new Promise((resolve) => {
+					finishRemoval = () => resolve(null);
+				}),
+			);
+			LoginServiceConfiguration.createOrUpdateService.resetHistory();
+
+			await toggleSamlModule(false);
+			await toggleSamlModule(true);
+			await clock.tickAsync(500);
+
+			expect(LoginServiceConfiguration.createOrUpdateService.called).to.equal(false);
+
+			finishRemoval();
+			await clock.tickAsync(0);
+
+			expect(LoginServiceConfiguration.createOrUpdateService.calledOnce).to.equal(true);
+			expect(SAMLUtils.setServiceProvidersList.lastCall.args[0]).to.have.lengthOf(1);
+		} finally {
+			clock.restore();
+		}
+	});
+
 	it('does not publish the providers of a build that finishes after the license lost the module', async () => {
 		const clock = sinon.useFakeTimers();
 		try {

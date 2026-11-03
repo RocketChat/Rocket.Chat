@@ -14,7 +14,16 @@ Meteor.startup(async () => {
 	await addSettings('Default');
 });
 
-const reloadServiceProviders = debounce(loadSamlServiceProviders, 500);
+// Loads run one at a time so a removal from an earlier load cannot land after a later load stored the login service.
+let providersLoad = Promise.resolve();
+const loadServiceProviders = (): Promise<void> => {
+	providersLoad = providersLoad
+		.then(loadSamlServiceProviders)
+		.catch((err) => SAMLUtils.error({ msg: 'Failed to load SAML service providers', err }));
+	return providersLoad;
+};
+
+const reloadServiceProviders = debounce(loadServiceProviders, 500);
 let stopWatchingProviderSettings: (() => void) | undefined;
 
 // Providers are only built while the module is licensed, so a license applied after startup cannot leave them stale.
@@ -26,7 +35,7 @@ License.onToggledFeature('saml-enterprise', {
 		stopWatchingProviderSettings?.();
 		stopWatchingProviderSettings = undefined;
 		reloadServiceProviders.cancel();
-		void loadSamlServiceProviders();
+		void loadServiceProviders();
 	},
 });
 
