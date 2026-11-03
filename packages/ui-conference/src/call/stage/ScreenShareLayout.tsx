@@ -26,7 +26,7 @@ const ScreenShareLayout = ({ featured, others, tiles, orientation, onPin, onStop
 
 	return (
 		<Box className={classes.container}>
-			<ScreenViewer stream={featured.stream} label={labelOf(featured)}>
+			<ScreenViewer key={featured.stream.id} stream={featured.stream} label={labelOf(featured)}>
 				{featured.isLocal && onStopLocalScreenShare && <StopShareButton onStop={onStopLocalScreenShare} />}
 			</ScreenViewer>
 			<Box className={classes.thumbs} data-thumb-orientation={classes.thumbOrientation}>

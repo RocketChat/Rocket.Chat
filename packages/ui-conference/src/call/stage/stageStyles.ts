@@ -66,6 +66,28 @@ export const mainStreamStyles = css`
 	background-color: ${Palette.surface['surface-neutral'].toString()};
 	border-radius: ${borderRadius('large')};
 	overflow: hidden;
+
+	&:fullscreen {
+		border-radius: 0;
+	}
+`;
+
+// The viewer clips the zoomed screen, and would clip a focus ring drawn outside it too.
+export const screenZoomViewportStyles = css`
+	&[data-zoomed] {
+		cursor: grab;
+		touch-action: none;
+		user-select: none;
+	}
+
+	&[data-zoomed]:active {
+		cursor: grabbing;
+	}
+
+	&:focus-visible {
+		outline: 2px solid ${Palette.stroke['stroke-highlight'].toString()};
+		outline-offset: -2px;
+	}
 `;
 
 const thumbStripStyles = css`
