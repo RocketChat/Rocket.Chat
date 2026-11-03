@@ -114,6 +114,7 @@ export type * from './VideoConferenceCapabilities';
 export type * from './SpotlightUser';
 export type * from './ICalendarEvent';
 export type * from './IExchangeCalendarSyncState';
+export type * from './IExchangeSyncLease';
 
 export type * from './search';
 export * from './omnichannel';

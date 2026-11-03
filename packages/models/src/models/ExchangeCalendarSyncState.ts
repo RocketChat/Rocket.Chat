@@ -41,26 +41,6 @@ export class ExchangeCalendarSyncStateRaw extends BaseRaw<IExchangeCalendarSyncS
 		return this.updateOne({ uid }, { $unset: { cursor: 1 } });
 	}
 
-	public async acquireSyncLease(uid: IUser['_id'], token: string, until: Date, now: Date): Promise<UpdateResult> {
-		return this.updateOne(
-			{ uid, $or: [{ syncLeaseUntil: { $exists: false } }, { syncLeaseUntil: { $lte: now } }] },
-			{ $set: { syncLeaseToken: token, syncLeaseUntil: until } },
-			{ upsert: true },
-		);
-	}
-
-	public async renewSyncLease(uid: IUser['_id'], token: string, until: Date): Promise<UpdateResult> {
-		return this.updateOne({ uid, syncLeaseToken: token }, { $set: { syncLeaseUntil: until } });
-	}
-
-	public async releaseSyncLease(uid: IUser['_id'], token: string): Promise<UpdateResult> {
-		return this.updateOne({ uid, syncLeaseToken: token }, { $unset: { syncLeaseToken: 1, syncLeaseUntil: 1 } });
-	}
-
-	public countActiveSyncLeases(now: Date): Promise<number> {
-		return this.countDocuments({ syncLeaseUntil: { $gt: now } });
-	}
-
 	public findAllUserIds(): Promise<IUser['_id'][]> {
 		return this.col.distinct('uid');
 	}

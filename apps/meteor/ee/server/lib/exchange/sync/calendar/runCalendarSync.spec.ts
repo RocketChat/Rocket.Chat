@@ -11,13 +11,13 @@ const getExchangeProvider = jest.fn();
 const isServerSyncEnabled = jest.fn();
 const getCalendarSyncWindow = jest.fn();
 const candidates = jest.fn();
-const acquireSyncLease = jest.fn();
-const releaseSyncLease = jest.fn();
+const acquireLease = jest.fn();
+const releaseLease = jest.fn();
 
 jest.mock('@rocket.chat/models', () => ({
-	ExchangeCalendarSyncState: {
-		acquireSyncLease: (...args: unknown[]) => acquireSyncLease(...args),
-		releaseSyncLease: (...args: unknown[]) => releaseSyncLease(...args),
+	ExchangeSyncLease: {
+		acquireLease: (...args: unknown[]) => acquireLease(...args),
+		releaseLease: (...args: unknown[]) => releaseLease(...args),
 	},
 }));
 jest.mock('./syncCalendarWindow', () => ({ syncCalendarWindow: (...args: unknown[]) => syncCalendarWindow(...args) }));
@@ -66,8 +66,8 @@ describe('runCalendarSync', () => {
 		syncCalendarWindow.mockResolvedValue(outcome());
 		applyDeferredSideEffects.mockResolvedValue(undefined);
 		candidates.mockImplementation(from([{ uid: 'a', mailbox: 'a@corp.example' }]));
-		acquireSyncLease.mockResolvedValue({ upsertedCount: 1, modifiedCount: 0 });
-		releaseSyncLease.mockResolvedValue({ modifiedCount: 1 });
+		acquireLease.mockResolvedValue({ upsertedCount: 1, modifiedCount: 0 });
+		releaseLease.mockResolvedValue({ deletedCount: 1 });
 	});
 
 	it('counts a user with no resolvable mailbox as skipped and syncs the rest', async () => {
@@ -128,7 +128,7 @@ describe('runCalendarSync', () => {
 				{ uid: 'b', mailbox: 'b@x' },
 			]),
 		);
-		acquireSyncLease.mockImplementation(async (uid: string) => {
+		acquireLease.mockImplementation(async (_scope: string, uid: string) => {
 			if (uid === 'a') {
 				throw new MongoServerError({ code: 11000, message: 'E11000 duplicate key error' });
 			}
@@ -140,8 +140,8 @@ describe('runCalendarSync', () => {
 		expect(syncCalendarWindow).toHaveBeenCalledTimes(1);
 		expect(syncCalendarWindow.mock.calls[0][1]).toBe('b');
 		expect(summary).toMatchObject({ mailboxes: 1, skipped: 1 });
-		expect(releaseSyncLease).toHaveBeenCalledTimes(1);
-		expect(releaseSyncLease).toHaveBeenCalledWith('b', acquireSyncLease.mock.calls.find(([uid]) => uid === 'b')?.[1]);
+		expect(releaseLease).toHaveBeenCalledTimes(1);
+		expect(releaseLease).toHaveBeenCalledWith('calendar', 'b', acquireLease.mock.calls.find(([, uid]) => uid === 'b')?.[2]);
 	});
 
 	it('releases the lease even when the mailbox sync throws', async () => {
@@ -149,7 +149,7 @@ describe('runCalendarSync', () => {
 
 		await expect(runCalendarSync()).rejects.toThrow('boom');
 
-		expect(releaseSyncLease).toHaveBeenCalledWith('a', acquireSyncLease.mock.calls[0][1]);
+		expect(releaseLease).toHaveBeenCalledWith('calendar', 'a', acquireLease.mock.calls[0][2]);
 	});
 
 	it('stops pulling candidates once one fails fatally, not just syncing them', async () => {
