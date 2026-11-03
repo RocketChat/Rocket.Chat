@@ -1,6 +1,6 @@
 # Research: other chat-product MCP servers
 
-> Raw research output, kept unedited. Collected on 2026-10-06 by a research agent for [the MCP server redesign proposal](../mcp-server-redesign.md).
+> Raw research output. Collected on 2026-10-06 by a research agent for [the MCP server redesign proposal](../mcp-server-redesign.md). The original text is kept. A *(changed, see update)* marker flags each claim that later sources changed or verified, and the [update of 2026-11-03](#update-2026-11-03) at the end gives the new state.
 > Scope: Slack (official, archived reference, korotovsky), Zulip, Microsoft Teams, Discord, and GitHub (design patterns only).
 
 ---
@@ -20,11 +20,11 @@ Docs: https://docs.slack.dev/ai/slack-mcp-server/ (blocked). Read instead: Slack
   - Messaging: `slack_send_message`, `slack_send_message_draft`, `slack_schedule_message` (`post_at` from 2 minutes to 120 days ahead).
   - Reactions: `slack_add_reaction`, `slack_get_reactions`.
   - Canvases: `slack_create_canvas`, `slack_read_canvas`, `slack_update_canvas`.
-- **Tool count:** **[UNVERIFIED]** Other sources give 11, 13, 15 or 18. A May 2026 changelog added tools (https://docs.slack.dev/changelog/2026/05/13/new-mcp-tools/). Snippets say the server returns only the tools the token's scopes allow, so the count varies by token.
+- **Tool count:** **[UNVERIFIED]** Other sources give 11, 13, 15 or 18. A May 2026 changelog added tools (https://docs.slack.dev/changelog/2026/05/13/new-mcp-tools/). Snippets say the server returns only the tools the token's scopes allow, so the count varies by token. *(changed, see update)*
 - **Transport and hosting:** hosted remote server, streamable HTTP, at `https://mcp.slack.com/mcp`. Admins must approve it per workspace. The Slack app needs its "MCP" toggle switched on, and users must re-authorize after that **[UNVERIFIED]**.
 - **Auth:**
   - OAuth with a pre-registered client only. Slack's plugin hard-codes `"oauth": {"clientId": "1601185624273.8899143856786", "callbackPort": 3118}`.
-  - **No dynamic client registration (DCR).** Claude Code, Cursor and others fail with "does not support dynamic client registration" (https://github.com/anthropics/claude-code/issues/52354).
+  - **No dynamic client registration (DCR).** Claude Code, Cursor and others fail with "does not support dynamic client registration" (https://github.com/anthropics/claude-code/issues/52354). *(verified, see update)*
   - Exposes `/.well-known/oauth-protected-resource` and `/.well-known/oauth-authorization-server` **[UNVERIFIED]**.
   - It uses the **user-token** OAuth endpoints (`slack.com/oauth/v2_user/authorize`, `oauth.v2.user.access`). Bot tokens are rejected with 401. Scopes are granular, for example `search:read.public`, `search:read.private`, `search:read.im`, `search:read.files`, `files:read`, `chat:write` **[UNVERIFIED]**.
 - **Context limits:**
@@ -93,7 +93,7 @@ Source: https://github.com/korotovsky/slack-mcp-server (`pkg/server/server.go`)
   - One Entra ID delegated scope, `McpServers.Teams.All`.
   - Tools are thin Graph wrappers named `mcp_graph_<area>_<op>`, for example `mcp_graph_chat_listChats` (`$top`, `$filter`, `$expand`, `$orderby`), `mcp_graph_chat_listChatMessages`, `mcp_graph_chat_postMessage`, `mcp_graph_teams_listTeams`.
   - It covers creating, updating and deleting chats, members, messages, channels and search.
-  - **[UNVERIFIED]** Reported as 28 tools and as needing a Copilot licence. learn.microsoft.com was blocked, so I could not get the full list (https://learn.microsoft.com/en-us/microsoft-agent-365/mcp-server-reference/teams).
+  - **[UNVERIFIED]** Reported as 28 tools and as needing a Copilot licence. *(changed, see update: 25 tools)* learn.microsoft.com was blocked, so I could not get the full list (https://learn.microsoft.com/en-us/microsoft-agent-365/mcp-server-reference/teams).
 - **Community: floriscornel/teams-mcp** (https://github.com/floriscornel/teams-mcp, `src/tools/*.ts`), **31 tools:**
   - Account and users: `auth_status`, `get_current_user`, `search_users`, `get_user`, `search_users_for_mentions`.
   - Teams and channels: `list_teams`, `list_channels`, `list_team_members`, `get_channel_messages`, `get_channel_message_replies`, `send_channel_message`, `reply_to_channel_message`, `update_channel_message`, `delete_channel_message`.
@@ -118,7 +118,7 @@ Source: https://github.com/korotovsky/slack-mcp-server (`pkg/server/server.go`)
 
 ### 5. github/github-mcp-server (design patterns only)
 Source: https://github.com/github/github-mcp-server (README, `docs/remote-server.md`, `docs/scope-filtering.md`, `docs/host-integration.md`)
-- **Toolsets.** Turned on with `--toolsets` or `GITHUB_TOOLSETS`. The default set is `context,repos,issues,pull_requests,users`, plus `all`, and `default,X` adds to the default. `--tools` / `X-MCP-Tools` cherry-picks individual tools and adds to the toolsets. Toolsets also gate their resources and prompts.
+- **Toolsets.** *(changed, see update: new releases)* Turned on with `--toolsets` or `GITHUB_TOOLSETS`. The default set is `context,repos,issues,pull_requests,users`, plus `all`, and `default,X` adds to the default. `--tools` / `X-MCP-Tools` cherry-picks individual tools and adds to the toolsets. Toolsets also gate their resources and prompts.
 - **Remote URL modifiers.** `/readonly`, `/x/{toolset}`, `/x/all`, `/insiders`. Headers: `X-MCP-Toolsets`, `X-MCP-Tools`, `X-MCP-Readonly`, `X-MCP-Lockdown`, `X-MCP-Insiders`.
 - **Read-only mode.** `--read-only` overrides everything, including tools named explicitly.
 - **Dynamic toolset discovery was removed on 2026-05-20** (commit 0f0506d, PR #2512). It consisted of the meta-tools `enable_toolset`, `list_available_toolsets` and `get_toolset_tools` behind `--dynamic-toolsets`. The commit message gives the reason: "local-only feature never offered by the remote server … no longer in active use."
@@ -152,3 +152,58 @@ Source: https://github.com/github/github-mcp-server (README, `docs/remote-server
 14. **Auth split.**
     - Vendor-hosted servers (Slack, Teams, GitHub) use OAuth with the product's own identity provider, act on behalf of the user, and **do not support dynamic client registration**: clients must be pre-registered.
     - Community servers run over local stdio with static bot or user tokens.
+
+---
+
+## Update 2026-11-03
+
+From pages read on 2026-11-03. The doc sites that the proxy blocked on 2026-10-06 were reachable this time. Items marked **[UNVERIFIED]** come only from search snippets.
+
+### 1a. Slack official hosted MCP server
+
+Source: https://docs.slack.dev/ai/slack-mcp-server/
+
+- **Tool count:** the page gives no official count. Its rate-limit table has 20 rows. Only `slack_get_file_upload_url` and `slack_complete_file_upload` appear by name, and the row "Create/read/update a list" can cover more than one tool. So the server has about 20 tools or more. The earlier figures of 11 to 18 are not supported.
+- **Auth:** confidential OAuth 2.0 with `client_id` and `client_secret`, user tokens through `slack.com/oauth/v2_user/authorize`, and RFC 8414 discovery. The page says: "We do not support SSE-based connections or Dynamic Client Registration at this time." This verifies the earlier "no DCR" claim.
+- **Search cap of 20 per page:** not verified. The page gives rate-limit tiers, not a page size.
+
+### 3. Microsoft Teams
+
+Source: https://learn.microsoft.com/en-us/microsoft-copilot-studio/mcp-teams-tools (updated 2026-09-30, `ms.date` 2026-08-03). The Agent 365 URL now leads to this page.
+
+- Server `mcp_TeamsServer`, scope `McpServers.Teams.All`, status preview.
+- 25 tools: 12 chat tools and 13 channel and team tools. This replaces the unverified count of 28.
+- Microsoft can change the names and parameters of preview tools.
+- The application-specific Microsoft 365 MCP servers, Teams included, stay for backward compatibility only. New projects use Work IQ MCP with the GitHub Copilot harness.
+
+### 5. github/github-mcp-server
+
+Sources: https://github.com/github/github-mcp-server/releases and the README on `main`.
+
+- v2.0.0 (2026-10-06) adds structured output and output schemas, advertised only to clients on MCP 2026-07-28 or later.
+- v2.0.1 (2026-10-07) changes the Go module path. v2.0.2 (2026-10-08) restores the validation of typed tool HTTP headers.
+- v2.0.3 (2026-10-21) adds cursor paging for `list_label` and a resource link for files over 1 MB.
+- v2.1.0 (2026-11-03) fixes the merged state in PR list output, adds experimental artifact tools, and rejects integers at or above 2^63.
+- Still true: the default toolsets `context,repos,issues,pull_requests,users`, and the consolidated `issue_read` (`get`, `get_comments`, `get_sub_issues`, `get_parent`, `get_labels`) and `issue_write` tools.
+- Not re-verified: `minimal_output` on by default, the `/readonly` remote URL, and the removal of dynamic toolsets. The README read stopped at 100k of its 120k characters, and the CHANGELOG URL returned 404.
+
+### Other chat products
+
+No official MCP server launched after 2026-10-06 was found.
+
+- Zulip: no official server. Only third-party servers. **[UNVERIFIED]**
+- Discord: no official server. https://dev.to/grove_chatforest/discord-mcp-servers-five-community-servers-no-official-one-and-a-fragmented-landscape-131i **[UNVERIFIED]**
+- Webex: the Webex Messaging MCP server went public in May 2026, and Webex Connect followed in August 2026. Both are earlier than 2026-10-06. https://developer-portal-k.wbx2.com/mcp/docs/ai-in-webex-whats-new **[UNVERIFIED]**
+- Google Chat: a Google-hosted remote MCP server in developer preview. Launch date not confirmed. https://www.developersdigest.tech/mcp-servers/google-workspace-chat **[UNVERIFIED]**
+- Element and Matrix: nothing found.
+
+### Client-side tool search
+
+Source: https://platform.claude.com/docs/en/agents-and-tools/tool-use/tool-search-tool
+
+- Selection accuracy drops past 30 to 50 available tools.
+- The docs recommend tool search from 10 tools or 10k tokens of definitions, and keep 3 to 5 core tools loaded.
+- MCP tools can be deferred through `defer_loading` on the connector's `mcp_toolset`. Up to 10,000 deferred tools, 5 results for each search by default.
+- The docs recommend a consistent prefix for each server, for example `github_` or `slack_`.
+
+Tool search lowers the cost of a large catalog only for clients that support it.

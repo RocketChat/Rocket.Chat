@@ -1,6 +1,6 @@
 # Research: Mattermost MCP server
 
-> Raw research output, kept unedited. Collected on 2026-10-06 by a research agent for [the MCP server redesign proposal](../mcp-server-redesign.md).
+> Raw research output. Collected on 2026-10-06 by a research agent for [the MCP server redesign proposal](../mcp-server-redesign.md). The original text is kept. A *(changed, see update)* marker flags each claim that later releases changed, and the [update of 2026-11-03](#update-2026-11-03) at the end gives the new state.
 > Scope: the MCP server in mattermost-plugin-agents — tools, transports, authentication, dispatch, output size.
 
 ---
@@ -23,8 +23,8 @@ Key files (paths relative to the repo root, browsable at `https://github.com/mat
 
 ### 1. Tools
 
-- **Count:** 121 tools in total. 118 are always registered and 3 only in dev mode. 73 are read-only (`ReadOnlyHint` annotation set) and 48 change state (45 outside dev mode). `classification_test.go` asserts every registered tool appears in its map.
-- **Core tools** (the admin guide's headline list, 16):
+- **Count:** 121 tools in total. 118 are always registered and 3 only in dev mode. 73 are read-only (`ReadOnlyHint` annotation set) and 48 change state (45 outside dev mode). `classification_test.go` asserts every registered tool appears in its map. *(changed, see update: at least 3 more tools)*
+- **Core tools** (the admin guide's headline list, 16) *(changed, see update: the README now lists 12)*:
   - `read_post`: params `post_id`, `include_thread` (default true).
   - `read_channel`: params `channel_id`, `limit` (default 20, max 100), `since`, `before`, `after`, `page`.
   - `search_posts`: params `query`, `team_id`, `channel_id`, `from`, `in`, `before`, `after`, `keyword_limit`/`keyword_offset`. When semantic search is enabled it also takes `semantic_limit` (max 50) / `semantic_offset`.
@@ -56,7 +56,7 @@ Key files (paths relative to the repo root, browsable at `https://github.com/mat
   - **License:** state-changing tools are hidden from `tools/list` and refused on `tools/call` below Enterprise. The check runs on every request. The license table reads "Built-in Mattermost tools: read-only" for Free/Professional and "read + write" for Enterprise and above.
   - **Access mode:** schema fields tagged `access:"local"` (local file-path attachments) exist only in stdio mode. HTTP and embedded servers run in "remote" mode.
   - **Admin and access control:** the plugin endpoint adds an access-control (ABAC) filter middleware and per-tool admin policies. There is no admin-only tool set; tools run with the user's own Mattermost permissions.
-- **Not part of the server:** `search_tools` and `load_tool` belong to the plugin's own agent client (`mcp/meta_tools.go`) for loading tools on demand. They are not exposed by the MCP server.
+- **Not part of the server:** `search_tools` and `load_tool` belong to the plugin's own agent client (`mcp/meta_tools.go`) for loading tools on demand. They are not exposed by the MCP server. *(changed, see update: the README now describes them for the MCP server)*
 
 ### 2. Resources and prompts
 
@@ -117,3 +117,34 @@ Little is stated explicitly. What exists:
 I found no document explaining why this particular tool set was chosen.
 
 **Unverified (sites blocked):** the full content of docs.mattermost.com/agents/mcpserver/README.html. It appears to be a render of the repo's `mcpserver/README.md`. From the blog post mattermost.com/blog/mattermost-mcp-server/, only search snippets were visible: availability in Agents v1.7.2+ on all plans, and agents inheriting the user's permissions.
+
+---
+
+## Update 2026-11-03
+
+From the GitHub releases and commits API and the `mcpserver/README.md` on master, read on 2026-11-03. The clone at `4491b8a6` was not updated, so the Go source was not read again.
+
+### Releases
+
+- v2.10.0 (2026-10-19).
+- v2.11.0 (2026-10-27). It requires Mattermost Server 12.0.0 or later. It adds a `wait_for_async_work` tool, ambient auto-reply, agent version history with import and export, and agents referenced by bot user ID. It fixes `search_posts`, which returned nothing without `team_id`.
+
+### Commits to `mcpserver/` after 2026-10-05
+
+- `8fa4e564` (2026-10-15) fixes the MCP tool callback paths and the validation of `create_post` and `dm`.
+- `ffd9df65` (2026-10-26) is the `search_posts` fix.
+- `af5b6b24` (2026-10-29) adds `list_drafts`, `create_draft` and `delete_draft`.
+
+So the count is at least 124 tools. The count at HEAD is not verified.
+
+### `mcpserver/README.md` on master
+
+- It lists 12 core tools and 3 dev-only tools. It does not give the names of the 12 in the material collected. The internal Confluence screenshot with 12 tools matches this count.
+- Other tools load through the `search_tools` and `load_tool` meta-tools. The README does not say clearly whether external MCP clients get these meta-tools, or only the plugin's own agents.
+- The HTTP transport uses OAuth with `/.well-known/oauth-protected-resource`. The stdio transport uses a PAT.
+- The standalone binary is not supported for production.
+- It does not mention Dynamic Client Registration.
+
+### Not re-checked
+
+The `manage_own_agent` permission, the loopback dispatch through `model.Client4`, the license gating of write tools, and the read-only and write counts.
