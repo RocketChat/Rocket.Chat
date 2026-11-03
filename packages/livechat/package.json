@@ -60,7 +60,7 @@
 		"@rocket.chat/fuselage-hooks": "workspace:^",
 		"@rocket.chat/fuselage-tokens": "workspace:^",
 		"@rocket.chat/logo": "workspace:~",
-		"@rocket.chat/storybook-dark-mode": "workspace:~",
+		"@rocket.chat/storybook-config": "workspace:~",
 		"@rocket.chat/ui-contexts": "workspace:^",
 		"@storybook/addon-docs": "~9.1.21",
 		"@storybook/addon-styling-webpack": "^1.0.1",

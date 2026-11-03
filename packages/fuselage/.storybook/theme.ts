@@ -1,3 +1,4 @@
+// Keep in step with ../../storybook-config/src/theme.ts, which Fuselage can't import: storybook-config depends on Fuselage.
 import border from '@rocket.chat/fuselage-tokens/dist/border.json';
 import button from '@rocket.chat/fuselage-tokens/dist/button.json';
 import font from '@rocket.chat/fuselage-tokens/dist/font.json';
@@ -65,25 +66,6 @@ export const createBrandTitle = (mode: ThemeMode, { logo, name }: { logo: string
 		${name ? `<span style="font-size: 12px; font-weight: 700; line-height: 16px; color: ${font[mode].hint};">${name}</span>` : ''}
 	</span>
 `;
-
-/** The toolbar control that picks which Fuselage palette stories, docs and the manager use. */
-export const themeGlobalType = {
-	name: 'Theme',
-	description: 'Fuselage palette',
-	toolbar: {
-		title: 'Theme',
-		icon: 'paintbrush',
-		dynamicTitle: true,
-		items: [
-			{ value: 'system', title: 'Match system', icon: 'mirror' },
-			{ value: 'light', title: 'Light', icon: 'sun' },
-			{ value: 'dark', title: 'Dark', icon: 'moon' },
-			{ value: 'high-contrast', title: 'High contrast', icon: 'contrast' },
-		],
-	},
-};
-
-export const initialThemeGlobal: ThemeGlobal = 'system';
 
 const systemColorScheme = () => window.matchMedia('(prefers-color-scheme: dark)');
 

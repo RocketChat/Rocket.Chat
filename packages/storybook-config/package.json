@@ -8,6 +8,8 @@
 		"/dist",
 		"/main.js",
 		"/main.d.ts",
+		"/preset.js",
+		"/preset.d.ts",
 		"/preview.js",
 		"/preview.d.ts"
 	],

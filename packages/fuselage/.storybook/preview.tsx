@@ -4,7 +4,8 @@ import { useSyncExternalStore } from 'react';
 
 import { PaletteStyleTag } from '../src';
 import DocsContainer from './DocsContainer';
-import { initialThemeGlobal, resolveThemeMode, subscribeToSystemColorScheme, themeGlobalType } from './theme';
+import { globalTypes, initialGlobals } from './globals';
+import { resolveThemeMode, subscribeToSystemColorScheme } from './theme';
 
 import 'normalize.css/normalize.css';
 import '@rocket.chat/icons/dist/rocketchat.css';
@@ -42,12 +43,8 @@ export default {
 			),
 		},
 	},
-	globalTypes: {
-		theme: themeGlobalType,
-	},
-	initialGlobals: {
-		theme: initialThemeGlobal,
-	},
+	globalTypes,
+	initialGlobals,
 	// Stories that place elements by their measured size, like tooltips, must be measured in the final fonts,
 	// or the visual regression snapshots render where the fallback font left them.
 	loaders: [() => Promise.all([...document.fonts].map((font) => font.load()))],
