@@ -8,7 +8,7 @@ import {
 } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../server/api';
-import { transformDatesForAPI } from '../../lib/engagementDashboard/date';
+import { isoDateStringSchema, transformDatesForAPI } from '../../lib/engagementDashboard/date';
 import {
 	findWeeklyMessagesSentData,
 	findMessagesSentOrigin,
@@ -18,10 +18,11 @@ import {
 const isDateRangeParams = ajvQuery.compile<{ start: string; end: string }>({
 	type: 'object',
 	properties: {
-		start: { type: 'string', format: 'date-time' },
-		end: { type: 'string', format: 'date-time' },
+		start: isoDateStringSchema,
+		end: isoDateStringSchema,
 	},
 	required: ['start', 'end'],
+	additionalProperties: false,
 });
 
 const weeklyDataResponseSchema = ajv.compile<{

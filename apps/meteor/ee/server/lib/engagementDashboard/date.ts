@@ -9,6 +9,17 @@ export const isDateISOString = mem(
 	{ maxAge: 10000 },
 );
 
+/**
+ * JSON schema for the only date form `mapDateForAPI` accepts: the output of `Date.prototype.toISOString`.
+ * A value that is not a date at all fails as `date-time`; a date written in another form fails the pattern.
+ */
+export const isoDateStringSchema = {
+	type: 'string',
+	format: 'date-time',
+	if: { format: 'date-time' },
+	then: { pattern: '^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$' },
+} as const;
+
 export const mapDateForAPI = (input: string): Date => {
 	if (!isDateISOString(input)) {
 		throw new Error('invalid ISO 8601 date');

@@ -11,7 +11,7 @@ import {
 import { API } from '../../../../server/api';
 import { getPaginationItems } from '../../../../server/api/lib/getPaginationItems';
 import { findChannelsWithNumberOfMessages } from '../../lib/engagementDashboard/channels';
-import { mapDateForAPI } from '../../lib/engagementDashboard/date';
+import { isoDateStringSchema, mapDateForAPI } from '../../lib/engagementDashboard/date';
 
 declare module '@rocket.chat/rest-typings' {
 	interface Endpoints {
@@ -41,12 +41,13 @@ declare module '@rocket.chat/rest-typings' {
 const isChannelsListParams = ajvQuery.compile<{ start: string; end: string; offset?: string; count?: string }>({
 	type: 'object',
 	properties: {
-		start: { type: 'string', format: 'date-time' },
-		end: { type: 'string', format: 'date-time' },
+		start: isoDateStringSchema,
+		end: isoDateStringSchema,
 		offset: { type: 'string' },
 		count: { type: 'string' },
 	},
 	required: ['start', 'end'],
+	additionalProperties: false,
 });
 
 const channelsListResponseSchema = ajv.compile<{
