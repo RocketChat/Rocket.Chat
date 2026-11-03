@@ -1,0 +1,30 @@
+apps/meteor/tests/end-to-end/api/rooms.ts
+  s_3c9a65c7fa408a::t_fdb418e3cd6637 3371-3386,3390,3397,3399-3401,3415-3498,3500-3506,3508-3520
+  s_3c9a65c7fa408a::t_0d386a0542f7bf 3398,3402-3405,3414,3499,3507
+  s_3c9a65c7fa408a::t_aeed29b3caa738 3387-3389,3391-3396,3406-3413
+apps/meteor/tests/end-to-end/api/users.ts
+  s_3c9a65c7fa408a::t_fdb418e3cd6637 7105-7106,7109-7128,7133-7140,7142-7164,7166-7173,7175-7176,7178-7185,7187-7228
+  s_3c9a65c7fa408a::t_2cbfc48f94178e 7107-7108,7129-7132,7165,7174,7177
+  s_3c9a65c7fa408a::t_0d386a0542f7bf 7141,7186
+apps/meteor/tests/end-to-end/api/channels.ts
+  s_3c9a65c7fa408a::t_fdb418e3cd6637 550-553
+apps/meteor/tests/end-to-end/api/chat.ts
+  s_3c9a65c7fa408a::t_fdb418e3cd6637 2599
+  s_3c9a65c7fa408a::t_2cbfc48f94178e 2577-2598
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "3e239898d108c737957e2abe9706d167aa115fe7",
+  "prompts": {},
+  "sessions": {
+    "s_3c9a65c7fa408a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "59b610b3-d9c5-4274-8410-fee40064a5ca",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}

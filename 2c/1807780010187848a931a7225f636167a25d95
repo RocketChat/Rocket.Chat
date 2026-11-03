@@ -1,0 +1,31 @@
+apps/meteor/ee/server/lib/saml/lib/signature/validateRedirectSignature.test.ts
+  s_3c9a65c7fa408a::t_37ea4970cadd12 31-42
+apps/meteor/ee/server/lib/saml/lib/processRequest.test.ts
+  s_3c9a65c7fa408a::t_7cb27736363ea6 456-461,463-470,472-473
+  s_3c9a65c7fa408a::t_412806a2ffa831 120-160,162-187,189-197
+  s_3c9a65c7fa408a::t_fb79a8b179d4f7 282-285
+  s_3c9a65c7fa408a::t_9a9d7bd35aade1 26-45
+  s_3c9a65c7fa408a::t_e42788307fc0f3 65,71-72
+  s_3c9a65c7fa408a::t_36cf4257c727b6 9,66,77,161,188,235,299-301,324-341,394-396,453,462,471
+  s_3c9a65c7fa408a::t_fccb5c0b5ef390 377-380
+  s_3c9a65c7fa408a::t_ade9b5eedb663a 93
+  s_3c9a65c7fa408a::t_1e8936b42fc928 102-105
+  s_3c9a65c7fa408a::t_a63bba088c11e0 304-323,342-343,345-358
+  s_3c9a65c7fa408a::t_6ed012e4adbd71 415-427,429-432
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "2c1807780010187848a931a7225f636167a25d95",
+  "prompts": {},
+  "sessions": {
+    "s_3c9a65c7fa408a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "59b610b3-d9c5-4274-8410-fee40064a5ca",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
