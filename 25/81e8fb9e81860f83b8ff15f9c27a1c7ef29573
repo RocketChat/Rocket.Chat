@@ -1,0 +1,21 @@
+docs/features/web-client-hosting.md
+  s_8df307296eb8c2::t_9328d64f81b283 17-18
+apps/meteor/.meteorignore
+  s_8df307296eb8c2::t_c804396be28382 5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "2581e8fb9e81860f83b8ff15f9c27a1c7ef29573",
+  "prompts": {},
+  "sessions": {
+    "s_8df307296eb8c2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "83949504-660d-4042-bab0-d58f26434788",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
