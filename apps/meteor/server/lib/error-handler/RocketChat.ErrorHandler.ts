@@ -1,8 +1,10 @@
 import { Settings, Users, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
+import { shouldExitOnUncaughtError } from './shouldExitOnUncaughtError';
 import { throttledCounter } from '../../../lib/utils/throttledCounter';
 import { settings } from '../../settings';
+import { httpServer } from '../http/httpServer';
 import { sendMessage } from '../messages/sendMessage';
 
 const incException = throttledCounter((counter) => {
@@ -92,6 +94,18 @@ Meteor._debug = function (message, stack, ...args) {
  * we will start respecting this and exit the process to prevent these kind of problems.
  */
 
+function exitIfRequired(): void {
+	const serving = httpServer.listening;
+	if (!shouldExitOnUncaughtError({ serving, env: process.env })) {
+		return;
+	}
+
+	if (!serving) {
+		console.error('The server failed to start; exiting so it can be restarted');
+	}
+	process.exit(1);
+}
+
 process.on('unhandledRejection', (error) => {
 	incException();
 
@@ -109,9 +123,7 @@ process.on('unhandledRejection', (error) => {
 	console.error('Future node.js versions will automatically exit the process');
 	console.error('=================================');
 
-	if (process.env.TEST_MODE || process.env.NODE_ENV === 'development' || process.env.EXIT_UNHANDLEDPROMISEREJECTION) {
-		process.exit(1);
-	}
+	exitIfRequired();
 });
 
 process.on('uncaughtException', async (error) => {
@@ -125,7 +137,5 @@ process.on('uncaughtException', async (error) => {
 
 	void errorHandler.trackError(error.message, error.stack);
 
-	if (process.env.TEST_MODE || process.env.NODE_ENV === 'development' || process.env.EXIT_UNHANDLEDPROMISEREJECTION) {
-		process.exit(1);
-	}
+	exitIfRequired();
 });
