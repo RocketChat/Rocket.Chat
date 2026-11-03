@@ -12,9 +12,6 @@ const firstVisitor = createFakeVisitor();
 
 const secondVisitor = createFakeVisitor();
 
-// Long enough for a queued chat to be taken on the queue's next cycle (`Omnichannel_queue_delay_timeout`, 5s by default).
-const queueCycleTimeout = 15_000;
-
 test.use({ storageState: Users.user1.state });
 
 test.describe('OC - Livechat - Queue Management', () => {
@@ -32,6 +29,8 @@ test.describe('OC - Livechat - Queue Management', () => {
 			api.post('/settings/Livechat_accept_chats_with_no_agents', { value: true }),
 			api.post('/settings/Livechat_waiting_queue', { value: true }),
 			api.post('/settings/Livechat_waiting_queue_message', { value: waitingQueueMessage }),
+			// Takes a queued chat within a second, rather than on the default five-second cycle.
+			api.post('/settings/Omnichannel_queue_delay_timeout', { value: 1 }),
 			api.post('/livechat/users/agent', { username: 'user1' }),
 		]);
 
@@ -55,6 +54,7 @@ test.describe('OC - Livechat - Queue Management', () => {
 			api.post('/settings/Livechat_accept_chats_with_no_agents', { value: false }),
 			api.post('/settings/Livechat_waiting_queue', { value: false }),
 			api.post('/settings/Livechat_waiting_queue_message', { value: '' }),
+			api.post('/settings/Omnichannel_queue_delay_timeout', { value: 5 }),
 			api.delete('/livechat/users/agent/user1'),
 		]);
 		await poHomeOmnichannel.page.close();
@@ -112,7 +112,7 @@ test.describe('OC - Livechat - Queue Management', () => {
 			});
 
 			await test.step('user1 should get assigned to the first chat', async () => {
-				await expect(poLiveChat.queuePosition(1)).not.toBeVisible({ timeout: queueCycleTimeout });
+				await expect(poLiveChat.queuePosition(1)).not.toBeVisible();
 			});
 
 			await test.step('secondary session should be on position #1', async () => {
@@ -120,7 +120,7 @@ test.describe('OC - Livechat - Queue Management', () => {
 			});
 
 			await test.step('secondary session should be taken by user1', async () => {
-				await expect(poLiveChat2.queuePosition(1)).not.toBeVisible({ timeout: queueCycleTimeout });
+				await expect(poLiveChat2.queuePosition(1)).not.toBeVisible();
 			});
 		});
 	});
