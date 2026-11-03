@@ -9,15 +9,15 @@ const syncCalendarWindow = jest.fn();
 const applyDeferredSideEffects = jest.fn();
 const resolveMailbox = jest.fn();
 const getExchangeProvider = jest.fn();
-const acquireSyncLease = jest.fn();
-const releaseSyncLease = jest.fn();
+const acquireLease = jest.fn();
+const releaseLease = jest.fn();
 const leases = new Map<string, string>();
 
 jest.mock('@rocket.chat/models', () => ({
 	Users: { findOneById: (...args: unknown[]) => findOneById(...args) },
-	ExchangeCalendarSyncState: {
-		acquireSyncLease: (...args: unknown[]) => acquireSyncLease(...args),
-		releaseSyncLease: (...args: unknown[]) => releaseSyncLease(...args),
+	ExchangeSyncLease: {
+		acquireLease: (...args: unknown[]) => acquireLease(...args),
+		releaseLease: (...args: unknown[]) => releaseLease(...args),
 	},
 }));
 jest.mock('./syncCalendarWindow', () => ({ syncCalendarWindow: (...args: unknown[]) => syncCalendarWindow(...args) }));
@@ -52,19 +52,19 @@ describe('syncCalendarForUser', () => {
 		syncCalendarWindow.mockResolvedValue(outcome());
 		applyDeferredSideEffects.mockResolvedValue(undefined);
 		leases.clear();
-		acquireSyncLease.mockImplementation(async (uid: string, token: string) => {
+		acquireLease.mockImplementation(async (_scope: string, uid: string, token: string) => {
 			if (leases.has(uid)) {
 				throw new MongoServerError({ code: 11000, message: 'E11000 duplicate key error' });
 			}
 			leases.set(uid, token);
 			return { upsertedCount: 1, modifiedCount: 0 };
 		});
-		releaseSyncLease.mockImplementation(async (uid: string, token: string) => {
+		releaseLease.mockImplementation(async (_scope: string, uid: string, token: string) => {
 			if (leases.get(uid) !== token) {
-				return { modifiedCount: 0 };
+				return { deletedCount: 0 };
 			}
 			leases.delete(uid);
-			return { modifiedCount: 1 };
+			return { deletedCount: 1 };
 		});
 	});
 
@@ -80,7 +80,7 @@ describe('syncCalendarForUser', () => {
 		syncCalendarWindow.mockResolvedValue(outcome({ failed: true, error: new Error('boom') }));
 
 		await expect(syncCalendarForUser('uid')).rejects.toThrow('boom');
-		expect(releaseSyncLease).toHaveBeenCalledWith('uid', acquireSyncLease.mock.calls[0][1]);
+		expect(releaseLease).toHaveBeenCalledWith('calendar', 'uid', acquireLease.mock.calls[0][2]);
 	});
 
 	it('syncs the mailbox resolved for the user', async () => {
@@ -117,14 +117,14 @@ describe('syncCalendarForUser', () => {
 
 		await expect(syncCalendarForUser('uid')).rejects.toMatchObject({ code: 'email-not-verified' });
 		expect(syncCalendarWindow).not.toHaveBeenCalled();
-		expect(acquireSyncLease).not.toHaveBeenCalled();
+		expect(acquireLease).not.toHaveBeenCalled();
 	});
 
 	it('reports a missing mailbox for a user that no longer exists', async () => {
 		findOneById.mockResolvedValue(null);
 
 		await expect(syncCalendarForUser('uid')).rejects.toMatchObject({ code: 'mailbox-not-found' });
-		expect(acquireSyncLease).not.toHaveBeenCalled();
+		expect(acquireLease).not.toHaveBeenCalled();
 	});
 
 	it('refuses a second sync while one is already running for the same user', async () => {
