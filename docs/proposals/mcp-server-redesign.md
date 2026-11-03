@@ -2,17 +2,26 @@
 
 ## Status
 
-Draft — research and target design. Nothing is implemented. Replaces the REST-catalog MCP server in `apps/meteor/ee/server/api/mcp/`, described in [docs/features/mcp-server.md](../features/mcp-server.md).
+Draft — research and target design. Replaces the REST-catalog MCP server in `apps/meteor/ee/server/api/mcp/`, described in [docs/features/mcp-server.md](../features/mcp-server.md). Last checked against develop and the outside sources on 2026-11-03.
 
-Target spec revision: **MCP 2026-07-28**, through `@modelcontextprotocol/server` 2.x. Clients that only speak a 2025 revision use the SDK's stateless fallback.
+Shipped since the first draft (2026-10-06):
+
+- PKCE storage and verification (#43149), with the named model method for the code upsert (#43148).
+- RFC 8414 authorization-server metadata (#43150).
+- Dynamic Client Registration at `/oauth/register`, off by default (#43151). The first draft rejected DCR. Section 6.5 has the current position.
+- OAuth access tokens on the MCP route, with the `401` challenge and RFC 9728 protected-resource metadata (#43152).
+
+Not implemented: the tool set, the SDK transport, in-process dispatch, scopes, audience binding, public clients, revocation, `iss` and CIMD.
+
+Target spec revision: **MCP 2026-07-28**, through `@modelcontextprotocol/server` 2.x. 2026-07-28 is still the current revision, and the draft changelog is empty. Clients that only speak a 2025 revision use the SDK's stateless fallback.
 
 ## Problem
 
 The current MCP server has three structural defects.
 
 1. **The tool surface is a mirror of the REST API.** `catalog.ts` turns REST routes into tools one-to-one. The curated mode exposes 6 routes. The extended mode exposes 95 routes: the 93 allow-listed routes plus the 2 curated `channels.*` routes. Routes with `oneOf` or `anyOf` request schemas split into several `_by_<field>` tools, so the real tool count is higher than 95. Every tool carries the full AJV request schema of its route. The model sees `get_dm_messages`, `get_dm_history` and `get_chat_syncMessages` as three different ways to read messages, and `get_rooms_get`, `get_subscriptions_get`, `get_dm_list` and `get_channels_list_joined` as four ways to list rooms. The tool list alone takes a large part of the context window before the first call. Results come back as `JSON.stringify` of the raw REST body, with every Mongo field.
-2. **Authentication is Personal Access Token only.** The route runs the REST middleware first: no credentials give a REST `401`, no `access-mcp` permission gives a REST `403`, and no AI license gives a REST `400`. A Bearer OAuth token passes that middleware, and then the MCP action rejects it with `-32001 Personal Access Token required`. MCP clients (Claude, ChatGPT, Cursor, VS Code) expect the MCP authorization flow: a `401` with `WWW-Authenticate` that points at protected-resource metadata, then OAuth 2.1 with PKCE against the workspace. Today a user must create a PAT in the account page and paste it into a client config, often through `mcp-remote`.
-3. **Tool calls go through the loopback interface.** `dispatch.ts` sends an HTTP request to `http://127.0.0.1:$PORT` with the caller's PAT. It guesses the port from `PORT`, copies `ROOT_URL_PATH_PREFIX` from the Meteor runtime config, and forwards the client IP in `X-Real-IP` so the rate limiter does not put every caller in one bucket. Each call pays for a socket, a second authentication, a second rate-limit check and a JSON round trip.
+2. **OAuth works, but without scopes or audience.** Since #43152 the MCP route accepts a PAT or an OAuth access token from the workspace's own OAuth server. A request without credentials gets `401` with `WWW-Authenticate: Bearer resource_metadata="…"` (`index.ts:51`). No `access-mcp` permission gives `403`, and no AI license gives `400`. The OAuth token carries no scope and no audience, so no read-only MCP access exists, and the same token works on the whole REST API. Every client is confidential, and redirect URIs match exactly, so native clients on a random loopback port need manual work. A client needs an app that an admin creates, or Dynamic Client Registration, which is off by default.
+3. **Tool calls go through the loopback interface.** `dispatch.ts` sends an HTTP request to `http://127.0.0.1:$PORT` with the caller's credential: the PAT headers or the OAuth Bearer token. It guesses the port from `PORT`, copies `ROOT_URL_PATH_PREFIX` from the Meteor runtime config, and forwards the client IP in `X-Real-IP` so the rate limiter does not put every caller in one bucket. Each call pays for a socket, a second authentication, a second rate-limit check and a JSON round trip.
 
 ## How other products do it
 
@@ -20,7 +29,7 @@ Sources: the source code of each server where available, otherwise its official 
 
 ### Mattermost (`mattermost-plugin-agents`, `mcpserver/`, commit `4491b8a6`, 2026-10-05)
 
-Mattermost is the closest peer, and its catalog is **not** small:
+Mattermost is the closest peer, and its catalog is **not** small. The table describes commit `4491b8a6`. Later changes are listed after it.
 
 | Aspect | Mattermost |
 | --- | --- |
@@ -33,22 +42,28 @@ Mattermost is the closest peer, and its catalog is **not** small:
 | Agents | Agents are bot accounts with an owner. A `manage_own_agent` permission lets a non-admin create one. |
 | Dispatch | HTTP to its own REST API v4 through `model.Client4`, with a per-user session the plugin creates. So Mattermost also loops back over HTTP; we should not copy that part. |
 
-An internal Confluence page ("The Sovereign Agentic Governance") shows a System Console screenshot with 12 Mattermost tools. That is most likely an older plugin version. The current source has 121.
+Changes after 2026-10-05:
 
-**Conclusion on Mattermost:** copy its auth flow, its output format and its 16-tool core. Do not copy the 121-tool catalog or the loopback dispatch.
+- Releases v2.10.0 (2026-10-19) and v2.11.0 (2026-10-27). v2.11.0 adds a `wait_for_async_work` tool and fixes `search_posts` without `team_id`.
+- Commit `af5b6b24` (2026-10-29) adds `list_drafts`, `create_draft` and `delete_draft`. The count is now at least 124. The count at HEAD is not verified.
+- The `mcpserver/README.md` on master lists 12 core tools and 3 dev-only tools. Other tools load through the `search_tools` and `load_tool` meta-tools. The README describes OAuth over HTTP and a PAT over stdio, and does not mention DCR.
+
+An internal Confluence page ("The Sovereign Agentic Governance") shows a System Console screenshot with 12 Mattermost tools. That matches the 12 core tools of the current README.
+
+**Conclusion on Mattermost:** copy its auth flow, its output format and its small core (16 tools in the admin guide, 12 in the current README). Do not copy the catalog of more than 120 tools or the loopback dispatch.
 
 ### Other chat products
 
 | Server | Tools | Auth | Context control |
 | --- | --- | --- | --- |
-| Slack official (hosted, `mcp.slack.com`) | ~13–18, varies by the scopes of the token *(count unverified)* | OAuth user tokens, pre-registered client, no DCR | Search-first design. Search capped at 20 per page with a cursor. |
+| Slack official (hosted, `mcp.slack.com`) | No official count. The rate-limit table of the docs has about 20 tools. | OAuth user tokens, confidential pre-registered client, RFC 8414 discovery. The docs say: "We do not support SSE-based connections or Dynamic Client Registration at this time." | Search-first design. Search capped at 20 per page with a cursor *(page size unverified)*. |
 | Slack reference server (archived) | 8 | Bot token, stdio | Caps at 200. Raw JSON output. |
 | korotovsky/slack-mcp-server | 22 | User, bot or browser tokens | CSV output. Write tools off by default. Tool allow-list env var. Unreads capped per channel. |
 | Zulip (akougkas/zulipchat-mcp) | 20 core, 60 extended | API key | Core/extended split, stated reason: "fewer tools means faster tool selection, lower token overhead". |
-| Microsoft Teams (Agent 365) | ~28 *(unverified)* | Entra ID delegated scope | Thin Graph wrappers. |
+| Microsoft Teams (`mcp_TeamsServer`, preview) | 25: 12 chat tools, 13 channel and team tools | Entra ID delegated scope `McpServers.Teams.All` | Thin Graph wrappers. Microsoft now keeps the per-app servers for backward compatibility only, and points new projects to Work IQ MCP. |
 | floriscornel/teams-mcp | 31 | MSAL device code | Read-only mode. HTML converted to markdown. |
 | Discord (community) | 46–75 | Bot token | Per-call limits only. |
-| GitHub official (non-chat, for patterns) | Toolsets; default set `context,repos,issues,pull_requests,users` | OAuth + PRM, no DCR, PAT fallback | Toolsets, `/readonly` URL, consolidated tools with a `method` parameter (`issue_read`, `issue_write`), `minimal_output` on by default. Dynamic toolset discovery was removed in May 2026 as unused. |
+| GitHub official (non-chat, for patterns) | Toolsets; default set `context,repos,issues,pull_requests,users` | OAuth + PRM, no DCR, PAT fallback | Toolsets, `/readonly` URL, consolidated tools with a `method` parameter (`issue_read`, `issue_write`), `minimal_output` on by default. Dynamic toolset discovery was removed in May 2026 as unused *(the last two not re-verified in November 2026)*. v2.0.0 (2026-10-06) adds output schemas and structured output, advertised only to clients on 2026-07-28 or later. |
 
 ### Patterns every chat MCP server shares
 
@@ -63,6 +78,10 @@ An internal Confluence page ("The Sovereign Agentic Governance") shows a System 
 9. Read-only mode or write tools off by default.
 10. Compact output (text, markdown or CSV), never the raw API body.
 11. Hosted servers use OAuth with the product's own identity provider and act as the user.
+
+### Tool search in clients
+
+Some clients now load tool definitions on demand. Anthropic's tool search tool defers MCP tools through `defer_loading`, and Mattermost's in-product agents use `search_tools`/`load_tool`. Anthropic's docs say that selection accuracy drops past 30–50 tools, and recommend tool search from 10 tools or 10k tokens of definitions. Tool search lowers the cost of a large catalog only for clients that support it. A client without it still loads every definition, so the small core set stays the default.
 
 ## Proposed solution
 
@@ -154,7 +173,7 @@ The results decide three items: the core tool set, the default `limit` values, a
 - Hard caps live in the input schema (`maximum`), so the client sees them.
 - Errors set `isError` and say what to do next, for example "Room `#foo` not found. Call `rc_list_rooms` with `query: \"foo\"`".
 - Every tool carries the MCP annotations `readOnlyHint`, `destructiveHint` and `idempotentHint`.
-- The tools declare no `outputSchema` in v1. The spec says that a tool with an `outputSchema` MUST return `structuredContent` that conforms to it, so every result would carry a JSON copy next to the text, which doubles the tokens.
+- The tools declare no `outputSchema` in v1. The spec says that a tool with an `outputSchema` MUST return `structuredContent` that conforms to it, so every result would carry a JSON copy next to the text, which doubles the tokens. GitHub v2.0.0 took the other path and sends output schemas to 2026-07-28 clients. The evaluation (section 3) can measure both.
 - One output format, no `response_format: concise | detailed` parameter in v1. The `[msg_id]` reference on each line costs a few tokens and saves a lookup call when the model replies or reacts. The evaluation (section 3) checks this choice. If the IDs cost more than they save, `response_format` comes back.
 - `DiscoverResult.instructions` tells the model the search-first workflow, the room reference syntax and the untrusted-content rule (section 5), once, instead of repeating them in every tool description.
 
@@ -169,11 +188,11 @@ The server combines three things that an injection attack needs: private data (t
 
 ### 6. OAuth 2.1 through the workspace's own OAuth provider
 
-The workspace already runs an OAuth 2.0 authorization server (`apps/meteor/server/oauth2-server/`, `@node-oauth/oauth2-server` ~5.3), and the REST layer already accepts its Bearer tokens (`oAuth2ServerAuth` in `apps/meteor/server/lib/auth/oauth2-server/oauth2-server.ts`). Four gaps block MCP today, and the table after them lists the protocol additions.
+The workspace already runs an OAuth 2.0 authorization server (`apps/meteor/server/oauth2-server/`, `@node-oauth/oauth2-server` ~5.3). The REST layer and the MCP route accept its Bearer tokens (`oAuth2ServerAuth` in `apps/meteor/server/lib/auth/oauth2-server/oauth2-server.ts`). Metadata, PKCE storage and the `401` challenge exist. Four gaps remain, and the table after them lists the state of each protocol addition.
 
 #### 6.1 Scopes and audience have no effect on REST
 
-`oAuth2ServerAuth` (`oauth2-server.ts:22`) ignores the scope, the audience, the client and the `active` state of the OAuth app. It returns the full user for every REST v1 route. An agent that holds an `mcp:read` token can call `POST /api/v1/chat.postMessage` directly with it, so a read-only MCP token is not read-only.
+`oAuth2ServerAuth` (`oauth2-server.ts:27`) ignores the scope, the audience, the client and the `active` state of the OAuth app. It returns the full user for every REST v1 route. An agent that holds an `mcp:read` token can call `POST /api/v1/chat.postMessage` directly with it, so a read-only MCP token is not read-only.
 
 - `oAuth2ServerAuth` rejects a token whose `resource` is the MCP resource. A token bound to MCP works only on MCP.
 - The MCP route rejects a token with no `resource`. Every OAuth token issued before this change has none, so no existing REST token works on MCP. The spec requires this direction too.
@@ -183,16 +202,16 @@ This change touches every REST route, so it is its own pull request.
 
 #### 6.2 Client types
 
-`getClient` (`apps/meteor/server/oauth2-server/model.ts:78`) returns any active client when the request sends no secret. Today that only lets a caller skip the secret on a code it cannot use. Once the server stores the PKCE challenge, anyone who holds a confidential client's code and its verifier can redeem the code with no secret.
+`getClient` (`apps/meteor/server/oauth2-server/model.ts:72`) returns any active client when the request sends no secret. Since #43149, the route middleware `requireClientSecret` (`oauth.ts:109`) rejects a token request without a secret. So a PKCE verifier cannot replace the secret, and every client is confidential. Dynamic Client Registration also creates confidential clients only: it registers a request with `token_endpoint_auth_method: none` as `client_secret_basic` and returns a secret.
 
 - `OAuthApps` gets a `clientType` field: `public` or `confidential`.
-- A confidential client must always send its secret. A public client has no secret and must use PKCE with S256.
-- `addOAuthApp` always creates a secret today. It creates none for a public client.
+- A confidential client must always send its secret. A public client has no secret and must use PKCE with S256. `requireClientSecret` skips a public client.
+- `addOAuthApp` and Dynamic Client Registration always create a secret today. They create none for a public client.
 - A refresh requires `client_secret` today, so a public client must log in again every hour. A public client refreshes with no secret, and the server rotates the refresh token on each use.
 
 #### 6.3 Redirect URIs for native clients
 
-Redirect URIs match exactly. Claude Code, Cursor and VS Code listen on `http://127.0.0.1:<random port>/callback`. The server adds RFC 8252 loopback matching: for `127.0.0.1` and `[::1]` redirect URIs, the port does not take part in the comparison.
+Redirect URIs match exactly. Dynamic Client Registration accepts an `http` loopback redirect, but it stores the exact port. Claude Code, Cursor and VS Code listen on `http://127.0.0.1:<random port>/callback`. The server adds RFC 8252 loopback matching: for `127.0.0.1` and `[::1]` redirect URIs, the port does not take part in the comparison.
 
 #### 6.4 Who may use MCP
 
@@ -202,14 +221,14 @@ Redirect URIs match exactly. Claude Code, Cursor and VS Code listen on `http://1
 
 | Requirement (MCP 2026-07-28 authorization) | Current state | Change |
 | --- | --- | --- |
-| `401` + `WWW-Authenticate: Bearer resource_metadata="…"` | A Bearer token gets `-32001 Personal Access Token required` | Return the challenge from the MCP route. |
-| RFC 9728 protected-resource metadata | Missing | Serve `/.well-known/oauth-protected-resource/api/v1/mcp` with `resource`, `authorization_servers`, `scopes_supported: ["mcp:read", "mcp:write"]`. One document, for the one canonical resource URL. |
-| RFC 8414 authorization-server metadata | Missing | Serve `/.well-known/oauth-authorization-server` with the `/oauth/authorize`, `/oauth/token` and new `/oauth/revoke` endpoints, and `authorization_response_iss_parameter_supported: true`. |
-| PKCE (S256) is mandatory | The model drops the challenge: `saveAuthorizationCode` and `getAuthorizationCode` in `model.ts` do not store or return `codeChallenge`/`codeChallengeMethod` | Persist both fields in `OAuthAuthCodes`; require S256 for public clients. |
-| RFC 9207 `iss` in the authorization response | Missing | Add `iss` to every authorization response. Clients must validate it under 2026-07-28. |
+| `401` + `WWW-Authenticate: Bearer resource_metadata="…"` | Done (#43152). `ee/server/api/mcp/index.ts:51` adds `error="invalid_token"` when the credential does not resolve. | None. |
+| RFC 9728 protected-resource metadata | Done (#43152). `ee/server/api/mcp/metadata.ts` serves `resource`, `authorization_servers` and `bearer_methods_supported` at `/.well-known/oauth-protected-resource/api/v1/mcp` and at the bare path. | Add `scopes_supported: ["mcp:read", "mcp:write"]` with the scopes. Keep one document, for the one canonical resource URL. |
+| RFC 8414 authorization-server metadata | Done (#43150). `server/oauth2-server/metadata.ts` serves the authorize, token and registration endpoints and `code_challenge_methods_supported: ['S256']`. It advertises `registration_endpoint` also when registration is off. | Add the new `/oauth/revoke` endpoint as `revocation_endpoint`, `authorization_response_iss_parameter_supported: true` and `scopes_supported`. |
+| PKCE (S256) is mandatory | Done (#43149). The model stores and returns `codeChallenge` and `codeChallengeMethod`. A request without a challenge still works. | Require S256 for public clients, when they exist. |
+| RFC 9207 `iss` in the authorization response | Missing | Add `iss` to every authorization response. Under 2026-07-28, servers SHOULD send it, and clients MUST validate it when it is present. The spec expects a later revision to make it a MUST for servers. |
 | Scopes | `verifyScope` compares scopes to grant types; codes and tokens store no scope | Store the granted scope on codes and tokens. |
 | Audience binding (RFC 8707 `resource` parameter) | Tokens have no audience | Store the `resource` on the token. Enforce it on both sides (6.1). |
-| Client registration | Admin creates OAuth apps manually | Keep manual registration. Add Client ID Metadata Documents, the registration method of the current spec. A CIMD client is public by definition. Do not add Dynamic Client Registration: the 2026-07-28 revision deprecates it. |
+| Client registration | An admin creates OAuth apps manually. Dynamic Client Registration (RFC 7591) exists at `/oauth/register` (#43151). It is off by default (`OAuth2_Allow_Dynamic_Client_Registration`), needs the AI add-on and `MCP_Enabled`, has a rate limit for each IP, and creates confidential clients with a non-expiring secret. | Keep manual registration and the opt-in Dynamic Client Registration. Add Client ID Metadata Documents, the registration method of the current spec (SHOULD; DCR is MAY and deprecated). A CIMD client is public by definition. Decide whether DCR stays once CIMD ships. |
 | Consent | `/oauth/authorize` UI says the client gets "full, unrestricted access" | Show the requested scopes and the client's metadata URL. Ask again when a known client requests more scope. |
 | Insufficient scope | Not applicable | A write tool registers `scopeChallenge: requireScopes('mcp:write')`. A call without the scope returns `403` with `insufficient_scope`, and the client starts a new authorization for the larger scope. |
 
@@ -223,22 +242,24 @@ The two models are different products. With the challenge, the user connects wit
 
 #### 6.7 PATs
 
-PATs stay valid as a Bearer token for headless agents and CI. The SDK's `verifyBearerToken` rejects a token with no `expiresAt` and checks `resource`, and a PAT has neither. The MCP route therefore uses a custom verifier: it tries the OAuth token first, then the PAT, and maps a PAT to an explicit `AuthInfo` with the scopes from 6.6 and no `resource` check. The `access-mcp` permission and the AI license module still gate the route.
+PATs stay valid for headless agents and CI. Today `checkMcpCredentials` (`ee/server/api/mcp/index.ts:94`) reads the PAT headers (`X-User-Id` + `X-Auth-Token`) first, then `Authorization: Bearer`, and the REST authentication resolves the user. A session token on `POST` gets `401` "Personal Access Token required". With the SDK, the SDK's `verifyBearerToken` rejects a token with no `expiresAt` and checks `resource`, and a PAT has neither. The MCP route therefore uses a custom verifier that maps both credentials to an `AuthInfo`. A PAT gets the scopes from 6.6 and no `resource` check. The `access-mcp` permission and the AI license module still gate the route.
 
 #### 6.8 OAuth bugs to fix first
 
 Each item is its own `fix` pull request, ordered before the MCP work (see [change organization](../change-organization.md)).
 
-- **Code replay.** `revokeAuthorizationCode` and `revokeToken` (`model.ts:259-284`) return `true` whether or not they deleted a record. Two parallel requests can redeem the same code. Return the result of `deleteOne`.
-- **Unknown code.** `getAuthorizationCode` throws on an unknown code, which gives a `500` instead of `invalid_grant`.
+All items are still open on 2026-11-03.
+
+- **Code replay.** `revokeAuthorizationCode` and `revokeToken` (`model.ts:254-279`) return `true` whether or not they deleted a record. Two parallel requests can redeem the same code. Return the result of `deleteOne`.
+- **Unknown code.** `getAuthorizationCode` (`model.ts:104`) throws on an unknown code, which gives a `500` instead of `invalid_grant`. `getClient` and `getRefreshToken` throw the same way.
 - **No revocation.** The server has no revocation endpoint, and deactivating an OAuth app does not revoke its tokens.
 - **No user control.** Users cannot see or revoke their `authorizedClients`.
 - **Auto-consent ignores scopes.** Once a user approves a client, every later request is approved, also one that asks for more scope.
-- **Token endpoint limits.** The token endpoint has no rate limit, and its body limit is 50 MB.
+- **Token endpoint limits.** The token endpoint has no rate limit, and its body limit is 50 MB (`oauth.ts:36`). Only `/oauth/register` has a rate limit.
 
 #### 6.9 CIMD fetches client-supplied URLs
 
-A Client ID Metadata Document is a URL that the client supplies, and the server fetches it. Without guards this is an SSRF path into the workspace's network.
+A Client ID Metadata Document is a URL that the client supplies, and the server fetches it. Without guards this is an SSRF path into the workspace's network. The shipped Dynamic Client Registration fetches no URL, so these guards are new work for CIMD only.
 
 - Allow `https` only, and block private, loopback and link-local address ranges after DNS resolution.
 - Do not follow redirects.
@@ -254,11 +275,13 @@ A Client ID Metadata Document is a URL that the client supplies, and the server 
 - The SDK ships the auth helpers that section 6 needs: bearer verification, `requireScopes` and the scope challenge.
 - `legacy: 'stateless'` serves clients that still speak a 2025 revision.
 
-Version 2.3.1 is stable and ships CJS and ESM builds. It depends on `zod ^4.2`, and the repo has `zod ~4.3.6`. `@modelcontextprotocol/hono` needs `hono ^4.11`, and the repo has 4.13.11.
+Version 2.4.0 (2026-10-23) is the latest stable release and ships CJS and ESM builds. It depends on `zod ^4.2`, and the repo has `zod ~4.3.6`. `@modelcontextprotocol/hono` 2.0.2 needs `hono ^4.11.4` and `@modelcontextprotocol/server ^2.3.0`, and the repo has `hono` 4.13.13. No `@modelcontextprotocol/*` package is a dependency of the repo yet.
+
+The 2.4.0 release notes do not name `verifyBearerToken`, `requireScopes`, `scopeChallenge` or `validateOriginHeader`. The spike (step 5 of the delivery plan) confirms that these APIs exist in 2.4.0 before section 6 depends on them.
 
 - **Entry point.** `createMcpHandler(factory, { legacy: 'stateless' })` returns `fetch(request, { authInfo })`. The factory runs once for each request and receives `authInfo`. It builds the tool list for that request from the token's scopes and the selected toolsets. This replaces the hand-written `server.ts` and `transport.ts`.
 - **Origin check.** Keep the current check: no `Origin` header is accepted, a browser origin must match `Site_Url` or the `API_CORS_Origin` list, and `*` is refused. Move it to the SDK's `validateOriginHeader` with the same allow-list.
-- **Meteor compatibility is unproven.** The SDK's `./_shims` entry uses the `node`, `browser` and `workerd` export conditions, and Meteor resolves conditional `exports` only in part. A spike pull request proves that the SDK loads and runs under the Meteor build before anything depends on it.
+- **Meteor compatibility is unproven.** The SDK's `./_shims` entry uses the `node`, `browser` and `workerd` export conditions, and Meteor resolves conditional `exports` only in part. Since #43281 the repo wraps Hono and other ESM-only code in a workspace package (`@rocket.chat/http-router`), which loads through Node (see [HTTP server](../features/http-server.md)). The SDK can load the same way. A spike pull request proves that the SDK loads and runs under the Meteor build before anything depends on it.
 
 ### 8. In-process dispatch, no loopback
 
@@ -271,7 +294,7 @@ Recommendation: use **A** for the first version. Each task-shaped tool calls one
 
 #### 8.1 Option A is a core REST change
 
-Option A is not internal to MCP. Hono `fetch` cannot pre-set the user: `authenticationHono.ts:24` always authenticates again. The rate limit runs inside the action wrapper (`ApiClass.ts:892`), not in a middleware. `remoteAddressMiddleware` throws when the request has no `incoming` binding. The REST layer needs four hooks:
+Option A is not internal to MCP. Hono `fetch` cannot pre-set the user: `authenticationHono.ts:24` always authenticates again. The rate limit runs inside the action wrapper (`apps/meteor/server/api/ApiClass.ts:809`), not in a middleware. The MCP route already counts the call in its own middleware (`enforceRateLimitForRoute`), so a REST handler that runs in-process counts it a second time. `remoteAddressMiddleware` throws when the request has no `incoming` binding. Since #43281 the REST routers sit on the root Hono app of the workspace's own HTTP server, and `env.incoming` comes from that server. A synthetic `Request` through `fetch` still has no `incoming` binding. The REST layer needs four hooks:
 
 1. A trusted, pre-authenticated identity in `env`, which the authentication middleware accepts instead of headers. Only an in-process caller can set `env`, so an HTTP client cannot forge it.
 2. A rate-limit skip for that identity, because the MCP route already counted the call.
@@ -304,7 +327,7 @@ This flow is a separate concern. It gets its own pull request stack, after the O
 | Option | Result |
 | --- | --- |
 | 1. The tool returns a PAT for the bot | Rejected. The secret goes into the model context, the transcripts and the client logs. The model also cannot change the credential of its own MCP connection, so the PAT is useless until a human configures a new server entry. The spec forbids secrets through form elicitation for the same reason. |
-| 2. Server-side binding | **Recommended for v1.** The bot record stores `(ownerId, oauthClientId)`. The same OAuth token stays in use. The server resolves token → owner → bot and acts as the bot for writes, while reads use the owner's context. This is the Slack pattern. The bot never logs in; Apps-Engine bots already work this way (`server/lib/auth/startup.js:432` blocks the login of an `app` user). |
+| 2. Server-side binding | **Recommended for v1.** The bot record stores `(ownerId, oauthClientId)`. The same OAuth token stays in use. The server resolves token → owner → bot and acts as the bot for writes, while reads use the owner's context. This is the Slack pattern. The bot never logs in; Apps-Engine bots already work this way (`server/lib/auth/startup.js:410` blocks the login of an `app` user). |
 | 3. Step-up | The tool returns `403 insufficient_scope` for `mcp:agent`. The consent page asks the user to confirm the bot. The new token carries `sub = bot` and an actor claim for the owner, in the style of RFC 8693 delegation. A human approves in the browser, and the model never holds a secret. The cost: after the step-up, the whole connection acts as the bot, so the agent loses access to the owner's DMs. |
 
 The creation of the bot goes through a URL-mode confirmation page, so a human approves it. In 2026-07-28, URL mode goes through MRTR with a signed `requestState`. The spec allows URL mode here, because this step is not client authorization.
@@ -318,7 +341,7 @@ The `bot` role grants `api-bypass-rate-limit`, `message-impersonate`, `send-many
 
 #### 9.3 Seat loophole
 
-`validateUserRoles.ts:19` (`apps/meteor/ee/server/lib/authorization/`) exempts `type: 'bot'` and `type: 'app'` users from the seat count. Self-registration with `type: 'bot'` gives free, unlimited accounts. This is a product and licensing decision, and its owner must be named before the stack starts.
+`validateUserRoles.ts:21` (`apps/meteor/ee/server/lib/authorization/`) exempts `type: 'bot'` and `type: 'app'` users from the seat count. Self-registration with `type: 'bot'` gives free, unlimited accounts. This is a product and licensing decision, and its owner must be named before the stack starts.
 
 #### 9.4 Lifecycle
 
@@ -347,6 +370,7 @@ Other users will mention the bot and send it DMs. The agent learns of these mess
 ```
 apps/meteor/ee/server/api/mcp/
   index.ts          # route, auth challenge, custom token verifier (kept, smaller)
+  metadata.ts       # RFC 9728 protected-resource metadata (exists, #43152)
   handler.ts        # createMcpHandler factory: tool list per request from authInfo
   dispatch.ts       # in-process synthetic request (rewritten)
   format/           # message, room, user, list renderers
@@ -354,7 +378,7 @@ apps/meteor/ee/server/api/mcp/
   toolsets.ts       # core + optional toolsets, read-only filtering
   *.spec.ts         # one spec per module
 apps/meteor/server/oauth2-server/
-  metadata.ts       # RFC 8414 + RFC 9728 documents
+  metadata.ts       # RFC 8414 document and the well-known URL helpers (exists, #43150)
   revoke.ts         # RFC 7009 revocation endpoint
   cimd.ts           # Client ID Metadata Document fetch, with SSRF guards
 ```
@@ -365,14 +389,14 @@ apps/meteor/server/oauth2-server/
 
 Each step is one pull request that can be reverted alone, unless it says otherwise.
 
-1. **fix(oauth):** one pull request for each bug: code replay, the `500` on an unknown code, PKCE storage, the client type, the `iss` parameter.
+1. **fix(oauth):** one pull request for each bug: code replay, the `500` on an unknown code, the client type, the `iss` parameter. Done: PKCE storage (#43149, with the model refactor #43148).
 2. **fix(api):** `remoteAddressMiddleware` trusts `X-Real-IP` only from a configured proxy.
-3. **feat(oauth):** public clients, loopback redirects, scopes on codes and tokens, revocation, metadata, CIMD with SSRF guards. Several pull requests.
+3. **feat(oauth):** public clients, loopback redirects, scopes on codes and tokens, revocation, CIMD with SSRF guards. Several pull requests. Done: authorization-server metadata (#43150), and Dynamic Client Registration behind a setting (#43151), which the first draft did not plan.
 4. **feat(api):** `oAuth2ServerAuth` enforces the audience and the scope on REST.
 5. **chore(mcp):** a spike that loads `@modelcontextprotocol/server` under Meteor.
 6. **refactor(api):** the in-process identity hooks.
 7. **refactor(mcp):** the SDK transport and the in-process dispatch, with the same tools and the same behaviour.
-8. **feat(mcp):** the OAuth challenge and the scope challenge, with the decision on the `access-mcp` roles.
+8. **feat(mcp):** the scope challenge, with the decision on the `access-mcp` roles. Done: the OAuth `401` challenge, protected-resource metadata and OAuth Bearer tokens on the MCP route (#43152).
 9. **test(mcp):** the evaluation tasks and their harness, run against the current tools.
 10. **feat(mcp)!:** the 10 core tools with the new formatter replace the catalog. `MCP_Expose_Extended_API` is removed.
 11. **feat(mcp):** optional toolsets and read-only mode.
@@ -382,7 +406,7 @@ The MCP endpoint is behind an alpha alert today (`MCP_Alpha_Alert`), so step 10 
 
 ## Open questions
 
-1. Must `search_messages` fall back to keyword search when AI Intelligent Search is off, or must it say that search needs the AI module? The MCP route already requires the AI license module.
+1. Must `search_messages` fall back to keyword search when AI Intelligent Search is off, or must it say that search needs the AI module? The MCP route already requires the AI license module. Since #42720, `ai.search` returns `meta.intelligentSearchEnabled` and `meta.intelligentSearchConfigured`, and fails with a typed `error-ai-search-*` code when the search call fails. `search_messages` can use these values to choose between the fallback and an error.
 2. Do we expose omnichannel (livechat rooms, departments) as a toolset? No surveyed competitor has an equivalent.
 3. Do we need an admin audit record for each MCP grant and each write, as Mattermost writes? This also ties in with the agent governance work in PI-168.
 4. Do we expose resources (for example, a room as `rocketchat://room/{id}`)? Mattermost and the hosted Slack server expose tools only, and most MCP clients use tools only.
@@ -397,13 +421,14 @@ The MCP endpoint is behind an alpha alert today (`MCP_Alpha_Alert`), so step 10 
 The raw research output is in [mcp-server-redesign-research/](mcp-server-redesign-research/): [Mattermost](mcp-server-redesign-research/mattermost.md), [other chat servers](mcp-server-redesign-research/other-chat-servers.md), and [the current Rocket.Chat state](mcp-server-redesign-research/rocket-chat-current-state.md).
 
 - MCP specification, revision 2026-07-28: `modelcontextprotocol.io/specification/2026-07-28` — transports, `server/discover`, authorization, elicitation, MRTR.
-- MCP TypeScript SDK: `@modelcontextprotocol/server` 2.3.1, `@modelcontextprotocol/hono`.
+- MCP TypeScript SDK: `@modelcontextprotocol/server` 2.4.0, `@modelcontextprotocol/hono` 2.0.2 (npm registry, checked 2026-11-03).
+- Anthropic, tool search tool: `platform.claude.com/docs/en/agents-and-tools/tool-use/tool-search-tool`.
 - Anthropic, "Writing effective tools for agents": evaluation-driven tool design, namespacing, unambiguous parameters, response verbosity.
 - OAuth: RFC 7009 (revocation), RFC 8252 (native apps, loopback redirects), RFC 8414, RFC 8693 (token exchange, actor claim), RFC 8707, RFC 9207 (`iss`), RFC 9728.
 - Mattermost: `github.com/mattermost/mattermost-plugin-agents` — `mcpserver/tools/provider.go`, `mcpserver/tools/classification_test.go`, `mcpserver/plugin_handlers.go`, `mcpserver/oauth_metadata.go`, `docs/admin_guide.md`.
-- Slack: `github.com/slackapi/slack-skills-plugin`; `github.com/modelcontextprotocol/servers-archived/tree/main/src/slack`; `github.com/korotovsky/slack-mcp-server`; `docs.slack.dev/ai/slack-mcp-server/` (not reachable during research).
+- Slack: `github.com/slackapi/slack-skills-plugin`; `github.com/modelcontextprotocol/servers-archived/tree/main/src/slack`; `github.com/korotovsky/slack-mcp-server`; `docs.slack.dev/ai/slack-mcp-server/` (read on 2026-11-03).
 - Zulip: `github.com/akougkas/zulipchat-mcp`, `github.com/Monadical-SAS/zulip-mcp`.
-- Teams: `github.com/floriscornel/teams-mcp`; `learn.microsoft.com/en-us/microsoft-agent-365/mcp-server-reference/teams` (not reachable during research).
+- Teams: `github.com/floriscornel/teams-mcp`; `learn.microsoft.com/en-us/microsoft-copilot-studio/mcp-teams-tools` (the Agent 365 URL now redirects there).
 - Discord: `github.com/SaseQ/discord-mcp`, `github.com/barryyip0625/mcp-discord`.
 - GitHub: `github.com/github/github-mcp-server` — README, `docs/remote-server.md`, `docs/scope-filtering.md`.
-- Internal: Confluence "The Sovereign Agentic Governance"; Jira PI-125, CORE-2624, PI-168.
+- Internal: Confluence "The Sovereign Agentic Governance"; Jira PI-125 (the POC, Done, PR #41082), CORE-2624 (Cancelled, "Won't Do", 2026-09-01), PI-168.
