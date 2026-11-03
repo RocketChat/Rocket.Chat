@@ -30,11 +30,7 @@ const { Push } = proxyquire.noCallThru().load('./push', {
 			test: sinon.stub().returns(true),
 		},
 	},
-	'meteor/meteor': {
-		Meteor: {
-			absoluteUrl: sinon.stub().returns('http://localhost'),
-		},
-	},
+	'../../utils/getURL': { getWorkspaceURL: sinon.stub().returns('http://localhost') },
 });
 
 describe('Push Notifications [PushClass]', () => {

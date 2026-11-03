@@ -3,7 +3,6 @@ import { OAuthAccessTokens, Users } from '@rocket.chat/models';
 import type { NextFunction, Request, Response } from 'express';
 import type express from 'express';
 import rateLimit from 'express-rate-limit';
-import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 
 import { registerOAuthClient } from './registerOAuthClient';
@@ -13,6 +12,7 @@ import { serveAuthorizationServerMetadata } from '../../../oauth2-server/metadat
 import { OAuth2Server } from '../../../oauth2-server/oauth';
 import { settings } from '../../../settings/cached';
 import { httpApp } from '../../http/httpServer';
+import { getWorkspaceURL } from '../../utils/getURL';
 
 const oauth2server = new OAuth2Server({
 	// If you're developing something related to oauth servers, you should change this to true
@@ -72,7 +72,7 @@ oauth2server.app.get('/oauth/userinfo', async (req: Request, res: Response) => {
 		birthdate: '',
 		preffered_username: user.username,
 		updated_at: user._updatedAt,
-		picture: `${Meteor.absoluteUrl()}avatar/${user.username}`,
+		picture: getWorkspaceURL(`avatar/${user.username}`),
 	});
 });
 

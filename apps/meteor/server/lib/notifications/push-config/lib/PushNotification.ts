@@ -1,11 +1,11 @@
 import type { IMessage, IPushNotificationConfig, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../../settings';
 import { callbacks } from '../../../callbacks';
 import { RocketChatAssets } from '../../../media/assets';
 import { metrics } from '../../../metrics';
+import { getWorkspaceURL } from '../../../utils/getURL';
 import { replaceMentionedUsernamesWithFullNames, parseMessageTextPerUser } from '../../message';
 import { getPushData } from '../../message/mobile';
 import { Push } from '../../push';
@@ -73,7 +73,7 @@ class PushNotification {
 			title,
 			text,
 			payload: {
-				host: Meteor.absoluteUrl(),
+				host: `${getWorkspaceURL()}/`,
 				messageId,
 				notificationType: idOnly ? 'message-id-only' : 'message',
 				...(!idOnly && { rid, ...payload }),

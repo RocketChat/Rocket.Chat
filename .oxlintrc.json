@@ -305,6 +305,10 @@
 					{
 						"selector": "TSQualifiedName[left.name='Meteor'][right.name='Error']",
 						"message": "Use ClientSafeError from '@rocket.chat/core-services' instead."
+					},
+					{
+						"selector": "MemberExpression[object.name='Meteor'][property.name='absoluteUrl']",
+						"message": "Use getWorkspaceURL(path) from 'server/lib/utils/getURL' instead."
 					}
 				]
 			}
