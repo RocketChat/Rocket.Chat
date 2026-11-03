@@ -12,7 +12,7 @@ import moment from 'moment';
 import type { RootFilterOperators } from 'mongodb';
 
 import { getMentions } from './notifyUsersOnMessage';
-import { shortnameToUnicode } from '../../../lib/emoji-native/shortnameToUnicode';
+import { shortnameToUnicodeOutsideCode } from '../../../lib/emoji-native/shortnameToUnicodeOutsideCode';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { callbacks } from '../../lib/callbacks';
 import { parseMessageTextPerUser, replaceMentionedUsernamesWithFullNames } from '../../lib/notifications/message';
@@ -191,14 +191,15 @@ export const sendNotification = async ({
 			isThread,
 		})
 	) {
-		const messageWithUnicode = message.msg ? shortnameToUnicode(message.msg) : message.msg;
+		const messageWithUnicode = message.msg ? shortnameToUnicodeOutsideCode(message.msg) : message.msg;
 		const firstAttachment = message.attachments?.[0];
 
 		const convertedFirstAttachment = firstAttachment
 			? {
 					...firstAttachment,
-					description: typeof firstAttachment.description === 'string' ? shortnameToUnicode(firstAttachment.description) : undefined,
-					text: typeof firstAttachment.text === 'string' ? shortnameToUnicode(firstAttachment.text) : undefined,
+					description:
+						typeof firstAttachment.description === 'string' ? shortnameToUnicodeOutsideCode(firstAttachment.description) : undefined,
+					text: typeof firstAttachment.text === 'string' ? shortnameToUnicodeOutsideCode(firstAttachment.text) : undefined,
 				}
 			: undefined;
 
