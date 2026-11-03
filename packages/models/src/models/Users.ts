@@ -30,6 +30,7 @@ import type {
 	Document,
 	UpdateFilter,
 	UpdateOptions,
+	UpdateResult,
 	FindCursor,
 	SortDirection,
 	FindOneAndUpdateOptions,
@@ -3162,6 +3163,20 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		Object.assign(user, data);
 
 		return this.insertOne(user);
+	}
+
+	createIfNotExists({ _id, ...data }: Partial<IUser> & Pick<IUser, '_id'>): Promise<UpdateResult> {
+		return this.updateOne(
+			{ _id },
+			{
+				$setOnInsert: {
+					createdAt: new Date(),
+					avatarOrigin: 'none',
+					...data,
+				},
+			},
+			{ upsert: true },
+		);
 	}
 
 	// REMOVE
