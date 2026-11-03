@@ -24,10 +24,11 @@ const withListRoles = (userRoles: MessageListContextValue['userRoles']) => {
 const listRoles = (labels: { workspaceRoles: string[]; roomRoles: string[] }) => ({ rid, get: () => labels });
 
 it("shows the author's roles resolved by the message list", () => {
-	render(<MessageHeaderRoles message={createFakeMessage({ rid })} />, {
-		wrapper: withListRoles(listRoles({ workspaceRoles: ['Admin'], roomRoles: ['Owner'] })),
-	});
+	const get = jest.fn(() => ({ workspaceRoles: ['Admin'], roomRoles: ['Owner'] }));
+	const message = createFakeMessage({ rid });
+	render(<MessageHeaderRoles message={message} />, { wrapper: withListRoles({ rid, get }) });
 
+	expect(get).toHaveBeenCalledWith(message.u._id);
 	expect(screen.getByText('Admin')).toBeInTheDocument();
 	expect(screen.getByText('Owner')).toBeInTheDocument();
 	expect(screen.queryByText('roles by scope')).not.toBeInTheDocument();
