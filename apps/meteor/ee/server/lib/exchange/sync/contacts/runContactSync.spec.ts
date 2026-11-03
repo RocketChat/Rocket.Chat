@@ -1,5 +1,6 @@
+import { MongoServerError } from 'mongodb';
+
 import { runContactSync } from './runContactSync';
-import { acquireMailbox } from '../mailboxLock';
 import type { UserContactSyncOutcome } from './syncUserContacts';
 import { ExchangeError } from '../../errors';
 import { MAILBOX_CONCURRENCY } from '../limits';
@@ -10,6 +11,9 @@ const isServerSyncEnabled = jest.fn();
 const iterateMailboxCandidates = jest.fn();
 const hasSyncedSince = jest.fn();
 const settingsGet = jest.fn();
+const acquireLease = jest.fn();
+const releaseLease = jest.fn();
+const leases = new Map<string, string>();
 
 jest.mock('./syncUserContacts', () => ({ syncUserContacts: (...args: unknown[]) => syncUserContacts(...args) }));
 jest.mock('../resolveMailboxes', () => ({ iterateMailboxCandidates: () => iterateMailboxCandidates() }));
@@ -19,6 +23,10 @@ jest.mock('../../ExchangeProviderRegistry', () => ({
 }));
 jest.mock('@rocket.chat/models', () => ({
 	ExchangeContactSyncState: { hasSyncedSince: (...args: unknown[]) => hasSyncedSince(...args) },
+	ExchangeSyncLease: {
+		acquireLease: (...args: unknown[]) => acquireLease(...args),
+		releaseLease: (...args: unknown[]) => releaseLease(...args),
+	},
 }));
 jest.mock('../../../../../../server/settings', () => ({ settings: { get: (key: string) => settingsGet(key) } }));
 
@@ -66,6 +74,21 @@ describe('runContactSync', () => {
 		hasSyncedSince.mockResolvedValue(false);
 		iterateMailboxCandidates.mockImplementation(from([{ uid: 'a', mailbox: 'a@corp.example' }]));
 		settingsOf();
+		leases.clear();
+		acquireLease.mockImplementation(async (scope: string, uid: string, token: string) => {
+			if (leases.has(`${scope}:${uid}`)) {
+				throw new MongoServerError({ code: 11000, message: 'E11000 duplicate key error' });
+			}
+			leases.set(`${scope}:${uid}`, token);
+			return { upsertedCount: 1, modifiedCount: 0 };
+		});
+		releaseLease.mockImplementation(async (scope: string, uid: string, token: string) => {
+			if (leases.get(`${scope}:${uid}`) !== token) {
+				return { deletedCount: 0 };
+			}
+			leases.delete(`${scope}:${uid}`);
+			return { deletedCount: 1 };
+		});
 	});
 
 	describe('whether the run happens at all', () => {
@@ -137,46 +160,36 @@ describe('runContactSync', () => {
 			expect(summary).toMatchObject({ notDue: 1, mailboxes: 1 });
 		});
 
-		it('leaves a mailbox alone while an on-demand sync holds it', async () => {
+		it('leaves a mailbox alone while another sync holds its lease', async () => {
 			iterateMailboxCandidates.mockImplementation(
 				from([
 					{ uid: 'a', mailbox: 'a@corp.example' },
 					{ uid: 'b', mailbox: 'b@corp.example' },
 				]),
 			);
+			leases.set('contacts:a', 'held-elsewhere');
 
-			const release = acquireMailbox('contacts', 'a');
+			const summary = await runContactSync();
 
-			try {
-				const summary = await runContactSync();
-
-				expect(syncUserContacts).toHaveBeenCalledTimes(1);
-				expect(syncUserContacts.mock.calls[0][2]).toBe('b@corp.example');
-				expect(summary).toMatchObject({ mailboxes: 1, skipped: 1 });
-			} finally {
-				release?.();
-			}
+			expect(syncUserContacts).toHaveBeenCalledTimes(1);
+			expect(syncUserContacts.mock.calls[0][2]).toBe('b@corp.example');
+			expect(summary).toMatchObject({ mailboxes: 1, skipped: 1 });
+			expect(leases.get('contacts:a')).toBe('held-elsewhere');
 		});
 
-		it('takes the calendar lock as a separate one, so neither sync waits for the other', async () => {
-			const release = acquireMailbox('calendar', 'a');
+		it('takes a lease of its own, so a calendar sync of the same user does not hold it back', async () => {
+			leases.set('calendar:a', 'held-by-calendar');
 
-			try {
-				const summary = await runContactSync();
+			const summary = await runContactSync();
 
-				expect(summary).toMatchObject({ mailboxes: 1, skipped: 0 });
-			} finally {
-				release?.();
-			}
+			expect(summary).toMatchObject({ mailboxes: 1, skipped: 0 });
 		});
 
-		it('releases the mailbox once the run is over, so the next one is not locked out', async () => {
+		it('releases the lease once the run is over, so the next one is not locked out', async () => {
 			await runContactSync();
 
-			const release = acquireMailbox('contacts', 'a');
-
-			expect(release).toBeDefined();
-			release?.();
+			expect(releaseLease).toHaveBeenCalledWith('contacts', 'a', acquireLease.mock.calls[0][2]);
+			expect(leases.has('contacts:a')).toBe(false);
 		});
 
 		it('passes the configured region down to every mailbox', async () => {

@@ -50,6 +50,12 @@ describe('configureContactSyncJob', () => {
 			expect(runContactSync).toHaveBeenCalled();
 		});
 
+		it('keeps the job locked for as long as a run lasts', async () => {
+			await configureContactSyncJob();
+
+			expect(add).toHaveBeenCalledWith(CONTACT_SYNC_JOB, expect.any(String), expect.any(Function), { renewLock: true });
+		});
+
 		it('removes the job it already had, so a settings change does not stack two of them', async () => {
 			has.mockResolvedValue(true);
 

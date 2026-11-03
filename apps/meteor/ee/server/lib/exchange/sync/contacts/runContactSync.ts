@@ -6,8 +6,8 @@ import { isExchangeError } from '../../errors';
 import { logger } from '../../logger';
 import { forEachWithConcurrency } from '../forEachWithConcurrency';
 import { MAILBOX_CONCURRENCY } from '../limits';
-import { acquireMailbox } from '../mailboxLock';
 import { iterateMailboxCandidates } from '../resolveMailboxes';
+import { acquireSyncLease } from '../syncLease';
 import { syncUserContacts } from './syncUserContacts';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -83,16 +83,20 @@ export const runContactSync = async (): Promise<ContactSyncRunSummary> => {
 				return;
 			}
 
-			const release = acquireMailbox('contacts', uid);
+			const release = await acquireSyncLease('contacts', uid);
 
 			if (!release) {
 				summary.skipped++;
 				return;
 			}
 
-			summary.mailboxes++;
-
 			try {
+				if (summary.aborted) {
+					return;
+				}
+
+				summary.mailboxes++;
+
 				const outcome = await syncUserContacts(provider, uid, mailbox, defaultRegion);
 
 				summary.folders += outcome.folders;
@@ -108,7 +112,7 @@ export const runContactSync = async (): Promise<ContactSyncRunSummary> => {
 					await candidates.return(undefined);
 				}
 			} finally {
-				release();
+				await release();
 			}
 		});
 

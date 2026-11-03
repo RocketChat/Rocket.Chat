@@ -43,7 +43,7 @@ export const configureContactSyncJob = async (isCurrent: () => boolean = () => t
 
 	logger.info({ msg: 'Scheduling the Exchange contact sync job', schedule });
 
-	await cronJobs.add(CONTACT_SYNC_JOB, schedule, async () => runContactSync());
+	await cronJobs.add(CONTACT_SYNC_JOB, schedule, async () => runContactSync(), { renewLock: true });
 
 	// A guard to avoid race conditions
 	if (!isCurrent()) {

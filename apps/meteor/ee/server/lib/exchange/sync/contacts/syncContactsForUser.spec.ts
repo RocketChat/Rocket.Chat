@@ -1,3 +1,5 @@
+import { MongoServerError } from 'mongodb';
+
 import { syncContactsForUser } from './syncContactsForUser';
 import type { UserContactSyncOutcome } from './syncUserContacts';
 
@@ -6,8 +8,17 @@ const syncUserContacts = jest.fn();
 const resolveMailbox = jest.fn();
 const getExchangeProvider = jest.fn();
 const settingsGet = jest.fn();
+const acquireLease = jest.fn();
+const releaseLease = jest.fn();
+const leases = new Map<string, string>();
 
-jest.mock('@rocket.chat/models', () => ({ Users: { findOneById: (...args: unknown[]) => findOneById(...args) } }));
+jest.mock('@rocket.chat/models', () => ({
+	Users: { findOneById: (...args: unknown[]) => findOneById(...args) },
+	ExchangeSyncLease: {
+		acquireLease: (...args: unknown[]) => acquireLease(...args),
+		releaseLease: (...args: unknown[]) => releaseLease(...args),
+	},
+}));
 jest.mock('./syncUserContacts', () => ({ syncUserContacts: (...args: unknown[]) => syncUserContacts(...args) }));
 jest.mock('../resolveMailboxes', () => ({ resolveMailbox: (...args: unknown[]) => resolveMailbox(...args) }));
 jest.mock('../../ExchangeProviderRegistry', () => ({ getExchangeProvider: () => getExchangeProvider() }));
@@ -43,6 +54,21 @@ describe('syncContactsForUser', () => {
 		findOneById.mockResolvedValue(verified);
 		syncUserContacts.mockResolvedValue(outcome());
 		settingsGet.mockReturnValue('AR');
+		leases.clear();
+		acquireLease.mockImplementation(async (scope: string, uid: string, token: string) => {
+			if (leases.has(`${scope}:${uid}`)) {
+				throw new MongoServerError({ code: 11000, message: 'E11000 duplicate key error' });
+			}
+			leases.set(`${scope}:${uid}`, token);
+			return { upsertedCount: 1, modifiedCount: 0 };
+		});
+		releaseLease.mockImplementation(async (scope: string, uid: string, token: string) => {
+			if (leases.get(`${scope}:${uid}`) !== token) {
+				return { deletedCount: 0 };
+			}
+			leases.delete(`${scope}:${uid}`);
+			return { deletedCount: 1 };
+		});
 	});
 
 	it('syncs the mailbox resolved for the user, with the configured region', async () => {
@@ -89,7 +115,7 @@ describe('syncContactsForUser', () => {
 			expect(syncUserContacts).toHaveBeenCalledTimes(1);
 		});
 
-		it('lets another user through, since the lock is on the mailbox and not on the feature', async () => {
+		it('lets another user through, since the lease is on the mailbox and not on the feature', async () => {
 			const first = deferred();
 			syncUserContacts.mockReturnValueOnce(first.promise);
 
@@ -101,17 +127,18 @@ describe('syncContactsForUser', () => {
 			await running;
 		});
 
-		it('releases the lock after a failed run, so a retry is not locked out by it', async () => {
+		it('releases the lease after a failed run, so a retry is not locked out by it', async () => {
 			syncUserContacts.mockRejectedValueOnce(new Error('transport died'));
 
 			await expect(syncContactsForUser('uid')).rejects.toThrow('transport died');
 			await expect(syncContactsForUser('uid')).resolves.toBeDefined();
 		});
 
-		it('releases the lock when the mailbox could not be resolved either', async () => {
+		it('does not take the lease when the mailbox could not be resolved', async () => {
 			resolveMailbox.mockReturnValueOnce(undefined);
 
 			await expect(syncContactsForUser('uid')).rejects.toMatchObject({ code: 'email-not-verified' });
+			expect(acquireLease).not.toHaveBeenCalled();
 			await expect(syncContactsForUser('uid')).resolves.toBeDefined();
 		});
 	});
