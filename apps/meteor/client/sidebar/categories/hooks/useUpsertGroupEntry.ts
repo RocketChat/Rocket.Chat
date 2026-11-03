@@ -24,10 +24,9 @@ export const useUpsertGroupEntry = () => {
 			const entryMap = new Map(rawCategories?.map((entry) => [entry._id, entry]));
 			entryMap.set(id, { _id: id, name: id, default: true, ...patch });
 
-			const merged = withDynamicFirst(
-				rawCategories.map((entry) => entry._id),
-				sidebarSectionsOrder,
-			);
+			// The new entry is listed explicitly: a system group missing from an older `sidebarSectionsOrder` would
+			// otherwise be left out of the written list, and its patch lost.
+			const merged = withDynamicFirst([...rawCategories.map((entry) => entry._id), id], sidebarSectionsOrder);
 
 			persistCategories(merged.map((key) => entryMap.get(key) ?? { _id: key, name: key, default: true }));
 		},

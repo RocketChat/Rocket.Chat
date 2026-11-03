@@ -96,6 +96,16 @@ describe('useSetActivityFilterHours', () => {
 		expect(persistedEntry('Channels')).toEqual({ _id: 'Channels', name: 'Channels', default: true, activityFilterHours: 720 });
 	});
 
+	it('creates the entry of a system group missing from the stored sections order', () => {
+		mockedUseUserPreference.mockReturnValue(['Direct_Messages', 'Channels']);
+
+		const { result } = renderHook(() => useSetActivityFilterHours());
+
+		act(() => result.current('Teams', 24));
+
+		expect(persistedEntry('Teams')).toEqual({ _id: 'Teams', name: 'Teams', default: true, activityFilterHours: 24 });
+	});
+
 	it('clears the filter', () => {
 		withCategories([{ _id: 'custom', name: 'Work', activityFilterHours: 168 }]);
 
@@ -103,7 +113,7 @@ describe('useSetActivityFilterHours', () => {
 
 		act(() => result.current('custom', undefined));
 
-		expect(persistedEntry('custom')?.activityFilterHours).toBeUndefined();
+		expect(persistedEntry('custom')).toEqual({ _id: 'custom', name: 'Work', activityFilterHours: undefined });
 	});
 });
 
