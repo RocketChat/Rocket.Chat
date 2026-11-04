@@ -42,6 +42,11 @@ type Listing = {
 	let oldMention: IMessage;
 	let oldThread: IMessage;
 	let oldUpload: IMessage;
+	let oldThreadUpload: IMessage;
+	let oldToDelete: IMessage;
+	let oldThreadToDelete: IMessage;
+	let oldThreadToDeleteReply: IMessage;
+	let hiddenThreadUpload: IMessage;
 	let oldDiscussion: IRoom;
 	let oldDiscussionMessage: IMessage;
 	let newMessage: IMessage;
@@ -67,6 +72,23 @@ type Listing = {
 	const pin = (messageId: IMessage['_id']) => request.post(api('chat.pinMessage')).set(credentials).send({ messageId }).expect(200);
 
 	const upload = async (description: string) => (await uploadFileToRC(room._id, imgURL, description, { request, credentials })).message;
+
+	const uploadToThread = async (description: string, tmid: IMessage['_id']) => {
+		const media = await request
+			.post(api(`rooms.media/${room._id}`))
+			.set(credentials)
+			.attach('file', imgURL)
+			.expect(200);
+		const res = await request
+			.post(api(`rooms.mediaConfirm/${room._id}/${media.body.file._id}`))
+			.set(credentials)
+			.send({ description, tmid })
+			.expect(200);
+		return res.body.message as IMessage;
+	};
+
+	const deleteAsAdmin = (rid: IRoom['_id'], msgId: IMessage['_id']) =>
+		request.post(api('chat.delete')).set(credentials).send({ roomId: rid, msgId }).expect(200);
 
 	const fileId = (message: IMessage) => (message.file?._id ?? message.files?.[0]?._id) as IUpload['_id'];
 
@@ -112,6 +134,10 @@ type Listing = {
 		oldThread = await send('thread started before the newcomer joined');
 		await send('reply sent before the newcomer joined', credentials, { tmid: oldThread._id });
 		oldUpload = await upload('uploaded before the newcomer joined');
+		oldThreadUpload = await uploadToThread('uploaded to an old thread before the newcomer joined', oldThread._id);
+		oldToDelete = await send('sent before the newcomer joined, deleted after');
+		oldThreadToDelete = await send('thread started before the newcomer joined, deleted after');
+		oldThreadToDeleteReply = await send('its only reply', credentials, { tmid: oldThreadToDelete._id });
 		oldDiscussion = await createDiscussion('before');
 		oldDiscussionMessage = await sendTo(oldDiscussion._id, 'discussed before the newcomer joined');
 
@@ -130,6 +156,7 @@ type Listing = {
 		newThread = await send('thread started after the newcomer joined');
 		await send('reply to a new thread', credentials, { tmid: newThread._id });
 		newUpload = await upload('uploaded after the newcomer joined');
+		hiddenThreadUpload = await uploadToThread('uploaded to an old thread after the newcomer joined', oldThread._id);
 		newDiscussion = await createDiscussion('after');
 	});
 
@@ -182,7 +209,10 @@ type Listing = {
 		const threads = { hidden: () => [oldThread._id], visible: () => [newThread._id] };
 		const mentions = { hidden: () => [oldMention._id], visible: () => [newMention._id] };
 		const pinned = { hidden: () => [oldMessage._id], visible: () => [newMessage._id] };
-		const files = { hidden: () => [fileId(oldUpload)], visible: () => [fileId(newUpload)] };
+		const files = {
+			hidden: () => [fileId(oldUpload), fileId(oldThreadUpload), fileId(hiddenThreadUpload)],
+			visible: () => [fileId(newUpload)],
+		};
 		const discussions = { hidden: () => [oldDiscussion._id], visible: () => [newDiscussion._id] };
 
 		const get = (path: Endpoint, query: () => Record<string, unknown>) => (userCredentials: Credentials) =>
@@ -459,6 +489,78 @@ type Listing = {
 		});
 	});
 
+	describe('a restricted moderator', () => {
+		before(() => request.post(api('channels.addModerator')).set(credentials).send({ roomId: room._id, userId: newcomer._id }).expect(200));
+
+		after(() =>
+			request.post(api('channels.removeModerator')).set(credentials).send({ roomId: room._id, userId: newcomer._id }).expect(200),
+		);
+
+		it('cannot edit a hidden message', async () => {
+			const res = await request
+				.post(api('chat.update'))
+				.set(newcomerCredentials)
+				.send({ roomId: room._id, msgId: oldMessage._id, text: 'overwritten blind' });
+			expect(res.body).to.have.property('success', false);
+
+			const original = await getMessage(oldMessage._id, credentials).expect(200);
+			expect(original.body.message.msg).to.equal('sent before the newcomer joined');
+		});
+
+		it('cannot delete a hidden message', async () => {
+			const res = await request.post(api('chat.delete')).set(newcomerCredentials).send({ roomId: room._id, msgId: oldMessage._id });
+			expect(res.body).to.have.property('success', false);
+
+			await getMessage(oldMessage._id, credentials).expect(200);
+		});
+
+		it('can still edit a message they can see', async () => {
+			const visible = await send('a message the moderator may edit');
+			await request
+				.post(api('chat.update'))
+				.set(newcomerCredentials)
+				.send({ roomId: room._id, msgId: visible._id, text: 'edited by the moderator' })
+				.expect(200);
+		});
+	});
+
+	describe('deleting messages the newcomer cannot see', () => {
+		before(async () => {
+			await deleteAsAdmin(room._id, oldToDelete._id);
+			await deleteAsAdmin(room._id, oldThreadToDeleteReply._id);
+			await deleteAsAdmin(room._id, oldThreadToDelete._id);
+		});
+
+		const since = new Date(0).toISOString();
+
+		it('chat.getDeletedMessages', async () => {
+			const fetch = (userCredentials: Credentials) =>
+				request.get(api('chat.getDeletedMessages')).set(userCredentials).query({ roomId: room._id, since }).expect(200);
+			const [newcomerRes, bystanderRes] = await Promise.all([fetch(newcomerCredentials), fetch(bystanderCredentials)]);
+
+			expect(messageIds(bystanderRes.body.messages)).to.include(oldToDelete._id);
+			expect(messageIds(newcomerRes.body.messages)).to.not.include(oldToDelete._id);
+		});
+
+		it('chat.syncMessages', async () => {
+			const fetch = (userCredentials: Credentials) =>
+				request.get(api('chat.syncMessages')).set(userCredentials).query({ roomId: room._id, lastUpdate: since }).expect(200);
+			const [newcomerRes, bystanderRes] = await Promise.all([fetch(newcomerCredentials), fetch(bystanderCredentials)]);
+
+			expect(messageIds(bystanderRes.body.result.deleted)).to.include(oldToDelete._id);
+			expect(messageIds(newcomerRes.body.result.deleted)).to.not.include(oldToDelete._id);
+		});
+
+		it('chat.syncThreadsList', async () => {
+			const fetch = (userCredentials: Credentials) =>
+				request.get(api('chat.syncThreadsList')).set(userCredentials).query({ rid: room._id, updatedSince: since }).expect(200);
+			const [newcomerRes, bystanderRes] = await Promise.all([fetch(newcomerCredentials), fetch(bystanderCredentials)]);
+
+			expect(messageIds(bystanderRes.body.threads.remove)).to.include(oldThreadToDelete._id);
+			expect(messageIds(newcomerRes.body.threads.remove)).to.not.include(oldThreadToDelete._id);
+		});
+	});
+
 	describe('in a private group', () => {
 		let group: IRoom;
 		let oldGroupMessage: IMessage;
@@ -500,9 +602,63 @@ type Listing = {
 		});
 	});
 
+	describe("a room's last message", () => {
+		let group: IRoom;
+		let lastBeforeJoin: IMessage;
+
+		const lastMessageIds = async (userCredentials: Credentials) => {
+			const [info, groupInfo, rooms] = await Promise.all([
+				request.get(api('rooms.info')).set(userCredentials).query({ roomId: group._id }).expect(200),
+				request.get(api('groups.info')).set(userCredentials).query({ roomId: group._id }).expect(200),
+				request.get(api('rooms.get')).set(userCredentials).expect(200),
+			]);
+			return [
+				info.body.room.lastMessage?._id,
+				groupInfo.body.group.lastMessage?._id,
+				(rooms.body.update as IRoom[]).find(({ _id }) => _id === group._id)?.lastMessage?._id,
+			];
+		};
+
+		before(async () => {
+			group = (await createRoom({ type: 'p', name: `restricted-history-last-${Date.now()}` })).body.group;
+			await request
+				.post(api('rooms.saveRoomSettings'))
+				.set(credentials)
+				.send({ rid: group._id, hideHistoryForNewMembers: true })
+				.expect(200);
+			lastBeforeJoin = await sendTo(group._id, 'the last message before the newcomer joined');
+
+			await sleep(50);
+			await request.post(api('groups.invite')).set(credentials).send({ roomId: group._id, userId: newcomer._id }).expect(200);
+			await sleep(50);
+		});
+
+		after(() => deleteRoom({ type: 'p', roomId: group._id }));
+
+		it('is left out while it was sent before the newcomer joined', async () => {
+			expect(await lastMessageIds(credentials)).to.deep.equal([lastBeforeJoin._id, lastBeforeJoin._id, lastBeforeJoin._id]);
+			expect(await lastMessageIds(newcomerCredentials)).to.deep.equal([undefined, undefined, undefined]);
+		});
+
+		it('stays left out after a newer message is deleted', async () => {
+			const newer = await sendTo(group._id, 'a newer message that gets deleted');
+			await deleteAsAdmin(group._id, newer._id);
+
+			expect(await lastMessageIds(newcomerCredentials)).to.deep.equal([undefined, undefined, undefined]);
+		});
+	});
+
 	describe('rooms.setMemberHistoryAccess', () => {
 		it('rejects members who cannot add people to the room', async () => {
 			await setMemberHistoryAccess(newcomer._id, false, bystanderCredentials).expect(403);
+		});
+
+		it('does not let anyone change their own access', async () => {
+			const res = await setMemberHistoryAccess(credentials['X-User-Id'], true);
+			expect(res.body).to.have.property('success', false);
+
+			const subscription = await getSubscriptionByRoomId(room._id);
+			expect(subscription).to.not.have.property('historyVisibleFrom');
 		});
 
 		it('restores the full history and announces it', async () => {
@@ -516,6 +672,7 @@ type Listing = {
 
 		it('hides the history again from the join time, including what the member starred meanwhile', async () => {
 			await request.post(api('chat.starMessage')).set(newcomerCredentials).send({ messageId: oldMessage._id }).expect(200);
+			await request.post(api('chat.followMessage')).set(newcomerCredentials).send({ mid: oldThread._id }).expect(200);
 			await setMemberHistoryAccess(newcomer._id, true).expect(200);
 
 			const subscription = await getSubscriptionByRoomId(room._id, newcomerCredentials);
@@ -524,6 +681,14 @@ type Listing = {
 
 			const starred = await request.get(api('chat.getStarredMessages')).set(newcomerCredentials).query({ roomId: room._id }).expect(200);
 			expect(messageIds(starred.body.messages)).to.not.include(oldMessage._id);
+		});
+
+		it('lists the files of an old thread the member followed meanwhile', async () => {
+			const res = await request.get(api('channels.files')).set(newcomerCredentials).query({ roomId: room._id }).expect(200);
+			const ids = messageIds(res.body.files);
+
+			expect(ids).to.include.members([fileId(oldThreadUpload), fileId(hiddenThreadUpload)]);
+			expect(ids).to.not.include(fileId(oldUpload));
 		});
 	});
 
@@ -543,12 +708,17 @@ type Listing = {
 			expect(subscription).to.have.property('historyVisibleFrom');
 		});
 
-		it('refuses to change the room setting', async () => {
+		it('refuses to turn the room setting on, but not off', async () => {
+			await request
+				.post(api('rooms.saveRoomSettings'))
+				.set(credentials)
+				.send({ rid: room._id, hideHistoryForNewMembers: true })
+				.expect(400);
 			await request
 				.post(api('rooms.saveRoomSettings'))
 				.set(credentials)
 				.send({ rid: room._id, hideHistoryForNewMembers: false })
-				.expect(400);
+				.expect(200);
 		});
 	});
 });
