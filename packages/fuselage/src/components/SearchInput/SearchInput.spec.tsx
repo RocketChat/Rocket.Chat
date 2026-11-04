@@ -1,4 +1,4 @@
-import { composeStories } from '@storybook/react-webpack5';
+import { composeStories } from '@storybook/react';
 import { axe } from 'jest-axe';
 
 import * as stories from './SearchInput.stories';

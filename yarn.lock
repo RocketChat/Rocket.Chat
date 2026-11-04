@@ -10451,6 +10451,7 @@ __metadata:
     "@storybook/addon-docs": "npm:~10.6.5"
     "@storybook/addon-styling-webpack": "npm:~3.0.2"
     "@storybook/addon-webpack5-compiler-swc": "npm:~4.0.3"
+    "@storybook/react": "npm:~10.6.5"
     "@storybook/react-webpack5": "npm:~10.6.5"
     "@testing-library/dom": "npm:~10.4.2"
     "@testing-library/react": "npm:~16.3.3"
