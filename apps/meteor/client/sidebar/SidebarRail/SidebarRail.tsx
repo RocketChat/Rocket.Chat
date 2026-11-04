@@ -1,17 +1,20 @@
 import { Box, NavBarGroup } from '@rocket.chat/fuselage';
 import { usePermission, useUser } from '@rocket.chat/ui-contexts';
+import { useMediaCallAction } from '@rocket.chat/ui-voip';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import SidebarRailCreateNew from './SidebarRailCreateNew';
+import SidebarRailContactCenter from './SidebarRailContactCenter';
+import SidebarRailDirectory from './SidebarRailDirectory';
 import SidebarRailDivider from './SidebarRailDivider';
+import SidebarRailInbox from './SidebarRailInbox';
 import SidebarRailLoginPage from './SidebarRailLoginPage';
+import SidebarRailMarketplace from './SidebarRailMarketplace';
 import SidebarRailPhone from './SidebarRailPhone';
-import SidebarRailSort from './SidebarRailSort';
-import NavBarOmnichannelGroup from '../../navbar/NavBarOmnichannelGroup';
-import NavBarItemDirectoryPage from '../../navbar/NavBarPagesGroup/NavBarItemDirectoryPage';
-import NavBarItemHomePage from '../../navbar/NavBarPagesGroup/NavBarItemHomePage';
-import NavBarItemMarketPlaceMenu from '../../navbar/NavBarPagesGroup/NavBarItemMarketPlaceMenu';
+import SidebarRailPreferences from './SidebarRailPreferences';
+import SidebarRailTeams from './SidebarRailTeams';
+import NavBarItemOmnichannelLivechatToggle from '../../navbar/NavBarOmnichannelGroup/NavBarItemOmnichannelLivechatToggle';
+import NavBarItemOmnichannelQueue from '../../navbar/NavBarOmnichannelGroup/NavBarItemOmnichannelQueue';
 import { NavBarItemAdministrationMenu, UserMenu } from '../../navbar/NavBarSettingsToolbar';
 import { useOmnichannelEnabled } from '../../views/omnichannel/hooks/useOmnichannelEnabled';
 
@@ -23,6 +26,7 @@ const SidebarRail = () => {
 	const hasAccessMarketplacePermission = usePermission('access-marketplace');
 	const showMarketplace = hasAccessMarketplacePermission || hasManageAppsPermission;
 	const showOmnichannel = useOmnichannelEnabled();
+	const showCalls = Boolean(useMediaCallAction());
 
 	return (
 		<Box
@@ -43,26 +47,39 @@ const SidebarRail = () => {
 			zIndex={10}
 		>
 			<Box flexGrow={1} minHeight={0} overflow='hidden auto' padding={8}>
-				<NavBarGroup vertical aria-label={t('Pages_and_actions')}>
-					<NavBarItemHomePage title={t('Home')} />
-					<SidebarRailSort />
-					<SidebarRailCreateNew />
-					<NavBarItemDirectoryPage title={t('Directory')} />
-					{showMarketplace && <NavBarItemMarketPlaceMenu />}
+				{/* Inbox and Teams select what the sidebar shows; the pages below open over it. */}
+				<NavBarGroup vertical aria-label={t('Navigation')}>
+					<SidebarRailInbox />
+					<SidebarRailTeams />
 				</NavBarGroup>
 				<SidebarRailDivider />
-				<NavBarGroup vertical aria-label={t('Voice_Call')}>
-					<SidebarRailPhone />
+				<NavBarGroup vertical aria-label={t('Pages_and_actions')}>
+					<SidebarRailDirectory />
+					{showMarketplace && <SidebarRailMarketplace />}
 				</NavBarGroup>
+				{/* Without calls the group would be empty, leaving two dividers with nothing between them. */}
+				{showCalls && (
+					<>
+						<SidebarRailDivider />
+						<NavBarGroup vertical aria-label={t('Voice_Call')}>
+							<SidebarRailPhone />
+						</NavBarGroup>
+					</>
+				)}
 				{showOmnichannel && (
 					<>
 						<SidebarRailDivider />
-						<NavBarOmnichannelGroup vertical />
+						<NavBarGroup vertical aria-label={t('Omnichannel')}>
+							<NavBarItemOmnichannelQueue />
+							<SidebarRailContactCenter />
+							<NavBarItemOmnichannelLivechatToggle />
+						</NavBarGroup>
 					</>
 				)}
 			</Box>
 			<Box padding={8}>
 				<NavBarGroup vertical aria-label={t('Workspace_and_user_preferences')}>
+					<SidebarRailPreferences />
 					<NavBarItemAdministrationMenu />
 					{user ? <UserMenu user={user} /> : <SidebarRailLoginPage />}
 				</NavBarGroup>

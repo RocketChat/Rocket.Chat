@@ -36,13 +36,20 @@ const sidebarRowHeight: Record<SidebarViewMode, number> = {
 
 const SIDEBAR_VIRTUAL_BUFFER_ROWS = 5;
 
-const RoomList = () => {
+type RoomListProps = {
+	/** Narrows the list to the rooms whose name matches, as the Inbox search does. */
+	filterText?: string;
+};
+
+const RoomList = ({ filterText = '' }: RoomListProps) => {
 	const { t } = useTranslation();
 	const userId = useUserId();
 	const isAnonymous = !userId;
 
 	const { collapsedGroups, handleClick } = useCollapsedGroups();
-	const { groups } = useRoomList({ collapsedGroups });
+	const { groups } = useRoomList({ collapsedGroups, filterText });
+	// While filtering, groups show expanded and some are left out, so collapsing or moving them is turned off.
+	const filtering = Boolean(filterText.trim());
 	const moveCategory = useMoveCategoryPosition();
 	const virtualizerRef = useRef<VirtualizerHandle>(null);
 	const { previousUnread, nextUnread, handleRangeChange } = useOffscreenUnreads({ groups });
@@ -83,6 +90,14 @@ const RoomList = () => {
 	const shortcutOpenMenuRef = useShortcutOpenMenu();
 	const ref = useMergedRefsV2(preventDefaultRef, shortcutOpenMenuRef);
 
+	if (filtering && groups.length === 0) {
+		return (
+			<Box paddingInline={16} paddingBlock={8} fontScale='p2' color='hint' role='status'>
+				{t('No_results_found')}
+			</Box>
+		);
+	}
+
 	return (
 		<Box position='relative' overflow='hidden' height='full' ref={ref}>
 			<SidebarVirtualList
@@ -95,11 +110,11 @@ const RoomList = () => {
 				renderGroup={(group, index) => (
 					<RoomListCollapser
 						group={group}
-						canMoveUp={canMoveGroup(groups, index, 'up')}
-						canMoveDown={canMoveGroup(groups, index, 'down')}
+						canMoveUp={!filtering && canMoveGroup(groups, index, 'up')}
+						canMoveDown={!filtering && canMoveGroup(groups, index, 'down')}
 						onMoveUp={() => moveCategory(allGroupKeys, group.key, 'up')}
 						onMoveDown={() => moveCategory(allGroupKeys, group.key, 'down')}
-						onClick={() => handleClick(group.key)}
+						onClick={() => !filtering && handleClick(group.key)}
 					/>
 				)}
 				renderItem={(item, _itemIndex, _group, _groupIndex, rowIndex) => (

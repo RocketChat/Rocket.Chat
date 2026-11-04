@@ -19,7 +19,7 @@ const query = { open: { $ne: false } };
 
 const emptyQueue: ILivechatInquiryRecord[] = [];
 
-type GroupUnreadInfo = {
+export type GroupUnreadInfo = {
 	userMentions: number;
 	groupMentions: number;
 	tunread: string[];
@@ -46,10 +46,44 @@ type useRoomListReturnType = {
 	totalCount: number;
 };
 
+export const emptyUnreadInfo = (): GroupUnreadInfo => ({ userMentions: 0, groupMentions: 0, tunread: [], tunreadUser: [], unread: 0 });
+
+export const buildUnreadInfo = (roomsToCount: SubscriptionWithRoom[]): GroupUnreadInfo =>
+	roomsToCount.reduce<GroupUnreadInfo>((counter, room) => {
+		if (room.hideUnreadStatus) {
+			return counter;
+		}
+
+		counter.userMentions += room.userMentions || 0;
+		counter.groupMentions += room.groupMentions || 0;
+		counter.tunread = [...counter.tunread, ...(room.tunread || [])];
+		counter.tunreadUser = [...counter.tunreadUser, ...(room.tunreadUser || [])];
+		counter.unread += room.unread || 0;
+
+		if (!room.unread && !room.tunread?.length && room.alert) {
+			counter.unread += 1;
+		}
+
+		return counter;
+	}, emptyUnreadInfo());
+
 export const isUnreadRoom = (room: SubscriptionWithRoom): boolean =>
 	!room.hideUnreadStatus && Boolean(room.alert || room.unread || room.tunread?.length);
 
-export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] }): useRoomListReturnType => {
+const matchesFilter = (room: { fname?: string; name?: string }, text: string) =>
+	(room.fname || room.name || '').toLocaleLowerCase().includes(text);
+
+/**
+ * `filterText` narrows the list to the rooms whose name matches: every group is shown expanded, and groups left with
+ * no matching room are left out.
+ */
+export const useRoomList = ({
+	collapsedGroups,
+	filterText = '',
+}: {
+	collapsedGroups?: string[];
+	filterText?: string;
+}): useRoomListReturnType => {
 	const showOmnichannel = useOmnichannelEnabled();
 
 	const { data: { isEnterprise = false } = {} } = useIsEnterprise();
@@ -78,7 +112,8 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 
 	const groups = useDebouncedValue(
 		useMemo(() => {
-			const isCollapsed = (key: string) => collapsedGroups?.includes(key) ?? false;
+			const text = filterText.trim().toLocaleLowerCase();
+			const isCollapsed = (key: string) => !text && (collapsedGroups?.includes(key) ?? false);
 
 			const unfilteredGroups = new Map<string, Set<SubscriptionWithRoom>>();
 			categoryList.forEach((category) => {
@@ -86,6 +121,10 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 			});
 
 			rooms.forEach((room) => {
+				if (text && !matchesFilter(room, text)) {
+					return;
+				}
+
 				const roomCategory = getRoomCategory(room, {
 					groups: unfilteredGroups,
 					hasIncomingCalls: (rid: SubscriptionWithRoom['rid']) => {
@@ -107,29 +146,9 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 			});
 
 			if (unfilteredGroups.has('Incoming_Livechats')) {
-				unfilteredGroups.set('Incoming_Livechats', new Set(queue) as unknown as Set<SubscriptionWithRoom>);
+				const matchingQueue = text ? queue.filter((inquiry) => matchesFilter(inquiry, text)) : queue;
+				unfilteredGroups.set('Incoming_Livechats', new Set(matchingQueue) as unknown as Set<SubscriptionWithRoom>);
 			}
-
-			const emptyUnreadInfo = (): GroupUnreadInfo => ({ userMentions: 0, groupMentions: 0, tunread: [], tunreadUser: [], unread: 0 });
-
-			const buildUnreadInfo = (roomsToCount: SubscriptionWithRoom[]): GroupUnreadInfo =>
-				roomsToCount.reduce<GroupUnreadInfo>((counter, room) => {
-					if (room.hideUnreadStatus) {
-						return counter;
-					}
-
-					counter.userMentions += room.userMentions || 0;
-					counter.groupMentions += room.groupMentions || 0;
-					counter.tunread = [...counter.tunread, ...(room.tunread || [])];
-					counter.tunreadUser = [...counter.tunreadUser, ...(room.tunreadUser || [])];
-					counter.unread += room.unread || 0;
-
-					if (!room.unread && !room.tunread?.length && room.alert) {
-						counter.unread += 1;
-					}
-
-					return counter;
-				}, emptyUnreadInfo());
 
 			const makeGroup = (key: string, set: Set<SubscriptionWithRoom>): SidebarRoomListGroup => {
 				const category = customCategories.find(({ _id }) => _id === key);
@@ -172,7 +191,7 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 
 			const groups = filterGroupVisibility(unfilteredGroups, isEnterprise, makeGroup);
 
-			return groups;
+			return text ? groups.filter((group) => group.rooms.length > 0) : groups;
 		}, [
 			categoryList,
 			rooms,
@@ -185,6 +204,7 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 			isShowUnreads,
 			isKeepUnreadsOnTop,
 			openedRoom,
+			filterText,
 		]),
 		50,
 	);
