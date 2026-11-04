@@ -2,7 +2,6 @@ import { styled, View } from '@tamagui/web';
 
 import type { ElementProps } from '../../types/ElementProps';
 import { Box } from '../Box';
-import { Margins } from '../Margins';
 import ModalHeaderInner from './ModalHeaderInner';
 
 export type ModalHeaderProps = ElementProps<HTMLElement>;
@@ -24,9 +23,7 @@ const ModalHeaderFrame = styled(View, {
 
 const ModalHeader = ({ children, className, ...props }: ModalHeaderProps) => (
 	<ModalHeaderFrame render={<Box is='header' {...props} />} className={['rcx-modal__header', className].filter(Boolean).join(' ')}>
-		<ModalHeaderInner>
-			<Margins all='x4'>{children}</Margins>
-		</ModalHeaderInner>
+		<ModalHeaderInner>{children}</ModalHeaderInner>
 	</ModalHeaderFrame>
 );
 

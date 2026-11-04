@@ -14,7 +14,7 @@ const ModalHeaderInnerFrame = styled(View, {
 	minWidth: 'auto',
 	minHeight: 'auto',
 	flexWrap: 'nowrap',
-	margin: '-4px',
+	gap: '8px',
 });
 
 // end of generated

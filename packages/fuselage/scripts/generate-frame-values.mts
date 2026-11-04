@@ -1944,7 +1944,7 @@ const generateModalBackdrop = () =>
 	);
 
 const generateModalHeader = () => modalPart('ModalHeaderFrame', { ...blockBox, margin: containerMargin });
-const generateModalHeaderInner = () => modalPart('ModalHeaderInnerFrame', { ...flexBox, flexWrap: 'nowrap', margin: spacing('-x4') });
+const generateModalHeaderInner = () => modalPart('ModalHeaderInnerFrame', { ...flexBox, flexWrap: 'nowrap', gap: spacing('x8')! });
 const generateModalHeaderText = () =>
 	modalPart('ModalHeaderTextFrame', {
 		...flexBox,
