@@ -1,4 +1,4 @@
-import { styled, View } from '@tamagui/web';
+import { styled, Text, View } from '@tamagui/web';
 import type { HTMLAttributes, ReactNode } from 'react';
 
 import { Chevron } from '../Chevron';
@@ -111,7 +111,8 @@ const SidebarAccordionChevronSlotFrame = styled(View, {
 });
 
 // Declared where it renders: zero-runtime only erases a `styled()` whose every use is in its own module
-const SidebarAccordionTitleFrame = styled(View, {
+const SidebarAccordionTitleFrame = styled(Text, {
+	wordWrap: 'inherit',
 	render: 'h5',
 	position: 'static',
 	display: 'block',

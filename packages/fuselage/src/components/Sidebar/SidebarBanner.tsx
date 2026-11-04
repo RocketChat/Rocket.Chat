@@ -1,4 +1,4 @@
-import { styled, View } from '@tamagui/web';
+import { styled, Text, View } from '@tamagui/web';
 import type { AllHTMLAttributes, ReactNode } from 'react';
 
 import { cx } from '../../helpers/composeClassNames';
@@ -76,7 +76,10 @@ const SidebarBannerAddonFrame = styled(View, {
 });
 
 // Declared where it renders: zero-runtime only erases a `styled()` whose every use is in its own module
-const SidebarBannerTitleFrame = styled(View, {
+const SidebarBannerTitleFrame = styled(Text, {
+	flexBasis: 'auto',
+	whiteSpace: 'inherit',
+	wordWrap: 'inherit',
 	render: 'h5',
 	position: 'static',
 	display: 'block',
@@ -95,7 +98,10 @@ const SidebarBannerTitleFrame = styled(View, {
 });
 
 // Declared where it renders: zero-runtime only erases a `styled()` whose every use is in its own module
-const SidebarBannerLinkFrame = styled(View, {
+const SidebarBannerLinkFrame = styled(Text, {
+	flexBasis: 'auto',
+	whiteSpace: 'inherit',
+	wordWrap: 'inherit',
 	render: 'a',
 	position: 'static',
 	display: 'inline-block',

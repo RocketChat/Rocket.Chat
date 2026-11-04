@@ -1,4 +1,4 @@
-import { styled, View } from '@tamagui/web';
+import { styled, Text, View } from '@tamagui/web';
 import type { ReactNode } from 'react';
 
 import { cx, cxx } from '../../helpers/composeClassNames';
@@ -117,7 +117,8 @@ const BarFrame = styled(View, {
 	},
 });
 
-const TitleFrame = styled(View, {
+const TitleFrame = styled(Text, {
+	wordWrap: 'inherit',
 	render: 'h2',
 	display: 'block',
 	flexDirection: 'row',

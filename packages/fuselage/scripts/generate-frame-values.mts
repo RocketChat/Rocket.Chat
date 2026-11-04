@@ -4973,6 +4973,77 @@ for (const [dir, control] of [
 		{ file: `${base}.styles.css`, generate: () => selectionStates(control), css: true },
 	);
 }
+
+// Frames whose children are text are a Tamagui Text: a string child of a View throws on React Native
+const textFrames = [
+	'BadgeFrame',
+	'BannerTitleFrame',
+	'CalloutContent',
+	'CalloutTitle',
+	'CardTitleFrame',
+	'CodeSnippetCodeBoxFrame',
+	'ContextualbarTitleFrame',
+	'DividerLabel',
+	'ItemDescriptionFrame',
+	'ItemGroupTitleFrame',
+	'ItemMetaFrame',
+	'ItemTitleFrame',
+	'LabelFrame',
+	'MenuItemDescriptionFrame',
+	'MessageBodyFrame',
+	'MessageDividerUnreadFrame',
+	'MessageGenericPreviewDescriptionFrame',
+	'MessageGenericPreviewIconTitleFrame',
+	'MessageMetricsItemLabelFrame',
+	'MessageReactionCounterFrame',
+	'MessageSystemBodyFrame',
+	'ModalFooterAnnotationFrame',
+	'ModalTaglineFrame',
+	'ModalTitleFrame',
+	'OptionDescriptionBlockFrame',
+	'SidebarAccordionTitleFrame',
+	'SidebarBannerLinkFrame',
+	'SidebarBannerTitleFrame',
+	'SidebarFooterContentFrame',
+	'SidebarGroupTitleFrame',
+	'SidebarMediaLabelFrame',
+	'SidebarMediaTitleFrame',
+	'SidepanelHeaderTitleFrame',
+	'StatesSubtitleFrame',
+	'StatesTitleFrame',
+	'ThreadMessageOriginFrame',
+	'ToastBarContentFrame',
+	'TooltipFrame',
+];
+
+// A Text is an inline, pre-wrapped span where a View is a column flex div: what the frame doesn't state stays a View's
+const viewDefaults: Record<string, Value> = {
+	render: 'div',
+	display: 'flex',
+	alignItems: 'stretch',
+	flexDirection: 'column',
+	flexBasis: 'auto',
+	flexShrink: 0,
+	minWidth: 0,
+	minHeight: 0,
+	whiteSpace: 'inherit',
+	wordWrap: 'inherit',
+};
+
+const onText = (code: string) =>
+	textFrames.reduce(
+		(out, name) =>
+			out.replace(new RegExp(`const ${name} = styled\\(View, \\{\\n([\\s\\S]*?)\\n\\}\\);`), (_, body: string) => {
+				const stated = new Set([...body.matchAll(/^\t"?(\w+)"?:/gm)].map(([, key]) => key));
+				const defaults = Object.entries(viewDefaults)
+					.filter(([key]) => !stated.has(key))
+					.map(([key, value]) => `\t${key}: ${JSON.stringify(value)},\n`)
+					.join('');
+				return `const ${name} = styled(Text, {\n${defaults}${body}\n});`;
+			}),
+		code,
+	);
+
 const check = process.argv.includes('--check');
 let stale = false;
 
@@ -5031,7 +5102,7 @@ for (const { file, generate, css } of components) {
 	}
 
 	const config = (await prettier.resolveConfig(file)) ?? {};
-	const body = await prettier.format(generate(), { ...config, parser: css ? 'css' : 'typescript' });
+	const body = await prettier.format(onText(generate()), { ...config, parser: css ? 'css' : 'typescript' });
 	const next = `${source.slice(0, start)}${START}\n\n${body}\n${source.slice(end)}`;
 
 	if (next !== source) {

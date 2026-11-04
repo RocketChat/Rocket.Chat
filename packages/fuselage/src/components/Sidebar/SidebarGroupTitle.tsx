@@ -1,4 +1,4 @@
-import { styled, View } from '@tamagui/web';
+import { styled, Text, View } from '@tamagui/web';
 import type { AriaAttributes, HTMLAttributes, ReactNode } from 'react';
 
 import { cx } from '../../helpers/composeClassNames';
@@ -33,7 +33,8 @@ const SidebarGroupHeadingFrame = styled(View, {
 });
 
 // Declared where it renders: zero-runtime only erases a `styled()` whose every use is in its own module
-const SidebarGroupTitleFrame = styled(View, {
+const SidebarGroupTitleFrame = styled(Text, {
+	wordWrap: 'inherit',
 	render: 'h4',
 	position: 'static',
 	display: 'block',

@@ -1,4 +1,4 @@
-import { styled, View } from '@tamagui/web';
+import { styled, Text, View } from '@tamagui/web';
 import type { HTMLAttributes, ReactNode } from 'react';
 
 import { cx } from '../../../helpers/composeClassNames';
@@ -38,7 +38,10 @@ const MessageDividerWrapperFrame = styled(View, {
 	backgroundColor: 'var(--rcx-message-background-color, var(--rcx-color-surface-room, #ffffff))',
 });
 
-const MessageDividerUnreadFrame = styled(View, {
+const MessageDividerUnreadFrame = styled(Text, {
+	flexBasis: 'auto',
+	whiteSpace: 'inherit',
+	wordWrap: 'inherit',
 	render: 'div',
 	position: 'absolute',
 	display: 'block',

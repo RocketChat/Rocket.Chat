@@ -1,5 +1,5 @@
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
-import { styled, View } from '@tamagui/web';
+import { styled, Text, View } from '@tamagui/web';
 import type { ReactNode } from 'react';
 
 import { cx } from '../../helpers/composeClassNames';
@@ -85,7 +85,10 @@ const CalloutBody = styled(View, {
 	overflow: 'hidden',
 });
 
-const CalloutTitle = styled(View, {
+const CalloutTitle = styled(Text, {
+	render: 'div',
+	flexBasis: 'auto',
+	wordWrap: 'inherit',
 	display: 'block',
 	flexDirection: 'row',
 	alignItems: 'normal',
@@ -101,7 +104,11 @@ const CalloutTitle = styled(View, {
 	letterSpacing: '0rem',
 });
 
-const CalloutContent = styled(View, {
+const CalloutContent = styled(Text, {
+	render: 'div',
+	flexBasis: 'auto',
+	whiteSpace: 'inherit',
+	wordWrap: 'inherit',
 	display: 'block',
 	flexDirection: 'row',
 	alignItems: 'normal',

@@ -1,4 +1,4 @@
-import { styled, View } from '@tamagui/web';
+import { styled, Text, View } from '@tamagui/web';
 import type { HTMLAttributes } from 'react';
 
 import { cx } from '../../../helpers/composeClassNames';
@@ -21,7 +21,10 @@ const SidebarMediaControllerFrame = styled(View, {
 });
 
 // Declared where it renders: zero-runtime only erases a `styled()` whose every use is in its own module
-const SidebarMediaLabelFrame = styled(View, {
+const SidebarMediaLabelFrame = styled(Text, {
+	flexBasis: 'auto',
+	whiteSpace: 'inherit',
+	wordWrap: 'inherit',
 	render: 'div',
 	position: 'static',
 	display: 'block',

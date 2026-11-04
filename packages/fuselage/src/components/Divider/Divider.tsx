@@ -1,4 +1,4 @@
-import { styled, View } from '@tamagui/web';
+import { styled, Text, View } from '@tamagui/web';
 import type { ReactNode } from 'react';
 
 import type { ElementProps } from '../../types/ElementProps';
@@ -314,7 +314,11 @@ const DividerBar = styled(View, {
 	flexGrow: 1,
 });
 
-const DividerLabel = styled(View, {
+const DividerLabel = styled(Text, {
+	render: 'div',
+	flexBasis: 'auto',
+	whiteSpace: 'inherit',
+	wordWrap: 'inherit',
 	display: 'block',
 	flexDirection: 'row',
 	alignItems: 'normal',

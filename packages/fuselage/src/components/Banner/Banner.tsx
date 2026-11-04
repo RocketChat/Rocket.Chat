@@ -139,7 +139,10 @@ const BannerContentFrame = styled(View, {
 });
 
 // Declared where they render: zero-runtime only erases a `styled()` whose every use is in its own module
-const BannerTitleFrame = styled(View, {
+const BannerTitleFrame = styled(Text, {
+	flexBasis: 'auto',
+	whiteSpace: 'inherit',
+	wordWrap: 'inherit',
 	render: 'h6',
 	display: 'block',
 	flexDirection: 'row',

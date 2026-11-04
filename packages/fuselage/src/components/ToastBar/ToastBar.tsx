@@ -1,4 +1,4 @@
-import { styled, View } from '@tamagui/web';
+import { styled, Text, View } from '@tamagui/web';
 import { type ReactNode, type AllHTMLAttributes, type CSSProperties, useId } from 'react';
 
 import { Box } from '../Box';
@@ -47,7 +47,11 @@ const ToastBarInnerFrame = styled(View, {
 	padding: '16px',
 });
 
-const ToastBarContentFrame = styled(View, {
+const ToastBarContentFrame = styled(Text, {
+	render: 'div',
+	flexBasis: 'auto',
+	whiteSpace: 'inherit',
+	wordWrap: 'inherit',
 	display: 'block',
 	flexDirection: 'row',
 	alignItems: 'normal',

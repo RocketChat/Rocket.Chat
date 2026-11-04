@@ -1,4 +1,4 @@
-import { styled, View } from '@tamagui/web';
+import { styled, Text, View } from '@tamagui/web';
 import type { ReactElement } from 'react';
 
 import type { ElementProps } from '../../types/ElementProps';
@@ -32,7 +32,9 @@ const CodeSnippetFrame = styled(View, {
 	backgroundColor: 'var(--rcx-color-surface-neutral, #e4e7ea)',
 });
 
-const CodeSnippetCodeBoxFrame = styled(View, {
+const CodeSnippetCodeBoxFrame = styled(Text, {
+	flexBasis: 'auto',
+	wordWrap: 'inherit',
 	render: 'div',
 	display: 'block',
 	flexDirection: 'row',

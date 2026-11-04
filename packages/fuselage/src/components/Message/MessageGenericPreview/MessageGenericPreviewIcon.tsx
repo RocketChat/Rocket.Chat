@@ -1,4 +1,4 @@
-import { styled, View } from '@tamagui/web';
+import { styled, Text, View } from '@tamagui/web';
 
 import { Icon, type IconProps } from '../../Icon';
 
@@ -29,7 +29,9 @@ const MessageGenericPreviewIconFrame = styled(View, {
 	backgroundColor: 'var(--rcx-message-generic-preview-icon-background-color, var(--rcx-color-surface-neutral, #e4e7ea))',
 });
 
-const MessageGenericPreviewIconTitleFrame = styled(View, {
+const MessageGenericPreviewIconTitleFrame = styled(Text, {
+	flexBasis: 'auto',
+	wordWrap: 'inherit',
 	render: 'div',
 	position: 'static',
 	display: 'block',
