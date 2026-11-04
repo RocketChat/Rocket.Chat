@@ -16,7 +16,7 @@ import { nodeLoggerMiddleware } from '../../../api/v1/middlewares/logger';
 const logger = new Logger('APPS');
 
 // the hash of a private endpoint is the secret that guards it
-const censorPrivateHash = (url: string) => url.replace(/(\/api\/apps\/private\/[^/]+\/)[^/?#]+/, '$1*Redacted*');
+const censorPrivateHash = (url: string) => url.replace(/(\/api\/apps\/private\/[^/]+\/)[^/?#]+/i, '$1*Redacted*');
 
 (WebApp.rawConnectHandlers as unknown as ReturnType<typeof express>).use(
 	['/api/apps/private', '/api/apps/public'],
