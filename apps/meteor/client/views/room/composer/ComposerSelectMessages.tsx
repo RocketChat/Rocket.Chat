@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import type { ComposerMessageProps } from './ComposerMessage';
 import { useCountSelected, useClearSelection, useAvailableMessagesCount } from '../MessageList/contexts/SelectedMessagesContext';
 
-const ComposerSelectMessages = ({ onClickSelectAll }: ComposerMessageProps) => {
+const ComposerSelectMessages = ({ onClickSelectAll }: Pick<ComposerMessageProps, 'onClickSelectAll'>) => {
 	const { t } = useTranslation();
 
 	const clearSelection = useClearSelection();
