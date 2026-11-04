@@ -91,8 +91,8 @@ const guardABACManagedField = (room: IRoom, value: string | undefined, current: 
 };
 
 const validators: RoomSettingsValidators = {
-	async hideHistoryForNewMembers({ room }) {
-		if (!settings.get<boolean>('Restricted_Message_History_Enabled') || !canRestrictMessageHistory(room)) {
+	async hideHistoryForNewMembers({ value, room }) {
+		if (value && (!settings.get<boolean>('Restricted_Message_History_Enabled') || !canRestrictMessageHistory(room))) {
 			throw new ClientSafeError('error-action-not-allowed', 'Hiding message history is not allowed in this room', {
 				method: 'saveRoomSettings',
 				action: 'Hide_history_for_new_members',

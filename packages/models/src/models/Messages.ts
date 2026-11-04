@@ -99,6 +99,34 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			.toArray();
 	}
 
+	async findFileIdsInThreads(
+		rid: IRoom['_id'],
+		threadIds: IMessage['_id'][],
+		{ withRoots, withAlsoSentToChannel }: { withRoots: boolean; withAlsoSentToChannel: boolean },
+	): Promise<string[]> {
+		if (!threadIds.length) {
+			return [];
+		}
+
+		const messages = await this.find<Pick<IMessage, 'file' | 'files'>>(
+			{
+				rid,
+				$and: [
+					{
+						$or: [
+							{ tmid: { $in: threadIds }, ...(!withAlsoSentToChannel && { tshow: { $ne: true } }) },
+							...(withRoots ? [{ _id: { $in: threadIds } }] : []),
+						],
+					},
+					{ $or: [{ 'file._id': { $exists: true } }, { 'files._id': { $exists: true } }] },
+				],
+			},
+			{ projection: { file: 1, files: 1 } },
+		).toArray();
+
+		return messages.flatMap(({ file, files }) => [...(files ?? []).map(({ _id }) => _id), ...(file ? [file._id] : [])]);
+	}
+
 	filterVisibleTo({ since, followedThreadIds, hiddenThreadIds }: MessageHistoryVisibility): Filter<IMessage> {
 		return {
 			$or: [

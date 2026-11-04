@@ -384,6 +384,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	setHistoryVisibleFromByRoomIdAndUserId(roomId: string, userId: string, historyVisibleFrom: Date): Promise<UpdateResult>;
 	unsetHistoryVisibleFromByRoomIdAndUserId(roomId: string, userId: string): Promise<UpdateResult>;
 	findWithHistoryVisibleFromByRoomId(roomId: string): FindCursor<Pick<ISubscription, 'u' | 'historyVisibleFrom'>>;
+	findWithHistoryVisibleFromByUserId(userId: string): FindCursor<Pick<ISubscription, 'rid' | 'historyVisibleFrom'>>;
 	findJoinedByUserId<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		userId: ISubscription['u']['_id'],
 		options?: O,

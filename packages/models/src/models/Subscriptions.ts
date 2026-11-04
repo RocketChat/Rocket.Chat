@@ -2053,6 +2053,10 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.find({ rid: roomId, historyVisibleFrom: { $exists: true } }, { projection: { u: 1, historyVisibleFrom: 1 } });
 	}
 
+	findWithHistoryVisibleFromByUserId(userId: string): FindCursor<Pick<ISubscription, 'rid' | 'historyVisibleFrom'>> {
+		return this.find({ 'u._id': userId, 'historyVisibleFrom': { $exists: true } }, { projection: { rid: 1, historyVisibleFrom: 1 } });
+	}
+
 	findJoinedByUserId<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		userId: ISubscription['u']['_id'],
 		options?: O,

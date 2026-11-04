@@ -14,7 +14,7 @@ import { Logger } from '@rocket.chat/logger';
 import { Rooms, Subscriptions, Users, VideoConference } from '@rocket.chat/models';
 
 import { emit, StreamPresence } from './StreamPresence';
-import { canMemberReceiveMessage, canReceiveMessage, trackHistoryCutoff } from './historyVisibility';
+import { canMemberReceiveMessage, canReceiveMessage, trackHistoryCutoff, trackRoomListCutoffs, visibleRoom } from './historyVisibility';
 import { getCachedUserForPublication } from './publication-user-cache';
 import { Streamer as StreamerModule } from './streamer.module';
 import type { IStreamer, IStreamerConstructor, StreamerOptions, StreamRelay } from './types';
@@ -174,10 +174,11 @@ export class NotificationsModule {
 					return false;
 				}
 
-				const roomParticipant = await Subscriptions.countByRoomIdAndUserId(room._id, user._id);
-				if (roomParticipant > 0 && !(await canMemberReceiveMessage(room._id, user._id, message))) {
+				if (!(await canMemberReceiveMessage(room._id, user._id, message))) {
 					return false;
 				}
+
+				const roomParticipant = await Subscriptions.countByRoomIdAndUserId(room._id, user._id);
 
 				return {
 					roomParticipant: roomParticipant > 0,
@@ -436,10 +437,17 @@ export class NotificationsModule {
 					return false;
 				}
 
+				await trackHistoryCutoff(this, rid, user._id);
+
 				return true;
 			} catch (error) {
 				return false;
 			}
+		});
+
+		this.streamRoomData.allowEmit(async function (_eventName, room) {
+			const visible = await visibleRoom(this, room);
+			return visible === room ? true : visible;
 		});
 
 		this.streamRoles.allowWrite('none');
@@ -459,8 +467,10 @@ export class NotificationsModule {
 			}
 
 			if (/rooms-changed/.test(eventName)) {
+				await trackRoomListCutoffs(publication, userId);
+
 				// TODO: change this to serialize only once
-				const roomEvent = (...args: any[]): void => {
+				const sendRoomEvent = (...args: any[]): void => {
 					// TODO if receive a removed event could do => streamer.removeListener(rid, roomEvent);
 					const payload = streamer.changedPayload(streamer.subscriptionName, 'id', {
 						eventName: `${userId}/rooms-changed`,
@@ -477,6 +487,16 @@ export class NotificationsModule {
 						return;
 					}
 					publication._session.socket.send(payload);
+				};
+
+				let pendingRoomEvents = Promise.resolve();
+				const roomEvent = (...args: any[]): void => {
+					pendingRoomEvents = pendingRoomEvents
+						.then(async () => {
+							const [clientAction, room, ...rest] = args;
+							sendRoomEvent(...(room?.lastMessage ? [clientAction, await visibleRoom(publication, room), ...rest] : args));
+						})
+						.catch((err) => logger.error({ msg: 'Error while delivering a room change', err }));
 				};
 
 				const subscriptions = await Subscriptions.find<Pick<ISubscription, 'rid'>>(

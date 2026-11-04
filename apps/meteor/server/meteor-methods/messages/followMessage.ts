@@ -32,7 +32,7 @@ export const followMessage = async (user: IUser, { mid }: { mid: IMessage['_id']
 	const threadRoot = message.tmid
 		? await Messages.findOneById<HistoryCheckedMessage>(id, { projection: historyCheckedMessageProjection })
 		: message;
-	if (!threadRoot || !(await canSeeMessage(user._id, threadRoot))) {
+	if (threadRoot && !(await canSeeMessage(user._id, threadRoot))) {
 		throw new ClientSafeError('error-not-allowed', 'not-allowed', { method: 'followMessage' });
 	}
 
