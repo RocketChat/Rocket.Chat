@@ -68,14 +68,16 @@ const admin = mongo.db('admin');
 const mongoCounters = async () => {
 	const [{ totals }, { opcounters }] = await Promise.all([admin.command({ top: 1 }), admin.command({ serverStatus: 1 })]);
 	const db = { queries: 0, getmore: 0, insert: 0, update: 0, remove: 0, commands: 0 };
+	const byCollection = {};
 	for (const [ns, entry] of Object.entries(totals)) {
 		if (ns.startsWith(`${args.db}.`)) {
 			for (const key of Object.keys(db)) {
 				db[key] += entry[key]?.count ?? 0;
+				byCollection[`${ns.slice(args.db.length + 1)}.${key}`] = entry[key]?.count ?? 0;
 			}
 		}
 	}
-	return { db, server: { ...opcounters } };
+	return { db, byCollection, server: { ...opcounters } };
 };
 const diff = (after, before) =>
 	Object.fromEntries(Object.entries(after).map(([key, value]) => [key, Number(value) - Number(before[key] ?? 0)]));
@@ -129,6 +131,18 @@ const mongoIdleAfter = await mongoCounters();
 const idleMetrics = await metricsOf('?reset=1');
 
 // --- the measured window
+// busy and total CPU ms of the whole machine, to flag runs that shared the machine with other work
+const machineTimes = () =>
+	os
+		.cpus()
+		.reduce(
+			(acc, { times }) => ({
+				busy: acc.busy + times.user + times.nice + times.sys + times.irq,
+				total: acc.total + times.user + times.nice + times.sys + times.irq + times.idle,
+			}),
+			{ busy: 0, total: 0 },
+		);
+const machineBefore = machineTimes();
 const mongoBefore = await mongoCounters();
 const cpuBefore = process.cpuUsage();
 const t0 = Date.now();
@@ -187,6 +201,7 @@ const t1 = Date.now();
 const serverMetrics = await metricsOf();
 const mongoAfter = await mongoCounters();
 const cpu = process.cpuUsage(cpuBefore);
+const machineAfter = machineTimes();
 
 // --- collect
 const results = await Promise.all(workers.map((worker) => ask(worker, 'finish', {}, 'result')));
@@ -269,6 +284,7 @@ const result = {
 	mongo: {
 		db: mongoDb,
 		server: diff(mongoAfter.server, mongoBefore.server),
+		byCollection: Object.fromEntries(Object.entries(diff(mongoAfter.byCollection, mongoBefore.byCollection)).filter(([, n]) => n > 0)),
 		readsPerReply: replies ? (mongoDb.queries + mongoDb.getmore) / replies : null,
 		writesPerReply: replies ? (mongoDb.insert + mongoDb.update + mongoDb.remove) / replies : null,
 		commandsPerReply: replies ? mongoDb.commands / replies : null,
@@ -308,6 +324,10 @@ const result = {
 	},
 	persistedMessageBytes: Object.values(persisted)[0]?.bytes ?? null,
 	loadgen: { cpuPct: ((cpu.user + cpu.system) / 1000 / (t1 - t0)) * 100 },
+	// cores busy with anything but the instances and the load generator; Mongo in Docker counts here
+	otherBusyCores:
+		((machineAfter.busy - machineBefore.busy) / (machineAfter.total - machineBefore.total)) * os.cpus().length -
+		(cpuMs + (cpu.user + cpu.system) / 1000) / (t1 - t0),
 };
 
 mkdirSync(args.out, { recursive: true });
