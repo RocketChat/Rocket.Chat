@@ -7,6 +7,7 @@ export const BlockElementType = {
 	CONVERSATIONS_SELECT: 'conversations_select',
 	DATEPICKER: 'datepicker',
 	DATETIMEPICKER: 'datetimepicker',
+	FILE_INPUT: 'file_input',
 	ICON: 'icon',
 	ICON_BUTTON: 'icon_button',
 	IMAGE: 'image',

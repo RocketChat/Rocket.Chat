@@ -5,6 +5,7 @@ import type { ConversationsSelectElement } from '../elements/ConversationsSelect
 import type { DatePickerElement } from '../elements/DatePickerElement.js';
 import type { DateTimePickerElement } from '../elements/DateTimePickerElement.js';
 import type { EmailTextInputElement } from '../elements/EmailTextInputElement.js';
+import type { FileInputElement } from '../elements/FileInputElement.js';
 import type { LinearScaleElement } from '../elements/LinearScaleElement.js';
 import type { MultiChannelsSelectElement } from '../elements/MultiChannelsSelectElement.js';
 import type { MultiConversationsSelectElement } from '../elements/MultiConversationsSelectElement.js';
@@ -29,6 +30,7 @@ export type InputBlock = LayoutBlockish<{
 		| ConversationsSelectElement
 		| DatePickerElement
 		| DateTimePickerElement
+		| FileInputElement
 		| LinearScaleElement
 		| MultiChannelsSelectElement
 		| MultiConversationsSelectElement

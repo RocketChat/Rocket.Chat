@@ -19,6 +19,7 @@ import {
 import { contextWithPlainText, contextWithMrkdwn, contextWithImage, contextWithAllElements } from './context';
 import { contextActions, contextActionsWithFeedback } from './contextActions';
 import { divider } from './divider';
+import { file, inputWithFileInput } from './file';
 import { header } from './header';
 import { imageWithTitle, imageWithoutTitle } from './image';
 import { infoCardPlain, infoCardMultipleRows } from './infoCard';
@@ -255,6 +256,10 @@ const BlocksTree: Item = [
 		],
 	},
 	{
+		label: 'file',
+		payload: file,
+	},
+	{
 		label: 'info card',
 		branches: [
 			{
@@ -303,6 +308,10 @@ const BlocksTree: Item = [
 			{
 				label: 'linear scale',
 				payload: inputWithLinearSelect,
+			},
+			{
+				label: 'file',
+				payload: inputWithFileInput,
 			},
 			{
 				label: 'number',

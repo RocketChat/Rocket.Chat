@@ -22,6 +22,11 @@ type UiKitContextValue = {
 	values: Record<ActionId, { value: unknown } | undefined>;
 	viewId?: string;
 	rid?: string;
+	/** Absent when the surface cannot store files; `file_input` then renders disabled. */
+	uploadFile?: (file: File) => Promise<{ _id: string; name: string }>;
+	/** Lets a surface keep its submit disabled while a `file_input` still has uploads in flight. */
+	setUploading?: (actionId: ActionId, uploading: boolean) => void;
+	uploading?: boolean;
 };
 
 export const UiKitContext = createContext<UiKitContextValue>({

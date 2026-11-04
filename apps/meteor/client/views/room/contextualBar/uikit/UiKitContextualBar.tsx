@@ -42,7 +42,7 @@ const UiKitContextualBar = ({ initialView }: UiKitContextualBarProps) => {
 
 	const handleSubmit = useStableCallback((e: FormEvent) => {
 		preventSyntheticEvent(e);
-		if (view.submit_disabled) {
+		if (view.submit_disabled || contextValue.uploading) {
 			return;
 		}
 		closeTab();
@@ -123,7 +123,7 @@ const UiKitContextualBar = ({ initialView }: UiKitContextualBarProps) => {
 						)}
 
 						{view.submit && (
-							<Button {...getButtonStyle(view.submit)} disabled={view.submit_disabled} onClick={handleSubmit}>
+							<Button {...getButtonStyle(view.submit)} disabled={view.submit_disabled || contextValue.uploading} onClick={handleSubmit}>
 								{contextualBarParser.renderTextObject(view.submit.text, 1)}
 							</Button>
 						)}

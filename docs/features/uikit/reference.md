@@ -99,6 +99,20 @@ Source: [`packages/ui-kit/src/blocks/layout/ImageBlock.ts`](../../../packages/ui
 | `appId` | `string` | no |  |
 | `blockId` | `string` | no |  |
 
+### `file`
+
+Source: [`packages/ui-kit/src/blocks/layout/FileBlock.ts`](../../../packages/ui-kit/src/blocks/layout/FileBlock.ts)
+
+An uploaded file shown as a card with a link to download it. The card shows a generic "File" label, not the file name, size or type: the client fetches no file details. The link is the file URL, which enforces room access, so a viewer who cannot read the file gets a `403` when they open it. Only files of the workspace are supported: any `source` other than `local` renders nothing.
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'file'` | yes |  |
+| `file_id` | `string` | yes |  |
+| `source` | `'local'` | no |  |
+| `appId` | `string` | no |  |
+| `blockId` | `string` | no |  |
+
 ### `info_card`
 
 Source: [`packages/ui-kit/src/blocks/layout/InfoCardBlock.ts`](../../../packages/ui-kit/src/blocks/layout/InfoCardBlock.ts)
@@ -428,6 +442,23 @@ Source: [`packages/ui-kit/src/blocks/elements/ImageElement.ts`](../../../package
 | `type` | `'image'` | yes |  |
 | `imageUrl` | `string` | yes |  |
 | `altText` | `string` | yes |  |
+
+### `file_input`
+
+Source: [`packages/ui-kit/src/blocks/elements/FileInputElement.ts`](../../../packages/ui-kit/src/blocks/elements/FileInputElement.ts)
+
+Lets the user attach files; the value in the view state is the list of the uploaded file IDs (`string[]`). Each file is uploaded when picked, as a temporary file of the room the view was opened from, and the app reads it with `IUploadRead` after the submit; see [interactions.md](interactions.md#files-in-views). Without a room, the element renders disabled.
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'file_input'` | yes |  |
+| `filetypes` | `string[]` | no | Accepted extensions, without the dot (`pdf`, `png`). Any file is accepted when omitted. |
+| `max_files` | `number` | no | Defaults to 10. |
+| `appId` | `string` | yes |  |
+| `blockId` | `string` | yes |  |
+| `actionId` | `string` | yes |  |
+| `confirm` | `ConfirmationDialog` | no |  |
+| `dispatchActionConfig` | `InputElementDispatchAction[]` | no |  |
 
 ### `linear_scale`
 

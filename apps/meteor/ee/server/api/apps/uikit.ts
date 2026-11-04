@@ -12,6 +12,7 @@ import rateLimit from 'express-rate-limit';
 import { authenticationMiddleware } from '../../../../server/api/v1/middlewares/authentication';
 import { nodeLoggerMiddleware } from '../../../../server/api/v1/middlewares/logger';
 import { httpApp } from '../../../../server/lib/http/httpServer';
+import { confirmViewFiles } from '../../../../server/lib/uikit/confirmViewFiles';
 import { recordInteractionView, withRecordedView } from '../../../../server/lib/uikit/recordedViews';
 import { reportInvalidInteractionBlocks } from '../../../../server/lib/uikit/reportInvalidBlocks';
 import { settings } from '../../../../server/settings';
@@ -307,17 +308,19 @@ export class AppUIKitInteractionApi {
 				const user = orch.getConverters()?.get('users').convertToApp(req.user);
 				const room = rid ? await orch.getConverters()?.get('rooms').convertById(rid) : undefined;
 
+				const view = await withRecordedView(payload.view, appId, req.user?._id);
 				const action = {
 					type,
 					appId,
 					actionId,
 					triggerId,
-					payload: { ...payload, view: await withRecordedView(payload.view, appId, req.user?._id) },
+					payload: { ...payload, view },
 					user,
 					room,
 				};
 
 				try {
+					await confirmViewFiles(view, req.user?._id);
 					const result = await orch.triggerEvent(AppEvents.IUIKitInteractionHandler, action);
 
 					if (reportInvalidInteractionBlocks(result, { where: 'ui.interaction', appId, userId: req.user?._id })) {
