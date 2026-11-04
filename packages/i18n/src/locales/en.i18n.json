@@ -7020,6 +7020,8 @@
   "Types": "Types",
   "Types_and_Distribution": "Types and distribution",
   "typing": "typing",
+  "UiKit_Reject_Invalid_Blocks": "Reject invalid UI blocks",
+  "UiKit_Reject_Invalid_Blocks_Description": "Reject messages with blocks that do not match the UiKit types or exceed its size limits, and drop the interaction views and pushed views of apps whose blocks do not. When disabled, they are only logged.",
   "UI_Allow_room_names_with_special_chars": "Allow special characters in room names",
   "UI_DisplayRoles": "Display roles",
   "UI_Group_Channels_By_Type": "Group channels by type",

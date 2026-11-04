@@ -69,4 +69,14 @@ The Livechat widget sends `blockAction` for message blocks to the same endpoint,
 
 ## Validation
 
-Neither the endpoint nor the push path validates payloads. User interactions, app responses and app-pushed views reach the other side as sent; the endpoint ends with a `TODO: validate payloads per type`. `@rocket.chat/ui-kit` exports typia guards for every view and interaction (`isModalView`, `isServerInteraction`, ...), but no host code calls them.
+Payloads are not validated per type: user interactions and app responses reach the other side as sent. Only the blocks apps send are checked, by `validateLayoutBlocks` in `@rocket.chat/ui-kit` (a typia validator for `LayoutBlock[]` plus the [size limits](reference.md#size-limits)). The server runs it in `reportInvalidBlocks` for `sendMessage`, `updateMessage`, the `ui.interaction` endpoint response and views pushed through the `uiInteraction` bridge.
+
+What happens to invalid blocks depends on the admin setting `UiKit_Reject_Invalid_Blocks` (Apps section, default off):
+
+| Path | Off | On |
+| --- | --- | --- |
+| Message sent or updated | Logged as a warning (`UiKit`), message saved | `error-invalid-blocks` is thrown with the first three errors; the message is not saved |
+| `ui.interaction` response with a view | Logged, view sent to the client | Logged; the response is replaced with `{}`, so the user sees nothing new |
+| View pushed by the app | Logged, view broadcast | Logged; the view is not recorded or broadcast |
+
+Rendering never checks the limits. Blocks that exceed them still render when the setting is off.
