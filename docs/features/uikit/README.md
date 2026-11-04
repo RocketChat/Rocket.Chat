@@ -9,7 +9,7 @@ UiKit is the JSON block language Rocket.Chat Apps use to draw UI inside the clie
 | Types and rendering contract | [`packages/ui-kit`](../../../packages/ui-kit) | Block, element and text-object types; one `UiKitParser*` per surface; the `SurfaceRenderer` base class; interaction payload types. |
 | App-facing API | [`packages/apps-engine`](../../../packages/apps-engine/src/definition/uikit) | What apps import. Messages and surfaces take `LayoutBlock[]` from `@rocket.chat/ui-kit`; `BlockBuilder` and the `I*Block` interfaces are deprecated. Interaction handlers (`executeBlockActionHandler`, `executeViewSubmitHandler`, ...) live here. |
 | Web renderer | [`packages/fuselage-ui-kit`](../../../packages/fuselage-ui-kit) | React components for every block and element, one `*SurfaceRenderer` per surface. Its Storybook is the UiKit playground. |
-| Livechat renderer | [`packages/livechat/src/components/uiKit`](../../../packages/livechat/src/components/uiKit) | Preact renderer for message blocks in the Livechat widget. Covers a subset of blocks and elements. |
+| Livechat renderer | [`packages/livechat/src/components/uiKit`](../../../packages/livechat/src/components/uiKit) | Preact renderer for message blocks in the Livechat widget. Covers most message blocks, plus modals with simple inputs. |
 | Host | `apps/meteor` | Mounts each surface, sends user interactions to the app and applies the app's responses. |
 
 ## Pages

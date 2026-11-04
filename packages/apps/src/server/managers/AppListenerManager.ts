@@ -34,6 +34,8 @@ import { isUIKitIncomingInteractionActionButtonMessageBox } from '@rocket.chat/a
 import type {
 	IUIKitLivechatBlockIncomingInteraction,
 	IUIKitLivechatIncomingInteraction,
+	IUIKitLivechatViewCloseIncomingInteraction,
+	IUIKitLivechatViewSubmitIncomingInteraction,
 } from '@rocket.chat/apps-engine/definition/uikit/livechat';
 import type { IFileUploadInternalContext } from '@rocket.chat/apps-engine/definition/uploads/IFileUploadContext';
 import type { IUser, IUserContext, IUserStatusContext, IUserUpdateContext } from '@rocket.chat/apps-engine/definition/users';
@@ -1083,6 +1085,10 @@ export class AppListenerManager {
 			switch (interactionType) {
 				case UIKitIncomingInteractionType.BLOCK:
 					return AppMethod.UIKIT_LIVECHAT_BLOCK_ACTION;
+				case UIKitIncomingInteractionType.VIEW_SUBMIT:
+					return AppMethod.UIKIT_LIVECHAT_VIEW_SUBMIT;
+				case UIKitIncomingInteractionType.VIEW_CLOSED:
+					return AppMethod.UIKIT_LIVECHAT_VIEW_CLOSE;
 			}
 		})(type);
 
@@ -1091,7 +1097,8 @@ export class AppListenerManager {
 		const interactionData = ((
 			interactionType: UIKitIncomingInteractionType,
 			interaction: IUIKitLivechatIncomingInteraction,
-		): IUIKitLivechatBlockIncomingInteraction => {
+		):
+			IUIKitLivechatBlockIncomingInteraction | IUIKitLivechatViewSubmitIncomingInteraction | IUIKitLivechatViewCloseIncomingInteraction => {
 			const { actionId, message, visitor, room, triggerId, container } = interaction;
 
 			switch (interactionType) {
@@ -1109,6 +1116,16 @@ export class AppListenerManager {
 						message,
 						container,
 					};
+				}
+				case UIKitIncomingInteractionType.VIEW_SUBMIT: {
+					const { view } = interaction.payload as { view: IUIKitSurface };
+
+					return { appId, actionId, view, visitor, room, triggerId };
+				}
+				case UIKitIncomingInteractionType.VIEW_CLOSED: {
+					const { view, isCleared } = interaction.payload as { view: IUIKitSurface; isCleared: boolean };
+
+					return { appId, actionId, view, visitor, room, isCleared };
 				}
 			}
 		})(type, data);

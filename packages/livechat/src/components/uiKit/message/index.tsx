@@ -6,10 +6,12 @@ import ActionsBlock from './ActionsBlock';
 import ButtonElement from './ButtonElement';
 import ContextBlock from './ContextBlock';
 import DatePickerElement from './DatePickerElement';
+import { CalloutBlock, ContextActionsBlock, HeaderBlock, MarkdownBlock, PreviewBlock, TableBlock, VideoBlock } from './DisplayBlocks';
 import DividerBlock from './DividerBlock';
 import ImageBlock from './ImageBlock';
 import ImageElement from './ImageElement';
 import Mrkdwn from './Mrkdwn';
+import MultiStaticSelectElement from './MultiStaticSelectElement';
 import OverflowElement from './OverflowElement';
 import PlainText from './PlainText';
 import SectionBlock from './SectionBlock';
@@ -112,7 +114,32 @@ export class MessageParser extends UiKitParserMessage<ComponentChild> {
 		return <StaticSelectElement key={index} {...element} parser={this} context={context} />;
 	};
 
-	multi_static_select = () => null;
+	multi_static_select = (element: any, context: any, index: any) => {
+		if (context === BlockContext.BLOCK) {
+			return null;
+		}
+
+		return <MultiStaticSelectElement key={index} {...element} parser={this} context={context} />;
+	};
+
+	header = (element: any, context: any, index: any) => (context === BlockContext.BLOCK ? <HeaderBlock key={index} {...element} /> : null);
+
+	markdown = (element: any, context: any, index: any) =>
+		context === BlockContext.BLOCK ? <MarkdownBlock key={index} {...element} /> : null;
+
+	video = (element: any, context: any, index: any) => (context === BlockContext.BLOCK ? <VideoBlock key={index} {...element} /> : null);
+
+	callout = (element: any, context: any, index: any) =>
+		context === BlockContext.BLOCK ? <CalloutBlock key={index} {...element} parser={this} /> : null;
+
+	table = (element: any, context: any, index: any) =>
+		context === BlockContext.BLOCK ? <TableBlock key={index} {...element} parser={this} /> : null;
+
+	preview = (element: any, context: any, index: any) =>
+		context === BlockContext.BLOCK ? <PreviewBlock key={index} {...element} parser={this} /> : null;
+
+	context_actions = (element: any, context: any, index: any) =>
+		context === BlockContext.BLOCK ? <ContextActionsBlock key={index} {...element} /> : null;
 }
 
 export const parser = new MessageParser();

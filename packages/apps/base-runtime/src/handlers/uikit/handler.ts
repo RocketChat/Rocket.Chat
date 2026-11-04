@@ -13,8 +13,16 @@ import {
 	UIKitViewCloseInteractionContext,
 	UIKitActionButtonInteractionContext,
 } from '@rocket.chat/apps-engine/definition/uikit/UIKitInteractionContext';
-import type { IUIKitLivechatBlockIncomingInteraction } from '@rocket.chat/apps-engine/definition/uikit/livechat/UIKitLivechatIncomingInteractionType';
-import { UIKitLivechatBlockInteractionContext } from '@rocket.chat/apps-engine/definition/uikit/livechat/UIKitLivechatInteractionContext';
+import type {
+	IUIKitLivechatBlockIncomingInteraction,
+	IUIKitLivechatViewSubmitIncomingInteraction,
+	IUIKitLivechatViewCloseIncomingInteraction,
+} from '@rocket.chat/apps-engine/definition/uikit/livechat/UIKitLivechatIncomingInteractionType';
+import {
+	UIKitLivechatBlockInteractionContext,
+	UIKitLivechatViewSubmitInteractionContext,
+	UIKitLivechatViewCloseInteractionContext,
+} from '@rocket.chat/apps-engine/definition/uikit/livechat/UIKitLivechatInteractionContext';
 
 import { AppObjectRegistry } from '../../AppObjectRegistry';
 import { AppAccessorsInstance } from '../../lib/accessors/mod';
@@ -30,6 +38,8 @@ export const uikitInteractions = [
 	'executeViewClosedHandler',
 	'executeActionButtonHandler',
 	'executeLivechatBlockActionHandler',
+	'executeLivechatViewSubmitHandler',
+	'executeLivechatViewClosedHandler',
 ] as const;
 
 export {
@@ -39,6 +49,8 @@ export {
 	UIKitViewCloseInteractionContext,
 	UIKitActionButtonInteractionContext,
 	UIKitLivechatBlockInteractionContext,
+	UIKitLivechatViewSubmitInteractionContext,
+	UIKitLivechatViewCloseInteractionContext,
 };
 
 export default async function handleUIKitInteraction(request: RequestContext): Promise<Defined | JsonRpcError> {
@@ -89,6 +101,12 @@ export default async function handleUIKitInteraction(request: RequestContext): P
 			break;
 		case 'executeLivechatBlockActionHandler':
 			context = new UIKitLivechatBlockInteractionContext(payload as unknown as IUIKitLivechatBlockIncomingInteraction);
+			break;
+		case 'executeLivechatViewSubmitHandler':
+			context = new UIKitLivechatViewSubmitInteractionContext(payload as unknown as IUIKitLivechatViewSubmitIncomingInteraction);
+			break;
+		case 'executeLivechatViewClosedHandler':
+			context = new UIKitLivechatViewCloseInteractionContext(payload as unknown as IUIKitLivechatViewCloseIncomingInteraction);
 			break;
 	}
 
