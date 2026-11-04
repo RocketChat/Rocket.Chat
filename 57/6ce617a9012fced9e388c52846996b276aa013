@@ -1,0 +1,15 @@
+.changeset/scheduled-messages.md
+  ai_agent 12
+apps/meteor/client/views/root/hooks/loggedIn/useScheduledMessagesUpdates.spec.tsx
+  ai_agent 2-24
+apps/meteor/client/views/root/MainLayout/LoggedInArea.tsx
+  ai_agent 16,36
+apps/meteor/client/views/root/hooks/loggedIn/useScheduledMessagesUpdates.ts
+  ai_agent 1-6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "576ce617a9012fced9e388c52846996b276aa013",
+  "prompts": {}
+}
