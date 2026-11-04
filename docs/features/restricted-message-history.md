@@ -20,11 +20,12 @@ While either doesn't hold, nothing is enforced. Stored dates are kept, so turnin
 
 - **Room setting.** `hideHistoryForNewMembers` on the room, off by default. While it's on, everyone who
   joins gets `historyVisibleFrom` set to their join time. Changing the setting never touches people
-  already in the room. A new discussion copies its parent room's setting.
+  already in the room. A new discussion copies its parent room's setting. It can only be turned on
+  while the feature is on, in a room type that supports it; turning it off is always accepted.
 - **Per member.** People who can add members to the room (`add-user-to-joined-room` in the room, or
   `add-user-to-any-c-room` / `add-user-to-any-p-room`) can hide or restore a member's history.
   Hiding sets the date to the member's join time; restoring removes it. Each change posts a system
-  message (`user-history-restricted` / `user-history-restored`).
+  message (`user-history-restricted` / `user-history-restored`). Nobody can change their own access.
 
 Leaving the room deletes the subscription, so someone who comes back is a new member. Roles don't
 change the restriction. Room creation and imports never set a date.
@@ -34,8 +35,16 @@ change the restriction. Room creation and imports never set a date.
 Every server path that returns room messages applies the same rule: timeline, sync, jump-to-message,
 single-message fetches, push notification content, threads, pinned, starred, mentions, discussions,
 search, AI search, exports, read receipts and the Files list. Actions that take a message ID (react,
-pin, star, report, follow, translate, start a discussion from a message) refuse hidden messages. Live
-updates (edits, reactions, deletions) to hidden messages aren't delivered either.
+pin, star, report, follow, translate, edit, delete, start a discussion from a message) refuse hidden
+messages, whatever the member's permissions. Live updates (edits, reactions, deletions) to hidden
+messages aren't delivered either, and deletions of hidden messages aren't reported by the sync and
+deleted-messages endpoints.
+
+A room's last message, shown in the sidebar and returned with the room, is left out while it's hidden
+from the member, in REST responses, DDP methods and the room streams alike.
+
+The Files list follows the messages the files were sent with: files sent after the date in a hidden
+thread are left out, and files in an old thread the member follows are listed.
 
 Discussions started before the date aren't listed. A member who reads a discussion through its parent
 room, without joining the discussion, gets their parent room date there too.
@@ -82,4 +91,7 @@ can't get a hidden message through it.
 - People who read a room without being a member of it. In a public channel, anyone allowed to preview
   it (`preview-c-room`), and anonymous readers where allowed, see its full history — including a
   restricted member who leaves. Where that matters, use a private group or remove the preview permission.
-- A message that quotes a hidden one carries the quoted text, like a copy-paste would.
+- Copies made by someone who can read the message: a quote, the `message_pinned` message a pin posts,
+  and a discussion started from the message (its first message, description and `discussion-created`
+  message) carry the copied text, like a copy-paste would. Only members who can read the original can
+  make them.

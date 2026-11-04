@@ -1046,7 +1046,7 @@ const chatEndpoints = API.v1
 
 			const { cursor, totalCount } = Messages.trashFindPaginatedDeletedAfter(
 				new Date(since),
-				{ rid: roomId },
+				await restrictToVisibleHistory(this.userId, roomId, { rid: roomId }),
 				{
 					skip: offset,
 					limit: count,
@@ -1234,7 +1234,7 @@ const chatEndpoints = API.v1
 							projection: fields,
 						},
 					).toArray(),
-					remove: await Messages.trashFindDeletedAfter(updatedSinceDate, threadQuery, {
+					remove: await Messages.trashFindDeletedAfter(updatedSinceDate, await restrictToVisibleHistory(this.userId, rid, threadQuery), {
 						sort,
 						projection: fields,
 					}).toArray(),

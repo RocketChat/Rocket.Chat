@@ -1,7 +1,14 @@
 import { Settings } from '@rocket.chat/core-services';
 import { Messages, Rooms, Subscriptions } from '@rocket.chat/models';
 
-import { canMemberReceiveMessage, canReceiveMessage, trackHistoryCutoff, updateHistoryCutoff } from './historyVisibility';
+import {
+	canMemberReceiveMessage,
+	canReceiveMessage,
+	trackHistoryCutoff,
+	trackRoomListCutoffs,
+	updateHistoryCutoff,
+	visibleRoom,
+} from './historyVisibility';
 import type { IPublication } from './types';
 
 jest.mock('@rocket.chat/core-services', () => ({
@@ -9,7 +16,7 @@ jest.mock('@rocket.chat/core-services', () => ({
 }));
 
 jest.mock('@rocket.chat/models', () => ({
-	Subscriptions: { findOneByRoomIdAndUserId: jest.fn() },
+	Subscriptions: { findOneByRoomIdAndUserId: jest.fn(), findWithHistoryVisibleFromByUserId: jest.fn() },
 	Messages: { findOneById: jest.fn() },
 	Rooms: { findOneById: jest.fn() },
 }));
@@ -139,6 +146,57 @@ describe('historyVisibility', () => {
 
 			await expect(canMemberReceiveMessage(rid, uid, { ts: before } as any)).resolves.toBe(false);
 			await expect(canMemberReceiveMessage(rid, uid, { ts: after } as any)).resolves.toBe(true);
+		});
+
+		it('applies the parent room cutoff to someone who reads a discussion without being in it', async () => {
+			jest.mocked(Subscriptions.findOneByRoomIdAndUserId).mockReset();
+			jest
+				.mocked(Subscriptions.findOneByRoomIdAndUserId)
+				.mockResolvedValueOnce(null)
+				.mockResolvedValueOnce({ rid: 'parent', historyVisibleFrom: cutoff } as any);
+			jest.mocked(Rooms.findOneById).mockResolvedValueOnce({ prid: 'parent' } as any);
+
+			await expect(canMemberReceiveMessage('discussion', uid, { ts: before } as any)).resolves.toBe(false);
+		});
+	});
+
+	describe('visibleRoom', () => {
+		const room = { _id: rid, name: 'room', lastMessage: { _id: 'last', ts: before } } as any;
+
+		it('leaves out a last message from before the cutoff', async () => {
+			const publication = await subscribe(cutoff);
+
+			await expect(visibleRoom(publication, room)).resolves.toEqual({ _id: rid, name: 'room' });
+		});
+
+		it('keeps a last message sent after the cutoff', async () => {
+			const publication = await subscribe(cutoff);
+			const recent = { ...room, lastMessage: { _id: 'last', ts: after } };
+
+			await expect(visibleRoom(publication, recent)).resolves.toBe(recent);
+		});
+
+		it('keeps everything while the feature is off', async () => {
+			const publication = await subscribe(cutoff);
+			jest.mocked(Settings.get).mockResolvedValue(false);
+
+			await expect(visibleRoom(publication, room)).resolves.toBe(room);
+		});
+
+		it('follows the room list cutoffs, including rooms restricted later', async () => {
+			jest.mocked(Subscriptions.findWithHistoryVisibleFromByUserId).mockReturnValueOnce({
+				toArray: async () => [{ rid, historyVisibleFrom: cutoff }],
+			} as any);
+			const publication = createPublication();
+			await trackRoomListCutoffs(publication, uid);
+
+			await expect(visibleRoom(publication, room)).resolves.not.toHaveProperty('lastMessage');
+
+			const other = { ...room, _id: 'other-room' };
+			await expect(visibleRoom(publication, other)).resolves.toBe(other);
+
+			updateHistoryCutoff({ rid: 'other-room', u: { _id: uid } as any, historyVisibleFrom: cutoff });
+			await expect(visibleRoom(publication, other)).resolves.not.toHaveProperty('lastMessage');
 		});
 	});
 });

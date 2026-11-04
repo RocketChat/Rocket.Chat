@@ -61,7 +61,7 @@ import * as dataExport from '../../lib/dataExport';
 import { eraseRoom } from '../../lib/eraseRoom';
 import { findUsersOfRoomOrderedByRole } from '../../lib/findUsersOfRoomOrderedByRole';
 import { FileUpload } from '../../lib/media/file-upload';
-import { canSeeMessage, getHistoryVisibleFrom } from '../../lib/messages/historyVisibility';
+import { canSeeMessage, getHistoryVisibleFrom, getUploadVisibility, withVisibleLastMessage } from '../../lib/messages/historyVisibility';
 import { loadRoomHistory, type RoomHistoryResult } from '../../lib/messages/loadRoomHistory';
 import { notifyOnSubscriptionChanged } from '../../lib/notifyListener';
 import { openRoom } from '../../lib/openRoom';
@@ -569,7 +569,9 @@ API.v1.get(
 		const { enforcementOn, requiredAttributeKeys } = getRoomAbacLockContext();
 
 		return API.v1.success({
-			room: await Rooms.findOneByIdOrName(room._id, { projection: fields }),
+			room: await Rooms.findOneByIdOrName(room._id, { projection: fields }).then(
+				async (info) => info && (await withVisibleLastMessage(this.userId, [info]))[0],
+			),
 			...(team && { team }),
 			...(parent && { parent }),
 			...(classificationBanner && { classificationBanner }),
@@ -692,16 +694,16 @@ API.v1.get(
 			return API.v1.forbidden();
 		}
 
-		const historyVisibleFrom = await getHistoryVisibleFrom(this.userId, room._id);
+		const visibility = await getUploadVisibility(this.userId, room._id);
+		const isHiddenUpload = ({ _id, uploadedAt }: IUpload) =>
+			visibility &&
+			!visibility.followedFileIds.includes(_id) &&
+			(!uploadedAt || uploadedAt < visibility.since || visibility.hiddenFileIds.includes(_id));
 
 		let initialImage: IUpload | null = null;
 		if (this.queryParams.startingFromId) {
 			initialImage = await Uploads.findOneById(this.queryParams.startingFromId);
-			if (
-				initialImage &&
-				(initialImage.rid !== room._id ||
-					(historyVisibleFrom && (!initialImage.uploadedAt || initialImage.uploadedAt < historyVisibleFrom)))
-			) {
+			if (initialImage && (initialImage.rid !== room._id || isHiddenUpload(initialImage))) {
 				initialImage = null;
 			}
 		}
@@ -715,7 +717,7 @@ API.v1.get(
 				skip: offset,
 				limit: count,
 			},
-			historyVisibleFrom,
+			visibility,
 		);
 
 		const [files, total] = await Promise.all([cursor.toArray(), totalCount]);

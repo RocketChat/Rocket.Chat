@@ -2,7 +2,7 @@ import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import type { MessageHistoryVisibility } from '@rocket.chat/model-typings';
 import { Messages } from '@rocket.chat/models';
-import type { FindOptions } from 'mongodb';
+import type { Filter, FindOptions } from 'mongodb';
 
 import { canAccessRoomIdAsync } from '../lib/authorization/canAccessRoom';
 import { getHistoryVisibility } from '../lib/messages/historyVisibility';
@@ -108,16 +108,18 @@ export function mountPreviousCursor(
 	return mountCursorFromMessage(messages[0], type);
 }
 
+const withVisibility = (query: Filter<IMessage>, visibility?: MessageHistoryVisibility): Filter<IMessage> =>
+	visibility ? { $and: [query, Messages.filterVisibleTo(visibility)] } : query;
+
 export async function handleWithoutPagination(rid: IRoom['_id'], lastUpdate: Date, fromTs?: Date, visibility?: MessageHistoryVisibility) {
 	const options: FindOptions<IMessage> = { sort: { ts: -1 } };
 
 	const [updatedMessages, deletedMessages] = await Promise.all([
 		Messages.findForUpdates(rid, { updatedAt: { $gt: lastUpdate }, minTs: fromTs }, options, visibility).toArray(),
-		Messages.trashFindDeletedAfter(
-			lastUpdate,
-			{ rid, ...(fromTs && { ts: { $gte: fromTs } }) },
-			{ projection: { _id: 1, _deletedAt: 1 }, ...options },
-		).toArray(),
+		Messages.trashFindDeletedAfter(lastUpdate, withVisibility({ rid, ...(fromTs && { ts: { $gte: fromTs } }) }, visibility), {
+			projection: { _id: 1, _deletedAt: 1 },
+			...options,
+		}).toArray(),
 	]);
 
 	return {
@@ -146,10 +148,10 @@ export async function handleCursorPagination(
 	const response =
 		type === 'UPDATED'
 			? await Messages.findForUpdates(rid, { updatedAt: query }, options, visibility).toArray()
-			: ((await Messages.trashFind(
-					{ rid, _deletedAt: query },
-					{ projection: { _id: 1, _deletedAt: 1 }, ...options },
-				)!.toArray()) as IMessage[]);
+			: ((await Messages.trashFind(withVisibility({ rid, _deletedAt: query }, visibility), {
+					projection: { _id: 1, _deletedAt: 1 },
+					...options,
+				})!.toArray()) as IMessage[]);
 
 	const cursor = {
 		next: mountNextCursor(response, count, type, next, previous),

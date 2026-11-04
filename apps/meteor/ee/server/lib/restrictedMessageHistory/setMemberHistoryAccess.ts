@@ -24,6 +24,12 @@ export async function setMemberHistoryAccess(
 
 	await assertCanAddUsersToRoom(actor._id, room);
 
+	if (userId === actor._id) {
+		throw new ClientSafeError('error-action-not-allowed', 'You cannot change your own access to earlier messages', {
+			method: 'setMemberHistoryAccess',
+		});
+	}
+
 	const subscription = await Subscriptions.findOneByRoomIdAndUserId<Pick<ISubscription, 'ts' | 'u' | 'status' | 'historyVisibleFrom'>>(
 		rid,
 		userId,
