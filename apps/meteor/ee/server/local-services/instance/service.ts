@@ -11,6 +11,7 @@ import { ServiceBroker, Transporters, Serializers } from 'moleculer';
 
 import { getLogger } from './getLogger';
 import { getTransporter } from './getTransporter';
+import { brokerCounters, countBrokerEvent } from '../../../../server/agent-stream/counters';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { AppsEngineNoNodesFoundError } from '../../../../server/services/apps-engine/service';
 import type { IInstanceService } from '../../sdk/types/IInstanceService';
@@ -21,10 +22,19 @@ const { Base } = Serializers;
 
 class EJSONSerializer extends Base {
 	override serialize(obj: any): Buffer {
-		return Buffer.from(EJSON.stringify(obj));
+		const buf = Buffer.from(EJSON.stringify(obj));
+		if (brokerCounters.enabled) {
+			brokerCounters.packetsOut++;
+			brokerCounters.bytesOut += buf.length;
+		}
+		return buf;
 	}
 
 	override deserialize(buf: Buffer): any {
+		if (brokerCounters.enabled) {
+			brokerCounters.packetsIn++;
+			brokerCounters.bytesIn += buf.length;
+		}
 		return EJSON.parse(buf.toString());
 	}
 }
@@ -44,6 +54,10 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 		publish: (event, args) => {
 			if (this.troubleshootDisableInstanceBroadcast) {
 				return;
+			}
+
+			if (brokerCounters.enabled) {
+				countBrokerEvent(event);
 			}
 
 			void this.broker.broadcast('event', { event, args });
