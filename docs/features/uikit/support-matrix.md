@@ -10,8 +10,9 @@ Each surface has one list of accepted layout blocks, exported by `@rocket.chat/u
 
 ## Divergences
 
-- **Livechat, message blocks**: `callout`, `context_actions`, `header`, `info_card`, `input`, `markdown`, `preview`, `table`, `video` and `video_conf` are accepted, but Livechat's `MessageParser` has no method for them, so they render as nothing in the widget.
-- **element `multi_static_select` in Livechat**: the method exists but returns `null`.
+- **Livechat, message blocks**: `info_card`, `input` and `video_conf` are accepted, but Livechat's `MessageParser` has no method for them, so they render as nothing in the widget. `info_card` needs icons the widget does not ship, and `video_conf` needs the call UI of the web client.
+- **Livechat, simplified drawing**: `context_actions` shows an emoji (feedback) or the label (icon button) instead of an icon; `multi_static_select` is a native multiple `<select>` that ignores `maxSelectItems`; `video` frames only absolute `https` URLs and `markdown` and `table` cells use the widget's own Markdown renderer.
+- **Livechat, modals**: the widget draws modal views with `actions`, `callout`, `context`, `divider`, `header`, `image`, `markdown`, `preview`, `section`, `table`, `video` and `input` blocks. `input` supports `plain_text_input`, `static_select`, `multi_static_select` and `datepicker`; other input elements render as nothing. Contextual bars, banners and `tab_navigation` are not drawn.
 - **`attachment` surface**: has a parser and a list, but no client renderer.
 - **`feedback_buttons` and `icon_button` outside their containers**: the types only allow them in the containers marked below, but the Fuselage renderer draws them in any element container, so a `feedback_buttons` inside an `actions` block still renders in a message.
 
@@ -22,20 +23,20 @@ Each surface has one list of accepted layout blocks, exported by `@rocket.chat/u
 | Block | message | Livechat (message) | modal | banner | contextualBar | attachment |
 | --- | --- | --- | --- | --- | --- | --- |
 | `actions` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| `callout` | ✅ | — | ✅ | ✅ | ✅ | ✅ |
+| `callout` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | `context` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| `context_actions` | ✅ | — | — | — | — | — |
+| `context_actions` | ✅ | ✅ | — | — | — | — |
 | `divider` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| `header` | ✅ | — | ✅ | — | ✅ | — |
+| `header` | ✅ | ✅ | ✅ | — | ✅ | — |
 | `image` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | `info_card` | ✅ | — | — | ✅ | — | — |
 | `input` | ✅ | — | ✅ | ✅ | ✅ | — |
-| `markdown` | ✅ | — | ✅ | — | ✅ | — |
-| `preview` | ✅ | — | ✅ | ✅ | ✅ | — |
+| `markdown` | ✅ | ✅ | ✅ | — | ✅ | — |
+| `preview` | ✅ | ✅ | ✅ | ✅ | ✅ | — |
 | `section` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | `tab_navigation` | — | — | — | — | ✅ | — |
-| `table` | ✅ | — | ✅ | — | ✅ | — |
-| `video` | ✅ | — | ✅ | — | ✅ | — |
+| `table` | ✅ | ✅ | ✅ | — | ✅ | — |
+| `video` | ✅ | ✅ | ✅ | — | ✅ | — |
 | `video_conf` | ✅ | — | — | — | — | — |
 
 `input` in a message has no view state to submit to: its elements only reach the app through `dispatchActionConfig` (see [interactions.md](interactions.md#when-an-element-sends-blockaction)).
@@ -55,18 +56,18 @@ Container columns come from the block types; renderer columns tell whether a met
 | `datepicker` | ✅ | ✅ | ✅ | — | — | — | — | — | — | ✅ | ✅ |
 | `datetimepicker` | ✅ | ✅ | — | — | — | — | — | — | — | ✅ | — |
 | `email_text_input` | — | ✅ | — | — | — | — | — | — | — | ✅ | — |
-| `feedback_buttons` | — | — | — | — | ✅ | — | — | — | — | ✅ | — |
+| `feedback_buttons` | — | — | — | — | ✅ | — | — | — | — | ✅ | ✅ |
 | `icon` | — | — | — | — | — | — | ✅ | — | — | ✅ | — |
-| `icon_button` | — | — | — | — | ✅ | — | — | ✅ | — | ✅ | — |
+| `icon_button` | — | — | — | — | ✅ | — | — | ✅ | — | ✅ | ✅ |
 | `image` | — | — | ✅ | ✅ | — | — | — | — | — | ✅ | ✅ |
 | `linear_scale` | ✅ | ✅ | — | — | — | — | — | — | — | ✅ | — |
 | `multi_channels_select` | ✅ | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
 | `multi_conversations_select` | ✅ | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
-| `multi_static_select` | ✅ | ✅ | ✅ | — | — | — | — | — | — | ✅ | — (returns `null`) |
+| `multi_static_select` | ✅ | ✅ | ✅ | — | — | — | — | — | — | ✅ | ✅ |
 | `multi_users_select` | ✅ | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
 | `number_input` | — | ✅ | — | — | — | — | — | — | — | ✅ | — |
 | `overflow` | ✅ | — | ✅ | — | — | ✅ | — | — | — | ✅ | ✅ |
-| `plain_text_input` | — | ✅ | — | — | — | — | — | — | — | ✅ | — |
+| `plain_text_input` | — | ✅ | — | — | — | — | — | — | — | ✅ | ✅ (modal only) |
 | `radio_button` | ✅ | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
 | `static_select` | ✅ | ✅ | ✅ | — | — | — | — | — | — | ✅ | ✅ |
 | `tab` (via `tab_navigation`) | — | — | — | — | — | — | — | — | ✅ | ✅ | — |

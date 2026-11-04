@@ -1,5 +1,9 @@
-import { Livechat } from '../api';
+import { h } from 'preact';
+
 import { createRandomId } from './random';
+import { Livechat } from '../api';
+import { UiKitModal, type UiKitModalView } from '../components/uiKit/modal';
+import store from '../store';
 
 export const UIKitInteractionType = {
 	MODAL_OPEN: 'modal.open',
@@ -38,7 +42,67 @@ const generateTriggerId = (appId: string) => {
 	return triggerId;
 };
 
-const handlePayloadUserInteraction = (type: string, { /* appId,*/ triggerId, ...data }: Record<string, any>) => {
+type OpenView = { appId: string; view: UiKitModalView; errors?: Record<string, string> };
+
+const openViews = new Map<string, OpenView>();
+
+const closeModal = (viewId: string) => {
+	if (openViews.delete(viewId)) {
+		store.setState({ modal: null });
+	}
+};
+
+const showModal = (viewId: string, openView: OpenView) => {
+	openViews.set(viewId, openView);
+	const { appId, view, errors } = openView;
+
+	const finish = async (type: string, payload: Record<string, unknown>) => {
+		let result: string | undefined;
+		try {
+			result = await triggerAction({
+				appId,
+				type,
+				viewId,
+				container: { type: UIKitIncomingInteractionContainerType.VIEW, id: viewId },
+				payload,
+			});
+		} catch {
+			// A failed or unanswered interaction leaves nothing to wait for, so the modal goes away.
+		}
+
+		if (
+			type === UIKitIncomingInteractionType.VIEW_CLOSED ||
+			![UIKitInteractionType.ERRORS, UIKitInteractionType.MODAL_UPDATE, UIKitInteractionType.MODAL_OPEN].includes(result ?? '')
+		) {
+			closeModal(viewId);
+		} else if (result === UIKitInteractionType.MODAL_OPEN && openViews.get(viewId) === openView) {
+			// The app replaced this view with another one, which already took the modal's place.
+			openViews.delete(viewId);
+		}
+	};
+
+	store.setState({
+		modal: h(UiKitModal, {
+			key: viewId,
+			appId,
+			view,
+			errors,
+			dispatchBlockAction: ({ actionId, payload }) =>
+				triggerAction({
+					appId,
+					type: UIKitIncomingInteractionType.BLOCK,
+					actionId,
+					viewId,
+					container: { type: UIKitIncomingInteractionContainerType.VIEW, id: viewId },
+					payload,
+				}),
+			onSubmit: (state) => finish(UIKitIncomingInteractionType.VIEW_SUBMIT, { view, state }),
+			onClose: (state) => finish(UIKitIncomingInteractionType.VIEW_CLOSED, { view: { ...view, state }, isCleared: false }),
+		}),
+	});
+};
+
+export const handlePayloadUserInteraction = (type: string, { triggerId, ...data }: Record<string, any>) => {
 	if (!triggersId.has(triggerId)) {
 		return;
 	}
@@ -58,44 +122,26 @@ const handlePayloadUserInteraction = (type: string, { /* appId,*/ triggerId, ...
 		return;
 	}
 
-	if ([UIKitInteractionType.ERRORS].includes(type)) {
-		// events.emit(viewId, {
-		// 	type,
-		// 	triggerId,
-		// 	viewId,
-		// 	appId,
-		// 	...data,
-		// });
+	const openView = openViews.get(viewId);
+
+	if (type === UIKitInteractionType.ERRORS) {
+		if (openView) {
+			showModal(viewId, { ...openView, errors: data.errors });
+		}
 		return UIKitInteractionType.ERRORS;
 	}
 
-	if ([UIKitInteractionType.MODAL_UPDATE].includes(type)) {
-		// events.emit(viewId, {
-		// 	type,
-		// 	triggerId,
-		// 	viewId,
-		// 	appId,
-		// 	...data,
-		// });
+	if (type === UIKitInteractionType.MODAL_UPDATE) {
+		showModal(viewId, { appId, view: { ...openView?.view, ...view }, errors: undefined });
 		return UIKitInteractionType.MODAL_UPDATE;
 	}
 
-	if ([UIKitInteractionType.MODAL_OPEN].includes(type)) {
-		// const instance = modal.push({
-		// 	template: 'ModalBlock',
-		// 	modifier: 'uikit',
-		// 	closeOnEscape: false,
-		// 	data: {
-		// 		triggerId,
-		// 		viewId,
-		// 		appId,
-		// 		...data,
-		// 	},
-		// });
-		// instances.set(viewId, instance);
+	if (type === UIKitInteractionType.MODAL_OPEN) {
+		showModal(viewId, { appId, view });
 		return UIKitInteractionType.MODAL_OPEN;
 	}
 
+	closeModal(viewId);
 	return UIKitInteractionType.MODAL_CLOSE;
 };
 

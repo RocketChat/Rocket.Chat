@@ -1,0 +1,187 @@
+@use '../../../../styles/colors';
+@use '../../../../styles/variables';
+
+.uikit-header {
+	margin: 0 6px 8px;
+
+	color: colors.$color-text-dark;
+
+	font-family: variables.$font-family;
+	font-size: 1rem;
+	font-weight: bold;
+	line-height: 1.5rem;
+}
+
+.uikit-markdown {
+	margin: 0 6px 8px;
+}
+
+.uikit-callout {
+	display: flex;
+
+	margin: 0 6px 8px;
+	padding: 8px 12px;
+
+	color: colors.$color-text-dark;
+	border-left: 4px solid colors.$color-blue;
+	border-radius: variables.$default-border-radius;
+	background-color: colors.$bg-color-light;
+
+	font-family: variables.$font-family;
+	font-size: 0.875rem;
+	line-height: 1.25rem;
+
+	&--variant-danger {
+		border-left-color: colors.$color-red;
+	}
+
+	&--variant-warning {
+		border-left-color: colors.$color-orange;
+	}
+
+	&--variant-success {
+		border-left-color: colors.$color-dark-green;
+	}
+
+	&__content {
+		flex: 1 1 auto;
+	}
+
+	&__title {
+		font-weight: bold;
+	}
+
+	&__accessory {
+		flex: 0 0 auto;
+
+		margin-left: 8px;
+	}
+}
+
+.uikit-table {
+	overflow-x: auto;
+
+	margin: 0 6px 8px;
+
+	font-family: variables.$font-family;
+	font-size: 0.875rem;
+
+	table {
+		border-collapse: collapse;
+	}
+
+	th,
+	td {
+		padding: 4px 8px;
+
+		text-align: left;
+
+		border: 1px solid colors.$bg-color-grey;
+	}
+
+	th {
+		background-color: colors.$bg-color-light;
+	}
+}
+
+.uikit-video {
+	margin: 0 6px 8px;
+
+	font-family: variables.$font-family;
+	font-size: 0.875rem;
+
+	&__title {
+		font-weight: bold;
+	}
+
+	&__description,
+	&__meta {
+		color: colors.$color-text-grey-system;
+	}
+
+	&__thumbnail {
+		display: block;
+
+		width: 100%;
+		margin-top: 4px;
+		padding: 0;
+
+		cursor: pointer;
+
+		border: none;
+		background: none;
+
+		img {
+			display: block;
+
+			max-width: 100%;
+		}
+	}
+
+	&__frame {
+		width: 100%;
+		margin-top: 4px;
+
+		border: none;
+		aspect-ratio: 16 / 9;
+	}
+}
+
+.uikit-preview {
+	display: flex;
+
+	margin: 0 6px 8px;
+	padding: 8px;
+
+	border: 1px solid colors.$bg-color-grey;
+	border-radius: variables.$default-border-radius;
+
+	font-family: variables.$font-family;
+	font-size: 0.875rem;
+
+	&__image {
+		flex: 0 0 auto;
+
+		max-width: 96px;
+		max-height: 96px;
+		margin-right: 8px;
+	}
+
+	&__content {
+		flex: 1 1 auto;
+	}
+
+	&__title {
+		font-weight: bold;
+	}
+
+	&__description {
+		color: colors.$color-text-grey-system;
+	}
+}
+
+.uikit-context-actions {
+	display: flex;
+
+	margin: 0 6px 8px;
+}
+
+.uikit-context-action {
+	margin-right: 4px;
+	padding: 2px 6px;
+
+	cursor: pointer;
+
+	color: colors.$color-text-grey;
+	border: variables.$default-border solid colors.$bg-color-grey;
+	border-radius: (2 * variables.$default-border-radius);
+	background-color: colors.$bg-color-white;
+
+	font-size: 0.875rem;
+
+	&:disabled {
+		cursor: default;
+
+		opacity: 0.5;
+	}
+}
