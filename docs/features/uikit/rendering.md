@@ -9,6 +9,14 @@ How `SurfaceRenderer.render(blocks)` in [`packages/ui-kit/src/rendering/SurfaceR
 3. **Each remaining block goes to the renderer method named after its `type`** (`section`, `actions`, ...), called with `BlockContext.BLOCK`. A missing method means the block renders as nothing.
 4. **Block components render their children** through the renderer again, using the context helpers below. Text objects go to `plain_text` and `mrkdwn`, which every renderer must implement.
 
+## Alternative element type names
+
+`renderBlockElement` and the guards map `checkboxes`, `radio_buttons` and `timepicker` to `checkbox`, `radio_button` and `time_picker` (`toCanonicalElementType` in [`elementTypeAliases.ts`](../../../packages/ui-kit/src/blocks/elementTypeAliases.ts)) before looking up the renderer method. Renderers only ever see the canonical type. View state is keyed by `actionId` and read from the element's fields, so the value an app receives is the same as for the canonical element. The canonical element types stay clean; the aliases are the separate `AliasedBlockElement` type, accepted by `renderBlockElement` and `toCanonicalElement`.
+
+## Emoji-only text
+
+Text made only of emoji is parsed as a big emoji block. Fuselage's `MarkdownTextElement` renders it at normal size (paragraph of inline emoji) so it does not stretch table rows, fields or context lines. The `markdown` block passes `bigEmoji` and keeps the chat-like large rendering.
+
 ## Block contexts
 
 The same method can be reached from different places, so every call carries a `BlockContext` and methods use it to decide what to return. `image` is the clearest case: in `BLOCK` context it draws an image block; anywhere else it draws an image element.

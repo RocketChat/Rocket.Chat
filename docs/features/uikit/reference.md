@@ -261,7 +261,7 @@ Source: [`packages/ui-kit/src/blocks/elements/CheckboxElement.ts`](../../../pack
 
 | Field | Type | Required | Notes |
 | --- | --- | --- | --- |
-| `type` | `'checkbox'` | yes |  |
+| `type` | `'checkbox'` | yes | Also accepted as `'checkboxes'`. |
 | `options` | `Option[]` | yes |  |
 | `initialOptions` | `Option[]` | no |  |
 | `focus_on_load` | `boolean` | no | Focuses the field when the view opens (its first option). |
@@ -358,7 +358,7 @@ Source: [`packages/ui-kit/src/blocks/elements/IconElement.ts`](../../../packages
 | Field | Type | Required | Notes |
 | --- | --- | --- | --- |
 | `type` | `'icon'` | yes |  |
-| `icon` | `AvailableIcons` | yes |  |
+| `icon` | `AvailableIcons` | yes | One of `phone`, `phone-off`, `phone-issue`, `phone-question-mark`, `clock`, `arrow-forward`, `info`, `copy`, `flag`, `trash`, `edit`, `link`, `check`, `cross`, `star`, `pin`, `share`, `download`, `eye`, `bell`, `kebab`. |
 | `variant` | `'default' \| 'danger' \| 'secondary' \| 'warning'` | yes |  |
 | `framed` | `boolean` | no |  |
 
@@ -537,7 +537,7 @@ Source: [`packages/ui-kit/src/blocks/elements/RadioButtonElement.ts`](../../../p
 
 | Field | Type | Required | Notes |
 | --- | --- | --- | --- |
-| `type` | `'radio_button'` | yes |  |
+| `type` | `'radio_button'` | yes | Also accepted as `'radio_buttons'`. |
 | `options` | `Option[]` | yes |  |
 | `initialOption` | `Option` | no |  |
 | `focus_on_load` | `boolean` | no | Focuses the field when the view opens (its first option). |
@@ -587,7 +587,7 @@ Source: [`packages/ui-kit/src/blocks/elements/TimePickerElement.ts`](../../../pa
 
 | Field | Type | Required | Notes |
 | --- | --- | --- | --- |
-| `type` | `'time_picker'` | yes |  |
+| `type` | `'time_picker'` | yes | Also accepted as `'timepicker'`. |
 | `placeholder` | `TextObject` | no |  |
 | `initialTime` | `string` | no |  |
 | `focus_on_load` | `boolean` | no | Focuses the field when the view opens. |

@@ -9,7 +9,7 @@ export type MarkdownBlockProps = BlockProps<UiKit.MarkdownBlock>;
 
 const MarkdownBlock = ({ className, block }: MarkdownBlockProps) => (
 	<Box className={className} fontScale='p2' color='default'>
-		<MarkdownTextElement textObject={{ type: 'mrkdwn', text: block.text }} />
+		<MarkdownTextElement textObject={{ type: 'mrkdwn', text: block.text }} bigEmoji />
 	</Box>
 );
 
