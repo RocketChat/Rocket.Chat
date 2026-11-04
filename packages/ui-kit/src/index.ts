@@ -61,6 +61,7 @@ export type { TableBlock, TableCell, RawTextTableCell, TableColumnSetting } from
 export type { VideoConferenceBlock } from './blocks/layout/VideoConferenceBlock';
 export type { LayoutBlock } from './blocks/LayoutBlock';
 export type { CalloutBlock } from './blocks/layout/CalloutBlock';
+export type { AlertBlock } from './blocks/layout/AlertBlock';
 export type { ExperimentalTabNavigationBlock } from './blocks/layout/ExperimentalTabNavigationBlock';
 export type { InfoCardBlock } from './blocks/layout/InfoCardBlock';
 export type { FileBlock } from './blocks/layout/FileBlock';

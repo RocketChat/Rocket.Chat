@@ -4,6 +4,7 @@ import { SurfaceRenderer } from '../../rendering/SurfaceRenderer';
 /** Layout blocks a home accepts; every home renderer must allow exactly these. */
 export const homeSurfaceLayoutBlockTypes = [
 	'actions',
+	'alert',
 	'callout',
 	'context',
 	'divider',
