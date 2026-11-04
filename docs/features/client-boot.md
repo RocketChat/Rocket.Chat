@@ -4,13 +4,14 @@ How the web client goes from an empty page to the first screen, and the rule tha
 
 ## The path
 
-The page shows a loading indicator while the client:
+To reach its first screen the client:
 
 1. loads the root components (`AppRoot`, the providers, `AppLayout`, `MainLayout`);
-2. waits for the stores every screen reads — permissions, then settings;
-3. renders the matched route inside the main layout.
+2. waits for the stores every screen reads — settings, then permissions;
+3. renders the matched route inside the main layout, next to the sidebar and header.
 
-The loading indicator stays until step 2 is done; the route then renders with the sidebar and header.
+The page shows a loading indicator while a root component or a store is not ready. A route component still
+loading leaves the content area empty, next to the sidebar and header, until it arrives.
 
 ## Don't suspend on the boot path
 
