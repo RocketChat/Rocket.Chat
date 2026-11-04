@@ -91,6 +91,8 @@
 	list-style: none;
 }
 
+/* generated gap by scripts/generate-frame-values.mts from @rocket.chat/fuselage-tokens, do not edit */
+
 .rcx-item,
 .rcx-item-group-header {
 	--rcx-item-gap: 4px;
@@ -105,12 +107,16 @@
 	--rcx-item-gap: 8px;
 }
 
+/* end of generated gap */
+
 /* The inset reaches the first and last slots, whatever they are, so it stays a custom property */
 .rcx-item,
 .rcx-item-group-header,
 .rcx-item-divider {
 	--rcx-item-inset-inline: 0;
 }
+
+/* generated inset by scripts/generate-frame-values.mts from @rocket.chat/fuselage-tokens, do not edit */
 
 .rcx-item--inset-sm,
 .rcx-item-group-header--inset-sm,
@@ -129,6 +135,8 @@
 .rcx-item-divider--inset-lg {
 	--rcx-item-inset-inline: 20px;
 }
+
+/* end of generated inset */
 
 .rcx-item > :first-child,
 .rcx-item-group-header > :first-child {
@@ -234,13 +242,19 @@
 	block-size: 0;
 }
 
+/* generated narrow-inset by scripts/generate-frame-values.mts from @rocket.chat/fuselage-tokens, do not edit */
+
 @container rcx-item-group (width < 320px) {
 	.rcx-item--inset-lg,
 	.rcx-item-group-header--inset-lg,
 	.rcx-item-divider--inset-lg {
 		--rcx-item-inset-inline: 12px;
 	}
+}
 
+/* end of generated narrow-inset */
+
+@container rcx-item-group (width < 320px) {
 	.rcx-item__description.rcx-item__description--inline {
 		display: block;
 

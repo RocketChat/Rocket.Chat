@@ -6,7 +6,7 @@
 // Tamagui's compiler reads a `styled()` definition from the source of its module and skips one it cannot read, so the
 // values cannot be computed there or imported. They are computed here from `@rocket.chat/fuselage-tokens`, under the
 // custom properties Fuselage already reads for them, and written between the markers below.
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { join } from 'node:path';
 
@@ -4979,6 +4979,228 @@ for (const [dir, control] of [
 	);
 }
 
+// The spacing and type of the hand-written stylesheets, each section where its rules sit so their order holds
+const stylesheet = (name: string) => join(import.meta.dirname, `../src/components/${name}.styles.css`);
+const inputPaddingInline = `calc(${spacing('x16')} - ${borderWidth('default')})`;
+
+components.push(
+	{
+		file: stylesheet('Avatar/Avatar'),
+		css: true,
+		generate: () => `.rcx-avatar-stack > .rcx-avatar {
+	margin: auto ${offScale(-2)};
+}`,
+	},
+	{
+		file: stylesheet('Button/Button'),
+		css: true,
+		generate: () => `.rcx-button .rcx-button__icon {
+	margin-inline-end: ${spacing('x4')};
+}`,
+	},
+	{
+		file: stylesheet('Card/Card'),
+		css: true,
+		generate: () => `.rcx-card__horizontal .rcx-card__col {
+	row-gap: ${spacing('x4')};
+}`,
+	},
+	{
+		file: stylesheet('CardGrid/CardGrid'),
+		css: true,
+		section: 'grid',
+		generate: () => `.rcx-grid.rcx-card-grid {
+	margin: ${spacing('-x8')};
+}`,
+	},
+	{
+		file: stylesheet('CardGrid/CardGrid'),
+		css: true,
+		section: 'item',
+		generate: () => `.rcx-grid__item.rcx-card-grid__item {
+	padding: ${spacing('x8')};
+}`,
+	},
+	{
+		file: stylesheet('CardGroup/CardGroup'),
+		css: true,
+		section: 'row',
+		generate: () => `.rcx-card-group__item {
+	margin-inline: ${spacing('x8')};
+}
+
+.rcx-card-group__item:first-of-type {
+	margin-inline-start: 0;
+}
+
+.rcx-card-group__item:last-of-type {
+	margin-inline-end: 0;
+}
+
+.rcx-card-group--wrap > .rcx-card-group__item {
+	margin-block-end: ${spacing('x16')};
+	margin-inline: ${spacing('x8')} ${spacing('x8')};
+}`,
+	},
+	{
+		file: stylesheet('CardGroup/CardGroup'),
+		css: true,
+		section: 'vertical',
+		generate: () => `.rcx-card-group--vertical .rcx-card-group__item {
+	margin-block: ${spacing('x4')};
+	margin-inline: 0;
+}
+
+.rcx-card-group--vertical .rcx-card-group__item:first-child {
+	margin-block-start: 0;
+}
+
+.rcx-card-group--vertical .rcx-card-group__item:last-child {
+	margin-block-end: 0;
+}`,
+	},
+	{
+		file: stylesheet('Dropdown/Dropdown'),
+		css: true,
+		generate: () => `.rcx-dropdown__bottom-sheet-content {
+	padding-block: ${spacing('x16')};
+}`,
+	},
+	{
+		file: stylesheet('FieldGroup/FieldGroup'),
+		css: true,
+		generate: () => `.rcx-field-group__item + .rcx-field-group__item {
+	margin-block-start: ${spacing('x24')};
+}`,
+	},
+	{
+		file: stylesheet('Tabs/Tabs'),
+		css: true,
+		generate: () => `.rcx-tabs--with-divider .rcx-tabs__item.rcx-tabs__item {
+	margin-block-end: ${offScale(-1)};
+}`,
+	},
+	{
+		file: stylesheet('Table/Table'),
+		css: true,
+		section: 'selection',
+		generate: () => `.rcx-table__selection.rcx-table__selection {
+	padding-inline: ${spacing('x24')};
+}
+
+.rcx-table__selection-text {
+	margin-block: ${spacing('x16')};
+	${fontDeclarations('p2b')}
+}`,
+	},
+	{
+		file: stylesheet('Table/Table'),
+		css: true,
+		section: 'selection-actions',
+		generate: () => `.rcx-table__selection-actions {
+	margin-inline: ${spacing('-x8')};
+	${fontDeclarations('p2m')}
+}`,
+	},
+	{
+		file: stylesheet('InputBox/InputBox'),
+		css: true,
+		section: 'box',
+		generate: () => `.rcx-input-box__wrapper:where(:not(.is_View)) {
+	padding-block: ${spacing('x8')};
+	padding-inline: ${inputPaddingInline};
+}
+
+.rcx-input-box:where(:not(.is_View)) {
+	${fontDeclarations('p2m')}
+}`,
+	},
+	{
+		file: stylesheet('InputBox/InputBox'),
+		css: true,
+		section: 'decorated',
+		generate: () => `.rcx-input-box:where(:not(.is_View)):not(.rcx-input-box--undecorated) {
+	padding: ${spacing('x8')} ${inputPaddingInline};
+}`,
+	},
+	{
+		file: stylesheet('InputBox/InputBox'),
+		css: true,
+		section: 'addons',
+		generate: () => `.rcx-input-box__addon:has(+ .rcx-input-box) {
+	margin-inline-end: ${spacing('x8')};
+}
+
+.rcx-input-box + .rcx-input-box__addon {
+	margin-inline-start: ${spacing('x8')};
+}`,
+	},
+	{
+		file: stylesheet('InputBox/InputBox'),
+		css: true,
+		section: 'text',
+		generate: () => `.rcx-input-box__placeholder {
+	${fontDeclarations('p2m')}
+}
+
+.rcx-input-box__option {
+	${fontDeclarations('p2m')}
+}`,
+	},
+	{
+		file: itemFile('Item.styles.css'),
+		css: true,
+		section: 'gap',
+		generate: () => `.rcx-item,
+.rcx-item-group-header {
+	--rcx-item-gap: ${spacing('x4')};
+}
+
+.rcx-item__row {
+	--rcx-item-gap: ${spacing('x4')};
+}
+
+.rcx-item:has(> .rcx-item__content > :nth-child(2)),
+.rcx-item--multiline {
+	--rcx-item-gap: ${spacing('x8')};
+}`,
+	},
+	{
+		file: itemFile('Item.styles.css'),
+		css: true,
+		section: 'inset',
+		generate: () => `.rcx-item--inset-sm,
+.rcx-item-group-header--inset-sm,
+.rcx-item-divider--inset-sm {
+	--rcx-item-inset-inline: ${spacing('x4')};
+}
+
+.rcx-item--inset-md,
+.rcx-item-group-header--inset-md,
+.rcx-item-divider--inset-md {
+	--rcx-item-inset-inline: ${spacing('x8')};
+}
+
+.rcx-item--inset-lg,
+.rcx-item-group-header--inset-lg,
+.rcx-item-divider--inset-lg {
+	--rcx-item-inset-inline: ${spacing('x20')};
+}`,
+	},
+	{
+		file: itemFile('Item.styles.css'),
+		css: true,
+		section: 'narrow-inset',
+		generate: () => `@container rcx-item-group (width < 320px) {
+	.rcx-item--inset-lg,
+	.rcx-item-group-header--inset-lg,
+	.rcx-item-divider--inset-lg {
+		--rcx-item-inset-inline: ${spacing('x12')};
+	}
+}`,
+	},
+);
+
 // Frames whose children are text are a Tamagui Text: a string child of a View throws on React Native
 const textFrames = [
 	'BadgeFrame',
@@ -5092,6 +5314,38 @@ if (check) {
 		if (!Object.hasOwn(spacingScale, match[1])) {
 			console.error(`generate-frame-values.mts:${lineOf(match.index)}: ${match[1]} is not on the spacing scale, use offScale()`);
 			stale = true;
+		}
+	}
+
+	// The hand-written stylesheets hold no spacing or type either: outside a generated section, a raw length there fails
+	const srcDir = join(import.meta.dirname, '../src');
+	const sources = readdirSync(srcDir, { recursive: true, encoding: 'utf8' })
+		.filter((name) => /\.(?:css|tsx?)$/.test(name))
+		.map((name) => ({ name, text: readFileSync(join(srcDir, name), 'utf8') }));
+
+	const spacingProperties = new Set<string>();
+	for (const text of [self, ...sources.map(({ text }) => text)]) {
+		for (const match of text.matchAll(spacingOrFont)) {
+			const from = match.index + match[0].length;
+			for (const [, name] of text.slice(from, valueEnd(text, from)).matchAll(/var\((--[\w-]+)/g)) {
+				spacingProperties.add(name);
+			}
+		}
+	}
+
+	for (const { name, text } of sources.filter(({ name }) => name.endsWith('.css'))) {
+		const handWritten = text.replace(/\/\* generated [\s\S]*?\/\* end of generated[^*]*\*\//g, (section) => section.replace(/[^\n]/g, ' '));
+		for (const match of handWritten.matchAll(/^[ \t]*([\w-]+)\s*:\s*([^;{}]*)/gm)) {
+			const [, property, value] = match;
+			const spacingOrFontProperty = property.startsWith('--')
+				? spacingProperties.has(property)
+				: /^(?:padding|margin|gap|row-gap|column-gap|font-size|line-height|letter-spacing)/.test(property);
+			if (spacingOrFontProperty && /\d(?:px|r?em)\b/.test(value)) {
+				console.error(
+					`src/${name}:${text.slice(0, match.index).split('\n').length}: raw length in \`${property}: ${value.trim()}\`, move it into a generated section`,
+				);
+				stale = true;
+			}
 		}
 	}
 }

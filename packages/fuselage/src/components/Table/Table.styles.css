@@ -42,38 +42,50 @@
 	align-items: center;
 	justify-content: space-between;
 
-	padding-inline: 24px;
-
 	border: 1px solid var(--rcx-color-shadow-elevation-border, #ebecef);
 	box-shadow:
 		0 0 2px 0 var(--rcx-color-shadow-elevation-2x, rgba(47, 52, 61, 0.08)),
 		0 0 12px 0 var(--rcx-color-shadow-elevation-2y, rgba(47, 52, 61, 0.12));
 }
 
+/* generated selection by scripts/generate-frame-values.mts from @rocket.chat/fuselage-tokens, do not edit */
+
+.rcx-table__selection.rcx-table__selection {
+	padding-inline: 24px;
+}
+
 .rcx-table__selection-text {
-	overflow: hidden;
-	flex-shrink: 1;
-
 	margin-block: 16px;
-
-	white-space: nowrap;
-	text-overflow: ellipsis;
-
 	letter-spacing: 0rem;
 	font-size: 0.875rem;
 	font-weight: 700;
 	line-height: 1.25rem;
 }
 
+/* end of generated selection */
+
+.rcx-table__selection-text {
+	overflow: hidden;
+	flex-shrink: 1;
+
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+/* generated selection-actions by scripts/generate-frame-values.mts from @rocket.chat/fuselage-tokens, do not edit */
+
 .rcx-table__selection-actions {
-	flex-shrink: 0;
-
 	margin-inline: -8px;
-
 	letter-spacing: 0rem;
 	font-size: 0.875rem;
 	font-weight: 500;
 	line-height: 1.25rem;
+}
+
+/* end of generated selection-actions */
+
+.rcx-table__selection-actions {
+	flex-shrink: 0;
 }
 
 .rcx-table__cell-placeholder {
