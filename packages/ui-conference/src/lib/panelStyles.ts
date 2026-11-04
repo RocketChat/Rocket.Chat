@@ -24,7 +24,7 @@ export const narrowRoomStyle = css`
 		padding-inline-start: ${PANEL_INLINE_PADDING}px;
 	}
 
-	&.rcx-message-system {
+	& .rcx-message-system {
 		padding-inline-start: ${PANEL_INLINE_PADDING}px;
 
 		&_body {
