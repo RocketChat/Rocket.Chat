@@ -35,18 +35,30 @@ export async function runPipeline(stages: Stage[], input: Artifact): Promise<Art
 const filler =
 	'Each stage writes its logs to the job output, and the pipeline keeps the artifacts for seven days so a failed run can be inspected later. ';
 
-/** The fixed reply of the fake producer: markdown with a list and a code block, cut into tokens of four ASCII characters. */
-export const replyTokens = (tokenCount: number): string[] => {
-	const length = tokenCount * CHARS_PER_TOKEN;
-	let text = head;
-	while (text.length < length) {
-		text += filler;
-	}
-	text = text.slice(0, length);
+const thinking =
+	'Let me read the code around the login handler and compare it with the report. The token check looks like the place to start. ';
 
-	const tokens: string[] = [];
-	for (let i = 0; i < length; i += CHARS_PER_TOKEN) {
-		tokens.push(text.slice(i, i + CHARS_PER_TOKEN));
+// cuts `lead`, then `repeat` as often as needed, into `tokenCount` tokens of four ASCII characters
+const slice = (lead: string, repeat: string, tokenCount: number): string[] => {
+	const length = tokenCount * CHARS_PER_TOKEN;
+	let text = lead;
+	while (text.length < length) {
+		text += repeat;
 	}
-	return tokens;
+	return Array.from({ length: tokenCount }, (_, i) => text.slice(i * CHARS_PER_TOKEN, (i + 1) * CHARS_PER_TOKEN));
+};
+
+export type ReplyStep =
+	{ kind: 'thinking'; text: string; first: boolean } | { kind: 'tool'; title: string } | { kind: 'output'; text: string; first: boolean };
+
+/** The fixed reply of the fake producer: 15% thinking, a tool call, 15% thinking, then markdown with a list and a code block. */
+export const replyScript = (tokenCount: number): ReplyStep[] => {
+	const thinkingTokens = Math.round(tokenCount * 0.15);
+	const think = (): ReplyStep[] => slice('', thinking, thinkingTokens).map((text, i) => ({ kind: 'thinking', text, first: i === 0 }));
+	const output = slice(head, filler, tokenCount - 2 * thinkingTokens).map((text, i): ReplyStep => ({
+		kind: 'output',
+		text,
+		first: i === 0,
+	}));
+	return [...think(), { kind: 'tool', title: 'Search the codebase for the login handler' }, ...think(), ...output];
 };
