@@ -17,6 +17,7 @@ import type { NumberInputElement } from './elements/NumberInputElement';
 import type { OverflowElement } from './elements/OverflowElement';
 import type { PlainTextInputElement } from './elements/PlainTextInputElement';
 import type { RadioButtonElement } from './elements/RadioButtonElement';
+import type { RichTextInputElement } from './elements/RichTextInputElement';
 import type { StaticSelectElement } from './elements/StaticSelectElement';
 import type { TimePickerElement } from './elements/TimePickerElement';
 import type { ToggleSwitchElement } from './elements/ToggleSwitchElement';
@@ -44,6 +45,7 @@ export type ActionableElement =
 	| UsersSelectElement
 	| ToggleSwitchElement
 	| RadioButtonElement
+	| RichTextInputElement
 	| CheckboxElement
 	| TimePickerElement
 	| ExperimentalTabElement

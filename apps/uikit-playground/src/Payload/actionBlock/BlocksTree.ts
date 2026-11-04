@@ -37,6 +37,7 @@ import {
 	inputWithMultiConversationsSelect,
 } from './input';
 import { markdown } from './markdown';
+import { richText, inputWithRichTextInput } from './richText';
 import { previewPlain, previewWithImage, previewWithUrl, previewWithImageAndUrl } from './preview';
 import {
 	sectionWithPlainText,
@@ -316,6 +317,10 @@ const BlocksTree: Item = [
 				payload: inputWithUrlInput,
 			},
 			{
+				label: 'rich text',
+				payload: inputWithRichTextInput,
+			},
+			{
 				label: 'date time Picker',
 				payload: inputWithDateTimePicker,
 			},
@@ -349,6 +354,15 @@ const BlocksTree: Item = [
 			{
 				label: 'Release notes',
 				payload: markdown,
+			},
+		],
+	},
+	{
+		label: 'rich text',
+		branches: [
+			{
+				label: 'Release notes',
+				payload: richText,
 			},
 		],
 	},

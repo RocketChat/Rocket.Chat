@@ -12,6 +12,7 @@ import InfoCard from '../blocks/InfoCard';
 import InputBlock from '../blocks/InputBlock';
 import MarkdownBlock from '../blocks/MarkdownBlock';
 import PreviewBlock from '../blocks/PreviewBlock';
+import RichTextBlock from '../blocks/RichTextBlock';
 import SectionBlock from '../blocks/SectionBlock';
 import TableBlock from '../blocks/TableBlock';
 import VideoBlock from '../blocks/VideoBlock';
@@ -34,6 +35,7 @@ import OverflowElement from '../elements/OverflowElement';
 import PlainTextElement from '../elements/PlainTextElement';
 import PlainTextInputElement from '../elements/PlainTextInputElement';
 import RadioButtonElement from '../elements/RadioButtonElement';
+import RichTextInputElement from '../elements/RichTextInputElement';
 import StaticSelectElement from '../elements/StaticSelectElement';
 import TimePickerElement from '../elements/TimePickerElement';
 import ToggleSwitchElement from '../elements/ToggleSwitchElement';
@@ -108,6 +110,18 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
 			return null;
 		}
 		return <PreviewBlock key={index} block={block} context={context} index={index} surfaceRenderer={this} />;
+	}
+
+	rich_text(block: UiKit.RichTextBlock, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
+		if (context !== UiKit.BlockContext.BLOCK) {
+			return null;
+		}
+
+		return (
+			<AppIdProvider key={index} appId={block.appId}>
+				<RichTextBlock block={block} context={context} index={index} surfaceRenderer={this} />
+			</AppIdProvider>
+		);
 	}
 
 	context(block: UiKit.ContextBlock, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
@@ -278,6 +292,18 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
 		return (
 			<AppIdProvider key={block.actionId || index} appId={block.appId}>
 				<PlainTextInputElement block={block} context={context} index={index} surfaceRenderer={this} />
+			</AppIdProvider>
+		);
+	}
+
+	rich_text_input(block: UiKit.RichTextInputElement, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return null;
+		}
+
+		return (
+			<AppIdProvider key={block.actionId || index} appId={block.appId}>
+				<RichTextInputElement block={block} context={context} index={index} surfaceRenderer={this} />
 			</AppIdProvider>
 		);
 	}

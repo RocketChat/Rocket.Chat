@@ -9,6 +9,7 @@ export const LayoutBlockType = {
 	CONTEXT: 'context',
 	INPUT: 'input',
 	MARKDOWN: 'markdown',
+	RICH_TEXT: 'rich_text',
 	CONDITIONAL: 'conditional',
 	PREVIEW: 'preview',
 	VIDEO_CONF: 'video_conf',
