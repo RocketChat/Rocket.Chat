@@ -4975,6 +4975,50 @@ for (const [dir, control] of [
 const check = process.argv.includes('--check');
 let stale = false;
 
+// A spacing or font value above comes from `spacing()`, `fontScale()` or, off the scale, `offScale()`; a raw length there would not
+const spacingOrFont =
+	/['"]?\b(?:padding|margin|gap|rowGap|columnGap|row-gap|column-gap|fontSize|font-size|lineHeight|line-height|letterSpacing|letter-spacing)[\w-]*['"]?\s*:\s*/g;
+
+const valueEnd = (text: string, from: number) => {
+	let depth = 0;
+	for (let i = from; i < text.length; i++) {
+		if ('([{'.includes(text[i])) {
+			depth++;
+		} else if (')]}'.includes(text[i])) {
+			if (depth === 0) {
+				return i;
+			}
+			depth--;
+		} else if (depth === 0 && ',;\n'.includes(text[i])) {
+			return i;
+		}
+	}
+	return text.length;
+};
+
+if (check) {
+	const self = readFileSync(import.meta.filename, 'utf8');
+	const lineOf = (index: number) => self.slice(0, index).split('\n').length;
+
+	for (const match of self.matchAll(spacingOrFont)) {
+		const from = match.index + match[0].length;
+		const value = self.slice(from, valueEnd(self, from)).trim();
+		if (/\d(?:px|rem)\b|\bpx\(|^-?[1-9][\d.]*$/.test(value)) {
+			console.error(
+				`generate-frame-values.mts:${lineOf(match.index)}: raw length in \`${match[0].trim()} ${value}\`, use spacing(), fontScale() or offScale()`,
+			);
+			stale = true;
+		}
+	}
+
+	for (const match of self.matchAll(/\bspacing\(['"](?:-|neg-)?(x\d+)['"]\)/g)) {
+		if (!Object.hasOwn(spacingScale, match[1])) {
+			console.error(`generate-frame-values.mts:${lineOf(match.index)}: ${match[1]} is not on the spacing scale, use offScale()`);
+			stale = true;
+		}
+	}
+}
+
 for (const { file, generate, css } of components) {
 	const source = readFileSync(file, 'utf8');
 	const [START, END] = css ? [CSS_START, CSS_END] : [TS_START, TS_END];
