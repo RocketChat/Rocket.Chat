@@ -15,8 +15,11 @@ export type { ConversationsSelectFilter } from './blocks/elements/ConversationsS
 export type { DatePickerElement } from './blocks/elements/DatePickerElement';
 export type { DateTimePickerElement } from './blocks/elements/DateTimePickerElement';
 export type { FeedbackButton, FeedbackButtonsElement } from './blocks/elements/FeedbackButtonsElement';
+export type { ExternalSelectElement } from './blocks/elements/ExternalSelectElement';
 export type { ImageElement } from './blocks/elements/ImageElement';
+export type { FileInputElement } from './blocks/elements/FileInputElement';
 export type { LinearScaleElement } from './blocks/elements/LinearScaleElement';
+export type { MultiExternalSelectElement } from './blocks/elements/MultiExternalSelectElement';
 export type { MultiStaticSelectElement } from './blocks/elements/MultiStaticSelectElement';
 export type { MultiChannelsSelectElement } from './blocks/elements/MultiChannelsSelectElement';
 export type { MultiConversationsSelectElement } from './blocks/elements/MultiConversationsSelectElement';
@@ -31,6 +34,7 @@ export type { UsersSelectElement } from './blocks/elements/UsersSelectElement';
 export type { ToggleSwitchElement } from './blocks/elements/ToggleSwitchElement';
 export type { CheckboxElement } from './blocks/elements/CheckboxElement';
 export type { RadioButtonElement } from './blocks/elements/RadioButtonElement';
+export type { RichTextInputElement } from './blocks/elements/RichTextInputElement';
 export type { TimePickerElement } from './blocks/elements/TimePickerElement';
 export type { BlockElement } from './blocks/BlockElement';
 export type { ExperimentalTabElement } from './blocks/elements/ExperimentalTabElement';
@@ -46,15 +50,23 @@ export type { HeaderBlock } from './blocks/layout/HeaderBlock';
 export type { ImageBlock } from './blocks/layout/ImageBlock';
 export type { InputBlock } from './blocks/layout/InputBlock';
 export type { MarkdownBlock } from './blocks/layout/MarkdownBlock';
+export type * from './blocks/layout/RichTextBlock';
 export type { SectionBlock } from './blocks/layout/SectionBlock';
 export type { ContextActionsBlock } from './blocks/layout/ContextActionsBlock';
+export type { TaskCardBlock, TaskCard, TaskStatus } from './blocks/layout/TaskCardBlock';
+export type { PlanBlock } from './blocks/layout/PlanBlock';
+export type { UrlSourceElement } from './blocks/elements/UrlSourceElement';
 export type { VideoBlock } from './blocks/layout/VideoBlock';
 export type { TableBlock, TableCell, RawTextTableCell, TableColumnSetting } from './blocks/layout/TableBlock';
 export type { VideoConferenceBlock } from './blocks/layout/VideoConferenceBlock';
 export type { LayoutBlock } from './blocks/LayoutBlock';
 export type { CalloutBlock } from './blocks/layout/CalloutBlock';
+export type { AlertBlock } from './blocks/layout/AlertBlock';
+export type { CardBlock, CardImage } from './blocks/layout/CardBlock';
+export type { CarouselBlock } from './blocks/layout/CarouselBlock';
 export type { ExperimentalTabNavigationBlock } from './blocks/layout/ExperimentalTabNavigationBlock';
 export type { InfoCardBlock } from './blocks/layout/InfoCardBlock';
+export type { FileBlock } from './blocks/layout/FileBlock';
 
 export type { InputElementDispatchAction } from './blocks/InputElementDispatchAction';
 
@@ -80,8 +92,12 @@ export * from './surfaces/View';
 export * from './surfaces/attachment';
 export * from './surfaces/banner';
 export * from './surfaces/contextualBar';
+export * from './surfaces/home';
 export * from './surfaces/message';
 export * from './surfaces/modal';
 
 export * from './interactions/UserInteraction';
 export * from './interactions/ServerInteraction';
+
+export type { CanonicalElementType, ElementTypeAlias } from './blocks/elementTypeAliases';
+export { toCanonicalElement, toCanonicalElementType } from './blocks/elementTypeAliases';

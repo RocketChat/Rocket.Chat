@@ -5,9 +5,11 @@ import type { ChannelsSelectElement } from '../elements/ChannelsSelectElement';
 import type { CheckboxElement } from '../elements/CheckboxElement';
 import type { ConversationsSelectElement } from '../elements/ConversationsSelectElement';
 import type { DatePickerElement } from '../elements/DatePickerElement';
+import type { ExternalSelectElement } from '../elements/ExternalSelectElement';
 import type { ImageElement } from '../elements/ImageElement';
 import type { MultiChannelsSelectElement } from '../elements/MultiChannelsSelectElement';
 import type { MultiConversationsSelectElement } from '../elements/MultiConversationsSelectElement';
+import type { MultiExternalSelectElement } from '../elements/MultiExternalSelectElement';
 import type { MultiStaticSelectElement } from '../elements/MultiStaticSelectElement';
 import type { MultiUsersSelectElement } from '../elements/MultiUsersSelectElement';
 import type { OverflowElement } from '../elements/OverflowElement';
@@ -26,9 +28,11 @@ export type SectionBlock = LayoutBlockish<{
 		| CheckboxElement
 		| ConversationsSelectElement
 		| DatePickerElement
+		| ExternalSelectElement
 		| ImageElement
 		| MultiChannelsSelectElement
 		| MultiConversationsSelectElement
+		| MultiExternalSelectElement
 		| MultiStaticSelectElement
 		| MultiUsersSelectElement
 		| OverflowElement

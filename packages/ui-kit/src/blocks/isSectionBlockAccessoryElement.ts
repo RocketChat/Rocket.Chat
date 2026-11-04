@@ -1,17 +1,20 @@
 import type { BlockElement } from './BlockElement';
 import { BlockElementType } from './BlockElementType';
+import { toCanonicalElementType } from './elementTypeAliases';
 import type { SectionBlock } from './layout/SectionBlock';
 
 export const isSectionBlockAccessoryElement = (block: BlockElement): block is Exclude<SectionBlock['accessory'], undefined> => {
-	switch (block.type) {
+	switch (toCanonicalElementType(block.type)) {
 		case BlockElementType.BUTTON:
 		case BlockElementType.CHANNELS_SELECT:
 		case BlockElementType.CHECKBOX:
 		case BlockElementType.CONVERSATIONS_SELECT:
 		case BlockElementType.DATEPICKER:
+		case BlockElementType.EXTERNAL_SELECT:
 		case BlockElementType.IMAGE:
 		case BlockElementType.MULTI_CHANNELS_SELECT:
 		case BlockElementType.MULTI_CONVERSATIONS_SELECT:
+		case BlockElementType.MULTI_EXTERNAL_SELECT:
 		case BlockElementType.MULTI_STATIC_SELECT:
 		case BlockElementType.MULTI_USERS_SELECT:
 		case BlockElementType.OVERFLOW:

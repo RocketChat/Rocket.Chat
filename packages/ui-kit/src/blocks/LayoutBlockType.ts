@@ -9,6 +9,7 @@ export const LayoutBlockType = {
 	CONTEXT: 'context',
 	INPUT: 'input',
 	MARKDOWN: 'markdown',
+	RICH_TEXT: 'rich_text',
 	CONDITIONAL: 'conditional',
 	PREVIEW: 'preview',
 	VIDEO_CONF: 'video_conf',
@@ -18,4 +19,10 @@ export const LayoutBlockType = {
 	CONTEXT_ACTIONS: 'context_actions',
 	VIDEO: 'video',
 	TABLE: 'table',
+	FILE: 'file',
+	TASK_CARD: 'task_card',
+	PLAN: 'plan',
+	ALERT: 'alert',
+	CARD: 'card',
+	CAROUSEL: 'carousel',
 } as const satisfies Record<Uppercase<LayoutBlock['type']>, LayoutBlock['type']>;

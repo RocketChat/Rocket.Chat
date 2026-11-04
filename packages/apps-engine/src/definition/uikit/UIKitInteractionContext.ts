@@ -1,8 +1,10 @@
 import type {
 	IUIKitActionButtonIncomingInteraction,
 	IUIKitActionButtonMessageBoxIncomingInteraction,
+	IUIKitAppHomeOpenedIncomingInteraction,
 	IUIKitBaseIncomingInteraction,
 	IUIKitBlockIncomingInteraction,
+	IUIKitBlockSuggestionIncomingInteraction,
 	IUIKitViewCloseIncomingInteraction,
 	IUIKitViewSubmitIncomingInteraction,
 } from './UIKitIncomingInteractionTypes';
@@ -38,6 +40,16 @@ export class UIKitBlockInteractionContext extends UIKitInteractionContext {
 	}
 }
 
+export class UIKitBlockSuggestionInteractionContext extends UIKitInteractionContext {
+	constructor(private readonly interactionData: IUIKitBlockSuggestionIncomingInteraction) {
+		super(interactionData);
+	}
+
+	public getInteractionData(): IUIKitBlockSuggestionIncomingInteraction {
+		return this.interactionData;
+	}
+}
+
 export class UIKitViewSubmitInteractionContext extends UIKitInteractionContext {
 	constructor(private readonly interactionData: IUIKitViewSubmitIncomingInteraction) {
 		super(interactionData);
@@ -54,6 +66,16 @@ export class UIKitViewCloseInteractionContext extends UIKitInteractionContext {
 	}
 
 	public getInteractionData(): IUIKitViewCloseIncomingInteraction {
+		return this.interactionData;
+	}
+}
+
+export class UIKitAppHomeOpenedInteractionContext extends UIKitInteractionContext {
+	constructor(private readonly interactionData: IUIKitAppHomeOpenedIncomingInteraction) {
+		super(interactionData);
+	}
+
+	public getInteractionData(): IUIKitAppHomeOpenedIncomingInteraction {
 		return this.interactionData;
 	}
 }

@@ -12,6 +12,7 @@ import { hasPermissionAsync } from '../authorization/hasPermission';
 import { FileUpload } from '../media/file-upload';
 import { validateCustomMessageFields } from '../messaging/validateCustomMessageFields';
 import { notifyOnRoomChangedById } from '../notifyListener';
+import { reportInvalidBlocks } from '../uikit/reportInvalidBlocks';
 
 export type SendMessageOptions = {
 	upsert?: boolean;
@@ -256,6 +257,8 @@ export const sendMessage = async function (user: any, message: any, room: any, o
 			await validateMessage(message, room, user);
 		}
 	}
+
+	reportInvalidBlocks(message.blocks, { where: 'message', rid: room._id, userId: user._id });
 
 	message = await Message.beforeSave({ message, room, user, previewUrls, parseUrls: message.parseUrls });
 

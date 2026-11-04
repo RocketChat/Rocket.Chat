@@ -94,6 +94,8 @@ export const Header = createStory(payloads.header);
 
 export const Markdown = createStory(payloads.markdown);
 
+export const RichText = createStory(payloads.richText);
+
 export const SectionWithPlainText = createStory(payloads.sectionWithPlainText);
 
 export const SectionWithMrkdwn = createStory(payloads.sectionWithMrkdwn);
@@ -141,6 +143,14 @@ export const InfoCard = createStory(payloads.infoCard);
 export const InfoCardMultiple = createStory(payloads.infoCardMultiple);
 export const InfoCardMultipleIcons = createStory(payloads.infoCardMultipleIcons);
 
+export const Alert = createStory(payloads.alert);
+
+export const Card = createStory(payloads.card);
+
+export const Carousel = createStory(payloads.carousel);
+
+export const File = createStory(payloads.file);
+
 export const Table = createStory(payloads.table);
 
 export const Video = createStory(payloads.video);
@@ -148,3 +158,7 @@ export const Video = createStory(payloads.video);
 export const ContextActions = createStory(payloads.contextActions);
 
 export const ContextActionsWithFeedback = createStory(payloads.contextActionsWithFeedback);
+
+export const TaskCard = createStory(payloads.taskCard);
+
+export const Plan = createStory(payloads.plan);

@@ -8,10 +8,14 @@ import { UIKitInteractionType, UIKitSurfaceType } from '@rocket.chat/apps-engine
 import {
 	formatContextualBarInteraction,
 	formatErrorInteraction,
+	formatModalClearInteraction,
+	formatModalCloseInteraction,
+	formatHomeInteraction,
 	formatModalInteraction,
 } from '@rocket.chat/apps-engine/definition/uikit/UIKitInteractionPayloadFormatter';
 import type {
 	IUIKitContextualBarViewParam,
+	IUIKitHomeViewParam,
 	IUIKitModalViewParam,
 } from '@rocket.chat/apps-engine/definition/uikit/UIKitInteractionResponder';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
@@ -68,6 +72,8 @@ export class UIController implements IUIController {
 				return this.openContextualBar(viewWithIds, context, user);
 			case UIKitSurfaceType.MODAL:
 				return this.openModal(viewWithIds, context, user);
+			case UIKitSurfaceType.HOME:
+				return this.publishHome(viewWithIds, context, user);
 		}
 	}
 
@@ -80,7 +86,44 @@ export class UIController implements IUIController {
 				return this.openContextualBar(viewWithIds, context, user, true);
 			case UIKitSurfaceType.MODAL:
 				return this.openModal(viewWithIds, context, user, true);
+			case UIKitSurfaceType.HOME:
+				return this.publishHome(viewWithIds, context, user);
 		}
+	}
+
+	public pushModalView(view: IUIKitModalViewParam, context: IUIKitInteractionParam, user: IUser) {
+		const viewWithIds = { ...view, blocks: UIHelper.assignIds(view.blocks, this.appId) };
+
+		return bridgeCall<void>(
+			this.senderFn,
+			'getUiInteractionBridge',
+			'doNotifyUser',
+			user,
+			formatModalInteraction(viewWithIds, { ...context, type: UIKitInteractionType.MODAL_PUSH, appId: this.appId }),
+			'APP_ID',
+		);
+	}
+
+	public closeModalView(viewId: string, context: IUIKitInteractionParam, user: IUser) {
+		return bridgeCall<void>(
+			this.senderFn,
+			'getUiInteractionBridge',
+			'doNotifyUser',
+			user,
+			formatModalCloseInteraction(viewId, { ...context, type: UIKitInteractionType.MODAL_CLOSE, appId: this.appId }),
+			'APP_ID',
+		);
+	}
+
+	public clearModalViews(context: IUIKitInteractionParam, user: IUser) {
+		return bridgeCall<void>(
+			this.senderFn,
+			'getUiInteractionBridge',
+			'doNotifyUser',
+			user,
+			formatModalClearInteraction({ ...context, type: UIKitInteractionType.MODAL_CLEAR, appId: this.appId }),
+			'APP_ID',
+		);
 	}
 
 	public setViewError(errorInteraction: IUIKitErrorInteractionParam, context: IUIKitInteractionParam, user: IUser) {
@@ -96,6 +139,23 @@ export class UIController implements IUIController {
 			'doNotifyUser',
 			user,
 			formatErrorInteraction(errorInteraction, interactionContext),
+			'APP_ID',
+		);
+	}
+
+	private publishHome(view: IUIKitHomeViewParam, context: IUIKitInteractionParam, user: IUser): Promise<void> {
+		const interactionContext = {
+			...context,
+			type: UIKitInteractionType.HOME_UPDATE,
+			appId: this.appId,
+		};
+
+		return bridgeCall<void>(
+			this.senderFn,
+			'getUiInteractionBridge',
+			'doNotifyUser',
+			user,
+			formatHomeInteraction(view, interactionContext),
 			'APP_ID',
 		);
 	}

@@ -4,16 +4,21 @@ import { SurfaceRenderer } from '../../rendering/SurfaceRenderer';
 /** Layout blocks a modal accepts; every modal renderer must allow exactly these. */
 export const modalSurfaceLayoutBlockTypes = [
 	'actions',
+	'alert',
 	'callout',
+	'card',
 	'context',
 	'divider',
 	'header',
 	'image',
 	'input',
 	'markdown',
+	'plan',
 	'preview',
+	'rich_text',
 	'section',
 	'table',
+	'task_card',
 	'video',
 ] as const satisfies readonly RenderableLayoutBlock['type'][];
 

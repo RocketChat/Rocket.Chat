@@ -1,4 +1,4 @@
-import type { ActionableElement, InputElementDispatchAction } from '@rocket.chat/ui-kit';
+import type { ActionableElement, BlockSuggestionResponse, InputElementDispatchAction } from '@rocket.chat/ui-kit';
 import type { MouseEventHandler } from 'react';
 import { createContext } from 'react';
 
@@ -14,14 +14,25 @@ type ActionParams = {
 	mid?: string;
 };
 
+type SuggestParams = Pick<ActionParams, 'blockId' | 'appId' | 'actionId' | 'viewId' | 'mid'> & {
+	/** What the user has typed so far. */
+	value: string;
+};
+
 type UiKitContextValue = {
 	action: (state: ActionParams, event: Parameters<MouseEventHandler<HTMLElement>>[0]) => Promise<void> | void;
 	updateState?: (state: ActionParams, event: Parameters<MouseEventHandler<HTMLElement>>[0]) => Promise<void> | void;
+	suggest?: (params: SuggestParams) => Promise<BlockSuggestionResponse>;
 	appId?: string;
 	errors?: { [field: string]: string }[] | { [field: string]: string };
 	values: Record<ActionId, { value: unknown } | undefined>;
 	viewId?: string;
 	rid?: string;
+	/** Absent when the surface cannot store files; `file_input` then renders disabled. */
+	uploadFile?: (file: File) => Promise<{ _id: string; name: string }>;
+	/** Lets a surface keep its submit disabled while a `file_input` still has uploads in flight. */
+	setUploading?: (actionId: ActionId, uploading: boolean) => void;
+	uploading?: boolean;
 };
 
 export const UiKitContext = createContext<UiKitContextValue>({

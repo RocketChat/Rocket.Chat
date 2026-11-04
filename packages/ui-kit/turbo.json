@@ -1,0 +1,9 @@
+{
+	"extends": ["//"],
+	"tasks": {
+		"testunit": {
+			"dependsOn": ["^build", "build"],
+			"outputs": ["coverage/**"]
+		}
+	}
+}

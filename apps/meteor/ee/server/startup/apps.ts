@@ -30,6 +30,12 @@ export const startupApp = async function startupApp() {
 				alert: 'Apps_Logs_TTL_Alert',
 			});
 
+			await this.add('UiKit_Reject_Invalid_Blocks', false, {
+				type: 'boolean',
+				public: false,
+				i18nDescription: 'UiKit_Reject_Invalid_Blocks_Description',
+			});
+
 			await this.add('Apps_Framework_Source_Package_Storage_Type', 'gridfs', {
 				type: 'select',
 				values: [

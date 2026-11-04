@@ -1,18 +1,30 @@
 import type { App } from '@rocket.chat/apps-engine/definition/App';
 import type {
 	IUIKitBlockIncomingInteraction,
+	IUIKitBlockSuggestionIncomingInteraction,
 	IUIKitViewSubmitIncomingInteraction,
 	IUIKitViewCloseIncomingInteraction,
 	IUIKitActionButtonIncomingInteraction,
+	IUIKitAppHomeOpenedIncomingInteraction,
 } from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionTypes';
 import {
 	UIKitBlockInteractionContext,
+	UIKitBlockSuggestionInteractionContext,
 	UIKitViewSubmitInteractionContext,
 	UIKitViewCloseInteractionContext,
 	UIKitActionButtonInteractionContext,
+	UIKitAppHomeOpenedInteractionContext,
 } from '@rocket.chat/apps-engine/definition/uikit/UIKitInteractionContext';
-import type { IUIKitLivechatBlockIncomingInteraction } from '@rocket.chat/apps-engine/definition/uikit/livechat/UIKitLivechatIncomingInteractionType';
-import { UIKitLivechatBlockInteractionContext } from '@rocket.chat/apps-engine/definition/uikit/livechat/UIKitLivechatInteractionContext';
+import type {
+	IUIKitLivechatBlockIncomingInteraction,
+	IUIKitLivechatViewSubmitIncomingInteraction,
+	IUIKitLivechatViewCloseIncomingInteraction,
+} from '@rocket.chat/apps-engine/definition/uikit/livechat/UIKitLivechatIncomingInteractionType';
+import {
+	UIKitLivechatBlockInteractionContext,
+	UIKitLivechatViewSubmitInteractionContext,
+	UIKitLivechatViewCloseInteractionContext,
+} from '@rocket.chat/apps-engine/definition/uikit/livechat/UIKitLivechatInteractionContext';
 
 import { AppObjectRegistry } from '../../AppObjectRegistry';
 import { AppAccessorsInstance } from '../../lib/accessors/mod';
@@ -23,18 +35,26 @@ import { isOneOf } from '../lib/assertions';
 
 export const uikitInteractions = [
 	'executeBlockActionHandler',
+	'executeBlockSuggestionHandler',
 	'executeViewSubmitHandler',
 	'executeViewClosedHandler',
 	'executeActionButtonHandler',
 	'executeLivechatBlockActionHandler',
+	'executeAppHomeOpenedHandler',
+	'executeLivechatViewSubmitHandler',
+	'executeLivechatViewClosedHandler',
 ] as const;
 
 export {
 	UIKitBlockInteractionContext,
+	UIKitBlockSuggestionInteractionContext,
 	UIKitViewSubmitInteractionContext,
 	UIKitViewCloseInteractionContext,
 	UIKitActionButtonInteractionContext,
+	UIKitAppHomeOpenedInteractionContext,
 	UIKitLivechatBlockInteractionContext,
+	UIKitLivechatViewSubmitInteractionContext,
+	UIKitLivechatViewCloseInteractionContext,
 };
 
 export default async function handleUIKitInteraction(request: RequestContext): Promise<Defined | JsonRpcError> {
@@ -71,6 +91,9 @@ export default async function handleUIKitInteraction(request: RequestContext): P
 		case 'executeBlockActionHandler':
 			context = new UIKitBlockInteractionContext(payload as unknown as IUIKitBlockIncomingInteraction);
 			break;
+		case 'executeBlockSuggestionHandler':
+			context = new UIKitBlockSuggestionInteractionContext(payload as unknown as IUIKitBlockSuggestionIncomingInteraction);
+			break;
 		case 'executeViewSubmitHandler':
 			context = new UIKitViewSubmitInteractionContext(payload as unknown as IUIKitViewSubmitIncomingInteraction);
 			break;
@@ -80,8 +103,17 @@ export default async function handleUIKitInteraction(request: RequestContext): P
 		case 'executeActionButtonHandler':
 			context = new UIKitActionButtonInteractionContext(payload as unknown as IUIKitActionButtonIncomingInteraction);
 			break;
+		case 'executeAppHomeOpenedHandler':
+			context = new UIKitAppHomeOpenedInteractionContext(payload as unknown as IUIKitAppHomeOpenedIncomingInteraction);
+			break;
 		case 'executeLivechatBlockActionHandler':
 			context = new UIKitLivechatBlockInteractionContext(payload as unknown as IUIKitLivechatBlockIncomingInteraction);
+			break;
+		case 'executeLivechatViewSubmitHandler':
+			context = new UIKitLivechatViewSubmitInteractionContext(payload as unknown as IUIKitLivechatViewSubmitIncomingInteraction);
+			break;
+		case 'executeLivechatViewClosedHandler':
+			context = new UIKitLivechatViewCloseInteractionContext(payload as unknown as IUIKitLivechatViewCloseIncomingInteraction);
 			break;
 	}
 

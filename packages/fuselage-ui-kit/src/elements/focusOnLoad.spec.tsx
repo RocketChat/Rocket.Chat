@@ -29,6 +29,8 @@ it.each([
 	['plain_text_input', { ...base, type: 'plain_text_input' }, 'textbox'],
 	['number_input', { ...base, type: 'number_input', is_decimal_allowed: false }, 'spinbutton'],
 	['users_select', { ...base, type: 'users_select' }, 'textbox'],
+	['static_select', { ...base, type: 'static_select', placeholder: { type: 'plain_text', text: 'Pick' }, options }, 'textbox'],
+	['multi_static_select', { ...base, type: 'multi_static_select', placeholder: { type: 'plain_text', text: 'Pick' }, options }, 'combobox'],
 	['multi_channels_select', { ...base, type: 'multi_channels_select' }, 'textbox'],
 ] as const)('focuses a %s marked focus_on_load', (_type, element, role) => {
 	renderInputs(element);
@@ -49,4 +51,13 @@ it('focuses the checked option of a radio_button marked focus_on_load', () => {
 	renderInputs({ ...base, type: 'radio_button', options, initialOption: options[1] });
 
 	expect(screen.getAllByRole('radio')[1]).toHaveFocus();
+});
+
+it.each([
+	['static_select', { type: 'static_select', placeholder: { type: 'plain_text', text: 'Pick' }, options }, 'textbox'],
+	['multi_static_select', { type: 'multi_static_select', placeholder: { type: 'plain_text', text: 'Pick' }, options }, 'combobox'],
+] as const)('does not focus a %s unless it asks for focus_on_load', (_type, element, role) => {
+	renderInputs({ ...element, appId: 'app', blockId: 'focused', actionId: 'focused' });
+
+	expect(screen.getAllByRole(role).at(-1)).not.toHaveFocus();
 });

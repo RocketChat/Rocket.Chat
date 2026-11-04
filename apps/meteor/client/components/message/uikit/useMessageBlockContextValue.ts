@@ -89,6 +89,20 @@ export const useMessageBlockContextValue = (rid: IRoom['_id'], mid: IMessage['_i
 				mid,
 			});
 		},
+		suggest: ({ appId, actionId, blockId, value }) =>
+			actionManager.suggestOptions(appId, {
+				type: 'blockSuggestion',
+				actionId,
+				blockId,
+				appId,
+				value,
+				container: {
+					type: 'message',
+					id: mid,
+				},
+				rid,
+				mid,
+			}),
 		rid,
 		values: {}, // TODO: this is a hack to make the context work, but it should be removed
 	};

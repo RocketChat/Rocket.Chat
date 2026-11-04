@@ -13,7 +13,22 @@ Source: [`packages/ui-kit/src/blocks/layout/ActionsBlock.ts`](../../../packages/
 | Field | Type | Required | Notes |
 | --- | --- | --- | --- |
 | `type` | `'actions'` | yes |  |
-| `elements` | `readonly ( \| ButtonElement \| ChannelsSelectElement \| ConversationsSelectElement \| DatePickerElement \| DateTimePickerElement \| LinearScaleElement \| MultiChannelsSelectElement \| MultiConversationsSelectElement \| MultiStaticSelectElement \| MultiUsersSelectElement \| OverflowElement \| StaticSelectElement \| UsersSelectElement \| ToggleSwitchElement \| CheckboxElement \| RadioButtonElement \| TimePickerElement )[]` | yes |  |
+| `elements` | `readonly ( \| ButtonElement \| ChannelsSelectElement \| ConversationsSelectElement \| DatePickerElement \| DateTimePickerElement \| LinearScaleElement \| MultiChannelsSelectElement \| MultiConversationsSelectElement \| MultiStaticSelectElement \| MultiUsersSelectElement \| OverflowElement \| StaticSelectElement \| UsersSelectElement \| ToggleSwitchElement \| CheckboxElement \| RadioButtonElement \| RichTextInputElement \| TimePickerElement )[]` | yes |  |
+| `elements` | `readonly ( \| ButtonElement \| ChannelsSelectElement \| ConversationsSelectElement \| DatePickerElement \| DateTimePickerElement \| ExternalSelectElement \| LinearScaleElement \| MultiChannelsSelectElement \| MultiConversationsSelectElement \| MultiExternalSelectElement \| MultiStaticSelectElement \| MultiUsersSelectElement \| OverflowElement \| StaticSelectElement \| UsersSelectElement \| ToggleSwitchElement \| CheckboxElement \| RadioButtonElement \| TimePickerElement )[]` | yes |  |
+| `appId` | `string` | no |  |
+| `blockId` | `string` | no |  |
+
+### `alert`
+
+Source: [`packages/ui-kit/src/blocks/layout/AlertBlock.ts`](../../../packages/ui-kit/src/blocks/layout/AlertBlock.ts)
+
+A short notice styled by its level. Drawn with the same component as `callout`, with no title or accessory; `error` takes the `danger` style.
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'alert'` | yes |  |
+| `text` | `TextObject` | yes | At most 200 characters. |
+| `level` | `'default' \| 'info' \| 'warning' \| 'error' \| 'success'` | no | Defaults to `default`. |
 | `appId` | `string` | no |  |
 | `blockId` | `string` | no |  |
 
@@ -28,6 +43,40 @@ Source: [`packages/ui-kit/src/blocks/layout/CalloutBlock.ts`](../../../packages/
 | `text` | `TextObject` | yes |  |
 | `variant` | `'info' \| 'danger' \| 'warning' \| 'success'` | no |  |
 | `accessory` | `ButtonElement \| OverflowElement` | no |  |
+| `appId` | `string` | no |  |
+| `blockId` | `string` | no |  |
+
+### `card`
+
+Source: [`packages/ui-kit/src/blocks/layout/CardBlock.ts`](../../../packages/ui-kit/src/blocks/layout/CardBlock.ts)
+
+A self-contained card. Images must have a safe URL to be drawn. The type does not say that a card needs at least one of `hero_image`, `title`, `body` or `actions`; a card with none draws an empty frame.
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'card'` | yes |  |
+| `hero_image` | `CardImage` | no | Wide image across the top. |
+| `icon` | `CardImage` | no | Small image beside the title and subtitle. |
+| `title` | `TextObject` | no | At most 150 characters. |
+| `subtitle` | `TextObject` | no | At most 150 characters. |
+| `body` | `TextObject` | no | At most 200 characters. |
+| `subtext` | `TextObject` | no | Small text under the body; at most 200 characters. |
+| `actions` | `readonly ButtonElement[]` | no | At most 3. |
+| `appId` | `string` | no |  |
+| `blockId` | `string` | no |  |
+
+`CardImage` is `{ type: 'image', image_url: string, alt_text: string }`: `image_url` has at most 3000 characters and `alt_text` at most 2000.
+
+### `carousel`
+
+Source: [`packages/ui-kit/src/blocks/layout/CarouselBlock.ts`](../../../packages/ui-kit/src/blocks/layout/CarouselBlock.ts)
+
+Cards in a row that scrolls sideways. The previous and next buttons are tab stops and the row itself is focusable, so the keyboard scrolls it natively; there is no arrow-key navigation between cards. Anything in `elements` that is not a `card` is skipped.
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'carousel'` | yes |  |
+| `elements` | `readonly CardBlock[]` | yes | From 1 to 10 cards. |
 | `appId` | `string` | no |  |
 | `blockId` | `string` | no |  |
 
@@ -99,6 +148,20 @@ Source: [`packages/ui-kit/src/blocks/layout/ImageBlock.ts`](../../../packages/ui
 | `appId` | `string` | no |  |
 | `blockId` | `string` | no |  |
 
+### `file`
+
+Source: [`packages/ui-kit/src/blocks/layout/FileBlock.ts`](../../../packages/ui-kit/src/blocks/layout/FileBlock.ts)
+
+An uploaded file shown as a card with a link to download it. The card shows a generic "File" label, not the file name, size or type: the client fetches no file details. The link is the file URL, which enforces room access, so a viewer who cannot read the file gets a `403` when they open it. Only files of the workspace are supported: any `source` other than `local` renders nothing.
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'file'` | yes |  |
+| `file_id` | `string` | yes |  |
+| `source` | `'local'` | no |  |
+| `appId` | `string` | no |  |
+| `blockId` | `string` | no |  |
+
 ### `info_card`
 
 Source: [`packages/ui-kit/src/blocks/layout/InfoCardBlock.ts`](../../../packages/ui-kit/src/blocks/layout/InfoCardBlock.ts)
@@ -118,7 +181,7 @@ Source: [`packages/ui-kit/src/blocks/layout/InputBlock.ts`](../../../packages/ui
 | --- | --- | --- | --- |
 | `type` | `'input'` | yes |  |
 | `label` | `PlainText` | yes |  |
-| `element` | `\| ChannelsSelectElement \| ConversationsSelectElement \| DatePickerElement \| DateTimePickerElement \| LinearScaleElement \| MultiChannelsSelectElement \| MultiConversationsSelectElement \| MultiStaticSelectElement \| MultiUsersSelectElement \| PlainTextInputElement \| NumberInputElement \| EmailTextInputElement \| UrlTextInputElement \| StaticSelectElement \| UsersSelectElement \| CheckboxElement \| RadioButtonElement \| TimePickerElement \| ToggleSwitchElement` | yes |  |
+| `element` | `\| ChannelsSelectElement \| ConversationsSelectElement \| DatePickerElement \| DateTimePickerElement \| ExternalSelectElement \| LinearScaleElement \| MultiChannelsSelectElement \| MultiConversationsSelectElement \| MultiExternalSelectElement \| MultiStaticSelectElement \| MultiUsersSelectElement \| PlainTextInputElement \| NumberInputElement \| EmailTextInputElement \| UrlTextInputElement \| StaticSelectElement \| UsersSelectElement \| CheckboxElement \| RadioButtonElement \| TimePickerElement \| ToggleSwitchElement` | yes |  |
 | `hint` | `PlainText` | no |  |
 | `optional` | `boolean` | no |  |
 | `appId` | `string` | no |  |
@@ -134,6 +197,20 @@ Source: [`packages/ui-kit/src/blocks/layout/MarkdownBlock.ts`](../../../packages
 | `text` | `string` | yes |  |
 | `appId` | `string` | no |  |
 | `blockId` | `string` | no |  |
+
+### `plan`
+
+Source: [`packages/ui-kit/src/blocks/layout/PlanBlock.ts`](../../../packages/ui-kit/src/blocks/layout/PlanBlock.ts)
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'plan'` | yes | The steps of a multi-step task, such as an AI agent's, shown together under a title. |
+| `title` | `string` | yes | Plain text. |
+| `tasks` | `readonly TaskCard[]` | yes | At most 50, checked by `validateLayoutBlocks`. Each is the fields of a `task_card` without `type`, `appId` and `blockId`. `task_id` should be unique in the plan; nothing checks it, and the renderer keys tasks by it. |
+| `appId` | `string` | no |  |
+| `blockId` | `string` | no |  |
+
+An app shows progress by sending the message or view again with the new statuses.
 
 ### `preview`
 
@@ -152,6 +229,46 @@ Source: [`packages/ui-kit/src/blocks/layout/PreviewBlock.ts`](../../../packages/
 | `externalUrl` | `string` | no |  |
 | `oembedUrl` | `string` | no |  |
 
+### `rich_text`
+
+Source: [`packages/ui-kit/src/blocks/layout/RichTextBlock.ts`](../../../packages/ui-kit/src/blocks/layout/RichTextBlock.ts)
+
+Structured rich text. Fuselage maps it to the `@rocket.chat/message-parser` AST and renders it with the same `Markup` component as a chat message.
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'rich_text'` | yes |  |
+| `elements` | `RichTextContainer[]` | yes | `rich_text_section`, `rich_text_list`, `rich_text_quote` or `rich_text_preformatted`. |
+| `appId` | `string` | no |  |
+| `blockId` | `string` | no |  |
+
+Containers:
+
+| Container | Fields |
+| --- | --- |
+| `rich_text_section` | `elements`: inline elements |
+| `rich_text_list` | `style`: `'bullet'` or `'ordered'`; `indent?`: number; `elements`: `rich_text_section[]` |
+| `rich_text_quote` | `elements`: inline elements |
+| `rich_text_preformatted` | `elements`: inline elements, whose `text` is joined and shown as a code block |
+
+Inline elements:
+
+| Element | Fields |
+| --- | --- |
+| `text` | `text`; `style?`: `{ bold?, italic?, strike?, code? }` |
+| `link` | `url`; `text?` (defaults to the url); `style?` |
+| `emoji` | `name`; `unicode?` (shown instead of the shortcode when set) |
+| `user` | `user_id`: resolved to the username through `/v1/users.info` |
+| `channel` | `channel_id`: resolved to the room name through `/v1/rooms.info` |
+| `date` | `timestamp`: Unix seconds; `format?`: `t`, `T`, `d`, `D`, `f` (default), `F` or `R` |
+| `broadcast` | `range`: `'here'`, `'channel'` or `'everyone'`; the last two both mention `@all` |
+
+Notes:
+
+- Mentions arrive by id and are resolved on the client with cached requests; the id is shown until the name loads, and stays if the lookup fails.
+- The message-parser AST has flat lists, so `indent` is ignored when rendering: a nested list shows at the top level.
+- Only the message, modal and contextual bar surfaces accept it.
+
 ### `section`
 
 Source: [`packages/ui-kit/src/blocks/layout/SectionBlock.ts`](../../../packages/ui-kit/src/blocks/layout/SectionBlock.ts)
@@ -161,7 +278,7 @@ Source: [`packages/ui-kit/src/blocks/layout/SectionBlock.ts`](../../../packages/
 | `type` | `'section'` | yes |  |
 | `text` | `TextObject` | no |  |
 | `fields` | `readonly TextObject[]` | no |  |
-| `accessory` | `ButtonElement \| ChannelsSelectElement \| CheckboxElement \| ConversationsSelectElement \| DatePickerElement \| ImageElement \| MultiChannelsSelectElement \| MultiConversationsSelectElement \| MultiStaticSelectElement \| MultiUsersSelectElement \| OverflowElement \| RadioButtonElement \| StaticSelectElement \| TimePickerElement \| UsersSelectElement` | no |  |
+| `accessory` | `ButtonElement \| ChannelsSelectElement \| CheckboxElement \| ConversationsSelectElement \| DatePickerElement \| ExternalSelectElement \| ImageElement \| MultiChannelsSelectElement \| MultiConversationsSelectElement \| MultiExternalSelectElement \| MultiStaticSelectElement \| MultiUsersSelectElement \| OverflowElement \| RadioButtonElement \| StaticSelectElement \| TimePickerElement \| UsersSelectElement` | no |  |
 | `appId` | `string` | no |  |
 | `blockId` | `string` | no |  |
 
@@ -185,6 +302,23 @@ Source: [`packages/ui-kit/src/blocks/layout/ExperimentalTabNavigationBlock.ts`](
 | --- | --- | --- | --- |
 | `type` | `'tab_navigation'` | yes |  |
 | `tabs` | `readonly ExperimentalTabElement[]` | yes |  |
+| `appId` | `string` | no |  |
+| `blockId` | `string` | no |  |
+
+### `task_card`
+
+Source: [`packages/ui-kit/src/blocks/layout/TaskCardBlock.ts`](../../../packages/ui-kit/src/blocks/layout/TaskCardBlock.ts)
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'task_card'` | yes | One step of a multi-step task, such as an AI agent's, with its status. |
+| `task_id` | `string` | yes | Tells the tasks of a plan apart. |
+| `title` | `string` | yes | Plain text. |
+| `status` | `'pending' \| 'in_progress' \| 'complete' \| 'error'` | yes | Drawn as an icon and a label. An unknown value draws as `pending`. |
+| `details` | `RichTextBlock` | no | What the task sets out to do. |
+| `output` | `RichTextBlock` | no | What the task produced. |
+| `sources` | `readonly UrlSourceElement[]` | no | Links to the pages the task drew on. A link whose URL is not safe to open is left out. |
+| `hide_title` | `boolean` | no | Leaves out the title, so `details` comes first. `title` is still required. |
 | `appId` | `string` | no |  |
 | `blockId` | `string` | no |  |
 
@@ -261,7 +395,7 @@ Source: [`packages/ui-kit/src/blocks/elements/CheckboxElement.ts`](../../../pack
 
 | Field | Type | Required | Notes |
 | --- | --- | --- | --- |
-| `type` | `'checkbox'` | yes |  |
+| `type` | `'checkbox' \| 'checkboxes'` | yes | Both names are typed and accepted. |
 | `options` | `Option[]` | yes |  |
 | `initialOptions` | `Option[]` | no |  |
 | `focus_on_load` | `boolean` | no | Focuses the field when the view opens (its first option). |
@@ -336,6 +470,25 @@ Source: [`packages/ui-kit/src/blocks/elements/EmailTextInputElement.ts`](../../.
 | `confirm` | `ConfirmationDialog` | no |  |
 | `dispatchActionConfig` | `InputElementDispatchAction[]` | no |  |
 
+### `external_select`
+
+Source: [`packages/ui-kit/src/blocks/elements/ExternalSelectElement.ts`](../../../packages/ui-kit/src/blocks/elements/ExternalSelectElement.ts)
+
+The app provides the options as the user types: see [`blockSuggestion`](interactions.md#options-for-external-selects).
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'external_select'` | yes |  |
+| `placeholder` | `PlainText` | no |  |
+| `initial_option` | `Option` | no | Option selected when the view opens. |
+| `min_query_length` | `number` | no | Characters the user types before the app is asked for options. Defaults to 3. |
+| `focus_on_load` | `boolean` | no | Focuses the field when the view opens. |
+| `appId` | `string` | yes |  |
+| `blockId` | `string` | yes |  |
+| `actionId` | `string` | yes |  |
+| `confirm` | `ConfirmationDialog` | no |  |
+| `dispatchActionConfig` | `InputElementDispatchAction[]` | no |  |
+
 ### `feedback_buttons`
 
 Source: [`packages/ui-kit/src/blocks/elements/FeedbackButtonsElement.ts`](../../../packages/ui-kit/src/blocks/elements/FeedbackButtonsElement.ts)
@@ -358,7 +511,7 @@ Source: [`packages/ui-kit/src/blocks/elements/IconElement.ts`](../../../packages
 | Field | Type | Required | Notes |
 | --- | --- | --- | --- |
 | `type` | `'icon'` | yes |  |
-| `icon` | `AvailableIcons` | yes |  |
+| `icon` | `AvailableIcons` | yes | One of `phone`, `phone-off`, `phone-issue`, `phone-question-mark`, `clock`, `arrow-forward`, `info`, `copy`, `flag`, `trash`, `edit`, `link`, `check`, `cross`, `star`, `pin`, `share`, `download`, `eye`, `bell`, `kebab`. |
 | `variant` | `'default' \| 'danger' \| 'secondary' \| 'warning'` | yes |  |
 | `framed` | `boolean` | no |  |
 
@@ -388,6 +541,23 @@ Source: [`packages/ui-kit/src/blocks/elements/ImageElement.ts`](../../../package
 | `type` | `'image'` | yes |  |
 | `imageUrl` | `string` | yes |  |
 | `altText` | `string` | yes |  |
+
+### `file_input`
+
+Source: [`packages/ui-kit/src/blocks/elements/FileInputElement.ts`](../../../packages/ui-kit/src/blocks/elements/FileInputElement.ts)
+
+Lets the user attach files; the value in the view state is the list of the uploaded file IDs (`string[]`). Each file is uploaded when picked, as a temporary file of the room the view was opened from, and the app reads it with `IUploadRead` after the submit; see [interactions.md](interactions.md#files-in-views). Without a room, the element renders disabled.
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'file_input'` | yes |  |
+| `filetypes` | `string[]` | no | Accepted extensions, without the dot (`pdf`, `png`). Any file is accepted when omitted. |
+| `max_files` | `number` | no | Defaults to 10. |
+| `appId` | `string` | yes |  |
+| `blockId` | `string` | yes |  |
+| `actionId` | `string` | yes |  |
+| `confirm` | `ConfirmationDialog` | no |  |
+| `dispatchActionConfig` | `InputElementDispatchAction[]` | no |  |
 
 ### `linear_scale`
 
@@ -443,6 +613,26 @@ Source: [`packages/ui-kit/src/blocks/elements/MultiConversationsSelectElement.ts
 | `confirm` | `ConfirmationDialog` | no |  |
 | `dispatchActionConfig` | `InputElementDispatchAction[]` | no |  |
 
+### `multi_external_select`
+
+Source: [`packages/ui-kit/src/blocks/elements/MultiExternalSelectElement.ts`](../../../packages/ui-kit/src/blocks/elements/MultiExternalSelectElement.ts)
+
+Like `external_select`, with several selections.
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'multi_external_select'` | yes |  |
+| `placeholder` | `PlainText` | no |  |
+| `initial_options` | `Option[]` | no | Options selected when the view opens. |
+| `min_query_length` | `number` | no | Characters the user types before the app is asked for options. Defaults to 3. |
+| `max_selected_items` | `number` | no | Most options that can be selected. |
+| `focus_on_load` | `boolean` | no | Focuses the field when the view opens. |
+| `appId` | `string` | yes |  |
+| `blockId` | `string` | yes |  |
+| `actionId` | `string` | yes |  |
+| `confirm` | `ConfirmationDialog` | no |  |
+| `dispatchActionConfig` | `InputElementDispatchAction[]` | no |  |
+
 ### `multi_static_select`
 
 Source: [`packages/ui-kit/src/blocks/elements/MultiStaticSelectElement.ts`](../../../packages/ui-kit/src/blocks/elements/MultiStaticSelectElement.ts)
@@ -456,6 +646,7 @@ Source: [`packages/ui-kit/src/blocks/elements/MultiStaticSelectElement.ts`](../.
 | `maxSelectItems` | `number` | no |  |
 | `initialValue` | `Option['value'][]` | no |  |
 | `initialOption` | `Option[]` | no |  |
+| `focus_on_load` | `boolean` | no | Focuses the field when the view opens. |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
 | `actionId` | `string` | yes |  |
@@ -531,13 +722,33 @@ Source: [`packages/ui-kit/src/blocks/elements/PlainTextInputElement.ts`](../../.
 | `confirm` | `ConfirmationDialog` | no |  |
 | `dispatchActionConfig` | `InputElementDispatchAction[]` | no |  |
 
+### `rich_text_input`
+
+Source: [`packages/ui-kit/src/blocks/elements/RichTextInputElement.ts`](../../../packages/ui-kit/src/blocks/elements/RichTextInputElement.ts)
+
+A multi-line field where the user types Markdown. Its value, in view state and in the payload sent to the app, is a `rich_text` block built by parsing the text the way a chat message is parsed. `initial_value` is converted back to Markdown for display.
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'rich_text_input'` | yes |  |
+| `placeholder` | `PlainText` | no |  |
+| `initial_value` | `RichTextBlock` | no |  |
+| `focus_on_load` | `boolean` | no | Focuses the field when the view opens. |
+| `appId` | `string` | yes |  |
+| `blockId` | `string` | yes |  |
+| `actionId` | `string` | yes |  |
+| `confirm` | `ConfirmationDialog` | no |  |
+| `dispatchActionConfig` | `InputElementDispatchAction[]` | no |  |
+
+Typed `@name` and `#name` mentions have no ids on the client, so they come back as `text` elements; `@here` and `@all` become `broadcast` elements. A nested list comes back as separate `rich_text_list` containers with `indent` set to the depth.
+
 ### `radio_button`
 
 Source: [`packages/ui-kit/src/blocks/elements/RadioButtonElement.ts`](../../../packages/ui-kit/src/blocks/elements/RadioButtonElement.ts)
 
 | Field | Type | Required | Notes |
 | --- | --- | --- | --- |
-| `type` | `'radio_button'` | yes |  |
+| `type` | `'radio_button' \| 'radio_buttons'` | yes | Both names are typed and accepted. |
 | `options` | `Option[]` | yes |  |
 | `initialOption` | `Option` | no |  |
 | `focus_on_load` | `boolean` | no | Focuses the field when the view opens (its first option). |
@@ -559,6 +770,7 @@ Source: [`packages/ui-kit/src/blocks/elements/StaticSelectElement.ts`](../../../
 | `optionGroups` | `readonly OptionGroup[]` | no |  |
 | `initialOption` | `Option` | no |  |
 | `initialValue` | `Option['value']` | no |  |
+| `focus_on_load` | `boolean` | no | Focuses the field when the view opens. |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
 | `actionId` | `string` | yes |  |
@@ -587,9 +799,10 @@ Source: [`packages/ui-kit/src/blocks/elements/TimePickerElement.ts`](../../../pa
 
 | Field | Type | Required | Notes |
 | --- | --- | --- | --- |
-| `type` | `'time_picker'` | yes |  |
+| `type` | `'time_picker' \| 'timepicker'` | yes | Both names are typed and accepted. |
 | `placeholder` | `TextObject` | no |  |
 | `initialTime` | `string` | no |  |
+| `timezone` | `string` | no | IANA name of the time zone `initialTime` and the picked time are in; the user's own when absent. The value sent stays `HH:mm`. |
 | `focus_on_load` | `boolean` | no | Focuses the field when the view opens. |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
@@ -611,6 +824,16 @@ Source: [`packages/ui-kit/src/blocks/elements/ToggleSwitchElement.ts`](../../../
 | `actionId` | `string` | yes |  |
 | `confirm` | `ConfirmationDialog` | no |  |
 | `dispatchActionConfig` | `InputElementDispatchAction[]` | no |  |
+
+### `url`
+
+Source: [`packages/ui-kit/src/blocks/elements/UrlSourceElement.ts`](../../../packages/ui-kit/src/blocks/elements/UrlSourceElement.ts)
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'url'` | yes | A link to a page a task drew on. Typed only for the `sources` of a `task_card`. |
+| `url` | `string` | yes |  |
+| `text` | `string` | yes | The link's label. |
 
 ### `url_text_input`
 
@@ -717,6 +940,13 @@ Source: [`packages/ui-kit/src/surfaces/modal/ModalView.ts`](../../../packages/ui
 | `close` | `ButtonElement` | no |  |
 | `submit` | `ButtonElement` | no |  |
 | `blocks` | `ModalSurfaceLayout` | yes |  |
+| `private_metadata` | `string` | no | Data the app gets back on submit and close. Kept on the server; whatever the client sends for it is ignored. |
+| `callback_id` | `string` | no | An id the app picks to recognize the view in its handlers. |
+| `external_id` | `string` | no | An id the app picks, unique among the views it opened for a user. An update that carries it, and no known `id`, updates that view. |
+| `submit_disabled` | `boolean` | no | Disables the submit button. |
+| `hash` | `string` | no | Set by the server on every save. An update that carries a different `hash` is stale and is dropped. |
+| `clearOnClose` | `boolean` | no | Closing the view closes every modal of the app (modal only). |
+| `notifyOnClose` | `boolean` | no | Whether closing the view sends `viewClosed` to the app. Defaults to `true`, so views that do not set it keep notifying. |
 
 ### BannerView
 
@@ -744,3 +974,43 @@ Source: [`packages/ui-kit/src/surfaces/contextualBar/ContextualBarView.ts`](../.
 | `close` | `ButtonElement` | no |  |
 | `submit` | `ButtonElement` | no |  |
 | `blocks` | `ContextualBarSurfaceLayout` | yes |  |
+| `private_metadata` | `string` | no | Data the app gets back on submit and close. Kept on the server; whatever the client sends for it is ignored. |
+| `callback_id` | `string` | no | An id the app picks to recognize the view in its handlers. |
+| `external_id` | `string` | no | An id the app picks, unique among the views it opened for a user. An update that carries it, and no known `id`, updates that view. |
+| `submit_disabled` | `boolean` | no | Disables the submit button. |
+| `hash` | `string` | no | Set by the server on every save. An update that carries a different `hash` is stale and is dropped. |
+| `clearOnClose` | `boolean` | no | Closing the view closes every modal of the app (modal only). |
+| `notifyOnClose` | `boolean` | no | Whether closing the view sends `viewClosed` to the app. Defaults to `true`, so views that do not set it keep notifying. |
+
+## Size limits
+
+Checked by `validateLayoutBlocks` (see [interactions.md](interactions.md#validation)), never by the renderers.
+
+| What | Limit |
+| --- | --- |
+| Blocks in a message | 50 |
+| Blocks in a view | 100 |
+| Elements in an `actions` block | 25 |
+| Tasks in a `plan` | 50 |
+| Options in a select (`options`) | 100 |
+| `header` text | 150 characters |
+| `section` text | 3000 characters |
+| `section` field | 2000 characters |
+| `button` text | 75 characters |
+| Option text | 75 characters |
+| `placeholder` | 150 characters |
+| Input `label` and `hint` | 2000 characters |
+
+The limits live in `packages/ui-kit/src/blocks/blockLimits.ts`.
+
+### HomeView
+
+Source: [`packages/ui-kit/src/surfaces/home/HomeView.ts`](../../../packages/ui-kit/src/surfaces/home/HomeView.ts)
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `appId` | `string` | yes | The ID of the app that created this view. |
+| `id` | `string` | yes | Keep it stable across publishes so the open page updates in place. |
+| `blocks` | `HomeSurfaceLayout` | yes | The contextual bar's blocks except `tab_navigation`. |
+| `private_metadata` | `string` | no | Opaque data the app gets back with every interaction on the view. |
+| `external_id` | `string` | no | An identifier the app chooses to find the view again. |

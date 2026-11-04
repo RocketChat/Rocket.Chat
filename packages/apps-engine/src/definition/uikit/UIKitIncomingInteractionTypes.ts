@@ -29,6 +29,16 @@ export interface IUIKitBlockIncomingInteraction extends IUIKitBaseIncomingIntera
 		IUIKitIncomingInteractionModalContainer | IUIKitIncomingInteractionContextualBarContainer | IUIKitIncomingInteractionMessageContainer;
 }
 
+export interface IUIKitBlockSuggestionIncomingInteraction extends IUIKitBaseIncomingInteraction {
+	/** What the user has typed so far. */
+	value: string;
+	message?: IMessage;
+	actionId: string;
+	blockId: string;
+	container:
+		IUIKitIncomingInteractionModalContainer | IUIKitIncomingInteractionContextualBarContainer | IUIKitIncomingInteractionMessageContainer;
+}
+
 export interface IUIKitViewSubmitIncomingInteraction extends IUIKitBaseIncomingInteraction {
 	view: IUIKitSurface;
 	triggerId: string;
@@ -37,6 +47,12 @@ export interface IUIKitViewSubmitIncomingInteraction extends IUIKitBaseIncomingI
 export interface IUIKitViewCloseIncomingInteraction extends IUIKitBaseIncomingInteraction {
 	view: IUIKitSurface;
 	isCleared: boolean;
+}
+
+export interface IUIKitAppHomeOpenedIncomingInteraction extends IUIKitBaseIncomingInteraction {
+	triggerId: string;
+	/** The home the app last published for the user, absent until it publishes one. */
+	view?: IUIKitSurface;
 }
 
 export interface IUIKitActionButtonIncomingInteraction extends IUIKitBaseIncomingInteraction {
