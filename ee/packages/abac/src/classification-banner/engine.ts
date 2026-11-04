@@ -1,10 +1,4 @@
-import type {
-	ClassificationBannerPayload,
-	ClassificationBannerSegment,
-	IAbacAttributeDefinition,
-	IRoom,
-	IRoomXMPPFederated,
-} from '@rocket.chat/core-typings';
+import type { ClassificationBannerPayload, ClassificationBannerSegment, IAbacAttributeDefinition, IRoom } from '@rocket.chat/core-typings';
 import { isABACManagedRoom, isDiscussion, isOmnichannelRoom, isRoomFederated, isRoomXMPPFederated } from '@rocket.chat/core-typings';
 import { isTruthy } from '@rocket.chat/tools';
 
@@ -93,8 +87,7 @@ export const buildClassificationBanner = (
 	};
 };
 
-type ClassifiedRoom = Pick<IRoom, 't' | 'abacAttributes' | 'federated' | 'prid' | 'teamId'> &
-	Partial<Pick<IRoomXMPPFederated, 'xmppFederation'>>;
+type ClassifiedRoom = Pick<IRoom, 't' | 'abacAttributes' | 'federated' | 'xmppFederation' | 'prid' | 'teamId'>;
 
 const roomTypes: Record<ClassificationRoomType, IRoom['t']> = {
 	direct: 'd',

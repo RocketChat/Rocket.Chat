@@ -1,4 +1,4 @@
-import type { IRoom, IRoomXMPPFederated } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 
 import { readableTextColor } from './colors';
 import { buildClassificationBanner, buildRoomClassificationBanner, parseClassificationBannersConfig } from './engine';
@@ -306,8 +306,7 @@ describe('buildRoomClassificationBanner', () => {
 	});
 
 	describe('matching a room', () => {
-		type Room = Pick<IRoom, 't' | 'abacAttributes' | 'uids' | 'federated' | 'prid' | 'teamMain' | 'teamId'> &
-			Partial<Pick<IRoomXMPPFederated, 'xmppFederation'>>;
+		type Room = Pick<IRoom, 't' | 'abacAttributes' | 'uids' | 'federated' | 'xmppFederation' | 'prid' | 'teamMain' | 'teamId'>;
 
 		const dm: Room = { t: 'd', uids: ['alice', 'bob'] };
 		const groupDm: Room = { t: 'd', uids: ['alice', 'bob', 'carol'] };
