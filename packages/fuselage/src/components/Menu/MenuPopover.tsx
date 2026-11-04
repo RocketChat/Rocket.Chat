@@ -5,6 +5,7 @@ import type { AriaPopoverProps } from 'react-aria';
 import { useInteractOutside } from 'react-aria';
 import type { OverlayTriggerState } from 'react-stately';
 
+import { Box } from '../Box';
 import { DropdownDesktop } from '../Dropdown/DropdownDesktop';
 import { DropdownMobile } from '../Dropdown/DropdownMobile';
 import { Popover } from '../Popover';
@@ -59,9 +60,9 @@ function MenuPopover({ children, state, offset = 4, maxWidth, ...props }: MenuPo
 			{isMobile ? (
 				<DropdownMobile>{children}</DropdownMobile>
 			) : (
-				<DropdownDesktop maxHeight='80vh' overflowY='auto' maxWidth={maxWidth}>
-					{children}
-				</DropdownDesktop>
+				<Box maxWidth={maxWidth}>
+					<DropdownDesktop maxHeight='most-of-screen'>{children}</DropdownDesktop>
+				</Box>
 			)}
 			{!isSubmenu && <span ref={containerRef} style={{ display: 'contents' }} />}
 		</Popover>

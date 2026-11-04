@@ -1,7 +1,8 @@
-import type { ReactNode } from 'react';
+import type { AnchorHTMLAttributes, ReactNode } from 'react';
 
 import { prependClassName } from '../../helpers/prependClassName';
-import { Box, type BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
+import { Box } from '../Box';
 
 export type TagProps = {
 	medium?: boolean;
@@ -13,7 +14,7 @@ export type TagProps = {
 	variant?: 'primary' | 'secondary' | 'danger' | 'warning' | 'secondary-danger' | 'secondary-warning' | 'secondary-info' | 'featured';
 	disabled?: boolean;
 	icon?: ReactNode;
-} & Omit<BoxProps, 'is'>;
+} & ElementProps<HTMLElement, AnchorHTMLAttributes<HTMLElement>>;
 
 /**
  * Used for mentions
@@ -33,13 +34,7 @@ const Tag = ({ large, medium, pill, className, disabled, onClick, variant, child
 		.join(' ');
 
 	return (
-		<Box
-			is={href ? 'a' : 'span'}
-			className={prependClassName(className as string, `rcx-tag ${modifiers}`)}
-			onClick={onClick}
-			href={href}
-			{...props}
-		>
+		<Box is={href ? 'a' : 'span'} className={prependClassName(className, `rcx-tag ${modifiers}`)} onClick={onClick} href={href} {...props}>
 			{icon}
 			<span className='rcx-tag__inner'>{children}</span>
 		</Box>

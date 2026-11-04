@@ -1,31 +1,18 @@
 import type { ReactNode, RefAttributes } from 'react';
 
-import { Box, Tile } from '..';
+import { Box } from '../Box';
+import { PopoverSurface } from '../PopoverSurface';
 
 export type DropdownMobileProps = RefAttributes<HTMLElement> & {
 	children: ReactNode;
 };
 
+const bottomSheet = { position: 'fixed', bottom: 0, left: 0, zIndex: 2, width: '100vw' } as const;
+
 export function DropdownMobile({ children, ...props }: DropdownMobileProps) {
 	return (
-		<Tile
-			elevation='2'
-			paddingInline='0'
-			paddingBlock='0'
-			width='100vw'
-			maxHeight='80%'
-			position='fixed'
-			display='flex'
-			flexDirection='column'
-			overflow='auto'
-			style={{ bottom: 0, left: 0 }}
-			zIndex={2}
-			data-testid='dropdown'
-			{...props}
-		>
-			<Box flexShrink={1} paddingBlock={16}>
-				{children}
-			</Box>
-		</Tile>
+		<PopoverSurface flush maxHeight='most-of-screen' style={bottomSheet} data-testid='dropdown' {...props}>
+			<Box paddingBlock={16}>{children}</Box>
+		</PopoverSurface>
 	);
 }

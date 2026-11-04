@@ -56,9 +56,7 @@ const metrics = (
 
 const metricsThread = (
 	<MessageMetrics>
-		<MessageMetricsReply onClick={action('click view thread')} overflow='visible'>
-			View thread
-		</MessageMetricsReply>
+		<MessageMetricsReply onClick={action('click view thread')}>View thread</MessageMetricsReply>
 		<MessageMetricsItem>
 			<MessageMetricsFollowing
 				title='Following'

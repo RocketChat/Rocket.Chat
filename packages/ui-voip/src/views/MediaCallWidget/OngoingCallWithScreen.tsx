@@ -63,7 +63,7 @@ const OngoingCall = () => {
 			<WidgetHandle />
 			<WidgetHeader title={connecting ? t('meteor_status_connecting') : <Timer startAt={startedAt} />}>
 				{onClickDirectMessage && (
-					<ActionButton tiny secondary={false} label={t('Direct_Message')} icon='balloon' onClick={onClickDirectMessage} />
+					<ActionButton size='tiny' secondary={false} label={t('Direct_Message')} icon='balloon' onClick={onClickDirectMessage} />
 				)}
 
 				<ToggleButton
@@ -74,7 +74,7 @@ const OngoingCall = () => {
 					onToggle={isPopout ? onClosePopout : onOpenPopout}
 					danger={false}
 					secondary={false}
-					tiny
+					size='tiny'
 				/>
 
 				<DevicePicker />
@@ -87,7 +87,7 @@ const OngoingCall = () => {
 
 					{isPopout && (
 						<Box display='flex' flexDirection='column' gap={4}>
-							<Button onClick={onClosePopout} icon='arrow-from-cross-box' medium width='full'>
+							<Button onClick={onClosePopout} icon='arrow-from-cross-box' size='medium'>
 								{t('Show_call_here')}
 							</Button>
 							{localScreen?.active && (

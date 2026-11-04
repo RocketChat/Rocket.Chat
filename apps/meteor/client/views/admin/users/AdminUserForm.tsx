@@ -1,22 +1,26 @@
-import type { AvatarObject, IRole, IUser, Serialized } from '@rocket.chat/core-typings';
+import type { AvatarObject, IRole, IUser, IUserPhoneNumber, Serialized } from '@rocket.chat/core-typings';
 import {
 	Accordion,
 	AccordionItem,
+	Box,
+	Button,
+	ButtonGroup,
+	Callout,
+	Divider,
 	Field,
+	FieldError,
+	FieldGroup,
+	FieldHint,
 	FieldLabel,
 	FieldRow,
-	FieldError,
-	FieldHint,
-	TextInput,
-	TextAreaInput,
-	MultiSelectFiltered,
-	Box,
-	ToggleSwitch,
 	Icon,
-	FieldGroup,
-	Button,
-	Callout,
+	MultiSelectFiltered,
 	Skeleton,
+	Stack,
+	Text,
+	TextAreaInput,
+	TextInput,
+	ToggleSwitch,
 } from '@rocket.chat/fuselage';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
@@ -43,6 +47,7 @@ import PasswordFieldSkeleton from './PasswordFieldSkeleton';
 import { useSmtpQuery } from './hooks/useSmtpQuery';
 import { useShowVoipExtension } from './useShowVoipExtension';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
+import PhoneNumberFieldList, { getInitialPhones, getPersistedPhones } from '../../../components/PhoneNumberFieldList';
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useCanManageUserStatus } from '../../../hooks/useCanManageUserStatus';
@@ -65,6 +70,7 @@ export type UserFormProps = UserCreateParamsPOST & {
 	passwordConfirmation: string;
 	sipExtension?: string;
 	statusVisibilityDeniedByAdmin?: string[];
+	phones?: IUserPhoneNumber[];
 };
 
 const getInitialValue = ({
@@ -95,6 +101,7 @@ const getInitialValue = ({
 	presenceDisabledByAdmin: data?.presenceDisabledByAdmin === true,
 	statusVisibilityDeniedByAdmin: data?.statusVisibilityDeniedByAdmin ?? [],
 	sipExtension: data?.sipExtension ?? '',
+	phones: getInitialPhones(data?.phones),
 	...(isNewUserPage && { joinDefaultChannels: true }),
 	sendWelcomeEmail: isSmtpEnabled,
 	avatar: '' as AvatarObject,
@@ -186,8 +193,12 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 	});
 
 	const handleSaveUser = useStableCallback(async (userFormPayload: UserFormProps) => {
-		const { avatar, passwordConfirmation, statusVisibilityDeniedByAdmin, presenceDisabledByAdmin, statusText, ...userFormData } =
+		const { avatar, passwordConfirmation, statusVisibilityDeniedByAdmin, presenceDisabledByAdmin, statusText, phones, ...rest } =
 			userFormPayload;
+		const userFormData = {
+			...rest,
+			...((isNewUserPage || dirtyFields.phones) && { phones: getPersistedPhones(phones) }),
+		};
 
 		if (!isNewUserPage && userData?._id) {
 			return handleUpdateUser.mutateAsync({
@@ -253,7 +264,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 							/>
 						</Field>
 					)}
-					{isNewUserPage && <Box color='hint'>{t('Manually_created_users_briefing')}</Box>}
+					{isNewUserPage && <Text color='hint'>{t('Manually_created_users_briefing')}</Text>}
 					<Field>
 						<FieldLabel htmlFor={emailId}>{t('Email')}</FieldLabel>
 						<FieldRow>
@@ -271,7 +282,6 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 										aria-invalid={errors.email ? 'true' : 'false'}
 										aria-describedby={`${emailId}-error`}
 										error={errors.email?.message}
-										flexGrow={1}
 									/>
 								)}
 							/>
@@ -285,19 +295,13 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 							<Skeleton width='full' height={26} />
 						) : (
 							<>
-								<FieldRow marginBlockStart={12}>
-									<Box display='flex' alignItems='center'>
-										<FieldLabel htmlFor={verifiedId} padding={0} disabled={!isSmtpEnabled || !isVerificationNeeded} margin={0}>
+								<FieldRow>
+									<Stack direction='row' align='center' gap={4}>
+										<FieldLabel htmlFor={verifiedId} disabled={!isSmtpEnabled || !isVerificationNeeded}>
 											{t('Mark_email_as_verified')}
 										</FieldLabel>
-										<Icon
-											name='info-circled'
-											size='x20'
-											marginInlineStart={4}
-											title={t('Enable_to_bypass_email_verification')}
-											color='default'
-										/>
-									</Box>
+										<Icon name='info-circled' size='x20' title={t('Enable_to_bypass_email_verification')} />
+									</Stack>
 									<Controller
 										control={control}
 										name='verified'
@@ -316,7 +320,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 										<Trans
 											i18nKey='Send_Email_SMTP_Warning'
 											components={{
-												// eslint-disable-next-line jsx-a11y/anchor-has-content
+												// oxlint-disable-next-line jsx-a11y/anchor-has-content
 												a: <a href='/admin/settings/Email' />,
 											}}
 										/>
@@ -327,7 +331,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 										<Trans
 											i18nKey='Email_verification_isnt_required'
 											components={{
-												// eslint-disable-next-line jsx-a11y/anchor-has-content
+												// oxlint-disable-next-line jsx-a11y/anchor-has-content
 												a: <a href='/admin/settings/Accounts' />,
 											}}
 										/>
@@ -350,7 +354,6 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 										aria-invalid={errors.name ? 'true' : 'false'}
 										aria-describedby={`${nameId}-error`}
 										error={errors.name?.message}
-										flexGrow={1}
 									/>
 								)}
 							/>
@@ -375,7 +378,6 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 										aria-invalid={errors.username ? 'true' : 'false'}
 										aria-describedby={`${usernameId}-error`}
 										error={errors.username?.message}
-										flexGrow={1}
 									/>
 								)}
 							/>
@@ -390,11 +392,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 						<Field>
 							<FieldLabel htmlFor={voiceExtensionId}>{t('Voice_call_extension')}</FieldLabel>
 							<FieldRow>
-								<Controller
-									control={control}
-									name='sipExtension'
-									render={({ field }) => <TextInput {...field} id={voiceExtensionId} flexGrow={1} />}
-								/>
+								<Controller control={control} name='sipExtension' render={({ field }) => <TextInput {...field} id={voiceExtensionId} />} />
 							</FieldRow>
 						</Field>
 					)}
@@ -403,9 +401,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 							<PasswordFieldSkeleton />
 						) : (
 							<>
-								<FieldLabel htmlFor={passwordId} marginBlockEnd={8}>
-									{t('Password')}
-								</FieldLabel>
+								<FieldLabel htmlFor={passwordId}>{t('Password')}</FieldLabel>
 								<AdminUserSetRandomPasswordRadios
 									isNewUserPage={isNewUserPage}
 									setRandomPasswordId={setRandomPasswordId}
@@ -440,7 +436,6 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 											id={rolesId}
 											value={value}
 											onChange={onChange}
-											flexGrow={1}
 											placeholder={t('Select_role')}
 											options={availableRoles}
 										/>
@@ -493,11 +488,11 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 									</FieldRow>
 								</Box>
 								{!isSmtpEnabled && (
-									<FieldHint id={`${sendWelcomeEmailId}-hint`} marginBlockStart={0}>
+									<FieldHint id={`${sendWelcomeEmailId}-hint`}>
 										<Trans
 											i18nKey='Send_Email_SMTP_Warning'
 											components={{
-												// eslint-disable-next-line jsx-a11y/anchor-has-content
+												// oxlint-disable-next-line jsx-a11y/anchor-has-content
 												a: <a href='/admin/settings/Email' />,
 											}}
 										/>
@@ -526,7 +521,6 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 											error={errors?.statusText?.message}
 											aria-invalid={errors.statusText ? 'true' : 'false'}
 											aria-describedby={`${statusTextId}-error ${statusTextId}-hint`}
-											flexGrow={1}
 										/>
 									)}
 								/>
@@ -554,8 +548,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 										error={errors?.bio?.message}
 										aria-invalid={errors.bio ? 'true' : 'false'}
 										aria-describedby={`${bioId}-error`}
-										flexGrow={1}
-										endAddon={<Icon name='edit' size='x20' alignSelf='center' />}
+										endAddon={<Icon name='edit' size='x20' />}
 									/>
 								)}
 							/>
@@ -569,22 +562,20 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 					<Field>
 						<FieldLabel htmlFor={nicknameId}>{t('Nickname')}</FieldLabel>
 						<FieldRow>
-							<Controller control={control} name='nickname' render={({ field }) => <TextInput {...field} id={nicknameId} flexGrow={1} />} />
+							<Controller control={control} name='nickname' render={({ field }) => <TextInput {...field} id={nicknameId} />} />
 						</FieldRow>
 					</Field>
+
+					<Divider flush />
+					<PhoneNumberFieldList control={control} />
+					<Divider flush />
 					{!!customFieldsMetadata.length && (
 						<>
-							<Button
-								fontScale='c2'
-								width='x140'
-								height='x28'
-								display='flex'
-								alignItems='center'
-								justifyContent='center'
-								onClick={() => setShowCustomFields((prevState) => !prevState)}
-							>
-								{showCustomFields ? t('Hide_additional_fields') : t('Show_additional_fields')}
-							</Button>
+							<Box>
+								<Button size='small' onClick={() => setShowCustomFields((prevState) => !prevState)}>
+									{showCustomFields ? t('Hide_additional_fields') : t('Show_additional_fields')}
+								</Button>
+							</Box>
 							{showCustomFields && <CustomFieldsForm formName='customFields' formControl={control} metadata={customFieldsMetadata} />}
 						</>
 					)}
@@ -619,9 +610,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 											/>
 										</FieldRow>
 									</Box>
-									<FieldHint id={`${userStatusId}-hint`} marginBlockStart={0}>
-										{t('User_status_admin_hint')}
-									</FieldHint>
+									<FieldHint id={`${userStatusId}-hint`}>{t('User_status_admin_hint')}</FieldHint>
 								</Field>
 								<Field>
 									<FieldLabel htmlFor={statusTextId} disabled={statusFieldsDisabled}>
@@ -645,7 +634,6 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 													error={errors?.statusText?.message}
 													aria-invalid={errors.statusText ? 'true' : 'false'}
 													aria-describedby={`${statusTextId}-error ${statusTextId}-hint`}
-													flexGrow={1}
 												/>
 											)}
 										/>
@@ -688,9 +676,11 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 				)}
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
-				<Button primary disabled={!isDirty} onClick={handleSubmit(handleSaveUser)} width='100%'>
-					{isNewUserPage ? t('Add_user') : t('Save_user')}
-				</Button>
+				<ButtonGroup stretch>
+					<Button variant='primary' disabled={!isDirty} onClick={handleSubmit(handleSaveUser)}>
+						{isNewUserPage ? t('Add_user') : t('Save_user')}
+					</Button>
+				</ButtonGroup>
 			</ContextualbarFooter>
 		</>
 	);

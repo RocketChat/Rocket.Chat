@@ -4,7 +4,7 @@ import { renderToString } from 'react-dom/server';
 
 import ToastBarPortal from './ToastBarPortal';
 
-// eslint-disable-next-line testing-library/no-node-access -- the anchor element's lifecycle is what these tests cover
+// oxlint-disable-next-line testing-library/no-node-access -- the anchor element's lifecycle is what these tests cover
 const queryAnchors = () => document.querySelectorAll('#toastBarRoot');
 
 describe('ToastBarPortal', () => {

@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 
+import { Box } from '../Box';
 import { IconButton } from '../Button';
 import { ButtonGroup } from '../ButtonGroup';
 import Divider from './Divider';
@@ -22,13 +23,28 @@ export default {
 	argTypes: {
 		variation: {
 			control: 'select',
-			options: ['danger'],
+			options: ['danger', 'light'],
 			description: 'Color variation of the divider.',
 			table: { category: 'Kind' },
 		},
 		vertical: {
 			control: 'boolean',
 			description: 'Renders the divider along the vertical axis instead of horizontal.',
+			table: { category: 'Layout' },
+		},
+		flush: {
+			control: 'boolean',
+			description: "Removes the divider's own margin; the container spaces it instead.",
+			table: { category: 'Layout' },
+		},
+		small: {
+			control: 'boolean',
+			description: 'Vertical only: uses a 4px inline margin instead of 8px.',
+			table: { category: 'Layout' },
+		},
+		stretch: {
+			control: 'boolean',
+			description: 'Vertical only: grows to the height of its container instead of 20px.',
 			table: { category: 'Layout' },
 		},
 		children: {
@@ -58,9 +74,45 @@ export const Vertical: Story = {
 export const AsButtonSeparator: Story = {
 	render: () => (
 		<ButtonGroup>
-			<IconButton small icon='phone' />
+			<IconButton size='small' icon='phone' />
 			<Divider vertical />
-			<IconButton small icon='user' />
+			<IconButton size='small' icon='user' />
 		</ButtonGroup>
+	),
+};
+
+export const Flush: Story = {
+	render: () => (
+		<Box display='flex' flexDirection='column' gap={16}>
+			<Box>Section</Box>
+			<Divider flush />
+			<Box>Section</Box>
+		</Box>
+	),
+};
+
+export const Light: Story = {
+	args: {
+		variation: 'light',
+	},
+};
+
+export const VerticalSmall: Story = {
+	render: () => (
+		<ButtonGroup small>
+			<IconButton size='small' icon='emoji' />
+			<Divider vertical small />
+			<IconButton size='small' icon='bold' />
+		</ButtonGroup>
+	),
+};
+
+export const VerticalStretch: Story = {
+	render: () => (
+		<Box display='flex' alignItems='center' height='x80'>
+			<Box>Before</Box>
+			<Divider vertical stretch />
+			<Box>After</Box>
+		</Box>
 	),
 };

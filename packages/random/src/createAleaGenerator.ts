@@ -1,4 +1,4 @@
-import { AleaRandomGenerator } from './AleaRandomGenerator';
+import { AleaRandomGenerator } from './AleaRandomGenerator.js';
 
 // instantiate RNG.  Heuristically collect entropy from various sources when a
 // cryptographic PRNG isn't available.

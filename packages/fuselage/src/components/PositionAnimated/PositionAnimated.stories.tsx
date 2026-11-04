@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import { useRef } from 'react';
 
 import { AnimatedVisibility } from '../AnimatedVisibility';
+import { Box } from '../Box';
 import { Tile } from '../Tile';
 import PositionAnimated from './PositionAnimated';
 
@@ -61,8 +62,8 @@ export default {
 
 		return (
 			<>
-				<Tile padding={12} ref={ref}>
-					Anchor element
+				<Tile flush ref={ref}>
+					<Box padding={12}>Anchor element</Box>
 				</Tile>
 				<PositionAnimated {...args} anchor={ref}>
 					<Tile>Positioned element</Tile>

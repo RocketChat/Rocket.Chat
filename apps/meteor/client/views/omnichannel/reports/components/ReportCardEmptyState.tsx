@@ -11,7 +11,7 @@ export const ReportCardEmptyState = ({ icon, subtitle }: CardEmpryStateProps) =>
 	const { t } = useTranslation();
 
 	return (
-		<States width='100%' height='100%'>
+		<States>
 			<StatesIcon name={icon || 'dashboard'} />
 			<StatesTitle>{t('No_data_available_for_the_selected_period')}</StatesTitle>
 			{subtitle && <StatesSubtitle>{subtitle}</StatesSubtitle>}

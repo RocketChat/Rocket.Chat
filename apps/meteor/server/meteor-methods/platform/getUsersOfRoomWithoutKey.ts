@@ -1,6 +1,6 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
 
@@ -9,7 +9,7 @@ export const getUsersOfRoomWithoutKeyMethod = async (
 	rid: IRoom['_id'],
 ): Promise<{ users: Pick<IUser, '_id' | 'e2e'>[] }> => {
 	if (!(await canAccessRoomIdAsync(rid, userId))) {
-		throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'e2e.getUsersOfRoomWithoutKey' });
+		throw new ClientSafeError('error-invalid-room', 'Invalid room', { method: 'e2e.getUsersOfRoomWithoutKey' });
 	}
 
 	const subscriptions = await Subscriptions.findByRidWithoutE2EKey(rid, {

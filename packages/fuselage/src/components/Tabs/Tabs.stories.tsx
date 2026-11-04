@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 
-import Tabs from './Tabs';
-import TabsItem from './TabsItem';
+import Tabs, { type TabsProps } from './Tabs';
+import TabsItem, { type TabsItemProps } from './TabsItem';
 
 export default {
 	title: 'Navigation/Tabs',
@@ -28,14 +28,20 @@ export default {
 			description: 'Shows a bottom border dividing the tabs from the content below.',
 			table: { defaultValue: { summary: 'true' } },
 		},
+		stretch: {
+			control: 'boolean',
+			description: 'Grows the items to fill the whole width.',
+		},
 	},
 } satisfies Meta<typeof Tabs>;
 
-type Story = StoryObj<typeof Tabs>;
+type Story = StoryObj<TabsProps & Pick<TabsItemProps, 'selected' | 'disabled'>>;
 
-const render: Story['render'] = (args) => (
+const render: Story['render'] = ({ selected, disabled, ...args }) => (
 	<Tabs {...args}>
-		<TabsItem {...args}>Tab text 1</TabsItem>
+		<TabsItem selected={selected} disabled={disabled}>
+			Tab text 1
+		</TabsItem>
 		<TabsItem>Tab text 2</TabsItem>
 		<TabsItem>Tab text 3</TabsItem>
 		<TabsItem>Tab text 4</TabsItem>
@@ -74,5 +80,18 @@ export const NoUnderline: Story = {
 	args: {
 		selected: true,
 		divider: false,
+	},
+};
+
+export const Stretch: Story = {
+	render: (args) => (
+		<Tabs {...args}>
+			<TabsItem selected>Tab text 1</TabsItem>
+			<TabsItem>Tab text 2</TabsItem>
+			<TabsItem>Tab text 3</TabsItem>
+		</Tabs>
+	),
+	args: {
+		stretch: true,
 	},
 };

@@ -67,7 +67,7 @@ describe.each(types)('useDevicePermissionPrompt2 - Action: %s', (actionType) => 
 		act(() => {
 			rejectPromise = result.current({ actionType });
 		});
-		// eslint-disable-next-line jest/valid-expect
+		// oxlint-disable-next-line jest/valid-expect
 		const rejectionExpectation = expect(rejectPromise).rejects.toThrow(PermissionRequestCancelledCallRejectedError);
 
 		const cancel = await screen.findByText('Continue without mic');
@@ -110,7 +110,7 @@ describe('useDevicePermissionPrompt2 - Permission state: prompt', () => {
 		act(() => {
 			rejectPromise = result.current({ actionType: 'incoming' });
 		});
-		// eslint-disable-next-line jest/valid-expect
+		// oxlint-disable-next-line jest/valid-expect
 		const rejectionExpectation = expect(rejectPromise).rejects.toThrow(PermissionRequestCancelledCallRejectedError);
 
 		const cancel = await screen.findByText('Accept without mic');
@@ -150,7 +150,7 @@ describe('useDevicePermissionPrompt2 - Permission state: prompt', () => {
 		act(() => {
 			rejectPromise = result.current({ actionType: 'outgoing' });
 		});
-		// eslint-disable-next-line jest/valid-expect
+		// oxlint-disable-next-line jest/valid-expect
 		const rejectionExpectation = expect(rejectPromise).rejects.toThrow(PermissionRequestCancelledCallRejectedError);
 
 		const cancel = await screen.findByText('Call without mic');
@@ -190,7 +190,7 @@ describe('useDevicePermissionPrompt2 - Permission state: prompt', () => {
 		act(() => {
 			rejectPromise = result.current({ actionType: 'device-change' });
 		});
-		// eslint-disable-next-line jest/valid-expect
+		// oxlint-disable-next-line jest/valid-expect
 		const rejectionExpectation = expect(rejectPromise).rejects.toThrow(PermissionRequestCancelledCallRejectedError);
 
 		const cancel = await screen.findByText('Cancel');

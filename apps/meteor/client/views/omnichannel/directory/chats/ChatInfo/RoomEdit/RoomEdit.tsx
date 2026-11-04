@@ -137,7 +137,7 @@ function RoomEdit({ room, visitor, reload, reloadInfo, onClose }: RoomEditProps)
 				<Field>
 					<FieldLabel htmlFor={topicField}>{t('Topic')}</FieldLabel>
 					<FieldRow>
-						<TextInput {...register('topic')} id={topicField} flexGrow={1} />
+						<TextInput {...register('topic')} id={topicField} />
 					</FieldRow>
 				</Field>
 
@@ -155,18 +155,9 @@ function RoomEdit({ room, visitor, reload, reloadInfo, onClose }: RoomEditProps)
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button flexGrow={1} onClick={onClose}>
-						{t('Cancel')}
-					</Button>
+					<Button onClick={onClose}>{t('Cancel')}</Button>
 
-					<Button
-						marginInlineEnd='none'
-						flexGrow={1}
-						onClick={handleSubmit(handleSave)}
-						loading={isSubmitting}
-						disabled={!isFormValid || !isFormDirty}
-						primary
-					>
+					<Button onClick={handleSubmit(handleSave)} loading={isSubmitting} disabled={!isFormValid || !isFormDirty} variant='primary'>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

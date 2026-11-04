@@ -107,9 +107,9 @@ export function useDebouncedReducer(
 ) {
 	return useDebouncedUpdates(
 		init !== undefined
-			? // eslint-disable-next-line react-hooks/rules-of-hooks
+			? // oxlint-disable-next-line react-hooks/rules-of-hooks
 				useReducer(reducer, initialArg, init)
-			: // eslint-disable-next-line react-hooks/rules-of-hooks
+			: // oxlint-disable-next-line react-hooks/rules-of-hooks
 				useReducer(reducer, initialArg),
 		delay,
 	);

@@ -70,7 +70,7 @@ globalThis.IntersectionObserver = class implements IntersectionObserver {
 	unobserve(): void {
 		// no-op mock
 	}
-} as unknown as typeof IntersectionObserver;
+};
 
-globalThis.TextEncoder = TextEncoder as any;
+globalThis.TextEncoder = TextEncoder;
 globalThis.TextDecoder = TextDecoder as any;

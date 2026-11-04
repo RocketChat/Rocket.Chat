@@ -53,7 +53,7 @@ export const Default: Story = {
 			<SplitButton aria-label='Microphone'>
 				<Menu
 					icon='kebab'
-					button={<SplitButtonTrigger secondary small icon='kebab' />}
+					button={<SplitButtonTrigger variant='secondary' size='small' icon='kebab' />}
 					aria-label='Audio settings'
 					placement='top-start'
 					selectionMode='single'
@@ -68,8 +68,8 @@ export const Default: Story = {
 					))}
 				</Menu>
 				<IconButton
-					secondary
-					small
+					variant='secondary'
+					size='small'
 					icon={enabled ? 'mic' : 'mic-off'}
 					aria-label='Microphone'
 					aria-pressed={enabled}
@@ -86,13 +86,13 @@ export const Danger: Story = {
 		<SplitButton danger aria-label='Leave call'>
 			<Menu
 				icon='chevron-up'
-				button={<SplitButtonTrigger secondary small icon='chevron-up' />}
+				button={<SplitButtonTrigger variant='secondary' size='small' icon='chevron-up' />}
 				aria-label='Leave options'
 				placement='top-start'
 			>
 				<MenuItem key='end-for-all'>End call for everyone</MenuItem>
 			</Menu>
-			<IconButton secondary danger small icon='phone-off' aria-label='Leave call' />
+			<IconButton variant='secondary-danger' size='small' icon='phone-off' aria-label='Leave call' />
 		</SplitButton>
 	),
 };
@@ -104,57 +104,57 @@ export const Variants: Story = {
 			<SplitButton aria-label='Microphone'>
 				<Menu
 					icon='chevron-up'
-					button={<SplitButtonTrigger secondary small icon='chevron-up' />}
+					button={<SplitButtonTrigger variant='secondary' size='small' icon='chevron-up' />}
 					aria-label='Microphone options'
 					placement='top-start'
 				>
 					<MenuItem key='built-in'>Built-in Microphone</MenuItem>
 				</Menu>
-				<IconButton secondary small icon='mic' aria-label='Microphone' />
+				<IconButton variant='secondary' size='small' icon='mic' aria-label='Microphone' />
 			</SplitButton>
 			<SplitButton danger aria-label='Leave call'>
 				<Menu
 					icon='chevron-up'
-					button={<SplitButtonTrigger secondary small icon='chevron-up' />}
+					button={<SplitButtonTrigger variant='secondary' size='small' icon='chevron-up' />}
 					aria-label='Leave options'
 					placement='top-start'
 				>
 					<MenuItem key='end-for-all'>End call for everyone</MenuItem>
 				</Menu>
-				<IconButton secondary danger small icon='phone-off' aria-label='Leave call' />
+				<IconButton variant='secondary-danger' size='small' icon='phone-off' aria-label='Leave call' />
 			</SplitButton>
 			<SplitButton warning aria-label='Raise hand'>
 				<Menu
 					icon='chevron-up'
-					button={<SplitButtonTrigger secondary small icon='chevron-up' />}
+					button={<SplitButtonTrigger variant='secondary' size='small' icon='chevron-up' />}
 					aria-label='Raise hand options'
 					placement='top-start'
 				>
 					<MenuItem key='lower-all'>Lower all hands</MenuItem>
 				</Menu>
-				<IconButton secondary warning small icon='hand' aria-label='Raise hand' />
+				<IconButton variant='secondary-warning' size='small' icon='hand' aria-label='Raise hand' />
 			</SplitButton>
 			<SplitButton success aria-label='Answer call'>
 				<Menu
 					icon='chevron-up'
-					button={<SplitButtonTrigger secondary small icon='chevron-up' />}
+					button={<SplitButtonTrigger variant='secondary' size='small' icon='chevron-up' />}
 					aria-label='Answer options'
 					placement='top-start'
 				>
 					<MenuItem key='audio-only'>Answer with audio only</MenuItem>
 				</Menu>
-				<IconButton secondary success small icon='phone' aria-label='Answer call' />
+				<IconButton variant='secondary-success' size='small' icon='phone' aria-label='Answer call' />
 			</SplitButton>
 			<SplitButton primary aria-label='Camera'>
 				<Menu
 					icon='chevron-up'
-					button={<SplitButtonTrigger secondary small icon='chevron-up' />}
+					button={<SplitButtonTrigger variant='secondary' size='small' icon='chevron-up' />}
 					aria-label='Camera options'
 					placement='top-start'
 				>
 					<MenuItem key='built-in'>Built-in Camera</MenuItem>
 				</Menu>
-				<IconButton primary small icon='video' aria-label='Camera' />
+				<IconButton variant='primary' size='small' icon='video' aria-label='Camera' />
 			</SplitButton>
 		</Box>
 	),
@@ -179,13 +179,18 @@ export const CallControls: Story = {
 		return (
 			<ButtonGroup aria-label='Call controls'>
 				<SplitButton aria-label='Microphone'>
-					<Menu icon='kebab' button={<SplitButtonTrigger secondary small icon='kebab' />} aria-label='Audio settings' placement='top-start'>
+					<Menu
+						icon='kebab'
+						button={<SplitButtonTrigger variant='secondary' size='small' icon='kebab' />}
+						aria-label='Audio settings'
+						placement='top-start'
+					>
 						<MenuItem key='built-in'>Built-in Microphone</MenuItem>
 						<MenuItem key='headset'>Headset</MenuItem>
 					</Menu>
 					<IconButton
-						secondary
-						small
+						variant='secondary'
+						size='small'
 						icon={micOn ? 'mic' : 'mic-off'}
 						aria-label='Microphone'
 						aria-pressed={micOn}
@@ -195,7 +200,7 @@ export const CallControls: Story = {
 				<SplitButton aria-label='Camera'>
 					<Menu
 						icon='chevron-up'
-						button={<SplitButtonTrigger secondary small icon='chevron-up' />}
+						button={<SplitButtonTrigger variant='secondary' size='small' icon='chevron-up' />}
 						aria-label='Video settings'
 						placement='top-start'
 					>
@@ -203,37 +208,42 @@ export const CallControls: Story = {
 						<MenuItem key='external'>External Camera</MenuItem>
 					</Menu>
 					<IconButton
-						secondary
-						small
+						variant='secondary'
+						size='small'
 						icon={cameraOn ? 'video' : 'video-off'}
 						aria-label='Camera'
 						aria-pressed={cameraOn}
 						onClick={() => setCameraOn((on) => !on)}
 					/>
 				</SplitButton>
-				<IconButton secondary small icon='desktop-arrow-up' aria-label='Present now' />
-				<IconButton secondary small icon='emoji' aria-label='Send a reaction' />
+				<IconButton variant='secondary' size='small' icon='desktop-arrow-up' aria-label='Present now' />
+				<IconButton variant='secondary' size='small' icon='emoji' aria-label='Send a reaction' />
 				<IconButton
-					secondary
-					small
+					variant='secondary'
+					size='small'
 					icon='closed-captions'
 					aria-label='Captions'
 					aria-pressed={captionsOn}
 					onClick={() => setCaptionsOn((on) => !on)}
 				/>
 				<IconButton
-					secondary
-					small
+					variant='secondary'
+					size='small'
 					icon='hand'
 					aria-label='Raise hand'
 					aria-pressed={handRaised}
 					onClick={() => setHandRaised((raised) => !raised)}
 				/>
-				<Menu icon='kebab' button={<IconButton secondary small icon='kebab' />} aria-label='More options' placement='top-end'>
+				<Menu
+					icon='kebab'
+					button={<IconButton variant='secondary' size='small' icon='kebab' />}
+					aria-label='More options'
+					placement='top-end'
+				>
 					<MenuItem key='settings'>Settings</MenuItem>
 					<MenuItem key='report'>Report a problem</MenuItem>
 				</Menu>
-				<Button danger small square icon='phone-off' aria-label='Leave call' />
+				<Button variant='danger' size='small' square icon='phone-off' aria-label='Leave call' />
 			</ButtonGroup>
 		);
 	},

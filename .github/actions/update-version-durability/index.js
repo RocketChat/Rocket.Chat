@@ -59,7 +59,7 @@ async function generateTable({ owner, repo } = {}) {
 	}
 
 	let index = 0;
-	// eslint-disable-next-line no-constant-condition
+	// oxlint-disable-next-line no-constant-condition
 	while (true) {
 		const release = releases[index];
 

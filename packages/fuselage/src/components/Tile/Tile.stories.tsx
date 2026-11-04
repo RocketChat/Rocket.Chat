@@ -16,10 +16,9 @@ export default {
 			description: 'Shadow depth applied to the tile.',
 			table: { defaultValue: { summary: '1' } },
 		},
-		padding: {
-			control: 'text',
-			description: 'Padding applied around the tile content.',
-			table: { defaultValue: { summary: '16' } },
+		flush: {
+			control: 'boolean',
+			description: 'Drops the default padding.',
 		},
 	},
 } satisfies Meta<typeof Tile>;
@@ -47,5 +46,12 @@ export const Elevation1: Story = {
 export const Elevation2: Story = {
 	args: {
 		elevation: '2',
+	},
+};
+
+export const Flush: Story = {
+	args: {
+		flush: true,
+		children: 'Content',
 	},
 };

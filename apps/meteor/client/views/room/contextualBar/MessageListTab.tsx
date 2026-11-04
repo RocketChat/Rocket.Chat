@@ -55,7 +55,7 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 				<ContextualbarTitle>{title}</ContextualbarTitle>
 				<ContextualbarClose onClick={handleTabBarCloseButtonClick} />
 			</ContextualbarHeader>
-			<ContextualbarContent flexShrink={1} flexGrow={1} paddingInline={0}>
+			<ContextualbarContent flush>
 				{queryResult.isLoading && (
 					<Box paddingInline={24} paddingBlock={12}>
 						<Throbber size='x12' />

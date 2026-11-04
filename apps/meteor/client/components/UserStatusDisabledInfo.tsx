@@ -9,8 +9,8 @@ const UserStatusDisabledInfo = ({ workspace }: UserStatusDisabledInfoProps) => {
 	const reason = workspace ? t('User_status_disabled_on_this_workspace') : t('User_status_disabled_by_an_admin');
 
 	return (
-		<Box display='flex' role='img' aria-label={reason} title={reason}>
-			<Icon name='info-circled' size='x20' color='info' />
+		<Box display='flex' role='img' aria-label={reason} title={reason} color='info'>
+			<Icon name='info-circled' size='x20' />
 		</Box>
 	);
 };

@@ -1,6 +1,5 @@
 import type { Serialized } from '@rocket.chat/core-typings';
 import {
-	Icon,
 	IconButton,
 	Item,
 	ItemActions,
@@ -15,13 +14,14 @@ import {
 	MessageGenericPreviewContent,
 	MessageGenericPreviewDescription,
 	MessageGenericPreviewTitle,
+	Icon,
 } from '@rocket.chat/fuselage';
 import type { ContactSearchChatsResult } from '@rocket.chat/rest-typings';
+import { useHasLicenseModule } from '@rocket.chat/ui-client';
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import { OmnichannelRoomIcon } from '../../../../../components/RoomIcon/OmnichannelRoomIcon';
-import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
 import { useTimeFromNow } from '../../../../../hooks/useTimeFromNow';
 import { useOmnichannelSource } from '../../../hooks/useOmnichannelSource';
 import AdvancedContactModal from '../../AdvancedContactModal';
@@ -56,7 +56,7 @@ const ContactInfoHistoryItem = ({ source, lastMessage, verified, onClick }: Cont
 					{lastMessage && <ItemMeta>{getTimeFromNow(lastMessage.ts)}</ItemMeta>}
 					{isVerified && (
 						<ItemIcon label={t('Verified')} title={t('Verified')}>
-							<Icon size='x16' name='success-circle' color='stroke-highlight' />
+							<Icon size='x16' name='success-circle' color='info' />
 						</ItemIcon>
 					)}
 				</ItemRow>
@@ -76,7 +76,7 @@ const ContactInfoHistoryItem = ({ source, lastMessage, verified, onClick }: Cont
 						aria-label={t('Unverified')}
 						onClick={() => setModal(<AdvancedContactModal onCancel={() => setModal(null)} />)}
 						icon='question-mark'
-						small
+						size='small'
 					/>
 				</ItemActions>
 			)}

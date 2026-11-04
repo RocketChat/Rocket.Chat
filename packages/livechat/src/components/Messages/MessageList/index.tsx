@@ -225,7 +225,7 @@ export class MessageList extends MemoizedComponent<MessageListProps, unknown> {
 	};
 
 	render = ({ className, style = {} }: MessageListProps) => (
-		// eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events
+		// oxlint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events
 		<div
 			data-qa='message-list'
 			className={createClassName(styles, 'message-list', {}, [className])}

@@ -17,6 +17,7 @@ import {
 	actionWithLinearScale,
 } from './action';
 import { contextWithPlainText, contextWithMrkdwn, contextWithImage, contextWithAllElements } from './context';
+import { contextActions, contextActionsWithFeedback } from './contextActions';
 import { divider } from './divider';
 import { header } from './header';
 import { imageWithTitle, imageWithoutTitle } from './image';
@@ -55,6 +56,8 @@ import {
 	sectionWithCheckbox,
 	sectionWithUsersSelect,
 } from './section';
+import { table } from './table';
+import { video } from './video';
 import { actionWithCheckbox } from '../action/checkbox';
 import { actionWithRadioButton } from '../action/radioButton';
 import { actionWithTimePicker } from '../action/timePicker';
@@ -346,6 +349,37 @@ const BlocksTree: Item = [
 			{
 				label: 'Release notes',
 				payload: markdown,
+			},
+		],
+	},
+	{
+		label: 'table',
+		branches: [
+			{
+				label: 'Service uptime',
+				payload: table,
+			},
+		],
+	},
+	{
+		label: 'video',
+		branches: [
+			{
+				label: 'Embedded video',
+				payload: video,
+			},
+		],
+	},
+	{
+		label: 'context_actions',
+		branches: [
+			{
+				label: 'Icon buttons',
+				payload: contextActions,
+			},
+			{
+				label: 'Feedback buttons',
+				payload: contextActionsWithFeedback,
 			},
 		],
 	},

@@ -3,9 +3,9 @@ import { ItemIcon } from '../Item';
 
 export type OptionIconProps = IconProps;
 
-const OptionIcon = (props: OptionIconProps) => (
+const OptionIcon = ({ className, ...props }: OptionIconProps) => (
 	<ItemIcon className='rcx-option__column'>
-		<Icon size='x20' rcx-option__icon {...props} />
+		<Icon size='x20' {...props} className={['rcx-option__icon', className].filter(Boolean).join(' ')} />
 	</ItemIcon>
 );
 

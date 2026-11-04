@@ -1,7 +1,8 @@
+import { after, before, describe, it } from 'node:test';
+
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IOmnichannelRoom, IRoom, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
 
 import { api, credentials, getCredentials, methodCall, methodCallAnon, request } from '../../data/api-data';
 import { closeOmnichannelRoom, createAgent, createLivechatRoom, createVisitor, makeAgentAvailable } from '../../data/livechat/rooms';
@@ -13,7 +14,7 @@ import { createUser, deleteUser, login } from '../../data/users.helper';
 import { IS_EE } from '../../e2e/config/constants';
 
 describe('Meteor.methods', () => {
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	describe('[@permissions:get]', () => {
 		const date = {
@@ -34,8 +35,8 @@ describe('Meteor.methods', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401);
 
-			expect(res.body).to.have.property('status', 'error');
-			expect(res.body).to.have.property('message');
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 		});
 
 		it('should return all permissions', async () => {
@@ -104,8 +105,8 @@ describe('Meteor.methods', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401);
 
-			expect(res.body).to.have.property('status', 'error');
-			expect(res.body).to.have.property('message');
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 		});
 
 		it('should return the list of public settings', async () => {
@@ -158,11 +159,11 @@ describe('Meteor.methods', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401);
 
-			expect(res.body).to.have.property('status', 'error');
-			expect(res.body).to.have.property('message');
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 		});
 
-		it('should return nothing when user doesnt have any permission', (done) => {
+		it('should return nothing when user doesnt have any permission', (_t, done) => {
 			void updatePermission('view-privileged-setting', [])
 				.then(() => updatePermission('edit-privileged-setting', []))
 				.then(() => updatePermission('manage-selected-settings', []))
@@ -218,7 +219,7 @@ describe('Meteor.methods', () => {
 			expect(data.result.update.length).to.not.equal(0);
 		});
 
-		it('should return properties when user has all related permissions', (done) => {
+		it('should return properties when user has all related permissions', (_t, done) => {
 			void updatePermission('view-privileged-setting', ['admin'])
 				.then(() => updatePermission('edit-privileged-setting', ['admin']))
 				.then(() => updatePermission('manage-selected-settings', ['admin']))
@@ -269,8 +270,8 @@ describe('Meteor.methods', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401);
 
-			expect(res.body).to.have.property('status', 'error');
-			expect(res.body).to.have.property('message');
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 		});
 
 		it('should return all subscriptions', async () => {
@@ -349,7 +350,7 @@ describe('Meteor.methods', () => {
 			).body.channel;
 		});
 
-		before('create direct conversation with user', async () => {
+		before(async () => {
 			const res = await request.post(api('im.create')).set(credentials).send({ username: testUser2.username }).expect(200);
 
 			dmId = res.body.room._id;
@@ -394,12 +395,12 @@ describe('Meteor.methods', () => {
 
 			expect(parsedMessage).to.have.property('error');
 			expect(parsedMessage.error).to.have.property('error');
-			expect(parsedMessage.error.error).to.equal('error-invalid-user');
+			expect(parsedMessage.error.error).to.equal('error-unauthenticated');
 
 			await updateSetting('Accounts_AllowAnonymousRead', false);
 		});
 
-		it("should throw an error if the user isn't logged in", (done) => {
+		it("should throw an error if the user isn't logged in", (_t, done) => {
 			void request
 				.post(methodCall('getRoomByTypeAndName'))
 				.send({
@@ -411,14 +412,13 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.end((_err, res) => {
-					expect(res.body).to.have.property('status', 'error');
-					expect(res.body).to.have.property('message');
-					expect(res.body.message).to.be.equal('You must be logged in to do this.');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 					done();
 				});
 		});
 
-		it("should throw an error if name isn't provided", (done) => {
+		it("should throw an error if name isn't provided", (_t, done) => {
 			void request
 				.post(methodCall('getRoomByTypeAndName'))
 				.set(credentials)
@@ -442,7 +442,7 @@ describe('Meteor.methods', () => {
 				});
 		});
 
-		it("should throw an error if type isn't provided", (done) => {
+		it("should throw an error if type isn't provided", (_t, done) => {
 			void request
 				.post(methodCall('getRoomByTypeAndName'))
 				.set(credentials)
@@ -466,7 +466,7 @@ describe('Meteor.methods', () => {
 				});
 		});
 
-		it("should throw an error if the user doesn't have access to the room", (done) => {
+		it("should throw an error if the user doesn't have access to the room", (_t, done) => {
 			void request
 				.post(methodCall('getRoomByTypeAndName'))
 				.set(testUserCredentials)
@@ -489,7 +489,7 @@ describe('Meteor.methods', () => {
 				});
 		});
 
-		it("should throw an error if the room doesn't exist", (done) => {
+		it("should throw an error if the room doesn't exist", (_t, done) => {
 			void request
 				.post(methodCall('getRoomByTypeAndName'))
 				.set(testUserCredentials)
@@ -532,7 +532,7 @@ describe('Meteor.methods', () => {
 			await updateSetting('Accounts_AllowAnonymousRead', false);
 		});
 
-		it('should return the room object for a DM', (done) => {
+		it('should return the room object for a DM', (_t, done) => {
 			void request
 				.post(methodCall('getRoomByTypeAndName'))
 				.set(credentials)
@@ -655,12 +655,12 @@ describe('Meteor.methods', () => {
 		const startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0).toISOString();
 		const endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999).toISOString();
 
-		before('create test user', async () => {
+		before(async () => {
 			testUser = await createUser();
 			testUserCredentials = await login(testUser.username, password);
 		});
 
-		before('generate audits data', async () => {
+		before(async () => {
 			await request.post(api('audit.messages')).set(credentials).send({
 				type: '',
 				msg: 'test1234',

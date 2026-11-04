@@ -1,11 +1,10 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { Integrations } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../lib/authorization/hasPermission';
 import { notifyOnIntegrationChanged } from '../../../lib/notifyListener';
 
 declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		deleteIncomingIntegration(integrationId: string): Promise<boolean>;
 	}
@@ -17,7 +16,7 @@ export const deleteIncomingIntegration = async (integrationId: string, userId: s
 		!canManageAllIntegrations && !!userId && (await hasPermissionAsync(userId, 'manage-own-incoming-integrations'));
 
 	if (!canManageAllIntegrations && !canManageOwnIntegrations) {
-		throw new Meteor.Error('not_authorized', 'Unauthorized', {
+		throw new ClientSafeError('not_authorized', 'Unauthorized', {
 			method: 'deleteIncomingIntegration',
 		});
 	}
@@ -28,7 +27,7 @@ export const deleteIncomingIntegration = async (integrationId: string, userId: s
 	});
 
 	if (!integration) {
-		throw new Meteor.Error('error-invalid-integration', 'Invalid integration', {
+		throw new ClientSafeError('error-invalid-integration', 'Invalid integration', {
 			method: 'deleteIncomingIntegration',
 		});
 	}

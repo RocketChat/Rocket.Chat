@@ -3,6 +3,7 @@ import type { MatrixEvent, Room, RoomEmittedEvents } from 'matrix-js-sdk';
 import { RoomStateEvent } from 'matrix-js-sdk';
 
 import { api } from '../../../../../apps/meteor/tests/data/api-data';
+import { retry } from '../../../../../apps/meteor/tests/data/retry';
 import {
 	acceptRoomInvite,
 	addUserToRoomSlashCommand,
@@ -12,7 +13,6 @@ import {
 import { getRequestConfig, createUser, deleteUser } from '../../../../../apps/meteor/tests/data/users.helper';
 import type { TestUser, IRequestConfig } from '../../../../../apps/meteor/tests/data/users.helper';
 import { IS_EE } from '../../../../../apps/meteor/tests/e2e/config/constants';
-import { retry } from '../../../../../apps/meteor/tests/end-to-end/api/helpers/retry';
 import { federationConfig } from '../helper/config';
 import { SynapseClient } from '../helper/synapse-client';
 import { withTimeout } from '../helper/withTimeout';
@@ -678,7 +678,7 @@ const waitForRoomEvent = async (
 				// TODO maybe we should allow it
 				it('should fail if a user from rc try to add another user to the group DM', async () => {
 					await expect(addUserToRoomSlashCommand({ usernames: [userDm3], rid: rcRoom1._id, config: rcUserConfig1 })).rejects.toThrow(
-						'error-not-authorized',
+						'error-forbidden',
 					);
 				});
 
@@ -1157,7 +1157,7 @@ const waitForRoomEvent = async (
 				it('should fail if a user from rc try to add another user to the group DM', async () => {
 					await expect(
 						addUserToRoomSlashCommand({ usernames: [rcUser3.username], rid: rcRoom._id, config: rcUserConfig2 }),
-					).rejects.toThrow('error-not-authorized');
+					).rejects.toThrow('error-forbidden');
 				});
 
 				it('should add another user by another user than the initial inviter', async () => {
@@ -1721,7 +1721,7 @@ const waitForRoomEvent = async (
 							rid: dmCreate.body.room._id,
 							config: rcUser1.config,
 						}),
-					).rejects.toThrow('error-not-authorized');
+					).rejects.toThrow('error-forbidden');
 
 					const roomInfo = await getRoomInfo(dmCreate.body.room._id, rcUser1.config);
 					expect(roomInfo.room).toHaveProperty('usersCount', 2);

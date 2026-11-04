@@ -336,7 +336,7 @@ export class Quantize {
 		return Math.max(1e-20, klemm_noise);
 	}
 
-	// eslint-disable-next-line complexity
+	// oxlint-disable-next-line complexity
 	private quant_compare(quant_comp: number, best: CalcNoiseResult, calc: CalcNoiseResult, gi: GrInfo, distort: Float32Array) {
 		let better;
 
@@ -362,7 +362,7 @@ export class Quantize {
 			case 8:
 				calc.max_noise = this.get_klemm_noise(distort, gi);
 
-			// eslint-disable-next-line no-fallthrough
+			// oxlint-disable-next-line no-fallthrough
 			case 1:
 				better = calc.max_noise < best.max_noise;
 				break;
@@ -581,7 +581,7 @@ export class Quantize {
 		return !status;
 	}
 
-	// eslint-disable-next-line complexity
+	// oxlint-disable-next-line complexity
 	outer_loop(gfp: LameGlobalFlags, cod_info: GrInfo, l3_xmin: Float32Array, xrpow: Float32Array, ch: number, targ_bits: number) {
 		const gfc = gfp.internal_flags;
 		const cod_info_w = new GrInfo();

@@ -216,4 +216,17 @@ export const createAISettings = async (): Promise<void> => {
 		i18nLabel: 'MCP_Expose_Extended_API',
 		i18nDescription: 'MCP_Expose_Extended_API_Description',
 	});
+
+	await settingsRegistry.add('OAuth2_Allow_Dynamic_Client_Registration', false, {
+		group: AI_SETTINGS_GROUP,
+		section: 'MCP',
+		type: 'boolean',
+		public: false,
+		enterprise: true,
+		modules: [AI_LICENSE_MODULE],
+		invalidValue: false,
+		enableQuery: { _id: 'MCP_Enabled', value: true },
+		i18nLabel: 'OAuth2_Allow_Dynamic_Client_Registration',
+		i18nDescription: 'OAuth2_Allow_Dynamic_Client_Registration_Description',
+	});
 };

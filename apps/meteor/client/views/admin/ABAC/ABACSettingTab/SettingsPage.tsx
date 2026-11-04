@@ -1,12 +1,11 @@
 import { Accordion, AccordionItem, Box, Callout, FieldGroup } from '@rocket.chat/fuselage';
-import { ExternalLink } from '@rocket.chat/ui-client';
+import { ExternalLink, links, useHasLicenseModule } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useTranslation, Trans } from 'react-i18next';
 
 import AbacEnabledToggle from './AbacEnabledToggle';
+import RequiredAttributesField from './RequiredAttributesField';
 import SettingField from './SettingField';
-import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
-import { links } from '../../../../lib/links';
 
 const SettingsPage = () => {
 	const { t } = useTranslation();
@@ -17,7 +16,10 @@ const SettingsPage = () => {
 		<Box maxWidth='x600' width='full' alignSelf='center' overflow='auto' marginBlock={24}>
 			<FieldGroup>
 				<AbacEnabledToggle hasABAC={hasABAC} />
+				<SettingField settingId='ABAC_Enforce_All_Rooms' />
+				<RequiredAttributesField />
 				<SettingField settingId='ABAC_PDP_Type' />
+				{pdpType === 'local' && <SettingField settingId='ABAC_Restrict_To_Owned_Attributes' />}
 				{pdpType !== 'local' && <SettingField settingId='ABAC_Attribute_Store' />}
 				<SettingField settingId='ABAC_ShowAttributesInRooms' />
 				<SettingField settingId='Abac_Cache_Decision_Time_Seconds' />

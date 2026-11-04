@@ -133,7 +133,7 @@ const CategoryMenu = ({
 		<Menu
 			icon='kebab'
 			title={t('Options')}
-			mini
+			size='mini'
 			selectionMode='multiple'
 			isOpen={isOpen}
 			onOpenChange={toggleOpen}

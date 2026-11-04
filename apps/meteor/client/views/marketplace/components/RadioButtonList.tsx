@@ -1,9 +1,9 @@
-import { Box, Option, RadioButton, Tile } from '@rocket.chat/fuselage';
+import { Box, Option, PopoverSurface, RadioButton } from '@rocket.chat/fuselage';
 
 import type { RadioDropDownProps } from '../definitions/RadioDropDownDefinitions';
 
 const RadioButtonList = ({ group, onSelected }: RadioDropDownProps) => (
-	<Tile overflow='auto' paddingBlock={12} paddingInline={0} elevation='2' width='full' backgroundColor='light' borderRadius='small'>
+	<PopoverSurface>
 		{group.label && (
 			<Box paddingInline={16} paddingBlockStart={8} paddingBlockEnd={4} fontScale='micro' textTransform='uppercase' color='default'>
 				{group.label}
@@ -14,7 +14,7 @@ const RadioButtonList = ({ group, onSelected }: RadioDropDownProps) => (
 				<RadioButton checked={item.checked} onChange={(): void => onSelected(item)} />
 			</Option>
 		))}
-	</Tile>
+	</PopoverSurface>
 );
 
 export default RadioButtonList;

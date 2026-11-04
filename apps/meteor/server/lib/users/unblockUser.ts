@@ -1,5 +1,5 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { Subscriptions } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { notifyOnSubscriptionChangedByRoomIdAndUserIds } from '../notifyListener';
 
@@ -10,7 +10,7 @@ export const unblockUserMethod = async (userId: string, { rid, blocked }: { rid:
 	]);
 
 	if (!blockedUser || !blockerUser) {
-		throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'unblockUser' });
+		throw new ClientSafeError('error-invalid-room', 'Invalid room', { method: 'unblockUser' });
 	}
 
 	const [blockedResponse, blockerResponse] = await Subscriptions.unsetBlockedByRoomId(rid, blocked, userId);

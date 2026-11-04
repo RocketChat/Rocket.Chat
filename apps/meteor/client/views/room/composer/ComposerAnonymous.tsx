@@ -8,7 +8,7 @@ const ComposerAnonymous = () => {
 	return (
 		<Box marginBlock={16}>
 			<ButtonGroup>
-				<Button small primary onClick={() => setForceLogin(true)}>
+				<Button size='small' variant='primary' onClick={() => setForceLogin(true)}>
 					{t('Sign_in_to_start_talking')}
 				</Button>
 			</ButtonGroup>

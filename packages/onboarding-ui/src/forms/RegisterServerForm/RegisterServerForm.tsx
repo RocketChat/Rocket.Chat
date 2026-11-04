@@ -87,7 +87,7 @@ const RegisterServerForm = ({
 				<FormContainer>
 					<FieldGroup>
 						<Field>
-							<FieldLabel required display='flex' alignItems='center' htmlFor={emailField}>
+							<FieldLabel required htmlFor={emailField}>
 								{t('form.registeredServerForm.fields.accountEmail.inputLabel')}
 							</FieldLabel>
 							<FieldRow>
@@ -129,7 +129,7 @@ const RegisterServerForm = ({
 				<FormFooter>
 					<Box display='flex' flexDirection='column' alignItems='flex-start'>
 						<ButtonGroup vertical={isMobile}>
-							<Button type='submit' primary loading={isSubmitting || isValidating} disabled={offline}>
+							<Button type='submit' variant='primary' loading={isSubmitting || isValidating} disabled={offline}>
 								{t('component.form.action.registerWorkspace')}
 							</Button>
 							{offline && (

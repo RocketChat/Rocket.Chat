@@ -159,7 +159,6 @@ const userSessionsByHourResponseSchema = ajv.compile<{
 });
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Endpoints {
 		'/v1/engagement-dashboard/users/active-users': {
 			GET: (params: { start: string; end: string }) => {

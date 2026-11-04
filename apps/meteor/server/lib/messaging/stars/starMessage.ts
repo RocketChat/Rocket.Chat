@@ -1,7 +1,7 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { Messages, Subscriptions, Rooms } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../settings';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../authorization';
@@ -10,7 +10,7 @@ import { notifyOnRoomChangedById, notifyOnMessageChange } from '../../notifyList
 
 export const starMessage = async (user: IUser, message: Pick<IMessage, 'rid' | '_id'> & { starred: boolean }): Promise<boolean> => {
 	if (!settings.get('Message_AllowStarring')) {
-		throw new Meteor.Error('error-action-not-allowed', 'Message starring not allowed', {
+		throw new ClientSafeError('error-action-not-allowed', 'Message starring not allowed', {
 			method: 'starMessage',
 			action: 'Message_starring',
 		});
@@ -29,11 +29,11 @@ export const starMessage = async (user: IUser, message: Pick<IMessage, 'rid' | '
 	const room = await Rooms.findOneById(message.rid, { projection: { ...roomAccessAttributes, lastMessage: 1 } });
 
 	if (!room) {
-		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'starMessage' });
+		throw new ClientSafeError('error-not-allowed', 'Not allowed', { method: 'starMessage' });
 	}
 
 	if (!(await canAccessRoomAsync(room, { _id: user._id }))) {
-		throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'starMessage' });
+		throw new ClientSafeError('not-authorized', 'Not Authorized', { method: 'starMessage' });
 	}
 
 	if (isTheLastMessage(room, message)) {

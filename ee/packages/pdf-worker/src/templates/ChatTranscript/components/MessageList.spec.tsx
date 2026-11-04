@@ -37,6 +37,60 @@ describe('components/MessageList', () => {
 		expect(getByText('invalid message')).toBeInTheDocument();
 	});
 
+	it('should render the raw message when its markup has content the PDF cannot draw', () => {
+		const msg = '- [ ] unsupported task';
+		const { getByText } = render(
+			<MessageList
+				messages={[
+					{
+						...validMessage,
+						msg,
+						md: [
+							{
+								type: 'TASKS',
+								value: [{ type: 'TASK', status: false, value: [{ type: 'PLAIN_TEXT', value: 'unsupported task' }] }],
+							},
+						],
+					},
+				]}
+				invalidFileMessage=''
+			/>,
+		);
+		expect(getByText(msg)).toBeInTheDocument();
+	});
+
+	it('should render items nested in a list', () => {
+		const { getByText } = render(
+			<MessageList
+				messages={[
+					{
+						...validMessage,
+						md: [
+							{
+								type: 'UNORDERED_LIST',
+								value: [
+									{
+										type: 'LIST_ITEM',
+										value: [{ type: 'PLAIN_TEXT', value: 'parent item' }],
+										nested: [
+											{
+												type: 'ORDERED_LIST',
+												value: [{ type: 'LIST_ITEM', number: 1, value: [{ type: 'PLAIN_TEXT', value: 'nested item' }] }],
+											},
+										],
+									},
+								],
+							},
+						],
+					},
+				]}
+				invalidFileMessage=''
+			/>,
+		);
+		expect(getByText('parent item')).toBeInTheDocument();
+		expect(getByText('nested item')).toBeInTheDocument();
+	});
+
 	it('should render valid system message', () => {
 		const { getByText } = render(<MessageList messages={[{ ...validSystemMessage, files: [] }]} invalidFileMessage='' />);
 		expect(getByText(validSystemMessage.t)).toBeInTheDocument();

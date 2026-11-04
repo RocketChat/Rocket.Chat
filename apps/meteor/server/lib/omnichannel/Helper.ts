@@ -1,6 +1,6 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/livechat';
-import { api, Message, Omnichannel } from '@rocket.chat/core-services';
+import { api, Message, Omnichannel, ClientSafeError } from '@rocket.chat/core-services';
 import type {
 	ILivechatVisitor,
 	IOmnichannelRoom,
@@ -33,7 +33,6 @@ import {
 } from '@rocket.chat/models';
 import { removeEmpty, validateEmail as validatorFunc } from '@rocket.chat/tools';
 import { Match, check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 import type { ClientSession } from 'mongodb';
 import { ObjectId } from 'mongodb';
 
@@ -61,13 +60,6 @@ import {
 
 const logger = new Logger('LivechatHelper');
 export const allowAgentSkipQueue = (agent: SelectedAgent) => {
-	check(
-		agent,
-		Match.ObjectIncluding({
-			agentId: String,
-		}),
-	);
-
 	return hasRoleAsync(agent.agentId, 'bot');
 };
 export const prepareLivechatRoom = async (
@@ -76,17 +68,6 @@ export const prepareLivechatRoom = async (
 	roomInfo: IOmnichannelRoomInfo = { source: { type: OmnichannelSourceType.OTHER } },
 	extraData?: IOmnichannelRoomExtraData,
 ): Promise<InsertionModel<IOmnichannelRoom>> => {
-	check(rid, String);
-	check(
-		guest,
-		Match.ObjectIncluding({
-			_id: String,
-			username: String,
-			status: Match.Maybe(String),
-			department: Match.Maybe(String),
-		}),
-	);
-
 	const extraRoomInfo = await beforeNewRoom(roomInfo, extraData);
 	const { _id, username, token, department: departmentId, status = 'online' } = guest;
 	const newRoomAt = new Date();
@@ -188,7 +169,6 @@ export const createLivechatInquiry = async ({
 	extraData?: IOmnichannelInquiryExtraData;
 	session?: ClientSession;
 }) => {
-	check(rid, String);
 	check(name, String);
 	check(
 		guest,
@@ -268,24 +248,6 @@ export const createLivechatSubscription = async (
 	agent: SelectedAgent,
 	department?: string,
 ) => {
-	check(rid, String);
-	check(name, String);
-	check(
-		guest,
-		Match.ObjectIncluding({
-			_id: String,
-			username: String,
-			status: Match.Maybe(String),
-		}),
-	);
-	check(
-		agent,
-		Match.ObjectIncluding({
-			agentId: String,
-			username: String,
-		}),
-	);
-
 	const existingSubscription = await Subscriptions.findOneByRoomIdAndUserId(rid, agent.agentId);
 	if (existingSubscription?._id) {
 		return existingSubscription;
@@ -854,7 +816,6 @@ export const updateDepartmentAgents = async (
 	},
 	departmentEnabled: boolean,
 ) => {
-	check(departmentId, String);
 	check(agents, {
 		upsert: Match.Maybe([
 			Match.ObjectIncluding({
@@ -955,7 +916,7 @@ export const updateDepartmentAgents = async (
 
 export const validateEmail = (email: string) => {
 	if (!validatorFunc(email)) {
-		throw new Meteor.Error('error-invalid-email', `Invalid email ${email}`, {
+		throw new ClientSafeError('error-invalid-email', `Invalid email ${email}`, {
 			function: 'Livechat.validateEmail',
 			email,
 		});

@@ -112,8 +112,8 @@ const RoomRow = ({ name, avatar, viewMode, selected, unread, ringing }: RoomRowP
 	);
 	const callActions = (
 		<SidebarItemActions>
-			<IconButton mini secondary success icon='phone' aria-label={`Accept call from ${name}`} />
-			<IconButton mini danger secondary icon='phone-off' aria-label={`Reject call from ${name}`} />
+			<IconButton size='mini' variant='secondary-success' icon='phone' aria-label={`Accept call from ${name}`} />
+			<IconButton size='mini' variant='secondary-danger' icon='phone-off' aria-label={`Reject call from ${name}`} />
 		</SidebarItemActions>
 	);
 

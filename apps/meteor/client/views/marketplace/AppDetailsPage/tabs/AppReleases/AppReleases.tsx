@@ -30,7 +30,7 @@ const AppReleases = ({ id }: AppReleasesProps) => {
 
 	return (
 		<>
-			<Accordion width='100%' alignSelf='center'>
+			<Accordion>
 				{isLoading && <AccordionLoading />}
 				{isFetched && (
 					<>

@@ -9,7 +9,7 @@ import type { TFunction } from 'i18next';
 import { memo, useMemo } from 'react';
 
 import SidebarItemTemplateWithData from './SidebarItemTemplateWithData';
-import type { RoomListItemViewMode } from '../../views/navigation/sidebar/RoomList/RoomListItem';
+import type { RoomListItemViewMode } from '../../components/RoomListItem/RoomListItem';
 
 export type RoomListRowProps = {
 	data: {

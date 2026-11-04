@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 
+import { Box } from '../Box';
 import { Tile } from '../Tile';
 import AnimatedVisibility from './AnimatedVisibility';
 
@@ -29,7 +30,9 @@ export const Example: Story = {
 	},
 	render: (args) => (
 		<AnimatedVisibility visibility={args.visibility}>
-			<Tile padding={40}>Visible</Tile>
+			<Tile flush>
+				<Box padding={40}>Visible</Box>
+			</Tile>
 		</AnimatedVisibility>
 	),
 };

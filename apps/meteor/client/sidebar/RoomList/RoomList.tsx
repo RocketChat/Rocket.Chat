@@ -12,7 +12,6 @@ import RoomListWrapper from './RoomListWrapper';
 import { useSidebarListDrag } from './useSidebarListDrag';
 import { useMergedRefsV2 } from '../../hooks/useMergedRefsV2';
 import { useOpenedRoom } from '../../lib/RoomManager';
-import { useShortcutOpenMenu } from '../../views/navigation/sidebar/hooks/useShortcutOpenMenu';
 import { useMoveCategoryPosition } from '../categories/hooks/useMoveCategoryPosition';
 import SidebarVirtualList from '../components/SidebarVirtualList';
 import { SIDEBAR_DYNAMIC_GROUP_KEYS } from '../hooks/useCategoryList';
@@ -20,6 +19,7 @@ import { useCollapsedGroups } from '../hooks/useCollapsedGroups';
 import { useOffscreenUnreads } from '../hooks/useOffscreenUnreads';
 import { usePreventDefault } from '../hooks/usePreventDefault';
 import { useRoomList } from '../hooks/useRoomList';
+import { useShortcutOpenMenu } from '../hooks/useShortcutOpenMenu';
 
 const canMoveGroup = (groups: { key: string }[], index: number, direction: 'up' | 'down'): boolean => {
 	if (SIDEBAR_DYNAMIC_GROUP_KEYS.includes(groups[index].key)) return false;

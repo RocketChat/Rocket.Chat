@@ -51,6 +51,7 @@ $chip-disabled-color: theme('chip-disabled-color', colors.font(disabled));
 	overflow: hidden;
 	align-items: center;
 
+	height: lengths.size(28);
 	min-height: lengths.size(28);
 
 	border-width: 0;
@@ -60,6 +61,15 @@ $chip-disabled-color: theme('chip-disabled-color', colors.font(disabled));
 		color: $button-secondary-color;
 		border-color: $button-secondary-border-color;
 		background-color: $button-secondary-background-color;
+	}
+
+	&--small {
+		height: lengths.size(20);
+		min-height: lengths.size(20);
+	}
+
+	&--label {
+		text-transform: uppercase;
 	}
 
 	&__text {

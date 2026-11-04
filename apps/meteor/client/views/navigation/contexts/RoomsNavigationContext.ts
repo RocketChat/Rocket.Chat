@@ -74,7 +74,6 @@ export type AllGroupsKeysWithUnread = SidePanelFilters | SideBarFiltersKeys | Si
 
 export type RecordTypeBySidebarKey<K extends AllGroupsKeysWithUnread> = K extends 'queue' ? ILivechatInquiryRecord : SubscriptionWithRoom;
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export interface RoomsNavigationGroup extends Map<AllGroupsKeysWithUnread, Set<RecordTypeBySidebarKey<AllGroupsKeysWithUnread>>> {
 	get<K extends AllGroupsKeysWithUnread>(key: K): Set<RecordTypeBySidebarKey<K>> | undefined;
 }

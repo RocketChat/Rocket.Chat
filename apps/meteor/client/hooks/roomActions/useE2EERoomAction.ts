@@ -100,7 +100,7 @@ export const useE2EERoomAction = () => {
 			groups: ['direct', 'direct_multiple', 'group', 'team'],
 			title: enabledOnRoom ? 'Disable_E2E_encryption' : 'Enable_E2E_encryption',
 			icon: 'key',
-			order: 13,
+			order: 14,
 			action,
 			type: 'organization',
 			...(federated && {

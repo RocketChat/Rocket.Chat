@@ -1,3 +1,4 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type {
 	MessageAttachment,
 	FileAttachmentProps,
@@ -10,7 +11,6 @@ import type {
 } from '@rocket.chat/core-typings';
 import { Rooms, Uploads, Users } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 
 import { executeSendMessage } from './sendMessage';
 import { getFileExtension } from '../../../lib/utils/getFileExtension';
@@ -24,7 +24,7 @@ function validateFileRequiredFields(file: Partial<IUpload>): asserts file is AtL
 	const requiredFields = ['_id', 'name', 'type', 'size'];
 	requiredFields.forEach((field) => {
 		if (!Object.keys(file).includes(field)) {
-			throw new Meteor.Error('error-invalid-file', 'Invalid file');
+			throw new ClientSafeError('error-invalid-file', 'Invalid file');
 		}
 	});
 }
@@ -38,7 +38,7 @@ export const parseFileIntoMessageAttachments = async (
 
 	const upload = await Uploads.findOneByIdAndUserIdAndRoomId(file._id, user._id, roomId, { projection: { _id: 1 } });
 	if (!upload) {
-		throw new Meteor.Error('error-invalid-file', 'Invalid file', {
+		throw new ClientSafeError('error-invalid-file', 'Invalid file', {
 			method: 'sendFileMessage',
 		});
 	}
@@ -176,7 +176,7 @@ export const sendFileMessage = async (
 	const user = await Users.findOneById(userId, { projection: { services: 0 } });
 
 	if (!user) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+		throw new ClientSafeError('error-invalid-user', 'Invalid user', {
 			method: 'sendFileMessage',
 		} as any);
 	}

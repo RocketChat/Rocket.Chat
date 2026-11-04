@@ -6,6 +6,6 @@ export type ContextualbarActionProps = {
 	name: IconButtonProps['icon'];
 } & Omit<IconButtonProps, 'name' | 'icon'>;
 
-const ContextualbarAction = ({ name, ...props }: ContextualbarActionProps) => <IconButton {...props} small flexShrink={0} icon={name} />;
+const ContextualbarAction = ({ name, ...props }: ContextualbarActionProps) => <IconButton {...props} size='small' icon={name} />;
 
 export default memo(ContextualbarAction);
