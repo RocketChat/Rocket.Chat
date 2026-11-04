@@ -60,6 +60,25 @@ export const useContextualBarContextValue = ({
 				rid,
 			});
 		},
+		suggest: async ({ appId, actionId, blockId, value, viewId }) => {
+			if (!viewId) {
+				return {};
+			}
+
+			return actionManager.suggestOptions(appId, {
+				type: 'blockSuggestion',
+				actionId,
+				blockId,
+				appId,
+				value,
+				container: {
+					type: 'view',
+					id: viewId,
+				},
+				viewId,
+				rid,
+			});
+		},
 		updateState: ({ actionId, value, blockId = 'default' }) => {
 			updateValues({
 				actionId,
