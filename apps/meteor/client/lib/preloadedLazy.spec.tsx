@@ -25,7 +25,12 @@ it('renders without showing the fallback once its module has loaded', async () =
 
 it('shows the fallback while its module is still loading', async () => {
 	let finishLoading: (module: { default: typeof Content }) => void = () => undefined;
-	const Lazy = preloadedLazy(() => new Promise<{ default: typeof Content }>((resolve) => (finishLoading = resolve)));
+	const Lazy = preloadedLazy(
+		() =>
+			new Promise<{ default: typeof Content }>((resolve) => {
+				finishLoading = resolve;
+			}),
+	);
 
 	renderInSuspense(Lazy);
 	expect(screen.getByText('fallback')).toBeInTheDocument();
