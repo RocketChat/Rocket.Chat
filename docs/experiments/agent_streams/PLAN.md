@@ -60,28 +60,94 @@ Each update carries the full `IMessage`, with the `md` AST. The total bytes of o
 
 All mechanisms implement the same behavior, so the numbers compare.
 
-**Persistence.** At the start, the producer sends one normal message, the placeholder. It carries the marker `streaming: { id, state: 'active' }`.
-At the end, one `updateMessage` writes the final text and sets `state` to `'done'`, `'stopped'` or `'error'`.
-No other database write happens per delta. H3 is the only exception, because it tests that write.
+**Persistence.** At the start, the producer sends one normal message, the placeholder. It carries the first `blocks` of "Agent message flow" and the marker `streaming: { id, state: 'active' }`.
+At the end of the LLM response, one `updateMessage` writes the full message. Its `blocks` are the placeholder `blocks` with all the accumulated deltas applied.
+The same write sets `state` to `'done'`, `'stopped'` or `'error'`.
+No other database write happens between the placeholder and this final write. H3 is the only exception, because it tests that write.
 
-**Delta shape.**
+**Delta shape.** A delta changes the `blocks` of the message (`IMessage.blocks`, a UiKit `MessageSurfaceLayout`). Blocks are the visual elements that the UI renders.
 
 ```ts
+// A path into IMessage.blocks: array indexes and object keys, in order. [] is the blocks array itself.
+type BlockPath = readonly (string | number)[];
+
+type BlockOp =
+	// On an array, push the value. On a string, concatenate the value.
+	{ op: 'append'; path: BlockPath; value: unknown } | { op: 'set'; path: BlockPath; value: unknown };
+
 type AgentDelta =
-	| { t: 'append'; streamId: string; seq: number; text: string; ts: number }
+	| { t: 'patch'; streamId: string; seq: number; ops: BlockOp[]; ts: number }
 	| { t: 'end'; streamId: string; seq: number; reason: 'done' | 'stopped' | 'error'; ts: number };
 ```
 
 - `seq` starts at 1 and increases by 1 for each delta. A coalesced delta has one `seq`.
 - `ts` is the producer clock in milliseconds. The harness uses it for latency.
-- **Blocks.** The deltas must also support the `blocks` property of a message (`IMessage.blocks`, a UiKit `MessageSurfaceLayout`). Blocks are the visual elements that the UI renders. The shape of a blocks delta is not defined yet. A later revision of this plan adds it. Until then, do not choose a transport or a frame format that can carry only text.
+- The client applies the `ops` of a delta in order. A path uses explicit indexes. The producer always knows them, because blocks are only appended at the end.
+- One shared function, `applyBlockOps(blocks, ops)`, applies the operations. The producer's snapshot, the client overlay, the harness check and the final `updateMessage` all use it.
+- On `end`, the producer sets the status of the last open task itself (`complete`, or `error` for `'error'`), before the final `updateMessage`. The `end` delta carries no `ops`.
 
-**Snapshot.** The producer's process holds `{ text, seq }` for each active stream.
+**Coalescing.** Within the window W, the producer merges the operations of a delta:
+
+- Consecutive `append` operations on the same string path merge into one.
+- An `append` that creates an item, followed by text appends into that item, folds into the initial text of the item.
+
+**Agent message flow.** The blocks of an agent reply change in three ways. A later revision covers more LLM turns after the output.
+
+1. The placeholder carries two blocks: an `alert` block, and a `plan` block with one task in `in_progress`.
+
+   ```json
+   {
+   	"blocks": [
+   		{
+   			"type": "alert",
+   			"level": "info",
+   			"text": { "type": "plain_text", "text": "The agent is working on your request." }
+   		},
+   		{
+   			"type": "plan",
+   			"title": "Fix the login bug",
+   			"tasks": [{ "task_id": "step-0", "title": "Read the issue", "status": "in_progress" }]
+   		}
+   	]
+   }
+   ```
+
+2. Each LLM turn adds one task to the `tasks` array of the `plan` block. The task describes the current step: thinking or a tool call.
+   The new task has the status `in_progress`. The previous task changes to `complete`.
+   - The thinking text streams into the `details` of the task, a `rich_text` block with one `rich_text_section` and one `text` element.
+   - The title of a tool call task is the call description, or the arguments as JSON when the call has no description.
+3. When the model writes text for the user, the producer appends a new `section` block at the end of `blocks`, with the text as `mrkdwn`.
+   Each later output delta appends its text to the `text.text` of that block.
+
+   ```json
+   {
+   	"actionId": "eee7fc17",
+   	"type": "section",
+   	"text": {
+   		"type": "mrkdwn",
+   		"text": "This is a mrkdwn section block :ghost: *this is bold*, and ~this is crossed out~, and <https://google.com|this is a link>"
+   	}
+   }
+   ```
+
+The operations for each step, from the placeholder above (`plan` at index 1, task 0 in progress):
+
+| Step                               | `ops`                                                                                                                                                                                                                                       |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A new thinking task                | `set [1,'tasks',0,'status'] 'complete'`, then `append [1,'tasks'] { task_id, title: 'Thinking', status: 'in_progress', details: { type: 'rich_text', elements: [{ type: 'rich_text_section', elements: [{ type: 'text', text: '' }] }] } }` |
+| A thinking text delta for task `n` | `append [1,'tasks',n,'details','elements',0,'elements',0,'text'] '<text>'`                                                                                                                                                                  |
+| A tool call                        | `set [1,'tasks',n,'status'] 'complete'`, then `append [1,'tasks'] { task_id, title: '<description or arguments>', status: 'in_progress' }`                                                                                                  |
+| The first output delta             | `set [1,'tasks',n,'status'] 'complete'`, then `append [] { type: 'section', text: { type: 'mrkdwn', text: '<text>' } }`                                                                                                                     |
+| A later output delta               | `append [2,'text','text'] '<text>'`                                                                                                                                                                                                         |
+
+**Snapshot.** The producer's process holds `{ blocks, seq }` for each active stream.
+`blocks` is the current `MessageSurfaceLayout`: the `alert` block, the `plan` block with the status of each task, and every `section` block with the text received so far.
+`seq` is the `seq` of the last delta that changed `blocks`.
 A late viewer, or a viewer after a reconnect, gets the snapshot, then applies only the deltas with `seq > snapshot.seq`.
 The viewer drops duplicates and detects gaps. Each hypothesis decides how the viewer gets the snapshot.
 
 **Display.** Until the end, the client shows the snapshot plus the deltas. After the end, it shows the persisted message.
-The text that the client shows at the end must equal the persisted text. This includes a stop in the middle of a reply.
+The `blocks` that the client shows at the end must equal the persisted `blocks`. This includes a stop in the middle of a reply.
 
 **Producer.** A fake producer runs inside a Rocket.Chat server process. In D2 it runs on instance A only.
 
@@ -89,7 +155,8 @@ The text that the client shows at the end must equal the persisted text. This in
 
 ## 5. Measurement protocol
 
-**Fake producer.** A fixed reply of 1,000 tokens (about 4 KB of markdown, with a code block and a list), at 40 tokens per second (25 seconds per reply).
+**Fake producer.** A fixed reply of 1,000 tokens at 40 tokens per second (25 seconds per reply), in the order of "Agent message flow":
+150 thinking tokens, one tool call, 150 thinking tokens, then 700 output tokens (about 3 KB of markdown, with a code block and a list).
 The coalescing window W is 0, 50 or 250 ms. With W = 0 the producer sends each token as one delta.
 
 **Deployments.**
@@ -116,31 +183,31 @@ The coalescing window W is 0, 50 or 250 ms. With W = 0 the producer sends each t
 **Functional checks (stage 1).** They prove that the mechanism works. Their numbers are not results.
 Run each check once, at W = 50, with `--tokens 200` (see `HARNESS.md`).
 
-| Check                                        | Deployment | What it proves                                                             |
-| -------------------------------------------- | ---------- | -------------------------------------------------------------------------- |
-| S1                                           | D1 and D2  | A viewer gets every delta, also from the other instance                    |
-| S2                                           | D2         | The fan-out to 500 viewers works                                           |
-| S5                                           | D2         | Resume and snapshot work                                                   |
-| `failures.mjs`: `stop`, `kill` and `restart` | D2         | The failure modes of section 11, item 7                                    |
-| The web client                               | D1         | The overlay shows the stream, and the final text equals the persisted text |
-| The proxy of `docker-compose-ci.yml`         | D1         | The mechanism works behind the proxy                                       |
+| Check                                        | Deployment | What it proves                                                                |
+| -------------------------------------------- | ---------- | ----------------------------------------------------------------------------- |
+| S1                                           | D1 and D2  | A viewer gets every delta, also from the other instance                       |
+| S2                                           | D2         | The fan-out to 500 viewers works                                              |
+| S5                                           | D2         | Resume and snapshot work                                                      |
+| `failures.mjs`: `stop`, `kill` and `restart` | D2         | The failure modes of section 11, item 7                                       |
+| The web client                               | D1         | The overlay shows the stream, and the final blocks equal the persisted blocks |
+| The proxy of `docker-compose-ci.yml`         | D1         | The mechanism works behind the proxy                                          |
 
-A check passes when the delta channel has no gap, no duplicate, no wrong order and no text mismatch.
+A check passes when the delta channel has no gap, no duplicate, no wrong order and no blocks mismatch.
 Fix the prototype until every check passes. If a check cannot pass, write the reason in the report.
 
 **Metrics.**
 
-| Metric                                                                             | Source                                                                                    |
-| ---------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| Server CPU ms per delivered delta, and CPU %                                       | `process.cpuUsage()` in each server, through the harness metrics endpoint                 |
-| Event loop delay p99                                                               | `monitorEventLoopDelay` (the health route uses it: `apps/meteor/server/routes/health.ts`) |
-| RSS and heap; memory for each open connection in S4                                | `process.memoryUsage()`                                                                   |
-| Mongo reads and writes per reply                                                   | `db.serverStatus().opcounters`, before and after the run                                  |
-| Broker events per reply, and bytes on the cluster transport                        | a counter in the `InstanceService` send path (D2)                                         |
-| Bytes on the wire for each viewer per reply                                        | load generator                                                                            |
-| Latency from producer to viewer: p50, p95, p99                                     | `ts` against the receive time. One host, so one clock                                     |
-| Correctness: gaps, duplicates, wrong order, final text not equal to persisted text | load generator                                                                            |
-| Web client main-thread time per delta (S1 only, secondary)                         | Playwright with the Performance API long-task entries                                     |
+| Metric                                                                                 | Source                                                                                    |
+| -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| Server CPU ms per delivered delta, and CPU %                                           | `process.cpuUsage()` in each server, through the harness metrics endpoint                 |
+| Event loop delay p99                                                                   | `monitorEventLoopDelay` (the health route uses it: `apps/meteor/server/routes/health.ts`) |
+| RSS and heap; memory for each open connection in S4                                    | `process.memoryUsage()`                                                                   |
+| Mongo reads and writes per reply                                                       | `db.serverStatus().opcounters`, before and after the run                                  |
+| Broker events per reply, and bytes on the cluster transport                            | a counter in the `InstanceService` send path (D2)                                         |
+| Bytes on the wire for each viewer per reply                                            | load generator                                                                            |
+| Latency from producer to viewer: p50, p95, p99                                         | `ts` against the receive time. One host, so one clock                                     |
+| Correctness: gaps, duplicates, wrong order, final blocks not equal to persisted blocks | load generator                                                                            |
+| Web client main-thread time per delta (S1 only, secondary)                             | Playwright with the Performance API long-task entries                                     |
 
 **Observability stack.** Use it in stage 1 and to find the cause of a result. Phase 0 measured the baseline without it.
 So a stage 2 run keeps its instrumentation off: no `TRACING_ENABLED` and no `Prometheus_Enabled` on the servers.
@@ -212,7 +279,7 @@ Answer each design point in the report.
 3. **Fan-out.** `Streamer.emit()` relays each emit to every instance as the broker event `stream` (`streamer.module.ts:270-273`; `docs/service-brokers.md`, "Stream relays"). Measure the broker events and bytes in D2 for each W. Sketch a relay that targets only the instances with subscribers. Build it only if the D2 numbers show that the relay is the largest cost.
 4. **Delivery loop.** `StreamAdapter.sendToManySubscriptions` awaits `isEmitAllowed` and `sendFrames` for each subscriber, one after the other (`packages/ddp-server/src/streams/StreamAdapter.ts:39-60`). Measure the latency spread across the 500 viewers of S2. Say whether the loop needs a change.
 5. **Frame.** Confirm that the emit uses the pre-encoded frame path, with no transform function. Report the frame size for each delta.
-6. **Resume.** After a reconnect, the client subscribes again, then calls a method for the snapshot `{ text, seq }`. It keeps the deltas that arrive before the snapshot and applies those with a higher `seq`.
+6. **Resume.** After a reconnect, the client subscribes again, then calls a method for the snapshot `{ blocks, seq }`. It keeps the deltas that arrive before the snapshot and applies those with a higher `seq`.
 7. **Microservices.** Emits from the monolith reach ddp-streamer through the `stream` relay (`docs/adr/0005-stream-fan-out-rides-the-service-broker.md`). Run D3 if time allows.
 8. **Web client.** Add the subscription and the same overlay behavior as H1.
 9. **Other clients.** Mobile and livechat use DDP already. Estimate the effort.
@@ -255,7 +322,7 @@ Stage 2 fills section 4 and these numbers, then revises the verdict.
 2. **Prototype.** The branch, the files that changed, how to run it.
 3. **Machine and mode.**
 4. **Results.** One table per deployment: rows are scenarios and W, columns are the metrics of section 5.
-5. **Correctness.** Gaps, duplicates, wrong order, and text mismatches: for each functional check in stage 1, and for each scenario in stage 2.
+5. **Correctness.** Gaps, duplicates, wrong order, and blocks mismatches: for each functional check in stage 1, and for each scenario in stage 2.
 6. **Design points.** One answer for each numbered point of your section.
 7. **Failure modes.** Test and describe: a viewer reconnect; a restart of the instance that serves a viewer; a producer that dies before `end` (what the client shows, and what happens to the placeholder); a stop in the middle of a reply.
 8. **Client effort.** The web client (done in the POC) and an estimate for each other client.
@@ -268,7 +335,7 @@ Stage 2 fills section 4 and these numbers, then revises the verdict.
 
 - No gaps and no duplicates on the delta channel in S5. The gate does not cover the final `updateMessage`.
   Phase 0 found a race in `updateMessage`: it reads the message again after the write. The race gives rare gaps and duplicates in the baseline. It is a separate issue.
-- The text that the client shows at the end equals the persisted text, also after a stop.
+- The `blocks` that the client shows at the end equal the persisted `blocks`, also after a stop.
 - It works behind the proxy of `docker-compose-ci.yml`.
 - S2 p99 latency is below 1 second at W = 50. This threshold is a proposal; adjust it before the runs.
 
