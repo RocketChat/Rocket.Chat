@@ -15,9 +15,9 @@ function PasswordInput(props: PasswordInputProps) {
 
 	return (
 		<InputBox
-			type={hidden ? 'password' : 'text'}
 			endAddon={<Icon name={hidden ? 'eye-off' : 'eye'} size={20} onClick={handleAddonClick} />}
 			{...props}
+			type={hidden ? 'password' : 'text'}
 		/>
 	);
 }

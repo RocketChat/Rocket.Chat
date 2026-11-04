@@ -1,6 +1,8 @@
 import { composeStories } from '@storybook/react-webpack5';
+import { screen } from '@testing-library/react';
 import { axe } from 'jest-axe';
 
+import UrlInput from './UrlInput';
 import * as stories from './UrlInput.stories';
 import { render } from '../../testing';
 
@@ -12,5 +14,12 @@ describe('[UrlInput Component]', () => {
 
 		const results = await axe(container);
 		expect(results).toHaveNoViolations();
+	});
+
+	it('keeps type="url" when spread props carry another type', () => {
+		const props = { type: 'text' };
+		render(<UrlInput {...props} aria-label='Website' />);
+
+		expect(screen.getByLabelText('Website')).toHaveAttribute('type', 'url');
 	});
 });
