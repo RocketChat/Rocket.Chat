@@ -699,7 +699,7 @@ API.v1.get(
 		let initialImage: IUpload | null = null;
 		if (this.queryParams.startingFromId) {
 			initialImage = await Uploads.findOneById(this.queryParams.startingFromId);
-			if (initialImage && initialImage.rid !== room._id) {
+			if (initialImage && (initialImage.rid !== room._id || initialImage.expiresAt)) {
 				initialImage = null;
 			}
 		}

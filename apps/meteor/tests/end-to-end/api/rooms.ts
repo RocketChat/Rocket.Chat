@@ -3506,7 +3506,11 @@ describe('[Rooms]', () => {
 			});
 			const sentFileId = getIdFromImgPath(title_link);
 
-			await request
+			const {
+				body: {
+					file: { _id: unsentFileId },
+				},
+			} = await request
 				.post(api(`rooms.media/${roomId}`))
 				.set(credentials)
 				.attach('file', fs.createReadStream(path.join(process.cwd(), imgURL)))
@@ -3522,6 +3526,16 @@ describe('[Rooms]', () => {
 					expect(res.body).to.have.property('files').and.to.be.an('array').and.to.have.lengthOf(1);
 					expect(res.body.files[0]).to.have.property('_id', sentFileId);
 					expect(res.body).to.have.property('total', 1);
+				});
+
+			await request
+				.get(api('rooms.images'))
+				.set(credentials)
+				.query({ roomId, startingFromId: unsentFileId })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.files.map(({ _id }: { _id: string }) => _id)).to.not.include(unsentFileId);
 				});
 
 			await deleteRoom({ type: 'p', roomId });
