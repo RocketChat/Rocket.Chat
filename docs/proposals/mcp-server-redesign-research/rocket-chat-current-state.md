@@ -1,6 +1,6 @@
 # Research: Rocket.Chat MCP server, current state
 
-> Raw research notes. Collected on 2026-10-06 from the code at commit `0de406c` for [the MCP server redesign proposal](../mcp-server-redesign.md). The original text is kept. A *(changed, see update)* marker flags each claim that develop changed, and the [update of 2026-11-03](#update-2026-11-03) at the end gives the new state.
+> Raw research notes. Collected on 2026-10-06 from the code at commit `0de406c` for [the MCP server redesign proposal](../mcp-server-redesign.md). The original text is kept. A *(changed, see update)* marker flags each claim that develop changed, and the [update of 2026-11-03](#update-2026-11-03) and the [update of 2026-11-04](#update-2026-11-04) at the end give the new state.
 > Scope: the current MCP route, its tool catalog, its dispatch, and the workspace OAuth 2.0 server.
 
 ---
@@ -121,7 +121,7 @@ Checked against develop at commit `2d02da8aad`. Paths are relative to `apps/mete
 
 - New file: `ee/server/api/mcp/metadata.ts` serves the RFC 9728 document at `/.well-known/oauth-protected-resource/api/v1/mcp` and at the bare path. Fields: `resource`, `authorization_servers`, `bearer_methods_supported: ['header']`. No `scopes_supported`.
 - Middleware order (`index.ts:266-273`): REST authentication with `authRequired: false` → `mcpAuthenticationMiddleware` → rate limit → permissions → license.
-- `unauthorizedResponse` (`index.ts:51-58`) returns `401` with `WWW-Authenticate: Bearer resource_metadata="<url>"`. It adds `error="invalid_token"` when the credential does not resolve.
+- `unauthorizedResponse` (`index.ts:51-58`) returns `401` with `WWW-Authenticate: Bearer resource_metadata="<url>"`. It adds `error="invalid_token"` when the credential does not resolve. *(corrected, see update of 2026-11-04)*
 - `readCredentials` (`index.ts:76-84`) prefers `X-User-Id` + `X-Auth-Token`, then `Authorization: Bearer`. `checkMcpCredentials` (`index.ts:94-106`) accepts a PAT or an OAuth token. A session token on `POST` gets `401` "Personal Access Token required". The route ignores an `?access_token=` query value.
 - A missing `access-mcp` permission still gives `403`, and a missing AI license still gives `400`.
 - The route counts the rate limit with `enforceRateLimitForRoute` and `registerRateLimiterForRoute` (`server/api/ApiClass.ts:470-502`).
@@ -155,7 +155,7 @@ Checked against develop at commit `2d02da8aad`. Paths are relative to `apps/mete
 ### Agent bot foundations
 
 - `validateUserRoles.ts:17-22` (`ee/server/lib/authorization/`) still exempts `bot` and `app` users from the seat count.
-- `server/lib/auth/startup.js:410-414` still blocks the login of an `app` user.
+- `server/lib/auth/startup.js:410-414` still blocks the login of an `app` user. *(changed, see update of 2026-11-04)*
 
 ### AI search
 
@@ -170,3 +170,29 @@ Checked against develop at commit `2d02da8aad`. Paths are relative to `apps/mete
 ### Not re-checked
 
 The file line counts, `catalog.ts` and its route counts, `server.ts`, the origin check in `transport.ts`, `Router.getHonoRouter()`, where the Express OAuth routes mount after #43281, and the 2FA path in the action wrapper.
+
+---
+
+## Update 2026-11-04
+
+Checked against develop at commit `5b6c8dc71d`, after a rebase onto 13 more commits. Paths are relative to `apps/meteor/` unless they say otherwise.
+
+### Commits since the update of 2026-11-03
+
+No commit changes the MCP route, the dispatch, the workspace OAuth 2.0 server or the MCP settings. One commit moves a line that this file cites:
+
+| Commit | Pull request | Change |
+| --- | --- | --- |
+| `28ec3fcad8` | #43478 | Removes `Meteor.startup` from the server. In `server/lib/auth/startup.js`, the code below the removed wrappers moves up by 5 lines. |
+
+### Changed lines
+
+- `server/lib/auth/startup.js:405-409` blocks the login of an `app` user. The update of 2026-11-03 gives lines 410-414.
+
+### Corrections to the update of 2026-11-03
+
+- `unauthorizedResponse` is at `ee/server/api/mcp/index.ts:52-58`, not 51-58. Line 51 is the comment above it. The file did not change between the two updates.
+
+### Re-checked, unchanged
+
+`index.ts:94` (`checkMcpCredentials`) and `index.ts:266-273` (the middleware order), `ee/server/startup/mcp.ts:6`, `server/api/ApiClass.ts:809`, `authenticationHono.ts:24`, `oauth2-server.ts:27`, `model.ts:72`, `model.ts:104`, `model.ts:254-279`, `oauth.ts:36`, `oauth.ts:109`, `validateUserRoles.ts:21`, `registerOAuthClient.ts:68` and `server/api/v1/middlewares/cors.ts:11`.
