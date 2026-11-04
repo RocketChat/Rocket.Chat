@@ -152,3 +152,7 @@ export const Video = createStory(payloads.video);
 export const ContextActions = createStory(payloads.contextActions);
 
 export const ContextActionsWithFeedback = createStory(payloads.contextActionsWithFeedback);
+
+export const TaskCard = createStory(payloads.taskCard);
+
+export const Plan = createStory(payloads.plan);

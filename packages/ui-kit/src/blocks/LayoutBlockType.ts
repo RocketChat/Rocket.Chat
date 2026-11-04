@@ -20,4 +20,6 @@ export const LayoutBlockType = {
 	VIDEO: 'video',
 	TABLE: 'table',
 	FILE: 'file',
+	TASK_CARD: 'task_card',
+	PLAN: 'plan',
 } as const satisfies Record<Uppercase<LayoutBlock['type']>, LayoutBlock['type']>;

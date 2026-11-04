@@ -60,6 +60,7 @@ import {
 	sectionWithExternalSelect,
 } from './section';
 import { table } from './table';
+import { taskCard, plan } from './taskCard';
 import { video } from './video';
 import { actionWithCheckbox } from '../action/checkbox';
 import { actionWithRadioButton } from '../action/radioButton';
@@ -386,6 +387,24 @@ const BlocksTree: Item = [
 			{
 				label: 'Service uptime',
 				payload: table,
+			},
+		],
+	},
+	{
+		label: 'task card',
+		branches: [
+			{
+				label: 'Completed task',
+				payload: taskCard,
+			},
+		],
+	},
+	{
+		label: 'plan',
+		branches: [
+			{
+				label: 'Deployment checklist',
+				payload: plan,
 			},
 		],
 	},

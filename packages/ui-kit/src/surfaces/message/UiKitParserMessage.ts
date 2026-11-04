@@ -14,10 +14,12 @@ export const messageSurfaceLayoutBlockTypes = [
 	'info_card',
 	'input',
 	'markdown',
+	'plan',
 	'preview',
 	'rich_text',
 	'section',
 	'table',
+	'task_card',
 	'video',
 	'video_conf',
 ] as const satisfies readonly RenderableLayoutBlock['type'][];

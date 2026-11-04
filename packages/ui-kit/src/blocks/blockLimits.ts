@@ -5,6 +5,7 @@ export const maxBlocksPerView = 100;
 
 const maxElementsPerActionsBlock = 25;
 const maxOptionsPerSelect = 100;
+const maxTasksPerPlan = 50;
 
 const maxTextLength = {
 	header: 150,
@@ -55,6 +56,8 @@ export const checkBlockLimits = (blocks: unknown, maxBlocks: number): LayoutBloc
 				max = maxOptionsPerSelect;
 			} else if (key === 'elements' && parent?.type === 'actions') {
 				max = maxElementsPerActionsBlock;
+			} else if (key === 'tasks' && parent?.type === 'plan') {
+				max = maxTasksPerPlan;
 			}
 
 			if (max !== undefined && value.length > max) {
