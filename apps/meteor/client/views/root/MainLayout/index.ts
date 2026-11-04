@@ -1,5 +1,5 @@
-import { lazy } from 'react';
+import { preloadedLazy } from '../../../lib/preloadedLazy';
 
-const MainLayout = lazy(() => import('./MainLayout'));
+const MainLayout = preloadedLazy(() => import('./MainLayout'));
 
 export default MainLayout;
