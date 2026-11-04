@@ -1,0 +1,21 @@
+apps/meteor/server/api/v1/middlewares/logger.ts
+  s_015fba93bd53a8::t_e06093862c529a 63
+apps/meteor/server/api/v1/middlewares/logger.spec.ts
+  s_015fba93bd53a8::t_6e3b308ad792af 91-102
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "d0da9f5a05e23bca0ea3448ca1284da0af8232ea",
+  "prompts": {},
+  "sessions": {
+    "s_015fba93bd53a8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d186ae17-5430-4065-8a6d-df9ede5df591",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
