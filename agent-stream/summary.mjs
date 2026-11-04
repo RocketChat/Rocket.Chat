@@ -40,9 +40,16 @@ const sortedKeys = [...cells.keys()].sort((a, b) => {
 
 for (const deployment of [...new Set(results.map((r) => r.deployment))].sort()) {
 	const keys = sortedKeys.filter((key) => key.startsWith(`${deployment}|`));
+	// a 5 s probe can catch a cron job or a GC, so the net CPU subtracts the median idle rate of all runs of the deployment
+	const deploymentRuns = results.filter((r) => r.deployment === deployment && r.server.idleCpuMsPerSec);
+	const idleRate = deploymentRuns[0]?.server.idleCpuMsPerSec.map((_, i) => median(deploymentRuns.map((r) => r.server.idleCpuMsPerSec[i])));
+	const netCpuMs = (r) => (idleRate ? r.server.cpuMs - idleRate.reduce((sum, rate) => sum + rate, 0) * (r.windowMs / 1000) : null);
 	console.log(`\n### ${deployment}\n`);
 	console.log(
-		'| Scenario | W | Runs | CPU ms / delivered delta | Net CPU ms / delivered delta | Net CPU ms / reply | Idle CPU ms/s (per instance) | CPU % (per instance) | EL p99 ms (per instance) | RSS MB (per instance) | Heap MB (per instance) | Mongo reads / reply | Mongo writes / reply | Mongo commands / reply | Broker events / reply | Broker KB / reply | KB / viewer / reply | Latency p50 / p95 / p99 ms | Delivered / expected | Window s | Timed out |',
+		`Median idle CPU of the deployment, subtracted for the net columns: ${idleRate?.map((rate) => fmt(rate, 1)).join(' / ')} ms/s per instance.\n`,
+	);
+	console.log(
+		'| Scenario | W | Runs | CPU ms / delivered delta | Net CPU ms / delivered delta | Net CPU ms / reply | Idle CPU ms/s in the run probe (per instance) | CPU % (per instance) | EL p99 ms (per instance) | RSS MB (per instance) | Heap MB (per instance) | Mongo reads / reply | Mongo writes / reply | Mongo commands / reply | Broker events / reply | Broker KB / reply | KB / viewer / reply | Latency p50 / p95 / p99 ms | Delivered / expected | Window s | Timed out |',
 	);
 	console.log(
 		'| --- | ---: | ---: | ---: | ---: | ---: | --- | --- | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | --- | ---: | ---: | ---: |',
@@ -63,11 +70,11 @@ for (const deployment of [...new Set(results.map((r) => r.deployment))].sort()) 
 					3,
 				),
 				fmt(
-					m((r) => r.server.netCpuMsPerDeliveredDelta),
+					m((r) => r.delivered && netCpuMs(r) / r.delivered),
 					3,
 				),
 				fmt(
-					m((r) => r.server.netCpuMsPerReply),
+					m((r) => r.replies && netCpuMs(r) / r.replies),
 					0,
 				),
 				perInstance(runs, (r) => r.server.idleCpuMsPerSec ?? []),
