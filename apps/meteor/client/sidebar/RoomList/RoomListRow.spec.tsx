@@ -22,7 +22,6 @@ const data = {
 	viewMode: 'condensed' as const,
 	showAvatar: false,
 	formatTime: () => '',
-	openedRoom: '',
 	isAnonymous: false,
 	userId: 'uid',
 };

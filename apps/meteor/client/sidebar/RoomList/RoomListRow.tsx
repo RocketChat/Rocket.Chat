@@ -4,6 +4,7 @@ import { memo } from 'react';
 
 import SidebarItemTemplateWithData from './SidebarItemTemplateWithData';
 import type { RoomListItemViewMode } from '../../components/RoomListItem/RoomListItem';
+import { useIsOpenedRoom } from '../../lib/RoomManager';
 import type { RingingCallActions } from '../hooks/useRingingCalls';
 
 export type RoomListRowProps = {
@@ -12,7 +13,6 @@ export type RoomListRowProps = {
 		viewMode: RoomListItemViewMode;
 		showAvatar: boolean;
 		formatTime: (time: Date | string) => string;
-		openedRoom: string;
 		isAnonymous: boolean;
 		userId?: string;
 	};
@@ -22,14 +22,15 @@ export type RoomListRowProps = {
 };
 
 const RoomListRow = ({ data, item, videoConfActions }: RoomListRowProps) => {
-	const { t, viewMode, showAvatar, formatTime, openedRoom, userId } = data;
+	const { t, viewMode, showAvatar, formatTime, userId } = data;
+	const selected = useIsOpenedRoom(item.rid);
 
 	return (
 		<SidebarItemTemplateWithData
 			viewMode={viewMode}
 			showAvatar={showAvatar}
 			formatTime={formatTime}
-			selected={item.rid === openedRoom}
+			selected={selected}
 			t={t}
 			room={item}
 			videoConfActions={videoConfActions}

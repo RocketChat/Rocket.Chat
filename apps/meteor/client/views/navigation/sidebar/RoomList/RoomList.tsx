@@ -13,7 +13,6 @@ import RoomListRow from './RoomListRow';
 import RoomListRowWrapper from './RoomListRowWrapper';
 import RoomListWrapper from './RoomListWrapper';
 import { useMergedRefsV2 } from '../../../../hooks/useMergedRefsV2';
-import { useOpenedRoom } from '../../../../lib/RoomManager';
 import { useSideBarRoomsList, sidePanelFiltersConfig } from '../../contexts/RoomsNavigationContext';
 import { usePreventDefault } from '../hooks/usePreventDefault';
 import { useShortcutOpenMenu } from '../hooks/useShortcutOpenMenu';
@@ -24,15 +23,13 @@ const RoomList = () => {
 
 	const { roomListGroups, groupCounts, collapsedGroups, handleClick, totalCount } = useSideBarRoomsList();
 	const { ref: resizeObserverRef } = useResizeObserver<HTMLElement>({ debounceDelay: 100 });
-	const openedRoom = useOpenedRoom() ?? '';
 
 	const itemData = useMemo(
 		() => ({
 			t,
-			openedRoom,
 			isAnonymous,
 		}),
-		[isAnonymous, openedRoom, t],
+		[isAnonymous, t],
 	);
 
 	const preventDefaultRef = usePreventDefault();
