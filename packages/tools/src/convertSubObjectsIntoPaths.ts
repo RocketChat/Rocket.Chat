@@ -7,11 +7,9 @@ export function convertSubObjectsIntoPaths(object: Record<string, any>, parentPa
 			const fullKey = parentPath ? `${parentPath}.${key}` : key;
 
 			if (isRecord(value)) {
-				const flattened = convertSubObjectsIntoPaths(value, fullKey);
-
-				return Object.keys(flattened).map((newKey) => [newKey, flattened[newKey]]);
+				return Object.entries(convertSubObjectsIntoPaths(value, fullKey));
 			}
 			return [[fullKey, value]];
-		}) as [string, any][],
+		}),
 	);
 }
