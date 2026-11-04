@@ -1,0 +1,75 @@
+packages/ui-client/src/hooks/useFeaturePreviewList.ts
+  ai_agent 3-4,64-68
+apps/meteor/client/views/room/composer/messageBox/ScheduleMessage/ScheduleMessageMenu.tsx
+  ai_agent 1-145
+apps/meteor/client/components/ScheduledMessages/ScheduledMessageRow.stories.tsx
+  ai_agent 1-54
+apps/meteor/client/hooks/roomActions/useScheduledMessagesRoomAction.spec.tsx
+  ai_agent 1-35
+apps/meteor/client/components/ScheduledMessages/schedulePresets.ts
+  ai_agent 1-9
+apps/meteor/client/components/ScheduledMessages/ScheduleMessageModal.spec.tsx
+  ai_agent 1-84
+apps/meteor/client/components/ScheduledMessages/ScheduledMessageRow.tsx
+  ai_agent 1-146
+apps/meteor/client/views/room/contextualBar/ScheduledMessagesTab.spec.tsx
+  ai_agent 1-115
+apps/meteor/client/lib/queryKeys.ts
+  ai_agent 225-230
+apps/meteor/client/sidebar/RoomList/ScheduledMessagesIndicator.spec.tsx
+  ai_agent 1-64
+apps/meteor/client/views/room/composer/messageBox/MessageBox.tsx
+  ai_agent 13,146-149,158-161,171-173,400,406
+apps/meteor/client/views/room/composer/messageBox/MessageBoxBase.tsx
+  ai_agent 19,32,41,65,74,137,143,177-193
+apps/meteor/client/views/room/composer/messageBox/ScheduleMessage/ScheduleMessageMenu.spec.tsx
+  ai_agent 1-221
+apps/meteor/client/views/root/hooks/loggedIn/useScheduledMessagesUpdates.spec.tsx
+  ai_agent 1-28
+apps/meteor/client/views/room/composer/messageBox/MessageBoxHint.tsx
+  ai_agent 10,16,32-38
+apps/meteor/client/ui.ts
+  ai_agent 26,63
+apps/meteor/client/views/room/composer/messageBox/RichTextMessageBox.tsx
+  ai_agent 15,214-217,226-229,239-241,496,502
+apps/meteor/client/views/room/composer/messageBox/MessageBox.spec.tsx
+  ai_agent 39,45,176-193
+apps/meteor/client/components/ScheduledMessages/schedulePresets.spec.ts
+  ai_agent 1-14
+apps/meteor/client/sidebar/RoomList/SidebarItemTemplateWithData.tsx
+  ai_agent 9,73-78
+apps/meteor/client/components/ScheduledMessages/useScheduledMessageActions.tsx
+  ai_agent 1-72
+apps/meteor/client/sidebar/RoomList/ScheduledMessagesIndicator.tsx
+  ai_agent 1-35
+apps/meteor/client/hooks/useCanScheduleMessages.ts
+  ai_agent 1-10
+apps/meteor/client/views/room/composer/messageBox/ScheduleMessage/useScheduledMessageEditing.spec.tsx
+  ai_agent 1-178
+.changeset/scheduled-messages.md
+  ai_agent 1-13
+apps/meteor/client/views/room/composer/messageBox/ScheduleMessage/useScheduledMessageEditing.tsx
+  ai_agent 1-169
+apps/meteor/client/views/room/contextualBar/ScheduledMessagesTab.tsx
+  ai_agent 1-60
+apps/meteor/client/hooks/useScheduledMessages.ts
+  ai_agent 1-46
+apps/meteor/client/components/ScheduledMessages/ScheduledMessageRow.spec.tsx
+  ai_agent 1-123
+apps/meteor/client/components/ScheduledMessages/toScheduledFiles.ts
+  ai_agent 1-8
+apps/meteor/client/views/root/MainLayout/LoggedInArea.tsx
+  ai_agent 16,36
+apps/meteor/client/views/root/hooks/loggedIn/useScheduledMessagesUpdates.ts
+  ai_agent 1-6
+apps/meteor/client/components/ScheduledMessages/ScheduleMessageModal.tsx
+  ai_agent 1-79
+apps/meteor/client/hooks/roomActions/useScheduledMessagesRoomAction.ts
+  ai_agent 1-34
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "7abc723029e05d02b411c0c35fb96b982840c01e",
+  "prompts": {}
+}
