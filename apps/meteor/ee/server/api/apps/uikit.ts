@@ -290,11 +290,13 @@ export class AppUIKitInteractionApi {
 				const user = orch.getConverters()?.get('users').convertToApp(req.user);
 				const room = rid ? await orch.getConverters()?.get('rooms').convertById(rid) : undefined;
 
+				const { visitor } = req.body;
 				const action = {
 					type,
 					appId,
 					triggerId,
 					user,
+					visitor,
 					room,
 					payload: {
 						view: await withRecordedView(view, appId, req.user?._id),
@@ -303,7 +305,10 @@ export class AppUIKitInteractionApi {
 				};
 
 				try {
-					const result = await orch.triggerEvent(AppEvents.IUIKitInteractionHandler, action);
+					const result = await orch.triggerEvent(
+						!visitor ? AppEvents.IUIKitInteractionHandler : AppEvents.IUIKitLivechatInteractionHandler,
+						action,
+					);
 
 					if (reportInvalidInteractionBlocks(result, { where: 'ui.interaction', appId, userId: req.user?._id })) {
 						res.send({});
@@ -326,6 +331,7 @@ export class AppUIKitInteractionApi {
 				const room = rid ? await orch.getConverters()?.get('rooms').convertById(rid) : undefined;
 
 				const view = await withRecordedView(payload.view, appId, req.user?._id);
+				const { visitor } = req.body;
 				const action = {
 					type,
 					appId,
@@ -333,12 +339,16 @@ export class AppUIKitInteractionApi {
 					triggerId,
 					payload: { ...payload, view },
 					user,
+					visitor,
 					room,
 				};
 
 				try {
 					await confirmViewFiles(view, req.user?._id);
-					const result = await orch.triggerEvent(AppEvents.IUIKitInteractionHandler, action);
+					const result = await orch.triggerEvent(
+						!visitor ? AppEvents.IUIKitInteractionHandler : AppEvents.IUIKitLivechatInteractionHandler,
+						action,
+					);
 
 					if (reportInvalidInteractionBlocks(result, { where: 'ui.interaction', appId, userId: req.user?._id })) {
 						res.send({});

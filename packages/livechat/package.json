@@ -20,6 +20,8 @@
 		"start": "cross-env TS_NODE_PROJECT=\"tsconfig.webpack.json\" webpack-dev-server --mode development",
 		"storybook": "storybook dev -p 9001 -c .storybook",
 		"stylelint": "stylelint 'src/**/*.scss'",
+		"test": "jest",
+		"testunit": "jest",
 		"typecheck": "tsc -p tsconfig.json --noEmit"
 	},
 	"browserslist": [
@@ -59,6 +61,7 @@
 		"@rocket.chat/ddp-client": "workspace:^",
 		"@rocket.chat/fuselage-hooks": "workspace:^",
 		"@rocket.chat/fuselage-tokens": "workspace:^",
+		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/logo": "workspace:~",
 		"@rocket.chat/storybook-dark-mode": "workspace:~",
 		"@rocket.chat/ui-contexts": "workspace:^",
@@ -80,7 +83,9 @@
 		"desvg-loader": "^0.1.0",
 		"file-loader": "^6.2.0",
 		"html-webpack-plugin": "~5.6.8",
+		"identity-obj-proxy": "~3.0.0",
 		"if-env": "^1.0.4",
+		"jest": "~30.5.2",
 		"lorem-ipsum": "^2.0.10",
 		"mini-css-extract-plugin": "~2.9.4",
 		"postcss": "8.5.29",

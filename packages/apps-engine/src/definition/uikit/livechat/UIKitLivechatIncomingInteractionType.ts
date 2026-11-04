@@ -1,6 +1,7 @@
 import type { IVisitor } from '../../livechat';
 import type { IMessage } from '../../messages';
 import type { IRoom } from '../../rooms';
+import type { IUIKitSurface } from '../IUIKitSurface';
 import type {
 	IUIKitIncomingInteractionMessageContainer,
 	IUIKitIncomingInteractionModalContainer,
@@ -22,4 +23,14 @@ export interface IUIKitLivechatBlockIncomingInteraction extends IUIKitLivechatBa
 	blockId: string;
 	room: IUIKitLivechatBaseIncomingInteraction['room'];
 	container: IUIKitIncomingInteractionModalContainer | IUIKitIncomingInteractionMessageContainer;
+}
+
+export interface IUIKitLivechatViewSubmitIncomingInteraction extends IUIKitLivechatBaseIncomingInteraction {
+	view: IUIKitSurface;
+	triggerId: string;
+}
+
+export interface IUIKitLivechatViewCloseIncomingInteraction extends IUIKitLivechatBaseIncomingInteraction {
+	view: IUIKitSurface;
+	isCleared: boolean;
 }
