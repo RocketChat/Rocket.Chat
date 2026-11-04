@@ -29,8 +29,8 @@ export const TaskCard = ({ className, task, context, index, surfaceRenderer }: T
 	const sources = task.sources?.filter((source) => UiKit.isSafeUrl(source.url)) ?? [];
 
 	return (
-		<Box className={className} display='flex' flexDirection='column' gap={4} padding={12}>
-			<Box display='flex' alignItems='center' gap={8}>
+		<Box className={className} display='flex' flexDirection='column' gap='x4' padding='x12'>
+			<Box display='flex' alignItems='center' gap='x8'>
 				<Icon name={status.icon} color={status.color} size='x20' />
 				{!task.hide_title && (
 					<Box flexGrow={1} fontScale='p2b' color='default'>
@@ -44,7 +44,7 @@ export const TaskCard = ({ className, task, context, index, surfaceRenderer }: T
 			{task.details && <RichTextBlock block={task.details} context={context} index={index} surfaceRenderer={surfaceRenderer} />}
 			{task.output && <RichTextBlock block={task.output} context={context} index={index} surfaceRenderer={surfaceRenderer} />}
 			{sources.length > 0 && (
-				<Box display='flex' alignItems='center' flexWrap='wrap' gap={8} fontScale='c1' color='hint'>
+				<Box display='flex' alignItems='center' flexWrap='wrap' gap='x8' fontScale='c1' color='hint'>
 					{t('Sources')}
 					{sources.map((source, sourceIndex) => (
 						<Box key={sourceIndex} is='a' href={source.url} target='_blank' rel='noopener noreferrer'>
