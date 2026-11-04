@@ -1,5 +1,7 @@
 import typia from 'typia';
 
+import type { Option } from '../blocks/Option.js';
+import type { OptionGroup } from '../blocks/OptionGroup.js';
 import type { View } from '../surfaces/View.js';
 
 export type MessageBlockActionUserInteraction = {
@@ -32,6 +34,46 @@ export type ViewBlockActionUserInteraction = {
 	};
 	rid?: string;
 	triggerId: string;
+};
+
+export type MessageBlockSuggestionUserInteraction = {
+	type: 'blockSuggestion';
+	actionId: string;
+	blockId: string;
+	appId: string;
+	/** What the user has typed so far. */
+	value: string;
+	container: {
+		type: 'message';
+		id: string;
+	};
+	mid: string;
+	tmid?: string;
+	rid: string;
+	triggerId: string;
+};
+
+export type ViewBlockSuggestionUserInteraction = {
+	type: 'blockSuggestion';
+	actionId: string;
+	blockId: string;
+	appId: string;
+	/** What the user has typed so far. */
+	value: string;
+	container: {
+		type: 'view';
+		id: string;
+	};
+	viewId: string;
+	rid?: string;
+	triggerId: string;
+};
+
+export type BlockSuggestionUserInteraction = MessageBlockSuggestionUserInteraction | ViewBlockSuggestionUserInteraction;
+
+export type BlockSuggestionResponse = {
+	options?: Option[];
+	option_groups?: OptionGroup[];
 };
 
 export type ViewClosedUserInteraction = {
@@ -117,6 +159,8 @@ export type RoomActionButtonUserInteraction = {
 export type UserInteraction =
 	| MessageBlockActionUserInteraction
 	| ViewBlockActionUserInteraction
+	| MessageBlockSuggestionUserInteraction
+	| ViewBlockSuggestionUserInteraction
 	| ViewClosedUserInteraction
 	| ViewSubmitUserInteraction
 	| MessageBoxActionButtonUserInteraction
@@ -126,6 +170,8 @@ export type UserInteraction =
 
 export const isMessageBlockActionUserInteraction = typia.createIs<MessageBlockActionUserInteraction>();
 export const isViewBlockActionUserInteraction = typia.createIs<ViewBlockActionUserInteraction>();
+export const isMessageBlockSuggestionUserInteraction = typia.createIs<MessageBlockSuggestionUserInteraction>();
+export const isViewBlockSuggestionUserInteraction = typia.createIs<ViewBlockSuggestionUserInteraction>();
 export const isViewClosedUserInteraction = typia.createIs<ViewClosedUserInteraction>();
 export const isViewSubmitUserInteraction = typia.createIs<ViewSubmitUserInteraction>();
 export const isMessageBoxActionButtonUserInteraction = typia.createIs<MessageBoxActionButtonUserInteraction>();

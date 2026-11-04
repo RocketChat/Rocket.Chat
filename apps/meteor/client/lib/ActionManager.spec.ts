@@ -167,3 +167,42 @@ describe('emitInteraction', () => {
 		expect(sdk.rest.post).not.toHaveBeenCalled();
 	});
 });
+
+describe('suggestOptions', () => {
+	const suggestion: Parameters<ActionManager['suggestOptions']>[1] = {
+		type: 'blockSuggestion',
+		actionId: 'a',
+		blockId: 'b',
+		appId,
+		value: 'qu',
+		container: { type: 'view', id: 'view-id' },
+		viewId: 'view-id',
+	};
+
+	beforeEach(() => {
+		jest.mocked(sdk.rest.post).mockReset();
+	});
+
+	it('returns the options the app answers with, without handling them as a server interaction', async () => {
+		const options = [{ text: { type: 'plain_text', text: 'Query' }, value: 'query' }];
+		jest.mocked(sdk.rest.post).mockResolvedValue({ options } as never);
+		const actionManager = new ActionManager({} as ContextType<typeof RouterContext>);
+		const handleServerInteraction = jest.spyOn(actionManager, 'handleServerInteraction');
+
+		await expect(actionManager.suggestOptions(appId, suggestion)).resolves.toEqual({ options });
+
+		expect(sdk.rest.post).toHaveBeenCalledWith(
+			`/apps/ui.interaction/${appId}`,
+			expect.objectContaining({ type: 'blockSuggestion', value: 'qu' }),
+		);
+		expect(handleServerInteraction).not.toHaveBeenCalled();
+	});
+
+	it.each(['../../v1/users.removeOtherTokens', '..', 'a/b', '%2e%2e', ''])('sends nothing for the app ID %p', async (invalidAppId) => {
+		const actionManager = new ActionManager({} as ContextType<typeof RouterContext>);
+
+		await expect(actionManager.suggestOptions(invalidAppId, suggestion)).resolves.toEqual({});
+
+		expect(sdk.rest.post).not.toHaveBeenCalled();
+	});
+});

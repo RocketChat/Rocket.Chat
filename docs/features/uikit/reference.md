@@ -14,6 +14,7 @@ Source: [`packages/ui-kit/src/blocks/layout/ActionsBlock.ts`](../../../packages/
 | --- | --- | --- | --- |
 | `type` | `'actions'` | yes |  |
 | `elements` | `readonly ( \| ButtonElement \| ChannelsSelectElement \| ConversationsSelectElement \| DatePickerElement \| DateTimePickerElement \| LinearScaleElement \| MultiChannelsSelectElement \| MultiConversationsSelectElement \| MultiStaticSelectElement \| MultiUsersSelectElement \| OverflowElement \| StaticSelectElement \| UsersSelectElement \| ToggleSwitchElement \| CheckboxElement \| RadioButtonElement \| RichTextInputElement \| TimePickerElement )[]` | yes |  |
+| `elements` | `readonly ( \| ButtonElement \| ChannelsSelectElement \| ConversationsSelectElement \| DatePickerElement \| DateTimePickerElement \| ExternalSelectElement \| LinearScaleElement \| MultiChannelsSelectElement \| MultiConversationsSelectElement \| MultiExternalSelectElement \| MultiStaticSelectElement \| MultiUsersSelectElement \| OverflowElement \| StaticSelectElement \| UsersSelectElement \| ToggleSwitchElement \| CheckboxElement \| RadioButtonElement \| TimePickerElement )[]` | yes |  |
 | `appId` | `string` | no |  |
 | `blockId` | `string` | no |  |
 
@@ -132,7 +133,7 @@ Source: [`packages/ui-kit/src/blocks/layout/InputBlock.ts`](../../../packages/ui
 | --- | --- | --- | --- |
 | `type` | `'input'` | yes |  |
 | `label` | `PlainText` | yes |  |
-| `element` | `\| ChannelsSelectElement \| ConversationsSelectElement \| DatePickerElement \| DateTimePickerElement \| LinearScaleElement \| MultiChannelsSelectElement \| MultiConversationsSelectElement \| MultiStaticSelectElement \| MultiUsersSelectElement \| PlainTextInputElement \| NumberInputElement \| EmailTextInputElement \| UrlTextInputElement \| StaticSelectElement \| UsersSelectElement \| CheckboxElement \| RadioButtonElement \| TimePickerElement \| ToggleSwitchElement` | yes |  |
+| `element` | `\| ChannelsSelectElement \| ConversationsSelectElement \| DatePickerElement \| DateTimePickerElement \| ExternalSelectElement \| LinearScaleElement \| MultiChannelsSelectElement \| MultiConversationsSelectElement \| MultiExternalSelectElement \| MultiStaticSelectElement \| MultiUsersSelectElement \| PlainTextInputElement \| NumberInputElement \| EmailTextInputElement \| UrlTextInputElement \| StaticSelectElement \| UsersSelectElement \| CheckboxElement \| RadioButtonElement \| TimePickerElement \| ToggleSwitchElement` | yes |  |
 | `hint` | `PlainText` | no |  |
 | `optional` | `boolean` | no |  |
 | `appId` | `string` | no |  |
@@ -215,7 +216,7 @@ Source: [`packages/ui-kit/src/blocks/layout/SectionBlock.ts`](../../../packages/
 | `type` | `'section'` | yes |  |
 | `text` | `TextObject` | no |  |
 | `fields` | `readonly TextObject[]` | no |  |
-| `accessory` | `ButtonElement \| ChannelsSelectElement \| CheckboxElement \| ConversationsSelectElement \| DatePickerElement \| ImageElement \| MultiChannelsSelectElement \| MultiConversationsSelectElement \| MultiStaticSelectElement \| MultiUsersSelectElement \| OverflowElement \| RadioButtonElement \| StaticSelectElement \| TimePickerElement \| UsersSelectElement` | no |  |
+| `accessory` | `ButtonElement \| ChannelsSelectElement \| CheckboxElement \| ConversationsSelectElement \| DatePickerElement \| ExternalSelectElement \| ImageElement \| MultiChannelsSelectElement \| MultiConversationsSelectElement \| MultiExternalSelectElement \| MultiStaticSelectElement \| MultiUsersSelectElement \| OverflowElement \| RadioButtonElement \| StaticSelectElement \| TimePickerElement \| UsersSelectElement` | no |  |
 | `appId` | `string` | no |  |
 | `blockId` | `string` | no |  |
 
@@ -390,6 +391,25 @@ Source: [`packages/ui-kit/src/blocks/elements/EmailTextInputElement.ts`](../../.
 | `confirm` | `ConfirmationDialog` | no |  |
 | `dispatchActionConfig` | `InputElementDispatchAction[]` | no |  |
 
+### `external_select`
+
+Source: [`packages/ui-kit/src/blocks/elements/ExternalSelectElement.ts`](../../../packages/ui-kit/src/blocks/elements/ExternalSelectElement.ts)
+
+The app provides the options as the user types: see [`blockSuggestion`](interactions.md#options-for-external-selects).
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'external_select'` | yes |  |
+| `placeholder` | `PlainText` | no |  |
+| `initial_option` | `Option` | no | Option selected when the view opens. |
+| `min_query_length` | `number` | no | Characters the user types before the app is asked for options. Defaults to 3. |
+| `focus_on_load` | `boolean` | no | Focuses the field when the view opens. |
+| `appId` | `string` | yes |  |
+| `blockId` | `string` | yes |  |
+| `actionId` | `string` | yes |  |
+| `confirm` | `ConfirmationDialog` | no |  |
+| `dispatchActionConfig` | `InputElementDispatchAction[]` | no |  |
+
 ### `feedback_buttons`
 
 Source: [`packages/ui-kit/src/blocks/elements/FeedbackButtonsElement.ts`](../../../packages/ui-kit/src/blocks/elements/FeedbackButtonsElement.ts)
@@ -507,6 +527,26 @@ Source: [`packages/ui-kit/src/blocks/elements/MultiConversationsSelectElement.ts
 | `max_selected_items` | `number` | no | Most conversations that can be selected. |
 | `default_to_current_conversation` | `boolean` | no | Starts with the conversation the view was opened from when nothing else is selected. Messages, contextual bars and modals use the room on screen; with no room open, or in a banner, nothing is preselected. |
 | `filter` | `{ include?: ('public' \| 'private' \| 'im' \| 'mpim')[] }` | no | Which kinds of conversation to list: `im` is a direct message with one person, `mpim` one with several. |
+| `focus_on_load` | `boolean` | no | Focuses the field when the view opens. |
+| `appId` | `string` | yes |  |
+| `blockId` | `string` | yes |  |
+| `actionId` | `string` | yes |  |
+| `confirm` | `ConfirmationDialog` | no |  |
+| `dispatchActionConfig` | `InputElementDispatchAction[]` | no |  |
+
+### `multi_external_select`
+
+Source: [`packages/ui-kit/src/blocks/elements/MultiExternalSelectElement.ts`](../../../packages/ui-kit/src/blocks/elements/MultiExternalSelectElement.ts)
+
+Like `external_select`, with several selections.
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'multi_external_select'` | yes |  |
+| `placeholder` | `PlainText` | no |  |
+| `initial_options` | `Option[]` | no | Options selected when the view opens. |
+| `min_query_length` | `number` | no | Characters the user types before the app is asked for options. Defaults to 3. |
+| `max_selected_items` | `number` | no | Most options that can be selected. |
 | `focus_on_load` | `boolean` | no | Focuses the field when the view opens. |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |

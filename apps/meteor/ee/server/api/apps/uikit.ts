@@ -262,6 +262,27 @@ export class AppUIKitInteractionApi {
 				break;
 			}
 
+			case 'blockSuggestion': {
+				const { type, actionId, blockId, value, container, triggerId, rid } = req.body;
+				const mid = 'mid' in req.body ? req.body.mid : undefined;
+
+				const user = orch.getConverters()?.get('users').convertToApp(req.user);
+				const message = mid ? await orch.getConverters()?.get('messages').convertById(mid) : undefined;
+				const room = rid ? await orch.getConverters()?.get('rooms').convertById(rid) : undefined;
+
+				const action = { type, appId, actionId, blockId, value, container, triggerId, user, message, room };
+
+				try {
+					const result = await orch.triggerEvent(AppEvents.IUIKitInteractionHandler, action);
+
+					res.send(result);
+				} catch (e) {
+					const error = e instanceof Error ? e.message : e;
+					res.status(500).send({ error });
+				}
+				break;
+			}
+
 			case 'viewClosed': {
 				const {
 					type,

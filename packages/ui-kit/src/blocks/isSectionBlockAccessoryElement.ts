@@ -10,9 +10,11 @@ export const isSectionBlockAccessoryElement = (block: BlockElement): block is Ex
 		case BlockElementType.CHECKBOX:
 		case BlockElementType.CONVERSATIONS_SELECT:
 		case BlockElementType.DATEPICKER:
+		case BlockElementType.EXTERNAL_SELECT:
 		case BlockElementType.IMAGE:
 		case BlockElementType.MULTI_CHANNELS_SELECT:
 		case BlockElementType.MULTI_CONVERSATIONS_SELECT:
+		case BlockElementType.MULTI_EXTERNAL_SELECT:
 		case BlockElementType.MULTI_STATIC_SELECT:
 		case BlockElementType.MULTI_USERS_SELECT:
 		case BlockElementType.OVERFLOW:

@@ -5,9 +5,11 @@ import type { ChannelsSelectElement } from '../elements/ChannelsSelectElement.js
 import type { CheckboxElement } from '../elements/CheckboxElement.js';
 import type { ConversationsSelectElement } from '../elements/ConversationsSelectElement.js';
 import type { DatePickerElement } from '../elements/DatePickerElement.js';
+import type { ExternalSelectElement } from '../elements/ExternalSelectElement.js';
 import type { ImageElement } from '../elements/ImageElement.js';
 import type { MultiChannelsSelectElement } from '../elements/MultiChannelsSelectElement.js';
 import type { MultiConversationsSelectElement } from '../elements/MultiConversationsSelectElement.js';
+import type { MultiExternalSelectElement } from '../elements/MultiExternalSelectElement.js';
 import type { MultiStaticSelectElement } from '../elements/MultiStaticSelectElement.js';
 import type { MultiUsersSelectElement } from '../elements/MultiUsersSelectElement.js';
 import type { OverflowElement } from '../elements/OverflowElement.js';
@@ -26,9 +28,11 @@ export type SectionBlock = LayoutBlockish<{
 		| CheckboxElement
 		| ConversationsSelectElement
 		| DatePickerElement
+		| ExternalSelectElement
 		| ImageElement
 		| MultiChannelsSelectElement
 		| MultiConversationsSelectElement
+		| MultiExternalSelectElement
 		| MultiStaticSelectElement
 		| MultiUsersSelectElement
 		| OverflowElement

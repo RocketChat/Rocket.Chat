@@ -57,6 +57,7 @@ import {
 	sectionWithRadioButtons,
 	sectionWithCheckbox,
 	sectionWithUsersSelect,
+	sectionWithExternalSelect,
 } from './section';
 import { table } from './table';
 import { video } from './video';
@@ -231,6 +232,10 @@ const BlocksTree: Item = [
 			{
 				label: 'users select',
 				payload: sectionWithUsersSelect,
+			},
+			{
+				label: 'external select',
+				payload: sectionWithExternalSelect,
 			},
 		],
 	},

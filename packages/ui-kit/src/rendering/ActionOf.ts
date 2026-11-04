@@ -7,11 +7,13 @@ import type { ConversationsSelectElement } from '../blocks/elements/Conversation
 import type { DatePickerElement } from '../blocks/elements/DatePickerElement.js';
 import type { DateTimePickerElement } from '../blocks/elements/DateTimePickerElement.js';
 import type { EmailTextInputElement } from '../blocks/elements/EmailTextInputElement.js';
+import type { ExternalSelectElement } from '../blocks/elements/ExternalSelectElement.js';
 import type { FeedbackButtonsElement } from '../blocks/elements/FeedbackButtonsElement.js';
 import type { FileInputElement } from '../blocks/elements/FileInputElement.js';
 import type { LinearScaleElement } from '../blocks/elements/LinearScaleElement.js';
 import type { MultiChannelsSelectElement } from '../blocks/elements/MultiChannelsSelectElement.js';
 import type { MultiConversationsSelectElement } from '../blocks/elements/MultiConversationsSelectElement.js';
+import type { MultiExternalSelectElement } from '../blocks/elements/MultiExternalSelectElement.js';
 import type { MultiStaticSelectElement } from '../blocks/elements/MultiStaticSelectElement.js';
 import type { MultiUsersSelectElement } from '../blocks/elements/MultiUsersSelectElement.js';
 import type { NumberInputElement } from '../blocks/elements/NumberInputElement.js';
@@ -38,34 +40,38 @@ export type ActionOf<TElement extends ActionableElement> = TElement extends Butt
 					? DateTimePickerElement['initial_date_time']
 					: TElement extends FileInputElement
 						? string[]
-						: TElement extends LinearScaleElement
-							? LinearScaleElement['initialValue']
-							: TElement extends MultiChannelsSelectElement
-								? Option['value'][]
-								: TElement extends MultiConversationsSelectElement
+						: TElement extends ExternalSelectElement
+							? Option['value']
+							: TElement extends LinearScaleElement
+								? LinearScaleElement['initialValue']
+								: TElement extends MultiChannelsSelectElement
 									? Option['value'][]
-									: TElement extends MultiStaticSelectElement
-										? MultiStaticSelectElement['initialValue']
-										: TElement extends MultiUsersSelectElement
+									: TElement extends MultiConversationsSelectElement
+										? Option['value'][]
+										: TElement extends MultiExternalSelectElement
 											? Option['value'][]
-											: TElement extends OverflowElement
-												? OverflowElement['options'][number]['value']
-												: TElement extends PlainTextInputElement
-													? PlainTextInputElement['initialValue']
-													: TElement extends NumberInputElement | EmailTextInputElement | UrlTextInputElement | FeedbackButtonsElement
-														? string
-														: TElement extends StaticSelectElement
-															? StaticSelectElement['initialValue']
-															: TElement extends UsersSelectElement
-																? Option['value']
-																: TElement extends ToggleSwitchElement
-																	? Option['value'][]
-																	: TElement extends RadioButtonElement
-																		? Option['value'] | undefined
-																		: TElement extends CheckboxElement
-																			? Option['value'][] | undefined
-																			: TElement extends TimePickerElement
-																				? TimePickerElement['initialTime']
-																				: TElement extends RichTextInputElement
-																					? RichTextBlock
-																					: never;
+											: TElement extends MultiStaticSelectElement
+												? MultiStaticSelectElement['initialValue']
+												: TElement extends MultiUsersSelectElement
+													? Option['value'][]
+													: TElement extends OverflowElement
+														? OverflowElement['options'][number]['value']
+														: TElement extends PlainTextInputElement
+															? PlainTextInputElement['initialValue']
+															: TElement extends NumberInputElement | EmailTextInputElement | UrlTextInputElement | FeedbackButtonsElement
+																? string
+																: TElement extends StaticSelectElement
+																	? StaticSelectElement['initialValue']
+																	: TElement extends UsersSelectElement
+																		? Option['value']
+																		: TElement extends ToggleSwitchElement
+																			? Option['value'][]
+																			: TElement extends RadioButtonElement
+																				? Option['value'] | undefined
+																				: TElement extends CheckboxElement
+																					? Option['value'][] | undefined
+																					: TElement extends TimePickerElement
+																						? TimePickerElement['initialTime']
+																						: TElement extends RichTextInputElement
+																							? RichTextBlock
+																							: never;
