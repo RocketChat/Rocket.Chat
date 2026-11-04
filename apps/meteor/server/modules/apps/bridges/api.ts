@@ -3,10 +3,10 @@ import { ApiBridge } from '@rocket.chat/apps/dist/server/bridges/ApiBridge';
 import type { AppApi } from '@rocket.chat/apps/dist/server/managers/AppApi';
 import type { RequestMethod } from '@rocket.chat/apps-engine/definition/accessors';
 import type { IApiRequest, IApiEndpoint, IApi } from '@rocket.chat/apps-engine/definition/api';
+import { Logger } from '@rocket.chat/logger';
 import type { Response, Request, IRouter, RequestHandler } from 'express';
 import express from 'express';
 import { Meteor } from 'meteor/meteor';
-import { Logger } from '@rocket.chat/logger';
 import { WebApp } from 'meteor/webapp';
 
 import { apiServer } from './router';
