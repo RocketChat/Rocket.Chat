@@ -19,24 +19,24 @@ Each surface has one list of accepted layout blocks, exported by `@rocket.chat/u
 
 ✅ means the block is in the surface's list, so the type, the `ui-kit` parser and the Fuselage renderer all accept it. The attachment surface has no Fuselage renderer, so its ✅ only means the block is in the list. The Livechat column covers message blocks in the Livechat widget.
 
-| Block | message | Livechat (message) | modal | banner | contextualBar | attachment |
-| --- | --- | --- | --- | --- | --- | --- |
-| `actions` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| `callout` | ✅ | — | ✅ | ✅ | ✅ | ✅ |
-| `context` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| `context_actions` | ✅ | — | — | — | — | — |
-| `divider` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| `header` | ✅ | — | ✅ | — | ✅ | — |
-| `image` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| `info_card` | ✅ | — | — | ✅ | — | — |
-| `input` | ✅ | — | ✅ | ✅ | ✅ | — |
-| `markdown` | ✅ | — | ✅ | — | ✅ | — |
-| `preview` | ✅ | — | ✅ | ✅ | ✅ | — |
-| `section` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| `tab_navigation` | — | — | — | — | ✅ | — |
-| `table` | ✅ | — | ✅ | — | ✅ | — |
-| `video` | ✅ | — | ✅ | — | ✅ | — |
-| `video_conf` | ✅ | — | — | — | — | — |
+| Block | message | Livechat (message) | modal | banner | contextualBar | home | attachment |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `actions` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `callout` | ✅ | — | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `context` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `context_actions` | ✅ | — | — | — | — | — | — |
+| `divider` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `header` | ✅ | — | ✅ | — | ✅ | ✅ | — |
+| `image` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `info_card` | ✅ | — | — | ✅ | — | — | — |
+| `input` | ✅ | — | ✅ | ✅ | ✅ | ✅ | — |
+| `markdown` | ✅ | — | ✅ | — | ✅ | ✅ | — |
+| `preview` | ✅ | — | ✅ | ✅ | ✅ | ✅ | — |
+| `section` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `tab_navigation` | — | — | — | — | ✅ | — | — |
+| `table` | ✅ | — | ✅ | — | ✅ | ✅ | — |
+| `video` | ✅ | — | ✅ | — | ✅ | ✅ | — |
+| `video_conf` | ✅ | — | — | — | — | — | — |
 
 `input` in a message has no view state to submit to: its elements only reach the app through `dispatchActionConfig` (see [interactions.md](interactions.md#when-an-element-sends-blockaction)).
 

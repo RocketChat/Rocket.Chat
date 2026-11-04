@@ -1,6 +1,7 @@
 import type { IUiKitView } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { UiKitViews } from '@rocket.chat/models';
+import type * as UiKit from '@rocket.chat/ui-kit';
 
 const logger = new Logger('UiKit');
 
@@ -11,6 +12,9 @@ const surfaceByInteractionType: Record<string, IUiKitView['type'] | undefined> =
 	'contextual_bar.update': 'contextual_bar',
 };
 
+/** One home per user and app, so publishing again replaces it. */
+const homeViewId = (appId: string, userId: string): string => `home:${appId}:${userId}`;
+
 type ViewLike = { id?: unknown; state?: unknown };
 
 const isObject = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null;
@@ -18,6 +22,15 @@ const isObject = (value: unknown): value is Record<string, unknown> => typeof va
 /** Keeps the modal or contextual bar an app opens or updates for a user, so its submit and close can carry the app's copy. */
 export const recordInteractionView = async (interaction: unknown, appId: string, userId: string | undefined): Promise<void> => {
 	if (!userId || !isObject(interaction) || typeof interaction.type !== 'string' || !isObject(interaction.view)) {
+		return;
+	}
+
+	if (interaction.type === 'home.update') {
+		try {
+			await UiKitViews.saveHomeView({ _id: homeViewId(appId, userId), appId, userId, view: interaction.view as UiKit.HomeView });
+		} catch (error) {
+			logger.error({ msg: 'Could not record a UiKit home view', appId, err: error });
+		}
 		return;
 	}
 

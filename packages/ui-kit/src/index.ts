@@ -80,6 +80,7 @@ export * from './surfaces/View';
 export * from './surfaces/attachment';
 export * from './surfaces/banner';
 export * from './surfaces/contextualBar';
+export * from './surfaces/home';
 export * from './surfaces/message';
 export * from './surfaces/modal';
 

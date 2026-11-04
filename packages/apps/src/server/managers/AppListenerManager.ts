@@ -279,6 +279,7 @@ export class AppListenerManager {
 		});
 
 		this.defaultHandlers.set('executeViewClosedHandler', { success: true });
+		this.defaultHandlers.set('executeAppHomeOpenedHandler', { success: true });
 	}
 
 	public registerListeners(app: ProxiedApp): void {
@@ -1019,6 +1020,12 @@ export class AppListenerManager {
 						user,
 					})
 					.catch(handleError(method));
+			}
+			case UIKitIncomingInteractionType.APP_HOME_OPENED: {
+				const method = 'executeAppHomeOpenedHandler';
+				const { view } = data.payload as { view?: IUIKitSurface };
+
+				return app.call(method, { appId, user, triggerId, view }).catch(handleError(method));
 			}
 			case 'actionButton': {
 				const method = 'executeActionButtonHandler';

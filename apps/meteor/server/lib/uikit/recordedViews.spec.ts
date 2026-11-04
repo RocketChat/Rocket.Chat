@@ -1,12 +1,14 @@
 import { recordInteractionView, withRecordedView } from './recordedViews';
 
 const mockSaveView = jest.fn();
+const mockSaveHomeView = jest.fn();
 const mockFindOneByIdForUser = jest.fn();
 
 jest.mock('@rocket.chat/logger', () => ({ Logger: jest.fn(() => ({ debug: jest.fn(), error: jest.fn() })) }));
 jest.mock('@rocket.chat/models', () => ({
 	UiKitViews: {
 		saveView: (...args: unknown[]) => mockSaveView(...args),
+		saveHomeView: (...args: unknown[]) => mockSaveHomeView(...args),
 		findOneByIdForUser: (...args: unknown[]) => mockFindOneByIdForUser(...args),
 	},
 }));
@@ -15,6 +17,7 @@ const appView = { id: 'view', title: { type: 'plain_text', text: 'Form' }, block
 
 beforeEach(() => {
 	mockSaveView.mockReset();
+	mockSaveHomeView.mockReset();
 	mockFindOneByIdForUser.mockReset();
 });
 
@@ -31,6 +34,15 @@ describe('recordInteractionView', () => {
 		await recordInteractionView({ type: 'contextual_bar.update', view: { id: 'view', blocks: [] } }, 'app', 'user');
 
 		expect(mockSaveView).toHaveBeenCalledWith(expect.objectContaining({ type: 'contextual_bar', view: { ...appView, blocks: [] } }));
+	});
+
+	it('records the home an app publishes as the one home of that user and app', async () => {
+		const home = { appId: 'app', id: 'home', blocks: [] };
+
+		await recordInteractionView({ type: 'home.update', appId: 'app', view: home }, 'app', 'user');
+
+		expect(mockSaveHomeView).toHaveBeenCalledWith({ _id: 'home:app:user', appId: 'app', userId: 'user', view: home });
+		expect(mockSaveView).not.toHaveBeenCalled();
 	});
 
 	it.each([

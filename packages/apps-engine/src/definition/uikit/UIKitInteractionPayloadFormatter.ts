@@ -2,6 +2,7 @@ import { v1 as uuid } from 'uuid';
 
 import type {
 	IUIKitContextualBarInteraction,
+	IUIKitHomeInteraction,
 	IUIKitErrorInteraction,
 	IUIKitInteraction,
 	IUIKitModalInteraction,
@@ -9,7 +10,7 @@ import type {
 import { UIKitInteractionType } from './IUIKitInteractionType';
 import type { IUIKitSurface } from './IUIKitSurface';
 import { UIKitSurfaceType } from './IUIKitSurface';
-import type { IUIKitContextualBarViewParam, IUIKitModalViewParam } from './UIKitInteractionResponder';
+import type { IUIKitContextualBarViewParam, IUIKitHomeViewParam, IUIKitModalViewParam } from './UIKitInteractionResponder';
 import type { IUIKitErrorInteractionParam } from '../accessors/IUIController';
 
 function isModalInteraction(type: IUIKitInteraction['type']): type is IUIKitModalInteraction['type'] {
@@ -61,6 +62,24 @@ export function formatContextualBarInteraction(
 			id: view.id ? view.id : uuid(),
 			...view,
 			showIcon: true,
+		} as IUIKitSurface,
+	};
+}
+
+export function formatHomeInteraction(view: IUIKitHomeViewParam, context: IUIKitInteraction): IUIKitHomeInteraction {
+	if (context.type !== UIKitInteractionType.HOME_UPDATE) {
+		throw new Error(`Invalid type "${context.type}" for home interaction`);
+	}
+
+	return {
+		type: context.type,
+		triggerId: context.triggerId,
+		appId: context.appId,
+		view: {
+			appId: context.appId,
+			type: UIKitSurfaceType.HOME,
+			id: view.id ? view.id : uuid(),
+			...view,
 		} as IUIKitSurface,
 	};
 }

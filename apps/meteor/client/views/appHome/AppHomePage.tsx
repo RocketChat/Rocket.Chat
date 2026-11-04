@@ -1,0 +1,48 @@
+import { Box, States, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
+import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
+import { useRouteParameter } from '@rocket.chat/ui-contexts';
+import { useTranslation } from 'react-i18next';
+
+import UiKitHome from './UiKitHome';
+import { useAppHome } from './useAppHome';
+import PageSkeleton from '../../components/PageSkeleton';
+
+export type AppHomeProps = {
+	appId: string;
+};
+
+export const AppHome = ({ appId }: AppHomeProps) => {
+	const { t } = useTranslation();
+	const { view, isPending, isError } = useAppHome(appId);
+
+	if (isPending) {
+		return <PageSkeleton />;
+	}
+
+	return (
+		<Page>
+			<PageHeader title={t('Home')} />
+			<PageScrollableContentWithShadow>
+				{view ? (
+					<UiKitHome key={view.id} initialView={view} />
+				) : (
+					<Box display='flex' justifyContent='center'>
+						<States>
+							<StatesIcon name={isError ? 'warning' : 'home'} variation={isError ? 'danger' : undefined} />
+							<StatesTitle>{isError ? t('App_Home_error') : t('App_Home_empty_title')}</StatesTitle>
+							{!isError && <StatesSubtitle>{t('App_Home_empty_description')}</StatesSubtitle>}
+						</States>
+					</Box>
+				)}
+			</PageScrollableContentWithShadow>
+		</Page>
+	);
+};
+
+const AppHomePage = () => {
+	const appId = useRouteParameter('appId');
+
+	return appId ? <AppHome key={appId} appId={appId} /> : null;
+};
+
+export default AppHomePage;

@@ -8,10 +8,12 @@ import { UIKitInteractionType, UIKitSurfaceType } from '@rocket.chat/apps-engine
 import {
 	formatContextualBarInteraction,
 	formatErrorInteraction,
+	formatHomeInteraction,
 	formatModalInteraction,
 } from '@rocket.chat/apps-engine/definition/uikit/UIKitInteractionPayloadFormatter';
 import type {
 	IUIKitContextualBarViewParam,
+	IUIKitHomeViewParam,
 	IUIKitModalViewParam,
 } from '@rocket.chat/apps-engine/definition/uikit/UIKitInteractionResponder';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
@@ -68,6 +70,8 @@ export class UIController implements IUIController {
 				return this.openContextualBar(viewWithIds, context, user);
 			case UIKitSurfaceType.MODAL:
 				return this.openModal(viewWithIds, context, user);
+			case UIKitSurfaceType.HOME:
+				return this.publishHome(viewWithIds, context, user);
 		}
 	}
 
@@ -80,6 +84,8 @@ export class UIController implements IUIController {
 				return this.openContextualBar(viewWithIds, context, user, true);
 			case UIKitSurfaceType.MODAL:
 				return this.openModal(viewWithIds, context, user, true);
+			case UIKitSurfaceType.HOME:
+				return this.publishHome(viewWithIds, context, user);
 		}
 	}
 
@@ -96,6 +102,23 @@ export class UIController implements IUIController {
 			'doNotifyUser',
 			user,
 			formatErrorInteraction(errorInteraction, interactionContext),
+			'APP_ID',
+		);
+	}
+
+	private publishHome(view: IUIKitHomeViewParam, context: IUIKitInteractionParam, user: IUser): Promise<void> {
+		const interactionContext = {
+			...context,
+			type: UIKitInteractionType.HOME_UPDATE,
+			appId: this.appId,
+		};
+
+		return bridgeCall<void>(
+			this.senderFn,
+			'getUiInteractionBridge',
+			'doNotifyUser',
+			user,
+			formatHomeInteraction(view, interactionContext),
 			'APP_ID',
 		);
 	}
