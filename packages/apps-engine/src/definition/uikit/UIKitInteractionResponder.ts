@@ -1,4 +1,5 @@
 import type {
+	IUIKitBlockSuggestionResponse,
 	IUIKitContextualBarResponse,
 	IUIKitErrorResponse,
 	IUIKitModalClearResponse,
@@ -95,6 +96,13 @@ export class UIKitInteractionResponder {
 		return {
 			success: true,
 			...formatContextualBarInteraction(viewData, { appId, triggerId, type: UIKitInteractionType.CONTEXTUAL_BAR_UPDATE }),
+		};
+	}
+
+	public optionsResponse({ options, option_groups }: IUIKitBlockSuggestionResponse): IUIKitBlockSuggestionResponse {
+		return {
+			...(options && { options }),
+			...(option_groups && { option_groups }),
 		};
 	}
 

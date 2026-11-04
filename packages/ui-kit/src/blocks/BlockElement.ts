@@ -6,6 +6,7 @@ import type { DatePickerElement } from './elements/DatePickerElement.js';
 import type { DateTimePickerElement } from './elements/DateTimePickerElement.js';
 import type { EmailTextInputElement } from './elements/EmailTextInputElement.js';
 import type { ExperimentalTabElement } from './elements/ExperimentalTabElement.js';
+import type { ExternalSelectElement } from './elements/ExternalSelectElement.js';
 import type { FeedbackButtonsElement } from './elements/FeedbackButtonsElement.js';
 import type { FileInputElement } from './elements/FileInputElement.js';
 import type { IconButtonElement } from './elements/IconButtonElement.js';
@@ -14,6 +15,7 @@ import type { ImageElement } from './elements/ImageElement.js';
 import type { LinearScaleElement } from './elements/LinearScaleElement.js';
 import type { MultiChannelsSelectElement } from './elements/MultiChannelsSelectElement.js';
 import type { MultiConversationsSelectElement } from './elements/MultiConversationsSelectElement.js';
+import type { MultiExternalSelectElement } from './elements/MultiExternalSelectElement.js';
 import type { MultiStaticSelectElement } from './elements/MultiStaticSelectElement.js';
 import type { MultiUsersSelectElement } from './elements/MultiUsersSelectElement.js';
 import type { NumberInputElement } from './elements/NumberInputElement.js';
@@ -34,9 +36,11 @@ export type BlockElement =
 	| DatePickerElement
 	| DateTimePickerElement
 	| ImageElement
+	| ExternalSelectElement
 	| LinearScaleElement
 	| MultiChannelsSelectElement
 	| MultiConversationsSelectElement
+	| MultiExternalSelectElement
 	| MultiStaticSelectElement
 	| MultiUsersSelectElement
 	| OverflowElement

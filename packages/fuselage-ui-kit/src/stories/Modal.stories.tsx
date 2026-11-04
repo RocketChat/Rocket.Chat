@@ -19,6 +19,12 @@ import { action } from 'storybook/actions';
 import { UiKitContext, UiKitModal } from '..';
 import * as payloads from './payloads';
 
+const suggestProjects = async ({ value }: { value: string }): Promise<UiKit.BlockSuggestionResponse> => ({
+	options: ['Rocket.Chat', 'Rocket.Chat Apps', 'Rocketeer', 'Livechat', 'Omnichannel']
+		.filter((name) => name.toLowerCase().includes(value.toLowerCase()))
+		.map((name) => ({ text: { type: 'plain_text', text: name }, value: name.toLowerCase().replace(/\W+/g, '-') })),
+});
+
 const DemoModal = ({ children, visible }: { children?: ReactNode; visible: boolean }) => (
 	<AnimatedVisibility visibility={visible ? AnimatedVisibility.VISIBLE : AnimatedVisibility.HIDDEN}>
 		<Modal open={visible}>
@@ -62,6 +68,7 @@ export default {
 					action: action('action'),
 					updateState: action('updateState'),
 					values: {},
+					suggest: suggestProjects,
 					errors,
 				}}
 			>
@@ -149,6 +156,10 @@ export const InputWithUrlTextInput = createStory(payloads.inputWithUrlTextInput,
 export const InputWithMultiUsersSelect = createStory(payloads.inputWithMultiUsersSelect, {
 	'input-0': 'Error',
 });
+
+export const InputWithExternalSelect = createStory(payloads.inputWithExternalSelect);
+
+export const InputWithMultiExternalSelect = createStory(payloads.inputWithMultiExternalSelect);
 
 export const InputWithConversationsSelect = createStory(payloads.inputWithConversationsSelect, {
 	'input-0': 'Error',

@@ -77,6 +77,7 @@ export enum AppMethod {
 	EXECUTEPOSTEXTERNALCOMPONENTCLOSED = 'executePostExternalComponentClosed',
 	// Blockit handlers
 	UIKIT_BLOCK_ACTION = 'executeBlockActionHandler',
+	UIKIT_BLOCK_SUGGESTION = 'executeBlockSuggestionHandler',
 	UIKIT_VIEW_SUBMIT = 'executeViewSubmitHandler',
 	UIKIT_VIEW_CLOSE = 'executeViewClosedHandler',
 	UIKIT_ACTION_BUTTON = 'executeActionButtonHandler',

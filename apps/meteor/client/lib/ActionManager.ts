@@ -115,6 +115,20 @@ export class ActionManager implements IActionManager {
 		);
 	}
 
+	public async suggestOptions(
+		appId: string,
+		interaction: DistributiveOmit<UiKit.BlockSuggestionUserInteraction, 'triggerId'>,
+	): Promise<UiKit.BlockSuggestionResponse> {
+		if (!isValidAppId(appId)) {
+			return {};
+		}
+
+		return sdk.rest.post(`/apps/ui.interaction/${appId}`, {
+			...interaction,
+			triggerId: this.generateTriggerId(appId),
+		}) as Promise<UiKit.BlockSuggestionResponse>;
+	}
+
 	protected async runWithTimeout<T>(task: () => Promise<T>, details: { triggerId: string; appId: string; viewId?: string }) {
 		this.notifyBusy();
 

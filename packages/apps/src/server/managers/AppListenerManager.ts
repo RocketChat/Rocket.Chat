@@ -23,7 +23,12 @@ import { AppInterface, AppMethod } from '@rocket.chat/apps-engine/definition/met
 import type { IRoom, IRoomUserJoinedContext, IRoomUserLeaveContext } from '@rocket.chat/apps-engine/definition/rooms';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import { UIActionButtonContext } from '@rocket.chat/apps-engine/definition/ui';
-import type { IUIKitResponse, IUIKitSurface, UIKitIncomingInteraction } from '@rocket.chat/apps-engine/definition/uikit';
+import type {
+	IUIKitBlockSuggestionResponse,
+	IUIKitResponse,
+	IUIKitSurface,
+	UIKitIncomingInteraction,
+} from '@rocket.chat/apps-engine/definition/uikit';
 import { UIKitIncomingInteractionType } from '@rocket.chat/apps-engine/definition/uikit';
 import { isUIKitIncomingInteractionActionButtonMessageBox } from '@rocket.chat/apps-engine/definition/uikit/IUIKitIncomingInteractionActionButton';
 import type {
@@ -158,7 +163,7 @@ export interface IListenerExecutor {
 	};
 	[AppInterface.IUIKitInteractionHandler]: {
 		args: [UIKitIncomingInteraction];
-		result: IUIKitResponse;
+		result: IUIKitResponse | IUIKitBlockSuggestionResponse;
 	};
 	[AppInterface.IUIKitLivechatInteractionHandler]: {
 		args: [IUIKitLivechatIncomingInteraction];
@@ -259,7 +264,7 @@ export interface IListenerExecutor {
 export class AppListenerManager {
 	private listeners: Map<string, Array<string>>;
 
-	private defaultHandlers = new Map<string, IUIKitResponse>();
+	private defaultHandlers = new Map<string, IUIKitResponse | IUIKitBlockSuggestionResponse>();
 
 	/**
 	 * Locked events are those who are listed in an app's
@@ -279,6 +284,7 @@ export class AppListenerManager {
 		});
 
 		this.defaultHandlers.set('executeViewClosedHandler', { success: true });
+		this.defaultHandlers.set('executeBlockSuggestionHandler', { options: [] });
 	}
 
 	public registerListeners(app: ProxiedApp): void {
@@ -947,7 +953,7 @@ export class AppListenerManager {
 		}
 	}
 
-	private async executeUIKitInteraction(data: UIKitIncomingInteraction): Promise<IUIKitResponse> {
+	private async executeUIKitInteraction(data: UIKitIncomingInteraction): Promise<IUIKitResponse | IUIKitBlockSuggestionResponse> {
 		const { appId } = data;
 
 		const app = this.manager.getOneById(appId);
@@ -985,6 +991,23 @@ export class AppListenerManager {
 						room: data.room,
 						triggerId,
 						value,
+						message: data.message,
+						container: data.container,
+					})
+					.catch(handleError(method));
+			}
+			case 'blockSuggestion': {
+				const method = 'executeBlockSuggestionHandler';
+
+				return app
+					.call<IUIKitBlockSuggestionResponse>(method, {
+						appId,
+						actionId,
+						blockId: data.blockId,
+						value: data.value,
+						user,
+						room: data.room,
+						triggerId,
 						message: data.message,
 						container: data.container,
 					})
