@@ -777,6 +777,13 @@ Source: [`packages/ui-kit/src/surfaces/modal/ModalView.ts`](../../../packages/ui
 | `close` | `ButtonElement` | no |  |
 | `submit` | `ButtonElement` | no |  |
 | `blocks` | `ModalSurfaceLayout` | yes |  |
+| `private_metadata` | `string` | no | Data the app gets back on submit and close. Kept on the server; whatever the client sends for it is ignored. |
+| `callback_id` | `string` | no | An id the app picks to recognize the view in its handlers. |
+| `external_id` | `string` | no | An id the app picks, unique among the views it opened for a user. An update that carries it, and no known `id`, updates that view. |
+| `submit_disabled` | `boolean` | no | Disables the submit button. |
+| `hash` | `string` | no | Set by the server on every save. An update that carries a different `hash` is stale and is dropped. |
+| `clearOnClose` | `boolean` | no | Closing the view closes every modal of the app (modal only). |
+| `notifyOnClose` | `boolean` | no | Whether closing the view sends `viewClosed` to the app. Defaults to `true`, so views that do not set it keep notifying. |
 
 ### BannerView
 
@@ -804,6 +811,13 @@ Source: [`packages/ui-kit/src/surfaces/contextualBar/ContextualBarView.ts`](../.
 | `close` | `ButtonElement` | no |  |
 | `submit` | `ButtonElement` | no |  |
 | `blocks` | `ContextualBarSurfaceLayout` | yes |  |
+| `private_metadata` | `string` | no | Data the app gets back on submit and close. Kept on the server; whatever the client sends for it is ignored. |
+| `callback_id` | `string` | no | An id the app picks to recognize the view in its handlers. |
+| `external_id` | `string` | no | An id the app picks, unique among the views it opened for a user. An update that carries it, and no known `id`, updates that view. |
+| `submit_disabled` | `boolean` | no | Disables the submit button. |
+| `hash` | `string` | no | Set by the server on every save. An update that carries a different `hash` is stale and is dropped. |
+| `clearOnClose` | `boolean` | no | Closing the view closes every modal of the app (modal only). |
+| `notifyOnClose` | `boolean` | no | Whether closing the view sends `viewClosed` to the app. Defaults to `true`, so views that do not set it keep notifying. |
 
 ## Size limits
 

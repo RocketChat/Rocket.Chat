@@ -4,6 +4,8 @@ export enum UIKitInteractionType {
 	MODAL_OPEN = 'modal.open',
 	MODAL_CLOSE = 'modal.close',
 	MODAL_UPDATE = 'modal.update',
+	MODAL_PUSH = 'modal.push',
+	MODAL_CLEAR = 'modal.clear',
 	CONTEXTUAL_BAR_OPEN = 'contextual_bar.open',
 	CONTEXTUAL_BAR_CLOSE = 'contextual_bar.close',
 	CONTEXTUAL_BAR_UPDATE = 'contextual_bar.update',
@@ -27,8 +29,21 @@ export interface IUIKitErrorInteraction extends IUIKitInteraction {
 }
 
 export interface IUIKitModalInteraction extends IUIKitInteraction {
-	type: UIKitInteractionType.MODAL_OPEN | UIKitInteractionType.MODAL_UPDATE | UIKitInteractionType.MODAL_CLOSE;
+	type:
+		| UIKitInteractionType.MODAL_OPEN
+		| UIKitInteractionType.MODAL_UPDATE
+		| UIKitInteractionType.MODAL_PUSH
+		| UIKitInteractionType.MODAL_CLOSE;
 	view: IUIKitSurface;
+}
+
+export interface IUIKitModalCloseInteraction extends IUIKitInteraction {
+	type: UIKitInteractionType.MODAL_CLOSE;
+	viewId?: string;
+}
+
+export interface IUIKitModalClearInteraction extends IUIKitInteraction {
+	type: UIKitInteractionType.MODAL_CLEAR;
 }
 
 export interface IUIKitContextualBarInteraction extends IUIKitInteraction {
@@ -37,5 +52,7 @@ export interface IUIKitContextualBarInteraction extends IUIKitInteraction {
 }
 
 export interface IUIKitModalResponse extends IUIKitModalInteraction, IUIKitResponse {}
+export interface IUIKitModalCloseResponse extends IUIKitModalCloseInteraction, IUIKitResponse {}
+export interface IUIKitModalClearResponse extends IUIKitModalClearInteraction, IUIKitResponse {}
 export interface IUIKitContextualBarResponse extends IUIKitContextualBarInteraction, IUIKitResponse {}
 export interface IUIKitErrorResponse extends IUIKitErrorInteraction, IUIKitResponse {}
