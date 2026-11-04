@@ -130,11 +130,11 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 
 			if (!result) {
 				queueLogger.debug({ msg: 'Inquiry not taken. Unlocking and re-queueing', inquiry: nextInquiry._id });
-				return await LivechatInquiry.unlock(nextInquiry._id);
+				return await LivechatInquiry.unlock(nextInquiry._id, nextInquiry.lockedAt);
 			}
 
 			queueLogger.debug({ msg: 'Inquiry taken successfully. Unlocking', inquiry: nextInquiry._id });
-			await LivechatInquiry.unlock(nextInquiry._id);
+			await LivechatInquiry.unlock(nextInquiry._id, nextInquiry.lockedAt);
 			queueLogger.debug({
 				msg: 'Inquiry processed',
 				inquiry: nextInquiry._id,

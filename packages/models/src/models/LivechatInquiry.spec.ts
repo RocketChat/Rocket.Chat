@@ -143,6 +143,25 @@ describe('LivechatInquiryRaw queue lock', () => {
 		expect((await model.takeInquiry(_id, current.lockedAt)).modifiedCount).toBe(1);
 	});
 
+	it('releases the lock for its holder, so an inquiry nobody could serve is offered again', async () => {
+		const _id = await insertQueuedInquiry();
+		const locked = await acquire();
+
+		expect((await model.unlock(_id, locked.lockedAt)).modifiedCount).toBe(1);
+		await acquire();
+	});
+
+	it('does not let a worker whose lock expired release the current holder lock', async () => {
+		const _id = await insertQueuedInquiry();
+		const expired = await acquire();
+		advance(LOCK_TIMEOUT_MS);
+		const current = await acquire();
+
+		expect((await model.unlock(_id, expired.lockedAt)).modifiedCount).toBe(0);
+		expect((await findStored(_id))?.lockedAt).toEqual(current.lockedAt);
+		expect(await model.findNextAndLock(SORT, null)).toBeNull();
+	});
+
 	it('takes an inquiry that was re-queued while still holding the lock of a failed assignment', async () => {
 		const _id = await insertQueuedInquiry();
 		const first = await acquire();
