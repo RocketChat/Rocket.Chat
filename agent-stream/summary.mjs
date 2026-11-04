@@ -70,11 +70,11 @@ for (const deployment of [...new Set(results.map((r) => r.deployment))].sort()) 
 					3,
 				),
 				fmt(
-					m((r) => r.delivered && netCpuMs(r) / r.delivered),
+					m((r) => (r.delivered ? netCpuMs(r) / r.delivered : null)),
 					3,
 				),
 				fmt(
-					m((r) => r.replies && netCpuMs(r) / r.replies),
+					m((r) => (r.replies ? netCpuMs(r) / r.replies : null)),
 					0,
 				),
 				perInstance(runs, (r) => r.server.idleCpuMsPerSec ?? []),
