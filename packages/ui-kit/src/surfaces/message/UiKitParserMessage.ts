@@ -4,6 +4,7 @@ import { SurfaceRenderer } from '../../rendering/SurfaceRenderer.js';
 /** Layout blocks a message accepts; every message renderer must allow exactly these. */
 export const messageSurfaceLayoutBlockTypes = [
 	'actions',
+	'alert',
 	'callout',
 	'context',
 	'context_actions',

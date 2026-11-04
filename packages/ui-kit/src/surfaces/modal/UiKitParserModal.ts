@@ -4,6 +4,7 @@ import { SurfaceRenderer } from '../../rendering/SurfaceRenderer.js';
 /** Layout blocks a modal accepts; every modal renderer must allow exactly these. */
 export const modalSurfaceLayoutBlockTypes = [
 	'actions',
+	'alert',
 	'callout',
 	'context',
 	'divider',
