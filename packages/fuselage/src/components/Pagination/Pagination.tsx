@@ -19,7 +19,7 @@ export type PaginationProps = {
 const defaultItemsPerPageLabel = () => 'Items per page:';
 
 const defaultShowingResultsLabel = ({ count, current, itemsPerPage }: { count: number; current: number; itemsPerPage: ItemsPerPage }) =>
-	`Showing results ${current + 1} - ${Math.min(current + itemsPerPage, count)} of ${count}`;
+	`Showing results ${count === 0 ? 0 : current + 1} - ${Math.min(current + itemsPerPage, count)} of ${count}`;
 
 const itemsPerPageOptions = [25, 50, 100] as const;
 
@@ -106,7 +106,7 @@ const Pagination = ({
 					<li className='rcx-pagination__list-item'>
 						<button
 							className='rcx-box rcx-box--full rcx-pagination__back'
-							disabled={currentPage === 0}
+							disabled={pages === 0 || currentPage <= 0}
 							aria-label='Previous page'
 							onClick={handleSetPageLinkClick(currentPage - 1)}
 						>
@@ -132,7 +132,7 @@ const Pagination = ({
 					<li className='rcx-pagination__list-item'>
 						<button
 							className='rcx-box rcx-box--full rcx-pagination__forward'
-							disabled={currentPage === pages - 1}
+							disabled={pages === 0 || currentPage >= pages - 1}
 							aria-label='Next page'
 							onClick={handleSetPageLinkClick(currentPage + 1)}
 						>
