@@ -50,9 +50,10 @@ const CarouselBlock = ({ className, block, surfaceRenderer }: CarouselBlockProps
 
 	return (
 		<Box className={className} display='flex' alignItems='center' gap='x4'>
+			{/* The chevron icons are drawn the other way round from their names, as the navbar's history buttons also account for. */}
 			<IconButton
 				size='small'
-				icon='chevron-left'
+				icon='chevron-right'
 				title={t('UIKit_Carousel_previous')}
 				disabled={edges.start}
 				onClick={() => scrollBy(-1)}
@@ -89,7 +90,7 @@ const CarouselBlock = ({ className, block, surfaceRenderer }: CarouselBlockProps
 					</Box>
 				))}
 			</Box>
-			<IconButton size='small' icon='chevron-right' title={t('UIKit_Carousel_next')} disabled={edges.end} onClick={() => scrollBy(1)} />
+			<IconButton size='small' icon='chevron-left' title={t('UIKit_Carousel_next')} disabled={edges.end} onClick={() => scrollBy(1)} />
 		</Box>
 	);
 };
