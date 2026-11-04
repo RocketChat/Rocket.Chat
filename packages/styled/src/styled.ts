@@ -1,5 +1,5 @@
 import { attachRules, createClassName, css, escapeName, transpile } from '@rocket.chat/css-in-js';
-import type { JSX, FunctionComponent } from 'react';
+import type { JSX, ReactElement } from 'react';
 import { createElement, Fragment, useDebugValue, useInsertionEffect } from 'react';
 
 import { useOwnerDocument } from './OwnerDocument';
@@ -11,13 +11,10 @@ export const attachClassName = <P extends { className?: string }>(props: P, addi
 
 const styled =
 	<K extends keyof JSX.IntrinsicElements, P>(type: K, filter?: (p: JSX.IntrinsicElements[K] & P) => JSX.IntrinsicElements[K]) =>
-	(
-		slices: TemplateStringsArray,
-		...values: readonly (string | ((props: P) => string))[]
-	): FunctionComponent<JSX.IntrinsicElements[K] & P> => {
+	(slices: TemplateStringsArray, ...values: readonly (string | ((props: P) => string))[]) => {
 		const cssFn = css(slices, ...values);
 
-		const StyledComponent: FunctionComponent<JSX.IntrinsicElements[K] & P> =
+		const StyledComponent: (props: JSX.IntrinsicElements[K] & P) => ReactElement =
 			typeof window === 'undefined'
 				? (props) => {
 						const content = cssFn(props);
@@ -55,9 +52,7 @@ const styled =
 						return createElement(type, filter ? filter(newProps) : newProps);
 					};
 
-		StyledComponent.displayName = `StyledComponent(${type})`;
-
-		return StyledComponent;
+		return Object.assign(StyledComponent, { displayName: `StyledComponent(${type})` });
 	};
 
 export default styled;
