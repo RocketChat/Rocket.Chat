@@ -3535,7 +3535,9 @@ describe('[Rooms]', () => {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body.files.map(({ _id }: { _id: string }) => _id)).to.not.include(unsentFileId);
+					expect(res.body).to.have.property('files').and.to.be.an('array').and.to.have.lengthOf(1);
+					expect(res.body.files[0]).to.have.property('_id', sentFileId);
+					expect(res.body).to.have.property('total', 1);
 				});
 
 			await deleteRoom({ type: 'p', roomId });
