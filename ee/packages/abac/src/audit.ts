@@ -3,6 +3,7 @@ import type {
 	ExtractDataToParams,
 	IAbacAttributeDefinition,
 	IAuditServerActor,
+	IAuditServerUserActor,
 	IServerEvents,
 	AbacAuditServerEventKey,
 	AbacAttributeDefinitionChangeType,
@@ -34,6 +35,14 @@ async function audit<K extends AbacAuditServerEventKey>(event: K, payload: Event
 	);
 }
 
+const toUserActor = (actor: AbacActor): IAuditServerUserActor => ({
+	type: 'user',
+	_id: actor._id,
+	username: actor.username!,
+	ip: '0.0.0.0',
+	useragent: '',
+});
+
 export const Audit = {
 	attributeCreated: async (attribute: IAbacAttributeDefinition, actor: AbacActor) => {
 		return audit(
@@ -44,7 +53,7 @@ export const Audit = {
 				change: 'created',
 				current: attribute,
 			} as EventPayload<'abac.attribute.changed'>,
-			{ type: 'user', _id: actor._id, username: actor.username!, ip: '0.0.0.0', useragent: '' },
+			toUserActor(actor),
 		);
 	},
 	attributeUpdated: async (current: IAbacAttributeDefinition, diff: IAbacAttributeDefinition, actor: AbacActor) => {
@@ -57,7 +66,7 @@ export const Audit = {
 				current,
 				diff,
 			},
-			{ type: 'user', _id: actor._id, username: actor.username!, ip: '0.0.0.0', useragent: '' },
+			toUserActor(actor),
 		);
 	},
 	attributeDeleted: async (attribute: IAbacAttributeDefinition, actor: AbacActor) => {
@@ -70,7 +79,7 @@ export const Audit = {
 				current: null,
 				diff: attribute,
 			},
-			{ type: 'user', _id: actor._id, username: actor.username!, ip: '0.0.0.0', useragent: '' },
+			toUserActor(actor),
 		);
 	},
 	objectAttributeChanged: async (
@@ -92,7 +101,7 @@ export const Audit = {
 				current,
 				app: app ?? null,
 			},
-			{ type: 'user', _id: actor._id, username: actor.username!, ip: '0.0.0.0', useragent: '' },
+			toUserActor(actor),
 		);
 	},
 	objectAttributeRemoved: async (
@@ -112,7 +121,7 @@ export const Audit = {
 				current,
 				app: null,
 			},
-			{ type: 'user', _id: actor._id, username: actor.username!, ip: '0.0.0.0', useragent: '' },
+			toUserActor(actor),
 		);
 	},
 	objectAttributesRemoved: async (minimalRoom: MinimalRoom, previous: IAbacAttributeDefinition[], actor: AbacActor) => {
@@ -125,7 +134,7 @@ export const Audit = {
 				previous,
 				current: null,
 			},
-			{ type: 'user', _id: actor._id, username: actor.username!, ip: '0.0.0.0', useragent: '' },
+			toUserActor(actor),
 		);
 	},
 	actionPerformed: async (
@@ -177,10 +186,6 @@ export const Audit = {
 		return audit('abac.attribute.store.switched', { from, to, reason: 'attribute-store-switch', roomsAffected }, { type: 'system' });
 	},
 	membershipEvaluated: async (attributes: IAbacAttributeDefinition[], subjects: MinimalUser[], actor: AbacActor) => {
-		return audit(
-			'abac.membership.evaluated',
-			{ reason: 'api', attributes, subjects },
-			{ type: 'user', _id: actor._id, username: actor.username!, ip: '0.0.0.0', useragent: '' },
-		);
+		return audit('abac.membership.evaluated', { reason: 'api', attributes, subjects }, toUserActor(actor));
 	},
 };
