@@ -252,8 +252,8 @@ export class AppUIKitInteractionApi {
 						break;
 					}
 
-					await recordInteractionView(result, appId, req.user?._id);
-					res.send(result);
+					const delivered = await recordInteractionView(result, appId, req.user?._id);
+					res.send(delivered ? result : {});
 				} catch (e) {
 					const error = e instanceof Error ? e.message : e;
 					res.status(500).send({ error });
@@ -265,6 +265,7 @@ export class AppUIKitInteractionApi {
 				const {
 					type,
 					rid,
+					triggerId,
 					payload: { view, isCleared },
 				} = req.body;
 
@@ -274,6 +275,7 @@ export class AppUIKitInteractionApi {
 				const action = {
 					type,
 					appId,
+					triggerId,
 					user,
 					room,
 					payload: {
@@ -290,8 +292,8 @@ export class AppUIKitInteractionApi {
 						break;
 					}
 
-					await recordInteractionView(result, appId, req.user?._id);
-					res.send(result);
+					const delivered = await recordInteractionView(result, appId, req.user?._id);
+					res.send(delivered ? result : {});
 				} catch (e) {
 					const error = e instanceof Error ? e.message : e;
 					res.status(500).send({ error });
@@ -323,8 +325,8 @@ export class AppUIKitInteractionApi {
 						break;
 					}
 
-					await recordInteractionView(result, appId, req.user?._id);
-					res.send(result);
+					const delivered = await recordInteractionView(result, appId, req.user?._id);
+					res.send(delivered ? result : {});
 				} catch (e) {
 					const error = e instanceof Error ? e.message : e;
 					res.status(500).send({ error });
@@ -370,8 +372,8 @@ export class AppUIKitInteractionApi {
 						break;
 					}
 
-					await recordInteractionView(result, appId, req.user?._id);
-					res.send(result);
+					const delivered = await recordInteractionView(result, appId, req.user?._id);
+					res.send(delivered ? result : {});
 				} catch (e) {
 					const error = e instanceof Error ? e.message : e;
 					res.status(500).send({ error });

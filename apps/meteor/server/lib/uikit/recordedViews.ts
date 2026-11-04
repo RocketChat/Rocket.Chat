@@ -1,11 +1,13 @@
 import type { IUiKitView } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { UiKitViews } from '@rocket.chat/models';
+import { Random } from '@rocket.chat/random';
 
 const logger = new Logger('UiKit');
 
 const surfaceByInteractionType: Record<string, IUiKitView['type'] | undefined> = {
 	'modal.open': 'modal',
+	'modal.push': 'modal',
 	'modal.update': 'modal',
 	'contextual_bar.open': 'contextual_bar',
 	'contextual_bar.update': 'contextual_bar',
@@ -15,26 +17,56 @@ type ViewLike = { id?: unknown; state?: unknown };
 
 const isObject = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null;
 
-/** Keeps the modal or contextual bar an app opens or updates for a user, so its submit and close can carry the app's copy. */
-export const recordInteractionView = async (interaction: unknown, appId: string, userId: string | undefined): Promise<void> => {
+// Only the app sets these; a value the client sends back for them is never trusted.
+const serverOwnedFields = ['private_metadata', 'callback_id', 'external_id', 'submit_disabled', 'hash'] as const;
+
+/**
+ * Keeps the modal or contextual bar an app opens or updates for a user, so its submit and close can carry the app's copy.
+ * Stamps the view with a new `hash`, and resolves an update that names a view by `external_id`.
+ * Returns `false` when the interaction is a stale or unresolvable update that must not reach the user.
+ */
+export const recordInteractionView = async (interaction: unknown, appId: string, userId: string | undefined): Promise<boolean> => {
 	if (!userId || !isObject(interaction) || typeof interaction.type !== 'string' || !isObject(interaction.view)) {
-		return;
+		return true;
 	}
 
 	const type = surfaceByInteractionType[interaction.type];
 	const view = interaction.view as IUiKitView['view'];
 
-	if (!type || typeof view.id !== 'string') {
-		return;
+	if (!type) {
+		return true;
 	}
 
 	try {
+		const isUpdate = interaction.type.endsWith('.update');
+		let recorded = isUpdate && typeof view.id === 'string' ? await UiKitViews.findOneByIdForUser(view.id, appId, userId) : null;
+
+		if (isUpdate && !recorded && typeof view.external_id === 'string') {
+			recorded = await UiKitViews.findOneByExternalIdForUser(view.external_id, appId, userId);
+			if (!recorded) {
+				logger.warn({ msg: 'UiKit update names an external_id the user has no view for; skipped', externalId: view.external_id, appId });
+				return false;
+			}
+			view.id = recorded._id;
+		}
+
+		if (typeof view.id !== 'string') {
+			return true;
+		}
+
+		if (recorded?.view.hash && typeof view.hash === 'string' && view.hash !== recorded.view.hash) {
+			logger.warn({ msg: 'Stale UiKit view update skipped: its hash does not match the saved view', viewId: view.id, appId });
+			return false;
+		}
+
+		view.hash = Random.id();
 		// An update may send only the fields that change, as the client merges it into the view it shows.
-		const recorded = interaction.type.endsWith('.update') ? await UiKitViews.findOneByIdForUser(view.id, appId, userId) : null;
 		await UiKitViews.saveView({ _id: view.id, appId, userId, type, view: recorded ? { ...recorded.view, ...view } : view });
 	} catch (error) {
 		logger.error({ msg: 'Could not record a UiKit view', viewId: view.id, appId, err: error });
 	}
+
+	return true;
 };
 
 /**
@@ -60,5 +92,12 @@ export const withRecordedView = async <TView extends ViewLike>(
 		return clientView;
 	}
 
-	return { ...clientView, ...recorded.view, state: clientView.state };
+	const view: TView = { ...clientView, ...recorded.view, state: clientView.state };
+	for (const field of serverOwnedFields) {
+		if (!(field in recorded.view)) {
+			delete (view as Record<string, unknown>)[field];
+		}
+	}
+
+	return view;
 };

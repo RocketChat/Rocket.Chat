@@ -42,7 +42,9 @@ The app returns one of these from its handler, usually built with `UIKitInteract
 
 | `type` | Client effect |
 | --- | --- |
-| `modal.open` | Opens a modal. |
+| `modal.open` | Opens a modal, closing the app's other open modals. |
+| `modal.push` | Opens a modal on top of the app's open ones. An app keeps at most 3 stacked; beyond that the top one is replaced. |
+| `modal.clear` | Closes every modal of the app. |
 | `modal.update` | Replaces the open modal's view (matched by `view.id`). |
 | `modal.close` | Closes the modal named by `view.id` (what apps-engine sends) or `viewId` (what core apps send). With neither, nothing happens. |
 | `banner.open` | Opens a banner. The view fields are spread at the top level of the payload instead of under `view`. |
@@ -51,7 +53,23 @@ The app returns one of these from its handler, usually built with `UIKitInteract
 | `contextual_bar.update` / `contextual_bar.close` | Replaces or disposes the contextual bar. |
 | `errors` | Marks fields as invalid. `errors` maps `actionId` to a message. **Only modals display them**; the contextual bar and banner contexts do not pass errors down to their elements. |
 
-After a `viewSubmit`, the view is disposed unless the response is `errors`, `modal.update` or `contextual_bar.update`. After a `viewClosed`, it is disposed unless the response is `errors`.
+After a `viewSubmit`, the view is disposed unless the response is `errors`, `modal.update`, `modal.push` or `contextual_bar.update`. After a `viewClosed`, it is disposed unless the response is `errors`.
+
+## View lifecycle
+
+Apps drive multi-step forms by answering a `viewSubmit` with `modal.push` (the next step on top, the previous one stays under it) or `modal.update`, and by finishing with `modal.clear` or `modal.close`. Closing or cancelling a pushed view returns the user to the one below.
+
+`UIKitInteractionResponder` has `pushModalViewResponse(view)`, `clearModalViewsResponse()` and `closeModalViewResponse(viewId?)`; `UIController` has `pushModalView`, `closeModalView` and `clearModalViews` for the same effects outside a response.
+
+Per view, set by the app:
+
+- `private_metadata`, `callback_id` and `external_id` ride on the view. The server keeps the app's copy of each view (`UiKitViews`), and `viewSubmit` and `viewClosed` hand the app that copy with only the `state` taken from the client, so `private_metadata` always comes back as the app set it. A value the client adds is dropped.
+- `external_id` lets `updateSurfaceView` (or a `modal.update` response) address a view without its `id`: the server finds the user's view with that `external_id` and rewrites the update to its `id`. An update naming an unknown `external_id` is dropped.
+- `hash` is a random string the server sets on every save and returns in the view. An update that carries a `hash` different from the saved one is stale and is dropped, so a slow handler cannot overwrite a newer view. Updates without a `hash` always apply.
+- `submit_disabled` disables the submit button.
+- `notifyOnClose` (default `true` when absent) decides whether closing the view sends `viewClosed`. `clearOnClose` makes closing a modal close all of the app's modals. The contextual bar honors `notifyOnClose` only.
+
+`viewClosed` carries the `triggerId` of the close, so the app may answer with `modal.open` or `modal.push`.
 
 ## Trigger IDs
 
