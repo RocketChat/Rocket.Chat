@@ -5,7 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { UiKitContext } from '../contexts/UiKitContext';
 import { messageParser } from '../surfaces';
 
-const renderFeedback = (action = jest.fn(), negativeValue = 'bad') => {
+const setupFeedback = (action = jest.fn(), negativeValue = 'bad') => {
 	render(
 		<MockedServerContext>
 			<UiKitContext.Provider value={{ action, updateState: jest.fn(), values: {}, appId: 'app' }}>
@@ -37,14 +37,14 @@ const renderFeedback = (action = jest.fn(), negativeValue = 'bad') => {
 };
 
 it('names each button after its text, or its accessibility label when it has one', () => {
-	renderFeedback();
+	setupFeedback();
 
 	expect(screen.getByRole('button', { name: 'Good answer' })).toBeInTheDocument();
 	expect(screen.getByRole('button', { name: 'Mark this answer as bad' })).toHaveAttribute('title', 'Bad answer');
 });
 
 it('sends the clicked button value and marks it as pressed', async () => {
-	const action = renderFeedback();
+	const action = setupFeedback();
 
 	await userEvent.click(screen.getByRole('button', { name: 'Good answer' }));
 
@@ -54,7 +54,7 @@ it('sends the clicked button value and marks it as pressed', async () => {
 });
 
 it('sends the negative value and marks only the negative button as pressed', async () => {
-	const action = renderFeedback();
+	const action = setupFeedback();
 
 	await userEvent.click(screen.getByRole('button', { name: 'Mark this answer as bad' }));
 
@@ -64,7 +64,7 @@ it('sends the negative value and marks only the negative button as pressed', asy
 });
 
 it('marks only the clicked button as pressed when both carry the same value', async () => {
-	renderFeedback(jest.fn(), 'good');
+	setupFeedback(jest.fn(), 'good');
 
 	await userEvent.click(screen.getByRole('button', { name: 'Good answer' }));
 
