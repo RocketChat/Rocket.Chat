@@ -94,12 +94,13 @@ export class NotificationsModule {
 			}
 
 			const userEvent = (clientAction: string, { rid }: { rid: string }): void => {
-				switch (clientAction) {
-					case 'removed':
-						streamer.removeListener(userId, userEvent);
-						const sub = [...streamer.subscriptions].find((sub) => sub.eventName === rid && sub.subscription.userId === userId);
-						sub && streamer.removeSubscription(sub, eventName);
-						break;
+				if (clientAction !== 'removed') {
+					return;
+				}
+				streamer.removeListener(userId, userEvent);
+				const sub = [...streamer.subscriptions].find((sub) => sub.eventName === rid && sub.subscription.userId === userId);
+				if (sub) {
+					streamer.removeSubscription(sub, eventName);
 				}
 			};
 
@@ -117,7 +118,7 @@ export class NotificationsModule {
 	}
 
 	private register<N extends StreamNames>(stream: IStreamer<N>): IStreamer<N> {
-		this.streams.set(stream.name, stream as IStreamer<StreamNames>);
+		this.streams.set(stream.name, stream);
 		return stream;
 	}
 
