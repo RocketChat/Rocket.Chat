@@ -29,6 +29,9 @@ const UiKitModal = ({ initialView }: UiKitModalProps) => {
 
 	const handleSubmit = useStableCallback((e: FormEvent) => {
 		preventSyntheticEvent(e);
+		if (contextValue.uploading) {
+			return;
+		}
 		void actionManager.emitInteraction(view.appId, {
 			type: 'viewSubmit',
 			payload: {
