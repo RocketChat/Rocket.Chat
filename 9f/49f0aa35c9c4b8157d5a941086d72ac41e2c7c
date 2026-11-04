@@ -1,0 +1,19 @@
+apps/meteor/ee/server/startup/upsell.ts
+  s_7e1026596d8472::t_3cb768a855cf6c 21-22
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "9f49f0aa35c9c4b8157d5a941086d72ac41e2c7c",
+  "prompts": {},
+  "sessions": {
+    "s_7e1026596d8472": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9063e7c7-e834-48dd-ba99-bb1eee5cda30",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
