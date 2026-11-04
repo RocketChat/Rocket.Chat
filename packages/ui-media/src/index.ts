@@ -11,10 +11,20 @@ export { usePlayMediaStream } from './streams/usePlayMediaStream';
 export { default as StreamVideo } from './streams/StreamVideo';
 export type { StreamVideoProps } from './streams/StreamVideo';
 export { useAudioLevel } from './streams/useAudioLevel';
+export { default as ZoomableScreen } from './streams/ZoomableScreen';
+export type { ZoomableScreenProps } from './streams/ZoomableScreen';
+export { useScreenZoom } from './streams/useScreenZoom';
+export type { ScreenZoom } from './streams/screenZoom';
+export { useFullscreen } from './streams/useFullscreen';
+export type { Fullscreen } from './streams/useFullscreen';
 export { default as ActionButton } from './components/ActionButton';
 export type { ActionButtonProps } from './components/ActionButton';
 export { default as ToggleButton } from './components/ToggleButton';
 export type { ToggleButtonProps } from './components/ToggleButton';
+export { default as ScreenZoomButtons } from './components/ScreenZoomButtons';
+export type { ScreenZoomButtonsProps } from './components/ScreenZoomButtons';
+export { default as FullscreenButton } from './components/FullscreenButton';
+export type { FullscreenButtonProps } from './components/FullscreenButton';
 export { default as DeviceMenuButton } from './components/DeviceMenuButton';
 export {
 	useDevicePermissionPrompt2,
