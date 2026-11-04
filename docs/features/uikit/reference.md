@@ -744,3 +744,23 @@ Source: [`packages/ui-kit/src/surfaces/contextualBar/ContextualBarView.ts`](../.
 | `close` | `ButtonElement` | no |  |
 | `submit` | `ButtonElement` | no |  |
 | `blocks` | `ContextualBarSurfaceLayout` | yes |  |
+
+## Size limits
+
+Checked by `validateLayoutBlocks` (see [interactions.md](interactions.md#validation)), never by the renderers.
+
+| What | Limit |
+| --- | --- |
+| Blocks in a message | 50 |
+| Blocks in a view | 100 |
+| Elements in an `actions` block | 25 |
+| Options in a select (`options`) | 100 |
+| `header` text | 150 characters |
+| `section` text | 3000 characters |
+| `section` field | 2000 characters |
+| `button` text | 75 characters |
+| Option text | 75 characters |
+| `placeholder` | 150 characters |
+| Input `label` and `hint` | 2000 characters |
+
+The limits live in `packages/ui-kit/src/blocks/blockLimits.ts`.

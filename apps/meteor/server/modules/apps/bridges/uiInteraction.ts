@@ -22,7 +22,10 @@ export class UiInteractionBridge extends AppsEngineUiInteractionBridge {
 			throw new Error('Invalid app provided');
 		}
 
-		reportInvalidInteractionBlocks(interaction, { where: 'ui interaction push', appId, userId: user.id });
+		if (reportInvalidInteractionBlocks(interaction, { where: 'ui interaction push', appId, userId: user.id })) {
+			return;
+		}
+
 		await recordInteractionView(interaction, appId, user.id);
 
 		void api.broadcast('notify.uiInteraction', user.id, interaction as UiKit.ServerInteraction);

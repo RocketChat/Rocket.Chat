@@ -243,7 +243,11 @@ export class AppUIKitInteractionApi {
 
 					const result = await orch.triggerEvent(eventInterface, action);
 
-					reportInvalidInteractionBlocks(result, { where: 'ui.interaction', appId, userId: req.user?._id });
+					if (reportInvalidInteractionBlocks(result, { where: 'ui.interaction', appId, userId: req.user?._id })) {
+						res.send({});
+						break;
+					}
+
 					await recordInteractionView(result, appId, req.user?._id);
 					res.send(result);
 				} catch (e) {
@@ -277,7 +281,11 @@ export class AppUIKitInteractionApi {
 				try {
 					const result = await orch.triggerEvent(AppEvents.IUIKitInteractionHandler, action);
 
-					reportInvalidInteractionBlocks(result, { where: 'ui.interaction', appId, userId: req.user?._id });
+					if (reportInvalidInteractionBlocks(result, { where: 'ui.interaction', appId, userId: req.user?._id })) {
+						res.send({});
+						break;
+					}
+
 					await recordInteractionView(result, appId, req.user?._id);
 					res.send(result);
 				} catch (e) {
@@ -306,7 +314,11 @@ export class AppUIKitInteractionApi {
 				try {
 					const result = await orch.triggerEvent(AppEvents.IUIKitInteractionHandler, action);
 
-					reportInvalidInteractionBlocks(result, { where: 'ui.interaction', appId, userId: req.user?._id });
+					if (reportInvalidInteractionBlocks(result, { where: 'ui.interaction', appId, userId: req.user?._id })) {
+						res.send({});
+						break;
+					}
+
 					await recordInteractionView(result, appId, req.user?._id);
 					res.send(result);
 				} catch (e) {
@@ -349,7 +361,11 @@ export class AppUIKitInteractionApi {
 				try {
 					const result = await orch.triggerEvent(AppEvents.IUIKitInteractionHandler, action);
 
-					reportInvalidInteractionBlocks(result, { where: 'ui.interaction', appId, userId: req.user?._id });
+					if (reportInvalidInteractionBlocks(result, { where: 'ui.interaction', appId, userId: req.user?._id })) {
+						res.send({});
+						break;
+					}
+
 					await recordInteractionView(result, appId, req.user?._id);
 					res.send(result);
 				} catch (e) {
