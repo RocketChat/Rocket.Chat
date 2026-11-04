@@ -70,6 +70,17 @@ const findScroller = (element: Element) => {
 	return document.scrollingElement as HTMLElement;
 };
 
+// How far the pointer is into the top (negative) or bottom (positive) edge of the scroller, or 0 away from both.
+const getEdgeDistance = (y: number, rect: DOMRect) => {
+	if (y < rect.top + EDGE_SIZE) {
+		return y - rect.top - EDGE_SIZE;
+	}
+	if (y > rect.bottom - EDGE_SIZE) {
+		return y - rect.bottom + EDGE_SIZE;
+	}
+	return 0;
+};
+
 const readSource = (element: Element): ItemListDragSource | undefined => {
 	const { dragKey, dragKind, dragGroup } = (element as HTMLElement).dataset;
 	if (!dragKey || !dragGroup || (dragKind !== 'item' && dragKind !== 'group')) {
@@ -252,8 +263,7 @@ export const useItemListDrag = ({
 
 				const autoScroll = () => {
 					const rect = scroller.getBoundingClientRect();
-					const distance =
-						pointerY < rect.top + EDGE_SIZE ? pointerY - rect.top - EDGE_SIZE : pointerY > rect.bottom - EDGE_SIZE ? pointerY - rect.bottom + EDGE_SIZE : 0;
+					const distance = getEdgeDistance(pointerY, rect);
 
 					if (distance) {
 						scroller.scrollTop += Math.max(-MAX_SCROLL_SPEED, Math.min(MAX_SCROLL_SPEED, distance / 2));
@@ -265,7 +275,9 @@ export const useItemListDrag = ({
 
 				// The groups a dragged row can go into are outlined from the start, so the places to aim at are visible before hovering.
 				const markAvailableGroups = () => {
-					const groups = new Set(Array.from(list.querySelectorAll<HTMLElement>('[data-drag-group]'), (element) => element.dataset.dragGroup!));
+					const groups = new Set(
+						Array.from(list.querySelectorAll<HTMLElement>('[data-drag-group]'), (element) => element.dataset.dragGroup!),
+					);
 					available = Array.from(groups)
 						.filter((group) => stableResolveTarget(dragSource, { group, key: group, kind: 'group', half: 'top' })?.position === 'inside')
 						.map((group) => {

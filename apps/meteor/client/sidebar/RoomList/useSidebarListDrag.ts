@@ -1,8 +1,8 @@
+import { useIsEnterprise } from '@rocket.chat/ui-client';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
-import { useIsEnterprise } from '../../hooks/useIsEnterprise';
 import { useItemListDrag } from '../../hooks/useItemListDrag';
 import type { ItemListDragSource, ItemListDropHover, ItemListDropTarget } from '../../hooks/useItemListDrag';
 import { useMoveRoomCategory } from '../categories/hooks/useMoveRoomCategory';
@@ -13,17 +13,24 @@ import type { SidebarRoomListGroup } from '../hooks/useRoomList';
 
 const isDynamicGroup = (key: string) => SIDEBAR_DYNAMIC_GROUP_KEYS.includes(key);
 
-const getSystemGroup = (room: SubscriptionWithRoom, groupKeys: string[]) => {
-	const key = room.teamMain
-		? 'Teams'
-		: room.prid
-			? 'Discussions'
-			: room.t === 'c' || room.t === 'p'
-				? 'Channels'
-				: room.t === 'd'
-					? 'Direct_Messages'
-					: undefined;
+const getSystemGroupKey = (room: SubscriptionWithRoom) => {
+	if (room.teamMain) {
+		return 'Teams';
+	}
+	if (room.prid) {
+		return 'Discussions';
+	}
+	if (room.t === 'c' || room.t === 'p') {
+		return 'Channels';
+	}
+	if (room.t === 'd') {
+		return 'Direct_Messages';
+	}
+	return undefined;
+};
 
+const getSystemGroup = (room: SubscriptionWithRoom, groupKeys: string[]) => {
+	const key = getSystemGroupKey(room);
 	return key && groupKeys.includes(key) ? key : 'Conversations';
 };
 
