@@ -1,7 +1,7 @@
 import { styled, View } from '@tamagui/web';
 
+import { cx } from '../../../helpers/composeClassNames';
 import type { ElementProps } from '../../../types/ElementProps';
-import { Box } from '../../Box';
 
 export type MessageToolbarWrapperProps = ElementProps<HTMLDivElement> & {
 	visible?: boolean;
@@ -37,9 +37,9 @@ const MessageToolbarWrapperFrame = styled(View, {
 function MessageToolbarWrapper({ className, children, visible, ...props }: MessageToolbarWrapperProps) {
 	return (
 		<MessageToolbarWrapperFrame
-			render={<Box rcx-message-toolbar__wrapper--visible={visible} rcx-message-toolbar__wrapper {...props} />}
+			render={<div {...props} />}
 			shown={Boolean(visible)}
-			className={className}
+			className={cx('rcx-box rcx-box--full', visible && 'rcx-message-toolbar__wrapper--visible', 'rcx-message-toolbar__wrapper', className)}
 		>
 			{children}
 		</MessageToolbarWrapperFrame>

@@ -1,7 +1,7 @@
 import { styled, View } from '@tamagui/web';
 
+import { cx } from '../../helpers/composeClassNames';
 import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
 
 export type MessageBlockProps = ElementProps<HTMLDivElement> & {
 	fixedWidth?: boolean;
@@ -38,9 +38,9 @@ const MessageBlockFrame = styled(View, {
 function MessageBlock({ className, children, fixedWidth, ...props }: MessageBlockProps) {
 	return (
 		<MessageBlockFrame
-			render={<Box rcx-message-block rcx-message-block--width-fixed={fixedWidth} {...props} />}
+			render={<div {...props} />}
 			width={fixedWidth ? 'fixed' : 'fluid'}
-			className={className}
+			className={cx('rcx-box rcx-box--full', 'rcx-message-block', fixedWidth && 'rcx-message-block--width-fixed', className)}
 		>
 			{children}
 		</MessageBlockFrame>

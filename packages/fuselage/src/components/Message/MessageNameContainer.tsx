@@ -1,7 +1,7 @@
 import { styled, Text } from '@tamagui/web';
 
+import { cx } from '../../helpers/composeClassNames';
 import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
 
 export type MessageNameContainerProps = ElementProps<HTMLSpanElement>;
 
@@ -37,7 +37,10 @@ const MessageNameContainerFrame = styled(Text, {
 
 function MessageNameContainer({ children, className, ...props }: MessageNameContainerProps) {
 	return (
-		<MessageNameContainerFrame render={<Box is='span' rcx-message-header__name-container {...props} />} className={className}>
+		<MessageNameContainerFrame
+			render={<span {...props} />}
+			className={cx('rcx-box rcx-box--full', 'rcx-message-header__name-container', className)}
+		>
 			{children}
 		</MessageNameContainerFrame>
 	);

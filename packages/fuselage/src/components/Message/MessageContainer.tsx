@@ -1,7 +1,7 @@
 import { styled, View } from '@tamagui/web';
 
+import { cx } from '../../helpers/composeClassNames';
 import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
 
 export type MessageContainerProps = ElementProps<HTMLDivElement>;
 
@@ -25,7 +25,7 @@ const MessageContainerFrame = styled(View, {
 // end of generated
 
 const MessageContainer = ({ children, className, ...props }: MessageContainerProps) => (
-	<MessageContainerFrame render={<Box rcx-message-container {...props} />} className={className}>
+	<MessageContainerFrame render={<div {...props} />} className={cx('rcx-box rcx-box--full', 'rcx-message-container', className)}>
 		{children}
 	</MessageContainerFrame>
 );

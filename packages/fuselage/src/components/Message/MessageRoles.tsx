@@ -1,7 +1,7 @@
 import { styled, View } from '@tamagui/web';
 
+import { cx } from '../../helpers/composeClassNames';
 import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
 
 export type MessageRolesProps = ElementProps<HTMLDivElement>;
 
@@ -25,7 +25,7 @@ const MessageRolesFrame = styled(View, {
 // end of generated
 
 const MessageRoles = ({ children, className, ...props }: MessageRolesProps) => (
-	<MessageRolesFrame render={<Box rcx-message-header__roles {...props} />} className={className}>
+	<MessageRolesFrame render={<div {...props} />} className={cx('rcx-box rcx-box--full', 'rcx-message-header__roles', className)}>
 		{children}
 	</MessageRolesFrame>
 );

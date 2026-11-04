@@ -1,8 +1,7 @@
 import { styled, Text } from '@tamagui/web';
 import type { ElementType, HTMLAttributes, ReactNode } from 'react';
 
-import { prependClassName } from '../../helpers/prependClassName';
-import { Box } from '../Box';
+import { cx } from '../../helpers/composeClassNames';
 
 export type MessageHighlightProps = {
 	is?: ElementType;
@@ -76,10 +75,10 @@ function MessageHighlight({ is: Tag = 'span', variant = 'other', className, clic
 
 	return (
 		<MessageHighlightFrame
-			render={<Box is={Tag} {...props} />}
+			render={<Tag {...props} />}
 			tone={variant}
 			clickable={Boolean(clickable)}
-			className={prependClassName(className, `rcx-message__highlight ${modifiers}`)}
+			className={cx('rcx-box rcx-box--full', `rcx-message__highlight ${modifiers}`, className)}
 		>
 			{children}
 		</MessageHighlightFrame>
