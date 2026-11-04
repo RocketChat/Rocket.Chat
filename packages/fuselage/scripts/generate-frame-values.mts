@@ -1036,6 +1036,82 @@ const onText = (code: string) =>
 const check = process.argv.includes('--check');
 let stale = false;
 
+// A spacing or font value above comes from `spacing()`, `fontScale()` or, off the scale, `offScale()`; a raw length there would not
+const spacingOrFont =
+	/['"]?\b(?:padding|margin|gap|rowGap|columnGap|row-gap|column-gap|fontSize|font-size|lineHeight|line-height|letterSpacing|letter-spacing)[\w-]*['"]?\s*:\s*/g;
+
+const valueEnd = (text: string, from: number) => {
+	let depth = 0;
+	for (let i = from; i < text.length; i++) {
+		if ('([{'.includes(text[i])) {
+			depth++;
+		} else if (')]}'.includes(text[i])) {
+			if (depth === 0) {
+				return i;
+			}
+			depth--;
+		} else if (depth === 0 && ',;\n'.includes(text[i])) {
+			return i;
+		}
+	}
+	return text.length;
+};
+
+if (check) {
+	const self = readFileSync(import.meta.filename, 'utf8');
+	const lineOf = (index: number) => self.slice(0, index).split('\n').length;
+
+	for (const match of self.matchAll(spacingOrFont)) {
+		const from = match.index + match[0].length;
+		const value = self.slice(from, valueEnd(self, from)).trim();
+		if (/\d(?:px|rem)\b|\bpx\(|^-?[1-9][\d.]*$/.test(value)) {
+			console.error(
+				`generate-frame-values.mts:${lineOf(match.index)}: raw length in \`${match[0].trim()} ${value}\`, use spacing(), fontScale() or offScale()`,
+			);
+			stale = true;
+		}
+	}
+
+	for (const match of self.matchAll(/\bspacing\(['"](?:-|neg-)?(x\d+)['"]\)/g)) {
+		if (!Object.hasOwn(spacingScale, match[1])) {
+			console.error(`generate-frame-values.mts:${lineOf(match.index)}: ${match[1]} is not on the spacing scale, use offScale()`);
+			stale = true;
+		}
+	}
+
+	// The hand-written stylesheets hold no spacing or type either: outside a generated section, a raw length there fails
+	const srcDir = join(import.meta.dirname, '../src');
+	const sources = readdirSync(srcDir, { recursive: true, encoding: 'utf8' })
+		.filter((name) => /\.(?:css|tsx?)$/.test(name))
+		.map((name) => ({ name, text: readFileSync(join(srcDir, name), 'utf8') }));
+
+	const spacingProperties = new Set<string>();
+	for (const text of [self, ...sources.map(({ text }) => text)]) {
+		for (const match of text.matchAll(spacingOrFont)) {
+			const from = match.index + match[0].length;
+			for (const [, name] of text.slice(from, valueEnd(text, from)).matchAll(/var\((--[\w-]+)/g)) {
+				spacingProperties.add(name);
+			}
+		}
+	}
+
+	for (const { name, text } of sources.filter(({ name }) => name.endsWith('.css'))) {
+		const handWritten = text.replace(/\/\* generated [\s\S]*?\/\* end of generated[^*]*\*\//g, (section) => section.replace(/[^\n]/g, ' '));
+		for (const match of handWritten.matchAll(/^[ \t]*([\w-]+)\s*:\s*([^;{}]*)/gm)) {
+			const [, property, value] = match;
+			const spacingOrFontProperty = property.startsWith('--')
+				? spacingProperties.has(property)
+				: /^(?:padding|margin|gap|row-gap|column-gap|font-size|line-height|letter-spacing)/.test(property);
+			if (spacingOrFontProperty && /\d(?:px|r?em)\b/.test(value)) {
+				console.error(
+					`src/${name}:${text.slice(0, match.index).split('\n').length}: raw length in \`${property}: ${value.trim()}\`, move it into a generated section`,
+				);
+				stale = true;
+			}
+		}
+	}
+}
+
 for (const { file, generate, css } of components) {
 	const source = readFileSync(file, 'utf8');
 	const [START, END] = css ? [CSS_START, CSS_END] : [TS_START, TS_END];
