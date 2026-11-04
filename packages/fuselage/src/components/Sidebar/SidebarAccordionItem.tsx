@@ -54,6 +54,7 @@ const SidebarAccordionBarFrame = styled(View, {
 	minWidth: 'auto',
 	minHeight: '1.5rem',
 	boxSizing: 'border-box',
+	group: 'sidebarAccordionBar',
 	zIndex: 1,
 	top: 0,
 	flexWrap: 'nowrap',
@@ -89,6 +90,23 @@ const SidebarAccordionBarFrame = styled(View, {
 				color: 'var(--rcx-color-font-disabled, #cbced1)',
 			},
 		},
+	},
+});
+
+// Declared where it renders: zero-runtime only erases a `styled()` whose every use is in its own module
+const SidebarAccordionChevronSlotFrame = styled(View, {
+	render: 'span',
+	position: 'static',
+	display: 'flex',
+	flexDirection: 'row',
+	flexShrink: 1,
+	alignItems: 'normal',
+	minWidth: 'auto',
+	minHeight: 'auto',
+	visibility: {
+		'default': 'hidden',
+		'group-hover/sidebarAccordionBar': 'visible',
+		'group-focus-visible/sidebarAccordionBar': 'visible',
 	},
 });
 
@@ -180,7 +198,11 @@ const SidebarAccordionItem = ({
 					disabled && 'rcx-sidebar-accordion-item__bar--disabled',
 				)}
 			>
-				{!noncollapsible && <Chevron className='rcx-sidebar-accordion-item__chevron' size='x16' right={!expanded} />}
+				{!noncollapsible && (
+					<SidebarAccordionChevronSlotFrame>
+						<Chevron className='rcx-sidebar-accordion-item__chevron' size='x16' right={!expanded} />
+					</SidebarAccordionChevronSlotFrame>
+				)}
 				{title && (
 					// oxlint-disable-next-line jsx-a11y/heading-has-content -- the frame's children are the content
 					<SidebarAccordionTitleFrame render={<h5 id={titleId} />} className='rcx-sidebar-accordion-item__title'>

@@ -13,15 +13,6 @@
 	list-style: none;
 }
 
-.rcx-sidebar-accordion-item__bar .rcx-sidebar-accordion-item__chevron {
-	visibility: hidden;
-}
-
-.rcx-sidebar-accordion-item__bar:hover .rcx-sidebar-accordion-item__chevron,
-.rcx-sidebar-accordion-item__bar:focus-visible .rcx-sidebar-accordion-item__chevron {
-	visibility: visible;
-}
-
 .rcx-sidebar-collapse-group__bar {
 	color: var(--rcx-color-font-secondary-info, #6c737a);
 }

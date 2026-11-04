@@ -2437,6 +2437,7 @@ ${sbFrame(
 	'SidebarAccordionBarFrame',
 	'div',
 	{
+		group: 'sidebarAccordionBar',
 		position: 'sticky',
 		zIndex: 1,
 		top: 0,
@@ -2470,6 +2471,15 @@ ${sbFrame(
 	},
 	true,
 )}
+
+${sbFrame('SidebarAccordionChevronSlotFrame', 'span', {
+	display: 'flex',
+	visibility: {
+		'default': 'hidden',
+		'group-hover/sidebarAccordionBar': 'visible',
+		'group-focus-visible/sidebarAccordionBar': 'visible',
+	},
+})}
 
 ${sbFrame('SidebarAccordionTitleFrame', 'h5', { ...sbTitle, ...font('h5') })}
 
@@ -2629,15 +2639,6 @@ const generateSidebarStyles = () => `.rcx-sidebar--divider {
 /* Tamagui has no list-style: the panel's children inherit it */
 .rcx-sidebar-accordion-item__panel {
 	list-style: none;
-}
-
-.rcx-sidebar-accordion-item__bar .rcx-sidebar-accordion-item__chevron {
-	visibility: hidden;
-}
-
-.rcx-sidebar-accordion-item__bar:hover .rcx-sidebar-accordion-item__chevron,
-.rcx-sidebar-accordion-item__bar:focus-visible .rcx-sidebar-accordion-item__chevron {
-	visibility: visible;
 }
 
 .rcx-sidebar-collapse-group__bar {
