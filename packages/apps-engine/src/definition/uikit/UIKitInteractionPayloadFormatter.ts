@@ -4,6 +4,8 @@ import type {
 	IUIKitContextualBarInteraction,
 	IUIKitErrorInteraction,
 	IUIKitInteraction,
+	IUIKitModalClearInteraction,
+	IUIKitModalCloseInteraction,
 	IUIKitModalInteraction,
 } from './IUIKitInteractionType';
 import { UIKitInteractionType } from './IUIKitInteractionType';
@@ -13,7 +15,12 @@ import type { IUIKitContextualBarViewParam, IUIKitModalViewParam } from './UIKit
 import type { IUIKitErrorInteractionParam } from '../accessors/IUIController';
 
 function isModalInteraction(type: IUIKitInteraction['type']): type is IUIKitModalInteraction['type'] {
-	return [UIKitInteractionType.MODAL_OPEN, UIKitInteractionType.MODAL_UPDATE, UIKitInteractionType.MODAL_CLOSE].includes(type);
+	return [
+		UIKitInteractionType.MODAL_OPEN,
+		UIKitInteractionType.MODAL_UPDATE,
+		UIKitInteractionType.MODAL_PUSH,
+		UIKitInteractionType.MODAL_CLOSE,
+	].includes(type);
 }
 
 export function formatModalInteraction(view: IUIKitModalViewParam, context: IUIKitInteraction): IUIKitModalInteraction {
@@ -33,6 +40,14 @@ export function formatModalInteraction(view: IUIKitModalViewParam, context: IUIK
 			showIcon: true,
 		} as IUIKitSurface,
 	};
+}
+
+export function formatModalCloseInteraction(viewId: string | undefined, context: IUIKitInteraction): IUIKitModalCloseInteraction {
+	return { type: UIKitInteractionType.MODAL_CLOSE, triggerId: context.triggerId, appId: context.appId, ...(viewId ? { viewId } : {}) };
+}
+
+export function formatModalClearInteraction(context: IUIKitInteraction): IUIKitModalClearInteraction {
+	return { type: UIKitInteractionType.MODAL_CLEAR, triggerId: context.triggerId, appId: context.appId };
 }
 
 function isContextualBarInteraction(type: IUIKitInteraction['type']): type is IUIKitContextualBarInteraction['type'] {

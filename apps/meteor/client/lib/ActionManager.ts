@@ -20,6 +20,8 @@ const UiKitModal = lazy(() => import('../views/modal/uikit/UiKitModal'));
 export class ActionManager implements IActionManager {
 	protected static TRIGGER_TIMEOUT = 5000;
 
+	protected static MODAL_STACK_LIMIT = 3;
+
 	protected static TRIGGER_TIMEOUT_ERROR = 'TRIGGER_TIMEOUT_ERROR';
 
 	protected events = new Emitter<{ busy: { busy: boolean }; [viewId: string]: any }>();
@@ -35,6 +37,9 @@ export class ActionManager implements IActionManager {
 			close: () => void;
 		}
 	>();
+
+	// An app's open modals, bottom to top.
+	protected modalStacks = new Map<string, string[]>();
 
 	public constructor(protected router: ContextType<typeof RouterContext>) {}
 
@@ -96,7 +101,7 @@ export class ActionManager implements IActionManager {
 				} finally {
 					switch (userInteraction.type) {
 						case 'viewSubmit':
-							if (!!interaction && !['errors', 'modal.update', 'contextual_bar.update'].includes(interaction.type))
+							if (!!interaction && !['errors', 'modal.update', 'modal.push', 'contextual_bar.update'].includes(interaction.type))
 								this.disposeView(userInteraction.viewId);
 							break;
 
@@ -164,6 +169,16 @@ export class ActionManager implements IActionManager {
 			case 'modal.open': {
 				const { view } = interaction;
 				this.openModal(view);
+				break;
+			}
+
+			case 'modal.push': {
+				this.pushModal(interaction.view);
+				break;
+			}
+
+			case 'modal.clear': {
+				this.clearModals(interaction.appId);
 				break;
 			}
 
@@ -262,7 +277,18 @@ export class ActionManager implements IActionManager {
 	}
 
 	private openModal(view: UiKit.ModalView) {
-		const instance = imperativeModal.open({
+		this.clearModals(view.appId);
+		this.pushModal(view);
+	}
+
+	private pushModal(view: UiKit.ModalView) {
+		const stack = this.modalStacks.get(view.appId) ?? [];
+
+		if (stack.length >= ActionManager.MODAL_STACK_LIMIT) {
+			this.disposeView(stack[stack.length - 1]);
+		}
+
+		const instance = imperativeModal.push({
 			component: UiKitModal,
 			props: {
 				key: view.id,
@@ -270,12 +296,23 @@ export class ActionManager implements IActionManager {
 			},
 		});
 
+		this.modalStacks.set(view.appId, [...(this.modalStacks.get(view.appId) ?? []), view.id]);
 		this.viewInstances.set(view.id, {
 			close: () => {
 				instance.close();
 				this.viewInstances.delete(view.id);
+				this.modalStacks.set(
+					view.appId,
+					(this.modalStacks.get(view.appId) ?? []).filter((id) => id !== view.id),
+				);
 			},
 		});
+	}
+
+	public clearModals(appId: string) {
+		for (const viewId of [...(this.modalStacks.get(appId) ?? [])]) {
+			this.disposeView(viewId);
+		}
 	}
 
 	private openBanner(view: UiKit.BannerView) {
