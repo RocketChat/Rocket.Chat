@@ -1,4 +1,4 @@
-import { Box, Callout, Field, FieldLabel, FieldRow, FieldError, ButtonGroup, Button } from '@rocket.chat/fuselage';
+import { Callout, Field, FieldLabel, FieldRow, FieldError, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { ContextualbarFooter, ContextualbarScrollableContent } from '@rocket.chat/ui-client';
 import type { Dispatch, SetStateAction } from 'react';
 import { useId } from 'react';
@@ -80,11 +80,9 @@ const RoomForm = ({ onClose, onSave, roomInfo, hasAttributeChanges = false, setS
 					)}
 				</Field>
 				{redacted && (
-					<Box marginBlockEnd={16}>
-						<Callout type='warning' title={t('ABAC_Attributes_Redacted')}>
-							{t('ABAC_Attributes_Redacted_Description')}
-						</Callout>
-					</Box>
+					<Callout type='warning' title={t('ABAC_Attributes_Redacted')}>
+						{t('ABAC_Attributes_Redacted_Description')}
+					</Callout>
 				)}
 				<RoomFormAttributeFields fields={fields} remove={remove} disabled={redacted} />
 				<Button
