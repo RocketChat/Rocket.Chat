@@ -7,6 +7,7 @@ import type { DateTimePickerElement } from './elements/DateTimePickerElement.js'
 import type { EmailTextInputElement } from './elements/EmailTextInputElement.js';
 import type { ExperimentalTabElement } from './elements/ExperimentalTabElement.js';
 import type { FeedbackButtonsElement } from './elements/FeedbackButtonsElement.js';
+import type { FileInputElement } from './elements/FileInputElement.js';
 import type { IconButtonElement } from './elements/IconButtonElement.js';
 import type { FrameableIconElement } from './elements/IconElement.js';
 import type { ImageElement } from './elements/ImageElement.js';
@@ -52,5 +53,6 @@ export type BlockElement =
 	| TimePickerElement
 	| ExperimentalTabElement
 	| FeedbackButtonsElement
+	| FileInputElement
 	| FrameableIconElement
 	| IconButtonElement;

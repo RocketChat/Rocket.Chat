@@ -10,7 +10,7 @@ Each surface has one list of accepted layout blocks, exported by `@rocket.chat/u
 
 ## Divergences
 
-- **Livechat, message blocks**: `callout`, `context_actions`, `header`, `info_card`, `input`, `markdown`, `preview`, `rich_text`, `table`, `video` and `video_conf` are accepted, but Livechat's `MessageParser` has no method for them, so they render as nothing in the widget.
+- **Livechat, message blocks**: `callout`, `context_actions`, `file`, `header`, `info_card`, `input`, `markdown`, `preview`, `rich_text`, `table`, `video` and `video_conf` are accepted, but Livechat's `MessageParser` has no method for them, so they render as nothing in the widget.
 - **element `multi_static_select` in Livechat**: the method exists but returns `null`.
 - **`attachment` surface**: has a parser and a list, but no client renderer.
 - **`feedback_buttons` and `icon_button` outside their containers**: the types only allow them in the containers marked below, but the Fuselage renderer draws them in any element container, so a `feedback_buttons` inside an `actions` block still renders in a message.
@@ -26,6 +26,7 @@ Each surface has one list of accepted layout blocks, exported by `@rocket.chat/u
 | `context` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | `context_actions` | ✅ | — | — | — | — | — |
 | `divider` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `file` | ✅ | — | — | — | — | — |
 | `header` | ✅ | — | ✅ | — | ✅ | — |
 | `image` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | `info_card` | ✅ | — | — | ✅ | — | — |
@@ -38,6 +39,8 @@ Each surface has one list of accepted layout blocks, exported by `@rocket.chat/u
 | `table` | ✅ | — | ✅ | — | ✅ | — |
 | `video` | ✅ | — | ✅ | — | ✅ | — |
 | `video_conf` | ✅ | — | — | — | — | — |
+
+`file_input` needs a room to store the files in, so it only works in a modal or contextual bar opened from a conversation; in a banner, or a modal opened with no room on screen, it renders disabled.
 
 `input` in a message has no view state to submit to: its elements only reach the app through `dispatchActionConfig` (see [interactions.md](interactions.md#when-an-element-sends-blockaction)).
 
@@ -57,6 +60,7 @@ Container columns come from the block types; renderer columns tell whether a met
 | `datetimepicker` | ✅ | ✅ | — | — | — | — | — | — | — | ✅ | — |
 | `email_text_input` | — | ✅ | — | — | — | — | — | — | — | ✅ | — |
 | `feedback_buttons` | — | — | — | — | ✅ | — | — | — | — | ✅ | — |
+| `file_input` | — | ✅ | — | — | — | — | — | — | — | ✅ | — |
 | `icon` | — | — | — | — | — | — | ✅ | — | — | ✅ | — |
 | `icon_button` | — | — | — | — | ✅ | — | — | ✅ | — | ✅ | — |
 | `image` | — | — | ✅ | ✅ | — | — | — | — | — | ✅ | ✅ |

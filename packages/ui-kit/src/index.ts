@@ -16,6 +16,7 @@ export type { DatePickerElement } from './blocks/elements/DatePickerElement.js';
 export type { DateTimePickerElement } from './blocks/elements/DateTimePickerElement.js';
 export type { FeedbackButton, FeedbackButtonsElement } from './blocks/elements/FeedbackButtonsElement.js';
 export type { ImageElement } from './blocks/elements/ImageElement.js';
+export type { FileInputElement } from './blocks/elements/FileInputElement.js';
 export type { LinearScaleElement } from './blocks/elements/LinearScaleElement.js';
 export type { MultiStaticSelectElement } from './blocks/elements/MultiStaticSelectElement.js';
 export type { MultiChannelsSelectElement } from './blocks/elements/MultiChannelsSelectElement.js';
@@ -57,6 +58,7 @@ export type { LayoutBlock } from './blocks/LayoutBlock.js';
 export type { CalloutBlock } from './blocks/layout/CalloutBlock.js';
 export type { ExperimentalTabNavigationBlock } from './blocks/layout/ExperimentalTabNavigationBlock.js';
 export type { InfoCardBlock } from './blocks/layout/InfoCardBlock.js';
+export type { FileBlock } from './blocks/layout/FileBlock.js';
 
 export type { InputElementDispatchAction } from './blocks/InputElementDispatchAction.js';
 

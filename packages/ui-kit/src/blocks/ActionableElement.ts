@@ -7,6 +7,7 @@ import type { DateTimePickerElement } from './elements/DateTimePickerElement.js'
 import type { EmailTextInputElement } from './elements/EmailTextInputElement.js';
 import type { ExperimentalTabElement } from './elements/ExperimentalTabElement.js';
 import type { FeedbackButtonsElement } from './elements/FeedbackButtonsElement.js';
+import type { FileInputElement } from './elements/FileInputElement.js';
 import type { IconButtonElement } from './elements/IconButtonElement.js';
 import type { LinearScaleElement } from './elements/LinearScaleElement.js';
 import type { MultiChannelsSelectElement } from './elements/MultiChannelsSelectElement.js';
@@ -41,6 +42,7 @@ export type ActionableElement =
 	| EmailTextInputElement
 	| UrlTextInputElement
 	| FeedbackButtonsElement
+	| FileInputElement
 	| StaticSelectElement
 	| UsersSelectElement
 	| ToggleSwitchElement

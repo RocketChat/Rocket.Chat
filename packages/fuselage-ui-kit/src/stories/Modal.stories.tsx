@@ -174,6 +174,10 @@ export const InputWithLinearScale = createStory(payloads.inputWithLinearScale, {
 	'input-0': 'Error',
 });
 
+export const InputWithFileInput = createStory(payloads.inputWithFileInput, {
+	'input-0': 'Error',
+});
+
 export const Conditional = createStory(payloads.conditional);
 
 export const Callout = createStory(payloads.callout);

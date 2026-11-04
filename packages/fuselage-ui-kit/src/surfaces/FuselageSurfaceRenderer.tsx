@@ -24,6 +24,7 @@ import CheckboxElement from '../elements/CheckboxElement';
 import DatePickerElement from '../elements/DatePickerElement';
 import DateTimePickerElement from '../elements/DateTimePickerElement';
 import FeedbackButtonsElement from '../elements/FeedbackButtonsElement';
+import FileInputElement from '../elements/FileInputElement';
 import FormattedTextInputElement from '../elements/FormattedTextInputElement';
 import IconButtonElement from '../elements/IconButtonElement';
 import IconElement from '../elements/IconElement';
@@ -500,6 +501,18 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
 		return (
 			<AppIdProvider key={index} appId={block.appId}>
 				<InfoCard block={block} context={context} index={index} surfaceRenderer={this} />
+			</AppIdProvider>
+		);
+	}
+
+	file_input(block: UiKit.FileInputElement, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return null;
+		}
+
+		return (
+			<AppIdProvider key={block.actionId || index} appId={block.appId}>
+				<FileInputElement block={block} context={context} index={index} surfaceRenderer={this} />
 			</AppIdProvider>
 		);
 	}

@@ -29,7 +29,7 @@ const UiKitModal = ({ initialView }: UiKitModalProps) => {
 
 	const handleSubmit = useStableCallback((e: FormEvent) => {
 		preventSyntheticEvent(e);
-		if (view.submit_disabled) {
+		if (view.submit_disabled || contextValue.uploading) {
 			return;
 		}
 		void actionManager.emitInteraction(view.appId, {
