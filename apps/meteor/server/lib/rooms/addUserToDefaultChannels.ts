@@ -18,7 +18,7 @@ export const addUserToDefaultChannels = async function (user: IUser, silenced?: 
 		if (!(await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, { projection: { _id: 1 } }))) {
 			const autoTranslateConfig = getSubscriptionAutotranslateDefaultConfig(user);
 			const joinedAt = new Date();
-			const historyVisibleFrom = await getHistoryVisibleFromForNewMember(room, joinedAt);
+			const historyVisibleFrom = await getHistoryVisibleFromForNewMember(room, user._id, joinedAt);
 
 			// Add a subscription to this user
 			const { insertedId } = await Subscriptions.createWithRoomAndUser(room, user, {

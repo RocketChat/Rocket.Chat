@@ -190,6 +190,33 @@ type Listing = {
 				await deleteUser(joiner);
 			}
 		});
+
+		it('keeps the room cutoff of a restricted member added to a discussion that shows its history', async () => {
+			const discussion = await createDiscussion('shows-history');
+			const latecomer = await createUser();
+			const latecomerCredentials = await login(latecomer.username, password);
+
+			try {
+				await request
+					.post(api('rooms.saveRoomSettings'))
+					.set(credentials)
+					.send({ rid: discussion._id, hideHistoryForNewMembers: false })
+					.expect(200);
+				const discussed = await sendTo(discussion._id, 'discussed before the latecomer joined the room');
+
+				await sleep(50);
+				await addUserToRoom({ usernames: [latecomer.username!], rid: room._id });
+				await addUserToRoom({ usernames: [latecomer.username!], rid: discussion._id });
+
+				const roomSubscription = await getSubscriptionByRoomId(room._id, latecomerCredentials);
+				const discussionSubscription = await getSubscriptionByRoomId(discussion._id, latecomerCredentials);
+				expect(discussionSubscription).to.have.property('historyVisibleFrom', roomSubscription.historyVisibleFrom);
+				expect(await historyIds(latecomerCredentials, discussion._id)).to.not.include(discussed._id);
+			} finally {
+				await deleteRoom({ type: 'c', roomId: discussion._id });
+				await deleteUser(latecomer);
+			}
+		});
 	});
 
 	describe('every path that lists messages leaves out what the newcomer cannot see', () => {
