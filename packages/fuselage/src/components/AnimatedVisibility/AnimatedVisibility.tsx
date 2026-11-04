@@ -1,11 +1,10 @@
 import { css, keyframes } from '@rocket.chat/css-in-js';
-import type { ReactNode } from 'react';
+import type { AnimationEventHandler, ReactNode } from 'react';
 import { useCallback, useEffect, useState } from 'react';
 
 import { appendClassName } from '../../helpers/appendClassName';
+import { patchChildren } from '../../helpers/patchChildren';
 import { useStyle } from '../../hooks/useStyle';
-import { BoxTransforms, useComposedBoxTransform } from '../Box/BoxTransforms';
-import type { BoxTransformProps } from '../Box/BoxTransforms';
 
 export type VisibilityType = 'hidden' | 'visible' | 'hiding' | 'unhiding' | undefined;
 
@@ -91,23 +90,15 @@ const AnimatedVisibility = (props: AnimatedVisibilityProps) => {
 		[],
 	);
 
-	const transformFn = useCallback(
-		(boxProps: BoxTransformProps) => {
-			if (boxProps.onAnimationEnd === undefined) {
-				boxProps.onAnimationEnd = handleAnimationEnd;
-			}
-			boxProps.className = className && appendClassName(boxProps.className, className);
-			return boxProps;
-		},
-		[className, handleAnimationEnd],
-	);
-
-	const composedFn = useComposedBoxTransform(transformFn);
 	if (visibility === AnimatedVisibility.HIDDEN) {
 		return null;
 	}
 
-	return <BoxTransforms.Provider value={composedFn}>{props.children}</BoxTransforms.Provider>;
+	return patchChildren(props.children, (childProps: { className?: string; onAnimationEnd?: AnimationEventHandler }) => ({
+		...childProps,
+		className: className ? appendClassName(childProps.className, className) : childProps.className,
+		onAnimationEnd: childProps.onAnimationEnd ?? handleAnimationEnd,
+	}));
 };
 
 AnimatedVisibility.HIDDEN = 'hidden' as VisibilityType;
