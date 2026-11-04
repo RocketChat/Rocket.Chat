@@ -1,0 +1,49 @@
+apps/meteor/server/api/v1/middlewares/logger.ts
+  s_46e3fdf3bce1fe::t_b1964dc226ae34 1-2,51-52
+  s_46e3fdf3bce1fe::t_72c01af69f1e5d 7,41-50,53-56,58-81
+  s_46e3fdf3bce1fe::t_eb0b66abd0427c 57
+  s_46e3fdf3bce1fe::t_eb6c3df8e79785 82
+apps/meteor/server/settings/theme/server.ts
+  s_46e3fdf3bce1fe::t_b1964dc226ae34 8-9,27-28,38
+  s_46e3fdf3bce1fe::t_47f75dd315dc3b 39
+apps/meteor/server/configuration/configurePassport.ts
+  s_46e3fdf3bce1fe::t_dd336126be1245 1,20
+  s_46e3fdf3bce1fe::t_549fd89d2c36e9 11,101
+  s_46e3fdf3bce1fe::t_1f2709698590bf 21
+apps/meteor/ee/server/api/federation.ts
+  s_46e3fdf3bce1fe::t_82f552dc797281 10,49-52
+apps/meteor/server/routes/timesync.ts
+  s_46e3fdf3bce1fe::t_549fd89d2c36e9 2-5
+  s_46e3fdf3bce1fe::t_b1964dc226ae34 11-12
+apps/meteor/server/routes/health.ts
+  s_46e3fdf3bce1fe::t_b1964dc226ae34 7,9,29-30
+apps/meteor/server/lib/auth/oauth2-server/oauth2-server.ts
+  s_46e3fdf3bce1fe::t_dd336126be1245 2,13,121
+apps/meteor/ee/server/api/mcp/metadata.ts
+  s_46e3fdf3bce1fe::t_dd336126be1245 1,6,42-46
+apps/meteor/ee/server/api/apps/uikit.ts
+  s_46e3fdf3bce1fe::t_dd336126be1245 38-40
+  s_46e3fdf3bce1fe::t_549fd89d2c36e9 3,14
+apps/meteor/server/modules/apps/bridges/api.ts
+  s_46e3fdf3bce1fe::t_549fd89d2c36e9 9,14,16-24
+apps/meteor/server/lib/logger/http.ts
+  s_46e3fdf3bce1fe::t_b1964dc226ae34 1-3
+apps/meteor/server/api/v1/middlewares/logger.spec.ts
+  s_46e3fdf3bce1fe::t_044898b93e6d4a 1-91
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "88b19887cc7c1d659a625bc7f1cdeffa8c93aed9",
+  "prompts": {},
+  "sessions": {
+    "s_46e3fdf3bce1fe": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "37fe89a3-62fb-45e3-bbe6-8ae71a835934",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
