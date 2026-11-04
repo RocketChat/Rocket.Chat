@@ -21,13 +21,13 @@ function setDefaultHeaders(res: ServerResponse) {
 	res.setHeader('Content-Type', 'application/json');
 }
 
+WebApp.rawHandlers.use(['/health', '/livez', '/readyz'], nodeLoggerMiddleware(HttpLogger));
+
 /**
  * DEPRECATED Liveness Probe (`/health`)
  * Maintained for backward compatibility. Behaves like a simple liveness probe.
  * @deprecated Update infrastructure to use /livez and /readyz.
  */
-WebApp.rawHandlers.use(['/health', '/livez', '/readyz'], nodeLoggerMiddleware(HttpLogger));
-
 WebApp.rawHandlers.use('/health', (_req: IncomingMessage, res: ServerResponse) => {
 	setDefaultHeaders(res);
 
