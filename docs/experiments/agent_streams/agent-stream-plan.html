@@ -1,0 +1,410 @@
+<title>Agent Stream Explorations</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: sticky section index on the left, one reading column on the right; one column on phones. */
+:root {
+  --bg: #f6f7f9;
+  --surface: #ffffff;
+  --fg: #1b2230;
+  --muted: #5a6577;
+  --rule: #d9dee6;
+  --accent: #1f5f8b;
+  --accent-soft: #e4eef6;
+  --code-bg: #eef1f5;
+  --warn-bg: #fdf3e1;
+  --warn-rule: #c98a1b;
+  --font-display: "IBM Plex Sans Condensed", "Arial Narrow", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12161d; --surface: #191f28; --fg: #e3e8ef; --muted: #9aa5b5; --rule: #2c3542;
+    --accent: #7fb6dd; --accent-soft: #1d2c3a; --code-bg: #1f2631; --warn-bg: #2a2416; --warn-rule: #d6a24a;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12161d; --surface: #191f28; --fg: #e3e8ef; --muted: #9aa5b5; --rule: #2c3542;
+  --accent: #7fb6dd; --accent-soft: #1d2c3a; --code-bg: #1f2631; --warn-bg: #2a2416; --warn-rule: #d6a24a;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg);
+  font: 15px/1.6 var(--font-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 32px 64px;
+}
+.page { max-width: 1120px; margin: 0 auto; display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 48px; }
+header.masthead { grid-column: 1 / -1; display: grid; gap: 8px; padding-bottom: 24px; border-bottom: 1px solid var(--rule); }
+.eyebrow { font: 500 12px/1.4 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+h1 { font: 600 clamp(28px, 4vw, 38px)/1.15 var(--font-display); margin: 0; text-wrap: balance; }
+.meta { color: var(--muted); font-size: 14px; }
+nav.toc { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 24px); align-self: start; font-size: 13.5px; }
+nav.toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+nav.toc a { display: grid; grid-template-columns: 2.2em 1fr; padding: 4px 8px; border-radius: 4px; color: var(--muted); text-decoration: none; }
+nav.toc a:hover, nav.toc a:focus-visible { background: var(--accent-soft); color: var(--fg); }
+nav.toc .n { font-family: var(--font-mono); font-size: 12px; color: var(--accent); padding-top: 1px; }
+main { min-width: 0; display: grid; gap: 40px; }
+section { display: grid; gap: 14px; min-width: 0; scroll-margin-top: 24px; }
+h2 { font: 600 22px/1.25 var(--font-display); margin: 0; display: flex; gap: 12px; align-items: baseline; text-wrap: balance; }
+h2 .n { font: 500 13px/1 var(--font-mono); color: var(--accent); min-width: 2em; }
+h3 { font: 600 16px/1.3 var(--font-body); margin: 8px 0 0; }
+p, li { max-width: 68ch; }
+p { margin: 0; }
+ul, ol.steps { margin: 0; padding-left: 22px; display: grid; gap: 6px; }
+ul ul, ol.steps ul { margin-top: 6px; }
+a { color: var(--accent); }
+code { font: 13px/1.5 var(--font-mono); background: var(--code-bg); padding: 1px 5px; border-radius: 3px; overflow-wrap: anywhere; }
+pre { margin: 0; background: var(--code-bg); border: 1px solid var(--rule); border-radius: 6px; padding: 14px 16px; overflow-x: auto; font: 13px/1.55 var(--font-mono); }
+pre code { background: none; padding: 0; overflow-wrap: normal; }
+.table-wrap { overflow-x: auto; border: 1px solid var(--rule); border-radius: 6px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; vertical-align: top; padding: 9px 12px; border-bottom: 1px solid var(--rule); }
+tr:last-child td { border-bottom: 0; }
+th { font: 600 12px/1.4 var(--font-mono); letter-spacing: .04em; text-transform: uppercase; color: var(--muted); background: var(--code-bg); }
+td { font-variant-numeric: tabular-nums; }
+.hypothesis { background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; padding: 14px 16px; border-left: 3px solid var(--accent); }
+.note { background: var(--warn-bg); border-left: 3px solid var(--warn-rule); padding: 10px 14px; border-radius: 0 6px 6px 0; font-size: 14px; }
+.tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.tag { font: 500 12px/1 var(--font-mono); padding: 5px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
+.prompt { display: grid; gap: 8px; }
+.prompt-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; }
+.prompt blockquote { margin: 0; background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; padding: 14px 16px; font-size: 14px; }
+button.copy { font: 500 13px/1 var(--font-body); padding: 8px 12px; border-radius: 4px; border: 1px solid var(--accent); background: transparent; color: var(--accent); cursor: pointer; }
+button.copy:hover { background: var(--accent-soft); }
+button.copy:focus-visible, nav.toc a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+@media (max-width: 860px) {
+  .page { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  nav.toc { position: static; border: 1px solid var(--rule); border-radius: 6px; padding: 10px; background: var(--surface); }
+  nav.toc ol { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+}
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+</style>
+
+<div class="page">
+  <header class="masthead">
+    <div class="eyebrow">Exploration plan · for review</div>
+    <h1>Agent response streams: exploration plan</h1>
+    <div class="meta">Rocket.Chat · 4 November 2026 · Phase 0, then H1, H2 and H3 in parallel, one subagent each</div>
+    <div class="tags"><span class="tag">H0 baseline</span><span class="tag">H1 SSE</span><span class="tag">H2 DDP stream</span><span class="tag">H3 lean updates</span></div>
+  </header>
+
+  <nav class="toc" aria-label="Sections">
+    <ol>
+      <li><a href="#s0"><span class="n">0</span>How to use this plan</a></li>
+      <li><a href="#s1"><span class="n">1</span>Goal</a></li>
+      <li><a href="#s2"><span class="n">2</span>Cost of a message update</a></li>
+      <li><a href="#s3"><span class="n">3</span>Ground rules</a></li>
+      <li><a href="#s4"><span class="n">4</span>Shared contract</a></li>
+      <li><a href="#s5"><span class="n">5</span>Measurement protocol</a></li>
+      <li><a href="#s6"><span class="n">6</span>Phase 0: harness</a></li>
+      <li><a href="#s7"><span class="n">7</span>H1: SSE endpoint</a></li>
+      <li><a href="#s8"><span class="n">8</span>H2: DDP stream</a></li>
+      <li><a href="#s9"><span class="n">9</span>H3: lean updates</a></li>
+      <li><a href="#s10"><span class="n">10</span>Options not included</a></li>
+      <li><a href="#s11"><span class="n">11</span>Report template</a></li>
+      <li><a href="#s12"><span class="n">12</span>How to compare</a></li>
+      <li><a href="#s13"><span class="n">13</span>Subagent prompts</a></li>
+    </ol>
+  </nav>
+
+  <main>
+    <section id="s0">
+      <h2><span class="n">0</span>How to use this plan</h2>
+      <p>Run Phase 0 first, with one subagent. It builds the shared harness and measures the current approach.</p>
+      <p>Then run H1, H2 and H3 in parallel, one subagent each. Each one starts from the Phase 0 branch. The prompts for each subagent are in section 13.</p>
+      <p>Every subagent reads sections 1 to 5, its own section, and section 11.</p>
+    </section>
+
+    <section id="s1">
+      <h2><span class="n">1</span>Goal</h2>
+      <p>Find the mechanism that delivers agent response deltas to clients at the lowest server cost.</p>
+      <p>Each exploration produces a prototype, measurements under one shared protocol, and a report. The reports must let us compare the options with the same numbers.</p>
+    </section>
+
+    <section id="s2">
+      <h2><span class="n">2</span>What a message update costs today</h2>
+      <p>One update to a message runs this chain. The current approach runs it for every delta.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Step</th><th>Where</th><th>Cost</th></tr></thead>
+          <tbody>
+            <tr><td>Read the message, run 3 Apps-Engine pre-events, clone to history if <code>Message_KeepHistory</code>, read the room</td><td><code>apps/meteor/server/lib/messages/updateMessage.ts:22-57</code></td><td>2 DB reads, 1 optional insert, 3 Apps-Engine round trips</td></tr>
+            <tr><td><code>Message.beforeSave</code>: markdown parse, mentions, URL parse, Spotify, quote attachments</td><td><code>apps/meteor/server/services/messages/service.ts:256-270</code></td><td>CPU that grows with the text length</td></tr>
+            <tr><td><code>Messages.updateOne</code>, then <code>IPostMessageUpdated</code></td><td><code>updateMessage.ts:79-93</code></td><td>1 DB write, 1 Apps-Engine event</td></tr>
+            <tr><td>Read the message again, run <code>afterSaveMessage</code> callbacks, then <code>Message.afterSave</code> runs OEmbed and <code>notifyOnMessageChange</code></td><td><code>updateMessage.ts:95-106</code>, <code>apps/meteor/server/hooks/messages/afterSaveMessage.ts:34</code>, <code>service.ts:286-292</code></td><td>2 more DB reads (<code>notifyOnMessageChange</code> gets no <code>data</code> here), callbacks</td></tr>
+            <tr><td><code>api.broadcast('watch.messages')</code> with the full message</td><td><code>apps/meteor/server/lib/notifyListener.ts:493-499</code></td><td>1 broker event to every instance</td></tr>
+            <tr><td>On every instance: emit to <code>__my_messages__</code> with a room read, <code>canAccessRoom</code> and a subscription count for each subscriber; emit to the room's <code>room-messages</code> subscribers</td><td><code>packages/streamer/src/listeners.module.ts:256-269</code>, <code>packages/streamer/src/notifications.module.ts:148-177</code></td><td>DB reads per subscriber, per instance. The web client has no <code>__my_messages__</code> consumer; other clients can have one</td></tr>
+            <tr><td>On every client in the room: <code>upsertMessage</code>, the <code>streamMessage</code> callbacks, the <code>new-message</code> global event</td><td><code>apps/meteor/client/lib/LegacyRoomManager.ts:171-207</code></td><td>A re-render of the full message</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Each update carries the full <code>IMessage</code>, with the <code>md</code> AST. The total bytes of one reply grow with the square of its length.</p>
+    </section>
+
+    <section id="s3">
+      <h2><span class="n">3</span>Ground rules for every subagent</h2>
+      <ul>
+        <li>Work in your own git worktree. Start your branch from <code>poc/agent-stream-harness</code>. Name it <code>poc/agent-stream-&lt;id&gt;</code>, for example <code>poc/agent-stream-h2</code>.</li>
+        <li>Do not push. Do not open a pull request. Do not post anywhere outside this machine.</li>
+        <li>Put all POC code behind the environment variable <code>AGENT_STREAM_POC=1</code>. Without it, the server must behave as <code>develop</code> does.</li>
+        <li>Keep the POC small. Skip production polish, but write each skipped item in the report under "Production gaps".</li>
+        <li>Use your own ports and database. Phase 0: 3000 and 3001. H1: 3100 and 3101. H2: 3200 and 3201. H3: 3300 and 3301. Mongo database name: <code>agentstream_&lt;id&gt;</code>.</li>
+      </ul>
+      <div class="note">Take the measurement lock before each load run. Parallel load runs share the CPU and spoil each other's numbers.</div>
+      <ul>
+        <li>Take it with <code>mkdir /private/tmp/claude-501/-Users-dgubert-dev-RocketChat-worktrees-main/db4740ae-bf22-4d3a-8a01-f77e259cc97b/scratchpad/agent-stream/bench.lock</code>.</li>
+        <li>If <code>mkdir</code> fails, wait 60 seconds and try again.</li>
+        <li>Release it with <code>rmdir</code> on the same path after the run, also when the run fails.</li>
+        <li>Builds and functional checks need no lock.</li>
+      </ul>
+      <ul>
+        <li>Use the Phase 0 harness. Do not change the scenario definitions. If a scenario cannot run for your mechanism, write the reason in the report.</li>
+        <li>Record the machine: CPU model, core count, RAM, Node version, and the server mode (production build or <code>yarn dev</code>).</li>
+        <li>If a design point blocks you for a long time, write it as an open question and continue.</li>
+        <li>Follow <code>docs/database-access.md</code> for any new database operation, also in the POC.</li>
+      </ul>
+    </section>
+
+    <section id="s4">
+      <h2><span class="n">4</span>Shared contract</h2>
+      <p>All mechanisms implement the same behavior, so the numbers compare.</p>
+      <h3>Persistence</h3>
+      <p>At the start, the producer sends one normal message, the placeholder. It carries the marker <code>streaming: { id, state: 'active' }</code>. At the end, one <code>updateMessage</code> writes the final text and sets <code>state</code> to <code>'done'</code>, <code>'stopped'</code> or <code>'error'</code>. No other database write happens per delta. H3 is the only exception, because it tests that write.</p>
+      <h3>Delta shape</h3>
+<pre><code>type AgentDelta =
+	| { t: 'append'; streamId: string; seq: number; text: string; ts: number }
+	| { t: 'end'; streamId: string; seq: number; reason: 'done' | 'stopped' | 'error'; ts: number };</code></pre>
+      <ul>
+        <li><code>seq</code> starts at 1 and increases by 1 for each delta. A coalesced delta has one <code>seq</code>.</li>
+        <li><code>ts</code> is the producer clock in milliseconds. The harness uses it for latency.</li>
+      </ul>
+      <h3>Snapshot</h3>
+      <p>The producer's process holds <code>{ text, seq }</code> for each active stream. A late viewer, or a viewer after a reconnect, gets the snapshot, then applies only the deltas with <code>seq &gt; snapshot.seq</code>. The viewer drops duplicates and detects gaps. Each hypothesis decides how the viewer gets the snapshot.</p>
+      <h3>Display</h3>
+      <p>Until the end, the client shows the snapshot plus the deltas. After the end, it shows the persisted message. The text that the client shows at the end must equal the persisted text. This includes a stop in the middle of a reply.</p>
+      <h3>Producer</h3>
+      <p>A fake producer runs inside a Rocket.Chat server process. In D2 it runs on instance A only.</p>
+      <h3>Out of scope</h3>
+      <p>The issue of the session id, a real LLM or agent runtime, ingestion from a process outside Rocket.Chat, UI design, and the mobile and desktop implementations. Give an effort estimate for the other clients only.</p>
+    </section>
+
+    <section id="s5">
+      <h2><span class="n">5</span>Measurement protocol</h2>
+      <h3>Fake producer</h3>
+      <p>A fixed reply of 1,000 tokens (about 4 KB of markdown, with a code block and a list), at 40 tokens per second (25 seconds per reply). The coalescing window W is 0, 50 or 250 ms. With W = 0 the producer sends each token as one delta.</p>
+      <h3>Deployments</h3>
+      <ul>
+        <li><strong>D1:</strong> one monolith instance.</li>
+        <li><strong>D2:</strong> two monolith instances on one Mongo, with the instance broker active. This needs <code>ROCKETCHAT_LICENSE</code> with the <code>scalability</code> module (see <code>docs/service-brokers.md</code>, "The cluster transport"). The producer runs on A. Half of the viewers connect to A, half to B.</li>
+        <li><strong>D3 (optional):</strong> microservices with ddp-streamer and NATS, as in <code>docker-compose-ci.yml</code>. Run it only if D2 does not separate the options.</li>
+      </ul>
+      <h3>Scenarios</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>ID</th><th>Streams</th><th>Viewers for each stream</th><th>Purpose</th></tr></thead>
+          <tbody>
+            <tr><td><code>S1</code></td><td>1</td><td>1</td><td>Latency floor</td></tr>
+            <tr><td><code>S2</code></td><td>1</td><td>500, in one channel</td><td>Fan-out to a large room</td></tr>
+            <tr><td><code>S3</code></td><td>100 at the same time</td><td>2</td><td>Many small rooms, as in DMs</td></tr>
+            <tr><td><code>S4</code></td><td>0</td><td>1,000 idle viewers with the room open</td><td>Standing cost of the mechanism</td></tr>
+            <tr><td><code>S5</code></td><td>100 at the same time</td><td>2; every 10 seconds, 10% of the viewers reconnect</td><td>Resume and snapshot correctness</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul>
+        <li>Each viewer is a distinct user, a member of the room, with the room open as the web client opens it.</li>
+        <li>Run each cell 3 times and report the median.</li>
+        <li>The matrix is S1 to S5, times D1 and D2, times W = 0, 50 and 250. S4 has no W.</li>
+      </ul>
+      <h3>Metrics</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Metric</th><th>Source</th></tr></thead>
+          <tbody>
+            <tr><td>Server CPU ms per delivered delta, and CPU %</td><td><code>process.cpuUsage()</code> in each server, through the harness metrics endpoint</td></tr>
+            <tr><td>Event loop delay p99</td><td><code>monitorEventLoopDelay</code> (the health route uses it: <code>apps/meteor/server/routes/health.ts</code>)</td></tr>
+            <tr><td>RSS and heap; memory for each open connection in S4</td><td><code>process.memoryUsage()</code></td></tr>
+            <tr><td>Mongo reads and writes per reply</td><td><code>db.serverStatus().opcounters</code>, before and after the run</td></tr>
+            <tr><td>Broker events per reply, and bytes on the cluster transport</td><td>A counter in the <code>InstanceService</code> send path (D2)</td></tr>
+            <tr><td>Bytes on the wire for each viewer per reply</td><td>Load generator</td></tr>
+            <tr><td>Latency from producer to viewer: p50, p95, p99</td><td><code>ts</code> against the receive time. One host, so one clock</td></tr>
+            <tr><td>Correctness: gaps, duplicates, wrong order, final text not equal to persisted text</td><td>Load generator</td></tr>
+            <tr><td>Web client main-thread time per delta (S1 only, secondary)</td><td>Playwright with the Performance API long-task entries</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="s6">
+      <h2><span class="n">6</span>Phase 0: harness and baseline</h2>
+      <div class="hypothesis"><strong>Goal.</strong> Build one harness for all hypotheses. Measure the current approach (one <code>updateMessage</code> per delta) as the baseline.</div>
+      <h3>Build these parts</h3>
+      <ol class="steps">
+        <li>A worktree branch <code>poc/agent-stream-harness</code> from <code>develop</code>.</li>
+        <li>The fake producer: a server module behind <code>AGENT_STREAM_POC=1</code>, with a sink interface: <code>start(placeholder)</code>, <code>delta(delta)</code>, <code>end(delta)</code>. The baseline sink calls <code>updateMessage</code> with the accumulated text for each delta. A dev-only route or method starts N streams in given rooms.</li>
+        <li>A dev-only metrics endpoint that returns the counters from section 5 and resets them.</li>
+        <li>The broker counter in the cluster transport (<code>apps/meteor/ee/server/local-services/instance/service.ts</code>).</li>
+        <li>A seed script: N users, the rooms, the memberships, and a login token for each user.</li>
+        <li>A load generator in Node, outside the Meteor bundle. It starts the viewers through a transport adapter interface: <code>connect</code>, <code>open(rid | streamId)</code>, an async iterator of deltas or message updates, <code>close</code>. It ships the DDP <code>room-messages</code> adapter for the baseline. It writes one JSON result per run. A summary script turns the results into the report tables.</li>
+        <li>Run scripts for D1 and D2 that take the ports and the database name as arguments.</li>
+        <li>The baseline run: the full matrix with the <code>updateMessage</code> sink.</li>
+      </ol>
+      <h3>Decide and record the server mode</h3>
+      <p>Prefer a production build if you can make one work. Otherwise use <code>yarn dev</code> and read the CPU from inside the server process only. All hypotheses then use the same mode.</p>
+      <h3>Deliverables</h3>
+      <ul>
+        <li>The branch <code>poc/agent-stream-harness</code>, committed.</li>
+        <li><code>HARNESS.md</code> at the root of the branch: how to run each deployment and scenario, how to add a sink, how to add an adapter.</li>
+        <li>The report <code>reports/H0-baseline.md</code> (path in section 11).</li>
+      </ul>
+    </section>
+
+    <section id="s7">
+      <h2><span class="n">7</span>H1: an SSE endpoint</h2>
+      <div class="hypothesis"><strong>Hypothesis.</strong> An HTTP stream for each viewer, for example <code>GET /api/v1/agent.stream/{streamId}</code>, carries deltas at a lower server cost than the update path, and at a cost lower than or equal to DDP.</div>
+      <p>Answer each design point in the report.</p>
+      <ol class="steps">
+        <li><strong>Route.</strong> Use a Hono route on <code>httpApp</code> or a REST v1 route (<code>docs/features/http-server.md</code>, "Adding a route"). Hono's <code>streamSSE</code> comes from <code>hono/streaming</code>, a subpath export. That doc says Meteor's bundler cannot load such exports from app code. Expose it from <code>@rocket.chat/http-router</code>, or write the SSE frames on the Node response.</li>
+        <li><strong>Auth.</strong> <code>EventSource</code> cannot send the <code>X-User-Id</code> and <code>X-Auth-Token</code> headers. Compare <code>fetch</code> with a <code>ReadableStream</code> (headers work; reconnect and <code>Last-Event-ID</code> are manual) against <code>EventSource</code> with a short-lived, single-use stream token. Choose one and give the reason.</li>
+        <li><strong>Long-lived response.</strong> The server sets a 5-second idle socket timeout unless <code>HTTP_SOCKET_TIMEOUT_MS</code> is set (<code>apps/meteor/server/lib/http/httpServer.ts:34-40</code>). Find what keeps an SSE response open. Choose a heartbeat interval. Check the Traefik proxy in <code>docker-compose-ci.yml</code> for response buffers. List what nginx needs, for example <code>X-Accel-Buffering: no</code>.</li>
+        <li><strong>Connections per origin.</strong> Browsers allow 6 HTTP/1.1 connections per origin. Test the REST calls of a tab with 3 or more open streams, and with 2 or more tabs. Say whether HTTP/2 at the proxy becomes a requirement.</li>
+        <li><strong>Cross-instance delivery. This is the main question.</strong> The SSE request lands on any instance, and the producer runs on A. Evaluate these in D2:
+          <ul>
+            <li>a. Relay each delta as a broker event to every instance, as the <code>stream</code> relay does (<code>packages/streamer/src/notifications.module.ts:60</code>). Measure it.</li>
+            <li>b. Targeted delivery: a registry of streamId to the instances that have viewers, and a send to those instances only. Measure it if a POC fits in a reasonable effort; otherwise estimate it.</li>
+            <li>c. Serve the stream from the producer's instance, with sticky routes by stream id. Assess the feasibility with the standard proxies. Build nothing if it is not feasible.</li>
+          </ul>
+        </li>
+        <li><strong>Resume.</strong> Use <code>seq</code> as the SSE <code>id:</code>. On a reconnect, the server sends the snapshot, then the next deltas.</li>
+        <li><strong>Microservices.</strong> The proxy sends <code>/api</code> to the monolith, not to ddp-streamer. State the consequence for where SSE connections end and for the instance count.</li>
+        <li><strong>Web client.</strong> Add a hook that opens the stream for a message with <code>streaming.state === 'active'</code>. It keeps an overlay of the text and changes to the persisted message at the end.</li>
+        <li><strong>Other clients.</strong> List what mobile (React Native has no native <code>EventSource</code>), desktop and the livechat widget need. Estimate only.</li>
+      </ol>
+      <p><strong>Harness additions.</strong> An SSE viewer adapter and an SSE sink.</p>
+    </section>
+
+    <section id="s8">
+      <h2><span class="n">8</span>H2: a DDP stream on the existing WebSocket</h2>
+      <div class="hypothesis"><strong>Hypothesis.</strong> The existing WebSocket and stream infrastructure carries deltas at a low cost. A stream emit touches no database and sends one pre-encoded frame to each subscriber.</div>
+      <p>Answer each design point in the report.</p>
+      <ol class="steps">
+        <li><strong>Stream.</strong> Compare two options. Measure the standing cost of each in S4.
+          <ul>
+            <li>a. A new event on <code>notify-room</code>: <code>&lt;rid&gt;/agent-delta</code>. The read permission runs once, at subscribe (<code>packages/streamer/src/notifications.module.ts:196</code>). The emit rule defaults to <code>all</code> (<code>packages/streamer/src/streamer.module.ts:56</code>).</li>
+            <li>b. A dedicated stream keyed by streamId. The client subscribes only while a message with an active stream is on the screen.</li>
+          </ul>
+        </li>
+        <li><strong>Do not use <code>room-messages</code>.</strong> Its <code>__my_messages__</code> event runs DB reads for each subscriber (<code>notifications.module.ts:148-177</code>), and it carries full messages.</li>
+        <li><strong>Fan-out.</strong> <code>Streamer.emit()</code> relays each emit to every instance as the broker event <code>stream</code> (<code>streamer.module.ts:270-273</code>; <code>docs/service-brokers.md</code>, "Stream relays"). Measure the broker events and bytes in D2 for each W. Sketch a relay that targets only the instances with subscribers. Build it only if the D2 numbers show that the relay is the largest cost.</li>
+        <li><strong>Delivery loop.</strong> <code>StreamAdapter.sendToManySubscriptions</code> awaits <code>isEmitAllowed</code> and <code>sendFrames</code> for each subscriber, one after the other (<code>packages/ddp-server/src/streams/StreamAdapter.ts:39-60</code>). Measure the latency spread across the 500 viewers of S2. Say whether the loop needs a change.</li>
+        <li><strong>Frame.</strong> Confirm that the emit uses the pre-encoded frame path, with no transform function. Report the frame size for each delta.</li>
+        <li><strong>Resume.</strong> After a reconnect, the client subscribes again, then calls a method for the snapshot <code>{ text, seq }</code>. It keeps the deltas that arrive before the snapshot and applies those with a higher <code>seq</code>.</li>
+        <li><strong>Microservices.</strong> Emits from the monolith reach ddp-streamer through the <code>stream</code> relay (<code>docs/adr/0005-stream-fan-out-rides-the-service-broker.md</code>). Run D3 if time allows.</li>
+        <li><strong>Web client.</strong> Add the subscription and the same overlay behavior as H1.</li>
+        <li><strong>Other clients.</strong> Mobile and livechat use DDP already. Estimate the effort.</li>
+      </ol>
+      <p><strong>Harness additions.</strong> A DDP stream viewer adapter and a stream sink.</p>
+    </section>
+
+    <section id="s9">
+      <h2><span class="n">9</span>H3: lean, coalesced message updates</h2>
+      <div class="hypothesis"><strong>Hypothesis.</strong> With a coalescing window of 250 to 1,000 ms and a lean update path, the existing message update flow is cheap enough. If this is true, no client needs a change: every client renders message updates today. This is the option with the least new code, so it must be disproved with numbers, not assumed false.</div>
+      <p>Answer each point in the report.</p>
+      <ol class="steps">
+        <li><strong>Wider windows.</strong> Add W = 500 and W = 1,000 ms to the Phase 0 baseline, with the current <code>updateMessage</code>.</li>
+        <li><strong>Lean sink.</strong> Add one model method, for example <code>Messages.setStreamTextById(_id, msg)</code>, with a <code>$set</code> of the text only (<code>docs/database-access.md</code>). The sink skips the Apps events, the history, the <code>beforeSave</code> parse and the <code>afterSave</code> callbacks. It broadcasts with <code>notifyOnMessageChange({ id, data })</code>, so it does not read the message again. The final write at the end uses the full <code>updateMessage</code>.</li>
+        <li><strong>What remains.</strong> Measure the DB write, the <code>watch.messages</code> event, the work for each subscriber in <code>ListenersModule</code>, and the growth of the payload.</li>
+        <li><strong>Partial payload.</strong> Test a broadcast of only <code>_id</code>, <code>rid</code>, <code>msg</code> and <code>_updatedAt</code>. Check whether <code>upsertMessage</code> (<code>apps/meteor/client/lib/RoomHistoryManager.ts:32</code>) accepts a partial message. Say what the mobile client needs for it.</li>
+        <li><strong>Markdown.</strong> Without <code>beforeSave</code>, <code>md</code> stays old during the stream. Find how the web client renders a message without a current <code>md</code>, and what a client-side parse costs per update.</li>
+        <li><strong>Side effects.</strong> List every consumer of a message write and of the <code>watch.messages</code> event: callbacks, Apps events, outgoing integrations, notifications, read receipts, search indexes, the "edited" mark. Say which ones the lean path skips, and whether each skip is acceptable while the stream is active.</li>
+      </ol>
+      <p><strong>Harness additions.</strong> The lean sink. The baseline adapter from Phase 0 already reads message updates.</p>
+    </section>
+
+    <section id="s10">
+      <h2><span class="n">10</span>Options not included</h2>
+      <ul>
+        <li><strong>WebTransport or WebRTC data channels.</strong> No gain over a WebSocket for text from server to client. Browser and proxy support is narrower.</li>
+        <li><strong>A second WebSocket without DDP.</strong> The same cross-instance problem as SSE, plus a second socket for each client.</li>
+        <li><strong>Deltas in a capped Mongo collection with change streams.</strong> This puts every delta back in the database.</li>
+        <li><strong>Clients that connect to the agent runtime directly.</strong> This removes Rocket.Chat from the data path, but it depends on the design of the agent runtime, which is out of scope. Reconsider it when that design exists.</li>
+      </ul>
+    </section>
+
+    <section id="s11">
+      <h2><span class="n">11</span>Report template</h2>
+      <p>Write the report to <code>/private/tmp/claude-501/-Users-dgubert-dev-RocketChat-worktrees-main/db4740ae-bf22-4d3a-8a01-f77e259cc97b/scratchpad/agent-stream/reports/&lt;id&gt;.md</code>.</p>
+      <ol class="steps">
+        <li><strong>Verdict.</strong> One paragraph: does the hypothesis hold, and under which limits.</li>
+        <li><strong>Prototype.</strong> The branch, the files that changed, how to run it.</li>
+        <li><strong>Machine and mode.</strong></li>
+        <li><strong>Results.</strong> One table per deployment: rows are scenarios and W, columns are the metrics of section 5.</li>
+        <li><strong>Correctness.</strong> Gaps, duplicates, wrong order, and text mismatches, for each scenario.</li>
+        <li><strong>Design points.</strong> One answer for each numbered point of your section.</li>
+        <li><strong>Failure modes.</strong> Test and describe: a viewer reconnect; a restart of the instance that serves a viewer; a producer that dies before <code>end</code> (what the client shows, and what happens to the placeholder); a stop in the middle of a reply.</li>
+        <li><strong>Client effort.</strong> The web client (done in the POC) and an estimate for each other client.</li>
+        <li><strong>Production gaps.</strong> What the POC skipped.</li>
+        <li><strong>Open questions.</strong></li>
+      </ol>
+    </section>
+
+    <section id="s12">
+      <h2><span class="n">12</span>How to compare the results</h2>
+      <h3>Hard gates</h3>
+      <p>An option that fails one of these is rejected.</p>
+      <ul>
+        <li>No gaps and no duplicates in S5.</li>
+        <li>The text that the client shows at the end equals the persisted text, also after a stop.</li>
+        <li>It works behind the proxy of <code>docker-compose-ci.yml</code>.</li>
+        <li>S2 p99 latency is below 1 second at W = 50. This threshold is a proposal; adjust it before the runs.</li>
+      </ul>
+      <h3>Ranking, in this order</h3>
+      <ol class="steps">
+        <li>Server CPU per delivered delta, in D2.</li>
+        <li>Broker bytes per reply, in D2.</li>
+        <li>Mongo writes per reply.</li>
+        <li>Standing cost, from S4.</li>
+        <li>The work for all clients, not only the web client.</li>
+        <li>The size of the POC code.</li>
+      </ol>
+    </section>
+
+    <section id="s13">
+      <h2><span class="n">13</span>Subagent prompts</h2>
+      <p>Use <code>subagent_type: "agent-stream-explorer"</code> (defined in <code>~/.claude/agents/agent-stream-explorer.md</code>) with <code>isolation: "worktree"</code>.</p>
+      <div class="prompt">
+        <div class="prompt-head"><h3>Phase 0 (run alone, first)</h3><button class="copy" type="button" id="copy-p0" data-copy="prompt-p0">Copy prompt</button></div>
+        <blockquote id="prompt-p0">You run Phase 0 of the plan at /private/tmp/claude-501/-Users-dgubert-dev-RocketChat-worktrees-main/db4740ae-bf22-4d3a-8a01-f77e259cc97b/scratchpad/agent-stream/PLAN.md. Read sections 1 to 6 and section 11. Follow the ground rules in section 3 exactly. Build the harness on the branch poc/agent-stream-harness, write HARNESS.md, and run the baseline matrix. Write the report to the path in section 11 with the id H0-baseline. Do not push, open a pull request, or post anywhere. When you finish, reply with the report path, the branch name, and a summary of 5 lines or less.</blockquote>
+      </div>
+      <div class="prompt">
+        <div class="prompt-head"><h3>H1, H2, H3 (in parallel, after Phase 0)</h3><button class="copy" type="button" id="copy-ph" data-copy="prompt-ph">Copy prompt</button></div>
+        <p>Replace <code>&lt;id&gt;</code> with <code>h1</code>, <code>h2</code> or <code>h3</code>, and <code>&lt;n&gt;</code> with 7, 8 or 9.</p>
+        <blockquote id="prompt-ph">You run exploration &lt;id&gt; of the plan at /private/tmp/claude-501/-Users-dgubert-dev-RocketChat-worktrees-main/db4740ae-bf22-4d3a-8a01-f77e259cc97b/scratchpad/agent-stream/PLAN.md. Read sections 1 to 5, section &lt;n&gt;, and section 11. Follow the ground rules in section 3 exactly, including the ports and the measurement lock. Start your branch poc/agent-stream-&lt;id&gt; from poc/agent-stream-harness, and read HARNESS.md first. The baseline numbers are in reports/H0-baseline.md. Answer every numbered design point of your section in the report. Write the report to the path in section 11 with the id &lt;id&gt;. Do not push, open a pull request, or post anywhere. When you finish, reply with the report path, the branch name, and a summary of 5 lines or less.</blockquote>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+document.querySelectorAll('button[data-copy]').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    var el = document.getElementById(btn.dataset.copy);
+    var done = function (label) { btn.textContent = label; setTimeout(function () { btn.textContent = 'Copy prompt'; }, 2000); };
+    var select = function () {
+      var range = document.createRange(); range.selectNodeContents(el);
+      var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
+      done('Selected: press Ctrl+C');
+    };
+    try {
+      navigator.clipboard.writeText(el.innerText).then(function () { done('Copied'); }, select);
+    } catch (e) { select(); }
+  });
+});
+</script>

@@ -1,0 +1,175 @@
+{
+  "label": "h0",
+  "adapter": "ddp-room-messages",
+  "sink": "update-message",
+  "deployment": "D2",
+  "scenario": "S1",
+  "w": 0,
+  "run": 3,
+  "tokens": 1000,
+  "at": "2026-11-04T14:30:32.062Z",
+  "machine": {
+    "cpu": "Apple M5 Pro",
+    "cores": 15,
+    "ramGB": 48,
+    "node": "v24.15.0",
+    "mode": "production bundle"
+  },
+  "viewers": 1,
+  "replies": 1,
+  "connect": {
+    "ms": 38,
+    "failed": 0
+  },
+  "windowMs": 25114,
+  "timedOut": false,
+  "producer": {
+    "streamsStarted": 1,
+    "streamsEnded": 1,
+    "deltas": 1000,
+    "queued": 0,
+    "sinkErrors": 0,
+    "lastError": "",
+    "active": 0
+  },
+  "expectedDeltasPerViewer": 1001,
+  "delivered": 1001,
+  "server": {
+    "cpuMs": 12267.354000000001,
+    "cpuMsPerDeliveredDelta": 12.255098901098902,
+    "cpuMsPerReply": 12267.354000000001,
+    "idleCpuMsPerSec": [
+      4.748507759649821,
+      4.55151153540175
+    ],
+    "netCpuMs": 12033.69576371959,
+    "netCpuMsPerDeliveredDelta": 12.02167408962996,
+    "netCpuMsPerReply": 12033.69576371959,
+    "cpuPct": [
+      45.637824391020544,
+      3.1892815920398014
+    ],
+    "eventLoopP99Ms": [
+      12.361727,
+      11.591679
+    ],
+    "rssBytes": [
+      1207091200,
+      991084544
+    ],
+    "heapUsedBytes": [
+      664661296,
+      585765592
+    ]
+  },
+  "mongo": {
+    "db": {
+      "queries": 20043,
+      "getmore": 58,
+      "insert": 3,
+      "update": 3017,
+      "remove": 1,
+      "commands": 45
+    },
+    "server": {
+      "insert": 3,
+      "query": 20047,
+      "update": 3017,
+      "delete": 1,
+      "getmore": 58,
+      "command": 66
+    },
+    "byCollection": {
+      "_queue.commands": 10,
+      "_raix_push_app_tokens.queries": 1,
+      "instances.getmore": 58,
+      "instances.update": 7,
+      "rocketchat_analytics.update": 1002,
+      "rocketchat_message.queries": 3005,
+      "rocketchat_message.insert": 1,
+      "rocketchat_message.update": 1001,
+      "rocketchat_notification_queue.insert": 2,
+      "rocketchat_notification_queue.update": 1,
+      "rocketchat_notification_queue.remove": 1,
+      "rocketchat_notification_queue.commands": 27,
+      "rocketchat_room.queries": 7013,
+      "rocketchat_room.update": 1002,
+      "rocketchat_settings.queries": 3,
+      "rocketchat_subscription.queries": 3,
+      "rocketchat_subscription.update": 3,
+      "rocketchat_subscription.commands": 3,
+      "users.queries": 10017,
+      "users.commands": 5,
+      "usersSessions.queries": 1,
+      "usersSessions.update": 1
+    },
+    "readsPerReply": 20101,
+    "writesPerReply": 3021,
+    "commandsPerReply": 45,
+    "idlePerSec": {
+      "queries": 0.2,
+      "getmore": 2,
+      "insert": 0,
+      "update": 0.2,
+      "remove": 0,
+      "commands": 1.2
+    },
+    "netReadsPerReply": 20045.749200000002,
+    "netWritesPerReply": 3015.9772
+  },
+  "broker": {
+    "perInstance": [
+      {
+        "events": 2006,
+        "packets": 2019,
+        "bytes": 13521663,
+        "eventsOut": {
+          "watch.subscriptions": 1,
+          "notify.desktop": 1,
+          "watch.rooms": 1002,
+          "watch.messages": 1002
+        },
+        "packetsIn": 13,
+        "bytesIn": 2210
+      },
+      {
+        "events": 0,
+        "packets": 13,
+        "bytes": 2210,
+        "eventsOut": {},
+        "packetsIn": 2019,
+        "bytesIn": 13521663
+      }
+    ],
+    "eventsPerReply": 2006,
+    "bytesPerReply": 13523873
+  },
+  "bytesPerViewerPerReply": {
+    "mean": 6382360,
+    "p50": 6382360,
+    "max": 6382360
+  },
+  "latencyMs": {
+    "count": 1001,
+    "p50": 18,
+    "p95": 23,
+    "p99": 31,
+    "max": 37
+  },
+  "correctness": {
+    "gapEvents": 0,
+    "missingSeqs": 0,
+    "dupes": 0,
+    "outOfOrder": 0,
+    "staleAfterSnapshot": 0,
+    "reconnects": 0,
+    "errors": 0,
+    "notEnded": 0,
+    "textMismatch": 0,
+    "persistedNotDone": 0
+  },
+  "persistedMessageBytes": 10506,
+  "loadgen": {
+    "cpuPct": 1.389523771601497
+  }
+}

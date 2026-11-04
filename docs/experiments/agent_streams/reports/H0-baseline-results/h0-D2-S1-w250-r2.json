@@ -1,0 +1,177 @@
+{
+  "label": "h0",
+  "adapter": "ddp-room-messages",
+  "sink": "update-message",
+  "deployment": "D2",
+  "scenario": "S1",
+  "w": 250,
+  "run": 2,
+  "tokens": 1000,
+  "at": "2026-11-04T14:33:19.033Z",
+  "machine": {
+    "cpu": "Apple M5 Pro",
+    "cores": 15,
+    "ramGB": 48,
+    "node": "v24.15.0",
+    "mode": "production bundle"
+  },
+  "viewers": 1,
+  "replies": 1,
+  "connect": {
+    "ms": 45,
+    "failed": 0
+  },
+  "windowMs": 25126,
+  "timedOut": false,
+  "producer": {
+    "streamsStarted": 1,
+    "streamsEnded": 1,
+    "deltas": 99,
+    "queued": 0,
+    "sinkErrors": 0,
+    "lastError": "",
+    "active": 0
+  },
+  "expectedDeltasPerViewer": 100,
+  "delivered": 100,
+  "server": {
+    "cpuMs": 2045.346,
+    "cpuMsPerDeliveredDelta": 20.45346,
+    "cpuMsPerReply": 2045.346,
+    "idleCpuMsPerSec": [
+      5.7988471476843575,
+      5.362353408865037
+    ],
+    "netCpuMs": 1764.7757404094614,
+    "netCpuMsPerDeliveredDelta": 17.647757404094612,
+    "netCpuMsPerReply": 1764.7757404094614,
+    "cpuPct": [
+      7.206102315219985,
+      0.9303683666162781
+    ],
+    "eventLoopP99Ms": [
+      11.485183,
+      11.370495
+    ],
+    "rssBytes": [
+      1207451648,
+      991117312
+    ],
+    "heapUsedBytes": [
+      562331856,
+      590041704
+    ]
+  },
+  "mongo": {
+    "db": {
+      "queries": 2027,
+      "getmore": 56,
+      "insert": 3,
+      "update": 316,
+      "remove": 1,
+      "commands": 75
+    },
+    "server": {
+      "insert": 3,
+      "query": 2031,
+      "update": 316,
+      "delete": 1,
+      "getmore": 56,
+      "command": 95
+    },
+    "byCollection": {
+      "_queue.commands": 10,
+      "_raix_push_app_tokens.queries": 1,
+      "instances.getmore": 56,
+      "instances.update": 6,
+      "rocketchat_analytics.update": 101,
+      "rocketchat_cron.commands": 30,
+      "rocketchat_message.queries": 302,
+      "rocketchat_message.insert": 1,
+      "rocketchat_message.update": 100,
+      "rocketchat_notification_queue.insert": 2,
+      "rocketchat_notification_queue.update": 1,
+      "rocketchat_notification_queue.remove": 1,
+      "rocketchat_notification_queue.commands": 27,
+      "rocketchat_room.queries": 706,
+      "rocketchat_room.update": 101,
+      "rocketchat_settings.queries": 4,
+      "rocketchat_subscription.queries": 3,
+      "rocketchat_subscription.update": 3,
+      "rocketchat_subscription.commands": 3,
+      "users.queries": 1008,
+      "users.update": 3,
+      "users.commands": 5,
+      "usersSessions.queries": 3,
+      "usersSessions.update": 1
+    },
+    "readsPerReply": 2083,
+    "writesPerReply": 320,
+    "commandsPerReply": 75,
+    "idlePerSec": {
+      "queries": 0.4,
+      "getmore": 2,
+      "insert": 0,
+      "update": 0.8,
+      "remove": 0,
+      "commands": 1.2
+    },
+    "netReadsPerReply": 2022.6976,
+    "netWritesPerReply": 299.8992
+  },
+  "broker": {
+    "perInstance": [
+      {
+        "events": 204,
+        "packets": 216,
+        "bytes": 1379061,
+        "eventsOut": {
+          "watch.subscriptions": 1,
+          "notify.desktop": 1,
+          "watch.rooms": 101,
+          "watch.messages": 101
+        },
+        "packetsIn": 12,
+        "bytesIn": 2040
+      },
+      {
+        "events": 0,
+        "packets": 12,
+        "bytes": 2040,
+        "eventsOut": {},
+        "packetsIn": 216,
+        "bytesIn": 1379061
+      }
+    ],
+    "eventsPerReply": 204,
+    "bytesPerReply": 1381101
+  },
+  "bytesPerViewerPerReply": {
+    "mean": 649920,
+    "p50": 649920,
+    "max": 649920
+  },
+  "latencyMs": {
+    "count": 100,
+    "p50": 33,
+    "p95": 38,
+    "p99": 64,
+    "max": 64
+  },
+  "correctness": {
+    "gapEvents": 0,
+    "missingSeqs": 0,
+    "dupes": 0,
+    "outOfOrder": 0,
+    "staleAfterSnapshot": 0,
+    "reconnects": 0,
+    "errors": 0,
+    "notEnded": 0,
+    "textMismatch": 0,
+    "persistedNotDone": 0
+  },
+  "persistedMessageBytes": 10505,
+  "loadgen": {
+    "cpuPct": 0.8379367985353816
+  }
+}

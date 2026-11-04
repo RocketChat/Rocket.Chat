@@ -1,0 +1,122 @@
+{
+  "label": "check",
+  "adapter": "ddp-room-messages",
+  "sink": "update-message",
+  "deployment": "D1",
+  "scenario": "S3",
+  "w": 0,
+  "run": 1,
+  "tokens": 200,
+  "at": "2026-11-04T14:18:34.919Z",
+  "machine": {
+    "cpu": "Apple M5 Pro",
+    "cores": 15,
+    "ramGB": 48,
+    "node": "v24.15.0",
+    "mode": "production bundle"
+  },
+  "viewers": 200,
+  "replies": 100,
+  "connect": {
+    "ms": 649,
+    "failed": 0
+  },
+  "windowMs": 44747,
+  "timedOut": false,
+  "producer": {
+    "streamsStarted": 100,
+    "streamsEnded": 100,
+    "deltas": 20000,
+    "queued": 0,
+    "sinkErrors": 0,
+    "lastError": "",
+    "active": 0
+  },
+  "expectedDeltasPerViewer": 201,
+  "delivered": 40200,
+  "server": {
+    "cpuMs": 69101.068,
+    "cpuMsPerDeliveredDelta": 1.718932039800995,
+    "cpuMsPerReply": 691.01068,
+    "cpuPct": [
+      154.37784678626483
+    ],
+    "eventLoopP99Ms": [
+      22.986751
+    ],
+    "rssBytes": [
+      1494958080
+    ],
+    "heapUsedBytes": [
+      818670560
+    ]
+  },
+  "mongo": {
+    "db": {
+      "queries": 344113,
+      "getmore": 99,
+      "insert": 301,
+      "update": 61118,
+      "remove": 4,
+      "commands": 899
+    },
+    "server": {
+      "insert": 301,
+      "query": 344513,
+      "update": 61118,
+      "delete": 4,
+      "getmore": 99,
+      "command": 149
+    },
+    "readsPerReply": 3442.12,
+    "writesPerReply": 614.23,
+    "commandsPerReply": 8.99
+  },
+  "broker": {
+    "perInstance": [
+      {
+        "events": 40900,
+        "packets": 40922,
+        "bytes": 104478599,
+        "eventsOut": {
+          "watch.subscriptions": 300,
+          "notify.desktop": 200,
+          "watch.rooms": 20200,
+          "watch.messages": 20200
+        },
+        "packetsIn": 23,
+        "bytesIn": 3866
+      }
+    ],
+    "eventsPerReply": 409,
+    "bytesPerReply": 1044785.99
+  },
+  "bytesPerViewerPerReply": {
+    "mean": 440382,
+    "p50": 440382,
+    "max": 440382
+  },
+  "latencyMs": {
+    "count": 40200,
+    "p50": 18151,
+    "p95": 37125,
+    "p99": 38933,
+    "max": 39298
+  },
+  "correctness": {
+    "gapEvents": 0,
+    "missingSeqs": 0,
+    "dupes": 0,
+    "outOfOrder": 0,
+    "staleAfterSnapshot": 0,
+    "reconnects": 0,
+    "errors": 0,
+    "notEnded": 0,
+    "textMismatch": 0,
+    "persistedNotDone": 0
+  },
+  "persistedMessageBytes": 3723,
+  "loadgen": {
+    "cpuPct": 6.203939928933784
+  }
+}

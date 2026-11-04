@@ -1,0 +1,168 @@
+{
+  "label": "h0",
+  "adapter": "ddp-room-messages",
+  "sink": "update-message",
+  "deployment": "D1",
+  "scenario": "S1",
+  "w": 250,
+  "run": 1,
+  "tokens": 1000,
+  "at": "2026-11-04T15:37:57.211Z",
+  "machine": {
+    "cpu": "Apple M5 Pro",
+    "cores": 15,
+    "ramGB": 48,
+    "node": "v24.15.0",
+    "mode": "production bundle"
+  },
+  "viewers": 1,
+  "replies": 1,
+  "connect": {
+    "ms": 37,
+    "failed": 0
+  },
+  "windowMs": 25171,
+  "timedOut": false,
+  "producer": {
+    "streamsStarted": 1,
+    "streamsEnded": 1,
+    "deltas": 98,
+    "queued": 0,
+    "sinkErrors": 0,
+    "lastError": "",
+    "active": 0
+  },
+  "expectedDeltasPerViewer": 99,
+  "delivered": 99,
+  "server": {
+    "cpuMs": 2026.241,
+    "cpuMsPerDeliveredDelta": 20.46708080808081,
+    "cpuMsPerReply": 2026.241,
+    "idleCpuMsPerSec": [
+      73.55798687089715
+    ],
+    "netCpuMs": 173.8302166301969,
+    "netCpuMsPerDeliveredDelta": 1.755860774042393,
+    "netCpuMsPerReply": 173.8302166301969,
+    "cpuPct": [
+      8.046066791089226
+    ],
+    "eventLoopP99Ms": [
+      12.615679
+    ],
+    "rssBytes": [
+      1182433280
+    ],
+    "heapUsedBytes": [
+      581478160
+    ]
+  },
+  "mongo": {
+    "db": {
+      "queries": 2009,
+      "getmore": 25,
+      "insert": 5,
+      "update": 316,
+      "remove": 5,
+      "commands": 35
+    },
+    "server": {
+      "insert": 5,
+      "query": 2013,
+      "update": 316,
+      "delete": 5,
+      "getmore": 25,
+      "command": 46
+    },
+    "byCollection": {
+      "_queue.commands": 5,
+      "_raix_push_app_tokens.queries": 5,
+      "instances.getmore": 25,
+      "instances.update": 4,
+      "rocketchat_analytics.update": 100,
+      "rocketchat_cron.commands": 4,
+      "rocketchat_cron_history.insert": 2,
+      "rocketchat_cron_history.update": 2,
+      "rocketchat_export_operations.queries": 1,
+      "rocketchat_message.queries": 299,
+      "rocketchat_message.insert": 1,
+      "rocketchat_message.update": 99,
+      "rocketchat_notification_queue.insert": 2,
+      "rocketchat_notification_queue.update": 7,
+      "rocketchat_notification_queue.remove": 5,
+      "rocketchat_notification_queue.commands": 18,
+      "rocketchat_room.queries": 699,
+      "rocketchat_room.update": 100,
+      "rocketchat_settings.queries": 3,
+      "rocketchat_subscription.queries": 3,
+      "rocketchat_subscription.update": 3,
+      "rocketchat_subscription.commands": 3,
+      "rocketchat_video_conference.queries": 1,
+      "users.queries": 997,
+      "users.commands": 5,
+      "usersSessions.queries": 1,
+      "usersSessions.update": 1
+    },
+    "readsPerReply": 2034,
+    "writesPerReply": 326,
+    "commandsPerReply": 35,
+    "idlePerSec": {
+      "queries": 0,
+      "getmore": 1,
+      "insert": 0,
+      "update": 0,
+      "remove": 0,
+      "commands": 0.8
+    },
+    "netReadsPerReply": 2008.829,
+    "netWritesPerReply": 326
+  },
+  "broker": {
+    "perInstance": [
+      {
+        "events": 202,
+        "packets": 0,
+        "bytes": 0,
+        "eventsOut": {
+          "watch.subscriptions": 1,
+          "notify.desktop": 1,
+          "watch.rooms": 100,
+          "watch.messages": 100
+        },
+        "packetsIn": 0,
+        "bytesIn": 0
+      }
+    ],
+    "eventsPerReply": 202,
+    "bytesPerReply": 0
+  },
+  "bytesPerViewerPerReply": {
+    "mean": 643501,
+    "p50": 643501,
+    "max": 643501
+  },
+  "latencyMs": {
+    "count": 99,
+    "p50": 29,
+    "p95": 35,
+    "p99": 64,
+    "max": 64
+  },
+  "correctness": {
+    "gapEvents": 0,
+    "missingSeqs": 0,
+    "dupes": 0,
+    "outOfOrder": 0,
+    "staleAfterSnapshot": 0,
+    "reconnects": 0,
+    "errors": 0,
+    "notEnded": 0,
+    "textMismatch": 0,
+    "persistedNotDone": 0
+  },
+  "persistedMessageBytes": 10504,
+  "loadgen": {
+    "cpuPct": 1.2889992451630845
+  },
+  "otherBusyCores": 0.8654805576453845
+}

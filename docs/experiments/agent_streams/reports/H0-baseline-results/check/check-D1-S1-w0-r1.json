@@ -1,0 +1,122 @@
+{
+  "label": "check",
+  "adapter": "ddp-room-messages",
+  "sink": "update-message",
+  "deployment": "D1",
+  "scenario": "S1",
+  "w": 0,
+  "run": 1,
+  "tokens": 80,
+  "at": "2026-11-04T14:17:18.431Z",
+  "machine": {
+    "cpu": "Apple M5 Pro",
+    "cores": 15,
+    "ramGB": 48,
+    "node": "v24.15.0",
+    "mode": "production bundle"
+  },
+  "viewers": 1,
+  "replies": 1,
+  "connect": {
+    "ms": 41,
+    "failed": 0
+  },
+  "windowMs": 2530,
+  "timedOut": false,
+  "producer": {
+    "streamsStarted": 1,
+    "streamsEnded": 1,
+    "deltas": 80,
+    "queued": 0,
+    "sinkErrors": 0,
+    "lastError": "",
+    "active": 0
+  },
+  "expectedDeltasPerViewer": 81,
+  "delivered": 81,
+  "server": {
+    "cpuMs": 1124.164,
+    "cpuMsPerDeliveredDelta": 13.878567901234568,
+    "cpuMsPerReply": 1124.164,
+    "cpuPct": [
+      44.206213134093595
+    ],
+    "eventLoopP99Ms": [
+      11.837439
+    ],
+    "rssBytes": [
+      913899520
+    ],
+    "heapUsedBytes": [
+      563338928
+    ]
+  },
+  "mongo": {
+    "db": {
+      "queries": 1639,
+      "getmore": 2,
+      "insert": 3,
+      "update": 249,
+      "remove": 1,
+      "commands": 11
+    },
+    "server": {
+      "insert": 3,
+      "query": 1643,
+      "update": 249,
+      "delete": 1,
+      "getmore": 2,
+      "command": 7
+    },
+    "readsPerReply": 1641,
+    "writesPerReply": 253,
+    "commandsPerReply": 11
+  },
+  "broker": {
+    "perInstance": [
+      {
+        "events": 166,
+        "packets": 0,
+        "bytes": 0,
+        "eventsOut": {
+          "watch.subscriptions": 1,
+          "notify.desktop": 1,
+          "watch.rooms": 82,
+          "watch.messages": 82
+        },
+        "packetsIn": 0,
+        "bytesIn": 0
+      }
+    ],
+    "eventsPerReply": 166,
+    "bytesPerReply": 0
+  },
+  "bytesPerViewerPerReply": {
+    "mean": 94914,
+    "p50": 94914,
+    "max": 94914
+  },
+  "latencyMs": {
+    "count": 81,
+    "p50": 16,
+    "p95": 30,
+    "p99": 37,
+    "max": 37
+  },
+  "correctness": {
+    "gapEvents": 0,
+    "missingSeqs": 0,
+    "dupes": 0,
+    "outOfOrder": 0,
+    "staleAfterSnapshot": 0,
+    "reconnects": 0,
+    "errors": 0,
+    "notEnded": 0,
+    "textMismatch": 0,
+    "persistedNotDone": 0
+  },
+  "persistedMessageBytes": 1665,
+  "loadgen": {
+    "cpuPct": 3.016916996047431
+  }
+}

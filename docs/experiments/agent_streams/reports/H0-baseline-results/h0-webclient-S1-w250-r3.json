@@ -1,0 +1,38 @@
+{
+  "label": "h0",
+  "sink": "update-message",
+  "scenario": "S1-webclient",
+  "w": 250,
+  "run": 3,
+  "streamMs": 27132,
+  "deltas": 100,
+  "idlePerSecondMs": {
+    "TaskDuration": 0.9884,
+    "ScriptDuration": 0.07540000000000001,
+    "LayoutDuration": 0,
+    "RecalcStyleDuration": 0
+  },
+  "rawMs": {
+    "TaskDuration": 2067.0060000000003,
+    "ScriptDuration": 1536.005,
+    "LayoutDuration": 73.656,
+    "RecalcStyleDuration": 78.708
+  },
+  "netMs": {
+    "TaskDuration": 2040.1887312000003,
+    "ScriptDuration": 1533.9592472000002,
+    "LayoutDuration": 73.656,
+    "RecalcStyleDuration": 78.708
+  },
+  "netMsPerDelta": {
+    "TaskDuration": 20.401887312000003,
+    "ScriptDuration": 15.339592472000001,
+    "LayoutDuration": 0.7365600000000001,
+    "RecalcStyleDuration": 0.78708
+  },
+  "longTasks": {
+    "count": 0,
+    "totalMs": 0,
+    "maxMs": 0
+  }
+}

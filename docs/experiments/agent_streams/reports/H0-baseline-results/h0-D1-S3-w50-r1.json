@@ -1,0 +1,168 @@
+{
+  "label": "h0",
+  "adapter": "ddp-room-messages",
+  "sink": "update-message",
+  "deployment": "D1",
+  "scenario": "S3",
+  "w": 50,
+  "run": 1,
+  "tokens": 1000,
+  "at": "2026-11-04T15:59:56.303Z",
+  "machine": {
+    "cpu": "Apple M5 Pro",
+    "cores": 15,
+    "ramGB": 48,
+    "node": "v24.15.0",
+    "mode": "production bundle"
+  },
+  "viewers": 200,
+  "replies": 100,
+  "connect": {
+    "ms": 849,
+    "failed": 0
+  },
+  "windowMs": 134803,
+  "timedOut": false,
+  "producer": {
+    "streamsStarted": 100,
+    "streamsEnded": 100,
+    "deltas": 40796,
+    "queued": 0,
+    "sinkErrors": 0,
+    "lastError": "",
+    "active": 0
+  },
+  "expectedDeltasPerViewer": 408.96,
+  "delivered": 81792,
+  "server": {
+    "cpuMs": 190183.965,
+    "cpuMsPerDeliveredDelta": 2.3252147520539905,
+    "cpuMsPerReply": 1901.83965,
+    "idleCpuMsPerSec": [
+      5.9044966175885385
+    ],
+    "netCpuMs": 189387.96209749303,
+    "netCpuMsPerDeliveredDelta": 2.3154827134376594,
+    "netCpuMsPerReply": 1893.8796209749303,
+    "cpuPct": [
+      141.07242254085287
+    ],
+    "eventLoopP99Ms": [
+      35.061759
+    ],
+    "rssBytes": [
+      1765130240
+    ],
+    "heapUsedBytes": [
+      621132536
+    ]
+  },
+  "mongo": {
+    "db": {
+      "queries": 698920,
+      "getmore": 135,
+      "insert": 305,
+      "update": 124308,
+      "remove": 66,
+      "commands": 1060
+    },
+    "server": {
+      "insert": 305,
+      "query": 699322,
+      "update": 124411,
+      "delete": 68,
+      "getmore": 135,
+      "command": 361
+    },
+    "byCollection": {
+      "_queue.commands": 27,
+      "_raix_push_app_tokens.queries": 66,
+      "instances.getmore": 135,
+      "instances.update": 15,
+      "rocketchat_analytics.update": 40996,
+      "rocketchat_cron.commands": 41,
+      "rocketchat_cron_history.insert": 5,
+      "rocketchat_cron_history.update": 5,
+      "rocketchat_export_operations.queries": 2,
+      "rocketchat_message.queries": 122888,
+      "rocketchat_message.insert": 100,
+      "rocketchat_message.update": 40896,
+      "rocketchat_notification_queue.insert": 200,
+      "rocketchat_notification_queue.update": 200,
+      "rocketchat_notification_queue.remove": 66,
+      "rocketchat_notification_queue.commands": 192,
+      "rocketchat_room.queries": 286872,
+      "rocketchat_room.update": 40996,
+      "rocketchat_settings.queries": 14,
+      "rocketchat_subscription.queries": 700,
+      "rocketchat_subscription.update": 400,
+      "rocketchat_subscription.commands": 300,
+      "rocketchat_video_conference.queries": 3,
+      "users.queries": 287573,
+      "users.commands": 500,
+      "usersSessions.queries": 802,
+      "usersSessions.update": 800
+    },
+    "readsPerReply": 6990.55,
+    "writesPerReply": 1246.79,
+    "commandsPerReply": 10.6,
+    "idlePerSec": {
+      "queries": 0,
+      "getmore": 1,
+      "insert": 0,
+      "update": 0,
+      "remove": 0,
+      "commands": 0.8
+    },
+    "netReadsPerReply": 6989.20197,
+    "netWritesPerReply": 1246.79
+  },
+  "broker": {
+    "perInstance": [
+      {
+        "events": 82492,
+        "packets": 0,
+        "bytes": 0,
+        "eventsOut": {
+          "watch.subscriptions": 300,
+          "notify.desktop": 200,
+          "watch.rooms": 40996,
+          "watch.messages": 40996
+        },
+        "packetsIn": 0,
+        "bytesIn": 0
+      }
+    ],
+    "eventsPerReply": 824.92,
+    "bytesPerReply": 0
+  },
+  "bytesPerViewerPerReply": {
+    "mean": 2598426.61,
+    "p50": 2598415,
+    "max": 2602148
+  },
+  "latencyMs": {
+    "count": 81792,
+    "p50": 45823,
+    "p95": 102646,
+    "p99": 108176,
+    "max": 109523
+  },
+  "correctness": {
+    "gapEvents": 0,
+    "missingSeqs": 0,
+    "dupes": 0,
+    "outOfOrder": 0,
+    "staleAfterSnapshot": 0,
+    "reconnects": 0,
+    "errors": 0,
+    "notEnded": 0,
+    "textMismatch": 0,
+    "persistedNotDone": 0
+  },
+  "persistedMessageBytes": 10505,
+  "loadgen": {
+    "cpuPct": 5.183132422868927
+  },
+  "otherBusyCores": 5.9102159822839475
+}

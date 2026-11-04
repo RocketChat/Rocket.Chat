@@ -1,0 +1,117 @@
+== h0 D2 S1 W=0 run 1 (11:29:20)
+1 viewers connected in 40 ms, 0 failed
+/private/tmp/claude-501/-Users-dgubert-dev-RocketChat-worktrees-main/e7d46ab9-f498-4015-8af1-b214a44f19a5/scratchpad/results/h0/h0-D2-S1-w0-r1.json: window 25116 ms, cpu/delta 12.326 ms (net 12.037), p50/p99 18/33 ms, delivered 1001, {"gapEvents":0,"missingSeqs":0,"dupes":0,"outOfOrder":0,"staleAfterSnapshot":0,"reconnects":0,"errors":0,"notEnded":0,"textMismatch":0,"persistedNotDone":0}
+== h0 D2 S1 W=0 run 2 (11:29:53)
+1 viewers connected in 41 ms, 0 failed
+/private/tmp/claude-501/-Users-dgubert-dev-RocketChat-worktrees-main/e7d46ab9-f498-4015-8af1-b214a44f19a5/scratchpad/results/h0/h0-D2-S1-w0-r2.json: window 25133 ms, cpu/delta 13.243 ms (net 12.995), p50/p99 18/32 ms, delivered 1001, {"gapEvents":0,"missingSeqs":0,"dupes":0,"outOfOrder":0,"staleAfterSnapshot":0,"reconnects":0,"errors":0,"notEnded":0,"textMismatch":0,"persistedNotDone":0}
+== h0 D2 S1 W=0 run 3 (11:30:26)
+1 viewers connected in 38 ms, 0 failed
+/private/tmp/claude-501/-Users-dgubert-dev-RocketChat-worktrees-main/e7d46ab9-f498-4015-8af1-b214a44f19a5/scratchpad/results/h0/h0-D2-S1-w0-r3.json: window 25114 ms, cpu/delta 12.255 ms (net 12.022), p50/p99 18/31 ms, delivered 1001, {"gapEvents":0,"missingSeqs":0,"dupes":0,"outOfOrder":0,"staleAfterSnapshot":0,"reconnects":0,"errors":0,"notEnded":0,"textMismatch":0,"persistedNotDone":0}
+== h0 D2 S1 W=50 run 1 (11:31:00)
+1 viewers connected in 40 ms, 0 failed
+/private/tmp/claude-501/-Users-dgubert-dev-RocketChat-worktrees-main/e7d46ab9-f498-4015-8af1-b214a44f19a5/scratchpad/results/h0/h0-D2-S1-w50-r1.json: window 25122 ms, cpu/delta 15.829 ms (net 15.225), p50/p99 25/33 ms, delivered 490, {"gapEvents":0,"missingSeqs":0,"dupes":0,"outOfOrder":0,"staleAfterSnapshot":0,"reconnects":0,"errors":0,"notEnded":0,"textMismatch":0,"persistedNotDone":0}
+== h0 D2 S1 W=50 run 2 (11:31:33)
+1 viewers connected in 40 ms, 0 failed
+/private/tmp/claude-501/-Users-dgubert-dev-RocketChat-worktrees-main/e7d46ab9-f498-4015-8af1-b214a44f19a5/scratchpad/results/h0/h0-D2-S1-w50-r2.json: window 25128 ms, cpu/delta 15.720 ms (net 15.171), p50/p99 25/35 ms, delivered 490, {"gapEvents":0,"missingSeqs":0,"dupes":0,"outOfOrder":0,"staleAfterSnapshot":0,"reconnects":0,"errors":0,"notEnded":0,"textMismatch":0,"persistedNotDone":0}
+== h0 D2 S1 W=50 run 3 (11:32:07)
+1 viewers connected in 41 ms, 0 failed
+/private/tmp/claude-501/-Users-dgubert-dev-RocketChat-worktrees-main/e7d46ab9-f498-4015-8af1-b214a44f19a5/scratchpad/results/h0/h0-D2-S1-w50-r3.json: window 25127 ms, cpu/delta 16.463 ms (net 15.963), p50/p99 25/36 ms, delivered 491, {"gapEvents":0,"missingSeqs":0,"dupes":0,"outOfOrder":0,"staleAfterSnapshot":0,"reconnects":0,"errors":0,"notEnded":0,"textMismatch":0,"persistedNotDone":0}
+== h0 D2 S1 W=250 run 1 (11:32:40)
+1 viewers connected in 39 ms, 0 failed
+/private/tmp/claude-501/-Users-dgubert-dev-RocketChat-worktrees-main/e7d46ab9-f498-4015-8af1-b214a44f19a5/scratchpad/results/h0/h0-D2-S1-w250-r1.json: window 25131 ms, cpu/delta 23.069 ms (net 20.499), p50/p99 28/42 ms, delivered 100, {"gapEvents":0,"missingSeqs":0,"dupes":0,"outOfOrder":0,"staleAfterSnapshot":0,"reconnects":0,"errors":0,"notEnded":0,"textMismatch":0,"persistedNotDone":0}
+== h0 D2 S1 W=250 run 2 (11:33:13)
+1 viewers connected in 45 ms, 0 failed
+/private/tmp/claude-501/-Users-dgubert-dev-RocketChat-worktrees-main/e7d46ab9-f498-4015-8af1-b214a44f19a5/scratchpad/results/h0/h0-D2-S1-w250-r2.json: window 25126 ms, cpu/delta 20.453 ms (net 17.648), p50/p99 33/64 ms, delivered 100, {"gapEvents":0,"missingSeqs":0,"dupes":0,"outOfOrder":0,"staleAfterSnapshot":0,"reconnects":0,"errors":0,"notEnded":0,"textMismatch":0,"persistedNotDone":0}
+== h0 D2 S1 W=250 run 3 (11:33:47)
+1 viewers connected in 42 ms, 0 failed
+/private/tmp/claude-501/-Users-dgubert-dev-RocketChat-worktrees-main/e7d46ab9-f498-4015-8af1-b214a44f19a5/scratchpad/results/h0/h0-D2-S1-w250-r3.json: window 25125 ms, cpu/delta 23.664 ms (net 20.992), p50/p99 31/59 ms, delivered 100, {"gapEvents":0,"missingSeqs":0,"dupes":0,"outOfOrder":0,"staleAfterSnapshot":0,"reconnects":0,"errors":0,"notEnded":0,"textMismatch":0,"persistedNotDone":0}
+== h0 D2 S2 W=0 run 1 (11:34:20)
+500 viewers connected in 1437 ms, 0 failed
+/private/tmp/claude-501/-Users-dgubert-dev-RocketChat-worktrees-main/e7d46ab9-f498-4015-8af1-b214a44f19a5/scratchpad/results/h0/h0-D2-S2-w0-r1.json: window 25122 ms, cpu/delta 0.032 ms (net 0.031), p50/p99 19/37 ms, delivered 500500, {"gapEvents":0,"missingSeqs":0,"dupes":0,"outOfOrder":0,"staleAfterSnapshot":0,"reconnects":0,"errors":0,"notEnded":0,"textMismatch":0,"persistedNotDone":0}
+== h0 D2 S2 W=0 run 2 (11:34:55)
+500 viewers connected in 1353 ms, 0 failed
+/private/tmp/claude-501/-Users-dgubert-dev-RocketChat-worktrees-main/e7d46ab9-f498-4015-8af1-b214a44f19a5/scratchpad/results/h0/h0-D2-S2-w0-r2.json: window 25124 ms, cpu/delta 0.031 ms (net 0.030), p50/p99 18/35 ms, delivered 500500, {"gapEvents":0,"missingSeqs":0,"dupes":0,"outOfOrder":0,"staleAfterSnapshot":0,"reconnects":0,"errors":0,"notEnded":0,"textMismatch":0,"persistedNotDone":0}
+== h0 D2 S2 W=0 run 3 (11:35:30)
+500 viewers connected in 1377 ms, 0 failed
+/private/tmp/claude-501/-Users-dgubert-dev-RocketChat-worktrees-main/e7d46ab9-f498-4015-8af1-b214a44f19a5/scratchpad/results/h0/h0-D2-S2-w0-r3.json: window 25126 ms, cpu/delta 0.031 ms (net 0.030), p50/p99 18/36 ms, delivered 500500, {"gapEvents":0,"missingSeqs":0,"dupes":0,"outOfOrder":0,"staleAfterSnapshot":0,"reconnects":0,"errors":0,"notEnded":0,"textMismatch":0,"persistedNotDone":0}
+== h0 D2 S2 W=50 run 1 (11:36:05)
+500 viewers connected in 1345 ms, 0 failed
+/private/tmp/claude-501/-Users-dgubert-dev-RocketChat-worktrees-main/e7d46ab9-f498-4015-8af1-b214a44f19a5/scratchpad/results/h0/h0-D2-S2-w50-r1.json: window 25162 ms, cpu/delta 0.044 ms (net 0.042), p50/p99 28/42 ms, delivered 240500, {"gapEvents":500,"missingSeqs":500,"dupes":500,"outOfOrder":0,"staleAfterSnapshot":0,"reconnects":0,"errors":0,"notEnded":0,"textMismatch":0,"persistedNotDone":0}
+== h0 D2 S2 W=50 run 2 (11:36:40)
+500 viewers connected in 1377 ms, 0 failed
+/private/tmp/claude-501/-Users-dgubert-dev-RocketChat-worktrees-main/e7d46ab9-f498-4015-8af1-b214a44f19a5/scratchpad/results/h0/h0-D2-S2-w50-r2.json: window 25138 ms, cpu/delta 0.045 ms (net 0.043), p50/p99 29/42 ms, delivered 240500, {"gapEvents":0,"missingSeqs":0,"dupes":0,"outOfOrder":0,"staleAfterSnapshot":0,"reconnects":0,"errors":0,"notEnded":0,"textMismatch":0,"persistedNotDone":0}
+== h0 D2 S2 W=50 run 3 (11:37:15)
+500 viewers connected in 1317 ms, 0 failed
+/private/tmp/claude-501/-Users-dgubert-dev-RocketChat-worktrees-main/e7d46ab9-f498-4015-8af1-b214a44f19a5/scratchpad/results/h0/h0-D2-S2-w50-r3.json: window 25172 ms, cpu/delta 0.047 ms (net 0.046), p50/p99 29/44 ms, delivered 239500, {"gapEvents":0,"missingSeqs":0,"dupes":0,"outOfOrder":0,"staleAfterSnapshot":0,"reconnects":0,"errors":0,"notEnded":0,"textMismatch":0,"persistedNotDone":0}
+== h0 D2 S2 W=250 run 1 (11:37:49)
+500 viewers connected in 1388 ms, 0 failed
+/private/tmp/claude-501/-Users-dgubert-dev-RocketChat-worktrees-main/e7d46ab9-f498-4015-8af1-b214a44f19a5/scratchpad/results/h0/h0-D2-S2-w250-r1.json: window 25135 ms, cpu/delta 0.075 ms (net 0.065), p50/p99 37/51 ms, delivered 49500, {"gapEvents":0,"missingSeqs":0,"dupes":0,"outOfOrder":0,"staleAfterSnapshot":0,"reconnects":0,"errors":0,"notEnded":0,"textMismatch":0,"persistedNotDone":0}
+== h0 D2 S2 W=250 run 2 (11:38:24)
+500 viewers connected in 1484 ms, 0 failed
+/private/tmp/claude-501/-Users-dgubert-dev-RocketChat-worktrees-main/e7d46ab9-f498-4015-8af1-b214a44f19a5/scratchpad/results/h0/h0-D2-S2-w250-r2.json: window 25147 ms, cpu/delta 0.072 ms (net 0.064), p50/p99 33/55 ms, delivered 49500, {"gapEvents":0,"missingSeqs":0,"dupes":0,"outOfOrder":0,"staleAfterSnapshot":0,"reconnects":0,"errors":0,"notEnded":0,"textMismatch":0,"persistedNotDone":0}
+== h0 D2 S2 W=250 run 3 (11:38:59)
+500 viewers connected in 1436 ms, 0 failed
+/private/tmp/claude-501/-Users-dgubert-dev-RocketChat-worktrees-main/e7d46ab9-f498-4015-8af1-b214a44f19a5/scratchpad/results/h0/h0-D2-S2-w250-r3.json: window 25151 ms, cpu/delta 0.071 ms (net 0.064), p50/p99 33/49 ms, delivered 49500, {"gapEvents":0,"missingSeqs":0,"dupes":0,"outOfOrder":0,"staleAfterSnapshot":0,"reconnects":0,"errors":0,"notEnded":0,"textMismatch":0,"persistedNotDone":0}
+== h0 D2 S3 W=0 run 1 (11:39:34)
+200 viewers connected in 599 ms, 0 failed
+/private/tmp/claude-501/-Users-dgubert-dev-RocketChat-worktrees-main/e7d46ab9-f498-4015-8af1-b214a44f19a5/scratchpad/results/h0/h0-D2-S3-w0-r1.json: window 374664 ms, cpu/delta 2.703 ms (net 2.676), p50/p99 148321/345000 ms, delivered 200200, {"gapEvents":0,"missingSeqs":0,"dupes":0,"outOfOrder":0,"staleAfterSnapshot":0,"reconnects":0,"errors":0,"notEnded":0,"textMismatch":0,"persistedNotDone":0}
+== h0 D2 S3 W=0 run 2 (11:45:58)
+200 viewers connected in 615 ms, 0 failed
+/private/tmp/claude-501/-Users-dgubert-dev-RocketChat-worktrees-main/e7d46ab9-f498-4015-8af1-b214a44f19a5/scratchpad/results/h0/h0-D2-S3-w0-r2.json: window 322648 ms, cpu/delta 2.430 ms (net 2.411), p50/p99 132848/293392 ms, delivered 200182, {"gapEvents":18,"missingSeqs":18,"dupes":18,"outOfOrder":0,"staleAfterSnapshot":0,"reconnects":0,"errors":0,"notEnded":0,"textMismatch":0,"persistedNotDone":0}
+== h0 D2 S3 W=0 run 3 (11:51:30)
+200 viewers connected in 543 ms, 0 failed
+/private/tmp/claude-501/-Users-dgubert-dev-RocketChat-worktrees-main/e7d46ab9-f498-4015-8af1-b214a44f19a5/scratchpad/results/h0/h0-D2-S3-w0-r3.json: window 323031 ms, cpu/delta 2.429 ms (net 2.290), p50/p99 123027/293683 ms, delivered 200200, {"gapEvents":0,"missingSeqs":0,"dupes":0,"outOfOrder":0,"staleAfterSnapshot":0,"reconnects":0,"errors":0,"notEnded":0,"textMismatch":0,"persistedNotDone":0}
+== h0 D2 S3 W=50 run 1 (11:57:02)
+200 viewers connected in 607 ms, 0 failed
+/private/tmp/claude-501/-Users-dgubert-dev-RocketChat-worktrees-main/e7d46ab9-f498-4015-8af1-b214a44f19a5/scratchpad/results/h0/h0-D2-S3-w50-r1.json: window 137507 ms, cpu/delta 2.507 ms (net 2.487), p50/p99 46348/110472 ms, delivered 80962, {"gapEvents":0,"missingSeqs":0,"dupes":0,"outOfOrder":0,"staleAfterSnapshot":0,"reconnects":0,"errors":0,"notEnded":0,"textMismatch":0,"persistedNotDone":0}
+== h0 D2 S3 W=50 run 2 (11:59:29)
+200 viewers connected in 593 ms, 0 failed
+/private/tmp/claude-501/-Users-dgubert-dev-RocketChat-worktrees-main/e7d46ab9-f498-4015-8af1-b214a44f19a5/scratchpad/results/h0/h0-D2-S3-w50-r2.json: window 130190 ms, cpu/delta 2.404 ms (net 2.388), p50/p99 43409/103149 ms, delivered 81460, {"gapEvents":0,"missingSeqs":0,"dupes":0,"outOfOrder":0,"staleAfterSnapshot":0,"reconnects":0,"errors":0,"notEnded":0,"textMismatch":0,"persistedNotDone":0}
+== h0 D2 S3 W=50 run 3 (12:01:48)
+200 viewers connected in 537 ms, 0 failed
+/private/tmp/claude-501/-Users-dgubert-dev-RocketChat-worktrees-main/e7d46ab9-f498-4015-8af1-b214a44f19a5/scratchpad/results/h0/h0-D2-S3-w50-r3.json: window 127918 ms, cpu/delta 2.438 ms (net 2.421), p50/p99 45125/101348 ms, delivered 78324, {"gapEvents":0,"missingSeqs":0,"dupes":0,"outOfOrder":0,"staleAfterSnapshot":0,"reconnects":0,"errors":0,"notEnded":0,"textMismatch":0,"persistedNotDone":0}
+== h0 D2 S3 W=250 run 1 (12:04:05)
+200 viewers connected in 624 ms, 0 failed
+/private/tmp/claude-501/-Users-dgubert-dev-RocketChat-worktrees-main/e7d46ab9-f498-4015-8af1-b214a44f19a5/scratchpad/results/h0/h0-D2-S3-w250-r1.json: window 33014 ms, cpu/delta 2.556 ms (net 2.536), p50/p99 1379/7298 ms, delivered 18600, {"gapEvents":0,"missingSeqs":0,"dupes":0,"outOfOrder":0,"staleAfterSnapshot":0,"reconnects":0,"errors":0,"notEnded":0,"textMismatch":0,"persistedNotDone":0}
+== h0 D2 S3 W=250 run 2 (12:04:47)
+200 viewers connected in 560 ms, 0 failed
+/private/tmp/claude-501/-Users-dgubert-dev-RocketChat-worktrees-main/e7d46ab9-f498-4015-8af1-b214a44f19a5/scratchpad/results/h0/h0-D2-S3-w250-r2.json: window 29526 ms, cpu/delta 2.332 ms (net 2.315), p50/p99 660/3552 ms, delivered 18784, {"gapEvents":0,"missingSeqs":0,"dupes":0,"outOfOrder":0,"staleAfterSnapshot":0,"reconnects":0,"errors":0,"notEnded":0,"textMismatch":0,"persistedNotDone":0}
+== h0 D2 S3 W=250 run 3 (12:05:26)
+200 viewers connected in 503 ms, 0 failed
+/private/tmp/claude-501/-Users-dgubert-dev-RocketChat-worktrees-main/e7d46ab9-f498-4015-8af1-b214a44f19a5/scratchpad/results/h0/h0-D2-S3-w250-r3.json: window 28340 ms, cpu/delta 2.188 ms (net 2.173), p50/p99 230/2380 ms, delivered 18740, {"gapEvents":0,"missingSeqs":0,"dupes":0,"outOfOrder":0,"staleAfterSnapshot":0,"reconnects":0,"errors":0,"notEnded":0,"textMismatch":0,"persistedNotDone":0}
+== h0 D2 S4 W=0 run 1 (12:06:03)
+1000 viewers connected in 2277 ms, 0 failed
+/private/tmp/claude-501/-Users-dgubert-dev-RocketChat-worktrees-main/e7d46ab9-f498-4015-8af1-b214a44f19a5/scratchpad/results/h0/h0-D2-S4-w0-r1.json: window 25001 ms, cpu/delta undefined ms (net undefined), p50/p99 null/null ms, delivered 0, {"gapEvents":0,"missingSeqs":0,"dupes":0,"outOfOrder":0,"staleAfterSnapshot":0,"reconnects":0,"errors":0,"notEnded":0,"textMismatch":0,"persistedNotDone":0}
+== h0 D2 S4 W=0 run 2 (12:06:43)
+1000 viewers connected in 2601 ms, 0 failed
+/private/tmp/claude-501/-Users-dgubert-dev-RocketChat-worktrees-main/e7d46ab9-f498-4015-8af1-b214a44f19a5/scratchpad/results/h0/h0-D2-S4-w0-r2.json: window 25002 ms, cpu/delta undefined ms (net undefined), p50/p99 null/null ms, delivered 0, {"gapEvents":0,"missingSeqs":0,"dupes":0,"outOfOrder":0,"staleAfterSnapshot":0,"reconnects":0,"errors":0,"notEnded":0,"textMismatch":0,"persistedNotDone":0}
+== h0 D2 S4 W=0 run 3 (12:07:24)
+1000 viewers connected in 2295 ms, 0 failed
+/private/tmp/claude-501/-Users-dgubert-dev-RocketChat-worktrees-main/e7d46ab9-f498-4015-8af1-b214a44f19a5/scratchpad/results/h0/h0-D2-S4-w0-r3.json: window 25002 ms, cpu/delta undefined ms (net undefined), p50/p99 null/null ms, delivered 0, {"gapEvents":0,"missingSeqs":0,"dupes":0,"outOfOrder":0,"staleAfterSnapshot":0,"reconnects":0,"errors":0,"notEnded":0,"textMismatch":0,"persistedNotDone":0}
+== h0 D2 S5 W=0 run 1 (12:08:05)
+200 viewers connected in 501 ms, 0 failed
+/private/tmp/claude-501/-Users-dgubert-dev-RocketChat-worktrees-main/e7d46ab9-f498-4015-8af1-b214a44f19a5/scratchpad/results/h0/h0-D2-S5-w0-r1.json: window 297098 ms, cpu/delta 2.349 ms (net 2.331), p50/p99 117803/268309 ms, delivered 199252, {"gapEvents":0,"missingSeqs":0,"dupes":0,"outOfOrder":0,"staleAfterSnapshot":618,"reconnects":585,"errors":0,"notEnded":0,"textMismatch":0,"persistedNotDone":0}
+== h0 D2 S5 W=0 run 2 (12:13:11)
+200 viewers connected in 504 ms, 0 failed
+/private/tmp/claude-501/-Users-dgubert-dev-RocketChat-worktrees-main/e7d46ab9-f498-4015-8af1-b214a44f19a5/scratchpad/results/h0/h0-D2-S5-w0-r2.json: window 288753 ms, cpu/delta 2.293 ms (net 2.276), p50/p99 112484/260032 ms, delivered 199368, {"gapEvents":0,"missingSeqs":0,"dupes":0,"outOfOrder":0,"staleAfterSnapshot":535,"reconnects":536,"errors":0,"notEnded":0,"textMismatch":0,"persistedNotDone":0}
+== h0 D2 S5 W=0 run 3 (12:18:09)
+200 viewers connected in 488 ms, 0 failed
+/private/tmp/claude-501/-Users-dgubert-dev-RocketChat-worktrees-main/e7d46ab9-f498-4015-8af1-b214a44f19a5/scratchpad/results/h0/h0-D2-S5-w0-r3.json: window 290726 ms, cpu/delta 2.309 ms (net 2.297), p50/p99 113612/262021 ms, delivered 199254, {"gapEvents":0,"missingSeqs":0,"dupes":0,"outOfOrder":0,"staleAfterSnapshot":624,"reconnects":589,"errors":0,"notEnded":0,"textMismatch":0,"persistedNotDone":0}
+== h0 D2 S5 W=50 run 1 (12:23:09)
+200 viewers connected in 466 ms, 0 failed
+/private/tmp/claude-501/-Users-dgubert-dev-RocketChat-worktrees-main/e7d46ab9-f498-4015-8af1-b214a44f19a5/scratchpad/results/h0/h0-D2-S5-w50-r1.json: window 118002 ms, cpu/delta 2.270 ms (net 2.257), p50/p99 38875/91586 ms, delivered 81717, {"gapEvents":0,"missingSeqs":0,"dupes":0,"outOfOrder":0,"staleAfterSnapshot":194,"reconnects":198,"errors":0,"notEnded":0,"textMismatch":0,"persistedNotDone":0}
+== h0 D2 S5 W=50 run 2 (12:25:15)
+200 viewers connected in 471 ms, 0 failed
+/private/tmp/claude-501/-Users-dgubert-dev-RocketChat-worktrees-main/e7d46ab9-f498-4015-8af1-b214a44f19a5/scratchpad/results/h0/h0-D2-S5-w50-r2.json: window 118287 ms, cpu/delta 2.258 ms (net 2.241), p50/p99 38828/91764 ms, delivered 82517, {"gapEvents":0,"missingSeqs":0,"dupes":0,"outOfOrder":0,"staleAfterSnapshot":223,"reconnects":230,"errors":0,"notEnded":0,"textMismatch":0,"persistedNotDone":0}
+== h0 D2 S5 W=50 run 3 (12:27:23)
+200 viewers connected in 455 ms, 0 failed
+/private/tmp/claude-501/-Users-dgubert-dev-RocketChat-worktrees-main/e7d46ab9-f498-4015-8af1-b214a44f19a5/scratchpad/results/h0/h0-D2-S5-w50-r3.json: window 117530 ms, cpu/delta 2.250 ms (net 2.238), p50/p99 38177/90710 ms, delivered 81910, {"gapEvents":0,"missingSeqs":0,"dupes":0,"outOfOrder":0,"staleAfterSnapshot":200,"reconnects":206,"errors":0,"notEnded":0,"textMismatch":0,"persistedNotDone":0}
+== h0 D2 S5 W=250 run 1 (12:29:29)
+200 viewers connected in 502 ms, 0 failed
+/private/tmp/claude-501/-Users-dgubert-dev-RocketChat-worktrees-main/e7d46ab9-f498-4015-8af1-b214a44f19a5/scratchpad/results/h0/h0-D2-S5-w250-r1.json: window 28328 ms, cpu/delta 2.248 ms (net 2.224), p50/p99 193/2869 ms, delivered 18760, {"gapEvents":0,"missingSeqs":0,"dupes":0,"outOfOrder":0,"staleAfterSnapshot":23,"reconnects":30,"errors":0,"notEnded":0,"textMismatch":0,"persistedNotDone":0}
+== h0 D2 S5 W=250 run 2 (12:30:06)
+200 viewers connected in 440 ms, 0 failed
+/private/tmp/claude-501/-Users-dgubert-dev-RocketChat-worktrees-main/e7d46ab9-f498-4015-8af1-b214a44f19a5/scratchpad/results/h0/h0-D2-S5-w250-r2.json: window 28299 ms, cpu/delta 2.238 ms (net 2.226), p50/p99 178/2779 ms, delivered 18767, {"gapEvents":4,"missingSeqs":4,"dupes":4,"outOfOrder":0,"staleAfterSnapshot":21,"reconnects":37,"errors":0,"notEnded":0,"textMismatch":0,"persistedNotDone":0}
+== h0 D2 S5 W=250 run 3 (12:30:43)
+200 viewers connected in 457 ms, 0 failed
+/private/tmp/claude-501/-Users-dgubert-dev-RocketChat-worktrees-main/e7d46ab9-f498-4015-8af1-b214a44f19a5/scratchpad/results/h0/h0-D2-S5-w250-r3.json: window 28823 ms, cpu/delta 2.276 ms (net 2.264), p50/p99 283/2822 ms, delivered 18701, {"gapEvents":0,"missingSeqs":0,"dupes":0,"outOfOrder":0,"staleAfterSnapshot":25,"reconnects":34,"errors":0,"notEnded":0,"textMismatch":0,"persistedNotDone":0}

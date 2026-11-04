@@ -1,0 +1,134 @@
+{
+  "label": "warmup",
+  "adapter": "ddp-room-messages",
+  "sink": "update-message",
+  "deployment": "D2",
+  "scenario": "S3",
+  "w": 50,
+  "run": 1,
+  "tokens": 200,
+  "at": "2026-11-04T14:23:45.140Z",
+  "machine": {
+    "cpu": "Apple M5 Pro",
+    "cores": 15,
+    "ramGB": 48,
+    "node": "v24.15.0",
+    "mode": "production bundle"
+  },
+  "viewers": 200,
+  "replies": 100,
+  "connect": {
+    "ms": 647,
+    "failed": 0
+  },
+  "windowMs": 23369,
+  "timedOut": false,
+  "producer": {
+    "streamsStarted": 100,
+    "streamsEnded": 100,
+    "deltas": 8281,
+    "queued": 0,
+    "sinkErrors": 0,
+    "lastError": "",
+    "active": 0
+  },
+  "expectedDeltasPerViewer": 83.81,
+  "delivered": 16762,
+  "server": {
+    "cpuMs": 36152.333999999995,
+    "cpuMsPerDeliveredDelta": 2.1568031261186014,
+    "cpuMsPerReply": 361.52333999999996,
+    "cpuPct": [
+      146.08989907629146,
+      8.513330197151776
+    ],
+    "eventLoopP99Ms": [
+      24.510463,
+      11.231231
+    ],
+    "rssBytes": [
+      1340276736,
+      960004096
+    ],
+    "heapUsedBytes": [
+      601408576,
+      615624176
+    ]
+  },
+  "mongo": {
+    "db": {
+      "queries": 144480,
+      "getmore": 55,
+      "insert": 300,
+      "update": 25750,
+      "remove": 0,
+      "commands": 834
+    },
+    "server": {
+      "insert": 300,
+      "query": 144880,
+      "update": 25750,
+      "delete": 0,
+      "getmore": 55,
+      "command": 94
+    },
+    "readsPerReply": 1445.35,
+    "writesPerReply": 260.5,
+    "commandsPerReply": 8.34
+  },
+  "broker": {
+    "perInstance": [
+      {
+        "events": 17462,
+        "packets": 17473,
+        "bytes": 44514660,
+        "eventsOut": {
+          "watch.subscriptions": 300,
+          "notify.desktop": 200,
+          "watch.rooms": 8481,
+          "watch.messages": 8481
+        },
+        "packetsIn": 11,
+        "bytesIn": 1847
+      },
+      {
+        "events": 0,
+        "packets": 11,
+        "bytes": 1847,
+        "eventsOut": {},
+        "packetsIn": 17473,
+        "bytesIn": 44514660
+      }
+    ],
+    "eventsPerReply": 174.62,
+    "bytesPerReply": 445165.07
+  },
+  "bytesPerViewerPerReply": {
+    "mean": 187199.19,
+    "p50": 187416,
+    "max": 189021
+  },
+  "latencyMs": {
+    "count": 16762,
+    "p50": 8237,
+    "p95": 16823,
+    "p99": 17671,
+    "max": 17851
+  },
+  "correctness": {
+    "gapEvents": 0,
+    "missingSeqs": 0,
+    "dupes": 0,
+    "outOfOrder": 0,
+    "staleAfterSnapshot": 0,
+    "reconnects": 0,
+    "errors": 0,
+    "notEnded": 0,
+    "textMismatch": 0,
+    "persistedNotDone": 0
+  },
+  "persistedMessageBytes": 3722,
+  "loadgen": {
+    "cpuPct": 6.119885318156532
+  }
+}
