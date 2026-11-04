@@ -3,9 +3,9 @@ import { useSafely } from '@rocket.chat/fuselage-hooks';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import type { ChangeEvent } from 'react';
 import { memo, useContext, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { UiKitContext } from '../contexts/UiKitContext';
-import { useAppTranslation } from '../hooks/useAppTranslation';
 import { useUiKitState } from '../hooks/useUiKitState';
 import type { BlockProps } from '../utils/BlockProps';
 
@@ -17,7 +17,7 @@ const getExtension = (name: string) => name.split('.').pop()?.toLowerCase() ?? '
 
 const FileInputElement = ({ block, context }: FileInputElementProps) => {
 	const { actionId, filetypes, max_files: maxFiles = DEFAULT_MAX_FILES } = block;
-	const { t } = useAppTranslation();
+	const { t } = useTranslation();
 	const { uploadFile, setUploading } = useContext(UiKitContext);
 	const [{ value, error }, action] = useUiKitState(block, context);
 

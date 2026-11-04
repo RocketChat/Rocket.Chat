@@ -1,8 +1,8 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
 import * as UiKit from '@rocket.chat/ui-kit';
+import { useTranslation } from 'react-i18next';
 
 import RichTextBlock from './RichTextBlock';
-import { useAppTranslation } from '../hooks/useAppTranslation';
 import type { BlockProps } from '../utils/BlockProps';
 
 export type TaskCardProps = Omit<BlockProps<UiKit.RichTextBlock>, 'block'> & {
@@ -17,7 +17,7 @@ const statusIcons = {
 } as const satisfies Record<UiKit.TaskStatus, { icon: string; color: string }>;
 
 export const TaskCard = ({ className, task, context, index, surfaceRenderer }: TaskCardProps) => {
-	const { t } = useAppTranslation();
+	const { t } = useTranslation();
 	const statusLabels = {
 		pending: t('Pending'),
 		in_progress: t('In_progress'),

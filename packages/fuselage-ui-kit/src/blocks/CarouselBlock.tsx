@@ -1,9 +1,9 @@
 import { Box, IconButton } from '@rocket.chat/fuselage';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import CardView from './CardView';
-import { useAppTranslation } from '../hooks/useAppTranslation';
 import type { BlockProps } from '../utils/BlockProps';
 
 export type CarouselBlockProps = BlockProps<UiKit.CarouselBlock>;
@@ -16,7 +16,7 @@ const isCard = (value: unknown): value is UiKit.CardBlock =>
 // The carousel follows the carousel pattern: the previous and next buttons are ordinary tab stops, and the row
 // scrolls natively, so Tab into a card brings it into view.
 const CarouselBlock = ({ className, block, surfaceRenderer }: CarouselBlockProps) => {
-	const { t } = useAppTranslation();
+	const { t } = useTranslation();
 	const scroller = useRef<HTMLDivElement>(null);
 	const [edges, setEdges] = useState({ start: true, end: true });
 
