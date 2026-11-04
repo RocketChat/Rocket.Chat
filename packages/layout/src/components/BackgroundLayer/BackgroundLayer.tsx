@@ -1,10 +1,8 @@
 import colors from '@rocket.chat/fuselage-tokens/dist/colors.json';
 import type { ReactNode } from 'react';
-import { useMemo } from 'react';
-import { renderToStaticMarkup } from 'react-dom/server';
 
-import BackgroundImage from './BackgroundImage';
 import { Wrapper } from './BackgroundLayer.styles';
+import { defaultBackgroundImage } from './defaultBackgroundImage';
 import { useDarkMode } from '../../DarkModeProvider';
 import { useLayoutContext } from '../../contexts/LayoutContext';
 
@@ -17,12 +15,7 @@ const BackgroundLayer = ({ children }: BackgroundLayerProps) => {
 	const darkMode = useDarkMode();
 	const backgroundColor = darkMode ? colors.n800 : colors.n200;
 	const color = darkMode ? colors.white : colors.n800;
-	const backgroundImage = useMemo(
-		() =>
-			(darkMode ? backgroundDark : background) ||
-			`data:image/svg+xml,${encodeURIComponent(renderToStaticMarkup(<BackgroundImage backgroundColor={backgroundColor} />))}`,
-		[background, backgroundColor, backgroundDark, darkMode],
-	);
+	const backgroundImage = (darkMode ? backgroundDark : background) || defaultBackgroundImage(backgroundColor);
 
 	return (
 		<Wrapper color={color} backgroundImage={backgroundImage} backgroundColor={backgroundColor}>
