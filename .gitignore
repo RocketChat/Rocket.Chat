@@ -63,6 +63,3 @@ storybook-static
 development/tempo-data/
 
 .env
-
-# Deno module cache, populated when the apps runtime builds
-packages/apps/.deno-cache/
