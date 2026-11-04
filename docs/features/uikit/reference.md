@@ -567,6 +567,7 @@ Source: [`packages/ui-kit/src/blocks/elements/MultiStaticSelectElement.ts`](../.
 | `maxSelectItems` | `number` | no |  |
 | `initialValue` | `Option['value'][]` | no |  |
 | `initialOption` | `Option[]` | no |  |
+| `focus_on_load` | `boolean` | no | Focuses the field when the view opens. |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
 | `actionId` | `string` | yes |  |
@@ -690,6 +691,7 @@ Source: [`packages/ui-kit/src/blocks/elements/StaticSelectElement.ts`](../../../
 | `optionGroups` | `readonly OptionGroup[]` | no |  |
 | `initialOption` | `Option` | no |  |
 | `initialValue` | `Option['value']` | no |  |
+| `focus_on_load` | `boolean` | no | Focuses the field when the view opens. |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
 | `actionId` | `string` | yes |  |
