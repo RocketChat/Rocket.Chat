@@ -1,4 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
+import { toCanonicalElementType } from '@rocket.chat/ui-kit';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { memo, useMemo } from 'react';
 
@@ -23,7 +24,8 @@ const SectionBlock = ({ className, block, surfaceRenderer }: SectionBlockProps) 
 	);
 
 	// Option lists need the full width; squeezed into the side column their labels wrap letter by letter.
-	if (block.accessory?.type === 'checkbox' || block.accessory?.type === 'radio_button') {
+	const accessoryType = block.accessory && toCanonicalElementType(block.accessory.type);
+	if (accessoryType === 'checkbox' || accessoryType === 'radio_button') {
 		return (
 			<Box className={className}>
 				{text && (
