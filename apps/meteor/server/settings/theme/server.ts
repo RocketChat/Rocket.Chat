@@ -5,6 +5,8 @@ import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 
 import { settings } from '..';
+import { nodeLoggerMiddleware } from '../../api/v1/middlewares/logger';
+import { HttpLogger } from '../../lib/logger/http';
 import { addStyle } from '../../lib/ui-master/inject';
 
 settings.watch('theme-custom-css', (value) => {
@@ -22,6 +24,8 @@ Meteor.startup(async () => {
 	await Settings.deleteOne({ _id: 'css' });
 });
 
+const logRequest = nodeLoggerMiddleware(HttpLogger);
+
 WebApp.rawConnectHandlers.use((req, res, next) => {
 	const path = req.url?.split('?')[0];
 	const prefix = __meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '';
@@ -30,6 +34,8 @@ WebApp.rawConnectHandlers.use((req, res, next) => {
 		next();
 		return;
 	}
+
+	logRequest(req, res, () => undefined);
 
 	const style = settings.get('theme-custom-css');
 	if (typeof style !== 'string') {

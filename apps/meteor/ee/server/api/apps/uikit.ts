@@ -1,5 +1,6 @@
 import { AppEvents, type IAppServerOrchestrator } from '@rocket.chat/apps';
 import { UiKitCoreApp } from '@rocket.chat/core-services';
+import { Logger } from '@rocket.chat/logger';
 import type { OperationParams, OperationResult, UrlParams } from '@rocket.chat/rest-typings';
 import bodyParser from 'body-parser';
 import cors from 'cors';
@@ -10,6 +11,7 @@ import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 
 import { authenticationMiddleware } from '../../../../server/api/v1/middlewares/authentication';
+import { nodeLoggerMiddleware } from '../../../../server/api/v1/middlewares/logger';
 import { settings } from '../../../../server/settings';
 import { Apps } from '../../lib/apps/orchestrator';
 
@@ -33,6 +35,9 @@ settings.watch('API_CORS_Origin', (value: string) => {
 		: [];
 });
 
+const logger = new Logger('APPS');
+
+WebApp.rawConnectHandlers.use('/api/apps/ui.interaction', nodeLoggerMiddleware(logger));
 WebApp.rawConnectHandlers.use(apiServer);
 
 // oxlint-disable-next-line new-cap
