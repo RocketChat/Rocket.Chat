@@ -39,3 +39,11 @@ it('reports blocks beyond the limit of the message or of the view', () => {
 it('reports text beyond its limit', () => {
 	expect(validateLayoutBlocks([{ type: 'header', text: text('a'.repeat(151)) }]).map(({ path }) => path)).toEqual(['$input[0].text.text']);
 });
+
+it.each([
+	{ type: 'checkboxes', options: [{ text: text('A'), value: 'a' }] },
+	{ type: 'radio_buttons', options: [{ text: text('A'), value: 'a' }] },
+	{ type: 'timepicker' },
+])('accepts the alternative element name $type', (element) => {
+	expect(validateLayoutBlocks([{ type: 'actions', elements: [element] }])).toEqual([]);
+});

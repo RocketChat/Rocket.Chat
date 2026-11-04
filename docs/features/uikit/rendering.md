@@ -11,7 +11,7 @@ How `SurfaceRenderer.render(blocks)` in [`packages/ui-kit/src/rendering/SurfaceR
 
 ## Alternative element type names
 
-`renderBlockElement` and the guards map `checkboxes`, `radio_buttons` and `timepicker` to `checkbox`, `radio_button` and `time_picker` (`toCanonicalElementType` in [`elementTypeAliases.ts`](../../../packages/ui-kit/src/blocks/elementTypeAliases.ts)) before looking up the renderer method. Renderers only ever see the canonical type. View state is keyed by `actionId` and read from the element's fields, so the value an app receives is the same as for the canonical element. The canonical element types stay clean; the aliases are the separate `AliasedBlockElement` type, accepted by `renderBlockElement` and `toCanonicalElement`.
+`renderBlockElement` and the guards map `checkboxes`, `radio_buttons` and `timepicker` to `checkbox`, `radio_button` and `time_picker` (`toCanonicalElementType` in [`elementTypeAliases.ts`](../../../packages/ui-kit/src/blocks/elementTypeAliases.ts)) before looking up the renderer method. Renderers only ever see the canonical type. View state is keyed by `actionId` and read from the element's fields, so the value an app receives is the same as for the canonical element. Both names are part of the element types (`CheckboxElement['type']` is `'checkbox' | 'checkboxes'`), so apps, `validateLayoutBlocks` and the container unions accept either; `BlockRenderers` only has the canonical keys, and `ActionOf` is the same for both names.
 
 ## Emoji-only text
 
