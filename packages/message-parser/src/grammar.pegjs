@@ -346,7 +346,7 @@ InlineEmoticon = emo:Emoticon & (EmoticonNeighbor / InlineItemPattern) { return 
 // Match "-" only when "-_-" is followed by more (so "-_-italic" → plain+italic); don't match when "-_-" is the full emoticon
 PlainRunBeforeEmoticon = "-" &("_" "-" .) { return plain('-'); }
 
-PlainRun = run:$[^*_~`:\n<\[\]! \t()\\|]+ { return plain(run); }
+PlainRun = run:$[^*_~`:\n<\[\]! \t\u00a0()\\|]+ { return plain(run); }
 
 EscapedTimestampRules
   = "\\" "<t:" rawDate:$(Unixtime / ISO8601Date / ISO8601DateWithoutMilliseconds / Timestamp) ":" format:TimestampType ">" {
@@ -359,7 +359,7 @@ EscapedTimestampRules
 // First-character dispatch: skip the full alternative chain by routing
 // each character to only the rules that can start with it.
 InlineItemPattern
-  = & [ \t]  @Whitespace
+  = & [ \t\u00a0] @Whitespace
   / & "\\"   @(EscapedTimestampRules / KatexInline / Escaped)
   / & "["    @MaybeReferences
   / & "<"    @(TimestampRules / MaybeReferences / InlineEmoticon)
@@ -649,15 +649,15 @@ StrikethroughContent = text:(StrikePlainRunFull / EscapedTimestampRules / Timest
 StrikePlainRunFull = run:$[^\x0a\~ *_:`@#\[\]\\<!\x7C\uD83C\uD83D\uD83E\u2300-\u27BF\u2600-\u26FF]+ { return plain(run); }
 
 // Exclude _ and ~ so nested italic/strike can be parsed
-BoldPlainRun = run:$[^\x0a\* _~ ]+ { return plain(run); }
+BoldPlainRun = run:$[^\x0a\* _~ \u00a0]+ { return plain(run); }
 AnyBold = t:[^\x0a\* ] { return plain(t); }
 
 // Exclude * and ~ so nested bold/strike can be parsed
-ItalicPlainRun = run:$[^\x0a\_ *~]+ { return plain(run); }
+ItalicPlainRun = run:$[^\x0a\_ \u00a0*~]+ { return plain(run); }
 AnyItalic = t:[^\x0a\_ ] { return plain(t); }
 
 // Exclude * and _ so nested bold/italic can be parsed
-StrikePlainRun = run:$[^\x0a\~ *_]+ { return plain(run); }
+StrikePlainRun = run:$[^\x0a\~ \u00a0*_]+ { return plain(run); }
 AnyStrike = t:[^\x0a\~ ] { return plain(t); }
 
 /**
@@ -920,7 +920,7 @@ Whitespace = w:$Space+ { return plain(w); }
 
 EndOfLine = "\r\n" / "\n" / "\r"
 
-Space = " " / "\t"
+Space = " " / "\t" / "\u00a0"
 
 Escaped = "\\" t:[*_~`#.] { return plain(t); }
 
