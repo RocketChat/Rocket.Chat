@@ -47,6 +47,7 @@
     "@rocket.chat/jest-presets": "workspace:~",
     "@rocket.chat/layout": "workspace:~",
     "@rocket.chat/logo": "workspace:~",
+    "@rocket.chat/mock-providers": "workspace:~",
     "@rocket.chat/storybook-config": "workspace:~",
     "@rocket.chat/styled": "workspace:~",
     "@rocket.chat/tsconfig": "workspace:~",

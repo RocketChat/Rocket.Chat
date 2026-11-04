@@ -20,6 +20,7 @@ export default baseConfig({
 				'react$': require.resolve('../../../node_modules/react'),
 				// 'react/jsx-runtime': require.resolve('../../../node_modules/react/jsx-runtime'),
 				'@tanstack/react-query': require.resolve('../../../node_modules/@tanstack/react-query'),
+				'react-i18next$': require.resolve('../../../node_modules/react-i18next'),
 				'@rocket.chat/fuselage$': require.resolve('../../../node_modules/@rocket.chat/fuselage'),
 				// Meteor's bundler ignores the `exports` field, so source code reaches
 				// into swiper's internals via deep file paths. Webpack honors `exports`

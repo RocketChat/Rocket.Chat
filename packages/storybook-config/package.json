@@ -4,6 +4,10 @@
 	"private": true,
 	"type": "module",
 	"exports": {
+		"./app-root": {
+			"types": "./dist/appRoot.d.ts",
+			"default": "./dist/appRoot.js"
+		},
 		"./main": {
 			"types": "./dist/main.d.ts",
 			"default": "./dist/main.js"
@@ -33,6 +37,7 @@
 		"@rocket.chat/emitter": "workspace:~",
 		"@rocket.chat/fuselage-hooks": "workspace:^",
 		"@rocket.chat/fuselage-tokens": "workspace:^",
+		"@rocket.chat/i18n": "workspace:~",
 		"@storybook/addon-a11y": "~10.6.5",
 		"@storybook/addon-docs": "~10.6.5",
 		"@storybook/addon-styling-webpack": "~3.0.2",

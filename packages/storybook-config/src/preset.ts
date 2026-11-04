@@ -19,7 +19,13 @@ export const env = (config: Record<string, string> = {}, { configDir }: Options)
 
 const fuselageFontsDir = dirname(require.resolve('@rocket.chat/fuselage/dist/fonts/InterVariable.woff2'));
 
-export const staticDirs = (dirs: { from: string; to: string }[] = []) => [...dirs, { from: fuselageFontsDir, to: '/fuselage-fonts' }];
+const translationsDir = dirname(require.resolve('@rocket.chat/i18n/dist/resources/en.i18n.json'));
+
+export const staticDirs = (dirs: { from: string; to: string }[] = []) => [
+	...dirs,
+	{ from: fuselageFontsDir, to: '/fuselage-fonts' },
+	{ from: translationsDir, to: '/i18n' },
+];
 
 export const managerHead = (head = ''): string => `${head}
 	<style>
