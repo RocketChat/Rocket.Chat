@@ -156,6 +156,7 @@ Tamagui's [zero-runtime rules](https://tamagui.dev/docs/guides/zero-runtime) com
   - **Loading the zero stylesheet first was tried and rejected (2026-11-04).** Moved before the other stylesheets in the zero Storybook, all 11 Sidebar stories changed and the frames lost their padding, borders and `flex-grow`: the frames carry `rcx-box rcx-box--full`, whose unlayered Box reset (`.rcx-box { flex: 0 1 auto }`, `.rcx-box--full { margin: 0; padding: 0; border-width: 0 }`) then beats every one-class atomic. With that reset moved into `@layer fuselage` as well, 23 of 568 stories still differed (input `font-family`, vertical `Divider` width, `Box` focusable), because every unlayered rule now beats the layered reset. And even with both fixed, the doubled atomics keep beating a one-class override, so consumers would still need `[class]`. Revisit only if the frames stop carrying `rcx-box--full`.
 
 - **State Tamagui `View`'s defaults explicitly where develop relied on the browser's:** `display: flex`, `flex-direction: column`, `flex-shrink: 0`, `min-width`/`min-height: 0`, `position: relative`. Don't force `box-sizing: content-box`: the app's reset makes everything `border-box`, and the Fuselage Storybook loads that reset so it matches the app.
+- **A frame whose children are text is `styled(Text)`.** A string child of a `View` throws on React Native. A `Text` starts as an inline, pre-wrapped `span`, so `generate-frame-values.mts` restates the `View` defaults (`div`, column flex box, `white-space` and `word-wrap` inherited) that a `textFrames` entry doesn't set.
 - **Values come from `@rocket.chat/fuselage-tokens` through `scripts/generate-frame-values.mts`.** It writes a delimited `generated … do not edit` section into each frame module (and into `.styles.css` files for rules that need plain CSS), as literal `var(--rcx-…, fallback)` strings; `--check` runs in lint. Add a component to its typed `components` list.
 - **No Tamagui tokens or themes for colors and sizes.** Values stay on the `--rcx-*` custom properties. Tamagui declares its token variables once on `:root`, and a custom property's `var()` resolves where it is declared, so tokens aliasing `--rcx-*` ignore the palettes the app scopes below `:root` (the dark sidebar, `.rcx-content--main`, the image gallery). Tested and rejected. Themes were tested too (2026-11-04) and rejected for the same reason; see "Tamagui themes for the palettes: tested and rejected".
 - **Pass `children` to the frame explicitly**, never inside the attributes: uncompiled runtime drops the children put on a render element, and a frame with no render element takes them like any element.
@@ -364,7 +365,7 @@ Tick an item in the commit that completes it.
 - [x] Uncompiled runtime: React 19 callback refs (cleanup ignored, `ref(null)` on unmount) and props leaking to the DOM, fixed by the `@tamagui/compose-refs` and `@tamagui/web` patches.
 - [x] Visual regression baselines regenerated for the Tamagui frames.
 - [ ] `navigation-sidebar--collapsed`: its badges are cut off at the 48px edge; confirm whether `develop` does the same.
-- [ ] `ContextualbarTitle` logs "A text node cannot be a child of a `<View>`" uncompiled: frames that hold text should be based on `Text`.
+- [x] `ContextualbarTitle` logged "A text node cannot be a child of a `<View>`" uncompiled. The typography frames (titles, labels, descriptions, meta) are `Text` now; containers that take arbitrary children (`Tile`, `CardBody`, `ItemLink`, `TableCell`, `TabsItem`…) still warn when a story gives them a bare string.
 - [x] Cascade order: the app's CSS and the admin's Custom CSS lose to the zero stylesheet for a one- or two-class override of a Fuselage part. Loading the zero stylesheet first breaks the frames against the Box reset, so the `[class]` rule is documented for consumers instead (see the per-component rules and `docs/frontend/building-components.md`). Still to do: find and fix the app's existing overrides of Fuselage parts that lack it, in the real-app A/B.
 
 **Verification**
@@ -403,7 +404,7 @@ Tick an item in the commit that completes it.
 3. **Full A/B** over every story against `develop`, and compiled against uncompiled.
 4. **Real-app A/B** against `develop`, including the consumers never seen in a browser.
 5. **Decisions**, cheap and can run in parallel with 1–4: the `style` custom-property pattern and the npm `dist` size.
-6. **Small fixes and cleanup:** `ContextualbarTitle` on `Text`, the collapsed-sidebar badges, the unused SCSS, the CI gate on `@tamagui/*` and the SCSS ratchet, the review of the infrastructure's deviations.
+6. **Small fixes and cleanup:** the collapsed-sidebar badges, the unused SCSS, the CI gate on `@tamagui/*` and the SCSS ratchet, the review of the infrastructure's deviations.
 7. **Bench the lists**, then Meteor `tsc`, the e2e suite and the uncompiled consumers.
 8. **Delivery:** changesets for the behaviour changes, the pull request strategy, Jira, and deleting the temporary branches and worktrees.
 9. **Later, when the size budget asks for it:** shrink the variant tables, in the order given in "Variant tables: measured cost and how to shrink them".
