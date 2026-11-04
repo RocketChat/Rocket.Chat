@@ -194,7 +194,7 @@ const ModalBlock = ({ view, errors, onSubmit, onClose, onCancel }: ModalBlockPar
 								</Button>
 							)}
 							{view.submit && (
-								<Button {...getButtonStyle(view.submit)} onClick={onSubmit}>
+								<Button {...getButtonStyle(view.submit)} disabled={view.submit_disabled} onClick={onSubmit}>
 									{modalParser.renderTextObject(view.submit.text, 1)}
 								</Button>
 							)}
