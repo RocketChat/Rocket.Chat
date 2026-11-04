@@ -16,6 +16,7 @@ export type { DatePickerElement } from './blocks/elements/DatePickerElement';
 export type { DateTimePickerElement } from './blocks/elements/DateTimePickerElement';
 export type { FeedbackButton, FeedbackButtonsElement } from './blocks/elements/FeedbackButtonsElement';
 export type { ImageElement } from './blocks/elements/ImageElement';
+export type { FileInputElement } from './blocks/elements/FileInputElement';
 export type { LinearScaleElement } from './blocks/elements/LinearScaleElement';
 export type { MultiStaticSelectElement } from './blocks/elements/MultiStaticSelectElement';
 export type { MultiChannelsSelectElement } from './blocks/elements/MultiChannelsSelectElement';
@@ -57,6 +58,7 @@ export type { LayoutBlock } from './blocks/LayoutBlock';
 export type { CalloutBlock } from './blocks/layout/CalloutBlock';
 export type { ExperimentalTabNavigationBlock } from './blocks/layout/ExperimentalTabNavigationBlock';
 export type { InfoCardBlock } from './blocks/layout/InfoCardBlock';
+export type { FileBlock } from './blocks/layout/FileBlock';
 
 export type { InputElementDispatchAction } from './blocks/InputElementDispatchAction';
 

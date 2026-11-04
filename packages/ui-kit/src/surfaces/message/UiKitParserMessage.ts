@@ -8,6 +8,7 @@ export const messageSurfaceLayoutBlockTypes = [
 	'context',
 	'context_actions',
 	'divider',
+	'file',
 	'header',
 	'image',
 	'info_card',

@@ -143,6 +143,8 @@ export const InfoCard = createStory(payloads.infoCard);
 export const InfoCardMultiple = createStory(payloads.infoCardMultiple);
 export const InfoCardMultipleIcons = createStory(payloads.infoCardMultipleIcons);
 
+export const File = createStory(payloads.file);
+
 export const Table = createStory(payloads.table);
 
 export const Video = createStory(payloads.video);

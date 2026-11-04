@@ -36,6 +36,12 @@ Decided in [`useUiKitState`](../../../packages/fuselage-ui-kit/src/hooks/useUiKi
 
 `state` in `viewSubmit` and `viewClosed` is `{ [blockId]: { [actionId]: value } }`. It starts from the initial values in the layout, and every element change updates it. Only elements with a `blockId` are included, so an input block without `blockId` never reaches the app.
 
+### Files in views
+
+A `file_input` uploads each file when the user picks it, through `rooms.media/:rid`, as a temporary file of the room the view was opened from (the open room for a modal, the room of the contextual bar). The element keeps the file IDs in the view state, and the surface keeps the submit disabled while an upload is in flight.
+
+On `viewSubmit` the server confirms the files named by the `file_input` values of the view state that belong to the submitting user (`Uploads.confirmTemporaryFile`), so they stop expiring. Ids of files owned by someone else are ignored, and no more ids than the element's `max_files` are read. The app then reads each file with `IUploadRead.getById` / `getBufferById`; the apps-engine needs no change. Files of a view that is never submitted stay temporary and are removed by the temporary-uploads cron. Core apps (`UiKitCoreApp`) do not confirm files.
+
 ## Server interactions
 
 The app returns one of these from its handler, usually built with `UIKitInteractionResponder` in apps-engine. The server passes the result through unchanged.

@@ -11,6 +11,7 @@ export * from './input';
 export * from './section';
 export * from './preview';
 export * from './infoCard';
+export * from './file';
 export * from './table';
 export * from './video';
 export * from './contextActions';
