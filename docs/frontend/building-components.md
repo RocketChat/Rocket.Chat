@@ -125,3 +125,7 @@ Logical components live in the application. They hold state and data, and render
 - One component per state: render `IncomingPopup`, `OutgoingPopup` or `StartCallPopup` depending on the call state, rather than one component with conditionals in its markup.
 - Customize through the variations the visual components declare, never by restyling them.
 - Styles the application needs go in a stylesheet and reach the component through `className`.
+
+### Overriding a Fuselage part from a stylesheet
+
+Fuselage components compiled by Tamagui get their styles from atomic classes in a stylesheet that loads after the application's. A rule that restyles a Fuselage part with one class (`.rcx-button { … }`) loses to them, so add `[class]` to it: `.rcx-button[class] { … }`. For the longhands of a shorthand (`border-color`, `padding-block`, `padding-inline`, `margin-block`, `margin-inline`, `flex-grow`, `flex-direction`, `border-top-width` and the like), Tamagui doubles the class, so add `[class]` twice. Check the override in a production build: in development the application's styles load last and the rule wins without it.
