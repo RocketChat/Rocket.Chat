@@ -61,7 +61,10 @@ const evaluateValue = (value: unknown, args: readonly unknown[]): string => {
 		return value.map((innerValue) => evaluateValue(innerValue, args)).join('');
 	}
 
-	return (value as { toString(): string }).toString();
+	// Interpolated values include objects that render through their own toString, such as fuselage's Var.
+	// Dropping this disable means typing interpolations and moving Var into this package so the type can name it.
+	// oxlint-disable-next-line typescript/no-base-to-string
+	return String(value);
 };
 
 const containsEvaluable = (value: unknown): boolean =>
