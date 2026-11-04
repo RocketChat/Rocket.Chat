@@ -1,0 +1,19 @@
+apps/meteor/server/modules/apps/bridges/api.ts
+  s_015fba93bd53a8::t_09b7f24b51036f 19
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "a3ba6232ad2ca959c83f8770a90b58cb95f279ad",
+  "prompts": {},
+  "sessions": {
+    "s_015fba93bd53a8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d186ae17-5430-4065-8a6d-df9ede5df591",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
