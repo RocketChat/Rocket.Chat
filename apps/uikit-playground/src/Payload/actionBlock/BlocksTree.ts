@@ -38,6 +38,7 @@ import {
 } from './input';
 import { markdown } from './markdown';
 import { previewPlain, previewWithImage, previewWithUrl, previewWithImageAndUrl } from './preview';
+import { richText, inputWithRichTextInput } from './richText';
 import {
 	sectionWithPlainText,
 	sectionWithMrkdwn,
@@ -316,6 +317,10 @@ const BlocksTree: Item = [
 				payload: inputWithUrlInput,
 			},
 			{
+				label: 'rich text',
+				payload: inputWithRichTextInput,
+			},
+			{
 				label: 'date time Picker',
 				payload: inputWithDateTimePicker,
 			},
@@ -349,6 +354,15 @@ const BlocksTree: Item = [
 			{
 				label: 'Release notes',
 				payload: markdown,
+			},
+		],
+	},
+	{
+		label: 'rich text',
+		branches: [
+			{
+				label: 'Release notes',
+				payload: richText,
 			},
 		],
 	},

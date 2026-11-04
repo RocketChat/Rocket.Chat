@@ -12,6 +12,7 @@ export const modalSurfaceLayoutBlockTypes = [
 	'input',
 	'markdown',
 	'preview',
+	'rich_text',
 	'section',
 	'table',
 	'video',

@@ -13,7 +13,7 @@ Source: [`packages/ui-kit/src/blocks/layout/ActionsBlock.ts`](../../../packages/
 | Field | Type | Required | Notes |
 | --- | --- | --- | --- |
 | `type` | `'actions'` | yes |  |
-| `elements` | `readonly ( \| ButtonElement \| ChannelsSelectElement \| ConversationsSelectElement \| DatePickerElement \| DateTimePickerElement \| LinearScaleElement \| MultiChannelsSelectElement \| MultiConversationsSelectElement \| MultiStaticSelectElement \| MultiUsersSelectElement \| OverflowElement \| StaticSelectElement \| UsersSelectElement \| ToggleSwitchElement \| CheckboxElement \| RadioButtonElement \| TimePickerElement )[]` | yes |  |
+| `elements` | `readonly ( \| ButtonElement \| ChannelsSelectElement \| ConversationsSelectElement \| DatePickerElement \| DateTimePickerElement \| LinearScaleElement \| MultiChannelsSelectElement \| MultiConversationsSelectElement \| MultiStaticSelectElement \| MultiUsersSelectElement \| OverflowElement \| StaticSelectElement \| UsersSelectElement \| ToggleSwitchElement \| CheckboxElement \| RadioButtonElement \| RichTextInputElement \| TimePickerElement )[]` | yes |  |
 | `appId` | `string` | no |  |
 | `blockId` | `string` | no |  |
 
@@ -151,6 +151,46 @@ Source: [`packages/ui-kit/src/blocks/layout/PreviewBlock.ts`](../../../packages/
 | `preview` | `Image` | no |  |
 | `externalUrl` | `string` | no |  |
 | `oembedUrl` | `string` | no |  |
+
+### `rich_text`
+
+Source: [`packages/ui-kit/src/blocks/layout/RichTextBlock.ts`](../../../packages/ui-kit/src/blocks/layout/RichTextBlock.ts)
+
+Structured rich text. Fuselage maps it to the `@rocket.chat/message-parser` AST and renders it with the same `Markup` component as a chat message.
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'rich_text'` | yes |  |
+| `elements` | `RichTextContainer[]` | yes | `rich_text_section`, `rich_text_list`, `rich_text_quote` or `rich_text_preformatted`. |
+| `appId` | `string` | no |  |
+| `blockId` | `string` | no |  |
+
+Containers:
+
+| Container | Fields |
+| --- | --- |
+| `rich_text_section` | `elements`: inline elements |
+| `rich_text_list` | `style`: `'bullet'` or `'ordered'`; `indent?`: number; `elements`: `rich_text_section[]` |
+| `rich_text_quote` | `elements`: inline elements |
+| `rich_text_preformatted` | `elements`: inline elements, whose `text` is joined and shown as a code block |
+
+Inline elements:
+
+| Element | Fields |
+| --- | --- |
+| `text` | `text`; `style?`: `{ bold?, italic?, strike?, code? }` |
+| `link` | `url`; `text?` (defaults to the url); `style?` |
+| `emoji` | `name`; `unicode?` (shown instead of the shortcode when set) |
+| `user` | `user_id`: resolved to the username through `/v1/users.info` |
+| `channel` | `channel_id`: resolved to the room name through `/v1/rooms.info` |
+| `date` | `timestamp`: Unix seconds; `format?`: `t`, `T`, `d`, `D`, `f` (default), `F` or `R` |
+| `broadcast` | `range`: `'here'`, `'channel'` or `'everyone'`; the last two both mention `@all` |
+
+Notes:
+
+- Mentions arrive by id and are resolved on the client with cached requests; the id is shown until the name loads, and stays if the lookup fails.
+- The message-parser AST has flat lists, so `indent` is ignored when rendering: a nested list shows at the top level.
+- Only the message, modal and contextual bar surfaces accept it.
 
 ### `section`
 
@@ -530,6 +570,26 @@ Source: [`packages/ui-kit/src/blocks/elements/PlainTextInputElement.ts`](../../.
 | `actionId` | `string` | yes |  |
 | `confirm` | `ConfirmationDialog` | no |  |
 | `dispatchActionConfig` | `InputElementDispatchAction[]` | no |  |
+
+### `rich_text_input`
+
+Source: [`packages/ui-kit/src/blocks/elements/RichTextInputElement.ts`](../../../packages/ui-kit/src/blocks/elements/RichTextInputElement.ts)
+
+A multi-line field where the user types Markdown. Its value, in view state and in the payload sent to the app, is a `rich_text` block built by parsing the text the way a chat message is parsed. `initial_value` is converted back to Markdown for display.
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'rich_text_input'` | yes |  |
+| `placeholder` | `PlainText` | no |  |
+| `initial_value` | `RichTextBlock` | no |  |
+| `focus_on_load` | `boolean` | no | Focuses the field when the view opens. |
+| `appId` | `string` | yes |  |
+| `blockId` | `string` | yes |  |
+| `actionId` | `string` | yes |  |
+| `confirm` | `ConfirmationDialog` | no |  |
+| `dispatchActionConfig` | `InputElementDispatchAction[]` | no |  |
+
+Typed `@name` and `#name` mentions have no ids on the client, so they come back as `text` elements; `@here` and `@all` become `broadcast` elements. A nested list comes back as separate `rich_text_list` containers with `indent` set to the depth.
 
 ### `radio_button`
 

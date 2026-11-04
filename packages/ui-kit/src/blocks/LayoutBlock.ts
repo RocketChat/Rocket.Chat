@@ -11,6 +11,7 @@ import type { InfoCardBlock } from './layout/InfoCardBlock.js';
 import type { InputBlock } from './layout/InputBlock.js';
 import type { MarkdownBlock } from './layout/MarkdownBlock.js';
 import type { PreviewBlock } from './layout/PreviewBlock.js';
+import type { RichTextBlock } from './layout/RichTextBlock.js';
 import type { SectionBlock } from './layout/SectionBlock.js';
 import type { TableBlock } from './layout/TableBlock.js';
 import type { VideoBlock } from './layout/VideoBlock.js';
@@ -18,6 +19,7 @@ import type { VideoConferenceBlock } from './layout/VideoConferenceBlock.js';
 
 export type LayoutBlock =
 	| PreviewBlock
+	| RichTextBlock
 	| ActionsBlock
 	| ConditionalBlock
 	| ContextBlock

@@ -22,6 +22,7 @@ export const BlockElementType = {
 	FEEDBACK_BUTTONS: 'feedback_buttons',
 	URL_TEXT_INPUT: 'url_text_input',
 	RADIO_BUTTON: 'radio_button',
+	RICH_TEXT_INPUT: 'rich_text_input',
 	STATIC_SELECT: 'static_select',
 	TAB: 'tab',
 	TIME_PICKER: 'time_picker',

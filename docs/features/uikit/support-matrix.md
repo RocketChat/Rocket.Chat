@@ -10,7 +10,7 @@ Each surface has one list of accepted layout blocks, exported by `@rocket.chat/u
 
 ## Divergences
 
-- **Livechat, message blocks**: `callout`, `context_actions`, `header`, `info_card`, `input`, `markdown`, `preview`, `table`, `video` and `video_conf` are accepted, but Livechat's `MessageParser` has no method for them, so they render as nothing in the widget.
+- **Livechat, message blocks**: `callout`, `context_actions`, `header`, `info_card`, `input`, `markdown`, `preview`, `rich_text`, `table`, `video` and `video_conf` are accepted, but Livechat's `MessageParser` has no method for them, so they render as nothing in the widget.
 - **element `multi_static_select` in Livechat**: the method exists but returns `null`.
 - **`attachment` surface**: has a parser and a list, but no client renderer.
 - **`feedback_buttons` and `icon_button` outside their containers**: the types only allow them in the containers marked below, but the Fuselage renderer draws them in any element container, so a `feedback_buttons` inside an `actions` block still renders in a message.
@@ -32,6 +32,7 @@ Each surface has one list of accepted layout blocks, exported by `@rocket.chat/u
 | `input` | ✅ | — | ✅ | ✅ | ✅ | — |
 | `markdown` | ✅ | — | ✅ | — | ✅ | — |
 | `preview` | ✅ | — | ✅ | ✅ | ✅ | — |
+| `rich_text` | ✅ | — | ✅ | — | ✅ | — |
 | `section` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | `tab_navigation` | — | — | — | — | ✅ | — |
 | `table` | ✅ | — | ✅ | — | ✅ | — |
@@ -68,6 +69,7 @@ Container columns come from the block types; renderer columns tell whether a met
 | `overflow` | ✅ | — | ✅ | — | — | ✅ | — | — | — | ✅ | ✅ |
 | `plain_text_input` | — | ✅ | — | — | — | — | — | — | — | ✅ | — |
 | `radio_button` | ✅ | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
+| `rich_text_input` | — | ✅ | — | — | — | — | — | — | — | ✅ | — |
 | `static_select` | ✅ | ✅ | ✅ | — | — | — | — | — | — | ✅ | ✅ |
 | `tab` (via `tab_navigation`) | — | — | — | — | — | — | — | — | ✅ | ✅ | — |
 | `time_picker` | ✅ | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
