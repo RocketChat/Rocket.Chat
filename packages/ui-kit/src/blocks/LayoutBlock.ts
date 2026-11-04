@@ -1,6 +1,8 @@
 import type { ActionsBlock } from './layout/ActionsBlock';
 import type { AlertBlock } from './layout/AlertBlock';
 import type { CalloutBlock } from './layout/CalloutBlock';
+import type { CardBlock } from './layout/CardBlock';
+import type { CarouselBlock } from './layout/CarouselBlock';
 import type { ConditionalBlock } from './layout/ConditionalBlock';
 import type { ContextActionsBlock } from './layout/ContextActionsBlock';
 import type { ContextBlock } from './layout/ContextBlock';
@@ -43,4 +45,6 @@ export type LayoutBlock =
 	| FileBlock
 	| TaskCardBlock
 	| PlanBlock
-	| AlertBlock;
+	| AlertBlock
+	| CardBlock
+	| CarouselBlock;

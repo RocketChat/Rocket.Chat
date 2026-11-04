@@ -4,6 +4,8 @@ import type { ReactElement } from 'react';
 import ActionsBlock from '../blocks/ActionsBlock';
 import AlertBlock from '../blocks/AlertBlock';
 import CalloutBlock from '../blocks/CalloutBlock';
+import CardBlock from '../blocks/CardBlock';
+import CarouselBlock from '../blocks/CarouselBlock';
 import ContextActionsBlock from '../blocks/ContextActionsBlock';
 import ContextBlock from '../blocks/ContextBlock';
 import DividerBlock from '../blocks/DividerBlock';
@@ -451,6 +453,30 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
 			return (
 				<AppIdProvider key={index} appId={block.appId}>
 					<AlertBlock block={block} context={context} index={index} surfaceRenderer={this} />
+				</AppIdProvider>
+			);
+		}
+
+		return null;
+	}
+
+	card(block: UiKit.CardBlock, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return (
+				<AppIdProvider key={index} appId={block.appId}>
+					<CardBlock block={block} context={context} index={index} surfaceRenderer={this} />
+				</AppIdProvider>
+			);
+		}
+
+		return null;
+	}
+
+	carousel(block: UiKit.CarouselBlock, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return (
+				<AppIdProvider key={index} appId={block.appId}>
+					<CarouselBlock block={block} context={context} index={index} surfaceRenderer={this} />
 				</AppIdProvider>
 			);
 		}

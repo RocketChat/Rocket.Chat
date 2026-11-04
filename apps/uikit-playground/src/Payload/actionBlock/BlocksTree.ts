@@ -16,8 +16,9 @@ import {
 	actionWithDateTimePicker,
 	actionWithLinearScale,
 } from './action';
-import { contextWithPlainText, contextWithMrkdwn, contextWithImage, contextWithAllElements } from './context';
 import { alert } from './alert';
+import { card, carousel } from './card';
+import { contextWithPlainText, contextWithMrkdwn, contextWithImage, contextWithAllElements } from './context';
 import { contextActions, contextActionsWithFeedback } from './contextActions';
 import { divider } from './divider';
 import { file, inputWithFileInput } from './file';
@@ -421,6 +422,14 @@ const BlocksTree: Item = [
 	{
 		label: 'alert',
 		branches: [{ label: 'All levels', payload: alert }],
+	},
+	{
+		label: 'card',
+		branches: [{ label: 'Card', payload: card }],
+	},
+	{
+		label: 'carousel',
+		branches: [{ label: 'Carousel', payload: carousel }],
 	},
 	{
 		label: 'context_actions',

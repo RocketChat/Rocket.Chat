@@ -59,3 +59,18 @@ it.each([
 ])('accepts the alternative element name $type', (element) => {
 	expect(validateLayoutBlocks([{ type: 'actions', elements: [element] }])).toEqual([]);
 });
+
+it('accepts a carousel of cards with buttons that leave out their ids', () => {
+	const card = {
+		type: 'card',
+		hero_image: { type: 'image', image_url: 'https://example.com/a.png', alt_text: 'a' },
+		title: text('Card'),
+		actions: [{ type: 'button', text: text('go') }],
+	};
+
+	expect(validateLayoutBlocks([card, { type: 'carousel', elements: [card] }, { type: 'alert', text: text('hi'), level: 'info' }])).toEqual(
+		[],
+	);
+	expect(validateLayoutBlocks([{ type: 'alert', text: text('hi'), level: 'bogus' }])).not.toEqual([]);
+	expect(validateLayoutBlocks([{ type: 'carousel', elements: [{ type: 'divider' }] }])).not.toEqual([]);
+});
