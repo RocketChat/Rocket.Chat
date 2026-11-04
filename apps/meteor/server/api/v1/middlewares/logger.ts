@@ -71,8 +71,10 @@ export const nodeLoggerMiddleware =
 			}
 			logged = true;
 			log.http({
-				status: res.statusCode,
+				// a client that leaves before the headers go out received no status at all
+				status: res.headersSent ? res.statusCode : undefined,
 				responseTime: Date.now() - startTime,
+				...(!res.writableFinished && { aborted: true }),
 			});
 		};
 		res.once('finish', logResponse);

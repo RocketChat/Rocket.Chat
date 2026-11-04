@@ -24,7 +24,8 @@ const createRequest = (originalUrl: string): Request =>
 		socket: { remoteAddress: '10.0.0.1' },
 	}) as unknown as Request;
 
-const createResponse = (statusCode = 200): Response => Object.assign(new EventEmitter(), { statusCode }) as unknown as Response;
+const createResponse = (statusCode = 200, { headersSent = true, writableFinished = true } = {}): Response =>
+	Object.assign(new EventEmitter(), { statusCode, headersSent, writableFinished }) as unknown as Response;
 
 describe('nodeLoggerMiddleware', () => {
 	it('logs the request fields and calls next before the response ends', () => {
@@ -59,14 +60,25 @@ describe('nodeLoggerMiddleware', () => {
 		expect(http).toHaveBeenCalledWith({ status: 404, responseTime: expect.any(Number) });
 	});
 
-	it('logs a request whose connection closed before the response finished', () => {
+	it('logs no status when the connection closed before the headers were sent', () => {
 		const { logger, http } = createLogger();
-		const res = createResponse();
+		const res = createResponse(200, { headersSent: false, writableFinished: false });
 
 		nodeLoggerMiddleware(logger)(createRequest('/health'), res, jest.fn());
 		res.emit('close');
 
 		expect(http).toHaveBeenCalledTimes(1);
+		expect(http).toHaveBeenCalledWith({ status: undefined, aborted: true, responseTime: expect.any(Number) });
+	});
+
+	it('logs the sent status when the connection closed while the body was being written', () => {
+		const { logger, http } = createLogger();
+		const res = createResponse(503, { headersSent: true, writableFinished: false });
+
+		nodeLoggerMiddleware(logger)(createRequest('/health'), res, jest.fn());
+		res.emit('close');
+
+		expect(http).toHaveBeenCalledWith({ status: 503, aborted: true, responseTime: expect.any(Number) });
 	});
 
 	it('censors the URL', () => {
