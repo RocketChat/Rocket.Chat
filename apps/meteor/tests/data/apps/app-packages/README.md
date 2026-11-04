@@ -990,6 +990,375 @@ export class UiKitComponentsTestApp extends App implements IUIKitInteractionHand
 
 </details>
 
+#### UIKit Capabilities Test
+
+File name: `uikit-capabilities-test_0.0.1.zip`
+
+An app that exercises the UIKit capabilities that need the app to answer or remember something: option suggestions for external selects, a two-step modal wizard, files collected in a view, and the app Home. It also sends a message with the `rich_text` block, the alternative element type names (`checkboxes`, `radio_buttons`, `timepicker`), new `icon_button` icons and an emoji-only table cell. It provides a slash command (`uikit-capabilities-test`) with two actions, plus a Home:
+
+- `rich` - Sends the message described above
+- `wizard` - Opens step 1 of a modal (callback id `wizard-1`) with an `external_select`, a `multi_external_select` and a `rich_text_input`, carrying `private_metadata` with the seed and the room. Submitting it pushes step 2 (`wizard-2`) with a `file_input`; submitting step 2 posts a message with the collected values and one `file` block per uploaded file, then clears the modals
+- Home - `executeAppHomeOpenedHandler` publishes a Home with a counter; its `home_refresh` button republishes it with the counter incremented
+
+The second argument is a random "seed" that identifies the execution context.
+
+**Log labels** (read with `findAppLogItem`):
+
+- `executeBlockSuggestionHandler`: `block_suggestion` (action id and query)
+- `executeViewSubmitHandler`: `view_submit_callback`, `view_submit_state` (JSON) and `view_submit_metadata`
+- `executeBlockActionHandler`: `block_action_actionId`, `block_action_value` (JSON)
+- `executeAppHomeOpenedHandler`: `app_home_opened` (user id)
+
+<details>
+<summary>App source code</summary>
+
+```typescript
+import {
+	IAppAccessors,
+	IConfigurationExtend,
+	IEnvironmentRead,
+	IHttp,
+	ILogger,
+	IModify,
+	IPersistence,
+	IRead,
+} from '@rocket.chat/apps-engine/definition/accessors';
+import { App } from '@rocket.chat/apps-engine/definition/App';
+import { AppMethod, IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
+import {
+	IUIKitBlockSuggestionResponse,
+	IUIKitInteractionHandler,
+	IUIKitResponse,
+	UIKitAppHomeOpenedInteractionContext,
+	UIKitBlockInteractionContext,
+	UIKitBlockSuggestionInteractionContext,
+	UIKitSurfaceType,
+	UIKitViewSubmitInteractionContext,
+} from '@rocket.chat/apps-engine/definition/uikit';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users';
+import type { ButtonElement, LayoutBlock } from '@rocket.chat/ui-kit';
+
+const projects = [
+	{ value: 'rocketchat', label: 'Rocket.Chat' },
+	{ value: 'fuselage', label: 'Fuselage' },
+	{ value: 'apps-engine', label: 'Apps-Engine' },
+	{ value: 'livechat', label: 'Livechat' },
+	{ value: 'mobile', label: 'Mobile' },
+];
+
+const people = [
+	{ value: 'ada', label: 'Ada Lovelace' },
+	{ value: 'alan', label: 'Alan Turing' },
+	{ value: 'grace', label: 'Grace Hopper' },
+	{ value: 'linus', label: 'Linus Torvalds' },
+	{ value: 'margaret', label: 'Margaret Hamilton' },
+];
+
+const toOption = ({ value, label }: { value: string; label: string }) => ({ text: { type: 'plain_text', text: label }, value });
+
+const button = (actionId: string, text: string) => ({ type: 'button', actionId, text: { type: 'plain_text', text } }) as ButtonElement;
+
+// Block literals leave out `appId` and `blockId`; the engine fills them in.
+const richMessageBlocks = () =>
+	[
+		{
+			type: 'rich_text',
+			elements: [
+				{
+					type: 'rich_text_section',
+					elements: [
+						{ type: 'text', text: 'Release ', style: { bold: true } },
+						{ type: 'text', text: '7.0', style: { italic: true } },
+						{ type: 'text', text: ' is out. Read the ' },
+						{ type: 'link', url: 'https://docs.rocket.chat', text: 'release notes' },
+						{ type: 'text', text: ' ' },
+						{ type: 'emoji', name: 'tada' },
+					],
+				},
+				{
+					type: 'rich_text_list',
+					style: 'bullet',
+					elements: [
+						{ type: 'rich_text_section', elements: [{ type: 'text', text: 'Faster search' }] },
+						{
+							type: 'rich_text_section',
+							elements: [
+								{ type: 'text', text: 'New ' },
+								{ type: 'text', text: 'rich_text', style: { code: true } },
+								{ type: 'text', text: ' block' },
+							],
+						},
+					],
+				},
+				{ type: 'rich_text_quote', elements: [{ type: 'text', text: 'Ship it.' }] },
+				{ type: 'rich_text_preformatted', elements: [{ type: 'text', text: 'yarn install\nyarn build' }] },
+			],
+		},
+		{
+			type: 'table',
+			blockId: 'status',
+			rows: [
+				[
+					{ type: 'raw_text', text: 'Service' },
+					{ type: 'raw_text', text: 'Status' },
+				],
+				[
+					{ type: 'raw_text', text: 'API' },
+					{ type: 'mrkdwn', text: ':white_check_mark:' },
+				],
+			],
+		},
+		{
+			type: 'actions',
+			blockId: 'aliases',
+			elements: [
+				{
+					type: 'checkboxes',
+					actionId: 'aliases_checkboxes',
+					options: [toOption({ value: 'a', label: 'Option A' }), toOption({ value: 'b', label: 'Option B' })],
+				},
+				{
+					type: 'radio_buttons',
+					actionId: 'aliases_radio_buttons',
+					options: [toOption({ value: 'yes', label: 'Yes' }), toOption({ value: 'no', label: 'No' })],
+				},
+				{ type: 'timepicker', actionId: 'aliases_timepicker', initialTime: '10:30' },
+			],
+		},
+		{
+			type: 'context_actions',
+			blockId: 'message_actions',
+			elements: [
+				{ type: 'icon_button', actionId: 'copy', icon: { type: 'icon', icon: 'copy', variant: 'default' }, label: 'Copy', value: 'copy' },
+				{ type: 'icon_button', actionId: 'flag', icon: { type: 'icon', icon: 'flag', variant: 'default' }, label: 'Report', value: 'flag' },
+			],
+		},
+	] as unknown as LayoutBlock[];
+
+const wizardStepOne = () =>
+	[
+		{ type: 'header', text: { type: 'plain_text', text: 'New release — step 1 of 2' } },
+		{
+			type: 'input',
+			blockId: 'project',
+			label: { type: 'plain_text', text: 'Project' },
+			element: {
+				type: 'external_select',
+				actionId: 'project',
+				min_query_length: 1,
+				placeholder: { type: 'plain_text', text: 'Search projects' },
+			},
+		},
+		{
+			type: 'input',
+			blockId: 'reviewers',
+			label: { type: 'plain_text', text: 'Reviewers' },
+			element: {
+				type: 'multi_external_select',
+				actionId: 'reviewers',
+				min_query_length: 1,
+				max_selected_items: 3,
+				placeholder: { type: 'plain_text', text: 'Search people' },
+			},
+		},
+		{
+			type: 'input',
+			blockId: 'notes',
+			label: { type: 'plain_text', text: 'Release notes' },
+			element: {
+				type: 'rich_text_input',
+				actionId: 'notes',
+				placeholder: { type: 'plain_text', text: 'Write Markdown' },
+			},
+		},
+	] as unknown as LayoutBlock[];
+
+const wizardStepTwo = () =>
+	[
+		{ type: 'header', text: { type: 'plain_text', text: 'New release — step 2 of 2' } },
+		{
+			type: 'input',
+			blockId: 'attachments',
+			label: { type: 'plain_text', text: 'Attachments' },
+			element: { type: 'file_input', actionId: 'files', max_files: 3 },
+		},
+	] as unknown as LayoutBlock[];
+
+const homeBlocks = (user: IUser, count: number) =>
+	[
+		{ type: 'header', text: { type: 'plain_text', text: 'UiKit capabilities' } },
+		{ type: 'markdown', text: `Hello **${user.name || user.username}**. This page is your app home.` },
+		{ type: 'section', blockId: 'counter', text: { type: 'mrkdwn', text: `Refreshed **${count}** times` } },
+		{ type: 'actions', blockId: 'home_actions', elements: [button('home_refresh', 'Refresh')] },
+	] as unknown as LayoutBlock[];
+
+type WizardState = { seed: string; rid?: string; project?: unknown; reviewers?: unknown; notes?: unknown };
+
+export class UiKitCapabilitiesTestApp extends App implements IUIKitInteractionHandler {
+	private homeRefreshes = new Map<string, number>();
+
+	constructor(info: IAppInfo, logger: ILogger, accessors: IAppAccessors) {
+		super(info, logger, accessors);
+	}
+
+	async [AppMethod.UIKIT_BLOCK_SUGGESTION](
+		context: UIKitBlockSuggestionInteractionContext,
+		_read: IRead,
+		_http: IHttp,
+		_persistence: IPersistence,
+		_modify: IModify,
+	): Promise<IUIKitBlockSuggestionResponse> {
+		const { actionId, value } = context.getInteractionData();
+		const query = value.toLowerCase();
+		const source = actionId === 'reviewers' ? people : projects;
+		this.getLogger().debug('block_suggestion', actionId, value);
+
+		return context.getInteractionResponder().optionsResponse({
+			options: source.filter(({ label }) => label.toLowerCase().includes(query)).map(toOption) as any,
+		});
+	}
+
+	async [AppMethod.UIKIT_BLOCK_ACTION](
+		context: UIKitBlockInteractionContext,
+		_read: IRead,
+		_http: IHttp,
+		_persistence: IPersistence,
+		modify: IModify,
+	): Promise<IUIKitResponse> {
+		const data = context.getInteractionData();
+		this.getLogger().debug('block_action_actionId', data.actionId);
+		this.getLogger().debug('block_action_value', JSON.stringify(data.value));
+
+		if (data.actionId === 'home_refresh') {
+			const count = (this.homeRefreshes.get(data.user.id) ?? 0) + 1;
+			this.homeRefreshes.set(data.user.id, count);
+			await this.publishHome(modify, data.user, data.triggerId, count);
+		}
+
+		return context.getInteractionResponder().successResponse();
+	}
+
+	async [AppMethod.UIKIT_VIEW_SUBMIT](
+		context: UIKitViewSubmitInteractionContext,
+		_read: IRead,
+		_http: IHttp,
+		_persistence: IPersistence,
+		modify: IModify,
+	): Promise<IUIKitResponse> {
+		const { view, user } = context.getInteractionData();
+		const state = (view.state ?? {}) as Record<string, Record<string, unknown>>;
+		const metadata = JSON.parse(view.private_metadata ?? '{}') as WizardState;
+		this.getLogger().debug('view_submit_callback', view.callback_id || 'none');
+		this.getLogger().debug('view_submit_state', JSON.stringify(state));
+		this.getLogger().debug('view_submit_metadata', view.private_metadata || 'none');
+
+		if (view.callback_id === 'wizard-1') {
+			const next: WizardState = {
+				...metadata,
+				project: state.project?.project,
+				reviewers: state.reviewers?.reviewers,
+				notes: state.notes?.notes,
+			};
+
+			return context.getInteractionResponder().pushModalViewResponse({
+				title: { type: 'plain_text', text: 'New release' },
+				blocks: wizardStepTwo(),
+				submit: button('wizard-finish', 'Finish'),
+				close: button('wizard-back', 'Back'),
+				callback_id: 'wizard-2',
+				private_metadata: JSON.stringify(next),
+			} as any);
+		}
+
+		if (view.callback_id === 'wizard-2') {
+			const fileIds = (state.attachments?.files as string[] | undefined) ?? [];
+
+			if (metadata.rid) {
+				const room = await this.getAccessors().reader.getRoomReader().getById(metadata.rid);
+				if (room) {
+					const blocks = [
+						{ type: 'header', text: { type: 'plain_text', text: `Release of ${String(metadata.project ?? 'a project')}` } },
+						{ type: 'section', text: { type: 'mrkdwn', text: `Reviewers: ${JSON.stringify(metadata.reviewers ?? [])}` } },
+						...(metadata.notes ? [metadata.notes] : []),
+						...fileIds.map((file_id) => ({ type: 'file', file_id, source: 'local' })),
+					] as unknown as LayoutBlock[];
+					const message = modify.getCreator().startMessage().setRoom(room).setSender(user).setBlocks(blocks);
+					await modify.getCreator().finish(message);
+				}
+			}
+
+			return context.getInteractionResponder().clearModalViewsResponse();
+		}
+
+		return context.getInteractionResponder().successResponse();
+	}
+
+	async [AppMethod.UIKIT_APP_HOME_OPENED](
+		context: UIKitAppHomeOpenedInteractionContext,
+		_read: IRead,
+		_http: IHttp,
+		_persistence: IPersistence,
+		modify: IModify,
+	): Promise<IUIKitResponse> {
+		const { user, triggerId } = context.getInteractionData();
+		this.getLogger().debug('app_home_opened', user.id);
+		await this.publishHome(modify, user, triggerId, this.homeRefreshes.get(user.id) ?? 0);
+
+		return context.getInteractionResponder().successResponse();
+	}
+
+	protected async extendConfiguration(configuration: IConfigurationExtend, _environmentRead: IEnvironmentRead): Promise<void> {
+		await configuration.slashCommands.provideSlashCommand({
+			command: 'uikit-capabilities-test',
+			i18nDescription: '',
+			i18nParamsExample: '',
+			providesPreview: false,
+			executor: async (context, _read, modify, _http, _persis) => {
+				const [action, seed] = context.getArguments();
+				const triggerId = context.getTriggerId();
+
+				if (action === 'rich') {
+					const message = modify.getCreator().startMessage().setRoom(context.getRoom()).setBlocks(richMessageBlocks());
+					await modify.getCreator().finish(message);
+					return;
+				}
+
+				if (action === 'wizard' && triggerId) {
+					await modify.getUiController().openSurfaceView(
+						{
+							id: `wizard-${seed}`,
+							type: UIKitSurfaceType.MODAL,
+							title: { type: 'plain_text', text: 'New release' },
+							blocks: wizardStepOne(),
+							submit: button('wizard-next', 'Next'),
+							callback_id: 'wizard-1',
+							private_metadata: JSON.stringify({ seed, rid: context.getRoom().id } satisfies WizardState),
+						} as any,
+						{ triggerId },
+						context.getSender(),
+					);
+				}
+			},
+		});
+	}
+
+	private async publishHome(modify: IModify, user: IUser, triggerId: string | undefined, count: number): Promise<void> {
+		await modify.getUiController().updateSurfaceView(
+			{
+				id: 'uikit-capabilities-home',
+				type: UIKitSurfaceType.HOME,
+				title: { type: 'plain_text', text: 'Home' },
+				blocks: homeBlocks(user, count),
+			} as any,
+			{ triggerId: triggerId ?? '' },
+			user,
+		);
+	}
+}
+```
+
+</details>
+
 #### Media call lifecycle events (IMediaCallHandler)
 
 File name: `media-call-events-test_0.0.1.zip`
