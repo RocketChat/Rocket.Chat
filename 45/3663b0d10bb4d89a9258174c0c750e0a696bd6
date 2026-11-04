@@ -1,0 +1,25 @@
+packages/i18n/src/locales/en.i18n.json
+  ai_agent 4512-4513
+apps/meteor/client/views/room/composer/messageBox/ScheduleMessage/ScheduleMessageMenu.spec.tsx
+  ai_agent 16,26-27,76-77
+.changeset/scheduled-messages.md
+  ai_agent 10,13
+apps/meteor/client/sidebar/RoomList/ScheduledMessagesIndicator.spec.tsx
+  ai_agent 2,6,12-13,46-62
+apps/meteor/client/hooks/roomActions/useScheduledMessagesRoomAction.spec.tsx
+  ai_agent 11-12
+apps/meteor/client/views/root/hooks/loggedIn/useScheduledMessagesUpdates.spec.tsx
+  ai_agent 15-16
+apps/meteor/client/sidebar/RoomList/ScheduledMessagesIndicator.tsx
+  ai_agent 23-25
+apps/meteor/client/hooks/useCanScheduleMessages.ts
+  ai_agent 2,8-9
+packages/ui-client/src/hooks/useFeaturePreviewList.ts
+  ai_agent 3-4,64-68
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "453663b0d10bb4d89a9258174c0c750e0a696bd6",
+  "prompts": {}
+}
