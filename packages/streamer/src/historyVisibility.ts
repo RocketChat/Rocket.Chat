@@ -1,83 +1,157 @@
 import { Settings } from '@rocket.chat/core-services';
 import type { IMessage, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
-import { Messages, Rooms, Subscriptions } from '@rocket.chat/models';
+import { Messages, Subscriptions } from '@rocket.chat/models';
 
 import type { IPublication } from './types';
 
 type StreamedMessage = Pick<IMessage, 'ts' | 'tmid' | 'tshow' | 'replies'>;
 
-type TrackedStream = { publication: IPublication; cutoff?: Date };
+type StreamedRoom = Pick<IRoom, '_id' | 'prid'>;
+
+type Cutoff = { date?: Date; governingRid: IRoom['_id'] };
+
+type TrackedStream = {
+	room: StreamedRoom;
+	uid: IUser['_id'];
+	/** Read on the first event that needs it, then kept current by subscription changes. */
+	cutoff?: Promise<Cutoff>;
+	/** The cutoff once read, so a subscription change can tell whether it applies. */
+	known?: Cutoff;
+};
+
+type TrackedRoomList = { publication: IPublication; uid: IUser['_id']; loaded?: Promise<void> };
 
 const streamsByMember = new Map<string, Set<TrackedStream>>();
 const trackedByPublication = new WeakMap<IPublication, Map<IRoom['_id'], TrackedStream>>();
-const roomListsByUser = new Map<IUser['_id'], Set<IPublication>>();
+const roomListsByUser = new Map<IUser['_id'], Set<TrackedRoomList>>();
+const roomListByPublication = new WeakMap<IPublication, TrackedRoomList>();
+const enabledByEvent = new WeakMap<object, Promise<boolean>>();
 
 const memberKey = (rid: IRoom['_id'], uid: IUser['_id']) => `${rid}:${uid}`;
 
 const toCutoff = (historyVisibleFrom: ISubscription['historyVisibleFrom']) =>
 	historyVisibleFrom ? new Date(historyVisibleFrom) : undefined;
 
-const isEnabled = async () => Boolean(await Settings.get<boolean>('Restricted_Message_History_Enabled'));
-
-const findSubscriptionCutoff = (rid: IRoom['_id'], uid: IUser['_id']) =>
-	Subscriptions.findOneByRoomIdAndUserId<Pick<ISubscription, 'rid' | 'historyVisibleFrom'>>(rid, uid, {
-		projection: { rid: 1, historyVisibleFrom: 1 },
-	});
-
-/** The subscription whose cutoff applies: the member's own, or their parent room's for a discussion they read through it. */
-async function findGoverningSubscription(rid: IRoom['_id'], uid: IUser['_id']) {
-	const subscription = await findSubscriptionCutoff(rid, uid);
-	if (subscription) {
-		return subscription;
+/** Whether the feature is on, read once per event however many subscribers it reaches. */
+const isEnabledFor = (event: object): Promise<boolean> => {
+	const cached = enabledByEvent.get(event);
+	if (cached) {
+		return cached;
 	}
 
-	const room = await Rooms.findOneById<Pick<IRoom, 'prid'>>(rid, { projection: { prid: 1 } });
-	return room?.prid ? findSubscriptionCutoff(room.prid, uid) : null;
+	const enabled = Settings.get<boolean>('Restricted_Message_History_Enabled').then(Boolean);
+	enabledByEvent.set(event, enabled);
+	return enabled;
+};
+
+const findSubscriptionCutoff = (rid: IRoom['_id'], uid: IUser['_id']) =>
+	Subscriptions.findOneByRoomIdAndUserId<Pick<ISubscription, 'historyVisibleFrom'>>(rid, uid, {
+		projection: { historyVisibleFrom: 1 },
+	});
+
+/** The cutoff that applies: the member's own, or their parent room's for a discussion they read through it. */
+async function findCutoff(room: StreamedRoom, uid: IUser['_id']): Promise<Cutoff> {
+	const subscription = await findSubscriptionCutoff(room._id, uid);
+	if (subscription || !room.prid) {
+		return { date: toCutoff(subscription?.historyVisibleFrom), governingRid: room._id };
+	}
+
+	const parentSubscription = await findSubscriptionCutoff(room.prid, uid);
+	return { date: toCutoff(parentSubscription?.historyVisibleFrom), governingRid: room.prid };
 }
 
-function track(publication: IPublication, rid: IRoom['_id'], uid: IUser['_id'], cutoff: Date | undefined, governingRid = rid): void {
-	const tracked: TrackedStream = { publication, cutoff };
-	const key = memberKey(governingRid, uid);
+function setCutoff(tracked: TrackedStream, cutoff: Cutoff | undefined): void {
+	tracked.known = cutoff;
+	tracked.cutoff = cutoff && Promise.resolve(cutoff);
+}
 
-	const members = streamsByMember.get(key) ?? new Set();
-	members.add(tracked);
-	streamsByMember.set(key, members);
+function readCutoff(tracked: TrackedStream): Promise<Cutoff> {
+	if (tracked.cutoff) {
+		return tracked.cutoff;
+	}
+
+	const read = findCutoff(tracked.room, tracked.uid);
+	tracked.cutoff = read;
+	void read.then(
+		(cutoff) => {
+			if (tracked.cutoff === read) {
+				tracked.known = cutoff;
+			}
+		},
+		() => {
+			if (tracked.cutoff === read) {
+				tracked.cutoff = undefined;
+			}
+		},
+	);
+
+	return read;
+}
+
+function track(publication: IPublication, room: StreamedRoom, uid: IUser['_id'], cutoff?: Cutoff): void {
+	const tracked: TrackedStream = { room, uid };
+	setCutoff(tracked, cutoff);
+
+	const keys = [memberKey(room._id, uid), ...(room.prid ? [memberKey(room.prid, uid)] : [])];
+	keys.forEach((key) => {
+		const members = streamsByMember.get(key) ?? new Set();
+		members.add(tracked);
+		streamsByMember.set(key, members);
+
+		publication.onStop(() => {
+			members.delete(tracked);
+			if (!members.size) {
+				streamsByMember.delete(key);
+			}
+		});
+	});
 
 	const rooms = trackedByPublication.get(publication) ?? new Map();
-	rooms.set(rid, tracked);
+	rooms.set(room._id, tracked);
 	trackedByPublication.set(publication, rooms);
-
-	publication.onStop(() => {
-		members.delete(tracked);
-		if (!members.size) {
-			streamsByMember.delete(key);
-		}
-	});
 }
 
-/** Remembers, for the lifetime of a room stream subscription, the date its user can read the room from. */
-export async function trackHistoryCutoff(publication: IPublication, rid: IRoom['_id'], uid: IUser['_id']): Promise<void> {
-	const subscription = await findGoverningSubscription(rid, uid);
-	track(publication, rid, uid, toCutoff(subscription?.historyVisibleFrom), subscription?.rid ?? rid);
+/** Lets a room stream subscription apply its user's cutoff in the room, without reading it until an event needs it. */
+export function trackHistoryCutoff(publication: IPublication, room: StreamedRoom, uid: IUser['_id']): void {
+	track(publication, room, uid);
 }
 
-/** Remembers, for the lifetime of a user's room list stream, the rooms where they have a cutoff. */
-export async function trackRoomListCutoffs(publication: IPublication, uid: IUser['_id']): Promise<void> {
+/** Lets a user's room list stream apply their cutoffs, without reading them until an event needs them. */
+export function trackRoomListCutoffs(publication: IPublication, uid: IUser['_id']): void {
+	const roomList: TrackedRoomList = { publication, uid };
+	roomListByPublication.set(publication, roomList);
+
 	const roomLists = roomListsByUser.get(uid) ?? new Set();
-	roomLists.add(publication);
+	roomLists.add(roomList);
 	roomListsByUser.set(uid, roomLists);
 	publication.onStop(() => {
-		roomLists.delete(publication);
+		roomLists.delete(roomList);
 		if (!roomLists.size) {
 			roomListsByUser.delete(uid);
 		}
 	});
-
-	const subscriptions = await Subscriptions.findWithHistoryVisibleFromByUserId(uid).toArray();
-	subscriptions.forEach(({ rid, historyVisibleFrom }) => track(publication, rid, uid, toCutoff(historyVisibleFrom)));
 }
 
-/** Applies a subscription change to the room streams its user already has open. */
+function loadRoomList(roomList: TrackedRoomList): Promise<void> {
+	roomList.loaded ??= Subscriptions.findWithHistoryVisibleFromByUserId(roomList.uid)
+		.toArray()
+		.then((subscriptions) => {
+			const tracked = trackedByPublication.get(roomList.publication);
+			subscriptions
+				.filter(({ rid }) => !tracked?.has(rid))
+				.forEach(({ rid, historyVisibleFrom }) =>
+					track(roomList.publication, { _id: rid }, roomList.uid, { date: toCutoff(historyVisibleFrom), governingRid: rid }),
+				);
+		})
+		.catch((error) => {
+			roomList.loaded = undefined;
+			throw error;
+		});
+
+	return roomList.loaded;
+}
+
+/** Applies a subscription change to the streams its user already has open. */
 export function updateHistoryCutoff({
 	rid,
 	u,
@@ -87,18 +161,34 @@ export function updateHistoryCutoff({
 		return;
 	}
 
-	const cutoff = toCutoff(historyVisibleFrom);
+	const cutoff: Cutoff = { date: toCutoff(historyVisibleFrom), governingRid: rid };
+
 	streamsByMember.get(memberKey(rid, u._id))?.forEach((tracked) => {
-		tracked.cutoff = cutoff;
+		if (tracked.room._id === rid || tracked.known?.governingRid === rid) {
+			setCutoff(tracked, cutoff);
+			return;
+		}
+
+		if (!tracked.known) {
+			setCutoff(tracked, undefined);
+		}
 	});
 
-	if (cutoff) {
-		roomListsByUser.get(u._id)?.forEach((publication) => {
-			if (!trackedByPublication.get(publication)?.has(rid)) {
-				track(publication, rid, u._id, cutoff);
-			}
-		});
+	roomListsByUser.get(u._id)?.forEach((roomList) => {
+		if (roomList.loaded && !trackedByPublication.get(roomList.publication)?.has(rid)) {
+			track(roomList.publication, { _id: rid }, u._id, cutoff);
+		}
+	});
+}
+
+async function findCutoffDate(publication: IPublication, rid: IRoom['_id']): Promise<Date | undefined> {
+	const roomList = roomListByPublication.get(publication);
+	if (roomList) {
+		await loadRoomList(roomList);
 	}
+
+	const tracked = trackedByPublication.get(publication)?.get(rid);
+	return tracked && (await readCutoff(tracked)).date;
 }
 
 async function isVisibleFrom(message: StreamedMessage, cutoff: Date, uid: IUser['_id']): Promise<boolean> {
@@ -126,35 +216,44 @@ export async function canReceiveMessage(
 	rid: IRoom['_id'],
 	message: StreamedMessage | undefined,
 ): Promise<boolean> {
-	const cutoff = trackedByPublication.get(publication)?.get(rid)?.cutoff;
-	if (!cutoff || !message?.ts || !publication.userId) {
+	const uid = publication.userId;
+	if (!message?.ts || !uid || !(await isEnabledFor(message))) {
 		return true;
 	}
 
-	if (!(await isEnabled())) {
-		return true;
-	}
-
-	return isVisibleFrom(message, cutoff, publication.userId);
+	const cutoff = await findCutoffDate(publication, rid);
+	return !cutoff || isVisibleFrom(message, cutoff, uid);
 }
 
-/** Whether a user may receive an event about this message outside the room's own stream. */
-export async function canMemberReceiveMessage(rid: IRoom['_id'], uid: IUser['_id'], message: StreamedMessage): Promise<boolean> {
-	if (!message.ts || !(await isEnabled())) {
+/**
+ * Whether a user may receive an event about this message outside the room's own stream.
+ * `subscription` is the user's in the message's room, or null when they aren't in it.
+ */
+export async function canMemberReceiveMessage(
+	room: StreamedRoom,
+	uid: IUser['_id'],
+	message: StreamedMessage,
+	subscription: Pick<ISubscription, 'historyVisibleFrom'> | null,
+): Promise<boolean> {
+	if (!message.ts || !(await isEnabledFor(message))) {
 		return true;
 	}
 
-	const subscription = await findGoverningSubscription(rid, uid);
-	const cutoff = toCutoff(subscription?.historyVisibleFrom);
+	const governing = subscription ?? (room.prid ? await findSubscriptionCutoff(room.prid, uid) : null);
+	const cutoff = toCutoff(governing?.historyVisibleFrom);
 
 	return !cutoff || isVisibleFrom(message, cutoff, uid);
 }
 
 /** The room as a stream subscriber may see it: without a last message from before their cutoff. */
 export async function visibleRoom<T extends Pick<IRoom, '_id' | 'lastMessage'>>(publication: IPublication, room: T): Promise<T> {
-	const cutoff = trackedByPublication.get(publication)?.get(room._id)?.cutoff;
 	const uid = publication.userId;
-	if (!cutoff || !uid || !room.lastMessage?.ts || !(await isEnabled()) || (await isVisibleFrom(room.lastMessage, cutoff, uid))) {
+	if (!uid || !room.lastMessage?.ts || !(await isEnabledFor(room))) {
+		return room;
+	}
+
+	const cutoff = await findCutoffDate(publication, room._id);
+	if (!cutoff || (await isVisibleFrom(room.lastMessage, cutoff, uid))) {
 		return room;
 	}
 

@@ -145,7 +145,7 @@ export class NotificationsModule {
 			const user = await getCachedUserForPublication(this);
 			const canRead = await Authorization.canReadRoom(room, user ?? undefined, extraData);
 			if (canRead && user) {
-				await trackHistoryCutoff(this, room._id, user._id);
+				trackHistoryCutoff(this, room, user._id);
 			}
 
 			return canRead;
@@ -174,14 +174,15 @@ export class NotificationsModule {
 					return false;
 				}
 
-				if (!(await canMemberReceiveMessage(room._id, user._id, message))) {
+				const subscription = await Subscriptions.findOneByRoomIdAndUserId<Pick<ISubscription, 'historyVisibleFrom'>>(room._id, user._id, {
+					projection: { historyVisibleFrom: 1 },
+				});
+				if (!(await canMemberReceiveMessage(room, user._id, message, subscription))) {
 					return false;
 				}
 
-				const roomParticipant = await Subscriptions.countByRoomIdAndUserId(room._id, user._id);
-
 				return {
-					roomParticipant: roomParticipant > 0,
+					roomParticipant: Boolean(subscription),
 					roomType: room.t,
 					roomName: room.name,
 				};
@@ -437,7 +438,7 @@ export class NotificationsModule {
 					return false;
 				}
 
-				await trackHistoryCutoff(this, rid, user._id);
+				trackHistoryCutoff(this, room, user._id);
 
 				return true;
 			} catch (error) {
@@ -467,7 +468,7 @@ export class NotificationsModule {
 			}
 
 			if (/rooms-changed/.test(eventName)) {
-				await trackRoomListCutoffs(publication, userId);
+				trackRoomListCutoffs(publication, userId);
 
 				// TODO: change this to serialize only once
 				const sendRoomEvent = (...args: any[]): void => {

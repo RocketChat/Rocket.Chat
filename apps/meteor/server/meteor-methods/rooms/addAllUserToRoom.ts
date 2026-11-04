@@ -56,7 +56,7 @@ export const addAllUserToRoomFn = async (userId: string, rid: IRoom['_id'], acti
 		}
 		await callbacks.run('beforeJoinRoom', user, room);
 		const autoTranslateConfig = getSubscriptionAutotranslateDefaultConfig(user);
-		const historyVisibleFrom = await getHistoryVisibleFromForNewMember(room, now);
+		const historyVisibleFrom = await getHistoryVisibleFromForNewMember(room, user._id, now);
 		const { insertedId } = await Subscriptions.createWithRoomAndUser(room, user, {
 			ts: now,
 			...(historyVisibleFrom && { historyVisibleFrom }),

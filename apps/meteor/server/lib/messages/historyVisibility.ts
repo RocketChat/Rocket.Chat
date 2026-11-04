@@ -19,10 +19,13 @@ export const getHiddenMessageIds = makeFunction(
 	async (_uid: IUser['_id'] | undefined, _messages: HistoryCheckedMessage[]): Promise<Set<IMessage['_id']>> => new Set(),
 );
 
-/** The date a member joining the room at `joinedAt` can read it from; undefined for its full history. */
+/** The date a user joining the room at `joinedAt` can read it from; undefined for its full history. */
 export const getHistoryVisibleFromForNewMember = makeFunction(
-	async (_room: Pick<IRoom, '_id' | 't' | 'federated' | 'hideHistoryForNewMembers'>, _joinedAt: Date): Promise<Date | undefined> =>
-		undefined,
+	async (
+		_room: Pick<IRoom, '_id' | 't' | 'federated' | 'hideHistoryForNewMembers' | 'prid'>,
+		_uid: IUser['_id'],
+		_joinedAt: Date,
+	): Promise<Date | undefined> => undefined,
 );
 
 /** Members of the message's room who can't read it because of their history restriction. */

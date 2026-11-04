@@ -47,7 +47,9 @@ The Files list follows the messages the files were sent with: files sent after t
 thread are left out, and files in an old thread the member follows are listed.
 
 Discussions started before the date aren't listed. A member who reads a discussion through its parent
-room, without joining the discussion, gets their parent room date there too.
+room, without joining the discussion, gets their parent room date there too, and keeps it when they join
+the discussion or are added to it. A discussion that hides its history from new members gives them their
+join time instead.
 
 ### Threads
 

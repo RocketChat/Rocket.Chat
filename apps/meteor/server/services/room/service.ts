@@ -314,7 +314,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		roles?: ISubscription['roles'];
 	}): Promise<string | undefined> {
 		const autoTranslateConfig = getSubscriptionAutotranslateDefaultConfig(userToBeAdded);
-		const historyVisibleFrom = await getHistoryVisibleFromForNewMember(room, ts);
+		const historyVisibleFrom = await getHistoryVisibleFromForNewMember(room, userToBeAdded._id, ts);
 
 		const { insertedId } = await Subscriptions.createWithRoomAndUser(room, userToBeAdded, {
 			ts,
