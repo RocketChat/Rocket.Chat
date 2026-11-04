@@ -316,7 +316,7 @@ Source: [`packages/ui-kit/src/blocks/elements/CheckboxElement.ts`](../../../pack
 
 | Field | Type | Required | Notes |
 | --- | --- | --- | --- |
-| `type` | `'checkbox'` | yes | Also accepted as `'checkboxes'`. |
+| `type` | `'checkbox' \| 'checkboxes'` | yes | Both names are typed and accepted. |
 | `options` | `Option[]` | yes |  |
 | `initialOptions` | `Option[]` | no |  |
 | `focus_on_load` | `boolean` | no | Focuses the field when the view opens (its first option). |
@@ -669,7 +669,7 @@ Source: [`packages/ui-kit/src/blocks/elements/RadioButtonElement.ts`](../../../p
 
 | Field | Type | Required | Notes |
 | --- | --- | --- | --- |
-| `type` | `'radio_button'` | yes | Also accepted as `'radio_buttons'`. |
+| `type` | `'radio_button' \| 'radio_buttons'` | yes | Both names are typed and accepted. |
 | `options` | `Option[]` | yes |  |
 | `initialOption` | `Option` | no |  |
 | `focus_on_load` | `boolean` | no | Focuses the field when the view opens (its first option). |
@@ -720,7 +720,7 @@ Source: [`packages/ui-kit/src/blocks/elements/TimePickerElement.ts`](../../../pa
 
 | Field | Type | Required | Notes |
 | --- | --- | --- | --- |
-| `type` | `'time_picker'` | yes | Also accepted as `'timepicker'`. |
+| `type` | `'time_picker' \| 'timepicker'` | yes | Both names are typed and accepted. |
 | `placeholder` | `TextObject` | no |  |
 | `initialTime` | `string` | no |  |
 | `timezone` | `string` | no | IANA name of the time zone `initialTime` and the picked time are in; the user's own when absent. The value sent stays `HH:mm`. |
