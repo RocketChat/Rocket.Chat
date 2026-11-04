@@ -5,7 +5,6 @@ import { sendFillerMessages } from './utils/sendMessage';
 import { expect, test } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
-test.use({ reusePage: true });
 test.describe.serial('Threads', () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
