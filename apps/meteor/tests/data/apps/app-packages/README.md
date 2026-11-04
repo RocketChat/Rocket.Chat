@@ -994,10 +994,13 @@ export class UiKitComponentsTestApp extends App implements IUIKitInteractionHand
 
 File name: `uikit-capabilities-test_0.0.1.zip`
 
-An app that exercises the UIKit capabilities that need the app to answer or remember something: option suggestions for external selects, a two-step modal wizard, files collected in a view, and the app Home. It also sends a message with the `rich_text` block, the alternative element type names (`checkboxes`, `radio_buttons`, `timepicker`), new `icon_button` icons and an emoji-only table cell. It provides a slash command (`uikit-capabilities-test`) with two actions, plus a Home:
+An app that exercises the UIKit capabilities that need the app to answer or remember something: option suggestions for external selects, a two-step modal wizard, files collected in a view, and the app Home. It also sends a message with the `rich_text` block, the alternative element type names (`checkboxes`, `radio_buttons`, `timepicker`), new `icon_button` icons and an emoji-only table cell. It provides a slash command (`uikit-capabilities-test`) with these actions, plus a Home:
 
 - `rich` - Sends the message described above
 - `wizard` - Opens step 1 of a modal (callback id `wizard-1`) with an `external_select`, a `multi_external_select` and a `rich_text_input`, carrying `private_metadata` with the seed and the room. Submitting it pushes step 2 (`wizard-2`) with a `file_input`; submitting step 2 posts a message with the collected values and one `file` block per uploaded file, then clears the modals
+- `agent` - Sends an `alert`, a `plan` with three tasks and a `task_card` with sources; its `agent_advance` button moves the plan one step forward by updating the message
+- `cards` - Sends a `card` and a `carousel` of four cards, each with an `Open` button
+- `confirm` - Sends a `button` with a `confirm` dialog (`delete_release`), a `plain_text_input` that dispatches on Enter (`search_enter`) and a `time_picker` with a `timezone`; both actions post a reply in the room
 - Home - `executeAppHomeOpenedHandler` publishes a Home with a counter; its `home_refresh` button republishes it with the counter incremented
 
 The second argument is a random "seed" that identifies the execution context.
@@ -1192,10 +1195,106 @@ const homeBlocks = (user: IUser, count: number) =>
 		{ type: 'actions', blockId: 'home_actions', elements: [button('home_refresh', 'Refresh')] },
 	] as unknown as LayoutBlock[];
 
+const agentSteps = ['Read the issue', 'Search the docs', 'Write the fix'];
+
+const agentBlocks = (done: number) =>
+	[
+		{
+			type: 'alert',
+			level: done >= agentSteps.length ? 'success' : 'info',
+			text: { type: 'plain_text', text: done >= agentSteps.length ? 'The agent finished.' : 'The agent is working on your request.' },
+		},
+		{
+			type: 'plan',
+			title: 'Fix the login bug',
+			tasks: agentSteps.map((title, index) => ({
+				task_id: `step-${index}`,
+				title,
+				status: index < done ? 'complete' : index === done ? 'in_progress' : 'pending',
+			})),
+		},
+		{
+			type: 'task_card',
+			task_id: 'search',
+			title: 'Searched the docs',
+			status: done >= 2 ? 'complete' : 'pending',
+			sources: [
+				{ type: 'url', url: 'https://docs.rocket.chat', text: 'Rocket.Chat docs' },
+				{ type: 'url', url: 'https://github.com/RocketChat/Rocket.Chat', text: 'Source code' },
+			],
+		},
+		...(done >= agentSteps.length ? [] : [{ type: 'actions', blockId: 'agent_actions', elements: [button('agent_advance', 'Next step')] }]),
+	] as unknown as LayoutBlock[];
+
+const card = (siteUrl: string, name: string, title: string, body: string) => ({
+	type: 'card',
+	hero_image: { type: 'image', image_url: `${siteUrl}/avatar/${name}`, alt_text: title },
+	title: { type: 'plain_text', text: title },
+	subtitle: { type: 'plain_text', text: `@${name}` },
+	body: { type: 'plain_text', text: body },
+	actions: [button(`card_open_${name}`, 'Open')],
+});
+
+const cardBlocks = (siteUrl: string) =>
+	[
+		card(siteUrl, 'rocket.cat', 'Rocket Cat', 'Keeps the build green.'),
+		{
+			type: 'carousel',
+			elements: [
+				card(siteUrl, 'ada', 'Ada', 'Reviews the parser.'),
+				card(siteUrl, 'grace', 'Grace', 'Owns the compiler.'),
+				card(siteUrl, 'alan', 'Alan', 'Breaks the codes.'),
+				card(siteUrl, 'linus', 'Linus', 'Merges the kernel.'),
+			],
+		},
+	] as unknown as LayoutBlock[];
+
+const confirmBlocks = () =>
+	[
+		{
+			type: 'actions',
+			blockId: 'danger_zone',
+			elements: [
+				{
+					type: 'button',
+					actionId: 'delete_release',
+					style: 'danger',
+					text: { type: 'plain_text', text: 'Delete release' },
+					confirm: {
+						title: { type: 'plain_text', text: 'Delete the release?' },
+						text: { type: 'plain_text', text: 'This removes release 7.0 for everyone.' },
+						confirm: { type: 'plain_text', text: 'Delete' },
+						deny: { type: 'plain_text', text: 'Keep it' },
+						style: 'danger',
+					},
+				},
+			],
+		},
+		{
+			type: 'input',
+			blockId: 'search',
+			label: { type: 'plain_text', text: 'Search, then press Enter' },
+			dispatchAction: true,
+			element: {
+				type: 'plain_text_input',
+				actionId: 'search_enter',
+				placeholder: { type: 'plain_text', text: 'Type and press Enter' },
+				dispatchActionConfig: ['on_enter_pressed'],
+			},
+		},
+		{
+			type: 'actions',
+			blockId: 'meeting',
+			elements: [{ type: 'time_picker', actionId: 'meeting_time', initialTime: '09:00', timezone: 'America/New_York' }],
+		},
+	] as unknown as LayoutBlock[];
+
 type WizardState = { seed: string; rid?: string; project?: unknown; reviewers?: unknown; notes?: unknown };
 
 export class UiKitCapabilitiesTestApp extends App implements IUIKitInteractionHandler {
 	private homeRefreshes = new Map<string, number>();
+
+	private agentProgress = new Map<string, number>();
 
 	constructor(info: IAppInfo, logger: ILogger, accessors: IAppAccessors) {
 		super(info, logger, accessors);
@@ -1220,7 +1319,7 @@ export class UiKitCapabilitiesTestApp extends App implements IUIKitInteractionHa
 
 	async [AppMethod.UIKIT_BLOCK_ACTION](
 		context: UIKitBlockInteractionContext,
-		_read: IRead,
+		read: IRead,
 		_http: IHttp,
 		_persistence: IPersistence,
 		modify: IModify,
@@ -1228,6 +1327,21 @@ export class UiKitCapabilitiesTestApp extends App implements IUIKitInteractionHa
 		const data = context.getInteractionData();
 		this.getLogger().debug('block_action_actionId', data.actionId);
 		this.getLogger().debug('block_action_value', JSON.stringify(data.value));
+
+		if (data.actionId === 'agent_advance' && data.message?.id) {
+			const done = (this.agentProgress.get(data.message.id) ?? 0) + 1;
+			this.agentProgress.set(data.message.id, done);
+			const editor = await read.getUserReader().getAppUser();
+			if (editor) {
+				const update = (await modify.getUpdater().message(data.message.id, editor)).setBlocks(agentBlocks(done));
+				await modify.getUpdater().finish(update);
+			}
+		}
+
+		if ((data.actionId === 'search_enter' || data.actionId === 'delete_release') && data.room) {
+			const text = data.actionId === 'search_enter' ? `Searching for _${String(data.value ?? '')}_` : 'Release deleted.';
+			await modify.getCreator().finish(modify.getCreator().startMessage().setRoom(data.room).setText(text));
+		}
 
 		if (data.actionId === 'home_refresh') {
 			const count = (this.homeRefreshes.get(data.user.id) ?? 0) + 1;
@@ -1307,19 +1421,26 @@ export class UiKitCapabilitiesTestApp extends App implements IUIKitInteractionHa
 		return context.getInteractionResponder().successResponse();
 	}
 
-	protected async extendConfiguration(configuration: IConfigurationExtend, _environmentRead: IEnvironmentRead): Promise<void> {
+	protected override async extendConfiguration(configuration: IConfigurationExtend, _environmentRead: IEnvironmentRead): Promise<void> {
 		await configuration.slashCommands.provideSlashCommand({
 			command: 'uikit-capabilities-test',
 			i18nDescription: '',
 			i18nParamsExample: '',
 			providesPreview: false,
-			executor: async (context, _read, modify, _http, _persis) => {
+			executor: async (context, read, modify, _http, _persis) => {
 				const [action, seed] = context.getArguments();
 				const triggerId = context.getTriggerId();
 
 				if (action === 'rich') {
 					const message = modify.getCreator().startMessage().setRoom(context.getRoom()).setBlocks(richMessageBlocks());
 					await modify.getCreator().finish(message);
+					return;
+				}
+
+				if (action === 'agent' || action === 'cards' || action === 'confirm') {
+					const siteUrl = String(await read.getEnvironmentReader().getServerSettings().getValueById('Site_Url')).replace(/\/$/, '');
+					const blocks = { agent: () => agentBlocks(0), cards: () => cardBlocks(siteUrl), confirm: confirmBlocks }[action]();
+					await modify.getCreator().finish(modify.getCreator().startMessage().setRoom(context.getRoom()).setBlocks(blocks));
 					return;
 				}
 
