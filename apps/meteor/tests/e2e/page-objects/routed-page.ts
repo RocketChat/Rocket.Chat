@@ -1,6 +1,12 @@
 import type { Locator, Page } from '@playwright/test';
 
 /**
+ * Pages whose page objects switch routes inside the running client instead of reloading. Only pages shared by
+ * the tests of a suite belong here: other tests rely on the reload to reset what a previous test left open.
+ */
+export const pagesNavigatingInClient = new WeakSet<Page>();
+
+/**
  * Base class for page objects that own a route.
  *
  * Subclasses declare the `route` they live at and how to tell that route has finished rendering, and
@@ -45,7 +51,16 @@ export abstract class RoutedPage {
 	 * @param until element or waiter to use, when the route settles on something other than its ready state
 	 */
 	protected async navigateTo(route: string, until?: Locator | (() => Promise<unknown>)): Promise<void> {
-		await this.page.goto(route);
+		if (await this.canNavigateInClient(route)) {
+			// Same as the client router's `navigate()`: the running client switches routes without booting again.
+			await this.page.evaluate((path) => {
+				const state = { path };
+				history.pushState(state, '', path);
+				dispatchEvent(new PopStateEvent('popstate', { state }));
+			}, route);
+		} else {
+			await this.page.goto(route);
+		}
 
 		if (!until) {
 			await this.waitForReady();
@@ -58,5 +73,20 @@ export abstract class RoutedPage {
 		}
 
 		await until.waitFor({ state: 'visible' });
+	}
+
+	private async canNavigateInClient(route: string): Promise<boolean> {
+		// The embedded layout is chosen when the client boots, and `/packages/` serves static pages outside the client.
+		const current = this.page.url();
+		if (
+			!pagesNavigatingInClient.has(this.page) ||
+			route.includes('layout=embedded') ||
+			current.includes('layout=embedded') ||
+			route.startsWith('/packages/') ||
+			!current.startsWith('http')
+		) {
+			return false;
+		}
+		return this.page.evaluate(() => document.querySelector('#main-content') !== null);
 	}
 }

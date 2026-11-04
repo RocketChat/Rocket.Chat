@@ -16,10 +16,13 @@ export class AdminModeration extends Admin {
 	}
 
 	async gotoMessages(): Promise<void> {
-		await this.navigateTo(`${AdminSectionsHref.moderation}/messages`, this.tabReportedMessages);
+		await this.navigateTo(
+			`${AdminSectionsHref.moderation}/messages`,
+			this.page.getByRole('tab', { name: 'Reported messages', selected: true }),
+		);
 	}
 
 	async gotoUsers(): Promise<void> {
-		await this.navigateTo(`${AdminSectionsHref.moderation}/users`, this.tabReportedUsers);
+		await this.navigateTo(`${AdminSectionsHref.moderation}/users`, this.page.getByRole('tab', { name: 'Reported users', selected: true }));
 	}
 }
