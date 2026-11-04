@@ -3,10 +3,15 @@
 ## 0. How to use this plan
 
 Run Phase 0 first, with one subagent. It builds the shared harness and measures the current approach.
-Then run H1, H2 and H3 in parallel, one subagent each. Each one starts from the Phase 0 branch.
+Then run task 9 of Phase 0, the observability stack. Then run H1, H2 and H3, one subagent each.
+Run one subagent at a time. Each hypothesis starts from the Phase 0 branch and has two stages:
+
+1. **Implementation.** Build the prototype and prove that it works with the functional checks of section 5. Then stop and report.
+2. **Measurement.** Run the matrix of section 5. Run this stage only when the user asks for it.
+
 The prompts for each subagent are in section 13.
 
-Every subagent reads sections 1 to 5, its own section, and section 11.
+Every subagent reads sections 0 to 5, its own section, and section 11.
 
 ## 1. Goal
 
@@ -18,15 +23,15 @@ The reports must let us compare the options with the same numbers.
 
 One update to a message runs this chain. The current approach runs it for every delta.
 
-| Step | Where | Cost |
-| --- | --- | --- |
-| Read the message, run 3 Apps-Engine pre-events, clone to history if `Message_KeepHistory`, read the room | `apps/meteor/server/lib/messages/updateMessage.ts:22-57` | 2 DB reads, 1 optional insert, 3 Apps-Engine round trips |
-| `Message.beforeSave`: markdown parse, mentions, URL parse, Spotify, quote attachments | `apps/meteor/server/services/messages/service.ts:256-270` | CPU that grows with the text length |
-| `Messages.updateOne`, then `IPostMessageUpdated` | `updateMessage.ts:79-93` | 1 DB write, 1 Apps-Engine event |
-| Read the message again, run `afterSaveMessage` callbacks, then `Message.afterSave` runs OEmbed and `notifyOnMessageChange` | `updateMessage.ts:95-106`, `apps/meteor/server/hooks/messages/afterSaveMessage.ts:34`, `service.ts:286-292` | 2 more DB reads (`notifyOnMessageChange` gets no `data` here), callbacks |
-| `api.broadcast('watch.messages')` with the full message | `apps/meteor/server/lib/notifyListener.ts:493-499` | 1 broker event to every instance |
+| Step                                                                                                                                                                        | Where                                                                                                        | Cost                                                                                                                |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
+| Read the message, run 3 Apps-Engine pre-events, clone to history if `Message_KeepHistory`, read the room                                                                    | `apps/meteor/server/lib/messages/updateMessage.ts:22-57`                                                     | 2 DB reads, 1 optional insert, 3 Apps-Engine round trips                                                            |
+| `Message.beforeSave`: markdown parse, mentions, URL parse, Spotify, quote attachments                                                                                       | `apps/meteor/server/services/messages/service.ts:256-270`                                                    | CPU that grows with the text length                                                                                 |
+| `Messages.updateOne`, then `IPostMessageUpdated`                                                                                                                            | `updateMessage.ts:79-93`                                                                                     | 1 DB write, 1 Apps-Engine event                                                                                     |
+| Read the message again, run `afterSaveMessage` callbacks, then `Message.afterSave` runs OEmbed and `notifyOnMessageChange`                                                  | `updateMessage.ts:95-106`, `apps/meteor/server/hooks/messages/afterSaveMessage.ts:34`, `service.ts:286-292`  | 2 more DB reads (`notifyOnMessageChange` gets no `data` here), callbacks                                            |
+| `api.broadcast('watch.messages')` with the full message                                                                                                                     | `apps/meteor/server/lib/notifyListener.ts:493-499`                                                           | 1 broker event to every instance                                                                                    |
 | On every instance: emit to `__my_messages__` with a room read, `canAccessRoom` and a subscription count for each subscriber; emit to the room's `room-messages` subscribers | `packages/streamer/src/listeners.module.ts:256-269`, `packages/streamer/src/notifications.module.ts:148-177` | DB reads per subscriber, per instance. The web client has no `__my_messages__` consumer; other clients can have one |
-| On every client in the room: `upsertMessage`, the `streamMessage` callbacks, the `new-message` global event | `apps/meteor/client/lib/LegacyRoomManager.ts:171-207` | a re-render of the full message |
+| On every client in the room: `upsertMessage`, the `streamMessage` callbacks, the `new-message` global event                                                                 | `apps/meteor/client/lib/LegacyRoomManager.ts:171-207`                                                        | a re-render of the full message                                                                                     |
 
 Each update carries the full `IMessage`, with the `md` AST. The total bytes of one reply grow with the square of its length.
 
@@ -36,7 +41,11 @@ Each update carries the full `IMessage`, with the `md` AST. The total bytes of o
 - Do not push. Do not open a pull request. Do not post anywhere outside this machine.
 - Put all POC code behind the environment variable `AGENT_STREAM_POC=1`. Without it, the server must behave as `develop` does.
 - Keep the POC small. Skip production polish, but write each skipped item in the report under "Production gaps".
-- Use your own ports and database. Phase 0: 3000 and 3001. H1: 3100 and 3101. H2: 3200 and 3201. H3: 3300 and 3301. Mongo database name: `agentstream_<id>`.
+- Commit your report and your raw results to your branch, at the paths of section 11. Do not leave an artifact that the user or the next subagent needs only in a scratchpad.
+- Use your own ports and database. Phase 0: 3000 and 3002. H1: 3110 and 3111. H2: 3210 and 3211. H3: 3300 and 3301. Mongo database name: `agentstream_<id>`.
+- Do not use the `mastra-observability-*` Docker containers or their ports: 3001, 3100, 3200, 4317, 4318 and 9090. Use the observability stack of Phase 0, task 9.
+- Give the license to the run scripts with `ROCKETCHAT_LICENSE_FILE=/private/tmp/claude-501/-Users-dgubert-dev-RocketChat-worktrees-main/db4740ae-bf22-4d3a-8a01-f77e259cc97b/scratchpad/agent-stream/license.txt`. Do not commit the license, and do not write its value in a report.
+- Do not commit the seed file. It holds the login tokens of the viewers.
 - Take the measurement lock before each load run. Parallel load runs share the CPU and spoil each other's numbers.
   - Take it with `mkdir /private/tmp/claude-501/-Users-dgubert-dev-RocketChat-worktrees-main/db4740ae-bf22-4d3a-8a01-f77e259cc97b/scratchpad/agent-stream/bench.lock`.
   - If `mkdir` fails, wait 60 seconds and try again.
@@ -65,6 +74,7 @@ type AgentDelta =
 
 - `seq` starts at 1 and increases by 1 for each delta. A coalesced delta has one `seq`.
 - `ts` is the producer clock in milliseconds. The harness uses it for latency.
+- **Blocks.** The deltas must also support the `blocks` property of a message (`IMessage.blocks`, a UiKit `MessageSurfaceLayout`). Blocks are the visual elements that the UI renders. The shape of a blocks delta is not defined yet. A later revision of this plan adds it. Until then, do not choose a transport or a frame format that can carry only text.
 
 **Snapshot.** The producer's process holds `{ text, seq }` for each active stream.
 A late viewer, or a viewer after a reconnect, gets the snapshot, then applies only the deltas with `seq > snapshot.seq`.
@@ -90,31 +100,51 @@ The coalescing window W is 0, 50 or 250 ms. With W = 0 the producer sends each t
 
 **Scenarios.**
 
-| ID | Streams | Viewers for each stream | Purpose |
-| --- | --- | --- | --- |
-| S1 | 1 | 1 | latency floor |
-| S2 | 1 | 500, in one channel | fan-out to a large room |
-| S3 | 100 at the same time | 2 | many small rooms, as in DMs |
-| S4 | 0 | 1,000 idle viewers with the room open | standing cost of the mechanism |
-| S5 | 100 at the same time | 2; every 10 seconds, 10% of the viewers reconnect | resume and snapshot correctness |
+| ID  | Streams              | Viewers for each stream                           | Purpose                         |
+| --- | -------------------- | ------------------------------------------------- | ------------------------------- |
+| S1  | 1                    | 1                                                 | latency floor                   |
+| S2  | 1                    | 500, in one channel                               | fan-out to a large room         |
+| S3  | 100 at the same time | 2                                                 | many small rooms, as in DMs     |
+| S4  | 0                    | 1,000 idle viewers with the room open             | standing cost of the mechanism  |
+| S5  | 100 at the same time | 2; every 10 seconds, 10% of the viewers reconnect | resume and snapshot correctness |
 
 - Each viewer is a distinct user, a member of the room, with the room open as the web client opens it.
 - Run each cell 3 times and report the median.
 - The matrix is S1 to S5, times D1 and D2, times W = 0, 50 and 250. S4 has no W.
+- Only stage 2 runs the matrix.
+
+**Functional checks (stage 1).** They prove that the mechanism works. Their numbers are not results.
+Run each check once, at W = 50, with `--tokens 200` (see `HARNESS.md`).
+
+| Check                                        | Deployment | What it proves                                                             |
+| -------------------------------------------- | ---------- | -------------------------------------------------------------------------- |
+| S1                                           | D1 and D2  | A viewer gets every delta, also from the other instance                    |
+| S2                                           | D2         | The fan-out to 500 viewers works                                           |
+| S5                                           | D2         | Resume and snapshot work                                                   |
+| `failures.mjs`: `stop`, `kill` and `restart` | D2         | The failure modes of section 11, item 7                                    |
+| The web client                               | D1         | The overlay shows the stream, and the final text equals the persisted text |
+| The proxy of `docker-compose-ci.yml`         | D1         | The mechanism works behind the proxy                                       |
+
+A check passes when the delta channel has no gap, no duplicate, no wrong order and no text mismatch.
+Fix the prototype until every check passes. If a check cannot pass, write the reason in the report.
 
 **Metrics.**
 
-| Metric | Source |
-| --- | --- |
-| Server CPU ms per delivered delta, and CPU % | `process.cpuUsage()` in each server, through the harness metrics endpoint |
-| Event loop delay p99 | `monitorEventLoopDelay` (the health route uses it: `apps/meteor/server/routes/health.ts`) |
-| RSS and heap; memory for each open connection in S4 | `process.memoryUsage()` |
-| Mongo reads and writes per reply | `db.serverStatus().opcounters`, before and after the run |
-| Broker events per reply, and bytes on the cluster transport | a counter in the `InstanceService` send path (D2) |
-| Bytes on the wire for each viewer per reply | load generator |
-| Latency from producer to viewer: p50, p95, p99 | `ts` against the receive time. One host, so one clock |
-| Correctness: gaps, duplicates, wrong order, final text not equal to persisted text | load generator |
-| Web client main-thread time per delta (S1 only, secondary) | Playwright with the Performance API long-task entries |
+| Metric                                                                             | Source                                                                                    |
+| ---------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| Server CPU ms per delivered delta, and CPU %                                       | `process.cpuUsage()` in each server, through the harness metrics endpoint                 |
+| Event loop delay p99                                                               | `monitorEventLoopDelay` (the health route uses it: `apps/meteor/server/routes/health.ts`) |
+| RSS and heap; memory for each open connection in S4                                | `process.memoryUsage()`                                                                   |
+| Mongo reads and writes per reply                                                   | `db.serverStatus().opcounters`, before and after the run                                  |
+| Broker events per reply, and bytes on the cluster transport                        | a counter in the `InstanceService` send path (D2)                                         |
+| Bytes on the wire for each viewer per reply                                        | load generator                                                                            |
+| Latency from producer to viewer: p50, p95, p99                                     | `ts` against the receive time. One host, so one clock                                     |
+| Correctness: gaps, duplicates, wrong order, final text not equal to persisted text | load generator                                                                            |
+| Web client main-thread time per delta (S1 only, secondary)                         | Playwright with the Performance API long-task entries                                     |
+
+**Observability stack.** Use it in stage 1 and to find the cause of a result. Phase 0 measured the baseline without it.
+So a stage 2 run keeps its instrumentation off: no `TRACING_ENABLED` and no `Prometheus_Enabled` on the servers.
+The numbers of the report come from the harness results only.
 
 ## 6. Phase 0: harness and baseline
 
@@ -130,14 +160,23 @@ The coalescing window W is 0, 50 or 250 ms. With W = 0 the producer sends each t
 6. A load generator in Node, outside the Meteor bundle. It starts the viewers through a transport adapter interface: `connect`, `open(rid | streamId)`, an async iterator of deltas or message updates, `close`. It ships the DDP `room-messages` adapter for the baseline. It writes one JSON result per run. A summary script turns the results into the report tables.
 7. Run scripts for D1 and D2 that take the ports and the database name as arguments.
 8. The baseline run: the full matrix with the `updateMessage` sink.
+9. The observability stack of the experiments: `agent-stream/docker-compose-observability.yml`. Do not reuse the `mastra-observability-*` containers.
+   - Start from `development/docker-compose-monitoring.yml` and its config files: Tempo, the OpenTelemetry collector, Prometheus and Grafana.
+   - Give it its own compose project name and its own volumes. Bind each port to `127.0.0.1`. Choose host ports that collide with none of the ports of section 3.
+   - Prometheus scrapes the exporter of each instance. Two instances share one host, so give each one its own `PROMETHEUS_PORT`.
+   - Do not scrape the harness metrics endpoint. A read resets its counters.
+   - The servers send traces with `TRACING_ENABLED=yes`. The exporter sends to `localhost:4317` by default, which is the `mastra` collector. Set `OTEL_EXPORTER_OTLP_ENDPOINT` to the collector of this stack.
+   - Add one switch to `start-instance.sh` that turns the exporter and the traces on. Keep it off by default (section 5, "Observability stack").
+   - Provision the Grafana data sources. A dashboard is optional.
+   - Prove it: in D2, Prometheus scrapes both instances, and Tempo shows the traces of both.
 
 **Decide and record** the server mode. Prefer a production build if you can make one work. Otherwise use `yarn dev` and read the CPU from inside the server process only. All hypotheses then use the same mode.
 
 **Deliverables.**
 
 - The branch `poc/agent-stream-harness`, committed.
-- `HARNESS.md` at the root of the branch: how to run each deployment and scenario, how to add a sink, how to add an adapter.
-- The report `reports/H0-baseline.md` (path in section 11).
+- `HARNESS.md` at the root of the branch: how to run each deployment and scenario, how to add a sink, how to add an adapter, and how to start and stop the observability stack.
+- The report `docs/experiments/agent_streams/reports/H0-baseline.md` (path in section 11).
 
 ## 7. H1: an SSE endpoint
 
@@ -205,13 +244,18 @@ Answer each point in the report.
 
 ## 11. Report template
 
-Write the report to `/private/tmp/claude-501/-Users-dgubert-dev-RocketChat-worktrees-main/db4740ae-bf22-4d3a-8a01-f77e259cc97b/scratchpad/agent-stream/reports/<id>.md`.
+Write the report to `docs/experiments/agent_streams/reports/<id>.md` in your branch.
+Write the raw results to `docs/experiments/agent_streams/reports/<id>-results/`. Commit both.
+
+Stage 1 writes every section except section 4, and marks section 4 "pending stage 2".
+When a design point asks for a measurement, stage 1 builds what the measurement needs and writes "stage 2" in place of the number.
+Stage 2 fills section 4 and these numbers, then revises the verdict.
 
 1. **Verdict.** One paragraph: does the hypothesis hold, and under which limits.
 2. **Prototype.** The branch, the files that changed, how to run it.
 3. **Machine and mode.**
 4. **Results.** One table per deployment: rows are scenarios and W, columns are the metrics of section 5.
-5. **Correctness.** Gaps, duplicates, wrong order, and text mismatches, for each scenario.
+5. **Correctness.** Gaps, duplicates, wrong order, and text mismatches: for each functional check in stage 1, and for each scenario in stage 2.
 6. **Design points.** One answer for each numbered point of your section.
 7. **Failure modes.** Test and describe: a viewer reconnect; a restart of the instance that serves a viewer; a producer that dies before `end` (what the client shows, and what happens to the placeholder); a stop in the middle of a reply.
 8. **Client effort.** The web client (done in the POC) and an estimate for each other client.
@@ -222,7 +266,8 @@ Write the report to `/private/tmp/claude-501/-Users-dgubert-dev-RocketChat-workt
 
 **Hard gates.** An option that fails one of these is rejected.
 
-- No gaps and no duplicates in S5.
+- No gaps and no duplicates on the delta channel in S5. The gate does not cover the final `updateMessage`.
+  Phase 0 found a race in `updateMessage`: it reads the message again after the write. The race gives rare gaps and duplicates in the baseline. It is a separate issue.
 - The text that the client shows at the end equals the persisted text, also after a stop.
 - It works behind the proxy of `docker-compose-ci.yml`.
 - S2 p99 latency is below 1 second at W = 50. This threshold is a proposal; adjust it before the runs.
@@ -238,12 +283,19 @@ Write the report to `/private/tmp/claude-501/-Users-dgubert-dev-RocketChat-workt
 
 ## 13. Subagent prompts
 
-Use `subagent_type: "agent-stream-explorer"` (defined in `~/.claude/agents/agent-stream-explorer.md`) with `isolation: "worktree"`.
+Use `subagent_type: "agent-stream-explorer"` (defined in `~/.claude/agents/agent-stream-explorer.md`). Run one subagent at a time.
+The plan and the reports live in the branch `poc/agent-stream-harness`, in `docs/experiments/agent_streams/`.
 
-**Phase 0** (run alone, first):
+**Phase 0** is done. Its report is `docs/experiments/agent_streams/reports/H0-baseline.md`.
 
-> You run Phase 0 of the plan at `/private/tmp/claude-501/-Users-dgubert-dev-RocketChat-worktrees-main/db4740ae-bf22-4d3a-8a01-f77e259cc97b/scratchpad/agent-stream/PLAN.md`. Read sections 1 to 6 and section 11. Follow the ground rules in section 3 exactly. Build the harness on the branch `poc/agent-stream-harness`, write `HARNESS.md`, and run the baseline matrix. Write the report to the path in section 11 with the id `H0-baseline`. Do not push, open a pull request, or post anywhere. When you finish, reply with the report path, the branch name, and a summary of 5 lines or less.
+**Phase 0, task 9** (no isolation; it works in the harness worktree):
 
-**H1, H2, H3** (run in parallel after Phase 0; replace `<id>` with `h1`, `h2` or `h3`, and `<n>` with 7, 8 or 9):
+> You run task 9 of Phase 0 of the agent stream plan. Work in the worktree `/Users/dgubert/dev/RocketChat/worktrees/main/.claude/worktrees/agent-aa21275e3f8eb1e66`, on the branch `poc/agent-stream-harness`. Do not create another worktree or branch. Read `docs/experiments/agent_streams/PLAN.md`: sections 0, 3, 5 and 6. Then read `HARNESS.md`. Build the observability stack of task 9 and prove that it works as task 9 says. Stop the stack and the servers after the check. Add the stack to `HARNESS.md`, and commit. Do not push, open a pull request, or post anywhere. When you finish, reply with the files that changed, the ports of the stack, and a summary of 5 lines or less.
 
-> You run exploration `<id>` of the plan at `/private/tmp/claude-501/-Users-dgubert-dev-RocketChat-worktrees-main/db4740ae-bf22-4d3a-8a01-f77e259cc97b/scratchpad/agent-stream/PLAN.md`. Read sections 1 to 5, section `<n>`, and section 11. Follow the ground rules in section 3 exactly, including the ports and the measurement lock. Start your branch `poc/agent-stream-<id>` from `poc/agent-stream-harness`, and read `HARNESS.md` first. The baseline numbers are in `reports/H0-baseline.md`. Answer every numbered design point of your section in the report. Write the report to the path in section 11 with the id `<id>`. Do not push, open a pull request, or post anywhere. When you finish, reply with the report path, the branch name, and a summary of 5 lines or less.
+**H1, H2, H3, stage 1** (with `isolation: "worktree"`; replace `<id>` with `h1`, `h2` or `h3`, and `<n>` with 7, 8 or 9):
+
+> You run stage 1 (implementation) of exploration `<id>` of the agent stream plan. In your worktree, create the branch `poc/agent-stream-<id>` from `poc/agent-stream-harness` and switch to it. Read `docs/experiments/agent_streams/PLAN.md`: sections 0 to 5, section `<n>`, and section 11. Follow the ground rules in section 3 exactly. Read `HARNESS.md` first. The baseline report is `docs/experiments/agent_streams/reports/H0-baseline.md`. Build the prototype, then run the functional checks of section 5 until they pass. Do not run the matrix. Write the stage 1 report as section 11 says, and commit it. Do not push, open a pull request, or post anywhere. When you finish, reply with the report path, the branch name, and a summary of 5 lines or less.
+
+**H1, H2, H3, stage 2** (only when the user asks; no isolation; replace `<id>` and `<n>` as above):
+
+> You run stage 2 (measurement) of exploration `<id>` of the agent stream plan. Stage 1 is done on the branch `poc/agent-stream-<id>`. Find the worktree of that branch with `git worktree list`, and work there. Read `docs/experiments/agent_streams/PLAN.md`: sections 0 to 5, section `<n>`, and section 11. Then read `HARNESS.md` and the stage 1 report `docs/experiments/agent_streams/reports/<id>.md`. Follow the ground rules in section 3 exactly, including the measurement lock. Run the matrix of section 5. Fill the stage 2 parts of the report as section 11 says. Commit the report and the raw results. Do not push, open a pull request, or post anywhere. When you finish, reply with the report path and a summary of 5 lines or less.
