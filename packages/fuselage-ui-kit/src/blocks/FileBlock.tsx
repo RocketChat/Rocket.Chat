@@ -23,8 +23,8 @@ const FileBlock = ({ block }: FileBlockProps) => {
 			download
 			display='flex'
 			alignItems='center'
-			gap={8}
-			padding={12}
+			gap='x8'
+			padding='x12'
 			maxWidth='345px'
 			borderWidth='default'
 			borderRadius='medium'
