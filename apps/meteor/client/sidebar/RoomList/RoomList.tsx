@@ -11,7 +11,6 @@ import RoomListRow from './RoomListRow';
 import RoomListRowWrapper from './RoomListRowWrapper';
 import RoomListWrapper from './RoomListWrapper';
 import { useMergedRefsV2 } from '../../hooks/useMergedRefsV2';
-import { useOpenedRoom } from '../../lib/RoomManager';
 import { useMoveCategoryPosition } from '../categories/hooks/useMoveCategoryPosition';
 import SidebarVirtualList from '../components/SidebarVirtualList';
 import { SIDEBAR_DYNAMIC_GROUP_KEYS } from '../hooks/useCategoryList';
@@ -48,7 +47,6 @@ const RoomList = () => {
 	const moveCategory = useMoveCategoryPosition();
 	const virtualizerRef = useRef<VirtualizerHandle>(null);
 	const { previousUnread, nextUnread, handleRangeChange } = useOffscreenUnreads({ groups });
-	const openedRoom = useOpenedRoom() ?? '';
 	const ringingCalls = useRingingCalls();
 	const formatTime = useShortTimeAgo();
 	const sidebarViewMode = useUserPreference<SidebarViewMode>('sidebarViewMode') || 'extended';
@@ -61,11 +59,10 @@ const RoomList = () => {
 			viewMode: sidebarViewMode,
 			showAvatar: sidebarDisplayAvatar,
 			formatTime,
-			openedRoom,
 			isAnonymous,
 			userId,
 		}),
-		[formatTime, isAnonymous, openedRoom, sidebarDisplayAvatar, sidebarViewMode, t, userId],
+		[formatTime, isAnonymous, sidebarDisplayAvatar, sidebarViewMode, t, userId],
 	);
 
 	const allGroupKeys = useMemo(() => groups.map((group) => group.key), [groups]);
