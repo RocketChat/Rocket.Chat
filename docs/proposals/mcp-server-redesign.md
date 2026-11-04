@@ -2,7 +2,7 @@
 
 ## Status
 
-Draft — research and target design. Replaces the REST-catalog MCP server in `apps/meteor/ee/server/api/mcp/`, described in [docs/features/mcp-server.md](../features/mcp-server.md). Last checked against develop and the outside sources on 2026-11-03.
+Draft — research and target design. Replaces the REST-catalog MCP server in `apps/meteor/ee/server/api/mcp/`, described in [docs/features/mcp-server.md](../features/mcp-server.md). Last checked against develop on 2026-11-04, and against the outside sources on 2026-11-03.
 
 Shipped since the first draft (2026-10-06):
 
@@ -20,7 +20,7 @@ Target spec revision: **MCP 2026-07-28**, through `@modelcontextprotocol/server`
 The current MCP server has three structural defects.
 
 1. **The tool surface is a mirror of the REST API.** `catalog.ts` turns REST routes into tools one-to-one. The curated mode exposes 6 routes. The extended mode exposes 95 routes: the 93 allow-listed routes plus the 2 curated `channels.*` routes. Routes with `oneOf` or `anyOf` request schemas split into several `_by_<field>` tools, so the real tool count is higher than 95. Every tool carries the full AJV request schema of its route. The model sees `get_dm_messages`, `get_dm_history` and `get_chat_syncMessages` as three different ways to read messages, and `get_rooms_get`, `get_subscriptions_get`, `get_dm_list` and `get_channels_list_joined` as four ways to list rooms. The tool list alone takes a large part of the context window before the first call. Results come back as `JSON.stringify` of the raw REST body, with every Mongo field.
-2. **OAuth works, but without scopes or audience.** Since #43152 the MCP route accepts a PAT or an OAuth access token from the workspace's own OAuth server. A request without credentials gets `401` with `WWW-Authenticate: Bearer resource_metadata="…"` (`index.ts:51`). No `access-mcp` permission gives `403`, and no AI license gives `400`. The OAuth token carries no scope and no audience, so no read-only MCP access exists, and the same token works on the whole REST API. Every client is confidential, and redirect URIs match exactly, so native clients on a random loopback port need manual work. A client needs an app that an admin creates, or Dynamic Client Registration, which is off by default.
+2. **OAuth works, but without scopes or audience.** Since #43152 the MCP route accepts a PAT or an OAuth access token from the workspace's own OAuth server. A request without credentials gets `401` with `WWW-Authenticate: Bearer resource_metadata="…"` (`index.ts:52`). No `access-mcp` permission gives `403`, and no AI license gives `400`. The OAuth token carries no scope and no audience, so no read-only MCP access exists, and the same token works on the whole REST API. Every client is confidential, and redirect URIs match exactly, so native clients on a random loopback port need manual work. A client needs an app that an admin creates, or Dynamic Client Registration, which is off by default.
 3. **Tool calls go through the loopback interface.** `dispatch.ts` sends an HTTP request to `http://127.0.0.1:$PORT` with the caller's credential: the PAT headers or the OAuth Bearer token. It guesses the port from `PORT`, copies `ROOT_URL_PATH_PREFIX` from the Meteor runtime config, and forwards the client IP in `X-Real-IP` so the rate limiter does not put every caller in one bucket. Each call pays for a socket, a second authentication, a second rate-limit check and a JSON round trip.
 
 ## How other products do it
@@ -149,7 +149,7 @@ User administration (`post_users_create`, `post_users_update`) leaves the MCP su
 Selection, in order of precedence:
 
 - An admin setting lists the toolsets the workspace allows. Default: core only.
-- A client narrows the set for each connection with an `X-MCP-Toolsets` header or a `toolsets` query parameter. The URL path does not select toolsets. A different path is a different resource URL, so a token issued for `/api/v1/mcp` fails the RFC 8707 audience check on `/api/v1/mcp/x/messages`, and each path needs its own protected-resource metadata document. The server keeps one canonical resource URL: `/api/v1/mcp`.
+- A client narrows the set for each connection with an `X-MCP-Toolsets` header or a `toolsets` query parameter. The URL path does not select toolsets. A different path is a different resource URL, so a token issued for `/api/v1/mcp` fails the RFC 8707 audience check on `/api/v1/mcp/x/messages`, and each path needs its own protected-resource metadata document. The server keeps one canonical resource URL: `/api/v1/mcp`. The shadow route of section 11 is a second resource URL until the cut-over.
 - A read-only switch (a `readonly` query parameter, an admin setting, or a PAT) hides every write tool. It overrides everything else. An OAuth client without `mcp:write` sees the write tools and gets a scope challenge when it calls one (see section 6).
 
 With all toolsets on, the server exposes about 22 tools.
@@ -160,7 +160,7 @@ The tool-design guide makes evaluation its main method. The proposal follows it:
 
 - Write a set of multi-step tasks with verifiable outcomes, for example "find the thread where @alice asked about the release date and reply with the date from #releases". Each task has a check that reads the workspace state after the run.
 - Seed a test workspace with fixed rooms, threads, users and E2E rooms.
-- Run every task against the current curated set, the current extended set and the new core tools, with at least two models.
+- Run every task against the current curated set, the current extended set and the new core tools, with at least two models. The shadow route (section 11) serves the new tools on the same workspace as the current route.
 - Measure the task success rate, the number of tool calls, the input and output tokens, and the tokens of the tool list.
 
 The results decide three items: the core tool set, the default `limit` values, and the need for a `response_format` parameter (section 4). The new tools replace the catalog only when they match or beat the extended set on success, with fewer tokens.
@@ -221,8 +221,8 @@ Redirect URIs match exactly. Dynamic Client Registration accepts an `http` loopb
 
 | Requirement (MCP 2026-07-28 authorization) | Current state | Change |
 | --- | --- | --- |
-| `401` + `WWW-Authenticate: Bearer resource_metadata="…"` | Done (#43152). `ee/server/api/mcp/index.ts:51` adds `error="invalid_token"` when the credential does not resolve. | None. |
-| RFC 9728 protected-resource metadata | Done (#43152). `ee/server/api/mcp/metadata.ts` serves `resource`, `authorization_servers` and `bearer_methods_supported` at `/.well-known/oauth-protected-resource/api/v1/mcp` and at the bare path. | Add `scopes_supported: ["mcp:read", "mcp:write"]` with the scopes. Keep one document, for the one canonical resource URL. |
+| `401` + `WWW-Authenticate: Bearer resource_metadata="…"` | Done (#43152). `ee/server/api/mcp/index.ts:52` adds `error="invalid_token"` when the credential does not resolve. | None. |
+| RFC 9728 protected-resource metadata | Done (#43152). `ee/server/api/mcp/metadata.ts` serves `resource`, `authorization_servers` and `bearer_methods_supported` at `/.well-known/oauth-protected-resource/api/v1/mcp` and at the bare path. | Add `scopes_supported: ["mcp:read", "mcp:write"]` with the scopes. Keep one document, for the one canonical resource URL. Until the cut-over, the shadow route has a second document (section 11). |
 | RFC 8414 authorization-server metadata | Done (#43150). `server/oauth2-server/metadata.ts` serves the authorize, token and registration endpoints and `code_challenge_methods_supported: ['S256']`. It advertises `registration_endpoint` also when registration is off. | Add the new `/oauth/revoke` endpoint as `revocation_endpoint`, `authorization_response_iss_parameter_supported: true` and `scopes_supported`. |
 | PKCE (S256) is mandatory | Done (#43149). The model stores and returns `codeChallenge` and `codeChallengeMethod`. A request without a challenge still works. | Require S256 for public clients, when they exist. |
 | RFC 9207 `iss` in the authorization response | Missing | Add `iss` to every authorization response. Under 2026-07-28, servers SHOULD send it, and clients MUST validate it when it is present. The spec expects a later revision to make it a MUST for servers. |
@@ -327,7 +327,7 @@ This flow is a separate concern. It gets its own pull request stack, after the O
 | Option | Result |
 | --- | --- |
 | 1. The tool returns a PAT for the bot | Rejected. The secret goes into the model context, the transcripts and the client logs. The model also cannot change the credential of its own MCP connection, so the PAT is useless until a human configures a new server entry. The spec forbids secrets through form elicitation for the same reason. |
-| 2. Server-side binding | **Recommended for v1.** The bot record stores `(ownerId, oauthClientId)`. The same OAuth token stays in use. The server resolves token → owner → bot and acts as the bot for writes, while reads use the owner's context. This is the Slack pattern. The bot never logs in; Apps-Engine bots already work this way (`server/lib/auth/startup.js:410` blocks the login of an `app` user). |
+| 2. Server-side binding | **Recommended for v1.** The bot record stores `(ownerId, oauthClientId)`. The same OAuth token stays in use. The server resolves token → owner → bot and acts as the bot for writes, while reads use the owner's context. This is the Slack pattern. The bot never logs in; Apps-Engine bots already work this way (`server/lib/auth/startup.js:405` blocks the login of an `app` user). |
 | 3. Step-up | The tool returns `403 insufficient_scope` for `mcp:agent`. The consent page asks the user to confirm the bot. The new token carries `sub = bot` and an actor claim for the owner, in the style of RFC 8693 delegation. A human approves in the browser, and the model never holds a secret. The cost: after the step-up, the whole connection acts as the bot, so the agent loses access to the owner's DMs. |
 
 The creation of the bot goes through a URL-mode confirmation page, so a human approves it. In 2026-07-28, URL mode goes through MRTR with a signed `requestState`. The spec allows URL mode here, because this step is not client authorization.
@@ -367,12 +367,18 @@ Other users will mention the bot and send it DMs. The agent learns of these mess
 
 ### 10. Code layout
 
+Until the cut-over (section 11), the new server lives in `mcp-next/`, and `mcp/` keeps the current server and the shared code:
+
 ```
 apps/meteor/ee/server/api/mcp/
-  index.ts          # route, auth challenge, custom token verifier (kept, smaller)
-  metadata.ts       # RFC 9728 protected-resource metadata (exists, #43152)
+  index.ts          # current route (kept until the cut-over)
+  guard.ts          # shared middleware chain: authentication, credentials, rate limit, permission, license
+  metadata.ts       # RFC 9728 protected-resource metadata for both routes (exists, #43152)
+  catalog.ts, server.ts, transport.ts, dispatch.ts   # current server, deleted at the cut-over
+apps/meteor/ee/server/api/mcp-next/
+  index.ts          # shadow route, custom token verifier
   handler.ts        # createMcpHandler factory: tool list per request from authInfo
-  dispatch.ts       # in-process synthetic request (rewritten)
+  dispatch.ts       # in-process synthetic request
   format/           # message, room, user, list renderers
   tools/            # one file per tool; each exports definition + handler
   toolsets.ts       # core + optional toolsets, read-only filtering
@@ -383,7 +389,49 @@ apps/meteor/server/oauth2-server/
   cimd.ts           # Client ID Metadata Document fetch, with SSRF guards
 ```
 
-`catalog.ts` and its schema-flattening code (`mcpSafeSchema`, `variantsForRoute`, `fitToolName`) are deleted. `server.ts` and `transport.ts` are deleted; the SDK replaces them. Tool input schemas are written by hand, small and flat. [docs/features/mcp-server.md](../features/mcp-server.md) is rewritten with the feature.
+At the cut-over, the files of `mcp-next/` move into `mcp/`. `catalog.ts` and its schema-flattening code (`mcpSafeSchema`, `variantsForRoute`, `fitToolName`) are deleted. `server.ts` and `transport.ts` are deleted; the SDK replaces them. Tool input schemas are written by hand, small and flat. [docs/features/mcp-server.md](../features/mcp-server.md) is rewritten with the feature.
+
+### 11. Shadow route during readiness
+
+The new server runs beside the current server until it is ready. Both routes run on one workspace. The evaluation (section 3) compares them on the same data, and an admin can go back to the current route without a deploy.
+
+| Aspect | Current route | Shadow route |
+| --- | --- | --- |
+| Path | `/api/v1/mcp` | `/api/v1/mcp-next` |
+| Setting | `MCP_Enabled` | `MCP_Next_Enabled` |
+| License | AI module (`AI_LICENSE_MODULE`) | The same |
+| Permission | `access-mcp` | The same |
+| Transport | Hand-written | SDK (section 7) |
+| Dispatch | Loopback | In-process (section 8) |
+| Tools | The catalog | The core tools and the toolsets |
+| Protected-resource metadata | `/.well-known/oauth-protected-resource/api/v1/mcp` and the bare path | `/.well-known/oauth-protected-resource/api/v1/mcp-next` |
+| Rate limit | Route `mcp` | Route `mcp-next`, its own bucket |
+
+#### 11.1 The setting
+
+`MCP_Next_Enabled` is a copy of `MCP_Enabled` in `apps/meteor/server/settings/ai.ts`: `enterprise: true`, `modules: [AI_LICENSE_MODULE]`, and an alpha `alert`. It does not depend on `MCP_Enabled`, so an admin can turn on either route or both. The toolset and read-only settings of section 2 have an `enableQuery` on `MCP_Next_Enabled` until the cut-over.
+
+#### 11.2 Shared code
+
+- The middleware chain of the current route (`ee/server/api/mcp/index.ts:266-273`) moves into `guard.ts`. Both routes use it. This move is its own `refactor(mcp)` pull request.
+- Two checks outside the route read `MCP_Enabled`. Each one accepts either setting: the Dynamic Client Registration gate (`server/lib/auth/oauth2-server/registerOAuthClient.ts:68`) and the `MCP-Protocol-Version` CORS header (`server/api/v1/middlewares/cors.ts:11`).
+
+#### 11.3 Two resource URLs
+
+The shadow path is a second resource URL. Section 2 keeps one resource URL, and the shadow route is an exception until the cut-over.
+
+- A client authorizes once for each route. After step 4 of the delivery plan, a token bound to one route fails on the other route.
+- The current route dispatches over loopback with the caller's token. So REST must accept a token bound to `/api/v1/mcp` until the cut-over.
+- Section 6.1 therefore applies in two parts. REST rejects a token bound to `/api/v1/mcp-next` from step 4, and a token bound to `/api/v1/mcp` from the cut-over.
+- Until the cut-over, a token for the current route still works on the whole REST API, as it does today.
+
+A header on one path can select the server instead, with one resource URL. The proposal rejects this option: claude.ai connectors accept only a URL and cannot send a header.
+
+#### 11.4 Cut-over
+
+- `/api/v1/mcp` serves the new server. The catalog, the hand-written transport, the loopback dispatch, `MCP_Expose_Extended_API` and `MCP_Next_Enabled` are deleted.
+- A migration sets `MCP_Enabled` to true when `MCP_Enabled` or `MCP_Next_Enabled` was true.
+- `/api/v1/mcp-next` stays for one release as an alias of `/api/v1/mcp`, with its own metadata document and audience. Then it is deleted.
 
 ## Delivery plan
 
@@ -392,17 +440,20 @@ Each step is one pull request that can be reverted alone, unless it says otherwi
 1. **fix(oauth):** one pull request for each bug: code replay, the `500` on an unknown code, the client type, the `iss` parameter. Done: PKCE storage (#43149, with the model refactor #43148).
 2. **fix(api):** `remoteAddressMiddleware` trusts `X-Real-IP` only from a configured proxy.
 3. **feat(oauth):** public clients, loopback redirects, scopes on codes and tokens, revocation, CIMD with SSRF guards. Several pull requests. Done: authorization-server metadata (#43150), and Dynamic Client Registration behind a setting (#43151), which the first draft did not plan.
-4. **feat(api):** `oAuth2ServerAuth` enforces the audience and the scope on REST.
+4. **feat(api):** `oAuth2ServerAuth` enforces the audience and the scope on REST, for the shadow resource only (section 11.3).
 5. **chore(mcp):** a spike that loads `@modelcontextprotocol/server` under Meteor.
 6. **refactor(api):** the in-process identity hooks.
-7. **refactor(mcp):** the SDK transport and the in-process dispatch, with the same tools and the same behaviour.
-8. **feat(mcp):** the scope challenge, with the decision on the `access-mcp` roles. Done: the OAuth `401` challenge, protected-resource metadata and OAuth Bearer tokens on the MCP route (#43152).
-9. **test(mcp):** the evaluation tasks and their harness, run against the current tools.
-10. **feat(mcp)!:** the 10 core tools with the new formatter replace the catalog. `MCP_Expose_Extended_API` is removed.
-11. **feat(mcp):** optional toolsets and read-only mode.
-12. **feat:** agent bots, as their own stack.
+7. **refactor(mcp):** the middleware chain of the current route moves into `guard.ts` (section 11.2).
+8. **feat(mcp):** the shadow route behind `MCP_Next_Enabled`, with the SDK transport, the in-process dispatch and its own protected-resource metadata. It has no tools yet.
+9. **feat(mcp):** the 10 core tools and the formatter on the shadow route. Several pull requests.
+10. **feat(mcp):** the scope challenge on the shadow route, with the decision on the `access-mcp` roles. Done: the OAuth `401` challenge, protected-resource metadata and OAuth Bearer tokens on the current route (#43152).
+11. **test(mcp):** the evaluation tasks and their harness, run against both routes.
+12. **feat(mcp):** optional toolsets and read-only mode on the shadow route.
+13. **feat(mcp)!:** the cut-over (section 11.4). REST also rejects a token bound to `/api/v1/mcp`.
+14. **chore(mcp):** the `/api/v1/mcp-next` alias is deleted, one release after step 13.
+15. **feat:** agent bots, as their own stack.
 
-The MCP endpoint is behind an alpha alert today (`MCP_Alpha_Alert`), so step 10 can break the tool names without a deprecation period.
+The MCP endpoint is behind an alpha alert today (`MCP_Alpha_Alert`), so step 13 can break the tool names without a deprecation period.
 
 ## Open questions
 
