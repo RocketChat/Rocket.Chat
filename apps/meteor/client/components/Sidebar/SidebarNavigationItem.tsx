@@ -35,7 +35,7 @@ const SidebarNavigationItem = ({
 
 	return (
 		<SidebarGenericItem active={isActive} href={path} externalUrl={externalUrl} aria-current={isActive ? 'page' : undefined}>
-			<Box display='flex' alignItems='center' gap={8} marginInline={4} flexGrow={1} minWidth={0}>
+			<Box display='flex' alignItems='center' gap={8} paddingBlock={8} marginInline={4} flexGrow={1} minWidth={0}>
 				{icon && <Icon name={icon} size='x20' />}
 				<Box
 					fontScale='p2'
