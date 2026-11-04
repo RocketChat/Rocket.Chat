@@ -17,6 +17,7 @@ import {
 	actionWithLinearScale,
 } from './action';
 import { contextWithPlainText, contextWithMrkdwn, contextWithImage, contextWithAllElements } from './context';
+import { alert } from './alert';
 import { contextActions, contextActionsWithFeedback } from './contextActions';
 import { divider } from './divider';
 import { file, inputWithFileInput } from './file';
@@ -416,6 +417,10 @@ const BlocksTree: Item = [
 				payload: video,
 			},
 		],
+	},
+	{
+		label: 'alert',
+		branches: [{ label: 'All levels', payload: alert }],
 	},
 	{
 		label: 'context_actions',

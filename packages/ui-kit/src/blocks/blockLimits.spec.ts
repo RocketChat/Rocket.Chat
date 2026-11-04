@@ -28,6 +28,7 @@ it.each([
 	['section text', { type: 'section', text: text(3001) }, '$input[0].text.text'],
 	['section field', { type: 'section', fields: [text(2001)] }, '$input[0].fields[0].text'],
 	['button text', { type: 'section', accessory: { type: 'button', text: text(76) } }, '$input[0].accessory.text.text'],
+	['alert text', { type: 'alert', text: text(201) }, '$input[0].text.text'],
 	['input label', { type: 'input', label: text(2001), element: {} }, '$input[0].label.text'],
 	['input hint', { type: 'input', hint: text(2001), element: {} }, '$input[0].hint.text'],
 	['placeholder', { type: 'input', element: { type: 'plain_text_input', placeholder: text(151) } }, '$input[0].element.placeholder.text'],

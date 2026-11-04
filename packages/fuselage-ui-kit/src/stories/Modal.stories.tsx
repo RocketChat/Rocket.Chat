@@ -191,6 +191,8 @@ export const InputWithFileInput = createStory(payloads.inputWithFileInput, {
 
 export const Conditional = createStory(payloads.conditional);
 
+export const Alert = createStory(payloads.alert);
+
 export const Callout = createStory(payloads.callout);
 
 export const CalloutWithAction = createStory(payloads.calloutWithAction);

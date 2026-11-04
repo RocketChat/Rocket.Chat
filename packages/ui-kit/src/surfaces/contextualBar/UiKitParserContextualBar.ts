@@ -4,6 +4,7 @@ import { SurfaceRenderer } from '../../rendering/SurfaceRenderer.js';
 /** Layout blocks a contextual bar accepts; every contextual bar renderer must allow exactly these. */
 export const contextualBarSurfaceLayoutBlockTypes = [
 	'actions',
+	'alert',
 	'callout',
 	'context',
 	'divider',

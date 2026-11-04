@@ -22,4 +22,5 @@ export const LayoutBlockType = {
 	FILE: 'file',
 	TASK_CARD: 'task_card',
 	PLAN: 'plan',
+	ALERT: 'alert',
 } as const satisfies Record<Uppercase<LayoutBlock['type']>, LayoutBlock['type']>;

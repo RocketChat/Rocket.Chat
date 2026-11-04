@@ -1,4 +1,5 @@
 import type { ActionsBlock } from './layout/ActionsBlock.js';
+import type { AlertBlock } from './layout/AlertBlock.js';
 import type { CalloutBlock } from './layout/CalloutBlock.js';
 import type { ConditionalBlock } from './layout/ConditionalBlock.js';
 import type { ContextActionsBlock } from './layout/ContextActionsBlock.js';
@@ -41,4 +42,5 @@ export type LayoutBlock =
 	| InfoCardBlock
 	| FileBlock
 	| TaskCardBlock
-	| PlanBlock;
+	| PlanBlock
+	| AlertBlock;

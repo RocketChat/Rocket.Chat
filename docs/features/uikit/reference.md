@@ -18,6 +18,20 @@ Source: [`packages/ui-kit/src/blocks/layout/ActionsBlock.ts`](../../../packages/
 | `appId` | `string` | no |  |
 | `blockId` | `string` | no |  |
 
+### `alert`
+
+Source: [`packages/ui-kit/src/blocks/layout/AlertBlock.ts`](../../../packages/ui-kit/src/blocks/layout/AlertBlock.ts)
+
+A short notice styled by its level. Drawn with the same component as `callout`, with no title or accessory; `error` takes the `danger` style.
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'alert'` | yes |  |
+| `text` | `TextObject` | yes | At most 200 characters. |
+| `level` | `'default' \| 'info' \| 'warning' \| 'error' \| 'success'` | no | Defaults to `default`. |
+| `appId` | `string` | no |  |
+| `blockId` | `string` | no |  |
+
 ### `callout`
 
 Source: [`packages/ui-kit/src/blocks/layout/CalloutBlock.ts`](../../../packages/ui-kit/src/blocks/layout/CalloutBlock.ts)

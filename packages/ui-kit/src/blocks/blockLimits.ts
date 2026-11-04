@@ -8,6 +8,7 @@ const maxOptionsPerSelect = 100;
 const maxTasksPerPlan = 50;
 
 const maxTextLength = {
+	alert: 200,
 	header: 150,
 	section: 3000,
 	sectionField: 2000,
@@ -35,7 +36,7 @@ const textLimit = (parent: Node, key: string, inFields: boolean): number | undef
 		return undefined;
 	}
 
-	if (parent.type === 'header' || parent.type === 'section' || parent.type === 'button') {
+	if (parent.type === 'alert' || parent.type === 'header' || parent.type === 'section' || parent.type === 'button') {
 		return maxTextLength[parent.type];
 	}
 

@@ -10,7 +10,7 @@ Each surface has one list of accepted layout blocks, exported by `@rocket.chat/u
 
 ## Divergences
 
-- **Livechat, message blocks**: `file`, `info_card`, `input`, `rich_text` and `video_conf` are accepted, but Livechat's `MessageParser` has no method for them, so they render as nothing in the widget. `info_card` needs icons the widget does not ship, and `video_conf` needs the call UI of the web client.
+- **Livechat, message blocks**: `alert`, `file`, `info_card`, `input`, `rich_text` and `video_conf` are accepted, but Livechat's `MessageParser` has no method for them, so they render as nothing in the widget. `info_card` needs icons the widget does not ship, and `video_conf` needs the call UI of the web client.
 - **Livechat, simplified drawing**: `context_actions` shows an emoji (feedback) or the label (icon button) instead of an icon; `multi_static_select` is a native multiple `<select>` that ignores `maxSelectItems`; `video` frames only absolute `https` URLs and `markdown` and `table` cells use the widget's own Markdown renderer.
 - **Livechat, modals**: the widget draws modal views with `actions`, `callout`, `context`, `divider`, `header`, `image`, `markdown`, `preview`, `section`, `table`, `video` and `input` blocks. `input` supports `plain_text_input`, `static_select`, `multi_static_select` and `datepicker`; other input elements render as nothing. Contextual bars, banners and `tab_navigation` are not drawn.
 - **Livechat, task blocks**: `plan` and `task_card` are accepted in messages, but Livechat's `MessageParser` has no method for them, so they render as nothing in the widget.
@@ -24,6 +24,7 @@ Each surface has one list of accepted layout blocks, exported by `@rocket.chat/u
 | Block | message | Livechat (message) | modal | banner | contextualBar | attachment |
 | --- | --- | --- | --- | --- | --- | --- |
 | `actions` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `alert` | ✅ | — | ✅ | — | ✅ | — |
 | `callout` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | `context` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | `context_actions` | ✅ | ✅ | — | — | — | — |
