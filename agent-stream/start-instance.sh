@@ -3,7 +3,8 @@
 # usage: start-instance.sh <port> <db>
 # env:   AGENT_STREAM_BUNDLE (the `meteor build --directory` output),
 #        ROCKETCHAT_LICENSE, or ROCKETCHAT_LICENSE_FILE with the license in it (one is required),
-#        AGENT_STREAM_LOGS (default: $AGENT_STREAM_BUNDLE/logs), MONGO_HOST (default: localhost:27017)
+#        AGENT_STREAM_LOGS (default: $AGENT_STREAM_BUNDLE/logs), MONGO_HOST (default: localhost:27017),
+#        AGENT_STREAM_OBSERVABILITY=1 to send traces and metrics to agent-stream/docker-compose-observability.yml (default off)
 set -euo pipefail
 
 port=${1:?port}
@@ -17,6 +18,18 @@ logs=${AGENT_STREAM_LOGS:-$bundle/logs}
 mkdir -p "$logs"
 # the real binary at the repo's pinned version, not a version manager shim, so the pid file names the server
 node_bin=$(cd "$(dirname "$0")" && node -p process.execPath)
+
+# Prometheus_Enabled is a setting, and its override stays in the database: an off start must turn it off again.
+obs=(OVERWRITE_SETTING_Prometheus_Enabled=false)
+if [ "${AGENT_STREAM_OBSERVABILITY:-0}" = 1 ]; then
+	obs=(
+		OVERWRITE_SETTING_Prometheus_Enabled=true
+		PROMETHEUS_PORT=$((port + 10000))
+		TRACING_ENABLED=yes
+		OTEL_EXPORTER_OTLP_ENDPOINT=http://127.0.0.1:19317
+		OTEL_RESOURCE_ATTRIBUTES=service.instance.id=$port
+	)
+fi
 
 if curl -sf "http://localhost:$port/_agent-stream/status" > /dev/null 2>&1; then
 	echo "port $port already answers; stop it first" >&2
@@ -42,6 +55,7 @@ fi
 		ADMIN_USERNAME=as-admin \
 		ADMIN_PASS=as-admin-pass \
 		ADMIN_EMAIL=as-admin@example.com \
+		"${obs[@]}" \
 		"$node_bin" --expose-gc main.js
 ) > "$logs/$port.log" 2>&1 &
 echo $! > "$logs/$port.pid"

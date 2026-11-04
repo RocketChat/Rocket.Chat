@@ -1,0 +1,24 @@
+# development/collector.config.yml for collector 0.137.0: the receiver names its endpoint (the default is localhost
+# since 0.104), and the removed `logging` exporter is gone.
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+
+processors:
+  batch:
+    timeout: 100ms
+
+exporters:
+  otlp/tempo:
+    endpoint: tempo:4317
+    tls:
+      insecure: true
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlp/tempo]

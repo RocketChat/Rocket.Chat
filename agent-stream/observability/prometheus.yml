@@ -1,0 +1,21 @@
+global:
+  # the exporter refreshes its values every 5 s
+  scrape_interval: 5s
+  evaluation_interval: 15s
+
+scrape_configs:
+  # The Rocket.Chat exporter of each instance on the ports of PLAN.md section 3. With AGENT_STREAM_OBSERVABILITY=1,
+  # start-instance.sh puts the exporter on the instance port + 10000. Never add the harness /metrics route: a read resets it.
+  - job_name: rocketchat
+    static_configs:
+      - targets: ['host.docker.internal:13000', 'host.docker.internal:13002']
+        labels: { exploration: h0 }
+      - targets: ['host.docker.internal:13110', 'host.docker.internal:13111']
+        labels: { exploration: h1 }
+      - targets: ['host.docker.internal:13210', 'host.docker.internal:13211']
+        labels: { exploration: h2 }
+      - targets: ['host.docker.internal:13300', 'host.docker.internal:13301']
+        labels: { exploration: h3 }
+  - job_name: tempo
+    static_configs:
+      - targets: ['tempo:3200']

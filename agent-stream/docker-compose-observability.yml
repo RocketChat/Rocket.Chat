@@ -1,0 +1,68 @@
+# The observability stack of the agent stream experiments (PLAN.md, Phase 0, task 9).
+# From development/docker-compose-monitoring.yml, with its own project, volumes and host ports, so it never meets the
+# mastra-observability containers (3001, 3100, 3200, 4317, 4318, 9090). Image versions are the ones already on the machine.
+#   up:   docker compose -f agent-stream/docker-compose-observability.yml up -d
+#   down: docker compose -f agent-stream/docker-compose-observability.yml down      (add -v to drop the data)
+name: agentstream-observability
+
+services:
+  # Tempo runs as user 10001, and docker compose creates the volume as root.
+  init:
+    image: &tempoImage grafana/tempo:2.9.0
+    user: root
+    entrypoint: ['chown', '10001:10001', '/var/tempo']
+    volumes:
+      - tempo-data:/var/tempo
+
+  tempo:
+    image: *tempoImage
+    command: ['-config.file=/etc/tempo.yaml']
+    volumes:
+      - ./observability/tempo.yml:/etc/tempo.yaml:ro
+      - tempo-data:/var/tempo
+    ports:
+      - '127.0.0.1:19200:3200'
+    depends_on:
+      init:
+        condition: service_completed_successfully
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.137.0
+    command: ['--config', '/etc/otelcol/config.yaml']
+    volumes:
+      - ./observability/collector.yml:/etc/otelcol/config.yaml:ro
+    ports:
+      - '127.0.0.1:19317:4317'
+    depends_on:
+      - tempo
+
+  prometheus:
+    image: prom/prometheus:v3.6.0
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --web.enable-remote-write-receiver
+      - --enable-feature=exemplar-storage,native-histograms
+    volumes:
+      - ./observability/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    ports:
+      - '127.0.0.1:19090:9090'
+
+  grafana:
+    image: grafana/grafana:12.2.0
+    volumes:
+      - ../development/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yaml:ro
+      - grafana-data:/var/lib/grafana
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+    ports:
+      - '127.0.0.1:19300:3000'
+
+volumes:
+  tempo-data:
+  prometheus-data:
+  grafana-data:

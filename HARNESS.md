@@ -27,6 +27,7 @@ Everything on the server runs only with `AGENT_STREAM_POC=1`. Without it, the se
 | `agent-stream/failures.mjs`                                           | The failure modes of the report template: stop, kill, restart, crash                                         |
 | `agent-stream/webclient.mjs`                                          | The secondary S1 metric: web client main-thread time for each delta                                          |
 | `agent-stream/start-instance.sh`, `run-d1.sh`, `run-d2.sh`, `stop.sh` | Start and stop the instances                                                                                 |
+| `agent-stream/docker-compose-observability.yml`, `observability/`     | The observability stack: Tempo, the OpenTelemetry collector, Prometheus and Grafana                          |
 
 ## The reply and the deltas
 
@@ -78,6 +79,7 @@ The Meteor build takes about one minute. Build again after every server change, 
 | `ROCKETCHAT_LICENSE` or `ROCKETCHAT_LICENSE_FILE` | `start-instance.sh`            | The license, or a file with it. Never commit it                    |
 | `AGENT_STREAM_LOGS`                               | `start-instance.sh`, `stop.sh` | Logs and pid files. Default: `$AGENT_STREAM_BUNDLE/logs`           |
 | `MONGO_HOST`                                      | `start-instance.sh`            | Default `localhost:27017`                                          |
+| `AGENT_STREAM_OBSERVABILITY`                      | `start-instance.sh`            | `1` sends traces and metrics to the stack below. Default off       |
 
 `start-instance.sh` also sets the settings that the harness needs: no setup wizard, an admin user (`as-admin`), no REST
 rate limiter, and no two-factor authentication (the seed logs in 1,000 users).
@@ -262,6 +264,55 @@ It opens `as-s1` as `as-u0000` in headless Chromium, measures the page's idle ma
 reply and reports the Chrome `Performance.getMetrics` durations (task, script, layout, style) for each delta, net of the
 idle rate, and the long tasks. It also checks the final screen against the persisted message (`blocksShown`: tasks whose
 title is not shown, whether the tail of the output is shown). Take the lock for it too.
+
+## Observability stack
+
+Use it in stage 1 and to find the cause of a result. Keep it off for a measured run (PLAN.md section 5): the numbers of
+a report come from the harness results only.
+
+The stack is `agent-stream/docker-compose-observability.yml`, with the compose project `agentstream-observability` and its
+own volumes. It does not use the `mastra-observability-*` containers or their ports. Each port binds to `127.0.0.1`.
+
+| Service                 | Host port         | Use                                                                       |
+| ----------------------- | ----------------- | ------------------------------------------------------------------------- |
+| Grafana                 | 19300             | Explore, with the provisioned Prometheus and Tempo data sources. No login |
+| Prometheus              | 19090             | Scrapes the exporter of each instance every 5 s                           |
+| Tempo                   | 19200             | Stores the traces. The search API is `/api/search`                        |
+| OpenTelemetry collector | 19317 (OTLP gRPC) | Receives the traces of the servers and sends them to Tempo                |
+
+```bash
+docker compose -f agent-stream/docker-compose-observability.yml up -d
+AGENT_STREAM_OBSERVABILITY=1 agent-stream/run-d2.sh 3000 3002 agentstream_h0
+# stage 1 checks; Grafana Explore: http://127.0.0.1:19300/explore
+agent-stream/stop.sh 3000 3002
+docker compose -f agent-stream/docker-compose-observability.yml down # add -v to delete the data
+```
+
+`AGENT_STREAM_OBSERVABILITY=1` on `start-instance.sh` (so also on `run-d1.sh` and `run-d2.sh`) sets:
+
+- `TRACING_ENABLED=yes`, `OTEL_EXPORTER_OTLP_ENDPOINT=http://127.0.0.1:19317` and
+  `OTEL_RESOURCE_ATTRIBUTES=service.instance.id=<port>`. All instances have the service name `core`. The instance id
+  tells them apart.
+- `OVERWRITE_SETTING_Prometheus_Enabled=true` and `PROMETHEUS_PORT=<port + 10000>`: the exporter of 3000 is on 13000.
+  Prometheus has a target for each port of PLAN.md section 3, with the label `exploration` (`h0` to `h3`). The target of
+  an instance that does not run is `down`.
+
+Without the switch, `start-instance.sh` sets `OVERWRITE_SETTING_Prometheus_Enabled=false`. The override of a setting
+stays in the database, so this start turns off an exporter that an earlier start turned on. Give all instances of a
+deployment the same switch value, because they share the setting.
+
+Check that both instances of D2 report:
+
+```bash
+curl -s -G http://127.0.0.1:19090/api/v1/query --data-urlencode 'query=up{job="rocketchat"} == 1'
+curl -s -G http://127.0.0.1:19200/api/search --data-urlencode 'q={resource.service.instance.id="3002"}'
+```
+
+The server starts a trace only at a root span: a REST request under `/api/v1`, a DDP method, the notification worker,
+or the Prometheus collector. Model calls, service calls (`action <service>.<method>`) and Mongo commands under a root
+span become its child spans. The fake producer runs from a dev route and from timers, so the deltas of the baseline make
+no trace. To trace the delta path of a mechanism, start a root span with `tracerSpan` from `@rocket.chat/tracing` in its
+sink. Without `TRACING_ENABLED`, `tracerSpan` only calls the function.
 
 ## Caveats
 
