@@ -29,7 +29,7 @@ export const syncCalendarForUser = async (uid: IUser['_id']): Promise<CalendarSy
 	const release = await acquireSyncLease('calendar', uid);
 
 	if (!release) {
-		throw new ExchangeError('rate-limited', 'A sync for this mailbox is already in progress');
+		throw new ExchangeError('sync-in-progress', 'A calendar sync for this mailbox is already in progress');
 	}
 
 	let changed = false;
