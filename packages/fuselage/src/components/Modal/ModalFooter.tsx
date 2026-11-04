@@ -2,7 +2,6 @@ import { styled, View } from '@tamagui/web';
 
 import { cx } from '../../helpers/composeClassNames';
 import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
 
 export type ModalFooterProps = ElementProps<HTMLDivElement> & {
 	/** Spreads the actions apart instead of packing them at the end, for a footer with content on its start side. */
@@ -35,7 +34,7 @@ const ModalFooterFrame = styled(View, {
 // end of generated
 
 const ModalFooter = ({ children, justify = 'end', className, ...props }: ModalFooterProps) => (
-	<ModalFooterFrame render={<Box {...props} />} justify={justify} className={cx('rcx-modal__footer', className)}>
+	<ModalFooterFrame render={<div {...props} />} justify={justify} className={cx('rcx-box rcx-box--full', 'rcx-modal__footer', className)}>
 		{children}
 	</ModalFooterFrame>
 );

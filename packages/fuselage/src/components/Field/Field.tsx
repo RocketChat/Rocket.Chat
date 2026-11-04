@@ -1,8 +1,8 @@
 import { styled, View } from '@tamagui/web';
 import { createContext } from 'react';
 
+import { cx } from '../../helpers/composeClassNames';
 import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
 
 export const FieldContext = createContext(false);
 
@@ -30,7 +30,7 @@ const FieldFrame = styled(View, {
 function Field({ ref, children, className, ...props }: FieldProps) {
 	return (
 		<FieldContext.Provider value={true}>
-			<FieldFrame render={<Box rcx-field {...props} ref={ref} />} className={className}>
+			<FieldFrame render={<div {...props} ref={ref} />} className={cx('rcx-box rcx-box--full', 'rcx-field', className)}>
 				{children}
 			</FieldFrame>
 		</FieldContext.Provider>

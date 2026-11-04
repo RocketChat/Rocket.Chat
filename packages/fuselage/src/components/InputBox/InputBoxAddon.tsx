@@ -1,7 +1,7 @@
 import { styled, View } from '@tamagui/web';
 
+import { cx } from '../../helpers/composeClassNames';
 import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
 
 export type InputBoxAddonProps = ElementProps<HTMLSpanElement>;
 
@@ -23,7 +23,11 @@ const InputBoxAddonFrame = styled(View, {
  * An addon for the input box.
  */
 function InputBoxAddon({ ref, children, ...props }: InputBoxAddonProps) {
-	return <InputBoxAddonFrame render={<Box is='span' rcx-input-box__addon {...props} ref={ref} />}>{children}</InputBoxAddonFrame>;
+	return (
+		<InputBoxAddonFrame render={<span {...props} ref={ref} />} className={cx('rcx-box rcx-box--full', 'rcx-input-box__addon')}>
+			{children}
+		</InputBoxAddonFrame>
+	);
 }
 
 export default InputBoxAddon;

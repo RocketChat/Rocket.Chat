@@ -1,5 +1,5 @@
 import { styled, Text, View } from '@tamagui/web';
-import type { ReactNode } from 'react';
+import type { ReactNode, Ref } from 'react';
 
 import type { ElementProps } from '../../types/ElementProps';
 import { Box } from '../Box';
@@ -331,7 +331,7 @@ const DividerLabel = styled(Text, {
 
 // end of generated
 
-const Divider = ({ variation, children, vertical, flush, small, stretch, className, ...props }: DividerProps) => {
+const Divider = ({ variation, children, vertical, flush, small, stretch, className, ref, ...props }: DividerProps) => {
 	if (!children) {
 		// Direction, size, flush and tone set overlapping properties, so each combination is one variant
 		const look = `${vertical ? 'vertical' : 'horizontal'}${vertical && small ? '-small' : ''}${vertical && stretch ? '-stretch' : ''}${
@@ -339,6 +339,7 @@ const Divider = ({ variation, children, vertical, flush, small, stretch, classNa
 		}:${variation ?? 'default'}`;
 		// Listed in the order `Box` gave the `rcx-` props it used to take: each one went in front of the last
 		const classes = [
+			'rcx-box rcx-box--full',
 			variation === 'light' && 'rcx-divider--light',
 			variation === 'danger' && 'rcx-divider--danger',
 			flush && 'rcx-divider--flush',
@@ -351,11 +352,11 @@ const Divider = ({ variation, children, vertical, flush, small, stretch, classNa
 			.filter(Boolean)
 			.join(' ');
 
-		return <DividerLine render={<Box {...props} is='hr' />} look={look} className={classes} />;
+		return <DividerLine render={<hr {...props} ref={ref as Ref<HTMLHRElement>} />} look={look} className={classes} />;
 	}
 
 	return (
-		<Box rcx-message-divider rcx-divider--labelled role='separator' className={className} {...props}>
+		<Box rcx-message-divider rcx-divider--labelled role='separator' className={className} {...props} ref={ref}>
 			<DividerBar className='rcx-divider__bar' />
 			<DividerLabel className='rcx-divider__wrapper'>{children}</DividerLabel>
 			<DividerBar className='rcx-divider__bar' />

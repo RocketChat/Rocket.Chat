@@ -1,7 +1,6 @@
 import { styled, Text } from '@tamagui/web';
 
 import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
 
 export type ModalTaglineProps = ElementProps<HTMLDivElement> & {
 	/** Mutes the tagline, so it reads as a category above the title. */
@@ -41,9 +40,9 @@ const ModalTaglineFrame = styled(Text, {
 
 const ModalTagline = ({ subtle, children, className, ...props }: ModalTaglineProps) => (
 	<ModalTaglineFrame
-		render={<Box {...props} />}
+		render={<div {...props} />}
 		subtle={Boolean(subtle)}
-		className={['rcx-modal__tagline', className].filter(Boolean).join(' ')}
+		className={['rcx-box rcx-box--full', 'rcx-modal__tagline', className].filter(Boolean).join(' ')}
 	>
 		{children}
 	</ModalTaglineFrame>

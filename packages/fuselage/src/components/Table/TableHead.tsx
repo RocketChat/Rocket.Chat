@@ -1,8 +1,8 @@
 import { styled, View } from '@tamagui/web';
 import { createContext } from 'react';
 
+import { cx } from '../../helpers/composeClassNames';
 import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
 
 export const TableHeadContext = createContext(false);
 
@@ -22,7 +22,7 @@ export type TableHeadProps = ElementProps<HTMLTableSectionElement>;
 
 const TableHead = ({ children, className, ref, ...props }: TableHeadProps) => (
 	<TableHeadContext.Provider value={true}>
-		<TableHeadFrame render={<Box is='thead' rcx-table__head {...props} ref={ref} />} className={className}>
+		<TableHeadFrame render={<thead {...props} ref={ref} />} className={cx('rcx-box rcx-box--full', 'rcx-table__head', className)}>
 			{children}
 		</TableHeadFrame>
 	</TableHeadContext.Provider>

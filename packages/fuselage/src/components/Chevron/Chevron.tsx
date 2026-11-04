@@ -2,8 +2,9 @@ import { styled, View } from '@tamagui/web';
 import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 
+import { cx } from '../../helpers/composeClassNames';
 import type { ElementProps } from '../../types/ElementProps';
-import { Box, type BoxProps } from '../Box';
+import type { BoxProps } from '../Box';
 import { Icon } from '../Icon';
 
 export type ChevronProps = ElementProps<HTMLSpanElement> & {
@@ -59,19 +60,14 @@ function Chevron({ up, right, down, left, size, className, ...props }: ChevronPr
 
 	return (
 		<ChevronFrame
-			render={
-				<Box
-					is='span'
-					rcx-chevron
-					rcx-chevron--up={up}
-					rcx-chevron--right={right}
-					rcx-chevron--down={down}
-					rcx-chevron--left={left}
-					{...props}
-				/>
-			}
+			render={<span {...props} />}
 			direction={directions.find(([, on]) => on)?.[0]}
-			className={className}
+			className={cx(
+				'rcx-box rcx-box--full',
+				{ 'rcx-chevron--left': !!left, 'rcx-chevron--down': !!down, 'rcx-chevron--right': !!right, 'rcx-chevron--up': !!up },
+				'rcx-chevron',
+				className,
+			)}
 		>
 			{children}
 		</ChevronFrame>

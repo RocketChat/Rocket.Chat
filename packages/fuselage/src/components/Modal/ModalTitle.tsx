@@ -1,7 +1,6 @@
 import { styled, Text } from '@tamagui/web';
 
 import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
 
 export type ModalTitleProps = ElementProps<HTMLHeadingElement>;
 
@@ -32,7 +31,11 @@ const ModalTitleFrame = styled(Text, {
 // end of generated
 
 const ModalTitle = ({ children, className, ...props }: ModalTitleProps) => (
-	<ModalTitleFrame render={<Box is='h2' {...props} />} className={['rcx-modal__title', className].filter(Boolean).join(' ')}>
+	<ModalTitleFrame
+		// oxlint-disable-next-line jsx-a11y/heading-has-content -- the frame's children are the content
+		render={<h2 {...props} />}
+		className={['rcx-box rcx-box--full', 'rcx-modal__title', className].filter(Boolean).join(' ')}
+	>
 		{children}
 	</ModalTitleFrame>
 );

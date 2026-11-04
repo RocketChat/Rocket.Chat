@@ -1,7 +1,7 @@
 import { styled, View } from '@tamagui/web';
+import type { Ref } from 'react';
 
 import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
 
 export type ContextualbarSectionProps = ElementProps<HTMLElement>;
 
@@ -24,9 +24,12 @@ const ContextualbarSectionFrame = styled(View, {
 
 // end of generated
 
-function ContextualbarSection({ className, children, ...props }: ContextualbarSectionProps) {
+function ContextualbarSection({ className, children, ref, ...props }: ContextualbarSectionProps) {
 	return (
-		<ContextualbarSectionFrame render={<Box {...props} />} className={['rcx-vertical-bar__section', className].filter(Boolean).join(' ')}>
+		<ContextualbarSectionFrame
+			render={<div {...props} ref={ref as Ref<HTMLDivElement>} />}
+			className={['rcx-box rcx-box--full', 'rcx-vertical-bar__section', className].filter(Boolean).join(' ')}
+		>
 			{children}
 		</ContextualbarSectionFrame>
 	);

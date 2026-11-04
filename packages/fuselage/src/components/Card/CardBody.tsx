@@ -2,7 +2,7 @@ import { styled, View } from '@tamagui/web';
 import type { CSSProperties, ReactNode } from 'react';
 
 import type { ElementProps } from '../../types/ElementProps';
-import { Box, type BoxProps } from '../Box';
+import { StylingBox, type BoxProps } from '../Box';
 
 export type CardBodyProps = {
 	flexDirection?: CSSProperties['flexDirection'];
@@ -31,12 +31,11 @@ const CardBodyFrame = styled(View, {
 // end of generated
 
 const CardBody = ({ children, flexDirection = 'row', height, className, ...props }: CardBodyProps) => (
-	<CardBodyFrame
-		render={<Box flexDirection={flexDirection} height={height} {...props} />}
-		className={['rcx-card__body', className].filter(Boolean).join(' ')}
-	>
-		{children}
-	</CardBodyFrame>
+	<StylingBox flexDirection={flexDirection} height={height}>
+		<CardBodyFrame render={<div {...props} />} className={['rcx-box rcx-box--full', 'rcx-card__body', className].filter(Boolean).join(' ')}>
+			{children}
+		</CardBodyFrame>
+	</StylingBox>
 );
 
 export default CardBody;

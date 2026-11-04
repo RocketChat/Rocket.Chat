@@ -2,7 +2,6 @@ import { styled, Text } from '@tamagui/web';
 
 import { cx } from '../../helpers/composeClassNames';
 import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
 
 export type ContextualbarTitleProps = ElementProps<HTMLHeadingElement>;
 
@@ -32,7 +31,8 @@ const ContextualbarTitleFrame = styled(Text, {
 // end of generated
 
 const ContextualbarTitle = ({ className, children, ...props }: ContextualbarTitleProps) => (
-	<ContextualbarTitleFrame render={<Box is='h5' {...props} />} className={cx('rcx-vertical-bar__title', className)}>
+	// oxlint-disable-next-line jsx-a11y/heading-has-content -- the frame's children are the content
+	<ContextualbarTitleFrame render={<h5 {...props} />} className={cx('rcx-box rcx-box--full', 'rcx-vertical-bar__title', className)}>
 		{children}
 	</ContextualbarTitleFrame>
 );

@@ -1,10 +1,10 @@
 import type { Keys as IconName } from '@rocket.chat/icons';
 import { styled, View } from '@tamagui/web';
-import type { AllHTMLAttributes, ReactElement, ReactNode, RefAttributes } from 'react';
+import type { AllHTMLAttributes, ElementType, ReactElement, ReactNode, RefAttributes } from 'react';
 import { isValidElement } from 'react';
 
 import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
+import { StylingBox } from '../Box';
 import { Icon } from '../Icon';
 
 export type IconButtonProps = {
@@ -895,6 +895,8 @@ function IconButton({
 	ref,
 	...props
 }: IconButtonProps) {
+	// The attributes of a button and of an anchor don't type-check against the union of both elements
+	const Tag = is as ElementType;
 	// `secondary-info` is the class that paints the primary palette.
 	const variant = variantProp === 'primary' ? 'secondary-info' : (variantProp ?? '');
 
@@ -909,6 +911,7 @@ function IconButton({
 	const paint = `${variant || 'icon'}${state}`;
 	// Listed in the order `Box` gave the `rcx-` props it used to take: each one went in front of the last
 	const classes = [
+		'rcx-box rcx-box--full',
 		badge && 'rcx-button--with-badge',
 		pressed && 'rcx-button--icon-pressed',
 		`rcx-button--${size}-square`,
@@ -923,21 +926,23 @@ function IconButton({
 		.join(' ');
 
 	return (
-		<IconButtonFrame
-			render={<Box {...attributes} is={is} color={color} disabled={disabled} ref={ref} />}
-			sizing={size}
-			badged={Boolean(badge)}
-			paint={paint}
-			className={classes}
-		>
-			{isValidElement<any>(icon) ? icon : <Icon name={icon} size={iconSizes[size]} />}
-			{Boolean(badge) && (
-				<span className={`rcx-button__badge rcx-button__badge--${badgePosition}`} aria-hidden='true'>
-					{badge}
-				</span>
-			)}
-			{children}
-		</IconButtonFrame>
+		<StylingBox color={color}>
+			<IconButtonFrame
+				render={<Tag {...attributes} disabled={disabled} ref={ref} />}
+				sizing={size}
+				badged={Boolean(badge)}
+				paint={paint}
+				className={classes}
+			>
+				{isValidElement<any>(icon) ? icon : <Icon name={icon} size={iconSizes[size]} />}
+				{Boolean(badge) && (
+					<span className={`rcx-button__badge rcx-button__badge--${badgePosition}`} aria-hidden='true'>
+						{badge}
+					</span>
+				)}
+				{children}
+			</IconButtonFrame>
+		</StylingBox>
 	);
 }
 

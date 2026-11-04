@@ -1,8 +1,8 @@
 import { styled, Text } from '@tamagui/web';
 import type { AnchorHTMLAttributes } from 'react';
 
+import { cx } from '../../helpers/composeClassNames';
 import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
 
 export type StatesLinkProps = ElementProps<HTMLAnchorElement, AnchorHTMLAttributes<HTMLAnchorElement>>;
 
@@ -26,7 +26,7 @@ const StatesLinkFrame = styled(Text, {
 // end of generated
 
 const StatesLink = ({ className, children, ...props }: StatesLinkProps) => (
-	<StatesLinkFrame render={<Box is='a' rcx-states__link {...props} />} className={className}>
+	<StatesLinkFrame render={<a {...props} />} className={cx('rcx-box rcx-box--full', 'rcx-states__link', className)}>
 		{children}
 	</StatesLinkFrame>
 );

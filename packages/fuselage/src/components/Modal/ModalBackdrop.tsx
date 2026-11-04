@@ -1,7 +1,6 @@
 import { styled, View } from '@tamagui/web';
 
 import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
 
 export type ModalBackdropProps = ElementProps<HTMLDivElement> & {
 	/** Drops the overlay colour, for a backdrop that only catches events or stacks over another one. */
@@ -40,9 +39,9 @@ const ModalBackdropFrame = styled(View, {
 
 const ModalBackdrop = ({ transparent, className, children, ...props }: ModalBackdropProps) => (
 	<ModalBackdropFrame
-		render={<Box {...props} />}
+		render={<div {...props} />}
 		tone={transparent ? 'transparent' : 'overlay'}
-		className={['rcx-modal__backdrop', className].filter(Boolean).join(' ')}
+		className={['rcx-box rcx-box--full', 'rcx-modal__backdrop', className].filter(Boolean).join(' ')}
 	>
 		{children}
 	</ModalBackdropFrame>

@@ -1,7 +1,7 @@
 import { styled, View } from '@tamagui/web';
 import type { AllHTMLAttributes } from 'react';
 
-import { Box } from '../Box';
+import { useStylingProps } from '../Box/useStylingProps';
 
 export type CardProps = {
 	horizontal?: boolean;
@@ -72,6 +72,7 @@ const CardFrame = styled(View, {
 const Card = ({ horizontal, hero, clickable, className, children, ...props }: CardProps) => {
 	// Listed in the order `Box` gave the `rcx-` props it used to take: each one went in front of the last
 	const classes = [
+		'rcx-box rcx-box--full',
 		clickable && 'rcx-card__clickable',
 		hero && 'rcx-card__hero',
 		!horizontal && 'rcx-card__vertical',
@@ -81,14 +82,16 @@ const Card = ({ horizontal, hero, clickable, className, children, ...props }: Ca
 	]
 		.filter(Boolean)
 		.join(' ');
+	// The HTML `width`, `height` and `color` attributes callers pass are styles
+	const { className: styledClasses, ...attributes } = useStylingProps({ ...props, className: classes });
 
 	return (
 		<CardFrame
 			// The caller's attributes go on the element `render` names: zero-runtime rejects spreads on a frame
-			render={<Box {...props} />}
+			render={<div {...attributes} />}
 			layout={`${horizontal ? 'horizontal' : 'vertical'}${hero ? '-hero' : ''}`}
 			clickable={Boolean(clickable)}
-			className={classes}
+			className={styledClasses}
 		>
 			{children}
 		</CardFrame>

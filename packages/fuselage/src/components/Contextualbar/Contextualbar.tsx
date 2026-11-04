@@ -1,7 +1,7 @@
 import { styled, View } from '@tamagui/web';
+import type { Ref } from 'react';
 
 import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
 
 export type ContextualbarProps = ElementProps<HTMLElement> & {
 	/** Makes the bar as wide as its container, as when it is positioned over the room. */
@@ -58,14 +58,14 @@ const ContextualbarFrame = styled(View, {
 /**
  * The `Contextualbar` has the purpose to persist and input information about the scope of the related page.
  */
-function Contextualbar({ stretch = false, position = 'static', className, children, ...props }: ContextualbarProps) {
+function Contextualbar({ stretch = false, position = 'static', className, children, ref, ...props }: ContextualbarProps) {
 	return (
 		<ContextualbarFrame
 			// The caller's attributes go on the element `render` names: zero-runtime rejects spreads on a frame
-			render={<Box {...props} />}
+			render={<div {...props} ref={ref as Ref<HTMLDivElement>} />}
 			stretch={stretch}
 			placement={position}
-			className={['rcx-vertical-bar', className].filter(Boolean).join(' ')}
+			className={['rcx-box rcx-box--full', 'rcx-vertical-bar', className].filter(Boolean).join(' ')}
 		>
 			{children}
 		</ContextualbarFrame>

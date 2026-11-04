@@ -2,7 +2,6 @@ import { styled, Text } from '@tamagui/web';
 
 import { cx } from '../../helpers/composeClassNames';
 import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
 
 export type ModalFooterAnnotationProps = ElementProps<HTMLDivElement>;
 
@@ -30,7 +29,10 @@ const ModalFooterAnnotationFrame = styled(Text, {
 // end of generated
 
 const ModalFooterAnnotation = ({ children, className, ...props }: ModalFooterAnnotationProps) => (
-	<ModalFooterAnnotationFrame render={<Box {...props} />} className={cx('rcx-modal__footer-annotation', className)}>
+	<ModalFooterAnnotationFrame
+		render={<div {...props} />}
+		className={cx('rcx-box rcx-box--full', 'rcx-modal__footer-annotation', className)}
+	>
 		{children}
 	</ModalFooterAnnotationFrame>
 );

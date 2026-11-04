@@ -1,9 +1,9 @@
 import { styled, View } from '@tamagui/web';
-import type { DialogHTMLAttributes, ElementType, ReactNode } from 'react';
+import type { DialogHTMLAttributes, ElementType, ReactNode, Ref } from 'react';
 import { createElement } from 'react';
 
 import type { ElementProps } from '../../types/ElementProps';
-import { Box, type BoxProps } from '../Box';
+import { Box, StylingBox, type BoxProps } from '../Box';
 
 export type ModalProps = ElementProps<Element, DialogHTMLAttributes<HTMLDialogElement>> & {
 	/** A fixed width, for content that needs it instead of the default fluid one. */
@@ -38,7 +38,7 @@ const ModalFrame = styled(View, {
 
 // end of generated
 
-const Modal = ({ children, wrapper = Box, wrapperFunction, className, ...props }: ModalProps) => {
+const Modal = ({ children, wrapper = Box, wrapperFunction, className, width, height, maxHeight, ref, ...props }: ModalProps) => {
 	const wrapperProps = {
 		children,
 		className: 'rcx-modal__inner',
@@ -46,13 +46,15 @@ const Modal = ({ children, wrapper = Box, wrapperFunction, className, ...props }
 	} as const;
 
 	return (
-		<ModalFrame
-			// The caller's attributes go on the element `render` names: zero-runtime rejects spreads on a frame
-			render={<Box is='dialog' open aria-modal='true' {...props} />}
-			className={['rcx-modal', className].filter(Boolean).join(' ')}
-		>
-			{wrapperFunction ? wrapperFunction(wrapperProps) : createElement(wrapper, wrapperProps)}
-		</ModalFrame>
+		<StylingBox width={width} height={height} maxHeight={maxHeight}>
+			<ModalFrame
+				// The caller's attributes go on the element `render` names: zero-runtime rejects spreads on a frame
+				render={<dialog open aria-modal='true' {...props} ref={ref as Ref<HTMLDialogElement>} />}
+				className={['rcx-box rcx-box--full', 'rcx-modal', className].filter(Boolean).join(' ')}
+			>
+				{wrapperFunction ? wrapperFunction(wrapperProps) : createElement(wrapper, wrapperProps)}
+			</ModalFrame>
+		</StylingBox>
 	);
 };
 

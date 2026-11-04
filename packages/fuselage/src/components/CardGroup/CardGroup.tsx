@@ -3,7 +3,7 @@ import type { AllHTMLAttributes, ReactNode } from 'react';
 
 import { appendClassName } from '../../helpers/appendClassName';
 import { patchChildren } from '../../helpers/patchChildren';
-import { Box } from '../Box';
+import { useStylingProps } from '../Box/useStylingProps';
 
 export type CardGroupProps = {
 	align?: 'start' | 'center' | 'end';
@@ -79,6 +79,7 @@ const CardGroupFrame = styled(View, {
 const CardGroup = ({ align = 'start', children, stretch, vertical, wrap, className, ...props }: CardGroupProps) => {
 	// Listed in the order `Box` gave the `rcx-` props it used to take: each one went in front of the last
 	const classes = [
+		'rcx-box rcx-box--full',
 		wrap && 'rcx-card-group--wrap',
 		vertical && 'rcx-card-group--vertical',
 		stretch && 'rcx-card-group--stretch',
@@ -88,14 +89,16 @@ const CardGroup = ({ align = 'start', children, stretch, vertical, wrap, classNa
 	]
 		.filter(Boolean)
 		.join(' ');
+	// The HTML `width`, `height` and `color` attributes callers pass are styles
+	const { className: styledClasses, ...attributes } = useStylingProps({ ...props, className: classes });
 
 	return (
 		// The caller's attributes go on the element `render` names: zero-runtime rejects spreads on a frame
 		<CardGroupFrame
-			render={<Box role='group' {...props} />}
+			render={<div role='group' {...attributes} />}
 			align={align}
 			flow={`${vertical ? 'column' : 'row'}-${wrap ? 'wrap' : 'nowrap'}-${stretch ? 'stretch' : 'start'}`}
-			className={classes}
+			className={styledClasses}
 		>
 			{patchChildren(children, (childProps: { className: string | string[] }) => ({
 				className: appendClassName(childProps.className, 'rcx-card-group__item'),

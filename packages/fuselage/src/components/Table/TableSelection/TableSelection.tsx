@@ -1,5 +1,6 @@
 import { styled, View } from '@tamagui/web';
 
+import { cx } from '../../../helpers/composeClassNames';
 import type { ElementProps } from '../../../types/ElementProps';
 import { Box } from '../../Box';
 
@@ -30,7 +31,7 @@ export type TableSelectionProps = ElementProps<HTMLDivElement> & {
 };
 
 const TableSelection = ({ children, text, className, ref, ...props }: TableSelectionProps) => (
-	<TableSelectionFrame render={<Box rcx-table__selection {...props} ref={ref} />} className={className}>
+	<TableSelectionFrame render={<div {...props} ref={ref} />} className={cx('rcx-box rcx-box--full', 'rcx-table__selection', className)}>
 		<Box rcx-table__selection-text>{text}</Box>
 		{children && <Box rcx-table__selection-actions>{children}</Box>}
 	</TableSelectionFrame>

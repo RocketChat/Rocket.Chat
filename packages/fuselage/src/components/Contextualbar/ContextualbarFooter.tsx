@@ -1,8 +1,8 @@
 import { styled, View } from '@tamagui/web';
+import type { Ref } from 'react';
 
 import { cx } from '../../helpers/composeClassNames';
 import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
 
 export type ContextualbarFooterProps = ElementProps<HTMLElement>;
 
@@ -22,9 +22,12 @@ const ContextualbarFooterFrame = styled(View, {
 
 // end of generated
 
-function ContextualbarFooter({ className, children, ...props }: ContextualbarFooterProps) {
+function ContextualbarFooter({ className, children, ref, ...props }: ContextualbarFooterProps) {
 	return (
-		<ContextualbarFooterFrame render={<Box {...props} />} className={cx('rcx-vertical-bar__footer', className)}>
+		<ContextualbarFooterFrame
+			render={<div {...props} ref={ref as Ref<HTMLDivElement>} />}
+			className={cx('rcx-box rcx-box--full', 'rcx-vertical-bar__footer', className)}
+		>
 			{children}
 		</ContextualbarFooterFrame>
 	);

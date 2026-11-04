@@ -1,7 +1,7 @@
 import { styled, Text, View } from '@tamagui/web';
 import { type ReactNode, type AllHTMLAttributes, type CSSProperties, useId } from 'react';
 
-import { Box } from '../Box';
+import { useStylingProps } from '../Box/useStylingProps';
 import { IconButton } from '../Button';
 import { Icon } from '../Icon';
 
@@ -110,8 +110,16 @@ function ToastBar({
 		} as CSSProperties,
 	};
 
+	// The shadow is a styling prop, and so are the HTML `width`, `height` and `color` attributes callers pass
+	const { className: classes, ...attributes } = useStylingProps({
+		id,
+		elevation: '2nb',
+		...props,
+		className: `rcx-box rcx-box--full rcx-toastbar rcx-toastbar--${variant} ${className}`,
+	});
+
 	return (
-		<ToastBarFrame render={<Box id={id} elevation='2nb' {...props} />} className={`rcx-toastbar rcx-toastbar--${variant} ${className}`}>
+		<ToastBarFrame render={<div {...attributes} />} className={classes}>
 			<ToastBarInnerFrame className='rcx-toastbar_inner'>
 				<Icon className={`rcx-toastbar_icon--${variant}`} size='x20' name={iconName} />
 				<ToastBarContentFrame render={<div role={role} />} className='rcx-toastbar_content'>
@@ -123,7 +131,7 @@ function ToastBar({
 					</div>
 				)}
 			</ToastBarInnerFrame>
-			<ToastBarProgressFrame render={<Box {...progressAttributes} />} className='rcx-toastbar_progressbar' />
+			<ToastBarProgressFrame render={<div {...progressAttributes} />} className='rcx-box rcx-box--full rcx-toastbar_progressbar' />
 		</ToastBarFrame>
 	);
 }

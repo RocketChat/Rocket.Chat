@@ -1,7 +1,8 @@
 import { styled, View } from '@tamagui/web';
+import type { Ref } from 'react';
 
 import type { ElementProps } from '../../types/ElementProps';
-import { Box, type BoxProps } from '../Box';
+import type { BoxProps } from '../Box';
 
 export type TileProps = ElementProps<HTMLElement> & {
 	elevation?: BoxProps['elevation'];
@@ -60,13 +61,15 @@ const TileFrame = styled(View, {
 
 // end of generated
 
-function Tile({ elevation = '1', flush, className, children, ...props }: TileProps) {
+function Tile({ elevation = '1', flush, className, children, ref, ...props }: TileProps) {
 	return (
 		<TileFrame
-			render={<Box {...props} />}
+			render={<div {...props} ref={ref as Ref<HTMLDivElement>} />}
 			elevation={elevation}
 			flush={Boolean(flush)}
-			className={[flush && 'rcx-tile--flush', `rcx-tile--elevation-${elevation}`, 'rcx-tile', className].filter(Boolean).join(' ')}
+			className={['rcx-box rcx-box--full', flush && 'rcx-tile--flush', `rcx-tile--elevation-${elevation}`, 'rcx-tile', className]
+				.filter(Boolean)
+				.join(' ')}
 		>
 			{children}
 		</TileFrame>

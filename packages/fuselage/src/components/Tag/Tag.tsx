@@ -1,9 +1,8 @@
 import { styled, View } from '@tamagui/web';
-import type { AnchorHTMLAttributes, ReactNode } from 'react';
+import type { AnchorHTMLAttributes, ReactNode, Ref } from 'react';
 
 import { prependClassName } from '../../helpers/prependClassName';
 import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
 
 export type TagProps = {
 	medium?: boolean;
@@ -411,7 +410,7 @@ const TagFrame = styled(View, {
 /**
  * Used for mentions
  */
-const Tag = ({ large, medium, pill, className, disabled, onClick, variant, children, icon, href, ...props }: TagProps) => {
+const Tag = ({ large, medium, pill, className, disabled, onClick, variant, children, icon, href, ref, ...props }: TagProps) => {
 	const modifiers = [
 		variant,
 		medium && 'medium',
@@ -431,14 +430,15 @@ const Tag = ({ large, medium, pill, className, disabled, onClick, variant, child
 
 	// The caller's attributes go on the element `render` names: zero-runtime rejects spreads on a frame
 	const attributes = { ...props, onClick, href };
+	const Root = href ? 'a' : 'span';
 
 	return (
 		<TagFrame
-			render={<Box {...attributes} is={href ? 'a' : 'span'} />}
+			render={<Root {...attributes} ref={ref as Ref<HTMLAnchorElement & HTMLSpanElement>} />}
 			look={`${variant ?? 'default'}|${clickable}|${Boolean(disabled)}`}
 			scale={scale}
 			pill={Boolean(pill)}
-			className={prependClassName(className, `rcx-tag ${modifiers}`)}
+			className={prependClassName(className, `rcx-box rcx-box--full rcx-tag ${modifiers}`)}
 		>
 			{icon}
 			<span className='rcx-tag__inner'>{children}</span>

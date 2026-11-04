@@ -1,7 +1,7 @@
 import { styled, View } from '@tamagui/web';
+import type { Ref } from 'react';
 
 import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
 
 export type ContextualbarContentProps = ElementProps<HTMLElement> & {
 	/** Drops the inline padding, for content such as a list whose items bring their own. */
@@ -44,12 +44,12 @@ const ContextualbarContentFrame = styled(View, {
 
 // end of generated
 
-function ContextualbarContent({ flush = false, spaced = false, className, children, ...props }: ContextualbarContentProps) {
+function ContextualbarContent({ flush = false, spaced = false, className, children, ref, ...props }: ContextualbarContentProps) {
 	return (
 		<ContextualbarContentFrame
-			render={<Box {...props} />}
+			render={<div {...props} ref={ref as Ref<HTMLDivElement>} />}
 			padding={[flush && 'flush', spaced && 'spaced'].filter(Boolean).join('-') || 'default'}
-			className={['rcx-vertical-bar__content', className].filter(Boolean).join(' ')}
+			className={['rcx-box rcx-box--full', 'rcx-vertical-bar__content', className].filter(Boolean).join(' ')}
 		>
 			{children}
 		</ContextualbarContentFrame>

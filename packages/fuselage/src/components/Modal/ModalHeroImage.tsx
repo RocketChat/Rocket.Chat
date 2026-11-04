@@ -2,7 +2,7 @@ import { styled, View } from '@tamagui/web';
 import type { ImgHTMLAttributes } from 'react';
 
 import type { ElementProps } from '../../types/ElementProps';
-import { Box, type BoxProps } from '../Box';
+import { StylingBox, type BoxProps } from '../Box';
 
 export type ModalHeroImageProps = ElementProps<HTMLImageElement, ImgHTMLAttributes<HTMLImageElement>> & {
 	/** The rendered width, which the `width` attribute alone cannot set over the fluid default. */
@@ -41,9 +41,15 @@ const ModalHeroFigureFrame = styled(View, {
 
 // end of generated
 
-const ModalHeroImage = ({ className, ...props }: ModalHeroImageProps) => (
+const ModalHeroImage = ({ className, width, height, ...props }: ModalHeroImageProps) => (
 	<ModalHeroFigureFrame className='rcx-modal__hero-image-wrapper'>
-		<ModalHeroImageFrame render={<Box is='img' {...props} />} className={['rcx-modal__hero-image', className].filter(Boolean).join(' ')} />
+		<StylingBox width={width} height={height}>
+			<ModalHeroImageFrame
+				// oxlint-disable-next-line jsx-a11y/alt-text -- the caller passes `alt`
+				render={<img {...props} />}
+				className={['rcx-box rcx-box--full', 'rcx-modal__hero-image', className].filter(Boolean).join(' ')}
+			/>
+		</StylingBox>
 	</ModalHeroFigureFrame>
 );
 

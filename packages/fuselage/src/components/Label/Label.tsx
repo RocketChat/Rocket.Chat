@@ -2,8 +2,9 @@ import { styled, Text } from '@tamagui/web';
 import type { ElementType, LabelHTMLAttributes } from 'react';
 import { createContext, useContext } from 'react';
 
+import { cx } from '../../helpers/composeClassNames';
 import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
+import { StylingBox } from '../Box';
 
 export const LabelContext = createContext(false);
 
@@ -61,20 +62,22 @@ export type LabelProps = ElementProps<HTMLElement, LabelHTMLAttributes<HTMLEleme
  */
 function Label({ ref, disabled, is, required, children, className, ...props }: LabelProps) {
 	const isInsideLabel = useContext(LabelContext);
-	const component = is || (isInsideLabel && 'span') || 'label';
+	const Tag = is || (isInsideLabel && 'span') || 'label';
 
 	return (
 		<LabelContext.Provider value={true}>
 			<LabelFrame
-				render={<Box is={component} rcx-label rcx-label--disabled={disabled} {...props} ref={ref} />}
+				render={<Tag {...props} ref={ref} />}
 				unavailable={Boolean(disabled)}
-				className={className}
+				className={cx('rcx-box rcx-box--full', { 'rcx-label--disabled': !!disabled }, 'rcx-label', className)}
 			>
 				{children}
 				{required && (
-					<LabelRequiredFrame render={<Box is='span' rcx-label__required marginInlineStart='x4' aria-hidden='true' />}>
-						*
-					</LabelRequiredFrame>
+					<StylingBox marginInlineStart='x4'>
+						<LabelRequiredFrame render={<span aria-hidden='true' />} className='rcx-box rcx-box--full rcx-label__required'>
+							*
+						</LabelRequiredFrame>
+					</StylingBox>
 				)}
 			</LabelFrame>
 		</LabelContext.Provider>

@@ -1,7 +1,7 @@
 import { styled, Text } from '@tamagui/web';
 import type { AllHTMLAttributes, ReactNode } from 'react';
 
-import { Box } from '../Box';
+import { useStylingProps } from '../Box/useStylingProps';
 import { LabelInfo } from '../Label/LabelInfo';
 
 export type CardTitleProps = {
@@ -51,15 +51,19 @@ const CardTitleFrame = styled(Text, {
 
 // end of generated
 
-const CardTitle = ({ children, info, variant = 'h4', className, ...props }: CardTitleProps) => (
-	<CardTitleFrame
-		render={<Box is={variant} {...props} />}
-		scale={variant}
-		className={['rcx-card__title', className].filter(Boolean).join(' ')}
-	>
-		{children}
-		{info && <LabelInfo title={info} />}
-	</CardTitleFrame>
-);
+const CardTitle = ({ children, info, variant: Tag = 'h4', className, ...props }: CardTitleProps) => {
+	// The HTML `width`, `height` and `color` attributes callers pass are styles
+	const { className: classes, ...attributes } = useStylingProps({
+		...props,
+		className: ['rcx-box rcx-box--full', 'rcx-card__title', className].filter(Boolean).join(' '),
+	});
+
+	return (
+		<CardTitleFrame render={<Tag {...attributes} />} scale={Tag} className={classes}>
+			{children}
+			{info && <LabelInfo title={info} />}
+		</CardTitleFrame>
+	);
+};
 
 export default CardTitle;

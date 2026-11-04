@@ -1,6 +1,7 @@
 import { styled, View } from '@tamagui/web';
 import type { TableHTMLAttributes } from 'react';
 
+import { cx } from '../../helpers/composeClassNames';
 import type { ElementProps } from '../../types/ElementProps';
 import { Box } from '../Box';
 
@@ -40,7 +41,7 @@ export type TableProps = ElementProps<HTMLTableElement, TableHTMLAttributes<HTML
 };
 
 const Table = ({ striped, sticky, fixed = false, columns, children, className, ref, ...props }: TableProps) => (
-	<WrapperFrame render={<Box rcx-table__wrapper />}>
+	<WrapperFrame render={<div />} className={cx('rcx-box rcx-box--full', 'rcx-table__wrapper')}>
 		<TableFrame
 			render={
 				<Box is='table' rcx-table rcx-table--fixed={fixed} rcx-table--sticky={sticky} rcx-table--striped={striped} {...props} ref={ref} />

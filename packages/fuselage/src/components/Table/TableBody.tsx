@@ -1,7 +1,7 @@
 import { styled, View } from '@tamagui/web';
 
+import { cx } from '../../helpers/composeClassNames';
 import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
 
 // Declared where it renders: zero-runtime only erases a `styled()` whose every use is in its own module
 const TableBodyFrame = styled(View, {
@@ -18,7 +18,7 @@ const TableBodyFrame = styled(View, {
 export type TableBodyProps = ElementProps<HTMLTableSectionElement>;
 
 const TableBody = ({ children, className, ref, ...props }: TableBodyProps) => (
-	<TableBodyFrame render={<Box is='tbody' rcx-table__body {...props} ref={ref} />} className={className}>
+	<TableBodyFrame render={<tbody {...props} ref={ref} />} className={cx('rcx-box rcx-box--full', 'rcx-table__body', className)}>
 		{children}
 	</TableBodyFrame>
 );

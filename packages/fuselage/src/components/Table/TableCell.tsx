@@ -2,6 +2,7 @@ import { styled, View } from '@tamagui/web';
 import type { TdHTMLAttributes, ThHTMLAttributes } from 'react';
 import { useContext } from 'react';
 
+import { cx } from '../../helpers/composeClassNames';
 import type { ElementProps } from '../../types/ElementProps';
 import { Box } from '../Box';
 import { TableHeadContext } from './TableHead';
@@ -132,39 +133,36 @@ export type TableCellProps = Omit<
 	strong?: boolean;
 };
 
-const TableCell = ({ align, clickable, rowHeader, truncate, color, strong, children, className, ref, ...props }: TableCellProps) => {
+const TableCell = ({ is, align, clickable, rowHeader, truncate, color, strong, children, className, ref, ...props }: TableCellProps) => {
 	const isInsideHead = useContext(TableHeadContext);
 
 	const innerElement = children ?? (!isInsideHead ? <Box rcx-table__cell-placeholder is='hr' /> : undefined);
 
+	const Tag = is ?? (isInsideHead || rowHeader ? 'th' : 'td');
 	const medium = strong || rowHeader;
 	const scale = [isInsideHead && 'header', medium && 'strong'].filter(Boolean).join('-') || 'body';
 	const tone = [rowHeader && 'row-header', color === 'default' && 'default'].filter(Boolean).join('-') || color || 'secondary';
 
 	return (
 		<TableCellFrame
-			render={
-				<Box
-					is={isInsideHead || rowHeader ? 'th' : 'td'}
-					scope={rowHeader ? 'row' : undefined}
-					rcx-table__cell
-					rcx-table__cell--align={align}
-					rcx-table__cell--header={isInsideHead}
-					rcx-table__cell--row-header={rowHeader}
-					rcx-table__cell--clickable={clickable}
-					rcx-table__cell--truncate={truncate}
-					rcx-table__cell--color={color}
-					rcx-table__cell--strong={strong}
-					{...props}
-					ref={ref}
-				/>
-			}
+			render={<Tag scope={rowHeader ? 'row' : undefined} {...props} ref={ref} />}
 			scale={scale}
 			tone={tone}
 			align={typeof align === 'string' ? align : 'inherit'}
 			clickable={Boolean(clickable)}
 			truncate={Boolean(truncate)}
-			className={className}
+			className={cx(
+				'rcx-box rcx-box--full',
+				strong && 'rcx-table__cell--strong',
+				color && `rcx-table__cell--color-${color}`,
+				truncate && 'rcx-table__cell--truncate',
+				clickable && 'rcx-table__cell--clickable',
+				rowHeader && 'rcx-table__cell--row-header',
+				isInsideHead && 'rcx-table__cell--header',
+				typeof align === 'string' && `rcx-table__cell--align-${align}`,
+				'rcx-table__cell',
+				className,
+			)}
 		>
 			{innerElement}
 		</TableCellFrame>

@@ -1,6 +1,7 @@
 import { styled, Text, View } from '@tamagui/web';
 import type { ReactElement } from 'react';
 
+import { cx } from '../../helpers/composeClassNames';
 import type { ElementProps } from '../../types/ElementProps';
 import { Box } from '../Box';
 import { Button } from '../Button';
@@ -67,15 +68,17 @@ const CodeSnippet = ({
 }: CodeSnippetProps): ReactElement<CodeSnippetProps> => {
 	if (!children) {
 		return (
-			<CodeSnippetFrame render={<Box is='pre' rcx-code-snippet {...props} />} className={className}>
+			<CodeSnippetFrame render={<pre {...props} />} className={cx('rcx-box rcx-box--full', 'rcx-code-snippet', className)}>
 				<Skeleton width='100%' aria-hidden aria-busy />
 			</CodeSnippetFrame>
 		);
 	}
 
 	return (
-		<CodeSnippetFrame render={<Box is='pre' rcx-code-snippet {...props} />} className={className}>
-			<CodeSnippetCodeBoxFrame render={<Box role='code' rcx-code-snippet__codebox />}>{children}</CodeSnippetCodeBoxFrame>
+		<CodeSnippetFrame render={<pre {...props} />} className={cx('rcx-box rcx-box--full', 'rcx-code-snippet', className)}>
+			<CodeSnippetCodeBoxFrame render={<div role='code' />} className='rcx-box rcx-box--full rcx-code-snippet__codebox'>
+				{children}
+			</CodeSnippetCodeBoxFrame>
 			{onClick && children && (
 				<Box>
 					<Button size='small' variant='primary' onClick={onClick} disabled={buttonDisabled}>
