@@ -24,13 +24,13 @@ export const narrowRoomStyle = css`
 		padding-inline-start: ${PANEL_INLINE_PADDING}px;
 	}
 
-& .rcx-message-system {
+	&.rcx-message-system {
     padding-inline-start: ${PANEL_INLINE_PADDING}px;
 
-    &__body {
+    &_body {
         white-space: pre-wrap;
     }
-}
+	}
 
 	& .rcx-message-container--left {
 		margin-inline-start: 0px;
