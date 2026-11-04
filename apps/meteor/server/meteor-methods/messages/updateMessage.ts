@@ -6,6 +6,7 @@ import moment from 'moment';
 
 import { canSendMessageAsync } from '../../lib/authorization/canSendMessage';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { canSeeMessage } from '../../lib/messages/historyVisibility';
 import { updateMessage } from '../../lib/messages/updateMessage';
 import { settings } from '../../settings';
 
@@ -19,6 +20,13 @@ export async function executeUpdateMessage(
 	const originalMessage = await Messages.findOneById(message._id);
 	if (!originalMessage?._id) {
 		return;
+	}
+
+	if (!(await canSeeMessage(uid, originalMessage))) {
+		throw new ClientSafeError('error-action-not-allowed', 'Message editing not allowed', {
+			method: 'updateMessage',
+			action: 'Message_editing',
+		});
 	}
 
 	Object.entries(message).forEach(([key, value]) => {

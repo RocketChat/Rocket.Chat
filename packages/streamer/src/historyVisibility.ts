@@ -10,6 +10,7 @@ type TrackedStream = { publication: IPublication; cutoff?: Date };
 
 const streamsByMember = new Map<string, Set<TrackedStream>>();
 const trackedByPublication = new WeakMap<IPublication, Map<IRoom['_id'], TrackedStream>>();
+const roomListsByUser = new Map<IUser['_id'], Set<IPublication>>();
 
 const memberKey = (rid: IRoom['_id'], uid: IUser['_id']) => `${rid}:${uid}`;
 
@@ -34,12 +35,9 @@ async function findGoverningSubscription(rid: IRoom['_id'], uid: IUser['_id']) {
 	return room?.prid ? findSubscriptionCutoff(room.prid, uid) : null;
 }
 
-/** Remembers, for the lifetime of a room stream subscription, the date its user can read the room from. */
-export async function trackHistoryCutoff(publication: IPublication, rid: IRoom['_id'], uid: IUser['_id']): Promise<void> {
-	const subscription = await findGoverningSubscription(rid, uid);
-
-	const tracked: TrackedStream = { publication, cutoff: toCutoff(subscription?.historyVisibleFrom) };
-	const key = memberKey(subscription?.rid ?? rid, uid);
+function track(publication: IPublication, rid: IRoom['_id'], uid: IUser['_id'], cutoff: Date | undefined, governingRid = rid): void {
+	const tracked: TrackedStream = { publication, cutoff };
+	const key = memberKey(governingRid, uid);
 
 	const members = streamsByMember.get(key) ?? new Set();
 	members.add(tracked);
@@ -57,6 +55,28 @@ export async function trackHistoryCutoff(publication: IPublication, rid: IRoom['
 	});
 }
 
+/** Remembers, for the lifetime of a room stream subscription, the date its user can read the room from. */
+export async function trackHistoryCutoff(publication: IPublication, rid: IRoom['_id'], uid: IUser['_id']): Promise<void> {
+	const subscription = await findGoverningSubscription(rid, uid);
+	track(publication, rid, uid, toCutoff(subscription?.historyVisibleFrom), subscription?.rid ?? rid);
+}
+
+/** Remembers, for the lifetime of a user's room list stream, the rooms where they have a cutoff. */
+export async function trackRoomListCutoffs(publication: IPublication, uid: IUser['_id']): Promise<void> {
+	const roomLists = roomListsByUser.get(uid) ?? new Set();
+	roomLists.add(publication);
+	roomListsByUser.set(uid, roomLists);
+	publication.onStop(() => {
+		roomLists.delete(publication);
+		if (!roomLists.size) {
+			roomListsByUser.delete(uid);
+		}
+	});
+
+	const subscriptions = await Subscriptions.findWithHistoryVisibleFromByUserId(uid).toArray();
+	subscriptions.forEach(({ rid, historyVisibleFrom }) => track(publication, rid, uid, toCutoff(historyVisibleFrom)));
+}
+
 /** Applies a subscription change to the room streams its user already has open. */
 export function updateHistoryCutoff({
 	rid,
@@ -71,6 +91,14 @@ export function updateHistoryCutoff({
 	streamsByMember.get(memberKey(rid, u._id))?.forEach((tracked) => {
 		tracked.cutoff = cutoff;
 	});
+
+	if (cutoff) {
+		roomListsByUser.get(u._id)?.forEach((publication) => {
+			if (!trackedByPublication.get(publication)?.has(rid)) {
+				track(publication, rid, u._id, cutoff);
+			}
+		});
+	}
 }
 
 async function isVisibleFrom(message: StreamedMessage, cutoff: Date, uid: IUser['_id']): Promise<boolean> {
@@ -110,14 +138,26 @@ export async function canReceiveMessage(
 	return isVisibleFrom(message, cutoff, publication.userId);
 }
 
-/** Whether a room member may receive an event about this message outside the room's own stream. */
+/** Whether a user may receive an event about this message outside the room's own stream. */
 export async function canMemberReceiveMessage(rid: IRoom['_id'], uid: IUser['_id'], message: StreamedMessage): Promise<boolean> {
 	if (!message.ts || !(await isEnabled())) {
 		return true;
 	}
 
-	const subscription = await findSubscriptionCutoff(rid, uid);
+	const subscription = await findGoverningSubscription(rid, uid);
 	const cutoff = toCutoff(subscription?.historyVisibleFrom);
 
 	return !cutoff || isVisibleFrom(message, cutoff, uid);
+}
+
+/** The room as a stream subscriber may see it: without a last message from before their cutoff. */
+export async function visibleRoom<T extends Pick<IRoom, '_id' | 'lastMessage'>>(publication: IPublication, room: T): Promise<T> {
+	const cutoff = trackedByPublication.get(publication)?.get(room._id)?.cutoff;
+	const uid = publication.userId;
+	if (!cutoff || !uid || !room.lastMessage?.ts || !(await isEnabled()) || (await isVisibleFrom(room.lastMessage, cutoff, uid))) {
+		return room;
+	}
+
+	const { lastMessage: _hidden, ...visible } = room;
+	return visible as T;
 }

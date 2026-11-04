@@ -50,7 +50,7 @@ import { hasAllPermissionAsync, hasPermissionAsync } from '../../lib/authorizati
 import { eraseRoom } from '../../lib/eraseRoom';
 import { findUsersOfRoom } from '../../lib/findUsersOfRoom';
 import { mountIntegrationQueryBasedOnPermissions } from '../../lib/integrations/lib/mountQueriesBasedOnPermission';
-import { getHistoryVisibleFrom, restrictToVisibleHistory } from '../../lib/messages/historyVisibility';
+import { getUploadVisibility, restrictToVisibleHistory } from '../../lib/messages/historyVisibility';
 import { openRoom } from '../../lib/openRoom';
 import { invitesByRawUsername } from '../../lib/rooms/invitesByRawUsername';
 import { getUsersHiddenFrom, filterHiddenUsers, redactHiddenUsers } from '../../lib/statusVisibility/hiddenUsers';
@@ -76,7 +76,7 @@ import { executeUnarchiveRoom } from '../../meteor-methods/rooms/unarchiveRoom';
 import { settings } from '../../settings';
 import { API } from '../api';
 import { addUserToFileObj } from '../lib/addUserToFileObj';
-import { composeRoomWithLastMessage } from '../lib/composeRoomWithLastMessage';
+import { composeRoomWithLastMessage, composeRoomsWithLastMessage } from '../lib/composeRoomWithLastMessage';
 import { getPaginationItems } from '../lib/getPaginationItems';
 import { getUserFromParams, getUserListFromParams, getUsernameListFromParams } from '../lib/getUserFromParams';
 
@@ -112,12 +112,7 @@ async function findChannelByIdOrName({
 	if (checkedArchived && room.archived) {
 		throw new ClientSafeError('error-room-archived', `The channel, ${room.name}, is archived`);
 	}
-	if (userId && room.lastMessage) {
-		const [lastMessage] = await normalizeMessagesForUser([room.lastMessage], userId);
-		room.lastMessage = lastMessage;
-	}
-
-	return room;
+	return userId ? composeRoomWithLastMessage(room, userId) : room;
 }
 
 const channelResponseSchema = ajv.compile<{ channel: IRoom }>({
@@ -1211,7 +1206,7 @@ API.v1.get(
 				limit: count,
 				projection: fields,
 			},
-			await getHistoryVisibleFrom(this.userId, filter.rid),
+			await getUploadVisibility(this.userId, filter.rid),
 		);
 
 		const [files, total] = await Promise.all([cursor.toArray(), totalCount]);
@@ -1496,7 +1491,7 @@ API.v1.get(
 		const [channels, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 		return API.v1.success({
-			channels: await Promise.all(channels.map((room) => composeRoomWithLastMessage(room, this.userId))),
+			channels: await composeRoomsWithLastMessage(channels, this.userId),
 			count: channels.length,
 			offset,
 			total,
@@ -1563,7 +1558,7 @@ API.v1.get(
 		const [channels, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 		return API.v1.success({
-			channels: await Promise.all(channels.map((room) => composeRoomWithLastMessage(room, this.userId))),
+			channels: await composeRoomsWithLastMessage(channels, this.userId),
 			offset,
 			count: channels.length,
 			total,

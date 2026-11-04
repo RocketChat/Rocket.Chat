@@ -43,6 +43,11 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	findThreadIdsStartedBeforeAndFollowedBy(rid: IRoom['_id'], since: Date, uid: IUser['_id']): Promise<IMessage['_id'][]>;
 	findThreadIdsStartedBeforeAndActiveSinceNotFollowedBy(rid: IRoom['_id'], since: Date, uid: IUser['_id']): Promise<IMessage['_id'][]>;
 	filterVisibleTo(visibility: MessageHistoryVisibility): Filter<IMessage>;
+	findFileIdsInThreads(
+		rid: IRoom['_id'],
+		threadIds: IMessage['_id'][],
+		options: { withRoots: boolean; withAlsoSentToChannel: boolean },
+	): Promise<string[]>;
 
 	findPaginatedVisibleByMentionAndRoomId<
 		T extends Document = IMessage,

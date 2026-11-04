@@ -1,5 +1,5 @@
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
-import type { MessageHistoryVisibility } from '@rocket.chat/model-typings';
+import type { MessageHistoryVisibility, UploadHistoryVisibility } from '@rocket.chat/model-typings';
 import { Messages } from '@rocket.chat/models';
 import { makeFunction } from '@rocket.chat/patch-injection';
 import type { Filter } from 'mongodb';
@@ -46,4 +46,46 @@ export const restrictToVisibleHistory = async (
 ): Promise<Filter<IMessage>> => {
 	const visibility = await getHistoryVisibility(uid, rid);
 	return visibility ? { $and: [query, Messages.filterVisibleTo(visibility)] } : query;
+};
+
+/** The files the user can see in the room; undefined when nothing is hidden from them. */
+export const getUploadVisibility = async (
+	uid: IUser['_id'] | undefined,
+	rid: IRoom['_id'],
+): Promise<UploadHistoryVisibility | undefined> => {
+	const visibility = await getHistoryVisibility(uid, rid);
+	if (!visibility) {
+		return undefined;
+	}
+
+	const [hiddenFileIds, followedFileIds] = await Promise.all([
+		Messages.findFileIdsInThreads(rid, visibility.hiddenThreadIds, { withRoots: false, withAlsoSentToChannel: false }),
+		Messages.findFileIdsInThreads(rid, visibility.followedThreadIds, { withRoots: true, withAlsoSentToChannel: true }),
+	]);
+
+	return { since: visibility.since, hiddenFileIds, followedFileIds };
+};
+
+/** The rooms as the user may see them, without a last message the user can't read. */
+export const withVisibleLastMessage = async <T extends Pick<IRoom, 'lastMessage'>>(
+	uid: IUser['_id'] | undefined,
+	rooms: T[],
+): Promise<T[]> => {
+	const lastMessages = rooms.flatMap(({ lastMessage }) => (lastMessage ? [lastMessage] : []));
+	if (!lastMessages.length) {
+		return rooms;
+	}
+
+	const hiddenMessageIds = await getHiddenMessageIds(uid, lastMessages);
+	if (!hiddenMessageIds.size) {
+		return rooms;
+	}
+
+	return rooms.map((room) => {
+		if (!room.lastMessage || !hiddenMessageIds.has(room.lastMessage._id)) {
+			return room;
+		}
+		const { lastMessage: _hidden, ...visibleRoom } = room;
+		return visibleRoom as T;
+	});
 };
