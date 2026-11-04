@@ -10219,7 +10219,7 @@ __metadata:
     mailparser: "npm:3.9.43"
     marked: "npm:^4.3.0"
     mem: "npm:^8.1.1"
-    mime-db: "npm:^1.52.0"
+    mime-db: "npm:1.52.0"
     mime-type: "npm:^4.0.0"
     mkdirp: "npm:^1.0.4"
     moleculer: "npm:^0.14.36"
@@ -27413,7 +27413,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mime-db@npm:1.52.0, mime-db@npm:^1.52.0":
+"mime-db@npm:1.52.0":
   version: 1.52.0
   resolution: "mime-db@npm:1.52.0"
   checksum: 10/54bb60bf39e6f8689f6622784e668a3d7f8bed6b0d886f5c3c446cb3284be28b30bf707ed05d0fe44a036f8469976b2629bbea182684977b084de9da274694d7
