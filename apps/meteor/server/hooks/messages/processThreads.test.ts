@@ -13,7 +13,6 @@ const callbacksRunAsyncMock = sinon.stub();
 
 const { processThreads } = p.noCallThru().load('./processThreads.ts', {
 	'@rocket.chat/models': modelsMock,
-	'meteor/meteor': { Meteor: { startup: sinon.stub() } },
 	'./notifyUsersOnMessage': { updateThreadUsersSubscriptions: sinon.stub(), getMentions: getMentionsMock },
 	'./sendNotificationsOnMessage': { sendMessageNotifications: sinon.stub() },
 	'../../lib/callbacks': {

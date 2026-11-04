@@ -7,7 +7,6 @@ import cors from 'cors';
 import type { Request, Response } from 'express';
 import express from 'express';
 import rateLimit from 'express-rate-limit';
-import { Meteor } from 'meteor/meteor';
 
 import { authenticationMiddleware } from '../../../../server/api/v1/middlewares/authentication';
 import { httpApp } from '../../../../server/lib/http/httpServer';
@@ -45,7 +44,7 @@ const unauthorized = (res: Response): unknown =>
 		message: 'You must be logged in to do this.',
 	});
 
-Meteor.startup(() => {
+export const addUiKitRateLimiter = (): void => {
 	// use specific rate limit of 600 (which is 60 times the default limits) requests per minute (around 10/second)
 	const apiLimiter = rateLimit({
 		windowMs: settings.get('API_Enable_Rate_Limiter_Limit_Time_Default'),
@@ -56,7 +55,7 @@ Meteor.startup(() => {
 	});
 
 	router.use(apiLimiter);
-});
+};
 
 router.use(authenticationMiddleware({ rejectUnauthorized: false }));
 

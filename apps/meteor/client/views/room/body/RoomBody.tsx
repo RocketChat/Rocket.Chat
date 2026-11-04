@@ -8,6 +8,7 @@ import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useMergedRefsV2 } from '../../../hooks/useMergedRefsV2';
 import { RoomHistoryManager } from '../../../lib/RoomHistoryManager';
 import { BubbleDate } from '../BubbleDate';
+import { BubbleDateScope } from '../BubbleDate/BubbleDateScope';
 import { MessageList } from '../MessageList';
 import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessageButton from './JumpToRecentMessageButton';
@@ -23,10 +24,11 @@ import { useQuoteMessageByUrl } from './hooks/useQuoteMessageByUrl';
 import { useReadMessageWindowEvents } from './hooks/useReadMessageWindowEvents';
 import RoomComposer from '../composer/RoomComposer/RoomComposer';
 import { useChat } from '../contexts/ChatContext';
-import { useRoom, useRoomSubscription, useRoomMessages } from '../contexts/RoomContext';
+import { useRoom, useRoomSubscription } from '../contexts/RoomContext';
 import { useDateScroll } from '../hooks/useDateScroll';
 import { useMessageListNavigation } from '../hooks/useMessageListNavigation';
 import { useRetentionPolicy } from '../hooks/useRetentionPolicy';
+import { useRoomMessages } from '../hooks/useRoomMessages';
 import { useFileUploadDropTarget } from './hooks/useFileUploadDropTarget';
 import { useGetMore } from './hooks/useGetMore';
 import { useHasNewMessages } from './hooks/useHasNewMessages';
@@ -107,7 +109,10 @@ const RoomBody = () => {
 		debouncedMessageRead,
 	} = useHandleUnread(room, subscription);
 
-	const { handleDateScroll, bubbleRef, listStyle, ...bubbleDate } = useDateScroll();
+	const { handleDateScroll, bubbleRef, bubbleDateStore, resetBubbleDate } = useDateScroll();
+
+	// RoomBody persists across room switches, so the bubble of the room being left must not carry over.
+	useEffect(() => resetBubbleDate, [room._id, resetBubbleDate]);
 
 	const { innerRef: getMoreInnerRef } = useGetMore(room._id, isJumpingToMessage);
 
@@ -184,7 +189,7 @@ const RoomBody = () => {
 	return (
 		<>
 			{!isLayoutEmbedded && room.announcement && <RoomAnnouncement announcement={room.announcement} />}
-			<Box key={room._id} className={['main-content-flex', listStyle]}>
+			<BubbleDateScope key={room._id} store={bubbleDateStore} className='main-content-flex'>
 				<section
 					role='presentation'
 					className={`messages-container flex-tab-main-content ${admin ? 'admin' : ''}`}
@@ -203,7 +208,7 @@ const RoomBody = () => {
 										onMarkAsReadButtonClick={handleMarkAsReadButtonClick}
 									/>
 								)}
-								<BubbleDate ref={bubbleRef} {...bubbleDate} />
+								<BubbleDate ref={bubbleRef} store={bubbleDateStore} />
 							</Box>
 							<div ref={userScrollIntentRef} className={['messages-box'].filter(isTruthy).join(' ')}>
 								<JumpToRecentMessageButton visible={hasNewMessages} onClick={handleNewMessageButtonClick} text={t('New_messages')} />
@@ -268,7 +273,7 @@ const RoomBody = () => {
 						</div>
 					</div>
 				</section>
-			</Box>
+			</BubbleDateScope>
 		</>
 	);
 };

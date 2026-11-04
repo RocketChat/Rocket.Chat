@@ -44,7 +44,7 @@ const rocketchatInfo = (): Plugin => {
 				...JSON.parse(readFileSync(join(appRoot, 'rocketchat.info'), 'utf8')),
 				marketplaceApiVersion: require('@rocket.chat/apps-engine/package.json').version.replace(/^[^0-9]/g, ''),
 				build: { date: new Date().toISOString() },
-				commit: { hash: git('rev-parse HEAD'), branch: git('rev-parse --abbrev-ref HEAD') },
+				commit: { hash: git('rev-parse HEAD'), branch: process.env.GITHUB_HEAD_REF || git('rev-parse --abbrev-ref HEAD') },
 			};
 
 			return `export const Info = ${JSON.stringify(info)};`;
@@ -119,6 +119,7 @@ const nativeModules = (): Plugin => {
 	const replacements = new Map(
 		Object.entries({
 			'client/lib/getURL.ts': 'getURL.ts',
+			'client/views/root/hooks/loggedIn/useRootUrlChange.tsx': 'useRootUrlChange.ts',
 		}).map(([original, native]) => [join(appRoot, original), join(here, 'native', native)]),
 	);
 

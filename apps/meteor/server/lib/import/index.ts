@@ -5,7 +5,6 @@ import { SelectionUser } from './classes/ImporterSelectionUser';
 import { ImporterWebsocket } from './classes/ImporterWebsocket';
 import { ImportersContainer } from './classes/ImportersContainer';
 import { ProgressStep } from '../../../lib/importer/ImporterProgressStep';
-import './startup/setImportsToInvalid';
 import './startup/store';
 
 export { Importer, ImporterWebsocket, ProgressStep, ImporterSelection as Selection, SelectionChannel, SelectionUser };

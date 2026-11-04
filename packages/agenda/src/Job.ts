@@ -4,10 +4,10 @@ import debugInitializer from 'debug';
 import humanInterval from 'human-interval';
 import moment from 'moment-timezone';
 
-import type { Agenda, RepeatOptions } from './Agenda';
-import type { IJob, IJobAttributes } from './definition/IJob';
-import { noCallback } from './lib/noCallback';
-import { parsePriority } from './lib/parsePriority';
+import type { Agenda, RepeatOptions } from './Agenda.js';
+import type { IJob, IJobAttributes } from './definition/IJob.js';
+import { noCallback } from './lib/noCallback.js';
+import { parsePriority } from './lib/parsePriority.js';
 
 const debug = debugInitializer('agenda:job');
 

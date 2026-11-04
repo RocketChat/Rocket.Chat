@@ -4,7 +4,6 @@ import { Roles, Settings, Users } from '@rocket.chat/models';
 import { escapeRegExp, escapeHTML, getLoginExpirationInDays, removeEmpty } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
 import { Match } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { isValidAttemptByUser, isValidLoginAttemptByIp } from './restrictLoginAttempts';
@@ -24,6 +23,7 @@ import { joinDefaultChannels } from '../rooms/joinDefaultChannels';
 import { getAvatarSuggestionForUser } from '../users/getAvatarSuggestionForUser';
 import { setAvatarFromServiceWithValidation } from '../users/setUserAvatar';
 import { getBaseUserFields } from '../utils/functions/getBaseUserFields';
+import { getWorkspaceURL } from '../utils/getURL';
 
 Accounts.config({
 	forbidClientAccountCreation: true,
@@ -53,14 +53,12 @@ Accounts._expireTokens = async function (oldestValidDate, userId) {
 	return _expireTokens.call(Accounts, oldestValidDate, userId);
 };
 
-Meteor.startup(() => {
-	settings.watchMultiple(['Accounts_LoginExpiration', 'Site_Name', 'From_Email'], () => {
-		Accounts._options.loginExpirationInDays = getLoginExpirationInDays(settings.get('Accounts_LoginExpiration'));
+settings.watchMultiple(['Accounts_LoginExpiration', 'Site_Name', 'From_Email'], () => {
+	Accounts._options.loginExpirationInDays = getLoginExpirationInDays(settings.get('Accounts_LoginExpiration'));
 
-		Accounts.emailTemplates.siteName = settings.get('Site_Name');
+	Accounts.emailTemplates.siteName = settings.get('Site_Name');
 
-		Accounts.emailTemplates.from = `${settings.get('Site_Name')} <${settings.get('From_Email')}>`;
-	});
+	Accounts.emailTemplates.from = `${settings.get('Site_Name')} <${settings.get('From_Email')}>`;
 });
 
 Accounts.emailTemplates.userToActivate = {
@@ -107,16 +105,14 @@ Accounts.emailTemplates.userActivated = {
 let verifyEmailTemplate = '';
 let enrollAccountTemplate = '';
 let resetPasswordTemplate = '';
-Meteor.startup(() => {
-	Mailer.getTemplateWrapped('Verification_Email', (value) => {
-		verifyEmailTemplate = value;
-	});
-	Mailer.getTemplateWrapped('Accounts_Enrollment_Email', (value) => {
-		enrollAccountTemplate = value;
-	});
-	Mailer.getTemplateWrapped('Forgot_Password_Email', (value) => {
-		resetPasswordTemplate = value;
-	});
+Mailer.getTemplateWrapped('Verification_Email', (value) => {
+	verifyEmailTemplate = value;
+});
+Mailer.getTemplateWrapped('Accounts_Enrollment_Email', (value) => {
+	enrollAccountTemplate = value;
+});
+Mailer.getTemplateWrapped('Forgot_Password_Email', (value) => {
+	resetPasswordTemplate = value;
 });
 
 Accounts.emailTemplates.verifyEmail.html = function (userModel, url) {
@@ -131,7 +127,15 @@ Accounts.emailTemplates.verifyEmail.subject = function () {
 };
 
 Accounts.urls.resetPassword = function (token) {
-	return Meteor.absoluteUrl(`reset-password/${token}`);
+	return getWorkspaceURL(`reset-password/${token}`);
+};
+
+Accounts.urls.verifyEmail = function (token) {
+	return getWorkspaceURL(`#/verify-email/${token}`);
+};
+
+Accounts.urls.enrollAccount = function (token) {
+	return getWorkspaceURL(`#/enroll-account/${token}`);
 };
 
 Accounts.emailTemplates.resetPassword.subject = function (userModel) {

@@ -1,20 +1,9 @@
 import { describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 
+import { _getURL } from './getURL';
 import { ltrim, rtrim } from './utils/stringUtils';
-
-const { _getURL } = proxyquire.noCallThru().load('./getURL', {
-	'meteor/meteor': {
-		'Meteor': {
-			absoluteUrl() {
-				return 'http://localhost:3000/';
-			},
-		},
-		'@global': true,
-	},
-});
 
 const testPaths = (o, _processPath) => {
 	let processPath = _processPath;
@@ -161,4 +150,37 @@ describe('getURL', () => {
 		_root_url_path_prefix: 'sub',
 		_site_url: 'https://localhost:3000/',
 	});
+});
+
+describe('getURL as a workspace URL builder (full: true, cdn: false)', () => {
+	const workspaceUrl = (path, _site_url, _root_url_path_prefix) =>
+		_getURL(path, { full: true, cdn: false, _cdn_prefix: 'https://cdn.com', _site_url, _root_url_path_prefix });
+
+	for (const [description, siteUrl, prefix, root] of [
+		['without a path prefix', 'https://open.rocket.chat/', '', 'https://open.rocket.chat'],
+		['with a path prefix', 'https://open.rocket.chat/chat/', '/chat', 'https://open.rocket.chat/chat'],
+	]) {
+		describe(description, () => {
+			it('should return the site root without a trailing slash and ignore the CDN', () => {
+				expect(workspaceUrl('', siteUrl, prefix)).to.equal(root);
+			});
+
+			it('should append a path', () => {
+				expect(workspaceUrl('reset-password/abc', siteUrl, prefix)).to.equal(`${root}/reset-password/abc`);
+				expect(workspaceUrl('/sounds/chime.mp3', siteUrl, prefix)).to.equal(`${root}/sounds/chime.mp3`);
+			});
+
+			it('should keep a hash route', () => {
+				expect(workspaceUrl('#/verify-email/abc', siteUrl, prefix)).to.equal(`${root}/#/verify-email/abc`);
+			});
+
+			it('should keep a query string', () => {
+				expect(workspaceUrl('direct/user?msg=abc', siteUrl, prefix)).to.equal(`${root}/direct/user?msg=abc`);
+			});
+
+			it('should drop a trailing slash from the path', () => {
+				expect(workspaceUrl('_saml/logout/provider/', siteUrl, prefix)).to.equal(`${root}/_saml/logout/provider`);
+			});
+		});
+	}
 });
