@@ -1,5 +1,6 @@
 import { useStableCallback, useSafely } from '@rocket.chat/fuselage-hooks';
 import * as UiKit from '@rocket.chat/ui-kit';
+import type { KeyboardEvent } from 'react';
 import { useContext, useMemo, useState } from 'react';
 
 import { useStringFromTextObject } from './useStringFromTextObject';
@@ -24,6 +25,7 @@ type UiKitState<TElement extends UiKit.ActionableElement = UiKit.ActionableEleme
 	setLoading: (loading: boolean) => void;
 	error?: string;
 	value: UiKit.ActionOf<TElement>;
+	onKeyDown?: (event: KeyboardEvent<HTMLElement>) => void;
 };
 
 export const useUiKitState = <TElement extends UiKit.ActionableElement>(
@@ -159,7 +161,34 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
 		}
 	});
 
-	const result: UiKitState = useMemo(() => ({ loading, setLoading, error, value }), [loading, setLoading, error, value]);
+	const sendsOnEnter = Array.isArray(dispatchActionConfig) && dispatchActionConfig.includes('on_enter_pressed');
+
+	const onEnterKeyDown = useStableCallback(async (event: KeyboardEvent<HTMLElement>) => {
+		if (event.key !== 'Enter' || event.shiftKey || event.nativeEvent.isComposing) {
+			return;
+		}
+
+		event.preventDefault();
+		if (!(await isAccepted())) {
+			return;
+		}
+		await action(
+			{
+				blockId,
+				appId: appId || appIdFromContext || 'core',
+				actionId,
+				value,
+				viewId,
+				dispatchActionConfig,
+			},
+			event as unknown as Parameters<typeof action>[1],
+		);
+	});
+
+	const result: UiKitState = useMemo(
+		() => ({ loading, setLoading, error, value, onKeyDown: sendsOnEnter ? onEnterKeyDown : undefined }),
+		[loading, setLoading, error, value, sendsOnEnter, onEnterKeyDown],
+	);
 
 	if (
 		element.type === 'plain_text_input' &&

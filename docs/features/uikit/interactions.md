@@ -16,13 +16,13 @@ element (useUiKitState)
 
 ## User interactions
 
-| `type` | Sent when | App handler |
-| --- | --- | --- |
-| `blockAction` | An interactive element fires (see below). `container` says whether it came from a `message` (`mid`, `rid`) or a `view` (`viewId`). | `executeBlockActionHandler` |
+| `type`            | Sent when                                                                                                                                   | App handler                                                        |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| `blockAction`     | An interactive element fires (see below). `container` says whether it came from a `message` (`mid`, `rid`) or a `view` (`viewId`).          | `executeBlockActionHandler`                                        |
 | `blockSuggestion` | The user types in an `external_select` or `multi_external_select`. `value` is the query. Needs the options back in the response; see below. | `executeBlockSuggestionHandler` (optional; defaults to no options) |
-| `viewSubmit` | The modal or contextual bar submit button is pressed. Carries the whole view plus `state`. | `executeViewSubmitHandler` |
-| `viewClosed` | A modal, contextual bar or banner is closed. `isCleared` is `true` for the close (X) button, `false` for cancel. | `executeViewClosedHandler` (optional; defaults to success) |
-| `actionButton` | An app action button is clicked: message box, message menu, room toolbar or user dropdown. Not tied to blocks. | `executeActionButtonHandler` |
+| `viewSubmit`      | The modal or contextual bar submit button is pressed. Carries the whole view plus `state`.                                                  | `executeViewSubmitHandler`                                         |
+| `viewClosed`      | A modal, contextual bar or banner is closed. `isCleared` is `true` for the close (X) button, `false` for cancel.                            | `executeViewClosedHandler` (optional; defaults to success)         |
+| `actionButton`    | An app action button is clicked: message box, message menu, room toolbar or user dropdown. Not tied to blocks.                              | `executeActionButtonHandler`                                       |
 
 ### When an element sends `blockAction`
 
@@ -32,6 +32,7 @@ Decided in [`useUiKitState`](../../../packages/fuselage-ui-kit/src/hooks/useUiKi
 - **Elements inside an `input` block** only update local state; their values travel with `viewSubmit`. Two exceptions:
   - `dispatchActionConfig: ['on_item_selected']` makes the element send on selection.
   - `dispatchActionConfig: ['on_character_entered']` on `plain_text_input` sends on typing, without a loading state so the field keeps focus. Modal and contextual bar debounce it by 700 ms; message and banner do not.
+  - `dispatchActionConfig: ['on_enter_pressed']` sends the current value when the user presses Enter, on `plain_text_input` (single line only; in a multiline input Enter inserts a newline), `number_input`, `email_text_input`, `url_text_input` and `rich_text_input` (Shift+Enter inserts a newline). Pressing Enter does not submit the view. Without it Enter does what it always did.
 
 ### Confirmation dialogs
 
@@ -59,19 +60,19 @@ On `viewSubmit` the server confirms the files named by the `file_input` values o
 
 The app returns one of these from its handler, usually built with `UIKitInteractionResponder` in apps-engine. The server passes the result through unchanged.
 
-| `type` | Client effect |
-| --- | --- |
-| `modal.open` | Opens a modal, closing the app's other open modals. |
-| `modal.push` | Opens a modal on top of the app's open ones. An app keeps at most 3 stacked; beyond that the top one is replaced. |
-| `modal.clear` | Closes every modal of the app. |
-| `modal.update` | Replaces the open modal's view (matched by `view.id`). |
-| `modal.close` | Closes the modal named by `view.id` (what apps-engine sends) or `viewId` (what core apps send). With neither, nothing happens. |
-| `banner.open` | Opens a banner. The view fields are spread at the top level of the payload instead of under `view`. |
-| `banner.update` / `banner.close` | Replaces or disposes the banner (matched by `viewId`). |
-| `contextual_bar.open` | Stores the view and navigates the room to `tab=app&context=<view.id>`. |
-| `contextual_bar.update` / `contextual_bar.close` | Replaces or disposes the contextual bar. |
-| `home.update` | Publishes the home for the user: the server stores the view, and the open home page replaces what it shows. Carries no `triggerId`, so the check below does not apply to it. |
-| `errors` | Marks fields as invalid. `errors` maps `actionId` to a message. **Only modals display them**; the contextual bar and banner contexts do not pass errors down to their elements. |
+| `type`                                           | Client effect                                                                                                                                                                   |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `modal.open`                                     | Opens a modal, closing the app's other open modals.                                                                                                                             |
+| `modal.push`                                     | Opens a modal on top of the app's open ones. An app keeps at most 3 stacked; beyond that the top one is replaced.                                                               |
+| `modal.clear`                                    | Closes every modal of the app.                                                                                                                                                  |
+| `modal.update`                                   | Replaces the open modal's view (matched by `view.id`).                                                                                                                          |
+| `modal.close`                                    | Closes the modal named by `view.id` (what apps-engine sends) or `viewId` (what core apps send). With neither, nothing happens.                                                  |
+| `banner.open`                                    | Opens a banner. The view fields are spread at the top level of the payload instead of under `view`.                                                                             |
+| `banner.update` / `banner.close`                 | Replaces or disposes the banner (matched by `viewId`).                                                                                                                          |
+| `contextual_bar.open`                            | Stores the view and navigates the room to `tab=app&context=<view.id>`.                                                                                                          |
+| `contextual_bar.update` / `contextual_bar.close` | Replaces or disposes the contextual bar.                                                                                                                                        |
+| `home.update`                                    | Publishes the home for the user: the server stores the view, and the open home page replaces what it shows. Carries no `triggerId`, so the check below does not apply to it.    |
+| `errors`                                         | Marks fields as invalid. `errors` maps `actionId` to a message. **Only modals display them**; the contextual bar and banner contexts do not pass errors down to their elements. |
 
 After a `viewSubmit`, the view is disposed unless the response is `errors`, `modal.update`, `modal.push` or `contextual_bar.update`. After a `viewClosed`, it is disposed unless the response is `errors`.
 
@@ -109,11 +110,11 @@ When a user opens an app's home, the app receives `executeAppHomeOpenedHandler` 
 
 The Livechat widget sends its interactions to the same endpoint, authenticated with the `x-visitor-token` header. On the server a request with a visitor becomes the `IUIKitLivechatInteractionHandler` event instead of `IUIKitInteractionHandler`:
 
-| Type | App method | Context |
-| --- | --- | --- |
-| `blockAction` | `executeLivechatBlockActionHandler` | `UIKitLivechatBlockInteractionContext` |
-| `viewSubmit` | `executeLivechatViewSubmitHandler` | `UIKitLivechatViewSubmitInteractionContext` |
-| `viewClosed` | `executeLivechatViewClosedHandler` | `UIKitLivechatViewCloseInteractionContext` |
+| Type          | App method                          | Context                                     |
+| ------------- | ----------------------------------- | ------------------------------------------- |
+| `blockAction` | `executeLivechatBlockActionHandler` | `UIKitLivechatBlockInteractionContext`      |
+| `viewSubmit`  | `executeLivechatViewSubmitHandler`  | `UIKitLivechatViewSubmitInteractionContext` |
+| `viewClosed`  | `executeLivechatViewClosedHandler`  | `UIKitLivechatViewCloseInteractionContext`  |
 
 The widget applies the response: `modal.open` and `modal.update` draw a modal, `modal.close` closes it, and `errors` marks the inputs named by `actionId`. Other response types are ignored. The same trigger ID check as for users applies, so a modal opens only as the answer to an interaction the widget sent in the last 5 seconds.
 
@@ -131,10 +132,10 @@ Payloads are not validated per type: user interactions and app responses reach t
 
 What happens to invalid blocks depends on the admin setting `UiKit_Reject_Invalid_Blocks` (Apps section, default off):
 
-| Path | Off | On |
-| --- | --- | --- |
-| Message sent or updated | Logged as a warning (`UiKit`), message saved | `error-invalid-blocks` is thrown with the first three errors; the message is not saved |
-| `ui.interaction` response with a view | Logged, view sent to the client | Logged; the response is replaced with `{}`, so the user sees nothing new |
-| View pushed by the app | Logged, view broadcast | Logged; the view is not recorded or broadcast |
+| Path                                  | Off                                          | On                                                                                     |
+| ------------------------------------- | -------------------------------------------- | -------------------------------------------------------------------------------------- |
+| Message sent or updated               | Logged as a warning (`UiKit`), message saved | `error-invalid-blocks` is thrown with the first three errors; the message is not saved |
+| `ui.interaction` response with a view | Logged, view sent to the client              | Logged; the response is replaced with `{}`, so the user sees nothing new               |
+| View pushed by the app                | Logged, view broadcast                       | Logged; the view is not recorded or broadcast                                          |
 
 Rendering never checks the limits. Blocks that exceed them still render when the setting is off.

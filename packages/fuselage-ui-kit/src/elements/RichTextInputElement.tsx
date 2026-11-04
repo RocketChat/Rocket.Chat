@@ -12,7 +12,7 @@ import { richTextToMarkdown } from '../utils/richText/richTextToMarkdown';
 export type RichTextInputElementProps = BlockProps<UiKit.RichTextInputElement>;
 
 const RichTextInputElement = ({ block, context }: RichTextInputElementProps) => {
-	const [{ loading, value, error }, action] = useUiKitState(block, context);
+	const [{ loading, value, error, onKeyDown }, action] = useUiKitState(block, context);
 	const fromTextObjectToString = useStringFromTextObject();
 	const names = useRichTextMentionNames(value);
 
@@ -32,6 +32,7 @@ const RichTextInputElement = ({ block, context }: RichTextInputElementProps) => 
 				setText(event.currentTarget.value);
 				return action({ target: { value: richTextFromMarkdown(event.currentTarget.value) } });
 			}}
+			onKeyDown={onKeyDown}
 			placeholder={fromTextObjectToString(block.placeholder)}
 		/>
 	);
