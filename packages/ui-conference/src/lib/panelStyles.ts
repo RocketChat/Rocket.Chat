@@ -25,11 +25,11 @@ export const narrowRoomStyle = css`
 	}
 
 	&.rcx-message-system {
-    padding-inline-start: ${PANEL_INLINE_PADDING}px;
+		padding-inline-start: ${PANEL_INLINE_PADDING}px;
 
-    &_body {
-        white-space: pre-wrap;
-    }
+		&_body {
+			white-space: pre-wrap;
+		}
 	}
 
 	& .rcx-message-container--left {
