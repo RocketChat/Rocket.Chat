@@ -23,7 +23,6 @@
 	"apps/meteor/client/components/GenericResourceUsage/GenericResourceUsageSkeleton.tsx": 1,
 	"apps/meteor/client/components/GenericUpsellModal/GenericUpsellModal.tsx": 1,
 	"apps/meteor/client/components/ImageGallery/ImageGallery.tsx": 3,
-	"apps/meteor/client/components/ListItem.stories.tsx": 4,
 	"apps/meteor/client/components/ListSkeleton.tsx": 3,
 	"apps/meteor/client/components/message/content/attachments/default/ActionAttachtment.tsx": 1,
 	"apps/meteor/client/components/message/content/attachments/default/Field.tsx": 2,

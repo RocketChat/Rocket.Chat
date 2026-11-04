@@ -4,9 +4,9 @@ import type { HTMLAttributes, KeyboardEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { usePreventPropagation } from '../../hooks/usePreventPropagation';
+import { useUnreadDisplay } from '../../views/navigation/sidebar/hooks/useUnreadDisplay';
 import CategoryMenu from '../categories/CategoryMenu';
 import type { SidebarRoomListGroup } from '../hooks/useRoomList';
-import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
 type RoomListCollapserProps = {
 	group: SidebarRoomListGroup;

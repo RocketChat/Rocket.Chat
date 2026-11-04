@@ -7,16 +7,16 @@ import type { VirtualizerHandle } from 'virtua';
 import MoreUnreadsBubble from './MoreUnreadsBubble';
 import RoomListCollapser from './RoomListCollapser';
 import RoomListRow from './RoomListRow';
-import RoomListRowWrapper from './RoomListRowWrapper';
 import RoomListWrapper from './RoomListWrapper';
 import { useMergedRefsV2 } from '../../hooks/useMergedRefsV2';
 import { useOpenedRoom } from '../../lib/RoomManager';
+import RoomListRowWrapper from '../../views/navigation/sidebar/RoomList/RoomListRowWrapper';
+import { usePreventDefault } from '../../views/navigation/sidebar/hooks/usePreventDefault';
 import { useMoveCategoryPosition } from '../categories/hooks/useMoveCategoryPosition';
 import SidebarVirtualList from '../components/SidebarVirtualList';
 import { SIDEBAR_DYNAMIC_GROUP_KEYS } from '../hooks/useCategoryList';
 import { useCollapsedGroups } from '../hooks/useCollapsedGroups';
 import { useOffscreenUnreads } from '../hooks/useOffscreenUnreads';
-import { usePreventDefault } from '../hooks/usePreventDefault';
 import { useRoomList } from '../hooks/useRoomList';
 import { useShortcutOpenMenu } from '../hooks/useShortcutOpenMenu';
 
