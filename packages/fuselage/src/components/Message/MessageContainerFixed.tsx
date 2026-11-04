@@ -1,7 +1,7 @@
 import { styled, View } from '@tamagui/web';
 
+import { cx } from '../../helpers/composeClassNames';
 import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
 
 export type MessageContainerFixedProps = ElementProps<HTMLDivElement>;
 
@@ -25,7 +25,10 @@ const MessageContainerFixedFrame = styled(View, {
 // end of generated
 
 const MessageContainerFixed = ({ children, className, ...props }: MessageContainerFixedProps) => (
-	<MessageContainerFixedFrame render={<Box rcx-message-container--fixed rcx-message-container {...props} />} className={className}>
+	<MessageContainerFixedFrame
+		render={<div {...props} />}
+		className={cx('rcx-box rcx-box--full', 'rcx-message-container--fixed', 'rcx-message-container', className)}
+	>
 		{children}
 	</MessageContainerFixedFrame>
 );

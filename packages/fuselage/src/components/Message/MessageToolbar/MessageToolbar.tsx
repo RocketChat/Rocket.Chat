@@ -1,6 +1,6 @@
 import { styled, View } from '@tamagui/web';
 
-import { Box } from '../../Box';
+import { cx } from '../../../helpers/composeClassNames';
 import { ButtonGroup, type ButtonGroupProps } from '../../ButtonGroup';
 
 export type MessageToolbarProps = ButtonGroupProps;
@@ -31,7 +31,7 @@ const MessageToolbarFrame = styled(View, {
 
 function MessageToolbar(props: MessageToolbarProps) {
 	return (
-		<MessageToolbarFrame render={<Box rcx-message-toolbar />}>
+		<MessageToolbarFrame render={<div />} className={cx('rcx-box rcx-box--full', 'rcx-message-toolbar')}>
 			<ButtonGroup role='toolbar' small {...props} />
 		</MessageToolbarFrame>
 	);

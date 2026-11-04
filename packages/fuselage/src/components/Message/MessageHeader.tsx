@@ -1,7 +1,7 @@
 import { styled, View } from '@tamagui/web';
 
+import { cx } from '../../helpers/composeClassNames';
 import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
 
 export type MessageHeaderProps = ElementProps<HTMLDivElement>;
 
@@ -38,8 +38,10 @@ const MessageHeaderWrapperFrame = styled(View, {
 // end of generated
 
 const MessageHeader = ({ children, className, ...props }: MessageHeaderProps) => (
-	<MessageHeaderFrame render={<Box rcx-message-header {...props} />} className={className}>
-		<MessageHeaderWrapperFrame render={<Box rcx-message-header__wrapper />}>{children}</MessageHeaderWrapperFrame>
+	<MessageHeaderFrame render={<div {...props} />} className={cx('rcx-box rcx-box--full', 'rcx-message-header', className)}>
+		<MessageHeaderWrapperFrame render={<div />} className={cx('rcx-box rcx-box--full', 'rcx-message-header__wrapper')}>
+			{children}
+		</MessageHeaderWrapperFrame>
 	</MessageHeaderFrame>
 );
 

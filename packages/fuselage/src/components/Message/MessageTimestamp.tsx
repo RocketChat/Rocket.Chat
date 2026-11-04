@@ -1,7 +1,7 @@
 import { styled, Text } from '@tamagui/web';
 
+import { cx } from '../../helpers/composeClassNames';
 import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
 
 export type MessageTimestampProps = ElementProps<HTMLSpanElement>;
 
@@ -27,7 +27,7 @@ const MessageTimestampFrame = styled(Text, {
 // end of generated
 
 const MessageTimestamp = ({ children, className, ...props }: MessageTimestampProps) => (
-	<MessageTimestampFrame render={<Box is='span' rcx-message-header__time {...props} />} className={className}>
+	<MessageTimestampFrame render={<span {...props} />} className={cx('rcx-box rcx-box--full', 'rcx-message-header__time', className)}>
 		{children}
 	</MessageTimestampFrame>
 );
