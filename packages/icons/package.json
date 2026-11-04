@@ -22,6 +22,7 @@
 	],
 	"scripts": {
 		"build": "node scripts/buildIcons.mjs",
+		"check:fill": "node scripts/checkFill.mjs",
 		"lint": "yarn run -T oxlint",
 		"lint:fix": "yarn run -T oxlint --fix"
 	},
