@@ -124,6 +124,12 @@ Environment for `matrix.sh`: `SCENARIOS` (default `S1 S2 S3 S4 S5`), `WS` (defau
 `ADAPTER`, `SINK`, `DRAIN_TIMEOUT`. Restart the instances when you change deployment, and run one short unrecorded
 warm-up (for example S2 and S3 with `--tokens 200 --label warmup`) before a matrix.
 
+With the baseline sink, the matrix of one deployment took about 100 minutes (D1) and 120 minutes (D2). S3 and S5 at
+W = 0 take most of it: the baseline falls behind and drains a backlog for about 5 minutes per run. A mechanism that
+keeps up takes about 30 s per run.
+
+> In zsh, `set -- $var` does not split `$var` into words. Loop over the values directly in a run loop of your own.
+
 ## The dev routes
 
 All under `/_agent-stream`, no auth (local use only):
