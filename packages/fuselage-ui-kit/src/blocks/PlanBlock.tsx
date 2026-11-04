@@ -17,7 +17,7 @@ const PlanBlock = ({ className, block, context, surfaceRenderer }: PlanBlockProp
 		borderColor='extra-light'
 		backgroundColor='surface-tint'
 	>
-		<Box fontScale='h5' color='default' padding={12}>
+		<Box fontScale='h5' color='default' padding='x12'>
 			{block.title}
 		</Box>
 		{block.tasks.map((task, index) => (

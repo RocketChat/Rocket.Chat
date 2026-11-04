@@ -100,7 +100,7 @@ const FileInputElement = ({ block, context }: FileInputElementProps) => {
 	const full = ids.length + uploads >= maxFiles;
 
 	return (
-		<Box display='flex' flexDirection='column' alignItems='flex-start' width='full' gap={8}>
+		<Box display='flex' flexDirection='column' alignItems='flex-start' width='full' gap='x8'>
 			<Button size='small' icon='clip' type='button' disabled={!uploadFile || full} onClick={() => inputRef.current?.click()}>
 				{t('UIKit_File_input_choose')}
 			</Button>
@@ -121,7 +121,7 @@ const FileInputElement = ({ block, context }: FileInputElementProps) => {
 				</Box>
 			)}
 			{ids.length > 0 && (
-				<Box is='ul' display='flex' flexDirection='column' gap={4} width='full' margin={0} padding={0}>
+				<Box is='ul' display='flex' flexDirection='column' gap='x4' width='full' margin={0} padding={0}>
 					{ids.map((id) => (
 						<Box is='li' key={id} display='flex' alignItems='center' justifyContent='space-between' fontScale='p2'>
 							<Box withTruncatedText>{names[id] ?? id}</Box>
