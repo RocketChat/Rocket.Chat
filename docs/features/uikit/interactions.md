@@ -19,6 +19,7 @@ element (useUiKitState)
 | `type` | Sent when | App handler |
 | --- | --- | --- |
 | `blockAction` | An interactive element fires (see below). `container` says whether it came from a `message` (`mid`, `rid`) or a `view` (`viewId`). | `executeBlockActionHandler` |
+| `blockSuggestion` | The user types in an `external_select` or `multi_external_select`. `value` is the query. Needs the options back in the response; see below. | `executeBlockSuggestionHandler` (optional; defaults to no options) |
 | `viewSubmit` | The modal or contextual bar submit button is pressed. Carries the whole view plus `state`. | `executeViewSubmitHandler` |
 | `viewClosed` | A modal, contextual bar or banner is closed. `isCleared` is `true` for the close (X) button, `false` for cancel. | `executeViewClosedHandler` (optional; defaults to success) |
 | `actionButton` | An app action button is clicked: message box, message menu, room toolbar or user dropdown. Not tied to blocks. | `executeActionButtonHandler` |
@@ -31,6 +32,14 @@ Decided in [`useUiKitState`](../../../packages/fuselage-ui-kit/src/hooks/useUiKi
 - **Elements inside an `input` block** only update local state; their values travel with `viewSubmit`. Two exceptions:
   - `dispatchActionConfig: ['on_item_selected']` makes the element send on selection.
   - `dispatchActionConfig: ['on_character_entered']` on `plain_text_input` sends on typing, without a loading state so the field keeps focus. Modal and contextual bar debounce it by 700 ms; message and banner do not.
+
+### Options for external selects
+
+`external_select` and `multi_external_select` ask the app for their options while the user types. The client waits 300 ms after the last keystroke, then sends `blockSuggestion` only once the query has at least `min_query_length` characters (3 by default). The request carries `actionId`, `blockId`, `appId`, `value` (the query) and a `container` (`view` with `viewId`, or `message` with `mid` and `rid`).
+
+Unlike the other interactions, the response is not a `ServerInteraction`: it is `{ options?: Option[], option_groups?: OptionGroup[] }`, and the client does not pass it to `handleServerInteraction`. In apps-engine, build it with `UIKitBlockSuggestionInteractionContext.getInteractionResponder().optionsResponse(...)`. Option groups are shown as a flat list. The client gives up after 3 seconds and shows no options. A suggestion request has no `triggerId` lifecycle and shows no busy state. Only modals, contextual bars and messages can ask; a banner or a surface without a `suggest` function shows no options.
+
+Once the user picks an option, the element behaves like any other select: its value is the option's `value`, sent as `blockAction` or with `viewSubmit` as usual.
 
 ### View state
 

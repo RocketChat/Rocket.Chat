@@ -9,6 +9,7 @@ import handleUIKitInteraction, {
 	UIKitActionButtonInteractionContext,
 	UIKitAppHomeOpenedInteractionContext,
 	UIKitBlockInteractionContext,
+	UIKitBlockSuggestionInteractionContext,
 	UIKitLivechatBlockInteractionContext,
 	UIKitViewCloseInteractionContext,
 	UIKitViewSubmitInteractionContext,
@@ -26,6 +27,7 @@ describe('handlers > uikit', () => {
 	const mockApp = {
 		getID: (): string => 'appId',
 		executeBlockActionHandler: (context: any): Promise<any> => Promise.resolve(context),
+		executeBlockSuggestionHandler: (context: any): Promise<any> => Promise.resolve(context),
 		executeViewSubmitHandler: (context: any): Promise<any> => Promise.resolve(context),
 		executeViewClosedHandler: (context: any): Promise<any> => Promise.resolve(context),
 		executeActionButtonHandler: (context: any): Promise<any> => Promise.resolve(context),
@@ -51,6 +53,20 @@ describe('handlers > uikit', () => {
 
 		const result = await handleUIKitInteraction(request);
 		assert.ok(result instanceof UIKitBlockInteractionContext, `Expected instance of ${UIKitBlockInteractionContext.name}`);
+	});
+
+	it('successfully handles a call for "executeBlockSuggestionHandler"', async () => {
+		const request = makeMockRequest('app:executeBlockSuggestionHandler', {
+			actionId: 'actionId',
+			blockId: 'blockId',
+			value: 'qu',
+		});
+
+		const result = await handleUIKitInteraction(request);
+		assert.ok(
+			result instanceof UIKitBlockSuggestionInteractionContext,
+			`Expected instance of ${UIKitBlockSuggestionInteractionContext.name}`,
+		);
 	});
 
 	it('successfully handles a call for "executeViewSubmitHandler"', async () => {

@@ -8,8 +8,10 @@ export const isInputBlockElement = (block: BlockElement): block is InputBlock['e
 		case BlockElementType.CONVERSATIONS_SELECT:
 		case BlockElementType.DATEPICKER:
 		case BlockElementType.DATETIMEPICKER:
+		case BlockElementType.EXTERNAL_SELECT:
 		case BlockElementType.FILE_INPUT:
 		case BlockElementType.LINEAR_SCALE:
+		case BlockElementType.MULTI_EXTERNAL_SELECT:
 		case BlockElementType.MULTI_STATIC_SELECT:
 		case BlockElementType.PLAIN_TEXT_INPUT:
 		case BlockElementType.RICH_TEXT_INPUT:

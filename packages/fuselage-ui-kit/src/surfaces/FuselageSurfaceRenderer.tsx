@@ -23,6 +23,8 @@ import MultiChannelsSelectElement from '../elements/ChannelsSelectElement/MultiC
 import CheckboxElement from '../elements/CheckboxElement';
 import DatePickerElement from '../elements/DatePickerElement';
 import DateTimePickerElement from '../elements/DateTimePickerElement';
+import ExternalSelectElement from '../elements/ExternalSelectElement/ExternalSelectElement';
+import MultiExternalSelectElement from '../elements/ExternalSelectElement/MultiExternalSelectElement';
 import FeedbackButtonsElement from '../elements/FeedbackButtonsElement';
 import FileInputElement from '../elements/FileInputElement';
 import FormattedTextInputElement from '../elements/FormattedTextInputElement';
@@ -447,6 +449,22 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
 		}
 
 		return <UsersSelectElement block={block} context={context} index={index} surfaceRenderer={this} />;
+	}
+
+	external_select(block: UiKit.ExternalSelectElement, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return null;
+		}
+
+		return <ExternalSelectElement block={block} context={context} index={index} surfaceRenderer={this} />;
+	}
+
+	multi_external_select(block: UiKit.MultiExternalSelectElement, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return null;
+		}
+
+		return <MultiExternalSelectElement block={block} context={context} index={index} surfaceRenderer={this} />;
 	}
 
 	channels_select(block: UiKit.ChannelsSelectElement, context: UiKit.BlockContext, index: number): ReactElement<any> | null {

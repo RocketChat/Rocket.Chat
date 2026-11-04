@@ -1,3 +1,5 @@
+import type { Option, OptionGroup } from '@rocket.chat/ui-kit';
+
 import type { IUIKitSurface } from './IUIKitSurface';
 
 export enum UIKitInteractionType {
@@ -15,6 +17,11 @@ export enum UIKitInteractionType {
 
 export interface IUIKitResponse {
 	success: boolean;
+}
+
+export interface IUIKitBlockSuggestionResponse {
+	options?: Option[];
+	option_groups?: OptionGroup[];
 }
 
 export interface IUIKitInteraction {

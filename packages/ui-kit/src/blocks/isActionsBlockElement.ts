@@ -8,7 +8,9 @@ export const isActionsBlockElement = (block: BlockElement): block is ActionsBloc
 		case BlockElementType.BUTTON:
 		case BlockElementType.DATEPICKER:
 		case BlockElementType.DATETIMEPICKER:
+		case BlockElementType.EXTERNAL_SELECT:
 		case BlockElementType.LINEAR_SCALE:
+		case BlockElementType.MULTI_EXTERNAL_SELECT:
 		case BlockElementType.MULTI_STATIC_SELECT:
 		case BlockElementType.OVERFLOW:
 		case BlockElementType.STATIC_SELECT:

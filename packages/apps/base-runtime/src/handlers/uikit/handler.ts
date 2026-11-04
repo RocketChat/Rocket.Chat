@@ -1,6 +1,7 @@
 import type { App } from '@rocket.chat/apps-engine/definition/App';
 import type {
 	IUIKitBlockIncomingInteraction,
+	IUIKitBlockSuggestionIncomingInteraction,
 	IUIKitViewSubmitIncomingInteraction,
 	IUIKitViewCloseIncomingInteraction,
 	IUIKitActionButtonIncomingInteraction,
@@ -8,6 +9,7 @@ import type {
 } from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionTypes';
 import {
 	UIKitBlockInteractionContext,
+	UIKitBlockSuggestionInteractionContext,
 	UIKitViewSubmitInteractionContext,
 	UIKitViewCloseInteractionContext,
 	UIKitActionButtonInteractionContext,
@@ -25,6 +27,7 @@ import { isOneOf } from '../lib/assertions';
 
 export const uikitInteractions = [
 	'executeBlockActionHandler',
+	'executeBlockSuggestionHandler',
 	'executeViewSubmitHandler',
 	'executeViewClosedHandler',
 	'executeActionButtonHandler',
@@ -34,6 +37,7 @@ export const uikitInteractions = [
 
 export {
 	UIKitBlockInteractionContext,
+	UIKitBlockSuggestionInteractionContext,
 	UIKitViewSubmitInteractionContext,
 	UIKitViewCloseInteractionContext,
 	UIKitActionButtonInteractionContext,
@@ -74,6 +78,9 @@ export default async function handleUIKitInteraction(request: RequestContext): P
 	switch (method) {
 		case 'executeBlockActionHandler':
 			context = new UIKitBlockInteractionContext(payload as unknown as IUIKitBlockIncomingInteraction);
+			break;
+		case 'executeBlockSuggestionHandler':
+			context = new UIKitBlockSuggestionInteractionContext(payload as unknown as IUIKitBlockSuggestionIncomingInteraction);
 			break;
 		case 'executeViewSubmitHandler':
 			context = new UIKitViewSubmitInteractionContext(payload as unknown as IUIKitViewSubmitIncomingInteraction);

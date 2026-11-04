@@ -15,9 +15,11 @@ export type { ConversationsSelectFilter } from './blocks/elements/ConversationsS
 export type { DatePickerElement } from './blocks/elements/DatePickerElement';
 export type { DateTimePickerElement } from './blocks/elements/DateTimePickerElement';
 export type { FeedbackButton, FeedbackButtonsElement } from './blocks/elements/FeedbackButtonsElement';
+export type { ExternalSelectElement } from './blocks/elements/ExternalSelectElement';
 export type { ImageElement } from './blocks/elements/ImageElement';
 export type { FileInputElement } from './blocks/elements/FileInputElement';
 export type { LinearScaleElement } from './blocks/elements/LinearScaleElement';
+export type { MultiExternalSelectElement } from './blocks/elements/MultiExternalSelectElement';
 export type { MultiStaticSelectElement } from './blocks/elements/MultiStaticSelectElement';
 export type { MultiChannelsSelectElement } from './blocks/elements/MultiChannelsSelectElement';
 export type { MultiConversationsSelectElement } from './blocks/elements/MultiConversationsSelectElement';

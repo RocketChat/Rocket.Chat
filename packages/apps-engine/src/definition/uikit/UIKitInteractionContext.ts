@@ -4,6 +4,7 @@ import type {
 	IUIKitAppHomeOpenedIncomingInteraction,
 	IUIKitBaseIncomingInteraction,
 	IUIKitBlockIncomingInteraction,
+	IUIKitBlockSuggestionIncomingInteraction,
 	IUIKitViewCloseIncomingInteraction,
 	IUIKitViewSubmitIncomingInteraction,
 } from './UIKitIncomingInteractionTypes';
@@ -35,6 +36,16 @@ export class UIKitBlockInteractionContext extends UIKitInteractionContext {
 	}
 
 	public getInteractionData(): IUIKitBlockIncomingInteraction {
+		return this.interactionData;
+	}
+}
+
+export class UIKitBlockSuggestionInteractionContext extends UIKitInteractionContext {
+	constructor(private readonly interactionData: IUIKitBlockSuggestionIncomingInteraction) {
+		super(interactionData);
+	}
+
+	public getInteractionData(): IUIKitBlockSuggestionIncomingInteraction {
 		return this.interactionData;
 	}
 }
