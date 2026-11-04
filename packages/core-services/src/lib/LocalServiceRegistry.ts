@@ -58,6 +58,7 @@ export class LocalServiceRegistry {
 			return undefined;
 		}
 
-		return async (args: unknown[]): Promise<unknown> => (service.instance as any)[name](...args);
+		const methods = service.instance as unknown as Record<string, (...args: unknown[]) => Promise<unknown>>;
+		return async (args: unknown[]): Promise<unknown> => methods[name](...args);
 	}
 }
