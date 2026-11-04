@@ -9,7 +9,7 @@ import { api, credentials, getCredentials, methodCall, request } from '../../dat
 import { uploadFileToRC } from '../../data/file.helper';
 import { imgURL } from '../../data/interactions';
 import { sleep } from '../../data/livechat/utils';
-import { getSettingValueById, updateSetting } from '../../data/permissions.helper';
+import { getSettingValueById, updatePermission, updateSetting } from '../../data/permissions.helper';
 import { addUserToRoom, createRoom, deleteRoom, getSubscriptionByRoomId } from '../../data/rooms.helper';
 import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
@@ -489,12 +489,18 @@ type Listing = {
 		});
 	});
 
-	describe('a restricted moderator', () => {
-		before(() => request.post(api('channels.addModerator')).set(credentials).send({ roomId: room._id, userId: newcomer._id }).expect(200));
+	describe('a restricted member allowed to edit and delete any message', () => {
+		const defaultRoles = ['admin', 'owner', 'moderator'];
 
-		after(() =>
-			request.post(api('channels.removeModerator')).set(credentials).send({ roomId: room._id, userId: newcomer._id }).expect(200),
-		);
+		before(async () => {
+			await updatePermission('edit-message', [...defaultRoles, 'user']);
+			await updatePermission('delete-message', [...defaultRoles, 'user']);
+		});
+
+		after(async () => {
+			await updatePermission('edit-message', defaultRoles);
+			await updatePermission('delete-message', defaultRoles);
+		});
 
 		it('cannot edit a hidden message', async () => {
 			const res = await request
@@ -515,11 +521,11 @@ type Listing = {
 		});
 
 		it('can still edit a message they can see', async () => {
-			const visible = await send('a message the moderator may edit');
+			const visible = await send('a message the member may edit');
 			await request
 				.post(api('chat.update'))
 				.set(newcomerCredentials)
-				.send({ roomId: room._id, msgId: visible._id, text: 'edited by the moderator' })
+				.send({ roomId: room._id, msgId: visible._id, text: 'edited by the member' })
 				.expect(200);
 		});
 	});
