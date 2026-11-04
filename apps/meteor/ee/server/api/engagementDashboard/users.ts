@@ -8,7 +8,7 @@ import {
 } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../server/api';
-import { isoDateStringSchema, transformDatesForAPI } from '../../lib/engagementDashboard/date';
+import { isDateRangeParams, isoDateStringSchema, transformDatesForAPI } from '../../lib/engagementDashboard/date';
 import {
 	findWeeklyUsersRegisteredData,
 	findActiveUsersMonthlyData,
@@ -16,16 +16,6 @@ import {
 	findBusiestsChatsWithinAWeek,
 	findUserSessionsByHourWithinAWeek,
 } from '../../lib/engagementDashboard/users';
-
-const isDateRangeParams = ajvQuery.compile<{ start: string; end: string }>({
-	type: 'object',
-	properties: {
-		start: isoDateStringSchema,
-		end: isoDateStringSchema,
-	},
-	required: ['start', 'end'],
-	additionalProperties: false,
-});
 
 const isStartDateParams = ajvQuery.compile<{ start: string }>({
 	type: 'object',

@@ -1,29 +1,18 @@
 import type { IDirectMessageRoom, IRoom } from '@rocket.chat/core-typings';
 import {
 	ajv,
-	ajvQuery,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
 	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../server/api';
-import { isoDateStringSchema, transformDatesForAPI } from '../../lib/engagementDashboard/date';
+import { isDateRangeParams, transformDatesForAPI } from '../../lib/engagementDashboard/date';
 import {
 	findWeeklyMessagesSentData,
 	findMessagesSentOrigin,
 	findTopFivePopularChannelsByMessageSentQuantity,
 } from '../../lib/engagementDashboard/messages';
-
-const isDateRangeParams = ajvQuery.compile<{ start: string; end: string }>({
-	type: 'object',
-	properties: {
-		start: isoDateStringSchema,
-		end: isoDateStringSchema,
-	},
-	required: ['start', 'end'],
-	additionalProperties: false,
-});
 
 const weeklyDataResponseSchema = ajv.compile<{
 	days: { day: Date; messages: number }[];
