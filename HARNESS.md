@@ -8,23 +8,23 @@ Everything on the server runs only with `AGENT_STREAM_POC=1`. Without it, the se
 
 ## What is where
 
-| Path | What |
-| --- | --- |
-| `apps/meteor/server/agent-stream/producer.ts` | The fake producer, the delta and sink types, the snapshot `{ text, seq }` for each active stream |
-| `apps/meteor/server/agent-stream/reply.ts` | The fixed reply: 1,000 tokens of 4 ASCII characters, markdown with a list and a code block |
-| `apps/meteor/server/agent-stream/sinks/` | The sinks. `update-message` is the baseline |
-| `apps/meteor/server/agent-stream/routes.ts` | The dev routes under `/_agent-stream` |
-| `apps/meteor/server/agent-stream/counters.ts` | The broker counters, filled by `apps/meteor/ee/server/local-services/instance/service.ts` |
-| `agent-stream/scenarios.mjs` | S1 to S5 and the reply rate. **Do not change them.** |
-| `agent-stream/seed.mjs` | Users, rooms and login tokens, through the REST API |
-| `agent-stream/loadgen.mjs` | Runs one cell (scenario, deployment, W) and writes one JSON result |
-| `agent-stream/viewer-worker.mjs`, `lib/viewer.mjs` | The viewers, in worker threads; order, gap and duplicate checks; latency |
-| `agent-stream/adapters/` | The viewer transports. `ddp-room-messages` is the baseline |
-| `agent-stream/matrix.sh` | Runs the cells of one deployment, 3 runs each, under the measurement lock |
-| `agent-stream/summary.mjs` | Turns the JSON results into the report tables |
-| `agent-stream/failures.mjs` | The failure modes of the report template: stop, kill, restart, crash |
-| `agent-stream/webclient.mjs` | The secondary S1 metric: web client main-thread time for each delta |
-| `agent-stream/start-instance.sh`, `run-d1.sh`, `run-d2.sh`, `stop.sh` | Start and stop the instances |
+| Path                                                                  | What                                                                                             |
+| --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `apps/meteor/server/agent-stream/producer.ts`                         | The fake producer, the delta and sink types, the snapshot `{ text, seq }` for each active stream |
+| `apps/meteor/server/agent-stream/reply.ts`                            | The fixed reply: 1,000 tokens of 4 ASCII characters, markdown with a list and a code block       |
+| `apps/meteor/server/agent-stream/sinks/`                              | The sinks. `update-message` is the baseline                                                      |
+| `apps/meteor/server/agent-stream/routes.ts`                           | The dev routes under `/_agent-stream`                                                            |
+| `apps/meteor/server/agent-stream/counters.ts`                         | The broker counters, filled by `apps/meteor/ee/server/local-services/instance/service.ts`        |
+| `agent-stream/scenarios.mjs`                                          | S1 to S5 and the reply rate. **Do not change them.**                                             |
+| `agent-stream/seed.mjs`                                               | Users, rooms and login tokens, through the REST API                                              |
+| `agent-stream/loadgen.mjs`                                            | Runs one cell (scenario, deployment, W) and writes one JSON result                               |
+| `agent-stream/viewer-worker.mjs`, `lib/viewer.mjs`                    | The viewers, in worker threads; order, gap and duplicate checks; latency                         |
+| `agent-stream/adapters/`                                              | The viewer transports. `ddp-room-messages` is the baseline                                       |
+| `agent-stream/matrix.sh`                                              | Runs the cells of one deployment, 3 runs each, under the measurement lock                        |
+| `agent-stream/summary.mjs`                                            | Turns the JSON results into the report tables                                                    |
+| `agent-stream/failures.mjs`                                           | The failure modes of the report template: stop, kill, restart, crash                             |
+| `agent-stream/webclient.mjs`                                          | The secondary S1 metric: web client main-thread time for each delta                              |
+| `agent-stream/start-instance.sh`, `run-d1.sh`, `run-d2.sh`, `stop.sh` | Start and stop the instances                                                                     |
 
 ## Server mode
 
@@ -55,12 +55,12 @@ The Meteor build takes about one minute. Build again after every server change, 
 
 ## Environment
 
-| Variable | Used by | Meaning |
-| --- | --- | --- |
-| `AGENT_STREAM_BUNDLE` | `start-instance.sh`, `stop.sh` | The `meteor build --directory` output. Use a directory of your own |
-| `ROCKETCHAT_LICENSE` or `ROCKETCHAT_LICENSE_FILE` | `start-instance.sh` | The license, or a file with it. Never commit it |
-| `AGENT_STREAM_LOGS` | `start-instance.sh`, `stop.sh` | Logs and pid files. Default: `$AGENT_STREAM_BUNDLE/logs` |
-| `MONGO_HOST` | `start-instance.sh` | Default `localhost:27017` |
+| Variable                                          | Used by                        | Meaning                                                            |
+| ------------------------------------------------- | ------------------------------ | ------------------------------------------------------------------ |
+| `AGENT_STREAM_BUNDLE`                             | `start-instance.sh`, `stop.sh` | The `meteor build --directory` output. Use a directory of your own |
+| `ROCKETCHAT_LICENSE` or `ROCKETCHAT_LICENSE_FILE` | `start-instance.sh`            | The license, or a file with it. Never commit it                    |
+| `AGENT_STREAM_LOGS`                               | `start-instance.sh`, `stop.sh` | Logs and pid files. Default: `$AGENT_STREAM_BUNDLE/logs`           |
+| `MONGO_HOST`                                      | `start-instance.sh`            | Default `localhost:27017`                                          |
 
 `start-instance.sh` also sets the settings that the harness needs: no setup wizard, an admin user (`as-admin`), no REST
 rate limiter, and no two-factor authentication (the seed logs in 1,000 users).
@@ -128,14 +128,14 @@ warm-up (for example S2 and S3 with `--tokens 200 --label warmup`) before a matr
 
 All under `/_agent-stream`, no auth (local use only):
 
-| Route | Does |
-| --- | --- |
+| Route                                                   | Does                                                                                              |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
 | `POST /start` `{ rooms, userId, w, tokens, tps, sink }` | Starts one stream in each room, at the same time. Returns `{ streams: [{ streamId, rid, mid }] }` |
-| `POST /stop` `{ streamId, reason? }` | Ends a stream early (default reason `stopped`) |
-| `POST /kill` `{ streamId }` | Stops a stream with no end delta and no final write, as a producer that dies |
-| `GET /status` | `{ active, queued }`: active streams and sink calls that wait |
-| `GET /snapshot/:streamId` | The producer's `{ text, seq, active }` |
-| `GET /metrics[?reset=1][&gc=1]` | The counters below; `reset=1` starts a new window after it reads; `gc=1` collects first |
+| `POST /stop` `{ streamId, reason? }`                    | Ends a stream early (default reason `stopped`)                                                    |
+| `POST /kill` `{ streamId }`                             | Stops a stream with no end delta and no final write, as a producer that dies                      |
+| `GET /status`                                           | `{ active, queued }`: active streams and sink calls that wait                                     |
+| `GET /snapshot/:streamId`                               | The producer's `{ text, seq, active }`                                                            |
+| `GET /metrics[?reset=1][&gc=1]`                         | The counters below; `reset=1` starts a new window after it reads; `gc=1` collects first           |
 
 `/metrics` returns, for the window since the last reset: `cpu` (`process.cpuUsage()`: user, system, total ms, and % of
 one core), `eventLoop` (`monitorEventLoopDelay` at the default 10 ms resolution, so its floor is about 10 ms),
@@ -145,21 +145,21 @@ calls, sink errors).
 
 ## The metrics in a result
 
-| Field | How |
-| --- | --- |
-| `server.cpuMsPerDeliveredDelta` | CPU ms of all instances in the window, divided by the deltas the viewers received (first receipt, end included) |
-| `server.idleCpuMsPerSec` | Per instance: CPU ms per second in the 5 s idle probe before the window, with the viewers connected |
-| `server.netCpuMs`, `netCpuMsPerDeliveredDelta`, `netCpuMsPerReply` | The same, minus the idle rate of each instance over the window |
-| `server.eventLoopP99Ms`, `cpuPct`, `rssBytes`, `heapUsedBytes` | Per instance, A first |
-| `server.memoryPerConnection` | S4 only: the growth of RSS and heap (after a GC) from before the viewers connect to 5 s after, divided by the viewers |
-| `mongo.db` | `top` counts for the database of the run (`queries`, `getmore`, `insert`, `update`, `remove`, `commands`) |
-| `mongo.server` | `serverStatus().opcounters` of the whole mongod, as the plan asks. Other databases on the same mongod add to it |
-| `mongo.readsPerReply`, `writesPerReply` | From `top`: (`queries` + `getmore`) and (`insert` + `update` + `remove`), divided by the replies |
-| `mongo.idlePerSec`, `netReadsPerReply`, `netWritesPerReply` | The `top` rate of the idle probe, and the counts per reply minus that rate over the window |
-| `broker.eventsPerReply`, `bytesPerReply` | Sent by all instances, divided by the replies |
-| `bytesPerViewerPerReply` | WebSocket payload bytes (no frame headers; the server does not compress) plus REST bodies the adapter reads, per viewer in the window |
-| `latencyMs` | Receive time minus the delta's `ts`, for each first receipt. One host, one clock |
-| `correctness` | Summed over the viewers. See below |
+| Field                                                              | How                                                                                                                                   |
+| ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `server.cpuMsPerDeliveredDelta`                                    | CPU ms of all instances in the window, divided by the deltas the viewers received (first receipt, end included)                       |
+| `server.idleCpuMsPerSec`                                           | Per instance: CPU ms per second in the 5 s idle probe before the window, with the viewers connected                                   |
+| `server.netCpuMs`, `netCpuMsPerDeliveredDelta`, `netCpuMsPerReply` | The same, minus the idle rate of each instance over the window                                                                        |
+| `server.eventLoopP99Ms`, `cpuPct`, `rssBytes`, `heapUsedBytes`     | Per instance, A first                                                                                                                 |
+| `server.memoryPerConnection`                                       | S4 only: the growth of RSS and heap (after a GC) from before the viewers connect to 5 s after, divided by the viewers                 |
+| `mongo.db`                                                         | `top` counts for the database of the run (`queries`, `getmore`, `insert`, `update`, `remove`, `commands`)                             |
+| `mongo.server`                                                     | `serverStatus().opcounters` of the whole mongod, as the plan asks. Other databases on the same mongod add to it                       |
+| `mongo.readsPerReply`, `writesPerReply`                            | From `top`: (`queries` + `getmore`) and (`insert` + `update` + `remove`), divided by the replies                                      |
+| `mongo.idlePerSec`, `netReadsPerReply`, `netWritesPerReply`        | The `top` rate of the idle probe, and the counts per reply minus that rate over the window                                            |
+| `broker.eventsPerReply`, `bytesPerReply`                           | Sent by all instances, divided by the replies                                                                                         |
+| `bytesPerViewerPerReply`                                           | WebSocket payload bytes (no frame headers; the server does not compress) plus REST bodies the adapter reads, per viewer in the window |
+| `latencyMs`                                                        | Receive time minus the delta's `ts`, for each first receipt. One host, one clock                                                      |
+| `correctness`                                                      | Summed over the viewers. See below                                                                                                    |
 
 Correctness, as `lib/viewer.mjs` counts it:
 
