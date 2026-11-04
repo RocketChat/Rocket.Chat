@@ -19,8 +19,8 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"devDependencies": {
-		"@react-aria/focus": "^3.21.1",
-		"@react-aria/visually-hidden": "^3.8.27",
+		"@react-aria/focus": "^3.19.1",
+		"@react-aria/visually-hidden": "^3.8.19",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/css-in-js": "workspace:^",
 		"@rocket.chat/fuselage": "workspace:~",
