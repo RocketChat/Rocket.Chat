@@ -1,9 +1,10 @@
 import type { BlockElement } from './BlockElement';
 import { BlockElementType } from './BlockElementType';
+import { toCanonicalElementType } from './elementTypeAliases';
 import type { ActionsBlock } from './layout/ActionsBlock';
 
 export const isActionsBlockElement = (block: BlockElement): block is ActionsBlock['elements'][number] => {
-	switch (block.type) {
+	switch (toCanonicalElementType(block.type)) {
 		case BlockElementType.BUTTON:
 		case BlockElementType.DATEPICKER:
 		case BlockElementType.DATETIMEPICKER:
