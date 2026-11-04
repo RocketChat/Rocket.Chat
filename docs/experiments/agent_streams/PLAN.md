@@ -42,7 +42,7 @@ Each update carries the full `IMessage`, with the `md` AST. The total bytes of o
 - Put all POC code behind the environment variable `AGENT_STREAM_POC=1`. Without it, the server must behave as `develop` does.
 - Keep the POC small. Skip production polish, but write each skipped item in the report under "Production gaps".
 - Commit your report and your raw results to your branch, at the paths of section 11. Do not leave an artifact that the user or the next subagent needs only in a scratchpad.
-- Use your own ports and database. Phase 0: 3000 and 3002. H1: 3110 and 3111. H2: 3210 and 3211. H3: 3300 and 3301. Mongo database name: `agentstream_<id>`.
+- Use the ports 3000 and 3002 for every exploration. The explorations run one at a time, so the ports do not collide. Use your own database: `agentstream_<id>`.
 - Do not use the `mastra-observability-*` Docker containers or their ports: 3001, 3100, 3200, 4317, 4318 and 9090. Use the observability stack of Phase 0, task 9.
 - Give the license to the run scripts with `ROCKETCHAT_LICENSE_FILE=/private/tmp/claude-501/-Users-dgubert-dev-RocketChat-worktrees-main/db4740ae-bf22-4d3a-8a01-f77e259cc97b/scratchpad/agent-stream/license.txt`. Do not commit the license, and do not write its value in a report.
 - Do not commit the seed file. It holds the login tokens of the viewers.

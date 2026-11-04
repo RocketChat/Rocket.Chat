@@ -9,13 +9,6 @@ scrape_configs:
   - job_name: rocketchat
     static_configs:
       - targets: ['host.docker.internal:13000', 'host.docker.internal:13002']
-        labels: { exploration: h0 }
-      - targets: ['host.docker.internal:13110', 'host.docker.internal:13111']
-        labels: { exploration: h1 }
-      - targets: ['host.docker.internal:13210', 'host.docker.internal:13211']
-        labels: { exploration: h2 }
-      - targets: ['host.docker.internal:13300', 'host.docker.internal:13301']
-        labels: { exploration: h3 }
   - job_name: tempo
     static_configs:
       - targets: ['tempo:3200']

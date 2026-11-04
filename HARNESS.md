@@ -86,7 +86,7 @@ rate limiter, and no two-factor authentication (the seed logs in 1,000 users).
 
 ## Run a deployment
 
-Use your own ports and your own database (`agentstream_<id>`).
+Every exploration uses the ports 3000 and 3002, because the explorations run one at a time. Use your own database (`agentstream_<id>`).
 
 > Check that your ports are free before you start. On the Phase 0 machine, Docker containers held 3001 (Grafana),
 > 3100 (Loki) and 3200 (Tempo). Phase 0 used 3000 and 3002.
@@ -294,8 +294,7 @@ docker compose -f agent-stream/docker-compose-observability.yml down # add -v to
   `OTEL_RESOURCE_ATTRIBUTES=service.instance.id=<port>`. All instances have the service name `core`. The instance id
   tells them apart.
 - `OVERWRITE_SETTING_Prometheus_Enabled=true` and `PROMETHEUS_PORT=<port + 10000>`: the exporter of 3000 is on 13000.
-  Prometheus has a target for each port of PLAN.md section 3, with the label `exploration` (`h0` to `h3`). The target of
-  an instance that does not run is `down`.
+  Prometheus scrapes 13000 and 13002. The target of an instance that does not run is `down`.
 
 Without the switch, `start-instance.sh` sets `OVERWRITE_SETTING_Prometheus_Enabled=false`. The override of a setting
 stays in the database, so this start turns off an exporter that an earlier start turned on. Give all instances of a
