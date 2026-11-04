@@ -7,6 +7,7 @@ import './sessions';
 import './chat';
 import './roles';
 import './apps/uikit';
+import './apps/home';
 import './engagementDashboard';
 import './audit';
 import './abac';

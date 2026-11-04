@@ -105,7 +105,7 @@ export class CloudAnnouncementsModule implements IUiKitCoreApp {
 				throw new InvalidCloudAnnouncementInteractionError(`Invalid appId`);
 			}
 
-			if (serverInteraction.triggerId !== interaction.triggerId) {
+			if (!('triggerId' in serverInteraction) || serverInteraction.triggerId !== interaction.triggerId) {
 				throw new InvalidCloudAnnouncementInteractionError(`Invalid triggerId`);
 			}
 

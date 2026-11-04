@@ -19,26 +19,26 @@ Each surface has one list of accepted layout blocks, exported by `@rocket.chat/u
 
 ✅ means the block is in the surface's list, so the type, the `ui-kit` parser and the Fuselage renderer all accept it. The attachment surface has no Fuselage renderer, so its ✅ only means the block is in the list. The Livechat column covers message blocks in the Livechat widget.
 
-| Block | message | Livechat (message) | modal | banner | contextualBar | attachment |
-| --- | --- | --- | --- | --- | --- | --- |
-| `actions` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| `callout` | ✅ | — | ✅ | ✅ | ✅ | ✅ |
-| `context` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| `context_actions` | ✅ | — | — | — | — | — |
-| `divider` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| `file` | ✅ | — | — | — | — | — |
-| `header` | ✅ | — | ✅ | — | ✅ | — |
-| `image` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| `info_card` | ✅ | — | — | ✅ | — | — |
-| `input` | ✅ | — | ✅ | ✅ | ✅ | — |
-| `markdown` | ✅ | — | ✅ | — | ✅ | — |
-| `preview` | ✅ | — | ✅ | ✅ | ✅ | — |
-| `rich_text` | ✅ | — | ✅ | — | ✅ | — |
-| `section` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| `tab_navigation` | — | — | — | — | ✅ | — |
-| `table` | ✅ | — | ✅ | — | ✅ | — |
-| `video` | ✅ | — | ✅ | — | ✅ | — |
-| `video_conf` | ✅ | — | — | — | — | — |
+| Block | message | Livechat (message) | modal | banner | contextualBar | home | attachment |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `actions` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `callout` | ✅ | — | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `context` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `context_actions` | ✅ | — | — | — | — | — | — |
+| `divider` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `file` | ✅ | — | — | — | — | — | — |
+| `header` | ✅ | — | ✅ | — | ✅ | ✅ | — |
+| `image` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `info_card` | ✅ | — | — | ✅ | — | — | — |
+| `input` | ✅ | — | ✅ | ✅ | ✅ | ✅ | — |
+| `markdown` | ✅ | — | ✅ | — | ✅ | ✅ | — |
+| `preview` | ✅ | — | ✅ | ✅ | ✅ | ✅ | — |
+| `rich_text` | ✅ | — | ✅ | — | ✅ | ✅ | — |
+| `section` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `tab_navigation` | — | — | — | — | ✅ | — | — |
+| `table` | ✅ | — | ✅ | — | ✅ | ✅ | — |
+| `video` | ✅ | — | ✅ | — | ✅ | ✅ | — |
+| `video_conf` | ✅ | — | — | — | — | — | — |
 
 `file_input` needs a room to store the files in, so it only works in a modal or contextual bar opened from a conversation; in a banner, or a modal opened with no room on screen, it renders disabled.
 
