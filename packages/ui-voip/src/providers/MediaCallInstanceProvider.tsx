@@ -1,4 +1,4 @@
-import { useUser } from '@rocket.chat/ui-contexts';
+import type { MediaSignalingSession } from '@rocket.chat/media-signaling';
 import { useMemo, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 
@@ -6,18 +6,15 @@ import { useAudioStream } from './useAudioStream';
 import useAvailableViewTracker from './useAvailableViewTracker';
 import { useGetAutocompleteOptions } from './useGetAutocompleteOptions';
 import { useInstanceState } from './useInstanceState';
-import { useMediaSessionInstance } from './useMediaSessionInstance';
 import { MediaCallInstanceContext } from '../context/MediaCallInstanceContext';
 
 export type MediaCallInstanceProviderProps = {
 	children: ReactNode;
-	enabled?: boolean;
+	instance: MediaSignalingSession | undefined;
 };
 
-const MediaCallInstanceProvider = ({ children, enabled = true }: MediaCallInstanceProviderProps) => {
+const MediaCallInstanceProvider = ({ children, instance }: MediaCallInstanceProviderProps) => {
 	const { currentViews, registerView, unregisterView } = useAvailableViewTracker();
-	const user = useUser();
-	const instance = useMediaSessionInstance(user?._id, enabled);
 
 	const { openWidget, closeWidget, targetPeer, setTargetPeer, targetWidgetVisibility, openRoomId, setOpenRoomId } =
 		useInstanceState(instance);
