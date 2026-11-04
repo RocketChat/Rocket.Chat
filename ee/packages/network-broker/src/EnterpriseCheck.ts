@@ -1,10 +1,12 @@
-import type { ServiceSchema } from 'moleculer';
+import type { Service, ServiceSchema } from 'moleculer';
 
 import { startLicenseEnforcement } from './licenseEnforcement';
 
+type EnterpriseCheckService = Service & { stopLicenseEnforcement?: () => void };
+
 export const EnterpriseCheck: ServiceSchema = {
 	name: 'EnterpriseCheck',
-	async started(): Promise<void> {
+	async started(this: EnterpriseCheckService): Promise<void> {
 		// `this` is the host service, so `this.name` is the mixed-in service name
 		this.stopLicenseEnforcement = startLicenseEnforcement({
 			serviceName: this.name,
@@ -14,7 +16,7 @@ export const EnterpriseCheck: ServiceSchema = {
 			fatal: (message: string) => this.broker.fatal(message),
 		});
 	},
-	async stopped(): Promise<void> {
+	async stopped(this: EnterpriseCheckService): Promise<void> {
 		this.stopLicenseEnforcement?.();
 	},
 };

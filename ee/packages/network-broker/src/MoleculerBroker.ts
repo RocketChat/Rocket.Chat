@@ -3,7 +3,7 @@ import Stream from 'node:stream';
 import { asyncLocalStorage, getInstanceMethods } from '@rocket.chat/core-services';
 import type { CallingOptions, IBroker, IBrokerNode, IServiceMetrics, IServiceClass, EventSignatures } from '@rocket.chat/core-services';
 import { injectCurrentContext, tracerSpan } from '@rocket.chat/tracing';
-import type { ServiceBroker, Context, ServiceSchema } from 'moleculer';
+import type { ServiceBroker, Context, ServiceEventLegacyHandler, ServiceSchema } from 'moleculer';
 
 import { EnterpriseCheck } from './EnterpriseCheck';
 
@@ -39,13 +39,13 @@ export class MoleculerBroker implements IBroker {
 			return;
 		}
 
-		const context = asyncLocalStorage.getStore();
+		const ctx: Context | undefined = asyncLocalStorage.getStore()?.ctx;
 
 		const stream = data?.[0]?.streamParam;
 		const isStreamingCall = !!stream;
 
-		if (context?.ctx?.call) {
-			return context.ctx.call(method, isStreamingCall ? stream : data, {
+		if (ctx?.call) {
+			return ctx.call(method, isStreamingCall ? stream : data, {
 				...options,
 				...(isStreamingCall && { meta: { ...((options as any)?.meta || {}), details: data[0].details } }),
 			});
@@ -80,7 +80,7 @@ export class MoleculerBroker implements IBroker {
 	createService(instance: IServiceClass, serviceDependencies: string[] = []): void {
 		const methods = getInstanceMethods(instance);
 
-		const serviceInstance = instance as any;
+		const serviceInstance = instance as unknown as Record<string, (...args: unknown[]) => unknown>;
 
 		const name = instance.getName();
 		if (!name) {
@@ -120,7 +120,7 @@ export class MoleculerBroker implements IBroker {
 
 		for (const method of methods) {
 			if (method.match(/^on[A-Z]/)) {
-				service.events[events[method]] = serviceInstance[method].bind(serviceInstance);
+				service.events[events[method]] = serviceInstance[method].bind(serviceInstance) as ServiceEventLegacyHandler;
 				continue;
 			}
 
@@ -139,7 +139,7 @@ export class MoleculerBroker implements IBroker {
 				continue;
 			}
 
-			service.actions[method] = async (ctx: Context<[], { optl?: unknown; details?: unknown }>): Promise<any> => {
+			service.actions[method] = async (ctx: Context<unknown[], { optl?: unknown; details?: unknown }>): Promise<unknown> => {
 				const isStreamingCall = Stream.isReadable(ctx.params as any);
 				const params = isStreamingCall ? [{ streamParam: ctx.params, details: ctx.meta?.details }] : ctx.params;
 
