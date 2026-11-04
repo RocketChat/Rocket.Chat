@@ -1,5 +1,5 @@
 import breakpointTokens from '@rocket.chat/fuselage-tokens/dist/breakpoints.json';
-import type { Preview } from '@storybook/react-webpack5';
+import type { Preview } from '@storybook/react';
 import { useSyncExternalStore } from 'react';
 
 import { PaletteStyleTag } from '../src';
