@@ -11,10 +11,12 @@ import type { ImageBlock } from './layout/ImageBlock';
 import type { InfoCardBlock } from './layout/InfoCardBlock';
 import type { InputBlock } from './layout/InputBlock';
 import type { MarkdownBlock } from './layout/MarkdownBlock';
+import type { PlanBlock } from './layout/PlanBlock';
 import type { PreviewBlock } from './layout/PreviewBlock';
 import type { RichTextBlock } from './layout/RichTextBlock';
 import type { SectionBlock } from './layout/SectionBlock';
 import type { TableBlock } from './layout/TableBlock';
+import type { TaskCardBlock } from './layout/TaskCardBlock';
 import type { VideoBlock } from './layout/VideoBlock';
 import type { VideoConferenceBlock } from './layout/VideoConferenceBlock';
 
@@ -37,4 +39,6 @@ export type LayoutBlock =
 	| CalloutBlock
 	| ExperimentalTabNavigationBlock
 	| InfoCardBlock
-	| FileBlock;
+	| FileBlock
+	| TaskCardBlock
+	| PlanBlock;

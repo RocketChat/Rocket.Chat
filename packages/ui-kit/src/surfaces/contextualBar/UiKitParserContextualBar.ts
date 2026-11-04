@@ -11,11 +11,13 @@ export const contextualBarSurfaceLayoutBlockTypes = [
 	'image',
 	'input',
 	'markdown',
+	'plan',
 	'preview',
 	'rich_text',
 	'section',
 	'tab_navigation',
 	'table',
+	'task_card',
 	'video',
 ] as const satisfies readonly RenderableLayoutBlock['type'][];
 
