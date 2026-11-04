@@ -33,6 +33,10 @@ Decided in [`useUiKitState`](../../../packages/fuselage-ui-kit/src/hooks/useUiKi
   - `dispatchActionConfig: ['on_item_selected']` makes the element send on selection.
   - `dispatchActionConfig: ['on_character_entered']` on `plain_text_input` sends on typing, without a loading state so the field keeps focus. Modal and contextual bar debounce it by 700 ms; message and banner do not.
 
+### Confirmation dialogs
+
+An element that carries `confirm` (every `Actionable` element) does not send `blockAction` straight away. [`useUiKitState`](../../../packages/fuselage-ui-kit/src/hooks/useUiKitState.ts) first opens a dialog with `title`, `text`, the `confirm` and `deny` labels, and `style` on the confirm button; the action is sent only if the user confirms, and denying or dismissing does nothing. The dialog is mounted on its own root in `document.body`, so it stacks above an open modal and leaves it open. Elements that only update local state inside an `input` block never ask. The Livechat renderer does not honour `confirm`.
+
 ### Options for external selects
 
 `external_select` and `multi_external_select` ask the app for their options while the user types. The client waits 300 ms after the last keystroke, then sends `blockSuggestion` only once the query has at least `min_query_length` characters (3 by default). The request carries `actionId`, `blockId`, `appId`, `value` (the query) and a `container` (`view` with `viewId`, or `message` with `mid` and `rid`).
