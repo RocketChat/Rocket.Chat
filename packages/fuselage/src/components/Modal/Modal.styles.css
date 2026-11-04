@@ -30,22 +30,27 @@
 	}
 }
 
-/* end of generated */
-
 .rcx-modal__content-wrapper {
 	margin-inline: 24px;
 }
 
 .rcx-modal__content-wrapper--fill {
-	height: 100%;
 	padding-block-end: 16px;
+}
+
+.rcx-modal__icon {
+	padding-block: 4px;
+}
+
+/* end of generated */
+
+.rcx-modal__content-wrapper--fill {
+	height: 100%;
 }
 
 .rcx-modal__icon {
 	display: flex;
 	align-items: center;
-
-	padding-block: 4px;
 }
 
 .rcx-modal__icon--align-end {

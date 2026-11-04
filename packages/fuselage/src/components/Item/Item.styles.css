@@ -41,6 +41,26 @@
 	border-top: 1px solid var(--rcx-item-color-stroke-divider, var(--rcx-color-stroke-extra-light, #ebecef));
 }
 
+.rcx-item-divider.rcx-item-divider--inset-sm,
+.rcx-item-divider.rcx-item-divider--inset-md,
+.rcx-item-divider.rcx-item-divider--inset-lg {
+	margin-inline: calc(4px + var(--rcx-item-inset-inline));
+}
+
+.rcx-item-group + .rcx-item-group {
+	margin-block-start: 8px;
+}
+
+.rcx-item-group-title:is(button) {
+	gap: 4px;
+}
+
+@media (pointer: coarse) {
+	.rcx-item.rcx-item {
+		padding-block: 8px;
+	}
+}
+
 /* end of generated */
 
 /* The frames' display classes come after the reset's `[hidden]` rule and would otherwise win over it */
@@ -120,18 +140,8 @@
 	margin-inline-end: var(--rcx-item-inset-inline);
 }
 
-.rcx-item-divider.rcx-item-divider--inset-sm,
-.rcx-item-divider.rcx-item-divider--inset-md,
-.rcx-item-divider.rcx-item-divider--inset-lg {
-	margin-inline: calc(4px + var(--rcx-item-inset-inline));
-}
-
 .rcx-item-group {
 	container: rcx-item-group / inline-size;
-}
-
-.rcx-item-group + .rcx-item-group {
-	margin-block-start: 8px;
 }
 
 .rcx-item--focus-managed:focus {
@@ -179,8 +189,6 @@
 	border: 0;
 	outline: 0;
 	background: none;
-
-	gap: 4px;
 }
 
 .rcx-item__actions.rcx-item__actions--reveal-hover {
@@ -237,12 +245,6 @@
 		display: block;
 
 		margin-inline-start: 0;
-	}
-}
-
-@media (pointer: coarse) {
-	.rcx-item.rcx-item {
-		padding-block: 8px;
 	}
 }
 

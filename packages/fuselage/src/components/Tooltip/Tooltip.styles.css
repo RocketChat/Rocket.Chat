@@ -26,6 +26,15 @@
 		var(--rcx-tooltip-dark-background-color, var(--rcx-color-surface-dark, #1f2329));
 }
 
+.rcx-tooltip--dir-left::after,
+.rcx-tooltip--dir-right::after {
+	margin-block-start: -4px;
+}
+
+.rcx-tooltip--pos-middle::after {
+	margin-left: -4px;
+}
+
 /* end of generated */
 
 .rcx-tooltip--dir-top::after {
@@ -44,8 +53,6 @@
 	inset-block-start: 50%;
 	right: -4px;
 
-	margin-block-start: -4px;
-
 	transform: rotate(-135deg);
 }
 
@@ -53,15 +60,11 @@
 	inset-block-start: 50%;
 	left: -4px;
 
-	margin-block-start: -4px;
-
 	transform: rotate(45deg);
 }
 
 .rcx-tooltip--pos-middle::after {
 	left: 50%;
-
-	margin-left: -4px;
 }
 
 .rcx-tooltip--pos-start::after {
