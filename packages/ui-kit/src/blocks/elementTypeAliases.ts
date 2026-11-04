@@ -1,22 +1,19 @@
 import type { BlockElement } from './BlockElement';
-import type { CheckboxElement } from './elements/CheckboxElement';
-import type { RadioButtonElement } from './elements/RadioButtonElement';
-import type { TimePickerElement } from './elements/TimePickerElement';
 
-const elementTypeAliases: Record<string, BlockElement['type']> = {
+const elementTypeAliases = {
 	checkboxes: 'checkbox',
 	radio_buttons: 'radio_button',
 	timepicker: 'time_picker',
-};
+} as const;
 
-export type AliasedBlockElement =
-	| (Omit<CheckboxElement, 'type'> & { type: 'checkboxes' })
-	| (Omit<RadioButtonElement, 'type'> & { type: 'radio_buttons' })
-	| (Omit<TimePickerElement, 'type'> & { type: 'timepicker' });
+export type ElementTypeAlias = keyof typeof elementTypeAliases;
 
-export const toCanonicalElementType = (type: string): BlockElement['type'] => elementTypeAliases[type] ?? type;
+export type CanonicalElementType = Exclude<BlockElement['type'], ElementTypeAlias>;
 
-export const toCanonicalElement = (element: BlockElement | AliasedBlockElement): BlockElement => {
+export const toCanonicalElementType = (type: BlockElement['type']): CanonicalElementType =>
+	type in elementTypeAliases ? elementTypeAliases[type as ElementTypeAlias] : (type as CanonicalElementType);
+
+export const toCanonicalElement = (element: BlockElement): BlockElement => {
 	const type = toCanonicalElementType(element.type);
-	return type === element.type ? (element as BlockElement) : ({ ...element, type } as BlockElement);
+	return type === element.type ? element : ({ ...element, type } as BlockElement);
 };
