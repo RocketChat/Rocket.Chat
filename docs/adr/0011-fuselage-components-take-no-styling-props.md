@@ -1,4 +1,4 @@
-# ADR 0008 — Fuselage components take no styling props
+# ADR 0011 — Fuselage components take no styling props
 
 - **Status:** accepted
 - **Date:** 2026-10
