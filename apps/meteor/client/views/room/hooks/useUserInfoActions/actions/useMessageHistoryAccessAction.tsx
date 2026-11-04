@@ -1,6 +1,6 @@
 import type { IRoom, ISubscription, IUser, Serialized } from '@rocket.chat/core-typings';
 import { GenericModal } from '@rocket.chat/ui-client';
-import { useEndpoint, useSetModal, useToastMessageDispatch, useUserRoom } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useSetModal, useToastMessageDispatch, useUserId, useUserRoom } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -21,6 +21,7 @@ export const useMessageHistoryAccessAction = (
 	const { t } = useTranslation();
 	const room = useUserRoom(rid);
 	const canManage = useCanManageMessageHistory(rid);
+	const ownUserId = useUserId();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const queryClient = useQueryClient();
@@ -48,7 +49,7 @@ export const useMessageHistoryAccessAction = (
 	});
 
 	return useMemo(() => {
-		if (!canManage || historyVisibleFrom === undefined) {
+		if (!canManage || historyVisibleFrom === undefined || user._id === ownUserId) {
 			return undefined;
 		}
 
@@ -80,5 +81,5 @@ export const useMessageHistoryAccessAction = (
 			onClick,
 			type: 'management' as const,
 		};
-	}, [canManage, historyVisibleFrom, mutate, setModal, t, user.username]);
+	}, [canManage, historyVisibleFrom, mutate, ownUserId, setModal, t, user._id, user.username]);
 };

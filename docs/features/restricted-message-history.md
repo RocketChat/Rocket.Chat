@@ -71,7 +71,7 @@ them.
 - **Edit Room → Advanced settings** shows "Hide earlier messages from new members" while the feature is
   on, for the room types above.
 - **Members list.** People who can manage it get "Hide earlier messages" / "Show earlier messages" in a
-  member's menu, and see an icon next to restricted members. Hiding asks for confirmation; restoring
+  member's menu (not on their own row), and see an icon next to restricted members. Hiding asks for confirmation; restoring
   doesn't. The user info panel doesn't offer the action, because it doesn't know the member's state.
 - **Restricted member.** The start of the timeline says from which date messages are available. A reply
   sent to the channel from a hidden thread says the thread isn't available instead of quoting it, and

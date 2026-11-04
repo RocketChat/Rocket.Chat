@@ -37,6 +37,14 @@ describe('useMessageHistoryAccessAction', () => {
 		expect(result.current).toBeUndefined();
 	});
 
+	it('is not offered on your own row', () => {
+		const { result } = renderHook(() => useMessageHistoryAccessAction({ _id: 'john.doe', username: 'john.doe' }, room._id, null), {
+			wrapper: appRoot().build(),
+		});
+
+		expect(result.current).toBeUndefined();
+	});
+
 	it('offers to hide the history of a member who sees all of it', () => {
 		const { result } = renderHook(() => useMessageHistoryAccessAction(member, room._id, null), { wrapper: appRoot().build() });
 
