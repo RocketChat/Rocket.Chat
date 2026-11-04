@@ -25,8 +25,15 @@ const Block = ({ appId, blockId, children }: BlockProps) => (
 	</BlockContext.Provider>
 );
 
+export const useBlockActionDispatcher = (actionId: string) => {
+	const { appId, blockId } = useContext(BlockContext);
+	const dispatchAction = useDispatchAction();
+
+	return useCallback((payload = {}) => dispatchAction({ appId, blockId, actionId, payload }), [actionId, appId, blockId, dispatchAction]);
+};
+
 export const usePerformAction = (actionId: string) => {
-	const { appId } = useContext(BlockContext);
+	const { appId, blockId } = useContext(BlockContext);
 	const dispatchAction = useDispatchAction();
 
 	const [performing, setPerforming] = useState(false);
@@ -46,6 +53,7 @@ export const usePerformAction = (actionId: string) => {
 			try {
 				await dispatchAction({
 					appId,
+					blockId,
 					actionId,
 					payload,
 				});
@@ -55,7 +63,7 @@ export const usePerformAction = (actionId: string) => {
 				}
 			}
 		},
-		[actionId, appId, dispatchAction],
+		[actionId, appId, blockId, dispatchAction],
 	);
 
 	return [perform, performing] as const;

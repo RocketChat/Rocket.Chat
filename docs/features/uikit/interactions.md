@@ -98,7 +98,23 @@ The same trigger ID check applies. A pushed view is shown only when it carries a
 
 ## Livechat
 
-The Livechat widget sends `blockAction` for message blocks to the same endpoint, authenticated with the `x-visitor-token` header. On the server this becomes the `IUIKitLivechatInteractionHandler` event. The widget ignores the response, so apps cannot open modals or show errors there.
+The Livechat widget sends its interactions to the same endpoint, authenticated with the `x-visitor-token` header. On the server a request with a visitor becomes the `IUIKitLivechatInteractionHandler` event instead of `IUIKitInteractionHandler`:
+
+| Type | App method | Context |
+| --- | --- | --- |
+| `blockAction` | `executeLivechatBlockActionHandler` | `UIKitLivechatBlockInteractionContext` |
+| `viewSubmit` | `executeLivechatViewSubmitHandler` | `UIKitLivechatViewSubmitInteractionContext` |
+| `viewClosed` | `executeLivechatViewClosedHandler` | `UIKitLivechatViewCloseInteractionContext` |
+
+The widget applies the response: `modal.open` and `modal.update` draw a modal, `modal.close` closes it, and `errors` marks the inputs named by `actionId`. Other response types are ignored. The same trigger ID check as for users applies, so a modal opens only as the answer to an interaction the widget sent in the last 5 seconds.
+
+Inside a modal the widget follows the [view state](#view-state) rules: elements in an `input` block only update the state that travels with `viewSubmit`, and elements in `actions` or as a `section` accessory send `blockAction` with `container.type` set to `view`. After `viewSubmit` the modal is disposed unless the response is `errors` or `modal.update`; after `viewClosed` it always is.
+
+Differences from the web client:
+
+- The server does not record the views apps open for a visitor, so `viewSubmit` and `viewClosed` carry the view as the widget holds it.
+- `viewSubmit` and `viewClosed` do not carry `rid`; `room` is empty in the app handlers.
+- Apps cannot push views to a visitor outside an interaction response. `UIController` needs a user, and no `uiInteraction` stream exists for visitors.
 
 ## Validation
 

@@ -10,6 +10,8 @@ import handleUIKitInteraction, {
 	UIKitBlockInteractionContext,
 	UIKitBlockSuggestionInteractionContext,
 	UIKitLivechatBlockInteractionContext,
+	UIKitLivechatViewCloseInteractionContext,
+	UIKitLivechatViewSubmitInteractionContext,
 	UIKitViewCloseInteractionContext,
 	UIKitViewSubmitInteractionContext,
 } from '../uikit/handler';
@@ -31,6 +33,8 @@ describe('handlers > uikit', () => {
 		executeViewClosedHandler: (context: any): Promise<any> => Promise.resolve(context),
 		executeActionButtonHandler: (context: any): Promise<any> => Promise.resolve(context),
 		executeLivechatBlockActionHandler: (context: any): Promise<any> => Promise.resolve(context),
+		executeLivechatViewSubmitHandler: (context: any): Promise<any> => Promise.resolve(context),
+		executeLivechatViewClosedHandler: (context: any): Promise<any> => Promise.resolve(context),
 	};
 
 	beforeEach(() => {
@@ -116,5 +120,30 @@ describe('handlers > uikit', () => {
 
 		const result = await handleUIKitInteraction(request);
 		assert.ok(result instanceof UIKitLivechatBlockInteractionContext, `Expected instance of ${UIKitLivechatBlockInteractionContext.name}`);
+	});
+
+	it('successfully handles a call for "executeLivechatViewSubmitHandler"', async () => {
+		const request = makeMockRequest('app:executeLivechatViewSubmitHandler', {
+			appId: 'appId',
+			visitor: {},
+			view: {},
+			triggerId: 'triggerId',
+		});
+
+		const result = await handleUIKitInteraction(request);
+		assert.ok(
+			result instanceof UIKitLivechatViewSubmitInteractionContext,
+			`Expected instance of ${UIKitLivechatViewSubmitInteractionContext.name}`,
+		);
+	});
+
+	it('successfully handles a call for "executeLivechatViewClosedHandler"', async () => {
+		const request = makeMockRequest('app:executeLivechatViewClosedHandler', { appId: 'appId', visitor: {}, view: {}, isCleared: false });
+
+		const result = await handleUIKitInteraction(request);
+		assert.ok(
+			result instanceof UIKitLivechatViewCloseInteractionContext,
+			`Expected instance of ${UIKitLivechatViewCloseInteractionContext.name}`,
+		);
 	});
 });
