@@ -9,7 +9,7 @@ import type { BlockProps } from '../utils/BlockProps';
 export type FormattedTextInputElementProps = BlockProps<UiKit.NumberInputElement | UiKit.EmailTextInputElement | UiKit.UrlTextInputElement>;
 
 const FormattedTextInputElement = ({ block, context }: FormattedTextInputElementProps) => {
-	const [{ loading, value, error }, action] = useUiKitState(block, context);
+	const [{ loading, value, error, onKeyDown }, action] = useUiKitState(block, context);
 	const fromTextObjectToString = useStringFromTextObject();
 
 	if (block.type === 'number_input') {
@@ -22,6 +22,7 @@ const FormattedTextInputElement = ({ block, context }: FormattedTextInputElement
 				error={error}
 				value={value}
 				onChange={action}
+				onKeyDown={onKeyDown}
 				placeholder={fromTextObjectToString(block.placeholder)}
 				step={block.is_decimal_allowed ? 'any' : 1}
 				// The browser counts steps from `min`, so a fractional minimum would make fractional values valid.
@@ -42,6 +43,7 @@ const FormattedTextInputElement = ({ block, context }: FormattedTextInputElement
 			error={error}
 			value={value}
 			onChange={action}
+			onKeyDown={onKeyDown}
 			placeholder={fromTextObjectToString(block.placeholder)}
 		/>
 	);
