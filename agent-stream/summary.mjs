@@ -169,6 +169,6 @@ for (const key of sortedKeys) {
 	const [deployment, scenario, w] = key.split('|');
 	const total = (field) => runs.reduce((sum, r) => sum + r.correctness[field], 0);
 	console.log(
-		`| ${deployment} | ${scenario} | ${scenario === 'S4' ? '-' : w} | ${runs.length} | ${['gapEvents', 'missingSeqs', 'dupes', 'outOfOrder', 'staleAfterSnapshot', 'reconnects', 'errors', 'notEnded', 'textMismatch', 'persistedNotDone'].map(total).join(' | ')} |`,
+		`| ${deployment} | ${scenario} | ${scenario === 'S4' ? '-' : w} | ${runs.length} | ${['gapEvents', 'missingSeqs', 'dupes', 'outOfOrder', 'staleAfterSnapshot', 'reconnects', 'errors', 'notEnded', 'blocksMismatch', 'persistedNotDone'].map(total).join(' | ')} |`,
 	);
 }

@@ -6,7 +6,7 @@
 //          [--cmd "<shell command>"]   restart: restarts the viewer's instance; crash: kills the producer's instance
 import { execSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
-import { parseArgs } from 'node:util';
+import { isDeepStrictEqual, parseArgs } from 'node:util';
 
 import { adapters } from './adapters/index.mjs';
 import { Viewer } from './lib/viewer.mjs';
@@ -43,13 +43,14 @@ const persistedMessage = async (mid) => {
 				headers: { 'X-User-Id': user.userId, 'X-Auth-Token': user.token },
 			});
 			const { message } = await res.json();
-			return { text: message.msg, streaming: message.streaming };
+			return { blocks: message.blocks, streaming: message.streaming };
 		} catch {
 			// that instance is down; try the other one
 		}
 	}
 	return undefined;
 };
+const outputText = (blocks) => blocks.find((block) => block.type === 'section')?.text.text ?? '';
 const waitFor = async (predicate, ms) => {
 	const until = Date.now() + ms;
 	while (!predicate() && Date.now() < until) {
@@ -89,16 +90,18 @@ switch (args.case) {
 		execSync(args.cmd, { stdio: 'inherit' });
 		break;
 	case 'restart': {
-		const textBefore = viewer.text.length;
+		const outputBefore = outputText(viewer.blocks).length;
 		execSync(args.cmd, { stdio: 'inherit' });
-		notes.push(`viewer had ${textBefore} chars when its instance went down`);
+		notes.push(`viewer had ${outputBefore} output chars when its instance went down`);
 		let attempts = 0;
 		while (!(await viewer.reconnect().then(() => !viewer.lastError))) {
 			attempts++;
 			viewer.lastError = undefined;
 			await sleep(1000);
 		}
-		notes.push(`reconnected after ${attempts} failed attempts, resumed at seq ${viewer.lastSeq} with ${viewer.text.length} chars`);
+		notes.push(
+			`reconnected after ${attempts} failed attempts, resumed at seq ${viewer.lastSeq} with ${outputText(viewer.blocks).length} output chars`,
+		);
 		break;
 	}
 	default:
@@ -115,16 +118,17 @@ console.log(
 			case: args.case,
 			viewerEnded: ended,
 			viewerEndReason: viewer.endReason,
-			viewerChars: viewer.text.length,
-			persistedChars: persisted?.text.length,
+			viewerBlocks: viewer.blocks.length,
+			persistedBlocks: persisted?.blocks.length,
 			persistedStreaming: persisted?.streaming,
-			viewerTextEqualsPersisted: viewer.text === persisted?.text,
-			viewerTail: viewer.text.slice(-40),
-			persistedTail: persisted?.text.slice(-40),
+			viewerBlocksEqualPersisted: isDeepStrictEqual(viewer.blocks, persisted?.blocks),
+			taskStatuses: persisted?.blocks.find((block) => block.type === 'plan')?.tasks.map((task) => `${task.title}: ${task.status}`),
+			viewerTail: outputText(viewer.blocks).slice(-40),
+			persistedTail: outputText(persisted?.blocks ?? []).slice(-40),
 			stats: viewer.result(),
 			notes,
 		},
-		(key, value) => (key === 'text' ? undefined : value),
+		(key, value) => (key === 'blocks' ? undefined : value),
 		2,
 	),
 );

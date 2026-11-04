@@ -5,7 +5,7 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import os from 'node:os';
 import { join } from 'node:path';
-import { parseArgs } from 'node:util';
+import { isDeepStrictEqual, parseArgs } from 'node:util';
 import { Worker } from 'node:worker_threads';
 
 import { MongoClient } from 'mongodb';
@@ -133,15 +133,13 @@ const idleMetrics = await metricsOf('?reset=1');
 // --- the measured window
 // busy and total CPU ms of the whole machine, to flag runs that shared the machine with other work
 const machineTimes = () =>
-	os
-		.cpus()
-		.reduce(
-			(acc, { times }) => ({
-				busy: acc.busy + times.user + times.nice + times.sys + times.irq,
-				total: acc.total + times.user + times.nice + times.sys + times.irq + times.idle,
-			}),
-			{ busy: 0, total: 0 },
-		);
+	os.cpus().reduce(
+		(acc, { times }) => ({
+			busy: acc.busy + times.user + times.nice + times.sys + times.irq,
+			total: acc.total + times.user + times.nice + times.sys + times.irq + times.idle,
+		}),
+		{ busy: 0, total: 0 },
+	);
 const machineBefore = machineTimes();
 const mongoBefore = await mongoCounters();
 const cpuBefore = process.cpuUsage();
@@ -216,7 +214,7 @@ for (const { streamId, rid, mid } of started) {
 		headers: { 'X-User-Id': viewer.userId, 'X-Auth-Token': viewer.token },
 	});
 	persisted[streamId] = {
-		text: message.msg,
+		blocks: message.blocks,
 		state: message.streaming?.state,
 		seq: message.streaming?.seq,
 		bytes: JSON.stringify(message).length,
@@ -240,7 +238,9 @@ const idleCpuMsPerSec = idleMetrics.map((m) => (m.cpu.totalMs / m.wallMs) * 1000
 const netCpuMs = sum(serverMetrics, (m, i) => m.cpu.totalMs - (idleCpuMsPerSec[i] * m.wallMs) / 1000);
 const idleDb = diff(mongoIdleAfter.db, mongoIdleBefore.db);
 const netDb = Object.fromEntries(Object.entries(mongoDb).map(([key, value]) => [key, value - (idleDb[key] * (t1 - t0)) / IDLE_PROBE_MS]));
-const textMismatch = viewers.filter((v) => v.streamId && persisted[v.streamId] && v.text !== persisted[v.streamId].text).length;
+const blocksMismatch = viewers.filter(
+	(v) => v.streamId && persisted[v.streamId] && !isDeepStrictEqual(v.blocks, persisted[v.streamId].blocks),
+).length;
 
 const result = {
 	label: args.label,
@@ -319,7 +319,7 @@ const result = {
 		reconnects: sum(viewers, (v) => v.reconnects),
 		errors: sum(viewers, (v) => v.errors),
 		notEnded: replies ? viewers.filter((v) => !v.ended).length : 0,
-		textMismatch,
+		blocksMismatch,
 		persistedNotDone: Object.values(persisted).filter((p) => p.state !== 'done').length,
 	},
 	persistedMessageBytes: Object.values(persisted)[0]?.bytes ?? null,

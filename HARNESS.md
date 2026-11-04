@@ -8,23 +8,40 @@ Everything on the server runs only with `AGENT_STREAM_POC=1`. Without it, the se
 
 ## What is where
 
-| Path                                                                  | What                                                                                             |
-| --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| `apps/meteor/server/agent-stream/producer.ts`                         | The fake producer, the delta and sink types, the snapshot `{ text, seq }` for each active stream |
-| `apps/meteor/server/agent-stream/reply.ts`                            | The fixed reply: 1,000 tokens of 4 ASCII characters, markdown with a list and a code block       |
-| `apps/meteor/server/agent-stream/sinks/`                              | The sinks. `update-message` is the baseline                                                      |
-| `apps/meteor/server/agent-stream/routes.ts`                           | The dev routes under `/_agent-stream`                                                            |
-| `apps/meteor/server/agent-stream/counters.ts`                         | The broker counters, filled by `apps/meteor/ee/server/local-services/instance/service.ts`        |
-| `agent-stream/scenarios.mjs`                                          | S1 to S5 and the reply rate. **Do not change them.**                                             |
-| `agent-stream/seed.mjs`                                               | Users, rooms and login tokens, through the REST API                                              |
-| `agent-stream/loadgen.mjs`                                            | Runs one cell (scenario, deployment, W) and writes one JSON result                               |
-| `agent-stream/viewer-worker.mjs`, `lib/viewer.mjs`                    | The viewers, in worker threads; order, gap and duplicate checks; latency                         |
-| `agent-stream/adapters/`                                              | The viewer transports. `ddp-room-messages` is the baseline                                       |
-| `agent-stream/matrix.sh`                                              | Runs the cells of one deployment, 3 runs each, under the measurement lock                        |
-| `agent-stream/summary.mjs`                                            | Turns the JSON results into the report tables                                                    |
-| `agent-stream/failures.mjs`                                           | The failure modes of the report template: stop, kill, restart, crash                             |
-| `agent-stream/webclient.mjs`                                          | The secondary S1 metric: web client main-thread time for each delta                              |
-| `agent-stream/start-instance.sh`, `run-d1.sh`, `run-d2.sh`, `stop.sh` | Start and stop the instances                                                                     |
+| Path                                                                  | What                                                                                                         |
+| --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `apps/meteor/server/agent-stream/producer.ts`                         | The fake producer, the delta and sink types, the snapshot `{ blocks, seq }` for each active stream           |
+| `apps/meteor/server/agent-stream/reply.ts`                            | The fixed reply script: thinking, one tool call, thinking, then the output (see below)                       |
+| `apps/meteor/server/agent-stream/blockOps.js`, `blockOps.d.ts`        | `applyBlockOps`, `coalesceOps`, `closeOpenTask`: one CommonJS file that the server and the harness both load |
+| `agent-stream/blockOps.test.mjs`                                      | Tests for it: `node --test agent-stream/blockOps.test.mjs`                                                   |
+| `apps/meteor/server/agent-stream/sinks/`                              | The sinks. `update-message` is the baseline                                                                  |
+| `apps/meteor/server/agent-stream/routes.ts`                           | The dev routes under `/_agent-stream`                                                                        |
+| `apps/meteor/server/agent-stream/counters.ts`                         | The broker counters, filled by `apps/meteor/ee/server/local-services/instance/service.ts`                    |
+| `agent-stream/scenarios.mjs`                                          | S1 to S5 and the reply rate. **Do not change them.**                                                         |
+| `agent-stream/seed.mjs`                                               | Users, rooms and login tokens, through the REST API                                                          |
+| `agent-stream/loadgen.mjs`                                            | Runs one cell (scenario, deployment, W) and writes one JSON result                                           |
+| `agent-stream/viewer-worker.mjs`, `lib/viewer.mjs`                    | The viewers, in worker threads; order, gap and duplicate checks; latency                                     |
+| `agent-stream/adapters/`                                              | The viewer transports. `ddp-room-messages` is the baseline                                                   |
+| `agent-stream/matrix.sh`                                              | Runs the cells of one deployment, 3 runs each, under the measurement lock                                    |
+| `agent-stream/summary.mjs`                                            | Turns the JSON results into the report tables                                                                |
+| `agent-stream/failures.mjs`                                           | The failure modes of the report template: stop, kill, restart, crash                                         |
+| `agent-stream/webclient.mjs`                                          | The secondary S1 metric: web client main-thread time for each delta                                          |
+| `agent-stream/start-instance.sh`, `run-d1.sh`, `run-d2.sh`, `stop.sh` | Start and stop the instances                                                                                 |
+
+## The reply and the deltas
+
+The producer streams a blocks reply of 1,000 tokens at 40 tokens/s, in this order (`--tokens N` scales the parts):
+
+1. 150 thinking tokens: a task with the title `Thinking`, the text in its `details`;
+2. one tool call: a task whose title is a description. It takes no time and is not a token;
+3. 150 thinking tokens: a new thinking task;
+4. 700 output tokens: one `mrkdwn` `section` block with a code block and a list.
+
+The placeholder has an `alert` block and a `plan` block with task `step-0` in progress. Each step closes the previous
+task. A delta is `{ t: 'patch', streamId, seq, ops, ts }` with the ops of PLAN.md section 4, or
+`{ t: 'end', streamId, seq, reason, ts }`. With W = 0 a token is one delta and nothing folds. With W > 0 the producer
+runs `coalesceOps` on the window. On `end` the producer sets the open task with `closeOpenTask` (`complete`, or `error`
+for `'error'`), and the viewers do the same, because `end` has no ops. The final `updateMessage` writes the blocks.
 
 ## Server mode
 
@@ -140,7 +157,7 @@ All under `/_agent-stream`, no auth (local use only):
 | `POST /stop` `{ streamId, reason? }`                    | Ends a stream early (default reason `stopped`)                                                    |
 | `POST /kill` `{ streamId }`                             | Stops a stream with no end delta and no final write, as a producer that dies                      |
 | `GET /status`                                           | `{ active, queued }`: active streams and sink calls that wait                                     |
-| `GET /snapshot/:streamId`                               | The producer's `{ text, seq, active }`                                                            |
+| `GET /snapshot/:streamId`                               | The producer's `{ blocks, seq, active }`                                                          |
 | `GET /metrics[?reset=1][&gc=1]`                         | The counters below; `reset=1` starts a new window after it reads; `gc=1` collects first           |
 
 `/metrics` returns, for the window since the last reset: `cpu` (`process.cpuUsage()`: user, system, total ms, and % of
@@ -174,7 +191,7 @@ Correctness, as `lib/viewer.mjs` counts it:
 - `dupes`: a `seq` seen before in the same session.
 - `outOfOrder`: a `seq` lower than the last one, not seen before.
 - `staleAfterSnapshot`: a `seq` that the snapshot already covers. Expected after a reconnect, not an error.
-- `notEnded`: viewers that never saw the end. `textMismatch`: viewers whose final text differs from the persisted text.
+- `notEnded`: viewers that never saw the end. `blocksMismatch`: viewers whose final blocks are not deeply equal to the persisted blocks.
 - `persistedNotDone`: replies whose persisted state is not `done`.
 
 ## Add a sink
@@ -182,13 +199,14 @@ Correctness, as `lib/viewer.mjs` counts it:
 A sink carries the deltas of one stream from the producer to the viewers.
 
 1. Write a `SinkFactory` in `apps/meteor/server/agent-stream/sinks/<name>.ts`. It gets `{ streamId, room, user }` and
-   returns `{ start(placeholder), delta(delta, text), end(delta, text) }`. `text` is the whole reply after the delta.
+   returns `{ start(placeholder), delta(delta, blocks), end(delta, blocks) }`. `blocks` is the whole reply after the delta.
+   It is the producer's live array: clone it before the first `await`, as the baseline does.
 2. Register it in `sinks/index.ts` under a name.
 3. Run with `--sink <name>` (or `SINK=<name>` for `matrix.sh`).
 
 The producer calls the sink of a stream in order and waits for each call before the next, so a slow sink builds a queue
 and the latency shows it. The producer owns the persistence of the shared contract: the placeholder before `start`, and
-one `updateMessage` with the final text and `streaming.state` after `end`. A sink writes nothing to the database, except
+one `updateMessage` with the final blocks and `streaming.state` after `end`. A sink writes nothing to the database, except
 in H3. Read the snapshot of a stream with `getSnapshot(streamId)` from `producer.ts`.
 
 The placeholder and the final write carry `streaming: { id, state, seq, ts }`. `seq` and `ts` are harness additions to
@@ -211,9 +229,10 @@ An adapter is how one viewer receives a stream.
 
 Events, each with `recvTs: Date.now()` taken when it came off the socket:
 
-- `{ type: 'snapshot', streamId, mid, seq, text, state }`
-- `{ type: 'append', streamId, seq, ts, text }` and `{ type: 'end', streamId, seq, ts, reason }`: the contract's deltas
-- `{ type: 'full', streamId, mid, seq, ts, text, state }`: a whole-message update, as the baseline gets
+- `{ type: 'snapshot', streamId, mid, seq, blocks, state }`
+- `{ type: 'patch', streamId, seq, ts, ops }` and `{ type: 'end', streamId, seq, ts, reason }`: the contract's deltas.
+  The viewer applies `ops` with `applyBlockOps` and closes the open task on `end`
+- `{ type: 'full', streamId, mid, seq, ts, blocks, state }`: a whole-message update, as the baseline gets
 
 `lib/ddp.mjs` is a small DDP client over the raw `/websocket` endpoint, with login by resume token, `stream()` for
 streamer subscriptions, `call()` for methods, and a byte counter.
@@ -229,7 +248,9 @@ node agent-stream/failures.mjs --case restart --servers ... --seed "$SEED" --cmd
 node agent-stream/failures.mjs --case crash --servers ... --seed "$SEED" --cmd "kill -9 \$(cat \$AGENT_STREAM_BUNDLE/logs/3000.pid)"
 ```
 
-`--after` (ms, default 5000) sets when the failure happens; 3800 lands the stop inside the code block of the reply.
+Each case prints whether the blocks of the viewer equal the persisted blocks, and the status of each task.
+`--after` (ms, default 5000) sets when the failure happens. At 40 tokens/s the first thinking ends at 3.75 s and the
+output starts at 7.5 s: 5000 stops in the second thinking task, 11000 inside the code block of the output.
 
 ## Web client (S1, secondary)
 
@@ -239,7 +260,8 @@ node agent-stream/webclient.mjs --server http://localhost:3000 --seed "$SEED" --
 
 It opens `as-s1` as `as-u0000` in headless Chromium, measures the page's idle main-thread time for 10 s, then streams one
 reply and reports the Chrome `Performance.getMetrics` durations (task, script, layout, style) for each delta, net of the
-idle rate, and the long tasks. Take the lock for it too.
+idle rate, and the long tasks. It also checks the final screen against the persisted message (`blocksShown`: tasks whose
+title is not shown, whether the tail of the output is shown). Take the lock for it too.
 
 ## Caveats
 

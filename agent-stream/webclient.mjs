@@ -81,7 +81,9 @@ const startRes = await fetch(`${args.server}/_agent-stream/start`, {
 		sink: args.sink,
 	}),
 });
-await startRes.json();
+const {
+	streams: [{ mid }],
+} = await startRes.json();
 for (;;) {
 	await sleep(500);
 	const status = await (await fetch(`${args.server}/_agent-stream/status`)).json();
@@ -93,6 +95,18 @@ await sleep(2000);
 const streamMs = Date.now() - t0;
 const stream = delta(await metrics(), s0);
 const { producer } = await (await fetch(`${args.server}/_agent-stream/metrics`)).json();
+// the client shows the persisted message after the end: every task title and the last output line must be on screen
+const { message } = await (
+	await fetch(`${args.server}/api/v1/chat.getMessage?msgId=${mid}`, { headers: { 'X-User-Id': user.userId, 'X-Auth-Token': user.token } })
+).json();
+const shown = await page.locator(`[data-mid="${mid}"]`).first().innerText();
+const plan = message.blocks.find((block) => block.type === 'plan');
+const output = message.blocks.find((block) => block.type === 'section')?.text.text ?? '';
+const blocksShown = {
+	tasksMissing: plan.tasks.filter((task) => !shown.includes(task.title)).length,
+	outputTailShown: shown.includes(output.trim().slice(-20)),
+	state: message.streaming?.state,
+};
 const longTasks = await page.evaluate(() => window.__longTasks);
 await browser.close();
 
@@ -106,6 +120,7 @@ const result = {
 	run: Number(args.run),
 	streamMs,
 	deltas,
+	blocksShown,
 	idlePerSecondMs: Object.fromEntries(KEYS.map((key) => [key, (idle[key] / idleMs) * 1000])),
 	rawMs: stream,
 	netMs: net,

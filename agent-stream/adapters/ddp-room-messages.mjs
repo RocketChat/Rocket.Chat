@@ -11,7 +11,7 @@ const toEvent = (message, recvTs) => ({
 	seq: message.streaming.seq,
 	ts: message.streaming.ts,
 	state: message.streaming.state,
-	text: message.msg,
+	blocks: message.blocks,
 	recvTs,
 });
 

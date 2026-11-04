@@ -1,9 +1,11 @@
+import { applyBlockOps, closeOpenTask } from '../../apps/meteor/server/agent-stream/blockOps.js';
+
 /**
  * One viewer of one stream: it rebuilds the reply from what its adapter yields and counts what went wrong. Every
  * adapter yields the same event types:
- * - `snapshot` { streamId, mid, seq, text, state }: the state to start from after (re)connecting;
- * - `full` { streamId, mid, seq, ts, text, state }: the whole reply so far, from a message update;
- * - `append` { streamId, seq, ts, text } and `end` { streamId, seq, ts, reason }: the deltas of the shared contract.
+ * - `snapshot` { streamId, mid, seq, blocks, state }: the state to start from after (re)connecting;
+ * - `full` { streamId, mid, seq, ts, blocks, state }: all the blocks of the reply so far, from a message update;
+ * - `patch` { streamId, seq, ts, ops } and `end` { streamId, seq, ts, reason }: the deltas of the shared contract.
  * Each event carries `recvTs`, the time it came off the socket.
  */
 export class Viewer {
@@ -15,7 +17,7 @@ export class Viewer {
 		this.bytesClosed = 0;
 		this.streamId = undefined;
 		this.mid = undefined;
-		this.text = '';
+		this.blocks = [];
 		this.lastSeq = 0;
 		this.covered = 0;
 		this.seen = new Set();
@@ -73,7 +75,7 @@ export class Viewer {
 		this.mid ??= event.mid;
 
 		if (event.type === 'snapshot') {
-			this.text = event.text;
+			this.blocks = event.blocks;
 			this.covered = Math.max(this.covered, event.seq);
 			this.lastSeq = event.seq;
 			if (event.state && event.state !== 'active') {
@@ -93,16 +95,16 @@ export class Viewer {
 		}
 
 		if (event.type === 'full') {
-			if (inOrder) {
-				this.text = event.text;
+			if (inOrder || event.state !== 'active') {
+				this.blocks = event.blocks;
 			}
 			if (event.state !== 'active') {
-				this.text = event.text;
 				this.finish(event.state);
 			}
-		} else if (event.type === 'append') {
-			this.text += event.text;
+		} else if (event.type === 'patch') {
+			applyBlockOps(this.blocks, event.ops);
 		} else if (event.type === 'end') {
+			closeOpenTask(this.blocks, event.reason);
 			this.finish(event.reason);
 		}
 	}
@@ -151,7 +153,7 @@ export class Viewer {
 			server: this.spec.baseUrl,
 			streamId: this.streamId,
 			mid: this.mid,
-			text: this.text,
+			blocks: this.blocks,
 			ended: this.ended,
 			endReason: this.endReason,
 			lastSeq: this.lastSeq,
