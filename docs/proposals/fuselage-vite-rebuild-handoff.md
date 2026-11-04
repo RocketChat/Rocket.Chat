@@ -157,9 +157,77 @@ Tamagui's [zero-runtime rules](https://tamagui.dev/docs/guides/zero-runtime) com
 
 - **State Tamagui `View`'s defaults explicitly where develop relied on the browser's:** `display: flex`, `flex-direction: column`, `flex-shrink: 0`, `min-width`/`min-height: 0`, `position: relative`. Don't force `box-sizing: content-box`: the app's reset makes everything `border-box`, and the Fuselage Storybook loads that reset so it matches the app.
 - **Values come from `@rocket.chat/fuselage-tokens` through `scripts/generate-frame-values.mts`.** It writes a delimited `generated … do not edit` section into each frame module (and into `.styles.css` files for rules that need plain CSS), as literal `var(--rcx-…, fallback)` strings; `--check` runs in lint. Add a component to its typed `components` list.
-- **No Tamagui tokens or themes for colors and sizes.** Values stay on the `--rcx-*` custom properties. Tamagui declares its token variables once on `:root`, and a custom property's `var()` resolves where it is declared, so tokens aliasing `--rcx-*` ignore the palettes the app scopes below `:root` (the dark sidebar, `.rcx-content--main`, the image gallery). Tested and rejected.
+- **No Tamagui tokens or themes for colors and sizes.** Values stay on the `--rcx-*` custom properties. Tamagui declares its token variables once on `:root`, and a custom property's `var()` resolves where it is declared, so tokens aliasing `--rcx-*` ignore the palettes the app scopes below `:root` (the dark sidebar, `.rcx-content--main`, the image gallery). Tested and rejected. Themes were tested too (2026-11-04) and rejected for the same reason; see "Tamagui themes for the palettes: tested and rejected".
 - **Pass `children` to the frame explicitly**, never inside the attributes: uncompiled runtime drops the children put on a render element, and a frame with no render element takes them like any element.
 - **State classes (`.is-hovered`, `.hover`, `.focus`, `.active`, `.disabled`…) are dropped on purpose.** Stories that force states by class differ from `develop`; convert them to the pseudo-states addon.
+
+## Tamagui themes for the palettes: tested and rejected
+
+**The question.** Tamagui scopes themes by class (`.t_light`, `.t_<name>`), and the app scopes its palettes by selector, so could the `--rcx-color-*` palettes be Tamagui themes? On web the frames would compile to scoped `var()`, and on native the theme would resolve to concrete values. The frames hold 1,037 `var(--rcx-…)` strings today, and React Native resolves none of them.
+
+**What was tried.** Branch `p4/themes-spike`, on `@tamagui/*` 3.0.18. The Badge frame was built in the Fuselage Storybook with `FUSELAGE_ZERO_RUNTIME=1` and `TAMAGUI_COMPILER_STATS_FILE`, and was also run on the runtime. `tamagui.config.ts` got a `light` theme. There was no `ThemeProvider`, and the stories still don't reach the config. Three shapes were tried, one per Badge variant:
+
+- **A: theme keys named after the property.** The key is `rcx-color-badge-background-level-2: '#156ff5'`, and the frame uses `backgroundColor: '$rcx-color-badge-background-level-2'`.
+- **B: a theme key aliasing the property, as the tokens did.** The key is `badgeSecondaryBg: 'var(--rcx-color-badge-background-level-1, #6c737a)'`.
+- **C: a theme key inside the component override.** The value is `'var(--rcx-badge-colors-warning-background-color, $rcx-color-badge-background-level-2)'`.
+
+**What compiled.** Zero runtime accepts `$` theme values with no provider: 246 frames found and lowered, 0 bailed, and no diagnostics on `Badge.tsx`. The zero stylesheet gets:
+
+```css
+:root {
+	--t0: #ffffff;
+	--t1: #156ff5;
+	--t2: var(--rcx-color-badge-background-level-1, #6c737a);
+}
+:root .t_dark .t_light,
+:root .t_light,
+…,
+.tm_xxt {
+	--rcx-color-font-pure-white: var(--t0);
+	--rcx-color-badge-background-level-2: var(--t1);
+	--badgeSecondaryBg: var(--t2);
+}
+._b-648394653 {
+	background-color: var(--rcx-color-badge-background-level-2);
+}
+._b-2067521743 {
+	background-color: var(--badgeSecondaryBg);
+}
+._b-1421572135 {
+	background-color: var(--rcx-badge-colors-warning-background-color, var(--rcx-color-badge-background-level-2));
+}
+```
+
+Tamagui names a theme variable `--<simpleHash(key, 40)>`, which keeps up to 41 valid characters as they are. That is why A's key came out exactly as `--rcx-color-badge-background-level-2`.
+
+**A/B, measured with computed styles** (`scripts/themes-spike-probe.mjs` on the spike branch). Each cell is a background colour. The scoped row is a parent that sets every badge level to green, as the dark sidebar does. "Custom CSS" sets the levels to magenta on `:root`. A `.t_light` ancestor is what a `<Theme>`, or a runtime `TamaguiProvider` at a consumer's root, would add.
+
+| Case                          | A                              | B                       | C             | literal `var()` (control) |
+| ----------------------------- | ------------------------------ | ----------------------- | ------------- | ------------------------- |
+| As built, `:root` row         | palette `#156ff5`              | **transparent**         | palette       | palette                   |
+| Scoped row                    | green                          | **transparent**         | green         | green                     |
+| Custom CSS on `:root`         | magenta                        | **transparent**         | magenta       | magenta                   |
+| Under `.t_light`, `:root` row | **`#156ff5`, Custom CSS lost** | magenta                 | **`#156ff5`** | magenta                   |
+| Under `.t_light`, scoped row  | green                          | **magenta, scope lost** | green         | green                     |
+
+The runtime build without a provider matched the zero-runtime build in the first three rows.
+
+**Why it is rejected:**
+
+- **A works on web only because the theme is dead code.** No element has `.t_light`, so the theme rule never applies, and the frame reads the raw `--rcx-color-*` property. Once a `.t_light` class appears, the theme's light values override the `:root` palette for everything below it: dark mode, high contrast and Custom CSS are all lost.
+- **A depends on a hashing detail.** The name only matches while the key is at most 41 characters. 23 of the 105 palette names are longer, for example `rcx-color-button-background-primary-default`, which becomes `--rcx-color-button-background-primary-defau3464`. Those would silently read an unset variable. `TAMAGUI_CSS_VARIABLE_PREFIX='rcx-color-'` would shorten the keys, but 3 would still be over the limit.
+- **A drops the fallbacks.** A pure `$key` compiles to `var(--x)` with no default, so a page with no palette on `:root` gets transparent colours.
+- **Only 204 of the 922 palette references are a direct `var(--rcx-color-…, #hex)`.** That is the only shape A can replace one-for-one. 582 go through a component override (`var(--rcx-<component>-…, var(--rcx-color-…))`), which needs C. C compiles on web but has no native form: the native extractor bails on a theme reference inside a larger string, and the runtime would turn it into `var(…, #156ff5)`, which React Native can't parse.
+- **B is the rejected tokens again.** The theme's `:root{--tN:…}` interns the alias at `:root`, so the scoped palette is lost, and with no `.t_light` the property is unset.
+- **Size.** Each theme adds its whole key set twice to the zero stylesheet: the `--tN` values on `:root`, and the mapping under `.t_light`. That is about 70 bytes per key, or roughly 7 kB raw per theme for 105 keys and 21 kB raw for light, dark and high contrast. On web all of it is dead. The JS stays the same, because the class strings don't change.
+
+**Decision.** Web keeps the literal `var(--rcx-…, fallback)` strings from `generate-frame-values.mts`. If a native target is ever built, the generator is the place to also write a native value set from the same `(property, fallback)` pairs it already computes:
+
+- concrete values, or `$key` references into native-only themes built from `getThemePalette('light' | 'dark' | 'high-contrast')`;
+- served by platform resolution: a `.native.ts` values module, or a native frame module;
+- the web output stays as it is.
+
+It is not built now, because no native target exists.
 
 ## Optimization strategy for the variant maps (documented, not applied)
 
@@ -346,6 +414,8 @@ Tick an item in the commit that completes it.
   - **Cost:** it breaks consumers that pass other attributes, and arbitrary `aria-*` and `data-*` names can't be listed statically.
   - **To decide:** count the attributes the app and the other packages actually pass to each component, and whether a closed list covers them.
   - **What it would remove:** the `@tamagui/static` render-element patch.
+
+- **Colors on React Native (decided, 2026-11-04).** Tamagui themes can't carry the `--rcx-*` palettes; see "Tamagui themes for the palettes: tested and rejected". If a native target is ever built, `generate-frame-values.mts` also writes a native value set. Until then, nothing is built for native.
 
 - **Where the JS goes.** Measured: +17.5 kB gzip JS against a `develop` that compiles Fuselage from source, about 7.1 kB of it in variant tables and 7.4 kB in the frames' static class strings. The budget is +25 kB; the shrink techniques are documented and deferred.
 - **The npm build's size.** Uncompiled consumers get the Tamagui runtime bundled into `fuselage.production.js` (36 → 110 kB gzip). Decide whether to also publish a zero-runtime-compiled build or make the runtime a peer dependency.
