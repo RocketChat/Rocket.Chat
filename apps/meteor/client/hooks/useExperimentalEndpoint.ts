@@ -1,3 +1,4 @@
+import type { Serialized } from '@rocket.chat/core-typings';
 import type { ExperimentalEndpoints } from '@rocket.chat/rest-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 
@@ -9,7 +10,7 @@ type ExperimentalParams<
 type ExperimentalResult<
 	TPath extends keyof ExperimentalEndpoints,
 	TMethod extends keyof ExperimentalEndpoints[TPath],
-> = ExperimentalEndpoints[TPath][TMethod] extends (...args: any) => infer R ? R : never;
+> = ExperimentalEndpoints[TPath][TMethod] extends (...args: any) => infer R ? Serialized<R> : never;
 
 /**
  * Like `useEndpoint`, but typed against `ExperimentalEndpoints` instead of the stable `Endpoints` union.
