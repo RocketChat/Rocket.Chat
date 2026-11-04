@@ -1,5 +1,3 @@
-import 'core-js';
-import 'regenerator-runtime/runtime';
 import 'whatwg-fetch';
 import cssVars from 'css-vars-ponyfill';
 
