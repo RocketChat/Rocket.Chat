@@ -27,6 +27,8 @@ npm install @rocket.chat/css-in-js
 
 The package ships a CommonJS bundle (with development and production builds picked by `process.env.NODE_ENV`), TypeScript declarations, and a stylesheet. It is meant to be consumed through a bundler that can import CSS.
 
+The bundle targets the web only. Components that render with Tamagui carry their own copy of the `@tamagui/web` runtime, built with `TAMAGUI_TARGET` fixed to `web`; `NODE_ENV` is the only environment variable it reads. An app that also runs Tamagui itself ends up with two runtimes sharing `globalThis.__tamaguiConfig`, so use one or the other.
+
 ## Usage
 
 ### Load the styles
