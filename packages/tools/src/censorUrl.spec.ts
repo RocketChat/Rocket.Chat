@@ -37,6 +37,12 @@ describe('censorUrl', () => {
 		);
 	});
 
+	it('redacts the OAuth authorization code', () => {
+		expect(censorUrl('https://example.com/_oauth/google?code=secret&state=abc')).toBe(
+			'https://example.com/_oauth/google?code=*Redacted*&state=abc',
+		);
+	});
+
 	it('accepts URL objects as input', () => {
 		expect(censorUrl(new URL('https://user:password@example.com/path?query=secret'))).toBe(
 			'https://*Redacted*:*Redacted*@example.com/path?query=*Redacted*',
