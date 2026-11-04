@@ -13,6 +13,7 @@ export * from './isBareJid';
 export * from './isObject';
 export * from './isRecord';
 export * from './isTruthy';
+export * from './mongoErrors';
 export * from './normalizeLanguage';
 export * from './objectMap';
 export * from './pick';
