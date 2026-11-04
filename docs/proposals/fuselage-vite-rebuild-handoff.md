@@ -144,7 +144,17 @@ Tamagui's [zero-runtime rules](https://tamagui.dev/docs/guides/zero-runtime) com
 - **A prop named `disabled` on a frame becomes `aria-disabled`.** Give internal variants another name, such as `muted`.
 - **The wrapper owns the `rcx-*` classes**, joining them with the consumer `className`.
   - Code outside Fuselage styles its own elements with `rcx-*` classes. Keep those rules in `styles/consumer-classes.css`, and check for them before moving a component's CSS.
-- **Tamagui's zero stylesheet can't be put in a cascade layer.** `TAMAGUI_CSS_LAYER` only layers runtime-inserted CSS, and Tamagui's base rules (`:where(.is_View)…`) stay unlayered even with `wrapExtractedCSS`. The zero stylesheet loads after the component stylesheets, and some atomic classes are doubled (`._x._x`), so a one- or two-class rule that overrides a frame property loses. Write such rules with `[class]` or doubled classes, inside Fuselage and in the app, and add a `[hidden]` rule for frames that can be hidden. The reset and the global element rules still sit in `@layer reset`.
+- **Tamagui's zero stylesheet can't be put in a cascade layer, and it loads last.** `TAMAGUI_CSS_LAYER` only layers runtime-inserted CSS, and Tamagui's base rules (`:where(.is_View)…`) stay unlayered even with `wrapExtractedCSS`. Each frame property is a one-class atomic rule (`._x`), except the longhands of a shorthand Tamagui knows (`border-color`, `padding-block`, `padding-inline`, `margin-block`, `margin-inline`, the `flex-*` and `border-<side>-*` longhands), which are doubled (`._x._x`) so they beat their shorthand. The reset and the global element rules still sit in `@layer reset`. How to override a frame property from a stylesheet:
+
+  | The rule loads                                                                                                             | Beats a one-class atomic | Beats a doubled atomic |
+  | -------------------------------------------------------------------------------------------------------------------------- | ------------------------ | ---------------------- |
+  | Before the zero stylesheet: Fuselage's `.styles.css`, the app's bundled CSS                                                | `.rcx-x[class]`          | `.rcx-x[class][class]` |
+  | After it: the admin's Custom CSS, which the server registers after the client's tags (not yet checked in a running server) | `.rcx-x`                 | `.rcx-x[class]`        |
+
+  Measured on `Button` in the zero Storybook (27 one-class and 1 doubled property). Add a `[hidden]` rule for frames that can be hidden. In development (`dev:next`) Vite inserts the app's styles at runtime after the zero stylesheet's link, so an override missing its `[class]` can work there and fail in the production build.
+
+  - **Loading the zero stylesheet first was tried and rejected (2026-11-04).** Moved before the other stylesheets in the zero Storybook, all 11 Sidebar stories changed and the frames lost their padding, borders and `flex-grow`: the frames carry `rcx-box rcx-box--full`, whose unlayered Box reset (`.rcx-box { flex: 0 1 auto }`, `.rcx-box--full { margin: 0; padding: 0; border-width: 0 }`) then beats every one-class atomic. With that reset moved into `@layer fuselage` as well, 23 of 568 stories still differed (input `font-family`, vertical `Divider` width, `Box` focusable), because every unlayered rule now beats the layered reset. And even with both fixed, the doubled atomics keep beating a one-class override, so consumers would still need `[class]`. Revisit only if the frames stop carrying `rcx-box--full`.
+
 - **State Tamagui `View`'s defaults explicitly where develop relied on the browser's:** `display: flex`, `flex-direction: column`, `flex-shrink: 0`, `min-width`/`min-height: 0`, `position: relative`. Don't force `box-sizing: content-box`: the app's reset makes everything `border-box`, and the Fuselage Storybook loads that reset so it matches the app.
 - **Values come from `@rocket.chat/fuselage-tokens` through `scripts/generate-frame-values.mts`.** It writes a delimited `generated … do not edit` section into each frame module (and into `.styles.css` files for rules that need plain CSS), as literal `var(--rcx-…, fallback)` strings; `--check` runs in lint. Add a component to its typed `components` list.
 - **No Tamagui tokens or themes for colors and sizes.** Values stay on the `--rcx-*` custom properties. Tamagui declares its token variables once on `:root`, and a custom property's `var()` resolves where it is declared, so tokens aliasing `--rcx-*` ignore the palettes the app scopes below `:root` (the dark sidebar, `.rcx-content--main`, the image gallery). Tested and rejected.
@@ -287,7 +297,7 @@ Tick an item in the commit that completes it.
 - [x] Visual regression baselines regenerated for the Tamagui frames.
 - [ ] `navigation-sidebar--collapsed`: its badges are cut off at the 48px edge; confirm whether `develop` does the same.
 - [ ] `ContextualbarTitle` logs "A text node cannot be a child of a `<View>`" uncompiled: frames that hold text should be based on `Text`.
-- [ ] Cascade order: the app's CSS and the admin's Custom CSS now lose to the zero stylesheet for any one- or two-class override of a Fuselage part. Try loading the zero stylesheet before the component and app stylesheets (the server injects stylesheets from the Vite manifest, so the order is ours); otherwise document the `[class]` rule for consumers.
+- [x] Cascade order: the app's CSS and the admin's Custom CSS lose to the zero stylesheet for a one- or two-class override of a Fuselage part. Loading the zero stylesheet first breaks the frames against the Box reset, so the `[class]` rule is documented for consumers instead (see the per-component rules and `docs/frontend/building-components.md`). Still to do: find and fix the app's existing overrides of Fuselage parts that lack it, in the real-app A/B.
 
 **Verification**
 
@@ -320,7 +330,7 @@ Tick an item in the commit that completes it.
 
 ## Next steps, in order
 
-1. **Cascade order** (Correctness): the only remaining risk users would see. Try loading the zero stylesheet before the component and app stylesheets; fall back to documenting the `[class]` rule.
+1. **Cascade order** (Correctness): the `[class]` rule is documented; loading the zero stylesheet first was rejected. What is left is finding the app's and the other packages' overrides of Fuselage parts that lack `[class]`, during the real-app A/B (step 4).
 2. **Fast verification scripts** (Verification): parallel stories, frozen animations, id filter. They unblock steps 3 and 4.
 3. **Full A/B** over every story against `develop`, and compiled against uncompiled.
 4. **Real-app A/B** against `develop`, including the consumers never seen in a browser.
