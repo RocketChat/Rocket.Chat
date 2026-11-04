@@ -721,6 +721,7 @@ Source: [`packages/ui-kit/src/blocks/elements/TimePickerElement.ts`](../../../pa
 | `type` | `'time_picker'` | yes | Also accepted as `'timepicker'`. |
 | `placeholder` | `TextObject` | no |  |
 | `initialTime` | `string` | no |  |
+| `timezone` | `string` | no | IANA name of the time zone `initialTime` and the picked time are in; the user's own when absent. The value sent stays `HH:mm`. |
 | `focus_on_load` | `boolean` | no | Focuses the field when the view opens. |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
