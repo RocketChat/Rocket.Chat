@@ -67,16 +67,6 @@ providers.registerProvider({
 });
 
 providers.registerProvider({
-	urls: [new RegExp('https?://www\\.rdio\\.com/\\S+'), new RegExp('https?://rd\\.io/\\S+')],
-	endPoint: 'https://www.rdio.com/api/oembed/?format=json&maxheight=150',
-});
-
-providers.registerProvider({
-	urls: [new RegExp('https?://www\\.slideshare\\.net/[^/]+/[^/]+')],
-	endPoint: 'https://www.slideshare.net/api/oembed/2?format=json&maxheight=200',
-});
-
-providers.registerProvider({
 	urls: [new RegExp('https?://www\\.dailymotion\\.com/video/\\S+')],
 	endPoint: 'https://www.dailymotion.com/services/oembed?maxheight=200',
 });
