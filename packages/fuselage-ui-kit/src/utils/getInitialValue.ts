@@ -23,6 +23,14 @@ const hasInitialOption = (element: UiKit.ActionableElement): element is UiKit.Ac
 const hasInitialOptions = (element: UiKit.ActionableElement): element is UiKit.ActionableElement & { initialOptions: UiKit.Option[] } =>
 	'initialOptions' in element;
 
+const hasSnakeCaseInitialOption = (
+	element: UiKit.ActionableElement,
+): element is UiKit.ActionableElement & { initial_option: UiKit.Option } => 'initial_option' in element;
+
+const hasSnakeCaseInitialOptions = (
+	element: UiKit.ActionableElement,
+): element is UiKit.ActionableElement & { initial_options: UiKit.Option[] } => 'initial_options' in element;
+
 const initialSelectionFields = [
 	'initial_user',
 	'initial_users',
@@ -46,5 +54,7 @@ export const getInitialValue = (element: UiKit.ActionableElement) =>
 		(hasInitialDate(element) && element.initialDate) ||
 		(hasInitialOption(element) && element.initialOption.value) ||
 		(hasInitialOptions(element) && element.initialOptions.map((option) => option.value)) ||
+		(hasSnakeCaseInitialOption(element) && element.initial_option?.value) ||
+		(hasSnakeCaseInitialOptions(element) && element.initial_options?.map((option) => option.value)) ||
 		getInitialSelection(element) ||
 		undefined);

@@ -6,11 +6,13 @@ import type { DatePickerElement } from './elements/DatePickerElement';
 import type { DateTimePickerElement } from './elements/DateTimePickerElement';
 import type { EmailTextInputElement } from './elements/EmailTextInputElement';
 import type { ExperimentalTabElement } from './elements/ExperimentalTabElement';
+import type { ExternalSelectElement } from './elements/ExternalSelectElement';
 import type { FeedbackButtonsElement } from './elements/FeedbackButtonsElement';
 import type { IconButtonElement } from './elements/IconButtonElement';
 import type { LinearScaleElement } from './elements/LinearScaleElement';
 import type { MultiChannelsSelectElement } from './elements/MultiChannelsSelectElement';
 import type { MultiConversationsSelectElement } from './elements/MultiConversationsSelectElement';
+import type { MultiExternalSelectElement } from './elements/MultiExternalSelectElement';
 import type { MultiStaticSelectElement } from './elements/MultiStaticSelectElement';
 import type { MultiUsersSelectElement } from './elements/MultiUsersSelectElement';
 import type { NumberInputElement } from './elements/NumberInputElement';
@@ -29,9 +31,11 @@ export type ActionableElement =
 	| ConversationsSelectElement
 	| DatePickerElement
 	| DateTimePickerElement
+	| ExternalSelectElement
 	| LinearScaleElement
 	| MultiChannelsSelectElement
 	| MultiConversationsSelectElement
+	| MultiExternalSelectElement
 	| MultiStaticSelectElement
 	| MultiUsersSelectElement
 	| OverflowElement

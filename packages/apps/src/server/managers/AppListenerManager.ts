@@ -279,6 +279,7 @@ export class AppListenerManager {
 		});
 
 		this.defaultHandlers.set('executeViewClosedHandler', { success: true });
+		this.defaultHandlers.set('executeBlockSuggestionHandler', { options: [] });
 	}
 
 	public registerListeners(app: ProxiedApp): void {
@@ -985,6 +986,23 @@ export class AppListenerManager {
 						room: data.room,
 						triggerId,
 						value,
+						message: data.message,
+						container: data.container,
+					})
+					.catch(handleError(method));
+			}
+			case UIKitIncomingInteractionType.BLOCK_SUGGESTION: {
+				const method = 'executeBlockSuggestionHandler';
+
+				return app
+					.call(method, {
+						appId,
+						actionId,
+						blockId: data.blockId,
+						value: data.value,
+						user,
+						room: data.room,
+						triggerId,
 						message: data.message,
 						container: data.container,
 					})

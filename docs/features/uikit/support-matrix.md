@@ -55,6 +55,7 @@ Container columns come from the block types; renderer columns tell whether a met
 | `datepicker` | ✅ | ✅ | ✅ | — | — | — | — | — | — | ✅ | ✅ |
 | `datetimepicker` | ✅ | ✅ | — | — | — | — | — | — | — | ✅ | — |
 | `email_text_input` | — | ✅ | — | — | — | — | — | — | — | ✅ | — |
+| `external_select` | ✅ | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
 | `feedback_buttons` | — | — | — | — | ✅ | — | — | — | — | ✅ | — |
 | `icon` | — | — | — | — | — | — | ✅ | — | — | ✅ | — |
 | `icon_button` | — | — | — | — | ✅ | — | — | ✅ | — | ✅ | — |
@@ -62,6 +63,7 @@ Container columns come from the block types; renderer columns tell whether a met
 | `linear_scale` | ✅ | ✅ | — | — | — | — | — | — | — | ✅ | — |
 | `multi_channels_select` | ✅ | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
 | `multi_conversations_select` | ✅ | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
+| `multi_external_select` | ✅ | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
 | `multi_static_select` | ✅ | ✅ | ✅ | — | — | — | — | — | — | ✅ | — (returns `null`) |
 | `multi_users_select` | ✅ | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
 | `number_input` | — | ✅ | — | — | — | — | — | — | — | ✅ | — |

@@ -7,10 +7,12 @@ import type { ConversationsSelectElement } from '../blocks/elements/Conversation
 import type { DatePickerElement } from '../blocks/elements/DatePickerElement';
 import type { DateTimePickerElement } from '../blocks/elements/DateTimePickerElement';
 import type { EmailTextInputElement } from '../blocks/elements/EmailTextInputElement';
+import type { ExternalSelectElement } from '../blocks/elements/ExternalSelectElement';
 import type { FeedbackButtonsElement } from '../blocks/elements/FeedbackButtonsElement';
 import type { LinearScaleElement } from '../blocks/elements/LinearScaleElement';
 import type { MultiChannelsSelectElement } from '../blocks/elements/MultiChannelsSelectElement';
 import type { MultiConversationsSelectElement } from '../blocks/elements/MultiConversationsSelectElement';
+import type { MultiExternalSelectElement } from '../blocks/elements/MultiExternalSelectElement';
 import type { MultiStaticSelectElement } from '../blocks/elements/MultiStaticSelectElement';
 import type { MultiUsersSelectElement } from '../blocks/elements/MultiUsersSelectElement';
 import type { NumberInputElement } from '../blocks/elements/NumberInputElement';
@@ -61,4 +63,8 @@ export type ActionOf<TElement extends ActionableElement> = TElement extends Butt
 																		? Option['value'][] | undefined
 																		: TElement extends TimePickerElement
 																			? TimePickerElement['initialTime']
-																			: never;
+																			: TElement extends ExternalSelectElement
+																				? Option['value']
+																				: TElement extends MultiExternalSelectElement
+																					? Option['value'][]
+																					: never;

@@ -1,4 +1,10 @@
-import type { IUIKitContextualBarResponse, IUIKitErrorResponse, IUIKitModalResponse, IUIKitResponse } from './IUIKitInteractionType';
+import type {
+	IUIKitBlockSuggestionResponse,
+	IUIKitContextualBarResponse,
+	IUIKitErrorResponse,
+	IUIKitModalResponse,
+	IUIKitResponse,
+} from './IUIKitInteractionType';
 import { UIKitInteractionType } from './IUIKitInteractionType';
 import type { IUIKitSurface } from './IUIKitSurface';
 import type { IUIKitBaseIncomingInteraction } from './UIKitIncomingInteractionTypes';
@@ -56,6 +62,13 @@ export class UIKitInteractionResponder {
 		return {
 			success: true,
 			...formatContextualBarInteraction(viewData, { appId, triggerId: triggerId!, type: UIKitInteractionType.CONTEXTUAL_BAR_UPDATE }),
+		};
+	}
+
+	public optionsResponse({ options, option_groups }: IUIKitBlockSuggestionResponse): IUIKitBlockSuggestionResponse {
+		return {
+			...(options && { options }),
+			...(option_groups && { option_groups }),
 		};
 	}
 

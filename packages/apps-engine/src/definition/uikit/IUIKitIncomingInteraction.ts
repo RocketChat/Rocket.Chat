@@ -9,6 +9,7 @@ import type {
 
 export enum UIKitIncomingInteractionType {
 	BLOCK = 'blockAction',
+	BLOCK_SUGGESTION = 'blockSuggestion',
 	VIEW_SUBMIT = 'viewSubmit',
 	VIEW_CLOSED = 'viewClosed',
 	ACTION_BUTTON = 'actionButton',
@@ -28,4 +29,19 @@ export interface IUIKitIncomingInteraction {
 	message?: IMessage;
 }
 
-export type UIKitIncomingInteraction = IUIKitIncomingInteraction | IUIKitIncomingInteractionActionButton;
+/** Sent while the user types in an external select, to ask the app for options. */
+export interface IUIKitIncomingInteractionBlockSuggestion {
+	type: 'blockSuggestion';
+	appId: string;
+	user: IUser;
+	actionId: string;
+	blockId: string;
+	value: string;
+	container: IUIKitIncomingInteractionModalContainer | IUIKitIncomingInteractionMessageContainer;
+	triggerId?: string;
+	room?: IRoom;
+	message?: IMessage;
+}
+
+export type UIKitIncomingInteraction =
+	IUIKitIncomingInteraction | IUIKitIncomingInteractionActionButton | IUIKitIncomingInteractionBlockSuggestion;
