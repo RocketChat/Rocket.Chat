@@ -5,6 +5,7 @@ import type { ContextActionsBlock } from './layout/ContextActionsBlock';
 import type { ContextBlock } from './layout/ContextBlock';
 import type { DividerBlock } from './layout/DividerBlock';
 import type { ExperimentalTabNavigationBlock } from './layout/ExperimentalTabNavigationBlock';
+import type { FileBlock } from './layout/FileBlock';
 import type { HeaderBlock } from './layout/HeaderBlock';
 import type { ImageBlock } from './layout/ImageBlock';
 import type { InfoCardBlock } from './layout/InfoCardBlock';
@@ -35,4 +36,5 @@ export type LayoutBlock =
 	| VideoConferenceBlock
 	| CalloutBlock
 	| ExperimentalTabNavigationBlock
-	| InfoCardBlock;
+	| InfoCardBlock
+	| FileBlock;
