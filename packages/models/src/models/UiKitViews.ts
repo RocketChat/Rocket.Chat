@@ -23,6 +23,14 @@ export class UiKitViewsRaw extends BaseRaw<IUiKitView> implements IUiKitViewsMod
 		await this.updateOne({ _id }, { $set: { appId, userId, type, view, expireAt: new Date(Date.now() + VIEW_TTL_MS) } }, { upsert: true });
 	}
 
+	async saveHomeView({ _id, appId, userId, view }: Pick<IUiKitView, '_id' | 'appId' | 'userId' | 'view'>): Promise<void> {
+		await this.updateOne({ _id }, { $set: { appId, userId, type: 'home', view }, $unset: { expireAt: 1 } }, { upsert: true });
+	}
+
+	findHomeViewByAppIdAndUserId(appId: IUiKitView['appId'], userId: IUiKitView['userId']): Promise<IUiKitView | null> {
+		return this.findOne({ appId, userId, type: 'home' });
+	}
+
 	findOneByIdForUser(viewId: IUiKitView['_id'], appId: IUiKitView['appId'], userId: IUiKitView['userId']): Promise<IUiKitView | null> {
 		return this.findOne({ _id: viewId, appId, userId, expireAt: { $gt: new Date() } });
 	}

@@ -7,6 +7,7 @@ import { Logger } from '../../lib/logger';
 import type { RequestContext } from '../../lib/requestContext';
 import handleUIKitInteraction, {
 	UIKitActionButtonInteractionContext,
+	UIKitAppHomeOpenedInteractionContext,
 	UIKitBlockInteractionContext,
 	UIKitLivechatBlockInteractionContext,
 	UIKitViewCloseInteractionContext,
@@ -28,6 +29,7 @@ describe('handlers > uikit', () => {
 		executeViewSubmitHandler: (context: any): Promise<any> => Promise.resolve(context),
 		executeViewClosedHandler: (context: any): Promise<any> => Promise.resolve(context),
 		executeActionButtonHandler: (context: any): Promise<any> => Promise.resolve(context),
+		executeAppHomeOpenedHandler: (context: any): Promise<any> => Promise.resolve(context),
 		executeLivechatBlockActionHandler: (context: any): Promise<any> => Promise.resolve(context),
 	};
 
@@ -86,6 +88,17 @@ describe('handlers > uikit', () => {
 
 		const result = await handleUIKitInteraction(request);
 		assert.ok(result instanceof UIKitActionButtonInteractionContext, `Expected instance of ${UIKitActionButtonInteractionContext.name}`);
+	});
+
+	it('successfully handles a call for "executeAppHomeOpenedHandler"', async () => {
+		const request = makeMockRequest('app:executeAppHomeOpenedHandler', {
+			appId: 'appId',
+			triggerId: 'triggerId',
+			user: {},
+		});
+
+		const result = await handleUIKitInteraction(request);
+		assert.ok(result instanceof UIKitAppHomeOpenedInteractionContext, `Expected instance of ${UIKitAppHomeOpenedInteractionContext.name}`);
 	});
 
 	it('successfully handles a call for "executeLivechatBlockActionHandler"', async () => {

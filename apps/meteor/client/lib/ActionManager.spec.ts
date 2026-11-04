@@ -3,7 +3,7 @@ import type { RouterContext } from '@rocket.chat/ui-contexts';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import type { ContextType } from 'react';
 
-import { ActionManager } from './ActionManager';
+import { ActionManager, homeUpdateEventName } from './ActionManager';
 import { sdk } from './SDKClient';
 
 jest.mock('@rocket.chat/ui-client', () => ({ imperativeModal: { push: jest.fn() } }));
@@ -131,6 +131,24 @@ describe('modal stack', () => {
 		trigger(actionManager, { type: 'modal.push', view: modalView('d') });
 
 		expect(closes.get('b')).not.toHaveBeenCalled();
+	});
+});
+
+describe('home.update', () => {
+	const homeView = { appId, id: 'home-id', blocks: [] } as UiKit.HomeView;
+
+	it('reaches the open home without a trigger id, by app and by view', () => {
+		const actionManager = new ActionManager({} as ContextType<typeof RouterContext>);
+		const onApp = jest.fn();
+		const onView = jest.fn();
+		actionManager.on(homeUpdateEventName(appId), onApp);
+		actionManager.on(homeView.id, onView);
+
+		const handled = actionManager.handleServerInteraction({ type: 'home.update', appId, view: homeView });
+
+		expect(handled).toBe('home.update');
+		expect(onApp).toHaveBeenCalledWith(expect.objectContaining({ view: homeView }));
+		expect(onView).toHaveBeenCalledWith(expect.objectContaining({ view: homeView }));
 	});
 });
 
