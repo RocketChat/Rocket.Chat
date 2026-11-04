@@ -208,7 +208,7 @@ export class OAuth2Client implements IOAuth2Client {
 
 	private async getBaseURLWithoutTrailingSlash(): Promise<string> {
 		const SITE_URL = 'Site_Url';
-		const url = await this.app.getAccessors().environmentReader.getServerSettings().getValueById(SITE_URL);
+		const url: string = await this.app.getAccessors().environmentReader.getServerSettings().getValueById(SITE_URL);
 
 		if (url.endsWith('/')) {
 			return url.substr(0, url.length - 1);
