@@ -114,9 +114,12 @@ export class Server {
 
 			end?.();
 		} catch (err: unknown) {
-			session.send(encodeNosub(packet.id, handleInternalException(err, 'Subscription error')));
+			const error = handleInternalException(err, 'Subscription error');
+			if (session.ws.readyState === WebSocket.OPEN) {
+				session.send(encodeNosub(packet.id, error));
+			}
 			// A failed subscription must not outlive its handler.
-			publication?.emit('stop', session, packet);
+			publication?._deactivate();
 		}
 	}
 

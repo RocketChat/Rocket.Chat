@@ -1,6 +1,7 @@
 import { EventEmitter } from 'events';
 
 import type { IPublication } from '@rocket.chat/streamer';
+import WebSocket from 'ws';
 
 import type { IPacket } from './IPacket';
 import type { Session } from './Session';
@@ -19,7 +20,7 @@ export class Publication extends EventEmitter implements IPublication {
 		this.packet = packet;
 		client.subscriptions.set(packet.id, this);
 
-		const onClientClose = () => this.emit('stop', this.client, this.packet);
+		const onClientClose = () => this._deactivate();
 		client.once('close', onClientClose);
 		this.once('stop', () => {
 			client.removeListener('close', onClientClose);
@@ -52,11 +53,30 @@ export class Publication extends EventEmitter implements IPublication {
 	}
 
 	stop(): void {
-		this.client.send(encodeNosub(this.packet.id));
+		if (this._isDeactivated()) {
+			return;
+		}
+		if (this.client.ws.readyState === WebSocket.OPEN) {
+			this.client.send(encodeNosub(this.packet.id));
+		}
+		this._deactivate();
+	}
+
+	/** Ends the publication without notifying the client: it reports itself deactivated and its stop callbacks run, once. */
+	_deactivate(): void {
+		if (this._isDeactivated()) {
+			return;
+		}
+		this._session = null;
 		this.emit('stop', this.client, this.packet);
 	}
 
+	/** Runs `fn` when the publication stops, or right away when it already has, as Meteor's `Subscription.onStop` does. */
 	onStop(fn: (...args: any[]) => void): void {
+		if (this._isDeactivated()) {
+			fn();
+			return;
+		}
 		this.once('stop', fn);
 	}
 

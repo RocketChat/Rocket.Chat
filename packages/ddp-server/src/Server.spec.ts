@@ -339,6 +339,32 @@ describe('Server subscriptions', () => {
 		expect(session.listenerCount('close')).toBe(0);
 	});
 
+	it('stops, without answering, a subscription whose session closed while its handler was pending', async () => {
+		let resume!: () => void;
+		const pending = new Promise<void>((resolve) => {
+			resume = resolve;
+		});
+		const onStop = jest.fn();
+		server.publish('messages', async function (this: Publication) {
+			await pending;
+			this.onStop(onStop);
+			if (this._isDeactivated()) {
+				throw new ClientSafeError('publication-client-disconnected');
+			}
+			this.ready();
+		});
+
+		const subscribing = server.subscribe(session, makeSubscription());
+		session.ws.readyState = WebSocket.CLOSED;
+		session.emit('close');
+		resume();
+		await subscribing;
+
+		expect(onStop).toHaveBeenCalledTimes(1);
+		expect(session.send).not.toHaveBeenCalled();
+		expect(session.subscriptions.size).toBe(0);
+	});
+
 	it('starts metrics before execution and completes them after the async publication finishes', async () => {
 		const end = jest.fn().mockReturnValue(0);
 		const metrics: IServiceMetrics = {

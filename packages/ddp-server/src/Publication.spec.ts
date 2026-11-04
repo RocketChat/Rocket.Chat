@@ -1,3 +1,5 @@
+import WebSocket from 'ws';
+
 import { Publication } from './Publication';
 import { makeSession, makeSubscription, sentPackets } from './__tests__/helpers';
 
@@ -51,6 +53,70 @@ describe('Publication', () => {
 
 		expect(first).toHaveBeenCalledTimes(1);
 		expect(second).toHaveBeenCalledTimes(1);
+	});
+
+	it('reports itself deactivated once the session closes or it stops', () => {
+		const other = new Publication(session, { ...makeSubscription(), id: 'other-id' });
+
+		session.emit('close');
+		other.stop();
+
+		expect(publication._isDeactivated()).toBe(true);
+		expect(publication._session).toBeNull();
+		expect(other._isDeactivated()).toBe(true);
+		expect(other._session).toBeNull();
+	});
+
+	it('runs a stop callback registered after the session closed right away, once', () => {
+		const late = jest.fn();
+		session.emit('close');
+
+		publication.onStop(late);
+		expect(late).toHaveBeenCalledTimes(1);
+
+		publication.stop();
+		session.emit('close');
+		expect(late).toHaveBeenCalledTimes(1);
+	});
+
+	it('runs a stop callback registered after an explicit stop right away', () => {
+		const late = jest.fn();
+		publication.stop();
+
+		publication.onStop(late);
+
+		expect(late).toHaveBeenCalledTimes(1);
+	});
+
+	it('sends a single nosub across repeated stops', () => {
+		publication.stop();
+		publication.stop();
+
+		expect(sentPackets(session)).toEqual([{ msg: 'nosub', id: 'test-id' }]);
+	});
+
+	it('stops without writing to a socket that is no longer open', () => {
+		const onStop = jest.fn();
+		publication.onStop(onStop);
+		session.ws.readyState = WebSocket.CLOSING;
+
+		publication.stop();
+
+		expect(session.send).not.toHaveBeenCalled();
+		expect(onStop).toHaveBeenCalledTimes(1);
+		expect(session.subscriptions.has('test-id')).toBe(false);
+	});
+
+	it('is fully stopped even when one of its stop callbacks throws', () => {
+		publication.onStop(() => {
+			throw new Error('stop callback failure');
+		});
+
+		expect(() => publication.stop()).toThrow('stop callback failure');
+
+		expect(publication._isDeactivated()).toBe(true);
+		expect(session.subscriptions.has('test-id')).toBe(false);
+		expect(session.listenerCount('close')).toBe(0);
 	});
 
 	it('removes its session close listener when stopped', () => {
