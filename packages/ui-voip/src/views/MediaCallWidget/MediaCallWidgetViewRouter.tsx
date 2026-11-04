@@ -1,5 +1,8 @@
-import { OngoingCall, NewCall, IncomingCall, OutgoingCall } from '..';
+import IncomingCall from './IncomingCall';
+import NewCall from './NewCall';
+import OngoingCall from './OngoingCall';
 import OngoingCallWithScreen from './OngoingCallWithScreen';
+import OutgoingCall from './OutgoingCall';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
 
 const MediaCallWidgetViewRouter = () => {

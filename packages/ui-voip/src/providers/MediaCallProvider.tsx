@@ -3,8 +3,8 @@ import type { ReactNode } from 'react';
 
 import MediaCallInstanceProvider from './MediaCallInstanceProvider';
 import MediaCallViewProvider from './MediaCallViewProvider';
-import { MediaCallWidget } from '../views';
 import MediaCallPopout from '../views/MediaCallPopout';
+import MediaCallWidget from '../views/MediaCallWidget/MediaCallWidget';
 
 export type MediaCallProviderProps = {
 	children: ReactNode;

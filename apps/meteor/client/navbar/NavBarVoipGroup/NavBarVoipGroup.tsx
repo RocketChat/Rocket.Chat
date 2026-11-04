@@ -1,6 +1,6 @@
 import { NavBarGroup, NavBarItem } from '@rocket.chat/fuselage';
 import { useRouter } from '@rocket.chat/ui-contexts';
-import { useMediaCallAction } from '@rocket.chat/ui-voip';
+import { useMediaCallAction } from '@rocket.chat/ui-voip/dist/hooks/useMediaCallAction';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 

@@ -1,6 +1,6 @@
 import { useHasLicenseModule } from '@rocket.chat/ui-client';
 import { usePermission } from '@rocket.chat/ui-contexts';
-import { MediaCallProvider as MediaCallProviderBase } from '@rocket.chat/ui-voip';
+import MediaCallProviderBase from '@rocket.chat/ui-voip/dist/providers/MediaCallProvider';
 import type { ReactNode } from 'react';
 
 export type MediaCallProviderProps = { children: ReactNode };

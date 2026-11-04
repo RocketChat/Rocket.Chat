@@ -1,6 +1,7 @@
 import { useShortTimeAgo } from '@rocket.chat/ui-client';
 import type { OngoingCallsContextValue } from '@rocket.chat/ui-conference';
-import { OngoingCallsContext, useRinging } from '@rocket.chat/ui-conference';
+import { OngoingCallsContext } from '@rocket.chat/ui-conference/dist/context/OngoingCallsContext';
+import { useRinging } from '@rocket.chat/ui-conference/dist/hooks/useRinging';
 import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useVideoConfDismissCall, useVideoConfIncomingCalls } from '@rocket.chat/ui-video-conf';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
