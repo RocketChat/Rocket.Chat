@@ -10332,6 +10332,7 @@ __metadata:
     invariant: "npm:^2.2.4"
     jest: "npm:~30.5.2"
     jest-axe: "npm:~11.0.0"
+    magic-string: "npm:~0.30.21"
     normalize.css: "npm:^8.0.1"
     postcss: "npm:8.5.26"
     postcss-scss: "npm:~4.0.9"
@@ -29380,7 +29381,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"magic-string@npm:0.30.21, magic-string@npm:^0.30.3":
+"magic-string@npm:0.30.21, magic-string@npm:^0.30.3, magic-string@npm:~0.30.21":
   version: 0.30.21
   resolution: "magic-string@npm:0.30.21"
   dependencies:
