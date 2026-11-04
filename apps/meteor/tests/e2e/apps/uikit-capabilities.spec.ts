@@ -58,7 +58,7 @@ test.describe.serial('Apps > UIKit capabilities', () => {
 		});
 
 		await test.step('context actions show the new icons, named after their labels', async () => {
-			await expect(message.getByRole('button', { name: 'Copy' })).toBeVisible();
+			await expect(message.locator('button[value="copy"]')).toHaveAttribute('title', 'Copy');
 			await expect(message.getByRole('button', { name: 'Report' })).toBeVisible();
 		});
 	});
@@ -108,6 +108,62 @@ test.describe.serial('Apps > UIKit capabilities', () => {
 
 			await expect(page.getByRole('dialog', { name: 'New release' })).toHaveCount(0);
 			await expect(poHomeChannel.content.lastUserMessage.getByText('Release of rocketchat')).toBeVisible();
+		});
+	});
+
+	test('should show an agent plan and move it forward when the app updates the message', async () => {
+		await poHomeChannel.content.dispatchSlashCommand('/uikit-capabilities-test agent');
+
+		const message = poHomeChannel.content.lastUserMessage;
+		await expect(message.getByText('The agent is working on your request.')).toBeVisible();
+		await expect(message.getByText('Fix the login bug')).toBeVisible();
+		await expect(message.getByText('In progress')).toHaveCount(1);
+		await expect(message.getByRole('link', { name: 'Rocket.Chat docs' })).toBeVisible();
+
+		await message.getByRole('button', { name: 'Next step' }).click();
+
+		await expect(message.getByText('Completed')).toHaveCount(1);
+		await expect(message.getByText('In progress')).toHaveCount(1);
+	});
+
+	test('should show a card and a carousel of cards', async () => {
+		await poHomeChannel.content.dispatchSlashCommand('/uikit-capabilities-test cards');
+
+		const message = poHomeChannel.content.lastUserMessage;
+		await expect(message.getByText('Rocket Cat')).toBeVisible();
+		await expect(message.getByRole('group', { name: 'Carousel' })).toBeVisible();
+		await expect(message.getByRole('group', { name: '4 of 4' })).toBeAttached();
+		await expect(message.getByRole('button', { name: 'Open' })).toHaveCount(5);
+	});
+
+	test('should ask before a confirmed action and send input values on Enter', async ({ page }) => {
+		await poHomeChannel.content.dispatchSlashCommand('/uikit-capabilities-test confirm');
+
+		const message = poHomeChannel.content.lastUserMessage;
+		const deleteButton = message.getByRole('button', { name: 'Delete release' });
+		const dialog = page.getByRole('alertdialog', { name: 'Delete the release?' });
+
+		await test.step('denying the dialog sends nothing', async () => {
+			await deleteButton.click();
+			await dialog.getByRole('button', { name: 'Keep it' }).click();
+			await expect(dialog).toHaveCount(0);
+			await expect(poHomeChannel.content.lastUserMessage.getByRole('button', { name: 'Delete release' })).toBeVisible();
+		});
+
+		await test.step('confirming the dialog sends the action', async () => {
+			await deleteButton.click();
+			await dialog.getByRole('button', { name: 'Delete', exact: true }).click();
+			await expect(poHomeChannel.content.lastUserMessage).toContainText('Release deleted.');
+		});
+
+		await test.step('Enter sends the input value', async () => {
+			await page.getByPlaceholder('Type and press Enter').last().fill('login bug');
+			await page.getByPlaceholder('Type and press Enter').last().press('Enter');
+			await expect(poHomeChannel.content.lastUserMessage).toContainText('Searching for login bug');
+		});
+
+		await test.step('the time picker names its time zone', async () => {
+			await expect(page.getByText(/EST|EDT|GMT-[45]/).last()).toBeVisible();
 		});
 	});
 });
