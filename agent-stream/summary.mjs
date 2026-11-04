@@ -11,7 +11,7 @@ const dir = positionals[0];
 const results = readdirSync(dir)
 	.filter((file) => file.endsWith('.json'))
 	.map((file) => JSON.parse(readFileSync(join(dir, file), 'utf8')))
-	.filter((r) => !args.label || r.label === args.label);
+	.filter((r) => r.deployment && (!args.label || r.label === args.label));
 
 const median = (values) => {
 	const sorted = values.filter((v) => v !== null && v !== undefined && !Number.isNaN(v)).sort((a, b) => a - b);
