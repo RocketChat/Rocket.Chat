@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 
 import * as stories from './MultiSelect.stories';
+import MultiSelectFiltered from './MultiSelectFiltered';
 import { withResizeObserverMock } from '../../../mocks/withResizeObserverMock';
 import { render } from '../../testing';
 
@@ -52,4 +53,13 @@ test('unchecks the option checkbox on deselect', async () => {
 
 	expect(option).toHaveAttribute('aria-selected', 'false');
 	expect(checkbox).not.toBeChecked();
+});
+
+test.each([
+	[true, true],
+	[false, false],
+])('focuses the combobox on mount when autoFocus is %s', (autoFocus, focused) => {
+	render(<MultiSelectFiltered autoFocus={autoFocus} placeholder='Pick' options={[['a', 'A']]} onChange={jest.fn()} />);
+
+	expect(screen.getByRole('combobox').matches(':focus')).toBe(focused);
 });
