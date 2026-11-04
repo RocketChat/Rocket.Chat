@@ -13,6 +13,7 @@ import type { MultiUsersSelectElement } from '../elements/MultiUsersSelectElemen
 import type { NumberInputElement } from '../elements/NumberInputElement';
 import type { PlainTextInputElement } from '../elements/PlainTextInputElement';
 import type { RadioButtonElement } from '../elements/RadioButtonElement';
+import type { RichTextInputElement } from '../elements/RichTextInputElement';
 import type { StaticSelectElement } from '../elements/StaticSelectElement';
 import type { TimePickerElement } from '../elements/TimePickerElement';
 import type { ToggleSwitchElement } from '../elements/ToggleSwitchElement';
@@ -41,6 +42,7 @@ export type InputBlock = LayoutBlockish<{
 		| UsersSelectElement
 		| CheckboxElement
 		| RadioButtonElement
+		| RichTextInputElement
 		| TimePickerElement
 		| ToggleSwitchElement;
 	hint?: PlainText;

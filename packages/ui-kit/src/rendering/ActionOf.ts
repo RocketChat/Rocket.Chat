@@ -17,11 +17,13 @@ import type { NumberInputElement } from '../blocks/elements/NumberInputElement';
 import type { OverflowElement } from '../blocks/elements/OverflowElement';
 import type { PlainTextInputElement } from '../blocks/elements/PlainTextInputElement';
 import type { RadioButtonElement } from '../blocks/elements/RadioButtonElement';
+import type { RichTextInputElement } from '../blocks/elements/RichTextInputElement';
 import type { StaticSelectElement } from '../blocks/elements/StaticSelectElement';
 import type { TimePickerElement } from '../blocks/elements/TimePickerElement';
 import type { ToggleSwitchElement } from '../blocks/elements/ToggleSwitchElement';
 import type { UrlTextInputElement } from '../blocks/elements/UrlTextInputElement';
 import type { UsersSelectElement } from '../blocks/elements/UsersSelectElement';
+import type { RichTextBlock } from '../blocks/layout/RichTextBlock';
 
 export type ActionOf<TElement extends ActionableElement> = TElement extends ButtonElement
 	? ButtonElement['value']
@@ -61,4 +63,6 @@ export type ActionOf<TElement extends ActionableElement> = TElement extends Butt
 																		? Option['value'][] | undefined
 																		: TElement extends TimePickerElement
 																			? TimePickerElement['initialTime']
-																			: never;
+																			: TElement extends RichTextInputElement
+																				? RichTextBlock
+																				: never;
