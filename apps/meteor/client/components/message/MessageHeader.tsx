@@ -40,10 +40,10 @@ const MessageHeader = ({ message }: MessageHeaderProps) => {
 
 	const showRealName = useMessageListShowRealName();
 	const user = { ...message.u, roles: [], ...useUserPresence(message.u._id) };
-	const usernameAndRealNameAreSame = !user.name || user.username === user.name;
+	const normalizedUsername = normalizeUsername(user.username);
+	const usernameAndRealNameAreSame = !user.name || normalizedUsername === normalizeUsername(user.name);
 	const showUsername = useMessageListShowUsername() && showRealName && !usernameAndRealNameAreSame;
 	const displayName = useUserDisplayName(user);
-	const normalizedUsername = normalizeUsername(user.username);
 
 	const showRoles = useMessageListShowRoles();
 	const { workspaceRoles, roomRoles } = useUserRolesByScope(message.u._id, message.rid, { enabled: showRoles });
