@@ -5,6 +5,7 @@ export * from './context';
 export * from './divider';
 export * from './header';
 export * from './markdown';
+export * from './richText';
 export * from './image';
 export * from './input';
 export * from './section';

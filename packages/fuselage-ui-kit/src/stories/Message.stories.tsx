@@ -94,6 +94,8 @@ export const Header = createStory(payloads.header);
 
 export const Markdown = createStory(payloads.markdown);
 
+export const RichText = createStory(payloads.richText);
+
 export const SectionWithPlainText = createStory(payloads.sectionWithPlainText);
 
 export const SectionWithMrkdwn = createStory(payloads.sectionWithMrkdwn);

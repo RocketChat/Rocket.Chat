@@ -14,6 +14,7 @@ export const messageSurfaceLayoutBlockTypes = [
 	'input',
 	'markdown',
 	'preview',
+	'rich_text',
 	'section',
 	'table',
 	'video',

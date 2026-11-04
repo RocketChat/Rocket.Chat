@@ -31,6 +31,7 @@ export type { UsersSelectElement } from './blocks/elements/UsersSelectElement.js
 export type { ToggleSwitchElement } from './blocks/elements/ToggleSwitchElement.js';
 export type { CheckboxElement } from './blocks/elements/CheckboxElement.js';
 export type { RadioButtonElement } from './blocks/elements/RadioButtonElement.js';
+export type { RichTextInputElement } from './blocks/elements/RichTextInputElement.js';
 export type { TimePickerElement } from './blocks/elements/TimePickerElement.js';
 export type { BlockElement } from './blocks/BlockElement.js';
 export type { ExperimentalTabElement } from './blocks/elements/ExperimentalTabElement.js';
@@ -46,6 +47,7 @@ export type { HeaderBlock } from './blocks/layout/HeaderBlock.js';
 export type { ImageBlock } from './blocks/layout/ImageBlock.js';
 export type { InputBlock } from './blocks/layout/InputBlock.js';
 export type { MarkdownBlock } from './blocks/layout/MarkdownBlock.js';
+export type * from './blocks/layout/RichTextBlock.js';
 export type { SectionBlock } from './blocks/layout/SectionBlock.js';
 export type { ContextActionsBlock } from './blocks/layout/ContextActionsBlock.js';
 export type { VideoBlock } from './blocks/layout/VideoBlock.js';
