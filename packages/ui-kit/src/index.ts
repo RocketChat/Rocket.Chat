@@ -93,5 +93,5 @@ export * from './surfaces/modal';
 export * from './interactions/UserInteraction';
 export * from './interactions/ServerInteraction';
 
-export type { AliasedBlockElement } from './blocks/elementTypeAliases';
+export type { CanonicalElementType, ElementTypeAlias } from './blocks/elementTypeAliases';
 export { toCanonicalElement, toCanonicalElementType } from './blocks/elementTypeAliases';
