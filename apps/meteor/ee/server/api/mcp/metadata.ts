@@ -1,7 +1,9 @@
+import { Logger } from '@rocket.chat/logger';
 import type { RequestHandler } from 'express';
 import type express from 'express';
 import { WebApp } from 'meteor/webapp';
 
+import { nodeLoggerMiddleware } from '../../../../server/api/v1/middlewares/logger';
 import { getOAuthIssuer, getWellKnownUrl, isWellKnownRequest } from '../../../../server/oauth2-server/metadata';
 import { settings } from '../../../../server/settings/cached';
 
@@ -37,4 +39,8 @@ export const serveProtectedResourceMetadata: RequestHandler = (req, res, next) =
 	res.send(getProtectedResourceMetadata(getOAuthIssuer()));
 };
 
-(WebApp.rawConnectHandlers as unknown as ReturnType<typeof express>).use(BARE_METADATA_PATH, serveProtectedResourceMetadata);
+(WebApp.rawConnectHandlers as unknown as ReturnType<typeof express>).use(
+	BARE_METADATA_PATH,
+	nodeLoggerMiddleware(new Logger('OAuth')),
+	serveProtectedResourceMetadata,
+);
