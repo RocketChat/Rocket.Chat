@@ -47,11 +47,14 @@ const CustomField = <T extends FieldValues>({
 
 	const validateRequired = useCallback((value: string) => (required ? typeof value === 'string' && !!value.trim() : true), [required]);
 
+	const fieldName = name.split('.').pop() ?? name;
+	const displayLabel = t((label || fieldName) as TranslationKey);
+
 	const getErrorMessage = useCallback(
 		(error: RHFFieldError) => {
 			switch (error?.type) {
 				case 'required':
-					return t('Required_field', { field: label || name });
+					return t('Required_field', { field: displayLabel });
 				case 'minLength':
 					return t('Min_length_is', { limit: props?.minLength });
 				case 'maxLength':
@@ -60,7 +63,7 @@ const CustomField = <T extends FieldValues>({
 					return error?.message || '';
 			}
 		},
-		[label, name, props?.maxLength, props?.minLength, t],
+		[displayLabel, props?.maxLength, props?.minLength, t],
 	);
 
 	const error = get(errors, name);
@@ -79,7 +82,7 @@ const CustomField = <T extends FieldValues>({
 			render={({ field }) => (
 				<Field rcx-field-group__item>
 					<FieldLabel is='span' id={fieldId} required={required}>
-						{label || t(name as TranslationKey)}
+						{displayLabel}
 					</FieldLabel>
 					<FieldRow>
 						<Component
@@ -110,7 +113,7 @@ export const CustomFieldsForm = <T extends FieldValues>({ formName, formControl,
 	return (
 		<FieldGroup aria-label={t('Custom_Fields')}>
 			{metadata.map(({ name: fieldName, label, ...props }) => (
-				<CustomField key={fieldName} name={`${formName}.${fieldName}`} control={formControl} label={label ?? fieldName} {...props} />
+				<CustomField key={fieldName} name={`${formName}.${fieldName}`} control={formControl} label={label || fieldName} {...props} />
 			))}
 		</FieldGroup>
 	);

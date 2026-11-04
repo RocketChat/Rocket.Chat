@@ -23,7 +23,7 @@ const TestComponent = ({ metadata, formName, onSubmit }: TestComponentProps) => 
 	const { control, handleSubmit } = useForm({ mode: 'onBlur' });
 
 	return (
-		<form onSubmit={handleSubmit(onSubmit)}>
+		<form onSubmit={handleSubmit((data) => onSubmit(data))}>
 			<CustomFieldsForm formName={formName} formControl={control as unknown as Control<any>} metadata={metadata} />
 			<button type='submit'>Submit</button>
 		</form>
@@ -135,5 +135,96 @@ describe('CustomFieldsForm', () => {
 		).not.toThrow();
 
 		expect(screen.queryByLabelText('Field 1')).not.toBeInTheDocument();
+	});
+
+	it('should display configured label instead of internal key', () => {
+		const metadata: CustomFieldMetadata[] = [
+			{ name: 'employee_department', type: 'text', label: 'Department', required: true, defaultValue: '', options: [] },
+		];
+
+		render(<TestComponent metadata={metadata} formName='testForm' onSubmit={jest.fn()} />, { wrapper: appRoot });
+
+		expect(screen.getByRole('textbox', { name: 'Department' })).toBeInTheDocument();
+		expect(screen.queryByText('employee_department')).not.toBeInTheDocument();
+	});
+
+	it('should display translated label when translation is available for the internal field name', () => {
+		const translatedRoot = mockAppRoot()
+			.withTranslations('en', 'core', {
+				Required_field: '{{field}} required',
+				employee_department: 'Department',
+			})
+			.build();
+
+		const metadata: CustomFieldMetadata[] = [
+			{ name: 'employee_department', type: 'text', required: true, defaultValue: '', options: [] },
+		];
+
+		render(<TestComponent metadata={metadata} formName='testForm' onSubmit={jest.fn()} />, { wrapper: translatedRoot });
+
+		expect(screen.getByRole('textbox', { name: 'Department' })).toBeInTheDocument();
+		expect(screen.queryByText('employee_department')).not.toBeInTheDocument();
+	});
+
+	it('should display translated label when translation is available for a configured label key', () => {
+		const translatedRoot = mockAppRoot()
+			.withTranslations('en', 'core', {
+				Required_field: '{{field}} required',
+				Custom_Department_Label: 'Department',
+			})
+			.build();
+
+		const metadata: CustomFieldMetadata[] = [
+			{ name: 'employee_department', type: 'text', label: 'Custom_Department_Label', required: false, defaultValue: '', options: [] },
+		];
+
+		render(<TestComponent metadata={metadata} formName='testForm' onSubmit={jest.fn()} />, { wrapper: translatedRoot });
+
+		expect(screen.getByRole('textbox', { name: 'Department' })).toBeInTheDocument();
+	});
+
+	it('should fall back to internal key when neither label nor translation is configured', () => {
+		const metadata: CustomFieldMetadata[] = [
+			{ name: 'untranslated_custom_field', type: 'text', required: false, defaultValue: '', options: [] },
+		];
+
+		render(<TestComponent metadata={metadata} formName='testForm' onSubmit={jest.fn()} />, { wrapper: appRoot });
+
+		expect(screen.getByRole('textbox', { name: 'untranslated_custom_field' })).toBeInTheDocument();
+	});
+
+	it('should submit form with internal key while displaying configured label', async () => {
+		const onSubmit = jest.fn();
+		const metadata: CustomFieldMetadata[] = [
+			{ name: 'employee_department', type: 'text', label: 'Department', required: true, defaultValue: '', options: [] },
+		];
+
+		render(<TestComponent metadata={metadata} formName='customFields' onSubmit={onSubmit} />, { wrapper: appRoot });
+
+		const input = screen.getByRole('textbox', { name: 'Department' });
+		await userEvent.type(input, 'Engineering');
+		await userEvent.click(screen.getByRole('button', { name: 'Submit' }));
+
+		await waitFor(() => {
+			expect(onSubmit).toHaveBeenCalledWith({
+				customFields: {
+					employee_department: 'Engineering',
+				},
+			});
+		});
+	});
+
+	it('should use display label in validation error message', async () => {
+		const metadata: CustomFieldMetadata[] = [
+			{ name: 'employee_department', type: 'text', label: 'Department', required: true, defaultValue: '', options: [] },
+		];
+
+		render(<TestComponent metadata={metadata} formName='testForm' onSubmit={jest.fn()} />, { wrapper: appRoot });
+
+		const input = screen.getByRole('textbox', { name: 'Department' });
+		await userEvent.click(input);
+		await userEvent.tab();
+
+		await waitFor(() => expect(input).toHaveAccessibleDescription('Department required'));
 	});
 });
