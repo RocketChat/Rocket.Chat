@@ -18,4 +18,6 @@ const handleHadTrial = (): void => {
 
 export const registerHadTrialHandler = (): void => {
 	License.onValidateLicense(handleHadTrial);
+	// the license applied at boot was validated before this handler existed
+	handleHadTrial();
 };
