@@ -28,6 +28,16 @@ it.each([
 	['section text', { type: 'section', text: text(3001) }, '$input[0].text.text'],
 	['section field', { type: 'section', fields: [text(2001)] }, '$input[0].fields[0].text'],
 	['button text', { type: 'section', accessory: { type: 'button', text: text(76) } }, '$input[0].accessory.text.text'],
+	['card title', { type: 'card', title: text(151) }, '$input[0].title.text'],
+	['card subtitle', { type: 'card', subtitle: text(151) }, '$input[0].subtitle.text'],
+	['card body', { type: 'card', body: text(201) }, '$input[0].body.text'],
+	['card subtext', { type: 'card', subtext: text(201) }, '$input[0].subtext.text'],
+	['card image URL', { type: 'card', icon: { type: 'image', image_url: 'a'.repeat(3001), alt_text: 'a' } }, '$input[0].icon.image_url'],
+	[
+		'card image alt text',
+		{ type: 'card', hero_image: { type: 'image', image_url: 'a', alt_text: 'a'.repeat(2001) } },
+		'$input[0].hero_image.alt_text',
+	],
 	['alert text', { type: 'alert', text: text(201) }, '$input[0].text.text'],
 	['input label', { type: 'input', label: text(2001), element: {} }, '$input[0].label.text'],
 	['input hint', { type: 'input', hint: text(2001), element: {} }, '$input[0].hint.text'],
@@ -48,4 +58,15 @@ it('limits the options of a select and the elements of an actions block', () => 
 	expect(paths([{ type: 'actions', elements: [{ type: 'static_select', options }] }])).toEqual(['$input[0].elements[0].options']);
 	expect(paths([{ type: 'actions', elements }])).toEqual(['$input[0].elements']);
 	expect(paths([{ type: 'context', elements }])).toEqual([]);
+});
+
+it('limits the buttons of a card and the cards of a carousel', () => {
+	const actions = Array.from({ length: 4 }, () => ({ type: 'button', text: text(1) }));
+	const cards = Array.from({ length: 11 }, () => ({ type: 'card' }));
+
+	expect(paths([{ type: 'card', actions }])).toEqual(['$input[0].actions']);
+	expect(paths([{ type: 'card', actions: actions.slice(1) }])).toEqual([]);
+	expect(paths([{ type: 'carousel', elements: cards }])).toEqual(['$input[0].elements']);
+	expect(paths([{ type: 'carousel', elements: [] }])).toEqual(['$input[0].elements']);
+	expect(paths([{ type: 'carousel', elements: [{ type: 'card', title: text(151) }] }])).toEqual(['$input[0].elements[0].title.text']);
 });

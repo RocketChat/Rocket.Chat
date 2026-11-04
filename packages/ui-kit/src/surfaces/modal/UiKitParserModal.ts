@@ -6,6 +6,7 @@ export const modalSurfaceLayoutBlockTypes = [
 	'actions',
 	'alert',
 	'callout',
+	'card',
 	'context',
 	'divider',
 	'header',

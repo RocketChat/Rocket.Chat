@@ -40,3 +40,10 @@ it('leaves values that are not blocks as they are, for the validation to report'
 	expect(withElementIds('blocks')).toBe('blocks');
 	expect(withElementIds([null, 'text'])).toEqual([null, 'text']);
 });
+
+it('gives the buttons of a card, alone or in a carousel, the ids of the card', () => {
+	const card = { type: 'card', blockId: 'card', actions: [{ type: 'button' }] };
+	const withIds = { type: 'card', blockId: 'card', actions: [{ type: 'button', appId: '', blockId: 'card', actionId: '' }] };
+
+	expect(withElementIds([card, { type: 'carousel', elements: [card] }])).toEqual([withIds, { type: 'carousel', elements: [withIds] }]);
+});

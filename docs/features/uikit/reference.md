@@ -46,6 +46,40 @@ Source: [`packages/ui-kit/src/blocks/layout/CalloutBlock.ts`](../../../packages/
 | `appId` | `string` | no |  |
 | `blockId` | `string` | no |  |
 
+### `card`
+
+Source: [`packages/ui-kit/src/blocks/layout/CardBlock.ts`](../../../packages/ui-kit/src/blocks/layout/CardBlock.ts)
+
+A self-contained card. Images must have a safe URL to be drawn. The type does not say that a card needs at least one of `hero_image`, `title`, `body` or `actions`; a card with none draws an empty frame.
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'card'` | yes |  |
+| `hero_image` | `CardImage` | no | Wide image across the top. |
+| `icon` | `CardImage` | no | Small image beside the title and subtitle. |
+| `title` | `TextObject` | no | At most 150 characters. |
+| `subtitle` | `TextObject` | no | At most 150 characters. |
+| `body` | `TextObject` | no | At most 200 characters. |
+| `subtext` | `TextObject` | no | Small text under the body; at most 200 characters. |
+| `actions` | `readonly ButtonElement[]` | no | At most 3. |
+| `appId` | `string` | no |  |
+| `blockId` | `string` | no |  |
+
+`CardImage` is `{ type: 'image', image_url: string, alt_text: string }`: `image_url` has at most 3000 characters and `alt_text` at most 2000.
+
+### `carousel`
+
+Source: [`packages/ui-kit/src/blocks/layout/CarouselBlock.ts`](../../../packages/ui-kit/src/blocks/layout/CarouselBlock.ts)
+
+Cards in a row that scrolls sideways. The previous and next buttons are tab stops and the row itself is focusable, so the keyboard scrolls it natively; there is no arrow-key navigation between cards. Anything in `elements` that is not a `card` is skipped.
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'carousel'` | yes |  |
+| `elements` | `readonly CardBlock[]` | yes | From 1 to 10 cards. |
+| `appId` | `string` | no |  |
+| `blockId` | `string` | no |  |
+
 ### `conditional`
 
 Source: [`packages/ui-kit/src/blocks/layout/ConditionalBlock.ts`](../../../packages/ui-kit/src/blocks/layout/ConditionalBlock.ts)
