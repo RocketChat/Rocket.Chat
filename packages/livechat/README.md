@@ -146,7 +146,7 @@ yarn workspace @rocket.chat/livechat build       # production build into dist/
 yarn workspace @rocket.chat/livechat start       # dev server with hot reload at http://localhost:8080
 yarn workspace @rocket.chat/livechat lint        # eslint + stylelint
 yarn workspace @rocket.chat/livechat typecheck
-yarn workspace @rocket.chat/livechat storybook   # Storybook at http://localhost:9001
+yarn workspace @rocket.chat/livechat storybook   # Storybook at http://localhost:6006
 ```
 
 Other scripts: `dev` (same as `build`), `clean`, `eslint`, `stylelint` and `build-storybook`.

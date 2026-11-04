@@ -13,6 +13,7 @@ import AutoComplete from './AutoComplete';
 export default {
 	title: 'Inputs/AutoComplete',
 	component: AutoComplete,
+	tags: ['status:deprecated'],
 	parameters: {
 		layout: 'centered',
 	},

@@ -81,7 +81,6 @@
     "@rocket.chat/server-fetch": "0.2.5",
     "@rocket.chat/sha256": "1.0.13",
     "@rocket.chat/storybook-config": "0.0.4",
-    "@rocket.chat/storybook-dark-mode": "4.3.0",
     "@rocket.chat/streamer": "0.1.1",
     "@rocket.chat/styled": "0.34.1",
     "@rocket.chat/stylis-logical-props-middleware": "0.31.26",
