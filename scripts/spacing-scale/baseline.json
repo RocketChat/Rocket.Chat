@@ -189,7 +189,6 @@
 	"apps/meteor/client/views/home/DefaultHomePage.tsx": 2,
 	"apps/meteor/client/views/mailer/MailerUnsubscriptionPage.tsx": 1,
 	"apps/meteor/client/views/marketplace/AppDetailsPage/AppDetailsPage.tsx": 2,
-	"apps/meteor/client/views/marketplace/AppDetailsPage/AppDetailsPageHeader.tsx": 9,
 	"apps/meteor/client/views/marketplace/AppDetailsPage/AppDetailsPageLoading.tsx": 2,
 	"apps/meteor/client/views/marketplace/AppDetailsPage/tabs/AppDetails/AppDetails.tsx": 10,
 	"apps/meteor/client/views/marketplace/AppDetailsPage/tabs/AppDetails/AppDetailsAPIs.tsx": 2,
