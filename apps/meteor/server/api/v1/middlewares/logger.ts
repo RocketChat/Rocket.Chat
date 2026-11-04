@@ -60,7 +60,7 @@ export const nodeLoggerMiddleware =
 			userAgent: req.headers['user-agent'],
 			length: req.headers['content-length'],
 			host: req.headers.host,
-			referer: req.headers.referer,
+			referer: req.headers.referer && censor(censorUrl(req.headers.referer)),
 			remoteIP: getRemoteAddress(req),
 		});
 

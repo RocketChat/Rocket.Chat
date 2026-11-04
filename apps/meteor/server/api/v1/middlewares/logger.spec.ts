@@ -88,4 +88,16 @@ describe('nodeLoggerMiddleware', () => {
 
 		expect(child).toHaveBeenCalledWith(expect.objectContaining({ url: 'http://localhost/api/apps/private/app-id/*Redacted*/endpoint' }));
 	});
+
+	it('censors the referer like the URL', () => {
+		const { logger, child } = createLogger();
+		const req = createRequest('/api/apps/private/app-id/hash/style.css');
+		req.headers.referer = 'https://open.rocket.chat/api/apps/private/app-id/hash/page?code=secret';
+
+		nodeLoggerMiddleware(logger, { censor: (url) => url.replace('hash', '*Redacted*') })(req, createResponse(), jest.fn());
+
+		expect(child).toHaveBeenCalledWith(
+			expect.objectContaining({ referer: 'https://open.rocket.chat/api/apps/private/app-id/*Redacted*/page?code=*Redacted*' }),
+		);
+	});
 });
