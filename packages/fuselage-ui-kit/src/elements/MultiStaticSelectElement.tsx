@@ -32,6 +32,7 @@ const MultiStaticSelectElement = ({ block, context }: MultiStaticSelectElementPr
 			error={error}
 			options={options}
 			placeholder={fromTextObjectToString(block.placeholder)}
+			autoFocus={block.focus_on_load}
 			onChange={handleChange}
 		/>
 	);

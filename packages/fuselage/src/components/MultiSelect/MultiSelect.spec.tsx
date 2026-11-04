@@ -6,6 +6,7 @@ import { axe } from 'jest-axe';
 import MultiSelect from './MultiSelect';
 import { Chip } from '../Chip';
 import * as stories from './MultiSelect.stories';
+import MultiSelectFiltered from './MultiSelectFiltered';
 import { withResizeObserverMock } from '../../../mocks/withResizeObserverMock';
 import { render } from '../../testing';
 
@@ -110,4 +111,13 @@ test.each(['{Enter}', ' '])('removes a custom chip from the keyboard with %s', a
 	await userEvent.keyboard(key);
 
 	expect(onChange).toHaveBeenCalledWith(['2']);
+});
+
+test.each([
+	[true, true],
+	[false, false],
+])('focuses the combobox on mount when autoFocus is %s', (autoFocus, focused) => {
+	render(<MultiSelectFiltered autoFocus={autoFocus} placeholder='Pick' options={[['a', 'A']]} onChange={jest.fn()} />);
+
+	expect(screen.getByRole('combobox').matches(':focus')).toBe(focused);
 });

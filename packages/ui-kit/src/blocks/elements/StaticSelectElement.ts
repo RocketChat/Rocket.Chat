@@ -10,4 +10,5 @@ export type StaticSelectElement = Actionable<{
 	optionGroups?: readonly OptionGroup[];
 	initialOption?: Option;
 	initialValue?: Option['value'];
+	focus_on_load?: boolean;
 }>;
