@@ -11,10 +11,12 @@ import ImageBlock from '../blocks/ImageBlock';
 import InfoCard from '../blocks/InfoCard';
 import InputBlock from '../blocks/InputBlock';
 import MarkdownBlock from '../blocks/MarkdownBlock';
+import PlanBlock from '../blocks/PlanBlock';
 import PreviewBlock from '../blocks/PreviewBlock';
 import RichTextBlock from '../blocks/RichTextBlock';
 import SectionBlock from '../blocks/SectionBlock';
 import TableBlock from '../blocks/TableBlock';
+import TaskCardBlock from '../blocks/TaskCardBlock';
 import VideoBlock from '../blocks/VideoBlock';
 import { AppIdProvider } from '../contexts/AppIdContext';
 import ButtonElement from '../elements/ButtonElement';
@@ -364,6 +366,30 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
 			return (
 				<AppIdProvider key={index} appId={block.appId}>
 					<TableBlock block={block} context={context} index={index} surfaceRenderer={this} />
+				</AppIdProvider>
+			);
+		}
+
+		return null;
+	}
+
+	task_card(block: UiKit.TaskCardBlock, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return (
+				<AppIdProvider key={index} appId={block.appId}>
+					<TaskCardBlock block={block} context={context} index={index} surfaceRenderer={this} />
+				</AppIdProvider>
+			);
+		}
+
+		return null;
+	}
+
+	plan(block: UiKit.PlanBlock, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return (
+				<AppIdProvider key={index} appId={block.appId}>
+					<PlanBlock block={block} context={context} index={index} surfaceRenderer={this} />
 				</AppIdProvider>
 			);
 		}

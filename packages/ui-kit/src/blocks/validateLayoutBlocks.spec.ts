@@ -36,6 +36,18 @@ it('reports blocks beyond the limit of the message or of the view', () => {
 	expect(validateLayoutBlocks(blocks, 100)).toEqual([]);
 });
 
+it('accepts a plan of tasks and reports one with more than 50', () => {
+	const task = { task_id: 't', title: 'Step', status: 'pending' };
+	const plan = (count: number) => [{ type: 'plan', title: 'Plan', tasks: Array.from({ length: count }, () => task) }];
+
+	expect(validateLayoutBlocks(plan(50))).toEqual([]);
+	expect(validateLayoutBlocks(plan(51)).map(({ path }) => path)).toEqual(['$input[0].tasks']);
+});
+
+it('reports a task card with an unknown status', () => {
+	expect(validateLayoutBlocks([{ type: 'task_card', task_id: 't', title: 'Step', status: 'done' }]).length).toBeGreaterThan(0);
+});
+
 it('reports text beyond its limit', () => {
 	expect(validateLayoutBlocks([{ type: 'header', text: text('a'.repeat(151)) }]).map(({ path }) => path)).toEqual(['$input[0].text.text']);
 });

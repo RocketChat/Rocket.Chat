@@ -150,6 +150,20 @@ Source: [`packages/ui-kit/src/blocks/layout/MarkdownBlock.ts`](../../../packages
 | `appId` | `string` | no |  |
 | `blockId` | `string` | no |  |
 
+### `plan`
+
+Source: [`packages/ui-kit/src/blocks/layout/PlanBlock.ts`](../../../packages/ui-kit/src/blocks/layout/PlanBlock.ts)
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'plan'` | yes | The steps of a multi-step task, such as an AI agent's, shown together under a title. |
+| `title` | `string` | yes | Plain text. |
+| `tasks` | `readonly TaskCard[]` | yes | At most 50, checked by `validateLayoutBlocks`. Each is the fields of a `task_card` without `type`, `appId` and `blockId`. `task_id` should be unique in the plan; nothing checks it, and the renderer keys tasks by it. |
+| `appId` | `string` | no |  |
+| `blockId` | `string` | no |  |
+
+An app shows progress by sending the message or view again with the new statuses.
+
 ### `preview`
 
 Source: [`packages/ui-kit/src/blocks/layout/PreviewBlock.ts`](../../../packages/ui-kit/src/blocks/layout/PreviewBlock.ts)
@@ -240,6 +254,23 @@ Source: [`packages/ui-kit/src/blocks/layout/ExperimentalTabNavigationBlock.ts`](
 | --- | --- | --- | --- |
 | `type` | `'tab_navigation'` | yes |  |
 | `tabs` | `readonly ExperimentalTabElement[]` | yes |  |
+| `appId` | `string` | no |  |
+| `blockId` | `string` | no |  |
+
+### `task_card`
+
+Source: [`packages/ui-kit/src/blocks/layout/TaskCardBlock.ts`](../../../packages/ui-kit/src/blocks/layout/TaskCardBlock.ts)
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'task_card'` | yes | One step of a multi-step task, such as an AI agent's, with its status. |
+| `task_id` | `string` | yes | Tells the tasks of a plan apart. |
+| `title` | `string` | yes | Plain text. |
+| `status` | `'pending' \| 'in_progress' \| 'complete' \| 'error'` | yes | Drawn as an icon and a label. An unknown value draws as `pending`. |
+| `details` | `RichTextBlock` | no | What the task sets out to do. |
+| `output` | `RichTextBlock` | no | What the task produced. |
+| `sources` | `readonly UrlSourceElement[]` | no | Links to the pages the task drew on. A link whose URL is not safe to open is left out. |
+| `hide_title` | `boolean` | no | Leaves out the title, so `details` comes first. `title` is still required. |
 | `appId` | `string` | no |  |
 | `blockId` | `string` | no |  |
 
@@ -746,6 +777,16 @@ Source: [`packages/ui-kit/src/blocks/elements/ToggleSwitchElement.ts`](../../../
 | `confirm` | `ConfirmationDialog` | no |  |
 | `dispatchActionConfig` | `InputElementDispatchAction[]` | no |  |
 
+### `url`
+
+Source: [`packages/ui-kit/src/blocks/elements/UrlSourceElement.ts`](../../../packages/ui-kit/src/blocks/elements/UrlSourceElement.ts)
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'url'` | yes | A link to a page a task drew on. Typed only for the `sources` of a `task_card`. |
+| `url` | `string` | yes |  |
+| `text` | `string` | yes | The link's label. |
+
 ### `url_text_input`
 
 Source: [`packages/ui-kit/src/blocks/elements/UrlTextInputElement.ts`](../../../packages/ui-kit/src/blocks/elements/UrlTextInputElement.ts)
@@ -902,6 +943,7 @@ Checked by `validateLayoutBlocks` (see [interactions.md](interactions.md#validat
 | Blocks in a message | 50 |
 | Blocks in a view | 100 |
 | Elements in an `actions` block | 25 |
+| Tasks in a `plan` | 50 |
 | Options in a select (`options`) | 100 |
 | `header` text | 150 characters |
 | `section` text | 3000 characters |

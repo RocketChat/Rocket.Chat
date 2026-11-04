@@ -15,3 +15,4 @@ export * from './file';
 export * from './table';
 export * from './video';
 export * from './contextActions';
+export * from './taskCard';
