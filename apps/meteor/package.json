@@ -47,7 +47,7 @@
 		"release": "meteor yarn set-version --silent",
 		"set-version": "node .scripts/set-version.js",
 		"start": "meteor",
-		"storybook": "storybook dev -p 6006 --no-version-updates",
+		"storybook": "storybook dev -p 6006",
 		"stylelint": "stylelint \"app/**/*.css\" \"client/**/*.css\"",
 		"stylelint:fix": "stylelint --fix \"app/**/*.css\" \"client/**/*.css\"",
 		"test": "yarn testunit && yarn testapi",

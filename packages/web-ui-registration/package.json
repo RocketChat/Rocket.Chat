@@ -13,7 +13,7 @@
 		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
 		"lint": "yarn run -T oxlint",
 		"lint:fix": "yarn run -T oxlint --fix",
-		"storybook": "storybook dev -p 6006 --no-version-updates",
+		"storybook": "storybook dev -p 6006",
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {

@@ -30,7 +30,7 @@
 		"dev": "tsc --watch --preserveWatchOutput -p tsconfig.build.json",
 		"docs": "cross-env NODE_ENV=production storybook build -o ../../static/fuselage-ui-kit",
 		"lint": "yarn run -T oxlint",
-		"storybook": "storybook dev -p 6006 --no-version-updates",
+		"storybook": "storybook dev -p 6006",
 		"test": "jest",
 		"testunit": "jest",
 		"typecheck": "tsc --noEmit"

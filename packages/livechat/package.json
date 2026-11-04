@@ -18,7 +18,7 @@
 		"dev": "yarn build",
 		"lint": "yarn run -T oxlint && yarn run stylelint",
 		"start": "cross-env TS_NODE_PROJECT=\"tsconfig.webpack.json\" webpack-dev-server --mode development",
-		"storybook": "storybook dev -p 9001 -c .storybook",
+		"storybook": "storybook dev -p 6006",
 		"stylelint": "stylelint 'src/**/*.scss'",
 		"typecheck": "tsc -p tsconfig.json --noEmit"
 	},
