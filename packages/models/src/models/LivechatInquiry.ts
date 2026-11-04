@@ -182,6 +182,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 			},
 			{
 				sort: queueSortBy,
+				returnDocument: 'after',
 			},
 		);
 	}
