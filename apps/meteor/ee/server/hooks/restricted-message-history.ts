@@ -146,10 +146,15 @@ getMembersWithoutAccessToMessage.patch(async (next, message) => {
 	return new Set(restrictedMembers.filter((_, index) => !visibility[index]).map(({ u }) => u._id));
 });
 
-getHistoryVisibleFromForNewMember.patch(async (next, room, joinedAt) => {
-	if (!isActive() || !room.hideHistoryForNewMembers || !canRestrictMessageHistory(room)) {
-		return next(room, joinedAt);
+/** Someone restricted in a discussion's parent room stays restricted when they join the discussion. */
+getHistoryVisibleFromForNewMember.patch(async (next, room, uid, joinedAt) => {
+	if (!isActive() || !canRestrictMessageHistory(room)) {
+		return next(room, uid, joinedAt);
 	}
 
-	return joinedAt;
+	if (room.hideHistoryForNewMembers) {
+		return joinedAt;
+	}
+
+	return room.prid ? (await findSubscriptionCutoff(uid, room.prid))?.historyVisibleFrom : undefined;
 });
