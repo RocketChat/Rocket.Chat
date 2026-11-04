@@ -383,7 +383,9 @@ describe('AbacService (unit)', () => {
 
 		it('throws error-duplicate-attribute-key when duplicate index error occurs', async () => {
 			const attribute = { key: 'DupKey', values: ['a'] };
-			mockAbacInsertOne.mockRejectedValueOnce(new Error('E11000 duplicate key error collection: abac_attributes'));
+			mockAbacInsertOne.mockRejectedValueOnce(
+				Object.assign(new Error('E11000 duplicate key error collection: abac_attributes'), { code: 11000 }),
+			);
 			await expect(service.addAbacAttribute(attribute, fakeActor)).rejects.toThrow('error-duplicate-attribute-key');
 		});
 
@@ -521,7 +523,7 @@ describe('AbacService (unit)', () => {
 				.mockResolvedValueOnce({ _id: 'id9', key: 'Old', values: ['v'] }) // findOneById
 				.mockResolvedValueOnce(null); // duplicate key check
 			mockRoomsIsAbacAttributeInUse.mockResolvedValueOnce(false);
-			mockAbacUpdateOne.mockRejectedValueOnce(new Error('E11000 duplicate key error collection'));
+			mockAbacUpdateOne.mockRejectedValueOnce(Object.assign(new Error('E11000 duplicate key error collection'), { code: 11000 }));
 			await expect(service.updateAbacAttributeById('id9', { key: 'NewKey' }, fakeActor)).rejects.toThrow('error-duplicate-attribute-key');
 		});
 
