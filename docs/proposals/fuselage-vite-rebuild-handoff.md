@@ -361,7 +361,7 @@ Tick an item in the commit that completes it.
 
 **Correctness**
 
-- [x] Box sizing in the app: the Storybook loads the app's reset and frames no longer force `content-box`.
+- [x] Box sizing in the app: frames no longer force `content-box`. The Storybook doesn't load the app's reset, so `styles/box-sizing.css` gives every `rcx-*` part and its pseudo-elements the reset's `border-box`, in the `fuselage` layer.
 - [x] `States`' link rendered empty when Fuselage runs uncompiled, like the Message emoji: their `children` travelled in the props spread on the render element and the childless frame replaced them. They go to the frame now.
 - [x] Uncompiled runtime: React 19 callback refs (cleanup ignored, `ref(null)` on unmount) and props leaking to the DOM, fixed by the `@tamagui/compose-refs` and `@tamagui/web` patches.
 - [x] Visual regression baselines regenerated for the Tamagui frames.
