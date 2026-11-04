@@ -1,6 +1,6 @@
 type Ids = { appId?: unknown; blockId?: unknown };
 
-const elementKeys = ['elements', 'accessory', 'element', 'tabs'] as const;
+const elementKeys = ['elements', 'accessory', 'element', 'tabs', 'actions'] as const;
 
 const isObject = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
 
@@ -25,6 +25,13 @@ export const withElementIds = (blocks: unknown): unknown => {
 
 		for (const key of elementKeys) {
 			const value = copy[key];
+
+			// The elements of a carousel are cards, which are blocks: they hand their own ids to their buttons.
+			if (block.type === 'carousel' && key === 'elements') {
+				copy[key] = withElementIds(value);
+				continue;
+			}
+
 			copy[key] = Array.isArray(value) ? value.map((element) => withIds(element, block)) : withIds(value, block);
 		}
 

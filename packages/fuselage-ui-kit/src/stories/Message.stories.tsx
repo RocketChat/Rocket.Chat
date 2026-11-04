@@ -145,6 +145,10 @@ export const InfoCardMultipleIcons = createStory(payloads.infoCardMultipleIcons)
 
 export const Alert = createStory(payloads.alert);
 
+export const Card = createStory(payloads.card);
+
+export const Carousel = createStory(payloads.carousel);
+
 export const File = createStory(payloads.file);
 
 export const Table = createStory(payloads.table);
