@@ -2,7 +2,9 @@ import { useStableCallback, useSafely } from '@rocket.chat/fuselage-hooks';
 import * as UiKit from '@rocket.chat/ui-kit';
 import { useContext, useMemo, useState } from 'react';
 
+import { useStringFromTextObject } from './useStringFromTextObject';
 import { UiKitContext } from '../contexts/UiKitContext';
+import { askConfirmation } from '../utils/askConfirmation';
 import { getInitialValue } from '../utils/getInitialValue';
 
 const getElementValueFromState = (
@@ -29,9 +31,13 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
 	context: UiKit.BlockContext,
 ): [
 	state: UiKitState<TElement>,
-	action: (pseudoEvent?: Event | { target: EventTarget } | { target: { value: UiKit.ActionOf<TElement> } }) => Promise<void>,
+	action: (
+		pseudoEvent?:
+			Event | { target: EventTarget; onConfirmed?: () => void } | { target: { value: UiKit.ActionOf<TElement> }; onConfirmed?: () => void },
+	) => Promise<void>,
 ] => {
-	const { blockId, actionId, appId, dispatchActionConfig } = element;
+	const { blockId, actionId, appId, dispatchActionConfig, confirm } = element;
+	const fromTextObjectToString = useStringFromTextObject();
 	const { action, appId: appIdFromContext = undefined, viewId = undefined, updateState } = useContext(UiKitContext);
 
 	const initialValue = getInitialValue(element);
@@ -130,6 +136,29 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
 		);
 	});
 
+	const isAccepted = async () =>
+		!confirm ||
+		askConfirmation({
+			title: fromTextObjectToString(confirm.title) ?? '',
+			text: fromTextObjectToString(confirm.text) ?? '',
+			confirm: fromTextObjectToString(confirm.confirm) ?? '',
+			deny: fromTextObjectToString(confirm.deny) ?? '',
+			style: confirm.style,
+		});
+
+	const confirmedAction = useStableCallback(async (e: any) => {
+		if (await isAccepted()) {
+			e?.onConfirmed?.();
+			await actionFunction(e);
+		}
+	});
+
+	const confirmedNoLoadStateAction = useStableCallback(async (e: any) => {
+		if (await isAccepted()) {
+			await noLoadStateActionFunction(e);
+		}
+	});
+
 	const result: UiKitState = useMemo(() => ({ loading, setLoading, error, value }), [loading, setLoading, error, value]);
 
 	if (
@@ -137,15 +166,15 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
 		Array.isArray(element?.dispatchActionConfig) &&
 		element.dispatchActionConfig.includes('on_character_entered')
 	) {
-		return [result, noLoadStateActionFunction];
+		return [result, confirmedNoLoadStateAction];
 	}
 
 	if (context === UiKit.BlockContext.SECTION || context === UiKit.BlockContext.ACTION) {
-		return [result, actionFunction];
+		return [result, confirmedAction];
 	}
 
 	if (Array.isArray(element?.dispatchActionConfig) && element.dispatchActionConfig.includes('on_item_selected')) {
-		return [result, actionFunction];
+		return [result, confirmedAction];
 	}
 
 	return [result, stateFunction];
