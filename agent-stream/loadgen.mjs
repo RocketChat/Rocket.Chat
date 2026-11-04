@@ -119,8 +119,16 @@ if (scenario.idle) {
 	};
 }
 
-// --- the measured window
+// --- the idle rate with the viewers connected, so the cost of the replies can be told apart from the background
+const IDLE_PROBE_MS = 5000;
 await metricsOf('?reset=1');
+const mongoIdleBefore = await mongoCounters();
+await sleep(IDLE_PROBE_MS);
+const mongoIdleAfter = await mongoCounters();
+// reading with reset=1 also starts the measured window
+const idleMetrics = await metricsOf('?reset=1');
+
+// --- the measured window
 const mongoBefore = await mongoCounters();
 const cpuBefore = process.cpuUsage();
 const t0 = Date.now();
@@ -201,7 +209,7 @@ for (const { streamId, rid, mid } of started) {
 }
 await mongo.close();
 
-const sum = (list, fn) => list.reduce((total, item) => total + fn(item), 0);
+const sum = (list, fn) => list.reduce((total, item, i) => total + fn(item, i), 0);
 const replies = started.length;
 const delivered = sum(viewers, (v) => v.delivered);
 const cpuMs = sum(serverMetrics, (m) => m.cpu.totalMs);
@@ -213,6 +221,10 @@ const brokerOut = (m) => ({
 	bytes: m.broker.bytesOut,
 });
 const producer = serverMetrics[0].producer;
+const idleCpuMsPerSec = idleMetrics.map((m) => (m.cpu.totalMs / m.wallMs) * 1000);
+const netCpuMs = sum(serverMetrics, (m, i) => m.cpu.totalMs - (idleCpuMsPerSec[i] * m.wallMs) / 1000);
+const idleDb = diff(mongoIdleAfter.db, mongoIdleBefore.db);
+const netDb = Object.fromEntries(Object.entries(mongoDb).map(([key, value]) => [key, value - (idleDb[key] * (t1 - t0)) / IDLE_PROBE_MS]));
 const textMismatch = viewers.filter((v) => v.streamId && persisted[v.streamId] && v.text !== persisted[v.streamId].text).length;
 
 const result = {
@@ -244,6 +256,10 @@ const result = {
 		cpuMs,
 		cpuMsPerDeliveredDelta: delivered ? cpuMs / delivered : null,
 		cpuMsPerReply: replies ? cpuMs / replies : null,
+		idleCpuMsPerSec,
+		netCpuMs,
+		netCpuMsPerDeliveredDelta: delivered ? netCpuMs / delivered : null,
+		netCpuMsPerReply: replies ? netCpuMs / replies : null,
 		cpuPct: serverMetrics.map((m) => m.cpu.pct),
 		eventLoopP99Ms: serverMetrics.map((m) => m.eventLoop.p99Ms),
 		rssBytes: serverMetrics.map((m) => m.memory.rss),
@@ -256,6 +272,9 @@ const result = {
 		readsPerReply: replies ? (mongoDb.queries + mongoDb.getmore) / replies : null,
 		writesPerReply: replies ? (mongoDb.insert + mongoDb.update + mongoDb.remove) / replies : null,
 		commandsPerReply: replies ? mongoDb.commands / replies : null,
+		idlePerSec: Object.fromEntries(Object.entries(idleDb).map(([key, value]) => [key, (value / IDLE_PROBE_MS) * 1000])),
+		netReadsPerReply: replies ? (netDb.queries + netDb.getmore) / replies : null,
+		netWritesPerReply: replies ? (netDb.insert + netDb.update + netDb.remove) / replies : null,
 	},
 	broker: {
 		perInstance: serverMetrics.map((m) => ({
@@ -295,7 +314,7 @@ mkdirSync(args.out, { recursive: true });
 const file = join(args.out, `${args.label}-${args.deployment}-${args.scenario}-w${w}-r${args.run}.json`);
 writeFileSync(file, JSON.stringify(result, null, 2));
 console.log(
-	`${file}: window ${result.windowMs} ms${timedOut ? ' (TIMED OUT)' : ''}, cpu/delta ${result.server.cpuMsPerDeliveredDelta?.toFixed(3)} ms, ` +
+	`${file}: window ${result.windowMs} ms${timedOut ? ' (TIMED OUT)' : ''}, cpu/delta ${result.server.cpuMsPerDeliveredDelta?.toFixed(3)} ms (net ${result.server.netCpuMsPerDeliveredDelta?.toFixed(3)}), ` +
 		`p50/p99 ${result.latencyMs.p50}/${result.latencyMs.p99} ms, delivered ${delivered}, ${JSON.stringify(result.correctness)}`,
 );
 process.exit(0);
