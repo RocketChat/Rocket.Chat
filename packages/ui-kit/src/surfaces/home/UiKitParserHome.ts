@@ -6,6 +6,8 @@ export const homeSurfaceLayoutBlockTypes = [
 	'actions',
 	'alert',
 	'callout',
+	'card',
+	'carousel',
 	'context',
 	'divider',
 	'header',

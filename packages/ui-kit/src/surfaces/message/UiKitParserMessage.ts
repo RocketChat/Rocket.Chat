@@ -6,6 +6,8 @@ export const messageSurfaceLayoutBlockTypes = [
 	'actions',
 	'alert',
 	'callout',
+	'card',
+	'carousel',
 	'context',
 	'context_actions',
 	'divider',
