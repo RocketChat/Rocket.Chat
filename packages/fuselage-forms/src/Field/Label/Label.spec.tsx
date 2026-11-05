@@ -1,8 +1,8 @@
 import { render } from '@testing-library/react';
 import { createRef } from 'react';
 
-import { HiddenLabel, LabelFor, ReferencedLabel } from '.';
-import { Field } from '..';
+import { HiddenLabel, LabelFor, ReferencedLabel } from './index.js';
+import { Field } from '../index.js';
 
 it.each([
 	['HiddenLabel', HiddenLabel],

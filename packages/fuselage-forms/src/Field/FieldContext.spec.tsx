@@ -1,8 +1,8 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 
-import { Field, FieldLabel, useFieldDescriptorId } from '.';
-import { CheckBox, MultiSelectFiltered, TextInput } from '../Inputs';
+import { Field, FieldLabel, useFieldDescriptorId } from './index.js';
+import { CheckBox, MultiSelectFiltered, TextInput } from '../Inputs/index.js';
 
 it('should stop acting on a wrapped input after it is replaced', async () => {
 	const { container, rerender } = render(

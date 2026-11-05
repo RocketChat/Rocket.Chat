@@ -16,7 +16,7 @@ import {
 	Slider as SliderComponent,
 } from '@rocket.chat/fuselage';
 
-import { withLabelId, withAriaLabelledBy, withAriaLabelledByAndId, withVisuallyHiddenLabel } from './withLabelHelpers';
+import { withLabelId, withAriaLabelledBy, withAriaLabelledByAndId, withVisuallyHiddenLabel } from './withLabelHelpers.js';
 
 // TODO: Some inputs are still not supported due to requiring a different a11y approach
 

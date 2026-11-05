@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react';
 
-import { Field, FieldLabel, FieldError } from '.';
-import { TextInput } from '../Inputs';
+import { Field, FieldLabel, FieldError } from './index.js';
+import { TextInput } from '../Inputs/index.js';
 
 it('should have an alert element', () => {
 	const { container } = render(
