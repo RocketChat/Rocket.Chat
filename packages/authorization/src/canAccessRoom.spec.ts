@@ -1,6 +1,6 @@
-import { Authorization, Settings } from '@rocket.chat/core-services';
-import type { IUser } from '@rocket.chat/core-typings';
-import { Users } from '@rocket.chat/models';
+import { Abac, Authorization, License, Settings } from '@rocket.chat/core-services';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
 import { canAccessRoom } from './canAccessRoom';
 import { canAccessRoomLivechat } from './canAccessRoomLivechat';
@@ -57,6 +57,67 @@ describe('canAccessRoom', () => {
 		hasPermission.mockResolvedValue(false);
 		getSetting.mockResolvedValue(false);
 		jest.mocked(canAccessRoomLivechat).mockResolvedValue(false);
+	});
+
+	describe('discussion privacy', () => {
+		const user = { _id: 'user-id', username: 'charlie', roles: ['user'] } as IUser;
+		const discussion = { _id: 'discussion-id', t: 'p' as const, prid: 'parent-id' };
+
+		beforeEach(() => {
+			jest.mocked(Subscriptions.countByRoomIdAndUserId).mockResolvedValue(0);
+			jest.mocked(Authorization.canAccessRoom).mockResolvedValue(true);
+			hasPermission.mockResolvedValue(true);
+		});
+
+		it.each(['c', 'p'] as const)('denies a private discussion to a nonmember with access to a %s parent', async (type) => {
+			jest.mocked(Rooms.findOneById).mockResolvedValue({ _id: discussion.prid, t: type } as IRoom);
+
+			expect(await canAccessRoom(discussion, user)).toBe(false);
+			expect(Authorization.canAccessRoom).not.toHaveBeenCalled();
+		});
+
+		it('denies a private discussion to an anonymous reader of its parent', async () => {
+			getSetting.mockResolvedValue(true);
+			jest.mocked(Rooms.findOneById).mockResolvedValue({ _id: discussion.prid, t: 'c' } as IRoom);
+
+			expect(await canAccessRoom(discussion, undefined)).toBe(false);
+		});
+
+		it('allows an existing member with room-view permission', async () => {
+			jest.mocked(Subscriptions.countByRoomIdAndUserId).mockResolvedValue(1);
+
+			expect(await canAccessRoom(discussion, user)).toBe(true);
+			expect(Subscriptions.countByRoomIdAndUserId).toHaveBeenCalledWith(discussion._id, user._id, false);
+		});
+
+		it('does not bypass missing room-view permissions for a member', async () => {
+			hasPermission.mockResolvedValue(false);
+			jest.mocked(Subscriptions.countByRoomIdAndUserId).mockResolvedValue(1);
+			jest.mocked(Rooms.findOneById).mockResolvedValue({ _id: discussion.prid, t: 'c' } as IRoom);
+
+			expect(await canAccessRoom(discussion, user)).toBe(false);
+		});
+
+		it('preserves public discussion access for a nonmember', async () => {
+			expect(await canAccessRoom({ ...discussion, t: 'c' }, user)).toBe(true);
+		});
+
+		it('revokes parent-based access when a public discussion becomes private', async () => {
+			jest.mocked(Rooms.findOneById).mockResolvedValue({ _id: discussion.prid, t: 'c' } as IRoom);
+
+			expect(await canAccessRoom({ ...discussion, t: 'c' }, user)).toBe(true);
+			expect(await canAccessRoom(discussion, user)).toBe(false);
+			expect(await canAccessRoom({ ...discussion, t: 'c' }, user)).toBe(true);
+		});
+
+		it('does not bypass an ABAC denial through the parent room', async () => {
+			jest.mocked(License.hasModule).mockResolvedValue(true);
+			getSetting.mockResolvedValue(true);
+			jest.mocked(Abac.canAccessObject).mockResolvedValue(false);
+			jest.mocked(Rooms.findOneById).mockResolvedValue({ _id: discussion.prid, t: 'c' } as IRoom);
+
+			expect(await canAccessRoom({ ...discussion, abacAttributes: [{ key: 'department', values: ['engineering'] }] }, user)).toBe(false);
+		});
 	});
 
 	describe('user hydration', () => {

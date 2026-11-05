@@ -90,7 +90,8 @@ const roomAccessValidators: RoomAccessValidatorConverted[] = [
 	},
 
 	async function _validateAccessToDiscussionsParentRoom(room, user): Promise<boolean> {
-		if (!room?.prid) {
+		// Private discussions must pass their own membership/access checks above.
+		if (!room?.prid || room.t === 'p') {
 			return false;
 		}
 

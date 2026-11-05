@@ -145,6 +145,21 @@ export class NotificationsModule {
 			return Authorization.canReadRoom(room, user ?? undefined, extraData);
 		});
 
+		this.streamRoomMessage.allowEmit(async function (eventName) {
+			const room = await Rooms.findOneById(eventName);
+			if (!room) {
+				return false;
+			}
+
+			if (!room.prid || room.t !== 'p') {
+				return true;
+			}
+
+			// An existing stream subscription must not bypass a discussion becoming private.
+			const user = await getCachedUserForPublication(this);
+			return Authorization.canReadRoom(room, user ?? undefined);
+		});
+
 		this.streamRoomMessage.allowRead('__my_messages__', 'all');
 		this.streamRoomMessage.allowEmit('__my_messages__', async function (_eventName, { rid }) {
 			const user = await getCachedUserForPublication(this);
