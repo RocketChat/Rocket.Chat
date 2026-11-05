@@ -1,6 +1,6 @@
 import type { JSONSchemaType } from 'ajv';
 
-import { ajv } from '../Ajv';
+import { ajv } from '../Ajv.js';
 
 /**
  * The body of every conference endpoint that only has to say *which* call: cancel, decline, leave.

@@ -1,13 +1,13 @@
 import type { IModerationAudit, IModerationReport, IUser, MessageReport, UserReport } from '@rocket.chat/core-typings';
 
-import type { ArchiveReportPropsPOST } from './ArchiveReportProps';
-import type { GetUserReportsParamsGET } from './GetUserReportsParams';
-import type { ModerationDeleteMsgHistoryParamsPOST } from './ModerationDeleteMsgHistoryParams';
-import type { ModerationReportUserPOST } from './ModerationReportUserPOST';
-import type { ReportHistoryPropsGET } from './ReportHistoryProps';
-import type { ReportInfoParams } from './ReportInfoParams';
-import type { ReportsByMsgIdParamsGET } from './ReportsByMsgIdParams';
-import type { PaginatedResult } from '../../helpers/PaginatedResult';
+import type { ArchiveReportPropsPOST } from './ArchiveReportProps.js';
+import type { GetUserReportsParamsGET } from './GetUserReportsParams.js';
+import type { ModerationDeleteMsgHistoryParamsPOST } from './ModerationDeleteMsgHistoryParams.js';
+import type { ModerationReportUserPOST } from './ModerationReportUserPOST.js';
+import type { ReportHistoryPropsGET } from './ReportHistoryProps.js';
+import type { ReportInfoParams } from './ReportInfoParams.js';
+import type { ReportsByMsgIdParamsGET } from './ReportsByMsgIdParams.js';
+import type { PaginatedResult } from '../../helpers/PaginatedResult.js';
 
 export type ModerationEndpoints = {
 	// API endpoint to fetch the reported messages

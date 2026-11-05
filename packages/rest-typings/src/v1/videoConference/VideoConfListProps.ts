@@ -1,7 +1,7 @@
 import type { JSONSchemaType } from 'ajv';
 
-import { ajvQuery } from '../Ajv';
-import { paginationQueryProperties } from '../pagination';
+import { ajvQuery } from '../Ajv.js';
+import { paginationQueryProperties } from '../pagination.js';
 
 export type VideoConfListProps = {
 	roomId: string;

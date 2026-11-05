@@ -1,7 +1,7 @@
 import type { IRocketChatAssets } from '@rocket.chat/core-typings';
 import type { JSONSchemaType } from 'ajv';
 
-import { ajv } from './Ajv';
+import { ajv } from './Ajv.js';
 
 export type AssetsUnsetAssetProps = { assetName: keyof IRocketChatAssets; refreshAllClients?: boolean };
 

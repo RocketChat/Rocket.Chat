@@ -1,4 +1,4 @@
-import { ajv } from '../Ajv';
+import { ajv } from '../Ajv.js';
 
 type ChannelsInviteUsers = { userId?: string; userIds?: string[] } | { username?: string; user?: string; usernames?: string[] };
 

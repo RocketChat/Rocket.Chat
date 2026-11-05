@@ -1,8 +1,8 @@
 import type { IStats } from '@rocket.chat/core-typings';
 
-import { ajv } from './Ajv';
-import { paginationQueryProperties } from './pagination';
-import type { PaginatedRequest } from '../helpers/PaginatedRequest';
+import { ajv } from './Ajv.js';
+import { paginationQueryProperties } from './pagination.js';
+import type { PaginatedRequest } from '../helpers/PaginatedRequest.js';
 
 type SlashCommand = { command: string };
 
