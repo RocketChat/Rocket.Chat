@@ -335,7 +335,11 @@ describe('Server subscriptions', () => {
 		await server.subscribe(session, makeSubscription());
 
 		const failed = published[0];
+		expect(published).toHaveLength(1);
 		expect(Streamer.isPublicationActive(failed)).toBe(false);
+		expect(sentPackets(session)).toEqual([
+			{ msg: 'nosub', id: 'test-id', error: new ClientSafeError(403, 'Forbidden').toJSON() },
+		]);
 
 		const late = jest.fn();
 		failed.onStop(late);
