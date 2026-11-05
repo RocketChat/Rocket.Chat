@@ -42,11 +42,10 @@ describe('EwsTransportPool', () => {
 		const { pool, connections, pending } = createConnections(2);
 
 		void pool.post('a');
-		void pool.post('b');
+		const b = pool.post('b');
 		void pool.post('c');
 		pending[1][0].resolve('');
-		await Promise.resolve();
-		await Promise.resolve();
+		await b;
 		void pool.post('d');
 
 		expect(connections[0].post.mock.calls).toEqual([['a'], ['c']]);
