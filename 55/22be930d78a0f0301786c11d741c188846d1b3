@@ -1,0 +1,21 @@
+ee/packages/federation-matrix/src/api/middlewares/isFederationDomainAllowed.spec.ts
+  s_a2d75ff6b098f7::t_cb8c3847a54cf6 1-49
+ee/packages/federation-matrix/src/api/middlewares/isFederationDomainAllowed.ts
+  s_a2d75ff6b098f7::t_6abb9ccfd5328c 20-23,26-27
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "5522be930d78a0f0301786c11d741c188846d1b3",
+  "prompts": {},
+  "sessions": {
+    "s_a2d75ff6b098f7": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "39438f7f-d20d-439e-9e35-3dce142af3db",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
