@@ -1,3 +1,5 @@
+import crypto from 'crypto';
+
 import { Apps } from '@rocket.chat/apps';
 import type { AppVideoConfProviderManager } from '@rocket.chat/apps/dist/server/managers/AppVideoConfProviderManager';
 import type { VideoConfData, VideoConfDataExtended } from '@rocket.chat/apps-engine/definition/videoConfProviders';
@@ -14,6 +16,7 @@ import type {
 	LivechatInstructions,
 	AtLeast,
 	IGroupVideoConference,
+	IVideoConference,
 	IVideoConferenceUser,
 	IMessage,
 	IStats,
@@ -26,6 +29,8 @@ import type {
 	Optional,
 	ExternalVideoConference,
 	IVoIPVideoConference,
+	RequiredField,
+	IRegisterUser,
 } from '@rocket.chat/core-typings';
 import {
 	UserStatus,
@@ -212,13 +217,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		// Only a provider supplied by an app has an app to ask; the apps engine throws for a built-in one.
 		if (!this.isEmbeddedProvider(call.providerName)) {
-			const blocks = await (
-				await this.getProviderManager()
-			)
-				.getVideoConferenceInfo(call.providerName, call, user || undefined)
-				.catch((e) => {
-					throw new Error(e);
-				});
+			const blocks = await this.getBlocks(call.providerName, call, user || undefined).catch((e) => {
+				throw new Error(e);
+			});
 
 			if (blocks?.length) {
 				return blocks as UiKit.ModalSurfaceLayout;
@@ -249,6 +250,15 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 				},
 			},
 		];
+	}
+
+	private async getBlocks(providerName: string, call: any, user?: any) {
+		const provider = videoConfProviders.getVideoConfProviderHandler(providerName);
+		if (provider) {
+			return provider.getVideoConferenceInfo(call, user);
+		}
+
+		return (await this.getProviderManager()).getVideoConferenceInfo(call.providerName, call, user || undefined);
 	}
 
 	public async cancel(uid: IUser['_id'], callId: VideoConference['_id']): Promise<void> {
@@ -372,7 +382,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	public async listProviders(): Promise<{ key: string; label: string }[]> {
-		return videoConfProviders.getProviderList();
+		return videoConfProviders.getAllProviders();
 	}
 
 	public async listProviderCapabilities(providerName: string): Promise<VideoConferenceCapabilities> {
@@ -680,11 +690,22 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		if (this.isEmbeddedProvider(providerName)) {
 			return;
 		}
-		const manager = await this.getProviderManager();
-		const configured = await manager.isFullyConfigured(providerName).catch(() => false);
+		const configured = await this.isFullyConfigured(providerName);
 		if (!configured) {
 			throw new Error(availabilityErrors.NOT_CONFIGURED);
 		}
+	}
+
+	private async isFullyConfigured(providerName: string): Promise<boolean> {
+		const provider = videoConfProviders.getVideoConfProviderHandler(providerName);
+		if (provider) {
+			return provider.isFullyConfigured();
+		}
+
+		const manager = await this.getProviderManager();
+		const configured = await manager.isFullyConfigured(providerName).catch(() => false);
+
+		return configured;
 	}
 
 	private async getValidatedProvider(): Promise<string> {
@@ -853,6 +874,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			providerName,
 		});
 
+		await this.maybeAddSipAliasToCall(callId, providerName);
+
 		await this.runNewVideoConferenceEvent(callId);
 
 		const isEmbedded = this.isEmbeddedProvider(providerName);
@@ -864,7 +887,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			await this.addAbsentMember(callId, calleeId);
 		}
 
-		await this.maybeCreateDiscussion(callId, user);
+		if (settings.get<boolean>('VideoConf_Persistent_Chat_Create_Discussion')) {
+			await this.maybeCreateDiscussion(callId, user);
+		}
 
 		const call = (await this.getUnfiltered(callId)) as IDirectVideoConference | null;
 		if (!call) {
@@ -945,6 +970,140 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await subscriptions.forEach((subscription) => this.notifyUser(subscription.u._id, action, params));
 	}
 
+	/**
+	 * A fresh eight-digit alias, never starting with a zero.
+	 *
+	 * Rejection-sampled rather than taken modulo the byte: 256 divides by neither 9 nor 10, so `value % 10`
+	 * would make the low digits measurably likelier than the high ones. An alias is short and dialling one
+	 * reaches a live conference, so an occasional discarded byte is worth not skewing the space.
+	 */
+	private makeSipAlias(): string {
+		const result: number[] = [];
+		const buffer = new Uint8Array(16);
+		crypto.getRandomValues(buffer);
+
+		let bufferIndex = 0;
+
+		const nextByte = (): number => {
+			if (bufferIndex >= buffer.length) {
+				crypto.getRandomValues(buffer);
+				bufferIndex = 0;
+			}
+			return buffer[bufferIndex++];
+		};
+
+		// 252 is the largest multiple of 9 at or below 256; anything above it is discarded rather than folded in.
+		while (result.length === 0) {
+			const value = nextByte();
+			if (value < 252) {
+				result.push((value % 9) + 1);
+			}
+		}
+
+		// 250 is the same bound for 10, the remaining digits being allowed to be zero.
+		while (result.length < 8) {
+			const value = nextByte();
+			if (value < 250) {
+				result.push(value % 10);
+			}
+		}
+
+		return result.join('');
+	}
+
+	/**
+	 * Gives a call an alias, trying again on collision.
+	 *
+	 * The index is unique, so a number already in use comes back as a write error rather than quietly
+	 * overwriting somebody else's conference — which is what makes retrying the whole of the collision
+	 * handling. Giving up is not fatal: the call runs, it just cannot be dialled into.
+	 */
+	private async addSipAlias(callId: string, attempt = 0): Promise<string | null> {
+		const alias = this.makeSipAlias();
+
+		try {
+			await VideoConferenceModel.setSipAliasById(callId, alias);
+			return alias;
+		} catch (err) {
+			if (err && typeof err === 'object' && err instanceof Error && err.message.includes('E11000')) {
+				if (attempt >= 20) {
+					logger.error({ msg: 'Failed to generate a unique SIP alias for this conference.', err });
+					return null;
+				}
+				return this.addSipAlias(callId, attempt + 1);
+			}
+
+			logger.error({ msg: 'Failed to add Sip Alias to video conference', err });
+			return null;
+		}
+	}
+
+	/** Only the internal Pexip provider can be dialled into, and only while the workspace asks for aliases. */
+	private async maybeAddSipAliasToCall(callId: string, providerName: string): Promise<void> {
+		if (providerName !== 'core.pexip') {
+			return;
+		}
+
+		if (!settings.get('Pexip_Integration_SIP_AddAlias')) {
+			return;
+		}
+
+		await this.addSipAlias(callId);
+	}
+
+	public async createEscalatedConference(
+		data: Required<Pick<IGroupVideoConference, 'rid' | 'mediaCallIds'>>,
+		user: IRegisterUser,
+		{ createDiscussion }: { createDiscussion: boolean },
+	): Promise<IGroupVideoConference | null> {
+		logger.debug({
+			msg: 'VideoConf.createEscalatedConference',
+			rid: data.rid,
+			mediaCallIds: data.mediaCallIds,
+			uid: user._id,
+		});
+
+		try {
+			const providerName = 'core.pexip';
+
+			const { _id, name, username } = user;
+
+			const callId = await VideoConferenceModel.createGroup({
+				...data,
+				// TODO: custom title
+				title: 'Escalated Media Call',
+				providerName,
+				createdBy: {
+					_id,
+					name,
+					username,
+				},
+			});
+
+			await this.maybeAddSipAliasToCall(callId, providerName);
+			if (createDiscussion) {
+				await this.maybeCreateDiscussion(callId);
+			}
+
+			const call = await VideoConferenceModel.findOneById<IGroupVideoConference>(callId);
+			if (!call) {
+				return null;
+			}
+
+			const messageId = await this.createMessage(call, user);
+			await VideoConferenceModel.setMessageById(callId, 'started', messageId);
+
+			const result = await VideoConferenceModel.findOneById<IGroupVideoConference>(callId);
+			return result;
+		} catch (err) {
+			logger.error({
+				msg: 'Error on VideoConf.createEscalatedConference',
+				err,
+			});
+			throw err;
+		}
+	}
+
 	private async startGroup(
 		providerName: string,
 		user: IUser,
@@ -965,9 +1124,13 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			providerName,
 		});
 
+		await this.maybeAddSipAliasToCall(callId, providerName);
+
 		await this.runNewVideoConferenceEvent(callId);
 
-		await this.maybeCreateDiscussion(callId, user);
+		if (settings.get<boolean>('VideoConf_Persistent_Chat_Create_Discussion')) {
+			await this.maybeCreateDiscussion(callId, user);
+		}
 
 		const call = (await this.getUnfiltered(callId)) as IGroupVideoConference | null;
 		if (!call) {
@@ -1035,7 +1198,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		};
 	}
 
-	private async joinCall(
+	public async joinCall(
 		call: ExternalVideoConference,
 		user: AtLeast<IUser, '_id' | 'username' | 'name' | 'avatarETag'> | undefined,
 		options: VideoConferenceJoinOptions,
@@ -1088,6 +1251,12 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	private async generateNewUrl(call: ExternalVideoConference): Promise<string> {
 		if (!videoConfProviders.isProviderAvailable(call.providerName)) {
 			throw new Error('video-conf-provider-unavailable');
+		}
+
+		const provider = videoConfProviders.getVideoConfProviderHandler(call.providerName);
+		if (provider) {
+			// TODO: compensate for the getRoomName?
+			return provider.generateUrl(call);
 		}
 
 		const title = isGroupVideoConference(call) ? call.title || (await this.getRoomName(call.rid)) : '';
@@ -1143,9 +1312,16 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return 'Rocket.Chat';
 	}
 
+	/** Narrows the call for a provider that takes a url, after `getUrl` has made sure there is one. */
+	private requireCallUrl(call: ExternalVideoConference): asserts call is RequiredField<ExternalVideoConference, 'url'> {
+		if (!call.url) {
+			throw new Error('Call url is missing');
+		}
+	}
+
 	private async getUrl(
 		call: ExternalVideoConference,
-		user?: AtLeast<IUser, '_id' | 'username' | 'name'>,
+		user?: AtLeast<IUser, '_id' | 'username' | 'name' | 'avatarETag'>,
 		options: VideoConferenceJoinOptions = {},
 	): Promise<string> {
 		if (!videoConfProviders.isProviderAvailable(call.providerName)) {
@@ -1155,6 +1331,22 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		if (!call.url) {
 			call.url = await this.generateNewUrl(call);
 			await VideoConferenceModel.setUrlById(call._id, call.url);
+		}
+
+		const userData = user && {
+			_id: user._id,
+			username: user.username as string,
+			name: user.name as string,
+			avatarETag: user.avatarETag || null,
+			ts: new Date(),
+		};
+
+		const provider = videoConfProviders.getVideoConfProviderHandler(call.providerName);
+		if (provider) {
+			this.requireCallUrl(call);
+
+			// TODO: compensate for the call title?
+			return provider.customizeUrl(call, userData, options);
 		}
 
 		const callData: VideoConfDataExtended = {
@@ -1169,12 +1361,6 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			},
 			title: await this.getCallTitle(call),
 			discussionRid: call.discussionRid,
-		};
-
-		const userData = user && {
-			_id: user._id,
-			username: user.username as string,
-			name: user.name as string,
 		};
 
 		return (await this.getProviderManager()).customizeUrl(call.providerName, callData, userData, options);
@@ -1202,6 +1388,11 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			return;
 		}
 
+		const provider = videoConfProviders.getVideoConfProviderHandler(call.providerName);
+		if (provider) {
+			return provider.onNewVideoConference(call);
+		}
+
 		return (await this.getProviderManager()).onNewVideoConference(call.providerName, call);
 	}
 
@@ -1221,6 +1412,11 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 
 		if (this.isEmbeddedProvider(call.providerName)) {
+			return;
+		}
+
+		const provider = videoConfProviders.getVideoConfProviderHandler(call.providerName);
+		if (provider) {
 			return;
 		}
 
@@ -1244,6 +1440,11 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		if (this.isEmbeddedProvider(call.providerName)) {
 			return;
+		}
+
+		const provider = videoConfProviders.getVideoConfProviderHandler(call.providerName);
+		if (provider) {
+			return provider.onUserJoin(call, user);
 		}
 
 		return (await this.getProviderManager()).onUserJoin(call.providerName, call, user);
@@ -1516,7 +1717,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	 * That record is what lets a client tell a phone ringing now from one rung and ignored.
 	 */
 	private async ringUsers(callId: VideoConference['_id'], rid: IRoom['_id'], uid: IUser['_id'], memberIds: IUser['_id'][]): Promise<void> {
-		memberIds.forEach((memberId) => this.notifyUser(memberId, 'ring', { callId, rid, uid }));
+		memberIds.forEach((memberId) => this.notifyUser(memberId, 'ring-member', { callId, rid, uid }));
 		await VideoConferenceModel.setUsersRingingById(callId, memberIds);
 		this.notifyConferenceUpdate(callId);
 		this.notifyVideoConfUpdate(rid, callId);
@@ -1840,14 +2041,20 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		uid: IUser['_id'],
 		callId: VideoConference['_id'],
 		mode: VideoConferenceChatAccessMode,
+		users?: NonNullable<IUser['username']>[],
 	): Promise<IRoom['_id']> {
 		const {
 			access: { rid, membersWithoutAccess, canInvite },
-			usernamesWithoutAccess: usernames,
+			usernamesWithoutAccess,
 		} = await this.resolveChatAccess(uid, callId);
-		if (!membersWithoutAccess.length) {
+
+		// Named outright, these are people being brought into the conversation rather than members who cannot
+		// read it — so there is nothing to work out, and no reason to stop when everyone can already read it.
+		if (!users && !membersWithoutAccess.length) {
 			return rid;
 		}
+
+		const usernames = users ?? usernamesWithoutAccess;
 
 		const resolved = resolveChatAccessMode({ mode, canInvite });
 		if (!resolved) {
@@ -2001,6 +2208,17 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return name.includes('[date]') ? name.replace('[date]', date) : `${date} ${name}`;
 	}
 
+	/** Who is in a room: a DM lists them on the room itself, everything else has to be read from subscriptions. */
+	private async getUsernamesFromRoom(room: Pick<IRoom, '_id' | 't' | 'usernames'>): Promise<NonNullable<IUser['username']>[]> {
+		if (room.t === 'd') {
+			return room.usernames || [];
+		}
+
+		return (await Subscriptions.findByRoomIdWhenUsernameExists(room._id, { projection: { 'u.username': 1 } }).toArray())
+			.map((subscription) => subscription.u.username)
+			.filter((username): username is string => !!username);
+	}
+
 	/**
 	 * Moves the conference's chat to a discussion off its room, so it continues without exposing the parent
 	 * room's history to the people being added.
@@ -2039,13 +2257,17 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		// Not the conference's `users`: that holds only people who joined the call, which is not the room's
 		// membership.
-		const existingMembers =
-			baseRoom.t === 'd'
-				? baseRoom.usernames || []
-				: (await Subscriptions.findByRoomIdWhenUsernameExists(baseRoom._id, { projection: { 'u.username': 1 } }).toArray())
-						.map((subscription) => subscription.u.username)
-						.filter((username): username is string => !!username);
-		const members = [...new Set([...existingMembers, ...usernames])].filter(Boolean);
+		const existingMembers = await this.getUsernamesFromRoom(baseRoom);
+
+		// When the chat has moved before, the room it started in is read as well. Somebody who joined that room
+		// since the first fork is part of the conversation and would otherwise be left behind by the second.
+		const originalRoom =
+			baseRoom._id === call.rid
+				? null
+				: await Rooms.findOneById<Pick<IRoom, '_id' | 't' | 'usernames'>>(call.rid, { projection: { t: 1, usernames: 1 } });
+		const originalMembers = originalRoom ? await this.getUsernamesFromRoom(originalRoom) : [];
+
+		const members = [...new Set([...originalMembers, ...existingMembers, ...usernames])].filter(Boolean);
 
 		const name = this.getDiscussionDisplayName();
 
@@ -2207,6 +2429,103 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		});
 	}
 
+	/**
+	 * The room a conference nobody picked a room for should hang off.
+	 *
+	 * Someone dialling an alias that does not exist yet has no room in mind, so the workspace names one in
+	 * advance. `roomPick` stores an array of room references; the first usable one wins.
+	 */
+	public async getRidForExternalConference(): Promise<IRoom['_id'] | null> {
+		const settingValue = settings.get('Pexip_Integration_PersistentChat_ExternalRoom');
+		if (!Array.isArray(settingValue) || !settingValue.length) {
+			return null;
+		}
+
+		for (const value of settingValue) {
+			if (!value || typeof value !== 'object' || !value._id) {
+				continue;
+			}
+
+			return value._id;
+		}
+
+		return null;
+	}
+
+	/** Where to send someone to take part in a conference from inside Rocket.Chat. */
+	public async makePersistentChatUrlForConference(conferenceId: VideoConference['_id']): Promise<string> {
+		const baseUrl = settings.get<string>('Site_Url');
+
+		return `${baseUrl}/conference/${conferenceId}`;
+	}
+
+	/** Failing to subscribe somebody must not keep them out of the call, so this reports rather than throws. */
+	private async addUserToConferenceDiscussion(conference: Pick<IVideoConference, 'discussionRid'>, uid: IUser['_id']): Promise<void> {
+		if (!conference.discussionRid) {
+			return;
+		}
+
+		const { discussionRid } = conference;
+
+		try {
+			await Room.addUserToRoom(discussionRid, { _id: uid });
+		} catch (err) {
+			logger.error({ msg: `Failed to add user to conference's discussion`, discussionRid, uid, err });
+		}
+	}
+
+	/**
+	 * The conference a dialled alias stands for, creating it if this is the first person to ask.
+	 *
+	 * An alias can be handed out before the conference behind it exists — a scheduled invitation carries the
+	 * number, and whoever dials first brings the call into being. So this is both "join" and "create", and
+	 * everyone after the first is simply subscribed to the chat that is already there.
+	 */
+	public async initializeOrJoinScheduledConference(sipAlias: string, uid: IUser['_id']): Promise<VideoConference['_id']> {
+		if (!settings.get('Pexip_Integration_Enabled') || !settings.get('Pexip_Integration_SIP_AddAlias')) {
+			throw new Error('feature-disabled');
+		}
+
+		const providerName = 'core.pexip';
+
+		const existing = await VideoConferenceModel.findOneByProviderNameAndSipAlias(providerName, sipAlias, {
+			projection: { discussionRid: 1 },
+		});
+
+		if (existing) {
+			await this.addUserToConferenceDiscussion(existing, uid);
+			return existing._id;
+		}
+
+		const rid = await this.getRidForExternalConference();
+		if (!rid) {
+			throw new Error('invalid-room');
+		}
+
+		const user = await Users.findOneById(uid);
+		if (!user) {
+			throw new Error('invalid-user');
+		}
+
+		// Before the conference, not after: `createGroup` takes the discussion, so the chat has to exist first.
+		const discussionRid = await this.createDiscussionForConferenceData(this.getDiscussionDisplayName(), rid, user);
+
+		return VideoConferenceModel.createGroup({
+			rid,
+			createdBy: {
+				_id: uid,
+				name: user.name as string,
+				username: user.username as string,
+			},
+			// TODO: custom title
+			title: sipAlias,
+			providerName,
+			// No `ringing`: nobody is being asked to answer — whoever dials the alias arrives of their own accord.
+			sipAlias,
+			discussionRid,
+		});
+	}
+
 	private async getRoomForDiscussion(
 		baseRoom: IRoom['_id'],
 		childRoomIds: IRoom['_id'][] = [],
@@ -2234,18 +2553,31 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		call: AtLeast<VideoConference, '_id' | 'rid' | 'createdBy'>,
 		createdBy?: IUser,
 	): Promise<void> {
-		const room = await this.getRoomForDiscussion(call.rid);
-
-		const type = await roomCoordinator.getRoomDirectives(room.t).getDiscussionType(room);
 		const user = call.createdBy._id === createdBy?._id ? createdBy : await Users.findOneById(call.createdBy._id);
 		if (!user) {
 			throw new Error('invalid-user');
 		}
 
+		const discussionRid = await this.createDiscussionForConferenceData(name, call.rid, user);
+
+		return this.assignDiscussionToConference(call._id, discussionRid);
+	}
+
+	/**
+	 * The discussion itself, off whatever room the given one hangs from, and nothing else.
+	 *
+	 * Separate from `createDiscussionForConference` because a conference reached over SIP has its chat created
+	 * *before* the conference record exists — the alias is dialled first and the conference is built around it.
+	 */
+	private async createDiscussionForConferenceData(name: string, rid: IRoom['_id'], createdBy: IUser): Promise<IRoom['_id']> {
+		const room = await this.getRoomForDiscussion(rid);
+
+		const type = await roomCoordinator.getRoomDirectives(room.t).getDiscussionType(room);
+
 		const discussion = await createRoom(
 			type,
 			Random.id(),
-			user,
+			createdBy,
 			[],
 			false,
 			false,
@@ -2255,14 +2587,14 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 				encrypted: false,
 			},
 			{
-				creator: user._id,
+				creator: createdBy._id,
 				subscriptionExtra: {
 					open: false,
 				},
 			},
 		);
 
-		return this.assignDiscussionToConference(call._id, discussion._id);
+		return discussion._id;
 	}
 
 	public async assignDiscussionToConference(callId: VideoConference['_id'], rid: IRoom['_id'] | undefined): Promise<void> {

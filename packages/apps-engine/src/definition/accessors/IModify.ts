@@ -1,3 +1,4 @@
+import type { IMediaCallModify } from './IMediaCallModify';
 import type { IModerationModify } from './IModerationModify';
 import type { IModifyCreator } from './IModifyCreator';
 import type { IModifyDeleter } from './IModifyDeleter';
@@ -42,4 +43,10 @@ export interface IModify {
 	 * @returns the moderation accessor
 	 */
 	getModerationModifier(): IModerationModify;
+
+	/**
+	 * Gets the accessor for reporting `cti` media-call events back to Rocket.Chat
+	 * (inbound calls and call state), for apps that handle calls on external devices.
+	 */
+	getMediaCallModifier(): IMediaCallModify;
 }

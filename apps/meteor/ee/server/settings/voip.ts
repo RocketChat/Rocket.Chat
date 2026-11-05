@@ -62,6 +62,13 @@ export function addSettings(): Promise<void> {
 						alert: 'VoIP_TeamCollab_Internal_SIP_Beta_Alert',
 					});
 
+					await this.add('VoIP_TeamCollab_SIP_Integration_Normalize_Caller_Numbers', true, {
+						type: 'boolean',
+						public: false,
+						invalidValue: false,
+						i18nDescription: 'VoIP_TeamCollab_SIP_Integration_Normalize_Caller_Numbers_Description',
+					});
+
 					await this.add('VoIP_TeamCollab_Drachtio_Host', '', {
 						type: 'string',
 						public: false,
@@ -90,6 +97,68 @@ export function addSettings(): Promise<void> {
 						type: 'int',
 						public: false,
 						invalidValue: 5060,
+					});
+				});
+
+				await this.section('VoIP_TeamCollab_CTI', async function () {
+					await this.add('VoIP_TeamCollab_CTI_Enabled', false, {
+						type: 'boolean',
+						public: true,
+						invalidValue: false,
+						i18nDescription: 'VoIP_TeamCollab_CTI_Enabled_Description',
+					});
+				});
+
+				await this.section('VoIP_TeamCollab_ExternalCallHistory', async function () {
+					await this.add('VoIP_TeamCollab_ExternalCallHistory_Enabled', false, {
+						type: 'boolean',
+						public: true,
+						invalidValue: false,
+						i18nDescription: 'VoIP_TeamCollab_ExternalCallHistory_Enabled_Description',
+					});
+
+					const enableQuery = { _id: 'VoIP_TeamCollab_ExternalCallHistory_Enabled', value: true };
+
+					await this.add('VoIP_TeamCollab_ExternalCallHistory_Host', '', {
+						type: 'string',
+						public: false,
+						invalidValue: '',
+						enableQuery,
+					});
+
+					await this.add('VoIP_TeamCollab_ExternalCallHistory_User', '', {
+						type: 'string',
+						public: false,
+						invalidValue: '',
+						enableQuery,
+					});
+
+					await this.add('VoIP_TeamCollab_ExternalCallHistory_Password', '', {
+						type: 'password',
+						public: false,
+						secret: true,
+						invalidValue: '',
+						enableQuery,
+					});
+
+					await this.add('VoIP_TeamCollab_ExternalCallHistory_Timeout', 10000, {
+						type: 'int',
+						public: false,
+						invalidValue: 10000,
+						enableQuery,
+						i18nDescription: 'VoIP_TeamCollab_ExternalCallHistory_Timeout_Description',
+					});
+				});
+
+				await this.section('VoIP_TeamCollab_AdvancedFeatures', async function () {
+					const enableQuery = { _id: 'Pexip_Integration_Enabled', value: true };
+
+					await this.add('VoIP_TeamCollab_Video_Escalation_Enabled', false, {
+						type: 'boolean',
+						public: true,
+						invalidValue: false,
+						enableQuery,
+						i18nDescription: 'VoIP_TeamCollab_Video_Escalation_Enabled_Description',
 					});
 				});
 			},

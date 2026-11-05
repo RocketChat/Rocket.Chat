@@ -1,0 +1,30 @@
+export type AvatarRequest = {
+	'bandwidth': unknown;
+	'call_direction': 'dial_in' | 'dial_out' | 'non_dial';
+	'call_tag': unknown;
+	'height': number;
+	'local_alias': string;
+	'location': string;
+	'ms-subnet'?: unknown;
+	'node_ip': string;
+	'p_Asserted-Identity'?: unknown;
+	'protocol': 'api' | 'webrtc' | 'sip' | 'rtmp' | 'h323' | 'mssip';
+	'proxy_node_address': unknown;
+	'proxy_node_location': string;
+	'pseudo_version_id': unknown;
+	'registered': boolean;
+	'remote_address': string;
+	'remote_alias': string;
+	'remote_display_name': string;
+	'remote_port': unknown;
+	'role': 'chair' | 'guest' | 'unknown';
+	'service_name'?: unknown;
+	'service_tag'?: unknown;
+	'trigger': 'web' | 'web_avatar_fetch' | 'invite' | 'options' | 'subscribe' | 'setup' | 'arq' | 'irq' | 'unspecified';
+	'unique_service_name'?: unknown;
+	'vendor': unknown;
+	'version_id': unknown;
+	'width': number;
+};
+
+export type SerializedAvatarRequest = { [K in keyof AvatarRequest]: string | undefined };

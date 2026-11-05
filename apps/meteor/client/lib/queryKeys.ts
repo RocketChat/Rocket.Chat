@@ -9,7 +9,7 @@ import type {
 	IOutboundProvider,
 	RoomType,
 } from '@rocket.chat/core-typings';
-import type { PaginatedRequest } from '@rocket.chat/rest-typings';
+import type { ContactsSortableField, PaginatedRequest } from '@rocket.chat/rest-typings';
 import { videoConferenceInfoQueryKey } from '@rocket.chat/ui-video-conf';
 
 export const roomsQueryKeys = {
@@ -171,8 +171,18 @@ export const ABACQueryKeys = {
 	},
 };
 
+export const contactsQueryKeys = {
+	all: ['contacts'] as const,
+	list: (
+		...args: [query?: { sortBy: ContactsSortableField; sortDirection: 'asc' | 'desc'; offset: number; count: number; text?: string }]
+	) => [...contactsQueryKeys.all, 'list', ...args] as const,
+	info: (contactId: string) => [...contactsQueryKeys.all, 'info', contactId] as const,
+};
+
 export const callHistoryQueryKeys = {
 	all: ['call-history'] as const,
+	import: () => [...callHistoryQueryKeys.all, 'import'] as const,
+	list: () => [...callHistoryQueryKeys.all, 'list'] as const,
 	info: (callId?: string) => [...callHistoryQueryKeys.all, 'info', callId] as const,
 };
 
@@ -210,6 +220,8 @@ export const videoConferenceQueryKeys = {
 	joinable: () => [...videoConferenceQueryKeys.all, 'joinable'] as const,
 	/** What the provider can be told about devices — asked before any conference exists. */
 	capabilities: () => [...videoConferenceQueryKeys.all, 'capabilities'] as const,
+	/** Keyed by the number dialled, since the conference it stands for may not exist yet. */
+	scheduled: (sipAlias: string) => [...videoConferenceQueryKeys.all, 'scheduled', sipAlias] as const,
 } as const;
 
 export const messagesQueryKeys = {

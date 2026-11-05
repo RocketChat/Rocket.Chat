@@ -41,6 +41,7 @@ import { ServerSettingUpdater } from './environment/ServerSettingUpdater';
 import { ServerSettingsModify } from './environment/ServerSettingsModify';
 import { SettingRead } from './environment/SettingRead';
 import { SettingUpdater } from './environment/SettingUpdater';
+import { MediaCallModify } from './modify/MediaCallModify';
 import { ModerationModify } from './modify/ModerationModify';
 import { ModifyCreator } from './modify/ModifyCreator';
 import { ModifyDeleter } from './modify/ModifyDeleter';
@@ -55,6 +56,7 @@ import { CloudWorkspaceRead } from './read/CloudWorkspaceRead';
 import { ContactRead } from './read/ContactRead';
 import { ExperimentalRead } from './read/ExperimentalRead';
 import { LivechatRead } from './read/LivechatRead';
+import { MediaCallRead } from './read/MediaCallRead';
 import { MessageRead } from './read/MessageRead';
 import { OAuthAppsReader } from './read/OAuthAppsReader';
 import { PersistenceRead } from './read/PersistenceRead';
@@ -304,6 +306,7 @@ export class AppAccessors {
 				new RoleRead(this.senderFn),
 				new ExperimentalRead(this.senderFn),
 				new CallHistoryRead(this.senderFn),
+				new MediaCallRead(this.senderFn),
 			);
 		}
 
@@ -322,6 +325,7 @@ export class AppAccessors {
 				getScheduler: () => new SchedulerModify(this.senderFn),
 				getOAuthAppsModifier: () => new OAuthAppsModify(this.senderFn),
 				getModerationModifier: () => new ModerationModify(this.senderFn),
+				getMediaCallModifier: () => new MediaCallModify(this.senderFn),
 			};
 		}
 
