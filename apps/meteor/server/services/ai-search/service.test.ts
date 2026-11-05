@@ -216,7 +216,7 @@ describe('AISearchService', () => {
 			).to.be.true;
 			expect(
 				Subscriptions.findByUserIdAndRoomIds.calledWith('user-id', ['blocked', 'allowed'], {
-					projection: { rid: 1, status: 1 },
+					projection: { rid: 1, status: 1, name: 1, fname: 1 },
 				}),
 			).to.be.true;
 		});
