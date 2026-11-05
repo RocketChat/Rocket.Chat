@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import type { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IOmnichannelSystemMessage } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { Random } from '@rocket.chat/random';
 import { render, screen } from '@testing-library/react';
@@ -51,6 +51,35 @@ describe('SystemMessage', () => {
 		render(<SystemMessage message={message} showUserAvatar />, { wrapper: wrapper.build() });
 
 		expect(screen.getByText('changed room description to: & test &')).toBeInTheDocument();
+	});
+
+	it('should wrap omnichannel transfer comments', () => {
+		const message: IOmnichannelSystemMessage = {
+			...createBaseMessage(''),
+			t: 'livechat_transfer_history',
+			transferData: {
+				comment: 'A long transfer comment',
+				scope: 'agent',
+				transferredBy: { username: 'source' },
+				transferredTo: { username: 'target' },
+			},
+		};
+
+		render(<SystemMessage message={message} showUserAvatar />, { wrapper: wrapper.build() });
+
+		expect(screen.getByRole('document')).toHaveStyle({
+			whiteSpace: 'normal',
+			overflowWrap: 'anywhere',
+		});
+		expect(screen.getByRole('document')).toHaveTextContent('A long transfer comment');
+	});
+
+	it('should keep other system messages truncated', () => {
+		const message = createBaseMessage('& test &');
+
+		render(<SystemMessage message={message} showUserAvatar />, { wrapper: wrapper.build() });
+
+		expect(screen.getByRole('document')).not.toHaveStyle({ whiteSpace: 'pre-wrap' });
 	});
 
 	it('should not show escaped html while rendering system message', () => {
