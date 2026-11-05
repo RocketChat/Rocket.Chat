@@ -7,8 +7,10 @@ export type MessageInteractionsContextValue = {
 	hasReacted: (message: IMessage, reaction: string) => boolean;
 	openReactionPicker: (event: UIEvent, message: IMessage) => void;
 	quote: (message: IMessage) => void;
-	replyWith: (text: string) => void;
-	sendMessage: (text: string) => void;
+	/** Quotes a message known only by its id in the composer, as an attachment button that responds with it does. */
+	quoteMessageById: (messageId: IMessage['_id']) => void | Promise<void>;
+	replyWith: (text: string) => void | Promise<void>;
+	sendMessage: (text: string) => void | Promise<void>;
 	edit: (message: IMessage) => void;
 	canDelete: (message: IMessage) => boolean;
 	requestDeletion: (message: IMessage) => void;
@@ -36,6 +38,7 @@ export const messageInteractionsDefaultValue: MessageInteractionsContextValue = 
 	hasReacted: () => false,
 	openReactionPicker: noop,
 	quote: noop,
+	quoteMessageById: noop,
 	replyWith: noop,
 	sendMessage: noop,
 	edit: noop,
