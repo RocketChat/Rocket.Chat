@@ -12,7 +12,7 @@ const RoomList = ({ rooms }: { rooms: string[] }) => (
 		<List>
 			{rooms.map((room) => (
 				<div key={room}>
-					<img className='rcx-avatar__element' src={`/avatar/room/${room}`} alt={room} />
+					<img src={`/avatar/room/${room}`} alt={room} />
 				</div>
 			))}
 		</List>
@@ -28,7 +28,7 @@ const trackLoadListeners = (img: HTMLImageElement) => {
 	return () => countLoad(added) - countLoad(removed);
 };
 
-it('keeps the load listeners of a room avatar constant while new messages move rooms to the top', async () => {
+it('keeps the load listeners of a row image constant while new messages move rooms to the top', async () => {
 	let rooms = ['general', 'random', 'support'];
 	const { rerender } = render(<RoomList rooms={rooms} />);
 	await waitForScrollbarsUpdate();
