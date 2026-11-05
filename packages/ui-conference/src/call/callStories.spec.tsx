@@ -13,6 +13,7 @@ import * as voiceActivity from './VoiceActivity.stories';
 import * as callDiagnosticsPanel from './diagnostics/CallDiagnosticsPanel.stories';
 import * as participantTile from './tile/ParticipantTile.stories';
 import * as callBar from '../components/CallBar.stories';
+import * as callMessagePreviews from '../components/CallMessagePreviews/CallMessagePreviews.stories';
 import * as callPresenting from '../components/CallPresenting.stories';
 import * as callRaisedHands from '../components/CallRaisedHands.stories';
 
@@ -27,6 +28,7 @@ const testCases = [
 	...casesOf('CallControls', composeStories(callControls)),
 	...casesOf('CallDiagnosticsPanel', composeStories(callDiagnosticsPanel)),
 	...casesOf('CallHeader', composeStories(callHeader)),
+	...casesOf('CallMessagePreviews', composeStories(callMessagePreviews)),
 	...casesOf('CallPresenting', composeStories(callPresenting)),
 	...casesOf('CallRaisedHands', composeStories(callRaisedHands)),
 	...casesOf('CallReactions', composeStories(callReactions)),

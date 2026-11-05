@@ -322,6 +322,12 @@ Video conference message blocks inside the panel have their join/call-back actio
 
 When the preflight opens for a conference that has already ended (`endedAt` is set on the info response), a "Call ended" state page is shown instead of the preflight — with a Close button that tears down the window. The real-time `updated` subscription also catches a call ending while the user is still on the preflight.
 
+### New message previews
+
+While the chat panel is closed, each new message someone else sends to the call's chat is previewed over the call, in the corner under the chat button. A preview names the sender and shows the message as plain text, two lines at most. It goes away after a few seconds or when dismissed, and stays while it is hovered or focused so it can be reached from the keyboard. Clicking it opens the chat at that message. At most three are shown, the latest ones, and opening the chat clears them.
+
+The application decides what is new from the room's message stream: messages from other people, sent after the reader joined the call, in the call's chat — the room's own messages in main room mode, the thread's in thread mode. The stream sends a message again on every change to it (a reaction, an edit, a reply in its thread), so each message is previewed once, and one sent before the reader joined never is.
+
 ### Thread Auto-Follow
 
 When persistent chat is in **thread** mode, participants are automatically subscribed to the call's chat thread
