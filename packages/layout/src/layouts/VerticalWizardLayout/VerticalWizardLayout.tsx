@@ -1,11 +1,11 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 
-import DarkModeProvider from '../../DarkModeProvider';
-import BackgroundLayer from '../../components/BackgroundLayer';
-import LayoutLogo from '../../components/LayoutLogo';
-import type { LayoutContextValue } from '../../contexts/LayoutContext';
-import { LayoutContext } from '../../contexts/LayoutContext';
+import DarkModeProvider from '../../DarkModeProvider.js';
+import BackgroundLayer from '../../components/BackgroundLayer/index.js';
+import LayoutLogo from '../../components/LayoutLogo/index.js';
+import type { LayoutContextValue } from '../../contexts/LayoutContext.js';
+import { LayoutContext } from '../../contexts/LayoutContext.js';
 
 const VerticalWizardLayout = ({
 	children,
