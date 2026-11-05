@@ -76,6 +76,7 @@ Read the doc that matches the task instead of scanning `docs/` wholesale.
   - [uikit/](docs/features/uikit/README.md) — UiKit blocks, surfaces, rendering, interactions; field reference and per-surface support matrix
   - [client-boot.md](docs/features/client-boot.md) — the path to the first screen, and why components on it must not suspend
   - [web-client-hosting.md](docs/features/web-client-hosting.md) — how the server serves the Vite-built client (manifest, entry injection, CDN, cache) and how to serve the client from another host
+  - [message-scheduling.md](docs/features/message-scheduling.md) — scheduled messages: the gates, statuses, how a send is claimed and recovered, held files, cleanup, encrypted rooms, restrictions
 - [docs/proposals/](docs/proposals/) — design proposals, not yet implemented
   - [serve-client-without-meteor-webapp.md](docs/proposals/serve-client-without-meteor-webapp.md) — serving the client without Meteor's `web.browser` program
   - [finish-moving-http-and-ddp-off-meteor.md](docs/proposals/finish-moving-http-and-ddp-off-meteor.md) — what still reaches Meteor's HTTP and DDP servers, and the order to move it
