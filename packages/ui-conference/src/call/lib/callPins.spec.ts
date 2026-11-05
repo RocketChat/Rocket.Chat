@@ -1,5 +1,5 @@
-import { NO_PINS, dismissScreens, pinScreen, pinsForShares, togglePersonPin, unpinPerson } from './callPins';
-import type { ScreenShare } from './screenShares';
+import { NO_PINS, dismissScreens, pinScreen, pinsForShares, togglePersonPin, unpinPerson } from './callPins.js';
+import type { ScreenShare } from './screenShares.js';
 
 const SCREENS_DISMISSED = dismissScreens(NO_PINS);
 

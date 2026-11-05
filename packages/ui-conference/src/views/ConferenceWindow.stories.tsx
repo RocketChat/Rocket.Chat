@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { userEvent, within } from 'storybook/test';
 
-import ConferenceWindow from './ConferenceWindow';
-import ConferenceChatNotShared from '../components/ConferenceChatNotShared';
-import type { ConferenceMember } from '../context/definitions';
-import { conferenceAppRoot, onPhone, withConferenceWindow, withLiveConference } from '../fixtures/storyFixtures';
-import { buildChatAccess, buildConferenceMember } from '../fixtures/testFixtures';
+import ConferenceWindow from './ConferenceWindow.js';
+import ConferenceChatNotShared from '../components/ConferenceChatNotShared.js';
+import type { ConferenceMember } from '../context/definitions.js';
+import { conferenceAppRoot, onPhone, withConferenceWindow, withLiveConference } from '../fixtures/storyFixtures.js';
+import { buildChatAccess, buildConferenceMember } from '../fixtures/testFixtures.js';
 
 /**
  * The assembled ongoing call — the thing all the other stories are parts of: the top bar with the call's name

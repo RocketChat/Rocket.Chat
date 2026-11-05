@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { userEvent, within } from 'storybook/test';
 
-import CallRaisedHands from './CallRaisedHands';
-import { CallSurface, conferenceAppRoot, withConferenceWindow } from '../fixtures/storyFixtures';
+import CallRaisedHands from './CallRaisedHands.js';
+import { CallSurface, conferenceAppRoot, withConferenceWindow } from '../fixtures/storyFixtures.js';
 
 const queue = [
 	{ id: 'alan', name: 'Alan Turing' },

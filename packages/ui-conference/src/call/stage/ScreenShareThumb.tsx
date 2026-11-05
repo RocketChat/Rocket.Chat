@@ -1,11 +1,11 @@
 import { Box } from '@rocket.chat/fuselage';
 import { StreamVideo } from '@rocket.chat/ui-media';
 
-import ScreenActions from './ScreenActions';
-import { ownBadgeStyles, screenThumbStyles } from './stageStyles';
-import ScreenPin from '../ScreenPin';
-import { useScreenShareLabel } from '../hooks/useScreenShareLabel';
-import type { ScreenShare } from '../lib/screenShares';
+import ScreenActions from './ScreenActions.js';
+import { ownBadgeStyles, screenThumbStyles } from './stageStyles.js';
+import ScreenPin from '../ScreenPin.js';
+import { useScreenShareLabel } from '../hooks/useScreenShareLabel.js';
+import type { ScreenShare } from '../lib/screenShares.js';
 
 export type ScreenShareThumbProps = {
 	share: ScreenShare;

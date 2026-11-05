@@ -1,9 +1,9 @@
 import { composeStories } from '@storybook/react';
 import { render, screen, waitFor, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 
-import * as stories from './OngoingCallsDropdown.stories';
+import * as stories from './OngoingCallsDropdown.stories.js';
 
 /**
  * Whether the button is there at all and what colour it is — red while something rings, blue while something
