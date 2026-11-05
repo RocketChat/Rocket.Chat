@@ -10,7 +10,7 @@ import {
 	orderRaisedHands,
 	parseMessage,
 	sweepReactions,
-} from './callDataProtocol';
+} from './callDataProtocol.js';
 
 const raw = (text: string) => new TextEncoder().encode(text);
 
