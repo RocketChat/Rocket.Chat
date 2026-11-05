@@ -1,4 +1,4 @@
-import { ajv } from '../Ajv';
+import { ajv } from '../Ajv.js';
 
 export type ChannelsSetJoinCodeProps = { roomId: string; joinCode: string } | { roomName: string; joinCode: string };
 

@@ -1,8 +1,8 @@
 import type { IMessage, IRoom, MessageAttachment, IReadReceiptWithUser, MessageUrl, IThreadMainMessage } from '@rocket.chat/core-typings';
 
-import { ajv, ajvQuery } from './Ajv';
-import { paginationQueryProperties } from './pagination';
-import type { PaginatedRequest } from '../helpers/PaginatedRequest';
+import { ajv, ajvQuery } from './Ajv.js';
+import { paginationQueryProperties } from './pagination.js';
+import type { PaginatedRequest } from '../helpers/PaginatedRequest.js';
 
 type ChatSendMessageFields = Partial<
 	Pick<

@@ -1,5 +1,5 @@
-import type { WithUserId } from './BaseProps';
-import { withUserIdProps } from './BaseProps';
+import type { WithUserId } from './BaseProps.js';
+import { withUserIdProps } from './BaseProps.js';
 
 export type GroupsRemoveOwnerProps = WithUserId;
 export const isGroupsRemoveOwnerProps = withUserIdProps;

@@ -1,5 +1,5 @@
-import { ajv } from '../Ajv';
-import type { ITeamMemberParams } from './ITeamMemberParams';
+import { ajv } from '../Ajv.js';
+import type { ITeamMemberParams } from './ITeamMemberParams.js';
 
 export type TeamsUpdateMemberProps = ({ teamId: string } | { teamName: string }) & {
 	member: ITeamMemberParams;

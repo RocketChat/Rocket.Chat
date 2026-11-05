@@ -1,6 +1,6 @@
 import type { ISubscription, IMessage, IRoom } from '@rocket.chat/core-typings';
 
-import { ajv, ajvQuery } from './Ajv';
+import { ajv, ajvQuery } from './Ajv.js';
 
 type SubscriptionsGet = { updatedSince?: string };
 

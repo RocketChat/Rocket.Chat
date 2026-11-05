@@ -1,7 +1,7 @@
 import assert from 'node:assert';
 import { describe, it } from 'node:test';
 
-import { isVideoConfShareChatProps } from './VideoConfShareChatProps';
+import { isVideoConfShareChatProps } from './VideoConfShareChatProps.js';
 
 /**
  * What this schema says that the others don't: a `mode` is required, and has to be one this server can actually
