@@ -1,6 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 
 import Box from './Box';
+import StylingBox from './StylingBox';
 import { render } from '../../testing';
 
 describe('[Box Component]', () => {
@@ -131,6 +132,28 @@ describe('[Box Component]', () => {
 				'tagName',
 				'path', // tagName is lowercase for SVG elements
 			);
+		});
+	});
+
+	describe('StylingBox', () => {
+		it('omits className on child when no className or styling props are provided', () => {
+			const { container } = render(
+				<StylingBox>
+					<div className='default-class'>Child</div>
+				</StylingBox>,
+			);
+			expect(container.firstElementChild).toHaveClass('default-class');
+			expect(container.firstElementChild?.getAttribute('class')).toBe('default-class');
+		});
+
+		it('applies styling props to the child alongside its own class names', () => {
+			const { container } = render(
+				<StylingBox padding='x8' className='extra-class'>
+					<div className='default-class'>Child</div>
+				</StylingBox>,
+			);
+			expect(container.firstElementChild).toHaveClass('default-class', 'extra-class');
+			expect(container.firstElementChild?.className).toMatch(/rcx-css-/);
 		});
 	});
 });
