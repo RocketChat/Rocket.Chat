@@ -1,8 +1,10 @@
 import { attachRules, createClassName, css, escapeName, transpile } from '@rocket.chat/css-in-js';
-import type { JSX, FunctionComponent } from 'react';
+import type { JSX, ReactElement } from 'react';
 import { createElement, Fragment, useDebugValue, useInsertionEffect } from 'react';
 
 import { useOwnerDocument } from './OwnerDocument';
+
+type StyledComponentType<P> = ((props: P) => ReactElement) & { displayName?: string };
 
 export const attachClassName = <P extends { className?: string }>(props: P, additionalClassName: string): P => ({
 	...props,
@@ -14,10 +16,10 @@ const styled =
 	(
 		slices: TemplateStringsArray,
 		...values: readonly (string | ((props: P) => string))[]
-	): FunctionComponent<JSX.IntrinsicElements[K] & P> => {
+	): StyledComponentType<JSX.IntrinsicElements[K] & P> => {
 		const cssFn = css(slices, ...values);
 
-		const StyledComponent: FunctionComponent<JSX.IntrinsicElements[K] & P> =
+		const StyledComponent: StyledComponentType<JSX.IntrinsicElements[K] & P> =
 			typeof window === 'undefined'
 				? (props) => {
 						const content = cssFn(props);
