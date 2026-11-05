@@ -1,6 +1,6 @@
-import type { IMessage } from './IMessage/IMessage';
-import type { IRocketChatRecord } from './IRocketChatRecord';
-import type { IUser } from './IUser';
+import type { IMessage } from './IMessage/IMessage.js';
+import type { IRocketChatRecord } from './IRocketChatRecord.js';
+import type { IUser } from './IUser.js';
 
 export interface MessageReads extends IRocketChatRecord {
 	tmid: IMessage['_id'];

@@ -1,4 +1,4 @@
-import type { IRoom } from './IRoom';
+import type { IRoom } from './IRoom.js';
 
 export type DirectRoomRouteData = (
 	| {

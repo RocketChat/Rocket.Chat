@@ -1,5 +1,5 @@
-import type { IRocketChatRecord } from './IRocketChatRecord';
-import type { UserStatus } from './UserStatus';
+import type { IRocketChatRecord } from './IRocketChatRecord.js';
+import type { UserStatus } from './UserStatus.js';
 
 export interface IVisitorPhone {
 	phoneNumber: string;

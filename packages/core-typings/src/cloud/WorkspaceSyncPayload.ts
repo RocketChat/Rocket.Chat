@@ -1,10 +1,10 @@
 import type * as UiKit from '@rocket.chat/ui-kit';
 import * as z from 'zod';
 
-import { IBannerSchema } from '../IBanner';
-import { AnnouncementSchema } from './Announcement';
-import { NpsSurveyAnnouncementSchema } from './NpsSurveyAnnouncement';
-import { TimestampSchema } from '../utils';
+import { IBannerSchema } from '../IBanner.js';
+import { AnnouncementSchema } from './Announcement.js';
+import { NpsSurveyAnnouncementSchema } from './NpsSurveyAnnouncement.js';
+import { TimestampSchema } from '../utils.js';
 
 export const WorkspaceSyncPayloadSchema = z.object({
 	workspaceId: z.string(),

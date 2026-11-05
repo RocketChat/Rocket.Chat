@@ -1,4 +1,4 @@
-import type { AbacAttributeStoreType, AbacPdpType } from './ServerAudit/IAuditServerAbacAction';
+import type { AbacAttributeStoreType, AbacPdpType } from './ServerAudit/IAuditServerAbacAction.js';
 
 export enum AbacAccessOperation {
 	READ = 'read',
