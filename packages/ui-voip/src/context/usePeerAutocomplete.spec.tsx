@@ -2,10 +2,10 @@ import { UserStatus } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { renderHook, waitFor, act } from '@testing-library/react';
 
-import type { PeerInfo } from './definitions';
-import type { PeerAutocompleteOptions } from '../components';
-import { usePeerAutocomplete, isFirstPeerAutocompleteOption } from './usePeerAutocomplete';
-import MockedInstanceProvider from '../providers/MockedInstanceProvider';
+import type { PeerInfo } from './definitions.js';
+import { usePeerAutocomplete, isFirstPeerAutocompleteOption } from './usePeerAutocomplete.js';
+import type { PeerAutocompleteOptions } from '../components/index.js';
+import MockedInstanceProvider from '../providers/MockedInstanceProvider.js';
 
 jest.mock('@rocket.chat/ui-contexts', () => ({
 	...jest.requireActual('@rocket.chat/ui-contexts'),

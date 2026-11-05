@@ -1,6 +1,6 @@
 import type { CallState } from '@rocket.chat/media-signaling';
 
-import { deriveWidgetStateFromCallState } from './deriveWidgetStateFromCallState';
+import { deriveWidgetStateFromCallState } from './deriveWidgetStateFromCallState.js';
 
 describe('deriveWidgetStateFromCallState', () => {
 	describe('when call state indicates an ongoing call', () => {

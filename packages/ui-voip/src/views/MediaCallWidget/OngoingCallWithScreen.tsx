@@ -2,7 +2,7 @@ import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { ActionButton, StreamVideo, ToggleButton } from '@rocket.chat/ui-media';
 import { useTranslation } from 'react-i18next';
 
-import Dialpad from './Dialpad';
+import Dialpad from './Dialpad.js';
 import {
 	PeerInfo,
 	Widget,
@@ -18,10 +18,10 @@ import {
 	CardWidgetContainer,
 	StreamCard,
 	getPeerDisplayName,
-} from '../../components';
-import { useMediaCallInstance } from '../../context';
-import { useMediaCallView } from '../../context/MediaCallViewContext';
-import { isUnknownPeer } from '../../utils/isUnknownPeer';
+} from '../../components/index.js';
+import { useMediaCallView } from '../../context/MediaCallViewContext.js';
+import { useMediaCallInstance } from '../../context/index.js';
+import { isUnknownPeer } from '../../utils/isUnknownPeer.js';
 
 const OngoingCall = () => {
 	const { t } = useTranslation();

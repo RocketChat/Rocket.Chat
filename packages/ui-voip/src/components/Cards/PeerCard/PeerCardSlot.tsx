@@ -1,6 +1,6 @@
 import { Icon } from '@rocket.chat/fuselage';
 
-import CardSlot from '../CardSlot';
+import CardSlot from '../CardSlot.js';
 
 export type PeerCardSlotProps = {
 	muted: boolean;

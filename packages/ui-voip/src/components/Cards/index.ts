@@ -1,14 +1,14 @@
-export * from './PeerCard';
-export * from './StreamCard';
+export * from './PeerCard/index.js';
+export * from './StreamCard/index.js';
 
-export { default as Card } from './Card';
-export { default as CardWidgetContainer } from './CardWidgetContainer';
+export { default as Card } from './Card.js';
+export { default as CardWidgetContainer } from './CardWidgetContainer.js';
 
-export { default as CardSlot } from './CardSlot';
+export { default as CardSlot } from './CardSlot.js';
 
-export { default as CardList } from './CardList';
-export { default as CardListPinned } from './CardListPinned';
-export { default as CardListContainer } from './CardListContainer';
-export { default as CardListSection, SECTION_MAX_HEIGHT as CARD_LIST_SECTION_MAX_HEIGHT } from './CardListSection';
+export { default as CardList } from './CardList.js';
+export { default as CardListPinned } from './CardListPinned.js';
+export { default as CardListContainer } from './CardListContainer.js';
+export { default as CardListSection, SECTION_MAX_HEIGHT as CARD_LIST_SECTION_MAX_HEIGHT } from './CardListSection.js';
 
-export { useShouldWrapCards } from './useShouldWrapCards';
+export { useShouldWrapCards } from './useShouldWrapCards.js';

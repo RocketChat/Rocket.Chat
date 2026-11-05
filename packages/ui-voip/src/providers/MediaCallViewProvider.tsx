@@ -12,20 +12,20 @@ import type { ReactNode } from 'react';
 import { useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useAllowedFeatures } from './useAllowedFeatures';
-import { useCallSounds } from './useCallSounds';
-import { useDesktopNotifications } from './useDesktopNotifications';
-import { useMediaSession } from './useMediaSession';
-import { useMediaSessionControls } from './useMediaSessionControls';
-import { useScreenShareStreams } from './useScreenShareStreams';
-import useWidgetPositionTracker from './useWidgetPositionTracker';
-import { useMediaCallInstance } from '../context/MediaCallInstanceContext';
-import MediaCallViewContext from '../context/MediaCallViewContext';
-import type { PeerInfo } from '../context/definitions';
-import { isValidTone, useTonePlayer } from '../hooks/useTonePlayer';
-import { isExternalPeer } from '../utils/isExternalPeer';
-import { isInternalPeer } from '../utils/isInternalPeer';
-import TransferModal from '../views/TransferModal';
+import { useAllowedFeatures } from './useAllowedFeatures.js';
+import { useCallSounds } from './useCallSounds.js';
+import { useDesktopNotifications } from './useDesktopNotifications.js';
+import { useMediaSession } from './useMediaSession.js';
+import { useMediaSessionControls } from './useMediaSessionControls.js';
+import { useScreenShareStreams } from './useScreenShareStreams.js';
+import useWidgetPositionTracker from './useWidgetPositionTracker.js';
+import { useMediaCallInstance } from '../context/MediaCallInstanceContext.js';
+import MediaCallViewContext from '../context/MediaCallViewContext.js';
+import type { PeerInfo } from '../context/definitions.js';
+import { isValidTone, useTonePlayer } from '../hooks/useTonePlayer.js';
+import { isExternalPeer } from '../utils/isExternalPeer.js';
+import { isInternalPeer } from '../utils/isInternalPeer.js';
+import TransferModal from '../views/TransferModal.js';
 
 export type MediaCallViewProviderProps = {
 	children?: ReactNode;

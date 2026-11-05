@@ -1,6 +1,6 @@
-import { OngoingCall, NewCall, IncomingCall, OutgoingCall } from '..';
-import OngoingCallWithScreen from './OngoingCallWithScreen';
-import { useMediaCallView } from '../../context/MediaCallViewContext';
+import { OngoingCall, NewCall, IncomingCall, OutgoingCall } from '../index.js';
+import OngoingCallWithScreen from './OngoingCallWithScreen.js';
+import { useMediaCallView } from '../../context/MediaCallViewContext.js';
 
 const MediaCallWidgetViewRouter = () => {
 	const {

@@ -3,7 +3,7 @@ import { composeStories } from '@storybook/react';
 import { render } from '@testing-library/react';
 import { axe } from 'jest-axe';
 
-import * as useFullStartDateStories from './useFullStartDate.stories';
+import * as useFullStartDateStories from './useFullStartDate.stories.js';
 
 const testCases = Object.values(composeStories(useFullStartDateStories)).map((Story) => [Story.storyName || 'Story', Story]);
 

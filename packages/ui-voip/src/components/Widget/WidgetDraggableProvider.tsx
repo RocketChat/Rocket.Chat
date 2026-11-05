@@ -1,9 +1,9 @@
 import type { ReactNode } from 'react';
 import { useLayoutEffect } from 'react';
 
-import { DragContext } from './WidgetDraggableContext';
-import { useMediaCallView } from '../../context';
-import { useDraggable } from '../../hooks';
+import { DragContext } from './WidgetDraggableContext.js';
+import { useMediaCallView } from '../../context/index.js';
+import { useDraggable } from '../../hooks/index.js';
 
 type WidgetDraggableProviderProps = {
 	children: ReactNode;

@@ -4,11 +4,11 @@ import { ActionButton, ToggleButton } from '@rocket.chat/ui-media';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Timer, DevicePicker, useShouldWrapCards, ActionStrip } from '../components';
-import MediaCallCardList from './MediaCallCardList';
-import { useFullscreenToggle } from './useFullscreenToggle';
-import { useMediaCallView } from '../context/MediaCallViewContext';
-import { isInternalPeer } from '../utils/isInternalPeer';
+import MediaCallCardList from './MediaCallCardList.js';
+import { useFullscreenToggle } from './useFullscreenToggle.js';
+import { Timer, DevicePicker, useShouldWrapCards, ActionStrip } from '../components/index.js';
+import { useMediaCallView } from '../context/MediaCallViewContext.js';
+import { isInternalPeer } from '../utils/isInternalPeer.js';
 
 export type MediaCallPopoutViewProps = {
 	user: {

@@ -1,7 +1,7 @@
 import { renderHook } from '@testing-library/react';
 
-import { useCallSounds } from './useCallSounds';
-import type { State } from '../context/definitions';
+import { useCallSounds } from './useCallSounds.js';
+import type { State } from '../context/definitions.js';
 
 const mockPlayCallEnded = jest.fn();
 const mockPlayDialer = jest.fn();

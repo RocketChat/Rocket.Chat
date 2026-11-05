@@ -1,7 +1,7 @@
 import type { IMediaStreamWrapper, MediaSignalingSession } from '@rocket.chat/media-signaling';
 
-import type { MediaCallStreams } from '../context/MediaCallViewContext';
-import { useInstanceSnapshot } from '../context/useInstanceSnapshot';
+import type { MediaCallStreams } from '../context/MediaCallViewContext.js';
+import { useInstanceSnapshot } from '../context/useInstanceSnapshot.js';
 
 const getStreamWrappers = (instance?: MediaSignalingSession) => {
 	try {

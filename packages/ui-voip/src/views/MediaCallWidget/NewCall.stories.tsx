@@ -1,8 +1,8 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { Meta, StoryObj } from '@storybook/react';
 
-import NewCall from './NewCall';
-import MockedMediaCallProvider from '../../providers/MockedMediaCallProvider';
+import NewCall from './NewCall.js';
+import MockedMediaCallProvider from '../../providers/MockedMediaCallProvider.js';
 
 const mockedContexts = mockAppRoot()
 	.withTranslations('en', 'core', {
