@@ -1,1 +1,1 @@
-export { default, type LoginPageProps, type TotpFormProps } from './LoginPage';
+export { default, type LoginPageProps, type TotpFormProps } from './LoginPage.js';

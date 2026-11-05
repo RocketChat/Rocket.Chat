@@ -1,1 +1,1 @@
-export { default, type CreateNewPasswordPayload } from './CreateNewPassword';
+export { default, type CreateNewPasswordPayload } from './CreateNewPassword.js';
