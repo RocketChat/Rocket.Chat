@@ -1,5 +1,6 @@
 import type { IServiceMetrics } from '@rocket.chat/core-services';
 import { ClientSafeError } from '@rocket.chat/core-services';
+import { Streamer } from '@rocket.chat/streamer';
 import WebSocket from 'ws';
 
 import { Publication } from './Publication';
@@ -324,15 +325,16 @@ describe('Server subscriptions', () => {
 		expect(onStop).toHaveBeenCalledTimes(1);
 	});
 
-	it('deactivates a failed publication so a late continuation cannot revive it', async () => {
-		const stop = jest.spyOn(Publication.prototype, '_stop');
+	it('retires a failed publication so a late continuation cannot revive it', async () => {
+		const deactivate = jest.spyOn(Publication.prototype, 'deactivate');
 		server.publish('messages', jest.fn().mockRejectedValue(new ClientSafeError(403, 'Forbidden')));
 
 		await server.subscribe(session, makeSubscription());
 
-		expect(stop).toHaveBeenCalledTimes(1);
-		const failed = stop.mock.contexts[0] as Publication;
-		expect(failed._isDeactivated()).toBe(true);
+		expect(deactivate).toHaveBeenCalledTimes(1);
+		const failed = deactivate.mock.contexts[0] as Publication;
+
+		expect(Streamer.isPublicationActive(failed)).toBe(false);
 		expect(failed._session).toBeNull();
 
 		const late = jest.fn();
