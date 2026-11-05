@@ -4,8 +4,8 @@ import { useDropdownVisibility } from '@rocket.chat/ui-client';
 import { useEffect, useId, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import OngoingCallsList from '../components/OngoingCalls/OngoingCallsList';
-import { useOngoingCalls } from '../context/OngoingCallsContext';
+import OngoingCallsList from '../components/OngoingCalls/OngoingCallsList.js';
+import { useOngoingCalls } from '../context/OngoingCallsContext.js';
 
 /**
  * The calls this user could walk into, behind one control — nothing at all while there are none.

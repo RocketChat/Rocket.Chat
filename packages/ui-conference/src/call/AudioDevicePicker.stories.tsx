@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import AudioDevicePicker from './AudioDevicePicker';
-import { withCall } from '../fixtures/callFixtures';
-import { CallSurface, conferenceAppRoot, withConferenceWindow } from '../fixtures/storyFixtures';
+import AudioDevicePicker from './AudioDevicePicker.js';
+import { withCall } from '../fixtures/callFixtures.js';
+import { CallSurface, conferenceAppRoot, withConferenceWindow } from '../fixtures/storyFixtures.js';
 
 /**
  * The microphone and speaker menu of a call running in this window. Its trigger shows what the microphone hears

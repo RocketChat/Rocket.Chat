@@ -1,7 +1,7 @@
 import type { RefCallback } from 'react';
 import { useCallback, useState } from 'react';
 
-import type { StageSize } from '../lib/stageTiles';
+import type { StageSize } from '../lib/stageTiles.js';
 
 /** The size of whatever element the returned ref is attached to, kept current as it resizes. Zero until measured. */
 export const useElementSize = (): [ref: RefCallback<HTMLElement>, size: StageSize] => {

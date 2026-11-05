@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { CONFERENCE_THEMED_CLASS, narrowRoomStyle } from '../lib/panelStyles';
+import { CONFERENCE_THEMED_CLASS, narrowRoomStyle } from '../lib/panelStyles.js';
 
 type ConferenceThreadModalProps = {
 	/** The thread itself, which is the product's and arrives built. */

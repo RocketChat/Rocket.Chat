@@ -2,7 +2,7 @@ import { Box, ButtonGroup } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import CallTitle from '../call/CallTitle';
+import CallTitle from '../call/CallTitle.js';
 
 /** What the bar is at least, which is what anything laid over the window has to start below. */
 export const CALL_TOP_BAR_MIN_HEIGHT = 48;

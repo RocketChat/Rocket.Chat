@@ -4,15 +4,19 @@ import { DeviceSelectionProvider } from '@rocket.chat/ui-media';
 import type { ReactNode } from 'react';
 import { Suspense, useMemo } from 'react';
 
-import { PreviewMediaContextProvider } from './PreviewMediaContext';
-import { useCallDevicePreview } from './useCallDevicePreview';
-import { NOISE_METHOD_LABELS, VIDEO_QUALITY_LABELS, choicesOf } from '../call/lib/mediaChoiceLabels';
-import type { PreflightMedia } from '../context/definitions';
-import type { NoiseSuppressionSelection } from '../devices/NoiseSuppressionContext';
-import { NoiseSuppressionProvider, supportsRnnoise } from '../devices/NoiseSuppressionContext';
-import type { VideoQualitySelection } from '../devices/VideoQualityContext';
-import { VideoQualityProvider } from '../devices/VideoQualityContext';
-import { useCallDevicesInitialState, useNoiseSuppressionPreference, useVideoQualityPreference } from '../hooks/useCallDevicesInitialState';
+import { PreviewMediaContextProvider } from './PreviewMediaContext.js';
+import { useCallDevicePreview } from './useCallDevicePreview.js';
+import { NOISE_METHOD_LABELS, VIDEO_QUALITY_LABELS, choicesOf } from '../call/lib/mediaChoiceLabels.js';
+import type { PreflightMedia } from '../context/definitions.js';
+import type { NoiseSuppressionSelection } from '../devices/NoiseSuppressionContext.js';
+import { NoiseSuppressionProvider, supportsRnnoise } from '../devices/NoiseSuppressionContext.js';
+import type { VideoQualitySelection } from '../devices/VideoQualityContext.js';
+import { VideoQualityProvider } from '../devices/VideoQualityContext.js';
+import {
+	useCallDevicesInitialState,
+	useNoiseSuppressionPreference,
+	useVideoQualityPreference,
+} from '../hooks/useCallDevicesInitialState.js';
 
 const QUALITIES = choicesOf(VIDEO_QUALITY_LABELS);
 

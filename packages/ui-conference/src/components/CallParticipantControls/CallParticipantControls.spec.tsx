@@ -1,10 +1,10 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 
-import CallParticipantControls from './CallParticipantControls';
-import type { PluginFeature, PluginParticipant, PluginSelf, ProviderPluginActions } from '../../lib/providerPlugin';
-import { PLUGIN_FEATURES } from '../../lib/providerPlugin';
+import CallParticipantControls from './CallParticipantControls.js';
+import type { PluginFeature, PluginParticipant, PluginSelf, ProviderPluginActions } from '../../lib/providerPlugin.js';
+import { PLUGIN_FEATURES } from '../../lib/providerPlugin.js';
 
 /**
  * The show-and-hide rule, seen through what a row actually offers.

@@ -1,13 +1,13 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-import ScreenShareThumb from './ScreenShareThumb';
-import ScreenViewer from './ScreenViewer';
-import StopShareButton from './StopShareButton';
-import ThumbnailTile from './ThumbnailTile';
-import { spotlightClasses } from './stageStyles';
-import type { ScreenShare } from '../lib/screenShares';
-import type { SpotlightOrientation, StageTile } from '../lib/stageTiles';
+import ScreenShareThumb from './ScreenShareThumb.js';
+import ScreenViewer from './ScreenViewer.js';
+import StopShareButton from './StopShareButton.js';
+import ThumbnailTile from './ThumbnailTile.js';
+import { spotlightClasses } from './stageStyles.js';
+import type { ScreenShare } from '../lib/screenShares.js';
+import type { SpotlightOrientation, StageTile } from '../lib/stageTiles.js';
 
 export type ScreenShareLayoutProps = {
 	featured: ScreenShare;

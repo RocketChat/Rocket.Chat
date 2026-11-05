@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { action } from 'storybook/actions';
 
-import ChatAccessModal from './ChatAccessModal';
-import { conferenceAppRoot, withCallProviders, withConference } from '../../fixtures/storyFixtures';
-import { buildChatAccess } from '../../fixtures/testFixtures';
+import ChatAccessModal from './ChatAccessModal.js';
+import { conferenceAppRoot, withCallProviders, withConference } from '../../fixtures/storyFixtures.js';
+import { buildChatAccess } from '../../fixtures/testFixtures.js';
 
 /**
  * Both ways out of "some members can't see the chat" give something away, so neither is applied on the user's

@@ -1,10 +1,10 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-import PreflightDeviceMenu from './PreflightDeviceMenu';
-import { usePreviewMedia } from './PreviewMediaContext';
-import { useNoiseSuppressionChoices } from '../devices/useNoiseSuppressionChoices';
-import { useVideoQualityChoices } from '../devices/useVideoQualityChoices';
+import PreflightDeviceMenu from './PreflightDeviceMenu.js';
+import { usePreviewMedia } from './PreviewMediaContext.js';
+import { useNoiseSuppressionChoices } from '../devices/useNoiseSuppressionChoices.js';
+import { useVideoQualityChoices } from '../devices/useVideoQualityChoices.js';
 
 /** The devices to arrive on, one menu per kind the provider can be told about. */
 const PreflightDevices = () => {
