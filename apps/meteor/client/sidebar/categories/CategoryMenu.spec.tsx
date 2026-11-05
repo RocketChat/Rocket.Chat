@@ -21,8 +21,10 @@ jest.mock('./hooks/useUserSidebarCategories', () => ({
 	useUserSidebarCategories: jest.fn(),
 }));
 
+const openArchiveRooms = jest.fn();
+
 jest.mock('./hooks/useCategoryModals', () => ({
-	useCategoryModals: () => ({ openManage: jest.fn(), openDelete: jest.fn() }),
+	useCategoryModals: () => ({ openManage: jest.fn(), openDelete: jest.fn(), openArchiveRooms }),
 }));
 
 jest.mock('./hooks/useMoveRoomCategory', () => ({
@@ -34,6 +36,7 @@ jest.mock('../../navbar/NavBarPagesGroup/hooks/useCreateNewItems', () => ({
 }));
 
 const mutate = jest.fn();
+
 const readMessages = jest.fn(async () => undefined);
 
 const appRoot = mockAppRoot()
@@ -46,6 +49,7 @@ const appRoot = mockAppRoot()
 		Last_7_days: 'Last 7 days',
 		Last_30_days: 'Last 30 days',
 		Hide_inactive_unreads: 'Hide inactive unreads',
+		Archive_rooms_ellipsis: 'Archive rooms…',
 		Unreads: 'Unreads',
 		Mark_read: 'Mark read',
 		Mark_rooms_as_read: 'Mark rooms as read',
@@ -64,6 +68,7 @@ const appRoot = mockAppRoot()
 beforeEach(() => {
 	mutate.mockClear();
 	readMessages.mockClear();
+	openArchiveRooms.mockClear();
 	jest.mocked(usePersistCategoriesMutation).mockReturnValue({ mutate } as any);
 	jest.mocked(useUserSidebarCategories).mockReturnValue({
 		rawCategories: [{ _id: 'Channels', name: 'Channels', default: true, activityFilterHours: 24 * 7 }],
@@ -149,15 +154,28 @@ describe('the Filter submenu', () => {
 	});
 });
 
-describe('the Mark read item', () => {
-	const unreadRooms = [
-		{ rid: 'read-one', t: 'c', name: 'read-one', unread: 0, alert: false },
-		{ rid: 'unread-one', t: 'c', name: 'unread-one', unread: 2, alert: true },
-		{ rid: 'thread-one', t: 'p', name: 'thread-one', unread: 0, alert: false, tunread: ['m1'] },
-	] as SubscriptionWithRoom[];
-
-	it('is disabled while the group has nothing unread', async () => {
+describe('the archive item', () => {
+	it('opens the modal that archives the inactive rooms of the group', async () => {
 		renderMenu();
+		await userEvent.click(await screen.findByRole('button', { name: 'Options' }));
+
+		await userEvent.click(await screen.findByRole('menuitemcheckbox', { name: 'Archive rooms…' }));
+
+		expect(openArchiveRooms).toHaveBeenCalledWith({ groupTitle: 'Channels', rooms });
+	});
+
+	it('is not offered on a dynamic group', async () => {
+		renderMenu({ groupKey: 'Unread', groupTitle: 'Unread' });
+		await userEvent.click(await screen.findByRole('button', { name: 'Options' }));
+
+		expect(await screen.findByRole('menuitemcheckbox', { name: 'Move up' })).toBeInTheDocument();
+		expect(screen.queryByRole('menuitemcheckbox', { name: 'Archive rooms…' })).not.toBeInTheDocument();
+	});
+});
+
+describe('the Mark read item', () => {
+	it('is disabled while the group has nothing unread', async () => {
+		renderMenu({ rooms: [rooms[0]] });
 		await userEvent.click(await screen.findByRole('button', { name: 'Options' }));
 
 		const item = await screen.findByRole('menuitemcheckbox', { name: 'Mark read' });
@@ -169,7 +187,7 @@ describe('the Mark read item', () => {
 	});
 
 	it('says how many rooms become read, then marks each unread one read with its threads', async () => {
-		renderMenu({ rooms: unreadRooms });
+		renderMenu();
 		await userEvent.click(await screen.findByRole('button', { name: 'Options' }));
 		await userEvent.click(await screen.findByRole('menuitemcheckbox', { name: 'Mark read' }));
 

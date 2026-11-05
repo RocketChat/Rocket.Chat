@@ -12,6 +12,15 @@ jest.mock('@rocket.chat/ui-client', () => ({
 	useIsEnterprise: () => ({ data: { isEnterprise: true } }),
 }));
 
+jest.mock('../categories/ArchivedGroupMenu', () => ({
+	__esModule: true,
+	default: () => (
+		<button type='button' aria-label='Archived options'>
+			archived menu
+		</button>
+	),
+}));
+
 jest.mock('../categories/CategoryMenu', () => ({
 	__esModule: true,
 	default: () => (
@@ -30,6 +39,7 @@ const makeGroup = (collapsed: boolean, unread = 0) =>
 		keepUnreadsOnTop: false,
 		collapsed,
 		rooms: [],
+		allRooms: [],
 		unreadInfo: { userMentions: 0, groupMentions: 0, unread, tunread: [], tunreadUser: [] },
 	}) as unknown as SidebarRoomListGroup;
 
@@ -181,6 +191,39 @@ const renderFilteredCollapser = (overrides: Partial<SidebarRoomListGroup> = {}) 
 };
 
 const getChip = () => screen.getByRole('button', { name: '7d, filter: Last 7 days' });
+
+describe('the archived placeholder', () => {
+	const makeArchivedGroup = () =>
+		({
+			...makeGroup(true, 0),
+			key: 'Archived',
+			title: 'Archived',
+			translateTitle: true,
+			empty: true,
+		}) as SidebarRoomListGroup;
+
+	it('is listed collapsed as an empty group, with its own menu and no chip or badge', async () => {
+		renderCollapser(makeArchivedGroup());
+
+		expect(screen.getByRole('button', { name: /Archived/ })).toHaveAttribute('aria-expanded', 'false');
+		expect(screen.queryByRole('button', { name: /Filter/ })).not.toBeInTheDocument();
+		expect(screen.queryByRole('status')).not.toBeInTheDocument();
+
+		await userEvent.hover(screen.getByRole('button', { name: /Archived/ }));
+
+		expect(await screen.findByRole('button', { name: 'Archived options' })).toBeInTheDocument();
+		expect(screen.queryByRole('button', { name: 'Options' })).not.toBeInTheDocument();
+	});
+
+	it('still folds and unfolds', async () => {
+		const onClick = jest.fn();
+		renderCollapser(makeArchivedGroup(), onClick);
+
+		await userEvent.click(screen.getByRole('button', { name: /Archived/ }));
+
+		expect(onClick).toHaveBeenCalledTimes(1);
+	});
+});
 
 describe('the activity filter chip', () => {
 	it('names the window the group is filtered by', () => {

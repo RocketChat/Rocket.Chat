@@ -9,7 +9,9 @@ import { useLeaveRoomAction } from './menuActions/useLeaveRoom';
 import { useToggleFavoriteAction } from './menuActions/useToggleFavoriteAction';
 import { useToggleNotificationAction } from './menuActions/useToggleNotificationsAction';
 import { useToggleReadAction } from './menuActions/useToggleReadAction';
-import { useHideRoomAction } from './useHideRoomAction';
+import { useArchiveRoomAction } from './useArchiveRoomAction';
+import { useArchivedRooms } from './useArchivedRooms';
+import { useUnarchiveRoomAction } from './useUnarchiveRoomAction';
 import { useOmnichannelPrioritiesMenu } from '../views/omnichannel/hooks/useOmnichannelPrioritiesMenu';
 
 export type RoomMenuSection = {
@@ -55,7 +57,10 @@ export const useRoomMenuActions = ({
 		return !((cl != null && !cl) || ['d', 'l'].includes(type));
 	})();
 
-	const handleHide = useHideRoomAction({ rid, type, name }, { redirect: false });
+	const handleArchive = useArchiveRoomAction({ rid, type, name });
+	const handleUnarchive = useUnarchiveRoomAction({ rid });
+	// An archived room is offered the way back instead of the archive again.
+	const isArchived = useArchivedRooms().isArchivedRoom(rid);
 	const handleToggleFavorite = useToggleFavoriteAction({ rid, isFavorite });
 	const handleToggleRead = useToggleReadAction({ rid, isUnread, subscription });
 	const handleLeave = useLeaveRoomAction({ rid, type, name, roomOpen });
@@ -68,12 +73,20 @@ export const useRoomMenuActions = ({
 		() =>
 			!hideDefaultOptions
 				? ([
-						!isOmnichannelRoom && {
-							id: 'hideRoom',
-							icon: 'eye-off',
-							content: t('Hide'),
-							onClick: handleHide,
-						},
+						!isOmnichannelRoom &&
+							(isArchived
+								? {
+										id: 'unarchiveRoom',
+										icon: 'undo',
+										content: t('Unarchive'),
+										onClick: handleUnarchive,
+									}
+								: {
+										id: 'hideRoom',
+										icon: 'archive',
+										content: t('Archive'),
+										onClick: handleArchive,
+									}),
 						{
 							id: 'toggleRead',
 							icon: 'flag',
@@ -97,7 +110,9 @@ export const useRoomMenuActions = ({
 		[
 			hideDefaultOptions,
 			t,
-			handleHide,
+			handleArchive,
+			handleUnarchive,
+			isArchived,
 			isUnread,
 			handleToggleRead,
 			canFavorite,

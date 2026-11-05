@@ -7,8 +7,9 @@ import { useUserSubscriptions } from '@rocket.chat/ui-contexts';
 import { useVideoConfIncomingCalls, useVideoConfWindowEnabled } from '@rocket.chat/ui-video-conf';
 import { useMemo } from 'react';
 
-import { filterGroupVisibility, getRoomCategory, useCategoryList } from './useCategoryList';
+import { SIDEBAR_ARCHIVED_GROUP_KEY, filterGroupVisibility, getRoomCategory, useCategoryList } from './useCategoryList';
 import type { LiftedActivityFilters } from './useLiftedActivityFilters';
+import { useArchivedRooms } from '../../hooks/useArchivedRooms';
 import { useSortQueryOptions } from '../../hooks/useSortQueryOptions';
 import { useOpenedRoom } from '../../lib/RoomManager';
 import { useOmnichannelEnabled } from '../../views/omnichannel/hooks/useOmnichannelEnabled';
@@ -37,13 +38,45 @@ export type SidebarRoomListGroup = {
 	inactiveCount: number;
 	showingInactive: boolean;
 	collapsed: boolean;
-	/** The rooms listed under the header right now, after the collapse. */
+	/** The rooms listed under the header right now, after the collapse and the activity filter. */
 	rooms: SubscriptionWithRoom[];
-	/** Every room of the group, whatever the collapse leaves out, for actions on the group as a whole. */
+	/** Every room of the group, whatever the collapse or the filter leaves out, for actions on the group as a whole. */
 	allRooms: SubscriptionWithRoom[];
 	unreadInfo: GroupUnreadInfo;
 	empty: boolean;
 };
+
+/** The room with nothing to badge: an archived room asks for no attention, whatever arrives in it. */
+const withoutUnreads = (room: SubscriptionWithRoom): SubscriptionWithRoom => ({
+	...room,
+	alert: false,
+	unread: 0,
+	userMentions: 0,
+	groupMentions: 0,
+	tunread: [],
+	tunreadUser: [],
+	tunreadGroup: [],
+});
+
+/**
+ * The group listed last, holding the rooms archived out of the sidebar. Its header always looks like an empty
+ * group's and carries no badge, nor do its rooms, so the archive never asks for attention; it starts collapsed.
+ * A room stays here, whatever happens in it, until the user unarchives it.
+ */
+const makeArchivedGroup = (rooms: SubscriptionWithRoom[], collapsed: boolean): SidebarRoomListGroup => ({
+	key: SIDEBAR_ARCHIVED_GROUP_KEY,
+	title: SIDEBAR_ARCHIVED_GROUP_KEY,
+	translateTitle: true,
+	showUnreads: false,
+	keepUnreadsOnTop: false,
+	inactiveCount: 0,
+	showingInactive: false,
+	collapsed,
+	rooms: collapsed ? [] : rooms.map(withoutUnreads),
+	allRooms: rooms,
+	unreadInfo: emptyUnreadInfo(),
+	empty: true,
+});
 
 type useRoomListReturnType = {
 	groups: SidebarRoomListGroup[];
@@ -81,6 +114,7 @@ export const useRoomList = ({
 	const options = useSortQueryOptions();
 
 	const rooms = useUserSubscriptions(query, options);
+	const { archivedRoomIds } = useArchivedRooms();
 
 	const inquiries = useQueuedInquiries();
 
@@ -106,7 +140,15 @@ export const useRoomList = ({
 				unfilteredGroups.set(category, new Set<SubscriptionWithRoom>());
 			});
 
+			// An archived room is in no other group, not even Unread: it waits in the archive, quietly.
+			const archivedRooms: SubscriptionWithRoom[] = [];
+
 			rooms.forEach((room) => {
+				if (isEnterprise && archivedRoomIds.has(room.rid)) {
+					archivedRooms.push(room);
+					return;
+				}
+
 				const roomCategory = getRoomCategory(room, {
 					groups: unfilteredGroups,
 					hasIncomingCalls: (rid: SubscriptionWithRoom['rid']) => {
@@ -205,10 +247,18 @@ export const useRoomList = ({
 
 			const groups = filterGroupVisibility(unfilteredGroups, isEnterprise, makeGroup);
 
+			// The archive is offered from the group menus, which need a license; so is its group. Unlike the others
+			// it starts collapsed, so the collapsed list, which only records the groups toggled from their start,
+			// records it when it is expanded.
+			if (isEnterprise) {
+				groups.push(makeArchivedGroup(archivedRooms, !isCollapsed(SIDEBAR_ARCHIVED_GROUP_KEY)));
+			}
+
 			return groups;
 		}, [
 			categoryList,
 			rooms,
+			archivedRoomIds,
 			isEnterprise,
 			collapsedGroups,
 			incomingCalls,

@@ -6,12 +6,14 @@ import {
 	isSubscriptionsGetProps,
 	isSubscriptionsGetOneProps,
 	isSubscriptionsReadProps,
+	isSubscriptionsSetUserArchivedProps,
 	isSubscriptionsUnreadProps,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 
 import { unreadMessages } from '../../lib/messaging/unread/unreadMessages';
+import { notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../lib/notifyListener';
 import { readMessages } from '../../lib/readMessages';
 import { getSubscriptions } from '../../publications/subscription';
 import { API } from '../api';
@@ -170,6 +172,33 @@ API.v1.post(
 			'firstUnreadMessage' in this.bodyParams ? this.bodyParams.firstUnreadMessage : undefined,
 			'roomId' in this.bodyParams ? this.bodyParams.roomId : undefined,
 		);
+
+		return API.v1.success();
+	},
+);
+
+API.v1.post(
+	'subscriptions.setUserArchived',
+	{
+		authRequired: true,
+		body: isSubscriptionsSetUserArchivedProps,
+		response: {
+			200: voidSuccessResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		const { roomId, archived } = this.bodyParams;
+
+		const { matchedCount, modifiedCount } = await Subscriptions.setUserArchivedByRoomIdAndUserId(roomId, this.userId, archived);
+		if (!matchedCount) {
+			throw new Error('error-invalid-subscription');
+		}
+
+		if (modifiedCount) {
+			void notifyOnSubscriptionChangedByRoomIdAndUserId(roomId, this.userId);
+		}
 
 		return API.v1.success();
 	},
