@@ -1,0 +1,24 @@
+.changeset/room-files-load-more.md
+  s_879bdc629b7fd2::t_f64e9f9da06862 1-5
+apps/meteor/client/views/room/contextualBar/RoomFiles/RoomFilesWithData.tsx
+  s_879bdc629b7fd2::t_aee6e3d89dd57c 19,25-29
+  s_879bdc629b7fd2::t_50ac0d79602071 45
+apps/meteor/client/views/room/contextualBar/RoomFiles/RoomFiles.tsx
+  s_879bdc629b7fd2::t_2053c65ccc5a89 107
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "cda2f18a613f7e664f9b56e768a2209c039c4b27",
+  "prompts": {},
+  "sessions": {
+    "s_879bdc629b7fd2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e41c4e77-c92e-4dd7-8b58-12fb0e3a9e2b",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
