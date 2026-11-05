@@ -9,6 +9,7 @@ import { useMemo } from 'react';
 import AdminUserInfoActions from './AdminUserInfoActions';
 import type { AdminUsersTab } from './AdminUsersPage';
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
+import MarkdownText from '../../../components/MarkdownText';
 import { FormSkeleton } from '../../../components/Skeleton';
 import UserInfoPhoneNumberList from '../../../components/UserInfoPhoneNumberList';
 import { UserStatus } from '../../../components/UserStatus';
@@ -20,6 +21,8 @@ export type AdminUserInfoWithDataProps = {
 	onReload: () => void;
 	tab: AdminUsersTab;
 };
+
+const renderMarkdown = (content: string) => <MarkdownText variant='inline' content={content} />;
 
 const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProps) => {
 	const t = useTranslation();
@@ -118,6 +121,7 @@ const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProp
 	return (
 		<UserInfo
 			{...user}
+			renderMarkdown={renderMarkdown}
 			actions={
 				<AdminUserInfoActions
 					isActive={data?.user.active}
