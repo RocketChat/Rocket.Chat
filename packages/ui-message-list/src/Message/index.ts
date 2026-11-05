@@ -29,3 +29,5 @@ export {
 	type QuoteAttachmentProps as MessageQuoteAttachmentProps,
 } from './content/attachments/QuoteAttachment';
 export { default as MessageCollapsible, type MessageCollapsibleProps } from './MessageCollapsible';
+export { default as MessageToolbarHolder, type MessageToolbarHolderProps } from './MessageToolbarHolder';
+export { default as MessageToolbar, type MessageToolbarProps } from './toolbar/MessageToolbar';

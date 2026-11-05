@@ -11,6 +11,7 @@ import IgnoredContent from '../IgnoredContent';
 import MessageAuthorAvatar from '../MessageAuthorAvatar';
 import MessageContentFallback from '../MessageContentFallback';
 import MessageHeader from '../MessageHeader';
+import MessageToolbarHolder from '../MessageToolbarHolder';
 import StatusIndicators from '../StatusIndicators';
 import type { MessageActionContext } from '../contexts/MessageAction';
 import { useMessageDisplay } from '../contexts/MessageDisplayContext';
@@ -55,17 +56,7 @@ const getAriaLabelledBy = ({
 	return labels.join(' ');
 };
 
-const RoomMessage = ({
-	message,
-	sequential,
-	all,
-	mention,
-	unread,
-	context: _context,
-	ignoredUser,
-	searchText,
-	...props
-}: RoomMessageProps) => {
+const RoomMessage = ({ message, sequential, all, mention, unread, context, ignoredUser, searchText, ...props }: RoomMessageProps) => {
 	const { t } = useTranslation();
 	const uid = useUserId();
 	const { showAvatars, readReceipts } = useMessageDisplay();
@@ -109,6 +100,7 @@ const RoomMessage = ({
 					</ErrorBoundary>
 				)}
 			</MessageContainer>
+			{!message.private && message.e2e !== 'pending' && !isSelecting && <MessageToolbarHolder message={message} context={context} />}
 		</Message>
 	);
 };

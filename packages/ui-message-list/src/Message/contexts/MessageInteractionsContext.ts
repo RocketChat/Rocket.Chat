@@ -5,7 +5,7 @@ import { createContext, useContext } from 'react';
 export type MessageInteractionsContextValue = {
 	toggleReaction: (message: IMessage, reaction: string) => void;
 	hasReacted: (message: IMessage, reaction: string) => boolean;
-	openReactionPicker: (event: UIEvent, message: IMessage) => void;
+	openReactionPicker: (event: UIEvent, message: IMessage, options?: { onClose?: () => void }) => void;
 	quote: (message: IMessage) => void;
 	/** Quotes a message known only by its id in the composer, as an attachment button that responds with it does. */
 	quoteMessageById: (messageId: IMessage['_id']) => void | Promise<void>;
