@@ -6,7 +6,6 @@ import { CredentialTokens, Rooms, Users, Roles, SamlUsedAssertions } from '@rock
 import { Random } from '@rocket.chat/random';
 import { escapeRegExp, escapeHTML } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
-import { Meteor } from 'meteor/meteor';
 
 import { SAMLServiceProvider } from './ServiceProvider';
 import { SAMLUtils } from './Utils';
@@ -18,6 +17,7 @@ import { addUserToRoom } from '../../../../../server/lib/rooms/addUserToRoom';
 import { createRoom } from '../../../../../server/lib/rooms/createRoom';
 import { generateUsernameSuggestion } from '../../../../../server/lib/users/getUsernameSuggestion';
 import { saveUserIdentity } from '../../../../../server/lib/users/saveUserIdentity';
+import { getWorkspaceURL } from '../../../../../server/lib/utils/getURL';
 import { settings } from '../../../../../server/settings';
 import type { ISAMLAction } from '../definition/ISAMLAction';
 import type { ISAMLUser } from '../definition/ISAMLUser';
@@ -316,7 +316,7 @@ export class SAML {
 				timeoutHandler = undefined;
 
 				res.writeHead(302, {
-					Location: url || Meteor.absoluteUrl(),
+					Location: url || `${getWorkspaceURL()}/`,
 				});
 				res.end();
 			};
@@ -401,7 +401,7 @@ export class SAML {
 				await logOutUser(inResponseTo);
 			} finally {
 				res.writeHead(302, {
-					Location: Meteor.absoluteUrl(),
+					Location: `${getWorkspaceURL()}/`,
 				});
 				res.end();
 			}
@@ -470,7 +470,7 @@ export class SAML {
 			url = await serviceProvider.getAuthorizeUrl(samlObject.credentialToken, loginClient);
 		} catch (err: any) {
 			SAMLUtils.error({ err, msg: 'Unable to generate authorize url' });
-			url = Meteor.absoluteUrl();
+			url = `${getWorkspaceURL()}/`;
 		}
 
 		res.writeHead(302, {
@@ -487,7 +487,7 @@ export class SAML {
 	): Promise<void> {
 		const redirect = (url?: string) => {
 			res.writeHead(302, {
-				Location: url ?? Meteor.absoluteUrl(),
+				Location: url ?? `${getWorkspaceURL()}/`,
 			});
 			res.end();
 		};
@@ -544,7 +544,7 @@ export class SAML {
 					redirectPath += `&loginClient=${loginClient}`;
 				}
 
-				const url = Meteor.absoluteUrl(redirectPath);
+				const url = getWorkspaceURL(redirectPath);
 				redirect(url);
 			} catch (err) {
 				SAMLUtils.error({ err });

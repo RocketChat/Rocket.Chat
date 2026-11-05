@@ -5,13 +5,13 @@ import humanInterval from 'human-interval';
 import { MongoClient } from 'mongodb';
 import type { MongoClientOptions, Db, Document, Collection, InsertOneResult } from 'mongodb';
 
-import { Job } from './Job';
-import { JobProcessingQueue } from './JobProcessingQueue';
-import { createJob } from './createJob';
-import type { IJob } from './definition/IJob';
-import type { JobDefinition, JobOptions } from './definition/JobDefinition';
-import { hasMongoProtocol } from './lib/hasMongoProtocol';
-import { noCallback } from './lib/noCallback';
+import { Job } from './Job.js';
+import { JobProcessingQueue } from './JobProcessingQueue.js';
+import { createJob } from './createJob.js';
+import type { IJob } from './definition/IJob.js';
+import type { JobDefinition, JobOptions } from './definition/JobDefinition.js';
+import { hasMongoProtocol } from './lib/hasMongoProtocol.js';
+import { noCallback } from './lib/noCallback.js';
 
 const debug = debugInitializer('agenda:agenda');
 

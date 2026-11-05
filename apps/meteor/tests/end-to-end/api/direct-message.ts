@@ -398,7 +398,7 @@ describe('[Direct Messages]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
 				});
 		});
 	});
@@ -739,7 +739,7 @@ describe('[Direct Messages]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'forbidden');
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
 				});
 		});
 
@@ -930,7 +930,7 @@ describe('[Direct Messages]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
 				});
 		});
 		it('should fail when the endpoint is enabled but the user doesnt have permission', async () => {
@@ -946,7 +946,7 @@ describe('[Direct Messages]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
 				});
 		});
 		it('should succeed when the endpoint is enabled and user has permission', async () => {
@@ -1209,11 +1209,11 @@ describe('[Direct Messages]', () => {
 					usernames: [user.username, otherUser.username].join(','),
 					excludeSelf: true,
 				})
-				.expect(400)
+				.expect(403)
 				.expect('Content-Type', 'application/json');
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('errorType', 'error-not-allowed');
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
 		});
 
 		it('rejects users with view-room-administration but without create-d-other-users', async () => {
@@ -1227,11 +1227,11 @@ describe('[Direct Messages]', () => {
 						usernames: [user.username, otherUser.username].join(','),
 						excludeSelf: true,
 					})
-					.expect(400)
+					.expect(403)
 					.expect('Content-Type', 'application/json');
 
 				expect(res.body).to.have.property('success', false);
-				expect(res.body).to.have.property('errorType', 'error-not-allowed');
+				expect(res.body).to.have.property('errorType', 'error-forbidden');
 			} finally {
 				await updatePermission('view-room-administration', ['admin']);
 			}
@@ -1475,7 +1475,7 @@ describe('[Direct Messages]', () => {
 				.expect('Content-Type', 'application/json');
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('error', 'forbidden');
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
 		});
 
 		describe('when authenticated as a non-admin user', () => {
@@ -1511,10 +1511,11 @@ describe('[Direct Messages]', () => {
 					.send({
 						roomId: testDM._id,
 					})
-					.expect(400)
+					.expect(403)
 					.expect('Content-Type', 'application/json');
 
 				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('errorType', 'error-forbidden');
 			});
 		});
 	});

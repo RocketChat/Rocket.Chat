@@ -192,7 +192,7 @@ API.v1.post(
 		const { userId } = this;
 
 		if (!(await hasPermissionAsync(this.user, 'call-management', roomId))) {
-			return API.v1.forbidden('Not allowed');
+			return API.v1.forbidden('User does not have the permissions required for this action');
 		}
 
 		try {
@@ -202,7 +202,7 @@ API.v1.post(
 				type: this.user.type ?? 'user',
 			});
 		} catch {
-			return API.v1.forbidden('Not allowed');
+			return API.v1.forbidden('User cannot send messages in this room');
 		}
 
 		try {

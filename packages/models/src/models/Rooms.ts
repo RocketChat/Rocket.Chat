@@ -2025,32 +2025,32 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateMany(query, update);
 	}
 
-	async createWithIdTypeAndName(
+	createWithIdTypeAndNameIfNotExists(
 		_id: IRoom['_id'],
 		type: IRoom['t'],
 		name: IRoom['name'],
-		extraData?: Record<string, unknown>,
-	): Promise<IRoom> {
-		const room: IRoom = {
-			_id,
-			ts: new Date(),
-			t: type,
-			name,
-			usernames: [],
-			msgs: 0,
-			usersCount: 0,
-			_updatedAt: new Date(),
-			u: {
-				_id: 'rocket.cat',
-				username: 'rocket.cat',
-				name: 'Rocket.Cat',
+		extraData?: Partial<IRoom>,
+	): Promise<UpdateResult> {
+		return this.updateOne(
+			{ _id },
+			{
+				$setOnInsert: {
+					ts: new Date(),
+					t: type,
+					name,
+					usernames: [],
+					msgs: 0,
+					usersCount: 0,
+					u: {
+						_id: 'rocket.cat',
+						username: 'rocket.cat',
+						name: 'Rocket.Cat',
+					},
+					...extraData,
+				},
 			},
-		};
-
-		Object.assign(room, extraData);
-
-		await this.insertOne(room);
-		return room;
+			{ upsert: true },
+		);
 	}
 
 	async createWithFullRoomData(room: Omit<IRoom, '_id' | '_updatedAt'>): Promise<IRoom> {

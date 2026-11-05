@@ -1,6 +1,8 @@
-import { registerAutoupdatePublication } from './autoupdate';
+import { registerAutoupdatePublication, setClientVersion } from './autoupdate';
+import type { ClientVersion } from './autoupdate';
 import { Server } from '../Server';
 import { makeSession, makeSubscription, sentPackets } from '../__tests__/helpers';
+import { MeteorCollection } from '../lib/MeteorCollection';
 
 jest.mock('@rocket.chat/logger', () => ({
 	Logger: jest.fn().mockReturnValue({
@@ -25,6 +27,24 @@ describe('meteor_autoupdate_clientVersions publication', () => {
 				fields: { version: 'v1', versionRefreshable: 'r1', versionNonRefreshable: 'n1', versionHmr: 1 },
 			},
 			{ msg: 'ready', subs: ['test-id'] },
+		]);
+	});
+});
+
+describe('setClientVersion', () => {
+	it('stores a version by architecture without repeating the id in the record', () => {
+		const collection = new MeteorCollection<ClientVersion>();
+
+		setClientVersion(collection, {
+			_id: 'web.browser',
+			version: 'v2',
+			versionRefreshable: 'r2',
+			versionNonRefreshable: 'n2',
+			versionHmr: 2,
+		});
+
+		expect([...collection.entries()]).toEqual([
+			['web.browser', { version: 'v2', versionRefreshable: 'r2', versionNonRefreshable: 'n2', versionHmr: 2 }],
 		]);
 	});
 });

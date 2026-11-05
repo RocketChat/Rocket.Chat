@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react';
 
 import { ChatContext } from '../../../client/views/room/contexts/ChatContext';
-import { createFakeSubscription } from '../data';
 
 export type FakeChatProviderProps = {
 	children?: ReactNode;
@@ -12,11 +11,7 @@ const FakeChatProvider = ({ children }: FakeChatProviderProps) => {
 		<ChatContext.Provider
 			value={
 				{
-					data: {
-						getSubscriptionFromMessage: async () => {
-							return createFakeSubscription();
-						},
-					},
+					data: {},
 				} as any
 			}
 		>

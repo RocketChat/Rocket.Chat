@@ -1,9 +1,8 @@
 import { Imports } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { ProgressStep } from '../../../../lib/importer/ImporterProgressStep';
 
-Meteor.startup(async () => {
+export const invalidateStaleImports = async () => {
 	const lastOperation = await Imports.findLastImport();
 
 	// If the operation is still on "ready to start" state, we don't need to invalidate it.
@@ -13,4 +12,4 @@ Meteor.startup(async () => {
 	}
 
 	await Imports.invalidateAllOperations();
-});
+};

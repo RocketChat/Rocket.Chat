@@ -1,10 +1,10 @@
 import type { Document, Filter, FilterOperators, Sort, UpdateFilter } from 'mongodb';
 
-import { getBSONType } from './bson';
-import { assertHasValidFieldNames, assertIsValidFieldName, clone, isIndexable, isNumericKey, isPlainObject, equals } from './common';
-import { createPredicateFromFilter } from './filter';
-import { createComparatorFromSort } from './sort';
-import { BSONType, type ArrayIndices } from './types';
+import { getBSONType } from './bson.js';
+import { assertHasValidFieldNames, assertIsValidFieldName, clone, isIndexable, isNumericKey, isPlainObject, equals } from './common.js';
+import { createPredicateFromFilter } from './filter.js';
+import { createComparatorFromSort } from './sort.js';
+import { BSONType, type ArrayIndices } from './types.js';
 
 const isUpdateModifiers = <T>(mod: UpdateFilter<T>): boolean => {
 	let isModify = false;

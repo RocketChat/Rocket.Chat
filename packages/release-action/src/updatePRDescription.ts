@@ -5,7 +5,7 @@ import * as core from '@actions/core';
 import { exec } from '@actions/exec';
 import * as github from '@actions/github';
 
-import { setupOctokit } from './setupOctokit';
+import { setupOctokit } from './setupOctokit.js';
 import {
 	MAX_PULL_REQUEST_BODY_LENGTH,
 	createTempReleaseNotes,
@@ -13,7 +13,7 @@ import {
 	getEngineVersionsMd,
 	isPreRelease,
 	readPackageJson,
-} from './utils';
+} from './utils.js';
 
 export async function updatePRDescription({
 	githubToken,

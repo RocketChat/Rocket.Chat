@@ -1,5 +1,5 @@
-export type { ArrayIndices } from './types';
-export { getBSONType } from './bson';
-export { createPredicateFromFilter, createDocumentMatcherFromFilter } from './filter';
-export { createComparatorFromSort } from './sort';
-export { createTransformFromUpdateFilter, createUpsertDocument } from './updateFilter';
+export type { ArrayIndices } from './types.js';
+export { getBSONType } from './bson.js';
+export { createPredicateFromFilter, createDocumentMatcherFromFilter } from './filter.js';
+export { createComparatorFromSort } from './sort.js';
+export { createTransformFromUpdateFilter, createUpsertDocument } from './updateFilter.js';

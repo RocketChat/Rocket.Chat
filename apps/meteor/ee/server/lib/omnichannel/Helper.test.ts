@@ -12,7 +12,6 @@ const usersModelMock = {
 const departmentsMock = { findOneById: sinon.stub() };
 
 const mocks = {
-	'meteor/meteor': { Meteor: { startup: sinon.stub() } },
 	'./QueueInactivityMonitor': { stop: sinon.stub() },
 	'../../../../server/lib/omnichannel/settings': { getInquirySortMechanismSetting: sinon.stub() },
 	'../../../../lib/livechat/inquiries': { getOmniChatSortQuery: sinon.stub() },
