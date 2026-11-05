@@ -1,10 +1,10 @@
 import type { FieldLabel as FieldLabelComponent } from '@rocket.chat/fuselage';
 import { type ComponentPropsWithoutRef } from 'react';
 
-import { useFieldFieldType } from '../FieldContext';
-import HiddenLabel from './HiddenLabel';
-import LabelFor from './LabelFor';
-import ReferencedLabel from './ReferencedLabel';
+import { useFieldFieldType } from '../FieldContext.js';
+import HiddenLabel from './HiddenLabel.js';
+import LabelFor from './LabelFor.js';
+import ReferencedLabel from './ReferencedLabel.js';
 
 export type FieldLabelProps = ComponentPropsWithoutRef<typeof FieldLabelComponent>;
 
