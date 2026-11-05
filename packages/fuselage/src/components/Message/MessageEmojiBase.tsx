@@ -5,8 +5,8 @@ export type MessageEmojiBaseProps = {
 	image?: string;
 } & HTMLAttributes<HTMLSpanElement>;
 
-const MessageEmojiBase = ({ name, image, className, ...props }: MessageEmojiBaseProps) => (
-	<span className={`${className || ''} ${name}`} style={image?.length ? { backgroundImage: image } : undefined} {...props} />
+const MessageEmojiBase = ({ name, image, className, style, ...props }: MessageEmojiBaseProps) => (
+	<span className={`${className || ''} ${name}`} style={image?.length ? { ...style, backgroundImage: image } : style} {...props} />
 );
 
 export default MessageEmojiBase;
