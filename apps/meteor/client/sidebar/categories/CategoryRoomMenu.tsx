@@ -1,13 +1,13 @@
 import { Menu, MenuItem, MenuSection, MenuSubmenuTrigger } from '@rocket.chat/fuselage';
-import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { GenericMenuItem, useHandleMenuAction } from '@rocket.chat/ui-client';
 import { useUserSubscription } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useCategoryMenuItems } from './hooks/useCategoryMenuItems';
+import type { RoomMenuSection } from '../../hooks/useRoomMenuActions';
 
-type Section = { title: string; items: GenericMenuItemProps[] };
+type Section = RoomMenuSection;
 
 type CategoryRoomMenuProps = {
 	rid: string;

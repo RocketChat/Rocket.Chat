@@ -291,11 +291,14 @@ flow (`useHideRoomAction`, closing the subscription) is no longer reachable from
 The `Archived` group listed last (`SIDEBAR_ARCHIVED_GROUP_KEY`, licensed workspaces only) holds the archived rooms:
 its header always wears the empty-group look and no badge, its rows are stripped of their unread counters, it has no
 chip, is never moved or moved past, and starts collapsed, so the collapsed-groups list records it when it is
-*expanded*. Its menu (`ArchivedGroupMenu.tsx`) has one item, **Mute archived rooms** or **Unmute archived rooms** (`useMuteArchivedRoomsItem.tsx`):
-muting sets `disableNotifications` and `hideUnreadStatus` on every archived room through `rooms.saveNotification`,
-five at a time, so an archived room sends no notification and counts as unread nowhere, not even in the tab title
-(`useUnread` already skips `hideUnreadStatus`); unmuting is offered once every archived room is muted and clears
-both. Each first says how many rooms it changes, in a modal without an icon. A room whose notifications are off, archived or not, shows a crossed bell after its title in the sidebar and the sidepanel (`RoomListItemTitleIcon.tsx`, where the draft pencil also lives).
+*expanded*. Its menu (`ArchivedGroupMenu.tsx`) has a single **Notifications** item with a toggle
+(`useArchivedRoomsNotificationsItem.tsx`), on while any archived room still sends notifications: turning it off sets
+`disableNotifications` on those rooms through `rooms.saveNotification`, five at a time, and once every archived room
+is off, turning it on wakes them all. Each first says how many rooms it changes, in a modal without an icon ("Turn
+off notifications" / "Turn on notifications"). A room whose notifications are off, archived or not, shows a crossed bell
+after its title in the sidebar and the sidepanel (`RoomListItemTitleIcon.tsx`, where the draft pencil also lives).
+The sidebar room menu (`useRoomMenuActions.tsx`) gains a **Notifications** item with a toggle, on while the room
+sends notifications; clicking it flips `disableNotifications` for that room, as the sidepanel's switch does.
 
 **Mark read** (`useMarkGroupReadItem.tsx`) marks every unread room of the group as read, threads included, through
 `POST /v1/subscriptions.read` with `readThreads: true`, five rooms at a time. It is disabled while the group has
