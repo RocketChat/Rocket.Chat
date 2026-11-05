@@ -1,5 +1,5 @@
 import type { JoinableVideoConference } from '@rocket.chat/core-typings';
-import { SwitchCallModal } from '@rocket.chat/ui-conference';
+import SwitchCallModal from '@rocket.chat/ui-conference/dist/components/SwitchCallModal';
 import { useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
 import { useVideoConfJoinCall } from '@rocket.chat/ui-video-conf';
 import { useCallback, useRef } from 'react';

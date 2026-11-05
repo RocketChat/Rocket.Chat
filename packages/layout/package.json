@@ -1,6 +1,7 @@
 {
 	"name": "@rocket.chat/layout",
 	"version": "1.0.0-rc.1",
+	"sideEffects": false,
 	"description": "Shared Application Layout Components",
 	"homepage": "https://github.com/RocketChat/Rocket.Chat#readme",
 	"bugs": {

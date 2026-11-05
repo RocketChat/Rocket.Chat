@@ -1,6 +1,7 @@
 {
 	"name": "@rocket.chat/ui-livekit",
 	"version": "1.0.0-rc.1",
+	"sideEffects": false,
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",

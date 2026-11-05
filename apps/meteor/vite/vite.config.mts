@@ -1,7 +1,7 @@
 import { execSync } from 'node:child_process';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
-import { dirname, join, resolve } from 'node:path';
+import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import react from '@vitejs/plugin-react';
@@ -367,6 +367,8 @@ export default defineConfig({
 		// Same default as the Meteor server this replaces in dev.
 		host: process.env.BIND_IP || '0.0.0.0',
 		strictPort: true,
+		// The first page load finds what every page loads already compiled.
+		warmup: { clientFiles: ['./entry.ts', ...[...bootModules].map((file) => relative(here, file))] },
 		proxy: {
 			...Object.fromEntries(serverRoutes.map((route) => [route, proxyTo()])),
 			'/websocket': proxyTo({ ws: true }),

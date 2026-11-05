@@ -1,6 +1,6 @@
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
-import { useMediaCallAction } from '@rocket.chat/ui-voip';
+import { useMediaCallAction } from '@rocket.chat/ui-voip/dist/hooks/useMediaCallAction';
 import { useCallback, type HTMLAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
 

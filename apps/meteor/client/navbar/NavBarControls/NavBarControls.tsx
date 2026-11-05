@@ -1,7 +1,8 @@
 import { NavBarSection, NavBarGroup } from '@rocket.chat/fuselage';
-import { OngoingCallsDropdown, useOngoingCalls } from '@rocket.chat/ui-conference';
+import { useOngoingCalls } from '@rocket.chat/ui-conference/dist/context/OngoingCallsContext';
+import OngoingCallsDropdown from '@rocket.chat/ui-conference/dist/views/OngoingCallsDropdown';
 import { useUser, useLayout } from '@rocket.chat/ui-contexts';
-import { useMediaCallAction } from '@rocket.chat/ui-voip';
+import { useMediaCallAction } from '@rocket.chat/ui-voip/dist/hooks/useMediaCallAction';
 import { useTranslation } from 'react-i18next';
 
 import NavBarControlsWithData from './NavBarControlsWithData';

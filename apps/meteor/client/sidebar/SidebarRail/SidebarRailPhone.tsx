@@ -1,7 +1,7 @@
 import { NavBarItem } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useCurrentRoutePath, useRouter } from '@rocket.chat/ui-contexts';
-import { useMediaCallAction } from '@rocket.chat/ui-voip';
+import { useMediaCallAction } from '@rocket.chat/ui-voip/dist/hooks/useMediaCallAction';
 import type { HTMLAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
 
