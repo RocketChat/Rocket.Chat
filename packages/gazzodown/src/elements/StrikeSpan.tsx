@@ -1,13 +1,13 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
 
-import BoldSpan from './BoldSpan';
-import ItalicSpan from './ItalicSpan';
-import LinkSpan from './LinkSpan';
-import PlainSpan from './PlainSpan';
-import CodeElement from '../code/CodeElement';
-import EmojiElement from '../emoji/EmojiElement';
-import ChannelMentionElement from '../mentions/ChannelMentionElement';
-import UserMentionElement from '../mentions/UserMentionElement';
+import BoldSpan from './BoldSpan.js';
+import ItalicSpan from './ItalicSpan.js';
+import LinkSpan from './LinkSpan.js';
+import PlainSpan from './PlainSpan.js';
+import CodeElement from '../code/CodeElement.js';
+import EmojiElement from '../emoji/EmojiElement.js';
+import ChannelMentionElement from '../mentions/ChannelMentionElement.js';
+import UserMentionElement from '../mentions/UserMentionElement.js';
 
 type MessageBlock =
 	| MessageParser.Timestamp

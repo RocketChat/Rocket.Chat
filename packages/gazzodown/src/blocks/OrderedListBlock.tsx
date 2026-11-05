@@ -1,7 +1,7 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
 
-import NestedListsBlock from './NestedListsBlock';
-import InlineElements from '../elements/InlineElements';
+import NestedListsBlock from './NestedListsBlock.js';
+import InlineElements from '../elements/InlineElements.js';
 
 export type OrderedListBlockProps = {
 	items: MessageParser.ListItem[];

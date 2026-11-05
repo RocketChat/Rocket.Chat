@@ -1,7 +1,7 @@
 import { render, screen, act } from '@testing-library/react';
 
-import TimestampWrapper from './index';
-import { MarkupInteractionContext } from '../../MarkupInteractionContext';
+import TimestampWrapper from './index.js';
+import { MarkupInteractionContext } from '../../MarkupInteractionContext.js';
 
 beforeEach(() => {
 	jest.useFakeTimers();
