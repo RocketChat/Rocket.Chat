@@ -40,7 +40,6 @@ import {
 	AbacInvalidAttributeValuesError,
 	AbacUnsupportedObjectTypeError,
 	AbacUnsupportedOperationError,
-	OnlyCompliantCanBeAddedToRoomError,
 	PdpUnavailableError,
 	PdpHealthCheckError,
 	AbacContractError,
@@ -692,10 +691,6 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	private async assertPdpPermitsCreator(attributes: IAbacAttributeDefinition[], actor: AbacActor): Promise<void> {
-		if (!actor.username) {
-			throw new OnlyCompliantCanBeAddedToRoomError();
-		}
-
 		if (!this.pdp) {
 			throw new PdpUnavailableError();
 		}
