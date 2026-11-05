@@ -1,1 +1,1 @@
-export { default, type CreateFirstMemberPageProps } from './CreateFirstMemberPage';
+export { default, type CreateFirstMemberPageProps } from './CreateFirstMemberPage.js';
