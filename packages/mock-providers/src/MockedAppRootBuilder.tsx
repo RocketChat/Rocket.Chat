@@ -59,7 +59,7 @@ import type { ContextType, JSXElementConstructor, ReactNode } from 'react';
 import { useEffect, useReducer, useSyncExternalStore } from 'react';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
 
-import { MockedDeviceContext } from './MockedDeviceContext';
+import { MockedDeviceContext } from './MockedDeviceContext.js';
 
 type Mutable<T> = {
 	-readonly [P in keyof T]: T[P];
