@@ -1,4 +1,4 @@
-import { MeteorError } from '@rocket.chat/core-services';
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { Meteor } from 'meteor/meteor';
 
 import type { SaveUserData } from './saveUser';
@@ -39,7 +39,7 @@ export async function sendUserEmail(subject: string, html: string, userData: Sav
 	} catch (error) {
 		const errorMessage = typeof error === 'object' && error && 'message' in error ? error.message : '';
 
-		throw new MeteorError('error-email-send-failed', `Error trying to send email: ${errorMessage}`, {
+		throw new ClientSafeError('error-email-send-failed', `Error trying to send email: ${errorMessage}`, {
 			function: 'RocketChat.saveUser',
 			message: errorMessage,
 		});

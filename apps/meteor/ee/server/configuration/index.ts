@@ -1,5 +1,6 @@
 import './contact-verification';
 import './ldap';
+import './ldapCore';
 import './oauth';
 import './outlookCalendar';
 import './saml';

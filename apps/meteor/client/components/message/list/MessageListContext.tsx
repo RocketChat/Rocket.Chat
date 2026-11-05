@@ -1,10 +1,10 @@
 import type { IMessage } from '@rocket.chat/core-typings';
+import type { useFormatTime, useFormatDateAndTime } from '@rocket.chat/ui-client';
 import type { KeyboardEvent, MouseEvent } from 'react';
 import { createContext, useContext } from 'react';
 
+import { normalizeUsername } from '../../../../lib/utils/normalizeUsername';
 import type { useFormatDate } from '../../../hooks/useFormatDate';
-import type { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
-import type { useFormatTime } from '../../../hooks/useFormatTime';
 
 export type MessageListContextValue = {
 	autoTranslate: {
@@ -20,7 +20,7 @@ export type MessageListContextValue = {
 	useOpenEmojiPicker: (message: IMessage) => (event: MouseEvent | KeyboardEvent) => void;
 	showRoles: boolean;
 	showRealName: boolean;
-	showUsername: boolean;
+	getAuthorUsername: (author: Pick<IMessage['u'], 'name' | 'username'>) => { normalizedUsername: string; showUsername: boolean };
 	highlights?: {
 		highlight: string;
 		regex: RegExp;
@@ -60,7 +60,7 @@ export const messageListContextDefaultValue: MessageListContextValue = {
 	useOpenEmojiPicker: () => (): void => undefined,
 	showRoles: false,
 	showRealName: false,
-	showUsername: false,
+	getAuthorUsername: ({ username }) => ({ normalizedUsername: normalizeUsername(username), showUsername: false }),
 	showColors: false,
 	username: undefined,
 	apiEmbedEnabled: false,
@@ -86,7 +86,8 @@ export const useMessageDateFormatter: MessageListContextValue['useMessageDateFor
 	useContext(MessageListContext).useMessageDateFormatter(...args);
 export const useMessageListShowRoles = (): MessageListContextValue['showRoles'] => useContext(MessageListContext).showRoles;
 export const useMessageListShowRealName = (): MessageListContextValue['showRealName'] => useContext(MessageListContext).showRealName;
-export const useMessageListShowUsername = (): MessageListContextValue['showUsername'] => useContext(MessageListContext).showUsername;
+export const useMessageListAuthorUsername: MessageListContextValue['getAuthorUsername'] = (author) =>
+	useContext(MessageListContext).getAuthorUsername(author);
 export const useMessageListHighlights = (): MessageListContextValue['highlights'] => useContext(MessageListContext).highlights;
 export const useMessageListJumpToMessageParam = (): MessageListContextValue['jumpToMessageParam'] =>
 	useContext(MessageListContext).jumpToMessageParam;

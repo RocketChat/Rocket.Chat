@@ -10,8 +10,9 @@
 	],
 	"scripts": {
 		"build": "rm -rf dist && tsc -p tsconfig.json",
-		"lint": "eslint .",
-		"lint:fix": "eslint --fix ."
+		"lint": "yarn run -T oxlint",
+		"lint:fix": "yarn run -T oxlint --fix",
+		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
 		"cron": "~1.8.2",
@@ -23,8 +24,7 @@
 	},
 	"devDependencies": {
 		"@types/debug": "^4.1.13",
-		"eslint": "~9.39.5",
-		"typescript": "~5.9.3"
+		"typescript": "~7.0.2"
 	},
 	"volta": {
 		"extends": "../../package.json"

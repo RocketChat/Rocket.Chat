@@ -1,4 +1,4 @@
-import { OptionColumn, OptionContent } from '@rocket.chat/fuselage';
+import { ItemContent, ItemMedia, ItemTitle } from '@rocket.chat/fuselage';
 
 import Emoji from '../../../components/Emoji';
 
@@ -9,10 +9,12 @@ export type ComposerBoxPopupEmojiProps = {
 function ComposerBoxPopupEmoji({ _id }: ComposerBoxPopupEmojiProps) {
 	return (
 		<>
-			<OptionColumn>
+			<ItemMedia aria-hidden>
 				<Emoji emojiHandle={_id} />
-			</OptionColumn>
-			<OptionContent>{_id}</OptionContent>
+			</ItemMedia>
+			<ItemContent>
+				<ItemTitle>{_id}</ItemTitle>
+			</ItemContent>
 		</>
 	);
 }

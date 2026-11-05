@@ -1,5 +1,6 @@
 import type { ILogItem } from '@rocket.chat/core-typings';
 import { Box, Divider } from '@rocket.chat/fuselage';
+import { useFormatDateAndTime } from '@rocket.chat/ui-client';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -7,7 +8,6 @@ import AppLogsItemEntry from './AppLogsItemEntry';
 import { AppsLogItemField } from './AppLogsItemField';
 import { CollapseButton } from './Components/CollapseButton';
 import { CollapsibleRegion } from './Components/CollapsibleRegion';
-import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 
 export type AppLogsItemProps = {
 	regionId: string;
@@ -47,7 +47,7 @@ const AppLogsItem = ({ regionId, expanded, onExpand, ...props }: AppLogsItemProp
 				<Box ref={anchorRef}>{title}</Box>
 			</CollapseButton>
 
-			<CollapsibleRegion expanded={expanded} id={regionId} paddingBlockStart={expanded ? 16 : '0px'} marginInlineStart={36}>
+			<CollapsibleRegion expanded={expanded} id={regionId} paddingBlockStart={expanded ? 'x16' : '0px'} marginInlineStart='x32'>
 				{props.instanceId && <AppsLogItemField marginBlockStart={0} field={props.instanceId} label='Instance' />}
 				{props.totalTime !== undefined && <AppsLogItemField field={`${props.totalTime}ms`} label={t('Total_time')} />}
 				{props.startTime && <AppsLogItemField field={formatDateAndTime(Date.parse(props.startTime))} label={t('Time')} />}
@@ -58,7 +58,7 @@ const AppLogsItem = ({ regionId, expanded, onExpand, ...props }: AppLogsItemProp
 				<AppLogsItemEntry fullLog={props} />
 			</CollapsibleRegion>
 			<Box is='dt'>
-				<Divider marginBlock={0} />
+				<Divider flush />
 			</Box>
 		</>
 	);

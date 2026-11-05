@@ -18,7 +18,7 @@ const MessageContextFooter = ({ userId, deleted }: MessageContextFooterProps) =>
 	return (
 		<ButtonGroup stretch>
 			<Button onClick={dismissUserAction.onClick}>{t('Moderation_Dismiss_all_reports')}</Button>
-			<Button onClick={deleteMessagesAction.onClick} secondary danger>
+			<Button onClick={deleteMessagesAction.onClick} variant='secondary-danger'>
 				{t('Moderation_Delete_all_messages')}
 			</Button>
 

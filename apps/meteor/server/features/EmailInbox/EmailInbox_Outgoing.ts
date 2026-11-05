@@ -77,7 +77,7 @@ const sendSuccessReplyMessage = async (options: { room: IOmnichannelRoom; msgId:
 	return sendMessage(user, message, options.room);
 };
 
-async function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): Promise<{ messageId: string }> {
+async function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): Promise<{ messageId: string } | undefined> {
 	return inbox.smtp
 		.sendMail({
 			from: inbox.config.senderInfo
@@ -96,10 +96,11 @@ async function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): Promi
 			logger.error({ msg: 'Error sending Email reply', err });
 
 			if (!options?.msgId) {
-				return;
+				return undefined;
 			}
 
 			await sendErrorReplyMessage(err.message, options);
+			return undefined;
 		});
 }
 
@@ -163,7 +164,7 @@ slashCommands.add({
 				sender: message.u.username,
 				rid: message.rid,
 			},
-		).then((info) => LivechatRooms.updateEmailThreadByRoomId(room._id, info.messageId));
+		).then((info) => info && LivechatRooms.updateEmailThreadByRoomId(room._id, info.messageId));
 
 		await Messages.updateOne(
 			{ _id: message._id },
@@ -285,7 +286,7 @@ callbacks.add(
 				sender: message.u.username,
 				rid: room._id,
 			},
-		).then((info) => LivechatRooms.updateEmailThreadByRoomId(room._id, info.messageId));
+		).then((info) => info && LivechatRooms.updateEmailThreadByRoomId(room._id, info.messageId));
 
 		message.msg = match.groups.text;
 

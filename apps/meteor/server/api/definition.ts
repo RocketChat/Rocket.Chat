@@ -1,6 +1,7 @@
 import type { IncomingMessage } from 'node:http';
 
 import type { IUser, LicenseModule, RequiredField } from '@rocket.chat/core-typings';
+import type { OpenAPIDocumentation } from '@rocket.chat/http-router';
 import type { Logger } from '@rocket.chat/logger';
 import type { Method, MethodOf, OperationParams, OperationResult, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
 import type { ValidateFunction } from 'ajv';
@@ -49,12 +50,12 @@ export type UnauthorizedResult<T> = {
 	};
 };
 
-export type ForbiddenResult<T> = {
+export type ForbiddenResult = {
 	statusCode: 403;
 	body: {
 		success: false;
-		// TODO: MAJOR remove 'unauthorized'
-		error: T | 'forbidden' | 'unauthorized';
+		error: string;
+		errorType: 'error-forbidden';
 	};
 };
 
@@ -119,8 +120,6 @@ export type SharedOptions<TMethod extends string> = (
 			userWithoutUsername?: boolean;
 			forceTwoFactorAuthenticationForNonEnterprise?: boolean;
 			rateLimiterOptions?: RateLimiterOptions | boolean;
-			queryOperations?: string[];
-			queryFields?: string[];
 	  }
 	| {
 			permissionsRequired?:
@@ -134,9 +133,6 @@ export type SharedOptions<TMethod extends string> = (
 			twoFactorRequired: true;
 			twoFactorOptions?: ITwoFactorOptions;
 			rateLimiterOptions?: RateLimiterOptions | boolean;
-
-			queryOperations?: string[];
-			queryFields?: string[];
 	  }
 ) & {
 	/**
@@ -187,21 +183,11 @@ export type ActionThis<TMethod extends Method, TPathPattern extends PathPattern,
 	readonly request: Request;
 	readonly incoming: IncomingMessage;
 
-	readonly queryOperations: TOptions extends { queryOperations: infer T } ? T : never;
-	readonly queryFields: TOptions extends { queryFields: infer T } ? T : never;
-
 	readonly twoFactorChecked: boolean;
 
 	parseJsonQuery(): Promise<{
 		sort: Record<string, 1 | -1>;
-		/**
-		 * @deprecated To access "fields" parameter, use ALLOW_UNSAFE_QUERY_AND_FIELDS_API_PARAMS environment variable.
-		 */
 		fields: Record<string, 0 | 1>;
-		/**
-		 * @deprecated To access "query" parameter, use ALLOW_UNSAFE_QUERY_AND_FIELDS_API_PARAMS environment variable.
-		 */
-		query: Record<string, unknown>;
 	}>;
 
 	readonly connection: {
@@ -290,7 +276,9 @@ export type TypedOptions = {
 	tags?: string[];
 	typed?: boolean;
 	license?: LicenseModule[];
-} & SharedOptions<'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'>;
+	licenseRequired?: boolean;
+} & OpenAPIDocumentation &
+	SharedOptions<'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'>;
 
 export type TypedThis<TOptions extends TypedOptions, TPath extends string = ''> = {
 	readonly logger: Logger;
@@ -300,22 +288,13 @@ export type TypedThis<TOptions extends TypedOptions, TPath extends string = ''> 
 	urlParams: UrlParams<TPath> extends Record<any, any> ? UrlParams<TPath> : never;
 	parseJsonQuery(): Promise<{
 		sort: Record<string, 1 | -1>;
-		/**
-		 * @deprecated To access "fields" parameter, use ALLOW_UNSAFE_QUERY_AND_FIELDS_API_PARAMS environment variable.
-		 */
 		fields: Record<string, 0 | 1>;
-		/**
-		 * @deprecated To access "query" parameter, use ALLOW_UNSAFE_QUERY_AND_FIELDS_API_PARAMS environment variable.
-		 */
-		query: Record<string, unknown>;
 	}>;
 	bodyParams: TOptions['body'] extends ValidateFunction<infer Body> ? Body : never;
 	request: Request;
 	requestIp?: string;
 	route: string;
 	response: Response;
-	readonly queryOperations: TOptions extends { queryOperations: infer T } ? T : never;
-	readonly queryFields: TOptions extends { queryFields: infer T } ? T : never;
 	readonly connection: {
 		token: string;
 		id: string;
@@ -354,7 +333,7 @@ type Results<TResponse extends TypedOptions['response']> = {
 				: K extends 401
 					? UnauthorizedResult<InferNon200Result<TResponse[401]>>
 					: K extends 403
-						? ForbiddenResult<InferNon200Result<TResponse[403]>>
+						? ForbiddenResult
 						: K extends 404
 							? NotFoundResult<InferNon200Result<TResponse[404]>>
 							: K extends ErrorStatusCodes

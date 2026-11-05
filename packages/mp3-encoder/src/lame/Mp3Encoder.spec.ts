@@ -23,12 +23,10 @@ test('mono', async () => {
 	const hash = createHash('sha1');
 	hash.setEncoding('hex');
 
-	let remainingSamples = samples.length;
-
 	const encoder = new Mp3Encoder();
 	const maxSamples = 1152;
 
-	for (let i = 0; remainingSamples >= maxSamples; i += maxSamples) {
+	for (let i = 0; i < samples.length; i += maxSamples) {
 		const left = samples.subarray(i, i + maxSamples);
 		const right = samples.subarray(i, i + maxSamples);
 
@@ -36,7 +34,6 @@ test('mono', async () => {
 		if (mp3buf.length > 0) {
 			hash.write(Buffer.from(mp3buf));
 		}
-		remainingSamples -= maxSamples;
 	}
 
 	const mp3buf = encoder.flush();
@@ -46,7 +43,7 @@ test('mono', async () => {
 
 	hash.end();
 
-	expect(hash.read()).toBe('ca9292fc5fea3ba4cb07c4a0ba60cf0c267b783b');
+	expect(hash.read()).toBe('faea675a21a17077fa314f0112459d4f8702598f');
 });
 
 test('stereo', async () => {
@@ -63,12 +60,10 @@ test('stereo', async () => {
 	const hash = createHash('sha1');
 	hash.setEncoding('hex');
 
-	let remainingSamples = leftSamples.length;
-
 	const encoder = new Mp3Encoder(2, leftWaveHeader.sampleRate, 128);
 	const maxSamples = 1152;
 
-	for (let i = 0; remainingSamples >= maxSamples; i += maxSamples) {
+	for (let i = 0; i < leftSamples.length; i += maxSamples) {
 		const left = leftSamples.subarray(i, i + maxSamples);
 		const right = rightSamples.subarray(i, i + maxSamples);
 
@@ -76,7 +71,6 @@ test('stereo', async () => {
 		if (mp3buf.length > 0) {
 			hash.write(Buffer.from(mp3buf));
 		}
-		remainingSamples -= maxSamples;
 	}
 
 	const mp3buf = encoder.flush();
@@ -86,5 +80,26 @@ test('stereo', async () => {
 
 	hash.end();
 
-	expect(hash.read()).toBe('ab6daeb1c563389cafacc0ec4ed963ee8ae8e8d7');
+	expect(hash.read()).toBe('239ee8846bd09d42ca200fa308a18a69da6ad8f6');
+});
+
+test('encodes the same stream regardless of how the samples are chunked', () => {
+	const waveHeader = WavHeader.readHeader(new DataView(leftSampleBuffer));
+	const samples = new Int16Array(leftSampleBuffer, waveHeader.dataOffset, waveHeader.dataLen / 2);
+
+	const encodeInChunks = (chunkSize: number) => {
+		const encoder = new Mp3Encoder();
+		const hash = createHash('sha1');
+		for (let i = 0; i < samples.length; i += chunkSize) {
+			hash.update(encoder.encodeBuffer(samples.subarray(i, i + chunkSize)));
+		}
+		hash.update(encoder.flush());
+		return hash.digest('hex');
+	};
+
+	const whole = encodeInChunks(samples.length);
+
+	expect(encodeInChunks(1152)).toBe(whole);
+	expect(encodeInChunks(1000)).toBe(whole);
+	expect(encodeInChunks(4097)).toBe(whole);
 });

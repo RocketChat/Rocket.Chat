@@ -1,6 +1,5 @@
+import { GenericNoResults } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
-
-import GenericNoResults from '../../components/GenericNoResults';
 
 export type NavBarAISearchNoResultsProps = {
 	suggestAISearch: boolean;

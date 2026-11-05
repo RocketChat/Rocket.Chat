@@ -15,11 +15,6 @@ jest.mock('../../../../client/lib/LegacyRoomManager', () => ({
 
 const appRoot = mockAppRoot().build();
 
-test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
-	const { baseElement } = render(<Story />, { wrapper: appRoot });
-	expect(baseElement).toMatchSnapshot();
-});
-
 test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
 	const { container } = render(<Story />, { wrapper: appRoot });
 

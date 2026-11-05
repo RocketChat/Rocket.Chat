@@ -189,7 +189,7 @@ const ModalBlock = ({ view, errors, onSubmit, onClose, onCancel }: ModalBlockPar
 					<ModalFooter>
 						<ModalFooterControllers>
 							{view.close && (
-								<Button danger={view.close.style === 'danger'} onClick={onCancel}>
+								<Button variant={view.close.style === 'danger' ? 'danger' : undefined} onClick={onCancel}>
 									{modalParser.renderTextObject(view.close.text, 0)}
 								</Button>
 							)}

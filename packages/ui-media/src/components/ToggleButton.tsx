@@ -1,0 +1,88 @@
+import { Icon, IconButton, type IconButtonSize } from '@rocket.chat/fuselage';
+import type { Keys } from '@rocket.chat/icons';
+import type { ComponentProps } from 'react';
+
+import { getButtonVariant } from './getButtonVariant';
+
+export type ToggleButtonProps = {
+	label: string; // label should not change due to a11y constraints
+	icons: [defaultIcon: Keys, pressedIcon: Keys];
+	titles: [defaultTitle: string, pressedTitle: string]; // Titles might change though
+	disabled?: boolean;
+	pressed?: boolean;
+	/**
+	 * Whether *pressed* is the state worth shouting about — a muted mic, a dark camera — in which case the whole
+	 * button goes `secondary-danger` rather than only its glyph turning red.
+	 *
+	 * Opt-in, because for most of these toggles pressed means *active*: a shared screen or a raised hand is not a
+	 * problem, and colouring it as one would read as an error.
+	 */
+	dangerWhenPressed?: boolean;
+	/**
+	 * Draws the pressed glyph blue rather than red, for a toggle whose pressed state is something the user is doing —
+	 * sharing their screen, raising their hand — rather than something they have switched off.
+	 */
+	info?: boolean;
+	/** Paints the pressed glyph red, unless `info` or `dangerWhenPressed` says otherwise. */
+	danger?: boolean;
+	/** Fills the button; without it only the glyph shows. */
+	secondary?: boolean;
+	/** `large` is the size used by the conference UI. The widget keeps its original size by default. */
+	size?: 'tiny' | 'medium' | 'large';
+	onToggle?: () => void;
+} & Omit<
+	ComponentProps<typeof IconButton>,
+	'icon' | 'title' | 'aria-label' | 'disabled' | 'onClick' | 'variant' | 'primary' | 'warning' | 'success' | keyof IconButtonSize
+>;
+
+const pressedGlyphStatus = ({
+	pressed,
+	dangerWhenPressed,
+	danger,
+	info,
+}: Pick<ToggleButtonProps, 'pressed' | 'dangerWhenPressed' | 'danger' | 'info'>): 'info' | 'danger' | undefined => {
+	if (!pressed || dangerWhenPressed) {
+		return undefined;
+	}
+
+	if (info) {
+		return 'info';
+	}
+
+	return danger ? 'danger' : undefined;
+};
+
+const ToggleButton = ({
+	disabled,
+	label,
+	pressed,
+	icons,
+	titles,
+	onToggle,
+	danger = true,
+	info = false,
+	secondary = true,
+	size = 'medium',
+	dangerWhenPressed = false,
+	...props
+}: ToggleButtonProps) => {
+	const glyphStatus = pressedGlyphStatus({ pressed, dangerWhenPressed, danger, info });
+	const glyphSize = size === 'large' ? 20 : 16;
+	const glyphName = icons[pressed ? 1 : 0];
+
+	return (
+		<IconButton
+			{...props}
+			label={label}
+			size={size}
+			variant={getButtonVariant({ secondary, danger: dangerWhenPressed && pressed })}
+			icon={<Icon size={glyphSize} color={glyphStatus} name={glyphName} />}
+			title={titles[pressed ? 1 : 0]}
+			aria-label={label}
+			disabled={disabled}
+			onClick={onToggle}
+		/>
+	);
+};
+
+export default ToggleButton;

@@ -1,9 +1,9 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { LivechatDepartmentDTO, ILivechatDepartment, ILivechatDepartmentAgents, ILivechatAgent } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatDepartmentAgents, LivechatVisitors, LivechatRooms, Users } from '@rocket.chat/models';
 import { isDepartmentCreationAvailable } from '@rocket.chat/omni-core';
 import { check, Match } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 
 import { updateDepartmentAgents } from './Helper';
 import { afterDepartmentArchived, afterDepartmentUnarchived } from './hooks';
@@ -28,7 +28,7 @@ export async function saveDepartment(
 	departmentUnit?: { _id?: string },
 ) {
 	if (departmentUnit?._id !== undefined && typeof departmentUnit._id !== 'string') {
-		throw new Meteor.Error('error-invalid-department-unit', 'Invalid department unit id provided', {
+		throw new ClientSafeError('error-invalid-department-unit', 'Invalid department unit id provided', {
 			method: 'livechat:saveDepartment',
 		});
 	}
@@ -42,20 +42,20 @@ export async function saveDepartment(
 	if (departmentUnit && !departmentUnit._id && department && department.parentId) {
 		const isLastDepartmentInUnit = (await LivechatDepartment.countDepartmentsInUnit(department.parentId)) === 1;
 		if (isLastDepartmentInUnit) {
-			throw new Meteor.Error('error-unit-cant-be-empty', "The last department in a unit can't be removed", {
+			throw new ClientSafeError('error-unit-cant-be-empty', "The last department in a unit can't be removed", {
 				method: 'livechat:saveDepartment',
 			});
 		}
 	}
 
 	if (!department && !(await isDepartmentCreationAvailable())) {
-		throw new Meteor.Error('error-max-departments-number-reached', 'Maximum number of departments reached', {
+		throw new ClientSafeError('error-max-departments-number-reached', 'Maximum number of departments reached', {
 			method: 'livechat:saveDepartment',
 		});
 	}
 
 	if (department?.archived && departmentData.enabled) {
-		throw new Meteor.Error('error-archived-department-cant-be-enabled', 'Archived departments cant be enabled', {
+		throw new ClientSafeError('error-archived-department-cant-be-enabled', 'Archived departments cant be enabled', {
 			method: 'livechat:saveDepartment',
 		});
 	}
@@ -93,7 +93,7 @@ export async function saveDepartment(
 
 	const { requestTagBeforeClosingChat, chatClosingTags, fallbackForwardDepartment } = departmentData;
 	if (requestTagBeforeClosingChat && (!chatClosingTags || chatClosingTags.length === 0)) {
-		throw new Meteor.Error(
+		throw new ClientSafeError(
 			'error-validating-department-chat-closing-tags',
 			'At least one closing tag is required when the department requires tag(s) on closing conversations.',
 			{ method: 'livechat:saveDepartment' },
@@ -101,13 +101,13 @@ export async function saveDepartment(
 	}
 
 	if (_id && !department) {
-		throw new Meteor.Error('error-department-not-found', 'Department not found', {
+		throw new ClientSafeError('error-department-not-found', 'Department not found', {
 			method: 'livechat:saveDepartment',
 		});
 	}
 
 	if (fallbackForwardDepartment === _id) {
-		throw new Meteor.Error(
+		throw new ClientSafeError(
 			'error-fallback-department-circular',
 			'Cannot save department. Circular reference between fallback department and department',
 		);
@@ -118,7 +118,7 @@ export async function saveDepartment(
 			projection: { _id: 1 },
 		});
 		if (!fallbackDep) {
-			throw new Meteor.Error('error-fallback-department-not-found', 'Fallback department not found', {
+			throw new ClientSafeError('error-fallback-department-not-found', 'Fallback department not found', {
 				method: 'livechat:saveDepartment',
 			});
 		}
@@ -165,7 +165,7 @@ export async function unarchiveDepartment(_id: string) {
 	const department = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id'>>(_id, { projection: { _id: 1 } });
 
 	if (!department) {
-		throw new Meteor.Error('department-not-found');
+		throw new ClientSafeError('department-not-found');
 	}
 
 	const status = await LivechatDepartment.unarchiveDepartment(department._id);
@@ -186,7 +186,7 @@ export async function saveDepartmentAgents(
 ) {
 	const department = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, 'enabled'>>(_id, { projection: { enabled: 1 } });
 	if (!department) {
-		throw new Meteor.Error('error-department-not-found', 'Department not found');
+		throw new ClientSafeError('error-department-not-found', 'Department not found');
 	}
 
 	return updateDepartmentAgents(_id, departmentAgents, department.enabled);
@@ -201,7 +201,7 @@ export async function setDepartmentForGuest({ visitorId, department }: { visitor
 
 	const dep = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id'>>(department, { projection: { _id: 1 } });
 	if (!dep) {
-		throw new Meteor.Error('invalid-department', 'Provided department does not exists');
+		throw new ClientSafeError('invalid-department', 'Provided department does not exists');
 	}
 
 	// Visitor is already validated at this point

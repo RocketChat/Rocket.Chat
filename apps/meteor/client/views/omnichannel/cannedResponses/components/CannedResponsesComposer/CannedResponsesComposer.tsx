@@ -1,4 +1,4 @@
-import { Button, PositionAnimated, Tile } from '@rocket.chat/fuselage';
+import { Box, Button, PopoverSurface, PositionAnimated } from '@rocket.chat/fuselage';
 import {
 	MessageComposerAction,
 	MessageComposerToolbarActions,
@@ -112,20 +112,25 @@ const CannedResponsesComposer = ({ onChange, ...props }: CannedResponsesComposer
 					<MessageComposerAction icon='strike' onClick={useMarkdownSyntax('~')} title={t('Strikethrough')} />
 					<MessageComposerAction icon='link' onClick={useMarkdownSyntax('[]()')} title={t('Link')} />
 					<MessageComposerActionsDivider />
-					<Button ref={ref} small onClick={openPlaceholderSelect}>
+					<Button ref={ref} size='small' onClick={openPlaceholderSelect}>
 						{t('Insert_Placeholder')}
 					</Button>
-					<Backdrop
-						display={visible ? 'block' : 'none'}
-						onClick={(): void => {
-							textAreaRef?.current && textAreaRef.current.focus();
-							setVisible(false);
-						}}
-					/>
+					{visible && (
+						<Backdrop
+							onClick={(): void => {
+								textAreaRef?.current && textAreaRef.current.focus();
+								setVisible(false);
+							}}
+						/>
+					)}
 					<PositionAnimated visible={visible ? 'visible' : 'hidden'} anchor={ref}>
-						<Tile elevation='1' width='224px'>
-							<InsertPlaceholderDropdown onChange={onChange} textAreaRef={textAreaRef} setVisible={setVisible} />
-						</Tile>
+						<Box width='224px'>
+							<PopoverSurface elevation='1' flush>
+								<Box padding={16}>
+									<InsertPlaceholderDropdown onChange={onChange} textAreaRef={textAreaRef} setVisible={setVisible} />
+								</Box>
+							</PopoverSurface>
+						</Box>
 					</PositionAnimated>
 				</MessageComposerToolbarActions>
 			</MessageComposerToolbar>

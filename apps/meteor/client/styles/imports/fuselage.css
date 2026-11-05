@@ -1,0 +1,10 @@
+/* Fuselage */
+@import url('../../../node_modules/@rocket.chat/fuselage/dist/fuselage.css');
+
+@font-face {
+	font-family: RocketChat;
+	font-weight: 400;
+	font-style: normal;
+	font-display: block;
+	src: url('/fonts/rocketchat.woff2') format('woff2');
+}

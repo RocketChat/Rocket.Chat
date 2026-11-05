@@ -26,7 +26,7 @@ const wrapper = mockAppRoot()
 		Rooms: 'Rooms',
 		Create: 'Create',
 		Cancel: 'Cancel',
-		You_can_add_rooms_after: 'You can add rooms after',
+		You_can_add_rooms_later: 'You can add rooms later',
 		Categories_are_private_custom_groupings_of_rooms: 'Categories are private custom groupings of rooms',
 		Please_enter_a_category_name: 'Please enter a category name',
 		A_category_with_this_name_already_exists: 'A category with this name already exists',

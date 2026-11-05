@@ -6,7 +6,6 @@ import { Meteor } from 'meteor/meteor';
 import type { WithId } from 'mongodb';
 
 declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		'permissions/get'(
 			updatedSince?: Date,

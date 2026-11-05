@@ -67,6 +67,57 @@ describe('`once` method', () => {
 		times(5, () => emitter.emit('test'));
 		expect(handler).toHaveBeenCalledTimes(1);
 	});
+
+	it('should call `test` handler only once when it re-emits the same event', () => {
+		const reentrant = jest.fn(() => emitter.emit('test'));
+		emitter.once('test', reentrant);
+		emitter.emit('test');
+		expect(reentrant).toHaveBeenCalledTimes(1);
+		expect(emitter.has('test')).toBe(false);
+	});
+
+	it('should call `test` handler only once when an earlier handler re-emits the same event', () => {
+		let reemitted = false;
+		emitter.on('test', () => {
+			if (!reemitted) {
+				reemitted = true;
+				emitter.emit('test');
+			}
+		});
+		emitter.once('test', handler);
+		emitter.emit('test');
+		expect(handler).toHaveBeenCalledTimes(1);
+	});
+
+	it('should keep `once` and `on` registrations of the same handler on different events independent', () => {
+		emitter.on('test', handler);
+		emitter.once('test2', handler);
+		times(2, () => emitter.emit('test'));
+		times(2, () => emitter.emit('test2'));
+		expect(handler).toHaveBeenCalledTimes(3);
+		expect(emitter.has('test')).toBe(true);
+		expect(emitter.has('test2')).toBe(false);
+	});
+
+	it('should keep `once` registration after removing an `on` registration of the same handler on another event', () => {
+		emitter.on('test', handler);
+		emitter.once('test2', handler);
+		emitter.off('test', handler);
+		times(2, () => emitter.emit('test2'));
+		expect(handler).toHaveBeenCalledTimes(1);
+		expect(emitter.has('test2')).toBe(false);
+	});
+
+	it('should remove `test` handler even if it throws', () => {
+		const throwing = jest.fn(() => {
+			throw new Error('boom');
+		});
+		emitter.once('test', throwing);
+		expect(() => emitter.emit('test')).toThrow('boom');
+		emitter.emit('test');
+		expect(throwing).toHaveBeenCalledTimes(1);
+		expect(emitter.has('test')).toBe(false);
+	});
 });
 
 describe('`off` method', () => {
@@ -79,6 +130,14 @@ describe('`off` method', () => {
 	it('should have no `test` handler after use stop callback', () => {
 		emitter.on('test', handler)();
 		expect(emitter.has('test')).toBe(false);
+	});
+
+	it('should remove only its own registration when using the stop callback', () => {
+		emitter.on('test', handler);
+		emitter.once('test', handler)();
+		times(2, () => emitter.emit('test'));
+		expect(handler).toHaveBeenCalledTimes(2);
+		expect(emitter.has('test')).toBe(true);
 	});
 
 	it('should have no `test` handler after emit once', () => {

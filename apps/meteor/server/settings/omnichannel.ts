@@ -6,7 +6,7 @@ const omnichannelEnabledQuery = { _id: 'Livechat_enabled', value: true };
 
 export const createOmniSettings = () =>
 	settingsRegistry.addGroup('Omnichannel', async function () {
-		await this.add('Livechat_enabled', true, {
+		await this.add('Livechat_enabled', false, {
 			type: 'boolean',
 			group: 'Omnichannel',
 			public: true,

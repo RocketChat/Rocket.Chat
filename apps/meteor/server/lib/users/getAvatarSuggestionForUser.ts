@@ -1,23 +1,11 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { License } from '@rocket.chat/license';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
-import Gravatar from 'gravatar';
 import { check } from 'meteor/check';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
-import { warnGravatarDeprecation } from './gravatarDeprecation';
 import { settings } from '../../settings';
 
 const avatarProviders = {
-	facebook(user: IUser) {
-		if (user.services?.facebook?.id && settings.get('Accounts_OAuth_Facebook')) {
-			return {
-				service: 'facebook',
-				url: `https://graph.facebook.com/${user.services.facebook.id}/picture?type=large`,
-			};
-		}
-	},
-
 	google(user: IUser) {
 		if (
 			user.services?.google?.picture &&
@@ -36,29 +24,6 @@ const avatarProviders = {
 			return {
 				service: 'github',
 				url: `https://avatars.githubusercontent.com/${user.services.github.username}?s=200`,
-			};
-		}
-	},
-
-	linkedin(user: IUser) {
-		if (
-			user.services?.linkedin?.profilePicture?.identifiersUrl &&
-			user.services.linkedin.profilePicture.identifiersUrl.length > 0 &&
-			settings.get('Accounts_OAuth_Linkedin')
-		) {
-			const total = user.services.linkedin.profilePicture.identifiersUrl.length;
-			return {
-				service: 'linkedin',
-				url: user.services.linkedin.profilePicture.identifiersUrl[total - 1],
-			};
-		}
-	},
-
-	twitter(user: IUser) {
-		if (user.services?.twitter?.profile_image_url_https && settings.get('Accounts_OAuth_Twitter')) {
-			return {
-				service: 'twitter',
-				url: user.services.twitter.profile_image_url_https.replace(/_normal|_bigger/, ''),
 			};
 		}
 	},
@@ -99,46 +64,6 @@ const avatarProviders = {
 			}),
 		);
 
-		return avatars;
-	},
-
-	emails(user: IUser) {
-		const avatars: { service: string; url: string }[] = [];
-
-		// Offline (air-gapped) licenses suppress Gravatar lookups: every suggested
-		// URL is fetched server-side below, and gravatar.com is not admin-configured
-		// infrastructure (unlike OAuth provider avatars, which keep working).
-		if (License.hasOfflineLicense()) {
-			return avatars;
-		}
-
-		if (user.emails && user.emails.length > 0) {
-			warnGravatarDeprecation();
-
-			for (const email of user.emails) {
-				if (email.verified === true) {
-					avatars.push({
-						service: 'gravatar',
-						url: Gravatar.url(email.address, {
-							default: '404',
-							size: '200',
-							protocol: 'https',
-						}),
-					});
-				}
-
-				if (email.verified !== true) {
-					avatars.push({
-						service: 'gravatar',
-						url: Gravatar.url(email.address, {
-							default: '404',
-							size: '200',
-							protocol: 'https',
-						}),
-					});
-				}
-			}
-		}
 		return avatars;
 	},
 };

@@ -80,7 +80,7 @@ const CannedResponseEdit = ({ cannedResponseData, onDelete }: CannedResponseEdit
 			>
 				{cannedResponseData?._id && (
 					<ButtonGroup>
-						<Button danger onClick={onDelete}>
+						<Button variant='danger' onClick={onDelete}>
 							{t('Delete')}
 						</Button>
 					</ButtonGroup>
@@ -96,7 +96,7 @@ const CannedResponseEdit = ({ cannedResponseData, onDelete }: CannedResponseEdit
 			<PageFooter isDirty={isDirty}>
 				<ButtonGroup>
 					<Button onClick={() => reset()}>{t('Cancel')}</Button>
-					<Button form={formId} primary type='submit'>
+					<Button form={formId} variant='primary' type='submit'>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

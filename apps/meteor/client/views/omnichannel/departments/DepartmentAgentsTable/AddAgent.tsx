@@ -1,4 +1,4 @@
-import { Box, Button } from '@rocket.chat/fuselage';
+import { Button, Stack } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { AriaAttributes } from 'react';
@@ -43,12 +43,12 @@ function AddAgent({ agentList, onAdd, 'aria-labelledby': ariaLabelledBy }: AddAg
 	});
 
 	return (
-		<Box role='group' aria-labelledby={ariaLabelledBy} display='flex' alignItems='center'>
+		<Stack role='group' aria-labelledby={ariaLabelledBy} direction='row' align='center' gap={8}>
 			<AutoCompleteAgent value={userId} onChange={handleAgent} />
-			<Button disabled={!userId} onClick={handleSave} marginInlineStart={8} primary>
+			<Button disabled={!userId} onClick={handleSave} variant='primary'>
 				{t('Add')}
 			</Button>
-		</Box>
+		</Stack>
 	);
 }
 

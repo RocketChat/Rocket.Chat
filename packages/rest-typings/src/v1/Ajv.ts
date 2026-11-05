@@ -20,16 +20,23 @@ const ajvQuery = new Ajv({
 addFormats(ajv);
 addFormats(ajvQuery);
 
+// `example` is an OpenAPI annotation, not a validation keyword — declaring it lets schemas carry
+// their own documentation without tripping AJV's strict mode.
+ajv.addVocabulary(['example']);
+ajvQuery.addVocabulary(['example']);
+
 ajv.addFormat('basic_email', /^[^@]+@[^@]+$/);
 ajv.addFormat(
 	'rfc_email',
 	/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
 );
+ajv.addFormat('basic_phone_number', /^\+?[1-9]\d{1,14}$/);
 ajvQuery.addFormat('basic_email', /^[^@]+@[^@]+$/);
 ajvQuery.addFormat(
 	'rfc_email',
 	/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
 );
+ajvQuery.addFormat('basic_phone_number', /^\+?[1-9]\d{1,14}$/);
 ajv.addKeyword({
 	keyword: 'isNotEmpty',
 	type: 'string',
@@ -39,6 +46,40 @@ ajvQuery.addKeyword({
 	keyword: 'isNotEmpty',
 	type: 'string',
 	validate: (_schema: unknown, data: unknown): boolean => typeof data === 'string' && !!data.trim(),
+});
+
+// Strips whitespace from the property before it's checked against a `format`
+ajv.addKeyword({
+	keyword: 'transformStripWhitespaces',
+	type: 'string',
+	schemaType: 'boolean',
+	modifying: true,
+	before: 'format',
+	validate: (schema, data, _parentSchema, dataCxt): boolean => {
+		if (!schema || typeof data !== 'string' || !dataCxt?.parentData) {
+			return true;
+		}
+
+		dataCxt.parentData[dataCxt.parentDataProperty] = data.replace(/\s+/g, '');
+
+		return true;
+	},
+});
+ajvQuery.addKeyword({
+	keyword: 'transformStripWhitespaces',
+	type: 'string',
+	schemaType: 'boolean',
+	modifying: true,
+	before: 'format',
+	validate: (schema, data, _parentSchema, dataCxt): boolean => {
+		if (!schema || typeof data !== 'string' || !dataCxt?.parentData) {
+			return true;
+		}
+
+		dataCxt.parentData[dataCxt.parentDataProperty] = data.replace(/\s+/g, '');
+
+		return true;
+	},
 });
 export { ajv, ajvQuery };
 
@@ -51,13 +92,16 @@ type BadRequestErrorResponse = {
 };
 
 const BadRequestErrorResponseSchema = {
+	$id: 'BadRequestError',
 	type: 'object',
 	properties: {
 		success: { type: 'boolean', enum: [false] },
 		stack: { type: 'string' },
 		error: { type: 'string' },
 		errorType: { type: 'string' },
-		details: { anyOf: [{ type: 'string' }, { type: 'object' }, { type: 'array' }] },
+		// `items` is empty on purpose: the spec requires the keyword on arrays, and the payload can
+		// hold anything the endpoint chose to attach
+		details: { anyOf: [{ type: 'string' }, { type: 'object' }, { type: 'array', items: {} }] },
 	},
 	required: ['success'],
 	additionalProperties: false,
@@ -74,6 +118,7 @@ type UnauthorizedErrorResponse = {
 };
 
 const UnauthorizedErrorResponseSchema = {
+	$id: 'UnauthorizedError',
 	type: 'object',
 	properties: {
 		success: { type: 'boolean', enum: [false] },
@@ -90,22 +135,19 @@ export const validateUnauthorizedErrorResponse = ajv.compile<UnauthorizedErrorRe
 
 type ForbiddenErrorResponse = {
 	success: false;
-	status?: string;
-	message?: string;
-	error?: string;
-	errorType?: string;
+	error: string;
+	errorType: 'error-forbidden';
 };
 
 const ForbiddenErrorResponseSchema = {
+	$id: 'ForbiddenError',
 	type: 'object',
 	properties: {
 		success: { type: 'boolean', enum: [false] },
-		status: { type: 'string' },
-		message: { type: 'string' },
 		error: { type: 'string' },
-		errorType: { type: 'string' },
+		errorType: { type: 'string', enum: ['error-forbidden'] },
 	},
-	required: ['success'],
+	required: ['success', 'error', 'errorType'],
 	additionalProperties: false,
 };
 
@@ -117,6 +159,7 @@ type NotFoundErrorResponse = {
 };
 
 const NotFoundErrorResponseSchema = {
+	$id: 'NotFoundError',
 	type: 'object',
 	properties: {
 		success: { type: 'boolean', enum: [false] },

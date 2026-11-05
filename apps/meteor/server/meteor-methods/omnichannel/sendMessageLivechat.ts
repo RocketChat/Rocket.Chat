@@ -1,10 +1,8 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { LivechatVisitors } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 
-import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import type { ILivechatMessage } from '../../lib/omnichannel/localTypes';
 import { sendMessage } from '../../lib/omnichannel/messages';
 import { settings } from '../../settings';
@@ -17,13 +15,6 @@ interface ILivechatMessageAgent {
 interface ISendMessageLivechat {
 	message: ILivechatMessage;
 	agent?: ILivechatMessageAgent;
-}
-
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		sendMessageLivechat(message: ILivechatMessage, agent: ILivechatMessageAgent): boolean;
-	}
 }
 
 export const sendMessageLivechat = async ({
@@ -43,15 +34,18 @@ export const sendMessageLivechat = async ({
 		}),
 	);
 
+	check(file, Match.Maybe(Match.ObjectIncluding({ _id: String })));
+	check(files, Match.Maybe([Match.ObjectIncluding({ _id: String })]));
+
 	// No projection: the guest is forwarded into the message-sending pipeline, which expects a full visitor.
 	const guest = await LivechatVisitors.getVisitorByToken(token);
 
 	if (!guest) {
-		throw new Meteor.Error('invalid-token');
+		throw new ClientSafeError('invalid-token');
 	}
 
 	if (settings.get('Livechat_enable_message_character_limit') && msg.length > parseInt(settings.get('Livechat_message_character_limit'))) {
-		throw new Meteor.Error('message-length-exceeds-character-limit');
+		throw new ClientSafeError('message-length-exceeds-character-limit');
 	}
 
 	return sendMessage({
@@ -73,10 +67,3 @@ export const sendMessageLivechat = async ({
 		},
 	});
 };
-
-Meteor.methods<ServerMethods>({
-	async sendMessageLivechat({ token, _id, rid, msg, file, files, attachments }: ILivechatMessage, agent: ILivechatMessageAgent) {
-		methodDeprecationLogger.method('sendMessageLivechat', '9.0.0', '/v1/livechat/message');
-		return sendMessageLivechat({ message: { token, _id, rid, msg, file, files, attachments }, agent });
-	},
-});

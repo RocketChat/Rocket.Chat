@@ -72,7 +72,7 @@ const RegisterWorkspaceModal = ({ onClose, onStatusChange, ...props }: RegisterW
 					<ExternalLink to={documentationLink}>{t('Learn_more')}</ExternalLink>
 					<ButtonGroup align='end'>
 						<Button onClick={handleTokenModal}>{t('Use_token')}</Button>
-						<Button primary onClick={handleSetupModal}>
+						<Button variant='primary' onClick={handleSetupModal}>
 							{t('RegisterWorkspace_Button')}
 						</Button>
 					</ButtonGroup>

@@ -2,7 +2,7 @@ import { useRoomToolbox } from '@rocket.chat/ui-contexts';
 import { renderHook } from '@testing-library/react';
 
 import { useAppsContextualBar } from './useAppsContextualBar';
-import { useUiKitActionManager } from '../../../uikit/hooks/useUiKitActionManager';
+import { useUiKitActionManager } from '../../../hooks/uikit/useUiKitActionManager';
 
 jest.mock('@rocket.chat/ui-contexts', () => ({
 	useRouteParameter: jest.fn((param: string) => {
@@ -13,7 +13,7 @@ jest.mock('@rocket.chat/ui-contexts', () => ({
 	useRoomToolbox: jest.fn(),
 }));
 
-jest.mock('../../../uikit/hooks/useUiKitActionManager', () => ({
+jest.mock('../../../hooks/uikit/useUiKitActionManager', () => ({
 	useUiKitActionManager: jest.fn(),
 }));
 

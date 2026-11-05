@@ -10,8 +10,8 @@ const makeQuote = (): MessageQuoteAttachment => {
 	return {
 		text: `[ ](http://localhost:3000/group/encrypted?msg=${faker.string.uuid()})`,
 		message_link: `http://localhost:3000/group/encrypted?msg=${faker.string.uuid()}`,
-		author_name: faker.internet.userName(),
-		author_icon: `/avatar/${faker.internet.userName()}`,
+		author_name: faker.internet.username(),
+		author_icon: `/avatar/${faker.internet.username()}`,
 		author_link: `http://localhost:3000/group/encrypted?msg=${faker.string.uuid()}`,
 	};
 };

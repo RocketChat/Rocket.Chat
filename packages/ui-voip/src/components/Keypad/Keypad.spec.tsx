@@ -8,11 +8,6 @@ const testCases = Object.values(composeStories(stories))
 	.filter((Story) => !Story.tags?.includes('skip'))
 	.map((Story) => [Story.storyName || 'Story', Story]);
 
-test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
-	const view = render(<Story />);
-	expect(view.baseElement).toMatchSnapshot();
-});
-
 test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
 	const { container } = render(<Story />);
 

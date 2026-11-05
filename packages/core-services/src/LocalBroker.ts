@@ -6,10 +6,15 @@ import { injectCurrentContext, tracerActiveSpan } from '@rocket.chat/tracing';
 
 import { asyncLocalStorage } from '.';
 import type { EventSignatures } from './events/Events';
+import { LocalServiceRegistry } from './lib/LocalServiceRegistry';
 import type { CallingOptions, IBroker, IBrokerNode } from './types/IBroker';
 import type { ServiceClass, IServiceClass } from './types/ServiceClass';
 
 type ExtendedServiceClass = { instance: IServiceClass; dependencies: string[]; isStarted: boolean };
+
+export type ClusterTransport = {
+	publish(event: string, args: unknown[]): void;
+};
 
 const logger = new Logger('LocalBroker');
 
@@ -19,7 +24,7 @@ const TIMEOUT = INTERVAL * 10;
 export class LocalBroker implements IBroker {
 	private started = false;
 
-	private methods = new Map<string, (...params: any) => any>();
+	private registry = new LocalServiceRegistry();
 
 	private events = new EventEmitter();
 
@@ -28,6 +33,8 @@ export class LocalBroker implements IBroker {
 	private pendingServices: Set<string> = new Set();
 
 	private defaultDependencies = ['settings'];
+
+	private clusterTransport?: ClusterTransport;
 
 	async call(method: string, data: any, options?: CallingOptions): Promise<any> {
 		if (options) {
@@ -45,7 +52,7 @@ export class LocalBroker implements IBroker {
 						requestID: 'ctx.requestID',
 						broker: this,
 					},
-					(): any => this.methods.get(method)?.(...data),
+					(): any => this.registry.resolve(method)?.(data),
 				);
 			},
 			injectCurrentContext(),
@@ -57,18 +64,7 @@ export class LocalBroker implements IBroker {
 
 		instance.getEvents().forEach((event) => event.listeners.forEach((listener) => this.events.removeListener(event.eventName, listener)));
 
-		const methods =
-			instance.constructor?.name === 'Object'
-				? Object.getOwnPropertyNames(instance)
-				: Object.getOwnPropertyNames(Object.getPrototypeOf(instance));
-
-		for (const method of methods) {
-			if (method === 'constructor') {
-				continue;
-			}
-
-			this.methods.delete(`${namespace}.${method}`);
-		}
+		this.registry.remove(instance);
 		instance.removeAllListeners();
 		await instance.stopped();
 
@@ -98,18 +94,7 @@ export class LocalBroker implements IBroker {
 
 		instance.getEvents().forEach((event) => event.listeners.forEach((listener) => this.events.on(event.eventName, listener)));
 
-		const methods =
-			instance.constructor?.name === 'Object'
-				? Object.getOwnPropertyNames(instance)
-				: Object.getOwnPropertyNames(Object.getPrototypeOf(instance));
-
-		for (const method of methods) {
-			if (method === 'constructor') {
-				continue;
-			}
-			const i = instance as any;
-			this.methods.set(`${serviceName}.${method}`, i[method].bind(i));
-		}
+		this.registry.add(instance);
 
 		this.services.set(serviceName, { instance, dependencies, isStarted: false });
 		this.registerPendingServices(Array.from(new Set([serviceName, ...dependencies])));
@@ -119,18 +104,27 @@ export class LocalBroker implements IBroker {
 		}
 	}
 
-	onBroadcast(callback: (eventName: string, args: unknown[]) => void): void {
-		this.events.on('broadcast', callback);
+	/**
+	 * Installs what carries `broadcast()` to the other instances of this deployment. Without one, a broadcast stays
+	 * in this process.
+	 */
+	setClusterTransport(transport: ClusterTransport): void {
+		this.clusterTransport = transport;
 	}
 
 	async broadcast<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
 		void this.broadcastLocal(event, ...args);
 
-		this.events.emit('broadcast', event, args);
+		this.clusterTransport?.publish(event, args);
 	}
 
 	async broadcastLocal<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
 		this.events.emit(event, ...args);
+	}
+
+	/** Service names are unique within a process, so every listener here is the one instance of its service. */
+	async emitToOne<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
+		return this.broadcastLocal(event, ...args);
 	}
 
 	async broadcastToServices<T extends keyof EventSignatures>(

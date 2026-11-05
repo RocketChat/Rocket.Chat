@@ -2,7 +2,6 @@ import type { OAuthConfiguration } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import passport from 'passport';
 
-import { CustomOAuth } from '../../lib/auth-providers/custom-oauth/custom_oauth_server';
 import { addPassportCustomOAuth } from '../../lib/oauth/addPassportCustomOAuth';
 import { settings } from '../../settings';
 
@@ -19,8 +18,6 @@ const NEXTCLOUD_PATHS = {
 	},
 };
 
-const Nextcloud = new CustomOAuth('nextcloud', NEXTCLOUD_PATHS);
-
 function configureNextcloudOAuth(): void {
 	passport.unuse('nextcloud');
 	const enabled = settings.get<boolean>('Accounts_OAuth_Nextcloud');
@@ -36,25 +33,12 @@ function configureNextcloudOAuth(): void {
 		return;
 	}
 
-	const config = { ...NEXTCLOUD_PATHS, serverURL, clientId, clientSecret };
-
-	if (settings.get<boolean>('Accounts_OAuth_Use_Modern_Flow')) {
-		addPassportCustomOAuth('nextcloud', config);
-		return;
-	}
-
-	Nextcloud.configure(config);
+	addPassportCustomOAuth('nextcloud', { ...NEXTCLOUD_PATHS, serverURL, clientId, clientSecret });
 }
 
 Meteor.startup(() => {
 	settings.watchMultiple(
-		[
-			'Accounts_OAuth_Nextcloud',
-			'Accounts_OAuth_Nextcloud_URL',
-			'Accounts_OAuth_Nextcloud_id',
-			'Accounts_OAuth_Nextcloud_secret',
-			'Accounts_OAuth_Use_Modern_Flow',
-		],
+		['Accounts_OAuth_Nextcloud', 'Accounts_OAuth_Nextcloud_URL', 'Accounts_OAuth_Nextcloud_id', 'Accounts_OAuth_Nextcloud_secret'],
 		configureNextcloudOAuth,
 	);
 });

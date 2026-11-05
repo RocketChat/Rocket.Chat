@@ -6,7 +6,6 @@ import { getPaginationItems } from '../../../../../server/api/lib/getPaginationI
 import { findBusinessHours } from '../../../lib/omnichannel/business-hour/lib/business-hour';
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Endpoints {
 		'/v1/livechat/business-hours': {
 			GET: (params: PaginatedRequest) => {

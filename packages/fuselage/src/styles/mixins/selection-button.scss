@@ -1,0 +1,65 @@
+@use 'sass:map';
+@use '../lengths.scss';
+@use '../variables/button-colors.scss' as *;
+@use '../variables/input-colors.scss' as *;
+@use './interactivity.scss' as *;
+@use './shadows.scss' as *;
+
+@mixin is-selection-button($unchecked: 'empty', $indeterminate: null, $checked: 'primary') {
+	position: relative;
+
+	display: inline-flex;
+
+	vertical-align: middle;
+
+	@include clickable;
+
+	$styles: (
+		unchecked: $unchecked,
+		indeterminate: $indeterminate,
+		checked: $checked,
+	);
+
+	$state-pseudo-classes: (
+		default: null,
+		hovered: ':hover',
+		focused: ':focus',
+		active: ':active',
+		disabled: ':disabled',
+	);
+
+	$state-helper-classes: (
+		default: null,
+		hovered: '.is-hovered',
+		focused: '.is-focused',
+		active: '.is-active',
+		disabled: '.is-disabled',
+	);
+
+	@each $value in unchecked, indeterminate, checked {
+		$style: map.get($styles, $value);
+
+		@if $style != null {
+			$value-pseudo-class: if(sass($value == unchecked): ''; else: ':#{$value}');
+			$input: #{&}__input#{$value-pseudo-class};
+
+			@at-root &__input#{$value-pseudo-class} + &__fake {
+				@extend %selection-button__fake--#{$style} !optional;
+			}
+
+			@each $state in default, hovered, focused, active, disabled {
+				$state-pseudo-class: map.get($state-pseudo-classes, $state);
+				$state-helper-class: map.get($state-helper-classes, $state);
+
+				@at-root &__input#{$value-pseudo-class}#{$state-pseudo-class} + &__fake,
+					&#{$state-helper-class} &__input#{$value-pseudo-class} + &__fake {
+					@extend %selection-button__fake--#{$style}--#{$state} !optional;
+
+					@if $state == disabled {
+						cursor: not-allowed;
+					}
+				}
+			}
+		}
+	}
+}

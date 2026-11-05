@@ -1,0 +1,85 @@
+@use '../../styles/colors.scss';
+@use '../../styles/lengths.scss';
+@use '../../styles/typography.scss' as *;
+@use '../../styles/functions' as *;
+@use '../../styles/mixins/button.scss';
+@use '../../styles/variables/button-colors.scss' as *;
+@use '../../styles/mixins/interactivity.scss' as *;
+@use '../Box/Box.styles.scss';
+
+// to do: replace button with stroke
+
+$chip-background-color: theme('chip-background-color', colors.button(secondary-default));
+$chip-border-color: theme('chip-border-color', colors.button(secondary-default));
+$chip-color: theme('chip-color', colors.font(secondary-info));
+$chip-hover-background-color: theme('chip-hover-background-color', colors.button(secondary-hover));
+$chip-hover-border-color: theme('chip-hover-border-color', colors.button(secondary-hover));
+$chip-active-background-color: theme('chip-active-background-color', colors.button(secondary-press));
+$chip-active-border-color: theme('chip-active-border-color', colors.button(secondary-press));
+$chip-focus-background-color: theme('chip-focus-background-color', colors.button(secondary-focus));
+$chip-focus-border-color: theme('chip-focus-border-color', colors.stroke(extra-dark));
+$chip-focus-shadow-color: theme('chip-focus-shadow-color', colors.stroke(extra-light-highlight));
+$chip-disabled-background-color: theme('chip-disabled-background-color', colors.button(secondary-disabled));
+$chip-disabled-border-color: theme('chip-disabled-border-color', colors.button(secondary-disabled));
+$chip-disabled-color: theme('chip-disabled-color', colors.font(disabled));
+
+.rcx-chip {
+	@extend %box--full;
+
+	@include button.kind-variant(
+		(
+			background-color: $chip-background-color,
+			border-color: $chip-border-color,
+			color: $chip-color,
+			hover-background-color: $chip-hover-background-color,
+			hover-border-color: $chip-hover-border-color,
+			active-background-color: $chip-active-background-color,
+			active-border-color: $chip-active-border-color,
+			focus-background-color: $chip-focus-background-color,
+			focus-border-color: $chip-focus-border-color,
+			focus-shadow-color: $chip-focus-shadow-color,
+			disabled-background-color: $chip-disabled-background-color,
+			disabled-border-color: $chip-disabled-border-color,
+			disabled-color: $chip-disabled-color,
+		)
+	);
+
+	@include clickable;
+	@include use-font-scale('p2');
+
+	display: flex;
+	overflow: hidden;
+	align-items: center;
+
+	height: lengths.size(28);
+	min-height: lengths.size(28);
+
+	border-width: 0;
+
+	&.disabled,
+	&:disabled {
+		color: $button-secondary-color;
+		border-color: $button-secondary-border-color;
+		background-color: $button-secondary-background-color;
+	}
+
+	&--small {
+		height: lengths.size(20);
+		min-height: lengths.size(20);
+	}
+
+	&--label {
+		text-transform: uppercase;
+	}
+
+	&__text {
+		@include use-text-ellipsis;
+
+		white-space: nowrap;
+		letter-spacing: inherit;
+
+		color: inherit;
+
+		font: inherit;
+	}
+}

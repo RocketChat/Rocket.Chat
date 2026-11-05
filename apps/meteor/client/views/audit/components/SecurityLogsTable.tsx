@@ -1,5 +1,5 @@
 import type { IAuditServerAppActor, IAuditServerSystemActor, IAuditServerUserActor } from '@rocket.chat/core-typings';
-import { Box, Button, ButtonGroup, Field, FieldLabel, Margins, Pagination } from '@rocket.chat/fuselage';
+import { Box, Button, Field, FieldLabel, Pagination } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import {
 	GenericTable,
@@ -10,6 +10,7 @@ import {
 	GenericTableLoadingRow,
 	GenericTableRow,
 	usePagination,
+	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -20,7 +21,6 @@ import { useTranslation } from 'react-i18next';
 import SecurityLogDisplayModal from './SecurityLogDisplayModal';
 import { SettingSelect } from './SettingSelect';
 import DateRangePicker from './forms/DateRangePicker';
-import GenericNoResults from '../../../components/GenericNoResults';
 import type { DateRange } from '../utils/dateRange';
 import { getTypeTranslation } from '../utils/getAppTypeTranslation';
 
@@ -102,28 +102,30 @@ const SecurityLogsTable = () => {
 	return (
 		<>
 			<Box marginBlock={16} display='flex' flexWrap='wrap' alignItems='flex-end'>
-				<Field width='unset' flexShrink={1} flexGrow={1}>
-					<Margins inline={6}>
-						<FieldLabel>{t('Date')}</FieldLabel>
-						<DateRangePicker display='flex' flexGrow={1} value={dateRange} onChange={setDateRange} />
-					</Margins>
-				</Field>
-				<Field width={300}>
-					<Margins inline={6}>
-						<FieldLabel>{t('Setting')}</FieldLabel>
-						<SettingSelect value={setting} onChange={setSetting} />
-					</Margins>
-				</Field>
-				<ButtonGroup>
-					<Margins blockStart={12} inline={6}>
-						<Button secondary onClick={handleClearFilters}>
-							{t('Clear_filters')}
-						</Button>
-						<Button primary onClick={handleApplyFilters}>
-							{t('Apply_filters')}
-						</Button>
-					</Margins>
-				</ButtonGroup>
+				<Box flexGrow={1}>
+					<Field>
+						<Box display='flex' flexDirection='column' paddingInline='x4'>
+							<FieldLabel>{t('Date')}</FieldLabel>
+							<DateRangePicker flexGrow={1} value={dateRange} onChange={setDateRange} />
+						</Box>
+					</Field>
+				</Box>
+				<Box width={300} flexShrink={0}>
+					<Field>
+						<Box display='flex' flexDirection='column' paddingInline='x4'>
+							<FieldLabel>{t('Setting')}</FieldLabel>
+							<SettingSelect value={setting} onChange={setSetting} />
+						</Box>
+					</Field>
+				</Box>
+				<Box role='group' display='flex' alignItems='center' gap='x20' paddingInline='x4' paddingBlockStart='x12'>
+					<Button variant='secondary' onClick={handleClearFilters}>
+						{t('Clear_filters')}
+					</Button>
+					<Button variant='primary' onClick={handleApplyFilters}>
+						{t('Apply_filters')}
+					</Button>
+				</Box>
 			</Box>
 
 			{isLoading && (
@@ -168,7 +170,6 @@ const SecurityLogsTable = () => {
 									role='link'
 									action
 									tabIndex={0}
-									height={44}
 									onClick={() =>
 										handleItemClick({
 											actor: item.actor,
@@ -179,8 +180,8 @@ const SecurityLogsTable = () => {
 										})
 									}
 								>
-									<GenericTableCell withTruncatedText>
-										<Box display='flex' alignItems='center'>
+									<GenericTableCell truncate>
+										<Box display='flex' alignItems='center' minHeight={28}>
 											{item.actor.type === 'user' && (
 												<Box marginInlineEnd={4}>
 													<UserAvatar size='x24' userId={item.actor._id} />
@@ -191,12 +192,12 @@ const SecurityLogsTable = () => {
 											</Box>
 										</Box>
 									</GenericTableCell>
-									<GenericTableCell withTruncatedText>{format(new Date(item.ts), 'MMMM d yyyy, h:mm:ss a')}</GenericTableCell>
-									<GenericTableCell withTruncatedText title={setting && String(setting)}>
+									<GenericTableCell truncate>{format(new Date(item.ts), 'MMMM d yyyy, h:mm:ss a')}</GenericTableCell>
+									<GenericTableCell truncate title={setting && String(setting)}>
 										{setting && String(setting)}
 									</GenericTableCell>
-									<GenericTableCell withTruncatedText>{String(previous)}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{String(current)}</GenericTableCell>
+									<GenericTableCell truncate>{String(previous)}</GenericTableCell>
+									<GenericTableCell truncate>{String(current)}</GenericTableCell>
 								</GenericTableRow>
 							);
 						})}

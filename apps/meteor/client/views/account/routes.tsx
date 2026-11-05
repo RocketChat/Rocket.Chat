@@ -20,10 +20,6 @@ declare module '@rocket.chat/ui-contexts' {
 			pathname: '/account/security';
 			pattern: '/account/security';
 		};
-		'integrations': {
-			pathname: '/account/integrations';
-			pattern: '/account/integrations';
-		};
 		'tokens': {
 			pathname: '/account/tokens';
 			pattern: '/account/tokens';
@@ -51,7 +47,7 @@ export const registerAccountRoute = createRouteGroup(
 
 registerAccountRoute('/preferences', {
 	name: 'preferences',
-	component: lazy(() => import('./preferences/AccountPreferencesPage')),
+	component: lazy(() => import('./preferences/AccountPreferencesRoute')),
 });
 
 registerAccountRoute('/profile', {
@@ -62,11 +58,6 @@ registerAccountRoute('/profile', {
 registerAccountRoute('/security', {
 	name: 'security',
 	component: lazy(() => import('./security/AccountSecurityRoute')),
-});
-
-registerAccountRoute('/integrations', {
-	name: 'integrations',
-	component: lazy(() => import('./integrations/AccountIntegrationsRoute')),
 });
 
 registerAccountRoute('/tokens', {
@@ -81,10 +72,10 @@ registerAccountRoute('/omnichannel', {
 
 registerAccountRoute('/feature-preview', {
 	name: 'feature-preview',
-	component: lazy(() => import('./featurePreview/AccountFeaturePreviewPage')),
+	component: lazy(() => import('@rocket.chat/ui-account').then(({ FeaturePreviewPage }) => ({ default: FeaturePreviewPage }))),
 });
 
 registerAccountRoute('/accessibility-and-appearance', {
 	name: 'accessibility-and-appearance',
-	component: lazy(() => import('./accessibility/AccessibilityPage')),
+	component: lazy(() => import('@rocket.chat/ui-account').then(({ AccessibilityPage }) => ({ default: AccessibilityPage }))),
 });

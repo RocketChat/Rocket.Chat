@@ -7,7 +7,7 @@ export type ToneSelectorWrapperProps = {
 
 const ToneSelectorWrapper = ({ caption, children, ...props }: ToneSelectorWrapperProps) => {
 	return (
-		<Box {...props} display='flex' alignItems='center'>
+		<Box {...props} display='flex' alignItems='center' gap={4}>
 			<Box fontScale='c2'>{caption}</Box>
 			{children}
 		</Box>

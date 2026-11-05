@@ -3,7 +3,6 @@ import {
 	Button,
 	ButtonGroup,
 	Callout,
-	Margins,
 	ProgressBar,
 	Skeleton,
 	StatesAction,
@@ -57,9 +56,9 @@ const CustomUserStatusService = () => {
 
 	return (
 		<>
-			<ContextualbarContent display='flex' flexDirection='column' justifyContent='space-between' color='default'>
-				<div>
-					<Box display='flex' justifyContent='space-between' marginBlock={16}>
+			<ContextualbarContent>
+				<Box display='flex' flexDirection='column' gap={16} paddingBlock={16} flexGrow={1}>
+					<Box display='flex' justifyContent='space-between'>
 						<Box fontScale='p1'>{t('Service_status')}</Box>
 						<ToggleSwitch
 							disabled={disablePresenceService.isPending || !presenceDisabled || percentage === 100}
@@ -67,19 +66,17 @@ const CustomUserStatusService = () => {
 							onChange={() => disablePresenceService.mutate()}
 						/>
 					</Box>
-					<Box display='flex' fontScale='c1' justifyContent='space-between' marginBlock={16}>
+					<Box display='flex' fontScale='c1' justifyContent='space-between'>
 						<Box>{t('Active_connections')}</Box>
 						<Box>{license?.isEnterprise ? current : `${current}/${max}`}</Box>
 					</Box>
 					{!license?.isEnterprise && <ProgressBar percentage={percentage} variant={percentage > 80 ? 'danger' : 'success'} />}
 					{presenceDisabled && (
-						<Margins block={16}>
-							<Callout type='danger' title={t('Service_disabled')}>
-								{t('Service_disabled_description')}
-							</Callout>
-						</Margins>
+						<Callout type='danger' title={t('Service_disabled')}>
+							{t('Service_disabled_description')}
+						</Callout>
 					)}
-				</div>
+				</Box>
 				<Box display='flex' flexDirection='column' marginBlock={16}>
 					{license?.isEnterprise ? (
 						<>
@@ -109,13 +106,15 @@ const CustomUserStatusService = () => {
 				</Box>
 			</ContextualbarContent>
 			{!license?.isEnterprise && (
-				<ContextualbarFooter borderBlockStartWidth='default' borderBlockColor='extra-light'>
-					<ButtonGroup stretch vertical>
-						<Button primary width='100%' is='a' href={links.enterprise} target='_blank'>
-							{t('More_about_Premium_plans')}
-						</Button>
-					</ButtonGroup>
-				</ContextualbarFooter>
+				<Box borderBlockStartWidth='default' borderBlockColor='extra-light'>
+					<ContextualbarFooter>
+						<ButtonGroup stretch vertical>
+							<Button variant='primary' is='a' href={links.enterprise} target='_blank'>
+								{t('More_about_Premium_plans')}
+							</Button>
+						</ButtonGroup>
+					</ContextualbarFooter>
+				</Box>
 			)}
 		</>
 	);

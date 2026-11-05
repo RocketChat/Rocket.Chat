@@ -1,29 +1,15 @@
 import { Random } from '@rocket.chat/random';
-import { Accounts } from 'meteor/accounts-base';
-import { Meteor } from 'meteor/meteor';
+import type { Meteor } from 'meteor/meteor';
 
-import { type LoginCallback, callLoginMethod, handleLogin } from '../../lib/2fa/overrideLoginMethod';
+import { handleLogin } from '../../lib/2fa/overrideLoginMethod';
 import { absoluteUrl } from '../../lib/absoluteUrl';
 import { STORAGE_KEYS, removeStoredItem } from '../../lib/sdk/storage';
 import { settings } from '../../lib/settings';
-
-declare module 'meteor/meteor' {
-	// eslint-disable-next-line @typescript-eslint/no-namespace
-	namespace Meteor {
-		function loginWithSamlToken(credentialToken: string, callback?: LoginCallback): void;
-
-		function loginWithSaml(options: { provider: string; credentialToken?: string }): void;
-	}
-}
+import { callLoginMethod, registerLoginWithMethod } from '../accounts';
 
 declare module 'meteor/accounts-base' {
-	// eslint-disable-next-line @typescript-eslint/no-namespace
+	// oxlint-disable-next-line @typescript-eslint/no-namespace
 	namespace Accounts {
-		export let saml: {
-			credentialToken?: string;
-			credentialSecret?: string;
-		};
-
 		/**
 		 * There is one case where the onlogout event is triggered with no user:
 		 * during the deletion, the user is logged out, and the framework try to get the user from the database.
@@ -33,76 +19,68 @@ declare module 'meteor/accounts-base' {
 }
 
 declare module 'meteor/service-configuration' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Configuration {
 		logoutBehaviour?: 'SAML' | 'Local';
 		idpSLORedirectURL?: string;
 	}
 }
 
-if (!Accounts.saml) {
-	Accounts.saml = {};
-}
-
-const { logout } = Meteor;
-
-Meteor.logout = async function (...args) {
-	const standardLogout = () => logout.apply(Meteor, args);
-
+/** Ends the session at the SAML identity provider; resolves `false` when the caller should log out locally instead. */
+export const logoutFromSamlIdp = async (): Promise<boolean> => {
 	if (!settings.peek('SAML_Custom_Default')) {
-		return standardLogout();
+		return false;
 	}
 
 	if (settings.peek('SAML_Custom_Default_logout_behaviour') === 'Local') {
 		console.info('SAML session not terminated, only the Rocket.Chat session is going to be killed');
-		return standardLogout();
+		return false;
 	}
 
 	const provider = settings.peek('SAML_Custom_Default_provider');
 
-	if (provider && settings.peek('SAML_Custom_Default_idp_slo_redirect_url')) {
-		console.info('SAML session terminated via SLO');
-
-		const { sdk } = await import('../../lib/SDKClient');
-		sdk
-			.call('samlLogout', provider)
-			.then((result) => {
-				if (!result) {
-					logout.apply(Meteor);
-					return;
-				}
-
-				// Remove the userId from the client to prevent calls to the server while the logout is processed.
-				// If the logout fails, the userId will be reloaded on the resume call
-				removeStoredItem(STORAGE_KEYS.USER_ID);
-
-				// A nasty bounce: 'result' has the SAML LogoutRequest but we need a proper 302 to redirected from the server.
-				window.location.replace(absoluteUrl(`_saml/sloRedirect/${provider}/?redirect=${encodeURIComponent(result)}`));
-			})
-			.catch(() => logout.apply(Meteor));
-		return;
+	if (!provider || !settings.peek('SAML_Custom_Default_idp_slo_redirect_url')) {
+		return false;
 	}
 
-	return standardLogout();
+	console.info('SAML session terminated via SLO');
+
+	// Any failure on the way to the identity provider falls back to the local logout.
+	try {
+		const { sdk } = await import('../../lib/SDKClient');
+		const result = await sdk.call('samlLogout', provider);
+
+		if (!result) {
+			return false;
+		}
+
+		// Remove the userId from the client to prevent calls to the server while the logout is processed.
+		// If the logout fails, the userId will be reloaded on the resume call
+		removeStoredItem(STORAGE_KEYS.USER_ID);
+
+		// A nasty bounce: 'result' has the SAML LogoutRequest but we need a proper 302 to redirected from the server.
+		window.location.replace(absoluteUrl(`_saml/sloRedirect/${provider}/?redirect=${encodeURIComponent(result)}`));
+		return true;
+	} catch (error) {
+		console.warn('[saml] single logout failed, logging out locally', error);
+		return false;
+	}
 };
 
-Meteor.loginWithSaml = (options) => {
-	options = options || {};
-	const credentialToken = `id-${Random.id()}`;
-	options.credentialToken = credentialToken;
+registerLoginWithMethod('loginWithSaml', (options: { provider: string; credentialToken?: string } = { provider: '' }) => {
+	options.credentialToken = `id-${Random.id()}`;
 
 	let url = `_saml/authorize/${options.provider}/${options.credentialToken}`;
 
 	// Forward the loginClient so the session can be deep-linked back to the native client.
 	const loginClient = new URLSearchParams(window.location.search).get('loginClient');
-	if (settings.peek('Accounts_OAuth_Use_Modern_Flow') && (loginClient === 'desktop' || loginClient === 'mobile')) {
+	if (loginClient === 'desktop' || loginClient === 'mobile') {
 		url += `?loginClient=${loginClient}`;
 	}
 
 	window.location.href = url;
-};
+});
 
-const loginWithSamlToken = (credentialToken: string) =>
+const loginWithSamlTokenOnly = (credentialToken: string) =>
 	callLoginMethod({
 		methodArguments: [
 			{
@@ -127,4 +105,4 @@ const loginWithSamlTokenAndTOTP = (credentialToken: string, code: string) =>
 		],
 	});
 
-Meteor.loginWithSamlToken = handleLogin(loginWithSamlToken, loginWithSamlTokenAndTOTP);
+export const loginWithSamlToken = handleLogin(loginWithSamlTokenOnly, loginWithSamlTokenAndTOTP);

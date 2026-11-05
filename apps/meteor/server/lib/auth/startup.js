@@ -1,5 +1,5 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
-import { User } from '@rocket.chat/core-services';
+import { User, ClientSafeError } from '@rocket.chat/core-services';
 import { Roles, Settings, Users } from '@rocket.chat/models';
 import { escapeRegExp, escapeHTML, getLoginExpirationInDays, removeEmpty } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
@@ -162,29 +162,6 @@ Accounts.emailTemplates.enrollAccount.html = function (user = {} /* , url*/) {
 	});
 };
 
-const getLinkedInName = ({ firstName, lastName }) => {
-	const { preferredLocale, localized: firstNameLocalized } = firstName;
-	const { localized: lastNameLocalized } = lastName;
-
-	// LinkedIn new format
-	if (preferredLocale && firstNameLocalized && preferredLocale.language && preferredLocale.country) {
-		const locale = `${preferredLocale.language}_${preferredLocale.country}`;
-
-		if (firstNameLocalized[locale] && lastNameLocalized[locale]) {
-			return `${firstNameLocalized[locale]} ${lastNameLocalized[locale]}`;
-		}
-		if (firstNameLocalized[locale]) {
-			return firstNameLocalized[locale];
-		}
-	}
-
-	// LinkedIn old format
-	if (!lastName) {
-		return firstName;
-	}
-	return `${firstName} ${lastName}`;
-};
-
 const validateEmailDomain = (user) => {
 	if (user.type === 'visitor') {
 		return true;
@@ -202,7 +179,7 @@ const validateEmailDomain = (user) => {
 		const inWhiteList = domainWhiteList.some((domain) => email.match(`@${escapeRegExp(domain)}$`));
 
 		if (!inWhiteList) {
-			throw new Meteor.Error('error-invalid-domain');
+			throw new ClientSafeError('error-invalid-domain');
 		}
 	}
 
@@ -221,13 +198,8 @@ const onCreateUserAsync = async function (options, user = {}) {
 	}
 
 	if (!user.name) {
-		if (options.profile) {
-			if (options.profile.name) {
-				user.name = options.profile.name;
-			} else if (options.profile.firstName) {
-				// LinkedIn format
-				user.name = getLinkedInName(options.profile);
-			}
+		if (options.profile?.name) {
+			user.name = options.profile.name;
 		}
 	}
 
@@ -281,7 +253,7 @@ const onCreateUserAsync = async function (options, user = {}) {
 	}
 
 	if (!options.skipEmailValidation && !validateEmailDomain(user)) {
-		throw new Meteor.Error(403, 'User validation failed');
+		throw new ClientSafeError(403, 'User validation failed');
 	}
 
 	return removeEmpty(user);
@@ -386,12 +358,9 @@ Accounts.insertUserDoc = async function (options, user) {
 		}
 		if (!options.skipDefaultAvatar && settings.get('Accounts_SetDefaultAvatar') === true) {
 			const avatarSuggestions = await getAvatarSuggestionForUser(user);
-			for (const service of Object.keys(avatarSuggestions)) {
-				const avatarData = avatarSuggestions[service];
-				if (service !== 'gravatar') {
-					await setAvatarFromServiceWithValidation(_id, avatarData.blob, '', service);
-					break;
-				}
+			const [service] = Object.keys(avatarSuggestions);
+			if (service) {
+				await setAvatarFromServiceWithValidation(_id, avatarSuggestions[service].blob, '', service);
 			}
 		}
 	}
@@ -410,13 +379,13 @@ const validateLoginAttemptAsync = async function (login) {
 	login = await callbacks.run('beforeValidateLogin', login);
 
 	if (!(await isValidLoginAttemptByIp(getClientAddress(login.connection)))) {
-		throw new Meteor.Error('error-login-blocked-for-ip', 'Login has been temporarily blocked For IP', {
+		throw new ClientSafeError('error-login-blocked-for-ip', 'Login has been temporarily blocked For IP', {
 			function: 'Accounts.validateLoginAttempt',
 		});
 	}
 
 	if (!(await isValidAttemptByUser(login))) {
-		throw new Meteor.Error('error-login-blocked-for-user', 'Login has been temporarily blocked For User', {
+		throw new ClientSafeError('error-login-blocked-for-user', 'Login has been temporarily blocked For User', {
 			function: 'Accounts.validateLoginAttempt',
 		});
 	}
@@ -430,19 +399,19 @@ const validateLoginAttemptAsync = async function (login) {
 	}
 
 	if (login.user.type === 'app') {
-		throw new Meteor.Error('error-app-user-is-not-allowed-to-login', 'App user is not allowed to login', {
+		throw new ClientSafeError('error-app-user-is-not-allowed-to-login', 'App user is not allowed to login', {
 			function: 'Accounts.validateLoginAttempt',
 		});
 	}
 
 	if (!!login.user.active !== true) {
-		throw new Meteor.Error('error-user-is-not-activated', 'User is not activated', {
+		throw new ClientSafeError('error-user-is-not-activated', 'User is not activated', {
 			function: 'Accounts.validateLoginAttempt',
 		});
 	}
 
 	if (!login.user.roles || !Array.isArray(login.user.roles)) {
-		throw new Meteor.Error('error-user-has-no-roles', 'User has no roles', {
+		throw new ClientSafeError('error-user-has-no-roles', 'User has no roles', {
 			function: 'Accounts.validateLoginAttempt',
 		});
 	}
@@ -450,7 +419,7 @@ const validateLoginAttemptAsync = async function (login) {
 	if (login.user.roles.includes('admin') === false && login.type === 'password' && settings.get('Accounts_EmailVerification') === true) {
 		const validEmail = login.user.emails.filter((email) => email.verified === true);
 		if (validEmail.length === 0) {
-			throw new Meteor.Error('error-invalid-email', 'Invalid email __email__');
+			throw new ClientSafeError('error-invalid-email', 'Invalid email __email__');
 		}
 	}
 
@@ -488,7 +457,7 @@ Accounts.validateNewUser((user) => {
 		settings.get('LDAP_Enable') === false &&
 		!(user.services && user.services.password)
 	) {
-		throw new Meteor.Error('registration-disabled-authentication-services', 'User registration is disabled for authentication services');
+		throw new ClientSafeError('registration-disabled-authentication-services', 'User registration is disabled for authentication services');
 	}
 
 	return true;
@@ -511,7 +480,7 @@ Accounts.validateNewUser((user) => {
 		const inWhiteList = domainWhiteList.some((domain) => email.match(`@${escapeRegExp(domain)}$`));
 
 		if (inWhiteList === false) {
-			throw new Meteor.Error('error-invalid-domain');
+			throw new ClientSafeError('error-invalid-domain');
 		}
 	}
 

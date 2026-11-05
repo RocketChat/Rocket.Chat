@@ -1,6 +1,6 @@
 import { useDebouncedState, useStableCallback, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import type { ReactNode, ContextType } from 'react';
-import { useState, useCallback, useMemo, useSyncExternalStore } from 'react';
+import { useState, useCallback, useMemo, useRef, useSyncExternalStore } from 'react';
 
 import { useUpdateCustomEmoji } from './useUpdateCustomEmoji';
 import { EmojiPickerContext } from '../../contexts/EmojiPickerContext';
@@ -78,11 +78,27 @@ const EmojiPickerProvider = ({ children }: EmojiPickerProviderProps) => {
 		[recentEmojis, setRecentEmojis, addFrequentEmojis],
 	);
 
-	const open = useCallback((ref: Element, callback: (emoji: string) => void) => {
-		return setEmojiPicker(<EmojiPicker reference={ref} onClose={() => setEmojiPicker(null)} onPickEmoji={(emoji) => callback(emoji)} />);
+	const onCloseRef = useRef<() => void>(undefined);
+
+	const close = useCallback(() => {
+		setEmojiPicker(null);
+
+		const onClose = onCloseRef.current;
+		onCloseRef.current = undefined;
+		onClose?.();
 	}, []);
 
-	const close = useCallback(() => setEmojiPicker(null), []);
+	const open = useCallback(
+		(ref: Element, callback: (emoji: string) => void, onClose?: () => void) => {
+			// A picker opened in place of another closes that one for whoever opened it.
+			const previousOnClose = onCloseRef.current;
+			onCloseRef.current = onClose;
+			previousOnClose?.();
+
+			setEmojiPicker(<EmojiPicker reference={ref} onClose={close} onPickEmoji={(emoji) => callback(emoji)} />);
+		},
+		[close],
+	);
 
 	const handlePreview = useCallback(
 		(emoji: string, name: string) =>

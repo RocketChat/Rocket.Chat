@@ -88,7 +88,6 @@ const RoomsTableFilters = ({ setFilters }: RoomsTableFiltersProps) => {
 			<Box minWidth='x224' display='flex' margin='x4' flexGrow={2}>
 				<TextInput
 					name='search-rooms'
-					alignItems='center'
 					placeholder={t('Search_rooms')}
 					endAddon={<Icon name='magnifier' size='x20' />}
 					onChange={handleSearchTextChange}

@@ -28,16 +28,24 @@ it('should update the steps when the list emits a stateChanged event', () => {
 
 it('should subscribe to list changes on mount and unsubscribe on unmount', () => {
 	const list = new StepsLinkedList([]);
-	const onSpy = jest.spyOn(list, 'on');
-	const offSpy = jest.spyOn(list, 'off');
+	const toArraySpy = jest.spyOn(list, 'toArray');
 
-	const { unmount } = renderHook(() => useWizardSteps(list));
+	const { result, unmount } = renderHook(() => useWizardSteps(list));
 
-	expect(onSpy).toHaveBeenCalledWith('stateChanged', expect.any(Function));
+	expect(list.has('stateChanged')).toBe(true);
+
+	act(() => list.append({ id: '1', title: 'Step 1' }));
+
+	expect(result.current).toEqual(list.toArray());
 
 	unmount();
 
-	expect(offSpy).toHaveBeenCalledWith('stateChanged', expect.any(Function));
+	expect(list.has('stateChanged')).toBe(false);
+
+	toArraySpy.mockClear();
+	list.append({ id: '2', title: 'Step 2' });
+
+	expect(toArraySpy).not.toHaveBeenCalled();
 });
 
 it('should return the latest state on re-render if the list instance changes', () => {

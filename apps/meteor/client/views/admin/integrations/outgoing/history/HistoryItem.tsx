@@ -1,13 +1,13 @@
 import type { IIntegrationHistory, Serialized } from '@rocket.chat/core-typings';
-import { Button, Icon, Box, AccordionItem, Field, FieldGroup, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
+import { Button, Icon, Box, AccordionItem, Field, FieldGroup, FieldLabel, FieldRow, Stack } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { useFormatDateAndTime } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
 import type { MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { outgoingEvents } from '../../../../../../app/integrations/lib/outgoingEvents';
-import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
+import { outgoingEvents } from '../../../../../../lib/integrations/outgoingEvents';
 import { useHighlightedCode } from '../../../../../hooks/useHighlightedCode';
 
 export type HistoryItemProps = { data: Serialized<IIntegrationHistory> };
@@ -57,11 +57,11 @@ const HistoryItem = ({ data }: HistoryItemProps) => {
 		<AccordionItem
 			title={
 				<Box display='inline-flex' width='full' flexDirection='row' justifyContent='space-between'>
-					<Box display='flex' flexDirection='row' alignItems='center'>
-						<Icon name='info-circled' size='x16' marginInlineEnd={4} />
+					<Stack direction='row' align='center' gap={4}>
+						<Icon name='info-circled' size='x16' />
 						{formatDateAndTime(_createdAt)}
-					</Box>
-					<Button secondary onClick={handleClickReplay}>
+					</Stack>
+					<Button variant='secondary' onClick={handleClickReplay}>
 						{t('Replay')}
 					</Button>
 				</Box>

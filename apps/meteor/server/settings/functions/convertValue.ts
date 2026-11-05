@@ -1,5 +1,15 @@
 import type { ISetting, SettingValue } from '@rocket.chat/core-typings';
 
+const parseIntegerValue = (value: string): number => {
+	const parsed = Number(value);
+
+	if (value.trim() === '' || !Number.isSafeInteger(parsed)) {
+		throw new Error(`Invalid integer value "${value}"`);
+	}
+
+	return parsed;
+};
+
 export const convertValue = (value: 'true' | 'false' | string, type: ISetting['type']): SettingValue => {
 	if (value.toLowerCase() === 'true') {
 		return true;
@@ -7,10 +17,10 @@ export const convertValue = (value: 'true' | 'false' | string, type: ISetting['t
 	if (value.toLowerCase() === 'false') {
 		return false;
 	}
-	if (type === 'int') {
-		return parseInt(value);
+	if (type === 'int' || type === 'timespan') {
+		return parseIntegerValue(value);
 	}
-	if (type === 'multiSelect') {
+	if (type === 'multiSelect' || type === 'multiLookup') {
 		return JSON.parse(value);
 	}
 	return value;

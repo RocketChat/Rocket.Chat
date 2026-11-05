@@ -1,7 +1,7 @@
+import { renderComposerMarkup } from '@rocket.chat/gazzodown-alt';
 import { parse, type Options } from '@rocket.chat/message-parser';
 import { escapeHTML } from '@rocket.chat/tools';
 
-import { renderComposerMarkup } from './renderComposerMarkup';
 import { getSelectionRange, setSelectionRange } from './selectionRange';
 
 // Paragraphs render with a trailing '\n' the source does not have.

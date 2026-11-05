@@ -5,4 +5,5 @@ export type RadioButtonElement = Actionable<{
 	type: 'radio_button';
 	options: Option[];
 	initialOption?: Option;
+	focus_on_load?: boolean;
 }>;

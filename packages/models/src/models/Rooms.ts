@@ -99,6 +99,14 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 				sparse: true,
 			},
 			{
+				key: { 'xmppFederation.muc': 1 },
+				sparse: true,
+			},
+			{
+				key: { 'xmppFederation.role': 1, 'uids': 1 },
+				sparse: true,
+			},
+			{
 				key: {
 					'usersWaitingForE2EKeys.userId': 1,
 				},
@@ -795,6 +803,57 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		};
 
 		return this.findOne<T, O>(query, options);
+	}
+
+	findByXMPPRole<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		role: NonNullable<IRoom['xmppFederation']>['role'],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
+		const query: Filter<IRoom> = {
+			'xmppFederation.role': role,
+		};
+
+		return this.find<T, O>(query, options);
+	}
+
+	findOneByXMPPMucJid<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		mucJid: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
+		const query: Filter<IRoom> = {
+			'xmppFederation.muc': mucJid,
+		};
+
+		return this.findOne<T, O>(query, options);
+	}
+
+	findXMPPDirectMessagesByUserId<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		uid: IUser['_id'],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
+		const query: Filter<IRoom> = {
+			'xmppFederation.role': 'dm',
+			'uids': uid,
+		};
+
+		return this.find<T, O>(query, options);
+	}
+
+	findOneXMPPDirectMessageByUserIdAndRemoteJid<
+		T extends Document = IRoom,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(uid: IUser['_id'], remoteJid: string, options?: O): Promise<DocumentWithProjection<T, O> | null> {
+		const query: Filter<IRoom> = {
+			'xmppFederation.role': 'dm',
+			'xmppFederation.with': remoteJid,
+			'uids': uid,
+		};
+
+		return this.findOne<T, O>(query, options);
+	}
+
+	setXMPPFederationById(rid: IRoom['_id'], xmppFederation: NonNullable<IRoom['xmppFederation']>): Promise<UpdateResult> {
+		return this.updateOne({ _id: rid }, { $set: { xmppFederation } });
 	}
 
 	async findBiggestFederatedRoomInNumberOfUsers(options?: FindOptions<IRoom>): Promise<IRoom | undefined> {
@@ -1966,32 +2025,32 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateMany(query, update);
 	}
 
-	async createWithIdTypeAndName(
+	createWithIdTypeAndNameIfNotExists(
 		_id: IRoom['_id'],
 		type: IRoom['t'],
 		name: IRoom['name'],
-		extraData?: Record<string, unknown>,
-	): Promise<IRoom> {
-		const room: IRoom = {
-			_id,
-			ts: new Date(),
-			t: type,
-			name,
-			usernames: [],
-			msgs: 0,
-			usersCount: 0,
-			_updatedAt: new Date(),
-			u: {
-				_id: 'rocket.cat',
-				username: 'rocket.cat',
-				name: 'Rocket.Cat',
+		extraData?: Partial<IRoom>,
+	): Promise<UpdateResult> {
+		return this.updateOne(
+			{ _id },
+			{
+				$setOnInsert: {
+					ts: new Date(),
+					t: type,
+					name,
+					usernames: [],
+					msgs: 0,
+					usersCount: 0,
+					u: {
+						_id: 'rocket.cat',
+						username: 'rocket.cat',
+						name: 'Rocket.Cat',
+					},
+					...extraData,
+				},
 			},
-		};
-
-		Object.assign(room, extraData);
-
-		await this.insertOne(room);
-		return room;
+			{ upsert: true },
+		);
 	}
 
 	async createWithFullRoomData(room: Omit<IRoom, '_id' | '_updatedAt'>): Promise<IRoom> {

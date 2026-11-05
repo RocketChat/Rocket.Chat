@@ -1,5 +1,5 @@
-import { Box, Tile } from '@rocket.chat/fuselage';
-import { useMergedRefs, usePosition } from '@rocket.chat/fuselage-hooks';
+import { Box, PopoverSurface } from '@rocket.chat/fuselage';
+import { useMergedRefs, usePosition, usePreventScrollOutside } from '@rocket.chat/fuselage-hooks';
 import type { ReactNode, Ref, RefObject } from 'react';
 import { useMemo, useRef, forwardRef } from 'react';
 
@@ -59,22 +59,13 @@ const EmojiPickerDesktopDropdown = forwardRef(function ToolboxDropdownDesktop(
 	const mergedRef = useMergedRefs(ref, targetRef);
 
 	const style = useDropdownPosition(reference, targetRef);
+	// The picker belongs to the message it was opened from, and scrolling the page would leave it beside another one.
+	usePreventScrollOutside(targetRef);
 
 	return (
-		<Tile
-			style={style}
-			ref={mergedRef}
-			elevation='2'
-			paddingInline='0'
-			paddingBlock='0'
-			display='flex'
-			flexDirection='column'
-			overflow='auto'
-		>
-			<Box flexShrink={1} paddingBlock={12}>
-				{children}
-			</Box>
-		</Tile>
+		<PopoverSurface style={style} ref={mergedRef}>
+			<Box>{children}</Box>
+		</PopoverSurface>
 	);
 });
 

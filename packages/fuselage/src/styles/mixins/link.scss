@@ -1,0 +1,26 @@
+@use '../../styles/colors.scss';
+@use '../../styles/lengths.scss';
+@use '../../styles/mixins/states.scss';
+@use '../../styles/functions.scss' as *;
+@use '../../styles/mixins/states.scss' as *;
+
+@mixin use-link-colors($color: colors.font(info)) {
+	@extend %link;
+
+	color: theme('link-color', $color);
+
+	@include on-focus {
+		color: theme('link-focus-color', $color);
+	}
+
+	&:where(:visited),
+	&:where(.is-visited) {
+		color: theme('link-visited-color', $color);
+	}
+
+	&:where(:active),
+	&:where(.active),
+	&:where(.is-active) {
+		color: theme('link-active-color', $color);
+	}
+}

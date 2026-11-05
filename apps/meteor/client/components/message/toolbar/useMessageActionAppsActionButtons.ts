@@ -5,11 +5,11 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Utilities } from '../../../../ee/lib/misc/Utilities';
+import { useUiKitActionManager } from '../../../hooks/uikit/useUiKitActionManager';
 import { useAppActionButtons, getIdForActionButton } from '../../../hooks/useAppActionButtons';
 import { useApplyButtonFilters } from '../../../hooks/useApplyButtonFilters';
 import type { MessageActionContext, MessageActionConfig } from '../../../lib/MessageAction';
 import { UiKitTriggerTimeoutError } from '../../../lib/errors/UiKitTriggerTimeoutError';
-import { useUiKitActionManager } from '../../../uikit/hooks/useUiKitActionManager';
 
 const filterActionsByContext = (context: string | undefined, action: IUIActionButton) => {
 	if (!context) {

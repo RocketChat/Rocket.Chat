@@ -2,6 +2,7 @@ import { CheckBox } from '@rocket.chat/fuselage';
 import type * as MessageParser from '@rocket.chat/message-parser';
 import { useContext } from 'react';
 
+import NestedListsBlock from './NestedListsBlock';
 import { MarkupInteractionContext } from '../MarkupInteractionContext';
 import InlineElements from '../elements/InlineElements';
 
@@ -17,6 +18,7 @@ const TaskListBlock = ({ tasks }: TaskListBlockProps) => {
 			{tasks.map((item, index) => (
 				<li key={index}>
 					<CheckBox checked={item.status} onChange={onTaskChecked?.(item)} /> <InlineElements>{item.value}</InlineElements>
+					{item.nested && <NestedListsBlock lists={item.nested} />}
 				</li>
 			))}
 		</ul>

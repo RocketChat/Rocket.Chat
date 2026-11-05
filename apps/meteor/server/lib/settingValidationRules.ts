@@ -17,9 +17,10 @@ const isAppliesWhenCondition = (value: unknown): value is { _id: ISetting['_id']
 const isValidationRule = (rule: unknown): rule is SettingValidationRule =>
 	isRecord(rule) &&
 	isRecord(rule.query) &&
+	(rule.referencesMayBeAbsent === undefined || typeof rule.referencesMayBeAbsent === 'boolean') &&
 	(rule.appliesWhen === undefined ||
 		isAppliesWhenCondition(rule.appliesWhen) ||
-		(Array.isArray(rule.appliesWhen) && rule.appliesWhen.every(isAppliesWhenCondition)));
+		(Array.isArray(rule.appliesWhen) && rule.appliesWhen.length > 0 && rule.appliesWhen.every(isAppliesWhenCondition)));
 
 const isValidationRuleArray = (value: unknown): value is SettingValidationRule[] => Array.isArray(value) && value.every(isValidationRule);
 
@@ -108,7 +109,10 @@ const evaluateSettingValidationRule = (
 
 	const unknownReferences = Object.keys(references).filter((id) => references[id] === undefined);
 	if (unknownReferences.length) {
-		logger.error({ msg: 'Setting validation rule references unknown settings', settingId, references: unknownReferences });
+		if (!rule.referencesMayBeAbsent) {
+			logger.error({ msg: 'Setting validation rule references unknown settings', settingId, references: unknownReferences });
+		}
+
 		return true;
 	}
 

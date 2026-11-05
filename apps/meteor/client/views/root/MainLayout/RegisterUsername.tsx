@@ -125,7 +125,7 @@ const RegisterUsername = () => {
 				</FormContainer>
 				<FormFooter>
 					<ButtonGroup stretch vertical>
-						<Button disabled={isLoading} type='submit' primary>
+						<Button disabled={isLoading} type='submit' variant='primary'>
 							{t('Use_this_username')}
 						</Button>
 						<Button onClick={logout}>{t('Logout')}</Button>

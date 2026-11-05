@@ -1,4 +1,4 @@
-import { MeteorError } from '@rocket.chat/core-services';
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatVisitors, Users, LivechatRooms, LivechatInquiry, Rooms, Subscriptions } from '@rocket.chat/models';
 import type { MatchKeysAndValues, OnlyFieldsOfType } from 'mongodb';
@@ -26,7 +26,7 @@ export async function registerContact(
 	userId: string,
 ): Promise<string> {
 	if (!token || typeof token !== 'string') {
-		throw new MeteorError('error-invalid-contact-data', 'Invalid visitor token');
+		throw new ClientSafeError('error-invalid-contact-data', 'Invalid visitor token');
 	}
 
 	const visitorEmail = email.trim().toLowerCase();
@@ -35,10 +35,10 @@ export async function registerContact(
 		// verify if the user exists with this username and has a livechat-agent role
 		const manager = await Users.findOneByUsername(contactManager.username, { projection: { roles: 1 } });
 		if (!manager) {
-			throw new MeteorError('error-contact-manager-not-found', `No user found with username ${contactManager.username}`);
+			throw new ClientSafeError('error-contact-manager-not-found', `No user found with username ${contactManager.username}`);
 		}
 		if (!manager.roles || !Array.isArray(manager.roles) || !manager.roles.includes('livechat-agent')) {
-			throw new MeteorError('error-invalid-contact-manager', 'The contact manager must have the role "livechat-agent"');
+			throw new ClientSafeError('error-invalid-contact-manager', 'The contact manager must have the role "livechat-agent"');
 		}
 	}
 

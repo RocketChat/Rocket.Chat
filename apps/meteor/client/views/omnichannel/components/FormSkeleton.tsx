@@ -4,8 +4,8 @@ import type { ComponentPropsWithoutRef } from 'react';
 export type FormSkeletonProps = ComponentPropsWithoutRef<typeof Box>;
 
 export const FormSkeleton = (props: FormSkeletonProps) => (
-	<Box width='full' paddingBlock={24} {...props}>
-		<Skeleton marginBlockEnd={8} />
-		<Skeleton marginBlockEnd={4} />
+	<Box width='full' paddingBlockStart={24} paddingBlockEnd={28} display='flex' flexDirection='column' gap={8} {...props}>
+		<Skeleton />
+		<Skeleton />
 	</Box>
 );

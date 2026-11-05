@@ -1,7 +1,18 @@
-import { VisuallyHidden } from '@react-aria/visually-hidden';
 import { getUserDisplayNames } from '@rocket.chat/core-typings';
-import { Box, Icon, IconButton, Option, OptionAvatar, OptionColumn, OptionContent } from '@rocket.chat/fuselage';
-import { UserAvatar } from '@rocket.chat/ui-avatar';
+import {
+	Icon,
+	IconButton,
+	Item,
+	ItemActions,
+	ItemContent,
+	ItemDescription,
+	ItemIcon,
+	ItemMedia,
+	ItemRow,
+	ItemTitle,
+} from '@rocket.chat/fuselage';
+import { ITEM_MEDIA_SIZE, UserAvatar } from '@rocket.chat/ui-avatar';
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useConferenceSlots, useConferenceViewer } from '../../context/ConferenceContext';
@@ -15,6 +26,7 @@ import CallParticipantStatus from '../CallParticipantStatus/CallParticipantStatu
 
 type CallMemberItemProps = {
 	member: ConferenceMember;
+	/** Membership grants no room access, so a member can be in the call and unable to read its chat. */
 	hasChatAccess: boolean;
 	/** Whether this member's ring has been asked for and not yet answered. */
 	ringing?: boolean;
@@ -23,19 +35,38 @@ type CallMemberItemProps = {
 	 * the provider does not have is one no request could name.
 	 */
 	controls?: Omit<CallParticipantControlsProps, 'name'>;
+	/** Whether they are waiting to speak. */
+	handRaised?: boolean;
+	/** Whether their microphone is already off, in which case there is nothing to ask for. */
+	muted?: boolean;
+	/** Asks them to mute. Absent where the call cannot carry the request. */
+	onMute?: (memberId: string) => void;
+	/** Their microphone level, for a call whose audio this window holds. */
+	activity?: ReactNode;
 	onRing: (memberId: string) => void;
 };
 
+/** Only shown for members who aren't in the call — for those, presence in the call is the whole story. */
 const statusLabel: Record<Exclude<ConferenceMemberStatus, 'joined'>, string> = {
 	left: 'Left',
 	declined: 'Declined',
 	invited: 'Waiting_for_answer',
 };
 
-const CallMemberItem = ({ member, hasChatAccess, ringing: ringRequested = false, controls, onRing }: CallMemberItemProps) => {
+const CallMemberItem = ({
+	member,
+	hasChatAccess,
+	ringing: ringRequested = false,
+	controls,
+	handRaised,
+	muted,
+	activity,
+	onRing,
+	onMute,
+}: CallMemberItemProps) => {
 	const { t } = useTranslation();
 	// `video-conference.ring` refuses without the permission, so a caller who lacks it is offered nothing to press.
-	const { useRealName, canRingUsers } = useConferenceViewer();
+	const { uid: ownUserId, useRealName, canRingUsers } = useConferenceViewer();
 	const { renderMemberStatus } = useConferenceSlots();
 	const [nameOrUsername, displayUsername] = getUserDisplayNames(member.name, member.username, useRealName);
 	const status = getConferenceMemberStatus(member);
@@ -43,56 +74,67 @@ const CallMemberItem = ({ member, hasChatAccess, ringing: ringRequested = false,
 	const ringing = useIsRinging(member);
 
 	const canRing = status !== 'joined' && !ringing;
+	const isLive = status === 'joined' && !muted;
+	const canMute = isLive && member._id !== ownUserId && !!onMute;
+	const showActivity = isLive && !!activity;
 
 	return (
-		<Option>
-			<OptionAvatar>
-				<UserAvatar username={member.username} size='x28' />
-			</OptionAvatar>
-			{renderMemberStatus && <OptionColumn>{renderMemberStatus(member._id)}</OptionColumn>}
-			<OptionContent>
-				<Box display='flex' alignItems='center'>
-					<Box withTruncatedText>{nameOrUsername}</Box>
-					{displayUsername && (
-						<Box marginInlineStart={4} color='hint' withTruncatedText>
-							{displayUsername}
-						</Box>
-					)}
+		<Item role='listitem' inset='lg'>
+			<ItemMedia>
+				<UserAvatar username={member.username} size={ITEM_MEDIA_SIZE.medium} />
+			</ItemMedia>
+			{renderMemberStatus && <ItemIcon>{renderMemberStatus(member._id)}</ItemIcon>}
+			<ItemContent>
+				<ItemRow>
+					<ItemTitle>
+						{nameOrUsername} {displayUsername && <ItemDescription inline>{displayUsername}</ItemDescription>}
+					</ItemTitle>
+				</ItemRow>
+				{status !== 'joined' && <ItemDescription>{t(ringing ? 'Ringing' : statusLabel[status])}</ItemDescription>}
+			</ItemContent>
+			{(canMute || showActivity || (canRingUsers && canRing) || controls || !hasChatAccess || handRaised) && (
+				<ItemActions>
+					{/* What a provider running in its own frame says about them. */}
 					{controls && <CallParticipantStatus participant={controls.participant} />}
 					{!hasChatAccess && (
-						// `Icon` renders `aria-hidden`, so the fact has to go in as text to be announced at all.
-						<Box marginInlineStart={4} display='flex' color='hint' title={t('No_chat_access')}>
-							<Icon name='balloon-off' size='x16' />
-							<VisuallyHidden>{t('No_chat_access')}</VisuallyHidden>
-						</Box>
+						<ItemIcon label={t('No_chat_access')} title={t('No_chat_access')}>
+							<Icon name='balloon-off' size='x16' color='hint' />
+						</ItemIcon>
 					)}
-				</Box>
-				{status !== 'joined' && (
-					<Box fontScale='c1' color='hint'>
-						{t(ringing ? 'Ringing' : statusLabel[status])}
-					</Box>
-				)}
-			</OptionContent>
-			{canRingUsers && canRing && (
-				<OptionColumn>
-					{/* The button stays until the server says the phone is ringing, which is a round trip away — so
-					    while the request is out it refuses a second one. Clicking three times rang three times. */}
-					<IconButton
-						small
-						icon='phone'
-						title={t('Ring__name__', { name: nameOrUsername })}
-						aria-label={t('Ring__name__', { name: nameOrUsername })}
-						disabled={ringRequested}
-						onClick={() => onRing(member._id)}
-					/>
-				</OptionColumn>
+					{handRaised && (
+						<ItemIcon label={t('Raised_hand')} title={t('Raised_hand')}>
+							<Icon name='hand' size='x16' />
+						</ItemIcon>
+					)}
+					{/* A live microphone, and for anyone but the reader a way to ask it for silence. A muted one says nothing:
+					    silence is what everyone already hears. */}
+					{canMute && (
+						<IconButton
+							variant='secondary'
+							size='small'
+							icon='mic-off'
+							title={t('Mute__name__', { name: nameOrUsername })}
+							aria-label={t('Mute__name__', { name: nameOrUsername })}
+							onClick={() => onMute?.(member._id)}
+						/>
+					)}
+					{showActivity && activity}
+					{canRingUsers && canRing && (
+						// The button stays until the server says the phone is ringing, which is a round trip away — so
+						// while the request is out it refuses a second one. Clicking three times rang three times.
+						<IconButton
+							size='small'
+							icon='phone'
+							title={t('Ring__name__', { name: nameOrUsername })}
+							aria-label={t('Ring__name__', { name: nameOrUsername })}
+							disabled={ringRequested}
+							onClick={() => onRing(member._id)}
+						/>
+					)}
+					{controls && <CallParticipantControls name={nameOrUsername} {...controls} />}
+				</ItemActions>
 			)}
-			{controls && (
-				<OptionColumn>
-					<CallParticipantControls name={nameOrUsername} {...controls} />
-				</OptionColumn>
-			)}
-		</Option>
+		</Item>
 	);
 };
 

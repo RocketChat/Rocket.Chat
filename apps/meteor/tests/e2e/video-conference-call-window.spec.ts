@@ -381,7 +381,7 @@ test.describe('video conference call window', () => {
 			// Asserted as the one row it is rather than as the absence of a second, so that a change to any of
 			// the above fails here instead of passing on something that was never rendered.
 			await callWindow.getBtnMembers(1).click();
-			await expect(callWindow.textInCall).toBeVisible();
+			await expect(callWindow.listInCall).toBeVisible();
 			await expect(callWindow.memberRows).toHaveCount(1);
 			await expect(callWindow.getMember('user1')).toBeVisible();
 		});
@@ -555,7 +555,7 @@ test.describe('video conference call window', () => {
 		await test.step('a decline is reported where the ring was, and ringing back is offered', async () => {
 			await user2.poHomeChannel.ongoingCalls.btnDecline.click();
 
-			await expect(callWindow.textNotInTheCall).toBeVisible();
+			await expect(callWindow.listNotInTheCall).toBeVisible();
 			try {
 				await expect(callWindow.getMemberStatus('Declined')).toBeVisible();
 			} catch (error) {
@@ -577,9 +577,9 @@ test.describe('video conference call window', () => {
 
 		await test.step('a join moves them into the call and clears what they were before', async () => {
 			await expect(callWindow.getBtnMembers(2)).toBeVisible();
-			await expect(callWindow.textInCall).toBeVisible();
+			await expect(callWindow.listInCall).toBeVisible();
 			await expect(callWindow.getMemberStatus('Declined')).toHaveCount(0);
-			await expect(callWindow.textNotInTheCall).toHaveCount(0);
+			await expect(callWindow.listNotInTheCall).toHaveCount(0);
 		});
 
 		await test.step('and closing their window is the leave the panel is told about', async () => {
@@ -622,7 +622,7 @@ test.describe('video conference call window', () => {
 		await test.step('the members panel opens on its button', async () => {
 			await callWindow.getBtnMembers(1).click();
 			await expect(callWindow.panelTitle).toHaveText('People');
-			await expect(callWindow.textInCall).toBeVisible();
+			await expect(callWindow.listInCall).toBeVisible();
 		});
 
 		await test.step('the chat panel replaces it in the same slot', async () => {
@@ -634,7 +634,7 @@ test.describe('video conference call window', () => {
 			await expect(callWindow.getChatComposer(channel)).toBeVisible();
 			// Never both, and never two: one header means one panel, and the members list is gone from it.
 			await expect(callWindow.panelTitle).toHaveCount(1);
-			await expect(callWindow.textInCall).toHaveCount(0);
+			await expect(callWindow.listInCall).toHaveCount(0);
 		});
 
 		await test.step('the same button closes it again', async () => {
@@ -741,7 +741,7 @@ test.describe('video conference call window', () => {
 		await callWindow.addPeople('user3');
 
 		await test.step('an add rings, and a member who is not in the call is not counted as being in it', async () => {
-			await expect(callWindow.textNotInTheCall).toBeVisible();
+			await expect(callWindow.listNotInTheCall).toBeVisible();
 			await expect(callWindow.getMember('user3')).toBeVisible();
 			await expect(callWindow.getMemberStatus('Ringing')).toBeVisible();
 			await expect(callWindow.getBtnMembers(1)).toBeVisible();

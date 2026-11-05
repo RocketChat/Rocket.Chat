@@ -17,7 +17,7 @@ const UserContextFooter = ({ userId, deleted }: UserContextFooterProps) => {
 	return (
 		<ButtonGroup stretch>
 			<Button onClick={dismissUserAction.onClick}>{t('Moderation_Dismiss_all_reports')}</Button>
-			<Button disabled={deleted} onClick={deactivateUserAction.onClick} secondary danger>
+			<Button disabled={deleted} onClick={deactivateUserAction.onClick} variant='secondary-danger'>
 				{t('Moderation_Deactivate_User')}
 			</Button>
 			<Box display='flex' flexGrow={0} marginInlineStart={8}>

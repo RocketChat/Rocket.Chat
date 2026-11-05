@@ -1,9 +1,9 @@
 import type { IRole, Serialized } from '@rocket.chat/core-typings';
-import { Box, Icon, Margins, TextInput } from '@rocket.chat/fuselage';
+import { Box, Icon, Select, TextInput } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import type { OptionProp } from '@rocket.chat/ui-client';
 import { MultiSelectCustom } from '@rocket.chat/ui-client';
-import type { ChangeEvent, Dispatch, SetStateAction } from 'react';
+import type { ChangeEvent, Dispatch, Key, SetStateAction } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -11,30 +11,48 @@ import type { UsersFilters } from '../AdminUsersPage';
 
 export type UsersTableFiltersProps = {
 	setUsersFilters: Dispatch<SetStateAction<UsersFilters>>;
-	roleData: { roles: Serialized<IRole>[] } | undefined;
+	roleData: { roles: Serialized<Omit<IRole, '_updatedAt'>>[] } | undefined;
+	showStatusManagementFilter?: boolean;
 };
 
-const UsersTableFilters = ({ roleData, setUsersFilters }: UsersTableFiltersProps) => {
+const UsersTableFilters = ({ roleData, setUsersFilters, showStatusManagementFilter = false }: UsersTableFiltersProps) => {
 	const { t } = useTranslation();
 
 	const [selectedRoles, setSelectedRoles] = useState<OptionProp[]>([]);
 	const [text, setText] = useState('');
 
+	const [statusManagement, setStatusManagement] = useState<UsersFilters['statusManagement']>();
+
 	const handleSearchTextChange = useCallback(
 		(event: ChangeEvent<HTMLInputElement>) => {
 			setText(event.currentTarget.value);
-			setUsersFilters({ text: event.currentTarget.value, roles: selectedRoles });
+			setUsersFilters({ text: event.currentTarget.value, roles: selectedRoles, statusManagement });
 		},
-		[selectedRoles, setUsersFilters],
+		[selectedRoles, setUsersFilters, statusManagement],
 	);
 
 	const handleRolesChange = useCallback(
 		(roles: OptionProp[]) => {
-			setUsersFilters({ text, roles });
+			setUsersFilters({ text, roles, statusManagement });
 			setSelectedRoles(roles);
 		},
-		[setUsersFilters, text],
+		[setUsersFilters, statusManagement, text],
 	);
+
+	const handleStatusManagementChange = useCallback(
+		(key: Key) => {
+			const value = key === 'all' ? undefined : (key as UsersFilters['statusManagement']);
+			setUsersFilters({ text, roles: selectedRoles, statusManagement: value });
+			setStatusManagement(value);
+		},
+		[selectedRoles, setUsersFilters, text],
+	);
+
+	const statusManagementOptions: [key: string, label: string][] = [
+		['all', t('All_user_statuses')],
+		['default', t('Default_status')],
+		['managed', t('Managed_status')],
+	];
 
 	const userRolesFilterStructure = useMemo(
 		() => [
@@ -72,18 +90,17 @@ const UsersTableFilters = ({ roleData, setUsersFilters }: UsersTableFiltersProps
 			display='flex'
 			flexWrap='wrap'
 			alignItems='center'
+			columnGap={isLargeScreenOrBigger ? 16 : undefined}
 		>
-			<Margins inlineEnd={isLargeScreenOrBigger ? 16 : 0}>
+			<Box display='flex' flexGrow={1} minWidth='x280'>
 				<TextInput
 					placeholder={t('Search_Users')}
 					endAddon={<Icon name='magnifier' size='x20' />}
 					onChange={handleSearchTextChange}
 					value={text}
-					flexGrow={2}
-					minWidth='x220'
 					aria-label={t('Search_Users')}
 				/>
-			</Margins>
+			</Box>
 			<Box marginBlock={4} width={isLargeScreenOrBigger ? 'unset' : '100%'}>
 				<MultiSelectCustom
 					dropdownOptions={userRolesFilterStructure}
@@ -95,6 +112,17 @@ const UsersTableFilters = ({ roleData, setUsersFilters }: UsersTableFiltersProps
 					{...fixFiltersSize}
 				/>
 			</Box>
+			{showStatusManagementFilter && (
+				<Box marginBlock={4} width={isLargeScreenOrBigger ? 'unset' : '100%'}>
+					<Select
+						aria-label={t('User_Status')}
+						options={statusManagementOptions}
+						value={statusManagement ?? 'all'}
+						onChange={handleStatusManagementChange}
+						{...fixFiltersSize}
+					/>
+				</Box>
+			)}
 		</Box>
 	);
 };

@@ -134,7 +134,7 @@ describe('clone', () => {
 
 	it('should handle Arguments objects', () => {
 		function getArgs(..._: any) {
-			// eslint-disable-next-line prefer-rest-params
+			// oxlint-disable-next-line prefer-rest-params
 			return arguments;
 		}
 

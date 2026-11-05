@@ -1,4 +1,4 @@
-import { Button } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { Meta, StoryObj } from '@storybook/react';
 
@@ -9,6 +9,10 @@ import MockedMediaCallProvider from '../../providers/MockedMediaCallProvider';
 const mockedContexts = mockAppRoot()
 	.withTranslations('en', 'core', {
 		New_Call: 'New call',
+		Transferring_call_incoming: 'Incoming call transfer',
+		Transferring_call_incoming__from_: 'From {{from}}',
+		Transferred_call__from__to: '{{from}} transferred call to',
+		Transferring_call: 'Transferring call',
 		Incoming_call: 'Incoming call',
 		Enter_username_or_number: 'Enter username or number',
 		meteor_status_connecting: 'Connecting...',
@@ -48,12 +52,14 @@ export const MediaCallWidgetManualTesting: Story = {
 		const { state } = sessionState;
 		return (
 			<>
-				<Button onClick={() => toggleWidget()} disabled={state !== 'none'} marginInlineEnd={8}>
-					Toggle widget
-				</Button>
-				<Button onClick={() => onCall()} disabled={targetWidgetVisibility !== 'closed'}>
-					Receive call
-				</Button>
+				<ButtonGroup>
+					<Button onClick={() => toggleWidget()} disabled={state !== 'none'}>
+						Toggle widget
+					</Button>
+					<Button onClick={() => onCall()} disabled={targetWidgetVisibility !== 'closed'}>
+						Receive call
+					</Button>
+				</ButtonGroup>
 				<MediaCallWidget />
 			</>
 		);
@@ -86,6 +92,14 @@ export const IncomingCallTransfer: Story = {
 	},
 };
 
+export const IncomingCallTransferConnecting: Story = {
+	args: {
+		state: 'ringing',
+		transferredBy: 'Jason',
+		connectionState: 'CONNECTING',
+	},
+};
+
 export const OutgoingCall: Story = {
 	args: {
 		state: 'calling',
@@ -103,6 +117,14 @@ export const OutgoingCallTransfer: Story = {
 	args: {
 		state: 'calling',
 		transferredBy: 'Joy',
+	},
+};
+
+export const OutgoingCallTransferConnecting: Story = {
+	args: {
+		state: 'calling',
+		transferredBy: 'Joy',
+		connectionState: 'CONNECTING',
 	},
 };
 
@@ -130,5 +152,13 @@ export const OngoingCallDisabledAllButScreenshare: Story = {
 	args: {
 		state: 'ongoing',
 		supportedFeatures: ['screen-share'],
+	},
+};
+
+export const OngoingCallNoScreenSharingPermission: Story = {
+	args: {
+		state: 'ongoing',
+		supportedFeatures: ['screen-share', 'audio', 'hold', 'transfer'],
+		allowedFeatures: ['audio', 'hold', 'transfer'],
 	},
 };

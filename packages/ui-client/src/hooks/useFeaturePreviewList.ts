@@ -31,7 +31,7 @@ export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 	{
 		name: 'aiSearch',
 		i18n: 'Intelligent_Search',
-		description: 'Intelligent_Search_upsell_description',
+		description: 'Intelligent_Search_description',
 		group: 'AI',
 		value: false,
 		enabled: true,
@@ -48,7 +48,7 @@ export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 		name: 'realtimeMessageComposer',
 		i18n: 'Realtime_message_composer',
 		description: 'Realtime_message_composer_description',
-		group: 'Message',
+		group: 'Room',
 		value: false,
 		enabled: true,
 	},

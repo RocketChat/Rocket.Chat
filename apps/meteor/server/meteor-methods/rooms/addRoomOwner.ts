@@ -1,25 +1,15 @@
-import { api, Message, Team } from '@rocket.chat/core-services';
+import { api, Message, Team, ClientSafeError } from '@rocket.chat/core-services';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Subscriptions, Rooms, Users } from '@rocket.chat/models';
 import { check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { beforeChangeRoomRole } from '../../lib/callbacks/beforeChangeRoomRole';
-import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { notifyOnSubscriptionChangedById } from '../../lib/notifyListener';
 import { syncRoomRolePriorityForUserAndRoom } from '../../lib/roles/syncRoomRolePriority';
 import { isFederationEnabled, FederationMatrixInvalidConfigurationError } from '../../services/federation/utils';
 import { settings } from '../../settings';
-
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		addRoomOwner(rid: IRoom['_id'], userId: IUser['_id']): boolean;
-	}
-}
 
 export const addRoomOwner = async (fromUserId: IUser['_id'], rid: IRoom['_id'], userId: IUser['_id']): Promise<boolean> => {
 	check(rid, String);
@@ -27,7 +17,7 @@ export const addRoomOwner = async (fromUserId: IUser['_id'], rid: IRoom['_id'], 
 
 	const room = await Rooms.findOneById(rid, { projection: { t: 1, federated: 1, federation: 1 } });
 	if (!room) {
-		throw new Meteor.Error('error-invalid-room', 'Invalid room', {
+		throw new ClientSafeError('error-invalid-room', 'Invalid room', {
 			method: 'addRoomOwner',
 		});
 	}
@@ -35,7 +25,7 @@ export const addRoomOwner = async (fromUserId: IUser['_id'], rid: IRoom['_id'], 
 	const isFederated = isRoomFederated(room);
 
 	if (!(await hasPermissionAsync(fromUserId, 'set-owner', rid)) && !isFederated) {
-		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+		throw new ClientSafeError('error-not-allowed', 'Not allowed', {
 			method: 'addRoomOwner',
 		});
 	}
@@ -47,7 +37,7 @@ export const addRoomOwner = async (fromUserId: IUser['_id'], rid: IRoom['_id'], 
 	const user = await Users.findOneById(userId);
 
 	if (!user?.username) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+		throw new ClientSafeError('error-invalid-user', 'Invalid user', {
 			method: 'addRoomOwner',
 		});
 	}
@@ -55,13 +45,13 @@ export const addRoomOwner = async (fromUserId: IUser['_id'], rid: IRoom['_id'], 
 	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
 
 	if (!subscription) {
-		throw new Meteor.Error('error-user-not-in-room', 'User is not in this room', {
+		throw new ClientSafeError('error-user-not-in-room', 'User is not in this room', {
 			method: 'addRoomOwner',
 		});
 	}
 
 	if (subscription.roles && Array.isArray(subscription.roles) === true && subscription.roles.includes('owner') === true) {
-		throw new Meteor.Error('error-user-already-owner', 'User is already an owner', {
+		throw new ClientSafeError('error-user-already-owner', 'User is already an owner', {
 			method: 'addRoomOwner',
 		});
 	}
@@ -77,7 +67,7 @@ export const addRoomOwner = async (fromUserId: IUser['_id'], rid: IRoom['_id'], 
 
 	const fromUser = await Users.findOneById(fromUserId);
 	if (!fromUser) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+		throw new ClientSafeError('error-invalid-user', 'Invalid user', {
 			method: 'addRoomLeader',
 		});
 	}
@@ -101,22 +91,6 @@ export const addRoomOwner = async (fromUserId: IUser['_id'], rid: IRoom['_id'], 
 	if (settings.get('UI_DisplayRoles')) {
 		void api.broadcast('user.roleUpdate', event);
 	}
-	void api.broadcast('federation.userRoleChanged', { ...event, givenByUserId: fromUserId });
 
 	return true;
 };
-
-Meteor.methods<ServerMethods>({
-	async addRoomOwner(rid, userId) {
-		methodDeprecationLogger.method('addRoomOwner', '9.0.0', ['/v1/channels.addOwner', '/v1/groups.addOwner']);
-		const uid = Meteor.userId();
-
-		if (!uid) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'addRoomOwner',
-			});
-		}
-
-		return addRoomOwner(uid, rid, userId);
-	},
-});

@@ -37,6 +37,10 @@ export class LocalAttributeStore implements IAttributeStore {
 		};
 	}
 
+	async listAttributeKeys(_actor: AbacActor | undefined): Promise<string[]> {
+		return AbacAttributes.findAllKeys();
+	}
+
 	async validateAssignable(attrs: IAbacAttributeDefinition[], _actor: AbacActor): Promise<void> {
 		await ensureAttributeDefinitionsExist(attrs);
 	}

@@ -11,11 +11,13 @@ import {
 	ModalHeader,
 	ModalHeaderText,
 	ModalTitle,
-	Option,
-	OptionAvatar,
-	OptionContent,
+	Item,
+	ItemContent,
+	ItemGroup,
+	ItemMedia,
+	ItemTitle,
 } from '@rocket.chat/fuselage';
-import { UserAvatar } from '@rocket.chat/ui-avatar';
+import { ITEM_MEDIA_SIZE, UserAvatar } from '@rocket.chat/ui-avatar';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useId, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -41,6 +43,7 @@ type ChatAccessModalProps = {
 const ChatAccessModal = ({ access, onClose }: ChatAccessModalProps) => {
 	const { t } = useTranslation();
 	const titleId = useId();
+	const membersDescriptionId = useId();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { useRealName } = useConferenceViewer();
 	const { shareChat } = useConferenceActions();
@@ -93,17 +96,23 @@ const ChatAccessModal = ({ access, onClose }: ChatAccessModalProps) => {
 				</ModalHeaderText>
 				<ModalClose tabIndex={-1} aria-label={t('Close')} onClick={onClose} />
 			</ModalHeader>
-			<ModalContent fontScale='p2'>
-				<Box color='default'>{t('These_participants_cannot_see_the_chat')}</Box>
-				{/* Named from the conference's own record — there may be no shared room to look them up in. */}
-				{access.members.map((member) => (
-					<Option key={member._id}>
-						<OptionAvatar>
-							<UserAvatar username={member.username} size='x24' />
-						</OptionAvatar>
-						<OptionContent>{getUserDisplayName(member.name, member.username, useRealName)}</OptionContent>
-					</Option>
-				))}
+			<ModalContent>
+				<Box id={membersDescriptionId} color='default'>
+					{t('These_participants_cannot_see_the_chat')}
+				</Box>
+				<ItemGroup is='ul' aria-labelledby={membersDescriptionId}>
+					{/* Named from the conference's own record — there may be no shared room to look them up in. */}
+					{access.members.map((member) => (
+						<Item key={member._id} is='li'>
+							<ItemMedia>
+								<UserAvatar username={member.username} size={ITEM_MEDIA_SIZE.medium} />
+							</ItemMedia>
+							<ItemContent>
+								<ItemTitle>{getUserDisplayName(member.name, member.username, useRealName)}</ItemTitle>
+							</ItemContent>
+						</Item>
+					))}
+				</ItemGroup>
 
 				{access.canInvite && (
 					<Box marginBlockStart={16}>
@@ -135,7 +144,7 @@ const ChatAccessModal = ({ access, onClose }: ChatAccessModalProps) => {
 			</ModalContent>
 			<ModalFooter>
 				<ModalFooterControllers>
-					<Button secondary onClick={onClose}>
+					<Button variant='secondary' onClick={onClose}>
 						{t('Cancel')}
 					</Button>
 					{/* The leading action sits last, where the primary action is expected. */}

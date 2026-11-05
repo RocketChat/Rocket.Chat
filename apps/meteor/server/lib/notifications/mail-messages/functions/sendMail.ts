@@ -1,3 +1,4 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { escapeHTML } from '@rocket.chat/tools';
@@ -26,7 +27,7 @@ export const sendMail = async function ({
 	Mailer.checkAddressFormatAndThrow(from, 'Mailer.sendMail');
 
 	if (body.indexOf('[unsubscribe]') === -1) {
-		throw new Meteor.Error('error-missing-unsubscribe-link', 'You must provide the [unsubscribe] link.', {
+		throw new ClientSafeError('error-missing-unsubscribe-link', 'You must provide the [unsubscribe] link.', {
 			function: 'Mailer.sendMail',
 		});
 	}
@@ -40,7 +41,7 @@ export const sendMail = async function ({
 		const user = await Users.findOneByEmailAddress(from);
 
 		if (!user) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+			throw new ClientSafeError('error-invalid-user', 'Invalid user', {
 				function: 'Mailer.sendMail',
 			});
 		}

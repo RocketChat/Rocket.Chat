@@ -7,7 +7,7 @@ const UpdateRocketChatButton = () => {
 	const { t } = useTranslation();
 
 	return (
-		<Button icon='new-window' primary is='a' href={links.updatingRocketChat} external>
+		<Button icon='new-window' variant='primary' is='a' href={links.updatingRocketChat} external>
 			{t('Update')}
 		</Button>
 	);

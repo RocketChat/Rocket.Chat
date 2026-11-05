@@ -1,6 +1,7 @@
+import { getRootUrlPathPrefix } from './meteorRuntimeConfig';
 import { settings } from './settings';
-import { getURLWithoutSettings } from '../../app/utils/lib/getURL';
-import { Info } from '../../app/utils/rocketchat.info';
+import { getURLWithoutSettings } from '../../lib/getURL';
+import { Info } from '../../rocketchat.info';
 
 export const getURL = function (
 	path: string,
@@ -21,5 +22,5 @@ export const getURL = function (
 		path += `${path.includes('?') ? '&' : '?'}cacheKey=${Info.version}`;
 	}
 
-	return getURLWithoutSettings(path, params, cdnPrefix, siteUrl, cloudDeepLinkUrl);
+	return getURLWithoutSettings(path, params, cdnPrefix, siteUrl, getRootUrlPathPrefix(), cloudDeepLinkUrl);
 };

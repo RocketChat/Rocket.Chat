@@ -20,6 +20,7 @@ export const _matchToken = Match.OneOf({ apn: String }, { gcm: String });
 const PUSH_TITLE_LIMIT = 65;
 const PUSH_MESSAGE_BODY_LIMIT = 240;
 const PUSH_GATEWAY_MAX_RETRIES = 5;
+const PUSH_GATEWAY_MAX_CONCURRENT_REQUESTS = Number(process.env.PUSH_GATEWAY_MAX_CONCURRENT_REQUESTS) || 50;
 
 type FCMCredentials = {
 	type: string;
@@ -115,8 +116,6 @@ type GatewayNotification = {
 	query?: {
 		userId: any;
 	};
-	token?: IPushToken['token'];
-	tokens?: IPushToken['token'][];
 	payload?: Record<string, any>;
 	delayUntil?: Date;
 	createdAt: Date;
@@ -136,6 +135,8 @@ class PushClass {
 	};
 
 	isConfigured = false;
+
+	private gatewayRequestsInFlight = new Set<Promise<void>>();
 
 	public configure(options: PushOptions): void {
 		this.options = {
@@ -176,7 +177,7 @@ class PushClass {
 	}
 
 	private removeToken(token: string): void {
-		void PushToken.removeOrUnsetByTokenString(token).catch((err) => {
+		void PushToken.removeByTokenString(token).catch((err) => {
 			logger.error({ msg: 'Failed to remove push token', err });
 		});
 	}
@@ -190,24 +191,18 @@ class PushClass {
 	}
 
 	private async sendNotificationNative(
-		app: IPushToken,
+		pushToken: IPushToken,
 		notification: PendingPushNotification,
 		countApn: string[],
 		countGcm: string[],
 	): Promise<void> {
-		logger.debug({ msg: 'send to token', token: app.token });
+		logger.debug({ msg: 'send to token', tokenType: pushToken.tokenType });
 
-		if ('apn' in app.token && app.token.apn) {
-			const userToken = notification.useVoipToken ? app.voipToken : app.token.apn;
-			const topic = notification.useVoipToken ? `${app.appName}.voip` : app.appName;
-
-			// Send to APN
-			if (this.options.apn && userToken) {
-				countApn.push(app._id);
-				sendAPN({ userToken, notification: { topic, ...notification }, _removeToken: this.removeToken });
+		if (pushToken.tokenType === 'gcm') {
+			if (!pushToken.tokenValue) {
+				return;
 			}
-		} else if ('gcm' in app.token && app.token.gcm) {
-			countGcm.push(app._id);
+			countGcm.push(pushToken._id);
 
 			// override this.options.gcm.apiKey with the oauth2 token
 			const { projectId, token } = await this.getNativeNotificationAuthorizationCredentials();
@@ -221,14 +216,29 @@ class PushClass {
 			};
 
 			sendFCM({
-				userTokens: app.token.gcm,
+				userTokens: pushToken.tokenValue,
 				notification,
 				_removeToken: this.removeToken,
 				options: sendGCMOptions as RequiredField<PushOptions, 'gcm'>,
 			});
-		} else {
-			throw new Error('send got a faulty query');
+			return;
 		}
+
+		if ((pushToken.tokenType === 'voip') !== Boolean(notification.useVoipToken)) {
+			return;
+		}
+
+		if (pushToken.tokenType === 'apn' || pushToken.tokenType === 'voip') {
+			const topic = pushToken.tokenType === 'voip' ? `${pushToken.appName}.voip` : pushToken.appName;
+
+			if (this.options.apn && pushToken.tokenValue) {
+				countApn.push(pushToken._id);
+				sendAPN({ userToken: pushToken.tokenValue, notification: { topic, ...notification }, _removeToken: this.removeToken });
+			}
+			return;
+		}
+
+		throw new Error('send got a faulty query');
 	}
 
 	private async getNativeNotificationAuthorizationCredentials(): Promise<{ token: string; projectId: string }> {
@@ -315,8 +325,33 @@ class PushClass {
 
 			logger.log({ msg: 'Retrying push to gateway', tries: tries + 1, in: ms });
 
-			setTimeout(() => this.sendGatewayPush(gateway, service, token, notification, { tries: tries + 1, maxRetries }), ms);
+			setTimeout(
+				() =>
+					this.sendGatewayPush(gateway, service, token, notification, { tries: tries + 1, maxRetries }).catch((err) =>
+						logger.error({ msg: 'Error sending push to gateway', err }),
+					),
+				ms,
+			);
 		}
+	}
+
+	// Sends without waiting for the gateway, so the notification queue is not throttled to one push per gateway round trip;
+	// waits for a free slot once the in-flight requests reach the limit, keeping the backlog in the queue instead of in memory.
+	private async sendNotificationGatewayInBackground(
+		pushToken: IPushToken,
+		notification: PendingPushNotification,
+		countApn: string[],
+		countGcm: string[],
+	): Promise<void> {
+		while (this.gatewayRequestsInFlight.size >= PUSH_GATEWAY_MAX_CONCURRENT_REQUESTS) {
+			await Promise.race(this.gatewayRequestsInFlight);
+		}
+
+		const request: Promise<void> = this.sendNotificationGateway(pushToken, notification, countApn, countGcm)
+			.catch((err) => logger.error({ msg: 'Error sending push to gateway', err }))
+			.finally(() => this.gatewayRequestsInFlight.delete(request));
+
+		this.gatewayRequestsInFlight.add(request);
 	}
 
 	private getGatewayNotificationData(notification: PendingPushNotification): Omit<GatewayNotification, 'uniqueId'> {
@@ -330,7 +365,7 @@ class PushClass {
 	}
 
 	private async sendNotificationGateway(
-		app: IPushToken,
+		pushToken: IPushToken,
 		notification: PendingPushNotification,
 		countApn: string[],
 		countGcm: string[],
@@ -346,21 +381,27 @@ class PushClass {
 		};
 
 		for (const gateway of this.options.gateways) {
-			logger.debug({ msg: 'send to token', token: app.token });
+			logger.debug({ msg: 'send to token', tokenType: pushToken.tokenType });
 
-			if ('apn' in app.token && app.token.apn) {
-				const token = notification.useVoipToken ? app.voipToken : app.token.apn;
-				const topic = notification.useVoipToken ? `${app.appName}.voip` : app.appName;
-
-				if (token) {
-					countApn.push(app._id);
-					return this.sendGatewayPush(gateway, 'apn', token, { topic, ...gatewayNotification }, retryOptions);
+			if (pushToken.tokenType === 'gcm') {
+				if (pushToken.tokenValue) {
+					countGcm.push(pushToken._id);
+					return this.sendGatewayPush(gateway, 'gcm', pushToken.tokenValue, gatewayNotification, retryOptions);
 				}
+				continue;
 			}
 
-			if ('gcm' in app.token && app.token.gcm) {
-				countGcm.push(app._id);
-				return this.sendGatewayPush(gateway, 'gcm', app.token.gcm, gatewayNotification, retryOptions);
+			if ((pushToken.tokenType === 'voip') !== Boolean(notification.useVoipToken)) {
+				return;
+			}
+
+			if (pushToken.tokenType === 'apn' || pushToken.tokenType === 'voip') {
+				const topic = pushToken.tokenType === 'voip' ? `${pushToken.appName}.voip` : pushToken.appName;
+
+				if (pushToken.tokenValue) {
+					countApn.push(pushToken._id);
+					return this.sendGatewayPush(gateway, 'apn', pushToken.tokenValue, { topic, ...gatewayNotification }, retryOptions);
+				}
 			}
 		}
 	}
@@ -390,15 +431,15 @@ class PushClass {
 			userId: notification.userId,
 		});
 
-		const appTokens = options.skipTokenId
+		const pushTokens = options.skipTokenId
 			? PushToken.findTokensByUserIdExceptId(notification.userId, options.skipTokenId)
 			: PushToken.findAllTokensByUserId(notification.userId);
 
-		for await (const app of appTokens) {
-			logger.debug({ msg: 'send to token', token: app.token });
+		for await (const pushToken of pushTokens) {
+			logger.debug({ msg: 'send to token', tokenType: pushToken.tokenType });
 
 			if (this.shouldUseGateway()) {
-				await this.sendNotificationGateway(app, notification, countApn, countGcm);
+				await this.sendNotificationGatewayInBackground(pushToken, notification, countApn, countGcm);
 				continue;
 			}
 
@@ -409,7 +450,7 @@ class PushClass {
 				continue;
 			}
 
-			await this.sendNotificationNative(app, notification, countApn, countGcm);
+			await this.sendNotificationNative(pushToken, notification, countApn, countGcm);
 		}
 
 		if (settings.get('Log_Level') === '2') {

@@ -17,9 +17,9 @@ Practical consequence: when you look for code, ask "what kind of thing is it?" b
 | Path        | What it is |
 | ----------- | ---------- |
 | `server/`   | **All community server code.** Described in detail below. |
-| `ee/server/` | Enterprise server code — an exact mirror of `server/`'s responsibility layout. See [License boundary](#the-license-boundary-ee). |
+| `ee/server/` | Enterprise server code — an exact mirror of `server/`'s responsibility layout. See [License boundary](#the-ee-tree-eeserver-and-the-license-boundary). |
 | `client/`, `ee/client/` | Frontend (React) code. |
-| `app/`      | **Legacy remnant, do not add server code here.** What's left is genuinely shared client+server code (`app/*/lib/`), client-only feature code (`app/*/client/`), and `app/apps/server/` (Apps-Engine bridges/converters, kept intentionally). |
+| `app/`      | **Legacy remnant, do not add server code here.** What's left is genuinely shared client+server code (`app/*/lib/`), and client-only feature code (`app/*/client/`). |
 | `lib/`      | Small utilities shared between client and server (isomorphic, no Meteor/server imports). |
 | `imports/`  | Legacy Meteor-style feature folders (`personal-access-tokens`, message-read-receipt client parts). Avoid adding to it. |
 | `packages/` (repo root) | Workspace packages (`@rocket.chat/*`). Cross-app logic, typings (`core-typings`, `rest-typings`), and services SDK (`core-services`) live here — prefer a package when code must be shared beyond `apps/meteor`. |
@@ -50,7 +50,7 @@ Practical consequence: when you look for code, ask "what kind of thing is it?" b
 | `startup/` | Boot-time configuration and one-off initialization (`initialData.ts`, `rateLimiter.js`, `robots.js`, `migrations/`). |
 | `routes/` | Non-REST HTTP routes (avatar serving, etc.). |
 | `database/` | Mongo connection utilities (`trash`, `readSecondaryPreferred`, transaction helpers). |
-| `modules/` | Larger self-contained subsystems (core-apps, listeners, notifications, streamer). |
+| `modules/` | Larger self-contained subsystems: `apps/` (the Apps-Engine host: bridges and converters) and `core-apps/`. |
 | `features/` | Feature-flag style subsystems (e.g. `EmailInbox/`). |
 | `configuration/` | Runtime configuration glue (OAuth, CAS, LDAP wiring). |
 | `email/`, `ufs/`, `oauth2-server/`, `deasync/` | Infrastructure kept as-is: mailer transport, Upload-File-System storage engine, OAuth2 provider implementation, deasync shim. |
@@ -68,7 +68,7 @@ Practical consequence: when you look for code, ask "what kind of thing is it?" b
 | `omnichannel/` | The livechat/omnichannel engine: `QueueManager`, `RoutingManager` (+ `routing/` strategies), `business-hour/`, `contacts/`, `analytics/`, transcripts, visitors, guests, departments… The biggest domain. |
 | `authorization/` | Permission/role checks: `hasPermission`, `canAccessRoom`, `getRoles`, `constant/permissions.ts` (the permission list), `streamer/` (permission change notifications). |
 | `auth/` | Authentication utilities: `passwordPolicy`, `generatePassword`, login attempt logging/restriction, `oauth2-server/` (OAuth app admin), `token-login`. |
-| `auth-providers/` | One folder/file per external login provider: `apple/`, `crowd/`, `custom-oauth/`, `oauth/` (core OAuth glue), `github.ts`, `gitlab.ts`, `google.js`, `wordpress.ts`, … |
+| `auth-providers/` | One folder/file per external login provider: `apple/`, `custom-oauth/`, `gitlab.ts`, `iframe.ts`. The Passport wiring they share lives in the `oauth/` domain. |
 | `saml/`, `cas/`, `ldap/`, `2fa/`, `e2e/` | Protocol-specific auth/crypto subsystems. |
 | `notifications/` | Notification delivery: `push/`, `push-config/`, `email/` (Mailer API), `mail-messages/`, `queue/`, `core/` (Notifications streams), `message/` (per-message desktop/email/mobile decision helpers), direct-reply email processing. |
 | `media/` | Files and media: `file-upload/` (FileUpload + storage configs), `file/`, `emoji-custom/`, `emoji-native/`, `custom-sounds/`, `assets/`. |
@@ -81,7 +81,7 @@ Practical consequence: when you look for code, ask "what kind of thing is it?" b
 
 ## The EE tree (`ee/server/`) and the license boundary
 
-`ee/server/` mirrors the same responsibility layout: `api/`, `hooks/`, `lib/` (with `omnichannel/`, `license/`, `ldap/`, `canned-responses/`, `abac/`, `audit/`, …), `meteor-methods/`, `settings/`, `cron/`, `models/`, `patches/`, `startup/`, `configuration/`, and `local-services/` (EE internal services).
+`ee/server/` mirrors the same responsibility layout: `api/`, `hooks/`, `lib/` (with `omnichannel/`, `license/`, `ldap/`, `canned-responses/`, `abac/`, `audit/`, `apps/` — the Apps-Engine orchestrator, marketplace client and app storage, …), `meteor-methods/`, `settings/`, `cron/`, `models/`, `patches/`, `startup/`, `configuration/`, and `local-services/` (EE internal services).
 
 **The directory boundary is the license boundary.** Code under an `ee/` path is governed by the Enterprise license (`apps/meteor/ee/LICENSE`); everything else is community-licensed:
 
@@ -109,15 +109,19 @@ Anti-patterns to avoid:
 - Adding server code under `app/` (the folder is frozen; only shared/client code remains there).
 - Barrel `index.ts` files that just re-export — import the concrete file. (Existing barrels like `settings/index.ts` and `authorization/index.ts` are legacy API surfaces, kept until their consumers are rewritten.)
 - Putting logic in a hook/method/endpoint file instead of `lib`/`services` — those files should be thin entry points.
+- Passing a filter or update document to a model's generic `find`/`findOne`/`updateOne`/… — add a named method to the model instead ([database access](database-access.md)).
 - "Utility" dumping: if it has a domain, it goes in the domain.
 
 ## Tests
 
-- **Co-located specs** (`server/**/**.spec.ts`) and **mirrored specs** (`tests/unit/server/**` mirrors the source tree; EE code is mirrored under `ee/tests/unit/**`) both exist. When you move source, move its mirror.
-- Two runners with **separate globs**: mocha (`.mocharc.js` `spec` list) and jest (`jest.config.ts` `testMatch`). A spec in a folder not matched by any glob silently never runs; a jest spec caught by a mocha glob throws `jest is not defined`.
-- `proxyquire`/`jest.mock` keys are **string literals matched against the loaded module's import specifiers** — lint and tsc cannot validate them. If you move a module, every mock key referencing it (or referencing its dependencies' specifiers) must be updated, and the affected suites actually run. A stale key silently loads the real dependency; if that dependency reaches `server/settings/index.ts`, the whole mocha run dies with a top-level-await transform error — that error is the signature of a stale settings mock.
+- A unit test sits in the same folder as the file it tests: `foo.test.ts` next to `foo.ts`. When you move source code, move its tests with it.
+- A test for a package goes in that package, not in `apps/meteor`.
+- `tests/` keeps the REST API and e2e suites, and the code that tests share (`tests/mocks/`, `tests/data/`, `tests/setup/`). Coverage does not count files in `tests/`, so shared test code goes there and not next to the source.
+- For unit tests, during the migration from Jest to `node:test`, the file name selects the runner. `*.test.ts` runs on `node:test` and `*.spec.ts` runs on Jest. Both runners find their files with globs.
+- The `node:test` scripts use `--experimental-test-isolation=none`, not `--test-isolation=none`. We support Node 22, and Node 22 knows only the old name of this flag. Node 24 accepts both names.
+- `proxyquire`/`jest.mock` keys are **string literals matched against the loaded module's import specifiers** — lint and tsc cannot validate them. If you move a module, every mock key referencing it (or referencing its dependencies' specifiers) must be updated, and the affected suites actually run. A stale key silently loads the real dependency; if that dependency reaches `server/settings/index.ts`, the file fails to load with a top-level-await transform error — that error is the signature of a stale settings mock.
 - Specs must not depend on suite execution order (e.g. on another spec having installed a mocked core-services broker) — mock `@rocket.chat/core-services` locally.
 
 ## History
 
-The structure above is the result of a 7-phase migration (finished 2026-07) that dissolved the old Meteor-package-style `app/*/server/` folders: slash commands (#40259), bridges (#41115), REST API (#41126), domain functions (#41155), meteor-methods (#41225), lib/hooks/feature code (#41315), omnichannel + final cleanup (#41381). Files were moved as-is, so `git log --follow` works across the moves. The old `app/<feature>/server/` path of any file can be found in those PRs' manifests if needed.
+The structure above is the result of a 7-phase migration (finished 2026-07) that dissolved the old Meteor-package-style `app/*/server/` folders: slash commands (#40259), bridges (#41115), REST API (#41126), domain functions (#41155), meteor-methods (#41225), lib/hooks/feature code (#41315), omnichannel + final cleanup (#41381). The Apps-Engine host folders (`app/apps/server/` and `ee/server/apps/`) were out of scope for those phases and moved later, into `server/modules/apps/` and the `ee/server/` responsibility folders (#42459). Files were moved as-is, so `git log --follow` works across the moves. The old `app/<feature>/server/` path of any file can be found in those PRs' manifests if needed.

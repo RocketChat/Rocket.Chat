@@ -19,6 +19,7 @@ const meta = {
 		isDirect: true,
 		canName: false,
 		capabilities: allCapabilities,
+		media: null,
 		onConfirm: action('onConfirm'),
 		onCancel: action('onCancel'),
 	},

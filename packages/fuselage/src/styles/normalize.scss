@@ -1,0 +1,5 @@
+@use './primitives/link.scss';
+
+a:where(:not(.rcx-button, .rcx-item, .rcx-item__link)) {
+	@extend %link;
+}

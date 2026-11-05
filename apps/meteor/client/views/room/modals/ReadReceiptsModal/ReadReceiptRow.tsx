@@ -1,9 +1,7 @@
 import type { IReadReceiptWithUser } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useUserDisplayName } from '@rocket.chat/ui-client';
-
-import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
+import { useUserDisplayName, useFormatDateAndTime } from '@rocket.chat/ui-client';
 
 const ReadReceiptRow = ({ user, ts }: IReadReceiptWithUser) => {
 	const displayName = useUserDisplayName(user || {});

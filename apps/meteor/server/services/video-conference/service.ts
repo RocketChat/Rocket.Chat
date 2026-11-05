@@ -44,7 +44,6 @@ import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import { wrapExceptions } from '@rocket.chat/tools';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { Meteor } from 'meteor/meteor';
-import { MongoInternals } from 'meteor/mongo';
 
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 import { resolveChatAccessMode } from '../../../lib/videoConference/chatAccess';
@@ -53,6 +52,7 @@ import { availabilityErrors, CALL_FACES_SHOWN, EMPTY_CALL_GRACE_MS, shouldRingRe
 import { canRingConferenceMember, isUnaskedConferenceMember } from '../../../lib/videoConference/memberStatus';
 import { expiredPresenceLeases, INFERRED_LEAVE_REASONS } from '../../../lib/videoConference/presence';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
+import { db } from '../../database/utils';
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
 import { hasAtLeastOnePermissionAsync } from '../../lib/authorization/hasPermission';
 import { callbacks } from '../../lib/callbacks';
@@ -74,8 +74,6 @@ import { videoConfProviders } from '../../lib/videoConfProviders';
 import { videoConfTypes } from '../../lib/videoConfTypes';
 import { addUsersToRoomMethod } from '../../meteor-methods/rooms/addUsersToRoom';
 import { settings } from '../../settings';
-
-const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
 const logger = new Logger('VideoConference');
 
@@ -212,12 +210,33 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			}
 		}
 
-		const blocks = await (await this.getProviderManager()).getVideoConferenceInfo(call.providerName, call, user || undefined).catch((e) => {
-			throw new Error(e);
-		});
+		// Only a provider supplied by an app has an app to ask; the apps engine throws for a built-in one.
+		if (!this.isEmbeddedProvider(call.providerName)) {
+			const blocks = await (
+				await this.getProviderManager()
+			)
+				.getVideoConferenceInfo(call.providerName, call, user || undefined)
+				.catch((e) => {
+					throw new Error(e);
+				});
 
-		if (blocks?.length) {
-			return blocks as UiKit.ModalSurfaceLayout;
+			if (blocks?.length) {
+				return blocks as UiKit.ModalSurfaceLayout;
+			}
+		}
+
+		// A call held in our own window has no URL to offer, so it says who is in it instead.
+		if (!call.url) {
+			return [
+				{
+					blockId: 'videoconf-info',
+					type: 'section',
+					text: {
+						type: 'mrkdwn',
+						text: i18n.t('__count__people_in_the_call', { count: call.users.filter(isInVideoConference).length }),
+					},
+				},
+			];
 		}
 
 		return [
@@ -1681,7 +1700,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 					await this.endCall(call._id);
 				}
 			} catch (err) {
-				// One unreachable provider or one malformed call must not stop the sweep for every other call.
+				// One malformed call must not stop the sweep for every other call.
 				logger.error({ msg: 'Failed to expire presence leases for a conference', callId: call._id, err });
 			}
 		}

@@ -10,9 +10,9 @@ import tinykeys from 'tinykeys';
 
 import NavBarSearchListBox from './NavBarSearchListbox';
 import { getShortcutLabel } from './getShortcutLabel';
+import { SearchActiveOptionContext, useSearchActiveOption } from './hooks/useSearchActiveOption';
 import { useSearchClick } from './hooks/useSearchClick';
 import { useSearchFocus } from './hooks/useSearchFocus';
-import { useSearchInputNavigation } from './hooks/useSearchNavigation';
 
 const NavBarSearch = () => {
 	const { t } = useTranslation();
@@ -38,7 +38,7 @@ const NavBarSearch = () => {
 	const { triggerProps, overlayProps } = useOverlayTrigger({ type: 'listbox' }, state, triggerRef);
 	delete triggerProps.onPress;
 
-	const handleKeyDown = useSearchInputNavigation(state);
+	const { activeId, handleKeyDown, handleInput, contextValue } = useSearchActiveOption(state, overlayProps.id);
 	const handleFocus = useSearchFocus(state);
 	const handleClick = useSearchClick(state);
 
@@ -81,6 +81,8 @@ const NavBarSearch = () => {
 					{...triggerProps}
 					onFocus={handleFocus}
 					onKeyDown={handleKeyDown}
+					onInput={handleInput}
+					aria-activedescendant={activeId}
 					onClick={handleClick}
 					autoComplete='off'
 					placeholder={placeholder}
@@ -91,13 +93,17 @@ const NavBarSearch = () => {
 					small
 					endAddon={
 						isDirty ? (
-							<IconButton mini icon='cross' aria-label={t('Clear')} onClick={handleClearText} />
+							<IconButton size='mini' icon='cross' aria-label={t('Clear')} onClick={handleClearText} />
 						) : (
 							<Icon name='magnifier' size='x20' aria-label={t('Search')} />
 						)
 					}
 				/>
-				{state.isOpen && <NavBarSearchListBox state={state} overlayProps={overlayProps} />}
+				{state.isOpen && (
+					<SearchActiveOptionContext.Provider value={contextValue}>
+						<NavBarSearchListBox state={state} overlayProps={overlayProps} />
+					</SearchActiveOptionContext.Provider>
+				)}
 			</Box>
 		</FormProvider>
 	);

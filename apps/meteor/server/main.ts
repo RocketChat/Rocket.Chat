@@ -23,19 +23,24 @@ import './startup/robots';
 import './importPackages';
 import './meteor-methods';
 import './publications';
-import '../lib/oauthRedirectUriServer';
 import './lib/pushConfig';
 import './features/EmailInbox/index';
 
-await Promise.all([configureServer(settings), registerServices(), startup()]);
+try {
+	await Promise.all([configureServer(settings), registerServices(), startup()]);
 
-await startRocketChat();
+	await startRocketChat();
 
-setImmediate(() => {
-	startCronJobs().catch((err) => {
-		SystemLogger.error({ msg: 'Failed to start cron jobs', err });
+	setImmediate(() => {
+		startCronJobs().catch((err) => {
+			SystemLogger.error({ msg: 'Failed to start cron jobs', err });
+		});
 	});
-});
 
-await startupApp();
-await startRestAPI();
+	await startupApp();
+	await startRestAPI();
+} catch (err) {
+	// a server that failed to boot would otherwise stay up without ever listening
+	SystemLogger.fatal({ msg: 'Server failed to start', err });
+	process.exit(1);
+}

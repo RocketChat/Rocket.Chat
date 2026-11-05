@@ -1,4 +1,4 @@
-import { Account, MeteorError } from '@rocket.chat/core-services';
+import { Account, ClientSafeError } from '@rocket.chat/core-services';
 
 import type { Server } from '../ddp/Server';
 import { WS_ERRORS } from '../ddp/constants';
@@ -9,7 +9,7 @@ export function registerAccountMethods(server: Server, lifecycle: ConnectionLife
 		async login({ resume }: { resume: string }) {
 			const result = await Account.login({ resume });
 			if (!result) {
-				throw new MeteorError(403, "You've been logged out by the server. Please log in again");
+				throw new ClientSafeError(403, "You've been logged out by the server. Please log in again");
 			}
 
 			this.userId = result.uid;

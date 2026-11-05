@@ -1,6 +1,10 @@
 {
 	"extends": "@rocket.chat/tsconfig/server.json",
 	"compilerOptions": {
+		// This package is pinned to TS5.9 (ts-node test loader); node16 is the
+		// resolution both TS5.9 and TS7 accept alongside CommonJS emit.
+		"module": "node16",
+		"moduleResolution": "node16",
 		"declaration": true,
 		"rootDir": "./src",
 		"outDir": "./dist",

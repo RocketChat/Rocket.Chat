@@ -1,0 +1,419 @@
+{
+	"$schema": "./node_modules/oxlint/configuration_schema.json",
+	"extends": ["./packages/lint-config/oxlint.json"],
+	"options": {
+		"typeAware": true,
+		"reportUnusedDisableDirectives": "error"
+	},
+	"ignorePatterns": [
+		"apps/meteor/**/public",
+		"apps/meteor/**/private/moment-locales",
+		"apps/meteor/**/imports",
+		"apps/meteor/**/packages",
+		"apps/meteor/.meteor/**",
+		"packages/{apps,apps-engine}/{client,definition,docs,server,lib}",
+		"packages/jest-presets/{client,server}/**",
+		"packages/node-poplib/**",
+		"packages/storybook-config/*.{d.ts,js}",
+		"scripts/**",
+		".github/**",
+		".houston/**"
+	],
+	"overrides": [
+		{
+			"files": ["apps/meteor/**/*"],
+			"rules": {
+				"you-dont-need-lodash-underscore/concat": "error",
+				"you-dont-need-lodash-underscore/drop": "error",
+				"you-dont-need-lodash-underscore/drop-right": "error",
+				"you-dont-need-lodash-underscore/index-of": "error",
+				"you-dont-need-lodash-underscore/join": "error",
+				"you-dont-need-lodash-underscore/last": "error",
+				"you-dont-need-lodash-underscore/last-index-of": "error",
+				"you-dont-need-lodash-underscore/reverse": "error",
+				"you-dont-need-lodash-underscore/fill": "error",
+				"you-dont-need-lodash-underscore/detect": "error",
+				"you-dont-need-lodash-underscore/first": "error",
+				"you-dont-need-lodash-underscore/is-array": "error",
+				"you-dont-need-lodash-underscore/slice": "error",
+				"you-dont-need-lodash-underscore/bind": "error",
+				"you-dont-need-lodash-underscore/is-finite": "error",
+				"you-dont-need-lodash-underscore/is-integer": "error",
+				"you-dont-need-lodash-underscore/is-nan": "error",
+				"you-dont-need-lodash-underscore/is-nil": "error",
+				"you-dont-need-lodash-underscore/is-null": "error",
+				"you-dont-need-lodash-underscore/is-undefined": "error",
+				"you-dont-need-lodash-underscore/keys": "error",
+				"you-dont-need-lodash-underscore/extend-own": "error",
+				"you-dont-need-lodash-underscore/assign": "error",
+				"you-dont-need-lodash-underscore/values": "error",
+				"you-dont-need-lodash-underscore/entries": "error",
+				"you-dont-need-lodash-underscore/to-pairs": "error",
+				"you-dont-need-lodash-underscore/pairs": "error",
+				"you-dont-need-lodash-underscore/split": "error",
+				"you-dont-need-lodash-underscore/starts-with": "error",
+				"you-dont-need-lodash-underscore/ends-with": "error",
+				"you-dont-need-lodash-underscore/to-lower": "error",
+				"you-dont-need-lodash-underscore/to-upper": "error",
+				"you-dont-need-lodash-underscore/trim": "error",
+				"you-dont-need-lodash-underscore/pad-start": "error",
+				"you-dont-need-lodash-underscore/pad-end": "error",
+				"you-dont-need-lodash-underscore/repeat": "error",
+				"you-dont-need-lodash-underscore/uniq": "error",
+				"you-dont-need-lodash-underscore/replace": "error",
+				"you-dont-need-lodash-underscore/omit": "error",
+				"you-dont-need-lodash-underscore/flatten": "error",
+				"you-dont-need-lodash-underscore/throttle": "error",
+				"you-dont-need-lodash-underscore/is-string": "error",
+				"you-dont-need-lodash-underscore/cast-array": "error",
+				"you-dont-need-lodash-underscore/clone-deep": "error",
+				"you-dont-need-lodash-underscore/is-function": "error",
+				"you-dont-need-lodash-underscore/capitalize": "error",
+				"you-dont-need-lodash-underscore/is-date": "error",
+				"you-dont-need-lodash-underscore/defaults": "error",
+				"you-dont-need-lodash-underscore/head": "error",
+				"you-dont-need-lodash-underscore/find": "warn",
+				"you-dont-need-lodash-underscore/find-index": "warn",
+				"you-dont-need-lodash-underscore/each": "warn",
+				"you-dont-need-lodash-underscore/for-each": "warn",
+				"you-dont-need-lodash-underscore/every": "warn",
+				"you-dont-need-lodash-underscore/all": "warn",
+				"you-dont-need-lodash-underscore/filter": "warn",
+				"you-dont-need-lodash-underscore/select": "warn",
+				"you-dont-need-lodash-underscore/map": "warn",
+				"you-dont-need-lodash-underscore/collect": "warn",
+				"you-dont-need-lodash-underscore/reduce": "warn",
+				"you-dont-need-lodash-underscore/inject": "warn",
+				"you-dont-need-lodash-underscore/foldl": "warn",
+				"you-dont-need-lodash-underscore/reduce-right": "warn",
+				"you-dont-need-lodash-underscore/foldr": "warn",
+				"you-dont-need-lodash-underscore/size": "warn",
+				"you-dont-need-lodash-underscore/some": "warn",
+				"you-dont-need-lodash-underscore/any": "warn",
+				"you-dont-need-lodash-underscore/includes": "warn",
+				"you-dont-need-lodash-underscore/contains": "warn",
+				"you-dont-need-lodash-underscore/take-right": "warn",
+				"you-dont-need-lodash-underscore/get": "warn",
+				"you-dont-need-lodash-underscore/union-by": "warn",
+				"you-dont-need-lodash-underscore/is-array-buffer": "warn",
+				"new-cap": [
+					"error",
+					{
+						"capIsNewExceptions": [
+							"Match.Optional",
+							"Match.Maybe",
+							"Match.OneOf",
+							"Match.Where",
+							"Match.ObjectIncluding",
+							"Push.Configure",
+							"SHA256"
+						]
+					}
+				],
+				"prefer-arrow-callback": [
+					"error",
+					{
+						"allowNamedFunctions": true
+					}
+				],
+				"import/named": "error",
+				"react/exhaustive-deps": "warn"
+			},
+			"globals": {
+				"__meteor_runtime_config__": "readonly",
+				"Assets": "readonly",
+				"chrome": "readonly",
+				"jscolor": "readonly",
+				"AsyncDisposableStack": "readonly",
+				"DisposableStack": "readonly",
+				"SuppressedError": "readonly"
+			},
+			"env": {
+				"browser": true
+			},
+			"jsPlugins": ["eslint-plugin-you-dont-need-lodash-underscore"]
+		},
+		{
+			"files": ["apps/meteor/**/*.{ts,tsx}"],
+			"rules": {
+				"no-unreachable-loop": "error"
+			}
+		},
+		{
+			"files": ["apps/meteor/**/*.tests.js"],
+			"env": {
+				"mocha": true
+			}
+		},
+		{
+			"files": ["apps/meteor/tests/{end-to-end,unit}/**/*.spec.ts"],
+			"rules": {
+				"jest/expect-expect": "off",
+				"jest/no-conditional-expect": "off",
+				"jest/no-done-callback": "off",
+				"jest/no-export": "off",
+				"jest/no-identical-title": "off",
+				"jest-js/no-standalone-expect": "off",
+				"jest/no-test-prefixes": "off",
+				"jest/valid-describe-callback": "off",
+				"jest/valid-expect-in-promise": "off",
+				"jest/valid-expect": "off",
+				"jest/valid-title": "off"
+			},
+			"plugins": ["jest"]
+		},
+		{
+			"files": ["apps/meteor/tests/{end-to-end,unit}/**/*.ts"],
+			"rules": {
+				"no-unused-expressions": "off"
+			}
+		},
+		{
+			"files": [
+				"apps/meteor/client/**/*.{ts,tsx}",
+				"apps/meteor/server/**/*.ts",
+				"apps/meteor/ee/app/**/*.ts",
+				"apps/meteor/ee/client/**/*.{ts,tsx}",
+				"apps/meteor/ee/server/**/*.ts",
+				"packages/i18n/src/scripts/common.mts"
+			],
+			"rules": {
+				"typescript/no-floating-promises": "off"
+			}
+		},
+		{
+			"files": ["apps/meteor/tests/e2e/**/*"],
+			"rules": {
+				"testing-library/no-await-sync-events": "off",
+				"testing-library/no-container": "off",
+				"testing-library/no-manual-cleanup": "off",
+				"testing-library/no-node-access": "off",
+				"testing-library/no-render-in-lifecycle": "off",
+				"testing-library/prefer-explicit-assert": "off",
+				"testing-library/prefer-find-by": "off",
+				"testing-library/prefer-screen-queries": "off",
+				"testing-library/prefer-user-event": "off",
+				"testing-library/render-result-naming-convention": "off",
+				"import/named": "error",
+				"typescript/no-floating-promises": "error"
+			}
+		},
+		{
+			"files": ["apps/meteor/packages/**/*"],
+			"globals": {
+				"Package": "readonly",
+				"Npm": "readonly"
+			}
+		},
+		{
+			"files": ["packages/apps-engine/**/*", "packages/apps/**/*"],
+			"rules": {
+				"new-cap": "off",
+				"no-empty-function": "off",
+				"no-unused-vars": [
+					"error",
+					{
+						"args": "none",
+						"ignoreRestSiblings": true
+					}
+				],
+				"typescript/no-empty-object-type": "off",
+				"typescript/no-unnecessary-type-assertion": "off",
+				"typescript/no-unsafe-function-type": "error",
+				"typescript/no-wrapper-object-types": "error"
+			}
+		},
+		{
+			"files": ["packages/apps-engine/tests/**/*", "packages/apps/tests/**/*"],
+			"rules": {
+				"testing-library/no-await-sync-queries": "off",
+				"typescript/no-non-null-assertion": "off"
+			}
+		},
+		{
+			"files": ["packages/core-typings/**/*"],
+			"rules": {
+				"typescript/no-empty-interface": "off"
+			}
+		},
+		{
+			"files": ["packages/livechat/**/*"],
+			"globals": {
+				"AsyncDisposableStack": "readonly",
+				"DisposableStack": "readonly",
+				"SuppressedError": "readonly"
+			},
+			"env": {
+				"browser": true
+			}
+		},
+		{
+			"files": [
+				"apps/meteor/client/**/*.{ts,tsx}",
+				"apps/meteor/app/**/*.ts",
+				"apps/meteor/ee/app/**/*.ts",
+				"apps/meteor/ee/client/**/*.{ts,tsx}",
+				"apps/meteor/ee/server/**/*.ts",
+				"apps/meteor/server/**/*.ts",
+				"packages/fuselage-ui-kit/**/*.{ts,tsx}",
+				"packages/ui-account/**/*.{ts,tsx}",
+				"packages/ui-client/**/*.{ts,tsx}",
+				"packages/ui-voip/**/*.{ts,tsx}",
+				"packages/web-ui-registration/**/*.{ts,tsx}"
+			],
+			"rules": {
+				"no-unused-vars": [
+					"error",
+					{
+						"varsIgnorePattern": "Endpoints?$|Routes$|^invites$|^livechatVisitorDepartmentTransfer$",
+						"argsIgnorePattern": "^_",
+						"ignoreRestSiblings": true,
+						"caughtErrors": "none"
+					}
+				],
+				"typescript/no-misused-promises": [
+					"warn",
+					{
+						"checksVoidReturn": {
+							"arguments": false,
+							"attributes": false,
+							"inheritedMethods": false
+						}
+					}
+				]
+			}
+		},
+		{
+			"files": ["packages/{sha256,models}/**/*"],
+			"rules": {
+				"new-cap": [
+					"error",
+					{
+						"capIsNewExceptions": ["SHA256"]
+					}
+				]
+			}
+		},
+		{
+			"files": ["apps/meteor/server/**/*.{ts,js}", "apps/meteor/ee/server/**/*.{ts,js}"],
+			"rules": {
+				"eslint-js/no-restricted-syntax": [
+					"error",
+					{
+						"selector": "MemberExpression[object.name='Meteor'][property.name='Error']",
+						"message": "Use ClientSafeError from '@rocket.chat/core-services' instead."
+					},
+					{
+						"selector": "TSQualifiedName[left.name='Meteor'][right.name='Error']",
+						"message": "Use ClientSafeError from '@rocket.chat/core-services' instead."
+					}
+				]
+			}
+		},
+		{
+			"files": ["packages/ui-account/src/**/logic/**/*.{ts,tsx}"],
+			"rules": {
+				"no-restricted-imports": [
+					"error",
+					{
+						"paths": [
+							{
+								"name": "@rocket.chat/ui-client",
+								"allowTypeImports": true,
+								"allowImportNames": ["usePreferenceFeaturePreviewList"],
+								"message": "logic/ may only use headless hooks from ui-client; add the hook to the allow list if it renders nothing."
+							}
+						],
+						"patterns": [
+							{
+								"group": ["@rocket.chat/fuselage", "react-dom", "**/views/**"],
+								"message": "logic/ must not depend on rendering; move this to views/ or pass it in."
+							}
+						]
+					}
+				]
+			}
+		},
+		{
+			"files": [
+				"**/*.d.ts",
+				"**/__tests__/**",
+				"**/*.{spec,test}.{ts,tsx}",
+				"**/tests/**",
+				"**/.storybook/**",
+				"**/jest.config.{ts,js}",
+				"**/jest.config.*.{ts,js}",
+				"**/webpack.config.{ts,js}",
+				"**/vite.config.{ts,js}",
+				"**/rollup.config.{ts,js}",
+				"apps/meteor/.storybook/logo.svg.d.ts",
+				"packages/fuselage-ui-kit/.storybook/logo.svg.d.ts",
+				"packages/storybook-config/src/logo.svg.d.ts",
+				"{ee/packages,packages}/*/jest.config.ts",
+				"ee/packages/pdf-worker/.storybook/*.{ts,tsx}",
+				"packages/{gazzodown,ui-account,ui-client,ui-composer,ui-voip,web-ui-registration}/.storybook/*.{ts,tsx}"
+			],
+			"rules": {
+				"typescript/prefer-optional-chain": "off",
+				"typescript/no-misused-promises": "off"
+			}
+		},
+		{
+			"files": ["**/*.stories.{ts,tsx,js,jsx,mjs,cjs}"],
+			"rules": {
+				"storybook/no-renderer-packages": "off"
+			}
+		},
+		{
+			"files": ["packages/fuselage/src/**/*.{ts,tsx}"],
+			"rules": {
+				"react/display-name": "warn",
+				"react-js/jsx-key": [
+					"warn",
+					{
+						"checkFragmentShorthand": true,
+						"checkKeyMustBeforeSpread": true,
+						"warnOnDuplicates": true
+					}
+				],
+				"react/no-children-prop": "warn",
+				"react/no-multi-comp": "warn",
+				"no-empty-function": "warn",
+				"react/exhaustive-deps": "warn"
+			}
+		},
+		{
+			"files": ["packages/mp3-encoder/src/lame/**/*.ts"],
+			"rules": {
+				"new-cap": "off"
+			}
+		},
+		{
+			"files": ["apps/meteor/tests/e2e/**/*"],
+			"rules": {
+				"importx/order": [
+					"error",
+					{
+						"newlines-between": "always",
+						"groups": ["builtin", "external", "internal", ["parent", "sibling", "index"]],
+						"alphabetize": {
+							"order": "asc"
+						}
+					}
+				]
+			}
+		},
+		{
+			"files": ["ee/packages/federation-matrix/src/api/.well-known/server.ts"],
+			"rules": {
+				"importx/order": "warn"
+			}
+		},
+		{
+			"files": ["packages/livechat/**/*"],
+			"rules": {
+				"react/display-name": "off"
+			}
+		}
+	]
+}

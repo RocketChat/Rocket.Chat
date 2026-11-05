@@ -45,7 +45,7 @@ const UninstallGrandfatheredAppModal = ({ context, limit, appName, handleUninsta
 			<ModalContent>
 				<MarkdownText content={modalContent} />
 			</ModalContent>
-			<ModalFooter justifyContent='space-between'>
+			<ModalFooter justify='space-between'>
 				<ModalFooterAnnotation>
 					<a target='_blank' rel='noopener noreferrer' href={links.go.appsDocumentation}>
 						{t('Learn_more')}
@@ -53,7 +53,7 @@ const UninstallGrandfatheredAppModal = ({ context, limit, appName, handleUninsta
 				</ModalFooterAnnotation>
 				<ModalFooterControllers>
 					<Button onClick={handleClose}>{t('Cancel')}</Button>
-					<Button danger onClick={handleUninstall}>
+					<Button variant='danger' onClick={handleUninstall}>
 						{t('Uninstall')}
 					</Button>
 				</ModalFooterControllers>

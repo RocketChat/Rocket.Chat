@@ -10,12 +10,14 @@ It is **enterprise (protected) code** under `apps/meteor/ee/`. The design goal i
 
 ## Endpoint
 
-| Method | Endpoint      | Behavior                                                                                                      |
-| ------ | ------------- | ------------------------------------------------------------------------------------------------------------- |
-| POST   | `/api/v1/mcp` | JSON-RPC 2.0 message. The `2025-03-26` revision also accepts batch arrays. Response is `application/json`.    |
-| GET    | `/api/v1/mcp` | `405` with `Allow: POST` — this transport does not offer a server-initiated SSE stream.                       |
+| Method | Endpoint                                               | Behavior                                                                                                   |
+| ------ | ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------- |
+| POST   | `/api/v1/mcp`                                          | JSON-RPC 2.0 message. The `2025-03-26` revision also accepts batch arrays. Response is `application/json`. |
+| GET    | `/api/v1/mcp`                                          | `405` with `Allow: POST` — this transport does not offer a server-initiated SSE stream.                    |
+| GET, HEAD | `/.well-known/oauth-protected-resource/api/v1/mcp`  | Protected resource metadata (RFC 9728): names the workspace as the authorization server of the endpoint. Under a path prefix, the prefix goes after `oauth-protected-resource`. |
+| GET, HEAD | `/.well-known/oauth-protected-resource`             | The same document, for clients that look it up at the bare path.                                          |
 
-The endpoint is attached directly to the existing `/api/v1` Hono router because its JSON-RPC envelopes are defined by the MCP specification rather than Rocket.Chat's REST response contract. It still uses the standard authentication, `access-mcp` permission, and AI license middleware. When `MCP_Enabled` is off the action returns `404`.
+The endpoint is attached directly to the existing `/api/v1` Hono router because its JSON-RPC envelopes are defined by the MCP specification rather than Rocket.Chat's REST response contract. It still uses the standard authentication, `access-mcp` permission, and AI license middleware. When `MCP_Enabled` is off the endpoint and the metadata return `404` before MCP checks credentials or sends a challenge, so a disabled endpoint does not advertise OAuth.
 
 ## Request lifecycle
 
@@ -32,13 +34,30 @@ The shared CORS middleware advertises this request header only while MCP is enab
 
 ## Authentication
 
-Authentication is **reused from the REST layer** — no MCP-specific credential type:
+Authentication is **reused from the REST layer** — no MCP-specific credential type. A request without a credential, usually a client's first `initialize`, gets the challenge described below; every other request carries one of:
 
-- The client sends a **Personal Access Token** as `X-User-Id` + `X-Auth-Token` headers on every request (including `initialize`), because the route is `authRequired: true`.
-- For POST requests, the standard auth middleware resolves the user; the MCP action then verifies that the matching login-token record is a Personal Access Token. Missing, invalid, and session tokens are rejected with `401`. GET is still covered by route authentication but returns `405` without performing the additional token-type lookup because it cannot execute tools.
-- Every MCP action additionally requires the **`access-mcp`** permission (`permissionsRequired: ['access-mcp']`), enforced by the standard permissions middleware. Without it the request is rejected with `403`. The permission is granted to `admin` by default; admins can grant it to other roles from the Permissions admin page.
+- a **Personal Access Token**, as `X-User-Id` + `X-Auth-Token` headers;
+- an **OAuth access token** issued by the workspace's own [OAuth2 server](oauth2-server.md), as `Authorization: Bearer <token>`.
+
+The standard auth middleware resolves the user, and the MCP middleware then checks which credential it came from:
+
+- Without either credential, the request gets `401` with `WWW-Authenticate: Bearer resource_metadata="https://<host>/.well-known/oauth-protected-resource<path>/api/v1/mcp"`, where `<path>` is the workspace's path prefix, if any. That challenge is how MCP clients discover that the endpoint uses OAuth and where to get a token (MCP authorization, RFC 9728). For a workspace under a prefix, that location is outside the prefix, so a reverse proxy in front of it must forward it to the workspace.
+- A credential that does not resolve to a user gets the same challenge with `error="invalid_token"`.
+- On POST, the only method that runs tools, `X-Auth-Token` must belong to a Personal Access Token: a login session token is refused with `401`. GET answers `405` without that lookup.
+- An access token passed as an `access_token` query parameter, which the REST API accepts, is ignored: MCP only reads it from the `Authorization` header.
+
+Every MCP request additionally requires the **`access-mcp`** permission (`permissionsRequired: ['access-mcp']`), enforced by the standard permissions middleware. Without it the request is rejected with `403`. The permission is granted to `admin` by default; admins can grant it to other roles from the Permissions admin page. OAuth does not change who may use MCP.
 
 > When creating the PAT, tick **"Ignore Two Factor Authentication"**, otherwise header auth is rejected with a 2FA challenge.
+
+### OAuth flow
+
+1. The client sends `initialize` without credentials and gets the `401` challenge.
+2. It reads the protected resource metadata, which names the workspace (`Site_Url`) as the authorization server, then the [authorization server metadata](oauth2-server.md#metadata).
+3. It registers itself at `/oauth/register` (Dynamic Client Registration, off by default — see [the OAuth2 server](oauth2-server.md#dynamic-client-registration)), or uses the client ID and secret of an OAuth app an administrator created for it.
+4. It sends the user to `/oauth/authorize` with a PKCE challenge, exchanges the code at `/oauth/token`, and retries with the access token. It refreshes the token with the refresh token when it expires.
+
+An OAuth access token is not bound to MCP: one issued to any OAuth app of the workspace works here, and one issued for MCP works on the whole REST API. This matches what a Personal Access Token can already do.
 
 ## Transport security
 
@@ -51,7 +70,7 @@ Tool dispatch is restricted to server-generated, allow-listed REST paths on `127
 The feature is gated behind the **Rocket.Chat AI add-on** (`chat.rocket.rc-ai`):
 
 - The route is registered with `license: [AI_LICENSE_MODULE]`, so requests are rejected unless the workspace license includes the module.
-- The `MCP_*` settings use the same module and an `invalidValue` of `false`, so without the add-on they fall back to **off** and the feature cannot be enabled.
+- The `MCP_*` settings and `OAuth2_Allow_Dynamic_Client_Registration` use the same module and an `invalidValue` of `false`, so without the add-on they fall back to **off** and the feature cannot be enabled.
 
 ## Tool catalog
 
@@ -89,7 +108,7 @@ Tool **descriptions** are sourced from the route schema's own `description` (add
 
 `tools/call` executes the target endpoint **as the authenticated user** via a loopback HTTP call to the local REST API (`http://127.0.0.1:<PORT><ROOT_URL_PATH_PREFIX>/api/v1/<route>`), forwarding:
 
-- `X-User-Id` + `X-Auth-Token` (the caller's PAT), so all validation and permission checks run exactly as for a real REST client — **zero duplicated business logic**;
+- the caller's credential — `X-User-Id` + `X-Auth-Token` for a PAT, `Authorization: Bearer` for an OAuth access token — so all validation and permission checks run exactly as for a real REST client — **zero duplicated business logic**;
 - `X-Real-IP` set to the resolved client address (`this.requestIp`), so the target endpoint's per-route rate limiter keys on the real client rather than the loopback address.
 
 The REST response is wrapped as MCP `content` (`type: "text"`); a non-2xx REST response is returned with `isError: true`. Internal calls time out after 20 seconds. REST bodies and final encoded MCP responses are capped at 5 MiB; batched calls use bounded concurrency and share a single streaming body budget to limit retained response data.
@@ -106,8 +125,13 @@ Registered under **Admin → AI Center → MCP** (`server/settings/ai.ts`):
 | ------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `MCP_Enabled`             | `false` | Enables the `/api/v1/mcp` endpoint. Flagged **alpha** via an admin warning callout (`MCP_Alpha_Alert`).                                           |
 | `MCP_Expose_Extended_API` | `false` | When on, exposes the extended allow-listed toolset instead of the minimal curated one. Gated behind `MCP_Enabled`. The full API is never exposed. |
+| `OAuth2_Allow_Dynamic_Client_Registration` | `false` | Lets MCP clients register themselves as OAuth clients at `/oauth/register` ([Dynamic Client Registration](oauth2-server.md#dynamic-client-registration)). Requires the AI add-on and is gated behind `MCP_Enabled`. |
 
 ## Connecting a client
+
+With OAuth, a client starts from the endpoint URL, `https://<host>/api/v1/mcp`, and discovers the rest. It also needs to be registered as an OAuth client, in one of two ways: enable `OAuth2_Allow_Dynamic_Client_Registration` (off by default) on the same MCP settings page so the client registers itself, or create an OAuth app (Administration → Third-party login) with the client's redirect URI and enter its client ID and secret in the client. `Site_Url` must be the address the client uses to reach the workspace, since every discovery URL is built from it.
+
+With a Personal Access Token:
 
 ```bash
 claude mcp add --transport http rocketchat http://<host>/api/v1/mcp \
@@ -132,13 +156,15 @@ curl -s "${H[@]}" http://localhost:3000/api/v1/mcp \
 - Implements the handshake-based Streamable HTTP lifecycle through protocol version `2025-11-25`; newer lifecycle methods are not yet supported.
 - Requires the **Rocket.Chat AI add-on** — both the route and the settings are gated by it.
 - One HTTP response per POST. The `2025-03-26` compatibility revision accepts a bounded batch of up to 20 messages; later revisions accept one message per POST. There is no server-initiated SSE stream (`GET` → `405`).
+- OAuth tokens carry no scopes, so there is no read-only OAuth access and no scope challenge.
 - The official `@modelcontextprotocol/sdk` is intentionally not used; the files are structured so it can be dropped into the transport/server layer later for SSE and richer session handling.
 
 ## Key Files
 
 | Layer                                                                        | File                                                                                               |
 | ---------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| Hono route registration (`/api/v1/mcp`) + `MCP_Enabled` gate                 | `apps/meteor/ee/server/api/mcp/index.ts`                                                           |
+| Hono route registration (`/api/v1/mcp`), `MCP_Enabled` gate, credential check | `apps/meteor/ee/server/api/mcp/index.ts`                                                           |
+| Protected resource metadata (RFC 9728)                                       | `apps/meteor/ee/server/api/mcp/metadata.ts`                                                        |
 | JSON-RPC handlers (`initialize`/`tools/list`/`tools/call`/…)                 | `apps/meteor/ee/server/api/mcp/server.ts`                                                          |
 | Tool catalog (curated + extended allow-list, variants, schema normalization) | `apps/meteor/ee/server/api/mcp/catalog.ts`                                                         |
 | Tool dispatch (loopback to REST as the user)                                 | `apps/meteor/ee/server/api/mcp/dispatch.ts`                                                        |

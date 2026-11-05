@@ -1,4 +1,4 @@
-import { Box, Card, CardTitle, CardBody, CardCol, CardRow } from '@rocket.chat/fuselage';
+import { Box, Card, CardTitle, CardBody, CardCol, CardRow, Icon } from '@rocket.chat/fuselage';
 import type { ComponentProps, ReactNode } from 'react';
 import { forwardRef } from 'react';
 
@@ -27,8 +27,8 @@ export const ReportCard = forwardRef<HTMLElement, ReportCardProps>(function Repo
 	ref,
 ) {
 	return (
-		<Box height='full' ref={ref}>
-			<Card height='full' aria-busy={isPending} data-qa={id}>
+		<Box height='full' display='grid' ref={ref}>
+			<Card aria-busy={isPending} data-qa={id}>
 				<Box rcx-card__header justifyContent='space-between'>
 					<CardCol>
 						<CardTitle>{title}</CardTitle>
@@ -39,7 +39,7 @@ export const ReportCard = forwardRef<HTMLElement, ReportCardProps>(function Repo
 					<CardCol>
 						<CardRow>
 							<PeriodSelector name='periodSelector' {...periodSelectorProps} />
-							<DownloadDataButton {...downloadProps} title='Download CSV' size={32} />
+							<DownloadDataButton {...downloadProps} title='Download CSV' size='medium' icon={<Icon name='download' size='x20' />} />
 						</CardRow>
 					</CardCol>
 				</Box>

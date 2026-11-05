@@ -8,6 +8,8 @@ export const appCausingNestedRequests = path.resolve(__dirname, './nested-reques
 
 export const appUiKitRoomTest = path.resolve(__dirname, './uikit-room-test_0.0.1.zip');
 
+export const appUiKitComponentsTest = path.resolve(__dirname, './uikit-components-test_0.0.1.zip');
+
 export const appUpdateStatusTest = path.resolve(__dirname, './update-status-test_0.0.1.zip');
 
 export const appUpdateTest = path.resolve(__dirname, './app-update-test_0.0.1.zip');
@@ -25,3 +27,5 @@ export const messageReactionTest = path.resolve(__dirname, './message-updater-te
 export const appPresenceStateTest = path.resolve(__dirname, './presence-state-test_0.0.1.zip');
 
 export const appMediaCallEventsTest = path.resolve(__dirname, './media-call-events-test_0.0.1.zip');
+
+export const appAbacRoomCreationTest = path.resolve(__dirname, './abac-room-creation-test_0.0.1.zip');

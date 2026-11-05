@@ -2,9 +2,7 @@ import fetchMock from 'jest-fetch-mock';
 
 import { RestClient } from '../src/index';
 
-beforeAll(() => {
-	fetchMock.enableMocks();
-});
+fetchMock.enableMocks();
 
 afterAll(() => {
 	fetchMock.disableMocks();

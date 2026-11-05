@@ -77,7 +77,7 @@ const WizardExample = ({ ordered = false }: { ordered?: boolean }) => {
 				</Box>
 
 				<WizardActions>
-					<Button primary onClick={() => window.alert('Finished!')}>
+					<Button variant='primary' onClick={() => window.alert('Finished!')}>
 						Finish
 					</Button>
 				</WizardActions>

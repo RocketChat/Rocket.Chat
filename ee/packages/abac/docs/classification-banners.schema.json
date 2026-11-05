@@ -23,6 +23,17 @@
         "fallbackColor": { "$ref": "#/$defs/hexColor" }
       }
     },
+    "nonAbacBanner": {
+      "description": "Banners for rooms that are not ABAC managed, such as DMs, group DMs, discussions and federated rooms. The first enabled entry whose match fits the room is shown. At least one enabled entry must have no match; the first of them is the default, shown when no other enabled entry matches, wherever it sits in the list. When absent, the room shows no banner. Omnichannel (livechat) rooms are not affected by this setting and never show a banner",
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/nonAbacBanner" },
+      "contains": {
+        "type": "object",
+        "properties": { "enabled": { "const": true } },
+        "not": { "type": "object", "required": ["match"] }
+      }
+    },
     "attributes": {
       "type": "array",
       "minItems": 1,
@@ -35,6 +46,34 @@
     "hexColor": {
       "type": "string",
       "pattern": "^#[0-9a-fA-F]{6}$"
+    },
+    "nonAbacBanner": {
+      "type": "object",
+      "required": ["enabled", "text", "color"],
+      "additionalProperties": false,
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "text": { "type": "string", "minLength": 1 },
+        "color": { "$ref": "#/$defs/hexColor" },
+        "match": { "$ref": "#/$defs/roomMatch" }
+      }
+    },
+    "roomMatch": {
+      "type": "object",
+      "description": "Every property given must hold for the room; an omitted property matches any room. At least one property is required; an entry that applies to any room omits match instead",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "type": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "enum": ["direct", "public", "private"] }
+        },
+        "federated": { "type": "boolean" },
+        "discussion": { "type": "boolean" },
+        "team": { "type": "boolean", "description": "A team's own room or a room that belongs to a team" }
+      }
     },
     "attribute": {
       "type": "object",

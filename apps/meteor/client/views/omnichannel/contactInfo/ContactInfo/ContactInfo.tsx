@@ -1,5 +1,6 @@
 import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
-import { Box, Button, ButtonGroup, Callout, IconButton, Tabs, TabsItem } from '@rocket.chat/fuselage';
+import { css } from '@rocket.chat/css-in-js';
+import { Box, Button, ButtonGroup, Callout, IconButton, Tabs, TabsItem, useStyle } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import {
 	ContextualbarHeader,
@@ -28,6 +29,10 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 	const { t } = useTranslation();
 
 	const setModal = useSetModal();
+	const conflictsCalloutClassName = useStyle(css`
+		margin-block-end: 8px !important;
+		align-items: center !important;
+	`);
 	const handleNavigate = useContactRoute();
 	const context = useRouteParameter('context');
 
@@ -61,7 +66,7 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 						<IconButton
 							disabled={!canEditContact || hasConflicts}
 							title={canEditContact ? t('Edit') : t('Not_authorized')}
-							small
+							size='small'
 							icon='pencil'
 							onClick={() => handleNavigate({ context: 'edit' })}
 						/>
@@ -69,12 +74,11 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 				)}
 				{hasConflicts && (
 					<Callout
-						marginBlockEnd={8}
-						alignItems='center'
+						className={conflictsCalloutClassName}
 						icon='members'
 						actions={
 							<ButtonGroup>
-								<Button onClick={() => setModal(<ReviewContactModal onCancel={() => setModal(null)} contact={contact} />)} small>
+								<Button onClick={() => setModal(<ReviewContactModal onCancel={() => setModal(null)} contact={contact} />)} size='small'>
 									{t('See_conflicts')}
 								</Button>
 							</ButtonGroup>

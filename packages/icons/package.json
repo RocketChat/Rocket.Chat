@@ -1,0 +1,43 @@
+{
+	"name": "@rocket.chat/icons",
+	"version": "0.52.0-rc.0",
+	"description": "Rocket.Chat's Icons",
+	"homepage": "https://github.com/RocketChat/Rocket.Chat#readme",
+	"bugs": {
+		"url": "https://github.com/RocketChat/Rocket.Chat/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/RocketChat/Rocket.Chat.git",
+		"directory": "packages/icons"
+	},
+	"license": "MIT",
+	"author": {
+		"name": "Rocket.Chat",
+		"url": "https://rocket.chat/"
+	},
+	"main": "dist/index.js",
+	"files": [
+		"/dist"
+	],
+	"scripts": {
+		"build": "node scripts/buildIcons.mjs",
+		"lint": "yarn run -T oxlint",
+		"lint:fix": "yarn run -T oxlint --fix"
+	},
+	"devDependencies": {
+		"svg2ttf": "~6.1.0",
+		"svgicons2svgfont": "~16.0.0",
+		"ttf2eot": "~3.1.0",
+		"ttf2woff": "~3.0.0",
+		"ttf2woff2": "~8.0.1",
+		"unicode": "~14.0.0",
+		"xml2js": "~0.6.2"
+	},
+	"publishConfig": {
+		"access": "public"
+	},
+	"volta": {
+		"extends": "../../package.json"
+	}
+}
