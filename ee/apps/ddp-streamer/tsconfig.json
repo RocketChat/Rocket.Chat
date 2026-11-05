@@ -15,6 +15,6 @@
 			"mongodb": ["../../../node_modules/mongodb"]
 		}
 	},
-	"include": ["./src/**/*", "./definition"],
+	"include": ["./src/**/*"],
 	"exclude": ["./dist", "./ecosystem.config.js"]
 }

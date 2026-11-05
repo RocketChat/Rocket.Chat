@@ -3,7 +3,7 @@ import { Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 
 const PageSkeleton = () => (
 	<Page>
-		<PageHeader title={<Skeleton width='x320' maxWidth='full' />}>
+		<PageHeader title={<Skeleton width='min(320px, 100%)' />}>
 			<ButtonGroup>
 				<Button disabled>
 					<Skeleton width='x80' />

@@ -22,7 +22,6 @@ type Version = {
 	messages?: Message[];
 };
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export interface SupportedVersions {
 	timestamp: string;
 	messages?: Message[];
@@ -36,7 +35,6 @@ export interface SupportedVersions {
 	i18n?: Dictionary;
 }
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export interface SignedSupportedVersions extends SupportedVersions {
 	signed: string; // SerializedJWT<SupportedVersions>;
 }

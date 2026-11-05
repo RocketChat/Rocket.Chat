@@ -39,7 +39,7 @@ const WorkspaceRoute = () => {
 			<Page>
 				<PageHeader title={t('Workspace')}>
 					<ButtonGroup>
-						<Button icon='reload' primary type='button' onClick={handleClickRefreshButton} loading={statisticsQuery.isPending}>
+						<Button icon='reload' variant='primary' type='button' onClick={handleClickRefreshButton} loading={statisticsQuery.isPending}>
 							{t('Refresh')}
 						</Button>
 					</ButtonGroup>

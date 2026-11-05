@@ -1,6 +1,7 @@
 import type { IOmnichannelRoom, Serialized } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import type { OperationParams, OperationResult } from '@rocket.chat/rest-typings';
+import { isValidAppId } from '@rocket.chat/ui-kit';
 
 import { DDPSDK } from '../DDPSDK';
 import type { StreamerCallbackArgs } from '../types/streams';
@@ -296,6 +297,9 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 	): Promise<Serialized<OperationResult<'POST', '/apps/ui.interaction/:id'>>> {
 		if (!this.token) {
 			throw new Error('Invalid token');
+		}
+		if (!isValidAppId(appId)) {
+			throw new Error('Invalid app id');
 		}
 		return this.rest.post(`/apps/ui.interaction/${appId}`, payload, { headers: { 'x-visitor-token': this.token } });
 	}

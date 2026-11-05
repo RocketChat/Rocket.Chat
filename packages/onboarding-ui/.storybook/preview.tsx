@@ -1,90 +1,51 @@
-import { PaletteStyleTag } from '@rocket.chat/fuselage';
-import surface from '@rocket.chat/fuselage-tokens/dist/surface.json';
 import { DarkModeProvider } from '@rocket.chat/layout';
-import { useDarkMode } from '@rocket.chat/storybook-dark-mode';
-import type { Preview } from '@storybook/react-webpack5';
-import i18next from 'i18next';
-import { Suspense } from 'react';
-import { I18nextProvider, initReactI18next } from 'react-i18next';
-import { themes } from 'storybook/theming';
+import { mockAppRoot } from '@rocket.chat/mock-providers';
+import { appRootDecorator, languageGlobalTypes, languageInitialGlobals } from '@rocket.chat/storybook-config/app-root';
+import { parameters, decorators, useThemeMode } from '@rocket.chat/storybook-config/preview';
+import type { Decorator, Preview } from '@storybook/react-webpack5';
+import { I18nextProvider, useTranslation } from 'react-i18next';
 
-import manifest from '../package.json';
-import DocsContainer from './DocsContainer';
-import logo from './logo.svg';
+import en from '../.i18n/en.i18n.json';
 
-import '@rocket.chat/fuselage/dist/fuselage.css';
-import '@rocket.chat/icons/dist/rocketchat.css';
+type NestedTranslations = { [key: string]: string | NestedTranslations };
 
-const getI18n = () => {
-	const i18n = i18next.createInstance().use(initReactI18next);
+const flatten = (translations: NestedTranslations, prefix = ''): Record<string, string> =>
+	Object.fromEntries(
+		Object.entries(translations).flatMap(([key, value]) =>
+			typeof value === 'string' ? [[`${prefix}${key}`, value]] : Object.entries(flatten(value, `${prefix}${key}.`)),
+		),
+	);
 
-	import('../.i18n/en.i18n.json').then((translation) => {
-		i18n.init({
-			fallbackLng: 'en',
-			debug: false,
-			resources: {
-				en: {
-					translation,
-				},
-			},
-		});
-	});
+/**
+ * Resolves the package's unprefixed keys in the `onboarding` namespace, as the app does around its onboarding steps,
+ * and darkens the layout with the theme.
+ */
+const OnboardingDecorator: Decorator = (Story, { globals }) => {
+	const { i18n } = useTranslation();
+	const dark = useThemeMode(globals.theme) === 'dark';
 
-	return i18n;
+	return (
+		<I18nextProvider i18n={i18n} defaultNS='onboarding'>
+			<DarkModeProvider.default forcedDarkMode={dark}>
+				<Story />
+			</DarkModeProvider.default>
+		</I18nextProvider>
+	);
 };
 
-export default {
+const preview: Preview = {
 	parameters: {
-		backgrounds: {
-			grid: {
-				cellSize: 4,
-				cellAmount: 4,
-				opacity: 0.5,
-			},
-		},
-		docs: {
-			container: DocsContainer,
-		},
-		options: {
-			storySort: {
-				method: 'alphabetical',
-			},
-		},
-		darkMode: {
-			dark: {
-				...themes.dark,
-				appBg: surface.dark.sidebar,
-				appContentBg: surface.dark.light,
-				appPreviewBg: 'transparent',
-				barBg: surface.dark.light,
-				brandTitle: manifest.name,
-				brandImage: logo,
-				brandUrl: manifest.homepage,
-			},
-			light: {
-				...themes.normal,
-				appPreviewBg: 'transparent',
-				brandTitle: manifest.name,
-				brandImage: logo,
-				brandUrl: manifest.homepage,
-			},
-		},
+		...parameters,
 	},
 	decorators: [
-		(Story) => {
-			const dark = useDarkMode();
-
-			return (
-				<Suspense fallback={null}>
-					<I18nextProvider i18n={getI18n()}>
-						<DarkModeProvider.default forcedDarkMode={dark}>
-							<PaletteStyleTag theme={dark ? 'dark' : 'light'} />
-							<Story />
-						</DarkModeProvider.default>
-					</I18nextProvider>
-				</Suspense>
-			);
-		},
+		...decorators,
+		OnboardingDecorator,
+		// The package's own English strings stay the source; the app's catalog only carries the subset it renders.
+		appRootDecorator(mockAppRoot, (root) => root.withTranslations('en', 'onboarding', flatten(en))),
 	],
+	globalTypes: languageGlobalTypes,
+	initialGlobals: languageInitialGlobals,
 	tags: ['autodocs'],
-} satisfies Preview;
+};
+
+export default preview;

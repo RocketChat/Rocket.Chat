@@ -208,7 +208,7 @@ export class ClientStreamImpl extends Emitter implements ClientStream {
 	subscribe(name: string, ...params: any[]) {
 		const id = this.ddp.subscribe(name, params);
 
-		// eslint-disable-next-line @typescript-eslint/no-this-alias
+		// oxlint-disable-next-line @typescript-eslint/no-this-alias
 		const self = this;
 
 		// Kept for the whole subscription: a resubscription after a reconnect answers again.

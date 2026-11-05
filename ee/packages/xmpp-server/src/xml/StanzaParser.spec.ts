@@ -1,0 +1,204 @@
+import type Element from 'ltx/lib/Element';
+
+import { StanzaParser } from './StanzaParser';
+
+const STREAM_HEADER =
+	"<stream:stream xmlns='jabber:server' xmlns:stream='http://etherx.jabber.org/streams' from='a.tld' to='b.tld' version='1.0'>";
+
+describe('StanzaParser', () => {
+	const collect = (parser: StanzaParser) => {
+		const events: { type: string; payload?: unknown }[] = [];
+		parser.on('streamStart', (el) => events.push({ type: 'streamStart', payload: el }));
+		parser.on('stanza', (el) => events.push({ type: 'stanza', payload: el }));
+		parser.on('streamEnd', () => events.push({ type: 'streamEnd' }));
+		parser.on('error', (error) => events.push({ type: 'error', payload: error }));
+		return events;
+	};
+
+	it('emits the stream header and complete depth-1 stanzas', () => {
+		const parser = new StanzaParser();
+		const events = collect(parser);
+
+		parser.write(`<?xml version='1.0'?>${STREAM_HEADER}`);
+		parser.write("<message from='u@a.tld' to='v@b.tld'><body>hi</body></message>");
+
+		expect(events).toHaveLength(2);
+		expect(events[0].type).toBe('streamStart');
+		expect((events[0].payload as Element).attrs.from).toBe('a.tld');
+		expect(events[1].type).toBe('stanza');
+		const stanza = events[1].payload as Element;
+		expect(stanza.name).toBe('message');
+		expect(stanza.getChildText('body')).toBe('hi');
+	});
+
+	it('keeps a character whose bytes are split across reads intact', () => {
+		const parser = new StanzaParser();
+		const events = collect(parser);
+		const bytes = Buffer.from('<message><body>olá 😀 日本</body></message>');
+		const emoji = bytes.indexOf(Buffer.from('😀'));
+
+		parser.write(STREAM_HEADER);
+		parser.write(bytes.subarray(0, emoji + 2));
+		parser.write(bytes.subarray(emoji + 2));
+
+		expect((events[1].payload as Element).getChildText('body')).toBe('olá 😀 日本');
+	});
+
+	it('handles stanzas split across chunks', () => {
+		const parser = new StanzaParser();
+		const events = collect(parser);
+
+		parser.write(STREAM_HEADER);
+		parser.write('<message><bo');
+		parser.write('dy>split</body></mes');
+		parser.write('sage>');
+
+		expect(events.filter((e) => e.type === 'stanza')).toHaveLength(1);
+		expect((events[1].payload as Element).getChildText('body')).toBe('split');
+	});
+
+	it('emits streamEnd on the closing tag', () => {
+		const parser = new StanzaParser();
+		const events = collect(parser);
+
+		parser.write(`${STREAM_HEADER}</stream:stream>`);
+
+		expect(events.map((e) => e.type)).toEqual(['streamStart', 'streamEnd']);
+	});
+
+	it('rejects DOCTYPE declarations', () => {
+		const parser = new StanzaParser();
+		const events = collect(parser);
+
+		parser.write("<?xml version='1.0'?><!DOCTYPE foo [<!ENTITY bar 'x'>]>");
+
+		expect(events[0].type).toBe('error');
+	});
+
+	it('rejects comments even when split across chunks', () => {
+		const parser = new StanzaParser();
+		const events = collect(parser);
+
+		parser.write(`${STREAM_HEADER}<`);
+		parser.write('!-- sneaky -->');
+
+		expect(events.some((e) => e.type === 'error')).toBe(true);
+	});
+
+	it('rejects processing instructions after the prologue', () => {
+		const parser = new StanzaParser();
+		const events = collect(parser);
+
+		parser.write(`${STREAM_HEADER}<?php evil ?>`);
+
+		expect(events.some((e) => e.type === 'error')).toBe(true);
+	});
+
+	it('rejects oversized stanzas', () => {
+		const parser = new StanzaParser({ maxStanzaSize: 128 });
+		const events = collect(parser);
+
+		parser.write(STREAM_HEADER);
+		parser.write(`<message><body>${'x'.repeat(256)}</body></message>`);
+
+		expect(events.some((e) => e.type === 'error')).toBe(true);
+	});
+
+	it('rejects an oversized stanza that arrives in the same read as the stream header (R7)', () => {
+		const parser = new StanzaParser({ maxStanzaSize: 256 });
+		const events = collect(parser);
+
+		parser.write(`${STREAM_HEADER}<message><body>${'x'.repeat(300)}</body></message>`);
+
+		expect(events.map((e) => e.type)).toEqual(['error']);
+	});
+
+	it('accepts a stanza just under the cap whose last read also carries the next stanza (R7)', () => {
+		const parser = new StanzaParser({ maxStanzaSize: 1000 });
+		const events = collect(parser);
+		const big = `<message><body>${'x'.repeat(990 - 32)}</body></message>`;
+		const next = '<message><body>hi</body></message>';
+
+		parser.write(STREAM_HEADER);
+		parser.write(big.slice(0, 980));
+		parser.write(big.slice(980) + next);
+
+		expect(events.map((e) => e.type)).toEqual(['streamStart', 'stanza', 'stanza']);
+	});
+
+	it('accepts one read carrying more stanzas than the cap holds (R7)', () => {
+		const parser = new StanzaParser({ maxStanzaSize: 1000 });
+		const events = collect(parser);
+
+		parser.write(STREAM_HEADER + '<message><body>hi</body></message>'.repeat(100));
+
+		expect(events.filter((e) => e.type === 'stanza')).toHaveLength(100);
+		expect(events.some((e) => e.type === 'error')).toBe(false);
+	});
+
+	it('rejects an oversized stanza that starts in the read where the previous one ended (R7)', () => {
+		const parser = new StanzaParser({ maxStanzaSize: 1000 });
+		const events = collect(parser);
+		const big = `<message><body>${'x'.repeat(1100)}</body></message>`;
+
+		parser.write(STREAM_HEADER);
+		parser.write(`<message><body>hi</body></message>${big.slice(0, 900)}`);
+		parser.write(big.slice(900));
+
+		expect(events.map((e) => e.type)).toEqual(['streamStart', 'stanza', 'error']);
+	});
+
+	it('does not end a stanza at a closing tag quoted in an attribute (R7)', () => {
+		const parser = new StanzaParser({ maxStanzaSize: 1000 });
+		const events = collect(parser);
+
+		parser.write(STREAM_HEADER);
+		parser.write(`<message id='${'x'.repeat(600)}</message><message>'><body>`);
+		parser.write(`${'x'.repeat(600)}</body></message>`);
+
+		expect(events.map((e) => e.type)).toEqual(['streamStart', 'error']);
+	});
+
+	it('does not count the stream header toward the first stanza (R7)', () => {
+		const parser = new StanzaParser({ maxStanzaSize: 1000 });
+		const events = collect(parser);
+
+		parser.write(`${STREAM_HEADER}<message><body>${'x'.repeat(1000 - 32)}</body></message>`);
+
+		expect(events.map((e) => e.type)).toEqual(['streamStart', 'stanza']);
+	});
+
+	it('rejects excessive nesting depth', () => {
+		const parser = new StanzaParser();
+		const events = collect(parser);
+
+		parser.write(STREAM_HEADER);
+		parser.write(`${'<a>'.repeat(40)}`);
+
+		expect(events.some((e) => e.type === 'error')).toBe(true);
+	});
+
+	it('is reusable after reset (stream restart)', () => {
+		const parser = new StanzaParser();
+		const events = collect(parser);
+
+		parser.write(`<?xml version='1.0'?>${STREAM_HEADER}`);
+		parser.reset();
+		parser.write(`<?xml version='1.0'?>${STREAM_HEADER}<message><body>after restart</body></message>`);
+
+		const stanzas = events.filter((e) => e.type === 'stanza');
+		expect(events.filter((e) => e.type === 'streamStart')).toHaveLength(2);
+		expect(stanzas).toHaveLength(1);
+		expect((stanzas[0].payload as Element).getChildText('body')).toBe('after restart');
+	});
+
+	it('stops emitting after a fatal error', () => {
+		const parser = new StanzaParser();
+		const events = collect(parser);
+
+		parser.write('<!DOCTYPE x>');
+		parser.write(`${STREAM_HEADER}<message/>`);
+
+		expect(events.map((e) => e.type)).toEqual(['error']);
+	});
+});

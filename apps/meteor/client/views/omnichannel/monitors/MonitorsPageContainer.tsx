@@ -1,6 +1,7 @@
+import { useHasLicenseModule } from '@rocket.chat/ui-client';
+
 import MonitorsPage from './MonitorsPage';
 import PageSkeleton from '../../../components/PageSkeleton';
-import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 
 const MonitorsPageContainer = () => {

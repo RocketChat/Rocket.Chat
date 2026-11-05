@@ -37,7 +37,7 @@ export const SidebarBanner = ({
 		</div>
 		<div className='rcx-box rcx-box--full rcx-sidebar-banner__addon'>
 			{addon}
-			{onClose && <IconButton onClick={onClose} tiny icon='cross' />}
+			{onClose && <IconButton onClick={onClose} size='tiny' icon='cross' />}
 		</div>
 	</div>
 );

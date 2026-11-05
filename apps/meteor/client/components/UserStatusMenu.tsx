@@ -11,16 +11,10 @@ import { UserStatus } from './UserStatus';
 export type UserStatusMenuProps = {
 	onChange: (type: UserStatusType) => void;
 	initialStatus?: UserStatusType;
-	optionWidth?: ComponentProps<typeof Box>['width'];
 	placement?: ComponentProps<typeof PositionAnimated>['placement'];
 };
 
-const UserStatusMenu = ({
-	onChange,
-	initialStatus = UserStatusType.OFFLINE,
-	optionWidth = undefined,
-	placement = 'bottom-start',
-}: UserStatusMenuProps) => {
+const UserStatusMenu = ({ onChange, initialStatus = UserStatusType.OFFLINE, placement = 'bottom-start' }: UserStatusMenuProps) => {
 	const { t } = useTranslation();
 	const [status, setStatus] = useState(initialStatus);
 	const allowInvisibleStatus = useSetting('Accounts_AllowInvisibleStatusOption', true);
@@ -80,9 +74,9 @@ const UserStatusMenu = ({
 		<>
 			<Button
 				ref={ref}
-				mini
+				size='mini'
 				square
-				secondary
+				variant='secondary'
 				onClick={onClick}
 				onBlur={hide}
 				onKeyUp={handleKeyUp}
@@ -91,8 +85,8 @@ const UserStatusMenu = ({
 			>
 				<UserStatus status={status} />
 			</Button>
-			<PositionAnimated width='auto' visible={visible} anchor={ref} placement={placement}>
-				<Options width={optionWidth} onSelect={handleSelection} options={options} cursor={cursor} />
+			<PositionAnimated visible={visible} anchor={ref} placement={placement}>
+				<Options onSelect={handleSelection} options={options} cursor={cursor} />
 			</PositionAnimated>
 		</>
 	);

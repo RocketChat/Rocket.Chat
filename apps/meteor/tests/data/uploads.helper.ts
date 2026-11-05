@@ -1,7 +1,8 @@
+import { after, before, describe, it } from 'node:test';
+
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { after, before, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import { api, request, credentials } from './api-data';
@@ -40,7 +41,7 @@ export async function testFileUploads(
 		Promise.all([deleteRoom({ type: 'c' as const, roomId: testRoom._id }), updateSetting('Message_KeepHistory', false), deleteUser(user)]),
 	);
 
-	it('should fail if invalid channel', (done) => {
+	it('should fail if invalid channel', (_t, done) => {
 		void request
 			.get(api(filesEndpoint))
 			.set(credentials)
@@ -56,7 +57,7 @@ export async function testFileUploads(
 			.end(done);
 	});
 
-	it('should succeed when searching by roomId', (done) => {
+	it('should succeed when searching by roomId', (_t, done) => {
 		void request
 			.get(api(filesEndpoint))
 			.set(credentials)
@@ -72,7 +73,7 @@ export async function testFileUploads(
 			.end(done);
 	});
 
-	it('should succeed when searching by roomId even requested with count and offset params', (done) => {
+	it('should succeed when searching by roomId even requested with count and offset params', (_t, done) => {
 		void request
 			.get(api(filesEndpoint))
 			.set(credentials)
@@ -90,9 +91,10 @@ export async function testFileUploads(
 			.end(done);
 	});
 
-	it('should succeed when searching by roomName', function (done) {
+	it('should succeed when searching by roomName', (t, done) => {
 		if (!testRoom.name) {
-			this.skip();
+			t.skip();
+			return done();
 		}
 		void request
 			.get(api(filesEndpoint))
@@ -109,9 +111,10 @@ export async function testFileUploads(
 			.end(done);
 	});
 
-	it('should succeed when searching by roomName even requested with count and offset params', function (done) {
+	it('should succeed when searching by roomName even requested with count and offset params', (t, done) => {
 		if (!testRoom.name) {
-			this.skip();
+			t.skip();
+			return done();
 		}
 		void request
 			.get(api(filesEndpoint))
@@ -335,11 +338,7 @@ export async function testFileUploads(
 			await deleteUser(anotherUser, { confirmRelinquish: true });
 		});
 
-		it('should not allow to confirm a file from another user', async function () {
-			if (roomType === 'd') {
-				this.skip();
-			}
-
+		it('should not allow to confirm a file from another user', { skip: roomType === 'd' }, async () => {
 			let fileId: string;
 			await request
 				.post(api(`rooms.media/${testRoom._id}`))

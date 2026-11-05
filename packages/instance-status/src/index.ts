@@ -35,7 +35,7 @@ let createIndexes = async () => {
 		.catch(() => [])
 		.then((result) =>
 			result.some((index) => {
-				if (index.key && index.key._updatedAt === 1) {
+				if (index.key?._updatedAt === 1) {
 					if (index.expireAfterSeconds !== indexExpire && index.name) {
 						void InstanceStatusModel.col.dropIndex(index.name);
 						return false;

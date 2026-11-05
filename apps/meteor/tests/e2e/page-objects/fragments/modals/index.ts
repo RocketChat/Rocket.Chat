@@ -1,3 +1,5 @@
+export * from './abac-self-lockout-modal';
+export * from './abac-update-room-modal';
 export * from './apps-modal';
 export * from './confirm-delete-modal';
 export * from './confirm-logout-modal';

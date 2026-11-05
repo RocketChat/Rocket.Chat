@@ -94,7 +94,7 @@ export class ListenersModule {
 					username: 'rocket.cat',
 				},
 				private: true,
-				_id: message._id || String(Date.now()),
+				_id: message._id || crypto.randomUUID(),
 				rid,
 				ts: new Date(),
 				_updatedAt: new Date(),

@@ -1,7 +1,6 @@
-import { api } from '@rocket.chat/core-services';
+import { api, ClientSafeError } from '@rocket.chat/core-services';
 import { EmojiCustom } from '@rocket.chat/models';
 import limax from 'limax';
-import { Meteor } from 'meteor/meteor';
 
 import { trim } from '../../../../../lib/utils/stringUtils';
 import { hasPermissionAsync } from '../../../authorization/hasPermission';
@@ -21,11 +20,11 @@ type EmojiDataWithParsedAliases = Omit<EmojiData, 'aliases' | '_id'> & { _id: st
 
 export async function insertOrUpdateEmoji(userId: string | null, emojiData: EmojiData): Promise<EmojiDataWithParsedAliases> {
 	if (!userId || !(await hasPermissionAsync(userId, 'manage-emoji'))) {
-		throw new Meteor.Error('not_authorized');
+		throw new ClientSafeError('not_authorized');
 	}
 
 	if (!trim(emojiData.name)) {
-		throw new Meteor.Error('error-the-field-is-required', 'The field Name is required', {
+		throw new ClientSafeError('error-the-field-is-required', 'The field Name is required', {
 			method: 'insertOrUpdateEmoji',
 			field: 'Name',
 		});
@@ -43,7 +42,7 @@ export async function insertOrUpdateEmoji(userId: string | null, emojiData: Emoj
 	emojiData.aliases = emojiData.aliases?.replace(/:/g, '');
 
 	if (nameValidation.test(emojiData.name)) {
-		throw new Meteor.Error('error-input-is-not-a-valid-field', `${emojiData.name} is not a valid name`, {
+		throw new ClientSafeError('error-input-is-not-a-valid-field', `${emojiData.name} is not a valid name`, {
 			method: 'insertOrUpdateEmoji',
 			input: emojiData.name,
 			field: 'Name',
@@ -53,7 +52,7 @@ export async function insertOrUpdateEmoji(userId: string | null, emojiData: Emoj
 	let aliases: string[] = [];
 	if (emojiData.aliases) {
 		if (aliasValidation.test(emojiData.aliases)) {
-			throw new Meteor.Error('error-input-is-not-a-valid-field', `${emojiData.aliases} is not a valid alias set`, {
+			throw new ClientSafeError('error-input-is-not-a-valid-field', `${emojiData.aliases} is not a valid alias set`, {
 				method: 'insertOrUpdateEmoji',
 				input: emojiData.aliases,
 				field: 'Alias_Set',
@@ -73,13 +72,17 @@ export async function insertOrUpdateEmoji(userId: string | null, emojiData: Emoj
 	});
 
 	if (conflictingEmoji) {
-		throw new Meteor.Error('Custom_Emoji_Error_Name_Or_Alias_Already_In_Use', 'The custom emoji or one of its aliases is already in use', {
-			method: 'insertOrUpdateEmoji',
-		});
+		throw new ClientSafeError(
+			'Custom_Emoji_Error_Name_Or_Alias_Already_In_Use',
+			'The custom emoji or one of its aliases is already in use',
+			{
+				method: 'insertOrUpdateEmoji',
+			},
+		);
 	}
 
 	if (typeof emojiData.extension === 'undefined') {
-		throw new Meteor.Error('error-the-field-is-required', 'The custom emoji file is required', {
+		throw new ClientSafeError('error-the-field-is-required', 'The custom emoji file is required', {
 			method: 'insertOrUpdateEmoji',
 		});
 	}

@@ -6,7 +6,6 @@
 		"rootDir": "./src",
 		"outDir": "./dist/ee/apps/omnichannel-transcript/src",
 	},
-	"files": ["./src/service.ts", "./src/fips.ts"],
-	"include": ["../../../apps/meteor/definition/externals/meteor"],
+	"include": ["./src", "../../../apps/meteor/definition/externals/meteor"],
 	"exclude": ["./dist"]
 }

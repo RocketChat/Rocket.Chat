@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion -- acceptable for this test file */
+/* oxlint-disable @typescript-eslint/no-non-null-assertion -- acceptable for this test file */
 import * as assert from 'node:assert';
 import { beforeEach, describe, it } from 'node:test';
 

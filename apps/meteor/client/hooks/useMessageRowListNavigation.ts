@@ -6,6 +6,6 @@ export const isMessageRow = (node: Element) => node.matches(messageRowSelector);
 
 /**
  * Gives the lists whose rows are messages, such as the pinned, starred and mentions lists, the keyboard model of the other lists:
- * each message is a row, and its links, buttons and toolbar are the stops of Tab and of the left and right arrows.
+ * each message is a row, and its links, buttons and toolbar are the stops of Tab.
  */
 export const useMessageRowListNavigation = () => useItemListNavigation({ isItem: isMessageRow, rowSelector: messageRowSelector });

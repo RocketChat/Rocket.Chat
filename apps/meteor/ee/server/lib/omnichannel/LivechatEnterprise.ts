@@ -3,7 +3,6 @@ import type { IOmnichannelBusinessUnit, IOmnichannelServiceLevelAgreements, IUse
 import { Users, OmnichannelServiceLevelAgreements, LivechatTag, LivechatUnitMonitors, LivechatUnit } from '@rocket.chat/models';
 import { getUnitsFromUser } from '@rocket.chat/omni-core-ee';
 import { Match, check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 
 import { updateSLAInquiries } from './Helper';
 import { removeSLAFromRooms } from './SlaHelper';
@@ -38,7 +37,7 @@ export const LivechatEnterprise = {
 		});
 
 		if (!user) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+			throw new ClientSafeError('error-invalid-user', 'Invalid user', {
 				method: 'livechat:removeMonitor',
 			});
 		}
@@ -54,13 +53,11 @@ export const LivechatEnterprise = {
 	},
 
 	async removeUnit(_id: string, userId: string) {
-		check(_id, String);
-
 		const unitsFromUser = await getUnitsFromUser(userId);
 
 		const result = await LivechatUnit.removeByIdAndUnit(_id, unitsFromUser);
 		if (!result.deletedCount) {
-			throw new Meteor.Error('unit-not-found', 'Unit not found', { method: 'livechat:removeUnit' });
+			throw new ClientSafeError('unit-not-found', 'Unit not found', { method: 'livechat:removeUnit' });
 		}
 
 		return result;
@@ -73,8 +70,6 @@ export const LivechatEnterprise = {
 		unitDepartments: { departmentId: string }[],
 		userId: string,
 	) {
-		check(_id, Match.Maybe(String));
-
 		check(unitData, {
 			name: String,
 			visibility: String,
@@ -108,7 +103,7 @@ export const LivechatEnterprise = {
 				{ unitsFromUser },
 			);
 			if (!unit) {
-				throw new Meteor.Error('error-unit-not-found', 'Unit not found', {
+				throw new ClientSafeError('error-unit-not-found', 'Unit not found', {
 					method: 'livechat:saveUnit',
 				});
 			}
@@ -134,7 +129,7 @@ export const LivechatEnterprise = {
 		const tag = await LivechatTag.findOneById<Pick<ILivechatTag, '_id' | 'name'>>(_id, { projection: { _id: 1, name: 1 } });
 
 		if (!tag) {
-			throw new Meteor.Error('tag-not-found', 'Tag not found', { method: 'livechat:removeTag' });
+			throw new ClientSafeError('tag-not-found', 'Tag not found', { method: 'livechat:removeTag' });
 		}
 
 		await callbacks.run('livechat.afterTagRemoved', tag);

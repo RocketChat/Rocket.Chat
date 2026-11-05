@@ -1,6 +1,7 @@
-import { Box, type BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
+import { Box } from '../Box';
 
-export type ModalTitleProps = BoxProps;
+export type ModalTitleProps = ElementProps<HTMLHeadingElement>;
 
 const ModalTitle = ({ children, ...props }: ModalTitleProps) => (
 	<Box is='h2' rcx-modal__title {...props}>

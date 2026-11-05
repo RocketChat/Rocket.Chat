@@ -64,7 +64,7 @@ const openExternalWindow = async (callId: string, theme: string) => {
 			} catch (error) {
 				// arround ~ 5 seconds total timeout
 				if (attempt > 9) {
-					reject(error as Error);
+					reject(error instanceof Error ? error : new Error('Failed to create the popout window root'));
 					externalWindow.close();
 					return;
 				}

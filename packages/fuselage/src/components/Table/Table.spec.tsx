@@ -1,4 +1,4 @@
-import { composeStories } from '@storybook/react-webpack5';
+import { composeStories } from '@storybook/react';
 import { axe } from 'jest-axe';
 
 import * as stories from './Table.stories';
@@ -12,5 +12,12 @@ describe('[Table Rendering]', () => {
 
 		const results = await axe(container);
 		expect(results).toHaveNoViolations();
+	});
+
+	test('renders one col per declared column', () => {
+		const { Columns } = composeStories(stories);
+		const { container } = render(<Columns />);
+
+		expect(container.querySelectorAll('table > colgroup > col')).toHaveLength(4);
 	});
 });

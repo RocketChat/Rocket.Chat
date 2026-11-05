@@ -4,8 +4,31 @@ import { ajv, ajvQuery } from './Ajv';
 import { paginationQueryProperties } from './pagination';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 
+type ChatSendMessageFields = Partial<
+	Pick<
+		IMessage,
+		| '_id'
+		| 'rid'
+		| 'tmid'
+		| 'tshow'
+		| 'msg'
+		| 'alias'
+		| 'emoji'
+		| 'avatar'
+		| 'attachments'
+		| 'blocks'
+		| 'customFields'
+		| 'location'
+		| 'groupable'
+		| 't'
+		| 'e2e'
+		| 'e2eMentions'
+		| 'content'
+	>
+> & { parseUrls?: boolean; text?: string };
+
 type ChatSendMessage = {
-	message: Partial<IMessage>;
+	message: ChatSendMessageFields;
 	previewUrls?: string[];
 };
 
@@ -57,10 +80,56 @@ const chatSendMessageSchema = {
 					type: 'array',
 					items: {
 						type: 'object',
+						allOf: [
+							{
+								if: { properties: { type: { enum: ['actions', 'context'] } }, required: ['type'] },
+								then: { properties: { elements: { type: 'array', items: { type: 'object' } } }, required: ['elements'] },
+							},
+							{
+								if: { properties: { type: { const: 'section' } }, required: ['type'] },
+								then: { properties: { fields: { type: 'array', items: { type: 'object' } } } },
+							},
+							{
+								if: { properties: { type: { const: 'input' } }, required: ['type'] },
+								then: { properties: { element: { type: 'object' } }, required: ['element'] },
+							},
+						],
 					},
 					nullable: true,
 				},
 				customFields: {
+					type: 'object',
+					nullable: true,
+				},
+				location: {
+					type: 'object',
+					nullable: true,
+				},
+				parseUrls: {
+					type: 'boolean',
+					nullable: true,
+				},
+				text: {
+					type: 'string',
+					nullable: true,
+				},
+				groupable: {
+					type: 'boolean',
+					nullable: true,
+				},
+				t: {
+					type: 'string',
+					nullable: true,
+				},
+				e2e: {
+					type: 'string',
+					nullable: true,
+				},
+				e2eMentions: {
+					type: 'object',
+					nullable: true,
+				},
+				content: {
 					type: 'object',
 					nullable: true,
 				},
@@ -79,6 +148,8 @@ const chatSendMessageSchema = {
 };
 
 export const isChatSendMessageProps = ajv.compile<ChatSendMessage>(chatSendMessageSchema);
+
+export const chatSendMessageFieldNames: readonly string[] = Object.keys(chatSendMessageSchema.properties.message.properties);
 
 type ChatGetMessage = {
 	msgId: IMessage['_id'];

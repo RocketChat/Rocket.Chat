@@ -1,10 +1,14 @@
 import { MockedServerContext, MockedUserContext } from '@rocket.chat/mock-providers';
 import { render } from '@testing-library/react';
-import { Meteor } from 'meteor/meteor';
 
 import SAMLLoginRoute from './SAMLLoginRoute';
 import RouterContextMock from '../../../tests/mocks/client/RouterContextMock';
+import { loginWithSamlToken } from '../../meteor/login/saml';
 import { useSamlInviteToken } from '../invite/hooks/useSamlInviteToken';
+
+jest.mock('../../meteor/login/saml', () => ({
+	loginWithSamlToken: jest.fn((_token: string, callback: () => void) => callback()),
+}));
 
 jest.mock('../invite/hooks/useSamlInviteToken');
 const mockUseSamlInviteToken = jest.mocked(useSamlInviteToken);
@@ -17,7 +21,7 @@ beforeAll(() => {
 beforeEach(() => {
 	jest.clearAllMocks();
 	navigateStub.mockClear();
-	(Meteor.loginWithSamlToken as jest.Mock<any>).mockClear();
+	jest.mocked(loginWithSamlToken).mockClear();
 });
 
 it('should redirect to /home', async () => {
@@ -73,8 +77,8 @@ it('should call loginWithSamlToken when component is mounted', async () => {
 		</MockedServerContext>,
 	);
 
-	expect(Meteor.loginWithSamlToken).toHaveBeenCalledTimes(1);
-	expect(Meteor.loginWithSamlToken).toHaveBeenLastCalledWith(undefined, expect.any(Function));
+	expect(loginWithSamlToken).toHaveBeenCalledTimes(1);
+	expect(loginWithSamlToken).toHaveBeenLastCalledWith(undefined, expect.any(Function));
 });
 
 it('should call loginWithSamlToken with the token when it is present', async () => {
@@ -86,8 +90,8 @@ it('should call loginWithSamlToken with the token when it is present', async () 
 		</MockedUserContext>,
 	);
 
-	expect(Meteor.loginWithSamlToken).toHaveBeenCalledTimes(1);
-	expect(Meteor.loginWithSamlToken).toHaveBeenLastCalledWith('testToken', expect.any(Function));
+	expect(loginWithSamlToken).toHaveBeenCalledTimes(1);
+	expect(loginWithSamlToken).toHaveBeenLastCalledWith('testToken', expect.any(Function));
 });
 
 jest.mock('../../lib/buildAuthDeeplinkURL', () => ({ buildSamlDeepLinkURL: jest.fn() }));
@@ -116,7 +120,7 @@ describe('native client handoff', () => {
 		);
 
 		// The browser must never authenticate: the app redeems the credential on its own connection.
-		expect(Meteor.loginWithSamlToken).not.toHaveBeenCalled();
+		expect(loginWithSamlToken).not.toHaveBeenCalled();
 		expect(navigateStub).not.toHaveBeenCalled();
 
 		expect(buildSamlDeepLinkURL).toHaveBeenCalledTimes(1);
@@ -134,6 +138,6 @@ describe('native client handoff', () => {
 		);
 
 		expect(buildSamlDeepLinkURL).not.toHaveBeenCalled();
-		expect(Meteor.loginWithSamlToken).toHaveBeenCalledTimes(1);
+		expect(loginWithSamlToken).toHaveBeenCalledTimes(1);
 	});
 });

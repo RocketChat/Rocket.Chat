@@ -6,7 +6,6 @@ import ldapEscape from 'ldap-escape';
 import limax from 'limax';
 // #ToDo: #TODO: Remove Meteor dependencies
 import { Accounts } from 'meteor/accounts-base';
-import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { LDAPConnection } from './Connection';
@@ -351,7 +350,7 @@ export class LDAPManager {
 	): Promise<LDAPLoginResult> {
 		if (user.ldap !== true && settings.get('LDAP_Merge_Existing_Users') !== true) {
 			logger.debug('User exists without "ldap: true"');
-			throw new Meteor.Error(
+			throw new ClientSafeError(
 				'LDAP-login-error',
 				`LDAP Authentication succeeded, but there's already an existing user with provided username [${user.username}] in Mongo.`,
 			);

@@ -1,4 +1,6 @@
 import { ajv } from '../Ajv';
+import type { AbacCreationAttributes } from '../abacCreationAttributes';
+import { abacCreationAttributesSchema } from '../abacCreationAttributes';
 
 export type GroupsCreateProps = {
 	name: string;
@@ -9,8 +11,12 @@ export type GroupsCreateProps = {
 		broadcast: boolean;
 		encrypted: boolean;
 		teamId?: string;
+		federated?: boolean;
+		topic?: string;
+		xmppFederated?: boolean;
 	};
 	excludeSelf?: boolean;
+	abacAttributes?: AbacCreationAttributes;
 };
 
 const GroupsCreatePropsSchema = {
@@ -36,6 +42,7 @@ const GroupsCreatePropsSchema = {
 			type: 'object',
 			nullable: true,
 		},
+		abacAttributes: abacCreationAttributesSchema,
 		extraData: {
 			type: 'object',
 			properties: {
@@ -55,6 +62,10 @@ const GroupsCreatePropsSchema = {
 				},
 				topic: {
 					type: 'string',
+					nullable: true,
+				},
+				xmppFederated: {
+					type: 'boolean',
 					nullable: true,
 				},
 			},

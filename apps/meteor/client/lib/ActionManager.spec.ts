@@ -4,6 +4,7 @@ import type * as UiKit from '@rocket.chat/ui-kit';
 import type { ContextType } from 'react';
 
 import { ActionManager } from './ActionManager';
+import { sdk } from './SDKClient';
 
 jest.mock('@rocket.chat/ui-client', () => ({ imperativeModal: { open: jest.fn() } }));
 jest.mock('./SDKClient', () => ({ sdk: { rest: { post: jest.fn() } } }));
@@ -41,5 +42,39 @@ describe('modal.close', () => {
 		actionManager.handleServerInteraction({ type: 'modal.close', triggerId: actionManager.generateTriggerId(appId), appId });
 
 		expect(close).not.toHaveBeenCalled();
+	});
+});
+
+describe('emitInteraction', () => {
+	const interaction: Parameters<ActionManager['emitInteraction']>[1] = {
+		type: 'blockAction',
+		actionId: 'a',
+		payload: { blockId: 'b', value: undefined },
+		container: { type: 'message', id: 'mid' },
+		rid: 'rid',
+		mid: 'mid',
+	};
+
+	beforeEach(() => {
+		jest
+			.mocked(sdk.rest.post)
+			.mockReset()
+			.mockResolvedValue({ type: 'errors' } as never);
+	});
+
+	it('posts the interaction to the app it names', async () => {
+		const actionManager = new ActionManager({} as ContextType<typeof RouterContext>);
+
+		await actionManager.emitInteraction(appId, interaction);
+
+		expect(sdk.rest.post).toHaveBeenCalledWith(`/apps/ui.interaction/${appId}`, expect.objectContaining({ actionId: 'a' }));
+	});
+
+	it.each(['../../v1/users.removeOtherTokens', '..', 'a/b', '%2e%2e', ''])('sends nothing for the app ID %p', async (invalidAppId) => {
+		const actionManager = new ActionManager({} as ContextType<typeof RouterContext>);
+
+		await actionManager.emitInteraction(invalidAppId, interaction);
+
+		expect(sdk.rest.post).not.toHaveBeenCalled();
 	});
 });

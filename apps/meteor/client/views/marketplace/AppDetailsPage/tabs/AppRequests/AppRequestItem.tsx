@@ -1,4 +1,4 @@
-import { Badge, Box } from '@rocket.chat/fuselage';
+import { Badge, Box, Text } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useFormatDateAndTime } from '@rocket.chat/ui-client';
 import { usePermission } from '@rocket.chat/ui-contexts';
@@ -17,7 +17,7 @@ const AppRequestItem = ({ seen, name, createdDate, message, username }: AppReque
 
 	return (
 		<Box display='flex' flexDirection='row' paddingBlock={12} paddingInlineEnd={24} marginBlockEnd={8} flexGrow='1'>
-			<Box marginInlineEnd={8} marginBlockStart={2} display='flex' flexDirection='row' alignItems='flex-start' height='full'>
+			<Box marginInlineEnd='x8' marginBlockStart='x4' display='flex' flexDirection='row' alignItems='flex-start' height='full'>
 				<Box marginInlineEnd={16} alignSelf='center' height='100%' width='x8'>
 					{!seen && isAdminUser && <Badge small variant='primary' />}
 				</Box>
@@ -28,13 +28,13 @@ const AppRequestItem = ({ seen, name, createdDate, message, username }: AppReque
 					<Box fontScale='p2b' marginInlineEnd={4} lineHeight='initial' color='titles-labels'>
 						{name}
 					</Box>
-					<Box fontScale='c1' color='annotation'>
+					<Text fontScale='c1' color='annotation'>
 						{formatDateAndTime(createdDate)}
-					</Box>
+					</Text>
 				</Box>
-				<Box fontScale='p2' color='default'>
+				<Text fontScale='p2' color='default'>
 					{message}
-				</Box>
+				</Text>
 			</Box>
 		</Box>
 	);

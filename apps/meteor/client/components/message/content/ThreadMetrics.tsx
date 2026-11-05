@@ -44,9 +44,7 @@ const ThreadMetrics = ({ unread, mention, all, rid, mid, counter, participants, 
 					data-rid={rid}
 					data-mid={mid}
 					onClick={() => goToThread({ rid, tmid: mid })}
-					primary={!!unread}
-					position='relative'
-					overflow='visible'
+					variant={unread ? 'primary' : 'secondary'}
 				>
 					{t('View_thread')}
 				</MessageMetricsReply>

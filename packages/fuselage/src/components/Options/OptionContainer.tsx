@@ -1,19 +1,18 @@
-import type { RefAttributes } from 'react';
-
-import { Box, type BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
+import { Box } from '../Box';
+import { PopoverSurface } from '../PopoverSurface';
 import { Scrollable } from '../Scrollable';
-import { Tile } from '../Tile';
 
-export type OptionContainerProps = Omit<BoxProps, 'ref'> & RefAttributes<HTMLElement>;
+export type OptionContainerProps = ElementProps<HTMLElement>;
 
 function OptionContainer(props: OptionContainerProps) {
 	return (
 		<Box rcx-options>
-			<Tile padding={0} paddingBlock='x12' paddingInline={0}>
+			<PopoverSurface elevation='1'>
 				<Scrollable vertical smooth>
-					<Tile elevation='0' padding='none' maxHeight='x240' {...props} />
+					<Box borderRadius='medium' backgroundColor='light' maxHeight='x240' {...props} />
 				</Scrollable>
-			</Tile>
+			</PopoverSurface>
 		</Box>
 	);
 }

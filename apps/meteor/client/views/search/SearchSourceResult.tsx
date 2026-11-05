@@ -13,10 +13,13 @@ import {
 	MessageRole,
 	MessageTimestamp,
 	MessageUsername,
+	MessageNameContainer,
 } from '@rocket.chat/fuselage';
 import type { AISearchResult } from '@rocket.chat/rest-typings';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
+import { useUserPreference, useLayout } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
+import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import MarkdownText from '../../components/MarkdownText';
@@ -72,35 +75,31 @@ const SearchSourceResult = ({ item }: SearchSourceResultProps): ReactElement => 
 	const { t } = useTranslation();
 	const roomLabel = item.room?.fname || item.room?.name;
 	const href = getMessageHref(item);
+	const messageLinkRef = useRef<HTMLAnchorElement>(null);
 	const username = item.u?.username || item.u?.name || t('Unknown_User');
 	const displayName = item.u?.name || username;
 	const messageTime = formatMessageTime(item.ts);
 	const relevanceScore = typeof item.score === 'number' ? Math.max(0, Math.min(100, Math.round(item.score * 100))) : undefined;
+	const { isMobile } = useLayout();
+	const showUsername = Boolean(!useUserPreference<boolean>('hideUsernames') && !isMobile);
 
 	return (
-		<Box
-			is='article'
-			role='listitem'
-			position='relative'
-			borderBlockEndWidth='default'
-			borderBlockEndStyle='solid'
-			borderBlockEndColor='extra-light'
-			paddingBlockStart={16}
-			paddingBlockEnd={16}
-		>
+		<Box is='article' role='listitem' position='relative' paddingBlockStart={4} paddingBlockEnd={4}>
 			<Message clickable={Boolean(href)}>
 				<MessageLeftContainer>
 					<MessageAvatar username={username} size='x36' />
 				</MessageLeftContainer>
 				<MessageContainer>
 					<MessageHeader>
-						<MessageName title={displayName}>{displayName}</MessageName>
-						{item.u?.username && (
-							<>
-								{' '}
-								<MessageUsername>@{item.u.username}</MessageUsername>
-							</>
-						)}
+						<MessageNameContainer>
+							<MessageName title={displayName}>{displayName}</MessageName>
+							{showUsername && item.u?.username && (
+								<>
+									{' '}
+									<MessageUsername>@{item.u.username}</MessageUsername>
+								</>
+							)}
+						</MessageNameContainer>
 						{roomLabel && (
 							<MessageRole>
 								<Box display='flex' alignItems='center' gap={4}>
@@ -122,13 +121,16 @@ const SearchSourceResult = ({ item }: SearchSourceResultProps): ReactElement => 
 				</MessageContainer>
 				{typeof relevanceScore === 'number' && (
 					<MessageContainerFixed>
-						<MessageRole title={`${relevanceScore}%`}>{relevanceScore}%</MessageRole>
+						<Box position='relative' zIndex={1} onClick={() => messageLinkRef.current?.click()}>
+							<MessageRole title={t('Semantic_match_score')}>{relevanceScore}%</MessageRole>
+						</Box>
 					</MessageContainerFixed>
 				)}
 			</Message>
 			{href && (
 				<Box
 					is='a'
+					ref={messageLinkRef}
 					href={href}
 					aria-label={t('Jump_to_message')}
 					position='absolute'

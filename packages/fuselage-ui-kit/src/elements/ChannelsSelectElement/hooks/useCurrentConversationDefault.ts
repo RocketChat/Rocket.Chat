@@ -36,7 +36,7 @@ export const useCurrentConversationDefault = <TElement extends RoomSelectElement
 			undefined as never,
 		);
 		// Seed the view state once, when the element mounts.
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// oxlint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	return useMemo(() => {

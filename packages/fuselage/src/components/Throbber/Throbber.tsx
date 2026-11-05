@@ -1,6 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
-import type { RefAttributes } from 'react';
 
+import type { ElementProps } from '../../types/ElementProps';
 import { Box, type BoxProps } from '../Box';
 
 type CircleProps = {
@@ -26,12 +26,12 @@ function Circle({ disabled, circleCount, iteration, inheritColor, ...props }: Ci
 	);
 }
 
-export type ThrobberProps = Omit<BoxProps, 'ref' | 'disabled'> &
-	RefAttributes<HTMLElement> & {
-		circleCount?: number;
-		disabled?: boolean;
-		inheritColor?: boolean;
-	};
+export type ThrobberProps = ElementProps<HTMLElement> & {
+	size?: BoxProps['size'];
+	circleCount?: number;
+	disabled?: boolean;
+	inheritColor?: boolean;
+};
 
 /**
  * Indicates content that has not loaded yet.

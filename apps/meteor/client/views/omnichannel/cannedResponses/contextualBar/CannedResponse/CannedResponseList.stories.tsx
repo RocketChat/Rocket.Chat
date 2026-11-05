@@ -1,3 +1,4 @@
+import { Box } from '@rocket.chat/fuselage';
 import { Contextualbar } from '@rocket.chat/ui-client';
 import type { StoryObj, Meta } from '@storybook/react';
 import { action } from 'storybook/actions';
@@ -76,5 +77,11 @@ export const Default: StoryObj<typeof CannedResponseList> = {
 		loadMoreItems: action('loadMoreItems'),
 	},
 
-	decorators: [(fn) => <Contextualbar height='100vh'>{fn()}</Contextualbar>],
+	decorators: [
+		(fn) => (
+			<Box height='100vh'>
+				<Contextualbar>{fn()}</Contextualbar>
+			</Box>
+		),
+	],
 };

@@ -18,8 +18,9 @@ const ReadReceiptIndicator = ({ mid, unread }: ReadReceiptIndicatorProps) => {
 			position='absolute'
 			insetBlockStart={2}
 			insetInlineEnd={8}
+			color={unread ? 'secondary-info' : 'info'}
 		>
-			<Icon size='x16' name={unread ? 'check-single' : 'check-double'} color={unread ? 'secondary-info' : 'info'} />
+			<Icon size='x16' name={unread ? 'check-single' : 'check-double'} />
 		</Box>
 	);
 };

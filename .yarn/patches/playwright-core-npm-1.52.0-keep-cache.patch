@@ -1,0 +1,12 @@
+diff --git a/lib/server/chromium/crNetworkManager.js b/lib/server/chromium/crNetworkManager.js
+--- a/lib/server/chromium/crNetworkManager.js
++++ b/lib/server/chromium/crNetworkManager.js
+@@ -178,7 +178,7 @@
+   }
+   async clearCache() {
+     await this._forEachSession(async (info) => {
+-      await info.session.send("Network.setCacheDisabled", { cacheDisabled: true });
++      await info.session.send("Network.setCacheDisabled", { cacheDisabled: false });
+       if (!this._protocolRequestInterceptionEnabled)
+         await info.session.send("Network.setCacheDisabled", { cacheDisabled: false });
+       if (!info.workerFrame)

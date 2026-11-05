@@ -26,7 +26,6 @@ import { updateMessage } from '../../lib/messages/updateMessage';
 import { incrementAndNotifyParentRoomWithParentMessage } from '../../lib/messaging/discussions/updateAndNotifyParentRoomWithParentMessage';
 import { executeSetReaction } from '../../lib/messaging/reactions/setReaction';
 import { notifyOnRoomChangedById, notifyOnMessageChange } from '../../lib/notifyListener';
-import { shouldBreakInVersion } from '../../lib/shouldBreakInVersion';
 import { getUserAvatarURL } from '../../lib/utils/getUserAvatarURL';
 import { executeSendMessage } from '../../meteor-methods/messages/sendMessage';
 import { settings } from '../../settings';
@@ -93,6 +92,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 	}
 
 	async saveMessageFromFederation({
+		_id,
 		fromId,
 		rid,
 		federation_event_id,
@@ -104,6 +104,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		thread,
 		ts,
 	}: {
+		_id?: string;
 		fromId: string;
 		rid: string;
 		federation_event_id: string;
@@ -121,6 +122,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		return executeSendMessage(
 			fromId,
 			{
+				...(_id && { _id }),
 				rid,
 				msg,
 				...thread,
@@ -248,9 +250,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 
 		message = await this.cannedResponse.replacePlaceholders({ message, room, user });
 		message = await this.badWords.filterBadWords({ message });
-		// TODO: Auto-close unclosed markdown code blocks for server versions below 9.0.0
-		// In 9.0.0, this behavior is handled on the client side, so this block should be removed.
-		if (!shouldBreakInVersion('9.0.0') && message.msg) {
+		if (message.msg) {
 			message = { ...message, msg: closeUnclosedCodeBlock(message.msg) };
 		}
 		message = await this.markdownParser.parseMarkdown({ message, config: this.getMarkdownConfig() });

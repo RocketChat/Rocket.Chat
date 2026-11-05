@@ -1,11 +1,12 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { AuthorizationContext, useUserId } from '@rocket.chat/ui-contexts';
 import type { ContextType, ReactNode } from 'react';
-import { useMemo, useSyncExternalStore } from 'react';
+import { useEffect, useMemo, useSyncExternalStore } from 'react';
 
 import { PermissionsCachedStore } from '../cachedStores';
 import { createAuthorizationFunctions } from '../lib/authorization/createAuthorizationFunctions';
 import { Permissions, Roles, Subscriptions, Users } from '../stores';
+import PageLoading from '../views/root/PageLoading';
 
 // Only the slice of IUser that the authorization helpers actually read.
 // Snapshotting just `roles` (instead of the full user document) keeps the
@@ -27,14 +28,17 @@ const selectUserRoles = (userId: IUser['_id'] | undefined): AuthorizableUser['ro
 };
 
 const AuthorizationProvider = ({ children }: AuthorizationProviderProps) => {
+	// waits for permissions without suspending, see ../../../../docs/features/client-boot.md
 	const isReady = PermissionsCachedStore.useReady();
 
-	if (!isReady) {
-		throw (async () => {
-			PermissionsCachedStore.listen();
-			await PermissionsCachedStore.init();
-		})();
-	}
+	useEffect(() => {
+		if (isReady) {
+			return;
+		}
+
+		PermissionsCachedStore.listen();
+		void PermissionsCachedStore.init();
+	}, [isReady]);
 
 	const userId = useUserId();
 
@@ -101,6 +105,10 @@ const AuthorizationProvider = ({ children }: AuthorizationProviderProps) => {
 		}),
 		[auth, userId],
 	);
+
+	if (!isReady) {
+		return <PageLoading />;
+	}
 
 	return <AuthorizationContext.Provider value={contextValue}>{children}</AuthorizationContext.Provider>;
 };

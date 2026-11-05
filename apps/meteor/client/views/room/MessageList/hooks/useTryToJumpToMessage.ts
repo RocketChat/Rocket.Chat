@@ -9,8 +9,8 @@ import { RoomHistoryManager } from '../../../../lib/RoomHistoryManager';
 import { messagesQueryKeys } from '../../../../lib/queryKeys';
 import { mapMessageFromApi } from '../../../../lib/utils/mapMessageFromApi';
 import { setMessageJumpQueryStringParameter } from '../../../../lib/utils/setMessageJumpQueryStringParameter';
-import { useRoomMessages } from '../../contexts/RoomContext';
 import { useGoToRoom } from '../../hooks/useGoToRoom';
+import { useRoomMessages } from '../../hooks/useRoomMessages';
 import { clearHighlightMessage, setHighlightMessage } from '../providers/messageHighlightSubscription';
 
 type UseTryToJumpToMessageProps = {

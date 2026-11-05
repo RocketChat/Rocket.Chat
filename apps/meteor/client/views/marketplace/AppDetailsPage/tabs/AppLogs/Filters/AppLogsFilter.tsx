@@ -1,5 +1,6 @@
 import { Box, Button, IconButton, Label } from '@rocket.chat/fuselage';
 import { useRouter, useSetModal } from '@rocket.chat/ui-contexts';
+import { useId } from 'react';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -56,73 +57,57 @@ export const AppLogsFilter = ({ appId, expandAll, collapseAll, refetchLogs, isLo
 	};
 
 	const compactMode = useCompactMode();
+	const eventField = useId();
+	const timeField = useId();
+	const instanceField = useId();
+	const severityField = useId();
 
 	return (
-		<Box display='flex' alignItems='flex-end' flexDirection='row' width='full' flexWrap='wrap' alignContent='flex-end'>
-			<Box display='flex' flexDirection='column' marginInlineEnd={10} flexGrow={1}>
-				<Label id='eventFilterLabel' htmlFor='eventFilter'>
-					{t('Event')}
-				</Label>
-				<Controller
-					control={control}
-					name='event'
-					render={({ field }) => <EventFilterSelect appId={appId} aria-labelledby='eventFilterLabel' id='eventFilter' {...field} />}
-				/>
+		<Box display='flex' alignItems='flex-end' flexDirection='row' width='full' flexWrap='wrap' alignContent='flex-end' columnGap='x8'>
+			<Box display='flex' flexDirection='column' flexGrow={1}>
+				<Label htmlFor={eventField}>{t('Event')}</Label>
+				<Controller control={control} name='event' render={({ field }) => <EventFilterSelect {...field} appId={appId} id={eventField} />} />
 			</Box>
 			{!compactMode && (
 				<>
-					<Box display='flex' flexDirection='column' marginInlineEnd={10} flexGrow={1}>
-						<Label id='timeFilterLabel' htmlFor='timeFilter'>
-							{t('Time')}
-						</Label>
-						<TimeFilterSelect id='timeFilter' aria-labelledby='timeFilterLabel' />
+					<Box display='flex' flexDirection='column' flexGrow={1}>
+						<Label htmlFor={timeField}>{t('Time')}</Label>
+						<TimeFilterSelect id={timeField} />
 					</Box>
-
-					<Box display='flex' flexDirection='column' marginInlineEnd={10} flexGrow={1}>
-						<Label id='instanceFilterLabel' htmlFor='instanceFilter'>
-							{t('Instance')}
-						</Label>
+					<Box display='flex' flexDirection='column' flexGrow={1}>
+						<Label htmlFor={instanceField}>{t('Instance')}</Label>
 						<Controller
 							control={control}
 							name='instance'
-							render={({ field }) => (
-								<InstanceFilterSelect appId={appId} aria-labelledby='instanceFilterLabel' id='instanceFilter' {...field} />
-							)}
+							render={({ field }) => <InstanceFilterSelect appId={appId} id={instanceField} {...field} />}
 						/>
 					</Box>
-
-					<Box display='flex' flexDirection='column' marginInlineEnd={10} flexGrow={1}>
-						<Label>{t('Severity')}</Label>
-						<Controller control={control} name='severity' render={({ field }) => <SeverityFilterSelect id='severityFilter' {...field} />} />
+					<Box display='flex' flexDirection='column' flexGrow={1}>
+						<Label htmlFor={severityField}>{t('Severity')}</Label>
+						<Controller control={control} name='severity' render={({ field }) => <SeverityFilterSelect id={severityField} {...field} />} />
 					</Box>
-
 					<IconButton
 						title={isLoading ? t('Loading') : t('Refresh_logs')}
 						disabled={isLoading}
 						icon='refresh'
-						secondary
-						marginInlineEnd={10}
+						variant='secondary'
 						onClick={() => refreshLogs()}
 					/>
-
 					<IconButton
 						title={noResults ? t('No_data_to_export') : t('Export')}
 						icon='circle-arrow-down'
 						disabled={noResults}
-						secondary
-						marginInlineEnd={10}
+						variant='secondary'
 						onClick={() => openExportModal()}
 						aria-label={noResults ? t('No_data_to_export') : t('Export')}
 						aria-disabled={noResults}
 					/>
-
 					<AppsLogsFilterOptions onExpandAll={openAllLogs} onCollapseAll={collapseAll} />
 				</>
 			)}
-
 			{compactMode && (
 				<>
-					<Button alignSelf='flex-end' icon='customize' secondary marginInlineEnd={10} onClick={() => openContextualBar()}>
+					<Button icon='customize' variant='secondary' onClick={() => openContextualBar()}>
 						{t('Filters')}
 					</Button>
 					<CompactFilterOptions

@@ -3,7 +3,7 @@ import { useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 
 import { GenericCard, GenericCardButton } from '../../../components/GenericCard';
-import CreateChannelModal from '../../../navbar/NavBarPagesGroup/actions/CreateChannelModal';
+import CreateChannelModal from '../../../navbar/NavBarPagesGroup/actions/CreateChannelModalWithData';
 
 const CreateChannelsCard = (props: Omit<ComponentProps<typeof Card>, 'type'>) => {
 	const t = useTranslation();

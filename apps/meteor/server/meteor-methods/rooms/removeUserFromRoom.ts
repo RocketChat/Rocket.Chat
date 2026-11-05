@@ -1,8 +1,7 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
-import { Message, Team, Room } from '@rocket.chat/core-services';
+import { Message, Team, Room, ClientSafeError } from '@rocket.chat/core-services';
 import { Subscriptions, Rooms, Users, Roles } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 import { canAccessRoomAsync } from '../../lib/authorization';
@@ -17,7 +16,7 @@ import { settings } from '../../settings';
 
 export const removeUserFromRoomMethod = async (fromId: string, data: { rid: string; username: string }): Promise<boolean> => {
 	if (!(await hasPermissionAsync(fromId, 'remove-user', data.rid))) {
-		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+		throw new ClientSafeError('error-not-allowed', 'Not allowed', {
 			method: 'removeUserFromRoom',
 		});
 	}
@@ -25,14 +24,14 @@ export const removeUserFromRoomMethod = async (fromId: string, data: { rid: stri
 	const room = await Rooms.findOneById(data.rid);
 
 	if (!room || !(await roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.REMOVE_USER, fromId))) {
-		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+		throw new ClientSafeError('error-not-allowed', 'Not allowed', {
 			method: 'removeUserFromRoom',
 		});
 	}
 
 	const fromUser = await Users.findOneById(fromId);
 	if (!fromUser) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+		throw new ClientSafeError('error-invalid-user', 'Invalid user', {
 			method: 'removeUserFromRoom',
 		});
 	}
@@ -42,12 +41,12 @@ export const removeUserFromRoomMethod = async (fromId: string, data: { rid: stri
 
 	const canKickAnyUser = await hasPermissionAsync(fromId, kickAnyUserPermission);
 	if (!canKickAnyUser && !(await canAccessRoomAsync(room, fromUser))) {
-		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
+		throw new ClientSafeError('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
 	}
 
 	const removedUser = await Users.findOneByUsernameIgnoringCase(data.username);
 	if (!removedUser) {
-		throw new Meteor.Error('error-user-not-in-room', 'User is not in this room', {
+		throw new ClientSafeError('error-user-not-in-room', 'User is not in this room', {
 			method: 'removeUserFromRoom',
 		});
 	}
@@ -59,7 +58,7 @@ export const removeUserFromRoomMethod = async (fromId: string, data: { rid: stri
 			projection: { _id: 1 },
 		});
 		if (!subscription) {
-			throw new Meteor.Error('error-user-not-in-room', 'User is not in this room', {
+			throw new ClientSafeError('error-user-not-in-room', 'User is not in this room', {
 				method: 'removeUserFromRoom',
 			});
 		}
@@ -69,7 +68,7 @@ export const removeUserFromRoomMethod = async (fromId: string, data: { rid: stri
 		const numOwners = await Roles.countUsersInRole('owner', room._id);
 
 		if (numOwners === 1) {
-			throw new Meteor.Error('error-you-are-last-owner', 'You are the last owner. Please set new owner before leaving the room.', {
+			throw new ClientSafeError('error-you-are-last-owner', 'You are the last owner. Please set new owner before leaving the room.', {
 				method: 'removeUserFromRoom',
 			});
 		}
@@ -79,7 +78,7 @@ export const removeUserFromRoomMethod = async (fromId: string, data: { rid: stri
 		await Apps.self?.triggerEvent(AppEvents.IPreRoomUserLeave, room, removedUser, fromUser);
 	} catch (error: any) {
 		if (error.name === AppsEngineException.name) {
-			throw new Meteor.Error('error-app-prevented', error.message);
+			throw new ClientSafeError('error-app-prevented', error.message);
 		}
 
 		throw error;

@@ -47,6 +47,11 @@ $input-border-radius: theme('input-border-radius', lengths.border-radius(medium)
 	}
 }
 
+.rcx-input-box__wrapper--end-addon-flush {
+	padding-block: lengths.padding(4);
+	padding-inline-end: lengths.padding(4);
+}
+
 .rcx-input-box__addon {
 	@include clickable;
 	display: flex;
@@ -124,6 +129,24 @@ $input-border-radius: theme('input-border-radius', lengths.border-radius(medium)
 		}
 	}
 
+	// Browsers pad the date and time fields vertically, which makes the input taller than its line height.
+	&--type-date,
+	&--type-time,
+	&--type-datetime-local {
+		&::-webkit-datetime-edit,
+		&::-webkit-datetime-edit-fields-wrapper,
+		&::-webkit-datetime-edit-year-field,
+		&::-webkit-datetime-edit-month-field,
+		&::-webkit-datetime-edit-day-field,
+		&::-webkit-datetime-edit-hour-field,
+		&::-webkit-datetime-edit-minute-field,
+		&::-webkit-datetime-edit-second-field,
+		&::-webkit-datetime-edit-millisecond-field,
+		&::-webkit-datetime-edit-meridiem-field {
+			padding-block: 0;
+		}
+	}
+
 	// Firefox shows its own (non-hideable) calendar icon for date inputs, so hide
 	// our addon there to avoid a duplicate. `-moz-orient` is Firefox-exclusive.
 	&--type-date {
@@ -159,10 +182,21 @@ $input-border-radius: theme('input-border-radius', lengths.border-radius(medium)
 		}
 	}
 
+	&__wrapper:has(> .rcx-input-box) {
+		align-items: center;
+
+		min-height: lengths.size(40);
+	}
+
+	&__wrapper:has(> .rcx-input-box--type-textarea) {
+		align-items: flex-start;
+	}
+
 	&__wrapper:has(.rcx-input-box--small) {
 		align-items: center;
 
 		min-width: lengths.size(112);
+		min-height: lengths.size(28);
 		max-height: lengths.size(28);
 		padding: lengths.padding(4) lengths.padding(8);
 	}

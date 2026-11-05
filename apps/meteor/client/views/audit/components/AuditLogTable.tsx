@@ -1,5 +1,5 @@
 import type { IAuditLog } from '@rocket.chat/core-typings';
-import { Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, type TableColumnWidth } from '@rocket.chat/fuselage';
 import {
 	GenericTable,
 	GenericTableHeaderCell,
@@ -54,26 +54,28 @@ const AuditLogTable = () => {
 		},
 	});
 
+	const columns: TableColumnWidth[] = ['auto', 'auto', 'auto', 80];
+
 	const headers = (
 		<>
 			<GenericTableHeaderCell>{t('User')}</GenericTableHeaderCell>
 			<GenericTableHeaderCell>{t('Looked_for')}</GenericTableHeaderCell>
 			<GenericTableHeaderCell>{t('When')}</GenericTableHeaderCell>
-			<GenericTableHeaderCell width={80}>{t('Results')}</GenericTableHeaderCell>
+			<GenericTableHeaderCell>{t('Results')}</GenericTableHeaderCell>
 			<GenericTableHeaderCell>{t('Filters_applied')}</GenericTableHeaderCell>
 		</>
 	);
 
 	return (
 		<>
-			<Field alignSelf='stretch'>
+			<Field>
 				<FieldLabel>{t('Date')}</FieldLabel>
 				<FieldRow>
-					<DateRangePicker display='flex' flexGrow={1} value={dateRange} onChange={setDateRange} />
+					<DateRangePicker flexGrow={1} value={dateRange} onChange={setDateRange} />
 				</FieldRow>
 			</Field>
 			{isLoading && (
-				<GenericTable>
+				<GenericTable columns={columns}>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
 						<GenericTableLoadingRow cols={4} />
@@ -82,7 +84,7 @@ const AuditLogTable = () => {
 			)}
 			{isSuccess && data.length === 0 && <GenericNoResults />}
 			{isSuccess && data.length > 0 && (
-				<GenericTable>
+				<GenericTable columns={columns}>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
 						{data.map((auditLog) => (

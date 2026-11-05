@@ -9,7 +9,7 @@ export const LoginPoweredBy = () => {
 		return null;
 	}
 	return (
-		<Box marginBlockEnd={18}>
+		<Box marginBlockEnd='x16'>
 			<Trans i18nKey='registration.page.poweredBy'>
 				{'Powered by '}
 				<ActionLink href='https://rocket.chat/' target='_blank' rel='noopener noreferrer'>

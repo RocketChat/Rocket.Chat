@@ -1,21 +1,22 @@
-import type { ReactNode, MouseEvent, AllHTMLAttributes, RefAttributes } from 'react';
+import type { ReactNode, MouseEvent, AllHTMLAttributes, ElementType, RefAttributes } from 'react';
 import { memo } from 'react';
 
 import { cx, cxx } from '../../helpers/composeClassNames';
 import { prevent } from '../../helpers/prevent';
 import { useArrayLikeClassNameProp } from '../../hooks/useArrayLikeClassNameProp';
-import type { BoxProps } from '../Box';
 import { Icon, type IconProps } from '../Icon';
 import { Item, ItemContent, ItemIcon, ItemMedia, ItemTitle } from '../Item';
 
 export type OptionProps<TLabel = ReactNode> = RefAttributes<Element> & {
-	is?: BoxProps['is'];
+	is?: ElementType;
 	id?: string;
 	children?: ReactNode;
 	label?: TLabel;
 	focus?: boolean;
+	/** Shows the focus ring on the option when a script moves focus to it, such as a combobox's active descendant. */
+	focusVisible?: boolean;
 	selected?: boolean;
-	className?: BoxProps['className'];
+	className?: string;
 	icon?: IconProps['name'];
 	/** Names what the `icon` conveys, such as "Federated". Without it, the icon is decorative. */
 	iconLabel?: string;
@@ -33,6 +34,7 @@ export type OptionProps<TLabel = ReactNode> = RefAttributes<Element> & {
 		| 'id'
 		| 'children'
 		| 'label'
+		| 'focusVisible'
 		| 'selected'
 		| 'className'
 		| 'ref'
@@ -57,6 +59,7 @@ function Option<TLabel = ReactNode>({
 	children,
 	label,
 	focus,
+	focusVisible,
 	selected,
 	className,
 	icon,
@@ -80,6 +83,7 @@ function Option<TLabel = ReactNode>({
 			is={is}
 			inset='md'
 			focused={focus}
+			focusVisible={focusVisible}
 			selected={selected}
 			disabled={disabled}
 			variant={variant === 'danger' ? 'danger' : undefined}

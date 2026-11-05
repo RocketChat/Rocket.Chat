@@ -11,7 +11,7 @@ function NavBarItem({ children, icon, ...props }: NavbarItemProps) {
 	return (
 		<>
 			{icon ? (
-				<IconButton rcx-navbar-item icon={icon} small {...props} />
+				<IconButton icon={icon} size='small' {...props} className={['rcx-navbar-item', props.className].filter(Boolean).join(' ')} />
 			) : (
 				patchChildren(children, (childProps: { className: string | string[] }) => ({
 					className: appendClassName(childProps.className, 'rcx-navbar-item'),

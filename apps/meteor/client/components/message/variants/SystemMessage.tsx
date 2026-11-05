@@ -1,7 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import {
 	MessageSystem,
-	MessageSystemBody,
 	MessageSystemContainer,
 	MessageSystemLeftContainer,
 	MessageSystemName,
@@ -11,13 +10,12 @@ import {
 	MessageNameContainer,
 } from '@rocket.chat/fuselage';
 import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
-import { MessageTypes } from '@rocket.chat/message-types';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useUserPresence, useUserCard } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, KeyboardEvent, MouseEvent } from 'react';
 import { memo } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -26,10 +24,11 @@ import {
 	useIsSelectedMessage,
 	useCountSelected,
 } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
-import Attachments from '../content/Attachments';
-import MessageActions from '../content/MessageActions';
+import MessageContentFallback from '../MessageContentFallback';
 import { getCheckboxLabel } from '../helpers/getCheckboxLabel';
 import { useMessageListFormatDateAndTime, useMessageListFormatTime } from '../list/MessageListContext';
+import SystemMessageBody from './system/SystemMessageBody';
+import SystemMessageContent from './system/SystemMessageContent';
 
 export type SystemMessageProps = {
 	message: IMessage;
@@ -44,8 +43,6 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 
 	const user = { ...message.u, roles: [], ...useUserPresence(message.u._id) };
 	const displayName = useUserDisplayName(user);
-
-	const messageType = MessageTypes.getType(message);
 
 	const isSelecting = useIsSelecting();
 	const toggleSelected = useToggleSelect(message._id);
@@ -102,28 +99,14 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 					>
 						<MessageSystemName>{displayName}</MessageSystemName>
 					</MessageNameContainer>
-					{messageType && (
-						<MessageSystemBody role='document' aria-roledescription={t('system_message_body')}>
-							{messageType.text(t, message)}
-						</MessageSystemBody>
-					)}
+					<ErrorBoundary fallback={<MessageContentFallback />} resetKeys={[message]}>
+						<SystemMessageBody message={message} />
+					</ErrorBoundary>
 					<MessageSystemTimestamp title={formatDateAndTime(message.ts)}>{formatTime(message.ts)}</MessageSystemTimestamp>
 				</MessageSystemBlock>
-				{message.attachments && (
-					<MessageSystemBlock>
-						<Attachments attachments={message.attachments} />
-					</MessageSystemBlock>
-				)}
-				{message.actionLinks?.length && (
-					<MessageActions
-						message={message}
-						actions={message.actionLinks.map(({ method_id: methodId, i18nLabel, ...action }) => ({
-							methodId,
-							i18nLabel: i18nLabel as TranslationKey,
-							...action,
-						}))}
-					/>
-				)}
+				<ErrorBoundary fallback={<MessageContentFallback />} resetKeys={[message]}>
+					<SystemMessageContent message={message} />
+				</ErrorBoundary>
 			</MessageSystemContainer>
 		</MessageSystem>
 	);

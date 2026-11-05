@@ -19,6 +19,10 @@ $modal-border-radius: theme('modal-border-radius', lengths.border-radius(large))
 
 	background: none;
 
+	&[hidden] {
+		display: none;
+	}
+
 	&__inner {
 		display: flex;
 		flex-direction: column;

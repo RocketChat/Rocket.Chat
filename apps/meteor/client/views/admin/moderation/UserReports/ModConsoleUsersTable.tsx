@@ -1,5 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
+import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle, type TableColumnWidth } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
@@ -66,6 +66,8 @@ const ModConsoleUsersTable = () => {
 		});
 	});
 
+	const columns: TableColumnWidth[] = ['auto', 'auto', 'auto', 'auto', 'auto', 'x48'];
+
 	const headers = (
 		<>
 			<GenericTableHeaderCell
@@ -95,7 +97,7 @@ const ModConsoleUsersTable = () => {
 			<GenericTableHeaderCell key='reports' direction={sortDirection} active={sortBy === 'count'} onClick={setSort} sort='count'>
 				{t('Moderation_Reports')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key='actions' width='x48' />
+			<GenericTableHeaderCell key='actions' />
 		</>
 	);
 
@@ -103,14 +105,14 @@ const ModConsoleUsersTable = () => {
 		<>
 			<ModerationFilter text={text} setText={setText} setDateRange={setDateRange} />
 			{isLoading && (
-				<GenericTable>
+				<GenericTable columns={columns}>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>{isLoading && <GenericTableLoadingTable headerCells={6} />}</GenericTableBody>
 				</GenericTable>
 			)}
 			{isSuccess && data.reports.length > 0 && (
 				<>
-					<GenericTable>
+					<GenericTable columns={columns}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.reports.map((report) => (

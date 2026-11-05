@@ -38,7 +38,7 @@ const DisableE2EEModal = ({ onConfirm, onCancel, roomType, canResetRoomKey, onRe
 							<Box marginBlockEnd={16} is='p'>
 								{t('E2E_reset_encryption_keys_description')}
 							</Box>
-							<Button secondary danger small onClick={onResetRoomKey}>
+							<Button variant='secondary-danger' size='small' onClick={onResetRoomKey}>
 								{t('E2E_reset_encryption_keys_button', { roomType })}
 							</Button>
 						</AccordionItem>

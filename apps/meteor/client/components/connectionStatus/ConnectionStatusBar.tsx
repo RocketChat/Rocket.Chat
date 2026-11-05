@@ -88,9 +88,9 @@ function ConnectionStatusBar() {
 			</span>
 			<Button
 				className='rcx-connection-status-bar--action'
-				primary
+				variant='primary'
 				onClick={reconnect}
-				small
+				size='small'
 				disabled={['connected', 'connecting'].includes(status)}
 			>
 				{t('Connect')}

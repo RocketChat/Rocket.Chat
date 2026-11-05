@@ -7,7 +7,7 @@ export type HeaderIconProps = { icon: ReactElement<any> | ComponentPropsWithoutR
 const HeaderIcon = ({ icon }: HeaderIconProps) =>
 	icon && (
 		<Box display='flex' flexShrink={0} alignItems='center' overflow='hidden' justifyContent='center'>
-			{isValidElement<any>(icon) ? icon : <Icon color='default' size='x20' name={icon.name} />}
+			{isValidElement<any>(icon) ? icon : <Icon size='x20' name={icon.name} />}
 		</Box>
 	);
 

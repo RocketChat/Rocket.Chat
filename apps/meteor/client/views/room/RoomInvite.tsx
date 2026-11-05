@@ -1,6 +1,7 @@
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { IUser, IInviteSubscription } from '@rocket.chat/core-typings';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { links } from '@rocket.chat/ui-client';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, type ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -11,7 +12,6 @@ import { useGoToHomeOnRemoved } from './body/hooks/useGoToHomeOnRemoved';
 import type { IRoomWithFederationOriginalName } from './contexts/RoomContext';
 import { useRoomInvitation } from './hooks/useRoomInvitation';
 import RoomLayout from './layout/RoomLayout';
-import { links } from '../../lib/links';
 import { roomsQueryKeys, subscriptionsQueryKeys } from '../../lib/queryKeys';
 
 export type RoomInviteProps = Omit<ComponentProps<typeof RoomLayout>, 'header' | 'body' | 'aside'> & {

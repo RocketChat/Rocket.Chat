@@ -219,7 +219,7 @@ export const LoginForm = ({ setLoginRoute }: LoginFormProps) => {
 									</FieldError>
 								)}
 								{isResetPasswordAllowed && (
-									<FieldRow justifyContent='end'>
+									<FieldRow justify='end'>
 										<FieldLink
 											href='#'
 											onClick={(e): void => {
@@ -237,7 +237,7 @@ export const LoginForm = ({ setLoginRoute }: LoginFormProps) => {
 					</FormContainer>
 					<FormFooter>
 						<ButtonGroup>
-							<Button loading={loginMutation.isPending} type='submit' primary>
+							<Button loading={loginMutation.isPending} type='submit' variant='primary'>
 								{t('registration.component.login')}
 							</Button>
 						</ButtonGroup>

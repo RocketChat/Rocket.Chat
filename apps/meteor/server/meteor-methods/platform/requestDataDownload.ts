@@ -2,9 +2,9 @@ import { mkdtemp } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path, { join } from 'node:path';
 
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IExportOperation, IUser } from '@rocket.chat/core-typings';
 import { ExportOperations, UserDataFiles } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import * as dataExport from '../../lib/dataExport';
 import { settings } from '../../settings';
@@ -24,7 +24,7 @@ export const requestDataDownload = async ({
 	const currentUserData = userData;
 
 	if (!currentUserData) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user');
+		throw new ClientSafeError('error-invalid-user', 'Invalid user');
 	}
 
 	const userId = currentUserData._id;

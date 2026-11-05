@@ -1,17 +1,17 @@
 import {
-	ButtonGroup,
-	Button,
-	Box,
-	ToggleSwitch,
 	Accordion,
 	AccordionItem,
+	Box,
+	Button,
+	ButtonGroup,
+	Callout,
 	Field,
 	FieldGroup,
+	FieldHint,
 	FieldLabel,
 	FieldRow,
-	FieldHint,
-	Callout,
-	Margins,
+	Text,
+	ToggleSwitch,
 } from '@rocket.chat/fuselage';
 import {
 	useDefaultSettingFeaturePreviewList,
@@ -82,13 +82,11 @@ const AdminFeaturePreviewPage = () => {
 			<PageHeader title={t('Feature_preview')} />
 			<PageScrollableContentWithShadow>
 				<Box maxWidth='x600' width='full' alignSelf='center'>
-					<Box>
-						<Margins block={24}>
-							<Box fontScale='p1'>{t('Feature_preview_admin_page_description')}</Box>
-							<Callout>{t('Feature_preview_page_callout')}</Callout>
-							<Callout>{t('Feature_preview_admin_page_callout')}</Callout>
-							<Setting settingId='Accounts_AllowFeaturePreview' sectionChanged={allowFeaturePreviewSetting.changed} />
-						</Margins>
+					<Box display='flex' flexDirection='column' gap={24} paddingBlock={24}>
+						<Text fontScale='p1'>{t('Feature_preview_admin_page_description')}</Text>
+						<Callout>{t('Feature_preview_page_callout')}</Callout>
+						<Callout>{t('Feature_preview_admin_page_callout')}</Callout>
+						<Setting settingId='Accounts_AllowFeaturePreview' sectionChanged={allowFeaturePreviewSetting.changed} />
 					</Box>
 					<Accordion>
 						{grouppedFeaturesPreview?.map(([group, features], index) => (
@@ -107,7 +105,7 @@ const AdminFeaturePreviewPage = () => {
 														disabled={feature.disabled || !allowFeaturePreviewSetting.value}
 													/>
 												</FieldRow>
-												{feature.description && <FieldHint marginBlockStart={12}>{t(feature.description)}</FieldHint>}
+												{feature.description && <FieldHint>{t(feature.description)}</FieldHint>}
 											</Field>
 											{feature.imageUrl && <Box is='img' width='100%' height='auto' marginBlockStart={16} src={feature.imageUrl} alt='' />}
 										</Fragment>
@@ -121,7 +119,7 @@ const AdminFeaturePreviewPage = () => {
 			<PageFooter isDirty={isDirty || allowFeaturePreviewSetting.changed}>
 				<ButtonGroup>
 					<Button onClick={() => reset({ featuresPreview: features })}>{t('Cancel')}</Button>
-					<Button primary disabled={!(isDirty || allowFeaturePreviewSetting.changed)} onClick={handleSubmit(handleSave)}>
+					<Button variant='primary' disabled={!(isDirty || allowFeaturePreviewSetting.changed)} onClick={handleSubmit(handleSave)}>
 						{t('Save_changes')}
 					</Button>
 				</ButtonGroup>

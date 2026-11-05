@@ -12,14 +12,14 @@ import { isArrayBufferView } from 'node:util/types';
 import { hashLoginToken } from '@rocket.chat/account-utils';
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { isE2EEUpload, type IUpload } from '@rocket.chat/core-typings';
 import { Users, Avatars, UserDataFiles, Uploads, Settings, Subscriptions, Messages, Rooms } from '@rocket.chat/models';
 import { streamToBuffer } from '@rocket.chat/tools';
 import type { NextFunction } from 'connect';
+import { parseCookie } from 'cookie';
 import filesize from 'filesize';
 import { Match } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
-import { Cookies } from 'meteor/ostrio:cookies';
 import type { ClientSession, OptionalId } from 'mongodb';
 import sharp from 'sharp';
 import type { WritableStreamBuffer } from 'stream-buffers';
@@ -39,8 +39,6 @@ import { roomCoordinator } from '../../../rooms/roomCoordinator';
 import { getURL } from '../../../utils/getURL';
 import { validateAndDecodeJWT, generateJWT } from '../../../utils/lib/JWTHelper';
 import { fileUploadIsValidContentType } from '../../../utils/restrictions';
-
-const cookie = new Cookies();
 
 // Caps GIF frames decoded per thumbnail; limitInputPixels doesn't bound frame count.
 const MAX_ANIMATED_THUMBNAIL_PAGES = 100;
@@ -145,12 +143,12 @@ export const FileUpload = {
 		const language = user?.language || 'en';
 		if (!fileUploadAllowed) {
 			const reason = i18n.t('FileUpload_Disabled', { lng: language });
-			throw new Meteor.Error('error-file-upload-disabled', reason);
+			throw new ClientSafeError('error-file-upload-disabled', reason);
 		}
 
 		if (room && !directMessageAllowed && room.t === 'd') {
 			const reason = i18n.t('File_not_allowed_direct_messages', { lng: language });
-			throw new Meteor.Error('error-direct-message-file-upload-not-allowed', reason);
+			throw new ClientSafeError('error-direct-message-file-upload-not-allowed', reason);
 		}
 
 		// -1 maxFileSize means there is no limit
@@ -159,12 +157,12 @@ export const FileUpload = {
 				size: filesize(maxFileSize),
 				lng: language,
 			});
-			throw new Meteor.Error('error-file-too-large', reason);
+			throw new ClientSafeError('error-file-too-large', reason);
 		}
 
 		if (!settings.get('E2E_Enable_Encrypt_Files') && isE2EEUpload(file)) {
 			const reason = i18n.t('Encrypted_file_not_allowed', { lng: language });
-			throw new Meteor.Error('error-invalid-file-type', reason);
+			throw new ClientSafeError('error-invalid-file-type', reason);
 		}
 
 		// E2EE files should be of type application/octet-stream. no information about them should be disclosed on upload if they are encrypted
@@ -175,7 +173,7 @@ export const FileUpload = {
 		// E2EE files are of type application/octet-stream, which is whitelisted for E2EE files
 		if (!fileUploadIsValidContentType(file?.type, isE2EEUpload(file) ? 'application/octet-stream' : undefined)) {
 			const reason = i18n.t('File_type_is_not_accepted', { lng: language });
-			throw new Meteor.Error('error-invalid-file-type', reason);
+			throw new ClientSafeError('error-invalid-file-type', reason);
 		}
 
 		// App IPreFileUpload event hook
@@ -183,7 +181,7 @@ export const FileUpload = {
 			await Apps.self?.triggerEvent(AppEvents.IPreFileUpload, { file, content });
 		} catch (error: any) {
 			if (error.name === AppsEngineException.name) {
-				throw new Meteor.Error('error-app-prevented', error.message);
+				throw new ClientSafeError('error-app-prevented', error.message);
 			}
 
 			throw error;
@@ -203,7 +201,7 @@ export const FileUpload = {
 		// accept only images the browser can display as an avatar
 		if (!isRenderableImageType(file.type)) {
 			const reason = i18n.t('File_type_is_not_accepted', { lng: language });
-			throw new Meteor.Error('error-invalid-file-type', reason);
+			throw new ClientSafeError('error-invalid-file-type', reason);
 		}
 
 		// -1 maxFileSize means there is no limit
@@ -212,7 +210,7 @@ export const FileUpload = {
 				size: filesize(maxFileSize),
 				lng: language,
 			});
-			throw new Meteor.Error('error-file-too-large', reason);
+			throw new ClientSafeError('error-file-too-large', reason);
 		}
 
 		return true;
@@ -426,13 +424,13 @@ export const FileUpload = {
 		}
 
 		if (!file.userId) {
-			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
+			throw new ClientSafeError('error-not-allowed', 'Change avatar is not allowed');
 		}
 
 		// update file record to match user's username
 		const user = await Users.findOneById(file.userId);
 		if (!user?.username) {
-			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
+			throw new ClientSafeError('error-not-allowed', 'Change avatar is not allowed');
 		}
 		const oldAvatar = await Avatars.findOneByName(user.username);
 		if (oldAvatar) {
@@ -451,8 +449,7 @@ export const FileUpload = {
 		let { rc_uid, rc_token } = query as Record<string, string | undefined>;
 
 		if (!rc_uid && headers.cookie) {
-			rc_uid = cookie.get('rc_uid', headers.cookie);
-			rc_token = cookie.get('rc_token', headers.cookie);
+			({ rc_uid, rc_token } = parseCookie(headers.cookie));
 		}
 
 		const uid = rc_uid || (headers['x-user-id'] as string);
@@ -477,10 +474,7 @@ export const FileUpload = {
 		const { token } = query;
 
 		if (!rc_uid && headers.cookie) {
-			rc_uid = cookie.get('rc_uid', headers.cookie);
-			rc_token = cookie.get('rc_token', headers.cookie);
-			rc_rid = cookie.get('rc_rid', headers.cookie);
-			rc_room_type = cookie.get('rc_room_type', headers.cookie);
+			({ rc_uid, rc_token, rc_rid, rc_room_type } = parseCookie(headers.cookie));
 		}
 
 		const isAuthorizedByRoom = async () =>

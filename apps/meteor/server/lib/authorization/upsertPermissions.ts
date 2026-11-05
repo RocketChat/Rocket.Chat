@@ -1,4 +1,3 @@
-/* eslint no-multi-spaces: 0 */
 import type { IPermission, ISetting } from '@rocket.chat/core-typings';
 import { Permissions, Settings } from '@rocket.chat/models';
 

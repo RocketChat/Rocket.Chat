@@ -16,7 +16,6 @@ import { Box } from '../Box';
 import { Chip } from '../Chip';
 import { Icon } from '../Icon';
 import { Input } from '../InputBox';
-import { Margins } from '../Margins';
 import { useCursor, Options, type OptionType } from '../Options';
 import { PositionAnimated } from '../PositionAnimated';
 
@@ -162,43 +161,39 @@ function AutoComplete<TLabel = ReactNode>({
 			flexGrow={1}
 			className={useMemo(() => [error && 'invalid', disabled && 'disabled'], [error, disabled])}
 		>
-			<Box display='flex' flexGrow={1} alignItems='center' flexWrap='wrap' margin='neg-x4' role='group'>
-				<Margins all='x4'>
-					<Input
-						ref={mergedRefs}
-						onChange={useStableCallback((e: ChangeEvent<HTMLInputElement>) => setFilter?.(e.currentTarget.value))}
-						onBlur={handleOnBlur}
-						onFocus={show}
-						onKeyDown={handleKeyDown}
-						placeholder={optionsAreVisible === AnimatedVisibility.HIDDEN || !value ? placeholder : undefined}
-						order={1}
-						rcx-input-box--undecorated
-						value={filter}
-						disabled={disabled}
-						{...props}
-					/>
-					{selected.map((itemSelected) =>
-						RenderSelected ? (
-							<RenderSelected key={itemSelected.value} selected={itemSelected} onRemove={handleRemove} />
-						) : (
-							<Chip key={itemSelected.value} value={itemSelected.value} onClick={handleRemove}>
-								{itemSelected.label as ReactNode}
-							</Chip>
-						),
-					)}
-				</Margins>
+			<Box display='flex' flexGrow={1} alignItems='center' flexWrap='wrap' gap={4} role='group'>
+				<Input
+					ref={mergedRefs}
+					onChange={useStableCallback((e: ChangeEvent<HTMLInputElement>) => setFilter?.(e.currentTarget.value))}
+					onBlur={handleOnBlur}
+					onFocus={show}
+					onKeyDown={handleKeyDown}
+					placeholder={optionsAreVisible === AnimatedVisibility.HIDDEN || !value ? placeholder : undefined}
+					value={filter}
+					disabled={disabled}
+					{...props}
+					className={['rcx-input-box--undecorated', 'rcx-autocomplete__input', props.className].filter(Boolean).join(' ')}
+				/>
+				{selected.map((itemSelected) =>
+					RenderSelected ? (
+						<RenderSelected key={itemSelected.value} selected={itemSelected} onRemove={handleRemove} />
+					) : (
+						<Chip key={itemSelected.value} value={itemSelected.value} onClick={handleRemove}>
+							{itemSelected.label as ReactNode}
+						</Chip>
+					),
+				)}
 			</Box>
-			<Box rcx-autocomplete__addon>
-				<Icon name={optionsAreVisible === AnimatedVisibility.VISIBLE ? 'cross' : 'magnifier'} size='x20' color='titles-labels' />
+			<Box rcx-autocomplete__addon color='titles-labels'>
+				<Icon name={optionsAreVisible === AnimatedVisibility.VISIBLE ? 'cross' : 'magnifier'} size='x20' />
 			</Box>
 			<PositionAnimated visible={optionsAreVisible} anchor={containerRef}>
 				<Options
-					width={borderBoxSize.inlineSize}
+					style={{ width: borderBoxSize.inlineSize }}
 					onSelect={handleSelect}
 					renderItem={renderItem}
 					renderEmpty={renderEmpty}
 					cursor={cursor}
-					value={value}
 					options={memoizedOptions}
 				/>
 			</PositionAnimated>

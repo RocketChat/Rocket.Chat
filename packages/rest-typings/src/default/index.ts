@@ -16,7 +16,6 @@ const OpenAPIJSONEndpointSchema = {
 
 export const isOpenAPIJSONEndpoint = ajvQuery.compile<OpenAPIJSONEndpoint>(OpenAPIJSONEndpointSchema);
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export interface DefaultEndpoints {
 	'/info': {
 		GET: () =>

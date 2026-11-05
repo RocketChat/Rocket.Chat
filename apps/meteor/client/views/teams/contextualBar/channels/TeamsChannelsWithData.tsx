@@ -8,7 +8,7 @@ import AddExistingModal from './AddExistingModal';
 import TeamsChannels from './TeamsChannels';
 import { useTeamsChannelList } from './hooks/useTeamsChannelList';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
-import CreateChannelModal from '../../../../navbar/NavBarPagesGroup/actions/CreateChannelModal';
+import CreateChannelModal from '../../../../navbar/NavBarPagesGroup/actions/CreateChannelModalWithData';
 import { useRoom } from '../../../room/contexts/RoomContext';
 
 const TeamsChannelsWithData = () => {
