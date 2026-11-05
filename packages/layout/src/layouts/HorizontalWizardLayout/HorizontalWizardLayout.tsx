@@ -1,10 +1,10 @@
 import type { ReactNode } from 'react';
 
-import DarkModeProvider from '../../DarkModeProvider';
-import BackgroundLayer from '../../components/BackgroundLayer';
-import * as FormPageLayout from '../../components/FormPageLayout/FormPageLayout.styles';
-import type { LayoutContextValue } from '../../contexts/LayoutContext';
-import { LayoutContext } from '../../contexts/LayoutContext';
+import DarkModeProvider from '../../DarkModeProvider.js';
+import BackgroundLayer from '../../components/BackgroundLayer/index.js';
+import * as FormPageLayout from '../../components/FormPageLayout/FormPageLayout.styles.js';
+import type { LayoutContextValue } from '../../contexts/LayoutContext.js';
+import { LayoutContext } from '../../contexts/LayoutContext.js';
 
 const HorizontalWizardLayout = ({
 	children,
