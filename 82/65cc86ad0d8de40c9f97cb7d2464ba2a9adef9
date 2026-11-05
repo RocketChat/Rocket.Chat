@@ -1,0 +1,65 @@
+packages/rest-typings/src/experimental/scheduledMessages.ts
+  s_478a7742cf0448::t_1f703b75e11199 4,8-18,31
+packages/core-services/src/types/IScheduledMessageService.ts
+  s_478a7742cf0448::t_c814da6507f366 3-6
+apps/meteor/server/services/scheduled-messages/deliverScheduledMessage.ts
+  s_478a7742cf0448::t_30c0dca9de8dae 40,55-56
+apps/meteor/client/components/ScheduledMessages/ScheduledMessageRow.spec.tsx
+  s_478a7742cf0448::t_02ef3edc55f52d 31,117
+  s_478a7742cf0448::t_7b6ebe44a138ae 62-70
+  s_478a7742cf0448::t_c6129b7102e5d0 7-10,59-61,71-79
+apps/meteor/tests/end-to-end/api/scheduled-messages.ts
+  s_478a7742cf0448::t_4ea598d5c6a653 164-179
+apps/meteor/client/views/room/composer/messageBox/ScheduleMessage/ScheduleMessageMenu.tsx
+  s_478a7742cf0448::t_5ae3f76baa5c99 4,19,22,55-57,65-67,70,90,95-96
+docs/features/message-scheduling.md
+  s_478a7742cf0448::t_3ff387c436e726 84,86,88-95,97-100,103-104,107-108
+  s_478a7742cf0448::t_11d61464469b17 101-102,105-106
+apps/meteor/client/components/ScheduledMessages/useScheduledMessageText.ts
+  s_478a7742cf0448::t_a29c45c022480a 1-16
+.changeset/scheduled-messages.md
+  s_478a7742cf0448::t_0f414cc512ec5b 11,14
+apps/meteor/client/components/ScheduledMessages/ScheduledMessageRow.tsx
+  s_478a7742cf0448::t_5745cc57a3efbc 50,61
+  s_478a7742cf0448::t_6ca2857099edbc 24,38-41
+apps/meteor/client/components/ScheduledMessages/ScheduledMessageRow.stories.tsx
+  s_478a7742cf0448::t_02ef3edc55f52d 12,33,48
+apps/meteor/server/services/scheduled-messages/deliverScheduledMessage.spec.ts
+  s_478a7742cf0448::t_6595f1b6798072 95-102
+apps/meteor/client/views/room/composer/messageBox/ScheduleMessage/useScheduledMessageEditing.tsx
+  s_478a7742cf0448::t_6ca2857099edbc 12,111,114
+apps/meteor/server/services/scheduled-messages/service.ts
+  s_478a7742cf0448::t_c3459f0d03b6ab 46-48,58,63,70,101-103,110
+  s_478a7742cf0448::t_63ff95388de911 218
+  s_478a7742cf0448::t_30c0dca9de8dae 219-224,259,270
+packages/core-typings/src/IScheduledMessage.ts
+  s_478a7742cf0448::t_c814da6507f366 13-15,23
+apps/meteor/server/api/experimental/scheduledMessages.ts
+  s_478a7742cf0448::t_ca4e5b1fc988dc 16-18,20,34-54,64-66,79-80,83
+apps/meteor/server/services/scheduled-messages/service.spec.ts
+  s_478a7742cf0448::t_6595f1b6798072 197-209,299-309
+apps/meteor/client/views/room/composer/messageBox/ScheduleMessage/useScheduledMessageEditing.spec.tsx
+  s_478a7742cf0448::t_7b6ebe44a138ae 87-91,98-101
+  s_478a7742cf0448::t_c6129b7102e5d0 10-14,45,85-86,92-97
+apps/meteor/client/views/room/composer/messageBox/ScheduleMessage/ScheduleMessageMenu.spec.tsx
+  s_478a7742cf0448::t_c6129b7102e5d0 14-19,69,96,104-105,109-118
+  s_478a7742cf0448::t_7b6ebe44a138ae 97-101,106-108
+CLAUDE.md
+  s_478a7742cf0448::t_154b83bce386ed 79
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "8265cc86ad0d8de40c9f97cb7d2464ba2a9adef9",
+  "prompts": {},
+  "sessions": {
+    "s_478a7742cf0448": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "78511215-04eb-4d9d-beb9-8d0ec0460bb1",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
