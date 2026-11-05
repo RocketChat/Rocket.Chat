@@ -81,6 +81,8 @@ const RoomListCollapser = ({
 							<CategoryMenu
 								category={group.category}
 								groupKey={group.key}
+								groupTitle={title}
+								rooms={group.allRooms}
 								showUnreads={group.showUnreads}
 								keepUnreadsOnTop={group.keepUnreadsOnTop}
 								activityFilterHours={group.activityFilterHours}

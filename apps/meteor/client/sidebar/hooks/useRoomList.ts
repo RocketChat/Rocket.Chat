@@ -37,7 +37,10 @@ export type SidebarRoomListGroup = {
 	inactiveCount: number;
 	showingInactive: boolean;
 	collapsed: boolean;
+	/** The rooms listed under the header right now, after the collapse. */
 	rooms: SubscriptionWithRoom[];
+	/** Every room of the group, whatever the collapse leaves out, for actions on the group as a whole. */
+	allRooms: SubscriptionWithRoom[];
 	unreadInfo: GroupUnreadInfo;
 	empty: boolean;
 };
@@ -191,6 +194,7 @@ export const useRoomList = ({
 					showingInactive,
 					collapsed,
 					rooms: displayRooms,
+					allRooms,
 					// The header total badge only accounts for what the collapsed group hides. Rooms kept visible
 					// while collapsed — the open one, and the unread ones when "Show unreads" is on — carry their
 					// own counters, so counting them here as well would duplicate them.
