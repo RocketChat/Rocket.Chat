@@ -80,6 +80,15 @@ test.describe.serial('emoji', () => {
 			await page.keyboard.press('Enter');
 			await expect(poHomeChannel.content.lastUserMessage.getByTitle(`:${emojiName}:`)).toBeVisible();
 		});
+		await test.step('should highlight the custom category when selected', async () => {
+			await poHomeChannel.composer.btnEmoji.click();
+
+			const customEmojiTab = poHomeChannel.getEmojiPickerTabByName('Custom');
+			await customEmojiTab.click();
+			await expect(customEmojiTab).toHaveAttribute('aria-selected', 'true');
+
+			await page.keyboard.press('Escape');
+		});
 
 		await test.step('Rename custom emoji', async () => {
 			await poHomeChannel.navbar.openManageMenuItem('Workspace');
