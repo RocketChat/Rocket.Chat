@@ -7,6 +7,7 @@ import { LegacyRoomManager } from '../LegacyRoomManager';
 import { RoomHistoryManager } from '../RoomHistoryManager';
 import { sdk } from '../SDKClient';
 import { getUserId } from '../user';
+import { isWindowActive } from '../utils/isWindowActive';
 
 export class ReadStateManager extends Emitter {
 	private rid: IRoom['_id'];
@@ -56,7 +57,7 @@ export class ReadStateManager extends Emitter {
 			return;
 		}
 
-		if (document.hasFocus() && this.firstUnreadRecordId) {
+		if (isWindowActive() && this.firstUnreadRecordId) {
 			return;
 		}
 
@@ -129,7 +130,7 @@ export class ReadStateManager extends Emitter {
 			return;
 		}
 
-		if (!document.hasFocus()) {
+		if (!isWindowActive()) {
 			return;
 		}
 

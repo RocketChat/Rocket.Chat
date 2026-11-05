@@ -88,4 +88,15 @@ describe('ReadStateManager.attemptMarkAsRead', () => {
 
 		expect(sdk.rest.post).not.toHaveBeenCalled();
 	});
+
+	it('should not mark as read in a hidden tab that still reports focus', () => {
+		const visibility = jest.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden');
+		const manager = createManager();
+		manager.setHasUserReachedLatestMessageCallback(() => true);
+
+		manager.attemptMarkAsRead();
+
+		expect(sdk.rest.post).not.toHaveBeenCalled();
+		visibility.mockRestore();
+	});
 });

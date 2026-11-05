@@ -7,6 +7,7 @@ import type { ComponentProps } from 'react';
 import { useState, useEffect, useCallback, useId } from 'react';
 
 import ThreadMessageList from './ThreadMessageList';
+import { isWindowActive } from '../../../../../lib/utils/isWindowActive';
 import MessageListErrorBoundary from '../../../MessageList/MessageListErrorBoundary';
 import DropTargetOverlay from '../../../body/DropTargetOverlay';
 import { useFileUploadDropTarget } from '../../../body/hooks/useFileUploadDropTarget';
@@ -71,6 +72,10 @@ const ThreadChat = ({ mainMessage, onEscape, ...boxProps }: ThreadChatProps) => 
 			'streamNewMessage',
 			(msg: IMessage) => {
 				if (room._id !== msg.rid || isEditedMessage(msg) || msg.tmid !== mainMessage._id) {
+					return;
+				}
+
+				if (!isWindowActive()) {
 					return;
 				}
 
