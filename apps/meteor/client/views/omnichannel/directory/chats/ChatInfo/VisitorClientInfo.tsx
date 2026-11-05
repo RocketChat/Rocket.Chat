@@ -29,7 +29,7 @@ const VisitorClientInfo = ({ uid }: VisitorClientInfoProps) => {
 	});
 
 	if (isPending) {
-		return <FormSkeleton />;
+		return <FormSkeleton pi={24} />;
 	}
 
 	if (isError || !visitor.userAgent) {

@@ -18,7 +18,7 @@ const SlaField = ({ id }: SlaFieldProps) => {
 	const slaFieldId = useId();
 
 	if (isLoading) {
-		return <FormSkeleton />;
+		return <FormSkeleton pi={24} />;
 	}
 
 	if (isError || !data) {
