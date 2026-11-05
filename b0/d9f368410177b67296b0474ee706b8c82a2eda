@@ -1,0 +1,11 @@
+apps/meteor/client/components/ScheduledMessages/ScheduleMessageModal.tsx
+  ai_agent 1-75
+apps/meteor/client/components/ScheduledMessages/ScheduledMessageRow.tsx
+  ai_agent 13-133
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "b0d9f368410177b67296b0474ee706b8c82a2eda",
+  "prompts": {}
+}
