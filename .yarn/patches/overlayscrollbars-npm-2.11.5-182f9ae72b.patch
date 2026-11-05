@@ -1,0 +1,156 @@
+diff --git a/overlayscrollbars.cjs b/overlayscrollbars.cjs
+index c71becb7a30074bc71bc3855b6d4fdfefcdbd8ca..f1b1270cf479775a805ba41c42668b38f8b9eb3e 100644
+--- a/overlayscrollbars.cjs
++++ b/overlayscrollbars.cjs
+@@ -1296,20 +1296,23 @@ const createEventContentChange = (t, n, o) => {
+       }));
+       each(r, (o => each(o[0], (c => {
+         const r = o[1];
+-        const i = e.get(c) || [];
++        const i = e.get(c) || Object.create(null);
+         const l = t.contains(c);
+         if (l && r) {
+-          const t = addEventListener(c, r, (o => {
+-            if (s) {
+-              t();
+-              e.delete(c);
+-            } else {
+-              n(o);
+-            }
+-          }));
+-          e.set(c, push(i, t));
++          if (!i[r]) {
++            const t = addEventListener(c, r, (o => {
++              if (s) {
++                t();
++                e.delete(c);
++              } else {
++                n(o);
++              }
++            }));
++            i[r] = t;
++            e.set(c, i);
++          }
+         } else {
+-          runEachAndClear(i);
++          runEachAndClear(Object.values(i));
+           e.delete(c);
+         }
+       }))));
+diff --git a/overlayscrollbars.cjs.js b/overlayscrollbars.cjs.js
+index 0dfd445c4c295a9047104a965d9e2d56ee0bf19e..a75acdfc7b1d10338af16faaa4116299b180ee89 100644
+--- a/overlayscrollbars.cjs.js
++++ b/overlayscrollbars.cjs.js
+@@ -1296,20 +1296,23 @@ const createEventContentChange = (t, n, o) => {
+       }));
+       each(r, (o => each(o[0], (c => {
+         const r = o[1];
+-        const i = e.get(c) || [];
++        const i = e.get(c) || Object.create(null);
+         const l = t.contains(c);
+         if (l && r) {
+-          const t = addEventListener(c, r, (o => {
+-            if (s) {
+-              t();
+-              e.delete(c);
+-            } else {
+-              n(o);
+-            }
+-          }));
+-          e.set(c, push(i, t));
++          if (!i[r]) {
++            const t = addEventListener(c, r, (o => {
++              if (s) {
++                t();
++                e.delete(c);
++              } else {
++                n(o);
++              }
++            }));
++            i[r] = t;
++            e.set(c, i);
++          }
+         } else {
+-          runEachAndClear(i);
++          runEachAndClear(Object.values(i));
+           e.delete(c);
+         }
+       }))));
+diff --git a/overlayscrollbars.esm.js b/overlayscrollbars.esm.js
+index c71877ba0035241262069e4bc5f084c9076080bd..78be472e22035be08a09d6339e938406c7d66cf6 100644
+--- a/overlayscrollbars.esm.js
++++ b/overlayscrollbars.esm.js
+@@ -1290,20 +1290,23 @@ const createEventContentChange = (t, n, o) => {
+       }));
+       each(r, (o => each(o[0], (c => {
+         const r = o[1];
+-        const i = e.get(c) || [];
++        const i = e.get(c) || Object.create(null);
+         const l = t.contains(c);
+         if (l && r) {
+-          const t = addEventListener(c, r, (o => {
+-            if (s) {
+-              t();
+-              e.delete(c);
+-            } else {
+-              n(o);
+-            }
+-          }));
+-          e.set(c, push(i, t));
++          if (!i[r]) {
++            const t = addEventListener(c, r, (o => {
++              if (s) {
++                t();
++                e.delete(c);
++              } else {
++                n(o);
++              }
++            }));
++            i[r] = t;
++            e.set(c, i);
++          }
+         } else {
+-          runEachAndClear(i);
++          runEachAndClear(Object.values(i));
+           e.delete(c);
+         }
+       }))));
+diff --git a/overlayscrollbars.mjs b/overlayscrollbars.mjs
+index db6eb0df62420d5b2809d31d0e16bb5933c8a115..c62ade4ef26441a7a1342fa29caff99d5e85734b 100644
+--- a/overlayscrollbars.mjs
++++ b/overlayscrollbars.mjs
+@@ -1290,20 +1290,23 @@ const createEventContentChange = (t, n, o) => {
+       }));
+       each(r, (o => each(o[0], (c => {
+         const r = o[1];
+-        const i = e.get(c) || [];
++        const i = e.get(c) || Object.create(null);
+         const l = t.contains(c);
+         if (l && r) {
+-          const t = addEventListener(c, r, (o => {
+-            if (s) {
+-              t();
+-              e.delete(c);
+-            } else {
+-              n(o);
+-            }
+-          }));
+-          e.set(c, push(i, t));
++          if (!i[r]) {
++            const t = addEventListener(c, r, (o => {
++              if (s) {
++                t();
++                e.delete(c);
++              } else {
++                n(o);
++              }
++            }));
++            i[r] = t;
++            e.set(c, i);
++          }
+         } else {
+-          runEachAndClear(i);
++          runEachAndClear(Object.values(i));
+           e.delete(c);
+         }
+       }))));
