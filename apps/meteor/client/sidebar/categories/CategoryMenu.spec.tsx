@@ -104,7 +104,8 @@ describe('the Mark read item', () => {
 		await userEvent.click(await screen.findByRole('button', { name: 'Options' }));
 		await userEvent.click(await screen.findByRole('menuitemcheckbox', { name: 'Mark read' }));
 
-		const dialog = await screen.findByRole('dialog', { name: 'Mark rooms as read' });
+		// The menu's closing animation runs first; the modal follows it.
+		const dialog = await screen.findByRole('dialog', { name: 'Mark rooms as read' }, { timeout: 3000 });
 		expect(dialog).toHaveTextContent('2 unread rooms in “Channels” become read, threads included.');
 		expect(readMessages).not.toHaveBeenCalled();
 
