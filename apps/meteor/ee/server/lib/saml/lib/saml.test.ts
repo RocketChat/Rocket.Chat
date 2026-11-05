@@ -966,6 +966,33 @@ describe('SAML', () => {
 				// for this one, should run the regex first, then the template
 				expect(userObject).to.have.property('fullName').that.is.equal('[DisplayName] (AnotherName)');
 			});
+			it('should accept the {{field}} placeholders shown in the setting description', () => {
+				const { globalSettings } = SAMLUtils;
+
+				const fieldMap = {
+					'username': {
+						fieldName: 'anotherName',
+						template: 'user-{{anotherName}}45@7',
+						regex: 'user-(.*)@',
+					},
+					'email': 'singleEmail',
+					'name': {
+						fieldNames: ['anotherName', 'displayName'],
+						regex: '\\[(.*)\\]',
+						template: '{{displayName}} ({{regex}})',
+					},
+					'{{identifier}}': 'customField3',
+				};
+
+				globalSettings.userDataFieldMap = JSON.stringify(fieldMap);
+
+				SAMLUtils.updateGlobalSettings(globalSettings);
+				const userObject = SAMLUtils.mapProfileToUserObject(profile);
+
+				expect(userObject).to.have.property('username').that.is.equal('[AnotherName]45');
+				expect(userObject).to.have.property('fullName').that.is.equal('[DisplayName] (AnotherName)');
+				expect(userObject).to.have.property('identifier').that.has.property('attribute').that.is.equal('customField3');
+			});
 
 			it('should support individual array values on templates', () => {
 				const { globalSettings } = SAMLUtils;
