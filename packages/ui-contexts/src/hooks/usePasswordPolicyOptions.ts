@@ -1,7 +1,7 @@
 import type { PasswordPolicyOptions } from '@rocket.chat/password-policies';
 import { useMemo } from 'react';
 
-import { useSetting } from './useSetting';
+import { useSetting } from './useSetting.js';
 
 export const usePasswordPolicyOptions = (): PasswordPolicyOptions => {
 	const enabled = useSetting('Accounts_Password_Policy_Enabled', true);

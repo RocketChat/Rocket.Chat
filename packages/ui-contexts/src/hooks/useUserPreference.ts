@@ -1,6 +1,6 @@
 import { useContext, useMemo, useSyncExternalStore } from 'react';
 
-import { UserContext } from '../UserContext';
+import { UserContext } from '../UserContext.js';
 
 export const useUserPreference = <T>(key: string, defaultValue?: T): T | undefined => {
 	const { queryPreference } = useContext(UserContext);

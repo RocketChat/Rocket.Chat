@@ -1,7 +1,7 @@
 import type { ServerMethodName, ServerMethodParameters, ServerMethodReturn, ServerMethods } from '@rocket.chat/ddp-client';
 import { useCallback, useContext } from 'react';
 
-import { ServerContext } from '../ServerContext';
+import { ServerContext } from '../ServerContext.js';
 
 type ServerMethodFunction<MethodName extends ServerMethodName> = (
 	...args: ServerMethodParameters<MethodName>

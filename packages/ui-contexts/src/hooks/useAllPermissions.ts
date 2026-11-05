@@ -1,7 +1,7 @@
 import type { ObjectId } from 'mongodb';
 import { useContext, useMemo, useSyncExternalStore } from 'react';
 
-import { AuthorizationContext } from '../AuthorizationContext';
+import { AuthorizationContext } from '../AuthorizationContext.js';
 
 export const useAllPermissions = (permissions: (string | ObjectId)[], scope?: string | ObjectId): boolean => {
 	const { queryAllPermissions } = useContext(AuthorizationContext);

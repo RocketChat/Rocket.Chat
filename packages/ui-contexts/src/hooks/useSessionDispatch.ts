@@ -1,6 +1,6 @@
 import { useCallback, useContext } from 'react';
 
-import { SessionContext } from '../SessionContext';
+import { SessionContext } from '../SessionContext.js';
 
 export const useSessionDispatch = (name: string) => {
 	const { dispatch } = useContext(SessionContext);
