@@ -133,7 +133,10 @@ export const useReloadOnError = (url: string, type: 'video' | 'audio') => {
 	});
 
 	const mediaRefCallback = useCallback(
-		(node: HTMLAudioElement) => {
+		(node: HTMLMediaElement | null) => {
+			if (!node) {
+				return;
+			}
 			events.forEach((event) => {
 				node.addEventListener(event, handleMediaURLRecovery);
 			});
