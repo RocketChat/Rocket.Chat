@@ -11,6 +11,9 @@ inputs:
   install:
     required: false
     description: 'Install dependencies'
+  cache-mongodb-memory-server:
+    required: false
+    description: 'Cache the MongoDB binary mongodb-memory-server downloads; jobs without it skip the download'
   type:
     required: false
     description: 'development or production'
@@ -50,7 +53,7 @@ runs:
         cache: ${{ inputs.cache-modules && 'yarn' || '' }}
 
     - name: Cache mongodb-memory-server binary
-      if: inputs.cache-modules
+      if: inputs.cache-mongodb-memory-server
       uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
       with:
         path: ${{ runner.temp }}/mongodb-memory-server
@@ -62,6 +65,9 @@ runs:
         CACHE_DIR="${{ runner.temp }}/mongodb-memory-server"
         echo "MONGOMS_DOWNLOAD_DIR=$CACHE_DIR" >> $GITHUB_ENV
         echo "MONGOMS_PREFER_GLOBAL_PATH=false" >> $GITHUB_ENV
+        if [ -z "${{ inputs.cache-mongodb-memory-server }}" ]; then
+          echo "MONGOMS_DISABLE_POSTINSTALL=1" >> $GITHUB_ENV
+        fi
 
     - name: yarn login
       shell: bash
