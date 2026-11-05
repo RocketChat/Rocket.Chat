@@ -18,7 +18,6 @@ function Message({ className, clickable, sequential, isSelected, isEditing, isPe
 	return (
 		<Item
 			{...props}
-			align='start'
 			hoverable
 			selected={isSelected}
 			className={cx(
