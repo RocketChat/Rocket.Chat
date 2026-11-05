@@ -100,12 +100,11 @@ describe('the Mark read item', () => {
 	});
 
 	it('says how many rooms become read, then marks each unread one read with its threads', async () => {
-		renderMenu();
+		renderMenu({ rooms });
 		await userEvent.click(await screen.findByRole('button', { name: 'Options' }));
 		await userEvent.click(await screen.findByRole('menuitemcheckbox', { name: 'Mark read' }));
 
-		// The menu's closing animation runs first; the modal follows it.
-		const dialog = await screen.findByRole('dialog', { name: 'Mark rooms as read' }, { timeout: 3000 });
+		const dialog = await screen.findByRole('dialog', { name: 'Mark rooms as read' });
 		expect(dialog).toHaveTextContent('2 unread rooms in “Channels” become read, threads included.');
 		expect(readMessages).not.toHaveBeenCalled();
 
