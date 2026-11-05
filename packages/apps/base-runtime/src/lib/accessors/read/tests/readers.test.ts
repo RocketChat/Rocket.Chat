@@ -60,6 +60,19 @@ describe('Reader family (base-runtime)', () => {
 			});
 		});
 
+		it('getMessages applies defaults without mutating caller options', async () => {
+			const { rec, senderFn } = setup({ 'bridges:getRoomBridge:doGetMessages': [] });
+			const options = { limit: 10 };
+
+			await new RoomRead(senderFn).getMessages('r1', options);
+
+			assert.deepStrictEqual(options, { limit: 10 });
+			assert.deepStrictEqual(rec.emitted()[0], {
+				method: 'bridges:getRoomBridge:doGetMessages',
+				params: ['r1', { limit: 10, showThreadMessages: true }, 'APP_ID'],
+			});
+		});
+
 		it('getMessages rejects a limit above 100', async () => {
 			const { senderFn } = setup();
 			assert.throws(() => new RoomRead(senderFn).getMessages('r1', { limit: 101 }), /Expected number <= 100, got 101/);
