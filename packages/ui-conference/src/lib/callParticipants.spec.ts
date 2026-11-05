@@ -4,9 +4,9 @@ import {
 	composeCallParticipants,
 	matchesConferenceMember,
 	resolveParticipant,
-} from './callParticipants';
-import type { PluginFeature, PluginParticipant, PluginSelf } from './providerPlugin';
-import { buildConferenceMember } from '../fixtures/testFixtures';
+} from './callParticipants.js';
+import type { PluginFeature, PluginParticipant, PluginSelf } from './providerPlugin.js';
+import { buildConferenceMember } from '../fixtures/testFixtures.js';
 
 const buildParticipant = (overrides: Partial<PluginParticipant> & Pick<PluginParticipant, 'uuid'>): PluginParticipant => ({
 	displayName: `Name of ${overrides.uuid}`,

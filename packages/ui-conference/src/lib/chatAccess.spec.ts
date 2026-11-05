@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 
-import { chatAccessLeadsWithDiscussion, hasConferenceChatAccess } from './chatAccess';
+import { chatAccessLeadsWithDiscussion, hasConferenceChatAccess } from './chatAccess.js';
 
 describe('hasConferenceChatAccess', () => {
 	it('says yes where the server named nobody as shut out', () => {

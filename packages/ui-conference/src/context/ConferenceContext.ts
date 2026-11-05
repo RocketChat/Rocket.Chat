@@ -7,8 +7,8 @@ import type {
 	ConferenceSession,
 	ConferenceSlots,
 	ConferenceViewer,
-} from './definitions';
-import type { ProviderPluginControls } from '../lib/providerPlugin';
+} from './definitions.js';
+import type { ProviderPluginControls } from '../lib/providerPlugin.js';
 
 /** What the window can show beside the call. */
 export type ConferencePanel = 'members' | 'chat' | 'diagnostics';

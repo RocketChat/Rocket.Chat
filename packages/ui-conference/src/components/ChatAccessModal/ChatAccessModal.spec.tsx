@@ -1,12 +1,12 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { act, render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 import type { ReactNode } from 'react';
 
-import ChatAccessModal from './ChatAccessModal';
-import { ConferenceContext } from '../../context/ConferenceContext';
-import type { ConferenceChatAccess } from '../../context/definitions';
-import { buildConferenceContext } from '../../fixtures/storyFixtures';
+import ChatAccessModal from './ChatAccessModal.js';
+import { ConferenceContext } from '../../context/ConferenceContext.js';
+import type { ConferenceChatAccess } from '../../context/definitions.js';
+import { buildConferenceContext } from '../../fixtures/storyFixtures.js';
 
 const member = { _id: 'outsider-id', username: 'outsider', name: 'Outsider Person' };
 

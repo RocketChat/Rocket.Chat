@@ -1,4 +1,4 @@
-import { latestReactionBySender } from './reactions';
+import { latestReactionBySender } from './reactions.js';
 
 const reaction = (id: string, participantId: string, emoji: string) => ({ id, participantId, emoji, sentAt: 0, expiresAt: 0 });
 

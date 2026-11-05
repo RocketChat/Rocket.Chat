@@ -1,6 +1,6 @@
 import { createRequiredContext } from '@rocket.chat/ui-media';
 
-import type { VideoQuality } from '../hooks/useCallDevicesInitialState';
+import type { VideoQuality } from '../hooks/useCallDevicesInitialState.js';
 
 /**
  * The most detail the camera sends, for the camera menus. The preflight fills it with the stored preference; a call

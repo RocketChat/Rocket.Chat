@@ -1,13 +1,13 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 import type { ReactNode } from 'react';
 
-import ChatAccessNotice from './ChatAccessNotice';
-import { ConferenceContext } from '../../context/ConferenceContext';
-import type { ConferenceChatAccess } from '../../context/definitions';
-import { JOHN_DOE_ID, buildConferenceContext } from '../../fixtures/storyFixtures';
-import { buildChatAccess } from '../../fixtures/testFixtures';
+import ChatAccessNotice from './ChatAccessNotice.js';
+import { ConferenceContext } from '../../context/ConferenceContext.js';
+import type { ConferenceChatAccess } from '../../context/definitions.js';
+import { JOHN_DOE_ID, buildConferenceContext } from '../../fixtures/storyFixtures.js';
+import { buildChatAccess } from '../../fixtures/testFixtures.js';
 
 // The conference says who is reading, so the member without access has to be that same user to test
 // self-exclusion.

@@ -1,18 +1,18 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useMemo } from 'react';
 
-import type { RemoteParticipantInfo } from './context';
-import { useActiveSpeakerId } from './hooks/useActiveSpeakerId';
-import { useElementSize } from './hooks/useElementSize';
-import { useFeaturedScreen } from './hooks/useFeaturedScreen';
-import type { TileReaction } from './lib/reactions';
-import type { StageSelf } from './lib/stageTiles';
-import { buildStageTiles, pickFeaturedTile, spotlightOrientation } from './lib/stageTiles';
-import GridLayout from './stage/GridLayout';
-import ScreenShareLayout from './stage/ScreenShareLayout';
-import SidebarLayout from './stage/SidebarLayout';
-import SpotlightLayout from './stage/SpotlightLayout';
-import { stageStyles } from './stage/stageStyles';
+import type { RemoteParticipantInfo } from './context.js';
+import { useActiveSpeakerId } from './hooks/useActiveSpeakerId.js';
+import { useElementSize } from './hooks/useElementSize.js';
+import { useFeaturedScreen } from './hooks/useFeaturedScreen.js';
+import type { TileReaction } from './lib/reactions.js';
+import type { StageSelf } from './lib/stageTiles.js';
+import { buildStageTiles, pickFeaturedTile, spotlightOrientation } from './lib/stageTiles.js';
+import GridLayout from './stage/GridLayout.js';
+import ScreenShareLayout from './stage/ScreenShareLayout.js';
+import SidebarLayout from './stage/SidebarLayout.js';
+import SpotlightLayout from './stage/SpotlightLayout.js';
+import { stageStyles } from './stage/stageStyles.js';
 
 export type StageLayout = 'grid' | 'spotlight' | 'sidebar';
 

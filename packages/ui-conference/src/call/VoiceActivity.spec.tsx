@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 
-import VoiceActivity from './VoiceActivity';
+import VoiceActivity from './VoiceActivity.js';
 
 const barHeights = () => screen.getAllByTestId('voice-activity-bar').map((bar) => parseInt(bar.style.height, 10));
 

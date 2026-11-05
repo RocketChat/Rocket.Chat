@@ -11,17 +11,17 @@ import { useContext, useEffect, useMemo, useState } from 'react';
 import { I18nextProvider } from 'react-i18next';
 import { action } from 'storybook/actions';
 
-import { storybookI18n } from './i18n';
-import { buildConferenceMember } from './testFixtures';
-import type { ConferenceContextValue } from '../context/ConferenceContext';
-import { ConferenceContext, defaultConferenceContextValue } from '../context/ConferenceContext';
-import type { OngoingCallsContextValue } from '../context/OngoingCallsContext';
-import { OngoingCallsContext, defaultOngoingCallsContextValue } from '../context/OngoingCallsContext';
-import type { ConferenceMember } from '../context/definitions';
-import { callPreferencesStorageKey } from '../hooks/useCallDevicesInitialState';
-import type { PluginFeature, PluginParticipant, ProviderPluginControls } from '../lib/providerPlugin';
-import { PLUGIN_FEATURES } from '../lib/providerPlugin';
-import ConferenceViewport from '../views/ConferenceViewport';
+import { storybookI18n } from './i18n.js';
+import { buildConferenceMember } from './testFixtures.js';
+import type { ConferenceContextValue } from '../context/ConferenceContext.js';
+import { ConferenceContext, defaultConferenceContextValue } from '../context/ConferenceContext.js';
+import type { OngoingCallsContextValue } from '../context/OngoingCallsContext.js';
+import { OngoingCallsContext, defaultOngoingCallsContextValue } from '../context/OngoingCallsContext.js';
+import type { ConferenceMember } from '../context/definitions.js';
+import { callPreferencesStorageKey } from '../hooks/useCallDevicesInitialState.js';
+import type { PluginFeature, PluginParticipant, ProviderPluginControls } from '../lib/providerPlugin.js';
+import { PLUGIN_FEATURES } from '../lib/providerPlugin.js';
+import ConferenceViewport from '../views/ConferenceViewport.js';
 
 /** Who `withJohnDoe` logs in as, so the context says the same thing the app root does. */
 export const JOHN_DOE_ID = 'john.doe';

@@ -1,4 +1,4 @@
-import type { StageTile, TileParticipant } from './stageTiles';
+import type { StageTile, TileParticipant } from './stageTiles.js';
 import {
 	absorbLonelyTile,
 	buildStageTiles,
@@ -8,7 +8,7 @@ import {
 	sidebarCapacity,
 	splitByPriority,
 	spotlightOrientation,
-} from './stageTiles';
+} from './stageTiles.js';
 
 const stream = {} as MediaStream;
 

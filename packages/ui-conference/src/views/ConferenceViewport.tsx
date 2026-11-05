@@ -2,7 +2,7 @@ import { Box, PaletteStyleTag } from '@rocket.chat/fuselage';
 import { ModalProviderWithRegion, useThemeMode } from '@rocket.chat/ui-client';
 import type { ReactNode } from 'react';
 
-import { CONFERENCE_THEMED_CLASS } from '../lib/panelStyles';
+import { CONFERENCE_THEMED_CLASS } from '../lib/panelStyles.js';
 
 /**
  * The box the conference window fills, since it is a window of its own and has no ancestor to take a height

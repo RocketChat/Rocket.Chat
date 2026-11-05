@@ -1,6 +1,6 @@
-import type { RemoteParticipantInfo } from '../context';
-import type { TileReaction } from './reactions';
-import { TILE_GAP_PX } from './tileGrid';
+import type { RemoteParticipantInfo } from '../context.js';
+import type { TileReaction } from './reactions.js';
+import { TILE_GAP_PX } from './tileGrid.js';
 
 /** The reader as the stage draws them. */
 export type StageSelf = {

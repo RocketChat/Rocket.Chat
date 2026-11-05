@@ -3,7 +3,7 @@ import { GenericMenu } from '@rocket.chat/ui-client';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
-import RaisedHandsButton from './RaisedHandsButton';
+import RaisedHandsButton from './RaisedHandsButton.js';
 
 export type RaisedHand = {
 	id: string;

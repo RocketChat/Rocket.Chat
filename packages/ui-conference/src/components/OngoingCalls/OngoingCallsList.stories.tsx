@@ -2,10 +2,10 @@ import { Box } from '@rocket.chat/fuselage';
 import type { Meta, StoryObj } from '@storybook/react';
 import { userEvent, within } from 'storybook/test';
 
-import OngoingCallsList from './OngoingCallsList';
-import type { OngoingCallsFixture } from '../../fixtures/storyFixtures';
-import { conferenceAppRoot, withCallProviders, withLiveOngoingCalls } from '../../fixtures/storyFixtures';
-import { buildJoinableCall } from '../../fixtures/testFixtures';
+import OngoingCallsList from './OngoingCallsList.js';
+import type { OngoingCallsFixture } from '../../fixtures/storyFixtures.js';
+import { conferenceAppRoot, withCallProviders, withLiveOngoingCalls } from '../../fixtures/storyFixtures.js';
+import { buildJoinableCall } from '../../fixtures/testFixtures.js';
 
 /**
  * The list is handed its calls already grouped — which of them are still ringing is an answer with a clock in
