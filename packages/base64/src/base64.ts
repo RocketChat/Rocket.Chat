@@ -77,6 +77,13 @@ const encode = (array: ArrayLike<number> | string) => {
 };
 
 const decode = (str: string) => {
+	for (let i = 0; i < str.length; i++) {
+		const ch = str.charAt(i);
+		if (ch !== '=' && BASE_64_VALS[ch] === undefined) {
+			throw new Error('invalid base64 string');
+		}
+	}
+
 	let len = Math.floor((str.length * 3) / 4);
 	if (str.charAt(str.length - 1) === '=') {
 		len--;
