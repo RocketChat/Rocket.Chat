@@ -133,6 +133,8 @@ API.v1.post(
 	'subscriptions.read',
 	{
 		authRequired: true,
+		// The sidebar marks a whole group read with one call per room; the default of ten a minute would stop it.
+		rateLimiterOptions: { numRequestsAllowed: 120, intervalTimeInMS: 60000 },
 		body: isSubscriptionsReadProps,
 		response: {
 			200: voidSuccessResponseSchema,

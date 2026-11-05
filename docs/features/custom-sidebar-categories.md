@@ -299,7 +299,8 @@ off notifications" / "Turn on notifications").
 
 **Mark read** (`useMarkGroupReadItem.tsx`) marks every unread room of the group as read, threads included, through
 `POST /v1/subscriptions.read` with `readThreads: true`, five rooms at a time. It is disabled while the group has
-nothing unread (`isUnreadRoom` over the group's `allRooms`), and first says how many rooms become read in a
+nothing unread (`isUnreadRoom` over the group's `allRooms`, which, like the collapsed-group badge, leaves out rooms
+with `hideUnreadStatus` even when they carry mentions), and first says how many rooms become read in a
 do-not-ask-again modal without an icon ("Mark rooms as read"). A toast reports how many were marked read and, on
 failures, how many were not.
 
@@ -382,3 +383,4 @@ Placed before the room title in `RoomHeader`. Icon: `star-filled` (favorited) / 
 | Unit (activity filter range validation) | `apps/meteor/server/meteor-methods/users/saveUserPreferences.spec.ts` |
 | E2E (Playwright) | `apps/meteor/tests/e2e/sidebar-custom-categories.spec.ts` |
 | E2E page object | `apps/meteor/tests/e2e/page-objects/fragments/sidebar.ts` (custom-category helpers) |
+| Unit (group menu, Mark read) | `apps/meteor/client/sidebar/categories/CategoryMenu.spec.tsx` |
