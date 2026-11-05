@@ -1,1 +1,1 @@
-export { default, type ResetPasswordPageProps } from './ResetPasswordPage';
+export { default, type ResetPasswordPageProps } from './ResetPasswordPage.js';

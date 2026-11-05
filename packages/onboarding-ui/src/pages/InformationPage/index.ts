@@ -1,1 +1,1 @@
-export { default, type InformationPageProps } from './InformationPage';
+export { default, type InformationPageProps } from './InformationPage.js';
