@@ -1,10 +1,17 @@
 import crypto from 'crypto';
 import { EventEmitter } from 'events';
-import { Agent } from 'https';
+import https, { Agent } from 'https';
 import type { TLSSocket } from 'tls';
 
 import type { EwsTransportConfig } from './EwsTransport';
 import { AllowlistedAgent, captureCertificate, EwsTransport } from './EwsTransport';
+
+jest.mock('@rocket.chat/ntlm', () => ({
+	createType1Message: () => 'NTLM negotiate',
+	decodeType2Message: () => ({}),
+	createType3Message: () => 'NTLM authenticate',
+	computeChannelBindingHash: () => Buffer.from('binding'),
+}));
 
 const SOCKET_REACHED = new Error('socket reached');
 
@@ -116,5 +123,117 @@ describe('NTLM under FIPS', () => {
 		refuseSocket();
 
 		await expect(transportFor({ authMethod: 'ntlm' }).post('<soap/>')).rejects.toBe(SOCKET_REACHED);
+	});
+});
+
+describe('NTLM once per connection', () => {
+	const fakeExchange = ({ keepsAuthentication = true } = {}) => {
+		const authenticated = new WeakSet<TLSSocket>();
+		const requests: string[] = [];
+		const connect = () =>
+			Object.assign(
+				fakeSocket(() => Buffer.from('certificate')),
+				{ destroyed: false },
+			);
+		let connection = connect();
+
+		const answer = (authorization: string | undefined, body: string, socket: TLSSocket) => {
+			if (authorization === 'NTLM negotiate') {
+				requests.push('negotiate');
+				return { statusCode: 401, headers: { 'www-authenticate': 'NTLM challenge' } };
+			}
+
+			if (authorization === 'NTLM authenticate') {
+				requests.push(`authenticate ${body}`);
+				if (keepsAuthentication) {
+					authenticated.add(socket);
+				}
+				return { statusCode: 200, headers: {} };
+			}
+
+			requests.push(body);
+			return authenticated.has(socket) ? { statusCode: 200, headers: {} } : { statusCode: 401, headers: { 'www-authenticate': 'NTLM' } };
+		};
+
+		jest.spyOn(https, 'request').mockImplementation(((
+			_url: URL,
+			options: { headers: Record<string, string> },
+			callback: (res: EventEmitter) => void,
+		) => {
+			const req = Object.assign(new EventEmitter(), {
+				destroy: jest.fn(),
+				end: (body: string) => {
+					const socket = connection;
+					const { statusCode, headers } = answer(options.headers.Authorization, body, socket);
+					const res = Object.assign(new EventEmitter(), { statusCode, headers });
+
+					setImmediate(() => {
+						req.emit('socket', socket);
+						callback(res);
+						res.emit('data', Buffer.from(statusCode === 200 ? `answer to ${body}` : ''));
+						res.emit('end');
+					});
+				},
+			});
+
+			return req;
+		}) as unknown as typeof https.request);
+
+		return {
+			requests,
+			closeConnection: () => {
+				connection.destroyed = true;
+				connection = connect();
+			},
+			replaceConnectionUnnoticed: () => {
+				connection = connect();
+			},
+		};
+	};
+
+  let exchange: any;
+  let transport: any;
+
+  beforeEach(() => {
+		exchange = fakeExchange();
+		transport = transportFor({ authMethod: 'ntlm' });
+  })
+
+	afterEach(() => {
+		jest.restoreAllMocks();
+	});
+
+	it('authenticates once and sends the following requests over that connection without a handshake', async () => {
+		await expect(transport.post('a')).resolves.toBe('answer to a');
+		await expect(transport.post('b')).resolves.toBe('answer to b');
+
+		expect(exchange.requests).toEqual(['negotiate', 'authenticate a', 'b']);
+	});
+
+	it('authenticates again once Exchange closed the connection', async () => {
+		await transport.post('a');
+		exchange.closeConnection();
+		await expect(transport.post('b')).resolves.toBe('answer to b');
+
+		expect(exchange.requests).toEqual(['negotiate', 'authenticate a', 'negotiate', 'authenticate b']);
+	});
+
+	it('authenticates again when a request lands on a connection that was never authenticated', async () => {
+		await transport.post('a');
+		exchange.replaceConnectionUnnoticed();
+		await expect(transport.post('b')).resolves.toBe('answer to b');
+		await transport.post('c');
+
+		expect(exchange.requests).toEqual(['negotiate', 'authenticate a', 'b', 'negotiate', 'authenticate b', 'c']);
+	});
+
+	it('authenticates every request when Exchange does not keep the connection authenticated', async () => {
+		exchange = fakeExchange({ keepsAuthentication: false });
+
+		await transport.post('a');
+		await expect(transport.post('b')).resolves.toBe('answer to b');
+		await transport.post('c');
+
+		expect(exchange.requests).toEqual(['negotiate', 'authenticate a', 'b', 'negotiate', 'authenticate b', 'negotiate', 'authenticate c']);
 	});
 });
