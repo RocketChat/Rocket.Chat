@@ -61,6 +61,19 @@ export const createPickerEmojis = (
 	return [mappedCategories, categoriesIndexes];
 };
 
+export const getCurrentCategory = (categoriesIndexes: CategoriesIndexes, startIndex: number, endIndex: number) => {
+	const lastCategory = categoriesIndexes.at(-1);
+
+	// the last category can be short enough that its divider never reaches the top of the list,
+	// so it becomes the current one as soon as that divider is rendered. A list that has not been
+	// scrolled at all is still showing its first category, no matter how much else fits on screen.
+	if (lastCategory && startIndex > 0 && lastCategory.index <= endIndex) {
+		return lastCategory;
+	}
+
+	return categoriesIndexes.findLast(({ index }) => index < startIndex) ?? categoriesIndexes[0];
+};
+
 export const createEmojiList = (
 	customItemsLimit: number,
 	category: string,
