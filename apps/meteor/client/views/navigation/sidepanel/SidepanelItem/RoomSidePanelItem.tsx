@@ -1,5 +1,5 @@
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import { Icon, SidebarItemIcon } from '@rocket.chat/fuselage';
+import { SidebarItemIcon } from '@rocket.chat/fuselage';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useUserId, type SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
@@ -10,8 +10,8 @@ import RoomSidePanelItemBadges from './RoomSidePanelItemBadges';
 import SidePanelParent from './SidePanelParent';
 import SidePanelItem from './SidepanelItem';
 import { RoomIcon } from '../../../../components/RoomIcon';
+import RoomListItemTitleIcon from '../../../../components/RoomListItem/RoomListItemTitleIcon';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
-import { getSubscriptionDraft } from '../../../../lib/utils/getSubscriptionDraft';
 import { isIOsDevice } from '../../../../lib/utils/isIOsDevice';
 import { getMessagePreview } from '../../../../lib/utils/normalizeMessagePreview/getMessagePreview';
 import { useOmnichannelPriorities } from '../../../omnichannel/hooks/useOmnichannelPriorities';
@@ -40,9 +40,7 @@ const RoomSidePanelItem = ({ room, openedRoom, isRoomFilter, ...props }: RoomSid
 
 	const parentRoomId = Boolean(room.prid || (room.teamId && !room.teamMain));
 
-	const titleIcon = getSubscriptionDraft(room) ? (
-		<Icon name='pencil' size='x12' title={room.draft ? t('Draft') : t('Thread_draft')} />
-	) : undefined;
+	const titleIcon = <RoomListItemTitleIcon room={room} />;
 
 	const menu =
 		!isIOsDevice && !isAnonymous && (!isQueued || (isQueued && isPriorityEnabled)) ? (

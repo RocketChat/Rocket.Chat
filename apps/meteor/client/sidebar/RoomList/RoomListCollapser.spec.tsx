@@ -12,6 +12,15 @@ jest.mock('@rocket.chat/ui-client', () => ({
 	useIsEnterprise: () => ({ data: { isEnterprise: true } }),
 }));
 
+jest.mock('../categories/ArchivedGroupMenu', () => ({
+	__esModule: true,
+	default: () => (
+		<button type='button' aria-label='Archived options'>
+			archived menu
+		</button>
+	),
+}));
+
 jest.mock('../categories/CategoryMenu', () => ({
 	__esModule: true,
 	default: () => (
@@ -193,13 +202,17 @@ describe('the archived placeholder', () => {
 			empty: true,
 		}) as SidebarRoomListGroup;
 
-	it('is listed collapsed as an empty group, with no menu, chip or badge', () => {
+	it('is listed collapsed as an empty group, with its own menu and no chip or badge', async () => {
 		renderCollapser(makeArchivedGroup());
 
 		expect(screen.getByRole('button', { name: /Archived/ })).toHaveAttribute('aria-expanded', 'false');
-		expect(screen.queryByRole('button', { name: 'Options' })).not.toBeInTheDocument();
 		expect(screen.queryByRole('button', { name: /Filter/ })).not.toBeInTheDocument();
 		expect(screen.queryByRole('status')).not.toBeInTheDocument();
+
+		await userEvent.hover(screen.getByRole('button', { name: /Archived/ }));
+
+		expect(await screen.findByRole('button', { name: 'Archived options' })).toBeInTheDocument();
+		expect(screen.queryByRole('button', { name: 'Options' })).not.toBeInTheDocument();
 	});
 
 	it('still folds and unfolds', async () => {
