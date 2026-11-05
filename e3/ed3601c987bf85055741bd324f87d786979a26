@@ -1,0 +1,19 @@
+packages/ui-client/src/components/CustomScrollbars/VirtualizedScrollbars.spec.tsx
+  s_aa92acb00d5d32::t_8a7742562cdb0b 1,24-25,28,30-31,33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "e3ed3601c987bf85055741bd324f87d786979a26",
+  "prompts": {},
+  "sessions": {
+    "s_aa92acb00d5d32": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "46f25f04-7c5c-421f-8e80-ed18950b7bfe",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
