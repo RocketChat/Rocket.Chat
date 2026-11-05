@@ -3,11 +3,17 @@ import WebSocket from 'ws';
 import { Publication } from './Publication';
 import { makeSession, makeSubscription, sentPackets } from './__tests__/helpers';
 
+const mockLoggerError = jest.fn();
+jest.mock('@rocket.chat/logger', () => ({
+	Logger: jest.fn().mockImplementation(() => ({ error: (...args: unknown[]) => mockLoggerError(...args) })),
+}));
+
 describe('Publication', () => {
 	let session: ReturnType<typeof makeSession>;
 	let publication: Publication;
 
 	beforeEach(() => {
+		mockLoggerError.mockClear();
 		session = makeSession();
 		publication = new Publication(session, makeSubscription());
 	});
@@ -107,16 +113,47 @@ describe('Publication', () => {
 		expect(session.subscriptions.has('test-id')).toBe(false);
 	});
 
-	it('is fully stopped even when one of its stop callbacks throws', () => {
+	it('runs every stop callback and is fully stopped when one of them throws', () => {
+		const failure = new Error('stop callback failure');
+		const after = jest.fn();
 		publication.onStop(() => {
-			throw new Error('stop callback failure');
+			throw failure;
 		});
+		publication.onStop(after);
 
-		expect(() => publication.stop()).toThrow('stop callback failure');
+		expect(() => publication.stop()).not.toThrow();
 
+		expect(after).toHaveBeenCalledTimes(1);
+		expect(mockLoggerError).toHaveBeenCalledWith(expect.objectContaining({ err: failure }));
 		expect(publication._isDeactivated()).toBe(true);
 		expect(session.subscriptions.has('test-id')).toBe(false);
 		expect(session.listenerCount('close')).toBe(0);
+	});
+
+	it('stops every publication of a closing session when a stop callback of one of them throws', () => {
+		const other = new Publication(session, { ...makeSubscription(), id: 'other-id' });
+		const onOtherStop = jest.fn();
+		publication.onStop(() => {
+			throw new Error('stop callback failure');
+		});
+		other.onStop(onOtherStop);
+
+		expect(() => session.emit('close')).not.toThrow();
+
+		expect(onOtherStop).toHaveBeenCalledTimes(1);
+		expect(other._isDeactivated()).toBe(true);
+		expect(session.subscriptions.size).toBe(0);
+	});
+
+	it('logs, instead of throwing, an error from a stop callback registered after the stop', () => {
+		publication.stop();
+
+		expect(() =>
+			publication.onStop(() => {
+				throw new Error('stop callback failure');
+			}),
+		).not.toThrow();
+		expect(mockLoggerError).toHaveBeenCalledTimes(1);
 	});
 
 	it('removes its session close listener when stopped', () => {

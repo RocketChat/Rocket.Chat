@@ -1,11 +1,14 @@
 import { EventEmitter } from 'events';
 
+import { Logger } from '@rocket.chat/logger';
 import type { IPublication } from '@rocket.chat/streamer';
 import WebSocket from 'ws';
 
 import type { IPacket } from './IPacket';
 import type { Session } from './Session';
 import { encodeAdded, encodeChanged, encodeNosub, encodeReady, encodeRemoved } from './codec';
+
+const logger = new Logger('DDP-Streamer');
 
 export class Publication extends EventEmitter implements IPublication {
 	_session: IPublication['_session'];
@@ -71,13 +74,23 @@ export class Publication extends EventEmitter implements IPublication {
 		this.emit('stop', this.client, this.packet);
 	}
 
-	/** Runs `fn` when the publication stops, or right away when it already has, as Meteor's `Subscription.onStop` does. */
+	/**
+	 * Runs `fn` when the publication stops, or right away when it already has, as Meteor's `Subscription.onStop` does.
+	 * An error `fn` throws is logged, so it cannot keep the other stop callbacks, or the other publications of a closing session, from running.
+	 */
 	onStop(fn: (...args: any[]) => void): void {
+		const run = (...args: any[]) => {
+			try {
+				fn(...args);
+			} catch (err) {
+				logger.error({ msg: 'Publication stop callback failed', err });
+			}
+		};
 		if (this._isDeactivated()) {
-			fn();
+			run();
 			return;
 		}
-		this.once('stop', fn);
+		this.once('stop', run);
 	}
 
 	added(collection: string, id: string, fields: any): void {

@@ -332,7 +332,7 @@ describe('Server subscriptions', () => {
 			throw new ClientSafeError(403, 'Forbidden');
 		});
 
-		await expect(server.subscribe(session, makeSubscription())).rejects.toThrow('stop callback failure');
+		await server.subscribe(session, makeSubscription());
 
 		expect(sentPackets(session)).toEqual([{ msg: 'nosub', id: 'test-id', error: new ClientSafeError(403, 'Forbidden').toJSON() }]);
 		expect(session.subscriptions.size).toBe(0);
@@ -362,6 +362,28 @@ describe('Server subscriptions', () => {
 
 		expect(onStop).toHaveBeenCalledTimes(1);
 		expect(session.send).not.toHaveBeenCalled();
+		expect(session.subscriptions.size).toBe(0);
+	});
+
+	it('answers once a subscription the client unsubscribed while its handler was pending', async () => {
+		let resume!: () => void;
+		const pending = new Promise<void>((resolve) => {
+			resume = resolve;
+		});
+		server.publish('messages', async function (this: Publication) {
+			await pending;
+			if (this._isDeactivated()) {
+				throw new ClientSafeError('publication-client-disconnected');
+			}
+			this.ready();
+		});
+
+		const subscribing = server.subscribe(session, makeSubscription());
+		session.subscriptions.get('test-id')?.stop();
+		resume();
+		await subscribing;
+
+		expect(sentPackets(session)).toEqual([{ msg: 'nosub', id: 'test-id' }]);
 		expect(session.subscriptions.size).toBe(0);
 	});
 
