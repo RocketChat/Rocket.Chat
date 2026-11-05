@@ -4,7 +4,7 @@ import fetch from 'node-fetch';
 const validRepoNameRegex = /^[\w.-]+\/[\w.-]+$/;
 
 type RequestData = { kind: 'commit'; repo: string; commit: string } | { kind: 'pull'; repo: string; pull: number };
-type RequestDataResponse = { message: string; author: any; url: string; authorAssociation: any };
+type RequestDataResponse = { message?: string; author: any; url: string; authorAssociation: any };
 
 type ReposWithCommitsAndPRsToFetch = Record<string, ({ kind: 'commit'; commit: string } | { kind: 'pull'; pull: number })[]>;
 
@@ -160,7 +160,7 @@ export async function getCommitInfo(request: { commit: string; repo: string; pr?
 
 	const data = await GHDataLoader.load({ kind: 'commit', ...request });
 
-	const prMatch = data.message.match(/\(#(\d+)\)$/m);
+	const prMatch = data.message?.match(/\(#(\d+)\)$/m);
 	if (!prMatch && !request.pr) {
 		return {
 			author: { login: data.author.login, url: data.author.url, association: 'MEMBER' },
