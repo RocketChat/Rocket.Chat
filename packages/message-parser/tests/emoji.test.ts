@@ -1,6 +1,6 @@
 import { parse } from '../src';
 import { ALL_EMOJI, EMOJIBASE_VERSION } from './fixtures/allEmoji';
-import { emoji, bigEmoji, paragraph, plain, emojiUnicode } from './helpers';
+import { emoji, bigEmoji, paragraph, plain, emojiUnicode, emoticon } from './helpers';
 
 test.each([
 	[':smile: asd', [paragraph([emoji('smile'), plain(' asd')])]],
@@ -15,7 +15,7 @@ test.each([
 		`:smile:
   :smile:
   `,
-		[bigEmoji([emoji('smile'), emoji('smile')])],
+		[{ ...bigEmoji([emoji('smile'), emoji('smile')]), separators: ['\n  '] }],
 	],
 	['asdas :smile: asd', [paragraph([plain('asdas '), emoji('smile'), plain(' asd')])]],
 	[
@@ -45,6 +45,33 @@ test.each([
 	[':digit_zero:', [bigEmoji([emoji('digit_zero')])]],
 ])('parses %p', (input, output) => {
 	expect(parse(input)).toEqual(output);
+});
+
+test.each(['\n', '\r\n', '\r', '\n\n', ' \n  '])('preserves %j between large emojis', (separator) => {
+	expect(parse(`:smile:${separator}:heart: :rocket:`)).toEqual([
+		{ ...bigEmoji([emoji('smile'), emoji('heart'), emoji('rocket')]), separators: [separator, ' '] },
+	]);
+});
+
+test('preserves line breaks between large Unicode emojis', () => {
+	expect(parse('😀\n🚀\n🌈')).toEqual([
+		{ ...bigEmoji([emojiUnicode('😀'), emojiUnicode('🚀'), emojiUnicode('🌈')]), separators: ['\n', '\n'] },
+	]);
+});
+
+test('preserves line breaks between large emoticons', () => {
+	expect(parse(':)\n:)', { emoticons: true })).toEqual([
+		{ ...bigEmoji([emoticon(':)', 'slight_smile'), emoticon(':)', 'slight_smile')]), separators: ['\n'] },
+	]);
+});
+
+test('does not enlarge four emojis across lines', () => {
+	expect(parse(':smile:\n:heart:\n:rocket:\n:smile:')).toEqual([
+		paragraph([emoji('smile')]),
+		paragraph([emoji('heart')]),
+		paragraph([emoji('rocket')]),
+		paragraph([emoji('smile')]),
+	]);
 });
 
 // Tests for unicode emojis

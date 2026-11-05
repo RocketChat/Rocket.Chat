@@ -59,7 +59,7 @@ export const sourceOf = (node: SourceNode, source: string): string => {
 			return emojiSource(node);
 
 		case 'BIG_EMOJI':
-			return node.value.map(emojiSource).join('');
+			return node.value.map((emoji, index) => `${node.separators?.[index - 1] ?? ''}${emojiSource(emoji)}`).join('');
 
 		case 'LINK': {
 			const src = node.value.src.value;

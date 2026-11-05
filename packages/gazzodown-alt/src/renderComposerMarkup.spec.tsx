@@ -45,6 +45,10 @@ const horizontalRule: MessageParser.HorizontalRule = { type: 'HORIZONTAL_RULE', 
 const table: MessageParser.Table = { type: 'TABLE', value: { header: [], rows: [] }, fallback: [0, TABLE_SOURCE.length] };
 
 describe('block structure', () => {
+	it.each(['😀\n🚀\n🌈', ':smile:\n\n:heart:', ':smile: :heart:\n:rocket:'])('preserves multiline emoji composer text %j', (source) => {
+		expect(mountSource(source).textContent).toBe(source);
+	});
+
 	it('closes a paragraph with a line ending', () => {
 		expect(textOfTokens([paragraph('hello')])).toBe('hello\n');
 	});
