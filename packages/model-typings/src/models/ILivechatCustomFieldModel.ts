@@ -1,8 +1,8 @@
 import type { ILivechatCustomField } from '@rocket.chat/core-typings';
 import type { FindCursor, Document } from 'mongodb';
 
-import type { IBaseModel } from './IBaseModel';
-import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
+import type { IBaseModel } from './IBaseModel.js';
+import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection.js';
 
 export interface ILivechatCustomFieldModel extends IBaseModel<ILivechatCustomField> {
 	findByScope<T extends Document = ILivechatCustomField, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(

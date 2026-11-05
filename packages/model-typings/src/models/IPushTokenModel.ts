@@ -1,8 +1,8 @@
 import type { AtLeast, IPushToken, IUser } from '@rocket.chat/core-typings';
 import type { DeleteResult, InsertOneResult, UpdateResult, FindCursor, Document } from 'mongodb';
 
-import type { IBaseModel } from './IBaseModel';
-import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
+import type { IBaseModel } from './IBaseModel.js';
+import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection.js';
 
 export interface IPushTokenModel extends IBaseModel<IPushToken> {
 	countTokensByUserId(userId: IUser['_id']): Promise<number>;

@@ -1,8 +1,8 @@
 import type { ContactSyncProvider, IContact, IContactPublic, IUser } from '@rocket.chat/core-typings';
 import type { DeleteResult, Document, FindCursor, UpdateResult } from 'mongodb';
 
-import type { FindPaginated, IBaseModel, InsertionModel } from './IBaseModel';
-import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
+import type { FindPaginated, IBaseModel, InsertionModel } from './IBaseModel.js';
+import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection.js';
 
 export type ImportedContact = Omit<
 	InsertionModel<IContact>,

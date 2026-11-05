@@ -1,8 +1,8 @@
 import type { IMessage, ILivechatInquiryRecord, LivechatInquiryStatus, SelectedAgent } from '@rocket.chat/core-typings';
 import type { FindOptions, Document, UpdateResult, DeleteResult, FindCursor, DeleteOptions, AggregateOptions } from 'mongodb';
 
-import type { IBaseModel } from './IBaseModel';
-import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
+import type { IBaseModel } from './IBaseModel.js';
+import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection.js';
 
 export interface ILivechatInquiryModel extends IBaseModel<ILivechatInquiryRecord> {
 	findOneByRoomId<T extends Document = ILivechatInquiryRecord, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(

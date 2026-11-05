@@ -1,7 +1,7 @@
 import type { MessageReads, IUser, IMessage } from '@rocket.chat/core-typings';
 import type { UpdateResult } from 'mongodb';
 
-import type { IBaseModel } from './IBaseModel';
+import type { IBaseModel } from './IBaseModel.js';
 
 export interface IMessageReadsModel extends IBaseModel<MessageReads> {
 	findOneByUserIdAndThreadId(userId: IUser['_id'], tmid: IMessage['_id']): Promise<MessageReads | null>;

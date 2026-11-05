@@ -1,7 +1,7 @@
 import type { IEmailInbox } from '@rocket.chat/core-typings';
 import type { FindCursor, InsertOneResult, WithId, UpdateFilter } from 'mongodb';
 
-import type { IBaseModel } from './IBaseModel';
+import type { IBaseModel } from './IBaseModel.js';
 
 export interface IEmailInboxModel extends IBaseModel<IEmailInbox> {
 	setDisabledById(id: IEmailInbox['_id']): Promise<null | WithId<IEmailInbox>>;

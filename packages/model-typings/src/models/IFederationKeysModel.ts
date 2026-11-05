@@ -1,7 +1,7 @@
 import type { FederationKey } from '@rocket.chat/core-typings';
 import type NodeRSA from 'node-rsa';
 
-import type { IBaseModel } from './IBaseModel';
+import type { IBaseModel } from './IBaseModel.js';
 
 export interface IFederationKeysModel extends IBaseModel<FederationKey> {
 	getKey(type: FederationKey['type']): Promise<string | null>;

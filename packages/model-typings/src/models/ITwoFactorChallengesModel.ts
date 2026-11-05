@@ -1,8 +1,8 @@
 import type { ITwoFactorChallenge } from '@rocket.chat/core-typings';
 import type { DeleteResult, Document } from 'mongodb';
 
-import type { IBaseModel } from './IBaseModel';
-import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
+import type { IBaseModel } from './IBaseModel.js';
+import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection.js';
 
 export interface ITwoFactorChallengesModel extends IBaseModel<ITwoFactorChallenge> {
 	findOneByPendingChallengeId<

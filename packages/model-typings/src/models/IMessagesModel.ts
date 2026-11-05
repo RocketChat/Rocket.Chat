@@ -21,8 +21,8 @@ import type {
 	WithId,
 } from 'mongodb';
 
-import type { FindPaginated, IBaseModel } from './IBaseModel';
-import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
+import type { FindPaginated, IBaseModel } from './IBaseModel.js';
+import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection.js';
 
 type PaginatedRequest<S extends string = string> = {
 	count?: number;

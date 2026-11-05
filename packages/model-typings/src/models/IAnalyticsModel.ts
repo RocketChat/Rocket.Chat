@@ -1,8 +1,8 @@
 import type { IAnalytics, IRoom } from '@rocket.chat/core-typings';
 import type { AggregationCursor, FindOptions, UpdateResult, Document } from 'mongodb';
 
-import type { IBaseModel } from './IBaseModel';
-import type { IChannelsWithNumberOfMessagesBetweenDate } from './IRoomsModel';
+import type { IBaseModel } from './IBaseModel.js';
+import type { IChannelsWithNumberOfMessagesBetweenDate } from './IRoomsModel.js';
 
 export interface IAnalyticsModel extends IBaseModel<IAnalytics> {
 	saveMessageSent({ room, date }: { room: IRoom; date: IAnalytics['date'] }): Promise<Document | UpdateResult>;

@@ -1,7 +1,7 @@
 import type { IInvite } from '@rocket.chat/core-typings';
 import type { UpdateResult } from 'mongodb';
 
-import type { IBaseModel } from './IBaseModel';
+import type { IBaseModel } from './IBaseModel.js';
 
 export interface IInvitesModel extends IBaseModel<IInvite> {
 	findOneByUserRoomMaxUsesAndExpiration(userId: string, rid: string, maxUses: number, daysToExpire: number): Promise<IInvite | null>;
