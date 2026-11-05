@@ -1,3 +1,4 @@
+import { FederationMatrix } from '@rocket.chat/core-services';
 import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Users } from '@rocket.chat/models';
 import { ajv } from '@rocket.chat/rest-typings';
@@ -220,6 +221,13 @@ export const addProfileRoutes = (router: ClientRouter) => {
 				const userId = c.req.param('userId');
 				const username = c.get('impersonatedUserId') as string;
 
+				if (userId !== (c.req.query('user_id') ?? username)) {
+					return {
+						statusCode: 403,
+						body: { errcode: 'M_FORBIDDEN', error: 'Cannot set the avatar of another user' },
+					};
+				}
+
 				const user = await Users.findOneByUsername(username);
 				if (!user) {
 					return {
@@ -231,8 +239,16 @@ export const addProfileRoutes = (router: ClientRouter) => {
 					};
 				}
 
-				// TODO(federation-sdk): setUserProfile(userId, {displayname?, avatar_url?}) — global, propagates to rooms
-				return notImplemented('Global profile update not yet implemented', { userId });
+				const body = await c.req.json();
+
+				await FederationMatrix.setUserProfile(userId, {
+					avatar_url: body.avatar_url,
+				});
+
+				return {
+					statusCode: 200,
+					body: {},
+				};
 			},
 		);
 };
