@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 
-import { AttachmentContext } from '../AttachmentContext';
+import { AttachmentContext } from '../AttachmentContext.js';
 
 export const useAttachmentDimensions = (): {
 	width: number;

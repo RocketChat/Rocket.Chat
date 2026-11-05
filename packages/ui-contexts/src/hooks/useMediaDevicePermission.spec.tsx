@@ -1,7 +1,7 @@
 import { renderHook } from '@testing-library/react';
 
-import { useMediaDeviceMicrophonePermission } from './useMediaDevicePermission';
-import { DeviceContext } from '../DeviceContext';
+import { useMediaDeviceMicrophonePermission } from './useMediaDevicePermission.js';
+import { DeviceContext } from '../DeviceContext.js';
 
 const states = [
 	{ expectedState: 'granted', state: 'granted', requestDevice: 'function' },

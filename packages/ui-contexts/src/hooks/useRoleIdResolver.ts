@@ -1,7 +1,7 @@
 import type { IRole } from '@rocket.chat/core-typings';
 import { useCallback, useContext, useMemo, useSyncExternalStore } from 'react';
 
-import { AuthorizationContext } from '../AuthorizationContext';
+import { AuthorizationContext } from '../AuthorizationContext.js';
 
 /**
  * Returns a function that maps a role reference to a role id.

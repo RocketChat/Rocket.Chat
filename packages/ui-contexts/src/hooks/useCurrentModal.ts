@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 
-import type { ModalContextValue } from '../ModalContext';
-import { ModalContext } from '../ModalContext';
+import type { ModalContextValue } from '../ModalContext.js';
+import { ModalContext } from '../ModalContext.js';
 
 /**
  * Similar to useModal this hook return the current modal from the context value

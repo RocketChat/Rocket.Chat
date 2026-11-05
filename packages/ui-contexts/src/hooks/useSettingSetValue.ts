@@ -1,7 +1,7 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 import { useCallback } from 'react';
 
-import { useSettingsDispatch } from './useSettingsDispatch';
+import { useSettingsDispatch } from './useSettingsDispatch.js';
 
 export const useSettingSetValue = <T extends ISetting['value']>(_id: ISetting['_id']): ((value: T) => Promise<void>) => {
 	const dispatch = useSettingsDispatch();
