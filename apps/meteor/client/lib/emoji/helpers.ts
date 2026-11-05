@@ -3,6 +3,7 @@ import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
 import type { EmojiCategory, EmojiItem } from '.';
 import { emoji, emojiEmitter } from './lib';
+import { SUGGESTED_CATEGORY } from './suggested';
 
 export const CUSTOM_CATEGORY = 'rocket';
 export const CUSTOM_CATEGORY_CLASSNAME = 'emojipicker--custom';
@@ -18,6 +19,22 @@ export type CategoriesIndexes = { key: string; index: number }[];
 
 export const isRowDivider = (item: EmojiPickerItem): item is RowDivider => 'i18n' in item;
 export const isLoadMore = (item: EmojiPickerItem): item is LoadMoreItem => 'loadMore' in item;
+
+/**
+ * The emoji that picking `emojiName` yields in the given skin tone.
+ *
+ * A custom emoji overrides the native one with the same name, every tone included, so it never takes a tone:
+ * `:point_right:` overrides all of them, while `:point_right_tone1:` overrides only tone 1.
+ */
+export const getEmojiWithTone = (emojiName: string, tone: number): string => {
+	if (tone <= 0 || emoji.list[`:${emojiName}:`]?.emojiPackage === 'emojiCustom') {
+		return emojiName;
+	}
+
+	const hasTones = Object.values(emoji.packages).some((emojiPackage) => Object.hasOwn(emojiPackage.toneList, emojiName));
+
+	return hasTones ? `${emojiName}_tone${tone}` : emojiName;
+};
 
 export const createEmojiListByCategorySubscription = (
 	customItemsLimit: number,
@@ -78,18 +95,19 @@ export const createEmojiList = (
 			return;
 		}
 		const _total = emojiPackage.emojisByCategory[category].length;
-		const total = category === CUSTOM_CATEGORY ? customItemsLimit - count : _total;
+		const total = category === CUSTOM_CATEGORY ? Math.min(customItemsLimit - count, _total) : _total;
 		for (let i = 0; i < total; i++) {
 			const current = emojiPackage.emojisByCategory[category][i];
 
-			const tone = actualTone && actualTone > 0 && emojiPackage.toneList.hasOwnProperty(current) ? `_tone${actualTone}` : '';
-
-			const emojiToRender = `:${current}${tone}:`;
+			// Recent emojis are stored as they were picked, tone included
+			const emojiToRender = `:${category === 'recent' ? current : getEmojiWithTone(current, actualTone ?? 0)}:`;
 
 			const actualEmoji = emoji.list[emojiToRender];
 			if (!actualEmoji) {
-				removeFromRecent(emojiToRender, recentEmojis, setRecentEmojis);
-				return;
+				if (category === 'recent') {
+					removeFromRecent(emojiToRender, recentEmojis, setRecentEmojis);
+				}
+				continue;
 			}
 
 			// A custom emoji with the same name overrides the native one (including its tones), so skip the native duplicate
@@ -255,4 +273,12 @@ export const getFrequentEmoji = (frequentEmoji: string[]) => {
 	return frequentEmoji?.map((frequentEmoji) => {
 		return { emoji: frequentEmoji, image: getEmojiRender(`:${frequentEmoji}:`) };
 	});
+};
+
+/** The user's frequent emojis, topped up with the workspace suggestions in the user's skin tone. */
+export const getQuickReactions = (frequentEmojis: string[], tone: number): EmojiItem[] => {
+	const suggestedEmojis = emoji.packages.base.emojisByCategory[SUGGESTED_CATEGORY].map((emojiName) => getEmojiWithTone(emojiName, tone));
+	const emojiNames = [...new Set([...frequentEmojis, ...suggestedEmojis])].filter((emojiName) => emoji.list[`:${emojiName}:`]);
+
+	return getFrequentEmoji(emojiNames);
 };

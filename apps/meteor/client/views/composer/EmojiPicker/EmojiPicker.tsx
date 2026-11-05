@@ -21,7 +21,7 @@ import ToneSelector from './ToneSelector';
 import ToneSelectorWrapper from './ToneSelector/ToneSelectorWrapper';
 import { usePreviewEmoji, useEmojiPickerData } from '../../../contexts/EmojiPickerContext';
 import { useMergedRefsV2 } from '../../../hooks/useMergedRefsV2';
-import { emoji, getCategoriesList, getEmojisBySearchTerm } from '../../../lib/emoji';
+import { getCategoriesList, getEmojiWithTone, getEmojisBySearchTerm } from '../../../lib/emoji';
 import type { EmojiItem } from '../../../lib/emoji';
 import { useIsVisible } from '../../room/hooks/useIsVisible';
 
@@ -111,25 +111,12 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 			return;
 		}
 
-		let tone = '';
-
-		// Custom emoji should overwrite native emoji with the same name
-		// Custom emoji with name `:point_right:` should overwrite every tone
-		// Custom emoji with name `:point_right_tone1:` should overwrite only tone1, and not the original or other tones
-		if (emoji.list[`:${_emoji}:`].emojiPackage !== 'emojiCustom') {
-			for (const emojiPackage in emoji.packages) {
-				if (emoji.packages.hasOwnProperty(emojiPackage)) {
-					if (actualTone > 0 && emoji.packages[emojiPackage].toneList.hasOwnProperty(_emoji)) {
-						tone = `_tone${actualTone}`;
-					}
-				}
-			}
-		}
+		const pickedEmoji = getEmojiWithTone(_emoji, actualTone);
 
 		setSearchTerm('');
 
-		onPickEmoji(_emoji + tone);
-		addRecentEmoji(_emoji + tone);
+		onPickEmoji(pickedEmoji);
+		addRecentEmoji(pickedEmoji);
 		onClose();
 	};
 

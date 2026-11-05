@@ -12,6 +12,9 @@ export type EmojiPickerCategoryItemProps = {
 
 const mapCategoryIcon = (category: string) => {
 	switch (category) {
+		case 'suggested':
+			return 'circle-check';
+
 		case 'people':
 			return 'emoji';
 
