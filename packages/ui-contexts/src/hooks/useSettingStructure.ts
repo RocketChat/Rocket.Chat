@@ -1,7 +1,7 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 import { useContext, useMemo, useSyncExternalStore } from 'react';
 
-import { SettingsContext } from '../SettingsContext';
+import { SettingsContext } from '../SettingsContext.js';
 
 export const useSettingStructure = (_id: ISetting['_id']): ISetting | undefined => {
 	const { querySetting } = useContext(SettingsContext);

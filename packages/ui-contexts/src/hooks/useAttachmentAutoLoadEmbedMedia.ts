@@ -1,5 +1,5 @@
 import { useContext } from 'react';
 
-import { AttachmentContext } from '../AttachmentContext';
+import { AttachmentContext } from '../AttachmentContext.js';
 
 export const useAttachmentAutoLoadEmbedMedia = (): boolean => useContext(AttachmentContext).autoLoadEmbedMedias;

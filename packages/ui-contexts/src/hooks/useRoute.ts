@@ -1,7 +1,7 @@
 import { useContext, useMemo } from 'react';
 
-import type { RouteName, RouteParameters } from '../RouterContext';
-import { RouterContext } from '../RouterContext';
+import type { RouteName, RouteParameters } from '../RouterContext.js';
+import { RouterContext } from '../RouterContext.js';
 
 type Route = {
 	push: (

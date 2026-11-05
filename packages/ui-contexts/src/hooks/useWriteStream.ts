@@ -1,7 +1,7 @@
 import type { StreamNames, StreamKeys, StreamerCallbackArgs } from '@rocket.chat/ddp-client';
 import { useCallback, useContext } from 'react';
 
-import { ServerContext } from '../ServerContext';
+import { ServerContext } from '../ServerContext.js';
 
 type WriteStreamCallback<N extends StreamNames> = <K extends StreamKeys<N>>(eventName: K, ...args: StreamerCallbackArgs<N, K>) => void;
 

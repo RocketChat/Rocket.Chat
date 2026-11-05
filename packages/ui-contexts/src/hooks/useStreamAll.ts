@@ -1,7 +1,7 @@
 import type { StreamNames, StreamerEvents } from '@rocket.chat/ddp-client';
 import { useContext, useMemo } from 'react';
 
-import { ServerContext } from '../ServerContext';
+import { ServerContext } from '../ServerContext.js';
 
 export type StreamAllSubscriber<N extends StreamNames> = (
 	callback: (eventName: string, args: StreamerEvents[N][number]['args']) => void,

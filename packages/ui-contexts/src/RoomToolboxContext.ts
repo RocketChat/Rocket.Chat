@@ -2,7 +2,7 @@ import type { Keys as IconName } from '@rocket.chat/icons';
 import { createContext } from 'react';
 import type { ReactNode, ComponentType } from 'react';
 
-import type { TranslationKey } from './TranslationContext';
+import type { TranslationKey } from './TranslationContext.js';
 
 export type RenderToolboxItemParams = RoomToolboxActionConfig & {
 	className?: string;
