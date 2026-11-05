@@ -1,8 +1,8 @@
 import { Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
-import { usePersonalAccessTokens } from './logic/usePersonalAccessTokens';
-import PersonalAccessTokensView from './views/PersonalAccessTokensView';
+import { usePersonalAccessTokens } from './logic/usePersonalAccessTokens.js';
+import PersonalAccessTokensView from './views/PersonalAccessTokensView.js';
 
 const PersonalAccessTokensPage = () => {
 	const { t } = useTranslation();
