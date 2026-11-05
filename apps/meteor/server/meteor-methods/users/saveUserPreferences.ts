@@ -88,7 +88,7 @@ const MAX_CATEGORY_NAME_LENGTH = 30;
 
 export const validateSidebarCategories = (categories: ISidebarCategory[]): void => {
 	for (const category of categories) {
-		const { activityFilterHours } = category;
+		const { activityFilterHours, activityFilterHidesUnreads } = category;
 		// A `null` filter clears it, so it is not stored; the REST schema and the `check` pattern let it through for that.
 		if (activityFilterHours == null) {
 			delete category.activityFilterHours;
@@ -97,6 +97,9 @@ export const validateSidebarCategories = (categories: ISidebarCategory[]): void 
 				'error-invalid-param',
 				`sidebarCategories activityFilterHours must be between 1 and ${SIDEBAR_CATEGORY_ACTIVITY_FILTER_MAX_HOURS}`,
 			);
+		}
+		if (activityFilterHidesUnreads == null) {
+			delete category.activityFilterHidesUnreads;
 		}
 
 		if (category.default) {
@@ -157,6 +160,7 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 				showUnreads: Match.Optional(Boolean),
 				keepUnreadsOnTop: Match.Optional(Boolean),
 				activityFilterHours: Match.Optional(Match.OneOf(null, Match.Integer)),
+				activityFilterHidesUnreads: Match.Optional(Match.OneOf(null, Boolean)),
 			},
 		]),
 		muteFocusedConversations: Match.Optional(Boolean),

@@ -227,6 +227,21 @@ describe('[Menu Component]', () => {
 			expect(onAction).toHaveBeenCalledWith('activity');
 		});
 
+		it('should disable the submenu items named by the trigger disabledKeys', async () => {
+			const onAction = jest.fn();
+			render(<WithRadioSubmenu {...WithRadioSubmenu.args} onAction={onAction} />);
+
+			await userEvent.click(screen.getByRole('button'));
+			await userEvent.click(await screen.findByRole('menuitem', { name: 'Sort by' }));
+
+			const size = await screen.findByRole('menuitemradio', { name: 'Size' });
+			expect(size).toHaveAttribute('aria-disabled', 'true');
+			expect(screen.getByRole('menuitemradio', { name: 'Activity' })).not.toHaveAttribute('aria-disabled');
+
+			await userEvent.click(size);
+			expect(onAction).not.toHaveBeenCalled();
+		});
+
 		it('should close nested submenus one level at a time when navigating back, keeping the root open', async () => {
 			const user = userEvent.setup();
 			render(<WithRichSubmenuTrigger {...WithRichSubmenuTrigger.args} />);

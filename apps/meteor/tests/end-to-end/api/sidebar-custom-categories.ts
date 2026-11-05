@@ -183,6 +183,45 @@ describe('[Sidebar Custom Categories]', () => {
 				.expect(expectInvalid);
 		});
 
+		it('should persist the optional activityFilterHidesUnreads field verbatim', async () => {
+			const categories = [
+				category({ name: 'Recent', activityFilterHours: 24, activityFilterHidesUnreads: true }),
+				category({ name: 'Week', activityFilterHours: 168, activityFilterHidesUnreads: false }),
+				{ _id: 'Channels', name: 'Channels', default: true, activityFilterHidesUnreads: true },
+			];
+
+			await setCategories(categories).expect(200);
+
+			await request
+				.get(api('users.getPreferences'))
+				.set(testUserCredentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body.preferences.sidebarCategories).to.deep.equal(categories);
+				});
+		});
+
+		it('should clear "activityFilterHidesUnreads" when it is sent as null', async () => {
+			const entry = category({ name: 'Day', activityFilterHours: 24 });
+
+			await setCategories([{ ...entry, activityFilterHidesUnreads: true }]).expect(200);
+			await setCategories([{ ...entry, activityFilterHidesUnreads: null }]).expect(200);
+
+			await request
+				.get(api('users.getPreferences'))
+				.set(testUserCredentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body.preferences.sidebarCategories[0]).to.not.have.property('activityFilterHidesUnreads');
+				});
+		});
+
+		it('should reject an "activityFilterHidesUnreads" that is not a boolean', async () => {
+			await setCategories([{ _id: Random.id(), name: 'x', activityFilterHidesUnreads: 'yes' }])
+				.expect(400)
+				.expect(expectInvalid);
+		});
+
 		it('should reject an "activityFilterHours" that is not a whole number of hours', async () => {
 			await setCategories([{ _id: Random.id(), name: 'x', activityFilterHours: 1.5 }])
 				.expect(400)

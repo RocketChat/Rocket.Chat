@@ -3272,6 +3272,7 @@
   "Hide_flextab": "Hide contextual bar by clicking outside of it",
   "Hide_Group_Warning": "Are you sure you want to hide the group \"{{roomName}}\"?",
   "Hide_inactive": "Hide inactive",
+  "Hide_inactive_unreads": "Hide inactive unreads",
   "Hide_Livechat_Warning": "Are you sure you want to hide the chat with \"{{roomName}}\"?",
   "Hide_On_Workspace": "Hide on workspace",
   "Hide_Private_Warning": "Are you sure you want to hide the discussion with \"{{roomName}}\"?",

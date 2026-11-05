@@ -50,6 +50,22 @@ describe('validateSidebarCategories', () => {
 			);
 		});
 
+		it.each([true, false])('keeps activityFilterHidesUnreads %s', (activityFilterHidesUnreads) => {
+			const categories = [category({ activityFilterHours: 24, activityFilterHidesUnreads })];
+
+			validateSidebarCategories(categories);
+
+			expect(categories[0].activityFilterHidesUnreads).toBe(activityFilterHidesUnreads);
+		});
+
+		it('drops a null activityFilterHidesUnreads instead of storing it', () => {
+			const categories = [category({ activityFilterHidesUnreads: null as unknown as boolean })];
+
+			validateSidebarCategories(categories);
+
+			expect(categories[0]).not.toHaveProperty('activityFilterHidesUnreads');
+		});
+
 		it('leaves an entry without a filter alone', () => {
 			const categories = [category()];
 

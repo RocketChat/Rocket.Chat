@@ -84,6 +84,7 @@ const RoomListCollapser = ({
 								showUnreads={group.showUnreads}
 								keepUnreadsOnTop={group.keepUnreadsOnTop}
 								activityFilterHours={group.activityFilterHours}
+								activityFilterHidesUnreads={group.activityFilterHidesUnreads}
 								canMoveUp={canMoveUp}
 								canMoveDown={canMoveDown}
 								onMoveUp={onMoveUp}

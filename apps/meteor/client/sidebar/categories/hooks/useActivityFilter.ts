@@ -14,9 +14,9 @@ const CLOCK_INTERVAL = 5 * 60 * 1000;
 export const isActivityFilterable = (groupKey: string): boolean => !SIDEBAR_DYNAMIC_GROUP_KEYS.includes(groupKey);
 
 /**
- * Reads the activity filter of each group. Like the custom categories, it needs an enterprise license: without
- * one the stored filters read as none, so no caller has to check the license itself. A dynamic group never has
- * one either, whatever its entry says.
+ * Reads the activity filter of each group: its window, and whether it hides the unread rooms too. Like the
+ * custom categories, it needs an enterprise license: without one the stored filters read as none, so no caller
+ * has to check the license itself. A dynamic group never has one either, whatever its entry says.
  */
 export const useActivityFilterHours = () => {
 	const { data: { isEnterprise = false } = {} } = useIsEnterprise();
@@ -28,9 +28,19 @@ export const useActivityFilterHours = () => {
 		[isEnterprise, rawCategories],
 	);
 
+	// Read on its own, not with the window: the choice is kept while the filter is off, so it is back when a window
+	// is chosen again.
+	const getActivityFilterHidesUnreads = useCallback(
+		(id: string): boolean =>
+			isEnterprise && isActivityFilterable(id)
+				? Boolean(rawCategories.find((entry) => entry._id === id)?.activityFilterHidesUnreads)
+				: false,
+		[isEnterprise, rawCategories],
+	);
+
 	const hasActivityFilters = isEnterprise && rawCategories.some((entry) => entry.activityFilterHours && isActivityFilterable(entry._id));
 
-	return { getActivityFilterHours, hasActivityFilters };
+	return { getActivityFilterHours, getActivityFilterHidesUnreads, hasActivityFilters };
 };
 
 /** Stores a group's activity filter on its `sidebarCategories` entry; `undefined` clears it. */
@@ -39,6 +49,16 @@ export const useSetActivityFilterHours = () => {
 
 	return useCallback(
 		(id: string, activityFilterHours: number | undefined) => upsertGroupEntry(id, { activityFilterHours }),
+		[upsertGroupEntry],
+	);
+};
+
+/** Stores whether a group's activity filter hides its unread rooms too, on its `sidebarCategories` entry. */
+export const useSetActivityFilterHidesUnreads = () => {
+	const upsertGroupEntry = useUpsertGroupEntry();
+
+	return useCallback(
+		(id: string, activityFilterHidesUnreads: boolean) => upsertGroupEntry(id, { activityFilterHidesUnreads }),
 		[upsertGroupEntry],
 	);
 };

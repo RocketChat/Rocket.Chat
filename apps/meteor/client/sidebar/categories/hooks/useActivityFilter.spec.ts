@@ -3,7 +3,13 @@ import { useIsEnterprise } from '@rocket.chat/ui-client';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { act, renderHook } from '@testing-library/react';
 
-import { isActivityFilterable, useActivityFilterClock, useActivityFilterHours, useSetActivityFilterHours } from './useActivityFilter';
+import {
+	isActivityFilterable,
+	useActivityFilterClock,
+	useActivityFilterHours,
+	useSetActivityFilterHidesUnreads,
+	useSetActivityFilterHours,
+} from './useActivityFilter';
 import { usePersistCategoriesMutation } from './usePersistCategoriesMutation';
 import { useUserSidebarCategories } from './useUserSidebarCategories';
 import { SIDEBAR_DYNAMIC_GROUP_KEYS } from '../../hooks/useCategoryList';
@@ -68,12 +74,55 @@ describe('useActivityFilterHours', () => {
 	});
 
 	it('reads no filter on a dynamic group, whatever its entry says', () => {
-		withCategories([{ _id: 'Unread', name: 'Unread', default: true, activityFilterHours: 24 }]);
+		withCategories([{ _id: 'Unread', name: 'Unread', default: true, activityFilterHours: 24, activityFilterHidesUnreads: true }]);
 
 		const { result } = renderHook(() => useActivityFilterHours());
 
 		expect(result.current.getActivityFilterHours('Unread')).toBeUndefined();
+		expect(result.current.getActivityFilterHidesUnreads('Unread')).toBe(false);
 		expect(result.current.hasActivityFilters).toBe(false);
+	});
+
+	it('reads whether the filter hides the unread rooms too, even while it has no window', () => {
+		withCategories([
+			{ _id: 'Channels', name: 'Channels', default: true, activityFilterHidesUnreads: true },
+			{ _id: 'custom', name: 'Work', activityFilterHours: 24 },
+		]);
+
+		const { result } = renderHook(() => useActivityFilterHours());
+
+		expect(result.current.getActivityFilterHidesUnreads('Channels')).toBe(true);
+		expect(result.current.getActivityFilterHidesUnreads('custom')).toBe(false);
+		expect(result.current.getActivityFilterHidesUnreads('Teams')).toBe(false);
+	});
+
+	it('reads no unreads toggle without the license module', () => {
+		mockedUseIsEnterprise.mockReturnValue({ data: { isEnterprise: false } } as any);
+		withCategories([{ _id: 'Channels', name: 'Channels', default: true, activityFilterHours: 168, activityFilterHidesUnreads: true }]);
+
+		const { result } = renderHook(() => useActivityFilterHours());
+
+		expect(result.current.getActivityFilterHidesUnreads('Channels')).toBe(false);
+	});
+});
+
+describe('useSetActivityFilterHidesUnreads', () => {
+	it('stores the toggle on the group entry, keeping its window', () => {
+		withCategories([{ _id: 'custom', name: 'Work', activityFilterHours: 168 }]);
+
+		const { result } = renderHook(() => useSetActivityFilterHidesUnreads());
+
+		act(() => result.current('custom', true));
+
+		expect(persistedEntry('custom')).toEqual({ _id: 'custom', name: 'Work', activityFilterHours: 168, activityFilterHidesUnreads: true });
+	});
+
+	it('creates the entry of a system group that has none yet', () => {
+		const { result } = renderHook(() => useSetActivityFilterHidesUnreads());
+
+		act(() => result.current('Channels', true));
+
+		expect(persistedEntry('Channels')).toEqual({ _id: 'Channels', name: 'Channels', default: true, activityFilterHidesUnreads: true });
 	});
 });
 

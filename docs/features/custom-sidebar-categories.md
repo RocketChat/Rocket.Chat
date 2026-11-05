@@ -158,8 +158,11 @@ What it does, in `makeGroup` (`useRoomList.ts`):
   unreads with "Always display"); its inactive rooms are still counted, so the announcement can say what the
   filter hides, but the chip is not shown.
 - A room is **inactive** when it is read, is not the room currently open, and its last activity
-  (`getLastActivity`) is older than `now - activityFilterHours` hours. Unread rooms are never hidden — the
-  filter only thins out read ones.
+  (`getLastActivity`) is older than `now - activityFilterHours` hours. By default unread rooms are never
+  hidden — the filter only thins out read ones — so no unread is missed. A group can ask to hide its inactive
+  unread rooms too (`activityFilterHidesUnreads`, the "Hide inactive unreads" toggle at the bottom of the
+  Filter submenu); the toggle is disabled while the group has no window, keeping its value for when one is
+  chosen again. The open room always stays.
 - Last activity is the sidebar's `lm` (`SubscriptionsCachedStore`): the later of the room's last message and
   the user's last read (`lr`), falling back to the subscription's / room's creation. So opening a room counts as
   activity, just as it does for the "Activity" sort. Some rooms have no `lm` at all — common on old direct
@@ -206,7 +209,10 @@ group's normal sort order.
   (a group whose only rooms are unread, say). With nothing hidden there is nothing to lift, so the chip is
   disabled and its tooltip says "No inactive rooms hidden"; `inactiveCount` keeps counting while the rooms
   are revealed, so the chip can put the filter back. Never on a collapsed group.
-- Changing the window itself is done from the kebab's Filter submenu (`useActivityFilterItems`).
+- Changing the window itself, and the unreads toggle, is done from the kebab's Filter submenu
+  (`useActivityFilterItems`, `useActivityFilterHidesUnreadsItem`). The submenu is a multiple-selection menu
+  (checkbox items): the window in use and, when on, the toggle are checked; `useSetActivityFilterHidesUnreads`
+  writes the toggle to the group's entry the same way the window is written.
 - It is a Fuselage `Tag` with `is='button'` in `SidebarCollapseGroup`'s `actions` slot, which places it
   right after the name, outside the collapse toggle, with the kebab at the far end. Clicking the empty part
   of the header still collapses the group, since the section handles the click, and the header shows its
