@@ -21,7 +21,7 @@ import { Fragment } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import type { FeaturePreviewPreferencesViewModel } from '../logic/useFeaturePreviewPreferences';
+import type { FeaturePreviewPreferencesViewModel } from '../logic/useFeaturePreviewPreferences.js';
 
 export type FeaturePreviewViewProps = {
 	vm: FeaturePreviewPreferencesViewModel;

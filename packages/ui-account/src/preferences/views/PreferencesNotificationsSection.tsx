@@ -5,7 +5,7 @@ import { useCallback, useEffect, useId, useMemo, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import type { PreferencesViewModel } from '../logic/usePreferences';
+import type { PreferencesViewModel } from '../logic/usePreferences.js';
 
 export type PreferencesNotificationsSectionProps = {
 	notifications: PreferencesViewModel['notifications'];
