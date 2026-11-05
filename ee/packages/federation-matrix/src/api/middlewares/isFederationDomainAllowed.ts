@@ -3,6 +3,8 @@ import type { MiddlewareHandler } from 'hono';
 import { createMiddleware } from 'hono/factory';
 import mem from 'mem';
 
+import { logger } from '../logger';
+
 // cache for 60 seconds
 const getAllowList = mem(
 	async () => {
@@ -39,12 +41,19 @@ export const isFederationDomainAllowedMiddleware: MiddlewareHandler = createMidd
 	// Extract all key-value pairs from Matrix authorization header
 	const authHeader = c.req.header('authorization');
 	if (!authHeader) {
+		logger.info({ msg: 'Missing Authorization header', method: c.req.method, path: c.req.path });
 		return c.json({ errcode: 'M_UNAUTHORIZED', error: 'Missing Authorization headers.' }, 401);
 	}
 
 	const authValues = parseMatrixAuthorizationHeader(authHeader);
 	const domain = authValues.origin?.toLowerCase();
 	if (!domain) {
+		logger.warn({
+			msg: 'Missing origin',
+			method: c.req.method,
+			path: c.req.path,
+			headerParams: Object.keys(authValues),
+		});
 		return c.json({ errcode: 'M_MISSING_ORIGIN', error: 'Missing origin in authorization header.' }, 401);
 	}
 
@@ -53,5 +62,6 @@ export const isFederationDomainAllowedMiddleware: MiddlewareHandler = createMidd
 		return next();
 	}
 
+	logger.info({ msg: 'Domain not allowed', method: c.req.method, path: c.req.path, origin: domain });
 	return c.json({ errcode: 'M_FORBIDDEN', error: 'Federation from this domain is not allowed.' }, 403);
 });
