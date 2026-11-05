@@ -3,16 +3,7 @@ import styled from '@rocket.chat/styled';
 
 import { serializeCssUrl } from '../utils/serializeCssUrl';
 
-const filterElementProps = ({
-	imageUrl: _imageUrl,
-	size: _size,
-	spaced: _spaced,
-	...props
-}: {
-	imageUrl: string;
-	size: number;
-	spaced?: boolean;
-}) => props;
+const filterElementProps = ({ imageUrl: _imageUrl, size: _size, ...props }: { imageUrl: string; size: number }) => props;
 
 export const Element = styled('div', filterElementProps)`
 	box-sizing: border-box;
@@ -28,5 +19,4 @@ export const Element = styled('div', filterElementProps)`
 	height: ${(props) => String(props.size)}px;
 	border-radius: ${String(borderRadius('medium'))};
 	overflow: hidden;
-	margin-inline-start: ${(props) => (props.spaced ? '4px' : '0')};
 `;
