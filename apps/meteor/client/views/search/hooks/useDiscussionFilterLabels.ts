@@ -6,7 +6,7 @@ export const useDiscussionFilterLabels = (filters: AppliedFilter[]): AppliedFilt
 	const query = useMemo(
 		() => ({
 			prid: { $exists: true },
-			name: { $in: filters.filter(({ key, meta }) => key === 'in' && !meta?.label).map(({ value }) => value) },
+			name: { $in: filters.filter(({ key }) => key === 'in').map(({ value }) => value) },
 		}),
 		[filters],
 	);
@@ -15,13 +15,13 @@ export const useDiscussionFilterLabels = (filters: AppliedFilter[]): AppliedFilt
 	return useMemo(
 		() =>
 			filters.map((filter) => {
-				if (filter.key !== 'in' || filter.meta?.label) {
+				if (filter.key !== 'in') {
 					return filter;
 				}
 
-				const discussion = discussions.find(({ prid, name }) => prid && name === filter.value);
+				const discussion = discussions.find(({ name }) => name === filter.value);
 
-				return discussion?.fname ? { ...filter, meta: { ...filter.meta, label: discussion.fname } } : filter;
+				return discussion?.fname ? { ...filter, meta: { label: discussion.fname } } : filter;
 			}),
 		[discussions, filters],
 	);
