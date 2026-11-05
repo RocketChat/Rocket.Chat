@@ -1,8 +1,8 @@
 import { Skeleton } from '@rocket.chat/fuselage';
 import type { AllHTMLAttributes } from 'react';
 
-import VideoConfMessage from './VideoConfMessage';
-import VideoConfMessageRow from './VideoConfMessageRow';
+import VideoConfMessage from './VideoConfMessage.js';
+import VideoConfMessageRow from './VideoConfMessageRow.js';
 
 export type VideoConfMessageSkeletonProps = Omit<AllHTMLAttributes<HTMLDivElement>, 'is'>;
 

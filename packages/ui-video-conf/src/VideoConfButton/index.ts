@@ -1,1 +1,1 @@
-export { default } from './VideoConfButton';
+export { default } from './VideoConfButton.js';
