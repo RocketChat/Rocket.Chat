@@ -4,7 +4,7 @@ import { act, renderHook } from '@testing-library/react';
 import type { Room } from 'livekit-client';
 import { RoomEvent } from 'livekit-client';
 
-import { useActiveDevice } from './useActiveDevice';
+import { useActiveDevice } from './useActiveDevice.js';
 
 class FakeRoom extends EventEmitter {
 	active: Partial<Record<MediaDeviceKind, string>> = {};
