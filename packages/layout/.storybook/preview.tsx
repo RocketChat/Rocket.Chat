@@ -2,7 +2,7 @@ import { parameters, decorators, useThemeMode } from '@rocket.chat/storybook-con
 import type { Preview } from '@storybook/react-webpack5';
 import { Suspense } from 'react';
 
-import DarkModeProvider from '../src/DarkModeProvider';
+import DarkModeProvider from '../src/DarkModeProvider.js';
 
 const preview: Preview = {
 	parameters: {

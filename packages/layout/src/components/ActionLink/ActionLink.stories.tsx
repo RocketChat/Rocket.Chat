@@ -1,6 +1,6 @@
 import type { Meta, StoryFn } from '@storybook/react-webpack5';
 
-import ActionLink from './ActionLink';
+import ActionLink from './ActionLink.js';
 
 export default {
 	title: 'components/ActionLink',
