@@ -80,6 +80,7 @@ import type {
 	IAbacAttributesModel,
 	ITwoFactorChallengesModel,
 	ISamlUsedAssertionsModel,
+	IScheduledMessagesModel,
 } from '@rocket.chat/model-typings';
 import type { Collection, Db } from 'mongodb';
 
@@ -107,6 +108,7 @@ import {
 	AbacAttributesRaw,
 	ServerEventsRaw,
 	SamlUsedAssertionsRaw,
+	ScheduledMessagesRaw,
 	CronHistoryRaw,
 	VideoConferenceRaw,
 } from './modelClasses';
@@ -210,6 +212,7 @@ export const WorkspaceCredentials = proxify<IWorkspaceCredentialsModel>('IWorksp
 export const AbacAttributes = proxify<IAbacAttributesModel>('IAbacAttributesModel');
 export const TwoFactorChallenges = proxify<ITwoFactorChallengesModel>('ITwoFactorChallengesModel');
 export const SamlUsedAssertions = proxify<ISamlUsedAssertionsModel>('ISamlUsedAssertionsModel');
+export const ScheduledMessages = proxify<IScheduledMessagesModel>('IScheduledMessagesModel');
 
 export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecordDeleted<any>>): void {
 	registerModel('IUsersSessionsModel', () => new UsersSessionsRaw(db));
@@ -248,5 +251,6 @@ export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecor
 	// process holds the stream — ddp-streamer, once the services are split out.
 	registerModel('IVideoConferenceModel', () => new VideoConferenceRaw(db));
 	registerModel('ISamlUsedAssertionsModel', () => new SamlUsedAssertionsRaw(db));
+	registerModel('IScheduledMessagesModel', () => new ScheduledMessagesRaw(db));
 	registerModel('ICronHistoryModel', () => new CronHistoryRaw(db));
 }
