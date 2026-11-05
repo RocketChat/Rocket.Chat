@@ -1,7 +1,7 @@
 import styled from '@rocket.chat/styled';
 
-import { below } from '../../helpers/tokenBreakpoints';
-import { sans } from '../../helpers/tokenFontFamilies';
+import { below } from '../../helpers/tokenBreakpoints.js';
+import { sans } from '../../helpers/tokenFontFamilies.js';
 
 export const Wrapper = styled('div')`
 	width: 100%;
