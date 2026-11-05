@@ -257,7 +257,7 @@ went: a requirement, a constraint, or an ADR.
 
 Every `D` heading is an anchor. The skipped test that pins the defect, end-to-end or
 integration, carries a comment with the relative path and the anchor, for example
-`// Known defect: ../../docs/specs/hosted-muc.md#d1-kicked-xmpp-users-are-not-told-they-were-removed`.
+`// Known defect: ../../docs/specs/hosted-muc.md#d5-a-rocketchat-member-takes-the-nick-of-an-xmpp-occupant`.
 
 Where each id shows up:
 
