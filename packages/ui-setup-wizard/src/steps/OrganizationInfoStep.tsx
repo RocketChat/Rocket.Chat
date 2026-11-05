@@ -2,7 +2,7 @@ import { OrganizationInfoPage } from '@rocket.chat/onboarding-ui';
 import type { ComponentProps } from 'react';
 import { I18nextProvider, useTranslation } from 'react-i18next';
 
-import { useSetupWizardContext } from '../contexts/SetupWizardContext';
+import { useSetupWizardContext } from '../contexts/SetupWizardContext.js';
 
 const OrganizationInfoStep = () => {
 	const { t, i18n } = useTranslation();
