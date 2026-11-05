@@ -51,6 +51,7 @@ const AppInstallationModal = ({
 
 		if (enabled > limit) {
 			return t('Enable_of_limit_apps_currently_enabled_exceeded', {
+				context: '',
 				enabled,
 				limit,
 				exceed: enabled - limit + 1,
