@@ -4,7 +4,7 @@ import type { LocalVideoTrack, Room } from 'livekit-client';
 import { VideoPresets } from 'livekit-client';
 import { useState } from 'react';
 
-import { useVideoQuality } from './useVideoQuality';
+import { useVideoQuality } from './useVideoQuality.js';
 
 const persisted = jest.fn();
 
