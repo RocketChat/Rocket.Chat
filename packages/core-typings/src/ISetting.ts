@@ -1,5 +1,5 @@
-import type { IRocketChatAssetConstraint } from './IRocketChatAssets';
-import type { IRocketChatRecord } from './IRocketChatRecord';
+import type { IRocketChatAssetConstraint } from './IRocketChatAssets.js';
+import type { IRocketChatRecord } from './IRocketChatRecord.js';
 
 export enum SettingEditor {
 	COLOR = 'color',

@@ -1,4 +1,4 @@
-import type { IUser } from './IUser';
+import type { IUser } from './IUser.js';
 
 export type SpotlightUser = {
 	_id: IUser['_id'];

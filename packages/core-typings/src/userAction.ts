@@ -1,4 +1,4 @@
-import type { IMessage } from './IMessage';
+import type { IMessage } from './IMessage/index.js';
 
 export type IExtras = {
 	tmid?: IMessage['_id'];

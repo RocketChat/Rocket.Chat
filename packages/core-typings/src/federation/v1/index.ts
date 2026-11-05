@@ -1,1 +1,1 @@
-export type { FederationKey } from './FederationKey';
+export type { FederationKey } from './FederationKey.js';

@@ -1,13 +1,13 @@
-import type { IAbacAttributeDefinition } from './IAbacAttribute';
-import type { ILivechatDepartment } from './ILivechatDepartment';
-import type { ILivechatPriority } from './ILivechatPriority';
-import type { ILivechatVisitor } from './ILivechatVisitor';
-import type { IMessage, MessageTypesValues } from './IMessage';
-import type { IOmnichannelServiceLevelAgreements } from './IOmnichannelServiceLevelAgreements';
-import type { IRocketChatRecord } from './IRocketChatRecord';
-import type { IUser } from './IUser';
-import type { RoomType } from './RoomType';
-import type { Branded } from './utils';
+import type { IAbacAttributeDefinition } from './IAbacAttribute.js';
+import type { ILivechatDepartment } from './ILivechatDepartment.js';
+import type { ILivechatPriority } from './ILivechatPriority.js';
+import type { ILivechatVisitor } from './ILivechatVisitor.js';
+import type { IMessage, MessageTypesValues } from './IMessage/index.js';
+import type { IOmnichannelServiceLevelAgreements } from './IOmnichannelServiceLevelAgreements.js';
+import type { IRocketChatRecord } from './IRocketChatRecord.js';
+import type { IUser } from './IUser.js';
+import type { RoomType } from './RoomType.js';
+import type { Branded } from './utils.js';
 
 export interface IRoom extends IRocketChatRecord {
 	t: RoomType;

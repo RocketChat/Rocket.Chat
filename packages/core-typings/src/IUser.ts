@@ -1,8 +1,8 @@
-import type { IAbacAttributeDefinition } from './IAbacAttribute';
-import type { IRocketChatRecord } from './IRocketChatRecord';
-import type { IRole } from './IRole';
-import type { PresenceSource, UserStatus } from './UserStatus';
-import type { Serialized } from './utils';
+import type { IAbacAttributeDefinition } from './IAbacAttribute.js';
+import type { IRocketChatRecord } from './IRocketChatRecord.js';
+import type { IRole } from './IRole.js';
+import type { PresenceSource, UserStatus } from './UserStatus.js';
+import type { Serialized } from './utils.js';
 
 export interface ILoginToken {
 	hashedToken: string;

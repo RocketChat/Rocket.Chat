@@ -1,4 +1,4 @@
-import type { ISetting } from '../ISetting';
+import type { ISetting } from '../ISetting.js';
 
 export interface IMessageSearchProvider {
 	key: string;
