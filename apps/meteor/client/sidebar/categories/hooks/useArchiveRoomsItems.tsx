@@ -33,7 +33,7 @@ export const useArchiveRoomsItems = ({ groupKey, groupTitle, rooms, onOpen }: Us
 						{
 							id: ARCHIVE_INACTIVE_ROOMS_ITEM_ID,
 							icon: 'archive',
-							content: t('Archive_inactive_rooms_ellipsis'),
+							content: t('Archive_rooms_ellipsis'),
 							onClick: () => {
 								onOpen?.();
 								openArchiveRooms({ groupTitle, rooms });

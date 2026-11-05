@@ -46,7 +46,7 @@ const appRoot = mockAppRoot()
 		Last_7_days: 'Last 7 days',
 		Last_30_days: 'Last 30 days',
 		Hide_inactive_unreads: 'Hide inactive unreads',
-		Archive_inactive_rooms_ellipsis: 'Archive inactive rooms…',
+		Archive_rooms_ellipsis: 'Archive rooms…',
 		Unreads: 'Unreads',
 		Always_display: 'Always display',
 		Keep_on_top: 'Keep on top',
@@ -148,7 +148,7 @@ describe('the archive item', () => {
 		renderMenu();
 		await userEvent.click(await screen.findByRole('button', { name: 'Options' }));
 
-		await userEvent.click(await screen.findByRole('menuitemcheckbox', { name: 'Archive inactive rooms…' }));
+		await userEvent.click(await screen.findByRole('menuitemcheckbox', { name: 'Archive rooms…' }));
 
 		expect(openArchiveRooms).toHaveBeenCalledWith({ groupTitle: 'Channels', rooms });
 	});
@@ -158,6 +158,6 @@ describe('the archive item', () => {
 		await userEvent.click(await screen.findByRole('button', { name: 'Options' }));
 
 		expect(await screen.findByRole('menuitemcheckbox', { name: 'Move up' })).toBeInTheDocument();
-		expect(screen.queryByRole('menuitemcheckbox', { name: 'Archive inactive rooms…' })).not.toBeInTheDocument();
+		expect(screen.queryByRole('menuitemcheckbox', { name: 'Archive rooms…' })).not.toBeInTheDocument();
 	});
 });

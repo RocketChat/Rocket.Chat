@@ -260,11 +260,11 @@ in `sidebarCategories` can be silently dropped during a move.
 ### Category collapser kebab — `CategoryMenu.tsx`
 
 **Custom category:**
-- Main: Move up / Move down / Create new › / Manage / Delete / Filter › / Archive inactive rooms…
+- Main: Move up / Move down / Create new › / Manage / Delete / Filter › / Archive rooms…
 - Unreads: Always display / Keep on top toggles
 
 **System group:**
-- Main: Move up / Move down (dynamic groups have both disabled) / Filter › / Archive inactive rooms… (neither on dynamic groups)
+- Main: Move up / Move down (dynamic groups have both disabled) / Filter › / Archive rooms… (neither on dynamic groups)
 - Unreads: Always display / Keep on top toggles
 
 **Filter ›** opens a submenu — All / Last 24 hours /
@@ -272,7 +272,7 @@ Last 7 days / Last 30 days — of radio items (`MenuSubmenuTrigger selectionMode
 checked (`aria-checked`) and marked with a checkmark. Picking one closes the menu, persists it via
 `useSetActivityFilterHours` and reports the choice through `onActivityFilterChange`, for the announcement.
 
-**Archive inactive rooms…** opens `ArchiveRoomsModal` (`useArchiveRoomsItems.tsx`, through
+**Archive rooms…** opens `ArchiveRoomsModal` (`useArchiveRoomsItems.tsx`, through
 `useCategoryModals().openArchiveRooms`), which archives the group's quiet rooms: "Inactive for" offers 30 / 90 /
 180 days, 1 year, or "Custom date", which reveals an "Inactive since" date field. Either way the room's last
 activity (`getLastActivity`, as the filter judges it) is compared with the threshold. The room currently open and
