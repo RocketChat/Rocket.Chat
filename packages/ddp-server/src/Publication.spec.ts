@@ -130,6 +130,21 @@ describe('Publication', () => {
 		expect(session.listenerCount('close')).toBe(0);
 	});
 
+	it('logs a stop callback whose promise rejects and still runs the others', async () => {
+		const failure = new Error('async stop callback failure');
+		const after = jest.fn();
+		publication.onStop(async () => {
+			throw failure;
+		});
+		publication.onStop(after);
+
+		publication.stop();
+		await new Promise((resolve) => setImmediate(resolve));
+
+		expect(after).toHaveBeenCalledTimes(1);
+		expect(mockLoggerError).toHaveBeenCalledWith(expect.objectContaining({ name: 'messages', err: failure }));
+	});
+
 	it('stops every publication of a closing session when a stop callback of one of them throws', () => {
 		const other = new Publication(session, { ...makeSubscription(), id: 'other-id' });
 		const onOtherStop = jest.fn();

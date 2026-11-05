@@ -76,21 +76,21 @@ export class Publication extends EventEmitter implements IPublication {
 
 	/**
 	 * Runs `fn` when the publication stops, or right away when it already has, as Meteor's `Subscription.onStop` does.
-	 * An error `fn` throws is logged, so it cannot keep the other stop callbacks, or the other publications of a closing session, from running.
+	 * An error `fn` throws, or a rejection of the promise it returns, is logged, so it cannot keep the other stop callbacks, or the other publications of a closing session, from running.
 	 */
-	onStop(fn: (...args: any[]) => void): void {
-		const run = (...args: any[]) => {
+	onStop(fn: (...args: any[]) => void | Promise<void>): void {
+		const run = async (...args: any[]) => {
 			try {
-				fn(...args);
+				await fn(...args);
 			} catch (err) {
 				logger.error({ msg: 'Publication stop callback failed', name: this.packet.name, err });
 			}
 		};
 		if (this._isDeactivated()) {
-			run();
+			void run();
 			return;
 		}
-		this.once('stop', run);
+		this.once('stop', (...args: any[]) => void run(...args));
 	}
 
 	added(collection: string, id: string, fields: any): void {
