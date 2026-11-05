@@ -23,6 +23,18 @@ export { default as MessageLocation, type LocationProps as MessageLocationProps 
 export { default as MessageActionLinks, type MessageActionsProps as MessageActionLinksProps } from './content/MessageActions';
 export { default as MessageReactionList, type ReactionsProps as MessageReactionListProps } from './content/Reactions';
 export { default as MessageThreadMetrics, type ThreadMetricsProps as MessageThreadMetricsProps } from './content/ThreadMetrics';
+export {
+	default as MessageThreadMetricsFollow,
+	type ThreadMetricsFollowProps as MessageThreadMetricsFollowProps,
+} from './content/ThreadMetricsFollow';
+export {
+	default as MessageThreadMetricsParticipants,
+	type ThreadMetricsParticipantsProps as MessageThreadMetricsParticipantsProps,
+} from './content/ThreadMetricsParticipants';
+export {
+	default as MessageThreadMetricsUnreadBadge,
+	type ThreadMetricsUnreadBadgeProps as MessageThreadMetricsUnreadBadgeProps,
+} from './content/ThreadMetricsUnreadBadge';
 export { default as MessageUrlPreviews, type UrlPreviewsProps as MessageUrlPreviewsProps } from './content/UrlPreviews';
 export {
 	default as MessageQuoteAttachment,
