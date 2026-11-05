@@ -17,4 +17,5 @@ export default {
 			setupFilesAfterEnv: ['<rootDir>/src/jest-setup.ts'],
 		},
 	],
+	...(process.env.CI ? { maxWorkers: 2 } : {}),
 } satisfies Config;
