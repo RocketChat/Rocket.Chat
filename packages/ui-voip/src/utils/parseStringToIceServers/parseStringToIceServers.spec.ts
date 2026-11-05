@@ -1,4 +1,4 @@
-import { parseStringToIceServers, parseStringToIceServer } from './parseStringToIceServers';
+import { parseStringToIceServers, parseStringToIceServer } from './parseStringToIceServers.js';
 
 describe('parseStringToIceServers', () => {
 	describe('parseStringToIceServers', () => {

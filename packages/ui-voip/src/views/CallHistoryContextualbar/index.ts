@@ -1,3 +1,3 @@
-export { default as CallHistoryContextualBar } from './CallHistoryContextualbar';
-export type { CallHistoryData } from './CallHistoryContextualbar';
-export { getCallHistoryMenuItems } from './CallHistoryActions';
+export { default as CallHistoryContextualBar } from './CallHistoryContextualbar.js';
+export type { CallHistoryData } from './CallHistoryContextualbar.js';
+export { getCallHistoryMenuItems } from './CallHistoryActions.js';

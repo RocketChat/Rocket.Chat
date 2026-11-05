@@ -3,8 +3,8 @@ import type { CallContact } from '@rocket.chat/media-signaling';
 import { renderHook, act } from '@testing-library/react';
 import type { ReactNode } from 'react';
 
-import { MediaCallInstanceContext, defaultContextValue } from './MediaCallInstanceContext';
-import { usePeekMediaSessionPeerInfo } from './usePeekMediaSessionPeerInfo';
+import { MediaCallInstanceContext, defaultContextValue } from './MediaCallInstanceContext.js';
+import { usePeekMediaSessionPeerInfo } from './usePeekMediaSessionPeerInfo.js';
 
 type MockInstance = {
 	getState: () => { confirmed: true; remoteParticipant: { contact: CallContact } } | null;

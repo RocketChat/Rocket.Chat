@@ -1,8 +1,8 @@
 import { FocusScope } from '@react-aria/focus';
 import type { ReactNode } from 'react';
 
-import WidgetBase from './WidgetBase';
-import { useDraggableWidget } from './WidgetDraggableContext';
+import WidgetBase from './WidgetBase.js';
+import { useDraggableWidget } from './WidgetDraggableContext.js';
 
 export type WidgetProps = {
 	children: ReactNode;

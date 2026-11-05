@@ -1,7 +1,7 @@
-import CallHistoryExternalUser from './CallHistoryExternalUser';
-import CallHistoryInternalUser from './CallHistoryInternalUser';
-import CallHistoryUnknownUser from './CallHistoryUnknownUser';
-import { isCallHistoryExternalContact, isCallHistoryInternalContact, type CallHistoryContact } from '../definitions';
+import CallHistoryExternalUser from './CallHistoryExternalUser.js';
+import CallHistoryInternalUser from './CallHistoryInternalUser.js';
+import CallHistoryUnknownUser from './CallHistoryUnknownUser.js';
+import { isCallHistoryExternalContact, isCallHistoryInternalContact, type CallHistoryContact } from '../definitions/index.js';
 
 export type CallHistoryUserProps = {
 	contact: CallHistoryContact;

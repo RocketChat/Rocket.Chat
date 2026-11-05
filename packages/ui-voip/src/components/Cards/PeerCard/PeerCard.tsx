@@ -1,7 +1,7 @@
 import { Avatar, Box, Icon } from '@rocket.chat/fuselage';
 
-import Card from '../Card';
-import PeerCardSlot from './PeerCardSlot';
+import Card from '../Card.js';
+import PeerCardSlot from './PeerCardSlot.js';
 
 export type PeerCardProps = {
 	displayName: string;

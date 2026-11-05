@@ -1,8 +1,8 @@
 import { renderHook } from '@testing-library/react';
 import type { ReactNode } from 'react';
 
-import { useMediaCallOpenRoomTracker } from './useMediaCallOpenRoomTracker';
-import MockedInstanceProvider from '../providers/MockedInstanceProvider';
+import { useMediaCallOpenRoomTracker } from './useMediaCallOpenRoomTracker.js';
+import MockedInstanceProvider from '../providers/MockedInstanceProvider.js';
 
 const setOpenRoomIdMock = jest.fn();
 

@@ -1,4 +1,4 @@
-import type { UnknownPeerInfo, PeerInfo } from '../context';
+import type { UnknownPeerInfo, PeerInfo } from '../context/index.js';
 
 export function isUnknownPeer(info: PeerInfo): info is UnknownPeerInfo {
 	return info.type === 'unknown';

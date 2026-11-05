@@ -1,7 +1,7 @@
 import { UserStatus } from '@rocket.chat/core-typings';
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { PeerInfo } from '.';
+import { PeerInfo } from './index.js';
 
 export default {
 	component: PeerInfo,

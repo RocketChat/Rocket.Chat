@@ -1,13 +1,13 @@
-export * from './Widget';
-export * from './PeerInfo';
-export * from './PeerAutocomplete';
-export * from './Cards';
-export * from './Actions';
+export * from './Widget/index.js';
+export * from './PeerInfo/index.js';
+export * from './PeerAutocomplete.js';
+export * from './Cards/index.js';
+export * from './Actions/index.js';
 
-export { default as Keypad } from './Keypad/Keypad';
-export { useInfoSlots } from './PeerInfo/useInfoSlots';
-export { default as PeerAutocomplete } from './PeerAutocomplete';
-export { default as Timer } from './Timer';
-export { default as DevicePicker } from './DevicePicker';
-export { default as CallHistoryInternalUser } from './CallHistoryInternalUser';
-export { default as CallHistoryExternalUser } from './CallHistoryExternalUser';
+export { default as Keypad } from './Keypad/Keypad.js';
+export { useInfoSlots } from './PeerInfo/useInfoSlots.js';
+export { default as PeerAutocomplete } from './PeerAutocomplete.js';
+export { default as Timer } from './Timer.js';
+export { default as DevicePicker } from './DevicePicker.js';
+export { default as CallHistoryInternalUser } from './CallHistoryInternalUser.js';
+export { default as CallHistoryExternalUser } from './CallHistoryExternalUser.js';

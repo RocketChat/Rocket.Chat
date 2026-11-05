@@ -16,7 +16,7 @@ import { ITEM_MEDIA_SIZE } from '@rocket.chat/ui-avatar';
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { isFirstPeerAutocompleteOption } from '../context';
+import { isFirstPeerAutocompleteOption } from '../context/index.js';
 
 export type PeerAutocompleteOptions = {
 	value: string; // user id

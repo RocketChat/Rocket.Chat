@@ -2,11 +2,11 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
 import type { ComponentType, ReactNode } from 'react';
 
-import OngoingCall from './OngoingCall';
-import OngoingCallWithScreen from './OngoingCallWithScreen';
-import { DragContext } from '../../components';
-import MediaCallViewContext from '../../context/MediaCallViewContext';
-import type { PeerInfo, SessionState } from '../../context/definitions';
+import OngoingCall from './OngoingCall.js';
+import OngoingCallWithScreen from './OngoingCallWithScreen.js';
+import { DragContext } from '../../components/index.js';
+import MediaCallViewContext from '../../context/MediaCallViewContext.js';
+import type { PeerInfo, SessionState } from '../../context/definitions.js';
 
 const externalPeer = { type: 'sip', number: '+15551234567' } as PeerInfo;
 const internalPeer = { type: 'user', displayName: 'John Doe', userId: 'u1', username: 'john.doe' } as PeerInfo;

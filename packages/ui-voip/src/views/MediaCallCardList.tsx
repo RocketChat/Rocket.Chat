@@ -1,9 +1,9 @@
 import { StreamVideo } from '@rocket.chat/ui-media';
 import { useState } from 'react';
 
-import { CardListContainer, CardListSection, PeerCard, StreamCard } from '../components';
-import { useMediaCallView } from '../context';
-import { isInternalPeer } from '../utils/isInternalPeer';
+import { CardListContainer, CardListSection, PeerCard, StreamCard } from '../components/index.js';
+import { useMediaCallView } from '../context/index.js';
+import { isInternalPeer } from '../utils/isInternalPeer.js';
 
 export type MediaCallCardListProps = {
 	shouldWrapCards: boolean;

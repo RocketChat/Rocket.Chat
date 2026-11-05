@@ -1,5 +1,5 @@
-import { useMediaCallInstance } from './MediaCallInstanceContext';
-import { useInstanceSnapshot } from './useInstanceSnapshot';
+import { useMediaCallInstance } from './MediaCallInstanceContext.js';
+import { useInstanceSnapshot } from './useInstanceSnapshot.js';
 
 export type PeekMediaSessionCallIdReturn = string | undefined;
 

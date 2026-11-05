@@ -1,10 +1,10 @@
 import { AnchorPortal } from '@rocket.chat/ui-client';
 import type { ReactNode } from 'react';
 
-import MediaCallInstanceProvider from './MediaCallInstanceProvider';
-import MediaCallViewProvider from './MediaCallViewProvider';
-import { MediaCallWidget } from '../views';
-import MediaCallPopout from '../views/MediaCallPopout';
+import MediaCallInstanceProvider from './MediaCallInstanceProvider.js';
+import MediaCallViewProvider from './MediaCallViewProvider.js';
+import MediaCallPopout from '../views/MediaCallPopout.js';
+import { MediaCallWidget } from '../views/index.js';
 
 export type MediaCallProviderProps = {
 	children: ReactNode;

@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 
-import CardList from './CardList';
-import CardListPinned from './CardListPinned';
+import CardList from './CardList.js';
+import CardListPinned from './CardListPinned.js';
 
 export type CardListContainerProps = {
 	children: ReactNode;

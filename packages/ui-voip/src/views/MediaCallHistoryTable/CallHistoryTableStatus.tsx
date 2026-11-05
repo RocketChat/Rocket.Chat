@@ -3,7 +3,7 @@ import { Box, Icon } from '@rocket.chat/fuselage';
 import type { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
 
-import { getCallDurationText } from '../../ui-kit/getHistoryMessagePayload';
+import { getCallDurationText } from '../../ui-kit/getHistoryMessagePayload.js';
 
 export type CallHistoryTableStatusProps = {
 	status: CallHistoryItemState;

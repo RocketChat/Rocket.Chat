@@ -2,8 +2,8 @@ import { Divider, Box, TextInput, Field, FieldRow, Stack } from '@rocket.chat/fu
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import Keypad from '../../components/Keypad/Keypad';
-import { useMediaCallView } from '../../context/MediaCallViewContext';
+import Keypad from '../../components/Keypad/Keypad.js';
+import { useMediaCallView } from '../../context/MediaCallViewContext.js';
 
 export type DialpadProps = {
 	autoFocus?: boolean;
