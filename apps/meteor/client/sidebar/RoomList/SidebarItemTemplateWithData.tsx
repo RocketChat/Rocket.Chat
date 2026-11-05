@@ -1,5 +1,5 @@
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import { Icon, IconButton, SidebarItemActions } from '@rocket.chat/fuselage';
+import { IconButton, SidebarItemActions } from '@rocket.chat/fuselage';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useLayout } from '@rocket.chat/ui-contexts';
 import type { TFunction } from 'i18next';
@@ -9,9 +9,9 @@ import { memo, useMemo } from 'react';
 import { RoomIcon, useRoomIconLabel } from '../../components/RoomIcon';
 import RoomListItem from '../../components/RoomListItem/RoomListItem';
 import type { RoomListItemViewMode } from '../../components/RoomListItem/RoomListItem';
+import RoomListItemTitleIcon from '../../components/RoomListItem/RoomListItemTitleIcon';
 import { useUserStatusTooltip } from '../../hooks/useUserStatusTooltip';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
-import { getSubscriptionDraft } from '../../lib/utils/getSubscriptionDraft';
 import { getUidDirectMessage } from '../../lib/utils/getUidDirectMessage';
 import { isIOsDevice } from '../../lib/utils/isIOsDevice';
 import { getMessagePreview } from '../../lib/utils/normalizeMessagePreview/getMessagePreview';
@@ -69,9 +69,7 @@ const SidebarItemTemplateWithData = ({
 	const isIncomingCall = Boolean(videoConfActions);
 	const iconLabel = useRoomIconLabel(room, isIncomingCall);
 
-	const titleIcon = getSubscriptionDraft(room) ? (
-		<Icon name='pencil' size='x12' title={room.draft ? t('Draft') : t('Thread_draft')} />
-	) : undefined;
+	const titleIcon = <RoomListItemTitleIcon room={room} />;
 
 	const actions = useMemo(
 		() =>
@@ -180,6 +178,9 @@ export default memo(SidebarItemTemplateWithData, (prevProps, nextProps) => {
 		return false;
 	}
 	if (prevProps.room.draft !== nextProps.room.draft) {
+		return false;
+	}
+	if (prevProps.room.disableNotifications !== nextProps.room.disableNotifications) {
 		return false;
 	}
 	if (prevProps.room.threadDrafts !== nextProps.room.threadDrafts) {
