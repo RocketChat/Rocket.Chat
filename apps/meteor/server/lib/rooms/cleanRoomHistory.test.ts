@@ -16,6 +16,7 @@ const modelsMock = {
 	Rooms: {
 		resetLastMessageById: sinon.stub(),
 		findOneDiscussionById: sinon.stub(),
+		findDiscussionsWithOriginMessageByParentRoomId: sinon.stub(),
 	},
 	Subscriptions: {
 		findUnreadThreadsByRoomId: sinon.stub(),
@@ -61,12 +62,14 @@ describe('cleanRoomHistory', () => {
 			...Object.values(modelsMock.Messages),
 			...Object.values(modelsMock.Subscriptions),
 			modelsMock.Rooms.resetLastMessageById,
+			modelsMock.Rooms.findDiscussionsWithOriginMessageByParentRoomId,
 			modelsMock.ReadReceipts.removeByMessageIds,
 			modelsMock.ReadReceiptsArchive.removeByMessageIds,
 			broadcastMock,
 			notifyOnSubscriptionChangedByIdMock,
 		].forEach((stub) => stub.reset());
 
+		modelsMock.Rooms.findDiscussionsWithOriginMessageByParentRoomId.returns(cursorOf([]));
 		modelsMock.Messages.findFilesByRoomIdPinnedTimestampAndUsers.returns(cursorOf([]));
 		modelsMock.Messages.findByIdPinnedTimestampLimitAndUsers.resolves([]);
 		modelsMock.Messages.removeByIdPinnedTimestampLimitAndUsers.callsFake(async (...args: unknown[]) => ({
@@ -124,6 +127,15 @@ describe('cleanRoomHistory', () => {
 
 		expect(modelsMock.Rooms.resetLastMessageById.calledOnceWith('rid', sinon.match.any, -2000)).to.be.true;
 		expect(broadcastMock.getCalls().map((call) => call.args[2].ids)).to.deep.equal([ids('a', 1000), ids('b', 1000)]);
+	});
+
+	it('spares the messages that discussions started from, together with their files', async () => {
+		modelsMock.Rooms.findDiscussionsWithOriginMessageByParentRoomId.returns(cursorOf([{ pmid: 'origin' }]));
+
+		await cleanRoomHistory({ rid: 'rid' });
+
+		expect(modelsMock.Messages.findFilesByRoomIdPinnedTimestampAndUsers.firstCall.args[6]).to.deep.equal(['origin']);
+		expect(modelsMock.Messages.findByIdPinnedTimestampLimitAndUsers.firstCall.args[7]).to.deep.equal(['origin']);
 	});
 
 	it('clears pruned threads from unread lists in bounded batches', async () => {

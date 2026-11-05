@@ -1235,6 +1235,69 @@ describe('[Rooms]', () => {
 				});
 		});
 
+		describe('with a discussion started from a message with a file', () => {
+			let originId: IMessage['_id'];
+
+			const startDiscussionFromOrigin = () =>
+				request
+					.post(api('rooms.createDiscussion'))
+					.set(credentials)
+					.send({ prid: publicChannel._id, pmid: originId, t_name: `discussion-${Random.id()}` })
+					.expect(200);
+
+			const pruneAll = (options: Record<string, boolean>) =>
+				request
+					.post(api('rooms.cleanHistory'))
+					.set(credentials)
+					.send({ roomId: publicChannel._id, latest: '9999-12-31T23:59:59.000Z', oldest: '0001-01-01T00:00:00.000Z', ...options })
+					.expect(200);
+
+			const getMessages = async (roomId: IRoom['_id']): Promise<IMessage[]> =>
+				(await request.get(api('channels.messages')).set(credentials).query({ roomId }).expect(200)).body.messages;
+
+			const getFiles = async (): Promise<unknown[]> =>
+				(await request.get(api('channels.files')).set(credentials).query({ roomId: publicChannel._id }).expect(200)).body.files;
+
+			beforeEach(async () => {
+				const mediaResponse = await request
+					.post(api(`rooms.media/${publicChannel._id}`))
+					.set(credentials)
+					.attach('file', imgURL)
+					.expect(200);
+				originId = (
+					await request
+						.post(api(`rooms.mediaConfirm/${publicChannel._id}/${mediaResponse.body.file._id}`))
+						.set(credentials)
+						.send({ msg: 'discussion origin' })
+						.expect(200)
+				).body.message._id;
+				await startDiscussionFromOrigin();
+			});
+
+			it('should keep the origin message and its file when ignoreDiscussion is set', async () => {
+				await startDiscussionFromOrigin();
+				await sendSimpleMessage({ roomId: publicChannel._id });
+
+				const res = await pruneAll({ ignoreDiscussion: true });
+
+				expect(res.body).to.have.property('count', 1);
+				expect((await getMessages(publicChannel._id)).map(({ _id }) => _id)).to.include(originId);
+				expect(await getFiles()).to.have.lengthOf(1);
+			});
+
+			it('should delete the origin message when ignoreDiscussion is not set', async () => {
+				await pruneAll({ ignoreDiscussion: false });
+
+				expect((await getMessages(publicChannel._id)).map(({ _id }) => _id)).not.to.include(originId);
+			});
+
+			it('should keep the origin file when filesOnly and ignoreDiscussion are set', async () => {
+				await pruneAll({ filesOnly: true, ignoreDiscussion: true });
+
+				expect(await getFiles()).to.have.lengthOf(1);
+			});
+		});
+
 		it('should return success when send a valid private channel', async () => {
 			const res = await request
 				.post(api('rooms.cleanHistory'))
@@ -2037,6 +2100,7 @@ describe('[Rooms]', () => {
 			expect(res.body).to.have.property('discussion').and.to.be.an('object');
 			expect(res.body.discussion).to.have.property('prid').and.to.be.equal(testChannel._id);
 			expect(res.body.discussion).to.have.property('fname').and.to.be.equal(`discussion-create-from-tests-${testChannel.name}`);
+			expect(res.body.discussion).to.not.have.property('pmid');
 		});
 		it('should create a discussion successfully when send the required parameters plus the optional parameter "reply"', async () => {
 			const res = await request
@@ -2088,6 +2152,7 @@ describe('[Rooms]', () => {
 			expect(res.body).to.have.property('discussion').and.to.be.an('object');
 			expect(res.body.discussion).to.have.property('prid').and.to.be.equal(testChannel._id);
 			expect(res.body.discussion).to.have.property('fname').and.to.be.equal(`discussion-create-from-tests-${testChannel.name}`);
+			expect(res.body.discussion).to.have.property('pmid', messageSent._id);
 		});
 
 		describe('when the user is not a member of the parent room', () => {

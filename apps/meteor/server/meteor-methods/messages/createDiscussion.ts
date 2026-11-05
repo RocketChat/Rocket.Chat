@@ -10,7 +10,6 @@ import { hasAtLeastOnePermissionAsync } from '../../lib/authorization/hasPermiss
 import { i18n } from '../../lib/i18n';
 import { attachMessage } from '../../lib/messages/attachMessage';
 import { sendMessage } from '../../lib/messages/sendMessage';
-import { addUserToRoom } from '../../lib/rooms/addUserToRoom';
 import { createRoom } from '../../lib/rooms/createRoom';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { settings } from '../../settings';
@@ -129,19 +128,6 @@ const create = async ({
 		});
 	}
 
-	if (pmid) {
-		// No projection: the full room is spread into the returned discussion below.
-		const discussionAlreadyExists = await Rooms.findOne({
-			prid,
-			pmid,
-		});
-		if (discussionAlreadyExists) {
-			// do not allow multiple discussions to the same message'\
-			await addUserToRoom(discussionAlreadyExists._id, user);
-			return { ...discussionAlreadyExists, rid: discussionAlreadyExists._id };
-		}
-	}
-
 	const name = Random.id();
 
 	// auto invite the replied message owner
@@ -182,6 +168,7 @@ const create = async ({
 			description, // TODO discussions remove
 			topic: discussionTopic,
 			prid,
+			...(pmid && { pmid }),
 			encrypted,
 		},
 		{
