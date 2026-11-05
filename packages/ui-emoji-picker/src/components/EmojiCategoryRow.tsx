@@ -1,12 +1,14 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
-import { EmojiPickerLoadMore, EmojiPickerNotFound, EmojiPickerCategoryWrapper } from '@rocket.chat/ui-client';
 import { memo, type MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import EmojiElement from './EmojiElement';
-import { isRowDivider, isLoadMore, CUSTOM_CATEGORY, CUSTOM_CATEGORY_CLASSNAME } from '../../../lib/emoji';
-import type { EmojiPickerItem } from '../../../lib/emoji';
+import EmojiPickerCategoryWrapper from './EmojiPickerCategoryWrapper';
+import EmojiPickerLoadMore from './EmojiPickerLoadMore';
+import EmojiPickerNotFound from './EmojiPickerNotFound';
+import { isRowDivider, isLoadMore, CUSTOM_CATEGORY, CUSTOM_CATEGORY_CLASSNAME } from '../lib/emoji';
+import type { EmojiPickerItem } from '../lib/emoji';
 
 export type EmojiCategoryRowProps = {
 	customItemsLimit: number;
@@ -31,7 +33,7 @@ const EmojiCategoryRow = ({ item, handleLoadMore, handleSelectEmoji }: EmojiCate
 	if (isRowDivider(item)) {
 		return (
 			<>
-				<Box is='h4' fontScale='c1' paddingBlock={8} id={`emoji-list-category-${item.category}`}>
+				<Box is='h4' fontScale='c1' paddingBlock='x8' id={`emoji-list-category-${item.category}`}>
 					{t(item.i18n)}
 				</Box>
 			</>
