@@ -2,7 +2,7 @@
 
 - **Status:** proposed
 - **Date:** 2026-10
-- **Scope:** `packages/ui-message-list`, and in Part 2 the room and thread lists in `apps/meteor`
+- **Scope:** `packages/ui-message-list`, and every place in `apps/meteor` that shows messages
 
 ## Decision
 
@@ -55,7 +55,8 @@ Rejected alternatives:
 
 ## Consequences
 
-- Part 1 copies the message components into ui-message-list; until Part 2 replaces the meteor lists, a fix to
-  `apps/meteor/client/components/message` must be ported to the copy.
+- The app keeps no message components of its own. It provides the message contexts from one provider,
+  `apps/meteor/client/providers/MessagesProvider`, which every place that shows messages mounts; a capability the
+  components gain is added there.
 - jsdom cannot render the virtualized list, so component specs replace the module that wraps virtua with a renderer
   of every row, and `ui-message-list` runs story play tests in CI (`test-storybook`).

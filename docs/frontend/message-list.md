@@ -40,9 +40,11 @@
 
 ## Feeding it
 
-- **A store of loaded messages** (the room): pass the window the store holds, the flags of the history manager, and promises from its loaders. A jump to an unloaded message loads the messages around it; set `targetMessageId` and the list jumps once they arrive.
-- **A React Query infinite query** (a thread): `fetchPreviousPage` and `fetchNextPage` are the loaders, `isFetchingPreviousPage` and `isFetchingNextPage` the flags.
+- **A store of loaded messages** (the room, `useRoomMessageListData` in `apps/meteor/client/views/room/body/RoomMessageList`): pass the window the store holds, the flags of the history manager, and promises from its loaders. A jump to an unloaded message loads the messages around it; set `targetMessageId` and the list jumps once they arrive.
+- **A React Query infinite query** (a thread, `ThreadMessageList`): `fetchPreviousPage` and `fetchNextPage` are the loaders, `isFetchingPreviousPage` and `isFetchingNextPage` the flags.
 - **A read-only list** (an audit, a search result): pass the messages and nothing else; no loaders, no own messages, no position.
+
+In the app, wrap the list, or any message component, in `MessagesProvider` with the conversation's room and subscription; read-only places pass `allowsInteraction={false}`.
 
 The load callbacks must settle once the new page is in `messages`, or once loading failed. The list loads one page at a time and checks again after each change, so a callback that never settles stops paging.
 
@@ -58,7 +60,7 @@ The load callbacks must settle once the new page is in `messages`, or once loadi
 
 1. Add it to the context's value type, named for the user's intent (`followThread(message)`, not `callFollowEndpoint`), with a no-op or sensible default in the context's default value.
 2. Use it from the component through the context's hook.
-3. Provide it from the app's provider for each place that shows messages, and from the read-only providers if it makes sense there.
+3. Provide it from the app, in the hook of `MessagesProvider` that builds that context (`apps/meteor/client/providers/MessagesProvider`); every place that shows messages gets it from there.
 4. In the component's spec, wrap with `mockMessageProviders` (`packages/ui-message-list/tests/utils`), which turns every navigation and interaction capability into a `jest.fn`, and assert it is called with the right arguments.
 
 ## Testing
