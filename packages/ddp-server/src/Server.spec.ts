@@ -349,6 +349,21 @@ describe('Server subscriptions', () => {
 		await expect(continuation).resolves.toBe('aborted');
 	});
 
+	it('retires a failed publication even when the client cannot be told', async () => {
+		const published: Publication[] = [];
+		server.publish('messages', function (this: Publication) {
+			published.push(this);
+			throw new ClientSafeError(403, 'Forbidden');
+		});
+		session.send.mockImplementation(() => {
+			throw new Error('socket is gone');
+		});
+
+		await expect(server.subscribe(session, makeSubscription())).rejects.toThrow('socket is gone');
+
+		expect(Streamer.isPublicationActive(published[0])).toBe(false);
+	});
+
 	it('still answers a failed subscription when one of its stop callbacks throws', async () => {
 		server.publish('messages', function (this: Publication) {
 			this.onStop(() => {

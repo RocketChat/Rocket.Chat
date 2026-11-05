@@ -114,9 +114,13 @@ export class Server {
 
 			end?.();
 		} catch (err: unknown) {
-			session.send(encodeNosub(packet.id, handleInternalException(err, 'Subscription error')));
-			// A failed subscription must not outlive its handler.
-			publication?.deactivate();
+			// A failed subscription must not outlive its handler, even if the
+			// client cannot be told: the answer is best-effort, the retirement is not.
+			try {
+				session.send(encodeNosub(packet.id, handleInternalException(err, 'Subscription error')));
+			} finally {
+				publication?.deactivate();
+			}
 		}
 	}
 
