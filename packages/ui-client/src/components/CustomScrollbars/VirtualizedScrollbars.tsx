@@ -2,7 +2,7 @@ import { useOverlayScrollbars } from 'overlayscrollbars-react';
 import type { HTMLAttributes, ReactElement } from 'react';
 import { useEffect, useState, useRef, cloneElement, forwardRef, memo } from 'react';
 
-import BaseScrollbars, { getScrollbarsOptions } from './BaseScrollbars';
+import BaseScrollbars, { getScrollbarsOptions } from './BaseScrollbars.js';
 
 export type VirtualizedScrollbarsProps = {
 	overflowX?: boolean;

@@ -2,7 +2,7 @@ import { css } from '@rocket.chat/css-in-js';
 import type { ComponentProps } from 'react';
 import { forwardRef, memo } from 'react';
 
-import { PageScrollableContent } from '../Page';
+import { PageScrollableContent } from '../Page/index.js';
 
 // An empty last item, so the gap also leaves room below the last child when scrolled to the end
 const trailingGap = css`

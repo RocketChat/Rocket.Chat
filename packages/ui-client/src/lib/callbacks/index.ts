@@ -1,1 +1,1 @@
-export { clientCallbacks } from './clientCallbacks';
+export { clientCallbacks } from './clientCallbacks.js';

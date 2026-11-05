@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-import { useFormatTime } from './useFormatTime';
+import { useFormatTime } from './useFormatTime.js';
 
 export const useTimezoneTime = (offset: number, interval = 1000): string => {
 	const [now, setNow] = useState(() => new Date());

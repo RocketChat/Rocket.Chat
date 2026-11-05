@@ -1,7 +1,7 @@
 import { renderHook, act } from '@testing-library/react';
 
-import type { StepMetadata } from './lib/StepNode';
-import { useWizard } from './useWizard';
+import type { StepMetadata } from './lib/StepNode.js';
+import { useWizard } from './useWizard.js';
 
 const initialSteps: StepMetadata[] = [
 	{ id: 'step1', title: 'Step 1' },

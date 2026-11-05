@@ -1,10 +1,10 @@
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useMemo, useState } from 'react';
 
-import type { WizardAPI } from './WizardContext';
-import type { StepMetadata } from './lib/StepNode';
-import type StepNode from './lib/StepNode';
-import StepsLinkedList from './lib/StepsLinkedList';
+import type { WizardAPI } from './WizardContext.js';
+import type { StepMetadata } from './lib/StepNode.js';
+import type StepNode from './lib/StepNode.js';
+import StepsLinkedList from './lib/StepsLinkedList.js';
 
 type UseWizardProps = {
 	steps: StepMetadata[];

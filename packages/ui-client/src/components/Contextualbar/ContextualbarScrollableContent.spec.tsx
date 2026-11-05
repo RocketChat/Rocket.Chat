@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 
-import ContextualbarScrollableContent from './ContextualbarScrollableContent';
+import ContextualbarScrollableContent from './ContextualbarScrollableContent.js';
 
 it('keeps the trailing gap when the caller passes a className', () => {
 	render(<ContextualbarScrollableContent className='caller'>content</ContextualbarScrollableContent>);

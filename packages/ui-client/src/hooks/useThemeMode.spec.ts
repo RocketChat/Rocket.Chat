@@ -1,8 +1,8 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { renderHook } from '@testing-library/react';
 
-import { useThemeMode } from './useThemeMode';
-import { useThemePreview } from './useThemePreview';
+import { useThemeMode } from './useThemeMode.js';
+import { useThemePreview } from './useThemePreview.js';
 
 const mockUseDarkMode = jest.fn();
 

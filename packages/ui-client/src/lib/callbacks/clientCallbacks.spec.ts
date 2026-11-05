@@ -1,6 +1,6 @@
 import { it, expect } from '@jest/globals';
 
-import { clientCallbacks } from './clientCallbacks';
+import { clientCallbacks } from './clientCallbacks.js';
 
 it("if the callback doesn't return any value should return the original", async () => {
 	clientCallbacks.add('test', () => undefined, clientCallbacks.priority.LOW, '1');

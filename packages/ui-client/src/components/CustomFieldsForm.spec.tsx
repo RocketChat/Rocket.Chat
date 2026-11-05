@@ -1,11 +1,11 @@
 import type { CustomFieldMetadata } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 import type { Control } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
 
-import { CustomFieldsForm } from './CustomFieldsForm';
+import { CustomFieldsForm } from './CustomFieldsForm.js';
 
 type TestComponentProps = {
 	metadata: CustomFieldMetadata[];

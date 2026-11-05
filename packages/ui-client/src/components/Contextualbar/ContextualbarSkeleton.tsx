@@ -1,5 +1,5 @@
-import ContextualbarDialog from './ContextualbarDialog';
-import ContextualbarSkeletonBody from './ContextualbarSkeletonBody';
+import ContextualbarDialog from './ContextualbarDialog.js';
+import ContextualbarSkeletonBody from './ContextualbarSkeletonBody.js';
 
 const ContextualbarSkeleton = ({ onClose }: { onClose?: () => void }) => (
 	<ContextualbarDialog onClose={onClose}>

@@ -1,7 +1,7 @@
 import { useCallback, useRef, useSyncExternalStore } from 'react';
 
-import type StepNode from './lib/StepNode';
-import type StepsLinkedList from './lib/StepsLinkedList';
+import type StepNode from './lib/StepNode.js';
+import type StepsLinkedList from './lib/StepsLinkedList.js';
 
 /**
  * Custom hook to manage the state of wizard steps.

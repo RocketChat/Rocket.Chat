@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-import type { FeaturePreviewProps } from './useFeaturePreviewList';
+import type { FeaturePreviewProps } from './useFeaturePreviewList.js';
 
 const handleFeaturePreviewEnableQuery = (item: FeaturePreviewProps, _: any, features: FeaturePreviewProps[]) => {
 	if (item.enableQuery) {

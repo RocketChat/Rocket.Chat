@@ -1,7 +1,7 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { renderHook } from '@testing-library/react';
 
-import { useUserDisplayName } from './useUserDisplayName';
+import { useUserDisplayName } from './useUserDisplayName.js';
 
 const fakeUser = {
 	name: 'John Doe',

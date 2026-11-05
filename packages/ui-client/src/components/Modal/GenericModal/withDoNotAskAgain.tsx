@@ -3,7 +3,7 @@ import type { ComponentType, ReactNode } from 'react';
 import { useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useRememberDontAskAgain } from '../../../hooks/useRememberDontAskAgain';
+import { useRememberDontAskAgain } from '../../../hooks/useRememberDontAskAgain.js';
 
 type DoNotAskAgainProps = {
 	onConfirm: (...args: any) => Promise<void> | void;

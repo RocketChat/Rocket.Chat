@@ -1,6 +1,6 @@
 import { renderHook } from '@testing-library/react';
 
-import { useDocumentTitle } from './useDocumentTitle';
+import { useDocumentTitle } from './useDocumentTitle.js';
 
 const DEFAULT_TITLE = 'Default Title';
 const EXAMPLE_TITLE = 'Example Title';

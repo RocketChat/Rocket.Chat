@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import type { ComponentType } from 'react';
 import { action } from 'storybook/actions';
 
-import GenericModal, { GenericModalDoNotAskAgain } from './GenericModal';
+import GenericModal, { GenericModalDoNotAskAgain } from './GenericModal.js';
 
 export default {
 	component: GenericModal,
