@@ -3,7 +3,7 @@ import Stream from 'node:stream';
 import { asyncLocalStorage, getInstanceMethods } from '@rocket.chat/core-services';
 import type { CallingOptions, IBroker, IBrokerNode, IServiceMetrics, IServiceClass, EventSignatures } from '@rocket.chat/core-services';
 import { injectCurrentContext, tracerSpan } from '@rocket.chat/tracing';
-import type { ServiceBroker, Context, ServiceEventLegacyHandler, ServiceSchema } from 'moleculer';
+import type { ServiceBroker, Context, ServiceSchema } from 'moleculer';
 
 import { EnterpriseCheck } from './EnterpriseCheck';
 
@@ -17,6 +17,14 @@ const lifecycle: { [k: string]: string } = {
 	created: 'created',
 	started: 'started',
 	stopped: 'stopped',
+};
+
+const getMethod = (instance: IServiceClass, name: string) => {
+	const method: unknown = Reflect.get(instance, name);
+	if (typeof method !== 'function') {
+		throw new TypeError(`${name} is not a function`);
+	}
+	return method;
 };
 
 export class MoleculerBroker implements IBroker {
@@ -80,8 +88,6 @@ export class MoleculerBroker implements IBroker {
 	createService(instance: IServiceClass, serviceDependencies: string[] = []): void {
 		const methods = getInstanceMethods(instance);
 
-		const serviceInstance = instance as unknown as Record<string, (...args: unknown[]) => unknown>;
-
 		const name = instance.getName();
 		if (!name) {
 			return;
@@ -120,7 +126,7 @@ export class MoleculerBroker implements IBroker {
 
 		for (const method of methods) {
 			if (method.match(/^on[A-Z]/)) {
-				service.events[events[method]] = serviceInstance[method].bind(serviceInstance) as ServiceEventLegacyHandler;
+				service.events[events[method]] = getMethod(instance, method).bind(instance);
 				continue;
 			}
 
@@ -133,7 +139,7 @@ export class MoleculerBroker implements IBroker {
 							requestID: null,
 							broker: this,
 						},
-						serviceInstance[method].bind(serviceInstance),
+						getMethod(instance, method).bind(instance),
 					);
 				};
 				continue;
@@ -155,7 +161,7 @@ export class MoleculerBroker implements IBroker {
 								broker: this,
 								ctx,
 							},
-							() => serviceInstance[method](...params),
+							(): unknown => getMethod(instance, method).apply(instance, params),
 						);
 					},
 					ctx.meta?.optl,
