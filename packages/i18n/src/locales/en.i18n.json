@@ -5914,6 +5914,14 @@
   "Room_uploaded_file_list": "Files list",
   "Room_uploaded_file_list_empty": "No files available.",
   "Rooms": "Rooms",
+  "Rooms_marked_read": {
+    "one": "{{count}} room marked read",
+    "other": "{{count}} rooms marked read"
+  },
+  "Rooms_not_marked_read": {
+    "one": "{{count}} room could not be marked read. Try again.",
+    "other": "{{count}} rooms could not be marked read. Try again."
+  },
   "Rooms_added_successfully": "Rooms added successfully",
   "Root": "Root",
   "Routing": "Routing",
