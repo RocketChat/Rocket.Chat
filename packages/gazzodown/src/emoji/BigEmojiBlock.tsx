@@ -1,6 +1,6 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
 
-import BigEmojiElement from './BigEmojiElement';
+import BigEmojiElement from './BigEmojiElement.js';
 
 export type BigEmojiBlockProps = {
 	emoji: MessageParser.Emoji[];

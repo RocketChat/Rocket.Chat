@@ -1,6 +1,6 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
 
-import ParagraphBlock from './ParagraphBlock';
+import ParagraphBlock from './ParagraphBlock.js';
 
 export type QuoteBlockProps = {
 	children: MessageParser.Paragraph[];

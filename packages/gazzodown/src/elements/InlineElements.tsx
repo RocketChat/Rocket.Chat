@@ -1,22 +1,22 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
 import { lazy } from 'react';
 
-import BoldSpan from './BoldSpan';
-import ImageElement from './ImageElement';
-import ItalicSpan from './ItalicSpan';
-import LinkSpan from './LinkSpan';
-import PlainSpan from './PlainSpan';
-import SpoilerSpan from './SpoilerSpan';
-import StrikeSpan from './StrikeSpan';
-import Timestamp from './Timestamp';
-import CodeElement from '../code/CodeElement';
-import ColorElement from '../colors/ColorElement';
-import EmojiElement from '../emoji/EmojiElement';
-import KatexErrorBoundary from '../katex/KatexErrorBoundary';
-import ChannelMentionElement from '../mentions/ChannelMentionElement';
-import UserMentionElement from '../mentions/UserMentionElement';
+import BoldSpan from './BoldSpan.js';
+import ImageElement from './ImageElement.js';
+import ItalicSpan from './ItalicSpan.js';
+import LinkSpan from './LinkSpan.js';
+import PlainSpan from './PlainSpan.js';
+import SpoilerSpan from './SpoilerSpan.js';
+import StrikeSpan from './StrikeSpan.js';
+import Timestamp from './Timestamp/index.js';
+import CodeElement from '../code/CodeElement.js';
+import ColorElement from '../colors/ColorElement.js';
+import EmojiElement from '../emoji/EmojiElement.js';
+import KatexErrorBoundary from '../katex/KatexErrorBoundary.js';
+import ChannelMentionElement from '../mentions/ChannelMentionElement.js';
+import UserMentionElement from '../mentions/UserMentionElement.js';
 
-const KatexElement = lazy(() => import('../katex/KatexElement'));
+const KatexElement = lazy(() => import('../katex/KatexElement.js'));
 
 export type InlineElementsProps = {
 	children: (MessageParser.Inlines | { fallback: MessageParser.Plain; type: undefined })[];

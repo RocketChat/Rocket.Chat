@@ -6,7 +6,7 @@ import hljs from 'highlight.js';
 import { Fragment, useContext, useLayoutEffect, useMemo, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { MarkupInteractionContext } from '../MarkupInteractionContext';
+import { MarkupInteractionContext } from '../MarkupInteractionContext.js';
 
 export type CodeBlockProps = {
 	language?: string;

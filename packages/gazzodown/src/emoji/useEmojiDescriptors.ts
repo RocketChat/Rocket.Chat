@@ -2,7 +2,7 @@ import type * as MessageParser from '@rocket.chat/message-parser';
 import DOMPurify from 'dompurify';
 import { useContext, useMemo } from 'react';
 
-import { MarkupInteractionContext } from '../MarkupInteractionContext';
+import { MarkupInteractionContext } from '../MarkupInteractionContext.js';
 
 export const useEmojiDescriptors = (emoji: MessageParser.Emoji) => {
 	const { detectEmoji } = useContext(MarkupInteractionContext);

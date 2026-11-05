@@ -1,14 +1,14 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, MessageBody, MessageContainer } from '@rocket.chat/fuselage';
-import colors from '@rocket.chat/fuselage-tokens/dist/colors.json';
+import colors from '@rocket.chat/fuselage-tokens/dist/colors.json' with { type: 'json' };
 import type { Options } from '@rocket.chat/message-parser';
 import { parse } from '@rocket.chat/message-parser';
 import type { Meta, StoryObj } from '@storybook/react';
-import outdent from 'outdent';
+import { outdent } from 'outdent';
 import { Suspense } from 'react';
 
-import Markup from './Markup';
-import { MarkupInteractionContext } from './MarkupInteractionContext';
+import Markup from './Markup.js';
+import { MarkupInteractionContext } from './MarkupInteractionContext.js';
 
 export default {
 	component: Markup,

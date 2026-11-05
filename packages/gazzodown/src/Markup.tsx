@@ -2,19 +2,19 @@ import { Divider } from '@rocket.chat/fuselage';
 import type * as MessageParser from '@rocket.chat/message-parser';
 import { lazy, memo } from 'react';
 
-import HeadingBlock from './blocks/HeadingBlock';
-import OrderedListBlock from './blocks/OrderedListBlock';
-import ParagraphBlock from './blocks/ParagraphBlock';
-import QuoteBlock from './blocks/QuoteBlock';
-import SpoilerBlock from './blocks/SpoilerBlock';
-import TableBlock from './blocks/TableBlock';
-import TaskList from './blocks/TaskListBlock';
-import UnorderedListBlock from './blocks/UnorderedListBlock';
-import BigEmojiBlock from './emoji/BigEmojiBlock';
-import KatexErrorBoundary from './katex/KatexErrorBoundary';
+import HeadingBlock from './blocks/HeadingBlock.js';
+import OrderedListBlock from './blocks/OrderedListBlock.js';
+import ParagraphBlock from './blocks/ParagraphBlock.js';
+import QuoteBlock from './blocks/QuoteBlock.js';
+import SpoilerBlock from './blocks/SpoilerBlock.js';
+import TableBlock from './blocks/TableBlock.js';
+import TaskList from './blocks/TaskListBlock.js';
+import UnorderedListBlock from './blocks/UnorderedListBlock.js';
+import BigEmojiBlock from './emoji/BigEmojiBlock.js';
+import KatexErrorBoundary from './katex/KatexErrorBoundary.js';
 
-const CodeBlock = lazy(() => import('./code/CodeBlock'));
-const KatexBlock = lazy(() => import('./katex/KatexBlock'));
+const CodeBlock = lazy(() => import('./code/CodeBlock.js'));
+const KatexBlock = lazy(() => import('./katex/KatexBlock.js'));
 
 export type MarkupProps = {
 	tokens: MessageParser.Root;
