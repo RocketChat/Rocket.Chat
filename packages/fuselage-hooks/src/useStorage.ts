@@ -4,13 +4,27 @@ import { useRef, useCallback, useSyncExternalStore, useState } from 'react';
 
 const ee = new Emitter<Record<`fuselage-${string}`, any>>();
 
-const getKeyPrefix = (storage: Storage | undefined) => {
-	if (storage === globalThis.window?.sessionStorage) {
-		return 'fuselage-sessionStorage' as const;
+const getWindowStorage = (storageType: 'localStorage' | 'sessionStorage'): Storage | undefined => {
+	try {
+		return typeof window === 'undefined' ? undefined : window[storageType];
+	} catch {
+		return undefined;
 	}
+};
 
-	if (storage === globalThis.window?.localStorage) {
-		return 'fuselage-localStorage' as const;
+const getKeyPrefix = (storage: Storage | undefined) => {
+	if (!storage) return 'fuselage-unknownStorage' as const;
+
+	try {
+		if (storage === globalThis.window?.sessionStorage) {
+			return 'fuselage-sessionStorage' as const;
+		}
+
+		if (storage === globalThis.window?.localStorage) {
+			return 'fuselage-localStorage' as const;
+		}
+	} catch {
+		return 'fuselage-unknownStorage' as const;
 	}
 
 	return 'fuselage-unknownStorage' as const;
@@ -19,14 +33,23 @@ const getKeyPrefix = (storage: Storage | undefined) => {
 const getStorageItem = <T>(storedKey: `fuselage-${string}`, fallbackValue: T, storage?: Storage): T => {
 	if (!storage) return fallbackValue;
 
-	const item = storage.getItem(storedKey);
-	return item ? JSON.parse(item) : fallbackValue;
+	try {
+		const item = storage.getItem(storedKey);
+		return item ? JSON.parse(item) : fallbackValue;
+	} catch {
+		return fallbackValue;
+	}
 };
 
 const setStorageItem = <T>(storedKey: `fuselage-${string}`, value: T, storage?: Storage): void => {
 	if (!storage) return;
 
-	storage.setItem(storedKey, JSON.stringify(value));
+	const serialized = JSON.stringify(value);
+	try {
+		storage.setItem(storedKey, serialized);
+	} catch {
+		// Ignore write errors (quota exceeded, private browsing restrictions)
+	}
 	ee.emit(storedKey, value);
 };
 
@@ -58,7 +81,13 @@ export const useStorage = <T>(storage: Storage | undefined, key: string, fallbac
 				if (event.storageArea !== storage) return;
 				if (event.key !== storedKey) return;
 
-				ee.emit(storedKey, event.newValue ? JSON.parse(event.newValue) : fallbackValueRef.current);
+				let parsedValue: T;
+				try {
+					parsedValue = event.newValue ? JSON.parse(event.newValue) : fallbackValueRef.current;
+				} catch {
+					parsedValue = fallbackValueRef.current;
+				}
+				ee.emit(storedKey, parsedValue);
 			};
 
 			const offCb = ee.on(storedKey, (value: T): void => {
@@ -96,7 +125,7 @@ export const useStorage = <T>(storage: Storage | undefined, key: string, fallbac
  * @returns a state and a setter function
  * @public
  */
-export const useLocalStorage = useStorage.bind(null, typeof window !== 'undefined' ? window.localStorage : undefined) as <T>(
+export const useLocalStorage = useStorage.bind(null, getWindowStorage('localStorage')) as <T>(
 	key: string,
 	fallbackValue: T,
 ) => [T, Dispatch<SetStateAction<T>>];
@@ -108,7 +137,7 @@ export const useLocalStorage = useStorage.bind(null, typeof window !== 'undefine
  * @returns a state and a setter function
  * @public
  */
-export const useSessionStorage = useStorage.bind(null, typeof window !== 'undefined' ? window.sessionStorage : undefined) as <T>(
+export const useSessionStorage = useStorage.bind(null, getWindowStorage('sessionStorage')) as <T>(
 	key: string,
 	fallbackValue: T,
 ) => [T, Dispatch<SetStateAction<T>>];

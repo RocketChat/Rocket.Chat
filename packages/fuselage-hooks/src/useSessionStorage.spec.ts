@@ -19,3 +19,12 @@ it('returns a new value', () => {
 	const [value] = result.current;
 	expect(value).toStrictEqual('value-new');
 });
+
+it('falls back to default value when stored item is invalid JSON', () => {
+	window.sessionStorage.setItem('fuselage-sessionStorage-corrupt-key', 'invalid-json{');
+
+	const { result } = renderHook(() => useSessionStorage('corrupt-key', 'value-fallback'));
+	const [value] = result.current;
+
+	expect(value).toStrictEqual('value-fallback');
+});
