@@ -8,6 +8,9 @@ import type {
 	LicenseLimitKind,
 	BehaviorWithContext,
 	LicenseBehavior,
+	LicenseCandidateSource,
+	LicenseDiagnostics,
+	LicenseDiagnosticsCandidate,
 	LicenseInfo,
 	LicenseValidationOptions,
 	LimitContext,
@@ -51,6 +54,8 @@ import { runValidation } from './validation/runValidation';
 import { validateDefaultLimits } from './validation/validateDefaultLimits';
 import { validateFormat } from './validation/validateFormat';
 import { validateLicenseLimits } from './validation/validateLicenseLimits';
+import { isPeriodInvalid } from './validation/validateLicensePeriods';
+import { matchesServerUrl } from './validation/validateLicenseUrl';
 
 const globalLimitKinds: LicenseLimitKind[] = ['activeUsers', 'guestUsers', 'privateApps', 'marketplaceApps', 'monthlyActiveContacts'];
 
@@ -274,6 +279,14 @@ export abstract class LicenseManager extends Emitter<LicenseEvents> {
 		return this.setLicenseV3(convertToV3(newLicense), encryptedLicense, newLicense, isNewLicense);
 	}
 
+	private async decodeLicense(encryptedLicense: string): Promise<ILicenseV3> {
+		await validateFormat(encryptedLicense);
+
+		const decrypted = JSON.parse(await decrypt(encryptedLicense));
+		const license: ILicenseV3 = encryptedLicense.startsWith('RCV3_') ? decrypted : convertToV3(decrypted);
+		return license;
+	}
+
 	private isLicenseDuplicated(encryptedLicense: string): boolean {
 		return Boolean(this._lockedLicense && this._lockedLicense === encryptedLicense);
 	}
@@ -359,10 +372,7 @@ export abstract class LicenseManager extends Emitter<LicenseEvents> {
 
 		let license: ILicenseV3;
 		try {
-			await validateFormat(encryptedLicense);
-
-			const decrypted = JSON.parse(await decrypt(encryptedLicense));
-			license = encryptedLicense.startsWith('RCV3_') ? decrypted : convertToV3(decrypted);
+			license = await this.decodeLicense(encryptedLicense);
 		} catch (err) {
 			logger.error({ msg: 'Invalid raw license provided for validation preview', err });
 			return { valid: false, reasons: [] };
@@ -377,6 +387,89 @@ export abstract class LicenseManager extends Emitter<LicenseEvents> {
 		const reasons = filterBehaviorsResult(validationResult, ['invalidate_license', 'prevent_installation']);
 
 		return reasons.length ? { valid: false, reasons } : { valid: true };
+	}
+
+	public async getDiagnostics({
+		candidates,
+	}: {
+		candidates: { source: LicenseCandidateSource; token: string }[];
+	}): Promise<LicenseDiagnostics> {
+		const tokens = new Map<string, LicenseCandidateSource[]>();
+		for (const { source, token } of candidates) {
+			const trimmed = (token ?? '').trim();
+			if (trimmed) {
+				tokens.set(trimmed, [...(tokens.get(trimmed) ?? []), source]);
+			}
+		}
+
+		const hasValidLicense = this.hasValidLicense();
+		let status: LicenseDiagnostics['status'] = tokens.size > 0 || this._license ? 'invalid' : 'none';
+		if (hasValidLicense) {
+			status = 'valid';
+		}
+		const pending = hasPendingLicense.call(this);
+		const workspaceUrl = this.getWorkspaceUrl();
+
+		if (!workspaceUrl || !isReadyForValidation.call(this)) {
+			return { status, ready: false, workspace: { normalizedUrl: workspaceUrl }, candidates: [], pending, needsReapply: false };
+		}
+
+		const urlHash = this.hashWorkspaceUrl(workspaceUrl);
+
+		const results = await Promise.all([...tokens].map(([token, sources]) => this.diagnoseCandidate(token, sources, workspaceUrl, urlHash)));
+
+		const loadedValid = results.find((candidate) => candidate.loaded && candidate.decoded && candidate.valid);
+		const lead = loadedValid ?? results.find((candidate) => candidate.sources.includes('setting')) ?? results[0];
+
+		return {
+			status,
+			ready: true,
+			workspace: { normalizedUrl: workspaceUrl, urlHash },
+			diagnosed: lead?.sources[0],
+			candidates: results,
+			pending,
+			needsReapply: !hasValidLicense && results.some((candidate) => candidate.decoded && candidate.valid),
+		};
+	}
+
+	private async diagnoseCandidate(
+		token: string,
+		sources: LicenseCandidateSource[],
+		workspaceUrl: string,
+		urlHash: string,
+	): Promise<LicenseDiagnosticsCandidate> {
+		const candidate = { sources, tokenTail: token.length > 8 ? token.slice(-8) : '', loaded: token === this._lockedLicense };
+
+		let license: ILicenseV3;
+		try {
+			license = await this.decodeLicense(token);
+		} catch {
+			return { ...candidate, decoded: false };
+		}
+
+		const behaviors = await runValidation.call(this, license, {
+			behaviors: licenseValidationBehaviors,
+			isNewLicense: !sources.includes('setting'),
+			suppressLog: true,
+		});
+
+		return {
+			...candidate,
+			decoded: true,
+			valid: !filterBehaviorsResult(behaviors, ['invalidate_license', 'prevent_installation']).length,
+			trial: license.information.trial,
+			offline: license.information.offline,
+			createdAt: license.information.createdAt,
+			tags: license.information.tags ?? [],
+			validPeriods: license.validation.validPeriods.map(({ validFrom, validUntil, invalidBehavior }) => ({
+				validFrom,
+				validUntil,
+				invalidBehavior,
+				inRange: !isPeriodInvalid(validFrom, validUntil),
+			})),
+			serverUrls: license.validation.serverUrls.map((url) => ({ ...url, matches: matchesServerUrl(url, workspaceUrl, urlHash) })),
+			behaviors,
+		};
 	}
 
 	public async setLicense(encryptedLicense: string, isNewLicense = true): Promise<boolean> {

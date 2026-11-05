@@ -1,4 +1,4 @@
-import type { Cloud, LicenseInfo } from '@rocket.chat/core-typings';
+import type { Cloud, LicenseDiagnostics, LicenseInfo } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { Settings, Users } from '@rocket.chat/models';
 import {
@@ -11,11 +11,15 @@ import {
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 
+import { Info } from '../../../rocketchat.info';
+import type { ExtractRoutesFromAPI } from '../../../server/api/ApiClass';
 import { API } from '../../../server/api/api';
 import { hasPermissionAsync } from '../../../server/lib/authorization/hasPermission';
+import { retrieveRegistrationStatus } from '../../../server/lib/cloud/retrieveRegistrationStatus';
 import { notifyOnSettingChangedById } from '../../../server/lib/notifyListener';
 import { settings } from '../../../server/settings';
 import { updateAuditedByUser } from '../../../server/settings/lib/auditedSettingUpdates';
+import { buildDiagnosticsSummary, type DiagnosticsCloud } from '../lib/license/buildDiagnosticsSummary';
 
 // LicenseInfo is a large, loosely-matching shape (branded LicenseModule names, partial `limits`,
 // a nested ILicenseV3) that a strict typia $ref can't validate without fighting the type, so the
@@ -180,3 +184,78 @@ API.v1.get(
 		return API.v1.success({ maxActiveUsers: maxActiveUsers > 0 ? maxActiveUsers : null, activeUsers });
 	},
 );
+
+type LicensesDiagnosticsResponse = Omit<LicenseDiagnostics, 'workspace'> & {
+	workspace: LicenseDiagnostics['workspace'] & { siteUrl: string };
+	overwrittenByEnv: boolean;
+	summaryText: string;
+	cloud?: DiagnosticsCloud;
+};
+
+const licensesDiagnosticsResponseSchema = ajv.compile<LicensesDiagnosticsResponse>({
+	type: 'object',
+	properties: {
+		status: { type: 'string', enum: ['valid', 'invalid', 'none'] },
+		ready: { type: 'boolean' },
+		workspace: { type: 'object' },
+		diagnosed: { type: 'string', enum: ['setting', 'environment'] },
+		candidates: { type: 'array', items: { type: 'object' } },
+		pending: { type: 'boolean' },
+		needsReapply: { type: 'boolean' },
+		overwrittenByEnv: { type: 'boolean' },
+		summaryText: { type: 'string' },
+		cloud: { type: 'object' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['status', 'ready', 'workspace', 'candidates', 'pending', 'needsReapply', 'overwrittenByEnv', 'summaryText', 'success'],
+	additionalProperties: false,
+});
+
+const getCloudDiagnostics = async (): Promise<DiagnosticsCloud> => {
+	const { workspaceRegistered, workspaceId } = await retrieveRegistrationStatus();
+
+	return {
+		registered: workspaceRegistered,
+		workspaceId: workspaceId || null,
+		restrictionDays: settings.get<number>('Cloud_Workspace_AirGapped_Restrictions_Remaining_Days'),
+	};
+};
+
+const licensesDiagnosticsEndpoints = API.v1.get(
+	'licenses.diagnostics',
+	{
+		authRequired: true,
+		permissionsRequired: ['view-privileged-setting'],
+		response: {
+			200: licensesDiagnosticsResponseSchema,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+	},
+	async function action() {
+		const diagnostics = await License.getDiagnostics({
+			candidates: [
+				{ source: 'setting', token: settings.get<string>('Enterprise_License') ?? '' },
+				{ source: 'environment', token: process.env.ROCKETCHAT_LICENSE ?? '' },
+			],
+		});
+		const siteUrl = settings.get<string>('Site_Url');
+		const overwrittenByEnv = settings.getSetting('Enterprise_License')?.valueSource === 'processEnvValue';
+		const cloud = (await hasPermissionAsync(this.user, 'manage-cloud')) ? await getCloudDiagnostics() : undefined;
+
+		return API.v1.success({
+			...diagnostics,
+			workspace: { ...diagnostics.workspace, siteUrl },
+			overwrittenByEnv,
+			...(cloud && { cloud }),
+			summaryText: buildDiagnosticsSummary({ diagnostics, siteUrl, overwrittenByEnv, cloud, version: Info.version, now: new Date() }),
+		});
+	},
+);
+
+export type LicensesDiagnosticsEndpoints = ExtractRoutesFromAPI<typeof licensesDiagnosticsEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// oxlint-disable-next-line @typescript-eslint/no-empty-interface, @typescript-eslint/no-empty-object-type
+	interface Endpoints extends LicensesDiagnosticsEndpoints {}
+}
