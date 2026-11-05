@@ -4,12 +4,12 @@ import type { ReactNode } from 'react';
 import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useEmbeddedLayout } from '../../hooks/useEmbeddedLayout';
-import { HoverCard, HoverCardActions, HoverCardBand, HoverCardInfoItem, HoverCardInfoList, HoverCardSection } from '../HoverCard';
-import { MarkdownTextContext } from '../MarkdownTextContext';
-import * as Status from '../UserStatus';
-import UserCardHeader from './UserCardHeader';
-import UserCardRoles from './UserCardRoles';
+import { useEmbeddedLayout } from '../../hooks/useEmbeddedLayout.js';
+import { HoverCard, HoverCardActions, HoverCardBand, HoverCardInfoItem, HoverCardInfoList, HoverCardSection } from '../HoverCard/index.js';
+import { MarkdownTextContext } from '../MarkdownTextContext.js';
+import UserCardHeader from './UserCardHeader.js';
+import UserCardRoles from './UserCardRoles.js';
+import * as Status from '../UserStatus/index.js';
 
 export type UserCardProps = {
 	user?: {

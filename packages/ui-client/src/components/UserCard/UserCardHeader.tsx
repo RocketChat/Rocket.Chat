@@ -1,7 +1,7 @@
 import { Box, Item, ItemContent, ItemDescription, ItemMedia, ItemTitle } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 
-import UserCardUsername from './UserCardUsername';
+import UserCardUsername from './UserCardUsername.js';
 
 export type UserCardHeaderProps = {
 	avatar?: ReactNode;

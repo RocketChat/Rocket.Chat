@@ -1,7 +1,7 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { renderHook, waitFor } from '@testing-library/react';
 
-import { useUserCustomFields } from './useUserCustomFields';
+import { useUserCustomFields } from './useUserCustomFields.js';
 
 it('should not break with invalid Accounts_CustomFieldsToShowInUserInfo setting', async () => {
 	const { result } = renderHook(

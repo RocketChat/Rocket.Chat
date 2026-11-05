@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 
-import { WizardContext } from './WizardContext';
+import { WizardContext } from './WizardContext.js';
 
 export const useWizardContext = () => {
 	const context = useContext(WizardContext);

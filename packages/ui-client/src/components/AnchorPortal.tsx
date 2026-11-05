@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { useLayoutEffect } from 'react';
 import { createPortal } from 'react-dom';
 
-import { ensureAnchorElement, refAnchorElement, unrefAnchorElement } from '../helpers/anchors';
+import { ensureAnchorElement, refAnchorElement, unrefAnchorElement } from '../helpers/anchors.js';
 
 export type AnchorPortalProps = {
 	id: string;

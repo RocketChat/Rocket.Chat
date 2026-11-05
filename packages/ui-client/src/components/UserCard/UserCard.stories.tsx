@@ -1,6 +1,6 @@
 import type { Meta } from '@storybook/react';
 
-import { UserCard, UserCardRole, UserCardAction } from '.';
+import { UserCard, UserCardRole, UserCardAction } from './index.js';
 
 const user = {
 	name: 'Guilherme Gazzo',

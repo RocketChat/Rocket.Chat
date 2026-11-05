@@ -1,7 +1,7 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { act, renderHook } from '@testing-library/react';
 
-import { usePagination } from './usePagination';
+import { usePagination } from './usePagination.js';
 
 it('should go back to the first page when the reset key changes', () => {
 	const { result, rerender } = renderHook(({ resetKey }) => usePagination({ resetKey }), {

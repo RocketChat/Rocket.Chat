@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react';
 import { useState } from 'react';
 
-import ModalProvider from './ModalProvider';
-import ModalRegion from '../../components/Modal/ModalRegion';
+import ModalProvider from './ModalProvider.js';
+import ModalRegion from '../../components/Modal/ModalRegion.js';
 
 export type ModalProviderWithRegionProps = { children?: ReactNode };
 

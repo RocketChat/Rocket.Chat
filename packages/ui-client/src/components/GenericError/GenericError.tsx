@@ -2,8 +2,8 @@ import { Box, States, StatesIcon, StatesTitle, StatesActions, StatesAction } fro
 import type { Keys as IconName } from '@rocket.chat/icons';
 import { useTranslation } from 'react-i18next';
 
-import CopyErrorReportAction from '../ErrorReport/CopyErrorReportAction';
-import type { CopyErrorReportActionProps } from '../ErrorReport/CopyErrorReportAction';
+import CopyErrorReportAction from '../ErrorReport/CopyErrorReportAction.js';
+import type { CopyErrorReportActionProps } from '../ErrorReport/CopyErrorReportAction.js';
 
 export type GenericErrorProps = {
 	icon?: IconName;

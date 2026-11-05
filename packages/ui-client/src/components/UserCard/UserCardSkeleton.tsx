@@ -1,7 +1,7 @@
 import { Box, Skeleton } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-import { HoverCard, HoverCardSection } from '../HoverCard';
+import { HoverCard, HoverCardSection } from '../HoverCard/index.js';
 
 const UserCardSkeleton = () => {
 	const { t } = useTranslation();

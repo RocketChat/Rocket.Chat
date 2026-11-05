@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import type { ComponentType } from 'react';
 
-import * as UserStatus from '.';
-import { useAutoSequence } from '../../hooks/useAutoSequence';
+import * as UserStatus from './index.js';
+import { useAutoSequence } from '../../hooks/useAutoSequence.js';
 
 export default {
 	component: UserStatus.UserStatus,

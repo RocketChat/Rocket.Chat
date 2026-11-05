@@ -1,5 +1,5 @@
-import type { WizardAPI } from '../WizardContext';
-import StepsLinkedList from '../lib/StepsLinkedList';
+import type { WizardAPI } from '../WizardContext.js';
+import StepsLinkedList from '../lib/StepsLinkedList.js';
 
 export const createMockWizardApi = (overrides?: Partial<WizardAPI>) => {
 	const steps = new StepsLinkedList([

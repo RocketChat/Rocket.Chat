@@ -1,8 +1,8 @@
 import type { ReactElement } from 'react';
 import { Children, Suspense, cloneElement } from 'react';
 
-import { useFeaturePreview } from '../../hooks/useFeaturePreview';
-import type { FeaturesAvailable } from '../../hooks/useFeaturePreviewList';
+import { useFeaturePreview } from '../../hooks/useFeaturePreview.js';
+import type { FeaturesAvailable } from '../../hooks/useFeaturePreviewList.js';
 
 export type FeaturePreviewProps = {
 	feature: FeaturesAvailable;

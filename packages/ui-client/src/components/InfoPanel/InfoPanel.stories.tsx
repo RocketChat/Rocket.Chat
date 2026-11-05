@@ -11,7 +11,7 @@ import {
 	InfoPanelSection,
 	InfoPanelText,
 	InfoPanelTitle,
-} from '.';
+} from './index.js';
 
 export default {
 	component: InfoPanel,

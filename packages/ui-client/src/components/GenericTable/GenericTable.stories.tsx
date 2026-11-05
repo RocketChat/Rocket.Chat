@@ -9,7 +9,7 @@ import {
 	GenericTableHeader,
 	GenericTableBody,
 	GenericTableLoadingTable,
-} from '.';
+} from './index.js';
 
 export default {
 	component: GenericTable,

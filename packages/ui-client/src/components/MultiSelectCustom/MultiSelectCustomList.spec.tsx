@@ -1,7 +1,7 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
 
-import MultiSelectCustomList from './MultiSelectCustomList';
+import MultiSelectCustomList from './MultiSelectCustomList.js';
 
 it('should render options with correct checked state', () => {
 	render(

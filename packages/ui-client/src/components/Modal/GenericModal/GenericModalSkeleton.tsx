@@ -1,7 +1,7 @@
 import { Skeleton } from '@rocket.chat/fuselage';
 import type { ComponentPropsWithoutRef } from 'react';
 
-import GenericModal from './GenericModal';
+import GenericModal from './GenericModal.js';
 
 const GenericModalSkeleton = (props: ComponentPropsWithoutRef<typeof GenericModal>) => (
 	<GenericModal {...props} icon={null} title={<Skeleton width='50%' />}>

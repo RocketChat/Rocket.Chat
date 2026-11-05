@@ -3,7 +3,7 @@ import { ModalContext } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import { useMemo, memo, useSyncExternalStore } from 'react';
 
-import { modalStore } from './ModalStore';
+import { modalStore } from './ModalStore.js';
 
 export type ModalProviderProps = {
 	children?: ReactNode;

@@ -1,7 +1,7 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { renderHook } from '@testing-library/react';
 
-import { useFeaturePreview } from './useFeaturePreview';
+import { useFeaturePreview } from './useFeaturePreview.js';
 
 it('should return false if featurePreviewEnabled is false', () => {
 	const { result } = renderHook(() => useFeaturePreview('secondarySidebar'), {
