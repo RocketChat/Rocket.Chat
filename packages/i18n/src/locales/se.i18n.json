@@ -1,1 +1,10 @@
-{ }
+{
+  "Apple_Watch": "Apple Watch",
+  "Apple_Watch_Quick_Actions": "Apple Watch jođánis doaimmat",
+  "Apple_Watch_Quick_Actions_Description": "Apple Watch-prográmma standárda jođánis vástádusat, mat leat juhkkojuvvon kommáiguin. Dat lasihuvvojit geavaheaddji listui dalle go geavaheaddji vuosttaš háve logge sisa ovttadahkii mas lea diibmoprográmma; listtut maid geavaheaddjis lea juo eai rievdaduvvo. Divtte guorus jos it hálit standárdavástádusaid.",
+  "Apple_Watch_Quick_Actions_Max_Count": "Jođánis vástádusaid alimus lohku",
+  "Apple_Watch_Quick_Actions_Max_Count_Description": "Alimus lohku jođánis vástádusain maid geavaheaddji sáhttá doallat. Standárdavástádusat mat ravdet dán logu eai lasihuvvo geavaheaddji listui. Lobiduvvon mearri: 1 rájes 100 rádjái.",
+  "Apple_Watch_Quick_Actions_Max_Length": "Jođánis vástádusa alimus guhkkodat",
+  "Apple_Watch_Quick_Actions_Max_Length_Description": "Alimus lohku mearkkain ovtta jođánis vástádusas. Guhkit standárdavástádusat oanehuvvojit dán guhkkodahkii. Lobiduvvon mearri: 1 rájes 100 rádjái.",
+  "Apple_Watch_Quick_Replies_Default": "Standárda jođánis vástádusat"
+}
