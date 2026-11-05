@@ -1,0 +1,24 @@
+.changeset/federation-unquoted-x-matrix-params.md
+  s_54c5388c2e88fa::t_24e3ac02451337 1-7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "203d5ff96b613a12f85d9e59c57b4d177a4858c0",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_54c5388c2e88fa": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "07c0f695-3dac-4588-ad50-e082c76935db",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
