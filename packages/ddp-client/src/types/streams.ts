@@ -178,6 +178,7 @@ export interface StreamerEvents {
 		{ key: `${string}/updateInvites`; args: [unknown] },
 		{ key: `${string}/departmentAgentData`; args: [unknown] },
 		{ key: `${string}/calendar`; args: [ICalendarNotification] },
+		{ key: `${string}/scheduled-messages`; args: [] },
 		{ key: `${string}/banners`; args: [IBanner] },
 	];
 

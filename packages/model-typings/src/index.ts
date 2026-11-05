@@ -82,3 +82,4 @@ export type * from './models/ICallHistoryModel';
 export type * from './models/IAbacAttributesModel';
 export type * from './models/ITwoFactorChallengesModel';
 export type * from './models/ISamlUsedAssertionsModel';
+export type * from './models/IScheduledMessagesModel';
