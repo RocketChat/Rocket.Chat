@@ -157,7 +157,7 @@ export class ListenersModule {
 
 		service.onEvent('room.video-conference', ({ rid, callId }) => {
 			/* deprecated */
-			(notifications.notifyRoomInThisInstance as any)(rid, callId);
+			notifications.streamRoom._emit(`${rid}/${callId}`, [], undefined, false);
 
 			notifications.notifyRoomInThisInstance(rid, 'videoconf', callId);
 		});
@@ -264,18 +264,21 @@ export class ListenersModule {
 		});
 
 		service.onEvent('watch.subscriptions', ({ clientAction, subscription }) => {
-			if (!subscription.u?._id) {
+			const userId = subscription.u?._id;
+			if (!userId) {
 				return;
 			}
 
-			// emit a removed event on msg stream to remove the user's stream-room-messages subscription when the user is removed from room
 			if (clientAction === 'removed') {
-				notifications.streamRoomMessage.__emit(subscription.u._id, clientAction, subscription);
+				// emit a removed event on msg stream to remove the user's stream-room-messages subscription when the user is removed from room
+				notifications.streamRoomMessage.__emit(userId, clientAction, subscription);
+				notifications.streamUser.__emit(userId, clientAction, subscription);
+				notifications.notifyUserInThisInstance(userId, 'subscriptions-changed', clientAction, subscription);
+				return;
 			}
 
-			notifications.streamUser.__emit(subscription.u._id, clientAction, subscription);
-
-			notifications.notifyUserInThisInstance(subscription.u._id, 'subscriptions-changed', clientAction, subscription as any);
+			notifications.streamUser.__emit(userId, clientAction, subscription);
+			notifications.notifyUserInThisInstance(userId, 'subscriptions-changed', clientAction, subscription);
 		});
 
 		service.onEvent('watch.roles', ({ clientAction, role }): void => {
