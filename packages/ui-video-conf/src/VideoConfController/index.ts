@@ -1,1 +1,1 @@
-export { default } from './VideoConfController';
+export { default } from './VideoConfController.js';

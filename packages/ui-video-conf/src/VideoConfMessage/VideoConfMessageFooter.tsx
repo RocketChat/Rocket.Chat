@@ -1,7 +1,7 @@
 import { Stack } from '@rocket.chat/fuselage';
 import type { AllHTMLAttributes } from 'react';
 
-import VideoConfMessageRow from './VideoConfMessageRow';
+import VideoConfMessageRow from './VideoConfMessageRow.js';
 
 export type VideoConfMessageFooterProps = Omit<AllHTMLAttributes<HTMLDivElement>, 'is'>;
 
