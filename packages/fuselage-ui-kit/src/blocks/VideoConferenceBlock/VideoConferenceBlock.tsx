@@ -20,11 +20,11 @@ import type { MouseEventHandler } from 'react';
 import { useContext, memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { UiKitContext } from '../..';
-import { useGoToRoom } from './hooks/useGoToRoom';
-import { useVideoConfDataStream } from './hooks/useVideoConfDataStream';
-import { useSurfaceType } from '../../hooks/useSurfaceType';
-import type { BlockProps } from '../../utils/BlockProps';
+import { UiKitContext } from '../../index.js';
+import { useGoToRoom } from './hooks/useGoToRoom.js';
+import { useVideoConfDataStream } from './hooks/useVideoConfDataStream.js';
+import { useSurfaceType } from '../../hooks/useSurfaceType.js';
+import type { BlockProps } from '../../utils/BlockProps.js';
 
 export type VideoConferenceBlockProps = BlockProps<UiKit.VideoConferenceBlock>;
 

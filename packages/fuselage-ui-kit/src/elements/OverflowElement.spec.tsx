@@ -2,11 +2,11 @@ import { MockedServerContext } from '@rocket.chat/mock-providers';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { BlockContext } from '@rocket.chat/ui-kit';
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 
-import OverflowElement from './OverflowElement';
-import { UiKitContext } from '../contexts/UiKitContext';
-import { messageParser } from '../surfaces';
+import OverflowElement from './OverflowElement.js';
+import { UiKitContext } from '../contexts/UiKitContext.js';
+import { messageParser } from '../surfaces/index.js';
 
 const selectOption = async (url: string) => {
 	const block: UiKit.OverflowElement = {

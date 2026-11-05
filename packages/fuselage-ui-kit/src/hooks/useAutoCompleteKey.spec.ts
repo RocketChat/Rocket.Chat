@@ -1,6 +1,6 @@
 import { renderHook } from '@testing-library/react';
 
-import { useAutoCompleteKey } from './useAutoCompleteKey';
+import { useAutoCompleteKey } from './useAutoCompleteKey.js';
 
 it('changes the key once the selected options load, and keeps it when a later search leaves them out', () => {
 	const { result, rerender } = renderHook(({ options }) => useAutoCompleteKey(['general'], options), {

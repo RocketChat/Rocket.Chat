@@ -1,4 +1,4 @@
-import { limitOptions } from './limitOptions';
+import { limitOptions } from './limitOptions.js';
 
 const options = [{ value: 'a' }, { value: 'b' }, { value: 'c' }];
 

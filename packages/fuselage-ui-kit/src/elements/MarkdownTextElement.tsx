@@ -4,7 +4,7 @@ import { parse } from '@rocket.chat/message-parser';
 import type { TextObject } from '@rocket.chat/ui-kit';
 import { Suspense } from 'react';
 
-import { useAppTranslation } from '../hooks/useAppTranslation';
+import { useAppTranslation } from '../hooks/useAppTranslation.js';
 
 export type MarkdownTextElementProps = { textObject: TextObject };
 

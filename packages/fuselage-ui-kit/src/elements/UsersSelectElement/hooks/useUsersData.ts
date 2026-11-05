@@ -2,7 +2,7 @@ import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { keepPreviousData, useQueries, useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
-import type { UserAutoCompleteOptionType } from '../UsersSelectElement';
+import type { UserAutoCompleteOptionType } from '../UsersSelectElement.js';
 
 type useUsersDataProps = {
 	filter: string;

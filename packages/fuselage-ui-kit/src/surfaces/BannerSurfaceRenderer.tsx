@@ -1,6 +1,6 @@
 import * as UiKit from '@rocket.chat/ui-kit';
 
-import { FuselageSurfaceRenderer, renderTextObject } from './FuselageSurfaceRenderer';
+import { FuselageSurfaceRenderer, renderTextObject } from './FuselageSurfaceRenderer.js';
 
 export class BannerSurfaceRenderer extends FuselageSurfaceRenderer {
 	public constructor() {

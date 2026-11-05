@@ -2,11 +2,11 @@ import { MockedServerContext } from '@rocket.chat/mock-providers';
 import type { MultiUsersSelectElement as MultiUsersSelectElementType } from '@rocket.chat/ui-kit';
 import { BlockContext } from '@rocket.chat/ui-kit';
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 
-import MultiUsersSelectElement from './MultiUsersSelectElement';
-import { contextualBarParser } from '../../surfaces';
-import { useUsersData } from './hooks/useUsersData';
+import MultiUsersSelectElement from './MultiUsersSelectElement.js';
+import { useUsersData } from './hooks/useUsersData.js';
+import { contextualBarParser } from '../../surfaces/index.js';
 
 const usersBlock: MultiUsersSelectElementType = {
 	type: 'multi_users_select',
