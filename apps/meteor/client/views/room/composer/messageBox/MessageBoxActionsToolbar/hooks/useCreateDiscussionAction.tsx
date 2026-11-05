@@ -1,7 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
-import { useTranslation, useSetting, usePermission, useSetModal } from '@rocket.chat/ui-contexts';
+import { useTranslation, useSetting, usePermission, useSetModal, useUserSubscription } from '@rocket.chat/ui-contexts';
 
 import CreateDiscussion from '../../../../../../components/CreateDiscussion';
 
@@ -13,14 +13,15 @@ export const useCreateDiscussionAction = (disabled: boolean, room?: IRoom): Gene
 		throw new Error('Invalid room');
 	}
 
+	const parentRoomId = room.prid || room._id;
+
 	const handleCreateDiscussion = () =>
-		setModal(
-			<CreateDiscussion onClose={() => setModal(null)} defaultParentRoom={room?.prid || room?._id} encryptedParentRoom={room?.encrypted} />,
-		);
+		setModal(<CreateDiscussion onClose={() => setModal(null)} defaultParentRoom={parentRoomId} encryptedParentRoom={room?.encrypted} />);
 
 	const discussionEnabled = useSetting('Discussion_enabled', true);
 	const canStartDiscussion = usePermission('start-discussion', room._id);
 	const canSstartDiscussionOtherUser = usePermission('start-discussion-other-user', room._id);
+	const isParentRoomMember = Boolean(useUserSubscription(parentRoomId));
 
 	const allowDiscussion = room && discussionEnabled && !isRoomFederated(room) && (canStartDiscussion || canSstartDiscussionOtherUser);
 
@@ -28,7 +29,8 @@ export const useCreateDiscussionAction = (disabled: boolean, room?: IRoom): Gene
 		id: 'create-discussion',
 		content: t('Discussion'),
 		icon: 'discussion',
-		disabled: !allowDiscussion || disabled,
+		disabled: !allowDiscussion || !isParentRoomMember || disabled,
+		...(allowDiscussion && !isParentRoomMember && { tooltip: t('Discussion_requires_parent_membership') }),
 		onClick: handleCreateDiscussion,
 	};
 };

@@ -2282,6 +2282,7 @@
   "Discussion_first_message_title": "Message",
   "Discussion_info": "Discussion info",
   "Discussion_name": "Discussion name",
+  "Discussion_requires_parent_membership": "You must be a member of the parent channel or team to create a discussion",
   "Discussion_start": "Start a discussion",
   "Discussion_target_channel": "Parent channel or team",
   "Discussion_target_channel_description": "Select a channel which is related to what you want to ask",
