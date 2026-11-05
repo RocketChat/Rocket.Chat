@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useConvertToChannel } from './useConvertToChannel';
 import { useLeaveTeam } from './useLeaveTeam';
-import { useHideRoomAction } from '../../../../hooks/useHideRoomAction';
+import { useArchiveRoomAction } from '../../../../hooks/useArchiveRoomAction';
 import { useDeleteRoom } from '../../../hooks/roomActions/useDeleteRoom';
 
 type GenProps = {
@@ -13,7 +13,7 @@ type GenProps = {
 
 export const useTeamActions = (room: IRoom, { onClickEdit }: GenProps) => {
 	const { t } = useTranslation();
-	const hideTeam = useHideRoomAction({ rid: room._id, type: room.t, name: room.name ?? '' });
+	const archiveTeam = useArchiveRoomAction({ rid: room._id });
 	const convertToChannel = useConvertToChannel(room);
 	const { handleDelete, canDeleteRoom } = useDeleteRoom(room);
 	const leaveTeam = useLeaveTeam(room);
@@ -22,10 +22,10 @@ export const useTeamActions = (room: IRoom, { onClickEdit }: GenProps) => {
 		() => ({
 			items: [
 				{
-					id: 'hide',
-					content: t('Hide'),
-					icon: 'eye-off' as const,
-					onClick: hideTeam,
+					id: 'archive',
+					content: t('Archive'),
+					icon: 'archive' as const,
+					onClick: archiveTeam,
 				},
 				...(onClickEdit
 					? [
@@ -70,6 +70,6 @@ export const useTeamActions = (room: IRoom, { onClickEdit }: GenProps) => {
 					: []),
 			],
 		}),
-		[t, hideTeam, leaveTeam, onClickEdit, handleDelete, canDeleteRoom, convertToChannel],
+		[t, archiveTeam, leaveTeam, onClickEdit, handleDelete, canDeleteRoom, convertToChannel],
 	);
 };

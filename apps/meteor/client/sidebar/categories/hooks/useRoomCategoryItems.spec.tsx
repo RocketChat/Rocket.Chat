@@ -23,7 +23,12 @@ const catB = { _id: 'cat-b', name: 'Engineering', showUnreads: true };
 beforeEach(() => {
 	mockedUseCustomCategories.mockReturnValue({ customCategories: [catA, catB] } as any);
 	mockedUseMoveRoomCategory.mockReturnValue({ mutate: jest.fn(), mutateAsync: jest.fn() } as any);
-	mockedUseCategoryModals.mockReturnValue({ openCreate: jest.fn(), openManage: jest.fn(), openDelete: jest.fn() });
+	mockedUseCategoryModals.mockReturnValue({
+		openCreate: jest.fn(),
+		openManage: jest.fn(),
+		openDelete: jest.fn(),
+		openArchiveRooms: jest.fn(),
+	});
 	mockedUseIsEnterprise.mockReturnValue({ data: { isEnterprise: true } } as any);
 });
 

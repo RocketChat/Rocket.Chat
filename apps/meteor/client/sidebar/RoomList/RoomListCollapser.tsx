@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import RoomListActivityFilterChip from './RoomListActivityFilterChip';
 import { usePreventPropagation } from '../../hooks/usePreventPropagation';
 import CategoryMenu from '../categories/CategoryMenu';
+import { SIDEBAR_ARCHIVED_GROUP_KEY } from '../hooks/useCategoryList';
 import type { SidebarRoomListGroup } from '../hooks/useRoomList';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
@@ -39,6 +40,8 @@ const RoomListCollapser = ({
 	const preventPropagation = usePreventPropagation();
 
 	const title = group.translateTitle ? t(group.title) : group.title;
+	// The archived rooms: nothing to move, filter or badge, only to fold and unfold.
+	const isArchivedGroup = group.key === SIDEBAR_ARCHIVED_GROUP_KEY;
 
 	const toggleOnEnterOrSpace = (event: KeyboardEvent<HTMLDivElement>) => {
 		if (event.repeat || !['Enter', 'Space'].includes(event.code)) {
@@ -75,12 +78,14 @@ const RoomListCollapser = ({
 			}
 			actions={filterChip}
 			menu={
-				isEnterprise ? (
+				isEnterprise && !isArchivedGroup ? (
 					<SidebarCollapseGroupMenu onClick={preventPropagation} onKeyDown={preventPropagation}>
 						{menuVisibility ? (
 							<CategoryMenu
 								category={group.category}
 								groupKey={group.key}
+								groupTitle={title}
+								rooms={group.allRooms}
 								showUnreads={group.showUnreads}
 								keepUnreadsOnTop={group.keepUnreadsOnTop}
 								activityFilterHours={group.activityFilterHours}
