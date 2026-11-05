@@ -3,14 +3,15 @@ import { css } from '@rocket.chat/css-in-js';
 import { TextAreaInput, FieldGroup, Field, FieldRow, FieldError, FieldLabel, FieldDescription, Box } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
+import { MessageContentBody } from '@rocket.chat/ui-message-list';
 import { useId } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import MarkdownText from '../../../../components/MarkdownText';
-import MessageContentBody from '../../../../components/message/MessageContentBody';
 import { getMarkdownParserLimit } from '../../../../lib/getMarkdownParserLimit';
 import { toPlainTextRoot } from '../../../../lib/toPlainTextRoot';
+import { MessagesProvider } from '../../../../providers/MessagesProvider';
 
 type ReportMessageModalsFields = {
 	description: string;
@@ -64,7 +65,13 @@ const ReportMessageModal = ({ message, onClose }: ReportMessageModalProps) => {
 			confirmText={t('Report')}
 		>
 			<Box marginBlockEnd={24} className={wordBreak}>
-				{md ? <MessageContentBody md={md} /> : <MarkdownText variant='inline' parseEmoji content={message.msg} />}
+				{md ? (
+					<MessagesProvider allowsInteraction={false}>
+						<MessageContentBody md={md} />
+					</MessagesProvider>
+				) : (
+					<MarkdownText variant='inline' parseEmoji content={message.msg} />
+				)}
 			</Box>
 			<FieldGroup>
 				<Field>

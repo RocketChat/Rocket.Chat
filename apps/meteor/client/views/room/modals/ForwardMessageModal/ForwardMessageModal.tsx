@@ -17,13 +17,14 @@ import {
 import { useClipboard } from '@rocket.chat/fuselage-hooks';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint, useToastMessageDispatch, useUserAvatarPath } from '@rocket.chat/ui-contexts';
+import { MessageQuoteAttachment as QuoteAttachment } from '@rocket.chat/ui-message-list';
 import { useMutation } from '@tanstack/react-query';
 import { memo, useId } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import UserAndRoomAutoCompleteMultiple from '../../../../components/UserAndRoomAutoCompleteMultiple';
-import { QuoteAttachment } from '../../../../components/message/content/attachments/QuoteAttachment';
 import { prependReplies } from '../../../../lib/utils/prependReplies';
+import { MessagesProvider } from '../../../../providers/MessagesProvider';
 
 type ForwardMessageProps = {
 	onClose: () => void;
@@ -120,7 +121,9 @@ const ForwardMessageModal = ({ onClose, permalink, message }: ForwardMessageProp
 						)}
 					</Field>
 					<Field>
-						<QuoteAttachment attachment={attachment} />
+						<MessagesProvider allowsInteraction={false}>
+							<QuoteAttachment attachment={attachment} />
+						</MessagesProvider>
 					</Field>
 				</FieldGroup>
 			</ModalContent>
