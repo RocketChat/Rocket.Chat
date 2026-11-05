@@ -14,11 +14,15 @@ export const useComposerBoxPopupQueries = <T extends { _id: string; sort?: numbe
 
 	const shouldPopupPreview = useEnablePopupPreview(filter, popup);
 
+	const hasCmd = (filter: unknown): filter is { cmd: string } => 
+		typeof filter === 'object' && filter !== null && 'cmd' in filter && typeof (filter as Record<string, unknown>).cmd === 'string';
+
 	const enableQuery =
 		!popup ||
 		(popup.preview &&
-			Boolean(slashCommands.commands[(filter as any)?.cmd]) &&
-			slashCommands.commands[(filter as any)?.cmd].providesPreview) ||
+			hasCmd(filter) &&
+			Boolean(slashCommands.commands[filter.cmd]) &&
+			slashCommands.commands[filter.cmd].providesPreview) ||
 		shouldPopupPreview;
 
 	const queries = useQueries({
