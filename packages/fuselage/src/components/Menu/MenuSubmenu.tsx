@@ -99,7 +99,7 @@ function MenuSubmenu({ item, state, rootMenuTriggerState, parentMenuRef, onActio
 			>
 				{item.rendered}
 				<ItemIcon>
-					<Icon name='chevron-left' size='x16' />
+					<Icon name='chevron-right' size='x16' />
 				</ItemIcon>
 			</Item>
 			{submenuTriggerState.isOpen && (

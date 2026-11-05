@@ -7,7 +7,7 @@ export type CollapsibleContentProps = Omit<ComponentProps<typeof Action>, 'icon'
 
 const CollapsibleContent = ({ collapsed = false, ...props }: CollapsibleContentProps) => {
 	const { t } = useTranslation();
-	return <Action title={collapsed ? t('Uncollapse') : t('Collapse')} icon={!collapsed ? 'chevron-down' : 'chevron-left'} {...props} />;
+	return <Action title={collapsed ? t('Uncollapse') : t('Collapse')} icon={!collapsed ? 'chevron-down' : 'chevron-right'} {...props} />;
 };
 
 export default CollapsibleContent;
