@@ -2,7 +2,7 @@ import type { Box } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
 import { forwardRef } from 'react';
 
-import PageContent from './PageContent';
+import PageContent from './PageContent.js';
 
 const PageBlock = forwardRef<HTMLElement, ComponentProps<typeof Box>>(function PageBlock(props, ref) {
 	return (

@@ -1,10 +1,10 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { act, renderHook, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 import { Suspense } from 'react';
 
-import { useConfirmAction } from './useConfirmAction';
-import ModalProviderWithRegion from '../providers/ModalProvider/ModalProviderWithRegion';
+import { useConfirmAction } from './useConfirmAction.js';
+import ModalProviderWithRegion from '../providers/ModalProvider/ModalProviderWithRegion.js';
 
 const renderConfirmAction = (action: (id: string) => Promise<unknown>) => {
 	const dispatch = jest.fn();

@@ -1,7 +1,7 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { renderHook } from '@testing-library/react';
 
-import { useValidatePassword } from './useValidatePassword';
+import { useValidatePassword } from './useValidatePassword.js';
 
 const settingsMockWrapper = mockAppRoot()
 	.withSetting('Accounts_Password_Policy_Enabled', 'true')

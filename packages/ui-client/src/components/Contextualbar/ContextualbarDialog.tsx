@@ -7,7 +7,7 @@ import { useLayoutSizes, useLayoutContextualBarPosition, useRoomToolbox } from '
 import type { ReactNode } from 'react';
 import { useRef } from 'react';
 
-import ContextualbarResizable from './ContextualbarResizable';
+import ContextualbarResizable from './ContextualbarResizable.js';
 
 export type ContextualbarDialogProps = AriaDialogProps & { children?: ReactNode; onClose?: () => void };
 

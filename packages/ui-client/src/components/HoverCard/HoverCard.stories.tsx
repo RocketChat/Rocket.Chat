@@ -2,7 +2,15 @@ import { Box, Button, IconButton } from '@rocket.chat/fuselage';
 import type { Meta, StoryFn } from '@storybook/react';
 import type { ComponentProps } from 'react';
 
-import { HoverCard, HoverCardActions, HoverCardBand, HoverCardHeader, HoverCardInfoItem, HoverCardInfoList, HoverCardSection } from '.';
+import {
+	HoverCard,
+	HoverCardActions,
+	HoverCardBand,
+	HoverCardHeader,
+	HoverCardInfoItem,
+	HoverCardInfoList,
+	HoverCardSection,
+} from './index.js';
 
 export default {
 	title: 'Components/HoverCard',

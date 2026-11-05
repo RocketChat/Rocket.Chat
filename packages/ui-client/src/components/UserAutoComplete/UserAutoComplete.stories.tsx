@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import UserAutoComplete from '.';
+import UserAutoComplete from './index.js';
 
 export default {
 	component: UserAutoComplete,

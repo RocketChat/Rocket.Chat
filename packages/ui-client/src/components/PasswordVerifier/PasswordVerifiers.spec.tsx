@@ -1,7 +1,7 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen, waitFor } from '@testing-library/react';
 
-import { PasswordVerifier } from './PasswordVerifier';
+import { PasswordVerifier } from './PasswordVerifier.js';
 
 afterEach(() => {
 	// restore the spy created with spyOn

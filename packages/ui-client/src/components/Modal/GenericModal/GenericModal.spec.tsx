@@ -1,13 +1,13 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import { act, screen, renderHook } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 import type { ReactNode } from 'react';
 import { Suspense } from 'react';
 
-import GenericModal from './GenericModal';
-import ModalProviderWithRegion from '../../../providers/ModalProvider/ModalProviderWithRegion';
+import GenericModal from './GenericModal.js';
+import ModalProviderWithRegion from '../../../providers/ModalProvider/ModalProviderWithRegion.js';
 
 const renderModal = (modalElement: ReactNode) => {
 	const {

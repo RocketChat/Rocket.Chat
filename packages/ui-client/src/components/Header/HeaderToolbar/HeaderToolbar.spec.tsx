@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 
-import HeaderToolbar from './HeaderToolbar';
-import HeaderToolbarAction from './HeaderToolbarAction';
+import HeaderToolbar from './HeaderToolbar.js';
+import HeaderToolbarAction from './HeaderToolbarAction.js';
 
 const renderToolbar = () =>
 	render(

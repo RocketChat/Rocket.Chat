@@ -2,7 +2,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 import type { Box } from '@rocket.chat/fuselage';
 import type { ComponentProps, ReactNode } from 'react';
 
-import { UserCardUsername } from '../UserCard';
+import { UserCardUsername } from '../UserCard/index.js';
 
 export type UserInfoUsernameProps = {
 	username: IUser['username'];

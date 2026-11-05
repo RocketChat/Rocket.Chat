@@ -1,8 +1,8 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 
-import GenericMenu from './GenericMenu';
+import GenericMenu from './GenericMenu.js';
 
 const mockedFunction = jest.fn();
 const regular = {

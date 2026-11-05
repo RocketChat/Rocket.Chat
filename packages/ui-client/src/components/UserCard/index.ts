@@ -1,10 +1,10 @@
-import UserCard from './UserCard';
-import UserCardAction from './UserCardAction';
-import UserCardHeader from './UserCardHeader';
-import UserCardInfo from './UserCardInfo';
-import UserCardRole from './UserCardRole';
-import UserCardRoles from './UserCardRoles';
-import UserCardSkeleton from './UserCardSkeleton';
-import UserCardUsername from './UserCardUsername';
+import UserCard from './UserCard.js';
+import UserCardAction from './UserCardAction.js';
+import UserCardHeader from './UserCardHeader.js';
+import UserCardInfo from './UserCardInfo.js';
+import UserCardRole from './UserCardRole.js';
+import UserCardRoles from './UserCardRoles.js';
+import UserCardSkeleton from './UserCardSkeleton.js';
+import UserCardUsername from './UserCardUsername.js';
 
 export { UserCard, UserCardAction, UserCardHeader, UserCardInfo, UserCardRole, UserCardRoles, UserCardUsername, UserCardSkeleton };

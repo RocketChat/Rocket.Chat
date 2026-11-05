@@ -1,7 +1,7 @@
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { Key } from 'react';
 
-import type { GenericMenuItemProps } from '../GenericMenuItem';
+import type { GenericMenuItemProps } from '../GenericMenuItem.js';
 
 export const useHandleMenuAction = (items: GenericMenuItemProps[], callbackAction?: () => void) =>
 	useStableCallback((id: Key) => {

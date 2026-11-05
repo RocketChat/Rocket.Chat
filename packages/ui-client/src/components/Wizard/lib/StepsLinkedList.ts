@@ -1,7 +1,7 @@
 import { Emitter } from '@rocket.chat/emitter';
 
-import type { StepMetadata } from './StepNode';
-import StepNode from './StepNode';
+import type { StepMetadata } from './StepNode.js';
+import StepNode from './StepNode.js';
 
 /**
  * A doubly linked list implementation to manage the state of wizard steps.

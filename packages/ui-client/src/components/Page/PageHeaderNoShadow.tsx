@@ -3,9 +3,9 @@ import { useLayout } from '@rocket.chat/ui-contexts';
 import type { ComponentPropsWithoutRef, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useDocumentTitle } from '../../hooks';
-import { HeaderToolbar } from '../Header';
-import { SidebarToggler } from '../SidebarToggler';
+import { useDocumentTitle } from '../../hooks/index.js';
+import { HeaderToolbar } from '../Header/index.js';
+import { SidebarToggler } from '../SidebarToggler/index.js';
 
 type PageHeaderProps = {
 	title: ReactNode;

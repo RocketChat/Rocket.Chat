@@ -1,4 +1,4 @@
-import StepNode, { type StepMetadata } from './StepNode';
+import StepNode, { type StepMetadata } from './StepNode.js';
 
 describe('StepNode', () => {
 	const baseMetadata: StepMetadata = { id: 'step1', title: 'Step 1' };

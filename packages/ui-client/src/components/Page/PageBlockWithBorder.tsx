@@ -2,8 +2,8 @@ import type { Box } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
 import { forwardRef, useContext } from 'react';
 
-import PageBlock from './PageBlock';
-import PageContext from './PageContext';
+import PageBlock from './PageBlock.js';
+import PageContext from './PageContext.js';
 
 const PageBlockWithBorder = forwardRef<HTMLElement, ComponentProps<typeof Box>>(function PageBlockWithBorder(props, ref) {
 	const [border] = useContext(PageContext);

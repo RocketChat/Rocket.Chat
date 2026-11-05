@@ -2,7 +2,7 @@ import { Box } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
 import { useState } from 'react';
 
-import PageContext from './PageContext';
+import PageContext from './PageContext.js';
 
 export type PageProps = Omit<ComponentProps<typeof Box>, 'backgroundColor'> & {
 	background?: 'light' | 'tint' | 'neutral' | 'room';
