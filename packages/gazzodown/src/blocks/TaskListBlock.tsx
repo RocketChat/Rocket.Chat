@@ -2,9 +2,9 @@ import { CheckBox } from '@rocket.chat/fuselage';
 import type * as MessageParser from '@rocket.chat/message-parser';
 import { useContext } from 'react';
 
-import NestedListsBlock from './NestedListsBlock';
-import { MarkupInteractionContext } from '../MarkupInteractionContext';
-import InlineElements from '../elements/InlineElements';
+import NestedListsBlock from './NestedListsBlock.js';
+import { MarkupInteractionContext } from '../MarkupInteractionContext.js';
+import InlineElements from '../elements/InlineElements.js';
 
 export type TaskListBlockProps = {
 	tasks: MessageParser.Task[];

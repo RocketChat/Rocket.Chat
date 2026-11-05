@@ -1,9 +1,9 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
 import { useMemo, useContext, memo } from 'react';
 
-import { MarkupInteractionContext } from '../MarkupInteractionContext';
-import EmojiRenderer from './EmojiRenderer';
-import PlainSpan from '../elements/PlainSpan';
+import { MarkupInteractionContext } from '../MarkupInteractionContext.js';
+import EmojiRenderer from './EmojiRenderer.js';
+import PlainSpan from '../elements/PlainSpan.js';
 
 export type EmojiProps = MessageParser.Emoji & {
 	big?: boolean;

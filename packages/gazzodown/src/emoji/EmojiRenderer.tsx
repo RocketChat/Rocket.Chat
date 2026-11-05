@@ -2,9 +2,9 @@ import { MessageEmoji, ThreadMessageEmoji } from '@rocket.chat/fuselage';
 import type * as MessageParser from '@rocket.chat/message-parser';
 import { useContext, memo } from 'react';
 
-import { MarkupInteractionContext } from '../MarkupInteractionContext';
-import { useEmojiDescriptors } from './useEmojiDescriptors';
-import PlainSpan from '../elements/PlainSpan';
+import { MarkupInteractionContext } from '../MarkupInteractionContext.js';
+import { useEmojiDescriptors } from './useEmojiDescriptors.js';
+import PlainSpan from '../elements/PlainSpan.js';
 
 type EmojiProps = MessageParser.Emoji & {
 	big?: boolean;

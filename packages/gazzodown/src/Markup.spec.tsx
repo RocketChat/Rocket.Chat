@@ -1,8 +1,8 @@
 import { render, screen, within } from '@testing-library/react';
 import { Suspense } from 'react';
 
-import { MarkupInteractionContext } from '.';
-import Markup from './Markup';
+import Markup from './Markup.js';
+import { MarkupInteractionContext } from './index.js';
 
 jest.mock('highlight.js', () => ({
 	highlightElement: (): void => undefined,
