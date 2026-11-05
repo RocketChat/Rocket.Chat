@@ -63,11 +63,14 @@ export const updateGroupDMsName = async (
 
 	// loop rooms to update the subscriptions from them all
 	for await (const room of rooms) {
-		if (!room.uids) {
-			return;
+		if (!room.uids || room.uids.length < 3) {
+			continue;
 		}
 
 		const members = getMembers(room.uids);
+		if (members.length < 3) {
+			continue;
+		}
 		const sortedMembers = members.sort(sortUsersAlphabetically);
 
 		const subs = Subscriptions.findByRoomId(room._id, { projection: { '_id': 1, 'u._id': 1 }, session });
