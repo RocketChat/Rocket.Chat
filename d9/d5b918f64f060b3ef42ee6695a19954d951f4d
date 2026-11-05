@@ -1,0 +1,30 @@
+ee/packages/federation-matrix/src/api/middlewares/isAuthenticated.ts
+  s_a2d75ff6b098f7::t_ffc267c69694df 5-6,40
+  s_a2d75ff6b098f7::t_1ad3da10848c74 16
+  s_a2d75ff6b098f7::t_081ba7e63b47a9 28
+  s_a2d75ff6b098f7::t_97da7f8642c407 41
+ee/packages/federation-matrix/src/api/middlewares/isAuthenticated.spec.ts
+  s_a2d75ff6b098f7::t_1ad3da10848c74 16,41
+  s_a2d75ff6b098f7::t_53388148d82b11 1-15,17-40,42-49,51-62
+  s_a2d75ff6b098f7::t_5e0da5c6a09d26 50
+ee/packages/federation-matrix/src/api/middlewares/isFederationDomainAllowed.spec.ts
+  s_a2d75ff6b098f7::t_51fc8d2af6bb3b 5,11-14,24-27,38,45,53,60
+ee/packages/federation-matrix/src/api/middlewares/isFederationDomainAllowed.ts
+  s_a2d75ff6b098f7::t_3855d63891a789 6-7,44,51-56,65
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "d9d5b918f64f060b3ef42ee6695a19954d951f4d",
+  "prompts": {},
+  "sessions": {
+    "s_a2d75ff6b098f7": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "39438f7f-d20d-439e-9e35-3dce142af3db",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
