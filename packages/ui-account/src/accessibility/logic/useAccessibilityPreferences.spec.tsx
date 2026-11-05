@@ -1,7 +1,7 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { act, renderHook } from '@testing-library/react';
 
-import { useAccessibilityPreferences } from './useAccessibilityPreferences';
+import { useAccessibilityPreferences } from './useAccessibilityPreferences.js';
 
 it('falls back to defaults when the user has no preferences', () => {
 	const { result } = renderHook(() => useAccessibilityPreferences(), { wrapper: mockAppRoot().withJohnDoe().build() });

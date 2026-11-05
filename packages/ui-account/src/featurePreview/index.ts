@@ -1,3 +1,3 @@
-export { default as FeaturePreviewPage } from './FeaturePreviewPage';
-export { default as FeaturePreviewView } from './views/FeaturePreviewView';
-export * from './logic/useFeaturePreviewPreferences';
+export { default as FeaturePreviewPage } from './FeaturePreviewPage.js';
+export { default as FeaturePreviewView } from './views/FeaturePreviewView.js';
+export * from './logic/useFeaturePreviewPreferences.js';

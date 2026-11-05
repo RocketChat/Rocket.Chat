@@ -1,5 +1,5 @@
-import { useFeaturePreviewPreferences } from './logic/useFeaturePreviewPreferences';
-import FeaturePreviewView from './views/FeaturePreviewView';
+import { useFeaturePreviewPreferences } from './logic/useFeaturePreviewPreferences.js';
+import FeaturePreviewView from './views/FeaturePreviewView.js';
 
 const FeaturePreviewPage = () => {
 	const vm = useFeaturePreviewPreferences();

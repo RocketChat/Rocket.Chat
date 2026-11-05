@@ -2,7 +2,7 @@ import { ButtonGroup, IconButton } from '@rocket.chat/fuselage';
 import { GenericTableRow, GenericTableCell, useFormatDateAndTime } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
-import type { PersonalAccessToken } from '../logic/personalAccessTokens';
+import type { PersonalAccessToken } from '../logic/personalAccessTokens.js';
 
 type PersonalAccessTokenRowProps = {
 	token: PersonalAccessToken;

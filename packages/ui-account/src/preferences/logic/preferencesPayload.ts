@@ -1,4 +1,4 @@
-import type { AccountPreferencesData } from './usePreferences';
+import type { AccountPreferencesData } from './usePreferences.js';
 
 export type DontAskAgainItem = { action: string; label: string };
 
