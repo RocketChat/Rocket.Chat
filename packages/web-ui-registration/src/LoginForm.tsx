@@ -19,9 +19,9 @@ import { useEffect, useId, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
-import EmailConfirmationForm from './EmailConfirmationForm';
-import LoginServices from './LoginServices';
-import type { DispatchLoginRouter } from './hooks/useLoginRouter';
+import EmailConfirmationForm from './EmailConfirmationForm.js';
+import LoginServices from './LoginServices.js';
+import type { DispatchLoginRouter } from './hooks/useLoginRouter.js';
 
 const LOGIN_SUBMIT_ERRORS = {
 	'error-user-is-not-activated': {

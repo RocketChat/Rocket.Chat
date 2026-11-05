@@ -3,6 +3,13 @@
 	"version": "36.0.0-rc.1",
 	"private": true,
 	"homepage": "https://rocket.chat",
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		}
+	},
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"files": [
