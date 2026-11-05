@@ -60,7 +60,6 @@ export class IMAPInterceptor extends EventEmitter {
 		this.imap.on('error', async (err: Error) => {
 			logger.error({ msg: 'IMAP error', err });
 		});
-		void this.start();
 	}
 
 	openInbox(): Promise<IMAP.Box> {
