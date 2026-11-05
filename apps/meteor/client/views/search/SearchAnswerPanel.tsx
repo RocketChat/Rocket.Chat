@@ -52,12 +52,11 @@ const SearchAnswerPanel = ({
 	let content: ReactElement;
 	if (isLoading) {
 		content = (
-			<Box display='flex' flexDirection='column' gap={12} aria-busy='true' aria-label={t('Loading')}>
+			<Box display='flex' flexDirection='column' gap={4} aria-busy='true' aria-label={t('Loading')}>
 				<Skeleton width='60%' />
 				<Skeleton width='100%' />
 				<Skeleton width='95%' />
 				<Skeleton width='88%' />
-				<Skeleton width='72%' />
 			</Box>
 		);
 	} else if (error && !isLoading && !disabled) {
