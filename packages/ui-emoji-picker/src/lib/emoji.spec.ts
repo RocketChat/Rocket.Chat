@@ -1,4 +1,4 @@
-import { removeFromRecent } from './emoji';
+import { removeFromRecent } from './emoji.js';
 
 describe('removeFromRecent', () => {
 	it('should remove a specific emoji from recent emojis', () => {
