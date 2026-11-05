@@ -47,7 +47,7 @@ async function readLocalVideoStats(localParticipant: Participant): Promise<{
 				best = { width: w, height: h, fps, bytesSent: bs || 0 };
 			}
 			if (report.codecId) {
-				const codecReport = stats.get(report.codecId);
+				const codecReport: { mimeType?: string } | undefined = stats.get(report.codecId);
 				if (codecReport) {
 					codec = codecReport.mimeType?.replace('video/', '');
 				}
@@ -150,7 +150,7 @@ async function readRemoteParticipantStats(participant: Participant): Promise<{
 				packetsLost = (packetsLost ?? 0) + report.packetsLost;
 			}
 			if (report.codecId) {
-				const codecReport = stats.get(report.codecId);
+				const codecReport: { mimeType?: string } | undefined = stats.get(report.codecId);
 				if (codecReport) {
 					videoCodec = codecReport.mimeType?.replace('video/', '');
 				}

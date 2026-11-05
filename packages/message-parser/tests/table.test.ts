@@ -84,7 +84,7 @@ test('exposes the source offsets as fallback for renderers without table support
 	const [node] = parse(input) as [ReturnType<typeof table>];
 	expect(node.fallback).toEqual([0, input.length]);
 	// the offsets slice back to the original markup
-	expect(input.slice(node.fallback![0], node.fallback![1])).toBe(input);
+	expect(input.slice(node.fallback?.[0], node.fallback?.[1])).toBe(input);
 });
 
 test.each([
