@@ -4,10 +4,10 @@ import { callFeatureList } from '@rocket.chat/media-signaling';
 import type { ReactNode } from 'react';
 import { useState } from 'react';
 
-import type { MockedInstanceProviderProps } from './MockedInstanceProvider';
-import MockedInstanceProvider, { avatarUrl, mockedPeers } from './MockedInstanceProvider';
-import MediaCallViewContext from '../context/MediaCallViewContext';
-import type { State, PeerInfo, SessionState, ConnectionState } from '../context/definitions';
+import type { MockedInstanceProviderProps } from './MockedInstanceProvider.js';
+import MockedInstanceProvider, { avatarUrl, mockedPeers } from './MockedInstanceProvider.js';
+import MediaCallViewContext from '../context/MediaCallViewContext.js';
+import type { State, PeerInfo, SessionState, ConnectionState } from '../context/definitions.js';
 
 export type MockedMediaCallProviderProps = {
 	children: ReactNode;

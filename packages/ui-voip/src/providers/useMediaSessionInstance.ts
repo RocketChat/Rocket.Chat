@@ -7,8 +7,8 @@ import { stopTracks } from '@rocket.chat/ui-media';
 import { useEffect, useSyncExternalStore, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { MediaCallLogger } from './MediaCallLogger';
-import { useIceServers } from '../hooks/useIceServers';
+import { MediaCallLogger } from './MediaCallLogger.js';
+import { useIceServers } from '../hooks/useIceServers.js';
 
 type SignalTransport = MediaSignalTransport<ClientMediaSignal>;
 

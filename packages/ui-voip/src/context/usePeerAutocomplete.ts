@@ -3,10 +3,10 @@ import { useUserPresence } from '@rocket.chat/ui-contexts';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 
-import type { PeerInfo } from './definitions';
-import type { PeerAutocompleteOptions } from '../components';
-import { useMediaCallInstance } from './MediaCallInstanceContext';
-import { mediaCallQueryKeys } from '../utils/queryKeys';
+import { useMediaCallInstance } from './MediaCallInstanceContext.js';
+import type { PeerInfo } from './definitions.js';
+import type { PeerAutocompleteOptions } from '../components/index.js';
+import { mediaCallQueryKeys } from '../utils/queryKeys.js';
 
 const PREFIX_FIRST_OPTION = 'rcx-first-option-';
 

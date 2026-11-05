@@ -1,9 +1,9 @@
 import type { ReactNode } from 'react';
 
-import Card from '../Card';
-import StreamCardOpenInRoomButton from './StreamCardOpenInRoom';
-import StreamCardPin from './StreamCardPin';
-import StreamCardStopSharingButton from './StreamCardStopSharingButton';
+import Card from '../Card.js';
+import StreamCardOpenInRoomButton from './StreamCardOpenInRoom.js';
+import StreamCardPin from './StreamCardPin.js';
+import StreamCardStopSharingButton from './StreamCardStopSharingButton.js';
 
 export type StreamCardProps = {
 	children: ReactNode;

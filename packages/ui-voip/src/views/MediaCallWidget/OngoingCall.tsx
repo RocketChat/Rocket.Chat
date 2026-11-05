@@ -3,7 +3,7 @@ import { ActionButton, ToggleButton } from '@rocket.chat/ui-media';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import Dialpad from './Dialpad';
+import Dialpad from './Dialpad.js';
 import {
 	PeerInfo,
 	Widget,
@@ -17,9 +17,9 @@ import {
 	useInfoSlots,
 	useDraggableWidget,
 	getPeerDisplayName,
-} from '../../components';
-import { useMediaCallView } from '../../context/MediaCallViewContext';
-import { isUnknownPeer } from '../../utils/isUnknownPeer';
+} from '../../components/index.js';
+import { useMediaCallView } from '../../context/MediaCallViewContext.js';
+import { isUnknownPeer } from '../../utils/isUnknownPeer.js';
 
 const OngoingCall = () => {
 	const { t } = useTranslation();

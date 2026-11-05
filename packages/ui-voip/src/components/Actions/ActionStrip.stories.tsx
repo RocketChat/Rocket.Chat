@@ -4,9 +4,9 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import ActionStrip from './ActionStrip';
-import Timer from '../Timer';
-import ActionToggleChat from './ActionToggleChat';
+import ActionStrip from './ActionStrip.js';
+import Timer from '../Timer.js';
+import ActionToggleChat from './ActionToggleChat.js';
 
 export default {
 	component: ActionStrip,

@@ -2,12 +2,12 @@ import { useUser } from '@rocket.chat/ui-contexts';
 import { useMemo, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 
-import { useAudioStream } from './useAudioStream';
-import useAvailableViewTracker from './useAvailableViewTracker';
-import { useGetAutocompleteOptions } from './useGetAutocompleteOptions';
-import { useInstanceState } from './useInstanceState';
-import { useMediaSessionInstance } from './useMediaSessionInstance';
-import { MediaCallInstanceContext } from '../context/MediaCallInstanceContext';
+import { useAudioStream } from './useAudioStream.js';
+import useAvailableViewTracker from './useAvailableViewTracker.js';
+import { useGetAutocompleteOptions } from './useGetAutocompleteOptions.js';
+import { useInstanceState } from './useInstanceState.js';
+import { useMediaSessionInstance } from './useMediaSessionInstance.js';
+import { MediaCallInstanceContext } from '../context/MediaCallInstanceContext.js';
 
 export type MediaCallInstanceProviderProps = {
 	children: ReactNode;

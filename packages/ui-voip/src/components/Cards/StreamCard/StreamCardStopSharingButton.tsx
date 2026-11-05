@@ -1,7 +1,7 @@
 import { Button } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-import CardSlotContainer from '../CardSlot';
+import CardSlotContainer from '../CardSlot.js';
 
 export type CardSlotStopSharingProps = {
 	onClick: () => void;

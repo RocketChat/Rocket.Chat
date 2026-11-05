@@ -1,8 +1,8 @@
 import { IconButton } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-import CardSlotContainer from '../CardSlot';
-import type { SlotPosition } from '../CardSlot';
+import CardSlotContainer from '../CardSlot.js';
+import type { SlotPosition } from '../CardSlot.js';
 
 export type CardSlotPinProps = {
 	onClick: () => void;
