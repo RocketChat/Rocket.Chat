@@ -1,2 +1,2 @@
-export { default } from './styled';
-export * from './OwnerDocument';
+export { default } from './styled.js';
+export * from './OwnerDocument.js';
