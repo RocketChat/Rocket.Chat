@@ -346,7 +346,9 @@ InlineEmoticon = emo:Emoticon & (EmoticonNeighbor / InlineItemPattern) { return 
 // Match "-" only when "-_-" is followed by more (so "-_-italic" → plain+italic); don't match when "-_-" is the full emoticon
 PlainRunBeforeEmoticon = "-" &("_" "-" .) { return plain('-'); }
 
-PlainRun = run:$[^*_~`:\n<\[\]! \t()\\|]+ { return plain(run); }
+PlainRun = run:$PlainRunChar+ { return plain(run); }
+
+PlainRunChar = [^*_~`:\n<\[\]! \t()\\|]
 
 EscapedTimestampRules
   = "\\" "<t:" rawDate:$(Unixtime / ISO8601Date / ISO8601DateWithoutMilliseconds / Timestamp) ":" format:TimestampType ">" {
@@ -692,9 +694,10 @@ UserMention
     }
   / UserMentionDirect
 
+// a `#` inside a word is plain text, together with the rest of that plain run, so no part of it is parsed as a link or mention
 ChannelMention
-  = t:Text "#" channel:AlphaNumericChar {
-      return reducePlainTexts([t, plain('#' + channel)])[0];
+  = t:Text "#" &AlphaNumericChar rest:$PlainRunChar* {
+      return reducePlainTexts([t, plain('#' + rest)])[0];
     }
   / "#" channel:UTF8NamesValidation { return mentionChannel(channel); }
 
