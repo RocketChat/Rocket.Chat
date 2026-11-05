@@ -1,6 +1,6 @@
 import { ToastBar } from '@rocket.chat/fuselage';
 
-import type { ToastBarPayload } from './ToastBarContext';
+import type { ToastBarPayload } from './ToastBarContext.js';
 
 const ToastBarPersistent = ({ type, message, title, id }: ToastBarPayload) => {
 	return (
