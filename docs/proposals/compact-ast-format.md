@@ -2,7 +2,7 @@
 
 ## Status
 
-Draft
+Implemented in `@rocket.chat/message-parser` (`src/compactAst.ts`).
 
 ## Problem
 
