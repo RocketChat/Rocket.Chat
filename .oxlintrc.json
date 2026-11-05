@@ -1,6 +1,11 @@
 {
 	"$schema": "./node_modules/oxlint/configuration_schema.json",
 	"extends": ["./packages/lint-config/oxlint.json"],
+	"settings": {
+		"react": {
+			"version": "19.2"
+		}
+	},
 	"options": {
 		"typeAware": true,
 		"reportUnusedDisableDirectives": "error"
