@@ -17,6 +17,12 @@ export class SelectedMessageStore extends Emitter<
 		this.emit('change');
 	}
 
+	/** Replaces the messages "Select all" picks, for a list that knows all of them. */
+	setAvailableMessages(mids: string[]): void {
+		this.availableMessages = new Set(mids);
+		this.emit('change');
+	}
+
 	removeAvailableMessage(mid: string): void {
 		this.availableMessages.delete(mid);
 		this.emit('change');

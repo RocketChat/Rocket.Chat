@@ -1,7 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
+import type { MessageListPosition } from '@rocket.chat/ui-message-list';
 import { useMemo, useSyncExternalStore } from 'react';
-import type { CacheSnapshot } from 'virtua';
 
 import { LegacyRoomManager } from './LegacyRoomManager';
 import { RoomHistoryManager } from './RoomHistoryManager';
@@ -17,18 +17,8 @@ class RoomStore extends Emitter<{
 	changed: undefined;
 	[key: CollapsibleKey]: undefined;
 }> {
-	lastTime?: Date;
-
-	scroll?: number;
-
-	cache?: CacheSnapshot;
-
-	// Message count the cache snapshot was taken against, since virtua's cache is positional.
-	cacheMessageCount?: number;
-
-	lm?: Date;
-
-	atBottom = true;
+	/** Where the message list was left, restored when the room opens again. */
+	position?: MessageListPosition;
 
 	private readonly toggledCollapsibles = new Set<string>();
 
@@ -38,36 +28,8 @@ class RoomStore extends Emitter<{
 		debug && this.on('changed', () => console.log(`RoomStore ${this.rid} changed`, this));
 	}
 
-	update({
-		scroll,
-		lastTime,
-		atBottom,
-		cache,
-		cacheMessageCount,
-	}: {
-		scroll?: number;
-		lastTime?: Date;
-		atBottom?: boolean;
-		cache?: CacheSnapshot;
-		cacheMessageCount?: number;
-	}): void {
-		if (scroll !== undefined) {
-			this.scroll = scroll;
-		}
-		if (lastTime !== undefined) {
-			this.lastTime = lastTime;
-		}
-
-		if (atBottom !== undefined) {
-			this.atBottom = atBottom;
-		}
-		if (cache !== undefined) {
-			this.cache = cache;
-			this.cacheMessageCount = cacheMessageCount;
-		}
-		if (scroll || lastTime) {
-			this.emit('changed');
-		}
+	savePosition(position: MessageListPosition): void {
+		this.position = position;
 	}
 
 	toggleCollapsible(key: string): void {

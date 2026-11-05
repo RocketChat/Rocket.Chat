@@ -55,10 +55,6 @@ export type RoomHistoryState = {
 	loaded: number | undefined;
 	cursorPrevious?: string | null;
 	cursorNext?: string | null;
-	scroll?: {
-		scrollHeight: number;
-		scrollTop: number;
-	};
 };
 
 const roomStateEvent = (rid: IRoom['_id']) => `state:${rid}` as const;
@@ -196,14 +192,6 @@ class RoomHistoryManagerClass extends Emitter {
 				hasMore: result.cursor.previous !== null,
 			});
 
-			const wrapper = document.querySelector<HTMLElement>('.messages-box .wrapper [data-overlayscrollbars-viewport]');
-			if (wrapper) {
-				room.scroll = {
-					scrollHeight: wrapper.scrollHeight,
-					scrollTop: wrapper.scrollTop,
-				};
-			}
-
 			await upsertMessageBulk({
 				msgs: messages.filter((msg) => msg.t !== 'command'),
 				subscription,
@@ -235,23 +223,6 @@ class RoomHistoryManagerClass extends Emitter {
 				this.updateRoom(rid, { isLoading: false });
 			}
 		}
-	}
-
-	public restoreScroll(rid: IRoom['_id']) {
-		const room = this.getRoom(rid);
-		const wrapper = document.querySelector('.messages-box .wrapper [data-overlayscrollbars-viewport]');
-
-		if (room.scroll === undefined) {
-			return;
-		}
-
-		if (!wrapper) {
-			return;
-		}
-
-		const heightDiff = wrapper.scrollHeight - (room.scroll.scrollHeight ?? NaN);
-		wrapper.scrollTop = room.scroll.scrollTop + heightDiff;
-		room.scroll = undefined;
 	}
 
 	public async getMoreNext(rid: IRoom['_id']) {
@@ -360,9 +331,6 @@ class RoomHistoryManagerClass extends Emitter {
 			hasMoreNext: false,
 			cursorPrevious: undefined,
 			cursorNext: undefined,
-			// The snapshot describes the DOM of the window being discarded; a stale restoreScroll
-			// resuming after this clear must no-op instead of applying it to the rebuilt window.
-			scroll: undefined,
 		});
 		this.emit('room-cleared', rid);
 	}
