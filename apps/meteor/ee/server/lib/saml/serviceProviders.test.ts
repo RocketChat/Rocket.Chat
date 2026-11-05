@@ -72,8 +72,8 @@ const setup = ({ samlModuleActiveAtStartup = false } = {}) => {
 	const samlSettings = proxyquire.noCallThru().load('./lib/settings', {
 		'@rocket.chat/license': { License },
 		'@rocket.chat/models': { LoginServiceConfiguration },
-		'meteor/meteor': { Meteor: { absoluteUrl: (path: string) => `http://localhost:3000/${path}` } },
 		'./Utils': { SAMLUtils },
+		'../../../../../server/lib/utils/getURL': { getWorkspaceURL: () => 'http://localhost:3000/' },
 		'../../../../../server/lib/logger/system': { SystemLogger: { warn: sinon.stub() } },
 		'../../../../../server/lib/notifyListener': {
 			notifyOnLoginServiceConfigurationChanged,
@@ -82,14 +82,13 @@ const setup = ({ samlModuleActiveAtStartup = false } = {}) => {
 		'../../../../../server/settings': { settings, settingsRegistry: {} },
 	});
 
-	const samlStartup = proxyquire.noCallThru().load('./startup', {
-		'@rocket.chat/logger': { Logger: class {} },
+	const samlStartup = proxyquire.noCallThru().load('./serviceProviders', {
 		'@rocket.chat/license': { License },
-		'meteor/meteor': { Meteor: { startup: sinon.stub() } },
 		'./lib/Utils': { SAMLUtils },
-		'./lib/settings': { ...samlSettings, addSettings: sinon.stub() },
+		'./lib/settings': samlSettings,
 		'../../../../server/settings': { settings },
 	});
+	samlStartup.watchSamlServiceProviders();
 
 	// Same listener ee/server/configuration/saml.ts registers once the module is licensed.
 	License.onToggledFeature('saml-enterprise', {
