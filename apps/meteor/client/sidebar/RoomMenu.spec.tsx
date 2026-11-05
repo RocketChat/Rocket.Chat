@@ -37,6 +37,8 @@ const buildBase = () =>
 	mockAppRoot()
 		.withTranslations('en', 'core', {
 			Archive: 'Archive',
+			Archive_room: 'Archive room',
+			Archive_Channel_Description: '“{{roomName}}” moves to the Archived group.',
 			Unarchive: 'Unarchive',
 			Mark_unread: 'Mark Unread',
 			Favorite: 'Favorite',
@@ -153,8 +155,8 @@ describe('the archive', () => {
 		localStorage.clear();
 	});
 
-	it('archives the room from its menu, with nothing to confirm', async () => {
-		render(<RoomMenu {...defaultProps} />, {
+	it('archives the room from its menu once the user confirms what that means', async () => {
+		render(<RoomMenu {...defaultProps} name='general' />, {
 			wrapper: buildBase()
 				.withSubscription(createFakeSubscription({ rid: 'roomId', t: 'c' }))
 				.build(),
@@ -163,8 +165,13 @@ describe('the archive', () => {
 		await userEvent.click(screen.getByRole('button', { name: 'Options' }));
 		await userEvent.click(await screen.findByRole('menuitem', { name: 'Archive' }));
 
+		const dialog = await screen.findByRole('dialog', { name: 'Archive room' });
+		expect(dialog).toHaveTextContent('“general” moves to the Archived group.');
+		expect(JSON.parse(localStorage.getItem(ARCHIVED_KEY) ?? '[]')).toEqual([]);
+
+		await userEvent.click(screen.getByRole('button', { name: 'Archive room' }));
+
 		expect(JSON.parse(localStorage.getItem(ARCHIVED_KEY) ?? '[]')).toEqual(['roomId']);
-		expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 	});
 
 	it('offers to unarchive an archived room instead', async () => {

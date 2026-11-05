@@ -285,7 +285,8 @@ user — **in `localStorage` for now (`sidebarArchivedRooms-{userId}`), to be mo
 final implementation**. An archived room is in no other group, not even Unread; it stays archived whatever
 happens in it (opening it, a new message, a mention), and carries no badge meanwhile. The room-level action is
 labelled **Archive** everywhere (sidebar and sidepanel room menus, room info, team info; `useArchiveRoomAction`,
-no confirmation), and becomes **Unarchive** (`useUnarchiveRoomAction`) on an archived room. The old "Hide"
+which first tells what archiving means in a do-not-ask-again modal without an icon, per room type), and becomes
+**Unarchive** (`useUnarchiveRoomAction`) on an archived room. The old "Hide"
 flow (`useHideRoomAction`, closing the subscription) is no longer reachable from the UI except through `/hide`.
 
 The `Archived` group listed last (`SIDEBAR_ARCHIVED_GROUP_KEY`, licensed workspaces only) holds the archived rooms:

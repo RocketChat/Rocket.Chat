@@ -13,7 +13,7 @@ type GenProps = {
 
 export const useTeamActions = (room: IRoom, { onClickEdit }: GenProps) => {
 	const { t } = useTranslation();
-	const archiveTeam = useArchiveRoomAction({ rid: room._id });
+	const archiveTeam = useArchiveRoomAction({ rid: room._id, type: room.t, name: room.name ?? '' });
 	const convertToChannel = useConvertToChannel(room);
 	const { handleDelete, canDeleteRoom } = useDeleteRoom(room);
 	const leaveTeam = useLeaveTeam(room);

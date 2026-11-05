@@ -23,7 +23,7 @@ export const useRoomActions = (room: IRoom, options: UseRoomActionsOptions) => {
 	const { handleDelete, canDeleteRoom } = useDeleteRoom(room, { reload: resetState });
 	const handleMoveToTeam = useRoomMoveToTeam(room);
 	const handleConvertToTeam = useRoomConvertToTeam(room);
-	const handleArchive = useArchiveRoomAction({ rid: room._id });
+	const handleArchive = useArchiveRoomAction({ rid: room._id, type: room.t, name: room.name ?? '' });
 
 	return useMemo(() => {
 		const memoizedActions = {

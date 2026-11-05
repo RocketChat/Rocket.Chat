@@ -55,7 +55,7 @@ export const useRoomMenuActions = ({
 		return !((cl != null && !cl) || ['d', 'l'].includes(type));
 	})();
 
-	const handleArchive = useArchiveRoomAction({ rid });
+	const handleArchive = useArchiveRoomAction({ rid, type, name });
 	const handleUnarchive = useUnarchiveRoomAction({ rid });
 	// An archived room is offered the way back instead of the archive again.
 	const isArchived = useArchivedRooms().isArchivedRoom(rid);
