@@ -42,6 +42,7 @@ import type { IPushService } from './types/IPushService';
 import type { IQueueWorkerService, HealthAggResult } from './types/IQueueWorkerService';
 import type { IRoomService, ICreateRoomParams, ISubscriptionExtraData } from './types/IRoomService';
 import type { ISAUMonitorService } from './types/ISAUMonitorService';
+import type { IScheduledMessageService, ScheduledMessageCreateParams } from './types/IScheduledMessageService';
 import type { ISettingsService } from './types/ISettingsService';
 import type { IStatusVisibilityService } from './types/IStatusVisibilityService';
 import type {
@@ -166,6 +167,8 @@ export type {
 	IUploadFileParams,
 	IUploadService,
 	ICalendarService,
+	IScheduledMessageService,
+	ScheduledMessageCreateParams,
 	IAISearchService,
 	AISearchAnswerMessage,
 	AISearchAnswerResult,
@@ -212,6 +215,7 @@ export const DeviceManagement = proxify<IDeviceManagementService>('device-manage
 export const VideoConf = proxify<IVideoConfService>('video-conference');
 export const Upload = proxify<IUploadService>('upload');
 export const Calendar = proxify<ICalendarService>('calendar');
+export const ScheduledMessage = proxify<IScheduledMessageService>('scheduled-message');
 export const CallHistory = proxify<ICallHistoryService>('call-history');
 export const QueueWorker = proxify<IQueueWorkerService>('queue-worker');
 export const OmnichannelTranscript = proxify<IOmnichannelTranscriptService>('omnichannel-transcript');

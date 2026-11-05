@@ -47,6 +47,10 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 		this.emit(`cancelling-${id}`);
 	};
 
+	add = (upload: Upload): void => {
+		this.set([...this.uploads, upload]);
+	};
+
 	wipeFailedOnes = (): void => {
 		this.set(this.uploads.filter((upload) => !upload.error));
 	};
