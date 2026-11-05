@@ -4,6 +4,7 @@ import { useUserDisplayName } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
 import SidebarCard from './SidebarCard';
+import { useAudioWaveform } from '../../components/message/content/attachments/file/hooks/useAudioWaveform';
 import { useFormatMemorySize } from '../../hooks/useFormatMemorySize';
 import { setMessageJumpQueryStringParameter } from '../../lib/utils/setMessageJumpQueryStringParameter';
 import { useMediaPlayer } from '../../providers/MediaPlayerProvider';
@@ -17,9 +18,11 @@ import { useGoToRoom } from '../../views/room/hooks/useGoToRoom';
  */
 const NowPlayingSection = () => {
 	const { t } = useTranslation();
-	const { track, playing, currentTime, duration, playbackRate, toggle, seek, cyclePlaybackRate, close } = useMediaPlayer();
+	const { track, playing, currentTime, duration, playbackRate, loading, error, toggle, seek, cyclePlaybackRate, retry, close } =
+		useMediaPlayer();
 	const goToRoom = useGoToRoom();
 	const formatMemorySize = useFormatMemorySize();
+	const waveform = useAudioWaveform(track?.url ?? '', track?.size);
 	const displayName = useUserDisplayName({ name: track?.name, username: track?.username });
 
 	if (!track) {
@@ -74,6 +77,10 @@ const NowPlayingSection = () => {
 				currentTime={currentTime}
 				durationTime={duration}
 				playbackSpeed={playbackRate}
+				waveform={waveform}
+				loading={loading}
+				error={error}
+				onRetry={retry}
 				onTogglePlay={toggle}
 				onSeek={seek}
 				onChangePlaybackSpeed={cyclePlaybackRate}

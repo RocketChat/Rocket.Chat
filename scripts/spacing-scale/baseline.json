@@ -28,7 +28,7 @@
 	"apps/meteor/client/components/message/content/attachments/default/Field.tsx": 2,
 	"apps/meteor/client/components/message/content/attachments/default/FieldsAttachment.tsx": 2,
 	"apps/meteor/client/components/message/content/attachments/DefaultAttachment.tsx": 1,
-	"apps/meteor/client/components/message/content/attachments/file/AudioAttachment.tsx": 3,
+	"apps/meteor/client/components/message/content/attachments/file/AudioAttachment.tsx": 1,
 	"apps/meteor/client/components/message/content/attachments/structure/Attachment.tsx": 1,
 	"apps/meteor/client/components/message/content/attachments/structure/AttachmentAuthor.tsx": 2,
 	"apps/meteor/client/components/message/content/attachments/structure/AttachmentBlock.tsx": 1,
