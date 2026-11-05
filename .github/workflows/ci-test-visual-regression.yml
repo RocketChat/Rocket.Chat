@@ -17,15 +17,13 @@ env:
 permissions: {}
 
 jobs:
-  changes:
+  test:
+    # the snapshots are rendered by the arm64 Playwright image, which runs natively here
     runs-on: ubuntu-24.04-arm
     permissions:
       contents: read
 
-    name: Detect Fuselage Changes
-
-    outputs:
-      fuselage: ${{ steps.affected.outputs.fuselage }}
+    name: Test Visual Regression
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -73,21 +71,8 @@ jobs:
           echo "@rocket.chat/fuselage affected: ${affected}"
           echo "fuselage=${affected}" >> "$GITHUB_OUTPUT"
 
-  test:
-    needs: [changes]
-    if: needs.changes.outputs.fuselage == 'true'
-
-    # the snapshots are rendered by the arm64 Playwright image, which runs natively here
-    runs-on: ubuntu-24.04-arm
-    permissions:
-      contents: read
-
-    name: Test Visual Regression
-
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
       - name: Setup NodeJS
+        if: steps.affected.outputs.fuselage == 'true'
         uses: ./.github/actions/setup-node
         with:
           node-version: ${{ inputs.node-version }}
@@ -96,20 +81,24 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - uses: rharkor/caching-for-turbo@2238fae6eb9a9936f92356f54cb3660200d105e7 # v2.5.1
+        if: steps.affected.outputs.fuselage == 'true'
 
       - uses: ./.github/actions/restore-packages
+        if: steps.affected.outputs.fuselage == 'true'
 
       - name: Build Storybook
+        if: steps.affected.outputs.fuselage == 'true'
         run: yarn workspace @rocket.chat/fuselage run build-storybook
         env:
           STORYBOOK_DISABLE_TELEMETRY: 1
 
       - name: Run visual regression tests
+        if: steps.affected.outputs.fuselage == 'true'
         run: yarn workspace @rocket.chat/fuselage run visual-regression
 
       - name: Upload visual regression results
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        if: failure()
+        if: failure() && steps.affected.outputs.fuselage == 'true'
         with:
           name: playwright-visual-results-${{ github.event.number || github.run_id }}
           path: packages/fuselage/test-results
