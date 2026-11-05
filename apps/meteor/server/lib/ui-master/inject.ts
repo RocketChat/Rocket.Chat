@@ -44,7 +44,7 @@ const callback: NextHandleFunction = (req, res, next) => {
 				res.writeHead(200, {
 					'Content-type': contentType,
 					'cache-control': cacheControl,
-					'Content-Length': content.length,
+					'Content-Length': Buffer.byteLength(content, 'utf-8'),
 				});
 				res.write(content);
 				res.end();
