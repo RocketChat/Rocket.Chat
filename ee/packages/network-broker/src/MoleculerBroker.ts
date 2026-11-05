@@ -19,6 +19,19 @@ const lifecycle: { [k: string]: string } = {
 	stopped: 'stopped',
 };
 
+const hasCall = (ctx: unknown): ctx is Pick<Context, 'call'> =>
+	typeof ctx === 'object' && ctx !== null && 'call' in ctx && typeof ctx.call === 'function';
+
+const isCallable = (value: unknown): value is (...args: unknown[]) => unknown => typeof value === 'function';
+
+const getMethod = (instance: IServiceClass, method: string) => {
+	const value: unknown = Reflect.get(instance, method);
+	if (!isCallable(value)) {
+		throw new Error(`${method} is not a method of service ${instance.getName()}`);
+	}
+	return value.bind(instance);
+};
+
 export class MoleculerBroker implements IBroker {
 	private broker: ServiceBroker;
 
@@ -44,7 +57,7 @@ export class MoleculerBroker implements IBroker {
 		const stream = data?.[0]?.streamParam;
 		const isStreamingCall = !!stream;
 
-		if (context?.ctx?.call) {
+		if (hasCall(context?.ctx)) {
 			return context.ctx.call(method, isStreamingCall ? stream : data, {
 				...options,
 				...(isStreamingCall && { meta: { ...((options as any)?.meta || {}), details: data[0].details } }),
@@ -79,8 +92,6 @@ export class MoleculerBroker implements IBroker {
 
 	createService(instance: IServiceClass, serviceDependencies: string[] = []): void {
 		const methods = getInstanceMethods(instance);
-
-		const serviceInstance = instance as any;
 
 		const name = instance.getName();
 		if (!name) {
@@ -120,7 +131,8 @@ export class MoleculerBroker implements IBroker {
 
 		for (const method of methods) {
 			if (method.match(/^on[A-Z]/)) {
-				service.events[events[method]] = serviceInstance[method].bind(serviceInstance);
+				const handler: (...args: unknown[]) => void = getMethod(instance, method);
+				service.events[events[method]] = handler;
 				continue;
 			}
 
@@ -133,7 +145,7 @@ export class MoleculerBroker implements IBroker {
 							requestID: null,
 							broker: this,
 						},
-						serviceInstance[method].bind(serviceInstance),
+						getMethod(instance, method),
 					);
 				};
 				continue;
@@ -155,7 +167,7 @@ export class MoleculerBroker implements IBroker {
 								broker: this,
 								ctx,
 							},
-							() => serviceInstance[method](...params),
+							() => getMethod(instance, method)(...params),
 						);
 					},
 					ctx.meta?.optl,
