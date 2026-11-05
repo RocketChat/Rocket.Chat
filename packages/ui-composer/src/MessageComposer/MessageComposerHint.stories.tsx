@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { MessageComposerHint } from '.';
+import { MessageComposerHint } from './index.js';
 
 export default {
 	component: MessageComposerHint,
