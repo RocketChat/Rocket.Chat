@@ -4,6 +4,12 @@ import type { Meteor } from 'meteor/meteor';
 
 import { settings } from '../settings';
 
+// How many previous passwords to remember; anything but a positive number means none
+export const getPasswordHistoryLength = (): number => {
+	const historyLength = Number(settings.get('Accounts_Password_History_Amount'));
+	return historyLength > 0 ? historyLength : 0;
+};
+
 /**
  * Check if a given password is the one user by given user or if the user doesn't have a password
  * @param {object} user User object
@@ -18,8 +24,13 @@ export async function compareUserPasswordHistory(user: IUser, pass: IPassword): 
 		return false;
 	}
 
+	const historyLength = getPasswordHistoryLength();
+	if (historyLength === 0) {
+		return true;
+	}
+
 	const currentPassword = user.services.password.bcrypt;
-	const passwordHistory = user.services.passwordHistory.slice(-Number(settings.get('Accounts_Password_History_Amount')));
+	const passwordHistory = user.services.passwordHistory.slice(-historyLength);
 
 	for await (const password of passwordHistory) {
 		if (!password.trim()) {
