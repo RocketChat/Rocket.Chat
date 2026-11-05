@@ -37,8 +37,8 @@ const MessageHeader = ({ message }: MessageHeaderProps) => {
 	const buttonProps = useButtonPattern(() => openUserInfo(message.u.username));
 
 	const user = { ...message.u, roles: [], ...useUserPresence(message.u._id) };
-	const { normalizedUsername, showUsername } = useMessageListAuthorUsername(user);
 	const displayName = useUserDisplayName(user);
+	const { normalizedUsername, showUsername } = useMessageListAuthorUsername({ ...user, name: message.alias || displayName });
 
 	const showRoles = useMessageListShowRoles();
 	const { workspaceRoles, roomRoles } = useUserRolesByScope(message.u._id, message.rid, { enabled: showRoles });
