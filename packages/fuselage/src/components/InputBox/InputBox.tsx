@@ -17,7 +17,6 @@ export type InputBoxProps<T extends HTMLInputElement | HTMLSelectElement | HTMLT
 	endAddon?: ReactNode;
 	/** Reduces the end padding so a button in `endAddon` sits flush with the input's edge. */
 	endAddonFlush?: boolean;
-	input?: ReactNode;
 	multiple?: boolean;
 	error?: string;
 	placeholder?: string;

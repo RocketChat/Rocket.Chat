@@ -3,6 +3,7 @@ import { waitFor } from '@testing-library/react';
 import { axe } from 'jest-axe';
 import { useEffect, useState } from 'react';
 
+import type { InputBoxProps } from './InputBox';
 import * as stories from './InputBox.stories';
 import { render } from '../../testing';
 
@@ -36,6 +37,13 @@ it('should update error class when error changes asynchronously', async () => {
 		const input = getByRole('textbox', { name: /test-input/i }).parentElement as HTMLElement;
 		expect(input).toHaveClass('invalid');
 	});
+});
+
+it('does not accept an input prop', () => {
+	// @ts-expect-error InputBox always renders its own control, so it takes no `input` element
+	const props: InputBoxProps = { type: 'text', input: null };
+
+	expect(props.type).toBe('text');
 });
 
 it('should flush the end addon only when requested', () => {
