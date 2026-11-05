@@ -1,12 +1,12 @@
 import type { ReactNode } from 'react';
 import { useState, memo, useCallback, useMemo } from 'react';
 
-import type { ToastBarPayload } from './ToastBarContext';
-import { ToastBarContext } from './ToastBarContext';
-import ToastBarPersistent from './ToastBarPersistent';
-import ToastBarPortal from './ToastBarPortal';
-import ToastBarTimed from './ToastBarTimed';
-import ToastBarZone from './ToastBarZone';
+import type { ToastBarPayload } from './ToastBarContext.js';
+import { ToastBarContext } from './ToastBarContext.js';
+import ToastBarPersistent from './ToastBarPersistent.js';
+import ToastBarPortal from './ToastBarPortal.js';
+import ToastBarTimed from './ToastBarTimed.js';
+import ToastBarZone from './ToastBarZone.js';
 
 export type ToastBarProviderProps = {
 	children?: ReactNode;
