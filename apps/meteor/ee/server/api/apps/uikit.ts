@@ -1,6 +1,7 @@
 import { AppEvents, type IAppServerOrchestrator } from '@rocket.chat/apps';
 import { UiKitCoreApp } from '@rocket.chat/core-services';
 import { nodeHandler } from '@rocket.chat/http-router';
+import { Logger } from '@rocket.chat/logger';
 import type { OperationParams, OperationResult, UrlParams } from '@rocket.chat/rest-typings';
 import bodyParser from 'body-parser';
 import cors from 'cors';
@@ -9,6 +10,7 @@ import express from 'express';
 import rateLimit from 'express-rate-limit';
 
 import { authenticationMiddleware } from '../../../../server/api/v1/middlewares/authentication';
+import { nodeLoggerMiddleware } from '../../../../server/api/v1/middlewares/logger';
 import { httpApp } from '../../../../server/lib/http/httpServer';
 import { settings } from '../../../../server/settings';
 import { Apps } from '../../lib/apps/orchestrator';
@@ -33,7 +35,9 @@ settings.watch('API_CORS_Origin', (value: string) => {
 		: [];
 });
 
-httpApp.use('/api/apps/ui.interaction/*', nodeHandler(apiServer));
+const logger = new Logger('APPS');
+
+httpApp.use('/api/apps/ui.interaction/*', nodeHandler(nodeLoggerMiddleware(logger)), nodeHandler(apiServer));
 
 // oxlint-disable-next-line new-cap
 const router = express.Router();

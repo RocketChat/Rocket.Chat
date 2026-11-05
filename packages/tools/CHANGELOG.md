@@ -1,5 +1,11 @@
 # @rocket.chat/tools
 
+## 0.5.0-rc.1
+
+### Patch Changes
+
+- ([#43500](https://github.com/RocketChat/Rocket.Chat/pull/43500)) Fixes requests to the federation, Apps-Engine endpoint, UiKit interaction, OAuth login, `.well-known` metadata, health probe, `/_timesync` and `/theme.css` routes not appearing in the HTTP request log, and redacts OAuth authorization codes from logged URLs
+
 ## 0.5.0-rc.0
 
 ### Minor Changes
