@@ -1,0 +1,37 @@
+apps/meteor/server/services/scheduled-messages/processDueScheduledMessages.ts
+  s_478a7742cf0448::t_20731a95e3b12f 13-14
+apps/meteor/client/components/ScheduledMessages/ScheduledMessageRow.tsx
+  s_478a7742cf0448::t_f05255bc48bb7e 13,15,19,65,72-73,78,96,101,104,106,108,112,132-133
+apps/meteor/server/services/scheduled-messages/processDueScheduledMessages.test.ts
+  s_478a7742cf0448::t_20731a95e3b12f 61-69
+CLAUDE.md
+  s_478a7742cf0448::t_d4135bee842325 79
+apps/meteor/server/services/scheduled-messages/service.ts
+  s_478a7742cf0448::t_2c868724c938b0 29-30,163-168
+docs/features/message-scheduling.md
+  s_478a7742cf0448::t_44a77fac3c31ba 33,43-45,56-57,60-61,68,81-82
+  s_478a7742cf0448::t_2b616b4eac2e09 86-87
+  s_478a7742cf0448::t_9c1fb033f43546 1-32,34-42,46-55,58-59,62-67,69-80,83-85
+apps/meteor/server/services/scheduled-messages/service.spec.ts
+  s_478a7742cf0448::t_2c868724c938b0 135-150
+packages/fuselage/src/components/SplitButton/SplitButton.stories.tsx
+  s_478a7742cf0448::t_aefa2adff04685 105
+apps/meteor/client/components/ScheduledMessages/ScheduleMessageModal.tsx
+  s_478a7742cf0448::t_e3b0e0177b1539 1,51-52,66-75
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "3a879953e30ec319c8974baa3b988f0f265d5e78",
+  "prompts": {},
+  "sessions": {
+    "s_478a7742cf0448": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "78511215-04eb-4d9d-beb9-8d0ec0460bb1",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
