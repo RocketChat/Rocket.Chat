@@ -19,6 +19,7 @@ const appRoot = mockAppRoot().withJohnDoe().withTranslations('en', 'core', {
 	Contact_sales: 'Contact sales',
 	Outbound_message_upsell_annotation: 'Outbound_message_upsell_annotation',
 	No_phone_number_available_for_selected_channel: 'No phone number available for the selected channel',
+	Outbound_message_upsell_alt: 'Illustration of a smartphone receiving a new message notification.',
 });
 
 describe('OutboundMessageUpsellModal', () => {
@@ -26,6 +27,11 @@ describe('OutboundMessageUpsellModal', () => {
 
 	beforeEach(() => {
 		jest.clearAllMocks();
+	});
+
+	it('should describe the illustration', () => {
+		render(<OutboundMessageUpsellModal onClose={onClose} />, { wrapper: appRoot.build() });
+		expect(screen.getByRole('img', { name: 'Illustration of a smartphone receiving a new message notification.' })).toBeInTheDocument();
 	});
 
 	describe('hasModule is false', () => {
