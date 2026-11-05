@@ -28,7 +28,7 @@ function FlexItem({ children, order, grow, shrink, basis, align }: FlexItemProps
 			}
 
 			if (basis !== undefined && props.flexBasis === undefined) {
-				props.flexBasis = basis;
+				props.flexBasis = typeof basis === 'number' ? `${basis}px` : basis;
 			}
 
 			if (align !== undefined && props.alignSelf === undefined) {
