@@ -37,11 +37,9 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 	margin-inline: lengths.margin(2);
 }
 
-%rcx-margins-block {
-	margin-block: lengths.margin(2);
-}
-
 .rcx-message {
+	padding-inline: lengths.padding(24);
+
 	&-container {
 		display: flex;
 		flex-direction: column;
@@ -49,8 +47,6 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 		flex-shrink: 1;
 
 		min-width: 1px;
-		margin-block: lengths.margin(-2);
-		margin-inline: lengths.margin(4);
 
 		&--fixed {
 			align-items: center;
@@ -65,20 +61,7 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 			flex-shrink: 0;
 
 			width: lengths.size(36);
-			margin-block: lengths.margin(-2);
 		}
-	}
-
-	margin-inline: lengths.margin(2);
-
-	padding-block: lengths.padding(8) lengths.padding(4);
-
-	padding-inline: lengths.padding(20);
-
-	gap: 0;
-
-	> .rcx-message-container {
-		margin-inline: lengths.margin(4);
 	}
 
 	&.rcx-message--editing,
@@ -95,10 +78,6 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 		.rcx-message-body {
 			opacity: 0.4;
 		}
-	}
-
-	&--sequential {
-		padding-block: lengths.padding(4);
 	}
 
 	@keyframes background-fade {
@@ -120,13 +99,8 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 		flex-shrink: 1;
 
 		min-width: 1px;
-		margin-block: lengths.margin(-2);
-		margin-inline: lengths.margin(-2);
-
-		gap: 0;
 
 		&__time {
-			@extend %rcx-margins-header;
 			@include use-with-truncated-text();
 			@include use-font-scale(c1);
 			flex-shrink: 0;
@@ -143,8 +117,6 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 			display: inline;
 
 			@include use-with-truncated-text();
-
-			@extend %rcx-margins-header;
 
 			@include templates.focus-state;
 			flex-shrink: 0;
@@ -186,10 +158,6 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 
 		&__role {
 			@extend %rcx-margins-header;
-		}
-
-		& + .rcx-message-block {
-			margin-block-start: lengths.margin(4);
 		}
 	}
 
@@ -306,7 +274,6 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 	}
 
 	&-block {
-		@extend %rcx-margins-block;
 		display: flex;
 		flex-direction: column;
 
