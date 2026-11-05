@@ -1,6 +1,6 @@
 import fetchMock from 'jest-fetch-mock';
 
-import { RestClient } from '../src/index';
+import { RestClient } from '../src/index.js';
 
 fetchMock.enableMocks();
 
