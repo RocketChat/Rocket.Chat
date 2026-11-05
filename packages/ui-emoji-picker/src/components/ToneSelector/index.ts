@@ -1,1 +1,1 @@
-export { default } from './ToneSelector';
+export { default } from './ToneSelector.js';
