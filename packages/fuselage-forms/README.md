@@ -19,7 +19,7 @@ npm install @rocket.chat/fuselage-forms @rocket.chat/fuselage @rocket.chat/fusel
 
 `@rocket.chat/fuselage`, `@rocket.chat/fuselage-hooks`, `react` and `react-dom` are peer dependencies. `@rocket.chat/fuselage` has its own peer dependencies and stylesheet; see its README. The components rely on React 19 (they read `ref` as a regular prop).
 
-The package ships CommonJS and ES module builds with TypeScript declarations.
+The package ships ES modules only, with TypeScript declarations.
 
 ## Usage
 

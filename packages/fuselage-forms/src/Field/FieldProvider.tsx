@@ -3,8 +3,8 @@ import type { ReactNode } from 'react';
 import { useState, useCallback } from 'react';
 import { useId } from 'react-aria';
 
-import type { LabelTypes, FieldType } from './FieldContext';
-import { FieldContext } from './FieldContext';
+import type { LabelTypes, FieldType } from './FieldContext.js';
+import { FieldContext } from './FieldContext.js';
 
 export type FieldProviderProps = { children: ReactNode };
 
