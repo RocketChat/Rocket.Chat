@@ -1,6 +1,6 @@
 import { useCallback, useContext, useSyncExternalStore } from 'react';
 
-import { RouterContext } from '../RouterContext';
+import { RouterContext } from '../RouterContext.js';
 
 export const useCurrentRoutePath = () => {
 	const router = useContext(RouterContext);

@@ -1,7 +1,7 @@
 import type { UserPresence } from '@rocket.chat/core-typings';
 import { useContext, useMemo, useSyncExternalStore } from 'react';
 
-import { UserPresenceContext } from '../UserPresenceContext';
+import { UserPresenceContext } from '../UserPresenceContext.js';
 
 /**
  * Hook to fetch and subscribe user presence data

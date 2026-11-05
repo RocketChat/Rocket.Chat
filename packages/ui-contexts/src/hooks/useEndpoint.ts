@@ -2,7 +2,7 @@ import type { Serialized } from '@rocket.chat/core-typings';
 import type { Method, OperationParams, OperationResult, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
 import { useCallback, useContext, useRef } from 'react';
 
-import { ServerContext } from '../ServerContext';
+import { ServerContext } from '../ServerContext.js';
 
 type EndpointOptions = {
 	signal?: AbortSignal;
