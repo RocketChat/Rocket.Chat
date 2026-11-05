@@ -1,4 +1,4 @@
-import { act, render, screen } from '@testing-library/react';
+import { act, render } from '@testing-library/react';
 import type { ReactNode, Ref } from 'react';
 
 import VirtualizedScrollbars from './VirtualizedScrollbars';
@@ -21,27 +21,14 @@ const RoomList = ({ rooms }: { rooms: string[] }) => (
 
 const waitForScrollbarsUpdate = () => act(() => new Promise((resolve) => setTimeout(resolve, 50)));
 
-const trackLoadListeners = (img: HTMLImageElement) => {
-	const added = jest.spyOn(img, 'addEventListener');
-	const removed = jest.spyOn(img, 'removeEventListener');
-	const countLoad = (spy: typeof added | typeof removed) => spy.mock.calls.filter(([type]) => type === 'load').length;
-	return () => countLoad(added) - countLoad(removed);
-};
-
-it('keeps the load listeners of a row image constant while new messages move rooms to the top', async () => {
-	let rooms = ['general', 'random', 'support'];
-	const { rerender } = render(<RoomList rooms={rooms} />);
+it('adds no image load listener when a new message moves a room to the top', async () => {
+	const { rerender } = render(<RoomList rooms={['general', 'random', 'support']} />);
 	await waitForScrollbarsUpdate();
 
-	const liveLoadListeners = trackLoadListeners(screen.getByAltText<HTMLImageElement>('support'));
+	const addEventListener = jest.spyOn(HTMLImageElement.prototype, 'addEventListener');
 
-	for (let message = 0; message < 10; message++) {
-		const [top, ...others] = rooms;
-		rooms = [...others, top];
-		rerender(<RoomList rooms={rooms} />);
-		// eslint-disable-next-line no-await-in-loop
-		await waitForScrollbarsUpdate();
-	}
+	rerender(<RoomList rooms={['support', 'general', 'random']} />);
+	await waitForScrollbarsUpdate();
 
-	expect(liveLoadListeners()).toBe(0);
+	expect(addEventListener.mock.calls.filter(([type]) => type === 'load')).toHaveLength(0);
 });
