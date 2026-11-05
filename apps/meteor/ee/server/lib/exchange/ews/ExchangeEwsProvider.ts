@@ -78,11 +78,11 @@ const decodeCursor = (cursor?: string): { window?: string; syncState?: string } 
 /** At 1000 occurrences a page, past any window a person can fill. An emergency guard, not a working limit. */
 const MAX_CALENDAR_VIEW_PAGES = 50;
 
-/** At 100 changes a page, enough to carry a first sync of a long-lived calendar in one run. */
+/** At 512 changes a page, enough to carry a first sync of a long-lived calendar in one run. */
 const MAX_SYNC_BATCHES = 50;
 
-/** How many items one `GetItem` is asked for, matching the delta's own page size. */
-const EVENT_BATCH_SIZE = 100;
+/** How many items one `GetItem` reads, below a delta page's 512 so a full page does not become one heavy response. */
+const GET_ITEM_BATCH_SIZE = 100;
 
 const isBusyStatus = (status: string | undefined): boolean => status === 'Busy';
 
@@ -208,8 +208,8 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 	private async loadEvents(mailbox: string, itemIds: string[]): Promise<ExchangeEvent[]> {
 		const events: ExchangeEvent[] = [];
 
-		for (let i = 0; i < itemIds.length; i += EVENT_BATCH_SIZE) {
-			const doc = parseEwsResponse(await this.transport.post(getItemRequest(mailbox, itemIds.slice(i, i + EVENT_BATCH_SIZE))));
+		for (let i = 0; i < itemIds.length; i += GET_ITEM_BATCH_SIZE) {
+			const doc = parseEwsResponse(await this.transport.post(getItemRequest(mailbox, itemIds.slice(i, i + GET_ITEM_BATCH_SIZE))));
 
 			events.push(
 				...allByTag(doc, TYPES_NS, 'CalendarItem')
@@ -322,11 +322,19 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 
 	/** The delta only carries ids, so the fields come from a second call. */
 	private async loadContacts(mailbox: string, folderId: string, itemIds: string[]): Promise<ExchangeContact[]> {
-		const doc = parseEwsResponse(await this.transport.post(getContactItemsRequest(mailbox, itemIds)));
+		const contacts: ExchangeContactUpsert[] = [];
 
-		return allByTag(doc, TYPES_NS, 'Contact')
-			.map((node) => this.toExchangeContact(node, folderId))
-			.filter((contact): contact is ExchangeContactUpsert => contact !== undefined);
+		for (let i = 0; i < itemIds.length; i += GET_ITEM_BATCH_SIZE) {
+			const doc = parseEwsResponse(await this.transport.post(getContactItemsRequest(mailbox, itemIds.slice(i, i + GET_ITEM_BATCH_SIZE))));
+
+			contacts.push(
+				...allByTag(doc, TYPES_NS, 'Contact')
+					.map((node) => this.toExchangeContact(node, folderId))
+					.filter((contact): contact is ExchangeContactUpsert => contact !== undefined),
+			);
+		}
+
+		return contacts;
 	}
 
 	private toExchangeContact(node: Element, folderId: string): ExchangeContactUpsert | undefined {
