@@ -193,6 +193,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		ts: Filter<IMessage>['ts'],
 		users: string[],
 		ignoreThreads: boolean,
+		excludeIds: string[],
 		options?: O,
 	): FindCursor<DocumentWithProjection<T, O>>;
 	findVisibleByRoomId<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
@@ -337,6 +338,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		limit: number,
 		users: string[],
 		ignoreThreads: boolean,
+		excludeIds?: string[],
 	): Promise<string[]>;
 	removeByUserId(userId: string): Promise<DeleteResult>;
 	getThreadFollowsByThreadId(tmid: string): Promise<string[] | undefined>;
