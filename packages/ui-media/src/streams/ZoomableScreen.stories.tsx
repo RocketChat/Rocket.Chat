@@ -19,9 +19,9 @@ const createScreenStream = () => {
 	const stream = canvas.captureStream();
 
 	if (context) {
-		context.fillStyle = '#1f2329';
+		context.fillStyle = '#2b66be';
 		context.fillRect(0, 0, canvas.width, canvas.height);
-		context.strokeStyle = '#6c727a';
+		context.strokeStyle = '#182332';
 		context.fillStyle = '#e4e7ea';
 		context.font = '24px sans-serif';
 		for (let column = 0; column < 8; column++) {
