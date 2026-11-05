@@ -83,6 +83,9 @@ export const link = (src: string, label?: Markup[]): Link => ({
 	value: { src: plain(src), label: label ?? [plain(src)] },
 });
 
+// `internal` is reserved by ICANN for private networks, so it never shows up in the public suffix list
+const privateUseHosts = ['localhost', 'internal'];
+
 let cachedAutoLinkDomains: string[] | undefined | null = null;
 let cachedAutoLinkOptions: { detectIp: boolean; allowPrivateDomains: boolean; validHosts: string[] };
 
@@ -92,7 +95,7 @@ export const autoLink = (src: string, customDomains?: string[]) => {
 		cachedAutoLinkOptions = {
 			detectIp: true,
 			allowPrivateDomains: true,
-			validHosts: ['localhost', ...(customDomains ?? [])],
+			validHosts: [...privateUseHosts, ...(customDomains ?? [])],
 		};
 	}
 	const { validHosts } = cachedAutoLinkOptions;
