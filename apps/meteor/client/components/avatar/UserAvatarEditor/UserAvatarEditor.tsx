@@ -3,8 +3,8 @@ import { Box, Button, Avatar, IconButton } from '@rocket.chat/fuselage';
 import { Field, FieldLabel, FieldRow, FieldError, TextInput } from '@rocket.chat/fuselage-forms';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
-import type { ChangeEvent } from 'react';
-import { useState, useCallback } from 'react';
+import type { ReactElement, ChangeEvent } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { UserAvatarSuggestion } from './UserAvatarSuggestion';
@@ -17,13 +17,14 @@ import { isValidImageFormat } from '../../../lib/utils/isValidImageFormat';
 export type UserAvatarEditorProps = {
 	currentUsername: IUser['username'];
 	username: IUser['username'];
+	avatarObj?: AvatarObject;
 	setAvatarObj: (obj: AvatarObject) => void;
 	disabled?: boolean;
 	etag: IUser['avatarETag'];
 	name: IUser['name'];
 };
 
-function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disabled, etag }: UserAvatarEditorProps) {
+function UserAvatarEditor({ currentUsername, username, avatarObj, setAvatarObj, name, disabled, etag }: UserAvatarEditorProps): ReactElement {
 	const { t } = useTranslation();
 	const useFullNameForDefaultAvatar = useSetting('UI_Use_Name_Avatar');
 	const rotateImages = useSetting('FileUpload_RotateImages');
@@ -31,18 +32,45 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 	const [newAvatarSource, setNewAvatarSource] = useState<string>();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const [avatarUrlError, setAvatarUrlError] = useState<string | undefined>(undefined);
+	const previousAvatarObjRef = useRef(avatarObj);
+	const avatarSelectionGenerationRef = useRef(0);
+
+	useEffect(() => {
+		const previous = previousAvatarObjRef.current;
+		previousAvatarObjRef.current = avatarObj;
+
+		if (previous && !avatarObj) {
+			avatarSelectionGenerationRef.current += 1;
+			setNewAvatarSource(undefined);
+			setAvatarFromUrl('');
+			setAvatarUrlError(undefined);
+		}
+	}, [avatarObj]);
 
 	const setUploadedPreview = useCallback(
 		async (file: File, avatarObj: AvatarObject) => {
+			const avatarSelectionGeneration = ++avatarSelectionGenerationRef.current;
 			setAvatarObj(avatarObj);
 			try {
 				const dataURL = await readFileAsDataURL(file);
 
-				if (await isValidImageFormat(dataURL)) {
+				if (avatarSelectionGeneration !== avatarSelectionGenerationRef.current) {
+					return;
+				}
+
+				const isValid = await isValidImageFormat(dataURL);
+
+				if (avatarSelectionGeneration !== avatarSelectionGenerationRef.current) {
+					return;
+				}
+
+				if (isValid) {
 					setNewAvatarSource(dataURL);
 				}
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: t('Avatar_format_invalid') });
+				if (avatarSelectionGeneration === avatarSelectionGenerationRef.current) {
+					dispatchToastMessage({ type: 'error', message: t('Avatar_format_invalid') });
+				}
 			}
 		},
 		[setAvatarObj, t, dispatchToastMessage],
@@ -62,7 +90,14 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 			return;
 		}
 
-		if (!(await isValidImageFormat(avatarFromUrl))) {
+		const avatarSelectionGeneration = ++avatarSelectionGenerationRef.current;
+		const isValid = await isValidImageFormat(avatarFromUrl);
+
+		if (avatarSelectionGeneration !== avatarSelectionGenerationRef.current) {
+			return;
+		}
+
+		if (!isValid) {
 			setAvatarUrlError(t('error-invalid-image-url'));
 			return;
 		}
@@ -74,7 +109,9 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 	};
 
 	const clickReset = (): void => {
-		setNewAvatarSource(`/avatar/%40${useFullNameForDefaultAvatar ? name : username}`);
+		avatarSelectionGenerationRef.current += 1;
+		const defaultAvatarUsername = useFullNameForDefaultAvatar ? name : username;
+		setNewAvatarSource(`/avatar/%40${defaultAvatarUsername}${etag ? `?etag=${etag}` : ''}`);
 		setAvatarObj('reset');
 	};
 
@@ -90,6 +127,7 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 
 	const handleSelectSuggestion = useCallback(
 		(suggestion: UserAvatarSuggestion) => {
+			avatarSelectionGenerationRef.current += 1;
 			setAvatarObj(suggestion as unknown as AvatarObject);
 			setNewAvatarSource(suggestion.blob);
 		},
