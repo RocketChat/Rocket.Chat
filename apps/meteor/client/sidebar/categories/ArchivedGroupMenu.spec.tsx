@@ -11,16 +11,16 @@ const appRoot = mockAppRoot()
 	.withEndpoint('POST', '/v1/rooms.saveNotification', saveNotification as any)
 	.withTranslations('en', 'core', {
 		Options: 'Options',
-		Mute: 'Mute',
-		Unmute: 'Unmute',
+		Notifications: 'Notifications',
+		Turn_OFF: 'Turn off',
+		Turn_ON: 'Turn on',
 		Cancel: 'Cancel',
-		Mute_archived_rooms: 'Mute archived rooms',
-		Unmute_archived_rooms: 'Unmute archived rooms',
-		Archived_rooms_muted_description_one: '{{count}} archived room stops sending notifications and counting as unread until unmuted.',
-		Archived_rooms_muted_description_other: '{{count}} archived rooms stop sending notifications and counting as unread until unmuted.',
-		Archived_rooms_unmuted_description_other: '{{count}} archived rooms send notifications and count as unread again.',
-		Rooms_muted_other: '{{count}} rooms muted',
-		Rooms_unmuted_other: '{{count}} rooms unmuted',
+		Turn_off_notifications: 'Turn off notifications',
+		Turn_on_notifications: 'Turn on notifications',
+		Archived_rooms_notifications_off_description_other: '{{count}} archived rooms stop sending notifications.',
+		Archived_rooms_notifications_on_description_other: '{{count}} archived rooms send notifications again.',
+		Rooms_notifications_off_other: '{{count}} rooms notifications off',
+		Rooms_notifications_on_other: '{{count}} rooms notifications on',
 	})
 	.build();
 
@@ -28,8 +28,8 @@ const room = (overrides: Partial<SubscriptionWithRoom> & { rid: string }) =>
 	({ t: 'c', name: overrides.rid, ...overrides }) as SubscriptionWithRoom;
 
 const loud = room({ rid: 'loud' });
-const halfMuted = room({ rid: 'half-muted', disableNotifications: true });
-const quiet = room({ rid: 'quiet', disableNotifications: true, hideUnreadStatus: true });
+const loudToo = room({ rid: 'loud-too' });
+const quiet = room({ rid: 'quiet', disableNotifications: true });
 
 beforeEach(() => {
 	saveNotification.mockClear();
@@ -40,40 +40,39 @@ const openMenu = async (rooms: SubscriptionWithRoom[]) => {
 	await userEvent.click(screen.getByRole('button', { name: 'Options' }));
 };
 
-it('mutes the rooms not yet fully muted, after saying how many', async () => {
-	await openMenu([loud, halfMuted, quiet]);
-	await userEvent.click(await screen.findByRole('menuitem', { name: 'Mute archived rooms' }));
+it('turns notifications off for the rooms still sending them, after saying how many', async () => {
+	await openMenu([loud, loudToo, quiet]);
+	await userEvent.click(await screen.findByRole('menuitem', { name: 'Turn off' }));
 
-	expect(await screen.findByRole('dialog', { name: 'Mute archived rooms' })).toHaveTextContent(
-		'2 archived rooms stop sending notifications and counting as unread until unmuted.',
+	expect(await screen.findByRole('dialog', { name: 'Turn off notifications' })).toHaveTextContent(
+		'2 archived rooms stop sending notifications.',
 	);
 	expect(saveNotification).not.toHaveBeenCalled();
 
-	await userEvent.click(screen.getByRole('button', { name: 'Mute' }));
+	await userEvent.click(screen.getByRole('button', { name: 'Turn off' }));
 
 	await waitFor(() => expect(saveNotification).toHaveBeenCalledTimes(2));
-	expect(saveNotification).toHaveBeenCalledWith({ roomId: 'loud', notifications: { disableNotifications: '1', hideUnreadStatus: '1' } });
-	expect(saveNotification).toHaveBeenCalledWith({
-		roomId: 'half-muted',
-		notifications: { disableNotifications: '1', hideUnreadStatus: '1' },
-	});
+	expect(saveNotification).toHaveBeenCalledWith({ roomId: 'loud', notifications: { disableNotifications: '1' } });
+	expect(saveNotification).toHaveBeenCalledWith({ roomId: 'loud-too', notifications: { disableNotifications: '1' } });
 });
 
-it('offers to unmute once every room is muted', async () => {
-	await openMenu([quiet, room({ rid: 'quiet-too', disableNotifications: true, hideUnreadStatus: true })]);
+it('offers to turn notifications on once every room has them off', async () => {
+	await openMenu([quiet, room({ rid: 'quiet-too', disableNotifications: true })]);
 
-	expect(screen.queryByRole('menuitem', { name: 'Mute archived rooms' })).not.toBeInTheDocument();
-	await userEvent.click(await screen.findByRole('menuitem', { name: 'Unmute archived rooms' }));
-	expect(await screen.findByRole('dialog', { name: 'Unmute archived rooms' })).toHaveTextContent('2 archived rooms send notifications');
+	expect(screen.queryByRole('menuitem', { name: 'Turn off' })).not.toBeInTheDocument();
+	await userEvent.click(await screen.findByRole('menuitem', { name: 'Turn on' }));
+	expect(await screen.findByRole('dialog', { name: 'Turn on notifications' })).toHaveTextContent(
+		'2 archived rooms send notifications again.',
+	);
 
-	await userEvent.click(screen.getByRole('button', { name: 'Unmute' }));
+	await userEvent.click(screen.getByRole('button', { name: 'Turn on' }));
 
 	await waitFor(() => expect(saveNotification).toHaveBeenCalledTimes(2));
-	expect(saveNotification).toHaveBeenCalledWith({ roomId: 'quiet', notifications: { disableNotifications: '0', hideUnreadStatus: '0' } });
+	expect(saveNotification).toHaveBeenCalledWith({ roomId: 'quiet', notifications: { disableNotifications: '0' } });
 });
 
 it('is disabled while nothing is archived', async () => {
 	await openMenu([]);
 
-	expect(await screen.findByRole('menuitem', { name: 'Mute archived rooms' })).toHaveAttribute('aria-disabled', 'true');
+	expect(await screen.findByRole('menuitem', { name: 'Turn on' })).toHaveAttribute('aria-disabled', 'true');
 });

@@ -40,6 +40,9 @@ const buildBase = () =>
 			Archive_room: 'Archive room',
 			Archive_Channel_Description: '“{{roomName}}” moves to the Archived group.',
 			Unarchive: 'Unarchive',
+			Notifications: 'Notifications',
+			Turn_OFF: 'Turn off',
+			Turn_ON: 'Turn on',
 			Mark_unread: 'Mark Unread',
 			Favorite: 'Favorite',
 			Favorites: 'Favorites',
@@ -188,5 +191,60 @@ describe('the archive', () => {
 		await userEvent.click(await screen.findByRole('menuitem', { name: 'Unarchive' }));
 
 		expect(JSON.parse(localStorage.getItem(ARCHIVED_KEY) ?? '[]')).toEqual(['other']);
+	});
+});
+
+describe('the Notifications section', () => {
+	const saveNotification = jest.fn(async () => ({ success: true }));
+
+	beforeEach(() => {
+		saveNotification.mockClear();
+	});
+
+	it('turns the room notifications off', async () => {
+		render(<RoomMenu {...defaultProps} name='general' />, {
+			wrapper: buildBase()
+				.withSubscription(createFakeSubscription({ rid: 'roomId', t: 'c', disableNotifications: false }))
+				.withEndpoint('POST', '/v1/rooms.saveNotification', saveNotification as any)
+				.build(),
+		});
+
+		await userEvent.click(screen.getByRole('button', { name: 'Options' }));
+		await userEvent.click(await screen.findByRole('menuitem', { name: 'Turn off' }));
+
+		expect(saveNotification).toHaveBeenCalledWith({ roomId: 'roomId', notifications: { disableNotifications: '1' } });
+	});
+
+	it('lists both states in a submenu on a licensed workspace, the current one checked', async () => {
+		render(<RoomMenu {...defaultProps} />, {
+			wrapper: buildBase()
+				.withJohnDoe()
+				.withQueryClient(buildEnterpriseQueryClient())
+				.withSubscription(createFakeSubscription({ rid: 'roomId', t: 'c', disableNotifications: false }))
+				.withEndpoint('POST', '/v1/rooms.saveNotification', saveNotification as any)
+				.build(),
+		});
+
+		await userEvent.click(screen.getByRole('button', { name: 'Options' }));
+		await userEvent.click(await screen.findByRole('menuitem', { name: 'Notifications' }));
+
+		expect(await screen.findByRole('menuitemradio', { name: 'Turn on' })).toHaveAttribute('aria-checked', 'true');
+		await userEvent.click(screen.getByRole('menuitemradio', { name: 'Turn off' }));
+
+		expect(saveNotification).toHaveBeenCalledWith({ roomId: 'roomId', notifications: { disableNotifications: '1' } });
+	});
+
+	it('offers to turn them back on', async () => {
+		render(<RoomMenu {...defaultProps} />, {
+			wrapper: buildBase()
+				.withSubscription(createFakeSubscription({ rid: 'roomId', t: 'c', disableNotifications: true }))
+				.withEndpoint('POST', '/v1/rooms.saveNotification', saveNotification as any)
+				.build(),
+		});
+
+		await userEvent.click(screen.getByRole('button', { name: 'Options' }));
+		await userEvent.click(await screen.findByRole('menuitem', { name: 'Turn on' }));
+
+		expect(saveNotification).toHaveBeenCalledWith({ roomId: 'roomId', notifications: { disableNotifications: '0' } });
 	});
 });

@@ -1054,13 +1054,13 @@
   "archive-room": "Archive room",
   "archive-room_description": "Permission to archive a channel",
   "Archived": "Archived",
-  "Archived_rooms_muted_description": {
-    "one": "{{count}} archived room stops sending notifications and counting as unread until unmuted.",
-    "other": "{{count}} archived rooms stop sending notifications and counting as unread until unmuted."
+  "Archived_rooms_notifications_off_description": {
+    "one": "{{count}} archived room stops sending notifications.",
+    "other": "{{count}} archived rooms stop sending notifications."
   },
-  "Archived_rooms_unmuted_description": {
-    "one": "{{count}} archived room sends notifications and counts as unread again.",
-    "other": "{{count}} archived rooms send notifications and count as unread again."
+  "Archived_rooms_notifications_on_description": {
+    "one": "{{count}} archived room sends notifications again.",
+    "other": "{{count}} archived rooms send notifications again."
   },
   "Archived_rooms_stay_until_unarchived": "Rooms move to the Archived group and keep no badge until you unarchive them. The room currently open stays.",
   "Are_you_sure": "Are you sure?",
@@ -4695,7 +4695,6 @@
   "multiple_instance_solutions": "multiple instance solutions",
   "Multiple_monolith_instances_alert": "You are operating multiple instances without an active Premium license - some features may not behave as designed",
   "Mute": "Mute",
-  "Mute_archived_rooms": "Mute archived rooms",
   "Mute__name__": "Mute {{name}}",
   "Mute_all_notifications": "Mute all notifications",
   "Mute_and_dismiss": "Mute and dismiss",
@@ -5950,25 +5949,25 @@
     "one": "{{count}} room archived",
     "other": "{{count}} rooms archived"
   },
-  "Rooms_muted": {
-    "one": "{{count}} room muted",
-    "other": "{{count}} rooms muted"
+  "Rooms_notifications_off": {
+    "one": "{{count}} room notifications off",
+    "other": "{{count}} rooms notifications off"
   },
-  "Rooms_not_muted": {
-    "one": "{{count}} room could not be muted. Try again.",
-    "other": "{{count}} rooms could not be muted. Try again."
+  "Rooms_notifications_on": {
+    "one": "{{count}} room notifications on",
+    "other": "{{count}} rooms notifications on"
   },
-  "Rooms_not_unmuted": {
-    "one": "{{count}} room could not be unmuted. Try again.",
-    "other": "{{count}} rooms could not be unmuted. Try again."
+  "Rooms_notifications_still_off": {
+    "one": "{{count}} room still has notifications off. Try again.",
+    "other": "{{count}} rooms still have notifications off. Try again."
+  },
+  "Rooms_notifications_still_on": {
+    "one": "{{count}} room still has notifications on. Try again.",
+    "other": "{{count}} rooms still have notifications on. Try again."
   },
   "Rooms_to_archive": {
     "one": "{{count}} room to archive",
     "other": "{{count}} rooms to archive"
-  },
-  "Rooms_unmuted": {
-    "one": "{{count}} room unmuted",
-    "other": "{{count}} rooms unmuted"
   },
   "Rooms_added_successfully": "Rooms added successfully",
   "Root": "Root",
@@ -7057,6 +7056,8 @@
   "Turn_off_answer_chats": "Turn off answer chats",
   "Turn_off_video": "Turn off video",
   "Turn_ON": "Turn on",
+  "Turn_off_notifications": "Turn off notifications",
+  "Turn_on_notifications": "Turn on notifications",
   "Turn_on_answer_chats": "Turn on answer chats",
   "Turn_on_video": "Turn on video",
   "Two Factor Authentication": "Two factor authentication",
@@ -7136,7 +7137,6 @@
   "Unlimited_seats_MACs": "Unlimited seats and MACs",
   "Unlock_premium_capabilities": "Unlock Premium capabilities",
   "Unmute": "Unmute",
-  "Unmute_archived_rooms": "Unmute archived rooms",
   "Unmute_microphone": "Unmute microphone",
   "Unmute_someone_in_room": "Unmute someone in the room",
   "Unmute_user": "Unmute user",

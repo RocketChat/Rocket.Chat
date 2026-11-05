@@ -1,4 +1,5 @@
 import type { RoomType } from '@rocket.chat/core-typings';
+import { Icon } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { usePermission, useSetting, useUserSubscription } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
@@ -6,11 +7,21 @@ import { useTranslation } from 'react-i18next';
 
 import { useLeaveRoomAction } from './menuActions/useLeaveRoom';
 import { useToggleFavoriteAction } from './menuActions/useToggleFavoriteAction';
+import { useToggleNotificationAction } from './menuActions/useToggleNotificationsAction';
 import { useToggleReadAction } from './menuActions/useToggleReadAction';
 import { useArchiveRoomAction } from './useArchiveRoomAction';
 import { useArchivedRooms } from './useArchivedRooms';
 import { useUnarchiveRoomAction } from './useUnarchiveRoomAction';
 import { useOmnichannelPrioritiesMenu } from '../views/omnichannel/hooks/useOmnichannelPrioritiesMenu';
+
+export type RoomMenuSection = {
+	/** Set on the section a menu may render as a submenu. */
+	id?: string;
+	title: string;
+	items: GenericMenuItemProps[];
+	/** The item that is the current state, when the section is a choice between states. */
+	selectedId?: string;
+};
 
 type RoomMenuActionsProps = {
 	rid: string;
@@ -30,7 +41,7 @@ export const useRoomMenuActions = ({
 	cl,
 	roomOpen,
 	hideDefaultOptions,
-}: RoomMenuActionsProps): { title: string; items: GenericMenuItemProps[] }[] => {
+}: RoomMenuActionsProps): RoomMenuSection[] => {
 	const { t } = useTranslation();
 	const subscription = useUserSubscription(rid);
 
@@ -38,6 +49,7 @@ export const useRoomMenuActions = ({
 	const canLeaveChannel = usePermission('leave-c');
 	const canLeavePrivate = usePermission('leave-p');
 	const canFavorite = useSetting('Favorite_Rooms') as boolean;
+	const isNotificationEnabled = !subscription?.disableNotifications;
 
 	const canLeave = ((): boolean => {
 		if (type === 'c' && !canLeaveChannel) {
@@ -56,6 +68,9 @@ export const useRoomMenuActions = ({
 	const handleToggleFavorite = useToggleFavoriteAction({ rid, isFavorite });
 	const handleToggleRead = useToggleReadAction({ rid, isUnread, subscription });
 	const handleLeave = useLeaveRoomAction({ rid, type, name, roomOpen });
+	// One action per direction, so a submenu can list both and the chosen one stays chosen.
+	const handleTurnNotificationsOff = useToggleNotificationAction({ rid, isNotificationEnabled: true, roomName: name });
+	const handleTurnNotificationsOn = useToggleNotificationAction({ rid, isNotificationEnabled: false, roomName: name });
 
 	const isOmnichannelRoom = type === 'l';
 	const prioritiesMenu = useOmnichannelPrioritiesMenu(rid);
@@ -115,6 +130,32 @@ export const useRoomMenuActions = ({
 		],
 	);
 
+	// The same switch the sidepanel offers, scoped to this room, as both directions with the current one marked:
+	// the licensed menu lists them in a submenu, the plain menu keeps only the one that changes something.
+	const notificationsSelectedId = isNotificationEnabled ? 'notificationsOn' : 'notificationsOff';
+	const notificationsMenuOptions = useMemo<GenericMenuItemProps[]>(
+		() =>
+			!hideDefaultOptions && !isOmnichannelRoom && subscription
+				? [
+						{
+							id: 'notificationsOff',
+							icon: 'bell-off',
+							content: t('Turn_OFF'),
+							onClick: handleTurnNotificationsOff,
+							addon: isNotificationEnabled ? undefined : <Icon name='check' size='x16' />,
+						},
+						{
+							id: 'notificationsOn',
+							icon: 'bell',
+							content: t('Turn_ON'),
+							onClick: handleTurnNotificationsOn,
+							addon: isNotificationEnabled ? <Icon name='check' size='x16' /> : undefined,
+						},
+					]
+				: [],
+		[hideDefaultOptions, isOmnichannelRoom, subscription, isNotificationEnabled, t, handleTurnNotificationsOff, handleTurnNotificationsOn],
+	);
+
 	if (isOmnichannelRoom && prioritiesMenu.length > 0) {
 		return [
 			...(menuOptions.length > 0 ? [{ title: '', items: menuOptions }] : []),
@@ -122,5 +163,10 @@ export const useRoomMenuActions = ({
 		];
 	}
 
-	return menuOptions.length > 0 ? [{ title: '', items: menuOptions }] : [];
+	return [
+		...(menuOptions.length > 0 ? [{ title: '', items: menuOptions }] : []),
+		...(notificationsMenuOptions.length > 0
+			? [{ id: 'notifications', title: t('Notifications'), items: notificationsMenuOptions, selectedId: notificationsSelectedId }]
+			: []),
+	];
 };
