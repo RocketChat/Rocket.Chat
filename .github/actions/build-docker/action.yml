@@ -20,7 +20,10 @@ inputs:
     default: 'arm64'
   service:
     required: false
-    description: 'Container to build'
+    description: 'Compose services to build, space separated; rocketchat is always built on its own'
+  name:
+    required: false
+    description: 'Name for the artifacts of this build; defaults to service'
   publish-image:
     required: false
     description: 'Publish image'
@@ -92,21 +95,24 @@ runs:
       run: |
         set -o xtrace
 
-        # The Docker SERVICE arg (folder under ee/apps) lives in the compose build args;
-        # the compose service name (INPUT_SERVICE) can differ (e.g. ddp-streamer-service).
-        SERVICE_DIR=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "$INPUT_SERVICE" '.services[$s].build.args.SERVICE')
-        PKG_NAME=$(node -p "require('./ee/apps/${SERVICE_DIR}/package.json').name")
         TURBO_VERSION=$(node -p "require('./package.json').devDependencies.turbo")
 
-        rm -rf "out/${SERVICE_DIR}"
+        for service in $INPUT_SERVICE; do
+          # The Docker SERVICE arg (folder under ee/apps) lives in the compose build args;
+          # the compose service name can differ (e.g. ddp-streamer-service).
+          SERVICE_DIR=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "$service" '.services[$s].build.args.SERVICE')
+          PKG_NAME=$(node -p "require('./ee/apps/${SERVICE_DIR}/package.json').name")
 
-        # `turbo prune` derives the exact workspace dependency closure for the service — no
-        # hand-maintained list. --use-gitignore=false also captures the gitignored build output
-        # we need (dist/, generated definition/), at the cost of dragging in node_modules/.turbo,
-        # which we strip below; `yarn workspaces focus --production` rebuilds node_modules in-image.
-        npx -y "turbo@${TURBO_VERSION}" prune "$PKG_NAME" --skip-infer --use-gitignore=false --out-dir "out/${SERVICE_DIR}"
+          rm -rf "out/${SERVICE_DIR}"
 
-        find "out/${SERVICE_DIR}" \( -name node_modules -o -name .turbo \) -type d -prune -exec rm -rf {} +
+          # `turbo prune` derives the exact workspace dependency closure for the service — no
+          # hand-maintained list. --use-gitignore=false also captures the gitignored build output
+          # we need (dist/, generated definition/), at the cost of dragging in node_modules/.turbo,
+          # which we strip below; `yarn workspaces focus --production` rebuilds node_modules in-image.
+          npx -y "turbo@${TURBO_VERSION}" prune "$PKG_NAME" --skip-infer --use-gitignore=false --out-dir "out/${SERVICE_DIR}"
+
+          find "out/${SERVICE_DIR}" \( -name node_modules -o -name .turbo \) -type d -prune -exec rm -rf {} +
+        done
 
     - name: Build Docker images
       shell: bash
@@ -149,14 +155,22 @@ runs:
           LOAD_OR_PUSH="--load"
         fi
 
-        # Get image name from docker-compose-ci.yml since rocketchat image is different from service name (rocket.chat)
-        IMAGE=$(docker compose -f docker-compose-ci.yml $compose_fips_override config --format json 2>/dev/null | jq -r --arg s "$INPUT_SERVICE" '.services[$s].image')
+        read -r -a services <<< "$INPUT_SERVICE"
 
+        # Get image name from docker-compose-ci.yml since rocketchat image is different from service name (rocket.chat)
+        COMPOSE_CONFIG=$(docker compose -f docker-compose-ci.yml $compose_fips_override config --format json 2>/dev/null)
+        declare -a run_tags=()
+        for service in "${services[@]}"; do
+          IMAGE=$(jq -r --arg s "$service" '.services[$s].image' <<< "$COMPOSE_CONFIG")
+          run_tags+=(--set "${service}.tags+=${IMAGE}-gha-run-${GITHUB_RUN_ID}")
+        done
+
+        # one bake builds every service in parallel on this runner
         docker buildx bake \
           -f docker-compose-ci.yml $compose_fips_override \
           ${LOAD_OR_PUSH} \
           --allow=fs.read=/tmp/build \
-          --set "*.tags+=${IMAGE}-gha-run-${GITHUB_RUN_ID}" \
+          "${run_tags[@]}" \
           --set "*.labels.org.opencontainers.image.description=Build run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
           --set "*.labels.org.opencontainers.image.source=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}" \
           --set "*.platform=linux/${INPUT_ARCH}" \
@@ -165,33 +179,37 @@ runs:
           --provenance=false \
           --sbom=false \
           --metadata-file "/tmp/meta.json" \
-          "$INPUT_SERVICE"
+          "${services[@]}"
 
         echo "Contents of /tmp/meta.json:"
         cat /tmp/meta.json
 
         if [[ "$INPUT_PUBLISH_IMAGE" == 'true' ]]; then
-          SERVICE_SUFFIX=''
-          if [[ "$INPUT_SERVICE" == 'rocketchat' && "$INPUT_TYPE" == 'coverage' ]] && [[ "$GITHUB_EVENT_NAME" == 'release' || "$GITHUB_REF" == 'refs/heads/develop' ]]; then
-            SERVICE_SUFFIX='-cov'
-          elif [[ "$INPUT_TYPE" == 'fips' ]]; then
-            SERVICE_SUFFIX='-fips'
-          fi
+          for service in "${services[@]}"; do
+            SERVICE_SUFFIX=''
+            if [[ "$service" == 'rocketchat' && "$INPUT_TYPE" == 'coverage' ]] && [[ "$GITHUB_EVENT_NAME" == 'release' || "$GITHUB_REF" == 'refs/heads/develop' ]]; then
+              SERVICE_SUFFIX='-cov'
+            elif [[ "$INPUT_TYPE" == 'fips' ]]; then
+              SERVICE_SUFFIX='-fips'
+            fi
 
-          mkdir -p "/tmp/manifests/${INPUT_SERVICE}${SERVICE_SUFFIX}/${INPUT_ARCH}"
+            MANIFEST_DIR="/tmp/manifests/${service}${SERVICE_SUFFIX}/${INPUT_ARCH}"
+            mkdir -p "$MANIFEST_DIR"
 
-          # Get digest and image info
-          DIGEST=$(jq -r --arg service "$INPUT_SERVICE" '.[$service].["containerimage.digest"]' "/tmp/meta.json")
-          IMAGE_NO_TAG=$(echo "$IMAGE" | sed 's/:.*$//')
-          FULL_IMAGE="${IMAGE_NO_TAG}@${DIGEST}"
+            # Get digest and image info
+            IMAGE=$(jq -r --arg s "$service" '.services[$s].image' <<< "$COMPOSE_CONFIG")
+            DIGEST=$(jq -r --arg service "$service" '.[$service].["containerimage.digest"]' "/tmp/meta.json")
+            IMAGE_NO_TAG=$(echo "$IMAGE" | sed 's/:.*$//')
+            FULL_IMAGE="${IMAGE_NO_TAG}@${DIGEST}"
 
-          echo "Inspecting image: $FULL_IMAGE"
+            echo "Inspecting image: $FULL_IMAGE"
 
-          # Inspect the image and save complete manifest with sizes (using -v for verbose)
-          docker manifest inspect -v "$FULL_IMAGE" > "/tmp/manifests/${INPUT_SERVICE}${SERVICE_SUFFIX}/${INPUT_ARCH}/manifest.json"
+            # Inspect the image and save complete manifest with sizes (using -v for verbose)
+            docker manifest inspect -v "$FULL_IMAGE" > "${MANIFEST_DIR}/manifest.json"
 
-          echo "Saved manifest to /tmp/manifests/${INPUT_SERVICE}${SERVICE_SUFFIX}/${INPUT_ARCH}/manifest.json"
-          cat "/tmp/manifests/${INPUT_SERVICE}${SERVICE_SUFFIX}/${INPUT_ARCH}/manifest.json" | jq '.'
+            echo "Saved manifest to ${MANIFEST_DIR}/manifest.json"
+            jq '.' "${MANIFEST_DIR}/manifest.json"
+          done
         fi
 
     - name: Save Docker image as artifact
@@ -208,30 +226,35 @@ runs:
           compose_fips_override='-f docker-compose-ci.fips.yml'
         fi
 
-        # Get image name from docker-compose-ci.yml
-        IMAGE=$(docker compose -f docker-compose-ci.yml $compose_fips_override config --format json 2>/dev/null | jq -r --arg s "$SERVICE" '.services[$s].image')
+        COMPOSE_CONFIG=$(docker compose -f docker-compose-ci.yml $compose_fips_override config --format json 2>/dev/null)
 
         # Create directory for image archives
         mkdir -p /tmp/docker-images
 
-        # Save the image to a tar file
-        docker save "${IMAGE}" -o "/tmp/docker-images/${SERVICE}-${ARCH}-${TYPE}.tar"
+        for service in $SERVICE; do
+          # Get image name from docker-compose-ci.yml
+          IMAGE=$(jq -r --arg s "$service" '.services[$s].image' <<< "$COMPOSE_CONFIG")
 
-        echo "Saved image to /tmp/docker-images/${SERVICE}-${ARCH}-${TYPE}.tar"
+          # Save the image to a tar file
+          docker save "${IMAGE}" -o "/tmp/docker-images/${service}-${ARCH}-${TYPE}.tar"
+
+          echo "Saved image to /tmp/docker-images/${service}-${ARCH}-${TYPE}.tar"
+        done
+
         ls -lh /tmp/docker-images/
 
     - name: Upload Docker image artifact
       if: inputs.publish-image == 'false' && inputs.arch == 'amd64'
       uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
       with:
-        name: docker-image-${{ inputs.service }}-${{ inputs.arch }}-${{ inputs.type }}
-        path: /tmp/docker-images/${{ inputs.service }}-${{ inputs.arch }}-${{ inputs.type }}.tar
+        name: docker-image-${{ inputs.name || inputs.service }}-${{ inputs.arch }}-${{ inputs.type }}
+        path: /tmp/docker-images/*-${{ inputs.arch }}-${{ inputs.type }}.tar
         retention-days: 1
 
     - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
       if: inputs.publish-image == 'true'
       with:
-        name: manifests-${{ inputs.service }}-${{ inputs.arch }}-${{ inputs.type }}
+        name: manifests-${{ inputs.name || inputs.service }}-${{ inputs.arch }}-${{ inputs.type }}
         path: /tmp/manifests
         retention-days: 5
 
