@@ -1,6 +1,7 @@
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
-export type FeaturesAvailable = 'secondarySidebar' | 'aiSearch' | 'roomToolboxLayout' | 'realtimeMessageComposer' | 'sidebarRail';
+export type FeaturesAvailable =
+	'secondarySidebar' | 'aiSearch' | 'roomToolboxLayout' | 'realtimeMessageComposer' | 'sidebarRail' | 'messageScheduling';
 
 export type FeaturePreviewProps = {
 	name: FeaturesAvailable;
@@ -57,6 +58,14 @@ export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 		i18n: 'Sidebar_rail',
 		description: 'Sidebar_rail_description',
 		group: 'Navigation',
+		value: false,
+		enabled: true,
+	},
+	{
+		name: 'messageScheduling',
+		i18n: 'Message_scheduling',
+		description: 'Message_scheduling_description',
+		group: 'Message',
 		value: false,
 		enabled: true,
 	},
