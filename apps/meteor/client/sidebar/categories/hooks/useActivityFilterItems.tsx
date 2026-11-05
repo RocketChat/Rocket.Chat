@@ -1,4 +1,4 @@
-import { Icon } from '@rocket.chat/fuselage';
+import { Icon, ToggleSwitch } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useLanguage } from '@rocket.chat/ui-contexts';
@@ -6,7 +6,7 @@ import type { TFunction } from 'i18next';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useSetActivityFilterHours } from './useActivityFilter';
+import { useSetActivityFilterHidesUnreads, useSetActivityFilterHours } from './useActivityFilter';
 
 // The windows the menus offer. Any whole number of hours is a valid filter; these are just the choices.
 const ACTIVITY_FILTER_PRESETS: { hours: number | undefined; label: TranslationKey }[] = [
@@ -53,6 +53,34 @@ export const useActivityFilterLabel = (hours: number | undefined): string => {
 
 /** The menu item id of a filter, `all` when there is none. */
 export const getActivityFilterItemId = (hours: number | undefined): string => `activity-filter-${hours ?? 'all'}`;
+
+/** The menu item id of the toggle that makes the filter hide the unread rooms too. */
+export const ACTIVITY_FILTER_HIDES_UNREADS_ITEM_ID = 'activity-filter-hides-unreads';
+
+/**
+ * The toggle, below the presets, that makes a group's filter hide its unread rooms too. Without a window there
+ * is nothing for it to hide, so it is disabled, keeping its state for when a window is chosen again.
+ */
+export const useActivityFilterHidesUnreadsItem = (
+	groupId: string,
+	activityFilterHours: number | undefined,
+	activityFilterHidesUnreads: boolean,
+): GenericMenuItemProps => {
+	const { t } = useTranslation();
+	const setActivityFilterHidesUnreads = useSetActivityFilterHidesUnreads();
+	const disabled = activityFilterHours === undefined;
+
+	return useMemo(
+		() => ({
+			id: ACTIVITY_FILTER_HIDES_UNREADS_ITEM_ID,
+			content: t('Hide_inactive_unreads'),
+			disabled,
+			onClick: () => setActivityFilterHidesUnreads(groupId, !activityFilterHidesUnreads),
+			addon: <ToggleSwitch disabled={disabled} checked={activityFilterHidesUnreads} onChange={() => undefined} />,
+		}),
+		[t, groupId, disabled, activityFilterHidesUnreads, setActivityFilterHidesUnreads],
+	);
+};
 
 /**
  * One menu item per preset for a group, the current one checked. Choosing one stores it and reports the choice

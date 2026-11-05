@@ -449,7 +449,7 @@ WithRichSubmenuTrigger.args = {
 export const WithRadioSubmenu: StoryFn<typeof Menu> = (args) => (
 	<Menu title='Menu with a radio submenu' {...args}>
 		<MenuItem key='rename'>Rename</MenuItem>
-		<MenuSubmenuTrigger key='sort' textValue='Sort by' selectionMode='single' selectedKeys={['name']}>
+		<MenuSubmenuTrigger key='sort' textValue='Sort by' selectionMode='single' selectedKeys={['name']} disabledKeys={['size']}>
 			<MenuItem aria-label='Sort by'>
 				<MenuItemIcon name='sort' />
 				<MenuItemContent>Sort by</MenuItemContent>
@@ -467,7 +467,7 @@ WithRadioSubmenu.parameters = {
 	docs: {
 		description: {
 			story:
-				'A submenu declares its own selection on its trigger. With `selectionMode="single"` its items are radio items that announce which one is checked from `selectedKeys`.',
+				'A submenu declares its own selection on its trigger. With `selectionMode="single"` its items are radio items that announce which one is checked from `selectedKeys`. Its `disabledKeys` are declared there too.',
 		},
 	},
 };

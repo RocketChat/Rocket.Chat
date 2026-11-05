@@ -200,6 +200,8 @@ export interface ISidebarCategory {
 	keepUnreadsOnTop?: boolean;
 	/** An expanded group stops listing read rooms with no activity in this many hours. */
 	activityFilterHours?: number;
+	/** The activity filter hides the group's unread rooms too, instead of keeping them listed whatever their age. */
+	activityFilterHidesUnreads?: boolean;
 }
 
 export interface IUser extends IRocketChatRecord {

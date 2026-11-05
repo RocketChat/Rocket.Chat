@@ -102,12 +102,17 @@ const getWrapperSettings = ({
 		showUnreads?: boolean;
 		keepUnreadsOnTop?: boolean;
 		activityFilterHours?: number;
+		activityFilterHidesUnreads?: boolean;
 	}[];
 }) => {
 	// UI-PREVIEW ONLY: the activity filters are read from localStorage, so the preference entries seed it.
 	localStorage.setItem(
 		`fuselage-localStorage-sidebarActivityFilters-${user._id}`,
 		JSON.stringify(Object.fromEntries(sidebarCategories.flatMap((c) => (c.activityFilterHours ? [[c._id, c.activityFilterHours]] : [])))),
+	);
+	localStorage.setItem(
+		`fuselage-localStorage-sidebarActivityFilterHidesUnreads-${user._id}`,
+		JSON.stringify(Object.fromEntries(sidebarCategories.flatMap((c) => (c.activityFilterHidesUnreads ? [[c._id, true]] : [])))),
 	);
 	const root = mockAppRoot()
 		.wrap((children) => (
@@ -475,11 +480,13 @@ describe('the activity filter', () => {
 
 	const renderChannels = ({
 		activityFilterHours,
+		activityFilterHidesUnreads,
 		collapsedGroups = [],
 		liftedFilters,
 		isEnterprise = true,
 	}: {
 		activityFilterHours: number;
+		activityFilterHidesUnreads?: boolean;
 		collapsedGroups?: string[];
 		liftedFilters?: LiftedActivityFilters;
 		isEnterprise?: boolean;
@@ -489,7 +496,7 @@ describe('the activity filter', () => {
 				rooms: channels,
 				sidebarGroupByType: true,
 				isEnterprise,
-				sidebarCategories: [{ _id: 'Channels', name: 'Channels', default: true, activityFilterHours }],
+				sidebarCategories: [{ _id: 'Channels', name: 'Channels', default: true, activityFilterHours, activityFilterHidesUnreads }],
 			}).build(),
 		});
 
@@ -504,6 +511,24 @@ describe('the activity filter', () => {
 		const group = channelsGroupOf(result.current.groups);
 		expect(namesOf(group)).toEqual(['quiet-unread', 'recent-read']);
 		expect(group?.inactiveCount).toBe(2);
+	});
+
+	it('hides the unread rooms too when the group asks for it', async () => {
+		const { result } = renderChannels({ activityFilterHours: 24, activityFilterHidesUnreads: true });
+
+		await waitFor(() => expect(channelsGroupOf(result.current.groups)?.activityFilterHidesUnreads).toBe(true));
+		const group = channelsGroupOf(result.current.groups);
+		expect(namesOf(group)).toEqual(['recent-read']);
+		expect(group?.inactiveCount).toBe(3);
+	});
+
+	it('keeps the unread rooms while the group asks to hide them but has no window', async () => {
+		const { result } = renderChannels({ activityFilterHours: undefined as unknown as number, activityFilterHidesUnreads: true });
+
+		await waitFor(() => expect(channelsGroupOf(result.current.groups)?.activityFilterHidesUnreads).toBe(true));
+		const group = channelsGroupOf(result.current.groups);
+		expect(namesOf(group)).toHaveLength(channels.length);
+		expect(group?.inactiveCount).toBe(0);
 	});
 
 	it('widens with the window', async () => {
