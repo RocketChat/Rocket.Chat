@@ -66,6 +66,7 @@ const appRoot = mockAppRoot()
 	.build();
 
 beforeEach(() => {
+	localStorage.clear();
 	mutate.mockClear();
 	readMessages.mockClear();
 	openArchiveRooms.mockClear();
@@ -104,7 +105,9 @@ const openFilterSubmenu = async (overrides: Partial<ComponentProps<typeof Catego
 	return screen.findByRole('menuitemcheckbox', { name: /Hide inactive unreads/ });
 };
 
-const persistedChannels = () => mutate.mock.calls[0][0].find((entry: { _id: string }) => entry._id === 'Channels');
+// UI-PREVIEW ONLY: the toggle lives in localStorage, under the key fuselage-hooks derives (no user in this app root).
+const HIDES_UNREADS_KEY = 'fuselage-localStorage-sidebarActivityFilterHidesUnreads-anonymous';
+const storedHidesUnreads = () => JSON.parse(localStorage.getItem(HIDES_UNREADS_KEY) ?? 'null');
 
 describe('the Filter submenu', () => {
 	it('checks the window in use and offers the unreads toggle, off by default', async () => {
@@ -121,7 +124,8 @@ describe('the Filter submenu', () => {
 
 		await userEvent.click(toggle);
 
-		expect(persistedChannels()).toEqual(expect.objectContaining({ activityFilterHours: 24 * 7, activityFilterHidesUnreads: true }));
+		expect(storedHidesUnreads()).toEqual({ Channels: true });
+		expect(mutate).not.toHaveBeenCalled();
 	});
 
 	it('turns the unreads toggle off again', async () => {
@@ -134,7 +138,7 @@ describe('the Filter submenu', () => {
 
 		await userEvent.click(toggle);
 
-		expect(persistedChannels()).toEqual(expect.objectContaining({ activityFilterHidesUnreads: false }));
+		expect(storedHidesUnreads()).toEqual({});
 	});
 
 	it('disables the unreads toggle while the group has no window', async () => {
@@ -150,7 +154,7 @@ describe('the Filter submenu', () => {
 
 		await userEvent.click(toggle);
 
-		expect(mutate).not.toHaveBeenCalled();
+		expect(storedHidesUnreads()).toBeNull();
 	});
 });
 

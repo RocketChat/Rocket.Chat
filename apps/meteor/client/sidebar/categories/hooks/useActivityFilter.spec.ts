@@ -1,6 +1,5 @@
-import type { ISidebarCategory } from '@rocket.chat/core-typings';
 import { useIsEnterprise } from '@rocket.chat/ui-client';
-import { useUserPreference } from '@rocket.chat/ui-contexts';
+import { useUserId } from '@rocket.chat/ui-contexts';
 import { act, renderHook } from '@testing-library/react';
 
 import {
@@ -10,20 +9,10 @@ import {
 	useSetActivityFilterHidesUnreads,
 	useSetActivityFilterHours,
 } from './useActivityFilter';
-import { usePersistCategoriesMutation } from './usePersistCategoriesMutation';
-import { useUserSidebarCategories } from './useUserSidebarCategories';
 import { SIDEBAR_DYNAMIC_GROUP_KEYS } from '../../hooks/useCategoryList';
 
 jest.mock('@rocket.chat/ui-contexts', () => ({
-	useUserPreference: jest.fn(),
-}));
-
-jest.mock('./usePersistCategoriesMutation', () => ({
-	usePersistCategoriesMutation: jest.fn(),
-}));
-
-jest.mock('./useUserSidebarCategories', () => ({
-	useUserSidebarCategories: jest.fn(),
+	useUserId: jest.fn(),
 }));
 
 jest.mock('@rocket.chat/ui-client', () => ({
@@ -32,29 +21,26 @@ jest.mock('@rocket.chat/ui-client', () => ({
 }));
 
 const mockedUseIsEnterprise = jest.mocked(useIsEnterprise);
-const mockedUseUserPreference = jest.mocked(useUserPreference);
-const mockedUsePersistCategoriesMutation = jest.mocked(usePersistCategoriesMutation);
-const mockedUseUserSidebarCategories = jest.mocked(useUserSidebarCategories);
+const mockedUseUserId = jest.mocked(useUserId);
 
-const mutate = jest.fn();
+// UI-PREVIEW ONLY: the filters live in localStorage, under the key fuselage-hooks derives.
+const STORAGE_KEY = 'fuselage-localStorage-sidebarActivityFilters-user-1';
+const HIDES_UNREADS_KEY = 'fuselage-localStorage-sidebarActivityFilterHidesUnreads-user-1';
 
-const persistedEntry = (id: string): ISidebarCategory | undefined =>
-	mutate.mock.calls[0][0].find((entry: ISidebarCategory) => entry._id === id);
-
-const withCategories = (rawCategories: ISidebarCategory[]) =>
-	mockedUseUserSidebarCategories.mockReturnValue({ rawCategories, customCategories: rawCategories.filter((entry) => !entry.default) });
+const stored = (): Record<string, number> => JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '{}');
+const withStored = (filters: Record<string, number>) => localStorage.setItem(STORAGE_KEY, JSON.stringify(filters));
+const storedHidesUnreads = (): Record<string, boolean> => JSON.parse(localStorage.getItem(HIDES_UNREADS_KEY) ?? '{}');
+const withStoredHidesUnreads = (toggles: Record<string, boolean>) => localStorage.setItem(HIDES_UNREADS_KEY, JSON.stringify(toggles));
 
 beforeEach(() => {
-	mutate.mockClear();
+	localStorage.clear();
 	mockedUseIsEnterprise.mockReturnValue({ data: { isEnterprise: true } } as any);
-	mockedUseUserPreference.mockReturnValue(undefined); // sidebarSectionsOrder falls back to SIDEBAR_SYSTEM_GROUP_KEYS
-	mockedUsePersistCategoriesMutation.mockReturnValue({ mutate } as any);
-	withCategories([]);
+	mockedUseUserId.mockReturnValue('user-1');
 });
 
 describe('useActivityFilterHours', () => {
-	it('reads the filter stored on the group entry', () => {
-		withCategories([{ _id: 'Channels', name: 'Channels', default: true, activityFilterHours: 168 }]);
+	it('reads the filter stored for the group', () => {
+		withStored({ Channels: 168 });
 
 		const { result } = renderHook(() => useActivityFilterHours());
 
@@ -64,8 +50,8 @@ describe('useActivityFilterHours', () => {
 	});
 
 	it('reads no filter without the license module', () => {
+		withStored({ Channels: 168 });
 		mockedUseIsEnterprise.mockReturnValue({ data: { isEnterprise: false } } as any);
-		withCategories([{ _id: 'Channels', name: 'Channels', default: true, activityFilterHours: 168 }]);
 
 		const { result } = renderHook(() => useActivityFilterHours());
 
@@ -73,8 +59,9 @@ describe('useActivityFilterHours', () => {
 		expect(result.current.hasActivityFilters).toBe(false);
 	});
 
-	it('reads no filter on a dynamic group, whatever its entry says', () => {
-		withCategories([{ _id: 'Unread', name: 'Unread', default: true, activityFilterHours: 24, activityFilterHidesUnreads: true }]);
+	it('reads no filter for a dynamic group, whatever is stored', () => {
+		withStored({ Unread: 24 });
+		withStoredHidesUnreads({ Unread: true });
 
 		const { result } = renderHook(() => useActivityFilterHours());
 
@@ -84,21 +71,18 @@ describe('useActivityFilterHours', () => {
 	});
 
 	it('reads whether the filter hides the unread rooms too, even while it has no window', () => {
-		withCategories([
-			{ _id: 'Channels', name: 'Channels', default: true, activityFilterHidesUnreads: true },
-			{ _id: 'custom', name: 'Work', activityFilterHours: 24 },
-		]);
+		withStored({ custom: 24 });
+		withStoredHidesUnreads({ Channels: true });
 
 		const { result } = renderHook(() => useActivityFilterHours());
 
 		expect(result.current.getActivityFilterHidesUnreads('Channels')).toBe(true);
 		expect(result.current.getActivityFilterHidesUnreads('custom')).toBe(false);
-		expect(result.current.getActivityFilterHidesUnreads('Teams')).toBe(false);
 	});
 
 	it('reads no unreads toggle without the license module', () => {
+		withStoredHidesUnreads({ Channels: true });
 		mockedUseIsEnterprise.mockReturnValue({ data: { isEnterprise: false } } as any);
-		withCategories([{ _id: 'Channels', name: 'Channels', default: true, activityFilterHours: 168, activityFilterHidesUnreads: true }]);
 
 		const { result } = renderHook(() => useActivityFilterHours());
 
@@ -107,94 +91,72 @@ describe('useActivityFilterHours', () => {
 });
 
 describe('useSetActivityFilterHidesUnreads', () => {
-	it('stores the toggle on the group entry, keeping its window', () => {
-		withCategories([{ _id: 'custom', name: 'Work', activityFilterHours: 168 }]);
+	it('stores the toggle for the group, keeping the others and the windows', () => {
+		withStored({ Channels: 168 });
+		withStoredHidesUnreads({ custom: true });
 
-		const { result } = renderHook(() => useSetActivityFilterHidesUnreads());
-
-		act(() => result.current('custom', true));
-
-		expect(persistedEntry('custom')).toEqual({ _id: 'custom', name: 'Work', activityFilterHours: 168, activityFilterHidesUnreads: true });
-	});
-
-	it('creates the entry of a system group that has none yet', () => {
 		const { result } = renderHook(() => useSetActivityFilterHidesUnreads());
 
 		act(() => result.current('Channels', true));
 
-		expect(persistedEntry('Channels')).toEqual({ _id: 'Channels', name: 'Channels', default: true, activityFilterHidesUnreads: true });
+		expect(storedHidesUnreads()).toEqual({ custom: true, Channels: true });
+		expect(stored()).toEqual({ Channels: 168 });
+	});
+
+	it('drops the toggle when turned off', () => {
+		withStoredHidesUnreads({ custom: true, Channels: true });
+
+		const { result } = renderHook(() => useSetActivityFilterHidesUnreads());
+
+		act(() => result.current('Channels', false));
+
+		expect(storedHidesUnreads()).toEqual({ custom: true });
+	});
+});
+
+describe('isActivityFilterable', () => {
+	it('excludes every dynamic group and nothing else', () => {
+		SIDEBAR_DYNAMIC_GROUP_KEYS.forEach((key) => expect(isActivityFilterable(key)).toBe(false));
+		expect(isActivityFilterable('Channels')).toBe(true);
+		expect(isActivityFilterable('custom')).toBe(true);
 	});
 });
 
 describe('useSetActivityFilterHours', () => {
-	it('stores a filter on a custom category', () => {
-		withCategories([{ _id: 'custom', name: 'Work' }]);
+	it('stores the filter for the group, keeping the others', () => {
+		withStored({ Channels: 168 });
 
 		const { result } = renderHook(() => useSetActivityFilterHours());
 
 		act(() => result.current('custom', 24));
 
-		expect(persistedEntry('custom')).toEqual({ _id: 'custom', name: 'Work', activityFilterHours: 24 });
-	});
-
-	it('creates the entry of a system group that has none yet', () => {
-		const { result } = renderHook(() => useSetActivityFilterHours());
-
-		act(() => result.current('Channels', 720));
-
-		expect(persistedEntry('Channels')).toEqual({ _id: 'Channels', name: 'Channels', default: true, activityFilterHours: 720 });
-	});
-
-	it('creates the entry of a system group missing from the stored sections order', () => {
-		mockedUseUserPreference.mockReturnValue(['Direct_Messages', 'Channels']);
-
-		const { result } = renderHook(() => useSetActivityFilterHours());
-
-		act(() => result.current('Teams', 24));
-
-		expect(persistedEntry('Teams')).toEqual({ _id: 'Teams', name: 'Teams', default: true, activityFilterHours: 24 });
+		expect(stored()).toEqual({ Channels: 168, custom: 24 });
 	});
 
 	it('clears the filter', () => {
-		withCategories([{ _id: 'custom', name: 'Work', activityFilterHours: 168 }]);
+		withStored({ Channels: 168, custom: 24 });
 
 		const { result } = renderHook(() => useSetActivityFilterHours());
 
 		act(() => result.current('custom', undefined));
 
-		expect(persistedEntry('custom')).toEqual({ _id: 'custom', name: 'Work', activityFilterHours: undefined });
+		expect(stored()).toEqual({ Channels: 168 });
 	});
-});
-
-it('never filters dynamic groups', () => {
-	SIDEBAR_DYNAMIC_GROUP_KEYS.forEach((key) => expect(isActivityFilterable(key)).toBe(false));
-	expect(isActivityFilterable('Channels')).toBe(true);
-	expect(isActivityFilterable('custom')).toBe(true);
 });
 
 describe('useActivityFilterClock', () => {
 	beforeEach(() => jest.useFakeTimers());
 	afterEach(() => jest.useRealTimers());
 
-	it('moves forward while enabled', () => {
-		const { result } = renderHook(() => useActivityFilterClock(true));
+	it('ticks every five minutes only while enabled', () => {
+		const { result, rerender } = renderHook(({ enabled }) => useActivityFilterClock(enabled), { initialProps: { enabled: false } });
 		const start = result.current;
 
-		act(() => {
-			jest.advanceTimersByTime(5 * 60 * 1000);
-		});
-
-		expect(result.current).toBeGreaterThan(start);
-	});
-
-	it('stands still while disabled', () => {
-		const { result } = renderHook(() => useActivityFilterClock(false));
-		const start = result.current;
-
-		act(() => {
-			jest.advanceTimersByTime(60 * 60 * 1000);
-		});
-
+		act(() => jest.advanceTimersByTime(5 * 60 * 1000));
 		expect(result.current).toBe(start);
+
+		rerender({ enabled: true });
+		act(() => jest.advanceTimersByTime(5 * 60 * 1000));
+		expect(result.current).toBeGreaterThan(start);
 	});
 });

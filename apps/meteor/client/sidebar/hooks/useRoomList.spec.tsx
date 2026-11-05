@@ -105,6 +105,15 @@ const getWrapperSettings = ({
 		activityFilterHidesUnreads?: boolean;
 	}[];
 }) => {
+	// UI-PREVIEW ONLY: the activity filters are read from localStorage, so the preference entries seed it.
+	localStorage.setItem(
+		`fuselage-localStorage-sidebarActivityFilters-${user._id}`,
+		JSON.stringify(Object.fromEntries(sidebarCategories.flatMap((c) => (c.activityFilterHours ? [[c._id, c.activityFilterHours]] : [])))),
+	);
+	localStorage.setItem(
+		`fuselage-localStorage-sidebarActivityFilterHidesUnreads-${user._id}`,
+		JSON.stringify(Object.fromEntries(sidebarCategories.flatMap((c) => (c.activityFilterHidesUnreads ? [[c._id, true]] : [])))),
+	);
 	const root = mockAppRoot()
 		.wrap((children) => (
 			<VideoConfContext.Provider
