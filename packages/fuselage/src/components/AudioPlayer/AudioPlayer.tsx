@@ -65,6 +65,9 @@ export type AudioPlayerProps = RefAttributes<HTMLAudioElement> &
 		audioPlaybackRangeLabel?: string;
 		changePlaybackSpeedLabel?: string;
 		downloadAudioFileLabel?: string;
+		loadingLabel?: string;
+		errorLabel?: string;
+		retryLabel?: string;
 		trackProps?: TrackHTMLAttributes<HTMLTrackElement>;
 	};
 
@@ -81,6 +84,9 @@ const AudioPlayer = ({
 	audioPlaybackRangeLabel = 'Audio Playback Range',
 	changePlaybackSpeedLabel = 'Change Playback Speed',
 	downloadAudioFileLabel = 'Download Audio File',
+	loadingLabel,
+	errorLabel,
+	retryLabel,
 	trackProps,
 	className,
 	...props
@@ -91,6 +97,8 @@ const AudioPlayer = ({
 	const [currentTime, setCurrentTime] = useState(0);
 	const [durationTime, setDurationTime] = useState(0);
 	const [playbackSpeed, setPlaybackSpeed] = useState(1);
+	const [loading, setLoading] = useState(false);
+	const [error, setError] = useState(false);
 
 	const handlePlay = () => {
 		const isPlaying = audioRef.current?.paused;
@@ -129,6 +137,12 @@ const AudioPlayer = ({
 				currentTime={currentTime}
 				durationTime={durationTime}
 				playbackSpeed={playbackSpeed}
+				loading={loading}
+				error={error}
+				onRetry={() => {
+					setError(false);
+					audioRef.current?.load();
+				}}
 				onTogglePlay={handlePlay}
 				onSeek={(time) => {
 					if (audioRef.current) {
@@ -150,6 +164,9 @@ const AudioPlayer = ({
 				audioPlaybackRangeLabel={audioPlaybackRangeLabel}
 				changePlaybackSpeedLabel={changePlaybackSpeedLabel}
 				downloadAudioFileLabel={downloadAudioFileLabel}
+				loadingLabel={loadingLabel}
+				errorLabel={errorLabel}
+				retryLabel={retryLabel}
 			/>
 			<audio
 				style={{ display: 'none' }}
@@ -166,6 +183,10 @@ const AudioPlayer = ({
 					getDurationForInfinityDurationAudioFile(src, setDurationTime);
 				}}
 				onEnded={() => setIsPlaying(false)}
+				onWaiting={() => setLoading(true)}
+				onCanPlay={() => setLoading(false)}
+				onPlaying={() => setLoading(false)}
+				onError={() => setError(true)}
 				ref={refs}
 				preload='metadata'
 				onRateChange={(e) => {
@@ -179,7 +200,8 @@ const AudioPlayer = ({
 				}}
 				controls
 			>
-				<source src={src} type={type} />
+				{/* A failed <source> fires `error` on itself, not on the <audio> element. */}
+				<source src={src} type={type} onError={() => setError(true)} />
 				<track kind='captions' {...trackProps} />
 			</audio>
 		</Box>

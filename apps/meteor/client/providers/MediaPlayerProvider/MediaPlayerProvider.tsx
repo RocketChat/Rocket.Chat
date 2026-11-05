@@ -28,6 +28,8 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 	const [currentTime, setCurrentTime] = useState(0);
 	const [duration, setDuration] = useState(0);
 	const [playbackRate, setPlaybackRate] = useState<number>(1);
+	const [loading, setLoading] = useState(false);
+	const [error, setError] = useState(false);
 
 	const trackRef = useRef<PersistentAudioTrack | null>(null);
 	trackRef.current = track;
@@ -52,6 +54,7 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 			setCurrentTime(startTime);
 			setDuration(0);
 			pendingStartTimeRef.current = startTime;
+			setError(false);
 			audio.src = next.url;
 			audio.load();
 		}
@@ -107,13 +110,40 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 		setPlaying(false);
 		setCurrentTime(0);
 		setDuration(0);
+		setLoading(false);
+		setError(false);
+	});
+
+	const retry = useStableCallback(() => {
+		const audio = audioRef.current;
+		if (!audio || !trackRef.current) {
+			return;
+		}
+		setError(false);
+		audio.load();
+		audio.play().catch((err) => console.warn('Failed to retry audio playback:', err));
 	});
 
 	const isActive = useCallback((id: string) => trackRef.current?.id === id, []);
 
 	const value = useMemo<MediaPlayerContextValue>(
-		() => ({ track, playing, currentTime, duration, playbackRate, play, toggle, seek, cyclePlaybackRate, close, isActive }),
-		[track, playing, currentTime, duration, playbackRate, play, toggle, seek, cyclePlaybackRate, close, isActive],
+		() => ({
+			track,
+			playing,
+			currentTime,
+			duration,
+			playbackRate,
+			loading,
+			error,
+			retry,
+			play,
+			toggle,
+			seek,
+			cyclePlaybackRate,
+			close,
+			isActive,
+		}),
+		[track, playing, currentTime, duration, playbackRate, loading, error, retry, play, toggle, seek, cyclePlaybackRate, close, isActive],
 	);
 
 	return (
@@ -126,8 +156,19 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 				onPlay={() => setPlaying(true)}
 				onPause={() => setPlaying(false)}
 				onEnded={() => close()}
+				onWaiting={() => setLoading(true)}
+				onCanPlay={() => setLoading(false)}
+				onPlaying={() => setLoading(false)}
+				onError={() => {
+					// Only a track that is set can fail; clearing `src` on close also fires `error`.
+					if (trackRef.current) {
+						setLoading(false);
+						setError(true);
+					}
+				}}
 				onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
 				onLoadedMetadata={(e) => {
+					setError(false);
 					setDuration(e.currentTarget.duration || 0);
 					if (pendingStartTimeRef.current > 0) {
 						e.currentTarget.currentTime = pendingStartTimeRef.current;
