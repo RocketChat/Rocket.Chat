@@ -104,7 +104,7 @@ const RoomFiles = ({
 										height: '100%',
 										width: '100%',
 									}}
-									totalCount={total}
+									totalCount={filesItems.length}
 									endReached={loadMoreItems}
 									overscan={100}
 									data={filesItems}
