@@ -21,6 +21,23 @@ type MenuSubmenuProps = {
 	onAction?: (key: Key) => void;
 };
 
+const materializedChildItems = new WeakMap<Iterable<object>, object[]>();
+
+// Keeps a data-backed submenu populated every time it opens, even when its `childItems` can only be iterated once
+const getChildItems = (childItems: Iterable<object> | undefined): object[] | undefined => {
+	if (!childItems) {
+		return undefined;
+	}
+
+	let items = materializedChildItems.get(childItems);
+	if (!items) {
+		items = Array.from(childItems);
+		materializedChildItems.set(childItems, items);
+	}
+
+	return items;
+};
+
 /**
  * Renders a menu item that opens a nested submenu.
  *
@@ -34,6 +51,8 @@ function MenuSubmenu({ item, state, rootMenuTriggerState, parentMenuRef, onActio
 	const submenuRef = useRef<HTMLDivElement>(null);
 
 	const submenuTriggerState = useSubmenuTriggerState({ triggerKey: item.key }, rootMenuTriggerState);
+
+	const childItems = getChildItems(item.props?.childItems);
 
 	const { submenuTriggerProps, submenuProps, popoverProps } = useSubmenuTrigger<object>(
 		{ parentMenuRef, submenuRef },
@@ -106,6 +125,7 @@ function MenuSubmenu({ item, state, rootMenuTriggerState, parentMenuRef, onActio
 				<MenuPopover {...popoverProps} state={submenuTriggerState} triggerRef={triggerRef} placement='right top'>
 					<MenuDropDown
 						{...submenuProps}
+						items={childItems}
 						onKeyDown={onSubmenuKeyDown}
 						rootMenuTriggerState={rootMenuTriggerState}
 						menuRef={submenuRef}
