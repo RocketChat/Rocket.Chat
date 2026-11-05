@@ -71,10 +71,7 @@ export class Publication extends EventEmitter implements IPublication {
 		this.once('stop', fn);
 	}
 
-	/**
-	 * Retires the publication without answering the client, because the caller
-	 * already has. `_isDeactivated()` reports the same state.
-	 */
+	/** Retires the publication without answering the client, because the caller already has. */
 	deactivate(): void {
 		this._stop();
 	}

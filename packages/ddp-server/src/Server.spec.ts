@@ -344,6 +344,9 @@ describe('Server subscriptions', () => {
 		const late = jest.fn();
 		failed.onStop(late);
 		expect(late).toHaveBeenCalledTimes(1);
+
+		const continuation = Promise.resolve().then(() => (Streamer.isPublicationActive(failed) ? 'revived' : 'aborted'));
+		await expect(continuation).resolves.toBe('aborted');
 	});
 
 	it('still answers a failed subscription when one of its stop callbacks throws', async () => {
