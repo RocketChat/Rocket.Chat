@@ -30,7 +30,7 @@ function buildFormData(data?: Record<string, any> | void, formData = new FormDat
 
 	if (typeof data === 'object' && !(data instanceof File)) {
 		Object.keys(data).forEach((key) => {
-			buildFormData(formData, data[key], parentKey ? `${parentKey}[${key}]` : key);
+			buildFormData(data[key], formData, parentKey ? `${parentKey}[${key}]` : key);
 		});
 	} else {
 		data && parentKey && formData.append(parentKey, data);
@@ -188,10 +188,26 @@ export class RestClient implements RestClientInterface {
 
 	async delete<TPathPattern extends MatchPathPattern<TPath>, TPath extends PathFor<'DELETE'>>(
 		endpoint: TPath,
-		_params?: ParamsFor<'DELETE', TPathPattern>,
-		options: Omit<RequestInit, 'method'> = {},
+		params?: ParamsFor<'DELETE', TPathPattern>,
+		{ headers, ...options }: Omit<RequestInit, 'method'> = {},
 	): Promise<Serialized<OperationResult<'DELETE', TPathPattern>>> {
-		const response = await this.send(endpoint, 'DELETE', options ?? {});
+		const isFormData = checkIfIsFormData(params);
+		const response = await this.send(endpoint, 'DELETE', {
+			...(params !== undefined && { body: isFormData ? buildFormData(params) : JSON.stringify(params) }),
+
+			headers: {
+				Accept: 'application/json',
+				...(!isFormData && params !== undefined && { 'Content-Type': 'application/json' }),
+				...headers,
+			},
+
+			...options,
+		});
+
+		if (response.status === 204) {
+			return {} as any;
+		}
+
 		return response.json();
 	}
 
