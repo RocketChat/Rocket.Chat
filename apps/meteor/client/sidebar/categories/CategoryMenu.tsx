@@ -3,11 +3,13 @@ import { Menu, MenuItem, MenuSection, MenuSubmenuTrigger, ToggleSwitch } from '@
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { GenericMenuItem, useHandleMenuAction } from '@rocket.chat/ui-client';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
+import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useCategoryModals } from './hooks/useCategoryModals';
+import { useMarkGroupReadItem } from './hooks/useMarkGroupReadItem';
 import { useMoveRoomCategory } from './hooks/useMoveRoomCategory';
 import { useToggleUnreads } from './hooks/useToggleUnreads';
 import { useCreateNewItems } from '../../navbar/NavBarPagesGroup/hooks/useCreateNewItems';
@@ -15,6 +17,10 @@ import { useCreateNewItems } from '../../navbar/NavBarPagesGroup/hooks/useCreate
 type CategoryMenuProps = {
 	category?: ISidebarCategory;
 	groupKey: string;
+	/** The group as its header names it. */
+	groupTitle: string;
+	/** Every room of the group, the ones the collapse leaves out included. */
+	rooms: SubscriptionWithRoom[];
 	showUnreads: boolean;
 	keepUnreadsOnTop: boolean;
 	canMoveUp: boolean;
@@ -26,6 +32,8 @@ type CategoryMenuProps = {
 const CategoryMenu = ({
 	category,
 	groupKey,
+	groupTitle,
+	rooms,
 	showUnreads,
 	keepUnreadsOnTop,
 	canMoveUp,
@@ -103,7 +111,10 @@ const CategoryMenu = ({
 			]
 		: [];
 
+	const markGroupReadItem = useMarkGroupReadItem({ groupTitle, rooms, onOpen: close });
+
 	const unreadItems: GenericMenuItemProps[] = [
+		markGroupReadItem,
 		{
 			id: 'show-unreads',
 			icon: 'flag',

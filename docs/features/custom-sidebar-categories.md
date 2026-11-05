@@ -170,8 +170,15 @@ in `sidebarCategories` can be silently dropped during a move.
 **Custom category:**
 - Order: Move up / Move down / New channel
 - Manage: Rename / Delete / New category
+- Unreads: Mark read, then the toggles below
 - When collapsed: Show unreads toggle
 - When expanded: Keep unreads on top toggle
+
+**Mark read** (`useMarkGroupReadItem.tsx`) marks every unread room of the group as read, threads included, through
+`POST /v1/subscriptions.read` with `readThreads: true`, five rooms at a time. It is disabled while the group has
+nothing unread (`isUnreadRoom` over the group's `allRooms`), and first says how many rooms become read in a
+do-not-ask-again modal without an icon ("Mark rooms as read"). A toast reports how many were marked read and, on
+failures, how many were not.
 
 **System group:**
 - Order: Move up / Move down (dynamic groups have both disabled)
