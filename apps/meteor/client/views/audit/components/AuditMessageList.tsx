@@ -1,24 +1,23 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { MessageDivider } from '@rocket.chat/fuselage';
 import { MessageTypes } from '@rocket.chat/message-types';
-import { useUserPreference } from '@rocket.chat/ui-contexts';
+import { RoomMessage, SystemMessage } from '@rocket.chat/ui-message-list';
 import { Fragment, memo } from 'react';
 
-import RoomMessage from '../../../components/message/variants/RoomMessage';
-import SystemMessage from '../../../components/message/variants/SystemMessage';
 import { useFormatDate } from '../../../hooks/useFormatDate';
+import { MessagesProvider } from '../../../providers/MessagesProvider';
 import { isMessageNewDay } from '../../room/MessageList/lib/isMessageNewDay';
 
 export type AuditMessageListProps = {
 	messages: IMessage[];
 };
 
+/** The messages an audit found, shown without anything to act on them. */
 const AuditMessageList = ({ messages }: AuditMessageListProps) => {
 	const formatDate = useFormatDate();
-	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
 
 	return (
-		<>
+		<MessagesProvider allowsInteraction={false}>
 			{messages.map((message, index, { [index - 1]: previous }) => {
 				const newDay = isMessageNewDay(message, previous);
 				const system = MessageTypes.isSystemMessage(message);
@@ -27,23 +26,13 @@ const AuditMessageList = ({ messages }: AuditMessageListProps) => {
 					<Fragment key={message._id}>
 						{newDay && <MessageDivider>{formatDate(message.ts)}</MessageDivider>}
 
-						{!system && (
-							<RoomMessage
-								message={message}
-								sequential={false}
-								unread={false}
-								mention={false}
-								all={false}
-								ignoredUser={false}
-								showUserAvatar={showUserAvatar}
-							/>
-						)}
+						{!system && <RoomMessage message={message} sequential={false} unread={false} mention={false} all={false} ignoredUser={false} />}
 
-						{system && <SystemMessage message={message} showUserAvatar={showUserAvatar} />}
+						{system && <SystemMessage message={message} />}
 					</Fragment>
 				);
 			})}
-		</>
+		</MessagesProvider>
 	);
 };
 
