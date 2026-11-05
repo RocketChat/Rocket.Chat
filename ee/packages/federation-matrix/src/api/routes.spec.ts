@@ -1,7 +1,6 @@
-import { Writable } from 'node:stream';
-
 import { Settings } from '@rocket.chat/core-services';
-import type { NextFunction, Request, Response } from 'express';
+import { createRootApp, mountRouter } from '@rocket.chat/http-router';
+import type { HttpBindings } from '@rocket.chat/http-router';
 
 import { getFederationRoutes } from './routes';
 
@@ -19,21 +18,15 @@ jest.mock('@rocket.chat/federation-sdk', () => ({
 
 type Outcome = { handledWith: number } | 'passed-on';
 
-const requestWellKnown = (url: string): Promise<Outcome> =>
-	new Promise((resolve) => {
-		const res = Object.assign(new Writable({ write: (_chunk, _encoding, callback) => callback() }), {
-			statusCode: 200,
-			status(code: number) {
-				this.statusCode = code;
-				return this;
-			},
-			setHeader: () => undefined,
-		});
-		res.on('finish', () => resolve({ handledWith: res.statusCode }));
-		const req = { method: 'GET', url, headers: {} };
+const requestWellKnown = async (url: string): Promise<Outcome> => {
+	const app = createRootApp();
+	mountRouter(app, getFederationRoutes('1.0.0').wellKnown);
+	app.notFound((c) => c.text('passed-on'));
 
-		getFederationRoutes('1.0.0').wellKnown.router(req as Request, res as unknown as Response, (() => resolve('passed-on')) as NextFunction);
-	});
+	const response = await app.request(url, undefined, {} as HttpBindings);
+	const body = await response.text();
+	return body === 'passed-on' ? body : { handledWith: response.status };
+};
 
 describe('federation /.well-known routes', () => {
 	beforeEach(() => {

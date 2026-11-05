@@ -1,12 +1,10 @@
 import { Logger } from '@rocket.chat/logger';
 import type { Method } from '@rocket.chat/rest-typings';
-import express from 'express';
 import type { Context, HonoRequest, MiddlewareHandler } from 'hono';
 import { Hono } from 'hono';
 import type { StatusCode } from 'hono/utils/http-status';
 
 import type { ResponseSchema, TypedOptions } from './definition';
-import { honoAdapterForExpress } from './middlewares/honoAdapterForExpress';
 import type { OpenAPIDocsOptions, Route } from './openapi';
 import { buildOperation, toOpenAPIPath } from './openapi';
 import { parseQueryParams } from './parseQueryParams';
@@ -352,19 +350,13 @@ export class Router<
 		return this as any;
 	}
 
-	get router(): express.Router {
-		// oxlint-disable-next-line new-cap
-		const router = express.Router();
-		const hono = new Hono();
-		router.use(
-			this.base,
-			honoAdapterForExpress(
-				hono.route(this.base, this.innerRouter).options('*', (c) => {
-					return c.body('OK');
-				}),
-			),
-		);
-		return router;
+	/**
+	 * An app answering every request under the router's base, with the routes the router has when it is called.
+	 */
+	toHono(): Hono {
+		return new Hono().route(this.base, this.innerRouter).options(`${this.base}/*`, (c) => {
+			return c.body('OK');
+		});
 	}
 
 	getHonoRouter(): InnerRouter {

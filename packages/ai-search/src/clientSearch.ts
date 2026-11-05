@@ -1,4 +1,4 @@
-import { AI_SEARCH_FILTER_SUGGESTION_LIMIT, MAX_ROOM_SEARCH_PATTERN_LENGTH, MAX_SEARCH_FILTER_VALUES } from './constants';
+import { AI_SEARCH_FILTER_SUGGESTION_LIMIT, MAX_ROOM_SEARCH_PATTERN_LENGTH, MAX_SEARCH_FILTER_VALUES } from './constants.js';
 
 export const SEARCH_FILTER_KEYS = ['in', 'from', 'before', 'after'] as const;
 

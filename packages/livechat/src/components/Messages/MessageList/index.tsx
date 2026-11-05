@@ -13,7 +13,7 @@ import store from '../../../store';
 import Message from '../Message';
 import MessageSeparator from '../MessageSeparator';
 import { TypingIndicator } from '../TypingIndicator';
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 
 type ScrollPosition = 'top' | 'bottom' | 'free';
 

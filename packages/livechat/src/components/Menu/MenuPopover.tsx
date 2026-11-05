@@ -1,7 +1,7 @@
 import type { ComponentChildren } from 'preact';
 
 import PopoverMenuWrapper from './PopoverMenuWrapper';
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 import { createClassName } from '../../helpers/createClassName';
 import { PopoverTrigger } from '../Popover';
 

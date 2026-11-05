@@ -1,6 +1,5 @@
 import type { IEmailInbox } from '@rocket.chat/core-typings';
 import { EmailInbox, EmailMessageHistory } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 import nodemailer from 'nodemailer';
 import type Mail from 'nodemailer/lib/mailer';
 
@@ -91,8 +90,8 @@ export async function configureEmailInboxes(): Promise<void> {
 	logger.info({ msg: 'Configured a total of inboxes', count: inboxes.size });
 }
 
-Meteor.startup(() => {
+export const startEmailInboxes = (): void => {
 	settings.watchOnce('Livechat_Routing_Method', (_) => {
 		void configureEmailInboxes();
 	});
-});
+};

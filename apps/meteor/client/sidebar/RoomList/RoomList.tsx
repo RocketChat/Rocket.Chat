@@ -1,4 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
+import { useShortTimeAgo } from '@rocket.chat/ui-client';
 import { useUserPreference, useUserId } from '@rocket.chat/ui-contexts';
 import { useMemo, useRef } from 'react';
 import { VisuallyHidden } from 'react-aria';
@@ -11,7 +12,6 @@ import RoomListRow from './RoomListRow';
 import RoomListRowWrapper from './RoomListRowWrapper';
 import RoomListWrapper from './RoomListWrapper';
 import { useMergedRefsV2 } from '../../hooks/useMergedRefsV2';
-import { useOpenedRoom } from '../../lib/RoomManager';
 import { useMoveCategoryPosition } from '../categories/hooks/useMoveCategoryPosition';
 import SidebarVirtualList from '../components/SidebarVirtualList';
 import { useActivityFilterAnnouncement } from '../hooks/useActivityFilterAnnouncement';
@@ -20,6 +20,7 @@ import { useCollapsedGroups } from '../hooks/useCollapsedGroups';
 import { useLiftedActivityFilters } from '../hooks/useLiftedActivityFilters';
 import { useOffscreenUnreads } from '../hooks/useOffscreenUnreads';
 import { usePreventDefault } from '../hooks/usePreventDefault';
+import { useRingingCalls } from '../hooks/useRingingCalls';
 import { useRoomList } from '../hooks/useRoomList';
 import { useShortcutOpenMenu } from '../hooks/useShortcutOpenMenu';
 
@@ -57,7 +58,8 @@ const RoomList = () => {
 	};
 	const virtualizerRef = useRef<VirtualizerHandle>(null);
 	const { previousUnread, nextUnread, handleRangeChange } = useOffscreenUnreads({ groups });
-	const openedRoom = useOpenedRoom() ?? '';
+	const ringingCalls = useRingingCalls();
+	const formatTime = useShortTimeAgo();
 	const sidebarViewMode = useUserPreference<SidebarViewMode>('sidebarViewMode') || 'extended';
 	const sidebarDisplayAvatar = !!useUserPreference<boolean>('sidebarDisplayAvatar');
 	const bufferSize = sidebarRowHeight[sidebarViewMode] * SIDEBAR_VIRTUAL_BUFFER_ROWS;
@@ -67,11 +69,11 @@ const RoomList = () => {
 			t,
 			viewMode: sidebarViewMode,
 			showAvatar: sidebarDisplayAvatar,
-			openedRoom,
+			formatTime,
 			isAnonymous,
 			userId,
 		}),
-		[isAnonymous, openedRoom, sidebarDisplayAvatar, sidebarViewMode, t, userId],
+		[formatTime, isAnonymous, sidebarDisplayAvatar, sidebarViewMode, t, userId],
 	);
 
 	const allGroupKeys = useMemo(() => groups.map((group) => group.key), [groups]);
@@ -117,7 +119,7 @@ const RoomList = () => {
 				)}
 				renderItem={(item, _itemIndex, _group, _groupIndex, rowIndex) => (
 					<RoomListRowWrapper data-index={rowIndex}>
-						<RoomListRow data={itemData} item={item} />
+						<RoomListRow data={itemData} item={item} videoConfActions={ringingCalls.get(item.rid)} />
 					</RoomListRowWrapper>
 				)}
 			/>

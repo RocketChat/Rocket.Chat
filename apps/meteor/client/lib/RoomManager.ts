@@ -176,6 +176,10 @@ const subscribeOpenedRoom = [
 
 export const useOpenedRoom = (): IRoom['_id'] | undefined => useSyncExternalStore(...subscribeOpenedRoom);
 
+/** Whether `rid` is the opened room; a component re-renders only when that answer flips, not on every switch. */
+export const useIsOpenedRoom = (rid: IRoom['_id']): boolean =>
+	useSyncExternalStore(subscribeOpenedRoom[0], () => RoomManager.opened === rid);
+
 export const useOpenedRoomUnreadSince = (): Date | undefined => {
 	const rid = useOpenedRoom();
 

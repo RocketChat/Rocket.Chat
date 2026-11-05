@@ -40,7 +40,9 @@ const canRenderBlock = (block: MessageParser.Root[number]): boolean => {
 
 		case 'UNORDERED_LIST':
 		case 'ORDERED_LIST':
-			return block.value.every(({ value, nested }) => !nested && value.every((inline) => canRenderInline(inline)));
+			return block.value.every(
+				({ value, nested }) => value.every((inline) => canRenderInline(inline)) && (!nested || nested.every(canRenderBlock)),
+			);
 
 		case 'BIG_EMOJI':
 		case 'CODE':

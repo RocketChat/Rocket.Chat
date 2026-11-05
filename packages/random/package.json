@@ -3,6 +3,14 @@
 	"version": "1.2.4",
 	"private": true,
 	"description": "Random number generator and utilities; Fork of Meteor's Random package",
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/main.server.d.ts",
+			"browser": "./dist/main.client.js",
+			"default": "./dist/main.server.js"
+		}
+	},
 	"main": "./dist/main.server.js",
 	"browser": "./dist/main.client.js",
 	"types": "./dist/main.server.d.ts",

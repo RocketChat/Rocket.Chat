@@ -24,6 +24,11 @@ const noRemoteMethods: RemoteMethodCall = async (_client, method) => {
 	throw new ClientSafeError(404, `Method '${method}' not found`);
 };
 
+/** Rejects, by throwing, a method call or subscription the session may not make, before it runs. */
+export type CallCheck = (session: Session, type: 'method' | 'subscription', name: string) => void;
+
+const allowEveryCall: CallCheck = () => undefined;
+
 const handleInternalException = (err: unknown, msg: string): ClientSafeError => {
 	if (err instanceof ClientSafeError) {
 		return err;
@@ -44,7 +49,10 @@ export class Server {
 
 	public readonly id = uuidv1();
 
-	constructor(private readonly callRemoteMethod: RemoteMethodCall = noRemoteMethods) {}
+	constructor(
+		private readonly callRemoteMethod: RemoteMethodCall = noRemoteMethods,
+		private readonly checkCall: CallCheck = allowEveryCall,
+	) {}
 
 	setMetrics(metrics: IServiceMetrics): void {
 		this.metrics = metrics;
@@ -55,6 +63,8 @@ export class Server {
 			return;
 		}
 		try {
+			this.checkCall(session, 'method', packet.method);
+
 			if (!this._methods.has(packet.method)) {
 				return this.sendResult(session, packet, await this.callRemoteMethod(session, packet.method, packet.params));
 			}
@@ -93,6 +103,8 @@ export class Server {
 			if (!fn) {
 				throw new ClientSafeError(404, `Subscription '${packet.name}' not found`);
 			}
+
+			this.checkCall(session, 'subscription', packet.name);
 
 			const end = this.metrics?.timer('rocketchat_subscription', { subscription: packet.name });
 

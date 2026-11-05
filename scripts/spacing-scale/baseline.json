@@ -78,7 +78,6 @@
 	"apps/meteor/client/navbar/NavBarSettingsToolbar/UserMenu/UserMenuHeader.tsx": 2,
 	"apps/meteor/client/sidebar/categories/CreateCategoryModal.tsx": 1,
 	"apps/meteor/client/sidebar/categories/DeleteCategoryModal.tsx": 1,
-	"apps/meteor/client/sidebar/footer/SidebarFooterDefault.tsx": 1,
 	"apps/meteor/client/sidebar/footer/SidebarFooterWatermark.tsx": 2,
 	"apps/meteor/client/sidebar/sections/SidebarCard.tsx": 1,
 	"apps/meteor/client/sidebar/SidebarRail/SidebarRail.tsx": 2,

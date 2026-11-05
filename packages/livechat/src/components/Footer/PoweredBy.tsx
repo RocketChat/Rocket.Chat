@@ -1,7 +1,7 @@
 import { RocketChatLogo } from '@rocket.chat/logo';
 import { useTranslation } from 'react-i18next';
 
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 import { createClassName } from '../../helpers/createClassName';
 
 export type PoweredByProps = {

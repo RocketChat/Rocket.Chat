@@ -2,6 +2,12 @@
 	"name": "@rocket.chat/release-changelog",
 	"version": "0.1.1",
 	"private": true,
+	"type": "module",
+	"exports": {
+		".": {
+			"default": "./dist/index.js"
+		}
+	},
 	"main": "dist/index.js",
 	"scripts": {
 		"build": "tsc",

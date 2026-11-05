@@ -1,3 +1,6 @@
+/* The reset loses to every unlayered rule, whatever order the stylesheets load in. */
+@layer reset;
+
 /* General */
 @import url('./imports/general/variables.css');
 @import url('./imports/general/reset.css');

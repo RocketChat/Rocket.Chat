@@ -21,7 +21,6 @@ const modelsMock = {
 	LivechatInquiry: { findOneById: sinon.stub() },
 	Users: { findOneById: sinon.stub() },
 };
-const meteorMock = { Meteor: { startup: sinon.stub() } };
 const createIndexStub = sinon.stub();
 const databaseUtilsMock = {
 	db: { collection: sinon.stub().returns({ createIndex: createIndexStub }) },
@@ -35,7 +34,6 @@ const { OmnichannelQueueInactivityMonitorClass } = proxyquire.noCallThru().load(
 		Agenda: sinon.stub().returns(AgendaStub),
 	},
 	'@rocket.chat/models': modelsMock,
-	'meteor/meteor': meteorMock,
 	'../../../../server/database/utils': databaseUtilsMock,
 	'../../../../server/lib/omnichannel/closeRoom': livechatMock,
 	'../../../../server/settings': settingsMock,

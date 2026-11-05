@@ -1,6 +1,6 @@
-import { parse } from '../src';
-import { ALL_EMOJI, EMOJIBASE_VERSION } from './fixtures/allEmoji';
-import { emoji, bigEmoji, paragraph, plain, emojiUnicode } from './helpers';
+import { parse } from '../src/index.js';
+import { ALL_EMOJI, EMOJIBASE_VERSION } from './fixtures/allEmoji.js';
+import { emoji, bigEmoji, paragraph, plain, emojiUnicode } from './helpers.js';
 
 test.each([
 	[':smile: asd', [paragraph([emoji('smile'), plain(' asd')])]],

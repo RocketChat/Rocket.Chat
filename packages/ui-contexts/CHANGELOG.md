@@ -1,5 +1,34 @@
 # @rocket.chat/ui-contexts
 
+## 36.0.0-rc.0
+
+### Major Changes
+
+- ([#42369](https://github.com/RocketChat/Rocket.Chat/pull/42369)) Removes the legacy Meteor OAuth login flow and the `Accounts_OAuth_Use_Modern_Flow` setting. OAuth logins (Apple, GitHub, GitLab, Google, Nextcloud and custom OAuth) now always use the server-side Passport flow, with PKCE/state validation.
+
+  Also removes `Accounts_OAuth_Proxy_host` and `Accounts_OAuth_Proxy_services` settings and support for OAuth login through proxies.
+
+### Minor Changes
+
+- ([#42976](https://github.com/RocketChat/Rocket.Chat/pull/42976)) Stops re-rendering every component that talks to the server whenever the connection status changes, including on each reconnection attempt
+
+- ([#42501](https://github.com/RocketChat/Rocket.Chat/pull/42501)) Adds a native XMPP server (Enterprise, federation module) that federates directly with other XMPP servers over server-to-server connections. Rocket.Chat users can message any XMPP address, exchange presence with remote contacts, and join rooms on remote servers; remote XMPP users can join dedicated XMPP rooms hosted by Rocket.Chat. It runs as the `xmpp-server-service` microservice and is configured under **Administration → Settings → Federation → XMPP Server (Native)**.
+
+- ([#42508](https://github.com/RocketChat/Rocket.Chat/pull/42508)) Stops announcing every user card trigger in a room as expanded while a single card is open, and stops re-rendering every message when a user card opens or closes
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [1034e1f85d8e82788ca9590a185370aaf6efc4fb, 4f350b4ffb76024d9bf44c02f3322c8f9071f1cf, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 80223cb35a1bbd2b7026f70cfbd3e80ddc4935c5, 12f0c0a9d48ded61bd12ba2e3dcee7b3d877e860, 8662d98d1c6070b063f51d45cf4b8454085033d9, 8662d98d1c6070b063f51d45cf4b8454085033d9, 8662d98d1c6070b063f51d45cf4b8454085033d9, 8662d98d1c6070b063f51d45cf4b8454085033d9, 8662d98d1c6070b063f51d45cf4b8454085033d9, 8662d98d1c6070b063f51d45cf4b8454085033d9, 8662d98d1c6070b063f51d45cf4b8454085033d9, 8662d98d1c6070b063f51d45cf4b8454085033d9, 8662d98d1c6070b063f51d45cf4b8454085033d9, 8662d98d1c6070b063f51d45cf4b8454085033d9, e729e558908abfb9915a9dc7fb6ed14ac79c51df, 8662d98d1c6070b063f51d45cf4b8454085033d9, 8662d98d1c6070b063f51d45cf4b8454085033d9, 8662d98d1c6070b063f51d45cf4b8454085033d9, 8662d98d1c6070b063f51d45cf4b8454085033d9, 8662d98d1c6070b063f51d45cf4b8454085033d9, 8662d98d1c6070b063f51d45cf4b8454085033d9, 8662d98d1c6070b063f51d45cf4b8454085033d9, 8662d98d1c6070b063f51d45cf4b8454085033d9, 8662d98d1c6070b063f51d45cf4b8454085033d9, 8662d98d1c6070b063f51d45cf4b8454085033d9, 8662d98d1c6070b063f51d45cf4b8454085033d9, dd082311778ac467d36a72589bc675f1ab2b2cbe, 6bb0d3bca9b5da401050697d51bc99e89871bbb7, 6be3614cd2660ab4024635802fdf9cd7dd7b502f, 4c379a0d016fcf010bab86ddd94a22ff2401606e, 766ac93fba3c991c79c9bfcb404f6ec7fd1e30f8, 7fbb5676fe0d2c034f4c52586ab858b3796e5dc6, 7fbb5676fe0d2c034f4c52586ab858b3796e5dc6, 60102b6e0ae410a45631ee494a3a302b9c863b48, 9c39b5dbfb3f2269e355802d44c9ea64ab85d2ec, 58eacc4ba44053744df9a32b4a70a44c37428265, 86decd8694ca09043ac5c6b7b50efc8a4278e113, 2aea648f6431c710fc022c8ec37946a368abe6a2, 588311c49bfce08e7106e7c0bb32741334fa5321, 10b4e00e08951ace8f9c27d83fc0c48be010bdc7, a11ffff8acb74fd016e9ddb972da6eebda0c3e5e, c12e5836df7fc5a4c9ee7a760c6101cb0ee8474a, 2f77d817051c919f29615babbb3ecd1964575b52, 5e82e67eaa4c998870d3eb0597f485b30c244f02, 05bbcccf3779fe8df3c96c6d80c4ce0d56bf6e9c, a9b2bb76d88e4d2743e0817b15e6447e7c9c46eb, cdd948cb67ecf282f6cc8f411615c3de0db0b9f1, 0c244a62b0e632a55cf87a84e1b321ba6e48f6c2, 6b3ec3e667c99015e381a4e8ea43146accb5f7f7, 9e401e55fbd71b95dc7c4b273024219ce2564856, a11ffff8acb74fd016e9ddb972da6eebda0c3e5e, 80223cb35a1bbd2b7026f70cfbd3e80ddc4935c5, bb69cb6c2e190cc3dffe33c3970f0e7c706d24a1, cc5554d63e7341925dd7fd5844d77bd51834b572, 2559423eb2c897c5f1fe8c968c02380009a97df9, 52fdf8ea1b17b08482cf8cb21156f1be7b80844c, eaf5cedcce9f8e800415b4c49bce242f661462ea, 9a520fcd54321e154374182698c825aa09e87cc7, f3fa7abd6b9d311f76619d0fe27793ac68f6d208, a10c48ca6e4fd76f4d8ce4435e04e70c1e89d771, 1df95ff2d31f1e077084596f0024c3e2c53ca1df, daa677895dad92d6aab1e84a09f190efd2755ef9, 07a2ddb3dc22c4046e5cd66897a2f9232a717d3f, 642d9e528a8572208e2f0bb51f45ea78400bcea3, bd92e8abc5a8f0161f3de5308979a0f88d09f351, e729e558908abfb9915a9dc7fb6ed14ac79c51df, 39a6e6e1397e1e89bc631fe4ab1cc10fa93b59e8, 034260ee3eec49db0a2a86572bacf5e14490815d, 61bdf0d5afb6714ea3cef087758f1d0eb3bfef45, a39b03fe5c248079365162e31994e1dece63e7c2, 6c23db12912236374f41ae8f43ca7409b7b8b56c, 94a22a577e6f160b687b9ddffeade19417c66f1e, 5e7e4a8aa389be0d3d4ace0861c646069151674d, 5e7e4a8aa389be0d3d4ace0861c646069151674d, 3f26ea55ffb1b571247a5da12e1b74d3ee65a17c, 202de9fa4953c6c984e893567f9c03178551bf5a, 5feb08c8d83883c4142fda5d98cd1e1435d5d3b8]:</summary>
+  - @rocket.chat/i18n@5.0.0-rc.0
+  - @rocket.chat/core-typings@9.0.0-rc.0
+  - @rocket.chat/rest-typings@9.0.0-rc.0
+  - @rocket.chat/ddp-client@2.0.0-rc.0
+  - @rocket.chat/emitter@0.33.1-rc.0
+  - @rocket.chat/fuselage-hooks@0.44.0-rc.0
+  - @rocket.chat/password-policies@0.1.1
+
+  </details>
+
 ## 35.0.0
 
 ### Patch Changes

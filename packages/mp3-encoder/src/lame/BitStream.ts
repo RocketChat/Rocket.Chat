@@ -1,17 +1,17 @@
-import { GainAnalysis } from './GainAnalysis';
-import type { GrInfo } from './GrInfo';
-import type { LameGlobalFlags } from './LameGlobalFlags';
-import type { LameInternalFlags } from './LameInternalFlags';
-import * as tables from './Tables';
-import { Takehiro } from './Takehiro';
-import { TotalBytes } from './TotalBytes';
-import { VBRTag } from './VBRTag';
-import { copyArray, fillArray } from './arrays';
-import { assert, assertDefined } from './assert';
-import { getBitrate } from './bitrates';
-import { LAME_MAXMP3BUFFER, MAX_HEADER_BUF, NORM_TYPE, SHORT_TYPE } from './constants';
-import { getLameShortVersion } from './getLameShortVersion';
-import { isCloseToEachOther } from './math';
+import { GainAnalysis } from './GainAnalysis.js';
+import type { GrInfo } from './GrInfo.js';
+import type { LameGlobalFlags } from './LameGlobalFlags.js';
+import type { LameInternalFlags } from './LameInternalFlags.js';
+import * as tables from './Tables.js';
+import { Takehiro } from './Takehiro.js';
+import { TotalBytes } from './TotalBytes.js';
+import { VBRTag } from './VBRTag.js';
+import { copyArray, fillArray } from './arrays.js';
+import { assert, assertDefined } from './assert.js';
+import { getBitrate } from './bitrates.js';
+import { LAME_MAXMP3BUFFER, MAX_HEADER_BUF, NORM_TYPE, SHORT_TYPE } from './constants.js';
+import { getLameShortVersion } from './getLameShortVersion.js';
+import { isCloseToEachOther } from './math.js';
 
 export class BitStream {
 	private static readonly MAX_LENGTH = 32;
