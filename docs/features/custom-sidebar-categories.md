@@ -295,7 +295,7 @@ chip, is never moved or moved past, and starts collapsed, so the collapsed-group
 muting sets `disableNotifications` and `hideUnreadStatus` on every archived room through `rooms.saveNotification`,
 five at a time, so an archived room sends no notification and counts as unread nowhere, not even in the tab title
 (`useUnread` already skips `hideUnreadStatus`); unmuting is offered once every archived room is muted and clears
-both. Each first says how many rooms it changes, in a modal without an icon.
+both. Each first says how many rooms it changes, in a modal without an icon. A room whose notifications are off, archived or not, shows a crossed bell after its title in the sidebar and the sidepanel (`RoomListItemTitleIcon.tsx`, where the draft pencil also lives).
 
 ### Room context menu — `CategoryRoomMenu.tsx`
 
