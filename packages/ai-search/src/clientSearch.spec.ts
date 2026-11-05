@@ -301,6 +301,25 @@ describe('AI Search client helpers', () => {
 			]);
 		});
 
+		it('uses the display name as the value for discussions', () => {
+			expect(
+				buildFilterSuggestions(
+					{ key: 'in', value: 'xmpp' },
+					[{ _id: 'subscription-id', rid: 'discussion-id', prid: 'parent-id', name: '6bXEMpwPaPykCmKcu', fname: 'XMPP rollout' }],
+					t,
+				),
+			).toEqual([
+				{
+					key: 'in-discussion-id',
+					filterKey: 'in',
+					title: 'XMPP rollout',
+					value: 'XMPP rollout',
+					icon: 'hash',
+					meta: { rid: 'discussion-id' },
+				},
+			]);
+		});
+
 		it('caps room suggestions at the configured limit', () => {
 			const rooms = Array.from({ length: AI_SEARCH_FILTER_SUGGESTION_LIMIT + 3 }, (_, index) => ({
 				_id: `room-${index}`,

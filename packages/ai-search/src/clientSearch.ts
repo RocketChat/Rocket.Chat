@@ -35,6 +35,7 @@ export type SearchFilterSuggestion = {
 export type SearchRoomSuggestionSource = {
 	_id: string;
 	rid?: string;
+	prid?: string;
 	name?: string;
 	fname?: string;
 };
@@ -279,7 +280,7 @@ export const buildFilterSuggestions = (
 			key: `in-${room.rid || room._id}`,
 			filterKey: 'in',
 			title: room.fname || room.name || '',
-			value: room.name || room.fname || '',
+			value: (room.prid ? room.fname || room.name : room.name || room.fname) || '',
 			icon: 'hash',
 			meta: { rid: room.rid || room._id },
 		}));
