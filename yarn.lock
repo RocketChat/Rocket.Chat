@@ -10730,6 +10730,7 @@ __metadata:
     tldts: "npm:~6.1.86"
     ts-loader: "npm:~9.5.7"
     ts-node: "npm:~10.9.2"
+    tsx: "npm:~4.22.5"
     typescript: "npm:~5.9.3"
     webpack: "npm:~5.104.1"
     webpack-cli: "npm:~5.1.4"

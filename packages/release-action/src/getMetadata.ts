@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 
-import { readPackageJson } from './utils';
+import { readPackageJson } from './utils.js';
 
 export async function getMongoVersion(cwd: string) {
 	try {
