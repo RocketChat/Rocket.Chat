@@ -1,9 +1,9 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-import CallDiagnosticsStatRow from './CallDiagnosticsStatRow';
-import { fmt, fmtKbps } from './format';
-import type { ParticipantTrackStats } from '../context';
+import CallDiagnosticsStatRow from './CallDiagnosticsStatRow.js';
+import { fmt, fmtKbps } from './format.js';
+import type { ParticipantTrackStats } from '../context.js';
 
 const CallDiagnosticsParticipantCard = ({ participant }: { participant: ParticipantTrackStats }) => {
 	const { t } = useTranslation();
