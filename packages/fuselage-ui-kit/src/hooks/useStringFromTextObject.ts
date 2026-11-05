@@ -1,7 +1,7 @@
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { useCallback } from 'react';
 
-import { useAppTranslation } from './useAppTranslation';
+import { useAppTranslation } from './useAppTranslation.js';
 
 export const useStringFromTextObject = () => {
 	const { t } = useAppTranslation();

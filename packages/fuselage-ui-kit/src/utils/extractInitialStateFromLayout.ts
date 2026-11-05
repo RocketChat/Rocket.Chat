@@ -1,8 +1,8 @@
 import type * as UiKit from '@rocket.chat/ui-kit';
 
-import { type Value, getInitialValue } from './getInitialValue';
-import { hasElement } from './hasElement';
-import { hasElements } from './hasElements';
+import { type Value, getInitialValue } from './getInitialValue.js';
+import { hasElement } from './hasElement.js';
+import { hasElements } from './hasElements.js';
 
 const isActionableElement = (element: UiKit.BlockElement | UiKit.TextObject): element is UiKit.ActionableElement =>
 	'actionId' in element && typeof element.actionId === 'string';

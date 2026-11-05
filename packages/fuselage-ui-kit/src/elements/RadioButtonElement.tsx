@@ -1,9 +1,9 @@
 import { Box, RadioButton } from '@rocket.chat/fuselage';
 import type * as UiKit from '@rocket.chat/ui-kit';
 
-import OptionLabel from './OptionLabel';
-import { useUiKitState } from '../hooks/useUiKitState';
-import type { BlockProps } from '../utils/BlockProps';
+import OptionLabel from './OptionLabel.js';
+import { useUiKitState } from '../hooks/useUiKitState.js';
+import type { BlockProps } from '../utils/BlockProps.js';
 
 export type RadioButtonElementProps = BlockProps<UiKit.RadioButtonElement>;
 

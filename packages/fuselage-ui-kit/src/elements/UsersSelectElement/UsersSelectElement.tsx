@@ -4,10 +4,10 @@ import { ITEM_MEDIA_SIZE, UserAvatar } from '@rocket.chat/ui-avatar';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { useCallback, useState } from 'react';
 
-import { useUsersData } from './hooks/useUsersData';
-import { useAutoCompleteKey } from '../../hooks/useAutoCompleteKey';
-import { useUiKitState } from '../../hooks/useUiKitState';
-import type { BlockProps } from '../../utils/BlockProps';
+import { useUsersData } from './hooks/useUsersData.js';
+import { useAutoCompleteKey } from '../../hooks/useAutoCompleteKey.js';
+import { useUiKitState } from '../../hooks/useUiKitState.js';
+import type { BlockProps } from '../../utils/BlockProps.js';
 
 export type UsersSelectElementProps = BlockProps<UiKit.UsersSelectElement>;
 

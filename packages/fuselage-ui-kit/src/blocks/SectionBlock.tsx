@@ -2,8 +2,8 @@ import { Box, FlexItem, Grid, GridItem } from '@rocket.chat/fuselage';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { memo, useMemo } from 'react';
 
-import Fields from './SectionBlock.Fields';
-import type { BlockProps } from '../utils/BlockProps';
+import Fields from './SectionBlock.Fields.js';
+import type { BlockProps } from '../utils/BlockProps.js';
 
 export type SectionBlockProps = BlockProps<UiKit.SectionBlock>;
 

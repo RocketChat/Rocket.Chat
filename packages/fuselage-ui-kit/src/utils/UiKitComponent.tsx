@@ -1,6 +1,6 @@
 import type * as UiKit from '@rocket.chat/ui-kit';
 
-import type { UiKitBanner, UiKitContextualBar, UiKitMessage, UiKitModal } from '../surfaces';
+import type { UiKitBanner, UiKitContextualBar, UiKitMessage, UiKitModal } from '../surfaces/index.js';
 
 export type UiKitComponentProps = {
 	render: typeof UiKitBanner | typeof UiKitMessage | typeof UiKitModal | typeof UiKitContextualBar;

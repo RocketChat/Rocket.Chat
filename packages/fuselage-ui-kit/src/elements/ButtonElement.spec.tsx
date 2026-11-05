@@ -3,8 +3,8 @@ import type * as UiKit from '@rocket.chat/ui-kit';
 import { BlockContext } from '@rocket.chat/ui-kit';
 import { render, screen } from '@testing-library/react';
 
-import ButtonElement from './ButtonElement';
-import { messageParser } from '../surfaces';
+import ButtonElement from './ButtonElement.js';
+import { messageParser } from '../surfaces/index.js';
 
 const renderButton = (url: string) => {
 	const block: UiKit.ButtonElement = {

@@ -2,8 +2,8 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { render, screen } from '@testing-library/react';
 
-import { UiKitContext } from '../../contexts/UiKitContext';
-import { contextualBarParser } from '../../surfaces';
+import { UiKitContext } from '../../contexts/UiKitContext.js';
+import { contextualBarParser } from '../../surfaces/index.js';
 
 const subscriptions = [
 	{ rid: 'GENERAL', name: 'general', t: 'c' },
