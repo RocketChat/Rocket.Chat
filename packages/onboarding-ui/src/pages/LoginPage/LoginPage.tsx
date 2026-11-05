@@ -8,10 +8,10 @@ import {
 import type { SubmitHandler } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
-import LoginForm from '../../forms/LoginForm';
-import type { LoginFormPayload } from '../../forms/LoginForm/LoginForm';
-import TotpForm from '../../forms/TotpForm';
-import type { TotpFormPayload } from '../../forms/TotpForm/TotpForm';
+import type { LoginFormPayload } from '../../forms/LoginForm/LoginForm.js';
+import LoginForm from '../../forms/LoginForm/index.js';
+import type { TotpFormPayload } from '../../forms/TotpForm/TotpForm.js';
+import TotpForm from '../../forms/TotpForm/index.js';
 
 export type TotpFormProps = {
 	initialValues?: TotpFormPayload;

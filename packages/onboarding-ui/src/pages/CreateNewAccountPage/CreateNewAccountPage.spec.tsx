@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 
-import CreateNewAccountPage from './CreateNewAccountPage';
+import CreateNewAccountPage from './CreateNewAccountPage.js';
 
 it('renders without crashing', () => {
 	const { container } = render(

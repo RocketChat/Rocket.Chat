@@ -6,7 +6,7 @@ import type { FieldPathValue, SubmitHandler, Validate } from 'react-hook-form';
 import { Controller, useForm, FormProvider } from 'react-hook-form';
 import { useTranslation, Trans } from 'react-i18next';
 
-import AgreeTermsField from '../../common/AgreeTermsField';
+import AgreeTermsField from '../../common/AgreeTermsField.js';
 
 export type RegisterServerPayload = {
 	email: string;

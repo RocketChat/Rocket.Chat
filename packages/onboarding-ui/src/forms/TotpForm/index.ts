@@ -1,1 +1,1 @@
-export { default, type TotpFormPayload } from './TotpForm';
+export { default, type TotpFormPayload } from './TotpForm.js';

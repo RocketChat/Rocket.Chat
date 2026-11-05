@@ -1,1 +1,1 @@
-export { default, type LoaderPageProps } from './LoaderPage';
+export { default, type LoaderPageProps } from './LoaderPage.js';

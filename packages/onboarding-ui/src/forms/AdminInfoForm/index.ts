@@ -1,1 +1,1 @@
-export { default, type AdminInfoPayload } from './AdminInfoForm';
+export { default, type AdminInfoPayload } from './AdminInfoForm.js';
