@@ -1,2 +1,2 @@
-export * from './ServerEventsAuditSettingsParamsGET';
-export type * from './server-events';
+export * from './ServerEventsAuditSettingsParamsGET.js';
+export type * from './server-events.js';

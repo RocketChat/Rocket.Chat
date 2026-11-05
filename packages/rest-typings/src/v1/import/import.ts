@@ -1,8 +1,8 @@
 import type { IImport, IImporterSelection, IImportProgress, ImportStatus, IImportUser } from '@rocket.chat/core-typings';
 
-import type { DownloadPublicImportFileParamsPOST } from './DownloadPublicImportFileParamsPOST';
-import type { StartImportParamsPOST } from './StartImportParamsPOST';
-import type { UploadImportFileParamsPOST } from './UploadImportFileParamsPOST';
+import type { DownloadPublicImportFileParamsPOST } from './DownloadPublicImportFileParamsPOST.js';
+import type { StartImportParamsPOST } from './StartImportParamsPOST.js';
+import type { UploadImportFileParamsPOST } from './UploadImportFileParamsPOST.js';
 
 export type ImportEndpoints = {
 	'/v1/uploadImportFile': {

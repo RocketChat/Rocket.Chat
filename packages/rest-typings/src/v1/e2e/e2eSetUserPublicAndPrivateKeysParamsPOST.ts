@@ -1,4 +1,4 @@
-import { ajv } from '../Ajv';
+import { ajv } from '../Ajv.js';
 
 export type e2eSetUserPublicAndPrivateKeysParamsPOST = {
 	public_key: string;

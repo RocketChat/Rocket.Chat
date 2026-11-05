@@ -1,4 +1,4 @@
-import { ajv } from '../Ajv';
+import { ajv } from '../Ajv.js';
 
 export type ChannelsSetTopicProps = { roomId: string; topic: string } | { roomName: string; topic: string };
 

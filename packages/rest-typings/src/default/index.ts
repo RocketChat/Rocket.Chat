@@ -1,4 +1,4 @@
-import { ajvQuery } from '../v1/Ajv';
+import { ajvQuery } from '../v1/Ajv.js';
 
 type OpenAPIJSONEndpoint = { withUndocumented?: boolean };
 

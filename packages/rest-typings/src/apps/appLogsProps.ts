@@ -1,5 +1,5 @@
-import type { PaginatedRequest } from '../helpers/PaginatedRequest';
-import { ajvQuery } from '../v1/Ajv';
+import type { PaginatedRequest } from '../helpers/PaginatedRequest.js';
+import { ajvQuery } from '../v1/Ajv.js';
 
 export type AppLogsProps = PaginatedRequest<{
 	appId?: string;

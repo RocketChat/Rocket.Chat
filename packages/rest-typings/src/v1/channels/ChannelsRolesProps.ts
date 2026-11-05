@@ -1,4 +1,4 @@
-import { ajvQuery } from '../Ajv';
+import { ajvQuery } from '../Ajv.js';
 
 export type ChannelsRolesProps = { roomId: string } | { roomName: string };
 const channelsRolesPropsSchema = {

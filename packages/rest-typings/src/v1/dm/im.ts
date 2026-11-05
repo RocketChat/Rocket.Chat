@@ -1,13 +1,13 @@
 import type { IMessage, IRoom, ISubscription, IUploadWithUser, IUser } from '@rocket.chat/core-typings';
 
-import type { DmBlockUserProps } from './DmBlockUserProps';
-import type { DmCreateProps } from './DmCreateProps';
-import type { DmFileProps } from './DmFileProps';
-import type { DmHistoryProps } from './DmHistoryProps';
-import type { DmLeaveProps } from './DmLeaveProps';
-import type { DmMemberProps } from './DmMembersProps';
-import type { DmMessagesProps } from './DmMessagesProps';
-import type { PaginatedResult } from '../../helpers/PaginatedResult';
+import type { DmBlockUserProps } from './DmBlockUserProps.js';
+import type { DmCreateProps } from './DmCreateProps.js';
+import type { DmFileProps } from './DmFileProps.js';
+import type { DmHistoryProps } from './DmHistoryProps.js';
+import type { DmLeaveProps } from './DmLeaveProps.js';
+import type { DmMemberProps } from './DmMembersProps.js';
+import type { DmMessagesProps } from './DmMessagesProps.js';
+import type { PaginatedResult } from '../../helpers/PaginatedResult.js';
 
 type DmKickProps = {
 	roomId: string;

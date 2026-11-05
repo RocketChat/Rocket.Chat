@@ -1,6 +1,6 @@
 import type { JSONSchemaType } from 'ajv';
 
-import { ajv } from '../Ajv';
+import { ajv } from '../Ajv.js';
 
 export type VideoConfStartProps = { roomId: string; title?: string; allowRinging?: boolean };
 
