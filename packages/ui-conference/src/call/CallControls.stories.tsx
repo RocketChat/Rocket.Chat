@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import CallControls from './CallControls';
-import { remoteParticipants, withCall } from '../fixtures/callFixtures';
-import { CallSurface, conferenceAppRoot, withConferenceWindow } from '../fixtures/storyFixtures';
+import CallControls from './CallControls.js';
+import { remoteParticipants, withCall } from '../fixtures/callFixtures.js';
+import { CallSurface, conferenceAppRoot, withConferenceWindow } from '../fixtures/storyFixtures.js';
 
 /** The controls of a call running in the conference window, in the states a caller sees them change through. */
 const meta = {

@@ -2,8 +2,8 @@ import { Box } from '@rocket.chat/fuselage';
 import type { Meta, StoryObj } from '@storybook/react';
 import { action } from 'storybook/actions';
 
-import CallMembersPanel from './CallMembersPanel';
-import type { ConferenceChatAccess, ConferenceMember } from '../../context/definitions';
+import CallMembersPanel from './CallMembersPanel.js';
+import type { ConferenceChatAccess, ConferenceMember } from '../../context/definitions.js';
 import {
 	buildCallParticipant,
 	conferenceAppRoot,
@@ -11,9 +11,9 @@ import {
 	speakingProvider,
 	withCallProviders,
 	withLiveConference,
-} from '../../fixtures/storyFixtures';
-import { buildChatAccess } from '../../fixtures/testFixtures';
-import type { ProviderPluginControls } from '../../lib/providerPlugin';
+} from '../../fixtures/storyFixtures.js';
+import { buildChatAccess } from '../../fixtures/testFixtures.js';
+import type { ProviderPluginControls } from '../../lib/providerPlugin.js';
 
 /**
  * The people panel: who is in the call, and who isn't, under headings that count them.

@@ -22,9 +22,9 @@ import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useId, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { useConferenceActions, useConferenceViewer } from '../../context/ConferenceContext';
-import type { ConferenceChatAccess } from '../../context/definitions';
-import { chatAccessLeadsWithDiscussion } from '../../lib/chatAccess';
+import { useConferenceActions, useConferenceViewer } from '../../context/ConferenceContext.js';
+import type { ConferenceChatAccess } from '../../context/definitions.js';
+import { chatAccessLeadsWithDiscussion } from '../../lib/chatAccess.js';
 
 type ChatAccessModalProps = {
 	access: ConferenceChatAccess;

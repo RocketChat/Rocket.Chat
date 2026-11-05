@@ -2,8 +2,8 @@ import { Box, MultiSelect } from '@rocket.chat/fuselage';
 import type { Meta, StoryObj } from '@storybook/react';
 import { action } from 'storybook/actions';
 
-import AddParticipantsModal from './AddParticipantsModal';
-import { conferenceAppRoot, storeCallPreferences, withCallProviders, withConference } from '../../fixtures/storyFixtures';
+import AddParticipantsModal from './AddParticipantsModal.js';
+import { conferenceAppRoot, storeCallPreferences, withCallProviders, withConference } from '../../fixtures/storyFixtures.js';
 
 /**
  * Adding people to a call in progress. They become members of the *conference*, which is what lets them join —

@@ -1,9 +1,9 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Palette, borderRadius } from '@rocket.chat/fuselage';
 
-import type { SpotlightOrientation } from '../lib/stageTiles';
-import { COLUMN_THUMB_WIDTH, STRIP_THUMB_WIDTH } from '../lib/stageTiles';
-import { TILE_GAP_PX } from '../lib/tileGrid';
+import type { SpotlightOrientation } from '../lib/stageTiles.js';
+import { COLUMN_THUMB_WIDTH, STRIP_THUMB_WIDTH } from '../lib/stageTiles.js';
+import { TILE_GAP_PX } from '../lib/tileGrid.js';
 
 export const stageStyles = css`
 	position: relative;

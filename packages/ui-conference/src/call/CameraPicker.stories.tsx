@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { userEvent, within } from 'storybook/test';
 
-import CameraPicker from './CameraPicker';
-import { withCall } from '../fixtures/callFixtures';
-import { CallSurface, conferenceAppRoot, withConferenceWindow } from '../fixtures/storyFixtures';
+import CameraPicker from './CameraPicker.js';
+import { withCall } from '../fixtures/callFixtures.js';
+import { CallSurface, conferenceAppRoot, withConferenceWindow } from '../fixtures/storyFixtures.js';
 
 /** The camera menu of a call running in this window: which camera, how much detail, and what is done to the background. */
 const meta = {

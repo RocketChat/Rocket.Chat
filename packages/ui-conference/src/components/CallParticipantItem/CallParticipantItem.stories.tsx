@@ -1,8 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { Meta, StoryObj } from '@storybook/react';
 
-import CallParticipantItem from './CallParticipantItem';
-import { buildCallParticipant, conferenceAppRoot, speakingProvider, withCallProviders } from '../../fixtures/storyFixtures';
+import CallParticipantItem from './CallParticipantItem.js';
+import { buildCallParticipant, conferenceAppRoot, speakingProvider, withCallProviders } from '../../fixtures/storyFixtures.js';
 
 const provider = speakingProvider();
 

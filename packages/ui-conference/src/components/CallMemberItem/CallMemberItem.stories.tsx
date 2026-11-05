@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import type { ComponentProps } from 'react';
 import { action } from 'storybook/actions';
 
-import CallMemberItem from './CallMemberItem';
+import CallMemberItem from './CallMemberItem.js';
 import {
 	buildCallParticipant,
 	conferenceAppRoot,
@@ -11,7 +11,7 @@ import {
 	speakingProvider,
 	withCallProviders,
 	withLiveRings,
-} from '../../fixtures/storyFixtures';
+} from '../../fixtures/storyFixtures.js';
 
 const provider = speakingProvider();
 
