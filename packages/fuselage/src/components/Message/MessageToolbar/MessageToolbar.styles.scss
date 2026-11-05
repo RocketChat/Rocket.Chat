@@ -18,6 +18,11 @@ $message-toolbar-border-radius: theme('message-toolbar-border-radius', lengths.b
 
 		user-select: none;
 
+		// The toolbar floats over the row, so its slot takes no room, not even the gap in front of it.
+		.rcx-message > & {
+			margin-inline-start: calc(var(--rcx-item-gap) * -1);
+		}
+
 		.rcx-message:hover &,
 		.rcx-message:focus-within & {
 			display: inline-block;
