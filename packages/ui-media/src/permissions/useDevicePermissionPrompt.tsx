@@ -2,8 +2,8 @@ import { useMediaDeviceMicrophonePermission, useSelectedDevices, useSetInputMedi
 import { useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
 
-import { refreshMediaDevices } from '../devices/mediaDevicesStore';
-import PermissionFlowModal, { type PermissionFlowModalType } from './PermissionFlow/PermissionFlowModal';
+import { refreshMediaDevices } from '../devices/mediaDevicesStore.js';
+import PermissionFlowModal, { type PermissionFlowModalType } from './PermissionFlow/PermissionFlowModal.js';
 
 type OnAccept = (stream: MediaStream) => void;
 type OnReject = (error?: DOMException) => void;

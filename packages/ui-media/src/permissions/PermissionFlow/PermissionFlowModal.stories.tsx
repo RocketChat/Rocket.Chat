@@ -1,7 +1,7 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { Meta, StoryObj } from '@storybook/react';
 
-import PermissionFlowModal from './PermissionFlowModal';
+import PermissionFlowModal from './PermissionFlowModal.js';
 
 const noop = () => undefined;
 
