@@ -36,7 +36,6 @@ function MenuOption({
 			{...props}
 			key={id}
 			id={id}
-			aria-selected={!!selected}
 			aria-disabled={!!disabled}
 			title={title}
 			onClick={(e: MouseEvent<HTMLDivElement>) => {
