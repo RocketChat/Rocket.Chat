@@ -1,8 +1,8 @@
 import type { INpsVote, INpsVoteStatus } from '@rocket.chat/core-typings';
 import type { Document, FindCursor, UpdateResult } from 'mongodb';
 
-import type { IBaseModel } from './IBaseModel';
-import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
+import type { IBaseModel } from './IBaseModel.js';
+import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection.js';
 
 export interface INpsVoteModel extends IBaseModel<INpsVote> {
 	// `sort` and `limit` are branded away because the implementation overwrites both on the cursor;

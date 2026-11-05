@@ -1,8 +1,8 @@
 import type { IUserDataFile } from '@rocket.chat/core-typings';
 import type { Document } from 'mongodb';
 
-import type { IBaseUploadsModel } from './IBaseUploadsModel';
-import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
+import type { IBaseUploadsModel } from './IBaseUploadsModel.js';
+import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection.js';
 
 export interface IUserDataFilesModel extends IBaseUploadsModel<IUserDataFile> {
 	findLastFileByUser<T extends Document = IUserDataFile, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(

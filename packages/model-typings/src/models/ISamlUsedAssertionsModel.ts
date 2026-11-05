@@ -1,6 +1,6 @@
 import type { ISamlUsedAssertions } from '@rocket.chat/core-typings';
 
-import type { IBaseModel } from './IBaseModel';
+import type { IBaseModel } from './IBaseModel.js';
 
 export interface ISamlUsedAssertionsModel extends IBaseModel<ISamlUsedAssertions> {
 	markUsed(assertionId: string, issuer: string, expireAt: Date): Promise<boolean>;

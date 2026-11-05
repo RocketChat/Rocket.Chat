@@ -1,7 +1,7 @@
 import type { IExportOperation } from '@rocket.chat/core-typings';
 import type { UpdateResult } from 'mongodb';
 
-import type { IBaseModel } from './IBaseModel';
+import type { IBaseModel } from './IBaseModel.js';
 
 export interface IExportOperationsModel extends IBaseModel<IExportOperation> {
 	findOnePending(): Promise<IExportOperation | null>;

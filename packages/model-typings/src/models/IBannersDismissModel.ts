@@ -1,7 +1,7 @@
 import type { IBannerDismiss } from '@rocket.chat/core-typings';
 import type { Document, FindCursor, FindOptions } from 'mongodb';
 
-import type { IBaseModel } from './IBaseModel';
+import type { IBaseModel } from './IBaseModel.js';
 
 export interface IBannersDismissModel extends IBaseModel<IBannerDismiss> {
 	findByUserIdAndBannerId(userId: string, bannerIds: string[]): FindCursor<IBannerDismiss>;

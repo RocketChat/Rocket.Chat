@@ -1,8 +1,8 @@
 import type { IIntegration, IUser } from '@rocket.chat/core-typings';
 import type { AggregateOptions, FindCursor, Document } from 'mongodb';
 
-import type { IBaseModel } from './IBaseModel';
-import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
+import type { IBaseModel } from './IBaseModel.js';
+import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection.js';
 
 export type IntegrationsStatistics = {
 	totalIntegrations: number;

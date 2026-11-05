@@ -1,8 +1,8 @@
 import type { ICustomUserStatus } from '@rocket.chat/core-typings';
 import type { FindCursor, InsertOneResult, UpdateResult, WithId, Document } from 'mongodb';
 
-import type { IBaseModel, InsertionModel } from './IBaseModel';
-import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
+import type { IBaseModel, InsertionModel } from './IBaseModel.js';
+import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection.js';
 
 export interface ICustomUserStatusModel extends IBaseModel<ICustomUserStatus> {
 	findOneByName<T extends Document = ICustomUserStatus, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
