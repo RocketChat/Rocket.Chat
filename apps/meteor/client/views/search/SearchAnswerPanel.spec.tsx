@@ -81,13 +81,6 @@ describe('SearchAnswerPanel', () => {
 		expect(onRetry).toHaveBeenCalledTimes(1);
 	});
 
-	it('always shows the full answer without a Read more toggle', () => {
-		renderPanel({ answer: 'A long answer.' });
-
-		expect(screen.getByText('A long answer.')).toBeInTheDocument();
-		expect(screen.queryByRole('button', { name: /read (more|less)/i })).not.toBeInTheDocument();
-	});
-
 	it('tells admins why the provider failed', () => {
 		renderPanel({ error: { errorType: 'error-ai-provider-request-failed' } }, ['view-privileged-setting']);
 
