@@ -10,7 +10,6 @@ import {
 	ContextualbarTitle,
 	ContextualbarClose,
 	ContextualbarDialog,
-	usePagination,
 	useSort,
 	Page,
 	PageHeader,
@@ -18,7 +17,7 @@ import {
 } from '@rocket.chat/ui-client';
 import { useRouteParameter, useTranslation, useRouter, useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Trans } from 'react-i18next';
 
 import AdminInviteUsers from './AdminInviteUsers';
@@ -68,7 +67,6 @@ const AdminUsersPage = () => {
 		queryFn: async () => getRoles(),
 	});
 
-	const paginationData = usePagination();
 	const sortData = useSort<UsersTableSortingOption>('name');
 
 	const [tab, setTab] = useState<AdminUsersTab>('all');
@@ -79,13 +77,10 @@ const AdminUsersPage = () => {
 	const canFilterByUserStatus = canManageUserStatus && userStatusEnabled;
 
 	const searchTerm = useDebouncedValue(userFilters.text, 500);
-	const prevSearchTerm = useRef('');
 
-	const filteredUsersQueryResult = useFilteredUsers({
+	const { usersListQueryResult: filteredUsersQueryResult, paginationData } = useFilteredUsers({
 		searchTerm,
-		prevSearchTerm,
 		sortData,
-		paginationData,
 		tab,
 		selectedRoles: useMemo(() => userFilters.roles.map((role) => role.id), [userFilters.roles]),
 		statusManagement: canFilterByUserStatus ? userFilters.statusManagement : undefined,
@@ -101,15 +96,10 @@ const AdminUsersPage = () => {
 	const handleTabChange = (tab: AdminUsersTab) => {
 		setTab(tab);
 
-		paginationData.setCurrent(0);
 		sortData.setSort(tab === 'pending' ? 'active' : 'name', 'asc');
 	};
 
 	const handleCloseContextualbar = useStableCallback(() => router.navigate('/admin/users'));
-
-	useEffect(() => {
-		prevSearchTerm.current = searchTerm;
-	}, [searchTerm]);
 
 	const isRoutePrevented = useMemo(
 		() => context && ['new', 'invite'].includes(context) && isCreateUserDisabled,
