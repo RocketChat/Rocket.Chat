@@ -2,7 +2,6 @@ import { ClientSafeError } from '@rocket.chat/core-services';
 import type { ICreateRoomParams } from '@rocket.chat/core-services';
 import type { IAbacAttributeDefinition, ICreatedRoom, IUser, ITeam } from '@rocket.chat/core-typings';
 import { Team } from '@rocket.chat/models';
-import { Match, check } from 'meteor/check';
 
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { createRoom } from '../../lib/rooms/createRoom';
@@ -23,9 +22,6 @@ export const createPrivateGroupMethod = async (
 		skippedMembers?: string[];
 	}
 > => {
-	check(name, String);
-	check(members, Match.Optional([String]));
-
 	if (extraData.teamId) {
 		const team = await Team.findOneById<Pick<ITeam, '_id' | 'roomId'>>(extraData.teamId, { projection: { roomId: 1 } });
 		if (!team) {

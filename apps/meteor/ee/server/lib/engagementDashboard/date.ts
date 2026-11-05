@@ -1,3 +1,4 @@
+import { ajvQuery } from '@rocket.chat/rest-typings';
 import mem from 'mem';
 import moment from 'moment';
 
@@ -8,6 +9,28 @@ export const isDateISOString = mem(
 	},
 	{ maxAge: 10000 },
 );
+
+/**
+ * JSON schema for the only date form `mapDateForAPI` accepts: the output of `Date.prototype.toISOString`.
+ * A value that is not a date at all fails as `date-time`; a date written in another form fails the pattern.
+ */
+export const isoDateStringSchema = {
+	type: 'string',
+	format: 'date-time',
+	if: { format: 'date-time' },
+	then: { pattern: '^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$' },
+} as const;
+
+/** Query validator for the engagement dashboard endpoints that take a `start`/`end` date range. */
+export const isDateRangeParams = ajvQuery.compile<{ start: string; end: string }>({
+	type: 'object',
+	properties: {
+		start: isoDateStringSchema,
+		end: isoDateStringSchema,
+	},
+	required: ['start', 'end'],
+	additionalProperties: false,
+});
 
 export const mapDateForAPI = (input: string): Date => {
 	if (!isDateISOString(input)) {
