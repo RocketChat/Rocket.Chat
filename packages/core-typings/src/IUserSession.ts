@@ -1,4 +1,4 @@
-import type { UserStatus } from './UserStatus';
+import type { UserStatus } from './UserStatus.js';
 
 export interface IUserSessionConnection {
 	id: string;

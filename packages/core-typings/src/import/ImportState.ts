@@ -1,4 +1,4 @@
-import type { IImport } from './IImport';
+import type { IImport } from './IImport.js';
 
 export type ImportStatus =
 	| { state: 'none' }

@@ -1,4 +1,4 @@
-import type { IUser } from './IUser';
+import type { IUser } from './IUser.js';
 
 export type AbacPreviewMember = Pick<IUser, '_id' | 'username' | 'name'>;
 

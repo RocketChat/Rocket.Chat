@@ -1,9 +1,9 @@
 import type * as UiKit from '@rocket.chat/ui-kit';
 import * as z from 'zod';
 
-import { IRocketChatRecordSchema, type IRocketChatRecord } from './IRocketChatRecord';
-import type { IUser } from './IUser';
-import { TimestampSchema } from './utils';
+import { IRocketChatRecordSchema, type IRocketChatRecord } from './IRocketChatRecord.js';
+import type { IUser } from './IUser.js';
+import { TimestampSchema } from './utils.js';
 
 export enum BannerPlatform {
 	Web = 'web',

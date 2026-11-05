@@ -1,8 +1,8 @@
-import type { IImportChannel } from './IImportChannel';
-import type { IImportContact } from './IImportContact';
-import type { IImportMessage } from './IImportMessage';
-import type { IImportUser } from './IImportUser';
-import type { IRocketChatRecord } from '../IRocketChatRecord';
+import type { IImportChannel } from './IImportChannel.js';
+import type { IImportContact } from './IImportContact.js';
+import type { IImportMessage } from './IImportMessage.js';
+import type { IImportUser } from './IImportUser.js';
+import type { IRocketChatRecord } from '../IRocketChatRecord.js';
 
 export type IImportRecordType = 'user' | 'channel' | 'message' | 'contact';
 export type IImportData = IImportUser | IImportChannel | IImportMessage | IImportContact;

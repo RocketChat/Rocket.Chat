@@ -1,5 +1,5 @@
-import type { IRocketChatRecord } from './IRocketChatRecord';
-import type { IUser } from './IUser';
+import type { IRocketChatRecord } from './IRocketChatRecord.js';
+import type { IUser } from './IUser.js';
 
 /**
  * One row per user and contact folder, because both providers scope the contact delta token to a folder.

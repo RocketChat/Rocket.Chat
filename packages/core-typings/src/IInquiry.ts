@@ -1,10 +1,10 @@
-import type { ILivechatPriority } from './ILivechatPriority';
-import type { ILivechatVisitor } from './ILivechatVisitor';
-import type { IMessage } from './IMessage';
-import type { IOmnichannelServiceLevelAgreements } from './IOmnichannelServiceLevelAgreements';
-import type { IRocketChatRecord } from './IRocketChatRecord';
-import type { IOmnichannelRoom, OmnichannelSourceType } from './IRoom';
-import type { SelectedAgent } from './omnichannel/routing';
+import type { ILivechatPriority } from './ILivechatPriority.js';
+import type { ILivechatVisitor } from './ILivechatVisitor.js';
+import type { IMessage } from './IMessage/index.js';
+import type { IOmnichannelServiceLevelAgreements } from './IOmnichannelServiceLevelAgreements.js';
+import type { IRocketChatRecord } from './IRocketChatRecord.js';
+import type { IOmnichannelRoom, OmnichannelSourceType } from './IRoom.js';
+import type { SelectedAgent } from './omnichannel/routing.js';
 
 export enum LivechatInquiryStatus {
 	VERIFYING = 'verifying',

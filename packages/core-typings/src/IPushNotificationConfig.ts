@@ -1,4 +1,4 @@
-import type { IPushToken } from './IPushToken';
+import type { IPushToken } from './IPushToken.js';
 
 export interface IPushNotificationConfig {
 	from?: string;

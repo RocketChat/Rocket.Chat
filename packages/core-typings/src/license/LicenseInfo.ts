@@ -1,7 +1,7 @@
-import type { ILicenseTag } from './ILicenseTag';
-import type { ExternalModule, ILicenseV3, LicenseLimitKind } from './ILicenseV3';
-import type { LicenseModule } from './LicenseModule';
-import type { ICloudSyncAnnouncement } from '../cloud';
+import type { ILicenseTag } from './ILicenseTag.js';
+import type { ExternalModule, ILicenseV3, LicenseLimitKind } from './ILicenseV3.js';
+import type { LicenseModule } from './LicenseModule.js';
+import type { ICloudSyncAnnouncement } from '../cloud/index.js';
 
 export type LicenseInfo = {
 	license?: ILicenseV3;

@@ -1,2 +1,2 @@
-export * from './IMessage';
-export * from './MessageAttachment';
+export * from './IMessage.js';
+export * from './MessageAttachment/index.js';

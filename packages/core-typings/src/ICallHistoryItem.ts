@@ -1,8 +1,8 @@
-import type { IContact } from './IContact';
-import type { IMessage } from './IMessage/IMessage';
-import type { IRocketChatRecord } from './IRocketChatRecord';
-import type { IRoom } from './IRoom';
-import type { IUser } from './IUser';
+import type { IContact } from './IContact.js';
+import type { IMessage } from './IMessage/IMessage.js';
+import type { IRocketChatRecord } from './IRocketChatRecord.js';
+import type { IRoom } from './IRoom.js';
+import type { IUser } from './IUser.js';
 
 export type CallHistoryItemState =
 	/** One of the users ended the call */

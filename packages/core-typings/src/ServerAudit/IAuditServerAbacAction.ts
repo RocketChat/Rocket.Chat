@@ -1,4 +1,4 @@
-import type { IUser, IRoom, IAuditServerEventType, IAbacAttributeDefinition, IServerEvents, Optional } from '..';
+import type { IUser, IRoom, IAuditServerEventType, IAbacAttributeDefinition, IServerEvents, Optional } from '../index.js';
 
 export type MinimalUser = Pick<IUser, 'username'> & Optional<Pick<IUser, '_id'>, '_id'>;
 export type MinimalRoom = Pick<IRoom, '_id' | 'name'>;
