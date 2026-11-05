@@ -1,0 +1,9 @@
+apps/meteor/client/hooks/useExperimentalEndpoint.ts
+  ai_agent 1,13
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "b48b9da3b0f4d6ed8af08eb49478d2e0ab2f7f74",
+  "prompts": {}
+}
