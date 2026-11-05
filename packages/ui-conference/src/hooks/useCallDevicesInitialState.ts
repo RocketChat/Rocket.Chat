@@ -2,7 +2,7 @@ import type { VideoConferenceCapabilities } from '@rocket.chat/core-typings';
 import { useUserId } from '@rocket.chat/ui-contexts';
 import { useCallback, useMemo, useSyncExternalStore } from 'react';
 
-import { NOISE_METHOD_LABELS, VIDEO_QUALITY_LABELS, choicesOf } from '../call/lib/mediaChoiceLabels';
+import { NOISE_METHOD_LABELS, VIDEO_QUALITY_LABELS, choicesOf } from '../call/lib/mediaChoiceLabels.js';
 
 /** Whether to arrive with mic and camera on. Exactly what the join endpoint accepts, which rejects anything more. */
 export type CallPreferences = {

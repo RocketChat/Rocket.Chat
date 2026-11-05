@@ -4,10 +4,10 @@ import { AnnouncementBanner } from '@rocket.chat/ui-client';
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
-import { ConferenceContext, useConference, useConferenceViewer } from '../../context/ConferenceContext';
-import type { ConferenceChatAccess } from '../../context/definitions';
-import { hasConferenceChatAccess } from '../../lib/chatAccess';
-import ChatAccessModal from '../ChatAccessModal/ChatAccessModal';
+import { ConferenceContext, useConference, useConferenceViewer } from '../../context/ConferenceContext.js';
+import type { ConferenceChatAccess } from '../../context/definitions.js';
+import { hasConferenceChatAccess } from '../../lib/chatAccess.js';
+import ChatAccessModal from '../ChatAccessModal/ChatAccessModal.js';
 
 type ChatAccessNoticeProps = {
 	access: ConferenceChatAccess;

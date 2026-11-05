@@ -1,12 +1,12 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 import type { ReactNode } from 'react';
 
-import CallMemberItem from './CallMemberItem';
-import { ConferenceContext } from '../../context/ConferenceContext';
-import type { ConferenceMember } from '../../context/definitions';
-import { buildConferenceContext } from '../../fixtures/storyFixtures';
+import CallMemberItem from './CallMemberItem.js';
+import { ConferenceContext } from '../../context/ConferenceContext.js';
+import type { ConferenceMember } from '../../context/definitions.js';
+import { buildConferenceContext } from '../../fixtures/storyFixtures.js';
 
 const base = { _id: 'grace-id', username: 'grace', name: 'Grace Hopper' };
 

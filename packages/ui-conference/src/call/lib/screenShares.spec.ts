@@ -1,5 +1,5 @@
-import type { ScreenShare } from './screenShares';
-import { collectScreenShares, nextPinnedScreen, pickFeaturedScreen, recordShareStarts } from './screenShares';
+import type { ScreenShare } from './screenShares.js';
+import { collectScreenShares, nextPinnedScreen, pickFeaturedScreen, recordShareStarts } from './screenShares.js';
 
 const streamA = { id: 'a' } as MediaStream;
 const streamB = { id: 'b' } as MediaStream;

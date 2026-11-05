@@ -2,9 +2,9 @@ import { Box } from '@rocket.chat/fuselage';
 import type { Meta, StoryObj } from '@storybook/react';
 import type { ComponentProps } from 'react';
 
-import CallListItem from './CallListItem';
-import { conferenceAppRoot, withCallProviders, withLiveRings, withOngoingCalls } from '../../fixtures/storyFixtures';
-import { buildJoinableCall } from '../../fixtures/testFixtures';
+import CallListItem from './CallListItem.js';
+import { conferenceAppRoot, withCallProviders, withLiveRings, withOngoingCalls } from '../../fixtures/storyFixtures.js';
+import { buildJoinableCall } from '../../fixtures/testFixtures.js';
 
 /**
  * One call in the list: the sidebar's room item with no avatar, a video mark instead, and how many people are

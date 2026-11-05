@@ -1,11 +1,11 @@
 import { Box } from '@rocket.chat/fuselage';
 
-import MainTile from './MainTile';
-import OverflowTile from './OverflowTile';
-import ThumbnailTile from './ThumbnailTile';
-import { mainStreamStyles, spotlightClasses } from './stageStyles';
-import type { SpotlightOrientation, StageSize, StageTile } from '../lib/stageTiles';
-import { sidebarCapacity, splitByPriority } from '../lib/stageTiles';
+import MainTile from './MainTile.js';
+import OverflowTile from './OverflowTile.js';
+import ThumbnailTile from './ThumbnailTile.js';
+import { mainStreamStyles, spotlightClasses } from './stageStyles.js';
+import type { SpotlightOrientation, StageSize, StageTile } from '../lib/stageTiles.js';
+import { sidebarCapacity, splitByPriority } from '../lib/stageTiles.js';
 
 export type SidebarLayoutProps = {
 	featured: StageTile;
