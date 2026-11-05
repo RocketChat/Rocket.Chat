@@ -27,7 +27,7 @@ const LinearScaleElement = ({ className, block, context, surfaceRenderer }: Line
 				</Box>
 			)}
 			<Box>
-				<ButtonGroup className={className as string} align='center'>
+				<ButtonGroup className={className} align='center'>
 					{points.map((point, i) => (
 						<Button
 							key={i}
