@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { getSubscriptionDraft } from '../../lib/utils/getSubscriptionDraft';
 
-type RoomListItemTitleIconProps = {
+export type RoomListItemTitleIconProps = {
 	room: SubscriptionWithRoom;
 };
 
@@ -23,7 +23,7 @@ const RoomListItemTitleIcon = ({ room }: RoomListItemTitleIconProps) => {
 
 	return (
 		<>
-			{muted && <Icon name='bell-off' size='x12' title={t('Muted')} />}
+			{muted && <Icon name='bell-off' size='x12' title={t('Notifications_off')} />}
 			{draft && <Icon name='pencil' size='x12' title={room.draft ? t('Draft') : t('Thread_draft')} />}
 		</>
 	);

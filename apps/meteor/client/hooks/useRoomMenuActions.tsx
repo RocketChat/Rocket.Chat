@@ -43,6 +43,7 @@ export const useRoomMenuActions = ({
 	const canLeaveChannel = usePermission('leave-c');
 	const canLeavePrivate = usePermission('leave-p');
 	const canFavorite = useSetting('Favorite_Rooms') as boolean;
+	const hasSubscription = Boolean(subscription);
 	const isNotificationEnabled = !subscription?.disableNotifications;
 
 	const canLeave = ((): boolean => {
@@ -112,7 +113,7 @@ export const useRoomMenuActions = ({
 	// The room's notifications as a switch, on while they are sent; an omnichannel room has no such preference.
 	const notificationsMenuOptions = useMemo<GenericMenuItemProps[]>(
 		() =>
-			!hideDefaultOptions && !isOmnichannelRoom && subscription
+			!hideDefaultOptions && !isOmnichannelRoom && hasSubscription
 				? [
 						{
 							id: 'notifications',
@@ -123,7 +124,7 @@ export const useRoomMenuActions = ({
 						},
 					]
 				: [],
-		[hideDefaultOptions, isOmnichannelRoom, subscription, isNotificationEnabled, t, handleToggleNotification],
+		[hideDefaultOptions, isOmnichannelRoom, hasSubscription, isNotificationEnabled, t, handleToggleNotification],
 	);
 
 	if (isOmnichannelRoom && prioritiesMenu.length > 0) {
