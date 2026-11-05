@@ -13,7 +13,7 @@ import {
 } from '@rocket.chat/rest-typings';
 
 import { unreadMessages } from '../../lib/messaging/unread/unreadMessages';
-import { notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../lib/notifyListener';
+import { notifyOnSubscriptionsChangedByRoomIdsAndUserId } from '../../lib/notifyListener';
 import { readMessages } from '../../lib/readMessages';
 import { getSubscriptions } from '../../publications/subscription';
 import { API } from '../api';
@@ -191,16 +191,15 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		const { roomId, archived } = this.bodyParams;
+		const { roomIds, archived } = this.bodyParams;
 
-		const { matchedCount, modifiedCount } = await Subscriptions.setUserArchivedByRoomIdAndUserId(roomId, this.userId, archived);
+		// One update for the whole list: the sidebar archives a group's worth of rooms at once.
+		const { matchedCount } = await Subscriptions.setUserArchivedByRoomIdsAndUserId(roomIds, this.userId, archived);
 		if (!matchedCount) {
 			throw new Error('error-invalid-subscription');
 		}
 
-		if (modifiedCount) {
-			void notifyOnSubscriptionChangedByRoomIdAndUserId(roomId, this.userId);
-		}
+		void notifyOnSubscriptionsChangedByRoomIdsAndUserId(roomIds, this.userId);
 
 		return API.v1.success();
 	},

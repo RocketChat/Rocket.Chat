@@ -1043,13 +1043,12 @@
   "Apps_WhatIsIt_paragraph3": "Secondly, they are dynamic scripts or packages which will allow you to customize your Rocket.Chat instance without having to fork the codebase. But do keep in mind, this is a new feature set and due to that it might not be 100% stable. Also, we are still developing the feature set so not everything can be customized at this point in time. For more information about getting started developing an app, go here to read:",
   "Apps_WhatIsIt_paragraph4": "But with that said, if you are interested in enabling this feature and trying it out then here click this button to enable the apps system.",
   "Archive": "Archive",
-  "Archive_rooms_ellipsis": "Archive rooms…",
   "Archive_Channel_Description": "“{{roomName}}” moves to the Archived group. The channel stays there, with no badge, until you unarchive it.",
   "Archive_Direct_Description": "“{{roomName}}” moves to the Archived group. The direct message stays there, with no badge, until you unarchive it.",
   "Archive_Group_Description": "“{{roomName}}” moves to the Archived group. The private channel stays there, with no badge, until you unarchive it.",
   "Archive_Livechat_Description": "“{{roomName}}” moves to the Archived group. The chat stays there, with no badge, until you unarchive it.",
   "Archive_room": "Archive room",
-  "Archive_rooms": "Archive rooms",
+  "Archive_rooms_ellipsis": "Archive rooms…",
   "Archive_rooms_in__group__": "Archive rooms in {{group}}",
   "archive-room": "Archive room",
   "archive-room_description": "Permission to archive a channel",
@@ -2030,7 +2029,6 @@
   "Current_Status": "Current status",
   "Currently_we_dont_support_joining_servers_with_this_many_people": "Currently we don't support joining servers with this many people",
   "Custom": "Custom",
-  "Custom_date": "Custom date",
   "Custom CSS": "Custom CSS",
   "Custom_agent": "Custom agent",
   "Custom_API": "Custom (API)",
@@ -2039,6 +2037,7 @@
   "Custom_categories_description": "Custom categories are private groupings of rooms that only you can see. Group your most important rooms so your sidebar matches the way you work.",
   "Custom_categories_subtitle": "Organize your workspace with custom categories",
   "Custom_content": "Custom content",
+  "Custom_date": "Custom date",
   "Custom_dates": "Custom dates",
   "Custom_Emoji": "Custom emoji",
   "Custom_Emoji_Add": "Add new emoji",
@@ -3424,11 +3423,11 @@
   "Importing_users": "Importing users",
   "In_call": "In call",
   "In_progress": "In progress",
+  "Inactive_for": "Inactive for",
   "Inactive_rooms_hidden_in_group": {
     "one": "{{filter}}: {{count}} inactive room hidden in {{group}}",
     "other": "{{filter}}: {{count}} inactive rooms hidden in {{group}}"
   },
-  "Inactive_for": "Inactive for",
   "Inactive_since": "Inactive since",
   "Inactivity_Time": "Inactivity time",
   "Inbound": "Inbound",
@@ -4868,10 +4867,10 @@
   "No_requested_apps": "No requested apps",
   "No_requests": "No requests",
   "No_results_found": "No results found",
-  "No_rooms_to_archive": "No rooms to archive",
   "No_results_found_for": "No results found for:",
   "No_rooms": "No rooms",
   "No_rooms_description": "@{username}, @all, @here  mentions and highlighted words will appear here.",
+  "No_rooms_to_archive": "No rooms to archive",
   "No_SLA_policies_yet": "No SLA policies yet",
   "No_SLA_policies_yet_description": "Use SLA policies to change the order of omnichannel queues based on estimated wait time.",
   "No_snippet_messages": "No snippet",
@@ -5947,9 +5946,18 @@
   "Room_uploaded_file_list": "Files list",
   "Room_uploaded_file_list_empty": "No files available.",
   "Rooms": "Rooms",
+  "Rooms_added_successfully": "Rooms added successfully",
   "Rooms_archived": {
     "one": "{{count}} room archived",
     "other": "{{count}} rooms archived"
+  },
+  "Rooms_not_archived": {
+    "one": "{{count}} room could not be archived. Try again.",
+    "other": "{{count}} rooms could not be archived. Try again."
+  },
+  "Rooms_not_unarchived": {
+    "one": "{{count}} room could not be unarchived. Try again.",
+    "other": "{{count}} rooms could not be unarchived. Try again."
   },
   "Rooms_notifications_off": {
     "one": "{{count}} room notifications off",
@@ -5966,14 +5974,6 @@
   "Rooms_notifications_still_on": {
     "one": "{{count}} room still has notifications on. Try again.",
     "other": "{{count}} rooms still have notifications on. Try again."
-  },
-  "Rooms_not_archived": {
-    "one": "{{count}} room could not be archived. Try again.",
-    "other": "{{count}} rooms could not be archived. Try again."
-  },
-  "Rooms_not_unarchived": {
-    "one": "{{count}} room could not be unarchived. Try again.",
-    "other": "{{count}} rooms could not be unarchived. Try again."
   },
   "Rooms_to_archive": {
     "one": "{{count}} room to archive",
@@ -7072,11 +7072,11 @@
   "Tuesday": "Tuesday",
   "Turn_OFF": "Turn off",
   "Turn_off_answer_chats": "Turn off answer chats",
+  "Turn_off_notifications": "Turn off notifications",
   "Turn_off_video": "Turn off video",
   "Turn_ON": "Turn on",
-  "Turn_off_notifications": "Turn off notifications",
-  "Turn_on_notifications": "Turn on notifications",
   "Turn_on_answer_chats": "Turn on answer chats",
+  "Turn_on_notifications": "Turn on notifications",
   "Turn_on_video": "Turn on video",
   "Two Factor Authentication": "Two factor authentication",
   "Two-factor_authentication": "Two-factor authentication",

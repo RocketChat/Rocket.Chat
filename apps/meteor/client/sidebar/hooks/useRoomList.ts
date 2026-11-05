@@ -46,17 +46,18 @@ export type SidebarRoomListGroup = {
 	empty: boolean;
 };
 
-/** The room with nothing to badge: an archived room asks for no attention, whatever arrives in it. */
-const withoutUnreads = (room: SubscriptionWithRoom): SubscriptionWithRoom => ({
-	...room,
-	alert: false,
-	unread: 0,
-	userMentions: 0,
-	groupMentions: 0,
-	tunread: [],
-	tunreadUser: [],
-	tunreadGroup: [],
-});
+// Quiet rooms by document, so a row keeps its object, and its memo, until the store hands out a new one.
+const quietRooms = new WeakMap<SubscriptionWithRoom, SubscriptionWithRoom>();
+
+/**
+ * The room with nothing to badge: an archived room asks for no attention, whatever arrives in it. The flags the
+ * badges already honour do it, so the counts stay for the row's own menu to offer "Mark read".
+ */
+const asQuietRoom = (room: SubscriptionWithRoom): SubscriptionWithRoom => {
+	const quiet = quietRooms.get(room) ?? { ...room, hideUnreadStatus: true, hideMentionStatus: true };
+	quietRooms.set(room, quiet);
+	return quiet;
+};
 
 /**
  * The group listed last, holding the rooms archived out of the sidebar. Its header always looks like an empty
@@ -72,7 +73,7 @@ const makeArchivedGroup = (rooms: SubscriptionWithRoom[], collapsed: boolean): S
 	inactiveCount: 0,
 	showingInactive: false,
 	collapsed,
-	rooms: collapsed ? [] : rooms.map(withoutUnreads),
+	rooms: collapsed ? [] : rooms.map(asQuietRoom),
 	allRooms: rooms,
 	unreadInfo: emptyUnreadInfo(),
 	empty: true,

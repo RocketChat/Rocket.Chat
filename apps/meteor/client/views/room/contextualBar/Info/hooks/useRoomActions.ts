@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useRoomConvertToTeam } from './actions/useRoomConvertToTeam';
 import { useRoomLeave } from './actions/useRoomLeave';
 import { useRoomMoveToTeam } from './actions/useRoomMoveToTeam';
-import { useArchiveRoomAction } from '../../../../../hooks/useArchiveRoomAction';
+import { useRoomArchiveMenuItem } from '../../../../../hooks/useRoomArchiveMenuItem';
 import { useDeleteRoom } from '../../../../hooks/roomActions/useDeleteRoom';
 
 type UseRoomActionsOptions = {
@@ -23,17 +23,12 @@ export const useRoomActions = (room: IRoom, options: UseRoomActionsOptions) => {
 	const { handleDelete, canDeleteRoom } = useDeleteRoom(room, { reload: resetState });
 	const handleMoveToTeam = useRoomMoveToTeam(room);
 	const handleConvertToTeam = useRoomConvertToTeam(room);
-	const handleArchive = useArchiveRoomAction({ rid: room._id, type: room.t, name: room.name ?? '' });
+	const archiveItem = useRoomArchiveMenuItem({ rid: room._id, type: room.t, name: room.name ?? '' });
 
 	return useMemo(() => {
 		const memoizedActions = {
 			items: [
-				{
-					id: 'archive',
-					content: t('Archive'),
-					icon: 'archive' as const,
-					onClick: handleArchive,
-				},
+				archiveItem,
 
 				...(onClickEnterRoom
 					? [
@@ -100,5 +95,5 @@ export const useRoomActions = (room: IRoom, options: UseRoomActionsOptions) => {
 		};
 
 		return memoizedActions;
-	}, [canDeleteRoom, handleConvertToTeam, handleDelete, handleArchive, handleLeave, handleMoveToTeam, onClickEdit, onClickEnterRoom, t]);
+	}, [canDeleteRoom, handleConvertToTeam, handleDelete, archiveItem, handleLeave, handleMoveToTeam, onClickEdit, onClickEnterRoom, t]);
 };

@@ -38,6 +38,7 @@ const buildBase = () =>
 		.withTranslations('en', 'core', {
 			Archive: 'Archive',
 			Notifications: 'Notifications',
+			Hide: 'Hide',
 			Archive_room: 'Archive room',
 			Archive_Channel_Description: '“{{roomName}}” moves to the Archived group.',
 			Unarchive: 'Unarchive',
@@ -69,12 +70,12 @@ const enterpriseRenderOptions = {
 	wrapper: buildBase().withJohnDoe().withQueryClient(buildEnterpriseQueryClient()).build(),
 };
 
-it('should display Archive, Mark Unread, Leave and Favorite toggle for regular rooms without enterprise', async () => {
+it('should display Hide, Mark Unread, Leave and Favorite toggle for regular rooms without enterprise', async () => {
 	render(<RoomMenu {...defaultProps} />, renderOptions);
 
 	await userEvent.click(screen.queryByRole('button') as HTMLElement);
 
-	expect(await screen.findByRole('menuitem', { name: 'Archive' })).toBeInTheDocument();
+	expect(await screen.findByRole('menuitem', { name: 'Hide' })).toBeInTheDocument();
 	expect(await screen.findByRole('menuitem', { name: 'Mark Unread' })).toBeInTheDocument();
 	expect(await screen.findByRole('menuitem', { name: 'Leave' })).toBeInTheDocument();
 	expect(await screen.findByRole('menuitem', { name: 'Favorite' })).toBeInTheDocument();
@@ -159,6 +160,8 @@ describe('the archive', () => {
 	const renderWith = (subscription: Record<string, unknown>) =>
 		render(<RoomMenu {...defaultProps} name='general' />, {
 			wrapper: buildBase()
+				.withJohnDoe()
+				.withQueryClient(buildEnterpriseQueryClient())
 				.withSubscription(createFakeSubscription({ rid: 'roomId', t: 'c', ...subscription }))
 				.withEndpoint('POST', '/v1/subscriptions.setUserArchived', setUserArchived as any)
 				.build(),
@@ -176,7 +179,7 @@ describe('the archive', () => {
 
 		await userEvent.click(screen.getByRole('button', { name: 'Archive' }));
 
-		await waitFor(() => expect(setUserArchived).toHaveBeenCalledWith({ roomId: 'roomId', archived: true }));
+		await waitFor(() => expect(setUserArchived).toHaveBeenCalledWith({ roomIds: ['roomId'], archived: true }));
 	});
 
 	it('offers to unarchive an archived room instead', async () => {
@@ -187,7 +190,7 @@ describe('the archive', () => {
 		expect(screen.queryByRole('menuitem', { name: 'Archive' })).not.toBeInTheDocument();
 		await userEvent.click(await screen.findByRole('menuitem', { name: 'Unarchive' }));
 
-		await waitFor(() => expect(setUserArchived).toHaveBeenCalledWith({ roomId: 'roomId', archived: false }));
+		await waitFor(() => expect(setUserArchived).toHaveBeenCalledWith({ roomIds: ['roomId'], archived: false }));
 	});
 });
 

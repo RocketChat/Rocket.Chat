@@ -280,13 +280,19 @@ a room with no date are never taken; unread rooms only when "Include unread room
 how many rooms match and the confirm button is disabled at zero.
 
 Archiving is the user's own flag on the subscription, `userArchived`, set through `POST /v1/subscriptions.setUserArchived`
-(`useArchivedRooms` reads it from the subscriptions store and writes it in batches of five, with the sidebar
-updated ahead of the server and put back on failure). An archived room is in no other group, not even Unread; it stays archived whatever
+(`useArchivedRooms` reads it from the subscriptions store and writes it with one request per two hundred rooms,
+with the sidebar updated ahead of the server and put back on failure). An archived room is in no other group, not even Unread; it stays archived whatever
 happens in it (opening it, a new message, a mention), and carries no badge meanwhile. The room-level action is
 labelled **Archive** everywhere (sidebar and sidepanel room menus, room info, team info; `useArchiveRoomAction`,
 which first tells what archiving means in a do-not-ask-again modal without an icon, per room type), and becomes
 **Unarchive** (`useUnarchiveRoomAction`) on an archived room. The old "Hide"
 flow (`useHideRoomAction`, closing the subscription) is no longer reachable from the UI except through `/hide`.
+
+Two things to know: the sidebar applies the optimistic flag at once, but the subscription stream replaces the
+whole document on every echo, so an unrelated echo (a new message) that lands before the archive's own can show
+the room back in its group for a moment; and "Archive" here is the user's own, unrelated to a channel's
+`archived` state set from room settings, which still reads "Archived" in the edit form. Without a license there is
+no Archived group, so the item hides the room as before (`useRoomArchiveMenuItem`).
 
 The `Archived` group listed last (`SIDEBAR_ARCHIVED_GROUP_KEY`, licensed workspaces only) holds the archived rooms:
 its header always wears the empty-group look and no badge, its rows are stripped of their unread counters, it has no
