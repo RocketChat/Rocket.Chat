@@ -1,5 +1,23 @@
 # @rocket.chat/meteor
 
+## 9.0.0-rc.5
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#43507](https://github.com/RocketChat/Rocket.Chat/pull/43507)) Fixes features of a removed license, such as the ABAC message composer lock, staying active for connected users until they reload the page
+
+- ([#43500](https://github.com/RocketChat/Rocket.Chat/pull/43500)) Fixes requests to the federation, Apps-Engine endpoint, UiKit interaction, OAuth login, `.well-known` metadata, health probe, `/_timesync` and `/theme.css` routes not appearing in the HTTP request log, and redacts OAuth authorization codes from logged URLs
+
+- <details><summary>Updated dependencies [8b00fa367d7be9793c31bf578eb1b6c99bf240e9]:</summary>
+  - @rocket.chat/tools@0.5.0-rc.1
+  - @rocket.chat/omni-core@0.1.6-rc.0
+  - @rocket.chat/core-typings@9.0.0-rc.5
+  - @rocket.chat/rest-typings@9.0.0-rc.5
+
+  </details>
+
 ## 9.0.0-rc.4
 
 ### Patch Changes
