@@ -1,5 +1,27 @@
 # @rocket.chat/meteor
 
+## 9.0.0-rc.7
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#43513](https://github.com/RocketChat/Rocket.Chat/pull/43513)) Fixes bot notifications sent back to back (for example, the result of `/invite-all-to` or `/invite`) occasionally replacing each other, so only the last one was shown
+
+- ([#43532](https://github.com/RocketChat/Rocket.Chat/pull/43532)) Marks native video (LiveKit) as beta instead of alpha in the Conference Call settings
+
+- ([#43532](https://github.com/RocketChat/Rocket.Chat/pull/43532)) Shows the built-in video conference provider as "Rocket.Chat Native (LiveKit)" in the Default provider setting and the Conference Call settings section
+
+- ([#43547](https://github.com/RocketChat/Rocket.Chat/pull/43547)) Fixes the memory usage of the web client and the desktop app, which increased for as long as the app stayed open. Each new message that moved a room in the sidebar added an event listener to the room avatar.
+
+- <details><summary>Updated dependencies [6254de43f3e9e23078efed927e40b320c1586a66, 9277d940be7fbca8b5a2cc890b368d0e803e1130, 9277d940be7fbca8b5a2cc890b368d0e803e1130]:</summary>
+  - @rocket.chat/streamer@0.1.2-rc.1
+  - @rocket.chat/i18n@5.0.0-rc.2
+  - @rocket.chat/core-typings@9.0.0-rc.7
+  - @rocket.chat/rest-typings@9.0.0-rc.7
+
+  </details>
+
 ## 9.0.0-rc.6
 
 ### Patch Changes

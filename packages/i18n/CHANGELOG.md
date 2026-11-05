@@ -1,5 +1,13 @@
 # @rocket.chat/i18n
 
+## 5.0.0-rc.2
+
+### Patch Changes
+
+- ([#43532](https://github.com/RocketChat/Rocket.Chat/pull/43532)) Marks native video (LiveKit) as beta instead of alpha in the Conference Call settings
+
+- ([#43532](https://github.com/RocketChat/Rocket.Chat/pull/43532)) Shows the built-in video conference provider as "Rocket.Chat Native (LiveKit)" in the Default provider setting and the Conference Call settings section
+
 ## 5.0.0-rc.1
 
 ### Minor Changes

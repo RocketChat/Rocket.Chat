@@ -1,5 +1,16 @@
 # @rocket.chat/streamer
 
+## 0.1.2-rc.1
+
+### Patch Changes
+
+- ([#43513](https://github.com/RocketChat/Rocket.Chat/pull/43513)) Fixes bot notifications sent back to back (for example, the result of `/invite-all-to` or `/invite`) occasionally replacing each other, so only the last one was shown
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@9.0.0-rc.7
+
+  </details>
+
 ## 0.1.2-rc.0
 
 ### Patch Changes
