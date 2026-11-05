@@ -37,6 +37,7 @@ const buildBase = () =>
 	mockAppRoot()
 		.withTranslations('en', 'core', {
 			Hide: 'Hide',
+			Notifications: 'Notifications',
 			Mark_unread: 'Mark Unread',
 			Favorite: 'Favorite',
 			Favorites: 'Favorites',
@@ -143,4 +144,54 @@ it('should display only mark unread and favorite for omnichannel rooms', async (
 	expect(await screen.findAllByRole('menuitem')).toHaveLength(2);
 	expect(screen.queryByRole('menuitem', { name: 'Hide' })).not.toBeInTheDocument();
 	expect(screen.queryByRole('menuitem', { name: 'Leave' })).not.toBeInTheDocument();
+});
+
+describe('the Notifications toggle', () => {
+	const saveNotification = jest.fn(async () => ({ success: true }));
+
+	beforeEach(() => {
+		saveNotification.mockClear();
+	});
+
+	const renderWith = (disableNotifications: boolean, enterprise = false) => {
+		const base = buildBase()
+			.withSubscription(createFakeSubscription({ rid: 'roomId', t: 'c', disableNotifications }))
+			.withEndpoint('POST', '/v1/rooms.saveNotification', saveNotification as any);
+		render(<RoomMenu {...defaultProps} name='general' />, {
+			wrapper: enterprise ? base.withJohnDoe().withQueryClient(buildEnterpriseQueryClient()).build() : base.build(),
+		});
+	};
+
+	it('is on while the room sends notifications, and turns them off', async () => {
+		renderWith(false);
+
+		await userEvent.click(screen.getByRole('button', { name: 'Options' }));
+		const item = await screen.findByRole('menuitem', { name: /Notifications/ });
+		expect(item.querySelector('input[type="checkbox"]')).toBeChecked();
+
+		await userEvent.click(item);
+
+		expect(saveNotification).toHaveBeenCalledWith({ roomId: 'roomId', notifications: { disableNotifications: '1' } });
+	});
+
+	it('is off while they are off, and turns them on', async () => {
+		renderWith(true);
+
+		await userEvent.click(screen.getByRole('button', { name: 'Options' }));
+		const item = await screen.findByRole('menuitem', { name: /Notifications/ });
+		expect(item.querySelector('input[type="checkbox"]')).not.toBeChecked();
+
+		await userEvent.click(item);
+
+		expect(saveNotification).toHaveBeenCalledWith({ roomId: 'roomId', notifications: { disableNotifications: '0' } });
+	});
+
+	it('is there on the licensed menu too', async () => {
+		renderWith(false, true);
+
+		await userEvent.click(screen.getByRole('button', { name: 'Options' }));
+		await userEvent.click(await screen.findByRole('menuitem', { name: /Notifications/ }));
+
+		expect(saveNotification).toHaveBeenCalledWith({ roomId: 'roomId', notifications: { disableNotifications: '1' } });
+	});
 });
