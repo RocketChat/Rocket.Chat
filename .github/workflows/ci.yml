@@ -57,9 +57,11 @@ jobs:
     name: ⚙️ Variables Setup
     runs-on: ubuntu-24.04-arm
     permissions:
+      checks: read
       contents: read
       pull-requests: read
     outputs:
+      skip-tests: ${{ steps.check.outputs.skip-tests }}
       release: ${{ steps.by-tag.outputs.release }}
       latest-release: ${{ steps.latest.outputs.latest-release }}
       gh-docker-tag: ${{ steps.docker.outputs.gh-docker-tag }}
@@ -210,14 +212,6 @@ jobs:
             echo "actions-changed=true" >> "$GITHUB_OUTPUT"
           fi
 
-  test-guard:
-    name: ⚙️ Test Guard
-    runs-on: ubuntu-24.04-arm
-    permissions:
-      checks: read
-    outputs:
-      skip-tests: ${{ steps.check.outputs.skip-tests }}
-    steps:
       # Commits only reach develop through the merge queue, where the full test
       # suite already ran on this exact SHA — skip re-running it on the push event.
       # Direct pushes (admin/revert) have no successful "Tests Done" check, so they
@@ -627,8 +621,8 @@ jobs:
   # gating `checks` also skips every e2e test job (they all `need` it);
   # test-storybook and test-unit don't, so they carry the same gate below
   checks:
-    needs: [release-versions, packages-build, test-guard]
-    if: needs.test-guard.outputs.skip-tests != 'true'
+    needs: [release-versions, packages-build]
+    if: needs.release-versions.outputs.skip-tests != 'true'
 
     name: 🔎 Code Check
     uses: ./.github/workflows/ci-code-check.yml
@@ -637,8 +631,8 @@ jobs:
 
   test-storybook:
     name: 🔨 Test Storybook
-    needs: [packages-build, release-versions, test-guard]
-    if: needs.test-guard.outputs.skip-tests != 'true'
+    needs: [packages-build, release-versions]
+    if: needs.release-versions.outputs.skip-tests != 'true'
 
     uses: ./.github/workflows/ci-test-storybook.yml
     with:
@@ -648,8 +642,8 @@ jobs:
 
   test-visual-regression:
     name: 🔨 Test Visual Regression
-    needs: [packages-build, release-versions, test-guard]
-    if: needs.test-guard.outputs.skip-tests != 'true'
+    needs: [packages-build, release-versions]
+    if: needs.release-versions.outputs.skip-tests != 'true'
 
     uses: ./.github/workflows/ci-test-visual-regression.yml
     with:
@@ -657,8 +651,8 @@ jobs:
 
   test-unit:
     name: 🔨 Test Unit
-    needs: [packages-build, release-versions, test-guard]
-    if: needs.test-guard.outputs.skip-tests != 'true'
+    needs: [packages-build, release-versions]
+    if: needs.release-versions.outputs.skip-tests != 'true'
 
     uses: ./.github/workflows/ci-test-unit.yml
     with:
@@ -1015,8 +1009,8 @@ jobs:
   tests-done:
     name: ✅ Tests Done
     runs-on: ubuntu-24.04-arm
-    needs: [test-guard, checks, test-unit, test-visual-regression, test-api, test-ui, test-api-ee, test-ui-ee, test-api-livechat, test-api-livechat-ee, test-api-fips, test-api-livechat-fips, test-ui-fips, test-federation-matrix]
-    if: always() && needs.test-guard.outputs.skip-tests != 'true'
+    needs: [release-versions, checks, test-unit, test-visual-regression, test-api, test-ui, test-api-ee, test-ui-ee, test-api-livechat, test-api-livechat-ee, test-api-fips, test-api-livechat-fips, test-ui-fips, test-federation-matrix]
+    if: always() && needs.release-versions.outputs.skip-tests != 'true'
     steps:
       - name: Test finish aggregation
         run: |
