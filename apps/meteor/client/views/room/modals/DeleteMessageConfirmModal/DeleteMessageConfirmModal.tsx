@@ -33,9 +33,13 @@ const DeleteMessageConfirmModal = ({
 
 			await chat.data.deleteMessage(message);
 		},
-		onSuccess: () => {
+		onSuccess: async () => {
 			if (mid === message._id) {
-				chat.currentEditingMessage.stop();
+				try {
+					await chat.currentEditingMessage.stop({ messageDeleted: true });
+				} catch (error) {
+					console.warn('Failed to clean up editing state after deleting a message', error);
+				}
 			}
 			chat.composer?.focus();
 
