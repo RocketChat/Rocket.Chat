@@ -63,7 +63,7 @@ export class LocalServiceRegistry {
 			if (typeof handler !== 'function') {
 				throw new TypeError(`${method} is not a function`);
 			}
-			return handler.apply(service.instance, args);
+			return handler.call(service.instance, ...args);
 		};
 	}
 }
