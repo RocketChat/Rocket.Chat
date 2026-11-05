@@ -71,7 +71,12 @@ export class Publication extends EventEmitter implements IPublication {
 		this.once('stop', fn);
 	}
 
-	private _stop(): void {
+	/**
+	 * Marks the publication stopped without notifying the client. Used when the
+	 * caller has already reported the stop (an explicit `stop()` sends `nosub`
+	 * first) or when the subscription failed before it was ever ready.
+	 */
+	_stop(): void {
 		if (this._stopped) {
 			return;
 		}

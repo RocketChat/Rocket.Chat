@@ -324,6 +324,22 @@ describe('Server subscriptions', () => {
 		expect(onStop).toHaveBeenCalledTimes(1);
 	});
 
+	it('deactivates a failed publication so a late continuation cannot revive it', async () => {
+		const stop = jest.spyOn(Publication.prototype, '_stop');
+		server.publish('messages', jest.fn().mockRejectedValue(new ClientSafeError(403, 'Forbidden')));
+
+		await server.subscribe(session, makeSubscription());
+
+		expect(stop).toHaveBeenCalledTimes(1);
+		const failed = stop.mock.contexts[0] as Publication;
+		expect(failed._isDeactivated()).toBe(true);
+		expect(failed._session).toBeNull();
+
+		const late = jest.fn();
+		failed.onStop(late);
+		expect(late).toHaveBeenCalledTimes(1);
+	});
+
 	it('still answers a failed subscription when one of its stop callbacks throws', async () => {
 		server.publish('messages', function (this: Publication) {
 			this.onStop(() => {
