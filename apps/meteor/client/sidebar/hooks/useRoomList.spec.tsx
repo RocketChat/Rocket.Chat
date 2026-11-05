@@ -634,3 +634,62 @@ describe('the activity filter', () => {
 		expect(group?.inactiveCount).toBe(0);
 	});
 });
+
+describe('the archived group', () => {
+	const ARCHIVED_KEY = `fuselage-localStorage-sidebarArchivedRooms-${user._id}`;
+	// A quiet channel and an unread direct message, archived.
+	const archivedRooms = [favoriteRooms[0], directRooms[0]] as unknown as SubscriptionWithRoom[];
+	const rooms = fakeRooms.map((room) =>
+		room === directRooms[0] ? { ...room, unread: 3, alert: true, userMentions: 1 } : room,
+	) as unknown as SubscriptionWithRoom[];
+
+	beforeEach(() => {
+		localStorage.setItem(ARCHIVED_KEY, JSON.stringify(archivedRooms.map((room) => room.rid)));
+	});
+
+	afterEach(() => {
+		localStorage.clear();
+	});
+
+	it('is listed last and collapsed as an empty, quiet group, taking its rooms out of the others', async () => {
+		const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
+			wrapper: getWrapperSettings({ isEnterprise: true, sidebarGroupByType: true, rooms }).build(),
+		});
+
+		await waitFor(() => expect(groupsListOf(result.current.groups)).toContain('Archived'));
+		const { groups } = result.current;
+		const archived = groups[groups.length - 1];
+
+		expect(archived.key).toBe('Archived');
+		expect(archived).toEqual(expect.objectContaining({ empty: true, collapsed: true, rooms: [], translateTitle: true }));
+		expect(archived.allRooms.map((room) => room.rid)).toEqual(archivedRooms.map((room) => room.rid));
+		expect(archived.unreadInfo.unread).toBe(0);
+		expect(groups.slice(0, -1).flatMap((group) => group.allRooms.map((room) => room.rid))).not.toContain(archivedRooms[0].rid);
+		expect(groups.find((group) => group.key === 'Unread')).toBeUndefined();
+	});
+
+	it('lists the archived rooms once toggled open, with no badge on any of them', async () => {
+		const { result } = renderHook(() => useRoomList({ collapsedGroups: ['Archived'] }), {
+			wrapper: getWrapperSettings({ isEnterprise: true, sidebarGroupByType: true, sidebarShowUnread: true, rooms }).build(),
+		});
+
+		await waitFor(() => expect(groupsListOf(result.current.groups)).toContain('Archived'));
+		const { groups } = result.current;
+		const archived = groups[groups.length - 1];
+
+		expect(archived.collapsed).toBe(false);
+		expect(archived.rooms.map((room) => room.rid)).toEqual(archivedRooms.map((room) => room.rid));
+		expect(archived.rooms.every((room) => !room.alert && room.unread === 0 && room.userMentions === 0)).toBe(true);
+		expect(groups.find((group) => group.key === 'Unread')?.rooms.map((room) => room.rid)).not.toContain(directRooms[0].rid);
+	});
+
+	it('is not listed without a license, whose sidebar keeps every room in its own group', async () => {
+		const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
+			wrapper: getWrapperSettings({ sidebarGroupByType: true, rooms }).build(),
+		});
+
+		await waitFor(() => expect(groupsListOf(result.current.groups)).toContain('Channels'));
+		expect(groupsListOf(result.current.groups)).not.toContain('Archived');
+		expect(result.current.groups.flatMap((group) => group.allRooms.map((room) => room.rid))).toContain(archivedRooms[0].rid);
+	});
+});

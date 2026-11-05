@@ -5,6 +5,8 @@ import { useMemo } from 'react';
 
 import type { MovableRoom } from './useUserSidebarCategories';
 import { useUpsellActions } from '../../../components/GenericUpsellModal/hooks';
+import ArchiveRoomsModal from '../ArchiveRoomsModal';
+import type { ArchiveRoomsModalProps } from '../ArchiveRoomsModal';
 import CreateCategoryModal from '../CreateCategoryModal';
 import CustomCategoryUpsellModal from '../CustomCategoryUpsellModal';
 import DeleteCategoryModal from '../DeleteCategoryModal';
@@ -25,6 +27,7 @@ export const useCategoryModals = () => {
 				openCreate: handleOpenUpsellModal,
 				openManage: handleOpenUpsellModal,
 				openDelete: handleOpenUpsellModal,
+				openArchiveRooms: handleOpenUpsellModal,
 			};
 		}
 
@@ -32,6 +35,7 @@ export const useCategoryModals = () => {
 			openCreate: (room?: MovableRoom) => setModal(<CreateCategoryModal room={room} onClose={onClose} />),
 			openManage: (category: ISidebarCategory) => setModal(<ManageCategoryModal category={category} onClose={onClose} />),
 			openDelete: (category: ISidebarCategory) => setModal(<DeleteCategoryModal category={category} onClose={onClose} />),
+			openArchiveRooms: (props: Omit<ArchiveRoomsModalProps, 'onClose'>) => setModal(<ArchiveRoomsModal {...props} onClose={onClose} />),
 		};
 	}, [handleManageSubscription, setModal, shouldShowUpsell]);
 };
