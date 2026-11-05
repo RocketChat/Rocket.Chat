@@ -1,5 +1,5 @@
-import type { IRocketChatRecord } from './IRocketChatRecord';
-import type { ILoginToken } from './IUser';
+import type { IRocketChatRecord } from './IRocketChatRecord.js';
+import type { ILoginToken } from './IUser.js';
 
 export const pushTokenTypes = ['gcm', 'apn'] as const;
 

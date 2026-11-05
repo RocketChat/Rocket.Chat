@@ -1,5 +1,5 @@
-import type { IAuditServerEventType } from '../IServerEvent';
-import type { ISetting } from '../ISetting';
+import type { IAuditServerEventType } from '../IServerEvent.js';
+import type { ISetting } from '../ISetting.js';
 
 export interface IServerEventSettingsChanged extends IAuditServerEventType<
 	| {

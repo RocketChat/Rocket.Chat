@@ -1,8 +1,8 @@
-import type { ICalendarEvent } from './ICalendarEvent';
-import type { IMessage } from './IMessage';
-import type { IRocketChatRecord } from './IRocketChatRecord';
-import type { IRoom } from './IRoom';
-import type { ISubscription } from './ISubscription';
+import type { ICalendarEvent } from './ICalendarEvent.js';
+import type { IMessage } from './IMessage/index.js';
+import type { IRocketChatRecord } from './IRocketChatRecord.js';
+import type { IRoom } from './IRoom.js';
+import type { ISubscription } from './ISubscription.js';
 
 export interface INotificationItemPush {
 	type: 'push';

@@ -1,4 +1,4 @@
-export { type WorkspaceLicensePayload, WorkspaceLicensePayloadSchema } from './WorkspaceLicensePayload';
+export { type WorkspaceLicensePayload, WorkspaceLicensePayloadSchema } from './WorkspaceLicensePayload.js';
 export {
 	type WorkspaceSyncPayload,
 	WorkspaceSyncPayloadSchema,
@@ -8,7 +8,7 @@ export {
 	type WorkspaceCommsResponsePayload,
 	WorkspaceCommsResponsePayloadSchema,
 	type WorkspaceInteractionResponsePayload,
-} from './WorkspaceSyncPayload';
-export type { ICloudSyncAnnouncement } from './CloudSyncAnnouncement';
-export { NpsSurveyAnnouncementSchema, type NpsSurveyAnnouncement } from './NpsSurveyAnnouncement';
-export { AnnouncementSchema, type Announcement } from './Announcement';
+} from './WorkspaceSyncPayload.js';
+export type { ICloudSyncAnnouncement } from './CloudSyncAnnouncement.js';
+export { NpsSurveyAnnouncementSchema, type NpsSurveyAnnouncement } from './NpsSurveyAnnouncement.js';
+export { AnnouncementSchema, type Announcement } from './Announcement.js';

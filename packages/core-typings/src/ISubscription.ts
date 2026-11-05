@@ -1,8 +1,8 @@
-import type { IRocketChatRecord } from './IRocketChatRecord';
-import type { IRole } from './IRole';
-import type { IRoom } from './IRoom';
-import type { IUser } from './IUser';
-import type { RoomType } from './RoomType';
+import type { IRocketChatRecord } from './IRocketChatRecord.js';
+import type { IRole } from './IRole.js';
+import type { IRoom } from './IRoom.js';
+import type { IUser } from './IUser.js';
+import type { RoomType } from './RoomType.js';
 
 type OldKey = { e2eKeyId: string; ts: Date; E2EKey: string };
 

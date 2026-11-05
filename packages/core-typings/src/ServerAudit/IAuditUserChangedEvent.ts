@@ -1,8 +1,8 @@
 import type { UpdateFilter } from 'mongodb';
 
-import type { IAuditServerEventType } from '../IServerEvent';
-import type { IUser } from '../IUser';
-import type { DeepPartial } from '../utils';
+import type { IAuditServerEventType } from '../IServerEvent.js';
+import type { IUser } from '../IUser.js';
+import type { DeepPartial } from '../utils.js';
 
 export interface IServerEventUserChanged extends IAuditServerEventType<
 	| {

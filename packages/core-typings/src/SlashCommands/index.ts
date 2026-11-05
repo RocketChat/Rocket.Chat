@@ -1,5 +1,5 @@
-import type { IMessage } from '../IMessage';
-import type { RequiredField } from '../utils';
+import type { IMessage } from '../IMessage/index.js';
+import type { RequiredField } from '../utils.js';
 
 export type SlashCommandCallbackParams<T> = {
 	command: T;

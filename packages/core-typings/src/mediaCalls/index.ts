@@ -1,3 +1,3 @@
-export type * from './IMediaCall';
-export type * from './IMediaCallNegotiation';
-export type * from './RTCSessionDescription';
+export type * from './IMediaCall.js';
+export type * from './IMediaCallNegotiation.js';
+export type * from './RTCSessionDescription.js';

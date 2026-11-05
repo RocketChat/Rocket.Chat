@@ -1,8 +1,8 @@
 import assert from 'node:assert';
 import { describe, it } from 'node:test';
 
-import type { ISubscription } from './ISubscription';
-import { isBannedSubscription, isInviteSubscription } from './ISubscription';
+import type { ISubscription } from './ISubscription.js';
+import { isBannedSubscription, isInviteSubscription } from './ISubscription.js';
 
 describe('ISubscription type guards', () => {
 	describe('isBannedSubscription', () => {

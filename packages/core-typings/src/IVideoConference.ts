@@ -1,8 +1,8 @@
-import type { IMessage } from './IMessage';
-import type { IRocketChatRecord } from './IRocketChatRecord';
-import type { IRoom } from './IRoom';
-import type { IUser } from './IUser';
-import type { AtLeast } from './utils';
+import type { IMessage } from './IMessage/index.js';
+import type { IRocketChatRecord } from './IRocketChatRecord.js';
+import type { IRoom } from './IRoom.js';
+import type { IUser } from './IUser.js';
+import type { AtLeast } from './utils.js';
 
 export type DirectCallParams = {
 	uid: IUser['_id'];

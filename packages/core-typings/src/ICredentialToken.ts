@@ -1,4 +1,4 @@
-import type { IRocketChatRecord } from './IRocketChatRecord';
+import type { IRocketChatRecord } from './IRocketChatRecord.js';
 
 export interface ICredentialToken extends IRocketChatRecord {
 	userInfo: {

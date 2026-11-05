@@ -1,7 +1,7 @@
-import type { FileProp } from './IMessage/MessageAttachment/Files/FileProp';
-import type { IRocketChatRecord } from './IRocketChatRecord';
-import type { IUser } from './IUser';
-import type { RoomType } from './RoomType';
+import type { FileProp } from './IMessage/MessageAttachment/Files/FileProp.js';
+import type { IRocketChatRecord } from './IRocketChatRecord.js';
+import type { IUser } from './IUser.js';
+import type { RoomType } from './RoomType.js';
 
 export interface IExportOperation extends IRocketChatRecord {
 	roomList?: (
