@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { backgroundColor, Box, Button, ButtonGroup, strokeColor, Text, useStyle } from '@rocket.chat/fuselage';
+import { backgroundColor, Button, ButtonGroup, Stack, strokeColor, Text, useStyle } from '@rocket.chat/fuselage';
 import { FieldLabel, Field, FieldRow, TextAreaInput } from '@rocket.chat/fuselage-forms';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { GenericModal, useInvalidateLicense } from '@rocket.chat/ui-client';
@@ -44,7 +44,6 @@ const ManageLicenseModal = ({ enterpriseLicense, onCancel }: ManageLicenseModalP
 
 	// The field turns into a drop target while a file is dragged over it
 	const licenseInputClassName = useStyle(css`
-		margin-block-end: 8px !important;
 		width: 100% !important;
 		border-style: ${isDragOver ? 'dashed' : 'solid'} !important;
 		border-color: ${strokeColor(isDragOver ? 'stroke-highlight' : 'stroke-light')} !important;
@@ -109,13 +108,13 @@ const ManageLicenseModal = ({ enterpriseLicense, onCancel }: ManageLicenseModalP
 				onConfirm={handleRemove}
 				onCancel={() => setIsConfirmingRemoval(false)}
 			>
-				<Box display='flex' flexDirection='column' gap={16}>
-					<Box>{t('Remove_license_confirmation')}</Box>
-					<Box>{t('Are_you_sure_you_want_to_continue_question')}</Box>
-					<Text fontScale='c1' color='secondary-info'>
+				<Stack gap='x16'>
+					<Text is='p'>{t('Remove_license_confirmation')}</Text>
+					<Text is='p'>{t('Are_you_sure_you_want_to_continue_question')}</Text>
+					<Text is='p' fontScale='c1' color='secondary-info'>
 						{t('Remove_license_disclaimer')}
 					</Text>
-				</Box>
+				</Stack>
 			</GenericModal>
 		);
 	}
@@ -130,55 +129,54 @@ const ManageLicenseModal = ({ enterpriseLicense, onCancel }: ManageLicenseModalP
 			onConfirm={handleApply}
 			onCancel={onCancel}
 		>
-			<Box fontScale='p2' marginBlockEnd={8}>
-				{t('Manage_license_description')}
-			</Box>
-			<Box
-				is='input'
-				ref={inputRef}
-				type='file'
-				accept='.txt,text/plain'
-				aria-label={t('Upload_license_file')}
-				display='none'
-				onChange={(event: ChangeEvent<HTMLInputElement>) => {
-					void handleFile(event.currentTarget.files?.[0]);
-					// Reset so selecting the same file again still fires onChange.
-					event.currentTarget.value = '';
-				}}
-			/>
-			{selectedFile && <LicenseFilePreview selectedFile={selectedFile} handleRemoveFile={handleRemoveFile} />}
-			<Field>
-				<FieldLabel>{t('License_key')}</FieldLabel>
-				<FieldRow>
-					<TextAreaInput
-						className={licenseInputClassName}
-						style={{ fontFamily: 'monospace' }}
-						rows={4}
-						placeholder={t('Drag_and_drop_license_placeholder')}
-						value={license}
-						onChange={handleTextChange}
-						onDrop={handleDrop}
-						onDragOver={handleDragOver}
-						onDragEnter={handleDragOver}
-						onDragLeave={handleDragLeave}
+			<Stack gap='x16'>
+				<Stack gap='x8'>
+					<Text is='p' fontScale='p2'>
+						{t('Manage_license_description')}
+					</Text>
+					<input
+						ref={inputRef}
+						type='file'
+						accept='.txt,text/plain'
+						aria-label={t('Upload_license_file')}
+						hidden
+						onChange={(event: ChangeEvent<HTMLInputElement>) => {
+							void handleFile(event.currentTarget.files?.[0]);
+							// Reset so selecting the same file again still fires onChange.
+							event.currentTarget.value = '';
+						}}
 					/>
-				</FieldRow>
-			</Field>
-			<ButtonGroup>
-				<Button icon='upload' size='small' onClick={() => inputRef.current?.click()}>
-					{t('Upload_license_file')}
-				</Button>
-				{isCurrentLicense && (
-					<Button icon='trash' size='small' variant='secondary-danger' onClick={() => setIsConfirmingRemoval(true)}>
-						{t('Remove_license')}
-					</Button>
-				)}
-			</ButtonGroup>
-			{showStatus && (
-				<Box marginBlockStart={16}>
-					<LicenseStatus isValidating={isValidating} isValid={isLicenseValid} invalidMessage={invalidMessage} />
-				</Box>
-			)}
+					{selectedFile && <LicenseFilePreview selectedFile={selectedFile} handleRemoveFile={handleRemoveFile} />}
+					<Field>
+						<FieldLabel>{t('License_key')}</FieldLabel>
+						<FieldRow>
+							<TextAreaInput
+								className={licenseInputClassName}
+								style={{ fontFamily: 'monospace' }}
+								rows={4}
+								placeholder={t('Drag_and_drop_license_placeholder')}
+								value={license}
+								onChange={handleTextChange}
+								onDrop={handleDrop}
+								onDragOver={handleDragOver}
+								onDragEnter={handleDragOver}
+								onDragLeave={handleDragLeave}
+							/>
+						</FieldRow>
+					</Field>
+					<ButtonGroup>
+						<Button icon='upload' size='small' onClick={() => inputRef.current?.click()}>
+							{t('Upload_license_file')}
+						</Button>
+						{isCurrentLicense && (
+							<Button icon='trash' size='small' variant='secondary-danger' onClick={() => setIsConfirmingRemoval(true)}>
+								{t('Remove_license')}
+							</Button>
+						)}
+					</ButtonGroup>
+				</Stack>
+				{showStatus && <LicenseStatus isValidating={isValidating} isValid={isLicenseValid} invalidMessage={invalidMessage} />}
+			</Stack>
 		</GenericModal>
 	);
 };

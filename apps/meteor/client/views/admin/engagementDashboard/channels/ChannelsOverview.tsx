@@ -1,4 +1,4 @@
-import { Box, Icon, Pagination, Skeleton, Table, TableBody, TableCell, TableHead, TableRow, Tile } from '@rocket.chat/fuselage';
+import { Icon, Pagination, Skeleton, Stack, Table, TableBody, TableCell, TableHead, TableRow } from '@rocket.chat/fuselage';
 import { format } from 'date-fns/format';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -8,7 +8,8 @@ import DownloadDataButton from '../../../../components/dashboards/DownloadDataBu
 import PeriodSelector from '../../../../components/dashboards/PeriodSelector';
 import { usePeriodSelectorState } from '../../../../components/dashboards/usePeriodSelectorState';
 import Growth from '../../../../components/dataView/Growth';
-import EngagementDashboardCardFilter from '../EngagementDashboardCardFilter';
+import EngagementDashboardCardFilter from '../layout/EngagementDashboardCardFilter';
+import NoDataTile from '../layout/NoDataTile';
 
 const ChannelsOverview = () => {
 	const [period, periodSelectorProps] = usePeriodSelectorState('last 7 days', 'last 30 days', 'last 90 days');
@@ -58,77 +59,69 @@ const ChannelsOverview = () => {
 					}
 				/>
 			</EngagementDashboardCardFilter>
-			<div>
-				{channels && !channels.length && (
-					<Tile>
-						<Box fontScale='p1' color='hint' textAlign='center'>
-							{t('No_data_found')}
-						</Box>
-					</Tile>
-				)}
-				{(!channels || channels.length) && (
-					<Table>
-						<TableHead>
-							<TableRow>
-								<TableCell>#</TableCell>
-								<TableCell>{t('Channel')}</TableCell>
-								<TableCell>{t('Created')}</TableCell>
-								<TableCell>{t('Last_active')}</TableCell>
-								<TableCell>{t('Messages_sent')}</TableCell>
+			{channels && !channels.length && <NoDataTile>{t('No_data_found')}</NoDataTile>}
+			{(!channels || channels.length) && (
+				<Table>
+					<TableHead>
+						<TableRow>
+							<TableCell>#</TableCell>
+							<TableCell>{t('Channel')}</TableCell>
+							<TableCell>{t('Created')}</TableCell>
+							<TableCell>{t('Last_active')}</TableCell>
+							<TableCell>{t('Messages_sent')}</TableCell>
+						</TableRow>
+					</TableHead>
+					<TableBody>
+						{channels?.map(({ t, name, createdAt, updatedAt, messagesCount, messagesVariation }, i) => (
+							<TableRow key={i}>
+								<TableCell>{i + 1}.</TableCell>
+								<TableCell>
+									<Stack direction='row' align='center' gap='x4'>
+										{(t === 'd' && <Icon name='at' />) || (t === 'p' && <Icon name='lock' />) || (t === 'c' && <Icon name='hashtag' />)}
+										{name}
+									</Stack>
+								</TableCell>
+								<TableCell>{format(new Date(createdAt ?? new Date()), 'P')}</TableCell>
+								<TableCell>{format(new Date(updatedAt ?? new Date()), 'P')}</TableCell>
+								<TableCell>
+									{messagesCount} <Growth>{messagesVariation}</Growth>
+								</TableCell>
 							</TableRow>
-						</TableHead>
-						<TableBody>
-							{channels?.map(({ t, name, createdAt, updatedAt, messagesCount, messagesVariation }, i) => (
+						))}
+						{!channels &&
+							Array.from({ length: 5 }, (_, i) => (
 								<TableRow key={i}>
-									<TableCell>{i + 1}.</TableCell>
 									<TableCell>
-										<Box display='flex' alignItems='center' gap={4}>
-											{(t === 'd' && <Icon name='at' />) || (t === 'p' && <Icon name='lock' />) || (t === 'c' && <Icon name='hashtag' />)}
-											{name}
-										</Box>
+										<Skeleton width='100%' />
 									</TableCell>
-									<TableCell>{format(new Date(createdAt ?? new Date()), 'P')}</TableCell>
-									<TableCell>{format(new Date(updatedAt ?? new Date()), 'P')}</TableCell>
 									<TableCell>
-										{messagesCount} <Growth>{messagesVariation}</Growth>
+										<Skeleton width='100%' />
+									</TableCell>
+									<TableCell>
+										<Skeleton width='100%' />
+									</TableCell>
+									<TableCell>
+										<Skeleton width='100%' />
+									</TableCell>
+									<TableCell>
+										<Skeleton width='100%' />
 									</TableCell>
 								</TableRow>
 							))}
-							{!channels &&
-								Array.from({ length: 5 }, (_, i) => (
-									<TableRow key={i}>
-										<TableCell>
-											<Skeleton width='100%' />
-										</TableCell>
-										<TableCell>
-											<Skeleton width='100%' />
-										</TableCell>
-										<TableCell>
-											<Skeleton width='100%' />
-										</TableCell>
-										<TableCell>
-											<Skeleton width='100%' />
-										</TableCell>
-										<TableCell>
-											<Skeleton width='100%' />
-										</TableCell>
-									</TableRow>
-								))}
-						</TableBody>
-					</Table>
-				)}
-				<Pagination
-					current={current}
-					itemsPerPage={itemsPerPage}
-					itemsPerPageLabel={(): string => t('Items_per_page:')}
-					showingResultsLabel={({ count, current, itemsPerPage }): string =>
-						t('Showing_results_of', { from: current + 1, to: Math.min(current + itemsPerPage, count), total: count })
-					}
-					count={data?.total || 0}
-					onSetItemsPerPage={setItemsPerPage}
-					onSetCurrent={setCurrent}
-				/>
-			</div>
+					</TableBody>
+				</Table>
+			)}
+			<Pagination
+				current={current}
+				itemsPerPage={itemsPerPage}
+				itemsPerPageLabel={(): string => t('Items_per_page:')}
+				showingResultsLabel={({ count, current, itemsPerPage }): string =>
+					t('Showing_results_of', { from: current + 1, to: Math.min(current + itemsPerPage, count), total: count })
+				}
+				count={data?.total || 0}
+				onSetItemsPerPage={setItemsPerPage}
+				onSetCurrent={setCurrent}
+			/>
 		</>
 	);
 };
