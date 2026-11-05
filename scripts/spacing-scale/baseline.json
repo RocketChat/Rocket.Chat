@@ -46,8 +46,6 @@
 	"apps/meteor/client/components/PlanTag.tsx": 1,
 	"apps/meteor/client/components/RoomAutoCompleteMultiple/RoomAutoCompleteMultiple.tsx": 1,
 	"apps/meteor/client/components/Sidebar/Header.tsx": 2,
-	"apps/meteor/client/components/Sidebar/SidebarGenericItem.tsx": 1,
-	"apps/meteor/client/components/Sidebar/SidebarNavigationItem.tsx": 3,
 	"apps/meteor/client/components/Skeleton.tsx": 5,
 	"apps/meteor/client/components/TextCopy.tsx": 2,
 	"apps/meteor/client/components/TwoFactorModal/TwoFactorEmailModal.tsx": 1,
