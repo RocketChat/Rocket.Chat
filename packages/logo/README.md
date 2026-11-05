@@ -16,7 +16,7 @@ This package renders the horizontal Rocket.Chat logo (symbol and wordmark) as an
 npm install @rocket.chat/logo react react-dom
 ```
 
-`react` and `react-dom` are peer dependencies. The components use `useId`, so React 18 or later is required. The package ships both CommonJS and ES modules, with TypeScript declarations.
+`react` and `react-dom` are peer dependencies. The components use `useId`, so React 18 or later is required. The package ships ES modules only, with TypeScript declarations.
 
 ## Usage
 
@@ -101,7 +101,7 @@ yarn workspace @rocket.chat/logo typecheck
 yarn workspace @rocket.chat/logo lint
 ```
 
-`build` compiles the ES and CommonJS outputs, then renders the default logo to `dist/logo.svg` and `dist/logo.png`.
+`build` compiles the ES modules, then renders the default logo to `dist/logo.svg` and `dist/logo.png`.
 
 ## License
 
