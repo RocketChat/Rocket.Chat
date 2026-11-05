@@ -37,6 +37,7 @@ Read the doc that matches the task instead of scanning `docs/` wholesale.
   - [layout.md](docs/frontend/layout.md) — screens compose named layout containers, never raw `Box` or styling props on Fuselage components; where a new container lives and when it gets promoted
   - [building-components.md](docs/frontend/building-components.md) — application vs Fuselage components, the props a component accepts, layout containers, adding a variation, Storybook-first
   - [list-keyboard-navigation.md](docs/frontend/list-keyboard-navigation.md) — the three keyboard models for lists (combobox, menu, composite list), the implementation of each, and how to test them
+  - [message-list.md](docs/frontend/message-list.md) — composing and feeding `MessageList`, the rules that keep its scrolling correct, adding a capability to a message context, and how to test it
   - [dom-hooks.md](docs/frontend/dom-hooks.md) — hooks that attach listeners or observers return a callback ref instead of taking a `RefObject`
   - [i18n.md](docs/frontend/i18n.md) — client side only: `useTranslation`, `Trans`, runtime keys, escaping (shared rules in [docs/i18n.md](docs/i18n.md))
   - [adding-icons.md](docs/frontend/adding-icons.md) — adding an icon to `@rocket.chat/icons`: SVG cleanup, shape-based naming, directional icons, glyph mapping, changeset
@@ -72,6 +73,7 @@ Read the doc that matches the task instead of scanning `docs/` wholesale.
 - [ee/packages/xmpp-server/docs/](ee/packages/xmpp-server/docs/README.md) — the XMPP server is developed spec-first; its specs, ADRs, plans and compliance matrix live in the package, not here; `/xmpp-intent`, `/xmpp-spec` and `/xmpp-plan` drive its authoring stages from any directory
 - [docs/features/](docs/features/) — per-feature notes
   - [uikit/](docs/features/uikit/README.md) — UiKit blocks, surfaces, rendering, interactions; field reference and per-surface support matrix
+  - [message-list/](docs/features/message-list/README.md) — the message list: what it does, its rows, anchors and paging, the data contract; [message-components.md](docs/features/message-list/message-components.md) for the message variants and their capability contexts
   - [web-client-hosting.md](docs/features/web-client-hosting.md) — how the server serves the Vite-built client (manifest, entry injection, CDN, cache) and how to serve the client from another host
 - [docs/proposals/](docs/proposals/) — design proposals, not yet implemented
   - [serve-client-without-meteor-webapp.md](docs/proposals/serve-client-without-meteor-webapp.md) — serving the client without Meteor's `web.browser` program
