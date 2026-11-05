@@ -4,7 +4,9 @@ import { getHeapStatistics } from 'node:v8';
 
 import { WebApp } from 'meteor/webapp';
 
+import { nodeLoggerMiddleware } from '../api/v1/middlewares/logger';
 import { db } from '../database/utils';
+import { HttpLogger } from '../lib/logger/http';
 import { SystemLogger } from '../lib/logger/system';
 
 export function pingMongo() {
@@ -18,6 +20,8 @@ function setDefaultHeaders(res: ServerResponse) {
 	res.setHeader('Expires', '0');
 	res.setHeader('Content-Type', 'application/json');
 }
+
+WebApp.rawHandlers.use(['/health', '/livez', '/readyz'], nodeLoggerMiddleware(HttpLogger));
 
 /**
  * DEPRECATED Liveness Probe (`/health`)

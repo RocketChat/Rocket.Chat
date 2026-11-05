@@ -6,6 +6,7 @@ import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
 import { Sessions, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
+import { validateForbiddenErrorResponse } from '@rocket.chat/rest-typings';
 import type { JoinPathPattern, Method } from '@rocket.chat/rest-typings';
 import { wrapExceptions } from '@rocket.chat/tools';
 import type { ValidateFunction } from 'ajv';
@@ -56,6 +57,21 @@ import { getDefaultUserFields } from '../lib/utils/functions/getDefaultUserField
 import { settings } from '../settings';
 
 const logger = new Logger('API');
+
+// error codes that mean the caller was refused, answered with 403
+export const refusalErrorCodes = new Set([
+	'unauthorized',
+	'error-unauthorized',
+	'not-authorized',
+	'not_authorized',
+	'error-not-authorized',
+	'error-not-allowed',
+	'not-allowed',
+	'no-permission',
+	'error-not-authorized-federation',
+	'forbidden',
+	'error-forbidden',
+]);
 
 // We have some breaking changes planned to the API.
 // To avoid conflicts or missing something during the period we are adopting a 'feature flag approach'
@@ -384,19 +400,13 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 		};
 	}
 
-	public forbidden(): ForbiddenResult<string>;
-
-	public forbidden<T>(msg: T): ForbiddenResult<T>;
-
-	public forbidden<T>(msg?: T): ForbiddenResult<T> {
+	public forbidden(message = 'You are not allowed to do this'): ForbiddenResult {
 		return {
 			statusCode: 403,
 			body: {
 				success: false,
-				// TODO: MAJOR remove 'unauthorized' in favor of 'forbidden'
-				// because of reasons beyond my control we were used to send `unauthorized` to 403 cases, to avoid a breaking change we just adapted here
-				// but thanks to the semver check tests should break as soon we bump to a new version
-				error: msg || (applyBreakingChanges ? 'forbidden' : 'unauthorized'),
+				error: message,
+				errorType: 'error-forbidden',
 			},
 		};
 	}
@@ -597,7 +607,9 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 				} & Omit<TOptions, 'response'>
 		  >
 	> {
-		this.addRoute([subpath], { tags: [], ...options, typed: true }, { [method.toLowerCase()]: { action } } as any);
+		// any thrown refusal answers 403, so every typed route can answer it
+		const response = options.response && { ...options.response, 403: validateForbiddenErrorResponse };
+		this.addRoute([subpath], { tags: [], ...options, response, typed: true }, { [method.toLowerCase()]: { action } } as any);
 		return this;
 	}
 
@@ -828,19 +840,20 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 							}
 						} catch (e: any) {
 							result = ((e: any) => {
-								switch (e.error) {
+								// plain `Error`s carry the code in `message`
+								const code = typeof e === 'string' ? e : (e.error ?? e.message);
+								const message: string = typeof e === 'string' ? e : e.message;
+								if (refusalErrorCodes.has(code)) {
+									// a ClientSafeError's message ends in a `[code]` suffix; its reason is the readable part
+									return api.forbidden(isClientSafeError(e) ? e.reason : message);
+								}
+								switch (code) {
 									case 'error-too-many-requests':
-										return api.tooManyRequests(typeof e === 'string' ? e : e.message);
+										return api.tooManyRequests(message);
 									case 'error-unauthenticated':
-										return api.unauthorized(typeof e === 'string' ? e : e.message);
-									case 'unauthorized':
-									case 'error-unauthorized':
-									case 'error-not-authorized':
-									case 'forbidden':
-									case 'error-forbidden':
-										return api.forbidden(typeof e === 'string' ? e : e.message);
+										return api.unauthorized(message);
 									default:
-										return api.failure(typeof e === 'string' ? e : e.message, e.error, process.env.TEST_MODE ? e.stack : undefined, e);
+										return api.failure(message, e.error, process.env.TEST_MODE ? e.stack : undefined, e);
 								}
 							})(e);
 						} finally {

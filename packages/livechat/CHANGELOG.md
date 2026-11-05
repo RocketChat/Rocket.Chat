@@ -1,5 +1,32 @@
 # @rocket.chat/livechat Change Log
 
+## 3.0.0-rc.0
+
+### Minor Changes
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds `accessibility_label` to UiKit buttons: screen readers announce it instead of the button text, for buttons whose visible text is ambiguous on its own.
+
+### Patch Changes
+
+- ([#42976](https://github.com/RocketChat/Rocket.Chat/pull/42976)) Stops re-rendering every component that talks to the server whenever the connection status changes, including on each reconnection attempt
+
+- ([#42953](https://github.com/RocketChat/Rocket.Chat/pull/42953)) Fixes the Livechat client ignoring a visitor token set through `credentials.token`, `onQueuePositionChange` subscribing without the visitor token, and visitor endpoints throwing synchronously instead of rejecting when there is no token
+
+- ([#40697](https://github.com/RocketChat/Rocket.Chat/pull/40697) by [@aleksandernsilva](https://github.com/aleksandernsilva)) Adds support for registering multiple phone numbers with labels per user. **Breaking:** the `phone` user field is replaced by the `phones` array (`{ number, label? }[]`); existing numbers are migrated automatically on upgrade.
+
+- ([#42560](https://github.com/RocketChat/Rocket.Chat/pull/42560)) Fixes UiKit buttons, icon buttons and overflow options opening `javascript:`, `data:` and `vbscript:` URLs sent by apps. Those URLs are now ignored; every other URL, including app deep links and relative URLs, still opens. Overflow options in the web client, which never opened their URL, now open it in a new tab without access to the opener. `@rocket.chat/ui-kit` exports the check as `isSafeUrl`.
+
+- <details><summary>Updated dependencies [dd082311778ac467d36a72589bc675f1ab2b2cbe, ec381cf4a88002601fd2b83b7eed734a2e8165b6, 25fd477c2c38f71e9a16b7e2896d39efd43bfc61, ec381cf4a88002601fd2b83b7eed734a2e8165b6, 909b2e6aa0a360075c5a91eb52b955824909423a, 909b2e6aa0a360075c5a91eb52b955824909423a, 909b2e6aa0a360075c5a91eb52b955824909423a, c9aa43916295df79a799e53b8e09c58011991a97, c9aa43916295df79a799e53b8e09c58011991a97, 9e401e55fbd71b95dc7c4b273024219ce2564856, e2f037838f6226f4894faa28613cc86f6d6f8e2d, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, 9dfedc72439d12f5d2985b9dd54daccd97e11e74, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, 9dfedc72439d12f5d2985b9dd54daccd97e11e74, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, bb586dc723b3dccdf725d28f530b28cfa857020a, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, 23698f9d08d34d3c145f116b5303b542e8342f9e, 9dfedc72439d12f5d2985b9dd54daccd97e11e74, e1070288debfecc5e49e118c3dc535f95936281f, 9dfedc72439d12f5d2985b9dd54daccd97e11e74, 8fddbd4ebf2e4ac77a716b22a676077054506b7b]:</summary>
+  - @rocket.chat/emitter@0.33.1-rc.0
+  - @rocket.chat/fuselage-tokens@0.36.0-rc.0
+  - @rocket.chat/logo@0.33.3-rc.0
+  - @rocket.chat/message-parser@0.33.0-rc.0
+  - @rocket.chat/gazzodown@36.0.0-rc.0
+  - @rocket.chat/ui-kit@2.0.0-rc.0
+  - @rocket.chat/random@1.2.4
+
+  </details>
+
 ## 2.1.8
 
 ### Patch Changes

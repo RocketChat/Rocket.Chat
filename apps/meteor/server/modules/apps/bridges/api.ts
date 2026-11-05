@@ -3,6 +3,7 @@ import { ApiBridge } from '@rocket.chat/apps/dist/server/bridges/ApiBridge';
 import type { AppApi } from '@rocket.chat/apps/dist/server/managers/AppApi';
 import type { RequestMethod } from '@rocket.chat/apps-engine/definition/accessors';
 import type { IApiRequest, IApiEndpoint, IApi } from '@rocket.chat/apps-engine/definition/api';
+import { Logger } from '@rocket.chat/logger';
 import type { Response, Request, IRouter, RequestHandler } from 'express';
 import express from 'express';
 import { Meteor } from 'meteor/meteor';
@@ -10,7 +11,17 @@ import { WebApp } from 'meteor/webapp';
 
 import { apiServer } from './router';
 import { authenticationMiddleware } from '../../../api/v1/middlewares/authentication';
+import { nodeLoggerMiddleware } from '../../../api/v1/middlewares/logger';
 
+const logger = new Logger('APPS');
+
+// the hash of a private endpoint is the secret that guards it
+const censorPrivateHash = (url: string) => url.replace(/(\/api\/apps\/private\/[^/]+\/)[^/?#]+/i, '$1*Redacted*');
+
+(WebApp.rawConnectHandlers as unknown as ReturnType<typeof express>).use(
+	['/api/apps/private', '/api/apps/public'],
+	nodeLoggerMiddleware(logger, { censor: censorPrivateHash }),
+);
 WebApp.rawConnectHandlers.use(apiServer);
 
 interface IRequestWithPrivateHash extends Request {

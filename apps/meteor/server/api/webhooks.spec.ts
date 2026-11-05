@@ -117,6 +117,8 @@ const LEGACY_HOOK_URL = '/hooks/integration-id/legacy-user-id/the-token';
 jest.requireActual('./api');
 jest.requireActual('./webhooks');
 
+const { ClientSafeError } = jest.requireActual<typeof import('@rocket.chat/core-services')>('@rocket.chat/core-services');
+
 const app = express().use(jest.mocked(WebApp.rawConnectHandlers.use).mock.calls[0][0] as unknown as express.RequestHandler);
 
 describe('Webhooks API', () => {
@@ -310,7 +312,7 @@ describe('Webhooks API', () => {
 
 			const response = await request(app).post(HOOK_URL).send({ text: 'hello' });
 
-			expect(response.statusCode).toBe(400);
+			expect(response.statusCode).toBe(403);
 			expect(response.body.error).toBe('error-user-lacks-message-impersonate-permission');
 			expect(mockProcessWebhookMessage).not.toHaveBeenCalled();
 		});
@@ -346,7 +348,7 @@ describe('Webhooks API', () => {
 		it('refuses a `channel` override when overriding is disabled', async () => {
 			const response = await request(app).post(HOOK_URL).send({ text: 'hello', channel: '#other' });
 
-			expect(response.statusCode).toBe(400);
+			expect(response.statusCode).toBe(403);
 			expect(response.body.error).toBe('overriding destination channel is disabled for this integration');
 			expect(mockProcessWebhookMessage).not.toHaveBeenCalled();
 		});
@@ -354,7 +356,7 @@ describe('Webhooks API', () => {
 		it('refuses a `roomId` override when overriding is disabled', async () => {
 			const response = await request(app).post(HOOK_URL).send({ text: 'hello', roomId: 'room-id' });
 
-			expect(response.statusCode).toBe(400);
+			expect(response.statusCode).toBe(403);
 			expect(response.body.error).toBe('overriding destination channel is disabled for this integration');
 			expect(mockProcessWebhookMessage).not.toHaveBeenCalled();
 		});
@@ -377,7 +379,7 @@ describe('Webhooks API', () => {
 
 			const response = await request(app).post(HOOK_URL).send({ text: 'hello' });
 
-			expect(response.statusCode).toBe(400);
+			expect(response.statusCode).toBe(500);
 			expect(response.body.error).toBe('unknown-error');
 		});
 
@@ -386,8 +388,47 @@ describe('Webhooks API', () => {
 
 			const response = await request(app).post(HOOK_URL).send({ text: 'hello' });
 
-			expect(response.statusCode).toBe(400);
+			expect(response.statusCode).toBe(404);
 			expect(response.body.error).toBe('error-invalid-room');
+		});
+
+		it.each(['error-not-allowed', 'error-not-authorized', 'not-authorized', 'not_authorized', 'no-permission', 'error-forbidden'])(
+			'answers 403 when message processing rejects with the refusal code %s',
+			async (code) => {
+				mockProcessWebhookMessage.mockRejectedValue(Object.assign(new Error('boom'), { error: code }));
+
+				const response = await request(app).post(HOOK_URL).send({ text: 'hello' });
+
+				expect(response.statusCode).toBe(403);
+				expect(response.body).toEqual({ success: false, error: code, errorType: 'error-forbidden' });
+			},
+		);
+
+		it('answers a refusal thrown as a ClientSafeError with its reason, without the code suffix', async () => {
+			mockProcessWebhookMessage.mockRejectedValue(new ClientSafeError('error-not-allowed', 'Not allowed'));
+
+			const response = await request(app).post(HOOK_URL).send({ text: 'hello' });
+
+			expect(response.statusCode).toBe(403);
+			expect(response.body).toEqual({ success: false, error: 'Not allowed', errorType: 'error-forbidden' });
+		});
+
+		it('answers a refusal thrown as a ClientSafeError without a reason with the default message', async () => {
+			mockProcessWebhookMessage.mockRejectedValue(new ClientSafeError('not_authorized'));
+
+			const response = await request(app).post(HOOK_URL).send({ text: 'hello' });
+
+			expect(response.statusCode).toBe(403);
+			expect(response.body).toEqual({ success: false, error: 'You are not allowed to do this', errorType: 'error-forbidden' });
+		});
+
+		it('answers 400 with the code when message processing rejects with a ClientSafeError that is not a refusal', async () => {
+			mockProcessWebhookMessage.mockRejectedValue(new ClientSafeError('invalid-channel'));
+
+			const response = await request(app).post(HOOK_URL).send({ text: 'hello' });
+
+			expect(response.statusCode).toBe(400);
+			expect(response.body.error).toBe('invalid-channel');
 		});
 
 		it('surfaces the message when message processing rejects without an error code', async () => {
@@ -513,7 +554,7 @@ describe('Webhooks API', () => {
 
 			const response = await request(app).post(HOOK_URL).send({ text: 'hello' });
 
-			expect(response.statusCode).toBe(400);
+			expect(response.statusCode).toBe(500);
 			expect(response.body.error).toBe('error-running-script');
 			expect(mockProcessWebhookMessage).not.toHaveBeenCalled();
 		});
@@ -523,7 +564,7 @@ describe('Webhooks API', () => {
 
 			const response = await request(app).post(HOOK_URL).send({ text: 'hello' });
 
-			expect(response.statusCode).toBe(400);
+			expect(response.statusCode).toBe(500);
 			expect(response.body.error).toBe('error-running-script');
 			expect(mockProcessWebhookMessage).not.toHaveBeenCalled();
 		});
@@ -720,7 +761,8 @@ describe('Webhooks API', () => {
 				.post('/hooks/remove/integration-id/legacy-user-id/the-token')
 				.send({ target_url: 'https://example.com/missing' });
 
-			expect(JSON.stringify(response.body)).toContain('integration-not-found');
+			expect(response.statusCode).toBe(404);
+			expect(response.body.error).toBe('integration-not-found');
 			expect(mockDeleteOutgoingIntegration).not.toHaveBeenCalled();
 		});
 	});

@@ -18,13 +18,14 @@ import { useMemo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ABACQueryKeys } from '../../../../lib/queryKeys';
-import DateRangePicker from '../../moderation/helpers/DateRangePicker';
+import DateRangePicker, { type DateRangePreset } from '../../moderation/helpers/DateRangePicker';
 
 const LogsPage = () => {
 	const { t } = useTranslation();
 
 	const [startDate, setStartDate] = useState<string>(new Date().toISOString().split('T')[0]);
 	const [endDate, setEndDate] = useState<string>(new Date().toISOString().split('T')[0]);
+	const [preset, setPreset] = useState<DateRangePreset | null>('today');
 
 	const formatDate = useFormatDateAndTime();
 
@@ -163,16 +164,24 @@ const LogsPage = () => {
 						type='date'
 						placeholder={t('Start_date')}
 						value={startDate}
-						onChange={(e) => setStartDate((e.target as HTMLInputElement).value)}
+						onChange={(e) => {
+							setStartDate((e.target as HTMLInputElement).value);
+							setPreset(null);
+						}}
 					/>
 					<InputBox
 						type='date'
 						placeholder={t('End_date')}
 						value={endDate}
-						onChange={(e) => setEndDate((e.target as HTMLInputElement).value)}
+						onChange={(e) => {
+							setEndDate((e.target as HTMLInputElement).value);
+							setPreset(null);
+						}}
 					/>
 					<DateRangePicker
 						defaultSelectedKey='today'
+						value={preset}
+						onPresetChange={setPreset}
 						onChange={(range) => {
 							setStartDate(range.start);
 							setEndDate(range.end);

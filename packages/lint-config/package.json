@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/lint-config",
-	"version": "0.0.0",
+	"version": "0.1.0-rc.0",
 	"description": "Rocket.Chat's JS/TS oxlint config",
 	"repository": {
 		"type": "git",

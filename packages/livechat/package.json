@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/livechat",
-	"version": "2.1.8",
+	"version": "3.0.0-rc.0",
 	"homepage": "https://rocket.chat",
 	"repository": {
 		"type": "git",
@@ -109,8 +109,8 @@
 		"webpack-dev-server": "~5.2.6"
 	},
 	"peerDependencies": {
-		"@rocket.chat/fuselage-tokens": "*",
-		"@rocket.chat/logo": "*"
+		"@rocket.chat/fuselage-tokens": "0.36.0-rc.0",
+		"@rocket.chat/logo": "0.33.3-rc.0"
 	},
 	"volta": {
 		"extends": "../../package.json"
