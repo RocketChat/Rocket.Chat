@@ -20,7 +20,7 @@ import type { XMPPServerConfiguration } from './configuration';
 import { normalizeDomain } from '../jid/normalize';
 import type { Logger as CoreLogger } from '../logger';
 import { isXMPPSettingKey, readXMPPServerConfiguration } from './configuration';
-import { domainOfJid, toBareJid } from './helpers/jid';
+import { domainOfJid, localJidOf, localUsernameOf, toBareJid } from './helpers/jid';
 import { deriveInboundEventId, deriveInboundMessageId } from './helpers/messageId';
 import type { InboundEventKey, InboundMessageKey } from './helpers/messageId';
 import { mapPresenceToStatus, mapStatusToPresence } from './helpers/presence';
@@ -50,8 +50,6 @@ function toCoreLogger(logger: Logger): CoreLogger {
 const HOSTED_ROOM_PROJECTION = { _id: 1, t: 1, u: 1, topic: 1, xmppFederation: 1 } as const;
 
 const coreRoomIdOf = (mucJid: string): string => mucJid.split('@')[0];
-
-const isRemoteUsername = (username: string): boolean => username.includes('@');
 
 /** A message from the wire, in whichever kind of room it arrived. */
 type InboundMessage = InboundEventKey & {
@@ -259,7 +257,7 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 			case 'dm':
 				if (federation.with) {
 					await this.server.sendChatMessage({
-						from: `${user.username}@${this.server.domain}`,
+						from: localJidOf(user.username, this.server.domain),
 						to: federation.with,
 						body: message.msg,
 						...stanza,
@@ -276,7 +274,7 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 					// The author may have no session in the room yet
 					await this.joinRemoteMUC(user._id, room._id);
 					await this.server.mucSendToRemoteRoom({
-						localJid: `${user.username}@${this.server.domain}`,
+						localJid: localJidOf(user.username, this.server.domain),
 						roomJid: federation.muc,
 						body: message.msg,
 						...stanza,
@@ -306,7 +304,7 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 		this.server.mucInvite({
 			roomId: coreRoomIdOf(room.xmppFederation.muc),
 			inviteeJid: toBareJid(jid),
-			inviterJid: `${inviter.username}@${this.server.domain}`,
+			inviterJid: localJidOf(inviter.username, this.server.domain),
 		});
 		this.logger.debug({ msg: 'Sent MUC invite', room: room.xmppFederation.muc, to: jid });
 	}
@@ -326,7 +324,7 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 		this.syncHostedRoomWithCore(room);
 		this.server.mucAddLocalOccupant({
 			roomId: coreRoomIdOf(room.xmppFederation.muc),
-			localJid: `${user.username}@${this.server.domain}`,
+			localJid: localJidOf(user.username, this.server.domain),
 			nick: user.username,
 			role: room.u?._id === user._id ? 'moderator' : 'participant',
 		});
@@ -393,18 +391,22 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 			return;
 		}
 		const roomId = coreRoomIdOf(room.xmppFederation.muc);
-		const subscriptions = await Subscriptions.findByRoomId(room._id, { projection: { 'u._id': 1, 'u.username': 1 } }).toArray();
+		const subscriptions = await Subscriptions.findByRoomId(room._id, { projection: { 'u._id': 1 } }).toArray();
+		const members = await Users.findByIds(
+			subscriptions.map(({ u }) => u._id),
+			{ projection: { username: 1, xmppFederation: 1 } },
+		).toArray();
 
-		for (const { u } of subscriptions) {
+		for (const member of members) {
 			// Remote occupants join by themselves
-			if (!u.username || isRemoteUsername(u.username)) {
+			if (!member.username || isUserXMPPFederated(member)) {
 				continue;
 			}
 			this.server.mucAddLocalOccupant({
 				roomId,
-				localJid: `${u.username}@${this.server.domain}`,
-				nick: u.username,
-				role: room.u?._id === u._id ? 'moderator' : 'participant',
+				localJid: localJidOf(member.username, this.server.domain),
+				nick: member.username,
+				role: room.u?._id === member._id ? 'moderator' : 'participant',
 			});
 		}
 	}
@@ -421,7 +423,7 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 			return;
 		}
 		await this.server.mucJoinRemoteRoom({
-			localJid: `${user.username}@${this.server.domain}`,
+			localJid: localJidOf(user.username, this.server.domain),
 			roomJid: room.xmppFederation.muc,
 			nick: user.username,
 			// History catches up on messages missed while offline; decode-only mode has nowhere to store them
@@ -441,7 +443,7 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 			return;
 		}
 		await this.server.mucLeaveRemoteRoom({
-			localJid: `${user.username}@${this.server.domain}`,
+			localJid: localJidOf(user.username, this.server.domain),
 			roomJid: room.xmppFederation.muc,
 		});
 	}
@@ -474,7 +476,7 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 
 	/** Stores a remote user's direct message in their DM with the addressee. */
 	private async onIncomingDirectMessage(event: IncomingChatMessage): Promise<void> {
-		const localUsername = toBareJid(event.to).split('@')[0];
+		const localUsername = localUsernameOf(event.to);
 		const localUser = await Users.findOneByUsername(localUsername, { projection: { _id: 1, username: 1 } });
 		if (!localUser) {
 			this.logger.debug({ msg: 'XMPP message for unknown local user', to: event.to });
@@ -544,7 +546,7 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 			return { allow: false, reason: 'forbidden' };
 		}
 
-		const user = await Users.findOneByUsername(toBareJid(params.occupantJid), { projection: { _id: 1 } });
+		const user = await this.findXMPPUser(params.occupantJid);
 		const subscription = user && (await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, { projection: { status: 1 } }));
 		if (subscription && isBannedSubscription(subscription)) {
 			this.logger.warn({ msg: 'MUC join refused: banned from this room', muc: mucJid, from: params.occupantJid });
@@ -641,12 +643,18 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 
 	private async onHostedOccupantLeft(mucJid: string, occupantJid: string): Promise<void> {
 		const room = await Rooms.findOneByXMPPMucJid(mucJid);
-		const user = room && (await Users.findOneByUsername(toBareJid(occupantJid)));
+		const user = room && (await this.findXMPPUser(occupantJid));
 		if (!room || !user) {
 			return;
 		}
 		// performUserRemoval runs no callbacks, so the removal does not bounce back as a kick
 		await Room.performUserRemoval(room, user);
+	}
+
+	/** The record of the remote XMPP user a JID names, never that of a local user holding the same username. */
+	private async findXMPPUser(jid: string): Promise<IUser | null> {
+		const user = await Users.findOneByUsername(toBareJid(jid));
+		return user && isUserXMPPFederated(user) ? user : null;
 	}
 
 	/** Persists a message received in a hosted MUC room (author addressed by real JID). */
@@ -797,7 +805,7 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 		if (!this.server) {
 			return;
 		}
-		const localUsername = toBareJid(event.toLocalJid).split('@')[0];
+		const localUsername = localUsernameOf(event.toLocalJid);
 		const localUser = await Users.findOneByUsername(localUsername, { projection: { _id: 1, username: 1 } });
 		if (!localUser) {
 			return;
@@ -830,7 +838,7 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 		if (!this.server || !user.username) {
 			return;
 		}
-		const from = `${user.username}@${this.server.domain}`;
+		const from = localJidOf(user.username, this.server.domain);
 		const { availability, show } = mapStatusToPresence(user.status);
 
 		const rooms = await Rooms.findXMPPDirectMessagesByUserId(user._id, { projection: { xmppFederation: 1 } }).toArray();
@@ -869,7 +877,7 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 		if (!this.server || !this.presenceEnabled) {
 			return;
 		}
-		const localUsername = toBareJid(event.to).split('@')[0];
+		const localUsername = localUsernameOf(event.to);
 		const remoteJid = toBareJid(event.from);
 
 		const localUser = await Users.findOneByUsername(localUsername, { projection: { _id: 1 } });

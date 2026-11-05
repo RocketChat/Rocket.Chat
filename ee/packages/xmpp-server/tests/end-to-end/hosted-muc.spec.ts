@@ -20,6 +20,7 @@ import {
 	leaveRoom,
 	listMemberUsernames,
 	messagesWithText,
+	overrideSetting,
 	sendMessage,
 	setRoomTopic,
 	setSetting,
@@ -27,6 +28,7 @@ import {
 	teardown,
 	updateMessage,
 	waitForMessage,
+	WIDENED_USERNAMES,
 } from './helper/rocketchat';
 import type { LocalUser, RocketChat, RoomRef } from './helper/rocketchat';
 import { NS } from './helper/stanza';
@@ -219,6 +221,19 @@ describe('XMPP federation: rooms hosted by Rocket.Chat', () => {
 		it('refuses a join from an XMPP user who was not invited (R4)', async () => {
 			await assert.rejects(
 				carol.joinRoom(muc),
+				(error: unknown) => error instanceof StanzaError && error.condition === 'registration-required',
+			);
+		});
+
+		it('refuses a join from an XMPP user named like a local member (R4, addressing R11)', async () => {
+			const mallory = await registerXmppUser(rc, 'mallory');
+			await overrideSetting(rc, 'UTF8_User_Names_Validation', WIDENED_USERNAMES);
+			const lookalike = await createLocalUser(rc, 'lookalike', mallory.bareJid, { email: mallory.bareJid, name: 'Look Alike' });
+			await inviteToRoom(owner, room, lookalike.username);
+			await waitForMember(owner, room, lookalike.username);
+
+			await assert.rejects(
+				mallory.joinRoom(muc),
 				(error: unknown) => error instanceof StanzaError && error.condition === 'registration-required',
 			);
 		});
