@@ -39,6 +39,7 @@ jobs:
           node-version: ${{ inputs.node-version }}
           cache-modules: true
           install: true
+          cache-mongodb-memory-server: true
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - uses: rharkor/caching-for-turbo@2238fae6eb9a9936f92356f54cb3660200d105e7 # v2.5.1

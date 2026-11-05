@@ -57,9 +57,11 @@ jobs:
     name: ⚙️ Variables Setup
     runs-on: ubuntu-24.04-arm
     permissions:
+      checks: read
       contents: read
       pull-requests: read
     outputs:
+      skip-tests: ${{ steps.check.outputs.skip-tests }}
       release: ${{ steps.by-tag.outputs.release }}
       latest-release: ${{ steps.latest.outputs.latest-release }}
       gh-docker-tag: ${{ steps.docker.outputs.gh-docker-tag }}
@@ -210,14 +212,6 @@ jobs:
             echo "actions-changed=true" >> "$GITHUB_OUTPUT"
           fi
 
-  test-guard:
-    name: ⚙️ Test Guard
-    runs-on: ubuntu-24.04-arm
-    permissions:
-      checks: read
-    outputs:
-      skip-tests: ${{ steps.check.outputs.skip-tests }}
-    steps:
       # Commits only reach develop through the merge queue, where the full test
       # suite already ran on this exact SHA — skip re-running it on the push event.
       # Direct pushes (admin/revert) have no successful "Tests Done" check, so they
@@ -394,8 +388,51 @@ jobs:
           source-hash: ${{ needs.release-versions.outputs.packages-build-cache-key }}-${{ needs.release-versions.outputs.meteor-rc-cache-key }}
           type: ${{ matrix.type }}
 
+  # the microservice images need only the packages build, so they start without waiting for Meteor
+  build-gh-docker-services:
+    name: 🚢 Build Docker (${{ matrix.arch }}, services, ${{ matrix.type }})
+    needs: [packages-build, release-versions]
+    runs-on: ubuntu-24.04${{ matrix.arch == 'arm64' && '-arm' || '' }}
+
+    env:
+      DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}-${{ matrix.arch }}
+      LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [arm64, amd64]
+        type:
+          - ${{ (github.event_name != 'release' && github.ref != 'refs/heads/develop') && 'coverage' || 'production' }}
+          - fips
+        exclude:
+          - arch: arm64
+            type: fips
+          # drop the whole fips leg when there is nothing downstream to consume it (fork PRs)
+          - type: ${{ needs.release-versions.outputs.fips-skip == 'all' && 'fips' || '' }}
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: ./.github/actions/restore-packages
+
+      # we only build and publish the actual docker images if not a PR from a fork
+      - name: Images
+        uses: ./.github/actions/build-docker
+        if: github.actor != 'dependabot[bot]'
+        with:
+          service: authorization-service queue-worker-service ddp-streamer-service xmpp-server-service account-service presence-service omnichannel-transcript-service
+          name: services
+          CR_USER: ${{ secrets.CR_USER }}
+          CR_PAT: ${{ secrets.CR_PAT }}
+          DOCKER_USER: ${{ secrets.DOCKER_USER }}
+          DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
+          arch: ${{ matrix.arch }}
+          type: ${{ matrix.type }}
+          publish-image: ${{ github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop' }}
+
   build-gh-docker:
-    name: 🚢 Build Docker
+    name: 🚢 Build Docker (${{ matrix.arch }}, rocketchat, ${{ matrix.type }})
     needs: [build, release-versions]
     runs-on: ubuntu-24.04${{ matrix.arch == 'arm64' && '-arm' || '' }}
 
@@ -407,12 +444,6 @@ jobs:
       fail-fast: false
       matrix:
         arch: [arm64, amd64]
-        service:
-          [
-            [authorization-service, queue-worker-service, ddp-streamer-service, xmpp-server-service],
-            [account-service, presence-service, omnichannel-transcript-service],
-            [rocketchat],
-          ]
         type:
           - ${{ (github.event_name != 'release' && github.ref != 'refs/heads/develop') && 'coverage' || 'production' }}
           - fips
@@ -423,85 +454,33 @@ jobs:
           - type: ${{ needs.release-versions.outputs.fips-skip == 'all' && 'fips' || '' }}
         include:
           - arch: amd64
-            service: [rocketchat]
             type: coverage
           - arch: arm64
-            service: [rocketchat]
             type: coverage
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - uses: ./.github/actions/restore-packages
-
       # we only build and publish the actual docker images if not a PR from a fork
-      - name: Image ${{ matrix.service[0] }}
+      - name: Image rocketchat
         uses: ./.github/actions/build-docker
         if: github.actor != 'dependabot[bot]'
         env:
           # add suffix for the extra images with coverage if building for production
           DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && (github.event_name == 'release' || github.ref == 'refs/heads/develop') && '-cov' || '' }}
         with:
+          service: rocketchat
           CR_USER: ${{ secrets.CR_USER }}
           CR_PAT: ${{ secrets.CR_PAT }}
           DOCKER_USER: ${{ secrets.DOCKER_USER }}
           DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
           arch: ${{ matrix.arch }}
-          service: ${{ matrix.service[0] }}
           type: ${{ matrix.type }}
           publish-image: ${{ github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop' }}
-
-      - name: Image ${{ matrix.service[1] || '"skipped"' }}
-        uses: ./.github/actions/build-docker
-        if: matrix.service[1] && github.actor != 'dependabot[bot]'
-        env:
-          DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && '-cov' || '' }}
-        with:
-          CR_USER: ${{ secrets.CR_USER }}
-          CR_PAT: ${{ secrets.CR_PAT }}
-          DOCKER_USER: ${{ secrets.DOCKER_USER }}
-          DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
-          arch: ${{ matrix.arch }}
-          service: ${{ matrix.service[1] }}
-          type: ${{ matrix.type }}
-          publish-image: ${{ github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop' }}
-          setup-docker: false
-
-      - name: Image ${{ matrix.service[2] || '"skipped"' }}
-        uses: ./.github/actions/build-docker
-        if: matrix.service[2] && github.actor != 'dependabot[bot]'
-        env:
-          DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && '-cov' || '' }}
-        with:
-          CR_USER: ${{ secrets.CR_USER }}
-          CR_PAT: ${{ secrets.CR_PAT }}
-          DOCKER_USER: ${{ secrets.DOCKER_USER }}
-          DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
-          arch: ${{ matrix.arch }}
-          service: ${{ matrix.service[2] }}
-          type: ${{ matrix.type }}
-          publish-image: ${{ github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop' }}
-          setup-docker: false
-
-      - name: Image ${{ matrix.service[3] || '"skipped"' }}
-        uses: ./.github/actions/build-docker
-        if: matrix.service[3] && github.actor != 'dependabot[bot]'
-        env:
-          DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && '-cov' || '' }}
-        with:
-          CR_USER: ${{ secrets.CR_USER }}
-          CR_PAT: ${{ secrets.CR_PAT }}
-          DOCKER_USER: ${{ secrets.DOCKER_USER }}
-          DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
-          arch: ${{ matrix.arch }}
-          service: ${{ matrix.service[3] }}
-          type: ${{ matrix.type }}
-          publish-image: ${{ github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop' }}
-          setup-docker: false
 
   build-gh-docker-publish:
     name: 🚢 Publish Docker Images (ghcr.io)
-    needs: [build-gh-docker, release-versions]
+    needs: [build-gh-docker, build-gh-docker-services, release-versions]
     runs-on: ubuntu-24.04-arm
 
     env:
@@ -627,8 +606,8 @@ jobs:
   # gating `checks` also skips every e2e test job (they all `need` it);
   # test-storybook and test-unit don't, so they carry the same gate below
   checks:
-    needs: [release-versions, packages-build, test-guard]
-    if: needs.test-guard.outputs.skip-tests != 'true'
+    needs: [release-versions, packages-build]
+    if: needs.release-versions.outputs.skip-tests != 'true'
 
     name: 🔎 Code Check
     uses: ./.github/workflows/ci-code-check.yml
@@ -637,8 +616,8 @@ jobs:
 
   test-storybook:
     name: 🔨 Test Storybook
-    needs: [packages-build, release-versions, test-guard]
-    if: needs.test-guard.outputs.skip-tests != 'true'
+    needs: [packages-build, release-versions]
+    if: needs.release-versions.outputs.skip-tests != 'true'
 
     uses: ./.github/workflows/ci-test-storybook.yml
     with:
@@ -648,8 +627,8 @@ jobs:
 
   test-visual-regression:
     name: 🔨 Test Visual Regression
-    needs: [packages-build, release-versions, test-guard]
-    if: needs.test-guard.outputs.skip-tests != 'true'
+    needs: [packages-build, release-versions]
+    if: needs.release-versions.outputs.skip-tests != 'true'
 
     uses: ./.github/workflows/ci-test-visual-regression.yml
     with:
@@ -657,8 +636,8 @@ jobs:
 
   test-unit:
     name: 🔨 Test Unit
-    needs: [packages-build, release-versions, test-guard]
-    if: needs.test-guard.outputs.skip-tests != 'true'
+    needs: [packages-build, release-versions]
+    if: needs.release-versions.outputs.skip-tests != 'true'
 
     uses: ./.github/workflows/ci-test-unit.yml
     with:
@@ -1015,8 +994,8 @@ jobs:
   tests-done:
     name: ✅ Tests Done
     runs-on: ubuntu-24.04-arm
-    needs: [test-guard, checks, test-unit, test-visual-regression, test-api, test-ui, test-api-ee, test-ui-ee, test-api-livechat, test-api-livechat-ee, test-api-fips, test-api-livechat-fips, test-ui-fips, test-federation-matrix]
-    if: always() && needs.test-guard.outputs.skip-tests != 'true'
+    needs: [release-versions, checks, test-unit, test-visual-regression, test-api, test-ui, test-api-ee, test-ui-ee, test-api-livechat, test-api-livechat-ee, test-api-fips, test-api-livechat-fips, test-ui-fips, test-federation-matrix]
+    if: always() && needs.release-versions.outputs.skip-tests != 'true'
     steps:
       - name: Test finish aggregation
         run: |
