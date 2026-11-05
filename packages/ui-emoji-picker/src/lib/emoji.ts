@@ -51,7 +51,7 @@ export const getEmojisBySearchTerm = (
 	const searchRegExp = new RegExp(escapeRegExp(searchTerm.replace(/:/g, '')), 'i');
 
 	for (let current in registry.list) {
-		if (!registry.list.hasOwnProperty(current) || !searchRegExp.test(current)) {
+		if (!Object.hasOwn(registry.list, current) || !searchRegExp.test(current)) {
 			continue;
 		}
 
@@ -66,7 +66,7 @@ export const getEmojisBySearchTerm = (
 		let tone = '';
 		current = current.replace(/:/g, '');
 
-		if (actualTone > 0 && registry.packages[emojiPackage].toneList.hasOwnProperty(name ?? current)) {
+		if (actualTone > 0 && Object.hasOwn(registry.packages[emojiPackage].toneList, name ?? current)) {
 			tone = `_tone${actualTone}`;
 		}
 
