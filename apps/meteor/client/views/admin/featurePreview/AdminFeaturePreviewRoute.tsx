@@ -7,7 +7,7 @@ import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import EditableSettingsProvider from '../settings/EditableSettingsProvider';
 
 const AdminFeaturePreviewRoute = () => {
-	const canViewFeaturesPreview = usePermission('manage-cloud');
+	const canViewFeaturesPreview = usePermission('manage-feature-preview');
 
 	if (!canViewFeaturesPreview) {
 		return <NotAuthorizedPage />;
