@@ -1,8 +1,8 @@
-import { useSetupWizardContext } from './contexts/SetupWizardContext';
-import AdminInfoStep from './steps/AdminInfoStep';
-import CloudAccountConfirmation from './steps/CloudAccountConfirmation';
-import OrganizationInfoStep from './steps/OrganizationInfoStep';
-import RegisterServerStep from './steps/RegisterServerStep';
+import { useSetupWizardContext } from './contexts/SetupWizardContext.js';
+import AdminInfoStep from './steps/AdminInfoStep.js';
+import CloudAccountConfirmation from './steps/CloudAccountConfirmation.js';
+import OrganizationInfoStep from './steps/OrganizationInfoStep.js';
+import RegisterServerStep from './steps/RegisterServerStep.js';
 
 const SetupWizardPage = () => {
 	const { currentStep } = useSetupWizardContext();
