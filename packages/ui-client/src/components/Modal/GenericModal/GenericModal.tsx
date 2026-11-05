@@ -18,9 +18,9 @@ import type { ReactElement, ReactNode, ComponentPropsWithoutRef } from 'react';
 import { useId, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { RequiredModalProps } from './withDoNotAskAgain';
-import { withDoNotAskAgain } from './withDoNotAskAgain';
-import { modalStore } from '../../../providers/ModalProvider/ModalStore';
+import type { RequiredModalProps } from './withDoNotAskAgain.js';
+import { withDoNotAskAgain } from './withDoNotAskAgain.js';
+import { modalStore } from '../../../providers/ModalProvider/ModalStore.js';
 
 type VariantType = 'danger' | 'secondary-danger' | 'warning' | 'info' | 'success' | 'upsell';
 

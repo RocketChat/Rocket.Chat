@@ -1,7 +1,7 @@
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
-import { parseSetting, useFeaturePreviewList } from './useFeaturePreviewList';
+import { parseSetting, useFeaturePreviewList } from './useFeaturePreviewList.js';
 
 export const useDefaultSettingFeaturePreviewList = () => {
 	const featurePreviewSettingJSON = useSetting('Accounts_Default_User_Preferences_featuresPreview', '[]');

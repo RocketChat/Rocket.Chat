@@ -2,7 +2,7 @@ import { Box, Popover } from '@rocket.chat/fuselage';
 import type { ComponentProps, ReactNode } from 'react';
 import { Suspense } from 'react';
 
-import type { HoverCardController } from './useHoverCard';
+import type { HoverCardController } from './useHoverCard.js';
 
 export type HoverCardPopoverProps<TKey> = {
 	hoverCard: HoverCardController<TKey>;

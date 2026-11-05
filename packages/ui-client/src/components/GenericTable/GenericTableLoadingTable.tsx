@@ -1,4 +1,4 @@
-import { GenericTableLoadingRow } from './GenericTableLoadingRow';
+import { GenericTableLoadingRow } from './GenericTableLoadingRow.js';
 
 export type GenericTableLoadingTableProps = { headerCells: number };
 

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
-import type { ErrorReportSource } from '../lib/errorReport';
-import { buildErrorReport } from '../lib/errorReport';
+import type { ErrorReportSource } from '../lib/errorReport.js';
+import { buildErrorReport } from '../lib/errorReport.js';
 
 const COPIED_FEEDBACK_MS = 2000;
 

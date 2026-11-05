@@ -2,9 +2,9 @@ import { IconButton, MenuItem, MenuSection, Menu } from '@rocket.chat/fuselage';
 import { cloneElement, type ComponentProps, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { GenericMenuItemProps } from './GenericMenuItem';
-import GenericMenuItem from './GenericMenuItem';
-import { useHandleMenuAction } from './hooks/useHandleMenuAction';
+import type { GenericMenuItemProps } from './GenericMenuItem.js';
+import GenericMenuItem from './GenericMenuItem.js';
+import { useHandleMenuAction } from './hooks/useHandleMenuAction.js';
 
 type GenericMenuCommonProps = {
 	title: string;

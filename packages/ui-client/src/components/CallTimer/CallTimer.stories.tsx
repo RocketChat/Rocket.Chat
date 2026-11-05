@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import CallTimer from './CallTimer';
+import CallTimer from './CallTimer.js';
 
 /**
  * How long the call has been going, in the call window's header.

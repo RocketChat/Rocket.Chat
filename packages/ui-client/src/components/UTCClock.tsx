@@ -1,6 +1,6 @@
 import { memo } from 'react';
 
-import { useUTCClock } from '../hooks/useUTCClock';
+import { useUTCClock } from '../hooks/useUTCClock.js';
 
 export type UTCClockProps = {
 	utcOffset: number;

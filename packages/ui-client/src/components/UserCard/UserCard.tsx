@@ -5,7 +5,7 @@ import type { ReactNode } from 'react';
 import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useEmbeddedLayout } from '../../hooks/useEmbeddedLayout';
+import { useEmbeddedLayout } from '../../hooks/useEmbeddedLayout.js';
 import {
 	HoverCard,
 	HoverCardActions,
@@ -14,11 +14,11 @@ import {
 	HoverCardInfoItem,
 	HoverCardInfoList,
 	HoverCardSection,
-} from '../HoverCard';
-import { MarkdownTextContext } from '../MarkdownTextContext';
-import * as Status from '../UserStatus';
-import UserCardRoles from './UserCardRoles';
-import UserCardUsername from './UserCardUsername';
+} from '../HoverCard/index.js';
+import { MarkdownTextContext } from '../MarkdownTextContext.js';
+import UserCardRoles from './UserCardRoles.js';
+import UserCardUsername from './UserCardUsername.js';
+import * as Status from '../UserStatus/index.js';
 
 const linkButtonStyle = css`
 	padding: 0;

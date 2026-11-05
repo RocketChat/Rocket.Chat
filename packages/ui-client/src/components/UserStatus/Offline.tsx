@@ -1,5 +1,5 @@
-import type { UserStatusProps } from './UserStatus';
-import UserStatus from './UserStatus';
+import type { UserStatusProps } from './UserStatus.js';
+import UserStatus from './UserStatus.js';
 
 export type OfflineProps = Omit<UserStatusProps, 'status'>;
 

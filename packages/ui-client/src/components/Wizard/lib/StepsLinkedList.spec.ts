@@ -1,5 +1,5 @@
-import type { StepMetadata } from './StepNode';
-import StepsLinkedList from './StepsLinkedList';
+import type { StepMetadata } from './StepNode.js';
+import StepsLinkedList from './StepsLinkedList.js';
 
 describe('StepsLinkedList', () => {
 	const steps: StepMetadata[] = [
