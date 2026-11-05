@@ -25,7 +25,7 @@ import { getErrorMessage } from '../../../../lib/errorHandling';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import { useGoToThread } from '../../hooks/useGoToThread';
 
-type ThreadType = 'all' | 'following' | 'unread';
+type ThreadType = 'all' | 'following' | 'unread' | 'drafts';
 
 // TODO: Refactor this component to isolate the data from the visual
 const ThreadList = () => {
@@ -59,6 +59,7 @@ const ThreadList = () => {
 			['all', t('All')],
 			['following', t('Following')],
 			['unread', t('Unread')],
+			['drafts', t('Drafts')],
 		],
 		[t],
 	);
@@ -79,6 +80,9 @@ const ThreadList = () => {
 	const subscribed = !!subscription;
 	const uid = useUserId();
 	const tunread = subscription?.tunread?.sort().join(',');
+	const drafts = Object.keys(subscription?.threadDrafts ?? {})
+		.sort()
+		.join(',');
 	const text = useDebouncedValue(searchText, 400);
 	const options = useDebouncedValue(
 		useMemo(() => {
@@ -103,8 +107,15 @@ const ThreadList = () => {
 						type,
 						tunread: tunread?.split(','),
 					};
+				case 'drafts':
+					return {
+						rid,
+						text,
+						type,
+						drafts: drafts ? drafts.split(',') : [],
+					};
 			}
-		}, [rid, subscribed, text, tunread, type, uid]),
+		}, [rid, subscribed, text, tunread, drafts, type, uid]),
 		300,
 	);
 
