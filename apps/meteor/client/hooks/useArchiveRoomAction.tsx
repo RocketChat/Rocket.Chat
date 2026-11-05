@@ -1,5 +1,6 @@
 import type { RoomType } from '@rocket.chat/core-typings';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import type { RocketchatI18nKeys } from '@rocket.chat/i18n';
 import { GenericModalDoNotAskAgain, useDontAskAgain } from '@rocket.chat/ui-client';
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
@@ -18,8 +19,7 @@ const ARCHIVE_DESCRIPTION_BY_ROOM_TYPE = {
 	p: 'Archive_Group_Description',
 	d: 'Archive_Direct_Description',
 	l: 'Archive_Livechat_Description',
-	v: 'Archive_Livechat_Description',
-} as const;
+} as const satisfies Record<RoomType, RocketchatI18nKeys>;
 
 /**
  * Archives one room out of the sidebar, after telling what that means, unless the user asked not to be told

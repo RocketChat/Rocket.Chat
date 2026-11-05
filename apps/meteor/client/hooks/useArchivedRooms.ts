@@ -3,11 +3,10 @@ import { useUserId } from '@rocket.chat/ui-contexts';
 import { useCallback, useMemo } from 'react';
 
 /**
- * The rooms the user archived out of the sidebar. An archived room stays archived until the user unarchives
- * it: opening it, a new message or a mention do not bring it back, and it carries no badge meanwhile.
- *
- * Kept in `localStorage`, per user, as a list of room ids, so the behaviour can be tried before the state is
- * moved to the subscription (where the final implementation keeps it).
+ * PREVIEW ONLY. The rooms the user archived out of the sidebar, kept per user in this browser's `localStorage`
+ * instead of the subscription, because the UI preview runs against a workspace whose server has no
+ * `subscriptions.setUserArchived` yet. Same surface as the real hook, so nothing else differs from the feature
+ * branch; this file is replaced by the feature's own once the test workspace has the server side.
  */
 export const useArchivedRooms = () => {
 	const userId = useUserId();
@@ -18,12 +17,18 @@ export const useArchivedRooms = () => {
 	const isArchivedRoom = useCallback((rid: string): boolean => archivedRoomIds.has(rid), [archivedRoomIds]);
 
 	const archiveRooms = useCallback(
-		(rids: string[]) => setArchivedRoomIdList((current) => [...new Set([...current, ...rids])]),
+		async (rids: string[]): Promise<{ changed: number; failed: number }> => {
+			setArchivedRoomIdList((current) => [...new Set([...current, ...rids])]);
+			return { changed: rids.length, failed: 0 };
+		},
 		[setArchivedRoomIdList],
 	);
 
 	const unarchiveRoom = useCallback(
-		(rid: string) => setArchivedRoomIdList((current) => current.filter((id) => id !== rid)),
+		async (rid: string): Promise<{ changed: number; failed: number }> => {
+			setArchivedRoomIdList((current) => current.filter((id) => id !== rid));
+			return { changed: 1, failed: 0 };
+		},
 		[setArchivedRoomIdList],
 	);
 

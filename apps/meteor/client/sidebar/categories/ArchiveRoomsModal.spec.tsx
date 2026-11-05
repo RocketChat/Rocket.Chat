@@ -25,6 +25,7 @@ const rooms = [
 	room({ rid: 'undated', t: 'c' }),
 ];
 
+// PREVIEW ONLY: the archived rooms live in localStorage here, see useArchivedRooms.
 const ARCHIVED_KEY = 'fuselage-localStorage-sidebarArchivedRooms-anonymous';
 const archivedRoomIds = () => JSON.parse(localStorage.getItem(ARCHIVED_KEY) ?? '[]');
 
@@ -95,7 +96,7 @@ describe('archiving the inactive rooms', () => {
 		expect(screen.getByRole('status')).toHaveTextContent('1 room to archive');
 	});
 
-	it('takes any date, and has nothing to archive before the oldest room', async () => {
+	it('takes any past date, and has nothing to archive before the oldest room or in the future', async () => {
 		renderModal();
 
 		await pickPreset('Custom date');
@@ -105,9 +106,9 @@ describe('archiving the inactive rooms', () => {
 		fireEvent.change(screen.getByLabelText('Inactive since'), { target: { value: '2020-01-01' } });
 		expect(screen.getByRole('status')).toHaveTextContent('No rooms to archive');
 
-		// A day no room has been active after takes every dated read room but the open one.
+		// A day still to come is no threshold at all.
 		fireEvent.change(screen.getByLabelText('Inactive since'), { target: { value: '2099-01-01' } });
-		expect(screen.getByRole('status')).toHaveTextContent('4 rooms to archive');
-		expect(screen.getByRole('button', { name: 'Archive' })).toBeEnabled();
+		expect(screen.getByRole('status')).toHaveTextContent('No rooms to archive');
+		expect(screen.getByRole('button', { name: 'Archive' })).toBeDisabled();
 	});
 });

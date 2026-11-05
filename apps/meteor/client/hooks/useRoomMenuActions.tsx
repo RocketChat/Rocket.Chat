@@ -9,9 +9,7 @@ import { useLeaveRoomAction } from './menuActions/useLeaveRoom';
 import { useToggleFavoriteAction } from './menuActions/useToggleFavoriteAction';
 import { useToggleNotificationAction } from './menuActions/useToggleNotificationsAction';
 import { useToggleReadAction } from './menuActions/useToggleReadAction';
-import { useArchiveRoomAction } from './useArchiveRoomAction';
-import { useArchivedRooms } from './useArchivedRooms';
-import { useUnarchiveRoomAction } from './useUnarchiveRoomAction';
+import { useRoomArchiveMenuItem } from './useRoomArchiveMenuItem';
 import { useOmnichannelPrioritiesMenu } from '../views/omnichannel/hooks/useOmnichannelPrioritiesMenu';
 
 export type RoomMenuSection = {
@@ -45,6 +43,7 @@ export const useRoomMenuActions = ({
 	const canLeaveChannel = usePermission('leave-c');
 	const canLeavePrivate = usePermission('leave-p');
 	const canFavorite = useSetting('Favorite_Rooms') as boolean;
+	const hasSubscription = Boolean(subscription);
 	const isNotificationEnabled = !subscription?.disableNotifications;
 
 	const canLeave = ((): boolean => {
@@ -57,10 +56,7 @@ export const useRoomMenuActions = ({
 		return !((cl != null && !cl) || ['d', 'l'].includes(type));
 	})();
 
-	const handleArchive = useArchiveRoomAction({ rid, type, name });
-	const handleUnarchive = useUnarchiveRoomAction({ rid });
-	// An archived room is offered the way back instead of the archive again.
-	const isArchived = useArchivedRooms().isArchivedRoom(rid);
+	const archiveItem = useRoomArchiveMenuItem({ rid, type, name, redirect: false });
 	const handleToggleFavorite = useToggleFavoriteAction({ rid, isFavorite });
 	const handleToggleRead = useToggleReadAction({ rid, isUnread, subscription });
 	const handleLeave = useLeaveRoomAction({ rid, type, name, roomOpen });
@@ -73,20 +69,7 @@ export const useRoomMenuActions = ({
 		() =>
 			!hideDefaultOptions
 				? ([
-						!isOmnichannelRoom &&
-							(isArchived
-								? {
-										id: 'unarchiveRoom',
-										icon: 'undo',
-										content: t('Unarchive'),
-										onClick: handleUnarchive,
-									}
-								: {
-										id: 'hideRoom',
-										icon: 'archive',
-										content: t('Archive'),
-										onClick: handleArchive,
-									}),
+						!isOmnichannelRoom && archiveItem,
 						{
 							id: 'toggleRead',
 							icon: 'flag',
@@ -110,9 +93,7 @@ export const useRoomMenuActions = ({
 		[
 			hideDefaultOptions,
 			t,
-			handleArchive,
-			handleUnarchive,
-			isArchived,
+			archiveItem,
 			isUnread,
 			handleToggleRead,
 			canFavorite,
@@ -127,7 +108,7 @@ export const useRoomMenuActions = ({
 	// The room's notifications as a switch, on while they are sent; an omnichannel room has no such preference.
 	const notificationsMenuOptions = useMemo<GenericMenuItemProps[]>(
 		() =>
-			!hideDefaultOptions && !isOmnichannelRoom && subscription
+			!hideDefaultOptions && !isOmnichannelRoom && hasSubscription
 				? [
 						{
 							id: 'notifications',
@@ -138,7 +119,7 @@ export const useRoomMenuActions = ({
 						},
 					]
 				: [],
-		[hideDefaultOptions, isOmnichannelRoom, subscription, isNotificationEnabled, t, handleToggleNotification],
+		[hideDefaultOptions, isOmnichannelRoom, hasSubscription, isNotificationEnabled, t, handleToggleNotification],
 	);
 
 	if (isOmnichannelRoom && prioritiesMenu.length > 0) {

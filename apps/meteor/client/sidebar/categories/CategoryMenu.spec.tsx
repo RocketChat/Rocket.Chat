@@ -68,8 +68,8 @@ const appRoot = mockAppRoot()
 beforeEach(() => {
 	localStorage.clear();
 	mutate.mockClear();
-	openArchiveRooms.mockClear();
 	readMessages.mockClear();
+	openArchiveRooms.mockClear();
 	jest.mocked(usePersistCategoriesMutation).mockReturnValue({ mutate } as any);
 	jest.mocked(useUserSidebarCategories).mockReturnValue({
 		rawCategories: [{ _id: 'Channels', name: 'Channels', default: true, activityFilterHours: 24 * 7 }],
@@ -185,7 +185,7 @@ describe('the Mark read item', () => {
 	] as SubscriptionWithRoom[];
 
 	it('is disabled while the group has nothing unread', async () => {
-		renderMenu();
+		renderMenu({ rooms: [rooms[0]] });
 		await userEvent.click(await screen.findByRole('button', { name: 'Options' }));
 
 		const item = await screen.findByRole('menuitemcheckbox', { name: 'Mark read' });

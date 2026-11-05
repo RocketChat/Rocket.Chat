@@ -636,11 +636,15 @@ describe('the activity filter', () => {
 });
 
 describe('the archived group', () => {
+	// A quiet channel and an unread direct message, archived by the user.
+	// PREVIEW ONLY: the archived rooms live in localStorage here, see useArchivedRooms.
 	const ARCHIVED_KEY = `fuselage-localStorage-sidebarArchivedRooms-${user._id}`;
-	// A quiet channel and an unread direct message, archived.
-	const archivedRooms = [favoriteRooms[0], directRooms[0]] as unknown as SubscriptionWithRoom[];
-	const rooms = fakeRooms.map((room) =>
-		room === directRooms[0] ? { ...room, unread: 3, alert: true, userMentions: 1 } : room,
+	const archivedRooms = [
+		favoriteRooms[0],
+		{ ...directRooms[0], unread: 3, alert: true, userMentions: 1 },
+	] as unknown as SubscriptionWithRoom[];
+	const rooms = fakeRooms.map(
+		(room) => archivedRooms.find((archived) => archived.rid === room.rid) ?? room,
 	) as unknown as SubscriptionWithRoom[];
 
 	beforeEach(() => {
@@ -679,7 +683,8 @@ describe('the archived group', () => {
 
 		expect(archived.collapsed).toBe(false);
 		expect(archived.rooms.map((room) => room.rid)).toEqual(archivedRooms.map((room) => room.rid));
-		expect(archived.rooms.every((room) => !room.alert && room.unread === 0 && room.userMentions === 0)).toBe(true);
+		expect(archived.rooms.every((room) => room.hideUnreadStatus && room.hideMentionStatus)).toBe(true);
+		expect(archived.rooms[1].unread).toBe(3);
 		expect(groups.find((group) => group.key === 'Unread')?.rooms.map((room) => room.rid)).not.toContain(directRooms[0].rid);
 	});
 

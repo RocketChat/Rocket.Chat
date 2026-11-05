@@ -1,7 +1,7 @@
 import type { RoomType } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { QueryClient } from '@tanstack/react-query';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
 
@@ -37,12 +37,11 @@ const buildBase = () =>
 	mockAppRoot()
 		.withTranslations('en', 'core', {
 			Archive: 'Archive',
+			Notifications: 'Notifications',
+			Hide: 'Hide',
 			Archive_room: 'Archive room',
 			Archive_Channel_Description: '“{{roomName}}” moves to the Archived group.',
 			Unarchive: 'Unarchive',
-			Notifications: 'Notifications',
-			Turn_OFF: 'Turn off',
-			Turn_ON: 'Turn on',
 			Mark_unread: 'Mark Unread',
 			Favorite: 'Favorite',
 			Favorites: 'Favorites',
@@ -71,12 +70,12 @@ const enterpriseRenderOptions = {
 	wrapper: buildBase().withJohnDoe().withQueryClient(buildEnterpriseQueryClient()).build(),
 };
 
-it('should display Archive, Mark Unread, Leave and Favorite toggle for regular rooms without enterprise', async () => {
+it('should display Hide, Mark Unread, Leave and Favorite toggle for regular rooms without enterprise', async () => {
 	render(<RoomMenu {...defaultProps} />, renderOptions);
 
 	await userEvent.click(screen.queryByRole('button') as HTMLElement);
 
-	expect(await screen.findByRole('menuitem', { name: 'Archive' })).toBeInTheDocument();
+	expect(await screen.findByRole('menuitem', { name: 'Hide' })).toBeInTheDocument();
 	expect(await screen.findByRole('menuitem', { name: 'Mark Unread' })).toBeInTheDocument();
 	expect(await screen.findByRole('menuitem', { name: 'Leave' })).toBeInTheDocument();
 	expect(await screen.findByRole('menuitem', { name: 'Favorite' })).toBeInTheDocument();
@@ -152,18 +151,24 @@ it('should display only mark unread and favorite for omnichannel rooms', async (
 });
 
 describe('the archive', () => {
-	const ARCHIVED_KEY = 'fuselage-localStorage-sidebarArchivedRooms-anonymous';
+	// PREVIEW ONLY: the archived rooms live in localStorage here, see useArchivedRooms.
+	const ARCHIVED_KEY = 'fuselage-localStorage-sidebarArchivedRooms-john.doe';
 
 	beforeEach(() => {
 		localStorage.clear();
 	});
 
-	it('archives the room from its menu once the user confirms what that means', async () => {
+	const renderWith = () =>
 		render(<RoomMenu {...defaultProps} name='general' />, {
 			wrapper: buildBase()
+				.withJohnDoe()
+				.withQueryClient(buildEnterpriseQueryClient())
 				.withSubscription(createFakeSubscription({ rid: 'roomId', t: 'c' }))
 				.build(),
 		});
+
+	it('archives the room from its menu once the user confirms what that means', async () => {
+		renderWith();
 
 		await userEvent.click(screen.getByRole('button', { name: 'Options' }));
 		await userEvent.click(await screen.findByRole('menuitem', { name: 'Archive' }));
@@ -174,23 +179,19 @@ describe('the archive', () => {
 
 		await userEvent.click(screen.getByRole('button', { name: 'Archive' }));
 
-		expect(JSON.parse(localStorage.getItem(ARCHIVED_KEY) ?? '[]')).toEqual(['roomId']);
+		await waitFor(() => expect(JSON.parse(localStorage.getItem(ARCHIVED_KEY) ?? '[]')).toEqual(['roomId']));
 	});
 
 	it('offers to unarchive an archived room instead', async () => {
 		localStorage.setItem(ARCHIVED_KEY, JSON.stringify(['other', 'roomId']));
-		render(<RoomMenu {...defaultProps} />, {
-			wrapper: buildBase()
-				.withSubscription(createFakeSubscription({ rid: 'roomId', t: 'c' }))
-				.build(),
-		});
+		renderWith();
 
 		await userEvent.click(screen.getByRole('button', { name: 'Options' }));
 
 		expect(screen.queryByRole('menuitem', { name: 'Archive' })).not.toBeInTheDocument();
 		await userEvent.click(await screen.findByRole('menuitem', { name: 'Unarchive' }));
 
-		expect(JSON.parse(localStorage.getItem(ARCHIVED_KEY) ?? '[]')).toEqual(['other']);
+		await waitFor(() => expect(JSON.parse(localStorage.getItem(ARCHIVED_KEY) ?? '[]')).toEqual(['other']));
 	});
 });
 

@@ -279,14 +279,20 @@ activity (`getLastActivity`, as the filter judges it) is compared with the thres
 a room with no date are never taken; unread rooms only when "Include unread rooms" is checked. A live line says
 how many rooms match and the confirm button is disabled at zero.
 
-Archiving is the user's own state, not the subscription's: `useArchivedRooms` keeps the archived room ids per
-user — **in `localStorage` for now (`sidebarArchivedRooms-{userId}`), to be moved to the subscription in the
-final implementation**. An archived room is in no other group, not even Unread; it stays archived whatever
+Archiving is the user's own flag on the subscription, `userArchived`, set through `POST /v1/subscriptions.setUserArchived`
+(`useArchivedRooms` reads it from the subscriptions store and writes it with one request per two hundred rooms,
+with the sidebar updated ahead of the server and put back on failure). An archived room is in no other group, not even Unread; it stays archived whatever
 happens in it (opening it, a new message, a mention), and carries no badge meanwhile. The room-level action is
 labelled **Archive** everywhere (sidebar and sidepanel room menus, room info, team info; `useArchiveRoomAction`,
 which first tells what archiving means in a do-not-ask-again modal without an icon, per room type), and becomes
 **Unarchive** (`useUnarchiveRoomAction`) on an archived room. The old "Hide"
 flow (`useHideRoomAction`, closing the subscription) is no longer reachable from the UI except through `/hide`.
+
+Two things to know: the sidebar applies the optimistic flag at once, but the subscription stream replaces the
+whole document on every echo, so an unrelated echo (a new message) that lands before the archive's own can show
+the room back in its group for a moment; and "Archive" here is the user's own, unrelated to a channel's
+`archived` state set from room settings, which still reads "Archived" in the edit form. Without a license there is
+no Archived group, so the item hides the room as before (`useRoomArchiveMenuItem`).
 
 The `Archived` group listed last (`SIDEBAR_ARCHIVED_GROUP_KEY`, licensed workspaces only) holds the archived rooms:
 its header always wears the empty-group look and no badge, its rows are stripped of their unread counters, it has no
@@ -295,16 +301,14 @@ chip, is never moved or moved past, and starts collapsed, so the collapsed-group
 (`useArchivedRoomsNotificationsItem.tsx`), on while any archived room still sends notifications: turning it off sets
 `disableNotifications` on those rooms through `rooms.saveNotification`, five at a time, and once every archived room
 is off, turning it on wakes them all. Each first says how many rooms it changes, in a modal without an icon ("Turn
-off notifications" / "Turn on notifications"). A room whose notifications are off, archived or not, shows a crossed bell
-after its title in the sidebar and the sidepanel (`RoomListItemTitleIcon.tsx`, where the draft pencil also lives).
-The sidebar room menu (`useRoomMenuActions.tsx`) gains a **Notifications** item with a toggle, on while the room
-sends notifications; clicking it flips `disableNotifications` for that room, as the sidepanel's switch does.
+off notifications" / "Turn on notifications").
 
 **Mark read** (`useMarkGroupReadItem.tsx`) marks every unread room of the group as read, threads included, through
 `POST /v1/subscriptions.read` with `readThreads: true`, five rooms at a time. It is disabled while the group has
-nothing unread (`isUnreadRoom` over `allRooms`), and first says how many rooms become read in a do-not-ask-again
-modal without an icon ("Mark rooms as read"). A toast reports how many were marked read and, on failures, how
-many were not.
+nothing unread (`isUnreadRoom` over the group's `allRooms`, which, like the collapsed-group badge, leaves out rooms
+with `hideUnreadStatus` even when they carry mentions), and first says how many rooms become read in a
+do-not-ask-again modal without an icon ("Mark rooms as read"). A toast reports how many were marked read and, on
+failures, how many were not.
 
 ### Room context menu — `CategoryRoomMenu.tsx`
 
@@ -385,3 +389,4 @@ Placed before the room title in `RoomHeader`. Icon: `star-filled` (favorited) / 
 | Unit (activity filter range validation) | `apps/meteor/server/meteor-methods/users/saveUserPreferences.spec.ts` |
 | E2E (Playwright) | `apps/meteor/tests/e2e/sidebar-custom-categories.spec.ts` |
 | E2E page object | `apps/meteor/tests/e2e/page-objects/fragments/sidebar.ts` (custom-category helpers) |
+| Unit (group menu, Mark read) | `apps/meteor/client/sidebar/categories/CategoryMenu.spec.tsx` |
