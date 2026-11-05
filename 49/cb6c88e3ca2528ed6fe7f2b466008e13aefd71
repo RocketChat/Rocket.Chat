@@ -1,0 +1,36 @@
+apps/meteor/server/services/scheduled-messages/service.ts
+  s_478a7742cf0448::t_97752ef422039e 247
+  s_478a7742cf0448::t_77737494b0e9f7 46,68,250-251
+apps/meteor/server/services/scheduled-messages/processDueScheduledMessages.test.ts
+  s_478a7742cf0448::t_97752ef422039e 12
+docs/features/message-scheduling.md
+  s_478a7742cf0448::t_97752ef422039e 88-92,94
+  s_478a7742cf0448::t_8e848aead1448d 93
+packages/core-typings/src/IScheduledMessage.ts
+  s_478a7742cf0448::t_77737494b0e9f7 11
+apps/meteor/server/services/scheduled-messages/deliverScheduledMessage.ts
+  s_478a7742cf0448::t_0e40f6400e0aaf 13,15,44-46,52
+apps/meteor/client/components/ScheduledMessages/ScheduledMessageRow.spec.tsx
+  s_478a7742cf0448::t_5486a3b0b11f6a 9,49
+apps/meteor/client/components/ScheduledMessages/ScheduledMessageRow.tsx
+  s_478a7742cf0448::t_5486a3b0b11f6a 20,37,46,56,68,72
+apps/meteor/server/services/scheduled-messages/deliverScheduledMessage.spec.ts
+  s_478a7742cf0448::t_5486a3b0b11f6a 79
+  s_478a7742cf0448::t_0e40f6400e0aaf 31,53
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "49cb6c88e3ca2528ed6fe7f2b466008e13aefd71",
+  "prompts": {},
+  "sessions": {
+    "s_478a7742cf0448": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "78511215-04eb-4d9d-beb9-8d0ec0460bb1",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
