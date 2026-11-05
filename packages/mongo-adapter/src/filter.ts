@@ -493,7 +493,7 @@ const logicalOperators = {
 	$where,
 } as const;
 
-const isLogicalOperator = (operator: string): operator is keyof typeof logicalOperators => operator in logicalOperators;
+export const isLogicalOperator = (operator: string): operator is keyof typeof logicalOperators => operator in logicalOperators;
 
 const isOperatorObject = <TOperator extends `$${string}`>(
 	valueSelector: unknown,

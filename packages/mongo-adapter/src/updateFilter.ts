@@ -2,7 +2,7 @@ import type { Document, Filter, FilterOperators, Sort, UpdateFilter } from 'mong
 
 import { getBSONType } from './bson';
 import { assertHasValidFieldNames, assertIsValidFieldName, clone, isIndexable, isNumericKey, isPlainObject, equals } from './common';
-import { createPredicateFromFilter } from './filter';
+import { createPredicateFromFilter, isLogicalOperator } from './filter';
 import { createComparatorFromSort } from './sort';
 import { BSONType, type ArrayIndices } from './types';
 
@@ -316,6 +316,12 @@ const $pop = <TField extends string>(target: Record<TField, unknown[]>, field: T
 	}
 };
 
+// a $pull condition made only of query operators applies to each element itself, as in MongoDB
+const isElementCondition = (arg: Record<string, unknown>) => {
+	const keys = Object.keys(arg);
+	return keys.length > 0 && keys.every((key) => key.startsWith('$') && !isLogicalOperator(key));
+};
+
 const $pull = <TField extends string, TDocument extends object>(
 	target: Record<TField, TDocument[]>,
 	field: TField,
@@ -335,10 +341,14 @@ const $pull = <TField extends string, TDocument extends object>(
 	}
 
 	let out;
-	if (arg != null && typeof arg === 'object' && !Array.isArray(arg)) {
+	if (isPlainObject(arg) && !isElementCondition(arg)) {
 		const predicate = createPredicateFromFilter(arg);
 
 		out = toPull.filter((element) => !predicate(element));
+	} else if (isPlainObject(arg) || (arg as unknown) instanceof RegExp) {
+		const predicate = createPredicateFromFilter<{ element: unknown }>({ element: arg });
+
+		out = toPull.filter((element) => !predicate({ element }));
 	} else {
 		out = toPull.filter((element) => !equals(element, arg as any));
 	}
