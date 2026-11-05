@@ -1,3 +1,4 @@
+import { ToggleSwitch } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { GenericModal } from '@rocket.chat/ui-client';
@@ -6,7 +7,7 @@ import { useEndpoint, useSetModal, useToastMessageDispatch } from '@rocket.chat/
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-export const ARCHIVED_ROOMS_NOTIFICATIONS_ITEM_ID = 'turnOnNotifications';
+export const ARCHIVED_ROOMS_NOTIFICATIONS_ITEM_ID = 'notifications';
 
 /** How many rooms are changed at once; a long list goes in batches rather than as a burst of requests. */
 const BATCH_SIZE = 5;
@@ -19,9 +20,9 @@ type UseArchivedRoomsNotificationsItemOptions = {
 };
 
 /**
- * The item that turns notifications off for every archived room, or back on once every one of them is off: the
- * same switch a room's own menu offers, for the whole archive at once. It says how many rooms it is about to
- * change first, and is disabled while nothing is archived.
+ * The notifications switch of the whole archive: on while any archived room still sends notifications, and
+ * turning it off silences every one of them; once all are off, turning it on wakes them all. It says how many
+ * rooms it is about to change first, and is disabled while nothing is archived.
  */
 export const useArchivedRoomsNotificationsItem = ({ rooms, onOpen }: UseArchivedRoomsNotificationsItemOptions): GenericMenuItemProps => {
 	const { t } = useTranslation();
@@ -91,10 +92,11 @@ export const useArchivedRoomsNotificationsItem = ({ rooms, onOpen }: UseArchived
 	return useMemo(
 		() => ({
 			id: ARCHIVED_ROOMS_NOTIFICATIONS_ITEM_ID,
-			icon: enabled ? 'bell' : 'bell-off',
-			content: t(enabled ? 'Turn_OFF' : 'Turn_ON'),
+			icon: 'bell',
+			content: t('Notifications'),
 			disabled: targets.length === 0,
 			onClick: handleClick,
+			addon: <ToggleSwitch disabled={targets.length === 0} checked={enabled} onChange={() => undefined} />,
 		}),
 		[t, enabled, targets.length, handleClick],
 	);

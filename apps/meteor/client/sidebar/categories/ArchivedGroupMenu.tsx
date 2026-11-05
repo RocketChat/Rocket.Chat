@@ -15,15 +15,7 @@ const ArchivedGroupMenu = ({ rooms }: ArchivedGroupMenuProps) => {
 	const { t } = useTranslation();
 	const notificationsItem = useArchivedRoomsNotificationsItem({ rooms });
 
-	return (
-		<GenericMenu
-			detached
-			icon='kebab'
-			title={t('Options')}
-			size='mini'
-			sections={[{ title: t('Notifications'), items: [notificationsItem] }]}
-		/>
-	);
+	return <GenericMenu detached icon='kebab' title={t('Options')} size='mini' items={[notificationsItem]} />;
 };
 
 export default memo(ArchivedGroupMenu);

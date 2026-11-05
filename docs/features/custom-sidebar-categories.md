@@ -291,15 +291,14 @@ flow (`useHideRoomAction`, closing the subscription) is no longer reachable from
 The `Archived` group listed last (`SIDEBAR_ARCHIVED_GROUP_KEY`, licensed workspaces only) holds the archived rooms:
 its header always wears the empty-group look and no badge, its rows are stripped of their unread counters, it has no
 chip, is never moved or moved past, and starts collapsed, so the collapsed-groups list records it when it is
-*expanded*. Its menu (`ArchivedGroupMenu.tsx`) has a single **Notifications** section with **Turn off** / **Turn on**
-(`useArchivedRoomsNotificationsItem.tsx`): the same switch a room's own menu has, applied to every archived room
-through `rooms.saveNotification` (`disableNotifications`), five at a time. "Turn on" is offered once every archived
-room has notifications off. Each first says how many rooms it changes, in a modal without an icon ("Turn off
-notifications" / "Turn on notifications"). A room whose notifications are off, archived or not, shows a crossed bell
+*expanded*. Its menu (`ArchivedGroupMenu.tsx`) has a single **Notifications** item with a toggle
+(`useArchivedRoomsNotificationsItem.tsx`), on while any archived room still sends notifications: turning it off sets
+`disableNotifications` on those rooms through `rooms.saveNotification`, five at a time, and once every archived room
+is off, turning it on wakes them all. Each first says how many rooms it changes, in a modal without an icon ("Turn
+off notifications" / "Turn on notifications"). A room whose notifications are off, archived or not, shows a crossed bell
 after its title in the sidebar and the sidepanel (`RoomListItemTitleIcon.tsx`, where the draft pencil also lives).
-The sidebar room menu (`useRoomMenuActions.tsx`) gains a Notifications choice for the room, both states with the
-current one marked: `CategoryRoomMenu` lists it as a **Notifications ›** radio submenu (Turn off / Turn on), while
-the plain `GenericMenu` (no license) keeps only the item that changes the state, as the sidepanel's does.
+The sidebar room menu (`useRoomMenuActions.tsx`) gains a **Notifications** item with a toggle, on while the room
+sends notifications; clicking it flips `disableNotifications` for that room, as the sidepanel's switch does.
 
 ### Room context menu — `CategoryRoomMenu.tsx`
 

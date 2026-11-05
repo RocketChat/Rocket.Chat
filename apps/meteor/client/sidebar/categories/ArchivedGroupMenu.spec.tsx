@@ -40,9 +40,13 @@ const openMenu = async (rooms: SubscriptionWithRoom[]) => {
 	await userEvent.click(screen.getByRole('button', { name: 'Options' }));
 };
 
-it('turns notifications off for the rooms still sending them, after saying how many', async () => {
+const notificationsItem = () => screen.findByRole('menuitem', { name: /Notifications/ });
+
+it('is on while a room still sends notifications, and turns them off for those, after saying how many', async () => {
 	await openMenu([loud, loudToo, quiet]);
-	await userEvent.click(await screen.findByRole('menuitem', { name: 'Turn off' }));
+	const item = await notificationsItem();
+	expect(item.querySelector('input[type="checkbox"]')).toBeChecked();
+	await userEvent.click(item);
 
 	expect(await screen.findByRole('dialog', { name: 'Turn off notifications' })).toHaveTextContent(
 		'2 archived rooms stop sending notifications.',
@@ -56,11 +60,12 @@ it('turns notifications off for the rooms still sending them, after saying how m
 	expect(saveNotification).toHaveBeenCalledWith({ roomId: 'loud-too', notifications: { disableNotifications: '1' } });
 });
 
-it('offers to turn notifications on once every room has them off', async () => {
+it('is off once every room has notifications off, and turns them all on', async () => {
 	await openMenu([quiet, room({ rid: 'quiet-too', disableNotifications: true })]);
 
-	expect(screen.queryByRole('menuitem', { name: 'Turn off' })).not.toBeInTheDocument();
-	await userEvent.click(await screen.findByRole('menuitem', { name: 'Turn on' }));
+	const item = await notificationsItem();
+	expect(item.querySelector('input[type="checkbox"]')).not.toBeChecked();
+	await userEvent.click(item);
 	expect(await screen.findByRole('dialog', { name: 'Turn on notifications' })).toHaveTextContent(
 		'2 archived rooms send notifications again.',
 	);
@@ -74,5 +79,5 @@ it('offers to turn notifications on once every room has them off', async () => {
 it('is disabled while nothing is archived', async () => {
 	await openMenu([]);
 
-	expect(await screen.findByRole('menuitem', { name: 'Turn on' })).toHaveAttribute('aria-disabled', 'true');
+	expect(await notificationsItem()).toHaveAttribute('aria-disabled', 'true');
 });

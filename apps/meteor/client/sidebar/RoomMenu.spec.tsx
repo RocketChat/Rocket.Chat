@@ -194,57 +194,52 @@ describe('the archive', () => {
 	});
 });
 
-describe('the Notifications section', () => {
+describe('the Notifications toggle', () => {
 	const saveNotification = jest.fn(async () => ({ success: true }));
 
 	beforeEach(() => {
 		saveNotification.mockClear();
 	});
 
-	it('turns the room notifications off', async () => {
+	const renderWith = (disableNotifications: boolean, enterprise = false) => {
+		const base = buildBase()
+			.withSubscription(createFakeSubscription({ rid: 'roomId', t: 'c', disableNotifications }))
+			.withEndpoint('POST', '/v1/rooms.saveNotification', saveNotification as any);
 		render(<RoomMenu {...defaultProps} name='general' />, {
-			wrapper: buildBase()
-				.withSubscription(createFakeSubscription({ rid: 'roomId', t: 'c', disableNotifications: false }))
-				.withEndpoint('POST', '/v1/rooms.saveNotification', saveNotification as any)
-				.build(),
+			wrapper: enterprise ? base.withJohnDoe().withQueryClient(buildEnterpriseQueryClient()).build() : base.build(),
 		});
+	};
+
+	it('is on while the room sends notifications, and turns them off', async () => {
+		renderWith(false);
 
 		await userEvent.click(screen.getByRole('button', { name: 'Options' }));
-		await userEvent.click(await screen.findByRole('menuitem', { name: 'Turn off' }));
+		const item = await screen.findByRole('menuitem', { name: /Notifications/ });
+		expect(item.querySelector('input[type="checkbox"]')).toBeChecked();
+
+		await userEvent.click(item);
 
 		expect(saveNotification).toHaveBeenCalledWith({ roomId: 'roomId', notifications: { disableNotifications: '1' } });
 	});
 
-	it('lists both states in a submenu on a licensed workspace, the current one checked', async () => {
-		render(<RoomMenu {...defaultProps} />, {
-			wrapper: buildBase()
-				.withJohnDoe()
-				.withQueryClient(buildEnterpriseQueryClient())
-				.withSubscription(createFakeSubscription({ rid: 'roomId', t: 'c', disableNotifications: false }))
-				.withEndpoint('POST', '/v1/rooms.saveNotification', saveNotification as any)
-				.build(),
-		});
+	it('is off while they are off, and turns them on', async () => {
+		renderWith(true);
 
 		await userEvent.click(screen.getByRole('button', { name: 'Options' }));
-		await userEvent.click(await screen.findByRole('menuitem', { name: 'Notifications' }));
+		const item = await screen.findByRole('menuitem', { name: /Notifications/ });
+		expect(item.querySelector('input[type="checkbox"]')).not.toBeChecked();
 
-		expect(await screen.findByRole('menuitemradio', { name: 'Turn on' })).toHaveAttribute('aria-checked', 'true');
-		await userEvent.click(screen.getByRole('menuitemradio', { name: 'Turn off' }));
-
-		expect(saveNotification).toHaveBeenCalledWith({ roomId: 'roomId', notifications: { disableNotifications: '1' } });
-	});
-
-	it('offers to turn them back on', async () => {
-		render(<RoomMenu {...defaultProps} />, {
-			wrapper: buildBase()
-				.withSubscription(createFakeSubscription({ rid: 'roomId', t: 'c', disableNotifications: true }))
-				.withEndpoint('POST', '/v1/rooms.saveNotification', saveNotification as any)
-				.build(),
-		});
-
-		await userEvent.click(screen.getByRole('button', { name: 'Options' }));
-		await userEvent.click(await screen.findByRole('menuitem', { name: 'Turn on' }));
+		await userEvent.click(item);
 
 		expect(saveNotification).toHaveBeenCalledWith({ roomId: 'roomId', notifications: { disableNotifications: '0' } });
+	});
+
+	it('is there on the licensed menu too', async () => {
+		renderWith(false, true);
+
+		await userEvent.click(screen.getByRole('button', { name: 'Options' }));
+		await userEvent.click(await screen.findByRole('menuitem', { name: /Notifications/ }));
+
+		expect(saveNotification).toHaveBeenCalledWith({ roomId: 'roomId', notifications: { disableNotifications: '1' } });
 	});
 });

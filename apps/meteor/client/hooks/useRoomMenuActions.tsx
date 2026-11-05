@@ -1,5 +1,5 @@
 import type { RoomType } from '@rocket.chat/core-typings';
-import { Icon } from '@rocket.chat/fuselage';
+import { ToggleSwitch } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { usePermission, useSetting, useUserSubscription } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
@@ -15,12 +15,8 @@ import { useUnarchiveRoomAction } from './useUnarchiveRoomAction';
 import { useOmnichannelPrioritiesMenu } from '../views/omnichannel/hooks/useOmnichannelPrioritiesMenu';
 
 export type RoomMenuSection = {
-	/** Set on the section a menu may render as a submenu. */
-	id?: string;
 	title: string;
 	items: GenericMenuItemProps[];
-	/** The item that is the current state, when the section is a choice between states. */
-	selectedId?: string;
 };
 
 type RoomMenuActionsProps = {
@@ -68,9 +64,7 @@ export const useRoomMenuActions = ({
 	const handleToggleFavorite = useToggleFavoriteAction({ rid, isFavorite });
 	const handleToggleRead = useToggleReadAction({ rid, isUnread, subscription });
 	const handleLeave = useLeaveRoomAction({ rid, type, name, roomOpen });
-	// One action per direction, so a submenu can list both and the chosen one stays chosen.
-	const handleTurnNotificationsOff = useToggleNotificationAction({ rid, isNotificationEnabled: true, roomName: name });
-	const handleTurnNotificationsOn = useToggleNotificationAction({ rid, isNotificationEnabled: false, roomName: name });
+	const handleToggleNotification = useToggleNotificationAction({ rid, isNotificationEnabled, roomName: name });
 
 	const isOmnichannelRoom = type === 'l';
 	const prioritiesMenu = useOmnichannelPrioritiesMenu(rid);
@@ -130,30 +124,21 @@ export const useRoomMenuActions = ({
 		],
 	);
 
-	// The same switch the sidepanel offers, scoped to this room, as both directions with the current one marked:
-	// the licensed menu lists them in a submenu, the plain menu keeps only the one that changes something.
-	const notificationsSelectedId = isNotificationEnabled ? 'notificationsOn' : 'notificationsOff';
+	// The room's notifications as a switch, on while they are sent; an omnichannel room has no such preference.
 	const notificationsMenuOptions = useMemo<GenericMenuItemProps[]>(
 		() =>
 			!hideDefaultOptions && !isOmnichannelRoom && subscription
 				? [
 						{
-							id: 'notificationsOff',
-							icon: 'bell-off',
-							content: t('Turn_OFF'),
-							onClick: handleTurnNotificationsOff,
-							addon: isNotificationEnabled ? undefined : <Icon name='check' size='x16' />,
-						},
-						{
-							id: 'notificationsOn',
+							id: 'notifications',
 							icon: 'bell',
-							content: t('Turn_ON'),
-							onClick: handleTurnNotificationsOn,
-							addon: isNotificationEnabled ? <Icon name='check' size='x16' /> : undefined,
+							content: t('Notifications'),
+							onClick: handleToggleNotification,
+							addon: <ToggleSwitch checked={isNotificationEnabled} onChange={() => undefined} />,
 						},
 					]
 				: [],
-		[hideDefaultOptions, isOmnichannelRoom, subscription, isNotificationEnabled, t, handleTurnNotificationsOff, handleTurnNotificationsOn],
+		[hideDefaultOptions, isOmnichannelRoom, subscription, isNotificationEnabled, t, handleToggleNotification],
 	);
 
 	if (isOmnichannelRoom && prioritiesMenu.length > 0) {
@@ -165,8 +150,6 @@ export const useRoomMenuActions = ({
 
 	return [
 		...(menuOptions.length > 0 ? [{ title: '', items: menuOptions }] : []),
-		...(notificationsMenuOptions.length > 0
-			? [{ id: 'notifications', title: t('Notifications'), items: notificationsMenuOptions, selectedId: notificationsSelectedId }]
-			: []),
+		...(notificationsMenuOptions.length > 0 ? [{ title: '', items: notificationsMenuOptions }] : []),
 	];
 };

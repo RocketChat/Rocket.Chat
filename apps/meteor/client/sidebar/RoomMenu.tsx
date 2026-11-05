@@ -29,13 +29,7 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 		return <CategoryRoomMenu rid={rid} name={name} sections={sections} />;
 	}
 
-	// Without a submenu to list both states, a choice section keeps only the item that changes the state.
-	const flatSections = sections.map(({ selectedId, items, ...section }) => ({
-		...section,
-		items: selectedId ? items.filter((item) => item.id !== selectedId).map(({ addon: _addon, ...item }) => item) : items,
-	}));
-
-	return <GenericMenu detached title={t('Options')} size='mini' aria-keyshortcuts='alt' sections={flatSections} />;
+	return <GenericMenu detached title={t('Options')} size='mini' aria-keyshortcuts='alt' sections={sections} />;
 };
 
 export default memo(RoomMenu);
