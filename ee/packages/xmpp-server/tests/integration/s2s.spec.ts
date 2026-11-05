@@ -142,8 +142,7 @@ describe('S2S integration: two servers over localhost', () => {
 		expect(receivedIds).toEqual(ids);
 	});
 
-	// Known defect: ../../docs/specs/s2s-connectivity.md#d2-stopping-the-server-drops-stanzas-not-yet-written-out
-	it.skip('delivers every stanza already sent when the server stops (s2s-connectivity R18, D2)', async () => {
+	it('delivers every stanza already sent when the server stops (s2s-connectivity R18)', async () => {
 		const fresh = await startServer('a.localhost', { routable: false });
 		const ids = ['s1', 's2', 's3'];
 		try {

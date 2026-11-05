@@ -94,6 +94,37 @@ describe('StanzaParser', () => {
 		expect(events.some((e) => e.type === 'error')).toBe(true);
 	});
 
+	it('accepts an XML declaration split across reads (R7)', () => {
+		const parser = new StanzaParser();
+		const events = collect(parser);
+
+		parser.write('<');
+		parser.write("?xml version='1.0'");
+		parser.write(`?>${STREAM_HEADER}`);
+
+		expect(events.map((e) => e.type)).toEqual(['streamStart']);
+	});
+
+	it('rejects a processing instruction split across the first reads (R7)', () => {
+		const parser = new StanzaParser();
+		const events = collect(parser);
+
+		parser.write('<?');
+		parser.write(`php evil ?>${STREAM_HEADER}`);
+
+		expect(events.map((e) => e.type)).toEqual(['error']);
+	});
+
+	it('rejects an XML declaration that never closes (R7)', () => {
+		const parser = new StanzaParser();
+		const events = collect(parser);
+
+		parser.write("<?xml version='1.0'");
+		parser.write(' '.repeat(2048));
+
+		expect(events.map((e) => e.type)).toEqual(['error']);
+	});
+
 	it('rejects oversized stanzas', () => {
 		const parser = new StanzaParser({ maxStanzaSize: 128 });
 		const events = collect(parser);
