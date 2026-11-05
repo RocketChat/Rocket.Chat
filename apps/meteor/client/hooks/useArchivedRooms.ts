@@ -33,7 +33,7 @@ export const useArchivedRooms = () => {
 
 	const isArchivedRoom = useCallback((rid: string): boolean => archivedRoomIds.has(rid), [archivedRoomIds]);
 
-	const setArchived = useStableCallback(async (rids: string[], archived: boolean) => {
+	const setArchived = useStableCallback(async (rids: string[], archived: boolean): Promise<{ changed: number; failed: number }> => {
 		let failed = 0;
 		for (let start = 0; start < rids.length; start += CHUNK_SIZE) {
 			const chunk = rids.slice(start, start + CHUNK_SIZE);
@@ -51,6 +51,8 @@ export const useArchivedRooms = () => {
 		if (failed) {
 			dispatchToastMessage({ type: 'error', message: t(archived ? 'Rooms_not_archived' : 'Rooms_not_unarchived', { count: failed }) });
 		}
+
+		return { changed: rids.length - failed, failed };
 	});
 
 	const archiveRooms = useStableCallback((rids: string[]) => setArchived(rids, true));

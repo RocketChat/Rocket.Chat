@@ -664,7 +664,8 @@ describe('the archived group', () => {
 
 		expect(archived.collapsed).toBe(false);
 		expect(archived.rooms.map((room) => room.rid)).toEqual(archivedRooms.map((room) => room.rid));
-		expect(archived.rooms.every((room) => !room.alert && room.unread === 0 && room.userMentions === 0)).toBe(true);
+		expect(archived.rooms.every((room) => room.hideUnreadStatus && room.hideMentionStatus)).toBe(true);
+		expect(archived.rooms[1].unread).toBe(3);
 		expect(groups.find((group) => group.key === 'Unread')?.rooms.map((room) => room.rid)).not.toContain(directRooms[0].rid);
 	});
 

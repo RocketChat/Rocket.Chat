@@ -7,9 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { useLeaveRoomAction } from './menuActions/useLeaveRoom';
 import { useToggleFavoriteAction } from './menuActions/useToggleFavoriteAction';
 import { useToggleReadAction } from './menuActions/useToggleReadAction';
-import { useArchiveRoomAction } from './useArchiveRoomAction';
-import { useArchivedRooms } from './useArchivedRooms';
-import { useUnarchiveRoomAction } from './useUnarchiveRoomAction';
+import { useRoomArchiveMenuItem } from './useRoomArchiveMenuItem';
 import { useOmnichannelPrioritiesMenu } from '../views/omnichannel/hooks/useOmnichannelPrioritiesMenu';
 
 export type RoomMenuSection = {
@@ -54,10 +52,7 @@ export const useRoomMenuActions = ({
 		return !((cl != null && !cl) || ['d', 'l'].includes(type));
 	})();
 
-	const handleArchive = useArchiveRoomAction({ rid, type, name });
-	const handleUnarchive = useUnarchiveRoomAction({ rid });
-	// An archived room is offered the way back instead of the archive again.
-	const isArchived = useArchivedRooms().isArchivedRoom(rid);
+	const archiveItem = useRoomArchiveMenuItem({ rid, type, name, redirect: false });
 	const handleToggleFavorite = useToggleFavoriteAction({ rid, isFavorite });
 	const handleToggleRead = useToggleReadAction({ rid, isUnread, subscription });
 	const handleLeave = useLeaveRoomAction({ rid, type, name, roomOpen });
@@ -69,20 +64,7 @@ export const useRoomMenuActions = ({
 		() =>
 			!hideDefaultOptions
 				? ([
-						!isOmnichannelRoom &&
-							(isArchived
-								? {
-										id: 'unarchiveRoom',
-										icon: 'undo',
-										content: t('Unarchive'),
-										onClick: handleUnarchive,
-									}
-								: {
-										id: 'hideRoom',
-										icon: 'archive',
-										content: t('Archive'),
-										onClick: handleArchive,
-									}),
+						!isOmnichannelRoom && archiveItem,
 						{
 							id: 'toggleRead',
 							icon: 'flag',
@@ -106,9 +88,7 @@ export const useRoomMenuActions = ({
 		[
 			hideDefaultOptions,
 			t,
-			handleArchive,
-			handleUnarchive,
-			isArchived,
+			archiveItem,
 			isUnread,
 			handleToggleRead,
 			canFavorite,

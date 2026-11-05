@@ -1048,7 +1048,6 @@
   "Archive_Group_Description": "“{{roomName}}” moves to the Archived group. The private channel stays there, with no badge, until you unarchive it.",
   "Archive_Livechat_Description": "“{{roomName}}” moves to the Archived group. The chat stays there, with no badge, until you unarchive it.",
   "Archive_room": "Archive room",
-  "Archive_rooms": "Archive rooms",
   "Archive_rooms_ellipsis": "Archive rooms…",
   "Archive_rooms_in__group__": "Archive rooms in {{group}}",
   "archive-room": "Archive room",

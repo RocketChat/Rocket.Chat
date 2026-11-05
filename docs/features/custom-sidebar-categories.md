@@ -288,6 +288,12 @@ which first tells what archiving means in a do-not-ask-again modal without an ic
 **Unarchive** (`useUnarchiveRoomAction`) on an archived room. The old "Hide"
 flow (`useHideRoomAction`, closing the subscription) is no longer reachable from the UI except through `/hide`.
 
+Two things to know: the sidebar applies the optimistic flag at once, but the subscription stream replaces the
+whole document on every echo, so an unrelated echo (a new message) that lands before the archive's own can show
+the room back in its group for a moment; and "Archive" here is the user's own, unrelated to a channel's
+`archived` state set from room settings, which still reads "Archived" in the edit form. Without a license there is
+no Archived group, so the item hides the room as before (`useRoomArchiveMenuItem`).
+
 The `Archived` group listed last (`SIDEBAR_ARCHIVED_GROUP_KEY`, licensed workspaces only) holds the archived rooms:
 its header always wears the empty-group look and no badge, its rows are stripped of their unread counters, it has no
 chip, is never moved or moved past, and starts collapsed, so the collapsed-groups list records it when it is

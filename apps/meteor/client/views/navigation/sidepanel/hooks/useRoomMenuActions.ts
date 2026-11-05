@@ -9,9 +9,7 @@ import { useLeaveRoomAction } from '../../../../hooks/menuActions/useLeaveRoom';
 import { useToggleFavoriteAction } from '../../../../hooks/menuActions/useToggleFavoriteAction';
 import { useToggleNotificationAction } from '../../../../hooks/menuActions/useToggleNotificationsAction';
 import { useToggleReadAction } from '../../../../hooks/menuActions/useToggleReadAction';
-import { useArchiveRoomAction } from '../../../../hooks/useArchiveRoomAction';
-import { useArchivedRooms } from '../../../../hooks/useArchivedRooms';
-import { useUnarchiveRoomAction } from '../../../../hooks/useUnarchiveRoomAction';
+import { useRoomArchiveMenuItem } from '../../../../hooks/useRoomArchiveMenuItem';
 import { useOmnichannelPrioritiesMenu } from '../../../omnichannel/hooks/useOmnichannelPrioritiesMenu';
 
 type RoomMenuActionsProps = {
@@ -55,10 +53,7 @@ export const useRoomMenuActions = ({
 		return !((cl != null && !cl) || ['d', 'l'].includes(type));
 	})();
 
-	const handleArchive = useArchiveRoomAction({ rid, type, name });
-	const handleUnarchive = useUnarchiveRoomAction({ rid });
-	// An archived room is offered the way back instead of the archive again.
-	const isArchived = useArchivedRooms().isArchivedRoom(rid);
+	const archiveItem = useRoomArchiveMenuItem({ rid, type, name, redirect: false });
 	const handleToggleFavorite = useToggleFavoriteAction({ rid, isFavorite });
 	const handleToggleRead = useToggleReadAction({ rid, isUnread, subscription });
 	const handleLeave = useLeaveRoomAction({ rid, type, name, roomOpen });
@@ -73,20 +68,7 @@ export const useRoomMenuActions = ({
 		}
 
 		const options: (GenericMenuItemProps | false)[] = [
-			!isOmnichannelRoom &&
-				(isArchived
-					? {
-							id: 'unarchiveRoom',
-							icon: 'undo',
-							content: t('Unarchive'),
-							onClick: handleUnarchive,
-						}
-					: {
-							id: 'hideRoom',
-							icon: 'archive',
-							content: t('Archive'),
-							onClick: handleArchive,
-						}),
+			!isOmnichannelRoom && archiveItem,
 			{
 				id: 'toggleRead',
 				icon: 'flag',
@@ -112,9 +94,7 @@ export const useRoomMenuActions = ({
 		subscription,
 		isOmnichannelRoom,
 		t,
-		handleArchive,
-		handleUnarchive,
-		isArchived,
+		archiveItem,
 		isUnread,
 		handleToggleRead,
 		canFavorite,

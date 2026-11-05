@@ -77,10 +77,14 @@ const ArchiveRoomsModal = ({ groupTitle, rooms, onClose }: ArchiveRoomsModalProp
 	);
 
 	// The instant a room must have been active after to stay; `undefined` while the date typed in is not one yet.
-	const threshold = useMemo(
-		(): number | undefined => (preset === CUSTOM_DATE ? fromDateInputValue(customDate)?.getTime() : Date.now() - Number(preset) * DAY),
-		[preset, customDate],
-	);
+	const threshold = useMemo((): number | undefined => {
+		if (preset !== CUSTOM_DATE) {
+			return Date.now() - Number(preset) * DAY;
+		}
+		// A date still to come has nothing quiet since it; the input's `max` stops the picker, not the keyboard.
+		const since = fromDateInputValue(customDate)?.getTime();
+		return since !== undefined && since <= Date.now() ? since : undefined;
+	}, [preset, customDate]);
 
 	const candidates = useMemo(
 		() =>
@@ -92,10 +96,12 @@ const ArchiveRoomsModal = ({ groupTitle, rooms, onClose }: ArchiveRoomsModalProp
 		[rooms, threshold, openedRoom, includeUnread],
 	);
 
-	const handleConfirm = () => {
-		archiveRooms(candidates.map((room) => room.rid));
-		dispatchToastMessage({ type: 'success', message: t('Rooms_archived', { count: candidates.length }) });
+	const handleConfirm = async () => {
 		onClose();
+		const { changed } = await archiveRooms(candidates.map((room) => room.rid));
+		if (changed) {
+			dispatchToastMessage({ type: 'success', message: t('Rooms_archived', { count: changed }) });
+		}
 	};
 
 	return (
