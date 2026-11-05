@@ -14,6 +14,7 @@ import {
 	MultiSelect as MultiSelectComponent,
 	MultiSelectFiltered as MultiSelectFilteredComponent,
 	Slider as SliderComponent,
+	PaginatedSelectFiltered as PaginatedSelectFilteredComponent,
 } from '@rocket.chat/fuselage';
 
 import { withLabelId, withAriaLabelledBy, withAriaLabelledByAndId, withVisuallyHiddenLabel } from './withLabelHelpers';
@@ -46,3 +47,4 @@ export const Slider = withAriaLabelledBy(SliderComponent) as typeof SliderCompon
 export const CheckBox = withVisuallyHiddenLabel(CheckBoxComponent);
 export const ToggleSwitch = withVisuallyHiddenLabel(ToggleSwitchComponent);
 export const RadioButton = withVisuallyHiddenLabel(RadioButtonComponent);
+export const PaginatedSelectFiltered = withLabelId(PaginatedSelectFilteredComponent);

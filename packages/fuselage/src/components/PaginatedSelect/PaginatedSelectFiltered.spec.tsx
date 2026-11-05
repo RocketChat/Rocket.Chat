@@ -98,4 +98,23 @@ describe('[PaginatedSelectFiltered Component]', () => {
 			}),
 		);
 	});
+
+	test('should forward the input id and accessible label to the textbox', () => {
+		render(<PaginatedSelectFiltered id='unit-input' aria-label='Unit' filter='' setFilter={() => undefined} onChange={() => undefined} options={[]} />);
+
+		const input = screen.getByRole('textbox', { name: 'Unit' });
+		expect(input).toHaveAttribute('id', 'unit-input');
+	});
+
+	test('should forward aria-labelledby to the textbox', () => {
+		render(
+			<>
+				<span id='unit-label'>Unit</span>
+				<PaginatedSelectFiltered aria-labelledby='unit-label' filter='' setFilter={() => undefined} onChange={() => undefined} options={[]} />,
+			</>,
+		);
+
+		const input = screen.getByRole('textbox', { name: 'Unit' });
+		expect(input).toHaveAttribute('aria-labelledby', 'unit-label');
+	});
 });
