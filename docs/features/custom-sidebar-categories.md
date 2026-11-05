@@ -289,9 +289,13 @@ which first tells what archiving means in a do-not-ask-again modal without an ic
 flow (`useHideRoomAction`, closing the subscription) is no longer reachable from the UI except through `/hide`.
 
 The `Archived` group listed last (`SIDEBAR_ARCHIVED_GROUP_KEY`, licensed workspaces only) holds the archived rooms:
-its header always wears the empty-group look and no badge, its rows are stripped of their unread counters, it has
-no menu or chip, is never moved or moved past, and starts collapsed, so the collapsed-groups list records it when
-it is *expanded*.
+its header always wears the empty-group look and no badge, its rows are stripped of their unread counters, it has no
+chip, is never moved or moved past, and starts collapsed, so the collapsed-groups list records it when it is
+*expanded*. Its menu (`ArchivedGroupMenu.tsx`) has one item, **Mute** or **Unmute** (`useMuteArchivedRoomsItem.tsx`):
+muting sets `disableNotifications` and `hideUnreadStatus` on every archived room through `rooms.saveNotification`,
+five at a time, so an archived room sends no notification and counts as unread nowhere, not even in the tab title
+(`useUnread` already skips `hideUnreadStatus`); unmuting is offered once every archived room is muted and clears
+both. Each first says how many rooms it changes, in a modal without an icon.
 
 ### Room context menu — `CategoryRoomMenu.tsx`
 
