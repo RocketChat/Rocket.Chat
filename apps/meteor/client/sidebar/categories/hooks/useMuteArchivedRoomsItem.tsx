@@ -87,7 +87,7 @@ export const useMuteArchivedRoomsItem = ({ rooms, onOpen }: UseMuteArchivedRooms
 		() => ({
 			id: MUTE_ARCHIVED_ROOMS_ITEM_ID,
 			icon: muted ? 'bell' : 'bell-off',
-			content: t(muted ? 'Unmute' : 'Mute'),
+			content: t(muted ? 'Unmute_archived_rooms' : 'Mute_archived_rooms'),
 			disabled: targets.length === 0,
 			onClick: handleClick,
 		}),

@@ -42,7 +42,7 @@ const openMenu = async (rooms: SubscriptionWithRoom[]) => {
 
 it('mutes the rooms not yet fully muted, after saying how many', async () => {
 	await openMenu([loud, halfMuted, quiet]);
-	await userEvent.click(await screen.findByRole('menuitem', { name: 'Mute' }));
+	await userEvent.click(await screen.findByRole('menuitem', { name: 'Mute archived rooms' }));
 
 	expect(await screen.findByRole('dialog', { name: 'Mute archived rooms' })).toHaveTextContent(
 		'2 archived rooms stop sending notifications and counting as unread until unmuted.',
@@ -62,8 +62,8 @@ it('mutes the rooms not yet fully muted, after saying how many', async () => {
 it('offers to unmute once every room is muted', async () => {
 	await openMenu([quiet, room({ rid: 'quiet-too', disableNotifications: true, hideUnreadStatus: true })]);
 
-	expect(screen.queryByRole('menuitem', { name: 'Mute' })).not.toBeInTheDocument();
-	await userEvent.click(await screen.findByRole('menuitem', { name: 'Unmute' }));
+	expect(screen.queryByRole('menuitem', { name: 'Mute archived rooms' })).not.toBeInTheDocument();
+	await userEvent.click(await screen.findByRole('menuitem', { name: 'Unmute archived rooms' }));
 	expect(await screen.findByRole('dialog', { name: 'Unmute archived rooms' })).toHaveTextContent('2 archived rooms send notifications');
 
 	await userEvent.click(screen.getByRole('button', { name: 'Unmute' }));
@@ -75,5 +75,5 @@ it('offers to unmute once every room is muted', async () => {
 it('is disabled while nothing is archived', async () => {
 	await openMenu([]);
 
-	expect(await screen.findByRole('menuitem', { name: 'Mute' })).toHaveAttribute('aria-disabled', 'true');
+	expect(await screen.findByRole('menuitem', { name: 'Mute archived rooms' })).toHaveAttribute('aria-disabled', 'true');
 });
