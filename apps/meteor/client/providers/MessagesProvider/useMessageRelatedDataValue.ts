@@ -4,12 +4,12 @@ import type { MessageRelatedDataContextValue } from '@rocket.chat/ui-message-lis
 import { useQuery } from '@tanstack/react-query';
 import { useCallback, useMemo, useSyncExternalStore } from 'react';
 
+import { useParentMessage } from './useParentMessage';
 import { useUserRolesByScope } from '../../hooks/useUserRolesByScope';
 import { RoomManager, getCollapsibleEventKey, useOpenedRoom } from '../../lib/RoomManager';
 import type { ChatAPI } from '../../lib/chats/ChatAPI';
 import { messagesQueryKeys } from '../../lib/queryKeys';
 import { Rooms, Subscriptions } from '../../stores';
-import { useParentMessage } from '../../views/room/MessageList/hooks/useParentMessage';
 import { useGetMessageByID } from '../../views/room/contextualBar/Threads/hooks/useGetMessageByID';
 
 const useCollapsedState = (key: string, initiallyCollapsed: boolean): [boolean, () => void] => {

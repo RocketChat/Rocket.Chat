@@ -4,8 +4,8 @@ import type { MessageContentContextValue, MessageDisplayContextValue, Normalized
 import { useMemo } from 'react';
 
 import { normalizeMessage } from './normalizeMessage';
+import { useAutoTranslate } from '../../hooks/useAutoTranslate';
 import { getEmojiClassNameAndDataTitle } from '../../lib/utils/renderEmoji';
-import { useAutoTranslate } from '../../views/room/MessageList/hooks/useAutoTranslate';
 
 const getEmojiData = (name: string) => {
 	const { name: emojiName, className, image, children } = getEmojiClassNameAndDataTitle(name);

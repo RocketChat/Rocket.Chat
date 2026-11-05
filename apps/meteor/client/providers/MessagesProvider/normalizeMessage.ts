@@ -9,9 +9,9 @@ import {
 } from '@rocket.chat/core-typings';
 import type { Options } from '@rocket.chat/message-parser';
 
+import type { AutoTranslateOptions } from '../../hooks/useAutoTranslate';
 import type { MessageWithMdEnforced } from '../../lib/parseMessageTextToAstMarkdown';
 import { parseMessageTextToAstMarkdown } from '../../lib/parseMessageTextToAstMarkdown';
-import type { AutoTranslateOptions } from '../../views/room/MessageList/hooks/useAutoTranslate';
 
 const normalizeAttachments = (attachments: MessageAttachment[], name?: string, type?: string): MessageAttachment[] => {
 	if (name) {

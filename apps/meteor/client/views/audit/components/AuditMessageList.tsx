@@ -5,8 +5,8 @@ import { RoomMessage, SystemMessage } from '@rocket.chat/ui-message-list';
 import { Fragment, memo } from 'react';
 
 import { useFormatDate } from '../../../hooks/useFormatDate';
+import { isMessageNewDay } from '../../../lib/utils/isMessageNewDay';
 import { MessagesProvider } from '../../../providers/MessagesProvider';
-import { isMessageNewDay } from '../../room/MessageList/lib/isMessageNewDay';
 
 export type AuditMessageListProps = {
 	messages: IMessage[];

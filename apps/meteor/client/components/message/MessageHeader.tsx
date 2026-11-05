@@ -17,7 +17,7 @@ import MessageRoles from './header/MessageRoles';
 import { useMessageListShowRoles, useMessageListFormatDateAndTime, useMessageListFormatTime } from './list/MessageListContext';
 import { normalizeUsername } from '../../../lib/utils/normalizeUsername';
 import { useUserRolesByScope } from '../../hooks/useUserRolesByScope';
-import { useIsSelecting } from '../../views/room/MessageList/contexts/SelectedMessagesContext';
+import { useIsSelecting } from '../../views/room/providers/SelectedMessagesContext';
 
 export type MessageHeaderProps = {
 	message: IMessage;

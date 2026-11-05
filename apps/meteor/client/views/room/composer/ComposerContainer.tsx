@@ -20,8 +20,8 @@ import { useMessageComposerIsArchived } from './hooks/useMessageComposerIsArchiv
 import { useMessageComposerIsBlocked } from './hooks/useMessageComposerIsBlocked';
 import { useMessageComposerIsReadOnly } from './hooks/useMessageComposerIsReadOnly';
 import { useAirGappedRestriction } from '../../../hooks/useAirGappedRestriction';
-import { useIsSelecting } from '../MessageList/contexts/SelectedMessagesContext';
 import { useIsRoomAbacLocked } from '../hooks/useIsRoomAbacLocked';
+import { useIsSelecting } from '../providers/SelectedMessagesContext';
 
 const ComposerContainer = ({ children, ...props }: ComposerMessageProps) => {
 	const room = useRoom();

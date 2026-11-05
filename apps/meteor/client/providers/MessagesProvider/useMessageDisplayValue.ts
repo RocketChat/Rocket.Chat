@@ -5,10 +5,10 @@ import { useLayout, useSetting, useUserId, useUserPreference } from '@rocket.cha
 import type { MessageDisplayContextValue } from '@rocket.chat/ui-message-list';
 import { useMemo } from 'react';
 
+import { useAutoTranslate } from '../../hooks/useAutoTranslate';
 import { useFormatDate } from '../../hooks/useFormatDate';
+import { useKatex } from '../../hooks/useKatex';
 import { getRegexHighlight, getRegexHighlightUrl } from '../../lib/highlightWords';
-import { useAutoTranslate } from '../../views/room/MessageList/hooks/useAutoTranslate';
-import { useKatex } from '../../views/room/MessageList/hooks/useKatex';
 
 export type UseMessageDisplayValueOptions = {
 	room: IRoom | undefined;

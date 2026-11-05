@@ -2,8 +2,8 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import type { Options, Root } from '@rocket.chat/message-parser';
 import { useMemo } from 'react';
 
-import { useAutoLinkDomains } from './useAutoLinkDomains';
 import { useMessageListAutoTranslate } from '../../../../components/message/list/MessageListContext';
+import { useAutoLinkDomains } from '../../../../hooks/useAutoLinkDomains';
 import { parseMessageTextToAstMarkdown } from '../../../../lib/parseMessageTextToAstMarkdown';
 import { toPlainTextRoot } from '../../../../lib/toPlainTextRoot';
 

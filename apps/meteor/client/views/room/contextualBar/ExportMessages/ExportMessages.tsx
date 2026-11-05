@@ -22,8 +22,8 @@ import { useExportMessagesAsPDFMutation } from './useExportMessagesAsPDFMutation
 import { useRoomExportMutation } from './useRoomExportMutation';
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
-import { SelectedMessageContext, useCountSelected } from '../../MessageList/contexts/SelectedMessagesContext';
 import { useRoom } from '../../contexts/RoomContext';
+import { SelectedMessageContext, useCountSelected } from '../../providers/SelectedMessagesContext';
 
 export type ExportMessagesFormValues = {
 	type: 'email' | 'file' | 'download';

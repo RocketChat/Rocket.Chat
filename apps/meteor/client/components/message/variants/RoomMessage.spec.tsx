@@ -36,7 +36,7 @@ jest.mock('../../../hooks/useUserRolesByScope', () => ({
 jest.mock('../../../lib/utils/fireGlobalEvent', () => ({ fireGlobalEvent: () => undefined }));
 jest.mock('../../../views/room/hooks/useGoToRoom', () => ({ useGoToRoom: () => undefined }));
 jest.mock('../../../views/room/contextualBar/Threads/hooks/useGetMessageByID', () => undefined);
-jest.mock('../../../views/room/MessageList/hooks/useAutoTranslate', () => ({
+jest.mock('../../../hooks/useAutoTranslate', () => ({
 	useAutoTranslate: () => ({
 		autoTranslateEnabled: false,
 		autoTranslateLanguage: '',

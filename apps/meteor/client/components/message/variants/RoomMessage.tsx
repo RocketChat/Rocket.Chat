@@ -15,7 +15,7 @@ import {
 	useToggleSelect,
 	useIsSelectedMessage,
 	useCountSelected,
-} from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
+} from '../../../views/room/providers/SelectedMessagesContext';
 import Emoji from '../../Emoji';
 import IgnoredContent from '../IgnoredContent';
 import MessageContentFallback from '../MessageContentFallback';

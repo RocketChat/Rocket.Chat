@@ -8,9 +8,9 @@ import FormatSelector from './FormatSelector';
 import Preview from './Preview';
 import TimePicker from './TimePicker';
 import TimezoneSelector from './TimezoneSelector';
-import type { ComposerAPI } from '../../../../../../../lib/chats/ChatAPI';
-import { dateToISOString, generateTimestampMarkup } from '../../../../../../../lib/utils/timestamp/conversion';
-import type { TimezoneKey, TimestampFormat } from '../../../../../../../lib/utils/timestamp/types';
+import type { ComposerAPI } from '../../../../../../lib/chats/ChatAPI';
+import { dateToISOString, generateTimestampMarkup } from '../../../../../../lib/utils/timestamp/conversion';
+import type { TimezoneKey, TimestampFormat } from '../../../../../../lib/utils/timestamp/types';
 
 type TimestampForm = {
 	date: Date;

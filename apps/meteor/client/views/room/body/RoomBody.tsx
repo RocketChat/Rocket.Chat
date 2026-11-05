@@ -7,24 +7,24 @@ import type { MouseEvent } from 'react';
 import { memo, useCallback, useEffect, useMemo, useRef } from 'react';
 
 import DropTargetOverlay from './DropTargetOverlay';
-import UnreadMessagesIndicator from './UnreadMessagesIndicator';
-import MessageListErrorBoundary from '../MessageList/MessageListErrorBoundary';
-import { useToggleSelectAll } from '../MessageList/contexts/SelectedMessagesContext';
+import MessageListErrorBoundary from './MessageListErrorBoundary';
 import RoomAnnouncement from '../RoomAnnouncement';
 import RoomMessageList from './RoomMessageList/RoomMessageList';
+import UnreadMessagesIndicator from './UnreadMessagesIndicator';
 import UploadProgressIndicator from './UploadProgress';
 import ComposerContainer from '../composer/ComposerContainer';
+import { useToggleSelectAll } from '../providers/SelectedMessagesContext';
 import { useFileUpload } from './hooks/useFileUpload';
+import { useFileUploadDropTarget } from './hooks/useFileUploadDropTarget';
 import { useGoToHomeOnRemoved } from './hooks/useGoToHomeOnRemoved';
 import { useQuoteMessageByUrl } from './hooks/useQuoteMessageByUrl';
 import { useReadMessageWindowEvents } from './hooks/useReadMessageWindowEvents';
+import { useHandleUnread } from './hooks/useUnreadMessages';
 import RoomComposer from '../composer/RoomComposer/RoomComposer';
 import { useChat } from '../contexts/ChatContext';
 import { useRoom, useRoomSubscription } from '../contexts/RoomContext';
 import { useRetentionPolicy } from '../hooks/useRetentionPolicy';
-import { useFileUploadDropTarget } from './hooks/useFileUploadDropTarget';
-import { useHandleUnread } from './hooks/useUnreadMessages';
-import useTryToJumpToThreadMessage from '../MessageList/hooks/useTryToJumpToThreadMessage';
+import useTryToJumpToThreadMessage from './hooks/useTryToJumpToThreadMessage';
 
 const RoomBody = () => {
 	const chat = useChat();

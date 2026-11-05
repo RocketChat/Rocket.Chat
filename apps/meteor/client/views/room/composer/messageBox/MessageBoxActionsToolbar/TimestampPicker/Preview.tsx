@@ -3,9 +3,9 @@ import { Markup } from '@rocket.chat/gazzodown';
 import { parse } from '@rocket.chat/message-parser';
 import { useTranslation } from 'react-i18next';
 
-import { dateToISOString, generateTimestampMarkup } from '../../../../../../../lib/utils/timestamp/conversion';
-import type { TimestampFormat, TimezoneKey } from '../../../../../../../lib/utils/timestamp/types';
-import GazzodownText from '../../../../../../GazzodownText';
+import GazzodownText from '../../../../../../components/GazzodownText';
+import { dateToISOString, generateTimestampMarkup } from '../../../../../../lib/utils/timestamp/conversion';
+import type { TimestampFormat, TimezoneKey } from '../../../../../../lib/utils/timestamp/types';
 
 export type PreviewProps = {
 	date: Date;

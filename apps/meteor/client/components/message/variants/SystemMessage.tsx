@@ -23,7 +23,7 @@ import {
 	useToggleSelect,
 	useIsSelectedMessage,
 	useCountSelected,
-} from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
+} from '../../../views/room/providers/SelectedMessagesContext';
 import MessageContentFallback from '../MessageContentFallback';
 import { getCheckboxLabel } from '../helpers/getCheckboxLabel';
 import { useMessageListFormatDateAndTime, useMessageListFormatTime } from '../list/MessageListContext';
