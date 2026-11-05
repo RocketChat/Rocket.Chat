@@ -22,7 +22,7 @@ describe('NavBarAISearch', () => {
 		const user = userEvent.setup();
 		const wrapper = mockAppRoot()
 			.withTranslations('en', 'core', {
-				Clear: 'Clear',
+				clear: 'Clear',
 				Search_rooms: 'Search rooms',
 			})
 			.build();
