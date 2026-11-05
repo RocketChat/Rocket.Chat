@@ -277,8 +277,8 @@ export class MockedAppRootBuilder {
 		loginWithPassword: () => Promise.resolve(),
 		loginWithToken: () => Promise.resolve(),
 		loginWithService: () => () => Promise.resolve(true),
-		loginWithIframe: async () => Promise.reject('loginWithIframe not implemented'),
-		loginWithTokenRoute: async () => Promise.reject('loginWithTokenRoute not implemented'),
+		loginWithIframe: async () => Promise.reject(new Error('loginWithIframe not implemented')),
+		loginWithTokenRoute: async () => Promise.reject(new Error('loginWithTokenRoute not implemented')),
 		queryLoginServices: {
 			getCurrentValue: () => this.authServices,
 			subscribe: () => () => undefined,
@@ -616,16 +616,16 @@ export class MockedAppRootBuilder {
 
 		this._settings.set(id, setting);
 
-		const cache = new WeakMap();
+		const cache = new WeakMap<SettingsContextQuery, (setting: ISetting) => boolean>();
 
 		this.settings.querySettings = (query: SettingsContextQuery) => {
 			const filter =
 				cache.get(query) ??
-				createPredicateFromFilter({
+				createPredicateFromFilter<ISetting>({
 					...(query._id ? { _id: { $in: query._id } } : {}),
 				} as any);
 			cache.set(query, filter);
-			const arr = cache.get(filter) ?? Array.from(this._settings.values()).filter(filter);
+			const arr = Array.from(this._settings.values()).filter(filter);
 			return [
 				() => () => undefined,
 				() => {
