@@ -351,7 +351,7 @@ export class MockedAppRootBuilder {
 		const innerFn = this.server.getStream;
 
 		const outerFn: ServerContextValue['getStream'] = (innerStreamName) => {
-			if (innerStreamName === (streamName as StreamNames)) {
+			if (innerStreamName === String(streamName)) {
 				ref.controller = {
 					emit: <K extends StreamKeys<N>>(eventName: K, args: StreamerCallbackArgs<N, K>) => {
 						this.events.emit(`stream-${innerStreamName}-${eventName}` as AllStreamerEventKeys, ...args);
@@ -399,8 +399,8 @@ export class MockedAppRootBuilder {
 
 		const outerFn = (
 			innerPermission: string | ObjectId,
-			innerScope?: string | ObjectId | undefined,
-			innerScopedRoles?: string[] | undefined,
+			innerScope?: string | ObjectId,
+			innerScopedRoles?: string[],
 		): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => boolean] => {
 			if (innerPermission === permission) {
 				return [() => () => undefined, () => true];
@@ -415,8 +415,8 @@ export class MockedAppRootBuilder {
 
 		const outerFn2 = (
 			innerPermissions: Array<string | ObjectId>,
-			innerScope?: string | ObjectId | undefined,
-			innerScopedRoles?: string[] | undefined,
+			innerScope?: string | ObjectId,
+			innerScopedRoles?: string[],
 		): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => boolean] => {
 			if (innerPermissions.includes(permission)) {
 				return [() => () => undefined, () => true];
@@ -431,8 +431,8 @@ export class MockedAppRootBuilder {
 
 		const outerFn3 = (
 			innerPermissions: Array<string | ObjectId>,
-			innerScope?: string | ObjectId | undefined,
-			innerScopedRoles?: string[] | undefined,
+			innerScope?: string | ObjectId,
+			innerScopedRoles?: string[],
 		): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => boolean] => {
 			if (innerPermissions.includes(permission)) {
 				return [() => () => undefined, () => true];
@@ -538,7 +538,7 @@ export class MockedAppRootBuilder {
 
 		const outerFn = (
 			innerRole: string | ObjectId,
-			innerScope?: string | undefined,
+			innerScope?: string,
 		): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => boolean] => {
 			if (innerRole === role) {
 				return [() => () => undefined, () => true];
@@ -564,7 +564,7 @@ export class MockedAppRootBuilder {
 
 		const outerFn = (
 			innerRole: string | ObjectId,
-			innerScope?: string | undefined,
+			innerScope?: string,
 		): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => boolean] => {
 			if (innerRole === role && innerScope === scope) {
 				return [() => () => undefined, () => true];
@@ -642,7 +642,7 @@ export class MockedAppRootBuilder {
 
 		const outerFn = <T,>(
 			key: string | ObjectId,
-			defaultValue?: T | undefined,
+			defaultValue?: T,
 		): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => T | undefined] => {
 			if (key === id) {
 				return [() => () => undefined, () => value as T];
@@ -838,7 +838,7 @@ export class MockedAppRootBuilder {
 
 		void i18n.init();
 
-		return function MockedAppRoot({ children }) {
+		return function MockedAppRoot({ children }: { children: ReactNode }) {
 			const [translation, updateTranslation] = useReducer(reduceTranslation, undefined, () => reduceTranslation());
 
 			useEffect(() => {
