@@ -1,5 +1,5 @@
 /**
- * How many mailboxes at once, and how many connections EWS opens to Exchange. Kept low because neither
+ * How many mailboxes run at once and the maximum number of connections in the EWS pool. Kept low because neither
  * server tells us its request limit, and crossing it gets us throttled.
  */
 export const MAILBOX_CONCURRENCY = 5;
