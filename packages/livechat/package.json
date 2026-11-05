@@ -65,6 +65,8 @@
 		"@storybook/addon-docs": "~10.6.5",
 		"@storybook/preact": "~10.6.5",
 		"@storybook/preact-vite": "~10.6.5",
+		"@tamagui/static": "3.0.18",
+		"@tamagui/vite-plugin": "3.0.18",
 		"@types/crypto-js": "~4.2.2",
 		"@types/emoji-mart": "~3.0.14",
 		"@types/react": "~19.2.18",

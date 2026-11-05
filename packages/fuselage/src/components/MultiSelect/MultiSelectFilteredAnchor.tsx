@@ -1,6 +1,6 @@
 import { use, type InputEvent } from 'react';
 
-import { FlexItem } from '../Flex';
+import { StylingBox } from '../Box';
 import { Input } from '../InputBox';
 import type { MultiSelectAnchorParams } from './MultiSelectAnchorParams';
 import { MultiSelectFilteredContext } from './MultiSelectFilteredContext';
@@ -11,7 +11,7 @@ function MultiSelectFilteredAnchor({ children: _children, ...props }: MultiSelec
 	const { placeholder, filter, setFilter } = use(MultiSelectFilteredContext);
 
 	return (
-		<FlexItem grow={1} order={1}>
+		<StylingBox flexGrow={1} order={1}>
 			<Input
 				placeholder={placeholder}
 				value={filter}
@@ -20,7 +20,7 @@ function MultiSelectFilteredAnchor({ children: _children, ...props }: MultiSelec
 				className='rcx-input-box--undecorated'
 				autoComplete='off'
 			/>
-		</FlexItem>
+		</StylingBox>
 	);
 }
 

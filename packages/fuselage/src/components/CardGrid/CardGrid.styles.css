@@ -1,0 +1,26 @@
+.rcx-grid.rcx-card-grid {
+	--rcx-card-grid-min-row-height: auto;
+}
+
+/* generated grid by scripts/generate-frame-values.mts from @rocket.chat/fuselage-tokens, do not edit */
+
+.rcx-grid.rcx-card-grid {
+	margin: -8px;
+}
+
+/* end of generated grid */
+
+.rcx-card-grid__item {
+	display: grid;
+
+	min-height: var(--rcx-card-grid-min-row-height, auto);
+	grid-template-columns: minmax(0, 1fr);
+}
+
+/* generated item by scripts/generate-frame-values.mts from @rocket.chat/fuselage-tokens, do not edit */
+
+.rcx-grid__item.rcx-card-grid__item {
+	padding: 8px;
+}
+
+/* end of generated item */

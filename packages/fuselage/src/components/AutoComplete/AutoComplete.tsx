@@ -18,6 +18,7 @@ import { Icon } from '../Icon';
 import { Input } from '../InputBox';
 import { useCursor, Options, type OptionType } from '../Options';
 import { PositionAnimated } from '../PositionAnimated';
+import SelectContainer from '../Select/SelectContainer';
 
 export type AutoCompleteOption<TLabel> = {
 	value: string;
@@ -100,13 +101,11 @@ function AutoComplete<TLabel = ReactNode>({
 	const { ref: containerRef, borderBoxSize } = useResizeObserver();
 
 	const [selected, setSelected] = useState(() => getSelected(value, options) || []);
-
-	useEffect(() => {
-		// Validates if selected items are still valid after value changes
-		setSelected((selected) => {
-			return !selected.every(isSelectedValid(value)) ? selected.filter(isSelectedValid(value)) : selected;
-		});
-	}, [value]);
+	const [syncedValue, setSyncedValue] = useState(value);
+	if (value !== syncedValue) {
+		setSyncedValue(value);
+		setSelected(selected.filter(isSelectedValid(value)));
+	}
 
 	const handleSelect = useStableCallback(([newValue]: OptionType<string, TLabel>) => {
 		if (selected.some((item) => item.value === newValue)) {
@@ -153,13 +152,14 @@ function AutoComplete<TLabel = ReactNode>({
 	useEffect(reset, [filter, reset]);
 
 	return (
-		<Box
+		<SelectContainer
 			animated
 			rcx-autocomplete
 			ref={containerRef}
 			onClick={useStableCallback(() => innerRef.current?.focus())}
 			flexGrow={1}
-			className={useMemo(() => [error && 'invalid', disabled && 'disabled'], [error, disabled])}
+			rcx-select--invalid={!!error}
+			rcx-select--disabled={disabled}
 		>
 			<Box display='flex' flexGrow={1} alignItems='center' flexWrap='wrap' gap={4} role='group'>
 				<Input
@@ -197,7 +197,7 @@ function AutoComplete<TLabel = ReactNode>({
 					options={memoizedOptions}
 				/>
 			</PositionAnimated>
-		</Box>
+		</SelectContainer>
 	);
 }
 

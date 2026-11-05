@@ -50,6 +50,12 @@ An application component built on a Fuselage one types its props from that compo
 type ResetSettingButtonProps = Omit<ComponentProps<typeof IconButton>, 'icon'>;
 ```
 
+### Where `className`, `style` and the rest land
+
+The root element receives `className`, `style`, `data-*` and `ref`. A component with more than one element gives the inner ones an explicit `xxxProps` prop (`Bubble.contentProps`, `AudioPlayer.trackProps`).
+
+Form controls and media are the exception: `CheckBox`, `RadioButton`, `ToggleSwitch` and `Avatar` put `className` on the outer `<label>` or `<figure>` and every other attribute on the inner `<input>` or `<img>`, because that is the element a form or a test targets. `InputBox` follows the same idea: `className` lands on the wrapper when there is an addon, and on the `<input>` otherwise. `AudioPlayer` keeps `className` and the HTML attributes on its root, but its `ref` targets the inner `<audio>`, the element a caller controls playback through.
+
 ## No outer spacing
 
 A component never sets its own outer margin, width or flex behavior. Those belong to the container (see [Layout in the app](layout.md)). A component that needs room for something it draws (a focus ring, a badge) makes that room inside its own box.
@@ -119,3 +125,7 @@ Logical components live in the application. They hold state and data, and render
 - One component per state: render `IncomingPopup`, `OutgoingPopup` or `StartCallPopup` depending on the call state, rather than one component with conditionals in its markup.
 - Customize through the variations the visual components declare, never by restyling them.
 - Styles the application needs go in a stylesheet and reach the component through `className`.
+
+### Overriding a Fuselage part from a stylesheet
+
+Fuselage components compiled by Tamagui get their styles from atomic classes in a stylesheet that loads after the application's. A rule that restyles a Fuselage part with one class (`.rcx-button { … }`) loses to them, so add `[class]` to it: `.rcx-button[class] { … }`. For the longhands of a shorthand (`border-color`, `padding-block`, `padding-inline`, `margin-block`, `margin-inline`, `flex-grow`, `flex-direction`, `border-top-width` and the like), Tamagui doubles the class, so add `[class]` twice. Check the override in a production build: in development the application's styles load last and the rule wins without it.

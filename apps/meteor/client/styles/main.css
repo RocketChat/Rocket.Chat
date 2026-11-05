@@ -1,5 +1,5 @@
-/* The reset loses to every unlayered rule, whatever order the stylesheets load in. */
-@layer reset;
+/* The reset loses to Fuselage's layer and to every unlayered rule, whatever order the stylesheets load in. */
+@layer reset, fuselage;
 
 /* General */
 @import url('./imports/general/variables.css');
