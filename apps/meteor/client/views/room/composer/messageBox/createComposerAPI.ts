@@ -3,6 +3,7 @@ import type { RefObject } from 'react';
 import type { ComposerAPI } from '../../../../lib/chats/ChatAPI';
 import { createComposerAPICore, triggerEvent, type SetText } from '../../../../lib/createComposerAPICore';
 import { limitQuoteChain } from '../../../../lib/limitQuoteChain';
+import { getLineMarker, isEachLineWrapped, toggleLineMarker } from '../../../../lib/toggleLineMarker';
 
 export const createComposerAPI = (
 	input: HTMLTextAreaElement,
@@ -66,6 +67,39 @@ export const createComposerAPI = (
 		const finalText = input.value.slice(selectionEnd, input.value.length);
 
 		focus();
+
+		const lineMarker = getLineMarker(pattern);
+
+		if (lineMarker && selectedText.includes('\n')) {
+			const markerAround =
+				input.value.slice(selectionStart - lineMarker.length, selectionStart) === lineMarker &&
+				input.value.slice(selectionEnd, selectionEnd + lineMarker.length) === lineMarker;
+			const blockStart = markerAround ? selectionStart - lineMarker.length : selectionStart;
+			const blockEnd = markerAround ? selectionEnd + lineMarker.length : selectionEnd;
+			const block = input.value.slice(blockStart, blockEnd);
+
+			if (!markerAround || isEachLineWrapped(block, lineMarker)) {
+				const toggledText = toggleLineMarker(block, lineMarker);
+
+				input.setSelectionRange(blockStart, blockEnd);
+				if (!document.execCommand?.('insertText', false, toggledText)) {
+					input.value = input.value.slice(0, blockStart) + toggledText + input.value.slice(blockEnd);
+				}
+
+				input.selectionStart = blockStart;
+				input.selectionEnd = blockStart + toggledText.length;
+				triggerEvent(input, 'input');
+				triggerEvent(input, 'change');
+
+				focus();
+
+				return {
+					selectionStart: input.selectionStart,
+					selectionEnd: input.selectionEnd,
+					value: input.value,
+				};
+			}
+		}
 
 		const startPattern = pattern.slice(0, pattern.indexOf('{{text}}'));
 		const startPatternFound = input.value.slice(selectionStart - startPattern.length, selectionStart) === startPattern;
