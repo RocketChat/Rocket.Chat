@@ -60,9 +60,11 @@ describe('Reader family (base-runtime)', () => {
 			});
 		});
 
-		it('getMessages rejects a limit above 100', async () => {
+		it('getMessages rejects limits outside 1 to 100', async () => {
 			const { senderFn } = setup();
-			assert.throws(() => new RoomRead(senderFn).getMessages('r1', { limit: 101 }), /Expected number <= 100, got 101/);
+			assert.throws(() => new RoomRead(senderFn).getMessages('r1', { limit: 0 }), /between 1 and 100, got 0/);
+			assert.throws(() => new RoomRead(senderFn).getMessages('r1', { limit: -1 }), /between 1 and 100, got -1/);
+			assert.throws(() => new RoomRead(senderFn).getMessages('r1', { limit: 101 }), /between 1 and 100, got 101/);
 		});
 
 		it('getMessages rejects an invalid sort key and direction', async () => {
