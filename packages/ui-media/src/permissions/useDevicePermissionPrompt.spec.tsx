@@ -1,10 +1,10 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { ModalProvider, ModalRegion } from '@rocket.chat/ui-client';
 import { renderHook, screen, waitFor, act } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 import type { ReactNode } from 'react';
 
-import { PermissionRequestCancelledCallRejectedError, useDevicePermissionPrompt2 } from './useDevicePermissionPrompt';
+import { PermissionRequestCancelledCallRejectedError, useDevicePermissionPrompt2 } from './useDevicePermissionPrompt.js';
 
 const types = ['device-change', 'outgoing', 'incoming'] as const;
 
