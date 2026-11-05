@@ -169,7 +169,7 @@ describe('the archive', () => {
 		expect(dialog).toHaveTextContent('“general” moves to the Archived group.');
 		expect(JSON.parse(localStorage.getItem(ARCHIVED_KEY) ?? '[]')).toEqual([]);
 
-		await userEvent.click(screen.getByRole('button', { name: 'Archive room' }));
+		await userEvent.click(screen.getByRole('button', { name: 'Archive' }));
 
 		expect(JSON.parse(localStorage.getItem(ARCHIVED_KEY) ?? '[]')).toEqual(['roomId']);
 	});

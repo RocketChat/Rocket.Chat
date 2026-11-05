@@ -1053,7 +1053,7 @@
   "archive-room": "Archive room",
   "archive-room_description": "Permission to archive a channel",
   "Archived": "Archived",
-  "Archived_rooms_stay_until_unarchived": "The room you have open stays. Archived rooms stay archived, with no badge, until you unarchive them from the Archived group.",
+  "Archived_rooms_stay_until_unarchived": "Rooms move to the Archived group and keep no badge until you unarchive them. The room currently open stays.",
   "Are_you_sure": "Are you sure?",
   "Are_you_sure_delete_contact": "Are you sure you want to delete {{contactName}} and all {{channelsCount}} of their conversation history? To confirm, type '{{confirmationText}}' in the field below.",
   "Are_you_sure_delete_department": "Are you sure you want to delete this department? This action cannot be undone. Please enter the department name to confirm.",
@@ -5942,8 +5942,8 @@
     "other": "{{count}} rooms archived"
   },
   "Rooms_to_archive": {
-    "one": "{{count}} room will be archived",
-    "other": "{{count}} rooms will be archived"
+    "one": "{{count}} room to archive",
+    "other": "{{count}} rooms to archive"
   },
   "Rooms_added_successfully": "Rooms added successfully",
   "Root": "Root",

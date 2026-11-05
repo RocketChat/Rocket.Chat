@@ -132,7 +132,7 @@ const ArchiveRoomsModal = ({ mode, groupTitle, rooms, onClose }: ArchiveRoomsMod
 	return (
 		<GenericModal
 			title={t('Archive_rooms_in__group__', { group: groupTitle })}
-			icon='archive'
+			icon={null}
 			variant='warning'
 			confirmText={t('Archive')}
 			confirmDisabled={candidates.length === 0}

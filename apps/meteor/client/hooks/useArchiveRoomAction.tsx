@@ -42,7 +42,7 @@ export const useArchiveRoomAction = ({ rid, type, name }: ArchiveRoomProps) => {
 			<GenericModalDoNotAskAgain
 				icon={null}
 				title={t('Archive_room')}
-				confirmText={t('Archive_room')}
+				confirmText={t('Archive')}
 				cancelText={t('Cancel')}
 				onClose={closeModal}
 				onCancel={closeModal}

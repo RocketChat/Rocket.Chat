@@ -40,8 +40,8 @@ const appRoot = mockAppRoot()
 		Date: 'Date',
 		Include_unread_rooms: 'Include unread rooms',
 		No_rooms_to_archive: 'No rooms to archive',
-		Rooms_to_archive_one: '{{count}} room will be archived',
-		Rooms_to_archive_other: '{{count}} rooms will be archived',
+		Rooms_to_archive_one: '{{count}} room to archive',
+		Rooms_to_archive_other: '{{count}} rooms to archive',
 		Rooms_archived_one: '{{count}} room archived',
 		Rooms_archived_other: '{{count}} rooms archived',
 		Archived_rooms_stay_until_unarchived: 'Archived rooms stay archived until you unarchive them.',
@@ -69,7 +69,7 @@ describe('archiving by an age', () => {
 
 		expect(screen.getByRole('dialog', { name: 'Archive rooms in Channels' })).toBeInTheDocument();
 		expect(screen.getByRole('combobox')).toHaveTextContent('30 days');
-		expect(screen.getByRole('status')).toHaveTextContent('3 rooms will be archived');
+		expect(screen.getByRole('status')).toHaveTextContent('3 rooms to archive');
 	});
 
 	it('archives them, keeping any archived before, and closes', async () => {
@@ -87,7 +87,7 @@ describe('archiving by an age', () => {
 
 		await userEvent.click(screen.getByRole('checkbox', { name: 'Include unread rooms' }));
 
-		expect(screen.getByRole('status')).toHaveTextContent('4 rooms will be archived');
+		expect(screen.getByRole('status')).toHaveTextContent('4 rooms to archive');
 	});
 
 	it('offers a year, counted in years', async () => {
@@ -95,7 +95,7 @@ describe('archiving by an age', () => {
 
 		await pickPreset('1 year');
 
-		expect(screen.getByRole('status')).toHaveTextContent('1 room will be archived');
+		expect(screen.getByRole('status')).toHaveTextContent('1 room to archive');
 	});
 
 	it('takes any number of days', async () => {
@@ -106,7 +106,7 @@ describe('archiving by an age', () => {
 		await userEvent.clear(days);
 		await userEvent.type(days, '60');
 
-		expect(screen.getByRole('status')).toHaveTextContent('2 rooms will be archived');
+		expect(screen.getByRole('status')).toHaveTextContent('2 rooms to archive');
 	});
 });
 
@@ -115,7 +115,7 @@ describe('archiving by a date', () => {
 		renderModal('inactive-since');
 
 		expect(screen.getByRole('combobox')).toHaveTextContent('1 month ago');
-		expect(screen.getByRole('status')).toHaveTextContent('3 rooms will be archived');
+		expect(screen.getByRole('status')).toHaveTextContent('3 rooms to archive');
 	});
 
 	it('takes any date, and has nothing to archive before the oldest room', async () => {
@@ -130,7 +130,7 @@ describe('archiving by a date', () => {
 
 		// A day no room has been active after takes every dated read room but the open one.
 		fireEvent.change(screen.getByLabelText('Date'), { target: { value: '2099-01-01' } });
-		expect(screen.getByRole('status')).toHaveTextContent('4 rooms will be archived');
+		expect(screen.getByRole('status')).toHaveTextContent('4 rooms to archive');
 		expect(screen.getByRole('button', { name: 'Archive' })).toBeEnabled();
 	});
 });
