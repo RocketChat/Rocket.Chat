@@ -3,8 +3,8 @@ import { GenericMenu, type GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useMessageActionAppsActionButtons } from './useMessageActionAppsActionButtons';
 import type { MessageActionContext } from '../../../lib/MessageAction';
+import { useMessageActionAppsActionButtons } from '../../../providers/MessagesProvider/actions/useMessageActionAppsActionButtons';
 
 type MessageActionSection = {
 	id: string;

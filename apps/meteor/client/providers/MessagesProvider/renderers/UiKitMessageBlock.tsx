@@ -4,7 +4,7 @@ import { UiKitComponent, UiKitMessage as UiKitMessageSurfaceRender, UiKitContext
 import type { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
 
 import { useMessageBlockContextValue } from './useMessageBlockContextValue';
-import GazzodownText from '../../GazzodownText';
+import GazzodownText from '../../../components/GazzodownText';
 
 export type UiKitMessageBlockProps = {
 	rid: IRoom['_id'];

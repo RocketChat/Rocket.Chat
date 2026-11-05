@@ -10,7 +10,7 @@ const mockRegisterDownloadForUid = jest.fn();
 const mockOpenDocumentViewer = jest.fn();
 const mockSupportedDocumentViewerFormats = jest.fn(() => ['pdf', 'markdown']);
 
-jest.mock('./hooks/useOpenEncryptedPdf', () => ({
+jest.mock('../../../../../providers/MessagesProvider/useOpenEncryptedPdf', () => ({
 	useOpenEncryptedPdf: () => mockOpenEncryptedPdf,
 }));
 

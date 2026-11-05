@@ -2,8 +2,8 @@ import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { useSetting, usePermission } from '@rocket.chat/ui-contexts';
 
+import { useUnpinMessageMutation } from './useUnpinMessageMutation';
 import type { MessageActionConfig } from '../../../lib/MessageAction';
-import { useUnpinMessageMutation } from '../hooks/useUnpinMessageMutation';
 
 export const useUnpinMessageAction = (
 	message: IMessage,

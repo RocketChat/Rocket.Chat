@@ -1,9 +1,9 @@
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { usePermission, useSetModal, useSetting, useUser } from '@rocket.chat/ui-contexts';
 
+import CreateDiscussion from '../../../components/CreateDiscussion';
 import type { MessageActionConfig } from '../../../lib/MessageAction';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
-import CreateDiscussion from '../../CreateDiscussion';
 
 export const useNewDiscussionMessageAction = (
 	message: IMessage,
