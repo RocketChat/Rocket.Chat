@@ -7,6 +7,12 @@ describe('createPredicateFromFilter', () => {
 		expect(fn({ foo: 'baz' })).toBe(false);
 	});
 
+	it('matches a date only against an equal date', () => {
+		const fn = createPredicateFromFilter({ foo: { $eq: new Date(0) } });
+		expect(fn({ foo: new Date(0) })).toBe(true);
+		expect(fn({ foo: {} })).toBe(false);
+	});
+
 	it('matches $in', () => {
 		const fn = createPredicateFromFilter({ foo: { $in: ['a', 'b'] } });
 		expect(fn({ foo: 'a' })).toBe(true);
