@@ -1,6 +1,8 @@
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 
 import { SubscriptionsCachedStore } from './SubscriptionsCachedStore';
+import { createFakeRoom, createFakeSubscription } from '../../tests/mocks/data';
+import { STORAGE_KEYS } from '../lib/sdk/storage';
 import { Rooms, Subscriptions } from '../stores';
 
 jest.mock('localforage', () => ({
@@ -12,7 +14,7 @@ jest.mock('localforage', () => ({
 
 jest.mock('../lib/SDKClient', () => ({
 	sdk: {
-		call: jest.fn(),
+		call: jest.fn().mockResolvedValue({ update: [], remove: [] }),
 		stream: jest.fn(() => ({ stop: jest.fn() })),
 	},
 }));
@@ -281,5 +283,21 @@ describe('SubscriptionsCachedStore mapRecord', () => {
 		const mapped = await mapThroughStore(buildSubscription({ ts: undefined, lr: new Date('2026-03-01T00:00:00Z') }));
 
 		expect(mapped?.lm).toEqual(new Date('2026-03-01T00:00:00Z'));
+	});
+});
+
+describe('SubscriptionsCachedStore', () => {
+	afterEach(() => SubscriptionsCachedStore.release());
+
+	it('should restore a direct message from the cache with the members of its room', async () => {
+		const { getItem } = jest.requireMock('localforage');
+		const subscription = createFakeSubscription({ _id: 'subscription-id', rid: 'dm-id', t: 'd' });
+		Rooms.use.getState().store(createFakeRoom({ _id: 'dm-id', t: 'd', uids: ['me', 'other'] }));
+		localStorage.setItem(STORAGE_KEYS.LOGIN_TOKEN, 'token');
+		getItem.mockResolvedValue({ version: Number.MAX_SAFE_INTEGER, token: 'token', records: [subscription], updatedAt: new Date() });
+
+		await SubscriptionsCachedStore.init();
+
+		expect(Subscriptions.use.getState().get('subscription-id')).toMatchObject({ uids: ['me', 'other'] });
 	});
 });
