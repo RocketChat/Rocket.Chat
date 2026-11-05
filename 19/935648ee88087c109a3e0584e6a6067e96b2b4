@@ -1,0 +1,17 @@
+apps/meteor/server/services/scheduled-messages/processDueScheduledMessages.test.ts
+  ai_agent 12
+apps/meteor/server/services/scheduled-messages/service.ts
+  ai_agent 46-251
+apps/meteor/server/services/scheduled-messages/deliverScheduledMessage.spec.ts
+  ai_agent 31-79
+packages/core-typings/src/IScheduledMessage.ts
+  ai_agent 11
+apps/meteor/server/services/scheduled-messages/deliverScheduledMessage.ts
+  ai_agent 13-52
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "19935648ee88087c109a3e0584e6a6067e96b2b4",
+  "prompts": {}
+}
