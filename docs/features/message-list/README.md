@@ -43,6 +43,24 @@ Each time the messages change, the list compares the new row keys with the previ
 
 A list reports where it was left: whether it was at the bottom, the message at the top of the viewport and how far into it the viewport was, plus the virtualizer's measurements. Restoring goes to the bottom when the list was left there, to that message at that offset when it is still loaded, and to the bottom otherwise. The measurements are reused only when the rows they describe are still the first rows, in the same order, at the same width.
 
+### Scrolling
+
+The list keeps one **anchor**, what it holds in view:
+
+- **bottom**: the latest message stays at the bottom while messages arrive and content, the viewport or the composer change size;
+- **message**: a message stays at the same place, centered after a jump or at its saved offset after a restore, while the rows around it are measured;
+- **none**: the viewer is reading somewhere and nothing is pinned.
+
+Only the viewer's own input (wheel, touch, scroll keys, dragging the scrollbar, moving between messages with the keyboard) releases an anchor. A scroll that the list or the browser makes can take the list back to the bottom when it lands there, but never away from it. Everything the viewer does between the first gesture and the moment scrolling stops is one **user-scrolling window**; the floating date shows only inside it.
+
+A held message is released after a few seconds without its surroundings changing size, since images resolve well after the first layout.
+
+The list has two **phases**. While **positioning** (opening, restoring), it does not load pages; it counts as placed once nothing moved for a few frames, or after a timeout. Then it is **idle**.
+
+The viewer's own messages always take the list to the bottom. When the list shows an older window of the conversation, it first asks the consumer for the latest page, then goes to the bottom once that page is in.
+
+A message from someone else that arrives while the viewer is away from the bottom raises the "New messages" indicator, which clears once the bottom is reached.
+
 ### Paging
 
-Older messages load when the viewport comes within a third of its height from the first message; newer messages load at the bottom.
+Older messages load when the viewport comes within a third of its height from the first message; newer messages load at the bottom. One page loads at a time. The check runs after every scroll and once more after every data change, so a viewport taller than a page keeps loading until it is full, and it never runs while the list is positioning or holding a message in view.
