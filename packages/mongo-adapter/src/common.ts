@@ -3,7 +3,7 @@ import { BSONType } from './types.js';
 
 export function assertHasValidFieldNames(doc: unknown) {
 	if (doc && typeof doc === 'object') {
-		JSON.stringify(doc, (key, value) => {
+		JSON.stringify(doc, (key, value: unknown) => {
 			assertIsValidFieldName(key);
 			return value;
 		});
