@@ -21,8 +21,27 @@ import { useCallback } from 'react';
  */
 
 export const useButtonPattern = (onPress: (e: MouseEvent<Element> | KeyboardEvent<Element>) => void) => {
+	const handleClick = useCallback(
+		(event: MouseEvent<Element>) => {
+			const target = event.target as Element | null;
+			if (target && typeof target.closest === 'function') {
+				const interactive = target.closest('button, a, input, select, textarea, [role="button"], [role="link"]');
+				if (interactive && interactive !== event.currentTarget) {
+					return;
+				}
+			}
+
+			onPress(event);
+		},
+		[onPress],
+	);
+
 	const handleKeyDown = useCallback(
 		(event: KeyboardEvent<Element>) => {
+			if (event.target !== event.currentTarget) {
+				return;
+			}
+
 			if (event.code === 'Space' || event.code === 'Enter') {
 				event.preventDefault();
 				onPress(event);
@@ -32,7 +51,7 @@ export const useButtonPattern = (onPress: (e: MouseEvent<Element> | KeyboardEven
 	);
 
 	return {
-		onClick: onPress,
+		onClick: handleClick,
 		onKeyDown: handleKeyDown,
 		role: 'button',
 		tabIndex: 0,
