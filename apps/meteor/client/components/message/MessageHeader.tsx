@@ -15,14 +15,8 @@ import { useTranslation } from 'react-i18next';
 
 import StatusIndicators from './StatusIndicators';
 import MessageRoles from './header/MessageRoles';
-import {
-	useMessageListShowUsername,
-	useMessageListShowRealName,
-	useMessageListShowRoles,
-	useMessageListFormatDateAndTime,
-	useMessageListFormatTime,
-} from './list/MessageListContext';
-import { normalizeUsername } from '../../../lib/utils/normalizeUsername';
+import { useMessageAuthorUsername } from './hooks/useMessageAuthorUsername';
+import { useMessageListShowRoles, useMessageListFormatDateAndTime, useMessageListFormatTime } from './list/MessageListContext';
 import { useUserRolesByScope } from '../../hooks/useUserRolesByScope';
 import { useIsSelecting } from '../../views/room/MessageList/contexts/SelectedMessagesContext';
 
@@ -38,11 +32,8 @@ const MessageHeader = ({ message }: MessageHeaderProps) => {
 	const { openUserCard, openUserInfo } = useUserCard();
 	const buttonProps = useButtonPattern(() => openUserInfo(message.u.username));
 
-	const showRealName = useMessageListShowRealName();
 	const user = { ...message.u, roles: [], ...useUserPresence(message.u._id) };
-	const normalizedUsername = normalizeUsername(user.username);
-	const usernameAndRealNameAreSame = !user.name || normalizedUsername === normalizeUsername(user.name);
-	const showUsername = useMessageListShowUsername() && showRealName && !usernameAndRealNameAreSame;
+	const { normalizedUsername, showUsername } = useMessageAuthorUsername(user);
 	const displayName = useUserDisplayName(user);
 
 	const showRoles = useMessageListShowRoles();
@@ -63,12 +54,7 @@ const MessageHeader = ({ message }: MessageHeaderProps) => {
 		<FuselageMessageHeader>
 			<MessageNameContainer id={`${message._id}-displayName`} {...authorTriggerProps}>
 				<MessageName data-username={normalizedUsername}>{message.alias || displayName}</MessageName>
-				{showUsername && (
-					<>
-						{' '}
-						<MessageUsername data-username={normalizedUsername}>@{normalizedUsername}</MessageUsername>
-					</>
-				)}
+				{showUsername && <MessageUsername data-username={normalizedUsername}>@{normalizedUsername}</MessageUsername>}
 			</MessageNameContainer>
 			{shouldShowRolesList && (
 				<MessageRoles
