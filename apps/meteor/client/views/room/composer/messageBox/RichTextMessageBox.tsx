@@ -12,6 +12,7 @@ import { memo, useRef, useReducer, useCallback, useState, useSyncExternalStore, 
 import type { MessageBoxProps } from './MessageBox';
 import MessageBoxBase from './MessageBoxBase';
 import MessageComposerFiles from './MessageComposerFiles';
+import { useScheduledMessageEditing } from './ScheduleMessage/useScheduledMessageEditing';
 import { useComposerHistory } from './hooks/useComposerHistory';
 import { useDraft } from './hooks/useDraft';
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
@@ -210,6 +211,10 @@ const RichTextMessageBox = ({
 
 	const { hasUploads, handleUploadFiles, isUploading, isProcessingUploads } = useFileUpload();
 
+	const scheduledEdit = useScheduledMessageEditing(room._id, tmid, chat.composer, (value) => {
+		void onSend?.({ value, tshow, previewUrls, isSlashCommandAllowed });
+	});
+
 	const handleSendMessage = useStableCallback(() => {
 		if (isUploading || isProcessingUploads) {
 			return;
@@ -217,6 +222,10 @@ const RichTextMessageBox = ({
 
 		const text = chat.composer?.text ?? '';
 		popup.clear();
+
+		if (scheduledEdit.handleSend(text)) {
+			return;
+		}
 
 		void onSend?.({
 			value: text,
@@ -227,6 +236,9 @@ const RichTextMessageBox = ({
 	});
 
 	const closeEditing = async (event: KeyboardEvent | MouseEvent<HTMLElement>) => {
+		if (scheduledEdit.handleClose(event)) {
+			return;
+		}
 		const input = contentEditableRef.current as HTMLDivElement;
 		const mid = chat.currentEditingMessage.getMID();
 
@@ -481,11 +493,13 @@ const RichTextMessageBox = ({
 		<MessageBoxBase
 			rid={room._id}
 			tmid={tmid}
+			tshow={tshow}
 			composer={chat.composer}
 			messageComposerRef={messageComposerRef}
 			popup={popup}
 			shouldPopupPreview={shouldPopupPreview}
 			isEditing={isEditing}
+			isEditingScheduled={!!scheduledEdit.editing}
 			isRecording={isRecording}
 			isRecordingAudio={isRecordingAudio}
 			isRecordingVideo={isRecordingVideo}
