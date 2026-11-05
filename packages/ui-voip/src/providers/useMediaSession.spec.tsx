@@ -2,7 +2,7 @@ import type { MediaSignalingSession } from '@rocket.chat/media-signaling';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { renderHook } from '@testing-library/react';
 
-import { useMediaSession } from './useMediaSession';
+import { useMediaSession } from './useMediaSession.js';
 
 /** A call this session placed, before the server confirms it. */
 const unconfirmedCall = {

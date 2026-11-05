@@ -1,2 +1,2 @@
-export { default as MediaCallRoomSection } from './MediaCallRoomSection';
-export { default as MediaCallRoomActivity } from './MediaCallRoomActivity';
+export { default as MediaCallRoomSection } from './MediaCallRoomSection.js';
+export { default as MediaCallRoomActivity } from './MediaCallRoomActivity.js';

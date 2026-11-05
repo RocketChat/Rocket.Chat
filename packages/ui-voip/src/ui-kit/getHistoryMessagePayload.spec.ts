@@ -6,7 +6,7 @@ import {
 	getFormattedCallDuration,
 	getHistoryMessagePayload,
 	getHistoryAction,
-} from './getHistoryMessagePayload';
+} from './getHistoryMessagePayload.js';
 
 const appId = 'media-call-core';
 describe('callStateToTranslationKey', () => {

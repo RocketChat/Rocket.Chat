@@ -3,9 +3,9 @@ import { composeStories } from '@storybook/react';
 import { render } from '@testing-library/react';
 import { axe } from 'jest-axe';
 
-import MediaCallWidget from './MediaCallWidget';
-import * as stories from './MediaCallWidget.stories';
-import MockedMediaCallProvider from '../../providers/MockedMediaCallProvider';
+import MediaCallWidget from './MediaCallWidget.js';
+import * as stories from './MediaCallWidget.stories.js';
+import MockedMediaCallProvider from '../../providers/MockedMediaCallProvider.js';
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 

@@ -3,13 +3,20 @@ import { ActionButton, ToggleButton } from '@rocket.chat/ui-media';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Timer, DevicePicker, useShouldWrapCards, CARD_LIST_SECTION_MAX_HEIGHT, ActionStrip, ActionToggleChat } from '../../components';
-import { useMediaCallInstance } from '../../context/MediaCallInstanceContext';
-import { useMediaCallView } from '../../context/MediaCallViewContext';
-import useRegisterView from '../../context/useRegisterView';
-import { isInternalPeer } from '../../utils/isInternalPeer';
-import MediaCallCardList from '../MediaCallCardList';
-import PopoutDockPrompt from '../PopoutDockPrompt';
+import {
+	Timer,
+	DevicePicker,
+	useShouldWrapCards,
+	CARD_LIST_SECTION_MAX_HEIGHT,
+	ActionStrip,
+	ActionToggleChat,
+} from '../../components/index.js';
+import { useMediaCallInstance } from '../../context/MediaCallInstanceContext.js';
+import { useMediaCallView } from '../../context/MediaCallViewContext.js';
+import useRegisterView from '../../context/useRegisterView.js';
+import { isInternalPeer } from '../../utils/isInternalPeer.js';
+import MediaCallCardList from '../MediaCallCardList.js';
+import PopoutDockPrompt from '../PopoutDockPrompt.js';
 
 export type MediaCallRoomSectionProps = {
 	showChat: boolean;

@@ -1,5 +1,5 @@
-import InlineMediaCallWidgetContent from './InlineMediaCallWidgetContent';
-import MediaCallViewProvider from '../../providers/MediaCallViewProvider';
+import InlineMediaCallWidgetContent from './InlineMediaCallWidgetContent.js';
+import MediaCallViewProvider from '../../providers/MediaCallViewProvider.js';
 
 const InlineMediaCallWidget = () => (
 	<MediaCallViewProvider>

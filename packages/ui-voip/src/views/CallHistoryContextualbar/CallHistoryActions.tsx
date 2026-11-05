@@ -3,8 +3,8 @@ import { ContextualbarActions, ContextualbarClose, GenericMenu } from '@rocket.c
 import type { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
 
-import type { PeekMediaSessionStateReturn } from '../../context/usePeekMediaSessionState';
-import { usePeekMediaSessionState } from '../../context/usePeekMediaSessionState';
+import type { PeekMediaSessionStateReturn } from '../../context/usePeekMediaSessionState.js';
+import { usePeekMediaSessionState } from '../../context/usePeekMediaSessionState.js';
 
 type HistoryActions = 'voiceCall' | 'videoCall' | 'jumpToMessage' | 'directMessage' | 'userInfo';
 

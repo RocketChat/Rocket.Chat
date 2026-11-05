@@ -1,7 +1,7 @@
 import type { AnyMediaCallData } from '@rocket.chat/media-signaling';
 
-import { derivePeerInfoFromInstanceContact } from './derivePeerInfoFromInstanceContact';
-import type { UnknownPeerInfo } from '../context';
+import { derivePeerInfoFromInstanceContact } from './derivePeerInfoFromInstanceContact.js';
+import type { UnknownPeerInfo } from '../context/index.js';
 
 export const derivePeerInfoFromInstanceState = (callState: AnyMediaCallData) => {
 	if (!callState.confirmed) {

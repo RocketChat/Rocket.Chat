@@ -3,10 +3,10 @@ import { GenericMenu, useSort } from '@rocket.chat/ui-client';
 import type { Meta, StoryObj } from '@storybook/react';
 import { action } from 'storybook/actions';
 
-import type { CallHistoryTableRowProps } from './CallHistoryTableRow';
-import CallHistoryTableRow from './CallHistoryTableRow';
-import MediaCallHistoryTable from './MediaCallHistoryTable';
-import type { CallHistoryContact, CallHistoryInternalContact } from '../../definitions';
+import type { CallHistoryTableRowProps } from './CallHistoryTableRow.js';
+import CallHistoryTableRow from './CallHistoryTableRow.js';
+import MediaCallHistoryTable from './MediaCallHistoryTable.js';
+import type { CallHistoryContact, CallHistoryInternalContact } from '../../definitions/index.js';
 
 const mockedContexts = mockAppRoot()
 	.withTranslations('en', 'core', {

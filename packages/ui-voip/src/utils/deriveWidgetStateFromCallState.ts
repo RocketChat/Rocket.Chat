@@ -1,6 +1,6 @@
 import type { CallRole, CallState } from '@rocket.chat/media-signaling';
 
-import type { State } from '../context/definitions';
+import type { State } from '../context/definitions.js';
 
 export const deriveWidgetStateFromCallState = (
 	callState: CallState,

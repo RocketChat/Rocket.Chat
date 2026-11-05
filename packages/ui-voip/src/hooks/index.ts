@@ -1,3 +1,3 @@
-export { useDraggable } from './VoipPopupDraggable/DraggableCore';
-export { useMediaCallAction } from './useMediaCallAction';
-export { useMediaCallOpenRoomTracker } from './useMediaCallOpenRoomTracker';
+export { useDraggable } from './VoipPopupDraggable/DraggableCore.js';
+export { useMediaCallAction } from './useMediaCallAction.js';
+export { useMediaCallOpenRoomTracker } from './useMediaCallOpenRoomTracker.js';

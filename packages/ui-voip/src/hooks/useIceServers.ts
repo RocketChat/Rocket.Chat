@@ -1,8 +1,8 @@
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
-import type { IceServer } from '../definitions';
-import { parseStringToIceServers } from '../utils/parseStringToIceServers';
+import type { IceServer } from '../definitions/index.js';
+import { parseStringToIceServers } from '../utils/parseStringToIceServers/index.js';
 
 export const useIceServers = (): IceServer[] => {
 	const servers = useSetting('VoIP_TeamCollab_Ice_Servers');
