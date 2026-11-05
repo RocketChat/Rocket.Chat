@@ -26,15 +26,15 @@ import { ConnectionState, Room, RoomEvent, Track } from 'livekit-client';
 import type { ReactNode } from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { connectionStateFor, isAgentParticipant, otherPeople, toRemoteParticipantInfo } from './callParticipants';
-import { useCallDataChannel } from './useCallDataChannel';
-import { useCallDeviceSwitching } from './useCallDeviceSwitching';
-import { useCallDiagnostics } from './useCallDiagnostics';
-import { useLiveKitTransport } from './useLiveKitTransport';
-import { useNoiseSuppression } from './useNoiseSuppression';
-import { useSendResolution } from './useSendResolution';
-import { useSpeakingWhileMuted } from './useSpeakingWhileMuted';
-import { useVideoQuality } from './useVideoQuality';
+import { connectionStateFor, isAgentParticipant, otherPeople, toRemoteParticipantInfo } from './callParticipants.js';
+import { useCallDataChannel } from './useCallDataChannel.js';
+import { useCallDeviceSwitching } from './useCallDeviceSwitching.js';
+import { useCallDiagnostics } from './useCallDiagnostics.js';
+import { useLiveKitTransport } from './useLiveKitTransport.js';
+import { useNoiseSuppression } from './useNoiseSuppression.js';
+import { useSendResolution } from './useSendResolution.js';
+import { useSpeakingWhileMuted } from './useSpeakingWhileMuted.js';
+import { useVideoQuality } from './useVideoQuality.js';
 
 export type LiveKitCallProviderProps = {
 	callId: string;

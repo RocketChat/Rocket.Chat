@@ -4,7 +4,7 @@ import { supportsRnnoise, useNoiseSuppressionPreference } from '@rocket.chat/ui-
 import type { AudioCaptureOptions, LocalAudioTrack, Room } from 'livekit-client';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-import { RnnoiseProcessor } from './rnnoiseProcessor';
+import { RnnoiseProcessor } from './rnnoiseProcessor.js';
 
 /** Weakest first, the order the microphone menu offers them in. */
 const ORDER: NoiseMethod[] = ['none', 'browser', 'rnnoise'];
