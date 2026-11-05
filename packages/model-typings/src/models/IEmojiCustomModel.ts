@@ -1,8 +1,8 @@
 import type { IEmojiCustom } from '@rocket.chat/core-typings';
 import type { FindCursor, InsertOneResult, UpdateResult, WithId, Document } from 'mongodb';
 
-import type { IBaseModel, InsertionModel } from './IBaseModel';
-import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
+import type { IBaseModel, InsertionModel } from './IBaseModel.js';
+import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection.js';
 
 export interface IEmojiCustomModel extends IBaseModel<IEmojiCustom> {
 	findByNameOrAlias<T extends Document = IEmojiCustom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(

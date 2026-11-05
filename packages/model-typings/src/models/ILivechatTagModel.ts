@@ -1,7 +1,7 @@
 import type { ILivechatTag } from '@rocket.chat/core-typings';
 import type { DeleteResult } from 'mongodb';
 
-import type { IBaseModel } from './IBaseModel';
+import type { IBaseModel } from './IBaseModel.js';
 
 export interface ILivechatTagModel extends IBaseModel<ILivechatTag> {
 	createOrUpdateTag(

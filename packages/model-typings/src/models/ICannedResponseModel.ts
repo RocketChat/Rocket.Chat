@@ -1,8 +1,8 @@
 import type { IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
 import type { FindCursor, DeleteResult, UpdateResult, Document } from 'mongodb';
 
-import type { IBaseModel } from './IBaseModel';
-import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
+import type { IBaseModel } from './IBaseModel.js';
+import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection.js';
 
 export interface ICannedResponseModel extends IBaseModel<IOmnichannelCannedResponse> {
 	findOneByShortcut<T extends Document = IOmnichannelCannedResponse, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(

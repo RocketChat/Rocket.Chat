@@ -1,8 +1,8 @@
 import type { IOAuthApps } from '@rocket.chat/core-typings';
 import type { Document } from 'mongodb';
 
-import type { IBaseModel } from './IBaseModel';
-import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
+import type { IBaseModel } from './IBaseModel.js';
+import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection.js';
 
 export interface IOAuthAppsModel extends IBaseModel<IOAuthApps> {
 	findOneAuthAppByIdOrClientId<T extends Document = IOAuthApps, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(

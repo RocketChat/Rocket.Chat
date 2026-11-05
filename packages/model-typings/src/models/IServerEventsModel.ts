@@ -1,6 +1,6 @@
 import type { ExtractDataToParams, IAuditServerActor, IServerEvent, IServerEvents } from '@rocket.chat/core-typings';
 
-import type { IBaseModel } from './IBaseModel';
+import type { IBaseModel } from './IBaseModel.js';
 
 export interface IServerEventsModel extends IBaseModel<IServerEvent> {
 	findLastFailedAttemptByIp(ip: string): Promise<IServerEvent | null>;

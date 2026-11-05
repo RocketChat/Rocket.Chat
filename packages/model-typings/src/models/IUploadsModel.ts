@@ -1,9 +1,9 @@
 import type { IRoom, IUpload } from '@rocket.chat/core-typings';
 import type { FindCursor, WithId, Filter, FindOptions, UpdateResult, Document } from 'mongodb';
 
-import type { FindPaginated } from './IBaseModel';
-import type { IBaseUploadsModel } from './IBaseUploadsModel';
-import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
+import type { FindPaginated } from './IBaseModel.js';
+import type { IBaseUploadsModel } from './IBaseUploadsModel.js';
+import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection.js';
 
 export interface IUploadsModel extends IBaseUploadsModel<IUpload> {
 	findPaginatedWithoutThumbs(query: Filter<IUpload>, options?: any): FindPaginated<FindCursor<WithId<IUpload>>>;
