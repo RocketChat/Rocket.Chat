@@ -89,3 +89,15 @@ describe('ReadStateManager.attemptMarkAsRead', () => {
 		expect(sdk.rest.post).not.toHaveBeenCalled();
 	});
 });
+
+describe('ReadStateManager.markAsRead', () => {
+	beforeEach(() => {
+		jest.clearAllMocks();
+	});
+
+	it('should not mark as read a room the user is not subscribed to', async () => {
+		await new ReadStateManager('room-id').markAsRead();
+
+		expect(sdk.rest.post).not.toHaveBeenCalled();
+	});
+});
