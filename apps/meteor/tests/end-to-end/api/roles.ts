@@ -1,11 +1,12 @@
 import { after, before, describe, it } from 'node:test';
 
-import type { IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { updatePermission } from '../../data/permissions.helper';
+import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { password, adminUsername } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 
@@ -500,6 +501,71 @@ describe('[Roles]', () => {
 					expect(res.body).to.have.property('total', 0);
 					expect(res.body).to.have.property('users');
 					expect(res.body.users).to.be.an('array').that.is.empty;
+				});
+		});
+	});
+
+	describe('[/roles.removeUserFromRole] subscription-scoped roles', () => {
+		let testUser: IUser;
+		let testRoomId: IRoom['_id'];
+
+		before(async () => {
+			await updatePermission('access-permissions', ['admin']);
+			testUser = await createUser();
+			const room = await createRoom({
+				type: 'c',
+				name: `role.removeUserFromRole.scoped.${Date.now()}`,
+				members: [testUser.username as string],
+			});
+			testRoomId = room.body.channel._id;
+		});
+
+		after(async () => {
+			await deleteRoom({ type: 'c', roomId: testRoomId });
+			await deleteUser(testUser);
+		});
+
+		it('should remove a user from a room-scoped role when the room is given as roomId', async () => {
+			await request
+				.post(api('roles.addUserToRole'))
+				.set(credentials)
+				.send({
+					roleId: 'moderator',
+					username: testUser.username,
+					roomId: testRoomId,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await request
+				.post(api('roles.removeUserFromRole'))
+				.set(credentials)
+				.send({
+					roleId: 'moderator',
+					username: testUser.username,
+					roomId: testRoomId,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await request
+				.get(api('roles.getUsersInRole'))
+				.set(credentials)
+				.query({
+					role: 'moderator',
+					roomId: testRoomId,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('total', 0);
 				});
 		});
 	});
