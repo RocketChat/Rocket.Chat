@@ -145,19 +145,21 @@ export class NotificationsModule {
 			return Authorization.canReadRoom(room, user ?? undefined, extraData);
 		});
 
-		this.streamRoomMessage.allowEmit(async function (eventName) {
+		this.streamRoomMessage.allowEmitWithPreparation(async (eventName) => {
 			const room = await Rooms.findOneById(eventName);
 			if (!room) {
-				return false;
+				return async () => false;
 			}
 
-			if (!room.prid || room.t !== 'p') {
-				return true;
+			if (!room.prid) {
+				return async () => true;
 			}
 
-			// An existing stream subscription must not bypass a discussion becoming private.
-			const user = await getCachedUserForPublication(this);
-			return Authorization.canReadRoom(room, user ?? undefined);
+			// Existing subscriptions must respect discussion access changes between events.
+			return async function () {
+				const user = await getCachedUserForPublication(this);
+				return Authorization.canReadRoom(room, user ?? undefined);
+			};
 		});
 
 		this.streamRoomMessage.allowRead('__my_messages__', 'all');

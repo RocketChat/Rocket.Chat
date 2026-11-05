@@ -91,6 +91,43 @@ describe('Stream adapter fan-out', () => {
 		expect(allowed.subscription.client.sendFrames).toHaveBeenCalledTimes(1);
 	});
 
+	it('prepares once per event while checking every recipient independently', async () => {
+		const prepare = jest.fn(
+			async () =>
+				async function (this: { connection: { id: string } }) {
+					return this.connection.id === 'allowed';
+				},
+		);
+		stream.allowEmitWithPreparation(prepare);
+		const denied = makeSubscription();
+		const allowed = makeSubscription({ connectionId: 'allowed' });
+		const subscriptions = new Set([denied, allowed]);
+
+		await stream.sendToManySubscriptions(subscriptions, undefined, 'event', [], message);
+
+		expect(prepare).toHaveBeenCalledTimes(1);
+		expect(denied.subscription.client.sendFrames).not.toHaveBeenCalled();
+		expect(allowed.subscription.client.sendFrames).toHaveBeenCalledTimes(1);
+
+		await stream.sendToManySubscriptions(subscriptions, undefined, 'event', [], message);
+		expect(prepare).toHaveBeenCalledTimes(2);
+	});
+
+	it('does not send to any recipient when preparation fails', async () => {
+		const failure = new Error('lookup failed');
+		const prepare = jest.fn().mockRejectedValue(failure);
+		stream.allowEmitWithPreparation(prepare);
+		const first = makeSubscription();
+		const second = makeSubscription({ connectionId: 'c2' });
+
+		await stream.sendToManySubscriptions(new Set([first, second]), undefined, 'event', [], message);
+
+		expect(prepare).toHaveBeenCalledTimes(1);
+		expect(first.subscription.client.sendFrames).not.toHaveBeenCalled();
+		expect(second.subscription.client.sendFrames).not.toHaveBeenCalled();
+		expect(consoleError).toHaveBeenCalledWith('Error trying to send data to stream.', failure);
+	});
+
 	describe('when the socket rejects the write', () => {
 		const destroyed = Object.assign(new Error('write after destroy'), { code: 'ERR_STREAM_DESTROYED' });
 

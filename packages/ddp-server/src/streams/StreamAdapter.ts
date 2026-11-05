@@ -36,6 +36,7 @@ export const createStreamAdapter = (server: Server): StreamConstructor =>
 			}
 
 			const frames = preframe(getMsg);
+			const checkEmit = this.createEmitChecker(eventName, args);
 
 			for (const { subscription } of subscriptions) {
 				// Every publication in this process is our Publication, so its client is our Session.
@@ -51,11 +52,10 @@ export const createStreamAdapter = (server: Server): StreamConstructor =>
 					continue;
 				}
 
-				if (!(await this.isEmitAllowed(subscription, eventName, ...args))) {
-					continue;
-				}
-
 				try {
+					if (!(await checkEmit(subscription))) {
+						continue;
+					}
 					await session.sendFrames(frames);
 				} catch (error: any) {
 					if (error.code === 'ERR_STREAM_DESTROYED') {
