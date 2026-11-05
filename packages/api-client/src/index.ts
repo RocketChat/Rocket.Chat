@@ -220,6 +220,7 @@ export class RestClient implements RestClientInterface {
 			}
 
 			if (response.status !== 400) {
+				// oxlint-disable-next-line typescript/prefer-promise-reject-errors -- consumers' middlewares read the status and body off the rejected Response; wrapping it breaks the public contract
 				return Promise.reject(response);
 			}
 
@@ -248,6 +249,7 @@ export class RestClient implements RestClientInterface {
 				});
 			}
 
+			// oxlint-disable-next-line typescript/prefer-promise-reject-errors -- consumers' middlewares read the status and body off the rejected Response; wrapping it breaks the public contract
 			return Promise.reject(response);
 		});
 	}
