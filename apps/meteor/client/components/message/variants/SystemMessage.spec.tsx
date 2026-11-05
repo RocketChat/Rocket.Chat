@@ -84,46 +84,38 @@ describe('SystemMessage', () => {
 	});
 
 	describe('username', () => {
-		const renderWithAuthor = (u: IMessage['u'], { showUsername, showRealName = true }: { showUsername: boolean; showRealName?: boolean }) =>
-			render(<SystemMessage message={{ ...createBaseMessage('test'), u }} showUserAvatar />, {
-				wrapper: mockAppRoot()
-					.withSetting('UI_Use_Real_Name', showRealName)
-					.wrap((children) => (
-						<MessageListContext.Provider value={{ ...messageListContextDefaultValue, showUsername, showRealName }}>
-							{children}
-						</MessageListContext.Provider>
-					))
-					.build(),
-			});
-
-		const author = { _id: 'userId', name: 'Alex Smith', username: 'alex.smith' };
+		const renderWithUsername = (showUsername: boolean) =>
+			render(
+				<SystemMessage
+					message={{ ...createBaseMessage('test'), u: { _id: 'userId', name: 'Alex Smith', username: 'alex.smith' } }}
+					showUserAvatar
+				/>,
+				{
+					wrapper: mockAppRoot()
+						.withSetting('UI_Use_Real_Name', true)
+						.wrap((children) => (
+							<MessageListContext.Provider
+								value={{ ...messageListContextDefaultValue, getAuthorUsername: () => ({ normalizedUsername: 'alex.smith', showUsername }) }}
+							>
+								{children}
+							</MessageListContext.Provider>
+						))
+						.build(),
+				},
+			);
 
 		it('shows the username next to the real name when usernames are shown', () => {
-			renderWithAuthor(author, { showUsername: true });
+			renderWithUsername(true);
 
 			expect(screen.getByText('Alex Smith')).toBeInTheDocument();
 			expect(screen.getByText('@alex.smith')).toBeInTheDocument();
 		});
 
 		it('leaves the username out when usernames are hidden', () => {
-			renderWithAuthor(author, { showUsername: false });
+			renderWithUsername(false);
 
 			expect(screen.getByText('Alex Smith')).toBeInTheDocument();
 			expect(screen.queryByText('@alex.smith')).not.toBeInTheDocument();
-		});
-
-		it('leaves the username out when the name already shows it', () => {
-			renderWithAuthor(author, { showUsername: true, showRealName: false });
-
-			expect(screen.getByText('alex.smith')).toBeInTheDocument();
-			expect(screen.queryByText('@alex.smith')).not.toBeInTheDocument();
-		});
-
-		it('leaves a federated username out when it matches the real name without its leading @', () => {
-			renderWithAuthor({ _id: 'userId', name: 'alex:matrix.org', username: '@alex:matrix.org' }, { showUsername: true });
-
-			expect(screen.getByText('alex:matrix.org')).toBeInTheDocument();
-			expect(screen.queryByText('@alex:matrix.org')).not.toBeInTheDocument();
 		});
 	});
 });

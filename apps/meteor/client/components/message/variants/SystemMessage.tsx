@@ -27,8 +27,7 @@ import {
 } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
 import MessageContentFallback from '../MessageContentFallback';
 import { getCheckboxLabel } from '../helpers/getCheckboxLabel';
-import { useMessageAuthorUsername } from '../hooks/useMessageAuthorUsername';
-import { useMessageListFormatDateAndTime, useMessageListFormatTime } from '../list/MessageListContext';
+import { useMessageListAuthorUsername, useMessageListFormatDateAndTime, useMessageListFormatTime } from '../list/MessageListContext';
 import SystemMessageBody from './system/SystemMessageBody';
 import SystemMessageContent from './system/SystemMessageContent';
 
@@ -44,7 +43,7 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 	const { openUserCard, openUserInfo } = useUserCard();
 
 	const user = { ...message.u, roles: [], ...useUserPresence(message.u._id) };
-	const { normalizedUsername, showUsername } = useMessageAuthorUsername(user);
+	const { normalizedUsername, showUsername } = useMessageListAuthorUsername(user);
 	const displayName = useUserDisplayName(user);
 
 	const isSelecting = useIsSelecting();
@@ -101,7 +100,12 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 						})}
 					>
 						<MessageSystemName>{displayName}</MessageSystemName>
-						{showUsername && <MessageUsername data-username={normalizedUsername}>@{normalizedUsername}</MessageUsername>}
+						{showUsername && (
+							<>
+								{' '}
+								<MessageUsername data-username={normalizedUsername}>@{normalizedUsername}</MessageUsername>
+							</>
+						)}
 					</MessageNameContainer>
 					<ErrorBoundary fallback={<MessageContentFallback />} resetKeys={[message]}>
 						<SystemMessageBody message={message} />
