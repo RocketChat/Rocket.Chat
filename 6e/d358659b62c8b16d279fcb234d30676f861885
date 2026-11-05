@@ -1,0 +1,35 @@
+apps/meteor/tests/end-to-end/api/outgoing-integrations.ts
+  s_f15b4a6b3cffae::t_7c5ce9df55bb1e 454,468,475,477-478,488-492,498,507,547,549,551,553,556,562,565,571,577,581,591,596
+  s_f15b4a6b3cffae::t_e9c62a3d5e54d9 471,521,540,550
+  s_f15b4a6b3cffae::t_9d29e02bc804f7 4,461,479
+  s_f15b4a6b3cffae::t_fed53f994f5215 10
+  s_f15b4a6b3cffae::t_eb0e7028b07ff7 464-465,531,590,595
+  s_f15b4a6b3cffae::t_33d40b357eea25 459,469,482-485,501
+  s_f15b4a6b3cffae::t_8dbf3fd5910103 519,524,529,534,579,584
+  s_f15b4a6b3cffae::t_ea8a22172ddd63 533
+  s_f15b4a6b3cffae::t_410546b131db57 453,455-458,460,462-463,466-467,470,472-474,476,480-481,486-487,493-497,499-500,502-506,508-518,520,522-523,525-528,530,532,535-539,541-546,548,552,554-555,557-561,563-564,566-567,569-570,572-573,575-576,578,580,582-583,585-589,592-594,597-601
+  s_f15b4a6b3cffae::t_70e28d792b2dbd 568,574
+apps/meteor/tests/end-to-end/api/chat.ts
+  s_f15b4a6b3cffae::t_87a50c42f107cb 11-12
+  s_f15b4a6b3cffae::t_b3e9834d9ced3c 2444-2449,2452-2460,2475-2477,2480-2481,2483-2497,2501-2522,2526-2535,2538,2542,2544,2546-2547,2553,2555,2557-2558,2560,2562-2563
+  s_f15b4a6b3cffae::t_70e28d792b2dbd 2523-2525,2536-2537,2539-2541,2543,2545,2548-2549,2551-2552,2556,2559,2561
+  s_f15b4a6b3cffae::t_f9c6c1f241d719 2550,2554
+  s_f15b4a6b3cffae::t_8bad914752f17d 2450-2451,2461-2474,2482,2498-2500
+  s_f15b4a6b3cffae::t_f75d756dc2d267 2478-2479
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "6ed358659b62c8b16d279fcb234d30676f861885",
+  "prompts": {},
+  "sessions": {
+    "s_f15b4a6b3cffae": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3fc8d543-a858-49f1-bf51-ceccf6d6ad1a",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
