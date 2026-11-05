@@ -16,17 +16,17 @@ const RoomFilesWithData = () => {
 
 	const debouncedText = useDebouncedValue(text, 400);
 
-	const { isPending, isSuccess, data, fetchNextPage, hasNextPage, isFetching, refetch } = useFilesList({
+	const { isPending, isSuccess, data, fetchNextPage, hasNextPage, isFetchingNextPage, refetch } = useFilesList({
 		rid: room._id,
 		type,
 		text: debouncedText,
 	});
 
 	const loadMoreItems = useCallback(() => {
-		if (hasNextPage && !isFetching) {
+		if (hasNextPage && !isFetchingNextPage) {
 			void fetchNextPage();
 		}
-	}, [fetchNextPage, hasNextPage, isFetching]);
+	}, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
 	const handleTextChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
 		setText(event.currentTarget.value);
