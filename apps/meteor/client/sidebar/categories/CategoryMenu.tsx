@@ -17,6 +17,7 @@ import {
 } from './hooks/useActivityFilterItems';
 import { useArchiveRoomsItems } from './hooks/useArchiveRoomsItems';
 import { useCategoryModals } from './hooks/useCategoryModals';
+import { useMarkGroupReadItem } from './hooks/useMarkGroupReadItem';
 import { useMoveRoomCategory } from './hooks/useMoveRoomCategory';
 import { useToggleUnreads } from './hooks/useToggleUnreads';
 import { useCreateNewItems } from '../../navbar/NavBarPagesGroup/hooks/useCreateNewItems';
@@ -125,7 +126,10 @@ const CategoryMenu = ({
 			]
 		: [];
 
+	const markGroupReadItem = useMarkGroupReadItem({ groupTitle, rooms, onOpen: close });
+
 	const unreadItems: GenericMenuItemProps[] = [
+		markGroupReadItem,
 		{
 			id: 'show-unreads',
 			icon: 'flag',

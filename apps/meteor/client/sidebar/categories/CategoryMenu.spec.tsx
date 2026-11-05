@@ -1,6 +1,6 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ComponentProps } from 'react';
 
@@ -37,7 +37,10 @@ jest.mock('../../navbar/NavBarPagesGroup/hooks/useCreateNewItems', () => ({
 
 const mutate = jest.fn();
 
+const readMessages = jest.fn(async () => undefined);
+
 const appRoot = mockAppRoot()
+	.withEndpoint('POST', '/v1/subscriptions.read', readMessages as any)
 	.withTranslations('en', 'core', {
 		Options: 'Options',
 		Filter: 'Filter',
@@ -48,6 +51,13 @@ const appRoot = mockAppRoot()
 		Hide_inactive_unreads: 'Hide inactive unreads',
 		Archive_rooms_ellipsis: 'Archive rooms…',
 		Unreads: 'Unreads',
+		Mark_read: 'Mark read',
+		Mark_rooms_as_read: 'Mark rooms as read',
+		Unread_rooms_in_group_become_read_one: '{{count}} unread room in “{{group}}” becomes read, threads included.',
+		Unread_rooms_in_group_become_read_other: '{{count}} unread rooms in “{{group}}” become read, threads included.',
+		Rooms_marked_read_one: '{{count}} room marked read',
+		Rooms_marked_read_other: '{{count}} rooms marked read',
+		Cancel: 'Cancel',
 		Always_display: 'Always display',
 		Keep_on_top: 'Keep on top',
 		Move_up: 'Move up',
@@ -59,6 +69,7 @@ beforeEach(() => {
 	localStorage.clear();
 	mutate.mockClear();
 	openArchiveRooms.mockClear();
+	readMessages.mockClear();
 	jest.mocked(usePersistCategoriesMutation).mockReturnValue({ mutate } as any);
 	jest.mocked(useUserSidebarCategories).mockReturnValue({
 		rawCategories: [{ _id: 'Channels', name: 'Channels', default: true, activityFilterHours: 24 * 7 }],
@@ -163,5 +174,41 @@ describe('the archive item', () => {
 
 		expect(await screen.findByRole('menuitemcheckbox', { name: 'Move up' })).toBeInTheDocument();
 		expect(screen.queryByRole('menuitemcheckbox', { name: 'Archive rooms…' })).not.toBeInTheDocument();
+	});
+});
+
+describe('the Mark read item', () => {
+	const unreadRooms = [
+		{ rid: 'read-one', t: 'c', name: 'read-one', unread: 0, alert: false },
+		{ rid: 'unread-one', t: 'c', name: 'unread-one', unread: 2, alert: true },
+		{ rid: 'thread-one', t: 'p', name: 'thread-one', unread: 0, alert: false, tunread: ['m1'] },
+	] as SubscriptionWithRoom[];
+
+	it('is disabled while the group has nothing unread', async () => {
+		renderMenu();
+		await userEvent.click(await screen.findByRole('button', { name: 'Options' }));
+
+		const item = await screen.findByRole('menuitemcheckbox', { name: 'Mark read' });
+		expect(item).toHaveAttribute('aria-disabled', 'true');
+
+		await userEvent.click(item);
+
+		expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+	});
+
+	it('says how many rooms become read, then marks each unread one read with its threads', async () => {
+		renderMenu({ rooms: unreadRooms });
+		await userEvent.click(await screen.findByRole('button', { name: 'Options' }));
+		await userEvent.click(await screen.findByRole('menuitemcheckbox', { name: 'Mark read' }));
+
+		const dialog = await screen.findByRole('dialog', { name: 'Mark rooms as read' });
+		expect(dialog).toHaveTextContent('2 unread rooms in “Channels” become read, threads included.');
+		expect(readMessages).not.toHaveBeenCalled();
+
+		await userEvent.click(screen.getByRole('button', { name: 'Mark read' }));
+
+		await waitFor(() => expect(readMessages).toHaveBeenCalledTimes(2));
+		expect(readMessages).toHaveBeenCalledWith({ rid: 'unread-one', readThreads: true });
+		expect(readMessages).toHaveBeenCalledWith({ rid: 'thread-one', readThreads: true });
 	});
 });
