@@ -10,6 +10,7 @@ const REFERENCE_TAG_ID = 'reference-palette';
 /** The palette Fuselage emits for a theme at `:root`, to compare against the ones this component scopes. */
 const paletteFor = (theme: 'light' | 'dark' | 'high-contrast') => {
 	const { unmount } = render(<PaletteStyleTag theme={theme} tagId={REFERENCE_TAG_ID} />);
+	// oxlint-disable-next-line testing-library/no-node-access -- the whole palette a <style> tag carries is what is compared, and no query reaches style tags
 	const css = document.getElementById(REFERENCE_TAG_ID)?.textContent;
 	unmount();
 	return css;
@@ -20,9 +21,11 @@ const renderViewport = (themeAppearence: string) =>
 		wrapper: mockAppRoot().withUserPreference('themeAppearence', themeAppearence).build(),
 	});
 
+// oxlint-disable-next-line testing-library/no-node-access -- the whole palette a <style> tag carries is what is compared, and no query reaches style tags
 const themedCss = (theme: string) => document.getElementById(`conference-themed-palette-${theme}`)?.textContent;
 
 /** The window's own palette, compared at `:root` — the doubled selector is only there to outrank the app's. */
+// oxlint-disable-next-line testing-library/no-node-access -- the whole palette a <style> tag carries is what is compared, and no query reaches style tags
 const pinnedCss = () => document.getElementById('conference-palette')?.textContent?.replaceAll(':root:root', ':root');
 
 describe('ConferenceViewport', () => {
