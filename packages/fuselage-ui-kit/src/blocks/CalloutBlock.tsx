@@ -1,7 +1,7 @@
 import { Callout } from '@rocket.chat/fuselage';
 import * as UiKit from '@rocket.chat/ui-kit';
 
-import type { BlockProps } from '../utils/BlockProps';
+import type { BlockProps } from '../utils/BlockProps.js';
 
 export type CalloutBlockProps = BlockProps<UiKit.CalloutBlock>;
 

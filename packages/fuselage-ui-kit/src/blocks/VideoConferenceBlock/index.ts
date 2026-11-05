@@ -1,1 +1,1 @@
-export { default } from './VideoConferenceBlock';
+export { default } from './VideoConferenceBlock.js';

@@ -3,8 +3,8 @@ import { Field, FieldLabel, FieldRow, FieldError, FieldHint } from '@rocket.chat
 import * as UiKit from '@rocket.chat/ui-kit';
 import { memo, useMemo } from 'react';
 
-import { useUiKitState } from '../hooks/useUiKitState';
-import type { BlockProps } from '../utils/BlockProps';
+import { useUiKitState } from '../hooks/useUiKitState.js';
+import type { BlockProps } from '../utils/BlockProps.js';
 
 export type InputBlockProps = BlockProps<UiKit.InputBlock>;
 

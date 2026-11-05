@@ -2,8 +2,8 @@ import { Box, Icon } from '@rocket.chat/fuselage';
 import * as UiKit from '@rocket.chat/ui-kit';
 import { useTranslation } from 'react-i18next';
 
-import RichTextBlock from './RichTextBlock';
-import type { BlockProps } from '../utils/BlockProps';
+import RichTextBlock from './RichTextBlock.js';
+import type { BlockProps } from '../utils/BlockProps.js';
 
 export type TaskCardProps = Omit<BlockProps<UiKit.RichTextBlock>, 'block'> & {
 	task: UiKit.TaskCard;

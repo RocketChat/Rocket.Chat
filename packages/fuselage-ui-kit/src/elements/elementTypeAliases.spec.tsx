@@ -2,8 +2,8 @@ import { MockedServerContext } from '@rocket.chat/mock-providers';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { render } from '@testing-library/react';
 
-import { modalParser } from '../surfaces';
-import { extractInitialStateFromLayout } from '../utils/extractInitialStateFromLayout';
+import { modalParser } from '../surfaces/index.js';
+import { extractInitialStateFromLayout } from '../utils/extractInitialStateFromLayout.js';
 
 const options: UiKit.Option[] = [
 	{ text: { type: 'plain_text', text: 'A' }, value: 'a' },

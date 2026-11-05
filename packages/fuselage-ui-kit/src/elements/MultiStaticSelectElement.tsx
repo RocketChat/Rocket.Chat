@@ -3,9 +3,9 @@ import { MultiSelectFiltered } from '@rocket.chat/fuselage';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { memo, useCallback, useMemo } from 'react';
 
-import { useStringFromTextObject } from '../hooks/useStringFromTextObject';
-import { useUiKitState } from '../hooks/useUiKitState';
-import type { BlockProps } from '../utils/BlockProps';
+import { useStringFromTextObject } from '../hooks/useStringFromTextObject.js';
+import { useUiKitState } from '../hooks/useUiKitState.js';
+import type { BlockProps } from '../utils/BlockProps.js';
 
 export type MultiStaticSelectElementProps = BlockProps<UiKit.MultiStaticSelectElement>;
 

@@ -1,8 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
 import * as UiKit from '@rocket.chat/ui-kit';
 
-import IconElement from '../elements/IconElement';
-import type { BlockProps } from '../utils/BlockProps';
+import IconElement from '../elements/IconElement.js';
+import type { BlockProps } from '../utils/BlockProps.js';
 
 export type InfoCardProps = BlockProps<UiKit.InfoCardBlock>;
 

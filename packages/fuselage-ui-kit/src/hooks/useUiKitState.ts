@@ -3,10 +3,10 @@ import * as UiKit from '@rocket.chat/ui-kit';
 import type { KeyboardEvent } from 'react';
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 
-import { useStringFromTextObject } from './useStringFromTextObject';
-import { UiKitContext } from '../contexts/UiKitContext';
-import { askConfirmation } from '../utils/askConfirmation';
-import { getInitialValue } from '../utils/getInitialValue';
+import { useStringFromTextObject } from './useStringFromTextObject.js';
+import { UiKitContext } from '../contexts/UiKitContext.js';
+import { askConfirmation } from '../utils/askConfirmation.js';
+import { getInitialValue } from '../utils/getInitialValue.js';
 
 const getElementValueFromState = (
 	actionId: string,

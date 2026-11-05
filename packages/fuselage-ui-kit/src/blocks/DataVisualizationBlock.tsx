@@ -2,10 +2,10 @@ import { Box, Skeleton } from '@rocket.chat/fuselage';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { Suspense, lazy, memo, useMemo } from 'react';
 
-import ErrorBoundary from './DataVisualizationErrorBoundary';
-import ChartTable from './DataVisualizationTable';
-import type { BlockProps } from '../utils/BlockProps';
-import { toChartModel } from '../utils/dataVisualization';
+import ErrorBoundary from './DataVisualizationErrorBoundary.js';
+import ChartTable from './DataVisualizationTable.js';
+import type { BlockProps } from '../utils/BlockProps.js';
+import { toChartModel } from '../utils/dataVisualization.js';
 
 export type DataVisualizationBlockProps = BlockProps<UiKit.DataVisualizationBlock>;
 
@@ -13,7 +13,7 @@ export type DataVisualizationBlockProps = BlockProps<UiKit.DataVisualizationBloc
 // A lazy component keeps a failed import for good, so after one the next chart to mount gets a fresh one that tries again.
 // A chart that fails to draw leaves it alone: its code did load.
 const loadChart = () =>
-	import('./DataVisualizationChart').catch((error: unknown) => {
+	import('./DataVisualizationChart.js').catch((error: unknown) => {
 		DataVisualizationChart = lazy(loadChart);
 		throw error;
 	});

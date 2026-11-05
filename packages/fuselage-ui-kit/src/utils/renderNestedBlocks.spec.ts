@@ -1,6 +1,6 @@
 import type * as UiKit from '@rocket.chat/ui-kit';
 
-import { renderNestedBlocks } from './renderNestedBlocks';
+import { renderNestedBlocks } from './renderNestedBlocks.js';
 
 const rendered: UiKit.Block[][] = [];
 const surfaceRenderer = {

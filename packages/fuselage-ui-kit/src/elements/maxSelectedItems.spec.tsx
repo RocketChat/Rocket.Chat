@@ -1,8 +1,8 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 
-import { modalParser } from '../surfaces';
+import { modalParser } from '../surfaces/index.js';
 
 const users = [
 	{ _id: 'u1', username: 'rocket.cat', name: 'Rocket Cat' },

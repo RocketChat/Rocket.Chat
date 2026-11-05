@@ -2,7 +2,7 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { render, screen } from '@testing-library/react';
 
-import { messageParser } from '../surfaces';
+import { messageParser } from '../surfaces/index.js';
 
 const wrapper = mockAppRoot()
 	.withEndpoint('GET', '/v1/users.autocomplete', () => ({ items: [] }) as any)

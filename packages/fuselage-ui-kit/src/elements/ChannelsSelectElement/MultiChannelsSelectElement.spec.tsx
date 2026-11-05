@@ -2,11 +2,11 @@ import { MockedServerContext } from '@rocket.chat/mock-providers';
 import type { MultiChannelsSelectElement as MultiChannelsSelectElementType } from '@rocket.chat/ui-kit';
 import { BlockContext } from '@rocket.chat/ui-kit';
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 
-import MultiChannelsSelectElement from './MultiChannelsSelectElement';
-import { contextualBarParser } from '../../surfaces';
-import { useChannelsData } from './hooks/useChannelsData';
+import MultiChannelsSelectElement from './MultiChannelsSelectElement.js';
+import { useChannelsData } from './hooks/useChannelsData.js';
+import { contextualBarParser } from '../../surfaces/index.js';
 
 const channelsBlock: MultiChannelsSelectElementType = {
 	type: 'multi_channels_select',

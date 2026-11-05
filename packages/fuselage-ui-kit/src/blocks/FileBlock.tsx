@@ -2,8 +2,8 @@ import { Box, Icon } from '@rocket.chat/fuselage';
 import { useAbsoluteUrl } from '@rocket.chat/ui-contexts';
 import type * as UiKit from '@rocket.chat/ui-kit';
 
-import { useAppTranslation } from '../hooks/useAppTranslation';
-import type { BlockProps } from '../utils/BlockProps';
+import { useAppTranslation } from '../hooks/useAppTranslation.js';
+import type { BlockProps } from '../utils/BlockProps.js';
 
 export type FileBlockProps = BlockProps<UiKit.FileBlock>;
 

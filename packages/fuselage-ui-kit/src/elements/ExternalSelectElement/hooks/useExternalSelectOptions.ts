@@ -3,7 +3,7 @@ import type * as UiKit from '@rocket.chat/ui-kit';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useContext, useMemo, useRef } from 'react';
 
-import { UiKitContext } from '../../../contexts/UiKitContext';
+import { UiKitContext } from '../../../contexts/UiKitContext.js';
 
 export type ExternalSelectOption = { value: string; label: string };
 

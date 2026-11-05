@@ -4,7 +4,7 @@ import { Markup } from '@rocket.chat/gazzodown';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import type { ReactNode } from 'react';
 
-import type { RichTextPart } from '../utils/richText/richTextRuns';
+import type { RichTextPart } from '../utils/richText/richTextRuns.js';
 
 // Fuselage has no green, orange or brown tag; those take the closest tone.
 const tagVariants: Record<UiKit.RichTextTagColor, NonNullable<TagProps['variant']>> = {

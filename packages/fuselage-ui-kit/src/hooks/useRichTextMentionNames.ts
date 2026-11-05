@@ -4,8 +4,8 @@ import { useQueries } from '@tanstack/react-query';
 import { useContext, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { MentionBudgetContext, createMentionBudget } from '../contexts/MentionBudgetContext';
-import type { MentionNames } from '../utils/richText/richTextToAst';
+import { MentionBudgetContext, createMentionBudget } from '../contexts/MentionBudgetContext.js';
+import type { MentionNames } from '../utils/richText/richTextToAst.js';
 
 const collectIds = (block: Pick<UiKit.RichTextBlock, 'elements'>) => {
 	const users = new Set<string>();

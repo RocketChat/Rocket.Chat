@@ -1,6 +1,6 @@
 import * as UiKit from '@rocket.chat/ui-kit';
 
-import { bannerParser, contextualBarParser, messageParser, modalParser } from '.';
+import { bannerParser, contextualBarParser, messageParser, modalParser } from './index.js';
 
 it.each([
 	['message', messageParser, UiKit.messageSurfaceLayoutBlockTypes],

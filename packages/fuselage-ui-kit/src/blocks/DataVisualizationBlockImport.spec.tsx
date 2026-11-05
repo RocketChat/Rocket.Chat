@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
 
-import { messageParser } from '../surfaces';
+import { messageParser } from '../surfaces/index.js';
 
 let mockImportFails = true;
 

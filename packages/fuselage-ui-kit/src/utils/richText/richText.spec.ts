@@ -1,9 +1,9 @@
 import type * as UiKit from '@rocket.chat/ui-kit';
 
-import { richTextFromMarkdown } from './richTextFromMarkdown';
-import { richTextToRuns } from './richTextRuns';
-import { richTextToAst } from './richTextToAst';
-import { richTextToMarkdown } from './richTextToMarkdown';
+import { richTextFromMarkdown } from './richTextFromMarkdown.js';
+import { richTextToRuns } from './richTextRuns.js';
+import { richTextToAst } from './richTextToAst.js';
+import { richTextToMarkdown } from './richTextToMarkdown.js';
 
 const names = {
 	users: { u1: 'jane.roe' },
