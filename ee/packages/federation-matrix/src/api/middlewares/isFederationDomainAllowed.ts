@@ -17,19 +17,14 @@ const getAllowList = mem(
 	{ maxAge: 60000 },
 );
 
-/**
- * Parses all key-value pairs from a Matrix authorization header.
- * Example: X-Matrix origin="matrix.org", key="value", ...
- * Returns an object with all parsed values.
- */
-// TODO make this function more of a utility if needed elsewhere
+// values may be quoted strings or bare tokens (RFC 9110), as servers built on ruma only quote values that need it
+const AUTH_PARAM_REGEX = /(?<![\w!#$%&'*+.^`|~-])([\w!#$%&'*+.^`|~-]+)=(?:"((?:[^"\\]|\\.)*)"|([^\s,"]+))/g;
+
+// TODO: Replace parseMatrixAuthorizationHeader with extractSignaturesFromHeader once federation-sdk exports it
 function parseMatrixAuthorizationHeader(header: string): Record<string, string> {
 	const result: Record<string, string> = {};
-	// Match key="value" pairs
-	const regex = /([a-zA-Z0-9_-]+)\s*=\s*"([^"]*)"/g;
-	let match;
-	while ((match = regex.exec(header)) !== null) {
-		result[match[1]] = match[2];
+	for (const [, name, quoted, token] of header.matchAll(AUTH_PARAM_REGEX)) {
+		result[name.toLowerCase()] = quoted !== undefined ? quoted.replace(/\\(.)/g, '$1') : token;
 	}
 	return result;
 }
