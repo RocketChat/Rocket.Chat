@@ -174,6 +174,12 @@ describe('the archive item', () => {
 });
 
 describe('the Mark read item', () => {
+	const unreadRooms = [
+		{ rid: 'read-one', t: 'c', name: 'read-one', unread: 0, alert: false },
+		{ rid: 'unread-one', t: 'c', name: 'unread-one', unread: 2, alert: true },
+		{ rid: 'thread-one', t: 'p', name: 'thread-one', unread: 0, alert: false, tunread: ['m1'] },
+	] as SubscriptionWithRoom[];
+
 	it('is disabled while the group has nothing unread', async () => {
 		renderMenu({ rooms: [rooms[0]] });
 		await userEvent.click(await screen.findByRole('button', { name: 'Options' }));
@@ -187,12 +193,11 @@ describe('the Mark read item', () => {
 	});
 
 	it('says how many rooms become read, then marks each unread one read with its threads', async () => {
-		renderMenu();
+		renderMenu({ rooms: unreadRooms });
 		await userEvent.click(await screen.findByRole('button', { name: 'Options' }));
 		await userEvent.click(await screen.findByRole('menuitemcheckbox', { name: 'Mark read' }));
 
-		// The menu's closing animation runs first; the modal follows it.
-		const dialog = await screen.findByRole('dialog', { name: 'Mark rooms as read' }, { timeout: 3000 });
+		const dialog = await screen.findByRole('dialog', { name: 'Mark rooms as read' });
 		expect(dialog).toHaveTextContent('2 unread rooms in “Channels” become read, threads included.');
 		expect(readMessages).not.toHaveBeenCalled();
 
