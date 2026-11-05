@@ -9,9 +9,9 @@ import type {
 } from '@rocket.chat/rest-typings';
 import { stringify } from 'query-string';
 
-import type { Credentials } from './Credentials';
-import type { Middleware, RestClientInterface } from './RestClientInterface';
-import { hasRequiredTwoFactorMethod, isTotpInvalidError, isTotpRequiredError } from './errors';
+import type { Credentials } from './Credentials.js';
+import type { Middleware, RestClientInterface } from './RestClientInterface.js';
+import { hasRequiredTwoFactorMethod, isTotpInvalidError, isTotpRequiredError } from './errors.js';
 
 export type { RestClientInterface, Credentials };
 
