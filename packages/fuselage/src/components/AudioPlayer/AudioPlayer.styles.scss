@@ -7,10 +7,9 @@
 	align-items: center;
 
 	width: lengths.size(full);
-	max-width: lengths.size(300);
+	max-width: lengths.size(368);
 
-	padding-block: lengths.padding(12);
-	padding-inline: lengths.padding(16) lengths.padding(8);
+	padding: lengths.padding(8);
 
 	border-width: lengths.border-width(default);
 	border-color: colors.stroke(extra-light);
@@ -22,24 +21,40 @@
 		align-items: center;
 
 		width: lengths.size(full);
+		gap: lengths.padding(12);
 	}
 
-	&__track {
-		display: flex;
-		align-items: center;
+	&__error {
+		@include use-font-scale(c1);
+
 		flex-grow: 1;
 
-		margin-inline: lengths.margin(8);
-		gap: lengths.padding(16);
-	}
-
-	&__time {
-		@include use-font-scale(p2);
-
-		color: colors.font(secondary-info);
+		color: colors.font(default);
 	}
 
 	&__range {
-		width: lengths.size(full);
+		flex-grow: 1;
+
+		min-width: 0;
+	}
+
+	&__time {
+		@include use-font-scale(c1);
+
+		flex-shrink: 0;
+
+		color: colors.font(secondary-info);
+
+		&--loading {
+			color: colors.font(annotation);
+		}
+	}
+
+	&__speed {
+		display: flex;
+		justify-content: center;
+		flex-shrink: 0;
+
+		width: lengths.size(56);
 	}
 }
