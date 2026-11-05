@@ -175,7 +175,7 @@ describe('the archive', () => {
 
 		await userEvent.click(screen.getByRole('button', { name: 'Archive' }));
 
-		await waitFor(() => expect(setUserArchived).toHaveBeenCalledWith({ roomId: 'roomId', archived: true }));
+		await waitFor(() => expect(setUserArchived).toHaveBeenCalledWith({ roomIds: ['roomId'], archived: true }));
 	});
 
 	it('offers to unarchive an archived room instead', async () => {
@@ -186,6 +186,6 @@ describe('the archive', () => {
 		expect(screen.queryByRole('menuitem', { name: 'Archive' })).not.toBeInTheDocument();
 		await userEvent.click(await screen.findByRole('menuitem', { name: 'Unarchive' }));
 
-		await waitFor(() => expect(setUserArchived).toHaveBeenCalledWith({ roomId: 'roomId', archived: false }));
+		await waitFor(() => expect(setUserArchived).toHaveBeenCalledWith({ roomIds: ['roomId'], archived: false }));
 	});
 });

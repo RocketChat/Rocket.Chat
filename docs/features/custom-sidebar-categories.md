@@ -280,8 +280,8 @@ a room with no date are never taken; unread rooms only when "Include unread room
 how many rooms match and the confirm button is disabled at zero.
 
 Archiving is the user's own flag on the subscription, `userArchived`, set through `POST /v1/subscriptions.setUserArchived`
-(`useArchivedRooms` reads it from the subscriptions store and writes it in batches of five, with the sidebar
-updated ahead of the server and put back on failure). An archived room is in no other group, not even Unread; it stays archived whatever
+(`useArchivedRooms` reads it from the subscriptions store and writes it with one request per two hundred rooms,
+with the sidebar updated ahead of the server and put back on failure). An archived room is in no other group, not even Unread; it stays archived whatever
 happens in it (opening it, a new message, a mention), and carries no badge meanwhile. The room-level action is
 labelled **Archive** everywhere (sidebar and sidepanel room menus, room info, team info; `useArchiveRoomAction`,
 which first tells what archiving means in a do-not-ask-again modal without an icon, per room type), and becomes

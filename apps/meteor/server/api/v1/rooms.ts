@@ -406,6 +406,8 @@ const roomsSaveNotificationEndpoint = API.v1.post(
 	'rooms.saveNotification',
 	{
 		authRequired: true,
+		// The Archived group switches the notifications of every archived room with one call per room.
+		rateLimiterOptions: { numRequestsAllowed: 120, intervalTimeInMS: 60000 },
 		body: saveNotificationBodySchema,
 		response: {
 			200: saveNotificationResponseSchema,

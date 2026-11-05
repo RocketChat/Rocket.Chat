@@ -69,16 +69,14 @@ describe('archiving the inactive rooms', () => {
 		expect(screen.getByRole('status')).toHaveTextContent('3 rooms to archive');
 	});
 
-	it('archives each of them through the subscription flag and closes', async () => {
+	it('archives them all in one request through the subscription flag and closes', async () => {
 		const onClose = renderModal();
 
 		await userEvent.click(screen.getByRole('button', { name: 'Archive' }));
 
 		await waitFor(() => expect(onClose).toHaveBeenCalled());
-		await waitFor(() => expect(setUserArchived).toHaveBeenCalledTimes(3));
-		for (const roomId of ['quiet-channel', 'old-dm', 'quiet-group']) {
-			expect(setUserArchived).toHaveBeenCalledWith({ roomId, archived: true });
-		}
+		await waitFor(() => expect(setUserArchived).toHaveBeenCalledTimes(1));
+		expect(setUserArchived).toHaveBeenCalledWith({ roomIds: ['quiet-channel', 'old-dm', 'quiet-group'], archived: true });
 	});
 
 	it('takes the unread rooms too only when asked', async () => {
