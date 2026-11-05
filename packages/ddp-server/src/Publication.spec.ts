@@ -1,5 +1,22 @@
+import { Streamer } from '@rocket.chat/streamer';
+
 import { Publication } from './Publication';
 import { makeSession, makeSubscription, sentPackets } from './__tests__/helpers';
+
+// The streamer is abstract; this spec only needs _publish and the activity check.
+class TestStreamer extends Streamer<any> {
+	registerPublication(): void {
+		// publication registration belongs to the transport, not to this spec
+	}
+
+	registerMethod(): void {
+		// method dispatch is not exercised here
+	}
+
+	changedPayload(): string {
+		return 'payload';
+	}
+}
 
 describe('Publication', () => {
 	let session: ReturnType<typeof makeSession>;
@@ -141,5 +158,91 @@ describe('Publication', () => {
 		expect(() => publication.unblock()).not.toThrow();
 		expect(session.send).not.toHaveBeenCalled();
 		expect(session.subscriptions.get('test-id')).toBe(publication);
+	});
+
+	it('retires the publication when the session closes, so a later continuation cannot revive it', () => {
+		session.emit('close');
+
+		expect(publication._isDeactivated()).toBe(true);
+		expect(publication._session).toBeNull();
+	});
+
+	it('runs a cleanup registered after the publication already stopped', () => {
+		const cleanup = jest.fn();
+
+		session.emit('close');
+		publication.onStop(cleanup);
+
+		expect(cleanup).toHaveBeenCalledTimes(1);
+	});
+
+	it('runs a cleanup registered after an explicit stop, and only once', () => {
+		const cleanup = jest.fn();
+
+		publication.stop();
+		publication.onStop(cleanup);
+		session.emit('close');
+
+		expect(cleanup).toHaveBeenCalledTimes(1);
+	});
+
+	it('stops once no matter how many times stop is called', () => {
+		publication.stop();
+		publication.stop();
+		publication.stop();
+
+		expect(sentPackets(session)).toEqual([{ msg: 'nosub', id: 'test-id' }]);
+	});
+
+	it('lets the streamer remove a listener registered before a mid-await disconnect', () => {
+		const listeners = new Set(['room1']);
+
+		session.emit('close');
+		publication.onStop(() => listeners.delete('room1'));
+
+		expect(listeners.size).toBe(0);
+	});
+
+	it('deactivates a publication whose session closed, so a late continuation cannot revive it', async () => {
+		// Streamer._publish re-checks _isDeactivated() after every await; a continuation
+		// that resumes once the client has gone must not attach anything.
+		const continuation = Promise.resolve().then(() => (publication._isDeactivated() ? 'aborted' : 'attached'));
+
+		session.emit('close');
+
+		await expect(continuation).resolves.toBe('aborted');
+	});
+
+	it('does not attach a listener when the client disconnects during a publish', async () => {
+		const streamer = new TestStreamer('disconnect-race');
+		streamer.allowRead('all');
+
+		let resumeLookup: () => void = () => undefined;
+		const lookup = new Promise<void>((resolve) => {
+			resumeLookup = resolve;
+		});
+
+		const attached: string[] = [];
+		streamer.on('_afterPublish', async (_streamer, published) => {
+			await lookup; // the awaited database lookup the notification module does
+
+			if (!Streamer.isPublicationActive(published)) {
+				return;
+			}
+
+			attached.push('room1');
+			published.onStop(() => {
+				attached.pop();
+			});
+		});
+
+		await streamer._publish(publication, 'rooms-changed', false);
+
+		session.emit('close'); // the client disconnects while the lookup is in flight
+		resumeLookup();
+		await lookup;
+
+		expect(attached).toEqual([]);
+		expect(streamer.subscriptions.size).toBe(0);
 	});
 });
