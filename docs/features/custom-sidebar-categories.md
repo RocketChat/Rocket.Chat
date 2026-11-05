@@ -260,11 +260,11 @@ in `sidebarCategories` can be silently dropped during a move.
 ### Category collapser kebab — `CategoryMenu.tsx`
 
 **Custom category:**
-- Main: Move up / Move down / Create new › / Manage / Delete / Filter › / Archive ›
+- Main: Move up / Move down / Create new › / Manage / Delete / Filter › / Archive inactive rooms…
 - Unreads: Always display / Keep on top toggles
 
 **System group:**
-- Main: Move up / Move down (dynamic groups have both disabled) / Filter › / Archive › (neither on dynamic groups)
+- Main: Move up / Move down (dynamic groups have both disabled) / Filter › / Archive inactive rooms… (neither on dynamic groups)
 - Unreads: Always display / Keep on top toggles
 
 **Filter ›** opens a submenu — All / Last 24 hours /
@@ -272,13 +272,12 @@ Last 7 days / Last 30 days — of radio items (`MenuSubmenuTrigger selectionMode
 checked (`aria-checked`) and marked with a checkmark. Picking one closes the menu, persists it via
 `useSetActivityFilterHours` and reports the choice through `onActivityFilterChange`, for the announcement.
 
-**Archive ›** opens a submenu — Inactive since… / Older than… — whose items open `ArchiveRoomsModal`
-(`useArchiveRoomsItems.tsx`, through `useCategoryModals().openArchiveRooms`). The modal archives the group's
-quiet rooms: "Inactive since" takes a date (1 month ago / 3 months ago / 6 months ago / 1 year ago / a custom
-date), "Older than" an age (30 / 90 / 180 days / 1 year / a custom number of days). Both compare the room's last
-activity (`getLastActivity`, as the filter does) against the threshold. The room currently open and a room with no
-date are never taken; unread rooms only when "Include unread rooms" is checked. A live line says how many rooms
-match and the confirm button is disabled at zero.
+**Archive inactive rooms…** opens `ArchiveRoomsModal` (`useArchiveRoomsItems.tsx`, through
+`useCategoryModals().openArchiveRooms`), which archives the group's quiet rooms: "Inactive for" offers 30 / 90 /
+180 days, 1 year, or "Custom date", which reveals an "Inactive since" date field. Either way the room's last
+activity (`getLastActivity`, as the filter judges it) is compared with the threshold. The room currently open and
+a room with no date are never taken; unread rooms only when "Include unread rooms" is checked. A live line says
+how many rooms match and the confirm button is disabled at zero.
 
 Archiving is the user's own state, not the subscription's: `useArchivedRooms` keeps the archived room ids per
 user — **in `localStorage` for now (`sidebarArchivedRooms-{userId}`), to be moved to the subscription in the
@@ -314,8 +313,8 @@ Placed before the room title in `RoomHeader`. Icon: `star-filled` (favorited) / 
 | `CreateCategoryModal.tsx` | Create or "create and move" — single name field, max 30 chars. |
 | `ManageCategoryModal.tsx` | Rename with duplicate/empty validation. |
 | `DeleteCategoryModal.tsx` | Confirmation + "rooms will return to default groups" warning. |
-| `ArchiveRoomsModal.tsx` | Archive the group's rooms inactive since a date or older than an age; presets plus a custom value. |
-| `hooks/useCategoryModals.tsx` | Single entry point: `openCreate(room?)` / `openManage(category)` / `openDelete(category)` / `openArchiveRooms({ mode, groupTitle, rooms })`. |
+| `ArchiveRoomsModal.tsx` | Archive the group's rooms inactive for a preset spell or since a custom date. |
+| `hooks/useCategoryModals.tsx` | Single entry point: `openCreate(room?)` / `openManage(category)` / `openDelete(category)` / `openArchiveRooms({ groupTitle, rooms })`. |
 
 ### Navbar create menu
 

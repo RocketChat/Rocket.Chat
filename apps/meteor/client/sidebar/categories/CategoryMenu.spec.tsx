@@ -46,9 +46,7 @@ const appRoot = mockAppRoot()
 		Last_7_days: 'Last 7 days',
 		Last_30_days: 'Last 30 days',
 		Hide_inactive_unreads: 'Hide inactive unreads',
-		Archive: 'Archive',
-		Inactive_since_ellipsis: 'Inactive since…',
-		Older_than_ellipsis: 'Older than…',
+		Archive_inactive_rooms_ellipsis: 'Archive inactive rooms…',
 		Unreads: 'Unreads',
 		Always_display: 'Always display',
 		Keep_on_top: 'Keep on top',
@@ -145,27 +143,14 @@ describe('the Filter submenu', () => {
 	});
 });
 
-describe('the Archive submenu', () => {
-	const openArchiveSubmenu = async (overrides: Partial<ComponentProps<typeof CategoryMenu>> = {}) => {
-		renderMenu(overrides);
+describe('the archive item', () => {
+	it('opens the modal that archives the inactive rooms of the group', async () => {
+		renderMenu();
 		await userEvent.click(await screen.findByRole('button', { name: 'Options' }));
-		await userEvent.click(await screen.findByRole('menuitem', { name: 'Archive' }));
-	};
 
-	it('opens the modal that archives by a date, for the group and its rooms', async () => {
-		await openArchiveSubmenu();
+		await userEvent.click(await screen.findByRole('menuitemcheckbox', { name: 'Archive inactive rooms…' }));
 
-		await userEvent.click(await screen.findByRole('menuitem', { name: 'Inactive since…' }));
-
-		expect(openArchiveRooms).toHaveBeenCalledWith({ mode: 'inactive-since', groupTitle: 'Channels', rooms });
-	});
-
-	it('opens the modal that archives by an age', async () => {
-		await openArchiveSubmenu();
-
-		await userEvent.click(await screen.findByRole('menuitem', { name: 'Older than…' }));
-
-		expect(openArchiveRooms).toHaveBeenCalledWith({ mode: 'older-than', groupTitle: 'Channels', rooms });
+		expect(openArchiveRooms).toHaveBeenCalledWith({ groupTitle: 'Channels', rooms });
 	});
 
 	it('is not offered on a dynamic group', async () => {
@@ -173,6 +158,6 @@ describe('the Archive submenu', () => {
 		await userEvent.click(await screen.findByRole('button', { name: 'Options' }));
 
 		expect(await screen.findByRole('menuitemcheckbox', { name: 'Move up' })).toBeInTheDocument();
-		expect(screen.queryByRole('menuitem', { name: 'Archive' })).not.toBeInTheDocument();
+		expect(screen.queryByRole('menuitemcheckbox', { name: 'Archive inactive rooms…' })).not.toBeInTheDocument();
 	});
 });

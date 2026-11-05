@@ -240,20 +240,11 @@ const CategoryMenu = ({
 								</MenuSection>
 							</MenuSubmenuTrigger>
 						)}
-						{archiveItems.length > 0 && (
-							<MenuSubmenuTrigger key='archive' textValue={t('Archive')}>
-								<MenuItem aria-label={t('Archive')}>
-									<GenericMenuItem id='archive' icon='archive' content={t('Archive')} />
-								</MenuItem>
-								<MenuSection items={archiveItems}>
-									{(item) => (
-										<MenuItem key={item.id} textValue={typeof item.content === 'string' ? item.content : undefined}>
-											<GenericMenuItem {...item} />
-										</MenuItem>
-									)}
-								</MenuSection>
-							</MenuSubmenuTrigger>
-						)}
+						{archiveItems.map((item) => (
+							<MenuItem key={item.id}>
+								<GenericMenuItem {...item} />
+							</MenuItem>
+						))}
 					</>
 				</MenuSection>,
 				<MenuSection key='unreads' title={t('Unreads')} items={unreadItems}>
