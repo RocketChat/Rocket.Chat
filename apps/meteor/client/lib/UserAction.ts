@@ -23,7 +23,7 @@ const activityTimeouts = new Map();
 const activityRenews = new Map();
 const continuingIntervals = new Map();
 const roomActivities = new Map<string, Set<string>>();
-const rooms = new Map<string, (username: string, activityType: string[], extras?: object) => void>();
+const rooms = new Map<string, { stop: () => void; subscribers: number }>();
 
 const performingUsers = new Map<string, IRoomActivity>();
 const performingUsersEmitter = new Emitter<{ changed: void }>();
@@ -69,27 +69,38 @@ function handleStreamAction(rid: string, username: string, activityTypes: string
 }
 export const UserAction = new (class {
 	addStream(rid: string): () => void {
-		if (rooms.get(rid)) {
-			throw new Error('UserAction - addStream should only be called once per room');
+		const room = rooms.get(rid);
+
+		if (room) {
+			room.subscribers++;
+		} else {
+			const handler = function (username: string, activityType: string[], extras?: object): void {
+				const uid = getUserId();
+				const user = uid ? Users.state.get(uid) : undefined;
+
+				if (username === shownName(user)) {
+					return;
+				}
+				handleStreamAction(rid, username, activityType, extras);
+			};
+
+			const { stop } = sdk.stream('notify-room', [`${rid}/${USER_ACTIVITY}`], handler);
+			rooms.set(rid, { stop, subscribers: 1 });
 		}
 
-		const handler = function (username: string, activityType: string[], extras?: object): void {
-			const uid = getUserId();
-			const user = uid ? Users.state.get(uid) : undefined;
-
-			if (username === shownName(user)) {
-				return;
-			}
-			handleStreamAction(rid, username, activityType, extras);
-		};
-		rooms.set(rid, handler);
-
-		const { stop } = sdk.stream('notify-room', [`${rid}/${USER_ACTIVITY}`], handler);
+		let released = false;
 		return () => {
-			if (!rooms.get(rid)) {
+			const room = rooms.get(rid);
+			if (released || !room) {
 				return;
 			}
-			stop();
+			released = true;
+
+			room.subscribers--;
+			if (room.subscribers > 0) {
+				return;
+			}
+			room.stop();
 			rooms.delete(rid);
 		};
 	}

@@ -10,12 +10,14 @@ import RoomSidePanelItemBadges from './RoomSidePanelItemBadges';
 import SidePanelParent from './SidePanelParent';
 import SidePanelItem from './SidepanelItem';
 import { RoomIcon } from '../../../../components/RoomIcon';
+import { UserActivityText } from '../../../../components/UserActivity';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { getSubscriptionDraft } from '../../../../lib/utils/getSubscriptionDraft';
 import { isIOsDevice } from '../../../../lib/utils/isIOsDevice';
 import { getMessagePreview } from '../../../../lib/utils/normalizeMessagePreview/getMessagePreview';
 import { useOmnichannelPriorities } from '../../../omnichannel/hooks/useOmnichannelPriorities';
 import { useUnreadDisplay } from '../../sidebar/hooks/useUnreadDisplay';
+import { useSidePanelUserActivities } from '../hooks/useSidePanelUserActivities';
 
 export type RoomSidePanelItemProps = {
 	room: SubscriptionWithRoom;
@@ -32,6 +34,7 @@ const RoomSidePanelItem = ({ room, openedRoom, isRoomFilter, ...props }: RoomSid
 
 	const time = 'lastMessage' in room ? room.lastMessage?.ts : undefined;
 	const message = getMessagePreview(room, room.lastMessage, t);
+	const activities = useSidePanelUserActivities(rid);
 	const title = roomCoordinator.getRoomName(room.t, room) || '';
 	const href = roomCoordinator.getRouteLink(room.t, room) || '';
 
@@ -39,6 +42,9 @@ const RoomSidePanelItem = ({ room, openedRoom, isRoomFilter, ...props }: RoomSid
 	const { enabled: isPriorityEnabled } = useOmnichannelPriorities();
 
 	const parentRoomId = Boolean(room.prid || (room.teamId && !room.teamMain));
+
+	const messagePreview = message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }} /> : null;
+	const subtitle = activities.length > 0 ? <UserActivityText activities={activities} /> : messagePreview;
 
 	const titleIcon = getSubscriptionDraft(room) ? (
 		<Icon name='pencil' size='x12' title={room.draft ? t('Draft') : t('Thread_draft')} />
@@ -70,7 +76,7 @@ const RoomSidePanelItem = ({ room, openedRoom, isRoomFilter, ...props }: RoomSid
 			icon={<SidebarItemIcon highlighted={highlighted} icon={<RoomIcon room={room} placement='sidebar' size='x20' />} />}
 			unread={highlighted}
 			time={time}
-			subtitle={message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }} /> : null}
+			subtitle={subtitle}
 			parentRoom={!isRoomFilter && parentRoomId && <SidePanelParent room={room} />}
 			badges={<RoomSidePanelItemBadges room={room} roomTitle={title} />}
 			menu={menu}
