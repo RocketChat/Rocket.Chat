@@ -1,5 +1,5 @@
-import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
-import { ajv } from '../Ajv';
+import type { PaginatedRequest } from '../../helpers/PaginatedRequest.js';
+import { ajv } from '../Ajv.js';
 
 export type GroupsListProps = PaginatedRequest<null>;
 const groupsListPropsSchema = {};

@@ -1,6 +1,6 @@
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
 
-import { ajv } from '../Ajv';
+import { ajv } from '../Ajv.js';
 
 export type ArchiveReportPropsPOST = {
 	userId?: IUser['_id'];

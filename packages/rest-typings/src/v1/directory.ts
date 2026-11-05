@@ -1,9 +1,9 @@
 import type { IDirectoryChannelResult, IDirectoryUserResult } from '@rocket.chat/core-typings';
 
-import { ajv } from './Ajv';
-import { paginationQueryProperties } from './pagination';
-import type { PaginatedRequest } from '../helpers/PaginatedRequest';
-import type { PaginatedResult } from '../helpers/PaginatedResult';
+import { ajv } from './Ajv.js';
+import { paginationQueryProperties } from './pagination.js';
+import type { PaginatedRequest } from '../helpers/PaginatedRequest.js';
+import type { PaginatedResult } from '../helpers/PaginatedResult.js';
 
 type DirectoryProps = PaginatedRequest<{ text?: string; type?: string; workspace?: string }>;
 

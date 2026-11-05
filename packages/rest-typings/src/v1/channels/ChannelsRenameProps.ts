@@ -1,4 +1,4 @@
-import { ajv } from '../Ajv';
+import { ajv } from '../Ajv.js';
 
 export type ChannelsRenameProps = { roomId: string; name: string } | { roomName: string; name: string };
 

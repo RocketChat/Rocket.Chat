@@ -1,7 +1,7 @@
 import type { IOutgoingIntegration } from '@rocket.chat/core-typings';
 
-import type { IntegrationsHooksAddProps } from './IntegrationHooksAddProps';
-import type { IntegrationsHooksRemoveProps } from './IntegrationHooksRemoveProps';
+import type { IntegrationsHooksAddProps } from './IntegrationHooksAddProps.js';
+import type { IntegrationsHooksRemoveProps } from './IntegrationHooksRemoveProps.js';
 
 export type IntegrationHooksEndpoints = {
 	'/hooks/add/:integrationId/:userId/:token': {

@@ -1,9 +1,9 @@
-import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
-import type { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api';
-import type { IExternalComponent } from '@rocket.chat/apps-engine/definition/externalComponent';
-import type { IPermission } from '@rocket.chat/apps-engine/definition/permissions/IPermission';
-import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
-import type { IUIActionButton } from '@rocket.chat/apps-engine/definition/ui';
+import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus.js';
+import type { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api/index.js';
+import type { IExternalComponent } from '@rocket.chat/apps-engine/definition/externalComponent/index.js';
+import type { IPermission } from '@rocket.chat/apps-engine/definition/permissions/IPermission.js';
+import type { ISetting } from '@rocket.chat/apps-engine/definition/settings/index.js';
+import type { IUIActionButton } from '@rocket.chat/apps-engine/definition/ui/index.js';
 import type {
 	AppCategory,
 	AppScreenshot,
@@ -15,12 +15,12 @@ import type {
 } from '@rocket.chat/core-typings';
 import type * as UiKit from '@rocket.chat/ui-kit';
 
-import type { AppLogsExportProps } from './appLogsExportProps';
-import type { AppLogsProps } from './appLogsProps';
-import type { PaginatedResult } from '../helpers/PaginatedResult';
+import type { AppLogsExportProps } from './appLogsExportProps.js';
+import type { AppLogsProps } from './appLogsProps.js';
+import type { PaginatedResult } from '../helpers/PaginatedResult.js';
 
-export * from './appLogsExportProps';
-export * from './appLogsProps';
+export * from './appLogsExportProps.js';
+export * from './appLogsProps.js';
 
 export type AppsEndpoints = {
 	'/apps/count': {

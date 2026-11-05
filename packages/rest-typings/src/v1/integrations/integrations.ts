@@ -1,14 +1,14 @@
 import type { IIntegration, IIntegrationHistory } from '@rocket.chat/core-typings';
 
-import type { IntegrationsClearHistoryProps } from './IntegrationsClearHistoryProps';
-import type { IntegrationsCreateProps } from './IntegrationsCreateProps';
-import type { IntegrationsGetProps } from './IntegrationsGetProps';
-import type { IntegrationsHistoryProps } from './IntegrationsHistoryProps';
-import type { IntegrationsListProps } from './IntegrationsListProps';
-import type { IntegrationsRemoveProps } from './IntegrationsRemoveProps';
-import type { IntegrationsReplayProps } from './IntegrationsReplayProps';
-import type { IntegrationsUpdateProps } from './IntegrationsUpdateProps';
-import type { PaginatedResult } from '../../helpers/PaginatedResult';
+import type { IntegrationsClearHistoryProps } from './IntegrationsClearHistoryProps.js';
+import type { IntegrationsCreateProps } from './IntegrationsCreateProps.js';
+import type { IntegrationsGetProps } from './IntegrationsGetProps.js';
+import type { IntegrationsHistoryProps } from './IntegrationsHistoryProps.js';
+import type { IntegrationsListProps } from './IntegrationsListProps.js';
+import type { IntegrationsRemoveProps } from './IntegrationsRemoveProps.js';
+import type { IntegrationsReplayProps } from './IntegrationsReplayProps.js';
+import type { IntegrationsUpdateProps } from './IntegrationsUpdateProps.js';
+import type { PaginatedResult } from '../../helpers/PaginatedResult.js';
 
 export type IntegrationsEndpoints = {
 	'/v1/integrations.create': {

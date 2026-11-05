@@ -1,6 +1,6 @@
-import { ajv } from '../Ajv';
-import type { GroupsBaseProps } from './BaseProps';
-import { withGroupBaseProperties } from './BaseProps';
+import { ajv } from '../Ajv.js';
+import type { GroupsBaseProps } from './BaseProps.js';
+import { withGroupBaseProperties } from './BaseProps.js';
 
 export type GroupsAddAllProps = GroupsBaseProps & {
 	activeUsersOnly?: 'true' | 'false' | 1 | 0;
