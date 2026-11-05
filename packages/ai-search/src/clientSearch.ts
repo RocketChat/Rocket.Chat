@@ -6,7 +6,7 @@ export type SearchFilterKey = (typeof SEARCH_FILTER_KEYS)[number];
 
 export type SearchFilterIcon = 'hash' | 'user' | 'calendar';
 
-export type SearchFilterMeta = { rid?: string };
+export type SearchFilterMeta = { rid?: string; label?: string };
 
 export type AppliedFilter = {
 	id: string;
@@ -217,6 +217,8 @@ const formatFilterValue = (value: string): string => (/[\s,"]/.test(value) ? `"$
 export const serializeSearchQuery = ({ text, filters }: SearchQuery): string =>
 	[...filters.map(({ key, value }) => `${key}:${formatFilterValue(value)}`), text].filter(Boolean).join(' ').replace(/\s+/g, ' ').trim();
 
+export const formatAppliedFilter = ({ key, value, meta }: AppliedFilter): string => `${key}:${formatFilterValue(meta?.label ?? value)}`;
+
 const filterValues = (filters: AppliedFilter[], key: SearchFilterKey): AppliedFilter[] => filters.filter((filter) => filter.key === key);
 
 export const toAISearchParams = ({ text, filters }: SearchQuery) => {
@@ -280,9 +282,9 @@ export const buildFilterSuggestions = (
 			key: `in-${room.rid || room._id}`,
 			filterKey: 'in',
 			title: room.fname || room.name || '',
-			value: (room.prid ? room.fname || room.name : room.name || room.fname) || '',
+			value: room.name || room.fname || '',
 			icon: 'hash',
-			meta: { rid: room.rid || room._id },
+			meta: { rid: room.rid || room._id, ...(room.prid && room.fname && { label: room.fname }) },
 		}));
 	}
 

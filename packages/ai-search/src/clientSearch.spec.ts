@@ -4,6 +4,7 @@ import {
 	buildRoomSearchQuery,
 	buildUserFilterSuggestions,
 	createAppliedFilter,
+	formatAppliedFilter,
 	getAISearchButtonTooltip,
 	isSearchFilterKey,
 	mergeAppliedFilters,
@@ -221,6 +222,22 @@ describe('AI Search client helpers', () => {
 
 			expect(parseSearchInput(serializeSearchQuery(query))).toEqual(query);
 		});
+
+		it('keeps the room name, not the display label, so the query resolves to the same room', () => {
+			const filter = { ...appliedFilter('in', 'rAnd0mIdA'), meta: { rid: 'discussion-a', label: 'Standup' } };
+
+			expect(serializeSearchQuery({ text: '', filters: [filter] })).toBe('in:rAnd0mIdA');
+		});
+	});
+
+	describe('formatAppliedFilter', () => {
+		it('shows the display label when there is one and the value otherwise', () => {
+			expect(formatAppliedFilter({ ...appliedFilter('in', 'rAnd0mIdA'), meta: { rid: 'discussion-a', label: 'Daily standup' } })).toBe(
+				'in:"Daily standup"',
+			);
+			expect(formatAppliedFilter(appliedFilter('in', 'general'))).toBe('in:general');
+			expect(formatAppliedFilter(appliedFilter('after', '2026-01-01'))).toBe('after:2026-01-01');
+		});
 	});
 
 	describe('toAISearchParams', () => {
@@ -301,7 +318,7 @@ describe('AI Search client helpers', () => {
 			]);
 		});
 
-		it('uses the display name as the value for discussions', () => {
+		it('keeps the unique name as the value for discussions and carries the display name as a label', () => {
 			expect(
 				buildFilterSuggestions(
 					{ key: 'in', value: 'xmpp' },
@@ -313,11 +330,25 @@ describe('AI Search client helpers', () => {
 					key: 'in-discussion-id',
 					filterKey: 'in',
 					title: 'XMPP rollout',
-					value: 'XMPP rollout',
+					value: '6bXEMpwPaPykCmKcu',
 					icon: 'hash',
-					meta: { rid: 'discussion-id' },
+					meta: { rid: 'discussion-id', label: 'XMPP rollout' },
 				},
 			]);
+		});
+
+		it('keeps two discussions with the same display name as separate filters', () => {
+			const [first, second] = buildFilterSuggestions(
+				{ key: 'in', value: 'standup' },
+				[
+					{ _id: 'sub-a', rid: 'discussion-a', prid: 'parent-id', name: 'rAnd0mIdA', fname: 'Standup' },
+					{ _id: 'sub-b', rid: 'discussion-b', prid: 'parent-id', name: 'rAnd0mIdB', fname: 'Standup' },
+				],
+				t,
+			).map(({ filterKey, value, meta }) => createAppliedFilter(filterKey, value, meta)!);
+
+			expect(mergeAppliedFilters([first], [second])).toEqual([first, second]);
+			expect(toAISearchParams({ text: '', filters: [first, second] })).toEqual({ query: '', rids: 'discussion-a,discussion-b' });
 		});
 
 		it('caps room suggestions at the configured limit', () => {
