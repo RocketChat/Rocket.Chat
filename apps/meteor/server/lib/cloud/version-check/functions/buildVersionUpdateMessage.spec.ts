@@ -1,3 +1,5 @@
+import { mockModel } from '@rocket.chat/models/testing';
+
 import { buildVersionUpdateMessage } from './buildVersionUpdateMessage';
 import { sendMessagesToAdmins } from '../../../sendMessagesToAdmins';
 
@@ -15,16 +17,6 @@ jest.mock('../../../../../rocketchat.info', () => ({
 
 const mockSetBannersInBulk = jest.fn();
 const mockFindUsersInRolesWithQuery = jest.fn();
-
-jest.mock('@rocket.chat/models', () => ({
-	Settings: {
-		updateValueById: jest.fn().mockResolvedValue({ modifiedCount: 0 }),
-	},
-	Users: {
-		findUsersInRolesWithQuery: () => mockFindUsersInRolesWithQuery(),
-		setBannersInBulk: (updates: unknown) => mockSetBannersInBulk(updates),
-	},
-}));
 
 const mockSettingsGet = jest.fn();
 
@@ -53,6 +45,16 @@ jest.mock('../../../notifyListener', () => ({
 }));
 
 describe('buildVersionUpdateMessage', () => {
+	beforeAll(() => {
+		mockModel('Settings', {
+			updateValueById: jest.fn().mockResolvedValue({ modifiedCount: 0 }),
+		});
+		mockModel('Users', {
+			findUsersInRolesWithQuery: () => mockFindUsersInRolesWithQuery(),
+			setBannersInBulk: (updates: unknown) => mockSetBannersInBulk(updates),
+		});
+	});
+
 	// Delete the TEST_MODE environment variable so buildVersionUpdateMessage()
 	// doesn't return early (see line 40 in buildVersionUpdateMessage.ts)
 	beforeAll(() => {

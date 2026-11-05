@@ -1,5 +1,6 @@
-import { afterEach, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -28,7 +29,6 @@ const { runMergeContacts } = proxyquire.noCallThru().load('./mergeContacts', {
 	'../../../server/lib/omnichannel/contacts/ContactMerger': { ContactMerger: contactMergerStub },
 	'../lib/omnichannel/logger': { contactLogger: { info: sinon.stub(), debug: sinon.stub() } },
 	'../../../server/lib/notifyListener': { notifyOnSettingChanged: sinon.stub() },
-	'@rocket.chat/models': modelsMock,
 });
 
 describe('mergeContacts', () => {
@@ -45,6 +45,12 @@ describe('mergeContacts', () => {
 		field: 'field',
 		value: 'value',
 	};
+
+	before(() => {
+		mockModel('LivechatContacts', modelsMock.LivechatContacts);
+		mockModel('LivechatRooms', modelsMock.LivechatRooms);
+		mockModel('Settings', modelsMock.Settings);
+	});
 
 	beforeEach(() => {
 		modelsMock.LivechatContacts.findOneEnabledById.reset();

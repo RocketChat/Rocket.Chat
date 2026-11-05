@@ -1,5 +1,6 @@
 import { before, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -15,11 +16,6 @@ const stubs = {
 };
 
 const { uploadZipFile } = proxyquire.noCallThru().load('./uploadZipFile.ts', {
-	'@rocket.chat/models': {
-		Users: {
-			findOneById: stubs.findOneUserById,
-		},
-	},
 	'@rocket.chat/random': {
 		Random: {
 			id: stubs.randomId,
@@ -47,6 +43,7 @@ describe('Export - uploadZipFile', () => {
 	const filePath = 'random-path';
 
 	before(() => {
+		mockModel('Users', { findOneById: stubs.findOneUserById });
 		stubs.findOneUserById.returns({ name: userName });
 		stubs.stat.returns({ size: fileStat });
 		stubs.randomId.returns(randomId);

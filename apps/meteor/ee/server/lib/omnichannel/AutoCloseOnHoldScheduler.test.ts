@@ -1,5 +1,6 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import chai, { expect } from 'chai';
 import chaiDateTime from 'chai-datetime';
 import moment from 'moment';
@@ -57,15 +58,16 @@ const mocks = {
 	'../../../../server/database/utils': { client: { db: sinon.stub() } },
 	'../../../../server/lib/omnichannel/closeRoom': { closeRoom: mockLivechatCloseRoom },
 	'./logger': { schedulerLogger: mockLogger },
-	'@rocket.chat/models': {
-		LivechatRooms: mockLivechatRooms,
-		Users: mockUsers,
-	},
 };
 
 const { AutoCloseOnHoldSchedulerClass } = proxyquire.noCallThru().load('./AutoCloseOnHoldScheduler', mocks);
 
 describe('AutoCloseOnHoldScheduler', () => {
+	before(() => {
+		mockModel('LivechatRooms', mockLivechatRooms);
+		mockModel('Users', mockUsers);
+	});
+
 	it('should call logger.section upon instantiating', () => {
 		expect(mockLogger.section.called).to.be.true;
 	});

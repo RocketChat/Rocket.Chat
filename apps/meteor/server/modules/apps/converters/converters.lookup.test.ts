@@ -1,9 +1,19 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
 import type { IAppServerOrchestrator } from '@rocket.chat/apps';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { AppContactsConverter } from './contacts';
+import { AppDepartmentsConverter } from './departments';
+import { AppMessagesConverter } from './messages';
+import { AppRolesConverter } from './roles';
+import { AppRoomsConverter } from './rooms';
+import { AppSettingsConverter } from './settings';
+import { AppUsersConverter } from './users';
+import { AppVisitorsConverter } from './visitors';
 
 const sandbox = sinon.createSandbox();
 
@@ -23,26 +33,12 @@ const getVideoConf = sandbox.stub();
 
 const load = (module: string, stubs: Record<string, unknown>) => proxyquire.noCallThru().load(`./${module}`, stubs);
 
-const models = (stores: Record<string, unknown>) => ({ '@rocket.chat/models': stores });
-
-const { AppContactsConverter } = load('contacts', models({ LivechatContacts: { findOneEnabledById: findContact } }));
-const { AppDepartmentsConverter } = load('departments', models({ LivechatDepartment: { findOneById: findDepartment } }));
-const { AppMessagesConverter } = load('messages', models({ Messages: { findOneById: findMessage } }));
-const { AppRolesConverter } = load('roles', models({ Roles: { findOneById: findRole } }));
-const { AppRoomsConverter } = load('rooms', models({ Rooms: { findOneById: findRoomById, findOneByName: findRoomByName } }));
-const { AppSettingsConverter } = load('settings', models({ Settings: { findOneById: findSetting } }));
 const uploadsCodec = proxyquire.noCallThru().load('./codecs/uploads', {
 	'../../../../lib/utils/getURL': { getURL: (path: string) => path },
 });
 const { AppUploadsConverter } = load('uploads', {
-	...models({ Uploads: { findOneById: findUpload } }),
 	'./codecs/uploads': uploadsCodec,
 });
-const { AppUsersConverter } = load('users', models({ Users: { findOneById: findUserById, findOneByUsername: findUserByUsername } }));
-const { AppVisitorsConverter } = load(
-	'visitors',
-	models({ LivechatVisitors: { findOneEnabledById: findVisitorById, getVisitorByToken: findVisitorByToken } }),
-);
 const { AppVideoConferencesConverter } = load('videoConferences', {
 	'@rocket.chat/core-services': { VideoConf: { getUnfiltered: getVideoConf } },
 });
@@ -57,10 +53,10 @@ const orch = {
 	}),
 } as unknown as IAppServerOrchestrator;
 
-const contacts = new AppContactsConverter(orch);
+const contacts = new AppContactsConverter();
 const departments = new AppDepartmentsConverter(orch);
 const messages = new AppMessagesConverter(orch);
-const roles = new AppRolesConverter(orch);
+const roles = new AppRolesConverter();
 const rooms = new AppRoomsConverter(orch);
 const settings = new AppSettingsConverter(orch);
 const uploads = new AppUploadsConverter(orch);
@@ -183,6 +179,21 @@ const guards = [
 ];
 
 describe('apps converters — lookups and guard clauses', () => {
+	before(() => {
+		mockModel('LivechatContacts', { findOneEnabledById: findContact });
+		mockModel('LivechatDepartment', { findOneById: findDepartment });
+		mockModel('Messages', { findOneById: findMessage });
+		mockModel('Roles', { findOneById: findRole });
+		mockModel('Rooms', { findOneById: findRoomById, findOneByName: findRoomByName });
+		mockModel('Settings', { findOneById: findSetting });
+		mockModel('Uploads', { findOneById: findUpload });
+		mockModel('Users', { findOneById: findUserById, findOneByUsername: findUserByUsername });
+		mockModel('LivechatVisitors', {
+			findOneEnabledById: findVisitorById,
+			getVisitorByToken: findVisitorByToken,
+		});
+	});
+
 	beforeEach(() => {
 		sandbox.reset();
 	});

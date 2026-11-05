@@ -1,4 +1,5 @@
 import { createNodeServer } from '@rocket.chat/http-router';
+import { mockModel } from '@rocket.chat/models/testing';
 import request from 'supertest';
 
 import { httpApp } from '../lib/http/httpServer';
@@ -73,11 +74,6 @@ jest.mock('../settings', () => ({
 
 jest.mock('meteor/facts-base', () => ({ Facts: { incrementServerFact: () => undefined } }), { virtual: true });
 
-jest.mock('@rocket.chat/models', () => ({
-	Integrations: mockIntegrations,
-	Users: mockUsers,
-}));
-
 jest.mock('../lib/notifications/email/transport', () => ({ sendMail: jest.fn() }));
 jest.mock('../lib/authorization/hasPermission', () => ({ hasPermissionAsync: mockHasPermissionAsync }));
 jest.mock('../lib/messages/processWebhookMessage', () => ({ processWebhookMessage: mockProcessWebhookMessage }));
@@ -119,6 +115,11 @@ afterAll(() => {
 });
 
 describe('Webhooks API', () => {
+	beforeAll(() => {
+		mockModel('Integrations', mockIntegrations);
+		mockModel('Users', mockUsers);
+	});
+
 	beforeEach(() => {
 		jest.clearAllMocks();
 		rateLimiterCounters.clear();

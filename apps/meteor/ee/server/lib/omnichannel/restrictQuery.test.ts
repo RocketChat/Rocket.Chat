@@ -1,5 +1,6 @@
 import { afterEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -37,10 +38,9 @@ describe('restrictQuery', () => {
 
 		const debugStub = sinon.stub();
 
+		mockModel('LivechatDepartment', { find: findStub });
+
 		const { restrictQuery } = proxyquire.noCallThru().load(modulePath, {
-			'@rocket.chat/models': {
-				LivechatDepartment: { find: findStub },
-			},
 			'@rocket.chat/omni-core-ee': {
 				getUnitsFromUser: getUnitsFromUserStub,
 			},

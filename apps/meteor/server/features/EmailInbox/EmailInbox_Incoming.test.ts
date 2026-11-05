@@ -1,8 +1,7 @@
 import { before, beforeEach, describe, it } from 'node:test';
 
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
-import type { ILivechatRoomsModel, ILivechatVisitorsModel, IMessagesModel } from '@rocket.chat/model-typings';
-import { registerModel } from '@rocket.chat/models';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -60,9 +59,9 @@ const sentMessage = () => sendMessage.firstCall.args[0];
 
 describe('onEmailReceived', () => {
 	before(() => {
-		registerModel('ILivechatVisitorsModel', models.LivechatVisitors as unknown as ILivechatVisitorsModel);
-		registerModel('ILivechatRoomsModel', models.LivechatRooms as unknown as ILivechatRoomsModel);
-		registerModel('IMessagesModel', models.Messages as unknown as IMessagesModel);
+		mockModel('LivechatVisitors', models.LivechatVisitors);
+		mockModel('LivechatRooms', models.LivechatRooms);
+		mockModel('Messages', models.Messages);
 	});
 
 	beforeEach(() => {

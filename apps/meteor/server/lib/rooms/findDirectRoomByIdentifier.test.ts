@@ -1,8 +1,10 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import Sinon from 'sinon';
+
+import { findDirectRoomByIdentifier } from './findDirectRoomByIdentifier';
 
 const RoomsStub = {
 	findByTypeAndNameOrId: Sinon.stub(),
@@ -14,13 +16,14 @@ const UsersStub = {
 	findUsersByUsernames: Sinon.stub(),
 };
 
-const { findDirectRoomByIdentifier } = proxyquire.noCallThru().load('./findDirectRoomByIdentifier.ts', {
-	'@rocket.chat/models': { Rooms: RoomsStub, Users: UsersStub },
-});
-
 const cursorOf = (docs: unknown[]) => ({ toArray: async () => docs });
 
 describe('findDirectRoomByIdentifier', () => {
+	before(() => {
+		mockModel('Rooms', RoomsStub);
+		mockModel('Users', UsersStub);
+	});
+
 	beforeEach(() => {
 		RoomsStub.findByTypeAndNameOrId.reset();
 		RoomsStub.findOneDirectRoomContainingAllUserIDs.reset();

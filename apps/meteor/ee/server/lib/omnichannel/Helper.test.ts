@@ -1,5 +1,6 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -16,12 +17,16 @@ const mocks = {
 	'../../../../server/lib/omnichannel/settings': { getInquirySortMechanismSetting: sinon.stub() },
 	'../../../../lib/livechat/inquiries': { getOmniChatSortQuery: sinon.stub() },
 	'../../../../server/settings': { settings: { get: settingGetMock } },
-	'@rocket.chat/models': { Users: usersModelMock, LivechatDepartment: departmentsMock },
 };
 
 const { isAgentWithinChatLimits } = proxyquire.noCallThru().load('./Helper.ts', mocks);
 
 describe('isAgentWithinChatLimits', () => {
+	before(() => {
+		mockModel('Users', usersModelMock);
+		mockModel('LivechatDepartment', departmentsMock);
+	});
+
 	beforeEach(() => {
 		usersModelMock.getAgentInfo.reset();
 		departmentsMock.findOneById.reset();

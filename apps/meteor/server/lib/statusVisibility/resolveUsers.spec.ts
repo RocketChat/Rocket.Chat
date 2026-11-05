@@ -1,16 +1,18 @@
+import { mockModel } from '@rocket.chat/models/testing';
+
 import { resolveUsersByIds, resolveUsersByUsernames } from './resolveUsers';
 
 const usersByUsernames = jest.fn();
 const usersByIds = jest.fn();
 
-jest.mock('@rocket.chat/models', () => ({
-	Users: {
-		findByUsernames: (...args: unknown[]) => usersByUsernames(...args),
-		findByIds: (...args: unknown[]) => usersByIds(...args),
-	},
-}));
-
 describe('status visibility user resolution', () => {
+	beforeAll(() => {
+		mockModel('Users', {
+			findByUsernames: (...args: unknown[]) => usersByUsernames(...args),
+			findByIds: (...args: unknown[]) => usersByIds(...args),
+		});
+	});
+
 	beforeEach(() => {
 		jest.resetAllMocks();
 	});

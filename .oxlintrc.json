@@ -13,6 +13,7 @@
 		"apps/meteor/.meteor/**",
 		"packages/{apps,apps-engine}/{client,definition,docs,server,lib}",
 		"packages/jest-presets/{client,server}/**",
+		"packages/models/testing/**",
 		"packages/node-poplib/**",
 		"packages/storybook-config/*.{d.ts,js}",
 		"scripts/**",

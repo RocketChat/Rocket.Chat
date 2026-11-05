@@ -1,6 +1,7 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
 import { ClientSafeError } from '@rocket.chat/core-services';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import p from 'proxyquire';
 import sinon from 'sinon';
@@ -29,7 +30,6 @@ const notifyOnSubscriptionChangedMock = sinon.stub();
 const afterBanFromRoomCallbackMock = { run: sinon.stub() };
 
 const { performUserBan, banUserFromRoom } = p.noCallThru().load('./banUserFromRoom.ts', {
-	'@rocket.chat/models': modelsMock,
 	'@rocket.chat/core-services': { Message: messageMock, ClientSafeError },
 	'../callbacks/afterBanFromRoomCallback': { afterBanFromRoomCallback: afterBanFromRoomCallbackMock },
 	'../roles/removeUserFromRoles': { removeUserFromRolesAsync: removeUserFromRolesAsyncMock },
@@ -41,6 +41,12 @@ const { performUserBan, banUserFromRoom } = p.noCallThru().load('./banUserFromRo
 
 describe('banUserFromRoom', () => {
 	const mockByUser = { _id: 'admin1', username: 'admin' };
+
+	before(() => {
+		mockModel('Rooms', modelsMock.Rooms);
+		mockModel('Subscriptions', modelsMock.Subscriptions);
+		mockModel('Users', modelsMock.Users);
+	});
 
 	beforeEach(() => {
 		modelsMock.Rooms.findOneById.reset();

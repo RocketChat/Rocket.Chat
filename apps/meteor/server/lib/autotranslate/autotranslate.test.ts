@@ -28,7 +28,6 @@ describe('TranslationProviderRegistry', () => {
 			.noCallThru()
 			.noPreserveCache()
 			.load('./autotranslate', {
-				'@rocket.chat/models': { Messages: {}, Subscriptions: {} },
 				'../../settings': { settings: { watch: sinon.stub(), get: sinon.stub() } },
 				'../callbacks': { callbacks: { add: addStub, remove: removeStub, priority: { MEDIUM: 2 } } },
 				'../messaging/markdown': { Markdown: {} },

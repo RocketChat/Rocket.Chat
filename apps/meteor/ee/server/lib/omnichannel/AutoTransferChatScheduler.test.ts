@@ -1,5 +1,6 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import chai, { expect } from 'chai';
 import chaiDateTime from 'chai-datetime';
 import moment from 'moment';
@@ -66,15 +67,16 @@ const mocks = {
 	'../../../../server/lib/omnichannel/rooms': { returnRoomAsInquiry: returnRoomAsInquiryMock },
 	'../../../../server/settings': { settings: { get: settingsGet } },
 	'./logger': { schedulerLogger: mockLogger },
-	'@rocket.chat/models': {
-		LivechatRooms: mockLivechatRooms,
-		Users: mockUsers,
-	},
 };
 
 const { AutoTransferChatSchedulerClass } = proxyquire.noCallThru().load('./AutoTransferChatScheduler', mocks);
 
 describe('AutoTransferChats', () => {
+	before(() => {
+		mockModel('LivechatRooms', mockLivechatRooms);
+		mockModel('Users', mockUsers);
+	});
+
 	describe('getSchedulerUser', () => {
 		it('should return rocket.cat user', async () => {
 			const scheduler = new AutoTransferChatSchedulerClass();

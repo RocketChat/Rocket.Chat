@@ -1,5 +1,6 @@
 import { describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
@@ -34,7 +35,8 @@ describe('/me', () => {
 describe('/help', () => {
 	it('sends the translated keyboard shortcuts privately in the current thread', async () => {
 		const findUser = sinon.stub().resolves({ language: 'pt' });
-		const slashCommand = loadSlashCommand('help/server', { '@rocket.chat/models': { Users: { findOneById: findUser } } });
+		mockModel('Users', { findOneById: findUser });
+		const slashCommand = loadSlashCommand('help/server');
 		slashCommand.translate.callsFake((key: string, options: { shortcut: string }) => `${key}: ${options.shortcut}`);
 		await slashCommand.runCommand('help', { message: { _id: 'message', rid: 'current-room', tmid: 'thread' } });
 		sinon.assert.calledOnceWithExactly(findUser, 'actor');
@@ -47,9 +49,8 @@ describe('/help', () => {
 	});
 
 	it('provides English help without a user preference or thread', async () => {
-		const slashCommand = loadSlashCommand('help/server', {
-			'@rocket.chat/models': { Users: { findOneById: sinon.stub().resolves(null) } },
-		});
+		mockModel('Users', { findOneById: sinon.stub().resolves(null) });
+		const slashCommand = loadSlashCommand('help/server');
 
 		await slashCommand.runCommand('help');
 		sinon.assert.calledOnce(slashCommand.broadcast);

@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquireRaw from 'proxyquire';
 import * as sinon from 'sinon';
@@ -23,9 +24,6 @@ describe('eraseTeam (TypeScript) module', () => {
 				removeAllMembersFromTeam: sandbox.stub().resolves(),
 				deleteById: sandbox.stub().resolves(),
 			},
-			'Users': {
-				findOneById: sandbox.stub().resolves(null),
-			},
 			'Rooms': {
 				findOneById: sandbox.stub().resolves(null),
 			},
@@ -48,14 +46,6 @@ describe('eraseTeam (TypeScript) module', () => {
 					},
 				},
 			},
-			'@rocket.chat/models': {
-				Rooms: {
-					findOneById: (...args: any[]) => stubs.Rooms.findOneById(...args),
-				},
-				Users: {
-					findOneById: (...args: any[]) => stubs.Users.findOneById(...args),
-				},
-			},
 			'@rocket.chat/core-services': {
 				ClientSafeError: (function () {
 					class ClientSafeError extends Error {
@@ -74,9 +64,10 @@ describe('eraseTeam (TypeScript) module', () => {
 			},
 		};
 
+		mockModel('Rooms', stubs.Rooms);
+
 		subject = proxyquire('./eraseTeam', {
 			'@rocket.chat/apps': stubs['@rocket.chat/apps'],
-			'@rocket.chat/models': stubs['@rocket.chat/models'],
 			'../../lib/eraseRoom': { __esModule: true, eraseRoom: stubs.eraseRoomStub },
 			'../../lib/rooms/deleteRoom': { __esModule: true, deleteRoom: stubs.deleteRoomStub },
 			'../../lib/logger/system': stubs['../../lib/logger/system'],
@@ -163,7 +154,6 @@ describe('eraseTeam (TypeScript) module', () => {
 
 			const base = proxyquire('./eraseTeam', {
 				'@rocket.chat/apps': stubs['@rocket.chat/apps'],
-				'@rocket.chat/models': stubs['@rocket.chat/models'],
 				'../../lib/eraseRoom': { __esModule: true, eraseRoom: stubs.eraseRoomStub },
 				'../../lib/rooms/deleteRoom': { __esModule: true, deleteRoom: stubs.deleteRoomStub },
 				'../../lib/logger/system': stubs['../../lib/logger/system'],
@@ -184,7 +174,6 @@ describe('eraseTeam (TypeScript) module', () => {
 		beforeEach(() => {
 			baseModule = proxyquire('./eraseTeam', {
 				'@rocket.chat/apps': stubs['@rocket.chat/apps'],
-				'@rocket.chat/models': stubs['@rocket.chat/models'],
 				'../../lib/eraseRoom': { __esModule: true, eraseRoom: stubs.eraseRoomStub },
 				'../../lib/rooms/deleteRoom': { __esModule: true, deleteRoom: stubs.deleteRoomStub },
 				'../../lib/logger/system': stubs['../../lib/logger/system'],
@@ -221,7 +210,6 @@ describe('eraseTeam (TypeScript) module', () => {
 
 			const m = proxyquire('./eraseTeam', {
 				'@rocket.chat/apps': AppsStub,
-				'@rocket.chat/models': stubs['@rocket.chat/models'],
 				'../../lib/eraseRoom': { __esModule: true, eraseRoom: stubs.eraseRoomStub },
 				'../../lib/rooms/deleteRoom': { __esModule: true, deleteRoom: stubs.deleteRoomStub },
 				'../../lib/logger/system': stubs['../../lib/logger/system'],
@@ -244,7 +232,6 @@ describe('eraseTeam (TypeScript) module', () => {
 
 			const m = proxyquire('./eraseTeam', {
 				'@rocket.chat/apps': stubs['@rocket.chat/apps'],
-				'@rocket.chat/models': stubs['@rocket.chat/models'],
 				'../../lib/eraseRoom': { __esModule: true, eraseRoom: stubs.eraseRoomStub },
 				'../../lib/rooms/deleteRoom': { __esModule: true, deleteRoom: stubs.deleteRoomStub },
 				'../../lib/logger/system': stubs['../../lib/logger/system'],
@@ -274,7 +261,6 @@ describe('eraseTeam (TypeScript) module', () => {
 			stubs.deleteRoomStub.resolves();
 			const m = proxyquire('./eraseTeam', {
 				'@rocket.chat/apps': AppsStub,
-				'@rocket.chat/models': stubs['@rocket.chat/models'],
 				'../../lib/eraseRoom': { __esModule: true, eraseRoom: stubs.eraseRoomStub },
 				'../../lib/rooms/deleteRoom': { __esModule: true, deleteRoom: stubs.deleteRoomStub },
 				'../../lib/logger/system': stubs['../../lib/logger/system'],

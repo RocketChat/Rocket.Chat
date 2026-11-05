@@ -1,6 +1,5 @@
 import { License, MockedLicenseBuilder } from '@rocket.chat/license';
-import type { ILivechatDepartmentModel } from '@rocket.chat/model-typings';
-import { registerModel } from '@rocket.chat/models';
+import { mockModel } from '@rocket.chat/models/testing';
 import { isDepartmentCreationAvailable } from '@rocket.chat/omni-core';
 
 import { isDepartmentCreationAvailablePatch } from './isDepartmentCreationAvailable';
@@ -21,7 +20,7 @@ beforeEach(async () => {
 beforeAll(async () => {
 	isDepartmentCreationAvailablePatch();
 
-	registerModel('ILivechatDepartmentModel', { countTotal: () => 1 } as unknown as ILivechatDepartmentModel);
+	mockModel('LivechatDepartment', { countTotal: async () => 1 });
 });
 
 it('should skip the check if Livechat Enterprise is enabled', async () => {

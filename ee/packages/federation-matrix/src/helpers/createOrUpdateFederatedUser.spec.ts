@@ -1,15 +1,9 @@
 import { UserStatus } from '@rocket.chat/core-typings';
-import { Users } from '@rocket.chat/models';
+import { mockModel } from '@rocket.chat/models/testing';
 
 import { createOrUpdateFederatedUser } from './createOrUpdateFederatedUser';
 
-jest.mock('@rocket.chat/models', () => ({
-	Users: {
-		findOneAndUpdate: jest.fn(),
-	},
-}));
-
-const mockFindOneAndUpdate = Users.findOneAndUpdate as jest.MockedFunction<typeof Users.findOneAndUpdate>;
+const mockFindOneAndUpdate = jest.fn();
 
 const fakeUser = {
 	_id: 'user123',
@@ -20,6 +14,10 @@ const fakeUser = {
 };
 
 describe('createOrUpdateFederatedUser', () => {
+	beforeAll(() => {
+		mockModel('Users', { findOneAndUpdate: mockFindOneAndUpdate });
+	});
+
 	beforeEach(() => {
 		jest.clearAllMocks();
 	});

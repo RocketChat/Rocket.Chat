@@ -1,20 +1,17 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
 import type { IAppServerOrchestrator } from '@rocket.chat/apps';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import { convertMessageFiles } from './convertMessageFiles';
+import { AppMessagesConverter } from './messages';
 
 const sandbox = sinon.createSandbox();
 
 const findRoom = sandbox.stub();
 const findUser = sandbox.stub();
-
-const { AppMessagesConverter } = proxyquire.noCallThru().load('./messages', {
-	'@rocket.chat/models': { Rooms: { findOneById: findRoom }, Users: { findOneById: findUser } },
-});
 
 const orch = {
 	getConverters: () => ({
@@ -25,11 +22,16 @@ const orch = {
 	}),
 } as unknown as IAppServerOrchestrator;
 
-const converter = new AppMessagesConverter(orch);
+const converter: any = new AppMessagesConverter(orch);
 
 const ts = new Date('2024-01-01T00:00:00.000Z');
 
 describe('AppMessagesConverter.convertAppMessage', () => {
+	before(() => {
+		mockModel('Rooms', { findOneById: findRoom });
+		mockModel('Users', { findOneById: findUser });
+	});
+
 	beforeEach(() => {
 		sandbox.reset();
 		findRoom.resolves({ _id: 'room-1' });

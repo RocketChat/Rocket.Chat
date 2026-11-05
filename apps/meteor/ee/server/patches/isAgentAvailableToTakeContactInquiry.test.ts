@@ -1,5 +1,6 @@
-import { afterEach, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -15,13 +16,16 @@ const settingsMock = {
 };
 
 const { runIsAgentAvailableToTakeContactInquiry } = proxyquire.noCallThru().load('./isAgentAvailableToTakeContactInquiry', {
-	'@rocket.chat/models': modelsMock,
 	'../../../server/settings': {
 		settings: settingsMock,
 	},
 });
 
 describe('isAgentAvailableToTakeContactInquiry', () => {
+	before(() => {
+		mockModel('LivechatContacts', modelsMock.LivechatContacts);
+	});
+
 	beforeEach(() => {
 		modelsMock.LivechatContacts.findOneEnabledById.reset();
 		settingsMock.get.reset();

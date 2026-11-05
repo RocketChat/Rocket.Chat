@@ -1,8 +1,10 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { ensureCloudWorkspaceRegistered } from './cloudRegistration';
 
 const models = {
 	Settings: {
@@ -12,15 +14,15 @@ const models = {
 	},
 };
 
-const { ensureCloudWorkspaceRegistered } = proxyquire.noCallThru().load('./cloudRegistration', {
-	'@rocket.chat/models': models,
-});
-
 describe('ensureCloudWorkspaceRegistered', () => {
 	const stubSettings = (values: Record<string, string | undefined>, showSetupWizard: Record<string, unknown> | null) => {
 		models.Settings.getValueById.callsFake(async (id: string) => values[id]);
 		models.Settings.findOneById.resolves(showSetupWizard);
 	};
+
+	before(() => {
+		mockModel('Settings', models.Settings);
+	});
 
 	beforeEach(() => {
 		models.Settings.getValueById.reset();

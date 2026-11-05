@@ -25,8 +25,6 @@ jest.mock('../settings', () => ({
 	},
 }));
 
-jest.mock('@rocket.chat/models', () => ({}));
-
 const { ClientSafeError } = jest.requireActual<typeof import('@rocket.chat/core-services')>('@rocket.chat/core-services');
 jest.requireActual('./api');
 const { APIClass } = jest.requireActual<typeof import('./ApiClass')>('./ApiClass');

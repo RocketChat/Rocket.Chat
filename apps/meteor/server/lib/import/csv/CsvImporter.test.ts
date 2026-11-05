@@ -3,6 +3,7 @@ import { after, before, beforeEach, describe, it } from 'node:test';
 import * as os from 'os';
 import * as path from 'path';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import AdmZip from 'adm-zip';
 import { expect } from 'chai';
 import { parse } from 'csv-parse/sync';
@@ -71,10 +72,6 @@ class MockImporter {
 }
 
 const { CsvImporter } = proxyquire.noCallThru().load('./CsvImporter', {
-	'@rocket.chat/models': {
-		Settings: { incrementValueById },
-		Users: { findOneByUsername, addImportIds },
-	},
 	'csv-parse/lib/sync': { parse },
 	'..': {
 		Importer: MockImporter,
@@ -103,6 +100,8 @@ describe('CsvImporter', () => {
 	let zipCount = 0;
 
 	before(() => {
+		mockModel('Settings', { incrementValueById });
+		mockModel('Users', { findOneByUsername, addImportIds });
 		tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'rc-csv-importer-'));
 	});
 
