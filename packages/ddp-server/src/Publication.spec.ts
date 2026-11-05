@@ -124,7 +124,7 @@ describe('Publication', () => {
 		expect(() => publication.stop()).not.toThrow();
 
 		expect(after).toHaveBeenCalledTimes(1);
-		expect(mockLoggerError).toHaveBeenCalledWith(expect.objectContaining({ err: failure }));
+		expect(mockLoggerError).toHaveBeenCalledWith(expect.objectContaining({ name: 'messages', err: failure }));
 		expect(publication._isDeactivated()).toBe(true);
 		expect(session.subscriptions.has('test-id')).toBe(false);
 		expect(session.listenerCount('close')).toBe(0);

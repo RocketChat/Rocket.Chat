@@ -83,7 +83,7 @@ export class Publication extends EventEmitter implements IPublication {
 			try {
 				fn(...args);
 			} catch (err) {
-				logger.error({ msg: 'Publication stop callback failed', err });
+				logger.error({ msg: 'Publication stop callback failed', name: this.packet.name, err });
 			}
 		};
 		if (this._isDeactivated()) {
