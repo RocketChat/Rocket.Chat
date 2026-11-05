@@ -5,9 +5,9 @@ import type { ChangeEvent } from 'react';
 import { memo, useContext, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { UiKitContext } from '../contexts/UiKitContext';
-import { useUiKitState } from '../hooks/useUiKitState';
-import type { BlockProps } from '../utils/BlockProps';
+import { UiKitContext } from '../contexts/UiKitContext.js';
+import { useUiKitState } from '../hooks/useUiKitState.js';
+import type { BlockProps } from '../utils/BlockProps.js';
 
 export type FileInputElementProps = BlockProps<UiKit.FileInputElement>;
 

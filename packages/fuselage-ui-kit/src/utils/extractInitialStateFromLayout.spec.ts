@@ -1,4 +1,4 @@
-import { extractInitialStateFromLayout } from './extractInitialStateFromLayout';
+import { extractInitialStateFromLayout } from './extractInitialStateFromLayout.js';
 
 const input = (actionId: string, blockId: string, initialValue: string) => ({
 	type: 'input',

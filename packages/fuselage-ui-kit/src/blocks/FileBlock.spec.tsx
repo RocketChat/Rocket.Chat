@@ -1,7 +1,7 @@
 import { MockedServerContext } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
 
-import { messageParser } from '../surfaces';
+import { messageParser } from '../surfaces/index.js';
 
 const renderBlocks = (block: Record<string, unknown>) =>
 	render(<MockedServerContext>{messageParser.render([{ type: 'file', ...block } as never])}</MockedServerContext>);

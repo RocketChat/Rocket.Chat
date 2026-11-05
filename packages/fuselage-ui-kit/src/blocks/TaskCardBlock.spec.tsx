@@ -1,7 +1,7 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
 
-import { bannerParser, messageParser, modalParser } from '../surfaces';
+import { bannerParser, messageParser, modalParser } from '../surfaces/index.js';
 
 const wrapper = mockAppRoot().build();
 

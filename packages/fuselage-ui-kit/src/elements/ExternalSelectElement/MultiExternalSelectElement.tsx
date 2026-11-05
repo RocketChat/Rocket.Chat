@@ -2,11 +2,11 @@ import { AutoComplete } from '@rocket.chat/fuselage';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { memo, useCallback, useState } from 'react';
 
-import { useExternalSelectOptions } from './hooks/useExternalSelectOptions';
-import { useAutoCompleteKey } from '../../hooks/useAutoCompleteKey';
-import { useUiKitState } from '../../hooks/useUiKitState';
-import type { BlockProps } from '../../utils/BlockProps';
-import { limitOptions } from '../../utils/limitOptions';
+import { useExternalSelectOptions } from './hooks/useExternalSelectOptions.js';
+import { useAutoCompleteKey } from '../../hooks/useAutoCompleteKey.js';
+import { useUiKitState } from '../../hooks/useUiKitState.js';
+import type { BlockProps } from '../../utils/BlockProps.js';
+import { limitOptions } from '../../utils/limitOptions.js';
 
 export type MultiExternalSelectElementProps = BlockProps<UiKit.MultiExternalSelectElement>;
 

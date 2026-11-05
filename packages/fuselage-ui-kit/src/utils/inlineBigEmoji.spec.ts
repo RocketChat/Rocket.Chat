@@ -1,6 +1,6 @@
 import { parse } from '@rocket.chat/message-parser';
 
-import { inlineBigEmoji } from './inlineBigEmoji';
+import { inlineBigEmoji } from './inlineBigEmoji.js';
 
 it('parses emoji-only text as a big emoji block', () => {
 	expect(parse('😀', { emoticons: false })[0].type).toBe('BIG_EMOJI');

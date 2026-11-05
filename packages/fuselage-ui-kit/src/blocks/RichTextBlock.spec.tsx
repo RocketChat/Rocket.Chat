@@ -2,8 +2,8 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { render, screen, waitFor } from '@testing-library/react';
 
-import { messageParser } from '../surfaces';
-import MessageSurface from '../surfaces/MessageSurface';
+import MessageSurface from '../surfaces/MessageSurface.js';
+import { messageParser } from '../surfaces/index.js';
 
 const wrapper = () =>
 	mockAppRoot()

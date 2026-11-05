@@ -4,8 +4,8 @@ import type * as UiKit from '@rocket.chat/ui-kit';
 import type { Meta, StoryObj } from '@storybook/react';
 import { action } from 'storybook/actions';
 
-import { UiKitContext, UiKitBanner } from '..';
-import * as payloads from './payloads';
+import { UiKitContext, UiKitBanner } from '../index.js';
+import * as payloads from './payloads/index.js';
 
 type StoryArgs = {
 	blocks: readonly UiKit.LayoutBlock[];

@@ -2,8 +2,8 @@ import { Box, Table, TableBody, TableCell, TableHead, TableRow } from '@rocket.c
 import * as UiKit from '@rocket.chat/ui-kit';
 import { memo } from 'react';
 
-import type { BlockProps } from '../utils/BlockProps';
-import { isTextObject } from '../utils/isTextObject';
+import type { BlockProps } from '../utils/BlockProps.js';
+import { isTextObject } from '../utils/isTextObject.js';
 
 export type TableBlockProps = BlockProps<UiKit.TableBlock>;
 

@@ -1,7 +1,7 @@
 import { BlockContext, type MultiStaticSelectElement } from '@rocket.chat/ui-kit';
 import { act, renderHook } from '@testing-library/react';
 
-import { useUiKitState } from './useUiKitState';
+import { useUiKitState } from './useUiKitState.js';
 
 describe('state function', () => {
 	const context = BlockContext.NONE;

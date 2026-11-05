@@ -1,7 +1,7 @@
 import * as UiKit from '@rocket.chat/ui-kit';
 
-import type { MentionNames } from './richTextToAst';
-import { messageHref } from './richTextToAst';
+import type { MentionNames } from './richTextToAst.js';
+import { messageHref } from './richTextToAst.js';
 
 // Escapes the characters of plain text that the Markdown parser reads as syntax: the inline
 // markers, a `#` or a list number that starts a line. Styled text cannot hold an escape.

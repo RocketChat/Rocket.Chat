@@ -1,9 +1,9 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 
-import { UiKitContext } from '../contexts/UiKitContext';
-import { modalParser } from '../surfaces';
+import { UiKitContext } from '../contexts/UiKitContext.js';
+import { modalParser } from '../surfaces/index.js';
 
 const base = { appId: 'app', blockId: 'block', actionId: 'field' } as const;
 

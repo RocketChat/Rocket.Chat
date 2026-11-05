@@ -2,8 +2,8 @@ import { MockedServerContext } from '@rocket.chat/mock-providers';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { fireEvent, render, screen } from '@testing-library/react';
 
-import { UiKitContext } from '../contexts/UiKitContext';
-import { modalParser } from '../surfaces';
+import { UiKitContext } from '../contexts/UiKitContext.js';
+import { modalParser } from '../surfaces/index.js';
 
 const element: UiKit.DateTimePickerElement = {
 	type: 'datetimepicker',

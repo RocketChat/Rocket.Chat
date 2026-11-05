@@ -4,8 +4,8 @@ import { memo, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import RichTextBlock from './RichTextBlock';
-import type { BlockProps } from '../utils/BlockProps';
+import RichTextBlock from './RichTextBlock.js';
+import type { BlockProps } from '../utils/BlockProps.js';
 import {
 	cellText,
 	isActionCell,
@@ -16,7 +16,7 @@ import {
 	numberText,
 	sortRows,
 	toList,
-} from '../utils/dataTable';
+} from '../utils/dataTable.js';
 
 export type DataTableBlockProps = BlockProps<UiKit.DataTableBlock>;
 

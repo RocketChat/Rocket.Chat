@@ -1,8 +1,8 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
 import type * as UiKit from '@rocket.chat/ui-kit';
 
-import type { MentionNames } from './richTextToAst';
-import { containerToAst, inlineToAst, isCustomInline } from './richTextToAst';
+import type { MentionNames } from './richTextToAst.js';
+import { containerToAst, inlineToAst, isCustomInline } from './richTextToAst.js';
 
 export type RichTextPart =
 	{ kind: 'markup'; tokens: MessageParser.Root } | { kind: 'custom'; element: UiKit.RichTextTagElement | UiKit.RichTextCitationElement };

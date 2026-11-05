@@ -3,10 +3,10 @@ import { Markup } from '@rocket.chat/gazzodown';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { Suspense, memo, useMemo } from 'react';
 
-import RichTextLine from './RichTextLine';
-import { useRichTextMentionNames } from '../hooks/useRichTextMentionNames';
-import type { BlockProps } from '../utils/BlockProps';
-import { richTextToRuns } from '../utils/richText/richTextRuns';
+import RichTextLine from './RichTextLine.js';
+import { useRichTextMentionNames } from '../hooks/useRichTextMentionNames.js';
+import type { BlockProps } from '../utils/BlockProps.js';
+import { richTextToRuns } from '../utils/richText/richTextRuns.js';
 
 export type RichTextBlockProps = BlockProps<UiKit.RichTextBlock>;
 

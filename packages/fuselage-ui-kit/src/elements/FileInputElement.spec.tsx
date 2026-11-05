@@ -2,13 +2,13 @@ import { MockedServerContext } from '@rocket.chat/mock-providers';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { BlockContext } from '@rocket.chat/ui-kit';
 import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 import type { ComponentProps } from 'react';
 
-import FileInputElement from './FileInputElement';
-import { UiKitContext } from '../contexts/UiKitContext';
-import { modalParser } from '../surfaces';
-import { askConfirmation } from '../utils/askConfirmation';
+import FileInputElement from './FileInputElement.js';
+import { UiKitContext } from '../contexts/UiKitContext.js';
+import { modalParser } from '../surfaces/index.js';
+import { askConfirmation } from '../utils/askConfirmation.js';
 
 jest.mock('../utils/askConfirmation', () => ({ askConfirmation: jest.fn() }));
 
