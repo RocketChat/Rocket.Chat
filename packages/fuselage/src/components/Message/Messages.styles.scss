@@ -38,6 +38,9 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 }
 
 .rcx-message {
+	// The content column starts at the same x whether or not the header shows.
+	--rcx-item-gap: #{lengths.margin(8)};
+
 	padding-inline: lengths.padding(24);
 
 	&-container {

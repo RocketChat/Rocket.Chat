@@ -5,6 +5,7 @@
 @use '../mixins.scss';
 
 .rcx-message.rcx-message-thread {
+	--rcx-item-gap: #{lengths.margin(4)};
 	@include use-font-scale(c1);
 	@include use-with-truncated-text();
 	display: flex;
