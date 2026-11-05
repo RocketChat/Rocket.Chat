@@ -3,7 +3,7 @@ import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 import { memo, useContext, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { MarkupInteractionContext } from '../MarkupInteractionContext';
+import { MarkupInteractionContext } from '../MarkupInteractionContext.js';
 
 export type ChannelMentionElementProps = {
 	mention: string;

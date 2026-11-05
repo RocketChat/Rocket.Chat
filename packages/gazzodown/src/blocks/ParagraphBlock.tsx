@@ -1,6 +1,6 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
 
-import InlineElements from '../elements/InlineElements';
+import InlineElements from '../elements/InlineElements.js';
 
 export type ParagraphBlockProps = {
 	children: MessageParser.Inlines[];
