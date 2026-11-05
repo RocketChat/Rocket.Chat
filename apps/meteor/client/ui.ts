@@ -23,6 +23,7 @@ import { useOutlookCalenderRoomAction } from './hooks/roomActions/useOutlookCale
 import { usePinnedMessagesRoomAction } from './hooks/roomActions/usePinnedMessagesRoomAction';
 import { usePushNotificationsRoomAction } from './hooks/roomActions/usePushNotificationsRoomAction';
 import { useRocketSearchRoomAction } from './hooks/roomActions/useRocketSearchRoomAction';
+import { useScheduledMessagesRoomAction } from './hooks/roomActions/useScheduledMessagesRoomAction';
 import { useStarredMessagesRoomAction } from './hooks/roomActions/useStarredMessagesRoomAction';
 import { useTeamChannelsRoomAction } from './hooks/roomActions/useTeamChannelsRoomAction';
 import { useTeamInfoRoomAction } from './hooks/roomActions/useTeamInfoRoomAction';
@@ -59,6 +60,7 @@ export const roomActionHooks = [
 	useOmnichannelExternalFrameRoomAction,
 	useOutlookCalenderRoomAction,
 	usePinnedMessagesRoomAction,
+	useScheduledMessagesRoomAction,
 	usePushNotificationsRoomAction,
 	useRocketSearchRoomAction,
 	useRoomInfoRoomAction,

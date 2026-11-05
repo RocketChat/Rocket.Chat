@@ -6079,8 +6079,8 @@
     "other": "{{count}} scheduled messages failed"
   },
   "Scheduled_messages_in_room": {
-    "one": "{{count}} scheduled message in this room",
-    "other": "{{count}} scheduled messages in this room"
+    "one": "{{count}} scheduled message",
+    "other": "{{count}} scheduled messages"
   },
   "Scope": "Scope",
   "Score": "Score",
