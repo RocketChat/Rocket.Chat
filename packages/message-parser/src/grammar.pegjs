@@ -681,7 +681,7 @@ TildeWithWhitespace = a:$"~"+ w:$Space+ b:$"~"+ { return plain(a + w + b); }
 */
 // Direct form: starts with @, used by dispatch
 UserMentionDirect
-  = "@"+ user:$(UTF8NamesValidation ([:@] UTF8NamesValidation)?) & { return !user.endsWith('__'); } {
+  = "@"+ user:$(MentionName ([:@] MentionName)?) & { return !user.endsWith('__'); } {
       return mentionUser(user);
     }
 
@@ -696,7 +696,7 @@ ChannelMention
   = t:Text "#" channel:AlphaNumericChar {
       return reducePlainTexts([t, plain('#' + channel)])[0];
     }
-  / "#" channel:UTF8NamesValidation { return mentionChannel(channel); }
+  / "#" channel:MentionName { return mentionChannel(channel); }
 
 /**
  *
@@ -935,6 +935,9 @@ Line = t:LineStructure { return plain(t); }
 LineStructure = head:$Space* text:$AnyText+ tail:$Space* { return head + text + tail; }
 
 UTF8NamesValidation = $([-_.] / AlphaNumericChar)+
+
+// A mention never ends with ".", so the period that ends a sentence ("thanks @john.") stays outside it
+MentionName = $("."* ([-_] / AlphaNumericChar))+
 
 NonASCII = [\x80-\uFFFF]
 
