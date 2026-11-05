@@ -261,11 +261,11 @@ in `sidebarCategories` can be silently dropped during a move.
 
 **Custom category:**
 - Main: Move up / Move down / Create new › / Manage / Delete / Filter › / Archive rooms…
-- Unreads: Always display / Keep on top toggles
+- Unreads: Mark read / Always display / Keep on top toggles
 
 **System group:**
 - Main: Move up / Move down (dynamic groups have both disabled) / Filter › / Archive rooms… (neither on dynamic groups)
-- Unreads: Always display / Keep on top toggles
+- Unreads: Mark read / Always display / Keep on top toggles
 
 **Filter ›** opens a submenu — All / Last 24 hours /
 Last 7 days / Last 30 days — of radio items (`MenuSubmenuTrigger selectionMode='single'`), the current one
@@ -292,6 +292,12 @@ The `Archived` group listed last (`SIDEBAR_ARCHIVED_GROUP_KEY`, licensed workspa
 its header always wears the empty-group look and no badge, its rows are stripped of their unread counters, it has
 no menu or chip, is never moved or moved past, and starts collapsed, so the collapsed-groups list records it when
 it is *expanded*.
+
+**Mark read** (`useMarkGroupReadItem.tsx`) marks every unread room of the group as read, threads included, through
+`POST /v1/subscriptions.read` with `readThreads: true`, five rooms at a time. It is disabled while the group has
+nothing unread (`isUnreadRoom` over `allRooms`), and first says how many rooms become read in a do-not-ask-again
+modal without an icon ("Mark rooms as read"). A toast reports how many were marked read and, on failures, how
+many were not.
 
 ### Room context menu — `CategoryRoomMenu.tsx`
 
