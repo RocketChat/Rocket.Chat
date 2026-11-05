@@ -323,6 +323,7 @@ Recommended order: 5 and 6, then 3, then 2 (which absorbs 4), then 1. Together t
 | Storybook pixel A/B against `develop`, `STORY_AB_WAIT=2000`      | Visual changes; the pseudo-states addon needs the wait                                                |
 | `story-computed` over every story, against `develop`             | Style changes the screenshot doesn't show (order, grow, hidden states)                                |
 | `story-computed`, zero-runtime Storybook against the runtime one | A component that renders differently compiled than uncompiled, which npm consumers and Jest would see |
+| Visual regression, runtime and zero-runtime Storybook (CI)       | Either build drifting from the shared baselines, so compiled and runtime must render identically      |
 | Bench, list components                                           | Mount and update cost                                                                                 |
 | Size report on the app bundle (CI)                               | The component's JS and CSS cost and the running total against the budget                              |
 | Real-app A/B, per family                                         | Consumer classes, layer order, the app's own CSS                                                      |
@@ -372,6 +373,7 @@ Tick an item in the commit that completes it.
 **Verification**
 
 - [ ] Make the verification scripts fast: stories in parallel, animations frozen (`getAnimations()` paused at 0, or Playwright's `animations: 'disabled'`), an id filter. Never run them unfiltered and sequential: the 566 stories take close to an hour.
+- [x] CI: the visual regression runs on the zero-runtime Storybook (`FUSELAGE_ZERO_RUNTIME=1`) as well as the runtime one, against the same baselines, so the compiled-only paths (the `@tamagui/static` patch's variant tables, the `className` passthrough, render flattening) are covered.
 - [ ] Pixel and computed-style A/B over every story against `develop`, and compiled against uncompiled. Each lot was only checked on its own stories.
 - [ ] Real-app A/B against `develop`: home, a room, members, a modal, preferences, the marketplace and the dark sidebar. Also the consumers never seen in a browser: OutlookSettingItem, VideoConfListItem, ui-composer, the marketplace `CategoryDropDownAnchor`.
 - [ ] Bench the lists (150 messages, 200 sidebar rows, members): mount and update within +10% of `develop`. Commit the pilot's bench (`perf/bench`) with it.
