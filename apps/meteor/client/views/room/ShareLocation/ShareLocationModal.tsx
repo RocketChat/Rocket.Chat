@@ -1,11 +1,11 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useEndpoint, useTranslation, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { MessageMapView } from '@rocket.chat/ui-message-list';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { getGeolocationPermission } from './getGeolocationPermission';
 import { getGeolocationPosition } from './getGeolocationPosition';
-import MapView from '../../../components/message/content/location/MapView';
 
 export type ShareLocationModalProps = {
 	rid: IRoom['_id'];
@@ -89,7 +89,7 @@ const ShareLocationModal = ({ rid, tmid, onClose }: ShareLocationModalProps) => 
 
 	return (
 		<GenericModal title={t('Share_Location_Title')} confirmText={t('Share')} onConfirm={onConfirm} onClose={onClose} onCancel={onClose}>
-			<MapView latitude={positionData.coords.latitude} longitude={positionData.coords.longitude} />
+			<MessageMapView latitude={positionData.coords.latitude} longitude={positionData.coords.longitude} />
 		</GenericModal>
 	);
 };
