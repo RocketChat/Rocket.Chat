@@ -1,1 +1,1 @@
-export { default } from './ResetPasswordConfirmationPage';
+export { default } from './ResetPasswordConfirmationPage.js';

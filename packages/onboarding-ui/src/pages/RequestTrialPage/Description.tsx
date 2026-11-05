@@ -1,10 +1,10 @@
-import colors from '@rocket.chat/fuselage-tokens/dist/colors.json';
+import colors from '@rocket.chat/fuselage-tokens/dist/colors.json' with { type: 'json' };
 import { List, DarkModeProvider, ListItem } from '@rocket.chat/layout';
 import { useMemo } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { useTranslation } from 'react-i18next';
 
-import PlanFeatureIcon from '../../common/PlanFeatureIcon';
+import PlanFeatureIcon from '../../common/PlanFeatureIcon.js';
 
 const Description = () => {
 	const isDarkMode = DarkModeProvider.useDarkMode();

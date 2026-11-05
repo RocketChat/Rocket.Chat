@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 
-import RegisterOfflinePage from '.';
+import RegisterOfflinePage from './index.js';
 
 it('renders without crashing', () => {
 	const { container } = render(

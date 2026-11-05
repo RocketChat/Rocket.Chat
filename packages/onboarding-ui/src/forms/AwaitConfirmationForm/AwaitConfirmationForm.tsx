@@ -2,7 +2,7 @@ import { Box, Label } from '@rocket.chat/fuselage';
 import { Form, FormContainer, FormFooter, FormHeader, FormSteps, FormTitle } from '@rocket.chat/layout';
 import { Trans, useTranslation } from 'react-i18next';
 
-import EmailCodeFallback from '../../common/EmailCodeFallback';
+import EmailCodeFallback from '../../common/EmailCodeFallback.js';
 
 type AwaitingConfirmationFormProps = {
 	currentStep: number;
