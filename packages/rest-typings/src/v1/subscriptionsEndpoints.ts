@@ -10,6 +10,8 @@ type SubscriptionsRead = { rid: IRoom['_id']; readThreads?: boolean } | { roomId
 
 type SubscriptionsUnread = { roomId: IRoom['_id'] } | { firstUnreadMessage: Pick<IMessage, '_id'> };
 
+type SubscriptionsSetUserArchived = { roomId: IRoom['_id']; archived: boolean };
+
 const SubscriptionsGetSchema = {
 	type: 'object',
 	properties: {
@@ -106,6 +108,22 @@ const SubscriptionsUnreadSchema = {
 
 export const isSubscriptionsUnreadProps = ajvQuery.compile<SubscriptionsUnread>(SubscriptionsUnreadSchema);
 
+const SubscriptionsSetUserArchivedSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+		},
+		archived: {
+			type: 'boolean',
+		},
+	},
+	required: ['roomId', 'archived'],
+	additionalProperties: false,
+};
+
+export const isSubscriptionsSetUserArchivedProps = ajv.compile<SubscriptionsSetUserArchived>(SubscriptionsSetUserArchivedSchema);
+
 export type SubscriptionsEndpoints = {
 	'/v1/subscriptions.get': {
 		GET: (params: SubscriptionsGet) => {
@@ -126,5 +144,9 @@ export type SubscriptionsEndpoints = {
 
 	'/v1/subscriptions.unread': {
 		POST: (params: SubscriptionsUnread) => void;
+	};
+
+	'/v1/subscriptions.setUserArchived': {
+		POST: (params: SubscriptionsSetUserArchived) => void;
 	};
 };

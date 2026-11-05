@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useRoomConvertToTeam } from './actions/useRoomConvertToTeam';
 import { useRoomLeave } from './actions/useRoomLeave';
 import { useRoomMoveToTeam } from './actions/useRoomMoveToTeam';
-import { useHideRoomAction } from '../../../../../hooks/useHideRoomAction';
+import { useArchiveRoomAction } from '../../../../../hooks/useArchiveRoomAction';
 import { useDeleteRoom } from '../../../../hooks/roomActions/useDeleteRoom';
 
 type UseRoomActionsOptions = {
@@ -23,16 +23,16 @@ export const useRoomActions = (room: IRoom, options: UseRoomActionsOptions) => {
 	const { handleDelete, canDeleteRoom } = useDeleteRoom(room, { reload: resetState });
 	const handleMoveToTeam = useRoomMoveToTeam(room);
 	const handleConvertToTeam = useRoomConvertToTeam(room);
-	const handleHide = useHideRoomAction({ rid: room._id, type: room.t, name: room.name ?? '' });
+	const handleArchive = useArchiveRoomAction({ rid: room._id, type: room.t, name: room.name ?? '' });
 
 	return useMemo(() => {
 		const memoizedActions = {
 			items: [
 				{
-					id: 'hide',
-					content: t('Hide'),
-					icon: 'eye-off' as const,
-					onClick: handleHide,
+					id: 'archive',
+					content: t('Archive'),
+					icon: 'archive' as const,
+					onClick: handleArchive,
 				},
 
 				...(onClickEnterRoom
@@ -100,5 +100,5 @@ export const useRoomActions = (room: IRoom, options: UseRoomActionsOptions) => {
 		};
 
 		return memoizedActions;
-	}, [canDeleteRoom, handleConvertToTeam, handleDelete, handleHide, handleLeave, handleMoveToTeam, onClickEdit, onClickEnterRoom, t]);
+	}, [canDeleteRoom, handleConvertToTeam, handleDelete, handleArchive, handleLeave, handleMoveToTeam, onClickEdit, onClickEnterRoom, t]);
 };

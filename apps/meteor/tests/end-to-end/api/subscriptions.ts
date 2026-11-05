@@ -430,4 +430,59 @@ describe('[Subscriptions]', () => {
 			expect(res.body).to.have.property('error');
 		});
 	});
+
+	describe('[/subscriptions.setUserArchived]', () => {
+		let testChannel: IRoom;
+
+		before(async () => {
+			testChannel = (await createRoom({ type: 'c', name: `archive.test.${Date.now()}` })).body.channel;
+		});
+
+		after(() => deleteRoom({ type: 'c', roomId: testChannel._id }));
+
+		const getSubscription = async () => {
+			const res = await request.get(api('subscriptions.getOne')).set(credentials).query({ roomId: testChannel._id }).expect(200);
+			return res.body.subscription;
+		};
+
+		it('should archive the room for the user', async () => {
+			const res = await request
+				.post(api('subscriptions.setUserArchived'))
+				.set(credentials)
+				.send({ roomId: testChannel._id, archived: true })
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(await getSubscription()).to.have.property('userArchived', true);
+		});
+
+		it('should unarchive the room for the user', async () => {
+			const res = await request
+				.post(api('subscriptions.setUserArchived'))
+				.set(credentials)
+				.send({ roomId: testChannel._id, archived: false })
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(await getSubscription()).to.not.have.property('userArchived');
+		});
+
+		it('should fail on a room the user is not subscribed to', async () => {
+			const res = await request
+				.post(api('subscriptions.setUserArchived'))
+				.set(credentials)
+				.send({ roomId: 'foobar123-somechannel', archived: true })
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'error-invalid-subscription');
+		});
+
+		it('should fail without the archived flag', async () => {
+			const res = await request.post(api('subscriptions.setUserArchived')).set(credentials).send({ roomId: testChannel._id }).expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('errorType', 'error-invalid-params');
+		});
+	});
 });
