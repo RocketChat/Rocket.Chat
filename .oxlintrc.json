@@ -11,6 +11,10 @@
 		"reportUnusedDisableDirectives": "error"
 	},
 	"ignorePatterns": [
+		"**/dist",
+		"**/coverage",
+		"**/storybook-static",
+		".yarn/**",
 		"apps/meteor/**/public",
 		"apps/meteor/**/private/moment-locales",
 		"apps/meteor/**/imports",
