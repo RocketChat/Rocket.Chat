@@ -38,6 +38,13 @@ describe('isFederationDomainAllowedMiddleware', () => {
 		expect(logger.warn).not.toHaveBeenCalled();
 	});
 
+	it('reads parameter names case-insensitively', async () => {
+		const res = await requestWith('X-Matrix Origin=allowed.example,DESTINATION=rocket.chat,Key="ed25519:a",sig="s"');
+
+		expect(res.status).toBe(200);
+		expect(logger.warn).not.toHaveBeenCalled();
+	});
+
 	it('forbids an origin that is not on the allow list', async () => {
 		const res = await requestWith('X-Matrix origin=denied.example,key="ed25519:a",sig="s"');
 
