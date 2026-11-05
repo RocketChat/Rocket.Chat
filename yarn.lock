@@ -31665,8 +31665,8 @@ __metadata:
 
 "overlayscrollbars@patch:overlayscrollbars@npm%3A2.11.5#~/.yarn/patches/overlayscrollbars-npm-2.11.5-182f9ae72b.patch":
   version: 2.11.5
-  resolution: "overlayscrollbars@patch:overlayscrollbars@npm%3A2.11.5#~/.yarn/patches/overlayscrollbars-npm-2.11.5-182f9ae72b.patch::version=2.11.5&hash=f193c8"
-  checksum: 10/06675318d27769bba7f32230790c0e8e08341932ca7f1cdd11db1b8aefc4a63a499b7a1205878955bf39fe6a2898f5a309ba2024fcd6dc326f97e44f58a12179
+  resolution: "overlayscrollbars@patch:overlayscrollbars@npm%3A2.11.5#~/.yarn/patches/overlayscrollbars-npm-2.11.5-182f9ae72b.patch::version=2.11.5&hash=67d00e"
+  checksum: 10/5640628e15c6e458db85eba1ce22930fe833f845d7316bc2a358c30ad7cf34667834a0cb4a48dd644300ca74a10a81a2221ca87bf23c4300faf25977e84092cb
   languageName: node
   linkType: hard
 
