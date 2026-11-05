@@ -1,6 +1,6 @@
 import { createContext, useContext, useMemo } from 'react';
 
-import type { EmojiPickerItem, CategoriesIndexes } from '../lib/emoji';
+import type { EmojiPickerItem, CategoriesIndexes } from '../lib/emoji.js';
 
 type EmojiPickerContextValue = {
 	open: (ref: Element, callback: (emoji: string) => void, onClose?: () => void) => void;
