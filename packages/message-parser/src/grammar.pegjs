@@ -552,8 +552,11 @@ AutoLinkURL
   = head:($(URLScheme URLAuthority) / $(URLAuthorityHost)) tail:$(AutoLinkURLBody*) { return head + tail; }
 
 AutoLinkURLBody
-  = [^ \t\r\n.,!%~*\"':;()=~]
-  / !(Extra* (Whitespace / EndOfLine / !.)) .
+  = [^ \t\r\n.,!%~*\"':;()=~>]
+  / !(AutoLinkExtra* (Whitespace / EndOfLine / !.)) .
+
+// trailing characters left out of an auto-linked URL; `>` closes a `<url>` written in angle brackets
+AutoLinkExtra = Extra / ">"
 
 /**
  *
