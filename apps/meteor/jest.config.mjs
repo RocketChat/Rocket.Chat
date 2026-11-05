@@ -31,7 +31,6 @@ export default {
 			coveragePathIgnorePatterns: ['/node_modules/'],
 		},
 	],
-	...(process.env.CI ? { maxWorkers: 2 } : {}),
 	coverageProvider: 'v8',
 	collectCoverage: true,
 };
