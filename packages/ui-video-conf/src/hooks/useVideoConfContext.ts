@@ -1,6 +1,6 @@
 import { useContext, useMemo, useSyncExternalStore } from 'react';
 
-import { VideoConfContext } from '../VideoConfContext';
+import { VideoConfContext } from '../VideoConfContext.js';
 
 const useVideoConfContext = () => {
 	const context = useContext(VideoConfContext);
