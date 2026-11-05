@@ -20,9 +20,22 @@ export {
 	type DiscussionMetricsProps as MessageDiscussionMetricsProps,
 } from './content/DiscussionMetrics';
 export { default as MessageLocation, type LocationProps as MessageLocationProps } from './content/Location';
+export { default as MessageMapView, type MapViewProps as MessageMapViewProps } from './content/location/MapView';
 export { default as MessageActionLinks, type MessageActionsProps as MessageActionLinksProps } from './content/MessageActions';
 export { default as MessageReactionList, type ReactionsProps as MessageReactionListProps } from './content/Reactions';
 export { default as MessageThreadMetrics, type ThreadMetricsProps as MessageThreadMetricsProps } from './content/ThreadMetrics';
+export {
+	default as MessageThreadMetricsFollow,
+	type ThreadMetricsFollowProps as MessageThreadMetricsFollowProps,
+} from './content/ThreadMetricsFollow';
+export {
+	default as MessageThreadMetricsParticipants,
+	type ThreadMetricsParticipantsProps as MessageThreadMetricsParticipantsProps,
+} from './content/ThreadMetricsParticipants';
+export {
+	default as MessageThreadMetricsUnreadBadge,
+	type ThreadMetricsUnreadBadgeProps as MessageThreadMetricsUnreadBadgeProps,
+} from './content/ThreadMetricsUnreadBadge';
 export { default as MessageUrlPreviews, type UrlPreviewsProps as MessageUrlPreviewsProps } from './content/UrlPreviews';
 export {
 	default as MessageQuoteAttachment,
@@ -31,3 +44,4 @@ export {
 export { default as MessageCollapsible, type MessageCollapsibleProps } from './MessageCollapsible';
 export { default as MessageToolbarHolder, type MessageToolbarHolderProps } from './MessageToolbarHolder';
 export { default as MessageToolbar, type MessageToolbarProps } from './toolbar/MessageToolbar';
+export { useReloadOnError as useMediaReloadOnError } from './content/attachments/file/hooks/useReloadOnError';

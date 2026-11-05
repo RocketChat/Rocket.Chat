@@ -1,12 +1,11 @@
 import type { IMessage, MessageQuoteAttachment } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { IconButton, Box, Margins } from '@rocket.chat/fuselage';
-import { useUserDisplayName } from '@rocket.chat/ui-client';
+import { MessageQuoteAttachment as QuoteAttachment, useUserDisplayName } from '@rocket.chat/ui-client';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { QuoteAttachment } from '../../../../components/message/content/attachments/QuoteAttachment';
-import AttachmentProvider from '../../../../providers/AttachmentProvider';
+import { MessagesProvider } from '../../../../providers/MessagesProvider';
 import { useChat } from '../../contexts/ChatContext';
 
 export type MessageBoxReplyProps = { reply: IMessage };
@@ -26,7 +25,7 @@ const MessageBoxReply = ({ reply }: MessageBoxReplyProps) => {
 	return (
 		<Margins block={4}>
 			<Box display='flex' position='relative'>
-				<AttachmentProvider>
+				<MessagesProvider allowsInteraction={false}>
 					<QuoteAttachment
 						attachment={
 							{
@@ -40,7 +39,7 @@ const MessageBoxReply = ({ reply }: MessageBoxReplyProps) => {
 							} as MessageQuoteAttachment
 						}
 					/>
-				</AttachmentProvider>
+				</MessagesProvider>
 				<Box
 					className={closeWrapperStyle}
 					data-mid={reply._id}
