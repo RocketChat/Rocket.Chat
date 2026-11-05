@@ -151,46 +151,47 @@ it('should display only mark unread and favorite for omnichannel rooms', async (
 });
 
 describe('the archive', () => {
-	const setUserArchived = jest.fn(async () => ({ success: true }));
+	// PREVIEW ONLY: the archived rooms live in localStorage here, see useArchivedRooms.
+	const ARCHIVED_KEY = 'fuselage-localStorage-sidebarArchivedRooms-john.doe';
 
 	beforeEach(() => {
-		setUserArchived.mockClear();
+		localStorage.clear();
 	});
 
-	const renderWith = (subscription: Record<string, unknown>) =>
+	const renderWith = () =>
 		render(<RoomMenu {...defaultProps} name='general' />, {
 			wrapper: buildBase()
 				.withJohnDoe()
 				.withQueryClient(buildEnterpriseQueryClient())
-				.withSubscription(createFakeSubscription({ rid: 'roomId', t: 'c', ...subscription }))
-				.withEndpoint('POST', '/v1/subscriptions.setUserArchived', setUserArchived as any)
+				.withSubscription(createFakeSubscription({ rid: 'roomId', t: 'c' }))
 				.build(),
 		});
 
 	it('archives the room from its menu once the user confirms what that means', async () => {
-		renderWith({});
+		renderWith();
 
 		await userEvent.click(screen.getByRole('button', { name: 'Options' }));
 		await userEvent.click(await screen.findByRole('menuitem', { name: 'Archive' }));
 
 		const dialog = await screen.findByRole('dialog', { name: 'Archive room' });
 		expect(dialog).toHaveTextContent('“general” moves to the Archived group.');
-		expect(setUserArchived).not.toHaveBeenCalled();
+		expect(JSON.parse(localStorage.getItem(ARCHIVED_KEY) ?? '[]')).toEqual([]);
 
 		await userEvent.click(screen.getByRole('button', { name: 'Archive' }));
 
-		await waitFor(() => expect(setUserArchived).toHaveBeenCalledWith({ roomIds: ['roomId'], archived: true }));
+		await waitFor(() => expect(JSON.parse(localStorage.getItem(ARCHIVED_KEY) ?? '[]')).toEqual(['roomId']));
 	});
 
 	it('offers to unarchive an archived room instead', async () => {
-		renderWith({ userArchived: true });
+		localStorage.setItem(ARCHIVED_KEY, JSON.stringify(['other', 'roomId']));
+		renderWith();
 
 		await userEvent.click(screen.getByRole('button', { name: 'Options' }));
 
 		expect(screen.queryByRole('menuitem', { name: 'Archive' })).not.toBeInTheDocument();
 		await userEvent.click(await screen.findByRole('menuitem', { name: 'Unarchive' }));
 
-		await waitFor(() => expect(setUserArchived).toHaveBeenCalledWith({ roomIds: ['roomId'], archived: false }));
+		await waitFor(() => expect(JSON.parse(localStorage.getItem(ARCHIVED_KEY) ?? '[]')).toEqual(['other']));
 	});
 });
 

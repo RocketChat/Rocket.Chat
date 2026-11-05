@@ -628,13 +628,23 @@ describe('the activity filter', () => {
 
 describe('the archived group', () => {
 	// A quiet channel and an unread direct message, archived by the user.
+	// PREVIEW ONLY: the archived rooms live in localStorage here, see useArchivedRooms.
+	const ARCHIVED_KEY = `fuselage-localStorage-sidebarArchivedRooms-${user._id}`;
 	const archivedRooms = [
-		{ ...favoriteRooms[0], userArchived: true },
-		{ ...directRooms[0], userArchived: true, unread: 3, alert: true, userMentions: 1 },
+		favoriteRooms[0],
+		{ ...directRooms[0], unread: 3, alert: true, userMentions: 1 },
 	] as unknown as SubscriptionWithRoom[];
 	const rooms = fakeRooms.map(
 		(room) => archivedRooms.find((archived) => archived.rid === room.rid) ?? room,
 	) as unknown as SubscriptionWithRoom[];
+
+	beforeEach(() => {
+		localStorage.setItem(ARCHIVED_KEY, JSON.stringify(archivedRooms.map((room) => room.rid)));
+	});
+
+	afterEach(() => {
+		localStorage.clear();
+	});
 
 	it('is listed last and collapsed as an empty, quiet group, taking its rooms out of the others', async () => {
 		const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {

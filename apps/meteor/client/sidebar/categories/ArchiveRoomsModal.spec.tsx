@@ -25,10 +25,11 @@ const rooms = [
 	room({ rid: 'undated', t: 'c' }),
 ];
 
-const setUserArchived = jest.fn(async () => ({ success: true }));
+// PREVIEW ONLY: the archived rooms live in localStorage here, see useArchivedRooms.
+const ARCHIVED_KEY = 'fuselage-localStorage-sidebarArchivedRooms-anonymous';
+const archivedRoomIds = () => JSON.parse(localStorage.getItem(ARCHIVED_KEY) ?? '[]');
 
 const appRoot = mockAppRoot()
-	.withEndpoint('POST', '/v1/subscriptions.setUserArchived', setUserArchived as any)
 	.withTranslations('en', 'core', {
 		Archive: 'Archive',
 		Archive_rooms_in__group__: 'Archive rooms in {{group}}',
@@ -47,7 +48,7 @@ const appRoot = mockAppRoot()
 	.build();
 
 beforeEach(() => {
-	setUserArchived.mockClear();
+	localStorage.clear();
 });
 
 const renderModal = (onClose = jest.fn()) => {
@@ -69,14 +70,14 @@ describe('archiving the inactive rooms', () => {
 		expect(screen.getByRole('status')).toHaveTextContent('3 rooms to archive');
 	});
 
-	it('archives them all in one request through the subscription flag and closes', async () => {
+	it('archives them, keeping any archived before, and closes', async () => {
+		localStorage.setItem(ARCHIVED_KEY, JSON.stringify(['earlier']));
 		const onClose = renderModal();
 
 		await userEvent.click(screen.getByRole('button', { name: 'Archive' }));
 
 		await waitFor(() => expect(onClose).toHaveBeenCalled());
-		await waitFor(() => expect(setUserArchived).toHaveBeenCalledTimes(1));
-		expect(setUserArchived).toHaveBeenCalledWith({ roomIds: ['quiet-channel', 'old-dm', 'quiet-group'], archived: true });
+		expect(archivedRoomIds()).toEqual(['earlier', 'quiet-channel', 'old-dm', 'quiet-group']);
 	});
 
 	it('takes the unread rooms too only when asked', async () => {
