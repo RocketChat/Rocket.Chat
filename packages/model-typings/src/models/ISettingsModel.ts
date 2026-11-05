@@ -1,8 +1,8 @@
 import type { ISetting, ISettingColor, ISettingSelectOption, SettingValue } from '@rocket.chat/core-typings';
 import type { FindCursor, UpdateFilter, UpdateResult, Document, FindOneAndUpdateOptions, WithId, UpdateOptions } from 'mongodb';
 
-import type { IBaseModel } from './IBaseModel';
-import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
+import type { IBaseModel } from './IBaseModel.js';
+import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection.js';
 
 export interface ISettingsModel extends IBaseModel<ISetting> {
 	getValueById<T extends SettingValue = SettingValue>(_id: string): Promise<T | undefined>;

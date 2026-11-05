@@ -1,8 +1,8 @@
 import type { AvailableAgentsAggregation, ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
 import type { DeleteResult, FindCursor, Document, UpdateResult, Filter, AggregationCursor } from 'mongodb';
 
-import type { FindPaginated, IBaseModel } from './IBaseModel';
-import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
+import type { FindPaginated, IBaseModel } from './IBaseModel.js';
+import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection.js';
 
 export interface ILivechatDepartmentAgentsModel extends IBaseModel<ILivechatDepartmentAgents> {
 	findByAgentId<T extends Document = ILivechatDepartmentAgents, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(

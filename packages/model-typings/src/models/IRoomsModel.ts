@@ -21,9 +21,9 @@ import type {
 	FindOneAndUpdateOptions,
 } from 'mongodb';
 
-import type { Updater } from '../updater';
-import type { FindPaginated, IBaseModel } from './IBaseModel';
-import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
+import type { Updater } from '../updater.js';
+import type { FindPaginated, IBaseModel } from './IBaseModel.js';
+import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection.js';
 
 export interface IChannelsWithNumberOfMessagesBetweenDate {
 	room: {

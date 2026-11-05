@@ -16,8 +16,8 @@ import type {
 	ClientSession,
 } from 'mongodb';
 
-import type { IBaseModel } from './IBaseModel';
-import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
+import type { IBaseModel } from './IBaseModel.js';
+import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection.js';
 
 export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	getBadgeCount(uid: string): Promise<number>;

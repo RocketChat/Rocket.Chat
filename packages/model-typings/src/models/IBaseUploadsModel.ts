@@ -1,8 +1,8 @@
 import type { EncryptedContent, IUpload } from '@rocket.chat/core-typings';
 import type { DeleteResult, UpdateResult, ClientSession, Document, InsertOneResult, WithId, FindCursor } from 'mongodb';
 
-import type { IBaseModel } from './IBaseModel';
-import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
+import type { IBaseModel } from './IBaseModel.js';
+import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection.js';
 
 export interface IBaseUploadsModel<T extends IUpload> extends IBaseModel<T> {
 	insertFileInit(userId: string, store: string, file: { name: string }, extra: object): Promise<InsertOneResult<WithId<IUpload>>>;

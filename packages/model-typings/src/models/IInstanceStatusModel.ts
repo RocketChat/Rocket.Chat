@@ -1,7 +1,7 @@
 import type { IInstanceStatus } from '@rocket.chat/core-typings';
 import type { ChangeStream, DeleteResult, UpdateResult } from 'mongodb';
 
-import type { IBaseModel } from './IBaseModel';
+import type { IBaseModel } from './IBaseModel.js';
 
 export interface IInstanceStatusModel extends IBaseModel<IInstanceStatus> {
 	watchActiveInstances(): ChangeStream<IInstanceStatus>;

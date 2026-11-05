@@ -1,7 +1,7 @@
 import type { ILivechatAgentActivity, IServiceHistory } from '@rocket.chat/core-typings';
 import type { AggregationCursor, FindCursor, Document, WithId, UpdateResult } from 'mongodb';
 
-import type { IBaseModel } from './IBaseModel';
+import type { IBaseModel } from './IBaseModel.js';
 
 export interface ILivechatAgentActivityModel extends IBaseModel<ILivechatAgentActivity> {
 	findOneByAgendIdAndDate(agentId: string, date: ILivechatAgentActivity['date']): Promise<ILivechatAgentActivity | null>;

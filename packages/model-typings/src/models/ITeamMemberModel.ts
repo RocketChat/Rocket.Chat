@@ -1,7 +1,7 @@
 import type { ITeamMember, IUser, IRole } from '@rocket.chat/core-typings';
 import type { FindOptions, FindCursor, InsertOneResult, UpdateResult, DeleteResult, Filter, Document } from 'mongodb';
 
-import type { FindPaginated, IBaseModel } from './IBaseModel';
+import type { FindPaginated, IBaseModel } from './IBaseModel.js';
 
 export interface ITeamMemberModel extends IBaseModel<ITeamMember> {
 	findByUserId(userId: string): FindCursor<ITeamMember>;
