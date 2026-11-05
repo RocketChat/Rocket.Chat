@@ -3,6 +3,7 @@ import {
 	MessageHeader as FuselageMessageHeader,
 	MessageName,
 	MessageTimestamp,
+	MessageUsername,
 	MessageStatusPrivateIndicator,
 	MessageNameContainer,
 } from '@rocket.chat/fuselage';
@@ -14,8 +15,12 @@ import { useTranslation } from 'react-i18next';
 
 import StatusIndicators from './StatusIndicators';
 import MessageRoles from './header/MessageRoles';
-import { useMessageListShowRoles, useMessageListFormatDateAndTime, useMessageListFormatTime } from './list/MessageListContext';
-import { normalizeUsername } from '../../../lib/utils/normalizeUsername';
+import {
+	useMessageListAuthorUsername,
+	useMessageListShowRoles,
+	useMessageListFormatDateAndTime,
+	useMessageListFormatTime,
+} from './list/MessageListContext';
 import { useUserRolesByScope } from '../../hooks/useUserRolesByScope';
 import { useIsSelecting } from '../../views/room/MessageList/contexts/SelectedMessagesContext';
 
@@ -33,7 +38,7 @@ const MessageHeader = ({ message }: MessageHeaderProps) => {
 
 	const user = { ...message.u, roles: [], ...useUserPresence(message.u._id) };
 	const displayName = useUserDisplayName(user);
-	const normalizedUsername = normalizeUsername(user.username);
+	const { normalizedUsername, showUsername } = useMessageListAuthorUsername({ ...user, name: message.alias || displayName });
 
 	const showRoles = useMessageListShowRoles();
 	const { workspaceRoles, roomRoles } = useUserRolesByScope(message.u._id, message.rid, { enabled: showRoles });
@@ -53,6 +58,12 @@ const MessageHeader = ({ message }: MessageHeaderProps) => {
 		<FuselageMessageHeader>
 			<MessageNameContainer id={`${message._id}-displayName`} {...authorTriggerProps}>
 				<MessageName data-username={normalizedUsername}>{message.alias || displayName}</MessageName>
+				{showUsername && (
+					<>
+						{' '}
+						<MessageUsername data-username={normalizedUsername}>@{normalizedUsername}</MessageUsername>
+					</>
+				)}
 			</MessageNameContainer>
 			{shouldShowRolesList && (
 				<MessageRoles

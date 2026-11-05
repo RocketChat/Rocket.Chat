@@ -5,6 +5,7 @@ import { Random } from '@rocket.chat/random';
 import { render, screen } from '@testing-library/react';
 
 import SystemMessage from './SystemMessage';
+import { MessageListContext, messageListContextDefaultValue } from '../list/MessageListContext';
 
 jest.mock('../content/Attachments', () => ({
 	default: () => <div>attachments</div>,
@@ -80,5 +81,41 @@ describe('SystemMessage', () => {
 
 		expect(screen.queryByTitle('test-title')).not.toBeInTheDocument();
 		expect(screen.getByText('changed room description to: <button title="test-title">OK</button>')).toBeInTheDocument();
+	});
+
+	describe('username', () => {
+		const renderWithUsername = (showUsername: boolean) =>
+			render(
+				<SystemMessage
+					message={{ ...createBaseMessage('test'), u: { _id: 'userId', name: 'Alex Smith', username: 'alex.smith' } }}
+					showUserAvatar
+				/>,
+				{
+					wrapper: mockAppRoot()
+						.withSetting('UI_Use_Real_Name', true)
+						.wrap((children) => (
+							<MessageListContext.Provider
+								value={{ ...messageListContextDefaultValue, getAuthorUsername: () => ({ normalizedUsername: 'alex.smith', showUsername }) }}
+							>
+								{children}
+							</MessageListContext.Provider>
+						))
+						.build(),
+				},
+			);
+
+		it('shows the username next to the real name when usernames are shown', () => {
+			renderWithUsername(true);
+
+			expect(screen.getByText('Alex Smith')).toBeInTheDocument();
+			expect(screen.getByText('@alex.smith')).toBeInTheDocument();
+		});
+
+		it('leaves the username out when usernames are hidden', () => {
+			renderWithUsername(false);
+
+			expect(screen.getByText('Alex Smith')).toBeInTheDocument();
+			expect(screen.queryByText('@alex.smith')).not.toBeInTheDocument();
+		});
 	});
 });

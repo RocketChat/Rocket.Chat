@@ -5,6 +5,7 @@ import { useLayout, useUser, useUserPreference, useSetting, useEndpoint, useSear
 import type { KeyboardEvent, MouseEvent, ReactNode } from 'react';
 import { useMemo, memo } from 'react';
 
+import { normalizeUsername } from '../../../../../lib/utils/normalizeUsername';
 import type { MessageListContextValue } from '../../../../components/message/list/MessageListContext';
 import { MessageListContext } from '../../../../components/message/list/MessageListContext';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
@@ -94,7 +95,11 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 			autoLinkDomains,
 			showRoles,
 			showRealName,
-			showUsername,
+			getAuthorUsername: ({ name, username }) => {
+				const normalizedUsername = normalizeUsername(username);
+				const nameRepeatsUsername = !name || normalizeUsername(name) === normalizedUsername;
+				return { normalizedUsername, showUsername: showUsername && showRealName && !nameRepeatsUsername };
+			},
 			jumpToMessageParam: msgParameter,
 			...(katexEnabled && {
 				katex: {
