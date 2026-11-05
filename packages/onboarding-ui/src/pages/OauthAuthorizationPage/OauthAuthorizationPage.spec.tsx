@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 
-import OauthAuthorizationPage from './OauthAuthorizationPage';
+import OauthAuthorizationPage from './OauthAuthorizationPage.js';
 
 it('renders without crashing', () => {
 	const { container } = render(

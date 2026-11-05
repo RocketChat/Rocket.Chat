@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 
-import RegisterOfflineForm from './RegisterOfflineForm';
+import RegisterOfflineForm from './RegisterOfflineForm.js';
 
 it('renders without crashing', () => {
 	const { container } = render(

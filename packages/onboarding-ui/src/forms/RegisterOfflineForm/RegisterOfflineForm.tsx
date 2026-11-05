@@ -4,8 +4,8 @@ import type { SubmitHandler } from 'react-hook-form';
 import { useForm, FormProvider } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import CopyStep from './steps/CopyStep';
-import PasteStep from './steps/PasteStep';
+import CopyStep from './steps/CopyStep.js';
+import PasteStep from './steps/PasteStep.js';
 
 export type RegisterOfflinePayload = {
 	token: string;

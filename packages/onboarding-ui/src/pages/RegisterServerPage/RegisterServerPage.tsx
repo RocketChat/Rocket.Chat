@@ -1,10 +1,10 @@
 import { BackgroundLayer } from '@rocket.chat/layout';
 import type { FieldPathValue, SubmitHandler, Validate } from 'react-hook-form';
 
-import type { FormPageLayoutStyleProps } from '../../Types';
-import FormPageLayout from '../../common/FormPageLayout';
-import RegisterServerForm from '../../forms/RegisterServerForm';
-import type { RegisterServerPayload } from '../../forms/RegisterServerForm/RegisterServerForm';
+import type { FormPageLayoutStyleProps } from '../../Types/index.js';
+import FormPageLayout from '../../common/FormPageLayout.js';
+import type { RegisterServerPayload } from '../../forms/RegisterServerForm/RegisterServerForm.js';
+import RegisterServerForm from '../../forms/RegisterServerForm/index.js';
 
 export type RegisterServerPageProps = {
 	currentStep: number;
