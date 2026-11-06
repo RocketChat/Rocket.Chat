@@ -2,6 +2,7 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { axe } from 'jest-axe';
 
 import ArchiveRoomsModal from './ArchiveRoomsModal';
 
@@ -36,6 +37,7 @@ const appRoot = mockAppRoot()
 		Inactive_for: 'Inactive for',
 		Inactive_since: 'Inactive since',
 		Custom_date: 'Custom date',
+		Choose_today_or_an_earlier_date: 'Choose today or an earlier date.',
 		Include_unread_rooms: 'Include unread rooms',
 		No_rooms_to_archive: 'No rooms to archive',
 		Rooms_to_archive_one: '{{count}} room to archive',
@@ -96,19 +98,36 @@ describe('archiving the inactive rooms', () => {
 		expect(screen.getByRole('status')).toHaveTextContent('1 room to archive');
 	});
 
-	it('takes any past date, and has nothing to archive before the oldest room or in the future', async () => {
+	it('takes any past date, and has nothing to archive before the oldest room', async () => {
 		renderModal();
 
 		await pickPreset('Custom date');
+		const field = screen.getByLabelText('Inactive since');
+		expect(field).toHaveFocus();
+		expect(screen.getByRole('status')).toHaveTextContent('No rooms to archive');
+		expect(screen.getByRole('button', { name: 'Archive' })).toBeDisabled();
+		expect(await axe(screen.getByRole('dialog'))).toHaveNoViolations();
+
+		fireEvent.change(field, { target: { value: '2020-01-01' } });
+		expect(screen.getByRole('status')).toHaveTextContent('No rooms to archive');
+		expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+		expect(field).not.toHaveAttribute('aria-invalid', 'true');
+	});
+
+	it('refuses a day still to come, saying so on the field', async () => {
+		renderModal();
+
+		await pickPreset('Custom date');
+		const field = screen.getByLabelText('Inactive since');
+		fireEvent.change(field, { target: { value: '2099-01-01' } });
+
+		expect(screen.getByRole('alert')).toHaveTextContent('Choose today or an earlier date.');
+		expect(field).toHaveAttribute('aria-invalid', 'true');
+		expect(field).toHaveAccessibleDescription('Choose today or an earlier date.');
 		expect(screen.getByRole('status')).toHaveTextContent('No rooms to archive');
 		expect(screen.getByRole('button', { name: 'Archive' })).toBeDisabled();
 
-		fireEvent.change(screen.getByLabelText('Inactive since'), { target: { value: '2020-01-01' } });
-		expect(screen.getByRole('status')).toHaveTextContent('No rooms to archive');
-
-		// A day still to come is no threshold at all.
-		fireEvent.change(screen.getByLabelText('Inactive since'), { target: { value: '2099-01-01' } });
-		expect(screen.getByRole('status')).toHaveTextContent('No rooms to archive');
-		expect(screen.getByRole('button', { name: 'Archive' })).toBeDisabled();
+		fireEvent.change(field, { target: { value: '2020-01-01' } });
+		expect(screen.queryByRole('alert')).not.toBeInTheDocument();
 	});
 });
