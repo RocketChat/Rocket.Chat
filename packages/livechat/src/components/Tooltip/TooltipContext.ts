@@ -3,7 +3,7 @@ import { type ComponentChildren, createContext } from 'preact';
 import type { Placement } from './Tooltip';
 
 export const TooltipContext = createContext<{
-	tooltip: any;
+	tooltip: ComponentChildren;
 	activeChild: number | null;
 	event: any;
 	placement: Placement;

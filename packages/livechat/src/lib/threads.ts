@@ -9,12 +9,12 @@ const addParentMessage = async (parentMessage: any) => {
 	const { tmid } = parentMessage;
 
 	if (!parentMessages.find((msg) => msg._id === tmid)) {
-		await store.setState({
+		store.setState({
 			parentMessages: upsert(
 				parentMessages,
 				parentMessage,
 				({ _id }) => _id === parentMessage._id,
-				({ ts }) => ts,
+				({ ts }) => ts as string,
 			),
 		});
 	}
@@ -29,7 +29,7 @@ const isThreadMessage = async (message: any) => {
 	return true;
 };
 
-const findParentMessage = async (tmid: string) => {
+const findParentMessage = async (tmid: string): Promise<any> => {
 	const { state } = store;
 	const { parentMessages = [], room, alerts } = state;
 
@@ -44,14 +44,14 @@ const findParentMessage = async (tmid: string) => {
 				data: { error: reason },
 			} = error;
 			const alert = { id: createToken(), children: reason, error: true, timeout: 5000 };
-			await store.setState({ alerts: (alerts.push(alert), alerts) });
+			store.setState({ alerts: (alerts.push(alert), alerts) });
 		}
 	}
 
 	return parentMessage;
 };
 
-const normalizeThreadMessage = async (message: any) => {
+const normalizeThreadMessage = async (message: any): Promise<any> => {
 	const { state } = store;
 	const { messages = [] } = state;
 
@@ -63,7 +63,7 @@ const normalizeThreadMessage = async (message: any) => {
 	return Object.assign(message, { threadMsg: parentMessage, attachments: [{ attachments, text: msg, tmid: message.tmid }] });
 };
 
-export const normalizeMessage = async (message: any) => {
+export const normalizeMessage = async (message: any): Promise<any> => {
 	const isThreadMsg = await isThreadMessage(message);
 	if (isThreadMsg) {
 		return null;

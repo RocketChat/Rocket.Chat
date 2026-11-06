@@ -126,7 +126,7 @@ export type StoreState = {
 	renderedTriggers: TriggerMessage[];
 	customFieldsQueue: Record<string, { value: string; overwrite: boolean }>;
 	parentMessages?: any[];
-	triggersRecords?: Record<string, any>;
+	triggersRecords?: Record<string, { id: string; status: string; condition?: string; action?: string; error?: unknown }>;
 };
 
 export const initialState = (): StoreState => ({
@@ -198,8 +198,10 @@ window.addEventListener('visibilitychange', () => {
 		return;
 	}
 
-	!store.state.minimized && !store.state.triggered && parentCall('openWidget');
-	store.state.iframe.visible ? parentCall('showWidget') : parentCall('hideWidget');
+	if (!store.state.minimized && !store.state.triggered) {
+		parentCall('openWidget');
+	}
+	parentCall(store.state.iframe.visible ? 'showWidget' : 'hideWidget');
 });
 
 window.addEventListener('beforeunload', () => {

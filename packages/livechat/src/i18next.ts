@@ -6,7 +6,7 @@ import { browserLanguage, configLanguage, normalizeLanguageString } from './lib/
 export const loadResource = async (lng: string) => {
 	const {
 		default: { translation },
-	} = await import(`./i18n/${lng}.json`);
+	}: { default: { translation: Record<string, string> } } = await import(`./i18n/${lng}.json`);
 
 	return translation;
 };

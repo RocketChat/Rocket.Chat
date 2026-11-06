@@ -1,3 +1,4 @@
+import type { IOmnichannelSystemMessage } from '@rocket.chat/core-typings';
 import type { TFunction } from 'i18next';
 import type { CSSProperties } from 'preact/compat';
 import { memo } from 'preact/compat';
@@ -28,13 +29,25 @@ import {
 	MESSAGE_TYPE_LIVECHAT_TRANSFER_HISTORY,
 } from '../constants';
 
+type MessageAttachment = {
+	audio_url?: string;
+	video_url?: string;
+	image_url?: string;
+	title_link?: string;
+	title: string;
+	message_link?: string;
+	tmid?: string;
+	text?: string;
+	attachments?: MessageAttachment[];
+};
+
 type RenderContentArgs = {
 	text?: any;
 	system?: boolean;
 	quoted?: boolean;
 	me?: boolean;
 	blocks?: any;
-	attachments?: any[];
+	attachments?: MessageAttachment[];
 	attachmentResolver: (url: string) => string;
 	mid?: string;
 	rid?: string;
@@ -66,7 +79,20 @@ const renderContent = ({ text, system, quoted, me, blocks, attachments, attachme
 		blocks && <MessageBlocks blocks={blocks} mid={mid} rid={rid} />,
 	].filter(Boolean);
 
-const getSystemMessageText = ({ type, conversationFinishedMessage, transferData, u }: any, t: TFunction) =>
+const getSystemMessageText = (
+	{
+		type,
+		conversationFinishedMessage,
+		transferData,
+		u,
+	}: {
+		type?: string;
+		conversationFinishedMessage?: string;
+		transferData?: IOmnichannelSystemMessage['transferData'];
+		u: IOmnichannelSystemMessage['u'];
+	},
+	t: TFunction,
+) =>
 	(type === MESSAGE_TYPE_ROOM_NAME_CHANGED && t('room_name_changed')) ||
 	(type === MESSAGE_TYPE_USER_ADDED && t('user_added_by')) ||
 	(type === MESSAGE_TYPE_USER_REMOVED && t('user_removed_by')) ||
@@ -77,7 +103,7 @@ const getSystemMessageText = ({ type, conversationFinishedMessage, transferData,
 	(type === MESSAGE_TYPE_LIVECHAT_STARTED && t('chat_started')) ||
 	(type === MESSAGE_TYPE_LIVECHAT_TRANSFER_HISTORY && normalizeTransferHistoryMessage(transferData, u, t));
 
-const getMessageUsernames = (compact: boolean | undefined, message: any) => {
+const getMessageUsernames = (compact: boolean | undefined, message: { alias?: string; u?: { username: string; name?: string } }) => {
 	if (compact || !message.u) {
 		return [];
 	}
@@ -125,7 +151,17 @@ const Message = ({
 			)}
 			<MessageContent reverse={me}>
 				{renderContent({
-					text: message.type ? getSystemMessageText(message, t) : message.msg,
+					text: message.type
+						? getSystemMessageText(
+								{
+									type: message.type,
+									conversationFinishedMessage: message.conversationFinishedMessage,
+									transferData: message.transferData,
+									u: message.u,
+								},
+								t,
+							)
+						: message.msg,
 					system: !!message.type,
 					me,
 					attachments: message.attachments,
