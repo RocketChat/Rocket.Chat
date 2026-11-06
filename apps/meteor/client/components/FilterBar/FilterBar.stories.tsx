@@ -65,5 +65,11 @@ export const Compact: Story = {
 			</>
 		),
 	},
-	decorators: [(Story) => <div style={{ width: 352 }}>{Story()}</div>],
+	decorators: [
+		(Story) => (
+			<div style={{ width: 352 }}>
+				<Story />
+			</div>
+		),
+	],
 };
