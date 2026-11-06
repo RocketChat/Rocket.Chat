@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { createElement } from 'react';
 
 import styled from './styled';
@@ -8,10 +8,9 @@ it('should create a styled component', () => {
 		color: rebeccapurple;
 	`;
 
-	render(createElement(component));
+	render(createElement(component, {}, 'content'));
 
-	const styleElement = document.getElementsByTagName('style')[0];
-	expect(styleElement.textContent).toMatch(/\{color:rebeccapurple;\}/);
+	expect(screen.getByText('content')).toHaveStyle({ color: 'rgb(102, 51, 153)' });
 });
 
 it('should create a styled component with props', () => {
@@ -19,9 +18,8 @@ it('should create a styled component with props', () => {
 		color: ${(props) => props.foo};
 	`;
 
-	const { container } = render(createElement(component, { foo: 'rebeccapurple', lang: 'pt-BR' }));
+	render(createElement(component, { foo: 'rebeccapurple', lang: 'pt-BR' }, 'content'));
 
-	const styleElement = document.getElementsByTagName('style')[0];
-	expect(styleElement.textContent).toMatch(/\{color:rebeccapurple;\}/);
-	expect(container.firstElementChild?.getAttribute('lang')).toBe('pt-BR');
+	expect(screen.getByText('content')).toHaveStyle({ color: 'rgb(102, 51, 153)' });
+	expect(screen.getByText('content')).toHaveAttribute('lang', 'pt-BR');
 });

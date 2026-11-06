@@ -30,6 +30,9 @@ export type EmojiPickerProps = {
 	onAddCustomEmoji: () => void;
 };
 
+const isFocusable = (element: Element): element is Element & Pick<HTMLOrSVGElement, 'focus'> =>
+	'focus' in element && typeof element.focus === 'function';
+
 const EmojiPicker = ({ reference, onClose, onPickEmoji, onAddCustomEmoji }: EmojiPickerProps) => {
 	const t = useTranslation();
 
@@ -117,8 +120,8 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji, onAddCustomEmoji }: Emoj
 		// Custom emoji with name `:point_right_tone1:` should overwrite only tone1, and not the original or other tones
 		if (emojiRegistry.list[`:${_emoji}:`].emojiPackage !== 'emojiCustom') {
 			for (const emojiPackage in emojiRegistry.packages) {
-				if (emojiRegistry.packages.hasOwnProperty(emojiPackage)) {
-					if (actualTone > 0 && emojiRegistry.packages[emojiPackage].toneList.hasOwnProperty(_emoji)) {
+				if (Object.hasOwn(emojiRegistry.packages, emojiPackage)) {
+					if (actualTone > 0 && Object.hasOwn(emojiRegistry.packages[emojiPackage].toneList, _emoji)) {
 						tone = `_tone${actualTone}`;
 					}
 				}
@@ -154,7 +157,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji, onAddCustomEmoji }: Emoj
 			onClose();
 
 			// Escape hands the focus back to what opened the picker, while it is still on the page.
-			if (reference.isConnected && 'focus' in reference && typeof reference.focus === 'function') {
+			if (reference.isConnected && isFocusable(reference)) {
 				reference.focus();
 			}
 		}
