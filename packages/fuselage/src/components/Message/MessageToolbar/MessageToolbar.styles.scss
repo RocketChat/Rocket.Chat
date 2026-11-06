@@ -34,6 +34,8 @@ $message-toolbar-border-radius: theme('message-toolbar-border-radius', lengths.b
 			display: inline-block;
 
 			.rcx-message-toolbar {
+				pointer-events: auto;
+
 				opacity: 1;
 			}
 		}
