@@ -19,6 +19,7 @@ const PermissionsPage = ({ isEnterprise }: PermissionsPageProps) => {
 	const canViewPermission = usePermission('access-permissions');
 	const canViewSettingPermission = usePermission('access-setting-permissions');
 	const defaultType = canViewPermission ? 'permissions' : 'settings';
+	// TODO: evaluate switching to the other tab when the selected tab's permission is revoked mid-session
 	const [type, setType] = useState(defaultType);
 	const router = useRoute('admin-permissions');
 	const setModal = useSetModal();
