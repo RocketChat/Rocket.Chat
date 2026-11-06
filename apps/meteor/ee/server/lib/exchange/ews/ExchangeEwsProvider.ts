@@ -23,7 +23,6 @@ import {
 	syncContactFolderItemsRequest,
 	syncFolderItemsRequest,
 } from './templates';
-import { sleep } from '../../../../../lib/utils/sleep';
 import type { IExchangeProvider } from '../definition/IExchangeProvider';
 import type {
 	ContactFolder,
@@ -38,7 +37,8 @@ import type {
 	ExchangeProviderCapabilities,
 	Page,
 } from '../definition/types';
-import { ExchangeError, isExchangeError } from '../errors';
+import { ExchangeError } from '../errors';
+import { fetchEwsWithRetry } from '../http/fetchEwsWithRetry';
 import { logger } from '../logger';
 import { MAX_CONTACT_PHOTO_BYTES } from '../sync/limits';
 
@@ -87,11 +87,6 @@ const EVENT_BATCH_SIZE = 100;
 
 const isBusyStatus = (status: string | undefined): boolean => status === 'Busy';
 
-/** The same bounds Graph retries under. A back-off that does not fit is not shortened, since that only prolongs the throttling. */
-const THROTTLE_BUDGET_MS = 90000;
-const MAX_THROTTLE_RETRIES = 5;
-const THROTTLE_BACKOFF_BASE_MS = 1000;
-
 export class ExchangeEwsProvider implements IExchangeProvider {
 	public readonly id = 'ews' as const;
 
@@ -105,7 +100,7 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 	private readonly serviceAccountAddress: string;
 
 	/** Exchange throttles the service account, not a request, so a back-off one request is told holds every other one too. */
-	private throttledUntil = 0;
+	private readonly throttle = { until: 0 };
 
 	constructor(transport: IEwsTransport, serviceAccountAddress = '') {
 		this.transport = transport;
@@ -487,33 +482,7 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 		return photos;
 	}
 
-	/** Waits out Exchange's throttling within a budget, and gives up with `rate-limited`, which stops the run. */
-	private async request(soapEnvelope: string): Promise<Document> {
-		const deadline = Date.now() + THROTTLE_BUDGET_MS;
-
-		for (let attempt = 0; ; attempt++) {
-			if (this.throttledUntil > deadline) {
-				throw new ExchangeError('rate-limited', 'Exchange is throttling the service account', {
-					detail: `the back-off Exchange asked for does not fit the ${THROTTLE_BUDGET_MS / 1000}s retry budget`,
-				});
-			}
-
-			if (this.throttledUntil > Date.now()) {
-				await sleep(this.throttledUntil - Date.now());
-			}
-
-			try {
-				return parseEwsResponse(await this.transport.post(soapEnvelope));
-			} catch (err) {
-				if (!isExchangeError(err) || err.code !== 'rate-limited' || attempt >= MAX_THROTTLE_RETRIES) {
-					throw err;
-				}
-
-				const backOffMs = err.retryAfterMs ?? THROTTLE_BACKOFF_BASE_MS * 2 ** attempt;
-				this.throttledUntil = Math.max(this.throttledUntil, Date.now() + backOffMs);
-
-				logger.warn({ msg: 'Exchange is throttling, backing off before retrying', backOffMs, attempt: attempt + 1 });
-			}
-		}
+	private request(soapEnvelope: string): Promise<Document> {
+		return fetchEwsWithRetry(async () => parseEwsResponse(await this.transport.post(soapEnvelope)), this.throttle);
 	}
 }

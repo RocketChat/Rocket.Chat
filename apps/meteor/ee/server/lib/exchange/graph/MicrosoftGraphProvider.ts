@@ -17,7 +17,7 @@ import type {
 	Page,
 } from '../definition/types';
 import { ExchangeError } from '../errors';
-import { fetchWithRetry } from '../http/fetchWithRetry';
+import { fetchGraphWithRetry } from '../http/fetchGraphWithRetry';
 import { logger } from '../logger';
 import { MAX_CONTACT_PHOTO_BYTES } from '../sync/limits';
 
@@ -521,7 +521,7 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 	private async authorizedFetch(url: string, init: Omit<ExtendedFetchOptions, 'ignoreSsrfValidation' | 'allowList'>): Promise<Response> {
 		const token = await this.tokenClient.getAccessToken();
 
-		return fetchWithRetry(url, {
+		return fetchGraphWithRetry(url, {
 			...init,
 			headers: { ...(init.headers as Record<string, string> | undefined), Authorization: `Bearer ${token}` },
 			timeout: REQUEST_TIMEOUT_MS,
