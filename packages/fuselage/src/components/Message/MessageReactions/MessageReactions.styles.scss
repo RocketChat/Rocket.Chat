@@ -41,6 +41,10 @@ $message-reaction-background-color: theme('message-reaction-background-color', c
 		border-radius: $message-reaction-border-radius;
 		background-color: $message-reaction-hover-background-color;
 
+		@include templates.focus-state {
+			border-color: colors.stroke(light);
+		}
+
 		&:hover {
 			border-color: $message-reaction-hover-border-color;
 			background-color: $message-reaction-hover-background-color;
@@ -58,10 +62,6 @@ $message-reaction-background-color: theme('message-reaction-background-color', c
 			border-width: lengths.border-width(default);
 			border-color: $message-reaction-border-color;
 			background-color: $message-reaction-background-color;
-		}
-
-		@include templates.focus-state {
-			border-color: colors.stroke(light);
 		}
 	}
 
