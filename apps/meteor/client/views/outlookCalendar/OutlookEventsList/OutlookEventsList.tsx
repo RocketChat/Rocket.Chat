@@ -1,4 +1,4 @@
-import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, ButtonGroup, Button, Throbber, Callout } from '@rocket.chat/fuselage';
+import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, ButtonGroup, Button, Throbber, Callout, Stack } from '@rocket.chat/fuselage';
 import { useMergedRefs, useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import {
 	VirtualizedScrollbars,
@@ -98,22 +98,20 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps) => 
 			</ContextualbarContent>
 			<ContextualbarFooter>
 				{isServerManaged ? (
-					<>
-						<Box marginBlockEnd='x8'>
-							<Callout>
-								{t('Outlook_calendar_sync_schedule', {
-									interval: t('Outlook_calendar_sync_interval_hours', { count: syncIntervalHours }),
-									window: t('Outlook_calendar_sync_window_days', { count: syncWindowDays }),
-								})}
-							</Callout>
-						</Box>
+					<Stack gap='x8'>
+						<Callout>
+							{t('Outlook_calendar_sync_schedule', {
+								interval: t('Outlook_calendar_sync_interval_hours', { count: syncIntervalHours }),
+								window: t('Outlook_calendar_sync_window_days', { count: syncWindowDays }),
+							})}
+						</Callout>
 						<ButtonGroup stretch>
 							<Button onClick={changeRoute}>{t('Settings')}</Button>
 							<Button icon='refresh' loading={syncOutlookCalendar.isPending} onClick={() => syncOutlookCalendar.mutate()}>
 								{t('Sync')}
 							</Button>
 						</ButtonGroup>
-					</>
+					</Stack>
 				) : (
 					<>
 						<ButtonGroup stretch>
