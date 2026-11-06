@@ -13,6 +13,8 @@ export * from './models/CustomUserStatus';
 export * from './models/EmailInbox';
 export * from './models/EmailMessageHistory';
 export * from './models/EmojiCustom';
+export * from './models/ExchangeCalendarSyncState';
+export * from './models/ExchangeSyncLease';
 export * from './models/ExportOperations';
 export * from './models/FederationKeys';
 export * from './models/ImportData';
