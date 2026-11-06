@@ -8660,6 +8660,7 @@ __metadata:
     prom-client: "npm:^14.2.0"
     prometheus-gc-stats: "npm:^1.1.0"
     ts-node: "npm:^10.9.2"
+    tsx: "npm:~4.22.5"
     typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
@@ -8793,6 +8794,7 @@ __metadata:
     prom-client: "npm:^14.2.0"
     prometheus-gc-stats: "npm:^1.1.0"
     ts-node: "npm:^10.9.2"
+    tsx: "npm:~4.22.5"
     typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
@@ -9013,6 +9015,7 @@ __metadata:
     prometheus-gc-stats: "npm:^1.1.0"
     sharp: "npm:^0.35.5"
     ts-node: "npm:^10.9.2"
+    tsx: "npm:~4.22.5"
     typescript: "npm:~7.0.2"
     underscore: "npm:^1.13.8"
     ws: "npm:~8.21.3"
@@ -10385,6 +10388,7 @@ __metadata:
     prometheus-gc-stats: "npm:^1.1.0"
     react: "npm:~19.2.8"
     ts-node: "npm:^10.9.2"
+    tsx: "npm:~4.22.5"
     typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
@@ -10536,6 +10540,7 @@ __metadata:
     prom-client: "npm:^14.2.0"
     prometheus-gc-stats: "npm:^1.1.0"
     ts-node: "npm:^10.9.2"
+    tsx: "npm:~4.22.5"
     typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
@@ -10588,6 +10593,7 @@ __metadata:
     prom-client: "npm:^14.2.0"
     prometheus-gc-stats: "npm:^1.1.0"
     ts-node: "npm:^10.9.2"
+    tsx: "npm:~4.22.5"
     typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
@@ -11514,6 +11520,7 @@ __metadata:
     polka: "npm:^0.5.2"
     prom-client: "npm:^14.2.0"
     ts-node: "npm:^10.9.2"
+    tsx: "npm:~4.22.5"
     typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
