@@ -51,6 +51,7 @@ function POP3Client(port, host, options) {
 	var multiline = false;
 	var socket = null;
 	var tlssock = null;
+	var destroyed = false;
 	var callback = function (resp, data) {
 		if (resp === false) {
 			locked = false;
@@ -130,23 +131,41 @@ function POP3Client(port, host, options) {
 		socket.end();
 	};
 
+	this.destroy = function () {
+		destroyed = true;
+		callback = function () {};
+		locked = false;
+
+		if (!socket) return;
+
+		var activeSocket = socket;
+		socket = null;
+		activeSocket.destroy();
+	};
+
 	// Upgrades a standard unencrypted TCP connection to use TLS
 	// Liberally copied and modified from https://gist.github.com/848444
 	// starttls() should be a private function, but I can't figure out
 	// how to get a public prototypal method (stls) to talk to private method (starttls)
 	// which references private variables without going through a privileged method
 	this.starttls = function (options) {
+		if (destroyed) return;
+
 		var s = socket;
 		s.removeAllListeners('end');
 		s.removeAllListeners('data');
 		s.removeAllListeners('error');
-		socket = null;
 
 		var sslcontext = crypto.createCredentials(options);
 		var pair = tls.createSecurePair(sslcontext, false);
 		var cleartext = pipe(pair);
 
 		pair.on('secure', function () {
+			if (destroyed) {
+				cleartext.destroy();
+				return;
+			}
+
 			var verifyError = pair.ssl.verifyError();
 			cleartext.authorized = true;
 
