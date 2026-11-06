@@ -108,4 +108,19 @@ describe('CachedStore', () => {
 		expect(consoleError).toHaveBeenCalledWith(error);
 		consoleError.mockRestore();
 	});
+
+	it('hands the records restored from the cache to the same hook as the records loaded from the server', async () => {
+		const loaded = jest.fn();
+		const cachedStore = new (class extends TestCachedStore {
+			protected override handleLoadedFromServer(records: TestRecord[]) {
+				loaded(records);
+			}
+		})();
+		localStorage.setItem(STORAGE_KEYS.LOGIN_TOKEN, 'token');
+		mockGetItem.mockResolvedValue({ version: Number.MAX_SAFE_INTEGER, token: 'token', records: [fresh], updatedAt: new Date() });
+
+		await cachedStore.init();
+
+		expect(loaded).toHaveBeenCalledWith([fresh]);
+	});
 });
