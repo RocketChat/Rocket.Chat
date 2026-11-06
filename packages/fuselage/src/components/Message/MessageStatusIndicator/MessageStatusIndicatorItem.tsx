@@ -9,10 +9,15 @@ export type MessageStatusIndicatorItemProps = {
 	color?: IconProps['color'];
 } & Omit<AllHTMLAttributes<HTMLElement>, 'is' | 'color'>;
 
-const MessageStatusIndicatorItem = ({ name, variant, className, ...props }: MessageStatusIndicatorItemProps) => (
+/**
+ * A status icon such as edited, pinned or starred. Its `title` names the status for assistive technology; without one the icon is decorative.
+ */
+const MessageStatusIndicatorItem = ({ name, variant, className, title, ...props }: MessageStatusIndicatorItemProps) => (
 	<Icon
 		name={name}
 		size='x16'
+		title={title}
+		{...(title && { 'role': 'img', 'aria-label': title, 'aria-hidden': undefined })}
 		{...props}
 		className={cx('rcx-message-status-indicator__item', variant && `rcx-message-status-indicator__item--${variant}`, className)}
 	/>
