@@ -1,7 +1,7 @@
-import breakpointsTokens from '@rocket.chat/fuselage-tokens/dist/breakpoints.json';
+import breakpointsTokens from '@rocket.chat/fuselage-tokens/dist/breakpoints.json' with { type: 'json' };
 import { useMemo } from 'react';
 
-import { useMediaQueries } from './useMediaQueries';
+import { useMediaQueries } from './useMediaQueries.js';
 
 const breakpoints = Object.entries(breakpointsTokens)
 	.map(([name, { minViewportWidth }]) => ({

@@ -1,6 +1,6 @@
-import { renderHook } from './testing';
-import { usePrefersReducedData } from './usePrefersReducedData';
-import { withMatchMediaMock } from '../mocks/withMatchMediaMock';
+import { renderHook } from './testing.js';
+import { usePrefersReducedData } from './usePrefersReducedData.js';
+import { withMatchMediaMock } from '../mocks/withMatchMediaMock.js';
 
 const setViewport = withMatchMediaMock();
 
