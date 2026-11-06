@@ -41,7 +41,7 @@ export class UploadsRaw extends BaseUploadModelRaw implements IUploadsModel {
 		);
 	}
 
-	findImagesByRoomId(
+	findConfirmedImagesByRoomId(
 		rid: IRoom['_id'],
 		uploadedAt?: Date,
 		options: Omit<FindOptions<IUpload>, 'sort'> = {},

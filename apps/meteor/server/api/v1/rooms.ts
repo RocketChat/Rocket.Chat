@@ -706,7 +706,7 @@ API.v1.get(
 
 		const { offset, count } = await getPaginationItems(this.queryParams);
 
-		const { cursor, totalCount } = Uploads.findImagesByRoomId(room._id, initialImage?.uploadedAt, {
+		const { cursor, totalCount } = Uploads.findConfirmedImagesByRoomId(room._id, initialImage?.uploadedAt, {
 			skip: offset,
 			limit: count,
 		});
