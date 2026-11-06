@@ -13,12 +13,23 @@ export async function initializeSettings({ model, settings }: { model: typeof Se
 	settings.initialized();
 }
 
-// Catches up with values written to the database after the cache was loaded, without re-emitting the ones that did not change.
+// Catches up with what was written to or removed from the database after the cache was loaded, without re-emitting what did not change.
 export async function reloadSettings({ model, settings }: { model: typeof Settings; settings: ICachedSettings }): Promise<void> {
+	// taken before reading so a setting registered meanwhile is not mistaken for a removed one
+	const removed = new Set(settings.ids());
+
 	await model.find().forEach((record: ISetting) => {
+		removed.delete(record._id);
 		if (settings.has(record._id) && isDeepStrictEqual(settings.getSetting(record._id)?.value, record.value)) {
 			return;
 		}
 		settings.set(record);
 	});
+
+	for (const _id of removed) {
+		const setting = settings.getSetting(_id);
+		if (setting) {
+			settings.set({ ...setting, value: undefined });
+		}
+	}
 }

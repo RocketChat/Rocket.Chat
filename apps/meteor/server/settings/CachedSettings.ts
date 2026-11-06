@@ -20,6 +20,8 @@ export interface ICachedSettings {
 
 	has(_id: ISetting['_id']): boolean;
 
+	ids(): ISetting['_id'][];
+
 	getSetting(_id: ISetting['_id']): ISetting | undefined;
 
 	get<T extends SettingValue = SettingValue>(_id: ISetting['_id']): T;
@@ -111,6 +113,10 @@ export class CachedSettings
 			SystemLogger.warn({ msg: 'Settings not initialized yet. getting', _id });
 		}
 		return this.store.has(_id);
+	}
+
+	public ids(): ISetting['_id'][] {
+		return [...this.store.keys()];
 	}
 
 	/**

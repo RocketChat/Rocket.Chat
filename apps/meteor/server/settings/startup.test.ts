@@ -51,6 +51,40 @@ describe('reloadSettings', () => {
 		expect(settings.has('Accounts')).to.equal(true);
 	});
 
+	it('drops settings the database no longer has', async () => {
+		const settings = cacheWith([record('removed', true)]);
+		const changed = spy();
+		settings.on('removed', changed);
+
+		await reloadSettings({ model: modelWith([]), settings });
+
+		expect(settings.get('removed')).to.equal(undefined);
+		expect(changed).to.have.been.called.exactly(1);
+	});
+
+	it('does not emit for settings already dropped', async () => {
+		const settings = cacheWith([record('gone', undefined)]);
+		const changed = spy();
+		settings.on('*', changed);
+
+		await reloadSettings({ model: modelWith([]), settings });
+
+		expect(changed).to.not.have.been.called();
+	});
+
+	it('keeps settings cached while the database was being read', async () => {
+		const settings = cacheWith([]);
+		const model = {
+			find: () => ({
+				forEach: async () => settings.set(record('late', 1)),
+			}),
+		} as unknown as typeof Settings;
+
+		await reloadSettings({ model, settings });
+
+		expect(settings.get('late')).to.equal(1);
+	});
+
 	it('does not emit for values that did not change', async () => {
 		const settings = cacheWith([record('order', ['Favorites', 'Channels']), record('flag', true)]);
 		const changed = spy();
