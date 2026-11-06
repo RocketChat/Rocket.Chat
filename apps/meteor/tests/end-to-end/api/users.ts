@@ -20,7 +20,7 @@ import { removeAgent, getAgent } from '../../data/livechat/users';
 import { updatePermission, updateSetting, restorePermissionToRoles, getSettingValueById } from '../../data/permissions.helper';
 import { retry } from '../../data/retry';
 import type { ActionRoomParams } from '../../data/rooms.helper';
-import { actionRoom, createRoom, deleteRoom } from '../../data/rooms.helper';
+import { actionRoom, createRoom, deleteRoom, getSubscriptionByRoomId } from '../../data/rooms.helper';
 import { createTeam, deleteTeam } from '../../data/teams.helper';
 import type { IUserWithCredentials } from '../../data/user';
 import { adminEmail, password, adminUsername } from '../../data/user';
@@ -3554,6 +3554,32 @@ describe('[Users]', () => {
 				expect(userInfoResponse.body).to.have.property('success', true);
 				expect(userInfoResponse.body).to.have.nested.property('user.customFields.customFieldText1', 'updated1');
 				expect(userInfoResponse.body).to.have.nested.property('user.customFields.customFieldText2', 'value2');
+			});
+
+			it('should keep all custom fields on the DM subscriptions of the user when updating some of them', async () => {
+				await request
+					.post(api('users.update'))
+					.set(credentials)
+					.send({ userId: testUser._id, data: { customFields: { customFieldText1: 'value1', customFieldText2: 'value2' } } })
+					.expect(200);
+
+				const dmRoomId = (await createRoom({ type: 'd', username: testUser.username })).body.room._id;
+
+				try {
+					await request
+						.post(api('users.update'))
+						.set(credentials)
+						.send({ userId: testUser._id, data: { customFields: { customFieldText1: 'updated1' } } })
+						.expect(200);
+
+					const testUserCredentials = await login(testUser.username, password);
+					const subscription = await getSubscriptionByRoomId(dmRoomId, testUserCredentials);
+
+					expect(subscription).to.have.nested.property('customFields.customFieldText1', 'updated1');
+					expect(subscription).to.have.nested.property('customFields.customFieldText2', 'value2');
+				} finally {
+					await deleteRoom({ type: 'd', roomId: dmRoomId });
+				}
 			});
 
 			it('should preserve existing custom fields when adding new ones', async () => {

@@ -64,7 +64,9 @@ export const saveCustomFieldsWithoutValidation = async function (
 	}
 
 	await onceTransactionCommitedSuccessfully(async () => {
-		const setCustomFieldsResponse = await Subscriptions.setCustomFieldsDirectMessagesByUserId(userId, customFields);
+		const user = await Users.findOneById<Pick<IUser, 'customFields'>>(userId, { projection: { customFields: 1 } });
+		const allCustomFields = { ...user?.customFields, ...customFields };
+		const setCustomFieldsResponse = await Subscriptions.setCustomFieldsDirectMessagesByUserId(userId, allCustomFields);
 		if (setCustomFieldsResponse.modifiedCount) {
 			void notifyOnSubscriptionChangedByUserIdAndRoomType(userId, 'd');
 		}
