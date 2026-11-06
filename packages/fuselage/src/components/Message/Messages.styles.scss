@@ -69,7 +69,6 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 		}
 
 		&--left {
-			justify-content: flex-start;
 			align-items: flex-end;
 			flex-grow: 0;
 			flex-shrink: 0;
@@ -109,11 +108,6 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 	}
 
 	&-header {
-		flex-grow: 0;
-		flex-shrink: 1;
-
-		min-width: 1px;
-
 		&__time {
 			@include use-with-truncated-text();
 			@include use-font-scale(c1);
