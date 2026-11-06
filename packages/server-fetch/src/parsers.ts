@@ -1,4 +1,4 @@
-import type { ExtendedFetchOptions, FetchOptions, OriginalFetchOptions } from './types';
+import type { ExtendedFetchOptions, FetchOptions, OriginalFetchOptions } from './types.js';
 
 const jsonParser = (options: ExtendedFetchOptions) => {
 	if (!options) {
