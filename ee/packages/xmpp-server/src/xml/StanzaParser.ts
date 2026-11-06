@@ -1,10 +1,10 @@
 import { StringDecoder } from 'node:string_decoder';
 
 import { Emitter } from '@rocket.chat/emitter';
-import Element from 'ltx/lib/Element';
-import SaxLtx from 'ltx/lib/parsers/ltx';
+import Element from 'ltx/lib/Element.js';
+import SaxLtx from 'ltx/lib/parsers/ltx.js';
 
-import { TopLevelBoundaries } from './TopLevelBoundaries';
+import { TopLevelBoundaries } from './TopLevelBoundaries.js';
 
 export type StanzaParserEvents = {
 	/** The `<stream:stream>` opening tag (attributes only, no children). */

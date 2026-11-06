@@ -1,4 +1,4 @@
-import Element from 'ltx/lib/Element';
+import Element from 'ltx/lib/Element.js';
 
 type Child = Element | string | undefined | null;
 

@@ -1,6 +1,6 @@
-import type Element from 'ltx/lib/Element';
+import type Element from 'ltx/lib/Element.js';
 
-import { NS_DIALBACK, NS_SERVER, NS_STREAMS } from './namespaces';
+import { NS_DIALBACK, NS_SERVER, NS_STREAMS } from './namespaces.js';
 
 // Conventional prefixes used when a peer relies on declarations we did not retain
 const WELL_KNOWN_PREFIXES: Record<string, string> = {

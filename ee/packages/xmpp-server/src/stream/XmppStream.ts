@@ -3,11 +3,11 @@ import tls from 'node:tls';
 
 import { Emitter } from '@rocket.chat/emitter';
 import { escapeXML } from 'ltx';
-import type Element from 'ltx/lib/Element';
+import type Element from 'ltx/lib/Element.js';
 
-import type { Logger } from '../logger';
-import { StanzaParser } from '../xml/StanzaParser';
-import { NS_DIALBACK, NS_SERVER, NS_STREAMS, NS_STREAM_ERRORS } from '../xml/namespaces';
+import type { Logger } from '../logger.js';
+import { StanzaParser } from '../xml/StanzaParser.js';
+import { NS_DIALBACK, NS_SERVER, NS_STREAMS, NS_STREAM_ERRORS } from '../xml/namespaces.js';
 
 const TLS_HANDSHAKE_TIMEOUT_MS = 10000;
 const GRACEFUL_CLOSE_TIMEOUT_MS = 2000;

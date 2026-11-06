@@ -1,9 +1,9 @@
-import type Element from 'ltx/lib/Element';
+import type Element from 'ltx/lib/Element.js';
 
-import type { ResolvedXMPPServerConfig } from '../config';
-import { xml } from '../xml/build';
-import { buildStanzaError } from '../xml/errors';
-import { NS_DISCO_INFO, NS_DISCO_ITEMS, NS_MUC, NS_PING, NS_DIALBACK } from '../xml/namespaces';
+import type { ResolvedXMPPServerConfig } from '../config.js';
+import { xml } from '../xml/build.js';
+import { buildStanzaError } from '../xml/errors.js';
+import { NS_DISCO_INFO, NS_DISCO_ITEMS, NS_MUC, NS_PING, NS_DIALBACK } from '../xml/namespaces.js';
 
 export type DiscoItemsProvider = () => { jid: string; name?: string }[];
 

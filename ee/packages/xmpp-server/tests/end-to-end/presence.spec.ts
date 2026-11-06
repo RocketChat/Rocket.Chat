@@ -2,9 +2,9 @@ import assert from 'node:assert/strict';
 import { after, before, describe, it } from 'node:test';
 import { setTimeout as sleep } from 'node:timers/promises';
 
-import { federationPolling, uniqueSuffix } from './helper/config';
-import { isPresenceFrom } from './helper/predicates';
-import type { Predicate } from './helper/predicates';
+import { federationPolling, uniqueSuffix } from './helper/config.js';
+import { isPresenceFrom } from './helper/predicates.js';
+import type { Predicate } from './helper/predicates.js';
 import {
 	connectSession,
 	createLocalUser,
@@ -15,11 +15,11 @@ import {
 	teardown,
 	waitForDirectMessageWith,
 	waitForMessage,
-} from './helper/rocketchat';
-import type { LocalUser, RocketChat } from './helper/rocketchat';
-import { assertFederationReachable, registerXmppUser, setupSuite } from './helper/suite';
-import type { XmppUser } from './helper/xmpp-client';
-import { retry } from '../../../../../apps/meteor/tests/data/retry';
+} from './helper/rocketchat.js';
+import type { LocalUser, RocketChat } from './helper/rocketchat.js';
+import { assertFederationReachable, registerXmppUser, setupSuite } from './helper/suite.js';
+import type { XmppUser } from './helper/xmpp-client.js';
+import { retry } from '../../../../../apps/meteor/tests/data/retry.js';
 
 const SETTING_PROPAGATION_MS = 2000;
 const DELIVERY_WINDOW_MS = 4000;

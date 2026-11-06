@@ -1,14 +1,14 @@
 import net from 'node:net';
 
 import { Emitter } from '@rocket.chat/emitter';
-import type Element from 'ltx/lib/Element';
+import type Element from 'ltx/lib/Element.js';
 
-import { resolveConfig } from '../../src/config';
-import type { XMPPServerEventMap } from '../../src/events';
-import type { Logger } from '../../src/logger';
-import { S2SManager } from '../../src/s2s/S2SManager';
-import { generateDialbackKey } from '../../src/s2s/dialback';
-import type { XmppDnsResolver } from '../../src/s2s/dnsResolver';
+import { resolveConfig } from '../../src/config.js';
+import type { XMPPServerEventMap } from '../../src/events.js';
+import type { Logger } from '../../src/logger.js';
+import { S2SManager } from '../../src/s2s/S2SManager.js';
+import { generateDialbackKey } from '../../src/s2s/dialback.js';
+import type { XmppDnsResolver } from '../../src/s2s/dnsResolver.js';
 
 jest.setTimeout(30000);
 

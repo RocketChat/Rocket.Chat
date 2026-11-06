@@ -1,4 +1,4 @@
-import type Element from 'ltx/lib/Element';
+import type Element from 'ltx/lib/Element.js';
 
 export type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'failed';
 
