@@ -31,7 +31,7 @@ export interface ISidebarCategory {
 }
 
 // A whole number of hours, 1 to SIDEBAR_CATEGORY_ACTIVITY_FILTER_MAX_HOURS (24 × 365). Absent means "All".
-// The UI offers presets — 24, 168 (7 days), 720 (30 days) — but any value in range is valid, so a custom
+// The UI offers presets — 24, 168 (7 days), 336 (14 days), 720 (30 days) — but any value in range is valid, so a custom
 // window needs no data or validation change.
 ```
 
@@ -186,7 +186,7 @@ What it does, in `makeGroup` (`useRoomList.ts`):
 
 When an expanded group has a filter, a chip right after the group name shows the
 window with a clock, as short as the user's language abbreviates it: `Intl.NumberFormat` with `style: 'unit'` and
-`unitDisplay: 'narrow'` gives "24h", "7d", "30d" in English and "24 h", "7 dias", "30 dias" in Portuguese, from the
+`unitDisplay: 'narrow'` gives "24h", "7d", "14d", "30d" in English and "24 h", "7 dias", "14 dias", "30 dias" in Portuguese, from the
 CLDR data the browser (or Electron) ships, so no translation key is involved; a whole number of days of 48 hours or
 more reads in days, anything else in hours. Clicking it lifts the
 filter for this session and clicking again puts it back. The lifts live in `useLiftedActivityFilters`
@@ -268,7 +268,7 @@ in `sidebarCategories` can be silently dropped during a move.
 - Unreads: Mark read / Always display / Keep on top toggles
 
 **Filter ›** opens a submenu — All / Last 24 hours /
-Last 7 days / Last 30 days — of radio items (`MenuSubmenuTrigger selectionMode='single'`), the current one
+Last 7 days / Last 14 days / Last 30 days — of radio items (`MenuSubmenuTrigger selectionMode='single'`), the current one
 checked (`aria-checked`) and marked with a checkmark. Picking one closes the menu, persists it via
 `useSetActivityFilterHours` and reports the choice through `onActivityFilterChange`, for the announcement.
 

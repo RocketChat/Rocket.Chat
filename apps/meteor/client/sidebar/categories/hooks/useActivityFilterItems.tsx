@@ -13,6 +13,7 @@ const ACTIVITY_FILTER_PRESETS: { hours: number | undefined; label: TranslationKe
 	{ hours: undefined, label: 'All' },
 	{ hours: 24, label: 'Last_24_hours' },
 	{ hours: 24 * 7, label: 'Last_7_days' },
+	{ hours: 24 * 14, label: 'Last_14_days' },
 	{ hours: 24 * 30, label: 'Last_30_days' },
 ];
 
