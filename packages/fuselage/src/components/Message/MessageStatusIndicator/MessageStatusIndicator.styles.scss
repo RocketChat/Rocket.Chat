@@ -9,8 +9,6 @@ $message-status-variant-color-warning: theme('message-status-variant-color-warni
 $message-status-variant-color-primary: theme('message-status-variant-color-primary', colors.status-font(on-primary));
 
 .rcx-message-status-indicator {
-	margin-block: lengths.margin(2);
-
 	user-select: none;
 
 	&:empty {
