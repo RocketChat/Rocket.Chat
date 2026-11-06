@@ -98,7 +98,7 @@ export abstract class RandomGenerator {
 	 */
 	choice(arrayOrString: string): string;
 
-	choice<T>(arrayOrString: T[]): T;
+	choice<T>(arrayOrString: T[]): T | undefined;
 
 	choice<T>(arrayOrString: T[] | string) {
 		const index = Math.floor(this.fraction() * arrayOrString.length);
