@@ -15,6 +15,7 @@ import { ThreadMessageItem } from './ThreadMessageItem';
 import InfiniteListAnchor from '../../../../../components/InfiniteListAnchor';
 import { setMessageJumpQueryStringParameter } from '../../../../../lib/utils/setMessageJumpQueryStringParameter';
 import { BubbleDate } from '../../../BubbleDate';
+import { BubbleDateScope } from '../../../BubbleDate/BubbleDateScope';
 import { useKeepAtBottom } from '../../../MessageList/hooks/useKeepAtBottom';
 import { useKeepMountedMessages } from '../../../MessageList/hooks/useKeepMountedMessages';
 import { isMessageNewDay } from '../../../MessageList/lib/isMessageNewDay';
@@ -372,7 +373,10 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 	const keepMountedMessages = useKeepMountedMessages(items);
 
 	return (
-		<div className={['thread-list js-scroll-thread', hideUsernames && 'hide-usernames'].filter(isTruthy).join(' ')}>
+		<BubbleDateScope
+			store={bubbleDateStore}
+			className={['thread-list js-scroll-thread', hideUsernames && 'hide-usernames'].filter(isTruthy).join(' ')}
+		>
 			<BubbleDate ref={bubbleRef} store={bubbleDateStore} />
 			<CustomVirtuaScrollbars ref={mergedRefs}>
 				<MessageListProvider>
@@ -450,7 +454,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 					</VList>
 				</MessageListProvider>
 			</CustomVirtuaScrollbars>
-		</div>
+		</BubbleDateScope>
 	);
 };
 
