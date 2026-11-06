@@ -2,7 +2,7 @@ import type { RoomAccessValidator } from '@rocket.chat/core-services';
 import { Authorization } from '@rocket.chat/core-services';
 import { Subscriptions, Users } from '@rocket.chat/models';
 
-import { canAccessRoom, isPartialUser } from './canAccessRoom';
+import { canAccessRoom, isPartialUser } from './canAccessRoom.js';
 
 export const canReadRoom: RoomAccessValidator = async (...args) => {
 	const [room, user] = args;

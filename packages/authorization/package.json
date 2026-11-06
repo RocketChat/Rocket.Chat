@@ -3,6 +3,17 @@
 	"version": "0.0.3",
 	"private": true,
 	"description": "Rocket.Chat Authorization service",
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/Authorization.d.ts",
+			"default": "./dist/Authorization.js"
+		},
+		"./dist/*": {
+			"types": "./dist/*.d.ts",
+			"default": "./dist/*.js"
+		}
+	},
 	"main": "./dist/Authorization.js",
 	"types": "./dist/Authorization.d.ts",
 	"files": [
