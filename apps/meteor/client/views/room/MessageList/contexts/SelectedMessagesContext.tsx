@@ -1,18 +1,21 @@
 import type { SyntheticEvent } from 'react';
 import { createContext, useCallback, useContext, useEffect, useSyncExternalStore } from 'react';
 
-import { selectedMessageStore } from '../../providers/SelectedMessagesProvider';
+import { selectedMessageStore as defaultSelectedMessageStore } from '../../providers/SelectedMessagesProvider';
 
-type SelectMessageContextValue = {
-	selectedMessageStore: typeof selectedMessageStore;
+export type SelectMessageContextValue = {
+	selectedMessageStore: typeof defaultSelectedMessageStore;
 };
 
-export const SelectedMessageContext = createContext({
-	selectedMessageStore,
-} as SelectMessageContextValue);
+export const SelectedMessageContext = createContext<SelectMessageContextValue | undefined>(undefined);
+
+export const useSelectedMessageStore = () => {
+	const context = useContext(SelectedMessageContext);
+	return context?.selectedMessageStore ?? defaultSelectedMessageStore;
+};
 
 export const useIsSelectedMessage = (mid: string, omit?: boolean): boolean => {
-	const { selectedMessageStore } = useContext(SelectedMessageContext);
+	const selectedMessageStore = useSelectedMessageStore();
 
 	const subscribe = useCallback(
 		(callback: () => void): (() => void) => selectedMessageStore.on(mid, callback),
@@ -29,15 +32,13 @@ export const useIsSelectedMessage = (mid: string, omit?: boolean): boolean => {
 		}
 
 		selectedMessageStore.addAvailableMessage(mid);
-
-		return () => selectedMessageStore.removeAvailableMessage(mid);
 	}, [mid, selectedMessageStore, isSelected, omit]);
 
 	return isSelected;
 };
 
 export const useIsSelecting = (): boolean => {
-	const { selectedMessageStore } = useContext(SelectedMessageContext);
+	const selectedMessageStore = useSelectedMessageStore();
 
 	const subscribe = useCallback(
 		(callback: () => void): (() => void) => selectedMessageStore.on('toggleIsSelecting', callback),
@@ -50,7 +51,7 @@ export const useIsSelecting = (): boolean => {
 };
 
 export const useToggleSelect = (mid: string): ((event?: SyntheticEvent<HTMLElement>) => void) => {
-	const { selectedMessageStore } = useContext(SelectedMessageContext);
+	const selectedMessageStore = useSelectedMessageStore();
 
 	return useCallback(
 		(event) => {
@@ -62,21 +63,21 @@ export const useToggleSelect = (mid: string): ((event?: SyntheticEvent<HTMLEleme
 };
 
 export const useToggleSelectAll = (): (() => void) => {
-	const { selectedMessageStore } = useContext(SelectedMessageContext);
+	const selectedMessageStore = useSelectedMessageStore();
 	return useCallback(() => {
 		selectedMessageStore.toggleAll(Array.from(selectedMessageStore.availableMessages));
 	}, [selectedMessageStore]);
 };
 
 export const useClearSelection = (): (() => void) => {
-	const { selectedMessageStore } = useContext(SelectedMessageContext);
+	const selectedMessageStore = useSelectedMessageStore();
 	return useCallback(() => {
 		selectedMessageStore.clearStore();
 	}, [selectedMessageStore]);
 };
 
 export const useCountSelected = (): number => {
-	const { selectedMessageStore } = useContext(SelectedMessageContext);
+	const selectedMessageStore = useSelectedMessageStore();
 
 	const subscribe = useCallback(
 		(callback: () => void): (() => void) => selectedMessageStore.on('change', callback),
@@ -89,7 +90,7 @@ export const useCountSelected = (): number => {
 };
 
 export const useAvailableMessagesCount = () => {
-	const { selectedMessageStore } = useContext(SelectedMessageContext);
+	const selectedMessageStore = useSelectedMessageStore();
 
 	const subscribe = useCallback(
 		(callback: () => void): (() => void) => selectedMessageStore.on('change', callback),

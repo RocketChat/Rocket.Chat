@@ -111,6 +111,12 @@ jest.mock('./providers/MessageListProvider', () => ({ children }: { children: Re
 
 jest.mock('../providers/SelectedMessagesProvider', () => ({
 	SelectedMessagesProvider: ({ children }: { children: ReactNode }) => <>{children}</>,
+	selectedMessageStore: {
+		setAvailableMessages: jest.fn(),
+		on: jest.fn(() => jest.fn()),
+		getIsSelecting: jest.fn(() => false),
+		isSelected: jest.fn(() => false),
+	},
 }));
 
 jest.mock('../body/LoadingMessagesIndicator', () => () => <span>Loading</span>);
@@ -387,5 +393,47 @@ describe('MessageList accessibility', () => {
 		const { container } = render(<MessageList {...defaultProps} {...props} />, { wrapper: root.build() });
 
 		expect(await axe(container)).toHaveNoViolations();
+	});
+});
+
+describe('MessageList message selection synchronization', () => {
+	let root: ReturnType<typeof mockAppRoot>;
+
+	beforeEach(() => {
+		jest.clearAllMocks();
+		(useMessages as jest.Mock).mockReturnValue([createMessage('message-1'), createMessage('message-2')]);
+		(useFirstUnreadMessageId as jest.Mock).mockReturnValue(undefined);
+		(RoomManager.getStore as jest.Mock).mockReturnValue({ scroll: undefined, atBottom: false, update: jest.fn() });
+		root = mockAppRoot().withSetting('Message_GroupingPeriod', 300).withUserPreference('displayAvatars', true);
+	});
+
+	it('should sync available messages to store when isSelecting is true', () => {
+		const { selectedMessageStore } = jest.requireMock('../providers/SelectedMessagesProvider');
+		selectedMessageStore.getIsSelecting.mockReturnValue(true);
+
+		render(<MessageList {...defaultProps} />, { wrapper: root.build() });
+
+		expect(selectedMessageStore.setAvailableMessages).toHaveBeenCalledWith(['message-1', 'message-2']);
+	});
+
+	it('should resync available messages when the loaded messages change while selecting', () => {
+		const { selectedMessageStore } = jest.requireMock('../providers/SelectedMessagesProvider');
+		selectedMessageStore.getIsSelecting.mockReturnValue(true);
+
+		const { rerender } = render(<MessageList {...defaultProps} />, { wrapper: root.build() });
+
+		(useMessages as jest.Mock).mockReturnValue([createMessage('message-1'), createMessage('message-2'), createMessage('message-3')]);
+		rerender(<MessageList {...defaultProps} />);
+
+		expect(selectedMessageStore.setAvailableMessages).toHaveBeenLastCalledWith(['message-1', 'message-2', 'message-3']);
+	});
+
+	it('should not sync available messages to store when isSelecting is false', () => {
+		const { selectedMessageStore } = jest.requireMock('../providers/SelectedMessagesProvider');
+		selectedMessageStore.getIsSelecting.mockReturnValue(false);
+
+		render(<MessageList {...defaultProps} />, { wrapper: root.build() });
+
+		expect(selectedMessageStore.setAvailableMessages).not.toHaveBeenCalled();
 	});
 });
