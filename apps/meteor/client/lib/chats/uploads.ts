@@ -32,6 +32,7 @@ type PersistedUpload = {
 		type: string;
 		hash: string;
 		metadataForEncryption: Partial<IUpload>;
+		imageDimensions?: { height: number; width: number };
 	};
 };
 
@@ -101,6 +102,7 @@ const toPersistedUpload = (upload: Upload, expiresAt: number): PersistedUpload |
 				type: upload.encryptedFile.type,
 				hash: upload.encryptedFile.hash,
 				metadataForEncryption: upload.metadataForEncryption,
+				...(upload.imageDimensions && { imageDimensions: upload.imageDimensions }),
 			},
 		}),
 	};
@@ -122,6 +124,7 @@ const fromPersistedUpload = (entry: PersistedUpload): Upload => ({
 			hash: entry.encryption.hash,
 		},
 		metadataForEncryption: entry.encryption.metadataForEncryption,
+		...(entry.encryption.imageDimensions && { imageDimensions: entry.encryption.imageDimensions }),
 	}),
 });
 
@@ -351,6 +354,7 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 			...(encrypted && {
 				encryptedFile: encrypted.encryptedFile,
 				metadataForEncryption: encrypted.fileContent.raw,
+				...(encrypted.imageDimensions && { imageDimensions: encrypted.imageDimensions }),
 			}),
 		};
 

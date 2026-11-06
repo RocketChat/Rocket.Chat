@@ -3,6 +3,7 @@ import { t } from '../../../../lib/i18n';
 import { e2e } from '../../e2ee';
 import { settings } from '../../settings';
 import { dispatchToastMessage } from '../../toast';
+import { getImageDimensions } from '../../utils/getImageDimensions';
 import type { ChatAPI } from '../ChatAPI';
 
 export const uploadFiles = async (
@@ -44,7 +45,11 @@ export const uploadFiles = async (
 			return;
 		}
 
-		const encryptedFile = await e2eRoom.encryptFile(file);
+		// Measured while the bytes are at hand: a file restored in the composer later has none.
+		const [encryptedFile, imageDimensions] = await Promise.all([
+			e2eRoom.encryptFile(file),
+			file.type.startsWith('image/') ? getImageDimensions(file).catch(() => undefined) : undefined,
+		]);
 
 		if (!e2eRoom.isReady() || !encryptedFile) {
 			dispatchToastMessage({
@@ -72,7 +77,7 @@ export const uploadFiles = async (
 			encrypted: await e2eRoom.encryptMessageContent(fileContentData),
 		};
 
-		await uploadsStore.send(encryptedFile.file, { rawFile: file, fileContent, encryptedFile });
+		await uploadsStore.send(encryptedFile.file, { rawFile: file, fileContent, encryptedFile, imageDimensions });
 	};
 
 	resetFileInput?.();

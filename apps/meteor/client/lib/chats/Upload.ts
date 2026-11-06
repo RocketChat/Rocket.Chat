@@ -13,6 +13,7 @@ export type NonEncryptedUpload = {
 export type EncryptedUpload = NonEncryptedUpload & {
 	readonly encryptedFile: EncryptedFile;
 	readonly metadataForEncryption: Partial<IUpload>;
+	readonly imageDimensions?: { height: number; width: number };
 };
 
 export type Upload = EncryptedUpload | NonEncryptedUpload;

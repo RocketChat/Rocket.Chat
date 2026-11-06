@@ -243,6 +243,7 @@ describe('UploadsStore persistence', () => {
 			rawFile,
 			fileContent: { raw: { name: 'photo.png', type: 'image/png' } },
 			encryptedFile: { file: new File(['cipher'], 'photo.png'), key: { kty: 'oct' }, iv: 'iv', type: 'image/png', hash: 'hash' },
+			imageDimensions: { height: 480, width: 640 },
 		};
 
 		const first = createUploadsAPI({ rid: 'room' });
@@ -260,6 +261,7 @@ describe('UploadsStore persistence', () => {
 		expect(restored).toMatchObject({
 			encryptedFile: { key: { kty: 'oct' }, iv: 'iv', type: 'image/png', hash: 'hash' },
 			metadataForEncryption: { name: 'photo.png', type: 'image/png' },
+			imageDimensions: { height: 480, width: 640 },
 		});
 	});
 
