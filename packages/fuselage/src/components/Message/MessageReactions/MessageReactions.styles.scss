@@ -9,7 +9,6 @@
 @use '../mixins.scss';
 
 $message-reaction-border-radius: theme('message-reaction-border-radius', lengths.border-radius(medium));
-$message-reaction-hover-background-color: theme('message-reaction-hover-background-color', colors.surface(tint));
 $message-reaction-hover-border-color: theme('message-reaction-hover-border-color', colors.stroke(dark));
 $message-reaction-hover-background-color: theme('message-reaction-hover-background-color', colors.surface(hover));
 $message-reaction-color: theme('message-reaction-color', colors.font(default));
@@ -22,15 +21,13 @@ $message-reaction-background-color: theme('message-reaction-background-color', c
 		flex-flow: row wrap;
 		justify-content: flex-start;
 
-		margin: lengths.margin(-2);
+		gap: lengths.margin(4);
 	}
 
 	&__reaction {
 		@include use-font-scale(c1);
 		display: inline-flex;
 		align-items: center;
-
-		margin: lengths.margin(2);
 
 		padding: lengths.padding(2);
 
@@ -51,15 +48,11 @@ $message-reaction-background-color: theme('message-reaction-background-color', c
 		}
 
 		&--action {
-			@include mixins.message-focus-visible {
-				display: inline-flex;
-			}
-			padding: lengths.padding(2);
+			@include mixins.message-focus-visible;
 		}
 
 		&--mine {
 			color: $message-reaction-color;
-			border-width: lengths.border-width(default);
 			border-color: $message-reaction-border-color;
 			background-color: $message-reaction-background-color;
 		}

@@ -3,15 +3,10 @@
 @use '../../../styles/typography.scss' as *;
 
 .rcx-message-metrics {
-	&__content,
 	&__content-item {
 		display: flex;
 
 		margin-block: lengths.margin(4);
-
-		& + & {
-			margin-inline-start: lengths.margin(4);
-		}
 	}
 
 	&__content-wrapper {
@@ -54,10 +49,6 @@
 		display: flex;
 		flex-direction: row;
 
-		margin-inline: lengths.margin(-2);
-
-		&__content {
-			margin-inline: lengths.margin(2);
-		}
+		gap: lengths.margin(4);
 	}
 }

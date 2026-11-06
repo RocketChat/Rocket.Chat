@@ -61,9 +61,6 @@ $message-divider-size-neg: theme('message-divider-size-neg', lengths.margin(-1))
 		&--unread {
 			position: absolute;
 			z-index: 1;
-			// right: lengths.padding(8);
-
-			order: 1;
 
 			padding-inline-start: lengths.padding(8);
 
