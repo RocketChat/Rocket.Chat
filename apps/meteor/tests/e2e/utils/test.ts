@@ -4,11 +4,12 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import AxeBuilder from '@axe-core/playwright';
-import type { Locator, APIResponse, APIRequestContext } from '@playwright/test';
+import type { BrowserContext, Locator, Page, APIResponse, APIRequestContext } from '@playwright/test';
 import { test as baseTest, request as baseRequest } from '@playwright/test';
 
 import { BASE_API_URL, API_PREFIX, ADMIN_CREDENTIALS } from '../config/constants';
 import { Users } from '../fixtures/userStates';
+import { pagesNavigatingInClient } from '../page-objects/routed-page';
 
 const PATH_NYC_OUTPUT = path.join(process.cwd(), '.nyc_output');
 
@@ -32,12 +33,110 @@ declare global {
 	}
 }
 
+export type TestOptions = {
+	/**
+	 * Keeps one page, and so one running client, for all the tests of a serial describe, instead of a fresh page per test.
+	 * A failed test discards the page, so the next one starts from a fresh page.
+	 */
+	reusePage: boolean;
+};
+
+type WorkerFixtures = {
+	sharedPage: { key?: string; page?: Page; release(): Promise<void> };
+};
+
 let apiContext: APIRequestContext;
 
 const cacheFromCredentials = new Map<string, string>();
 
-export const test = baseTest.extend<BaseTest>({
-	context: async ({ context }, use) => {
+const instrumentCoverage = async (context: BrowserContext) => {
+	await context.addInitScript(() =>
+		window.addEventListener('beforeunload', () => window.collectIstanbulCoverage(JSON.stringify(window.__coverage__))),
+	);
+
+	await fs.promises.mkdir(PATH_NYC_OUTPUT, { recursive: true });
+
+	await context.exposeFunction('collectIstanbulCoverage', (coverageJSON: string) => {
+		if (coverageJSON) {
+			fs.writeFileSync(path.join(PATH_NYC_OUTPUT, `playwright_coverage_${randomUUID()}.json`), coverageJSON);
+		}
+	});
+};
+
+const collectCoverageAndClose = (context: BrowserContext) =>
+	Promise.all(
+		context.pages().map(async (page) => {
+			await page.evaluate(() => window.collectIstanbulCoverage(JSON.stringify(window.__coverage__)));
+			await page.close();
+		}),
+	);
+
+export const test = baseTest.extend<BaseTest & TestOptions, WorkerFixtures>({
+	reusePage: [false, { option: true }],
+
+	sharedPage: [
+		// oxlint-disable-next-line no-empty-pattern -- Playwright requires the fixtures argument to be destructured
+		async ({}, use) => {
+			const slot: WorkerFixtures['sharedPage'] = {
+				async release() {
+					const context = slot.page?.context();
+					slot.key = undefined;
+					slot.page = undefined;
+					if (!context) {
+						return;
+					}
+					if (process.env.E2E_COVERAGE) {
+						await collectCoverageAndClose(context);
+					}
+					await context.close();
+				},
+			};
+			await use(slot);
+			await slot.release();
+		},
+		{ scope: 'worker' },
+	],
+
+	page: async ({ context, reusePage, sharedPage }, use) => {
+		await use(reusePage && sharedPage.page ? sharedPage.page : await context.newPage());
+	},
+
+	context: async (
+		{ context, reusePage, sharedPage, browser, baseURL, storageState, viewport, locale, timezoneId, permissions, ignoreHTTPSErrors },
+		use,
+		testInfo,
+	) => {
+		const key = `${testInfo.file}:${testInfo.titlePath.slice(0, -1).join(' > ')}`;
+		if (!reusePage || sharedPage.key !== key) {
+			// an idle shared page would keep its user online and subscribed while other tests run
+			await sharedPage.release();
+		}
+
+		if (reusePage) {
+			if (!sharedPage.page) {
+				const shared = await browser.newContext({ baseURL, storageState, viewport, locale, timezoneId, permissions, ignoreHTTPSErrors });
+				if (process.env.E2E_COVERAGE) {
+					await instrumentCoverage(shared);
+				}
+				sharedPage.key = key;
+				sharedPage.page = await shared.newPage();
+				pagesNavigatingInClient.add(sharedPage.page);
+			} else {
+				// undo what a previous test may have changed on the page
+				if (viewport) {
+					await sharedPage.page.setViewportSize(viewport);
+				}
+				await sharedPage.page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
+			}
+
+			await use(sharedPage.page.context());
+
+			if (testInfo.status !== testInfo.expectedStatus) {
+				await sharedPage.release();
+			}
+			return;
+		}
+
 		if (!process.env.E2E_COVERAGE) {
 			await use(context);
 			await context.close();
@@ -45,26 +144,11 @@ export const test = baseTest.extend<BaseTest>({
 			return;
 		}
 
-		await context.addInitScript(() =>
-			window.addEventListener('beforeunload', () => window.collectIstanbulCoverage(JSON.stringify(window.__coverage__))),
-		);
-
-		await fs.promises.mkdir(PATH_NYC_OUTPUT, { recursive: true });
-
-		await context.exposeFunction('collectIstanbulCoverage', (coverageJSON: string) => {
-			if (coverageJSON) {
-				fs.writeFileSync(path.join(PATH_NYC_OUTPUT, `playwright_coverage_${randomUUID()}.json`), coverageJSON);
-			}
-		});
+		await instrumentCoverage(context);
 
 		await use(context);
 
-		await Promise.all(
-			context.pages().map(async (page) => {
-				await page.evaluate(() => window.collectIstanbulCoverage(JSON.stringify(window.__coverage__)));
-				await page.close();
-			}),
-		);
+		await collectCoverageAndClose(context);
 	},
 
 	api: async ({ request }, use) => {

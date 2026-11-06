@@ -5,6 +5,7 @@ import { HomeChannel } from './page-objects';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
+test.use({ reusePage: true });
 
 test.describe.serial('create-channel', () => {
 	let poHomeChannel: HomeChannel;

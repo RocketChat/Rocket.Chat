@@ -4,6 +4,7 @@ import { createTargetChannel } from './utils';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
+test.use({ reusePage: true });
 
 test.describe.serial('emoji', () => {
 	let poHomeChannel: HomeChannel;
