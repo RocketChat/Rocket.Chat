@@ -89,7 +89,13 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 		}
 
 		&__name-container {
+			@include use-with-truncated-text();
 			flex-shrink: 0;
+
+			// In the header a long name gives way before the timestamp and indicators do.
+			.rcx-message-header > & {
+				flex-shrink: 1;
+			}
 
 			// An outline takes no room, so the name keeps the header line's height; forced colors paint it too.
 			@include states.on-focus-visible {
