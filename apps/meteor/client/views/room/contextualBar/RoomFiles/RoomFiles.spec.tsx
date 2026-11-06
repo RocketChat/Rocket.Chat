@@ -26,3 +26,34 @@ it('follows the keyboard model of a list of rows', async () => {
 
 	await expectListKeyboard(screen.getByTestId('virtuoso-item-list'));
 });
+
+it('shows the thumbnail when available and the original otherwise', async () => {
+	const { Default } = composeStories(stories);
+	const base = { _updatedAt: new Date(), uploadedAt: new Date() };
+	const filesItems = [
+		{
+			...base,
+			_id: 'with-thumbnail',
+			name: 'first.png',
+			type: 'image/png',
+			typeGroup: 'image',
+			path: '/original.png',
+			thumbnailUrl: '/thumbnail.png',
+			description: 'first',
+		},
+		{
+			...base,
+			_id: 'without-thumbnail',
+			name: 'second.png',
+			type: 'image/png',
+			typeGroup: 'image',
+			path: '/fallback.png',
+			description: 'second',
+		},
+	];
+
+	render(<Default filesItems={filesItems} total={filesItems.length} />, { wrapper: listWrapper() });
+
+	expect(await screen.findByRole('img', { name: 'first' })).toHaveAttribute('src', '/thumbnail.png');
+	expect(screen.getByRole('img', { name: 'second' })).toHaveAttribute('src', '/fallback.png');
+});

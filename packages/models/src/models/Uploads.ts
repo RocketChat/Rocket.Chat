@@ -14,6 +14,7 @@ export class UploadsRaw extends BaseUploadModelRaw implements IUploadsModel {
 			...super.modelIndexes(),
 			{ key: { uploadedAt: -1 } },
 			{ key: { rid: 1, _hidden: 1, typeGroup: 1 } },
+			{ key: { originalFileId: 1 }, sparse: true },
 			{ key: { 'federation.mediaId': 1, 'federation.serverName': 1 }, unique: true, sparse: true },
 		];
 	}
