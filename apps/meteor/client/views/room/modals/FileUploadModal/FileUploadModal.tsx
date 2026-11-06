@@ -34,12 +34,11 @@ export type FileUploadModalProps = {
 	file: File;
 	/** Where to load the preview from when `file` holds no bytes. */
 	previewUrl?: string;
-	showPreview?: boolean;
 	fileName: string;
 	fileAltText?: string;
 };
 
-const FileUploadModal = ({ onClose, file, previewUrl, showPreview = true, fileName, fileAltText = '', onSubmit }: FileUploadModalProps) => {
+const FileUploadModal = ({ onClose, file, previewUrl, fileName, fileAltText = '', onSubmit }: FileUploadModalProps) => {
 	const { t } = useTranslation();
 	const fileUploadFormId = useId();
 	const isImage = file.type.startsWith('image/');
@@ -76,7 +75,7 @@ const FileUploadModal = ({ onClose, file, previewUrl, showPreview = true, fileNa
 				</ModalHeader>
 				<ModalContent>
 					<Box display='flex' maxHeight='x360' width='full' justifyContent='center' alignContent='center' marginBlockEnd={16}>
-						<FilePreview file={file} url={previewUrl} showPreview={showPreview} altText={fileAltText} />
+						<FilePreview file={file} url={previewUrl} altText={fileAltText} />
 					</Box>
 					<FieldGroup>
 						<Field>

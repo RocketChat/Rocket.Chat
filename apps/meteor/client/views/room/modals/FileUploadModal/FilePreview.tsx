@@ -40,14 +40,13 @@ const shouldShowMediaPreview = (file: File, fileType: FilePreviewType | undefine
 export type FilePreviewProps = {
 	file: File;
 	url?: string;
-	showPreview?: boolean;
 	altText?: string;
 };
 
-const FilePreview = ({ file, url, showPreview = true, altText }: FilePreviewProps) => {
+const FilePreview = ({ file, url, altText }: FilePreviewProps) => {
 	const fileType = getFileType(file.type);
 
-	if (showPreview && shouldShowMediaPreview(file, fileType)) {
+	if (shouldShowMediaPreview(file, fileType)) {
 		return <MediaPreview file={file} url={url} fileType={fileType as FilePreviewType} altText={altText} />;
 	}
 

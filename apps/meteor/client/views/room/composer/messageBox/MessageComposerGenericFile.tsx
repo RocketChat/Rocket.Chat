@@ -9,8 +9,7 @@ import type { MessageComposerFileItemProps } from './MessageComposerFileItem';
 import { getMimeType } from '../../../../../lib/mimeTypes';
 import { getFileExtension } from '../../../../../lib/utils/getFileExtension';
 import { usePreventPropagation } from '../../../../hooks/usePreventPropagation';
-import { isEncryptedUpload } from '../../../../lib/chats/Upload';
-import { getURL } from '../../../../lib/getURL';
+import { getRestoredUploadUrl } from '../../../../lib/chats/getRestoredUploadUrl';
 import { formatBytes } from '../../../../lib/utils/formatBytes';
 import { useChat } from '../../contexts/ChatContext';
 import FileUploadModal from '../../modals/FileUploadModal';
@@ -49,11 +48,7 @@ const MessageComposerGenericFile = ({
 				fileName={upload.file.name}
 				fileAltText={upload.altText}
 				file={upload.file}
-				{...(upload.restored && {
-					// A restored encrypted upload has only ciphertext on the server.
-					previewUrl: !isEncryptedUpload(upload) && upload.url ? getURL(upload.url, { full: true }) : undefined,
-					showPreview: !isEncryptedUpload(upload),
-				})}
+				previewUrl={getRestoredUploadUrl(upload)}
 				onClose={() => setModal(null)}
 			/>,
 		);
