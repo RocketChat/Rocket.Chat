@@ -15,14 +15,21 @@ export type ItemGroupTitleProps = {
 /**
  * The text of an `ItemGroupHeader`. Inside an `ItemGroup`, it becomes the group's accessible name.
  */
-const ItemGroupTitle = ({ is: Tag = 'div', id: propId, className, type, ...props }: ItemGroupTitleProps) => {
+const ItemGroupTitle = ({ is: Component = 'div', id: propId, className, type, ...props }: ItemGroupTitleProps) => {
 	const generatedId = useId();
 	const id = propId ?? generatedId;
 	const { registerTitle } = useItemGroupContext();
 
 	useEffect(() => registerTitle(id), [id, registerTitle]);
 
-	return <Tag {...props} type={Tag === 'button' ? (type ?? 'button') : type} id={id} className={cx('rcx-item-group-title', className)} />;
+	return (
+		<Component
+			{...props}
+			type={Component === 'button' ? (type ?? 'button') : type}
+			id={id}
+			className={cx('rcx-item-group-title', className)}
+		/>
+	);
 };
 
 export default ItemGroupTitle;

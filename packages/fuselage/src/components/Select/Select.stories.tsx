@@ -105,7 +105,7 @@ export const States: Story = {
 			<PropsVariationSection
 				component={(props) => <Select options={options} aria-label='select' {...props} />}
 				common={{
-					onChange: () => {},
+					onChange: () => undefined,
 				}}
 				xAxis={{
 					'default': {},

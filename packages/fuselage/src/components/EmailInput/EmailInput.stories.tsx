@@ -109,7 +109,7 @@ export const States: Story = {
 		<>
 			<PropsVariationSection
 				component={EmailInput}
-				common={{ 'onChange': () => {}, 'aria-label': 'email' }}
+				common={{ 'onChange': () => undefined, 'aria-label': 'email' }}
 				xAxis={{
 					'default': {},
 					'with placeholder': { placeholder: 'Placeholder' },
@@ -133,7 +133,7 @@ export const States: Story = {
 			/>
 			<PropsVariationSection
 				component={EmailInput}
-				common={{ 'onChange': () => {}, 'small': true, 'aria-label': 'email' }}
+				common={{ 'onChange': () => undefined, 'small': true, 'aria-label': 'email' }}
 				xAxis={{
 					'small': {},
 					'with placeholder': { placeholder: 'Placeholder' },

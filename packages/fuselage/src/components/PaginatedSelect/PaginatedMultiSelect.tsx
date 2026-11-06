@@ -73,8 +73,8 @@ const PaginatedMultiSelect = ({
 	options = [],
 	error,
 	disabled,
-	'anchor': Anchor = SelectFocus,
-	onChange = () => {},
+	'anchor': AnchorComponent = SelectFocus,
+	onChange = () => undefined,
 	placeholder,
 	'renderOptions': OptionsComponent = OptionsPaginated,
 	renderItem = Option,
@@ -148,7 +148,7 @@ const PaginatedMultiSelect = ({
 					<FlexContainer>
 						<Box is='div'>
 							<Box is='div' display='flex' alignItems='center' flexWrap='wrap' margin='neg-x4' gap={8} role='listbox'>
-								<Anchor
+								<AnchorComponent
 									disabled={disabled}
 									ref={ref}
 									aria-haspopup='listbox'
@@ -162,7 +162,7 @@ const PaginatedMultiSelect = ({
 									rcx-input-box--undecorated
 								>
 									{placeholder ?? null}
-								</Anchor>
+								</AnchorComponent>
 
 								{selectedOptions.map(({ value, label }, index) => (
 									<Chip

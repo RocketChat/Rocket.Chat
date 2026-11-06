@@ -99,7 +99,7 @@ export const States: Story = {
 	render: () => (
 		<PropsVariationSection
 			component={TextAreaInput}
-			common={{ onChange: () => {} }}
+			common={{ onChange: () => undefined }}
 			xAxis={{
 				'default': {},
 				'with placeholder': { placeholder: 'Placeholder' },
