@@ -41,6 +41,19 @@ export class UploadsRaw extends BaseUploadModelRaw implements IUploadsModel {
 		);
 	}
 
+	private confirmedImagesInRoomQuery(rid: IRoom['_id']): Filter<IUpload> {
+		return {
+			rid,
+			_hidden: { $ne: true },
+			typeGroup: 'image',
+			expiresAt: { $exists: false },
+		};
+	}
+
+	findOneConfirmedImageByIdAndRoomId(_id: IUpload['_id'], rid: IRoom['_id']): Promise<IUpload | null> {
+		return this.findOne({ _id, ...this.confirmedImagesInRoomQuery(rid) });
+	}
+
 	findConfirmedImagesByRoomId(
 		rid: IRoom['_id'],
 		uploadedAt?: Date,
@@ -48,10 +61,7 @@ export class UploadsRaw extends BaseUploadModelRaw implements IUploadsModel {
 	): FindPaginated<FindCursor<WithId<IUpload>>> {
 		return this.findPaginated(
 			{
-				rid,
-				_hidden: { $ne: true },
-				typeGroup: 'image',
-				expiresAt: { $exists: false },
+				...this.confirmedImagesInRoomQuery(rid),
 				...(Boolean(uploadedAt) && {
 					uploadedAt: {
 						$lte: uploadedAt,
