@@ -2,6 +2,9 @@ import MessageLeftContainer, { type MessageLeftContainerProps } from '../Message
 
 export type ThreadMessageLeftContainerProps = MessageLeftContainerProps;
 
+/**
+ * @deprecated Use `MessageLeftContainer`.
+ */
 const ThreadMessageLeftContainer = (props: ThreadMessageLeftContainerProps) => <MessageLeftContainer {...props} />;
 
 export default ThreadMessageLeftContainer;

@@ -5,6 +5,9 @@ import { Icon, type IconProps } from '../../Icon';
 
 export type MessageStatusIndicatorItemProps = {
 	name: IconProps['name'];
+	/**
+	 * @deprecated Use `color`.
+	 */
 	variant?: 'success' | 'danger' | 'warning' | 'primary';
 	color?: IconProps['color'];
 } & Omit<AllHTMLAttributes<HTMLElement>, 'is' | 'color'>;

@@ -5,6 +5,9 @@ import { cx } from '../../../helpers/composeClassNames';
 
 export type MessageStatusPrivateIndicatorProps = {
 	children?: ReactNode;
+	/**
+	 * @deprecated The private indicator is text and takes no status color.
+	 */
 	variant?: MessageStatusIndicatorItemProps['variant'];
 } & HTMLAttributes<HTMLSpanElement>;
 
