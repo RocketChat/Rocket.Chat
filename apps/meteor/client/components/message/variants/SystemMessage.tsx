@@ -93,7 +93,6 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 					<MessageNameContainer
 						{...(!isSelecting && {
 							...buttonProps,
-							style: { cursor: 'pointer' },
 							onMouseEnter: openUserCardOnHover,
 						})}
 					>
