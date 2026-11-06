@@ -99,6 +99,12 @@ export class EwsTransport implements IEwsTransport {
 	/** Must be the certificate of the connection actually carrying the handshake, not a separate lookup. */
 	private lastPeerCertificate: Buffer | undefined;
 
+	/** The connection Exchange already accepted the service account on, so requests over it skip the handshake. */
+	private authenticatedSocket: TLSSocket | undefined;
+
+	/** Off once Exchange asks again on a connection it had accepted. */
+	private reuseAuthentication = true;
+
 	constructor(config: EwsTransportConfig) {
 		this.config = config;
 
@@ -169,8 +175,26 @@ export class EwsTransport implements IEwsTransport {
 		return this.readBody(response);
 	}
 
-	/** The first request is expected to be rejected with a challenge. That is the protocol, not a failure. */
 	private async postWithNtlm(soapEnvelope: string): Promise<string> {
+		const socket = this.authenticatedSocket;
+
+		if (this.reuseAuthentication && socket && !socket.destroyed) {
+			const response = await this.send(soapEnvelope, {});
+			if (response.status !== 401) {
+				return this.readBody(response);
+			}
+
+			if (response.socket === socket) {
+				this.reuseAuthentication = false;
+				logger.warn({ msg: 'Exchange does not keep NTLM authentication on the connection, authenticating every request' });
+			}
+		}
+
+		return this.authenticateAndPost(soapEnvelope);
+	}
+
+	/** The first request is expected to be rejected with a challenge. That is the protocol, not a failure. */
+	private async authenticateAndPost(soapEnvelope: string): Promise<string> {
 		const { domain, user } = splitDomainAndUser(this.config.username);
 		const workstation = this.config.workstation ?? '';
 
@@ -222,6 +246,8 @@ export class EwsTransport implements IEwsTransport {
 			});
 		}
 
+		this.authenticatedSocket = response.socket;
+
 		return this.readBody(response);
 	}
 
@@ -229,10 +255,12 @@ export class EwsTransport implements IEwsTransport {
 		body: string,
 		headers: Record<string, string>,
 		method: 'GET' | 'POST' = 'POST',
-	): Promise<{ status: number; headers: Record<string, string | string[] | undefined>; body: string }> {
+	): Promise<{ status: number; headers: Record<string, string | string[] | undefined>; body: string; socket?: TLSSocket }> {
 		const { endpoint, agent } = this.assertConfigured();
 
 		return new Promise((resolve, reject) => {
+			let socket: TLSSocket | undefined;
+
 			const req = request(
 				endpoint,
 				{
@@ -254,16 +282,18 @@ export class EwsTransport implements IEwsTransport {
 							status: res.statusCode ?? 0,
 							headers: res.headers,
 							body: Buffer.concat(chunks).toString('utf8'),
+							socket,
 						}),
 					);
 				},
 			);
 
-			req.on('socket', (socket: TLSSocket) =>
-				captureCertificate(socket, (raw) => {
+			req.on('socket', (assigned: TLSSocket) => {
+				socket = assigned;
+				captureCertificate(assigned, (raw) => {
 					this.lastPeerCertificate = raw;
-				}),
-			);
+				});
+			});
 
 			req.on('timeout', () => {
 				req.destroy();
