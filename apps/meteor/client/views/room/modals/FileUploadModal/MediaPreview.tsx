@@ -10,12 +10,15 @@ import { useFileAsDataURL } from '../../hooks/useFileAsDataURL';
 
 export type MediaPreviewProps = {
 	file: File;
+	url?: string;
 	fileType: FilePreviewType;
 	altText?: string;
 };
 
-const MediaPreview = ({ file, fileType, altText }: MediaPreviewProps) => {
-	const [loaded, url] = useFileAsDataURL(file);
+const MediaPreview = ({ file, url: remoteUrl, fileType, altText }: MediaPreviewProps) => {
+	const [dataURLLoaded, dataURL] = useFileAsDataURL(file);
+	const loaded = remoteUrl ? true : dataURLLoaded;
+	const url = remoteUrl ?? dataURL;
 	const { t } = useTranslation();
 
 	if (!loaded) {

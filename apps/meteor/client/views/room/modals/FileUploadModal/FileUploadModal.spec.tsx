@@ -42,3 +42,18 @@ it('should not send a renamed file with not allowed mime-type', async () => {
 
 	expect(screen.getByText('Media type not accepted: image/svg+xml')).toBeInTheDocument();
 });
+
+it('should preview a file without bytes from its url', async () => {
+	render(<FileUploadModal {...defaultProps} fileAltText='A cat' previewUrl='/file-upload/file-1/testing.png' />, {
+		wrapper: defaultWrapper.build(),
+	});
+
+	expect(screen.getByAltText('A cat')).toHaveAttribute('src', '/file-upload/file-1/testing.png');
+});
+
+it('should not preview a file when told it has nothing to show', async () => {
+	render(<FileUploadModal {...defaultProps} showPreview={false} />, { wrapper: defaultWrapper.build() });
+
+	expect(screen.queryByRole('img', { hidden: true })).not.toBeInTheDocument();
+	expect(screen.getByText('testing.png - 0 Bytes')).toBeInTheDocument();
+});
