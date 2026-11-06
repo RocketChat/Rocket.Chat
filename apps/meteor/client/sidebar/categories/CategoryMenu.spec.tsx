@@ -41,6 +41,7 @@ const appRoot = mockAppRoot()
 		All: 'All',
 		Last_24_hours: 'Last 24 hours',
 		Last_7_days: 'Last 7 days',
+		Last_14_days: 'Last 14 days',
 		Last_30_days: 'Last 30 days',
 		Hide_inactive_unreads: 'Hide inactive unreads',
 		Unreads: 'Unreads',
@@ -94,6 +95,28 @@ describe('the Filter submenu', () => {
 		expect(screen.getByRole('menuitemcheckbox', { name: 'All' })).toHaveAttribute('aria-checked', 'false');
 		expect(toggle).toHaveAttribute('aria-checked', 'false');
 		expect(toggle).not.toHaveAttribute('aria-disabled');
+	});
+
+	it('offers the windows from the shortest to the longest', async () => {
+		await openFilterSubmenu();
+
+		const windows = ['All', 'Last 24 hours', 'Last 7 days', 'Last 14 days', 'Last 30 days'];
+		// The checked window also renders its checkmark, so the names are matched rather than compared whole.
+		const offered = screen
+			.getAllByRole('menuitemcheckbox')
+			.map((item) => windows.find((name) => item.textContent?.includes(name)))
+			.filter((name): name is string => !!name);
+		expect(offered).toEqual(windows);
+	});
+
+	it('persists the window chosen and reports it, for the announcement', async () => {
+		const onActivityFilterChange = jest.fn();
+		await openFilterSubmenu({ onActivityFilterChange });
+
+		await userEvent.click(screen.getByRole('menuitemcheckbox', { name: 'Last 14 days' }));
+
+		expect(persistedChannels()).toEqual(expect.objectContaining({ activityFilterHours: 24 * 14 }));
+		expect(onActivityFilterChange).toHaveBeenCalledWith(24 * 14);
 	});
 
 	it('turns the unreads toggle on for the group', async () => {
