@@ -139,7 +139,10 @@ describe('the Filter submenu', () => {
 
 		await userEvent.click(screen.getByRole('menuitemcheckbox', { name: 'Last 14 days' }));
 
-		expect(persistedChannels()).toEqual(expect.objectContaining({ activityFilterHours: 24 * 14 }));
+		// UI-PREVIEW ONLY: the window lives in localStorage, keyed by group, in place of the preference.
+		expect(JSON.parse(localStorage.getItem('fuselage-localStorage-sidebarActivityFilters-anonymous') ?? 'null')).toEqual({
+			Channels: 24 * 14,
+		});
 		expect(onActivityFilterChange).toHaveBeenCalledWith(24 * 14);
 	});
 
