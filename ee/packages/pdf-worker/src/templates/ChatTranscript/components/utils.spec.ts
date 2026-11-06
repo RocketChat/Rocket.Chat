@@ -1,5 +1,5 @@
-import { messageLongerThanPage, splitByTens, isSystemMessage, markupEntriesGreaterThan10 } from './utils';
-import type { PDFMessage } from '../../../types/ChatTranscriptData';
+import { messageLongerThanPage, splitByTens, isSystemMessage, markupEntriesGreaterThan10 } from './utils.js';
+import type { PDFMessage } from '../../../types/ChatTranscriptData.js';
 
 describe('utils', () => {
 	it('should return true if message is longer than MAX_MSG_SIZE', () => {
