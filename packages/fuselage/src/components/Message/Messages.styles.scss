@@ -109,12 +109,6 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 
 	&-header {
 		&__time {
-			@include use-with-truncated-text();
-			@include use-font-scale(c1);
-			flex-shrink: 0;
-
-			color: colors.font(secondary-info);
-
 			// secondary-info fails contrast against the hover surface.
 			.rcx-message:hover & {
 				color: colors.font(default);
