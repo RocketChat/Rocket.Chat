@@ -19,13 +19,13 @@ import type {
 } from '@rocket.chat/media-signaling';
 import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 
-import { DEFAULT_CALL_FEATURES } from '../../constants';
-import type { IMediaCallAgent } from '../../definition/IMediaCallAgent';
-import type { SignalProcessingOptions } from '../../definition/common';
-import { logger } from '../../logger';
-import { mediaCallDirector } from '../../server/CallDirector';
-import { getMediaCallServer } from '../../server/injection';
-import { stripSensitiveDataFromSignal } from '../../server/stripSensitiveData';
+import { DEFAULT_CALL_FEATURES } from '../../constants.js';
+import type { IMediaCallAgent } from '../../definition/IMediaCallAgent.js';
+import type { SignalProcessingOptions } from '../../definition/common.js';
+import { logger } from '../../logger.js';
+import { mediaCallDirector } from '../../server/CallDirector.js';
+import { getMediaCallServer } from '../../server/injection.js';
+import { stripSensitiveDataFromSignal } from '../../server/stripSensitiveData.js';
 
 export class UserActorSignalProcessor {
 	public get callId(): string {

@@ -4,12 +4,12 @@ import { MediaCalls, MediaCallNegotiations } from '@rocket.chat/models';
 import type Srf from 'drachtio-srf';
 import type { SrfRequest, SrfResponse } from 'drachtio-srf';
 
-import { BaseCallProvider } from '../../base/BaseCallProvider';
-import { logger } from '../../logger';
-import type { BroadcastActorAgent } from '../../server/BroadcastAgent';
-import { mediaCallDirector } from '../../server/CallDirector';
-import type { SipServerSession } from '../Session';
-import { SipErrorCodes } from '../errorCodes';
+import { BaseCallProvider } from '../../base/BaseCallProvider.js';
+import { logger } from '../../logger.js';
+import type { BroadcastActorAgent } from '../../server/BroadcastAgent.js';
+import { mediaCallDirector } from '../../server/CallDirector.js';
+import type { SipServerSession } from '../Session.js';
+import { SipErrorCodes } from '../errorCodes.js';
 
 export type SipCallNegotiation = {
 	id: string;

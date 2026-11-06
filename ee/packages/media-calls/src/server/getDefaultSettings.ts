@@ -1,4 +1,4 @@
-import type { IMediaCallServerSettings } from '../definition/IMediaCallServer';
+import type { IMediaCallServerSettings } from '../definition/IMediaCallServer.js';
 
 export function getDefaultSettings(): IMediaCallServerSettings {
 	return {
