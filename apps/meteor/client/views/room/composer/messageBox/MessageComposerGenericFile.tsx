@@ -1,7 +1,7 @@
 import { IconButton } from '@rocket.chat/fuselage';
 import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 import { MessageComposerFile, MessageComposerFileError, MessageComposerFileLoader } from '@rocket.chat/ui-composer';
-import { useMediaUrl, useSetModal } from '@rocket.chat/ui-contexts';
+import { useSetModal } from '@rocket.chat/ui-contexts';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -10,6 +10,7 @@ import { getMimeType } from '../../../../../lib/mimeTypes';
 import { getFileExtension } from '../../../../../lib/utils/getFileExtension';
 import { usePreventPropagation } from '../../../../hooks/usePreventPropagation';
 import { isEncryptedUpload } from '../../../../lib/chats/Upload';
+import { getURL } from '../../../../lib/getURL';
 import { formatBytes } from '../../../../lib/utils/formatBytes';
 import { useChat } from '../../contexts/ChatContext';
 import FileUploadModal from '../../modals/FileUploadModal';
@@ -28,7 +29,6 @@ const MessageComposerGenericFile = ({
 	const chat = useChat();
 	const [isActive, setIsActive] = useState(false);
 	const setModal = useSetModal();
-	const getURL = useMediaUrl();
 
 	const fileSize = formatBytes(upload.file.size, 2);
 	const fileExtension = getMimeType(upload.file.type, upload.file.name);
@@ -51,7 +51,7 @@ const MessageComposerGenericFile = ({
 				file={upload.file}
 				{...(upload.restored && {
 					// A restored encrypted upload has only ciphertext on the server.
-					previewUrl: !isEncryptedUpload(upload) && upload.url ? getURL(upload.url) : undefined,
+					previewUrl: !isEncryptedUpload(upload) && upload.url ? getURL(upload.url, { full: true }) : undefined,
 					showPreview: !isEncryptedUpload(upload),
 				})}
 				onClose={() => setModal(null)}
