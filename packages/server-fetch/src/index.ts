@@ -9,11 +9,11 @@ import { HttpsProxyAgent } from 'https-proxy-agent';
 import fetch, { FetchError, Headers as NodeFetchHeaders, Response } from 'node-fetch';
 import { getProxyForUrl } from 'proxy-from-env';
 
-import { checkForSsrfWithIp, parseSsrfAllowlist } from './checkForSsrf';
-import { MAX_REDIRECTS, redirectStatus } from './constants';
-import { buildPinnedUrl, checkDirectIp, extractHostname } from './helpers';
-import { parseRequestOptions } from './parsers';
-import type { ExtendedFetchOptions } from './types';
+import { checkForSsrfWithIp, parseSsrfAllowlist } from './checkForSsrf.js';
+import { MAX_REDIRECTS, redirectStatus } from './constants.js';
+import { buildPinnedUrl, checkDirectIp, extractHostname } from './helpers.js';
+import { parseRequestOptions } from './parsers.js';
+import type { ExtendedFetchOptions } from './types.js';
 
 const logger = new Logger('ExternalRequest');
 
