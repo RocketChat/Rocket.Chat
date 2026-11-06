@@ -105,7 +105,9 @@ export const useRoomMenuActions = ({
 		],
 	);
 
-	// The room's notifications as a switch, on while they are sent; an omnichannel room has no such preference.
+	// The room's notifications, under a section of their own: the item says what it does next ("Turn off" while
+	// they are sent), which is also how a screen reader learns the state; the switch beside it only shows the same
+	// state, so it is kept out of the accessibility tree and the tab order. An omnichannel room has no such preference.
 	const notificationsMenuOptions = useMemo<GenericMenuItemProps[]>(
 		() =>
 			!hideDefaultOptions && !isOmnichannelRoom && hasSubscription
@@ -113,9 +115,10 @@ export const useRoomMenuActions = ({
 						{
 							id: 'notifications',
 							icon: 'bell',
-							content: t('Notifications'),
+							content: isNotificationEnabled ? t('Turn_OFF') : t('Turn_ON'),
+							textValue: isNotificationEnabled ? t('Turn_OFF') : t('Turn_ON'),
 							onClick: handleToggleNotification,
-							addon: <ToggleSwitch checked={isNotificationEnabled} onChange={() => undefined} />,
+							addon: <ToggleSwitch checked={isNotificationEnabled} aria-hidden tabIndex={-1} onChange={() => undefined} />,
 						},
 					]
 				: [],
@@ -131,6 +134,6 @@ export const useRoomMenuActions = ({
 
 	return [
 		...(menuOptions.length > 0 ? [{ title: '', items: menuOptions }] : []),
-		...(notificationsMenuOptions.length > 0 ? [{ title: '', items: notificationsMenuOptions }] : []),
+		...(notificationsMenuOptions.length > 0 ? [{ title: t('Notifications'), items: notificationsMenuOptions }] : []),
 	];
 };

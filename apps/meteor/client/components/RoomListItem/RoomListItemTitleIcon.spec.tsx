@@ -1,6 +1,7 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { render, screen } from '@testing-library/react';
+import { axe } from 'jest-axe';
 
 import RoomListItemTitleIcon from './RoomListItemTitleIcon';
 
@@ -16,16 +17,16 @@ it('shows nothing for a room with notifications on and no draft', () => {
 	expect(container).toBeEmptyDOMElement();
 });
 
-it('marks a room whose notifications are off', () => {
-	render(<RoomListItemTitleIcon room={room({ disableNotifications: true })} />, { wrapper: appRoot });
+it('marks a room whose notifications are off, as an image a screen reader names', async () => {
+	const { container } = render(<RoomListItemTitleIcon room={room({ disableNotifications: true })} />, { wrapper: appRoot });
 
-	expect(screen.getByTitle('Notifications off')).toBeInTheDocument();
-	expect(screen.queryByTitle('Draft')).not.toBeInTheDocument();
+	expect(screen.getByRole('img', { name: 'Notifications off' })).toBeInTheDocument();
+	expect(screen.queryByRole('img', { name: 'Draft' })).not.toBeInTheDocument();
+	expect(await axe(container)).toHaveNoViolations();
 });
 
 it('marks a draft, after the mute mark when both apply', () => {
-	const { container } = render(<RoomListItemTitleIcon room={room({ disableNotifications: true, draft: 'hello' })} />, { wrapper: appRoot });
+	render(<RoomListItemTitleIcon room={room({ disableNotifications: true, draft: 'hello' })} />, { wrapper: appRoot });
 
-	const titles = [...container.querySelectorAll('[title]')].map((element) => element.getAttribute('title'));
-	expect(titles).toEqual(['Notifications off', 'Draft']);
+	expect(screen.getAllByRole('img').map((element) => element.getAttribute('aria-label'))).toEqual(['Notifications off', 'Draft']);
 });
