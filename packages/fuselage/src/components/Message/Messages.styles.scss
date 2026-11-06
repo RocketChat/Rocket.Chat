@@ -179,7 +179,7 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 			list-style: none;
 		}
 
-		& ul li::before {
+		& ul > li::before {
 			padding: 0 lengths.padding(8);
 
 			content: '•';
@@ -187,7 +187,7 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 			font-weight: bold;
 		}
 
-		& ol li::before {
+		& ol > li::before {
 			padding: 0 lengths.padding(8);
 
 			content: attr(value) '.';
