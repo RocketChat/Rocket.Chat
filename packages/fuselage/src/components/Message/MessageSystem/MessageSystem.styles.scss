@@ -1,45 +1,22 @@
 @use '../../../styles/colors.scss';
-@use '../../../styles/functions.scss' as *;
 @use '../../../styles/lengths.scss';
-@use '../../../styles/mixins/templates.scss';
 @use '../../../styles/typography.scss' as *;
 @use '../mixins.scss';
 
-$message-system-background-color-selected: theme('message-system-background-color-selected', colors.surface(selected));
-
 .rcx-message-system {
-	@include use-font-scale(c1);
-	@include use-with-truncated-text();
-	display: flex;
-	flex-direction: row;
-	align-items: flex-start;
-
-	margin-inline: lengths.margin(2);
+	// Same inset and gap as `.rcx-message`, so system and user messages share one text column.
+	--rcx-item-gap: #{lengths.margin(8)};
 
 	padding-block: lengths.padding(8);
-	padding-inline: lengths.padding(20);
-
-	color: colors.font(default);
-
-	&--selected {
-		background: $message-system-background-color-selected !important;
-	}
+	padding-inline: lengths.padding(24);
 
 	&__container {
-		@include use-with-truncated-text();
-		display: flex;
-		flex-direction: column;
-		flex-shrink: 1;
-		align-self: center;
-
-		width: 100%;
 		margin-block: lengths.margin(-4);
 	}
 
 	&__body {
 		@include use-font-scale(p2);
 		@include use-with-truncated-text();
-		margin-inline: lengths.margin(2);
 	}
 
 	&__name {
@@ -49,22 +26,4 @@ $message-system-background-color-selected: theme('message-system-background-colo
 
 		color: colors.font(titles-labels);
 	}
-
-	&__time {
-		@include use-with-truncated-text();
-		@include use-font-scale(c1);
-		flex-shrink: 0;
-
-		margin-inline: lengths.margin(2);
-
-		color: colors.font(secondary-info);
-	}
-
-	&__block {
-		display: flex;
-		flex-direction: row;
-		align-items: center;
-	}
-
-	@include templates.focus-state;
 }
