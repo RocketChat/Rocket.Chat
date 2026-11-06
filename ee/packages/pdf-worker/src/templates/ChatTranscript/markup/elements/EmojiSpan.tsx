@@ -1,7 +1,7 @@
 import { Text } from '@react-pdf/renderer';
 import type * as MessageParser from '@rocket.chat/message-parser';
 
-import { unicodeToShortname } from '../emoji';
+import { unicodeToShortname } from '../emoji.js';
 
 export type EmojiSpanProps = MessageParser.Emoji;
 

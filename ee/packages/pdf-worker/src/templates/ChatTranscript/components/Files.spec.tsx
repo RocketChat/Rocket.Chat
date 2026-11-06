@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react';
 import type { ReactNode } from 'react';
 
-import { invalidFile, validFile } from '../ChatTranscript.fixtures';
-import { Files } from './Files';
+import { invalidFile, validFile } from '../ChatTranscript.fixtures.js';
+import { Files } from './Files.js';
 
 jest.mock('@react-pdf/renderer', () => ({
 	StyleSheet: { create: () => ({ style: '' }) },
