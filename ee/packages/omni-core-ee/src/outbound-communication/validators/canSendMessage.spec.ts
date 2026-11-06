@@ -1,7 +1,7 @@
 import { Authorization } from '@rocket.chat/core-services';
 import { mockModel } from '@rocket.chat/models/testing';
 
-import { canSendOutboundMessage, validateAgentAssignPermissions } from './canSendMessage';
+import { canSendOutboundMessage, validateAgentAssignPermissions } from './canSendMessage.js';
 
 jest.mock('@rocket.chat/core-services', () => ({
 	Authorization: {
