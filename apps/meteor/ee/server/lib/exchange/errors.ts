@@ -31,11 +31,14 @@ export class ExchangeError extends Error {
 
 	public readonly detail?: string;
 
-	constructor(code: ExchangeErrorCode, message: string, options?: { detail?: string }) {
+	public readonly retryAfterMs?: number;
+
+	constructor(code: ExchangeErrorCode, message: string, options?: { detail?: string; retryAfterMs?: number }) {
 		super(message);
 		this.name = 'ExchangeError';
 		this.code = code;
 		this.detail = options?.detail === undefined ? undefined : scrubText(options.detail);
+		this.retryAfterMs = options?.retryAfterMs;
 	}
 }
 

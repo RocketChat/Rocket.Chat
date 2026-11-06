@@ -40,6 +40,10 @@ const cursorFor = (syncState: string, window: DateRange = timeWindow) =>
 
 const MAILBOX = 'user@corp.example';
 
+const sleep = jest.fn();
+
+jest.mock('../../../../../lib/utils/sleep', () => ({ sleep: (...args: unknown[]) => sleep(...args) }));
+
 describe('ExchangeEwsProvider', () => {
 	describe('testConnection', () => {
 		const SERVICE_ACCOUNT = 'svc@corp.example';
@@ -310,6 +314,46 @@ describe('ExchangeEwsProvider', () => {
 			const page = await new ExchangeEwsProvider(transport).listEvents(MAILBOX, timeWindow);
 
 			expect(page.items.map((event) => 'externalId' in event && event.externalId)).toEqual([OCCURRENCE_ID]);
+		});
+	});
+
+	describe('throttling', () => {
+		const serverBusy = (backOffMs: number) =>
+			soap(
+				'<s:Fault><faultstring>The server cannot service this request right now. Try again later.</faultstring><detail>' +
+					`<e:ResponseCode xmlns:e="${E}">ErrorServerBusy</e:ResponseCode>` +
+					`<t:MessageXml><t:Value Name="BackOffMilliseconds">${backOffMs}</t:Value></t:MessageXml>` +
+					'</detail></s:Fault>',
+				's',
+			);
+
+		beforeEach(() => {
+			sleep.mockReset();
+			jest.useFakeTimers();
+		});
+
+		afterEach(() => {
+			jest.useRealTimers();
+		});
+
+		it('waits the back-off Exchange asked for, then sends the same request again', async () => {
+			const transport = new FakeTransport([serverBusy(2000), okResponse('<m:Changes/>')]);
+
+			await new ExchangeEwsProvider(transport).listEvents(MAILBOX, timeWindow, cursorFor('S0'));
+
+			expect(sleep).toHaveBeenCalledWith(2000);
+			expect(transport.sent).toEqual([transport.sent[0], transport.sent[0]]);
+		});
+
+		it('gives up with rate-limited when the back-off does not fit the budget, and sends nothing more while it holds', async () => {
+			const transport = new FakeTransport([serverBusy(300000)]);
+			const provider = new ExchangeEwsProvider(transport);
+
+			await expect(provider.listEvents(MAILBOX, timeWindow, cursorFor('S0'))).rejects.toMatchObject({ code: 'rate-limited' });
+			await expect(provider.listContacts(MAILBOX, 'contacts')).rejects.toMatchObject({ code: 'rate-limited' });
+
+			expect(transport.sent).toHaveLength(1);
+			expect(sleep).not.toHaveBeenCalled();
 		});
 	});
 
