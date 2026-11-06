@@ -290,6 +290,10 @@ export class ConferenceWindow {
 		await expect(this.listboxPeople.root.getByRole('option')).toHaveCount(items.length);
 		await this.listboxPeople.selectOption(username, true);
 
+		// The list stays open after a pick and can cover the dialog's buttons.
+		await this.inputAddPeople.press('Tab');
+		await expect(this.inputAddPeople).toHaveAttribute('aria-expanded', 'false');
+
 		await expect(this.btnConfirmAddPeople).toBeEnabled();
 		await this.btnConfirmAddPeople.click();
 	}
