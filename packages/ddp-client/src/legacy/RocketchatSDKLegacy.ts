@@ -151,26 +151,26 @@ export class RocketchatSdkLegacyImpl extends DDPSDK implements RocketchatSDKLega
 		return this.client.subscribe(topic, ...args).ready();
 	}
 
-	subscribeRoom(rid: string): Promise<unknown> {
-		return Promise.all([
+	async subscribeRoom(rid: string): Promise<unknown> {
+		return [
 			this.stream('room-messages', rid, (...args) => this.ev.emit('message', args)),
 			this.stream('notify-room', `${rid}/typing`, (...args) => this.ev.emit('typing', args)),
 			this.stream('notify-room', `${rid}/deleteMessage`, (...args) => this.ev.emit('deleteMessage', args)),
-		]);
+		];
 	}
 
-	subscribeNotifyAll(): Promise<any> {
-		return Promise.all([
+	async subscribeNotifyAll(): Promise<any> {
+		return [
 			// this.stream('notify-all', 'roles-change', (...args) => this.ev.emit('roles-change', args)),
 			// this.stream('notify-all', 'updateEmojiCustom', (...args) => this.ev.emit('updateEmojiCustom', args)),
 			// this.stream('notify-all', 'deleteEmojiCustom', (...args) => this.ev.emit('deleteEmojiCustom', args)),
 			// this.stream('notify-all', 'updateAvatar', (...args) => this.ev.emit('updateAvatar', args)),
 			this.stream('notify-all', 'public-settings-changed', (...args) => this.ev.emit('public-settings-changed', args)),
-		]);
+		];
 	}
 
-	subscribeLoggedNotify(): Promise<any> {
-		return Promise.all([
+	async subscribeLoggedNotify(): Promise<any> {
+		return [
 			this.stream('notify-logged', 'Users:NameChanged', (...args) => this.ev.emit('Users:NameChanged', args)),
 			this.stream('notify-logged', 'Users:Deleted', (...args) => this.ev.emit('Users:Deleted', args)),
 			this.stream('notify-logged', 'updateAvatar', (...args) => this.ev.emit('updateAvatar', args)),
@@ -178,17 +178,17 @@ export class RocketchatSdkLegacyImpl extends DDPSDK implements RocketchatSDKLega
 			this.stream('notify-logged', 'deleteEmojiCustom', (...args) => this.ev.emit('deleteEmojiCustom', args)),
 			this.stream('notify-logged', 'roles-change', (...args) => this.ev.emit('roles-change', args)),
 			this.stream('notify-logged', 'permissions-changed', (...args) => this.ev.emit('permissions-changed', args)),
-		]);
+		];
 	}
 
-	subscribeNotifyUser = (): Promise<any> => {
-		return Promise.all([
+	subscribeNotifyUser = async (): Promise<any> => {
+		return [
 			this.stream('notify-user', `${this.account.uid}/message`, (...args) => this.ev.emit('user-message', args)),
 			this.stream('notify-user', `${this.account.uid}/notification`, (...args) => this.ev.emit('notification', args)),
 			this.stream('notify-user', `${this.account.uid}/rooms-changed`, (...args) => this.ev.emit('rooms-changed', args)),
 			this.stream('notify-user', `${this.account.uid}/subscriptions-changed`, (...args) => this.ev.emit('subscriptions-changed', args)),
 			this.stream('notify-user', `${this.account.uid}/uiInteraction`, (...args) => this.ev.emit('uiInteraction', args)),
-		]);
+		];
 	};
 
 	onStreamData<E extends RocketchatSdkLegacyEventsKeys>(event: E, cb: (...data: RocketchatSdkLegacyEventsValues<E>) => void): () => void {
