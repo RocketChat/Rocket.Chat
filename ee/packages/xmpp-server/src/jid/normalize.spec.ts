@@ -1,5 +1,5 @@
-import { InvalidJidError } from '../errors';
-import { isDomainAllowed, normalizeDomain, normalizeRoomJid, normalizeUserBareJid, withDomain } from './normalize';
+import { InvalidJidError } from '../errors.js';
+import { isDomainAllowed, normalizeDomain, normalizeRoomJid, normalizeUserBareJid, withDomain } from './normalize.js';
 
 describe('normalizeUserBareJid', () => {
 	it('drops the resource and normalizes the domain only', () => {

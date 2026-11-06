@@ -1,8 +1,8 @@
 import { parse } from 'ltx';
-import type Element from 'ltx/lib/Element';
+import type Element from 'ltx/lib/Element.js';
 
-import { MucRoom } from './MucRoom';
-import type { MucRoomDeps } from './MucRoom';
+import { MucRoom } from './MucRoom.js';
+import type { MucRoomDeps } from './MucRoom.js';
 
 const p = (xmlString: string): Element => parse(xmlString) as unknown as Element;
 

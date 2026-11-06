@@ -4,8 +4,8 @@ import { setTimeout as sleep } from 'node:timers/promises';
 
 import type { IRoom } from '@rocket.chat/core-typings';
 
-import { DUPLICATE_SETTLE_MS, federationPolling, uniqueSuffix, withUppercaseDomain } from './helper/config';
-import { isGroupchat, isOccupantPresence, isRoomInvite, isRoomSubject, replacedId, statusCodes } from './helper/predicates';
+import { DUPLICATE_SETTLE_MS, federationPolling, uniqueSuffix, withUppercaseDomain } from './helper/config.js';
+import { isGroupchat, isOccupantPresence, isRoomInvite, isRoomSubject, replacedId, statusCodes } from './helper/predicates.js';
 import {
 	banFromRoom,
 	createHostedRoom,
@@ -27,14 +27,14 @@ import {
 	teardown,
 	updateMessage,
 	waitForMessage,
-} from './helper/rocketchat';
-import type { LocalUser, RocketChat, RoomRef } from './helper/rocketchat';
-import { NS } from './helper/stanza';
-import { assertFederationReachable, registerXmppUser, setupSuite } from './helper/suite';
-import { StanzaError } from './helper/xmpp-client';
-import type { XmppUser } from './helper/xmpp-client';
-import { retry } from '../../../../../apps/meteor/tests/data/retry';
-import { createRoom } from '../../../../../apps/meteor/tests/data/rooms.helper';
+} from './helper/rocketchat.js';
+import type { LocalUser, RocketChat, RoomRef } from './helper/rocketchat.js';
+import { NS } from './helper/stanza.js';
+import { assertFederationReachable, registerXmppUser, setupSuite } from './helper/suite.js';
+import { StanzaError } from './helper/xmpp-client.js';
+import type { XmppUser } from './helper/xmpp-client.js';
+import { retry } from '../../../../../apps/meteor/tests/data/retry.js';
+import { createRoom } from '../../../../../apps/meteor/tests/data/rooms.helper.js';
 
 const mucJidOf = (room: IRoom): string => {
 	assert.ok(room.xmppFederation?.role === 'host-muc', `expected a host-muc room, got ${room.xmppFederation?.role}`);

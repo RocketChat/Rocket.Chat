@@ -1,15 +1,15 @@
 import type { Emitter } from '@rocket.chat/emitter';
-import type Element from 'ltx/lib/Element';
+import type Element from 'ltx/lib/Element.js';
 
-import type { ResolvedXMPPServerConfig } from '../config';
-import type { XMPPServerEventMap } from '../events';
-import type { MucRoomDescription } from '../iq/disco';
-import { normalizeRoomJid, normalizeUserBareJid } from '../jid/normalize';
-import type { Logger } from '../logger';
-import { MucRoom } from './MucRoom';
-import { parseMucInvite, splitOccupantJid } from './stanzas';
-import { buildStanzaError } from '../xml/errors';
-import { NS_MUC } from '../xml/namespaces';
+import type { ResolvedXMPPServerConfig } from '../config.js';
+import type { XMPPServerEventMap } from '../events.js';
+import type { MucRoomDescription } from '../iq/disco.js';
+import { normalizeRoomJid, normalizeUserBareJid } from '../jid/normalize.js';
+import type { Logger } from '../logger.js';
+import { MucRoom } from './MucRoom.js';
+import { parseMucInvite, splitOccupantJid } from './stanzas.js';
+import { buildStanzaError } from '../xml/errors.js';
+import { NS_MUC } from '../xml/namespaces.js';
 
 export type MucServiceDeps = {
 	config: ResolvedXMPPServerConfig;

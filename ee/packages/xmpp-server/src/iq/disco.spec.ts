@@ -1,9 +1,9 @@
 import { parse } from 'ltx';
-import type Element from 'ltx/lib/Element';
+import type Element from 'ltx/lib/Element.js';
 
-import { buildDiscoReply } from './disco';
-import { resolveConfig } from '../config';
-import type { Logger } from '../logger';
+import { buildDiscoReply } from './disco.js';
+import { resolveConfig } from '../config.js';
+import type { Logger } from '../logger.js';
 
 const silentLogger: Logger = {
 	debug: () => undefined,

@@ -1,10 +1,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { XMPPServer } from '../../src/XMPPServer';
-import type { IncomingChatMessage } from '../../src/events';
-import type { Logger } from '../../src/logger';
-import type { XmppDnsResolver } from '../../src/s2s/dnsResolver';
+import { XMPPServer } from '../../src/XMPPServer.js';
+import type { IncomingChatMessage } from '../../src/events.js';
+import type { Logger } from '../../src/logger.js';
+import type { XmppDnsResolver } from '../../src/s2s/dnsResolver.js';
 
 jest.setTimeout(30000);
 

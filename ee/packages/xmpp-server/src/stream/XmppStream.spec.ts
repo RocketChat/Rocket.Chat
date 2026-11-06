@@ -1,7 +1,7 @@
 import net from 'node:net';
 
-import { XmppStream } from './XmppStream';
-import type { Logger } from '../logger';
+import { XmppStream } from './XmppStream.js';
+import type { Logger } from '../logger.js';
 
 const silentLogger: Logger = {
 	debug: () => undefined,

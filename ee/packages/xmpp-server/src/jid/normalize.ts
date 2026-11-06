@@ -1,6 +1,6 @@
 import { domainToASCII } from 'node:url';
 
-import { InvalidJidError } from '../errors';
+import { InvalidJidError } from '../errors.js';
 
 const URL_SYNTAX = /[\s/?#\\%]/;
 

@@ -1,18 +1,18 @@
 import type net from 'node:net';
 
-import type Element from 'ltx/lib/Element';
+import type Element from 'ltx/lib/Element.js';
 
-import type { ResolvedXMPPServerConfig } from '../config';
-import { InvalidJidError } from '../errors';
-import { isDomainAllowed, normalizeDomain, withDomain } from '../jid/normalize';
-import type { Logger } from '../logger';
-import { XmppStream } from './XmppStream';
-import type { DialbackVerdict } from '../s2s/dialback';
-import { generateStreamId } from '../s2s/dialback';
-import { verifyPeerCertForDomain } from '../s2s/saslExternal';
-import { xml } from '../xml/build';
-import { NS_DIALBACK, NS_DIALBACK_FEATURE, NS_SASL, NS_TLS } from '../xml/namespaces';
-import { resolveElement } from '../xml/resolve';
+import type { ResolvedXMPPServerConfig } from '../config.js';
+import { InvalidJidError } from '../errors.js';
+import { isDomainAllowed, normalizeDomain, withDomain } from '../jid/normalize.js';
+import type { Logger } from '../logger.js';
+import { XmppStream } from './XmppStream.js';
+import type { DialbackVerdict } from '../s2s/dialback.js';
+import { generateStreamId } from '../s2s/dialback.js';
+import { verifyPeerCertForDomain } from '../s2s/saslExternal.js';
+import { xml } from '../xml/build.js';
+import { NS_DIALBACK, NS_DIALBACK_FEATURE, NS_SASL, NS_TLS } from '../xml/namespaces.js';
+import { resolveElement } from '../xml/resolve.js';
 
 export type InboundSessionDeps = {
 	config: ResolvedXMPPServerConfig;

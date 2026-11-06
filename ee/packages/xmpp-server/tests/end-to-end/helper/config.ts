@@ -1,6 +1,6 @@
 import crypto from 'node:crypto';
 
-import { apiUrl } from '../../../../../../apps/meteor/tests/data/api-data';
+import { apiUrl } from '../../../../../../apps/meteor/tests/data/api-data.js';
 
 const optional = (name: string, fallback: string): string => process.env[name]?.trim() || fallback;
 

@@ -1,4 +1,4 @@
-import { orderSrvRecords } from './dnsResolver';
+import { orderSrvRecords } from './dnsResolver.js';
 
 describe('orderSrvRecords', () => {
 	it('orders by ascending priority', () => {

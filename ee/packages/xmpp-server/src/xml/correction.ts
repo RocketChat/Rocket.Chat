@@ -1,7 +1,7 @@
-import type Element from 'ltx/lib/Element';
+import type Element from 'ltx/lib/Element.js';
 
-import { xml } from './build';
-import { NS_CORRECT } from './namespaces';
+import { xml } from './build.js';
+import { NS_CORRECT } from './namespaces.js';
 
 /** The XEP-0308 `<replace/>` child marking a message as a correction of `replaceId`; nothing for a plain message. */
 export function buildReplace(replaceId?: string): Element | undefined {
