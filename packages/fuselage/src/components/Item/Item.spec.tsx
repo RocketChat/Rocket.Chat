@@ -570,3 +570,30 @@ describe('ItemContent', () => {
 		expect(screen.getByTestId('content')).toHaveClass('rcx-item__content');
 	});
 });
+
+describe('Sub-items stories', () => {
+	const { SubItems } = composeStories(stories);
+
+	it('hides a sub-list and moves its unread to the parent badge', async () => {
+		render(<SubItems />);
+
+		const toggle = screen.getByRole('button', { name: 'Engineering sub-items' });
+		expect(screen.getByRole('list', { name: 'Engineering sub-items' })).toBeInTheDocument();
+		expect(screen.getAllByTitle('5 unread messages')).toHaveLength(2);
+
+		await userEvent.click(toggle);
+
+		expect(toggle).toHaveAttribute('aria-expanded', 'false');
+		expect(screen.queryByRole('list', { name: 'Engineering sub-items' })).not.toBeInTheDocument();
+		expect(screen.getAllByTitle('5 unread messages')).toHaveLength(3);
+	});
+
+	it('selects the row whose link is clicked', async () => {
+		render(<SubItems />);
+
+		await userEvent.click(screen.getByRole('link', { name: 'backend' }));
+
+		expect(screen.getByRole('link', { name: 'backend' })).toHaveAttribute('aria-current', 'page');
+		expect(screen.getByRole('link', { name: 'frontend' })).not.toHaveAttribute('aria-current');
+	});
+});
