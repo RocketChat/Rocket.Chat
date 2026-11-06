@@ -68,6 +68,7 @@ export const useDesktopNotifications = (sessionInfo: SessionState) => {
 					body: t('Incoming_call_ellipsis'),
 					avatar: avatarAsPng || undefined,
 					requireInteraction: true,
+					restoreWindow: true,
 				},
 			});
 		};
