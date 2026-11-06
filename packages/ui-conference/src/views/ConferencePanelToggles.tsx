@@ -4,25 +4,6 @@ import { useTranslation } from 'react-i18next';
 import type { ConferencePanel } from '../context/ConferenceContext';
 import type { ConferenceRoom } from '../context/definitions';
 
-/**
- * Folds a badge into its button's name. The badges are `aria-hidden` and `aria-label` overrides a button's
- * contents, so whatever a badge says has to reach the name — the dot included, which carries no count.
- */
-const withBadgeCount = (label: string, unread: number, unreadTitle: string, hasUnseenActivity = false): string =>
-	(unread > 0 || hasUnseenActivity) && unreadTitle ? `${label}, ${unreadTitle}` : label;
-
-/**
- * What the chat button's badge says: the unread count, or — when something happened that carries no count —
- * an empty badge, which is the dot. `undefined` is no badge at all.
- */
-const getChatBadge = (unread: number, unseenActivity: boolean): number | null | undefined => {
-	if (unread > 0) {
-		return unread;
-	}
-
-	return unseenActivity ? null : undefined;
-};
-
 export type ConferencePanelTogglesProps = {
 	activePanel: ConferencePanel | undefined;
 	presentCount: number;
@@ -37,8 +18,7 @@ const ConferencePanelToggles = ({ activePanel, presentCount, unread: roomUnread,
 	const { count: unreadCount, hasUnseenActivity, variant: unreadVariant, title: unreadTitle = '' } = roomUnread;
 	// Nothing is unread about a chat the reader is looking at.
 	const unread = chatVisible ? 0 : unreadCount;
-	const unseenActivity = !chatVisible && !unread && hasUnseenActivity;
-	const chatBadge = getChatBadge(unread, unseenActivity);
+	const showChatBadge = !chatVisible && (unread > 0 || hasUnseenActivity);
 
 	return (
 		<>
@@ -58,18 +38,17 @@ const ConferencePanelToggles = ({ activePanel, presentCount, unread: roomUnread,
 			<IconButton
 				size='small'
 				variant='secondary'
-				aria-label={withBadgeCount(t('Chat'), unread, unreadTitle, unseenActivity)}
+				// The badge is `aria-hidden`, so what it says has to be in the button's name.
+				aria-label={showChatBadge && unreadTitle ? `${t('Chat')}, ${unreadTitle}` : t('Chat')}
 				title={t('Chat')}
 				aria-pressed={chatVisible}
 				onClick={() => onToggle('chat')}
 				icon={<Icon name='balloon' size='x20' color={chatVisible ? 'info' : undefined} />}
-				// `chatBadge` is `null` for activity with no count behind it, which is the dot — a `Badge` with
-				// nothing in it. Only `undefined` means no badge at all, so the test is against that rather than
-				// for truth.
+				// An empty badge is the dot: activity with no count behind it.
 				badge={
-					chatBadge !== undefined ? (
+					showChatBadge ? (
 						<Badge variant={unreadVariant} title={unreadTitle}>
-							{chatBadge}
+							{unread > 0 ? unread : null}
 						</Badge>
 					) : undefined
 				}
