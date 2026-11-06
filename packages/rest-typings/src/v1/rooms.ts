@@ -1042,7 +1042,7 @@ export type RoomsEndpoints = {
 
 	'/v1/rooms.membersOrderedByRole': {
 		GET: (params: RoomsMembersOrderedByRoleProps) => PaginatedResult<{
-			members: (IUser & { subscription: Pick<ISubscription, '_id' | 'status' | 'ts' | 'roles'> })[];
+			members: (IUser & { subscription: Pick<ISubscription, '_id' | 'status' | 'ts' | 'roles' | 'historyVisibleFrom'> })[];
 		}>;
 	};
 

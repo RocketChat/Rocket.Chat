@@ -1,8 +1,9 @@
 import type { IRoom, IRoomWithRetentionPolicy } from '@rocket.chat/core-typings';
-import { usePermission, useAtLeastOnePermission, useRole } from '@rocket.chat/ui-contexts';
+import { usePermission, useAtLeastOnePermission, useRole, useSetting } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
 import { RoomSettingsEnum } from '../../../../../../definition/IRoomTypeConfig';
+import { canRestrictMessageHistory } from '../../../../../../lib/rooms/canRestrictMessageHistory';
 import { useTeamInfoQuery } from '../../../../../hooks/useTeamInfoQuery';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 
@@ -30,6 +31,8 @@ export const useEditRoomPermissions = (room: IRoom | IRoomWithRetentionPolicy) =
 	const canSetReadOnly = usePermission('set-readonly', room._id);
 	const canSetReactWhenReadOnly = usePermission('set-react-when-readonly', room._id);
 	const canEditRoomRetentionPolicy = usePermission('edit-room-retention-policy', room._id);
+	const isRestrictedHistoryEnabled = useSetting('Restricted_Message_History_Enabled', false);
+	const canViewHideHistoryForNewMembers = isRestrictedHistoryEnabled && canRestrictMessageHistory(room);
 	const canArchiveOrUnarchive = useAtLeastOnePermission(
 		useMemo(() => ['archive-room', 'unarchive-room'], []),
 		room._id,
@@ -82,5 +85,6 @@ export const useEditRoomPermissions = (room: IRoom | IRoomWithRetentionPolicy) =
 		canViewHideSysMes,
 		canViewJoinCode,
 		canViewReactWhenReadOnly,
+		canViewHideHistoryForNewMembers,
 	};
 };

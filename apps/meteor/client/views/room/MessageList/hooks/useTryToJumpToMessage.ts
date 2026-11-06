@@ -1,8 +1,9 @@
 import { isThreadMainMessage, isThreadMessage } from '@rocket.chat/core-typings';
-import { useEndpoint, useSearchParameter } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useSearchParameter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { WindowVirtualizerHandle } from 'virtua';
 
 import { RoomHistoryManager } from '../../../../lib/RoomHistoryManager';
@@ -28,6 +29,8 @@ const useTryToJumpToMessage = ({ rid, virtualizerRef, setIsJumpingToMessage, mes
 	const getMessage = useEndpoint('GET', '/v1/chat.getMessage');
 
 	const goToRoom = useGoToRoom();
+	const dispatchToastMessage = useToastMessageDispatch();
+	const { t } = useTranslation();
 
 	const { data: message, isError } = useQuery({
 		queryKey: messageJumpParam ? messagesQueryKeys.message(messageJumpParam) : [],
@@ -66,6 +69,7 @@ const useTryToJumpToMessage = ({ rid, virtualizerRef, setIsJumpingToMessage, mes
 		if (isError) {
 			setIsJumpingToMessage(false);
 			setMessageJumpQueryStringParameter(null);
+			dispatchToastMessage({ type: 'info', message: t('Message_not_available') });
 			return;
 		}
 		if (!message) {
@@ -107,7 +111,20 @@ const useTryToJumpToMessage = ({ rid, virtualizerRef, setIsJumpingToMessage, mes
 				setMessageJumpQueryStringParameter(null);
 			}
 		}, 500);
-	}, [messageJumpParam, virtualizerRef, setIsJumpingToMessage, rid, messages, message, isError, isLoadingMoreMessages, targetId, goToRoom]);
+	}, [
+		messageJumpParam,
+		virtualizerRef,
+		setIsJumpingToMessage,
+		rid,
+		messages,
+		message,
+		isError,
+		isLoadingMoreMessages,
+		targetId,
+		goToRoom,
+		dispatchToastMessage,
+		t,
+	]);
 };
 
 export default useTryToJumpToMessage;

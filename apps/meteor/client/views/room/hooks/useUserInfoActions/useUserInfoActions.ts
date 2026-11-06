@@ -1,4 +1,4 @@
-import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, ISubscription, IUser, Serialized } from '@rocket.chat/core-typings';
 import type { Icon } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useEmbeddedLayout } from '@rocket.chat/ui-client';
@@ -14,6 +14,7 @@ import { useChangeModeratorAction } from './actions/useChangeModeratorAction';
 import { useChangeOwnerAction } from './actions/useChangeOwnerAction';
 import { useDirectMessageAction } from './actions/useDirectMessageAction';
 import { useIgnoreUserAction } from './actions/useIgnoreUserAction';
+import { useMessageHistoryAccessAction } from './actions/useMessageHistoryAccessAction';
 import { useMuteUserAction } from './actions/useMuteUserAction';
 import { useRedirectModerationConsole } from './actions/useRedirectModerationConsole';
 import { useRemoveUserAction } from './actions/useRemoveUserAction';
@@ -58,6 +59,8 @@ type UserInfoActionsParams = {
 	size?: number;
 	isMember?: boolean;
 	isInvited?: boolean;
+	/** The member's history cutoff, `null` for full history; leave it out where it isn't known. */
+	historyVisibleFrom?: Serialized<ISubscription>['historyVisibleFrom'] | null;
 };
 
 type UseUserInfoActionsResult = {
@@ -72,6 +75,7 @@ export const useUserInfoActions = ({
 	size = 2,
 	isMember,
 	isInvited,
+	historyVisibleFrom,
 }: UserInfoActionsParams): UseUserInfoActionsResult => {
 	const addUser = useAddUserAction(user, rid, reload);
 	const blockUser = useBlockUserAction(user, rid);
@@ -82,6 +86,7 @@ export const useUserInfoActions = ({
 	const openDirectMessage = useDirectMessageAction(user, rid);
 	const ignoreUser = useIgnoreUserAction(user, rid);
 	const muteUser = useMuteUserAction(user, rid);
+	const messageHistoryAccess = useMessageHistoryAccessAction(user, rid, historyVisibleFrom);
 	const removeUser = useRemoveUserAction(user, rid, reload, isInvited);
 	const banUser = useBanUserAction(user, rid);
 	const videoCall = useVideoCallAction(user);
@@ -98,6 +103,7 @@ export const useUserInfoActions = ({
 			// Menu sections follow the order in which each type first appears here.
 			...(isMember && openModerationConsole && { openModerationConsole }),
 			...(isMember && muteUser && { muteUser }),
+			...(isMember && messageHistoryAccess && { messageHistoryAccess }),
 			...(!isMember && addUser && { addUser }),
 			...(isMember && changeOwner && { changeOwner }),
 			...(isMember && changeLeader && { changeLeader }),
@@ -118,6 +124,7 @@ export const useUserInfoActions = ({
 			changeModerator,
 			ignoreUser,
 			muteUser,
+			messageHistoryAccess,
 			blockUser,
 			removeUser,
 			reportUserOption,

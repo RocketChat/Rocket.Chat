@@ -121,6 +121,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 		retentionOverrideGlobal,
 		roomType: roomTypeP,
 		reactWhenReadOnly,
+		hideHistoryForNewMembers,
 	} = watch();
 
 	const {
@@ -138,6 +139,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 		canViewReadOnly,
 		canViewHideSysMes,
 		canViewJoinCode,
+		canViewHideHistoryForNewMembers,
 	} = useEditRoomPermissions(room);
 
 	const changeArchiving = archived !== !!room.archived;
@@ -241,6 +243,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 	const roomTypeField = useId();
 	const readOnlyField = useId();
 	const reactWhenReadOnlyField = useId();
+	const hideHistoryForNewMembersField = useId();
 	const archivedField = useId();
 	const joinCodeRequiredField = useId();
 	const hideSysMesField = useId();
@@ -251,7 +254,8 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 	const retentionFilesOnlyField = useId();
 	const retentionIgnoreThreads = useId();
 
-	const showAdvancedSettings = canViewReadOnly || readOnly || canViewArchived || canViewJoinCode || canViewHideSysMes;
+	const showAdvancedSettings =
+		canViewReadOnly || readOnly || canViewArchived || canViewJoinCode || canViewHideSysMes || canViewHideHistoryForNewMembers;
 	const showRetentionPolicy = canEditRoomRetentionPolicy && retentionPolicy?.enabled;
 
 	const showAccordion = showAdvancedSettings || showRetentionPolicy;
@@ -446,6 +450,30 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 														{reactWhenReadOnly ? t('Anyone_can_react_to_messages') : t('Only_authorized_users_can_react_to_messages')}
 													</FieldHint>
 												</FieldRow>
+											</Field>
+										)}
+										{canViewHideHistoryForNewMembers && (
+											<Field>
+												<FieldRow>
+													<FieldLabel htmlFor={hideHistoryForNewMembersField}>{t('Hide_history_for_new_members')}</FieldLabel>
+													<Controller
+														control={control}
+														name='hideHistoryForNewMembers'
+														render={({ field: { value, ...field } }) => (
+															<ToggleSwitch
+																id={hideHistoryForNewMembersField}
+																{...field}
+																checked={value}
+																aria-describedby={`${hideHistoryForNewMembersField}-hint`}
+															/>
+														)}
+													/>
+												</FieldRow>
+												<FieldHint id={`${hideHistoryForNewMembersField}-hint`}>
+													{hideHistoryForNewMembers
+														? t('Hide_history_for_new_members_hint_enabled')
+														: t('Hide_history_for_new_members_hint_disabled')}
+												</FieldHint>
 											</Field>
 										)}
 										{canViewArchived && (

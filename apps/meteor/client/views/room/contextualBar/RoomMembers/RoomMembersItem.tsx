@@ -17,10 +17,12 @@ import type { MouseEvent } from 'react';
 
 import UserActions from './RoomMembersActions';
 import { getUserDisplayNames } from '../../../../../lib/getUserDisplayNames';
+import HistoryRestrictedBadge from '../../../../components/HistoryRestrictedBadge';
 import InvitationBadge from '../../../../components/InvitationBadge';
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
 import { useUserStatusTooltip } from '../../../../hooks/useUserStatusTooltip';
 import type { RoomMember } from '../../../hooks/useMembersList';
+import { useCanManageMessageHistory } from '../../hooks/useCanManageMessageHistory';
 
 export type RoomMembersItemProps = Pick<RoomMember, 'federated' | 'username' | 'name' | '_id' | 'sipExtension' | 'subscription'> & {
 	rid: IRoom['_id'];
@@ -45,6 +47,8 @@ const RoomMembersItem = ({
 	const isInvited = subscription?.status === 'INVITED';
 	const invitationDate = isInvited ? subscription?.ts : undefined;
 	const [nameOrUsername, displayUsername] = getUserDisplayNames(name, username, useRealName);
+	const historyVisibleFrom = subscription?.historyVisibleFrom ?? null;
+	const canManageMessageHistory = useCanManageMessageHistory(rid);
 
 	const statusTooltipHandlers = useUserStatusTooltip(_id);
 
@@ -70,6 +74,7 @@ const RoomMembersItem = ({
 				</ItemTitle>
 			</ItemContent>
 			{invitationDate && <InvitationBadge size='x20' invitationDate={invitationDate} />}
+			{canManageMessageHistory && historyVisibleFrom && <HistoryRestrictedBadge size='x20' historyVisibleFrom={historyVisibleFrom} />}
 			<ItemActions reveal='hover'>
 				{menuVisibility ? (
 					<UserActions
@@ -80,6 +85,7 @@ const RoomMembersItem = ({
 						sipExtension={sipExtension}
 						federated={federated}
 						isInvited={isInvited}
+						historyVisibleFrom={historyVisibleFrom}
 						reload={reload}
 					/>
 				) : (
