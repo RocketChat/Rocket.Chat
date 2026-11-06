@@ -1,7 +1,7 @@
 import { ClientSafeError, isClientSafeError } from '@rocket.chat/core-services';
 import { ServiceBroker } from 'moleculer';
 
-import { CustomRegenerator } from './moleculer';
+import { CustomRegenerator } from './moleculer.js';
 
 describe('CustomRegenerator', () => {
 	const regenerator = new CustomRegenerator();

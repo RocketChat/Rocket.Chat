@@ -1,4 +1,4 @@
-import { shouldShutdown } from './licenseEnforcement';
+import { shouldShutdown } from './licenseEnforcement.js';
 
 describe('shouldShutdown', () => {
 	it('should shut down when the service is no longer registered', () => {

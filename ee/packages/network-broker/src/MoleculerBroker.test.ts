@@ -2,7 +2,7 @@ import { ServiceClass } from '@rocket.chat/core-services';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
-import { MoleculerBroker } from './MoleculerBroker';
+import { MoleculerBroker } from './MoleculerBroker.js';
 
 type ServiceSchema = { name: string; stopped: () => Promise<void> };
 
