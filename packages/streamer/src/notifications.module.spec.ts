@@ -47,7 +47,7 @@ class TestStreamer extends Streamer<any> {
 const validateAction = jest.mocked(VideoConf.validateAction);
 const processSerializedSignal = jest.mocked(MediaCall.processSerializedSignal);
 const countByRoomIdAndUserId = jest.mocked(Subscriptions.countByRoomIdAndUserId);
-const findOtherSubscriptions = jest.mocked(Subscriptions.findByRoomIdAndNotUserId);
+const findByRoomIdAndNotUserId = jest.mocked(Subscriptions.findByRoomIdAndNotUserId);
 
 describe('NotificationsModule', () => {
 	let notifications: NotificationsModule;
@@ -74,7 +74,7 @@ describe('NotificationsModule', () => {
 			processSerializedSignal.mockReset();
 			processSerializedSignal.mockResolvedValue(undefined);
 			countByRoomIdAndUserId.mockReset();
-			findOtherSubscriptions.mockReset();
+			findByRoomIdAndNotUserId.mockReset();
 		});
 
 		['force_logout', 'notification', 'message', 'uiInteraction', 'subscriptions-changed', 'webdav', 'banners'].forEach((event) => {
@@ -119,8 +119,8 @@ describe('NotificationsModule', () => {
 		beforeEach(() => {
 			countByRoomIdAndUserId.mockReset();
 			countByRoomIdAndUserId.mockResolvedValue(1); // attacker is subscribed to the room
-			findOtherSubscriptions.mockReset();
-			findOtherSubscriptions.mockReturnValue({ toArray: async () => [{ u: { _id: 'victim' } }] } as any);
+			findByRoomIdAndNotUserId.mockReset();
+			findByRoomIdAndNotUserId.mockReturnValue({ toArray: async () => [{ u: { _id: 'victim' } }] } as any);
 		});
 
 		['force_logout', 'notification', 'message', 'uiInteraction', 'subscriptions-changed', 'webdav', 'banners'].forEach((event) => {
@@ -130,7 +130,7 @@ describe('NotificationsModule', () => {
 				const result = await writeAllowed(`room1/${event}`, { foo: 'bar' });
 
 				expect(result).toBe(false);
-				expect(findOtherSubscriptions).not.toHaveBeenCalled();
+				expect(findByRoomIdAndNotUserId).not.toHaveBeenCalled();
 				expect(emitSpy).not.toHaveBeenCalled();
 			});
 		});
@@ -145,7 +145,7 @@ describe('NotificationsModule', () => {
 			});
 
 			expect(result).toBe(false);
-			expect(findOtherSubscriptions).not.toHaveBeenCalled();
+			expect(findByRoomIdAndNotUserId).not.toHaveBeenCalled();
 			expect(emitSpy).not.toHaveBeenCalled();
 		});
 
@@ -156,7 +156,7 @@ describe('NotificationsModule', () => {
 				const result = await writeAllowed(`room1/${event}`, { foo: 'bar' });
 
 				expect(result).toBe(false);
-				expect(findOtherSubscriptions).toHaveBeenCalled();
+				expect(findByRoomIdAndNotUserId).toHaveBeenCalled();
 				expect(emitSpy).toHaveBeenCalled();
 			});
 		});
