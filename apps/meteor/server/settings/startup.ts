@@ -27,9 +27,6 @@ export async function reloadSettings({ model, settings }: { model: typeof Settin
 	});
 
 	for (const _id of removed) {
-		const setting = settings.getSetting(_id);
-		if (setting) {
-			settings.set({ ...setting, value: undefined });
-		}
+		settings.remove(_id);
 	}
 }

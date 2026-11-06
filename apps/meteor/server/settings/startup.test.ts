@@ -58,8 +58,9 @@ describe('reloadSettings', () => {
 
 		await reloadSettings({ model: modelWith([]), settings });
 
-		expect(settings.get('removed')).to.equal(undefined);
+		expect(settings.has('removed')).to.equal(false);
 		expect(changed).to.have.been.called.exactly(1);
+		expect(changed).to.have.been.called.with(undefined);
 	});
 
 	it('does not emit for settings already dropped', async () => {
@@ -69,6 +70,7 @@ describe('reloadSettings', () => {
 
 		await reloadSettings({ model: modelWith([]), settings });
 
+		expect(settings.has('gone')).to.equal(false);
 		expect(changed).to.not.have.been.called();
 	});
 

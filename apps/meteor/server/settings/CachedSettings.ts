@@ -58,6 +58,8 @@ export interface ICachedSettings {
 
 	set(record: ISetting): void;
 
+	remove(_id: ISetting['_id']): void;
+
 	getConfig(config?: OverCustomSettingsConfig): SettingsConfig;
 
 	watchByRegex(regex: RegExp, cb: (...args: [string, SettingValue]) => void, config?: OverCustomSettingsConfig): () => void;
@@ -342,6 +344,27 @@ export class CachedSettings
 		}
 		this.emit(record._id, this.store.get(record._id)?.value);
 		this.emit('*', [record._id, this.store.get(record._id)?.value]);
+	}
+
+	/**
+	 * Forgets a setting the database no longer has; watchers see `undefined` unless that already was its value
+	 */
+	public remove(_id: ISetting['_id']): void {
+		const previous = this.store.get(_id);
+		this.store.delete(_id);
+		if (previous?.value === undefined) {
+			return;
+		}
+
+		if (!this.ready) {
+			this.once('ready', () => {
+				this.emit(_id, undefined);
+				this.emit('*', [_id, undefined]);
+			});
+			return;
+		}
+		this.emit(_id, undefined);
+		this.emit('*', [_id, undefined]);
 	}
 
 	public getConfig = (config?: OverCustomSettingsConfig): SettingsConfig => ({
