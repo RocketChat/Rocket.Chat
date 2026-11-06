@@ -71,4 +71,11 @@ export class UploadsRaw extends BaseUploadModelRaw implements IUploadsModel {
 	): FindCursor<DocumentWithProjection<T, O>> {
 		return this.find<T, O>({ originalFileId }, options);
 	}
+
+	findThumbnailsByOriginalFileIds<T extends Document = IUpload, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		originalFileIds: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
+		return this.find<T, O>({ originalFileId: { $in: originalFileIds }, typeGroup: 'thumb' }, options);
+	}
 }
