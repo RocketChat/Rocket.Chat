@@ -188,6 +188,7 @@ export class Job {
 	public run(): Promise<Job> {
 		const definition = this.agenda.getDefinition(this.attrs.name);
 
+		// oxlint-disable-next-line no-async-promise-executor
 		return new Promise(async (resolve, reject) => {
 			this.attrs.lastRunAt = new Date();
 			debug('[%s:%s] setting lastRunAt to: %s', this.attrs.name, this.attrs._id, this.attrs.lastRunAt.toISOString());
@@ -213,6 +214,7 @@ export class Job {
 
 				await this.save().catch((error) => {
 					debug('[%s:%s] failed to be saved to MongoDB', this.attrs.name, this.attrs._id);
+					// oxlint-disable-next-line typescript/prefer-promise-reject-errors
 					reject(error);
 				});
 				debug('[%s:%s] was saved successfully to MongoDB', this.attrs.name, this.attrs._id);
