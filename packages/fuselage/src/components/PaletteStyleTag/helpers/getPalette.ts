@@ -71,6 +71,7 @@ export const getThemePalette = (theme: Themes) => {
 				{ name: 'shadow-highlight', color: shadow.highlight },
 				{ name: 'shadow-danger', color: shadow.danger },
 				{ name: 'shadow-elevation-border', color: shadow['elevation-border'] },
+				{ name: 'shadow-extra-light-error', color: shadow['extra-light-error'] },
 				{ name: 'shadow-elevation-1', color: shadow['elevation-1'] },
 				{
 					name: 'shadow-elevation-2x',
