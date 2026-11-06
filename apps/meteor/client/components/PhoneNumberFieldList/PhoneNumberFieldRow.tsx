@@ -28,13 +28,12 @@ const PhoneNumberFieldRow = ({ control, index, onRemove, className }: PhoneNumbe
 				rules={{
 					validate: (_, formValues) => validatePhoneNumber(formValues.phones[index], index, t),
 				}}
-				// TODO: add back type='tel' to the Input
 				render={({ field, fieldState: { error } }) => (
 					<Field className={className}>
 						<FieldLabel>{t('Phone_number')}</FieldLabel>
 						<FieldRow>
 							<Stack direction='row' align='center' grow gap={8}>
-								<TextInput {...field} aria-label={`${t('Phone_number')} ${index + 1}`} error={error?.message} />
+								<TextInput {...field} type='tel' aria-label={`${t('Phone_number')} ${index + 1}`} error={error?.message} />
 								<IconButton
 									aria-controls={id}
 									title={t('Remove')}
