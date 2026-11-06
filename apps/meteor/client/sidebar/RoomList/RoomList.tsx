@@ -2,6 +2,7 @@ import { Box } from '@rocket.chat/fuselage';
 import { useMergedRefsV2, useShortTimeAgo } from '@rocket.chat/ui-client';
 import { useUserPreference, useUserId } from '@rocket.chat/ui-contexts';
 import { useMemo, useRef } from 'react';
+import { VisuallyHidden } from 'react-aria';
 import { useTranslation } from 'react-i18next';
 import type { VirtualizerHandle } from 'virtua';
 
@@ -12,8 +13,10 @@ import RoomListRowWrapper from './RoomListRowWrapper';
 import RoomListWrapper from './RoomListWrapper';
 import { useMoveCategoryPosition } from '../categories/hooks/useMoveCategoryPosition';
 import SidebarVirtualList from '../components/SidebarVirtualList';
+import { useActivityFilterAnnouncement } from '../hooks/useActivityFilterAnnouncement';
 import { SIDEBAR_DYNAMIC_GROUP_KEYS } from '../hooks/useCategoryList';
 import { useCollapsedGroups } from '../hooks/useCollapsedGroups';
+import { useLiftedActivityFilters } from '../hooks/useLiftedActivityFilters';
 import { useOffscreenUnreads } from '../hooks/useOffscreenUnreads';
 import { usePreventDefault } from '../hooks/usePreventDefault';
 import { useRingingCalls } from '../hooks/useRingingCalls';
@@ -42,8 +45,16 @@ const RoomList = () => {
 	const isAnonymous = !userId;
 
 	const { collapsedGroups, handleClick } = useCollapsedGroups();
-	const { groups } = useRoomList({ collapsedGroups });
+	const { liftedFilters, toggleLifted, dropLifted } = useLiftedActivityFilters();
+	const { groups } = useRoomList({ collapsedGroups, liftedFilters });
+	const { announcement, announceActivityFilter } = useActivityFilterAnnouncement(groups);
 	const moveCategory = useMoveCategoryPosition();
+
+	// A window chosen from the menu applies right away, even if the previous one was lifted, and is announced.
+	const chooseActivityFilter = (groupKey: string, activityFilterHours: number | undefined) => {
+		dropLifted(groupKey);
+		announceActivityFilter(groupKey, activityFilterHours);
+	};
 	const virtualizerRef = useRef<VirtualizerHandle>(null);
 	const { previousUnread, nextUnread, handleRangeChange } = useOffscreenUnreads({ groups });
 	const ringingCalls = useRingingCalls();
@@ -100,6 +111,8 @@ const RoomList = () => {
 						canMoveDown={canMoveGroup(groups, index, 'down')}
 						onMoveUp={() => moveCategory(allGroupKeys, group.key, 'up')}
 						onMoveDown={() => moveCategory(allGroupKeys, group.key, 'down')}
+						onToggleInactive={() => group.activityFilterHours && toggleLifted(group.key, group.activityFilterHours)}
+						onActivityFilterChange={(activityFilterHours) => chooseActivityFilter(group.key, activityFilterHours)}
 						onClick={() => handleClick(group.key)}
 					/>
 				)}
@@ -113,6 +126,9 @@ const RoomList = () => {
 				<MoreUnreadsBubble direction='up' mention={previousUnread.mention} onClick={() => scrollToUnread(previousUnread.index)} />
 			)}
 			{nextUnread && <MoreUnreadsBubble direction='down' mention={nextUnread.mention} onClick={() => scrollToUnread(nextUnread.index)} />}
+			<VisuallyHidden elementType='div' role='status' aria-live='polite'>
+				{announcement}
+			</VisuallyHidden>
 		</Box>
 	);
 };
