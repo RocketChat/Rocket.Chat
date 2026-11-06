@@ -479,8 +479,8 @@ const $nor = <T>(subSelector: Filter<T>[]) => {
 };
 
 const $where = <T>(selectorValue: string | ((this: T, doc: T) => boolean)) => {
-	if (!(selectorValue instanceof Function)) {
-		selectorValue = Function('obj', `return ${selectorValue}`) as (this: T, doc: T) => boolean;
+	if (typeof selectorValue !== 'function') {
+		throw new Error('$where only supports functions');
 	}
 
 	return (doc: T) => ({ result: selectorValue.call(doc, doc) });

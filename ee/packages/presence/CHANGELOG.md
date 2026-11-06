@@ -1,5 +1,19 @@
 # @rocket.chat/presence
 
+## 0.4.0-rc.1
+
+### Patch Changes
+
+- ([#43271](https://github.com/RocketChat/Rocket.Chat/pull/43271)) Fixes high database load when many users disconnect at once, such as after a network outage or an instance restart
+
+- ([#43279](https://github.com/RocketChat/Rocket.Chat/pull/43279)) Stops the presence service from writing and broadcasting the user's status on every connection heartbeat when the status did not change
+
+- <details><summary>Updated dependencies [687d88ff58975ac7d21ec059a0d151dcb75d8bd6, 3dcddc61941c7896bc750220220cc7d5b72b9b46, 4c152661022d34bfbe9bf78811eac286a31c47a5, bff76c34b21caddbc316d69b62fac858a73d7164]:</summary>
+  - @rocket.chat/models@3.0.0-rc.1
+  - @rocket.chat/core-typings@9.0.0-rc.4
+
+  </details>
+
 ## 0.4.0-rc.0
 
 ### Minor Changes

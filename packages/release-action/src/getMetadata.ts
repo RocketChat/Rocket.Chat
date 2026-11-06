@@ -19,10 +19,13 @@ export async function getMongoVersion(cwd: string) {
 	return [];
 }
 
-export async function getNodeNpmVersions(cwd: string): Promise<{ node: string; yarn: string; npm: string }> {
-	const packageJson = await readPackageJson(cwd);
+export async function getNodeNpmVersions(cwd: string) {
+	const { engines } = await readPackageJson(cwd);
+	if (!engines) {
+		throw new Error(`${cwd}/package.json has no engines field`);
+	}
 
-	return packageJson.engines;
+	return engines;
 }
 
 export async function getAppsEngineVersion(cwd: string) {

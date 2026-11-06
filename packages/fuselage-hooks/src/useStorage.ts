@@ -20,7 +20,7 @@ const getStorageItem = <T>(storedKey: `fuselage-${string}`, fallbackValue: T, st
 	if (!storage) return fallbackValue;
 
 	const item = storage.getItem(storedKey);
-	return item ? JSON.parse(item) : fallbackValue;
+	return item ? (JSON.parse(item) as T) : fallbackValue;
 };
 
 const setStorageItem = <T>(storedKey: `fuselage-${string}`, value: T, storage?: Storage): void => {

@@ -3,7 +3,6 @@ import { SIDEBAR_CATEGORY_ACTIVITY_FILTER_MAX_HOURS } from '@rocket.chat/core-ty
 import type { ISidebarCategory, ISubscription, ThemePreference } from '@rocket.chat/core-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import type { FontSize } from '@rocket.chat/rest-typings';
-import { Match, check } from 'meteor/check';
 
 import {
 	notifyOnSubscriptionChangedByAutoTranslateAndUserId,
@@ -89,7 +88,7 @@ const MAX_CATEGORY_NAME_LENGTH = 30;
 export const validateSidebarCategories = (categories: ISidebarCategory[]): void => {
 	for (const category of categories) {
 		const { activityFilterHours, activityFilterHidesUnreads } = category;
-		// A `null` filter clears it, so it is not stored; the REST schema and the `check` pattern let it through for that.
+		// A `null` filter clears it, so it is not stored; the REST schema lets it through for that.
 		if (activityFilterHours == null) {
 			delete category.activityFilterHours;
 		} else if (activityFilterHours < 1 || activityFilterHours > SIDEBAR_CATEGORY_ACTIVITY_FILTER_MAX_HOURS) {
@@ -121,61 +120,10 @@ export const validateSidebarCategories = (categories: ISidebarCategory[]): void 
 };
 
 export const saveUserPreferences = async (settings: Partial<UserPreferences>, userId: string): Promise<void> => {
-	const keys = {
-		language: Match.Optional(String),
-		newRoomNotification: Match.Optional(String),
-		newMessageNotification: Match.Optional(String),
-		clockMode: Match.Optional(Number),
-		useEmojis: Match.Optional(Boolean),
-		convertAsciiEmoji: Match.Optional(Boolean),
-		saveMobileBandwidth: Match.Optional(Boolean),
-		collapseMediaByDefault: Match.Optional(Boolean),
-		autoImageLoad: Match.Optional(Boolean),
-		emailNotificationMode: Match.Optional(String),
-		unreadAlert: Match.Optional(Boolean),
-		masterVolume: Match.Optional(Number),
-		notificationsSoundVolume: Match.Optional(Number),
-		voipRingerVolume: Match.Optional(Number),
-		desktopNotifications: Match.Optional(String),
-		pushNotifications: Match.Optional(String),
-		enableAutoAway: Match.Optional(Boolean),
-		highlights: Match.Optional([String]),
-		hideUsernames: Match.Optional(Boolean),
-		hideRoles: Match.Optional(Boolean),
-		displayAvatars: Match.Optional(Boolean),
-		hideFlexTab: Match.Optional(Boolean),
-		sendOnEnter: Match.Optional(String),
-		idleTimeLimit: Match.Optional(Number),
-		sidebarShowFavorites: Match.Optional(Boolean),
-		sidebarShowUnread: Match.Optional(Boolean),
-		sidebarSortby: Match.Optional(String),
-		sidebarViewMode: Match.Optional(String),
-		sidebarDisplayAvatar: Match.Optional(Boolean),
-		sidebarGroupByType: Match.Optional(Boolean),
-		sidebarCategories: Match.Optional([
-			{
-				_id: String,
-				name: String,
-				default: Match.Optional(Boolean),
-				showUnreads: Match.Optional(Boolean),
-				keepUnreadsOnTop: Match.Optional(Boolean),
-				activityFilterHours: Match.Optional(Match.OneOf(null, Match.Integer)),
-				activityFilterHidesUnreads: Match.Optional(Match.OneOf(null, Boolean)),
-			},
-		]),
-		muteFocusedConversations: Match.Optional(Boolean),
-		themeAppearence: Match.Optional(String),
-		fontSize: Match.Optional(String),
-		omnichannelTranscriptEmail: Match.Optional(Boolean),
-		omnichannelTranscriptPDF: Match.Optional(Boolean),
-		omnichannelHideConversationAfterClosing: Match.Optional(Boolean),
-		notifyCalendarEvents: Match.Optional(Boolean),
-		enableMobileRinging: Match.Optional(Boolean),
-		mentionsWithSymbol: Match.Optional(Boolean),
-		utcOffset: Match.Optional(Number),
-		statusVisibilityDenied: Match.Optional([String]),
-	};
-	check(settings, Match.ObjectIncluding(keys));
+	const nullPreference = Object.keys(settings).find((key) => settings[key as keyof UserPreferences] === null);
+	if (nullPreference) {
+		throw new ClientSafeError('error-invalid-param', `Invalid value for preference ${nullPreference}`);
+	}
 
 	if (settings.sidebarCategories) {
 		validateSidebarCategories(settings.sidebarCategories);
