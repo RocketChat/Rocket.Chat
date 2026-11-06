@@ -23,11 +23,8 @@ export const useAuditMutation = (type: IAuditLog['fields']['type']) => {
 					startDate,
 					endDate,
 					users,
-					// TODO: the Omnichannel audit form collects visitor/agent (required fields) but they are
-					// dropped here — carried over from the original DDP flow. Forwarding them would let the
-					// omnichannel audit filter by the selected visitor/agent. Left for investigation.
-					visitor: '',
-					agent: '',
+					visitor,
+					agent,
 				});
 				return messages.map((message) => mapMessageFromApi(message));
 			}
