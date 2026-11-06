@@ -43,7 +43,7 @@ export const createMessageSettings = () =>
 			await this.add('Message_AudioRecorderEnabled', true, {
 				type: 'boolean',
 				public: true,
-				i18nDescription: 'Message_AudioRecorderEnabledDescription',
+				i18nDescription: 'Message_AudioRecorderEnabled_Description',
 			});
 			await this.add('Message_Audio_bitRate', 32, {
 				type: 'int',
