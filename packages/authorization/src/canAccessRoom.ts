@@ -4,7 +4,7 @@ import { TeamType, AbacAccessOperation, AbacObjectType } from '@rocket.chat/core
 import type { IUser, ITeam, IRoom } from '@rocket.chat/core-typings';
 import { Subscriptions, Rooms, TeamMember, Team, Users } from '@rocket.chat/models';
 
-import { canAccessRoomLivechat } from './canAccessRoomLivechat';
+import { canAccessRoomLivechat } from './canAccessRoomLivechat.js';
 
 async function canAccessPublicRoom(user?: IUser): Promise<boolean> {
 	if (!user?._id) {

@@ -1,11 +1,11 @@
-import type { AuthorizationUtils as AuthorizationUtilsType } from './AuthorizationUtils';
+import type { AuthorizationUtils as AuthorizationUtilsType } from './AuthorizationUtils.js';
 
 describe('AuthorizationUtils', () => {
 	let AuthorizationUtils: typeof AuthorizationUtilsType;
 
 	beforeEach(async () => {
 		jest.resetModules();
-		({ AuthorizationUtils } = await import('./AuthorizationUtils'));
+		({ AuthorizationUtils } = await import('./AuthorizationUtils.js'));
 	});
 
 	describe('addRolePermissionWhiteList', () => {
