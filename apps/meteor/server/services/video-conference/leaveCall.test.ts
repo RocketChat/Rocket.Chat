@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, it } from 'node:test';
 
 import type { IVideoConferenceUser, VideoConference } from '@rocket.chat/core-typings';
 import { VideoConferenceStatus } from '@rocket.chat/core-typings';
+import { fakeCursor } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
@@ -39,7 +40,7 @@ const VideoConferenceModelMock = {
 	setStatusById: sinon.stub().callsFake(async (_callId: string, status: VideoConference['status']) => {
 		fixture.status = status;
 	}),
-	find: sinon.stub().returns({ toArray: async () => [] }),
+	find: sinon.stub(),
 	addMemberById: sinon.stub().resolves(),
 	setUserJoinedById: sinon.stub().resolves(),
 };
@@ -58,16 +59,10 @@ const VideoConfService = createService({
 		// A room with another member in it, so a broadcast the service should NOT send room-wide has somebody
 		// it would demonstrably reach.
 		Subscriptions: {
-			findByRoomIdAndNotUserId: sinon.stub().returns({
-				toArray: sinon.stub().resolves([{ u: { _id: 'other' } }]),
-				forEach: (cb: (subscription: { u: { _id: string } }) => void) => {
-					cb({ u: { _id: 'other' } });
-					return Promise.resolve();
-				},
-			}),
+			findByRoomIdAndNotUserId: sinon.stub().returns(fakeCursor([{ u: { _id: 'other' } }])),
 			// The same room read as a list, which is how the end-of-call broadcast asks for it: it adds the call's
 			// own members to these, and a member with no subscription here is the case that needs the union.
-			findByRoomId: sinon.stub().returns({ toArray: sinon.stub().resolves([{ u: { _id: 'other' } }]) }),
+			findByRoomId: sinon.stub().returns(fakeCursor([{ u: { _id: 'other' } }])),
 		},
 	},
 	// This suite is about what happens when a call empties, so the ringing the service would otherwise do on a
@@ -331,7 +326,7 @@ describe('VideoConfService one call at a time', () => {
 	/** `other` is a call this user is in, alongside the `wanted` one they are about to join. */
 	const joinWhileIn = async (other: VideoConference) => {
 		calls = { wanted: buildGroupCall([buildMember({ _id: 'host' })], { _id: 'wanted' }), [other._id]: other };
-		VideoConferenceModelMock.find.returns({ toArray: async () => [other] });
+		VideoConferenceModelMock.find.returns(fakeCursor([other]));
 
 		await service.addUser('wanted', 'joiner');
 	};

@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, it } from 'node:test';
 
 import type { IDirectVideoConference, IVideoConferenceUser, VideoConference } from '@rocket.chat/core-typings';
 import { isInVideoConference, VideoConferenceStatus, VIDEO_CONF_RINGING_WINDOW_MS } from '@rocket.chat/core-typings';
+import { fakeCursor } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
@@ -45,7 +46,7 @@ const VideoConferenceModelMock = {
 	}),
 	setUserJoinedById: sinon.stub().resolves(),
 	setStatusById: sinon.stub().resolves(),
-	find: sinon.stub().returns({ toArray: async () => [] }),
+	find: sinon.stub().returns(fakeCursor([])),
 };
 
 // `notifyUsersAddedToConference` reads the adder and the rung members straight off `Users` and broadcasts a
@@ -53,7 +54,7 @@ const VideoConferenceModelMock = {
 // something shaped like a real user.
 const UsersMock = {
 	findOneById: sinon.stub().resolves({ _id: 'caller', username: 'caller.user', name: 'Caller User' }),
-	find: sinon.stub().returns({ toArray: sinon.stub().resolves([]) }),
+	find: sinon.stub(),
 };
 
 const broadcastStub = sinon.stub().resolves();
@@ -100,7 +101,7 @@ beforeEach(() => {
 		fixture.users.push({ ...member, joined: false });
 	});
 	UsersMock.findOneById.resolves({ _id: 'caller', username: 'caller.user', name: 'Caller User' });
-	UsersMock.find.returns({ toArray: sinon.stub().resolves([]) });
+	UsersMock.find.returns(fakeCursor([]));
 	broadcastStub.resolves();
 });
 
@@ -215,7 +216,7 @@ describe('VideoConfService.addMembers', () => {
 	it('registers each named user as a member without marking them present, and returns the ids added', async () => {
 		fixture = buildGroupCall([buildMember({ _id: 'caller' })]);
 		const newUsers = [buildUser('newUser1'), buildUser('newUser2')];
-		UsersMock.find.returns({ toArray: sinon.stub().resolves(newUsers) });
+		UsersMock.find.returns(fakeCursor(newUsers));
 
 		const result = await service.addMembers('caller', 'call1', ['newUser1.user', 'newUser2.user']);
 
@@ -237,7 +238,7 @@ describe('VideoConfService.addMembers', () => {
 			buildMember({ _id: 'caller' }),
 			buildMember({ _id: 'already', joined: true, joinedAt: existingJoinedAt, declined: true }),
 		]);
-		UsersMock.find.returns({ toArray: sinon.stub().resolves([buildUser('already')]) });
+		UsersMock.find.returns(fakeCursor([buildUser('already')]));
 
 		const result = await service.addMembers('caller', 'call1', ['already.user']);
 
@@ -253,7 +254,7 @@ describe('VideoConfService.addMembers', () => {
 	it('rings everyone actually added', async () => {
 		fixture = buildGroupCall([buildMember({ _id: 'caller' })]);
 		const newUsers = [buildUser('newUser1'), buildUser('newUser2')];
-		UsersMock.find.returns({ toArray: sinon.stub().resolves(newUsers) });
+		UsersMock.find.returns(fakeCursor(newUsers));
 
 		const result = await service.addMembers('caller', 'call1', ['newUser1.user', 'newUser2.user']);
 
@@ -264,7 +265,7 @@ describe('VideoConfService.addMembers', () => {
 	// A finished call is not something to add people to — and certainly not something to ring them into.
 	it('adds nobody and rings nobody on a conference that has already ended', async () => {
 		fixture = buildGroupCall([buildMember({ _id: 'caller' })], { endedAt: new Date('2026-01-01T01:00:00.000Z') });
-		UsersMock.find.returns({ toArray: sinon.stub().resolves([buildUser('newUser1')]) });
+		UsersMock.find.returns(fakeCursor([buildUser('newUser1')]));
 
 		const result = await service.addMembers('caller', 'call1', ['newUser1.user']);
 
@@ -276,7 +277,7 @@ describe('VideoConfService.addMembers', () => {
 	// Nobody was actually added (every requested user was already a member) — there is nobody new to ring.
 	it('rings nobody when nobody was added', async () => {
 		fixture = buildGroupCall([buildMember({ _id: 'caller' }), buildMember({ _id: 'already' })]);
-		UsersMock.find.returns({ toArray: sinon.stub().resolves([buildUser('already')]) });
+		UsersMock.find.returns(fakeCursor([buildUser('already')]));
 
 		const result = await service.addMembers('caller', 'call1', ['already.user']);
 
@@ -289,7 +290,7 @@ describe('VideoConfService.addMembers', () => {
 	it('sends a silent desktop notification with no room name for each added member', async () => {
 		fixture = buildGroupCall([buildMember({ _id: 'caller' })]);
 		const newUsers = [buildUser('newUser1')];
-		UsersMock.find.returns({ toArray: sinon.stub().resolves(newUsers) });
+		UsersMock.find.returns(fakeCursor(newUsers));
 		UsersMock.findOneById.resolves({ _id: 'caller', username: 'caller.user', name: 'Caller User' });
 
 		await service.addMembers('caller', 'call1', ['newUser1.user']);

@@ -27,7 +27,6 @@ const { VideoConfService } = proxyquire.noCallThru().load('./service', {
 		VideoConference: { findOneById: sinon.stub().resolves(null) },
 		Rooms: { findOneById: sinon.stub().resolves({ _id: 'room1', t: 'c', name: 'general', fname: 'general' }) },
 		Messages: { setBlocksById: sinon.stub().resolves() },
-		Subscriptions: { findByRoomId: sinon.stub().returns({ toArray: sinon.stub().resolves([]) }) },
 	},
 	'../../lib/messages/sendMessage': { sendMessage: sendMessageStub },
 	'../../settings': { settings: { get: (key: string) => settingsValues[key] } },

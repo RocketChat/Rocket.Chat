@@ -1,6 +1,6 @@
 import { UserStatus, type IUserSession, type IUserSessionConnection } from '@rocket.chat/core-typings';
 import { registerModel } from '@rocket.chat/models';
-import type { FindCursor, WithId } from 'mongodb';
+import { fakeCursor } from '@rocket.chat/models/testing';
 
 import { PresenceReaper } from './PresenceReaper';
 
@@ -30,17 +30,6 @@ const createDates = () => {
 	return { now, stale, active, cutoff };
 };
 
-const createCursor = (documents: WithId<IUserSession>[]): FindCursor<WithId<IUserSession>> => {
-	let index = 0;
-	return {
-		async *[Symbol.asyncIterator]() {
-			while (index < documents.length) {
-				yield documents[index++];
-			}
-		},
-	} as FindCursor<WithId<IUserSession>>;
-};
-
 describe('PresenceReaper', () => {
 	let reaper: PresenceReaper;
 	const bulkWriteMock = jest.fn();
@@ -66,7 +55,7 @@ describe('PresenceReaper', () => {
 	});
 
 	it('should not call onUpdate when there no connections', async () => {
-		findMock.mockReturnValue(createCursor([]));
+		findMock.mockReturnValue(fakeCursor([]));
 
 		await reaper.run();
 
@@ -77,7 +66,7 @@ describe('PresenceReaper', () => {
 		const { stale } = createDates();
 
 		findMock.mockReturnValue(
-			createCursor([
+			fakeCursor([
 				createSession({
 					_id: 'user-789',
 					connections: [createConnection({ _updatedAt: stale })],
@@ -95,7 +84,7 @@ describe('PresenceReaper', () => {
 		const { stale } = createDates();
 
 		findMock.mockReturnValue(
-			createCursor([
+			fakeCursor([
 				createSession({
 					_id: 'user-1',
 					connections: [createConnection({ _updatedAt: stale })],
@@ -124,7 +113,7 @@ describe('PresenceReaper', () => {
 		const { stale, active } = createDates();
 
 		findMock.mockReturnValue(
-			createCursor([
+			fakeCursor([
 				createSession({
 					_id: 'no-connections',
 					connections: [],

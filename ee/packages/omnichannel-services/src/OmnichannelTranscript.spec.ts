@@ -43,11 +43,6 @@ jest.mock('@rocket.chat/models', () => ({
 	LivechatRooms: {
 		findOneById: jest.fn().mockResolvedValue({}),
 	},
-	Messages: {
-		findLivechatMessagesWithoutTypes: jest.fn().mockReturnValue({
-			toArray: jest.fn().mockResolvedValue([]),
-		}),
-	},
 	Uploads: {
 		findOneById: jest.fn().mockResolvedValue({}),
 	},

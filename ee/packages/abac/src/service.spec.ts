@@ -1,4 +1,5 @@
 import type { AbacRoomAttributesGrant, AbacRoomMembershipPreviewPage } from '@rocket.chat/core-services';
+import { fakeCursor } from '@rocket.chat/models/testing';
 
 import { Audit } from './audit';
 import { VirtruClient } from './clients/virtru/VirtruClient';
@@ -606,8 +607,6 @@ describe('AbacService (unit)', () => {
 			mockAbacFind.mockReset();
 			mockFindOneByIdAndType.mockReset();
 			mockRoomsIsAbacAttributeInUse.mockReset();
-			// Provide a default empty cursor so AbacAttributes.find always returns an object with toArray
-			mockAbacFind.mockReturnValue({ toArray: async () => [] });
 			// Prevent the protected hook from throwing
 			(service as any).onRoomAttributesChanged = jest.fn().mockResolvedValue(undefined);
 		});
@@ -622,7 +621,7 @@ describe('AbacService (unit)', () => {
 
 		it('accepts a default room', async () => {
 			mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: [], default: true });
-			mockAbacFind.mockReturnValueOnce({ toArray: async () => [{ key: 'dept', values: ['eng'] }] });
+			mockAbacFind.mockReturnValueOnce(fakeCursor([{ key: 'dept', values: ['eng'] }]));
 
 			await service.setRoomAbacAttributes('r1', { dept: ['eng'] }, fakeActor, 'manage-abac-admin-rooms');
 
@@ -650,9 +649,9 @@ describe('AbacService (unit)', () => {
 					{ key: 'region', values: ['emea', 'apac'] },
 					{ key: 'clearance', values: ['secret'] },
 				];
-				mockAbacFind.mockImplementation(({ key }: { key: { $in: string[] } }) => ({
-					toArray: async () => definitions.filter((definition) => key.$in.includes(definition.key)),
-				}));
+				mockAbacFind.mockImplementation(({ key }: { key: { $in: string[] } }) =>
+					fakeCursor(definitions.filter((definition) => key.$in.includes(definition.key))),
+				);
 				mockFindOneByIdAndType.mockResolvedValue(room);
 			});
 
@@ -745,7 +744,7 @@ describe('AbacService (unit)', () => {
 				mockHasPermission.mockReset().mockResolvedValue(false);
 				service.setPdpStrategy('local', true);
 				(service as any).onRoomAttributesChanged = jest.fn().mockResolvedValue(undefined);
-				mockAbacFind.mockReturnValue({ toArray: async () => [{ key: 'dept', values: ['eng', 'sales', 'ops'] }] });
+				mockAbacFind.mockReturnValue(fakeCursor([{ key: 'dept', values: ['eng', 'sales', 'ops'] }]));
 				mockFindOneByIdAndType.mockResolvedValue({ _id: 'r1', abacAttributes: [{ key: 'dept', values: ['ops'] }] });
 				mockUsersFindOneById.mockResolvedValue({ abacAttributes: [{ key: 'dept', values: ['eng'] }] });
 			});
@@ -797,7 +796,7 @@ describe('AbacService (unit)', () => {
 
 		it('accepts a team default room', async () => {
 			mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: [], teamDefault: true });
-			mockAbacFind.mockReturnValueOnce({ toArray: async () => [{ key: 'dept', values: ['eng'] }] });
+			mockAbacFind.mockReturnValueOnce(fakeCursor([{ key: 'dept', values: ['eng'] }]));
 
 			await service.setRoomAbacAttributes('r1', { dept: ['eng'] }, fakeActor, 'manage-abac-admin-rooms');
 
@@ -823,7 +822,7 @@ describe('AbacService (unit)', () => {
 		it('throws error-attribute-definition-not-found when definition for key missing', async () => {
 			mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: [] });
 			// Return empty list so size mismatch triggers not-found
-			mockAbacFind.mockReturnValueOnce({ toArray: async () => [] });
+			mockAbacFind.mockReturnValueOnce(fakeCursor([]));
 			await expect(service.setRoomAbacAttributes('r1', { dept: ['eng'] }, fakeActor, 'manage-abac-admin-rooms')).rejects.toThrow(
 				'error-attribute-definition-not-found',
 			);
@@ -832,9 +831,7 @@ describe('AbacService (unit)', () => {
 
 		it('throws error-invalid-attribute-values when a provided value not in definition', async () => {
 			mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: [] });
-			mockAbacFind.mockReturnValueOnce({
-				toArray: async () => [{ key: 'dept', values: ['eng'] }], // 'sales' not allowed
-			});
+			mockAbacFind.mockReturnValueOnce(fakeCursor([{ key: 'dept', values: ['eng'] }])); // 'sales' not allowed
 			await expect(service.setRoomAbacAttributes('r1', { dept: ['eng', 'sales'] }, fakeActor, 'manage-abac-admin-rooms')).rejects.toThrow(
 				'error-invalid-attribute-values',
 			);
@@ -843,9 +840,7 @@ describe('AbacService (unit)', () => {
 
 		it('does not call onroomattributechanged when the change is a duplicated attribute value', async () => {
 			mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: [{ key: 'dept', values: ['eng', 'sales'] }] });
-			mockAbacFind.mockReturnValueOnce({
-				toArray: async () => [{ key: 'dept', values: ['eng', 'sales'] }],
-			});
+			mockAbacFind.mockReturnValueOnce(fakeCursor([{ key: 'dept', values: ['eng', 'sales'] }]));
 
 			await service.setRoomAbacAttributes('r1', { dept: ['eng', 'eng', 'sales'] }, fakeActor, 'manage-abac-admin-rooms');
 
@@ -855,9 +850,7 @@ describe('AbacService (unit)', () => {
 		it('does not call onRoomAttributesChanged when an existing value is removed', async () => {
 			const existing = [{ key: 'dept', values: ['eng', 'sales'] }];
 			mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: existing });
-			mockAbacFind.mockReturnValueOnce({
-				toArray: async () => [{ key: 'dept', values: ['eng', 'sales'] }],
-			});
+			mockAbacFind.mockReturnValueOnce(fakeCursor([{ key: 'dept', values: ['eng', 'sales'] }]));
 
 			await service.setRoomAbacAttributes('r1', { dept: ['eng'] }, fakeActor, 'manage-abac-admin-rooms'); // removing 'sales'
 
@@ -868,9 +861,7 @@ describe('AbacService (unit)', () => {
 		it('calls onRoomAttributesChanged when a value is removed and the PDP evaluates removals', async () => {
 			evaluateRemovalsToo();
 			mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: [{ key: 'dept', values: ['eng', 'sales'] }] });
-			mockAbacFind.mockReturnValueOnce({
-				toArray: async () => [{ key: 'dept', values: ['eng', 'sales'] }],
-			});
+			mockAbacFind.mockReturnValueOnce(fakeCursor([{ key: 'dept', values: ['eng', 'sales'] }]));
 
 			await service.setRoomAbacAttributes('r1', { dept: ['eng'] }, fakeActor, 'manage-abac-admin-rooms');
 
@@ -884,9 +875,7 @@ describe('AbacService (unit)', () => {
 		it('calls onRoomAttributesChanged when adding values to an existing attribute', async () => {
 			const existing = [{ key: 'dept', values: ['eng'] }];
 			mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: existing });
-			mockAbacFind.mockReturnValueOnce({
-				toArray: async () => [{ key: 'dept', values: ['eng', 'sales'] }],
-			});
+			mockAbacFind.mockReturnValueOnce(fakeCursor([{ key: 'dept', values: ['eng', 'sales'] }]));
 
 			await service.setRoomAbacAttributes('r1', { dept: ['eng', 'sales'] }, fakeActor, 'manage-abac-admin-rooms'); // adding sales
 
@@ -984,7 +973,7 @@ describe('AbacService (unit)', () => {
 			mockAbacFind.mockReset();
 			(service as any).onRoomAttributesChanged = jest.fn().mockResolvedValue(undefined);
 			// default definition cursor
-			mockAbacFind.mockReturnValue({ toArray: async () => [{ key: 'dept', values: ['eng', 'sales', 'hr'] }] });
+			mockAbacFind.mockReturnValue(fakeCursor([{ key: 'dept', values: ['eng', 'sales', 'hr'] }]));
 		});
 
 		it('throws error-room-not-found if room missing', async () => {
@@ -1047,7 +1036,7 @@ describe('AbacService (unit)', () => {
 		});
 
 		it('validates against global definitions (invalid value)', async () => {
-			mockAbacFind.mockReturnValueOnce({ toArray: async () => [{ key: 'dept', values: ['eng'] }] });
+			mockAbacFind.mockReturnValueOnce(fakeCursor([{ key: 'dept', values: ['eng'] }]));
 			mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: [] });
 			await expect(service.updateRoomAbacAttributeValues('r1', 'dept', ['eng', 'sales'], fakeActor)).rejects.toThrow(
 				'error-invalid-attribute-values',
@@ -1130,7 +1119,7 @@ describe('AbacService (unit)', () => {
 			mockAbacFind.mockReset();
 			(service as any).onRoomAttributesChanged = jest.fn().mockResolvedValue(undefined);
 			// default attribute definitions
-			mockAbacFind.mockReturnValue({ toArray: async () => [{ key: 'dept', values: ['eng', 'sales', 'hr'] }] });
+			mockAbacFind.mockReturnValue(fakeCursor([{ key: 'dept', values: ['eng', 'sales', 'hr'] }]));
 		});
 
 		it('throws error-invalid-attribute-values when more than 10 values provided', async () => {
@@ -1217,7 +1206,7 @@ describe('AbacService (unit)', () => {
 
 		it('validates definitions and rejects invalid value', async () => {
 			// Only 'eng' allowed for dept
-			mockAbacFind.mockReturnValueOnce({ toArray: async () => [{ key: 'dept', values: ['eng'] }] });
+			mockAbacFind.mockReturnValueOnce(fakeCursor([{ key: 'dept', values: ['eng'] }]));
 			mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: [] });
 
 			await expect((service as any).replaceRoomAbacAttributeByKey('r1', 'dept', ['eng', 'sales'], fakeActor)).rejects.toThrow(
@@ -1238,7 +1227,7 @@ describe('AbacService (unit)', () => {
 
 		it('throws error-room-not-found when room does not exist', async () => {
 			// Ensure definitions exist to pass definition check, but room missing
-			mockAbacFind.mockReturnValueOnce({ toArray: async () => [{ key: 'dept', values: ['eng'] }] });
+			mockAbacFind.mockReturnValueOnce(fakeCursor([{ key: 'dept', values: ['eng'] }]));
 			mockFindOneByIdAndType.mockResolvedValueOnce(null);
 			await expect(service.addRoomAbacAttributeByKey('missing', 'dept', ['eng'], fakeActor)).rejects.toThrow('error-room-not-found');
 			expect(mockInsertAbacAttributeIfNotExistsById).not.toHaveBeenCalled();
@@ -1246,7 +1235,7 @@ describe('AbacService (unit)', () => {
 
 		it('throws error-attribute-definition-not-found when attribute definition missing', async () => {
 			// No definitions returned
-			mockAbacFind.mockReturnValueOnce({ toArray: async () => [] });
+			mockAbacFind.mockReturnValueOnce(fakeCursor([]));
 			mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: [] });
 			await expect(service.addRoomAbacAttributeByKey('r1', 'dept', ['eng'], fakeActor)).rejects.toThrow(
 				'error-attribute-definition-not-found',
@@ -1255,7 +1244,7 @@ describe('AbacService (unit)', () => {
 		});
 
 		it('throws error-duplicate-attribute-key when key already exists in room', async () => {
-			mockAbacFind.mockReturnValueOnce({ toArray: async () => [{ key: 'dept', values: ['eng', 'sales'] }] });
+			mockAbacFind.mockReturnValueOnce(fakeCursor([{ key: 'dept', values: ['eng', 'sales'] }]));
 			mockFindOneByIdAndType.mockResolvedValueOnce({
 				_id: 'r1',
 				abacAttributes: [{ key: 'dept', values: ['eng'] }],
@@ -1266,7 +1255,7 @@ describe('AbacService (unit)', () => {
 
 		it('throws error-invalid-attribute-values when room already has 10 attributes', async () => {
 			const existing = Array.from({ length: 10 }, (_, i) => ({ key: `k${i}`, values: ['x'] }));
-			mockAbacFind.mockReturnValueOnce({ toArray: async () => [{ key: 'dept', values: ['eng'] }] });
+			mockAbacFind.mockReturnValueOnce(fakeCursor([{ key: 'dept', values: ['eng'] }]));
 			mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: existing });
 			await expect(service.addRoomAbacAttributeByKey('r1', 'dept', ['eng'], fakeActor)).rejects.toThrow('error-invalid-attribute-values');
 			expect(mockInsertAbacAttributeIfNotExistsById).not.toHaveBeenCalled();
@@ -1275,7 +1264,7 @@ describe('AbacService (unit)', () => {
 		it('inserts new attribute and calls hook with DB returned document', async () => {
 			const existing = [{ key: 'other', values: ['x'] }];
 			const updatedDoc = { abacAttributes: [...existing, { key: 'dept', values: ['eng', 'sales'] }] };
-			mockAbacFind.mockReturnValueOnce({ toArray: async () => [{ key: 'dept', values: ['eng', 'sales'] }] });
+			mockAbacFind.mockReturnValueOnce(fakeCursor([{ key: 'dept', values: ['eng', 'sales'] }]));
 			mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: existing });
 			mockInsertAbacAttributeIfNotExistsById.mockResolvedValueOnce(updatedDoc);
 
@@ -1291,7 +1280,7 @@ describe('AbacService (unit)', () => {
 
 		it('inserts new attribute and calls hook with constructed list when DB returns undefined', async () => {
 			const existing = [{ key: 'other', values: ['x'] }];
-			mockAbacFind.mockReturnValueOnce({ toArray: async () => [{ key: 'dept', values: ['eng'] }] });
+			mockAbacFind.mockReturnValueOnce(fakeCursor([{ key: 'dept', values: ['eng'] }]));
 			mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: existing });
 			mockInsertAbacAttributeIfNotExistsById.mockResolvedValueOnce(undefined);
 
@@ -1306,7 +1295,7 @@ describe('AbacService (unit)', () => {
 		});
 
 		it('rejects when provided value not allowed by definition', async () => {
-			mockAbacFind.mockReturnValueOnce({ toArray: async () => [{ key: 'dept', values: ['eng'] }] });
+			mockAbacFind.mockReturnValueOnce(fakeCursor([{ key: 'dept', values: ['eng'] }]));
 			mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: [] });
 			await expect(service.addRoomAbacAttributeByKey('r1', 'dept', ['eng', 'sales'], fakeActor)).rejects.toThrow(
 				'error-invalid-attribute-values',
@@ -1347,7 +1336,6 @@ describe('AbacService (unit)', () => {
 				],
 			});
 			mockCreateAuditServerEvent.mockReset();
-			mockAbacFind.mockReturnValue({ toArray: async () => [{ key: 'dept', values: ['eng', 'sales'] }] });
 			(service as any).onRoomAttributesChanged = jest.fn().mockResolvedValue(undefined);
 			(service as any).attributeStores.local.store = makeStore();
 		});
@@ -1453,19 +1441,19 @@ describe('AbacService (unit)', () => {
 		beforeEach(() => {
 			mockHasPermission.mockReset().mockResolvedValue(false);
 			mockUsersFindOneById.mockReset();
-			mockAbacFind.mockReturnValue({ toArray: async () => [{ key: 'dept', values: ['eng', 'sales'] }] });
+			mockAbacFind.mockReturnValue(fakeCursor([{ key: 'dept', values: ['eng', 'sales'] }]));
 			service.setPdpStrategy('local', true);
 			(service as any).attributeStores.local.store = makeStore();
 		});
 
 		describe('under the local PDP', () => {
 			it('names every attribute and only the values the actor does not hold', async () => {
-				mockAbacFind.mockReturnValue({
-					toArray: async () => [
+				mockAbacFind.mockReturnValue(
+					fakeCursor([
 						{ key: 'dept', values: ['eng', 'sales'] },
 						{ key: 'region', values: ['emea', 'apac'] },
-					],
-				});
+					]),
+				);
 				holding({ dept: ['eng'], region: ['emea'] });
 
 				await expect(
@@ -1752,7 +1740,7 @@ describe('AbacService (unit)', () => {
 		beforeEach(() => {
 			mockHasPermission.mockReset().mockResolvedValue(false);
 			mockUsersFindOneById.mockReset();
-			mockAbacFindAll.mockReset().mockReturnValue({ toArray: async () => definitions });
+			mockAbacFindAll.mockReset().mockReturnValue(fakeCursor(definitions));
 			service.setPdpStrategy('local', true);
 		});
 
@@ -1974,9 +1962,9 @@ describe('AbacService (unit)', () => {
 		};
 
 		beforeEach(() => {
-			mockAbacFind.mockReturnValue({ toArray: async () => [{ key: 'dept', values: ['eng', 'sales'] }] });
+			mockAbacFind.mockReturnValue(fakeCursor([{ key: 'dept', values: ['eng', 'sales'] }]));
 			mockUsersFindOneById.mockReset().mockResolvedValue(creator);
-			mockUsersFindUsersByUsernames.mockReset().mockReturnValue({ toArray: async () => [alice, bob] });
+			mockUsersFindUsersByUsernames.mockReset().mockReturnValue(fakeCursor([alice, bob]));
 			mockHasPermission.mockReset().mockResolvedValue(false);
 		});
 
@@ -2043,7 +2031,7 @@ describe('AbacService (unit)', () => {
 			const evaluate = usePdp(jest.fn());
 			mockUsersFindUsersByUsernames.mockImplementation(() => {
 				(service as any).pdp = null;
-				return { toArray: async () => [alice] };
+				return fakeCursor([alice]);
 			});
 
 			await expect(service.previewCreationMembers(['alice'], attributes, fakeActor, joining)).resolves.toEqual({
@@ -2138,11 +2126,11 @@ describe('AbacService (unit)', () => {
 
 		beforeEach(() => {
 			mockFindOneByIdAndType.mockResolvedValue(room);
-			mockAbacFind.mockReturnValue({ toArray: async () => [{ key: 'dept', values: ['eng', 'sales', 'ops'] }] });
+			mockAbacFind.mockReturnValue(fakeCursor([{ key: 'dept', values: ['eng', 'sales', 'ops'] }]));
 			mockHasPermission.mockReset().mockResolvedValue(false);
 			mockUsersFindOneByIdAndRoomId.mockReset().mockResolvedValue(null);
-			mockSubscriptionsFindByRoomIdAndUserIds.mockReset().mockReturnValue({ toArray: async () => [] });
-			mockUsersFindActiveByRoomIdAfterUsername.mockReset().mockReturnValue({ toArray: async () => [alice] });
+			mockSubscriptionsFindByRoomIdAndUserIds.mockReset().mockReturnValue(fakeCursor([]));
+			mockUsersFindActiveByRoomIdAfterUsername.mockReset().mockReturnValue(fakeCursor([alice]));
 			mockUsersCountActiveByRoomIdAfterUsername.mockReset().mockResolvedValue(9);
 		});
 
@@ -2157,7 +2145,7 @@ describe('AbacService (unit)', () => {
 		});
 
 		it("attaches each listed member's room roles, from one lookup for the page", async () => {
-			mockSubscriptionsFindByRoomIdAndUserIds.mockReturnValue({ toArray: async () => [{ u: { _id: 'alice' }, roles: ['owner'] }] });
+			mockSubscriptionsFindByRoomIdAndUserIds.mockReturnValue(fakeCursor([{ u: { _id: 'alice' }, roles: ['owner'] }]));
 			usePdp();
 
 			const preview = await previewAs(adding);
@@ -2168,7 +2156,7 @@ describe('AbacService (unit)', () => {
 		});
 
 		it('leaves roles out for members who hold none, and skips the lookup for an empty page', async () => {
-			mockSubscriptionsFindByRoomIdAndUserIds.mockReturnValue({ toArray: async () => [{ u: { _id: 'alice' }, roles: [] }] });
+			mockSubscriptionsFindByRoomIdAndUserIds.mockReturnValue(fakeCursor([{ u: { _id: 'alice' }, roles: [] }]));
 			const { previewRoomMembers } = usePdp();
 
 			expect((await previewAs(adding)).members[0]).not.toHaveProperty('roles');
@@ -2328,11 +2316,7 @@ describe('AbacService (unit)', () => {
 
 		it('resolves when all provided usernames are compliant (query returns empty)', async () => {
 			const usernames = ['alice', 'bob'];
-			mockUsersFind.mockImplementationOnce(() => ({
-				map: () => ({
-					toArray: async () => [],
-				}),
-			}));
+			mockUsersFind.mockImplementationOnce(() => fakeCursor([]));
 
 			await expect(
 				service.checkUsernamesMatchAttributes(usernames, attributes as any, { _id: 'xxxxx', name: 'name' } as any),
@@ -2361,11 +2345,7 @@ describe('AbacService (unit)', () => {
 		it('rejects with error-only-compliant-users-can-be-added-to-abac-rooms and details for non-compliant users', async () => {
 			const usernames = ['alice', 'bob', 'charlie'];
 			const nonCompliantDocs = [{ username: 'bob' }, { username: 'charlie' }];
-			mockUsersFind.mockImplementationOnce(() => ({
-				map: (fn: (u: any) => string) => ({
-					toArray: async () => nonCompliantDocs.map(fn),
-				}),
-			}));
+			mockUsersFind.mockImplementationOnce(() => fakeCursor(nonCompliantDocs));
 
 			await expect(
 				service.checkUsernamesMatchAttributes(usernames, attributes as any, { _id: 'xxxxx', name: 'name' } as any),
@@ -2377,11 +2357,7 @@ describe('AbacService (unit)', () => {
 		it('generates an audit log for every compliant username', async () => {
 			const usernames = ['alice', 'bob'];
 
-			mockUsersFind.mockImplementationOnce(() => ({
-				map: () => ({
-					toArray: async () => [],
-				}),
-			}));
+			mockUsersFind.mockImplementationOnce(() => fakeCursor([]));
 
 			await expect(
 				service.checkUsernamesMatchAttributes(usernames, attributes as any, { _id: 'xxxxx', name: 'name' } as any),
@@ -2396,11 +2372,7 @@ describe('AbacService (unit)', () => {
 			const usernames = ['alice', 'bob', 'charlie'];
 			const nonCompliantDocs = [{ username: 'alice' }, { username: 'bob' }, { username: 'charlie' }];
 
-			mockUsersFind.mockImplementationOnce(() => ({
-				map: (fn: (u: any) => string) => ({
-					toArray: async () => nonCompliantDocs.map(fn),
-				}),
-			}));
+			mockUsersFind.mockImplementationOnce(() => fakeCursor(nonCompliantDocs));
 
 			await expect(
 				service.checkUsernamesMatchAttributes(usernames, attributes as any, { _id: 'xxxxx', name: 'name' } as any),
@@ -2482,10 +2454,8 @@ describe('AbacService (unit)', () => {
 		describe('evaluateRoomMembership', () => {
 			it('swallows the PDP error and removes nobody', async () => {
 				const pdp = usePdp({ evaluateUserRooms: jest.fn().mockRejectedValue(new Error('virtru down')) });
-				mockRoomsFindAllPrivateAbac.mockReturnValue({ toArray: async () => [room] });
-				mockUsersFindActiveByRoomIds.mockReturnValue({
-					map: (fn: (u: any) => any) => ({ toArray: async () => [{ _id: 'u1', __rooms: ['r1'] }].map(fn) }),
-				});
+				mockRoomsFindAllPrivateAbac.mockReturnValue(fakeCursor([room]));
+				mockUsersFindActiveByRoomIds.mockReturnValue(fakeCursor([{ _id: 'u1', __rooms: ['r1'] }]));
 
 				await expect(service.evaluateRoomMembership()).resolves.toBeUndefined();
 				expect(pdp.evaluateUserRooms).toHaveBeenCalled();
@@ -2527,7 +2497,7 @@ describe('AbacService (unit)', () => {
 			];
 
 			beforeEach(() => {
-				mockUsersFindByIds.mockReturnValue({ toArray: async () => subjects });
+				mockUsersFindByIds.mockReturnValue(fakeCursor(subjects));
 			});
 
 			it('admits every user to a room without attributes, without asking the PDP', async () => {
@@ -2610,12 +2580,12 @@ describe('AbacService (unit)', () => {
 			const unavailable = { allowed: false, reason: 'unavailable', code: 'error-pdp-unavailable' };
 
 			beforeEach(() => {
-				mockUsersFindByIds.mockReturnValue({
-					toArray: async () => [
+				mockUsersFindByIds.mockReturnValue(
+					fakeCursor([
 						{ _id: 'u1', username: 'alice' },
 						{ _id: 'u2', username: 'bob' },
-					],
-				});
+					]),
+				);
 			});
 
 			it('returns the compliant users as a decision', async () => {
@@ -2806,7 +2776,7 @@ describe('AbacService (unit)', () => {
 
 		it('calls Rooms.findPaginated with the base query and pagination, ignoring actor', async () => {
 			mockRoomsFindPaginated.mockReturnValue({
-				cursor: { toArray: async () => [roomA] },
+				cursor: fakeCursor([roomA]),
 				totalCount: Promise.resolve(1),
 			});
 
@@ -2820,7 +2790,7 @@ describe('AbacService (unit)', () => {
 
 		it('local mode: returns rooms byte-identical to the Mongo page (identity pass-through)', async () => {
 			mockRoomsFindPaginated.mockReturnValue({
-				cursor: { toArray: async () => [roomA, roomB] },
+				cursor: fakeCursor([roomA, roomB]),
 				totalCount: Promise.resolve(2),
 			});
 
@@ -2846,7 +2816,7 @@ describe('AbacService (unit)', () => {
 			(service as any).attributeStores.virtru.store = fakeStore;
 
 			mockRoomsFindPaginated.mockReturnValue({
-				cursor: { toArray: async () => [roomA, roomB, roomC] },
+				cursor: fakeCursor([roomA, roomB, roomC]),
 				totalCount: Promise.resolve(10),
 			});
 
@@ -2880,7 +2850,7 @@ describe('AbacService (unit)', () => {
 			(service as any).attributeStores.virtru.store = fakeStore;
 
 			mockRoomsFindPaginated.mockReturnValue({
-				cursor: { toArray: async () => ordered },
+				cursor: fakeCursor(ordered),
 				totalCount: Promise.resolve(3),
 			});
 
@@ -2897,7 +2867,7 @@ describe('AbacService (unit)', () => {
 			(service as any).attributeStores.virtru.store = fakeStore;
 
 			mockRoomsFindPaginated.mockReturnValue({
-				cursor: { toArray: async () => [roomA] },
+				cursor: fakeCursor([roomA]),
 				totalCount: Promise.resolve(99),
 			});
 
@@ -3447,11 +3417,9 @@ describe('AbacService (unit)', () => {
 	});
 
 	describe('reevaluateUsers', () => {
-		const usersCursor = (items: any[]) => ({ toArray: () => Promise.resolve(items) });
-
 		it('local PDP: forwards resolved user ids to the LDAP broker and removes nothing', async () => {
 			service.setPdpStrategy('local');
-			mockUsersFindUsersByIdentifiers.mockReturnValue(usersCursor([{ _id: 'u1' }, { _id: 'u2' }]));
+			mockUsersFindUsersByIdentifiers.mockReturnValue(fakeCursor([{ _id: 'u1' }, { _id: 'u2' }]));
 
 			await service.reevaluateUsers({ usernames: ['bob'] });
 
@@ -3467,7 +3435,7 @@ describe('AbacService (unit)', () => {
 			service.setPdpStrategy('virtru');
 			const u1 = { _id: 'u1', emails: [{ address: 'u1@x.com' }], username: 'u1' };
 			const room = { _id: 'r1', abacAttributes: [] };
-			mockUsersFindUsersByIdentifiers.mockReturnValue(usersCursor([u1]));
+			mockUsersFindUsersByIdentifiers.mockReturnValue(fakeCursor([u1]));
 			mockRoomRemoveUserFromRoom.mockResolvedValue(undefined);
 			jest.spyOn((service as any).pdp, 'isAvailable').mockResolvedValue(true);
 			jest.spyOn((service as any).pdp, 'reevaluateUsers').mockResolvedValue([{ user: u1, room }]);
@@ -3479,7 +3447,7 @@ describe('AbacService (unit)', () => {
 
 		it('no-ops when no users match', async () => {
 			service.setPdpStrategy('local');
-			mockUsersFindUsersByIdentifiers.mockReturnValue(usersCursor([]));
+			mockUsersFindUsersByIdentifiers.mockReturnValue(fakeCursor([]));
 
 			await service.reevaluateUsers({ ids: ['missing'] });
 

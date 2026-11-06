@@ -1,6 +1,7 @@
 import { beforeEach, describe, it } from 'node:test';
 
 import type { IRoom, VideoConference } from '@rocket.chat/core-typings';
+import { fakeCursor } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
@@ -64,7 +65,6 @@ describe('VideoConfService.getChatAccess', () => {
 		RoomsMock.findOneById.callsFake(async () => ({ ...room }));
 		canAccessRoomIdAsyncStub.reset();
 		findByRoomIdAndUserIdsStub.reset();
-		findByRoomIdAndUserIdsStub.returns({ toArray: sinon.stub().resolves([]) });
 		allowMemberActionStub.callsFake(async (targetRoom: Pick<IRoom, 't'>) => targetRoom.t !== 'd');
 	});
 
@@ -73,9 +73,7 @@ describe('VideoConfService.getChatAccess', () => {
 	it('treats every member of a public channel as having access, except one explicitly banned', async () => {
 		fixture = buildGroupCall([buildMember({ _id: 'alice' }), buildMember({ _id: 'bob' }), buildMember({ _id: 'banned' })]);
 		room = { _id: 'room1', t: 'c', name: 'general', fname: 'general' };
-		findByRoomIdAndUserIdsStub.returns({
-			toArray: sinon.stub().resolves([{ u: { _id: 'banned' }, status: 'BANNED' }]),
-		});
+		findByRoomIdAndUserIdsStub.returns(fakeCursor([{ u: { _id: 'banned' }, status: 'BANNED' }]));
 
 		const result = await service.getChatAccess('caller', 'call1');
 
@@ -109,12 +107,12 @@ describe('VideoConfService.getChatAccess', () => {
 	it('treats only subscribed members of a private group as having access', async () => {
 		fixture = buildGroupCall([buildMember({ _id: 'member' }), buildMember({ _id: 'invited' }), buildMember({ _id: 'stranger' })]);
 		room = { _id: 'room1', t: 'p', name: 'private-group', fname: 'private-group' };
-		findByRoomIdAndUserIdsStub.returns({
-			toArray: sinon.stub().resolves([
+		findByRoomIdAndUserIdsStub.returns(
+			fakeCursor([
 				{ u: { _id: 'member' }, status: undefined },
 				{ u: { _id: 'invited' }, status: 'INVITED' },
 			]),
-		});
+		);
 
 		const result = await service.getChatAccess('caller', 'call1');
 
@@ -129,9 +127,7 @@ describe('VideoConfService.getChatAccess', () => {
 	it('treats only subscribed members of a DM as having access, and reports it as not invitable', async () => {
 		fixture = buildGroupCall([buildMember({ _id: 'member' }), buildMember({ _id: 'neverJoinedRoom' })]);
 		room = { _id: 'room1', t: 'd', name: 'member.other', fname: '' };
-		findByRoomIdAndUserIdsStub.returns({
-			toArray: sinon.stub().resolves([{ u: { _id: 'member' }, status: undefined }]),
-		});
+		findByRoomIdAndUserIdsStub.returns(fakeCursor([{ u: { _id: 'member' }, status: undefined }]));
 
 		const result = await service.getChatAccess('caller', 'call1');
 

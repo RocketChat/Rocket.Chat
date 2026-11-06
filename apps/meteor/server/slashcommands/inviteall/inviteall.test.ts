@@ -2,6 +2,7 @@ import { beforeEach, describe, it } from 'node:test';
 
 import { AbacContractError, AbacErrorCode } from '@rocket.chat/abac';
 import { ClientSafeError, isClientSafeError } from '@rocket.chat/core-services';
+import { fakeCursor } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
@@ -36,9 +37,9 @@ import { loadSlashCommand } from '../../../tests/mocks/server/slashcommands/help
 			findUser = sinon.stub().resolves(actor);
 			canAccess = sinon.stub().resolves(true);
 			count = sinon.stub().resolves(2);
-			subscriptions = sinon.stub().returns({
-				toArray: sinon.stub().resolves([{ u: bob }, { u: { _id: 'nameless', username: '' } }, { u: { _id: 'no-username' } }, { u: carol }]),
-			});
+			subscriptions = sinon
+				.stub()
+				.returns(fakeCursor([{ u: bob }, { u: { _id: 'nameless', username: '' } }, { u: { _id: 'no-username' } }, { u: carol }]));
 
 			addUsers = sinon.stub().resolves();
 			createPublic = sinon.stub().resolves({});
