@@ -2,19 +2,13 @@ import type { AttributeValue } from '@opentelemetry/api';
 
 import { tracerActiveSpan } from '.';
 
-const isAttributeArray = (values: unknown[]): values is Extract<AttributeValue, unknown[]> => {
-	const types = new Set(values.filter((value) => value != null).map((value) => typeof value));
-	return types.size <= 1 && [...types].every((type) => type === 'string' || type === 'number' || type === 'boolean');
-};
-
-const getArguments = (args: unknown[]): { parameters?: AttributeValue } => {
-	const parameters = args.map((arg) => {
+const getArguments = (args: unknown[]): AttributeValue => {
+	return args.map((arg) => {
 		if (typeof arg === 'object' && arg != null && 'session' in arg) {
 			return '[mongo options with session]';
 		}
 		return arg;
-	});
-	return isAttributeArray(parameters) ? { parameters } : {};
+	}) as AttributeValue;
 };
 
 export function traceInstanceMethods<T extends object>(instance: T, ignoreMethods: string[] = []): T {
@@ -35,7 +29,7 @@ export function traceInstanceMethods<T extends object>(instance: T, ignoreMethod
 								attributes: {
 									model: className,
 									method: prop,
-									...getArguments(argumentsList),
+									parameters: getArguments(argumentsList),
 								},
 							},
 							() => {
