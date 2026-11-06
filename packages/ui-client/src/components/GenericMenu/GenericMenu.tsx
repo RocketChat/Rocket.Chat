@@ -73,7 +73,7 @@ const GenericMenu = ({ title, icon = 'menu', disabled, onAction, callbackAction,
 						<MenuSection
 							title={typeof title === 'string' && i18n.exists(title) ? t(title) : title}
 							items={handleItems(items)}
-							key={`${title}-${key}`}
+							key={typeof title === 'string' ? `${title}-${key}` : key}
 						>
 							{(item) => (
 								<MenuItem key={item.id} {...(item.textValue && { textValue: item.textValue })}>
