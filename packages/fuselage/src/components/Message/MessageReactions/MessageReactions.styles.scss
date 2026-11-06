@@ -25,6 +25,7 @@ $message-reaction-background-color: theme('message-reaction-background-color', c
 	}
 
 	&__reaction {
+		--emoji-size: 0.875rem;
 		@include use-font-scale(c1);
 		display: inline-flex;
 		align-items: center;
@@ -61,10 +62,10 @@ $message-reaction-background-color: theme('message-reaction-background-color', c
 	&__emoji {
 		display: block;
 
-		font-size: lengths.size(12);
-		line-height: lengths.size(16);
+		font-size: var(--emoji-size);
+		line-height: var(--emoji-size);
 
-		@include size.square(lengths.size(16));
+		@include size.square(var(--emoji-size));
 	}
 
 	&__counter {
