@@ -256,6 +256,7 @@ export class ConnectionImpl
 						this.status = 'failed';
 						this.emitStatus();
 						this.emit('disconnected');
+						// oxlint-disable-next-line typescript/prefer-promise-reject-errors -- published API: rejects with the server's preferred DDP version
 						return reject(payload.version);
 					}
 					/* istanbul ignore next */
