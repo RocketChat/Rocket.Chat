@@ -1,8 +1,8 @@
-import type { IncomingPayload } from './IncomingPayload';
-import type { RemoveListener } from './RemoveListener';
-import type { ConnectedPayload, FailedPayload } from './connectionPayloads';
-import type { MethodPayload, ResultPayload, UpdatedPayload } from './methodsPayloads';
-import type { NosubPayload, PublicationPayloads, ServerPublicationPayloads } from './publicationPayloads';
+import type { IncomingPayload } from './IncomingPayload.js';
+import type { RemoveListener } from './RemoveListener.js';
+import type { ConnectedPayload, FailedPayload } from './connectionPayloads.js';
+import type { MethodPayload, ResultPayload, UpdatedPayload } from './methodsPayloads.js';
+import type { NosubPayload, PublicationPayloads, ServerPublicationPayloads } from './publicationPayloads.js';
 
 export interface DDPDispatchOptions {
 	wait?: boolean;

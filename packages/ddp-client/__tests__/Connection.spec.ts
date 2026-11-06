@@ -1,8 +1,8 @@
-import WS from 'jest-websocket-mock';
+import { WS } from 'jest-websocket-mock';
 
-import { handleConnection, handleConnectionAndRejects, handleMethod } from './helpers';
-import { ConnectionImpl, getRetryDelay } from '../src/Connection';
-import { MinimalDDPClient } from '../src/MinimalDDPClient';
+import { handleConnection, handleConnectionAndRejects, handleMethod } from './helpers/index.js';
+import { ConnectionImpl, getRetryDelay } from '../src/Connection.js';
+import { MinimalDDPClient } from '../src/MinimalDDPClient.js';
 
 // The Node build of the ws package, not the mock-socket stand-in from __mocks__ nor its browser build.
 const { WebSocket: RealWebSocket } = jest.requireActual<typeof import('ws')>(

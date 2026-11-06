@@ -1,7 +1,7 @@
-import WS from 'jest-websocket-mock';
+import { WS } from 'jest-websocket-mock';
 
-import { handleConnection } from './helpers';
-import { LivechatClientImpl } from '../src/livechat/LivechatClientImpl';
+import { handleConnection } from './helpers/index.js';
+import { LivechatClientImpl } from '../src/livechat/LivechatClientImpl.js';
 
 let server: WS;
 
