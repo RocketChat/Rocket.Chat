@@ -1,4 +1,4 @@
-const getInsertIndex = <T>(array: T[], item: T, ranking: (item: T) => number) => {
+const getInsertIndex = <T>(array: T[], item: T, ranking: (item: T) => number | string) => {
 	const order = ranking(item);
 	let min = 0;
 	let max = array.length - 1;
@@ -18,7 +18,7 @@ const getInsertIndex = <T>(array: T[], item: T, ranking: (item: T) => number) =>
 	return array.length > 0 ? array.length : 0;
 };
 
-export const upsert = <T>(array: T[] = [], item: T, predicate: (item: T) => boolean, ranking: (item: T) => number) => {
+export const upsert = <T>(array: T[] = [], item: T, predicate: (item: T) => boolean, ranking: (item: T) => number | string) => {
 	const index = array.findIndex(predicate);
 
 	if (index > -1) {

@@ -50,7 +50,7 @@ const handlePayloadUserInteraction = (type: string, { /* appId,*/ triggerId, ...
 	const { view } = data;
 	let { viewId } = data;
 
-	if (view && view.id) {
+	if (view?.id) {
 		viewId = view.id;
 	}
 

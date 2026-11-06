@@ -86,7 +86,7 @@ class Triggers {
 
 		const record = this._findRecordById(id);
 
-		if (record && record.status === 'scheduled') {
+		if (record?.status === 'scheduled') {
 			throw new IgnoredScheduledTriggerError('Trigger already scheduled. ignoring...');
 		}
 
@@ -97,7 +97,7 @@ class Triggers {
 		});
 
 		try {
-			const runCondition = conditions[condition.name] as (condition: ILivechatTriggerCondition) => Promise<void>;
+			const runCondition = conditions[condition.name];
 			return await runCondition(condition);
 		} catch (error) {
 			this._updateRecord(id, { status: 'error', error });
@@ -107,6 +107,7 @@ class Triggers {
 
 	async fire(id: string, action: ILivechatTriggerAction, params: ILivechatTriggerCondition) {
 		if (!this._enabled) {
+			// oxlint-disable-next-line typescript/prefer-promise-reject-errors -- logged as-is like the condition rejections
 			return Promise.reject('Triggers disabled');
 		}
 
@@ -185,7 +186,7 @@ class Triggers {
 
 	_findRecordsByStatus(status: string[]) {
 		const { triggersRecords = {} } = store.state;
-		const records: any[] = Object.values(triggersRecords);
+		const records = Object.values(triggersRecords);
 
 		return records.filter((e) => status.includes(e.status));
 	}
