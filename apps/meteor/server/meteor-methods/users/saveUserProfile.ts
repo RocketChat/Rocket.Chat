@@ -161,7 +161,7 @@ async function saveUserProfile(
 			try {
 				await Users.removeNonLoginTokensExcept(this.userId, this.token);
 			} catch (e) {
-				Accounts._clearAllLoginTokens(this.userId);
+				await Users.unsetLoginTokens(this.userId);
 			}
 		}
 	}
