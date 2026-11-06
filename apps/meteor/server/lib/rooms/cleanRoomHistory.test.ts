@@ -9,6 +9,7 @@ import sinon from 'sinon';
 const modelsMock = {
 	Messages: {
 		findFilesByRoomIdPinnedTimestampAndUsers: sinon.stub(),
+		findByRoomIdAndMessageIds: sinon.stub(),
 		findByIdPinnedTimestampLimitAndUsers: sinon.stub(),
 		removeByIdPinnedTimestampLimitAndUsers: sinon.stub(),
 		findThreadsByRoomIdPinnedTimestampAndUsers: sinon.stub(),
@@ -69,6 +70,7 @@ describe('cleanRoomHistory', () => {
 		].forEach((stub) => stub.reset());
 
 		modelsMock.Messages.findFilesByRoomIdPinnedTimestampAndUsers.returns(cursorOf([]));
+		modelsMock.Messages.findByRoomIdAndMessageIds.returns(cursorOf([]));
 		modelsMock.Messages.findByIdPinnedTimestampLimitAndUsers.resolves([]);
 		modelsMock.Messages.removeByIdPinnedTimestampLimitAndUsers.callsFake(async (...args: unknown[]) => ({
 			count: (args[7] as string[]).length,
@@ -112,7 +114,9 @@ describe('cleanRoomHistory', () => {
 		const count = await cleanRoomHistory({ rid: 'rid', limit: 1500 });
 
 		expect(count).to.equal(1500);
-		expect(modelsMock.Messages.findByIdPinnedTimestampLimitAndUsers.getCalls().map((call) => call.args[4])).to.deep.equal([1000, 500]);
+		expect(modelsMock.Messages.findByIdPinnedTimestampLimitAndUsers.getCalls().map((call) => call.args[4])).to.deep.equal([
+			1500, 1000, 500,
+		]);
 		expect(broadcastMock.getCalls().map((call) => call.args[2].ids.length)).to.deep.equal([1000, 500]);
 	});
 
