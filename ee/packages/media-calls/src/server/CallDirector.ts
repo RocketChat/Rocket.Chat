@@ -12,13 +12,13 @@ import type { CallFeature, CallHangupReason, CallRole } from '@rocket.chat/media
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 
-import { getCastDirector, getMediaCallServer } from './injection';
-import { SIP_CALL_FEATURES } from '../constants';
-import type { IMediaCallAgent } from '../definition/IMediaCallAgent';
-import type { IMediaCallCastDirector } from '../definition/IMediaCallCastDirector';
-import { CallRejectedError } from '../definition/common';
-import type { InternalCallParams, MediaCallHeader } from '../definition/common';
-import { logger } from '../logger';
+import { getCastDirector, getMediaCallServer } from './injection.js';
+import { SIP_CALL_FEATURES } from '../constants.js';
+import type { IMediaCallAgent } from '../definition/IMediaCallAgent.js';
+import type { IMediaCallCastDirector } from '../definition/IMediaCallCastDirector.js';
+import { CallRejectedError } from '../definition/common.js';
+import type { InternalCallParams, MediaCallHeader } from '../definition/common.js';
+import { logger } from '../logger.js';
 
 const EXPIRATION_TIME = 120000;
 const EXPIRATION_CHECK_TIMEOUT = EXPIRATION_TIME + 1000;

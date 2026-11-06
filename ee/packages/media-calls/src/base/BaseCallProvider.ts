@@ -1,7 +1,7 @@
 import type { IMediaCall } from '@rocket.chat/core-typings';
 import type { ClientMediaSignalBody } from '@rocket.chat/media-signaling';
 
-import { logger } from '../logger';
+import { logger } from '../logger.js';
 
 export class BaseCallProvider {
 	public get callId(): string {

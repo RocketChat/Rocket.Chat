@@ -1,6 +1,6 @@
 import type { ServerMediaSignalNewCall } from '@rocket.chat/media-signaling';
 
-import { stripSensitiveDataFromSignal } from './stripSensitiveData';
+import { stripSensitiveDataFromSignal } from './stripSensitiveData.js';
 
 describe('stripSensitiveDataFromSignal', () => {
 	it('drops TURN credentials from the ICE servers of a new call signal', () => {
