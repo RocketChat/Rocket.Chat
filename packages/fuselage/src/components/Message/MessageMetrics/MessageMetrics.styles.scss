@@ -29,20 +29,6 @@
 		&-label {
 			margin-inline-start: lengths.margin(4);
 		}
-
-		&__follow {
-			position: relative;
-
-			overflow: visible;
-		}
-
-		&__follow-badge {
-			position: absolute;
-			top: 0;
-			right: 0;
-
-			transform: translate(40%, -40%);
-		}
 	}
 
 	&__avatar-row {
