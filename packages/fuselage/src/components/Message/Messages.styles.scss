@@ -16,8 +16,6 @@
 @use './ThreadMessage/ThreadMessage.styles.scss';
 @use './mixins.scss';
 
-$message-background-color: theme('message-background-color', colors.surface(room));
-
 $message-background-color-editing: theme('message-background-color-editing', colors.status-background(warning-2));
 $message-color-editing: theme('message-background-color-editing', colors.status-font(on-warning-2));
 
@@ -80,7 +78,7 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 	}
 
 	&--highlight {
-		animation: background-fade 6s forwards;
+		animation: background-fade 6s;
 	}
 
 	&--pending {
@@ -92,10 +90,6 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 	@keyframes background-fade {
 		50% {
 			background: $message-background-color-highlight;
-		}
-
-		100% {
-			background: $message-background-color;
 		}
 	}
 
