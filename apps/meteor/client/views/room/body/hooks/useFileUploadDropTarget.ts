@@ -44,6 +44,11 @@ export const useFileUploadDropTarget = (): readonly [
 		chat?.composer?.editing.get ?? (() => false),
 	);
 
+	const onUrlDrop = useStableCallback((url: string) => {
+		chat?.composer?.insertText(url);
+		chat?.composer?.focus();
+	});
+
 	const onFileDrop = useStableCallback(async (files: File[]) => {
 		const { getMimeType } = await import('../../../../../lib/mimeTypes');
 		const getUniqueFiles = () => {
@@ -88,9 +93,10 @@ export const useFileUploadDropTarget = (): readonly [
 		return {
 			enabled: true,
 			onFileDrop,
+			onUrlDrop,
 			...overlayProps,
 		} as const;
-	}, [isEditing, fileUploadAllowedForUser, fileUploadEnabled, isRoomOverMacLimit, onFileDrop, overlayProps, subscription, t]);
+	}, [isEditing, fileUploadAllowedForUser, fileUploadEnabled, isRoomOverMacLimit, onFileDrop, onUrlDrop, overlayProps, subscription, t]);
 
 	return [triggerProps, allOverlayProps] as const;
 };
