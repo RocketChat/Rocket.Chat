@@ -2,39 +2,46 @@
 
 ## Status
 
-Proposal with a working prototype on branch `poc/message-on-item`. Not reviewed visually yet; see "Handoff".
+Implemented on branch `poc/message-on-item` (PR #43139). Every visual change was compared before and after in Storybook and either measured identical or accepted on its own; the visual regression baselines are regenerated. What is left is listed under "Handoff".
 
 ## Decision
 
-The Fuselage `Message` row renders on the `Item` primitives. `Item` owns the row shell (padding, hover, selection, focus ring, the avatar column and the header line). The message body stays free content that `Item` does not style.
+The Fuselage `Message` row renders on the `Item` primitives. `Item` owns the row shell (padding, gap, hover, selection, focus ring, the avatar column and the header line). The message body stays free content that `Item` does not style.
 
 ```tsx
-<Item align='start' hoverable selected={isSelected} className='rcx-message …'>
+<Item align='start' multiline hoverable interactive={clickable} selected={isSelected} className='rcx-message …'>
 	<ItemMedia>{/* avatar x36 | checkbox | status indicators (sequential) */}</ItemMedia>
 	<ItemContent>
-		<ItemRow>{/* name, username, roles, timestamp, indicators */}</ItemRow>
+		<ItemRow>{/* name, username, roles (ItemRow), timestamp (ItemMeta), indicators */}</ItemRow>
 		{/* body, attachments, reactions, metrics: free content */}
 	</ItemContent>
 	{/* toolbar: absolutely positioned, outside the flow */}
 </Item>
 ```
 
-| Message part           | Becomes                       |
-| ---------------------- | ----------------------------- |
-| `Message`              | `Item align='start' hoverable` |
-| `MessageLeftContainer` | `ItemMedia`                   |
-| `MessageContainer`     | `ItemContent`                 |
-| `MessageHeader`        | `ItemRow`                     |
-| `MessageBody`, blocks  | unchanged, free content       |
-| `MessageToolbar*`      | unchanged, overlay            |
+| Message part                         | Becomes                                   |
+| ------------------------------------ | ----------------------------------------- |
+| `Message`                            | `Item align='start' multiline hoverable`  |
+| `MessageLeftContainer`               | `ItemMedia`                               |
+| `MessageContainer`                   | `ItemContent`                             |
+| `MessageHeader`, `MessageRoles`      | `ItemRow`                                 |
+| `MessageTimestamp`                   | `ItemMeta`                                |
+| `MessageSystem`                      | `Item inset='lg' multiline`               |
+| `MessageSystemContainer` / `…Block`  | `ItemContent` / `ItemRow`                 |
+| `MessageSystemTimestamp`             | `ItemMeta`                                |
+| `ThreadMessage`                      | `Item` (no longer a `Message`)            |
+| `ThreadMessageRow`                   | `ItemRow`                                 |
+| `ThreadMessageUnfollow`              | wrapped in `ItemActions reveal='hover'`   |
+| `MessageBody`, blocks, content parts | unchanged, free content                   |
+| `MessageToolbar*`                    | unchanged, overlay                        |
 
-The public API of the `Message*` components does not change, and the `rcx-message*` class names stay on the same elements, so app code, e2e locators and the keyboard selector keep working.
+The `rcx-message*` class names stay on the same elements, so app code, e2e locators and the keyboard selector keep working.
 
 ## Why
 
-- One row model across the client. Lists already moved to `Item` (sidebar, side panel, menus, members, files, composer popups). Messages are the last big list with their own row shell, focus style and hover rules.
+- One row model across the client. Lists already moved to `Item` (sidebar, side panel, menus, members, files, composer popups). Messages were the last big list with their own row shell, focus style and hover rules.
 - Shared behavior instead of copies: hover and selected surfaces, focus ring, `pointer: coarse` density, RTL-safe slots.
-- Less CSS once the follow-ups land (see "Next steps"). The prototype alone is neutral in size (+61/−63 lines, stories and specs excluded); the reduction comes from removing the duplicated row skeletons of `MessageSystem*` and `ThreadMessage*`.
+- Less CSS: the message stylesheets went from 781 lines on `develop` to 627 (non-blank, non-comment), mostly from the row shell, `MessageSystem`, `ThreadMessage` and dead content rules.
 
 ## Changes to `Item`
 
@@ -45,7 +52,7 @@ Two generic variations, neither message-specific:
 
 ### Why `align` is a prop and not always `start`
 
-With `flex-start` everywhere, rows whose slots have different heights misalign: an x28/x36 avatar next to a single 20px line, or `ItemActions` icon buttons taller than the text line, would stick to the top instead of centering. This was decided from the CSS, not from screenshots; flipping the default in `Item.styles.scss` and diffing the `Item` stories settles it.
+With `flex-start` everywhere, rows whose slots have different heights misalign: an x28/x36 avatar next to a single 20px line, or `ItemActions` icon buttons taller than the text line, would stick to the top instead of centering.
 
 ### Why messages do not use `ItemTitle` or `ItemIcon`
 
@@ -53,51 +60,65 @@ They register their ids in the parent `Item` through `setState` (`useIdRegistry`
 
 ## What stays message-specific
 
-Kept as `rcx-message--*` modifiers on the `Item`:
-
-- padding 8/4 × 20, `sequential` 4/4;
-- `editing` (warning surface, now wins by specificity instead of `!important`), `pending` (dimmed body), `highlight` (fade animation), `clickable` (cursor without `onClick`, used by search results);
-- the toolbar reveal, keyed on `.rcx-message:hover`.
+- **The 24px inset** is `padding-inline` on `.rcx-message`. `inset='lg'` gives the same 24px only when the last child is in the flow; in room messages the last child is the absolutely positioned toolbar wrapper. System messages have no toolbar and use `inset='lg'`.
+- **The avatar column**: a fixed 36px `ItemMedia` that right-aligns narrow children (checkbox, sequential status indicators), and a block size of header plus first line, so the avatar centers on them however long the body grows.
+- **States**: `editing` (warning surface; `Item` has none), `pending` (dimmed body), `highlight` (fade animation).
+- **The author name**: underline on hover, and a focus ring drawn with `outline` and `box-shadow` so it takes no room; a border-based ring made the header 2px taller and was invisible in forced colors.
+- **The toolbar**: an absolutely positioned overlay with its own reveal. `ItemActions reveal='hover'` does not fit it: it reveals on `:focus-within`, so a clicked message would keep its toolbar showing; it always reveals on `hover: none` devices, where every toolbar would overlap the previous message and stop gating the lazy mount; and its collapse does nothing for an overlay. A hidden toolbar takes no pointer events.
+- **The divider**: equal-width bars keep the date centered; the unread label sits in the flow, so the line ends before it and no background is needed.
 
 ## Compatibility
 
-- Focus: the transparent 1px border is replaced by `Item`'s inset ring, so the row is 2px shorter.
-- Radius: the row gets `Item`'s small radius; it was square.
-- Theme variables `message-background-color-hover` and `message-background-color-selected` are removed in favor of `item-color-surface-hover` and `item-color-surface-selected`. Nothing in the repository overrides them; external themes that do lose the effect.
-- `rcx-message--selected` is no longer emitted; the row carries `rcx-item--selected`. No app or e2e code references it.
-- The props of `Message`, `MessageContainer`, `MessageHeader` and `MessageLeftContainer` omit the HTML `is` attribute, which clashed with `Item`'s `is`.
-- Keyboard: `useMessageRowListNavigation` matches `.rcx-message[tabindex="0"]`, which still holds.
+Visual deltas against `develop`, all reviewed:
+
+- The row inset is 24px (it was 20px plus a 2px margin), with `Item`'s small radius and inset focus ring.
+- Headers are 2px shorter (name focus ring), and headers with status indicators no longer grow 4px.
+- System messages and thread previews line up with the message text column; thread preview rows sit flush.
+- Long author names end in an ellipsis instead of overflowing the header.
+- The user's own reactions show their dark border; titled status icons are announced to screen readers.
+- Message and reaction emoji are sized by `--emoji-size` (defaults 20px, 48px big, 14px in reactions), which the client already set.
+- Role tags in the header are plain labels; the author name still opens the user card.
+- The web client's `body` sets `font-variant-numeric: tabular-nums`, which message bodies used to get from `rcx-box`.
+
+API and markup:
+
+- Theme variables `message-background-color-hover` and `message-background-color-selected` are removed in favor of `item-color-surface-hover` and `item-color-surface-selected`; `message-system-background-color-selected` is removed too. The editing text color now reads `message-color-editing`. Nothing in the repository overrides these keys.
+- `rcx-message--selected` and `rcx-message--clickable` are no longer emitted; the row carries `rcx-item--selected` and `rcx-item--interactive`. No app or e2e code references them.
+- The props of the `Item`-based parts omit the HTML `is` attribute, which clashed with `Item`'s `is`.
+- Keyboard: `messageRowSelector` also matches `.rcx-message-thread[tabindex="0"]`, since thread previews no longer carry `rcx-message`.
+- Deprecated, to remove in the next major: `MessageStatusIndicatorText`, `ThreadMessageFollow`, the `variant` prop of the status indicators, and the `MessageSystemLeftContainer` and `ThreadMessageLeftContainer` aliases of `MessageLeftContainer`.
 
 ## Handoff
 
 ### Done (branch `poc/message-on-item`)
 
-1. `feat(fuselage): add align and hoverable to Item`
-2. `feat(fuselage): render Message on the Item primitives`
-3. `chore(fuselage): add Message on Item stories` (`Message/MessageOnItem.stories.tsx`: default, sequential, selected, editing, pending, highlight, clickable, toolbar, long body, reactions and metrics, missing avatar, RTL)
-4. This proposal.
+Each change is its own commit, with a changeset when it changes published behavior; `git log origin/develop..poc/message-on-item` lists them. In short:
 
-Fuselage jest for `Item` and `Message` passed (73 tests, no snapshot change), `stylelint` was clean, and Storybook compiled. ESLint was not run.
+1. `Item` gains `align` and `hoverable`; `Message` renders on `Item`.
+2. Row, header, system and thread parts move to `Item` slots and variations; rules and `rcx-box` classes that restated `Item` or the client body go away.
+3. Fixes found on the way: header height, long names, reaction border, editing color key, nested list markers, `clamp={4}`, empty preview title, status icon labels, thread unfollow by keyboard, system timestamp contrast, hidden toolbar catching the pointer, divider label backgrounds, follow badge in RTL, non-interactive role tags.
+4. Dead content rules removed; reactions and avatar rows spaced with `gap`; emoji sized by `--emoji-size`.
+5. Visual regression baselines regenerated with the Playwright Docker image (`yarn workspace @rocket.chat/fuselage visual-regression-update`).
+
+Verified: Fuselage jest, `tsc`, oxlint and stylelint; the `apps/meteor` message specs and `tsc`; Storybook screenshots of every `Message*` story at 800px and 400px in Chromium, light theme, before and after each change.
 
 ### Not done
 
-- **Visual review.** No screenshot was compared. Run the `storybook-ab` skill (or compare by hand) on the `Messages` and `MessageOnItem` stories, and the `Item` stories, against `develop`. Check `ThreadMessage` (`.rcx-message.rcx-message-thread` was left untouched and must still render as a compact column).
-- **App checks.** `apps/meteor` e2e and unit snapshots (`DiscussionsList.spec.tsx.snap`), plus a pass over the room: sequential rows, thread previews, system messages, the toolbar and its menu, selection mode, editing, the highlight after a jump.
-- **Changeset** for `@rocket.chat/fuselage` (minor: new `Item` props; note the removed theme variables).
+- **App e2e** (`apps/meteor/tests/e2e`) has not run against the branch.
+- **Dark theme and WebKit** were only spot-checked.
+- **Hover and focus states** were checked by computed style at a few points, not by screenshot across stories.
+- **`tabular-nums` on `body`**: which client screens outside a `Box` change their digits was not measured.
+- **Divider font**: `.rcx-message-divider` sets no `font-family` and inherits it; without an inherited sans font (as in a bare Storybook story) the date renders in serif. One line, `font-family: font-family('sans')`, fixes it.
 
-### Next steps, in order
+### Next steps
 
-1. **Spacing by `gap` instead of margins** (about 40 lines less). The prototype zeroes `Item`'s gap and rebuilds it with margins: `gap: 0`, `> .rcx-message-container { margin-inline: 4 }`, `margin: -2` on the header and `%rcx-margins-header` (2px) on each header child. That nets 4px between avatar and text and 4px between header items, so `--rcx-item-gap: 4px` on the row plus `ItemRow`'s own 4px gap replaces all of it. Leave the vertical header/body margins until measured.
-2. **Delete rules that `Item` already provides:** `display`, `flex-direction`, `flex-grow`, `flex-shrink` and `min-width` on `.rcx-message-container` (`ItemContent`), and the `flex` values on `--left` (`ItemMedia`).
-3. **`MessageTimestamp` renders `ItemMeta`** with the message class; keep only the hover contrast rule.
-4. **Drop `rcx-box rcx-box--full`** from `MessageContainer`, `MessageHeader` and `MessageLeftContainer`; verify visually.
-5. **`MessageSystem*` on the same skeleton** (7 components, ~70 lines of SCSS): a `Message` with an x18 avatar and `c1` text. Consumers: `SystemMessage.tsx`, `ContactHistoryMessage.tsx`.
-6. **`ThreadMessage*` on `Item`** (12 components, ~95 lines of SCSS): two compact truncated lines, the closest fit to a plain `Item` (`ItemMedia`/`ItemIcon` + `ItemContent` with two `ItemRow`s). Consumer: `ThreadMessagePreview.tsx`. Its `rcx-message` class makes it a keyboard row today; keep that or widen `messageRowSelector`.
-7. Then the contextual bar rows that render `Box is={Message}` (`DiscussionsListItem`, `ThreadListMessage`, `VideoConfListItem`) can move to plain `Item` rows with `useItemListNavigation`.
+1. The divider `font-family` above.
+2. The contextual bar rows that render `Box is={Message}` (`DiscussionsListItem`, `ThreadListMessage`, `VideoConfListItem`) can move to plain `Item` rows with `useItemListNavigation`.
+3. `MessageContainerFixed` (two consumers) can become a layout container or `ItemActions`.
+4. Spacing the metrics wrapper with `gap` needs the follow button to become a metrics item first; as is, it adds 4px before the button.
+5. Remove the deprecated parts in the next Fuselage major.
 
-Steps 1–4 are refactors of this branch; 5–7 are their own pull requests.
-
-### Running the prototype
+### Running the branch
 
 Fuselage resolves its workspace dependencies from their `dist`. If Storybook fails with `Can't resolve '@rocket.chat/fuselage-hooks'`, build them first:
 
@@ -108,5 +129,5 @@ cd packages/fuselage && yarn storybook
 
 ## Out of scope
 
-- The toolbar stays an overlay. `ItemActions reveal='hover'` is inline; unifying them needs a new `Item` variation, which adds code.
-- Message content components (body, attachments, reactions, metrics, previews) are unchanged.
+- The toolbar stays an overlay (see "What stays message-specific").
+- Message content components (body, attachments, reactions, metrics, previews) keep their own styles; only dead rules and margin gutters were removed.
