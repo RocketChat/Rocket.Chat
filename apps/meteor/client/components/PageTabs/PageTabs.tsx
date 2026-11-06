@@ -28,7 +28,7 @@ const PageTabs = <TId extends string>({ items, selected, onSelect }: PageTabsPro
 					{counter === undefined ? (
 						label
 					) : (
-						<Box is='span' display='flex' alignItems='center' gap={8}>
+						<Box is='span' display='flex' alignItems='center' gap='x8'>
 							{label}
 							{counter}
 						</Box>
