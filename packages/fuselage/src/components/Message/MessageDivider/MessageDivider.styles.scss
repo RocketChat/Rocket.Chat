@@ -56,8 +56,6 @@ $message-divider-size-neg: theme('message-divider-size-neg', lengths.margin(-1))
 		margin-block: lengths.margin(8);
 		padding-inline: lengths.padding(8);
 
-		background-color: $message-background-color;
-
 		&--unread {
 			position: absolute;
 			z-index: 1;
