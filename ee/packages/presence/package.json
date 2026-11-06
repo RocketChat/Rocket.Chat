@@ -2,6 +2,13 @@
 	"name": "@rocket.chat/presence",
 	"version": "0.4.0-rc.1",
 	"private": true,
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/Presence.d.ts",
+			"default": "./dist/Presence.js"
+		}
+	},
 	"main": "./dist/Presence.js",
 	"typings": "./dist/Presence.d.ts",
 	"files": [
