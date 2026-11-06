@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Box, Callout, States, StatesIcon, StatesSubtitle, StatesTitle, Tabs, TabsItem, Text } from '@rocket.chat/fuselage';
-import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
+import { ListSkeleton, Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -8,7 +8,6 @@ import AuditForm from './components/AuditForm';
 import AuditResult from './components/AuditResult';
 import { useAuditMutation } from './hooks/useAuditMutation';
 import { useAuditTab } from './hooks/useAuditTab';
-import ListSkeleton from '../../components/ListSkeleton';
 import { getErrorMessage } from '../../lib/errorHandling';
 
 const AuditPage = () => {

@@ -29,15 +29,24 @@ import './publications';
 import './lib/pushConfig';
 import './features/EmailInbox/index';
 
-await Promise.all([configureServer(settings), registerServices(), startup()]);
+try {
+	await Promise.all([configureServer(settings), registerServices(), startup()]);
 
-await startRocketChat();
+	await startRocketChat();
 
-setImmediate(() => {
-	startCronJobs().catch((err) => {
-		SystemLogger.error({ msg: 'Failed to start cron jobs', err });
+	setImmediate(() => {
+		startCronJobs().catch((err) => {
+			SystemLogger.error({ msg: 'Failed to start cron jobs', err });
+		});
 	});
-});
 
-await startupApp();
-await startRestAPI();
+	await startupApp();
+	await startRestAPI();
+	// not a static import: it would evaluate the modules it needs ahead of importPackages and reorder their side effects
+	const { runStartupTasks } = await import('./startup/startupTasks');
+	await runStartupTasks();
+} catch (err) {
+	// a server that failed to boot would otherwise stay up without ever listening
+	SystemLogger.fatal({ msg: 'Server failed to start', err });
+	process.exit(1);
+}

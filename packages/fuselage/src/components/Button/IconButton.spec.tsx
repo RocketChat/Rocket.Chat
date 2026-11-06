@@ -1,4 +1,4 @@
-import { composeStories } from '@storybook/react-webpack5';
+import { composeStories } from '@storybook/react';
 import { screen } from '@testing-library/react';
 
 import { render } from '../../testing';
@@ -57,6 +57,16 @@ describe('[IconButton Component]', () => {
 	it('should be large by default', () => {
 		render(<IconButton icon='balloon' aria-label='balloon' />);
 		expect(screen.getByRole('button')).toHaveClass('rcx-button--large-square');
+	});
+
+	it('should render a button of type button by default', () => {
+		render(<IconButton icon='balloon' aria-label='balloon' />);
+		expect(screen.getByRole('button', { name: 'balloon' })).toHaveAttribute('type', 'button');
+	});
+
+	it('should render a link without a type when is is a', () => {
+		render(<IconButton is='a' href='/somewhere' icon='balloon' aria-label='balloon' />);
+		expect(screen.getByRole('link', { name: 'balloon' })).not.toHaveAttribute('type');
 	});
 
 	it('should display the badge', () => {

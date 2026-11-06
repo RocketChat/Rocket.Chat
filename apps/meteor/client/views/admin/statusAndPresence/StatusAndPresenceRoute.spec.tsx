@@ -1,10 +1,11 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { RouterContextValue } from '@rocket.chat/ui-contexts';
-import { act, render } from '@testing-library/react';
+import { act, render, waitFor } from '@testing-library/react';
 
 import { STATUS_SETTING_IDS } from './SettingsTab';
 import StatusAndPresencePage from './StatusAndPresencePage';
 import StatusAndPresenceRoute from './StatusAndPresenceRoute';
+import { createFakeLicenseInfo } from '../../../../tests/mocks/data';
 
 jest.mock('./StatusAndPresencePage', () => jest.fn(() => null));
 
@@ -73,6 +74,25 @@ describe('StatusAndPresenceRoute', () => {
 		});
 
 		expect(lastPageProps()).toMatchObject({ canManageUserPresence: false });
+	});
+
+	it('keeps a direct link to the user status tab while the license loads', async () => {
+		const { router, navigate } = createRouter({ tab: 'user-presence' });
+
+		render(<StatusAndPresenceRoute />, {
+			wrapper: mockAppRoot()
+				.withJohnDoe()
+				.withSetting('Accounts_StatusVisibility_Admin_Enabled', true)
+				.withPermission('edit-other-user-info')
+				.withPermission('view-full-other-user-info')
+				.withPermission('manage-user-status')
+				.withEndpoint('GET', '/v1/licenses.info', () => ({ license: createFakeLicenseInfo({ activeModules: ['unlimited-presence'] }) }))
+				.withRouter(router)
+				.build(),
+		});
+
+		await waitFor(() => expect(lastPageProps()).toMatchObject({ tab: 'user-presence', canManageUserPresence: true }));
+		expect(navigate).not.toHaveBeenCalled();
 	});
 
 	it('opens the presence service panel once when the presence broadcast is disabled', () => {

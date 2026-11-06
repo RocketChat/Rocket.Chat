@@ -1,7 +1,11 @@
 import type { HTMLAttributes } from 'react';
 
+import { cx } from '../../../helpers/composeClassNames';
+
 export type MessageSystemBodyProps = HTMLAttributes<HTMLDivElement>;
 
-const MessageSystemBody = (props: MessageSystemBodyProps) => <div className='rcx-message-system__body' {...props} />;
+const MessageSystemBody = ({ className, ...props }: MessageSystemBodyProps) => (
+	<div {...props} className={cx('rcx-message-system__body', className)} />
+);
 
 export default MessageSystemBody;

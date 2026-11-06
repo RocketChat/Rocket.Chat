@@ -1,4 +1,4 @@
-import { beforeEach, describe, it } from 'node:test';
+import { after, beforeEach, describe, it } from 'node:test';
 
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
@@ -8,11 +8,20 @@ const checkUsernameAvailability = sinon.stub();
 const validateEmail = sinon.stub();
 const addUserRolesAsync = sinon.stub();
 const models = {
-	Settings: {},
-	Rooms: {},
+	Settings: {
+		updateValueById: sinon.stub(),
+	},
+	Rooms: {
+		findOneById: sinon.stub(),
+		createWithIdTypeAndNameIfNotExists: sinon.stub(),
+	},
 	Users: {
 		create: sinon.stub(),
+		createIfNotExists: sinon.stub(),
+		findOneById: sinon.stub(),
 		findOneByEmailAddress: sinon.stub(),
+		setAvatarData: sinon.stub(),
+		removeById: sinon.stub(),
 	},
 	Roles: {
 		countUsersInRole: sinon.stub(),
@@ -20,19 +29,26 @@ const models = {
 };
 const setPasswordAsync = sinon.stub();
 const settingsGet = sinon.stub();
+const avatarStore = {
+	deleteByName: sinon.stub(),
+	insert: sinon.stub(),
+};
 
-const { insertAdminUserFromEnv } = proxyquire.noCallThru().load('./initialData', {
+const { insertAdminUserFromEnv, insertInitialData } = proxyquire.noCallThru().load('./initialData', {
 	'meteor/accounts-base': {
 		Accounts: {
 			setPasswordAsync,
 		},
 	},
 	'meteor/meteor': {
-		Meteor: {
-			startup: sinon.stub(),
-		},
+		Meteor: {},
 	},
-	'../lib/media/file-upload': {},
+	'../lib/media/file-upload': {
+		FileUpload: { getStore: () => avatarStore },
+	},
+	'../lib/privateAssets': {
+		readPrivateAsset: sinon.stub().resolves(Buffer.from('png')),
+	},
 	'../lib/rooms/addUserToDefaultChannels': {},
 	'../lib/users/checkUsernameAvailability': {
 		checkUsernameAvailability,
@@ -229,5 +245,72 @@ describe('insertAdminUserFromEnv', () => {
 		await insertAdminUserFromEnv();
 
 		expect(models.Users.create.calledWith(sinon.match({ username: 'admin' }))).to.be.true;
+	});
+});
+
+describe('initial data startup', () => {
+	const runStartup = insertInitialData;
+	const { TEST_MODE } = process.env;
+
+	beforeEach(() => {
+		delete process.env.TEST_MODE;
+		process.env.ADMIN_PASS = '';
+		addUserRolesAsync.reset();
+		avatarStore.insert.reset();
+		avatarStore.insert.resolves({ etag: 'etag' });
+		settingsGet.reset();
+		models.Rooms.findOneById.reset();
+		models.Rooms.findOneById.resolves(null);
+		models.Rooms.createWithIdTypeAndNameIfNotExists.reset();
+		models.Rooms.createWithIdTypeAndNameIfNotExists.resolves({ upsertedCount: 1 });
+		models.Users.findOneById.reset();
+		models.Users.findOneById.resolves(null);
+		models.Users.createIfNotExists.reset();
+		models.Users.createIfNotExists.resolves({ upsertedCount: 1 });
+		models.Settings.updateValueById.resolves({ modifiedCount: 0 });
+		models.Roles.countUsersInRole.resolves(1);
+	});
+
+	after(() => {
+		if (TEST_MODE === undefined) {
+			delete process.env.TEST_MODE;
+		} else {
+			process.env.TEST_MODE = TEST_MODE;
+		}
+	});
+
+	it('should create the GENERAL room without failing when another instance created it first', async () => {
+		models.Rooms.createWithIdTypeAndNameIfNotExists.resolves({ upsertedCount: 0 });
+
+		await runStartup();
+
+		expect(models.Rooms.createWithIdTypeAndNameIfNotExists.calledOnceWith('GENERAL', 'c', 'general', { default: true })).to.be.true;
+	});
+
+	it('should set up rocket.cat only on the instance that created it', async () => {
+		await runStartup();
+
+		expect(addUserRolesAsync.calledOnceWith('rocket.cat', ['bot'])).to.be.true;
+		expect(avatarStore.insert.calledOnce).to.be.true;
+	});
+
+	it('should not set up rocket.cat when another instance created it first', async () => {
+		models.Users.createIfNotExists.resolves({ upsertedCount: 0 });
+
+		await runStartup();
+
+		expect(addUserRolesAsync.called).to.be.false;
+		expect(avatarStore.insert.called).to.be.false;
+	});
+
+	it('should not write the GENERAL room or rocket.cat when they already exist', async () => {
+		models.Rooms.findOneById.resolves({ _id: 'GENERAL' });
+		models.Users.findOneById.resolves({ _id: 'rocket.cat' });
+
+		await runStartup();
+
+		expect(models.Rooms.createWithIdTypeAndNameIfNotExists.called).to.be.false;
+		expect(models.Users.createIfNotExists.called).to.be.false;
+		expect(addUserRolesAsync.called).to.be.false;
 	});
 });

@@ -2,7 +2,7 @@ import { execSync } from 'node:child_process';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { dirname, join, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import react from '@vitejs/plugin-react';
 import autoprefixer from 'autoprefixer';
@@ -44,7 +44,7 @@ const rocketchatInfo = (): Plugin => {
 				...JSON.parse(readFileSync(join(appRoot, 'rocketchat.info'), 'utf8')),
 				marketplaceApiVersion: require('@rocket.chat/apps-engine/package.json').version.replace(/^[^0-9]/g, ''),
 				build: { date: new Date().toISOString() },
-				commit: { hash: git('rev-parse HEAD'), branch: git('rev-parse --abbrev-ref HEAD') },
+				commit: { hash: git('rev-parse HEAD'), branch: process.env.GITHUB_HEAD_REF || git('rev-parse --abbrev-ref HEAD') },
 			};
 
 			return `export const Info = ${JSON.stringify(info)};`;
@@ -119,6 +119,7 @@ const nativeModules = (): Plugin => {
 	const replacements = new Map(
 		Object.entries({
 			'client/lib/getURL.ts': 'getURL.ts',
+			'client/views/root/hooks/loggedIn/useRootUrlChange.tsx': 'useRootUrlChange.ts',
 		}).map(([original, native]) => [join(appRoot, original), join(here, 'native', native)]),
 	);
 
@@ -289,6 +290,7 @@ const prebundledWorkspaceDeps = [
 	'@rocket.chat/gazzodown',
 	'@rocket.chat/gazzodown-alt',
 	'@rocket.chat/i18n',
+	'@rocket.chat/icons',
 	'@rocket.chat/layout',
 	'@rocket.chat/message-parser',
 	'@rocket.chat/message-types',
@@ -342,6 +344,17 @@ export default defineConfig({
 		'process.env.MESSAGE_MAX_PARSE_LENGTH': JSON.stringify(process.env.MESSAGE_MAX_PARSE_LENGTH),
 	},
 	css: {
+		preprocessorOptions: {
+			scss: {
+				// Fuselage's stylesheets import the tokens as `~@rocket.chat/fuselage-tokens/...`, the webpack form.
+				importers: [
+					{
+						findFileUrl: (url: string) => (url.startsWith('~') ? pathToFileURL(require.resolve(url.slice(1))) : null),
+					},
+				],
+				charset: false,
+			},
+		},
 		postcss: {
 			plugins: [postcssEasyImport(), postcssCustomProperties({ preserve: true }), postcssMediaMinmax(), postcssNested(), autoprefixer()],
 		},

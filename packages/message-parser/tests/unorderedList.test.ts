@@ -1,5 +1,5 @@
-import { parse } from '../src';
-import { unorderedList, plain, listItem, bold, emoji } from './helpers';
+import { unorderedList, plain, listItem, bold, emoji } from './helpers.js';
+import { parse } from '../src/index.js';
 
 test.each([
 	[

@@ -1,11 +1,20 @@
 {
 	"$schema": "./node_modules/oxlint/configuration_schema.json",
 	"extends": ["./packages/lint-config/oxlint.json"],
+	"settings": {
+		"react": {
+			"version": "19.2"
+		}
+	},
 	"options": {
 		"typeAware": true,
 		"reportUnusedDisableDirectives": "error"
 	},
 	"ignorePatterns": [
+		"**/dist",
+		"**/coverage",
+		"**/storybook-static",
+		".yarn/**",
 		"apps/meteor/**/public",
 		"apps/meteor/**/private/moment-locales",
 		"apps/meteor/**/imports",
@@ -162,7 +171,7 @@
 			"plugins": ["jest"]
 		},
 		{
-			"files": ["apps/meteor/tests/{end-to-end,unit}/**/*.ts"],
+			"files": ["apps/meteor/tests/{end-to-end,unit}/**/*.ts", "apps/meteor/**/*.{test,spec}.ts"],
 			"rules": {
 				"no-unused-expressions": "off"
 			}
@@ -309,6 +318,10 @@
 					{
 						"selector": "MemberExpression[object.name='Meteor'][property.name='absoluteUrl']",
 						"message": "Use getWorkspaceURL(path) from 'server/lib/utils/getURL' instead."
+					},
+					{
+						"selector": "MemberExpression[object.name='Meteor'][property.name='startup']",
+						"message": "Register at module level, or export a function and call it from runStartupTasks() in server/startup/startupTasks.ts."
 					}
 				]
 			}

@@ -18,6 +18,7 @@ function TabsItem({ selected, disabled, ...props }: TabsItemProps) {
 			rcx-tabs__item--selected--disabled={selected && disabled}
 			aria-selected={selected ? 'true' : 'false'}
 			role='tab'
+			disabled={disabled}
 			{...props}
 		/>
 	);

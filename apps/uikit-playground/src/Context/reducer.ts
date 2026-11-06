@@ -85,6 +85,54 @@ export enum ActionTypes {
 	UpdateNodesAndViewPort,
 }
 
+const updatePayload = (state: initialStateType, payload: UpdatePayloadAction['payload']) => {
+	const { activeProject, activeScreen } = state;
+	state.screens[activeScreen].payload.blocks = payload.blocks;
+	if (payload.surface) state.screens[activeScreen].payload.surface = payload.surface;
+	state.screens[activeScreen].changedByEditor = payload.changedByEditor === undefined;
+	state.projects[activeProject].flowEdges = filterEdges(
+		state.projects[activeProject].flowEdges,
+		payload.blocks.map((node) => node.actionId),
+		activeScreen,
+	);
+	return { ...state };
+};
+
+const deleteScreen = (state: initialStateType, screenId: DeleteScreenAction['payload']) => {
+	const { activeProject } = state;
+	delete state.screens[screenId];
+	state.projects[activeProject].screens = [...state.projects[activeProject].screens.filter((id) => id !== screenId)];
+	if (state.projects[activeProject].screens.length > 0) {
+		state.activeScreen = state.projects[activeProject].screens[0];
+	} else if (state.projects[activeProject].screens.length === 0) {
+		if (Object.keys(state.projects).length > 0) {
+			delete state.projects[activeProject];
+			state.activeProject = '';
+			state.activeScreen = '';
+		}
+	}
+
+	state.projects[activeProject].flowEdges = state.projects[activeProject].flowEdges.filter(
+		(edge) => edge.source !== screenId && edge.target !== screenId,
+	);
+
+	state.projects[activeProject].flowNodes = state.projects[activeProject].flowNodes.filter((node) => node.id !== screenId);
+
+	return { ...state };
+};
+
+const deleteProject = (state: initialStateType, projectId: DeleteProjectAction['payload']) => {
+	window.console.log(state.projects[projectId]?.screens);
+	const screensIds = state.projects[projectId]?.screens;
+	screensIds?.map((id) => delete state.screens[id]);
+	delete state.projects[projectId];
+	return {
+		...state,
+		activeProject: '',
+		activeScreen: '',
+	};
+};
+
 const reducer = (state: initialStateType, action: IAction) => {
 	const { activeProject, activeScreen } = state;
 	switch (action.type) {
@@ -108,17 +156,8 @@ const reducer = (state: initialStateType, action: IAction) => {
 
 			return { ...state };
 		}
-		case ActionTypes.UpdatePayload: {
-			state.screens[activeScreen].payload.blocks = action?.payload?.blocks;
-			if (action?.payload?.surface) state.screens[activeScreen].payload.surface = action?.payload?.surface;
-			state.screens[activeScreen].changedByEditor = action?.payload?.changedByEditor === undefined;
-			state.projects[activeProject].flowEdges = filterEdges(
-				state.projects[activeProject].flowEdges,
-				action?.payload?.blocks.map((node) => node.actionId),
-				activeScreen,
-			);
-			return { ...state };
-		}
+		case ActionTypes.UpdatePayload:
+			return updatePayload(state, action.payload);
 		case ActionTypes.ActionPreview: {
 			state.screens[activeScreen].actionPreview = action.payload;
 			return { ...state };
@@ -141,7 +180,7 @@ const reducer = (state: initialStateType, action: IAction) => {
 					...state.screens,
 					[id]: {
 						id,
-						name: action?.payload || 'Untitled Screen',
+						name: action.payload || 'Untitled Screen',
 						payload: {
 							surface: SurfaceOptions.Message,
 							blocks: [],
@@ -174,7 +213,7 @@ const reducer = (state: initialStateType, action: IAction) => {
 						id,
 						date: getDate(),
 						actionPreview: {},
-						name: action?.payload.name || 'Untitled Screen',
+						name: action.payload.name || 'Untitled Screen',
 						payload: state.screens[action.payload.id].payload,
 					},
 				},
@@ -190,30 +229,11 @@ const reducer = (state: initialStateType, action: IAction) => {
 			};
 		}
 		case ActionTypes.RenameScreen: {
-			state.screens[action?.payload?.id].name = action.payload.name;
+			state.screens[action.payload.id].name = action.payload.name;
 			return { ...state };
 		}
-		case ActionTypes.DeleteScreen: {
-			delete state.screens[action.payload];
-			state.projects[activeProject].screens = [...state.projects[activeProject].screens.filter((id) => id !== action.payload)];
-			if (state.projects[activeProject].screens.length > 0) {
-				state.activeScreen = state.projects[activeProject].screens[0];
-			} else if (state.projects[activeProject].screens.length === 0) {
-				if (Object.keys(state.projects).length > 0) {
-					delete state.projects[activeProject];
-					state.activeProject = '';
-					state.activeScreen = '';
-				}
-			}
-
-			state.projects[activeProject].flowEdges = state.projects[activeProject].flowEdges.filter(
-				(edge) => edge.source !== action.payload && edge.target !== action.payload,
-			);
-
-			state.projects[activeProject].flowNodes = state.projects[activeProject].flowNodes.filter((node) => node.id !== action.payload);
-
-			return { ...state };
-		}
+		case ActionTypes.DeleteScreen:
+			return deleteScreen(state, action.payload);
 
 		case ActionTypes.CreateNewProject: {
 			const activeProjectId = getUniqueId();
@@ -224,7 +244,7 @@ const reducer = (state: initialStateType, action: IAction) => {
 					...state.projects,
 					[activeProjectId]: {
 						id: activeProjectId,
-						name: action?.payload || 'Untitled Project',
+						name: action.payload || 'Untitled Project',
 						screens: [activeScreenId],
 						date: getDate(),
 						flowEdges: [],
@@ -274,7 +294,7 @@ const reducer = (state: initialStateType, action: IAction) => {
 					[activeProjectId]: {
 						...state.projects[action.payload.id],
 						id: activeProjectId,
-						name: action?.payload.name || 'Untitled Project',
+						name: action.payload.name || 'Untitled Project',
 						screens: newScreensIds,
 						date: getDate(),
 					},
@@ -284,17 +304,8 @@ const reducer = (state: initialStateType, action: IAction) => {
 			};
 		}
 
-		case ActionTypes.DeleteProject: {
-			window.console.log(state.projects[action.payload]?.screens);
-			const screensIds = state.projects[action.payload]?.screens;
-			screensIds?.map((id) => delete state.screens[id]);
-			delete state.projects[action.payload];
-			return {
-				...state,
-				activeProject: '',
-				activeScreen: '',
-			};
-		}
+		case ActionTypes.DeleteProject:
+			return deleteProject(state, action.payload);
 		case ActionTypes.RenameProject: {
 			state.projects[action.payload.id].name = action.payload.name;
 			return { ...state };
