@@ -8,7 +8,7 @@ export type MessageSystemContainerProps = {
 } & Omit<HTMLAttributes<HTMLDivElement>, 'is'>;
 
 const MessageSystemContainer = ({ className, ...props }: MessageSystemContainerProps) => (
-	<ItemContent {...props} className={cx('rcx-box rcx-box--full rcx-message-system__container', className)} />
+	<ItemContent {...props} className={cx('rcx-message-system__container', className)} />
 );
 
 export default MessageSystemContainer;

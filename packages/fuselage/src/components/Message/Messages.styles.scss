@@ -32,15 +32,10 @@ $message-highlight-colors-link-color: theme('message-highlight-colors-link-color
 $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 
 .rcx-message {
-	// The content column starts at the same x whether or not the header shows.
-	--rcx-item-gap: #{lengths.margin(8)};
-
 	padding-inline: lengths.padding(24);
 
 	// The avatar centres on the header and the first body line, however long the body grows.
 	> .rcx-message-container--left {
-		justify-content: center;
-
 		block-size: calc(#{line-height(h5)} + #{line-height(p2)});
 	}
 
@@ -49,30 +44,23 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 	}
 
 	&-container {
-		display: flex;
-		flex-direction: column;
-		flex-grow: 1;
-		flex-shrink: 1;
-
-		min-width: 1px;
-
 		&--fixed {
+			display: flex;
+			flex-direction: column;
 			align-items: center;
-			flex-grow: 0;
-			flex-shrink: 0;
+			flex: none;
 		}
 
+		// A fixed-width column, so the content starts at the same x with or without an avatar.
 		&--left {
+			flex-direction: column;
 			align-items: flex-end;
-			flex-grow: 0;
-			flex-shrink: 0;
 
 			width: lengths.size(36);
 		}
 	}
 
-	&.rcx-message--editing,
-	&.rcx-message--editing:hover {
+	&.rcx-message--editing {
 		color: $message-color-editing;
 		background: $message-background-color-editing;
 	}
@@ -93,10 +81,6 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 		}
 	}
 
-	&--clickable {
-		cursor: pointer;
-	}
-
 	&-header {
 		&__time {
 			// secondary-info fails contrast against the hover surface.
@@ -106,10 +90,6 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 		}
 
 		&__name-container {
-			display: inline;
-
-			@include use-with-truncated-text();
-
 			@include templates.focus-state;
 			flex-shrink: 0;
 
@@ -129,24 +109,18 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 		&__name {
 			@include use-font-scale(h5);
 			@include use-with-truncated-text();
-			flex-shrink: 1;
 
 			color: colors.font(titles-labels);
 		}
 
 		&__username {
-			@include use-font-scale(p2);
 			@include use-with-truncated-text();
-			flex-shrink: 1;
 
 			color: colors.font(default);
 		}
 
 		&__roles {
-			display: flex;
-			flex-shrink: 1;
-			@include use-with-truncated-text();
-			gap: lengths.margin(4);
+			overflow: hidden;
 		}
 	}
 

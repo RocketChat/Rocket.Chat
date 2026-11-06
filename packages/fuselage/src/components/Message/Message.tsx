@@ -19,11 +19,12 @@ function Message({ className, clickable, sequential, isSelected, isEditing, isPe
 		<Item
 			{...props}
 			align='start'
+			multiline
 			hoverable
+			interactive={clickable}
 			selected={isSelected}
 			className={cx(
 				cxx('rcx-message')({
-					clickable: !!(clickable || props.onClick),
 					sequential: !!sequential,
 					editing: !!isEditing,
 					pending: !!isPending,

@@ -11,7 +11,7 @@ export type MessageSystemProps = {
 } & Omit<AllHTMLAttributes<HTMLDivElement>, 'is'>;
 
 const MessageSystem = ({ children, title, isSelected, className, ...props }: MessageSystemProps) => (
-	<Item {...props} selected={isSelected} title={title} className={cx('rcx-box rcx-box--full rcx-message-system', className)}>
+	<Item {...props} selected={isSelected} title={title} className={cx('rcx-message-system', className)}>
 		{children}
 	</Item>
 );
