@@ -13,7 +13,7 @@ import type {
 	StreamerOptions,
 	StreamRelay,
 	TransformMessage,
-} from './types';
+} from './types.js';
 
 const logger = new Logger('Streamer');
 
