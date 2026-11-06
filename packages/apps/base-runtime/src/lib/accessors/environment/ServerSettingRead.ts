@@ -7,18 +7,25 @@ import type * as Messenger from '../../messenger';
 export class ServerSettingRead implements IServerSettingRead {
 	constructor(private readonly senderFn: typeof Messenger.sendRequest) {}
 
-	public getOneById(id: string): Promise<ISetting> {
-		return bridgeCall<ISetting>(this.senderFn, 'getServerSettingBridge', 'doGetOneById', id, 'APP_ID');
-	}
-
-	public async getValueById(id: string): Promise<any> {
-		const set = (await bridgeCall(this.senderFn, 'getServerSettingBridge', 'doGetOneById', id, 'APP_ID')) as ISetting;
-
+	public async getOneById(id: string): Promise<ISetting> {
+		const set = await bridgeCall<ISetting | null | undefined>(
+			this.senderFn,
+			'getServerSettingBridge',
+			'doGetOneById',
+			id,
+			'APP_ID',
+		);
 		// The host accessor checks `typeof set === 'undefined'`, but across the RPC boundary an
 		// absent (undefined) host return is serialized as null, so both must be treated as "not found".
 		if (set === undefined || set === null) {
 			throw new Error(`No Server Setting found, or it is unaccessible, by the id of "${id}".`);
 		}
+
+		return set;
+	}
+
+	public async getValueById(id: string): Promise<any> {
+		const set = await this.getOneById(id);
 
 		if (set.value === undefined || set.value === null) {
 			return set.packageValue;

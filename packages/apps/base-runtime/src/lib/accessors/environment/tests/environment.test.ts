@@ -34,15 +34,25 @@ describe('Environment accessors (base-runtime)', () => {
 			await assert.rejects(() => new ServerSettingRead(senderFn).getValueById('missing'), /No Server Setting found/);
 		});
 
+		it('getOneById throws when the setting is not found across the bridge', async () => {
+			for (const missing of [undefined, null]) {
+				const { senderFn } = setup({ 'bridges:getServerSettingBridge:doGetOneById': missing });
+				await assert.rejects(() => new ServerSettingRead(senderFn).getOneById('missing'), /No Server Setting found/);
+			}
+		});
+
 		it('getAll throws (not implemented), matching the host accessor', () => {
 			const { senderFn } = setup();
 			assert.throws(() => new ServerSettingRead(senderFn).getAll(), /Method not implemented/);
 		});
 
 		it('getOneById and isReadableById forward verbatim', async () => {
-			const { rec, senderFn } = setup();
+			const { rec, senderFn } = setup({
+				'bridges:getServerSettingBridge:doGetOneById': { id: 's1' },
+				'bridges:getServerSettingBridge:doIsReadableById': true,
+			});
 			const read = new ServerSettingRead(senderFn);
-			await read.getOneById('s1');
+			assert.deepStrictEqual(await read.getOneById('s1'), { id: 's1' });
 			await read.isReadableById('s1');
 			assert.deepStrictEqual(rec.emitted(), [
 				{ method: 'bridges:getServerSettingBridge:doGetOneById', params: ['s1', 'APP_ID'] },
