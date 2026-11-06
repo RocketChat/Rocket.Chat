@@ -9,7 +9,7 @@ import { ChatButton } from './ChatButton';
 import CssVar from './CssVar';
 import ScreenHeader from './Header';
 import { ScreenContext } from './ScreenProvider';
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 
 export type ScreenProps = {
 	title: string;
@@ -29,9 +29,9 @@ const Screen = ({ title, color, agent, children, className, unread, triggered = 
 		theme,
 		livechatLogo,
 		notificationsEnabled,
-		minimized = false,
-		expanded = false,
-		windowed = false,
+		minimized,
+		expanded,
+		windowed,
 		alerts,
 		modal,
 		sound,

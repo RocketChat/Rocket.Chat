@@ -1,4 +1,5 @@
-import type { IAbacAttributeDefinition, IRoom, IUser, AtLeast } from '@rocket.chat/core-typings';
+import type { AbacActor, AbacRoomMembershipPreviewPage } from '@rocket.chat/core-services';
+import type { IAbacAttributeDefinition, IAbacRoomMembershipPreview, IRoom, IUser, AtLeast } from '@rocket.chat/core-typings';
 
 export type IEntityIdentifier = { emailAddress: string } | { id: string };
 
@@ -30,6 +31,18 @@ export interface IGetDecisionBulkResponse {
 
 export type ReevaluationUser = Pick<IUser, '_id' | 'emails' | 'username' | '__rooms'>;
 
+export type EvaluableSubject = Pick<IUser, '_id' | 'username' | 'emails' | 'abacAttributes'>;
+
+export type Evaluation = {
+	compliant: string[];
+	nonCompliant: string[];
+	inconclusive: string[];
+};
+
+export type AttributeSetChange = { added: boolean; removed: boolean };
+
+export type RoomMembersPreview = Pick<IAbacRoomMembershipPreview, 'members' | 'checked' | 'total' | 'next'>;
+
 export type NonCompliantPair = {
 	user: Pick<IUser, '_id' | 'emails' | 'username'>;
 	room: AtLeast<IRoom, '_id' | 'abacAttributes'>;
@@ -45,14 +58,44 @@ export interface IPolicyDecisionPoint {
 		user: AtLeast<IUser, '_id'>,
 	): Promise<{ granted: boolean; userToRemove?: IUser }>;
 
-	checkUsernamesMatchAttributes(usernames: string[], attributes: IAbacAttributeDefinition[], object: IRoom): Promise<void>;
+	checkUsernamesMatchAttributes(usernames: string[], attributes: IAbacAttributeDefinition[], object: Pick<IRoom, '_id'>): Promise<void>;
+
+	assertCreatorMayAssign(attributes: IAbacAttributeDefinition[], actor: AbacActor): Promise<{ creatorAdmitted: boolean }>;
+
+	findUnassignableValues?(
+		attributes: IAbacAttributeDefinition[],
+		actor: AbacActor,
+		alreadyAssigned?: IAbacAttributeDefinition[],
+	): Promise<IAbacAttributeDefinition[]>;
+
+	filterAssignableAttributes?(
+		definitions: IAbacAttributeDefinition[],
+		actor: AbacActor,
+		alreadyAssigned?: IAbacAttributeDefinition[],
+	): Promise<IAbacAttributeDefinition[]>;
+
+	evaluateSubjectsAgainstAttributes(
+		subjects: EvaluableSubject[],
+		attributes: IAbacAttributeDefinition[],
+		object: Pick<IRoom, '_id'>,
+	): Promise<Evaluation>;
+
+	evaluateSubjectAgainstRooms(subject: EvaluableSubject, rooms: AtLeast<IRoom, '_id' | 'abacAttributes'>[]): Promise<Evaluation>;
 
 	onRoomAttributesChanged(
 		room: AtLeast<IRoom, '_id' | 't' | 'teamMain' | 'abacAttributes'>,
 		newAttributes: IAbacAttributeDefinition[],
 	): Promise<IUser[]>;
 
-	onSubjectAttributesChanged(user: IUser, next: IAbacAttributeDefinition[]): Promise<IRoom[]>;
+	needsEvaluation(change: AttributeSetChange): boolean;
+
+	previewRoomMembers(
+		room: AtLeast<IRoom, '_id' | 'abacAttributes'>,
+		attributes: IAbacAttributeDefinition[],
+		page: AbacRoomMembershipPreviewPage,
+	): Promise<RoomMembersPreview>;
+
+	onSubjectAttributesChanged(user: IUser, next: IAbacAttributeDefinition[]): Promise<Pick<IRoom, '_id' | 'name'>[]>;
 
 	evaluateUserRooms(
 		entries: Array<{
@@ -62,6 +105,8 @@ export interface IPolicyDecisionPoint {
 	): Promise<NonCompliantPair[]>;
 
 	reevaluateUsers(users: ReevaluationUser[]): Promise<void | NonCompliantPair[]>;
+
+	refreshSubjectAttributes(userIds: string[]): Promise<void>;
 }
 
 export interface IVirtruPDPConfig {

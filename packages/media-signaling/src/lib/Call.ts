@@ -46,8 +46,8 @@ export interface IClientMediaCallConfig {
 }
 
 const TIMEOUT_TO_ACCEPT = 60000;
-const TIMEOUT_TO_CONFIRM_ACCEPTANCE = 2000;
-const TIMEOUT_TO_PROGRESS_SIGNALING = 10000;
+const TIMEOUT_TO_CONFIRM_ACCEPTANCE = 4000;
+const TIMEOUT_TO_PROGRESS_SIGNALING = 20000;
 const STATE_REPORT_DELAY = 300;
 const CALLS_WITH_NO_REMOTE_DATA_REPORT_DELAY = 5000;
 
@@ -157,6 +157,23 @@ export class ClientMediaCall implements IClientMediaCall {
 		return !this.isPendingAcceptance() && !this.isOver();
 	}
 
+	public get ringing(): boolean {
+		if (this.hidden) {
+			return false;
+		}
+
+		if (this._state !== 'ringing' || !this.hasRemoteData) {
+			return false;
+		}
+
+		if (this.role === 'caller' && this._contact?.type === 'sip') {
+			// On SIP Calls, the caller should start ringing only after the offer is sent to the server
+			return this.sentLocalSdp;
+		}
+
+		return true;
+	}
+
 	public get confirmed(): boolean {
 		return this.hasRemoteData;
 	}
@@ -199,7 +216,11 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	private remoteCallId: string | null;
 
+	private serverIceServers: RTCIceServer[];
+
 	private oldClientState: ClientState;
+
+	private hasFiredRingingEvent: boolean;
 
 	private serviceStates: Map<string, string>;
 
@@ -225,6 +246,8 @@ export class ClientMediaCall implements IClientMediaCall {
 	private receivedRemoteSdp: boolean;
 
 	private enabledFeatures: CallFeature[] | null;
+
+	private hangupReason: CallHangupReason | null;
 
 	private _flags: CallFlag[];
 
@@ -260,6 +283,7 @@ export class ClientMediaCall implements IClientMediaCall {
 
 			return {
 				confirmed: false,
+				hidden: this.hidden,
 				tempCallId: this.tempCallId,
 				state: this.state,
 				title: this.contact.displayName || number || 'unknown',
@@ -278,6 +302,7 @@ export class ClientMediaCall implements IClientMediaCall {
 			activeTimestamp: this.activeTimestamp,
 			tempCallId: this.tempCallId,
 			hidden: this.hidden,
+			ringing: this.ringing,
 
 			localParticipant: this.localParticipant,
 			remoteParticipant: this.remoteParticipant,
@@ -295,6 +320,7 @@ export class ClientMediaCall implements IClientMediaCall {
 
 		this.localCallId = callId;
 		this.remoteCallId = null;
+		this.serverIceServers = [];
 
 		this.acceptedLocally = false;
 		this.acceptedRemotely = false;
@@ -312,12 +338,14 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.sentLocalSdp = false;
 		this.receivedRemoteSdp = false;
 		this.enabledFeatures = null;
+		this.hangupReason = null;
 
 		this.earlySignals = new Set();
 		this.stateTimeoutHandlers = new Set();
 		this._role = 'callee';
 		this._state = 'none';
 		this.oldClientState = 'none';
+		this.hasFiredRingingEvent = false;
 		this._ignored = false;
 		this._contact = null;
 		this._transferredBy = null;
@@ -397,6 +425,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this._service = signal.service;
 		this._role = signal.role;
 		this._flags = signal.flags || [];
+		this.serverIceServers = signal.iceServers || [];
 		this.selfContact = { type: 'user', id: this.config.userId, ...signal.self };
 
 		this._transferredBy = signal.transferredBy || null;
@@ -464,6 +493,7 @@ export class ClientMediaCall implements IClientMediaCall {
 			}
 			this.emitter.emit('contactUpdate');
 			this.emitter.emit('confirmed');
+			this.updateRingingEvent();
 		}
 
 		await this.processEarlySignals();
@@ -571,14 +601,16 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 
 		const hadVideoTrack = this.hasScreenVideoTrack();
-		if (hadVideoTrack && newVideoTrack !== this.screenVideoTrack) {
-			this.config.logger?.debug('ClientMediaCall.setScreenVideoTrack.stopOldTrack');
-			this.screenVideoTrack?.stop();
-		}
-
+		const oldVideoTrack = this.screenVideoTrack;
 		this.screenVideoTrack = newVideoTrack;
 		if (this.webrtcProcessor) {
 			await this.webrtcProcessor.setScreenVideoTrack(newVideoTrack);
+		}
+
+		// Only stop the track after we replaced it on the transceiver, as we don't want the transceiver to stop if there's another track
+		if (hadVideoTrack && newVideoTrack !== oldVideoTrack) {
+			this.config.logger?.debug('ClientMediaCall.setScreenVideoTrack.stopOldTrack');
+			oldVideoTrack?.stop();
 		}
 
 		if (newVideoTrack && !hadVideoTrack) {
@@ -633,13 +665,14 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 
 		if (signalType === 'rejected-call-request') {
-			return this.flagAsEnded('remote');
+			const clientReason = ['busy', 'unavailable'].includes(signal.reason) ? 'unavailable' : undefined;
+			return this.flagAsEnded('remote', clientReason);
 		}
 
 		if (!this.hasRemoteData) {
 			// if the call is over, we no longer need to wait for its data
 			if (signal.type === 'notification' && signal.notification === 'hangup') {
-				this.changeState('hangup');
+				this.setHangupState(signal.hangupReason);
 				return;
 			}
 
@@ -698,7 +731,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 
 		this.config.transporter.answer(this.callId, 'reject');
-		this.changeState('hangup');
+		this.setHangupState('rejected');
 	}
 
 	public transfer(callee: { type: CallActorType; id: string }): void {
@@ -912,6 +945,18 @@ export class ClientMediaCall implements IClientMediaCall {
 		return this._flags.includes(flag);
 	}
 
+	public shouldSkipDroppedEvent(): boolean {
+		if (this.hidden) {
+			return true;
+		}
+
+		if (this.hangupReason === 'normal') {
+			return true;
+		}
+
+		return false;
+	}
+
 	private canChangeToState(newState: CallState): boolean {
 		if (newState === this._state) {
 			return false;
@@ -942,6 +987,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this._state = newState;
 		this.maybeStopWebRTC();
 		this.updateClientState();
+		this.updateRingingEvent();
 
 		this.emitter.emit('stateChange', oldState);
 		this.requestStateReport();
@@ -984,6 +1030,15 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.requestStateReport();
 		this.oldClientState = clientState;
 		this.emitter.emit('clientStateChange', oldClientState);
+	}
+
+	private updateRingingEvent(): void {
+		if (this.hasFiredRingingEvent || !this.ringing) {
+			return;
+		}
+
+		this.hasFiredRingingEvent = true;
+		this.emitter.emit('ringing');
 	}
 
 	private maybeStopWebRTC(): void {
@@ -1049,18 +1104,6 @@ export class ClientMediaCall implements IClientMediaCall {
 		return false;
 	}
 
-	protected async processAnswerRequest(signal: ServerMediaSignalRemoteSDP): Promise<void> {
-		if (this.hidden || this.shouldIgnoreWebRTC()) {
-			return;
-		}
-
-		this.config.logger?.debug('ClientMediaCall.processAnswerRequest', signal);
-
-		this.requireWebRTC();
-
-		void this.negotiationManager.addNegotiation(signal.negotiationId, signal.sdp);
-	}
-
 	protected sendError(error: Partial<ClientMediaSignalError>): void {
 		this.config.logger?.debug('ClientMediaCall.sendError', error);
 
@@ -1078,30 +1121,22 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 
 		if (!this.isSignalTargetingThisSession(signal)) {
-			this.config.logger?.error('Received an offer request that is unsigned, or signed to a different session.');
+			this.config.logger?.error('Received a remote sdp that is not signed to this session.');
 			return;
 		}
 
 		if (this.shouldIgnoreWebRTC()) {
 			return;
 		}
+		if (!['offer', 'answer'].includes(signal.sdp.type)) {
+			this.config.logger?.error('Unsupported remote sdp type.', signal.sdp.type);
+			return;
+		}
 
 		this.requireWebRTC();
 
-		if (signal.streams) {
-			this.webrtcProcessor.setRemoteIds(signal.streams);
-		}
-		switch (signal.sdp.type) {
-			case 'offer':
-				await this.processAnswerRequest(signal);
-				break;
-			case 'answer':
-				await this.negotiationManager.setRemoteDescription(signal.negotiationId, signal.sdp);
-				break;
-			default:
-				this.config.logger?.error('Unsupported sdp type.');
-				return;
-		}
+		this.webrtcProcessor.setRemoteIds(signal);
+		await this.negotiationManager.setRemoteDescription(signal.negotiationId, signal.sdp);
 
 		this.receivedRemoteSdp = true;
 		this.updateClientState();
@@ -1116,6 +1151,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 
 		this.updateClientState();
+		this.updateRingingEvent();
 	}
 
 	protected getLocalStreamIds(): MediaStreamIdentification[] {
@@ -1131,7 +1167,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 
 		this.config.transporter.answer(this.callId, 'unavailable');
-		this.changeState('hangup');
+		this.setHangupState('unavailable');
 	}
 
 	protected async processEarlySignals(): Promise<void> {
@@ -1180,7 +1216,7 @@ export class ClientMediaCall implements IClientMediaCall {
 				break;
 
 			case 'hangup':
-				return this.flagAsEnded('remote');
+				return this.flagAsEnded('remote', signal.hangupReason);
 		}
 	}
 
@@ -1215,16 +1251,24 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.changeState('accepted');
 	}
 
-	private flagAsEnded(reason: CallHangupReason): void {
-		this.config.logger?.debug('ClientMediaCall.flagAsEnded', reason);
+	private flagAsEnded(reasonForServer: CallHangupReason, reasonForClient?: CallHangupReason): void {
+		this.config.logger?.debug('ClientMediaCall.flagAsEnded', reasonForServer, reasonForClient);
 		if (this._state === 'hangup') {
 			return;
 		}
 
 		if (!this.hidden && this.hasRemoteData) {
-			this.config.transporter.hangup(this.callId, reason);
+			this.config.transporter.hangup(this.callId, reasonForServer);
 		}
 
+		this.setHangupState(reasonForClient || reasonForServer);
+	}
+
+	private setHangupState(reason?: CallHangupReason): void {
+		if (reason) {
+			this.hangupReason = reason;
+			this.config.logger?.debug('Hangup Reason:', reason);
+		}
 		this.changeState('hangup');
 	}
 
@@ -1286,6 +1330,8 @@ export class ClientMediaCall implements IClientMediaCall {
 				return 'timeout-local-sdp';
 			case 'activating':
 				return 'timeout-activation';
+			case 'accepting':
+				return 'timeout-accepting';
 		}
 
 		return 'timeout';
@@ -1577,13 +1623,15 @@ export class ClientMediaCall implements IClientMediaCall {
 			this.throwError('webrtc-not-implemented');
 		}
 
+		const iceServers = [...this.config.iceServers, ...this.serverIceServers];
+
 		this.webrtcProcessor = webrtcFactory({
 			logger,
 			iceGatheringTimeout,
 			call: this,
 			inputTrack: this.inputTrack,
 			screenVideoTrack: this.screenVideoTrack,
-			...(this.config.iceServers.length && { rtc: { iceServers: this.config.iceServers } }),
+			...(iceServers.length && { rtc: { iceServers } }),
 		});
 		this.webrtcProcessor.emitter.on('internalStateChange', (stateName) => this.onWebRTCInternalStateChange(stateName));
 		this.webrtcProcessor.emitter.on('streamChanged', () => this.onWebRTCStreamChanged());

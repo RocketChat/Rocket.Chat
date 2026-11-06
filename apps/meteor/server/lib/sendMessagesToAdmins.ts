@@ -2,7 +2,7 @@ import type { IUser, IMessage } from '@rocket.chat/core-typings';
 import { Roles, Users } from '@rocket.chat/models';
 
 import { SystemLogger } from './logger/system';
-import { notifyOnUserChangeAsync } from '../../app/lib/server/lib/notifyListener';
+import { notifyOnUserChangeAsync } from './notifyListener';
 import { createDirectMessage } from '../meteor-methods/messages/createDirectMessage';
 import { executeSendMessage } from '../meteor-methods/messages/sendMessage';
 

@@ -14,7 +14,7 @@ const VersionCardActionItem = ({ icon, label, danger }: VersionCardActionItemPro
 	return (
 		<Box display='flex' alignItems='center' color={danger ? 'danger' : 'secondary-info'} fontScale='p2m'>
 			<FramedIcon danger={danger} icon={icon} />
-			<Box mis={12}>{label}</Box>
+			<Box marginInlineStart={12}>{label}</Box>
 		</Box>
 	);
 };

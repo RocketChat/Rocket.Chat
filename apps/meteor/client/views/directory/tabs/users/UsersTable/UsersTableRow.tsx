@@ -1,5 +1,5 @@
 import type { IDirectoryUserResult, IUser, Serialized } from '@rocket.chat/core-typings';
-import { Box, FlexContainer, FlexItem } from '@rocket.chat/fuselage';
+import { Box, FlexContainer, FlexItem, Text } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { GenericTableRow, GenericTableCell } from '@rocket.chat/ui-client';
 import type { KeyboardEvent, MouseEvent } from 'react';
@@ -30,28 +30,26 @@ const UsersTableRow = ({
 				<FlexContainer>
 					<Box>
 						<FlexItem>{username && <UserAvatar size='x40' title={username} username={username} etag={avatarETag} />}</FlexItem>
-						<Box withTruncatedText mi={8}>
+						<Box withTruncatedText marginInline={8}>
 							<Box display='flex'>
-								<Box fontScale='p2m' withTruncatedText>
+								<Text fontScale='p2m' truncate>
 									{name || username}
 									{nickname && ` (${nickname})`}
-								</Box>{' '}
-								<Box mi={4} />{' '}
-								<Box fontScale='p2' color='hint' withTruncatedText>
+								</Text>{' '}
+								<Box marginInline={4} />{' '}
+								<Text fontScale='p2' color='hint' truncate>
 									{username}
-								</Box>
+								</Text>
 							</Box>
 							<MarkdownText variant='inline' fontScale='p2' color='hint' content={bio} />
 						</Box>
 					</Box>
 				</FlexContainer>
 			</GenericTableCell>
-			{mediaQuery && canViewFullOtherUserInfo && (
-				<GenericTableCell withTruncatedText>{emails?.length && emails[0].address}</GenericTableCell>
-			)}
-			{federation && <GenericTableCell withTruncatedText>{domain}</GenericTableCell>}
+			{mediaQuery && canViewFullOtherUserInfo && <GenericTableCell truncate>{emails?.length && emails[0].address}</GenericTableCell>}
+			{federation && <GenericTableCell truncate>{domain}</GenericTableCell>}
 			{mediaQuery && (
-				<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
+				<GenericTableCell color='hint' truncate>
 					{formatDate(createdAt)}
 				</GenericTableCell>
 			)}

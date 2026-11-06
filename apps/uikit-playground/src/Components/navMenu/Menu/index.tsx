@@ -37,7 +37,7 @@ const Menu = ({ isOpen }: MenuProps) => {
 			position='absolute'
 			width='min(85%, 280px)'
 			height='100%'
-			bg='default'
+			backgroundColor='default'
 			className={[basicStyle, toggleStyle]}
 			onClick={(e) => {
 				e.stopPropagation();

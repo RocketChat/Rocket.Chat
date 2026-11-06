@@ -1,7 +1,9 @@
 import { useUser } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 
+import MediaPlayerProvider from '../../../providers/MediaPlayerProvider';
 import { useCustomEmoji } from '../hooks/loggedIn/useCustomEmoji';
+import { useDesktopUnreadAlert } from '../hooks/loggedIn/useDesktopUnreadAlert';
 import { useE2EEncryption } from '../hooks/loggedIn/useE2EEncryption';
 import { useFingerprintChange } from '../hooks/loggedIn/useFingerprintChange';
 import { useFontStylePreference } from '../hooks/loggedIn/useFontStylePreference';
@@ -30,6 +32,7 @@ const LoggedInArea = ({ children }: LoggedInAreaProps) => {
 	useNotifyUser(user);
 	useUpdateVideoConfUser(user._id);
 	useNotificationUserCalendar(user);
+	useDesktopUnreadAlert();
 	useForceLogout(user._id);
 	useStoreCookiesOnLogin(user._id);
 	useCustomEmoji();
@@ -43,7 +46,7 @@ const LoggedInArea = ({ children }: LoggedInAreaProps) => {
 	useLogoutCleanup();
 	useE2EEncryption();
 
-	return children;
+	return <MediaPlayerProvider>{children}</MediaPlayerProvider>;
 };
 
 export default LoggedInArea;

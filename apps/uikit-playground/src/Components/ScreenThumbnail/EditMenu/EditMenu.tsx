@@ -54,19 +54,21 @@ const EditMenu = ({
 				setIsOpen(true);
 			}}
 		>
-			<Button ref={buttonRef} square mini>
+			<Button ref={buttonRef} square size='mini'>
 				<Icon name='cog' size='x16' />
 			</Button>
 			{isOpen && (
 				<Box position='absolute'>
-					<Box elevation='1' pb='10px' bg='white'>
-						<Box mi='10px'>
+					<Box elevation='1' paddingBlock='x8' backgroundColor='white'>
+						<Box marginInline='x8'>
 							<EditableLabel value={name} onChange={onChange} onBlur={onBlur} {...labelProps} />
-							<Box withTruncatedText mbs='2px' fontScale='p2'>
+							<Box withTruncatedText marginBlockStart='x4' fontScale='p2'>
 								{formatDate(date)}
 							</Box>
 						</Box>
-						<Divider mbs='12px' />
+						<Box paddingBlockStart={4}>
+							<Divider />
+						</Box>
 						<Option disabled={!onDuplicate} onClick={duplicatehandler}>
 							Duplicate
 						</Option>

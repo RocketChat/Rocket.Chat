@@ -50,7 +50,7 @@ const RoomOpenerEmbedded = ({ type, reference }: RoomOpenerProps) => {
 	const { t } = useTranslation();
 
 	return (
-		<Box display='flex' w='full' h='full'>
+		<Box display='flex' width='full' height='full'>
 			<Suspense fallback={<RoomSkeleton />}>
 				{isLoading && <RoomSkeleton />}
 				{isSuccess && (

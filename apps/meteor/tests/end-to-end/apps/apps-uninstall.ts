@@ -1,6 +1,7 @@
+import { after, before, describe, it } from 'node:test';
+
 import type { App } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, request, credentials } from '../../data/api-data';
 import { apps } from '../../data/apps/apps-data';
@@ -10,7 +11,7 @@ import { IS_EE } from '../../e2e/config/constants';
 (IS_EE ? describe : describe.skip)('Apps - Uninstall', () => {
 	let app: App;
 
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	before(async () => {
 		await cleanupApps();
@@ -20,7 +21,7 @@ import { IS_EE } from '../../e2e/config/constants';
 	after(() => cleanupApps());
 
 	describe('[Uninstall]', () => {
-		it('should throw an error when trying to uninstall an invalid app', (done) => {
+		it('should throw an error when trying to uninstall an invalid app', (_t, done) => {
 			void request
 				.delete(apps('/invalid-id'))
 				.set(credentials)
@@ -32,7 +33,7 @@ import { IS_EE } from '../../e2e/config/constants';
 				})
 				.end(done);
 		});
-		it('should remove the app successfully', (done) => {
+		it('should remove the app successfully', (_t, done) => {
 			void request
 				.delete(apps(`/${app.id}`))
 				.set(credentials)

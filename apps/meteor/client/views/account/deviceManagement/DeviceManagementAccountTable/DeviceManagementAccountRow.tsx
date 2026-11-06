@@ -1,11 +1,10 @@
-import { Box, Button } from '@rocket.chat/fuselage';
+import { Box, Button, Text } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
-import { GenericTableCell, GenericTableRow } from '@rocket.chat/ui-client';
+import { GenericTableCell, GenericTableRow, useFormatDateAndTime } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
 import DeviceIcon from '../../../../components/deviceManagement/DeviceIcon';
 import { useDeviceLogout } from '../../../../hooks/useDeviceLogout';
-import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 
 type DevicesRowProps = {
 	_id: string;
@@ -29,10 +28,10 @@ const DeviceManagementAccountRow = ({ _id, deviceName, deviceType = 'browser', d
 				<Box display='flex' alignItems='center'>
 					<DeviceIcon deviceType={deviceType} />
 					{deviceName && (
-						<Box withTruncatedText>
+						<Text truncate>
 							{deviceName}
 							{current && ` (${t('current')})`}
-						</Box>
+						</Text>
 					)}
 				</Box>
 			</GenericTableCell>

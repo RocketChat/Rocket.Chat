@@ -7,9 +7,9 @@ export type WizardActionsProps = {
 };
 
 const WizardActions = ({ annotation, children }: WizardActionsProps) => (
-	<Box className='steps-wizard-footer' pbs={24} display='flex' alignItems='center' justifyContent='end'>
+	<Box className='steps-wizard-footer' paddingBlockStart={24} display='flex' alignItems='center' justifyContent='end'>
 		{annotation ? (
-			<Box mie='auto' fontScale='c1' color='annotation'>
+			<Box marginInlineEnd='auto' fontScale='c1' color='annotation'>
 				{annotation}
 			</Box>
 		) : null}

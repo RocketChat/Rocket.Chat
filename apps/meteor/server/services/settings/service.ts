@@ -3,8 +3,8 @@ import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { SettingValue } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
 
-import { notifyOnSettingChangedById } from '../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../app/settings/server';
+import { notifyOnSettingChangedById } from '../../lib/notifyListener';
+import { settings } from '../../settings';
 import { verifyFingerPrint } from '../../settings/misc';
 
 export class SettingsService extends ServiceClassInternal implements ISettingsService {

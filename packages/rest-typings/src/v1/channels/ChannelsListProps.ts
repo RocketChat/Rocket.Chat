@@ -1,7 +1,10 @@
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 import { ajvQuery } from '../Ajv';
+import { paginationQueryProperties } from '../pagination';
 
-export type ChannelsListProps = PaginatedRequest<{ _id?: string }>;
+export type ChannelsListProps = PaginatedRequest<{
+	_id?: string;
+}>;
 
 const channelsListPropsSchema = {
 	type: 'object',
@@ -9,15 +12,7 @@ const channelsListPropsSchema = {
 		_id: {
 			type: 'string',
 		},
-		query: {
-			type: 'string',
-		},
-		count: {
-			type: 'number',
-		},
-		offset: {
-			type: 'number',
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 		},

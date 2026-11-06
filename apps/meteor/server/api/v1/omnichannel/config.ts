@@ -3,9 +3,9 @@ import mem from 'mem';
 
 import { API } from '../..';
 import { settings, findOpenRoom, getExtraConfigInfo, findAgent, findGuestWithoutActivity } from './lib/livechat';
-import { RoutingManager } from '../../../../app/livechat/server/lib/RoutingManager';
-import { online } from '../../../../app/livechat/server/lib/service-status';
-import { settings as serverSettings } from '../../../../app/settings/server';
+import { RoutingManager } from '../../../lib/omnichannel/RoutingManager';
+import { online } from '../../../lib/omnichannel/service-status';
+import { settings as serverSettings } from '../../../settings';
 import type { ExtractRoutesFromAPI } from '../../ApiClass';
 
 const cachedSettings = mem(settings, {
@@ -62,6 +62,6 @@ const livechatConfigEndpoints = API.v1.get(
 type LivechatConfigEndpoints = ExtractRoutesFromAPI<typeof livechatConfigEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
 	interface Endpoints extends LivechatConfigEndpoints {}
 }

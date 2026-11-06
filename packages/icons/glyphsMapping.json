@@ -1,0 +1,1166 @@
+{
+	"add-reaction": {
+		"start": "\ue000"
+	},
+	"at": {
+		"start": "\ue001"
+	},
+	"back": {
+		"start": "(",
+		"end": ")"
+	},
+	"arrow-down": {
+		"start": "\ue002"
+	},
+	"attachment": {
+		"start": "\ue003"
+	},
+	"ban": {
+		"start": "\ue004"
+	},
+	"bell": {
+		"start": "\ue005"
+	},
+	"bell-off": {
+		"start": "\ue006"
+	},
+	"backspace": {
+		"start": "[",
+		"end": "]"
+	},
+	"book": {
+		"start": "\ue007"
+	},
+	"bold": {
+		"start": "\ue008"
+	},
+	"business": {
+		"start": "\ue009"
+	},
+	"calendar": {
+		"start": "\ue00a"
+	},
+	"card": {
+		"start": "\ue00b"
+	},
+	"chat": {
+		"start": "\ue00d"
+	},
+	"check": {
+		"start": "\ue00e"
+	},
+	"checkmark-circled": {
+		"start": "\ue00f"
+	},
+	"chevron-down": {
+		"start": "\ue010"
+	},
+	"chevron-double-down": {
+		"start": "\ue10b"
+	},
+	"chevron-double-up": {
+		"start": "\ue10d"
+	},
+	"chevron-left": {
+		"start": "{",
+		"end": "}"
+	},
+	"chevron-right": {
+		"start": "\u0f3a",
+		"end": "\u0f3b"
+	},
+	"chevron-up": {
+		"start": "\ue011"
+	},
+	"circle": {
+		"start": "\ue012"
+	},
+	"circle-check": {
+		"start": "\ue013"
+	},
+	"circle-cross": {
+		"start": "\ue014"
+	},
+	"circled-arrow-down": {
+		"start": "\ue015"
+	},
+	"clip": {
+		"start": "\ue016"
+	},
+	"clipboard": {
+		"start": "\ue017"
+	},
+	"clock": {
+		"start": "\ue018"
+	},
+	"cloud-plus": {
+		"start": "\ue019"
+	},
+	"code": {
+		"start": "\ue01a"
+	},
+	"cog": {
+		"start": "\ue01b"
+	},
+	"computer": {
+		"start": "\ue01c"
+	},
+	"copy": {
+		"start": "\ue01d"
+	},
+	"cross": {
+		"start": "\ue01e"
+	},
+	"cube": {
+		"start": "\ue01f"
+	},
+	"customize": {
+		"start": "\ue020"
+	},
+	"dialpad": {
+		"start": "\ue021"
+	},
+	"directory": {
+		"start": "\ue022"
+	},
+	"discover": {
+		"start": "\ue023"
+	},
+	"discussion": {
+		"start": "\ue024"
+	},
+	"download": {
+		"start": "\ue025"
+	},
+	"edit": {
+		"start": "\ue026"
+	},
+	"edit-rounded": {
+		"start": "\ue027"
+	},
+	"emoji": {
+		"start": "\ue028"
+	},
+	"equal": {
+		"start": "\ue10f"
+	},
+	"eraser": {
+		"start": "\ue029"
+	},
+	"exit": {
+		"start": "\u0f3c",
+		"end": "\u0f3d"
+	},
+	"eye": {
+		"start": "\ue02a"
+	},
+	"eye-off": {
+		"start": "\ue02b"
+	},
+	"facebook": {
+		"start": "\ue02c"
+	},
+	"file-document": {
+		"start": "\ue02d"
+	},
+	"file-generic": {
+		"start": "\ue02e"
+	},
+	"file-google-drive": {
+		"start": "\ue02f"
+	},
+	"file-keynote": {
+		"start": "\ue030"
+	},
+	"file-pdf": {
+		"start": "\ue031"
+	},
+	"file-sheets": {
+		"start": "\ue032"
+	},
+	"files-audio": {
+		"start": "\ue033"
+	},
+	"files-video": {
+		"start": "\ue034"
+	},
+	"files-zip": {
+		"start": "\ue035"
+	},
+	"filter": {
+		"start": "\ue036"
+	},
+	"fingerprint": {
+		"start": "\ue037"
+	},
+	"flag": {
+		"start": "\ue038"
+	},
+	"folder": {
+		"start": "\ue039"
+	},
+	"game": {
+		"start": "\ue03a"
+	},
+	"github": {
+		"start": "\ue03b"
+	},
+	"gitlab": {
+		"start": "\ue03c"
+	},
+	"google": {
+		"start": "\ue03d"
+	},
+	"group-by-type": {
+		"start": "\ue03e"
+	},
+	"hand-pointer": {
+		"start": "\ue03f"
+	},
+	"hash": {
+		"start": "\ue040"
+	},
+	"hashtag": {
+		"start": "\ue041"
+	},
+	"help": {
+		"start": "\ue042"
+	},
+	"home": {
+		"start": "\ue043"
+	},
+	"import": {
+		"start": "\ue044"
+	},
+	"hubot": {
+		"start": "\ue045"
+	},
+	"info": {
+		"start": "\ue046"
+	},
+	"info-circled": {
+		"start": "\ue047"
+	},
+	"intermediate": {
+		"start": "\ue048"
+	},
+	"italic": {
+		"start": "\ue049"
+	},
+	"jump": {
+		"start": "\u169b",
+		"end": "\u169c"
+	},
+	"key": {
+		"start": "\ue04a"
+	},
+	"keyboard": {
+		"start": "\ue04b"
+	},
+	"language": {
+		"start": "\ue04c"
+	},
+	"link": {
+		"start": "\ue04d"
+	},
+	"linkedin": {
+		"start": "\ue04e"
+	},
+	"list": {
+		"start": "\ue04f"
+	},
+	"list-alt": {
+		"start": "\ue050"
+	},
+	"livechat": {
+		"start": "\ue051"
+	},
+	"loading": {
+		"start": "\ue052"
+	},
+	"lock": {
+		"start": "\ue053"
+	},
+	"mail": {
+		"start": "\ue054"
+	},
+	"magnifier": {
+		"start": "\ue055"
+	},
+	"map-pin": {
+		"start": "\ue056"
+	},
+	"menu": {
+		"start": "\ue057"
+	},
+	"mic": {
+		"start": "\ue058"
+	},
+	"message": {
+		"start": "\ue059"
+	},
+	"mic-off": {
+		"start": "\ue05a"
+	},
+	"modal-warning": {
+		"start": "\ue05b"
+	},
+	"mobile": {
+		"start": "\ue05c"
+	},
+	"multiline": {
+		"start": "\u2045",
+		"end": "\u2046"
+	},
+	"moon": {
+		"start": "\ue05d"
+	},
+	"mute": {
+		"start": "\ue05e"
+	},
+	"new-chat": {
+		"start": "\ue05f"
+	},
+	"new-window": {
+		"start": "\u207d",
+		"end": "\u207e"
+	},
+	"omnichannel": {
+		"start": "\ue060"
+	},
+	"pause": {
+		"start": "\ue061"
+	},
+	"phone": {
+		"start": "\ue062"
+	},
+	"permalink": {
+		"start": "\ue063"
+	},
+	"play": {
+		"start": "\u208d",
+		"end": "\u208e"
+	},
+	"pin": {
+		"start": "\ue064"
+	},
+	"play-solid": {
+		"start": "\ue065"
+	},
+	"plus": {
+		"start": "\ue066"
+	},
+	"podcast": {
+		"start": "\ue067"
+	},
+	"post": {
+		"start": "\ue068"
+	},
+	"quote": {
+		"start": "\ue069"
+	},
+	"queue": {
+		"start": "\ue06a"
+	},
+	"rec": {
+		"start": "\ue06b"
+	},
+	"refresh": {
+		"start": "\ue06c"
+	},
+	"reload": {
+		"start": "\ue06d"
+	},
+	"reply": {
+		"start": "\u2308",
+		"end": "\u2309"
+	},
+	"reply-directly": {
+		"start": "\u230a",
+		"end": "\u230b"
+	},
+	"report": {
+		"start": "\ue06e"
+	},
+	"send": {
+		"start": "\u2329",
+		"end": "\u232a"
+	},
+	"share": {
+		"start": "\ue06f"
+	},
+	"shield": {
+		"start": "\ue070"
+	},
+	"send-active": {
+		"start": "\u2768",
+		"end": "\u2769"
+	},
+	"shield-alt": {
+		"start": "\ue071"
+	},
+	"shield-check": {
+		"start": "\ue072"
+	},
+	"sign-out": {
+		"start": "\u276a",
+		"end": "\u276b"
+	},
+	"snippet": {
+		"start": "\ue073"
+	},
+	"sort": {
+		"start": "\ue074"
+	},
+	"sort-amount-down": {
+		"start": "\ue075"
+	},
+	"star": {
+		"start": "\ue076"
+	},
+	"star-filled": {
+		"start": "\ue077"
+	},
+	"strike": {
+		"start": "\ue078"
+	},
+	"sun": {
+		"start": "\ue079"
+	},
+	"team": {
+		"start": "\ue07a"
+	},
+	"th-list": {
+		"start": "\u276c",
+		"end": "\u276d"
+	},
+	"thread": {
+		"start": "\ue07b"
+	},
+	"threads": {
+		"start": "\ue07c"
+	},
+	"transfer": {
+		"start": "\u276e",
+		"end": "\u276f"
+	},
+	"trash": {
+		"start": "\ue07d"
+	},
+	"twitter": {
+		"start": "\ue07e"
+	},
+	"undo": {
+		"start": "\u2770",
+		"end": "\u2771"
+	},
+	"upload": {
+		"start": "\ue07f"
+	},
+	"user": {
+		"start": "\ue080"
+	},
+	"user-plus": {
+		"start": "\ue081"
+	},
+	"video": {
+		"start": "\u2772",
+		"end": "\u2773"
+	},
+	"user-rounded": {
+		"start": "\ue082"
+	},
+	"video-off": {
+		"start": "\u2774",
+		"end": "\u2775"
+	},
+	"volume-disable": {
+		"start": "\u27c5",
+		"end": "\u27c6"
+	},
+	"volume": {
+		"start": "\u27e6",
+		"end": "\u27e7"
+	},
+	"volume-disabled": {
+		"start": "\u27e8",
+		"end": "\u27e9"
+	},
+	"volume-mute": {
+		"start": "\u27ea",
+		"end": "\u27eb"
+	},
+	"volume-off": {
+		"start": "\u27ec",
+		"end": "\u27ed"
+	},
+	"warning": {
+		"start": "\ue083"
+	},
+	"chevron-expand": {
+		"start": "\ue084"
+	},
+	"underline": {
+		"start": "\ue085"
+	},
+	"doner": {
+		"start": "\ue086"
+	},
+	"kebab": {
+		"start": "\ue087"
+	},
+	"meatballs": {
+		"start": "\ue088"
+	},
+	"condensed-view": {
+		"start": "\u27ee",
+		"end": "\u27ef"
+	},
+	"extended-view": {
+		"start": "\u2983",
+		"end": "\u2984"
+	},
+	"medium-view": {
+		"start": "\u2985",
+		"end": "\u2986"
+	},
+	"audio": {
+		"start": "\ue089"
+	},
+	"camera": {
+		"start": "\ue08a"
+	},
+	"image": {
+		"start": "\ue08b"
+	},
+	"video-disabled": {
+		"start": "\ue08c"
+	},
+	"video-filled": {
+		"start": "\ue08d"
+	},
+	"sort-az": {
+		"start": "\u2987",
+		"end": "\u2988"
+	},
+	"avatar": {
+		"start": "\ue08e"
+	},
+	"globe": {
+		"start": "\ue08f"
+	},
+	"add-user": {
+		"start": "\ue090"
+	},
+	"bag": {
+		"start": "\ue091"
+	},
+	"ball": {
+		"start": "\ue092"
+	},
+	"cancel": {
+		"start": "\ue093"
+	},
+	"canned-response": {
+		"start": "\ue094"
+	},
+	"arrow-collapse": {
+		"start": "\ue095"
+	},
+	"desktop": {
+		"start": "\ue096"
+	},
+	"doc": {
+		"start": "\ue097"
+	},
+	"arrow-expand": {
+		"start": "\ue098"
+	},
+	"arrow-fall": {
+		"start": "\ue099"
+	},
+	"h-bar": {
+		"start": "\ue09a"
+	},
+	"headset": {
+		"start": "\ue09b"
+	},
+	"history": {
+		"start": "\ue09c"
+	},
+	"joystick": {
+		"start": "\ue09d"
+	},
+	"jump-to-message": {
+		"start": "\ue09e"
+	},
+	"live": {
+		"start": "\ue09f"
+	},
+	"pin-map": {
+		"start": "\ue0a0"
+	},
+	"arrow-rise": {
+		"start": "\ue0a1"
+	},
+	"send-filled": {
+		"start": "\ue0a2"
+	},
+	"sheet": {
+		"start": "\ue0a3"
+	},
+	"signal": {
+		"start": "\ue0a4"
+	},
+	"squares": {
+		"start": "\ue0a5"
+	},
+	"zip": {
+		"start": "\ue0a6"
+	},
+	"circle-arrow-down": {
+		"start": "\ue0a7"
+	},
+	"adobe": {
+		"start": "\ue0a8"
+	},
+	"google-drive": {
+		"start": "\ue0a9"
+	},
+	"arrow-back": {
+		"start": "\u2989",
+		"end": "\u298a"
+	},
+	"arrow-jump": {
+		"start": "\u298b",
+		"end": "\u298c"
+	},
+	"emoji-plus": {
+		"start": "\ue0aa"
+	},
+	"musical-note": {
+		"start": "\ue0ab"
+	},
+	"baloon-ellipsis": {
+		"start": "\ue0ac"
+	},
+	"baloons": {
+		"start": "\ue0ad"
+	},
+	"baloon-exclamation": {
+		"start": "\ue0ae"
+	},
+	"baloon-text": {
+		"start": "\ue0af"
+	},
+	"arrow-down-box": {
+		"start": "\ue0b0"
+	},
+	"arrow-return": {
+		"start": "\u298d",
+		"end": "\u298e"
+	},
+	"arrow-loop": {
+		"start": "\ue0b1"
+	},
+	"pencil": {
+		"start": "\u298f",
+		"end": "\u2990"
+	},
+	"pencil-box": {
+		"start": "\u2991",
+		"end": "\u2992"
+	},
+	"new-channel": {
+		"start": "\u2993",
+		"end": "\u2994"
+	},
+	"arrow-up-box": {
+		"start": "\ue0b2"
+	},
+	"file": {
+		"start": "\u2995",
+		"end": "\u2996"
+	},
+	"user-arrow-right": {
+		"start": "\u2997",
+		"end": "\u2998"
+	},
+	"cloud-arrow-up": {
+		"start": "\ue0b3"
+	},
+	"stack": {
+		"start": "\ue0b4"
+	},
+	"contact": {
+		"start": "\ue0b5"
+	},
+	"phone-off": {
+		"start": "\ue0b6"
+	},
+	"message-disabled": {
+		"start": "\ue0b7"
+	},
+	"login": {
+		"start": "\ue0b8"
+	},
+	"burger": {
+		"start": "\ue0b9"
+	},
+	"document-eye": {
+		"start": "\ue0bc"
+	},
+	"baloon-arrow-left": {
+		"start": "\ue0bd"
+	},
+	"hashtag-lock": {
+		"start": "\ue0be"
+	},
+	"team-lock": {
+		"start": "\ue0bf"
+	},
+	"members": {
+		"start": "\ue0c0"
+	},
+	"baloon-arrow-top-right": {
+		"start": "\ue0c1"
+	},
+	"baloon-close-top-right": {
+		"start": "\ue0c2"
+	},
+	"burger-arrow-left": {
+		"start": "\ue0c3"
+	},
+	"mail-arrow-top-right": {
+		"start": "\ue0c4"
+	},
+	"balloon": {
+		"start": "\ue0c5"
+	},
+	"balloon-arrow-left": {
+		"start": "\ue0c6"
+	},
+	"balloon-arrow-top-right": {
+		"start": "\ue0c7"
+	},
+	"balloon-close-top-right": {
+		"start": "\ue0c8"
+	},
+	"balloon-ellipsis": {
+		"start": "\ue0c9"
+	},
+	"balloon-off": {
+		"start": "\ue0ca"
+	},
+	"balloon-text": {
+		"start": "\ue0cb"
+	},
+	"balloons": {
+		"start": "\ue0cc"
+	},
+	"balloon-exclamation": {
+		"start": "\ue0cd"
+	},
+	"pause-unfilled": {
+		"start": "\ue0ce"
+	},
+	"team-arrow-right": {
+		"start": "\ue0d1"
+	},
+	"error-circle": {
+		"start": "\ue0d2"
+	},
+	"list-bullets": {
+		"start": "\ue0d3"
+	},
+	"list-numbers": {
+		"start": "\ue0d4"
+	},
+	"success-circle": {
+		"start": "\ue0d5"
+	},
+	"volume-lock": {
+		"start": "\ue0d6"
+	},
+	"headphone": {
+		"start": "\ue0d7"
+	},
+	"headphone-off": {
+		"start": "\ue0d8"
+	},
+	"brush": {
+		"start": "\ue0d9"
+	},
+	"crop": {
+		"start": "\ue0da"
+	},
+	"cross-small": {
+		"start": "\ue0db"
+	},
+	"globe-off": {
+		"start": "\ue0dc"
+	},
+	"plus-small": {
+		"start": "\ue0dd"
+	},
+	"text-increase": {
+		"start": "\ue0de"
+	},
+	"text-decrease": {
+		"start": "\ue0df"
+	},
+	"phone-disabled": {
+		"start": "\ue0e0"
+	},
+	"sms": {
+		"start": "\ue0e1"
+	},
+	"phone-in": {
+		"start": "\ue0e2"
+	},
+	"phone-out": {
+		"start": "\ue0e3"
+	},
+	"circle-exclamation": {
+		"start": "\ue0e5"
+	},
+	"emoji-neutral": {
+		"start": "\ue0e7"
+	},
+	"stopwatch": {
+		"start": "\ue0e9"
+	},
+	"globe-cross": {
+		"start": "\ue0eb"
+	},
+	"arrow-stack-up": {
+		"start": "\ue0ed"
+	},
+	"shield-blank": {
+		"start": "\ue0ef"
+	},
+	"mobile-exclamation": {
+		"start": "\ue0f1"
+	},
+	"circle-half": {
+		"start": "\ue0f3"
+	},
+	"circle-quarter": {
+		"start": "\ue0f5"
+	},
+	"circle-three-quarters": {
+		"start": "\ue0f7"
+	},
+	"mobile-check": {
+		"start": "\ue0f9"
+	},
+	"phone-issue": {
+		"start": "\ue0fb"
+	},
+	"notebook-hashtag-crossed": {
+		"start": "\ue0fd"
+	},
+	"notebook-hashtag": {
+		"start": "\ue0ff"
+	},
+	"arrow-forward": {
+		"start": "\ue101"
+	},
+	"address-book": {
+		"start": "\ue103"
+	},
+	"store": {
+		"start": "\ue105"
+	},
+	"lightning": {
+		"start": "\ue107"
+	},
+	"spanner": {
+		"start": "\ue109"
+	},
+	"attachment-file": {
+		"start": "\ue111"
+	},
+	"cloud-arrow-down": {
+		"start": "\ue113"
+	},
+	"code-block": {
+		"start": "\ue115"
+	},
+	"formula": {
+		"start": "\ue117"
+	},
+	"katex": {
+		"start": "\ue119"
+	},
+	"compass": {
+		"start": "\ue11b"
+	},
+	"palette": {
+		"start": "\ue11d"
+	},
+	"play-unfilled": {
+		"start": "\ue11f"
+	},
+	"stop-unfilled": {
+		"start": "\ue121"
+	},
+	"stop": {
+		"start": "\ue123"
+	},
+	"desktop-text": {
+		"start": "\ue125"
+	},
+	"rocket": {
+		"start": "\ue127"
+	},
+	"burger-menu": {
+		"start": "\ue129"
+	},
+	"airplane": {
+		"start": "\ue12b"
+	},
+	"lamp-bulb": {
+		"start": "\ue12d"
+	},
+	"percentage": {
+		"start": "\ue12f"
+	},
+	"leaf": {
+		"start": "\ue131"
+	},
+	"user-lock": {
+		"start": "\ue137"
+	},
+	"dashboard": {
+		"start": "\ue139"
+	},
+	"pause-shape-filled": {
+		"start": "\ue13b"
+	},
+	"play-shape-filled": {
+		"start": "\ue13d"
+	},
+	"flask": {
+		"start": "\ue13f"
+	},
+	"tag": {
+		"start": "\ue141"
+	},
+	"smart": {
+		"start": "\ue143"
+	},
+	"person-arms-spread": {
+		"start": "\ue145"
+	},
+	"rocketchat": {
+		"start": "\ue147"
+	},
+	"arrow-up": {
+		"start": "\ue149"
+	},
+	"circle-unfilled": {
+		"start": "\ue14b"
+	},
+	"check-single": {
+		"start": "\ue14f"
+	},
+	"check-double": {
+		"start": "\ue151"
+	},
+	"stars": {
+		"start": "\ue153"
+	},
+	"share-alt": {
+		"start": "\ue155"
+	},
+	"cloud": {
+		"start": "\ue157"
+	},
+	"ai": {
+		"start": "\ue159"
+	},
+	"pause-shape-unfilled": {
+		"start": "\ue15b"
+	},
+	"question-mark": {
+		"start": "\ue15d"
+	},
+	"circle-unfilled-large": {
+		"start": "\ue15f"
+	},
+	"circle-unfilled-small": {
+		"start": "\ue161"
+	},
+	"arrow-back-up": {
+		"start": "\u29da",
+		"end": "\u29db"
+	},
+	"video-message": {
+		"start": "\ue163"
+	},
+	"stacked-meatballs": {
+		"start": "\ue147"
+	},
+	"inbox": {
+		"start": "\ue165"
+	},
+	"phone-plus": {
+		"start": "\ue167"
+	},
+	"team-shield": {
+		"start": "\ue169"
+	},
+	"hash-shield": {
+		"start": "\ue16b"
+	},
+	"arrow-down-left": {
+		"start": "\ue16d"
+	},
+	"arrow-up-right": {
+		"start": "\ue16f"
+	},
+	"phone-question-mark": {
+		"start": "\ue171"
+	},
+	"desktop-cross": {
+		"start": "\ue173"
+	},
+	"desktop-arrow-up": {
+		"start": "\ue175"
+	},
+	"pin-filled": {
+		"start": "\ue177"
+	},
+	"arrow-from-cross-box": {
+		"start": "\ue17d"
+	},
+	"arrow-to-square-box": {
+		"start": "\ue17f"
+	},
+	"archive": {
+		"start": "\ue181"
+	},
+	"bell-dot": {
+		"start": "\ue183"
+	},
+	"closed-captions": {
+		"start": "\ue189"
+	},
+	"folder-plus": {
+		"start": "\u2e22",
+		"end": "\u2e23"
+	},
+	"hand": {
+		"start": "\ue18d"
+	},
+	"hd-filled": {
+		"start": "\ue18f"
+	},
+	"hd": {
+		"start": "\ue191"
+	},
+	"hash-lock": {
+		"start": "\ue193"
+	},
+	"image-resize": {
+		"start": "\ue195"
+	},
+	"move": {
+		"start": "\ue197"
+	},
+	"prune": {
+		"start": "\ue19b"
+	},
+	"resize": {
+		"start": "\ue19f"
+	},
+	"search-sparkle": {
+		"start": "\ue1a1"
+	},
+	"sidebar": {
+		"start": "\u2e26",
+		"end": "\u2e27"
+	},
+	"square-arrow-down-left": {
+		"start": "\ue1a3"
+	},
+	"square-arrows-contained-inwards": {
+		"start": "\ue1a5"
+	},
+	"square-arrows-contained-outwards": {
+		"start": "\ue1a7"
+	},
+	"square-slash": {
+		"start": "\ue1ab"
+	},
+	"star-plus": {
+		"start": "\ue1ad"
+	},
+	"note": {
+		"start": "\u2e55",
+		"end": "\u2e56"
+	},
+	"tag-horizontal": {
+		"start": "\ue1af"
+	},
+	"tag-horizontal-filled": {
+		"start": "\ue1b1"
+	},
+	"tag-horizontal-plus": {
+		"start": "\ue1b3"
+	},
+	"voicemail": {
+		"start": "\ue1bb"
+	},
+	"volume-question-mark": {
+		"start": "\ue1bd"
+	},
+	"square-arrow-up-right": {
+		"start": "\ue1bf"
+	},
+	"attachment-file-filled": {
+		"start": "\ue1c1"
+	},
+	"chevron-left-big": {
+		"start": "\u2e59",
+		"end": "\u2e5a"
+	},
+	"chevron-down-big": {
+		"start": "\ue1c3"
+	},
+	"chevron-up-big": {
+		"start": "\ue1c5"
+	},
+	"chevron-right-big": {
+		"start": "\u3008",
+		"end": "\u3009"
+	},
+	"jump-backward": {
+		"start": "\ue1c7"
+	},
+	"jump-forward": {
+		"start": "\ue1c9"
+	},
+	"arrow-left": {
+		"start": "\u300c",
+		"end": "\u300d"
+	},
+	"arrow-right": {
+		"start": "\u3010",
+		"end": "\u3011"
+	},
+	"arrow-up-down": {
+		"start": "\ue1cb"
+	},
+	"folder-star": {
+		"start": "\u3016",
+		"end": "\u3017"
+	},
+	"address-book-plus": {
+		"start": "\ue1cd"
+	},
+	"book-clock": {
+		"start": "\ue1cf"
+	}
+}

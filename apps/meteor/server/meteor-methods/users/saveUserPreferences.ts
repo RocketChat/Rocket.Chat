@@ -1,18 +1,17 @@
-import type { ISubscription, ThemePreference } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
+import { StatusVisibility, ClientSafeError } from '@rocket.chat/core-services';
+import type { ISidebarCategory, ISubscription, ThemePreference } from '@rocket.chat/core-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import type { FontSize } from '@rocket.chat/rest-typings';
-import { Match, check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 
-import { methodDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
 import {
 	notifyOnSubscriptionChangedByAutoTranslateAndUserId,
 	notifyOnSubscriptionChangedByUserId,
 	notifyOnSubscriptionChangedByUserPreferences,
 	notifyOnUserChange,
-} from '../../../app/lib/server/lib/notifyListener';
-import { settings as rcSettings } from '../../../app/settings/server';
+} from '../../lib/notifyListener';
+import { resolveUsersByUsernames } from '../../lib/statusVisibility/resolveUsers';
+import { isUserHidingAllowed } from '../../lib/statusVisibility/settings';
+import { settings as rcSettings } from '../../settings';
 
 type UserPreferences = {
 	language: string;
@@ -45,6 +44,7 @@ type UserPreferences = {
 	sidebarViewMode: string;
 	sidebarDisplayAvatar: boolean;
 	sidebarGroupByType: boolean;
+	sidebarCategories: ISidebarCategory[];
 	muteFocusedConversations: boolean;
 	dontAskAgainList: { action: string; label: string }[];
 	themeAppearence: ThemePreference;
@@ -54,14 +54,8 @@ type UserPreferences = {
 	enableMobileRinging: boolean;
 	mentionsWithSymbol?: boolean;
 	utcOffset?: number;
+	statusVisibilityDenied?: string[];
 };
-
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		saveUserPreferences(preferences: Partial<UserPreferences>): boolean;
-	}
-}
 
 async function updateNotificationPreferences(
 	userId: ISubscription['u']['_id'],
@@ -88,50 +82,37 @@ async function updateNotificationPreferences(
 	}
 }
 
+const MAX_CATEGORY_NAME_LENGTH = 30;
+
+export const validateSidebarCategories = (categories: ISidebarCategory[]): void => {
+	for (const category of categories) {
+		if (category.default) {
+			continue;
+		}
+		const trimmed = category.name.trim();
+		if (!trimmed) {
+			throw new ClientSafeError('error-invalid-param', 'sidebarCategories contains a blank category name');
+		}
+		if (trimmed.length > MAX_CATEGORY_NAME_LENGTH) {
+			throw new ClientSafeError('error-invalid-param', 'sidebarCategories category name exceeds maximum length');
+		}
+	}
+
+	const hasDuplicates = (values: string[]): boolean => new Set(values).size !== values.length;
+	if (hasDuplicates(categories.map((category) => category._id))) {
+		throw new ClientSafeError('error-invalid-param', 'sidebarCategories contains duplicate category _id values');
+	}
+};
+
 export const saveUserPreferences = async (settings: Partial<UserPreferences>, userId: string): Promise<void> => {
-	const keys = {
-		language: Match.Optional(String),
-		newRoomNotification: Match.Optional(String),
-		newMessageNotification: Match.Optional(String),
-		clockMode: Match.Optional(Number),
-		useEmojis: Match.Optional(Boolean),
-		convertAsciiEmoji: Match.Optional(Boolean),
-		saveMobileBandwidth: Match.Optional(Boolean),
-		collapseMediaByDefault: Match.Optional(Boolean),
-		autoImageLoad: Match.Optional(Boolean),
-		emailNotificationMode: Match.Optional(String),
-		unreadAlert: Match.Optional(Boolean),
-		masterVolume: Match.Optional(Number),
-		notificationsSoundVolume: Match.Optional(Number),
-		voipRingerVolume: Match.Optional(Number),
-		desktopNotifications: Match.Optional(String),
-		pushNotifications: Match.Optional(String),
-		enableAutoAway: Match.Optional(Boolean),
-		highlights: Match.Optional([String]),
-		hideUsernames: Match.Optional(Boolean),
-		hideRoles: Match.Optional(Boolean),
-		displayAvatars: Match.Optional(Boolean),
-		hideFlexTab: Match.Optional(Boolean),
-		sendOnEnter: Match.Optional(String),
-		idleTimeLimit: Match.Optional(Number),
-		sidebarShowFavorites: Match.Optional(Boolean),
-		sidebarShowUnread: Match.Optional(Boolean),
-		sidebarSortby: Match.Optional(String),
-		sidebarViewMode: Match.Optional(String),
-		sidebarDisplayAvatar: Match.Optional(Boolean),
-		sidebarGroupByType: Match.Optional(Boolean),
-		muteFocusedConversations: Match.Optional(Boolean),
-		themeAppearence: Match.Optional(String),
-		fontSize: Match.Optional(String),
-		omnichannelTranscriptEmail: Match.Optional(Boolean),
-		omnichannelTranscriptPDF: Match.Optional(Boolean),
-		omnichannelHideConversationAfterClosing: Match.Optional(Boolean),
-		notifyCalendarEvents: Match.Optional(Boolean),
-		enableMobileRinging: Match.Optional(Boolean),
-		mentionsWithSymbol: Match.Optional(Boolean),
-		utcOffset: Match.Optional(Number),
-	};
-	check(settings, Match.ObjectIncluding(keys));
+	const nullPreference = Object.keys(settings).find((key) => settings[key as keyof UserPreferences] === null);
+	if (nullPreference) {
+		throw new ClientSafeError('error-invalid-param', `Invalid value for preference ${nullPreference}`);
+	}
+
+	if (settings.sidebarCategories) {
+		validateSidebarCategories(settings.sidebarCategories);
+	}
 
 	const user = await Users.findOneById(userId);
 	if (!user) {
@@ -167,10 +148,21 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 	}
 
 	if (settings.idleTimeLimit != null && settings.idleTimeLimit < 60) {
-		throw new Meteor.Error('invalid-idle-time-limit-value', 'Invalid idleTimeLimit');
+		throw new ClientSafeError('invalid-idle-time-limit-value', 'Invalid idleTimeLimit');
 	}
 
-	await Users.setPreferences(user._id, settings);
+	if (!isUserHidingAllowed()) {
+		delete settings.statusVisibilityDenied;
+	}
+
+	const requested = settings.statusVisibilityDenied?.filter((username) => username !== user.username);
+	const denied = requested ? await resolveUsersByUsernames(requested) : undefined;
+
+	if (denied) {
+		settings.statusVisibilityDenied = denied.usernames;
+	}
+
+	await Users.setPreferences(user._id, denied ? { ...settings, statusVisibilityDenied: denied.ids } : settings);
 
 	const diff = (Object.keys(settings) as (keyof UserPreferences)[]).reduce<Record<string, any>>((data, key) => {
 		data[`settings.preferences.${key}`] = settings[key];
@@ -186,6 +178,10 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 			...(settings.language != null && { language: settings.language }),
 		},
 	});
+
+	if (settings.statusVisibilityDenied != null) {
+		void StatusVisibility.invalidate([user._id]);
+	}
 
 	// propagate changed notification preferences
 	setImmediate(async () => {
@@ -230,17 +226,3 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 		}
 	});
 };
-
-Meteor.methods<ServerMethods>({
-	async saveUserPreferences(settings) {
-		methodDeprecationLogger.method('saveUserPreferences', '9.0.0', '/v1/users.setPreferences');
-		const userId = Meteor.userId();
-		if (!userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'saveUserPreferences' });
-		}
-
-		await saveUserPreferences(settings, userId);
-
-		return true;
-	},
-});

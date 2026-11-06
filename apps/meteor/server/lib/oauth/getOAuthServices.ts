@@ -1,7 +1,7 @@
 import { isTruthy } from '@rocket.chat/tools';
 
 import { OAuthConfigs } from './oauthConfigs';
-import { type ICachedSettings } from '../../../app/settings/server/CachedSettings';
+import { type ICachedSettings } from '../../settings/CachedSettings';
 
 export const getOAuthServices = (settings: ICachedSettings) => {
 	const services = settings.getByRegexp(/^(Accounts_OAuth_|Accounts_OAuth_Custom-)[a-z0-9_]+$/i);
@@ -12,10 +12,7 @@ export const getOAuthServices = (settings: ICachedSettings) => {
 				return;
 			}
 
-			let serviceName = key.replace('Accounts_OAuth_', '');
-			if (serviceName === 'Meteor') {
-				serviceName = 'meteor-developer';
-			}
+			const serviceName = key.replace('Accounts_OAuth_', '');
 
 			if (/Accounts_OAuth_Custom-/.test(key)) {
 				return;

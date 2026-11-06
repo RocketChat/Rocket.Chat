@@ -1,0 +1,161 @@
+import { Box, Button, ItemGroup, ItemGroupHeader, ItemGroupTitle } from '@rocket.chat/fuselage';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import VoiceActivity from '../../call/VoiceActivity';
+import { ConferenceContext, useConference } from '../../context/ConferenceContext';
+import type { CallParticipantEntry } from '../../lib/callParticipants';
+import { composeCallParticipants } from '../../lib/callParticipants';
+import { hasConferenceChatAccess } from '../../lib/chatAccess';
+import type { PluginParticipant } from '../../lib/providerPlugin';
+import AddParticipantsModal from '../AddParticipantsModal/AddParticipantsModal';
+import CallMemberItem from '../CallMemberItem/CallMemberItem';
+import CallPanelHeader from '../CallPanelHeader';
+import CallParticipantItem from '../CallParticipantItem/CallParticipantItem';
+
+/** What a call running in this window knows about its members, by user id. */
+export type MembersInCall = {
+	raisedHands: ReadonlySet<string>;
+	mutedMembers: ReadonlySet<string>;
+	audioStreams: ReadonlyMap<string, MediaStream | undefined>;
+	muteMember: (memberId: string) => void;
+};
+
+type CallMembersPanelProps = {
+	/** Absent for a provider at an address of its own, whose call this window cannot see into. */
+	inCall?: MembersInCall;
+	onClose: () => void;
+};
+
+// A stable empty list, so a provider with no plugin does not recompose the groups on every render.
+const NO_PARTICIPANTS: PluginParticipant[] = [];
+
+const CallMembersPanel = ({ inCall, onClose }: CallMembersPanelProps) => {
+	const { t } = useTranslation();
+	const setModal = useSetModal();
+	const dispatchToastMessage = useToastMessageDispatch();
+	const conference = useConference();
+	const { call, room, actions, provider, viewer } = conference;
+	const { members } = call;
+	const { rid, chatAccess } = room;
+
+	// The plugin says which participant this window joined as — the one pairing a shared display name cannot
+	// settle on its own. No other row can be claimed this way.
+	const claimants = useMemo(() => {
+		const participantUuid = provider?.self?.participantUuid;
+
+		if (!participantUuid || !viewer.uid) {
+			return members;
+		}
+
+		return members.map((member) => (member._id === viewer.uid ? { ...member, providerParticipantId: participantUuid } : member));
+	}, [members, provider?.self?.participantUuid, viewer.uid]);
+
+	// Ours decides which group a row is in, the provider's decides what it can do: composed, not derived.
+	const { waiting, present, absent } = useMemo(
+		() => composeCallParticipants(claimants, provider?.participants ?? NO_PARTICIPANTS),
+		[claimants, provider?.participants],
+	);
+
+	// The lobby first, because everyone in it is waiting on somebody in this panel to let them in.
+	const groups = (
+		[
+			{ title: 'Waiting_to_join', entries: waiting },
+			{ title: 'In_call', entries: present },
+			{ title: 'Not_in_the_call', entries: absent },
+		] satisfies { title: TranslationKey; entries: CallParticipantEntry[] }[]
+	).filter(({ entries }) => entries.length > 0);
+
+	// A set rather than one pending request: ringing a second member put the first back in reach.
+	const [ringingMembers, setRingingMembers] = useState<string[]>([]);
+
+	const ringMember = (memberId: string) => {
+		setRingingMembers((current) => [...current, memberId]);
+
+		void actions
+			.ringMember(memberId)
+			.catch((error) => dispatchToastMessage({ type: 'error', message: error }))
+			.finally(() => setRingingMembers((current) => current.filter((id) => id !== memberId)));
+	};
+
+	const renderEntry = ({ key, member, participant }: CallParticipantEntry) => {
+		const controls =
+			provider && participant
+				? {
+						participant,
+						features: provider.features,
+						actions: provider.actions,
+						self: provider.self,
+						// The provider is the only thing that can name the viewer's own row across the two lists.
+						isSelf: provider.self?.participantUuid === participant.uuid,
+					}
+				: undefined;
+
+		if (member) {
+			return (
+				<CallMemberItem
+					key={key}
+					member={member}
+					hasChatAccess={hasConferenceChatAccess(chatAccess, member._id)}
+					// Until the server's answer comes back, this is what says the ask is already on its way.
+					ringing={ringingMembers.includes(member._id)}
+					controls={controls}
+					handRaised={inCall?.raisedHands.has(member._id)}
+					muted={inCall?.mutedMembers.has(member._id)}
+					onMute={inCall?.muteMember}
+					activity={inCall && <VoiceActivity stream={inCall.audioStreams.get(member._id)} size={14} badge />}
+					onRing={ringMember}
+				/>
+			);
+		}
+
+		// Only the provider's own roster puts a row here, so there is always something behind it.
+		return controls ? <CallParticipantItem key={key} {...controls} /> : null;
+	};
+
+	return (
+		<>
+			<CallPanelHeader title={t('People')} onClose={onClose}>
+				{rid && (
+					<Button
+						size='small'
+						icon='user-plus'
+						// The modal region is mounted outside the conference's provider, so the context is carried
+						// across by hand or the modal loses the user picker and the ring option.
+						onClick={() =>
+							setModal(
+								<ConferenceContext.Provider value={conference}>
+									<AddParticipantsModal onClose={() => setModal(null)} />
+								</ConferenceContext.Provider>,
+							)
+						}
+					>
+						{t('Add_people')}
+					</Button>
+				)}
+			</CallPanelHeader>
+
+			{/* A list per group rather than one list around everything, so each group is named by its own heading and
+			    the box around them is a `group` so the panel still has one handle. The heading is hidden from the
+			    list's contents: it already names the list, and a `list` should report only its rows. */}
+			<Box role='group' aria-label={t('Members')} flexGrow={1} overflowY='auto' paddingBlock={12}>
+				{groups.map(({ title, entries }) => (
+					<ItemGroup key={title} role='list' aria-label={t(title)}>
+						<Box aria-hidden>
+							<ItemGroupHeader inset='lg'>
+								<ItemGroupTitle>
+									{t(title)} ({entries.length})
+								</ItemGroupTitle>
+							</ItemGroupHeader>
+						</Box>
+						{entries.map(renderEntry)}
+					</ItemGroup>
+				))}
+			</Box>
+		</>
+	);
+};
+
+export default CallMembersPanel;

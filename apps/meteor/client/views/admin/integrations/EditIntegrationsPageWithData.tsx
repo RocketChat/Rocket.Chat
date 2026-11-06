@@ -1,5 +1,5 @@
 import type { IIncomingIntegration } from '@rocket.chat/core-typings';
-import { Box, Skeleton } from '@rocket.chat/fuselage';
+import { Box, Skeleton, Stack } from '@rocket.chat/fuselage';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
@@ -22,19 +22,25 @@ const EditIntegrationsPageWithData = ({ integrationId }: EditIntegrationsPageWit
 
 	if (isPending) {
 		return (
-			<Box w='full' p={24}>
-				<Skeleton mbe={4} />
-				<Skeleton mbe={8} />
-				<Skeleton mbe={4} />
-				<Skeleton mbe={8} />
-				<Skeleton mbe={4} />
-				<Skeleton mbe={8} />
+			<Box width='full' padding={24} display='flex' flexDirection='column' gap={8}>
+				<Stack gap={4}>
+					<Skeleton />
+					<Skeleton />
+				</Stack>
+				<Stack gap={4}>
+					<Skeleton />
+					<Skeleton />
+				</Stack>
+				<Box display='flex' flexDirection='column' gap={4} paddingBlockEnd={8}>
+					<Skeleton />
+					<Skeleton />
+				</Box>
 			</Box>
 		);
 	}
 
 	if (isError) {
-		return <Box mbs={16}>{t('Oops_page_not_found')}</Box>;
+		return <Box marginBlockStart={16}>{t('Oops_page_not_found')}</Box>;
 	}
 
 	if (data?.integration.type === 'webhook-outgoing') {

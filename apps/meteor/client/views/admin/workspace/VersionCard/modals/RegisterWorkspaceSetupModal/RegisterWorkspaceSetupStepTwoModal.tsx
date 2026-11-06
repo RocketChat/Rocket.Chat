@@ -1,17 +1,19 @@
 import {
-	Modal,
 	Box,
 	Field,
 	FieldLabel,
 	FieldRow,
-	TextInput,
+	Modal,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
 	ModalHeader,
 	ModalHeaderText,
 	ModalTagline,
 	ModalTitle,
-	ModalClose,
-	ModalContent,
-	ModalFooter,
+	Stack,
+	Text,
+	TextInput,
 } from '@rocket.chat/fuselage';
 import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect } from 'react';
@@ -86,31 +88,33 @@ const RegisterWorkspaceSetupStepTwoModal = ({ email, step, setStep, onClose, int
 						<Trans i18nKey='cloud.RegisterWorkspace_Setup_Email_Confirmation'>
 							<Box is='p'>
 								Email sent to{' '}
-								<Box is='span' fontScale='p2b'>
+								<Text is='span' fontScale='p2b'>
 									{email}{' '}
-								</Box>
+								</Text>
 								with a confirmation link.
 							</Box>
 						</Trans>
 					</Box>
-					<Box is='p'>{t('RegisterWorkspace_Setup_Email_Verification')}</Box>
-					<Field pbs={10}>
-						<FieldLabel>{t('Security_code')}</FieldLabel>
-						<FieldRow>
-							<TextInput defaultValue={intentData.user_code} disabled />
-						</FieldRow>
-					</Field>
+					<Stack gap='x8'>
+						<Box is='p'>{t('RegisterWorkspace_Setup_Email_Verification')}</Box>
+						<Field>
+							<FieldLabel>{t('Security_code')}</FieldLabel>
+							<FieldRow>
+								<TextInput defaultValue={intentData.user_code} disabled />
+							</FieldRow>
+						</Field>
+					</Stack>
 				</Box>
 			</ModalContent>
 			<ModalFooter>
-				<Box is='div' display='flex' justifyContent='start' fontSize='c1' w='full'>
+				<Box is='div' display='flex' justifyContent='start' fontSize='c1' width='full'>
 					<Trans i18nKey='RegisterWorkspace_Didnt_Receive_Email'>
 						Didn't receive email?{' '}
-						<Box is='a' pi={4} onClick={handleResendRegistrationEmail}>
+						<Box is='a' paddingInline={4} onClick={handleResendRegistrationEmail}>
 							Resend
 						</Box>{' '}
 						or{' '}
-						<Box is='a' pi={4} onClick={handleBackFromConfirmation}>
+						<Box is='a' paddingInline={4} onClick={handleBackFromConfirmation}>
 							change email
 						</Box>
 					</Trans>

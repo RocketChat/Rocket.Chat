@@ -32,7 +32,7 @@ test.describe('User - Password change required', () => {
 		poRegistration = new Registration(page);
 		navbar = new Navbar(page);
 		sidebar = new RoomSidebar(page);
-		await page.goto('/home');
+		await poLogin.goto();
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -142,7 +142,7 @@ test.describe('User - Password change not required', () => {
 		poLogin = new Login(page);
 		navbar = new Navbar(page);
 		sidebar = new RoomSidebar(page);
-		await page.goto('/home');
+		await poLogin.goto();
 	});
 
 	test.afterAll(async ({ api }) => {

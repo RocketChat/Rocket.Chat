@@ -40,7 +40,7 @@ export class OmnichannelContactInfo extends FlexTab {
 	}
 
 	private get customFieldsGroup() {
-		return this.root.getByRole('group', { name: 'Custom Fields' });
+		return this.root.getByRole('group', { name: 'Custom fields' });
 	}
 
 	getInfoByValue(value: string): Locator {

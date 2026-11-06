@@ -11,9 +11,9 @@ export type AppsListProps = {
 
 const AppsList = ({ apps, title, appsListId }: AppsListProps) => {
 	return (
-		<Box mbe={16}>
+		<Box marginBlockEnd={16}>
 			{title && (
-				<Box is='h2' id={appsListId} fontScale='h3' color='default' mbe={20}>
+				<Box is='h2' id={appsListId} fontScale='h3' color='default' marginBlockEnd={20}>
 					{title}
 				</Box>
 			)}

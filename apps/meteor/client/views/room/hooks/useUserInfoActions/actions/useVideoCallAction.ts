@@ -8,19 +8,22 @@ import {
 	useSetting,
 	usePermission,
 	useUserCard,
+	useEndpoint,
 } from '@rocket.chat/ui-contexts';
 import {
 	useVideoConfDispatchOutgoing,
 	useVideoConfIsCalling,
 	useVideoConfIsRinging,
 	useVideoConfLoadCapabilities,
+	useVideoConfStartCall,
+	useVideoConfWindowEnabled,
 } from '@rocket.chat/ui-video-conf';
 import { useMemo } from 'react';
 
 import { useVideoConfWarning } from '../../../contextualBar/VideoConference/hooks/useVideoConfWarning';
 import type { UserInfoAction } from '../useUserInfoActions';
 
-export const useVideoCallAction = (user: Pick<IUser, '_id' | 'username'>): UserInfoAction | undefined => {
+export const useVideoCallAction = (user: Pick<IUser, '_id' | 'username' | 'federated'>): UserInfoAction | undefined => {
 	const t = useTranslation();
 	const usernameSubscription = useUserSubscriptionByName(user.username ?? '');
 	const room = useUserRoom(usernameSubscription?.rid || '');
@@ -29,30 +32,48 @@ export const useVideoCallAction = (user: Pick<IUser, '_id' | 'username'>): UserI
 	const loadCapabilities = useVideoConfLoadCapabilities();
 	const dispatchWarning = useVideoConfWarning();
 	const dispatchPopup = useVideoConfDispatchOutgoing();
+	const startCall = useVideoConfStartCall();
 	const isCalling = useVideoConfIsCalling();
 	const isRinging = useVideoConfIsRinging();
 	const ownUserId = useUserId();
+	const conferenceWindowEnabled = useVideoConfWindowEnabled();
 
 	const enabledForDMs = useSetting('VideoConf_Enable_DMs');
 	const permittedToCallManagement = usePermission('call-management', room?._id);
+	const canCreateDirectMessage = usePermission('create-d');
+	const createDirectMessage = useEndpoint('POST', '/v1/im.create');
 
 	const videoCallOption = useMemo<UserInfoAction | undefined>(() => {
 		const action = async (): Promise<void> => {
-			if (isCalling || isRinging || !room) {
+			if (isCalling || isRinging || !user.username) {
 				return;
 			}
 
 			try {
 				await loadCapabilities();
 				closeUserCard();
-				dispatchPopup({ rid: room._id });
+
+				// A call placed from a card is about the person, not the room, so a missing DM is created on the way
+				// (im.create also returns the existing room when the subscription simply hasn't resolved yet).
+				const rid = room?._id ?? (await createDirectMessage({ username: user.username })).room.rid;
+
+				if (conferenceWindowEnabled) {
+					startCall(rid);
+					return;
+				}
+
+				dispatchPopup({ rid });
 			} catch (error: any) {
 				dispatchWarning(error.error);
 			}
 		};
 
+		// Without a DM, the entry is only offered to someone a DM can be created with: im.create needs a username,
+		// and calls are not supported over federation.
+		const hasCallableRoom = room ? !isRoomFederated(room) : canCreateDirectMessage && !user.federated && !!user.username;
+
 		const shouldShowStartCall =
-			room && !isRoomFederated(room) && user._id !== ownUserId && enabledForDMs && permittedToCallManagement && !isCalling && !isRinging;
+			hasCallableRoom && user._id !== ownUserId && enabledForDMs && permittedToCallManagement && !isCalling && !isRinging;
 
 		return shouldShowStartCall
 			? {
@@ -65,16 +86,22 @@ export const useVideoCallAction = (user: Pick<IUser, '_id' | 'username'>): UserI
 	}, [
 		room,
 		user._id,
+		user.username,
+		user.federated,
+		canCreateDirectMessage,
 		ownUserId,
 		enabledForDMs,
 		permittedToCallManagement,
 		isCalling,
 		isRinging,
+		conferenceWindowEnabled,
 		t,
+		startCall,
 		dispatchPopup,
 		dispatchWarning,
 		closeUserCard,
 		loadCapabilities,
+		createDirectMessage,
 	]);
 
 	return videoCallOption;

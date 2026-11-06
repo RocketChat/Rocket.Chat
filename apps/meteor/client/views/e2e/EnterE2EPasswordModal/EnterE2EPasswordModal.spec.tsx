@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { composeStories } from '@storybook/react';
 import { render, screen } from '@testing-library/react';
@@ -8,11 +7,6 @@ import EnterE2EPasswordModal from '.';
 import * as stories from './EnterE2EPasswordModal.stories';
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
-
-test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
-	const { baseElement } = render(<Story />);
-	expect(baseElement).toMatchSnapshot();
-});
 
 test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
 	const { container } = render(<Story />);

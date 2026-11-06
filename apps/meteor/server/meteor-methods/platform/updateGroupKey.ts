@@ -1,10 +1,6 @@
 import { Subscriptions, Rooms } from '@rocket.chat/models';
 
-import {
-	notifyOnSubscriptionChangedById,
-	notifyOnSubscriptionChanged,
-	notifyOnRoomChangedById,
-} from '../../../app/lib/server/lib/notifyListener';
+import { notifyOnSubscriptionChangedById, notifyOnSubscriptionChanged, notifyOnRoomChangedById } from '../../lib/notifyListener';
 
 export async function updateGroupKey(rid: string, uid: string, key: string, callerUserId: string) {
 	// I have a subscription to this room

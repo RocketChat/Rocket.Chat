@@ -1,4 +1,4 @@
-import { settingsRegistry } from '../../../app/settings/server';
+import { settingsRegistry } from '../../../server/settings';
 
 export const addSettings = async (): Promise<void> => {
 	const omnichannelEnabledQuery = { _id: 'Livechat_enabled', value: true };

@@ -1,15 +1,14 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { OmnichannelAdmin } from './omnichannel-admin';
+import { OmnichannelAdmin, OmnichannelSectionsHref } from './omnichannel-admin';
 import { FlexTab } from '../fragments/flextabs/flextab';
 import { Listbox } from '../fragments/listbox';
-import { Table } from '../fragments/table';
 
 class OmnichannelEditAgentFlexTab extends FlexTab {
 	readonly listbox: Listbox;
 
 	constructor(page: Page) {
-		super(page.getByRole('dialog', { name: 'Edit User' }));
+		super(page.getByRole('dialog', { name: 'Edit user' }));
 		this.listbox = new Listbox(page);
 	}
 
@@ -18,7 +17,7 @@ class OmnichannelEditAgentFlexTab extends FlexTab {
 	}
 
 	get inputDepartment(): Locator {
-		return this.root.getByLabel('Departments').getByRole('textbox');
+		return this.root.getByLabel('Departments');
 	}
 
 	getDepartmentOption(name: string) {
@@ -35,11 +34,14 @@ class OmnichannelEditAgentFlexTab extends FlexTab {
 	}
 
 	findSelectedDepartment(name: string) {
-		return this.root.getByLabel('Departments', { exact: true }).getByRole('option', { name });
+		return this.root
+			.getByRole('listbox')
+			.filter({ has: this.root.page().getByLabel('Departments', { exact: true }) })
+			.getByRole('option', { name });
 	}
 
 	private get inputStatus(): Locator {
-		return this.root.getByText('Status', { exact: true });
+		return this.root.getByRole('combobox', { name: 'Status', exact: true });
 	}
 
 	async selectStatus(status: string) {
@@ -50,7 +52,7 @@ class OmnichannelEditAgentFlexTab extends FlexTab {
 
 class OmnichannelAgentInfoFlexTab extends FlexTab {
 	constructor(page: Page) {
-		super(page.getByRole('dialog', { name: 'User Info' }));
+		super(page.getByRole('dialog', { name: 'User info' }));
 	}
 
 	get btnEdit(): Locator {
@@ -62,18 +64,14 @@ class OmnichannelAgentInfoFlexTab extends FlexTab {
 	}
 }
 
-class OmnichannelAgentsTable extends Table {
-	constructor(page: Page) {
-		super(page.getByRole('table', { name: 'Agents' }));
-	}
-}
-
 export class OmnichannelAgents extends OmnichannelAdmin {
+	protected readonly route = OmnichannelSectionsHref.agents;
+
+	protected readonly title = 'Agents';
+
 	readonly editAgent: OmnichannelEditAgentFlexTab;
 
 	readonly agentInfo: OmnichannelAgentInfoFlexTab;
-
-	readonly table: OmnichannelAgentsTable;
 
 	readonly listbox: Listbox;
 
@@ -81,7 +79,6 @@ export class OmnichannelAgents extends OmnichannelAdmin {
 		super(page);
 		this.editAgent = new OmnichannelEditAgentFlexTab(page);
 		this.agentInfo = new OmnichannelAgentInfoFlexTab(page);
-		this.table = new OmnichannelAgentsTable(page);
 		this.listbox = new Listbox(page);
 	}
 

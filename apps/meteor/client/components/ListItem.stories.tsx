@@ -16,44 +16,56 @@ export default {
 
 export const ListWithIcon: StoryFn<typeof Tile> = () => {
 	return (
-		<Tile elevation='2' p='0' display='flex' flexDirection='column' overflow='auto' w='x240'>
-			<Box flexShrink={1} pb={12}>
-				<OptionTitle>Title</OptionTitle>
-				<ListItem text='Item 1' icon='info' />
-				<ListItem text='Item 2' icon='star' />
-				<ListItem text='Item 3' icon='hashtag' />
-				<ListItem text='Item 4' icon='team' />
-			</Box>
-		</Tile>
+		<Box width='x240'>
+			<Tile elevation='2' flush>
+				<Box display='flex' flexDirection='column' overflow='auto'>
+					<Box flexShrink={1} paddingBlock={12}>
+						<OptionTitle>Title</OptionTitle>
+						<ListItem text='Item 1' icon='info' />
+						<ListItem text='Item 2' icon='star' />
+						<ListItem text='Item 3' icon='hashtag' />
+						<ListItem text='Item 4' icon='team' />
+					</Box>
+				</Box>
+			</Tile>
+		</Box>
 	);
 };
 
 export const NoIcon: StoryFn<typeof Tile> = () => {
 	return (
-		<Tile elevation='2' p='0' display='flex' flexDirection='column' overflow='auto' w='x240'>
-			<Box flexShrink={1} pb={12}>
-				<OptionTitle>Title</OptionTitle>
-				<ListItem text='Item 1' />
-				<ListItem text='Item 2' />
-				<ListItem text='Item 3' />
-				<ListItem text='Item 4' />
-			</Box>
-		</Tile>
+		<Box width='x240'>
+			<Tile elevation='2' flush>
+				<Box display='flex' flexDirection='column' overflow='auto'>
+					<Box flexShrink={1} paddingBlock={12}>
+						<OptionTitle>Title</OptionTitle>
+						<ListItem text='Item 1' />
+						<ListItem text='Item 2' />
+						<ListItem text='Item 3' />
+						<ListItem text='Item 4' />
+					</Box>
+				</Box>
+			</Tile>
+		</Box>
 	);
 };
 
 export const MixedWithGap: StoryObj<typeof Tile> = {
 	render: () => {
 		return (
-			<Tile elevation='2' p='0' display='flex' flexDirection='column' overflow='auto' w='x240'>
-				<Box flexShrink={1} pb={12}>
-					<OptionTitle>Title</OptionTitle>
-					<ListItem text='Item 1' icon='hashtag' />
-					<ListItem text='Item 2' icon='team' />
-					<ListItem text='Item 3' gap />
-					<ListItem text='Item 4' icon='airplane' />
-				</Box>
-			</Tile>
+			<Box width='x240'>
+				<Tile elevation='2' flush>
+					<Box display='flex' flexDirection='column' overflow='auto'>
+						<Box flexShrink={1} paddingBlock={12}>
+							<OptionTitle>Title</OptionTitle>
+							<ListItem text='Item 1' icon='hashtag' />
+							<ListItem text='Item 2' icon='team' />
+							<ListItem text='Item 3' gap />
+							<ListItem text='Item 4' icon='airplane' />
+						</Box>
+					</Box>
+				</Tile>
+			</Box>
 		);
 	},
 
@@ -70,15 +82,19 @@ export const MixedWithGap: StoryObj<typeof Tile> = {
 export const MixedWithoutGap: StoryObj<typeof Tile> = {
 	render: () => {
 		return (
-			<Tile elevation='2' p='0' display='flex' flexDirection='column' overflow='auto' w='x240'>
-				<Box flexShrink={1} pb={12}>
-					<OptionTitle>Title</OptionTitle>
-					<ListItem text='Item 1' icon='hashtag' />
-					<ListItem text='Item 2' icon='team' />
-					<ListItem text='Item 3' />
-					<ListItem text='Item 4' icon='airplane' />
-				</Box>
-			</Tile>
+			<Box width='x240'>
+				<Tile elevation='2' flush>
+					<Box display='flex' flexDirection='column' overflow='auto'>
+						<Box flexShrink={1} paddingBlock={12}>
+							<OptionTitle>Title</OptionTitle>
+							<ListItem text='Item 1' icon='hashtag' />
+							<ListItem text='Item 2' icon='team' />
+							<ListItem text='Item 3' />
+							<ListItem text='Item 4' icon='airplane' />
+						</Box>
+					</Box>
+				</Tile>
+			</Box>
 		);
 	},
 

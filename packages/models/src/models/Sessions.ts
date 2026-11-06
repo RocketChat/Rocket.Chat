@@ -11,7 +11,7 @@ import type {
 	IUser,
 	RocketChatRecordDeleted,
 } from '@rocket.chat/core-typings';
-import type { ISessionsModel } from '@rocket.chat/model-typings';
+import type { ISessionsModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
 import type { PaginatedResult, WithItemCount } from '@rocket.chat/rest-typings';
 import type {
 	AggregationCursor,
@@ -25,7 +25,6 @@ import type {
 	IndexDescription,
 	UpdateResult,
 	OptionalId,
-	FindOptions,
 } from 'mongodb';
 
 import { getCollectionName } from '../index';
@@ -992,8 +991,6 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 			{ key: { createdAt: -1 } },
 			{ key: { loginAt: -1 } },
 			{ key: { searchTerm: 1 }, partialFilterExpression: { searchTerm: { $exists: true } }, background: true },
-			// TODO: remove this index in the next major release (8.0.0) - its only consumer (findLastLoginByIp) was removed
-			// { key: { ip: 1, loginAt: -1 } },
 			{ key: { userId: 1, sessionId: 1 } },
 			{ key: { type: 1, year: 1, month: 1, day: 1 } },
 			{ key: { sessionId: 1, instanceId: 1, year: 1, month: 1, day: 1 } },
@@ -1572,11 +1569,10 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 		);
 	}
 
-	async getLoggedInByUserIdAndSessionId<T extends Document = ISession>(
-		userId: string,
-		sessionId: string,
-		options?: FindOptions<T>,
-	): Promise<T | null> {
-		return this.findOne({ userId, sessionId, logoutAt: { $exists: false } }, options);
+	async getLoggedInByUserIdAndSessionId<
+		T extends Document = ISession,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(userId: string, sessionId: string, options?: O): Promise<DocumentWithProjection<T, O> | null> {
+		return this.findOne<T, O>({ userId, sessionId, logoutAt: { $exists: false } }, options);
 	}
 }

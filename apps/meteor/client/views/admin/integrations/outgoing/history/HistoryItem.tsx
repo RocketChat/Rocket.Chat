@@ -1,13 +1,13 @@
 import type { IIntegrationHistory, Serialized } from '@rocket.chat/core-typings';
-import { Button, Icon, Box, AccordionItem, Field, FieldGroup, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
+import { Button, Icon, Box, AccordionItem, Field, FieldGroup, FieldLabel, FieldRow, Stack } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { useMethod } from '@rocket.chat/ui-contexts';
+import { useFormatDateAndTime } from '@rocket.chat/ui-client';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
 import type { MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { outgoingEvents } from '../../../../../../app/integrations/lib/outgoingEvents';
-import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
+import { outgoingEvents } from '../../../../../../lib/integrations/outgoingEvents';
 import { useHighlightedCode } from '../../../../../hooks/useHighlightedCode';
 
 export type HistoryItemProps = { data: Serialized<IIntegrationHistory> };
@@ -15,7 +15,7 @@ export type HistoryItemProps = { data: Serialized<IIntegrationHistory> };
 const HistoryItem = ({ data }: HistoryItemProps) => {
 	const { t } = useTranslation();
 
-	const replayOutgoingIntegration = useMethod('replayOutgoingIntegration');
+	const replayOutgoingIntegration = useEndpoint('POST', '/v1/integrations.replayOutgoing');
 
 	const {
 		_id,
@@ -56,12 +56,12 @@ const HistoryItem = ({ data }: HistoryItemProps) => {
 	return (
 		<AccordionItem
 			title={
-				<Box display='inline-flex' w='full' flexDirection='row' justifyContent='space-between'>
-					<Box display='flex' flexDirection='row' alignItems='center'>
-						<Icon name='info-circled' size='x16' mie={4} />
+				<Box display='inline-flex' width='full' flexDirection='row' justifyContent='space-between'>
+					<Stack direction='row' align='center' gap={4}>
+						<Icon name='info-circled' size='x16' />
 						{formatDateAndTime(_createdAt)}
-					</Box>
-					<Button secondary onClick={handleClickReplay}>
+					</Stack>
+					<Button variant='secondary' onClick={handleClickReplay}>
 						{t('Replay')}
 					</Button>
 				</Box>
@@ -71,7 +71,7 @@ const HistoryItem = ({ data }: HistoryItemProps) => {
 				<Field>
 					<FieldLabel>{t('Status')}</FieldLabel>
 					<FieldRow>
-						<Box withRichContent w='full'>
+						<Box withRichContent width='full'>
 							<code>{error ? t('Failure') : t('Success')}</code>
 						</Box>
 					</FieldRow>
@@ -79,7 +79,7 @@ const HistoryItem = ({ data }: HistoryItemProps) => {
 				<Field>
 					<FieldLabel>{t('Integration_Outgoing_WebHook_History_Time_Triggered')}</FieldLabel>
 					<FieldRow>
-						<Box withRichContent w='full'>
+						<Box withRichContent width='full'>
 							<code>{createdAt}</code>
 						</Box>
 					</FieldRow>
@@ -87,7 +87,7 @@ const HistoryItem = ({ data }: HistoryItemProps) => {
 				<Field>
 					<FieldLabel>{t('Integration_Outgoing_WebHook_History_Time_Ended_Or_Error')}</FieldLabel>
 					<FieldRow>
-						<Box withRichContent w='full'>
+						<Box withRichContent width='full'>
 							<code>{updatedAt}</code>
 						</Box>
 					</FieldRow>
@@ -95,7 +95,7 @@ const HistoryItem = ({ data }: HistoryItemProps) => {
 				<Field>
 					<FieldLabel>{t('Event_Trigger')}</FieldLabel>
 					<FieldRow>
-						<Box withRichContent w='full'>
+						<Box withRichContent width='full'>
 							<code>{t(outgoingEvents[event].label)}</code>
 						</Box>
 					</FieldRow>
@@ -103,7 +103,7 @@ const HistoryItem = ({ data }: HistoryItemProps) => {
 				<Field>
 					<FieldLabel>{t('Integration_Outgoing_WebHook_History_Trigger_Step')}</FieldLabel>
 					<FieldRow>
-						<Box withRichContent w='full'>
+						<Box withRichContent width='full'>
 							<code>{step}</code>
 						</Box>
 					</FieldRow>
@@ -112,7 +112,7 @@ const HistoryItem = ({ data }: HistoryItemProps) => {
 					<Field>
 						<FieldLabel>{t('Integration_Outgoing_WebHook_History_Data_Passed_To_Trigger')}</FieldLabel>
 						<FieldRow>
-							<Box withRichContent w='full'>
+							<Box withRichContent width='full'>
 								<pre>
 									<code dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(dataSentToTriggerCode) }}></code>
 								</pre>
@@ -124,7 +124,7 @@ const HistoryItem = ({ data }: HistoryItemProps) => {
 					<Field>
 						<FieldLabel>{t('Integration_Outgoing_WebHook_History_Messages_Sent_From_Prepare_Script')}</FieldLabel>
 						<FieldRow>
-							<Box withRichContent w='full'>
+							<Box withRichContent width='full'>
 								<pre>
 									<code dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(prepareSentMessageCode) }}></code>
 								</pre>
@@ -136,7 +136,7 @@ const HistoryItem = ({ data }: HistoryItemProps) => {
 					<Field>
 						<FieldLabel>{t('Integration_Outgoing_WebHook_History_Messages_Sent_From_Process_Script')}</FieldLabel>
 						<FieldRow>
-							<Box withRichContent w='full'>
+							<Box withRichContent width='full'>
 								<pre>
 									<code dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(processSentMessageCode) }}></code>
 								</pre>
@@ -148,7 +148,7 @@ const HistoryItem = ({ data }: HistoryItemProps) => {
 					<Field>
 						<FieldLabel>{t('URL')}</FieldLabel>
 						<FieldRow>
-							<Box withRichContent w='full'>
+							<Box withRichContent width='full'>
 								<code>{url}</code>
 							</Box>
 						</FieldRow>
@@ -158,7 +158,7 @@ const HistoryItem = ({ data }: HistoryItemProps) => {
 					<Field>
 						<FieldLabel>{t('Integration_Outgoing_WebHook_History_Data_Passed_To_URL')}</FieldLabel>
 						<FieldRow>
-							<Box withRichContent w='full'>
+							<Box withRichContent width='full'>
 								<pre>
 									<code dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(httpCallDataCode) }}></code>
 								</pre>
@@ -170,7 +170,7 @@ const HistoryItem = ({ data }: HistoryItemProps) => {
 					<Field>
 						<FieldLabel>{t('Integration_Outgoing_WebHook_History_Http_Response_Error')}</FieldLabel>
 						<FieldRow>
-							<Box withRichContent w='full'>
+							<Box withRichContent width='full'>
 								<pre>
 									<code dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(httpErrorCode) }}></code>
 								</pre>
@@ -182,7 +182,7 @@ const HistoryItem = ({ data }: HistoryItemProps) => {
 					<Field>
 						<FieldLabel>{t('Integration_Outgoing_WebHook_History_Http_Response')}</FieldLabel>
 						<FieldRow>
-							<Box withRichContent w='full'>
+							<Box withRichContent width='full'>
 								<pre>
 									<code dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(httpResultCode) }}></code>
 								</pre>
@@ -194,7 +194,7 @@ const HistoryItem = ({ data }: HistoryItemProps) => {
 					<Field>
 						<FieldLabel>{t('Integration_Outgoing_WebHook_History_Error_Stacktrace')}</FieldLabel>
 						<FieldRow>
-							<Box withRichContent w='full'>
+							<Box withRichContent width='full'>
 								<pre>
 									<code dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(errorStackCode) }}></code>
 								</pre>

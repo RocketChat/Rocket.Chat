@@ -49,7 +49,7 @@ export const Default: Story = {
 		onClose: noop,
 		actions: getArgs(5),
 	},
-	decorators: [getDecorator('closed')],
+	decorators: [getDecorator('none')],
 };
 
 export const WithLessActions: Story = {
@@ -57,7 +57,7 @@ export const WithLessActions: Story = {
 		onClose: noop,
 		actions: getArgs(3),
 	},
-	decorators: [getDecorator('closed')],
+	decorators: [getDecorator('none')],
 };
 
 export const WithSingleAction: Story = {
@@ -65,7 +65,7 @@ export const WithSingleAction: Story = {
 		onClose: noop,
 		actions: getArgs(1),
 	},
-	decorators: [getDecorator('closed')],
+	decorators: [getDecorator('none')],
 };
 
 export const WithDisabledVoiceCall: Story = {

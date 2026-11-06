@@ -13,11 +13,11 @@ const AdminUserCreated = ({ uid }: AdminUserCreatedProps) => {
 		<>
 			<ContextualbarEmptyContent icon='user' title={t('You_have_created_user')} />
 			<ContextualbarFooter>
-				<ButtonGroup stretch>
-					<Button type='reset' onClick={() => router.navigate(`/admin/users/new`)} flexBasis='0'>
+				<ButtonGroup stretch='equal'>
+					<Button type='reset' onClick={() => router.navigate(`/admin/users/new`)}>
 						{t('Add_more_users')}
 					</Button>
-					<Button primary onClick={() => router.navigate(`/admin/users/info/${uid}`)} flexBasis='0'>
+					<Button variant='primary' onClick={() => router.navigate(`/admin/users/info/${uid}`)}>
 						{t('Done')}
 					</Button>
 				</ButtonGroup>

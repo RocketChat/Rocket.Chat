@@ -14,13 +14,13 @@ const AdminUserUpgrade = () => {
 
 	return (
 		<>
-			<ContextualbarScrollableContent h='full'>
+			<ContextualbarScrollableContent height='full'>
 				<ContextualbarEmptyContent icon='warning' title={t('Seat_limit_reached')} subtitle={t('Seat_limit_reached_Description')} />
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={() => router.navigate('/admin/users')}>{t('Cancel')}</Button>
-					<Button primary role='link' onClick={() => openExternalLink(manageSubscriptionUrl)}>
+					<Button variant='primary' role='link' onClick={() => openExternalLink(manageSubscriptionUrl)}>
 						{t('Buy_more_seats')}
 					</Button>
 				</ButtonGroup>

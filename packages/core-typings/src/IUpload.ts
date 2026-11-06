@@ -23,6 +23,7 @@ export interface IUpload extends IRocketChatRecord {
 			width: number;
 			height: number;
 		};
+		pages?: number;
 	};
 	store?: string;
 	path?: string;
@@ -45,9 +46,6 @@ export interface IUpload extends IRocketChatRecord {
 		path: string;
 	};
 	googleCloudStorage?: {
-		path: string;
-	};
-	Webdav?: {
 		path: string;
 	};
 	content?: EncryptedContent;

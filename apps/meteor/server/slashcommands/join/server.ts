@@ -1,11 +1,10 @@
-import { api, Room } from '@rocket.chat/core-services';
+import { api, Room, ClientSafeError } from '@rocket.chat/core-services';
 import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../app/settings/server';
-import { slashCommands } from '../../../app/utils/server/slashCommand';
 import { i18n } from '../../lib/i18n';
+import { slashCommands } from '../../lib/utils/slashCommand';
+import { settings } from '../../settings';
 
 slashCommands.add({
 	command: 'join',
@@ -25,8 +24,8 @@ slashCommands.add({
 		if (!room) {
 			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 				msg: i18n.t('Channel_doesnt_exist', {
-					postProcess: 'sprintf',
-					sprintf: [channel],
+					interpolation: { escapeValue: false },
+					channelName: channel,
 					lng: settings.get('Language') || 'en',
 				}),
 			});
@@ -38,14 +37,14 @@ slashCommands.add({
 		});
 
 		if (subscription) {
-			throw new Meteor.Error('error-user-already-in-room', 'You are already in the channel', {
+			throw new ClientSafeError('error-user-already-in-room', 'You are already in the channel', {
 				method: 'slashCommands',
 			});
 		}
 
 		const user = await Users.findOneById(userId);
 		if (!user) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+			throw new ClientSafeError('error-invalid-user', 'Invalid user', {
 				method: 'slashCommands',
 			});
 		}

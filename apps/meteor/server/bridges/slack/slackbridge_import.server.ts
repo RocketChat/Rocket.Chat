@@ -1,18 +1,17 @@
 // This is a JS File that was renamed to TS so it won't lose its git history when converted to TS
 // TODO: Remove the following lint/ts instructions when the file gets properly converted
-/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
+/* oxlint-disable-next-line @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
 import { Rooms, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
-import { Match } from 'meteor/check';
 
 import { SlackBridge } from './slackbridge';
-import { msgStream } from '../../../app/lib/server';
-import { slashCommands } from '../../../app/utils/server/slashCommand';
 import { i18n } from '../../lib/i18n';
+import { msgStream } from '../../lib/messaging/msgStream';
+import { slashCommands } from '../../lib/utils/slashCommand';
 
-async function SlackBridgeImport({ command, params, message, userId }) {
-	if (command !== 'slackbridge-import' || !Match.test(params, String)) {
+async function SlackBridgeImport({ command, message, userId }) {
+	if (command !== 'slackbridge-import') {
 		return;
 	}
 
@@ -25,14 +24,12 @@ async function SlackBridgeImport({ command, params, message, userId }) {
 		rid: message.rid,
 		u: { username: 'rocket.cat' },
 		ts: new Date(),
-		msg: i18n.t(
-			'SlackBridge_start',
-			{
-				postProcess: 'sprintf',
-				sprintf: [user.username, channel],
-			},
-			user.language,
-		),
+		msg: i18n.t('SlackBridge_start', {
+			username: user.username,
+			channelName: channel,
+			interpolation: { escapeValue: false },
+			lng: user.language,
+		}),
 	});
 
 	try {
@@ -44,14 +41,12 @@ async function SlackBridgeImport({ command, params, message, userId }) {
 						rid: message.rid,
 						u: { username: 'rocket.cat' },
 						ts: new Date(),
-						msg: i18n.t(
-							'SlackBridge_error',
-							{
-								postProcess: 'sprintf',
-								sprintf: [channel, error.message],
-							},
-							user.language,
-						),
+						msg: i18n.t('SlackBridge_error', {
+							channelName: channel,
+							errorMessage: error.message,
+							interpolation: { escapeValue: false },
+							lng: user.language,
+						}),
 					});
 				} else {
 					msgStream.emit(message.rid, {
@@ -59,14 +54,11 @@ async function SlackBridgeImport({ command, params, message, userId }) {
 						rid: message.rid,
 						u: { username: 'rocket.cat' },
 						ts: new Date(),
-						msg: i18n.t(
-							'SlackBridge_finish',
-							{
-								postProcess: 'sprintf',
-								sprintf: [channel],
-							},
-							user.language,
-						),
+						msg: i18n.t('SlackBridge_finish', {
+							channelName: channel,
+							interpolation: { escapeValue: false },
+							lng: user.language,
+						}),
 					});
 				}
 			});
@@ -77,14 +69,12 @@ async function SlackBridgeImport({ command, params, message, userId }) {
 			rid: message.rid,
 			u: { username: 'rocket.cat' },
 			ts: new Date(),
-			msg: i18n.t(
-				'SlackBridge_error',
-				{
-					postProcess: 'sprintf',
-					sprintf: [channel, error.message],
-				},
-				user.language,
-			),
+			msg: i18n.t('SlackBridge_error', {
+				channelName: channel,
+				errorMessage: error.message,
+				interpolation: { escapeValue: false },
+				lng: user.language,
+			}),
 		});
 		throw error;
 	}

@@ -1,4 +1,5 @@
-import { useMergedRefs, useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { useMergedRefsV2 } from '@rocket.chat/ui-client';
 import type { ReactNode } from 'react';
 import { useCallback, useMemo, useRef, useState } from 'react';
 
@@ -36,7 +37,7 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 	const audioCallback = useCallback((node: HTMLAudioElement | null) => {
 		audioRef.current = node;
 	}, []);
-	const setAudioRef = useMergedRefs(audioCallback, mediaRef);
+	const setAudioRef = useMergedRefsV2(audioCallback, mediaRef);
 
 	const play = useStableCallback((next: PersistentAudioTrack) => {
 		const audio = audioRef.current;

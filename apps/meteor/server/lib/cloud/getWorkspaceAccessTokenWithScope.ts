@@ -1,11 +1,12 @@
+import { License } from '@rocket.chat/license';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { getRedirectUri } from './getRedirectUri';
 import { CloudWorkspaceAccessTokenError } from './getWorkspaceAccessToken';
+import { workspaceScopes } from './oauthScopes';
 import { removeWorkspaceRegistrationInfo } from './removeWorkspaceRegistrationInfo';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
-import { workspaceScopes } from '../../../app/cloud/server/oauthScopes';
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../settings';
 import { SystemLogger } from '../logger/system';
 
 type WorkspaceAccessTokenWithScope = {
@@ -31,7 +32,10 @@ export async function getWorkspaceAccessTokenWithScope({
 		return tokenResponse;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/naming-convention
+	if (License.hasOfflineLicense()) {
+		return tokenResponse;
+	}
+
 	const client_id = settings.get<string>('Cloud_Workspace_Client_Id');
 	if (!client_id) {
 		return tokenResponse;
@@ -41,7 +45,6 @@ export async function getWorkspaceAccessTokenWithScope({
 		scope = workspaceScopes.join(' ');
 	}
 
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	const client_secret = settings.get<string>('Cloud_Workspace_Client_Secret');
 	const redirectUri = getRedirectUri();
 

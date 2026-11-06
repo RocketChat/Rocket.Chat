@@ -2,36 +2,18 @@ import type { IUser, UserPresence } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import type { EventHandlerOf } from '@rocket.chat/emitter';
 import { Emitter } from '@rocket.chat/emitter';
-import { Meteor } from 'meteor/meteor';
 
-import { getDdpSdk } from './sdk/ddpSdk';
-import { isSdkTransportEnabled } from './sdk/sdkTransportEnabled';
-import { sdk } from '../../app/utils/client/lib/SDKClient';
+import { sdk } from './SDKClient';
+import { subscribeRaw } from '../meteor/connection';
 
-const sdkTransportEnabled = isSdkTransportEnabled();
-
+// A command-style subscription with no lifecycle: the server registers the added and removed uids and moves on.
 const subscribeUserPresence = (payload: { added?: string[]; removed?: string[] }): void => {
-	if (!sdkTransportEnabled) {
-		// Flag off: route directly through Meteor.subscribe — bit-for-bit develop
-		// behaviour, no DDPSDK socket created, no proxy in the call path.
-		Meteor.subscribe('stream-user-presence', '', payload);
-		return;
-	}
-	const ddp = getDdpSdk();
-	if (ddp.connection.status === 'connected' && ddp.account.uid) {
-		// Fire the command-style subscription over our SDK; it has no lifecycle
-		// (the server registers the added/removed uids and moves on), matching
-		// Meteor.subscribe's behaviour here.
-		ddp.client.subscribe('stream-user-presence', '', payload);
-		return;
-	}
-	Meteor.subscribe('stream-user-presence', '', payload);
+	subscribeRaw('stream-user-presence', '', payload);
 };
 
 type InternalEvents = {
 	remove: IUser['_id'];
 	reset: undefined;
-	restart: undefined;
 };
 
 type ExternalEvents = {
@@ -45,7 +27,7 @@ const emitter = new Emitter<Events>();
 const store = new Map<string, UserPresence>();
 
 const isUid = (eventType: keyof Events): eventType is UserPresence['_id'] =>
-	Boolean(eventType) && typeof eventType === 'string' && !['reset', 'restart', 'remove'].includes(eventType);
+	Boolean(eventType) && typeof eventType === 'string' && !['reset', 'remove'].includes(eventType);
 
 const uids = new Set<UserPresence['_id']>();
 
@@ -144,9 +126,6 @@ const getPresence = ((): ((uid: UserPresence['_id']) => void) => {
 			.forEach((uid) => {
 				emitter.emit(uid, undefined);
 			});
-		emitter.once('restart', () => {
-			emitter.events().filter(isUid).forEach(get);
-		});
 	});
 
 	return get;
@@ -178,8 +157,9 @@ const reset = (): void => {
 	emitter.emit('reset');
 };
 
-const restart = (): void => {
-	emitter.emit('restart');
+const resync = (): void => {
+	reset();
+	emitter.events().filter(isUid).forEach(getPresence);
 };
 
 const get = async (uid: UserPresence['_id']): Promise<UserPresence | undefined> =>
@@ -209,7 +189,7 @@ export const Presence = {
 	listen,
 	stop,
 	reset,
-	restart,
+	resync,
 	notify,
 	store,
 	get,

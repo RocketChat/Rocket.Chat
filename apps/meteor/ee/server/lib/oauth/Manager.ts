@@ -2,9 +2,9 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { Roles, Rooms, Users } from '@rocket.chat/models';
 
-import { getValidRoomName } from '../../../../app/utils/server/lib/getValidRoomName';
 import { addUserToRoom } from '../../../../server/lib/rooms/addUserToRoom';
 import { createRoom } from '../../../../server/lib/rooms/createRoom';
+import { getValidRoomName } from '../../../../server/lib/utils/lib/getValidRoomName';
 import { syncUserRoles } from '../syncUserRoles';
 
 const logger = new Logger('OAuth');

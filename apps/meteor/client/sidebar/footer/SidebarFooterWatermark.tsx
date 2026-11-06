@@ -1,8 +1,6 @@
-import { Box } from '@rocket.chat/fuselage';
-import { useLicense, useLicenseName } from '@rocket.chat/ui-client';
+import { Box, SidebarFooterContent as FooterContent } from '@rocket.chat/fuselage';
+import { links, useLicense, useLicenseName } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
-
-import { links } from '../../lib/links';
 
 export const SidebarFooterWatermark = () => {
 	const { t } = useTranslation();
@@ -26,15 +24,15 @@ export const SidebarFooterWatermark = () => {
 	}
 
 	return (
-		<Box pi={16} pbe={8}>
+		<FooterContent>
 			<Box is='a' href={links.rocketChat} target='_blank' rel='noopener noreferrer'>
-				<Box fontScale='micro' color='hint' pbe={4}>
+				<Box color='hint' paddingBlockEnd={4}>
 					{t('Powered_by_RocketChat')}
 				</Box>
-				<Box fontScale='micro' color='pure-white' pbe={4}>
+				<Box color='pure-white' paddingBlockEnd={12}>
 					{licenseName.data}
 				</Box>
 			</Box>
-		</Box>
+		</FooterContent>
 	);
 };

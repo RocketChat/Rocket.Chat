@@ -2,13 +2,14 @@ import type { IStats } from '@rocket.chat/core-typings';
 import {
 	ajv,
 	isTelemetryPayload,
-	validateUnauthorizedErrorResponse,
-	validateForbiddenErrorResponse,
+	paginatedResponseProperties,
 	validateBadRequestErrorResponse,
+	validateForbiddenErrorResponse,
+	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 
-import { getStatistics, getLastStatistics } from '../../../app/statistics/server';
-import telemetryEvent from '../../../app/statistics/server/lib/telemetryEvents';
+import { getStatistics, getLastStatistics } from '../../lib/statistics';
+import telemetryEvent from '../../lib/statistics/lib/telemetryEvents';
 import { API } from '../api';
 import { getPaginationItems } from '../lib/getPaginationItems';
 
@@ -24,10 +25,8 @@ const statisticsResponseSchema = ajv.compile<IStats>({
 const statisticsListResponseSchema = ajv.compile<{ statistics: IStats[]; count: number; offset: number; total: number }>({
 	type: 'object',
 	properties: {
-		statistics: { type: 'array' },
-		count: { type: 'number' },
-		offset: { type: 'number' },
-		total: { type: 'number' },
+		statistics: { type: 'array', items: {} },
+		...paginatedResponseProperties,
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['statistics', 'count', 'offset', 'total', 'success'],
@@ -79,12 +78,11 @@ API.v1.get(
 	},
 	async function action() {
 		const { offset, count } = await getPaginationItems(this.queryParams);
-		const { sort, fields, query } = await this.parseJsonQuery();
+		const { sort, fields } = await this.parseJsonQuery();
 
 		return API.v1.success(
 			await getStatistics({
 				userId: this.userId,
-				query,
 				pagination: {
 					offset,
 					count,

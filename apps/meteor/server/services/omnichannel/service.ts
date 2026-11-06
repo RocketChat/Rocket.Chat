@@ -5,9 +5,9 @@ import { License } from '@rocket.chat/license';
 import moment from 'moment';
 
 import { OmnichannelQueue } from './queue';
-import { RoutingManager } from '../../../app/livechat/server/lib/RoutingManager';
-import { notifyAgentStatusChanged } from '../../../app/livechat/server/lib/omni-users';
-import { settings } from '../../../app/settings/server';
+import { RoutingManager } from '../../lib/omnichannel/RoutingManager';
+import { notifyAgentStatusChanged } from '../../lib/omnichannel/omni-users';
+import { settings } from '../../settings';
 
 export class OmnichannelService extends ServiceClassInternal implements IOmnichannelService {
 	protected name = 'omnichannel';

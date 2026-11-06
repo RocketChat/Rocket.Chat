@@ -1,31 +1,52 @@
 import './tracing';
+import './lib/http/httpServer';
 import './models';
 
 /**
  * ./settings uses top level await, in theory the settings creation
  * and the startup should be done in parallel
  */
-import './settings';
+import './settings/definitions';
+import './lib/http/baseMiddlewares';
 
 import { startRestAPI } from './api/api';
 import { configureServer } from './configuration';
+import { SystemLogger } from './lib/logger/system';
 import { registerServices } from './services/startup';
+import { settings } from './settings';
 import { startup } from './startup';
-import { settings } from '../app/settings/server';
+import { startCronJobs } from './startup/cron';
 import { startupApp } from '../ee/server';
 import { startRocketChat } from '../startRocketChat';
 
 import './routes';
-import '../app/lib/server/startup';
+import './lib/realtime/routes';
+import './startup/rateLimiter';
+import './startup/robots';
 import './importPackages';
 import './meteor-methods';
 import './publications';
-import '../lib/oauthRedirectUriServer';
 import './lib/pushConfig';
 import './features/EmailInbox/index';
 
-await Promise.all([configureServer(settings), registerServices(), startup()]);
+try {
+	await Promise.all([configureServer(settings), registerServices(), startup()]);
 
-await startRocketChat();
-await startupApp();
-await startRestAPI();
+	await startRocketChat();
+
+	setImmediate(() => {
+		startCronJobs().catch((err) => {
+			SystemLogger.error({ msg: 'Failed to start cron jobs', err });
+		});
+	});
+
+	await startupApp();
+	await startRestAPI();
+	// not a static import: it would evaluate the modules it needs ahead of importPackages and reorder their side effects
+	const { runStartupTasks } = await import('./startup/startupTasks');
+	await runStartupTasks();
+} catch (err) {
+	// a server that failed to boot would otherwise stay up without ever listening
+	SystemLogger.fatal({ msg: 'Server failed to start', err });
+	process.exit(1);
+}

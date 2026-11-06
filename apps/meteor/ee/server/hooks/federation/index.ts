@@ -1,10 +1,9 @@
-import { FederationMatrix, Message, MeteorError, Room } from '@rocket.chat/core-services';
+import { FederationMatrix, Message, ClientSafeError, Room } from '@rocket.chat/core-services';
 import { isEditedMessage, isRoomNativeFederated, isUserNativeFederated, isBannedSubscription } from '@rocket.chat/core-typings';
 import type { IRoomNativeFederated, IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
-import { validateFederatedUsername } from '@rocket.chat/federation-matrix';
+import { isReservedByExclusiveBridge, validateFederatedUsername } from '@rocket.chat/federation-matrix';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
-import { notifyOnRoomChangedById, notifyOnSubscriptionChanged } from '../../../../app/lib/server/lib/notifyListener';
 import { callbacks } from '../../../../server/lib/callbacks';
 import { afterBanFromRoomCallback } from '../../../../server/lib/callbacks/afterBanFromRoomCallback';
 import { afterLeaveRoomCallback } from '../../../../server/lib/callbacks/afterLeaveRoomCallback';
@@ -13,6 +12,8 @@ import { afterUnbanFromRoomCallback } from '../../../../server/lib/callbacks/aft
 import { beforeAddUsersToRoom, beforeAddUserToRoom } from '../../../../server/lib/callbacks/beforeAddUserToRoom';
 import { beforeChangeRoomRole } from '../../../../server/lib/callbacks/beforeChangeRoomRole';
 import { prepareCreateRoomCallback } from '../../../../server/lib/callbacks/beforeCreateRoomCallback';
+import { checkUsernameAvailabilityCallback } from '../../../../server/lib/callbacks/checkUsernameAvailabilityCallback';
+import { notifyOnRoomChangedById, notifyOnSubscriptionChanged } from '../../../../server/lib/notifyListener';
 import { FederationActions } from '../../../../server/services/room/hooks/BeforeFederationActions';
 
 // callbacks.add('federation-event-example', async () => FederationMatrix.handleExample(), callbacks.priority.MEDIUM, 'federation-event-example-handler');
@@ -42,7 +43,7 @@ callbacks.add('federation.afterCreateFederatedRoom', async (room, { owner, origi
 
 	const federationRoom = await Rooms.findOneById(room._id);
 	if (!federationRoom || !isRoomNativeFederated(federationRoom)) {
-		throw new MeteorError('error-invalid-room', 'Invalid room');
+		throw new ClientSafeError('error-invalid-room', 'Invalid room');
 	}
 
 	// TODO this won't be neeeded once we receive all state events at ee/packages/federation-matrix/src/events/member.ts
@@ -101,7 +102,7 @@ beforeAddUsersToRoom.add(async ({ usernames, inviter }, room) => {
 		// check if trying to invite a federated user to a non-federated room
 		const federatedUsernames = usernames.filter((u) => validateFederatedUsername(u));
 		if (federatedUsernames.length > 0) {
-			throw new MeteorError('error-federated-users-in-non-federated-rooms', 'Cannot add federated users to non-federated rooms');
+			throw new ClientSafeError('error-federated-users-in-non-federated-rooms', 'Cannot add federated users to non-federated rooms');
 		}
 		return;
 	}
@@ -141,7 +142,7 @@ beforeAddUserToRoom.add(
 		}
 
 		if (!isUserNativeFederated(user) && !(await FederationMatrix.canUserAccessFederation(user))) {
-			throw new MeteorError('error-not-authorized-federation', 'Not authorized to access federation');
+			throw new ClientSafeError('error-not-authorized-federation', 'Not authorized to access federation');
 		}
 
 		// If inviter is federated, the invite came from an external transaction.
@@ -378,3 +379,20 @@ callbacks.add('afterSaveUser', async ({ user: userUpdated, oldUser: oldUserData 
 		void FederationMatrix.updateUserName(userUpdated);
 	}
 });
+
+// Reserve handles that fall within a bridge's exclusive namespace, so a regular user cannot
+// register or rename into a localpart only the bridge is allowed to own. Usernames are checked
+// against the bridge's exclusive `users` namespace; room/team names against its `aliases`/`rooms`
+// namespaces. Inert when federation is disabled (the helper matches against loaded appservice
+// registrations, of which there are none). Every handle assignment path — user creation,
+// SSO/LDAP assignment and renames, plus room renames and team creation — funnels through
+// `checkUsernameAvailability`.
+checkUsernameAvailabilityCallback.add(
+	(name, type) => {
+		if (isReservedByExclusiveBridge(type, name)) {
+			throw new ClientSafeError('error-username-reserved-by-bridge', 'Name is reserved by a federation bridge');
+		}
+	},
+	callbacks.priority.HIGH,
+	'federation-bridge-namespace',
+);

@@ -1,28 +1,27 @@
-import { Team } from '@rocket.chat/core-services';
+import { Team, ClientSafeError } from '@rocket.chat/core-services';
 import type { IRoom, IRoomWithRetentionPolicy, IUser, MessageTypesValues, ITeam, RequiredField } from '@rocket.chat/core-typings';
 import { TeamType } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms, Users } from '@rocket.chat/models';
-import { Match } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 
-import { isABACManagedRoom } from '../../../app/authorization/server/lib/isABACManagedRoom';
-import { saveReactWhenReadOnly } from '../../../app/channel-settings/server/functions/saveReactWhenReadOnly';
-import { saveRoomAnnouncement } from '../../../app/channel-settings/server/functions/saveRoomAnnouncement';
-import { saveRoomCustomFields } from '../../../app/channel-settings/server/functions/saveRoomCustomFields';
-import { saveRoomDescription } from '../../../app/channel-settings/server/functions/saveRoomDescription';
-import { saveRoomEncrypted } from '../../../app/channel-settings/server/functions/saveRoomEncrypted';
-import { saveRoomName } from '../../../app/channel-settings/server/functions/saveRoomName';
-import { saveRoomReadOnly } from '../../../app/channel-settings/server/functions/saveRoomReadOnly';
-import { saveRoomSystemMessages } from '../../../app/channel-settings/server/functions/saveRoomSystemMessages';
-import { saveRoomTopic } from '../../../app/channel-settings/server/functions/saveRoomTopic';
-import { saveRoomType } from '../../../app/channel-settings/server/functions/saveRoomType';
-import { notifyOnRoomChangedById } from '../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../app/settings/server';
 import { RoomSettingsEnum } from '../../../definition/IRoomTypeConfig';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { isABACManagedRoom } from '../../lib/authorization/isABACManagedRoom';
+import { SystemLogger } from '../../lib/logger/system';
+import { updateAndNotifyParentRoomWithParentMessage } from '../../lib/messaging/discussions/updateAndNotifyParentRoomWithParentMessage';
+import { notifyOnRoomChangedById } from '../../lib/notifyListener';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { setRoomAvatar } from '../../lib/rooms/setRoomAvatar';
+import { saveReactWhenReadOnly } from '../../lib/rooms/settings/saveReactWhenReadOnly';
+import { saveRoomAnnouncement } from '../../lib/rooms/settings/saveRoomAnnouncement';
+import { saveRoomCustomFields } from '../../lib/rooms/settings/saveRoomCustomFields';
+import { saveRoomDescription } from '../../lib/rooms/settings/saveRoomDescription';
+import { saveRoomEncrypted } from '../../lib/rooms/settings/saveRoomEncrypted';
+import { saveRoomName } from '../../lib/rooms/settings/saveRoomName';
+import { saveRoomReadOnly } from '../../lib/rooms/settings/saveRoomReadOnly';
+import { saveRoomSystemMessages } from '../../lib/rooms/settings/saveRoomSystemMessages';
+import { saveRoomTopic } from '../../lib/rooms/settings/saveRoomTopic';
+import { saveRoomType } from '../../lib/rooms/settings/saveRoomType';
+import { settings } from '../../settings';
 
 type RoomSettings = {
 	roomAvatar: string;
@@ -80,7 +79,7 @@ const guardABACManagedField = (room: IRoom, value: string | undefined, current: 
 		return;
 	}
 	if (isABACManagedRoom(room)) {
-		throw new Meteor.Error('error-action-not-allowed', `Editing an ABAC managed room's ${fieldName} is not allowed`, {
+		throw new ClientSafeError('error-action-not-allowed', `Editing an ABAC managed room's ${fieldName} is not allowed`, {
 			method: 'saveRoomSettings',
 			action: 'Editing_room',
 		});
@@ -88,15 +87,9 @@ const guardABACManagedField = (room: IRoom, value: string | undefined, current: 
 };
 
 const validators: RoomSettingsValidators = {
-	async default({ userId, room, value }) {
+	async default({ userId }) {
 		if (!(await hasPermissionAsync(userId, 'view-room-administration'))) {
-			throw new Meteor.Error('error-action-not-allowed', 'Viewing room administration is not allowed', {
-				method: 'saveRoomSettings',
-				action: 'Viewing_room_administration',
-			});
-		}
-		if (isABACManagedRoom(room) && value) {
-			throw new Meteor.Error('error-action-not-allowed', 'Setting an ABAC managed room as default is not allowed', {
+			throw new ClientSafeError('error-action-not-allowed', 'Viewing room administration is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Viewing_room_administration',
 			});
@@ -104,7 +97,7 @@ const validators: RoomSettingsValidators = {
 	},
 	async featured({ userId }) {
 		if (!(await hasPermissionAsync(userId, 'view-room-administration'))) {
-			throw new Meteor.Error('error-action-not-allowed', 'Viewing room administration is not allowed', {
+			throw new ClientSafeError('error-action-not-allowed', 'Viewing room administration is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Viewing_room_administration',
 			});
@@ -117,21 +110,21 @@ const validators: RoomSettingsValidators = {
 		}
 
 		if (value === 'c' && (!room.teamId || room.teamMain) && !(await hasPermissionAsync(userId, 'create-c'))) {
-			throw new Meteor.Error('error-action-not-allowed', 'Changing a private group to a public channel is not allowed', {
+			throw new ClientSafeError('error-action-not-allowed', 'Changing a private group to a public channel is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Change_Room_Type',
 			});
 		}
 
 		if (value === 'p' && (!room.teamId || room.teamMain) && !(await hasPermissionAsync(userId, 'create-p'))) {
-			throw new Meteor.Error('error-action-not-allowed', 'Changing a public channel to a private room is not allowed', {
+			throw new ClientSafeError('error-action-not-allowed', 'Changing a public channel to a private room is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Change_Room_Type',
 			});
 		}
 
 		if (isABACManagedRoom(room) && value !== 'p') {
-			throw new Meteor.Error('error-action-not-allowed', 'Changing an ABAC managed private room to public is not allowed', {
+			throw new ClientSafeError('error-action-not-allowed', 'Changing an ABAC managed private room to public is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Change_Room_Type',
 			});
@@ -143,21 +136,21 @@ const validators: RoomSettingsValidators = {
 		const team = await Team.getInfoById(room.teamId);
 
 		if (value === 'c' && !(await hasPermissionAsync(userId, 'create-team-channel', team?.roomId))) {
-			throw new Meteor.Error('error-action-not-allowed', `Changing a team's private group to a public channel is not allowed`, {
+			throw new ClientSafeError('error-action-not-allowed', `Changing a team's private group to a public channel is not allowed`, {
 				method: 'saveRoomSettings',
 				action: 'Change_Room_Type',
 			});
 		}
 
 		if (value === 'p' && !(await hasPermissionAsync(userId, 'create-team-group', team?.roomId))) {
-			throw new Meteor.Error('error-action-not-allowed', `Changing a team's public channel to a private room is not allowed`, {
+			throw new ClientSafeError('error-action-not-allowed', `Changing a team's public channel to a private room is not allowed`, {
 				method: 'saveRoomSettings',
 				action: 'Change_Room_Type',
 			});
 		}
 
 		if (isAbacManagedTeam(team, room) && value !== 'p') {
-			throw new Meteor.Error('error-action-not-allowed', 'Changing an ABAC managed private team room to public is not allowed', {
+			throw new ClientSafeError('error-action-not-allowed', 'Changing an ABAC managed private team room to public is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Change_Room_Type',
 			});
@@ -175,14 +168,14 @@ const validators: RoomSettingsValidators = {
 	async encrypted({ userId, value, room, rid }) {
 		if (value !== room.encrypted) {
 			if (!(await roomCoordinator.getRoomDirectives(room.t).allowRoomSettingChange(room, RoomSettingsEnum.E2E))) {
-				throw new Meteor.Error('error-action-not-allowed', 'Only groups or direct channels can enable encryption', {
+				throw new ClientSafeError('error-action-not-allowed', 'Only groups or direct channels can enable encryption', {
 					method: 'saveRoomSettings',
 					action: 'Change_Room_Encrypted',
 				});
 			}
 
 			if (room.t !== 'd' && !(await hasPermissionAsync(userId, 'toggle-room-e2e-encryption', rid))) {
-				throw new Meteor.Error('error-action-not-allowed', 'You do not have permission to toggle E2E encryption', {
+				throw new ClientSafeError('error-action-not-allowed', 'You do not have permission to toggle E2E encryption', {
 					method: 'saveRoomSettings',
 					action: 'Change_Room_Encrypted',
 				});
@@ -194,7 +187,7 @@ const validators: RoomSettingsValidators = {
 			!(await hasPermissionAsync(userId, 'edit-room-retention-policy', rid)) &&
 			(!hasRetentionPolicy(room) || value !== room.retention.enabled)
 		) {
-			throw new Meteor.Error('error-action-not-allowed', 'Editing room retention policy is not allowed', {
+			throw new ClientSafeError('error-action-not-allowed', 'Editing room retention policy is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Editing_room',
 			});
@@ -205,7 +198,7 @@ const validators: RoomSettingsValidators = {
 			!(await hasPermissionAsync(userId, 'edit-room-retention-policy', rid)) &&
 			(!hasRetentionPolicy(room) || value !== room.retention.maxAge)
 		) {
-			throw new Meteor.Error('error-action-not-allowed', 'Editing room retention policy is not allowed', {
+			throw new ClientSafeError('error-action-not-allowed', 'Editing room retention policy is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Editing_room',
 			});
@@ -216,7 +209,7 @@ const validators: RoomSettingsValidators = {
 			!(await hasPermissionAsync(userId, 'edit-room-retention-policy', rid)) &&
 			(!hasRetentionPolicy(room) || value !== room.retention.excludePinned)
 		) {
-			throw new Meteor.Error('error-action-not-allowed', 'Editing room retention policy is not allowed', {
+			throw new ClientSafeError('error-action-not-allowed', 'Editing room retention policy is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Editing_room',
 			});
@@ -227,7 +220,7 @@ const validators: RoomSettingsValidators = {
 			!(await hasPermissionAsync(userId, 'edit-room-retention-policy', rid)) &&
 			(!hasRetentionPolicy(room) || value !== room.retention.filesOnly)
 		) {
-			throw new Meteor.Error('error-action-not-allowed', 'Editing room retention policy is not allowed', {
+			throw new ClientSafeError('error-action-not-allowed', 'Editing room retention policy is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Editing_room',
 			});
@@ -238,7 +231,7 @@ const validators: RoomSettingsValidators = {
 			!(await hasPermissionAsync(userId, 'edit-room-retention-policy', rid)) &&
 			(!hasRetentionPolicy(room) || value !== room.retention.ignoreThreads)
 		) {
-			throw new Meteor.Error('error-action-not-allowed', 'Editing room retention policy is not allowed', {
+			throw new ClientSafeError('error-action-not-allowed', 'Editing room retention policy is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Editing_room',
 			});
@@ -246,7 +239,7 @@ const validators: RoomSettingsValidators = {
 	},
 	async roomAvatar({ userId, rid }) {
 		if (!(await hasPermissionAsync(userId, 'edit-room-avatar', rid))) {
-			throw new Meteor.Error('error-action-not-allowed', 'Editing a room avatar is not allowed', {
+			throw new ClientSafeError('error-action-not-allowed', 'Editing a room avatar is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Editing_room',
 			});
@@ -334,6 +327,13 @@ const settingSavers: RoomSettingsSavers = {
 	async systemMessages({ value, room, rid }) {
 		if (JSON.stringify(value) !== JSON.stringify(room.sysMes)) {
 			await saveRoomSystemMessages(rid, value);
+			if (room?.prid) {
+				try {
+					await updateAndNotifyParentRoomWithParentMessage({ ...room, sysMes: value });
+				} catch (err) {
+					SystemLogger.error({ msg: 'Failed to propagate discussion metadata', err, rid });
+				}
+			}
 		}
 	},
 	async joinCode({ value, rid }) {
@@ -373,18 +373,6 @@ const settingSavers: RoomSettingsSavers = {
 		await setRoomAvatar(rid, value, user);
 	},
 };
-
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		saveRoomSettings(rid: IRoom['_id'], settings: Partial<RoomSettings>): Promise<{ result: true; rid: IRoom['_id'] }>;
-		saveRoomSettings<RoomSettingName extends keyof RoomSettings>(
-			rid: IRoom['_id'],
-			setting: RoomSettingName,
-			value: RoomSettings[RoomSettingName],
-		): Promise<{ result: true; rid: IRoom['_id'] }>;
-	}
-}
 
 const fields: (keyof RoomSettings)[] = [
 	'roomAvatar',
@@ -455,16 +443,10 @@ export async function saveRoomSettings(
 	value?: RoomSettings[keyof RoomSettings],
 ): Promise<{ result: true; rid: IRoom['_id'] }> {
 	if (!userId) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-			function: 'RocketChat.saveRoomName',
-		});
-	}
-	if (!Match.test(rid, String)) {
-		throw new Meteor.Error('error-invalid-room', 'Invalid room', {
+		throw new ClientSafeError('error-unauthenticated', 'Unauthenticated', {
 			method: 'saveRoomSettings',
 		});
 	}
-
 	if (typeof settings !== 'object') {
 		settings = {
 			[settings]: value,
@@ -472,7 +454,7 @@ export async function saveRoomSettings(
 	}
 
 	if (!Object.keys(settings).every((key) => fields.includes(key as keyof typeof settings))) {
-		throw new Meteor.Error('error-invalid-settings', 'Invalid settings provided', {
+		throw new ClientSafeError('error-invalid-settings', 'Invalid settings provided', {
 			method: 'saveRoomSettings',
 		});
 	}
@@ -480,14 +462,14 @@ export async function saveRoomSettings(
 	const room = await Rooms.findOneById(rid);
 
 	if (!room) {
-		throw new Meteor.Error('error-invalid-room', 'Invalid room', {
+		throw new ClientSafeError('error-invalid-room', 'Invalid room', {
 			method: 'saveRoomSettings',
 		});
 	}
 
 	if (!(await hasPermissionAsync(userId, 'edit-room', rid))) {
 		if (!(Object.keys(settings).includes('encrypted') && room.t === 'd')) {
-			throw new Meteor.Error('error-action-not-allowed', 'Editing room is not allowed', {
+			throw new ClientSafeError('error-action-not-allowed', 'Editing room is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Editing_room',
 			});
@@ -496,7 +478,7 @@ export async function saveRoomSettings(
 	}
 
 	if (room.broadcast && (settings.readOnly || settings.reactWhenReadOnly)) {
-		throw new Meteor.Error('error-action-not-allowed', 'Editing readOnly/reactWhenReadOnly are not allowed for broadcast rooms', {
+		throw new ClientSafeError('error-action-not-allowed', 'Editing readOnly/reactWhenReadOnly are not allowed for broadcast rooms', {
 			method: 'saveRoomSettings',
 			action: 'Editing_room',
 		});
@@ -504,7 +486,7 @@ export async function saveRoomSettings(
 
 	const user = await Users.findOneById(userId, { projection: { username: 1, name: 1 } });
 	if (!user) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+		throw new ClientSafeError('error-invalid-user', 'Invalid user', {
 			method: 'saveRoomSettings',
 		});
 	}
@@ -544,16 +526,3 @@ export async function saveRoomSettings(
 		rid: room._id,
 	};
 }
-
-Meteor.methods<ServerMethods>({
-	saveRoomSettings: (...args) => {
-		const userId = Meteor.userId();
-		if (!userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				function: 'RocketChat.saveRoomName',
-			});
-		}
-
-		return saveRoomSettings(userId, ...args);
-	},
-});

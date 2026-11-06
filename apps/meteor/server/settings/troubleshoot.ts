@@ -1,4 +1,4 @@
-import { settingsRegistry } from '../../app/settings/server';
+import { settingsRegistry } from '.';
 
 export const createTroubleshootSettings = () =>
 	settingsRegistry.addGroup('Troubleshoot', async function () {
@@ -40,23 +40,6 @@ export const createTroubleshootSettings = () =>
 		await this.add('Troubleshoot_Disable_Teams_Mention', false, {
 			type: 'boolean',
 			i18nDescription: 'Troubleshoot_Disable_Teams_Mention_Alert',
-		});
-
-		// TODO: remove this setting at next major (7.0.0)
-		await this.add('Troubleshoot_Disable_Statistics_Generator', false, {
-			type: 'boolean',
-			i18nDescription: 'Troubleshoot_Disable_Statistics_Generator_Alert',
-			private: true,
-			hidden: true,
-			readonly: true,
-		});
-		// TODO: remove this setting at next major (7.0.0)
-		await this.add('Troubleshoot_Disable_Workspace_Sync', false, {
-			type: 'boolean',
-			i18nDescription: 'Troubleshoot_Disable_Workspace_Sync_Alert',
-			private: true,
-			hidden: true,
-			readonly: true,
 		});
 
 		await this.add('Troubleshoot_Force_Caching_Version', '', {

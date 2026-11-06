@@ -1,4 +1,5 @@
-import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { css } from '@rocket.chat/css-in-js';
+import { backgroundColor, Box, Button, ButtonGroup, strokeColor, Text, useStyle } from '@rocket.chat/fuselage';
 import { FieldLabel, Field, FieldRow, TextAreaInput } from '@rocket.chat/fuselage-forms';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { GenericModal, useInvalidateLicense } from '@rocket.chat/ui-client';
@@ -41,17 +42,27 @@ const ManageLicenseModal = ({ enterpriseLicense, onCancel }: ManageLicenseModalP
 		handleTextChange,
 	} = useLicenseFileInput(enterpriseLicense);
 
+	// The field turns into a drop target while a file is dragged over it
+	const licenseInputClassName = useStyle(css`
+		margin-block-end: 8px !important;
+		width: 100% !important;
+		border-style: ${isDragOver ? 'dashed' : 'solid'} !important;
+		border-color: ${strokeColor(isDragOver ? 'highlight' : 'light')} !important;
+		${isDragOver ? `background-color: ${backgroundColor('tint')} !important;` : ''}
+	`);
+
 	const trimmedLicense = license.trim();
 	const debouncedLicense = useDebouncedValue(trimmedLicense, 500);
-	const { data: validation, isPending, isError } = useValidateLicense(debouncedLicense);
 
 	const isEmpty = trimmedLicense === '';
 	const isPlausible = isPlausibleLicense(trimmedLicense);
-	const isValidating = isPlausible && (trimmedLicense !== debouncedLicense || isPending);
-
 	const isCurrentLicense = !isEmpty && trimmedLicense === enterpriseLicense.trim();
 
-	const isLicenseValid = !fileError && !isError && validation?.valid === true;
+	const { data: validation, isPending, isError } = useValidateLicense(debouncedLicense, !isCurrentLicense);
+
+	const isValidating = isPlausible && !isCurrentLicense && (trimmedLicense !== debouncedLicense || isPending);
+
+	const isLicenseValid = isPlausible && !fileError && !isError && validation?.valid === true;
 
 	const invalidMessage = (() => {
 		if (fileError) {
@@ -65,7 +76,7 @@ const ManageLicenseModal = ({ enterpriseLicense, onCancel }: ManageLicenseModalP
 		return t(getLicenseInvalidMessage(validation?.reasons ?? []));
 	})();
 
-	const showStatus = isPlausible || Boolean(fileError);
+	const showStatus = !isCurrentLicense && (isPlausible || Boolean(fileError));
 
 	const handleApply = async () => {
 		try {
@@ -101,9 +112,9 @@ const ManageLicenseModal = ({ enterpriseLicense, onCancel }: ManageLicenseModalP
 				<Box display='flex' flexDirection='column' gap={16}>
 					<Box>{t('Remove_license_confirmation')}</Box>
 					<Box>{t('Are_you_sure_you_want_to_continue_question')}</Box>
-					<Box fontScale='c1' color='secondary-info'>
+					<Text fontScale='c1' color='secondary-info'>
 						{t('Remove_license_disclaimer')}
-					</Box>
+					</Text>
 				</Box>
 			</GenericModal>
 		);
@@ -119,7 +130,7 @@ const ManageLicenseModal = ({ enterpriseLicense, onCancel }: ManageLicenseModalP
 			onConfirm={handleApply}
 			onCancel={onCancel}
 		>
-			<Box fontScale='p2' mbe={8}>
+			<Box fontScale='p2' marginBlockEnd={8}>
 				{t('Manage_license_description')}
 			</Box>
 			<Box
@@ -140,12 +151,7 @@ const ManageLicenseModal = ({ enterpriseLicense, onCancel }: ManageLicenseModalP
 				<FieldLabel>{t('License_key')}</FieldLabel>
 				<FieldRow>
 					<TextAreaInput
-						withRichContent
-						mbe={8}
-						width='100%'
-						bg={isDragOver ? 'tint' : undefined}
-						borderStyle={isDragOver ? 'dashed' : 'solid'}
-						borderColor={isDragOver ? 'stroke-highlight' : 'stroke-light'}
+						className={licenseInputClassName}
 						style={{ fontFamily: 'monospace' }}
 						rows={4}
 						placeholder={t('Drag_and_drop_license_placeholder')}
@@ -159,17 +165,17 @@ const ManageLicenseModal = ({ enterpriseLicense, onCancel }: ManageLicenseModalP
 				</FieldRow>
 			</Field>
 			<ButtonGroup>
-				<Button icon='upload' small onClick={() => inputRef.current?.click()}>
+				<Button icon='upload' size='small' onClick={() => inputRef.current?.click()}>
 					{t('Upload_license_file')}
 				</Button>
 				{isCurrentLicense && (
-					<Button icon='trash' small secondary danger onClick={() => setIsConfirmingRemoval(true)}>
+					<Button icon='trash' size='small' variant='secondary-danger' onClick={() => setIsConfirmingRemoval(true)}>
 						{t('Remove_license')}
 					</Button>
 				)}
 			</ButtonGroup>
 			{showStatus && (
-				<Box mbs={16}>
+				<Box marginBlockStart={16}>
 					<LicenseStatus isValidating={isValidating} isValid={isLicenseValid} invalidMessage={invalidMessage} />
 				</Box>
 			)}

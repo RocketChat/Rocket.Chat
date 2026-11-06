@@ -1,10 +1,11 @@
-import { Team } from '@rocket.chat/core-services';
+import { Team, ClientSafeError } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { Meteor } from 'meteor/meteor';
+import { escapeRegExp } from '@rocket.chat/tools';
 import _ from 'underscore';
 
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../settings';
+import type { UsernameAvailabilityCheckType } from '../callbacks/checkUsernameAvailabilityCallback';
+import { checkUsernameAvailabilityCallback } from '../callbacks/checkUsernameAvailabilityCallback';
 import { validateName } from '../shared/validateName';
 
 let usernameBlackList: RegExp[] = [];
@@ -20,17 +21,17 @@ const usernameIsBlocked = (username: string, usernameBlackList: RegExp[]): boole
 
 export const checkUsernameAvailabilityWithValidation = async function (userId: string, username: string): Promise<boolean> {
 	if (!username) {
-		throw new Meteor.Error('error-invalid-username', 'Invalid username', { method: 'setUsername' });
+		throw new ClientSafeError('error-invalid-username', 'Invalid username', { method: 'setUsername' });
 	}
 
 	const user = await Users.findOneById(userId, { projection: { username: 1 } });
 
 	if (!user) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setUsername' });
+		throw new ClientSafeError('error-invalid-user', 'Invalid user', { method: 'setUsername' });
 	}
 
 	if (user.username && !settings.get('Accounts_AllowUsernameChange')) {
-		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setUsername' });
+		throw new ClientSafeError('error-not-allowed', 'Not allowed', { method: 'setUsername' });
 	}
 
 	if (user.username === username) {
@@ -39,9 +40,9 @@ export const checkUsernameAvailabilityWithValidation = async function (userId: s
 	return checkUsernameAvailability(username);
 };
 
-export const checkUsernameAvailability = async function (username: string): Promise<boolean> {
+export const checkUsernameAvailability = async function (username: string, type: UsernameAvailabilityCheckType = 'user'): Promise<boolean> {
 	if (usernameIsBlocked(username, usernameBlackList) || !validateName(username)) {
-		throw new Meteor.Error('error-blocked-username', `${_.escape(username)} is blocked and can't be used!`, {
+		throw new ClientSafeError('error-blocked-username', `${_.escape(username)} is blocked and can't be used!`, {
 			method: 'checkUsernameAvailability',
 			field: username,
 		});
@@ -61,5 +62,11 @@ export const checkUsernameAvailability = async function (username: string): Prom
 		return false;
 	}
 
-	return true;
+	try {
+		await checkUsernameAvailabilityCallback.run(username, type);
+
+		return true;
+	} catch (error) {
+		return false;
+	}
 };

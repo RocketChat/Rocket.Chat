@@ -4,7 +4,7 @@ import { Modal } from './modal';
 
 export class OmnichannelReturnToQueueModal extends Modal {
 	constructor(page: Page) {
-		super(page.getByRole('dialog', { name: 'Return back to the Queue' }));
+		super(page.getByRole('dialog', { name: 'Return back to the queue' }));
 	}
 
 	private get btnReturnToQueueConfirm() {

@@ -1,5 +1,5 @@
 diff --git a/dist/import.mjs b/dist/import.mjs
-index a13ba8b37e27230ec01d4c31140127912208666c..97d6aa506f273263c2a99a9bc80731ac2c38eea6 100644
+index a13ba8b37e27230ec01d4c31140127912208666c..4208f8b7e8c3ff25b4eff8cce9017e8cfb8d3b4e 100644
 --- a/dist/import.mjs
 +++ b/dist/import.mjs
 @@ -1,50 +1,14 @@
@@ -44,7 +44,7 @@ index a13ba8b37e27230ec01d4c31140127912208666c..97d6aa506f273263c2a99a9bc80731ac
 -export {useSearchField} from '@react-aria/searchfield';
 -export {HiddenSelect, useHiddenSelect, useSelect} from '@react-aria/select';
 -export {ListKeyboardDelegate} from '@react-aria/selection';
-+export {useMenu, useMenuItem, useMenuSection, useMenuTrigger} from '@react-aria/menu';
++export {useMenu, useMenuItem, useMenuSection, useMenuTrigger, useSubmenuTrigger} from '@react-aria/menu';
 +export {DismissButton, Overlay, useOverlayTrigger, usePopover} from '@react-aria/overlays';
 +export {HiddenSelect, useSelect} from '@react-aria/select';
  export {useSeparator} from '@react-aria/separator';
@@ -62,7 +62,7 @@ index a13ba8b37e27230ec01d4c31140127912208666c..97d6aa506f273263c2a99a9bc80731ac
 -
 +export {useDialog} from '@react-aria/dialog';
 diff --git a/dist/main.js b/dist/main.js
-index b6a2ce3a780a09aeb416d7330ffcf6fd0b36b218..98e720a4660bdcd0384509786d04681a8ba98886 100644
+index b6a2ce3a780a09aeb416d7330ffcf6fd0b36b218..c5e9d3e7ba3c8f1a4db5a8e2f7b9c4d6a1e3f2b5 100644
 --- a/dist/main.js
 +++ b/dist/main.js
 @@ -1,172 +1,15 @@
@@ -243,7 +243,7 @@ index b6a2ce3a780a09aeb416d7330ffcf6fd0b36b218..98e720a4660bdcd0384509786d04681a
 +var _i18n = require("@react-aria/i18n"); exports.useNumberFormatter = _i18n.useNumberFormatter;
 +var _interactions = require("@react-aria/interactions"); exports.useFocus = _interactions.useFocus; exports.useFocusVisible = _interactions.useFocusVisible; exports.useFocusWithin = _interactions.useFocusWithin; exports.useHover = _interactions.useHover; exports.useInteractOutside = _interactions.useInteractOutside; exports.useKeyboard = _interactions.useKeyboard; exports.useMove = _interactions.useMove; exports.usePress = _interactions.usePress; exports.useLongPress = _interactions.useLongPress;
 +var _listbox = require("@react-aria/listbox"); exports.useListBox = _listbox.useListBox; exports.useListBoxSection = _listbox.useListBoxSection; exports.useOption = _listbox.useOption;
-+var _menu = require("@react-aria/menu"); exports.useMenu = _menu.useMenu; exports.useMenuItem = _menu.useMenuItem; exports.useMenuSection = _menu.useMenuSection; exports.useMenuTrigger = _menu.useMenuTrigger;
++var _menu = require("@react-aria/menu"); exports.useMenu = _menu.useMenu; exports.useMenuItem = _menu.useMenuItem; exports.useMenuSection = _menu.useMenuSection; exports.useMenuTrigger = _menu.useMenuTrigger; exports.useSubmenuTrigger = _menu.useSubmenuTrigger;
 +var _overlays = require("@react-aria/overlays"); exports.DismissButton = _overlays.DismissButton; exports.Overlay = _overlays.Overlay; exports.useOverlayTrigger = _overlays.useOverlayTrigger; exports.usePopover = _overlays.usePopover;
 +var _select = require("@react-aria/select"); exports.HiddenSelect = _select.HiddenSelect; exports.useSelect = _select.useSelect;
 +var _separator = require("@react-aria/separator"); exports.useSeparator = _separator.useSeparator;
@@ -252,7 +252,7 @@ index b6a2ce3a780a09aeb416d7330ffcf6fd0b36b218..98e720a4660bdcd0384509786d04681a
 +var _visuallyHidden = require("@react-aria/visually-hidden"); exports.VisuallyHidden = _visuallyHidden.VisuallyHidden; exports.useVisuallyHidden = _visuallyHidden.useVisuallyHidden;
 +var _dialog = require("@react-aria/dialog"); exports.useDialog = _dialog.useDialog;
 diff --git a/dist/module.js b/dist/module.js
-index a13ba8b37e27230ec01d4c31140127912208666c..97d6aa506f273263c2a99a9bc80731ac2c38eea6 100644
+index a13ba8b37e27230ec01d4c31140127912208666c..4208f8b7e8c3ff25b4eff8cce9017e8cfb8d3b4e 100644
 --- a/dist/module.js
 +++ b/dist/module.js
 @@ -1,50 +1,14 @@
@@ -297,7 +297,7 @@ index a13ba8b37e27230ec01d4c31140127912208666c..97d6aa506f273263c2a99a9bc80731ac
 -export {useSearchField} from '@react-aria/searchfield';
 -export {HiddenSelect, useHiddenSelect, useSelect} from '@react-aria/select';
 -export {ListKeyboardDelegate} from '@react-aria/selection';
-+export {useMenu, useMenuItem, useMenuSection, useMenuTrigger} from '@react-aria/menu';
++export {useMenu, useMenuItem, useMenuSection, useMenuTrigger, useSubmenuTrigger} from '@react-aria/menu';
 +export {DismissButton, Overlay, useOverlayTrigger, usePopover} from '@react-aria/overlays';
 +export {HiddenSelect, useSelect} from '@react-aria/select';
  export {useSeparator} from '@react-aria/separator';

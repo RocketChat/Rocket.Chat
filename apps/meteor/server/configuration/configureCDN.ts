@@ -1,6 +1,6 @@
 import { WebAppInternals } from 'meteor/webapp';
 
-import type { ICachedSettings } from '../../app/settings/server/CachedSettings';
+import type { ICachedSettings } from '../settings/CachedSettings';
 
 export async function configureCDN(settings: ICachedSettings): Promise<void> {
 	settings.change<string>('CDN_PREFIX', (value) => {

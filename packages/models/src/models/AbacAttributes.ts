@@ -1,5 +1,6 @@
 import type { IAbacAttribute } from '@rocket.chat/core-typings';
-import type { Db, FindOptions, IndexDescription } from 'mongodb';
+import type { DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
+import type { Db, Document, FindCursor, FindOptions, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -14,6 +15,16 @@ export class AbacAttributesRaw extends BaseRaw<IAbacAttribute> {
 
 	findOneByKey(key: string, options: FindOptions<IAbacAttribute> = {}): Promise<IAbacAttribute | null> {
 		return this.findOne({ key }, options);
+	}
+
+	findAll<T extends Document = IAbacAttribute, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
+		return this.find<T, O>({}, options);
+	}
+
+	findAllKeys(): Promise<string[]> {
+		return this.col.distinct('key');
 	}
 
 	async countTotalValues(): Promise<number> {

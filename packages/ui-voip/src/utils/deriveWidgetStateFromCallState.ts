@@ -8,10 +8,10 @@ export const deriveWidgetStateFromCallState = (
 ): Extract<State, 'ongoing' | 'ringing' | 'calling'> | undefined => {
 	switch (callState) {
 		case 'active':
-		case 'accepted':
 		case 'renegotiating':
 			return 'ongoing';
 		case 'none':
+		case 'accepted':
 		case 'ringing':
 			return callRole === 'callee' ? 'ringing' : 'calling';
 		default:

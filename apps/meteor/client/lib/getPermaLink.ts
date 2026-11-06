@@ -4,7 +4,7 @@ import { getUserId } from './user';
 
 const getMessage = async (msgId: string): Promise<Serialized<IMessage> | null> => {
 	try {
-		const { sdk } = await import('../../app/utils/client/lib/SDKClient');
+		const { sdk } = await import('./SDKClient');
 		const { message } = await sdk.rest.get('/v1/chat.getMessage', { msgId });
 		return message;
 	} catch {

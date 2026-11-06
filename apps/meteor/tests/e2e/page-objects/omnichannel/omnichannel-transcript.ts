@@ -1,8 +1,8 @@
-import type { Locator } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 
-import { OmnichannelAdmin } from './omnichannel-admin';
+export class OmnichannelTranscript {
+	constructor(private readonly page: Page) {}
 
-export class OmnichannelTranscript extends OmnichannelAdmin {
 	get contactCenterChats(): Locator {
 		return this.page.locator('//button[contains(.,"Chats")]');
 	}

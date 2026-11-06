@@ -1,8 +1,9 @@
 import type { IEmoji } from '@rocket.chat/core-typings';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
+import { removeFromRecent } from '@rocket.chat/ui-emoji-picker';
 
-import { emoji, removeFromRecent, replaceEmojiInRecent } from '../../app/emoji/client';
-import { getURL } from '../../app/utils/client';
+import { emoji, replaceEmojiInRecent } from './emoji';
+import { getURL } from './getURL';
 
 const isSetNotNull = (fn: () => unknown) => {
 	let value;

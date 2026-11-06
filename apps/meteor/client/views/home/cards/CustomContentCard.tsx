@@ -1,9 +1,9 @@
 import { Box, Button, Card, CardBody, CardControls, CardHeader, Icon, Tag } from '@rocket.chat/fuselage';
+import { useIsEnterprise } from '@rocket.chat/ui-client';
 import { useRole, useSettingSetValue, useSetting, useToastMessageDispatch, useRouter } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import CustomHomepageContent from '../CustomHomePageContent';
 
 const CustomContentCard = (props: Omit<ComponentProps<typeof Card>, 'type'>) => {
@@ -53,14 +53,13 @@ const CustomContentCard = (props: Omit<ComponentProps<typeof Card>, 'type'>) => 
 		return (
 			<Card role='region' aria-label={t('Custom_content', 'Custom content')} {...props}>
 				<CardHeader>
-					<Tag>
-						<Icon mie={4} name={willNotShowCustomContent ? 'eye-off' : 'eye'} size='x12' />
+					<Tag icon={<Icon name={willNotShowCustomContent ? 'eye-off' : 'eye'} size='x12' />}>
 						{willNotShowCustomContent ? t('Not_Visible_To_Workspace') : t('Visible_To_Workspace')}
 					</Tag>
 				</CardHeader>
 				<CardBody>{isCustomContentBodyEmpty ? t('Homepage_Custom_Content_Default_Message') : <CustomHomepageContent />}</CardBody>
 				<CardControls>
-					<Button medium onClick={() => router.navigate('/admin/settings/Layout')} title={t('Layout_Home_Page_Content')}>
+					<Button size='medium' onClick={() => router.navigate('/admin/settings/Layout')} title={t('Layout_Home_Page_Content')}>
 						{t('Customize_Content')}
 					</Button>
 					<Button
@@ -68,7 +67,7 @@ const CustomContentCard = (props: Omit<ComponentProps<typeof Card>, 'type'>) => 
 						disabled={isCustomContentBodyEmpty || (isCustomContentVisible && isCustomContentOnly)}
 						title={isCustomContentBodyEmpty ? t('Action_Available_After_Custom_Content_Added') : userVisibilityTooltipText}
 						onClick={handleChangeCustomContentVisibility}
-						medium
+						size='medium'
 					>
 						{willNotShowCustomContent ? t('Show_To_Workspace') : t('Hide_On_Workspace')}
 					</Button>
@@ -77,7 +76,7 @@ const CustomContentCard = (props: Omit<ComponentProps<typeof Card>, 'type'>) => 
 						disabled={willNotShowCustomContent || !isEnterprise}
 						title={!isEnterprise ? t('Premium_only') : customContentOnlyTooltipText}
 						onClick={handleOnlyShowCustomContent}
-						medium
+						size='medium'
 					>
 						{!isCustomContentOnly ? t('Show_Only_This_Content') : t('Show_default_content')}
 					</Button>
@@ -89,7 +88,7 @@ const CustomContentCard = (props: Omit<ComponentProps<typeof Card>, 'type'>) => 
 	if (!willNotShowCustomContent && !isCustomContentOnly) {
 		return (
 			<Card>
-				<Box mb={8}>
+				<Box marginBlock={8}>
 					<CustomHomepageContent role='status' aria-label={customContentBody} />
 				</Box>
 			</Card>

@@ -7,7 +7,7 @@ import { usePrivateAppsEnabled } from '../hooks/usePrivateAppsEnabled';
 const PrivateEmptyState = () => {
 	const privateAppsEnabled = usePrivateAppsEnabled();
 
-	return <Box mbs='24px'>{privateAppsEnabled ? <PrivateEmptyStateDefault /> : <PrivateEmptyStateUpgrade />}</Box>;
+	return <Box marginBlockStart='24px'>{privateAppsEnabled ? <PrivateEmptyStateDefault /> : <PrivateEmptyStateUpgrade />}</Box>;
 };
 
 export default PrivateEmptyState;

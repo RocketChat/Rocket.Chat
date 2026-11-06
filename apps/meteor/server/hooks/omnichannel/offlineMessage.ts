@@ -1,0 +1,26 @@
+import { callbacks } from '../../lib/callbacks';
+import { sendRequest } from '../../lib/omnichannel/webhooks';
+import { settings } from '../../settings';
+
+callbacks.add(
+	'livechat.offlineMessage',
+	async (data) => {
+		if (!settings.get('Livechat_webhook_on_offline_msg')) {
+			return data;
+		}
+
+		const postData = {
+			type: 'LivechatOfflineMessage',
+			sentAt: new Date(),
+			visitor: {
+				name: data.name,
+				email: data.email,
+			},
+			message: data.message,
+		};
+
+		await sendRequest(postData);
+	},
+	callbacks.priority.MEDIUM,
+	'livechat-send-email-offline-message',
+);

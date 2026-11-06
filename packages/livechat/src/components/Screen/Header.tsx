@@ -1,6 +1,6 @@
 import type { ComponentChildren } from 'preact';
 import { useRef } from 'preact/hooks';
-import { useTranslation, withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 import type { ScreenContextValue } from './ScreenProvider';
 import type { Agent } from '../../definitions/agents';
@@ -139,4 +139,4 @@ const ScreenHeader = ({
 	);
 };
 
-export default withTranslation()(ScreenHeader);
+export default ScreenHeader;

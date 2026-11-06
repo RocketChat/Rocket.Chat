@@ -29,8 +29,8 @@ test.describe('OC - Contact Unknown Callout', () => {
 		poLiveChat = new OmnichannelLiveChat(page, api);
 	});
 
-	test.beforeEach('create livechat conversation', async ({ page }) => {
-		await page.goto('/livechat');
+	test.beforeEach('create livechat conversation', async () => {
+		await poLiveChat.goto();
 		await poLiveChat.openLiveChat();
 		await poLiveChat.sendMessage(newVisitor, false);
 		await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor');

@@ -4,7 +4,7 @@ import type { ComponentPropsWithoutRef } from 'react';
 export type HeaderTagProps = ComponentPropsWithoutRef<typeof Tag>;
 
 const HeaderTag = ({ children, ...props }: HeaderTagProps) => (
-	<Box p={4} withTruncatedText minWidth='x32'>
+	<Box padding={4} withTruncatedText minWidth='x32'>
 		<Tag medium {...props}>
 			{children}
 		</Tag>

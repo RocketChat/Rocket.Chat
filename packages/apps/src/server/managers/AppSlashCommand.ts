@@ -8,7 +8,6 @@ import type {
 
 import type { ProxiedApp } from '../ProxiedApp';
 import type { AppLogStorage } from '../storage';
-import type { AppAccessorManager } from './AppAccessorManager';
 
 export class AppSlashCommand {
 	/**
@@ -47,24 +46,21 @@ export class AppSlashCommand {
 		method: AppMethod._COMMAND_EXECUTOR | AppMethod._COMMAND_PREVIEWER,
 		context: SlashCommandContext,
 		logStorage: AppLogStorage,
-		accessors: AppAccessorManager,
 	): Promise<void | ISlashCommandPreview> {
-		return this.runTheCode(method, logStorage, accessors, context, []);
+		return this.runTheCode(method, logStorage, context, []);
 	}
 
 	public async runPreviewExecutor(
 		previewItem: ISlashCommandPreviewItem,
 		context: SlashCommandContext,
 		logStorage: AppLogStorage,
-		accessors: AppAccessorManager,
 	): Promise<void> {
-		await this.runTheCode(AppMethod._COMMAND_PREVIEW_EXECUTOR, logStorage, accessors, context, [previewItem]);
+		await this.runTheCode(AppMethod._COMMAND_PREVIEW_EXECUTOR, logStorage, context, [previewItem]);
 	}
 
 	private async runTheCode(
 		method: AppMethod._COMMAND_EXECUTOR | AppMethod._COMMAND_PREVIEWER | AppMethod._COMMAND_PREVIEW_EXECUTOR,
 		_logStorage: AppLogStorage,
-		_accessors: AppAccessorManager,
 		context: SlashCommandContext,
 		runContextArgs: Array<any>,
 	): Promise<void | ISlashCommandPreview> {

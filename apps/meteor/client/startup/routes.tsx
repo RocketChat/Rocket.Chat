@@ -1,13 +1,15 @@
-import { SetupWizardRoute } from '@rocket.chat/ui-client';
+import { SetupWizardRoute } from '@rocket.chat/ui-setup-wizard';
 import { createElement, lazy, useEffect } from 'react';
 
 import { appLayout } from '../lib/appLayout';
+import { preloadedLazy } from '../lib/preloadedLazy';
 import { router } from '../providers/RouterProvider';
 import OAuthTwoFactorAuthenticationRouter from '../views/OAuthTwoFactorAuthentication/OAuthTwoFactorAuthenticationRouter';
 import MainLayout from '../views/root/MainLayout';
 
 const IndexRoute = lazy(() => import('../views/root/IndexRoute'));
-const HomePage = lazy(() => import('../views/home/HomePage'));
+// the route most sessions land on
+const HomePage = preloadedLazy(() => import('../views/home/HomePage'));
 const DirectoryPage = lazy(() => import('../views/directory'));
 const OmnichannelDirectoryRouter = lazy(() => import('../views/omnichannel/directory/OmnichannelDirectoryRouter'));
 const OmnichannelQueueList = lazy(() => import('../views/omnichannel/queueList'));
@@ -25,6 +27,8 @@ const OAuthAuthorizationPage = lazy(() => import('../views/oauth/OAuthAuthorizat
 const OAuthErrorPage = lazy(() => import('../views/oauth/OAuthErrorPage'));
 const NotFoundPage = lazy(() => import('../views/notFound/NotFoundPage'));
 const CallHistoryPage = lazy(() => import('../views/mediaCallHistory/CallHistoryPage'));
+const SidebarRailCallPanel = lazy(() => import('../sidebar/SidebarRail/SidebarRailCallPanel'));
+const SearchPage = lazy(() => import('../views/search/SearchPage'));
 
 declare module '@rocket.chat/ui-contexts' {
 	interface IRouterPaths {
@@ -84,10 +88,6 @@ declare module '@rocket.chat/ui-contexts' {
 			pathname: `/conference/${string}`;
 			pattern: '/conference/:id';
 		};
-		'setup-wizard': {
-			pathname: `/setup-wizard${`/${string}` | ''}`;
-			pattern: '/setup-wizard/:step?';
-		};
 		'mailer-unsubscribe': {
 			pathname: `/mailer/unsubscribe/${string}/${string}`;
 			pattern: '/mailer/unsubscribe/:_id/:createdAt';
@@ -115,6 +115,10 @@ declare module '@rocket.chat/ui-contexts' {
 		'call-history': {
 			pathname: `/call-history${`/details/${string}` | ''}`;
 			pattern: '/call-history/:tab?/:historyId?';
+		};
+		'search': {
+			pathname: '/search';
+			pattern: '/search';
 		};
 	}
 }
@@ -205,7 +209,7 @@ router.defineRoutes([
 	{
 		path: '/conference/:id',
 		id: 'conference',
-		element: appLayout.wrap(<ConferenceRoute />),
+		element: appLayout.wrap(<ConferenceRoute />, { standalone: true }),
 	},
 	{
 		path: '/setup-wizard/:step?',
@@ -248,6 +252,16 @@ router.defineRoutes([
 		element: appLayout.wrap(
 			<MainLayout>
 				<CallHistoryPage />
+				<SidebarRailCallPanel />
+			</MainLayout>,
+		),
+	},
+	{
+		path: '/search',
+		id: 'search',
+		element: appLayout.wrap(
+			<MainLayout>
+				<SearchPage />
 			</MainLayout>,
 		),
 	},

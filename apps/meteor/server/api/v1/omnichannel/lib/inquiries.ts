@@ -1,11 +1,12 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import type { ILivechatInquiryRecord, IRoom, IUser } from '@rocket.chat/core-typings';
 import { LivechatDepartmentAgents, LivechatDepartment, LivechatInquiry } from '@rocket.chat/models';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import type { Filter } from 'mongodb';
 
-import { getOmniChatSortQuery } from '../../../../../app/livechat/lib/inquiries';
-import { getInquirySortMechanismSetting } from '../../../../../app/livechat/server/lib/settings';
+import { getOmniChatSortQuery } from '../../../../../lib/livechat/inquiries';
+import { getInquirySortMechanismSetting } from '../../../../lib/omnichannel/settings';
 
 const agentDepartments = async (userId: IUser['_id']): Promise<string[]> => {
 	const agentDepartments = (await LivechatDepartmentAgents.findByAgentId(userId, { projection: { departmentId: 1 } }).toArray()).map(
@@ -25,7 +26,7 @@ const applyDepartmentRestrictions = async (
 		}
 
 		if (!allowedDepartments.includes(filterDepartment)) {
-			throw new Error('error-not-authorized');
+			throw new ClientSafeError('error-not-authorized', 'Not authorized');
 		}
 		return filterDepartment;
 	}

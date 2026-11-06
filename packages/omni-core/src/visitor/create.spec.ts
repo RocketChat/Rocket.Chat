@@ -299,7 +299,7 @@ describe('registerGuest', () => {
 
 			await registerGuest(guestData, { shouldConsiderIdleAgent: false, shouldConsiderOfflineAgent: false });
 
-			expect(getVisitorByTokenSpy).toHaveBeenCalledWith(token, { projection: { _id: 1 } });
+			expect(getVisitorByTokenSpy).toHaveBeenCalledWith(token, { projection: { _id: 1, department: 1, token: 1 } });
 
 			// Verify existing visitor data is used and updated
 			expect(updateOneByIdOrTokenSpy).toHaveBeenCalledWith(

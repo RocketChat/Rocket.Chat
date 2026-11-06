@@ -3,8 +3,8 @@ import type { IPersistence } from '@rocket.chat/apps-engine/definition/accessors
 import type { IRead } from '@rocket.chat/apps-engine/definition/accessors/IRead';
 
 import { AppObjectRegistry } from '../../AppObjectRegistry';
+import { bridgeCall } from '../bridges/bridgeCall';
 import type * as Messenger from '../messenger';
-import { formatErrorResponse } from './formatResponseErrorHandler';
 
 type RequestMethod = 'get' | 'post' | 'put' | 'head' | 'delete' | 'patch';
 
@@ -22,7 +22,6 @@ export class Http implements IHttp {
 		this.persistence = persistence;
 		this.httpExtender = httpExtender;
 		this.senderFn = senderFn;
-		// this.httpExtender = new HttpExtend();
 	}
 
 	public get(url: string, options?: IHttpRequest): Promise<IHttpResponse> {
@@ -72,18 +71,14 @@ export class Http implements IHttp {
 			request = await handler.executePreHttpRequest(url, request, this.read, this.persistence);
 		}
 
-		let { result: response } = await this.senderFn({
-			method: `bridges:getHttpBridge:doCall`,
-			params: [
-				{
-					appId: AppObjectRegistry.get<string>('id'),
-					method,
-					url,
-					request,
-				},
-			],
-		}).catch((error) => {
-			throw formatErrorResponse(error);
+		// `appId` here is a field inside the payload object, not a top-level positional
+		// param, so the host's `'APP_ID'` sentinel substitution cannot reach it - we send
+		// the resolved id. See docs/proposals/apps-accessor-consolidation/base-runtime-app-id-exceptions.md (bucket C).
+		let response = await bridgeCall(this.senderFn, 'getHttpBridge', 'doCall', {
+			appId: AppObjectRegistry.get<string>('id'),
+			method,
+			url,
+			request,
 		});
 
 		for (const handler of this.httpExtender.getPreResponseHandlers()) {

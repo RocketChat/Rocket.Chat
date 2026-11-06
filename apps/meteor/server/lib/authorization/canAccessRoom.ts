@@ -2,6 +2,7 @@ import { Authorization } from '@rocket.chat/core-services';
 
 export const canAccessRoomAsync = Authorization.canAccessRoom;
 export const canAccessRoomIdAsync = Authorization.canAccessRoomId;
+export const canAccessRoomIdsAsync = Authorization.canAccessRoomIds;
 export const roomAccessAttributes = {
 	_id: 1,
 	t: 1,

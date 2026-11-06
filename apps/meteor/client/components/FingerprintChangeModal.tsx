@@ -1,8 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
-import { ExternalLink, GenericModal } from '@rocket.chat/ui-client';
+import { ExternalLink, GenericModal, links } from '@rocket.chat/ui-client';
 import { Trans, useTranslation } from 'react-i18next';
-
-import { links } from '../lib/links';
 
 export type FingerprintChangeModalProps = {
 	onConfirm: () => void;
@@ -22,10 +20,10 @@ const FingerprintChangeModal = ({ onConfirm, onCancel, onClose }: FingerprintCha
 			confirmText={t('Configuration_update')}
 			cancelText={t('New_workspace')}
 		>
-			<Box is='p' mbe={16}>
+			<Box is='p' marginBlockEnd={16}>
 				<Trans i18nKey='Unique_ID_change_detected_description' />
 			</Box>
-			<Box is='p' mbe={16}>
+			<Box is='p' marginBlockEnd={16}>
 				<Trans
 					i18nKey='Unique_ID_change_detected_learn_more_link'
 					components={{ a: <ExternalLink to={links.go.fingerPrintChangedFaq} /> }}

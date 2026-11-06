@@ -18,7 +18,7 @@ import type { FormEvent, FormEventHandler } from 'react';
 import { useId, useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { getButtonStyle } from './getButtonStyle';
-import { getURL } from '../../../../app/utils/client/getURL';
+import { getURL } from '../../../lib/getURL';
 
 const focusableElementsString = `
 	a[href]:not([tabindex="-1"]),
@@ -189,7 +189,7 @@ const ModalBlock = ({ view, errors, onSubmit, onClose, onCancel }: ModalBlockPar
 					<ModalFooter>
 						<ModalFooterControllers>
 							{view.close && (
-								<Button danger={view.close.style === 'danger'} onClick={onCancel}>
+								<Button variant={view.close.style === 'danger' ? 'danger' : undefined} onClick={onCancel}>
 									{modalParser.renderTextObject(view.close.text, 0)}
 								</Button>
 							)}

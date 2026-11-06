@@ -1,6 +1,6 @@
 import type { IUserSession, IUserSessionConnection, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import type { IUsersSessionsModel } from '@rocket.chat/model-typings';
-import type { FindCursor, Collection, Db, FindOptions } from 'mongodb';
+import type { IUsersSessionsModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
+import type { FindCursor, Collection, Db, Document } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -60,11 +60,9 @@ export class UsersSessionsRaw extends BaseRaw<IUserSession> implements IUsersSes
 		);
 	}
 
-	async removeConnectionByConnectionId(connectionId: string): ReturnType<BaseRaw<IUserSession>['updateMany']> {
-		return this.updateMany(
-			{
-				'connections.id': connectionId,
-			},
+	removeConnectionById(uid: string, connectionId: string): ReturnType<BaseRaw<IUserSession>['updateOne']> {
+		return this.updateOne(
+			{ _id: uid },
 			{
 				$pull: {
 					connections: {
@@ -102,8 +100,11 @@ export class UsersSessionsRaw extends BaseRaw<IUserSession> implements IUsersSes
 		return this.updateOne({ _id: userId }, update, { upsert: true });
 	}
 
-	findByOtherInstanceIds(instanceIds: string[], options?: FindOptions<IUserSession>): FindCursor<IUserSession> {
-		return this.find(
+	findByOtherInstanceIds<T extends Document = IUserSession, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		instanceIds: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
+		return this.find<T, O>(
 			{
 				'connections.instanceId': {
 					$exists: true,

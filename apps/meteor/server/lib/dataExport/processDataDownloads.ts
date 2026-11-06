@@ -4,12 +4,10 @@ import { access, mkdir, rm, writeFile } from 'node:fs/promises';
 
 import type { IExportOperation, IUser, RoomType } from '@rocket.chat/core-typings';
 import { Avatars, ExportOperations, UserDataFiles, Subscriptions } from '@rocket.chat/models';
-import { escapeHTML } from '@rocket.chat/string-helpers';
+import { escapeHTML } from '@rocket.chat/tools';
 import moment from 'moment';
 
-import { FileUpload } from '../../../app/file-upload/server';
-import { settings } from '../../../app/settings/server';
-import { getURL } from '../../../app/utils/server/getURL';
+import { settings } from '../../settings';
 import { joinPath } from '../fileUtils';
 import { i18n } from '../i18n';
 import { copyFileUpload } from './copyFileUpload';
@@ -19,6 +17,8 @@ import { getRoomData } from './getRoomData';
 import { makeZipFile } from './makeZipFile';
 import { sendEmail } from './sendEmail';
 import { uploadZipFile } from './uploadZipFile';
+import { FileUpload } from '../media/file-upload';
+import { getURL } from '../utils/getURL';
 
 const loadUserSubscriptions = async (_exportOperation: IExportOperation, fileType: 'json' | 'html', userId: IUser['_id']) => {
 	const roomList: (

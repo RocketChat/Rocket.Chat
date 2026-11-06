@@ -5,10 +5,10 @@ import type {
 	TemplateParameter as CoreTemplateParameter,
 } from '@rocket.chat/core-typings';
 
-import type { SubmitPayload } from '../components/OutboundMessageWizard/forms';
 import type { MessageFormSubmitPayload } from '../components/OutboundMessageWizard/forms/MessageForm';
 import type { RecipientFormSubmitPayload } from '../components/OutboundMessageWizard/forms/RecipientForm/RecipientForm';
 import type { RepliesFormSubmitPayload } from '../components/OutboundMessageWizard/forms/RepliesForm';
+import type { SubmitPayload } from '../components/OutboundMessageWizard/forms/SubmitPayload';
 import type { TemplateParameter, TemplateParameters } from '../types/template';
 
 export const isRecipientStepValid = (data: Partial<SubmitPayload>): data is Required<RecipientFormSubmitPayload> => {

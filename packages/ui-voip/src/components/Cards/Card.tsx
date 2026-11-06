@@ -67,7 +67,7 @@ const Card = ({
 			overflow='hidden'
 			alignItems='center'
 			title={title}
-			borderRadius='4px'
+			borderRadius='medium'
 			className={styles}
 			backgroundColor='surface-light'
 			maxHeight={maxHeight}
@@ -76,7 +76,7 @@ const Card = ({
 			height={height}
 			minWidth={CARD_MIN_WIDTH}
 			minHeight={minHeight}
-			m={CARD_MARGIN}
+			margin={CARD_MARGIN}
 			{...borderProps}
 		>
 			{children}

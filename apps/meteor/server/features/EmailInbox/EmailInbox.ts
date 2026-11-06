@@ -1,13 +1,12 @@
 import type { IEmailInbox } from '@rocket.chat/core-typings';
 import { EmailInbox, EmailMessageHistory } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 import nodemailer from 'nodemailer';
 import type Mail from 'nodemailer/lib/mailer';
 
 import { onEmailReceived } from './EmailInbox_Incoming';
 import { logger } from './logger';
-import { settings } from '../../../app/settings/server';
 import { IMAPInterceptor } from '../../email/IMAPInterceptor';
+import { settings } from '../../settings';
 
 export type Inbox = {
 	imap: IMAPInterceptor;
@@ -91,8 +90,8 @@ export async function configureEmailInboxes(): Promise<void> {
 	logger.info({ msg: 'Configured a total of inboxes', count: inboxes.size });
 }
 
-Meteor.startup(() => {
+export const startEmailInboxes = (): void => {
 	settings.watchOnce('Livechat_Routing_Method', (_) => {
 		void configureEmailInboxes();
 	});
-});
+};

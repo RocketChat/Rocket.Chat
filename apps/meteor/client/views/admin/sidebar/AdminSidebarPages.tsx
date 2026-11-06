@@ -12,7 +12,7 @@ const AdminSidebarPages = ({ currentPath }: AdminSidebarPagesProps) => {
 	const items = useSyncExternalStore(subscribeToAdminSidebarItems, getAdminSidebarItems);
 
 	return (
-		<Box display='flex' flexDirection='column' flexShrink={0} pb={8}>
+		<Box display='flex' flexDirection='column' flexShrink={0} paddingBlock={8}>
 			<SidebarItemsAssembler items={items} currentPath={currentPath} />
 		</Box>
 	);

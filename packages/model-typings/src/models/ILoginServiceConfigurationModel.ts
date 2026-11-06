@@ -1,7 +1,8 @@
 import type { LoginServiceConfiguration } from '@rocket.chat/core-typings';
-import type { Document, FindOptions } from 'mongodb';
+import type { Document } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
+import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
 
 export interface ILoginServiceConfigurationModel extends IBaseModel<LoginServiceConfiguration> {
 	createOrUpdateService(
@@ -9,8 +10,8 @@ export interface ILoginServiceConfigurationModel extends IBaseModel<LoginService
 		serviceData: Partial<LoginServiceConfiguration>,
 	): Promise<LoginServiceConfiguration['_id']>;
 	removeByService(serviceName: LoginServiceConfiguration['service']): Promise<Pick<LoginServiceConfiguration, '_id'> | null>;
-	findOneByService<P extends Document = LoginServiceConfiguration>(
+	findOneByService<P extends Document = LoginServiceConfiguration, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
 		serviceName: LoginServiceConfiguration['service'],
-		options?: FindOptions<P>,
-	): Promise<P | null>;
+		options?: O,
+	): Promise<DocumentWithProjection<P, O> | null>;
 }

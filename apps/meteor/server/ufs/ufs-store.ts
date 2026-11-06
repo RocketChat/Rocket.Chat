@@ -2,11 +2,10 @@ import fs from 'node:fs';
 import type * as http from 'node:http';
 import type stream from 'node:stream';
 
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IUpload } from '@rocket.chat/core-typings';
 import type { IBaseUploadsModel } from '@rocket.chat/model-typings';
 import type createServer from 'connect';
-import { check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 import type { ClientSession, OptionalId } from 'mongodb';
 
 import { UploadFS } from '.';
@@ -104,15 +103,13 @@ export class Store {
 		UploadFS.addStore(this);
 
 		this.copy = async (fileId, store, callback) => {
-			check(fileId, String);
-
 			if (!(store instanceof Store)) {
 				throw new TypeError('store is not an instance of UploadFS.Store');
 			}
 			// Get original file
 			const file = await this.getCollection().findOne({ _id: fileId });
 			if (!file) {
-				throw new Meteor.Error('file-not-found', 'File not found');
+				throw new ClientSafeError('file-not-found', 'File not found');
 			}
 			// Silently ignore the file if it does not match filter
 			const filter = store.getFilter();
@@ -149,7 +146,6 @@ export class Store {
 		};
 
 		this.create = async (file, options) => {
-			check(file, Object);
 			file.store = this.options.name; // assign store to file
 			return (await this.getCollection().insertOne(file, { session: options?.session })).insertedId;
 		};
@@ -170,12 +166,10 @@ export class Store {
 					// Set file attribute
 					file.complete = true;
 					file.etag = UploadFS.generateEtag();
-					file.path = await this.getFileRelativeURL(fileId);
 					file.progress = 1;
 					file.token = this.generateToken();
 					file.uploading = false;
 					file.uploadedAt = new Date();
-					file.url = await this.getFileURL(fileId);
 
 					// Execute callback
 					if (typeof this.onFinishUpload === 'function') {
@@ -190,13 +184,11 @@ export class Store {
 							$set: {
 								complete: file.complete,
 								etag: file.etag,
-								path: file.path,
 								progress: file.progress,
 								size: file.size,
 								token: file.token,
 								uploading: file.uploading,
 								uploadedAt: file.uploadedAt,
-								url: file.url,
 							},
 						},
 						{ session: options?.session },
@@ -240,7 +232,6 @@ export class Store {
 
 	generateToken(pattern?: string) {
 		return (pattern || 'xyxyxyxyxy').replace(/[xy]/g, (c) => {
-			// eslint-disable-next-line no-mixed-operators
 			const r = (Math.random() * 16) | 0;
 			const v = c === 'x' ? r : (r & 0x3) | 0x8;
 			const s = v.toString(16);
@@ -249,22 +240,12 @@ export class Store {
 	}
 
 	getCollection() {
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+		// oxlint-disable-next-line @typescript-eslint/no-non-null-assertion
 		return this.options.collection!;
 	}
 
 	async getFilePath(_fileId: string, _file?: IUpload): Promise<string> {
 		throw new Error('Store.getFilePath is not implemented');
-	}
-
-	async getFileRelativeURL(fileId: string) {
-		const file = await this.getCollection().findOne(fileId, { projection: { name: 1 } });
-		return file ? this.getRelativeURL(`${fileId}/${file.name}`) : undefined;
-	}
-
-	async getFileURL(fileId: string) {
-		const file = await this.getCollection().findOne(fileId, { projection: { name: 1 } });
-		return file ? this.getURL(`${fileId}/${file.name}`) : undefined;
 	}
 
 	getFilter() {
@@ -277,21 +258,6 @@ export class Store {
 
 	async getReadStream(_fileId: string, _file: IUpload, _options?: { start?: number; end?: number }): Promise<stream.Readable> {
 		throw new Error('Store.getReadStream is not implemented');
-	}
-
-	getRelativeURL(path: string) {
-		const rootUrl = Meteor.absoluteUrl().replace(/\/+$/, '');
-		const rootPath = rootUrl.replace(/^[a-z]+:\/\/[^/]+\/*/gi, '');
-		const storeName = this.getName();
-		path = String(path).replace(/\/$/, '').trim();
-		return encodeURI(`${rootPath}/${UploadFS.config.storesPath}/${storeName}/${path}`);
-	}
-
-	getURL(path: string) {
-		const rootUrl = Meteor.absoluteUrl('', { secure: UploadFS.config.https }).replace(/\/+$/, '');
-		const storeName = this.getName();
-		path = String(path).replace(/\/$/, '').trim();
-		return encodeURI(`${rootUrl}/${UploadFS.config.storesPath}/${storeName}/${path}`);
 	}
 
 	async getRedirectURL(_file: IUpload, _forceDownload = false): Promise<string> {

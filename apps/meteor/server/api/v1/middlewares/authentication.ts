@@ -3,7 +3,7 @@ import { Authorization } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
 import type { Request, Response, NextFunction } from 'express';
 
-import { oAuth2ServerAuth } from '../../../../app/oauth2-server-config/server/oauth/oauth2-server';
+import { oAuth2ServerAuth } from '../../../lib/auth/oauth2-server/oauth2-server';
 
 type AuthenticationMiddlewareConfig = {
 	rejectUnauthorized?: boolean;
@@ -25,7 +25,8 @@ export function authenticationMiddleware(
 		const { 'x-user-id': userId, 'x-auth-token': authToken } = req.headers;
 
 		if (userId && authToken) {
-			req.user = (await Users.findOneByIdAndLoginToken(userId as string, hashLoginToken(authToken as string))) || undefined;
+			const user = await Users.findOneByIdAndLoginToken(userId as string, hashLoginToken(authToken as string));
+			req.user = user || undefined;
 		} else {
 			const { authorization } = req.headers;
 			const accessToken = typeof req.query.access_token === 'string' ? req.query.access_token : undefined;

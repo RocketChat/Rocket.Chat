@@ -4,7 +4,7 @@ import { AttachmentContext, useLayout, useUserPreference } from '@rocket.chat/ui
 import type { ReactNode } from 'react';
 import { useMemo } from 'react';
 
-import { getURL } from '../../app/utils/client';
+import { getURL } from '../lib/getURL';
 
 export type AttachmentProviderProps = {
 	children?: ReactNode;

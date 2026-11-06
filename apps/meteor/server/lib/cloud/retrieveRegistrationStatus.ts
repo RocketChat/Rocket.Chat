@@ -1,6 +1,6 @@
 import { Users } from '@rocket.chat/models';
 
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../settings';
 
 export async function retrieveRegistrationStatus(): Promise<{
 	workspaceRegistered: boolean;

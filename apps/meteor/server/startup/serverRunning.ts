@@ -1,18 +1,18 @@
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 
 import { License } from '@rocket.chat/license';
 // import { Users } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 import semver from 'semver';
 
-import { settings } from '../../app/settings/server';
-import { Info } from '../../app/utils/rocketchat.info';
-import { getMongoInfo } from '../../app/utils/server/functions/getMongoInfo';
+import { Info } from '../../rocketchat.info';
+import { showErrorBox, showSuccessBox, showWarningBox } from '../lib/logger/showBox';
+import { getMongoInfo } from '../lib/utils/functions/getMongoInfo';
 // import { i18n } from '../lib/i18n';
 // import { isRunningMs } from '../lib/isRunningMs';
 // import { sendMessagesToAdmins } from '../lib/sendMessagesToAdmins';
-import { showErrorBox, showSuccessBox, showWarningBox } from '../lib/logger/showBox';
+import { settings } from '../settings';
 
 const exitIfNotBypassed = (ignore: string | undefined, errorCode = 1) => {
 	if (typeof ignore === 'string' && ['yes', 'true'].includes(ignore.toLowerCase())) {
@@ -29,7 +29,7 @@ const skipMongoDbDeprecationCheck =
 	process.env.NODE_ENV === 'development';
 // const skipMongoDbDeprecationBanner = ['yes', 'true'].includes(String(process.env.SKIP_MONGODEPRECATION_BANNER).toLowerCase());
 
-Meteor.startup(async () => {
+export const reportServerRunning = async (): Promise<void> => {
 	const { mongoVersion, mongoStorageEngine } = await getMongoInfo();
 
 	const desiredNodeVersion = semver.clean(fs.readFileSync(path.join(process.cwd(), '../../.node_version.txt')).toString());
@@ -41,7 +41,7 @@ Meteor.startup(async () => {
 
 	const desiredNodeVersionMajor = String(parsedSemVer.major);
 
-	return setTimeout(async () => {
+	setTimeout(async () => {
 		let msg: string | string[] = [
 			`Rocket.Chat Version: ${Info.version}`,
 			`     NodeJS Version: ${process.versions.node} - ${process.arch}`,
@@ -51,6 +51,8 @@ Meteor.startup(async () => {
 			`       Process Port: ${process.env.PORT}`,
 			`           Site URL: ${settings.get<string>('Site_Url')}`,
 			`    Hashed Site URL: ${License.getHashedWorkspaceUrl()}`,
+			`    OpenSSL Version: ${process.versions.openssl}`,
+			`      FIPS Provider: ${crypto.getFips() ? 'Enabled' : 'Disabled'}`,
 		];
 
 		if (Info.commit?.hash) {
@@ -125,4 +127,4 @@ Meteor.startup(async () => {
 			// }
 		}
 	}, 100);
-});
+};

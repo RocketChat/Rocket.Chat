@@ -82,7 +82,7 @@ const AppearancePage = ({ settings }: AppearancePageProps) => {
 		<Page>
 			<PageHeader title={t('Appearance')} />
 			<PageScrollableContentWithShadow>
-				<Box maxWidth='x600' w='full' alignSelf='center'>
+				<Box maxWidth='x600' width='full' alignSelf='center'>
 					<FormProvider {...methods}>
 						<form id={formId} onSubmit={handleSubmit(handleSave)}>
 							<AppearanceForm />
@@ -93,7 +93,7 @@ const AppearancePage = ({ settings }: AppearancePageProps) => {
 			<PageFooter isDirty={isDirty}>
 				<ButtonGroup>
 					<Button onClick={() => reset()}>{t('Cancel')}</Button>
-					<Button form={formId} type='submit' primary>
+					<Button form={formId} type='submit' variant='primary'>
 						{t('Save_changes')}
 					</Button>
 				</ButtonGroup>

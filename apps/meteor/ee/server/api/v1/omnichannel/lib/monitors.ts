@@ -1,7 +1,7 @@
 import type { ILivechatMonitor, IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
 
 export async function findMonitors({
 	text,

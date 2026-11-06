@@ -4,12 +4,13 @@ import { createClassName } from '../../../helpers/createClassName';
 import DownloadIcon from '../../../icons/download.svg';
 import { FileAttachmentIcon } from '../FileAttachmentIcon';
 import { MessageBubble } from '../MessageBubble';
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 
 export type FileAttachmentProps = {
 	url: string;
 	title: string;
 	className?: string;
+	quoted?: boolean;
 };
 
 export const FileAttachment = memo(({ url, title, className, ...messageBubbleProps }: FileAttachmentProps) => (

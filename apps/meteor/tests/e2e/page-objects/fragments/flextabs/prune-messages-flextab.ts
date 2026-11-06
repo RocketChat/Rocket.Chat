@@ -18,7 +18,7 @@ export class PruneMessagesFlexTab extends FlexTab {
 	readonly confirmPruneModal: ConfirmPruneMessageModal;
 
 	constructor(page: Page) {
-		super(page.getByRole('dialog', { name: 'Prune Messages' }));
+		super(page.getByRole('dialog', { name: 'Prune messages' }));
 		this.confirmPruneModal = new ConfirmPruneMessageModal(page);
 	}
 

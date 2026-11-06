@@ -4,7 +4,7 @@ import HomeContainer from '../Components/HomeContainer/HomeContainer';
 
 const Home = () => {
 	return (
-		<Box display='flex' flexDirection='column' w='100%' flexGrow={1}>
+		<Box display='flex' flexDirection='column' width='100%' flexGrow={1}>
 			<Scrollable>
 				<HomeContainer />
 			</Scrollable>

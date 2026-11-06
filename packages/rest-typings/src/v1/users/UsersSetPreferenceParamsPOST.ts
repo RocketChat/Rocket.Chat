@@ -1,4 +1,4 @@
-import type { ThemePreference } from '@rocket.chat/core-typings';
+import type { ISidebarCategory, ThemePreference } from '@rocket.chat/core-typings';
 
 import { ajv } from '../Ajv';
 
@@ -36,9 +36,11 @@ export type UsersSetPreferencesParamsPOST = {
 		sidebarShowFavorites?: boolean;
 		sidebarShowUnread?: boolean;
 		sidebarSortby?: string;
+		statusVisibilityDenied?: string[];
 		sidebarViewMode?: string;
 		sidebarDisplayAvatar?: boolean;
 		sidebarGroupByType?: boolean;
+		sidebarCategories?: ISidebarCategory[];
 		muteFocusedConversations?: boolean;
 		dontAskAgainList?: Array<{ action: string; label: string }>;
 		featuresPreview?: { name: string; value: boolean }[];
@@ -183,6 +185,10 @@ const UsersSetPreferencesParamsPostSchema = {
 					type: 'boolean',
 					nullable: true,
 				},
+				statusVisibilityDenied: {
+					type: 'array',
+					items: { type: 'string' },
+				},
 				sidebarSortby: {
 					type: 'string',
 					nullable: true,
@@ -198,6 +204,21 @@ const UsersSetPreferencesParamsPostSchema = {
 				sidebarGroupByType: {
 					type: 'boolean',
 					nullable: true,
+				},
+				sidebarCategories: {
+					type: 'array',
+					items: {
+						type: 'object',
+						properties: {
+							_id: { type: 'string' },
+							name: { type: 'string', minLength: 1, maxLength: 30 },
+							default: { type: 'boolean' },
+							showUnreads: { type: 'boolean', nullable: true },
+							keepUnreadsOnTop: { type: 'boolean', nullable: true },
+						},
+						required: ['_id', 'name'],
+						additionalProperties: false,
+					},
 				},
 				muteFocusedConversations: {
 					type: 'boolean',

@@ -3,7 +3,7 @@ import { useLayoutEffect } from 'react';
 import { useMediaCallInstance } from '.';
 import type { AvailableViews } from './MediaCallInstanceContext';
 
-const useRegisterView = (view: AvailableViews): AvailableViews[] => {
+const useRegisterView = (view: AvailableViews) => {
 	const { currentViews, registerView, unregisterView } = useMediaCallInstance();
 
 	useLayoutEffect(() => {

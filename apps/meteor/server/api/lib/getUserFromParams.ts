@@ -1,8 +1,8 @@
 // Convenience method, almost need to turn it into a middleware of sorts
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { isTruthy } from '@rocket.chat/tools';
-import { Meteor } from 'meteor/meteor';
 
 export async function getUserFromParams<T extends boolean = false>(
 	params: {
@@ -28,11 +28,11 @@ export async function getUserFromParams<T extends boolean = false>(
 	} else if (params.user?.trim()) {
 		user = await Users.findOneByUsernameIgnoringCase(params.user, { projection });
 	} else {
-		throw new Meteor.Error('error-user-param-not-provided', 'The required "userId" or "username" param was not provided');
+		throw new ClientSafeError('error-user-param-not-provided', 'The required "userId" or "username" param was not provided');
 	}
 
 	if (!user) {
-		throw new Meteor.Error('error-invalid-user', 'The required "userId" or "username" param provided does not match any users');
+		throw new ClientSafeError('error-invalid-user', 'The required "userId" or "username" param provided does not match any users');
 	}
 
 	return user;
@@ -55,7 +55,10 @@ export async function getUserListFromParams(params: {
 	userListParam = [...new Set(userListParam)];
 
 	if (!userListParam.length) {
-		throw new Meteor.Error('error-users-params-not-provided', 'Please provide "userId" or "username" or "userIds" or "usernames" as param');
+		throw new ClientSafeError(
+			'error-users-params-not-provided',
+			'Please provide "userId" or "username" or "userIds" or "usernames" as param',
+		);
 	}
 
 	if (params.userIds || params.userId) {
@@ -91,7 +94,10 @@ export async function getUsernameListFromParams(params: {
 	const all = [...new Set([...usernames, ...usernamesFromIds])];
 
 	if (!all.length) {
-		throw new Meteor.Error('error-users-params-not-provided', 'Please provide "userId" or "username" or "userIds" or "usernames" as param');
+		throw new ClientSafeError(
+			'error-users-params-not-provided',
+			'Please provide "userId" or "username" or "userIds" or "usernames" as param',
+		);
 	}
 
 	return all;

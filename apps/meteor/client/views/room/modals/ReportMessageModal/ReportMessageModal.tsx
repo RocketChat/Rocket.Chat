@@ -9,6 +9,8 @@ import { useTranslation } from 'react-i18next';
 
 import MarkdownText from '../../../../components/MarkdownText';
 import MessageContentBody from '../../../../components/message/MessageContentBody';
+import { getMarkdownParserLimit } from '../../../../lib/getMarkdownParserLimit';
+import { toPlainTextRoot } from '../../../../lib/toPlainTextRoot';
 
 type ReportMessageModalsFields = {
 	description: string;
@@ -40,6 +42,8 @@ const ReportMessageModal = ({ message, onClose }: ReportMessageModalProps) => {
 
 	const { _id } = message;
 
+	const md = message.md ?? (message.msg.length > getMarkdownParserLimit() ? toPlainTextRoot(message.msg) : undefined);
+
 	const handleReportMessage = async ({ description }: ReportMessageModalsFields): Promise<void> => {
 		try {
 			await reportMessage({ messageId: _id, description });
@@ -59,8 +63,8 @@ const ReportMessageModal = ({ message, onClose }: ReportMessageModalProps) => {
 			onCancel={onClose}
 			confirmText={t('Report')}
 		>
-			<Box mbe={24} className={wordBreak}>
-				{message.md ? <MessageContentBody md={message.md} /> : <MarkdownText variant='inline' parseEmoji content={message.msg} />}
+			<Box marginBlockEnd={24} className={wordBreak}>
+				{md ? <MessageContentBody md={md} /> : <MarkdownText variant='inline' parseEmoji content={message.msg} />}
 			</Box>
 			<FieldGroup>
 				<Field>

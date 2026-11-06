@@ -25,3 +25,14 @@ export const WithLink: StoryObj<typeof AnnouncementBanner> = {
 		),
 	},
 };
+
+/**
+ * A banner that only announces. Nothing happens on click, so nothing offers to be clicked: no pointer, no
+ * underline on hover — the affordances the clickable case shows are exactly what would be a lie here.
+ */
+export const NotClickable: StoryObj<typeof AnnouncementBanner> = {
+	args: {
+		onClick: undefined,
+		children: 'Announcement',
+	},
+};

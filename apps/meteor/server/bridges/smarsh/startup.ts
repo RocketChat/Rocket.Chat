@@ -1,7 +1,7 @@
 import { cronJobs } from '@rocket.chat/cron';
 
 import { generateEml } from './functions/generateEml';
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../settings';
 import { smarshIntervalValuesToCronMap } from '../../settings/smarsh';
 
 const smarshJobName = 'Smarsh EML Connector';

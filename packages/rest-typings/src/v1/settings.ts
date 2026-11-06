@@ -1,6 +1,7 @@
 import type { ISetting, ISettingColor, LoginServiceConfiguration } from '@rocket.chat/core-typings';
 
 import { ajv, ajvQuery } from './Ajv';
+import { paginationQueryProperties } from './pagination';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 
@@ -27,27 +28,17 @@ type SettingsUpdatePropDefault = {
 
 export const isSettingsUpdatePropDefault = (props: Partial<SettingsUpdateProps>): props is SettingsUpdatePropDefault => 'value' in props;
 
-type SettingsPublicWithPaginationProps = PaginatedRequest<{ _id?: string; query?: string }>;
+type SettingsPublicWithPaginationProps = PaginatedRequest<{ _id?: string }>;
 
 const SettingsPublicWithPaginationSchema = {
 	type: 'object',
 	properties: {
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 			nullable: true,
 		},
 		_id: {
-			type: 'string',
-		},
-		query: {
 			type: 'string',
 		},
 	},
@@ -57,7 +48,7 @@ const SettingsPublicWithPaginationSchema = {
 
 export const isSettingsPublicWithPaginationProps = ajvQuery.compile<SettingsPublicWithPaginationProps>(SettingsPublicWithPaginationSchema);
 
-type SettingsGetParams = PaginatedRequest<{ includeDefaults?: boolean; query?: string }>;
+type SettingsGetParams = PaginatedRequest<{ includeDefaults?: boolean }>;
 
 const SettingsGetSchema = {
 	type: 'object',
@@ -65,19 +56,8 @@ const SettingsGetSchema = {
 		includeDefaults: {
 			type: 'boolean',
 		},
-		count: {
-			type: 'number',
-		},
-		offset: {
-			type: 'number',
-		},
+		...paginationQueryProperties,
 		sort: {
-			type: 'string',
-		},
-		fields: {
-			type: 'string',
-		},
-		query: {
 			type: 'string',
 		},
 	},
@@ -130,6 +110,14 @@ export type SettingsEndpoints = {
 
 	'/v1/settings.addCustomOAuth': {
 		POST: (params: { name: string }) => void;
+	};
+
+	'/v1/settings.removeCustomOAuth': {
+		POST: (params: { name: string }) => void;
+	};
+
+	'/v1/settings.refreshOAuthServices': {
+		POST: () => void;
 	};
 
 	'/v1/settings': {

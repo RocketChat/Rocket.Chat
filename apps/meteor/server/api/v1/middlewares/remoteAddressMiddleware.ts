@@ -1,17 +1,23 @@
 import type { IncomingMessage } from 'node:http';
 
-import type { Context, MiddlewareHandler } from 'hono';
+import type { MiddlewareHandler } from 'hono';
 
 type HttpBindings = {
 	incoming: IncomingMessage;
 };
 
-const getRemoteAddress = (c: Context) => {
-	const bindings = (c.env?.server ? c.env.server : c.env) as HttpBindings;
+const getHeader = (incoming: IncomingMessage, name: string): string | undefined => {
+	const value = incoming.headers[name];
+	return Array.isArray(value) ? value.join(', ') : value;
+};
 
-	const forwardedFor = c.req.header('x-forwarded-for');
-	const socket = bindings.incoming.socket.remoteAddress || bindings.incoming.connection.remoteAddress;
-	const remoteAddress = c.req.header('x-real-ip') || socket;
+/**
+ * The address of the client that sent `incoming`, trusting `HTTP_FORWARDED_COUNT` proxies in front of the server.
+ */
+export const getRemoteAddress = (incoming: IncomingMessage): string | undefined => {
+	const forwardedFor = getHeader(incoming, 'x-forwarded-for');
+	const socket = incoming.socket?.remoteAddress || incoming.connection?.remoteAddress;
+	const remoteAddress = getHeader(incoming, 'x-real-ip') || socket;
 
 	if (!socket) {
 		return remoteAddress || forwardedFor;
@@ -34,7 +40,7 @@ const getRemoteAddress = (c: Context) => {
 };
 
 export const remoteAddressMiddleware: MiddlewareHandler = async function (c, next) {
-	const remoteAddress = getRemoteAddress(c);
-	c.set('remoteAddress', remoteAddress);
+	const bindings = (c.env?.server ? c.env.server : c.env) as HttpBindings;
+	c.set('remoteAddress', getRemoteAddress(bindings.incoming));
 	return next();
 };

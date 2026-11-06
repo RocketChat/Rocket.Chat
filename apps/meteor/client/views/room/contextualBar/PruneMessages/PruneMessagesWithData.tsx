@@ -1,13 +1,12 @@
 import { isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { GenericModal } from '@rocket.chat/ui-client';
+import { formatDate, GenericModal } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useEndpoint, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import { useCallback, useMemo, useState } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import PruneMessages from './PruneMessages';
-import { formatDate } from '../../../../lib/utils/dateFormat';
 import { useRoom } from '../../contexts/RoomContext';
 
 const getTimeZoneOffset = (): string => {
@@ -123,19 +122,16 @@ const PruneMessagesWithData = () => {
 	const callOutText = useMemo(() => {
 		const name = room && ((isDirectMessageRoom(room) && room.usernames?.join(' x ')) || room.fname || room.name);
 		const exceptPinned = pinned ? ` ${t('except_pinned')}` : '';
-		const ifFrom = users.length
-			? ` ${t('if_they_are_from', {
-					postProcess: 'sprintf',
-					sprintf: [users.map((element) => element).join(', ')],
-				})}`
-			: '';
+		const ifFrom = users.length ? ` ${t('if_they_are_from', { users: users.map((element) => element).join(', ') })}` : '';
 		const filesOrMessages = attached ? t('files') : t('messages');
 
 		if (newerDate && olderDate) {
 			return (
 				t('Prune_Warning_between', {
-					postProcess: 'sprintf',
-					sprintf: [filesOrMessages, name, formatDate(fromDate, 'L LT'), formatDate(toDate, 'L LT')],
+					items: filesOrMessages,
+					roomName: name,
+					fromDate: formatDate(fromDate, 'L LT'),
+					toDate: formatDate(toDate, 'L LT'),
 				}) +
 				exceptPinned +
 				ifFrom
@@ -144,34 +140,17 @@ const PruneMessagesWithData = () => {
 
 		if (newerDate) {
 			return (
-				t('Prune_Warning_after', {
-					postProcess: 'sprintf',
-					sprintf: [filesOrMessages, name, formatDate(fromDate, 'L LT')],
-				}) +
-				exceptPinned +
-				ifFrom
+				t('Prune_Warning_after', { items: filesOrMessages, roomName: name, fromDate: formatDate(fromDate, 'L LT') }) + exceptPinned + ifFrom
 			);
 		}
 
 		if (olderDate) {
 			return (
-				t('Prune_Warning_before', {
-					postProcess: 'sprintf',
-					sprintf: [filesOrMessages, name, formatDate(toDate, 'L LT')],
-				}) +
-				exceptPinned +
-				ifFrom
+				t('Prune_Warning_before', { items: filesOrMessages, roomName: name, toDate: formatDate(toDate, 'L LT') }) + exceptPinned + ifFrom
 			);
 		}
 
-		return (
-			t('Prune_Warning_all', {
-				postProcess: 'sprintf',
-				sprintf: [filesOrMessages, name],
-			}) +
-			exceptPinned +
-			ifFrom
-		);
+		return t('Prune_Warning_all', { items: filesOrMessages, roomName: name }) + exceptPinned + ifFrom;
 	}, [attached, fromDate, newerDate, olderDate, pinned, room, t, toDate, users]);
 
 	const validateText = useMemo(() => {

@@ -3,6 +3,8 @@ import type { ComponentProps } from 'react';
 
 export type VideoConfMessageRowProps = ComponentProps<typeof Box>;
 
-const VideoConfMessageRow = (props: VideoConfMessageRowProps) => <Box p={16} display='flex' justifyContent='space-between' {...props} />;
+const VideoConfMessageRow = (props: VideoConfMessageRowProps) => (
+	<Box padding={16} display='flex' justifyContent='space-between' {...props} />
+);
 
 export default VideoConfMessageRow;

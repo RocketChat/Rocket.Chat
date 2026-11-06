@@ -52,20 +52,20 @@ const AppRequests = ({ id, isAdminUser }: AppRequestsProps) => {
 				}
 			}
 		};
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// oxlint-disable-next-line react-hooks/exhaustive-deps
 	}, [isAdminUser, isSuccess, paginatedAppRequests?.data, reloadApps]);
 
 	if (isLoading) {
 		return (
-			<Box w='full' maxWidth='x608' marginInline='auto' pbs={36}>
+			<Box width='full' maxWidth='x608' marginInline='auto' paddingBlockStart='x32'>
 				<AppRequestsLoading />
 			</Box>
 		);
 	}
 
 	return (
-		<Box h='full' display='flex' flexDirection='column'>
-			<Box w='full' maxWidth='x608' marginInline='auto' pbs={36} flexGrow='1'>
+		<Box height='full' display='flex' flexDirection='column'>
+			<Box width='full' maxWidth='x608' marginInline='auto' paddingBlockStart='x32' flexGrow='1'>
 				{isSuccess && paginatedAppRequests.data?.length ? (
 					paginatedAppRequests.data.map((request) => (
 						<AppRequestItem

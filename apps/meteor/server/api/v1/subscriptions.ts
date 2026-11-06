@@ -1,3 +1,4 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { ISubscription } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions } from '@rocket.chat/models';
 import {
@@ -9,9 +10,8 @@ import {
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
-import { Meteor } from 'meteor/meteor';
 
-import { unreadMessages } from '../../../app/message-mark-as-unread/server/unreadMessages';
+import { unreadMessages } from '../../lib/messaging/unread/unreadMessages';
 import { readMessages } from '../../lib/readMessages';
 import { getSubscriptions } from '../../publications/subscription';
 import { API } from '../api';
@@ -57,7 +57,7 @@ API.v1.get(
 		let updatedSinceDate: Date | undefined;
 		if (updatedSince) {
 			if (isNaN(Date.parse(updatedSince))) {
-				throw new Meteor.Error('error-roomId-param-invalid', 'The "lastUpdate" query parameter must be a valid date.');
+				throw new ClientSafeError('error-roomId-param-invalid', 'The "lastUpdate" query parameter must be a valid date.');
 			}
 			updatedSinceDate = new Date(updatedSince);
 		}

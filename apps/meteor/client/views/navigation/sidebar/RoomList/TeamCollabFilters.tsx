@@ -16,7 +16,9 @@ const TeamCollabFilters = () => {
 				<RoomListFiltersItem group='favorites' icon={sidePanelFiltersConfig.favorites.icon} />
 				{isDiscussionEnabled && <RoomListFiltersItem group='discussions' icon={sidePanelFiltersConfig.discussions.icon} />}
 			</Box>
-			<Divider borderColor='stroke-light' mb={4} mi={16} />
+			<Box paddingBlock={4} paddingInline={12}>
+				<Divider variation='light' flush />
+			</Box>
 		</>
 	);
 };

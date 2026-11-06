@@ -1,11 +1,11 @@
+import { makeFunction } from '@rocket.chat/patch-injection';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
 import { updateCasServices } from './cas/updateCasService';
 import { updateOAuthServices } from './oauth/updateOAuthServices';
-import { loadSamlServiceProviders } from '../../app/meteor-accounts-saml/server/lib/settings';
 
-export async function refreshLoginServices(): Promise<void> {
+export const refreshLoginServices = makeFunction(async (): Promise<void> => {
 	await ServiceConfiguration.configurations.removeAsync({});
 
-	await Promise.allSettled([updateOAuthServices(), loadSamlServiceProviders(), updateCasServices()]);
-}
+	await Promise.allSettled([updateOAuthServices(), updateCasServices()]);
+});

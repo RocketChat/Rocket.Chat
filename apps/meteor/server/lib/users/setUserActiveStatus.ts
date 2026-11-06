@@ -1,20 +1,19 @@
-import type { IUser, IUserEmail } from '@rocket.chat/core-typings';
+import { ClientSafeError } from '@rocket.chat/core-services';
+import type { IUserEmail } from '@rocket.chat/core-typings';
 import { isUserFederated, isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { Rooms, Users, Subscriptions, OAuthAccessTokens, OAuthRefreshTokens, OAuthAuthCodes } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
-import { check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
+import { settings } from '../../settings';
+import { callbacks } from '../callbacks';
+import * as Mailer from '../notifications/email/api';
 import {
 	notifyOnRoomChangedById,
 	notifyOnRoomChangedByUserDM,
 	notifyOnSubscriptionChangedByNameAndRoomType,
 	notifyOnUserChange,
-} from '../../../app/lib/server/lib/notifyListener';
-import * as Mailer from '../../../app/mailer/server/api';
-import { settings } from '../../../app/settings/server';
-import { callbacks } from '../callbacks';
+} from '../notifyListener';
 import { closeOmnichannelConversations } from '../omnichannel/closeOmnichannelConversations';
 import { shouldRemoveOrChangeOwner, getSubscribedRoomsForUserWithDetails } from '../rooms/getRoomsWithSingleOwner';
 import { relinquishRoomOwnerships } from '../rooms/relinquishRoomOwnerships';
@@ -34,7 +33,7 @@ async function reactivateDirectConversations(userId: string) {
 	}, []);
 	const uniqueUserIds = [...new Set(userIds)];
 	const activeUsers = await Users.findActiveByUserIds(uniqueUserIds, { projection: { _id: 1 } }).toArray();
-	const activeUserIds = activeUsers.map((u: IUser) => u._id);
+	const activeUserIds = activeUsers.map((u) => u._id);
 	const roomsToReactivate = directConversations.reduce((acc: string[], room) => {
 		const otherUserId = isDirectMessageRoom(room) ? room.uids.find((u: string) => u !== userId) : undefined;
 		if (otherUserId && activeUserIds.includes(otherUserId)) {
@@ -55,9 +54,6 @@ export async function setUserActiveStatus(
 	confirmRelinquish = false,
 	executedBy?: string,
 ): Promise<boolean | undefined> {
-	check(userId, String);
-	check(active, Boolean);
-
 	const user = await Users.findOneById(userId);
 
 	if (!user) {
@@ -65,7 +61,7 @@ export async function setUserActiveStatus(
 	}
 
 	if (isUserFederated(user)) {
-		throw new Meteor.Error('error-user-is-federated', 'Cannot change federated users status', {
+		throw new ClientSafeError('error-user-is-federated', 'Cannot change federated users status', {
 			method: 'setUserActiveStatus',
 		});
 	}
@@ -75,7 +71,7 @@ export async function setUserActiveStatus(
 		const userAdmin = await Users.findOneAdmin(userId || '');
 		const adminsCount = await Users.countActiveUsersInRoles(['admin']);
 		if (userAdmin && adminsCount === 1) {
-			throw new Meteor.Error('error-action-not-allowed', 'Leaving the app without an active admin is not allowed', {
+			throw new ClientSafeError('error-action-not-allowed', 'Leaving the app without an active admin is not allowed', {
 				method: 'removeUserFromRole',
 				action: 'Remove_last_admin',
 			});
@@ -88,7 +84,7 @@ export async function setUserActiveStatus(
 
 		if (shouldRemoveOrChangeOwner(chatSubscribedRooms) && !confirmRelinquish) {
 			const rooms = await getUserSingleOwnedRooms(chatSubscribedRooms as []);
-			throw new Meteor.Error('user-last-owner', '', rooms);
+			throw new ClientSafeError('user-last-owner', '', rooms);
 		}
 
 		// We don't want one killing the other :)

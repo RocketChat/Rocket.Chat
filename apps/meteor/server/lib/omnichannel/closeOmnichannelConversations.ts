@@ -1,8 +1,8 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { LivechatRooms } from '@rocket.chat/models';
 
-import { closeRoom } from '../../../app/livechat/server/lib/closeRoom';
-import { settings } from '../../../app/settings/server';
+import { closeRoom } from './closeRoom';
+import { settings } from '../../settings';
 import { callbacks } from '../callbacks';
 import { i18n } from '../i18n';
 

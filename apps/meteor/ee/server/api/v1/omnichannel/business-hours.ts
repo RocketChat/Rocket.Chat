@@ -3,10 +3,9 @@ import type { PaginatedRequest } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../../server/api';
 import { getPaginationItems } from '../../../../../server/api/lib/getPaginationItems';
-import { findBusinessHours } from '../../../../app/livechat-enterprise/server/business-hour/lib/business-hour';
+import { findBusinessHours } from '../../../lib/omnichannel/business-hour/lib/business-hour';
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Endpoints {
 		'/v1/livechat/business-hours': {
 			GET: (params: PaginatedRequest) => {

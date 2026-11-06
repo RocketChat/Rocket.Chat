@@ -12,17 +12,3 @@ export const removeDangerousProps = (v: Query): Query => {
 
 	return query;
 };
-/* @deprecated */
-export function clean(v: Query, allowList: string[] = []): Query {
-	const typedParam = removeDangerousProps(v);
-	if (v instanceof Object) {
-		for (const key in typedParam) {
-			if (key.startsWith('$') && !allowList.includes(key)) {
-				delete typedParam[key];
-			} else {
-				clean(typedParam[key], allowList);
-			}
-		}
-	}
-	return typedParam;
-}

@@ -1,10 +1,8 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
-import { Box, CheckBox, Icon, Margins } from '@rocket.chat/fuselage';
+import { Box, CheckBox, Icon, Text } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { GenericTableRow, GenericTableCell } from '@rocket.chat/ui-client';
+import { GenericTableRow, GenericTableCell, useFormatDateAndTime } from '@rocket.chat/ui-client';
 import { useId } from 'react';
-
-import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 
 export type ChannelDesertionTableRowProps = {
 	onChange: (room: Serialized<IRoom> & { isLastOwner?: boolean }) => void;
@@ -21,17 +19,26 @@ const ChannelDesertionTableRow = ({ room, onChange, selected, lastOwnerWarning }
 
 	return (
 		<GenericTableRow action>
-			<GenericTableCell maxWidth='x300' withTruncatedText>
-				<CheckBox id={checkboxId} checked={selected} onChange={handleChange} disabled={isLastOwner} />
-				<Box is='label' htmlFor={checkboxId} style={{ cursor: isLastOwner ? undefined : 'pointer' }}>
-					<Margins inline={8}>
+			<GenericTableCell truncate>
+				<Box display='flex' alignItems='center' maxWidth='x284'>
+					<CheckBox id={checkboxId} checked={selected} onChange={handleChange} disabled={isLastOwner} />
+					<Box
+						is='label'
+						htmlFor={checkboxId}
+						display='flex'
+						alignItems='center'
+						gap={8}
+						paddingInline={8}
+						withTruncatedText
+						style={{ cursor: isLastOwner ? undefined : 'pointer' }}
+					>
 						<Icon name={room.t === 'p' ? 'hashtag-lock' : 'hashtag'} />
-						{fname ?? name}
-						{isLastOwner && <Icon size='x16' name='info-circled' color='status-font-on-danger' title={lastOwnerWarning} />}
-					</Margins>
+						<Text truncate>{fname ?? name}</Text>
+						{isLastOwner && <Icon size='x16' name='info-circled' color='danger' title={lastOwnerWarning} />}
+					</Box>
 				</Box>
 			</GenericTableCell>
-			<GenericTableCell align='end' withTruncatedText>
+			<GenericTableCell align='end' truncate>
 				{formatDate(ts)}
 			</GenericTableCell>
 		</GenericTableRow>

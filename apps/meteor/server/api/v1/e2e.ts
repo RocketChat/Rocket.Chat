@@ -10,17 +10,17 @@ import {
 } from '@rocket.chat/rest-typings';
 import ExpiryMap from 'expiry-map';
 
-import { handleSuggestedGroupKey } from '../../../app/e2e/server/functions/handleSuggestedGroupKey';
-import { provideUsersSuggestedGroupKeys } from '../../../app/e2e/server/functions/provideUsersSuggestedGroupKeys';
-import { resetRoomKey } from '../../../app/e2e/server/functions/resetRoomKey';
-import { settings } from '../../../app/settings/server';
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { handleSuggestedGroupKey } from '../../lib/e2e/functions/handleSuggestedGroupKey';
+import { provideUsersSuggestedGroupKeys } from '../../lib/e2e/functions/provideUsersSuggestedGroupKeys';
+import { resetRoomKey } from '../../lib/e2e/functions/resetRoomKey';
 import { getUsersOfRoomWithoutKeyMethod } from '../../meteor-methods/platform/getUsersOfRoomWithoutKey';
 import { requestSubscriptionKeysMethod } from '../../meteor-methods/platform/requestSubscriptionKeys';
 import { setRoomKeyIDMethod } from '../../meteor-methods/platform/setRoomKeyID';
 import { setUserPublicAndPrivateKeysMethod } from '../../meteor-methods/platform/setUserPublicAndPrivateKeys';
 import { updateGroupKey } from '../../meteor-methods/platform/updateGroupKey';
+import { settings } from '../../settings';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 
@@ -438,8 +438,8 @@ const e2eEndpoints = API.v1
 
 		async function action() {
 			const { rid, e2eKey, e2eKeyId } = this.bodyParams;
-			if (!(await hasPermissionAsync(this.userId, 'toggle-room-e2e-encryption', rid))) {
-				return API.v1.forbidden('error-not-allowed');
+			if (!(await hasPermissionAsync(this.user, 'toggle-room-e2e-encryption', rid))) {
+				return API.v1.forbidden('User does not have the permissions required for this action');
 			}
 			if (LockMap.has(rid)) {
 				throw new Error('error-e2e-key-reset-in-progress');
@@ -528,6 +528,6 @@ const e2eEndpoints = API.v1
 type E2eEndpoints = ExtractRoutesFromAPI<typeof e2eEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
 	interface Endpoints extends E2eEndpoints {}
 }

@@ -4,7 +4,7 @@ import { LivechatRooms } from '@rocket.chat/models';
 import type { FindOptions } from 'mongodb';
 
 import { projectionAllowsAttribute } from './projectionAllowsAttribute';
-import { migrateVisitorIfMissingContact } from '../../../app/livechat/server/lib/contacts/migrateVisitorIfMissingContact';
+import { migrateVisitorIfMissingContact } from '../../lib/omnichannel/contacts/migrateVisitorIfMissingContact';
 
 /**
  * If the room is a livechat room and it doesn't yet have a contact, trigger the migration for its visitor and source

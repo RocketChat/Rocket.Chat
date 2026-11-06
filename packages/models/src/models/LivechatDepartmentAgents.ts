@@ -1,11 +1,15 @@
 import type { AvailableAgentsAggregation, ILivechatDepartmentAgents, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import type { FindPaginated, ILivechatDepartmentAgentsModel } from '@rocket.chat/model-typings';
+import type {
+	FindPaginated,
+	ILivechatDepartmentAgentsModel,
+	DocumentWithProjection,
+	FindOptionsWithProjection,
+} from '@rocket.chat/model-typings';
 import type {
 	Collection,
 	FindCursor,
 	Db,
 	Filter,
-	FindOptions,
 	Document,
 	UpdateResult,
 	DeleteResult,
@@ -47,37 +51,31 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		];
 	}
 
-	findByAgentIds(agentIds: string[], options?: FindOptions<ILivechatDepartmentAgents>): FindCursor<ILivechatDepartmentAgents> {
-		return this.find({ agentId: { $in: agentIds } }, options);
+	findByAgentIds<T extends Document = ILivechatDepartmentAgents, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		agentIds: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
+		return this.find<T, O>({ agentId: { $in: agentIds } }, options);
 	}
 
-	findByAgentId(agentId: string, options?: FindOptions<ILivechatDepartmentAgents>): FindCursor<ILivechatDepartmentAgents> {
-		return this.find({ agentId }, options);
+	findByAgentId<T extends Document = ILivechatDepartmentAgents, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		agentId: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
+		return this.find<T, O>({ agentId }, options);
 	}
 
-	findAgentsByDepartmentId(departmentId: string): FindPaginated<FindCursor<ILivechatDepartmentAgents>>;
-
-	findAgentsByDepartmentId(
-		departmentId: string,
-		options: FindOptions<ILivechatDepartmentAgents>,
-	): FindPaginated<FindCursor<ILivechatDepartmentAgents>>;
-
-	findAgentsByDepartmentId<P extends Document>(
-		departmentId: string,
-		options: FindOptions<P extends ILivechatDepartmentAgents ? ILivechatDepartmentAgents : P>,
-	): FindPaginated<FindCursor<P>>;
-
-	findAgentsByDepartmentId(
-		departmentId: string,
-		options?: undefined | FindOptions<ILivechatDepartmentAgents>,
-	): FindPaginated<FindCursor<ILivechatDepartmentAgents>> {
+	findAgentsByDepartmentId<
+		P extends Document = ILivechatDepartmentAgents,
+		O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>,
+	>(departmentId: string, options?: O): FindPaginated<FindCursor<DocumentWithProjection<P, O>>> {
 		const query = { departmentId };
 
 		if (options === undefined) {
-			return this.findPaginated(query);
+			return this.findPaginated<P, O>(query);
 		}
 
-		return this.findPaginated(query, options);
+		return this.findPaginated<P, O>(query, options);
 	}
 
 	findByDepartmentIds(departmentIds: string[], options = {}): FindCursor<ILivechatDepartmentAgents> {
@@ -92,16 +90,18 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		return this.deleteMany({ departmentId });
 	}
 
-	findByDepartmentId(departmentId: string, options?: FindOptions<ILivechatDepartmentAgents>): FindCursor<ILivechatDepartmentAgents> {
-		return this.find({ departmentId }, options);
+	findByDepartmentId<T extends Document = ILivechatDepartmentAgents, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		departmentId: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
+		return this.find<T, O>({ departmentId }, options);
 	}
 
-	findOneByAgentIdAndDepartmentId(
-		agentId: string,
-		departmentId: string,
-		options?: FindOptions<ILivechatDepartmentAgents>,
-	): Promise<ILivechatDepartmentAgents | null> {
-		return this.findOne({ agentId, departmentId }, options);
+	findOneByAgentIdAndDepartmentId<
+		T extends Document = ILivechatDepartmentAgents,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(agentId: string, departmentId: string, options?: O): Promise<DocumentWithProjection<T, O> | null> {
+		return this.findOne<T, O>({ agentId, departmentId }, options);
 	}
 
 	saveAgent(agent: {
@@ -185,7 +185,7 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 			agentId: 1,
 			departmentId: 1,
 			username: 1,
-		};
+		} as const;
 
 		return this.findOneAndUpdate(query, update, { sort, projection, returnDocument: 'after' });
 	}
@@ -239,7 +239,7 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 			agentId: 1,
 			departmentId: 1,
 			username: 1,
-		};
+		} as const;
 
 		return this.findOneAndUpdate(query, update, { sort, projection, returnDocument: 'after' });
 	}
@@ -272,12 +272,15 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		return this.col.distinct('agentId', { departmentId: { $in: departmentIds }, departmentEnabled: true });
 	}
 
-	findByAgentsAndDepartmentId(
+	findByAgentsAndDepartmentId<
+		T extends Document = ILivechatDepartmentAgents,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
 		agentsIds: ILivechatDepartmentAgents['agentId'][],
 		departmentId: ILivechatDepartmentAgents['departmentId'],
-		options?: FindOptions<ILivechatDepartmentAgents>,
-	): FindCursor<ILivechatDepartmentAgents> {
-		return this.find({ agentId: { $in: agentsIds }, departmentId }, options);
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
+		return this.find<T, O>({ agentId: { $in: agentsIds }, departmentId }, options);
 	}
 
 	findDepartmentsOfAgent(agentId: string, enabled = false): AggregationCursor<ILivechatDepartmentAgents & { departmentName: string }> {

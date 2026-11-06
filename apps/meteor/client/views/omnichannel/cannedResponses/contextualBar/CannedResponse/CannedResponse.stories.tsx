@@ -28,7 +28,7 @@ export const Default: StoryObj<typeof CannedResponse> = {
 
 	decorators: [
 		(fn) => (
-			<Box h='600px' w='330px'>
+			<Box height='600px' width='330px'>
 				{fn()}
 			</Box>
 		),

@@ -3,6 +3,8 @@ import { DDPSDK } from '@rocket.chat/ddp-client';
 
 import type { IRequestConfig } from '../../../../../apps/meteor/tests/data/users.helper';
 
+export type UserActivity = { shownName: string; activities: string[] };
+
 /**
  * DDP Listener for catching ephemeral messages in federation tests
  *
@@ -15,6 +17,8 @@ export class DDPListener {
 	private sdk: DDPSDK | null = null;
 
 	private ephemeralMessages: IMessage[] = [];
+
+	private userActivities: UserActivity[] = [];
 
 	private timeoutId: NodeJS.Timeout | null = null;
 
@@ -139,6 +143,35 @@ export class DDPListener {
 	 */
 	clearMessages(): void {
 		this.ephemeralMessages = [];
+	}
+
+	async publishUserActivity(rid: string, shownName: string, activities: string[]): Promise<void> {
+		if (!this.sdk) {
+			throw new Error('DDP connection is not established');
+		}
+
+		await this.sdk.client.callAsync('stream-notify-room', `${rid}/user-activity`, shownName, activities, {});
+	}
+
+	/**
+	 * Subscribe to the activity stream of a room, capturing what a client in that room would render
+	 */
+	observeUserActivity(rid: string): void {
+		if (!this.sdk) {
+			throw new Error('DDP connection is not established');
+		}
+
+		this.sdk.stream('notify-room', `${rid}/user-activity`, (shownName, activities) => {
+			this.userActivities.push({ shownName, activities });
+		});
+	}
+
+	getUserActivities(): UserActivity[] {
+		return [...this.userActivities];
+	}
+
+	clearActivities(): void {
+		this.userActivities = [];
 	}
 
 	/**

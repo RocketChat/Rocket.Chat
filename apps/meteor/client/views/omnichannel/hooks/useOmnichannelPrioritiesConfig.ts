@@ -1,13 +1,15 @@
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings';
-import { Palette } from '@rocket.chat/fuselage';
 import type { Keys } from '@rocket.chat/icons';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useOmnichannelPriorities } from './useOmnichannelPriorities';
 
-type PrioritiesConfig = { iconName: Keys; color?: string; variant?: 'secondary-danger' | 'secondary-warning' | 'secondary-info' };
+type PrioritiesConfig = {
+	iconName: Keys;
+	color?: 'danger' | 'status-font-on-warning' | 'info';
+	variant?: 'secondary-danger' | 'secondary-warning' | 'secondary-info';
+};
 
 export const PRIORITIES_CONFIG: Record<number, PrioritiesConfig> = {
 	[LivechatPriorityWeight.NOT_SPECIFIED]: {
@@ -15,27 +17,27 @@ export const PRIORITIES_CONFIG: Record<number, PrioritiesConfig> = {
 	},
 	[LivechatPriorityWeight.HIGHEST]: {
 		iconName: 'chevron-double-up',
-		color: Palette.badge['badge-background-level-4'].toString(),
+		color: 'danger',
 		variant: 'secondary-danger',
 	},
 	[LivechatPriorityWeight.HIGH]: {
 		iconName: 'chevron-up',
-		color: Palette.badge['badge-background-level-4'].toString(),
+		color: 'danger',
 		variant: 'secondary-danger',
 	},
 	[LivechatPriorityWeight.MEDIUM]: {
 		iconName: 'equal',
-		color: Palette.badge['badge-background-level-3'].toString(),
+		color: 'status-font-on-warning',
 		variant: 'secondary-warning',
 	},
 	[LivechatPriorityWeight.LOW]: {
 		iconName: 'chevron-down',
-		color: Palette.badge['badge-background-level-2'].toString(),
+		color: 'info',
 		variant: 'secondary-info',
 	},
 	[LivechatPriorityWeight.LOWEST]: {
 		iconName: 'chevron-double-down',
-		color: Palette.badge['badge-background-level-2'].toString(),
+		color: 'info',
 		variant: 'secondary-info',
 	},
 };
@@ -53,7 +55,7 @@ export const useOmnichannelPrioritiesConfig = (level: LivechatPriorityWeight, sh
 			return '';
 		}
 
-		return dirty ? name : t(i18n as TranslationKey);
+		return dirty ? name : t(i18n!);
 	}, [level, priorities, t]);
 
 	if (!showUnprioritized && level === LivechatPriorityWeight.NOT_SPECIFIED) {

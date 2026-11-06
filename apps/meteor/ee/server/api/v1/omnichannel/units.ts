@@ -1,15 +1,15 @@
 import type { ILivechatUnitMonitor, IOmnichannelBusinessUnit, OmnichannelBusinessUnitPayload } from '@rocket.chat/core-typings';
+import { ajv } from '@rocket.chat/rest-typings';
 import type { PaginatedResult, PaginatedRequest } from '@rocket.chat/rest-typings';
 
 import { findUnits, findUnitById, findUnitMonitors, findUnitsOfUser } from './lib/units';
 import { API } from '../../../../../server/api';
 import { getPaginationItems } from '../../../../../server/api/lib/getPaginationItems';
 import { hasPermissionAsync } from '../../../../../server/lib/authorization/hasPermission';
-import { findAllDepartmentsAvailable, findAllDepartmentsByUnit } from '../../../../app/livechat-enterprise/server/lib/Department';
-import { LivechatEnterprise } from '../../../../app/livechat-enterprise/server/lib/LivechatEnterprise';
+import { findAllDepartmentsAvailable, findAllDepartmentsByUnit } from '../../../lib/omnichannel/Department';
+import { LivechatEnterprise } from '../../../lib/omnichannel/LivechatEnterprise';
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Endpoints {
 		'/v1/livechat/units/:unitId/monitors': {
 			GET: (params: { unitId: string }) => { monitors: ILivechatUnitMonitor[] };
@@ -25,6 +25,45 @@ declare module '@rocket.chat/rest-typings' {
 		};
 	}
 }
+
+const isUnitPayload = ajv.compile<OmnichannelBusinessUnitPayload>({
+	type: 'object',
+	properties: {
+		unitData: {
+			type: 'object',
+			properties: {
+				name: { type: 'string', isNotEmpty: true },
+				visibility: { type: 'string', isNotEmpty: true },
+				enabled: { type: 'boolean' },
+				description: { type: 'string' },
+				email: { type: 'string' },
+				showOnOfflineForm: { type: 'boolean' },
+			},
+			required: ['name', 'visibility'],
+			additionalProperties: false,
+		},
+		unitMonitors: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: { monitorId: { type: 'string' }, username: { type: 'string' } },
+				required: ['monitorId', 'username'],
+				additionalProperties: false,
+			},
+		},
+		unitDepartments: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: { departmentId: { type: 'string' } },
+				required: ['departmentId'],
+				additionalProperties: false,
+			},
+		},
+	},
+	required: ['unitData', 'unitMonitors', 'unitDepartments'],
+	additionalProperties: false,
+});
 
 API.v1.addRoute(
 	'livechat/units/:unitId/monitors',
@@ -47,7 +86,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/units',
-	{ authRequired: true, permissionsRequired: { POST: ['manage-livechat-units'], GET: [] }, license: ['livechat-enterprise'] },
+	{
+		authRequired: true,
+		permissionsRequired: { POST: ['manage-livechat-units'], GET: [] },
+		license: ['livechat-enterprise'],
+		validateParams: { POST: isUnitPayload },
+	},
 	{
 		async get() {
 			const params = this.queryParams;
@@ -55,7 +99,7 @@ API.v1.addRoute(
 			const { sort } = await this.parseJsonQuery();
 			const { text } = this.queryParams;
 
-			if (!(await hasPermissionAsync(this.userId, 'manage-livechat-units'))) {
+			if (!(await hasPermissionAsync(this.user, 'manage-livechat-units'))) {
 				return API.v1.success(await findUnitsOfUser({ text, userId: this.userId, pagination: { offset, count, sort } }));
 			}
 
@@ -79,7 +123,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/units/:id',
-	{ authRequired: true, permissionsRequired: ['manage-livechat-units'], license: ['livechat-enterprise'] },
+	{
+		authRequired: true,
+		permissionsRequired: ['manage-livechat-units'],
+		license: ['livechat-enterprise'],
+		validateParams: { POST: isUnitPayload },
+	},
 	{
 		async get() {
 			const { id } = this.urlParams;

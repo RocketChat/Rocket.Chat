@@ -1,10 +1,10 @@
 import { applyLicense } from '@rocket.chat/license';
 import { Settings } from '@rocket.chat/models';
 
+import { settings } from '../../settings';
 import { syncCloudData } from './syncWorkspace/syncCloudData';
-import { notifyOnSettingChangedById } from '../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../app/settings/server';
 import { updateAuditedBySystem } from '../../settings/lib/auditedSettingUpdates';
+import { notifyOnSettingChangedById } from '../notifyListener';
 
 type SaveRegistrationDataDTO = {
 	workspaceId: string;

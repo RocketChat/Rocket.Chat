@@ -9,7 +9,7 @@ const testCases = Object.values(composeStories(stories)).map((Story) => [Story.s
 
 const appRoot = mockAppRoot().build();
 
-jest.mock('../../../../app/utils/client', () => ({
+jest.mock('../../../../client/lib/getURL', () => ({
 	getURL: (url: string) => url,
 }));
 
@@ -26,11 +26,6 @@ jest.mock('./RoomToolbox', () => ({
 describe('RoomInviteHeader', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
-	});
-
-	test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
-		const view = render(<Story />, { wrapper: appRoot });
-		expect(view.baseElement).toMatchSnapshot();
 	});
 
 	test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {

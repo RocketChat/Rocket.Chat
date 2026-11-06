@@ -1,14 +1,13 @@
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import { SidebarV2Action, SidebarV2Actions, SidebarV2ItemIcon } from '@rocket.chat/fuselage';
-import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
+import { IconButton, SidebarItemActions } from '@rocket.chat/fuselage';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useUserId } from '@rocket.chat/ui-contexts';
 import type { TFunction } from 'i18next';
 import type { AllHTMLAttributes } from 'react';
 import { memo, useMemo } from 'react';
 
-import SidebarItem from './SidebarItem';
-import { RoomIcon } from '../../../../components/RoomIcon';
+import { RoomIcon, useRoomIconLabel } from '../../../../components/RoomIcon';
+import RoomListItem from '../../../../components/RoomListItem/RoomListItem';
 import { useUserStatusTooltip } from '../../../../hooks/useUserStatusTooltip';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { getUidDirectMessage } from '../../../../lib/utils/getUidDirectMessage';
@@ -32,30 +31,38 @@ type RoomListRowProps = {
 };
 
 const SidebarItemWithData = ({ room, id, style, t, videoConfActions }: RoomListRowProps) => {
-	const title = roomCoordinator.getRoomName(room.t, room) || '';
 	const href = roomCoordinator.getRouteLink(room.t, room) || '';
+	const title = roomCoordinator.getRoomName(room.t, room) || '';
 
 	const dmUserId = getUidDirectMessage(room, useUserId());
 	const dmStatusTooltipHandlers = useUserStatusTooltip(dmUserId, title);
 
 	const { unreadTitle, showUnread, highlightUnread: highlighted } = useUnreadDisplay(room);
 
-	const icon = (
-		<SidebarV2ItemIcon
-			highlighted={highlighted}
-			icon={<RoomIcon room={room} placement='sidebar' size='x20' isIncomingCall={Boolean(videoConfActions)} />}
-		/>
-	);
+	const isIncomingCall = Boolean(videoConfActions);
+	const iconLabel = useRoomIconLabel(room, isIncomingCall);
 
 	const actions = useMemo(
 		() =>
 			videoConfActions && (
-				<SidebarV2Actions>
-					<SidebarV2Action onClick={videoConfActions.acceptCall} mini secondary success icon='phone' />
-					<SidebarV2Action onClick={videoConfActions.rejectCall} mini secondary danger icon='phone-off' />
-				</SidebarV2Actions>
+				<SidebarItemActions>
+					<IconButton
+						onClick={videoConfActions.acceptCall}
+						size='mini'
+						variant='secondary-success'
+						icon='phone'
+						aria-label={t('Accept_Call')}
+					/>
+					<IconButton
+						onClick={videoConfActions.rejectCall}
+						size='mini'
+						variant='secondary-danger'
+						icon='phone-off'
+						aria-label={t('Reject_call')}
+					/>
+				</SidebarItemActions>
 			),
-		[videoConfActions],
+		[videoConfActions, t],
 	);
 
 	const { parentRid } = useRoomsListContext();
@@ -65,23 +72,25 @@ const SidebarItemWithData = ({ room, id, style, t, videoConfActions }: RoomListR
 	const selected = isRoomFilter && room.rid === parentRid;
 
 	const redirectToFilter = useRedirectToFilter();
-	const buttonProps = useButtonPattern(() => redirectToFilter(room));
 
 	return (
-		<SidebarItem
+		<RoomListItem
 			id={id}
+			viewMode='condensed'
 			data-unread={highlighted}
-			unread={highlighted}
-			href={href}
+			highlighted={highlighted}
 			selected={selected}
+			aria-current={selected || undefined}
 			aria-label={showUnread ? t('__unreadTitle__from__roomTitle__', { unreadTitle, roomTitle: title }) : title}
+			href={href}
+			onClick={() => redirectToFilter(room)}
 			title={title}
-			icon={icon}
+			icon={<RoomIcon room={room} placement='sidebar' size='x20' isIncomingCall={isIncomingCall} />}
+			iconLabel={iconLabel}
 			style={style}
 			badges={<SidebarItemBadges room={room} roomTitle={title} />}
 			room={room}
 			actions={actions}
-			{...buttonProps}
 			{...dmStatusTooltipHandlers}
 		/>
 	);
@@ -96,7 +105,6 @@ function safeDateNotEqualCheck(a: Date | string | undefined, b: Date | string | 
 
 const keys: (keyof RoomListRowProps)[] = ['id', 'style', 't', 'videoConfActions'];
 
-// eslint-disable-next-line react/no-multi-comp
 export default memo(SidebarItemWithData, (prevProps, nextProps) => {
 	if (keys.some((key) => prevProps[key] !== nextProps[key])) {
 		return false;

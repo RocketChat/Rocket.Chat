@@ -78,7 +78,7 @@ export type ToastMessagesProviderProps = {
 	children?: ReactNode;
 };
 
-// eslint-disable-next-line react/no-multi-comp
+// oxlint-disable-next-line react/no-multi-comp
 const ToastMessagesProvider = ({ children }: ToastMessagesProviderProps) => (
 	<ToastBarProvider>
 		<ToastMessageInnerProvider>{children}</ToastMessageInnerProvider>

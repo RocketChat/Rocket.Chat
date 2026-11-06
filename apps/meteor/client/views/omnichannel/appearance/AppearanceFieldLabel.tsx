@@ -1,8 +1,7 @@
 import { FieldLabel, Box, Tag } from '@rocket.chat/fuselage';
+import { useHasLicenseModule } from '@rocket.chat/ui-client';
 import type { ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 
 export type AppearanceFieldLabelProps = ComponentProps<typeof FieldLabel> & {
 	premium?: boolean;
@@ -20,7 +19,7 @@ const AppearanceFieldLabel = ({ children, premium = false, ...props }: Appearanc
 
 	return (
 		<FieldLabel {...props}>
-			<Box is='span' mie={4}>
+			<Box is='span' marginInlineEnd={4}>
 				{children}
 			</Box>
 			<Tag variant='featured'>{t('Premium')}</Tag>

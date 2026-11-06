@@ -25,8 +25,12 @@ export class VoiceCallControls {
 		return this._controls.getByRole('button', { name: 'Accept', exact: true });
 	}
 
+	get reject(): Locator {
+		return this._controls.getByRole('button', { name: 'Reject', exact: true });
+	}
+
 	get hangup(): Locator {
-		return this._controls.getByRole('button', { name: /End call|Reject/, exact: true });
+		return this._controls.getByRole('button', { name: 'End call with', exact: false });
 	}
 
 	get cancel(): Locator {
@@ -107,9 +111,12 @@ export class Widget {
 
 	private readonly transferModal: TransferModal;
 
-	constructor(page: Page) {
+	private readonly page: Page;
+
+	constructor(page: Page, root?: Locator) {
+		this.page = page;
 		this.transferModal = new TransferModal(page, page.getByRole('dialog', { name: 'Transfer call' }));
-		this.root = page.getByRole('dialog', { name: 'Voice call', exact: false });
+		this.root = root || page.getByRole('dialog', { name: 'Voice call', exact: false });
 		this.callControls = new VoiceCallControls(this.root.getByRole('group'));
 		this.headerControls = new VoiceCallControls(this.root.getByRole('banner'));
 	}
@@ -123,11 +130,20 @@ export class Widget {
 	}
 
 	get timer(): Locator {
-		return this.root.getByRole('time');
+		return this.root.getByRole('timer');
 	}
 
 	get btnShowCallHere(): Locator {
 		return this.root.getByRole('button', { name: 'Show call here' });
+	}
+
+	get modalTransfer() {
+		return this.transferModal;
+	}
+
+	/** Dismisses the widget while it sits on the dialer, before a call is placed. */
+	get btnClose(): Locator {
+		return this.root.getByRole('button', { name: 'Close', exact: true });
 	}
 
 	async showCallHere(): Promise<void> {
@@ -140,7 +156,11 @@ export class Widget {
 		return timerToSeconds(text);
 	}
 
-	async initiateCall(): Promise<void> {
+	async initiateCall(username?: string): Promise<void> {
+		if (username) {
+			await this.root.getByRole('textbox', { name: 'Enter username or number' }).fill(username);
+			await this.page.getByRole('listbox').getByRole('option', { name: username }).click();
+		}
 		await this.callControls.call.click();
 		await expect(this.callControls.cancel).toBeVisible();
 	}
@@ -150,8 +170,13 @@ export class Widget {
 		await expect(this.callControls.hangup).toBeVisible();
 	}
 
-	async endCall(): Promise<void> {
+	async hangup(): Promise<void> {
 		await this.callControls.hangup.click();
+		await expect(this.content).not.toBeVisible();
+	}
+
+	async reject(): Promise<void> {
+		await this.callControls.reject.click();
 		await expect(this.content).not.toBeVisible();
 	}
 
@@ -221,6 +246,30 @@ export class Widget {
 	}
 }
 
+export class DockedWidget extends Widget {
+	constructor(page: Page) {
+		super(page, page.getByRole('complementary', { name: 'Calls' }).getByRole('dialog', { name: 'Voice Call', exact: false }));
+	}
+
+	public override async hangup(): Promise<void> {
+		await this.controls.hangup.click();
+		await expect(this.content).toBeVisible();
+	}
+
+	public override async reject(): Promise<void> {
+		await this.controls.reject.click();
+		await expect(this.content).toBeVisible();
+	}
+
+	public override async transferCall(username: string): Promise<void> {
+		await this.controls.transfer.click();
+		await expect(this.modalTransfer.content).toBeVisible();
+		await this.modalTransfer.transferCall(username);
+		await expect(this.modalTransfer.content).not.toBeVisible();
+		await expect(this.content).toBeVisible();
+	}
+}
+
 export class RoomSection {
 	private readonly root: Locator;
 
@@ -244,7 +293,7 @@ export class RoomSection {
 	}
 
 	get timer(): Locator {
-		return this.root.getByRole('time');
+		return this.root.getByRole('timer');
 	}
 
 	get allScreenShareVideos(): Locator {
@@ -265,7 +314,7 @@ export class RoomSection {
 		return timerToSeconds(text);
 	}
 
-	async endCall(): Promise<void> {
+	async hangup(): Promise<void> {
 		await this.callControls.hangup.click();
 		await expect(this.content).not.toBeVisible();
 	}
@@ -329,7 +378,7 @@ export class PopoutPage extends RoomSection {
 		this.page = page;
 	}
 
-	override async endCall(): Promise<void> {
+	override async hangup(): Promise<void> {
 		const pageClosed = new Promise((resolve) => this.page.on('close', () => resolve(true)));
 		await this.callControls.hangup.click();
 		await expect(pageClosed).resolves.toBe(true);
@@ -338,6 +387,8 @@ export class PopoutPage extends RoomSection {
 
 export class VoiceCalls {
 	public readonly widget: Widget;
+
+	public readonly dockedWidget: Widget;
 
 	public readonly roomSection: RoomSection;
 
@@ -348,6 +399,7 @@ export class VoiceCalls {
 	constructor(page: Page) {
 		this.page = page;
 		this.widget = new Widget(page);
+		this.dockedWidget = new DockedWidget(page);
 		this.roomSection = new RoomSection(page.getByRole('region', { name: 'Voice call' }));
 	}
 

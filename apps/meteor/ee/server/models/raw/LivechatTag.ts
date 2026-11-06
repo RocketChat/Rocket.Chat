@@ -37,7 +37,8 @@ export class LivechatTagRaw extends BaseRaw<ILivechatTag> implements ILivechatTa
 			_id = (await this.insertOne(record)).insertedId;
 		}
 
-		return Object.assign(record, { _id });
+		// updateOne/insertOne mutate `record` by injecting `_updatedAt` (setUpdatedAt), so rebuild the declared shape
+		return { _id, name, description, numDepartments: departments.length, departments };
 	}
 
 	// REMOVE

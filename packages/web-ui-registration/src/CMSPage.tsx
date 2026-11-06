@@ -1,6 +1,8 @@
 import { Box, IconButton } from '@rocket.chat/fuselage';
 import { VerticalWizardLayout, VerticalWizardLayoutFooter, VerticalWizardLayoutForm, VerticalWizardLayoutTitle } from '@rocket.chat/layout';
-import { useSetting, useTranslation, useAssetWithDarkModePath } from '@rocket.chat/ui-contexts';
+import { useSetting, useAssetWithDarkModePath } from '@rocket.chat/ui-contexts';
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { LoginPoweredBy } from './components/LoginPoweredBy';
 
@@ -9,22 +11,24 @@ export type CMSPageProps = {
 };
 
 const CMSPage = ({ page }: CMSPageProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const pageContent = useSetting(page, '');
 
 	const customLogo = useAssetWithDarkModePath('logo');
 	const customBackground = useAssetWithDarkModePath('background');
 
+	const dangerousContent = useMemo(() => ({ __html: pageContent }), [pageContent]);
+
 	return (
 		<VerticalWizardLayout
 			background={customBackground}
-			logo={customLogo ? <Box is='img' maxHeight='x40' mi='neg-x8' src={customLogo} alt='Logo' /> : undefined}
+			logo={customLogo ? <Box is='img' maxHeight='x40' marginInline='neg-x8' src={customLogo} alt='Logo' /> : undefined}
 		>
 			<VerticalWizardLayoutTitle>{t(page)}</VerticalWizardLayoutTitle>
 			<VerticalWizardLayoutForm>
-				<Box p={32}>
+				<Box padding={32}>
 					<IconButton title={t('Back')} icon='arrow-back' onClick={() => window.history.back()} style={{ float: 'right' }} />
-					<Box withRichContent dangerouslySetInnerHTML={{ __html: pageContent }} />
+					<Box withRichContent dangerouslySetInnerHTML={dangerousContent} />
 				</Box>
 			</VerticalWizardLayoutForm>
 			<VerticalWizardLayoutFooter>

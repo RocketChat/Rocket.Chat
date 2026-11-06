@@ -151,10 +151,14 @@ describe('subscription mechanism', () => {
 			}),
 		);
 
-		expect(handlerCallback).toHaveBeenCalledTimes(1);
-		expect(handlerCallback).toHaveBeenCalledWith({
+		expect(handlerCallback).toHaveBeenCalledTimes(2);
+		expect(handlerCallback).toHaveBeenNthCalledWith(1, {
 			msg: 'ready',
 			subs: [id],
+		});
+		expect(handlerCallback).toHaveBeenNthCalledWith(2, {
+			msg: 'nosub',
+			id,
 		});
 
 		expect(nosubCallback).toHaveBeenCalledTimes(1);

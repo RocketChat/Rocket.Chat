@@ -4,7 +4,7 @@ import PrototypeContainer from '../Components/PtototypeContainer/PrototypeContai
 
 const Prototype = () => {
 	return (
-		<Box w='100%' h='100%'>
+		<Box width='100%' height='100%'>
 			<PrototypeContainer />
 		</Box>
 	);

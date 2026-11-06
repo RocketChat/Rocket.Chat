@@ -1,32 +1,27 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
-import { api, Message } from '@rocket.chat/core-services';
+import { api, Message, ClientSafeError } from '@rocket.chat/core-services';
 import { isThreadMessage, type AtLeast, type IMessage, type IRoom, type IThreadMessage, type IUser } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Uploads, Users, ReadReceipts, ReadReceiptsArchive, Subscriptions } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
-import { FileUpload } from '../../../app/file-upload/server';
-import {
-	notifyOnRoomChangedById,
-	notifyOnMessageChange,
-	notifyOnSubscriptionChangedByRoomIdAndUserIds,
-} from '../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../settings';
 import { canDeleteMessageAsync } from '../authorization/canDeleteMessage';
 import { callbacks } from '../callbacks';
+import { FileUpload } from '../media/file-upload';
+import { notifyOnRoomChangedById, notifyOnMessageChange, notifyOnSubscriptionChangedByRoomIdAndUserIds } from '../notifyListener';
 
 export const deleteMessageValidatingPermission = async (message: AtLeast<IMessage, '_id'>, userId: IUser['_id']): Promise<void> => {
 	if (!message?._id) {
-		throw new Meteor.Error('error-invalid-message', 'Invalid message');
+		throw new ClientSafeError('error-invalid-message', 'Invalid message');
 	}
 	if (!userId) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user');
+		throw new ClientSafeError('error-unauthenticated', 'Unauthenticated');
 	}
 
 	const user = await Users.findOneById(userId);
 	const originalMessage = await Messages.findOneById(message._id);
 
 	if (!originalMessage || !user || !(await canDeleteMessageAsync(user, originalMessage))) {
-		throw new Meteor.Error('error-action-not-allowed', 'Not allowed');
+		throw new ClientSafeError('error-action-not-allowed', 'Not allowed');
 	}
 
 	return deleteMessage(originalMessage, user);
@@ -43,7 +38,7 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 	if (deletedMsg) {
 		const prevent = await Apps.self?.triggerEvent(AppEvents.IPreMessageDeletePrevent, deletedMsg);
 		if (prevent) {
-			throw new Meteor.Error('error-app-prevented-deleting', 'A Rocket.Chat App prevented the message deleting.');
+			throw new ClientSafeError('error-app-prevented-deleting', 'A Rocket.Chat App prevented the message deleting.');
 		}
 
 		if (room) {

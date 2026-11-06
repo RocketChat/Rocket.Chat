@@ -44,7 +44,7 @@ const MarketplaceHeader = ({ title, unsupportedVersion }: MarketplaceHeaderProps
 
 	return (
 		<PageHeader title={title}>
-			{result.isLoading && <GenericResourceUsageSkeleton mi={16} />}
+			{result.isLoading && <GenericResourceUsageSkeleton marginInline={16} />}
 
 			{!unsupportedVersion && result.isSuccess && !result.data.hasUnlimitedApps && (
 				<Margins inline={16}>
@@ -69,7 +69,7 @@ const MarketplaceHeader = ({ title, unsupportedVersion }: MarketplaceHeaderProps
 				{isAdmin && context === 'private' && <Button onClick={handleClickPrivate}>{t('Upload_private_app')}</Button>}
 
 				{isAdmin && result.isSuccess && !privateAppsEnabled && context === 'private' && (
-					<UpgradeButton primary target='private-apps-header' action='upgrade'>
+					<UpgradeButton variant='primary' target='private-apps-header' action='upgrade'>
 						{t('Upgrade')}
 					</UpgradeButton>
 				)}

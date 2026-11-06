@@ -11,7 +11,7 @@ const ImageBox = (props: ImageBoxProps) => (
 		justifyContent='center'
 		alignItems='center'
 		alignContent='center'
-		borderRadius={2}
+		borderRadius='small'
 		borderWidth='default'
 		borderStyle='solid'
 		borderColor='extra-light'

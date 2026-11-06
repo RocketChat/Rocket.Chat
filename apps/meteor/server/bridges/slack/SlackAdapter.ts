@@ -1,33 +1,32 @@
 // This is a JS File that was renamed to TS so it won't lose its git history when converted to TS
 // TODO: Remove the following lint/ts instructions when the file gets properly converted
-/* eslint-disable @typescript-eslint/no-empty-function */
-/* eslint-disable @typescript-eslint/naming-convention */
-/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
+/* oxlint-disable @typescript-eslint/no-empty-function */
+/* oxlint-disable-next-line @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
 import http from 'node:http';
 import https from 'node:https';
 import url from 'node:url';
 
-import { Message } from '@rocket.chat/core-services';
+import { Message, ClientSafeError } from '@rocket.chat/core-services';
 import { Messages, Rooms, Users } from '@rocket.chat/models';
 import { App as SlackApp } from '@slack/bolt';
 import { RTMClient } from '@slack/rtm-api';
-import { Meteor } from 'meteor/meteor';
 
 import { SlackAPI } from './SlackAPI';
 import { slackLogger } from './logger';
-import { saveRoomName, saveRoomTopic } from '../../../app/channel-settings/server';
-import { FileUpload } from '../../../app/file-upload/server';
-import { executeSetReaction } from '../../../app/reactions/server/setReaction';
-import { settings } from '../../../app/settings/server';
-import { getUserAvatarURL } from '../../../app/utils/server/getUserAvatarURL';
+import { FileUpload } from '../../lib/media/file-upload';
 import { deleteMessage } from '../../lib/messages/deleteMessage';
 import { sendMessage } from '../../lib/messages/sendMessage';
 import { updateMessage } from '../../lib/messages/updateMessage';
+import { executeSetReaction } from '../../lib/messaging/reactions/setReaction';
 import { addUserToRoom } from '../../lib/rooms/addUserToRoom';
 import { archiveRoom } from '../../lib/rooms/archiveRoom';
 import { removeUserFromRoom } from '../../lib/rooms/removeUserFromRoom';
+import { saveRoomName, saveRoomTopic } from '../../lib/rooms/settings';
 import { unarchiveRoom } from '../../lib/rooms/unarchiveRoom';
+import { getWorkspaceURL } from '../../lib/utils/getURL';
+import { getUserAvatarURL } from '../../lib/utils/getUserAvatarURL';
+import { settings } from '../../settings';
 
 export default class SlackAdapter {
 	constructor(slackBridge) {
@@ -53,17 +52,15 @@ export default class SlackAdapter {
 			if (connectResult) {
 				slackLogger.info({ msg: 'Connected to Slack' });
 				slackLogger.debug({ msg: 'Slack connection result', connectResult });
-				Meteor.startup(async () => {
-					try {
-						await this.populateMembershipChannelMap(); // If run outside of Meteor.startup, HTTP is not defined
-					} catch (err) {
-						slackLogger.error({ msg: 'Error attempting to connect to Slack', err });
-						if (err.data.error === 'invalid_auth') {
-							slackLogger.error('The provided token is invalid');
-						}
-						this.slackBridge.disconnect();
+				try {
+					await this.populateMembershipChannelMap();
+				} catch (err) {
+					slackLogger.error({ msg: 'Error attempting to connect to Slack', err });
+					if (err.data.error === 'invalid_auth') {
+						slackLogger.error('The provided token is invalid');
 					}
-				});
+					this.slackBridge.disconnect();
+				}
 			}
 		} catch (err) {
 			slackLogger.error({ msg: 'Error attempting to connect to Slack', err });
@@ -842,10 +839,8 @@ export default class SlackAdapter {
 
 	async postMessage(slackChannel, rocketMessage) {
 		if (slackChannel?.id) {
-			let iconUrl = getUserAvatarURL(rocketMessage.u?.username);
-			if (iconUrl) {
-				iconUrl = Meteor.absoluteUrl().replace(/\/$/, '') + iconUrl;
-			}
+			const username = rocketMessage.u?.username;
+			const iconUrl = username != null ? getWorkspaceURL(`/avatar/${encodeURIComponent(username)}`) : undefined;
 			const data = {
 				text: rocketMessage.msg,
 				channel: slackChannel.id,
@@ -1275,7 +1270,7 @@ export default class SlackAdapter {
 
 			const file = await fileStore.insert(details, stream);
 
-			const url = file.url.replace(Meteor.absoluteUrl(), '/');
+			const url = FileUpload.getPath(`${file._id}/${encodeURIComponent(file.name || '')}`);
 			const attachment = {
 				title: file.name,
 				title_link: url,
@@ -1445,9 +1440,9 @@ export default class SlackAdapter {
 				return this.importMessages(rid, callback);
 			}
 			slackLogger.error({ msg: 'Could not find Slack room with specified name', roomName: rocketchat_room.name });
-			return callback(new Meteor.Error('error-slack-room-not-found', 'Could not find Slack room with specified name'));
+			return callback(new ClientSafeError('error-slack-room-not-found', 'Could not find Slack room with specified name'));
 		}
 		slackLogger.error({ msg: 'Could not find Rocket.Chat room with specified id', rid });
-		return callback(new Meteor.Error('error-invalid-room', 'Invalid room'));
+		return callback(new ClientSafeError('error-invalid-room', 'Invalid room'));
 	}
 }

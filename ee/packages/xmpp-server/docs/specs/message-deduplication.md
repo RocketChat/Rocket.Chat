@@ -1,0 +1,119 @@
+---
+status: partial
+standards: [XEP-0359]
+adrs: [0007, 0009, 0014]
+code:
+  [
+    src/muc/RemoteMucSession.ts,
+    src/service/XMPPServerService.ts,
+    src/service/helpers/messageId.ts,
+    apps/meteor/ee/server/hooks/xmpp/index.ts,
+  ]
+tests:
+  [
+    src/muc/RemoteMucSession.spec.ts,
+    src/service/helpers/messageId.spec.ts,
+    tests/end-to-end/direct-messages.spec.ts,
+    tests/end-to-end/remote-muc.spec.ts,
+  ]
+---
+
+# Spec: Message deduplication
+
+## Summary
+
+Every message that arrives from the wire is stored exactly once, whatever the number of
+copies the network delivers, and nothing Rocket.Chat sent is stored again when it comes
+back. The rule is one event id per message, derived from the ids XMPP already carries
+([ADR 0007](../adr/0007-inbound-messages-are-deduplicated-by-federation-event-id.md)).
+
+## Motivation
+
+Copies are normal in XMPP: a peer redelivers after a dropped stream, a remote room reflects
+every message to each of our member sessions, and a room with an archive rewrites ids on the
+way. Without a dedup rule a three-member mirrored room stores every message three times.
+
+## Behaviour
+
+- **R1** An inbound message is stored with a `federation.eventId` that every copy of it
+  shares and no other message has. A message whose event id is already stored is dropped.
+- **R2** The event id is `xmpp:<origin domain>:<rid>:<key>`. `<key>` is the XEP-0359
+  `<stanza-id/>` the room assigned, one with an `id` whose `by` is the room's bare JID, when
+  the stanza carries one. A stanza-id naming anyone else, an occupant's address in the room
+  included, is ignored: an occupant can add one, and the room removes only those naming the
+  room itself (XEP-0359 §3, §6).
+  Otherwise it is a digest of
+  the author and the stanza `id`, since a sender's ids are unique only among its own
+  messages: two senders, or one sender in two rooms, may reuse an id. Without either,
+  `<key>` is random. The author is the bare JID in a DM and a hosted room, and in a remote
+  room the nick, joined with the XEP-0421 occupant id when the room sends one
+  ([ADR 0014](../adr/0014-inbound-message-id-is-derived-from-room-author-and-sender-id.md)).
+  The origin domain is the sender's domain for a DM and a hosted room, and the room's
+  domain for a remote room.
+- **R3** In a remote room, a `groupchat` from the session's own nick is ignored, and a message
+  whose replace id, or the id its sender gave it (the XEP-0359 `<origin-id/>`, otherwise the
+  stanza `id`), is the `_id` of a stored Rocket.Chat message is ignored: it is our own relay
+  reflected to another member's session, whatever stanza id the room assigned it.
+- **R4** The outgoing hook never relays a message that carries `federation.eventId`, so a
+  stored inbound message is not echoed back.
+- **R5** In a hosted room, local members receive no stanza at all; copies reach Rocket.Chat
+  only as the single `muc.messageReceived` event.
+- **R6** Copies of one message that arrive at the same time are still stored once.
+- **R7** Rocket.Chat does not stamp its outbound stanzas with `<origin-id/>` or
+  `<stanza-id/>`.
+
+## Design
+
+`receiveMessage` in the service computes the event id with `deriveInboundEventId`
+(`src/service/helpers/messageId.ts`), looks it up with
+`Messages.findOneByFederationId` and inserts; every inbound path goes through it. For R6 it
+holds the event id in an in-memory set from the lookup until the insert settles, and drops
+any copy whose id is in the set. That is enough because the service runs as one process per
+XMPP domain ([ADR 0002](../adr/0002-integration-service-runs-only-as-a-microservice.md)); it
+avoids a unique index on `federation.eventId`, a field Matrix federation writes too.
+
+`RemoteMucSession.handleMessage` skips the own nick and reports the room's stanza id, when
+the room stamped one, apart from the sender's ids, which R2 and R3 need. `onRemoteMucMessage` does the own-relay lookup
+by `_id` with the replace id or the sender's id. R3 relies on the room keeping the sender's
+`id` attribute on the reflection, as XEP-0045 §7.4 asks and as ejabberd and Prosody do.
+
+## Out of scope
+
+- Content-based deduplication.
+- Stamping outbound stanzas (R7). A capability that needs stable outbound ids (retraction,
+  receipts) adds it and updates this spec.
+
+## Known defects
+
+### D3 Copies without any id are never deduplicated
+
+When a room message carries neither an `id` nor a stanza id, each copy gets a random event
+id and every copy is stored. Whether a fix should cover this case is a design decision:
+content hashing is lossy, and accepting room messages from only one member session per room
+would change the session model. Test: `remote-muc.spec.ts`, "stores a message sent without
+an id once".
+
+### D4 A room without XEP-0359 passes an occupant's stanza id on
+
+A room that does not assign stanza ids does not remove a `<stanza-id by="<room JID>"/>` an
+occupant adds, so that occupant chooses the message's event id (R2). The id can only match
+another message in the same mirrored room, and it suppresses that message only if its key
+was predictable before it was sent, such as a sender-id digest whose sender numbers its
+ids. XEP-0359 §6 asks the receiver to check the room's `disco#info` for `urn:xmpp:sid:0`
+before trusting the id, and the service sends no IQ requests yet. A fix needs an IQ client,
+one answer per room shared by every member session so their copies keep one key, and a
+spec for what happens when that answer changes. Where: `RemoteMucSession.roomStanzaId`.
+Test: `RemoteMucSession.spec.ts`, "takes no room stanza-id from a room that has not
+advertised XEP-0359".
+
+## Open questions
+
+- **Q1** Should Rocket.Chat stamp its outbound room messages with `<origin-id/>` (R7), so
+  that R3 also holds in a room that rewrites the `id` attribute? Inbound corrections did not
+  need it: they find the message they replace by its derived `_id` ([ADR
+  0014](../adr/0014-inbound-message-id-is-derived-from-room-author-and-sender-id.md)).
+
+## References
+
+- XEP-0359
+- [ADR 0007](../adr/0007-inbound-messages-are-deduplicated-by-federation-event-id.md)

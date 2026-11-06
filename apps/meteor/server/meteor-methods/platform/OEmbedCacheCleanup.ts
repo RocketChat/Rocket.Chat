@@ -1,12 +1,12 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { OEmbedCache } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../app/settings/server';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { settings } from '../../settings';
 
 declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		OEmbedCacheCleanup(): { message: string };
 	}
@@ -23,7 +23,7 @@ Meteor.methods<ServerMethods>({
 	async OEmbedCacheCleanup() {
 		const uid = Meteor.userId();
 		if (!uid || !(await hasPermissionAsync(uid, 'clear-oembed-cache'))) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+			throw new ClientSafeError('error-not-allowed', 'Not allowed', {
 				method: 'OEmbedCacheCleanup',
 			});
 		}

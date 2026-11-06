@@ -41,8 +41,8 @@ export const useShowSettingAlerts = () => {
 							const labelText = (i18n.exists(i18nLabel) && t(i18nLabel)) || (i18n.exists(_id) && t(_id)) || i18nLabel || _id;
 
 							return (
-								<Box key={_id} mbe={24}>
-									<Box fontScale='h4' mbe={8}>
+								<Box key={_id} marginBlockEnd={24}>
+									<Box fontScale='h4' marginBlockEnd={8}>
 										{labelText}
 									</Box>
 									<Callout type='warning'>

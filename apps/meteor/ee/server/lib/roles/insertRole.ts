@@ -1,9 +1,9 @@
-import { api, MeteorError } from '@rocket.chat/core-services';
+import { api, ClientSafeError } from '@rocket.chat/core-services';
 import type { IRole } from '@rocket.chat/core-typings';
 import { Roles } from '@rocket.chat/models';
 
-import { notifyOnRoleChanged } from '../../../../app/lib/server/lib/notifyListener';
 import { isValidRoleScope } from '../../../../lib/roles/isValidRoleScope';
+import { notifyOnRoleChanged } from '../../../../server/lib/notifyListener';
 
 type InsertRoleOptions = {
 	broadcastUpdate?: boolean;
@@ -13,11 +13,11 @@ export const insertRoleAsync = async (roleData: Omit<IRole, '_id' | '_updatedAt'
 	const { name, scope, description, mandatory2fa } = roleData;
 
 	if (await Roles.findOneByName(name)) {
-		throw new MeteorError('error-duplicate-role-names-not-allowed', 'Role name already exists');
+		throw new ClientSafeError('error-duplicate-role-names-not-allowed', 'Role name already exists');
 	}
 
 	if (!isValidRoleScope(scope)) {
-		throw new MeteorError('error-invalid-scope', 'Invalid scope');
+		throw new ClientSafeError('error-invalid-scope', 'Invalid scope');
 	}
 
 	const role = await Roles.createWithRandomId(name, scope, description, false, mandatory2fa);

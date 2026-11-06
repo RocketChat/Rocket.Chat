@@ -1,8 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
+import { FormSkeleton } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
 import RoomEdit from './RoomEdit';
-import { FormSkeleton } from '../../../components';
 import { useOmnichannelRoomInfo } from '../../../hooks/useOmnichannelRoomInfo';
 import { useVisitorInfo } from '../../../hooks/useVisitorInfo';
 
@@ -26,11 +26,11 @@ function RoomEditWithData({ id: roomId, reload, reloadInfo, onClose }: RoomEditW
 	}
 
 	if (isRoomError || !room) {
-		return <Box mbs={16}>{t('Room_not_found')}</Box>;
+		return <Box marginBlockStart={16}>{t('Room_not_found')}</Box>;
 	}
 
 	if (isVisitorError || !visitor) {
-		return <Box mbs={16}>{t('Visitor_not_found')}</Box>;
+		return <Box marginBlockStart={16}>{t('Visitor_not_found')}</Box>;
 	}
 
 	return <RoomEdit room={room} visitor={visitor} reload={reload} reloadInfo={reloadInfo} onClose={onClose} />;

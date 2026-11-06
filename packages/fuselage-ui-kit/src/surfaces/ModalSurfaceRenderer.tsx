@@ -1,8 +1,10 @@
+import * as UiKit from '@rocket.chat/ui-kit';
+
 import { FuselageSurfaceRenderer, renderTextObject } from './FuselageSurfaceRenderer';
 
 export class ModalSurfaceRenderer extends FuselageSurfaceRenderer {
 	public constructor() {
-		super(['actions', 'context', 'divider', 'image', 'input', 'section', 'preview', 'callout']);
+		super(UiKit.modalSurfaceLayoutBlockTypes);
 	}
 
 	override plain_text = renderTextObject;

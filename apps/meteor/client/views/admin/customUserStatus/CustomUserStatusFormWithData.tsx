@@ -1,12 +1,12 @@
 import type { IUserStatus } from '@rocket.chat/core-typings';
 import { Box, Callout } from '@rocket.chat/fuselage';
+import { FormSkeleton } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import CustomUserStatusForm from './CustomUserStatusForm';
-import { FormSkeleton } from '../../../components/Skeleton';
 
 export type CustomUserStatusFormWithDataProps = {
 	_id?: IUserStatus['_id'];
@@ -39,12 +39,12 @@ const CustomUserStatusFormWithData = ({ _id, onReload, onClose }: CustomUserStat
 	}
 
 	if (isPending) {
-		return <FormSkeleton pi={20} />;
+		return <FormSkeleton paddingInline={20} />;
 	}
 
 	if (error || !data || data.count < 1) {
 		return (
-			<Box p={20}>
+			<Box padding={20}>
 				<Callout type='danger'>{t('Custom_User_Status_Error_Invalid_User_Status')}</Callout>
 			</Box>
 		);

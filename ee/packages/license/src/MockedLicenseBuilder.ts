@@ -115,6 +115,11 @@ export class MockedLicenseBuilder {
 		};
 	}
 
+	public withCreatedAt(date: Date): this {
+		this.information.createdAt = date.toISOString();
+		return this;
+	}
+
 	public withExpiredDate(): this {
 		// expired 1 minute ago
 		const date = new Date();
@@ -169,6 +174,11 @@ export class MockedLicenseBuilder {
 
 	public withGrantedTo(grantedTo: { name?: string; company?: string; email?: string }): this {
 		this.information.grantedTo = grantedTo;
+		return this;
+	}
+
+	public withOffline(offline = true): this {
+		this.information.offline = offline;
 		return this;
 	}
 

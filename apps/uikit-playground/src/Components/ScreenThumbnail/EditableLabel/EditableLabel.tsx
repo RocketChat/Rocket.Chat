@@ -1,10 +1,27 @@
 import './Editablelabel.scss';
-import { Box, Icon, Input } from '@rocket.chat/fuselage';
-import { type MouseEventHandler, type ComponentProps, useRef, useState } from 'react';
+import { css } from '@rocket.chat/css-in-js';
+import { Box, Icon, Input, fontScale, useStyle, type FontScale } from '@rocket.chat/fuselage';
+import { type MouseEventHandler, type ComponentProps, useRef } from 'react';
 
-const EditableLabel = (props: ComponentProps<typeof Input>) => {
-	const [hover, setHover] = useState<boolean>(false);
+type EditableLabelProps = ComponentProps<typeof Input> & {
+	/** The typography of the label, which the input renders in place. */
+	fontScale?: FontScale;
+};
+
+const EditableLabel = ({ fontScale: scale, className, ...props }: EditableLabelProps) => {
 	const inputRef = useRef<HTMLInputElement>(null);
+
+	const typography = scale ? fontScale(scale) : undefined;
+	const scaleClassName = useStyle(
+		typography
+			? css`
+					font-size: ${typography.fontSize} !important;
+					font-weight: ${typography.fontWeight} !important;
+					letter-spacing: ${typography.letterSpacing} !important;
+					line-height: ${typography.lineHeight} !important;
+				`
+			: undefined,
+	);
 
 	const iconClickHandler: MouseEventHandler<HTMLElement> = (e) => {
 		e.stopPropagation();
@@ -13,18 +30,9 @@ const EditableLabel = (props: ComponentProps<typeof Input>) => {
 	};
 
 	return (
-		<Box
-			position='relative'
-			className='rc-editableLabel'
-			w='100%'
-			h='max-content'
-			display='flex'
-			alignItems='center'
-			onMouseEnter={() => setHover(true)}
-			onMouseLeave={() => setHover(false)}
-		>
-			<Input ref={inputRef} {...props} />
-			<Icon invisible={!hover} className='editableLabel-icon' name='pencil' onClick={iconClickHandler} />
+		<Box position='relative' className='rc-editableLabel' width='100%' height='max-content' display='flex' alignItems='center'>
+			<Input ref={inputRef} {...props} className={[className, scaleClassName].filter(Boolean).join(' ')} />
+			<Icon className='editableLabel-icon' name='pencil' onClick={iconClickHandler} />
 		</Box>
 	);
 };

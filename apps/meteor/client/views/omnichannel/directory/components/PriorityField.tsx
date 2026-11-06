@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
+import { FormSkeleton } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
-import { FormSkeleton } from './FormSkeleton';
 import Field from '../../components/Field';
 import Info from '../../components/Info';
 import Label from '../../components/Label';
@@ -20,7 +20,7 @@ const PriorityField = ({ id }: PriorityFieldProps) => {
 	}
 
 	if (isError || !data) {
-		return <Box mbs={16}>{t('Custom_Field_Not_Found')}</Box>;
+		return <Box marginBlockStart={16}>{t('Custom_Field_Not_Found')}</Box>;
 	}
 
 	const { dirty, name, i18n } = data;

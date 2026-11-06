@@ -7,8 +7,8 @@ import IMAP from 'imap';
 import type { ParsedMail } from 'mailparser';
 import { simpleParser } from 'mailparser';
 
-import { notifyOnEmailInboxChanged } from '../../app/lib/server/lib/notifyListener';
 import { logger } from '../features/EmailInbox/logger';
+import { notifyOnEmailInboxChanged } from '../lib/notifyListener';
 
 type IMAPOptions = {
 	deleteAfterRead: boolean;

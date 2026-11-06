@@ -12,12 +12,12 @@ export type WidgetHeaderProps = {
 const WidgetHeader = ({ title, children }: WidgetHeaderProps) => {
 	const { t } = useTranslation();
 	return (
-		<Box is='header' mi={12} mb={4} display='flex' alignItems='center' justifyContent='space-between'>
+		<Box is='header' marginInline={12} marginBlock={4} display='flex' alignItems='center' justifyContent='space-between'>
 			<VisuallyHidden id='rcx-media-call-widget-title-prefix'>{t('Voice_call')}</VisuallyHidden>
 			<Box is='h3' color='titles-labels' fontScale='p1b' id='rcx-media-call-widget-title'>
 				{title}
 			</Box>
-			<Box mis={8} display='flex' flexDirection='row'>
+			<Box marginInlineStart={8} display='flex' flexDirection='row'>
 				{children}
 			</Box>
 		</Box>

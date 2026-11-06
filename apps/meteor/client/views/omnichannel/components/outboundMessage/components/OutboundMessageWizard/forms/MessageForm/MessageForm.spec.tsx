@@ -65,7 +65,7 @@ describe('MessageForm', () => {
 		const defaultValues = { templateId: 'template-1' };
 		render(<MessageForm {...defaultProps} defaultValues={defaultValues} />, { wrapper: appRoot.build() });
 
-		expect(screen.getByLabelText('Template*')).toHaveTextContent('Template One');
+		expect(screen.getByLabelText('Template*').parentElement).toHaveTextContent('Template One');
 	});
 
 	it('should show TemplateEditor when a template is selected', async () => {
@@ -76,7 +76,7 @@ describe('MessageForm', () => {
 		await userEvent.click(screen.getByLabelText('Template*'));
 		await userEvent.click(await screen.findByRole('option', { name: /Template One/ }));
 
-		expect(screen.getByLabelText('Template*')).toHaveTextContent('Template One');
+		expect(screen.getByLabelText('Template*').parentElement).toHaveTextContent('Template One');
 
 		expect(await screen.findByText(component.body.text)).toBeInTheDocument();
 	});

@@ -12,7 +12,7 @@ import { findTags, findTagById } from './lib/tags';
 import { API } from '../../../../../server/api';
 import type { ExtractRoutesFromAPI } from '../../../../../server/api/ApiClass';
 import { getPaginationItems } from '../../../../../server/api/lib/getPaginationItems';
-import { LivechatEnterprise } from '../../../../app/livechat-enterprise/server/lib/LivechatEnterprise';
+import { LivechatEnterprise } from '../../../lib/omnichannel/LivechatEnterprise';
 
 API.v1.addRoute(
 	'livechat/tags',
@@ -80,7 +80,7 @@ const livechatTagsEndpoints = API.v1
 				403: validateForbiddenErrorResponse,
 			},
 			authRequired: true,
-			permissions: ['manage-livechat-tags'],
+			permissionsRequired: ['manage-livechat-tags'],
 			license: ['livechat-enterprise'],
 			body: isPOSTLivechatTagsSaveParams,
 		},
@@ -102,7 +102,7 @@ const livechatTagsEndpoints = API.v1
 				403: validateForbiddenErrorResponse,
 			},
 			authRequired: true,
-			permissions: ['manage-livechat-tags'],
+			permissionsRequired: ['manage-livechat-tags'],
 			license: ['livechat-enterprise'],
 			body: isPOSTLivechatTagsDeleteParams,
 		},
@@ -118,6 +118,6 @@ const livechatTagsEndpoints = API.v1
 type LivechatTagsEndpoints = ExtractRoutesFromAPI<typeof livechatTagsEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
 	interface Endpoints extends LivechatTagsEndpoints {}
 }

@@ -1,18 +1,14 @@
 import { Team } from '@rocket.chat/core-services';
 import type { IUser, AtLeast } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms, Users, Subscriptions } from '@rocket.chat/models';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { isTruthy } from '@rocket.chat/tools';
+import { escapeRegExp, isTruthy } from '@rocket.chat/tools';
 import mem from 'mem';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
-import { Meteor } from 'meteor/meteor';
 import type { FindOptions, SortDirection } from 'mongodb';
 
-import { methodDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
-import { settings } from '../../../app/settings/server';
 import { trim } from '../../../lib/utils/stringUtils';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { settings } from '../../settings';
 
 const sortChannels = (field: string, direction: 'asc' | 'desc'): Record<string, 1 | -1> => {
 	switch (field) {
@@ -46,7 +42,7 @@ const sortUsers = (field: string, direction: 'asc' | 'desc'): Record<string, Sor
 };
 
 const getChannelsAndGroups = async (
-	user: AtLeast<IUser, '_id' | '__rooms'>,
+	user: AtLeast<IUser, '_id' | '__rooms' | 'roles'>,
 	canViewAnon: boolean,
 	searchTerm: string,
 	sort: Record<string, number>,
@@ -55,7 +51,7 @@ const getChannelsAndGroups = async (
 		limit: number;
 	},
 ) => {
-	if ((!user && !canViewAnon) || (user && !(await hasPermissionAsync(user._id, 'view-c-room')))) {
+	if ((!user && !canViewAnon) || (user && !(await hasPermissionAsync(user, 'view-c-room')))) {
 		return;
 	}
 
@@ -98,10 +94,11 @@ const getChannelsAndGroups = async (
 
 	const teamIds = result.map(({ teamId }) => teamId).filter(isTruthy);
 	const teamsMains = await Team.listByIds([...new Set(teamIds)], { projection: { _id: 1, name: 1 } });
+	const teamsById = new Map(teamsMains.map((team) => [team._id, team]));
 
 	const results = result.map((room) => {
 		if (room.teamId) {
-			const team = teamsMains.find((mainRoom) => mainRoom._id === room.teamId);
+			const team = teamsById.get(room.teamId);
 			if (team) {
 				return { ...room, belongsTo: team.name };
 			}
@@ -120,7 +117,7 @@ const getChannelsCountForTeam = mem((teamId) => Rooms.countByTeamId(teamId), {
 });
 
 const getTeams = async (
-	user: AtLeast<IUser, '_id' | '__rooms'>,
+	user: AtLeast<IUser, '_id' | '__rooms' | 'roles'>,
 	searchTerm: string,
 	sort: Record<string, number>,
 	pagination: {
@@ -248,7 +245,7 @@ const findUsers = async ({
 };
 
 const getUsers = async (
-	user: AtLeast<IUser, '_id' | '__rooms'> | undefined,
+	user: AtLeast<IUser, '_id' | '__rooms' | 'roles'> | undefined,
 	text: string,
 	workspace: string,
 	sort: Record<string, SortDirection>,
@@ -257,11 +254,11 @@ const getUsers = async (
 		limit: number;
 	},
 ) => {
-	if (!user || !(await hasPermissionAsync(user._id, 'view-outside-room')) || !(await hasPermissionAsync(user._id, 'view-d-room'))) {
+	if (!user || !(await hasPermissionAsync(user, 'view-outside-room')) || !(await hasPermissionAsync(user, 'view-d-room'))) {
 		return;
 	}
 
-	const viewFullOtherUserInfo = await hasPermissionAsync(user._id, 'view-full-other-user-info');
+	const viewFullOtherUserInfo = await hasPermissionAsync(user, 'view-full-other-user-info');
 
 	const { total, results } = await findUsers({ text, sort, pagination, workspace, viewFullOtherUserInfo });
 
@@ -282,13 +279,6 @@ type BrowseChannelsParams = {
 	limit?: number;
 };
 
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		browseChannels: (params: BrowseChannelsParams) => Promise<unknown>;
-	}
-}
-
 export const browseChannelsMethod = async (
 	{
 		text = '',
@@ -300,7 +290,7 @@ export const browseChannelsMethod = async (
 		offset = 0,
 		limit = 10,
 	}: BrowseChannelsParams,
-	user: AtLeast<IUser, '_id' | '__rooms'> | undefined | null,
+	user: AtLeast<IUser, '_id' | '__rooms' | 'roles'> | undefined | null,
 ) => {
 	const searchTerm = trim(escapeRegExp(text));
 
@@ -344,13 +334,6 @@ export const browseChannelsMethod = async (
 		default:
 	}
 };
-
-Meteor.methods<ServerMethods>({
-	async browseChannels(params: BrowseChannelsParams) {
-		methodDeprecationLogger.method('browseChannels', '9.0.0', '/v1/directory');
-		return browseChannelsMethod(params, (await Meteor.userAsync()) as IUser | null);
-	},
-});
 
 DDPRateLimiter.addRule(
 	{

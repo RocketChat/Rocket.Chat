@@ -1,4 +1,3 @@
-import { useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
 import type { MutableRefObject } from 'react';
 import { useCallback, useRef } from 'react';
 
@@ -12,42 +11,40 @@ import { useCallback, useRef } from 'react';
 // - When the user is at the bottom and a video is loading, after loading the video element can change sizes and shift the list
 export const useKeepAtBottom = (isAtBottom: MutableRefObject<boolean | null>) => {
 	const handleRef = useRef<(() => void) | null>(null);
-	const keepAtBottomRef = useSafeRefCallback(
-		useCallback(
-			(node: HTMLDivElement) => {
-				const sendToBottom = () => {
-					if (isAtBottom.current && handleRef.current) {
-						handleRef.current();
-					}
-				};
-				const listWrapper = node.firstChild;
-				const observer = new ResizeObserver(() => {
-					sendToBottom();
-				});
-
-				observer.observe(node);
-				if (listWrapper instanceof HTMLElement) {
-					observer.observe(listWrapper);
+	const keepAtBottomRef = useCallback(
+		(node: HTMLDivElement) => {
+			const sendToBottom = () => {
+				if (isAtBottom.current && handleRef.current) {
+					handleRef.current();
 				}
+			};
+			const listWrapper = node.firstChild;
+			const observer = new ResizeObserver(() => {
+				sendToBottom();
+			});
 
-				const sendToBottomEvent = (e: Event) => {
-					if (!(e.target instanceof HTMLElement)) return;
-					if (!e.target.closest('.rc-message-box')) return;
-					sendToBottom();
-				};
+			observer.observe(node);
+			if (listWrapper instanceof HTMLElement) {
+				observer.observe(listWrapper);
+			}
 
-				// Workaround for height hack in useAutoGrow
-				// node.style.height = '0';
-				// node.style.height = `${node.scrollHeight}px`;
-				window.addEventListener('input', sendToBottomEvent);
+			const sendToBottomEvent = (e: Event) => {
+				if (!(e.target instanceof HTMLElement)) return;
+				if (!e.target.closest('.rc-message-box')) return;
+				sendToBottom();
+			};
 
-				return () => {
-					observer.disconnect();
-					window.removeEventListener('input', sendToBottomEvent);
-				};
-			},
-			[isAtBottom],
-		),
+			// Workaround for height hack in useAutoGrow
+			// node.style.height = '0';
+			// node.style.height = `${node.scrollHeight}px`;
+			window.addEventListener('input', sendToBottomEvent);
+
+			return () => {
+				observer.disconnect();
+				window.removeEventListener('input', sendToBottomEvent);
+			};
+		},
+		[isAtBottom],
 	);
 
 	const setKeepAtBottom = useCallback((handle: () => void | null) => {

@@ -1,11 +1,11 @@
 import { MessageTypes } from '@rocket.chat/message-types';
 import { Messages, SmarshHistory, Users, Rooms } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 import moment from 'moment-timezone';
 
 import { sendEmail } from './sendEmail';
-import { settings } from '../../../../app/settings/server';
 import { i18n } from '../../../lib/i18n';
+import { getWorkspaceURL } from '../../../lib/utils/getURL';
+import { settings } from '../../../settings';
 
 const start =
 	'<table style="width: 100%; border: 1px solid; border-collapse: collapse; table-layout: fixed; margin-top: 10px; font-size: 12px; word-break: break-word;"><tbody>';
@@ -22,7 +22,7 @@ function _getLink(attachment: { title_link: string }): string {
 	if (url.match(/^(https?:)?\/\//i)) {
 		return url;
 	}
-	return Meteor.absoluteUrl().replace(/\/$/, '') + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX + url;
+	return getWorkspaceURL(url);
 }
 
 export const generateEml = async (): Promise<void> => {

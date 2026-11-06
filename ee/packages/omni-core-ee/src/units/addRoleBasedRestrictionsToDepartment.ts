@@ -1,11 +1,11 @@
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
-import type { FilterOperators } from 'mongodb';
+import type { Filter } from 'mongodb';
 
 import { getUnitsFromUser } from './getUnitsFromUser';
 import { defaultLogger } from '../utils/logger';
 
-export const addQueryRestrictionsToDepartmentsModel = async (originalQuery: FilterOperators<ILivechatDepartment> = {}, userId: string) => {
-	const query: FilterOperators<ILivechatDepartment> = { $and: [originalQuery, { type: { $ne: 'u' } }] };
+export const addQueryRestrictionsToDepartmentsModel = async (originalQuery: Filter<ILivechatDepartment> = {}, userId: string) => {
+	const query = { $and: [originalQuery, { type: { $ne: 'u' } }] } satisfies Filter<ILivechatDepartment>;
 
 	const units = await getUnitsFromUser(userId);
 	if (Array.isArray(units)) {

@@ -8,7 +8,8 @@ export interface ISessionDevice {
 	longVersion: string;
 	os: {
 		name: string;
-		version: string;
+		// Empty values are stripped at capture time (SAUMonitor.removeEmptyProps), so version may be absent at runtime.
+		version?: string;
 	};
 	version: string;
 }
@@ -80,5 +81,6 @@ export type DeviceManagementSession = Pick<ISession, '_id' | 'sessionId' | 'devi
 };
 
 export type DeviceManagementPopulatedSession = DeviceManagementSession & {
-	_user: Pick<IUser, 'name' | 'username' | 'avatarETag' | 'avatarOrigin'>;
+	// The users $lookup uses preserveNullAndEmptyArrays, so an unmatched session has no _user.
+	_user?: Pick<IUser, 'name' | 'username' | 'avatarETag' | 'avatarOrigin'>;
 };

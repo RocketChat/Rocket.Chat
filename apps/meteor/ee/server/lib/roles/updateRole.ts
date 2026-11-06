@@ -1,9 +1,9 @@
-import { api, MeteorError } from '@rocket.chat/core-services';
+import { api, ClientSafeError } from '@rocket.chat/core-services';
 import type { IRole } from '@rocket.chat/core-typings';
 import { Roles } from '@rocket.chat/models';
 
-import { notifyOnRoleChangedById } from '../../../../app/lib/server/lib/notifyListener';
 import { isValidRoleScope } from '../../../../lib/roles/isValidRoleScope';
+import { notifyOnRoleChangedById } from '../../../../server/lib/notifyListener';
 
 type UpdateRoleOptions = {
 	broadcastUpdate?: boolean;
@@ -17,17 +17,17 @@ export const updateRole = async (
 	const role = await Roles.findOneById(roleId);
 
 	if (!role) {
-		throw new MeteorError('error-invalid-roleId', 'This role does not exist');
+		throw new ClientSafeError('error-invalid-roleId', 'This role does not exist');
 	}
 
 	if (role.protected && ((roleData.name && roleData.name !== role.name) || (roleData.scope && roleData.scope !== role.scope))) {
-		throw new MeteorError('error-role-protected', 'Role is protected');
+		throw new ClientSafeError('error-role-protected', 'Role is protected');
 	}
 
 	if (roleData.name) {
 		const otherRole = await Roles.findOneByName(roleData.name, { projection: { _id: 1 } });
 		if (otherRole && otherRole._id !== role._id) {
-			throw new MeteorError('error-duplicate-role-names-not-allowed', 'Role name already exists');
+			throw new ClientSafeError('error-duplicate-role-names-not-allowed', 'Role name already exists');
 		}
 	} else {
 		roleData.name = role.name;
@@ -35,7 +35,7 @@ export const updateRole = async (
 
 	if (roleData.scope) {
 		if (!isValidRoleScope(roleData.scope)) {
-			throw new MeteorError('error-invalid-scope', 'Invalid scope');
+			throw new ClientSafeError('error-invalid-scope', 'Invalid scope');
 		}
 	} else {
 		roleData.scope = role.scope;
@@ -55,7 +55,7 @@ export const updateRole = async (
 
 	const updatedRole = await Roles.findOneById(roleId);
 	if (!updatedRole) {
-		throw new MeteorError('error-role-not-found', 'Role not found');
+		throw new ClientSafeError('error-role-not-found', 'Role not found');
 	}
 
 	return updatedRole;

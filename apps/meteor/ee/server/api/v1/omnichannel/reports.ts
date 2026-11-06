@@ -10,7 +10,7 @@ import {
 	findAllConversationsByAgentsCached,
 } from './lib/dashboards';
 import { API } from '../../../../../server/api';
-import { restrictQuery } from '../../../../app/livechat-enterprise/server/lib/restrictQuery';
+import { restrictQuery } from '../../../lib/omnichannel/restrictQuery';
 
 const checkDates = (start: Moment, end: Moment) => {
 	if (!start.isValid()) {

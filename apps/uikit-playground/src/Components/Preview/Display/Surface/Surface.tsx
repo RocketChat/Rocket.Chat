@@ -41,7 +41,7 @@ const Surface = () => {
 			})),
 			isChangeByDnd: false,
 		});
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// oxlint-disable-next-line react-hooks/exhaustive-deps
 	}, [screens[activeScreen]?.payload.blocks]);
 
 	useEffect(() => {
@@ -53,7 +53,7 @@ const Surface = () => {
 				}),
 			);
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// oxlint-disable-next-line react-hooks/exhaustive-deps
 	}, [uniqueBlocks]);
 
 	const onDragEnd = ({ destination, source }: DropResult) => {
@@ -65,7 +65,7 @@ const Surface = () => {
 	};
 
 	return (
-		<Box w='100%' h='100%' padding='20px'>
+		<Box width='100%' height='100%' padding='20px'>
 			<UiKitContext.Provider
 				value={{
 					action: (a) => {

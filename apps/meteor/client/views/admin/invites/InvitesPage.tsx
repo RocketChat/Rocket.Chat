@@ -1,4 +1,4 @@
-import { States, StatesIcon, StatesTitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
+import { States, StatesIcon, StatesTitle, StatesActions, StatesAction, type TableColumnWidth } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericModal,
@@ -10,13 +10,13 @@ import {
 	Page,
 	PageHeader,
 	PageContent,
+	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
 import InviteRow from './InviteRow';
-import GenericNoResults from '../../../components/GenericNoResults';
 
 const InvitesPage = () => {
 	const t = useTranslation();
@@ -68,16 +68,18 @@ const InvitesPage = () => {
 
 	const notSmall = useMediaQuery('(min-width: 768px)');
 
+	const columns: TableColumnWidth[] = [notSmall ? '20%' : '80%', ...(notSmall ? (['35%', '20%', '10%', '10%'] as const) : [])];
+
 	const headers = useMemo(
 		() => (
 			<>
-				<GenericTableHeaderCell w={notSmall ? '20%' : '80%'}>{t('Token')}</GenericTableHeaderCell>
+				<GenericTableHeaderCell>{t('Token')}</GenericTableHeaderCell>
 				{notSmall && (
 					<>
-						<GenericTableHeaderCell w='35%'>{t('Created_at')}</GenericTableHeaderCell>
-						<GenericTableHeaderCell w='20%'>{t('Expiration')}</GenericTableHeaderCell>
-						<GenericTableHeaderCell w='10%'>{t('Uses')}</GenericTableHeaderCell>
-						<GenericTableHeaderCell w='10%'>{t('Uses_left')}</GenericTableHeaderCell>
+						<GenericTableHeaderCell>{t('Created_at')}</GenericTableHeaderCell>
+						<GenericTableHeaderCell>{t('Expiration')}</GenericTableHeaderCell>
+						<GenericTableHeaderCell>{t('Uses')}</GenericTableHeaderCell>
+						<GenericTableHeaderCell>{t('Uses_left')}</GenericTableHeaderCell>
 						<GenericTableHeaderCell />
 					</>
 				)}
@@ -92,7 +94,7 @@ const InvitesPage = () => {
 			<PageContent>
 				<>
 					{isLoading && (
-						<GenericTable>
+						<GenericTable columns={columns}>
 							<GenericTableHeader>{headers}</GenericTableHeader>
 							<GenericTableBody>
 								<GenericTableLoadingTable headerCells={4} />
@@ -100,7 +102,7 @@ const InvitesPage = () => {
 						</GenericTable>
 					)}
 					{isSuccess && data && data.length > 0 && (
-						<GenericTable>
+						<GenericTable columns={columns}>
 							<GenericTableHeader>{headers}</GenericTableHeader>
 							<GenericTableBody>
 								{isLoading && <GenericTableLoadingTable headerCells={notSmall ? 4 : 1} />}

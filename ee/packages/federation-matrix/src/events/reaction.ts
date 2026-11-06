@@ -52,9 +52,9 @@ export function reaction() {
 		}
 	});
 
-	federationSDK.eventEmitterService.on('homeserver.matrix.redaction', async ({ event }) => {
+	federationSDK.eventEmitterService.on('homeserver.matrix.redaction', async ({ event, redacts }) => {
 		try {
-			const redactedEventId = event.redacts;
+			const redactedEventId = redacts || event.redacts;
 			if (!redactedEventId) {
 				logger.debug('No redacts field in redaction event');
 				return;

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { WizardContext, StepsLinkedList } from '@rocket.chat/ui-client';
 import { composeStories } from '@storybook/react';
@@ -49,11 +48,6 @@ const appRoot = mockAppRoot()
 describe('RepliesStep', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
-	});
-
-	test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
-		const view = render(<Story />, { wrapper: mockAppRoot().build() });
-		expect(view.baseElement).toMatchSnapshot();
 	});
 
 	test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {

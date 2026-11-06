@@ -1,0 +1,59 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
+import type { IOAuthApps } from '@rocket.chat/core-typings';
+import { OAuthApps, Users } from '@rocket.chat/models';
+
+import { parseUriList } from '../../lib/auth/oauth2-server/parseUriList';
+import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+
+export const updateOAuthApp = async (
+	userId: string,
+	applicationId: IOAuthApps['_id'],
+	application: Pick<IOAuthApps, 'name' | 'redirectUri' | 'active'>,
+): Promise<IOAuthApps | null> => {
+	if (!(await hasPermissionAsync(userId, 'manage-oauth-apps'))) {
+		throw new ClientSafeError('error-not-allowed', 'Not allowed', { method: 'updateOAuthApp' });
+	}
+
+	if (!application.name || typeof application.name.valueOf() !== 'string' || application.name.trim() === '') {
+		throw new ClientSafeError('error-invalid-name', 'Invalid name', { method: 'updateOAuthApp' });
+	}
+
+	if (!application.redirectUri || typeof application.redirectUri.valueOf() !== 'string' || application.redirectUri.trim() === '') {
+		throw new ClientSafeError('error-invalid-redirectUri', 'Invalid redirectUri', {
+			method: 'updateOAuthApp',
+		});
+	}
+
+	if (typeof application.active !== 'boolean') {
+		throw new ClientSafeError('error-invalid-arguments', 'Invalid arguments', {
+			method: 'updateOAuthApp',
+		});
+	}
+
+	const redirectUri = parseUriList(application.redirectUri);
+
+	if (redirectUri.length === 0) {
+		throw new ClientSafeError('error-invalid-redirectUri', 'Invalid redirectUri', {
+			method: 'updateOAuthApp',
+		});
+	}
+
+	const updatedApplication = await OAuthApps.updateById(applicationId, {
+		name: application.name,
+		active: application.active,
+		redirectUri,
+		_updatedBy: await Users.findOneById(userId, {
+			projection: {
+				username: 1,
+			},
+		}),
+	});
+
+	if (updatedApplication == null) {
+		throw new ClientSafeError('error-application-not-found', 'Application not found', {
+			method: 'updateOAuthApp',
+		});
+	}
+
+	return updatedApplication;
+};

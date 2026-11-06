@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Button, Icon, Scrollable } from '@rocket.chat/fuselage';
+import { Box, Button, Icon, Scrollable, useStyle } from '@rocket.chat/fuselage';
 import { useOutsideClick, useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { useContext, useRef } from 'react';
 
@@ -23,6 +23,15 @@ const CreateNewScreenContainer = () => {
 	const scrollRef = useHorizontalScroll();
 
 	const mergedRef = useMergedRefs(scrollRef, ref);
+	const plusIconClassName = useStyle(css`
+		cursor: pointer;
+		transition: var(--animation-default);
+		&:hover {
+			scale: 1.1;
+			transition: var(--animation-default);
+		}
+	`);
+
 	const createNewScreenhandler = () => {
 		dispatch(createNewScreenAction());
 	};
@@ -31,11 +40,11 @@ const CreateNewScreenContainer = () => {
 		<Scrollable horizontal>
 			<Box
 				ref={mergedRef}
-				w='100%'
+				width='100%'
 				height='250px'
 				borderBlockEnd='var(--default-border)'
 				position='fixed'
-				pi='40px'
+				paddingInline='40px'
 				className={css`
 					top: -255px;
 					left: 0;
@@ -49,18 +58,18 @@ const CreateNewScreenContainer = () => {
 					transition: var(--animation-default);
 				`}
 			>
-				<Button
+				<Box
 					position='fixed'
-					square
-					tiny
+					display='flex'
 					className={css`
 						top: 20px;
 						right: 20px;
 					`}
-					onClick={onClosehandler}
 				>
-					<Icon name='cross' size='x15' />
-				</Button>
+					<Button square size='tiny' onClick={onClosehandler}>
+						<Icon name='cross' size='x15' />
+					</Button>
+				</Box>
 				{openCreateNewScreen && (
 					<Box
 						width='max-content'
@@ -79,20 +88,7 @@ const CreateNewScreenContainer = () => {
 									disableDelete={projects[activeProject]?.screens.map((id) => screens[id]).length <= 1}
 								/>
 							))}
-						<Icon
-							onClick={createNewScreenhandler}
-							size='60px'
-							height='60px'
-							name='plus'
-							className={css`
-								cursor: pointer;
-								transition: var(--animation-default);
-								&:hover {
-									scale: 1.1;
-									transition: var(--animation-default);
-								}
-							`}
-						/>
+						<Icon onClick={createNewScreenhandler} size='60px' name='plus' className={plusIconClassName} />
 					</Box>
 				)}
 			</Box>

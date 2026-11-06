@@ -1,16 +1,13 @@
 import type { ILivechatTag } from '@rocket.chat/core-typings';
-import { Callout } from '@rocket.chat/fuselage';
 import { ContextualbarSkeletonBody } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import { useTranslation } from 'react-i18next';
 
 import TagEdit from './TagEdit';
 import TagEditWithDepartmentData from './TagEditWithDepartmentData';
+import NotAvailableCallout from '../components/NotAvailableCallout';
 
 const TagEditWithData = ({ tagId, onClose }: { tagId: ILivechatTag['_id']; onClose: () => void }) => {
-	const { t } = useTranslation();
-
 	const getTagById = useEndpoint('GET', '/v1/livechat/tags/:tagId', { tagId });
 	const { data, isPending, isError } = useQuery({
 		queryKey: ['livechat-getTagById', tagId],
@@ -23,11 +20,7 @@ const TagEditWithData = ({ tagId, onClose }: { tagId: ILivechatTag['_id']; onClo
 	}
 
 	if (isError) {
-		return (
-			<Callout m={16} type='danger'>
-				{t('Not_Available')}
-			</Callout>
-		);
+		return <NotAvailableCallout />;
 	}
 
 	if (data?.departments && data.departments.length > 0) {

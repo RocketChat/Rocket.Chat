@@ -1,13 +1,12 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
-import { Message } from '@rocket.chat/core-services';
+import { Message, ClientSafeError } from '@rocket.chat/core-services';
 import type { IMessage, IUser, AtLeast } from '@rocket.chat/core-typings';
 import { Messages, Rooms } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
-import { afterSaveMessage } from '../../../app/lib/server/lib/afterSaveMessage';
-import { notifyOnRoomChangedById } from '../../../app/lib/server/lib/notifyListener';
-import { validateCustomMessageFields } from '../../../app/lib/server/lib/validateCustomMessageFields';
-import { settings } from '../../../app/settings/server';
+import { afterSaveMessage } from '../../hooks/messages/afterSaveMessage';
+import { settings } from '../../settings';
+import { validateCustomMessageFields } from '../messaging/validateCustomMessageFields';
+import { notifyOnRoomChangedById } from '../notifyListener';
 
 export const updateMessage = async function (
 	{
@@ -31,7 +30,7 @@ export const updateMessage = async function (
 	if (message && Apps.self && Apps.isLoaded()) {
 		const prevent = await Apps.self?.triggerEvent(AppEvents.IPreMessageUpdatedPrevent, messageData);
 		if (prevent) {
-			throw new Meteor.Error('error-app-prevented-updating', 'A Rocket.Chat App prevented the message updating.');
+			throw new ClientSafeError('error-app-prevented-updating', 'A Rocket.Chat App prevented the message updating.');
 		}
 
 		let result = await Apps.self?.triggerEvent(AppEvents.IPreMessageUpdatedExtend, messageData);

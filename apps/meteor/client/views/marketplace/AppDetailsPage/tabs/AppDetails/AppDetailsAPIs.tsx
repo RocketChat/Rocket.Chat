@@ -1,5 +1,5 @@
 import type { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api';
-import { Box } from '@rocket.chat/fuselage';
+import { Box, Text } from '@rocket.chat/fuselage';
 import { useAbsoluteUrl } from '@rocket.chat/ui-contexts';
 import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -18,14 +18,14 @@ const AppDetailsAPIs = ({ apis }: AppDetailsAPIsProps) => {
 	return (
 		<>
 			<Box display='flex' flexDirection='column'>
-				<Box fontScale='h4' mb={12}>
+				<Box fontScale='h4' marginBlock={12}>
 					{t('APIs')}
 				</Box>
 				{apis.map((api) => (
-					<Box key={api.path} mb={8}>
-						<Box fontScale='p2m'>
+					<Box key={api.path} marginBlock={8}>
+						<Text fontScale='p2m'>
 							{api.methods.join(' | ').toUpperCase()} {api.path}
-						</Box>
+						</Text>
 						{api.methods.map((method, index) => (
 							<Box key={index}>
 								<Box withRichContent>

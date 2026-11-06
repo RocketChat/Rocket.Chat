@@ -1,36 +1,66 @@
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { axe } from 'jest-axe';
 import type { ReactNode } from 'react';
 
+import type { MessageListProps } from './MessageList';
 import { MessageList } from './MessageList';
 import { useMessages } from './hooks/useMessages';
 import { RoomManager } from '../../../lib/RoomManager';
+import { useRoomSubscription } from '../contexts/RoomContext';
 import { useFirstUnreadMessageId } from '../hooks/useFirstUnreadMessageId';
 
-const mockVirtualizerHandle = {
+const mockVirtualizerHandle: {
+	scrollToIndex: jest.Mock;
+	scrollTo: jest.Mock;
+	findItemIndex: jest.Mock;
+	scrollOffset: number;
+	scrollSize: number;
+	viewportSize: number;
+	cache?: unknown;
+} = {
 	scrollToIndex: jest.fn(),
 	scrollTo: jest.fn(),
 	findItemIndex: jest.fn((offset: number) => offset),
 	scrollOffset: 0,
 	scrollSize: 1000,
 	viewportSize: 300,
+	cache: undefined,
 };
 
+let lastVListCacheProp: unknown;
+
 jest.mock('virtua', () => {
-	const { forwardRef, useImperativeHandle } = jest.requireActual<typeof import('react')>('react');
+	const { Children, forwardRef, useImperativeHandle } = jest.requireActual<typeof import('react')>('react');
 
 	return {
+		// `virtua` renders a plain container and wraps every child in a `div` of its own, so the list markup
+		// under test cannot rely on `ul`/`li` semantics.
 		VList: forwardRef(
 			(
-				{ children, onScroll, shift: _shift, ...props }: { children: ReactNode; onScroll?: (offset: number) => void; shift?: boolean },
+				{
+					children,
+					onScroll,
+					shift: _shift,
+					keepMounted: _keepMounted,
+					cache,
+					...props
+				}: {
+					children: ReactNode;
+					onScroll?: (offset: number) => void;
+					shift?: boolean;
+					keepMounted?: number[];
+					cache?: unknown;
+				},
 				ref: any,
 			) => {
 				useImperativeHandle(ref, () => mockVirtualizerHandle);
+				lastVListCacheProp = cache;
 				return (
-					<ul data-testid='message-list' onScroll={() => onScroll?.(mockVirtualizerHandle.scrollOffset)} {...props}>
-						{children}
-					</ul>
+					<div data-testid='message-list' onScroll={() => onScroll?.(mockVirtualizerHandle.scrollOffset)} {...props}>
+						{Children.map(children, (child) => (child ? <div>{child}</div> : child))}
+					</div>
 				);
 			},
 		),
@@ -70,7 +100,11 @@ jest.mock('../contexts/ChatContext', () => ({
 }));
 
 jest.mock('./MessageListItem', () => ({
-	MessageListItem: ({ message }: { message: IMessage }) => <li data-testid='message-list-item'>{message.msg}</li>,
+	MessageListItem: ({ message }: { message: IMessage }) => (
+		<div role='listitem' data-testid='message-list-item'>
+			{message.msg}
+		</div>
+	),
 }));
 
 jest.mock('./providers/MessageListProvider', () => ({ children }: { children: ReactNode }) => <>{children}</>);
@@ -131,8 +165,11 @@ describe('MessageList scroll position', () => {
 		mockVirtualizerHandle.scrollOffset = 0;
 		mockVirtualizerHandle.scrollSize = 1000;
 		mockVirtualizerHandle.viewportSize = 300;
+		mockVirtualizerHandle.cache = undefined;
+		lastVListCacheProp = undefined;
 		(useMessages as jest.Mock).mockReturnValue([createMessage('message-1'), createMessage('message-2')]);
 		(useFirstUnreadMessageId as jest.Mock).mockReturnValue(undefined);
+		(useRoomSubscription as jest.Mock).mockReturnValue(undefined);
 		root = mockAppRoot().withSetting('Message_GroupingPeriod', 300).withUserPreference('displayAvatars', true);
 	});
 
@@ -178,6 +215,56 @@ describe('MessageList scroll position', () => {
 		expect(defaultProps.setShouldJumpToBottom).toHaveBeenCalledWith(true);
 	});
 
+	it('should jump to bottom if a listed message is unread before the first unread message is known', () => {
+		const store = {
+			scroll: 123,
+			atBottom: false,
+			update: jest.fn(),
+		};
+		const unreadMessage = { ...createMessage('message-2', new Date('2026-01-02')), u: { _id: 'other-user-id', username: 'other' } };
+		(useMessages as jest.Mock).mockReturnValue([createMessage('message-1', new Date('2026-01-01')), unreadMessage]);
+		(useRoomSubscription as jest.Mock).mockReturnValue({ rid: 'room-id', unread: 1, alert: true, ls: new Date('2026-01-01T12:00:00Z') });
+		(RoomManager.getStore as jest.Mock).mockReturnValue(store);
+
+		render(<MessageList {...defaultProps} />, { wrapper: root.build() });
+
+		expect(defaultProps.setShouldJumpToBottom).toHaveBeenCalledWith(true);
+		expect(mockVirtualizerHandle.scrollTo).not.toHaveBeenCalled();
+	});
+
+	it.each([
+		['only a thread reply is unread', { tmid: 'thread-id', u: { _id: 'other-user-id', username: 'other' } }],
+		['the only newer message was sent by the user', {}],
+	])('should restore the scroll position if %s', (_, overrides) => {
+		const store = {
+			scroll: 123,
+			atBottom: false,
+			update: jest.fn(),
+		};
+		const newerMessage = { ...createMessage('message-2', new Date('2026-01-02')), ...overrides };
+		(useMessages as jest.Mock).mockReturnValue([createMessage('message-1', new Date('2026-01-01')), newerMessage]);
+		// The subscription still flags the room, as a thread reply or an unread count of hidden messages would
+		(useRoomSubscription as jest.Mock).mockReturnValue({ rid: 'room-id', unread: 1, alert: true, ls: new Date('2026-01-01T12:00:00Z') });
+		(RoomManager.getStore as jest.Mock).mockReturnValue(store);
+
+		render(<MessageList {...defaultProps} />, { wrapper: root.build() });
+
+		expect(mockVirtualizerHandle.scrollTo).toHaveBeenCalledWith(123);
+		expect(defaultProps.setShouldJumpToBottom).not.toHaveBeenCalledWith(true);
+	});
+
+	it('should report the top visible message without waiting for a scroll', () => {
+		(RoomManager.getStore as jest.Mock).mockReturnValue({ scroll: undefined, atBottom: true, update: jest.fn() });
+		// the top padding offset lands on the first message, right after the foreword
+		mockVirtualizerHandle.scrollOffset = 22;
+		const messages = [createMessage('message-1', new Date('2026-01-01')), createMessage('message-2', new Date('2026-01-02'))];
+		(useMessages as jest.Mock).mockReturnValue(messages);
+
+		render(<MessageList {...defaultProps} />, { wrapper: root.build() });
+
+		expect(defaultProps.setLastMessageDate).toHaveBeenCalledWith(messages[0].ts);
+	});
+
 	it('should do nothing if no previous scroll position is stored', () => {
 		const store = {
 			scroll: undefined,
@@ -207,7 +294,98 @@ describe('MessageList scroll position', () => {
 		fireEvent.scroll(screen.getByTestId('message-list'));
 
 		await waitFor(() => {
-			expect(store.update).toHaveBeenCalledWith({ scroll: 50, atBottom: false });
+			expect(store.update).toHaveBeenCalledWith({ scroll: 50, atBottom: false, cache: undefined, cacheMessageCount: 2 });
 		});
+	});
+
+	it('should persist the virtualizer cache snapshot alongside the scroll position and the message count it was measured against', async () => {
+		const store = {
+			scroll: 1,
+			atBottom: false,
+			update: jest.fn(),
+		};
+		(RoomManager.getStore as jest.Mock).mockReturnValue(store);
+		mockVirtualizerHandle.scrollOffset = 50;
+		const cacheSnapshot = { fakeCache: true };
+		mockVirtualizerHandle.cache = cacheSnapshot;
+
+		render(<MessageList {...defaultProps} />, { wrapper: root.build() });
+
+		fireEvent.scroll(screen.getByTestId('message-list'));
+
+		await waitFor(() => {
+			expect(store.update).toHaveBeenCalledWith({ scroll: 50, atBottom: false, cache: cacheSnapshot, cacheMessageCount: 2 });
+		});
+	});
+
+	it('should seed the virtualizer with the cache snapshot stored for the room when the message count still matches', () => {
+		const cacheSnapshot = { fakeCache: true };
+		const store = {
+			scroll: 123,
+			atBottom: false,
+			cache: cacheSnapshot,
+			cacheMessageCount: 2,
+			update: jest.fn(),
+		};
+		(RoomManager.getStore as jest.Mock).mockReturnValue(store);
+
+		render(<MessageList {...defaultProps} />, { wrapper: root.build() });
+
+		expect(lastVListCacheProp).toBe(cacheSnapshot);
+	});
+
+	it('should not seed the virtualizer with a cache snapshot captured at a different message count', () => {
+		const cacheSnapshot = { fakeCache: true };
+		const store = {
+			scroll: 123,
+			atBottom: false,
+			cache: cacheSnapshot,
+			cacheMessageCount: 5,
+			update: jest.fn(),
+		};
+		(RoomManager.getStore as jest.Mock).mockReturnValue(store);
+
+		render(<MessageList {...defaultProps} />, { wrapper: root.build() });
+
+		expect(lastVListCacheProp).toBeUndefined();
+	});
+});
+
+describe('MessageList accessibility', () => {
+	let root: ReturnType<typeof mockAppRoot>;
+
+	beforeEach(() => {
+		jest.clearAllMocks();
+		(useMessages as jest.Mock).mockReturnValue([createMessage('message-1'), createMessage('message-2')]);
+		(useFirstUnreadMessageId as jest.Mock).mockReturnValue(undefined);
+		(RoomManager.getStore as jest.Mock).mockReturnValue({ scroll: undefined, atBottom: false, update: jest.fn() });
+		root = mockAppRoot().withSetting('Message_GroupingPeriod', 300).withUserPreference('displayAvatars', true);
+	});
+
+	it('should render a labelled list exposing every message as a list item', () => {
+		render(<MessageList {...defaultProps} />, { wrapper: root.build() });
+
+		const list = screen.getByRole('list');
+
+		expect(list).toHaveAccessibleName();
+		// the two messages plus the foreword
+		expect(within(list).getAllByRole('listitem')).toHaveLength(3);
+	});
+
+	const states: [string, Partial<MessageListProps>][] = [
+		['default', {}],
+		['loading previous messages', { hasMorePreviousMessages: true, isLoadingMoreMessages: true }],
+		['loading next messages', { hasMoreNextMessages: true, isLoadingMoreMessages: true }],
+		[
+			'showing the retention policy warning',
+			{ retentionPolicy: { enabled: true, isActive: true, filesOnly: false, excludePinned: false, ignoreThreads: false, maxAge: 30 } },
+		],
+		['without preview permission', { canPreview: false }],
+	];
+
+	it.each(states)('should have no accessibility violations when %s', async (_state, props) => {
+		const { container } = render(<MessageList {...defaultProps} {...props} />, { wrapper: root.build() });
+
+		expect(await axe(container)).toHaveNoViolations();
 	});
 });

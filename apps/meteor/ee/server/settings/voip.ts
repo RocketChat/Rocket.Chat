@@ -1,4 +1,5 @@
-import { settingsRegistry } from '../../../app/settings/server';
+import { turnServersSchema } from './turnServersSchema';
+import { settingsRegistry } from '../../../server/settings';
 
 export function addSettings(): Promise<void> {
 	return settingsRegistry.addGroup('VoIP_TeamCollab', async function () {
@@ -13,7 +14,6 @@ export function addSettings(): Promise<void> {
 						type: 'boolean',
 						public: true,
 						invalidValue: false,
-						alert: 'VoIP_TeamCollab_Screen_Sharing_Enabled_Alert',
 						i18nDescription: 'VoIP_TeamCollab_Screen_Sharing_Enabled_Description',
 					});
 
@@ -35,6 +35,16 @@ export function addSettings(): Promise<void> {
 						type: 'int',
 						public: true,
 						invalidValue: 5000,
+					});
+
+					await this.add('VoIP_TeamCollab_TURN_Servers', '', {
+						type: 'code',
+						code: 'application/json',
+						multiline: true,
+						public: false,
+						secret: true,
+						invalidValue: '',
+						schema: turnServersSchema,
 					});
 				});
 

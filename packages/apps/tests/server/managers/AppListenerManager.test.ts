@@ -20,7 +20,6 @@ describe('AppListenerManager', () => {
 	} as ProxiedApp;
 
 	const mockManager = {
-		getAccessorManager() {},
 		getOneById(appId: string) {
 			return mockApp;
 		},

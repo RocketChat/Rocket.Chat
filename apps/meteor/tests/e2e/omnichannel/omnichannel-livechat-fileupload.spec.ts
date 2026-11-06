@@ -19,7 +19,7 @@ const endpointMatrix = [
 ];
 
 const beforeTest = async (poLiveChat: OmnichannelLiveChat) => {
-	await poLiveChat.page.goto('/livechat');
+	await poLiveChat.goto();
 
 	await poLiveChat.openAnyLiveChat();
 	await poLiveChat.sendMessage(visitor, false);
@@ -105,7 +105,7 @@ test.describe('OC - Livechat - OC - File Upload - Disabled', () => {
 				}),
 			);
 
-			await poLiveChat.page.goto('/livechat');
+			await poLiveChat.goto();
 
 			await poLiveChat.openAnyLiveChat();
 			await poLiveChat.sendMessage(visitor, false);

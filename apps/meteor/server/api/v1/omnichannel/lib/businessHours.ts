@@ -1,6 +1,6 @@
 import type { ILivechatBusinessHour } from '@rocket.chat/core-typings';
 
-import { businessHourManager } from '../../../../../app/livechat/server/business-hour';
+import { businessHourManager } from '../../../../lib/omnichannel/business-hour';
 
 export async function findLivechatBusinessHour(id?: string, type?: string): Promise<Record<string, ILivechatBusinessHour>> {
 	return {

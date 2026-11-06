@@ -25,7 +25,9 @@ export async function canSendOutboundMessage(userId: string, agentId?: string, d
 			query = await addQueryRestrictionsToDepartmentsModel(query, userId);
 		}
 
-		const department = await LivechatDepartment.findOne<Pick<ILivechatDepartment, '_id' | 'enabled'>>(query, { _id: 1, enabled: 1 });
+		const department = await LivechatDepartment.findOne<Pick<ILivechatDepartment, '_id' | 'enabled'>>(query, {
+			projection: { _id: 1, enabled: 1 },
+		});
 		if (!department?.enabled) {
 			throw new Error('error-invalid-department');
 		}

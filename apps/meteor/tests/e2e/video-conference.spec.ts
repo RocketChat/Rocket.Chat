@@ -42,16 +42,17 @@ test.describe('video conference', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 
-		await page.goto('/home');
+		await poHomeChannel.goto();
 	});
 
 	test('should create video conference in targetChannel using keyboard', async ({ page }) => {
 		await poHomeChannel.navbar.openChat(targetChannel);
 		await poHomeChannel.content.sendMessage('hello video conference');
-		await poHomeChannel.roomHeaderFavoriteBtn.focus();
-		await expect(poHomeChannel.roomHeaderFavoriteBtn).toBeFocused();
+		await poHomeChannel.getRoomHeaderFavoriteBtn(IS_EE).focus();
+		await expect(poHomeChannel.getRoomHeaderFavoriteBtn(IS_EE)).toBeFocused();
 
 		await test.step('opens video conference popup', async () => {
+			await page.keyboard.press('Tab');
 			await page.keyboard.press('Tab');
 			await page.keyboard.press('Space');
 

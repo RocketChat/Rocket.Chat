@@ -453,6 +453,10 @@ export abstract class LicenseManager extends Emitter<LicenseEvents> {
 		return undefined;
 	}
 
+	public hasOfflineLicense(): boolean {
+		return this.getLicense()?.information.offline ?? false;
+	}
+
 	public syncShouldPreventActionResults(actions: Record<LicenseLimitKind, boolean>): void {
 		for (const [action, shouldPreventAction] of Object.entries(actions)) {
 			this.shouldPreventActionResults.set(action as LicenseLimitKind, shouldPreventAction);
@@ -474,7 +478,7 @@ export abstract class LicenseManager extends Emitter<LicenseEvents> {
 		const license = this.getLicense();
 
 		const items = await Promise.all(
-			keys.map(async (limit) => {
+			keys.map(async (limit): Promise<[LicenseLimitKind, boolean]> => {
 				const cached = this.shouldPreventActionResults.get(limit);
 
 				if (cached !== undefined) {
@@ -499,7 +503,7 @@ export abstract class LicenseManager extends Emitter<LicenseEvents> {
 			}),
 		);
 
-		return Object.fromEntries(items);
+		return Object.fromEntries(items) as Record<LicenseLimitKind, boolean>;
 	}
 
 	public async shouldPreventAction<T extends LicenseLimitKind>(

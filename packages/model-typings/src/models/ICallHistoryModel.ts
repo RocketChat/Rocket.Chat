@@ -1,22 +1,26 @@
 import type { CallHistoryItem, IRegisterUser, IUser } from '@rocket.chat/core-typings';
-import type { FindCursor, FindOptions } from 'mongodb';
+import type { FindCursor, Document } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
+import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
 
 export interface ICallHistoryModel extends IBaseModel<CallHistoryItem> {
-	findOneByIdAndUid(
+	findOneByIdAndUid<T extends Document = CallHistoryItem, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		_id: CallHistoryItem['_id'],
 		uid: CallHistoryItem['uid'],
-		options?: FindOptions<CallHistoryItem>,
-	): Promise<CallHistoryItem | null>;
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
 
-	findOneByCallIdAndUid(
+	findOneByCallIdAndUid<T extends Document = CallHistoryItem, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		callId: CallHistoryItem['callId'],
 		uid: CallHistoryItem['uid'],
-		options?: FindOptions<CallHistoryItem>,
-	): Promise<CallHistoryItem | null>;
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
 
-	findAllByUserIdAndSearchFilters(
+	findAllByUserIdAndSearchFilters<
+		T extends Document = CallHistoryItem,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
 		uid: IUser['_id'],
 		filters: {
 			type?: CallHistoryItem['type'];
@@ -24,8 +28,8 @@ export interface ICallHistoryModel extends IBaseModel<CallHistoryItem> {
 			direction?: CallHistoryItem['direction'];
 			inStates?: CallHistoryItem['state'][];
 		},
-		options: FindOptions<CallHistoryItem>,
-	): FindPaginated<FindCursor<CallHistoryItem>>;
+		options: O,
+	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>>;
 
 	updateUserReferences(userId: IRegisterUser['_id'], username: IRegisterUser['username'], name?: IRegisterUser['name']): Promise<void>;
 }

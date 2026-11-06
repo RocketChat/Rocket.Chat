@@ -1,4 +1,4 @@
-import { LegacyRoomManager } from '../../../../app/ui-utils/client';
+import { LegacyRoomManager } from '../../../lib/LegacyRoomManager';
 
 export const closeAllRooms = () => {
 	LegacyRoomManager.closeAllRooms();

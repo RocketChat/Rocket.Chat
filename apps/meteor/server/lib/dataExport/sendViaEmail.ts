@@ -1,12 +1,12 @@
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { Messages, Users } from '@rocket.chat/models';
-import { escapeHTML } from '@rocket.chat/string-helpers';
+import { escapeHTML } from '@rocket.chat/tools';
 import moment from 'moment';
 
-import * as Mailer from '../../../app/mailer/server/api';
-import { settings } from '../../../app/settings/server';
-import { Message } from '../../../app/ui-utils/server';
+import { settings } from '../../settings';
 import { getMomentLocale } from '../getMomentLocale';
+import { Message } from '../messaging/Message';
+import * as Mailer from '../notifications/email/api';
 
 export async function sendViaEmail(
 	data: {

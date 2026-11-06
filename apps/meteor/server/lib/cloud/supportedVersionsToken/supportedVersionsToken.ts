@@ -6,13 +6,13 @@ import type { Response } from '@rocket.chat/server-fetch';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { supportedVersionsChooseLatest } from './supportedVersionsChooseLatest';
-import { notifyOnSettingChangedById } from '../../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../../app/settings/server';
-import { supportedVersions as supportedVersionsFromBuild } from '../../../../app/utils/rocketchat-supported-versions.info';
-import { buildVersionUpdateMessage } from '../../../../app/version-check/server/functions/buildVersionUpdateMessage';
+import { supportedVersions as supportedVersionsFromBuild } from '../../../../rocketchat-supported-versions.info';
+import { settings } from '../../../settings';
 import { updateAuditedBySystem } from '../../../settings/lib/auditedSettingUpdates';
 import { SystemLogger } from '../../logger/system';
+import { notifyOnSettingChangedById } from '../../notifyListener';
 import { generateWorkspaceBearerHttpHeader } from '../getWorkspaceAccessToken';
+import { buildVersionUpdateMessage } from '../version-check/functions/buildVersionUpdateMessage';
 
 declare module '@rocket.chat/core-typings' {
 	interface ILicenseV3 {
@@ -107,12 +107,18 @@ const getSupportedVersionsFromCloud = async () => {
 	if (process.env.CLOUD_SUPPORTED_VERSIONS_TOKEN) {
 		return {
 			success: true,
-			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+			// oxlint-disable-next-line @typescript-eslint/no-non-null-assertion
 			result: JSON.parse(process.env.CLOUD_SUPPORTED_VERSIONS!),
 		};
 	}
 
 	const headers = await generateWorkspaceBearerHttpHeader();
+
+	// Re-validated at dispatch time: an offline license applied while this async
+	// operation was in flight must still suppress the request.
+	if (License.hasOfflineLicense()) {
+		return { success: true, result: undefined } as const;
+	}
 
 	const response = await handleResponse<SupportedVersions>(
 		fetch(releaseEndpoint, {
@@ -141,7 +147,10 @@ const getSupportedVersionsToken = async (retry = 0) => {
 	 * Gets the latest version
 	 * return the token
 	 */
-	const [versionsFromLicense, cloudResponse] = await Promise.all([License.getLicense(), getSupportedVersionsFromCloud()]);
+	const [versionsFromLicense, cloudResponse] = await Promise.all([
+		License.getLicense(),
+		License.hasOfflineLicense() ? ({ success: true, result: undefined } as const) : getSupportedVersionsFromCloud(),
+	]);
 
 	const supportedVersions = await supportedVersionsChooseLatest(
 		supportedVersionsFromBuild,

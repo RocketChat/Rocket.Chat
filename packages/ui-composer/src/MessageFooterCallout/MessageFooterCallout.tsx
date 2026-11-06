@@ -18,11 +18,12 @@ const MessageFooterCallout = forwardRef<
 				borderStyle: 'dashed',
 			})}
 			display='flex'
-			borderWidth={2}
+			borderWidth='medium'
 			borderColor='light'
-			borderRadius='x4'
-			p={8}
-			mbe={24}
+			borderRadius='medium'
+			padding={8}
+			gap={8}
+			marginBlockEnd={24}
 			backgroundColor='surface-tint'
 			alignItems='center'
 			minHeight='x48'

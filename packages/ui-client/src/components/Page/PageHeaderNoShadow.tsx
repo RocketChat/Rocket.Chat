@@ -20,7 +20,7 @@ const PageHeaderNoShadow = ({ children = undefined, title, onClickBack, ...props
 	useDocumentTitle(typeof title === 'string' ? title : undefined);
 
 	return (
-		<Box is='header' borderBlockEndWidth='default' pb={8} borderBlockEndColor='transparent' {...props}>
+		<Box is='header' borderBlockEndWidth='default' paddingBlock={8} borderBlockEndColor='transparent' {...props}>
 			<Box
 				height='100%'
 				marginInline={24}
@@ -29,6 +29,7 @@ const PageHeaderNoShadow = ({ children = undefined, title, onClickBack, ...props
 				flexDirection='row'
 				flexWrap='wrap'
 				alignItems='center'
+				columnGap={8}
 				color='default'
 			>
 				{sidebar.shouldToggle && isEmbedded ? (
@@ -36,7 +37,7 @@ const PageHeaderNoShadow = ({ children = undefined, title, onClickBack, ...props
 						<SidebarToggler />
 					</HeaderToolbar>
 				) : null}
-				{onClickBack && <IconButton small mie={8} icon='arrow-back' onClick={onClickBack} title={t('Back')} />}
+				{onClickBack && <IconButton size='small' icon='arrow-back' onClick={onClickBack} title={t('Back')} />}
 				<Box is='h1' fontScale='h2' flexGrow={1}>
 					{title}
 				</Box>

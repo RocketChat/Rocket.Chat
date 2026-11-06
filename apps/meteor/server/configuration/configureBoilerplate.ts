@@ -3,7 +3,7 @@ import { createHash } from 'node:crypto';
 import { Meteor } from 'meteor/meteor';
 import { WebApp, WebAppInternals } from 'meteor/webapp';
 
-import type { ICachedSettings } from '../../app/settings/server/CachedSettings';
+import type { ICachedSettings } from '../settings/CachedSettings';
 
 const webAppHashes: Record<string, string> = {};
 
@@ -45,10 +45,6 @@ export function configureBoilerplate(settings: ICachedSettings): void {
 				// prefix = match[2].replace(/\/$/, '');
 			}
 			(global as any).__meteor_runtime_config__.ROOT_URL = value;
-
-			if (Meteor.absoluteUrl.defaultOptions?.rootUrl) {
-				Meteor.absoluteUrl.defaultOptions.rootUrl = value;
-			}
 
 			// hostname = host.replace(/^https?:\/\//, '');
 			process.env.MOBILE_ROOT_URL = host;

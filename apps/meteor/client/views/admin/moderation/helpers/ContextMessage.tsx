@@ -16,7 +16,7 @@ import {
 	MessageUsername,
 } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useUserDisplayName } from '@rocket.chat/ui-client';
+import { useFormatTime, useUserDisplayName, useFormatDateAndTime } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
@@ -25,8 +25,7 @@ import MessageContentBody from '../../../../components/message/MessageContentBod
 import Attachments from '../../../../components/message/content/Attachments';
 import UiKitMessageBlock from '../../../../components/message/uikit/UiKitMessageBlock';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
-import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
-import { useFormatTime } from '../../../../hooks/useFormatTime';
+import { toPlainTextRoot } from '../../../../lib/toPlainTextRoot';
 import MessageReportInfo from '../MessageReportInfo';
 import useDeleteMessage from '../hooks/useDeleteMessage';
 import { useDismissMessageAction } from '../hooks/useDismissMessageAction';
@@ -92,7 +91,9 @@ const ContextMessage = ({
 								{message.e2e === 'pending' && t('E2E_message_encrypted_placeholder')}
 							</>
 						) : (
-							message.msg
+							!!message.msg && (
+								<MessageContentBody md={toPlainTextRoot(message.msg)} mentions={message.mentions} channels={message.channels} />
+							)
 						)}
 
 						{!!attachments && <Attachments id={message.files?.[0]?._id} attachments={attachments} />}

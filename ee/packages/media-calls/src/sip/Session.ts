@@ -12,6 +12,7 @@ import { IncomingSipCall } from './providers/IncomingSipCall';
 import { OutgoingSipCall } from './providers/OutgoingSipCall';
 import type { IMediaCallServerSettings } from '../definition/IMediaCallServer';
 import type { InternalCallParams } from '../definition/common';
+import { mediaCallDirector } from '../server/CallDirector';
 import { getDefaultSettings } from '../server/getDefaultSettings';
 
 export class SipServerSession {
@@ -109,6 +110,37 @@ export class SipServerSession {
 		return `sip:${extension}@${host}${portStr}`;
 	}
 
+	public async sendReferRequest(
+		sipDialog: Srf.Dialog,
+		params: { transferredTo?: MediaCallContact; transferredBy?: MediaCallContact },
+	): Promise<void> {
+		const { transferredBy, transferredTo } = params;
+		if (!transferredTo) {
+			throw new Error('Missing refer destination');
+		}
+
+		// Sip targets can only be referred to other sip users
+		const referToActor = await mediaCallDirector.cast.getContactForActor(transferredTo, { requiredType: 'sip' });
+		const referredBy = transferredBy && this.geContactUri(transferredBy);
+
+		const referTo = referToActor && this.geContactUri(referToActor);
+		if (!referTo) {
+			throw new Error('invalid-transfer');
+		}
+
+		const res = await sipDialog.request({
+			method: 'REFER',
+			headers: {
+				'Refer-To': referTo,
+				...(referredBy && { 'Referred-By': referredBy }),
+			},
+		});
+
+		if (res.status === 202) {
+			logger.debug({ msg: 'REFER was accepted', method: 'SipServerSession.sendReferRequest', ...params });
+		}
+	}
+
 	public stripDrachtioServerDetails(reqOrRes: Srf.SipMessage): Record<string, any> {
 		const { _agent, socket: _socket, _req, _res, ...data } = reqOrRes as Record<string, any>;
 
@@ -134,7 +166,7 @@ export class SipServerSession {
 
 		this.srf.use((req, _res, next) => {
 			logger.debug({ msg: 'Incoming message from Drachtio', method: req.method, source: req.source_address });
-			next();
+			(next as () => void)();
 		});
 
 		this.srf.invite((req, res) => {

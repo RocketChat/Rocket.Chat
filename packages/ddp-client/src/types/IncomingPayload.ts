@@ -7,9 +7,4 @@ import type { ServerPublicationPayloads } from './publicationPayloads';
  * @category incoming
  */
 export type IncomingPayload =
-	| PingPayload
-	| PongPayload
-	| ServerPublicationPayloads
-	| ServerMethodPayloads
-	| ConnectedPayload
-	| FailedPayload;
+	PingPayload | PongPayload | ServerPublicationPayloads | ServerMethodPayloads | ConnectedPayload | FailedPayload;

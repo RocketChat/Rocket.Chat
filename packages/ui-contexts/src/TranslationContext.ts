@@ -9,9 +9,11 @@ export type TranslationLanguage = {
 };
 
 type KeysWithoutSuffix = {
-	[K in RocketchatI18nKeys as K extends `${infer T extends string}_${'one' | 'other' | 'zero' | 'few' | 'many' | 'two' | 'three' | 'four'}`
-		? T
-		: K]: never;
+	[
+		K in RocketchatI18nKeys as K extends `${infer T extends string}_${'one' | 'other' | 'zero' | 'few' | 'many' | 'two' | 'three' | 'four'}`
+			? T
+			: K
+	]: never;
 };
 
 export type TranslationKey = keyof KeysWithoutSuffix | `app-${string}.${string}`;

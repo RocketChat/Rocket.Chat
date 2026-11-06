@@ -108,5 +108,5 @@ export interface IRoomTypeServerDirectives {
 	getMsgSender: (message: IMessage) => Promise<IUser | null>;
 	includeInRoomSearch: () => boolean;
 	includeInDashboard: () => boolean;
-	roomFind?: (rid: string) => Promise<IRoom | undefined> | Promise<IOmnichannelRoom | null> | IRoom | undefined;
+	roomFind?: (rid: string, uid?: IUser['_id']) => Promise<IRoom | IOmnichannelRoom | null | undefined> | IRoom | undefined;
 }

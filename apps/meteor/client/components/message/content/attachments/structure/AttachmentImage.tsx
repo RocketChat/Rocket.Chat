@@ -65,7 +65,7 @@ const AttachmentImage = ({ id, previewUrl, dataSrc, loadImage = true, setLoadIma
 
 	return (
 		<Box width={dimensions.width} maxWidth='full' position='relative'>
-			<Box pbs={`${dimensions.ratio}%`} position='relative'>
+			<Box paddingBlockStart={`${dimensions.ratio}%`} position='relative'>
 				<ImageBox
 					is='picture'
 					position='absolute'

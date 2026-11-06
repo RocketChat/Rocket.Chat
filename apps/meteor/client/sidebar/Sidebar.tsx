@@ -1,4 +1,4 @@
-import { SidebarV2 } from '@rocket.chat/fuselage';
+import { Sidebar as FuselageSidebar } from '@rocket.chat/fuselage';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -14,9 +14,14 @@ const Sidebar = () => {
 	const sidebarHideAvatar = !useUserPreference('sidebarDisplayAvatar');
 
 	return (
-		<SidebarV2
+		<FuselageSidebar
 			aria-label={t('Sidebar')}
-			className={['rcx-sidebar--main', `rcx-sidebar rcx-sidebar--${sidebarViewMode}`, sidebarHideAvatar && 'rcx-sidebar--hide-avatar']
+			className={[
+				'rcx-sidebar--main',
+				'sidebar-region-item',
+				`rcx-sidebar--${sidebarViewMode}`,
+				sidebarHideAvatar && 'rcx-sidebar--hide-avatar',
+			]
 				.filter(Boolean)
 				.join(' ')}
 		>
@@ -24,7 +29,7 @@ const Sidebar = () => {
 			<SidebarRoomList />
 			<NowPlayingSection />
 			<SidebarFooter />
-		</SidebarV2>
+		</FuselageSidebar>
 	);
 };
 

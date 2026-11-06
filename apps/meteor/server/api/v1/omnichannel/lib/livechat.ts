@@ -2,11 +2,11 @@ import type { ILivechatAgent, ILivechatDepartment, ILivechatTrigger, ILivechatVi
 import { License } from '@rocket.chat/license';
 import { EmojiCustom, LivechatTrigger, LivechatVisitors, LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
 import { makeFunction } from '@rocket.chat/patch-injection';
-import { Meteor } from 'meteor/meteor';
 
-import { normalizeAgent } from '../../../../../app/livechat/server/lib/Helper';
-import { getInitSettings } from '../../../../../app/livechat/server/lib/settings';
 import { callbacks } from '../../../../lib/callbacks';
+import { normalizeAgent } from '../../../../lib/omnichannel/Helper';
+import { getInitSettings } from '../../../../lib/omnichannel/settings';
+import { getWorkspaceURL } from '../../../../lib/utils/getURL';
 
 async function findTriggers(): Promise<Pick<ILivechatTrigger, '_id' | 'actions' | 'conditions' | 'runOnce'>[]> {
 	const triggers = await LivechatTrigger.findEnabled().toArray();
@@ -52,7 +52,9 @@ export function findGuest(token: string): Promise<ILivechatVisitor | null> {
 	return LivechatVisitors.getVisitorByToken(token);
 }
 
-export function findGuestWithoutActivity(token: string): Promise<ILivechatVisitor | null> {
+export function findGuestWithoutActivity(
+	token: string,
+): Promise<Pick<ILivechatVisitor, '_id' | 'name' | 'username' | 'token' | 'visitorEmails' | 'department'> | null> {
 	return LivechatVisitors.getVisitorByToken(token, { projection: { name: 1, username: 1, token: 1, visitorEmails: 1, department: 1 } });
 }
 
@@ -111,7 +113,7 @@ export async function settings({ businessUnit = '', userId }: { businessUnit?: s
 		findDepartments(businessUnit, userId),
 		EmojiCustom.find().toArray(),
 	]);
-	const sound = `${Meteor.absoluteUrl()}sounds/chime.mp3`;
+	const sound = getWorkspaceURL('sounds/chime.mp3');
 	return {
 		enabled: initSettings.Livechat_enabled,
 		settings: {
@@ -192,5 +194,3 @@ export const getExtraConfigInfo = makeFunction(
 		room?: IOmnichannelRoom;
 	}> => options,
 );
-
-export const onCheckRoomParams = makeFunction((params: any) => params);

@@ -1,4 +1,4 @@
-import { Box } from '@rocket.chat/fuselage';
+import { Text } from '@rocket.chat/fuselage';
 import { useSetModal } from '@rocket.chat/ui-contexts';
 
 import OmnichannelVerificationTag from '../../../omnichannel/components/OmnichannelVerificationTag';
@@ -10,9 +10,9 @@ const OmnichannelRoomHeaderTag = () => {
 	const { verified } = useOmnichannelRoom();
 
 	return (
-		<Box mis={4} withTruncatedText>
+		<Text truncate>
 			<OmnichannelVerificationTag verified={verified} onClick={() => setModal(<AdvancedContactModal onCancel={() => setModal(null)} />)} />
-		</Box>
+		</Text>
 	);
 };
 

@@ -7,7 +7,7 @@ import { createFakeRoom, createFakeSubscription } from '../../../../../../../tes
 const mockRoom = createFakeRoom({ _id: 'room1', t: 'c', name: 'room1', fname: 'Room 1' });
 const mockSubscription = createFakeSubscription({ name: 'room1', t: 'c', disableNotifications: false, rid: 'room1' });
 
-jest.mock('../../../../../../../app/ui-utils/client', () => ({
+jest.mock('../../../../../../../client/lib/LegacyRoomManager', () => ({
 	LegacyRoomManager: {
 		close: jest.fn(),
 	},

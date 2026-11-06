@@ -1,9 +1,8 @@
 import type { Meta, StoryFn } from '@storybook/preact';
-import type { ComponentProps } from 'preact';
-import { action } from 'storybook/actions';
 
-import TriggerMessage from './component';
-import { screenDecorator } from '../../../.storybook/helpers';
+import TriggerMessage, { type TriggerMessageProps } from './index';
+import { screenDecorator, storeDecorator } from '../../../.storybook/helpers';
+import type { StoreState } from '../../store';
 
 const now = new Date(Date.parse('2021-01-01T00:00:00.000Z'));
 
@@ -20,22 +19,18 @@ const messages = [
 	ts: new Date(now.getTime() - (15 - i) * 60000 - (i < 5 ? 24 * 60 * 60 * 1000 : 0)).toISOString(),
 }));
 
+type StoryArgs = TriggerMessageProps & Pick<StoreState, 'messages'>;
+
 export default {
 	title: 'Routes/TriggerMessage',
 	component: TriggerMessage,
-	args: {
-		messages,
-		title: '',
-		onSubmit: action('submit'),
-		onCancel: action('cancel'),
-	},
-	decorators: [screenDecorator],
+	decorators: [storeDecorator, screenDecorator],
 	parameters: {
 		layout: 'centered',
 	},
-} satisfies Meta<ComponentProps<typeof TriggerMessage>>;
+} satisfies Meta<StoryArgs>;
 
-const Template: StoryFn<ComponentProps<typeof TriggerMessage>> = (args) => <TriggerMessage {...args} />;
+const Template: StoryFn<StoryArgs> = (args) => <TriggerMessage {...args} />;
 
 export const Single = Template.bind({});
 Single.storyName = 'single';
@@ -45,3 +40,6 @@ Single.args = {
 
 export const Multiple = Template.bind({});
 Multiple.storyName = 'multiple';
+Multiple.args = {
+	messages,
+};

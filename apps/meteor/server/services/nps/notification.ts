@@ -3,9 +3,9 @@ import { BannerPlatform } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import moment from 'moment';
 
-import { settings } from '../../../app/settings/server';
 import { i18n } from '../../lib/i18n';
 import { sendMessagesToAdmins } from '../../lib/sendMessagesToAdmins';
+import { settings } from '../../settings';
 
 export const getBannerForAdmins = (expireAt: Date): Omit<IBanner, '_id'> => {
 	const lng = settings.get<string>('Language') || 'en';

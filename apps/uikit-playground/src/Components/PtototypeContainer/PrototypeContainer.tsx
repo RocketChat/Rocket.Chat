@@ -13,7 +13,7 @@ const PrototypeContainer = () => {
 
 	const activeActions = useMemo(() => {
 		return projects[activeProject]?.flowEdges.map((edge) => edge.sourceHandle);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// oxlint-disable-next-line react-hooks/exhaustive-deps
 	}, [activeProject, projects, projects[activeProject].flowEdges]);
 
 	if (!projects[activeProject].screens.length) return null;
@@ -22,7 +22,7 @@ const PrototypeContainer = () => {
 
 	return (
 		<Scrollable vertical>
-			<Box w='100%' h='100%'>
+			<Box width='100%' height='100%'>
 				<PrototypeRender
 					surface={surface}
 					blocks={blocks}

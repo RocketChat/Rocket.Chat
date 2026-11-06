@@ -18,7 +18,7 @@ const VerticalTemplate = ({ children }: VerticalTemplateProps) => {
 	return (
 		<VerticalWizardLayout
 			background={customBackground}
-			logo={!hideLogo && customLogo ? <Box is='img' maxHeight='x40' mi='neg-x8' src={customLogo} alt='Logo' /> : <></>}
+			logo={!hideLogo && customLogo ? <Box is='img' maxHeight='x40' marginInline='neg-x8' src={customLogo} alt='Logo' /> : <></>}
 		>
 			<VerticalWizardLayoutTitle>
 				<RegisterTitle />

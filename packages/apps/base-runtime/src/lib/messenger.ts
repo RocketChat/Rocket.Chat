@@ -1,149 +1,93 @@
 import EventEmitter from 'node:events';
 
-import * as jsonrpc from 'jsonrpc-lite';
+import { sanitizeForIpc } from '@rocket.chat/apps/dist/lib/IpcSanitizer';
 
-import { encoder } from './codec';
+import * as jsonrpc from './jsonrpc';
 import type { RequestContext } from './requestContext';
 
-export type RequestDescriptor = Pick<jsonrpc.RequestObject, 'method' | 'params'>;
+export type RequestDescriptor = Pick<jsonrpc.RequestObject, 'method' | 'params' | 'meta'>;
 
-export type NotificationDescriptor = Pick<jsonrpc.NotificationObject, 'method' | 'params'>;
+export type NotificationDescriptor = Pick<jsonrpc.NotificationObject, 'method' | 'params' | 'meta'>;
 
-export type SuccessResponseDescriptor = Pick<jsonrpc.SuccessObject, 'id' | 'result'>;
+export type SuccessResponseDescriptor = Pick<jsonrpc.SuccessObject, 'id' | 'result' | 'meta'>;
 
-export type ErrorResponseDescriptor = Pick<jsonrpc.ErrorObject, 'id' | 'error'>;
+export type ErrorResponseDescriptor = Pick<jsonrpc.ErrorObject, 'id' | 'error' | 'meta'>;
 
-export type JsonRpcRequest = jsonrpc.IParsedObjectRequest | jsonrpc.IParsedObjectNotification;
-export type JsonRpcResponse = jsonrpc.IParsedObjectSuccess | jsonrpc.IParsedObjectError;
+export type JsonRpcRequest = jsonrpc.RequestObject | jsonrpc.NotificationObject;
+export type JsonRpcResponse = jsonrpc.SuccessObject | jsonrpc.ErrorObject;
 
-export function isRequest(message: jsonrpc.IParsedObject): message is JsonRpcRequest {
-	return message.type === 'request' || message.type === 'notification';
+export function isRequest(message: jsonrpc.JsonRpc): message is JsonRpcRequest {
+	return jsonrpc.isRequestObject(message) || jsonrpc.isNotificationObject(message);
 }
 
-export function isResponse(message: jsonrpc.IParsedObject): message is JsonRpcResponse {
-	return message.type === 'success' || message.type === 'error';
+export function isResponse(message: jsonrpc.JsonRpc): message is JsonRpcResponse {
+	return jsonrpc.isSuccessObject(message) || jsonrpc.isErrorObject(message);
 }
 
-export function isErrorResponse(message: jsonrpc.JsonRpc): message is jsonrpc.ErrorObject {
-	return message instanceof jsonrpc.ErrorObject;
+// Takes `unknown` because `parseMessage` throws an `ErrorObject`, so the main loop
+// tests a caught value with this.
+export function isErrorResponse(message: unknown): message is jsonrpc.ErrorObject {
+	return jsonrpc.isErrorObject(message);
 }
 
 const COMMAND_PONG = '_zPONG';
 
 export const RPCResponseObserver = new EventEmitter();
 
-class MessageQueue {
-	private queue: Uint8Array[] = [];
-
-	private isProcessing = false;
-
-	private async processQueue() {
-		if (this.isProcessing) {
-			return;
-		}
-
-		this.isProcessing = true;
-
-		while (this.queue.length) {
-			const message = this.queue.shift();
-
-			if (message) {
-				await transport.send(message);
+/**
+ * The IPC channel connecting this runtime to the host process that spawned it.
+ *
+ * The channel serializes messages with V8's structured clone algorithm, which
+ * throws on functions and other non-cloneable values an app might return, so
+ * every message is sanitized before being handed to Node.
+ */
+export const ipcChannel = {
+	send(message: jsonrpc.JsonRpc | typeof COMMAND_PONG): Promise<void> {
+		return new Promise((resolve, reject) => {
+			if (typeof process.send !== 'function') {
+				reject(new Error('No IPC channel available to communicate with the host process'));
+				return;
 			}
-		}
 
-		this.isProcessing = false;
-	}
-
-	public enqueue(message: jsonrpc.JsonRpc | typeof COMMAND_PONG) {
-		this.queue.push(encoder.encode(message));
-		void this.processQueue();
-	}
-
-	public getCurrentSize() {
-		return this.queue.length;
-	}
-}
-
-export const Queue = new MessageQueue();
-
-/**
- * A platform-dependent component responsible for delivering encoded messages to
- * the host that controls this runtime.
- *
- * Each runtime platform is expected to provide its own implementation and
- * inject it via {@link setTransport}.
- */
-export type Transport = {
-	send(message: Uint8Array): Promise<void>;
+			process.send(sanitizeForIpc(message), undefined, undefined, (error) => (error ? reject(error) : resolve()));
+		});
+	},
 };
 
-/**
- * The default transport. It discards every message, and is used until a
- * platform injects its own transport via {@link setTransport}.
- */
-export const noopTransport: Transport = {
-	send: () => Promise.resolve(),
-};
-
-let transport: Transport = noopTransport;
-
-/**
- * Injects the transport implementation to be used when sending messages.
- *
- * Platforms must call this during bootstrap to wire up the appropriate
- * transport. Until then, messages are discarded by the default no-op transport.
- */
-export function setTransport(newTransport: Transport): void {
-	transport = newTransport;
-}
-
-export function parseMessage(message: string | Record<string, unknown>) {
-	let parsed: jsonrpc.IParsedObject | jsonrpc.IParsedObject[];
-
-	if (typeof message === 'string') {
-		parsed = jsonrpc.parse(message);
-	} else {
-		parsed = jsonrpc.parseObject(message);
+export function parseMessage(message: unknown): jsonrpc.JsonRpc {
+	if (jsonrpc.isJsonRpc(message)) {
+		return message;
 	}
 
-	if (Array.isArray(parsed)) {
-		throw jsonrpc.error(null, jsonrpc.JsonRpcError.invalidRequest(null));
-	}
-
-	if (parsed.type === 'invalid') {
-		throw jsonrpc.error(null, parsed.payload);
-	}
-
-	return parsed;
+	throw jsonrpc.error(null, jsonrpc.JsonRpcError.invalidRequest(message));
 }
 
 export async function sendInvalidRequestError(): Promise<void> {
 	const rpc = jsonrpc.error(null, jsonrpc.JsonRpcError.invalidRequest(null));
 
-	await Queue.enqueue(rpc);
+	await ipcChannel.send(rpc);
 }
 
 export async function sendInvalidParamsError(id: jsonrpc.ID): Promise<void> {
 	const rpc = jsonrpc.error(id, jsonrpc.JsonRpcError.invalidParams(null));
 
-	await Queue.enqueue(rpc);
+	await ipcChannel.send(rpc);
 }
 
 export async function sendParseError(): Promise<void> {
 	const rpc = jsonrpc.error(null, jsonrpc.JsonRpcError.parseError(null));
 
-	await Queue.enqueue(rpc);
+	await ipcChannel.send(rpc);
 }
 
 export async function sendMethodNotFound(id: jsonrpc.ID): Promise<void> {
 	const rpc = jsonrpc.error(id, jsonrpc.JsonRpcError.methodNotFound(null));
 
-	await Queue.enqueue(rpc);
+	await ipcChannel.send(rpc);
 }
 
 export async function errorResponse(
-	{ error: { message, code = -32000, data = {} }, id }: ErrorResponseDescriptor,
+	{ error: { message, code = -32000, data = {} }, id, meta }: ErrorResponseDescriptor,
 	req?: RequestContext,
 ): Promise<void> {
 	const { logger } = req?.context || {};
@@ -152,12 +96,12 @@ export async function errorResponse(
 		data.logs = logger.getLogs();
 	}
 
-	const rpc = jsonrpc.error(id, new jsonrpc.JsonRpcError(message, code, data));
+	const rpc = jsonrpc.error(id, new jsonrpc.JsonRpcError(message, code, data), meta);
 
-	await Queue.enqueue(rpc);
+	await ipcChannel.send(rpc);
 }
 
-export async function successResponse({ id, result }: SuccessResponseDescriptor, req: RequestContext): Promise<void> {
+export async function successResponse({ id, result, meta }: SuccessResponseDescriptor, req: RequestContext): Promise<void> {
 	const payload = { value: result } as Record<string, unknown>;
 	const { logger } = req.context;
 
@@ -165,17 +109,23 @@ export async function successResponse({ id, result }: SuccessResponseDescriptor,
 		payload.logs = logger.getLogs();
 	}
 
-	const rpc = jsonrpc.success(id, payload);
+	const rpc = jsonrpc.success(id, payload, meta);
 
-	await Queue.enqueue(rpc);
+	await ipcChannel.send(rpc);
 }
 
-export function pongResponse(): Promise<void> {
-	return Promise.resolve(Queue.enqueue(COMMAND_PONG));
+// A PONG that fails to send counts as a missed ping on the host
+export function pongResponse(): void {
+	ipcChannel.send(COMMAND_PONG).catch((error) => console.error('Failed to send PONG to the host process', error));
 }
 
 export async function sendRequest(requestDescriptor: RequestDescriptor): Promise<jsonrpc.SuccessObject> {
-	const request = jsonrpc.request(Math.random().toString(36).slice(2), requestDescriptor.method, requestDescriptor.params);
+	const request = jsonrpc.request(
+		Math.random().toString(36).slice(2),
+		requestDescriptor.method,
+		requestDescriptor.params,
+		requestDescriptor.meta,
+	);
 
 	// TODO: add timeout to this
 	const responsePromise = new Promise((resolve, reject) => {
@@ -190,15 +140,15 @@ export async function sendRequest(requestDescriptor: RequestDescriptor): Promise
 		RPCResponseObserver.once(`response:${request.id}`, handler);
 	});
 
-	await Queue.enqueue(request);
+	await ipcChannel.send(request);
 
 	return responsePromise as Promise<jsonrpc.SuccessObject>;
 }
 
-export function sendNotification({ method, params }: NotificationDescriptor) {
-	const request = jsonrpc.notification(method, params);
+export function sendNotification({ method, params, meta }: NotificationDescriptor) {
+	const request = jsonrpc.notification(method, params, meta);
 
-	Queue.enqueue(request);
+	ipcChannel.send(request).catch((error) => console.error(`Failed to send the "${method}" notification to the host process`, error));
 }
 
 export function log(params: jsonrpc.RpcParams) {

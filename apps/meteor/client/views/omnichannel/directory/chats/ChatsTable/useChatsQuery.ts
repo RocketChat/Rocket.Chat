@@ -1,5 +1,7 @@
 import { usePermission, useUserId } from '@rocket.chat/ui-contexts';
-import { parse, endOfDay, startOfDay } from 'date-fns';
+import { endOfDay } from 'date-fns/endOfDay';
+import { parse } from 'date-fns/parse';
+import { startOfDay } from 'date-fns/startOfDay';
 import { useCallback } from 'react';
 
 import type { ChatsFiltersQuery } from '../../contexts/ChatsContext';

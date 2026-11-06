@@ -8,9 +8,9 @@ const MessageComposerFileGroup = ({ children, style, ...props }: ComponentProps<
 			display='flex'
 			width='100%'
 			flexDirection='row'
-			pi={8}
-			pbe={8}
-			pbs={2}
+			paddingInline={8}
+			paddingBlockEnd={8}
+			paddingBlockStart='x4'
 			overflowX='auto'
 			style={{ whiteSpace: 'nowrap', ...style }}
 			{...props}

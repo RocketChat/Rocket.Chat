@@ -5,10 +5,6 @@ import moment from 'moment';
 import { convertDateToInt, diffBetweenDaysInclusive, getTotalOfWeekItems, convertIntToDate } from './date';
 
 export const handleUserCreated = async (user: IUser): Promise<IUser> => {
-	if (user.roles?.includes('anonymous')) {
-		return user;
-	}
-
 	await Analytics.saveUserData({
 		date: convertDateToInt(user.createdAt),
 	});
@@ -17,11 +13,11 @@ export const handleUserCreated = async (user: IUser): Promise<IUser> => {
 };
 
 export const fillFirstDaysOfUsersIfNeeded = async (date: Date): Promise<void> => {
-	const usersFromAnalytics = await Analytics.findByTypeBeforeDate({
+	const usersFromAnalytics = await Analytics.findOneByTypeBeforeDate({
 		type: 'users',
 		date: convertDateToInt(date),
-	}).toArray();
-	if (!usersFromAnalytics.length) {
+	});
+	if (!usersFromAnalytics) {
 		const startOfPeriod = moment(date).subtract(90, 'days').toDate();
 		const users = await Users.getTotalOfRegisteredUsersByDate({
 			start: startOfPeriod,

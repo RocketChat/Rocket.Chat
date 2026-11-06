@@ -1,10 +1,9 @@
 import type { IUpload } from '@rocket.chat/core-typings';
-import { MongoInternals } from 'meteor/mongo';
-import { NpmModuleMongodb } from 'meteor/npm-mongo';
 import type { ObjectId } from 'mongodb';
 
 import { UploadFS } from './ufs';
 import type { StoreOptions } from './ufs-store';
+import { db, GridFSBucket } from '../database/utils';
 
 type GridFSStoreOptions = StoreOptions & {
 	chunkSize: number;
@@ -39,9 +38,7 @@ export class GridFSStore extends UploadFS.Store {
 		this.chunkSize = options.chunkSize;
 		this.collectionName = options.collectionName;
 
-		// const mongo = MongoInternals.NpmModule;
-		const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
-		const mongoStore = new NpmModuleMongodb.GridFSBucket(db as any, {
+		const mongoStore = new GridFSBucket(db, {
 			bucketName: options.collectionName,
 			chunkSizeBytes: this.chunkSize,
 		});

@@ -1,5 +1,5 @@
 import type { EncryptedContent, IUpload } from '@rocket.chat/core-typings';
-import type { IBaseUploadsModel } from '@rocket.chat/model-typings';
+import type { IBaseUploadsModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
 import type {
 	DeleteResult,
 	IndexDescription,
@@ -8,7 +8,6 @@ import type {
 	InsertOneResult,
 	WithId,
 	Filter,
-	FindOptions,
 	FindCursor,
 	ClientSession,
 } from 'mongodb';
@@ -56,21 +55,17 @@ export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUplo
 			userId,
 		};
 
-		const update: Filter<T> = {
-			$set: {
-				complete: true,
-				uploading: false,
-				progress: 1,
-			},
-		};
+		const $set: Partial<T> = Object.assign(file, {
+			complete: true,
+			uploading: false,
+			progress: 1,
+		});
 
-		update.$set = Object.assign(file, update.$set);
-
-		if (update.$set.type) {
-			update.$set.typeGroup = update.$set.type.split('/').shift();
+		if ($set.type) {
+			$set.typeGroup = $set.type.split('/').shift();
 		}
 
-		return this.updateOne(filter, update);
+		return this.updateOne(filter, { $set });
 	}
 
 	confirmTemporaryFile(fileId: string, userId: string): Promise<Document | UpdateResult> | undefined {
@@ -92,14 +87,17 @@ export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUplo
 		return this.updateOne(filter, update);
 	}
 
-	findByIds(_ids: string[], options?: FindOptions<T>): FindCursor<T> {
+	findByIds<T_ extends Document = T, O extends FindOptionsWithProjection<T_> = FindOptionsWithProjection<T_>>(
+		_ids: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T_, O>> {
 		const query = {
 			_id: {
 				$in: _ids,
 			},
 		};
 
-		return this.find(query, options);
+		return this.find<T_, O>(query, options);
 	}
 
 	async findOneByName(name: string, options?: { session?: ClientSession }): Promise<T | null> {
@@ -110,8 +108,18 @@ export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUplo
 		return this.findOne({ rid });
 	}
 
-	findExpiredTemporaryFiles(options?: FindOptions<T>): FindCursor<T> {
-		return this.find(
+	async findOneByIdAndRoomId<T_ extends Document = T, O extends FindOptionsWithProjection<T_> = FindOptionsWithProjection<T_>>(
+		fileId: string,
+		rid: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T_, O> | null> {
+		return this.findOne<T_, O>({ _id: fileId, rid }, options);
+	}
+
+	findExpiredTemporaryFiles<T_ extends Document = T, O extends FindOptionsWithProjection<T_> = FindOptionsWithProjection<T_>>(
+		options?: O,
+	): FindCursor<DocumentWithProjection<T_, O>> {
+		return this.find<T_, O>(
 			{
 				expiresAt: {
 					$lte: new Date(),
@@ -135,8 +143,13 @@ export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUplo
 		return this.deleteOne({ _id: fileId }, { session: options?.session });
 	}
 
-	async findOneByIdAndUserIdAndRoomId(fileId: string, userId: string, rid: string, options?: FindOptions<T>): Promise<T | null> {
-		return this.findOne({ _id: fileId, userId, rid }, options);
+	async findOneByIdAndUserIdAndRoomId<T_ extends Document = T, O extends FindOptionsWithProjection<T_> = FindOptionsWithProjection<T_>>(
+		fileId: string,
+		userId: string,
+		rid: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T_, O> | null> {
+		return this.findOne<T_, O>({ _id: fileId, userId, rid }, options);
 	}
 
 	async updateFileMetadata(
