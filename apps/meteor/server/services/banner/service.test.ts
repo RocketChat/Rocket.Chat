@@ -61,6 +61,20 @@ const bannersModel = new BannerModel({ collection: () => ({}) } as unknown as an
 const bannerDismissModel = new BannerDismissModel({ collection: () => ({}) } as unknown as any, 'banner_dismiss');
 const userModel = new UserModel({ collection: () => ({}) } as unknown as any, 'user');
 
+// What a workspace sync sends for a cloud announcement.
+const syncAnnouncement = (overrides: Partial<IBanner> = {}): Optional<IBanner, '_id' | '_updatedAt'> => ({
+	_id: 'cloud-announcement-id',
+	platform: ['web'],
+	startAt: new Date('2026-11-01T00:00:00.000Z'),
+	expireAt: new Date('2026-12-01T00:00:00.000Z'),
+	createdBy: { _id: 'cloud-announcements' },
+	createdAt: new Date('2026-11-01T00:00:00.000Z'),
+	view: { appId: 'cloud-announcements-core', viewId: 'cloud-announcement' },
+	surface: 'banner',
+	dictionary: { default: { title: 'Monthly mobile notification limit reached' } },
+	...overrides,
+});
+
 describe('Banners service', () => {
 	before(() => {
 		registerModel('IBannersModel', bannersModel);
@@ -171,24 +185,11 @@ describe('Banners service', () => {
 	describe('create', () => {
 		beforeEach(() => bannersModel.docs.clear());
 
-		const announcement = (overrides: Partial<IBanner> = {}): Optional<IBanner, '_id' | '_updatedAt'> => ({
-			_id: 'cloud-announcement-id',
-			platform: ['web'],
-			startAt: new Date('2026-11-01T00:00:00.000Z'),
-			expireAt: new Date('2026-12-01T00:00:00.000Z'),
-			createdBy: { _id: 'cloud-announcements' },
-			createdAt: new Date('2026-11-01T00:00:00.000Z'),
-			view: { appId: 'cloud-announcements-core', viewId: 'cloud-announcement' },
-			surface: 'banner',
-			dictionary: { default: { title: 'Monthly mobile notification limit reached' } },
-			...overrides,
-		});
-
 		it('should send a banner to users when it is created', async () => {
 			const service = new BannerService();
 			const sendToUsers = sinon.spy(service, 'sendToUsers');
 
-			await service.create(announcement());
+			await service.create(syncAnnouncement());
 
 			expect(sendToUsers.callCount).to.be.equal(1);
 		});
@@ -198,11 +199,11 @@ describe('Banners service', () => {
 			const createOrUpdate = sinon.spy(bannersModel, 'createOrUpdate');
 			const sendToUsers = sinon.spy(service, 'sendToUsers');
 
-			await service.create(announcement());
+			await service.create(syncAnnouncement());
 			const writesAfterFirst = createOrUpdate.callCount;
 
-			await service.create(announcement());
-			await service.create(announcement());
+			await service.create(syncAnnouncement());
+			await service.create(syncAnnouncement());
 
 			expect(createOrUpdate.callCount).to.be.equal(writesAfterFirst);
 			expect(sendToUsers.callCount).to.be.equal(1);
@@ -212,8 +213,8 @@ describe('Banners service', () => {
 			const service = new BannerService();
 			const sendToUsers = sinon.spy(service, 'sendToUsers');
 
-			await service.create(announcement());
-			await service.create(announcement({ dictionary: { default: { title: 'Something else' } } }));
+			await service.create(syncAnnouncement());
+			await service.create(syncAnnouncement({ dictionary: { default: { title: 'Something else' } } }));
 
 			expect(sendToUsers.callCount).to.be.equal(2);
 			expect((bannersModel.docs.get('cloud-announcement-id') as IBanner).dictionary).to.deep.equal({
@@ -225,14 +226,14 @@ describe('Banners service', () => {
 			const service = new BannerService();
 			const sendToUsers = sinon.spy(service, 'sendToUsers');
 
-			await service.create(announcement());
+			await service.create(syncAnnouncement());
 
 			const expireAt = new Date(Date.now() - 60 * 60 * 1000);
 			(bannersModel.docs.get('cloud-announcement-id') as IBanner).expireAt = expireAt;
 
 			let error: Error | undefined;
 			try {
-				await service.create(announcement({ expireAt }));
+				await service.create(syncAnnouncement({ expireAt }));
 			} catch (err) {
 				error = err as Error;
 			}
@@ -245,12 +246,39 @@ describe('Banners service', () => {
 			const service = new BannerService();
 			const sendToUsers = sinon.spy(service, 'sendToUsers');
 
-			await service.create(announcement());
+			await service.create(syncAnnouncement());
 			(bannersModel.docs.get('cloud-announcement-id') as IBanner).active = false;
 
-			await service.create(announcement());
+			await service.create(syncAnnouncement());
 
 			expect(sendToUsers.callCount).to.be.equal(2);
+		});
+	});
+
+	// The workspace sync calls this once per run, every 12 hours.
+	describe('handleAnnouncementsOnWorkspaceSync', () => {
+		beforeEach(() => bannersModel.docs.clear());
+
+		const loadHandler = (create: (doc: IBanner) => Promise<IBanner>) =>
+			proxyquire.noCallThru().load('../../lib/cloud/syncWorkspace/handleCommsSync', {
+				'@rocket.chat/core-services': {
+					Banner: { create },
+					NPS: { create: () => Promise.resolve() },
+					api: { broadcast: () => Promise.resolve() },
+				},
+				'../../../services/nps/getAndCreateNpsSurvey': { getAndCreateNpsSurvey: () => Promise.resolve() },
+			}) as { handleAnnouncementsOnWorkspaceSync: (announcements: { create: IBanner[] }) => Promise<void> };
+
+		it('should announce a cloud announcement once across two syncs', async () => {
+			const service = new BannerService();
+			const sendToUsers = sinon.spy(service, 'sendToUsers');
+			const { handleAnnouncementsOnWorkspaceSync } = loadHandler((doc) => service.create(doc));
+
+			await handleAnnouncementsOnWorkspaceSync({ create: [syncAnnouncement()] });
+			await handleAnnouncementsOnWorkspaceSync({ create: [syncAnnouncement()] });
+
+			expect(sendToUsers.callCount).to.be.equal(1);
+			expect(bannersModel.docs.size).to.be.equal(1);
 		});
 	});
 });
