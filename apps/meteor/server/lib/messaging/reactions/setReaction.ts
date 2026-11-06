@@ -7,6 +7,7 @@ import { canAccessRoomAsync } from '../../authorization';
 import { hasPermissionAsync } from '../../authorization/hasPermission';
 import { callbacks } from '../../callbacks';
 import { i18n } from '../../i18n';
+import { canSeeMessage } from '../../messages/historyVisibility';
 import { isTheLastMessage } from '../../messages/isTheLastMessage';
 import { notifyOnMessageChange } from '../../notifyListener';
 import { emoji } from '../emoji';
@@ -114,7 +115,7 @@ export async function executeSetReaction(
 	}
 
 	const message = typeof messageParam === 'string' ? await Messages.findOneById(messageParam) : messageParam;
-	if (!message) {
+	if (!message || !(await canSeeMessage(userId, message))) {
 		throw new ClientSafeError('error-not-allowed', 'Not allowed', { method: 'setReaction' });
 	}
 

@@ -40,6 +40,7 @@ import { hasAllPermissionAsync, hasPermissionAsync } from '../../lib/authorizati
 import { eraseRoom } from '../../lib/eraseRoom';
 import { findUsersOfRoom } from '../../lib/findUsersOfRoom';
 import { mountIntegrationQueryBasedOnPermissions } from '../../lib/integrations/lib/mountQueriesBasedOnPermission';
+import { getUploadVisibility, restrictToVisibleHistory } from '../../lib/messages/historyVisibility';
 import { openRoom } from '../../lib/openRoom';
 import { invitesByRawUsername } from '../../lib/rooms/invitesByRawUsername';
 import { toAbacAttributeDefinitions } from '../../lib/rooms/toAbacAttributeDefinitions';
@@ -65,7 +66,7 @@ import { executeUnarchiveRoom } from '../../meteor-methods/rooms/unarchiveRoom';
 import { settings } from '../../settings';
 import { API } from '../api';
 import { addUserToFileObj } from '../lib/addUserToFileObj';
-import { composeRoomWithLastMessage } from '../lib/composeRoomWithLastMessage';
+import { composeRoomWithLastMessage, composeRoomsWithLastMessage } from '../lib/composeRoomWithLastMessage';
 import { getPaginationItems } from '../lib/getPaginationItems';
 import { getUserFromParams, getUserListFromParams, getUsernameListFromParams } from '../lib/getUserFromParams';
 
@@ -607,12 +608,16 @@ API.v1.get(
 			...(onlyConfirmed && { expiresAt: { $exists: false } }),
 		};
 
-		const { cursor, totalCount } = await Uploads.findPaginatedWithoutThumbs(filter, {
-			sort: sort || { name: 1 },
-			skip: offset,
-			limit: count,
-			projection: fields,
-		});
+		const { cursor, totalCount } = await Uploads.findPaginatedWithoutThumbs(
+			filter,
+			{
+				sort: sort || { name: 1 },
+				skip: offset,
+				limit: count,
+				projection: fields,
+			},
+			await getUploadVisibility(this.userId, filter.rid),
+		);
 
 		const [files, total] = await Promise.all([cursor.toArray(), totalCount]);
 
@@ -994,7 +999,7 @@ API.v1.get(
 		const [groups, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 		return API.v1.success({
-			groups: await Promise.all(groups.map((room) => composeRoomWithLastMessage(room, this.userId))),
+			groups: await composeRoomsWithLastMessage(groups, this.userId),
 			offset,
 			count: groups.length,
 			total,
@@ -1030,7 +1035,7 @@ API.v1.get(
 		const [rooms, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 		return API.v1.success({
-			groups: await Promise.all(rooms.map((room) => composeRoomWithLastMessage(room, this.userId))),
+			groups: await composeRoomsWithLastMessage(rooms, this.userId),
 			offset,
 			count: rooms.length,
 			total,
@@ -1212,7 +1217,7 @@ API.v1.get(
 			_hidden: { $ne: true },
 		};
 
-		const { cursor, totalCount } = Messages.findPaginated(ourQuery, {
+		const { cursor, totalCount } = Messages.findPaginated(await restrictToVisibleHistory(this.userId, findResult.rid, ourQuery), {
 			sort: sort || { ts: -1 },
 			skip: offset,
 			limit: count,

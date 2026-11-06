@@ -14,6 +14,7 @@ import { Logger } from '@rocket.chat/logger';
 import { Rooms, Subscriptions, Users, VideoConference } from '@rocket.chat/models';
 
 import { emit, StreamPresence } from './StreamPresence';
+import { canMemberReceiveMessage, canReceiveMessage, trackHistoryCutoff, trackRoomListCutoffs, visibleRoom } from './historyVisibility';
 import { getCachedUserForPublication } from './publication-user-cache';
 import { Streamer as StreamerModule } from './streamer.module';
 import type { IStreamer, IStreamerConstructor, StreamerOptions, StreamRelay } from './types';
@@ -142,11 +143,21 @@ export class NotificationsModule {
 			}
 
 			const user = await getCachedUserForPublication(this);
-			return Authorization.canReadRoom(room, user ?? undefined, extraData);
+			const canRead = await Authorization.canReadRoom(room, user ?? undefined, extraData);
+			if (canRead && user) {
+				trackHistoryCutoff(this, room, user._id);
+			}
+
+			return canRead;
+		});
+
+		this.streamRoomMessage.allowEmit(async function (eventName, message) {
+			return canReceiveMessage(this, eventName, message);
 		});
 
 		this.streamRoomMessage.allowRead('__my_messages__', 'all');
-		this.streamRoomMessage.allowEmit('__my_messages__', async function (_eventName, { rid }) {
+		this.streamRoomMessage.allowEmit('__my_messages__', async function (_eventName, message) {
+			const { rid } = message;
 			const user = await getCachedUserForPublication(this);
 			if (!user) {
 				return false;
@@ -163,10 +174,15 @@ export class NotificationsModule {
 					return false;
 				}
 
-				const roomParticipant = await Subscriptions.countByRoomIdAndUserId(room._id, user._id);
+				const subscription = await Subscriptions.findOneByRoomIdAndUserId<Pick<ISubscription, 'historyVisibleFrom'>>(room._id, user._id, {
+					projection: { historyVisibleFrom: 1 },
+				});
+				if (!(await canMemberReceiveMessage(room, user._id, message, subscription))) {
+					return false;
+				}
 
 				return {
-					roomParticipant: roomParticipant > 0,
+					roomParticipant: Boolean(subscription),
 					roomType: room.t,
 					roomName: room.name,
 				};
@@ -422,10 +438,17 @@ export class NotificationsModule {
 					return false;
 				}
 
+				trackHistoryCutoff(this, room, user._id);
+
 				return true;
 			} catch (error) {
 				return false;
 			}
+		});
+
+		this.streamRoomData.allowEmit(async function (_eventName, room) {
+			const visible = await visibleRoom(this, room);
+			return visible === room ? true : visible;
 		});
 
 		this.streamRoles.allowWrite('none');
@@ -445,8 +468,10 @@ export class NotificationsModule {
 			}
 
 			if (/rooms-changed/.test(eventName)) {
+				trackRoomListCutoffs(publication, userId);
+
 				// TODO: change this to serialize only once
-				const roomEvent = (...args: any[]): void => {
+				const sendRoomEvent = (...args: any[]): void => {
 					// TODO if receive a removed event could do => streamer.removeListener(rid, roomEvent);
 					const payload = streamer.changedPayload(streamer.subscriptionName, 'id', {
 						eventName: `${userId}/rooms-changed`,
@@ -463,6 +488,16 @@ export class NotificationsModule {
 						return;
 					}
 					publication._session.socket.send(payload);
+				};
+
+				let pendingRoomEvents = Promise.resolve();
+				const roomEvent = (...args: any[]): void => {
+					pendingRoomEvents = pendingRoomEvents
+						.then(async () => {
+							const [clientAction, room, ...rest] = args;
+							sendRoomEvent(...(room?.lastMessage ? [clientAction, await visibleRoom(publication, room), ...rest] : args));
+						})
+						.catch((err) => logger.error({ msg: 'Error while delivering a room change', err }));
 				};
 
 				const subscriptions = await Subscriptions.find<Pick<ISubscription, 'rid'>>(

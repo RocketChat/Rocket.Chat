@@ -140,6 +140,30 @@ export default (instance: MessageTypes) => {
 	});
 
 	instance.registerType({
+		id: 'user-history-restricted',
+		system: true,
+		text: (t, message) => t('User_history_restricted', { username: message.msg }),
+	});
+
+	instance.registerType({
+		id: 'user-history-restored',
+		system: true,
+		text: (t, message) => t('User_history_restored', { username: message.msg }),
+	});
+
+	instance.registerType({
+		id: 'room-set-history-hidden-for-new-members',
+		system: true,
+		text: (t) => t('Room_set_history_hidden_for_new_members'),
+	});
+
+	instance.registerType({
+		id: 'room-removed-history-hidden-for-new-members',
+		system: true,
+		text: (t) => t('Room_removed_history_hidden_for_new_members'),
+	});
+
+	instance.registerType({
 		id: 'subscription-role-added',
 		system: true,
 		text: (t, message) => t('set__username__as__role_', { username: message.msg, role: message.role ?? '' }),

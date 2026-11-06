@@ -1,5 +1,11 @@
 import type { IUpload, RocketChatRecordDeleted, IRoom } from '@rocket.chat/core-typings';
-import type { FindPaginated, IUploadsModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
+import type {
+	FindPaginated,
+	IUploadsModel,
+	DocumentWithProjection,
+	FindOptionsWithProjection,
+	UploadHistoryVisibility,
+} from '@rocket.chat/model-typings';
 import type { Collection, FindCursor, Db, IndexDescription, WithId, Filter, FindOptions, UpdateResult, Document } from 'mongodb';
 
 import { BaseUploadModelRaw } from './BaseUploadModel';
@@ -30,12 +36,26 @@ export class UploadsRaw extends BaseUploadModelRaw implements IUploadsModel {
 		return this.updateOne({ _id: fileId }, { $set: { rid, 'federation.mrid': mrid } });
 	}
 
-	findPaginatedWithoutThumbs(query: Filter<IUpload> = {}, options?: FindOptions<IUpload>): FindPaginated<FindCursor<WithId<IUpload>>> {
+	private filterVisibleTo({ since, hiddenFileIds, followedFileIds }: UploadHistoryVisibility): Filter<IUpload> {
+		return {
+			$or: [
+				{ uploadedAt: { $gte: since }, _id: { $nin: hiddenFileIds } },
+				...(followedFileIds.length ? [{ _id: { $in: followedFileIds } }] : []),
+			],
+		};
+	}
+
+	findPaginatedWithoutThumbs(
+		query: Filter<IUpload> = {},
+		options?: FindOptions<IUpload>,
+		visibility?: UploadHistoryVisibility,
+	): FindPaginated<FindCursor<WithId<IUpload>>> {
 		return this.findPaginated(
 			{
 				typeGroup: { $ne: 'thumb' },
 				...query,
 				_hidden: { $ne: true },
+				...(visibility && { $and: [this.filterVisibleTo(visibility)] }),
 			},
 			options,
 		);
@@ -45,17 +65,15 @@ export class UploadsRaw extends BaseUploadModelRaw implements IUploadsModel {
 		rid: IRoom['_id'],
 		uploadedAt?: Date,
 		options: Omit<FindOptions<IUpload>, 'sort'> = {},
+		visibility?: UploadHistoryVisibility,
 	): FindPaginated<FindCursor<WithId<IUpload>>> {
 		return this.findPaginated(
 			{
 				rid,
 				_hidden: { $ne: true },
 				typeGroup: 'image',
-				...(Boolean(uploadedAt) && {
-					uploadedAt: {
-						$lte: uploadedAt,
-					},
-				}),
+				...(uploadedAt && { uploadedAt: { $lte: uploadedAt } }),
+				...(visibility && { $and: [this.filterVisibleTo(visibility)] }),
 			},
 			{
 				...options,

@@ -18,6 +18,13 @@ Fixes and enabling refactors are their own commits, ordered below the feature so
 they can be extracted, even in a POC. Full rules:
 [docs/change-organization.md](docs/change-organization.md).
 
+Members can be barred from a room's earlier messages, and only the code that serves messages
+enforces it. Any server code that gives someone a room's message content, or acts on a message ID
+for them, applies the history restriction and gets a case in the restricted-history API test:
+endpoints, methods, publications, stream events, search, exports, notifications, and messages
+copied or quoted into others. Full rules:
+[docs/features/restricted-message-history.md](docs/features/restricted-message-history.md#adding-a-path-that-returns-messages).
+
 ## Documentation index
 
 Read the doc that matches the task instead of scanning `docs/` wholesale.

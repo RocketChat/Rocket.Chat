@@ -15,6 +15,7 @@ import { getMentions } from './notifyUsersOnMessage';
 import { shortnameToUnicode } from '../../../lib/emoji-native/shortnameToUnicode';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { callbacks } from '../../lib/callbacks';
+import { getMembersWithoutAccessToMessage } from '../../lib/messages/historyVisibility';
 import { parseMessageTextPerUser, replaceMentionedUsernamesWithFullNames } from '../../lib/notifications/message';
 import { notifyDesktopUser, shouldNotifyDesktop } from '../../lib/notifications/message/desktop';
 import { getEmailData, shouldNotifyEmail } from '../../lib/notifications/message/email';
@@ -357,23 +358,28 @@ export async function sendMessageNotifications(message: IMessage, room: IRoom, u
 	// the find below is crucial. All subscription records returned will receive at least one kind of notification.
 	// the query is defined by the server's default values and Notifications_Max_Room_Members setting.
 
-	const subscriptions = await Subscriptions.col.aggregate<SubscriptionAggregation>([{ $match: query }, lookup, filter, project]).toArray();
+	const [subscriptions, membersWithoutAccess] = await Promise.all([
+		Subscriptions.col.aggregate<SubscriptionAggregation>([{ $match: query }, lookup, filter, project]).toArray(),
+		message.tmid ? getMembersWithoutAccessToMessage(message) : new Set<string>(),
+	]);
 
-	subscriptions.forEach(
-		(subscription) =>
-			void sendNotification({
-				subscription,
-				sender,
-				hasMentionToAll,
-				hasMentionToHere,
-				message,
-				notificationMessage,
-				room,
-				mentionIds,
-				disableAllMessageNotifications,
-				hasReplyToThread: usersInThread?.includes(subscription.u._id),
-			}),
-	);
+	subscriptions
+		.filter(({ u }) => !membersWithoutAccess.has(u._id))
+		.forEach(
+			(subscription) =>
+				void sendNotification({
+					subscription,
+					sender,
+					hasMentionToAll,
+					hasMentionToHere,
+					message,
+					notificationMessage,
+					room,
+					mentionIds,
+					disableAllMessageNotifications,
+					hasReplyToThread: usersInThread?.includes(subscription.u._id),
+				}),
+		);
 
 	return {
 		sender,

@@ -47,6 +47,7 @@ export const subscriptionFields = {
 	tunreadUser: 1,
 	status: 1,
 	inviter: 1,
+	historyVisibleFrom: 1,
 
 	// Omnichannel fields
 	department: 1,
@@ -91,6 +92,7 @@ export const roomFields = {
 	label: 1,
 	ro: 1,
 	reactWhenReadOnly: 1,
+	hideHistoryForNewMembers: 1,
 	sysMes: 1,
 	sentiment: 1,
 	broadcast: 1,

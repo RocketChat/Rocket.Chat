@@ -10,5 +10,6 @@ import './apps/uikit';
 import './engagementDashboard';
 import './audit';
 import './abac';
+import './restrictedMessageHistory';
 import './mcp';
 import './videoConferenceCallConfig';

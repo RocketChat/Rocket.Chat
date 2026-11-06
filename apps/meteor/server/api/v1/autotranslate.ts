@@ -14,6 +14,7 @@ import { TranslationProviderRegistry } from '../../lib/autotranslate/autotransla
 import { getSupportedLanguages } from '../../lib/autotranslate/functions/getSupportedLanguages';
 import { saveAutoTranslateSettings } from '../../lib/autotranslate/functions/saveSettings';
 import { translateMessage } from '../../lib/autotranslate/functions/translateMessage';
+import { canSeeMessage } from '../../lib/messages/historyVisibility';
 import { settings } from '../../settings';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
@@ -182,7 +183,7 @@ const autotranslateEndpoints = API.v1
 				return API.v1.failure('The bodyParam "messageId" is required.');
 			}
 			const message = await Messages.findOneById(messageId);
-			if (!message) {
+			if (!message || !(await canSeeMessage(this.userId, message))) {
 				return API.v1.failure('Message not found.');
 			}
 

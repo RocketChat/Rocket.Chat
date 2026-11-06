@@ -1,8 +1,10 @@
 import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IMessage, IRoom, MessageTypesValues } from '@rocket.chat/core-typings';
+import type { MessageHistoryVisibility } from '@rocket.chat/model-typings';
 import { Messages } from '@rocket.chat/models';
 import type { FindOptions } from 'mongodb';
 
+import { getHistoryVisibility } from './historyVisibility';
 import { settings } from '../../settings/cached';
 import { getHiddenSystemMessages } from '../messaging/getHiddenSystemMessages';
 import { normalizeMessagesForUser } from '../utils/lib/normalizeMessagesForUser';
@@ -73,9 +75,11 @@ export async function loadRoomHistory({
 
 	const hiddenMessageTypes = getHiddenSystemMessages(room, settings.get<MessageTypesValues[]>('Hide_System_Messages'));
 
+	const visibility = await getHistoryVisibility(userId, rid);
+
 	const { records, hasNewer, hasOlder } = around
-		? await loadAround({ rid, around, count, hiddenMessageTypes, showThreadMessages })
-		: await loadPage({ rid, next, previous, count, hiddenMessageTypes, showThreadMessages });
+		? await loadAround({ rid, around, count, hiddenMessageTypes, showThreadMessages, visibility })
+		: await loadPage({ rid, next, previous, count, hiddenMessageTypes, showThreadMessages, visibility });
 
 	const newest = records[0];
 	const oldest = records[records.length - 1];
@@ -87,7 +91,7 @@ export async function loadRoomHistory({
 
 	const [messages, unread] = await Promise.all([
 		normalizeMessagesForUser(records, userId),
-		computeUnread({ rid, userId, lastSeen, oldest, hiddenMessageTypes, showThreadMessages }),
+		computeUnread({ rid, userId, lastSeen, oldest, hiddenMessageTypes, showThreadMessages, visibility }),
 	]);
 
 	return { messages, cursor, ...unread };
@@ -108,6 +112,7 @@ async function loadPage({
 	count,
 	hiddenMessageTypes,
 	showThreadMessages,
+	visibility,
 }: {
 	rid: IRoom['_id'];
 	next?: string;
@@ -115,6 +120,7 @@ async function loadPage({
 	count: number;
 	hiddenMessageTypes: MessageTypesValues[];
 	showThreadMessages: boolean;
+	visibility?: MessageHistoryVisibility;
 }): Promise<Window> {
 	// One extra document reveals whether a further page exists.
 	const options: FindOptions<IMessage> = { sort: { ts: next ? 1 : -1 }, limit: count + 1 };
@@ -127,6 +133,8 @@ async function loadPage({
 				hiddenMessageTypes,
 				options,
 				showThreadMessages,
+				false,
+				visibility,
 			).toArray()
 		: await Messages.findVisibleByRoomIdBeforeTimestampNotContainingTypes(
 				rid,
@@ -134,6 +142,8 @@ async function loadPage({
 				hiddenMessageTypes,
 				options,
 				showThreadMessages,
+				false,
+				visibility,
 			).toArray();
 
 	sortByTs(records, next ? 1 : -1);
@@ -163,12 +173,14 @@ async function loadAround({
 	count,
 	hiddenMessageTypes,
 	showThreadMessages,
+	visibility,
 }: {
 	rid: IRoom['_id'];
 	around: IMessage;
 	count: number;
 	hiddenMessageTypes: MessageTypesValues[];
 	showThreadMessages: boolean;
+	visibility?: MessageHistoryVisibility;
 }): Promise<Window> {
 	// A non-positive count would produce a Mongo `limit: 0`, which means "no limit".
 	const remaining = Math.max(count, 1) - 1;
@@ -182,6 +194,8 @@ async function loadAround({
 			hiddenMessageTypes,
 			{ sort: { ts: -1 }, limit: olderLimit + 1 },
 			showThreadMessages,
+			false,
+			visibility,
 		).toArray(),
 		Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(
 			rid,
@@ -190,6 +204,8 @@ async function loadAround({
 			hiddenMessageTypes,
 			{ sort: { ts: 1 }, limit: newerLimit + 1 },
 			showThreadMessages,
+			false,
+			visibility,
 		).toArray(),
 	]);
 
@@ -218,6 +234,7 @@ async function computeUnread({
 	oldest,
 	hiddenMessageTypes,
 	showThreadMessages,
+	visibility,
 }: {
 	rid: IRoom['_id'];
 	userId?: string;
@@ -225,6 +242,7 @@ async function computeUnread({
 	oldest?: IMessage;
 	hiddenMessageTypes: MessageTypesValues[];
 	showThreadMessages: boolean;
+	visibility?: MessageHistoryVisibility;
 }): Promise<{ firstUnread?: IMessage; unreadNotLoaded?: number }> {
 	if (!lastSeen || Number.isNaN(lastSeen.getTime()) || !oldest || !(new Date(oldest.ts) > lastSeen)) {
 		return { firstUnread: undefined, unreadNotLoaded: 0 };
@@ -238,8 +256,18 @@ async function computeUnread({
 			hiddenMessageTypes,
 			{ limit: 1, sort: { ts: 1 } },
 			showThreadMessages,
+			false,
+			visibility,
 		).toArray(),
-		Messages.countVisibleByRoomIdBetweenTimestampsNotContainingTypes(rid, lastSeen, oldest.ts, hiddenMessageTypes, showThreadMessages),
+		Messages.countVisibleByRoomIdBetweenTimestampsNotContainingTypes(
+			rid,
+			lastSeen,
+			oldest.ts,
+			hiddenMessageTypes,
+			showThreadMessages,
+			false,
+			visibility,
+		),
 	]);
 
 	const [firstUnread] = await normalizeMessagesForUser(firstUnreadRecords, userId);

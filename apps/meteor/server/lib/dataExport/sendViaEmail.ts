@@ -5,6 +5,7 @@ import moment from 'moment';
 
 import { settings } from '../../settings';
 import { getMomentLocale } from '../getMomentLocale';
+import { getHiddenMessageIds } from '../messages/historyVisibility';
 import { Message } from '../messaging/Message';
 import * as Mailer from '../notifications/email/api';
 
@@ -61,11 +62,13 @@ export async function sendViaEmail(
 		}
 	}
 
-	const html = (
-		await Messages.findByRoomIdAndMessageIds(data.rid, data.messages, {
-			sort: { ts: 1 },
-		}).toArray()
-	)
+	const messages = await Messages.findByRoomIdAndMessageIds(data.rid, data.messages, {
+		sort: { ts: 1 },
+	}).toArray();
+	const hiddenMessageIds = await getHiddenMessageIds(user._id, messages);
+
+	const html = messages
+		.filter(({ _id }) => !hiddenMessageIds.has(_id))
 		.map((message: IMessage) => {
 			const dateTime = moment(message.ts).locale(lang).format('L LT');
 			return `<p style='margin-bottom: 5px'><b>${escapeHTML(

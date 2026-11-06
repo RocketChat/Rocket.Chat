@@ -2,6 +2,7 @@ import { ClientSafeError } from '@rocket.chat/core-services';
 import { Messages, Users, Rooms } from '@rocket.chat/models';
 
 import { canAccessRoomAsync } from '../../lib/authorization';
+import { getHistoryVisibility } from '../../lib/messages/historyVisibility';
 
 export const getUserMentionsByChannel = async (
 	userId: string,
@@ -21,5 +22,5 @@ export const getUserMentionsByChannel = async (
 		});
 	}
 
-	return Messages.findVisibleByMentionAndRoomId(user.username, roomId, options).toArray();
+	return Messages.findVisibleByMentionAndRoomId(user.username, roomId, options, await getHistoryVisibility(userId, roomId)).toArray();
 };

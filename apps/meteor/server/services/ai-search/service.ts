@@ -42,6 +42,7 @@ import { Logger } from '@rocket.chat/logger';
 import { Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { serverFetch, type ExtendedFetchOptions } from '@rocket.chat/server-fetch';
 
+import { getHiddenMessageIds, historyCheckedMessageProjection } from '../../lib/messages/historyVisibility';
 import { settings } from '../../settings';
 
 const logger = new Logger('AISearchService');
@@ -370,15 +371,15 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 			}
 		}
 		const msgIds = [...msgIdSet];
-		let messageMap = new Map<string, Pick<IMessage, '_id' | 'rid' | 'msg' | 'ts' | 'u'>>();
+		let messageMap = new Map<string, Pick<IMessage, '_id' | 'rid' | 'msg' | 'ts' | 'u' | 'tmid' | 'tshow' | 'replies'>>();
 
 		if (msgIds.length > 0) {
+			const messages = await Messages.findVisibleByIds(msgIds, {
+				projection: { ...historyCheckedMessageProjection, msg: 1, u: 1 },
+			}).toArray();
+			const hiddenMessageIds = await getHiddenMessageIds(userId, messages);
 			messageMap = new Map(
-				await Messages.findVisibleByIds(msgIds, {
-					projection: { _id: 1, rid: 1, msg: 1, ts: 1, u: 1 },
-				})
-					.map((message) => [String(message._id), message] as const)
-					.toArray(),
+				messages.filter(({ _id }) => !hiddenMessageIds.has(_id)).map((message) => [String(message._id), message] as const),
 			);
 			logger.debug({ msg: 'AI search messages fetched from DB', requested: msgIds.length, found: messageMap.size });
 		}

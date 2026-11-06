@@ -3,6 +3,7 @@ import { Rooms, Messages, Users } from '@rocket.chat/models';
 import type { FindOptions } from 'mongodb';
 
 import { canAccessRoomAsync } from '../../lib/authorization/canAccessRoom';
+import { getHistoryVisibility } from '../../lib/messages/historyVisibility';
 
 export async function findMentionedMessages({
 	uid,
@@ -27,11 +28,16 @@ export async function findMentionedMessages({
 		throw new Error('invalid-user');
 	}
 
-	const { cursor, totalCount } = Messages.findPaginatedVisibleByMentionAndRoomId(user.username, roomId, {
-		sort: sort || { ts: -1 },
-		skip: offset,
-		limit: count,
-	});
+	const { cursor, totalCount } = Messages.findPaginatedVisibleByMentionAndRoomId(
+		user.username,
+		roomId,
+		{
+			sort: sort || { ts: -1 },
+			skip: offset,
+			limit: count,
+		},
+		await getHistoryVisibility(uid, roomId),
+	);
 
 	const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 
@@ -66,11 +72,16 @@ export async function findStarredMessages({
 		throw new Error('invalid-user');
 	}
 
-	const { cursor, totalCount } = Messages.findStarredByUserAtRoom(uid, roomId, {
-		sort: sort || { ts: -1 },
-		skip: offset,
-		limit: count,
-	});
+	const { cursor, totalCount } = Messages.findStarredByUserAtRoom(
+		uid,
+		roomId,
+		{
+			sort: sort || { ts: -1 },
+			skip: offset,
+			limit: count,
+		},
+		await getHistoryVisibility(uid, roomId),
+	);
 
 	const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 
@@ -104,11 +115,16 @@ export async function findDiscussionsFromRoom({
 		throw new Error('error-not-allowed');
 	}
 
-	const { cursor, totalCount } = await Messages.findDiscussionsByRoomAndText(roomId, text, {
-		sort: sort || { ts: -1 },
-		skip: offset,
-		limit: count,
-	});
+	const { cursor, totalCount } = await Messages.findDiscussionsByRoomAndText(
+		roomId,
+		text,
+		{
+			sort: sort || { ts: -1 },
+			skip: offset,
+			limit: count,
+		},
+		await getHistoryVisibility(uid, roomId),
+	);
 
 	const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 

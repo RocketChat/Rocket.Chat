@@ -2,6 +2,7 @@ import { Authorization, ClientSafeError } from '@rocket.chat/core-services';
 import type { IMessage, MessageTypesValues } from '@rocket.chat/core-typings';
 import { Messages, Rooms } from '@rocket.chat/models';
 
+import { getHistoryVisibility } from '../../lib/messages/historyVisibility';
 import { getHiddenSystemMessages } from '../../lib/messaging/getHiddenSystemMessages';
 import { normalizeMessagesForUser } from '../../lib/utils/lib/normalizeMessagesForUser';
 import { settings } from '../../settings/cached';
@@ -56,6 +57,8 @@ export const getChannelHistory = async ({
 
 	const hiddenMessageTypes = getHiddenSystemMessages(room, hiddenSystemMessages);
 
+	const visibility = await getHistoryVisibility(fromUserId, rid);
+
 	const options: Record<string, unknown> = {
 		sort: {
 			ts: -1,
@@ -73,6 +76,7 @@ export const getChannelHistory = async ({
 					options,
 					showThreadMessages,
 					inclusive,
+					visibility,
 				).toArray()
 			: await Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(
 					rid,
@@ -82,6 +86,7 @@ export const getChannelHistory = async ({
 					options,
 					showThreadMessages,
 					inclusive,
+					visibility,
 				).toArray();
 
 	const messages = await normalizeMessagesForUser(records, fromUserId);
@@ -105,6 +110,8 @@ export const getChannelHistory = async ({
 						},
 					},
 					showThreadMessages,
+					false,
+					visibility,
 				);
 
 				const totalCursor = await Messages.countVisibleByRoomIdBetweenTimestampsNotContainingTypes(
@@ -113,6 +120,8 @@ export const getChannelHistory = async ({
 					firstMsg.ts,
 					hiddenMessageTypes,
 					showThreadMessages,
+					false,
+					visibility,
 				);
 
 				firstUnread = (await unreadMessages.toArray())[0];
