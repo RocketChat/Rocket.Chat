@@ -1,4 +1,3 @@
-import { Base64 } from '@rocket.chat/base64';
 import type { IMessage, MessageAttachment } from '@rocket.chat/core-typings';
 import {
 	isFileImageAttachment,
@@ -10,16 +9,13 @@ import {
 import type { Options } from '@rocket.chat/message-parser';
 import { useMemo } from 'react';
 
+import { getDecryptedFileUrl } from '../../../lib/e2ee/getDecryptedFileUrl';
 import type { MessageWithMdEnforced } from '../../../lib/parseMessageTextToAstMarkdown';
 import { parseMessageTextToAstMarkdown } from '../../../lib/parseMessageTextToAstMarkdown';
 import { useAutoLinkDomains } from '../../../views/room/MessageList/hooks/useAutoLinkDomains';
 import { useMessageListAutoTranslate, useMessageListKatex, useMessageListShowColors } from '../list/MessageListContext';
 
 const normalizeAttachments = (attachments: MessageAttachment[], name?: string, type?: string): MessageAttachment[] => {
-	if (name) {
-		name = String.fromCharCode(...new TextEncoder().encode(name));
-	}
-
 	return attachments.map((attachment) => {
 		if (isQuoteAttachment(attachment) && attachment.attachments) {
 			attachment.attachments = normalizeAttachments(attachment.attachments);
@@ -30,26 +26,21 @@ const normalizeAttachments = (attachments: MessageAttachment[], name?: string, t
 			return attachment;
 		}
 
-		const key = Base64.encode(
-			JSON.stringify({
-				...attachment.encryption,
-				name,
-				type,
-			}),
-		);
+		const { encryption } = attachment;
+		const decryptedUrl = (path: string) => getDecryptedFileUrl(path, { encryption, name, type });
 
 		if (isFileAttachment(attachment)) {
 			if (attachment.title_link && !attachment.title_link.startsWith('/file-decrypt/')) {
-				attachment.title_link = `/file-decrypt${attachment.title_link}?key=${encodeURIComponent(key)}`;
+				attachment.title_link = decryptedUrl(attachment.title_link);
 			}
 			if (isFileImageAttachment(attachment) && !attachment.image_url.startsWith('/file-decrypt/')) {
-				attachment.image_url = `/file-decrypt${attachment.image_url}?key=${encodeURIComponent(key)}`;
+				attachment.image_url = decryptedUrl(attachment.image_url);
 			}
 			if (isFileAudioAttachment(attachment) && !attachment.audio_url.startsWith('/file-decrypt/')) {
-				attachment.audio_url = `/file-decrypt${attachment.audio_url}?key=${encodeURIComponent(key)}`;
+				attachment.audio_url = decryptedUrl(attachment.audio_url);
 			}
 			if (isFileVideoAttachment(attachment) && !attachment.video_url.startsWith('/file-decrypt/')) {
-				attachment.video_url = `/file-decrypt${attachment.video_url}?key=${encodeURIComponent(key)}`;
+				attachment.video_url = decryptedUrl(attachment.video_url);
 			}
 		}
 
