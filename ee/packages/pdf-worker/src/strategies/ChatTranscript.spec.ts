@@ -1,8 +1,8 @@
 import i18next from 'i18next';
 import moment from 'moment-timezone';
 
-import { ChatTranscript } from './ChatTranscript';
-import { invalidData, validData, newDayData, sameDayData } from '../templates/ChatTranscript/ChatTranscript.fixtures';
+import { ChatTranscript } from './ChatTranscript.js';
+import { invalidData, validData, newDayData, sameDayData } from '../templates/ChatTranscript/ChatTranscript.fixtures.js';
 
 jest.mock('../templates/ChatTranscript', () => {
 	return {

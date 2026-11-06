@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 
-import Quote from './Quote';
-import type { PDFQuote } from '../../../types/ChatTranscriptData';
+import Quote from './Quote.js';
+import type { PDFQuote } from '../../../types/ChatTranscriptData.js';
 
 export type QuotesProps = {
 	quotes: PDFQuote[];

@@ -1,14 +1,13 @@
-import * as path from 'node:path';
-
 import ReactPDF, { Font, Document, Page, StyleSheet } from '@react-pdf/renderer';
-import colors from '@rocket.chat/fuselage-tokens/dist/colors.json';
+import colors from '@rocket.chat/fuselage-tokens/dist/colors.json' with { type: 'json' };
 import { I18nextProvider, useTranslation } from 'react-i18next';
 
-import { Header } from './components/Header';
-import { MessageList } from './components/MessageList';
-import type { ChatTranscriptData } from '../../types/ChatTranscriptData';
+import { Header } from './components/Header.js';
+import { MessageList } from './components/MessageList.js';
+import publicPath from '../../public/index.cjs';
+import type { ChatTranscriptData } from '../../types/ChatTranscriptData.js';
 
-const FONT_PATH = path.resolve(__dirname, '../../public');
+const FONT_PATH = publicPath;
 
 const styles = StyleSheet.create({
 	page: {

@@ -2,9 +2,9 @@ import { Font, PDFViewer } from '@react-pdf/renderer';
 import type { Meta, StoryObj } from '@storybook/react';
 import i18next from 'i18next';
 
-import { ChatTranscriptPDF } from '.';
-import { exampleData } from './ChatTranscript.fixtures';
-import { ChatTranscript } from '../../strategies/ChatTranscript';
+import { exampleData } from './ChatTranscript.fixtures.js';
+import { ChatTranscriptPDF } from './index.js';
+import { ChatTranscript } from '../../strategies/ChatTranscript.js';
 
 Font.register({
 	family: 'Inter',
