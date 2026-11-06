@@ -13,7 +13,6 @@
 @use './MessageSystem/MessageSystem.styles.scss';
 @use './MessageToolbar/MessageToolbar.styles.scss';
 @use './ThreadMessage/ThreadMessage.styles.scss';
-@use './mixins.scss';
 
 $message-background-color-editing: theme('message-background-color-editing', colors.status-background(warning-2));
 $message-color-editing: theme('message-color-editing', colors.status-font(on-warning-2));
@@ -140,8 +139,6 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 
 		overflow: hidden;
 
-		flex-shrink: 1;
-
 		// Padding rather than margin, so overflow: hidden leaves room for emoji glyphs
 		// that paint slightly past their line box.
 		padding-block: lengths.padding(2);
@@ -149,8 +146,6 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 		transition: opacity 0.3s linear;
 
 		word-break: break-word;
-
-		opacity: 1;
 
 		color: colors.font(default);
 
@@ -197,15 +192,8 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 
 		&--clamp {
 			display: -webkit-box;
-			overflow: hidden;
-
-			word-break: break-word;
 			-webkit-box-orient: vertical;
 			-webkit-line-clamp: 2;
-
-			&-2 {
-				-webkit-line-clamp: 2;
-			}
 
 			&-3 {
 				-webkit-line-clamp: 3;
@@ -224,8 +212,7 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 			background-color: colors.surface(tint);
 			border-inline-start-color: colors.stroke(medium);
 
-			&:hover,
-			&:focus {
+			&:hover {
 				border-color: colors.stroke(light);
 				background-color: colors.surface(hover);
 				border-inline-start-color: colors.stroke(medium);
@@ -240,10 +227,6 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 			> li > .rcx-check-box > .rcx-check-box__input:focus + .rcx-check-box__fake {
 				z-index: 1;
 			}
-			margin-inline-start: 0;
-			padding-inline-start: 0;
-
-			list-style: none;
 		}
 	}
 
@@ -252,9 +235,6 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 		flex-direction: column;
 
 		&--width-fixed {
-			flex-grow: 0;
-			flex-shrink: 1;
-
 			width: 100%;
 			max-width: $message-block-width-fixed;
 		}
@@ -281,11 +261,7 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 	}
 
 	&__highlight {
-		display: inline;
-
 		white-space: nowrap;
-
-		word-break: keep-all;
 
 		font-weight: 500;
 

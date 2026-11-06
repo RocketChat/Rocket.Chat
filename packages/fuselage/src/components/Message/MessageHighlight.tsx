@@ -17,7 +17,7 @@ function MessageHighlight({ is: Tag = 'span', variant = 'other', className, clic
 		.map((modifier) => `rcx-message__highlight--${modifier}`)
 		.join(' ');
 
-	return <Tag className={prependClassName(className, `rcx-box rcx-box--full rcx-message__highlight ${modifiers}`)} {...props} />;
+	return <Tag className={prependClassName(className, `rcx-message__highlight ${modifiers}`)} {...props} />;
 }
 
 export default MessageHighlight;
