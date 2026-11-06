@@ -5,12 +5,12 @@ import { ClientSafeError } from '@rocket.chat/core-services';
 import ejson from 'ejson';
 import WebSocket from 'ws';
 
-import type { Publication } from './Publication';
-import { Server } from './Server';
-import { Session } from './Session';
-import { SERVER_ID, preframe } from './codec';
-import { TIMEOUT, WS_ERRORS, WS_ERRORS_MESSAGES } from './constants';
-import { ConnectionLifecycle } from './lifecycle';
+import type { Publication } from './Publication.js';
+import { Server } from './Server.js';
+import { Session } from './Session.js';
+import { SERVER_ID, preframe } from './codec.js';
+import { TIMEOUT, WS_ERRORS, WS_ERRORS_MESSAGES } from './constants.js';
+import { ConnectionLifecycle } from './lifecycle.js';
 
 jest.mock('@rocket.chat/logger', () => ({
 	Logger: jest.fn().mockReturnValue({

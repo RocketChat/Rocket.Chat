@@ -3,10 +3,10 @@ import { Streamer } from '@rocket.chat/streamer';
 import type { DDPSubscription, Connection, StreamerOptions, TransformMessage } from '@rocket.chat/streamer';
 import WebSocket from 'ws';
 
-import type { Server } from '../Server';
-import type { Session } from '../Session';
-import { encodeChanged, preframe } from '../codec';
-import { isEmpty } from '../lib/utils';
+import type { Server } from '../Server.js';
+import type { Session } from '../Session.js';
+import { encodeChanged, preframe } from '../codec.js';
+import { isEmpty } from '../lib/utils.js';
 
 type StreamConstructor = new <N extends StreamNames>(name: N, options?: StreamerOptions) => Streamer<N>;
 

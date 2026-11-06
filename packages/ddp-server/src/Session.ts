@@ -6,14 +6,14 @@ import { throttle } from 'underscore';
 import { v1 as uuidv1 } from 'uuid';
 import type WebSocket from 'ws';
 
-import type { IPacket } from './IPacket';
-import type { Publication } from './Publication';
-import type { Server } from './Server';
-import { getClientAddress } from './clientAddress';
-import type { FanOutFrames } from './codec';
-import { SERVER_ID, SOCKJS_OPEN_FRAME, decode, encodeConnected, encodePing, encodePong, wrapForSockJs } from './codec';
-import { DDP_EVENTS, WS_ERRORS, WS_ERRORS_MESSAGES, TIMEOUT } from './constants';
-import type { ConnectionLifecycle } from './lifecycle';
+import type { IPacket } from './IPacket.js';
+import type { Publication } from './Publication.js';
+import type { Server } from './Server.js';
+import { getClientAddress } from './clientAddress.js';
+import type { FanOutFrames } from './codec.js';
+import { SERVER_ID, SOCKJS_OPEN_FRAME, decode, encodeConnected, encodePing, encodePong, wrapForSockJs } from './codec.js';
+import { DDP_EVENTS, WS_ERRORS, WS_ERRORS_MESSAGES, TIMEOUT } from './constants.js';
+import type { ConnectionLifecycle } from './lifecycle.js';
 
 type WebSocketWithSender = { _sender: { sendFrame(frame: Buffer[], cb: (err?: Error) => void): void } };
 

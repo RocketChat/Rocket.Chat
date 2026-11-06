@@ -1,7 +1,7 @@
 import WebSocket from 'ws';
 
-import type { Session } from './Session';
-import type { ConnectionLifecycle } from './lifecycle';
+import type { Session } from './Session.js';
+import type { ConnectionLifecycle } from './lifecycle.js';
 
 const FORCE_LOGOUT_GRACE_MS = 5000;
 

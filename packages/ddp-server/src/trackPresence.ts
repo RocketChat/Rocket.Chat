@@ -1,7 +1,7 @@
 import { Presence } from '@rocket.chat/core-services';
 
-import type { Session } from './Session';
-import type { ConnectionLifecycle } from './lifecycle';
+import type { Session } from './Session.js';
+import type { ConnectionLifecycle } from './lifecycle.js';
 
 /**
  * Keeps Presence in step with the logged-in sessions of node `nodeId`: a session's connection is added on login,
