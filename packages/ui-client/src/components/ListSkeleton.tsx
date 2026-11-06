@@ -16,11 +16,11 @@ const ListSkeleton = ({ listCount = 2 }: ListSkeletonProps) => {
 	return (
 		<Box display='flex' height='100%' justifyContent='flex-start' flexDirection='column'>
 			{widths.map((width, index) => (
-				<Box key={index} paddingInline={24} paddingBlock={16} display='flex'>
+				<Box key={index} paddingInline='x24' paddingBlock='x16' display='flex'>
 					<Box>
-						<Skeleton variant='rect' width={36} height={36} />
+						<Skeleton variant='rect' width='x36' height='x36' />
 					</Box>
-					<Box marginInlineStart={8} flexGrow={1}>
+					<Box marginInlineStart='x8' flexGrow={1}>
 						<Skeleton width='100%' />
 						<Skeleton width={width} />
 					</Box>

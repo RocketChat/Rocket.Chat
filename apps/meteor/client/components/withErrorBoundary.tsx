@@ -1,7 +1,7 @@
+import { GenericError } from '@rocket.chat/ui-client';
 import type { ComponentType, ReactNode, ComponentProps } from 'react';
 
 import ReportableErrorBoundary from './ErrorReport/ReportableErrorBoundary';
-import GenericError from './GenericError';
 
 function withErrorBoundary<T extends object>(Component: ComponentType<T>, fallback: ReactNode = null) {
 	const WrappedComponent = function (props: ComponentProps<typeof Component>) {
