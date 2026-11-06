@@ -1,12 +1,11 @@
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatDepartmentAgents } from '@rocket.chat/models';
 import { isDepartmentCreationAvailable } from '@rocket.chat/omni-core';
-import { isGETLivechatDepartmentProps, isPOSTLivechatDepartmentProps } from '@rocket.chat/rest-typings';
+import { isGETLivechatDepartmentProps, isPOSTLivechatDepartmentProps, isPUTLivechatDepartmentProps } from '@rocket.chat/rest-typings';
 import {
 	isLivechatDepartmentDepartmentIdAgentsGETProps,
 	isLivechatDepartmentDepartmentIdAgentsPOSTProps,
 } from '@rocket.chat/rest-typings/src/v1/omnichannel';
-import { Match, check } from 'meteor/check';
 
 import { API } from '../..';
 import {
@@ -106,6 +105,7 @@ API.v1.addRoute(
 	'livechat/department/:_id',
 	{
 		authRequired: true,
+		validateParams: { PUT: isPUTLivechatDepartmentProps },
 		permissionsRequired: {
 			GET: { permissions: ['view-livechat-departments', 'view-l-room'], operation: 'hasAny' },
 			PUT: { permissions: ['manage-livechat-departments', 'add-livechat-department-agents'], operation: 'hasAny' },
@@ -132,12 +132,6 @@ API.v1.addRoute(
 		async put() {
 			const permissionToSave = await hasPermissionAsync(this.user, 'manage-livechat-departments');
 			const permissionToAddAgents = await hasPermissionAsync(this.user, 'add-livechat-department-agents');
-
-			check(this.bodyParams, {
-				department: Object,
-				agents: Match.Maybe(Array),
-				departmentUnit: Match.Maybe({ _id: Match.Optional(String) }),
-			});
 
 			const { _id } = this.urlParams;
 			const { department, agents, departmentUnit } = this.bodyParams;

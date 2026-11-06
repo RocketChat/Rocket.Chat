@@ -4,17 +4,25 @@ import type { AppApi } from '@rocket.chat/apps/dist/server/managers/AppApi';
 import type { RequestMethod } from '@rocket.chat/apps-engine/definition/accessors';
 import type { IApiRequest, IApiEndpoint, IApi } from '@rocket.chat/apps-engine/definition/api';
 import { nodeHandler } from '@rocket.chat/http-router';
+import { Logger } from '@rocket.chat/logger';
 import type { Response, Request, IRouter, RequestHandler } from 'express';
 import express from 'express';
 import { Meteor } from 'meteor/meteor';
 
 import { apiServer } from './router';
 import { authenticationMiddleware } from '../../../api/v1/middlewares/authentication';
+import { nodeLoggerMiddleware } from '../../../api/v1/middlewares/logger';
 import { httpApp } from '../../../lib/http/httpServer';
 
+const logger = new Logger('APPS');
+
+// the hash of a private endpoint is the secret that guards it
+const censorPrivateHash = (url: string) => url.replace(/(\/api\/apps\/private\/[^/]+\/)[^/?#]+/i, '$1*Redacted*');
+
+const logRequest = nodeHandler(nodeLoggerMiddleware(logger, { censor: censorPrivateHash }));
 const apiHandler = nodeHandler(apiServer);
-httpApp.use('/api/apps/private/*', apiHandler);
-httpApp.use('/api/apps/public/*', apiHandler);
+httpApp.use('/api/apps/private/*', logRequest, apiHandler);
+httpApp.use('/api/apps/public/*', logRequest, apiHandler);
 
 interface IRequestWithPrivateHash extends Request {
 	_privateHash?: string;

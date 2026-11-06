@@ -25,9 +25,6 @@ const {
 	handleCursorPagination,
 	getMessageHistory,
 } = proxyquire.noCallThru().load('./messages', {
-	'meteor/check': {
-		check: sinon.stub(),
-	},
 	'../lib/authorization/canAccessRoom': {
 		canAccessRoomIdAsync: canAccessRoomIdAsyncStub,
 	},

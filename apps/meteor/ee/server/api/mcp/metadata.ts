@@ -1,5 +1,8 @@
+import { nodeHandler } from '@rocket.chat/http-router';
+import { Logger } from '@rocket.chat/logger';
 import type { MiddlewareHandler } from 'hono';
 
+import { nodeLoggerMiddleware } from '../../../../server/api/v1/middlewares/logger';
 import { httpApp } from '../../../../server/lib/http/httpServer';
 import { getOAuthIssuer, getWellKnownUrl, isWellKnownPath } from '../../../../server/oauth2-server/metadata';
 import { settings } from '../../../../server/settings/cached';
@@ -34,4 +37,4 @@ export const serveProtectedResourceMetadata: MiddlewareHandler = async (c, next)
 	return c.json(getProtectedResourceMetadata(getOAuthIssuer()));
 };
 
-httpApp.get(`${BARE_METADATA_PATH}/*`, serveProtectedResourceMetadata);
+httpApp.get(`${BARE_METADATA_PATH}/*`, nodeHandler(nodeLoggerMiddleware(new Logger('OAuth'))), serveProtectedResourceMetadata);

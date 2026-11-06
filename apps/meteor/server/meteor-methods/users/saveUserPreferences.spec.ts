@@ -3,7 +3,6 @@ import type { ISidebarCategory } from '@rocket.chat/core-typings';
 
 import { validateSidebarCategories } from './saveUserPreferences';
 
-jest.mock('meteor/check', () => ({ Match: { Optional: jest.fn(), Integer: jest.fn() }, check: jest.fn() }), { virtual: true });
 jest.mock('@rocket.chat/models', () => ({ Subscriptions: {}, Users: {} }));
 jest.mock('../../lib/notifyListener', () => ({}));
 jest.mock('../../lib/statusVisibility/resolveUsers', () => ({}));

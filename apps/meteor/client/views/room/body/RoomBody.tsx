@@ -1,11 +1,10 @@
 import { Box } from '@rocket.chat/fuselage';
 import { isTruthy } from '@rocket.chat/tools';
-import { CustomVirtuaScrollbars, useEmbeddedLayout } from '@rocket.chat/ui-client';
+import { CustomVirtuaScrollbars, useEmbeddedLayout, useMergedRefsV2 } from '@rocket.chat/ui-client';
 import { useRole, useTranslation, useUser, useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { MouseEvent } from 'react';
 import { memo, useCallback, useEffect, useState } from 'react';
 
-import { useMergedRefsV2 } from '../../../hooks/useMergedRefsV2';
 import { RoomHistoryManager } from '../../../lib/RoomHistoryManager';
 import { BubbleDate } from '../BubbleDate';
 import { BubbleDateScope } from '../BubbleDate/BubbleDateScope';

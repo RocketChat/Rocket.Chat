@@ -1,6 +1,7 @@
+import { FormSkeleton } from '@rocket.chat/ui-client';
+
 import type { PriorityEditFormProps } from './PriorityEditForm';
 import PriorityEditForm from './PriorityEditForm';
-import { FormSkeleton } from '../../../components/Skeleton';
 import NotAvailableCallout from '../components/NotAvailableCallout';
 import { usePriorityInfo } from '../directory/hooks/usePriorityInfo';
 
