@@ -1,19 +1,19 @@
 import net from 'node:net';
 
 import type { Emitter } from '@rocket.chat/emitter';
-import type Element from 'ltx/lib/Element';
+import type Element from 'ltx/lib/Element.js';
 
-import type { ResolvedXMPPServerConfig } from '../config';
-import { ConnectionFailedError, DomainNotAllowedError, InvalidJidError, QueueOverflowError } from '../errors';
-import type { ConnectionStatus, XMPPServerEventMap } from '../events';
-import { Backoff } from './backoff';
-import type { DialbackVerdict } from './dialback';
-import { verifyDialbackKey } from './dialback';
-import type { XmppDnsResolver } from './dnsResolver';
-import { isDomainAllowed, normalizeDomain } from '../jid/normalize';
-import type { Logger } from '../logger';
-import { InboundSession } from '../stream/InboundSession';
-import { OutboundSession } from '../stream/OutboundSession';
+import type { ResolvedXMPPServerConfig } from '../config.js';
+import { ConnectionFailedError, DomainNotAllowedError, InvalidJidError, QueueOverflowError } from '../errors.js';
+import type { ConnectionStatus, XMPPServerEventMap } from '../events.js';
+import { Backoff } from './backoff.js';
+import type { DialbackVerdict } from './dialback.js';
+import { verifyDialbackKey } from './dialback.js';
+import type { XmppDnsResolver } from './dnsResolver.js';
+import { isDomainAllowed, normalizeDomain } from '../jid/normalize.js';
+import type { Logger } from '../logger.js';
+import { InboundSession } from '../stream/InboundSession.js';
+import { OutboundSession } from '../stream/OutboundSession.js';
 
 const MAX_CONSECUTIVE_FAILURES = 3;
 const IDLE_REAP_INTERVAL_MS = 60000;

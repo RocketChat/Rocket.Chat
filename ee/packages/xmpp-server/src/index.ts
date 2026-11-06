@@ -1,14 +1,14 @@
-export { XMPPServer } from './XMPPServer';
-export type { XMPPServerOptions, SendChatMessageParams, SendPresenceParams, SubscriptionType } from './XMPPServer';
-export { XMPP_SERVER_DEFAULTS } from './config';
-export type { XMPPServerConfig, TlsConfig, MucDelegates, MucJoinDecision } from './config';
-export type { ConnectionStatus, IncomingChatMessage, IncomingPresence, MucRemoteOccupant, XMPPServerEventMap } from './events';
-export { escapeLocalpart, unescapeLocalpart } from './jid/escaping';
-export { normalizeDomain } from './jid/normalize';
-export { XmppError, InvalidJidError, DomainNotAllowedError, NotJoinedToRemoteRoomError, ServerNotRunningError } from './errors';
-export type { Logger } from './logger';
-export { resolveXmppServer } from './s2s/dnsResolver';
-export type { XmppDnsResolver, XmppServerAddress } from './s2s/dnsResolver';
+export { XMPPServer } from './XMPPServer.js';
+export type { XMPPServerOptions, SendChatMessageParams, SendPresenceParams, SubscriptionType } from './XMPPServer.js';
+export { XMPP_SERVER_DEFAULTS } from './config.js';
+export type { XMPPServerConfig, TlsConfig, MucDelegates, MucJoinDecision } from './config.js';
+export type { ConnectionStatus, IncomingChatMessage, IncomingPresence, MucRemoteOccupant, XMPPServerEventMap } from './events.js';
+export { escapeLocalpart, unescapeLocalpart } from './jid/escaping.js';
+export { normalizeDomain } from './jid/normalize.js';
+export { XmppError, InvalidJidError, DomainNotAllowedError, NotJoinedToRemoteRoomError, ServerNotRunningError } from './errors.js';
+export type { Logger } from './logger.js';
+export { resolveXmppServer } from './s2s/dnsResolver.js';
+export type { XmppDnsResolver, XmppServerAddress } from './s2s/dnsResolver.js';
 
-export { XMPPServerService } from './service/XMPPServerService';
-export type { InboundHandlerObserver, XMPPServerServiceOptions } from './service/XMPPServerService';
+export { XMPPServerService } from './service/XMPPServerService.js';
+export type { InboundHandlerObserver, XMPPServerServiceOptions } from './service/XMPPServerService.js';

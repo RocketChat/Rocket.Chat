@@ -1,7 +1,7 @@
-import type Element from 'ltx/lib/Element';
+import type Element from 'ltx/lib/Element.js';
 
-import type { IncomingChatMessage, IncomingPresence } from '../events';
-import { parseReplaceId } from '../xml/correction';
+import type { IncomingChatMessage, IncomingPresence } from '../events.js';
+import { parseReplaceId } from '../xml/correction.js';
 
 /** Parses a `<message>` stanza into a chat message, or `undefined` for non-chat/bodyless messages. */
 export function parseChatMessage(stanza: Element): IncomingChatMessage | undefined {

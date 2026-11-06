@@ -1,6 +1,6 @@
 import dns from 'node:dns/promises';
 
-import { normalizeDomain } from '../jid/normalize';
+import { normalizeDomain } from '../jid/normalize.js';
 
 export type XmppServerAddress = { host: string; port: number };
 

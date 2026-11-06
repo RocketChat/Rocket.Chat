@@ -1,8 +1,8 @@
-import type Element from 'ltx/lib/Element';
+import type Element from 'ltx/lib/Element.js';
 
-import { xml } from '../xml/build';
-import { buildReplace } from '../xml/correction';
-import { NS_CONFERENCE, NS_MUC, NS_MUC_USER } from '../xml/namespaces';
+import { xml } from '../xml/build.js';
+import { buildReplace } from '../xml/correction.js';
+import { NS_CONFERENCE, NS_MUC, NS_MUC_USER } from '../xml/namespaces.js';
 
 export type MucRole = 'moderator' | 'participant';
 export type MucAffiliation = 'owner' | 'admin' | 'member' | 'none';
