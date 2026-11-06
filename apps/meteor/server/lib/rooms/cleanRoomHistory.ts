@@ -57,10 +57,25 @@ export async function cleanRoomHistory({
 
 	let fileCount = 0;
 
-	const cursor = Messages.findFilesByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ignoreDiscussion, ts, fromUsers, ignoreThreads, {
-		projection: { pinned: 1, files: 1 },
-		limit,
-	});
+	const discussionOriginIds = ignoreDiscussion
+		? (await Rooms.findDiscussionsWithOriginMessageByParentRoomId(rid, { projection: { pmid: 1 } }).toArray()).flatMap(({ pmid }) =>
+				pmid ? [pmid] : [],
+			)
+		: [];
+
+	const cursor = Messages.findFilesByRoomIdPinnedTimestampAndUsers(
+		rid,
+		excludePinned,
+		ignoreDiscussion,
+		ts,
+		fromUsers,
+		ignoreThreads,
+		discussionOriginIds,
+		{
+			projection: { pinned: 1, files: 1 },
+			limit,
+		},
+	);
 
 	const targetMessageIdsForAttachmentRemoval = new Set<string>();
 	// Since we remove every file from the messages, we don't need to specify which fileId has been removed.
@@ -158,6 +173,7 @@ export async function cleanRoomHistory({
 				Math.min(FILE_CLEANUP_BATCH_SIZE, remaining),
 				fromUsers,
 				ignoreThreads,
+				discussionOriginIds,
 			);
 			if (!batch.length) {
 				break;

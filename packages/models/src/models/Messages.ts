@@ -683,6 +683,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		ts: Filter<IMessage>['ts'],
 		users: string[] = [],
 		ignoreThreads = true,
+		excludeIds: string[] = [],
 		options?: O,
 	): FindCursor<DocumentWithProjection<T, O>> {
 		const query: Filter<IMessage> = {
@@ -700,6 +701,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			...(ignoreThreads ? { tmid: { $exists: false }, tcount: { $exists: false } } : {}),
 			...(ignoreDiscussion ? { drid: { $exists: false } } : {}),
 			...(users.length ? { 'u.username': { $in: users } } : {}),
+			...(excludeIds.length ? { _id: { $nin: excludeIds } } : {}),
 		};
 
 		return this.find<T, O>(query, options);
@@ -1445,11 +1447,13 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		limit: number,
 		users: string[] = [],
 		ignoreThreads = true,
+		excludeIds: string[] = [],
 	): Promise<string[]> {
 		const query: Filter<IMessage> = {
 			rid,
 			ts,
 			...(users.length > 0 && { 'u.username': { $in: users } }),
+			...(excludeIds.length > 0 && { _id: { $nin: excludeIds } }),
 		};
 
 		if (ignorePinned) {

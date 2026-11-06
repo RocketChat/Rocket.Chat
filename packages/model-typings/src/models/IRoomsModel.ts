@@ -331,6 +331,13 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		rid: string,
 		options?: O,
 	): Promise<DocumentWithProjection<T, O> | null>;
+	findDiscussionsWithOriginMessageByParentRoomId<
+		T extends Document = IRoom,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
+		prid: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 	findByType<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		type: IRoom['t'],
 		options?: O,
