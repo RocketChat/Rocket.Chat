@@ -3,7 +3,7 @@ import type { AbacActor, AbacRoomMembershipPreviewPage } from '@rocket.chat/core
 import type { AbacMembershipVerdict, AbacPreviewCursor, IAbacAttributeDefinition, IRoom, AtLeast, IUser } from '@rocket.chat/core-typings';
 import { Rooms, Users } from '@rocket.chat/models';
 
-import { AbacInvalidAttributeValuesError, OnlyCompliantCanBeAddedToRoomError } from '../errors';
+import { AbacInvalidAttributeValuesError, OnlyCompliantCanBeAddedToRoomError } from '../errors.js';
 import {
 	PREVIEW_READ_OPTIONS,
 	buildCompliantConditions,
@@ -13,9 +13,16 @@ import {
 	findUnownedValues,
 	previewRoomMembersInSteps,
 	withAttributeValues,
-} from '../helper';
-import type { PreviewSubject } from '../helper';
-import type { AttributeSetChange, EvaluableSubject, Evaluation, IPolicyDecisionPoint, ReevaluationUser, RoomMembersPreview } from './types';
+} from '../helper.js';
+import type { PreviewSubject } from '../helper.js';
+import type {
+	AttributeSetChange,
+	EvaluableSubject,
+	Evaluation,
+	IPolicyDecisionPoint,
+	ReevaluationUser,
+	RoomMembersPreview,
+} from './types.js';
 
 export const LOCAL_PREVIEW_PAGE_SIZE = 1000;
 

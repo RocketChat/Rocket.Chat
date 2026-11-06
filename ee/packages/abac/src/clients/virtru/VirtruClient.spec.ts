@@ -1,4 +1,4 @@
-import { VirtruClient } from './VirtruClient';
+import { VirtruClient } from './VirtruClient.js';
 
 const serverFetchMock = jest.fn();
 jest.mock('@rocket.chat/server-fetch', () => ({ serverFetch: (...a: unknown[]) => serverFetchMock(...a) }));

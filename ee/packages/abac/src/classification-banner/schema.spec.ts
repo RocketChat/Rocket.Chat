@@ -3,7 +3,7 @@ import path from 'path';
 
 import { ajv } from '@rocket.chat/rest-typings';
 
-import type { ClassificationBannersConfig } from './types';
+import type { ClassificationBannersConfig } from './types.js';
 
 const validate = ajv.compile(JSON.parse(readFileSync(path.join(__dirname, '../../docs/classification-banners.schema.json'), 'utf8')));
 

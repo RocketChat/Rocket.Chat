@@ -1,4 +1,4 @@
-import { buildEntityIdentifier, getUserEntityKey, buildAttributeFqns, parseAttributeFqns } from './identity';
+import { buildEntityIdentifier, getUserEntityKey, buildAttributeFqns, parseAttributeFqns } from './identity.js';
 
 describe('virtru/identity', () => {
 	it('buildEntityIdentifier maps emailAddress vs oidcIdentifier', () => {
