@@ -1,5 +1,5 @@
-import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
-import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definition/settings';
+import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus.js';
+import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definition/settings/index.js';
 import type { IServiceClass } from '@rocket.chat/core-services';
 import { EnterpriseSettings, StatusVisibility } from '@rocket.chat/core-services';
 import { isSettingColor, isSettingEnterprise, UserStatus } from '@rocket.chat/core-typings';
@@ -8,9 +8,9 @@ import { Logger } from '@rocket.chat/logger';
 import type { ServerMediaSignal } from '@rocket.chat/media-signaling';
 import { parse } from '@rocket.chat/message-parser';
 
-import { statusVisibilityGate } from './StatusVisibilityGate';
-import { refreshVisibility } from './StreamPresence';
-import type { NotificationsModule } from './notifications.module';
+import { statusVisibilityGate } from './StatusVisibilityGate.js';
+import { refreshVisibility } from './StreamPresence.js';
+import type { NotificationsModule } from './notifications.module.js';
 
 /** Synchronous view of setting values; `undefined` when the host has no value cached. */
 export type SettingsReader = {
