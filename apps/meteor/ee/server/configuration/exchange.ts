@@ -1,12 +1,11 @@
 import { Calendar } from '@rocket.chat/core-services';
 import { License } from '@rocket.chat/license';
-import { Meteor } from 'meteor/meteor';
 
 import { detachExchangeProvider, registerExchangeProviderWatchers } from '../lib/exchange/ExchangeProviderRegistry';
 import { registerCalendarSyncJob } from '../lib/exchange/sync/calendar/registerCalendarSyncJob';
 import { addSettings } from '../settings/exchange';
 
-Meteor.startup(async () => {
+export const configureExchange = async (): Promise<void> => {
 	let stopProviderWatcher: (() => void) | undefined;
 	let stopSyncWatcher: (() => void) | undefined;
 
@@ -40,4 +39,4 @@ Meteor.startup(async () => {
 			detachExchangeProvider();
 		},
 	});
-});
+};

@@ -1,5 +1,5 @@
-import { parse } from '../src';
-import { bigEmoji, paragraph, plain, emoticon } from './helpers';
+import { bigEmoji, paragraph, plain, emoticon } from './helpers.js';
+import { parse } from '../src/index.js';
 
 test.each([
 	// Should render normal Emojis

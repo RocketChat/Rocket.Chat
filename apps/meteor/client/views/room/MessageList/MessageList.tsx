@@ -25,6 +25,7 @@ import { useStoreScrollPosition } from '../body/hooks/useStoreScrollPosition';
 import { useChat } from '../contexts/ChatContext';
 import type { RetentionPolicy } from '../hooks/useRetentionPolicy';
 import { useKeepMountedMessages } from './hooks/useKeepMountedMessages';
+import { isMessageNewDay } from './lib/isMessageNewDay';
 
 export type MessageListProps = {
 	rid: IRoom['_id'];
@@ -341,12 +342,15 @@ export const MessageList = function MessageList({
 							<Fragment key={message._id}>
 								<MessageListItem
 									message={message}
-									previous={previous}
+									newDay={isMessageNewDay(message, previous)}
 									showUnreadDivider={showUnreadDivider}
 									showUserAvatar={showUserAvatar}
 									sequential={sequential}
 									visible={visible}
-									subscription={subscription}
+									unread={!!subscription?.tunread?.includes(message._id)}
+									mention={!!subscription?.tunreadUser?.includes(message._id)}
+									all={!!subscription?.tunreadGroup?.includes(message._id)}
+									ignoredUser={!!subscription?.ignored?.includes(message.u._id)}
 									system={system}
 								/>
 							</Fragment>

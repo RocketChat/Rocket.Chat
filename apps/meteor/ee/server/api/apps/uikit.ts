@@ -1,15 +1,16 @@
 import { AppEvents, type IAppServerOrchestrator } from '@rocket.chat/apps';
 import { UiKitCoreApp } from '@rocket.chat/core-services';
 import { nodeHandler } from '@rocket.chat/http-router';
+import { Logger } from '@rocket.chat/logger';
 import type { OperationParams, OperationResult, UrlParams } from '@rocket.chat/rest-typings';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import type { Request, Response } from 'express';
 import express from 'express';
 import rateLimit from 'express-rate-limit';
-import { Meteor } from 'meteor/meteor';
 
 import { authenticationMiddleware } from '../../../../server/api/v1/middlewares/authentication';
+import { nodeLoggerMiddleware } from '../../../../server/api/v1/middlewares/logger';
 import { httpApp } from '../../../../server/lib/http/httpServer';
 import { settings } from '../../../../server/settings';
 import { Apps } from '../../lib/apps/orchestrator';
@@ -34,7 +35,9 @@ settings.watch('API_CORS_Origin', (value: string) => {
 		: [];
 });
 
-httpApp.use('/api/apps/ui.interaction/*', nodeHandler(apiServer));
+const logger = new Logger('APPS');
+
+httpApp.use('/api/apps/ui.interaction/*', nodeHandler(nodeLoggerMiddleware(logger)), nodeHandler(apiServer));
 
 // oxlint-disable-next-line new-cap
 const router = express.Router();
@@ -45,7 +48,7 @@ const unauthorized = (res: Response): unknown =>
 		message: 'You must be logged in to do this.',
 	});
 
-Meteor.startup(() => {
+export const addUiKitRateLimiter = (): void => {
 	// use specific rate limit of 600 (which is 60 times the default limits) requests per minute (around 10/second)
 	const apiLimiter = rateLimit({
 		windowMs: settings.get('API_Enable_Rate_Limiter_Limit_Time_Default'),
@@ -56,7 +59,7 @@ Meteor.startup(() => {
 	});
 
 	router.use(apiLimiter);
-});
+};
 
 router.use(authenticationMiddleware({ rejectUnauthorized: false }));
 

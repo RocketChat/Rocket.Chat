@@ -2,6 +2,7 @@
 	"name": "@rocket.chat/mp3-encoder",
 	"version": "0.31.27-rc.0",
 	"description": "A LAME encoder to be used in web workers",
+	"type": "module",
 	"keywords": [
 		"rocket.chat",
 		"mp3",
@@ -21,7 +22,6 @@
 		"url": "https://rocket.chat/"
 	},
 	"main": "dist/index.js",
-	"module": "dist/index.mjs",
 	"types": "dist/index.d.ts",
 	"files": [
 		"/dist"

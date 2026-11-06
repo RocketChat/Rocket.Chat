@@ -246,7 +246,7 @@ const referenceSchema = (schema: AnySchema): AnySchema => {
 
 	const { $id, ...definition } = schema;
 
-	sharedSchemas.set($id, definition as AnySchema);
+	sharedSchemas.set($id, definition);
 
 	return { $ref: `#/components/schemas/${$id}` };
 };

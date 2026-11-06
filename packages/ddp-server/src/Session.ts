@@ -7,6 +7,7 @@ import { v1 as uuidv1 } from 'uuid';
 import type WebSocket from 'ws';
 
 import type { IPacket } from './IPacket';
+import type { Publication } from './Publication';
 import type { Server } from './Server';
 import { getClientAddress } from './clientAddress';
 import type { FanOutFrames } from './codec';
@@ -23,7 +24,7 @@ export class Session extends EventEmitter {
 
 	public readonly session = uuidv1();
 
-	public subscriptions = new Map();
+	public subscriptions = new Map<string, Publication>();
 
 	public connection: ISocketConnection;
 
@@ -128,7 +129,7 @@ export class Session extends EventEmitter {
 				}
 				void this.callSubscribe(packet);
 				break;
-			case DDP_EVENTS.UNSUBSCRIBE:
+			case DDP_EVENTS.UNSUBSCRIBE: {
 				if (!packet.id) {
 					return this.ws.close(WS_ERRORS.CLOSE_PROTOCOL_ERROR);
 				}
@@ -138,6 +139,7 @@ export class Session extends EventEmitter {
 				}
 				subscription.stop();
 				break;
+			}
 		}
 	}
 

@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastBarDispatch } from '@rocket.chat/fuselage-toastbar';
-import { Wizard, useWizard, WizardContent, WizardTabs, useHasLicenseModule } from '@rocket.chat/ui-client';
+import { Wizard, useWizard, WizardContent, WizardTabs, useHasLicenseModule, GenericError } from '@rocket.chat/ui-client';
 import { usePermission } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useLayoutEffect, useState } from 'react';
@@ -12,7 +12,6 @@ import OutboubdMessageWizardSkeleton from './components/OutboundMessageWizardSke
 import type { SubmitPayload } from './forms/SubmitPayload';
 import { ReviewStep, MessageStep, RecipientStep, RepliesStep } from './steps';
 import ReportableErrorBoundary from '../../../../../../components/ErrorReport/ReportableErrorBoundary';
-import GenericError from '../../../../../../components/GenericError';
 import { useEndpointMutation } from '../../../../../../hooks/useEndpointMutation';
 import { formatPhoneNumber } from '../../../../../../lib/formatPhoneNumber';
 import { omnichannelQueryKeys } from '../../../../../../lib/queryKeys';

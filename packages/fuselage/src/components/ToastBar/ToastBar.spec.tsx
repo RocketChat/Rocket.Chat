@@ -1,4 +1,4 @@
-import { composeStories } from '@storybook/react-webpack5';
+import { composeStories } from '@storybook/react';
 import { axe } from 'jest-axe';
 
 import ToastBar from './ToastBar';
@@ -39,5 +39,12 @@ describe('[ToastBar Roles]', () => {
 		const { getByRole } = render(<ToastBar>Default message</ToastBar>);
 		expect(getByRole('status')).toBeInTheDocument();
 		expect(getByRole('status')).toHaveTextContent('Default message');
+	});
+});
+
+describe('[ToastBar id]', () => {
+	it('renders the id it receives on the root', () => {
+		const { container } = render(<ToastBar id='toast-1'>Message</ToastBar>);
+		expect(container.querySelector('#toast-1.rcx-toastbar')).toBeInTheDocument();
 	});
 });

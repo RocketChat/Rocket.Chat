@@ -52,15 +52,7 @@ class MockRateLimiter {
 	}
 }
 
-jest.mock(
-	'meteor/meteor',
-	() => ({
-		Meteor: {
-			startup: (callback: () => void) => callback(),
-		},
-	}),
-	{ virtual: true },
-);
+jest.mock('meteor/meteor', () => ({ Meteor: {} }), { virtual: true });
 jest.mock('../lib/http/httpServer', () => ({ httpApp: jest.requireActual('@rocket.chat/http-router').createRootApp() }));
 jest.mock('meteor/rate-limit', () => ({ RateLimiter: MockRateLimiter }), { virtual: true });
 jest.mock('meteor/accounts-base', () => ({ Accounts: { _accountData: {} as Record<string, unknown> } }), { virtual: true });

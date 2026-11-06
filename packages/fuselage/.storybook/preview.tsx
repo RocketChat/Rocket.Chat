@@ -1,13 +1,11 @@
 import breakpointTokens from '@rocket.chat/fuselage-tokens/dist/breakpoints.json';
-import surface from '@rocket.chat/fuselage-tokens/dist/surface.json';
-import { useDarkMode } from '@rocket.chat/storybook-dark-mode';
-import type { Preview } from '@storybook/react-webpack5';
-import { themes } from 'storybook/theming';
+import type { Preview } from '@storybook/react';
+import { useSyncExternalStore } from 'react';
 
-import manifest from '../package.json';
 import { PaletteStyleTag } from '../src';
 import DocsContainer from './DocsContainer';
-import logo from './logo.svg';
+import { globalTypes, initialGlobals } from './globals';
+import { resolveThemeMode, subscribeToSystemColorScheme } from './theme';
 
 import 'normalize.css/normalize.css';
 import '@rocket.chat/icons/dist/rocketchat.css';
@@ -44,36 +42,24 @@ export default {
 				]),
 			),
 		},
-		darkMode: {
-			dark: {
-				...themes.dark,
-				appBg: surface.dark.sidebar,
-				appContentBg: surface.dark.light,
-				appPreviewBg: 'transparent',
-				barBg: surface.dark.light,
-				brandTitle: manifest.name,
-				brandImage: logo,
-				brandUrl: manifest.homepage,
-			},
-			light: {
-				...themes.normal,
-				appPreviewBg: 'transparent',
-				brandTitle: manifest.name,
-				brandImage: logo,
-				brandUrl: manifest.homepage,
-			},
-		},
 	},
+	globalTypes,
+	initialGlobals,
 	// Stories that place elements by their measured size, like tooltips, must be measured in the final fonts,
 	// or the visual regression snapshots render where the fallback font left them.
 	loaders: [() => Promise.all([...document.fonts].map((font) => font.load()))],
 	decorators: [
-		(Story) => {
-			const dark = useDarkMode();
+		function PaletteDecorator(Story, { globals }) {
+			const mode = useSyncExternalStore(subscribeToSystemColorScheme, () => resolveThemeMode(globals.theme));
 
 			return (
 				<>
-					<PaletteStyleTag theme={dark ? 'dark' : 'light'} />
+					<style>{`
+						body {
+							background-color: var(--rcx-color-surface-light);
+						}
+					`}</style>
+					<PaletteStyleTag theme={mode} />
 					<Story />
 				</>
 			);

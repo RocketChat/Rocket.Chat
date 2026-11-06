@@ -1,13 +1,13 @@
-import { Bits } from './Bits';
-import type { CalcNoiseData } from './CalcNoiseData';
-import { GrInfo } from './GrInfo';
-import type { IIISideInfo } from './IIISideInfo';
-import type { LameInternalFlags } from './LameInternalFlags';
-import { QuantizePVT } from './QuantizePVT';
-import * as tables from './Tables';
-import { fillArray } from './arrays';
-import { assert, assertDefined } from './assert';
-import { NORM_TYPE, SBMAX_l, SBPSY_l, SHORT_TYPE } from './constants';
+import { Bits } from './Bits.js';
+import type { CalcNoiseData } from './CalcNoiseData.js';
+import { GrInfo } from './GrInfo.js';
+import type { IIISideInfo } from './IIISideInfo.js';
+import type { LameInternalFlags } from './LameInternalFlags.js';
+import { QuantizePVT } from './QuantizePVT.js';
+import * as tables from './Tables.js';
+import { fillArray } from './arrays.js';
+import { assert, assertDefined } from './assert.js';
+import { NORM_TYPE, SBMAX_l, SBPSY_l, SHORT_TYPE } from './constants.js';
 
 export class Takehiro {
 	private static readonly LARGE_BITS = 100000;

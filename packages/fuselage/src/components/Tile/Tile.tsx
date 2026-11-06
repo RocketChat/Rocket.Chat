@@ -8,7 +8,7 @@ export type TileProps = ElementProps<HTMLElement> & {
 };
 
 function Tile({ elevation = '1', flush, ...props }: TileProps) {
-	return <Box rcx-tile rcx-tile--elevation={elevation} padding={flush ? undefined : 16} {...props} />;
+	return <Box rcx-tile rcx-tile--elevation={elevation} rcx-tile--flush={flush} {...props} />;
 }
 
 export default Tile;

@@ -2,9 +2,10 @@
 	"name": "@rocket.chat/release-action",
 	"version": "2.2.5",
 	"private": true,
+	"type": "module",
 	"main": "dist/index.js",
 	"scripts": {
-		"build": "tsc --noEmit && esbuild src/index.ts --bundle --platform=node --target=node24 --format=cjs --outfile=dist/index.js",
+		"build": "tsc --noEmit && esbuild src/index.ts --bundle --platform=node --target=node24 --format=esm --banner:js=\"import { createRequire } from 'node:module'; const require = createRequire(import.meta.url);\" --outfile=dist/index.js",
 		"lint": "yarn run -T oxlint",
 		"lint:fix": "yarn run -T oxlint --fix",
 		"typecheck": "tsc --noEmit"
