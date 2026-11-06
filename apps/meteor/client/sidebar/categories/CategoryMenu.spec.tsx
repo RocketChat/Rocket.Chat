@@ -223,7 +223,7 @@ describe('the Mark read item', () => {
 				}),
 		);
 
-		renderMenu({ rooms });
+		renderMenu({ rooms: unreadRooms });
 		await userEvent.click(await screen.findByRole('button', { name: 'Options' }));
 		await userEvent.click(await screen.findByRole('menuitemcheckbox', { name: 'Mark read' }));
 		const dialog = await screen.findByRole('dialog', { name: 'Mark rooms as read' });
