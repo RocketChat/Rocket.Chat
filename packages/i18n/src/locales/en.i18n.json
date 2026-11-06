@@ -566,6 +566,8 @@
   "ActiveSessionsPeak": "Active sessions peak",
   "ActiveSessionsPeak_InfoText": "Highest amount of active connections in the past 30 days",
   "Activity": "Activity",
+  "Activity_filter_cleared_in_group": "Filter cleared in {{group}}",
+  "Activity_filter_label": "{{window}}, filter: {{filter}}",
   "Actor": "Actor",
   "Add": "Add",
   "Add_a_Message": "Add a message",
@@ -1041,9 +1043,25 @@
   "Apps_WhatIsIt_paragraph3": "Secondly, they are dynamic scripts or packages which will allow you to customize your Rocket.Chat instance without having to fork the codebase. But do keep in mind, this is a new feature set and due to that it might not be 100% stable. Also, we are still developing the feature set so not everything can be customized at this point in time. For more information about getting started developing an app, go here to read:",
   "Apps_WhatIsIt_paragraph4": "But with that said, if you are interested in enabling this feature and trying it out then here click this button to enable the apps system.",
   "Archive": "Archive",
+  "Archive_Channel_Description": "“{{roomName}}” moves to the Archived group. The channel stays there, with no badge, until you unarchive it.",
+  "Archive_Direct_Description": "“{{roomName}}” moves to the Archived group. The direct message stays there, with no badge, until you unarchive it.",
+  "Archive_Group_Description": "“{{roomName}}” moves to the Archived group. The private channel stays there, with no badge, until you unarchive it.",
+  "Archive_Livechat_Description": "“{{roomName}}” moves to the Archived group. The chat stays there, with no badge, until you unarchive it.",
+  "Archive_room": "Archive room",
+  "Archive_rooms_ellipsis": "Archive rooms…",
+  "Archive_rooms_in__group__": "Archive rooms in {{group}}",
   "archive-room": "Archive room",
   "archive-room_description": "Permission to archive a channel",
   "Archived": "Archived",
+  "Archived_rooms_notifications_off_description": {
+    "one": "{{count}} archived room stops sending notifications.",
+    "other": "{{count}} archived rooms stop sending notifications."
+  },
+  "Archived_rooms_notifications_on_description": {
+    "one": "{{count}} archived room sends notifications again.",
+    "other": "{{count}} archived rooms send notifications again."
+  },
+  "Archived_rooms_stay_until_unarchived": "Rooms move to the Archived group and keep no badge until you unarchive them. The room currently open stays.",
   "Are_you_sure": "Are you sure?",
   "Are_you_sure_delete_contact": "Are you sure you want to delete {{contactName}} and all {{channelsCount}} of their conversation history? To confirm, type '{{confirmationText}}' in the field below.",
   "Are_you_sure_delete_department": "Are you sure you want to delete this department? This action cannot be undone. Please enter the department name to confirm.",
@@ -1481,6 +1499,7 @@
   "Choose_the_alias_that_will_appear_before_the_username_in_messages": "Choose the alias that will appear before the username in messages.",
   "Choose_the_username_that_this_integration_will_post_as": "Choose the username that this integration will post as.",
   "Choose_theme_description": "Choose the interface appearance that best suits your needs.",
+  "Choose_today_or_an_earlier_date": "Choose today or an earlier date.",
   "Choose_users": "Choose users",
   "Choose_your_camera_and_microphone_inside_the_call": "Choose your camera and microphone inside the call.",
   "Clean_History_unavailable_for_federation": "Clean history is unavailable for Federation",
@@ -2019,6 +2038,7 @@
   "Custom_categories_description": "Custom categories are private groupings of rooms that only you can see. Group your most important rooms so your sidebar matches the way you work.",
   "Custom_categories_subtitle": "Organize your workspace with custom categories",
   "Custom_content": "Custom content",
+  "Custom_date": "Custom date",
   "Custom_dates": "Custom dates",
   "Custom_Emoji": "Custom emoji",
   "Custom_Emoji_Add": "Add new emoji",
@@ -2317,7 +2337,7 @@
   "Domains": "Domains",
   "Domains_allowed_to_embed_the_livechat_widget": "Comma-separated list of domains allowed to embed the livechat widget. Leave blank to allow all domains.",
   "Done": "Done",
-  "Dont_ask_me_again": "Don't ask me again!",
+  "Dont_ask_me_again": "Don’t ask again",
   "Dont_ask_me_again_list": "Don't ask me again list",
   "Dont_cancel": "Don't cancel",
   "Download": "Download",
@@ -3268,13 +3288,15 @@
   "Hide_chat": "Hide chat",
   "Hide_counter": "Hide counter",
   "Hide_flextab": "Hide contextual bar by clicking outside of it",
-  "Hide_Group_Warning": "Are you sure you want to hide the group \"{{roomName}}\"?",
-  "Hide_Livechat_Warning": "Are you sure you want to hide the chat with \"{{roomName}}\"?",
+  "Hide_Group_Warning": "“{{roomName}}” leaves the sidebar. The private channel comes back when you open it or a new message arrives.",
+  "Hide_inactive": "Hide inactive",
+  "Hide_inactive_unreads": "Hide inactive unreads",
+  "Hide_Livechat_Warning": "“{{roomName}}” leaves the sidebar. The chat comes back when you open it or a new message arrives.",
   "Hide_On_Workspace": "Hide on workspace",
-  "Hide_Private_Warning": "Are you sure you want to hide the discussion with \"{{roomName}}\"?",
+  "Hide_Private_Warning": "“{{roomName}}” leaves the sidebar. The direct message comes back when you open it or a new message arrives.",
   "Hide_roles": "Hide roles",
-  "Hide_room": "Hide",
-  "Hide_Room_Warning": "Are you sure you want to hide the channel \"{{roomName}}\"?",
+  "Hide_room": "Hide room",
+  "Hide_Room_Warning": "“{{roomName}}” leaves the sidebar. The channel comes back when you open it or a new message arrives.",
   "Hide_status_from": "Hide status from",
   "Hide_status_from_hint": "User will always appear offline to selected users.",
   "Hide_System_Messages": "Hide system messages",
@@ -3402,10 +3424,17 @@
   "Importing_users": "Importing users",
   "In_call": "In call",
   "In_progress": "In progress",
+  "Inactive_for": "Inactive for",
+  "Inactive_rooms_hidden_in_group": {
+    "one": "{{filter}}: {{count}} inactive room hidden in {{group}}",
+    "other": "{{filter}}: {{count}} inactive rooms hidden in {{group}}"
+  },
+  "Inactive_since": "Inactive since",
   "Inactivity_Time": "Inactivity time",
   "Inbound": "Inbound",
   "Inbox_Info": "Inbox info",
   "Include_Offline_Agents": "Include offline agents",
+  "Include_unread_rooms": "Include unread rooms",
   "Includes": "Includes",
   "Inclusive": "Inclusive",
   "Incoming": "Incoming",
@@ -3686,8 +3715,10 @@
   "Language_Version": "English version",
   "Larger_amounts_of_active_connections": "For larger amounts of active connections you can consider our <1>multiple instance solutions</1>.",
   "Last_1_hour": "Last 1 hour",
+  "Last_14_days": "Last 14 days",
   "Last_15_days": "Last 15 days",
   "Last_15_minutes": "Last 15 minutes",
+  "Last_24_hours": "Last 24 hours",
   "Last_30_days": "Last 30 days",
   "Last_30_minutes": "Last 30 minutes",
   "Last_5_minutes": "Last 5 minutes",
@@ -4275,6 +4306,7 @@
   "Mark_as_unread": "Mark as unread",
   "Mark_email_as_verified": "Mark email as verified",
   "Mark_read": "Mark read",
+  "Mark_rooms_as_read": "Mark rooms as read",
   "Mark_unread": "Mark unread",
   "Markdown_Headers": "Allow markdown headers in messages",
   "Markdown_Marked_Breaks": "Enable marked breaks",
@@ -4807,6 +4839,7 @@
   "No_history": "No history",
   "No_history_yet": "No history yet",
   "No_history_yet_description": "The entire message history with this contact will appear here.",
+  "No_inactive_rooms_hidden": "No inactive rooms hidden",
   "No_installed_app_matches": "No installed app matches",
   "No_integration_found": "No integration found by the provided id.",
   "No_Limit": "No limit",
@@ -4839,6 +4872,7 @@
   "No_results_found_for": "No results found for:",
   "No_rooms": "No rooms",
   "No_rooms_description": "@{username}, @all, @here  mentions and highlighted words will appear here.",
+  "No_rooms_to_archive": "No rooms to archive",
   "No_SLA_policies_yet": "No SLA policies yet",
   "No_SLA_policies_yet_description": "Use SLA policies to change the order of omnichannel queues based on estimated wait time.",
   "No_snippet_messages": "No snippet",
@@ -4900,6 +4934,7 @@
   "Notifications_Max_Room_Members": "Max room members before disabling all message notifications",
   "Notifications_Max_Room_Members_Description": "Max number of members in room when notifications for all messages gets disabled. Users can still change per room setting to receive all notifications on an individual basis. (0 to disable)",
   "Notifications_Muted_Description": "If you choose to mute everything, you won't see the room highlight in the list when there are new messages, except for mentions. Muting notifications will override notifications settings.",
+  "Notifications_off": "Notifications off",
   "Notifications_Preferences": "Notifications preferences",
   "Notify_active_in_this_room": "Notify active users in this room",
   "Notify_all_in_this_room": "Notify all in this room",
@@ -5914,6 +5949,47 @@
   "Room_uploaded_file_list_empty": "No files available.",
   "Rooms": "Rooms",
   "Rooms_added_successfully": "Rooms added successfully",
+  "Rooms_archived": {
+    "one": "{{count}} room archived",
+    "other": "{{count}} rooms archived"
+  },
+  "Rooms_not_archived": {
+    "one": "{{count}} room could not be archived. Try again.",
+    "other": "{{count}} rooms could not be archived. Try again."
+  },
+  "Rooms_not_unarchived": {
+    "one": "{{count}} room could not be unarchived. Try again.",
+    "other": "{{count}} rooms could not be unarchived. Try again."
+  },
+  "Rooms_notifications_off": {
+    "one": "{{count}} room notifications off",
+    "other": "{{count}} rooms notifications off"
+  },
+  "Rooms_notifications_on": {
+    "one": "{{count}} room notifications on",
+    "other": "{{count}} rooms notifications on"
+  },
+  "Rooms_notifications_still_off": {
+    "one": "{{count}} room still has notifications off. Try again.",
+    "other": "{{count}} rooms still have notifications off. Try again."
+  },
+  "Rooms_notifications_still_on": {
+    "one": "{{count}} room still has notifications on. Try again.",
+    "other": "{{count}} rooms still have notifications on. Try again."
+  },
+  "Rooms_to_archive": {
+    "one": "{{count}} room to archive",
+    "other": "{{count}} rooms to archive"
+  },
+  "Rooms_added_successfully": "Rooms added successfully",
+  "Rooms_marked_read": {
+    "one": "{{count}} room marked read",
+    "other": "{{count}} rooms marked read"
+  },
+  "Rooms_not_marked_read": {
+    "one": "{{count}} room could not be marked read. Try again.",
+    "other": "{{count}} rooms could not be marked read. Try again."
+  },
   "Root": "Root",
   "Routing": "Routing",
   "Run_only_once_for_each_visitor": "Run only once for each visitor",
@@ -6303,6 +6379,10 @@
   "Show_default_content": "Show default content",
   "Show_email_field": "Show email field",
   "Show_fewer": "Show fewer",
+  "Show_inactive": {
+    "one": "Show {{count}} inactive",
+    "other": "Show {{count}} inactive"
+  },
   "Show_mentions": "Show badge for mentions",
   "Show_more": "Show more",
   "Show_more_messages": "Show more messages",
@@ -6994,9 +7074,11 @@
   "Tuesday": "Tuesday",
   "Turn_OFF": "Turn off",
   "Turn_off_answer_chats": "Turn off answer chats",
+  "Turn_off_notifications": "Turn off notifications",
   "Turn_off_video": "Turn off video",
   "Turn_ON": "Turn on",
   "Turn_on_answer_chats": "Turn on answer chats",
+  "Turn_on_notifications": "Turn on notifications",
   "Turn_on_video": "Turn on video",
   "Two Factor Authentication": "Two factor authentication",
   "Two-factor_authentication": "Two-factor authentication",
@@ -7099,6 +7181,10 @@
   "Unread_Requested_First": "Unread requested first",
   "Unread_Requested_Last": "Unread requested last",
   "Unread_Rooms": "Unread rooms",
+  "Unread_rooms_in_group_become_read": {
+    "one": "{{count}} unread room in “{{group}}” becomes read, threads included.",
+    "other": "{{count}} unread rooms in “{{group}}” become read, threads included."
+  },
   "Unread_Rooms_Mode": "Unread rooms mode",
   "Unread_Tray_Icon_Alert": "Unread tray icon alert",
   "Unreads": "Unreads",
@@ -7733,7 +7819,6 @@
   "Yes_continue": "Yes, continue!",
   "Yes_deactivate_it": "Yes, deactivate it!",
   "Yes_delete_it": "Yes, delete",
-  "Yes_hide_it": "Yes, hide it!",
   "Yes_leave_it": "Yes, leave it!",
   "Yes_mute_user": "Yes, mute user!",
   "Yes_pin_message": "Yes, pin message",
