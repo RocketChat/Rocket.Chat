@@ -1,4 +1,4 @@
-import { MeteorCollection } from './MeteorCollection';
+import { MeteorCollection } from './MeteorCollection.js';
 
 describe('MeteorCollection', () => {
 	let collection: MeteorCollection<{ value: number }>;

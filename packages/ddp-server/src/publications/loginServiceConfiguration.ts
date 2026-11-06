@@ -1,9 +1,9 @@
 import type { EventSignatures } from '@rocket.chat/core-services';
 import type { LoginServiceConfiguration } from '@rocket.chat/core-typings';
 
-import { publishMeteorCollection } from './meteorCollection';
-import type { Server } from '../Server';
-import { MeteorCollection } from '../lib/MeteorCollection';
+import { publishMeteorCollection } from './meteorCollection.js';
+import type { Server } from '../Server.js';
+import { MeteorCollection } from '../lib/MeteorCollection.js';
 
 type LoginServiceConfigurationChange = Parameters<EventSignatures['watch.loginServiceConfiguration']>[0];
 

@@ -1,9 +1,9 @@
 import type { LoginServiceConfiguration } from '@rocket.chat/core-typings';
 
-import { applyLoginServiceConfigurationChange, registerLoginServiceConfigurationPublication } from './loginServiceConfiguration';
-import { Server } from '../Server';
-import { makeSession, makeSubscription, sentPackets } from '../__tests__/helpers';
-import { MeteorCollection } from '../lib/MeteorCollection';
+import { applyLoginServiceConfigurationChange, registerLoginServiceConfigurationPublication } from './loginServiceConfiguration.js';
+import { Server } from '../Server.js';
+import { makeSession, makeSubscription, sentPackets } from '../__tests__/helpers.js';
+import { MeteorCollection } from '../lib/MeteorCollection.js';
 
 jest.mock('@rocket.chat/logger', () => ({
 	Logger: jest.fn().mockReturnValue({

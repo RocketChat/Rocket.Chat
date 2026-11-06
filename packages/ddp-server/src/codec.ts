@@ -1,9 +1,10 @@
 import { ClientSafeError, isClientSafeError } from '@rocket.chat/core-services';
 import ejson from 'ejson';
-import WebSocket from 'ws';
+import type WebSocket from 'ws';
+import { Sender } from 'ws';
 
-import type { IPacket } from './IPacket';
-import { DDP_EVENTS } from './constants';
+import type { IPacket } from './IPacket.js';
+import { DDP_EVENTS } from './constants.js';
 
 export const SERVER_ID = ejson.stringify({ msg: 'server_id', server_id: '0' });
 
@@ -87,7 +88,7 @@ export type FanOutFrames = { sockjs: Buffer[]; raw: Buffer[] };
 /** Frames a payload once per transport so a fan-out writes ready-made frames instead of encoding per subscriber. */
 export function preframe(payload: string): FanOutFrames {
 	return {
-		sockjs: [Buffer.concat(WebSocket.Sender.frame(Buffer.from(wrapForSockJs(payload)), TEXT_FRAME_OPTIONS))],
-		raw: [Buffer.concat(WebSocket.Sender.frame(Buffer.from(payload), TEXT_FRAME_OPTIONS))],
+		sockjs: [Buffer.concat(Sender.frame(Buffer.from(wrapForSockJs(payload)), TEXT_FRAME_OPTIONS))],
+		raw: [Buffer.concat(Sender.frame(Buffer.from(payload), TEXT_FRAME_OPTIONS))],
 	};
 }
