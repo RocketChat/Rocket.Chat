@@ -4,7 +4,6 @@
 @use '../../styles/mixins/shadows.scss';
 @use '../../styles/mixins/size.scss';
 @use '../../styles/mixins/states.scss';
-@use '../../styles/mixins/templates.scss';
 @use '../../styles/typography.scss' as *;
 @use './MessageDivider/MessageDivider.styles.scss';
 @use './MessageGenericPreview/MessageGenericPreview.styles.scss';
@@ -90,8 +89,14 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 		}
 
 		&__name-container {
-			@include templates.focus-state;
 			flex-shrink: 0;
+
+			// An outline takes no room, so the name keeps the header line's height; forced colors paint it too.
+			@include states.on-focus-visible {
+				border-radius: lengths.border-radius(medium);
+				outline: lengths.border-width(default) solid colors.stroke(highlight);
+				box-shadow: 0 0 0 calc(#{lengths.border-width(default)} + #{lengths.border-width(medium)}) colors.stroke(extra-light-highlight);
+			}
 
 			// This must match __name's color or the
 			// underline mismatches the text under it.
