@@ -21,8 +21,10 @@ export async function fetchEwsWithRetry<T>(send: () => Promise<T>, throttle: { u
 			});
 		}
 
-		if (throttle.until > Date.now()) {
-			await sleep(throttle.until - Date.now());
+		const waitMs = throttle.until - Date.now();
+
+		if (waitMs > 0) {
+			await sleep(waitMs);
 		}
 
 		try {
