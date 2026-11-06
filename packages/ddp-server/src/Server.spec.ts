@@ -364,6 +364,38 @@ describe('Server subscriptions', () => {
 		expect(Streamer.isPublicationActive(published[0])).toBe(false);
 	});
 
+	it('does not answer a second time when the client unsubscribed while the handler was awaiting', async () => {
+		let entered!: () => void;
+		const handlerEntered = new Promise<void>((resolve) => {
+			entered = resolve;
+		});
+		let release!: () => void;
+		const pending = new Promise<void>((resolve) => {
+			release = resolve;
+		});
+		const published: Publication[] = [];
+		server.publish('messages', function (this: Publication) {
+			published.push(this);
+			entered();
+			return pending.then(() => {
+				throw new ClientSafeError(403, 'Forbidden');
+			});
+		});
+
+		const subscription = server.subscribe(session, makeSubscription());
+		await handlerEntered;
+
+		// The client unsubscribes while the handler is still awaiting its lookup.
+		published[0].stop();
+		release();
+		await subscription;
+
+		// stop() answered the client once; the failed handler must not add an error nosub.
+		expect(sentPackets(session)).toEqual([{ msg: 'nosub', id: 'test-id' }]);
+		expect(published[0]._isDeactivated()).toBe(true);
+		expect(session.subscriptions.size).toBe(0);
+	});
+
 	it('still answers a failed subscription when one of its stop callbacks throws', async () => {
 		server.publish('messages', function (this: Publication) {
 			this.onStop(() => {
