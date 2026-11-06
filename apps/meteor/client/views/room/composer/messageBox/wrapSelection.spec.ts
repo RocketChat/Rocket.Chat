@@ -87,6 +87,32 @@ describe('handleSelectionWrapping', () => {
 			expect(result).toBe(false);
 			expect(composer.wrapSelection).not.toHaveBeenCalled();
 		});
+
+		it('should NOT wrap when single quote dead key resolves with space (US-intl dead keys)', () => {
+			const textarea = createTextarea('´', 0, 1);
+			const composer = createMockComposer('´');
+			const chat = { composer } as unknown as ChatAPI;
+
+			const event = createInputEvent(textarea, "'");
+
+			const result = handleSelectionWrapping(event, chat);
+
+			expect(result).toBe(false);
+			expect(composer.wrapSelection).not.toHaveBeenCalled();
+		});
+
+		it('should NOT wrap when double quote dead key resolves with space (US-intl dead keys)', () => {
+			const textarea = createTextarea('¨', 0, 1);
+			const composer = createMockComposer('¨');
+			const chat = { composer } as unknown as ChatAPI;
+
+			const event = createInputEvent(textarea, '"');
+
+			const result = handleSelectionWrapping(event, chat);
+
+			expect(result).toBe(false);
+			expect(composer.wrapSelection).not.toHaveBeenCalled();
+		});
 	});
 
 	describe('legitimate wrapping scenarios', () => {
@@ -129,6 +155,19 @@ describe('handleSelectionWrapping', () => {
 
 			expect(result).toBe(true);
 			expect(composer.wrapSelection).toHaveBeenCalledWith('`{{text}}`');
+		});
+
+		it('should wrap when text contains a typographic quote and matching quote is typed', () => {
+			const textarea = createTextarea('’', 0, 1);
+			const composer = createMockComposer('’');
+			const chat = { composer } as unknown as ChatAPI;
+
+			const event = createInputEvent(textarea, "'");
+
+			const result = handleSelectionWrapping(event, chat);
+
+			expect(result).toBe(true);
+			expect(composer.wrapSelection).toHaveBeenCalledWith("'{{text}}'");
 		});
 	});
 
