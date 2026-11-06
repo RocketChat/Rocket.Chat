@@ -1,5 +1,5 @@
-import { DDPDispatcher } from '../src/DDPDispatcher';
-import { MinimalDDPClient } from '../src/MinimalDDPClient';
+import { DDPDispatcher } from '../src/DDPDispatcher.js';
+import { MinimalDDPClient } from '../src/MinimalDDPClient.js';
 
 const ddp = new MinimalDDPClient();
 

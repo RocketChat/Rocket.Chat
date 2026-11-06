@@ -1,4 +1,4 @@
-import type WS from 'jest-websocket-mock';
+import type { WS } from 'jest-websocket-mock';
 
 const acceptConnection = async (server: WS) => {
 	await server.nextMessage.then(async (message) => {
