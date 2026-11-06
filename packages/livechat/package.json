@@ -8,6 +8,7 @@
 		"directory": "packages/livechat"
 	},
 	"license": "MIT",
+	"type": "module",
 	"files": [
 		"/build"
 	],
