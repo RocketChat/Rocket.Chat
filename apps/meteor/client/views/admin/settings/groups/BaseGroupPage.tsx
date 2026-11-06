@@ -21,7 +21,17 @@ const BaseGroupPage = ({ _id, i18nLabel, headerButtons, hasReset, onClickBack, .
 		);
 	}
 
-	return <GenericGroupPage _id={_id} i18nLabel={i18nLabel} sections={sections} onClickBack={onClickBack} hasReset={hasReset} {...props} />;
+	return (
+		<GenericGroupPage
+			_id={_id}
+			i18nLabel={i18nLabel}
+			sections={sections}
+			headerButtons={headerButtons}
+			onClickBack={onClickBack}
+			hasReset={hasReset}
+			{...props}
+		/>
+	);
 };
 
 export default BaseGroupPage;
