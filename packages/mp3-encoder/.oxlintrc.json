@@ -6,5 +6,5 @@
 			"version": "19.2"
 		}
 	},
-	"ignorePatterns": ["src/lame/**"]
+	"ignorePatterns": ["src/lame/**", "!src/lame/*.spec.ts"]
 }
