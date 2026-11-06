@@ -15,7 +15,7 @@ export type SidebarGroupTitleProps = {
 	actions?: ReactNode;
 	menu?: ReactNode;
 	barProps?: AriaAttributes;
-} & HTMLAttributes<HTMLDivElement>;
+} & Omit<HTMLAttributes<HTMLDivElement>, 'is'>;
 
 // The actions sit outside the toggle, so activating one neither collapses nor expands the group; every other key
 // still bubbles, so the list keeps its shortcuts.
@@ -57,7 +57,7 @@ export const SidebarGroupTitle = ({
 
 	return (
 		<ItemGroupHeader
-			{...(props as Omit<HTMLAttributes<HTMLDivElement>, 'is'>)}
+			{...props}
 			inset='md'
 			className={cx(
 				'rcx-sidebar-collapse-group__bar',

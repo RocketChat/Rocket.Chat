@@ -3,6 +3,7 @@ import { waitFor } from '@testing-library/react';
 import { axe } from 'jest-axe';
 import { useEffect, useState } from 'react';
 
+import InputBox from './InputBox';
 import * as stories from './InputBox.stories';
 import { render } from '../../testing';
 
@@ -17,7 +18,7 @@ test.each(testCases)('%s should have no a11y violations', async (_storyname, Sto
 	expect(results).toHaveNoViolations();
 });
 
-it('should update error class when error changes asynchronously', async () => {
+it('should mark the input invalid when error changes asynchronously', async () => {
 	const TestComponent = () => {
 		const [error, setError] = useState<string | undefined>(undefined);
 
@@ -33,9 +34,22 @@ it('should update error class when error changes asynchronously', async () => {
 	const { getByRole } = render(<TestComponent />);
 
 	await waitFor(() => {
-		const input = getByRole('textbox', { name: /test-input/i }).parentElement as HTMLElement;
-		expect(input).toHaveClass('invalid');
+		expect(getByRole('textbox', { name: /test-input/i })).toBeInvalid();
 	});
+});
+
+it('should put className on the wrapper only when there is an addon', () => {
+	const { getByRole } = render(<WithAddon className='custom' aria-label='with-addon' />);
+
+	const input = getByRole('textbox', { name: 'with-addon' });
+	expect(input.parentElement).toHaveClass('custom');
+	expect(input).not.toHaveClass('custom');
+});
+
+it('should put className on the input when there is no addon', () => {
+	const { getByRole } = render(<InputBox type='text' className='custom' aria-label='plain' />);
+
+	expect(getByRole('textbox', { name: 'plain' })).toHaveClass('custom');
 });
 
 it('should flush the end addon only when requested', () => {
