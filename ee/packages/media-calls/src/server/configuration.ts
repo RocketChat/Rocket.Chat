@@ -1,6 +1,6 @@
-import { MediaCallCastDirector } from './CastDirector';
-import { MediaCallServer } from './MediaCallServer';
-import { setCastDirector, setMediaCallServer } from './injection';
+import { MediaCallCastDirector } from './CastDirector.js';
+import { MediaCallServer } from './MediaCallServer.js';
+import { setCastDirector, setMediaCallServer } from './injection.js';
 
 export const castDirector = new MediaCallCastDirector();
 export const callServer = new MediaCallServer();

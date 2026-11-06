@@ -2,7 +2,7 @@ import type { CallPreventionRecord, IMediaCall, IUser, MediaCallContact } from '
 import type { Emitter } from '@rocket.chat/emitter';
 import type { CallFeature, ClientMediaSignal, ClientMediaSignalBody, ServerMediaSignal } from '@rocket.chat/media-signaling';
 
-import type { InternalCallParams, SignalProcessingOptions } from './common';
+import type { InternalCallParams, SignalProcessingOptions } from './common.js';
 
 export type VoipPushNotificationType = 'incoming_call' | 'remoteEnded' | 'answeredElsewhere' | 'declinedElsewhere' | 'unanswered';
 export type VoipPushNotificationEventType = 'new' | 'answer' | 'end';

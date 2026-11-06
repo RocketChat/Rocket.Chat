@@ -3,15 +3,15 @@ import { isBusyState, isCallHangupReason } from '@rocket.chat/media-signaling';
 import type { ClientMediaSignal, ServerMediaSignal, CallFeature, CallHangupReason } from '@rocket.chat/media-signaling';
 import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 
-import { UserActorSignalProcessor } from './CallSignalProcessor';
-import { BaseMediaCallAgent } from '../../base/BaseAgent';
-import type { VoipPushNotificationEventType } from '../../definition/IMediaCallServer';
-import type { SignalProcessingOptions } from '../../definition/common';
-import { logger } from '../../logger';
-import { getMediaCallServer } from '../../server/injection';
-import { getInitialOfferSignal } from '../../server/signals/getInitialOfferSignal';
-import { getNewCallSignal } from '../../server/signals/getNewCallSignal';
-import { getStateNotification } from '../../server/signals/getStateNotification';
+import { UserActorSignalProcessor } from './CallSignalProcessor.js';
+import { BaseMediaCallAgent } from '../../base/BaseAgent.js';
+import type { VoipPushNotificationEventType } from '../../definition/IMediaCallServer.js';
+import type { SignalProcessingOptions } from '../../definition/common.js';
+import { logger } from '../../logger.js';
+import { getMediaCallServer } from '../../server/injection.js';
+import { getInitialOfferSignal } from '../../server/signals/getInitialOfferSignal.js';
+import { getNewCallSignal } from '../../server/signals/getNewCallSignal.js';
+import { getStateNotification } from '../../server/signals/getStateNotification.js';
 
 export class UserActorAgent extends BaseMediaCallAgent {
 	public async processSignal(call: IMediaCall, signal: ClientMediaSignal, options?: SignalProcessingOptions): Promise<void> {
