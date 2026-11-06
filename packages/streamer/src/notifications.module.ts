@@ -13,10 +13,10 @@ import type { StreamerCallbackArgs, StreamKeys, StreamNames } from '@rocket.chat
 import { Logger } from '@rocket.chat/logger';
 import { Rooms, Subscriptions, Users, VideoConference } from '@rocket.chat/models';
 
-import { emit, StreamPresence } from './StreamPresence';
-import { getCachedUserForPublication } from './publication-user-cache';
-import { Streamer as StreamerModule } from './streamer.module';
-import type { IStreamer, IStreamerConstructor, StreamerOptions, StreamRelay } from './types';
+import { emit, StreamPresence } from './StreamPresence.js';
+import { getCachedUserForPublication } from './publication-user-cache.js';
+import { Streamer as StreamerModule } from './streamer.module.js';
+import type { IStreamer, IStreamerConstructor, StreamerOptions, StreamRelay } from './types.js';
 
 const logger = new Logger('NotificationsModule');
 

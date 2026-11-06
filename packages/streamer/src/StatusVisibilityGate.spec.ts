@@ -1,4 +1,4 @@
-import { StatusVisibilityGate } from './StatusVisibilityGate';
+import { StatusVisibilityGate } from './StatusVisibilityGate.js';
 
 let restrictedUsers: string[] = [];
 let pendingReads: ((users: string[]) => void)[] = [];

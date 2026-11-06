@@ -1,4 +1,4 @@
-import { Streamer } from './streamer.module';
+import { Streamer } from './streamer.module.js';
 
 class TestStreamer extends Streamer<any> {
 	registerPublication(): void {
