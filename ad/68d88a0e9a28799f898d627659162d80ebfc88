@@ -1,0 +1,29 @@
+packages/ui-client/src/components/CustomScrollbars/VirtualizedScrollbars.spec.tsx
+  s_aa92acb00d5d32::t_02316cd736a992 2-7,20-21
+  s_aa92acb00d5d32::t_73403a04d87dce 25-28
+  s_aa92acb00d5d32::t_b50c36dd87d52b 31
+  s_aa92acb00d5d32::t_754d32504cd3ad 15
+  s_aa92acb00d5d32::t_26190d12dd2717 8-14,16-19,22-24,29,32-46
+.changeset/sidebar-avatar-load-listener-leak.md
+  s_aa92acb00d5d32::t_9a262869ba2899 1-5
+packages/ui-client/src/components/CustomScrollbars/BaseScrollbars.tsx
+  s_aa92acb00d5d32::t_b62472ef409334 12
+  s_aa92acb00d5d32::t_49dc4eb5a61f60 15
+  s_aa92acb00d5d32::t_357f6bac1c449b 13-14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "ad68d88a0e9a28799f898d627659162d80ebfc88",
+  "prompts": {},
+  "sessions": {
+    "s_aa92acb00d5d32": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "46f25f04-7c5c-421f-8e80-ed18950b7bfe",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
