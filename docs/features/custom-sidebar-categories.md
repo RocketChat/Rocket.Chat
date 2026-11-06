@@ -260,17 +260,50 @@ in `sidebarCategories` can be silently dropped during a move.
 ### Category collapser kebab — `CategoryMenu.tsx`
 
 **Custom category:**
-- Main: Move up / Move down / Create new › / Manage / Delete / Filter ›
+- Main: Move up / Move down / Create new › / Manage / Delete / Filter › / Archive rooms…
 - Unreads: Always display / Keep on top toggles
 
 **System group:**
-- Main: Move up / Move down (dynamic groups have both disabled) / Filter › (not on dynamic groups)
+- Main: Move up / Move down (dynamic groups have both disabled) / Filter › / Archive rooms… (neither on dynamic groups)
 - Unreads: Always display / Keep on top toggles
 
 **Filter ›** opens a submenu — All / Last 24 hours /
 Last 7 days / Last 30 days — of radio items (`MenuSubmenuTrigger selectionMode='single'`), the current one
 checked (`aria-checked`) and marked with a checkmark. Picking one closes the menu, persists it via
 `useSetActivityFilterHours` and reports the choice through `onActivityFilterChange`, for the announcement.
+
+**Archive rooms…** opens `ArchiveRoomsModal` (`useArchiveRoomsItems.tsx`, through
+`useCategoryModals().openArchiveRooms`), which archives the group's quiet rooms: "Inactive for" offers 30 / 90 /
+180 days, 1 year, or "Custom date", which reveals an "Inactive since" date field that takes the focus as it
+appears and refuses a day still to come with an error of its own ("Choose today or an earlier date."). Either way
+the room's last activity (`getLastActivity`, as the filter judges it) is compared with the threshold. The room
+currently open and a room with no date are never taken; unread rooms only when "Include unread rooms" is checked.
+A live line says how many rooms match and the confirm button is disabled at zero, there being nothing to confirm.
+
+Archiving is the user's own flag on the subscription, `userArchived`, set through `POST /v1/subscriptions.setUserArchived`
+(`useArchivedRooms` reads it from the subscriptions store and writes it with one request per two hundred rooms,
+with the sidebar updated ahead of the server and put back on failure). An archived room is in no other group, not even Unread; it stays archived whatever
+happens in it (opening it, a new message, a mention), and carries no badge meanwhile. The room-level action is
+labelled **Archive** everywhere (sidebar and sidepanel room menus, room info, team info; `useArchiveRoomAction`,
+which first tells what archiving means in a do-not-ask-again modal without an icon, per room type), and becomes
+**Unarchive** (`useUnarchiveRoomAction`) on an archived room. The old "Hide"
+flow (`useHideRoomAction`, closing the subscription) is no longer reachable from the UI except through `/hide`.
+
+Two things to know: the sidebar applies the optimistic flag at once, but the subscription stream replaces the
+whole document on every echo, so an unrelated echo (a new message) that lands before the archive's own can show
+the room back in its group for a moment; and "Archive" here is the user's own, unrelated to a channel's
+`archived` state set from room settings, which still reads "Archived" in the edit form. Without a license there is
+no Archived group, so the item hides the room as before (`useRoomArchiveMenuItem`).
+
+The `Archived` group listed last (`SIDEBAR_ARCHIVED_GROUP_KEY`, licensed workspaces only) holds the archived rooms:
+its header always wears the empty-group look and no badge, its rows are stripped of their unread counters, it has no
+chip, is never moved or moved past, and starts collapsed, so the collapsed-groups list records it when it is
+*expanded*. Its menu (`ArchivedGroupMenu.tsx`) has a single item under a **Notifications** section
+(`useArchivedRoomsNotificationsItem.tsx`), which says what it does next beside a decorative switch: **Turn off**
+while any archived room still sends notifications, setting `disableNotifications` on those rooms through
+`rooms.saveNotification`, five at a time, and **Turn on** once every archived room is off, waking them all. Each
+first says how many rooms it changes, in a modal without an icon ("Turn off notifications" / "Turn on
+notifications").
 
 ### Room context menu — `CategoryRoomMenu.tsx`
 
@@ -292,7 +325,8 @@ Placed before the room title in `RoomHeader`. Icon: `star-filled` (favorited) / 
 | `CreateCategoryModal.tsx` | Create or "create and move" — single name field, max 30 chars. |
 | `ManageCategoryModal.tsx` | Rename with duplicate/empty validation. |
 | `DeleteCategoryModal.tsx` | Confirmation + "rooms will return to default groups" warning. |
-| `hooks/useCategoryModals.tsx` | Single entry point: `openCreate(room?)` / `openManage(category)` / `openDelete(category)`. |
+| `ArchiveRoomsModal.tsx` | Archive the group's rooms inactive for a preset spell or since a custom date. |
+| `hooks/useCategoryModals.tsx` | Single entry point: `openCreate(room?)` / `openManage(category)` / `openDelete(category)` / `openArchiveRooms({ groupTitle, rooms })`. |
 
 ### Navbar create menu
 

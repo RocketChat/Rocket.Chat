@@ -1,4 +1,5 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
+import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ComponentProps } from 'react';
@@ -20,8 +21,10 @@ jest.mock('./hooks/useUserSidebarCategories', () => ({
 	useUserSidebarCategories: jest.fn(),
 }));
 
+const openArchiveRooms = jest.fn();
+
 jest.mock('./hooks/useCategoryModals', () => ({
-	useCategoryModals: () => ({ openManage: jest.fn(), openDelete: jest.fn() }),
+	useCategoryModals: () => ({ openManage: jest.fn(), openDelete: jest.fn(), openArchiveRooms }),
 }));
 
 jest.mock('./hooks/useMoveRoomCategory', () => ({
@@ -43,6 +46,7 @@ const appRoot = mockAppRoot()
 		Last_7_days: 'Last 7 days',
 		Last_30_days: 'Last 30 days',
 		Hide_inactive_unreads: 'Hide inactive unreads',
+		Archive_rooms_ellipsis: 'Archive rooms…',
 		Unreads: 'Unreads',
 		Always_display: 'Always display',
 		Keep_on_top: 'Keep on top',
@@ -53,6 +57,7 @@ const appRoot = mockAppRoot()
 
 beforeEach(() => {
 	mutate.mockClear();
+	openArchiveRooms.mockClear();
 	jest.mocked(usePersistCategoriesMutation).mockReturnValue({ mutate } as any);
 	jest.mocked(useUserSidebarCategories).mockReturnValue({
 		rawCategories: [{ _id: 'Channels', name: 'Channels', default: true, activityFilterHours: 24 * 7 }],
@@ -60,10 +65,14 @@ beforeEach(() => {
 	});
 });
 
+const rooms = [{ rid: 'general', t: 'c', name: 'general' }] as SubscriptionWithRoom[];
+
 const renderMenu = (overrides: Partial<ComponentProps<typeof CategoryMenu>> = {}) =>
 	render(
 		<CategoryMenu
 			groupKey='Channels'
+			groupTitle='Channels'
+			rooms={rooms}
 			showUnreads={false}
 			keepUnreadsOnTop={false}
 			activityFilterHours={24 * 7}
@@ -131,5 +140,24 @@ describe('the Filter submenu', () => {
 		await userEvent.click(toggle);
 
 		expect(mutate).not.toHaveBeenCalled();
+	});
+});
+
+describe('the archive item', () => {
+	it('opens the modal that archives the inactive rooms of the group', async () => {
+		renderMenu();
+		await userEvent.click(await screen.findByRole('button', { name: 'Options' }));
+
+		await userEvent.click(await screen.findByRole('menuitemcheckbox', { name: 'Archive rooms…' }));
+
+		expect(openArchiveRooms).toHaveBeenCalledWith({ groupTitle: 'Channels', rooms });
+	});
+
+	it('is not offered on a dynamic group', async () => {
+		renderMenu({ groupKey: 'Unread', groupTitle: 'Unread' });
+		await userEvent.click(await screen.findByRole('button', { name: 'Options' }));
+
+		expect(await screen.findByRole('menuitemcheckbox', { name: 'Move up' })).toBeInTheDocument();
+		expect(screen.queryByRole('menuitemcheckbox', { name: 'Archive rooms…' })).not.toBeInTheDocument();
 	});
 });

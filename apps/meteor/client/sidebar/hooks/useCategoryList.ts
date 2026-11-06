@@ -52,6 +52,9 @@ export const SIDEBAR_DYNAMIC_GROUP_KEYS: readonly string[] = [
 	'Unread',
 ];
 
+/** The placeholder group listed last, standing for the rooms archived out of the sidebar. It lists nothing itself. */
+export const SIDEBAR_ARCHIVED_GROUP_KEY = 'Archived';
+
 export const mergeWithSectionsOrder = (explicitIds: string[], sectionsOrder: readonly string[]): string[] => {
 	const merged = [...explicitIds];
 	for (const key of sectionsOrder) {
