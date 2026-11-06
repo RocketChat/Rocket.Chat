@@ -24,7 +24,13 @@ const PageTabs = <TId extends string>({ items, selected, onSelect }: PageTabsPro
 		{items
 			.filter((item) => !item.hidden)
 			.map(({ id, label, counter, disabled }) => (
-				<TabsItem key={id} selected={id === selected} disabled={disabled} onClick={disabled ? undefined : () => onSelect(id)}>
+				<TabsItem
+					key={id}
+					selected={id === selected}
+					disabled={disabled}
+					aria-disabled={disabled}
+					onClick={disabled ? undefined : () => onSelect(id)}
+				>
 					{counter === undefined ? (
 						label
 					) : (
