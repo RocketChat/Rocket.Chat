@@ -11,13 +11,7 @@ export type ModalContentProps = ElementProps<HTMLDivElement> & {
 const ModalContent = ({ children, onScrollContent, fill, ...props }: ModalContentProps) => (
 	<Scrollable vertical onScrollContent={onScrollContent}>
 		<Box rcx-modal__content>
-			<Box
-				rcx-modal__content-wrapper
-				marginInline={24}
-				height={fill ? '100%' : undefined}
-				paddingBlockEnd={fill ? 16 : undefined}
-				{...props}
-			>
+			<Box rcx-modal__content-wrapper rcx-modal__content-wrapper--fill={fill} {...props}>
 				{children}
 			</Box>
 		</Box>

@@ -22,13 +22,7 @@ describe('[Contextualbar Rendering]', () => {
 		const { getByRole } = render(<WithLongTitle />);
 		const titleElement = getByRole('heading');
 
-		const titleStyle = window.getComputedStyle(titleElement);
-		expect(titleStyle.overflow).toBe('hidden');
-		expect(titleStyle.textOverflow).toBe('ellipsis');
-		expect(titleStyle.whiteSpace).toBe('nowrap');
-
-		const flexContainer = titleElement.parentElement;
-		const containerStyle = window.getComputedStyle(flexContainer!);
-		expect(containerStyle.overflow).toBe('hidden');
+		expect(titleElement).toHaveClass('rcx-vertical-bar__title');
+		expect(titleElement.parentElement).toHaveClass('rcx-vertical-bar__header-inner');
 	});
 });

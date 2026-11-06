@@ -11,6 +11,8 @@
 		margin-inline: lengths.margin(1);
 
 		animation: bounce 1.4s infinite ease-in-out both;
+		animation-duration: var(--throbber-duration);
+		animation-delay: var(--throbber-delay);
 
 		border-radius: 100%;
 
