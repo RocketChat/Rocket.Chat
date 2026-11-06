@@ -8,13 +8,13 @@ import { useSubmenuTriggerState } from 'react-stately';
 import { Icon } from '../Icon';
 import { Item, ItemIcon } from '../Item';
 import MenuDropDown from './MenuDropdown';
-import type { MenuOptionProps } from './MenuOption';
+import type { OptionProps } from '../Option';
 import MenuPopover from './MenuPopover';
 import type { MenuSubmenuTriggerProps } from './stately/MenuSubmenuTrigger';
 
 type MenuSubmenuProps = {
 	// `Node.props` is `any`, which would swallow the type below, so it is dropped before the trigger's props are typed.
-	item: Omit<Node<{ variant?: MenuOptionProps['variant'] }>, 'props'> & {
+	item: Omit<Node<{ variant?: OptionProps['variant'] }>, 'props'> & {
 		props?: Partial<
 			Pick<
 				MenuSubmenuTriggerProps<unknown>,

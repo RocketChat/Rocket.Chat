@@ -9312,6 +9312,7 @@ __metadata:
     react-virtuoso: "npm:~4.18.16"
     sass: "npm:~1.102.0"
     storybook: "npm:~10.6.5"
+    storybook-addon-pseudo-states: "npm:~10.6.5"
     stylelint: "npm:~17.14.1"
     stylelint-order: "npm:~8.1.1"
     stylelint-prettier: "npm:~5.0.3"
@@ -33056,6 +33057,15 @@ __metadata:
     es-errors: "npm:^1.3.0"
     internal-slot: "npm:^1.1.0"
   checksum: 10/ff36c4db171ee76c936ccfe9541946b77017f12703d4c446652017356816862d3aa029a64e7d4c4ceb484e00ed4a81789333896390d808458638f3a216aa1f41
+  languageName: node
+  linkType: hard
+
+"storybook-addon-pseudo-states@npm:~10.6.5":
+  version: 10.6.5
+  resolution: "storybook-addon-pseudo-states@npm:10.6.5"
+  peerDependencies:
+    storybook: ^10.6.5
+  checksum: 10/060b1ff27d2c3acb83f67e7ca69af9cd4c7d7495dafc56509b0051209d5e20e7a89ed08ca8ad82ac1a701f0d2e4e0b20db4fc86e2f171671be00da642a39c506
   languageName: node
   linkType: hard
 

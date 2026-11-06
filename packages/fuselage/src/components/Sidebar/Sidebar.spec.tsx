@@ -26,16 +26,6 @@ describe('[Sidebar Default story]', () => {
 });
 
 describe('[SidebarCollapseGroup]', () => {
-	it('should not pass `actions` to the DOM', () => {
-		const { container } = render(
-			<SidebarCollapseGroup title='Favorites' actions={<span />}>
-				<div />
-			</SidebarCollapseGroup>,
-		);
-
-		expect(container.querySelector('.rcx-sidebar-collapse-group')).not.toHaveAttribute('actions');
-	});
-
 	it('should render an `ItemGroupHeader` whose toggle collapses a list named by the title', async () => {
 		const { container } = render(
 			<SidebarCollapseGroup

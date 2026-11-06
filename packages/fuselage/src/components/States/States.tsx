@@ -1,11 +1,13 @@
 import type { AllHTMLAttributes, ReactNode } from 'react';
 
+import { cx } from '../../helpers/composeClassNames';
+
 export type StatesProps = {
 	children?: ReactNode;
 } & AllHTMLAttributes<HTMLDivElement>;
 
-const States = ({ children, ...props }: StatesProps) => (
-	<div {...props} className='rcx-states'>
+const States = ({ children, className, ...props }: StatesProps) => (
+	<div {...props} className={cx('rcx-states', className)}>
 		{children}
 	</div>
 );
