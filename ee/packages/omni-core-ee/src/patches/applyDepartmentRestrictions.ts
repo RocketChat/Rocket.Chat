@@ -3,8 +3,8 @@ import { License } from '@rocket.chat/license';
 import { applyDepartmentRestrictions } from '@rocket.chat/omni-core';
 import type { FilterOperators } from 'mongodb';
 
-import { addQueryRestrictionsToDepartmentsModel } from '../units/addRoleBasedRestrictionsToDepartment';
-import { hooksLogger } from '../utils/logger';
+import { addQueryRestrictionsToDepartmentsModel } from '../units/addRoleBasedRestrictionsToDepartment.js';
+import { hooksLogger } from '../utils/logger.js';
 
 export const applyDepartmentRestrictionsPatch = () => {
 	applyDepartmentRestrictions.patch(

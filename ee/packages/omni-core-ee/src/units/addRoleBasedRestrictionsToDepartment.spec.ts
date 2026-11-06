@@ -1,9 +1,9 @@
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import type { FilterOperators } from 'mongodb';
 
-import { addQueryRestrictionsToDepartmentsModel } from './addRoleBasedRestrictionsToDepartment';
-import { getUnitsFromUser } from './getUnitsFromUser';
-import { defaultLogger } from '../utils/logger';
+import { addQueryRestrictionsToDepartmentsModel } from './addRoleBasedRestrictionsToDepartment.js';
+import { getUnitsFromUser } from './getUnitsFromUser.js';
+import { defaultLogger } from '../utils/logger.js';
 
 // Mock dependencies
 jest.mock('./getUnitsFromUser');
