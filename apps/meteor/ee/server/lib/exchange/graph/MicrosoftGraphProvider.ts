@@ -543,6 +543,8 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 				return new ExchangeError('authorization-failed', 'The app registration is not allowed to read this mailbox', { detail });
 			case 404:
 				return new ExchangeError('mailbox-not-found', 'Microsoft Graph could not find the mailbox', { detail });
+			case 410:
+				return new ExchangeError('sync-state-invalid', 'The stored delta link is no longer valid and must be reset', { detail });
 			default:
 				return new ExchangeError('unexpected-response', `Microsoft Graph returned ${response.status}`, { detail });
 		}
