@@ -8,13 +8,13 @@ import {
 	AbacInvalidAttributeValuesError,
 	AbacNotAuthorizedToModifyRoomError,
 	PdpUnavailableError,
-} from '../errors';
-import { findUnownedValues } from '../helper';
-import { logger } from '../logger';
-import type { AttributeEntitlements, IAttributeStore, ListAttributesOptions, ListAttributesResult } from './types';
-import type { VirtruClient } from '../clients/virtru/VirtruClient';
-import { buildAttributeFqns, buildEntityIdentifier, getUserEntityKey, parseAttributeFqns } from '../clients/virtru/identity';
-import type { IGetDecisionBulkRequest, IGetDecisionBulkResponse, IGetEntitlementsRequest, IGetEntitlementsResponse } from '../pdp/types';
+} from '../errors.js';
+import { findUnownedValues } from '../helper.js';
+import { logger } from '../logger.js';
+import type { AttributeEntitlements, IAttributeStore, ListAttributesOptions, ListAttributesResult } from './types.js';
+import type { VirtruClient } from '../clients/virtru/VirtruClient.js';
+import { buildAttributeFqns, buildEntityIdentifier, getUserEntityKey, parseAttributeFqns } from '../clients/virtru/identity.js';
+import type { IGetDecisionBulkRequest, IGetDecisionBulkResponse, IGetEntitlementsRequest, IGetEntitlementsResponse } from '../pdp/types.js';
 
 const storeLogger = logger.section('VirtruAttributeStore');
 
