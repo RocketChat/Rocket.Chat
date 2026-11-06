@@ -1,14 +1,14 @@
 import { Text, View, StyleSheet } from '@react-pdf/renderer';
-import typography from '@rocket.chat/fuselage-tokens/dist/typography.json';
+import typography from '@rocket.chat/fuselage-tokens/dist/typography.json' with { type: 'json' };
 
-import type { PDFMessage } from '../../../types/ChatTranscriptData';
-import { Markup } from '../markup';
-import { Divider } from './Divider';
-import { Files } from './Files';
-import { MessageHeader } from './MessageHeader';
-import Quotes from './Quotes';
-import { isSystemMessage, markupEntriesGreaterThan10, messageLongerThanPage, splitByTens } from './utils';
-import { canRenderMarkup } from '../markup/canRenderMarkup';
+import { Divider } from './Divider.js';
+import { Files } from './Files.js';
+import { MessageHeader } from './MessageHeader.js';
+import Quotes from './Quotes.js';
+import { isSystemMessage, markupEntriesGreaterThan10, messageLongerThanPage, splitByTens } from './utils.js';
+import type { PDFMessage } from '../../../types/ChatTranscriptData.js';
+import { canRenderMarkup } from '../markup/canRenderMarkup.js';
+import { Markup } from '../markup/index.js';
 
 const { fontScale } = typography;
 

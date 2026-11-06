@@ -1,5 +1,5 @@
 import { StyleSheet, Text } from '@react-pdf/renderer';
-import colors from '@rocket.chat/fuselage-tokens/dist/colors.json';
+import colors from '@rocket.chat/fuselage-tokens/dist/colors.json' with { type: 'json' };
 
 export const codeStyles = StyleSheet.create({
 	wrapper: {

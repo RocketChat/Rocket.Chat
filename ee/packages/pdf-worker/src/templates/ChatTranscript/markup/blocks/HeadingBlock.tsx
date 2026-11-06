@@ -1,8 +1,8 @@
 import { View } from '@react-pdf/renderer';
-import typography from '@rocket.chat/fuselage-tokens/dist/typography.json';
+import typography from '@rocket.chat/fuselage-tokens/dist/typography.json' with { type: 'json' };
 import type * as MessageParser from '@rocket.chat/message-parser';
 
-import InlineElements from '../elements/InlineElements';
+import InlineElements from '../elements/InlineElements.js';
 
 const { fontScale } = typography;
 

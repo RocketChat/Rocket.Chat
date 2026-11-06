@@ -1,11 +1,11 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
 
-import BigEmojiBlock from './blocks/BigEmojiBlock';
-import CodeBlock from './blocks/CodeBlock';
-import HeadingBlock from './blocks/HeadingBlock';
-import OrderedListBlock from './blocks/OrderedListBlock';
-import ParagraphBlock from './blocks/ParagraphBlock';
-import UnorderedListBlock from './blocks/UnorderedListBlock';
+import BigEmojiBlock from './blocks/BigEmojiBlock.js';
+import CodeBlock from './blocks/CodeBlock.js';
+import HeadingBlock from './blocks/HeadingBlock.js';
+import OrderedListBlock from './blocks/OrderedListBlock.js';
+import ParagraphBlock from './blocks/ParagraphBlock.js';
+import UnorderedListBlock from './blocks/UnorderedListBlock.js';
 
 export type MarkupProps = {
 	tokens: MessageParser.Root;

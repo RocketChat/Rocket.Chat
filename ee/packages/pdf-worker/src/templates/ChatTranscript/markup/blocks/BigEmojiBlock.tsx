@@ -2,7 +2,7 @@ import { Text } from '@react-pdf/renderer';
 import type * as MessageParser from '@rocket.chat/message-parser';
 import type { ReactElement } from 'react';
 
-import { unicodeToShortname } from '../emoji';
+import { unicodeToShortname } from '../emoji.js';
 
 export type BigEmojiBlockProps = {
 	emoji: MessageParser.Emoji[];
