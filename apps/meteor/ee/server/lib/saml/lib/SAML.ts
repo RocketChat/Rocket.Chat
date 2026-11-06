@@ -1,7 +1,7 @@
 import type { ServerResponse } from 'node:http';
 
 import { ClientSafeError } from '@rocket.chat/core-services';
-import type { IUser, IIncomingMessage, IPersonalAccessToken, IRole } from '@rocket.chat/core-typings';
+import type { IUser, IIncomingMessage, IRole } from '@rocket.chat/core-typings';
 import { CredentialTokens, Rooms, Users, Roles, SamlUsedAssertions } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { escapeRegExp, escapeHTML } from '@rocket.chat/tools';
@@ -102,7 +102,7 @@ export class SAML {
 		await CredentialTokens.create(credentialToken, loginResult);
 	}
 
-	public static async insertOrUpdateSAMLUser(userObject: ISAMLUser): Promise<{ userId: string; token: string }> {
+	public static async insertOrUpdateSAMLUser(userObject: ISAMLUser): Promise<{ userId: string }> {
 		const { generateUsername, immutableProperty, nameOverwrite, mailOverwrite, channelsAttributeUpdate, defaultUserRole } =
 			SAMLUtils.globalSettings;
 
@@ -202,13 +202,6 @@ export class SAML {
 		if (!user) {
 			throw new Error('Failed to create user');
 		}
-		// creating the token and adding to the user
-		const stampedToken = Accounts._generateStampedLoginToken();
-		await Users.addPersonalAccessTokenToUser({
-			userId: user._id,
-			loginTokenObject: stampedToken as unknown as IPersonalAccessToken,
-		});
-
 		const updateData: Record<string, any> = {
 			'services.saml.provider': userObject.samlLogin.provider,
 			'services.saml.idp': userObject.samlLogin.idp,
@@ -248,11 +241,7 @@ export class SAML {
 		if ((username && username !== user.username) || (nameOverwrite && fullName && fullName !== user.name)) {
 			await saveUserIdentity({ _id: user._id, name: nameOverwrite ? fullName || undefined : user.name, username });
 		}
-		// sending token along with the userId
-		return {
-			userId: user._id,
-			token: stampedToken.token,
-		};
+		return { userId: user._id };
 	}
 
 	private static processMetadataAction(res: ServerResponse, service: IServiceProviderOptions): void {
