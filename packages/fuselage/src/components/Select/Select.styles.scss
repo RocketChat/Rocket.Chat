@@ -15,11 +15,6 @@
 
 	min-height: lengths.size(40);
 
-	// TODO move to .rcx-input-box
-	&__item {
-		@include use-text-ellipsis;
-	}
-
 	&__focus,
 	&__placeholder {
 		display: inline-block;

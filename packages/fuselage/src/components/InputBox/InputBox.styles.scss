@@ -289,6 +289,10 @@ $input-border-radius: theme('input-border-radius', lengths.border-radius(medium)
 	color: $input-colors-color;
 }
 
+.rcx-input-box__item {
+	@include use-text-ellipsis;
+}
+
 .rcx-skeleton__input {
 	display: inline-flex;
 
