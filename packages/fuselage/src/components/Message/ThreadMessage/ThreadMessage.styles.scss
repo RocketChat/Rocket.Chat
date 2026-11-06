@@ -12,6 +12,7 @@
 	padding-inline: lengths.padding(24);
 
 	color: colors.font(info);
+	gap: 0;
 
 	&__container {
 		@include use-with-truncated-text();
