@@ -19,12 +19,12 @@ describe('sortAppsByClosestOrFarthestModificationDate', () => {
 		expect(result).toBeLessThan(0);
 	});
 
-	it.skip('should return zero if firstDate and secondDate are equivalent', () => {
+	it('should return zero if firstDate and secondDate are equivalent', () => {
 		const firstDate = '2000-04-01T07:00:00';
 		const secondDate = '2000-04-01T07:00:00';
 
 		const result = sortAppsByClosestOrFarthestModificationDate(firstDate, secondDate);
 
-		expect(result).toBeLessThan(0);
+		expect(result).toBe(0);
 	});
 });
