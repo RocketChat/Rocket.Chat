@@ -29,25 +29,16 @@ const useImageStatus = (url: string | undefined): 'loading' | 'loaded' | 'error'
 };
 
 const MessageComposerImageFile = ({ upload, ...props }: MessageComposerFileItemProps) => {
-	const [, dataURL] = useFileAsDataURL(upload.file);
-	const restoredUrl = getRestoredUploadUrl(upload);
-	const restoredStatus = useImageStatus(restoredUrl);
+	const [dataURLRead, dataURL] = useFileAsDataURL(upload.file);
+	const previewUrl = getRestoredUploadUrl(upload) ?? (typeof dataURL === 'string' ? dataURL : undefined);
+	const status = useImageStatus(previewUrl);
 
-	if (restoredUrl && restoredStatus === 'error') {
+	// A file that won't render as an image, such as one with a misleading extension, shows as a plain file instead.
+	if (status === 'error' || (!previewUrl && dataURLRead)) {
 		return <MessageComposerGenericFile upload={upload} {...props} />;
 	}
 
-	const loadedRestoredUrl = restoredStatus === 'loaded' ? restoredUrl : undefined;
-	const previewUrl = restoredUrl ? loadedRestoredUrl : dataURL;
-
-	return (
-		<MessageComposerGenericFile
-			upload={upload}
-			shouldPreview
-			previewUrl={typeof previewUrl === 'string' ? previewUrl : undefined}
-			{...props}
-		/>
-	);
+	return <MessageComposerGenericFile upload={upload} shouldPreview previewUrl={status === 'loaded' ? previewUrl : undefined} {...props} />;
 };
 
 export default MessageComposerImageFile;
