@@ -21,6 +21,9 @@
 		"lint:fix": "yarn run -T oxlint --fix",
 		"typecheck": "tsc --noEmit"
 	},
+	"dependencies": {
+		"@rocket.chat/random": "workspace:^"
+	},
 	"devDependencies": {
 		"typescript": "~7.0.2"
 	},
