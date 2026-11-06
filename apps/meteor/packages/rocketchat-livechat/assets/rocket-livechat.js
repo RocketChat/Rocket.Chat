@@ -728,6 +728,7 @@
 				chatWidget.style.right = '0';
 				chatWidget.style.width = '100%';
 			} else {
+				smallScreen = false;
 				chatWidget.style.left = 'auto';
 				chatWidget.style.right = '50px';
 				chatWidget.style.width = widgetWidth;
