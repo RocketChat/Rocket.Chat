@@ -90,9 +90,6 @@ export const useAISearchRooms = (filterText = ''): { items: SubscriptionWithRoom
 	});
 
 	const items = useMemo(() => {
-		const filterRegex = new RegExp(escapeRegExp(name), 'i');
-		const matchesFilter = ({ name, fname }: { name?: string; fname?: string }) =>
-			(name && filterRegex.test(name)) || (fname && filterRegex.test(fname));
 		const isLocalDuplicate = (item: { _id: string; t?: string; uids?: string[]; name: string }): boolean =>
 			localRooms.some((room) => {
 				const sameRoom = [room.rid, room._id].includes(item._id);
@@ -103,13 +100,14 @@ export const useAISearchRooms = (filterText = ''): { items: SubscriptionWithRoom
 			});
 
 		const candidates = name === debouncedName && localRooms.length < LIMIT ? (serverResults ?? []) : [];
-		const fromServer = candidates.filter((item) => matchesFilter(item) && !isLocalDuplicate(item));
+		const fromServer = candidates.filter((item) => !isLocalDuplicate(item));
 		const exact = fromServer.filter((item) => [item.name, item.fname].includes(name));
 
 		return [...exact, ...localRooms, ...fromServer.filter((item) => !exact.includes(item))] as SubscriptionWithRoom[];
 	}, [debouncedName, localRooms, name, serverResults]);
 
-	const isLoading = isFetching && serverResults === undefined;
+	const isDebouncing = name !== debouncedName && localRooms.length < LIMIT;
+	const isLoading = isDebouncing || (isFetching && serverResults === undefined);
 
 	return { items, isLoading };
 };
