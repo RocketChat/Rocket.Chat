@@ -31,6 +31,8 @@ test.describe('OC - Livechat - Queue Management', () => {
 			api.post('/settings/Livechat_waiting_queue_message', { value: waitingQueueMessage }),
 			// Takes a queued chat within a second, rather than on the default five-second cycle.
 			api.post('/settings/Omnichannel_queue_delay_timeout', { value: 1 }),
+			// Keeps the second chat queued at #1 while the agent serves the first one.
+			api.post('/settings/Livechat_maximum_chats_per_agent', { value: 1 }),
 			api.post('/livechat/users/agent', { username: 'user1' }),
 		]);
 
@@ -55,6 +57,7 @@ test.describe('OC - Livechat - Queue Management', () => {
 			api.post('/settings/Livechat_waiting_queue', { value: false }),
 			api.post('/settings/Livechat_waiting_queue_message', { value: '' }),
 			api.post('/settings/Omnichannel_queue_delay_timeout', { value: 5 }),
+			api.post('/settings/Livechat_maximum_chats_per_agent', { value: 0 }),
 			api.delete('/livechat/users/agent/user1'),
 		]);
 		await poHomeOmnichannel.page.close();
@@ -78,7 +81,7 @@ test.describe('OC - Livechat - Queue Management', () => {
 			await liveChatContext.close();
 		});
 
-		test('Update user position on Queue', async () => {
+		test('Update user position on Queue', async ({ api }) => {
 			await test.step('should start livechat session', async () => {
 				await poLiveChat.openAnyLiveChatAndSendMessage({
 					liveChatUser: firstVisitor,
@@ -120,6 +123,7 @@ test.describe('OC - Livechat - Queue Management', () => {
 			});
 
 			await test.step('secondary session should be taken by user1', async () => {
+				await api.post('/settings/Livechat_maximum_chats_per_agent', { value: 0 });
 				await expect(poLiveChat2.queuePosition(1)).not.toBeVisible();
 			});
 		});
