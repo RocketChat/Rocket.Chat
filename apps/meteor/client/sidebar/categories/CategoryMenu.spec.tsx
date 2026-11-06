@@ -2,6 +2,7 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { axe } from 'jest-axe';
 import type { ComponentProps } from 'react';
 
 import CategoryMenu from './CategoryMenu';
@@ -113,5 +114,33 @@ describe('the Mark read item', () => {
 		await waitFor(() => expect(readMessages).toHaveBeenCalledTimes(2));
 		expect(readMessages).toHaveBeenCalledWith({ rid: 'unread-one', readThreads: true });
 		expect(readMessages).toHaveBeenCalledWith({ rid: 'thread-one', readThreads: true });
+		await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+	});
+
+	it('keeps the modal up with a busy button until every room is read, and takes no second run meanwhile', async () => {
+		let finish: () => void = () => undefined;
+		readMessages.mockImplementation(
+			() =>
+				new Promise<undefined>((resolve) => {
+					finish = () => resolve(undefined);
+				}),
+		);
+
+		renderMenu({ rooms });
+		await userEvent.click(await screen.findByRole('button', { name: 'Options' }));
+		await userEvent.click(await screen.findByRole('menuitemcheckbox', { name: 'Mark read' }));
+		const dialog = await screen.findByRole('dialog', { name: 'Mark rooms as read' });
+		expect(await axe(dialog)).toHaveNoViolations();
+
+		await userEvent.click(screen.getByRole('button', { name: 'Mark read' }));
+
+		expect(screen.getByRole('dialog', { name: 'Mark rooms as read' })).toBeInTheDocument();
+		expect(screen.getByRole('button', { name: 'Mark read' })).toBeDisabled();
+		await userEvent.click(await screen.findByRole('button', { name: 'Options' }));
+		expect(await screen.findByRole('menuitemcheckbox', { name: 'Mark read' })).toHaveAttribute('aria-disabled', 'true');
+
+		finish();
+		await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+		readMessages.mockImplementation(async () => undefined);
 	});
 });
