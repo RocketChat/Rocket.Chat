@@ -1,4 +1,4 @@
-import { TimeoutControl } from '../src/TimeoutControl';
+import { TimeoutControl } from '../src/TimeoutControl.js';
 
 jest.useFakeTimers();
 jest.spyOn(global, 'setTimeout');

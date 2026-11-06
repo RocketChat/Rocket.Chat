@@ -1,7 +1,7 @@
-import type { ConnectPayload } from './connectionPayloads';
-import type { PingPayload, PongPayload } from './heartbeatsPayloads';
-import type { MethodPayload } from './methodsPayloads';
-import type { ClientPublicationPayloads } from './publicationPayloads';
+import type { ConnectPayload } from './connectionPayloads.js';
+import type { PingPayload, PongPayload } from './heartbeatsPayloads.js';
+import type { MethodPayload } from './methodsPayloads.js';
+import type { ClientPublicationPayloads } from './publicationPayloads.js';
 
 /**
  * @category outgoing

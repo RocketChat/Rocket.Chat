@@ -2,9 +2,9 @@
  * A queue of ddp blocking methods that are waiting to be sent to the server.
  */
 
-import { MinimalDDPClient } from './MinimalDDPClient';
-import type { OutgoingPayload } from './types/OutgoingPayload';
-import type { MethodPayload } from './types/methodsPayloads';
+import { MinimalDDPClient } from './MinimalDDPClient.js';
+import type { OutgoingPayload } from './types/OutgoingPayload.js';
+import type { MethodPayload } from './types/methodsPayloads.js';
 
 type Blocks = {
 	wait: boolean;

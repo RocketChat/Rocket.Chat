@@ -1,4 +1,4 @@
-import type { ServerPublicationPayloads } from './publicationPayloads';
+import type { ServerPublicationPayloads } from './publicationPayloads.js';
 
 export interface Subscription {
 	stop: () => void;

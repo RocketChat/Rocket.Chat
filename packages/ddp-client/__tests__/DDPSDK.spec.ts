@@ -1,13 +1,20 @@
 import util from 'node:util';
 
-import WS from 'jest-websocket-mock';
+import { WS } from 'jest-websocket-mock';
 import { WebSocket } from 'ws';
 
-import { fireStreamChange, fireStreamAdded, fireStreamRemove, handleConnection, handleSubscription, handleMethod } from './helpers';
-import { ConnectionLostError } from '../src/ClientStream';
-import type { ConnectionImpl } from '../src/Connection';
-import { DDPSDK, toRestUrl } from '../src/DDPSDK';
-import { LivechatClientImpl } from '../src/livechat/LivechatClientImpl';
+import {
+	fireStreamChange,
+	fireStreamAdded,
+	fireStreamRemove,
+	handleConnection,
+	handleSubscription,
+	handleMethod,
+} from './helpers/index.js';
+import { ConnectionLostError } from '../src/ClientStream.js';
+import type { ConnectionImpl } from '../src/Connection.js';
+import { DDPSDK, toRestUrl } from '../src/DDPSDK.js';
+import { LivechatClientImpl } from '../src/livechat/LivechatClientImpl.js';
 
 (global as any).WebSocket = (global as any).WebSocket || WebSocket;
 

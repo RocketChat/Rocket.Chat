@@ -1,10 +1,10 @@
 import type { RestClient } from '@rocket.chat/api-client';
 
-import type { Connection } from '../Connection';
-import type { TimeoutControl } from '../TimeoutControl';
-import type { Account } from './Account';
-import type { ClientStream } from './ClientStream';
-import type { StreamKeys, StreamNames, StreamerCallbackArgs } from './streams';
+import type { Connection } from '../Connection.js';
+import type { TimeoutControl } from '../TimeoutControl.js';
+import type { Account } from './Account.js';
+import type { ClientStream } from './ClientStream.js';
+import type { StreamKeys, StreamNames, StreamerCallbackArgs } from './streams.js';
 
 /*
 * The following procedure is used for streaming data:
