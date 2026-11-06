@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker';
 import type { Locator, Page } from '@playwright/test';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 
+import { DEFAULT_USER_CREDENTIALS } from './config/constants';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import { setSettingValueById } from './utils/setSettingValueById';
@@ -13,7 +14,7 @@ const userData = {
 	username: faker.string.uuid(),
 	name: faker.person.firstName(),
 	email: faker.internet.email(),
-	password: faker.internet.password(),
+	password: DEFAULT_USER_CREDENTIALS.password,
 };
 
 const findSysMes = (page: Page, id: string): Locator =>
