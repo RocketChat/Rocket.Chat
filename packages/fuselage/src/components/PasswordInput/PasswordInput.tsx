@@ -19,7 +19,7 @@ function PasswordInput({ showPasswordLabel = 'Show password', hidePasswordLabel 
 			type={hidden ? 'password' : 'text'}
 			endAddon={
 				<IconButton
-					mini
+					size='mini'
 					type='button'
 					disabled={props.disabled}
 					icon={hidden ? 'eye-off' : 'eye'}
