@@ -3,9 +3,17 @@ import MessageComposerGenericFile from './MessageComposerGenericFile';
 import { useFileAsDataURL } from '../../hooks/useFileAsDataURL';
 
 const MessageComposerImageFile = ({ upload, ...props }: MessageComposerFileItemProps) => {
-	const [, url] = useFileAsDataURL(upload.file);
+	const [, dataURL] = useFileAsDataURL(upload.file);
+	const previewUrl = upload.restored ? upload.url : dataURL;
 
-	return <MessageComposerGenericFile upload={upload} shouldPreview previewUrl={typeof url === 'string' ? url : undefined} {...props} />;
+	return (
+		<MessageComposerGenericFile
+			upload={upload}
+			shouldPreview
+			previewUrl={typeof previewUrl === 'string' ? previewUrl : undefined}
+			{...props}
+		/>
+	);
 };
 
 export default MessageComposerImageFile;
