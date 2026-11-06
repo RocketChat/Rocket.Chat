@@ -1,3 +1,4 @@
+import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 import { Children } from 'react';
@@ -7,6 +8,13 @@ import { useIsCompactFilterBar } from './FilterBar';
 export type FilterBarFiltersProps = {
 	children: ReactNode;
 };
+
+// Input-like controls are zero-width flex items that only fill their slot by growing
+const fillSlot = css`
+	& > * {
+		flex: 1 1 auto;
+	}
+`;
 
 /**
  * The filters of a filter bar. They move to the next row together, never one by one, and share it in equal widths.
@@ -19,6 +27,8 @@ const FilterBarFilters = ({ children }: FilterBarFiltersProps) => {
 			{Children.toArray(children).map((child, index) => (
 				<Box
 					key={index}
+					className={fillSlot}
+					display='flex'
 					flexGrow={compact ? 0 : 1}
 					flexShrink={1}
 					flexBasis={compact ? 'x144' : 'x200'}
