@@ -247,15 +247,22 @@ export const useItemListNavigation = ({
 				moveFromStop(tab.media, tab.direction);
 			};
 
+			// A click or touch ends the Tab: the focus it moves belongs to the user, even into a text field, which is always focus-visible
+			const onDocumentPointerDown = () => {
+				mediaTab = null;
+			};
+
 			// The document's capture phase runs before React's capture handlers at the app root, such as a toolbar's
 			// `onKeyDownCapture`, so the list decides first how its rows handle these keys
 			const doc = node.ownerDocument;
 			doc.addEventListener('keydown', onKeyDown, { capture: true });
 			doc.addEventListener('focusin', onDocumentFocusIn, { capture: true });
+			doc.addEventListener('pointerdown', onDocumentPointerDown, { capture: true });
 			node.addEventListener('focusin', onFocusIn);
 			cleanupRef.current = () => {
 				doc.removeEventListener('keydown', onKeyDown, { capture: true });
 				doc.removeEventListener('focusin', onDocumentFocusIn, { capture: true });
+				doc.removeEventListener('pointerdown', onDocumentPointerDown, { capture: true });
 				node.removeEventListener('focusin', onFocusIn);
 			};
 		},
