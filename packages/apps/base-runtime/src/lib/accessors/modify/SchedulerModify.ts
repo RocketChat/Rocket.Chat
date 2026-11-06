@@ -9,7 +9,7 @@ import type * as Messenger from '../../messenger';
 // build the id string (a non-identity, local use), so it reads the real id from the registry rather
 // than the 'APP_ID' sentinel.
 function createProcessorId(jobId: string, appId: string): string {
-	return jobId.includes(`_${appId}`) ? jobId : `${jobId}_${appId}`;
+	return jobId.endsWith(`_${appId}`) ? jobId : `${jobId}_${appId}`;
 }
 
 export class SchedulerModify implements ISchedulerModify {
