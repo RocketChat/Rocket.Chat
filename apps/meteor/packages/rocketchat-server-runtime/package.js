@@ -30,7 +30,6 @@ const serverPackages = [
 	'tracker@1.3.4',
 	'reactive-var@1.0.13',
 	'autoupdate@2.0.1',
-	'dispatch:run-as-user',
 	'meteorhacks:inject-initial',
 ];
 

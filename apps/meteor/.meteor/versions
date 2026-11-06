@@ -16,7 +16,6 @@ ddp-common@1.4.5
 ddp-rate-limiter@1.3.0
 ddp-server@3.4.0
 diff-sequence@1.1.3
-dispatch:run-as-user@1.1.1
 dynamic-import@0.7.4
 ecmascript@0.19.1
 ecmascript-runtime@0.8.3
