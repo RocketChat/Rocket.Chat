@@ -1,3 +1,3 @@
-export * from './MoleculerBroker';
+export * from './MoleculerBroker.js';
 
-export { startBroker } from './moleculer';
+export { startBroker } from './moleculer.js';
