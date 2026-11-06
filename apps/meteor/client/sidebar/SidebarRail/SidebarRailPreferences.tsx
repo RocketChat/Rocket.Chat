@@ -21,7 +21,7 @@ const SidebarRailPreferences = (props: SidebarRailPreferencesProps) => {
 			selectionMode='multiple'
 			title={t('Sidebar_preferences')}
 			is={NavBarItem}
-			icon='sidebar'
+			icon='sort'
 			placement='bottom-end'
 			{...props}
 		/>
