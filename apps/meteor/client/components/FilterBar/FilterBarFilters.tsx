@@ -24,18 +24,20 @@ const FilterBarFilters = ({ children }: FilterBarFiltersProps) => {
 
 	return (
 		<Box display='flex' flexWrap={compact ? 'nowrap' : 'wrap'} flexGrow={compact ? 0 : 1} flexShrink={compact ? 0 : 1} gap='x8'>
-			{Children.map(children, (child) => (
-				<Box
-					className={fillSlot}
-					display='flex'
-					flexGrow={compact ? 0 : 1}
-					flexShrink={1}
-					flexBasis={compact ? 'x144' : 'x200'}
-					minWidth={compact ? 'x144' : 'x200'}
-				>
-					{child}
-				</Box>
-			))}
+			{Children.map(children, (child) =>
+				child === null ? null : (
+					<Box
+						className={fillSlot}
+						display='flex'
+						flexGrow={compact ? 0 : 1}
+						flexShrink={1}
+						flexBasis={compact ? 'x144' : 'x200'}
+						minWidth={compact ? 'x144' : 'x200'}
+					>
+						{child}
+					</Box>
+				),
+			)}
 		</Box>
 	);
 };
