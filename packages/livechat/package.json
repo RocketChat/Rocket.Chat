@@ -86,7 +86,7 @@
 		"sass-loader": "~16.0.8",
 		"storybook": "~10.6.5",
 		"style-loader": "^1.3.0",
-		"stylelint": "^16.10.0",
+		"stylelint": "^18.0.0",
 		"stylelint-order": "^6.0.4",
 		"svg-loader": "^0.0.2",
 		"typescript": "~5.9.3",
