@@ -7,6 +7,7 @@ export type NonEncryptedUpload = {
 	readonly percentage: number;
 	readonly error?: Error;
 	readonly altText?: string;
+	readonly restored?: boolean;
 };
 
 export type EncryptedUpload = NonEncryptedUpload & {

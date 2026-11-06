@@ -114,6 +114,8 @@ export type UploadsAPI = {
 	get(): readonly Upload[];
 	subscribe(callback: () => void): () => void;
 	wipeFailedOnes(): void;
+	attach(): void;
+	detach(): void;
 	clear(): void;
 	getProcessingUploads(): boolean;
 	setProcessingUploads(processing: boolean): void;
