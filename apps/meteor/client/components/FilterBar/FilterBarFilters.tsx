@@ -24,9 +24,8 @@ const FilterBarFilters = ({ children }: FilterBarFiltersProps) => {
 
 	return (
 		<Box display='flex' flexWrap={compact ? 'nowrap' : 'wrap'} flexGrow={compact ? 0 : 1} flexShrink={compact ? 0 : 1} gap='x8'>
-			{Children.toArray(children).map((child, index) => (
+			{Children.map(children, (child) => (
 				<Box
-					key={index}
 					className={fillSlot}
 					display='flex'
 					flexGrow={compact ? 0 : 1}

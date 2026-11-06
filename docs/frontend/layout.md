@@ -64,7 +64,7 @@ The search, filters and actions above a list are a `FilterBar` (`client/componen
 ```
 
 - The search takes the room the filters leave. When the row is full, the filters move to the next row together and share it in equal widths; they never move one by one.
-- A filter component sets no width or flex of its own; `FilterBarFilters` sizes it.
+- `FilterBarFilters` sizes each filter's slot; a filter sets no width of its own and only grows to fill that slot.
 - A bar with only a search, optionally followed by a button, is `FilterByText`.
 - Inside a contextual bar section, `<FilterBar compact>` keeps one row: the search shrinks and each filter stays narrow.
 - Filters that show a visible label are a form instead: each one a `Field`, laid out by `Stack direction='row' gap={8} wrap`.
