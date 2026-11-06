@@ -7,8 +7,8 @@ import type { HTMLAttributes, ReactNode } from 'react';
 import { forwardRef } from 'react';
 
 import ThreadMessageList from './ThreadMessageList';
-import { createBubbleDateStore, initialBubbleDateState } from '../../../BubbleDate/bubbleDateStore';
 import { createFakeMessage, createFakeRoom } from '../../../../../../tests/mocks/data';
+import { createBubbleDateStore, initialBubbleDateState } from '../../../BubbleDate/bubbleDateStore';
 import { useThreadMessagesQuery } from '../hooks/useThreadMessagesQuery';
 
 const room = createFakeRoom({ _id: 'room-id', t: 'c' });
@@ -115,7 +115,13 @@ jest.mock('../../../../../lib/utils/setMessageJumpQueryStringParameter', () => (
 
 jest.mock('./ThreadMessageItem', () => ({
 	ThreadMessageItem: ({ message }: { message: IMessage }) => (
-		<div role='listitem' data-time={new Date(message.ts).toISOString().replaceAll(/[-T:.]/g, '').substring(0, 8)}>
+		<div
+			role='listitem'
+			data-time={new Date(message.ts)
+				.toISOString()
+				.replaceAll(/[-T:.]/g, '')
+				.substring(0, 8)}
+		>
 			{message._id}
 		</div>
 	),
