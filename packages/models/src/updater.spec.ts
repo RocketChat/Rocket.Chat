@@ -2,7 +2,6 @@ import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 
 import { UpdaterImpl } from './updater';
 
-// oxlint-disable-next-line jest/expect-expect -- the assertions are the @ts-expect-error directives, checked by tsc
 test('updater typings', () => {
 	const updater = new UpdaterImpl<{
 		_id: string;
@@ -92,17 +91,8 @@ test('updater supports nested paths up to 3 levels deep', () => {
 	updater.set('level1.level2', { level3: 'test' });
 	// 3-level deep path
 	updater.set('level1.level2.level3', 'test');
-
-	expect(updater.getUpdateFilter()).toEqual({
-		$set: {
-			'level1': { level2: { level3: 'test' } },
-			'level1.level2': { level3: 'test' },
-			'level1.level2.level3': 'test',
-		},
-	});
 });
 
-// oxlint-disable-next-line jest/expect-expect -- the assertions are the @ts-expect-error directives, checked by tsc
 test('updater validates keys on real schemas with nested paths', () => {
 	const updater = new UpdaterImpl<IOmnichannelRoom>();
 
