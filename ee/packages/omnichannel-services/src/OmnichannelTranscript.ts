@@ -19,8 +19,8 @@ import type { MessageData, Quote, WorkerData } from '@rocket.chat/pdf-worker';
 import { guessTimezone, guessTimezoneFromOffset, streamToBuffer } from '@rocket.chat/tools';
 import type { TFunction, i18n } from 'i18next';
 
-import type { WorkDetailsWithSource } from './localTypes';
-import { isPromiseRejectedResult } from './localTypes';
+import type { WorkDetailsWithSource } from './localTypes.js';
+import { isPromiseRejectedResult } from './localTypes.js';
 
 export class OmnichannelTranscript extends ServiceClass implements IOmnichannelTranscriptService {
 	protected name = 'omnichannel-transcript';

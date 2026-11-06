@@ -1,2 +1,2 @@
-export { OmnichannelTranscript } from './OmnichannelTranscript';
-export { QueueWorker } from './QueueWorker';
+export { OmnichannelTranscript } from './OmnichannelTranscript.js';
+export { QueueWorker } from './QueueWorker.js';
