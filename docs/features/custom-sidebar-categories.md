@@ -307,8 +307,9 @@ off notifications" / "Turn on notifications").
 `POST /v1/subscriptions.read` with `readThreads: true`, five rooms at a time. It is disabled while the group has
 nothing unread (`isUnreadRoom` over the group's `allRooms`, which, like the collapsed-group badge, leaves out rooms
 with `hideUnreadStatus` even when they carry mentions), and first says how many rooms become read in a
-do-not-ask-again modal without an icon ("Mark rooms as read"). A toast reports how many were marked read and, on
-failures, how many were not.
+do-not-ask-again modal without an icon ("Mark rooms as read", `MarkGroupReadModal.tsx`). The modal stays up with a
+busy confirm button until every batch has settled, and the item is disabled meanwhile, so a run is never started
+twice. A toast reports how many were marked read and, on failures, how many were not.
 
 ### Room context menu — `CategoryRoomMenu.tsx`
 

@@ -1,13 +1,14 @@
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
-import { GenericModalDoNotAskAgain, useDontAskAgain } from '@rocket.chat/ui-client';
+import { useDontAskAgain } from '@rocket.chat/ui-client';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useEndpoint, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import { useMemo } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { isUnreadRoom } from '../../lib/unreadRooms';
+import MarkGroupReadModal from '../MarkGroupReadModal';
 
 export const MARK_GROUP_READ_ITEM_ID = 'mark-group-read';
 
@@ -38,20 +39,35 @@ export const useMarkGroupReadItem = ({ groupTitle, rooms, onOpen }: UseMarkGroup
 
 	const unreadRooms = useMemo(() => rooms.filter(isUnreadRoom), [rooms]);
 
+	// One run at a time: the item is disabled while a run is on, and a second call during one is ignored.
+	const runningRef = useRef(false);
+	const [running, setRunning] = useState(false);
+
 	const markRead = useStableCallback(async () => {
+		if (runningRef.current) {
+			return;
+		}
+		runningRef.current = true;
+		setRunning(true);
+
 		let read = 0;
 		let failed = 0;
-		for (let start = 0; start < unreadRooms.length; start += BATCH_SIZE) {
-			const outcomes = await Promise.allSettled(
-				unreadRooms.slice(start, start + BATCH_SIZE).map((room) => readMessages({ rid: room.rid, readThreads: true })),
-			);
-			for (const outcome of outcomes) {
-				if (outcome.status === 'fulfilled') {
-					read += 1;
-				} else {
-					failed += 1;
+		try {
+			for (let start = 0; start < unreadRooms.length; start += BATCH_SIZE) {
+				const outcomes = await Promise.allSettled(
+					unreadRooms.slice(start, start + BATCH_SIZE).map((room) => readMessages({ rid: room.rid, readThreads: true })),
+				);
+				for (const outcome of outcomes) {
+					if (outcome.status === 'fulfilled') {
+						read += 1;
+					} else {
+						failed += 1;
+					}
 				}
 			}
+		} finally {
+			runningRef.current = false;
+			setRunning(false);
 		}
 
 		queryClient.invalidateQueries({ queryKey: ['sidebar/search/spotlight'] });
@@ -72,26 +88,7 @@ export const useMarkGroupReadItem = ({ groupTitle, rooms, onOpen }: UseMarkGroup
 			return;
 		}
 
-		setModal(
-			<GenericModalDoNotAskAgain
-				icon={null}
-				title={t('Mark_rooms_as_read')}
-				confirmText={t('Mark_read')}
-				cancelText={t('Cancel')}
-				onClose={closeModal}
-				onCancel={closeModal}
-				onConfirm={() => {
-					closeModal();
-					void markRead();
-				}}
-				dontAskAgain={{
-					action: 'markGroupRead',
-					label: t('Mark_rooms_as_read'),
-				}}
-			>
-				{t('Unread_rooms_in_group_become_read', { count: unreadRooms.length, group: groupTitle })}
-			</GenericModalDoNotAskAgain>,
-		);
+		setModal(<MarkGroupReadModal groupTitle={groupTitle} count={unreadRooms.length} onConfirm={markRead} onClose={closeModal} />);
 	});
 
 	return useMemo(
@@ -99,9 +96,9 @@ export const useMarkGroupReadItem = ({ groupTitle, rooms, onOpen }: UseMarkGroup
 			id: MARK_GROUP_READ_ITEM_ID,
 			icon: 'flag',
 			content: t('Mark_read'),
-			disabled: unreadRooms.length === 0,
+			disabled: running || unreadRooms.length === 0,
 			onClick: handleClick,
 		}),
-		[t, unreadRooms.length, handleClick],
+		[t, running, unreadRooms.length, handleClick],
 	);
 };
