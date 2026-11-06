@@ -5,7 +5,7 @@ import { UserStatus } from '@rocket.chat/core-typings';
 import { cronJobs } from '@rocket.chat/cron';
 import { mockModel } from '@rocket.chat/models/testing';
 
-import { Presence } from './Presence';
+import { Presence } from './Presence.js';
 
 const usersModel = {
 	findOneById: jest.fn(),
