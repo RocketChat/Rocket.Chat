@@ -33,10 +33,6 @@ $message-highlight-colors-link-color: theme('message-highlight-colors-link-color
 
 $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 
-%rcx-margins-header {
-	margin-inline: lengths.margin(2);
-}
-
 .rcx-message {
 	// The content column starts at the same x whether or not the header shows.
 	--rcx-item-gap: #{lengths.margin(8)};
@@ -156,10 +152,7 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 			display: flex;
 			flex-shrink: 1;
 			@include use-with-truncated-text();
-		}
-
-		&__role {
-			@extend %rcx-margins-header;
+			gap: lengths.margin(4);
 		}
 	}
 
