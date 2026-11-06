@@ -11,7 +11,7 @@ import { useOpenedRoom } from '../../../lib/RoomManager';
 import { useIsRoomFilter, type AllGroupsKeys } from '../contexts/RoomsNavigationContext';
 import { usePreventDefault } from '../sidebar/hooks/usePreventDefault';
 
-type SidePanelProps<R = any> = {
+type SidePanelProps<R extends { _id: string } = any> = {
 	title: string;
 	currentTab: AllGroupsKeys;
 	unreadOnly: boolean;
@@ -56,6 +56,10 @@ const SidePanelInternal = ({ title, currentTab, unreadOnly, toggleUnreadOnly, ro
 					<Virtuoso
 						totalCount={rooms.length}
 						data={rooms}
+						// Key rows by room id instead of the default index, so React does not
+						// reuse a row — and any menu open inside it — for a different room
+						// when the list shifts, e.g. after a room is marked as read.
+						computeItemKey={(_index, room) => room._id}
 						components={{ Item: SidepanelListItem, List: SidepanelListWrapper }}
 						itemContent={(_, room) => {
 							return <ItemContentComponent room={room} openedRoom={openedRoom} isRoomFilter={isRoomFilter} />;
@@ -68,7 +72,7 @@ const SidePanelInternal = ({ title, currentTab, unreadOnly, toggleUnreadOnly, ro
 };
 
 export const createSidePanel =
-	<R extends object>(
+	<R extends { _id: string }>(
 		ItemContentComponent: ComponentType<{ room: R; openedRoom: ReturnType<typeof useOpenedRoom>; isRoomFilter: boolean }>,
 	) =>
 	// oxlint-disable-next-line react/display-name
