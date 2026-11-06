@@ -16,7 +16,7 @@ import type {
 } from '@rocket.chat/core-typings';
 import { ServerEvents } from '@rocket.chat/models';
 
-import { logger } from './logger';
+import { logger } from './logger.js';
 
 type EventParamsMap = {
 	[K in AbacAuditServerEventKey]: ExtractDataToParams<IServerEvents[K]>;

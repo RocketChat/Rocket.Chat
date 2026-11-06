@@ -16,13 +16,13 @@ import type {
 	NonCompliantPair,
 	ReevaluationUser,
 	RoomMembersPreview,
-} from './types';
-import { HEALTH_CHECK_TIMEOUT } from '../clients/virtru/VirtruClient';
-import type { VirtruClient } from '../clients/virtru/VirtruClient';
-import { buildEntityIdentifier, buildAttributeFqns, getUserEntityKey } from '../clients/virtru/identity';
-import { OnlyCompliantCanBeAddedToRoomError, PdpHealthCheckError } from '../errors';
-import { classifyDecisions, previewRoomMembersInSteps } from '../helper';
-import { logger } from '../logger';
+} from './types.js';
+import { HEALTH_CHECK_TIMEOUT } from '../clients/virtru/VirtruClient.js';
+import type { VirtruClient } from '../clients/virtru/VirtruClient.js';
+import { buildEntityIdentifier, buildAttributeFqns, getUserEntityKey } from '../clients/virtru/identity.js';
+import { OnlyCompliantCanBeAddedToRoomError, PdpHealthCheckError } from '../errors.js';
+import { classifyDecisions, previewRoomMembersInSteps } from '../helper.js';
+import { logger } from '../logger.js';
 
 const pdpLogger = logger.section('VirtruPDP');
 

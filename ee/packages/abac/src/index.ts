@@ -29,8 +29,8 @@ import { escapeRegExp, isTruthy } from '@rocket.chat/tools';
 import type { Document, UpdateFilter } from 'mongodb';
 import pLimit from 'p-limit';
 
-import { Audit } from './audit';
-import { VirtruClient } from './clients/virtru/VirtruClient';
+import { Audit } from './audit.js';
+import { VirtruClient } from './clients/virtru/VirtruClient.js';
 import {
 	AbacError,
 	AbacErrorCode,
@@ -43,7 +43,7 @@ import {
 	PdpUnavailableError,
 	PdpHealthCheckError,
 	AbacContractError,
-} from './errors';
+} from './errors.js';
 import {
 	getAbacRoom,
 	assertRoomAcceptsAttributes,
@@ -64,12 +64,12 @@ import {
 	type PreviewSubject,
 	MAX_ABAC_ATTRIBUTE_KEYS,
 	stripTrailingSlashes,
-} from './helper';
-import { logger } from './logger';
-import type { Evaluation, IPolicyDecisionPoint, VirtruPDPConfig } from './pdp';
-import { LocalPDP, VirtruPDP } from './pdp';
-import { LocalAttributeStore, VirtruAttributeStore } from './store';
-import type { AttributeStoreDescriptor, AttributeStoreSelectionContext, IAttributeStore } from './store';
+} from './helper.js';
+import { logger } from './logger.js';
+import type { Evaluation, IPolicyDecisionPoint, VirtruPDPConfig } from './pdp/index.js';
+import { LocalPDP, VirtruPDP } from './pdp/index.js';
+import { LocalAttributeStore, VirtruAttributeStore } from './store/index.js';
+import type { AttributeStoreDescriptor, AttributeStoreSelectionContext, IAttributeStore } from './store/index.js';
 
 // Limit concurrent user removals to avoid overloading the server with too many operations at once
 const limit = pLimit(20);
@@ -1496,10 +1496,10 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 }
 
-export { LocalPDP, VirtruPDP } from './pdp';
-export type { IPolicyDecisionPoint, VirtruPDPConfig } from './pdp';
-export { PdpHealthCheckError, getPdpHealthErrorCode, AbacAttributeStoreExternalError, AbacErrorCode, AbacContractError } from './errors';
-export { buildRoomClassificationBanner, parseClassificationBannersConfig } from './classification-banner/engine';
-export type { ClassificationBannersConfig } from './classification-banner/types';
+export { LocalPDP, VirtruPDP } from './pdp/index.js';
+export type { IPolicyDecisionPoint, VirtruPDPConfig } from './pdp/index.js';
+export { PdpHealthCheckError, getPdpHealthErrorCode, AbacAttributeStoreExternalError, AbacErrorCode, AbacContractError } from './errors.js';
+export { buildRoomClassificationBanner, parseClassificationBannersConfig } from './classification-banner/engine.js';
+export type { ClassificationBannersConfig } from './classification-banner/types.js';
 
 export default AbacService;

@@ -1,7 +1,7 @@
 import { serverFetch } from '@rocket.chat/server-fetch';
 
-import { logger } from '../../logger';
-import type { IVirtruPDPConfig, ITokenCache } from '../../pdp/types';
+import { logger } from '../../logger.js';
+import type { IVirtruPDPConfig, ITokenCache } from '../../pdp/types.js';
 
 const virtruClientLogger = logger.section('VirtruClient');
 

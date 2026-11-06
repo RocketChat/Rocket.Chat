@@ -24,8 +24,8 @@ import {
 	AbacInvalidAttributeValuesError,
 	AbacRoomNotFoundError,
 	PdpUnavailableError,
-} from './errors';
-import type { Evaluation, IResourceDecision, RoomMembersPreview } from './pdp/types';
+} from './errors.js';
+import type { Evaluation, IResourceDecision, RoomMembersPreview } from './pdp/types.js';
 
 export const MAX_ABAC_ATTRIBUTE_KEYS = 10;
 export const MAX_ABAC_ATTRIBUTE_VALUES = 10;
