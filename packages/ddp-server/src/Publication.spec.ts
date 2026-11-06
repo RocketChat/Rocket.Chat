@@ -1,5 +1,5 @@
-import { Publication } from './Publication';
-import { makeSession, makeSubscription, sentPackets } from './__tests__/helpers';
+import { Publication } from './Publication.js';
+import { makeSession, makeSubscription, sentPackets } from './__tests__/helpers.js';
 
 describe('Publication', () => {
 	let session: ReturnType<typeof makeSession>;

@@ -2,10 +2,10 @@ import type { IServiceMetrics } from '@rocket.chat/core-services';
 import { ClientSafeError } from '@rocket.chat/core-services';
 import WebSocket from 'ws';
 
-import { Publication } from './Publication';
-import type { RemoteMethodCall } from './Server';
-import { Server } from './Server';
-import { makeSession, makePacket, makeSubscription, sentPackets } from './__tests__/helpers';
+import { Publication } from './Publication.js';
+import type { RemoteMethodCall } from './Server.js';
+import { Server } from './Server.js';
+import { makeSession, makePacket, makeSubscription, sentPackets } from './__tests__/helpers.js';
 
 jest.mock('@rocket.chat/logger', () => ({
 	Logger: jest.fn().mockReturnValue({

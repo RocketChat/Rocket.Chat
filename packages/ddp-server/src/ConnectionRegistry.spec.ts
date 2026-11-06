@@ -2,9 +2,9 @@ import { EventEmitter } from 'events';
 
 import WebSocket from 'ws';
 
-import { ConnectionRegistry } from './ConnectionRegistry';
-import type { Session } from './Session';
-import { ConnectionLifecycle } from './lifecycle';
+import { ConnectionRegistry } from './ConnectionRegistry.js';
+import type { Session } from './Session.js';
+import { ConnectionLifecycle } from './lifecycle.js';
 
 function makeSession(userId: string | undefined, sessionId: string) {
 	const ws = Object.assign(new EventEmitter(), {
