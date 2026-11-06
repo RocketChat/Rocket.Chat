@@ -3,6 +3,13 @@
 	"version": "0.0.4",
 	"private": true,
 	"description": "Fork of https://github.com/kcbanner/node-cas",
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		}
+	},
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"files": [

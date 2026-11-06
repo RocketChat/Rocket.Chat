@@ -17,7 +17,7 @@ const usersModel = {
 const sessionsModel = {
 	findOneById: jest.fn(),
 	addConnectionById: jest.fn(),
-	removeConnectionByConnectionId: jest.fn(),
+	removeConnectionById: jest.fn(),
 	updateOne: jest.fn(),
 	updateConnectionStatusById: jest.fn(),
 	findByInstanceId: jest.fn(),
@@ -283,6 +283,7 @@ describe('Presence', () => {
 			aliceIsDisconnected();
 
 			await expect(presence.removeConnection('alice', 'alice-desktop')).resolves.toEqual({ uid: 'alice', session: 'alice-desktop' });
+			expect(sessionsModel.removeConnectionById).toHaveBeenCalledWith('alice', 'alice-desktop');
 			expect(broadcastStatuses()).toEqual([UserStatus.ONLINE, UserStatus.OFFLINE]);
 		});
 

@@ -4,7 +4,6 @@ import { mountRouter } from '@rocket.chat/http-router';
 import { Integrations, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { isIntegrationsHooksAddSchema, isIntegrationsHooksRemoveSchema } from '@rocket.chat/rest-typings';
-import { Meteor } from 'meteor/meteor';
 import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
 import _ from 'underscore';
 
@@ -567,6 +566,4 @@ Api.addRoute(
 	},
 );
 
-Meteor.startup(() => {
-	mountRouter(httpApp, Api.router);
-});
+mountRouter(httpApp, Api.router);

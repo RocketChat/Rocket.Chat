@@ -1,5 +1,4 @@
 import type { OAuthConfiguration } from '@rocket.chat/core-typings';
-import { Meteor } from 'meteor/meteor';
 import passport from 'passport';
 import _ from 'underscore';
 
@@ -41,18 +40,16 @@ const configureGitlabOAuth = () => {
 	addPassportCustomOAuth('gitlab', { ...config, clientId, clientSecret, serverURL, identityPath, mergeUsers });
 };
 
-Meteor.startup(() => {
-	const updateConfig = _.debounce(configureGitlabOAuth, 300);
+const updateConfig = _.debounce(configureGitlabOAuth, 300);
 
-	settings.watchMultiple(
-		[
-			'Accounts_OAuth_Gitlab',
-			'API_Gitlab_URL',
-			'Accounts_OAuth_Gitlab_id',
-			'Accounts_OAuth_Gitlab_secret',
-			'Accounts_OAuth_Gitlab_identity_path',
-			'Accounts_OAuth_Gitlab_merge_users',
-		],
-		updateConfig,
-	);
-});
+settings.watchMultiple(
+	[
+		'Accounts_OAuth_Gitlab',
+		'API_Gitlab_URL',
+		'Accounts_OAuth_Gitlab_id',
+		'Accounts_OAuth_Gitlab_secret',
+		'Accounts_OAuth_Gitlab_identity_path',
+		'Accounts_OAuth_Gitlab_merge_users',
+	],
+	updateConfig,
+);

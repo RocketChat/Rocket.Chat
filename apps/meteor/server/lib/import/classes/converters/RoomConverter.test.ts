@@ -36,7 +36,6 @@ const { RoomConverter } = proxyquire.noCallThru().load('./RoomConverter', {
 	'../../../../meteor-methods/rooms/createPrivateGroup': {
 		createPrivateGroupMethod: sinon.stub(),
 	},
-	'meteor/check': sinon.stub(),
 	'meteor/meteor': sinon.stub(),
 	'@rocket.chat/models': { ...modelsMock, '@global': true },
 });

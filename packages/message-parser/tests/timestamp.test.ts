@@ -1,4 +1,4 @@
-import { parse } from '../src';
+import { parse } from '../src/index.js';
 
 const plain = (value: string) => ({ type: 'PLAIN_TEXT' as const, value });
 

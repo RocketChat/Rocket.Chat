@@ -1,10 +1,12 @@
 import crypto from 'node:crypto';
 
+import { nodeHandler } from '@rocket.chat/http-router';
 import { Settings } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { settings } from '..';
+import { nodeLoggerMiddleware } from '../../api/v1/middlewares/logger';
 import { httpApp } from '../../lib/http/httpServer';
+import { HttpLogger } from '../../lib/logger/http';
 import { addStyle } from '../../lib/ui-master/inject';
 
 settings.watch('theme-custom-css', (value) => {
@@ -16,13 +18,13 @@ settings.watch('theme-custom-css', (value) => {
 });
 
 // TODO: Add a migration to remove this setting from the database
-Meteor.startup(async () => {
+export const removeLegacyThemeSettings = async (): Promise<void> => {
 	await Settings.deleteMany({ _id: /theme-color/ });
 	await Settings.deleteOne({ _id: /theme-font/ });
 	await Settings.deleteOne({ _id: 'css' });
-});
+};
 
-httpApp.all(`${__meteor_runtime_config__.ROOT_URL_PATH_PREFIX || ''}/theme.css`, (c) => {
+httpApp.all(`${__meteor_runtime_config__.ROOT_URL_PATH_PREFIX || ''}/theme.css`, nodeHandler(nodeLoggerMiddleware(HttpLogger)), (c) => {
 	const style = settings.get('theme-custom-css');
 	if (typeof style !== 'string') {
 		throw new Error('Invalid theme-custom-css setting');

@@ -1,8 +1,8 @@
+import { usePreviewEmoji } from '@rocket.chat/ui-emoji-picker';
 import { renderHook, act } from '@testing-library/react';
 import { useState, type ReactNode } from 'react';
 
 import EmojiPickerProvider from './EmojiPickerProvider';
-import { usePreviewEmoji } from '../../contexts/EmojiPickerContext';
 
 jest.mock('@rocket.chat/fuselage-hooks', () => {
 	const originalModule = jest.requireActual('@rocket.chat/fuselage-hooks');
@@ -24,7 +24,10 @@ jest.mock('../../lib/emoji', () => ({
 	}),
 }));
 
-jest.mock('../../views/composer/EmojiPicker', () => () => null);
+jest.mock('@rocket.chat/ui-emoji-picker', () => ({
+	...jest.requireActual('@rocket.chat/ui-emoji-picker'),
+	EmojiPicker: () => null,
+}));
 jest.mock('./useUpdateCustomEmoji', () => ({ useUpdateCustomEmoji: () => undefined }));
 
 const wrapper = ({ children }: { children: ReactNode }) => <EmojiPickerProvider>{children}</EmojiPickerProvider>;

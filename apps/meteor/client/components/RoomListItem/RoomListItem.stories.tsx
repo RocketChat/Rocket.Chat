@@ -17,7 +17,7 @@ const meta: Meta<RoomListItemProps> = {
 		icon: <Icon name='hashtag' size='x20' />,
 		iconLabel: 'Public channel',
 		subtitle: 'Rafael: release notes are up',
-		time: new Date(),
+		timeLabel: '10:24 AM',
 		menu: <IconButton size='mini' icon='kebab' aria-label='Options' />,
 	},
 	decorators: [

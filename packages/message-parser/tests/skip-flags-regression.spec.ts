@@ -1,4 +1,4 @@
-import { parse } from '../src';
+import { parse } from '../src/index.js';
 
 describe('Skip Flags Regression (Complexity Audit)', () => {
 	it('should parse nested formatting across multiple depths without throwing', () => {

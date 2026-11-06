@@ -1,13 +1,12 @@
 import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
 import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
-import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import { memo, useMemo, useSyncExternalStore } from 'react';
 
 import ComposerSkeleton from './ComposerSkeleton';
 import { LegacyRoomManager } from '../../../lib/LegacyRoomManager';
-import { useChat } from '../contexts/ChatContext';
 import { useRoom } from '../contexts/RoomContext';
+import type { ComposerActions } from './hooks/useComposerActions';
 import MessageBox from './messageBox/MessageBox';
 import RichTextMessageBox from './messageBox/RichTextMessageBox';
 
@@ -20,65 +19,14 @@ export type ComposerMessageProps = {
 	previewUrls?: string[];
 	onResize?: () => void;
 	onEscape?: () => void;
-	onSend?: () => void;
+	actions: ComposerActions;
 	onNavigateToNextMessage?: () => void;
 	onNavigateToPreviousMessage?: () => void;
 	onClickSelectAll?: () => void;
 };
 
-const ComposerMessage = ({ tmid, onSend, ...props }: ComposerMessageProps) => {
-	const chat = useChat();
+const ComposerMessage = ({ tmid, actions, ...props }: ComposerMessageProps) => {
 	const room = useRoom();
-	const dispatchToastMessage = useToastMessageDispatch();
-
-	const composerProps = useMemo(
-		() => ({
-			onJoin: async (): Promise<void> => {
-				try {
-					await chat?.data?.joinRoom();
-				} catch (error) {
-					dispatchToastMessage({ type: 'error', message: error });
-					throw error;
-				}
-			},
-
-			onSend: async ({
-				value: text,
-				tshow,
-				previewUrls,
-				isSlashCommandAllowed,
-			}: {
-				value: string;
-				tshow?: boolean;
-				previewUrls?: string[];
-				isSlashCommandAllowed?: boolean;
-			}): Promise<void> => {
-				try {
-					await chat?.action.stop('typing');
-					const newMessageSent = await chat?.flows.sendMessage({
-						text,
-						tshow,
-						previewUrls,
-						isSlashCommandAllowed,
-						tmid,
-					});
-					if (newMessageSent) onSend?.();
-				} catch (error) {
-					dispatchToastMessage({ type: 'error', message: error });
-				}
-			},
-			onTyping: async (): Promise<void> => {
-				if (chat?.composer?.text?.trim() === '') {
-					await chat?.action.stop('typing');
-					return;
-				}
-				await chat?.action.start('typing');
-			},
-			onNavigateToPreviousMessage: () => chat?.messageEditing.toPreviousMessage(),
-			onNavigateToNextMessage: () => chat?.messageEditing.toNextMessage(),
-		}),
-		[chat?.data, chat?.flows, chat?.action, chat?.composer?.text, chat?.messageEditing, dispatchToastMessage, tmid, onSend],
-	);
 
 	const { subscribe, getSnapshotValue } = useMemo(() => {
 		return LegacyRoomManager.listenRoomPropsByRid(room._id, 'streamActive');
@@ -92,16 +40,10 @@ const ComposerMessage = ({ tmid, onSend, ...props }: ComposerMessageProps) => {
 	return (
 		<FeaturePreview feature='realtimeMessageComposer'>
 			<FeaturePreviewOff>
-				<MessageBox key={tmid ? `${room._id}-${tmid}` : room._id} tmid={tmid} {...composerProps} showFormattingTips={true} {...props} />
+				<MessageBox key={tmid ? `${room._id}-${tmid}` : room._id} tmid={tmid} {...actions} showFormattingTips={true} {...props} />
 			</FeaturePreviewOff>
 			<FeaturePreviewOn>
-				<RichTextMessageBox
-					key={tmid ? `${room._id}-${tmid}` : room._id}
-					tmid={tmid}
-					{...composerProps}
-					showFormattingTips={true}
-					{...props}
-				/>
+				<RichTextMessageBox key={tmid ? `${room._id}-${tmid}` : room._id} tmid={tmid} {...actions} showFormattingTips={true} {...props} />
 			</FeaturePreviewOn>
 		</FeaturePreview>
 	);

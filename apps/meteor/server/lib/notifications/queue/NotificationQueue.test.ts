@@ -17,7 +17,6 @@ const pushNotificationStub = { send: sinon.stub() };
 
 const { Notification } = proxyquire.noCallThru().load('./NotificationQueue', {
 	'@rocket.chat/tracing': { tracerSpan: (_name: string, _options: unknown, fn: () => unknown) => fn() },
-	'meteor/meteor': { Meteor: { startup: sinon.stub() } },
 	'../../logger/system': { SystemLogger: { error: sinon.stub() } },
 	'../message/email': { sendEmailFromData: sinon.stub() },
 	'../push-config': { PushNotification: pushNotificationStub },
