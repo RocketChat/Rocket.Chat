@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import { CheckBox, Field, FieldGroup, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage-forms';
+import { CheckBox, Field, FieldError, FieldGroup, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage-forms';
 import { GenericModal } from '@rocket.chat/ui-client';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useLanguage, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
@@ -76,12 +76,18 @@ const ArchiveRoomsModal = ({ groupTitle, rooms, onClose }: ArchiveRoomsModalProp
 		[language, t],
 	);
 
+	// A date still to come has nothing quiet since it; the input's `max` stops the picker, not the keyboard, so the
+	// field says so itself.
+	const customDateInFuture = useMemo(() => {
+		const since = fromDateInputValue(customDate)?.getTime();
+		return preset === CUSTOM_DATE && since !== undefined && since > Date.now();
+	}, [preset, customDate]);
+
 	// The instant a room must have been active after to stay; `undefined` while the date typed in is not one yet.
 	const threshold = useMemo((): number | undefined => {
 		if (preset !== CUSTOM_DATE) {
 			return Date.now() - Number(preset) * DAY;
 		}
-		// A date still to come has nothing quiet since it; the input's `max` stops the picker, not the keyboard.
 		const since = fromDateInputValue(customDate)?.getTime();
 		return since !== undefined && since <= Date.now() ? since : undefined;
 	}, [preset, customDate]);
@@ -126,12 +132,15 @@ const ArchiveRoomsModal = ({ groupTitle, rooms, onClose }: ArchiveRoomsModalProp
 					<Field>
 						<FieldLabel>{t('Inactive_since')}</FieldLabel>
 						<FieldRow>
+							{/* The field appears on request, so it takes the focus the user would move to it next anyway. */}
 							<DateInput
+								autoFocus
 								max={toDateInputValue(new Date())}
 								value={customDate}
 								onChange={(event) => setCustomDate(event.currentTarget.value)}
 							/>
 						</FieldRow>
+						{customDateInFuture && <FieldError>{t('Choose_today_or_an_earlier_date')}</FieldError>}
 					</Field>
 				)}
 				<Field>

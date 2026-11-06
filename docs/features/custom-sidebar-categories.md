@@ -274,10 +274,11 @@ checked (`aria-checked`) and marked with a checkmark. Picking one closes the men
 
 **Archive rooms…** opens `ArchiveRoomsModal` (`useArchiveRoomsItems.tsx`, through
 `useCategoryModals().openArchiveRooms`), which archives the group's quiet rooms: "Inactive for" offers 30 / 90 /
-180 days, 1 year, or "Custom date", which reveals an "Inactive since" date field. Either way the room's last
-activity (`getLastActivity`, as the filter judges it) is compared with the threshold. The room currently open and
-a room with no date are never taken; unread rooms only when "Include unread rooms" is checked. A live line says
-how many rooms match and the confirm button is disabled at zero.
+180 days, 1 year, or "Custom date", which reveals an "Inactive since" date field that takes the focus as it
+appears and refuses a day still to come with an error of its own ("Choose today or an earlier date."). Either way
+the room's last activity (`getLastActivity`, as the filter judges it) is compared with the threshold. The room
+currently open and a room with no date are never taken; unread rooms only when "Include unread rooms" is checked.
+A live line says how many rooms match and the confirm button is disabled at zero, there being nothing to confirm.
 
 Archiving is the user's own flag on the subscription, `userArchived`, set through `POST /v1/subscriptions.setUserArchived`
 (`useArchivedRooms` reads it from the subscriptions store and writes it with one request per two hundred rooms,
@@ -297,11 +298,12 @@ no Archived group, so the item hides the room as before (`useRoomArchiveMenuItem
 The `Archived` group listed last (`SIDEBAR_ARCHIVED_GROUP_KEY`, licensed workspaces only) holds the archived rooms:
 its header always wears the empty-group look and no badge, its rows are stripped of their unread counters, it has no
 chip, is never moved or moved past, and starts collapsed, so the collapsed-groups list records it when it is
-*expanded*. Its menu (`ArchivedGroupMenu.tsx`) has a single **Notifications** item with a toggle
-(`useArchivedRoomsNotificationsItem.tsx`), on while any archived room still sends notifications: turning it off sets
-`disableNotifications` on those rooms through `rooms.saveNotification`, five at a time, and once every archived room
-is off, turning it on wakes them all. Each first says how many rooms it changes, in a modal without an icon ("Turn
-off notifications" / "Turn on notifications").
+*expanded*. Its menu (`ArchivedGroupMenu.tsx`) has a single item under a **Notifications** section
+(`useArchivedRoomsNotificationsItem.tsx`), which says what it does next beside a decorative switch: **Turn off**
+while any archived room still sends notifications, setting `disableNotifications` on those rooms through
+`rooms.saveNotification`, five at a time, and **Turn on** once every archived room is off, waking them all. Each
+first says how many rooms it changes, in a modal without an icon ("Turn off notifications" / "Turn on
+notifications").
 
 ### Room context menu — `CategoryRoomMenu.tsx`
 

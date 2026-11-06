@@ -1,7 +1,8 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { axe } from 'jest-axe';
 
 import ArchivedGroupMenu from './ArchivedGroupMenu';
 
@@ -40,12 +41,31 @@ const openMenu = async (rooms: SubscriptionWithRoom[]) => {
 	await userEvent.click(screen.getByRole('button', { name: 'Options' }));
 };
 
-const notificationsItem = () => screen.findByRole('menuitem', { name: /Notifications/ });
+const notificationsItem = (name: 'Turn off' | 'Turn on') => screen.findByRole('menuitem', { name });
 
-it('is on while a room still sends notifications, and turns them off for those, after saying how many', async () => {
+/** The switch only pictures the state the label already tells: out of the accessibility tree and the tab order. */
+const decorativeSwitch = (item: HTMLElement) => {
+	const toggle = within(item).getByRole('checkbox', { hidden: true });
+	expect(toggle).toHaveAttribute('aria-hidden', 'true');
+	expect(toggle).toHaveAttribute('tabindex', '-1');
+	return toggle;
+};
+
+const axeRules = {
+	rules: {
+		// Fuselage renders every menu item as a `<label role="menuitem">`, which axe rejects; not this menu's doing.
+		'aria-allowed-role': { enabled: false },
+		// A menu portaled into a bare test document sits in no landmark.
+		'region': { enabled: false },
+	},
+};
+
+it('says "Turn off" while a room still sends notifications, and turns them off for those, after saying how many', async () => {
 	await openMenu([loud, loudToo, quiet]);
-	const item = await notificationsItem();
-	expect(item.querySelector('input[type="checkbox"]')).toBeChecked();
+	const item = await notificationsItem('Turn off');
+	expect(screen.getByRole('group', { name: 'Notifications' })).toContainElement(item);
+	expect(decorativeSwitch(item)).toBeChecked();
+	expect(await axe(screen.getByRole('menu'), axeRules)).toHaveNoViolations();
 	await userEvent.click(item);
 
 	expect(await screen.findByRole('dialog', { name: 'Turn off notifications' })).toHaveTextContent(
@@ -60,11 +80,11 @@ it('is on while a room still sends notifications, and turns them off for those, 
 	expect(saveNotification).toHaveBeenCalledWith({ roomId: 'loud-too', notifications: { disableNotifications: '1' } });
 });
 
-it('is off once every room has notifications off, and turns them all on', async () => {
+it('says "Turn on" once every room has notifications off, and turns them all on', async () => {
 	await openMenu([quiet, room({ rid: 'quiet-too', disableNotifications: true })]);
 
-	const item = await notificationsItem();
-	expect(item.querySelector('input[type="checkbox"]')).not.toBeChecked();
+	const item = await notificationsItem('Turn on');
+	expect(decorativeSwitch(item)).not.toBeChecked();
 	await userEvent.click(item);
 	expect(await screen.findByRole('dialog', { name: 'Turn on notifications' })).toHaveTextContent(
 		'2 archived rooms send notifications again.',
@@ -79,5 +99,5 @@ it('is off once every room has notifications off, and turns them all on', async 
 it('is disabled while nothing is archived', async () => {
 	await openMenu([]);
 
-	expect(await notificationsItem()).toHaveAttribute('aria-disabled', 'true');
+	expect(await notificationsItem('Turn on')).toHaveAttribute('aria-disabled', 'true');
 });

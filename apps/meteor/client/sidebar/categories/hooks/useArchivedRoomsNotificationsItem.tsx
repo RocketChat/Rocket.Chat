@@ -20,9 +20,11 @@ type UseArchivedRoomsNotificationsItemOptions = {
 };
 
 /**
- * The notifications switch of the whole archive: on while any archived room still sends notifications, and
- * turning it off silences every one of them; once all are off, turning it on wakes them all. It says how many
- * rooms it is about to change first, and is disabled while nothing is archived.
+ * The notifications of the whole archive: "Turn off" while any archived room still sends notifications, which
+ * silences every one of them; once all are off, "Turn on" wakes them all. The item says what it does next, which
+ * is also how a screen reader learns the state; the switch beside it only pictures that state, so it is kept out of
+ * the accessibility tree and the tab order. It says how many rooms it is about to change first, and is disabled
+ * while nothing is archived.
  */
 export const useArchivedRoomsNotificationsItem = ({ rooms, onOpen }: UseArchivedRoomsNotificationsItemOptions): GenericMenuItemProps => {
 	const { t } = useTranslation();
@@ -93,10 +95,11 @@ export const useArchivedRoomsNotificationsItem = ({ rooms, onOpen }: UseArchived
 		() => ({
 			id: ARCHIVED_ROOMS_NOTIFICATIONS_ITEM_ID,
 			icon: 'bell',
-			content: t('Notifications'),
+			content: t(enabled ? 'Turn_OFF' : 'Turn_ON'),
+			textValue: t(enabled ? 'Turn_OFF' : 'Turn_ON'),
 			disabled: targets.length === 0,
 			onClick: handleClick,
-			addon: <ToggleSwitch disabled={targets.length === 0} checked={enabled} onChange={() => undefined} />,
+			addon: <ToggleSwitch disabled={targets.length === 0} checked={enabled} aria-hidden tabIndex={-1} onChange={() => undefined} />,
 		}),
 		[t, enabled, targets.length, handleClick],
 	);
