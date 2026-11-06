@@ -1,8 +1,8 @@
 import { Authorization } from '@rocket.chat/core-services';
 import { mockModel } from '@rocket.chat/models/testing';
 
-import { getUnitsFromUser } from './getUnitsFromUser';
-import { defaultLogger } from '../utils/logger';
+import { getUnitsFromUser } from './getUnitsFromUser.js';
+import { defaultLogger } from '../utils/logger.js';
 
 // Mock the dependencies
 jest.mock('@rocket.chat/core-services', () => ({
