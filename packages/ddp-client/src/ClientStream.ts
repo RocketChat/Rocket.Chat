@@ -1,12 +1,12 @@
 import { Emitter } from '@rocket.chat/emitter';
 
-import { DDPDispatcher } from './DDPDispatcher';
-import type { DDPDispatchOptions } from './MinimalDDPClient';
-import type { ClientStream } from './types/ClientStream';
-import type { DDPClient } from './types/DDPClient';
-import type { Subscription } from './types/Subscription';
-import type { MethodPayload } from './types/methodsPayloads';
-import type { PublicationPayloads } from './types/publicationPayloads';
+import { DDPDispatcher } from './DDPDispatcher.js';
+import type { DDPDispatchOptions } from './MinimalDDPClient.js';
+import type { ClientStream } from './types/ClientStream.js';
+import type { DDPClient } from './types/DDPClient.js';
+import type { Subscription } from './types/Subscription.js';
+import type { MethodPayload } from './types/methodsPayloads.js';
+import type { PublicationPayloads } from './types/publicationPayloads.js';
 
 /**
  * Rejection of a method call whose frame went out on a connection that dropped before the result arrived.
