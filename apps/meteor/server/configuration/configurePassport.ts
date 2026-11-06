@@ -1,4 +1,5 @@
 import { nodeHandler } from '@rocket.chat/http-router';
+import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
 import bodyParser from 'body-parser';
 import MongoStore from 'connect-mongo';
@@ -7,6 +8,7 @@ import rateLimit from 'express-rate-limit';
 import session from 'express-session';
 import passport from 'passport';
 
+import { nodeLoggerMiddleware } from '../api/v1/middlewares/logger';
 import { client } from '../database/utils';
 import { httpApp } from '../lib/http/httpServer';
 import { configureOAuthServices } from '../lib/oauth/configureOAuthServices';
@@ -15,6 +17,8 @@ import { getOAuthServices } from '../lib/oauth/getOAuthServices';
 import type { ICachedSettings } from '../settings/CachedSettings';
 
 const oAuthPaths = ['/oauth', '/_oauth'];
+
+const oAuthLogger = new Logger('OAuth');
 
 const { Router: router } = express;
 
@@ -95,6 +99,7 @@ export const configurePassport = (settings: ICachedSettings) => {
 		configureOAuthServices(oauthServiceConfigs, settings);
 	});
 
+	const logRequest = nodeHandler(nodeLoggerMiddleware(oAuthLogger));
 	const oAuthHandler = nodeHandler(oAuthApp);
-	oAuthPaths.forEach((path) => httpApp.use(`${path}/*`, oAuthHandler));
+	oAuthPaths.forEach((path) => httpApp.use(`${path}/*`, logRequest, oAuthHandler));
 };

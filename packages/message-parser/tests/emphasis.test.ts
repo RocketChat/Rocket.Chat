@@ -1,4 +1,3 @@
-import { parse } from '../src';
 import {
 	italic,
 	paragraph,
@@ -12,7 +11,8 @@ import {
 	mentionChannel,
 	mentionUser,
 	inlineCode,
-} from './helpers';
+} from './helpers.js';
+import { parse } from '../src/index.js';
 
 test.each([
 	['_:smile:_', [paragraph([italic([emoji('smile')])])]],

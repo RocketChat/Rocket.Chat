@@ -123,7 +123,7 @@ export function startBroker(options: Moleculer.BrokerOptions = {}): MoleculerBro
 			delay: parseInt(RETRY_DELAY),
 			maxDelay: parseInt(RETRY_MAX_DELAY),
 			factor: parseInt(RETRY_FACTOR),
-			check: (err: any): boolean => err && !!err.retryable,
+			check: (err: any): boolean => !!err?.retryable,
 		},
 
 		maxCallLevel: 100,

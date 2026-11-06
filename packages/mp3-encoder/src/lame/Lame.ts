@@ -1,23 +1,36 @@
-import { BitStream } from './BitStream';
-import { CBRNewIterationLoop } from './CBRNewIterationLoop';
-import { Encoder } from './Encoder';
-import { GainAnalysis } from './GainAnalysis';
-import { InOut } from './InOut';
-import { LameGlobalFlags } from './LameGlobalFlags';
-import { MPEGMode } from './MPEGMode';
-import { NumUsed } from './NumUsed';
-import { Presets } from './Presets';
-import { PsyModel } from './PsyModel';
-import { Quantize } from './Quantize';
-import { ScaleFac } from './ScaleFac';
-import { ShortBlock } from './ShortBlock';
-import { VbrMode } from './VbrMode';
-import { assert } from './assert';
-import { findBitrateIndex, findNearestBitrate, getBitrate } from './bitrates';
-import { BLKSIZE, BPC, ENCDELAY, FFTOFFSET, LAME_ID, MFSIZE, MPG_MD_MS_LR, POSTDELAY, PSFB12, PSFB21, SBMAX_l, SBMAX_s } from './constants';
-import { isCloseToEachOther, blackmanWindow, gcd } from './math';
-import type { SampleRate } from './sampleRates';
-import { findNearestSampleRate } from './sampleRates';
+import { BitStream } from './BitStream.js';
+import { CBRNewIterationLoop } from './CBRNewIterationLoop.js';
+import { Encoder } from './Encoder.js';
+import { GainAnalysis } from './GainAnalysis.js';
+import { InOut } from './InOut.js';
+import { LameGlobalFlags } from './LameGlobalFlags.js';
+import { MPEGMode } from './MPEGMode.js';
+import { NumUsed } from './NumUsed.js';
+import { Presets } from './Presets.js';
+import { PsyModel } from './PsyModel.js';
+import { Quantize } from './Quantize.js';
+import { ScaleFac } from './ScaleFac.js';
+import { ShortBlock } from './ShortBlock.js';
+import { VbrMode } from './VbrMode.js';
+import { assert } from './assert.js';
+import { findBitrateIndex, findNearestBitrate, getBitrate } from './bitrates.js';
+import {
+	BLKSIZE,
+	BPC,
+	ENCDELAY,
+	FFTOFFSET,
+	LAME_ID,
+	MFSIZE,
+	MPG_MD_MS_LR,
+	POSTDELAY,
+	PSFB12,
+	PSFB21,
+	SBMAX_l,
+	SBMAX_s,
+} from './constants.js';
+import { isCloseToEachOther, blackmanWindow, gcd } from './math.js';
+import type { SampleRate } from './sampleRates.js';
+import { findNearestSampleRate } from './sampleRates.js';
 
 export class Lame {
 	private readonly bs: BitStream;

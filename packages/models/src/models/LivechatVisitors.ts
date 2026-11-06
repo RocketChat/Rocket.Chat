@@ -173,7 +173,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		// TODO remove dependency from another model - this logic should be inside a service/function
 		const livechatCount = await Settings.incrementValueById('Livechat_guest_count', 1, { returnDocument: 'after' });
 
-		if (!livechatCount) {
+		if (typeof livechatCount?.value !== 'number') {
 			throw new Error("Can't find Livechat_guest_count setting");
 		}
 

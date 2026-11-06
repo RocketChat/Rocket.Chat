@@ -1,13 +1,14 @@
 import { QueryClientProvider } from '@tanstack/react-query';
-import { lazy, Suspense } from 'react';
+import { Suspense } from 'react';
 import { createPortal } from 'react-dom';
 
 import OutermostErrorBoundary from './OutermostErrorBoundary';
 import PageLoading from './PageLoading';
+import { preloadedLazy } from '../../lib/preloadedLazy';
 import { queryClient } from '../../lib/queryClient';
 
-const MeteorProvider = lazy(() => import('../../providers/MeteorProvider'));
-const AppLayout = lazy(() => import('./AppLayout'));
+const MeteorProvider = preloadedLazy(() => import('../../providers/MeteorProvider'));
+const AppLayout = preloadedLazy(() => import('./AppLayout'));
 
 const AppRoot = () => (
 	<OutermostErrorBoundary>

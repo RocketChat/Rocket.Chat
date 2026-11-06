@@ -76,7 +76,7 @@
 		"no-useless-catch": "warn",
 		"eslint-js/no-useless-escape": "warn",
 		"no-with": "error",
-		"eslint-js/preserve-caught-error": "warn",
+		"preserve-caught-error": "warn",
 		"require-yield": "error",
 		"use-isnan": "error",
 		"valid-typeof": [

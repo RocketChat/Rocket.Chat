@@ -9,11 +9,15 @@ export class MediaCallLogger implements IMediaSignalLogger {
 	}
 
 	log(...what: any[]): void {
-		this.isDebug && console.log(...what);
+		if (this.isDebug) {
+			console.log(...what);
+		}
 	}
 
 	debug(...what: any[]): void {
-		this.isDebug && console.debug(...what);
+		if (this.isDebug) {
+			console.debug(...what);
+		}
 	}
 
 	error(...what: any[]): void {

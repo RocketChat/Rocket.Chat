@@ -1,3 +1,4 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type {
 	FileAttachmentProps,
 	ImageAttachmentProps,
@@ -7,7 +8,7 @@ import type {
 } from '@rocket.chat/core-typings';
 import { LivechatVisitors, LivechatRooms } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
-import { Match, check } from 'meteor/check';
+import { ajv } from '@rocket.chat/rest-typings';
 
 import { sendMessageLivechat } from './sendMessageLivechat';
 import { FileUpload } from '../../lib/media/file-upload';
@@ -18,6 +19,18 @@ interface ISendFileLivechatMessage {
 	file: IUpload;
 	msgData?: { avatar?: string; emoji?: string; alias?: string; groupable?: boolean; msg?: string };
 }
+
+const isLivechatFileMessageData = ajv.compile<ISendFileLivechatMessage['msgData']>({
+	type: 'object',
+	properties: {
+		avatar: { type: 'string' },
+		emoji: { type: 'string' },
+		alias: { type: 'string' },
+		groupable: { type: 'boolean' },
+		msg: { type: 'string' },
+	},
+	additionalProperties: false,
+});
 
 export const sendFileLivechatMessage = async ({ roomId, visitorToken, file, msgData = {} }: ISendFileLivechatMessage): Promise<boolean> => {
 	const visitor = await LivechatVisitors.getVisitorByToken(visitorToken);
@@ -32,13 +45,11 @@ export const sendFileLivechatMessage = async ({ roomId, visitorToken, file, msgD
 		return false;
 	}
 
-	check(msgData, {
-		avatar: Match.Optional(String),
-		emoji: Match.Optional(String),
-		alias: Match.Optional(String),
-		groupable: Match.Optional(Boolean),
-		msg: Match.Optional(String),
-	});
+	if (!isLivechatFileMessageData(msgData)) {
+		throw new ClientSafeError('error-invalid-arguments', 'Invalid arguments', {
+			method: 'sendFileLivechatMessage',
+		});
+	}
 
 	const fileUrl = file.name && FileUpload.getPath(`${file._id}/${encodeURI(file.name)}`);
 
