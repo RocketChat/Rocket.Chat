@@ -2,9 +2,9 @@ import crypto from 'node:crypto';
 
 import { pino } from 'pino';
 
-import { normalizeDomain } from './jid/normalize';
-import type { Logger } from './logger';
-import { DEFAULT_MAX_STANZA_SIZE } from './xml/StanzaParser';
+import { normalizeDomain } from './jid/normalize.js';
+import type { Logger } from './logger.js';
+import { DEFAULT_MAX_STANZA_SIZE } from './xml/StanzaParser.js';
 
 export type TlsConfig = {
 	cert: string | Buffer;

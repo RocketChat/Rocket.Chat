@@ -2,14 +2,14 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { Emitter } from '@rocket.chat/emitter';
-import type Element from 'ltx/lib/Element';
+import type Element from 'ltx/lib/Element.js';
 
-import { resolveConfig } from '../../src/config';
-import type { XMPPServerEventMap } from '../../src/events';
-import type { Logger } from '../../src/logger';
-import { S2SManager } from '../../src/s2s/S2SManager';
-import type { XmppDnsResolver } from '../../src/s2s/dnsResolver';
-import { xml } from '../../src/xml/build';
+import { resolveConfig } from '../../src/config.js';
+import type { XMPPServerEventMap } from '../../src/events.js';
+import type { Logger } from '../../src/logger.js';
+import { S2SManager } from '../../src/s2s/S2SManager.js';
+import type { XmppDnsResolver } from '../../src/s2s/dnsResolver.js';
+import { xml } from '../../src/xml/build.js';
 
 jest.setTimeout(30000);
 

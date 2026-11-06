@@ -5,8 +5,8 @@ import { setTimeout as sleep } from 'node:timers/promises';
 
 import type { IRoom } from '@rocket.chat/core-typings';
 
-import { config, DUPLICATE_SETTLE_MS, federationPolling, uniqueSuffix } from './helper/config';
-import { isGroupchat, isOccupantPresence, replacedId } from './helper/predicates';
+import { config, DUPLICATE_SETTLE_MS, federationPolling, uniqueSuffix } from './helper/config.js';
+import { isGroupchat, isOccupantPresence, replacedId } from './helper/predicates.js';
 import {
 	assertDomainAllowed,
 	anonymousOccupantUsername,
@@ -24,11 +24,11 @@ import {
 	teardown,
 	updateMessage,
 	waitForMessage,
-} from './helper/rocketchat';
-import type { LocalUser, RocketChat } from './helper/rocketchat';
-import { assertFederationReachable, registerXmppUser, setupSuite } from './helper/suite';
-import type { XmppUser } from './helper/xmpp-client';
-import { retry } from '../../../../../apps/meteor/tests/data/retry';
+} from './helper/rocketchat.js';
+import type { LocalUser, RocketChat } from './helper/rocketchat.js';
+import { assertFederationReachable, registerXmppUser, setupSuite } from './helper/suite.js';
+import type { XmppUser } from './helper/xmpp-client.js';
+import { retry } from '../../../../../apps/meteor/tests/data/retry.js';
 
 describe('XMPP federation: rooms hosted by the XMPP server', () => {
 	let rc: RocketChat;

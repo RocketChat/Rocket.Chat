@@ -1,7 +1,7 @@
-import type Element from 'ltx/lib/Element';
+import type Element from 'ltx/lib/Element.js';
 
-import { xml } from './build';
-import { NS_STANZA_ERRORS } from './namespaces';
+import { xml } from './build.js';
+import { NS_STANZA_ERRORS } from './namespaces.js';
 
 export type StanzaErrorType = 'auth' | 'cancel' | 'continue' | 'modify' | 'wait';
 

@@ -1,6 +1,6 @@
 /* Ambient declarations for the CJS surface of `ltx` and `@xmpp/jid` that this package consumes. */
 
-declare module 'ltx/lib/Element' {
+declare module 'ltx/lib/Element.js' {
 	class Element {
 		name: string;
 
@@ -56,7 +56,7 @@ declare module 'ltx/lib/Element' {
 	export default Element;
 }
 
-declare module 'ltx/lib/parsers/ltx' {
+declare module 'ltx/lib/parsers/ltx.js' {
 	import type { EventEmitter } from 'events';
 
 	class SaxLtx extends EventEmitter {
@@ -77,7 +77,7 @@ declare module 'ltx/lib/parsers/ltx' {
 }
 
 declare module 'ltx' {
-	import type Element from 'ltx/lib/Element';
+	import type Element from 'ltx/lib/Element.js';
 
 	export { Element };
 	export function parse(data: string): Element;

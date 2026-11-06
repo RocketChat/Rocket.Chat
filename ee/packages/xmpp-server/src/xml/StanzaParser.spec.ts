@@ -1,6 +1,6 @@
-import type Element from 'ltx/lib/Element';
+import type Element from 'ltx/lib/Element.js';
 
-import { StanzaParser } from './StanzaParser';
+import { StanzaParser } from './StanzaParser.js';
 
 const STREAM_HEADER =
 	"<stream:stream xmlns='jabber:server' xmlns:stream='http://etherx.jabber.org/streams' from='a.tld' to='b.tld' version='1.0'>";

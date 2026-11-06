@@ -4,8 +4,8 @@ import { setTimeout as sleep } from 'node:timers/promises';
 
 import type { IRoom } from '@rocket.chat/core-typings';
 
-import { uniqueSuffix, withUppercaseDomain } from './helper/config';
-import { isChat, replacedId } from './helper/predicates';
+import { uniqueSuffix, withUppercaseDomain } from './helper/config.js';
+import { isChat, replacedId } from './helper/predicates.js';
 import {
 	createDirectMessage,
 	createLocalUser,
@@ -19,11 +19,11 @@ import {
 	updateMessage,
 	waitForDirectMessageWith,
 	waitForMessage,
-} from './helper/rocketchat';
-import type { LocalUser, RocketChat } from './helper/rocketchat';
-import { assertFederationReachable, registerXmppUser, setupSuite } from './helper/suite';
-import type { XmppUser } from './helper/xmpp-client';
-import { escapeLocalpart } from '../../src/jid/escaping';
+} from './helper/rocketchat.js';
+import type { LocalUser, RocketChat } from './helper/rocketchat.js';
+import { assertFederationReachable, registerXmppUser, setupSuite } from './helper/suite.js';
+import type { XmppUser } from './helper/xmpp-client.js';
+import { escapeLocalpart } from '../../src/jid/escaping.js';
 
 // Lets usernames hold `@` and `'`, as SAML, LDAP or an admin can
 const WIDENED_USERNAMES = "[0-9a-zA-Z-_.@']+";

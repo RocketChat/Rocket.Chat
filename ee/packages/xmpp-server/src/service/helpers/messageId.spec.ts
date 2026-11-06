@@ -1,4 +1,4 @@
-import { deriveInboundEventId, deriveInboundMessageId } from './messageId';
+import { deriveInboundEventId, deriveInboundMessageId } from './messageId.js';
 
 const key = { rid: 'room1', authorKey: 'alice@remote.tld', senderId: 'm1' };
 

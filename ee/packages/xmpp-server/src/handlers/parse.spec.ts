@@ -1,7 +1,7 @@
 import { parse } from 'ltx';
-import type Element from 'ltx/lib/Element';
+import type Element from 'ltx/lib/Element.js';
 
-import { getSubscriptionType, parseAvailabilityPresence, parseChatMessage } from './parse';
+import { getSubscriptionType, parseAvailabilityPresence, parseChatMessage } from './parse.js';
 
 const p = (xmlString: string): Element => parse(xmlString) as unknown as Element;
 
