@@ -25,7 +25,6 @@ test.describe('OC - Livechat - Queue Management', () => {
 
 	test.beforeAll(async ({ api, browser }) => {
 		await Promise.all([
-			api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' }),
 			api.post('/settings/Livechat_accept_chats_with_no_agents', { value: true }),
 			api.post('/settings/Livechat_waiting_queue', { value: true }),
 			api.post('/settings/Livechat_waiting_queue_message', { value: waitingQueueMessage }),
@@ -35,6 +34,10 @@ test.describe('OC - Livechat - Queue Management', () => {
 			api.post('/settings/Livechat_maximum_chats_per_agent', { value: 1 }),
 			api.post('/livechat/users/agent', { username: 'user1' }),
 		]);
+
+		// Restarts the queue worker, so a cycle already scheduled on the old delay cannot outlast the new one.
+		await api.post('/settings/Livechat_Routing_Method', { value: 'Manual_Selection' });
+		await api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' });
 
 		const { page: omniPage } = await createAuxContext(browser, Users.user1, '/', true);
 		poHomeOmnichannel = new HomeOmnichannel(omniPage);
