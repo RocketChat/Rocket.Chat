@@ -31,6 +31,7 @@ const MultiSelectCustomAnchor = forwardRef<HTMLElement, MultiSelectCustomAnchorP
 			role='button'
 			tabIndex={0}
 			display='flex'
+			flexGrow={1}
 			justifyContent='space-between'
 			alignItems='center'
 			height='x40'
