@@ -1,8 +1,8 @@
 import type { IRoom, VideoConference } from '@rocket.chat/core-typings';
 import { mockModel } from '@rocket.chat/models/testing';
 
-import { Authorization } from './Authorization';
-import { canAccessRoom } from './canAccessRoom';
+import { Authorization } from './Authorization.js';
+import { canAccessRoom } from './canAccessRoom.js';
 
 jest.mock('./canAccessRoom', () => ({ canAccessRoom: jest.fn() }));
 jest.mock('./canReadRoom', () => ({ canReadRoom: jest.fn() }));

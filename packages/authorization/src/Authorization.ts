@@ -4,11 +4,11 @@ import type { IUser, IRole, IRoom, ISubscription, VideoConference } from '@rocke
 import { Subscriptions, Rooms, Users, Roles, Permissions } from '@rocket.chat/models';
 import mem from 'mem';
 
-import { AuthorizationUtils } from './AuthorizationUtils';
-import { canAccessRoom } from './canAccessRoom';
-import { canReadRoom } from './canReadRoom';
+import { AuthorizationUtils } from './AuthorizationUtils.js';
+import { canAccessRoom } from './canAccessRoom.js';
+import { canReadRoom } from './canReadRoom.js';
 
-import './canAccessRoomLivechat';
+import './canAccessRoomLivechat.js';
 
 // Register as class
 export class Authorization extends ServiceClass implements IAuthorization {
