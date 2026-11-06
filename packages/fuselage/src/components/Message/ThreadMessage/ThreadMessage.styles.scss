@@ -52,12 +52,6 @@
 		&--follow {
 			color: colors.font(secondary-info);
 		}
-
-		&--unfollow {
-			.rcx-message-thread:not(:hover) & {
-				display: none;
-			}
-		}
 	}
 
 	&__emoji {
