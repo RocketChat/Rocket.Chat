@@ -16,7 +16,7 @@
 @use './mixins.scss';
 
 $message-background-color-editing: theme('message-background-color-editing', colors.status-background(warning-2));
-$message-color-editing: theme('message-background-color-editing', colors.status-font(on-warning-2));
+$message-color-editing: theme('message-color-editing', colors.status-font(on-warning-2));
 
 $message-background-color-highlight: theme('message-background-color-highlight', colors.status-background(warning-2));
 
