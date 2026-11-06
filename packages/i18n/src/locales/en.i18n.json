@@ -2932,6 +2932,7 @@
   "Exchange_Server_Sync_Description": "One administrator-configured connection reads every mailbox, so no user signs in and it works on web, mobile and desktop. Calendars and contacts each sync on their own interval.",
   "Exchange_Server_Sync_Disabled": "Server-to-server sync is turned off.",
   "Exchange_Sync_email_not_verified": "Your email address is not verified, so no Exchange mailbox can be matched to your account. Verify it and try again.",
+  "Exchange_Sync_in_progress": "A sync for this mailbox is already in progress. Try again shortly.",
   "Exchange_Sync_Provider": "Exchange type",
   "Exchange_Sync_Provider_Description": "Exchange Online uses Microsoft Graph. Exchange on-premises uses EWS. Each deployment supports only one of them, so this is set by an administrator and never detected automatically.",
   "Exchange_Sync_Provider_EWS": "Exchange on-premises (EWS)",

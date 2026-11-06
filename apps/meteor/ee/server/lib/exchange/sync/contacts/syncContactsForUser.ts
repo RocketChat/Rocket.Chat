@@ -26,7 +26,7 @@ export const syncContactsForUser = async (uid: IUser['_id']): Promise<UserContac
 	const release = await acquireSyncLease('contacts', uid);
 
 	if (!release) {
-		throw new ExchangeError('rate-limited', 'A contact sync for this mailbox is already in progress');
+		throw new ExchangeError('sync-in-progress', 'A contact sync for this mailbox is already in progress');
 	}
 
 	try {

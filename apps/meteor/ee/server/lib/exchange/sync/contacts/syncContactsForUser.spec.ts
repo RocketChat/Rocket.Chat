@@ -108,7 +108,7 @@ describe('syncContactsForUser', () => {
 
 			const running = syncContactsForUser('uid');
 
-			await expect(syncContactsForUser('uid')).rejects.toMatchObject({ code: 'rate-limited' });
+			await expect(syncContactsForUser('uid')).rejects.toMatchObject({ code: 'sync-in-progress' });
 
 			first.resolve(outcome());
 			await running;
