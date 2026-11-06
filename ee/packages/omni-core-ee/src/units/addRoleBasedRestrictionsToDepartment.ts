@@ -1,8 +1,8 @@
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import type { Filter } from 'mongodb';
 
-import { getUnitsFromUser } from './getUnitsFromUser';
-import { defaultLogger } from '../utils/logger';
+import { getUnitsFromUser } from './getUnitsFromUser.js';
+import { defaultLogger } from '../utils/logger.js';
 
 export const addQueryRestrictionsToDepartmentsModel = async (originalQuery: Filter<ILivechatDepartment> = {}, userId: string) => {
 	const query = { $and: [originalQuery, { type: { $ne: 'u' } }] } satisfies Filter<ILivechatDepartment>;

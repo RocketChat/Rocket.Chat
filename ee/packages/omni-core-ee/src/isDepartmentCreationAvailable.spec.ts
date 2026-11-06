@@ -3,7 +3,7 @@ import type { ILivechatDepartmentModel } from '@rocket.chat/model-typings';
 import { registerModel } from '@rocket.chat/models';
 import { isDepartmentCreationAvailable } from '@rocket.chat/omni-core';
 
-import { isDepartmentCreationAvailablePatch } from './isDepartmentCreationAvailable';
+import { isDepartmentCreationAvailablePatch } from './isDepartmentCreationAvailable.js';
 
 beforeEach(async () => {
 	await License.setWorkspaceUrl('http://localhost:3000');
