@@ -13,6 +13,7 @@ import {
 	useSort,
 	GenericNoResults,
 	links,
+	GenericError,
 } from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { hashKey, useQuery } from '@tanstack/react-query';
@@ -21,7 +22,6 @@ import { useMemo, useState } from 'react';
 import AddManager from './AddManager';
 import RemoveManagerButton from './RemoveManagerButton';
 import FilterByText from '../../../components/FilterByText';
-import GenericError from '../../../components/GenericError';
 import { omnichannelQueryKeys } from '../../../lib/queryKeys';
 
 const ManagersTable = () => {
