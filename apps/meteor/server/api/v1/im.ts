@@ -41,7 +41,7 @@ import { settings } from '../../settings';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import type { TypedAction } from '../definition';
-import { addUserToFileObj } from '../lib/addUserToFileObj';
+import { addUserAndThumbnailToFiles } from '../lib/addUserAndThumbnailToFiles';
 import { composeRoomWithLastMessage } from '../lib/composeRoomWithLastMessage';
 import { getPaginationItems } from '../lib/getPaginationItems';
 
@@ -439,7 +439,7 @@ const dmCountersAction = <Path extends string>(_path: Path): TypedAction<typeof 
 const dmFilesResponseSchema = ajv.compile<PaginatedResult<{ files: IUploadWithUser[] }>>({
 	type: 'object',
 	properties: {
-		files: { type: 'array', items: { type: 'object' } }, // relaxed: IUpload with addUserToFileObj transform
+		files: { type: 'array', items: { type: 'object' } }, // relaxed: IUpload with addUserAndThumbnailToFiles transform
 		...paginatedResponseProperties,
 		success: { type: 'boolean', enum: [true] },
 	},
@@ -493,7 +493,7 @@ const dmFilesAction = <Path extends string>(_path: Path): TypedAction<typeof dmF
 		const [files, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 		return API.v1.success({
-			files: await addUserToFileObj(files),
+			files: await addUserAndThumbnailToFiles(files),
 			count: files.length,
 			offset,
 			total,

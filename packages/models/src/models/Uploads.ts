@@ -14,6 +14,7 @@ export class UploadsRaw extends BaseUploadModelRaw implements IUploadsModel {
 			...super.modelIndexes(),
 			{ key: { uploadedAt: -1 } },
 			{ key: { rid: 1, _hidden: 1, typeGroup: 1 } },
+			{ key: { originalFileId: 1 }, sparse: true },
 			{ key: { 'federation.mediaId': 1, 'federation.serverName': 1 }, unique: true, sparse: true },
 		];
 	}
@@ -69,5 +70,12 @@ export class UploadsRaw extends BaseUploadModelRaw implements IUploadsModel {
 		options?: O,
 	): FindCursor<DocumentWithProjection<T, O>> {
 		return this.find<T, O>({ originalFileId }, options);
+	}
+
+	findThumbnailsByOriginalFileIds<T extends Document = IUpload, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		originalFileIds: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
+		return this.find<T, O>({ originalFileId: { $in: originalFileIds }, typeGroup: 'thumb' }, options);
 	}
 }
