@@ -125,6 +125,38 @@ const fromPersistedUpload = (entry: PersistedUpload): Upload => ({
 	}),
 });
 
+// Leaving the page loses whatever is still uploading, so the browser asks first. The desktop app is left out: there,
+// blocking the unload keeps the window from closing without asking anything.
+let uploadsInFlight = 0;
+
+const warnBeforeUnload = (event: BeforeUnloadEvent): void => {
+	event.preventDefault();
+	event.returnValue = '';
+};
+
+const trackUploadInFlight = (): (() => void) => {
+	if (window.RocketChatDesktop) {
+		return () => undefined;
+	}
+
+	uploadsInFlight++;
+	if (uploadsInFlight === 1) {
+		window.addEventListener('beforeunload', warnBeforeUnload);
+	}
+
+	let done = false;
+	return () => {
+		if (done) {
+			return;
+		}
+		done = true;
+		uploadsInFlight--;
+		if (uploadsInFlight === 0) {
+			window.removeEventListener('beforeunload', warnBeforeUnload);
+		}
+	};
+};
+
 class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id']}`]: void }> implements UploadsAPI {
 	private rid: string;
 
@@ -323,6 +355,7 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 		};
 
 		this.set([...this.uploads, pending]);
+		const untrackUploadInFlight = trackUploadInFlight();
 
 		try {
 			await new Promise((resolve, reject) => {
@@ -401,6 +434,8 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 			});
 		} catch (error: unknown) {
 			this.updateUpload(id, { percentage: 0, error: new Error(getErrorMessage(error)) });
+		} finally {
+			untrackUploadInFlight();
 		}
 	}
 }

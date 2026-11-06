@@ -273,3 +273,49 @@ describe('UploadsStore persistence', () => {
 		expect(localStorage.getItem(STORAGE_KEY)).toBeNull();
 	});
 });
+
+describe('UploadsStore unload warning', () => {
+	const unloadIsBlocked = () => {
+		const event = new Event('beforeunload', { cancelable: true });
+		window.dispatchEvent(event);
+		return event.defaultPrevented;
+	};
+
+	it('asks before leaving the page only while an upload is in flight', async () => {
+		const store = createUploadsAPI({ rid: 'room' });
+		store.attach();
+		expect(unloadIsBlocked()).toBe(false);
+
+		const sending = store.send(createFile());
+		expect(unloadIsBlocked()).toBe(true);
+
+		completeUpload(xhrs[0], 'file-1');
+		await sending;
+		expect(unloadIsBlocked()).toBe(false);
+	});
+
+	it('stops asking once the upload is cancelled', async () => {
+		const store = createUploadsAPI({ rid: 'room' });
+		store.attach();
+		const sending = store.send(createFile());
+
+		store.clear();
+		await sending;
+
+		expect(unloadIsBlocked()).toBe(false);
+	});
+
+	it('never asks in the desktop app', async () => {
+		window.RocketChatDesktop = {} as typeof window.RocketChatDesktop;
+		try {
+			const store = createUploadsAPI({ rid: 'room' });
+			store.attach();
+			void store.send(createFile());
+
+			expect(unloadIsBlocked()).toBe(false);
+			store.clear();
+		} finally {
+			delete window.RocketChatDesktop;
+		}
+	});
+});
