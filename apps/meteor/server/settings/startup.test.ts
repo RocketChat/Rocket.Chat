@@ -43,6 +43,14 @@ describe('reloadSettings', () => {
 		expect(settings.get('added')).to.equal(true);
 	});
 
+	it('takes value-less records the cache did not have', async () => {
+		const settings = cacheWith([]);
+
+		await reloadSettings({ model: modelWith([record('Accounts', undefined)]), settings });
+
+		expect(settings.has('Accounts')).to.equal(true);
+	});
+
 	it('does not emit for values that did not change', async () => {
 		const settings = cacheWith([record('order', ['Favorites', 'Channels']), record('flag', true)]);
 		const changed = spy();

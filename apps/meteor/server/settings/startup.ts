@@ -16,7 +16,7 @@ export async function initializeSettings({ model, settings }: { model: typeof Se
 // Catches up with values written to the database after the cache was loaded, without re-emitting the ones that did not change.
 export async function reloadSettings({ model, settings }: { model: typeof Settings; settings: ICachedSettings }): Promise<void> {
 	await model.find().forEach((record: ISetting) => {
-		if (isDeepStrictEqual(settings.getSetting(record._id)?.value, record.value)) {
+		if (settings.has(record._id) && isDeepStrictEqual(settings.getSetting(record._id)?.value, record.value)) {
 			return;
 		}
 		settings.set(record);
