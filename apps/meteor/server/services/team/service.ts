@@ -432,7 +432,14 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			await Message.saveSystemMessage('user-converted-to-channel', team.roomId, room.name || '', user);
 		}
 
+		const teamRooms = await Rooms.find({ teamId: team._id }, { projection: { _id: 1 } }).toArray();
+
 		await Rooms.unsetTeamId(team._id);
+
+		await notifyOnRoomChangedById(
+			teamRooms.map((teamRoom) => teamRoom._id),
+			'updated',
+		);
 	}
 
 	async updateRoom(uid: string, rid: string, isDefault: boolean, canUpdateAnyRoom = false): Promise<IRoom> {

@@ -4,6 +4,7 @@ import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const Rooms = {
+	find: sinon.stub(),
 	findDefaultRoomsForTeam: sinon.stub(),
 	findOneById: sinon.stub(),
 	unsetTeamId: sinon.stub(),
@@ -18,6 +19,7 @@ const Message = {
 };
 
 const addUserToRoom = sinon.stub();
+const notifyOnRoomChangedById = sinon.stub();
 
 const { TeamService } = proxyquire.noCallThru().load('../../../../../server/services/team/service', {
 	'@rocket.chat/core-services': {
@@ -57,7 +59,7 @@ const { TeamService } = proxyquire.noCallThru().load('../../../../../server/serv
 	},
 	'../../lib/notifyListener': {
 		notifyOnSubscriptionChangedByRoomIdAndUserId: sinon.stub(),
-		notifyOnRoomChangedById: sinon.stub(),
+		notifyOnRoomChangedById,
 	},
 	'../../settings': {
 		settings: { get: sinon.stub() },
@@ -68,6 +70,12 @@ const service = new TeamService();
 
 describe('Team service', () => {
 	beforeEach(() => {
+		Rooms.find.reset();
+		Rooms.find.returns({
+			toArray: async () => [],
+		});
+		notifyOnRoomChangedById.reset();
+		notifyOnRoomChangedById.resolves();
 		addUserToRoom.reset();
 		Rooms.findDefaultRoomsForTeam.reset();
 		Rooms.findOneById.reset();
@@ -128,6 +136,35 @@ describe('Team service', () => {
 	describe('unsetTeamIdOfRooms', () => {
 		const user = { _id: 'user-1', username: 'user-1', name: 'User One' };
 		const team = { _id: 'team-id', roomId: 'team-room' };
+		it('should notify all affected rooms after the database update completes', async () => {
+			Rooms.findOneById.resolves({
+				_id: 'team-room',
+				name: 'team-room-name',
+			});
+
+			Rooms.find.returns({
+				toArray: async () => [{ _id: 'team-room' }, { _id: 'child-room' }],
+			});
+
+			let databaseUpdateFinished = false;
+
+			Rooms.unsetTeamId.callsFake(async () => {
+				await Promise.resolve();
+				databaseUpdateFinished = true;
+			});
+
+			notifyOnRoomChangedById.callsFake(async () => {
+				expect(databaseUpdateFinished).to.equal(true);
+			});
+
+			await service.unsetTeamIdOfRooms(user, team);
+
+			sinon.assert.calledOnceWithExactly(Rooms.find, { teamId: 'team-id' }, { projection: { _id: 1 } });
+
+			sinon.assert.calledOnceWithExactly(notifyOnRoomChangedById, ['team-room', 'child-room'], 'updated');
+
+			sinon.assert.callOrder(Rooms.find, Rooms.unsetTeamId, notifyOnRoomChangedById);
+		});
 
 		it('should announce the conversion on the main room and move the remaining rooms back to the workspace', async () => {
 			Rooms.findOneById.resolves({ _id: 'team-room', name: 'team-room-name' });
