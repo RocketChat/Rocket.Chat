@@ -9,6 +9,7 @@ import {
 	ItemActions,
 	ItemContent,
 	ItemDescription,
+	ItemDisclosure,
 	ItemDivider,
 	ItemGroup,
 	ItemGroupHeader,
@@ -330,6 +331,81 @@ describe('ItemGroup', () => {
 		render(<ItemGroup is='ul' data-testid='group' />);
 
 		expect(screen.getByTestId('group')).not.toHaveAttribute('aria-labelledby');
+	});
+
+	it('marks nested groups with their depth, capped at 4, and inherits the density', () => {
+		render(
+			<ItemGroup data-testid='depth-0' density='extended' guide>
+				<ItemGroup data-testid='depth-1' guide>
+					<ItemGroup>
+						<ItemGroup>
+							<ItemGroup data-testid='depth-4'>
+								<ItemGroup data-testid='depth-5' />
+							</ItemGroup>
+						</ItemGroup>
+					</ItemGroup>
+				</ItemGroup>
+			</ItemGroup>,
+		);
+
+		const root = screen.getByTestId('depth-0');
+		expect(root.className).not.toMatch(/--depth-/);
+		expect(root).not.toHaveClass('rcx-item-group--guide');
+		expect(screen.getByTestId('depth-1')).toHaveClass('rcx-item-group--depth-1', 'rcx-item-group--extended', 'rcx-item-group--guide');
+		expect(screen.getByTestId('depth-4')).toHaveClass('rcx-item-group--depth-4');
+		expect(screen.getByTestId('depth-5')).toHaveClass('rcx-item-group--depth-4');
+	});
+
+	it('lets a nested group set its own density', () => {
+		render(
+			<ItemGroup density='extended'>
+				<ItemGroup data-testid='nested' density='compact' />
+			</ItemGroup>,
+		);
+
+		expect(screen.getByTestId('nested')).not.toHaveClass('rcx-item-group--extended');
+	});
+});
+
+describe('ItemDisclosure', () => {
+	it('is a button named by its label that reports whether the sub-list is open', () => {
+		render(<ItemDisclosure expanded label='Engineering rooms' aria-controls='engineering-rooms' />);
+
+		const button = screen.getByRole('button', { name: 'Engineering rooms' });
+		expect(button).toHaveAttribute('type', 'button');
+		expect(button).toHaveAttribute('aria-expanded', 'true');
+		expect(button).toHaveAttribute('aria-controls', 'engineering-rooms');
+		expect(button).not.toHaveClass('rcx-item__disclosure--collapsed');
+	});
+
+	it('marks itself collapsed when the sub-list is closed', () => {
+		render(<ItemDisclosure expanded={false} label='Engineering rooms' />);
+
+		const button = screen.getByRole('button', { name: 'Engineering rooms' });
+		expect(button).toHaveAttribute('aria-expanded', 'false');
+		expect(button).toHaveClass('rcx-item__disclosure--collapsed');
+	});
+
+	it('toggles without following the row link', async () => {
+		const onToggle = jest.fn();
+		const onNavigate = jest.fn();
+		render(
+			<Item>
+				<ItemDisclosure expanded={false} label='Engineering rooms' onClick={onToggle} />
+				<ItemContent>
+					<ItemTitle>
+						<ItemLink href='#engineering' onClick={onNavigate}>
+							Engineering
+						</ItemLink>
+					</ItemTitle>
+				</ItemContent>
+			</Item>,
+		);
+
+		await userEvent.click(screen.getByRole('button', { name: 'Engineering rooms' }));
+
+		expect(onToggle).toHaveBeenCalledTimes(1);
+		expect(onNavigate).not.toHaveBeenCalled();
 	});
 });
 
