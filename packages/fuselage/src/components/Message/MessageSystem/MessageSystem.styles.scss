@@ -1,27 +1,20 @@
 @use '../../../styles/colors.scss';
 @use '../../../styles/lengths.scss';
 @use '../../../styles/typography.scss' as *;
-@use '../mixins.scss';
 
 .rcx-message-system {
-	// Same inset and gap as `.rcx-message`, so system and user messages share one text column.
-	--rcx-item-gap: #{lengths.margin(8)};
-
 	padding-block: lengths.padding(8);
-	padding-inline: lengths.padding(24);
 
 	&__container {
 		margin-block: lengths.margin(-4);
 	}
 
 	&__body {
-		@include use-font-scale(p2);
 		@include use-with-truncated-text();
 	}
 
 	&__name {
 		@include use-font-scale(p2b);
-		@include use-with-truncated-text();
 		flex-shrink: 0;
 
 		color: colors.font(titles-labels);

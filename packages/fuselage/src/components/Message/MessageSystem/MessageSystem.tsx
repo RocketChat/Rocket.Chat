@@ -10,10 +10,8 @@ export type MessageSystemProps = {
 	onClick?: (e: ReactMouseEvent<HTMLDivElement, MouseEvent>) => void;
 } & Omit<AllHTMLAttributes<HTMLDivElement>, 'is'>;
 
-const MessageSystem = ({ children, title, isSelected, className, ...props }: MessageSystemProps) => (
-	<Item {...props} selected={isSelected} title={title} className={cx('rcx-message-system', className)}>
-		{children}
-	</Item>
+const MessageSystem = ({ isSelected, className, ...props }: MessageSystemProps) => (
+	<Item {...props} inset='lg' multiline selected={isSelected} className={cx('rcx-message-system', className)} />
 );
 
 export default MessageSystem;
