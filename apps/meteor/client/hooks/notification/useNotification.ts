@@ -9,6 +9,7 @@ import { stripTags } from '../../../lib/utils/stringUtils';
 import { sdk } from '../../lib/SDKClient';
 import { getUserAvatarURL } from '../../lib/getUserAvatarURL';
 import { onClientMessageReceived } from '../../lib/onClientMessageReceived';
+import { openNotifications } from '../../lib/openNotifications';
 
 export const useNotification = () => {
 	const requireInteractionPreference = useUserPreference('desktopNotificationRequireInteraction');
@@ -49,6 +50,11 @@ export const useNotification = () => {
 		} as NotificationOptions & {
 			canReply?: boolean;
 		});
+
+		if (!notification.payload.conferenceId) {
+			openNotifications.track(rid, n);
+		}
+
 		const notificationDuration = !requireInteraction && notification.duration ? notification.duration - 0 : 0;
 		if (notificationDuration > 0) {
 			setTimeout(() => n.close(), notificationDuration * 1000);

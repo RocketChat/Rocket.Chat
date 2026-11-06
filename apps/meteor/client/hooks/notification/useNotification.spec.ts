@@ -6,6 +6,7 @@ import { useNotification } from './useNotification';
 import { useNotificationAllowed } from './useNotificationAllowed';
 import { sdk } from '../../lib/SDKClient';
 import { onClientMessageReceived } from '../../lib/onClientMessageReceived';
+import { openNotifications } from '../../lib/openNotifications';
 
 jest.mock('./useNotificationAllowed', () => ({
 	useNotificationAllowed: jest.fn(),
@@ -179,6 +180,23 @@ describe('useNotification', () => {
 			jest.advanceTimersByTime(60_000);
 
 			expect(instance.close).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('open notifications', () => {
+		it('leaves a conference ring open when its room is read', async () => {
+			const { result } = renderHook(() => useNotification(), {
+				wrapper: mockAppRoot().build(),
+			});
+			const payload = buildPayload();
+
+			await result.current({ ...payload, payload: { ...payload.payload, conferenceId: 'conferenceId' } });
+			await result.current(payload);
+			openNotifications.closeNotificationsOfReadRoom({ rid: 'roomId', alert: false, unread: 0, tunread: [] });
+
+			const [ring, message] = MockNotification.instances;
+			expect(ring.close).not.toHaveBeenCalled();
+			expect(message.close).toHaveBeenCalledTimes(1);
 		});
 	});
 
