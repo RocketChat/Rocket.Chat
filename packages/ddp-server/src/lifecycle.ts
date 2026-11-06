@@ -1,6 +1,6 @@
 import { Emitter } from '@rocket.chat/emitter';
 
-import type { Session } from './Session';
+import type { Session } from './Session.js';
 
 export type ConnectionLifecycleEvents = {
 	connected: Session;

@@ -1,5 +1,5 @@
-import type { Server } from '../Server';
-import type { MeteorCollection } from '../lib/MeteorCollection';
+import type { Server } from '../Server.js';
+import type { MeteorCollection } from '../lib/MeteorCollection.js';
 
 /** Publishes a Meteor collection copy to DDP clients: replays what it holds, then forwards its changes until the subscription stops. */
 export function publishMeteorCollection<T>(

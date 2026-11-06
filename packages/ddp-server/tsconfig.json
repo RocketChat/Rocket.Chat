@@ -1,6 +1,8 @@
 {
 	"extends": "@rocket.chat/tsconfig/server.json",
 	"compilerOptions": {
+		"module": "nodenext",
+		"moduleResolution": "nodenext",
 		"strictPropertyInitialization": false,
 		"declaration": true,
 		"rootDir": "./src",
