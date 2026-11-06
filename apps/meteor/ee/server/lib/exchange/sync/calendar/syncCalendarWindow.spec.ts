@@ -61,6 +61,7 @@ const page = (items: ExchangeEvent[], over: Partial<EventPage> = {}): EventPage 
 
 const capabilities = () => ({
 	supportsWebhooks: false,
+	syncsFavorites: false,
 });
 
 const providerReturning = (id: string, ...pages: EventPage[]): IExchangeProvider => {

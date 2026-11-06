@@ -64,7 +64,9 @@ import type {
 	IUsersModel,
 	IVideoConferenceModel,
 	ICalendarEventModel,
+	IContactsModel,
 	IExchangeCalendarSyncStateModel,
+	IExchangeContactSyncStateModel,
 	IExchangeSyncLeaseModel,
 	IOmnichannelServiceLevelAgreementsModel,
 	IAppsModel,
@@ -201,7 +203,9 @@ export const UserDataFiles = proxify<IUserDataFilesModel>('IUserDataFilesModel')
 export const UsersSessions = proxify<IUsersSessionsModel>('IUsersSessionsModel');
 export const VideoConference = proxify<IVideoConferenceModel>('IVideoConferenceModel');
 export const CalendarEvent = proxify<ICalendarEventModel>('ICalendarEventModel');
+export const Contacts = proxify<IContactsModel>('IContactsModel');
 export const ExchangeCalendarSyncState = proxify<IExchangeCalendarSyncStateModel>('IExchangeCalendarSyncStateModel');
+export const ExchangeContactSyncState = proxify<IExchangeContactSyncStateModel>('IExchangeContactSyncStateModel');
 export const ExchangeSyncLease = proxify<IExchangeSyncLeaseModel>('IExchangeSyncLeaseModel');
 export const OmnichannelServiceLevelAgreements = proxify<IOmnichannelServiceLevelAgreementsModel>(
 	'IOmnichannelServiceLevelAgreementsModel',

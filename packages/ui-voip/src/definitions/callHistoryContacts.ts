@@ -1,5 +1,6 @@
 export type CallHistoryExternalContact = {
 	number: string;
+	displayName?: string;
 };
 
 export type CallHistoryInternalContact = {
