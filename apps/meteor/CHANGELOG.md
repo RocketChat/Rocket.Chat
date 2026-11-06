@@ -1,5 +1,29 @@
 # @rocket.chat/meteor
 
+## 8.6.4
+
+### Patch Changes
+
+- ([#43442](https://github.com/RocketChat/Rocket.Chat/pull/43442) by [@dionisio-bot](https://github.com/dionisio-bot)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#43410](https://github.com/RocketChat/Rocket.Chat/pull/43410) by [@dionisio-bot](https://github.com/dionisio-bot)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- ([#43401](https://github.com/RocketChat/Rocket.Chat/pull/43401) by [@dionisio-bot](https://github.com/dionisio-bot)) Bump the Node.js base image of the Docker images to 22.23.4 (the Debian image moves from bullseye to bookworm), which fixes a Brotli decoder out-of-bounds write (CVE-2026-111497).
+
+- ([#43447](https://github.com/RocketChat/Rocket.Chat/pull/43447) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes app slash commands that declare a permission being listed and executed for users without that permission
+
+- ([#43406](https://github.com/RocketChat/Rocket.Chat/pull/43406) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes a permission check in team member management
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.6.4
+  - @rocket.chat/rest-typings@8.6.4
+  </details>
+
 ## 8.6.3
 
 ### Patch Changes
