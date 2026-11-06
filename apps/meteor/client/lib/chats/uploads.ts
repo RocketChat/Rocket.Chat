@@ -1,4 +1,4 @@
-import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IUpload } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Random } from '@rocket.chat/random';
 import fileSize from 'filesize';
@@ -12,20 +12,236 @@ import { USER_ACTIVITIES, UserAction } from '../UserAction';
 import { settings } from '../settings';
 import { fileUploadIsValidContentType } from '../utils/restrictions';
 
+const STORAGE_KEY_PREFIX = 'composer_uploads_';
+
+// The server deletes unconfirmed uploads 24 hours after receiving them; forgetting ours an hour earlier keeps the
+// composer from offering a file that no longer exists.
+const PERSISTED_UPLOAD_TTL = 23 * 60 * 60 * 1000;
+
+type PersistedUpload = {
+	id: string;
+	fileName: string;
+	fileType: string;
+	fileSize: number;
+	url: string;
+	altText?: string;
+	expiresAt: number;
+	encryption?: {
+		key: JsonWebKey;
+		iv: string;
+		type: string;
+		hash: string;
+		metadataForEncryption: Partial<IUpload>;
+		imageDimensions?: { height: number; width: number };
+	};
+};
+
+// Every store of a room or thread hears about writes to its key, including writes from a store whose composer has
+// already been left.
+const persistedUploadsEvents = new Emitter<Record<string, void>>();
+
+const readPersistedUploads = (storageKey: string): PersistedUpload[] => {
+	try {
+		const stored = localStorage.getItem(storageKey);
+		if (!stored) {
+			return [];
+		}
+
+		const persisted: unknown = JSON.parse(stored);
+		if (!Array.isArray(persisted)) {
+			throw new Error('Invalid persisted uploads');
+		}
+
+		const now = Date.now();
+		const live = (persisted as PersistedUpload[]).filter((entry) => typeof entry.expiresAt === 'number' && entry.expiresAt > now);
+		if (live.length !== persisted.length) {
+			writePersistedUploads(storageKey, live);
+		}
+
+		return live;
+	} catch {
+		localStorage.removeItem(storageKey);
+		return [];
+	}
+};
+
+const writePersistedUploads = (storageKey: string, entries: PersistedUpload[]): void => {
+	if (entries.length === 0) {
+		localStorage.removeItem(storageKey);
+	} else {
+		localStorage.setItem(storageKey, JSON.stringify(entries));
+	}
+	persistedUploadsEvents.emit(storageKey);
+};
+
+// Stands in for a file whose bytes are already on the server: it reports the size the user picked, so the chip and the
+// sent message still show it.
+const createPlaceholderFile = (name: string, type: string, size: number): File => {
+	const file = new File([], name, { type });
+	Object.defineProperty(file, 'size', { value: size, configurable: true });
+	return file;
+};
+
+const toPersistedUpload = (upload: Upload, expiresAt: number): PersistedUpload | undefined => {
+	if (!upload.url || upload.error) {
+		return undefined;
+	}
+
+	return {
+		id: upload.id,
+		fileName: upload.file.name,
+		fileType: upload.file.type,
+		fileSize: upload.file.size,
+		url: upload.url,
+		...(upload.altText && { altText: upload.altText }),
+		expiresAt,
+		...(isEncryptedUpload(upload) && {
+			encryption: {
+				key: upload.encryptedFile.key,
+				iv: upload.encryptedFile.iv,
+				type: upload.encryptedFile.type,
+				hash: upload.encryptedFile.hash,
+				metadataForEncryption: upload.metadataForEncryption,
+				...(upload.imageDimensions && { imageDimensions: upload.imageDimensions }),
+			},
+		}),
+	};
+};
+
+const fromPersistedUpload = (entry: PersistedUpload): Upload => ({
+	id: entry.id,
+	file: createPlaceholderFile(entry.fileName, entry.fileType, entry.fileSize),
+	url: entry.url,
+	percentage: 100,
+	restored: true,
+	...(entry.altText && { altText: entry.altText }),
+	...(entry.encryption && {
+		encryptedFile: {
+			file: createPlaceholderFile(entry.fileName, entry.encryption.type, entry.fileSize),
+			key: entry.encryption.key,
+			iv: entry.encryption.iv,
+			type: entry.encryption.type,
+			hash: entry.encryption.hash,
+		},
+		metadataForEncryption: entry.encryption.metadataForEncryption,
+		...(entry.encryption.imageDimensions && { imageDimensions: entry.encryption.imageDimensions }),
+	}),
+});
+
+// Leaving the page loses whatever is still uploading, so the browser asks first. The desktop app is left out: there,
+// blocking the unload keeps the window from closing without asking anything.
+let uploadsInFlight = 0;
+
+const warnBeforeUnload = (event: BeforeUnloadEvent): void => {
+	event.preventDefault();
+	event.returnValue = '';
+};
+
+const trackUploadInFlight = (): (() => void) => {
+	if (window.RocketChatDesktop) {
+		return () => undefined;
+	}
+
+	uploadsInFlight++;
+	if (uploadsInFlight === 1) {
+		window.addEventListener('beforeunload', warnBeforeUnload);
+	}
+
+	let done = false;
+	return () => {
+		if (done) {
+			return;
+		}
+		done = true;
+		uploadsInFlight--;
+		if (uploadsInFlight === 0) {
+			window.removeEventListener('beforeunload', warnBeforeUnload);
+		}
+	};
+};
+
 class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id']}`]: void }> implements UploadsAPI {
 	private rid: string;
 
 	private tmid?: string;
 
+	private storageKey: string;
+
 	constructor({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMessage['_id'] }) {
 		super();
 		this.rid = rid;
 		this.tmid = tmid;
+		this.storageKey = `${STORAGE_KEY_PREFIX}${rid}${tmid ? `-${tmid}` : ''}`;
 	}
 
 	private uploads: readonly Upload[] = [];
 
 	private processingUploads: boolean = false;
+
+	private attachments = 0;
+
+	private stopListeningToStorage?: () => void;
+
+	attach = (): void => {
+		this.attachments++;
+		if (this.attachments > 1) {
+			return;
+		}
+
+		this.stopListeningToStorage = persistedUploadsEvents.on(this.storageKey, this.restoreFromStorage);
+		this.restoreFromStorage();
+	};
+
+	detach = (): void => {
+		this.attachments = Math.max(0, this.attachments - 1);
+		if (this.attachments > 0) {
+			return;
+		}
+
+		this.stopListeningToStorage?.();
+		this.stopListeningToStorage = undefined;
+		this.set([]);
+		UserAction.stop(this.rid, USER_ACTIVITIES.USER_UPLOADING, { tmid: this.tmid });
+	};
+
+	private restoreFromStorage = (): void => {
+		const missing = readPersistedUploads(this.storageKey).filter((entry) => !this.uploads.some((upload) => upload.id === entry.id));
+		if (missing.length === 0) {
+			return;
+		}
+
+		this.set([...this.uploads, ...missing.map(fromPersistedUpload)]);
+	};
+
+	private persistUpload(upload: Upload): void {
+		const entries = readPersistedUploads(this.storageKey);
+		const existing = entries.find((entry) => entry.id === upload.id);
+		const entry = toPersistedUpload(upload, existing?.expiresAt ?? Date.now() + PERSISTED_UPLOAD_TTL);
+		if (!entry) {
+			return;
+		}
+
+		writePersistedUploads(this.storageKey, existing ? entries.map((e) => (e.id === upload.id ? entry : e)) : [...entries, entry]);
+	}
+
+	private forgetUpload(id: Upload['id']): void {
+		const entries = readPersistedUploads(this.storageKey);
+		if (!entries.some((entry) => entry.id === id)) {
+			return;
+		}
+
+		writePersistedUploads(
+			this.storageKey,
+			entries.filter((entry) => entry.id !== id),
+		);
+	}
+
+	private persistUploadById(id: Upload['id']): void {
+		const upload = this.uploads.find((upload) => upload.id === id);
+		if (upload) {
+			this.persistUpload(upload);
+		}
+	}
 
 	set = (uploads: Upload[]): void => {
 		this.uploads = uploads;
@@ -57,6 +273,7 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 
 	removeUpload = (id: Upload['id']): void => {
 		this.set(this.uploads.filter((upload) => upload.id !== id));
+		this.forgetUpload(id);
 
 		if (this.uploads.length === 0) {
 			UserAction.stop(this.rid, USER_ACTIVITIES.USER_UPLOADING, { tmid: this.tmid });
@@ -79,6 +296,7 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 				};
 			}),
 		);
+		this.persistUploadById(uploadId);
 	};
 
 	editUploadFileName = (uploadId: Upload['id'], fileName: Upload['file']['name']) => {
@@ -91,13 +309,16 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 
 					return {
 						...upload,
-						file: new File([upload.file], fileName, upload.file),
+						file: upload.restored
+							? createPlaceholderFile(fileName, upload.file.type, upload.file.size)
+							: new File([upload.file], fileName, upload.file),
 						...(isEncryptedUpload(upload) && {
 							metadataForEncryption: { ...upload.metadataForEncryption, name: fileName },
 						}),
 					};
 				}),
 			);
+			this.persistUploadById(uploadId);
 		} catch (error) {
 			this.set(
 				this.uploads.map((upload) => {
@@ -116,7 +337,9 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 	};
 
 	clear = () => {
+		this.uploads.filter((upload) => !upload.url && !upload.error).forEach((upload) => this.cancel(upload.id));
 		this.set([]);
+		writePersistedUploads(this.storageKey, []);
 		UserAction.stop(this.rid, USER_ACTIVITIES.USER_UPLOADING, { tmid: this.tmid });
 	};
 
@@ -124,19 +347,19 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 		const maxFileSize = settings.peek('FileUpload_MaxFileSize');
 		const invalidContentType = !fileUploadIsValidContentType(encrypted ? encrypted.rawFile.type : file.type);
 		const id = Random.id();
+		const pending: Upload = {
+			id,
+			file: encrypted ? encrypted.rawFile : file,
+			percentage: 0,
+			...(encrypted && {
+				encryptedFile: encrypted.encryptedFile,
+				metadataForEncryption: encrypted.fileContent.raw,
+				...(encrypted.imageDimensions && { imageDimensions: encrypted.imageDimensions }),
+			}),
+		};
 
-		this.set([
-			...this.uploads,
-			{
-				id,
-				file: encrypted ? encrypted.rawFile : file,
-				percentage: 0,
-				...(encrypted && {
-					encryptedFile: encrypted.encryptedFile,
-					metadataForEncryption: encrypted.fileContent.raw,
-				}),
-			},
-		]);
+		this.set([...this.uploads, pending]);
+		const untrackUploadInFlight = trackUploadInFlight();
 
 		try {
 			await new Promise((resolve, reject) => {
@@ -193,7 +416,11 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 
 						if (xhr.status === 200) {
 							const result = JSON.parse(xhr.responseText);
-							this.updateUpload(id, { id: result.file._id, url: result.file.url, percentage: 100 });
+							const uploaded = { id: result.file._id, url: result.file.url, percentage: 100 };
+							const upload = this.uploads.find((upload) => upload.id === id);
+							this.updateUpload(id, uploaded);
+							// The composer may have been left while this was uploading; the file still waits for it there.
+							this.persistUpload({ ...(upload ?? pending), ...uploaded });
 							return;
 						}
 
@@ -211,6 +438,8 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 			});
 		} catch (error: unknown) {
 			this.updateUpload(id, { percentage: 0, error: new Error(getErrorMessage(error)) });
+		} finally {
+			untrackUploadInFlight();
 		}
 	}
 }

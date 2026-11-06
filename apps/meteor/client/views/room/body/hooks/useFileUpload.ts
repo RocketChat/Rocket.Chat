@@ -21,9 +21,10 @@ export const useFileUpload = () => {
 	const isProcessingUploads = useSyncExternalStore(store?.subscribe ?? emptySubscribe, store?.getProcessingUploads ?? getEmptyBool);
 
 	useEffect(() => {
+		store?.attach();
 		store?.wipeFailedOnes();
 
-		return () => store?.clear();
+		return () => store?.detach();
 	}, [chat.action, store]);
 
 	const handleUploadFiles = useCallback(

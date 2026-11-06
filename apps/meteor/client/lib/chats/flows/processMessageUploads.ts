@@ -10,23 +10,7 @@ import { dispatchToastMessage } from '../../toast';
 import type { ChatAPI, UploadsAPI } from '../ChatAPI';
 import { isEncryptedUpload, type EncryptedUpload } from '../Upload';
 
-const getHeightAndWidthFromDataUrl = (dataURL: string): Promise<{ height: number; width: number }> => {
-	return new Promise((resolve, reject) => {
-		const img = new Image();
-		img.onload = () => {
-			resolve({
-				height: img.height,
-				width: img.width,
-			});
-		};
-		img.onerror = () => {
-			reject(new Error('Failed to load image for dimensions'));
-		};
-		img.src = dataURL;
-	});
-};
-
-const getAttachmentForFile = async (fileToUpload: EncryptedUpload): Promise<FileAttachmentProps> => {
+const getAttachmentForFile = (fileToUpload: EncryptedUpload): FileAttachmentProps => {
 	const attachment: FileAttachmentProps = {
 		title: fileToUpload.file.name,
 		type: 'file',
@@ -58,7 +42,7 @@ const getAttachmentForFile = async (fileToUpload: EncryptedUpload): Promise<File
 		[`${fileType}_type`]: fileToUpload.file.type,
 		[`${fileType}_size`]: fileToUpload.file.size,
 		...(fileType === 'image' && {
-			image_dimensions: await getHeightAndWidthFromDataUrl(window.URL.createObjectURL(fileToUpload.file)),
+			image_dimensions: fileToUpload.imageDimensions,
 			image_alt: fileToUpload.altText,
 		}),
 	};
@@ -69,7 +53,7 @@ const getEncryptedContent = async (filesToUpload: readonly EncryptedUpload[], e2
 
 	const arrayOfFiles = await Promise.all(
 		filesToUpload.map(async (fileToUpload) => {
-			attachments.push(await getAttachmentForFile(fileToUpload));
+			attachments.push(getAttachmentForFile(fileToUpload));
 
 			const file = {
 				_id: fileToUpload.id,

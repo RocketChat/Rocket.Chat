@@ -108,12 +108,15 @@ export type EncryptedFileUploadContent = {
 	rawFile: File;
 	fileContent: { raw: Partial<IUpload>; encrypted?: IE2EEMessage['content'] };
 	encryptedFile: EncryptedFile;
+	imageDimensions?: { height: number; width: number };
 };
 
 export type UploadsAPI = {
 	get(): readonly Upload[];
 	subscribe(callback: () => void): () => void;
 	wipeFailedOnes(): void;
+	attach(): void;
+	detach(): void;
 	clear(): void;
 	getProcessingUploads(): boolean;
 	setProcessingUploads(processing: boolean): void;
