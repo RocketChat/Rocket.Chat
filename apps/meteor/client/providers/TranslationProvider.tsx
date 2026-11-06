@@ -242,7 +242,7 @@ const TranslationProvider = ({ children }: TranslationProviderProps) => {
  * the only way to invalidate after changing the language in a safe way is using the useTranslation from i8next
  * and invalidating the provider content
  */
-// eslint-disable-next-line react/no-multi-comp
+// oxlint-disable-next-line react/no-multi-comp
 const TranslationProviderInner = ({
 	children,
 	availableLanguages,

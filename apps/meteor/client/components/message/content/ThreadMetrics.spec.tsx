@@ -287,7 +287,7 @@ describe('Thread Metrics', () => {
 			const follower = screen.getByTitle('follower');
 			expect(follower).toBeVisible();
 
-			// eslint-disable-next-line testing-library/no-node-access
+			// oxlint-disable-next-line testing-library/no-node-access
 			expect(follower.querySelector('.rcx-icon--name-user')).toBeVisible();
 
 			expect(screen.getByText('1')).toBeVisible();
@@ -303,10 +303,46 @@ describe('Thread Metrics', () => {
 			const follower = screen.getByTitle('followers');
 			expect(follower).toBeVisible();
 
-			// eslint-disable-next-line testing-library/no-node-access
+			// oxlint-disable-next-line testing-library/no-node-access
 			expect(follower.querySelector('.rcx-icon--name-user')).toBeVisible();
 
 			expect(screen.getByText('5')).toBeVisible();
+		});
+	});
+
+	describe('Reply button', () => {
+		const renderThreadMetrics = (unread: boolean) =>
+			render(
+				<ThreadMetrics
+					lm={new Date(2024, 6, 1, 0, 0, 0)}
+					counter={5}
+					participants={[]}
+					unread={unread}
+					mention={false}
+					all={false}
+					mid='mid'
+					rid='rid'
+					following={false}
+				/>,
+				{
+					wrapper: mockRoot()
+						.withTranslations(...mockedTranslations)
+						.buildWithRouter(() => undefined),
+				},
+			);
+
+		it('should be primary while the thread has unread replies', () => {
+			renderThreadMetrics(true);
+
+			expect(screen.getByRole('button', { name: 'View_thread' })).toHaveClass('rcx-button--primary');
+		});
+
+		it('should be secondary once the thread is read', () => {
+			renderThreadMetrics(false);
+
+			const replyButton = screen.getByRole('button', { name: 'View_thread' });
+			expect(replyButton).toHaveClass('rcx-button--secondary');
+			expect(replyButton).not.toHaveClass('rcx-button--primary');
 		});
 	});
 });

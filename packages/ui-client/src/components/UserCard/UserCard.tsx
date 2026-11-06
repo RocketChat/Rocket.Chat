@@ -86,7 +86,7 @@ const UserCard = ({
 						)
 					}
 				/>
-				<Box display='flex' flexDirection='column' marginBlockStart='x18'>
+				<Box display='flex' flexDirection='column' marginBlockStart='x16'>
 					{(showUsername || roles || localTime) && (
 						<HoverCardInfoList>
 							{showUsername && (
@@ -124,7 +124,9 @@ const UserCard = ({
 				</Box>
 				{actions && (
 					<Box display='flex' flexDirection='column' marginBlockStart='x24'>
-						<HoverCardActions aria-label={t('User_card_actions')}>{actions}</HoverCardActions>
+						<HoverCardActions aria-label={t('User_card_actions')} stretch='equal'>
+							{actions}
+						</HoverCardActions>
 					</Box>
 				)}
 			</HoverCardSection>

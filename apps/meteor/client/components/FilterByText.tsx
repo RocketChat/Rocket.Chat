@@ -1,4 +1,4 @@
-import { Box, Icon, TextInput, Margins } from '@rocket.chat/fuselage';
+import { Box, Icon, TextInput } from '@rocket.chat/fuselage';
 import { useAutoFocus, useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import type { ChangeEvent, ComponentPropsWithoutRef, SubmitEvent } from 'react';
 import { forwardRef, memo, useCallback } from 'react';
@@ -23,19 +23,17 @@ const FilterByText = forwardRef<HTMLInputElement, FilterByTextProps>(function Fi
 	}, []);
 
 	return (
-		<Box marginBlock={16} marginInline='neg-x4' is='form' onSubmit={handleFormSubmit} display='flex' flexWrap='wrap' alignItems='center'>
-			<Box marginInline={4} display='flex' flexGrow={1}>
+		<Box marginBlock='x16' is='form' onSubmit={handleFormSubmit} display='flex' flexWrap='wrap' alignItems='center' columnGap='x8'>
+			<Box display='flex' flexGrow={1} minWidth='x280'>
 				<TextInput
 					{...props}
 					placeholder={placeholder ?? t('Search')}
 					ref={mergedRefs}
 					endAddon={<Icon name='magnifier' size='x20' />}
-					flexGrow={2}
-					minWidth='x220'
 					aria-label={placeholder ?? t('Search')}
 				/>
 			</Box>
-			{children && <Margins inline={4}>{children}</Margins>}
+			{children}
 		</Box>
 	);
 });

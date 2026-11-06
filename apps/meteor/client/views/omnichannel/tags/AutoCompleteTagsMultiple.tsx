@@ -47,9 +47,6 @@ const AutoCompleteTagsMultiple = ({
 			filter={tagsFilter}
 			setFilter={setTagsFilter}
 			options={tagsOptions}
-			width='100%'
-			flexShrink={0}
-			flexGrow={0}
 			placeholder={placeholder ?? t('Select_an_option')}
 			endReached={() => fetchNextPage()}
 		/>

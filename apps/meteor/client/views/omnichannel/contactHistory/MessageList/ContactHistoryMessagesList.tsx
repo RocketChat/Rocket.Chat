@@ -3,7 +3,6 @@ import {
 	Button,
 	ButtonGroup,
 	Icon,
-	Margins,
 	States,
 	StatesIcon,
 	StatesSubtitle,
@@ -79,7 +78,7 @@ const ContactHistoryMessagesList = ({ chatId, onClose, onOpenRoom }: ContactHist
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
 
-			<ContextualbarContent paddingInline={0}>
+			<ContextualbarContent flush>
 				<Box
 					display='flex'
 					flexDirection='row'
@@ -89,15 +88,13 @@ const ContactHistoryMessagesList = ({ chatId, onClose, onOpenRoom }: ContactHist
 					borderBlockEndColor='extra-light'
 					flexShrink={0}
 				>
-					<Box display='flex' flexDirection='row' flexGrow={1} marginInline='neg-x4'>
-						<Margins inline={4}>
-							<TextInput
-								placeholder={t('Search')}
-								value={text}
-								onChange={handleSearchChange}
-								endAddon={<Icon name='magnifier' size='x20' />}
-							/>
-						</Margins>
+					<Box display='flex' flexDirection='row' flexGrow={1}>
+						<TextInput
+							placeholder={t('Search')}
+							value={text}
+							onChange={handleSearchChange}
+							endAddon={<Icon name='magnifier' size='x20' />}
+						/>
 					</Box>
 				</Box>
 				{isPending && (

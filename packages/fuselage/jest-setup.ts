@@ -1,9 +1,8 @@
 const cssInJsClassRegex = /^rcx-css-[a-z0-9]+$/;
 
 declare global {
-	// eslint-disable-next-line @typescript-eslint/no-namespace
+	// oxlint-disable-next-line @typescript-eslint/no-namespace
 	namespace jest {
-		// eslint-disable-next-line @typescript-eslint/naming-convention
 		interface Matchers<R> {
 			toHaveCssInJsClass(): R;
 		}

@@ -1,23 +1,14 @@
-import { MongoInternals, type MongoConnection } from 'meteor/mongo';
-
-function getOplogInfo(): { mongo: MongoConnection } {
-	const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
-
-	return { mongo };
-}
+import { db } from '../../../database/utils';
 
 async function fallbackMongoInfo(): Promise<{
 	mongoVersion: string;
 	mongoStorageEngine?: string;
-	mongo: MongoConnection;
 }> {
 	let mongoVersion;
 	let mongoStorageEngine;
 
-	const { mongo } = getOplogInfo();
-
 	try {
-		const { version } = await mongo.db.command({ buildinfo: 1 });
+		const { version } = await db.command({ buildinfo: 1 });
 		mongoVersion = version;
 		mongoStorageEngine = 'unknown';
 	} catch (e) {
@@ -35,21 +26,18 @@ async function fallbackMongoInfo(): Promise<{
 		console.error('==================================');
 	}
 
-	return { mongoVersion, mongoStorageEngine, mongo };
+	return { mongoVersion, mongoStorageEngine };
 }
 
 export async function getMongoInfo(): Promise<{
 	mongoVersion: string;
 	mongoStorageEngine?: string;
-	mongo: MongoConnection;
 }> {
 	let mongoVersion;
 	let mongoStorageEngine;
 
-	const { mongo } = getOplogInfo();
-
 	try {
-		const { version, storageEngine } = await mongo.db.command({ serverStatus: 1 });
+		const { version, storageEngine } = await db.command({ serverStatus: 1 });
 
 		mongoVersion = version;
 		mongoStorageEngine = storageEngine.name;
@@ -57,5 +45,5 @@ export async function getMongoInfo(): Promise<{
 		return fallbackMongoInfo();
 	}
 
-	return { mongoVersion, mongoStorageEngine, mongo };
+	return { mongoVersion, mongoStorageEngine };
 }

@@ -1,5 +1,5 @@
-import { getBSONType, compareBSONValues } from './bson';
-import { BSONType } from './types';
+import { getBSONType, compareBSONValues } from './bson.js';
+import { BSONType } from './types.js';
 
 describe('getBSONType', () => {
 	it('should work', () => {

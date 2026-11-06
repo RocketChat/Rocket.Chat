@@ -36,8 +36,6 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			{ key: { username: 1 } },
 			{ key: { 'contactMananger.username': 1 }, sparse: true },
 			{ key: { 'livechatData.$**': 1 } },
-			// TODO: remove this index in the next major release (8.0.0)
-			// { key: { activity: 1 }, partialFilterExpression: { activity: { $exists: true } } },
 			{ key: { disabled: 1 }, partialFilterExpression: { disabled: { $exists: true } } },
 		];
 	}
@@ -175,7 +173,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		// TODO remove dependency from another model - this logic should be inside a service/function
 		const livechatCount = await Settings.incrementValueById('Livechat_guest_count', 1, { returnDocument: 'after' });
 
-		if (!livechatCount) {
+		if (typeof livechatCount?.value !== 'number') {
 			throw new Error("Can't find Livechat_guest_count setting");
 		}
 

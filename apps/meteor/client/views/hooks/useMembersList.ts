@@ -22,7 +22,7 @@ const endpointsByRoomType = {
 } as const;
 
 export type RoomMember = Serialized<
-	Pick<IUser, 'username' | '_id' | 'name' | 'status' | 'federated' | 'freeSwitchExtension'> & { roles?: IRole['_id'][] } & {
+	Pick<IUser, 'username' | '_id' | 'name' | 'status' | 'federated' | 'sipExtension'> & { roles?: IRole['_id'][] } & {
 		// im.members can return an empty subscription object when none is found
 		subscription: Partial<Pick<ISubscription, '_id' | 'status' | 'ts' | 'roles'>>;
 	}

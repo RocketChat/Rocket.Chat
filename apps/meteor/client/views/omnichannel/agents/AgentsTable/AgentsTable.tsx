@@ -1,4 +1,4 @@
-import { Pagination } from '@rocket.chat/fuselage';
+import { Pagination, type TableColumnWidth } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
@@ -9,6 +9,8 @@ import {
 	usePagination,
 	useSort,
 	GenericNoResults,
+	links,
+	GenericError,
 } from '@rocket.chat/ui-client';
 import { hashKey } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
@@ -17,8 +19,6 @@ import { useTranslation } from 'react-i18next';
 import AddAgent from './AddAgent';
 import AgentsTableRow from './AgentsTableRow';
 import FilterByText from '../../../../components/FilterByText';
-import GenericError from '../../../../components/GenericError';
-import { links } from '../../../../lib/links';
 import { useAgentsQuery } from '../hooks/useAgentsQuery';
 import { useQuery } from '../hooks/useQuery';
 
@@ -50,6 +50,8 @@ const AgentsTable = () => {
 
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 
+	const columns: TableColumnWidth[] = ['auto', ...(mediaQuery ? (['auto'] as const) : []), 'auto', 'auto', 'x60'];
+
 	const headers = (
 		<>
 			<GenericTableHeaderCell direction={sortDirection} sort='name' active={sortBy === 'name'} onClick={onHeaderClick}>
@@ -66,7 +68,7 @@ const AgentsTable = () => {
 			<GenericTableHeaderCell direction={sortDirection} sort='statusLivechat' active={sortBy === 'statusLivechat'} onClick={onHeaderClick}>
 				{t('Livechat_status')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell width='x60'>{t('Remove')}</GenericTableHeaderCell>
+			<GenericTableHeaderCell>{t('Remove')}</GenericTableHeaderCell>
 		</>
 	);
 
@@ -77,7 +79,7 @@ const AgentsTable = () => {
 				<FilterByText value={text} onChange={(event) => setText(event.target.value)} />
 			)}
 			{isLoading && (
-				<GenericTable>
+				<GenericTable columns={columns}>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
 						<GenericTableLoadingTable headerCells={mediaQuery ? 4 : 3} />
@@ -96,7 +98,7 @@ const AgentsTable = () => {
 			)}
 			{isSuccess && data?.users.length > 0 && (
 				<>
-					<GenericTable aria-label={t('Agents')} aria-busy={isLoading}>
+					<GenericTable columns={columns} aria-label={t('Agents')} aria-busy={isLoading}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data?.users.map((user) => (

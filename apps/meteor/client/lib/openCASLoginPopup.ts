@@ -1,5 +1,4 @@
 import { absoluteUrl } from './absoluteUrl';
-import { getRootUrlPathPrefix } from './meteorRuntimeConfig';
 import { settings } from './settings';
 
 const openCenteredPopup = (url: string, width: number, height: number) => {
@@ -32,8 +31,7 @@ const getPopupUrl = (credentialToken: string): string => {
 		throw new Error('CAS_login_url not set');
 	}
 
-	const appUrl = absoluteUrl().replace(/\/$/, '') + getRootUrlPathPrefix();
-	const serviceUrl = `${appUrl}/_cas/${credentialToken}`;
+	const serviceUrl = absoluteUrl(`_cas/${credentialToken}`);
 	const url = new URL(loginUrl);
 	url.searchParams.set('service', serviceUrl);
 

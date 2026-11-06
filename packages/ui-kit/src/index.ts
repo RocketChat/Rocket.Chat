@@ -14,6 +14,7 @@ export type { ConversationsSelectElement } from './blocks/elements/Conversations
 export type { ConversationsSelectFilter } from './blocks/elements/ConversationsSelectFilter';
 export type { DatePickerElement } from './blocks/elements/DatePickerElement';
 export type { DateTimePickerElement } from './blocks/elements/DateTimePickerElement';
+export type { FeedbackButton, FeedbackButtonsElement } from './blocks/elements/FeedbackButtonsElement';
 export type { ImageElement } from './blocks/elements/ImageElement';
 export type { LinearScaleElement } from './blocks/elements/LinearScaleElement';
 export type { MultiStaticSelectElement } from './blocks/elements/MultiStaticSelectElement';
@@ -46,6 +47,9 @@ export type { ImageBlock } from './blocks/layout/ImageBlock';
 export type { InputBlock } from './blocks/layout/InputBlock';
 export type { MarkdownBlock } from './blocks/layout/MarkdownBlock';
 export type { SectionBlock } from './blocks/layout/SectionBlock';
+export type { ContextActionsBlock } from './blocks/layout/ContextActionsBlock';
+export type { VideoBlock } from './blocks/layout/VideoBlock';
+export type { TableBlock, TableCell, RawTextTableCell, TableColumnSetting } from './blocks/layout/TableBlock';
 export type { VideoConferenceBlock } from './blocks/layout/VideoConferenceBlock';
 export type { LayoutBlock } from './blocks/LayoutBlock';
 export type { CalloutBlock } from './blocks/layout/CalloutBlock';
@@ -67,6 +71,7 @@ export type { RenderableLayoutBlock } from './blocks/RenderableLayoutBlock';
 
 export { SurfaceRenderer } from './rendering/SurfaceRenderer';
 export { isSafeUrl } from './rendering/isSafeUrl';
+export { isValidAppId } from './rendering/isValidAppId';
 export type { ActionableElement } from './blocks/ActionableElement';
 export type { ActionOf } from './rendering/ActionOf';
 

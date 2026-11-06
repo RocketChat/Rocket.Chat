@@ -91,7 +91,7 @@ const StartCallPopup = ({ id, loading, room, onClose, onConfirm }: StartCallPopu
 			</VideoConfPopupContent>
 			<VideoConfPopupFooter>
 				<VideoConfPopupFooterButtons>
-					<VideoConfButton disabled={loading} primary onClick={handleStartCall}>
+					<VideoConfButton disabled={loading} variant='primary' onClick={handleStartCall}>
 						{t('Start_call')}
 					</VideoConfButton>
 				</VideoConfPopupFooterButtons>

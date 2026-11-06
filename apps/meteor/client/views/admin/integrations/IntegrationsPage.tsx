@@ -19,7 +19,7 @@ const IntegrationsPage = () => {
 			<PageHeader title={t('Integrations')}>
 				<ButtonGroup>
 					<Button
-						primary
+						variant='primary'
 						onClick={() => router.navigate(`/admin/integrations/new/${context === 'webhook-outgoing' ? 'outgoing' : 'incoming'}`)}
 					>
 						{t('New')}

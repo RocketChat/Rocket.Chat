@@ -991,8 +991,6 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 			{ key: { createdAt: -1 } },
 			{ key: { loginAt: -1 } },
 			{ key: { searchTerm: 1 }, partialFilterExpression: { searchTerm: { $exists: true } }, background: true },
-			// TODO: remove this index in the next major release (8.0.0) - its only consumer (findLastLoginByIp) was removed
-			// { key: { ip: 1, loginAt: -1 } },
 			{ key: { userId: 1, sessionId: 1 } },
 			{ key: { type: 1, year: 1, month: 1, day: 1 } },
 			{ key: { sessionId: 1, instanceId: 1, year: 1, month: 1, day: 1 } },

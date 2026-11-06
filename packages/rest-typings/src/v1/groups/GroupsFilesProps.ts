@@ -33,10 +33,6 @@ const GroupsFilesPropsSchema = {
 			type: 'string',
 			nullable: true,
 		},
-		query: {
-			type: 'string',
-			nullable: true,
-		},
 		onlyConfirmed: {
 			type: 'boolean',
 		},

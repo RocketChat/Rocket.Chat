@@ -49,7 +49,7 @@ export class AdminUsers extends Admin {
 	}
 
 	async filterByUserStatus(option: 'All user statuses' | 'Default status' | 'Managed status'): Promise<void> {
-		await this.page.getByRole('button', { name: /^(All user statuses|Default status|Managed status)$/ }).click();
+		await this.page.getByRole('combobox', { name: 'User status' }).click();
 		await this.page.getByRole('option', { name: option, exact: true }).click();
 	}
 

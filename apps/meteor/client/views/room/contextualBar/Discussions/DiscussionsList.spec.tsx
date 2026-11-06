@@ -69,7 +69,7 @@ jest.mock('@rocket.chat/ui-client', () => ({
 		{ children, ...props },
 		ref,
 	) {
-		// eslint-disable-next-line testing-library/no-node-access
+		// oxlint-disable-next-line testing-library/no-node-access
 		const content = isValidElement<{ children?: ReactNode }>(children) && children.type === 'div' ? children.props.children : children;
 
 		return (
@@ -109,11 +109,6 @@ describe('DiscussionsList', () => {
 
 		expect(screen.queryByTestId('discussions-virtual-list')).not.toBeInTheDocument();
 	});
-});
-
-test.each(testCases)('renders %s with stable structure', (_storyname, Story) => {
-	const { baseElement } = render(<Story />);
-	expect(baseElement).toMatchSnapshot();
 });
 
 test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {

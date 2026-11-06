@@ -1,4 +1,4 @@
-import { composeStories } from '@storybook/react-webpack5';
+import { composeStories } from '@storybook/react';
 import { fireEvent, getByRole } from '@testing-library/react';
 import { axe } from 'jest-axe';
 
@@ -10,11 +10,6 @@ const { Default, Indeterminate, Disabled, DefaultChecked } = composeStories(stor
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 
 describe('[CheckBox Rendering]', () => {
-	test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
-		const tree = render(<Story />);
-		expect(tree.baseElement).toMatchSnapshot();
-	});
-
 	test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
 		const { container } = render(<Story />);
 

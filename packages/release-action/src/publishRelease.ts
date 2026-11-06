@@ -6,11 +6,12 @@ import { exec } from '@actions/exec';
 import * as github from '@actions/github';
 import semver from 'semver';
 
-import { createNpmFile } from './createNpmFile';
-import { fixWorkspaceVersionsBeforePublish } from './fixWorkspaceVersionsBeforePublish';
-import { checkoutBranch, commitChanges, createTag, getCurrentBranch, mergeBranch, pushChanges } from './gitUtils';
-import { setupOctokit } from './setupOctokit';
+import { createNpmFile } from './createNpmFile.js';
+import { fixWorkspaceVersionsBeforePublish } from './fixWorkspaceVersionsBeforePublish.js';
+import { checkoutBranch, commitChanges, createTag, getCurrentBranch, mergeBranch, pushChanges } from './gitUtils.js';
+import { setupOctokit } from './setupOctokit.js';
 import {
+	MAX_RELEASE_BODY_LENGTH,
 	bumpFileVersions,
 	createBumpFile,
 	getChangelogEntry,
@@ -18,7 +19,8 @@ import {
 	getReleaseName,
 	isPreRelease,
 	readPackageJson,
-} from './utils';
+	truncateReleaseNotes,
+} from './utils.js';
 
 export async function publishRelease({
 	githubToken,
@@ -129,7 +131,7 @@ export async function publishRelease({
 	await octokit.rest.repos.createRelease({
 		name: getReleaseName(newVersion, ltsVersions),
 		tag_name: newVersion,
-		body: releaseBody,
+		body: truncateReleaseNotes(releaseBody, MAX_RELEASE_BODY_LENGTH),
 		prerelease,
 		make_latest: isLatestRelease ? 'true' : 'false',
 		...github.context.repo,

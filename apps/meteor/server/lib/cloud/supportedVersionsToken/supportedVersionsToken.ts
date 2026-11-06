@@ -107,7 +107,7 @@ const getSupportedVersionsFromCloud = async () => {
 	if (process.env.CLOUD_SUPPORTED_VERSIONS_TOKEN) {
 		return {
 			success: true,
-			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+			// oxlint-disable-next-line @typescript-eslint/no-non-null-assertion
 			result: JSON.parse(process.env.CLOUD_SUPPORTED_VERSIONS!),
 		};
 	}

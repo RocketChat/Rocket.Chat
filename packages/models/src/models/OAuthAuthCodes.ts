@@ -1,6 +1,6 @@
 import type { IOAuthAuthCode, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IOAuthAuthCodesModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
-import type { Db, Collection, DeleteResult, IndexDescription, Document } from 'mongodb';
+import type { Db, Collection, DeleteResult, IndexDescription, Document, UpdateResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -21,6 +21,13 @@ export class OAuthAuthCodesRaw extends BaseRaw<IOAuthAuthCode> implements IOAuth
 			return Promise.resolve(null);
 		}
 		return this.findOne<T, O>({ authCode }, options);
+	}
+
+	upsertByAuthCode(
+		authCode: IOAuthAuthCode['authCode'],
+		code: Omit<IOAuthAuthCode, '_id' | '_updatedAt' | 'authCode'>,
+	): Promise<UpdateResult> {
+		return this.updateOne({ authCode }, { $set: { authCode, ...code } }, { upsert: true });
 	}
 
 	async deleteByUserId(userId: string): Promise<DeleteResult> {

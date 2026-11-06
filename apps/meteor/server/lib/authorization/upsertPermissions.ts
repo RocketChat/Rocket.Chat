@@ -1,4 +1,3 @@
-/* eslint no-multi-spaces: 0 */
 import type { IPermission, ISetting } from '@rocket.chat/core-typings';
 import { Permissions, Settings } from '@rocket.chat/models';
 
@@ -22,7 +21,6 @@ export const upsertPermissions = async (): Promise<void> => {
 		{ name: 'bot', scope: 'Users', description: '' },
 		{ name: 'app', scope: 'Users', description: 'App' },
 		{ name: 'guest', scope: 'Users', description: '' },
-		{ name: 'anonymous', scope: 'Users', description: '' },
 		{ name: 'livechat-agent', scope: 'Users', description: 'Livechat Agent' },
 		{ name: 'livechat-manager', scope: 'Users', description: 'Livechat Manager' },
 	] as const;

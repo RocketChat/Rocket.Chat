@@ -66,7 +66,7 @@ const OutlookSettingsList = ({ onClose, changeRoute }: OutlookSettingsListProps)
 				<ContextualbarTitle>{t('Outlook_calendar_settings')}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
-			<ContextualbarContent paddingInline={0} color='default'>
+			<ContextualbarContent flush>
 				{calendarSettings.map((setting, index) => {
 					if (setting.id === 'authentication' && !setting.enabled) {
 						return;

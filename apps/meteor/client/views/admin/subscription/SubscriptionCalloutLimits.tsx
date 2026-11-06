@@ -1,5 +1,5 @@
 import type { LicenseInfo } from '@rocket.chat/core-typings';
-import { Callout } from '@rocket.chat/fuselage';
+import { Box, Callout } from '@rocket.chat/fuselage';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import { Trans, useTranslation } from 'react-i18next';
 
@@ -19,12 +19,16 @@ export const SubscriptionCalloutLimits = () => {
 
 	const { prevent_action, disable_modules, invalidate_license, start_fair_policy } = licenseLimits;
 
+	if (!start_fair_policy && !prevent_action && !disable_modules && !invalidate_license) {
+		return null;
+	}
+
 	const toTranslationKey = (key: keyof LicenseInfo['limits']) => t(`subscription.callout.${key}`);
 
 	return (
-		<>
+		<Box display='flex' flexDirection='column' gap={16} padding={8}>
 			{start_fair_policy && (
-				<Callout type='warning' title={t('subscription.callout.servicesDisruptionsMayOccur')} margin={8}>
+				<Callout type='warning' title={t('subscription.callout.servicesDisruptionsMayOccur')}>
 					<Trans
 						i18nKey='subscription.callout.description.limitsReached'
 						count={start_fair_policy.length}
@@ -46,7 +50,7 @@ export const SubscriptionCalloutLimits = () => {
 			)}
 
 			{prevent_action && (
-				<Callout type='danger' title={t('subscription.callout.servicesDisruptionsOccurring')} margin={8}>
+				<Callout type='danger' title={t('subscription.callout.servicesDisruptionsOccurring')}>
 					<Trans
 						i18nKey='subscription.callout.description.limitsExceeded'
 						count={prevent_action.length}
@@ -68,7 +72,7 @@ export const SubscriptionCalloutLimits = () => {
 			)}
 
 			{disable_modules && (
-				<Callout type='danger' title={t('subscription.callout.capabilitiesDisabled')} margin={8}>
+				<Callout type='danger' title={t('subscription.callout.capabilitiesDisabled')}>
 					<Trans
 						i18nKey='subscription.callout.description.limitsExceeded'
 						count={disable_modules.length}
@@ -90,7 +94,7 @@ export const SubscriptionCalloutLimits = () => {
 			)}
 
 			{invalidate_license && (
-				<Callout type='danger' title={t('subscription.callout.allPremiumCapabilitiesDisabled')} margin={8}>
+				<Callout type='danger' title={t('subscription.callout.allPremiumCapabilitiesDisabled')}>
 					<Trans
 						i18nKey='subscription.callout.description.limitsExceeded'
 						count={disable_modules.length}
@@ -110,6 +114,6 @@ export const SubscriptionCalloutLimits = () => {
 					</Trans>
 				</Callout>
 			)}
-		</>
+		</Box>
 	);
 };

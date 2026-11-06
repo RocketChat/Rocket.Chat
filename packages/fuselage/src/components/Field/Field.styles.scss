@@ -38,6 +38,10 @@
 		margin-block: lengths.margin(4) lengths.margin(2);
 
 		color: colors.font(secondary-info);
+
+		&--justify-end {
+			justify-content: flex-end;
+		}
 	}
 
 	&__hint {

@@ -58,7 +58,7 @@ const DefaultAttachment = ({ collapseKey, ...attachment }: DefaultAttachmentProp
 					</AttachmentAuthor>
 				)}
 				{attachment.title && (
-					<AttachmentRow>
+					<AttachmentRow gap={2}>
 						<AttachmentTitle
 							{...(attachment.title_link && {
 								is: 'a',
@@ -68,7 +68,7 @@ const DefaultAttachment = ({ collapseKey, ...attachment }: DefaultAttachmentProp
 							})}
 						>
 							{attachment.title}
-						</AttachmentTitle>{' '}
+						</AttachmentTitle>
 						<CollapsibleContent key='collapsible-content-action' collapsed={collapsed} onClick={toggleCollapse} />
 					</AttachmentRow>
 				)}

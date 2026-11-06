@@ -73,11 +73,11 @@ const OAuthAppsTable = () => {
 								action
 								qa-oauth-app-id={_id}
 							>
-								<GenericTableCell withTruncatedText color='default' fontScale='p2m'>
+								<GenericTableCell truncate color='default' strong>
 									{name}
 								</GenericTableCell>
-								<GenericTableCell withTruncatedText>{createdBy}</GenericTableCell>
-								<GenericTableCell withTruncatedText>{formatDateAndTime(_createdAt)}</GenericTableCell>
+								<GenericTableCell truncate>{createdBy}</GenericTableCell>
+								<GenericTableCell truncate>{formatDateAndTime(_createdAt)}</GenericTableCell>
 							</GenericTableRow>
 						))}
 					</GenericTableBody>

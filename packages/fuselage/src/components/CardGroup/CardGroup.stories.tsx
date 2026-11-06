@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import type { Meta, StoryObj } from '@storybook/react';
 
 import { Badge } from '../Badge';
 import { Button, IconButton } from '../Button';
@@ -46,16 +46,6 @@ export default {
 			description: 'Stacks the cards in a column instead of a row.',
 			table: { category: 'Layout' },
 		},
-		small: {
-			control: 'boolean',
-			description: 'Small size scale for the card group.',
-			table: { category: 'Size' },
-		},
-		large: {
-			control: 'boolean',
-			description: 'Large size scale for the card group.',
-			table: { category: 'Size' },
-		},
 		children: {
 			control: false,
 			description: 'Card items rendered inside the group.',
@@ -77,10 +67,10 @@ const CardItem = (props: CardProps) => (
 			In adipisci consequatur qui laudantium rem praesentium earum ut consectetur.
 		</CardBody>
 		<CardControls>
-			<Button medium primary>
+			<Button size='medium' variant='primary'>
 				Button
 			</Button>
-			<Button medium>Button</Button>
+			<Button size='medium'>Button</Button>
 		</CardControls>
 	</Card>
 );
@@ -97,7 +87,7 @@ const CardHorizontal = (props: CardProps) => (
 		<CardControls>
 			<Badge small variant='primary' />
 			<Tag>Card tag</Tag>
-			<IconButton icon='menu' small aria-label='menu' />
+			<IconButton icon='menu' size='small' aria-label='menu' />
 		</CardControls>
 	</Card>
 );

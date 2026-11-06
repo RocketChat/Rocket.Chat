@@ -1,10 +1,10 @@
+import { useMergedRefsV2 } from '@rocket.chat/ui-client';
 import type { ForwardedRef, HTMLAttributes } from 'react';
 import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { CustomContainerComponentProps } from 'virtua';
 
-import { useMergedRefsV2 } from '../../hooks/useMergedRefsV2';
-import { useSidebarListNavigation } from '../../views/navigation/sidebar/RoomList/useSidebarListNavigation';
+import { useSidebarListNavigation } from './useSidebarListNavigation';
 
 export type RoomListWrapperProps = CustomContainerComponentProps &
 	Omit<HTMLAttributes<HTMLDivElement>, 'children' | 'style'> & {

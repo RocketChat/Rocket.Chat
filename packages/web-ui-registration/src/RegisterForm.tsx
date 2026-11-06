@@ -1,4 +1,4 @@
-/* eslint-disable complexity */
+/* oxlint-disable complexity */
 import {
 	FieldGroup,
 	TextInput,
@@ -22,6 +22,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import EmailConfirmationForm from './EmailConfirmationForm';
 import type { DispatchLoginRouter } from './hooks/useLoginRouter';
 import { useRegisterMethod } from './hooks/useRegisterMethod';
+import { EMAIL_PATTERN } from './lib/emailPattern';
 
 type LoginRegisterPayload = {
 	name: string;
@@ -176,7 +177,7 @@ export const RegisterForm = ({ setLoginRoute }: RegisterFormProps) => {
 								{...register('email', {
 									required: t('Required_field', { field: t('registration.component.form.email') }),
 									pattern: {
-										value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+										value: EMAIL_PATTERN,
 										message: t('registration.component.form.invalidEmail'),
 									},
 								})}
@@ -300,7 +301,7 @@ export const RegisterForm = ({ setLoginRoute }: RegisterFormProps) => {
 			</FormContainer>
 			<FormFooter>
 				<ButtonGroup>
-					<Button type='submit' loading={registerUser.isPending} primary>
+					<Button type='submit' loading={registerUser.isPending} variant='primary'>
 						{t('registration.component.form.joinYourTeam')}
 					</Button>
 				</ButtonGroup>

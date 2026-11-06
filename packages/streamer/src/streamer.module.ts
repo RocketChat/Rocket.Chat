@@ -1,4 +1,4 @@
-import { MeteorError } from '@rocket.chat/core-services';
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { StreamNames } from '@rocket.chat/ddp-client';
 import { Logger } from '@rocket.chat/logger';
 import { EventEmitter } from 'eventemitter3';
@@ -176,11 +176,11 @@ export abstract class Streamer<N extends StreamNames> extends EventEmitter imple
 		}
 
 		if (eventName.length === 0) {
-			throw new MeteorError('invalid-event-name');
+			throw new ClientSafeError('invalid-event-name');
 		}
 
 		if ((await this.isReadAllowed(publication, eventName, args)) !== true) {
-			throw new MeteorError('not-allowed');
+			throw new ClientSafeError('not-allowed');
 		}
 
 		// after meteor 3.4.1 immediately after a disconnection session becomes null (which is not wrong)
@@ -188,7 +188,7 @@ export abstract class Streamer<N extends StreamNames> extends EventEmitter imple
 		// now after any await, the session can potentially be null, so we need to check for that
 		if (!Streamer.isPublicationActive(publication)) {
 			// if the client is disconnected, we don't want to do anything, it will not have an disconnect event to undo anymore
-			throw new MeteorError('publication-client-disconnected');
+			throw new ClientSafeError('publication-client-disconnected');
 		}
 
 		const subscription = {

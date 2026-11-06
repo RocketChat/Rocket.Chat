@@ -53,7 +53,7 @@ const CustomEmojiRoute = () => {
 		<Page flexDirection='row'>
 			<Page name='admin-emoji-custom'>
 				<PageHeader title={t('Emoji')}>
-					<Button primary onClick={handleAddEmoji} aria-label={t('New')}>
+					<Button variant='primary' onClick={handleAddEmoji} aria-label={t('New')}>
 						{t('New')}
 					</Button>
 				</PageHeader>

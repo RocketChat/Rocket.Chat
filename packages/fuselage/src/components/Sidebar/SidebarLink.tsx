@@ -1,18 +1,18 @@
 import type { Keys as Icons } from '@rocket.chat/icons';
-import type { LinkHTMLAttributes, ReactNode } from 'react';
+import type { AnchorHTMLAttributes, ReactNode } from 'react';
 
 import { appendClassName } from '../../helpers/appendClassName';
 import { cx } from '../../helpers/composeClassNames';
 import { patchChildren } from '../../helpers/patchChildren';
 import { Icon } from '../Icon';
-import { Item, ItemActions, ItemIcon, ItemTitle, type ItemProps } from '../Item';
+import { Item, ItemActions, ItemIcon, ItemTitle } from '../Item';
 
 export type SidebarLinkProps = {
 	selected?: boolean;
 	icon?: Icons;
 	badge?: ReactNode;
 	menu?: ReactNode;
-} & LinkHTMLAttributes<HTMLAnchorElement>;
+} & Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'is'>;
 
 const SidebarLink = ({ selected, icon, badge, menu, className, children, ...props }: SidebarLinkProps) => (
 	<Item
@@ -24,7 +24,7 @@ const SidebarLink = ({ selected, icon, badge, menu, className, children, ...prop
 		className={cx('rcx-sidebar-link', 'rcx-sidebar-item', !!selected && 'rcx-sidebar-item--selected', className)}
 		onClick={(e) => e.stopPropagation()}
 		onKeyDown={(e) => e.code === 'Enter' && e.stopPropagation()}
-		{...(props as Omit<ItemProps, 'is' | 'selected'>)}
+		{...props}
 	>
 		{icon && (
 			<ItemIcon className='rcx-sidebar-item__icon'>

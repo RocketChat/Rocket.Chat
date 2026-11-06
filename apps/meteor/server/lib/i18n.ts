@@ -4,7 +4,7 @@ import languages from '@rocket.chat/i18n/dist/languages';
 import { i18n } from '../../lib/i18n';
 
 // Meteor bundler is incredible (derogatory)
-// eslint-disable-next-line no-constant-condition
+// oxlint-disable-next-line no-constant-condition
 if (false) {
 	// @ts-expect-error unreachable code
 	import('@rocket.chat/i18n/dist/resources/af.i18n.json');
@@ -88,11 +88,29 @@ void i18n.init({
 			language,
 			extractTranslationNamespaces(
 				// TODO: commonjs is terrible but we don't have esm build yet
-				// eslint-disable-next-line import-x/no-dynamic-require
+				// oxlint-disable-next-line import-x/no-dynamic-require
 				require(`@rocket.chat/i18n/dist/resources/${language}.i18n.json`) as unknown as Record<string, string>,
 			),
 		]),
 	),
 });
+
+const languageResourceJSONs = new Map<string, string>();
+
+/** A supported language's translation file, serialized as JSON for clients; `undefined` for an unsupported language. */
+export function getLanguageResourceJSON(lng: string): string | undefined {
+	if (!languages.includes(lng)) {
+		return undefined;
+	}
+
+	let json = languageResourceJSONs.get(lng);
+	if (json === undefined) {
+		// eslint-disable-next-line import-x/no-dynamic-require
+		json = JSON.stringify(require(`@rocket.chat/i18n/dist/resources/${lng}.i18n.json`));
+		languageResourceJSONs.set(lng, json);
+	}
+
+	return json;
+}
 
 export { i18n };

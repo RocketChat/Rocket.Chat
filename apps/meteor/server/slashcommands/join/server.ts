@@ -1,7 +1,6 @@
-import { api, Room } from '@rocket.chat/core-services';
+import { api, Room, ClientSafeError } from '@rocket.chat/core-services';
 import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { i18n } from '../../lib/i18n';
 import { slashCommands } from '../../lib/utils/slashCommand';
@@ -38,14 +37,14 @@ slashCommands.add({
 		});
 
 		if (subscription) {
-			throw new Meteor.Error('error-user-already-in-room', 'You are already in the channel', {
+			throw new ClientSafeError('error-user-already-in-room', 'You are already in the channel', {
 				method: 'slashCommands',
 			});
 		}
 
 		const user = await Users.findOneById(userId);
 		if (!user) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+			throw new ClientSafeError('error-invalid-user', 'Invalid user', {
 				method: 'slashCommands',
 			});
 		}

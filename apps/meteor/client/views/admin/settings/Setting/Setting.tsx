@@ -1,14 +1,14 @@
 import type { ISettingColor, SettingEditor, SettingValue } from '@rocket.chat/core-typings';
 import { isSettingColor, isSetting, isSettingCode } from '@rocket.chat/core-typings';
-import { Box, Button, Tag } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Tag } from '@rocket.chat/fuselage';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
+import { links } from '@rocket.chat/ui-client';
 import { useSettingStructure } from '@rocket.chat/ui-contexts';
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import MemoizedSetting from './MemoizedSetting';
 import MarkdownText from '../../../../components/MarkdownText';
-import { links } from '../../../../lib/links';
 import { getCodeSettingError } from '../../../../lib/utils/getCodeSettingError';
 import { useEditableSetting, useEditableSettingsDispatch, useEditableSettingVisibilityQuery } from '../../EditableSettingsContext';
 import { useHasSettingModule } from '../hooks/useHasSettingModule';
@@ -72,7 +72,7 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 
 	useEffect(() => {
 		setEditor(isSettingColor(setting) ? setting.editor : undefined);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// oxlint-disable-next-line react-hooks/exhaustive-deps
 	}, [(setting as ISettingColor).editor]);
 
 	const onChangeValue = useCallback(
@@ -101,7 +101,7 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 			value: persistedSetting.packageValue,
 			...(isSettingColor(persistedSetting) && { editor: persistedSetting.packageEditor }),
 		});
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// oxlint-disable-next-line react-hooks/exhaustive-deps
 	}, [setting.value, (setting as ISettingColor).editor, update, persistedSetting]);
 
 	const { _id, readonly, type, packageValue, i18nLabel, i18nDescription, alert } = setting;
@@ -139,9 +139,11 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 	const showUpgradeButton = useMemo(
 		() =>
 			shouldDisableEnterprise ? (
-				<Button marginBlockStart={4} is='a' href={PRICING_URL} target='_blank'>
-					{t('See_Paid_Plan')}
-				</Button>
+				<ButtonGroup>
+					<Button is='a' href={PRICING_URL} target='_blank'>
+						{t('See_Paid_Plan')}
+					</Button>
+				</ButtonGroup>
 			) : undefined,
 		[shouldDisableEnterprise, t],
 	);

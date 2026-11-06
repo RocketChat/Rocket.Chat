@@ -1,5 +1,5 @@
 import type { ISettingBase, SettingEditor, SettingValue } from '@rocket.chat/core-typings';
-import { Box, Callout, Field, Margins } from '@rocket.chat/fuselage';
+import { Box, Callout } from '@rocket.chat/fuselage';
 import type { ElementType, ReactNode } from 'react';
 import { memo } from 'react';
 
@@ -92,25 +92,19 @@ const MemoizedSetting = ({
 	const InputComponent = inputsByType[type];
 
 	return (
-		<Field className={className} flexDirection='row' justifyContent='space-between' alignItems='flex-start'>
-			<Box flexDirection='column' flexGrow={1} wordBreak='break-word' width='full'>
-				<InputComponent
-					value={value}
-					hint={hint}
-					editor={editor}
-					onChangeValue={onChangeValue}
-					onChangeEditor={onChangeEditor}
-					disabled={disabled}
-					{...inputProps}
-				/>
-				{callout && (
-					<Margins block={16}>
-						<Callout type='warning'>{callout}</Callout>
-					</Margins>
-				)}
-				{showUpgradeButton}
-			</Box>
-		</Field>
+		<Box className={className} display='flex' flexDirection='column' gap={8} wordBreak='break-word'>
+			<InputComponent
+				value={value}
+				hint={hint}
+				editor={editor}
+				onChangeValue={onChangeValue}
+				onChangeEditor={onChangeEditor}
+				disabled={disabled}
+				{...inputProps}
+			/>
+			{callout && <Callout type='warning'>{callout}</Callout>}
+			{showUpgradeButton}
+		</Box>
 	);
 };
 

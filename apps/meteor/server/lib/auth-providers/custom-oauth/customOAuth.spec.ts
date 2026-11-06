@@ -1,3 +1,4 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IUser, OAuthConfiguration } from '@rocket.chat/core-typings';
 import type { IUsersModel } from '@rocket.chat/model-typings';
 import type { Accounts } from 'meteor/accounts-base';
@@ -85,29 +86,13 @@ function setup() {
 	const notify = jest.fn();
 	const saveIdentity = jest.fn().mockResolvedValue(true);
 	const ldapLogin = jest.fn().mockResolvedValue(undefined);
-	const warnUnlicensed = jest.fn();
+	const hasModule = jest.fn().mockReturnValue(false);
 	let Strategy!: typeof CustomOAuthStrategy;
 	let oauth!: typeof OAuth2;
 
 	jest.isolateModules(() => {
 		jest.doMock('meteor/accounts-base', () => ({ Accounts: accounts }), { virtual: true });
-		jest.doMock(
-			'meteor/meteor',
-			() => ({
-				Meteor: {
-					Error: class extends Error {
-						constructor(
-							public error: string,
-							public reason?: string,
-						) {
-							super(reason || error);
-						}
-					},
-				},
-			}),
-			{ virtual: true },
-		);
-		jest.doMock('@rocket.chat/core-services', () => ({ LDAP: { loginAuthenticatedUserRequest: ldapLogin } }));
+		jest.doMock('@rocket.chat/core-services', () => ({ LDAP: { loginAuthenticatedUserRequest: ldapLogin }, ClientSafeError }));
 		jest.doMock('@rocket.chat/logger', () => ({ Logger: jest.fn(() => ({ debug: jest.fn() })) }));
 		const { registerModel } = jest.requireActual<typeof import('@rocket.chat/models')>('@rocket.chat/models');
 		registerModel('IUsersModel', users as unknown as IUsersModel);
@@ -115,7 +100,7 @@ function setup() {
 		jest.doMock('../../../settings/cached', () => ({ settings }));
 		jest.doMock('../../callbacks', () => ({ callbacks: { run: runCallback } }));
 		jest.doMock('../../notifyListener', () => ({ notifyOnUserChange: notify }));
-		jest.doMock('../../premiumAuthDeprecation', () => ({ warnUnlicensedAuthService: warnUnlicensed }));
+		jest.doMock('@rocket.chat/license', () => ({ License: { hasModule } }));
 		jest.doMock('../../users/saveUserIdentity', () => ({ saveUserIdentity: saveIdentity }));
 		// Each test gets fresh service registrations and exactly one Accounts wrapper.
 		Strategy = jest.requireActual<typeof import('./customOAuth')>('./customOAuth').CustomOAuthStrategy;
@@ -135,7 +120,7 @@ function setup() {
 		notify,
 		saveIdentity,
 		ldapLogin,
-		warnUnlicensed,
+		hasModule,
 		oauth,
 	};
 }
@@ -645,7 +630,7 @@ describe('CustomOAuthStrategy', () => {
 			expect(env.users.findOneById).toHaveBeenCalledWith('local-user');
 			expect(env.runCallback).toHaveBeenCalledWith('afterValidateNewOAuthUser', { identity, serviceName: 'test', user });
 			expect(env.ldapLogin).not.toHaveBeenCalled();
-			expect(env.warnUnlicensed).not.toHaveBeenCalled();
+			expect(env.hasModule).not.toHaveBeenCalled();
 		});
 
 		it.each([undefined, {}])('stops when the account operation returns no user ID (%j)', async (result) => {
@@ -683,10 +668,17 @@ describe('CustomOAuthStrategy', () => {
 			expect(env.runCallback).toHaveBeenCalledWith('afterValidateNewOAuthUser', { identity, serviceName: 'test', user });
 		});
 
-		it('checks licensing for an admin-configured custom OAuth service', async () => {
+		it('refuses login through an admin-configured custom OAuth service without the oauth-enterprise module', async () => {
 			env.settingValues.set('Accounts_OAuth_Custom-Test', true);
+			expect(await login()).toBeUndefined();
+			expect(env.hasModule).toHaveBeenCalledWith('oauth-enterprise');
+			expect(env.originalAccountOperation).not.toHaveBeenCalled();
+		});
+
+		it('allows login through an admin-configured custom OAuth service with the oauth-enterprise module', async () => {
+			env.settingValues.set('Accounts_OAuth_Custom-Test', true);
+			env.hasModule.mockReturnValue(true);
 			await login();
-			expect(env.warnUnlicensed).toHaveBeenCalledWith('Custom OAuth', 'oauth-enterprise');
 			expect(env.originalAccountOperation).toHaveBeenCalled();
 		});
 

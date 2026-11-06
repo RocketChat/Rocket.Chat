@@ -26,7 +26,11 @@ export class TwoFactorChallengesRaw extends BaseRaw<ITwoFactorChallenge> impleme
 		return this.deleteOne({ _id: pendingChallengeId });
 	}
 
-	async createTwoFactorChallenge(userId: string, method: ITwoFactorChallenge['method']): Promise<string> {
+	async createTwoFactorChallenge(
+		userId: string,
+		method: ITwoFactorChallenge['method'],
+		purpose: ITwoFactorChallenge['purpose'] = 'login',
+	): Promise<string> {
 		const now = new Date();
 		const challengeId = randomBytes(32).toString('hex');
 		await this.insertOne({
@@ -35,6 +39,7 @@ export class TwoFactorChallengesRaw extends BaseRaw<ITwoFactorChallenge> impleme
 			method,
 			createdAt: now,
 			expireAt: new Date(now.getTime() + 1000 * 60 * 5),
+			purpose,
 		});
 		return challengeId;
 	}

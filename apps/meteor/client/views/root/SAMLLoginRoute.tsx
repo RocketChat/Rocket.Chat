@@ -1,8 +1,8 @@
-import { useRouter, useToastMessageDispatch, useSearchParameter, useSetting } from '@rocket.chat/ui-contexts';
-import { Meteor } from 'meteor/meteor';
+import { useRouter, useToastMessageDispatch, useSearchParameter } from '@rocket.chat/ui-contexts';
 import { useEffect, useRef } from 'react';
 
 import { buildSamlDeepLinkURL } from '../../lib/buildAuthDeeplinkURL';
+import { loginWithSamlToken } from '../../meteor/login/saml';
 import { useSamlInviteToken } from '../invite/hooks/useSamlInviteToken';
 
 const SAMLLoginRoute = () => {
@@ -10,17 +10,11 @@ const SAMLLoginRoute = () => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const [inviteToken] = useSamlInviteToken();
 	const loginClient = useSearchParameter('loginClient');
-	const enableModernOAuthFlow = useSetting<boolean | undefined>('Accounts_OAuth_Use_Modern_Flow', undefined);
 
 	// The credential token is single-use, so the login handoff must fire only once
 	const sentLoginRequest = useRef(false);
 
 	useEffect(() => {
-		// Do not process the useEffect until the setting value is loaded
-		if (enableModernOAuthFlow === undefined) {
-			return;
-		}
-
 		if (sentLoginRequest.current) {
 			return;
 		}
@@ -29,7 +23,7 @@ const SAMLLoginRoute = () => {
 		const { token } = router.getRouteParameters();
 
 		//SAML token handoff to the native client (mobile/desktop)
-		if (enableModernOAuthFlow && (loginClient === 'desktop' || loginClient === 'mobile')) {
+		if (loginClient === 'desktop' || loginClient === 'mobile') {
 			window.location.href = buildSamlDeepLinkURL(token);
 			const timeout = setTimeout(() => {
 				router.navigate('/home', { replace: true });
@@ -37,7 +31,7 @@ const SAMLLoginRoute = () => {
 			return () => clearTimeout(timeout);
 		}
 
-		Meteor.loginWithSamlToken(token, (error?: unknown) => {
+		void loginWithSamlToken(token, (error?: unknown) => {
 			if (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
@@ -58,7 +52,7 @@ const SAMLLoginRoute = () => {
 				);
 			}
 		});
-	}, [dispatchToastMessage, enableModernOAuthFlow, inviteToken, loginClient, router]);
+	}, [dispatchToastMessage, inviteToken, loginClient, router]);
 
 	return null;
 };

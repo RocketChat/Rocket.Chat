@@ -3,9 +3,9 @@ import type { HTMLAttributes } from 'react';
 import { cx } from '../../../helpers/composeClassNames';
 import { ItemDescription } from '../../Item';
 
-export const SidebarItemContent = ({ className, unread, ...props }: { unread?: boolean } & HTMLAttributes<HTMLDivElement>) => (
+export const SidebarItemContent = ({ className, unread, ...props }: { unread?: boolean } & Omit<HTMLAttributes<HTMLDivElement>, 'is'>) => (
 	<ItemDescription
-		{...(props as Omit<HTMLAttributes<HTMLDivElement>, 'is'>)}
+		{...props}
 		className={cx('rcx-sidebar-item__subtitle', !!unread && 'rcx-sidebar-item__subtitle--highlighted', className)}
 	/>
 );

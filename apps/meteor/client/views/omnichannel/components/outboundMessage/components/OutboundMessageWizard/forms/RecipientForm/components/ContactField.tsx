@@ -57,12 +57,12 @@ const ContactField = ({ control, isError = false, isFetching = false, onRetry, .
 
 	return (
 		<Field {...props}>
-			<FieldLabel is='span' required id={contactFieldId}>
+			<FieldLabel required htmlFor={contactFieldId}>
 				{t('Contact')}
 			</FieldLabel>
 			<FieldRow>
 				<AutoCompleteContact
-					aria-labelledby={contactFieldId}
+					id={contactFieldId}
 					aria-describedby={contactFieldError && `${contactFieldId}-error`}
 					aria-invalid={!!contactFieldError}
 					placeholder={t('Select_recipient')}
@@ -73,9 +73,11 @@ const ContactField = ({ control, isError = false, isFetching = false, onRetry, .
 				/>
 			</FieldRow>
 			{contactFieldError && (
-				<FieldError aria-live='assertive' id={`${contactFieldId}-error`} display='flex' alignItems='center'>
-					{contactFieldError.message}
-					{isError && <RetryButton loading={isFetching} onClick={onRetry} />}
+				<FieldError aria-live='assertive' id={`${contactFieldId}-error`}>
+					<Box display='flex' alignItems='center' gap={4}>
+						{contactFieldError.message}
+						{isError && <RetryButton loading={isFetching} onClick={onRetry} />}
+					</Box>
 				</FieldError>
 			)}
 		</Field>

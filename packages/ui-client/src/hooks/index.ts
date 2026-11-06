@@ -1,4 +1,5 @@
 export * from './useClipboardWithToast';
+export * from './useCopyErrorReport';
 export * from './useCreateFontStyleElement';
 export * from './useDefaultSettingFeaturePreviewList';
 export * from './useDeferredMenuMount';
@@ -12,7 +13,11 @@ export * from './useFeaturePreview';
 export * from './useFeaturePreviewEnableQuery';
 export * from './useFeaturePreviewList';
 export * from './useGoToDirectMessage';
+export * from './useHasLicenseModule';
+export * from './useIsEnterprise';
+export * from './useIsVisible';
 export * from './useLicense';
+export * from './useMergedRefsV2';
 export * from './usePreferenceFeaturePreviewList';
 export * from './useResizeInlineBreakpoint';
 export * from './useRoomRoute';

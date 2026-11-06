@@ -6,6 +6,6 @@ export function expectInvalidParams(res: Awaited<ReturnType<(typeof request)['po
 	expect(res.body).to.have.property('success', false);
 	expect(res.body).to.have.property('error');
 	expect(res.body.error).to.be.a('string');
-	expect(res.body.errorType).to.be.equal('invalid-params');
+	expect(res.body.errorType).to.be.equal('error-invalid-params');
 	expect((res.body.error as string).split('\n').map((line) => line.trim())).to.be.deep.equal(expectedErrors);
 }

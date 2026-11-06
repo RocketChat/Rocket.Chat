@@ -1,8 +1,8 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IRole } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { Roles } from '@rocket.chat/models';
 import { ajv, validateBadRequestErrorResponse, validateUnauthorizedErrorResponse } from '@rocket.chat/rest-typings';
-import { Meteor } from 'meteor/meteor';
 
 import { API } from '../../../server/api/api';
 import { hasPermissionAsync } from '../../../server/lib/authorization/hasPermission';
@@ -73,7 +73,6 @@ const roleUpdatePropsSchema = {
 export const isRoleUpdateProps = ajv.compile<RoleUpdateProps>(roleUpdatePropsSchema);
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Endpoints {
 		'/v1/roles.create': {
 			POST: (params: RoleCreateProps) => {
@@ -112,19 +111,19 @@ API.v1.post(
 	},
 	async function action() {
 		if (!License.hasModule('custom-roles')) {
-			throw new Meteor.Error('error-action-not-allowed', 'This is an enterprise feature');
+			throw new ClientSafeError('error-action-not-allowed', 'This is an enterprise feature');
 		}
 
 		const { userId } = this;
 
 		if (!userId || !(await hasPermissionAsync(userId, 'access-permissions'))) {
-			throw new Meteor.Error('error-action-not-allowed', 'Accessing permissions is not allowed');
+			throw new ClientSafeError('error-action-not-allowed', 'Accessing permissions is not allowed');
 		}
 
 		const { name, scope, description, mandatory2fa } = this.bodyParams;
 
 		if (await Roles.findOneByIdOrName(name)) {
-			throw new Meteor.Error('error-duplicate-role-names-not-allowed', 'Role name already exists');
+			throw new ClientSafeError('error-duplicate-role-names-not-allowed', 'Role name already exists');
 		}
 
 		const roleData = {
@@ -160,7 +159,7 @@ API.v1.post(
 	},
 	async function action() {
 		if (!(await hasPermissionAsync(this.user, 'access-permissions'))) {
-			throw new Meteor.Error('error-action-not-allowed', 'Accessing permissions is not allowed');
+			throw new ClientSafeError('error-action-not-allowed', 'Accessing permissions is not allowed');
 		}
 
 		const { roleId, name, scope, description, mandatory2fa } = this.bodyParams;
@@ -168,7 +167,7 @@ API.v1.post(
 		const role = await Roles.findOne(roleId);
 
 		if (!License.hasModule('custom-roles') && !role?.protected) {
-			throw new Meteor.Error('error-action-not-allowed', 'This is an enterprise feature');
+			throw new ClientSafeError('error-action-not-allowed', 'This is an enterprise feature');
 		}
 
 		const roleData = {

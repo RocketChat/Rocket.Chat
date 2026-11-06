@@ -17,3 +17,5 @@ export const getURL = function (
 
 	return getURLWithoutSettings(path, params, cdnPrefix, siteUrl, __meteor_runtime_config__.ROOT_URL_PATH_PREFIX, cloudDeepLinkUrl);
 };
+
+export const getWorkspaceURL = (path = ''): string => getURL(path, { full: true, cdn: false });

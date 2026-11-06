@@ -2,7 +2,7 @@ import type { CSSProperties } from 'preact/compat';
 import { memo } from 'preact/compat';
 import { useTranslation } from 'react-i18next';
 
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 import { createClassName } from '../../../helpers/createClassName';
 
 export type MessageSeparatorProps = {
@@ -14,7 +14,6 @@ export type MessageSeparatorProps = {
 };
 
 // TODO: find a better way to pass `use` and do not default to a string
-// eslint-disable-next-line @typescript-eslint/naming-convention
 const MessageSeparator = ({ date, unread, use: Element = 'div', className, style = {} }: MessageSeparatorProps) => {
 	const { t } = useTranslation();
 

@@ -104,11 +104,12 @@ $item-group-narrow-width: 320px;
 	@include inset-slots;
 	@include inset-scale;
 
-	&:has(> .rcx-item__content > :nth-child(2)) {
+	&:has(> .rcx-item__content > :nth-child(2)),
+	&--multiline {
 		--rcx-item-gap: #{lengths.margin(8)};
 	}
 
-	&:where(.rcx-item--clickable, a, button, [role='option'], [role^='menuitem'], :has(.rcx-item__link)) {
+	&:where(.rcx-item--clickable, .rcx-item--interactive, a, button, [role='option'], [role^='menuitem'], :has(.rcx-item__link)) {
 		cursor: pointer;
 
 		&:hover {
@@ -370,6 +371,10 @@ $item-group-narrow-width: 320px;
 		@include reveal-actions;
 	}
 
+	&:focus-within .rcx-item__actions-inner {
+		overflow: visible;
+	}
+
 	.rcx-item__meta {
 		font-weight: 400;
 	}
@@ -470,8 +475,10 @@ $item-group-narrow-width: 320px;
 	margin-inline-start: calc(var(--rcx-item-gap) * -1);
 }
 
-// Actions inside an `ItemRow` overhang the line instead of growing it, so the row keeps its text height.
-.rcx-item__row > .rcx-item__actions {
+// Actions inside an `ItemRow` overhang the line instead of growing it when the row's height must not move:
+// hover-revealed ones anywhere, and any in a sidebar row, whose rows all share one height.
+.rcx-item__row > .rcx-item__actions--reveal-hover,
+.rcx-sidebar-item .rcx-item__row > .rcx-item__actions {
 	align-content: center;
 
 	block-size: 0;

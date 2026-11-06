@@ -1,5 +1,5 @@
 import type { AtLeast, IRoom } from '@rocket.chat/core-typings';
-import { isRoomFederated } from '@rocket.chat/core-typings';
+import { isRoomFederated, isRoomXMPPFederated } from '@rocket.chat/core-typings';
 
 import type { IRoomTypeClientDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../../../../definition/IRoomTypeConfig';
@@ -50,7 +50,7 @@ roomCoordinator.add(
 		},
 
 		roomName(roomData) {
-			if (roomData.prid || isRoomFederated(roomData)) {
+			if (roomData.prid || isRoomFederated(roomData) || isRoomXMPPFederated(roomData)) {
 				return roomData.fname;
 			}
 			if (settings.peek('UI_Allow_room_names_with_special_chars')) {
@@ -85,7 +85,7 @@ roomCoordinator.add(
 			if (room.teamMain) {
 				return 'team';
 			}
-			if (isRoomFederated(room)) {
+			if (isRoomFederated(room) || isRoomXMPPFederated(room)) {
 				return 'globe';
 			}
 

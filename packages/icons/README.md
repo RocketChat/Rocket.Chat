@@ -14,21 +14,20 @@ The package contains no React components. In a React app built on Fuselage, use 
 npm install @rocket.chat/icons
 ```
 
-The package has no dependencies and no peer dependencies. It has no `exports` map, so every file under `dist/` can be imported or referenced by path.
+The package has no dependencies and no peer dependencies. It ships as an ES module, and its `exports` map exposes the package root and every file under `dist/` by path. CommonJS code can `require()` it on a Node.js version that can load ES modules that way (20.19 or 22.12 and later); the character map is then under `.default`.
 
 ## Usage
 
 ### What is in the package
 
-| Path                                            | Content                                                                                                      |
-| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| `dist/index.js`                                 | CommonJS module. Default export: an object mapping each icon name to its character in the `RocketChat` font. |
-| `dist/index.mjs`                                | The same map as an ES module. Not referenced by `package.json`, so import it by path.                        |
-| `dist/index.d.ts`                               | Types for the map, plus the `Keys` type (the union of every icon name).                                      |
-| `dist/rocketchat.css`                           | An `@font-face` rule that declares the `RocketChat` font family.                                             |
-| `dist/font/rocketchat.{woff2,woff,ttf,eot,svg}` | The icon font in each format referenced by `rocketchat.css`.                                                 |
-| `dist/svg/<name>.svg`                           | One SVG file per icon, with `fill="currentColor"`.                                                           |
-| `dist/icons.svg`                                | An SVG sprite with one `<symbol id="icon-<name>">` per icon.                                                 |
+| Path                                            | Content                                                                                                |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `dist/index.js`                                 | ES module. Default export: an object mapping each icon name to its character in the `RocketChat` font. |
+| `dist/index.d.ts`                               | Types for the map, plus the `Keys` type (the union of every icon name).                                |
+| `dist/rocketchat.css`                           | An `@font-face` rule that declares the `RocketChat` font family.                                       |
+| `dist/font/rocketchat.{woff2,woff,ttf,eot,svg}` | The icon font in each format referenced by `rocketchat.css`.                                           |
+| `dist/svg/<name>.svg`                           | One SVG file per icon, with `fill="currentColor"`.                                                     |
+| `dist/icons.svg`                                | An SVG sprite with one `<symbol id="icon-<name>">` per icon.                                           |
 
 ### With Fuselage
 
@@ -82,7 +81,7 @@ const toolbarIcons: IconName[] = ['bell', 'cog', 'magnifier'];
 
 ### Finding icon names
 
-- List the keys of the default export: `Object.keys(require('@rocket.chat/icons'))`.
+- List the keys of the default export: `Object.keys((await import('@rocket.chat/icons')).default)`.
 - Look at the file names in `dist/svg/` of the installed package.
 - Browse the [source SVGs](https://github.com/RocketChat/Rocket.Chat/tree/develop/packages/icons/src) in the repository. The file name is the icon name, without the `.svg` extension and without a `.dir` or `.other` suffix. Icons with the `.other` suffix are left out of the font and the character map, and ship only as SVG.
 
