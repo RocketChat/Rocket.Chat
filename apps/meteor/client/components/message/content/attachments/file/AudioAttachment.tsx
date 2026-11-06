@@ -3,6 +3,7 @@ import { AudioPlayerControls, Box } from '@rocket.chat/fuselage';
 import { useMediaUrl } from '@rocket.chat/ui-contexts';
 import { useMemo, useState } from 'react';
 
+import { useAudioWaveform } from './hooks/useAudioWaveform';
 import { useMediaPlayer } from '../../../../../providers/MediaPlayerProvider';
 import type { PersistentAudioTrack } from '../../../../../providers/MediaPlayerProvider';
 import MarkdownText from '../../../../MarkdownText';
@@ -36,7 +37,8 @@ const AudioAttachment = ({
 	const getURL = useMediaUrl();
 	const src = useMemo(() => getURL(url), [getURL, url]);
 
-	const { play, toggle, seek, cyclePlaybackRate, isActive, playing, currentTime, duration, playbackRate } = useMediaPlayer();
+	const { play, toggle, seek, cyclePlaybackRate, retry, isActive, playing, currentTime, duration, playbackRate, loading, error } =
+		useMediaPlayer();
 
 	const track = useMemo<PersistentAudioTrack>(
 		() => ({
@@ -55,6 +57,7 @@ const AudioAttachment = ({
 
 	const active = isActive(track.id);
 	const [previewDuration, setPreviewDuration] = useState(0);
+	const waveform = useAudioWaveform(src, size);
 
 	return (
 		<>
@@ -65,18 +68,20 @@ const AudioAttachment = ({
 					borderStyle='solid'
 					borderColor='extra-light'
 					backgroundColor='tint'
-					paddingBlock={12}
-					paddingInlineEnd={8}
-					paddingInlineStart={16}
+					padding={8}
 					borderRadius='medium'
 					width='100%'
-					maxWidth='x300'
+					maxWidth='x368'
 				>
 					<AudioPlayerControls
 						isPlaying={active && playing}
 						currentTime={active ? currentTime : 0}
 						durationTime={active && duration ? duration : previewDuration}
 						playbackSpeed={playbackRate}
+						waveform={waveform}
+						loading={active && loading}
+						error={active && error}
+						onRetry={retry}
 						onTogglePlay={() => (active ? toggle() : play(track))}
 						onSeek={(time) => (active ? seek(time) : play(track))}
 						onChangePlaybackSpeed={cyclePlaybackRate}
