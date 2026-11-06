@@ -9,7 +9,7 @@ import { computeChannelBindingHash, createType1Message, createType3Message, deco
 
 import type { IEwsTransport } from './IEwsTransport';
 import { ExchangeError } from '../errors';
-import { parseRetryAfterSeconds } from '../http/fetchWithRetry';
+import { parseRetryAfterSeconds } from '../http/parseRetryAfterSeconds';
 import { logger } from '../logger';
 import { scrubForLog } from '../scrub';
 
