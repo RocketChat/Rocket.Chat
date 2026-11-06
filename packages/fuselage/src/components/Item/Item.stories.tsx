@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import type { ReactNode } from 'react';
-import { useState } from 'react';
+import { useId, useState } from 'react';
 
 import { Avatar } from '../Avatar';
 import { Badge } from '../Badge';
@@ -15,6 +15,7 @@ import Item from './Item';
 import ItemActions from './ItemActions';
 import ItemContent from './ItemContent';
 import ItemDescription from './ItemDescription';
+import ItemDisclosure from './ItemDisclosure';
 import ItemDivider from './ItemDivider';
 import ItemGroup from './ItemGroup';
 import ItemGroupHeader from './ItemGroupHeader';
@@ -44,6 +45,7 @@ export default {
 		ItemMeta,
 		ItemActions,
 		ItemLink,
+		ItemDisclosure,
 		ItemDivider,
 		ItemSkeleton,
 	},
@@ -58,7 +60,8 @@ export default {
 					'- Use `ItemLink` for the primary target, so actions sit beside the link instead of inside it.\n' +
 					'- The row height follows its content: the taller of the media and the text lines. Size the avatar to set it.\n' +
 					'- Use `inset` to align rows with their container gutter.\n' +
-					'- Collapsing a group belongs to the component that owns it. `ItemGroupHeader` only shows text.',
+					'- Collapsing a group belongs to the component that owns it. `ItemGroupHeader` only shows text.\n' +
+					'- For sub-items, wrap the parent row and a nested `ItemGroup` in one `li`. The nested group indents one level, and `ItemDisclosure` leads the parent row to show and hide it.',
 			},
 		},
 		layout: 'padded',
@@ -1024,5 +1027,437 @@ export const CommandSuggestions: Story = {
 				))}
 			</ItemGroup>
 		</Box>
+	),
+};
+
+type TreeNode = {
+	id: string;
+	name: string;
+	icon: IconProps['name'];
+	iconLabel: string;
+	avatar?: number;
+	time: string;
+	preview: string;
+	unread?: number;
+	mention?: boolean;
+	collapsed?: boolean;
+	children?: TreeNode[];
+};
+
+type UnreadSummary = { count: number; mention: boolean };
+
+const hiddenUnread = (node: TreeNode): UnreadSummary =>
+	(node.children ?? []).reduce<UnreadSummary>(
+		(total, child) => {
+			const nested = hiddenUnread(child);
+			const own = child.unread ?? 0;
+
+			return {
+				count: total.count + own + nested.count,
+				mention: total.mention || (!!own && !!child.mention) || nested.mention,
+			};
+		},
+		{ count: 0, mention: false },
+	);
+
+const roomTree: TreeNode[] = [
+	{
+		id: 'engineering',
+		name: 'Engineering',
+		icon: 'team',
+		iconLabel: 'Team',
+		avatar: 2,
+		time: '12:13',
+		preview: 'Lia: release notes are up',
+		children: [
+			{
+				id: 'frontend',
+				name: 'frontend',
+				icon: 'hashtag',
+				iconLabel: 'Public channel',
+				avatar: 0,
+				time: '12:13',
+				preview: 'Lia: tokens PR is green',
+			},
+			{
+				id: 'backend',
+				name: 'backend',
+				icon: 'hashtag',
+				iconLabel: 'Public channel',
+				avatar: 1,
+				time: '11:52',
+				preview: 'Tom: migration ran clean',
+				unread: 3,
+			},
+			{
+				id: 'releases',
+				name: 'releases',
+				icon: 'hashtag-lock',
+				iconLabel: 'Private channel',
+				avatar: 3,
+				time: '10:30',
+				preview: 'Mia: can you tag 8.1?',
+				unread: 2,
+				mention: true,
+			},
+		],
+	},
+	{
+		id: 'design',
+		name: 'Design',
+		icon: 'team',
+		iconLabel: 'Team',
+		avatar: 1,
+		time: 'Mon',
+		preview: 'Kai: new icons in review',
+		collapsed: true,
+		children: [
+			{
+				id: 'research',
+				name: 'research',
+				icon: 'hashtag',
+				iconLabel: 'Public channel',
+				avatar: 0,
+				time: 'Mon',
+				preview: 'Kai: interview notes',
+				unread: 4,
+			},
+			{
+				id: 'ui-reviews',
+				name: 'ui-reviews',
+				icon: 'hashtag-lock',
+				iconLabel: 'Private channel',
+				avatar: 2,
+				time: 'Mon',
+				preview: 'Joe: thoughts on the sidebar?',
+				unread: 1,
+				mention: true,
+			},
+		],
+	},
+	{
+		id: 'general',
+		name: 'general',
+		icon: 'hashtag',
+		iconLabel: 'Public channel',
+		avatar: 0,
+		time: '12:40',
+		preview: 'Ana: lunch at 1?',
+		children: [
+			{
+				id: 'deploy-freeze',
+				name: 'Deploy freeze on Friday?',
+				icon: 'thread',
+				iconLabel: 'Thread',
+				time: '12:02',
+				preview: '4 replies · Ravi: agreed',
+				unread: 1,
+			},
+			{
+				id: 'q4-planning',
+				name: 'Q4 planning',
+				icon: 'discussion',
+				iconLabel: 'Discussion',
+				time: '09:15',
+				preview: 'Discussion · 12 messages',
+			},
+		],
+	},
+	{
+		id: 'support',
+		name: 'support',
+		icon: 'hashtag-lock',
+		iconLabel: 'Private channel',
+		avatar: 3,
+		time: '11:05',
+		preview: 'Bot: new ticket assigned',
+		unread: 5,
+		mention: true,
+	},
+];
+
+const deepTree: TreeNode[] = [
+	{
+		id: 'deep-engineering',
+		name: 'Engineering',
+		icon: 'team',
+		iconLabel: 'Team',
+		avatar: 2,
+		time: '12:13',
+		preview: 'Lia: release notes are up',
+		children: [
+			{
+				id: 'deep-frontend',
+				name: 'frontend',
+				icon: 'hashtag',
+				iconLabel: 'Public channel',
+				avatar: 0,
+				time: '12:13',
+				preview: 'Lia: tokens PR is green',
+				children: [
+					{
+						id: 'design-system-migration',
+						name: 'Design system migration',
+						icon: 'discussion',
+						iconLabel: 'Discussion',
+						time: '11:40',
+						preview: 'Discussion · 48 messages',
+						children: [
+							{
+								id: 'tokens-rollout',
+								name: 'Tokens rollout',
+								icon: 'discussion',
+								iconLabel: 'Discussion',
+								time: '11:02',
+								preview: 'Discussion · 12 messages',
+								children: [
+									{
+										id: 'dark-contrast',
+										name: 'Dark theme contrast?',
+										icon: 'thread',
+										iconLabel: 'Thread',
+										time: '10:48',
+										preview: '6 replies · Kai: fixed',
+									},
+									{
+										id: 'release-checklist',
+										name: 'Release checklist',
+										icon: 'thread',
+										iconLabel: 'Thread',
+										time: '10:20',
+										preview: '2 replies · Tom: done',
+										unread: 2,
+									},
+								],
+							},
+							{
+								id: 'icon-audit',
+								name: 'Icon audit',
+								icon: 'thread',
+								iconLabel: 'Thread',
+								time: '09:58',
+								preview: '9 replies · Joe: 40 left',
+							},
+						],
+					},
+				],
+			},
+			{
+				id: 'deep-releases',
+				name: 'releases',
+				icon: 'hashtag-lock',
+				iconLabel: 'Private channel',
+				avatar: 3,
+				time: '10:30',
+				preview: 'Mia: can you tag 8.1?',
+				unread: 2,
+				mention: true,
+			},
+		],
+	},
+];
+
+type TreeViewMode = 'condensed' | 'extended';
+
+const TreeMedia = ({ node, viewMode, depth }: { node: TreeNode; viewMode: TreeViewMode; depth: number }) => {
+	if (viewMode === 'condensed' || node.avatar === undefined) {
+		const size = viewMode === 'extended' ? 'x28' : 'x20';
+
+		return (
+			<ItemMedia variant={viewMode === 'condensed' ? 'icon' : 'default'}>
+				{viewMode === 'condensed' ? (
+					<Icon name={node.icon} size='x16' />
+				) : (
+					<Box
+						display='flex'
+						alignItems='center'
+						justifyContent='center'
+						width={size}
+						height={size}
+						borderRadius='medium'
+						backgroundColor='neutral'
+					>
+						<Icon name={node.icon} size='x16' />
+					</Box>
+				)}
+			</ItemMedia>
+		);
+	}
+
+	return (
+		<ItemMedia>
+			<Avatar size={depth === 0 ? 'x36' : 'x28'} url={leterAvatarUrls[node.avatar]} alt='' />
+		</ItemMedia>
+	);
+};
+
+type TreeRowProps = {
+	node: TreeNode;
+	viewMode: TreeViewMode;
+	depth: number;
+	selectedId?: string;
+	onSelect: (id: string) => void;
+};
+
+const TreeRow = ({ node, viewMode, depth, selectedId, onSelect }: TreeRowProps) => {
+	const [expanded, setExpanded] = useState(!node.collapsed);
+	const subListId = useId();
+	const hidden = node.children && !expanded ? hiddenUnread(node) : { count: 0, mention: false };
+	const unread = (node.unread ?? 0) + hidden.count;
+	const mention = (!!node.unread && !!node.mention) || hidden.mention;
+	const selected = selectedId === node.id;
+	const extended = viewMode === 'extended';
+
+	const badge = unread ? (
+		<Badge variant={mention ? 'danger' : 'primary'} title={`${unread} unread messages`}>
+			{unread}
+		</Badge>
+	) : null;
+
+	const link = (
+		<ItemTitle>
+			<ItemLink
+				href={`#${node.id}`}
+				aria-current={selected ? 'page' : undefined}
+				onClick={(event) => {
+					event.preventDefault();
+					onSelect(node.id);
+				}}
+			>
+				{node.name}
+			</ItemLink>
+		</ItemTitle>
+	);
+
+	const row = (
+		<Item is={node.children ? 'div' : 'li'} selected={selected} highlighted={!!unread}>
+			{node.children && (
+				<ItemDisclosure
+					expanded={expanded}
+					label={`${node.name} sub-items`}
+					aria-controls={subListId}
+					onClick={() => setExpanded((value) => !value)}
+				/>
+			)}
+			<TreeMedia node={node} viewMode={viewMode} depth={depth} />
+			<ItemContent>
+				<ItemRow>
+					{extended && node.avatar !== undefined && (
+						<ItemIcon label={node.iconLabel}>
+							<Icon name={node.icon} size='x16' />
+						</ItemIcon>
+					)}
+					{link}
+					{extended && <ItemMeta>{node.time}</ItemMeta>}
+				</ItemRow>
+				{extended && (
+					<ItemRow>
+						<ItemDescription>{node.preview}</ItemDescription>
+						{badge}
+					</ItemRow>
+				)}
+			</ItemContent>
+			{!extended && badge}
+		</Item>
+	);
+
+	if (!node.children) {
+		return row;
+	}
+
+	return (
+		<li>
+			{row}
+			{expanded && (
+				<ItemGroup is='ul' id={subListId} aria-label={`${node.name} sub-items`} guide>
+					{node.children.map((child) => (
+						<TreeRow key={child.id} node={child} viewMode={viewMode} depth={depth + 1} selectedId={selectedId} onSelect={onSelect} />
+					))}
+				</ItemGroup>
+			)}
+		</li>
+	);
+};
+
+const RoomTree = ({ tree, viewMode, initialSelected }: { tree: TreeNode[]; viewMode: TreeViewMode; initialSelected?: string }) => {
+	const [selectedId, setSelectedId] = useState(initialSelected);
+
+	return (
+		<SidebarSurface>
+			<ItemGroup is='ul' aria-label='Rooms' density={viewMode === 'extended' ? 'extended' : 'compact'}>
+				{tree.map((node) => (
+					<TreeRow key={node.id} node={node} viewMode={viewMode} depth={0} selectedId={selectedId} onSelect={setSelectedId} />
+				))}
+			</ItemGroup>
+		</SidebarSurface>
+	);
+};
+
+export const SubItems: StoryObj<typeof RoomTree> = {
+	args: { viewMode: 'condensed' },
+	argTypes: {
+		viewMode: {
+			control: 'inline-radio',
+			options: ['condensed', 'extended'],
+		},
+		tree: { control: false },
+		initialSelected: { control: false },
+	},
+	parameters: {
+		docs: {
+			description: {
+				story:
+					'A parent row leads with `ItemDisclosure`; its sub-items sit in a nested `ItemGroup` in the same `li`. ' +
+					'Rows without sub-items in the same group keep the disclosure column, so media stay aligned. ' +
+					'A closed parent adds its hidden unread to its own badge. Pass `density="extended"` to the top group for 36px avatars.',
+			},
+		},
+	},
+	render: ({ viewMode }) => <RoomTree tree={roomTree} viewMode={viewMode} initialSelected='frontend' />,
+};
+
+export const SubItemsDepth: Story = {
+	parameters: {
+		docs: {
+			description: {
+				story:
+					'Each nested group indents one more step and draws its own guide from the parent disclosure. ' +
+					'Level 1 steps past the disclosure; deeper levels step less, and levels past 4 keep the level-4 indent.',
+			},
+		},
+	},
+	render: () => (
+		<Box display='flex' flexDirection='column'>
+			<Caption>condensed</Caption>
+			<RoomTree tree={deepTree} viewMode='condensed' initialSelected='dark-contrast' />
+			<Caption>extended</Caption>
+			<RoomTree tree={deepTree} viewMode='extended' initialSelected='dark-contrast' />
+		</Box>
+	),
+};
+
+export const SubItemsLoading: Story = {
+	render: () => (
+		<SidebarSurface>
+			<ItemGroup is='ul' aria-label='Rooms'>
+				<li>
+					<Item>
+						<ItemDisclosure expanded label='general sub-items' aria-controls='general-sub-items' />
+						<ItemMedia variant='icon'>
+							<Icon name='hashtag' size='x16' />
+						</ItemMedia>
+						<ItemContent>
+							<ItemTitle>
+								<ItemLink href='#general'>general</ItemLink>
+							</ItemTitle>
+						</ItemContent>
+					</Item>
+					<ItemGroup is='ul' id='general-sub-items' aria-label='general sub-items' aria-busy guide>
+						<ItemSkeleton is='li' mediaSize='x20' />
+						<ItemSkeleton is='li' mediaSize='x20' />
+					</ItemGroup>
+				</li>
+			</ItemGroup>
+		</SidebarSurface>
 	),
 };
