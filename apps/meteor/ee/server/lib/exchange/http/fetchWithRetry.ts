@@ -24,7 +24,7 @@ const BACKOFF_BASE_MS = 1000;
 const RETRY_BUDGET_MS = 90000;
 const SSRF_REJECTION = 'error-ssrf-validation-failed';
 
-const parseRetryAfterSeconds = (header: string | null): number | undefined => {
+export const parseRetryAfterSeconds = (header: string | null | undefined): number | undefined => {
 	if (!header) {
 		return undefined;
 	}

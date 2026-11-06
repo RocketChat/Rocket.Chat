@@ -24,6 +24,7 @@ const RESPONSE_CODE_TO_ERROR: Record<string, { code: ExchangeErrorCode; message:
 	ErrorNonExistentMailbox: { code: 'mailbox-not-found', message: 'The mailbox does not exist on this Exchange server' },
 	ErrorNameResolutionNoResults: { code: 'mailbox-not-found', message: 'Exchange could not resolve the mailbox address' },
 	ErrorInvalidSyncStateData: { code: 'sync-state-invalid', message: 'The stored sync state is no longer valid and must be reset' },
+	ErrorServerBusy: { code: 'rate-limited', message: 'Exchange is throttling the service account' },
 };
 
 const parseXml = (xml: string): Document => {
@@ -93,11 +94,18 @@ const responseCodesIn = (scope: Document | Element): Element[] => [
 	...allByTag(scope, ERRORS_NS, 'ResponseCode'),
 ];
 
-const toExchangeError = (code: string, detail: string | undefined): ExchangeError => {
+const backOffMsIn = (scope: Document | Element): number | undefined => {
+	const value = allByTag(scope, TYPES_NS, 'Value').find((node) => node.getAttribute('Name') === 'BackOffMilliseconds');
+	const ms = Number.parseInt(textOf(value) ?? '', 10);
+
+	return Number.isFinite(ms) && ms >= 0 ? ms : undefined;
+};
+
+const toExchangeError = (code: string, detail: string | undefined, scope: Document | Element): ExchangeError => {
 	const mapped = RESPONSE_CODE_TO_ERROR[code];
 
 	return mapped
-		? new ExchangeError(mapped.code, mapped.message, { detail: detail ?? code })
+		? new ExchangeError(mapped.code, mapped.message, { detail: detail ?? code, retryAfterMs: backOffMsIn(scope) })
 		: new ExchangeError('unexpected-response', `Exchange returned ${code}`, { detail });
 };
 
@@ -116,7 +124,7 @@ const assertNoSoapFault = (doc: Document): void => {
 	const code = textOf(responseCodesIn(fault)[0]);
 
 	if (code) {
-		throw toExchangeError(code, reason?.slice(0, 300));
+		throw toExchangeError(code, reason?.slice(0, 300), fault);
 	}
 
 	throw new ExchangeError('unexpected-response', 'Exchange rejected the request', {
@@ -131,7 +139,7 @@ const assertNoResponseCodeErrors = (doc: Document): void => {
 			continue;
 		}
 
-		throw toExchangeError(code, textOf(firstByTag(doc, MESSAGES_NS, 'MessageText')));
+		throw toExchangeError(code, textOf(firstByTag(doc, MESSAGES_NS, 'MessageText')), doc);
 	}
 };
 
