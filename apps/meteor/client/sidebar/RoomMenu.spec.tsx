@@ -1,9 +1,10 @@
 import type { RoomType } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { QueryClient } from '@tanstack/react-query';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
+import { axe } from 'jest-axe';
 
 import RoomMenu from './RoomMenu';
 import { createFakeLicenseInfo, createFakeSubscription } from '../../tests/mocks/data';
@@ -38,6 +39,8 @@ const buildBase = () =>
 		.withTranslations('en', 'core', {
 			Hide: 'Hide',
 			Notifications: 'Notifications',
+			Turn_OFF: 'Turn off',
+			Turn_ON: 'Turn on',
 			Mark_unread: 'Mark Unread',
 			Favorite: 'Favorite',
 			Favorites: 'Favorites',
@@ -166,8 +169,23 @@ describe('the Notifications toggle', () => {
 		renderWith(false);
 
 		await userEvent.click(screen.getByRole('button', { name: 'Options' }));
-		const item = await screen.findByRole('menuitem', { name: /Notifications/ });
-		expect(item.querySelector('input[type="checkbox"]')).toBeChecked();
+		const item = await screen.findByRole('menuitem', { name: 'Turn off' });
+		expect(screen.getByRole('group', { name: 'Notifications' })).toContainElement(item);
+		// The switch only pictures the state the label already tells: out of the accessibility tree and the tab order.
+		const toggle = within(item).getByRole('checkbox', { hidden: true });
+		expect(toggle).toBeChecked();
+		expect(toggle).toHaveAttribute('aria-hidden', 'true');
+		expect(toggle).toHaveAttribute('tabindex', '-1');
+		expect(
+			await axe(screen.getByRole('menu'), {
+				rules: {
+					// Fuselage renders every menu item as a `<label role="menuitem">`, which axe rejects; not this menu's doing.
+					'aria-allowed-role': { enabled: false },
+					// A menu portaled into a bare test document sits in no landmark.
+					'region': { enabled: false },
+				},
+			}),
+		).toHaveNoViolations();
 
 		await userEvent.click(item);
 
@@ -178,8 +196,8 @@ describe('the Notifications toggle', () => {
 		renderWith(true);
 
 		await userEvent.click(screen.getByRole('button', { name: 'Options' }));
-		const item = await screen.findByRole('menuitem', { name: /Notifications/ });
-		expect(item.querySelector('input[type="checkbox"]')).not.toBeChecked();
+		const item = await screen.findByRole('menuitem', { name: 'Turn on' });
+		expect(within(item).getByRole('checkbox', { hidden: true })).not.toBeChecked();
 
 		await userEvent.click(item);
 
@@ -190,7 +208,7 @@ describe('the Notifications toggle', () => {
 		renderWith(false, true);
 
 		await userEvent.click(screen.getByRole('button', { name: 'Options' }));
-		await userEvent.click(await screen.findByRole('menuitem', { name: /Notifications/ }));
+		await userEvent.click(await screen.findByRole('menuitem', { name: 'Turn off' }));
 
 		expect(saveNotification).toHaveBeenCalledWith({ roomId: 'roomId', notifications: { disableNotifications: '1' } });
 	});
