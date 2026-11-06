@@ -15,6 +15,7 @@ export type UserAndRoomAutoCompleteMultipleProps = Omit<ComponentProps<typeof Au
 	limit?: number;
 	excludeTypes?: RoomType[];
 	allowReadOnly?: boolean;
+	includeHiddenDirectMessages?: boolean;
 };
 
 type OptionType = {
@@ -41,6 +42,7 @@ const UserAndRoomAutoCompleteMultiple = ({
 	limit,
 	excludeTypes,
 	allowReadOnly = false,
+	includeHiddenDirectMessages = false,
 	...props
 }: UserAndRoomAutoCompleteMultipleProps) => {
 	const user = useUser();
@@ -64,15 +66,17 @@ const UserAndRoomAutoCompleteMultiple = ({
 		...useMemo<Parameters<typeof useUserSubscriptions>>(
 			() => [
 				{
-					open: { $ne: false },
 					rid: { $nin: selectedIds },
-					$or: filterConditions,
+					$and: [
+						{ $or: filterConditions },
+						...(includeHiddenDirectMessages ? [{ $or: [{ open: { $ne: false } }, { t: 'd' }] }] : [{ open: { $ne: false } }]),
+					],
 				},
 				// We are using a higher limit here to take advantage of the amount that
 				// will be filtered below into a smaller set respecting the limit prop.
 				{ limit: 100 },
 			],
-			[filterConditions, selectedIds],
+			[filterConditions, includeHiddenDirectMessages, selectedIds],
 		),
 	);
 
