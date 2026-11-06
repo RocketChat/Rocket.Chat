@@ -213,17 +213,20 @@ describe('Password Policy', () => {
 		expect(policy.policy.length).toBe(0);
 	});
 
-	it('should return correct values if policy is enabled but no specifiers exists', () => {
+	it('should not include repeating character count when repeating characters are not forbidden', () => {
 		const passwordPolicy = new PasswordPolicy({
 			enabled: true,
+			forbidRepeatingCharacters: false,
 		});
 
 		const policy = passwordPolicy.getPasswordPolicy();
 
 		expect(policy.enabled).toBe(true);
-		// even when no policy is specified, forbidRepeatingCharactersCount is still configured
-		// since its default value is 3
-		expect(policy.policy.length).toBe(1);
+		expect(policy.policy).not.toContainEqual([
+			'get-password-policy-forbidRepeatingCharactersCount',
+			{ forbidRepeatingCharactersCount: 3 },
+		]);
+		expect(policy.policy.length).toBe(0);
 	});
 });
 
