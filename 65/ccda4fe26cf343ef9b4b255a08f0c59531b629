@@ -1,0 +1,29 @@
+apps/meteor/server/settings/startup.test.ts
+  s_ae7539aab97c55::t_27155d08075754 1-55
+.changeset/migrated-settings-stale-cache.md
+  s_ae7539aab97c55::t_fabe964597072f 1-5
+apps/meteor/server/settings/startup.ts
+  s_ae7539aab97c55::t_1d91b64b4802f3 1-2,15-23
+  s_ae7539aab97c55::t_872b1d04fadcff 24
+apps/meteor/server/startup/migrations/xrun.ts
+  s_ae7539aab97c55::t_f05a9371396921 105-107
+  s_ae7539aab97c55::t_ef24a7058e7142 8
+apps/meteor/server/startup/migrations/v349.ts
+  s_ae7539aab97c55::t_cdba65a71033df 11-13
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "65ccda4fe26cf343ef9b4b255a08f0c59531b629",
+  "prompts": {},
+  "sessions": {
+    "s_ae7539aab97c55": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fd083441-3cf9-4c77-80c4-6fe3aa50b942",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
