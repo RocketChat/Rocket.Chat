@@ -5,7 +5,7 @@ import { Users } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
 import { ToastMessages } from '../page-objects/fragments';
 import { CreateE2EEChannel } from '../page-objects/fragments/e2ee';
-import { deletePrivateRoomsByName } from '../utils';
+import { createTargetGroupAndReturnFullRoom, deletePrivateRoomsByName, deleteRoom } from '../utils';
 import { preserveSettings } from '../utils/preserveSettings';
 import { test, expect } from '../utils/test';
 
@@ -367,6 +367,35 @@ test.describe('E2EE Encrypted Channels', () => {
 
 		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText(editedMessage);
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
+	});
+
+	test('keeps one quote when editing an encrypted reply', async ({ api, page }) => {
+		const originalMessage = 'Message to quote in an encrypted room';
+		const { group } = await createTargetGroupAndReturnFullRoom(api, {
+			extraData: { encrypted: true },
+			members: [Users.userE2EE.data._id],
+		});
+
+		try {
+			await poHomeChannel.gotoGroup(group.name as string);
+			await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+
+			await poHomeChannel.content.sendMessage(originalMessage);
+			await expect(poHomeChannel.content.lastUserMessageBody).toHaveText(originalMessage);
+			await poHomeChannel.content.quoteMessage('Original reply', originalMessage);
+			await expect(poHomeChannel.content.lastUserMessage.locator('blockquote')).toHaveCount(1);
+
+			await poHomeChannel.content.openLastMessageMenu();
+			await poHomeChannel.content.btnOptionEditMessage.click();
+			await poHomeChannel.composer.inputMessage.press('End');
+			await poHomeChannel.composer.inputMessage.pressSequentially(' edited');
+			await page.keyboard.press('Enter');
+
+			await expect(poHomeChannel.content.lastUserMessage).toContainText('Original reply edited');
+			await expect(poHomeChannel.content.lastUserMessage.locator('blockquote')).toHaveCount(1);
+		} finally {
+			await deleteRoom(api, group._id);
+		}
 	});
 
 	test('expect to edit encrypted message to include mention', async ({ page }) => {
