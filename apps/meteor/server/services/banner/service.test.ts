@@ -27,8 +27,13 @@ class BannerModel extends BaseRaw<any> {
 
 	// Mirrors BannersRaw.createOrUpdate: an upsert whose `$set` rewrites the whole
 	// document, including `_updatedAt` (BaseRaw.updateOne sets it), so even an
-	// unchanged banner looks modified to the database.
+	// unchanged banner looks modified to the database. Expired banners are rejected
+	// exactly as the model rejects them.
 	createOrUpdate(banner: IBanner): Promise<UpdateResult> {
+		if (banner.expireAt < new Date()) {
+			throw new Error('Cannot create banner already expired');
+		}
+
 		this.docs.set(banner._id, { ...this.docs.get(banner._id), active: true, ...banner, _updatedAt: new Date() });
 		return Promise.resolve({ matchedCount: 1, modifiedCount: 1, upsertedCount: 0 } as unknown as UpdateResult);
 	}
@@ -211,6 +216,29 @@ describe('Banners service', () => {
 			await service.create(announcement({ dictionary: { default: { title: 'Something else' } } }));
 
 			expect(sendToUsers.callCount).to.be.equal(2);
+			expect((bannersModel.docs.get('cloud-announcement-id') as IBanner).dictionary).to.deep.equal({
+				default: { title: 'Something else' },
+			});
+		});
+
+		it('should reject an unchanged banner that has expired', async () => {
+			const service = new BannerService();
+			const sendToUsers = sinon.spy(service, 'sendToUsers');
+
+			await service.create(announcement());
+
+			const expireAt = new Date(Date.now() - 60 * 60 * 1000);
+			(bannersModel.docs.get('cloud-announcement-id') as IBanner).expireAt = expireAt;
+
+			let error: Error | undefined;
+			try {
+				await service.create(announcement({ expireAt }));
+			} catch (err) {
+				error = err as Error;
+			}
+
+			expect(error?.message).to.be.equal('Cannot create banner already expired');
+			expect(sendToUsers.callCount).to.be.equal(1);
 		});
 
 		it('should send a banner that is currently inactive', async () => {

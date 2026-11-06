@@ -43,8 +43,13 @@ export class BannerService extends ServiceClassInternal implements IBannerServic
 
 		// A workspace sync sends the same cloud announcements on every run (every 12 hours). Writing
 		// and announcing a banner that did not change makes every connected client refetch the whole
-		// banner list, so keep the stored banner as it is and stay quiet instead.
-		if (previous && isEqual(bannerContent(previous), bannerContent({ ...previous, active: true, ...doc, _id: bannerId }))) {
+		// banner list, so keep the stored banner as it is and stay quiet instead. An expired banner
+		// still goes through the write, which is where an expired banner is rejected.
+		if (
+			previous &&
+			previous.expireAt >= new Date() &&
+			isEqual(bannerContent(previous), bannerContent({ ...previous, active: true, ...doc, _id: bannerId }))
+		) {
 			return previous;
 		}
 
