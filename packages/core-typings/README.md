@@ -18,6 +18,8 @@ npm install @rocket.chat/core-typings
 
 The package is published as CommonJS with TypeScript declarations.
 
+Releases `8.4.0` through `8.9.1` declare `typia` as a Yarn `patch:` URL, which npm cannot resolve and reports as `EUNSUPPORTEDPROTOCOL`. With npm, install `8.3.8` or earlier, or add `"overrides": { "typia": "9.7.2" }` to your own `package.json`.
+
 ## Usage
 
 ### Typing Rocket.Chat objects
