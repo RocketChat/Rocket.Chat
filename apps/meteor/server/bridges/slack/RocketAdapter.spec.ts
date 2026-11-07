@@ -29,6 +29,9 @@ describe('SlackBridge link conversion', () => {
 		expect(await convert('<https://example.com/a(b(c)d)|https://example.com/a(b(c)d)>')).toBe(
 			'[https://example.com/a(b(c)d)](https://example.com/a(b(c)d))',
 		);
+		expect(await convert('<https://example.com/a)b>')).toBe(
+			'[https://example.com/a\\)](https://example.com/a%29)',
+		);
 		expect(await convert('<https://example.com|a &gt; b>')).toBe('[a > b](https://example.com)');
 		expect(await convert('<https://example.com|Docs]>')).toBe('[Docs\\]](https://example.com)');
 		expect(await convert('<https://example.com|a](https://other.example)b>')).toBe('[a\\]\\(https://other.example\\)b](https://example.com)');

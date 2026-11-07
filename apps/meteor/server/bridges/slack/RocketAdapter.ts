@@ -55,7 +55,7 @@ const escapeMarkdownLinkDestination = (url: string): string => {
 };
 
 const formatBareUrl = (url: string): string =>
-	/[()]/.test(url) ? `[${escapeMarkdownLinkLabel(url)}](${url})` : url;
+	/[()]/.test(url) ? `[${escapeMarkdownLinkLabel(url)}](${escapeMarkdownLinkDestination(url)})` : url;
 
 export default class RocketAdapter {
 	constructor(slackBridge) {
