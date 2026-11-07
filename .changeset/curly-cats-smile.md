@@ -3,4 +3,4 @@
 "@rocket.chat/message-parser": patch
 ---
 
-fix(slackbridge): preserve Slack link labels and nested destinations
+Slack `<url|label>` links in SlackBridge messages now convert to plain URLs or Markdown links.
