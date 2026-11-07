@@ -16,8 +16,8 @@ export interface ILivechatInquiryModel extends IBaseModel<ILivechatInquiryRecord
 	findNextAndLock(
 		queueSortBy: FindOptions<ILivechatInquiryRecord>['sort'],
 		department: string | null,
-	): Promise<ILivechatInquiryRecord | null>;
-	unlock(inquiryId: string): Promise<UpdateResult>;
+	): Promise<(ILivechatInquiryRecord & { lockedAt: Date }) | null>;
+	unlock(inquiryId: string, lockedAt: Date): Promise<UpdateResult>;
 	unlockAll(): Promise<UpdateResult | Document>;
 	getCurrentSortedQueueAsync(props: {
 		inquiryId?: string;

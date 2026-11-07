@@ -33,7 +33,14 @@
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/node-rsa": "^1.1.4",
 		"jest": "~30.5.2",
+		"mongodb-memory-server": "^10.2.3",
 		"typescript": "~7.0.2"
+	},
+	"config": {
+		"mongodbMemoryServer": {
+			"downloadDir": "../../node_modules/.cache/mongodb-memory-server",
+			"preferGlobalPath": false
+		}
 	},
 	"volta": {
 		"extends": "../../package.json"

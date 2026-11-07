@@ -10229,6 +10229,7 @@ __metadata:
     "@types/node-rsa": "npm:^1.1.4"
     date-fns: "npm:~4.1.0"
     jest: "npm:~30.5.2"
+    mongodb-memory-server: "npm:^10.2.3"
     node-rsa: "npm:^1.1.1"
     typescript: "npm:~7.0.2"
   languageName: unknown
