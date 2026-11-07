@@ -1,108 +1,108 @@
 {
-	"name": "@rocket.chat/livechat",
-	"version": "3.0.0-rc.0",
-	"homepage": "https://rocket.chat",
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/RocketChat/Rocket.Chat.git",
-		"directory": "packages/livechat"
-	},
-	"license": "MIT",
-	"files": [
-		"/build"
-	],
-	"scripts": {
-		"build": "yarn clean && vite build && vite build --config vite.widget.config.mts",
-		"build-storybook": "storybook build",
-		"clean": "rm -rf dist",
-		"dev": "yarn build",
-		"lint": "yarn run -T oxlint && yarn run stylelint",
-		"start": "vite",
-		"storybook": "storybook dev -p 6006",
-		"stylelint": "stylelint 'src/**/*.scss'",
-		"typecheck": "tsc -p tsconfig.json --noEmit"
-	},
-	"browserslist": [
-		"last 2 versions",
-		"Firefox ESR"
-	],
-	"dependencies": {
-		"@rocket.chat/emitter": "workspace:~",
-		"@rocket.chat/gazzodown": "workspace:^",
-		"@rocket.chat/message-parser": "workspace:^",
-		"@rocket.chat/random": "workspace:~",
-		"@rocket.chat/ui-kit": "workspace:~",
-		"ajv": "^8.20.0",
-		"ajv-formats": "^3.0.1",
-		"css-vars-ponyfill": "^2.4.9",
-		"date-fns": "~4.1.0",
-		"dompurify": "~3.4.17",
-		"emoji-mart": "^3.0.1",
-		"history": "~5.3.0",
-		"i18next": "~26.4.2",
-		"mem": "^8.1.1",
-		"path-to-regexp": "^6.3.0",
-		"preact": "~10.25.4",
-		"preact-render-to-string": "~6.7.0",
-		"preact-router": "^4.1.2",
-		"query-string": "^7.1.3",
-		"react-hook-form": "~7.54.2",
-		"react-i18next": "~17.0.16",
-		"whatwg-fetch": "^3.6.20"
-	},
-	"devDependencies": {
-		"@babel/core": "~7.29.7",
-		"@babel/preset-env": "~7.29.7",
-		"@babel/preset-react": "~7.28.5",
-		"@babel/preset-typescript": "~7.28.5",
-		"@rocket.chat/core-typings": "workspace:^",
-		"@rocket.chat/ddp-client": "workspace:^",
-		"@rocket.chat/fuselage-hooks": "workspace:^",
-		"@rocket.chat/fuselage-tokens": "workspace:^",
-		"@rocket.chat/logo": "workspace:~",
-		"@rocket.chat/storybook-config": "workspace:~",
-		"@rocket.chat/ui-contexts": "workspace:^",
-		"@storybook/addon-docs": "~10.6.5",
-		"@storybook/preact": "~10.6.5",
-		"@storybook/preact-vite": "~10.6.5",
-		"@types/crypto-js": "~4.2.2",
-		"@types/emoji-mart": "~3.0.14",
-		"@types/react": "~19.2.18",
-		"autoprefixer": "^10.5.4",
-		"css-loader": "^6.11.0",
-		"cssnano": "^7.1.9",
-		"lorem-ipsum": "^2.0.10",
-		"postcss": "8.5.29",
-		"postcss-css-variables": "^0.19.0",
-		"postcss-dir-pseudo-class": "^9.0.1",
-		"postcss-flexbugs-fixes": "^5.0.2",
-		"postcss-loader": "^8.1.1",
-		"postcss-logical": "^8.0.0",
-		"postcss-scss": "^4.0.9",
-		"postcss-selector-not": "^8.0.1",
-		"react": "~19.2.8",
-		"react-dom": "~19.2.8",
-		"sass": "~1.80.7",
-		"sass-loader": "~16.0.8",
-		"storybook": "~10.6.5",
-		"style-loader": "^1.3.0",
-		"stylelint": "^16.10.0",
-		"stylelint-order": "^6.0.4",
-		"svg-loader": "^0.0.2",
-		"typescript": "~5.9.3",
-		"vite": "~8.2.2",
-		"webpack": "~5.104.1"
-	},
-	"peerDependencies": {
-		"@rocket.chat/fuselage-tokens": "0.36.0-rc.0",
-		"@rocket.chat/logo": "0.33.3-rc.0"
-	},
-	"volta": {
-		"extends": "../../package.json"
-	},
-	"houston": {
-		"updateFiles": [
-			"package.json"
-		]
-	}
+  "name": "@rocket.chat/livechat",
+  "version": "3.0.0-rc.0",
+  "homepage": "https://rocket.chat",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RocketChat/Rocket.Chat.git",
+    "directory": "packages/livechat"
+  },
+  "license": "MIT",
+  "files": [
+    "/build"
+  ],
+  "scripts": {
+    "build": "node init && yarn clean && vite build && vite build --config vite.widget.config.mts",
+    "build-storybook": "node init && storybook build",
+    "clean": "rm -rf dist",
+    "dev": "node init && yarn build",
+    "lint": "yarn run -T oxlint && yarn run stylelint",
+    "start": "node init && vite",
+    "storybook": "storybook dev -p 6006",
+    "stylelint": "stylelint 'src/**/*.scss'",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "browserslist": [
+    "last 2 versions",
+    "Firefox ESR"
+  ],
+  "dependencies": {
+    "@rocket.chat/emitter": "workspace:~",
+    "@rocket.chat/gazzodown": "workspace:^",
+    "@rocket.chat/message-parser": "workspace:^",
+    "@rocket.chat/random": "workspace:~",
+    "@rocket.chat/ui-kit": "workspace:~",
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
+    "css-vars-ponyfill": "^2.4.9",
+    "date-fns": "~4.1.0",
+    "dompurify": "~3.4.17",
+    "emoji-mart": "^3.0.1",
+    "history": "~5.3.0",
+    "i18next": "~26.4.2",
+    "mem": "^8.1.1",
+    "path-to-regexp": "^6.3.0",
+    "preact": "~10.25.4",
+    "preact-render-to-string": "~6.7.0",
+    "preact-router": "^4.1.2",
+    "query-string": "^7.1.3",
+    "react-hook-form": "~7.54.2",
+    "react-i18next": "~17.0.16",
+    "whatwg-fetch": "^3.6.20"
+  },
+  "devDependencies": {
+    "@babel/core": "~7.29.7",
+    "@babel/preset-env": "~7.29.7",
+    "@babel/preset-react": "~7.28.5",
+    "@babel/preset-typescript": "~7.28.5",
+    "@rocket.chat/core-typings": "workspace:^",
+    "@rocket.chat/ddp-client": "workspace:^",
+    "@rocket.chat/fuselage-hooks": "workspace:^",
+    "@rocket.chat/fuselage-tokens": "workspace:^",
+    "@rocket.chat/logo": "workspace:~",
+    "@rocket.chat/storybook-config": "workspace:~",
+    "@rocket.chat/ui-contexts": "workspace:^",
+    "@storybook/addon-docs": "~10.6.5",
+    "@storybook/preact": "~10.6.5",
+    "@storybook/preact-vite": "~10.6.5",
+    "@types/crypto-js": "~4.2.2",
+    "@types/emoji-mart": "~3.0.14",
+    "@types/react": "~19.2.18",
+    "autoprefixer": "^10.5.4",
+    "css-loader": "^6.11.0",
+    "cssnano": "^7.1.9",
+    "lorem-ipsum": "^2.0.10",
+    "postcss": "8.5.29",
+    "postcss-css-variables": "^0.19.0",
+    "postcss-dir-pseudo-class": "^9.0.1",
+    "postcss-flexbugs-fixes": "^5.0.2",
+    "postcss-loader": "^8.1.1",
+    "postcss-logical": "^8.0.0",
+    "postcss-scss": "^4.0.9",
+    "postcss-selector-not": "^8.0.1",
+    "react": "~19.2.8",
+    "react-dom": "~19.2.8",
+    "sass": "~1.80.7",
+    "sass-loader": "~16.0.8",
+    "storybook": "~10.6.5",
+    "style-loader": "^1.3.0",
+    "stylelint": "^16.10.0",
+    "stylelint-order": "^6.0.4",
+    "svg-loader": "^0.0.2",
+    "typescript": "~5.9.3",
+    "vite": "~8.2.2",
+    "webpack": "~5.104.1"
+  },
+  "peerDependencies": {
+    "@rocket.chat/fuselage-tokens": "0.36.0-rc.0",
+    "@rocket.chat/logo": "0.33.3-rc.0"
+  },
+  "volta": {
+    "extends": "../../package.json"
+  },
+  "houston": {
+    "updateFiles": [
+      "package.json"
+    ]
+  }
 }

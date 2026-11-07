@@ -1,23 +1,23 @@
 {
-	"name": "@rocket.chat/server-cloud-communication",
-	"version": "0.0.3",
-	"private": true,
-	"main": "./src/index.ts",
-	"types": "./src/index.ts",
-	"files": [
-		"/dist"
-	],
-	"scripts": {
-		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
-		"lint": "yarn run -T oxlint",
-		"lint:fix": "yarn run -T oxlint --fix",
-		"typecheck": "tsc --noEmit"
-	},
-	"devDependencies": {
-		"@rocket.chat/license": "workspace:^",
-		"typescript": "~7.0.2"
-	},
-	"volta": {
-		"extends": "../../package.json"
-	}
+  "name": "@rocket.chat/server-cloud-communication",
+  "version": "0.0.3",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "files": [
+    "/dist"
+  ],
+  "scripts": {
+    "dev": "node init && tsc -p tsconfig.json --watch --preserveWatchOutput",
+    "lint": "yarn run -T oxlint",
+    "lint:fix": "yarn run -T oxlint --fix",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@rocket.chat/license": "workspace:^",
+    "typescript": "~7.0.2"
+  },
+  "volta": {
+    "extends": "../../package.json"
+  }
 }
