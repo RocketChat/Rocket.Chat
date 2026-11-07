@@ -657,6 +657,7 @@ type ChatSyncMessages = {
 	roomId: IRoom['_id'];
 	lastUpdate?: string;
 	fromTs?: string;
+	/** Maximum records per cursor page. Pass returned opaque cursor strings back unchanged. */
 	count?: number;
 	next?: string;
 	previous?: string;
@@ -678,6 +679,8 @@ const ChatSyncMessagesSchema = {
 			format: 'iso-date-time',
 		},
 		count: {
+			description:
+				'Maximum records per cursor page. Numeric starting timestamps are accepted. Pass returned opaque timestamp/ID cursors back unchanged until null.',
 			type: 'number',
 			nullable: true,
 		},
