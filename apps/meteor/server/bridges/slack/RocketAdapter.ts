@@ -24,28 +24,32 @@ const normalizeHttpUrlScheme = (value: string): string =>
 const escapeMarkdownLinkLabel = (label: string): string => label.replace(/([\\[\]()_*~`])/g, '\\$1');
 
 const escapeMarkdownLinkDestination = (url: string): string => {
-	const unmatchedParentheses = new Set();
-	const openingParentheses = [];
+	const escapedParentheses = new Set<number>();
+	const openingParentheses: { index: number; depth: number }[] = [];
 
 	for (let index = 0; index < url.length; index++) {
 		if (url[index] === '(') {
-			openingParentheses.push(index);
+			openingParentheses.push({ index, depth: openingParentheses.length + 1 });
 		} else if (url[index] === ')') {
 			if (openingParentheses.length > 0) {
-				openingParentheses.pop();
+				const opening = openingParentheses.pop();
+				if (opening.depth > 1) {
+					escapedParentheses.add(opening.index);
+					escapedParentheses.add(index);
+				}
 			} else {
-				unmatchedParentheses.add(index);
+				escapedParentheses.add(index);
 			}
 		}
 	}
 
-	for (const index of openingParentheses) {
-		unmatchedParentheses.add(index);
+	for (const opening of openingParentheses) {
+		escapedParentheses.add(opening.index);
 	}
 
 	return url.split('')
 		.map((character, index) =>
-			unmatchedParentheses.has(index) ? `%${character.charCodeAt(0).toString(16).toUpperCase()}` : character,
+			escapedParentheses.has(index) ? `%${character.charCodeAt(0).toString(16).toUpperCase()}` : character,
 		)
 		.join('');
 };

@@ -30,5 +30,6 @@ describe('SlackBridge link conversion', () => {
 			'[\\*bold\\* and \\_italic\\_ \\`code\\`](https://example.com)',
 		);
 		expect(await convert('<https://example.com/search?q=a)|Search>')).toBe('[Search](https://example.com/search?q=a%29)');
+		expect(await convert('<https://example.com/a(b(c)d)|Docs>')).toBe('[Docs](https://example.com/a(b%28c%29d))');
 	});
 });

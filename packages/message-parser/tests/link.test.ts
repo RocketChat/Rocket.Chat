@@ -25,6 +25,8 @@ test.each([
 	['[ test ](https://rocket.chat)', [paragraph([link('https://rocket.chat', [plain(' test ')])])]],
 	['[title](https://rocket.chat)', [paragraph([link('https://rocket.chat', [plain('title')])])]],
 	['[a\\]\\(https://other.example\\)b](https://rocket.chat)', [paragraph([link('https://rocket.chat', [plain('a](https://other.example)b')])])],
+	['[Docs](https://example.com/a(b%28c%29d))', [paragraph([link('https://example.com/a(b%28c%29d)', [plain('Docs')])])]],
+	['[foo\\*bar](https://rocket.chat)', [paragraph([link('https://rocket.chat', [plain('foo*bar')])])],
 	['[C:\\\\Docs](https://rocket.chat)', [paragraph([link('https://rocket.chat', [plain('C:\\Docs')])])],
 	['[\\*bold\\* and \\_italic\\_ \\`code\\`](https://rocket.chat)', [paragraph([link('https://rocket.chat', [plain('*bold* and _italic_ `code`')])])],
 	['[title](http://localhost)', [paragraph([link('http://localhost', [plain('title')])])]],

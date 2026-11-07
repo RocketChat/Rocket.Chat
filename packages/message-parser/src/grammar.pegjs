@@ -425,7 +425,7 @@ References
 LinkTitle
   = "\\" char:("[" / "]" / "(" / ")" / "\\" / "*" / "_" / "~" / "`") { return plain(char); }
   / (Whitespace / Emphasis)
-  / anyTitle:$[^\]()*_~ \t\r\n]+ { return plain(anyTitle) }
+  / anyTitle:$[^\\\]()*_~ \t\r\n]+ { return plain(anyTitle) }
   / anyTitle:$(!("](" .) !("] [" [^\]]* "](") .) { return plain(anyTitle) }
 
 LinkTitle2 = $([\x20-\x3B\x3D\x3F-\x60\x61-\x7B\x7D-\xFF] / NonASCII)+
