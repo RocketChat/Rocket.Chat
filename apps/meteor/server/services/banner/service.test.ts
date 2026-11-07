@@ -1,6 +1,7 @@
 import { afterEach, before, beforeEach, describe, it } from 'node:test';
 
-import type { BannerPlatform, IBanner, IBannerDismiss, Optional } from '@rocket.chat/core-typings';
+import { BannerPlatform } from '@rocket.chat/core-typings';
+import type { Cloud, IBanner, IBannerDismiss, Optional } from '@rocket.chat/core-typings';
 import { registerModel, BaseRaw } from '@rocket.chat/models';
 import { expect } from 'chai';
 import type { FindCursor, FindOptions, UpdateResult } from 'mongodb';
@@ -62,12 +63,12 @@ const bannerDismissModel = new BannerDismissModel({ collection: () => ({}) } as 
 const userModel = new UserModel({ collection: () => ({}) } as unknown as any, 'user');
 
 // What a workspace sync sends for a cloud announcement.
-const syncAnnouncement = (overrides: Partial<IBanner> = {}): Optional<IBanner, '_id' | '_updatedAt'> => ({
+const syncAnnouncement = (overrides: Partial<Cloud.Announcement> = {}): Cloud.Announcement => ({
 	_id: 'cloud-announcement-id',
-	platform: ['web'],
+	platform: [BannerPlatform.Web],
 	startAt: new Date('2026-11-01T00:00:00.000Z'),
 	expireAt: new Date('2026-12-01T00:00:00.000Z'),
-	createdBy: { _id: 'cloud-announcements' },
+	createdBy: 'cloud',
 	createdAt: new Date('2026-11-01T00:00:00.000Z'),
 	view: { appId: 'cloud-announcements-core', viewId: 'cloud-announcement' },
 	surface: 'banner',
@@ -259,7 +260,7 @@ describe('Banners service', () => {
 	describe('handleAnnouncementsOnWorkspaceSync', () => {
 		beforeEach(() => bannersModel.docs.clear());
 
-		const loadHandler = (create: (doc: IBanner) => Promise<IBanner>) =>
+		const loadHandler = (create: (doc: Optional<IBanner, '_id' | '_updatedAt'>) => Promise<IBanner>) =>
 			proxyquire.noCallThru().load('../../lib/cloud/syncWorkspace/handleCommsSync', {
 				'@rocket.chat/core-services': {
 					Banner: { create },
@@ -267,7 +268,7 @@ describe('Banners service', () => {
 					api: { broadcast: () => Promise.resolve() },
 				},
 				'../../../services/nps/getAndCreateNpsSurvey': { getAndCreateNpsSurvey: () => Promise.resolve() },
-			}) as { handleAnnouncementsOnWorkspaceSync: (announcements: { create: IBanner[] }) => Promise<void> };
+			}) as { handleAnnouncementsOnWorkspaceSync: (announcements: { create: Cloud.Announcement[] }) => Promise<void> };
 
 		it('should announce a cloud announcement once across two syncs', async () => {
 			const service = new BannerService();
