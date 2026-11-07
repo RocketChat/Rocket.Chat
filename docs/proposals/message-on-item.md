@@ -21,7 +21,7 @@ The Fuselage `Message` row renders on the `Item` primitives. `Item` owns the row
 
 | Message part                         | Becomes                                   |
 | ------------------------------------ | ----------------------------------------- |
-| `Message`                            | `Item align='start' multiline hoverable`  |
+| `Message`                            | `Item align='start' inset='lg' multiline hoverable` |
 | `MessageLeftContainer`               | `ItemMedia`                               |
 | `MessageContainer`                   | `ItemContent`                             |
 | `MessageHeader`, `MessageRoles`      | `ItemRow`                                 |
@@ -29,7 +29,7 @@ The Fuselage `Message` row renders on the `Item` primitives. `Item` owns the row
 | `MessageSystem`                      | `Item inset='lg' multiline`               |
 | `MessageSystemContainer` / `…Block`  | `ItemContent` / `ItemRow`                 |
 | `MessageSystemTimestamp`             | `ItemMeta`                                |
-| `ThreadMessage`                      | `Item` (no longer a `Message`)            |
+| `ThreadMessage`                      | `Item inset='lg'` (no longer a `Message`) |
 | `ThreadMessageRow`                   | `ItemRow`                                 |
 | `ThreadMessageUnfollow`              | wrapped in `ItemActions reveal='hover'`   |
 | `MessageBody`, blocks, content parts | unchanged, free content                   |
@@ -60,7 +60,7 @@ They register their ids in the parent `Item` through `setState` (`useIdRegistry`
 
 ## What stays message-specific
 
-- **The 24px inset** is `padding-inline` on `.rcx-message`. `inset='lg'` gives the same 24px only when the last child is in the flow; in room messages the last child is the absolutely positioned toolbar wrapper. System messages have no toolbar and use `inset='lg'`.
+- **The 24px inset** is `inset='lg'` on every row. `Item` applies its inset as padding on the row itself, so the absolutely positioned toolbar wrapper, the thread preview's column and the conference panel's trimmed start padding don't need their own rules.
 - **The avatar column**: a fixed 36px `ItemMedia` that right-aligns narrow children (checkbox, sequential status indicators), and a block size of header plus first line, so the avatar centers on them however long the body grows.
 - **States**: `editing` (warning surface; `Item` has none) and `pending` (dimmed body).
 - **The author name**: underline on hover, and a focus ring drawn with `outline` and `box-shadow` so it takes no room; a border-based ring made the header 2px taller and was invisible in forced colors.

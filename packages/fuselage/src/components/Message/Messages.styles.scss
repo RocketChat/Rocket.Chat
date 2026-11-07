@@ -27,8 +27,6 @@ $message-highlight-colors-link-color: theme('message-highlight-colors-link-color
 $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 
 .rcx-message {
-	padding-inline: lengths.padding(24);
-
 	// The avatar centres on the header and the first body line, however long the body grows.
 	> .rcx-message-container--left {
 		min-block-size: calc(#{line-height(h5)} + #{line-height(p2)});

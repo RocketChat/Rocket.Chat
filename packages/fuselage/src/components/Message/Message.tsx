@@ -21,6 +21,7 @@ function Message({ className, clickable, hoverable = true, sequential, isSelecte
 		<Item
 			{...props}
 			align='start'
+			inset='lg'
 			multiline
 			hoverable={hoverable}
 			interactive={clickable}

@@ -12,6 +12,8 @@ const ThreadMessage = ({
 	isEditing: _isEditing,
 	isPending: _isPending,
 	...props
-}: ThreadMessageProps) => <Item {...props} interactive={clickable} selected={isSelected} className={cx('rcx-message-thread', className)} />;
+}: ThreadMessageProps) => (
+	<Item {...props} inset='lg' interactive={clickable} selected={isSelected} className={cx('rcx-message-thread', className)} />
+);
 
 export default ThreadMessage;
