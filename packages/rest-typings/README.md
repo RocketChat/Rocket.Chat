@@ -18,7 +18,7 @@ npm install @rocket.chat/rest-typings
 
 The package is published as CommonJS with TypeScript declarations.
 
-This package depends on `@rocket.chat/core-typings`, whose published 8.4.0 through 8.9.1 releases declare `typia` as a Yarn `patch:` URL that npm cannot resolve (`EUNSUPPORTEDPROTOCOL`); if you install with npm, add `"overrides": { "typia": "9.7.2" }` to your own `package.json`.
+This package depends on `@rocket.chat/core-typings`, whose published 8.4.0 through 8.9.1 releases declare `typia` as a Yarn `patch:` URL that npm cannot resolve (`EUNSUPPORTEDPROTOCOL`); if you install with npm, add `"overrides": { "typia": "9.7.2" }` to the root `package.json` of the project doing the install (npm reads `overrides` only from the root, and only from npm 8.3.0 onwards). That key replaces every `typia` in the tree; see the `@rocket.chat/core-typings` README for the cases where installing `8.3.8` or earlier is the better answer.
 
 Not every endpoint is in this package. Endpoints the server defines with its newer route API declare their types inside the Rocket.Chat server code, by augmenting `Endpoints`, and are not published here.
 
