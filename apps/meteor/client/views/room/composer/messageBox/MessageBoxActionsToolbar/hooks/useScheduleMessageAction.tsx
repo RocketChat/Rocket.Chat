@@ -9,18 +9,26 @@ import type { ChatAPI } from '../../../../lib/chats/ChatAPI';
 /**
  * Provides the generic action item to schedule messages from the composer toolbar.
  *
- * @param disabled - Whether the action item should be disabled.
- * @param room - The current room context.
- * @param chat - The chat API instance.
- * @param tmid - Optional thread message ID if scheduling within a thread.
+ * @param disabled Whether the action item should be disabled.
+ * @param room The current room context.
+ * @param chat The chat API instance.
+ * @param tmid Optional thread message ID if scheduling within a thread.
  * @returns The generic menu item properties for the schedule action.
  */
-export const useScheduleMessageAction = (\n\tdisabled: boolean,\n\troom: IRoom,\n\tchat: ChatAPI,\n\ttmid?: IMessage['tmid'],\n): GenericMenuItemProps => {
+export const useScheduleMessageAction = (
+	disabled: boolean,
+	room: IRoom,
+	chat: ChatAPI,
+	tmid?: IMessage['tmid'],
+): GenericMenuItemProps => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 
 	const handleSchedule = () => {
 		const text = chat?.composer?.text ?? '';
+
+		
+		if (!text.trim()) return;
 
 		setModal(
 			<ScheduleMessageModal
@@ -28,7 +36,11 @@ export const useScheduleMessageAction = (\n\tdisabled: boolean,\n\troom: IRoom,\
 				tmid={tmid}
 				text={text}
 				onClose={() => setModal(null)}
-				onScheduled={() => {\n\t\t\t\t\tif (typeof chat?.composer?.clear === 'function') {\n\t\t\t\t\t\tchat.composer.clear();\n\t\t\t\t\t}\n\t\t\t\t}}
+				onScheduled={() => {
+					if (typeof chat?.composer?.clear === 'function') {
+						chat.composer.clear();
+					}
+				}}
 			/>,
 		);
 	};
