@@ -1,5 +1,4 @@
 import { hasJoinedVideoConference, type VideoConference } from '@rocket.chat/core-typings';
-import { css } from '@rocket.chat/css-in-js';
 import {
 	Button,
 	Message,
@@ -11,7 +10,6 @@ import {
 	MessageBody,
 	MessageBlock,
 	Box,
-	Palette,
 	IconButton,
 	ButtonGroup,
 	AvatarStack,
@@ -46,15 +44,6 @@ const VideoConfListItem = ({ videoConfData, reload }: { videoConfData: VideoConf
 	// while still counting towards the total underneath.
 	const joinedUsers = users.filter((user) => user._id !== _id && !!user.username && hasJoinedVideoConference(user));
 
-	const hovered = css`
-		&:hover {
-			background: ${Palette.surface['surface-tint']};
-			.rcx-message {
-				background: ${Palette.surface['surface-tint']};
-			}
-		}
-	`;
-
 	const handleJoinConference = useStableCallback((): void => {
 		joinCall(callId);
 		return reload();
@@ -68,10 +57,9 @@ const VideoConfListItem = ({ videoConfData, reload }: { videoConfData: VideoConf
 			borderBlockEndWidth='default'
 			borderBlockEndColor='stroke-extra-light'
 			borderBlockEndStyle='solid'
-			className={hovered}
 			paddingBlock={8}
 		>
-			<Message>
+			<Message hoverable={false}>
 				<MessageLeftContainer>{username && <UserAvatar username={username} size='x36' />}</MessageLeftContainer>
 				<MessageContainer>
 					<MessageHeader>
