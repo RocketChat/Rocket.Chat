@@ -27,6 +27,18 @@ describe('MainLayout style tags', () => {
 		const style = queryByAttribute('id', document.head, 'codeBlock-palette');
 		expect(style).not.toBeNull();
 	});
+
+	it.each([
+		['dark', 'dark'],
+		['light', 'only light'],
+		['high-contrast', 'only light'],
+	])('should declare the color scheme of the %s theme', (themeAppearence, colorScheme) => {
+		const { unmount } = render(<MainLayoutStyleTags />, {
+			wrapper: mockAppRoot().withUserPreference('themeAppearence', themeAppearence).build(),
+		});
+		expect(queryByAttribute('name', document.head, 'color-scheme')).toHaveAttribute('content', colorScheme);
+		unmount();
+	});
 });
 
 it('should create the Dark theme style tag', () => {
