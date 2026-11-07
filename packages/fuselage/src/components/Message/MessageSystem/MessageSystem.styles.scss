@@ -12,11 +12,6 @@
 		margin-block: lengths.margin(-4);
 	}
 
-	// secondary-info fails contrast against the hover surface.
-	&:hover &__time {
-		color: colors.font(default);
-	}
-
 	&__body {
 		@include use-with-truncated-text();
 	}
