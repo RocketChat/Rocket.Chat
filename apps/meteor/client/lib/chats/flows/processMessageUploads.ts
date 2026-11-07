@@ -10,8 +10,9 @@ import { dispatchToastMessage } from '../../toast';
 import type { ChatAPI, UploadsAPI } from '../ChatAPI';
 import { isEncryptedUpload, type EncryptedUpload } from '../Upload';
 
-const getHeightAndWidthFromDataUrl = (dataURL: string): Promise<{ height: number; width: number }> => {
-	return new Promise((resolve, reject) => {
+/** Resolves `undefined` when the browser can't decode the image (e.g. HEIC), so the upload can still be sent. */
+const getHeightAndWidthFromDataUrl = (dataURL: string): Promise<{ height: number; width: number } | undefined> => {
+	return new Promise((resolve) => {
 		const img = new Image();
 		img.onload = () => {
 			resolve({
@@ -20,7 +21,7 @@ const getHeightAndWidthFromDataUrl = (dataURL: string): Promise<{ height: number
 			});
 		};
 		img.onerror = () => {
-			reject(new Error('Failed to load image for dimensions'));
+			resolve(undefined);
 		};
 		img.src = dataURL;
 	});
@@ -52,13 +53,16 @@ const getAttachmentForFile = async (fileToUpload: EncryptedUpload): Promise<File
 		};
 	}
 
+	const imageDimensions =
+		fileType === 'image' ? await getHeightAndWidthFromDataUrl(window.URL.createObjectURL(fileToUpload.file)) : undefined;
+
 	return {
 		...attachment,
 		[`${fileType}_url`]: fileToUpload.url,
 		[`${fileType}_type`]: fileToUpload.file.type,
 		[`${fileType}_size`]: fileToUpload.file.size,
 		...(fileType === 'image' && {
-			image_dimensions: await getHeightAndWidthFromDataUrl(window.URL.createObjectURL(fileToUpload.file)),
+			...(imageDimensions && { image_dimensions: imageDimensions }),
 			image_alt: fileToUpload.altText,
 		}),
 	};
