@@ -18,13 +18,24 @@ export function extractTimestampFromCursor(cursor: string): Date {
 	return new Date(timestamp);
 }
 
+/**
+ * Build an exclusive timestamp boundary and database batch options for sync pagination.
+ *
+ * `next` traverses newer timestamps; `previous` traverses older timestamps. Cursors
+ * are timestamp-only: compound timestamp/ID cursors are not part of this contract.
+ * Use a batch size rather than a result limit so the caller can finish a group of
+ * messages sharing the boundary timestamp before returning a continuation cursor.
+ *
+ * @param params - Pagination direction, timestamp cursor, and target page size.
+ * @returns The timestamp filter and database read options.
+ */
 export function mountCursorQuery({ next, previous, count }: { next?: string; previous?: string; count: number }): {
 	query: { $gt: Date } | { $lt: Date };
 	options: FindOptions<IMessage>;
 } {
 	const options: FindOptions<IMessage> = {
 		sort: { _updatedAt: 1 },
-		...(next || previous ? { limit: count + 1 } : {}),
+		...(next || previous ? { batchSize: count + 1 } : {}),
 	};
 
 	if (next) {
@@ -124,6 +135,22 @@ export async function handleWithoutPagination(rid: IRoom['_id'], lastUpdate: Dat
 	};
 }
 
+/**
+ * Read a sync page without splitting messages that share an update or deletion timestamp.
+ *
+ * The page contains at least `count` messages when available, plus the rest of its
+ * final timestamp group. One additional message determines whether another page
+ * exists. Iteration stops there and closes the database cursor. A timestamp group
+ * has no fixed size, so `count` and the database batch size are not response-size
+ * or memory limits. Returned cursors remain compatible with timestamp-only clients.
+ *
+ * @param type - Select updated messages or deleted-message tombstones.
+ * @param rid - Room whose messages are being synchronized.
+ * @param count - Target page size; tied timestamps can make the page larger.
+ * @param next - Exclusive timestamp boundary for forward traversal.
+ * @param previous - Exclusive timestamp boundary for backward traversal.
+ * @returns Messages and continuation cursors; the traversal cursor is null at exhaustion.
+ */
 export async function handleCursorPagination(
 	type: CursorPaginationType,
 	rid: IRoom['_id'],
@@ -140,20 +167,39 @@ export async function handleCursorPagination(
 }> {
 	const { query, options } = mountCursorQuery({ next, previous, count });
 
-	const response =
+	// Deleted-message cursors must use the same field for ordering and filtering.
+	options.sort = { [type === 'UPDATED' ? '_updatedAt' : '_deletedAt']: previous ? -1 : 1 };
+	const messages =
 		type === 'UPDATED'
-			? await Messages.findForUpdates(rid, { updatedAt: query }, options).toArray()
-			: ((await Messages.trashFind(
-					{ rid, _deletedAt: query },
-					{ projection: { _id: 1, _deletedAt: 1 }, ...options },
-				)!.toArray()) as IMessage[]);
+			? Messages.findForUpdates(rid, { updatedAt: query }, options)
+			: Messages.trashFind({ rid, _deletedAt: query }, { projection: { _id: 1, _deletedAt: 1 }, ...options })!;
 
+	const response: IMessage[] = [];
+	let hasMore = false;
+	for await (const message of messages) {
+		// A timestamp-only cursor cannot resume within a group of equal timestamps.
+		// Treat count as a target and finish the boundary group before advancing it.
+		// batchSize bounds database batches without truncating that group with limit.
+		if (
+			response.length >= count &&
+			response.length > 0 &&
+			mountCursorFromMessage(message as IMessage, type) !== mountCursorFromMessage(response[response.length - 1], type)
+		) {
+			response.push(message as IMessage);
+			hasMore = true;
+			break;
+		}
+		response.push(message as IMessage);
+	}
+
+	// Cursor helpers expect one lookahead entry, even when a page exceeds count.
+	const pageSize = response.length - (hasMore ? 1 : 0);
 	const cursor = {
-		next: mountNextCursor(response, count, type, next, previous),
-		previous: mountPreviousCursor(response, count, type, next, previous),
+		next: mountNextCursor(response, pageSize, type, next, previous),
+		previous: mountPreviousCursor(response, pageSize, type, next, previous),
 	};
 
-	if (response.length > count) {
+	if (hasMore) {
 		response.pop();
 	}
 

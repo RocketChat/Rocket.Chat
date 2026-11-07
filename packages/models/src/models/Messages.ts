@@ -38,9 +38,15 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		super(db, 'message', trash);
 	}
 
+	/**
+	 * Define message indexes, including room/update-time ordering for streaming sync
+	 * pages without a blocking sort when a timestamp group exceeds the page target.
+	 */
 	protected override modelIndexes(): IndexDescription[] {
 		return [
 			{ key: { rid: 1, ts: 1, _updatedAt: 1 } },
+			// Stream sync pages in update order, including complete groups of equal timestamps.
+			{ key: { rid: 1, _updatedAt: 1 } },
 			{ key: { ts: 1 } },
 			{ key: { 'u._id': 1 } },
 			{ key: { editedAt: 1 }, sparse: true },

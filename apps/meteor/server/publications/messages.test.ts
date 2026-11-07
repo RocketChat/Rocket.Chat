@@ -78,13 +78,13 @@ describe('mountCursorQuery', () => {
 	it('should return a query with $gt and ascending sort when next is provided', () => {
 		const result = mountCursorQuery({ next: mockDate.toString(), count: 10 });
 		expect(result.query).to.deep.equal({ $gt: new Date(mockDate) });
-		expect(result.options).to.deep.equal({ sort: { _updatedAt: 1 }, limit: 10 + 1 });
+		expect(result.options).to.deep.equal({ sort: { _updatedAt: 1 }, batchSize: 10 + 1 });
 	});
 
 	it('should return a query with $gt and descending sort when previous is provided', () => {
 		const result = mountCursorQuery({ previous: mockDate.toString(), count: 10 });
 		expect(result.query).to.deep.equal({ $lt: new Date(mockDate) });
-		expect(result.options).to.deep.equal({ sort: { _updatedAt: -1 }, limit: 10 + 1 });
+		expect(result.options).to.deep.equal({ sort: { _updatedAt: -1 }, batchSize: 10 + 1 });
 	});
 });
 
@@ -253,11 +253,107 @@ describe('handleWithoutPagination', () => {
 });
 
 describe('handleCursorPagination', () => {
+	beforeEach(() => {
+		messagesMock.findForUpdates.reset();
+		messagesMock.trashFind.reset();
+	});
+
+	for (const type of ['UPDATED', 'DELETED'] as const) {
+		for (const direction of ['next', 'previous'] as const) {
+			for (const groupSizes of [[], [1], [50], [429], [3, 60, 2], [50, 50, 50]]) {
+				it(`should sync all ${type} messages exactly once using ${direction} with timestamp groups ${JSON.stringify(groupSizes)}`, async () => {
+					const field = type === 'UPDATED' ? '_updatedAt' : '_deletedAt';
+					const source = groupSizes.flatMap((size, group) =>
+						Array.from({ length: size }, (_, index) => ({
+							_id: `${group}-${index}`,
+							// Deliberately reverse update and deletion order to catch sorting on the wrong field.
+							_updatedAt: new Date((groupSizes.length - group) * 1000),
+							_deletedAt: new Date((groupSizes.length - group) * 1000),
+							[field]: new Date((group + 1) * 1000),
+						})),
+					);
+					let closed = 0;
+					const read = (query: { $gt: Date } | { $lt: Date }, options: { sort: Record<string, number>; limit?: number }) => {
+						expect(options.sort).to.deep.equal({ [field]: direction === 'next' ? 1 : -1 });
+						const rows = source
+							.filter((message) => ('$gt' in query ? message[field] > query.$gt : message[field] < query.$lt))
+							.sort((a, b) => (a[field].getTime() - b[field].getTime()) * options.sort[field]);
+						return (async function* () {
+							try {
+								yield* options.limit ? rows.slice(0, options.limit) : rows;
+							} finally {
+								closed++;
+							}
+						})();
+					};
+					messagesMock.findForUpdates.callsFake((rid, { updatedAt }, options) => {
+						expect(rid).to.equal('roomId');
+						return read(updatedAt, options);
+					});
+					messagesMock.trashFind.callsFake(({ rid, _deletedAt }, options) => {
+						expect(rid).to.equal('roomId');
+						expect(options.projection).to.deep.equal({ _id: 1, _deletedAt: 1 });
+						return read(_deletedAt, options);
+					});
+
+					let cursor: string | null = direction === 'next' ? '0' : `${(groupSizes.length + 1) * 1000}`;
+					const ids: string[] = [];
+					let pages = 0;
+					while (cursor !== null) {
+						expect(pages++).to.be.lessThan(groupSizes.length + 2);
+						const result: { updated: IMessage[]; deleted: IMessage[]; cursor: Record<'next' | 'previous', string | null> } =
+							await handleCursorPagination(
+								type,
+								'roomId',
+								50,
+								direction === 'next' ? cursor : undefined,
+								direction === 'previous' ? cursor : undefined,
+							);
+						const page = type === 'UPDATED' ? result.updated : result.deleted;
+						ids.push(...page.map((message: IMessage) => message._id));
+						cursor = result.cursor[direction];
+						if (cursor !== null) {
+							expect(cursor).to.match(/^\d+$/);
+							expect(cursor).to.equal(`${page[page.length - 1][field].getTime()}`);
+						}
+					}
+					expect(ids).to.have.lengthOf(source.length);
+					expect(new Set(ids).size).to.equal(source.length);
+					expect(ids).to.have.members(source.map(({ _id }) => _id));
+					expect(closed).to.equal(pages);
+				});
+			}
+		}
+	}
+
+	it('should stop after one lookahead message and close the database cursor', async () => {
+		let reads = 0;
+		const close = sinon.spy();
+		messagesMock.findForUpdates.returns(
+			(async function* () {
+				try {
+					for (let index = 1; index <= 1000; index++) {
+						reads++;
+						yield { _id: `${index}`, _updatedAt: new Date(index) };
+					}
+				} finally {
+					close();
+				}
+			})(),
+		);
+
+		const result = await handleCursorPagination('UPDATED', 'roomId', 1, '0');
+		expect(result.updated.map(({ _id }: IMessage) => _id)).to.deep.equal(['1']);
+		expect(result.cursor).to.deep.equal({ next: '1', previous: '1' });
+		expect(reads).to.equal(2);
+		sinon.assert.calledOnce(close);
+	});
+
 	it('should return updated messages and cursor when type is UPDATED', async () => {
 		const rid = 'roomId';
 		const count = 10;
 		const messages = [{ _id: 'msg1', _updatedAt: new Date('2024-01-01T00:00:00Z') }];
-		messagesMock.findForUpdates.returns({ toArray: sinon.stub().resolves(messages) });
+		messagesMock.findForUpdates.returns(messages);
 
 		const result = await handleCursorPagination('UPDATED', rid, count);
 
@@ -272,7 +368,7 @@ describe('handleCursorPagination', () => {
 		const rid = 'roomId';
 		const count = 10;
 		const messages = [{ _id: 'msg1', _deletedAt: new Date() }];
-		messagesMock.trashFind.returns({ toArray: sinon.stub().resolves(messages) });
+		messagesMock.trashFind.returns(messages);
 
 		const result = await handleCursorPagination('DELETED', rid, count);
 
@@ -284,7 +380,7 @@ describe('handleCursorPagination', () => {
 	it('should handle empty response correctly', async () => {
 		const rid = 'roomId';
 		const count = 10;
-		messagesMock.findForUpdates.returns({ toArray: sinon.stub().resolves([]) });
+		messagesMock.findForUpdates.returns([]);
 
 		const result = await handleCursorPagination('UPDATED', rid, count);
 
