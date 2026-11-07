@@ -31,11 +31,11 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 
 	// The avatar centres on the header and the first body line, however long the body grows.
 	> .rcx-message-container--left {
-		block-size: calc(#{line-height(h5)} + #{line-height(p2)});
+		min-block-size: calc(#{line-height(h5)} + #{line-height(p2)});
 	}
 
 	&--sequential > .rcx-message-container--left {
-		block-size: line-height(p2);
+		min-block-size: line-height(p2);
 	}
 
 	&-container {
