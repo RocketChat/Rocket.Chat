@@ -239,7 +239,7 @@ API.v1.post(
 		const userStatusData = {
 			_id,
 			name,
-			statusType: statusType ?? customUserStatusToUpdate.statusType,
+			statusType: statusType === undefined ? customUserStatusToUpdate.statusType : (statusType ?? ''),
 			previousName: customUserStatusToUpdate.name,
 			previousStatusType: customUserStatusToUpdate.statusType,
 		};

@@ -273,6 +273,12 @@ describe('[CustomUserStatus]', () => {
 			await request
 				.post(api('custom-user-status.update'))
 				.set(credentials)
+				.send({ _id: customUserStatusId, name: customUserStatusName, statusType: 'away' })
+				.expect(200);
+
+			await request
+				.post(api('custom-user-status.update'))
+				.set(credentials)
 				.send({ _id: customUserStatusId, name: newName })
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -282,6 +288,26 @@ describe('[CustomUserStatus]', () => {
 					expect(res.body.customUserStatus).to.have.property('_id', customUserStatusId);
 					expect(res.body.customUserStatus).to.have.property('name', newName);
 					expect(res.body.customUserStatus).to.have.property('statusType', 'away');
+				});
+
+			customUserStatusName = newName;
+		});
+
+		it('should allow clearing statusType when explicitly passed as null', async () => {
+			const newName = `test-clear-${Date.now()}`;
+
+			await request
+				.post(api('custom-user-status.update'))
+				.set(credentials)
+				.send({ _id: customUserStatusId, name: newName, statusType: null })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('customUserStatus');
+					expect(res.body.customUserStatus).to.have.property('_id', customUserStatusId);
+					expect(res.body.customUserStatus).to.have.property('name', newName);
+					expect(res.body.customUserStatus).to.have.property('statusType', '');
 				});
 
 			customUserStatusName = newName;
