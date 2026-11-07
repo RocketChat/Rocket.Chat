@@ -1,7 +1,6 @@
 @use '../../styles/colors.scss';
 @use '../../styles/functions.scss' as *;
 @use '../../styles/lengths.scss';
-@use '../../styles/mixins/shadows.scss';
 @use '../../styles/mixins/size.scss';
 @use '../../styles/mixins/states.scss';
 @use '../../styles/typography.scss' as *;
@@ -249,9 +248,8 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 
 		@include states.on-focus-visible {
 			border-radius: lengths.border-radius(medium);
-			outline: lengths.border-width('default') solid colors.stroke(highlight);
-
-			@include shadows.use-focus-shadow(colors.stroke(extra-light-highlight));
+			outline: lengths.border-width(default) solid colors.stroke(highlight);
+			box-shadow: 0 0 0 calc(#{lengths.border-width(default)} + #{lengths.border-width(medium)}) colors.stroke(extra-light-highlight);
 		}
 	}
 }
