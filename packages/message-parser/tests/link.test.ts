@@ -125,7 +125,7 @@ test.each([
 	],
 	['google.com', [paragraph([link('//google.com', [plain('google.com')])])]],
 	['www.google.com', [paragraph([link('//www.google.com', [plain('www.google.com')])])]],
-	['rocket.chat:8080', [paragraph([link('rocket.chat:8080')])]],
+	['rocket.chat:8080', [paragraph([link('//rocket.chat:8080', [plain('rocket.chat:8080')])])]],
 	['ShouldNotBeALink', [paragraph([plain('ShouldNotBeALink')])]],
 	['http:/ google.com', [paragraph([plain('http:/ '), link('//google.com', [plain('google.com')])])]],
 	['[custom](custom://google.com)', [paragraph([link('custom://google.com', [plain('custom')])])]],
