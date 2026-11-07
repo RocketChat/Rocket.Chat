@@ -1,30 +1,30 @@
 {
-	"$schema": "https://www.schemastore.org/package",
-	"name": "@rocket.chat/desktop-api",
-	"version": "1.5.0-rc.0",
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/RocketChat/Rocket.Chat.git",
-		"directory": "packages/desktop-api"
-	},
-	"license": "MIT",
-	"type": "module",
-	"exports": {
-		".": {
-			"types": "./dist/index.d.ts",
-			"default": "./dist/index.js"
-		}
-	},
-	"types": "./dist/index.d.ts",
-	"scripts": {
-		"build": "rm -rf dist && tsc -p tsconfig.json",
-		"lint": "yarn run -T oxlint",
-		"typecheck": "tsc -p tsconfig.json --noEmit"
-	},
-	"devDependencies": {
-		"typescript": "~7.0.2"
-	},
-	"volta": {
-		"extends": "../../package.json"
-	}
+  "$schema": "https://www.schemastore.org/package",
+  "name": "@rocket.chat/desktop-api",
+  "version": "1.5.0-rc.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RocketChat/Rocket.Chat.git",
+    "directory": "packages/desktop-api"
+  },
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "node init && rm -rf dist && tsc -p tsconfig.json",
+    "lint": "yarn run -T oxlint",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "~7.0.2"
+  },
+  "volta": {
+    "extends": "../../package.json"
+  }
 }

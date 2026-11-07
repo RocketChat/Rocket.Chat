@@ -1,37 +1,37 @@
 {
-	"name": "@rocket.chat/license",
-	"version": "1.2.2-rc.0",
-	"private": true,
-	"main": "./dist/index.js",
-	"typings": "./dist/index.d.ts",
-	"files": [
-		"/dist"
-	],
-	"scripts": {
-		"build": "tsc",
-		"dev": "tsc --watch --preserveWatchOutput",
-		"lint": "yarn run -T oxlint",
-		"lint:fix": "yarn run -T oxlint --fix",
-		"test": "jest",
-		"testunit": "jest",
-		"typecheck": "tsc --noEmit"
-	},
-	"dependencies": {
-		"@rocket.chat/core-typings": "workspace:^",
-		"@rocket.chat/jwt": "workspace:^",
-		"@rocket.chat/logger": "workspace:^",
-		"bcrypt": "^6.0.0"
-	},
-	"devDependencies": {
-		"@rocket.chat/jest-presets": "workspace:~",
-		"@rocket.chat/tsconfig": "workspace:*",
-		"@types/bcrypt": "^6.0.0",
-		"@types/ws": "^8.18.2",
-		"jest": "~30.5.2",
-		"jest-websocket-mock": "~2.5.0",
-		"typescript": "~7.0.2"
-	},
-	"volta": {
-		"extends": "../../../package.json"
-	}
+  "name": "@rocket.chat/license",
+  "version": "1.2.2-rc.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "typings": "./dist/index.d.ts",
+  "files": [
+    "/dist"
+  ],
+  "scripts": {
+    "build": "node init && tsc",
+    "dev": "node init && tsc --watch --preserveWatchOutput",
+    "lint": "yarn run -T oxlint",
+    "lint:fix": "yarn run -T oxlint --fix",
+    "test": "jest",
+    "testunit": "jest",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@rocket.chat/core-typings": "workspace:^",
+    "@rocket.chat/jwt": "workspace:^",
+    "@rocket.chat/logger": "workspace:^",
+    "bcrypt": "^6.0.0"
+  },
+  "devDependencies": {
+    "@rocket.chat/jest-presets": "workspace:~",
+    "@rocket.chat/tsconfig": "workspace:*",
+    "@types/bcrypt": "^6.0.0",
+    "@types/ws": "^8.18.2",
+    "jest": "~30.5.2",
+    "jest-websocket-mock": "~2.5.0",
+    "typescript": "~7.0.2"
+  },
+  "volta": {
+    "extends": "../../../package.json"
+  }
 }
