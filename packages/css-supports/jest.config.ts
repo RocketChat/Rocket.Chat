@@ -16,6 +16,7 @@ export default {
 			testMatch: ['<rootDir>/src/**/*.server.spec.[jt]s?(x)'],
 		},
 	],
+	...(process.env.CI ? { maxWorkers: 2 } : {}),
 	coverageProvider: 'v8',
 	collectCoverage: true,
 } satisfies Config;
