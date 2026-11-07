@@ -93,7 +93,8 @@ describe('ensureAttributeDefinitionsExist', () => {
 	});
 
 	it('does nothing when normalized is empty', async () => {
-		await ensureAttributeDefinitionsExist([]);
+		await expect(ensureAttributeDefinitionsExist([])).resolves.toBeUndefined();
+		expect(attributesFindMock).not.toHaveBeenCalled();
 	});
 
 	it('throws when some attribute definitions are missing (size mismatch)', async () => {

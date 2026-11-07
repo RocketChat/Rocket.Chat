@@ -1,5 +1,5 @@
 import type { AbacAttributeDefinitionChangeType, AbacActionPerformed } from '@rocket.chat/core-typings';
-import { Box, InputBox, Margins, Pagination, Stack } from '@rocket.chat/fuselage';
+import { Box, InputBox, Pagination } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import {
 	GenericTable,
@@ -17,6 +17,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useMemo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { FilterBar, FilterBarFilters } from '../../../../components/FilterBar';
 import { ABACQueryKeys } from '../../../../lib/queryKeys';
 import DateRangePicker, { type DateRangePreset } from '../../moderation/helpers/DateRangePicker';
 
@@ -158,8 +159,8 @@ const LogsPage = () => {
 
 	return (
 		<>
-			<Margins block={24}>
-				<Stack direction='row' gap={8}>
+			<FilterBar>
+				<FilterBarFilters>
 					<InputBox
 						type='date'
 						placeholder={t('Start_date')}
@@ -187,8 +188,8 @@ const LogsPage = () => {
 							setEndDate(range.end);
 						}}
 					/>
-				</Stack>
-			</Margins>
+				</FilterBarFilters>
+			</FilterBar>
 			{(!data || data.events?.length === 0) && !isLoading ? (
 				<Box display='flex' justifyContent='center' height='full'>
 					<GenericNoResults icon='extended-view' title={t('ABAC_No_logs')} description={t('ABAC_No_logs_description')} />

@@ -3495,6 +3495,59 @@ describe('[Rooms]', () => {
 
 			await deleteRoom({ type: 'p', roomId });
 		});
+		describe('with an image that was uploaded but never sent', () => {
+			let roomId: IRoom['_id'];
+			let sentFileId: string;
+			let unsentFileId: string;
+
+			before(async () => {
+				const { body } = await createRoom({ type: 'p', name: `test-${Date.now()}` });
+				roomId = body.group._id;
+
+				const { title_link } = await uploadFile({
+					roomId,
+					file: fs.createReadStream(path.join(process.cwd(), imgURL)),
+				});
+				sentFileId = getIdFromImgPath(title_link);
+
+				const res = await request
+					.post(api(`rooms.media/${roomId}`))
+					.set(credentials)
+					.attach('file', fs.createReadStream(path.join(process.cwd(), imgURL)))
+					.expect(200);
+				unsentFileId = res.body.file._id;
+			});
+
+			after(() => deleteRoom({ type: 'p', roomId }));
+
+			it('should not return the unsent image', async () => {
+				await request
+					.get(api('rooms.images'))
+					.set(credentials)
+					.query({ roomId })
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('files').and.to.be.an('array').and.to.have.lengthOf(1);
+						expect(res.body.files[0]).to.have.property('_id', sentFileId);
+						expect(res.body).to.have.property('total', 1);
+					});
+			});
+
+			it('should ignore the unsent image when passed as startingFromId', async () => {
+				await request
+					.get(api('rooms.images'))
+					.set(credentials)
+					.query({ roomId, startingFromId: unsentFileId })
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('files').and.to.be.an('array').and.to.have.lengthOf(1);
+						expect(res.body.files[0]).to.have.property('_id', sentFileId);
+						expect(res.body).to.have.property('total', 1);
+					});
+			});
+		});
 		it('should allow to filter images passing the startingFromId parameter', async () => {
 			const { body } = await createRoom({ type: 'p', name: `test-${Date.now()}` });
 			const {

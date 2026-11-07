@@ -1,6 +1,6 @@
 import type { IRoom, IUpload, IUploadWithUser } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Box, Icon, TextInput, Select, Throbber } from '@rocket.chat/fuselage';
+import { Box, Select, Throbber } from '@rocket.chat/fuselage';
 import {
 	VirtualizedScrollbars,
 	ContextualbarHeader,
@@ -20,6 +20,7 @@ import { Virtuoso } from 'react-virtuoso';
 import RoomFileItemWrapper from './RoomFileItemWrapper';
 import RoomFilesListWrapper from './RoomFilesListWrapper';
 import FileItem from './components/FileItem';
+import { FilterBar, FilterBarFilters, FilterBarSearch } from '../../../../components/FilterBar';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
 
 export type RoomFilesProps = {
@@ -74,18 +75,19 @@ const RoomFiles = ({
 				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
 			</ContextualbarHeader>
 			<ContextualbarSection>
-				<TextInput
-					data-qa-files-search
-					placeholder={t('Search_Files')}
-					aria-label={t('Search_Files')}
-					aria-controls={isSuccess ? filesListId : undefined}
-					value={text}
-					onChange={setText}
-					endAddon={<Icon name='magnifier' size='x20' />}
-				/>
-				<Box width='x144' marginInlineStart={8}>
-					<Select aria-label={t('File_Type')} onChange={setType} value={type} options={options} />
-				</Box>
+				<FilterBar compact>
+					<FilterBarSearch
+						data-qa-files-search
+						placeholder={t('Search_Files')}
+						aria-label={t('Search_Files')}
+						aria-controls={isSuccess ? filesListId : undefined}
+						value={text}
+						onChange={setText}
+					/>
+					<FilterBarFilters>
+						<Select aria-label={t('File_Type')} onChange={setType} value={type} options={options} />
+					</FilterBarFilters>
+				</FilterBar>
 			</ContextualbarSection>
 			<ContextualbarContent flush>
 				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={total} />

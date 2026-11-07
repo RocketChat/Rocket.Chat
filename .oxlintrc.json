@@ -126,7 +126,18 @@
 					}
 				],
 				"import/named": "error",
-				"react/exhaustive-deps": "warn"
+				"react/exhaustive-deps": "warn",
+				"no-restricted-imports": [
+					"error",
+					{
+						"paths": [
+							{
+								"name": "meteor/check",
+								"message": "Validate with an ajv schema (endpoint `body`/`query` from @rocket.chat/rest-typings) or a type guard instead."
+							}
+						]
+					}
+				]
 			},
 			"globals": {
 				"__meteor_runtime_config__": "readonly",

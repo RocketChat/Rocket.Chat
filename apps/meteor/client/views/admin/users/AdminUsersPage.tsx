@@ -1,5 +1,5 @@
 import type { LicenseInfo } from '@rocket.chat/core-typings';
-import { Box, Callout, Skeleton, Tabs, TabsItem } from '@rocket.chat/fuselage';
+import { Box, Callout, Skeleton } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { UsersListStatusParamsGET } from '@rocket.chat/rest-typings';
 import type { OptionProp } from '@rocket.chat/ui-client';
@@ -32,6 +32,7 @@ import UsersTable from './UsersTable';
 import useFilteredUsers from './hooks/useFilteredUsers';
 import usePendingUsersCount from './hooks/usePendingUsersCount';
 import { useSeatsCap } from './useSeatsCap';
+import { PageTabs } from '../../../components/PageTabs';
 import { useCanManageUserStatus } from '../../../hooks/useCanManageUserStatus';
 import { useLicenseLimitsByBehavior } from '../../../hooks/useLicenseLimitsByBehavior';
 import { useShouldPreventAction } from '../../../hooks/useShouldPreventAction';
@@ -147,24 +148,23 @@ const AdminUsersPage = () => {
 						</Callout>
 					</Box>
 				)}
-				<Tabs>
-					<TabsItem selected={!tab || tab === 'all'} onClick={() => handleTabChange('all')}>
-						{t('All')}
-					</TabsItem>
-					<TabsItem selected={tab === 'pending'} onClick={() => handleTabChange('pending')}>
-						<Box is='span' display='flex' alignItems='center' gap={8}>
-							{`${t('Pending')} `}
-							{pendingUsersCount.isLoading && <Skeleton variant='circle' height='x16' width='x16' />}
-							{pendingUsersCount.isSuccess && `(${pendingUsersCount.data})`}
-						</Box>
-					</TabsItem>
-					<TabsItem selected={tab === 'active'} onClick={() => handleTabChange('active')}>
-						{t('Active')}
-					</TabsItem>
-					<TabsItem selected={tab === 'deactivated'} onClick={() => handleTabChange('deactivated')}>
-						{t('Deactivated')}
-					</TabsItem>
-				</Tabs>
+				<PageTabs
+					items={[
+						{ id: 'all', label: t('All') },
+						{
+							id: 'pending',
+							label: t('Pending'),
+							counter:
+								(pendingUsersCount.isLoading && <Skeleton variant='circle' height='x16' width='x16' />) ||
+								(pendingUsersCount.isSuccess && `(${pendingUsersCount.data})`) ||
+								undefined,
+						},
+						{ id: 'active', label: t('Active') },
+						{ id: 'deactivated', label: t('Deactivated') },
+					]}
+					selected={tab}
+					onSelect={handleTabChange}
+				/>
 				<PageContent>
 					<UsersTable
 						users={filteredUsersQueryResult.data?.users || []}
