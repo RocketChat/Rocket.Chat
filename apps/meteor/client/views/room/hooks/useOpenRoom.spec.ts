@@ -1,6 +1,6 @@
-import { mockAppRoot } from '@rocket.chat/mock-providers';
+import { mockAppRoot, type StreamControllerRef } from '@rocket.chat/mock-providers';
 import { LayoutContext } from '@rocket.chat/ui-contexts';
-import { renderHook, waitFor } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { createElement, useContext, type ReactNode } from 'react';
 
 import { useOpenRoom } from './useOpenRoom';
@@ -30,6 +30,36 @@ afterEach(() => {
 });
 
 describe('useOpenRoom', () => {
+	it('updates an open public preview when a team is converted to a channel', async () => {
+		const rid = 'preview-room-id';
+		const name = 'preview-team';
+		const channel = { ...createFakeRoom({ _id: rid, t: 'c', name }), t: 'c' as const, name };
+		const teamRoom = { ...channel, teamId: 'team-id', teamMain: true };
+		const streamRef: StreamControllerRef<'room-data'> = {};
+		let converted = false;
+
+		const { result } = renderHook(() => useOpenRoom({ type: 'c', reference: name }), {
+			wrapper: mockAppRoot()
+				.withJohnDoe()
+				.withPermission('preview-c-room')
+				.withStream('room-data', streamRef)
+				.withMethod('getRoomByTypeAndName', () => (converted ? channel : teamRoom) as any)
+				.build(),
+		});
+
+		await waitFor(() => expect(result.current.isSuccess).toBe(true));
+		expect(Rooms.state.get(rid)).toMatchObject({ teamId: 'team-id', teamMain: true });
+
+		converted = true;
+		act(() => streamRef.controller?.emit(rid, [{ _id: rid }]));
+
+		await waitFor(() => {
+			const room = Rooms.state.get(rid);
+			expect(room).toMatchObject({ _id: rid, name });
+			expect(room).not.toHaveProperty('teamId');
+			expect(room).not.toHaveProperty('teamMain');
+		});
+	});
 	describe('type-aware subscription cache lookup', () => {
 		it('resolves /channel/<name> to the channel even when a DM with the same name is cached', async () => {
 			const channelRid = 'channel-rid-abc';

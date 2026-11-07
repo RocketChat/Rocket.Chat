@@ -4,12 +4,14 @@ import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
+const logError = sinon.stub();
 const Rooms = {
+	find: sinon.stub(),
 	findOneByName: sinon.stub(),
 	setTeamMainById: sinon.stub(),
 	findDefaultRoomsForTeam: sinon.stub(),
 	findOneById: sinon.stub(),
-	unsetTeamId: sinon.stub(),
+	detachOneRoomFromTeam: sinon.stub(),
 };
 
 const Users = {
@@ -31,6 +33,7 @@ const TeamMember = { insertMany: sinon.stub() };
 const checkUsernameAvailability = sinon.stub();
 
 const addUserToRoom = sinon.stub();
+const notifyOnRoomChangedById = sinon.stub();
 
 const filterDefaultChannelsForUser = sinon.stub();
 
@@ -75,10 +78,15 @@ const { TeamService } = proxyquire.noCallThru().load('./service', {
 	},
 	'../../lib/notifyListener': {
 		notifyOnSubscriptionChangedByRoomIdAndUserId: sinon.stub(),
-		notifyOnRoomChangedById: sinon.stub(),
+		notifyOnRoomChangedById,
 	},
 	'../../settings': {
 		settings: { get: sinon.stub() },
+	},
+	'@rocket.chat/logger': {
+		Logger: class {
+			error = logError;
+		},
 	},
 });
 
@@ -86,14 +94,22 @@ const service = new TeamService();
 
 describe('Team service', () => {
 	beforeEach(() => {
+		Rooms.find.reset();
+		Rooms.find.returns({
+			toArray: async () => [],
+		});
+		notifyOnRoomChangedById.reset();
+		notifyOnRoomChangedById.resolves();
 		addUserToRoom.reset();
 		Rooms.findDefaultRoomsForTeam.reset();
 		Rooms.findOneById.reset();
-		Rooms.unsetTeamId.reset();
+		Rooms.detachOneRoomFromTeam.reset();
+		Rooms.detachOneRoomFromTeam.resolves(null);
 		Users.findActiveByIds.reset();
 		Message.saveSystemMessage.reset();
 		filterDefaultChannelsForUser.reset();
 		filterDefaultChannelsForUser.callsFake((rooms: unknown[]) => Promise.resolve(rooms));
+		logError.reset();
 	});
 
 	it('should not forward client room options to room creation', async () => {
@@ -194,6 +210,51 @@ describe('Team service', () => {
 	describe('unsetTeamIdOfRooms', () => {
 		const user = { _id: 'user-1', username: 'user-1', name: 'User One' };
 		const team = { _id: 'team-id', roomId: 'team-room' };
+		it('should notify every detached room, including one returned on a later call', async () => {
+			const detach = Rooms.detachOneRoomFromTeam;
+			detach.onFirstCall().resolves({ _id: team.roomId });
+			detach.onSecondCall().resolves({ _id: 'late-room' });
+
+			await service.unsetTeamIdOfRooms(user, team);
+
+			sinon.assert.calledThrice(detach);
+			sinon.assert.alwaysCalledWithExactly(detach, team._id);
+			sinon.assert.calledOnceWithExactly(notifyOnRoomChangedById, [team.roomId, 'late-room'], 'updated');
+			expect(detach.thirdCall.calledBefore(notifyOnRoomChangedById.firstCall)).to.be.true;
+		});
+
+		it('should log a notification failure and allow cleanup to continue', async () => {
+			const error = new Error('notification-failed');
+			Rooms.detachOneRoomFromTeam.onFirstCall().resolves({ _id: team.roomId });
+			notifyOnRoomChangedById.rejects(error);
+
+			await service.unsetTeamIdOfRooms(user, team);
+
+			sinon.assert.calledOnceWithExactly(notifyOnRoomChangedById, [team.roomId], 'updated');
+			sinon.assert.calledOnceWithExactly(logError, {
+				msg: 'Failed to notify room changes after removing team associations',
+				teamId: team._id,
+				err: error,
+			});
+		});
+
+		it('should propagate a database failure without notifying clients', async () => {
+			Rooms.detachOneRoomFromTeam.rejects(new Error('database-update-failed'));
+
+			await expect(service.unsetTeamIdOfRooms(user, team)).to.be.rejectedWith('database-update-failed');
+
+			sinon.assert.notCalled(notifyOnRoomChangedById);
+			sinon.assert.notCalled(logError);
+		});
+
+		it('should notify rooms already detached when a later detach fails', async () => {
+			Rooms.detachOneRoomFromTeam.onFirstCall().resolves({ _id: team.roomId });
+			Rooms.detachOneRoomFromTeam.onSecondCall().rejects(new Error('database-update-failed'));
+
+			await expect(service.unsetTeamIdOfRooms(user, team)).to.be.rejectedWith('database-update-failed');
+
+			sinon.assert.calledOnceWithExactly(notifyOnRoomChangedById, [team.roomId], 'updated');
+		});
 
 		it('should announce the conversion on the main room and move the remaining rooms back to the workspace', async () => {
 			Rooms.findOneById.resolves({ _id: 'team-room', name: 'team-room-name' });
@@ -201,7 +262,7 @@ describe('Team service', () => {
 			await service.unsetTeamIdOfRooms(user, team);
 
 			expect(Message.saveSystemMessage.calledOnceWith('user-converted-to-channel', 'team-room', 'team-room-name', user)).to.be.true;
-			expect(Rooms.unsetTeamId.calledOnceWith('team-id')).to.be.true;
+			sinon.assert.calledOnceWithExactly(Rooms.detachOneRoomFromTeam, team._id);
 		});
 
 		it('should move the remaining rooms back to the workspace when the main room no longer exists', async () => {
@@ -210,7 +271,7 @@ describe('Team service', () => {
 			await service.unsetTeamIdOfRooms(user, team);
 
 			expect(Message.saveSystemMessage.called).to.be.false;
-			expect(Rooms.unsetTeamId.calledOnceWith('team-id')).to.be.true;
+			sinon.assert.calledOnceWithExactly(Rooms.detachOneRoomFromTeam, team._id);
 		});
 	});
 });
