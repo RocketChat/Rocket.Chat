@@ -19,5 +19,16 @@ describe('SlackBridge link conversion', () => {
 	it('should convert Slack <url|label> links to a bare URL or a markdown link', async () => {
 		expect(await convert('<https://x.com/user/status/123|x.com/user/status/123>')).toBe('https://x.com/user/status/123');
 		expect(await convert('<https://example.com|some text>')).toBe('[some text](https://example.com)');
+		expect(await convert('<https://example.com>')).toBe('https://example.com');
+		expect(await convert('<HTTPS://example.com/path|https://example.com/…>')).toBe('HTTPS://example.com/path');
+		expect(await convert('<https://example.com/path|example.com/…>')).toBe('https://example.com/path');
+		expect(await convert('<https://example.com/path|…>')).toBe('[…](https://example.com/path)');
+		expect(await convert('<https://example.com|a &gt; b>')).toBe('[a > b](https://example.com)');
+		expect(await convert('<https://example.com|Docs]>')).toBe('[Docs\\]](https://example.com)');
+		expect(await convert('<https://example.com|a](https://other.example)b>')).toBe('[a\\]\\(https://other.example\\)b](https://example.com)');
+		expect(await convert('<https://example.com|*bold* and _italic_ `code`>')).toBe(
+			'[\\*bold\\* and \\_italic\\_ \\`code\\`](https://example.com)',
+		);
+		expect(await convert('<https://example.com/search?q=a)|Search>')).toBe('[Search](https://example.com/search?q=a%29)');
 	});
 });

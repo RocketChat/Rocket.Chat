@@ -18,6 +18,38 @@ import { setUserAvatar } from '../../lib/users/setUserAvatar';
 import { getWorkspaceURL } from '../../lib/utils/getURL';
 import { settings } from '../../settings';
 
+const normalizeHttpUrlScheme = (value: string): string =>
+	value.replace(/^(https?):\/\//i, (_match, scheme) => `${scheme.toLowerCase()}://`);
+
+const escapeMarkdownLinkLabel = (label: string): string => label.replace(/([\\[\]()_*~`])/g, '\\$1');
+
+const escapeMarkdownLinkDestination = (url: string): string => {
+	const unmatchedParentheses = new Set();
+	const openingParentheses = [];
+
+	for (let index = 0; index < url.length; index++) {
+		if (url[index] === '(') {
+			openingParentheses.push(index);
+		} else if (url[index] === ')') {
+			if (openingParentheses.length > 0) {
+				openingParentheses.pop();
+			} else {
+				unmatchedParentheses.add(index);
+			}
+		}
+	}
+
+	for (const index of openingParentheses) {
+		unmatchedParentheses.add(index);
+	}
+
+	return url.split('')
+		.map((character, index) =>
+			unmatchedParentheses.has(index) ? `%${character.charCodeAt(0).toString(16).toUpperCase()}` : character,
+		)
+		.join('');
+};
+
 export default class RocketAdapter {
 	constructor(slackBridge) {
 		rocketLogger.debug('constructor');
@@ -519,14 +551,23 @@ export default class RocketAdapter {
 			slackMsgTxt = slackMsgTxt.replace(/<!everyone>/g, '@all');
 			slackMsgTxt = slackMsgTxt.replace(/<!channel>/g, '@all');
 			slackMsgTxt = slackMsgTxt.replace(/<!here>/g, '@here');
-			slackMsgTxt = slackMsgTxt.replace(/<(http[s]?:[^>|]*)>/g, '$1');
-			slackMsgTxt = slackMsgTxt.replace(/<(http[s]?:[^|>]*)\|([^>]*)>/g, (_match, url, label) => {
-				const urlWithoutScheme = url.replace(/^https?:\/\//, '');
+			slackMsgTxt = slackMsgTxt.replace(/<(https?:[^>|]*)>/gi, '$1');
+			slackMsgTxt = slackMsgTxt.replace(/<(https?:[^|>]*)\|([^>]*)>/gi, (_match, url, label) => {
+				const urlWithoutScheme = url.replace(/^https?:\/\//i, '');
+				const normalizedUrl = normalizeHttpUrlScheme(url);
+				const normalizedUrlWithoutScheme = urlWithoutScheme;
+				const normalizedLabel = normalizeHttpUrlScheme(label);
+				const shortenedLabel = label.endsWith('…') ? label.slice(0, -1) : '';
+				const normalizedShortenedLabel = normalizeHttpUrlScheme(shortenedLabel);
 				const labelIsUrl =
-					label === url ||
-					label === urlWithoutScheme ||
-					(label.endsWith('…') && urlWithoutScheme.startsWith(label.slice(0, -1)));
-				return labelIsUrl ? url : `[${label}](${url})`;
+					normalizedLabel === normalizedUrl ||
+					normalizedLabel === normalizedUrlWithoutScheme ||
+					(shortenedLabel.length > 0 &&
+						(normalizedUrl.startsWith(normalizedShortenedLabel) ||
+							normalizedUrlWithoutScheme.startsWith(normalizedShortenedLabel)));
+				return labelIsUrl
+					? url
+					: `[${escapeMarkdownLinkLabel(label)}](${escapeMarkdownLinkDestination(url)})`;
 			});
 			slackMsgTxt = slackMsgTxt.replace(/&gt;/g, '>');
 			slackMsgTxt = slackMsgTxt.replace(/&lt;/g, '<');
