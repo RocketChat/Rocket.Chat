@@ -1,4 +1,5 @@
 import { Streamer } from './streamer.module';
+import type { IPublication, Rule } from './types';
 
 class TestStreamer extends Streamer<any> {
 	registerPublication(): void {
@@ -104,5 +105,91 @@ describe('Streamer.sendToManySubscriptions', () => {
 		expect(failingSub.send).not.toHaveBeenCalled();
 		expect(successSub.send).toHaveBeenCalledTimes(1);
 		expect(successSub.send).toHaveBeenCalledWith('test-msg');
+	});
+
+	it('shares asynchronous preparation while retaining recipient scope and transform metadata', async () => {
+		const first = makeSubscription('first');
+		const second = makeSubscription('second');
+		const rule = jest.fn(async function (this: IPublication) {
+			return { connectionId: this.connection.id };
+		});
+		let finishPreparation!: (rule: Rule) => void;
+		const prepare = jest.fn(
+			() =>
+				new Promise<Rule>((resolve) => {
+					finishPreparation = resolve;
+				}),
+		);
+		streamer.allowEmitWithPreparation(prepare);
+		const transform = jest.fn((_stream, _sub, _event, _args, allowed) => allowed.connectionId);
+
+		const delivery = streamer.sendToManySubscriptions(new Set([first.entry, second.entry]), undefined, 'event', ['argument'], transform);
+		expect(prepare).toHaveBeenCalledTimes(1);
+		expect(first.send).not.toHaveBeenCalled();
+		finishPreparation(rule);
+		await delivery;
+
+		expect(prepare).toHaveBeenCalledWith('event', 'argument');
+		expect(rule).toHaveBeenCalledTimes(2);
+		expect(rule).toHaveBeenCalledWith('event', 'argument');
+		expect(first.send).toHaveBeenCalledWith('first');
+		expect(second.send).toHaveBeenCalledWith('second');
+	});
+
+	it('does not share preparation between concurrent deliveries', async () => {
+		const sub = makeSubscription('recipient');
+		const prepare = jest.fn(
+			async (_event: string, allowed: boolean): Promise<Rule> =>
+				async () =>
+					allowed,
+		);
+		streamer.allowEmitWithPreparation(prepare);
+
+		await Promise.all([
+			streamer.sendToManySubscriptions(new Set([sub.entry]), undefined, 'event', [true], 'allowed'),
+			streamer.sendToManySubscriptions(new Set([sub.entry]), undefined, 'event', [false], 'denied'),
+		]);
+
+		expect(prepare).toHaveBeenCalledTimes(2);
+		expect(sub.send).toHaveBeenCalledTimes(1);
+		expect(sub.send).toHaveBeenCalledWith('allowed');
+	});
+
+	it('preserves named emit rules without invoking default preparation', async () => {
+		const sub = makeSubscription('recipient');
+		const prepare = jest.fn();
+		const namedRule = jest.fn(async () => true);
+		streamer.allowEmitWithPreparation(prepare);
+		streamer.allowEmit('event', namedRule);
+
+		await streamer.sendToManySubscriptions(new Set([sub.entry]), undefined, 'event', ['argument'], 'message');
+
+		expect(prepare).not.toHaveBeenCalled();
+		expect(namedRule).toHaveBeenCalledWith('event', 'argument');
+		expect(sub.send).toHaveBeenCalledWith('message');
+	});
+
+	it('fails closed for all recipients when preparation rejects', async () => {
+		const first = makeSubscription('first');
+		const second = makeSubscription('second');
+		const prepare = jest.fn().mockRejectedValue(new Error('lookup failed'));
+		streamer.allowEmitWithPreparation(prepare);
+
+		await streamer.sendToManySubscriptions(new Set([first.entry, second.entry]), undefined, 'event', [], 'message');
+
+		expect(prepare).toHaveBeenCalledTimes(1);
+		expect(first.send).not.toHaveBeenCalled();
+		expect(second.send).not.toHaveBeenCalled();
+	});
+
+	it('does not prepare events with no eligible recipients', async () => {
+		const origin = makeSubscription('origin');
+		const prepare = jest.fn();
+		streamer.allowEmitWithPreparation(prepare);
+
+		await streamer.sendToManySubscriptions(new Set(), undefined, 'event', [], 'message');
+		await streamer.sendToManySubscriptions(new Set([origin.entry]), origin.connection, 'event', [], 'message');
+
+		expect(prepare).not.toHaveBeenCalled();
 	});
 });

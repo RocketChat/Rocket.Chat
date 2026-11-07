@@ -1,11 +1,15 @@
-import { api, MediaCall, Settings, VideoConf } from '@rocket.chat/core-services';
-import { Subscriptions, Users } from '@rocket.chat/models';
+import { api, Authorization, MediaCall, Settings, VideoConf } from '@rocket.chat/core-services';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
 import { NotificationsModule } from './notifications.module';
+import { invalidate } from './publication-user-cache';
 import { Streamer } from './streamer.module';
+import type { IPublication } from './types';
 
 jest.mock('@rocket.chat/core-services', () => ({
 	...jest.requireActual('@rocket.chat/core-services'),
+	Authorization: { canReadRoom: jest.fn() },
 	VideoConf: { validateAction: jest.fn() },
 	MediaCall: { processSerializedSignal: jest.fn() },
 	Settings: { get: jest.fn() },
@@ -13,6 +17,7 @@ jest.mock('@rocket.chat/core-services', () => ({
 
 jest.mock('@rocket.chat/models', () => ({
 	...jest.requireActual('@rocket.chat/models'),
+	Rooms: { findOneById: jest.fn() },
 	Subscriptions: {
 		countByRoomIdAndUserId: jest.fn(),
 		findByRoomIdAndNotUserId: jest.fn(),
@@ -60,6 +65,135 @@ describe('NotificationsModule', () => {
 
 	afterEach(() => {
 		jest.restoreAllMocks();
+	});
+
+	describe('discussion message delivery', () => {
+		const user = { _id: 'discussion-reader', username: 'charlie', roles: ['user'] } as IUser;
+		const discussion = { _id: 'discussion-id', t: 'p', prid: 'parent-id' } as IRoom;
+
+		beforeEach(() => {
+			jest.mocked(Rooms.findOneById).mockReset().mockResolvedValue(discussion);
+			jest.mocked(Users.findOneById).mockReset().mockResolvedValue(user);
+			jest.mocked(Authorization.canReadRoom).mockReset().mockResolvedValue(false);
+		});
+
+		afterEach(() => invalidate(user._id));
+
+		it('stops delivering to an existing subscriber after the discussion becomes private', async () => {
+			const send = jest.fn();
+			const subscription = {
+				eventName: discussion._id,
+				subscription: { userId: user._id, _session: { socket: { send } } } as unknown as IPublication,
+			};
+			const stream = notifications.streamRoomMessage as Streamer<'room-messages'>;
+			jest.mocked(Rooms.findOneById).mockResolvedValueOnce({ ...discussion, t: 'c' });
+			jest.mocked(Authorization.canReadRoom).mockResolvedValueOnce(true);
+
+			await stream.sendToManySubscriptions(new Set([subscription]), undefined, discussion._id, [], 'public-message');
+			expect(send).toHaveBeenCalledWith('public-message');
+			send.mockClear();
+
+			await stream.sendToManySubscriptions(new Set([subscription]), undefined, discussion._id, [], 'private-message');
+			expect(send).not.toHaveBeenCalled();
+			expect(Authorization.canReadRoom).toHaveBeenCalledWith(discussion, user);
+		});
+
+		it('continues delivering to an authorized private discussion member', async () => {
+			jest.mocked(Authorization.canReadRoom).mockResolvedValue(true);
+			const stream = notifications.streamRoomMessage as Streamer<'room-messages'>;
+
+			expect(await stream.isEmitAllowed({ userId: user._id } as IPublication, discussion._id)).toBe(true);
+			expect(Authorization.canReadRoom).toHaveBeenCalledWith(discussion, user);
+		});
+
+		it('checks private discussion access for an existing anonymous subscriber', async () => {
+			const stream = notifications.streamRoomMessage as Streamer<'room-messages'>;
+
+			expect(await stream.isEmitAllowed({ userId: null } as IPublication, discussion._id)).toBe(false);
+			expect(Authorization.canReadRoom).toHaveBeenCalledWith(discussion, undefined);
+		});
+
+		it('preserves delivery rules for rooms that are not discussions', async () => {
+			jest.mocked(Rooms.findOneById).mockResolvedValue({ _id: 'room-id', t: 'p' } as IRoom);
+			const stream = notifications.streamRoomMessage as Streamer<'room-messages'>;
+
+			expect(await stream.isEmitAllowed({ userId: user._id } as IPublication, 'room-id')).toBe(true);
+			expect(Authorization.canReadRoom).not.toHaveBeenCalled();
+		});
+
+		it.each(['c', 'p'] as const)('looks up a regular %s room once for all recipients', async (t) => {
+			jest.mocked(Rooms.findOneById).mockResolvedValue({ _id: 'room-id', t } as IRoom);
+			const sends = Array.from({ length: 20 }, () => jest.fn());
+			const subscriptions = new Set(
+				sends.map((send) => ({
+					eventName: 'room-id',
+					subscription: { userId: user._id, _session: { socket: { send } } } as unknown as IPublication,
+				})),
+			);
+			const stream = notifications.streamRoomMessage as Streamer<'room-messages'>;
+
+			await stream.sendToManySubscriptions(subscriptions, undefined, 'room-id', [], 'message');
+
+			expect(Rooms.findOneById).toHaveBeenCalledTimes(1);
+			expect(Authorization.canReadRoom).not.toHaveBeenCalled();
+			for (const send of sends) {
+				expect(send).toHaveBeenCalledWith('message');
+			}
+		});
+
+		it('shares the discussion lookup while authorizing recipients independently', async () => {
+			const allowedSend = jest.fn();
+			const deniedSend = jest.fn();
+			jest.mocked(Authorization.canReadRoom).mockImplementation(async (_room, reader) => reader?._id === user._id);
+			const subscriptions = new Set(
+				[
+					[user._id, allowedSend],
+					[null, deniedSend],
+				].map(([userId, send]) => ({
+					eventName: discussion._id,
+					subscription: { userId, _session: { socket: { send } } } as unknown as IPublication,
+				})),
+			);
+			const stream = notifications.streamRoomMessage as Streamer<'room-messages'>;
+
+			await stream.sendToManySubscriptions(subscriptions, undefined, discussion._id, [], 'message');
+
+			expect(Rooms.findOneById).toHaveBeenCalledTimes(1);
+			expect(Authorization.canReadRoom).toHaveBeenCalledTimes(2);
+			expect(allowedSend).toHaveBeenCalledWith('message');
+			expect(deniedSend).not.toHaveBeenCalled();
+		});
+
+		it('stops delivering public discussion messages after access is revoked', async () => {
+			const publicDiscussion = { ...discussion, t: 'c' } as IRoom;
+			jest.mocked(Rooms.findOneById).mockResolvedValue(publicDiscussion);
+			jest.mocked(Authorization.canReadRoom).mockResolvedValueOnce(true).mockResolvedValue(false);
+			const send = jest.fn();
+			const subscriptions = new Set([
+				{
+					eventName: discussion._id,
+					subscription: { userId: user._id, _session: { socket: { send } } } as unknown as IPublication,
+				},
+			]);
+			const stream = notifications.streamRoomMessage as Streamer<'room-messages'>;
+
+			await stream.sendToManySubscriptions(subscriptions, undefined, discussion._id, [], 'before');
+			expect(send).toHaveBeenCalledWith('before');
+			send.mockClear();
+			await stream.sendToManySubscriptions(subscriptions, undefined, discussion._id, [], 'after');
+
+			expect(send).not.toHaveBeenCalled();
+			expect(Rooms.findOneById).toHaveBeenCalledTimes(2);
+			expect(Authorization.canReadRoom).toHaveBeenCalledWith(publicDiscussion, user);
+		});
+
+		it('denies delivery when the room no longer exists', async () => {
+			jest.mocked(Rooms.findOneById).mockResolvedValue(null);
+			const stream = notifications.streamRoomMessage as Streamer<'room-messages'>;
+
+			expect(await stream.isEmitAllowed({ userId: user._id } as IPublication, discussion._id)).toBe(false);
+			expect(Authorization.canReadRoom).not.toHaveBeenCalled();
+		});
 	});
 
 	describe('notify-user allowWrite', () => {

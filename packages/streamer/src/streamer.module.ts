@@ -6,6 +6,7 @@ import { EventEmitter } from 'eventemitter3';
 import type {
 	IPublication,
 	Rule,
+	EmitRuleFactory,
 	Connection,
 	DDPSubscription,
 	IStreamer,
@@ -35,6 +36,8 @@ export abstract class Streamer<N extends StreamNames> extends EventEmitter imple
 	private _allowWrite: IRules = {};
 
 	private _allowEmit: IRules = {};
+
+	private prepareEmit?: EmitRuleFactory;
 
 	private readonly relay?: StreamRelay;
 
@@ -112,7 +115,14 @@ export abstract class Streamer<N extends StreamNames> extends EventEmitter imple
 	}
 
 	allowEmit(eventName: string | boolean | Rule, fn?: Rule | 'all' | 'none' | 'logged'): void {
+		if (fn === undefined || eventName === '__all__') {
+			this.prepareEmit = undefined;
+		}
 		this.allow(this._allowEmit, 'allowEmit')(eventName, fn);
+	}
+
+	allowEmitWithPreparation(prepare: EmitRuleFactory): void {
+		this.prepareEmit = prepare;
 	}
 
 	private isAllowed(rules: IRules) {
@@ -130,7 +140,22 @@ export abstract class Streamer<N extends StreamNames> extends EventEmitter imple
 	}
 
 	async isEmitAllowed(scope: IPublication, eventName: string, ...args: any[]): Promise<boolean | object> {
+		if (!this._allowEmit[eventName] && this.prepareEmit) {
+			return (await this.prepareEmit(eventName, ...args)).call(scope, eventName, ...args);
+		}
 		return this.isAllowed(this._allowEmit)(scope, eventName, args);
+	}
+
+	protected createEmitChecker(eventName: string, args: any[]): (scope: IPublication) => Promise<boolean | object> {
+		const prepare = !this._allowEmit[eventName] ? this.prepareEmit : undefined;
+		let preparedRule: Promise<Rule> | undefined;
+		return async (scope) => {
+			if (!prepare) {
+				return this.isEmitAllowed(scope, eventName, ...args);
+			}
+			preparedRule ??= prepare(eventName, ...args);
+			return (await preparedRule).call(scope, eventName, ...args);
+		};
 	}
 
 	async isWriteAllowed(scope: IPublication, eventName: string, args: any): Promise<boolean | object> {
@@ -310,6 +335,7 @@ export abstract class Streamer<N extends StreamNames> extends EventEmitter imple
 		args: any[],
 		getMsg: string | TransformMessage,
 	): Promise<void> {
+		const checkEmit = this.createEmitChecker(eventName, args);
 		await Promise.all(
 			[...subscriptions].map(async (subscription) => {
 				try {
@@ -317,7 +343,7 @@ export abstract class Streamer<N extends StreamNames> extends EventEmitter imple
 						return;
 					}
 
-					const allowed = await this.isEmitAllowed(subscription.subscription, eventName, ...args);
+					const allowed = await checkEmit(subscription.subscription);
 					if (allowed) {
 						const msg = typeof getMsg === 'string' ? getMsg : getMsg(this, subscription, eventName, args, allowed);
 						if (msg) {
