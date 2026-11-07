@@ -54,7 +54,8 @@ const escapeMarkdownLinkDestination = (url: string): string => {
 		.join('');
 };
 
-const encodeBareUrlParentheses = (url: string): string => url.replace(/[()]/g, (character) => (character === '(' ? '%28' : '%29'));
+const formatBareUrl = (url: string): string =>
+	/[()]/.test(url) ? `[${escapeMarkdownLinkLabel(url)}](${url})` : url;
 
 export default class RocketAdapter {
 	constructor(slackBridge) {
@@ -557,9 +558,7 @@ export default class RocketAdapter {
 			slackMsgTxt = slackMsgTxt.replace(/<!everyone>/g, '@all');
 			slackMsgTxt = slackMsgTxt.replace(/<!channel>/g, '@all');
 			slackMsgTxt = slackMsgTxt.replace(/<!here>/g, '@here');
-			slackMsgTxt = slackMsgTxt.replace(/<(https?:[^>|]*)>/gi, (_match, url) =>
-				/[()]/.test(url) ? encodeBareUrlParentheses(url) : url,
-			);
+			slackMsgTxt = slackMsgTxt.replace(/<(https?:[^>|]*)>/gi, (_match, url) => formatBareUrl(url));
 			slackMsgTxt = slackMsgTxt.replace(/<(https?:[^|>]*)\|([^>]*)>/gi, (_match, url, label) => {
 				const urlWithoutScheme = url.replace(/^https?:\/\//i, '');
 				const normalizedUrl = normalizeHttpUrlScheme(url);
@@ -574,9 +573,7 @@ export default class RocketAdapter {
 						(normalizedUrl.startsWith(normalizedShortenedLabel) ||
 							normalizedUrlWithoutScheme.startsWith(normalizedShortenedLabel)));
 				return labelIsUrl
-					? /[()]/.test(url)
-						? encodeBareUrlParentheses(url)
-						: url
+					? formatBareUrl(url)
 					: `[${escapeMarkdownLinkLabel(label)}](${escapeMarkdownLinkDestination(url)})`;
 			});
 			slackMsgTxt = slackMsgTxt.replace(/&gt;/g, '>');
