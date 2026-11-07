@@ -16,7 +16,7 @@ export default {
 		},
 		children: {
 			control: false,
-			description: 'Content to render while visible; unmounted entirely once fully hidden.',
+			description: 'Box-based element to render while visible; unmounted entirely once fully hidden.',
 			table: { category: 'Content' },
 		},
 	},
