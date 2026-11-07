@@ -8,10 +8,18 @@ export class ScheduledMessagesRaw extends BaseRaw<IScheduledMessage> {
 		super(db, 'scheduled_message', trash);
 	}
 
+	/**
+	 * Defines database indexes supporting scheduled message queries.
+	 */
 	protected override modelIndexes(): IndexDescription[] {
 		return [{ key: { status: 1, deliverAt: 1 } }];
 	}
 
+	/**
+	 * Finds all pending scheduled messages whose delivery time has passed.
+	 *
+	 * @returns A MongoDB find cursor for due scheduled messages.
+	 */
 	findDueMessages(): FindCursor<IScheduledMessage> {
 		return this.find({
 			status: 'pending',

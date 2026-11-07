@@ -7,6 +7,10 @@ const logger = new Logger('ScheduledMessagesCron');
 
 const STALE_LOCK_TIMEOUT_MS = 5 * 60 * 1000;
 
+/**
+ * Recovers stale processing locks from interrupted workers.
+ * Transitions already delivered records to 'sent' and undelivered records back to 'pending'.
+ */
 async function recoverStaleLocks(): Promise<void> {
 	const staleThreshold = new Date(Date.now() - STALE_LOCK_TIMEOUT_MS);
 	const staleMessages = await ScheduledMessages.find(
@@ -34,7 +38,7 @@ async function recoverStaleLocks(): Promise<void> {
 	if (alreadyDeliveredIds.length > 0) {
 		updateOperations.push(
 			ScheduledMessages.updateMany(
-				{ _id: { $in: alreadyDeliveredIds }, status: 'processing' },
+				{ _id: { $in: alreadyDeliveredIds }, status: 'processing', _updatedAt: { $lte: staleThreshold } },
 				{
 					$set: {
 						status: 'sent',
@@ -49,7 +53,7 @@ async function recoverStaleLocks(): Promise<void> {
 	if (notDeliveredIds.length > 0) {
 		updateOperations.push(
 			ScheduledMessages.updateMany(
-				{ _id: { $in: notDeliveredIds }, status: 'processing' },
+				{ _id: { $in: notDeliveredIds }, status: 'processing', _updatedAt: { $lte: staleThreshold } },
 				{
 					$set: {
 						status: 'pending',
@@ -63,6 +67,9 @@ async function recoverStaleLocks(): Promise<void> {
 	await Promise.all(updateOperations);
 }
 
+/**
+ * Scans for due scheduled messages, locks them atomically, and delivers them via the message pipeline.
+ */
 async function processScheduledMessages(): Promise<void> {
 	logger.debug('Checking for due scheduled messages');
 
@@ -131,6 +138,9 @@ async function processScheduledMessages(): Promise<void> {
 	}
 }
 
+/**
+ * Initializes the background worker for polling and sending scheduled messages.
+ */
 export async function scheduledMessagesCron(): Promise<void> {
 	processScheduledMessages().catch((error) => {
 		logger.error({ msg: 'Error running initial scheduled messages process', err: error });

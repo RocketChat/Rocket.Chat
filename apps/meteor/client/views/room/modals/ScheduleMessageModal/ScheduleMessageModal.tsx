@@ -25,6 +25,9 @@ type ScheduleMessageModalProps = {
 	onScheduled?: () => void;
 };
 
+/**
+ * Modal dialog enabling users to select a future date and time to schedule a message.
+ */
 const ScheduleMessageModal = ({ rid, tmid, text, onClose, onScheduled }: ScheduleMessageModalProps) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();

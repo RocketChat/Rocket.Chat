@@ -16,6 +16,15 @@ declare module '@rocket.chat/ddp-client' {
 	}
 }
 
+/**
+ * Validates message content, room permissions, thread constraints, and scheduling time,
+ * then persists the scheduled message record into MongoDB.
+ *
+ * @param user - The user scheduling the message.
+ * @param message - Partial message payload containing room ID, text, and optional thread ID.
+ * @param scheduledAt - The future timestamp for message delivery.
+ * @returns The inserted database ID of the scheduled message.
+ */
 export async function executeScheduleMessage(
 	user: IUser,
 	message: Partial<IMessage>,
