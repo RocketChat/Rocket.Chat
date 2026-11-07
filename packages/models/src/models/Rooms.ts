@@ -47,6 +47,13 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 				sparse: true,
 			},
 			{
+				key: { name: 1 },
+				unique: false,
+				sparse: true,
+				name: 'name_insensitive',
+				collation: { locale: 'en', strength: 2 },
+			},
+			{
 				key: { default: 1 },
 				sparse: true,
 			},
@@ -1186,21 +1193,32 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 
 	findOneByNameAndType<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		name: NonNullable<IRoom['name']>,
-		type: IRoom['t'],
+		type: IRoom['t'] | Array<IRoom['t']>,
 		options?: O,
 		includeFederatedRooms = false,
+		caseInsensitive = false,
 	): Promise<DocumentWithProjection<T, O> | null> {
 		const query: Filter<IRoom> = {
-			t: type,
-			teamId: {
-				$exists: false,
-			},
-			...(includeFederatedRooms
-				? { $or: [{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name }] }, { federated: true, fname: name }] }
-				: { $or: [{ federated: { $exists: false } }, { federated: false }], name }),
+			t: Array.isArray(type) ? { $in: type } : type,
+			$and: [
+				{
+					$or: [{ teamId: { $exists: false } }, { teamMain: true, t: 'c' }],
+				},
+				includeFederatedRooms
+					? { $or: [{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name }] }, { federated: true, fname: name }] }
+					: { $or: [{ federated: { $exists: false } }, { federated: false }], name },
+			],
 		};
 
-		return this.findOne<T, O>(query, options);
+		return this.findOne<T, O>(
+			query,
+			caseInsensitive
+				? ({
+						...options,
+						collation: { locale: 'en', strength: 2 },
+				  } as unknown as O)
+				: options,
+		);
 	}
 
 	findById<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
