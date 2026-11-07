@@ -1,79 +1,92 @@
 import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
+import { ScheduledMessages } from '@rocket.chat/models';
+import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
-import { check,Match } from 'meteor/check';
 
 import { RateLimiterClass as RateLimiter } from '../../lib/RateLimiter';
-import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
-// Import your custom model here
-import { ScheduledMessages } from '@rocket.chat/models'; 
+import { canSendMessageAsync } from '../../lib/authorization/canSendMessage';
+import { settings } from '../../settings';
 
-// 1. Augment ServerMethods so Meteor.call('scheduleMessage') is strictly typed
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		scheduleMessage(message: Partial<IMessage>, scheduledAt: Date): Promise<string>;
+		scheduleMessage(message: Partial<IMessage>, scheduledAt: Date | string): Promise<string>;
 	}
 }
 
-// 2. Export the pure business logic function
 export async function executeScheduleMessage(
 	user: IUser,
 	message: Partial<IMessage>,
-	scheduledAt: Date,
+	scheduledAt: Date | string,
 ): Promise<string> {
 	if (!message.rid) {
 		throw new ClientSafeError('error-invalid-room', 'Invalid room', { method: 'scheduleMessage' });
 	}
 
-    if (!message.msg) {
-        throw new ClientSafeError('error-invalid-message', 'Message cannot be empty', { method: 'scheduleMessage' });
-    }
-
-	if (!(await canAccessRoomIdAsync(message.rid, user._id))) {
-		throw new ClientSafeError('error-not-allowed', 'Not allowed', { method: 'scheduleMessage' });
+	if (typeof message.msg !== 'string' || !message.msg.trim()) {
+		throw new ClientSafeError('error-invalid-message', 'Message cannot be empty', { method: 'scheduleMessage' });
 	}
 
-	if (!scheduledAt || new Date(scheduledAt) <= new Date()) {
+	const maxAllowedSize = settings.get<number>('Message_MaxAllowedSize') ?? 0;
+	if (maxAllowedSize > 0 && message.msg.length > maxAllowedSize) {
+		throw new ClientSafeError('error-message-size-exceeded', 'Message size exceeds Message_MaxAllowedSize', {
+			method: 'scheduleMessage',
+		});
+	}
+
+	try {
+		await canSendMessageAsync(message.rid, user);
+	} catch (error: any) {
+		throw new ClientSafeError(error.message || 'error-not-allowed', error.message || 'Not allowed', {
+			method: 'scheduleMessage',
+		});
+	}
+
+	const scheduledDate = scheduledAt instanceof Date ? scheduledAt : new Date(scheduledAt);
+	if (!scheduledAt || isNaN(scheduledDate.getTime()) || !isFinite(scheduledDate.getTime()) || scheduledDate.getTime() <= Date.now()) {
 		throw new ClientSafeError('error-invalid-date', 'Scheduled date must be in the future', {
 			method: 'scheduleMessage',
 		});
 	}
 
-	// 3. Insert the validated message into the MongoDB collection
 	const result = await ScheduledMessages.insertOne({
-        msg: message.msg,
-        rid: message.rid,
-        u: { _id: user._id, username: user.username },
-        ts: new Date(),
-        deliverAt: scheduledAt,
-        status: 'pending',
-        _updatedAt: new Date()
-    });
+		msg: message.msg,
+		rid: message.rid,
+		...(message.tmid && { tmid: message.tmid }),
+		...(message.tshow && { tshow: message.tshow }),
+		u: { _id: user._id, username: user.username },
+		ts: new Date(),
+		deliverAt: scheduledDate,
+		status: 'pending',
+		_updatedAt: new Date(),
+	});
 
-	return result.insertedId; // Returns the DB id to the client
+	return result.insertedId;
 }
 
-// 4. Register the Meteor Method handler
 Meteor.methods<ServerMethods>({
-    async scheduleMessage(message, scheduledAt) {
-        check(message, Object);
-        // FIX: Accept both Date (if called internally) and String (if called from REST API)
-        check(scheduledAt, Match.OneOf(Date, String)); 
+	async scheduleMessage(message, scheduledAt) {
+		check(message, Object);
+		check(scheduledAt, Match.OneOf(Date, String));
 
-        const user = (await Meteor.userAsync()) as IUser;
-        if (!user) {
-            throw new ClientSafeError('error-invalid-user', 'Invalid user', { method: 'scheduleMessage' });
-        }
+		const date = scheduledAt instanceof Date ? scheduledAt : new Date(scheduledAt);
+		if (isNaN(date.getTime()) || !isFinite(date.getTime())) {
+			throw new ClientSafeError('error-invalid-date', 'Scheduled date must be a valid future date', {
+				method: 'scheduleMessage',
+			});
+		}
 
-       
-        return executeScheduleMessage(user, message, new Date(scheduledAt));
-    },
+		const user = (await Meteor.userAsync()) as IUser;
+		if (!user) {
+			throw new ClientSafeError('error-invalid-user', 'Invalid user', { method: 'scheduleMessage' });
+		}
+
+		return executeScheduleMessage(user, message, date);
+	},
 });
 
-
-// 5. Rate-limit the method to prevent spam (max 5 requests per second per user)
 RateLimiter.limitMethod('scheduleMessage', 5, 1000, {
 	userId: () => true,
 });

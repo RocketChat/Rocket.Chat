@@ -7,37 +7,37 @@ import ScheduleMessageModal from '../../../../modals/ScheduleMessageModal/Schedu
 import type { ChatAPI } from '../../../../lib/chats/ChatAPI';
 
 export const useScheduleMessageAction = (
-    disabled: boolean,
-    room: IRoom,
-    chat: ChatAPI,
-    tmid?: IMessage['tmid'],
+	disabled: boolean,
+	room: IRoom,
+	chat: ChatAPI,
+	tmid?: IMessage['tmid'],
 ): GenericMenuItemProps => {
-    const { t } = useTranslation();
-    const setModal = useSetModal();
+	const { t } = useTranslation();
+	const setModal = useSetModal();
 
-    const handleSchedule = () => {
-        const text = chat?.composer?.text ?? '';
+	const handleSchedule = () => {
+		const text = chat?.composer?.text ?? '';
 
-        setModal(
-            <ScheduleMessageModal
-                rid={room._id}
-                tmid={tmid}
-                text={text}
-                onClose={() => setModal(null)}
-                onScheduled={() => {
-                    if (typeof chat?.composer?.clear === 'function') {
-                        chat.composer.clear();
-                    }
-                }}
-            />,
-        );
-    };
+		setModal(
+			<ScheduleMessageModal
+				rid={room._id}
+				tmid={tmid}
+				text={text}
+				onClose={() => setModal(null)}
+				onScheduled={() => {
+					if (typeof chat?.composer?.clear === 'function') {
+						chat.composer.clear();
+					}
+				}}
+			/>,
+		);
+	};
 
-    return {
-        id: 'schedule-message',
-        content: t('Schedule_message'),
-        icon: 'clock',
-        disabled,
-        onClick: handleSchedule,
-    };
+	return {
+		id: 'schedule-message',
+		content: t('Schedule_message'),
+		icon: 'clock',
+		disabled,
+		onClick: handleSchedule,
+	};
 };
