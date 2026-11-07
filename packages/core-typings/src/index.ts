@@ -139,3 +139,4 @@ export type * from './ServerAudit/IAuditUserChangedEvent';
 export { schemas } from './Ajv';
 
 export type * from './ITwoFactorChallenge';
+export * from './IScheduledMessage';
