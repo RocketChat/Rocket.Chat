@@ -6,26 +6,22 @@
 .rcx-message-thread {
 	@include use-font-scale(c1);
 	@include use-with-truncated-text();
-	flex-direction: column;
-
-	padding-block: 0;
-
 	color: colors.font(info);
-	gap: 0;
+
+	&__content {
+		gap: lengths.margin(8);
+	}
 
 	&__container {
 		@include use-with-truncated-text();
 		display: flex;
 
 		width: 100%;
-		margin-block: lengths.margin(4);
 	}
 
 	&__row {
 		// Same gap as the message row, so the preview text starts on the message text column.
 		--rcx-item-gap: #{lengths.margin(8)};
-
-		width: 100%;
 	}
 
 	&__message {
