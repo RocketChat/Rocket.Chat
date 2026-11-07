@@ -5,7 +5,10 @@
 .rcx-message-system {
 	padding-block: lengths.padding(8);
 
+	// The row keeps the avatar at the top when an attachment makes it tall; a single line still centres on it.
 	&__container {
+		align-self: center;
+
 		margin-block: lengths.margin(-4);
 	}
 

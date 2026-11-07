@@ -11,7 +11,7 @@ export type MessageSystemProps = {
 } & Omit<AllHTMLAttributes<HTMLDivElement>, 'is'>;
 
 const MessageSystem = ({ isSelected, className, ...props }: MessageSystemProps) => (
-	<Item {...props} inset='lg' multiline selected={isSelected} className={cx('rcx-message-system', className)} />
+	<Item {...props} align='start' inset='lg' multiline selected={isSelected} className={cx('rcx-message-system', className)} />
 );
 
 export default MessageSystem;
