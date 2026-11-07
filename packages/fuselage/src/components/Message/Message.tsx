@@ -7,7 +7,6 @@ export type MessageProps = Omit<AllHTMLAttributes<HTMLDivElement>, 'is'> &
 	RefAttributes<HTMLDivElement> & {
 		clickable?: boolean;
 		sequential?: boolean;
-		className?: string;
 		isSelected?: boolean;
 		isEditing?: boolean;
 		isPending?: boolean;

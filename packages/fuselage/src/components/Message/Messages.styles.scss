@@ -40,16 +40,13 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 	}
 
 	&-container {
+		&--left,
 		&--fixed {
-			display: flex;
 			flex-direction: column;
-			align-items: center;
-			flex: none;
 		}
 
 		// A fixed-width column, so the content starts at the same x with or without an avatar.
 		&--left {
-			flex-direction: column;
 			align-items: flex-end;
 
 			width: lengths.size(36);
@@ -137,20 +134,10 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 
 		color: colors.font(default);
 
-		& h1 {
-			@include use-font-scale(h1);
-		}
-
-		& h2 {
-			@include use-font-scale(h2);
-		}
-
-		& h3 {
-			@include use-font-scale(h3);
-		}
-
-		& h4 {
-			@include use-font-scale(h4);
+		@each $heading in h1, h2, h3, h4 {
+			& #{$heading} {
+				@include use-font-scale($heading);
+			}
 		}
 
 		& ul,
@@ -162,20 +149,19 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 			list-style: none;
 		}
 
-		& ul > li::before {
+		& :is(ul, ol) > li::before {
 			padding: 0 lengths.padding(8);
-
-			content: '•';
 
 			font-weight: bold;
 		}
 
+		// Task lists mark their items with a checkbox instead.
+		& ul:not(.task-list) > li::before {
+			content: '•';
+		}
+
 		& ol > li::before {
-			padding: 0 lengths.padding(8);
-
 			content: attr(value) '.';
-
-			font-weight: bold;
 		}
 
 		&--clamp {
@@ -208,10 +194,6 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 		}
 
 		& ul.task-list {
-			> li::before {
-				display: none;
-			}
-
 			> li > .rcx-check-box > .rcx-check-box__input:focus + .rcx-check-box__fake {
 				z-index: 1;
 			}
@@ -223,7 +205,6 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 		flex-direction: column;
 
 		&--width-fixed {
-			width: 100%;
 			max-width: $message-block-width-fixed;
 		}
 	}

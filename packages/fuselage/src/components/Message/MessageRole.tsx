@@ -1,9 +1,7 @@
-import { cx } from '../../helpers/composeClassNames';
-import type { TagProps } from '../Tag';
-import { Tag } from '../Tag';
+import { Tag, type TagProps } from '../Tag';
 
 export type MessageRoleProps = TagProps;
 
-const MessageRole = ({ className, ...props }: MessageRoleProps) => <Tag {...props} className={cx('rcx-message-header__role', className)} />;
+const MessageRole = (props: MessageRoleProps) => <Tag {...props} />;
 
 export default MessageRole;

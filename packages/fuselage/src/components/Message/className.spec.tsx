@@ -41,13 +41,13 @@ import { render } from '../../testing';
 
 const cases: [string, ReactElement, string][] = [
 	['MessageBlock', <MessageBlock data-testid='part' className='custom' />, 'rcx-message-block'],
-	['MessageContainer', <MessageContainer data-testid='part' className='custom' />, 'rcx-message-container'],
+	['MessageContainer', <MessageContainer data-testid='part' className='custom' />, 'rcx-item__content'],
 	['MessageContainerFixed', <MessageContainerFixed data-testid='part' className='custom' />, 'rcx-message-container--fixed'],
 	['MessageHeader', <MessageHeader data-testid='part' className='custom' />, 'rcx-message-header'],
 	['MessageLeftContainer', <MessageLeftContainer data-testid='part' className='custom' />, 'rcx-message-container--left'],
 	['MessageName', <MessageName data-testid='part' className='custom' />, 'rcx-message-header__name'],
 	['MessageNameContainer', <MessageNameContainer data-testid='part' className='custom' />, 'rcx-message-header__name-container'],
-	['MessageRole', <MessageRole data-testid='part' className='custom' />, 'rcx-message-header__role'],
+	['MessageRole', <MessageRole data-testid='part' className='custom' />, 'rcx-tag'],
 	['MessageRoles', <MessageRoles data-testid='part' className='custom' />, 'rcx-message-header__roles'],
 	['MessageTimestamp', <MessageTimestamp data-testid='part' className='custom' />, 'rcx-message-header__time'],
 	['MessageUsername', <MessageUsername data-testid='part' className='custom' />, 'rcx-message-header__username'],
