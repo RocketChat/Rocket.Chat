@@ -519,6 +519,15 @@ export default class RocketAdapter {
 			slackMsgTxt = slackMsgTxt.replace(/<!everyone>/g, '@all');
 			slackMsgTxt = slackMsgTxt.replace(/<!channel>/g, '@all');
 			slackMsgTxt = slackMsgTxt.replace(/<!here>/g, '@here');
+			slackMsgTxt = slackMsgTxt.replace(/<(http[s]?:[^>|]*)>/g, '$1');
+			slackMsgTxt = slackMsgTxt.replace(/<(http[s]?:[^|>]*)\|([^>]*)>/g, (_match, url, label) => {
+				const urlWithoutScheme = url.replace(/^https?:\/\//, '');
+				const labelIsUrl =
+					label === url ||
+					label === urlWithoutScheme ||
+					(label.endsWith('…') && urlWithoutScheme.startsWith(label.slice(0, -1)));
+				return labelIsUrl ? url : `[${label}](${url})`;
+			});
 			slackMsgTxt = slackMsgTxt.replace(/&gt;/g, '>');
 			slackMsgTxt = slackMsgTxt.replace(/&lt;/g, '<');
 			slackMsgTxt = slackMsgTxt.replace(/&amp;/g, '&');
@@ -526,7 +535,6 @@ export default class RocketAdapter {
 			slackMsgTxt = slackMsgTxt.replace(/:memo:/g, ':pencil:');
 			slackMsgTxt = slackMsgTxt.replace(/:piggy:/g, ':pig:');
 			slackMsgTxt = slackMsgTxt.replace(/:uk:/g, ':gb:');
-			slackMsgTxt = slackMsgTxt.replace(/<(http[s]?:[^>]*)>/g, '$1');
 
 			const promises = [];
 
