@@ -1,5 +1,6 @@
 import type { IServiceMetrics } from '@rocket.chat/core-services';
 import { ClientSafeError } from '@rocket.chat/core-services';
+import { Streamer } from '@rocket.chat/streamer';
 import WebSocket from 'ws';
 
 import { Publication } from './Publication';
@@ -322,6 +323,77 @@ describe('Server subscriptions', () => {
 		await server.subscribe(session, makeSubscription());
 
 		expect(onStop).toHaveBeenCalledTimes(1);
+	});
+
+	it('retires a failed publication so a late continuation cannot revive it', async () => {
+		const published: Publication[] = [];
+		server.publish('messages', function (this: Publication) {
+			published.push(this);
+			throw new ClientSafeError(403, 'Forbidden');
+		});
+
+		await server.subscribe(session, makeSubscription());
+
+		const failed = published[0];
+		expect(published).toHaveLength(1);
+		expect(Streamer.isPublicationActive(failed)).toBe(false);
+		expect(sentPackets(session)).toEqual([
+			{ msg: 'nosub', id: 'test-id', error: new ClientSafeError(403, 'Forbidden').toJSON() },
+		]);
+
+		const late = jest.fn();
+		failed.onStop(late);
+		expect(late).toHaveBeenCalledTimes(1);
+
+		const continuation = Promise.resolve().then(() => (Streamer.isPublicationActive(failed) ? 'revived' : 'aborted'));
+		await expect(continuation).resolves.toBe('aborted');
+	});
+
+	it('retires a failed publication even when the client cannot be told', async () => {
+		const published: Publication[] = [];
+		server.publish('messages', function (this: Publication) {
+			published.push(this);
+			throw new ClientSafeError(403, 'Forbidden');
+		});
+		session.send.mockImplementation(() => {
+			throw new Error('socket is gone');
+		});
+
+		await expect(server.subscribe(session, makeSubscription())).rejects.toThrow('socket is gone');
+
+		expect(Streamer.isPublicationActive(published[0])).toBe(false);
+	});
+
+	it('does not answer a second time when the client unsubscribed while the handler was awaiting', async () => {
+		let entered!: () => void;
+		const handlerEntered = new Promise<void>((resolve) => {
+			entered = resolve;
+		});
+		let release!: () => void;
+		const pending = new Promise<void>((resolve) => {
+			release = resolve;
+		});
+		const published: Publication[] = [];
+		server.publish('messages', function (this: Publication) {
+			published.push(this);
+			entered();
+			return pending.then(() => {
+				throw new ClientSafeError(403, 'Forbidden');
+			});
+		});
+
+		const subscription = server.subscribe(session, makeSubscription());
+		await handlerEntered;
+
+		// The client unsubscribes while the handler is still awaiting its lookup.
+		published[0].stop();
+		release();
+		await subscription;
+
+		// stop() answered the client once; the failed handler must not add an error nosub.
+		expect(sentPackets(session)).toEqual([{ msg: 'nosub', id: 'test-id' }]);
+		expect(published[0]._isDeactivated()).toBe(true);
+		expect(session.subscriptions.size).toBe(0);
 	});
 
 	it('still answers a failed subscription when one of its stop callbacks throws', async () => {

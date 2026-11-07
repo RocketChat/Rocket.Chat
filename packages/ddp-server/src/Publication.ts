@@ -11,6 +11,8 @@ export class Publication extends EventEmitter implements IPublication {
 
 	connection: IPublication['connection'];
 
+	private _stopped = false;
+
 	constructor(
 		public client: Session,
 		private packet: IPacket,
@@ -19,7 +21,7 @@ export class Publication extends EventEmitter implements IPublication {
 		this.packet = packet;
 		client.subscriptions.set(packet.id, this);
 
-		const onClientClose = () => this.emit('stop', this.client, this.packet);
+		const onClientClose = () => this._stop();
 		client.once('close', onClientClose);
 		this.once('stop', () => {
 			client.removeListener('close', onClientClose);
@@ -52,12 +54,36 @@ export class Publication extends EventEmitter implements IPublication {
 	}
 
 	stop(): void {
+		if (this._stopped) {
+			return;
+		}
+
 		this.client.send(encodeNosub(this.packet.id));
-		this.emit('stop', this.client, this.packet);
+		this._stop();
 	}
 
 	onStop(fn: (...args: any[]) => void): void {
+		if (this._stopped) {
+			fn(this.client, this.packet);
+			return;
+		}
+
 		this.once('stop', fn);
+	}
+
+	/** Retires the publication without answering the client, because the caller already has. */
+	deactivate(): void {
+		this._stop();
+	}
+
+	private _stop(): void {
+		if (this._stopped) {
+			return;
+		}
+
+		this._stopped = true;
+		this._session = null;
+		this.emit('stop', this.client, this.packet);
 	}
 
 	added(collection: string, id: string, fields: any): void {
