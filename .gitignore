@@ -25,7 +25,6 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # local env files
-.env.local
 .env.development.local
 .env.test.local
 .env.production.local
@@ -62,4 +61,4 @@ registration.yaml
 storybook-static
 development/tempo-data/
 
-.env
+config.bat

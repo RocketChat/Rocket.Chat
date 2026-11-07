@@ -1,83 +1,83 @@
 {
-	"name": "@rocket.chat/apps-engine",
-	"version": "1.68.0-rc.0",
-	"description": "The public API and type definitions for Rocket.Chat App development.",
-	"keywords": [
-		"rocket.chat",
-		"team chat",
-		"apps engine"
-	],
-	"homepage": "https://github.com/RocketChat/Rocket.Chat.Apps-engine#readme",
-	"bugs": {
-		"url": "https://github.com/RocketChat/Rocket.Chat.Apps-engine/issues"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/RocketChat/Rocket.Chat.git",
-		"directory": "packages/apps-engine"
-	},
-	"license": "MIT",
-	"author": {
-		"name": "Rocket.Chat",
-		"url": "https://rocket.chat/"
-	},
-	"contributors": [
-		{
-			"name": "Bradley Hilton",
-			"email": "bradley.hilton@rocket.chat"
-		},
-		{
-			"name": "Rodrigo Nascimento",
-			"email": "rodrigo.nascimento@rocket.chat"
-		},
-		{
-			"name": "Douglas Gubert",
-			"email": "douglas.gubert@rocket.chat"
-		}
-	],
-	"files": [
-		"definition/**"
-	],
-	"scripts": {
-		"build": "run-s build:clean build:default",
-		"build:clean": "rm -rf definition",
-		"build:default": "tsc -p tsconfig.json",
-		"dev": "yarn build:default --watch",
-		"gen-doc": "typedoc",
-		"lint": "yarn run -T oxlint",
-		"typecheck": "run-s typecheck:default typecheck:types",
-		"typecheck:default": "tsc -p tsconfig.json --noEmit",
-		"typecheck:types": "tsc -p tsconfig-types-test.json"
-	},
-	"nyc": {
-		"all": true,
-		"extension": [
-			".ts"
-		],
-		"include": [
-			"src/*.ts",
-			"src/server/**/*.ts"
-		],
-		"reporter": [
-			"lcov",
-			"json",
-			"html"
-		]
-	},
-	"dependencies": {
-		"uuid": "~11.1.1"
-	},
-	"devDependencies": {
-		"@rocket.chat/ui-kit": "workspace:~",
-		"@types/node": "~24.13.6",
-		"npm-run-all": "^4.1.5",
-		"typedoc": "~0.28.20",
-		"typescript": "~7.0.2"
-	},
-	"volta": {
-		"extends": "../../package.json"
-	},
-	"installConfig": {
-		"hoistingLimits": "workspaces"
-	}
+  "name": "@rocket.chat/apps-engine",
+  "version": "1.68.0-rc.0",
+  "description": "The public API and type definitions for Rocket.Chat App development.",
+  "keywords": [
+    "rocket.chat",
+    "team chat",
+    "apps engine"
+  ],
+  "homepage": "https://github.com/RocketChat/Rocket.Chat.Apps-engine#readme",
+  "bugs": {
+    "url": "https://github.com/RocketChat/Rocket.Chat.Apps-engine/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RocketChat/Rocket.Chat.git",
+    "directory": "packages/apps-engine"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Rocket.Chat",
+    "url": "https://rocket.chat/"
+  },
+  "contributors": [
+    {
+      "name": "Bradley Hilton",
+      "email": "bradley.hilton@rocket.chat"
+    },
+    {
+      "name": "Rodrigo Nascimento",
+      "email": "rodrigo.nascimento@rocket.chat"
+    },
+    {
+      "name": "Douglas Gubert",
+      "email": "douglas.gubert@rocket.chat"
+    }
+  ],
+  "files": [
+    "definition/**"
+  ],
+  "scripts": {
+    "build": "node init && run-s build:clean build:default",
+    "build:clean": "node init && rm -rf definition",
+    "build:default": "node init && tsc -p tsconfig.json",
+    "dev": "node init && yarn build:default --watch",
+    "gen-doc": "typedoc",
+    "lint": "yarn run -T oxlint",
+    "typecheck": "run-s typecheck:default typecheck:types",
+    "typecheck:default": "tsc -p tsconfig.json --noEmit",
+    "typecheck:types": "tsc -p tsconfig-types-test.json"
+  },
+  "nyc": {
+    "all": true,
+    "extension": [
+      ".ts"
+    ],
+    "include": [
+      "src/*.ts",
+      "src/server/**/*.ts"
+    ],
+    "reporter": [
+      "lcov",
+      "json",
+      "html"
+    ]
+  },
+  "dependencies": {
+    "uuid": "~11.1.1"
+  },
+  "devDependencies": {
+    "@rocket.chat/ui-kit": "workspace:~",
+    "@types/node": "~24.13.6",
+    "npm-run-all": "^4.1.5",
+    "typedoc": "~0.28.20",
+    "typescript": "~7.0.2"
+  },
+  "volta": {
+    "extends": "../../package.json"
+  },
+  "installConfig": {
+    "hoistingLimits": "workspaces"
+  }
 }
