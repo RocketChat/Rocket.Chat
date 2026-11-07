@@ -405,7 +405,7 @@ function setHiddenSystemMessages(hidden: StoreState['iframe']['hiddenSystemMessa
 
 function initialize(initParams: Partial<InitializeParams>) {
 	for (const initKey in initParams) {
-		if (!Object.prototype.hasOwnProperty.call(initParams, initKey)) {
+		if (!Object.hasOwn(initParams, initKey)) {
 			continue;
 		}
 
@@ -657,7 +657,7 @@ function onNewMessage(event: MessageEvent<LivechatMessageEventData<InternalWidge
 
 	const { fn, args } = event.data;
 
-	if (!Object.prototype.hasOwnProperty.call(api, fn)) {
+	if (!Object.hasOwn(api, fn)) {
 		return;
 	}
 

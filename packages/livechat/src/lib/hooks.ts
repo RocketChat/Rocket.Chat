@@ -344,7 +344,7 @@ function onNewMessageHandler(event: MessageEvent<LivechatMessageEventData<HooksW
 
 	const { fn, args } = event.data;
 
-	if (!Object.prototype.hasOwnProperty.call(api, fn)) {
+	if (!Object.hasOwn(api, fn)) {
 		return;
 	}
 
