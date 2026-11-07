@@ -17,7 +17,7 @@ export const pageUrlCondition = (condition: ILivechatTriggerCondition) => {
 		return Promise.resolve();
 	}
 
-	// oxlint-disable-next-line typescript/prefer-promise-reject-errors -- the reason is persisted to triggersRecords and logged as-is; an Error would serialize to {}
+	// oxlint-disable-next-line typescript/prefer-promise-reject-errors -- keeps the existing reasonless rejection: callers only need to know the condition failed
 	return Promise.reject();
 };
 
