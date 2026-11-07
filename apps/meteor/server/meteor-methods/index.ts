@@ -80,3 +80,4 @@ import './users/setEmail';
 import './users/setUserActiveStatus';
 import './users/setUserStatus';
 import './users/userPresence';
+import './messages/scheduleMessage';

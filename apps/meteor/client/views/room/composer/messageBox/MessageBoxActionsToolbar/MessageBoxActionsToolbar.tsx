@@ -6,6 +6,7 @@ import { useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
 import type { MouseEvent } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useScheduleMessageAction } from './hooks/useScheduleMessageAction';
 
 import { useAudioMessageAction } from './hooks/useAudioMessageAction';
 import { useCreateDiscussionAction } from './hooks/useCreateDiscussionAction';
@@ -61,6 +62,7 @@ const MessageBoxActionsToolbar = ({
 	const createDiscussionAction = useCreateDiscussionAction(disableBasicActions, room);
 	const shareLocationAction = useShareLocationAction(disableBasicActions, room, tmid);
 	const timestampAction = useTimestampAction(!canSend || isRecording, chatContext.composer);
+    const scheduleMessageAction = useScheduleMessageAction(disableBasicActions, room, chatContext, tmid);
 
 	const apps = useMessageboxAppsActionButtons();
 	const { composerToolbox: hiddenActions } = useLayoutHiddenActions();
@@ -72,6 +74,7 @@ const MessageBoxActionsToolbar = ({
 		...(!isHidden(hiddenActions, createDiscussionAction) && { createDiscussionAction }),
 		...(!isHidden(hiddenActions, shareLocationAction) && { shareLocationAction }),
 		...(timestampAction && !isHidden(hiddenActions, timestampAction) && { timestampAction }),
+		...(!isHidden(hiddenActions, scheduleMessageAction) && { scheduleMessageAction }),
 	};
 
 	const featured = [];
@@ -79,7 +82,7 @@ const MessageBoxActionsToolbar = ({
 	const share = [];
 	const insert = [];
 
-	createNew.push(allActions.createDiscussionAction);
+	createNew.push(allActions.createDiscussionAction,allActions.scheduleMessageAction);
 
 	if (allActions.timestampAction) {
 		insert.push(allActions.timestampAction);
