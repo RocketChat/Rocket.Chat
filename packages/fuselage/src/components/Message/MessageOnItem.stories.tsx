@@ -18,7 +18,7 @@ import {
 } from './MessageMetrics';
 import MessageName from './MessageName';
 import MessageNameContainer from './MessageNameContainer';
-import MessageReactions, { MessageReaction, MessageReactionAction } from './MessageReactions';
+import MessageReactions, { MessageReaction, MessageReactionAction, MessageReactionCounter } from './MessageReactions';
 import MessageRole from './MessageRole';
 import MessageRoles from './MessageRoles';
 import { MessageStatusIndicator, MessageStatusIndicatorItem } from './MessageStatusIndicator';
@@ -123,10 +123,6 @@ export const Pending: Story = {
 	render: () => withPadding(<Row isPending />),
 };
 
-export const Highlight: Story = {
-	render: () => withPadding(<Row highlight />),
-};
-
 export const Clickable: Story = {
 	render: () => withPadding(<Row clickable tabIndex={0} />),
 };
@@ -151,8 +147,12 @@ export const ReactionsAndMetrics: Story = {
 				extra={
 					<>
 						<MessageReactions>
-							<MessageReaction mine counter={1} />
-							<MessageReaction counter={2} />
+							<MessageReaction mine>
+								<MessageReactionCounter counter={1} />
+							</MessageReaction>
+							<MessageReaction>
+								<MessageReactionCounter counter={2} />
+							</MessageReaction>
 							<MessageReactionAction />
 						</MessageReactions>
 						<MessageBlock>

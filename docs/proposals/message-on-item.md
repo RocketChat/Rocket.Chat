@@ -62,7 +62,7 @@ They register their ids in the parent `Item` through `setState` (`useIdRegistry`
 
 - **The 24px inset** is `padding-inline` on `.rcx-message`. `inset='lg'` gives the same 24px only when the last child is in the flow; in room messages the last child is the absolutely positioned toolbar wrapper. System messages have no toolbar and use `inset='lg'`.
 - **The avatar column**: a fixed 36px `ItemMedia` that right-aligns narrow children (checkbox, sequential status indicators), and a block size of header plus first line, so the avatar centers on them however long the body grows.
-- **States**: `editing` (warning surface; `Item` has none), `pending` (dimmed body), `highlight` (fade animation).
+- **States**: `editing` (warning surface; `Item` has none) and `pending` (dimmed body).
 - **The author name**: underline on hover, and a focus ring drawn with `outline` and `box-shadow` so it takes no room; a border-based ring made the header 2px taller and was invisible in forced colors.
 - **The toolbar**: an absolutely positioned overlay with its own reveal. `ItemActions reveal='hover'` does not fit it: it reveals on `:focus-within`, so a clicked message would keep its toolbar showing; it always reveals on `hover: none` devices, where every toolbar would overlap the previous message and stop gating the lazy mount; and its collapse does nothing for an overlay. A hidden toolbar takes no pointer events.
 - **The divider**: equal-width bars keep the date centered; the unread label sits in the flow, so the line ends before it and no background is needed.
@@ -86,7 +86,7 @@ API and markup:
 - `rcx-message--selected` and `rcx-message--clickable` are no longer emitted; the row carries `rcx-item--selected` and `rcx-item--interactive`. No app or e2e code references them.
 - The props of the `Item`-based parts omit the HTML `is` attribute, which clashed with `Item`'s `is`.
 - Keyboard: `messageRowSelector` also matches `.rcx-message-thread[tabindex="0"]`, since thread previews no longer carry `rcx-message`.
-- Deprecated, to remove in the next major: `MessageStatusIndicatorText`, `ThreadMessageFollow`, the `variant` prop of the status indicators, and the `MessageSystemLeftContainer` and `ThreadMessageLeftContainer` aliases of `MessageLeftContainer`.
+- Removed, as nothing rendered them: `MessageStatusIndicatorText`, `ThreadMessageFollow`, the `MessageSystemLeftContainer` and `ThreadMessageLeftContainer` aliases of `MessageLeftContainer`, the `variant` prop of the status indicators, the `highlight` prop of `Message`, the `is` prop of `MessageHighlight`, and the `name` and `counter` props of `MessageReaction`.
 
 ## Handoff
 
@@ -116,7 +116,6 @@ Verified: Fuselage jest, `tsc`, oxlint and stylelint; the `apps/meteor` message 
 2. The contextual bar rows that render `Box is={Message}` (`DiscussionsListItem`, `ThreadListMessage`, `VideoConfListItem`) can move to plain `Item` rows with `useItemListNavigation`.
 3. `MessageContainerFixed` (two consumers) can become a layout container or `ItemActions`.
 4. Spacing the metrics wrapper with `gap` needs the follow button to become a metrics item first; as is, it adds 4px before the button.
-5. Remove the deprecated parts in the next Fuselage major.
 
 ### Running the branch
 

@@ -11,10 +11,9 @@ export type MessageProps = Omit<AllHTMLAttributes<HTMLDivElement>, 'is'> &
 		isSelected?: boolean;
 		isEditing?: boolean;
 		isPending?: boolean;
-		highlight?: boolean;
 	};
 
-function Message({ className, clickable, sequential, isSelected, isEditing, isPending, highlight, ...props }: MessageProps) {
+function Message({ className, clickable, sequential, isSelected, isEditing, isPending, ...props }: MessageProps) {
 	return (
 		<Item
 			{...props}
@@ -28,7 +27,6 @@ function Message({ className, clickable, sequential, isSelected, isEditing, isPe
 					sequential: !!sequential,
 					editing: !!isEditing,
 					pending: !!isPending,
-					highlight: !!highlight,
 				}),
 				className,
 			)}

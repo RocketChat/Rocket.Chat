@@ -17,8 +17,6 @@
 $message-background-color-editing: theme('message-background-color-editing', colors.status-background(warning-2));
 $message-color-editing: theme('message-color-editing', colors.status-font(on-warning-2));
 
-$message-background-color-highlight: theme('message-background-color-highlight', colors.status-background(warning-2));
-
 $message-highlight-colors-critical-color: theme('message-highlight-colors-critical-color', colors.status-font(on-danger));
 
 $message-highlight-colors-relevant-color: theme('message-highlight-colors-relevant-color', colors.status-font(on-service-1));
@@ -63,19 +61,9 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 		background: $message-background-color-editing;
 	}
 
-	&--highlight {
-		animation: background-fade 6s;
-	}
-
 	&--pending {
 		.rcx-message-body {
 			opacity: 0.4;
-		}
-	}
-
-	@keyframes background-fade {
-		50% {
-			background: $message-background-color-highlight;
 		}
 	}
 
