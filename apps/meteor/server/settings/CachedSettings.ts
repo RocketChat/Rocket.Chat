@@ -20,6 +20,8 @@ export interface ICachedSettings {
 
 	has(_id: ISetting['_id']): boolean;
 
+	ids(): ISetting['_id'][];
+
 	getSetting(_id: ISetting['_id']): ISetting | undefined;
 
 	get<T extends SettingValue = SettingValue>(_id: ISetting['_id']): T;
@@ -55,6 +57,8 @@ export interface ICachedSettings {
 	): () => void;
 
 	set(record: ISetting): void;
+
+	remove(_id: ISetting['_id']): void;
 
 	getConfig(config?: OverCustomSettingsConfig): SettingsConfig;
 
@@ -111,6 +115,10 @@ export class CachedSettings
 			SystemLogger.warn({ msg: 'Settings not initialized yet. getting', _id });
 		}
 		return this.store.has(_id);
+	}
+
+	public ids(): ISetting['_id'][] {
+		return [...this.store.keys()];
 	}
 
 	/**
@@ -336,6 +344,27 @@ export class CachedSettings
 		}
 		this.emit(record._id, this.store.get(record._id)?.value);
 		this.emit('*', [record._id, this.store.get(record._id)?.value]);
+	}
+
+	/**
+	 * Forgets a setting the database no longer has; watchers see `undefined` unless that already was its value
+	 */
+	public remove(_id: ISetting['_id']): void {
+		const previous = this.store.get(_id);
+		this.store.delete(_id);
+		if (previous?.value === undefined) {
+			return;
+		}
+
+		if (!this.ready) {
+			this.once('ready', () => {
+				this.emit(_id, undefined);
+				this.emit('*', [_id, undefined]);
+			});
+			return;
+		}
+		this.emit(_id, undefined);
+		this.emit('*', [_id, undefined]);
 	}
 
 	public getConfig = (config?: OverCustomSettingsConfig): SettingsConfig => ({
