@@ -33,9 +33,6 @@ $message-generic-preview-icon-background-color: theme('message-generic-preview-i
 
 	&__content {
 		display: flex;
-		flex-direction: row;
-
-		font-size: 0;
 
 		&-wrapper {
 			@include use-with-truncated-text();

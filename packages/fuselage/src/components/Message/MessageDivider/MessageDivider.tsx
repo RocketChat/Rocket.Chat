@@ -12,7 +12,7 @@ const MessageDivider = ({ children, unreadLabel, className, ...props }: MessageD
 		{children && (
 			<>
 				<div className='rcx-message-divider__bar' />
-				<div className='rcx-message-divider__wrapper'>{children}</div>{' '}
+				<div className='rcx-message-divider__wrapper'>{children}</div>
 			</>
 		)}
 		<div className='rcx-message-divider__bar'>

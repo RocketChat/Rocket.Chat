@@ -1,11 +1,9 @@
 @use '../../../styles/colors.scss';
 @use '../../../styles/functions.scss' as *;
 @use '../../../styles/lengths.scss';
-@use '../../../styles/mixins/button.scss';
 @use '../../../styles/mixins/size.scss';
 @use '../../../styles/mixins/templates.scss';
 @use '../../../styles/typography.scss' as *;
-@use '../../../styles/variables/buttons.scss';
 @use '../mixins.scss';
 
 $message-reaction-border-radius: theme('message-reaction-border-radius', lengths.border-radius(medium));
@@ -19,7 +17,6 @@ $message-reaction-background-color: theme('message-reaction-background-color', c
 	&__container {
 		display: flex;
 		flex-flow: row wrap;
-		justify-content: flex-start;
 
 		gap: lengths.margin(4);
 	}
@@ -35,7 +32,6 @@ $message-reaction-background-color: theme('message-reaction-background-color', c
 		cursor: pointer;
 
 		color: colors.font(hint);
-		border: lengths.border-width(default) solid colors.stroke(light);
 		border-radius: $message-reaction-border-radius;
 		background-color: $message-reaction-hover-background-color;
 
@@ -69,7 +65,6 @@ $message-reaction-background-color: theme('message-reaction-background-color', c
 	}
 
 	&__counter {
-		@include use-font-scale(c1);
 		margin-inline: lengths.margin(2);
 	}
 }

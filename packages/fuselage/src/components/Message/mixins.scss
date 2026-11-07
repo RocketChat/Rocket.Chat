@@ -1,6 +1,3 @@
-@use '../../styles/lengths.scss';
-@use '../../styles/colors.scss';
-
 @mixin message-focus-visible {
 	@content;
 

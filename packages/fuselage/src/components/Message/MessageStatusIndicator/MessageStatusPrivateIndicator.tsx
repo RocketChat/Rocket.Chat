@@ -7,7 +7,7 @@ export type MessageStatusPrivateIndicatorProps = {
 } & HTMLAttributes<HTMLSpanElement>;
 
 const MessageStatusPrivateIndicator = ({ children, className, ...props }: MessageStatusPrivateIndicatorProps) => (
-	<span {...props} className={cx('rcx-message-status-indicator__item rcx-message-status-indicator__item--private', className)}>
+	<span {...props} className={cx('rcx-message-status-indicator__item', className)}>
 		{children}
 	</span>
 );

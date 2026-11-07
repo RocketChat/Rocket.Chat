@@ -13,7 +13,6 @@ import MessageGenericPreviewTitle from './MessageGenericPreview/MessageGenericPr
 import MessageHeader from './MessageHeader';
 import MessageLeftContainer from './MessageLeftContainer';
 import MessageMetrics from './MessageMetrics/MessageMetrics';
-import MessageMetricsContentItem from './MessageMetrics/MessageMetricsContentItem';
 import MessageMetricsItemLabel from './MessageMetrics/MessageMetricsItem/MessageMetricsItemLabel';
 import MessageName from './MessageName';
 import MessageNameContainer from './MessageNameContainer';
@@ -34,7 +33,6 @@ import MessageUsername from './MessageUsername';
 import ThreadMessage from './ThreadMessage/ThreadMessage';
 import ThreadMessageBody from './ThreadMessage/ThreadMessageBody';
 import ThreadMessageContainer from './ThreadMessage/ThreadMessageContainer';
-import ThreadMessageIcon from './ThreadMessage/ThreadMessageIcon';
 import ThreadMessageOrigin from './ThreadMessage/ThreadMessageOrigin';
 import ThreadMessageRow from './ThreadMessage/ThreadMessageRow';
 import { render } from '../../testing';
@@ -64,7 +62,6 @@ const cases: [string, ReactElement, string][] = [
 		'rcx-message-generic-preview__title',
 	],
 	['MessageMetrics', <MessageMetrics data-testid='part' className='custom' />, 'rcx-message-metrics__content-wrapper'],
-	['MessageMetricsContentItem', <MessageMetricsContentItem data-testid='part' className='custom' />, 'rcx-message-metrics__content-item'],
 	['MessageMetricsItemLabel', <MessageMetricsItemLabel data-testid='part' className='custom' />, 'rcx-message-metrics__item-label'],
 	['MessageReactions', <MessageReactions data-testid='part' className='custom' />, 'rcx-message-reactions__container'],
 	['MessageStatusIndicator', <MessageStatusIndicator data-testid='part' className='custom' />, 'rcx-message-status-indicator'],
@@ -88,7 +85,6 @@ const cases: [string, ReactElement, string][] = [
 	['ThreadMessage', <ThreadMessage data-testid='part' className='custom' />, 'rcx-message-thread'],
 	['ThreadMessageBody', <ThreadMessageBody data-testid='part' className='custom' />, 'rcx-message-thread__message'],
 	['ThreadMessageContainer', <ThreadMessageContainer data-testid='part' className='custom' />, 'rcx-message-thread__container'],
-	['ThreadMessageIcon', <ThreadMessageIcon data-testid='part' className='custom' name='bell' />, 'rcx-message-thread__icon'],
 	[
 		'MessageGenericPreviewDescription',
 		<MessageGenericPreviewDescription data-testid='part' className='custom' />,
@@ -102,7 +98,7 @@ const cases: [string, ReactElement, string][] = [
 	[
 		'MessageStatusPrivateIndicator',
 		<MessageStatusPrivateIndicator data-testid='part' className='custom' />,
-		'rcx-message-status-indicator__item--private',
+		'rcx-message-status-indicator__item',
 	],
 	['ThreadMessageOrigin', <ThreadMessageOrigin data-testid='part' className='custom' />, 'rcx-message-thread__origin'],
 	['ThreadMessageRow', <ThreadMessageRow data-testid='part' className='custom' />, 'rcx-message-thread__row'],

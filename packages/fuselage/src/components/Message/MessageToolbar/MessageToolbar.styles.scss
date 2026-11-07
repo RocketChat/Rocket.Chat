@@ -41,9 +41,7 @@ $message-toolbar-border-radius: theme('message-toolbar-border-radius', lengths.b
 		}
 	}
 
-	@include mixins.message-focus-visible {
-		display: inline-block;
-	}
+	@include mixins.message-focus-visible;
 
 	@at-root .rcx-message & {
 		position: absolute;

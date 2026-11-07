@@ -29,7 +29,6 @@ $message-divider-size-neg: theme('message-divider-size-neg', lengths.margin(-1))
 
 	&__bar {
 		display: flex;
-		justify-content: flex-end;
 		align-items: center;
 		// Equal bars keep the date centred, whatever room the Unread label takes from its bar.
 		flex: 1 1 0;
