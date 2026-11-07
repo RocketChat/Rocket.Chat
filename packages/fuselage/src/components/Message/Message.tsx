@@ -6,19 +6,23 @@ import Item from '../Item/Item';
 export type MessageProps = Omit<AllHTMLAttributes<HTMLDivElement>, 'is'> &
 	RefAttributes<HTMLDivElement> & {
 		clickable?: boolean;
+		/**
+		 * Shows the hover surface, for rows whose content reacts to the pointer. Turn it off for rows with nothing to act on.
+		 */
+		hoverable?: boolean;
 		sequential?: boolean;
 		isSelected?: boolean;
 		isEditing?: boolean;
 		isPending?: boolean;
 	};
 
-function Message({ className, clickable, sequential, isSelected, isEditing, isPending, ...props }: MessageProps) {
+function Message({ className, clickable, hoverable = true, sequential, isSelected, isEditing, isPending, ...props }: MessageProps) {
 	return (
 		<Item
 			{...props}
 			align='start'
 			multiline
-			hoverable
+			hoverable={hoverable}
 			interactive={clickable}
 			selected={isSelected}
 			className={cx(
