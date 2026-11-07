@@ -39,14 +39,13 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	}
 
 	/**
-	 * Define message indexes, including room/update-time ordering for streaming sync
-	 * pages without a blocking sort when a timestamp group exceeds the page target.
+	 * Define message indexes, including deterministic timestamp/ID ordering for bounded sync pages.
 	 */
 	protected override modelIndexes(): IndexDescription[] {
 		return [
 			{ key: { rid: 1, ts: 1, _updatedAt: 1 } },
-			// Stream sync pages in update order, including complete groups of equal timestamps.
-			{ key: { rid: 1, _updatedAt: 1 } },
+			// Resume bounded sync pages within groups of messages sharing an update time.
+			{ key: { rid: 1, _updatedAt: 1, _id: 1 } },
 			{ key: { ts: 1 } },
 			{ key: { 'u._id': 1 } },
 			{ key: { editedAt: 1 }, sparse: true },
@@ -863,6 +862,15 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		};
 
 		return this.find<T, O>(query, options);
+	}
+
+	/** Read visible room messages with a timestamp/ID sync boundary. */
+	findForSync<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		roomId: IMessage['_id'],
+		boundary: Filter<IMessage>,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
+		return this.find<T, O>({ $and: [{ rid: roomId, _hidden: { $ne: true } }, boundary] } as Filter<T>, options);
 	}
 
 	findForUpdates<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(

@@ -657,7 +657,7 @@ type ChatSyncMessages = {
 	roomId: IRoom['_id'];
 	lastUpdate?: string;
 	fromTs?: string;
-	/** Target page size. Cursor pages include the complete boundary timestamp group and may exceed this value. */
+	/** Maximum records per cursor page. Pass returned opaque cursor strings back unchanged. */
 	count?: number;
 	next?: string;
 	previous?: string;
@@ -680,7 +680,7 @@ const ChatSyncMessagesSchema = {
 		},
 		count: {
 			description:
-				'Target page size. Cursor pages may exceed count to include all messages sharing the boundary timestamp. Follow the returned cursor until it is null.',
+				'Maximum records per cursor page. Numeric starting timestamps are accepted. Pass returned opaque timestamp/ID cursors back unchanged until null.',
 			type: 'number',
 			nullable: true,
 		},

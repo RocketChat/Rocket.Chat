@@ -260,6 +260,12 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		messageIds: string[],
 		options?: O,
 	): FindCursor<DocumentWithProjection<T, O>>;
+	/** Read visible room messages with a timestamp/ID sync boundary. */
+	findForSync<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		roomId: IMessage['_id'],
+		boundary: Filter<IMessage>,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 	findForUpdates<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		roomId: IMessage['rid'],
 		{ updatedAt, minTs }: { updatedAt: { $lt: Date } | { $gt: Date }; minTs?: Date },

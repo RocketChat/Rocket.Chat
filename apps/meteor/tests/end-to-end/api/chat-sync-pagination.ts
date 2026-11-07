@@ -67,7 +67,7 @@ describe('[chat.syncMessages] equal timestamp pagination', () => {
 				const seen: string[] = [];
 				let pages = 0;
 				while (cursor !== null) {
-					expect(pages++).to.be.lessThan(3);
+					expect(pages++).to.be.lessThan(10);
 					const response: Response = await request
 						.get(api('chat.syncMessages'))
 						.set(credentials)
@@ -77,12 +77,12 @@ describe('[chat.syncMessages] equal timestamp pagination', () => {
 					const messages: { _id: string }[] = result[type === 'UPDATED' ? 'updated' : 'deleted'];
 					seen.push(...messages.map(({ _id }) => _id));
 					if (pages === 1) {
-						expect(messages).to.have.lengthOf(430);
-						expect(result.cursor[direction]).to.equal(`${boundary}`);
+						expect(messages).to.have.lengthOf(50);
+						expect(result.cursor[direction]).to.match(/^\d+_.+$/);
 					}
 					cursor = result.cursor[direction];
 				}
-				expect(pages).to.equal(2);
+				expect(pages).to.equal(9);
 				expect(seen).to.have.lengthOf(ids.length);
 				expect(new Set(seen).size).to.equal(ids.length);
 				expect(seen).to.have.members(ids);
