@@ -48,16 +48,6 @@ export async function executeScheduleMessage(
 		});
 	}
 
-	if (message.tmid) {
-		const parentMessage = await Messages.findOneById(message.tmid, { projection: { rid: 1, tmid: 1 } });
-		if (!parentMessage || parentMessage.rid !== message.rid) {
-			throw new ClientSafeError('error-invalid-parent-message', 'Invalid parent message', {
-				method: 'scheduleMessage',
-			});
-		}
-		message.tmid = parentMessage.tmid || message.tmid;
-	}
-
 	let room;
 	try {
 		room = await canSendMessageAsync(message.rid, user);
@@ -71,6 +61,16 @@ export async function executeScheduleMessage(
 		throw new ClientSafeError('error-not-allowed', 'Scheduled messages are not supported in encrypted rooms', {
 			method: 'scheduleMessage',
 		});
+	}
+
+	if (message.tmid) {
+		const parentMessage = await Messages.findOneById(message.tmid, { projection: { rid: 1, tmid: 1 } });
+		if (!parentMessage || parentMessage.rid !== message.rid) {
+			throw new ClientSafeError('error-invalid-parent-message', 'Invalid parent message', {
+				method: 'scheduleMessage',
+			});
+		}
+		message.tmid = parentMessage.tmid || message.tmid;
 	}
 
 	const scheduledDate = scheduledAt instanceof Date ? scheduledAt : new Date(scheduledAt);

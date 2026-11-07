@@ -9,36 +9,58 @@ const STALE_LOCK_TIMEOUT_MS = 5 * 60 * 1000;
 
 async function recoverStaleLocks(): Promise<void> {
 	const staleThreshold = new Date(Date.now() - STALE_LOCK_TIMEOUT_MS);
-	const staleMessages = await ScheduledMessages.find({
-		status: 'processing',
-		_updatedAt: { $lte: staleThreshold },
-	}).toArray();
+	const staleMessages = await ScheduledMessages.find(
+		{
+			status: 'processing',
+			_updatedAt: { $lte: staleThreshold },
+		},
+		{ projection: { _id: 1 } },
+	).toArray();
 
-	for (const staleMessage of staleMessages) {
-		const alreadySent = await Messages.findOneById(staleMessage._id, { projection: { _id: 1 } });
-		if (alreadySent) {
-			await ScheduledMessages.updateOne(
-				{ _id: staleMessage._id, status: 'processing' },
+	if (staleMessages.length === 0) {
+		return;
+	}
+
+	const staleIds = staleMessages.map((m) => m._id);
+	const deliveredMessages = await Messages.find({ _id: { $in: staleIds } }, { projection: { _id: 1 } }).toArray();
+	const deliveredIdsSet = new Set(deliveredMessages.map((m) => m._id));
+
+	const alreadyDeliveredIds = staleIds.filter((id) => deliveredIdsSet.has(id));
+	const notDeliveredIds = staleIds.filter((id) => !deliveredIdsSet.has(id));
+
+	const now = new Date();
+	const updateOperations: Promise<unknown>[] = [];
+
+	if (alreadyDeliveredIds.length > 0) {
+		updateOperations.push(
+			ScheduledMessages.updateMany(
+				{ _id: { $in: alreadyDeliveredIds }, status: 'processing' },
 				{
 					$set: {
 						status: 'sent',
-						sentAt: new Date(),
-						_updatedAt: new Date(),
+						sentAt: now,
+						_updatedAt: now,
 					},
 				},
-			);
-		} else {
-			await ScheduledMessages.updateOne(
-				{ _id: staleMessage._id, status: 'processing' },
+			),
+		);
+	}
+
+	if (notDeliveredIds.length > 0) {
+		updateOperations.push(
+			ScheduledMessages.updateMany(
+				{ _id: { $in: notDeliveredIds }, status: 'processing' },
 				{
 					$set: {
 						status: 'pending',
-						_updatedAt: new Date(),
+						_updatedAt: now,
 					},
 				},
-			);
-		}
+			),
+		);
 	}
+
+	await Promise.all(updateOperations);
 }
 
 async function processScheduledMessages(): Promise<void> {
