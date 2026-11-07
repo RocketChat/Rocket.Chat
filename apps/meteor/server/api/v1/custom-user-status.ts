@@ -236,12 +236,13 @@ API.v1.post(
 			return API.v1.failure(`No custom user status found with the id of "${_id}".`);
 		}
 
+		const isStatusTypeOmitted = statusType === undefined;
+
 		const userStatusData = {
 			_id,
 			name,
-			statusType: statusType === undefined ? customUserStatusToUpdate.statusType : (statusType ?? ''),
-			previousName: customUserStatusToUpdate.name,
-			previousStatusType: customUserStatusToUpdate.statusType,
+			statusType: isStatusTypeOmitted ? customUserStatusToUpdate.statusType : (statusType ?? ''),
+			...(isStatusTypeOmitted && { previousStatusType: customUserStatusToUpdate.statusType }),
 		};
 
 		await insertOrUpdateUserStatus(this.userId, userStatusData);
