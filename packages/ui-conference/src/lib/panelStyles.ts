@@ -20,15 +20,14 @@ export const narrowRoomStyle = css`
 		padding-inline: ${PANEL_INLINE_PADDING}px;
 	}
 
-	& .rcx-message {
+	& .rcx-message,
+	& .rcx-message-system,
+	& .rcx-message-thread {
 		padding-inline-start: ${PANEL_INLINE_PADDING}px;
 	}
 
-	& .rcx-message-system {
-		padding-inline-start: ${PANEL_INLINE_PADDING}px;
-	}
-
-	& .rcx-message-container--left {
+	/* The system message's inset also moves its first slot; the extra class outranks that rule in any stylesheet order. */
+	& .rcx-message-system > :first-child {
 		margin-inline-start: 0px;
 	}
 `;
