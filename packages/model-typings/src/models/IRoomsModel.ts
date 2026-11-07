@@ -140,7 +140,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		options?: O,
 	): FindCursor<DocumentWithProjection<T, O>>;
 
-	unsetTeamId(teamId: ITeam['_id'], options?: UpdateOptions): Promise<Document | UpdateResult>;
+	detachOneRoomFromTeam(teamId: ITeam['_id']): Promise<Pick<IRoom, '_id'> | null>;
 
 	unsetTeamById(rid: IRoom['_id'], options?: UpdateOptions): Promise<UpdateResult>;
 

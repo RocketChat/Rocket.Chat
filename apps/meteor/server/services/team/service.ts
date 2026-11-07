@@ -471,7 +471,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		};
 	}
 
-	async unsetTeamIdOfRooms(user: AtLeast<IUser, '_id' | 'username' | 'name'>, team: AtLeast<ITeam, '_id' | 'roomId'>): Promise<void> {
+		async unsetTeamIdOfRooms(user: AtLeast<IUser, '_id' | 'username' | 'name'>, team: AtLeast<ITeam, '_id' | 'roomId'>): Promise<void> {
 		if (!team) {
 			throw new Error('invalid-team');
 		}
@@ -485,21 +485,26 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			await Message.saveSystemMessage('user-converted-to-channel', team.roomId, room.name || '', user);
 		}
 
-		const teamRooms = await Rooms.find({ teamId: team._id }, { projection: { _id: 1 } }).toArray();
-
-		await Rooms.unsetTeamId(team._id);
+		const detachedRoomIds: IRoom['_id'][] = [];
 
 		try {
-			await notifyOnRoomChangedById(
-				teamRooms.map((teamRoom) => teamRoom._id),
-				'updated',
-			);
-		} catch (error) {
-			logger.error({
-				msg: 'Failed to notify room changes after removing team associations',
-				teamId: team._id,
-				err: error,
-			});
+			let detachedRoom = await Rooms.detachOneRoomFromTeam(team._id);
+			while (detachedRoom) {
+				detachedRoomIds.push(detachedRoom._id);
+				detachedRoom = await Rooms.detachOneRoomFromTeam(team._id);
+			}
+		} finally {
+			if (detachedRoomIds.length > 0) {
+				try {
+					await notifyOnRoomChangedById(detachedRoomIds, 'updated');
+				} catch (error) {
+					logger.error({
+						msg: 'Failed to notify room changes after removing team associations',
+						teamId: team._id,
+						err: error,
+					});
+				}
+			}
 		}
 	}
 

@@ -33,7 +33,7 @@ describe('useOpenRoom', () => {
 	it('updates an open public preview when a team is converted to a channel', async () => {
 		const rid = 'preview-room-id';
 		const name = 'preview-team';
-		const channel = createFakeRoom({ _id: rid, t: 'c', name });
+		const channel = { ...createFakeRoom({ _id: rid, t: 'c', name }), t: 'c' as const, name };
 		const teamRoom = { ...channel, teamId: 'team-id', teamMain: true };
 		const streamRef: StreamControllerRef<'room-data'> = {};
 		let converted = false;
@@ -43,7 +43,7 @@ describe('useOpenRoom', () => {
 				.withJohnDoe()
 				.withPermission('preview-c-room')
 				.withStream('room-data', streamRef)
-				.withMethod('getRoomByTypeAndName', async () => (converted ? channel : teamRoom))
+				.withMethod('getRoomByTypeAndName', () => (converted ? channel : teamRoom) as any)
 				.build(),
 		});
 

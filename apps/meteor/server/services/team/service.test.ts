@@ -11,7 +11,7 @@ const Rooms = {
 	setTeamMainById: sinon.stub(),
 	findDefaultRoomsForTeam: sinon.stub(),
 	findOneById: sinon.stub(),
-	unsetTeamId: sinon.stub(),
+	detachOneRoomFromTeam: sinon.stub(),
 };
 
 const Users = {
@@ -103,7 +103,8 @@ describe('Team service', () => {
 		addUserToRoom.reset();
 		Rooms.findDefaultRoomsForTeam.reset();
 		Rooms.findOneById.reset();
-		Rooms.unsetTeamId.reset();
+		Rooms.detachOneRoomFromTeam.reset();
+		Rooms.detachOneRoomFromTeam.resolves(null);
 		Users.findActiveByIds.reset();
 		Message.saveSystemMessage.reset();
 		filterDefaultChannelsForUser.reset();
@@ -209,42 +210,22 @@ describe('Team service', () => {
 	describe('unsetTeamIdOfRooms', () => {
 		const user = { _id: 'user-1', username: 'user-1', name: 'User One' };
 		const team = { _id: 'team-id', roomId: 'team-room' };
-		it('should notify all affected rooms after the database update completes', async () => {
-			Rooms.findOneById.resolves({
-				_id: 'team-room',
-				name: 'team-room-name',
-			});
-
-			Rooms.find.returns({
-				toArray: async () => [{ _id: 'team-room' }, { _id: 'child-room' }],
-			});
-
-			let databaseUpdateFinished = false;
-
-			Rooms.unsetTeamId.callsFake(async () => {
-				await Promise.resolve();
-				databaseUpdateFinished = true;
-			});
-
-			let notificationSawCompletedUpdate = false;
-			notifyOnRoomChangedById.callsFake(async () => {
-				notificationSawCompletedUpdate = databaseUpdateFinished;
-			});
+		it('should notify every detached room, including one returned on a later call', async () => {
+			const detach = Rooms.detachOneRoomFromTeam;
+			detach.onFirstCall().resolves({ _id: team.roomId });
+			detach.onSecondCall().resolves({ _id: 'late-room' });
 
 			await service.unsetTeamIdOfRooms(user, team);
 
-			expect(notificationSawCompletedUpdate).to.equal(true);
-
-			sinon.assert.calledOnceWithExactly(Rooms.find, { teamId: 'team-id' }, { projection: { _id: 1 } });
-
-			sinon.assert.calledOnceWithExactly(notifyOnRoomChangedById, ['team-room', 'child-room'], 'updated');
-
-			sinon.assert.callOrder(Rooms.find, Rooms.unsetTeamId, notifyOnRoomChangedById);
+			sinon.assert.calledThrice(detach);
+			sinon.assert.alwaysCalledWithExactly(detach, team._id);
+			sinon.assert.calledOnceWithExactly(notifyOnRoomChangedById, [team.roomId, 'late-room'], 'updated');
+			expect(detach.thirdCall.calledBefore(notifyOnRoomChangedById.firstCall)).to.be.true;
 		});
 
 		it('should log a notification failure and allow cleanup to continue', async () => {
 			const error = new Error('notification-failed');
-			Rooms.find.returns({ toArray: async () => [{ _id: team.roomId }] });
+			Rooms.detachOneRoomFromTeam.onFirstCall().resolves({ _id: team.roomId });
 			notifyOnRoomChangedById.rejects(error);
 
 			await service.unsetTeamIdOfRooms(user, team);
@@ -258,12 +239,21 @@ describe('Team service', () => {
 		});
 
 		it('should propagate a database failure without notifying clients', async () => {
-			Rooms.unsetTeamId.rejects(new Error('database-update-failed'));
+			Rooms.detachOneRoomFromTeam.rejects(new Error('database-update-failed'));
 
 			await expect(service.unsetTeamIdOfRooms(user, team)).to.be.rejectedWith('database-update-failed');
 
 			sinon.assert.notCalled(notifyOnRoomChangedById);
 			sinon.assert.notCalled(logError);
+		});
+
+		it('should notify rooms already detached when a later detach fails', async () => {
+			Rooms.detachOneRoomFromTeam.onFirstCall().resolves({ _id: team.roomId });
+			Rooms.detachOneRoomFromTeam.onSecondCall().rejects(new Error('database-update-failed'));
+
+			await expect(service.unsetTeamIdOfRooms(user, team)).to.be.rejectedWith('database-update-failed');
+
+			sinon.assert.calledOnceWithExactly(notifyOnRoomChangedById, [team.roomId], 'updated');
 		});
 
 		it('should announce the conversion on the main room and move the remaining rooms back to the workspace', async () => {
@@ -272,7 +262,7 @@ describe('Team service', () => {
 			await service.unsetTeamIdOfRooms(user, team);
 
 			expect(Message.saveSystemMessage.calledOnceWith('user-converted-to-channel', 'team-room', 'team-room-name', user)).to.be.true;
-			expect(Rooms.unsetTeamId.calledOnceWith('team-id')).to.be.true;
+			sinon.assert.calledOnceWithExactly(Rooms.detachOneRoomFromTeam, team._id);
 		});
 
 		it('should move the remaining rooms back to the workspace when the main room no longer exists', async () => {
@@ -281,7 +271,7 @@ describe('Team service', () => {
 			await service.unsetTeamIdOfRooms(user, team);
 
 			expect(Message.saveSystemMessage.called).to.be.false;
-			expect(Rooms.unsetTeamId.calledOnceWith('team-id')).to.be.true;
+			sinon.assert.calledOnceWithExactly(Rooms.detachOneRoomFromTeam, team._id);
 		});
 	});
 });
