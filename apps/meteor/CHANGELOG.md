@@ -1,5 +1,19 @@
 # @rocket.chat/meteor
 
+## 9.0.0-rc.8
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#43580](https://github.com/RocketChat/Rocket.Chat/pull/43580)) Fixes servers that started while another server was running the database migrations, which kept the old values of the settings those migrations changed until they were restarted.
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@9.0.0-rc.8
+  - @rocket.chat/rest-typings@9.0.0-rc.8
+
+  </details>
+
 ## 9.0.0-rc.7
 
 ### Patch Changes
