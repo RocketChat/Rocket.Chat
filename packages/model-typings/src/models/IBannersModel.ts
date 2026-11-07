@@ -1,8 +1,8 @@
 import type { BannerPlatform, IBanner, Optional } from '@rocket.chat/core-typings';
 import type { Document, FindCursor, UpdateResult, InsertOneResult } from 'mongodb';
 
-import type { IBaseModel } from './IBaseModel';
-import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
+import type { IBaseModel } from './IBaseModel.js';
+import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection.js';
 
 export interface IBannersModel extends IBaseModel<IBanner> {
 	create(doc: Optional<IBanner, '_updatedAt'>): Promise<InsertOneResult<IBanner>>;

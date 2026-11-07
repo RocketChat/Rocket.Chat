@@ -1,14 +1,14 @@
 import type { Emitter } from '@rocket.chat/emitter';
-import type Element from 'ltx/lib/Element';
+import type Element from 'ltx/lib/Element.js';
 
-import type { ResolvedXMPPServerConfig } from '../config';
-import type { XMPPServerEventMap } from '../events';
-import { getSubscriptionType, parseAvailabilityPresence, parseChatMessage } from '../handlers/parse';
-import { buildDiscoReply } from '../iq/disco';
-import type { DiscoItemsProvider, MucRoomDescriber } from '../iq/disco';
-import { buildPingReply, isPing } from '../iq/ping';
-import type { Logger } from '../logger';
-import { buildStanzaError } from '../xml/errors';
+import type { ResolvedXMPPServerConfig } from '../config.js';
+import type { XMPPServerEventMap } from '../events.js';
+import { getSubscriptionType, parseAvailabilityPresence, parseChatMessage } from '../handlers/parse.js';
+import { buildDiscoReply } from '../iq/disco.js';
+import type { DiscoItemsProvider, MucRoomDescriber } from '../iq/disco.js';
+import { buildPingReply, isPing } from '../iq/ping.js';
+import type { Logger } from '../logger.js';
+import { buildStanzaError } from '../xml/errors.js';
 
 export type StanzaRouterDeps = {
 	config: ResolvedXMPPServerConfig;

@@ -3,9 +3,9 @@ import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import type { ReactNode } from 'react';
 import { useState } from 'react';
 
-import MediaCallRoomSection from './MediaCallRoomSection';
-import { useMediaCallViewer } from '../../hooks/useMediaCallViewer';
-import MediaCallViewProvider from '../../providers/MediaCallViewProvider';
+import MediaCallRoomSection from './MediaCallRoomSection.js';
+import { useMediaCallViewer } from '../../hooks/useMediaCallViewer.js';
+import MediaCallViewProvider from '../../providers/MediaCallViewProvider.js';
 
 export type MediaCallRoomActivityProps = {
 	children: ReactNode;

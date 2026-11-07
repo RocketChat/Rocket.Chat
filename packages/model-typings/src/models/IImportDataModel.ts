@@ -1,6 +1,6 @@
 import type { IImportRecord, IImportUserRecord, IImportContactRecord, IImportChannelRecord } from '@rocket.chat/core-typings';
 
-import type { IBaseModel } from './IBaseModel';
+import type { IBaseModel } from './IBaseModel.js';
 
 export interface IImportDataModel extends IBaseModel<IImportRecord> {
 	getAllUsersForSelection(): Promise<Array<IImportUserRecord>>;

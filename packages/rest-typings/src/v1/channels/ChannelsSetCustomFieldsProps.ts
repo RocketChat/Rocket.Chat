@@ -1,4 +1,4 @@
-import { ajv } from '../Ajv';
+import { ajv } from '../Ajv.js';
 
 export type ChannelsSetCustomFieldsProps =
 	{ roomId: string; customFields: Record<string, any> } | { roomName: string; customFields: Record<string, any> };

@@ -3,8 +3,8 @@ import type * as UiKit from '@rocket.chat/ui-kit';
 import { BlockContext } from '@rocket.chat/ui-kit';
 import { render, screen } from '@testing-library/react';
 
-import LinearScaleElement from './LinearScaleElement';
-import { messageParser } from '../surfaces';
+import LinearScaleElement from './LinearScaleElement.js';
+import { messageParser } from '../surfaces/index.js';
 
 const renderLinearScale = (range: Pick<UiKit.LinearScaleElement, 'minValue' | 'maxValue'>) => {
 	const block: UiKit.LinearScaleElement = {

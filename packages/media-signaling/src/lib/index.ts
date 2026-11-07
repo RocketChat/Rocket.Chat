@@ -1,6 +1,6 @@
-export * from './Session';
-export * from './Call';
-export * from './TransportWrapper';
-export * from './services/states';
-export * from './services/webrtc';
-export type { MediaStreamWrapper } from './media/MediaStreamWrapper';
+export * from './Session.js';
+export * from './Call.js';
+export * from './TransportWrapper.js';
+export * from './services/states.js';
+export * from './services/webrtc/index.js';
+export type { MediaStreamWrapper } from './media/MediaStreamWrapper.js';

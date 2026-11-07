@@ -1,4 +1,4 @@
-import { getIceServer } from './getIceServer';
+import { getIceServer } from './getIceServer.js';
 
 describe('getIceServer', () => {
 	beforeEach(() => {

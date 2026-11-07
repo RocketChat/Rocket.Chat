@@ -15,14 +15,14 @@ import { ITEM_MEDIA_SIZE, UserAvatar } from '@rocket.chat/ui-avatar';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useConferenceSlots, useConferenceViewer } from '../../context/ConferenceContext';
-import type { ConferenceMember } from '../../context/definitions';
-import { useIsRinging } from '../../hooks/useRinging';
-import type { ConferenceMemberStatus } from '../../lib/memberStatus';
-import { getConferenceMemberStatus } from '../../lib/memberStatus';
-import type { CallParticipantControlsProps } from '../CallParticipantControls/CallParticipantControls';
-import CallParticipantControls from '../CallParticipantControls/CallParticipantControls';
-import CallParticipantStatus from '../CallParticipantStatus/CallParticipantStatus';
+import { useConferenceSlots, useConferenceViewer } from '../../context/ConferenceContext.js';
+import type { ConferenceMember } from '../../context/definitions.js';
+import { useIsRinging } from '../../hooks/useRinging.js';
+import type { ConferenceMemberStatus } from '../../lib/memberStatus.js';
+import { getConferenceMemberStatus } from '../../lib/memberStatus.js';
+import type { CallParticipantControlsProps } from '../CallParticipantControls/CallParticipantControls.js';
+import CallParticipantControls from '../CallParticipantControls/CallParticipantControls.js';
+import CallParticipantStatus from '../CallParticipantStatus/CallParticipantStatus.js';
 
 type CallMemberItemProps = {
 	member: ConferenceMember;

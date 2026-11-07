@@ -1,6 +1,6 @@
-import SaxLtx from 'ltx/lib/parsers/ltx';
+import SaxLtx from 'ltx/lib/parsers/ltx.js';
 
-import { TopLevelBoundaries } from './TopLevelBoundaries';
+import { TopLevelBoundaries } from './TopLevelBoundaries.js';
 
 const HEADER = "<stream:stream xmlns='jabber:server' xmlns:stream='http://etherx.jabber.org/streams' version='1.0'>";
 

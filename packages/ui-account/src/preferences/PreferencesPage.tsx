@@ -1,6 +1,6 @@
-import type { UsePreferencesOptions } from './logic/usePreferences';
-import { usePreferences } from './logic/usePreferences';
-import PreferencesView from './views/PreferencesView';
+import type { UsePreferencesOptions } from './logic/usePreferences.js';
+import { usePreferences } from './logic/usePreferences.js';
+import PreferencesView from './views/PreferencesView.js';
 
 export type PreferencesPageProps = UsePreferencesOptions;
 

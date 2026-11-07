@@ -1,15 +1,15 @@
-import VideoConfMessage from './VideoConfMessage';
-import VideoConfMessageAction from './VideoConfMessageAction';
-import VideoConfMessageActions from './VideoConfMessageActions';
-import VideoConfMessageButton from './VideoConfMessageButton';
-import VideoConfMessageContent from './VideoConfMessageContent';
-import VideoConfMessageFooter from './VideoConfMessageFooter';
-import VideoConfMessageFooterText from './VideoConfMessageFooterText';
-import VideoConfMessageIcon from './VideoConfMessageIcon';
-import VideoConfMessageRow from './VideoConfMessageRow';
-import VideoConfMessageSkeleton from './VideoConfMessageSkeleton';
-import VideoConfMessageText from './VideoConfMessageText';
-import VideoConfMessageUserStack from './VideoConfMessageUserStack';
+import VideoConfMessage from './VideoConfMessage.js';
+import VideoConfMessageAction from './VideoConfMessageAction.js';
+import VideoConfMessageActions from './VideoConfMessageActions.js';
+import VideoConfMessageButton from './VideoConfMessageButton.js';
+import VideoConfMessageContent from './VideoConfMessageContent.js';
+import VideoConfMessageFooter from './VideoConfMessageFooter.js';
+import VideoConfMessageFooterText from './VideoConfMessageFooterText.js';
+import VideoConfMessageIcon from './VideoConfMessageIcon.js';
+import VideoConfMessageRow from './VideoConfMessageRow.js';
+import VideoConfMessageSkeleton from './VideoConfMessageSkeleton.js';
+import VideoConfMessageText from './VideoConfMessageText.js';
+import VideoConfMessageUserStack from './VideoConfMessageUserStack.js';
 
 export {
 	VideoConfMessage,

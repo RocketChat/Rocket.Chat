@@ -1,7 +1,7 @@
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { useContext, useEffect, useMemo } from 'react';
 
-import { UiKitContext } from '../../../contexts/UiKitContext';
+import { UiKitContext } from '../../../contexts/UiKitContext.js';
 
 type RoomSelectElement =
 	UiKit.ChannelsSelectElement | UiKit.MultiChannelsSelectElement | UiKit.ConversationsSelectElement | UiKit.MultiConversationsSelectElement;

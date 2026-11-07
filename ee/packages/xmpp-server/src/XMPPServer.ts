@@ -1,23 +1,23 @@
 import { Emitter } from '@rocket.chat/emitter';
 import type { EventHandlerOf, OffCallbackHandler } from '@rocket.chat/emitter';
-import type Element from 'ltx/lib/Element';
+import type Element from 'ltx/lib/Element.js';
 
-import type { XMPPServerConfig, ResolvedXMPPServerConfig } from './config';
-import { resolveConfig } from './config';
-import { NotJoinedToRemoteRoomError, ServerNotRunningError } from './errors';
-import type { ConnectionStatus, XMPPServerEventMap } from './events';
-import { normalizeRoomJid, normalizeUserBareJid } from './jid/normalize';
-import type { Logger } from './logger';
-import type { MucOccupant } from './muc/MucRoom';
-import { MucService } from './muc/MucService';
-import { RemoteMucSession } from './muc/RemoteMucSession';
-import { splitOccupantJid } from './muc/stanzas';
-import { StanzaRouter } from './router/StanzaRouter';
-import { S2SManager } from './s2s/S2SManager';
-import type { XmppDnsResolver } from './s2s/dnsResolver';
-import { resolveXmppServer } from './s2s/dnsResolver';
-import { xml } from './xml/build';
-import { buildReplace } from './xml/correction';
+import type { XMPPServerConfig, ResolvedXMPPServerConfig } from './config.js';
+import { resolveConfig } from './config.js';
+import { NotJoinedToRemoteRoomError, ServerNotRunningError } from './errors.js';
+import type { ConnectionStatus, XMPPServerEventMap } from './events.js';
+import { normalizeRoomJid, normalizeUserBareJid } from './jid/normalize.js';
+import type { Logger } from './logger.js';
+import type { MucOccupant } from './muc/MucRoom.js';
+import { MucService } from './muc/MucService.js';
+import { RemoteMucSession } from './muc/RemoteMucSession.js';
+import { splitOccupantJid } from './muc/stanzas.js';
+import { StanzaRouter } from './router/StanzaRouter.js';
+import { S2SManager } from './s2s/S2SManager.js';
+import type { XmppDnsResolver } from './s2s/dnsResolver.js';
+import { resolveXmppServer } from './s2s/dnsResolver.js';
+import { xml } from './xml/build.js';
+import { buildReplace } from './xml/correction.js';
 
 export type XMPPServerOptions = {
 	/** Replaces the DNS lookup of remote domains. */

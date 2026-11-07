@@ -1,9 +1,9 @@
 import type { Keys as IconName } from '@rocket.chat/icons';
 import typia from 'typia';
 
-import type { TextObject } from '../../blocks/TextObject';
-import type { View } from '../View';
-import type { BannerSurfaceLayout } from './UiKitParserBanner';
+import type { TextObject } from '../../blocks/TextObject.js';
+import type { View } from '../View.js';
+import type { BannerSurfaceLayout } from './UiKitParserBanner.js';
 
 /**
  * A view that is displayed as a banner.

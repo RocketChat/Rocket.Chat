@@ -1,4 +1,4 @@
-import { buildErrorReport } from './errorReport';
+import { buildErrorReport } from './errorReport.js';
 
 const chainOf = (length: number): Error =>
 	Array.from({ length }, (_, index) => index).reduceRight<Error | undefined>(

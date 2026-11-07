@@ -2,9 +2,9 @@ import { View, Text } from '@react-pdf/renderer';
 import type * as MessageParser from '@rocket.chat/message-parser';
 import { useMemo } from 'react';
 
-import BoldSpan from './BoldSpan';
-import ItalicSpan from './ItalicSpan';
-import StrikeSpan from './StrikeSpan';
+import BoldSpan from './BoldSpan.js';
+import ItalicSpan from './ItalicSpan.js';
+import StrikeSpan from './StrikeSpan.js';
 
 export type LinkSpanProps = {
 	label: MessageParser.Markup | MessageParser.Markup[];

@@ -4,7 +4,7 @@ import type { SubmitHandler } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { LoginActionsWrapper } from './LoginForm.styles';
+import { LoginActionsWrapper } from './LoginForm.styles.js';
 
 export type LoginFormPayload = {
 	email: string;

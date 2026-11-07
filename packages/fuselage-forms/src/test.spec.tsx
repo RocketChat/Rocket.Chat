@@ -1,9 +1,9 @@
 import { composeStories } from '@storybook/react-webpack5';
 import { render } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 
-import * as stories from './Field/Field.stories';
+import * as stories from './Field/Field.stories.js';
 
 const composedStories = composeStories(stories);
 

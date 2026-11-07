@@ -1,6 +1,6 @@
-import type Element from 'ltx/lib/Element';
+import type Element from 'ltx/lib/Element.js';
 
-import type { MucJoinDecision } from '../config';
+import type { MucJoinDecision } from '../config.js';
 import {
 	buildGroupchatMessage,
 	buildMediatedInvite,
@@ -9,10 +9,10 @@ import {
 	MUC_STATUS,
 	parseJoinPresence,
 	splitOccupantJid,
-} from './stanzas';
-import type { MucRole } from './stanzas';
-import { parseReplaceId } from '../xml/correction';
-import { buildStanzaError } from '../xml/errors';
+} from './stanzas.js';
+import type { MucRole } from './stanzas.js';
+import { parseReplaceId } from '../xml/correction.js';
+import { buildStanzaError } from '../xml/errors.js';
 
 export type MucOccupant = {
 	nick: string;

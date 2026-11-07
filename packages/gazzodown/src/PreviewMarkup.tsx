@@ -1,11 +1,11 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
 import { memo } from 'react';
 
-import PreviewCodeBlock from './code/PreviewCodeBlock';
-import PreviewInlineElements from './elements/PreviewInlineElements';
-import PreviewBigEmojiBlock from './emoji/PreviewBigEmojiBlock';
-import KatexErrorBoundary from './katex/KatexErrorBoundary';
-import PreviewKatexBlock from './katex/PreviewKatexBlock';
+import PreviewCodeBlock from './code/PreviewCodeBlock.js';
+import PreviewInlineElements from './elements/PreviewInlineElements.js';
+import PreviewBigEmojiBlock from './emoji/PreviewBigEmojiBlock.js';
+import KatexErrorBoundary from './katex/KatexErrorBoundary.js';
+import PreviewKatexBlock from './katex/PreviewKatexBlock.js';
 
 const isOnlyBigEmojiBlock = (tokens: MessageParser.Root): tokens is [MessageParser.BigEmoji] =>
 	tokens.length === 1 && tokens[0].type === 'BIG_EMOJI';

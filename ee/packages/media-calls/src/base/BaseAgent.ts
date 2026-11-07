@@ -1,7 +1,7 @@
 import type { IMediaCall, MediaCallActor, MediaCallActorType, MediaCallContact, MediaCallSignedActor } from '@rocket.chat/core-typings';
 import type { CallRole } from '@rocket.chat/media-signaling';
 
-import type { IMediaCallAgent } from '../definition/IMediaCallAgent';
+import type { IMediaCallAgent } from '../definition/IMediaCallAgent.js';
 
 export abstract class BaseMediaCallAgent implements IMediaCallAgent {
 	public readonly actorType: MediaCallActorType;

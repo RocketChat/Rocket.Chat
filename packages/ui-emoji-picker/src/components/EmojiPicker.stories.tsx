@@ -1,6 +1,6 @@
 import { Button } from '@rocket.chat/fuselage';
 import { extractTranslationNamespaces } from '@rocket.chat/i18n';
-import en from '@rocket.chat/i18n/dist/resources/en.i18n.json';
+import en from '@rocket.chat/i18n/dist/resources/en.i18n.json' with { type: 'json' };
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { Meta, StoryObj } from '@storybook/react';
 import type { ContextType, ReactNode } from 'react';
@@ -8,11 +8,11 @@ import { useMemo, useState } from 'react';
 import { action } from 'storybook/actions';
 import { userEvent, within } from 'storybook/test';
 
-import EmojiPicker from './EmojiPicker';
-import { EmojiPickerContext } from '../contexts/EmojiPickerContext';
-import { EmojiRegistryContext, type EmojiPackages } from '../contexts/EmojiRegistryContext';
-import type { CategoriesIndexes, EmojiPickerItem } from '../lib/emoji';
-import { getCategoriesList } from '../lib/emoji';
+import EmojiPicker from './EmojiPicker.js';
+import { EmojiPickerContext } from '../contexts/EmojiPickerContext.js';
+import { EmojiRegistryContext, type EmojiPackages } from '../contexts/EmojiRegistryContext.js';
+import type { CategoriesIndexes, EmojiPickerItem } from '../lib/emoji.js';
+import { getCategoriesList } from '../lib/emoji.js';
 
 const translations = extractTranslationNamespaces(en);
 

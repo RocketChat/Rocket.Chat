@@ -1,5 +1,5 @@
-import data from 'emojibase-data/en/data.json';
-import shortcodes from 'emojibase-data/en/shortcodes/emojibase.json';
+import data from 'emojibase-data/en/data.json' with { type: 'json' };
+import shortcodes from 'emojibase-data/en/shortcodes/emojibase.json' with { type: 'json' };
 
 type EmojibaseEntry = { emoji: string; hexcode: string; skins?: { emoji: string; hexcode: string }[] };
 

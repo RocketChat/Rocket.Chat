@@ -1,6 +1,6 @@
 import type { StoryFn, Meta } from '@storybook/react-webpack5';
 
-import RegisterServerPage from './RegisterServerPage';
+import RegisterServerPage from './RegisterServerPage.js';
 
 export default {
 	title: 'pages/RegisterServerPage',

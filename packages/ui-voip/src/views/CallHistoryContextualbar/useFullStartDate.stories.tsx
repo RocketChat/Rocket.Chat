@@ -1,7 +1,7 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { useFullStartDate } from './useFullStartDate';
+import { useFullStartDate } from './useFullStartDate.js';
 
 const FullStartDate = ({ date }: { date: Date }) => {
 	return <div>{useFullStartDate(date)}</div>;

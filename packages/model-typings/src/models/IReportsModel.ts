@@ -1,6 +1,6 @@
 import type { IReport, IMessage } from '@rocket.chat/core-typings';
 
-import type { IBaseModel } from './IBaseModel';
+import type { IBaseModel } from './IBaseModel.js';
 
 export interface IReportsModel extends IBaseModel<IReport> {
 	createWithMessageDescriptionAndUserId(

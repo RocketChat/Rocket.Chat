@@ -1,4 +1,4 @@
-import type { ILivechatInquiryRecord } from './IInquiry';
+import type { ILivechatInquiryRecord } from './IInquiry.js';
 
 export type OmichannelRoutingConfig = {
 	previewRoom: boolean;

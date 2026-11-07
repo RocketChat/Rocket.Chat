@@ -1,6 +1,6 @@
 import { UserStatus } from '@rocket.chat/core-typings';
 
-import type { IncomingPresence } from '../../events';
+import type { IncomingPresence } from '../../events.js';
 
 type OutgoingPresence = { availability: 'available' | 'unavailable'; show?: 'away' | 'chat' | 'dnd' | 'xa' };
 

@@ -1,6 +1,6 @@
 import type { StoryFn, Meta } from '@storybook/react-webpack5';
 
-import AdminInfoPage from './AdminInfoPage';
+import AdminInfoPage from './AdminInfoPage.js';
 
 export default {
 	title: 'pages/AdminInfoPage',

@@ -1,10 +1,10 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { Meta, StoryFn } from '@storybook/react';
 
-import UserInfo from './UserInfo';
-import { ContextualbarDialog } from '../Contextualbar';
-import { UserCardRole } from '../UserCard';
-import * as Status from '../UserStatus';
+import UserInfo from './UserInfo.js';
+import { ContextualbarDialog } from '../Contextualbar/index.js';
+import { UserCardRole } from '../UserCard/index.js';
+import * as Status from '../UserStatus/index.js';
 
 export default {
 	component: UserInfo,

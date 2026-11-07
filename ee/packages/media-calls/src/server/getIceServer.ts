@@ -2,7 +2,7 @@ import { createHmac } from 'node:crypto';
 
 import type { IUser } from '@rocket.chat/core-typings';
 
-import type { IceServerConfig } from '../definition/IMediaCallServer';
+import type { IceServerConfig } from '../definition/IMediaCallServer.js';
 
 const DEFAULT_SHARED_SECRET_TTL = 86400;
 

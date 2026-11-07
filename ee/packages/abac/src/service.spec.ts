@@ -1,17 +1,17 @@
 import type { AbacRoomAttributesGrant, AbacRoomMembershipPreviewPage } from '@rocket.chat/core-services';
 
-import { Audit } from './audit';
-import { VirtruClient } from './clients/virtru/VirtruClient';
+import { Audit } from './audit.js';
+import { VirtruClient } from './clients/virtru/VirtruClient.js';
 import {
 	AbacEntityResolutionFailedError,
 	AbacInvalidAttributeValuesError,
 	OnlyCompliantCanBeAddedToRoomError,
 	PdpUnavailableError,
-} from './errors';
-import { PREVIEW_SCAN_LIMIT } from './helper';
-import { AbacService } from './index';
-import { LocalPDP } from './pdp';
-import { LocalAttributeStore, VirtruAttributeStore } from './store';
+} from './errors.js';
+import { PREVIEW_SCAN_LIMIT } from './helper.js';
+import { AbacService } from './index.js';
+import { LocalPDP } from './pdp/index.js';
+import { LocalAttributeStore, VirtruAttributeStore } from './store/index.js';
 
 const mockSettingsGet = jest.fn();
 const mockHasModule = jest.fn();

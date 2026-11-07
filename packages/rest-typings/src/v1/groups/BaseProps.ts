@@ -1,4 +1,4 @@
-import { ajv } from '../Ajv';
+import { ajv } from '../Ajv.js';
 
 export type GroupsBaseProps = { roomId: string; roomName?: string } | { roomId?: string; roomName: string };
 

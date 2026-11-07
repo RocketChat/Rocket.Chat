@@ -8,10 +8,10 @@ import type {
 	ServerMediaSignal,
 } from '@rocket.chat/media-signaling';
 
-import { mediaCallDirector } from './CallDirector';
-import { getDefaultSettings } from './getDefaultSettings';
-import { getIceServer } from './getIceServer';
-import { stripSensitiveDataFromSignal } from './stripSensitiveData';
+import { mediaCallDirector } from './CallDirector.js';
+import { getDefaultSettings } from './getDefaultSettings.js';
+import { getIceServer } from './getIceServer.js';
+import { stripSensitiveDataFromSignal } from './stripSensitiveData.js';
 import type {
 	IMediaCallServer,
 	IMediaCallServerSettings,
@@ -20,13 +20,13 @@ import type {
 	PreCallCreatedHookParams,
 	PreCallCreatedHookResult,
 	VoipPushNotificationEventType,
-} from '../definition/IMediaCallServer';
-import { CallRejectedError } from '../definition/common';
-import type { SignalProcessingOptions, GetActorContactOptions, InternalCallParams } from '../definition/common';
-import { InternalCallProvider } from '../internal/InternalCallProvider';
-import { GlobalSignalProcessor } from '../internal/SignalProcessor';
-import { logger } from '../logger';
-import { SipServerSession } from '../sip/Session';
+} from '../definition/IMediaCallServer.js';
+import { CallRejectedError } from '../definition/common.js';
+import type { SignalProcessingOptions, GetActorContactOptions, InternalCallParams } from '../definition/common.js';
+import { InternalCallProvider } from '../internal/InternalCallProvider.js';
+import { GlobalSignalProcessor } from '../internal/SignalProcessor.js';
+import { logger } from '../logger.js';
+import { SipServerSession } from '../sip/Session.js';
 
 /**
  * Class used as gateway to send and receive signals to/from clients

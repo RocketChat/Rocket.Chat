@@ -1,11 +1,11 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 
-import { WizardContext } from './WizardContext';
-import WizardNextButton from './WizardNextButton';
-import StepNode from './lib/StepNode';
-import { createMockWizardApi } from './mocks/createMockWizardApi';
+import { WizardContext } from './WizardContext.js';
+import WizardNextButton from './WizardNextButton.js';
+import StepNode from './lib/StepNode.js';
+import { createMockWizardApi } from './mocks/createMockWizardApi.js';
 
 const mockWizardApi = createMockWizardApi();
 

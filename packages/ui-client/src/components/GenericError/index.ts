@@ -1,2 +1,2 @@
-export { default as GenericError } from './GenericError';
-export type { GenericErrorProps } from './GenericError';
+export { default as GenericError } from './GenericError.js';
+export type { GenericErrorProps } from './GenericError.js';

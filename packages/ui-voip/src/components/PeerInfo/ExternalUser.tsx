@@ -1,5 +1,5 @@
-import InternalUser from './InternalUser';
-import PhoneNumber from './PhoneNumber';
+import InternalUser from './InternalUser.js';
+import PhoneNumber from './PhoneNumber.js';
 
 export type ExternalUserProps = {
 	number: string;

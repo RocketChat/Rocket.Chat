@@ -2,8 +2,8 @@ import { Box, Button, Divider } from '@rocket.chat/fuselage';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import CallListItem from './CallListItem';
-import { useOngoingCalls } from '../../context/OngoingCallsContext';
+import CallListItem from './CallListItem.js';
+import { useOngoingCalls } from '../../context/OngoingCallsContext.js';
 
 const MAX_VISIBLE = 5;
 

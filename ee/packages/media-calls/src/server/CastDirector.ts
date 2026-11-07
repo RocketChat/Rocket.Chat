@@ -2,12 +2,12 @@ import type { IUser, MediaCallActor, MediaCallActorType, MediaCallContact, Media
 import type { CallRole } from '@rocket.chat/media-signaling';
 import { Users } from '@rocket.chat/models';
 
-import type { IMediaCallAgent } from '../definition/IMediaCallAgent';
-import type { IMediaCallCastDirector } from '../definition/IMediaCallCastDirector';
-import type { GetActorContactOptions, MinimalUserData, MediaCallHeader } from '../definition/common';
-import { UserActorAgent } from '../internal/agents/UserActorAgent';
-import { logger } from '../logger';
-import { BroadcastActorAgent } from './BroadcastAgent';
+import type { IMediaCallAgent } from '../definition/IMediaCallAgent.js';
+import type { IMediaCallCastDirector } from '../definition/IMediaCallCastDirector.js';
+import type { GetActorContactOptions, MinimalUserData, MediaCallHeader } from '../definition/common.js';
+import { UserActorAgent } from '../internal/agents/UserActorAgent.js';
+import { logger } from '../logger.js';
+import { BroadcastActorAgent } from './BroadcastAgent.js';
 
 type ContactList = Record<MediaCallActorType, MediaCallContact | null>;
 

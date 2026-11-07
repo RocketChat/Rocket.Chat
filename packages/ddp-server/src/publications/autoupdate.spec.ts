@@ -1,8 +1,8 @@
-import { registerAutoupdatePublication, setClientVersion } from './autoupdate';
-import type { ClientVersion } from './autoupdate';
-import { Server } from '../Server';
-import { makeSession, makeSubscription, sentPackets } from '../__tests__/helpers';
-import { MeteorCollection } from '../lib/MeteorCollection';
+import { registerAutoupdatePublication, setClientVersion } from './autoupdate.js';
+import type { ClientVersion } from './autoupdate.js';
+import { Server } from '../Server.js';
+import { makeSession, makeSubscription, sentPackets } from '../__tests__/helpers.js';
+import { MeteorCollection } from '../lib/MeteorCollection.js';
 
 jest.mock('@rocket.chat/logger', () => ({
 	Logger: jest.fn().mockReturnValue({

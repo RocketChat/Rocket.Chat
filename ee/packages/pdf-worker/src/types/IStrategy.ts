@@ -1,7 +1,7 @@
 import type { i18n } from 'i18next';
 
-import type { ChatTranscriptData } from './ChatTranscriptData';
-import type { WorkerData } from './WorkerData';
+import type { ChatTranscriptData } from './ChatTranscriptData.js';
+import type { WorkerData } from './WorkerData.js';
 
 export interface IStrategy {
 	renderTemplate(data: ChatTranscriptData): Promise<NodeJS.ReadableStream>;

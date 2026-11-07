@@ -1,9 +1,9 @@
 import type { AbacRoomMembershipPreviewPage } from '@rocket.chat/core-services';
 
-import { OnlyCompliantCanBeAddedToRoomError, PdpHealthCheckError } from '../errors';
-import { PREVIEW_SCAN_LIMIT } from '../helper';
-import { getDeniedSubjects, VIRTRU_PREVIEW_MIN_MATCHES, VirtruPDP } from './VirtruPDP';
-import type { Decision } from './types';
+import { OnlyCompliantCanBeAddedToRoomError, PdpHealthCheckError } from '../errors.js';
+import { PREVIEW_SCAN_LIMIT } from '../helper.js';
+import { getDeniedSubjects, VIRTRU_PREVIEW_MIN_MATCHES, VirtruPDP } from './VirtruPDP.js';
+import type { Decision } from './types.js';
 
 const serverFetchMock = jest.fn();
 jest.mock('@rocket.chat/server-fetch', () => ({ serverFetch: (...a: unknown[]) => serverFetchMock(...a) }));

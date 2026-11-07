@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 
-import { DeviceContext, isDeviceContextEnabled } from '../DeviceContext';
+import { DeviceContext, isDeviceContextEnabled } from '../DeviceContext.js';
 
 export const useDeviceConstraints = (): MediaStreamConstraints | null => {
 	const context = useContext(DeviceContext);

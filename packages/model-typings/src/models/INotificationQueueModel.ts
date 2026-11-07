@@ -1,7 +1,7 @@
 import type { INotification } from '@rocket.chat/core-typings';
 import type { Document, UpdateResult } from 'mongodb';
 
-import type { IBaseModel } from './IBaseModel';
+import type { IBaseModel } from './IBaseModel.js';
 
 export interface INotificationQueueModel extends IBaseModel<INotification> {
 	unsetSendingById(_id: string): Promise<UpdateResult>;

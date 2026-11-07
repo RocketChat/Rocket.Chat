@@ -2,6 +2,17 @@
 	"name": "@rocket.chat/mock-providers",
 	"version": "0.6.0-rc.0",
 	"private": true,
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		},
+		"./dist/*": {
+			"types": "./dist/*.d.ts",
+			"default": "./dist/*.js"
+		}
+	},
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"files": [

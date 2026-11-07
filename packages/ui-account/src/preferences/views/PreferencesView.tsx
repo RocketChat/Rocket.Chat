@@ -4,15 +4,15 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
-import PreferencesGlobalSection from './PreferencesGlobalSection';
-import PreferencesHighlightsSection from './PreferencesHighlightsSection';
-import PreferencesLocalizationSection from './PreferencesLocalizationSection';
-import PreferencesMessagesSection from './PreferencesMessagesSection';
-import PreferencesMyDataSection from './PreferencesMyDataSection';
-import PreferencesNotificationsSection from './PreferencesNotificationsSection';
-import PreferencesSoundSection from './PreferencesSoundSection';
-import PreferencesUserPresenceSection from './PreferencesUserPresenceSection';
-import type { AccountPreferencesData, PreferencesViewModel } from '../logic/usePreferences';
+import PreferencesGlobalSection from './PreferencesGlobalSection.js';
+import PreferencesHighlightsSection from './PreferencesHighlightsSection.js';
+import PreferencesLocalizationSection from './PreferencesLocalizationSection.js';
+import PreferencesMessagesSection from './PreferencesMessagesSection.js';
+import PreferencesMyDataSection from './PreferencesMyDataSection.js';
+import PreferencesNotificationsSection from './PreferencesNotificationsSection.js';
+import PreferencesSoundSection from './PreferencesSoundSection.js';
+import PreferencesUserPresenceSection from './PreferencesUserPresenceSection.js';
+import type { AccountPreferencesData, PreferencesViewModel } from '../logic/usePreferences.js';
 
 export type PreferencesViewProps = {
 	vm: PreferencesViewModel;

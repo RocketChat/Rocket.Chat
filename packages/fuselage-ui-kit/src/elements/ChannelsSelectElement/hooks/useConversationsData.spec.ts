@@ -2,7 +2,7 @@ import type { ISubscription } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { renderHook, waitFor } from '@testing-library/react';
 
-import { useConversationsData } from './useConversationsData';
+import { useConversationsData } from './useConversationsData.js';
 
 const subscriptions = [
 	{ rid: 'general', name: 'general', fname: 'General', t: 'c' },

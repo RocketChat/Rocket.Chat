@@ -2,7 +2,7 @@ import { UserStatus, type IUserSession, type IUserSessionConnection } from '@roc
 import { registerModel } from '@rocket.chat/models';
 import type { FindCursor, WithId } from 'mongodb';
 
-import { PresenceReaper } from './PresenceReaper';
+import { PresenceReaper } from './PresenceReaper.js';
 
 let sessions = 0;
 const createSession = (overrides: Partial<IUserSession> = {}): IUserSession => ({

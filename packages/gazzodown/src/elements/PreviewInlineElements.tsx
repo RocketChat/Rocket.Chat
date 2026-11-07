@@ -1,16 +1,16 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
 import { Fragment } from 'react';
 
-import BoldSpan from './BoldSpan';
-import ItalicSpan from './ItalicSpan';
-import StrikeSpan from './StrikeSpan';
-import PreviewCodeElement from '../code/PreviewCodeElement';
-import PreviewColorElement from '../colors/PreviewColorElement';
-import PreviewEmojiElement from '../emoji/PreviewEmojiElement';
-import KatexErrorBoundary from '../katex/KatexErrorBoundary';
-import PreviewKatexElement from '../katex/PreviewKatexElement';
-import PreviewChannelMentionElement from '../mentions/PreviewChannelMentionElement';
-import PreviewUserMentionElement from '../mentions/PreviewUserMentionElement';
+import BoldSpan from './BoldSpan.js';
+import ItalicSpan from './ItalicSpan.js';
+import StrikeSpan from './StrikeSpan.js';
+import PreviewCodeElement from '../code/PreviewCodeElement.js';
+import PreviewColorElement from '../colors/PreviewColorElement.js';
+import PreviewEmojiElement from '../emoji/PreviewEmojiElement.js';
+import KatexErrorBoundary from '../katex/KatexErrorBoundary.js';
+import PreviewKatexElement from '../katex/PreviewKatexElement.js';
+import PreviewChannelMentionElement from '../mentions/PreviewChannelMentionElement.js';
+import PreviewUserMentionElement from '../mentions/PreviewUserMentionElement.js';
 
 export type PreviewInlineElementsProps = {
 	children: MessageParser.Inlines[];

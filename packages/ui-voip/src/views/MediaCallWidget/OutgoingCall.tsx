@@ -2,9 +2,18 @@ import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import type { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
 
-import { PeerInfo, Widget, WidgetFooter, WidgetHandle, WidgetHeader, WidgetContent, DevicePicker, WidgetInfo } from '../../components';
-import { useMediaCallView } from '../../context/MediaCallViewContext';
-import { isUnknownPeer } from '../../utils/isUnknownPeer';
+import {
+	PeerInfo,
+	Widget,
+	WidgetFooter,
+	WidgetHandle,
+	WidgetHeader,
+	WidgetContent,
+	DevicePicker,
+	WidgetInfo,
+} from '../../components/index.js';
+import { useMediaCallView } from '../../context/MediaCallViewContext.js';
+import { isUnknownPeer } from '../../utils/isUnknownPeer.js';
 
 const getHeaderTitle = ({ connecting, transferred, t }: { connecting: boolean; transferred: boolean; t: TFunction }) => {
 	if (connecting) {

@@ -1,1 +1,1 @@
-export { default } from './RocketChatLogo';
+export { default } from './RocketChatLogo.js';

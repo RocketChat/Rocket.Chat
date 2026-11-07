@@ -3,8 +3,8 @@ import { Box, Palette } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 import { useEffect, useRef, useState } from 'react';
 
-import { CALL_TOP_BAR_MIN_HEIGHT } from './CallTopBar';
-import { CONFERENCE_THEMED_CLASS } from '../lib/panelStyles';
+import { CALL_TOP_BAR_MIN_HEIGHT } from './CallTopBar.js';
+import { CONFERENCE_THEMED_CLASS } from '../lib/panelStyles.js';
 
 type CallPanelProps = {
 	visible: boolean;

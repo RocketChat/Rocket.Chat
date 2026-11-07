@@ -30,8 +30,8 @@ import type {
 	FindOneAndUpdateOptionsWithProjection,
 	FindOptionsWithProjection,
 	ProjectionSpec,
-} from '../types/DocumentWithProjection';
-import type { Updater } from '../updater';
+} from '../types/DocumentWithProjection.js';
+import type { Updater } from '../updater.js';
 
 export type DefaultFields<Base> = Partial<Record<keyof Base, 1>> | Partial<Record<keyof Base, 0>> | void;
 export type ResultFields<Base, Defaults> = Defaults extends void | undefined

@@ -1,5 +1,5 @@
-import type { BaseFunction, PatchFunction, PatchedFunction } from './definition';
-import { withMiddleware } from './midleware';
+import type { BaseFunction, PatchFunction, PatchedFunction } from './definition.js';
+import { withMiddleware } from './midleware.js';
 
 export const makeFunction = <T extends BaseFunction>(fn: T): PatchedFunction<T> => {
 	const wrapped = withMiddleware(fn);

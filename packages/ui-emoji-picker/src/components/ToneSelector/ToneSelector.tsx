@@ -3,7 +3,7 @@ import { IconButton, useCursor, PositionAnimated, Options } from '@rocket.chat/f
 import type { ReactNode } from 'react';
 import { useMemo, useRef, useCallback, useEffect } from 'react';
 
-import ToneItem from './ToneItem';
+import ToneItem from './ToneItem.js';
 
 const ToneSelector = ({ tone, setTone }: { tone: number; setTone: (tone: number) => void }) => {
 	const options = useMemo(() => {

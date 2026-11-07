@@ -4,17 +4,17 @@ import type { ReactNode } from 'react';
 import { memo, useContext, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useTimeAgo } from '../../hooks/useTimeAgo';
-import { useUserCustomFields } from '../../hooks/useUserCustomFields';
-import { useUserDisplayName } from '../../hooks/useUserDisplayName';
-import { ContextualbarScrollableContent } from '../Contextualbar';
-import { InfoPanel, InfoPanelActionGroup, InfoPanelField, InfoPanelLabel, InfoPanelSection, InfoPanelText } from '../InfoPanel';
-import { MarkdownTextContext } from '../MarkdownTextContext';
-import UTCClock from '../UTCClock';
-import { UserCardRoles, UserCardUsername } from '../UserCard';
-import UserInfoABACAttributes from './UserInfoABACAttributes';
-import UserInfoCopyableText from './UserInfoCopyableText';
-import UserInfoZoomableAvatar from './UserInfoZoomableAvatar';
+import UserInfoABACAttributes from './UserInfoABACAttributes.js';
+import UserInfoCopyableText from './UserInfoCopyableText.js';
+import UserInfoZoomableAvatar from './UserInfoZoomableAvatar.js';
+import { useTimeAgo } from '../../hooks/useTimeAgo.js';
+import { useUserCustomFields } from '../../hooks/useUserCustomFields.js';
+import { useUserDisplayName } from '../../hooks/useUserDisplayName.js';
+import { ContextualbarScrollableContent } from '../Contextualbar/index.js';
+import { InfoPanel, InfoPanelActionGroup, InfoPanelField, InfoPanelLabel, InfoPanelSection, InfoPanelText } from '../InfoPanel/index.js';
+import { MarkdownTextContext } from '../MarkdownTextContext.js';
+import UTCClock from '../UTCClock.js';
+import { UserCardRoles, UserCardUsername } from '../UserCard/index.js';
 
 type UserInfoDataProps = Serialized<
 	Pick<

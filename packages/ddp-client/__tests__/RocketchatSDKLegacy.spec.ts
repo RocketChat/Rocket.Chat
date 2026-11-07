@@ -1,7 +1,7 @@
-import WS from 'jest-websocket-mock';
+import { WS } from 'jest-websocket-mock';
 
-import { handleConnection } from './helpers';
-import { RocketchatSdkLegacyImpl } from '../src/legacy/RocketchatSDKLegacy';
+import { handleConnection } from './helpers/index.js';
+import { RocketchatSdkLegacyImpl } from '../src/legacy/RocketchatSDKLegacy.js';
 
 let server: WS;
 

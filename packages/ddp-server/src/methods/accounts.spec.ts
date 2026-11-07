@@ -1,12 +1,12 @@
 import { ClientSafeError } from '@rocket.chat/core-services';
 import WebSocket from 'ws';
 
-import { Server } from '../Server';
-import { makePacket, makeSession, sentPackets } from '../__tests__/helpers';
-import { WS_ERRORS } from '../constants';
-import { ConnectionLifecycle } from '../lifecycle';
-import { registerAccountMethods } from './accounts';
-import type { SessionAccounts } from './accounts';
+import { Server } from '../Server.js';
+import { makePacket, makeSession, sentPackets } from '../__tests__/helpers.js';
+import { WS_ERRORS } from '../constants.js';
+import { ConnectionLifecycle } from '../lifecycle.js';
+import { registerAccountMethods } from './accounts.js';
+import type { SessionAccounts } from './accounts.js';
 
 jest.mock('@rocket.chat/logger', () => ({
 	Logger: jest.fn().mockReturnValue({

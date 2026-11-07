@@ -5,7 +5,7 @@ import {
 	backdropTint,
 	speakingRingLevel,
 	speakingRingThickness,
-} from './speakingRing';
+} from './speakingRing.js';
 
 describe('speakingRingLevel', () => {
 	it('shows nothing at or below the threshold', () => {

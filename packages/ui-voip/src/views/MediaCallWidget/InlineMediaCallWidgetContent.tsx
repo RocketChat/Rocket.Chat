@@ -1,6 +1,6 @@
-import MediaCallWidgetViewRouter from './MediaCallWidgetViewRouter';
-import { useMediaCallView } from '../../context/MediaCallViewContext';
-import useRegisterView from '../../context/useRegisterView';
+import MediaCallWidgetViewRouter from './MediaCallWidgetViewRouter.js';
+import { useMediaCallView } from '../../context/MediaCallViewContext.js';
+import useRegisterView from '../../context/useRegisterView.js';
 
 const InlineMediaCallWidgetContent = () => {
 	const currentViews = useRegisterView('inline-widget');

@@ -1,7 +1,7 @@
 import type { WithId } from 'mongodb';
 import * as z from 'zod';
 
-import { TimestampSchema } from './utils';
+import { TimestampSchema } from './utils.js';
 
 export const IRocketChatRecordSchema = z.object({
 	_id: z.string(),

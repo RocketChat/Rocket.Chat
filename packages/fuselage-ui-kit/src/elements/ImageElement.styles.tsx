@@ -1,6 +1,6 @@
 import styled from '@rocket.chat/styled';
 
-import { serializeCssUrl } from '../utils/serializeCssUrl';
+import { serializeCssUrl } from '../utils/serializeCssUrl.js';
 
 const filterElementProps = ({
 	imageUrl: _imageUrl,

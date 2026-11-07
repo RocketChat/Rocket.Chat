@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 
-import RedirectPage from './RedirectPage';
+import RedirectPage from './RedirectPage.js';
 
 const onRedirect = jest.fn();
 

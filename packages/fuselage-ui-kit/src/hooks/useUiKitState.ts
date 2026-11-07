@@ -2,8 +2,8 @@ import { useStableCallback, useSafely } from '@rocket.chat/fuselage-hooks';
 import * as UiKit from '@rocket.chat/ui-kit';
 import { useContext, useMemo, useState } from 'react';
 
-import { UiKitContext } from '../contexts/UiKitContext';
-import { getInitialValue } from '../utils/getInitialValue';
+import { UiKitContext } from '../contexts/UiKitContext.js';
+import { getInitialValue } from '../utils/getInitialValue.js';
 
 const getElementValueFromState = (
 	actionId: string,

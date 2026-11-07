@@ -1,6 +1,6 @@
-import type { MessageAttachmentBase } from '../MessageAttachmentBase';
-import type { FileAttachmentProps } from './FileAttachmentProps';
-import type { FileProp } from './FileProp';
+import type { MessageAttachmentBase } from '../MessageAttachmentBase.js';
+import type { FileAttachmentProps } from './FileAttachmentProps.js';
+import type { FileProp } from './FileProp.js';
 
 export type AudioAttachmentProps = {
 	audio_url: string;

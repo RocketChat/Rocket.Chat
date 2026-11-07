@@ -1,7 +1,7 @@
 import type { MediaSignalingSession } from '@rocket.chat/media-signaling';
 import { useCallback, useEffect, useState } from 'react';
 
-import type { PeerInfo } from '../context';
+import type { PeerInfo } from '../context/index.js';
 
 export const useInstanceState = (instance?: MediaSignalingSession) => {
 	const [openRoomId, setOpenRoomId] = useState<string | undefined>(undefined);

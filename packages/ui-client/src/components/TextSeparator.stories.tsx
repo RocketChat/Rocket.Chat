@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import TextSeparator from './TextSeparator';
+import TextSeparator from './TextSeparator.js';
 
 export default {
 	component: TextSeparator,

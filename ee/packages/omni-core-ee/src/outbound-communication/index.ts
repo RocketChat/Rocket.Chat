@@ -1,1 +1,1 @@
-export * from './validators/canSendMessage';
+export * from './validators/canSendMessage.js';

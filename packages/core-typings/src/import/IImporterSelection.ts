@@ -1,6 +1,6 @@
-import type { IImporterSelectionChannel } from './IImporterSelectionChannel';
-import type { IImporterSelectionContact } from './IImporterSelectionContact';
-import type { IImporterSelectionUser } from './IImporterSelectionUser';
+import type { IImporterSelectionChannel } from './IImporterSelectionChannel.js';
+import type { IImporterSelectionContact } from './IImporterSelectionContact.js';
+import type { IImporterSelectionUser } from './IImporterSelectionUser.js';
 
 export interface IImporterSelection {
 	name: string;

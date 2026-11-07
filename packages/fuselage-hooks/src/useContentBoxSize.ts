@@ -1,9 +1,9 @@
 import type { RefObject } from 'react';
 import { useState } from 'react';
 
-import { extractContentBoxSizeFromObserver } from './extractSizeFromObserver';
-import { useDebouncedCallback } from './useDebouncedCallback';
-import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
+import { extractContentBoxSizeFromObserver } from './extractSizeFromObserver.js';
+import { useDebouncedCallback } from './useDebouncedCallback.js';
+import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect.js';
 
 export const useContentBoxSize = (
 	ref: RefObject<HTMLElement | null>,

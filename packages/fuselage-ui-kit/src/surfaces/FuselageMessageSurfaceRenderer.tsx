@@ -1,9 +1,9 @@
 import * as UiKit from '@rocket.chat/ui-kit';
 import type { ReactNode } from 'react';
 
-import { FuselageSurfaceRenderer, renderTextObject } from './FuselageSurfaceRenderer';
-import VideoConferenceBlock from '../blocks/VideoConferenceBlock';
-import { AppIdProvider } from '../contexts/AppIdContext';
+import { FuselageSurfaceRenderer, renderTextObject } from './FuselageSurfaceRenderer.js';
+import VideoConferenceBlock from '../blocks/VideoConferenceBlock/index.js';
+import { AppIdProvider } from '../contexts/AppIdContext.js';
 
 export class FuselageMessageSurfaceRenderer extends FuselageSurfaceRenderer {
 	public constructor() {

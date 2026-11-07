@@ -1,7 +1,7 @@
 import type { IIntegrationHistory } from '@rocket.chat/core-typings';
 import type { FindOneAndUpdateOptions, InsertOneResult } from 'mongodb';
 
-import type { IBaseModel } from './IBaseModel';
+import type { IBaseModel } from './IBaseModel.js';
 
 export interface IIntegrationHistoryModel extends IBaseModel<IIntegrationHistory> {
 	removeByIntegrationId(integrationId: string): ReturnType<IBaseModel<IIntegrationHistory>['deleteMany']>;

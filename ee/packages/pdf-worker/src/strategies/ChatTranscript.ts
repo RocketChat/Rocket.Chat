@@ -1,10 +1,10 @@
 import type { i18n } from 'i18next';
 import moment from 'moment-timezone';
 
-import exportChatTranscript from '../templates/ChatTranscript';
-import type { ChatTranscriptData, PDFMessage } from '../types/ChatTranscriptData';
-import type { IStrategy } from '../types/IStrategy';
-import type { MessageData, WorkerData } from '../types/WorkerData';
+import exportChatTranscript from '../templates/ChatTranscript/index.js';
+import type { ChatTranscriptData, PDFMessage } from '../types/ChatTranscriptData.js';
+import type { IStrategy } from '../types/IStrategy.js';
+import type { MessageData, WorkerData } from '../types/WorkerData.js';
 
 export class ChatTranscript implements IStrategy {
 	private isNewDay(current: MessageData, previous: MessageData | undefined, timezone: string): boolean {

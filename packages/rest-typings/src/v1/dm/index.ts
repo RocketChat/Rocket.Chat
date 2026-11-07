@@ -1,8 +1,8 @@
-export type * from './dm';
-export type * from './im';
-export * from './DmBlockUserProps';
-export * from './DmCreateProps';
-export * from './DmFileProps';
-export * from './DmLeaveProps';
-export * from './DmMembersProps';
-export * from './DmMessagesProps';
+export type * from './dm.js';
+export type * from './im.js';
+export * from './DmBlockUserProps.js';
+export * from './DmCreateProps.js';
+export * from './DmFileProps.js';
+export * from './DmLeaveProps.js';
+export * from './DmMembersProps.js';
+export * from './DmMessagesProps.js';

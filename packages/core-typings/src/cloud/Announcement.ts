@@ -1,7 +1,7 @@
 import * as z from 'zod';
 
-import { IBannerSchema } from '../IBanner';
-import { TimestampSchema } from '../utils';
+import { IBannerSchema } from '../IBanner.js';
+import { TimestampSchema } from '../utils.js';
 
 export const AnnouncementSchema = IBannerSchema.extend({
 	createdBy: z.enum(['cloud', 'system']),

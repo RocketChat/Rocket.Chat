@@ -1,7 +1,7 @@
 import { ConnectionState, ParticipantKind, Track } from 'livekit-client';
 
-import type { ParticipantTrack } from './callParticipants';
-import { connectionStateFor, isAgentParticipant, otherPeople, toRemoteParticipantInfo } from './callParticipants';
+import type { ParticipantTrack } from './callParticipants.js';
+import { connectionStateFor, isAgentParticipant, otherPeople, toRemoteParticipantInfo } from './callParticipants.js';
 
 const camera = { id: 'camera' } as MediaStream;
 const screen = { id: 'screen' } as MediaStream;

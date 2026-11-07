@@ -1,7 +1,7 @@
 import { parameters as baseParameters, decorators as baseDecorators } from '@rocket.chat/storybook-config/preview';
 import type { Preview } from '@storybook/react-webpack5';
 
-import ToastBarProvider from '../src/ToastBarProvider';
+import ToastBarProvider from '../src/ToastBarProvider.js';
 
 const preview: Preview = {
 	parameters: { ...baseParameters },

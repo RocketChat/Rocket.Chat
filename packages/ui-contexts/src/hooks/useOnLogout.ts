@@ -1,6 +1,6 @@
 import type { OffCallbackHandler } from '@rocket.chat/emitter';
 import { useContext } from 'react';
 
-import { UserContext } from '../UserContext';
+import { UserContext } from '../UserContext.js';
 
 export const useOnLogout = (): ((callback: () => void) => OffCallbackHandler) => useContext(UserContext).onLogout;

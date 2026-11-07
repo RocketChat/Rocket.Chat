@@ -1,4 +1,4 @@
-import { getMediaDevices, refreshMediaDevices, subscribeToMediaDevices } from './mediaDevicesStore';
+import { getMediaDevices, refreshMediaDevices, subscribeToMediaDevices } from './mediaDevicesStore.js';
 
 const mic = { deviceId: 'yeti', kind: 'audioinput', label: '', groupId: 'usb' } as MediaDeviceInfo;
 const namedMic = { ...mic, label: 'Yeti Stereo Microphone' } as MediaDeviceInfo;

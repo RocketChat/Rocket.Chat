@@ -1,7 +1,7 @@
 import { Table, TableBody, TableCell, TableHead, TableRow } from '@rocket.chat/fuselage';
 import type * as MessageParser from '@rocket.chat/message-parser';
 
-import InlineElements from '../elements/InlineElements';
+import InlineElements from '../elements/InlineElements.js';
 
 export type TableBlockProps = {
 	header: MessageParser.TableCell[];

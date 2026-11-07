@@ -8,8 +8,8 @@ import { Logger } from '@rocket.chat/logger';
 import * as i18next from 'i18next';
 import sprintf from 'i18next-sprintf-postprocessor';
 
-import { OmnichannelTranscript } from './OmnichannelTranscript';
-import { invalidSystemMessage, messages, validSystemMessage, validTranslatableSystemMessage } from './OmnichannelTranscript.fixtures';
+import { invalidSystemMessage, messages, validSystemMessage, validTranslatableSystemMessage } from './OmnichannelTranscript.fixtures.js';
+import { OmnichannelTranscript } from './OmnichannelTranscript.js';
 
 jest.mock('@rocket.chat/pdf-worker', () => ({
 	PdfWorker: jest.fn().mockImplementation(() => ({

@@ -1,1 +1,1 @@
-export { default as SidebarToggler } from './SidebarToggler';
+export { default as SidebarToggler } from './SidebarToggler.js';

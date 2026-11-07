@@ -1,10 +1,10 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { Decorator, Meta, StoryObj } from '@storybook/react';
 
-import type { HistoryActionCallbacks } from './CallHistoryActions';
-import CallHistoryActions from './CallHistoryActions';
-import type { State } from '../../context/definitions';
-import MockedMediaCallProvider from '../../providers/MockedMediaCallProvider';
+import type { HistoryActionCallbacks } from './CallHistoryActions.js';
+import CallHistoryActions from './CallHistoryActions.js';
+import type { State } from '../../context/definitions.js';
+import MockedMediaCallProvider from '../../providers/MockedMediaCallProvider.js';
 
 const noop = () => undefined;
 

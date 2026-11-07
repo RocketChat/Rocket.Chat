@@ -2,7 +2,7 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { render, screen } from '@testing-library/react';
 
-import { modalParser } from '../../surfaces';
+import { modalParser } from '../../surfaces/index.js';
 
 const ids = { appId: 'app', blockId: 'block', actionId: 'where' };
 const placeholder = { type: 'plain_text', text: 'Pick one' } as const;

@@ -1,10 +1,10 @@
 import type { IMediaCall } from '@rocket.chat/core-typings';
 import { MediaCalls } from '@rocket.chat/models';
 
-import { BaseCallProvider } from '../base/BaseCallProvider';
-import { CallRejectedError, type InternalCallParams } from '../definition/common';
-import { logger } from '../logger';
-import { mediaCallDirector } from '../server/CallDirector';
+import { BaseCallProvider } from '../base/BaseCallProvider.js';
+import { CallRejectedError, type InternalCallParams } from '../definition/common.js';
+import { logger } from '../logger.js';
+import { mediaCallDirector } from '../server/CallDirector.js';
 
 export class InternalCallProvider extends BaseCallProvider {
 	public static async createCall(params: InternalCallParams): Promise<IMediaCall> {

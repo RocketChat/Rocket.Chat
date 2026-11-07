@@ -7,7 +7,7 @@ import {
 	validateBadRequestErrorResponse,
 	validateForbiddenErrorResponse,
 	validateUnauthorizedErrorResponse,
-} from '@rocket.chat/rest-typings/src/v1/Ajv';
+} from '@rocket.chat/rest-typings';
 import { convertSubObjectsIntoPaths } from '@rocket.chat/tools';
 
 import {

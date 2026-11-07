@@ -1,5 +1,5 @@
-export { default as TransferModal } from './TransferModal';
-export * from './MediaCallWidget';
-export * from './MediaCallHistoryTable';
-export * from './CallHistoryContextualbar';
-export * from './MediaCallRoomSection';
+export { default as TransferModal } from './TransferModal.js';
+export * from './MediaCallWidget/index.js';
+export * from './MediaCallHistoryTable/index.js';
+export * from './CallHistoryContextualbar/index.js';
+export * from './MediaCallRoomSection/index.js';

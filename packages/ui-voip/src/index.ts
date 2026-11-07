@@ -1,4 +1,4 @@
-export { default as MediaCallProvider } from './providers/MediaCallProvider';
+export { default as MediaCallProvider } from './providers/MediaCallProvider.js';
 
 export {
 	MediaCallInstanceContext,
@@ -8,15 +8,15 @@ export {
 	usePeekMediaSessionPeerInfo,
 	usePeekMediaSessionFeatures,
 	usePeekMediaSessionHidden,
-} from './context';
-export type { PeekMediaSessionStateReturn } from './context';
-export type { PeerInfo } from './context';
-export { useMediaCallAction, useMediaCallOpenRoomTracker } from './hooks';
+} from './context/index.js';
+export type { PeekMediaSessionStateReturn } from './context/index.js';
+export type { PeerInfo } from './context/index.js';
+export { useMediaCallAction, useMediaCallOpenRoomTracker } from './hooks/index.js';
 
-export { CallHistoryContextualBar, MediaCallRoomActivity, InlineMediaCallWidget, getCallHistoryMenuItems } from './views';
-export type { CallHistoryData } from './views';
-export * from './definitions/callHistoryContacts';
+export { CallHistoryContextualBar, MediaCallRoomActivity, InlineMediaCallWidget, getCallHistoryMenuItems } from './views/index.js';
+export type { CallHistoryData } from './views/index.js';
+export * from './definitions/callHistoryContacts.js';
 
-export { getHistoryMessagePayload } from './ui-kit/getHistoryMessagePayload';
+export { getHistoryMessagePayload } from './ui-kit/getHistoryMessagePayload.js';
 
-export * from './views/MediaCallHistoryTable';
+export * from './views/MediaCallHistoryTable/index.js';

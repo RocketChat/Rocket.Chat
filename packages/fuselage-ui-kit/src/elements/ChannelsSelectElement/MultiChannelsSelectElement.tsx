@@ -4,13 +4,13 @@ import { ITEM_MEDIA_SIZE, RoomAvatar } from '@rocket.chat/ui-avatar';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { memo, useCallback, useState } from 'react';
 
-import { useChannelsData } from './hooks/useChannelsData';
-import { useConversationsData } from './hooks/useConversationsData';
-import { useCurrentConversationDefault } from './hooks/useCurrentConversationDefault';
-import { useAutoCompleteKey } from '../../hooks/useAutoCompleteKey';
-import { useUiKitState } from '../../hooks/useUiKitState';
-import type { BlockProps } from '../../utils/BlockProps';
-import { limitOptions } from '../../utils/limitOptions';
+import { useChannelsData } from './hooks/useChannelsData.js';
+import { useConversationsData } from './hooks/useConversationsData.js';
+import { useCurrentConversationDefault } from './hooks/useCurrentConversationDefault.js';
+import { useAutoCompleteKey } from '../../hooks/useAutoCompleteKey.js';
+import { useUiKitState } from '../../hooks/useUiKitState.js';
+import type { BlockProps } from '../../utils/BlockProps.js';
+import { limitOptions } from '../../utils/limitOptions.js';
 
 type MultiChannelsSelectProps = BlockProps<UiKit.MultiChannelsSelectElement | UiKit.MultiConversationsSelectElement>;
 

@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import i18next from 'i18next';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
 
-import OverflowTile from './OverflowTile';
+import OverflowTile from './OverflowTile.js';
 
 const i18n = i18next.createInstance();
 void i18n.use(initReactI18next).init({

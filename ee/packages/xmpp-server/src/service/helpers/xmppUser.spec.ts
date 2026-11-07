@@ -1,6 +1,6 @@
-import { domainOfJid, toBareJid } from './jid';
-import { createOrUpdateXMPPUser } from './xmppUser';
-import { InvalidJidError } from '../../errors';
+import { domainOfJid, toBareJid } from './jid.js';
+import { createOrUpdateXMPPUser } from './xmppUser.js';
+import { InvalidJidError } from '../../errors.js';
 
 const upsertXMPPUser = jest.fn();
 

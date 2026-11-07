@@ -1,17 +1,17 @@
 import net from 'node:net';
 
-import type Element from 'ltx/lib/Element';
+import type Element from 'ltx/lib/Element.js';
 
-import type { ResolvedXMPPServerConfig } from '../config';
-import { ConnectionFailedError } from '../errors';
-import type { Logger } from '../logger';
-import { XmppStream } from './XmppStream';
-import type { DialbackVerdict } from '../s2s/dialback';
-import { generateDialbackKey } from '../s2s/dialback';
-import type { XmppDnsResolver } from '../s2s/dnsResolver';
-import { xml } from '../xml/build';
-import { NS_DIALBACK, NS_SASL, NS_STREAMS, NS_TLS } from '../xml/namespaces';
-import { resolveElement } from '../xml/resolve';
+import type { ResolvedXMPPServerConfig } from '../config.js';
+import { ConnectionFailedError } from '../errors.js';
+import type { Logger } from '../logger.js';
+import { XmppStream } from './XmppStream.js';
+import type { DialbackVerdict } from '../s2s/dialback.js';
+import { generateDialbackKey } from '../s2s/dialback.js';
+import type { XmppDnsResolver } from '../s2s/dnsResolver.js';
+import { xml } from '../xml/build.js';
+import { NS_DIALBACK, NS_SASL, NS_STREAMS, NS_TLS } from '../xml/namespaces.js';
+import { resolveElement } from '../xml/resolve.js';
 
 const NEGOTIATION_STEP_TIMEOUT_MS = 30000;
 

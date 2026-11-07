@@ -1,8 +1,8 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { Meta, StoryObj } from '@storybook/react';
 
-import OngoingCall from './OngoingCall';
-import MockedMediaCallProvider from '../../providers/MockedMediaCallProvider';
+import OngoingCall from './OngoingCall.js';
+import MockedMediaCallProvider from '../../providers/MockedMediaCallProvider.js';
 
 const mockedContexts = mockAppRoot().buildStoryDecorator();
 

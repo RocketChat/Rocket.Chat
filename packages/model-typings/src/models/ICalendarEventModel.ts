@@ -1,7 +1,7 @@
 import type { ICalendarEvent, IUser } from '@rocket.chat/core-typings';
 import type { FindCursor, UpdateResult } from 'mongodb';
 
-import type { IBaseModel } from './IBaseModel';
+import type { IBaseModel } from './IBaseModel.js';
 
 export interface ICalendarEventModel extends IBaseModel<ICalendarEvent> {
 	findByUserIdAndDate(uid: IUser['_id'], date: Date): FindCursor<ICalendarEvent>;

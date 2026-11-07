@@ -4,14 +4,14 @@ import type Icons from '@rocket.chat/icons';
 import type { Root } from '@rocket.chat/message-parser';
 import type { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
 
-import type { ILivechatPriority } from '../ILivechatPriority';
-import type { ILivechatVisitor } from '../ILivechatVisitor';
-import type { IOmnichannelServiceLevelAgreements } from '../IOmnichannelServiceLevelAgreements';
-import type { IRocketChatRecord } from '../IRocketChatRecord';
-import type { IRoom } from '../IRoom';
-import type { IUser } from '../IUser';
-import type { FileProp } from './MessageAttachment/Files/FileProp';
-import type { MessageAttachment } from './MessageAttachment/MessageAttachment';
+import type { ILivechatPriority } from '../ILivechatPriority.js';
+import type { ILivechatVisitor } from '../ILivechatVisitor.js';
+import type { IOmnichannelServiceLevelAgreements } from '../IOmnichannelServiceLevelAgreements.js';
+import type { IRocketChatRecord } from '../IRocketChatRecord.js';
+import type { IRoom } from '../IRoom.js';
+import type { IUser } from '../IUser.js';
+import type { FileProp } from './MessageAttachment/Files/FileProp.js';
+import type { MessageAttachment } from './MessageAttachment/MessageAttachment.js';
 
 export type MessageUrl = {
 	url: string;

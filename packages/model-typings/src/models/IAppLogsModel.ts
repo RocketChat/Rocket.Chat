@@ -1,4 +1,4 @@
-import type { IBaseModel } from './IBaseModel';
+import type { IBaseModel } from './IBaseModel.js';
 
 // TODO: type for AppLogs
 export interface IAppLogsModel extends IBaseModel<any> {

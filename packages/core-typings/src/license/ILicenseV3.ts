@@ -1,7 +1,7 @@
-import type { ILicenseTag } from './ILicenseTag';
-import type { LicenseLimit } from './LicenseLimit';
-import type { ExternalModuleName, InternalModuleName } from './LicenseModule';
-import type { LicensePeriod } from './LicensePeriod';
+import type { ILicenseTag } from './ILicenseTag.js';
+import type { LicenseLimit } from './LicenseLimit.js';
+import type { ExternalModuleName, InternalModuleName } from './LicenseModule.js';
+import type { LicensePeriod } from './LicensePeriod.js';
 
 export type InternalModule = { module: InternalModuleName; external?: false };
 export type ExternalModule = { module: ExternalModuleName; external: true };

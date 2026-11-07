@@ -1,4 +1,4 @@
-import * as ssrfModule from '../src/checkForSsrf';
+import * as ssrfModule from '../src/checkForSsrf.js';
 import {
 	allowlistedIpResolved,
 	buildPinnedUrl,
@@ -13,7 +13,7 @@ import {
 	parseIpv4WithPort,
 	unwrapBrackets,
 	nslookup,
-} from '../src/helpers';
+} from '../src/helpers.js';
 
 // Mock the nslookup function
 jest.mock('../src/helpers', () => ({

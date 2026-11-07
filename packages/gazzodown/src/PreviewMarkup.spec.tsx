@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 
-import PreviewMarkup from './PreviewMarkup';
+import PreviewMarkup from './PreviewMarkup.js';
 
 it('renders empty', () => {
 	const { container } = render(<PreviewMarkup tokens={[]} />);

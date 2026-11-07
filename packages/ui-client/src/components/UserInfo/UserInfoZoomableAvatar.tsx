@@ -5,8 +5,8 @@ import { useUserAvatarPath } from '@rocket.chat/ui-contexts';
 import { useContext, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import UserInfoAvatar from './UserInfoAvatar';
-import { ImageGalleryContext } from '../ImageGalleryContext';
+import UserInfoAvatar from './UserInfoAvatar.js';
+import { ImageGalleryContext } from '../ImageGalleryContext.js';
 
 const avatarButtonStyle = css`
 	padding: 0;

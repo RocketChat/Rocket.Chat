@@ -1,6 +1,6 @@
 import type { CallContact } from '@rocket.chat/media-signaling';
 
-import { derivePeerInfoFromInstanceContact } from './derivePeerInfoFromInstanceContact';
+import { derivePeerInfoFromInstanceContact } from './derivePeerInfoFromInstanceContact.js';
 
 describe('derivePeerInfoFromInstanceContact', () => {
 	describe('SIP contact', () => {

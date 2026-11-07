@@ -1,1 +1,1 @@
-export { default } from './UserAutoComplete';
+export { default } from './UserAutoComplete.js';

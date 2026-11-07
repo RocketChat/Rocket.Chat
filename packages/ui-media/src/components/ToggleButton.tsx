@@ -2,7 +2,7 @@ import { Icon, IconButton } from '@rocket.chat/fuselage';
 import type { Keys } from '@rocket.chat/icons';
 import type { ComponentProps } from 'react';
 
-import { getButtonVariant } from './getButtonVariant';
+import { getButtonVariant } from './getButtonVariant.js';
 
 export type ToggleButtonProps = {
 	label: string; // label should not change due to a11y constraints

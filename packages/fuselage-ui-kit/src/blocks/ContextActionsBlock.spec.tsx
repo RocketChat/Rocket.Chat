@@ -1,9 +1,9 @@
 import { MockedServerContext } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 
-import { UiKitContext } from '../contexts/UiKitContext';
-import { messageParser, modalParser } from '../surfaces';
+import { UiKitContext } from '../contexts/UiKitContext.js';
+import { messageParser, modalParser } from '../surfaces/index.js';
 
 it('renders its icon buttons and sends a block action with the block id when one is clicked', async () => {
 	const action = jest.fn();

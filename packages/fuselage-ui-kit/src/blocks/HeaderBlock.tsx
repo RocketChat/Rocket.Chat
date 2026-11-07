@@ -2,7 +2,7 @@ import { Box } from '@rocket.chat/fuselage';
 import * as UiKit from '@rocket.chat/ui-kit';
 import { memo } from 'react';
 
-import type { BlockProps } from '../utils/BlockProps';
+import type { BlockProps } from '../utils/BlockProps.js';
 
 export type HeaderBlockProps = BlockProps<UiKit.HeaderBlock>;
 

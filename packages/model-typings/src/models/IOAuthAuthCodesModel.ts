@@ -1,8 +1,8 @@
 import type { IOAuthAuthCode } from '@rocket.chat/core-typings';
 import type { DeleteResult, Document, UpdateResult } from 'mongodb';
 
-import type { IBaseModel } from './IBaseModel';
-import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
+import type { IBaseModel } from './IBaseModel.js';
+import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection.js';
 
 export interface IOAuthAuthCodesModel extends IBaseModel<IOAuthAuthCode> {
 	findOneByAuthCode<T extends Document = IOAuthAuthCode, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(

@@ -1,4 +1,4 @@
-import { parseDiversionHeader } from './parseDiversionHeader';
+import { parseDiversionHeader } from './parseDiversionHeader.js';
 
 describe('parseDiversionHeader', () => {
 	describe('unquoted display name', () => {

@@ -2,11 +2,11 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Divider, Palette } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-import CallDiagnosticsParticipantCard from './CallDiagnosticsParticipantCard';
-import CallDiagnosticsStatRow from './CallDiagnosticsStatRow';
-import { fmt, fmtKbps } from './format';
-import CallPanelHeader from '../../components/CallPanelHeader';
-import { useCallDiagnostics } from '../context';
+import CallDiagnosticsParticipantCard from './CallDiagnosticsParticipantCard.js';
+import CallDiagnosticsStatRow from './CallDiagnosticsStatRow.js';
+import { fmt, fmtKbps } from './format.js';
+import CallPanelHeader from '../../components/CallPanelHeader.js';
+import { useCallDiagnostics } from '../context.js';
 
 export type CallDiagnosticsPanelProps = {
 	onClose: () => void;

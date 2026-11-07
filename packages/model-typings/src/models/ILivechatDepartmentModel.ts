@@ -1,8 +1,8 @@
 import type { ILivechatDepartment, LivechatDepartmentDTO } from '@rocket.chat/core-typings';
 import type { FindOptions, FindCursor, Filter, UpdateResult, Document } from 'mongodb';
 
-import type { IBaseModel } from './IBaseModel';
-import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
+import type { IBaseModel } from './IBaseModel.js';
+import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection.js';
 
 export interface ILivechatDepartmentModel extends IBaseModel<ILivechatDepartment> {
 	countTotal(): Promise<number>;

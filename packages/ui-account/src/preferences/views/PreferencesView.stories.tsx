@@ -1,8 +1,8 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { Meta, StoryObj } from '@storybook/react';
 
-import PreferencesView from './PreferencesView';
-import type { PreferencesViewModel } from '../logic/usePreferences';
+import PreferencesView from './PreferencesView.js';
+import type { PreferencesViewModel } from '../logic/usePreferences.js';
 
 const createViewModel = (overrides: Partial<PreferencesViewModel> = {}): PreferencesViewModel => ({
 	values: {

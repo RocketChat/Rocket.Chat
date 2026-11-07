@@ -1,4 +1,4 @@
-import { LocalAttributeStore } from './LocalAttributeStore';
+import { LocalAttributeStore } from './LocalAttributeStore.js';
 
 const ensureMock = jest.fn();
 jest.mock('../helper', () => ({ ensureAttributeDefinitionsExist: (...a: unknown[]) => ensureMock(...a) }));

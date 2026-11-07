@@ -1,7 +1,7 @@
 import type { StoryFn, Meta } from '@storybook/react-webpack5';
 import { action } from 'storybook/actions';
 
-import RegisterOfflinePage from './RegisterOfflinePage';
+import RegisterOfflinePage from './RegisterOfflinePage.js';
 
 export default {
 	title: 'pages/RegisterOfflinePage',

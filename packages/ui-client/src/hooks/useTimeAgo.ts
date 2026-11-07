@@ -2,7 +2,7 @@ import { useUserPreference, useSetting } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { formatTimeAgo } from '../lib/dateFormat';
+import { formatTimeAgo } from '../lib/dateFormat.js';
 
 const dayFormat = ['h:mm A', 'H:mm'] as const;
 

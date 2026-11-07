@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import CallStageArea from './CallStageArea';
-import { remoteParticipants, withCall } from '../fixtures/callFixtures';
-import { CallSurface, conferenceAppRoot, withConferenceWindow } from '../fixtures/storyFixtures';
+import CallStageArea from './CallStageArea.js';
+import { remoteParticipants, withCall } from '../fixtures/callFixtures.js';
+import { CallSurface, conferenceAppRoot, withConferenceWindow } from '../fixtures/storyFixtures.js';
 
 /** The tiles of a call running in this window in each layout, with the reactions rising over them. */
 const meta = {

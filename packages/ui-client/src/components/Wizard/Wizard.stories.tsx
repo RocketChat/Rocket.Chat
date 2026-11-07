@@ -1,13 +1,13 @@
 import { Box, Button, States, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
 import type { Meta, StoryObj } from '@storybook/react';
 
-import Wizard from './Wizard';
-import WizardActions from './WizardActions';
-import WizardBackButton from './WizardBackButton';
-import WizardContent from './WizardContent';
-import WizardNextButton from './WizardNextButton';
-import WizardTabs from './WizardTabs';
-import { useWizard } from './useWizard';
+import Wizard from './Wizard.js';
+import WizardActions from './WizardActions.js';
+import WizardBackButton from './WizardBackButton.js';
+import WizardContent from './WizardContent.js';
+import WizardNextButton from './WizardNextButton.js';
+import WizardTabs from './WizardTabs.js';
+import { useWizard } from './useWizard.js';
 
 export default {
 	component: Wizard,

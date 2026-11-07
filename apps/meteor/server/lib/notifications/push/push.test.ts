@@ -1,7 +1,6 @@
 import { afterEach, beforeEach, describe, it } from 'node:test';
 
-import type { IPushNotificationConfig } from '@rocket.chat/core-typings/src/IPushNotificationConfig';
-import type { IPushToken } from '@rocket.chat/core-typings/src/IPushToken';
+import type { IPushNotificationConfig, IPushToken } from '@rocket.chat/core-typings';
 import { isRecord, pick, truncateString } from '@rocket.chat/tools';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';

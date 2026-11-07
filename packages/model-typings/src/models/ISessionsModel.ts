@@ -9,8 +9,8 @@ import type {
 } from '@rocket.chat/core-typings';
 import type { BulkWriteResult, Document, UpdateResult, FindCursor, OptionalId } from 'mongodb';
 
-import type { IBaseModel } from './IBaseModel';
-import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
+import type { IBaseModel } from './IBaseModel.js';
+import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection.js';
 
 export type DestructuredDate = { year: number; month: number; day: number };
 export type DestructuredDateWithType = {

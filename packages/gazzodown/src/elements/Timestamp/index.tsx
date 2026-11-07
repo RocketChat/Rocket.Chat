@@ -5,7 +5,7 @@ import { intlFormatDistance } from 'date-fns/intlFormatDistance';
 import { useContext, useEffect, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
-import { MarkupInteractionContext } from '../../MarkupInteractionContext';
+import { MarkupInteractionContext } from '../../MarkupInteractionContext.js';
 
 type BoldSpanProps = {
 	children: MessageParser.Timestamp;

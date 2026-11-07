@@ -1,7 +1,7 @@
 import { MockedServerContext } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
 
-import { messageParser } from '../surfaces';
+import { messageParser } from '../surfaces/index.js';
 
 it('renders the markdown of a markdown block', async () => {
 	render(

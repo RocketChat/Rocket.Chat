@@ -1,1 +1,1 @@
-export { default } from './AnnouncementBanner';
+export { default } from './AnnouncementBanner.js';

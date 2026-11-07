@@ -1,9 +1,9 @@
 import net from 'node:net';
 
-import { XMPPServer } from '../../src/XMPPServer';
-import type { Logger } from '../../src/logger';
-import type { XmppDnsResolver } from '../../src/s2s/dnsResolver';
-import { XMPPServerService } from '../../src/service/XMPPServerService';
+import { XMPPServer } from '../../src/XMPPServer.js';
+import type { Logger } from '../../src/logger.js';
+import type { XmppDnsResolver } from '../../src/s2s/dnsResolver.js';
+import { XMPPServerService } from '../../src/service/XMPPServerService.js';
 
 const settings = new Map<string, unknown>();
 const findOneByUsername = jest.fn();

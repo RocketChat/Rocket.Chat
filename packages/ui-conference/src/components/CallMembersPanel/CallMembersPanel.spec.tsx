@@ -1,15 +1,15 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 import type { ReactNode } from 'react';
 
-import CallMembersPanel from './CallMembersPanel';
-import { ConferenceContext } from '../../context/ConferenceContext';
-import type { ConferenceMember } from '../../context/definitions';
-import { buildConferenceContext } from '../../fixtures/storyFixtures';
-import { buildConferenceMember } from '../../fixtures/testFixtures';
-import type { PluginFeature, PluginParticipant, ProviderPluginControls } from '../../lib/providerPlugin';
-import { PLUGIN_FEATURES } from '../../lib/providerPlugin';
+import CallMembersPanel from './CallMembersPanel.js';
+import { ConferenceContext } from '../../context/ConferenceContext.js';
+import type { ConferenceMember } from '../../context/definitions.js';
+import { buildConferenceContext } from '../../fixtures/storyFixtures.js';
+import { buildConferenceMember } from '../../fixtures/testFixtures.js';
+import type { PluginFeature, PluginParticipant, ProviderPluginControls } from '../../lib/providerPlugin.js';
+import { PLUGIN_FEATURES } from '../../lib/providerPlugin.js';
 
 const actions = {
 	mute: jest.fn(),

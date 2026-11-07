@@ -1,9 +1,9 @@
 import { useEffect, useMemo } from 'react';
 
-import { useCurrent } from './useCurrent';
-import { useItemsPerPage } from './useItemsPerPage';
-import { useItemsPerPageLabel } from './useItemsPerPageLabel';
-import { useShowingResultsLabel } from './useShowingResultsLabel';
+import { useCurrent } from './useCurrent.js';
+import { useItemsPerPage } from './useItemsPerPage.js';
+import { useItemsPerPageLabel } from './useItemsPerPageLabel.js';
+import { useShowingResultsLabel } from './useShowingResultsLabel.js';
 
 /**
  * TODO: Move `usePagination` outside from `GenericTable` folder

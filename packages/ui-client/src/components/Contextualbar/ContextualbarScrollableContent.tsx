@@ -2,7 +2,7 @@ import { Margins } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
 import { forwardRef, memo } from 'react';
 
-import { PageScrollableContent } from '../Page';
+import { PageScrollableContent } from '../Page/index.js';
 
 const ContextualbarScrollableContent = forwardRef<HTMLElement, ComponentProps<typeof PageScrollableContent>>(
 	function ContextualbarScrollableContent({ children, ...props }, ref) {

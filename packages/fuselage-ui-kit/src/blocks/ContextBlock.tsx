@@ -2,8 +2,8 @@ import { Box } from '@rocket.chat/fuselage';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { memo, useMemo } from 'react';
 
-import Item from './ContextBlock.Item';
-import type { BlockProps } from '../utils/BlockProps';
+import Item from './ContextBlock.Item.js';
+import type { BlockProps } from '../utils/BlockProps.js';
 
 export type ContextBlockProps = BlockProps<UiKit.ContextBlock>;
 

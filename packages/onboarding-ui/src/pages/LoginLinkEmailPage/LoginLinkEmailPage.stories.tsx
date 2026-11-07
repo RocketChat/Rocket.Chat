@@ -1,6 +1,6 @@
 import type { Meta, StoryFn } from '@storybook/react-webpack5';
 
-import LoginLinkEmailPage from './LoginLinkEmailPage';
+import LoginLinkEmailPage from './LoginLinkEmailPage.js';
 
 export default {
 	title: 'pages/LoginLinkEmailPage',

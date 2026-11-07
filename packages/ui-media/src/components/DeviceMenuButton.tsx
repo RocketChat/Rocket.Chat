@@ -1,7 +1,7 @@
 import type { ComponentProps } from 'react';
 import { forwardRef } from 'react';
 
-import ActionButton from './ActionButton';
+import ActionButton from './ActionButton.js';
 
 type ActionButtonProps = ComponentProps<typeof ActionButton>;
 

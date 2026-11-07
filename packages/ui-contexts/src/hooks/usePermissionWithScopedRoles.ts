@@ -1,7 +1,7 @@
 import type { IRole } from '@rocket.chat/core-typings';
 import { useContext, useMemo, useSyncExternalStore } from 'react';
 
-import { AuthorizationContext } from '../AuthorizationContext';
+import { AuthorizationContext } from '../AuthorizationContext.js';
 
 /**
  * Check if the user has the permission considering the user have the scoped roles

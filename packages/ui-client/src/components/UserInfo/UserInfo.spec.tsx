@@ -2,7 +2,7 @@ import { composeStories } from '@storybook/react';
 import { render, screen } from '@testing-library/react';
 import { axe } from 'jest-axe';
 
-import * as stories from './UserInfo.stories';
+import * as stories from './UserInfo.stories.js';
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 

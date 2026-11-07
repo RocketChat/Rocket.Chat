@@ -1,8 +1,8 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { act, renderHook } from '@testing-library/react';
 
-import type { PeerInfo } from '../context';
-import { useMediaCallAction } from './useMediaCallAction';
+import { useMediaCallAction } from './useMediaCallAction.js';
+import type { PeerInfo } from '../context/index.js';
 
 const toggleWidgetMock = jest.fn();
 const endCallMock = jest.fn();

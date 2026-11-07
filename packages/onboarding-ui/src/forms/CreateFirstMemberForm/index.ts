@@ -3,4 +3,4 @@ export {
 	CreateFirstMemberForm,
 	type CreateFirstMemberFormProps,
 	type CreateFirstMemberFormPayload,
-} from './CreateFirstMemberForm';
+} from './CreateFirstMemberForm.js';

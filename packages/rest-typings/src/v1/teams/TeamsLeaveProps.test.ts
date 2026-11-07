@@ -1,7 +1,7 @@
 import assert from 'node:assert';
 import { describe, it } from 'node:test';
 
-import { isTeamsLeaveProps } from './TeamsLeaveProps';
+import { isTeamsLeaveProps } from './TeamsLeaveProps.js';
 
 describe('TeamsLeaveProps (definition/rest/v1)', () => {
 	describe('isTeamsLeaveProps', () => {

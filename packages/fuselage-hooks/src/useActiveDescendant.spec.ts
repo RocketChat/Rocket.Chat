@@ -1,5 +1,5 @@
-import { act, renderHook } from './testing';
-import { useActiveDescendant } from './useActiveDescendant';
+import { act, renderHook } from './testing.js';
+import { useActiveDescendant } from './useActiveDescendant.js';
 
 it('should start with no active option and no focus ring', () => {
 	const { result } = renderHook(() => useActiveDescendant<string>());

@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { action } from 'storybook/actions';
 
-import ConferencePreflight from './ConferencePreflight';
-import { allCapabilities, conferenceAppRoot, onPhone, storeCallPreferences, withConferenceWindow } from '../fixtures/storyFixtures';
+import ConferencePreflight from './ConferencePreflight.js';
+import { allCapabilities, conferenceAppRoot, onPhone, storeCallPreferences, withConferenceWindow } from '../fixtures/storyFixtures.js';
 
 /**
  * The screen a call actually starts on: what the camera will do on arrival, and what the call is called.

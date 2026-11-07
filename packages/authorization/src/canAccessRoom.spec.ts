@@ -2,8 +2,8 @@ import { Authorization, Settings } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
-import { canAccessRoom } from './canAccessRoom';
-import { canAccessRoomLivechat } from './canAccessRoomLivechat';
+import { canAccessRoom } from './canAccessRoom.js';
+import { canAccessRoomLivechat } from './canAccessRoomLivechat.js';
 
 jest.mock('@rocket.chat/models', () => ({
 	Subscriptions: {

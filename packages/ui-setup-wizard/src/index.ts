@@ -1,7 +1,7 @@
 import { lazy } from 'react';
 
-import './routes';
+import './routes.js';
 
-export const SetupWizardRoute = lazy(() => import('./SetupWizardRoute'));
+export const SetupWizardRoute = lazy(() => import('./SetupWizardRoute.js'));
 
-export { useRedirectToSetupWizard } from './hooks/useRedirectToSetupWizard';
+export { useRedirectToSetupWizard } from './hooks/useRedirectToSetupWizard.js';

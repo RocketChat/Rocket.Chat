@@ -1,11 +1,11 @@
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import type { Meta, StoryObj } from '@storybook/react';
 
-import Page from './Page';
-import PageContent from './PageContent';
-import PageHeader from './PageHeader';
-import PageScrollableContent from './PageScrollableContent';
-import PageScrollableContentWithShadow from './PageScrollableContentWithShadow';
+import Page from './Page.js';
+import PageContent from './PageContent.js';
+import PageHeader from './PageHeader.js';
+import PageScrollableContent from './PageScrollableContent.js';
+import PageScrollableContentWithShadow from './PageScrollableContentWithShadow.js';
 
 export default {
 	component: Page,

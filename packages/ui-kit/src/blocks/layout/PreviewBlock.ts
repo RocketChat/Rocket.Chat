@@ -1,6 +1,6 @@
-import type { LayoutBlockish } from '../LayoutBlockish';
-import type { TextObject } from '../TextObject';
-import type { ContextBlock } from './ContextBlock';
+import type { LayoutBlockish } from '../LayoutBlockish.js';
+import type { TextObject } from '../TextObject.js';
+import type { ContextBlock } from './ContextBlock.js';
 
 type Image = {
 	url: string;

@@ -2,8 +2,8 @@ import type { ILDAPEntry, IUser, IAbacAttributeDefinition } from '@rocket.chat/c
 import { Users } from '@rocket.chat/models';
 import type { Collection, Db } from 'mongodb';
 
-import { AbacService } from './index';
-import { acquireSharedInMemoryMongo, SHARED_ABAC_TEST_DB, type SharedMongoConnection } from './test-helpers/mongoMemoryServer';
+import { AbacService } from './index.js';
+import { acquireSharedInMemoryMongo, SHARED_ABAC_TEST_DB, type SharedMongoConnection } from './test-helpers/mongoMemoryServer.js';
 
 jest.mock('@rocket.chat/core-services', () => ({
 	ServiceClass: class {

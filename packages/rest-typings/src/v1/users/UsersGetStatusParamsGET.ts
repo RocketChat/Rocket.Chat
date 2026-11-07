@@ -1,4 +1,4 @@
-import { ajvQuery } from '../Ajv';
+import { ajvQuery } from '../Ajv.js';
 
 type UsersGetStatusParamsGET = {
 	userId?: string;

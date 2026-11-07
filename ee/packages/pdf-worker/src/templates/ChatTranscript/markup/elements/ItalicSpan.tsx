@@ -1,10 +1,10 @@
 import { StyleSheet, Text, View } from '@react-pdf/renderer';
 import type * as MessageParser from '@rocket.chat/message-parser';
 
-import BoldSpan from './BoldSpan';
-import EmojiSpan from './EmojiSpan';
-import LinkSpan from './LinkSpan';
-import StrikeSpan from './StrikeSpan';
+import BoldSpan from './BoldSpan.js';
+import EmojiSpan from './EmojiSpan.js';
+import LinkSpan from './LinkSpan.js';
+import StrikeSpan from './StrikeSpan.js';
 
 const styles = StyleSheet.create({
 	italic: {

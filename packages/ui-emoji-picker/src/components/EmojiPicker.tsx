@@ -6,22 +6,22 @@ import type { ChangeEvent, KeyboardEvent, MouseEvent, RefObject } from 'react';
 import { useLayoutEffect, useState, useEffect, useRef } from 'react';
 import type { ListRange, VirtuosoHandle } from 'react-virtuoso';
 
-import CategoriesResult from './CategoriesResult';
-import EmojiPickerCategoryHeader from './EmojiPickerCategoryHeader';
-import EmojiPickerCategoryItem from './EmojiPickerCategoryItem';
-import EmojiPickerContainer from './EmojiPickerContainer';
-import EmojiPickerDropdown from './EmojiPickerDropDown';
-import EmojiPickerHeader from './EmojiPickerHeader';
-import EmojiPickerListArea from './EmojiPickerListArea';
-import EmojiPickerPreview from './EmojiPickerPreview';
-import EmojiPickerPreviewArea from './EmojiPickerPreviewArea';
-import SearchingResult from './SearchingResult';
-import ToneSelector from './ToneSelector';
-import ToneSelectorWrapper from './ToneSelector/ToneSelectorWrapper';
-import { usePreviewEmoji, useEmojiPickerData } from '../contexts/EmojiPickerContext';
-import { useEmojiRegistry } from '../contexts/EmojiRegistryContext';
-import { getCategoriesList, getEmojisBySearchTerm } from '../lib/emoji';
-import type { EmojiItem } from '../lib/types';
+import CategoriesResult from './CategoriesResult.js';
+import EmojiPickerCategoryHeader from './EmojiPickerCategoryHeader.js';
+import EmojiPickerCategoryItem from './EmojiPickerCategoryItem.js';
+import EmojiPickerContainer from './EmojiPickerContainer.js';
+import EmojiPickerDropdown from './EmojiPickerDropDown.js';
+import EmojiPickerHeader from './EmojiPickerHeader.js';
+import EmojiPickerListArea from './EmojiPickerListArea.js';
+import EmojiPickerPreview from './EmojiPickerPreview.js';
+import EmojiPickerPreviewArea from './EmojiPickerPreviewArea.js';
+import SearchingResult from './SearchingResult.js';
+import ToneSelectorWrapper from './ToneSelector/ToneSelectorWrapper.js';
+import ToneSelector from './ToneSelector/index.js';
+import { usePreviewEmoji, useEmojiPickerData } from '../contexts/EmojiPickerContext.js';
+import { useEmojiRegistry } from '../contexts/EmojiRegistryContext.js';
+import { getCategoriesList, getEmojisBySearchTerm } from '../lib/emoji.js';
+import type { EmojiItem } from '../lib/types.js';
 
 export type EmojiPickerProps = {
 	reference: Element;

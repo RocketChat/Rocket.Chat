@@ -2,7 +2,7 @@ import { composeStories } from '@storybook/react-webpack5';
 import { render } from '@testing-library/react';
 import { axe } from 'jest-axe';
 
-import * as stories from './LayoutLogo.stories';
+import * as stories from './LayoutLogo.stories.js';
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 

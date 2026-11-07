@@ -1,6 +1,6 @@
 import type { JoinableVideoConference } from '@rocket.chat/core-typings';
 
-import type { ConferenceChatAccess, ConferenceMember } from '../context/definitions';
+import type { ConferenceChatAccess, ConferenceMember } from '../context/definitions.js';
 
 /**
  * The shapes the conference specs keep rebuilding, in one place — the server harness's counterpart on this side.

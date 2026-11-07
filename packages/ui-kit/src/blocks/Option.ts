@@ -1,5 +1,5 @@
-import type { TextObject } from './TextObject';
-import type { PlainText } from './text/PlainText';
+import type { TextObject } from './TextObject.js';
+import type { PlainText } from './text/PlainText.js';
 
 export type Option = {
 	text: TextObject;

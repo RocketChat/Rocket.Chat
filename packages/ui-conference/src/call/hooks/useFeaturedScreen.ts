@@ -1,9 +1,9 @@
 import { useCallback, useMemo, useState } from 'react';
 
-import type { RemoteParticipantInfo } from '../context';
-import type { ScreenShare, ShareStarts } from '../lib/screenShares';
-import { collectScreenShares, nextPinnedScreen, pickFeaturedScreen, recordShareStarts } from '../lib/screenShares';
-import type { StageSelf } from '../lib/stageTiles';
+import type { RemoteParticipantInfo } from '../context.js';
+import type { ScreenShare, ShareStarts } from '../lib/screenShares.js';
+import { collectScreenShares, nextPinnedScreen, pickFeaturedScreen, recordShareStarts } from '../lib/screenShares.js';
+import type { StageSelf } from '../lib/stageTiles.js';
 
 type Tracked = { shares: ScreenShare[] | null; starts: ShareStarts; pinned: string | null };
 

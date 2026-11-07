@@ -1,9 +1,9 @@
-import type { BlockElementRenderer } from './BlockElementRenderer';
-import type { LayoutBlockRenderer } from './LayoutBlockRenderer';
-import type { TextObjectRenderer } from './TextObjectRenderer';
-import type { BlockElement } from '../blocks/BlockElement';
-import type { RenderableLayoutBlock } from '../blocks/RenderableLayoutBlock';
-import type { TextObject } from '../blocks/TextObject';
+import type { BlockElementRenderer } from './BlockElementRenderer.js';
+import type { LayoutBlockRenderer } from './LayoutBlockRenderer.js';
+import type { TextObjectRenderer } from './TextObjectRenderer.js';
+import type { BlockElement } from '../blocks/BlockElement.js';
+import type { RenderableLayoutBlock } from '../blocks/RenderableLayoutBlock.js';
+import type { TextObject } from '../blocks/TextObject.js';
 
 export type BlockRenderers<T> = {
 	[B in RenderableLayoutBlock as B['type']]?: LayoutBlockRenderer<T, B>;

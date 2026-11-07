@@ -1,4 +1,4 @@
-import { VirtruAttributeStore } from './VirtruAttributeStore';
+import { VirtruAttributeStore } from './VirtruAttributeStore.js';
 
 const usersFindOneById = jest.fn();
 jest.mock('@rocket.chat/models', () => ({ Users: { findOneById: (...a: unknown[]) => usersFindOneById(...a) } }));

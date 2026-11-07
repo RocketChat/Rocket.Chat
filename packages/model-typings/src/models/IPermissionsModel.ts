@@ -1,7 +1,7 @@
 import type { IPermission, IRole } from '@rocket.chat/core-typings';
 import type { FindCursor } from 'mongodb';
 
-import type { IBaseModel } from './IBaseModel';
+import type { IBaseModel } from './IBaseModel.js';
 
 export interface IPermissionsModel extends IBaseModel<IPermission> {
 	createOrUpdate(name: string, roles: IRole['_id'][]): Promise<IPermission['_id']>;

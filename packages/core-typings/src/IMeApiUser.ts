@@ -1,4 +1,4 @@
-import type { IUser, IUserCalendar } from './IUser';
+import type { IUser, IUserCalendar } from './IUser.js';
 
 /**
  * Public service fields exposed by getUserInfo (password hash is never leaked).

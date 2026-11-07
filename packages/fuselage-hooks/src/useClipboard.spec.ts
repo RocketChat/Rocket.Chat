@@ -1,6 +1,6 @@
-import { renderHook, act } from './testing';
-import { useClipboard } from './useClipboard';
-import { withClipboardMock } from '../mocks/withClipboardMock';
+import { renderHook, act } from './testing.js';
+import { useClipboard } from './useClipboard.js';
+import { withClipboardMock } from '../mocks/withClipboardMock.js';
 
 let container: Element | undefined;
 

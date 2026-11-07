@@ -2,7 +2,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import type * as MessageParser from '@rocket.chat/message-parser';
 
-import Markup from '../Markup';
+import Markup from '../Markup.js';
 
 // The message body strips list indentation and gives every `ul li` a bullet, so nested lists win both back here.
 const nestedListsStyle = css`

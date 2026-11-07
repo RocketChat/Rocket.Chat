@@ -3,7 +3,7 @@ import { useUserDisplayName } from '@rocket.chat/ui-client';
 import { useUserAvatarPath, useUserPresence, useUserCard } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
-import type { CallHistoryInternalContact } from '../definitions';
+import type { CallHistoryInternalContact } from '../definitions/index.js';
 
 export type CallHistoryInternalUserProps = {
 	contact: CallHistoryInternalContact;

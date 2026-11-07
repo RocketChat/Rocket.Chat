@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { ContextType, ReactNode } from 'react';
 
-import { SurfaceContext } from '../contexts/SurfaceContext';
+import { SurfaceContext } from '../contexts/SurfaceContext.js';
 
 export type SurfaceProps = {
 	children: ReactNode;

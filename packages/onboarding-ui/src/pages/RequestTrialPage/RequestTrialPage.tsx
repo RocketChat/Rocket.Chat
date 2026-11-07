@@ -1,9 +1,9 @@
 import { BackgroundLayer, FormPageLayout as FormLayout } from '@rocket.chat/layout';
 import { useTranslation, Trans } from 'react-i18next';
 
-import Description from './Description';
-import FormPageLayout from '../../common/FormPageLayout';
-import RequestTrialForm, { type RequestTrialFormProps } from '../../forms/RequestTrialForm';
+import Description from './Description.js';
+import FormPageLayout from '../../common/FormPageLayout.js';
+import RequestTrialForm, { type RequestTrialFormProps } from '../../forms/RequestTrialForm/index.js';
 
 export type RequestTrialPageProps = RequestTrialFormProps;
 

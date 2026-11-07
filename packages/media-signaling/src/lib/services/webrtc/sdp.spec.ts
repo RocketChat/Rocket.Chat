@@ -1,4 +1,4 @@
-import { MediaDescription, SDP } from './sdp';
+import { MediaDescription, SDP } from './sdp.js';
 
 const CRLF = '\r\n';
 

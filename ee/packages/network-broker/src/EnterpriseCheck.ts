@@ -1,6 +1,6 @@
 import type { Service, ServiceSchema, ServiceSettingSchema } from 'moleculer';
 
-import { startLicenseEnforcement } from './licenseEnforcement';
+import { startLicenseEnforcement } from './licenseEnforcement.js';
 
 export const EnterpriseCheck: ServiceSchema<ServiceSettingSchema, Service & { stopLicenseEnforcement?: () => void }> = {
 	name: 'EnterpriseCheck',

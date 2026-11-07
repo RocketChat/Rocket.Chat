@@ -2,10 +2,10 @@ import type { IAbacAttributeDefinition, IRoom, IUser } from '@rocket.chat/core-t
 import { Subscriptions } from '@rocket.chat/models';
 import type { Collection, Db } from 'mongodb';
 
-import { Audit } from './audit';
-import { AbacService } from './index';
-import { logger } from './logger';
-import { acquireSharedInMemoryMongo, SHARED_ABAC_TEST_DB, type SharedMongoConnection } from './test-helpers/mongoMemoryServer';
+import { Audit } from './audit.js';
+import { AbacService } from './index.js';
+import { logger } from './logger.js';
+import { acquireSharedInMemoryMongo, SHARED_ABAC_TEST_DB, type SharedMongoConnection } from './test-helpers/mongoMemoryServer.js';
 
 jest.mock('@rocket.chat/core-services', () => ({
 	ServiceClass: class {

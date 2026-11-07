@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 
-import { domainOfJid } from './jid';
-import { escapeLocalpart } from '../../jid/escaping';
+import { domainOfJid } from './jid.js';
+import { escapeLocalpart } from '../../jid/escaping.js';
 
 /** The unique Rocket.Chat room name of the channel that mirrors a remote MUC, readable but distinct for every room JID. */
 export function mirroredRoomName(roomJid: string): string {
