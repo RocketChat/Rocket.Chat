@@ -22,6 +22,7 @@ import type {
 	ITeamStats,
 	AtLeast,
 } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { Team, Rooms, Subscriptions, Users, TeamMember } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/tools';
@@ -40,6 +41,7 @@ import { omitStatusVisibilityConfig } from '../../lib/statusVisibility/redactSta
 import { checkUsernameAvailability } from '../../lib/users/checkUsernameAvailability';
 import { settings } from '../../settings';
 
+const logger = new Logger('TeamService');
 const isAbacError = (error: unknown): boolean => {
 	if (isClientSafeError(error)) {
 		return String(error.error).startsWith('error-abac-');
@@ -487,10 +489,18 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 		await Rooms.unsetTeamId(team._id);
 
-		await notifyOnRoomChangedById(
-			teamRooms.map((teamRoom) => teamRoom._id),
-			'updated',
-		);
+		try {
+			await notifyOnRoomChangedById(
+				teamRooms.map((teamRoom) => teamRoom._id),
+				'updated',
+			);
+		} catch (error) {
+			logger.error({
+				msg: 'Failed to notify room changes after removing team associations',
+				teamId: team._id,
+				err: error,
+			});
+		}
 	}
 
 	async updateRoom(uid: string, rid: string, isDefault: boolean, canUpdateAnyRoom = false): Promise<IRoom> {

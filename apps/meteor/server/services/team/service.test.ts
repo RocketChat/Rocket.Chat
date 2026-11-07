@@ -4,6 +4,7 @@ import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
+const logError = sinon.stub();
 const Rooms = {
 	find: sinon.stub(),
 	findOneByName: sinon.stub(),
@@ -82,6 +83,11 @@ const { TeamService } = proxyquire.noCallThru().load('./service', {
 	'../../settings': {
 		settings: { get: sinon.stub() },
 	},
+	'@rocket.chat/logger': {
+		Logger: class {
+			error = logError;
+		},
+	},
 });
 
 const service = new TeamService();
@@ -102,6 +108,7 @@ describe('Team service', () => {
 		Message.saveSystemMessage.reset();
 		filterDefaultChannelsForUser.reset();
 		filterDefaultChannelsForUser.callsFake((rooms: unknown[]) => Promise.resolve(rooms));
+		logError.reset();
 	});
 
 	it('should not forward client room options to room creation', async () => {
@@ -219,17 +226,44 @@ describe('Team service', () => {
 				databaseUpdateFinished = true;
 			});
 
+			let notificationSawCompletedUpdate = false;
 			notifyOnRoomChangedById.callsFake(async () => {
-				expect(databaseUpdateFinished).to.equal(true);
+				notificationSawCompletedUpdate = databaseUpdateFinished;
 			});
 
 			await service.unsetTeamIdOfRooms(user, team);
+
+			expect(notificationSawCompletedUpdate).to.equal(true);
 
 			sinon.assert.calledOnceWithExactly(Rooms.find, { teamId: 'team-id' }, { projection: { _id: 1 } });
 
 			sinon.assert.calledOnceWithExactly(notifyOnRoomChangedById, ['team-room', 'child-room'], 'updated');
 
 			sinon.assert.callOrder(Rooms.find, Rooms.unsetTeamId, notifyOnRoomChangedById);
+		});
+
+		it('should log a notification failure and allow cleanup to continue', async () => {
+			const error = new Error('notification-failed');
+			Rooms.find.returns({ toArray: async () => [{ _id: team.roomId }] });
+			notifyOnRoomChangedById.rejects(error);
+
+			await service.unsetTeamIdOfRooms(user, team);
+
+			sinon.assert.calledOnceWithExactly(notifyOnRoomChangedById, [team.roomId], 'updated');
+			sinon.assert.calledOnceWithExactly(logError, {
+				msg: 'Failed to notify room changes after removing team associations',
+				teamId: team._id,
+				err: error,
+			});
+		});
+
+		it('should propagate a database failure without notifying clients', async () => {
+			Rooms.unsetTeamId.rejects(new Error('database-update-failed'));
+
+			await expect(service.unsetTeamIdOfRooms(user, team)).to.be.rejectedWith('database-update-failed');
+
+			sinon.assert.notCalled(notifyOnRoomChangedById);
+			sinon.assert.notCalled(logError);
 		});
 
 		it('should announce the conversion on the main room and move the remaining rooms back to the workspace', async () => {
