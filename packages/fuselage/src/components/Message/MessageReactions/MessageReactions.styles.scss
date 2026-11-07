@@ -35,13 +35,14 @@ $message-reaction-background-color: theme('message-reaction-background-color', c
 		border-radius: $message-reaction-border-radius;
 		background-color: $message-reaction-hover-background-color;
 
-		@include templates.focus-state {
-			border-color: colors.stroke(light);
-		}
-
 		&:hover {
 			border-color: $message-reaction-hover-border-color;
 			background-color: $message-reaction-hover-background-color;
+		}
+
+		// After the hover, so a reaction focused by keyboard keeps its focus border under the pointer.
+		@include templates.focus-state {
+			border-color: colors.stroke(light);
 		}
 
 		&--action {
