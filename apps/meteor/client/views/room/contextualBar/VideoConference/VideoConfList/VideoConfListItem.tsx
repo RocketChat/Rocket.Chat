@@ -25,16 +25,7 @@ import { useVideoConfJoinCall } from '@rocket.chat/ui-video-conf';
 import { VIDEOCONF_STACK_MAX_USERS } from '../../../../../lib/constants';
 import { useGoToRoom } from '../../../hooks/useGoToRoom';
 
-const VideoConfListItem = ({
-	videoConfData,
-	className = [],
-	reload,
-	...props
-}: {
-	videoConfData: VideoConference;
-	className?: string[];
-	reload: () => void;
-}) => {
+const VideoConfListItem = ({ videoConfData, reload }: { videoConfData: VideoConference; reload: () => void }) => {
 	const t = useTranslation();
 	const formatDate = useTimeAgo();
 	const joinCall = useVideoConfJoinCall();
@@ -56,8 +47,7 @@ const VideoConfListItem = ({
 	const joinedUsers = users.filter((user) => user._id !== _id && !!user.username && hasJoinedVideoConference(user));
 
 	const hovered = css`
-		&:hover,
-		&:focus {
+		&:hover {
 			background: ${Palette.surface['surface-tint']};
 			.rcx-message {
 				background: ${Palette.surface['surface-tint']};
@@ -78,10 +68,10 @@ const VideoConfListItem = ({
 			borderBlockEndWidth='default'
 			borderBlockEndColor='stroke-extra-light'
 			borderBlockEndStyle='solid'
-			className={[...className, hovered].filter(Boolean)}
+			className={hovered}
 			paddingBlock={8}
 		>
-			<Message {...props}>
+			<Message>
 				<MessageLeftContainer>{username && <UserAvatar username={username} size='x36' />}</MessageLeftContainer>
 				<MessageContainer>
 					<MessageHeader>
@@ -89,7 +79,6 @@ const VideoConfListItem = ({
 						<MessageTimestamp>{formatDate(createdAt)}</MessageTimestamp>
 					</MessageHeader>
 					<MessageBody clamp={2} />
-					<Box display='flex'></Box>
 					<MessageBlock>
 						<Box display='flex' alignItems='center'>
 							<ButtonGroup>
