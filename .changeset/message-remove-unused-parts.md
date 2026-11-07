@@ -10,3 +10,4 @@ Removes the message parts and props that nothing renders:
 - The `highlight` prop of `Message`, with its fade animation and the `message-background-color-highlight` theme variable.
 - The `is` prop of `MessageHighlight`, which always renders a `span`.
 - The `name` and `counter` props of `MessageReaction`; pass `MessageReactionEmoji` and `MessageReactionCounter` as children.
+- The `3` and `4` values of `MessageBody`'s `clamp` prop; `clamp={2}` cuts the body at two lines.
