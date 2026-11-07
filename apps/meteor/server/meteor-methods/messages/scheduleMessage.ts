@@ -1,7 +1,7 @@
 import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
-import { ScheduledMessages } from '@rocket.chat/models';
+import { Messages, ScheduledMessages } from '@rocket.chat/models';
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
@@ -36,10 +36,39 @@ export async function executeScheduleMessage(
 		});
 	}
 
+	if (message.tshow && !message.tmid) {
+		throw new ClientSafeError('invalid-params', 'tshow provided but missing tmid', {
+			method: 'scheduleMessage',
+		});
+	}
+
+	if (message.tmid && !settings.get('Threads_enabled')) {
+		throw new ClientSafeError('error-not-allowed', 'not-allowed', {
+			method: 'scheduleMessage',
+		});
+	}
+
+	if (message.tmid) {
+		const parentMessage = await Messages.findOneById(message.tmid, { projection: { rid: 1, tmid: 1 } });
+		if (!parentMessage || parentMessage.rid !== message.rid) {
+			throw new ClientSafeError('error-invalid-parent-message', 'Invalid parent message', {
+				method: 'scheduleMessage',
+			});
+		}
+		message.tmid = parentMessage.tmid || message.tmid;
+	}
+
+	let room;
 	try {
-		await canSendMessageAsync(message.rid, user);
+		room = await canSendMessageAsync(message.rid, user);
 	} catch (error: any) {
-		throw new ClientSafeError(error.message || 'error-not-allowed', error.message || 'Not allowed', {
+		throw new ClientSafeError('error-not-allowed', error.message || 'Not allowed', {
+			method: 'scheduleMessage',
+		});
+	}
+
+	if (room.encrypted) {
+		throw new ClientSafeError('error-not-allowed', 'Scheduled messages are not supported in encrypted rooms', {
 			method: 'scheduleMessage',
 		});
 	}

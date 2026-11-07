@@ -2,4 +2,4 @@
 '@rocket.chat/meteor': minor
 ---
 
-Implement scheduled messages feature with cron worker, UI modal, and spoofing prevention tags.
+Adds the ability to schedule messages for future delivery in rooms and thread replies.

@@ -1,5 +1,5 @@
 import { Logger } from '@rocket.chat/logger';
-import { ScheduledMessages } from '@rocket.chat/models';
+import { Messages, ScheduledMessages } from '@rocket.chat/models';
 
 import { executeSendMessage } from '../meteor-methods/messages/sendMessage';
 
@@ -9,18 +9,36 @@ const STALE_LOCK_TIMEOUT_MS = 5 * 60 * 1000;
 
 async function recoverStaleLocks(): Promise<void> {
 	const staleThreshold = new Date(Date.now() - STALE_LOCK_TIMEOUT_MS);
-	await ScheduledMessages.updateMany(
-		{
-			status: 'processing',
-			_updatedAt: { $lte: staleThreshold },
-		},
-		{
-			$set: {
-				status: 'pending',
-				_updatedAt: new Date(),
-			},
-		},
-	);
+	const staleMessages = await ScheduledMessages.find({
+		status: 'processing',
+		_updatedAt: { $lte: staleThreshold },
+	}).toArray();
+
+	for (const staleMessage of staleMessages) {
+		const alreadySent = await Messages.findOneById(staleMessage._id, { projection: { _id: 1 } });
+		if (alreadySent) {
+			await ScheduledMessages.updateOne(
+				{ _id: staleMessage._id, status: 'processing' },
+				{
+					$set: {
+						status: 'sent',
+						sentAt: new Date(),
+						_updatedAt: new Date(),
+					},
+				},
+			);
+		} else {
+			await ScheduledMessages.updateOne(
+				{ _id: staleMessage._id, status: 'processing' },
+				{
+					$set: {
+						status: 'pending',
+						_updatedAt: new Date(),
+					},
+				},
+			);
+		}
+	}
 }
 
 async function processScheduledMessages(): Promise<void> {
@@ -46,14 +64,18 @@ async function processScheduledMessages(): Promise<void> {
 				continue;
 			}
 
-			await executeSendMessage(message.u._id, {
-				rid: message.rid,
-				msg: message.msg,
-				groupable: false,
-				scheduled: true,
-				...(message.tmid && { tmid: message.tmid }),
-				...(message.tshow && { tshow: message.tshow }),
-			});
+			const existingMessage = await Messages.findOneById(message._id, { projection: { _id: 1 } });
+			if (!existingMessage) {
+				await executeSendMessage(message.u._id, {
+					_id: message._id,
+					rid: message.rid,
+					msg: message.msg,
+					groupable: false,
+					scheduled: true,
+					...(message.tmid && { tmid: message.tmid }),
+					...(message.tshow && { tshow: message.tshow }),
+				});
+			}
 
 			await ScheduledMessages.updateOne(
 				{ _id: message._id },
