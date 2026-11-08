@@ -10,7 +10,8 @@ jest.mock(
 	() => ({
 		maxBlocksPerMessage: 50,
 		maxBlocksPerView: 100,
-		validateLayoutBlocks: (blocks: unknown, maxBlocks: number) => mockValidateLayoutBlocks(blocks, maxBlocks),
+		maxChartsPerMessage: 2,
+		validateLayoutBlocks: (blocks: unknown, maxBlocks: number, options: unknown) => mockValidateLayoutBlocks(blocks, maxBlocks, options),
 	}),
 	{
 		virtual: true,
@@ -63,7 +64,7 @@ describe('with rejection off', () => {
 		);
 
 		expect(mockValidateLayoutBlocks).toHaveBeenCalledTimes(1);
-		expect(mockValidateLayoutBlocks).toHaveBeenCalledWith([{}], 100);
+		expect(mockValidateLayoutBlocks).toHaveBeenCalledWith([{}], 100, { maxCharts: undefined });
 		expect(mockWarn).toHaveBeenCalledWith(expect.objectContaining({ where: 'ui.interaction', appId: 'app' }));
 	});
 });
@@ -78,7 +79,7 @@ describe('with rejection on', () => {
 
 		expect(() => reportInvalidBlocks([{}], { where: 'message' })).toThrow(expect.objectContaining({ error: 'error-invalid-blocks' }));
 
-		expect(mockValidateLayoutBlocks).toHaveBeenCalledWith([{}], 50);
+		expect(mockValidateLayoutBlocks).toHaveBeenCalledWith([{}], 50, { maxCharts: 2 });
 		expect(mockWarn).toHaveBeenCalledTimes(1);
 	});
 

@@ -7,6 +7,7 @@ import type { ConditionalBlock } from './layout/ConditionalBlock.js';
 import type { ContextActionsBlock } from './layout/ContextActionsBlock.js';
 import type { ContextBlock } from './layout/ContextBlock.js';
 import type { DataTableBlock } from './layout/DataTableBlock.js';
+import type { DataVisualizationBlock } from './layout/DataVisualizationBlock.js';
 import type { DividerBlock } from './layout/DividerBlock.js';
 import type { ExperimentalTabNavigationBlock } from './layout/ExperimentalTabNavigationBlock.js';
 import type { FileBlock } from './layout/FileBlock.js';
@@ -49,4 +50,5 @@ export type LayoutBlock =
 	| AlertBlock
 	| CardBlock
 	| CarouselBlock
-	| DataTableBlock;
+	| DataTableBlock
+	| DataVisualizationBlock;

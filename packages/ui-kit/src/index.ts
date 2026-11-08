@@ -71,6 +71,16 @@ export type {
 	RichTextTableCell,
 	ActionTableCell,
 } from './blocks/layout/DataTableBlock.js';
+export type {
+	DataVisualizationBlock,
+	DataVisualizationChart,
+	PieChart,
+	SeriesChart,
+	PieSegment,
+	DataSeries,
+	DataPoint,
+	AxisConfig,
+} from './blocks/layout/DataVisualizationBlock.js';
 export type { ExperimentalTabNavigationBlock } from './blocks/layout/ExperimentalTabNavigationBlock.js';
 export type { InfoCardBlock } from './blocks/layout/InfoCardBlock.js';
 export type { FileBlock } from './blocks/layout/FileBlock.js';

@@ -1,6 +1,6 @@
 import { ClientSafeError } from '@rocket.chat/core-services';
 import { Logger } from '@rocket.chat/logger';
-import { maxBlocksPerMessage, maxBlocksPerView, validateLayoutBlocks } from '@rocket.chat/ui-kit/validateLayoutBlocks';
+import { maxBlocksPerMessage, maxBlocksPerView, maxChartsPerMessage, validateLayoutBlocks } from '@rocket.chat/ui-kit/validateLayoutBlocks';
 
 import { settings } from '../../settings';
 
@@ -18,8 +18,8 @@ type Source = {
 
 const rejectsInvalidBlocks = () => settings.get<boolean>('UiKit_Reject_Invalid_Blocks') === true;
 
-const logInvalidBlocks = (blocks: unknown, source: Source, maxBlocks: number) => {
-	const errors = validateLayoutBlocks(blocks, maxBlocks);
+const logInvalidBlocks = (blocks: unknown, source: Source, maxBlocks: number, maxCharts?: number) => {
+	const errors = validateLayoutBlocks(blocks, maxBlocks, { maxCharts });
 
 	if (errors.length > 0) {
 		logger.warn({ msg: 'Invalid UiKit blocks', ...source, errors: errors.slice(0, maxReportedErrors), errorCount: errors.length });
@@ -37,7 +37,7 @@ export const reportInvalidBlocks = (blocks: unknown, source: Source): void => {
 		return;
 	}
 
-	const errors = logInvalidBlocks(blocks, source, maxBlocksPerMessage);
+	const errors = logInvalidBlocks(blocks, source, maxBlocksPerMessage, maxChartsPerMessage);
 
 	if (errors.length > 0 && rejectsInvalidBlocks()) {
 		const reasons = errors.slice(0, 3).map(({ path, expected }) => `${path}: expected ${expected}`);

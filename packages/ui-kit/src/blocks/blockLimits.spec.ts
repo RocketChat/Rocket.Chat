@@ -1,7 +1,8 @@
 import { checkBlockLimits } from './blockLimits';
 
 const text = (length: number) => ({ type: 'plain_text', text: 'a'.repeat(length) });
-const paths = (blocks: unknown, maxBlocks = 50) => checkBlockLimits(blocks, maxBlocks).map(({ path }) => path);
+const paths = (blocks: unknown, maxBlocks = 50, options: { maxCharts?: number } = { maxCharts: 2 }) =>
+	checkBlockLimits(blocks, maxBlocks, options).map(({ path }) => path);
 
 it('accepts blocks at their limits and values that are not blocks', () => {
 	expect(
@@ -127,5 +128,88 @@ describe('data_table', () => {
 		expect(paths(table([header, row], { page_size: 1.5 }))).toEqual(['$input[0].page_size']);
 		expect(paths(table([header, row], { row_header_column_index: 2 }))).toEqual(['$input[0].row_header_column_index']);
 		expect(paths(table([header, row], { row_header_column_index: -1 }))).toEqual(['$input[0].row_header_column_index']);
+	});
+});
+
+describe('data_visualization', () => {
+	const point = (label: string, value = 1) => ({ label, value });
+	const chart = (type: string, series: unknown[], axis: object = { categories: ['a', 'b'] }) => ({
+		type: 'data_visualization',
+		title: 'Chart',
+		chart: { type, series, axis_config: axis },
+	});
+	const valid = (extra: object = {}) => ({ name: 'one', data: [point('a'), point('b', -2)], ...extra });
+	const withCategories = (categories: string[]) =>
+		chart('bar', [{ name: 'one', data: categories.map((label) => point(label)) }], { categories });
+	const pie = (segments: unknown[]) => ({ type: 'data_visualization', title: 'Pie', chart: { type: 'pie', segments } });
+
+	it('accepts charts at their limits', () => {
+		const categories = Array.from({ length: 20 }, (_, index) => `${index}`.padEnd(20, 'x'));
+		const series = Array.from({ length: 12 }, (_, index) => ({
+			name: `${index}`.padEnd(20, 'x'),
+			data: categories.map((label) => point(label)),
+		}));
+
+		expect(
+			paths([{ ...chart('bar', series, { categories, x_label: 'x'.repeat(50), y_label: 'y'.repeat(50) }), title: 't'.repeat(50) }]),
+		).toEqual([]);
+		expect(
+			paths([chart('line', [valid()]), pie(Array.from({ length: 12 }, (_, index) => ({ label: 'l'.repeat(20), value: index + 0.5 })))]),
+		).toEqual([]);
+	});
+
+	it.each([
+		['title', { ...chart('bar', [valid()]), title: 't'.repeat(51) }, '$input[0].title'],
+		['pie without segments', pie([]), '$input[0].chart.segments'],
+		['pie with 13 segments', pie(Array.from({ length: 13 }, () => ({ label: 'a', value: 1 }))), '$input[0].chart.segments'],
+		['segment label', pie([{ label: 'a'.repeat(21), value: 1 }]), '$input[0].chart.segments[0].label'],
+		['segment value of 0', pie([{ label: 'a', value: 0 }]), '$input[0].chart.segments[0].value'],
+		['segment negative value', pie([{ label: 'a', value: -1 }]), '$input[0].chart.segments[0].value'],
+		['no series', chart('area', []), '$input[0].chart.series'],
+		[
+			'13 series',
+			chart(
+				'area',
+				Array.from({ length: 13 }, (_, index) => valid({ name: `s${index}` })),
+			),
+			'$input[0].chart.series',
+		],
+		['series name', chart('bar', [valid({ name: 'n'.repeat(21) })]), '$input[0].chart.series[0].name'],
+		['duplicated series name', chart('bar', [valid(), valid()]), '$input[0].chart.series[1].name'],
+		['no categories', chart('bar', [valid({ data: [] })], { categories: [] }), '$input[0].chart.axis_config.categories'],
+		['21 categories', withCategories(Array.from({ length: 21 }, (_, index) => `${index}`)), '$input[0].chart.axis_config.categories'],
+		['category label', withCategories(['a', 'c'.repeat(21)]), '$input[0].chart.axis_config.categories[1]'],
+		['x_label', chart('bar', [valid()], { categories: ['a', 'b'], x_label: 'x'.repeat(51) }), '$input[0].chart.axis_config.x_label'],
+		['y_label', chart('bar', [valid()], { categories: ['a', 'b'], y_label: 'y'.repeat(51) }), '$input[0].chart.axis_config.y_label'],
+		['a missing point', chart('line', [valid({ data: [point('a')] })]), '$input[0].chart.series[0].data'],
+		['a point outside the categories', chart('line', [valid({ data: [point('a'), point('z')] })]), '$input[0].chart.series[0].data'],
+		['a repeated point', chart('line', [valid({ data: [point('a'), point('a')] })]), '$input[0].chart.series[0].data'],
+	])('limits the %s', (_, block, path) => {
+		expect(paths([block])).toEqual([path]);
+	});
+
+	it('reports duplicated categories and duplicated point labels', () => {
+		expect(paths([chart('bar', [valid()], { categories: ['a', 'a'] })])).toContain('$input[0].chart.axis_config.categories');
+		expect(paths([chart('line', [valid({ data: [point('a'), point('a')] })])])).toEqual(['$input[0].chart.series[0].data']);
+	});
+
+	it('stays fast on a payload far past the limits', () => {
+		const categories = Array.from({ length: 50000 }, (_, index) => `c${index}`);
+		const series = [{ name: 'one', data: [...categories].reverse().map((label) => point(label)) }];
+		const start = performance.now();
+		const result = paths([chart('bar', series, { categories })]);
+
+		expect(performance.now() - start).toBeLessThan(200);
+		expect(result).toContain('$input[0].chart.axis_config.categories');
+		expect(result).not.toContain('$input[0].chart.series[0].data');
+	});
+
+	it('allows 2 charts in a message and any number in a view', () => {
+		const charts = [chart('bar', [valid()]), chart('bar', [valid()]), chart('bar', [valid()])];
+
+		expect(paths(charts.slice(0, 2))).toEqual([]);
+		expect(paths(charts)).toEqual(['$input']);
+		expect(paths(charts, 100, {})).toEqual([]);
+		expect(paths(charts, 50, { maxCharts: 3 })).toEqual([]);
 	});
 });

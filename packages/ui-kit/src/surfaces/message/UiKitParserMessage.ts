@@ -11,6 +11,7 @@ export const messageSurfaceLayoutBlockTypes = [
 	'context',
 	'context_actions',
 	'data_table',
+	'data_visualization',
 	'divider',
 	'file',
 	'header',

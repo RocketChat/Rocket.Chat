@@ -141,6 +141,34 @@ A `DataTableCell` is one of:
 
 The button of an `action_cell` gets the block's `appId` and `blockId` when it has none, and clicking it sends the usual block action, so set its `value` to tell the rows apart. Any other cell renders empty.
 
+### `data_visualization`
+
+Source: [`packages/ui-kit/src/blocks/layout/DataVisualizationBlock.ts`](../../../packages/ui-kit/src/blocks/layout/DataVisualizationBlock.ts)
+
+A pie, bar, area or line chart under a title. The chart is drawn by a library that the web client loads only when a message shows one. It is announced as an image named by `title`, and its values are also available to assistive technology as a table. A message can hold up to 2 `data_visualization` blocks; this is checked when blocks are validated and does not apply to views.
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'data_visualization'` | yes |  |
+| `title` | `string` | yes | At most 50 characters. |
+| `chart` | `PieChart \| SeriesChart` | yes | See below. |
+| `appId` | `string` | no |  |
+| `blockId` | `string` | no |  |
+
+A `pie` chart has `segments`, from 1 to 12 `{ label, value }` slices: `label` is at most 20 characters and `value` is greater than 0. The share of a slice is its value over the sum of all values.
+
+A `bar`, `area` or `line` chart has `series`, from 1 to 12 `{ name, data }`, and an `axis_config`:
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `series[].name` | `string` | yes | At most 20 characters, unique in the chart; shown in the legend, which appears when there is more than one series. |
+| `series[].data` | `{ label, value }[]` | yes | Exactly one point for each category, no other; `value` may be negative. |
+| `axis_config.categories` | `string[]` | yes | From 1 to 20 labels of at most 20 characters, in x-axis order. |
+| `axis_config.x_label` | `string` | no | Title under the x-axis, at most 50 characters. |
+| `axis_config.y_label` | `string` | no | Title beside the y-axis, at most 50 characters. |
+
+Bars of several series are grouped by category. Areas are layered in array order, the first at the back.
+
 ### `divider`
 
 Source: [`packages/ui-kit/src/blocks/layout/DividerBlock.ts`](../../../packages/ui-kit/src/blocks/layout/DividerBlock.ts)
