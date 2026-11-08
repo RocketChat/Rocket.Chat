@@ -61,7 +61,7 @@ describe('RestClient response body validation', () => {
 		expect(json).not.toHaveBeenCalled();
 	});
 
-    	it('returns an empty object for a 205 response without reading the body', async () => {
+	it('returns an empty object for a 205 response without reading the body', async () => {
 		const json = jest.fn();
 		mockFetch(makeResponse({ status: 205, json }));
 
