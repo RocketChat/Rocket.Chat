@@ -1,10 +1,17 @@
 import type * as UiKit from '@rocket.chat/ui-kit';
 
 import { richTextFromMarkdown } from './richTextFromMarkdown';
+import { richTextToRuns } from './richTextRuns';
 import { richTextToAst } from './richTextToAst';
 import { richTextToMarkdown } from './richTextToMarkdown';
 
-const names = { users: { u1: 'jane.roe' }, channels: { c1: 'general' } };
+const names = {
+	users: { u1: 'jane.roe' },
+	channels: { c1: 'general' },
+	teams: { t1: 'support' },
+	messageLinks: { m1: 'https://chat.example/channel/general?msg=m1' },
+	messageLabel: 'message',
+};
 
 const text = (value: string, style?: UiKit.RichTextStyle): UiKit.RichTextInlineElement => ({
 	type: 'text',
@@ -60,7 +67,7 @@ describe('richTextToAst', () => {
 	it('falls back to the id while a name is unresolved', () => {
 		const [paragraph] = richTextToAst(
 			{ elements: [{ type: 'rich_text_section', elements: [{ type: 'user', user_id: 'u9' }] }] },
-			{ users: {}, channels: {} },
+			{ ...names, users: {}, channels: {} },
 		);
 
 		expect(paragraph).toEqual({ type: 'PARAGRAPH', value: [{ type: 'MENTION_USER', value: { type: 'PLAIN_TEXT', value: 'u9' } }] });
@@ -122,6 +129,147 @@ describe('richTextToAst', () => {
 				],
 			},
 		]);
+	});
+});
+
+describe('richTextToAst with color, tag, citation and mention elements', () => {
+	const plain = (value: string) => ({ type: 'PLAIN_TEXT', value });
+	const link = (src: string, label: string) => ({ type: 'LINK', value: { src: plain(src), label: plain(label) } });
+	const inlines = (...elements: UiKit.RichTextInlineElement[]) =>
+		richTextToAst({ elements: [{ type: 'rich_text_section', elements }] }, names)[0];
+
+	it('maps colors to COLOR tokens and keeps an invalid value as text', () => {
+		expect(inlines({ type: 'color', value: '#F405B3' })).toEqual({
+			type: 'PARAGRAPH',
+			value: [{ type: 'COLOR', value: { r: 244, g: 5, b: 179, a: 255 } }],
+		});
+		expect(inlines({ type: 'color', value: '#00000080' })).toMatchObject({ value: [{ type: 'COLOR', value: { a: 128 } }] });
+		expect(inlines({ type: 'color', value: 'red' })).toEqual({ type: 'PARAGRAPH', value: [plain('red')] });
+	});
+
+	it('leaves the style of a link element out, as it always was', () => {
+		expect(inlines({ type: 'link', url: 'https://example.com', text: 'site', style: { bold: true } })).toEqual({
+			type: 'PARAGRAPH',
+			value: [link('https://example.com', 'site')],
+		});
+	});
+
+	it('maps a tag to its text and a citation to a link labelled with its index', () => {
+		expect(
+			inlines({ type: 'tag', text: 'Open', color: 'red' }, { type: 'citation', url: 'https://example.com', text: 'Source', index: 2 }),
+		).toEqual({
+			type: 'PARAGRAPH',
+			value: [plain('Open'), link('https://example.com', '[2]')],
+		});
+	});
+
+	it('maps a citation with an unsafe url to plain text', () => {
+		expect(inlines({ type: 'citation', url: 'javascript:alert(1)', text: 'Source', index: 2 })).toEqual({
+			type: 'PARAGRAPH',
+			value: [plain('[2]')],
+		});
+	});
+
+	it('links a message mention to its url, or to the permalink, or leaves its label as text', () => {
+		const mention = { type: 'message_mention', channel_id: 'c1', message_id: 'm1' } as const;
+
+		expect(inlines({ ...mention, url: 'https://example.com/m', text: 'look' })).toEqual({
+			type: 'PARAGRAPH',
+			value: [link('https://example.com/m', 'look')],
+		});
+		expect(inlines(mention)).toEqual({ type: 'PARAGRAPH', value: [link('https://chat.example/channel/general?msg=m1', 'message')] });
+		expect(inlines({ ...mention, message_id: 'm2', url: 'javascript:x' })).toEqual({ type: 'PARAGRAPH', value: [plain('message')] });
+	});
+
+	it('maps an attachment mention to a link labelled with its text or url, and applies its style', () => {
+		expect(inlines({ type: 'attachment_mention', url: 'https://example.com/a' })).toEqual({
+			type: 'PARAGRAPH',
+			value: [link('https://example.com/a', 'https://example.com/a')],
+		});
+		expect(inlines({ type: 'attachment_mention', url: 'javascript:x', text: 'file' })).toEqual({
+			type: 'PARAGRAPH',
+			value: [plain('file')],
+		});
+		expect(inlines({ type: 'attachment_mention', url: 'https://example.com/a', text: 'file', style: { bold: true } })).toEqual({
+			type: 'PARAGRAPH',
+			value: [{ type: 'BOLD', value: [link('https://example.com/a', 'file')] }],
+		});
+	});
+
+	it('maps a usergroup to a user mention and a team to a channel mention, by team name', () => {
+		expect(inlines({ type: 'usergroup', usergroup_id: 't1' }, { type: 'team', team_id: 't1' }, { type: 'team', team_id: 't9' })).toEqual({
+			type: 'PARAGRAPH',
+			value: [
+				{ type: 'MENTION_USER', value: plain('support') },
+				{ type: 'MENTION_CHANNEL', value: plain('support') },
+				{ type: 'MENTION_CHANNEL', value: plain('t9') },
+			],
+		});
+	});
+});
+
+describe('richTextToRuns', () => {
+	it('keeps containers without tags or citations in one markup run and splits the others around them', () => {
+		const runs = richTextToRuns(
+			{
+				elements: [
+					{ type: 'rich_text_section', elements: [text('a')] },
+					{ type: 'rich_text_quote', elements: [text('b')] },
+					{ type: 'rich_text_section', elements: [text('Status '), { type: 'tag', text: 'Open' }, text(' now')] },
+					{ type: 'rich_text_section', elements: [text('c')] },
+				],
+			},
+			names,
+		);
+
+		expect(runs.map((run) => run.kind)).toEqual(['markup', 'mixed', 'markup']);
+		expect(runs[1]).toMatchObject({
+			container: 'section',
+			lines: [[{ kind: 'markup' }, { kind: 'custom', element: { type: 'tag' } }, { kind: 'markup' }]],
+		});
+	});
+
+	it('treats a citation with an unsafe url as markup', () => {
+		const runs = richTextToRuns(
+			{ elements: [{ type: 'rich_text_section', elements: [{ type: 'citation', url: 'javascript:x', text: 's', index: 1 }] }] },
+			names,
+		);
+
+		expect(runs.map((run) => run.kind)).toEqual(['markup']);
+	});
+});
+
+describe('richTextToMarkdown with the new elements', () => {
+	it('writes them as text a user could have typed', () => {
+		expect(
+			richTextToMarkdown(
+				{
+					elements: [
+						{
+							type: 'rich_text_section',
+							elements: [
+								{ type: 'color', value: '#FFF000' },
+								text(' '),
+								{ type: 'tag', text: 'Open', style: { bold: true } },
+								text(' '),
+								{ type: 'citation', url: 'https://example.com', text: 'Source', index: 1 },
+								text(' '),
+								{ type: 'message_mention', channel_id: 'c1', message_id: 'm1', text: 'look' },
+								text(' '),
+								{ type: 'attachment_mention', url: 'https://example.com/a' },
+								text(' '),
+								{ type: 'usergroup', usergroup_id: 't1' },
+								text(' '),
+								{ type: 'team', team_id: 't1' },
+							],
+						},
+					],
+				},
+				names,
+			),
+		).toBe(
+			'#FFF000 **Open** [1](https://example.com) [look](https://chat.example/channel/general?msg=m1) [https://example.com/a](https://example.com/a) @support #support',
+		);
 	});
 });
 
