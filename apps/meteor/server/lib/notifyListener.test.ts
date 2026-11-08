@@ -11,6 +11,9 @@ describe('Message Broadcast Tests', () => {
 	let usersFindByUsernamesStub: sinon.SinonStub;
 	let messagesFindOneStub: sinon.SinonStub;
 	let broadcastStub: sinon.SinonStub;
+	let findByIdsStub: sinon.SinonStub;
+	let logErrorStub: sinon.SinonStub;
+	let notifyOnRoomChangedById: typeof import('./notifyListener').notifyOnRoomChangedById;
 	let getMessageToBroadcast: any;
 	let notifyOnMessageChange: any;
 	let memStub: sinon.SinonStub;
@@ -27,6 +30,7 @@ describe('Message Broadcast Tests', () => {
 	};
 
 	const modelsStubs = () => ({
+		Rooms: { findByIds: findByIdsStub },
 		Messages: {
 			findOneById: messagesFindOneStub,
 		},
@@ -51,18 +55,46 @@ describe('Message Broadcast Tests', () => {
 		usersFindByUsernamesStub = sinon.stub();
 		messagesFindOneStub = sinon.stub();
 		broadcastStub = sinon.stub();
+		findByIdsStub = sinon.stub();
+		logErrorStub = sinon.stub();
 		memStub = sinon.stub().callsFake((fn: any) => fn);
 
 		const proxyMock = proxyquire.noPreserveCache().load('./notifyListener', {
 			'@rocket.chat/models': modelsStubs(),
 			'@rocket.chat/core-services': coreStubs(),
+			'@rocket.chat/logger': {
+				Logger: class {
+					error = logErrorStub;
+				},
+			},
 			'mem': memStub,
 		});
 
 		getMessageToBroadcast = proxyMock.getMessageToBroadcast;
 		notifyOnMessageChange = proxyMock.notifyOnMessageChange;
+		notifyOnRoomChangedById = proxyMock.notifyOnRoomChangedById;
 	});
 
+	it('logs a rejected room broadcast and still broadcasts the next room', async () => {
+		const firstRoom = { _id: 'room-a' };
+		const secondRoom = { _id: 'room-b' };
+		const error = new Error('room broadcast failed');
+
+		findByIdsStub.returns([firstRoom, secondRoom]);
+		broadcastStub.onFirstCall().rejects(error);
+		broadcastStub.onSecondCall().resolves();
+
+		await notifyOnRoomChangedById([firstRoom._id, secondRoom._id], 'updated');
+
+		sinon.assert.calledTwice(broadcastStub);
+		sinon.assert.calledWithExactly(broadcastStub.firstCall, 'watch.rooms', { clientAction: 'updated', room: firstRoom });
+		sinon.assert.calledWithExactly(broadcastStub.secondCall, 'watch.rooms', { clientAction: 'updated', room: secondRoom });
+		sinon.assert.calledOnceWithExactly(logErrorStub, {
+			msg: 'Failed to broadcast room change',
+			roomId: firstRoom._id,
+			err: error,
+		});
+	});
 	describe('getMessageToBroadcast', () => {
 		let originalEnv: NodeJS.ProcessEnv;
 
