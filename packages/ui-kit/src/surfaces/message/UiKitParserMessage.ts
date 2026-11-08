@@ -10,6 +10,7 @@ export const messageSurfaceLayoutBlockTypes = [
 	'carousel',
 	'context',
 	'context_actions',
+	'data_table',
 	'divider',
 	'file',
 	'header',

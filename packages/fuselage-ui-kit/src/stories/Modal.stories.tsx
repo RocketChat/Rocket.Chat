@@ -195,6 +195,8 @@ export const Alert = createStory(payloads.alert);
 
 export const Card = createStory(payloads.card);
 
+export const DataTable = createStory(payloads.dataTable);
+
 export const Callout = createStory(payloads.callout);
 
 export const CalloutWithAction = createStory(payloads.calloutWithAction);

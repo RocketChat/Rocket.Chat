@@ -74,3 +74,15 @@ it('accepts a carousel of cards with buttons that leave out their ids', () => {
 	expect(validateLayoutBlocks([{ type: 'alert', text: text('hi'), level: 'bogus' }])).not.toEqual([]);
 	expect(validateLayoutBlocks([{ type: 'carousel', elements: [{ type: 'divider' }] }])).not.toEqual([]);
 });
+
+it('accepts a data table with buttons that leave out their ids and rejects invalid cells', () => {
+	const cell = { type: 'raw_text', text: 'a' };
+	const table = (rows: unknown[][]) => [{ type: 'data_table', caption: 'Table', rows }];
+	const action = { type: 'action_cell', element: { type: 'button', text: text('go') }, fallback: { type: 'raw_number', value: 1 } };
+	const rich = { type: 'rich_text', elements: [{ type: 'rich_text_section', elements: [{ type: 'text', text: 'a' }] }] };
+
+	expect(validateLayoutBlocks(table([[cell], [action], [rich], [{ type: 'raw_number', value: 2, text: 'two' }]]))).toEqual([]);
+	expect(validateLayoutBlocks(table([[cell], [{ type: 'action_cell', element: { type: 'divider' } }]]))).not.toEqual([]);
+	expect(validateLayoutBlocks(table([[cell], [{ type: 'raw_number', value: 'two' }]]))).not.toEqual([]);
+	expect(validateLayoutBlocks([{ type: 'data_table', rows: [[cell], [cell]] }])).not.toEqual([]);
+});

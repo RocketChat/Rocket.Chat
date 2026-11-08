@@ -25,9 +25,92 @@ const maxTextLength = {
 	hint: 2000,
 } as const;
 
+const dataTable = { minRows: 2, maxRows: 201, maxColumns: 20, maxCharacters: 20000, maxPageSize: 100 } as const;
+
 type Node = Record<string, unknown>;
 
 const isNode = (value: unknown): value is Node => typeof value === 'object' && value !== null && !Array.isArray(value);
+
+const textLength = (value: unknown): number => {
+	if (Array.isArray(value)) {
+		return value.reduce<number>((total, item) => total + textLength(item), 0);
+	}
+
+	if (!isNode(value)) {
+		return 0;
+	}
+
+	return Object.entries(value).reduce(
+		(total, [key, child]) => total + (key === 'text' && typeof child === 'string' ? child.length : textLength(child)),
+		0,
+	);
+};
+
+const cellLength = (cell: Node): number => {
+	if (cell.type === 'raw_number') {
+		return typeof cell.text === 'string' ? cell.text.length : String(cell.value).length;
+	}
+
+	return cell.type === 'action_cell' ? textLength(cell.element) : textLength(cell);
+};
+
+const checkDataTable = (table: Node, path: string, errors: LayoutBlockError[]): void => {
+	const { rows } = table;
+
+	if (table.type !== 'data_table' || !Array.isArray(rows)) {
+		return;
+	}
+
+	if (rows.length < dataTable.minRows || rows.length > dataTable.maxRows) {
+		errors.push({ path: `${path}.rows`, expected: `array of ${dataTable.minRows} to ${dataTable.maxRows} rows` });
+	}
+
+	const columns = Array.isArray(rows[0]) ? rows[0].length : 0;
+
+	if (columns < 1 || columns > dataTable.maxColumns) {
+		errors.push({ path: `${path}.rows[0]`, expected: `array of 1 to ${dataTable.maxColumns} cells` });
+	}
+
+	let characters = 0;
+
+	rows.forEach((row, rowIndex) => {
+		if (!Array.isArray(row)) {
+			return;
+		}
+
+		if (rowIndex > 0 && row.length !== columns) {
+			errors.push({ path: `${path}.rows[${rowIndex}]`, expected: `array of ${columns} cells, like the header` });
+		}
+
+		row.forEach((cell, cellIndex) => {
+			if (!isNode(cell)) {
+				return;
+			}
+
+			if (rowIndex === 0 && (cell.type === 'rich_text' || cell.type === 'action_cell')) {
+				errors.push({ path: `${path}.rows[0][${cellIndex}]`, expected: 'raw_text or raw_number cell' });
+			}
+
+			characters += cellLength(cell);
+		});
+	});
+
+	if (characters > dataTable.maxCharacters) {
+		errors.push({ path: `${path}.rows`, expected: `cells of at most ${dataTable.maxCharacters} characters in total` });
+	}
+
+	const { page_size: pageSize } = table;
+
+	if (typeof pageSize === 'number' && (!Number.isInteger(pageSize) || pageSize < 1 || pageSize > dataTable.maxPageSize)) {
+		errors.push({ path: `${path}.page_size`, expected: `integer from 1 to ${dataTable.maxPageSize}` });
+	}
+
+	const { row_header_column_index: headerIndex } = table;
+
+	if (typeof headerIndex === 'number' && (!Number.isInteger(headerIndex) || headerIndex < 0 || headerIndex >= columns)) {
+		errors.push({ path: `${path}.row_header_column_index`, expected: `integer from 0 to ${Math.max(columns - 1, 0)}` });
+	}
+};
 
 const textLimit = (parent: Node, key: string, inFields: boolean): number | undefined => {
 	if (inFields) {
@@ -114,6 +197,8 @@ export const checkBlockLimits = (blocks: unknown, maxBlocks: number): LayoutBloc
 				errors.push({ path: `${path}.alt_text`, expected: `string of at most ${maxImageAltLength} characters` });
 			}
 		}
+
+		checkDataTable(value, path, errors);
 
 		for (const [childKey, child] of Object.entries(value)) {
 			walk(child, `${path}.${childKey}`, value, childKey, false);
