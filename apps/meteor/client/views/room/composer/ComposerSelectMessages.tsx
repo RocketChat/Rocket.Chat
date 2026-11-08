@@ -1,7 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { MessageFooterCallout, MessageFooterCalloutContent } from '@rocket.chat/ui-composer';
-import { useSetModal } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -18,9 +18,10 @@ import {
 import ForwardMessageModal from '../modals/ForwardMessageModal';
 import { selectedMessageStore } from '../providers/SelectedMessagesProvider';
 
-const ComposerSelectMessages = ({ onClickSelectAll }: Pick<ComposerMessageProps, 'onClickSelectAll'>) => {
+const ComposerSelectMessages = ({ onClickSelectAll }: ComposerMessageProps) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
+	const dispatchToastMessage = useToastMessageDispatch();
 	const [isLoading, setIsLoading] = useState(false);
 
 	const clearSelection = useClearSelection();
@@ -41,21 +42,25 @@ const ComposerSelectMessages = ({ onClickSelectAll }: Pick<ComposerMessageProps,
 
 			for (const mid of mids) {
 				const cached = Messages.state.get(mid);
-				if (cached) {
+				if (cached && cached._hidden !== true) {
 					resolvedMessages.push(cached);
 				} else {
 					try {
 						const response = await sdk.rest.get('/v1/chat.getMessage', { msgId: mid });
-						if (response?.message) {
+						if (response?.message && response.message._hidden !== true) {
 							resolvedMessages.push(mapMessageFromApi(response.message));
+						} else {
+							throw new Error('Message not found');
 						}
 					} catch {
-						// Ignore individual message fetch error
+						dispatchToastMessage({ type: 'error', message: t('error-forwarding-chat') });
+						return;
 					}
 				}
 			}
 
-			if (!resolvedMessages.length) {
+			if (resolvedMessages.length !== mids.length) {
+				dispatchToastMessage({ type: 'error', message: t('error-forwarding-chat') });
 				return;
 			}
 
@@ -77,7 +82,7 @@ const ComposerSelectMessages = ({ onClickSelectAll }: Pick<ComposerMessageProps,
 		} finally {
 			setIsLoading(false);
 		}
-	}, [setModal]);
+	}, [dispatchToastMessage, setModal, t]);
 
 	return (
 		<MessageFooterCallout>
@@ -92,10 +97,6 @@ const ComposerSelectMessages = ({ onClickSelectAll }: Pick<ComposerMessageProps,
 					{t('Clear_selection')}
 				</Button>
 				<Button icon='arrow-up' small disabled={countAvailable === 0} onClick={onClickSelectAll}>
-				<Button size='small' disabled={countSelected === 0} onClick={clearSelection}>
-					{t('Clear_selection')}
-				</Button>
-				<Button icon='arrow-up' size='small' variant='primary' disabled={countAvailable === 0} onClick={onClickSelectAll}>
 					{t('Select__count__messages', { count: countAvailable })}
 				</Button>
 				<Button
