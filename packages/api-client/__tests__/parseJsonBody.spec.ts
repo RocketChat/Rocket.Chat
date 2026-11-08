@@ -60,4 +60,25 @@ describe('RestClient response body validation', () => {
 		await expect((client as any).delete('/v1/info')).resolves.toEqual({});
 		expect(json).not.toHaveBeenCalled();
 	});
+
+    	it('returns an empty object for a 205 response without reading the body', async () => {
+		const json = jest.fn();
+		mockFetch(makeResponse({ status: 205, json }));
+
+		await expect((client as any).get('/v1/info')).resolves.toEqual({});
+		expect(json).not.toHaveBeenCalled();
+	});
+
+	it('rethrows errors that are not JSON syntax errors', async () => {
+		const abortError = Object.assign(new Error('The operation was aborted'), { name: 'AbortError' });
+		mockFetch(
+			makeResponse({
+				json: async () => {
+					throw abortError;
+				},
+			}),
+		);
+
+		await expect((client as any).get('/v1/info')).rejects.toBe(abortError);
+	});
 });

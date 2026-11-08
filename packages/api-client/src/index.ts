@@ -192,8 +192,8 @@ export class RestClient implements RestClientInterface {
 	}
 
 	private async parseJsonBody<T>(response: Response): Promise<T> {
-		// No content: callers only expect objects, so return an empty record.
-		if (response.status === 204) {
+		// No content / reset content: these responses have no body to parse.
+		if (response.status === 204 || response.status === 205) {
 			return {} as T;
 		}
 
@@ -201,6 +201,10 @@ export class RestClient implements RestClientInterface {
 		try {
 			body = await response.json();
 		} catch (cause) {
+			// Rethrow aborts and network errors raised while reading the body as-is.
+			if (!(cause instanceof SyntaxError)) {
+				throw cause;
+			}
 			throw new InvalidResponseError('Response body is not valid JSON', response, { cause });
 		}
 

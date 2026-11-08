@@ -22,7 +22,12 @@ export const hasRequiredTwoFactorMethod = (error: unknown): error is { details: 
 		isTwoFactorMethod((details as { method: string }).method)
 	);
 };
+
 export class InvalidResponseError extends Error {
+	/**
+	 * The response that failed validation. Its body has already been consumed,
+	 * so use it for `status`, `headers` and `url` only.
+	 */
 	readonly response: Response;
 
 	constructor(message: string, response: Response, options?: { cause?: unknown }) {
