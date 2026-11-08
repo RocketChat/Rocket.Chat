@@ -135,7 +135,7 @@ export class RestClient implements RestClientInterface {
 			...options,
 		});
 
-		return this.parseJsonBody<Serialized<OperationResult<'POST', TPathPattern>>>(response);
+				return this.parseJsonBody<Serialized<OperationResult<'POST', TPathPattern>>>(response, { allowEmpty: true });
 	}
 
 	put<TPathPattern extends MatchPathPattern<TPath>, TPath extends PathWithParamsFor<'PUT'> = PathWithParamsFor<'PUT'>>(
@@ -191,9 +191,10 @@ export class RestClient implements RestClientInterface {
 		return this.parseJsonBody<Serialized<OperationResult<'DELETE', TPathPattern>>>(response);
 	}
 
-	private async parseJsonBody<T>(response: Response): Promise<T> {
-		// No content / reset content: these responses have no body to parse.
-		if (response.status === 204 || response.status === 205) {
+		private async parseJsonBody<T>(response: Response, { allowEmpty = false }: { allowEmpty?: boolean } = {}): Promise<T> {
+		// Only operations that tolerate an empty response opt in. For everyone else a
+		// bodyless response is a failure, reported as InvalidResponseError below.
+		if (allowEmpty && (response.status === 204 || response.status === 205)) {
 			return {} as T;
 		}
 

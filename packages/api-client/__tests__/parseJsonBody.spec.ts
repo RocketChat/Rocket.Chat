@@ -57,7 +57,7 @@ describe('RestClient response body validation', () => {
 		const json = jest.fn();
 		mockFetch(makeResponse({ status: 204, json }));
 
-		await expect((client as any).delete('/v1/info')).resolves.toEqual({});
+		await expect((client as any).post('/v1/info', {})).resolves.toEqual({});
 		expect(json).not.toHaveBeenCalled();
 	});
 
@@ -65,7 +65,7 @@ describe('RestClient response body validation', () => {
 		const json = jest.fn();
 		mockFetch(makeResponse({ status: 205, json }));
 
-		await expect((client as any).get('/v1/info')).resolves.toEqual({});
+		await expect((client as any).post('/v1/info', {})).resolves.toEqual({});
 		expect(json).not.toHaveBeenCalled();
 	});
 
@@ -80,5 +80,18 @@ describe('RestClient response body validation', () => {
 		);
 
 		await expect((client as any).get('/v1/info')).rejects.toBe(abortError);
+	});
+
+	it('does not treat a 204 response as an empty object for get', async () => {
+		mockFetch(
+			makeResponse({
+				status: 204,
+				json: async () => {
+					throw new SyntaxError('Unexpected end of JSON input');
+				},
+			}),
+		);
+
+		await expect((client as any).get('/v1/info')).rejects.toBeInstanceOf(InvalidResponseError);
 	});
 });
