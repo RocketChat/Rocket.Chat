@@ -1,3 +1,4 @@
+import { isE2EEMessage } from '@rocket.chat/core-typings';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Message, MessageLeftContainer, MessageContainer, CheckBox } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
@@ -79,17 +80,18 @@ const RoomMessage = ({
 	const ignored = (ignoredUser || message.ignored) && !displayIgnoredMessage;
 	const { openUserCard, openUserInfo } = useUserCard();
 
+	const isE2E = isE2EEMessage(message);
 	const selecting = useIsSelecting();
 
 	const toggleSelected = useToggleSelect(message._id);
-	const selected = useIsSelectedMessage(message._id);
+	const selected = useIsSelectedMessage(message._id, isE2E);
 
 	const { enabled: readReceiptEnabled } = useMessageListReadReceipts();
 
 	useCountSelected();
 
 	const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-		if (!selecting) return;
+		if (!selecting || isE2E) return;
 
 		if (!(e.code === 'Space' || e.code === 'Enter')) return;
 
@@ -106,7 +108,7 @@ const RoomMessage = ({
 			tabIndex={0}
 			aria-roledescription={t('message')}
 			aria-labelledby={getAriaLabelledBy({ readReceiptEnabled, messageId: message._id, sequential })}
-			onClick={selecting ? toggleSelected : undefined}
+			onClick={selecting && !isE2E ? toggleSelected : undefined}
 			onKeyDown={handleKeyDown}
 			isSelected={selected}
 			isEditing={editing}
@@ -135,7 +137,15 @@ const RoomMessage = ({
 						aria-hidden='true'
 					/>
 				)}
-				{selecting && <CheckBox checked={selected} onChange={toggleSelected} aria-label={checkboxLabel} />}
+				{selecting && (
+					<CheckBox
+						checked={selected}
+						onChange={isE2E ? undefined : toggleSelected}
+						disabled={isE2E}
+						title={isE2E ? t('Action_not_available_encrypted_content', { action: t('Forward_message') }) : undefined}
+						aria-label={checkboxLabel}
+					/>
+				)}
 				{sequential && <StatusIndicators message={message} />}
 			</MessageLeftContainer>
 			<MessageContainer>

@@ -3,7 +3,7 @@ import { isTruthy } from '@rocket.chat/tools';
 import { CustomVirtuaScrollbars, useEmbeddedLayout } from '@rocket.chat/ui-client';
 import { usePermission, useRole, useSetting, useTranslation, useUser, useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { MouseEvent } from 'react';
-import { memo, useCallback, useMemo, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useMergedRefsV2 } from '../../../hooks/useMergedRefsV2';
 import { BubbleDate } from '../BubbleDate';
@@ -33,6 +33,7 @@ import { useSelectAllAndScrollToTop } from './hooks/useSelectAllAndScrollToTop';
 import { useHandleUnread } from './hooks/useUnreadMessages';
 import { useKeepAtBottom } from '../MessageList/hooks/useKeepAtBottom';
 import useTryToJumpToThreadMessage from '../MessageList/hooks/useTryToJumpToThreadMessage';
+import { selectedMessageStore } from '../providers/SelectedMessagesProvider';
 
 const RoomBody = () => {
 	const chat = useChat();
@@ -63,6 +64,12 @@ const RoomBody = () => {
 			setIsJumpingToMessage(false);
 		}
 	}
+
+	useEffect(() => {
+		return () => {
+			selectedMessageStore.reset();
+		};
+	}, [room._id]);
 
 	const retentionPolicy = useRetentionPolicy(room);
 

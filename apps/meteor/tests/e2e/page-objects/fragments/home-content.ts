@@ -186,11 +186,20 @@ export class HomeContent {
 		await this.messageListItems.last().hover();
 		await this.page.locator('role=button[name="Forward message"]').click();
 
+		const footerForward = this.page.locator('footer').getByRole('button', { name: 'Forward', exact: true });
+		try {
+			await footerForward.waitFor({ state: 'visible', timeout: 3000 });
+			await footerForward.click();
+		} catch {
+			// Footer might not be visible if modal opens directly
+		}
+
 		await this.page.getByRole('textbox', { name: 'Person or channel', exact: true }).click();
 		await this.page.keyboard.type(chatName);
 		await this.page.locator('#position-container').getByText(chatName).waitFor();
 		await this.page.locator('#position-container').getByText(chatName).click();
-		await this.page.locator('role=button[name="Forward"]').click();
+		await this.page.locator('#modal-root').getByRole('button', { name: 'Forward', exact: true }).click();
+		await expect(this.page.locator('#modal-root').getByRole('dialog')).not.toBeVisible({ timeout: 15000 });
 	}
 
 	// TODO: use modal fragments -----------------------------------------

@@ -3,17 +3,9 @@ import { render, screen } from '@testing-library/react';
 import { axe } from 'jest-axe';
 
 import ForwardMessageAction from './ForwardMessageAction';
+import { selectedMessageStore } from '../../../../../views/room/providers/SelectedMessagesProvider';
 import FakeRoomProvider from '../../../../../../tests/mocks/client/FakeRoomProvider';
 import { createFakeRoom } from '../../../../../../tests/mocks/data';
-
-// Mock the getPermaLink function
-jest.mock('../../../../../lib/getPermaLink', () => ({
-	getPermaLink: jest.fn(() => Promise.resolve(null)),
-}));
-
-jest.mock('../../../../../views/room/modals/ForwardMessageModal', () => ({
-	getPermaLink: jest.fn(() => null),
-}));
 
 const appRoot = mockAppRoot()
 	.withTranslations('en', 'core', {
@@ -32,6 +24,10 @@ const createMockMessage = (overrides: any = {}) => ({
 });
 
 describe('ForwardMessageAction', () => {
+	beforeEach(() => {
+		selectedMessageStore.reset();
+	});
+
 	it('should render the forward action for normal messages', () => {
 		const message = createMockMessage();
 		const room = createFakeRoom();
@@ -45,6 +41,24 @@ describe('ForwardMessageAction', () => {
 
 		expect(screen.getByRole('button', { name: 'Forward message' })).toBeInTheDocument();
 		expect(screen.getByRole('button', { name: 'Forward message' })).not.toBeDisabled();
+	});
+
+	it('should enter selection mode and select message on click', () => {
+		const message = createMockMessage({ _id: 'test-mid-1' });
+		const room = createFakeRoom();
+
+		render(
+			<FakeRoomProvider roomOverrides={room}>
+				<ForwardMessageAction message={message} room={room} />
+			</FakeRoomProvider>,
+			{ wrapper: appRoot },
+		);
+
+		const button = screen.getByRole('button', { name: 'Forward message' });
+		button.click();
+
+		expect(selectedMessageStore.getIsSelecting()).toBe(true);
+		expect(selectedMessageStore.isSelected('test-mid-1')).toBe(true);
 	});
 
 	it('should be disabled for encrypted messages', () => {
