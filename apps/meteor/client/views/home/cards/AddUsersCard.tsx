@@ -17,7 +17,7 @@ const AddUsersCard = (props: Omit<ComponentProps<typeof Card>, 'type'>) => {
 			title={t('Add_users')}
 			body={t('Invite_and_add_members_to_this_workspace_to_start_communicating')}
 			buttons={[
-				<GenericCardButton key={1} onClick={handleOpenUsersRoute} primary>
+				<GenericCardButton key={1} onClick={handleOpenUsersRoute} variant='primary'>
 					{t('Add_users')}
 				</GenericCardButton>,
 			]}

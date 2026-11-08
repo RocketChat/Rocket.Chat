@@ -1,0 +1,462 @@
+import type { StreamControllerRef } from '@rocket.chat/mock-providers';
+import { mockAppRoot } from '@rocket.chat/mock-providers';
+import { act, renderHook, waitFor } from '@testing-library/react';
+
+import { useConferenceEmbedded } from './useConferenceEmbedded';
+
+const callId = 'call-id';
+// `ts` is required on a membership entry and arrives as a string over REST, so the fixture carries one.
+const outsider = { _id: 'outsider-id', username: 'outsider', name: 'Outsider', ts: '2026-08-01T10:00:00.000Z' };
+
+// The conference is read again after every change, so what the second read returns is the whole point: the
+// first says a member can't see the chat, the second says the situation is resolved.
+const buildInfo = (membersWithoutAccess: string[]) =>
+	({
+		_id: callId,
+		type: 'videoconference',
+		rid: 'room-id',
+		title: '',
+		createdBy: { _id: 'someone-else', username: 'someone.else', name: 'Someone Else' },
+		users: [outsider],
+		messages: { started: 'some-msg-id' },
+		capabilities: {},
+		chatAccess: {
+			rid: 'room-id',
+			name: 'general',
+			type: 'c',
+			membersWithoutAccess,
+			canInvite: true,
+		},
+	}) as any;
+
+const renderConference = () => {
+	const streamRef: StreamControllerRef<'video-conference'> = {};
+	// What the server would say right now. Set by the test, rather than derived from how many times the hook has
+	// read — the hook reads whenever it has reason to, which is not the test's business.
+	let membersWithoutAccess = [outsider._id];
+
+	const result = renderHook(() => useConferenceEmbedded(callId), {
+		wrapper: mockAppRoot()
+			.withJohnDoe()
+			.withStream('video-conference', streamRef)
+			.withEndpoint('GET', '/v1/video-conference.info', () => buildInfo(membersWithoutAccess))
+			.withEndpoint('POST', '/v1/video-conference.join', () => ({ url: 'https://call.example', providerName: 'test' }) as any)
+			.build(),
+	});
+
+	return {
+		...result,
+		streamRef,
+		resolveChatAccess: () => {
+			membersWithoutAccess = [];
+		},
+	};
+};
+
+it('resolves the chat room and the members who cannot read it', async () => {
+	const { result } = renderConference();
+
+	await waitFor(() => {
+		expect(result.current.room.rid).toBe('room-id');
+		expect(result.current.room.chatAccess?.members).toEqual([{ ...outsider, ts: new Date(outsider.ts) }]);
+	});
+});
+
+it('reads the conference again when it changes', async () => {
+	const { result, streamRef, resolveChatAccess } = renderConference();
+
+	await waitFor(() => expect(result.current.room.chatAccess?.members).toHaveLength(1));
+
+	resolveChatAccess();
+
+	// The event means "what you know about this conference is stale" — the chat moved, the same room became
+	// readable, or the membership changed. Missing it leaves the UI wrong until the page is reloaded.
+	streamRef.controller?.emit(`${callId}/updated`, []);
+
+	await waitFor(() => expect(result.current.room.chatAccess?.members).toHaveLength(0));
+});
+
+// The stream is the window's only word on what the call is doing, and the server refuses a subscription it
+// can't authorise rather than queueing it — a refusal that is never retried. So *when* the window subscribes
+// is the whole of whether it ever hears anything.
+describe('watching the conference', () => {
+	const renderFor = (initialCallId: string) => {
+		const streamRef: StreamControllerRef<'video-conference'> = {};
+
+		return {
+			streamRef,
+			...renderHook(({ id }: { id: string }) => useConferenceEmbedded(id), {
+				initialProps: { id: initialCallId },
+				wrapper: mockAppRoot()
+					.withJohnDoe()
+					.withStream('video-conference', streamRef)
+					.withEndpoint('GET', '/v1/video-conference.info', () => buildInfo([]))
+					.withEndpoint('POST', '/v1/video-conference.join', () => ({ url: 'https://call.example', providerName: 'test' }) as any)
+					.build(),
+			}),
+		};
+	};
+
+	// `new` is the id the window carries before the call exists. The server looks the conference up by it, finds
+	// nothing, and refuses — and nothing asks again, so the window would watch nothing for as long as it is open.
+	it('asks about nothing while the call does not exist yet', async () => {
+		const { result, streamRef } = renderFor('new');
+
+		await waitFor(() => expect(result.current.room.loading).toBe(false));
+		expect(streamRef.controller?.has('new/updated')).toBe(false);
+	});
+
+	// The window opens fresh and authenticates as it loads, so the race is its normal condition rather than an
+	// edge: `allowRead` resolves the user from the connection and refuses when there is none, and a refusal is
+	// never retried — the window would then watch nothing for as long as it stayed open.
+	it('asks about nothing before the server knows who is asking', async () => {
+		const streamRef: StreamControllerRef<'video-conference'> = {};
+
+		const { result } = renderHook(() => useConferenceEmbedded(callId), {
+			wrapper: mockAppRoot()
+				.withStream('video-conference', streamRef)
+				.withEndpoint('GET', '/v1/video-conference.info', () => buildInfo([]))
+				.withEndpoint('POST', '/v1/video-conference.join', () => ({ url: 'https://call.example', providerName: 'test' }) as any)
+				.build(),
+		});
+
+		await waitFor(() => expect(result.current.room.loading).toBe(false));
+		expect(streamRef.controller?.has(`${callId}/updated`)).toBe(false);
+	});
+
+	// Subscribing is a round trip, and the read the query already made happened before it. Whatever changed in
+	// between was announced once, to nobody — so the catch-up read is the only thing that recovers it, and CI
+	// caught a window sitting on a pre-decline roster for the rest of a test for want of it.
+	it('reads the call again once something is listening', async () => {
+		let reads = 0;
+		const streamRef: StreamControllerRef<'video-conference'> = {};
+
+		const { result } = renderHook(() => useConferenceEmbedded(callId), {
+			wrapper: mockAppRoot()
+				.withJohnDoe()
+				.withStream('video-conference', streamRef)
+				.withEndpoint('GET', '/v1/video-conference.info', () => {
+					reads += 1;
+					return buildInfo([]);
+				})
+				.withEndpoint('POST', '/v1/video-conference.join', () => ({ url: 'https://call.example', providerName: 'test' }) as any)
+				.build(),
+		});
+
+		await waitFor(() => expect(result.current.room.loading).toBe(false));
+		await waitFor(() => expect(streamRef.controller?.has(`${callId}/updated`)).toBe(true));
+
+		// Twice: the read that filled the panel, and the one that covers the gap before anything was listening.
+		await waitFor(() => expect(reads).toBeGreaterThan(1));
+	});
+
+	it('starts watching as soon as the call is real', async () => {
+		const { result, streamRef, rerender } = renderFor('new');
+
+		await waitFor(() => expect(result.current.room.loading).toBe(false));
+
+		rerender({ id: callId });
+
+		await waitFor(() => expect(streamRef.controller?.has(`${callId}/updated`)).toBe(true));
+	});
+});
+
+it('follows the chat to a discussion the conference moved into', async () => {
+	const streamRef: StreamControllerRef<'video-conference'> = {};
+	let discussionRid: string | undefined;
+
+	const { result } = renderHook(() => useConferenceEmbedded(callId), {
+		wrapper: mockAppRoot()
+			.withJohnDoe()
+			.withSetting('VideoConf_Persistent_Chat_Mode', 'main_room')
+			.withStream('video-conference', streamRef)
+			.withEndpoint('GET', '/v1/video-conference.info', () => ({ ...buildInfo([]), discussionRid }) as any)
+			.withEndpoint('POST', '/v1/video-conference.join', () => ({ url: 'https://call.example', providerName: 'test' }) as any)
+			.build(),
+	});
+
+	await waitFor(() => expect(result.current.room.rid).toBe('room-id'));
+
+	discussionRid = 'discussion-id';
+	streamRef.controller?.emit(`${callId}/updated`, []);
+
+	await waitFor(() => expect(result.current.room.rid).toBe('discussion-id'));
+});
+
+it('follows the chat to a discussion in thread mode too', async () => {
+	const streamRef: StreamControllerRef<'video-conference'> = {};
+	let discussionRid: string | undefined;
+
+	const { result } = renderHook(() => useConferenceEmbedded(callId), {
+		wrapper: mockAppRoot()
+			.withJohnDoe()
+			.withSetting('VideoConf_Enable_Persistent_Chat', true)
+			.withSetting('VideoConf_Conference_Window_Enabled', true)
+			.withSetting('VideoConf_Persistent_Chat_Mode', 'thread')
+			.withStream('video-conference', streamRef)
+			.withEndpoint('GET', '/v1/video-conference.info', () => ({ ...buildInfo([]), discussionRid }) as any)
+			.withEndpoint('POST', '/v1/video-conference.join', () => ({ url: 'https://call.example', providerName: 'test' }) as any)
+			.build(),
+	});
+
+	await waitFor(() => {
+		expect(result.current.room.rid).toBe('room-id');
+		expect(result.current.room.tmid).toBeDefined();
+	});
+
+	discussionRid = 'discussion-id';
+	streamRef.controller?.emit(`${callId}/updated`, []);
+
+	await waitFor(() => {
+		expect(result.current.room.rid).toBe('discussion-id');
+		expect(result.current.room.tmid).toBeUndefined();
+	});
+});
+
+// Where the call's chat lives is the server's answer, and it takes two things to be a thread: persistent chat on
+// and the mode set to `thread` — plus the call window itself, since the thread hangs off the call's message and
+// this panel is the only thing that reads it. Not the provider: an iframed call in our window has our chat
+// panel beside it. The mode's registered default is `thread`, so reading the mode alone put every call's chat
+// in a thread nobody was subscribed to — the panel titled "Thread in <room>" over a conversation held in the
+// room. These cases exist to keep this answer and the server's `chatLivesInAThread` saying the same thing.
+describe('where the chat lives', () => {
+	const renderWithChatSettings = ({
+		enabled,
+		windowEnabled = true,
+		mode,
+		providerSupport,
+	}: {
+		enabled: boolean;
+		/** The window is what a thread off the call message belongs to, so nothing threads without it. */
+		windowEnabled?: boolean;
+		mode: 'thread' | 'main_room';
+		/** Kept to prove it no longer decides: the chat panel is ours whoever runs the media. */
+		providerSupport: boolean;
+	}) =>
+		renderHook(() => useConferenceEmbedded(callId), {
+			wrapper: mockAppRoot()
+				.withJohnDoe()
+				.withSetting('VideoConf_Enable_Persistent_Chat', enabled)
+				.withSetting('VideoConf_Conference_Window_Enabled', windowEnabled)
+				.withSetting('VideoConf_Persistent_Chat_Mode', mode)
+				.withEndpoint(
+					'GET',
+					'/v1/video-conference.info',
+					() => ({ ...buildInfo([]), capabilities: { persistentChat: providerSupport } }) as any,
+				)
+				.withEndpoint('POST', '/v1/video-conference.join', () => ({ url: 'https://call.example', providerName: 'test' }) as any)
+				.build(),
+		});
+
+	it('is the call message thread when the server would put it there', async () => {
+		const { result } = renderWithChatSettings({ enabled: true, mode: 'thread', providerSupport: true });
+
+		await waitFor(() => expect(result.current.room.rid).toBe('room-id'));
+		expect(result.current.room.tmid).toBe('some-msg-id');
+	});
+
+	it('is the room while persistent chat is off, whatever the mode says', async () => {
+		const { result } = renderWithChatSettings({ enabled: false, mode: 'thread', providerSupport: true });
+
+		await waitFor(() => expect(result.current.room.rid).toBe('room-id'));
+		expect(result.current.room.tmid).toBeUndefined();
+	});
+
+	// The complaint this answers: thread mode was set, and the panel opened the room. The thread hangs off the
+	// call's message and is read in our own panel, so who runs the media has no say in it — an iframed Jitsi call
+	// in our window threads exactly like a call we run ourselves.
+	it('is the thread for a provider that runs the media itself', async () => {
+		const { result } = renderWithChatSettings({ enabled: true, mode: 'thread', providerSupport: false });
+
+		await waitFor(() => expect(result.current.room.rid).toBe('room-id'));
+		expect(result.current.room.tmid).toBe('some-msg-id');
+	});
+
+	// Without the window there is no panel to read a thread in, and the server refuses to open one — its
+	// `getPersistentChatMode` answers `main_room` whatever the mode setting says.
+	it('is the room while the call window is off', async () => {
+		const { result } = renderWithChatSettings({ enabled: true, windowEnabled: false, mode: 'thread', providerSupport: true });
+
+		await waitFor(() => expect(result.current.room.rid).toBe('room-id'));
+		expect(result.current.room.tmid).toBeUndefined();
+	});
+
+	it('is the room in main_room mode', async () => {
+		const { result } = renderWithChatSettings({ enabled: true, mode: 'main_room', providerSupport: true });
+
+		await waitFor(() => expect(result.current.room.rid).toBe('room-id'));
+		expect(result.current.room.tmid).toBeUndefined();
+	});
+});
+
+// Joining is the user's decision, made on the preflight screen: it is what turns their mic and camera choices
+// into the provider's URL, and what marks them as present in the call.
+describe('joining', () => {
+	const renderForJoin = () => {
+		const join = jest.fn(() => ({ url: 'https://call.example', providerName: 'test' }) as any);
+
+		const { result } = renderHook(() => useConferenceEmbedded(callId), {
+			wrapper: mockAppRoot()
+				.withJohnDoe()
+				.withEndpoint('GET', '/v1/video-conference.info', () => buildInfo([]))
+				.withEndpoint('POST', '/v1/video-conference.join', join)
+				.build(),
+		});
+
+		return { result, join };
+	};
+
+	it('does not happen until it is asked for', async () => {
+		const { result, join } = renderForJoin();
+
+		await waitFor(() => expect(result.current.room.rid).toBe('room-id'));
+
+		expect(join).not.toHaveBeenCalled();
+		expect(result.current.conference.url).toBeUndefined();
+	});
+
+	it('carries the preferences it was asked with', async () => {
+		const { result, join } = renderForJoin();
+
+		await waitFor(() => expect(result.current.room.rid).toBe('room-id'));
+		result.current.conference.join({ state: { mic: false, cam: true } });
+
+		await waitFor(() => {
+			expect(join).toHaveBeenCalledWith({ callId, state: { mic: false, cam: true } });
+			expect(result.current.conference.url).toBe('https://call.example/?name=john.doe');
+		});
+	});
+
+	it('says who may name the call', async () => {
+		const { result } = renderForJoin();
+
+		// `withJohnDoe` is the reader, and the fixture's conference was started by somebody else.
+		await waitFor(() => expect(result.current.call.canRename).toBe(false));
+	});
+});
+
+// Naming a call it can already see the name of: the field on the preflight, which reaches the server on the way
+// into the call rather than as a separate action the user has to remember to take.
+describe('naming on the way in', () => {
+	const renderForRename = (rename: jest.Mock) => {
+		const join = jest.fn(() => ({ url: 'https://call.example', providerName: 'test' }) as any);
+
+		const { result } = renderHook(() => useConferenceEmbedded(callId), {
+			wrapper: mockAppRoot()
+				.withJohnDoe()
+				.withEndpoint('GET', '/v1/video-conference.info', () => ({ ...buildInfo([]), title: 'general' }) as any)
+				.withEndpoint('POST', '/v1/video-conference.join', join)
+				.withEndpoint('POST', '/v1/video-conference.rename', rename)
+				.build(),
+		});
+
+		return { result, join };
+	};
+
+	// Before, and having waited for the answer: a name sent alongside the join rather than ahead of it lands after
+	// whoever is already in the call has seen the old one, and renames it under them. So the rename is held open
+	// here and the join has to still not have happened.
+	it('renames the call before joining it, and waits for the answer', async () => {
+		let answerRename: () => void = () => undefined;
+		const rename = jest.fn(
+			() =>
+				new Promise((resolve) => {
+					answerRename = () => resolve({ success: true } as any);
+				}) as any,
+		);
+		const { result, join } = renderForRename(rename);
+
+		await waitFor(() => expect(result.current.call.name).toBe('general'));
+		result.current.conference.join({ state: { mic: true, cam: false }, name: 'Release planning' });
+
+		await waitFor(() => expect(rename).toHaveBeenCalledWith({ callId, title: 'Release planning' }));
+		expect(join).not.toHaveBeenCalled();
+
+		await act(async () => {
+			answerRename();
+		});
+
+		await waitFor(() => expect(join).toHaveBeenCalled());
+	});
+
+	it('says nothing to the server when the name was left alone', async () => {
+		const rename = jest.fn(() => ({ success: true }) as any);
+		const { result, join } = renderForRename(rename);
+
+		await waitFor(() => expect(result.current.call.name).toBe('general'));
+		result.current.conference.join({ state: { mic: true, cam: false }, name: 'general' });
+
+		await waitFor(() => expect(join).toHaveBeenCalled());
+		expect(rename).not.toHaveBeenCalled();
+	});
+
+	// The call is what the user actually asked for — a name that won't take is not worth being refused it over.
+	it('joins anyway when the name would not take', async () => {
+		const rename = jest.fn(() => {
+			throw new Error('error-not-allowed');
+		});
+		const { result, join } = renderForRename(rename);
+
+		await waitFor(() => expect(result.current.call.name).toBe('general'));
+		result.current.conference.join({ state: { mic: true, cam: false }, name: 'Release planning' });
+
+		await waitFor(() => expect(join).toHaveBeenCalled());
+		await waitFor(() => expect(result.current.conference.url).toBe('https://call.example/?name=john.doe'));
+	});
+});
+
+// What this window owes the call when it goes. The rule itself is pinned in `useLeaveConferenceOnClose.spec`;
+// what matters here is which facts it is fed, because the obvious source — this window's own join — is not the
+// only one that counts.
+describe('how a departure from this window should be reported', () => {
+	const self = { _id: 'john.doe', username: 'john.doe', name: 'John Doe', ts: '2026-08-01T10:00:00.000Z' };
+
+	const renderWith = (users: Record<string, unknown>[], type = 'videoconference', createdBy = 'someone-else') =>
+		renderHook(() => useConferenceEmbedded(callId), {
+			wrapper: mockAppRoot()
+				.withJohnDoe()
+				.withEndpoint('GET', '/v1/video-conference.info', () => ({
+					...buildInfo([]),
+					type,
+					createdBy: { _id: createdBy, username: createdBy, name: createdBy },
+					users,
+				}))
+				.withEndpoint('POST', '/v1/video-conference.join', () => ({ url: 'https://call.example', providerName: 'test' }) as any)
+				.build(),
+		});
+
+	// The case that makes the server's answer necessary: a reload loses this window's join but not the membership
+	// it recorded. Reporting nothing here leaves the call carrying someone who is gone.
+	it('is leaving when the server already has this user in the call, reload or no reload', async () => {
+		const { result } = renderWith([{ ...self, joined: true }]);
+
+		await waitFor(() => expect(result.current.conference.departure).toBe('leave'));
+	});
+
+	// A membership they already left is history, not presence — so this is not a leave to report again.
+	it('is not leaving on a membership this user already left', async () => {
+		const { result } = renderWith([{ ...self, joined: true, leftAt: '2026-08-01T10:30:00.000Z' }]);
+
+		await waitFor(() => expect(result.current.room.rid).toBe('room-id'));
+		expect(result.current.conference.departure).not.toBe('leave');
+	});
+
+	it('is declining for a member who was rung and has not joined', async () => {
+		const { result } = renderWith([{ ...self, joined: false, ringingAt: new Date().toISOString() }]);
+
+		await waitFor(() => expect(result.current.conference.departure).toBe('decline'));
+	});
+
+	it('is cancelling for the user placing a direct call', async () => {
+		const { result } = renderWith([{ ...self, joined: false }], 'direct', 'john.doe');
+
+		await waitFor(() => expect(result.current.conference.departure).toBe('cancel'));
+	});
+
+	it('is nothing for a member who was never asked and never arrived', async () => {
+		const { result } = renderWith([{ ...self, joined: false }]);
+
+		await waitFor(() => expect(result.current.room.rid).toBe('room-id'));
+		expect(result.current.conference.departure).toBe('none');
+	});
+});

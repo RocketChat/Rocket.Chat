@@ -21,8 +21,8 @@ const RadioDownAnchor = forwardRef<HTMLElement, RadioDropdownAnchorProps>(functi
 			alignItems='center'
 			backgroundColor='light'
 			borderColor='light'
-			borderRadius='x4'
-			borderWidth='x1'
+			borderRadius='medium'
+			borderWidth='default'
 			color='secondary-info'
 			display='flex'
 			flexGrow={1}
@@ -31,8 +31,8 @@ const RadioDownAnchor = forwardRef<HTMLElement, RadioDropdownAnchorProps>(functi
 			height='x40'
 			justifyContent='space-between'
 			minWidth='x144'
-			paddingInlineEnd={10}
-			paddingInlineStart={14}
+			paddingInlineEnd='x8'
+			paddingInlineStart='x12'
 			rcx-input-box
 			{...props}
 		>

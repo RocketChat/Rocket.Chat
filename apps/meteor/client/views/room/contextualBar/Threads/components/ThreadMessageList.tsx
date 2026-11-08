@@ -1,11 +1,11 @@
 import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
-import { useDebouncedCallback, useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { isTruthy } from '@rocket.chat/tools';
-import { clientCallbacks, CustomVirtuaScrollbars } from '@rocket.chat/ui-client';
+import { clientCallbacks, CustomVirtuaScrollbars, useMergedRefsV2 } from '@rocket.chat/ui-client';
 import { useSearchParameter, useSetting, useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
-import { differenceInSeconds } from 'date-fns';
+import { differenceInSeconds } from 'date-fns/differenceInSeconds';
 import { Fragment, useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { VirtualizerHandle } from 'virtua';
@@ -13,7 +13,6 @@ import { VList } from 'virtua';
 
 import { ThreadMessageItem } from './ThreadMessageItem';
 import InfiniteListAnchor from '../../../../../components/InfiniteListAnchor';
-import { useMergedRefsV2 } from '../../../../../hooks/useMergedRefsV2';
 import { setMessageJumpQueryStringParameter } from '../../../../../lib/utils/setMessageJumpQueryStringParameter';
 import { BubbleDate } from '../../../BubbleDate';
 import { useKeepAtBottom } from '../../../MessageList/hooks/useKeepAtBottom';
@@ -61,7 +60,7 @@ export type ThreadMessageListProps = {
 const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBottom }: ThreadMessageListProps) => {
 	const { t } = useTranslation();
 	const msgJumpParam = useSearchParameter('msg');
-	const { bubbleRef, handleDateScroll, ...bubbleDate } = useDateScroll();
+	const { bubbleRef, handleDateScroll, bubbleDateStore } = useDateScroll();
 
 	const {
 		data,
@@ -161,28 +160,26 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 		});
 	}, [loading, isFetchingNextPage, isFetchingPreviousPage, msgJumpParam, messages, mainMessage._id, loadMessageAround, hasPreviousPage]);
 
-	const interactionRef = useSafeRefCallback(
-		useCallback((element: HTMLDivElement) => {
-			const markInteracted = () => {
+	const interactionRef = useCallback((element: HTMLDivElement) => {
+		const markInteracted = () => {
+			userInteractedRef.current = true;
+		};
+		const handleKeydown = (e: KeyboardEvent) => {
+			if (['PageUp', 'PageDown', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(e.key)) {
 				userInteractedRef.current = true;
-			};
-			const handleKeydown = (e: KeyboardEvent) => {
-				if (['PageUp', 'PageDown', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(e.key)) {
-					userInteractedRef.current = true;
-				}
-			};
-			const parent = element.parentElement;
+			}
+		};
+		const parent = element.parentElement;
 
-			parent?.addEventListener('pointerdown', markInteracted);
-			element.addEventListener('wheel', markInteracted, { passive: true });
-			element.addEventListener('keydown', handleKeydown);
-			return () => {
-				parent?.removeEventListener('pointerdown', markInteracted);
-				element.removeEventListener('wheel', markInteracted);
-				element.removeEventListener('keydown', handleKeydown);
-			};
-		}, []),
-	);
+		parent?.addEventListener('pointerdown', markInteracted);
+		element.addEventListener('wheel', markInteracted, { passive: true });
+		element.addEventListener('keydown', handleKeydown);
+		return () => {
+			parent?.removeEventListener('pointerdown', markInteracted);
+			element.removeEventListener('wheel', markInteracted);
+			element.removeEventListener('keydown', handleKeydown);
+		};
+	}, []);
 
 	const mergedRefs = useMergedRefsV2(messageListRef, keepAtBottomRef, interactionRef);
 
@@ -376,7 +373,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 
 	return (
 		<div className={['thread-list js-scroll-thread', hideUsernames && 'hide-usernames'].filter(isTruthy).join(' ')}>
-			<BubbleDate ref={bubbleRef} {...bubbleDate} />
+			<BubbleDate ref={bubbleRef} store={bubbleDateStore} />
 			<CustomVirtuaScrollbars ref={mergedRefs}>
 				<MessageListProvider>
 					<VList

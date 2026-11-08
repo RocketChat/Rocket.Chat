@@ -1,14 +1,12 @@
 import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
 import { Badge, Box, Field, FieldError, FieldGroup, FieldHint, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
-import { GenericModal } from '@rocket.chat/ui-client';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { GenericModal, useHasLicenseModule } from '@rocket.chat/ui-client';
 import { useAtLeastOnePermission } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { mapLivechatContactConflicts } from '../../../../../lib/mapLivechatContactConflicts';
-import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
 import { ContactManagerInput } from '../../additionalForms';
 import { useCustomFieldsMetadata } from '../../directory/hooks/useCustomFieldsMetadata';
 import { useReviewContact } from '../hooks/useReviewContact';
@@ -86,13 +84,13 @@ const ReviewContactModal = ({ contact, onCancel }: ReviewContactModalProps) => {
 
 					return (
 						<Field key={index}>
-							<FieldLabel id={name}>{t(label as TranslationKey)}</FieldLabel>
+							<FieldLabel id={name}>{t(label)}</FieldLabel>
 							<FieldRow>
 								<Controller
 									name={name}
 									control={control}
 									rules={{
-										required: isContactManagerField ? undefined : t('Required_field', { field: t(label as TranslationKey) }),
+										required: isContactManagerField ? undefined : t('Required_field', { field: t(label) }),
 									}}
 									render={({ field: { value, onChange } }) => (
 										<Component

@@ -1,7 +1,12 @@
 import { ResponsiveLine } from '@nivo/line';
-import { Box, FlexContainer, FlexItem, Skeleton, Tile } from '@rocket.chat/fuselage';
+import { Box, FlexContainer, FlexItem, Skeleton, Text, Tile } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/dist/colors.json';
-import { addDays, startOfDay, differenceInDays, endOfDay, subDays, format } from 'date-fns';
+import { addDays } from 'date-fns/addDays';
+import { differenceInDays } from 'date-fns/differenceInDays';
+import { endOfDay } from 'date-fns/endOfDay';
+import { format } from 'date-fns/format';
+import { startOfDay } from 'date-fns/startOfDay';
+import { subDays } from 'date-fns/subDays';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -253,13 +258,13 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps) => {
 												<Box>
 													<Box>{formatDate(points[0].data.x)}</Box>
 													{points.map(({ serieId, data: { y: activeUsers } }) => (
-														<Box key={serieId} fontScale='p1m'>
+														<Text key={serieId} fontScale='p1m'>
 															<Box>
 																{(serieId === 'dau' && t('DAU_value', { value: activeUsers })) ||
 																	(serieId === 'wau' && t('WAU_value', { value: activeUsers })) ||
 																	(serieId === 'mau' && t('MAU_value', { value: activeUsers }))}
 															</Box>
-														</Box>
+														</Text>
 													))}
 												</Box>
 											</Tile>

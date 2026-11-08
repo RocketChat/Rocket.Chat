@@ -1,5 +1,5 @@
 import { Text, View, StyleSheet } from '@react-pdf/renderer';
-import { fontScale } from '@rocket.chat/fuselage-tokens/dist/typography.json';
+import typography from '@rocket.chat/fuselage-tokens/dist/typography.json';
 
 import type { PDFMessage } from '../../../types/ChatTranscriptData';
 import { Markup } from '../markup';
@@ -8,6 +8,9 @@ import { Files } from './Files';
 import { MessageHeader } from './MessageHeader';
 import Quotes from './Quotes';
 import { isSystemMessage, markupEntriesGreaterThan10, messageLongerThanPage, splitByTens } from './utils';
+import { canRenderMarkup } from '../markup/canRenderMarkup';
+
+const { fontScale } = typography;
 
 const styles = StyleSheet.create({
 	wrapper: {
@@ -32,7 +35,7 @@ const processMd = (message: PDFMessage) =>
 	));
 
 const processMessage = (message: PDFMessage) => {
-	if (message.md) {
+	if (message.md && canRenderMarkup(message.md)) {
 		if (markupEntriesGreaterThan10(message.md)) {
 			return processMd(message);
 		}

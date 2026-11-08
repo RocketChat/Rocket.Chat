@@ -4,7 +4,7 @@ import { hashLoginToken } from '@rocket.chat/account-utils';
 import type { IIncomingMessage, IUpload } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import type { NextFunction } from 'connect';
-import { Cookies } from 'meteor/ostrio:cookies';
+import { parseCookie } from 'cookie';
 import sanitizeHtml from 'sanitize-html';
 import sharp from 'sharp';
 import { throttle } from 'underscore';
@@ -14,8 +14,6 @@ import { getAvatarColor } from '../../lib/utils/lib/getAvatarColor';
 import { settings } from '../../settings';
 
 const FALLBACK_LAST_MODIFIED = 'Thu, 01 Jan 2015 00:00:00 GMT';
-
-const cookie = new Cookies();
 
 export const MAX_SVG_AVATAR_SIZE = 1024;
 export const MIN_SVG_AVATAR_SIZE = 16;
@@ -93,8 +91,7 @@ async function isUserAuthenticated({ headers, query }: Pick<IIncomingMessage, 'h
 	let { rc_uid, rc_token } = query;
 
 	if (!rc_uid && headers.cookie) {
-		rc_uid = cookie.get('rc_uid', headers.cookie);
-		rc_token = cookie.get('rc_token', headers.cookie);
+		({ rc_uid, rc_token } = parseCookie(headers.cookie));
 	}
 
 	if (rc_uid == null || rc_token == null) {

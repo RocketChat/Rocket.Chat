@@ -15,6 +15,7 @@ jest.mock('../../../../lib/RoomHistoryManager', () => ({
 		getMore: jest.fn(),
 		getMoreNext: jest.fn(),
 		restoreScroll: jest.fn(),
+		on: jest.fn(() => () => undefined),
 	},
 }));
 

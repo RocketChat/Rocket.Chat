@@ -9,10 +9,10 @@ import { afterEach, beforeEach, describe, it, mock } from 'node:test';
 import type { App } from '@rocket.chat/apps-engine/definition/App';
 import type { IPreFileUpload } from '@rocket.chat/apps-engine/definition/uploads/IPreFileUpload';
 import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails';
-import { JsonRpcError } from 'jsonrpc-lite';
 
 import { createMockRequest } from './helpers/mod';
 import { AppObjectRegistry } from '../../AppObjectRegistry';
+import { JsonRpcError } from '../../lib/jsonrpc';
 import handleUploadEvents from '../app/handleUploadEvents';
 import { Errors } from '../lib/assertions';
 

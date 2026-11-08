@@ -1,9 +1,10 @@
+import { after, before, describe, it } from 'node:test';
+
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { before, describe, after, it } from 'mocha';
 
-import { getCredentials, api, request, credentials, methodCall } from '../../data/api-data';
+import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { sendSimpleMessage } from '../../data/chat.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
@@ -25,9 +26,30 @@ const resetE2EDefaults = async () => {
 };
 
 describe('AutoTranslate', () => {
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	describe('[AutoTranslate]', () => {
+		describe('[/autotranslate.getProviderUiMetadata]', () => {
+			it('should reject unauthenticated requests', async () => {
+				await request.get(api('autotranslate.getProviderUiMetadata')).expect('Content-Type', 'application/json').expect(401);
+			});
+
+			it('should list the registered providers keyed by name', async () => {
+				const res = await request
+					.get(api('autotranslate.getProviderUiMetadata'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body).to.have.a.property('success', true);
+				expect(res.body).to.have.a.property('providers').that.is.an('object').and.is.not.empty;
+				Object.entries(res.body.providers as Record<string, { name: string; displayName: string }>).forEach(([key, provider]) => {
+					expect(provider).to.have.a.property('name', key);
+					expect(provider).to.have.a.property('displayName').that.is.a('string');
+				});
+			});
+		});
+
 		describe('[/autotranslate.getSupportedLanguages', () => {
 			before(() => resetAutoTranslateDefaults());
 			after(() => resetAutoTranslateDefaults());
@@ -377,12 +399,8 @@ describe('AutoTranslate', () => {
 				});
 
 				after(async () => {
-					await Promise.all([
-						updateSetting('AutoTranslate_Enabled', false),
-						deleteUser(userA),
-						deleteUser(userB),
-						deleteRoom({ type: 'p', roomId: privateRoom._id }),
-					]);
+					await Promise.all([updateSetting('AutoTranslate_Enabled', false), deleteRoom({ type: 'p', roomId: privateRoom._id })]);
+					await Promise.all([deleteUser(userA, { confirmRelinquish: true }), deleteUser(userB)]);
 				});
 
 				it('should return 403 forbidden when the user is not a member of the room', async () => {
@@ -397,90 +415,6 @@ describe('AutoTranslate', () => {
 
 					expect(res.body).to.have.a.property('success', false);
 				});
-			});
-		});
-
-		describe('[autoTranslate.translateMessage method]', () => {
-			let userA: TestUser<IUser>;
-			let userB: TestUser<IUser>;
-			let credA: Credentials;
-			let credB: Credentials;
-			let privateRoom: IRoom;
-			let privateMessage: IMessage;
-
-			before(async () => {
-				await updateSetting('AutoTranslate_Enabled', true);
-
-				userA = await createUser();
-				userB = await createUser();
-
-				credA = await login(userA.username, password);
-				credB = await login(userB.username, password);
-
-				privateRoom = (
-					await createRoom({
-						type: 'p',
-						name: `test-autotranslate-method-${Date.now()}`,
-						credentials: credA,
-					})
-				).body.group;
-
-				const msgRes = await sendSimpleMessage({
-					roomId: privateRoom._id,
-					text: 'Isso é um teste',
-					userCredentials: credA,
-				});
-				privateMessage = msgRes.body.message;
-			});
-
-			after(async () => {
-				await Promise.all([
-					updateSetting('AutoTranslate_Enabled', false),
-					deleteUser(userA),
-					deleteUser(userB),
-					deleteRoom({ type: 'p', roomId: privateRoom._id }),
-				]);
-			});
-
-			it('should fail when messageId is not a string', async () => {
-				const res = await request
-					.post(methodCall('autoTranslate.translateMessage'))
-					.set(credA)
-					.send({
-						message: JSON.stringify({
-							msg: 'method',
-							id: 'id',
-							method: 'autoTranslate.translateMessage',
-							params: [{ _id: { $gt: '' } }, 'en'],
-						}),
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(400);
-
-				expect(res.body).to.have.a.property('success', false);
-				const parsedBody = JSON.parse(res.body.message);
-				expect(parsedBody).to.have.a.property('error');
-			});
-
-			it('should return error-not-allowed when the caller is not a member of the room', async () => {
-				const res = await request
-					.post(methodCall('autoTranslate.translateMessage'))
-					.set(credB)
-					.send({
-						message: JSON.stringify({
-							msg: 'method',
-							id: 'id',
-							method: 'autoTranslate.translateMessage',
-							params: [{ _id: privateMessage._id }, 'en'],
-						}),
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(400);
-
-				expect(res.body).to.have.a.property('success', false);
-				const parsedBody = JSON.parse(res.body.message);
-				expect(parsedBody).to.have.a.property('error');
-				expect(parsedBody.error).to.have.a.property('error', 'error-not-allowed');
 			});
 		});
 
@@ -547,10 +481,9 @@ describe('AutoTranslate', () => {
 					updateSetting('AutoTranslate_AutoEnableOnJoinRoom', false),
 					updateSetting('AutoTranslate_Enabled', false),
 					updateSetting('Language', ''),
-					deleteUser(userA),
-					deleteUser(userB),
-					channelsToRemove.map(() => deleteRoom({ type: 'c', roomId: channel._id })),
+					...channelsToRemove.map((room) => deleteRoom({ type: 'c', roomId: room._id })),
 				]);
+				await Promise.all([deleteUser(userA), deleteUser(userB)]);
 			});
 
 			it("should do nothing if the user hasn't changed his language preference", async () => {

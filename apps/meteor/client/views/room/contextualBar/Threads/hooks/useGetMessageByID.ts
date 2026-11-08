@@ -6,6 +6,9 @@ import { onClientMessageReceived } from '../../../../../lib/onClientMessageRecei
 import { mapMessageFromApi } from '../../../../../lib/utils/mapMessageFromApi';
 import { Messages } from '../../../../../stores';
 
+/** What this throws when the server refuses the message — it is gone, or was never this reader's to have. */
+export const MESSAGE_NOT_FOUND = 'Message not found';
+
 export const useGetMessageByID = (shouldStoreMessage: boolean = true) => {
 	const getMessage = useEndpoint('GET', '/v1/chat.getMessage');
 	const storeMessage = Messages.use((state) => state.store);
@@ -22,7 +25,7 @@ export const useGetMessageByID = (shouldStoreMessage: boolean = true) => {
 				return message;
 			} catch (error) {
 				if (typeof error === 'object' && error !== null && 'success' in error) {
-					throw new Error('Message not found');
+					throw new Error(MESSAGE_NOT_FOUND);
 				}
 
 				throw error;

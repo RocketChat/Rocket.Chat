@@ -1,7 +1,7 @@
 import type { ILicenseV3 } from '@rocket.chat/core-typings';
 import { Box, Card, CardBody, CardControls, CardRow, Tag } from '@rocket.chat/fuselage';
 import { ExternalLink, useLicenseName } from '@rocket.chat/ui-client';
-import { differenceInDays } from 'date-fns';
+import { differenceInDays } from 'date-fns/differenceInDays';
 import { Trans, useTranslation } from 'react-i18next';
 
 import PlanCardHeader from './PlanCardHeader';
@@ -21,7 +21,7 @@ const PlanCardTrial = ({ licenseInformation }: PlanCardProps) => {
 	const { visualExpiration } = licenseInformation;
 
 	return (
-		<Card height='full'>
+		<Card>
 			<PlanCardHeader name={planName.data ?? ''} />
 			<CardBody flexDirection='column'>
 				{visualExpiration && (
@@ -54,15 +54,11 @@ const PlanCardTrial = ({ licenseInformation }: PlanCardProps) => {
 				<PlanCardLicenseDetails />
 			</CardBody>
 			<CardControls>
-				<UpgradeButton
-					target='plan_card_trial'
-					action={isSalesAssisted ? 'finish_purchase' : 'contact_sales'}
-					primary
-					marginBlockStart='auto'
-					width='full'
-				>
-					{isSalesAssisted ? t('Finish_purchase') : t('Contact_sales')}
-				</UpgradeButton>
+				<Box display='flex' flexDirection='column' marginBlockStart='auto' width='full'>
+					<UpgradeButton target='plan_card_trial' action={isSalesAssisted ? 'finish_purchase' : 'contact_sales'} variant='primary'>
+						{isSalesAssisted ? t('Finish_purchase') : t('Contact_sales')}
+					</UpgradeButton>
+				</Box>
 			</CardControls>
 		</Card>
 	);

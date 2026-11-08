@@ -9,7 +9,6 @@ import { configureIRC } from './configureIRC';
 import { configureLogLevel } from './configureLogLevel';
 import { configurePassport } from './configurePassport';
 import { configureSMTP } from './configureSMTP';
-import { configureLDAP } from './ldap';
 import { configureOAuth } from './oauth';
 import { configurePushNotifications } from './pushNotification';
 import type { ICachedSettings } from '../settings/CachedSettings';
@@ -19,7 +18,6 @@ export async function configureServer(settings: ICachedSettings) {
 		configureLogLevel(settings),
 		configureAccounts(),
 		configureCAS(settings),
-		configureLDAP(settings),
 		configureOAuth(settings),
 		configureAssets(settings),
 		configureCORS(settings),

@@ -2,11 +2,12 @@ import type { IWorkspaceInfo, IStats } from '@rocket.chat/core-typings';
 import { Button, Card, CardBody, CardControls, Margins } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { IInstance } from '@rocket.chat/rest-typings';
+import { useFormatDateAndTime } from '@rocket.chat/ui-client';
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
+import { Info } from '../../../../../rocketchat.info';
 import WorkspaceCardSection from '../components/WorkspaceCardSection';
 import InstancesModal from './components/InstancesModal';
 import WorkspaceCardSectionTitle from '../components/WorkspaceCardSectionTitle';
@@ -27,13 +28,14 @@ const DeploymentCard = ({
 	const setModal = useSetModal();
 
 	const { commit = {}, marketplaceApiVersion: appsEngineVersion } = info || {};
+	const clientCommit = Info.commit?.hash !== commit.hash ? Info.commit : undefined;
 
 	const handleInstancesModal = useStableCallback(() => {
 		setModal(<InstancesModal instances={instances} onClose={(): void => setModal()} />);
 	});
 
 	return (
-		<Card height='full'>
+		<Card>
 			<CardBody flexDirection='column'>
 				<WorkspaceCardSection>
 					<WorkspaceCardSectionTitle title={t('Deployment')} variant='h4' />
@@ -91,6 +93,13 @@ const DeploymentCard = ({
 						{t('Branch')}: {commit.branch} <br />
 						{commit.subject}
 					</WorkspaceCardSection>
+					{clientCommit?.hash && (
+						<WorkspaceCardSection>
+							<WorkspaceCardSectionTitle title={t('Web_client_commit_details')} />
+							{t('github_HEAD')}: ({clientCommit.hash.slice(0, 9)}) <br />
+							{t('Branch')}: {clientCommit.branch}
+						</WorkspaceCardSection>
+					)}
 					<WorkspaceCardSection>
 						<WorkspaceCardSectionTitle title={t('PID')} />
 						{statistics.process.pid}
@@ -100,7 +109,7 @@ const DeploymentCard = ({
 
 			{!!instances.length && (
 				<CardControls>
-					<Button medium onClick={handleInstancesModal}>
+					<Button size='medium' onClick={handleInstancesModal}>
 						{t('Instances')}
 					</Button>
 				</CardControls>

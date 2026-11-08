@@ -22,7 +22,7 @@ test.describe('prune-messages', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
-		await page.goto(`/channel/${targetChannel.fname}/clean-history`);
+		await poHomeChannel.gotoChannelCleanHistory(targetChannel.fname as string);
 	});
 
 	test(
@@ -78,7 +78,7 @@ test.describe('prune-messages', () => {
 			await test.step('uncheck files only', async () => {
 				await pruneMessages.labelFilesOnly.click();
 				await pruneMessages.prune();
-				await toastMessage.waitForDisplay({ type: 'success', message: '2 messages pruned' });
+				await toastMessage.waitForDisplay({ type: 'success', message: '3 messages pruned' });
 				await toastMessage.dismissToast();
 				await expect(pruneMessages.labelFilesOnly, 'Checkbox is reset after success').not.toBeChecked();
 			});

@@ -1,5 +1,6 @@
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 import { ajvQuery } from '../Ajv';
+import { paginationQueryProperties } from '../pagination';
 
 export type TeamsListRoomsOfUserProps = PaginatedRequest<
 	({ teamId: string } | { teamName: string }) & {
@@ -15,8 +16,7 @@ const teamsListRoomsOfUserPropsSchema = {
 		teamName: { type: 'string' },
 		userId: { type: 'string' },
 		canUserDelete: { type: 'string', nullable: true },
-		offset: { type: 'number', nullable: true },
-		count: { type: 'number', nullable: true },
+		...paginationQueryProperties,
 		sort: { type: 'string', nullable: true },
 	},
 	oneOf: [

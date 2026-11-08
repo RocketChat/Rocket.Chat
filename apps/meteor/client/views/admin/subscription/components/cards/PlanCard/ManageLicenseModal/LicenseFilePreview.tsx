@@ -1,4 +1,4 @@
-import { Box, IconButton } from '@rocket.chat/fuselage';
+import { Box, IconButton, Text } from '@rocket.chat/fuselage';
 import { FilePreviewIcon } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
@@ -9,17 +9,25 @@ const LicenseFilePreview = ({ selectedFile, handleRemoveFile }: { selectedFile: 
 	const { t } = useTranslation();
 
 	return (
-		<Box display='flex' alignItems='center' padding={4} marginBlockEnd={8} borderRadius={4} borderWidth={1} borderColor='extra-light'>
+		<Box
+			display='flex'
+			alignItems='center'
+			padding={4}
+			marginBlockEnd={8}
+			borderRadius='medium'
+			borderWidth='default'
+			borderColor='extra-light'
+		>
 			<FilePreviewIcon format={getFileExtension(selectedFile.name)} />
 			<Box flexGrow={1} withTruncatedText marginInlineStart={8} display='flex' flexDirection='column'>
-				<Box fontScale='p2' color='info' withTruncatedText>
+				<Text fontScale='p2' color='info' truncate>
 					{selectedFile.name}
-				</Box>
+				</Text>
 				<Box fontScale='c1' color='hint' textTransform='uppercase'>
 					{`${formatBytes(selectedFile.size, 2)} - ${getFileExtension(selectedFile.name)}`}
 				</Box>
 			</Box>
-			<IconButton icon='cross' tiny title={t('Remove_file')} onClick={handleRemoveFile} />
+			<IconButton icon='cross' size='tiny' title={t('Remove_file')} onClick={handleRemoveFile} />
 		</Box>
 	);
 };

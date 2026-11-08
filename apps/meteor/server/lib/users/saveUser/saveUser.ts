@@ -1,9 +1,8 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
-import { MeteorError } from '@rocket.chat/core-services';
-import { isUserFederated } from '@rocket.chat/core-typings';
+import { ClientSafeError, Presence, StatusVisibility } from '@rocket.chat/core-services';
+import { isUserFederated, UserStatus } from '@rocket.chat/core-typings';
 import type { IUser, IRole, IUserSettings, RequiredField } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 import type { ClientSession } from 'mongodb';
 
 import { handleBio } from './handleBio';
@@ -21,10 +20,12 @@ import { hasPermissionAsync } from '../../authorization/hasPermission';
 import { callbacks } from '../../callbacks';
 import { notifyOnUserChange } from '../../notifyListener';
 import { shouldBreakInVersion } from '../../shouldBreakInVersion';
+import { resolveUsersByUsernames } from '../../statusVisibility/resolveUsers';
 import { saveCustomFields } from '../saveCustomFields';
 import { saveUserIdentity } from '../saveUserIdentity';
 import { setEmail } from '../setEmail';
-import { setStatusText } from '../setStatusText';
+
+const isBroken = shouldBreakInVersion('9.0.0');
 
 export type SaveUserData = {
 	_id?: IUser['_id'];
@@ -52,8 +53,11 @@ export type SaveUserData = {
 
 	customFields?: Record<string, any>;
 	active?: boolean;
+	presenceDisabledByAdmin?: boolean;
+	statusVisibilityDeniedByAdmin?: string[];
 
-	freeSwitchExtension?: string;
+	sipExtension?: string;
+	phones?: IUser['phones'];
 };
 export type UpdateUserData = RequiredField<SaveUserData, '_id'>;
 export const isUpdateUserData = (params: SaveUserData): params is UpdateUserData => '_id' in params && !!params._id;
@@ -65,10 +69,39 @@ type SaveUserOptions = {
 const findUserById = async (uid: IUser['_id']): Promise<IUser> => {
 	const user = await Users.findOneById(uid);
 	if (!user) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user');
+		throw new ClientSafeError('error-invalid-user', 'Invalid user');
 	}
 
 	return user;
+};
+
+const STATUS_TEXT_MAX_LENGTH = 120;
+
+const getChangedStatusText = async (user: IUser, { statusText, presenceDisabledByAdmin }: SaveUserData): Promise<string | undefined> => {
+	const text = statusText?.trim().substring(0, STATUS_TEXT_MAX_LENGTH);
+
+	if (text === undefined || text === (user.statusText ?? '')) {
+		return undefined;
+	}
+
+	// this same save may be flipping the flag, and the service still answers for the state before the transaction
+	const presenceDisabled = presenceDisabledByAdmin ?? (await StatusVisibility.isPresenceDisabledFor(user._id));
+
+	return presenceDisabled ? undefined : text;
+};
+
+const isExpired = (expiresAt?: Date): boolean => expiresAt != null && new Date(expiresAt).getTime() < Date.now();
+
+const getOwnStatus = ({ statusDefault, statusSource, previousState }: IUser): UserStatus => {
+	if (!statusSource || statusSource === 'manual') {
+		return statusDefault ?? UserStatus.ONLINE;
+	}
+
+	if (previousState?.statusSource === 'manual' && !isExpired(previousState.statusExpiresAt)) {
+		return previousState.statusDefault;
+	}
+
+	return UserStatus.ONLINE;
 };
 
 const _saveUser = (session?: ClientSession) =>
@@ -77,7 +110,7 @@ const _saveUser = (session?: ClientSession) =>
 
 		const oldUserData = userData._id && (await Users.findOneById(userData._id));
 		if (oldUserData && isUserFederated(oldUserData)) {
-			throw new Meteor.Error('Edit_Federated_User_Not_Allowed', 'Not possible to edit a federated user');
+			throw new ClientSafeError('Edit_Federated_User_Not_Allowed', 'Not possible to edit a federated user');
 		}
 
 		await validateUserData(userId, userData);
@@ -105,7 +138,7 @@ const _saveUser = (session?: ClientSession) =>
 		}
 
 		if (!oldUserData) {
-			throw new MeteorError('error-user-not-found', 'User not found', {
+			throw new ClientSafeError('error-user-not-found', 'User not found', {
 				method: 'saveUser',
 			});
 		}
@@ -128,14 +161,16 @@ const _saveUser = (session?: ClientSession) =>
 					session,
 				}))
 			) {
-				throw new Meteor.Error('error-could-not-save-identity', 'Could not save user identity', {
+				throw new ClientSafeError('error-could-not-save-identity', 'Could not save user identity', {
 					method: 'saveUser',
 				});
 			}
 		}
 
-		if (typeof userData.statusText === 'string') {
-			await setStatusText(oldUserData, userData.statusText, { updater, session });
+		const statusText = await getChangedStatusText(oldUserData, userData);
+
+		if (statusText !== undefined) {
+			updater.set('statusText', statusText);
 		}
 
 		if (userData.email) {
@@ -153,8 +188,13 @@ const _saveUser = (session?: ClientSession) =>
 			sendPassword = false;
 		}
 
-		handleBio(updater, userData.bio);
-		handleNickname(updater, userData.nickname);
+		if (typeof userData.bio !== 'undefined') {
+			handleBio(updater, userData.bio);
+		}
+
+		if (typeof userData.nickname !== 'undefined') {
+			handleNickname(updater, userData.nickname);
+		}
 
 		if (userData.roles) {
 			updater.set('roles', userData.roles);
@@ -174,11 +214,23 @@ const _saveUser = (session?: ClientSession) =>
 			}
 		}
 
-		if (typeof userData.freeSwitchExtension === 'string' && userData.freeSwitchExtension !== (oldUserData?.freeSwitchExtension ?? '')) {
-			if (userData.freeSwitchExtension.trim() === '') {
-				updater.unset('freeSwitchExtension');
+		if (typeof userData.sipExtension === 'string' && userData.sipExtension !== (oldUserData?.sipExtension ?? '')) {
+			if (userData.sipExtension.trim() === '') {
+				updater.unset('sipExtension');
 			} else {
-				updater.set('freeSwitchExtension', userData.freeSwitchExtension);
+				updater.set('sipExtension', userData.sipExtension);
+			}
+		}
+
+		const unset: Record<string, number> = {};
+
+		if (Array.isArray(userData.phones)) {
+			if (userData.phones.length === 0) {
+				updater.unset('phones');
+				delete userData.phones;
+				unset.phones = 1;
+			} else {
+				updater.set('phones', userData.phones);
 			}
 		}
 
@@ -192,21 +244,74 @@ const _saveUser = (session?: ClientSession) =>
 			}
 		}
 
+		const presenceChanged =
+			userData.presenceDisabledByAdmin !== undefined &&
+			userData.presenceDisabledByAdmin !== (oldUserData?.presenceDisabledByAdmin === true);
+
+		if (presenceChanged) {
+			if (userData.presenceDisabledByAdmin) {
+				updater.set('presenceDisabledByAdmin', true);
+			} else {
+				updater.unset('presenceDisabledByAdmin');
+			}
+		}
+
+		const deniedByAdmin =
+			userData.statusVisibilityDeniedByAdmin !== undefined
+				? await resolveUsersByUsernames(
+						(userData.statusVisibilityDeniedByAdmin ?? []).filter((username) => username !== oldUserData?.username),
+					)
+				: undefined;
+
+		const storedDeniedByAdmin = oldUserData?.statusVisibilityDeniedByAdmin ?? [];
+		const deniedByAdminChanged =
+			deniedByAdmin !== undefined &&
+			(deniedByAdmin.ids.length !== storedDeniedByAdmin.length || deniedByAdmin.ids.some((id) => !storedDeniedByAdmin.includes(id)));
+
+		if (deniedByAdminChanged) {
+			if (deniedByAdmin.ids.length) {
+				updater.set('statusVisibilityDeniedByAdmin', deniedByAdmin.ids);
+			} else {
+				updater.unset('statusVisibilityDeniedByAdmin');
+			}
+		}
+
 		if (userData.customFields) {
 			await saveCustomFields(userData._id, userData.customFields, { _updater: updater, session });
 		}
 
-		await Users.updateFromUpdater({ _id: userData._id }, updater, { session });
+		if (updater.hasChanges()) {
+			await Users.updateFromUpdater({ _id: userData._id }, updater, { session });
+		}
 
 		await onceTransactionCommitedSuccessfully(async () => {
+			if (presenceChanged || deniedByAdminChanged) {
+				await StatusVisibility.invalidate([userData._id], { allViewers: presenceChanged }).catch(() => undefined);
+			}
+
+			if (statusText !== undefined) {
+				if (presenceChanged) {
+					await StatusVisibility.refresh([userData._id]);
+				}
+
+				if (!(await StatusVisibility.isPresenceDisabledFor(userData._id))) {
+					await Presence.setStatus(userData._id, getOwnStatus(oldUserData), statusText);
+				}
+			}
+
 			if (session && options?.auditStore) {
 				// setting this inside here to avoid moving `executeSetUserActiveStatus` from the endpoint fn
 				// updater will be commited by this point, so it won't affect the external user activation/deactivation
 				if (userData.active !== undefined) {
 					updater.set('active', userData.active);
 				}
-				options.auditStore.setUpdateFilter(updater.getRawUpdateFilter());
-				void options.auditStore.commitAuditEvent();
+				if (userData.username && userData.username !== oldUserData.username) {
+					updater.set('username', userData.username);
+				}
+				if (updater.hasChanges()) {
+					options.auditStore.setUpdateFilter(updater.getRawUpdateFilter());
+					void options.auditStore.commitAuditEvent();
+				}
 			}
 
 			// App IPostUserUpdated event hook
@@ -232,20 +337,23 @@ const _saveUser = (session?: ClientSession) =>
 			if (typeof userData.verified === 'boolean') {
 				delete userData.verified;
 			}
+
+			const { statusVisibilityDeniedByAdmin: _adminOnly, statusText: _presenceOwned, ...notifiableUserData } = userData;
+
 			void notifyOnUserChange({
 				clientAction: 'updated',
 				id: userData._id,
 				diff: {
-					...userData,
+					...notifiableUserData,
 					emails: userUpdated?.emails,
 				},
+				unset,
 			});
 		}, session);
 
 		return true;
 	};
 
-const isBroken = shouldBreakInVersion('9.0.0');
 export const saveUser = (() => {
 	if (!process.env.DEBUG_DISABLE_USER_AUDIT) {
 		return wrapInSessionTransaction(_saveUser);

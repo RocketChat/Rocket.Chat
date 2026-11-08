@@ -19,6 +19,8 @@ export type AISearchStatus = {
 	answerGenerationConfigured: boolean;
 };
 
+export type AISearchType = 'semantic' | 'keyword' | 'hybrid';
+
 export type AISearchAnswerMessage = {
 	text: string;
 	username?: string;
@@ -54,7 +56,13 @@ export type AISearchResult = {
 export interface IAISearchService extends IServiceClass {
 	status(): Promise<AISearchStatus>;
 
-	search(params: { query: string; userId: string; filters?: AISearchFilters; limit?: number }): Promise<AISearchResult[]>;
+	search(params: {
+		query: string;
+		userId: string;
+		filters?: AISearchFilters;
+		limit?: number;
+		searchType?: AISearchType;
+	}): Promise<AISearchResult[]>;
 
 	answer(params: { query: string; messages: AISearchAnswerMessage[] }): Promise<AISearchAnswerResult>;
 

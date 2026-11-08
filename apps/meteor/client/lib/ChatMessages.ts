@@ -39,7 +39,7 @@ export class ChatMessages implements ChatAPI {
 	public ActionManager: any;
 
 	public emojiPicker: {
-		open(el: Element, cb: (emoji: string) => void): void;
+		open(el: Element, cb: (emoji: string) => void, onClose?: () => void): void;
 		close(): void;
 	};
 

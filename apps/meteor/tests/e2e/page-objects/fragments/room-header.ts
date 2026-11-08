@@ -27,9 +27,11 @@ export class RoomHeader {
 		await this.menuMoveTo.selectMenuItem(name);
 	}
 
-	async checkRoomBelongsToGroup(optionName: string): Promise<boolean> {
+	async checkRoomBelongsToGroup(optionName: string, belongs: boolean): Promise<boolean> {
 		await this.openCategorySelector();
-		const exists = await this.menuMoveTo.getMenuItem(optionName).isVisible();
+		const option = this.menuMoveTo.getMenuItem(optionName);
+		await option.waitFor({ state: belongs ? 'visible' : 'hidden' });
+		const exists = await option.isVisible();
 		await this.root.page().keyboard.press('Escape');
 		return exists;
 	}

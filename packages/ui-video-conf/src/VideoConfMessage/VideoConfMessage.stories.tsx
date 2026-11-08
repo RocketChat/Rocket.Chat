@@ -77,7 +77,7 @@ export const CallingDM: StoryObj<typeof VideoConfMessage> = {
 				</VideoConfMessageActions>
 			</VideoConfMessageRow>
 			<VideoConfMessageFooter>
-				<VideoConfMessageButton primary>Join</VideoConfMessageButton>
+				<VideoConfMessageButton variant='primary'>Join</VideoConfMessageButton>
 				<VideoConfMessageFooterText>Waiting for answer</VideoConfMessageFooterText>
 			</VideoConfMessageFooter>
 		</VideoConfMessage>
@@ -117,8 +117,8 @@ export const CallOngoing: StoryObj<typeof VideoConfMessage> = {
 				</VideoConfMessageActions>
 			</VideoConfMessageRow>
 			<VideoConfMessageFooter>
-				<VideoConfMessageButton primary>Join</VideoConfMessageButton>
-				<VideoConfMessageUserStack users={fakeUsers} />
+				<VideoConfMessageButton variant='primary'>Join</VideoConfMessageButton>
+				<VideoConfMessageUserStack users={fakeUsers} showAvatars={false} showRealName={false} />
 				<VideoConfMessageFooterText>joined</VideoConfMessageFooterText>
 			</VideoConfMessageFooter>
 		</VideoConfMessage>
@@ -138,7 +138,7 @@ export const CallEnded: StoryObj<typeof VideoConfMessage> = {
 				</VideoConfMessageActions>
 			</VideoConfMessageRow>
 			<VideoConfMessageFooter>
-				<VideoConfMessageUserStack users={fakeUsers} />
+				<VideoConfMessageUserStack users={fakeUsers} showAvatars={false} showRealName={false} />
 				<VideoConfMessageFooterText>joined</VideoConfMessageFooterText>
 			</VideoConfMessageFooter>
 		</VideoConfMessage>
@@ -162,8 +162,26 @@ export const NoAvatars: StoryObj<typeof VideoConfMessage> = {
 				</VideoConfMessageActions>
 			</VideoConfMessageRow>
 			<VideoConfMessageFooter>
-				<VideoConfMessageButton primary>Join</VideoConfMessageButton>
-				<VideoConfMessageUserStack users={fakeUsers} />
+				<VideoConfMessageButton variant='primary'>Join</VideoConfMessageButton>
+				<VideoConfMessageUserStack users={fakeUsers} showAvatars={false} showRealName={false} />
+				<VideoConfMessageFooterText>{fakeUsers.length} joined</VideoConfMessageFooterText>
+			</VideoConfMessageFooter>
+		</VideoConfMessage>
+	),
+};
+
+export const UserStackWithAvatars: StoryObj<typeof VideoConfMessage> = {
+	render: () => (
+		<VideoConfMessage>
+			<VideoConfMessageRow>
+				<VideoConfMessageContent>
+					<VideoConfMessageIcon variant='outgoing' />
+					<VideoConfMessageText>Call ongoing</VideoConfMessageText>
+				</VideoConfMessageContent>
+			</VideoConfMessageRow>
+			<VideoConfMessageFooter>
+				<VideoConfMessageButton variant='primary'>Join</VideoConfMessageButton>
+				<VideoConfMessageUserStack users={fakeUsers} showAvatars showRealName={false} />
 				<VideoConfMessageFooterText>{fakeUsers.length} joined</VideoConfMessageFooterText>
 			</VideoConfMessageFooter>
 		</VideoConfMessage>

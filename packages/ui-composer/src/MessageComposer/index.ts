@@ -10,6 +10,8 @@ import MessageComposerSkeleton from './MessageComposerSkeleton';
 import MessageComposerToolbar from './MessageComposerToolbar';
 import MessageComposerToolbarActions from './MessageComposerToolbarActions';
 import MessageComposerToolbarSubmit from './MessageComposerToolbarSubmit';
+import RichTextComposerInput from './RichTextComposerInput';
+import RichTextComposerInputExpandable from './RichTextComposerInputExpandable';
 
 export {
 	MessageComposer,
@@ -24,6 +26,8 @@ export {
 	MessageComposerIcon,
 	MessageComposerHint,
 	MessageComposerButton,
+	RichTextComposerInput,
+	RichTextComposerInputExpandable,
 };
 
 export { MessageComposerFile, MessageComposerFileError, MessageComposerFileLoader, MessageComposerFileGroup } from './MessageComposerFile';

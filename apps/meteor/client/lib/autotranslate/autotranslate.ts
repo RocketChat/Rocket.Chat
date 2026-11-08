@@ -92,11 +92,11 @@ export const AutoTranslate = {
 
 		const loadProviders = async () => {
 			try {
-				const [providersMetadata, supportedLanguagesResponse] = await Promise.all([
-					sdk.call('autoTranslate.getProviderUiMetadata'),
+				const [providersResponse, supportedLanguagesResponse] = await Promise.all([
+					sdk.rest.get('/v1/autotranslate.getProviderUiMetadata'),
 					sdk.rest.get('/v1/autotranslate.getSupportedLanguages', { targetLanguage: 'en' }),
 				]);
-				this.providersMetadata = providersMetadata;
+				this.providersMetadata = providersResponse.providers;
 				this.supportedLanguages = supportedLanguagesResponse.languages;
 			} catch (e: unknown) {
 				// Avoid unwanted error message on UI when autotranslate is disabled while fetching data

@@ -1,0 +1,408 @@
+@use '../../styles/colors.scss';
+@use '../../styles/functions.scss' as *;
+@use '../../styles/lengths.scss';
+@use '../../styles/mixins/shadows.scss';
+@use '../../styles/mixins/size.scss';
+@use '../../styles/mixins/states.scss';
+@use '../../styles/mixins/templates.scss';
+@use '../../styles/typography.scss' as *;
+@use './MessageDivider/MessageDivider.styles.scss';
+@use './MessageGenericPreview/MessageGenericPreview.styles.scss';
+@use './MessageMetrics/MessageMetrics.styles.scss';
+@use './MessageReactions/MessageReactions.styles.scss';
+@use './MessageStatusIndicator/MessageStatusIndicator.styles.scss';
+@use './MessageSystem/MessageSystem.styles.scss';
+@use './MessageToolbar/MessageToolbar.styles.scss';
+@use './ThreadMessage/ThreadMessage.styles.scss';
+@use './mixins.scss';
+
+$message-background-color: theme('message-background-color', colors.surface(room));
+
+$message-background-color-hover: theme('message-background-color-hover', colors.surface(hover));
+
+$message-background-color-selected: theme('message-background-color-selected', colors.surface(selected));
+
+$message-background-color-editing: theme('message-background-color-editing', colors.status-background(warning-2));
+$message-color-editing: theme('message-background-color-editing', colors.status-font(on-warning-2));
+
+$message-background-color-highlight: theme('message-background-color-highlight', colors.status-background(warning-2));
+
+$message-highlight-colors-critical-color: theme('message-highlight-colors-critical-color', colors.status-font(on-danger));
+
+$message-highlight-colors-relevant-color: theme('message-highlight-colors-relevant-color', colors.status-font(on-service-1));
+
+$message-highlight-colors-other-color: theme('message-highlight-colors-other-color', colors.status-font(on-warning));
+
+$message-highlight-colors-link-color: theme('message-highlight-colors-link-color', colors.status-font(on-info));
+
+$message-block-width-fixed: theme('message-block-width-fixed', 368px);
+
+%rcx-margins-header {
+	margin-inline: lengths.margin(2);
+}
+
+%rcx-margins-block {
+	margin-block: lengths.margin(2);
+}
+
+.rcx-message {
+	&-container {
+		display: flex;
+		flex-direction: column;
+		flex-grow: 1;
+		flex-shrink: 1;
+
+		min-width: 1px;
+		margin-block: lengths.margin(-2);
+		margin-inline: lengths.margin(4);
+
+		&--fixed {
+			align-items: center;
+			flex-grow: 0;
+			flex-shrink: 0;
+		}
+
+		&--left {
+			align-items: center;
+			align-items: flex-end;
+			flex-grow: 0;
+			flex-shrink: 0;
+
+			width: lengths.size(36);
+			margin-block: lengths.margin(-2);
+		}
+	}
+
+	position: relative;
+
+	display: flex;
+	flex-direction: row;
+	align-items: flex-start;
+
+	margin-inline: lengths.margin(2);
+
+	padding-block: lengths.padding(8) lengths.padding(4);
+
+	padding-inline: lengths.padding(20);
+
+	// background-color: $message-background-color;
+
+	&:hover {
+		background-color: $message-background-color-hover;
+	}
+
+	@include templates.focus-state;
+
+	&--selected {
+		background: $message-background-color-selected !important;
+	}
+
+	&--editing {
+		color: $message-color-editing !important;
+		background: $message-background-color-editing !important;
+	}
+
+	&--highlight {
+		animation: background-fade 6s forwards;
+	}
+
+	&--pending {
+		.rcx-message-body {
+			opacity: 0.4;
+		}
+	}
+
+	&--sequential {
+		padding-block: lengths.padding(4);
+	}
+
+	@keyframes background-fade {
+		50% {
+			background: $message-background-color-highlight;
+		}
+
+		100% {
+			background: $message-background-color;
+		}
+	}
+
+	&--clickable {
+		cursor: pointer;
+	}
+
+	&-header {
+		@extend %rcx-margins-block;
+		display: flex;
+		flex-direction: row;
+		flex-grow: 0;
+		flex-shrink: 1;
+
+		min-width: 1px;
+
+		&__wrapper {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			flex-grow: 1;
+			flex-shrink: 1;
+
+			min-width: 1px;
+			margin-block: lengths.margin(-4);
+			margin-inline: lengths.margin(-2);
+		}
+
+		&__time {
+			@extend %rcx-margins-header;
+			@include use-with-truncated-text();
+			@include use-font-scale(c1);
+			flex-shrink: 0;
+
+			color: colors.font(secondary-info);
+
+			// secondary-info fails contrast against the hover surface.
+			.rcx-message:hover & {
+				color: colors.font(default);
+			}
+		}
+
+		&__name-container {
+			display: inline;
+
+			@include use-with-truncated-text();
+
+			@extend %rcx-margins-header;
+
+			@include templates.focus-state;
+			flex-shrink: 0;
+
+			// This must match __name's color or the
+			// underline mismatches the text under it.
+			color: colors.font(titles-labels);
+
+			&[role='button'] {
+				cursor: pointer;
+
+				&:hover {
+					text-decoration: underline;
+				}
+			}
+		}
+
+		&__name {
+			@include use-font-scale(h5);
+			@include use-with-truncated-text();
+			flex-shrink: 1;
+
+			color: colors.font(titles-labels);
+		}
+
+		&__username {
+			@include use-font-scale(p2);
+			@include use-with-truncated-text();
+			flex-shrink: 1;
+
+			color: colors.font(default);
+		}
+
+		&__roles {
+			display: flex;
+			flex-shrink: 1;
+			@include use-with-truncated-text();
+		}
+
+		&__role {
+			@extend %rcx-margins-header;
+		}
+
+		& + .rcx-message-block {
+			margin-block-start: lengths.margin(4);
+		}
+	}
+
+	&-body {
+		@include use-font-scale(p2);
+
+		overflow: hidden;
+
+		flex-shrink: 1;
+
+		// Padding rather than margin, so overflow: hidden leaves room for emoji glyphs
+		// that paint slightly past their line box.
+		padding-block: lengths.padding(2);
+
+		transition: opacity 0.3s linear;
+
+		word-break: break-word;
+
+		opacity: 1;
+
+		color: colors.font(default);
+
+		& h1 {
+			@include use-font-scale(h1);
+		}
+
+		& h2 {
+			@include use-font-scale(h2);
+		}
+
+		& h3 {
+			@include use-font-scale(h3);
+		}
+
+		& h4 {
+			@include use-font-scale(h4);
+		}
+
+		& ul,
+		ol {
+			margin: 0;
+			padding-block: lengths.padding(4) 0;
+			padding-inline: 0;
+
+			list-style: none;
+		}
+
+		& ul li::before {
+			padding: 0 lengths.padding(8);
+
+			content: '•';
+
+			font-weight: bold;
+		}
+
+		& ol li::before {
+			padding: 0 lengths.padding(8);
+
+			content: attr(value) '.';
+
+			font-weight: bold;
+		}
+
+		&--clamp {
+			display: -webkit-box;
+			overflow: hidden;
+
+			word-break: break-word;
+			-webkit-box-orient: vertical;
+			-webkit-line-clamp: 2;
+
+			&-2 {
+				-webkit-line-clamp: 2;
+			}
+
+			&-3 {
+				-webkit-line-clamp: 3;
+			}
+
+			&-4 {
+				-webkit-line-clamp: 3;
+			}
+		}
+
+		& blockquote {
+			padding-inline: lengths.padding(8);
+
+			border: 1px solid colors.stroke(extra-light);
+			border-radius: lengths.border-radius(small);
+			background-color: colors.surface(tint);
+			border-inline-start-color: colors.stroke(medium);
+
+			&:hover,
+			&:focus {
+				border-color: colors.stroke(light);
+				background-color: colors.surface(hover);
+				border-inline-start-color: colors.stroke(medium);
+			}
+		}
+
+		& ul.task-list {
+			> li::before {
+				display: none;
+			}
+
+			> li > .rcx-check-box > .rcx-check-box__input:focus + .rcx-check-box__fake {
+				z-index: 1;
+			}
+			margin-inline-start: 0;
+			padding-inline-start: 0;
+
+			list-style: none;
+		}
+	}
+
+	&-block {
+		@extend %rcx-margins-block;
+		display: flex;
+		flex-direction: column;
+
+		&--width-fixed {
+			flex-grow: 0;
+			flex-shrink: 1;
+
+			width: 100%;
+			max-width: $message-block-width-fixed;
+		}
+	}
+
+	&__emoji {
+		display: inline-block;
+
+		margin-inline: lengths.margin(2);
+
+		background-size: contain;
+
+		font-size: lengths.size(24);
+		line-height: lengths.size(24);
+
+		@include size.square(lengths.size(24));
+
+		&--big {
+			font-size: lengths.size(44);
+			line-height: lengths.size(48);
+
+			@include size.square(lengths.size(44));
+		}
+	}
+
+	&__highlight {
+		display: inline;
+
+		white-space: nowrap;
+
+		word-break: keep-all;
+
+		font-weight: 500;
+
+		&--clickable {
+			cursor: pointer;
+
+			&:hover {
+				text-decoration: underline;
+			}
+		}
+
+		&--critical {
+			color: $message-highlight-colors-critical-color;
+		}
+
+		&--relevant {
+			color: $message-highlight-colors-relevant-color;
+		}
+
+		&--link {
+			color: $message-highlight-colors-link-color;
+		}
+
+		&--other {
+			color: $message-highlight-colors-other-color;
+		}
+
+		@include states.on-focus-visible {
+			border-radius: lengths.border-radius(medium);
+			outline: lengths.border-width('default') solid colors.stroke(highlight);
+
+			@include shadows.use-focus-shadow(colors.stroke(extra-light-highlight));
+		}
+	}
+}

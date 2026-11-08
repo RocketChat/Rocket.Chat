@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
+/* oxlint-disable @typescript-eslint/no-empty-function */
 export const Meteor = {
 	Device: {
 		isDesktop: () => false,
@@ -14,10 +14,6 @@ export const Meteor = {
 		on: () => {},
 		removeListener: () => {},
 	}),
-	StreamerCentral: {
-		on: () => {},
-		removeListener: () => {},
-	},
 	startup: () => {},
 	methods: () => {},
 	call: () => {},
@@ -27,6 +23,11 @@ export const Meteor = {
 		},
 	},
 	users: {},
+};
+
+export const DDPCommon = {
+	parseDDP: () => undefined,
+	stringifyDDP: () => '',
 };
 
 export const Tracker = {
@@ -94,5 +95,3 @@ export const Session = {
 	get: () => {},
 	set: () => {},
 };
-
-export const DDPCommon = {};

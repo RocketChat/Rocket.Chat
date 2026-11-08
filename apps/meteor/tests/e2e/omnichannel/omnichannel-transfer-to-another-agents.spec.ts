@@ -77,7 +77,7 @@ test.describe('OC - Chat transfers [Agent role]', () => {
 			await agentA.poHomeOmnichannel.content.forwardChatModal.inputForwardUser.type('user2');
 			await expect(agentA.page.locator('text=Empty')).toBeVisible();
 
-			await agentA.page.goto('/');
+			await agentA.poHomeOmnichannel.goto();
 		});
 
 		await test.step('expect to be able to transfer an omnichannel to conversation to agent 2 as agent 1 when agent 2 is online', async () => {

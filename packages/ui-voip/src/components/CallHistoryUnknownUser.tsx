@@ -6,7 +6,7 @@ const CallHistoryUnknownUser = () => {
 	return (
 		<Box display='flex' flexDirection='row' alignItems='center'>
 			<Box marginInlineEnd={8}>
-				<FramedIcon icon='warning' size={28} />
+				<FramedIcon icon='warning' />
 			</Box>
 			<Box>{t('Unknown')}</Box>
 		</Box>

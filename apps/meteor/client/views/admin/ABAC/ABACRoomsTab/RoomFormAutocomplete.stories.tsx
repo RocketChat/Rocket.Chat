@@ -1,6 +1,8 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { Meta, StoryObj } from '@storybook/react';
+import { useState } from 'react';
 import { action } from 'storybook/actions';
+import { userEvent, within } from 'storybook/test';
 
 import RoomFormAutocomplete from './RoomFormAutocomplete';
 import { createFakeRoom } from '../../../../../tests/mocks/data';
@@ -40,3 +42,15 @@ export default meta;
 type Story = StoryObj<typeof RoomFormAutocomplete>;
 
 export const Default: Story = {};
+
+export const WithSelectedRoom: Story = {
+	render: function Render(args) {
+		const [value, setValue] = useState('');
+		return <RoomFormAutocomplete {...args} value={value} onSelectedRoom={(newValue) => setValue(newValue)} />;
+	},
+	play: async ({ canvasElement }) => {
+		await userEvent.click(within(canvasElement).getByRole('textbox'));
+		await userEvent.click(await within(document.body).findByRole('option', { name: /Room 1/ }));
+		(document.activeElement as HTMLElement | null)?.blur();
+	},
+};

@@ -2,7 +2,6 @@ import type { GetSignedUrlConfig } from '@google-cloud/storage';
 import { Storage } from '@google-cloud/storage';
 import type { IUpload } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
-import { check } from 'meteor/check';
 
 import { UploadFS } from '../../../../../ufs';
 import type { StoreOptions } from '../../../../../ufs/ufs-store';
@@ -79,8 +78,6 @@ class GoogleStorageStore extends UploadFS.Store {
 		 * @return {string}
 		 */
 		this.create = async function (file) {
-			check(file, Object);
-
 			if (file._id == null) {
 				file._id = Random.id();
 			}

@@ -1,17 +1,16 @@
 import * as child_process from 'node:child_process';
 import * as path from 'node:path';
-import { type Readable, EventEmitter } from 'node:stream';
+import { EventEmitter } from 'node:stream';
 import { inspect as utilInspect } from 'node:util';
 
 import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { AppMethod } from '@rocket.chat/apps-engine/definition/metadata';
 import debugFactory from 'debug';
-import * as jsonrpc from 'jsonrpc-lite';
 
 import { LivenessManager } from './LivenessManager';
 import { ProcessMessenger } from './ProcessMessenger';
 import { bundleLegacyApp } from './bundler';
-import { newDecoder } from './codec';
+import * as jsonrpc from '../../../lib/jsonrpc';
 import type { AppManager } from '../../AppManager';
 import type { AppBridges } from '../../bridges';
 import { AppResourceBridge } from '../../bridges/AppResourceBridge';
@@ -144,7 +143,13 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 		try {
 			const { command, args, options } = this.buildProcessConfiguration();
 
-			this.process = child_process.spawn(command, args, options);
+			this.process = child_process.spawn(command, args, {
+				...options,
+				// The subprocess is controlled exclusively through the IPC channel;
+				// stdout and stderr are piped so the host can surface subprocess logs
+				stdio: ['ignore', 'pipe', 'pipe', 'ipc'],
+				serialization: 'advanced',
+			});
 			this.messenger.setReceiver(this.process);
 			this.livenessManager.attach(this.process);
 
@@ -286,21 +291,17 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 		return this.appPackage.info.id;
 	}
 
-	public async sendRequest(message: Pick<jsonrpc.RequestObject, 'method' | 'params'>, options = this.options): Promise<unknown> {
+	public async sendRequest(message: Pick<jsonrpc.RequestObject, 'method' | 'params' | 'meta'>, options = this.options): Promise<unknown> {
 		const id = String(Math.random().toString(36)).substring(2);
 
 		const start = Date.now();
 
-		const request = jsonrpc.request(id, message.method, message.params);
+		const request = jsonrpc.request(id, message.method, message.params, message.meta);
 
 		const { promise, abort } = this.waitForResponse(request, options);
 
-		try {
-			this.debug('Sending message to subprocess %s', inspect(message));
-			this.messenger.send(request);
-		} catch (e) {
-			abort(e);
-		}
+		this.debug('Sending message to subprocess %s', inspect(message));
+		this.messenger.send(request).catch(abort);
 
 		return promise.finally(() => {
 			this.debug('Request %s for method %s took %dms', id, message.method, Date.now() - start);
@@ -338,7 +339,7 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 			promise: new Promise((resolve, reject) => {
 				const eventName = `result:${req.id}`;
 
-				const responseCallback = (result: unknown, error: jsonrpc.IParsedObjectError['payload']['error'] | Error) => {
+				const responseCallback = (result: unknown, error: jsonrpc.SerializedJsonRpcError | Error) => {
 					this.off(eventName, responseCallback);
 					clearTimeout(timeoutId);
 
@@ -380,7 +381,9 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 			return;
 		}
 
+		this.process.stdout.on('data', this.parseOutput.bind(this));
 		this.process.stderr.on('data', this.parseError.bind(this));
+		this.process.on('message', this.parseSubprocessMessage.bind(this));
 		this.process.on('error', (err) => {
 			this.state = 'invalid';
 			console.error(`Failed to startup ${this.runtimeName} subprocess for app ${this.getAppId()}`, err);
@@ -389,13 +392,9 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 		this.process.once('exit', (code) => this.emit('processExit', code));
 
 		this.once('ready', this.onReady.bind(this));
-
-		void this.parseStdout(this.process.stdout);
 	}
 
-	private async handleBridgeMessage({
-		payload: { method, id, params },
-	}: jsonrpc.IParsedObjectRequest): Promise<jsonrpc.SuccessObject | jsonrpc.ErrorObject> {
+	private async handleBridgeMessage({ method, id, params }: jsonrpc.RequestObject): Promise<jsonrpc.SuccessObject | jsonrpc.ErrorObject> {
 		const [bridgeName, bridgeMethod] = method.substring(8).split(':');
 
 		this.debug('Handling bridge message %s().%s() with params %s', bridgeName, bridgeMethod, inspect(params));
@@ -441,26 +440,28 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 			);
 		} catch (error) {
 			this.debug('Error executing bridge method %s().%s() %s', bridgeName, bridgeMethod, inspect(error.message));
-			const jsonRpcError = new jsonrpc.JsonRpcError(error.message, -32000, error);
+			const jsonRpcError = new jsonrpc.JsonRpcError(error.message, jsonrpc.SERVER_ERROR, error);
 			return jsonrpc.error(id, jsonRpcError);
 		}
 
 		return jsonrpc.success(id, typeof result === 'undefined' ? null : result);
 	}
 
-	private async handleIncomingMessage(message: jsonrpc.IParsedObjectNotification | jsonrpc.IParsedObjectRequest): Promise<void> {
-		const { method } = message.payload;
+	private async handleIncomingMessage(message: jsonrpc.NotificationObject | jsonrpc.RequestObject): Promise<void> {
+		const { method } = message;
 
 		if (method.startsWith('bridges:')) {
 			let result: jsonrpc.SuccessObject | jsonrpc.ErrorObject;
 
 			try {
-				result = await this.handleBridgeMessage(message as jsonrpc.IParsedObjectRequest);
+				result = await this.handleBridgeMessage(message as jsonrpc.RequestObject);
 			} catch (e) {
-				result = jsonrpc.error((message.payload as jsonrpc.RequestObject).id, new jsonrpc.JsonRpcError(e.message, 1000));
+				result = jsonrpc.error((message as jsonrpc.RequestObject).id, new jsonrpc.JsonRpcError(e.message, 1000));
 			}
 
-			this.messenger.send(result);
+			this.messenger.send(result).catch((error) => {
+				console.error(`[${this.getAppId()}] Failed to send the result of "${method}" to the subprocess`, error);
+			});
 
 			return;
 		}
@@ -484,30 +485,30 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 
 	private async logUnhandledError(
 		method: `${AppMethod.RUNTIME_UNCAUGHT_EXCEPTION | AppMethod.RUNTIME_UNHANDLED_REJECTION}`,
-		message: jsonrpc.IParsedObjectRequest | jsonrpc.IParsedObjectNotification,
+		message: jsonrpc.RequestObject | jsonrpc.NotificationObject,
 	) {
 		this.debug('Unhandled error of type "%s" caught in subprocess', method);
 
 		const logger = new AppConsole(method);
-		logger.error(message.payload);
+		logger.error(message);
 
 		await this.logStorage.storeEntries(AppConsole.toStorageEntry(this.getAppId(), logger));
 	}
 
-	private async handleResultMessage(message: jsonrpc.IParsedObjectError | jsonrpc.IParsedObjectSuccess): Promise<void> {
-		const { id } = message.payload;
+	private async handleResultMessage(message: jsonrpc.ErrorObject | jsonrpc.SuccessObject): Promise<void> {
+		const { id } = message;
 
 		let result: unknown;
-		let error: jsonrpc.IParsedObjectError['payload']['error'] | undefined;
+		let error: jsonrpc.SerializedJsonRpcError | undefined;
 		let logs: ILoggerStorageEntry;
 
-		if (message.type === 'success') {
-			const params = message.payload.result as { value: unknown; logs?: ILoggerStorageEntry };
+		if (jsonrpc.isSuccessObject(message)) {
+			const params = message.result as { value: unknown; logs?: ILoggerStorageEntry };
 			result = params.value;
 			logs = params.logs;
 		} else {
-			error = message.payload.error;
-			logs = message.payload.error.data?.logs as ILoggerStorageEntry;
+			error = message.error;
+			logs = message.error.data?.logs as ILoggerStorageEntry;
 		}
 
 		// Should we try to make sure all result messages have logs?
@@ -518,63 +519,41 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 		this.emit(`result:${id}`, result, error);
 	}
 
-	private async parseStdout(stream: Readable): Promise<void> {
+	private parseSubprocessMessage(message: unknown): void {
+		this.debug('Received message from subprocess %s', inspect(message));
+
 		try {
-			for await (const message of newDecoder().decodeStream(stream)) {
-				this.debug('Received message from subprocess %s', inspect(message));
-				try {
-					// Process PONG resonse first as it is not JSON RPC
-					if (message === COMMAND_PONG) {
-						this.emit('pong');
-						continue;
-					}
-
-					const JSONRPCMessage = jsonrpc.parseObject(message);
-
-					if (Array.isArray(JSONRPCMessage)) {
-						throw new Error('Invalid message format');
-					}
-
-					this.emit('heartbeat');
-
-					if (JSONRPCMessage.type === 'request' || JSONRPCMessage.type === 'notification') {
-						this.handleIncomingMessage(JSONRPCMessage).catch((reason) =>
-							console.error(`[${this.getAppId()}] Error executing handler`, reason, message),
-						);
-						continue;
-					}
-
-					if (JSONRPCMessage.type === 'success' || JSONRPCMessage.type === 'error') {
-						this.handleResultMessage(JSONRPCMessage).catch((reason) =>
-							console.error(`[${this.getAppId()}] Error executing handler`, reason, message),
-						);
-						continue;
-					}
-
-					console.error('Unrecognized message type', JSONRPCMessage);
-				} catch (e) {
-					// SyntaxError is thrown when the message is not a valid JSON
-					if (e instanceof SyntaxError) {
-						console.error(`[${this.getAppId()}] Failed to parse message`);
-						continue;
-					}
-
-					console.error(`[${this.getAppId()}] Error executing handler`, e, message);
-				}
+			// Process PONG resonse first as it is not JSON RPC
+			if (message === COMMAND_PONG) {
+				this.emit('pong');
+				return;
 			}
+
+			this.emit('heartbeat');
+
+			if (jsonrpc.isRequestObject(message) || jsonrpc.isNotificationObject(message)) {
+				this.handleIncomingMessage(message).catch((reason) =>
+					console.error(`[${this.getAppId()}] Error executing handler`, reason, message),
+				);
+				return;
+			}
+
+			if (jsonrpc.isSuccessObject(message) || jsonrpc.isErrorObject(message)) {
+				this.handleResultMessage(message).catch((reason) => console.error(`[${this.getAppId()}] Error executing handler`, reason, message));
+				return;
+			}
+
+			console.error('Unrecognized message type', message);
 		} catch (e) {
-			console.error(`[${this.getAppId()}]`, e);
-			this.emit('error', new Error('DECODE_ERROR'));
+			console.error(`[${this.getAppId()}] Error executing handler`, e, message);
 		}
 	}
 
-	private async parseError(chunk: Buffer): Promise<void> {
-		try {
-			const data = JSON.parse(chunk.toString());
+	private parseOutput(chunk: Buffer): void {
+		console.log(`[${this.getAppId()}] Subprocess stdout`, chunk.toString());
+	}
 
-			this.debug('Metrics received from subprocess (via stderr): %s', inspect(data));
-		} catch {
-			console.error('Subprocess stderr', chunk.toString());
-		}
+	private parseError(chunk: Buffer): void {
+		console.error(`[${this.getAppId()}] Subprocess stderr`, chunk.toString());
 	}
 }

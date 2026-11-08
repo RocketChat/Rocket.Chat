@@ -24,7 +24,7 @@ test.describe.serial('message-composer', () => {
 	test('should have all formatters and the main actions visible on toolbar', async () => {
 		await poHomeChannel.content.sendMessage('hello composer');
 
-		await expect(poHomeChannel.composer.allPrimaryActions).toHaveCount(12);
+		await expect(poHomeChannel.composer.allPrimaryActions).toHaveCount(14);
 	});
 
 	test('should have only the main formatter and the main action', async ({ page }) => {
@@ -225,7 +225,7 @@ test.describe.serial('message-composer', () => {
 			await expect(poHomeChannel.audioRecorder).toBeVisible();
 
 			await page.waitForTimeout(1000);
-			await poHomeChannel.audioRecorder.getByRole('button', { name: 'Finish Recording', exact: true }).click();
+			await poHomeChannel.audioRecorder.getByRole('button', { name: 'Finish recording', exact: true }).click();
 			await expect(poHomeChannel.composer.getFileByName('Audio record.mp3')).toBeVisible();
 		});
 	});

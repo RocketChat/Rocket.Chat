@@ -9,7 +9,7 @@ test.describe.serial('settings-assets', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poAdminSettings = new AdminSettings(page);
-		await page.goto('/admin/settings');
+		await poAdminSettings.goto();
 
 		await poAdminSettings.btnAssetsSettings.click();
 

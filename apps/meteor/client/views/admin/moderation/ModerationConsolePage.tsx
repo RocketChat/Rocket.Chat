@@ -1,4 +1,3 @@
-import { Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { useTranslation, useRouteParameter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
@@ -6,6 +5,7 @@ import { useCallback } from 'react';
 import ModConsoleReportDetails from './ModConsoleReportDetails';
 import ModerationConsoleTable from './ModerationConsoleTable';
 import ModConsoleUsersTable from './UserReports/ModConsoleUsersTable';
+import { PageTabs } from '../../../components/PageTabs';
 import { getPermaLink } from '../../../lib/getPermaLink';
 
 type TabType = 'users' | 'messages';
@@ -33,23 +33,18 @@ const ModerationConsolePage = ({ tab = 'messages', onSelectTab }: ModerationCons
 		[dispatchToastMessage],
 	);
 
-	const handleTabClick = useCallback(
-		(tab: TabType): undefined | (() => void) => (onSelectTab ? (): void => onSelectTab(tab) : undefined),
-		[onSelectTab],
-	);
-
 	return (
 		<Page flexDirection='row'>
 			<Page>
 				<PageHeader title={t('Moderation')} />
-				<Tabs>
-					<TabsItem selected={tab === 'messages'} onClick={handleTabClick('messages')}>
-						{t('Reported_Messages')}
-					</TabsItem>
-					<TabsItem selected={tab === 'users'} onClick={handleTabClick('users')}>
-						{t('Reported_Users')}
-					</TabsItem>
-				</Tabs>
+				<PageTabs
+					items={[
+						{ id: 'messages', label: t('Reported_Messages') },
+						{ id: 'users', label: t('Reported_Users') },
+					]}
+					selected={tab}
+					onSelect={(tab) => onSelectTab?.(tab)}
+				/>
 				<PageContent>
 					{tab === 'messages' && <ModerationConsoleTable />}
 					{tab === 'users' && <ModConsoleUsersTable />}

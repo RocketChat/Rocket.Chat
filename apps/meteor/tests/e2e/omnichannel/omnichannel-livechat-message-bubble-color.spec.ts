@@ -41,7 +41,7 @@ test.describe('OC - Livechat - Bubble background color', async () => {
 	test.beforeEach(async ({ page }) => {
 		poLiveChat = new OmnichannelLiveChatEmbedded(page);
 
-		await page.goto('/packages/rocketchat_livechat/assets/demo.html');
+		await poLiveChat.goto();
 	});
 
 	test.afterEach(async ({ page }) => {

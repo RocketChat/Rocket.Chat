@@ -46,10 +46,6 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			{ key: { alert: 1 } },
 			{ key: { ts: 1 } },
 			{ key: { ls: 1 } },
-			// TODO: remove these indexes in the next major release (8.0.0) - their only consumers (the per-room notification-preference finders) were removed
-			// { key: { desktopNotifications: 1 }, sparse: true },
-			// { key: { mobilePushNotifications: 1 }, sparse: true },
-			// { key: { emailNotifications: 1 }, sparse: true },
 			{ key: { autoTranslate: 1 }, sparse: true },
 			{ key: { autoTranslateLanguage: 1 }, sparse: true },
 			{ key: { 'userHighlights.0': 1 }, sparse: true },
@@ -269,7 +265,9 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 	addRolesByUserId(uid: IUser['_id'], roles: IRole['_id'][], rid?: IRoom['_id']): Promise<UpdateResult> {
 		if (!Array.isArray(roles)) {
 			roles = [roles];
-			process.env.NODE_ENV === 'development' && console.warn('[WARN] Subscriptions.addRolesByUserId: roles should be an array');
+			if (process.env.NODE_ENV === 'development') {
+				console.warn('[WARN] Subscriptions.addRolesByUserId: roles should be an array');
+			}
 		}
 
 		const query = {

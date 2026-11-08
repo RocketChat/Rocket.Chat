@@ -1,25 +1,10 @@
-import { useCallback, useSyncExternalStore } from 'react';
-
 import { useMediaCallInstance } from './MediaCallInstanceContext';
+import { useInstanceSnapshot } from './useInstanceSnapshot';
 
 export type PeekMediaSessionCallIdReturn = string | undefined;
 
 export const usePeekMediaSessionCallId = (): PeekMediaSessionCallIdReturn => {
 	const { instance } = useMediaCallInstance();
 
-	const subscribe = useCallback(
-		(onStoreChange: () => void): (() => void) => {
-			if (!instance) {
-				return () => undefined;
-			}
-			return instance?.on('sessionStateChange', onStoreChange);
-		},
-		[instance],
-	);
-
-	const getSnapshot = useCallback(() => {
-		return instance?.getState()?.tempCallId || undefined;
-	}, [instance]);
-
-	return useSyncExternalStore(subscribe, getSnapshot);
+	return useInstanceSnapshot(instance, (instance) => instance?.getState()?.tempCallId || undefined);
 };

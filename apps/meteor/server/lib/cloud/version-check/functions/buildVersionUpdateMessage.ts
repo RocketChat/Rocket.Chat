@@ -2,7 +2,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Settings, Users } from '@rocket.chat/models';
 import semver from 'semver';
 
-import { Info } from '../../../../../app/utils/rocketchat.info';
+import { Info } from '../../../../../rocketchat.info';
 import { settings } from '../../../../settings';
 import { updateAuditedBySystem } from '../../../../settings/lib/auditedSettingUpdates';
 import { i18n } from '../../../i18n';

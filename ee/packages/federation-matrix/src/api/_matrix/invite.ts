@@ -4,6 +4,7 @@ import { Router } from '@rocket.chat/http-router';
 import { Users } from '@rocket.chat/models';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 
+import { getUsernameServername } from '../../helpers/getUsernameServername';
 import { logger } from '../logger';
 import { isAuthenticatedMiddleware } from '../middlewares/isAuthenticated';
 
@@ -130,10 +131,26 @@ const ProcessInviteResponseSchema = {
 const isProcessInviteResponseProps = ajv.compile(ProcessInviteResponseSchema);
 
 export const getMatrixInviteRoutes = () => {
+	// PUT /_matrix/federation/v2/invite/{roomId}/{eventId}
+	// https://spec.matrix.org/v1.19/server-server-api/#put_matrixfederationv2inviteroomideventid
 	return new Router('/federation').put(
 		'/v2/invite/:roomId/:eventId',
 		{
-			body: ajv.compile({ type: 'object' }), // TODO: add schema from room package.
+			// TODO: add schema from room package. `event` is a PDU whose format varies by room
+			// version, so it stays unconstrained here; room_version and event are required per spec.
+			body: ajv.compile({
+				type: 'object',
+				properties: {
+					room_version: { type: 'string' },
+					event: { type: 'object' },
+					invite_room_state: {
+						type: 'array',
+						items: { type: 'object' },
+						nullable: true,
+					},
+				},
+				required: ['room_version', 'event'],
+			}),
 			params: isProcessInviteParamsProps,
 			response: {
 				200: isProcessInviteResponseProps,
@@ -146,30 +163,72 @@ export const getMatrixInviteRoutes = () => {
 			const { roomId, eventId } = c.req.param();
 			const { event, room_version: roomVersion, invite_room_state: strippedStateEvents } = await c.req.json();
 
-			const userToCheck = event.state_key as string;
+			const userToCheck = event.state_key;
 
-			if (!userToCheck) {
-				throw new Error('join event has missing state key, unable to determine user to join');
+			// matches Synapse: the PDU itself stays unvalidated, but an event that is not an invite
+			// membership event cannot be processed, so reject it instead of failing later
+			if (typeof userToCheck !== 'string' || !userToCheck || event.type !== 'm.room.member' || event.content?.membership !== 'invite') {
+				return {
+					body: {
+						errcode: 'M_UNKNOWN',
+						error: 'The event was not an m.room.member invite event',
+					},
+					statusCode: 400,
+				};
 			}
 
+			// spec: servers SHOULD return M_INVALID_PARAM if m.room.create is missing from invite_room_state
 			if (!strippedStateEvents?.some((e: any) => e.type === 'm.room.create')) {
 				return {
 					body: {
-						errcode: 'M_MISSING_PARAM',
+						errcode: 'M_INVALID_PARAM',
 						error: 'Missing invite_room_state: m.room.create event is required',
 					},
 					statusCode: 400,
 				};
 			}
 
-			const [username /* domain */] = userToCheck.split(':');
+			// spec grammar is `@localpart:server_name`, where localpart is non-empty. deliberately
+			// not `validateFederatedUsername`, which is stricter than the spec and would reject
+			// legal localparts containing `/` or `+`
+			if (!/^@[A-Za-z0-9_=/.+-]+:.+$/.test(userToCheck)) {
+				return {
+					body: {
+						errcode: 'M_UNKNOWN',
+						error: 'The invite event state_key is not a valid user ID',
+					},
+					statusCode: 400,
+				};
+			}
 
-			// TODO: check domain
+			// an invite addressed to a user of another homeserver would create a local subscription
+			// that can never be accepted, since the remote server never invited our copy of that user
+			const [username, , isLocalUser] = getUsernameServername(userToCheck, federationSDK.getConfig('serverName'));
 
-			const ourUser = await Users.findOneByUsername(username.slice(1));
+			if (!isLocalUser) {
+				return {
+					body: {
+						errcode: 'M_UNKNOWN',
+						error: 'The invite event must be for a user of this server',
+					},
+					statusCode: 400,
+				};
+			}
 
+			const ourUser = await Users.findOneByUsername(username);
+
+			// same response as the federation permission check below, so an unauthorized remote
+			// server cannot use the invite endpoint to probe which local users exist
 			if (!ourUser) {
-				throw new Error('user not found not processing invite');
+				logger.info({ msg: 'Invite for unknown local user, rejecting invite to room', userId: userToCheck, roomId });
+
+				return {
+					body: {
+						errcode: 'M_FORBIDDEN',
+						error: 'User does not have permission to access federation',
+					},
+					statusCode: 403,
+				};
 			}
 
 			// check federation permission before processing the invite

@@ -129,8 +129,15 @@ describe('UserPresence', () => {
 		restoreConnection(rerender);
 		await jest.advanceTimersByTimeAsync(DEBOUNCE_WAIT);
 
-		// the reconnected session is already online on the server, so nothing else has to be asserted
 		expect(goAway).toHaveBeenCalledTimes(1);
+		expect(goOnline).toHaveBeenCalledTimes(1);
+	});
+
+	it('should not announce the user online when the page loads', async () => {
+		render();
+		await jest.advanceTimersByTimeAsync(DEBOUNCE_WAIT);
+
+		expect(goOnline).not.toHaveBeenCalled();
 	});
 
 	it('should not restart the idle countdown from scratch on a reconnection', async () => {
@@ -195,6 +202,82 @@ describe('UserPresence', () => {
 		}
 	});
 
+	it('should not crash when the desktop presence detection call throws', () => {
+		const warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+		Object.assign(window, {
+			RocketChatDesktop: {
+				setUserPresenceDetection: () => {
+					throw new Error('desktop failure');
+				},
+			},
+		});
+
+		try {
+			expect(() => render().unmount()).not.toThrow();
+			// A detection that never registered has nothing to unregister.
+			expect(warn).toHaveBeenCalledTimes(1);
+		} finally {
+			delete (window as { RocketChatDesktop?: unknown }).RocketChatDesktop;
+			warn.mockRestore();
+		}
+	});
+
+	it('should not set an active user away at once when a later desktop detection setup fails', async () => {
+		const warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+		let fail = false;
+
+		Object.assign(window, {
+			RocketChatDesktop: {
+				setUserPresenceDetection: () => {
+					if (fail) throw new Error('desktop failure');
+				},
+			},
+		});
+
+		try {
+			const { rerender } = render();
+			await jest.advanceTimersByTimeAsync(IDLE_TIME_LIMIT_MS * 2);
+
+			fail = true;
+			state.preferences = { ...state.preferences, idleTimeLimit: IDLE_TIME_LIMIT + 60 };
+			rerender();
+			await jest.advanceTimersByTimeAsync(DEBOUNCE_WAIT);
+
+			expect(goAway).not.toHaveBeenCalled();
+
+			await jest.advanceTimersByTimeAsync((IDLE_TIME_LIMIT + 60) * 1000);
+
+			expect(goAway).toHaveBeenCalledTimes(1);
+		} finally {
+			delete (window as { RocketChatDesktop?: unknown }).RocketChatDesktop;
+			warn.mockRestore();
+		}
+	});
+
+	it('should set the user away through its own idle detection when the desktop one cannot be set up', async () => {
+		const warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+		Object.assign(window, {
+			RocketChatDesktop: {
+				setUserPresenceDetection: () => {
+					throw new Error('desktop failure');
+				},
+			},
+		});
+
+		try {
+			render();
+
+			await goIdle();
+
+			expect(goAway).toHaveBeenCalledTimes(1);
+		} finally {
+			delete (window as { RocketChatDesktop?: unknown }).RocketChatDesktop;
+			warn.mockRestore();
+		}
+	});
+
 	it('should not force the user away on reconnection when auto away is disabled', async () => {
 		state.preferences = { enableAutoAway: false, idleTimeLimit: IDLE_TIME_LIMIT };
 
@@ -207,6 +290,67 @@ describe('UserPresence', () => {
 		await jest.advanceTimersByTimeAsync(DEBOUNCE_WAIT);
 
 		expect(goAway).not.toHaveBeenCalled();
+	});
+
+	it('should go online when a desktop user returns while going away is still in progress', async () => {
+		let setUserOnline: ((online: boolean) => void) | undefined;
+		let resolveGoAway: ((value: boolean) => void) | undefined;
+
+		Object.assign(window, {
+			RocketChatDesktop: {
+				setUserPresenceDetection: (options: { setUserOnline: (online: boolean) => void }) => {
+					setUserOnline = options.setUserOnline;
+				},
+			},
+		});
+		goAway.mockReturnValueOnce(
+			new Promise((resolve) => {
+				resolveGoAway = resolve;
+			}),
+		);
+
+		try {
+			render();
+
+			setUserOnline?.(false);
+			await jest.advanceTimersByTimeAsync(DEBOUNCE_WAIT);
+			expect(goAway).toHaveBeenCalledTimes(1);
+
+			setUserOnline?.(true);
+			await jest.advanceTimersByTimeAsync(DEBOUNCE_WAIT);
+			resolveGoAway?.(true);
+			await jest.advanceTimersByTimeAsync(0);
+
+			expect(goOnline).toHaveBeenCalledTimes(1);
+		} finally {
+			delete (window as { RocketChatDesktop?: unknown }).RocketChatDesktop;
+		}
+	});
+
+	it('should report the latest desktop transition when the user returns within the debounce window', async () => {
+		let setUserOnline: ((online: boolean) => void) | undefined;
+
+		Object.assign(window, {
+			RocketChatDesktop: {
+				setUserPresenceDetection: (options: { setUserOnline: (online: boolean) => void }) => {
+					setUserOnline = options.setUserOnline;
+				},
+			},
+		});
+
+		try {
+			render();
+
+			setUserOnline?.(false);
+			await jest.advanceTimersByTimeAsync(DEBOUNCE_WAIT / 2);
+			setUserOnline?.(true);
+			await jest.advanceTimersByTimeAsync(DEBOUNCE_WAIT);
+
+			expect(goAway).not.toHaveBeenCalled();
+			expect(goOnline).toHaveBeenCalledTimes(1);
+		} finally {
+			delete (window as { RocketChatDesktop?: unknown }).RocketChatDesktop;
+		}
 	});
 
 	it('should go online again after interacting with the UI', async () => {

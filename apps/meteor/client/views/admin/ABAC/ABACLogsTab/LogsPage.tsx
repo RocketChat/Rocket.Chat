@@ -1,5 +1,5 @@
 import type { AbacAttributeDefinitionChangeType, AbacActionPerformed } from '@rocket.chat/core-typings';
-import { Box, InputBox, Margins, Pagination } from '@rocket.chat/fuselage';
+import { Box, InputBox, Pagination } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import {
 	GenericTable,
@@ -9,22 +9,24 @@ import {
 	GenericTableHeaderCell,
 	GenericTableRow,
 	usePagination,
+	GenericNoResults,
+	useFormatDateAndTime,
 } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import GenericNoResults from '../../../../components/GenericNoResults';
-import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
+import { FilterBar, FilterBarFilters } from '../../../../components/FilterBar';
 import { ABACQueryKeys } from '../../../../lib/queryKeys';
-import DateRangePicker from '../../moderation/helpers/DateRangePicker';
+import DateRangePicker, { type DateRangePreset } from '../../moderation/helpers/DateRangePicker';
 
 const LogsPage = () => {
 	const { t } = useTranslation();
 
 	const [startDate, setStartDate] = useState<string>(new Date().toISOString().split('T')[0]);
 	const [endDate, setEndDate] = useState<string>(new Date().toISOString().split('T')[0]);
+	const [preset, setPreset] = useState<DateRangePreset | null>('today');
 
 	const formatDate = useFormatDateAndTime();
 
@@ -103,7 +105,19 @@ const LogsPage = () => {
 							room: event.data?.find((item) => item.key === 'object')?.value?.name ?? '',
 							element: t('ABAC_room_membership'),
 						};
-					case 'abac.object.attribute.changed':
+					case 'abac.object.attribute.changed': {
+						const app = event.data?.find((item) => item.key === 'app')?.value;
+						return {
+							...eventInfo,
+							...(app && { user: t('ABAC_User_via_App', { username: eventInfo.user, appName: app.name ?? app._id }) }),
+							name:
+								event.data
+									?.find((item) => item.key === 'current')
+									?.value?.map((item) => item.key)
+									.join(', ') ?? t('Empty'),
+							room: event.data?.find((item) => item.key === 'room')?.value?.name ?? '',
+						};
+					}
 					case 'abac.object.attributes.removed':
 						return {
 							...eventInfo,
@@ -122,6 +136,17 @@ const LogsPage = () => {
 							name: `${event.data?.find((item) => item.key === 'from')?.value} -> ${event.data?.find((item) => item.key === 'to')?.value}`,
 							room: t('ABAC_Rooms_Affected', { count: Number(event.data?.find((item) => item.key === 'roomsAffected')?.value ?? 0) }),
 						};
+					case 'abac.membership.evaluated':
+						return {
+							...eventInfo,
+							element: t('ABAC_room_membership'),
+							action: t('ABAC_Membership_Evaluated'),
+							name:
+								event.data
+									?.find((item) => item.key === 'subjects')
+									?.value?.map((item) => item.username)
+									.join(', ') ?? '',
+						};
 					default:
 						return null;
 				}
@@ -134,33 +159,37 @@ const LogsPage = () => {
 
 	return (
 		<>
-			<Margins block={24}>
-				<Box display='flex'>
+			<FilterBar>
+				<FilterBarFilters>
 					<InputBox
 						type='date'
 						placeholder={t('Start_date')}
 						value={startDate}
-						onChange={(e) => setStartDate((e.target as HTMLInputElement).value)}
+						onChange={(e) => {
+							setStartDate((e.target as HTMLInputElement).value);
+							setPreset(null);
+						}}
 					/>
-					<Margins inlineStart={8}>
-						<InputBox
-							type='date'
-							placeholder={t('End_date')}
-							value={endDate}
-							onChange={(e) => setEndDate((e.target as HTMLInputElement).value)}
-						/>
-					</Margins>
-					<Margins inlineStart={8}>
-						<DateRangePicker
-							defaultSelectedKey='today'
-							onChange={(range) => {
-								setStartDate(range.start);
-								setEndDate(range.end);
-							}}
-						/>
-					</Margins>
-				</Box>
-			</Margins>
+					<InputBox
+						type='date'
+						placeholder={t('End_date')}
+						value={endDate}
+						onChange={(e) => {
+							setEndDate((e.target as HTMLInputElement).value);
+							setPreset(null);
+						}}
+					/>
+					<DateRangePicker
+						defaultSelectedKey='today'
+						value={preset}
+						onPresetChange={setPreset}
+						onChange={(range) => {
+							setStartDate(range.start);
+							setEndDate(range.end);
+						}}
+					/>
+				</FilterBarFilters>
+			</FilterBar>
 			{(!data || data.events?.length === 0) && !isLoading ? (
 				<Box display='flex' justifyContent='center' height='full'>
 					<GenericNoResults icon='extended-view' title={t('ABAC_No_logs')} description={t('ABAC_No_logs_description')} />
@@ -183,7 +212,7 @@ const LogsPage = () => {
 								}
 								return (
 									<GenericTableRow key={eventInfo.id}>
-										<GenericTableCell withTruncatedText>
+										<GenericTableCell truncate title={eventInfo.user}>
 											{eventInfo.userAvatar && (
 												<Box is='span' marginInlineEnd={4}>
 													{eventInfo.userAvatar}
@@ -191,13 +220,13 @@ const LogsPage = () => {
 											)}
 											{eventInfo.user}
 										</GenericTableCell>
-										<GenericTableCell withTruncatedText>{eventInfo.action}</GenericTableCell>
-										<GenericTableCell withTruncatedText>{eventInfo.room}</GenericTableCell>
-										<GenericTableCell withTruncatedText>{eventInfo.element}</GenericTableCell>
-										<GenericTableCell withTruncatedText title={eventInfo.name}>
+										<GenericTableCell truncate>{eventInfo.action}</GenericTableCell>
+										<GenericTableCell truncate>{eventInfo.room}</GenericTableCell>
+										<GenericTableCell truncate>{eventInfo.element}</GenericTableCell>
+										<GenericTableCell truncate title={eventInfo.name}>
 											{eventInfo.name}
 										</GenericTableCell>
-										<GenericTableCell withTruncatedText>{formatDate(eventInfo.timestamp)}</GenericTableCell>
+										<GenericTableCell truncate>{formatDate(eventInfo.timestamp)}</GenericTableCell>
 									</GenericTableRow>
 								);
 							})}

@@ -13,7 +13,9 @@ export type CallHistoryItemState =
 	/** The call was established, but it ended due to an error */
 	| 'error'
 	/** The call ended due to a transfer */
-	| 'transferred';
+	| 'transferred'
+	/** An app refused the call before anyone's device rang */
+	| 'prevented';
 
 interface ICallHistoryItem extends IRocketChatRecord {
 	uid: IUser['_id'];

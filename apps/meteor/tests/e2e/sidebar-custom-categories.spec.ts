@@ -22,8 +22,8 @@ test.describe.serial('sidebar custom categories', () => {
 		await expect(poHomeChannel.sidebar.getCategoryCollapser(name)).toBeVisible();
 	};
 
-	const roomBelongsToGroup = async (groupName: string) => {
-		const present = await poHomeChannel.content.header.checkRoomBelongsToGroup(`Remove from ${groupName}`);
+	const roomBelongsToGroup = async (groupName: string, belongs = true) => {
+		const present = await poHomeChannel.content.header.checkRoomBelongsToGroup(`Remove from ${groupName}`, belongs);
 		return present;
 	};
 
@@ -46,8 +46,7 @@ test.describe.serial('sidebar custom categories', () => {
 		await setUserPreferences(api, { sidebarCategories: [] });
 		await api.post('/rooms.favorite', { roomId: targetChannelId, favorite: false });
 		poHomeChannel = new HomeChannel(page);
-		await page.goto('/home');
-		await poHomeChannel.waitForHome();
+		await poHomeChannel.goto();
 	});
 
 	test.describe('create (+) menu', () => {
@@ -139,7 +138,7 @@ test.describe.serial('sidebar custom categories', () => {
 			expect(await roomBelongsToGroup('Favorites')).toBe(true);
 
 			await poHomeChannel.sidebar.removeRoomFromFavorites(targetChannel);
-			expect(await roomBelongsToGroup('Favorites')).toBe(false);
+			expect(await roomBelongsToGroup('Favorites', false)).toBe(false);
 		});
 
 		test('should remove a room from a category', async () => {
@@ -147,7 +146,7 @@ test.describe.serial('sidebar custom categories', () => {
 			expect(await roomBelongsToGroup(category)).toBe(true);
 
 			await poHomeChannel.sidebar.removeRoomFromCategory(targetChannel, category);
-			expect(await roomBelongsToGroup(category)).toBe(false);
+			expect(await roomBelongsToGroup(category, false)).toBe(false);
 		});
 
 		test('should create a category and move the room into it in one step', async () => {
@@ -170,7 +169,7 @@ test.describe.serial('sidebar custom categories', () => {
 			expect(await roomBelongsToGroup('Favorites')).toBe(true);
 
 			await poHomeChannel.content.header.pickCategoryMenuItem('Remove from Favorites');
-			expect(await roomBelongsToGroup('Favorites')).toBe(false);
+			expect(await roomBelongsToGroup('Favorites', false)).toBe(false);
 		});
 
 		test('should move the room into an existing category from the header', async () => {

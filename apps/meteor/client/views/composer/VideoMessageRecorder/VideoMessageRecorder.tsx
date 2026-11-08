@@ -115,22 +115,22 @@ const VideoMessageRecorder = ({ rid, tmid, reference }: VideoMessageRecorderProp
 
 	return (
 		<PositionAnimated visible='visible' anchor={reference} placement='top-end'>
-			<Box role='dialog' aria-label={t('Video_record')} backgroundColor='light' padding={4} borderRadius={4} elevation='2'>
-				<Box className={videoContainerClass} overflow='hidden' height={240} borderRadius={4}>
+			<Box role='dialog' aria-label={t('Video_record')} backgroundColor='light' padding={4} borderRadius='medium' elevation='2'>
+				<Box className={videoContainerClass} overflow='hidden' height={240} borderRadius='medium'>
 					<video muted autoPlay playsInline ref={videoRef} width={320} height={240} />
 				</Box>
 				<Box marginBlockStart={4} display='flex' justifyContent='space-between'>
-					<Button aria-label={isRecording ? t('Stop_Recording') : t('Record')} small onClick={handleRecord}>
-						<Box is='span' display='flex' alignItems='center'>
-							<Icon size='x16' marginInlineEnd={time ? 4 : undefined} name={isRecording ? 'stop-unfilled' : 'rec'} />
+					<Button aria-label={isRecording ? t('Stop_Recording') : t('Record')} size='small' onClick={handleRecord}>
+						<Box is='span' display='flex' alignItems='center' gap={4}>
+							<Icon size='x16' name={isRecording ? 'stop-unfilled' : 'rec'} />
 							{time && <span>{time}</span>}
 						</Box>
 					</Button>
 					<ButtonGroup>
-						<Button small onClick={handleCancel}>
+						<Button size='small' onClick={handleCancel}>
 							{t('Cancel')}
 						</Button>
-						<Button primary small disabled={sendButtonDisabled} onClick={handleSendRecord}>
+						<Button variant='primary' size='small' disabled={sendButtonDisabled} onClick={handleSendRecord}>
 							{t('Send')}
 						</Button>
 					</ButtonGroup>

@@ -123,6 +123,10 @@ export const AppPermissions = {
 	},
 	'abac': {
 		read: { name: 'abac.read' },
+		write: { name: 'abac.write' },
+	},
+	'mediaCall': {
+		history: { name: 'media-call.history' },
 	},
 };
 

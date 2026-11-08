@@ -3,7 +3,7 @@ import { License } from '@rocket.chat/license';
 import { LivechatContacts, LivechatRooms, Settings } from '@rocket.chat/models';
 import type { ClientSession } from 'mongodb';
 
-import { isSameChannel } from '../../../app/livechat/lib/isSameChannel';
+import { isSameChannel } from '../../../lib/livechat/isSameChannel';
 import { notifyOnSettingChanged } from '../../../server/lib/notifyListener';
 import { ContactMerger } from '../../../server/lib/omnichannel/contacts/ContactMerger';
 import { mergeContacts } from '../../../server/lib/omnichannel/contacts/mergeContacts';

@@ -13,7 +13,7 @@ test.describe.parallel('Login', () => {
 		poLogin = new Login(page);
 		poAuth = new Authenticated(page);
 
-		await page.goto('/home');
+		await poLogin.goto();
 	});
 
 	test.afterAll(async ({ api }) => {

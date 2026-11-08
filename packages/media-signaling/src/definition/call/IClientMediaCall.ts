@@ -36,6 +36,7 @@ export const callHangupReasonList = [
 	'timeout-remote-sdp', // Timeout waiting for the remote SDP
 	'timeout-local-sdp', // Timeout while generating the local SDP + waiting for ICE Gathering
 	'timeout-activation', // Timeout connecting to the negotiated session
+	'timeout-accepting', // Timeout waiting for server to acknowledge our acceptance
 	'timeout', // The call state hasn't progressed for too long
 	'signaling-error', // Hanging up because of an error during the signal processing
 	'service-error', // Hanging up because of an error setting up the service connection
@@ -78,6 +79,7 @@ export const callRejectedReasonList = [
 	'busy', // the actor who requested the call is supposedly busy
 	'invalid-call-params', // something is wrong with the params (eg. no valid route between caller and callee)
 	'forbidden', // one of the actors on the call doesn't have permission for it
+	'prevented', // an installed app refused the call before it was created
 ] as const;
 
 export type CallRejectedReason = (typeof callRejectedReasonList)[number];

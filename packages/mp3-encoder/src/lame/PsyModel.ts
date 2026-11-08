@@ -1,12 +1,12 @@
-import { FFT } from './FFT';
-import type { III_psy_ratio } from './III_psy_ratio';
-import type { LameGlobalFlags } from './LameGlobalFlags';
-import type { LameInternalFlags } from './LameInternalFlags';
-import { MPEGMode } from './MPEGMode';
-import { ShortBlock } from './ShortBlock';
-import { VbrMode } from './VbrMode';
-import { fillArray } from './arrays';
-import { assert } from './assert';
+import { FFT } from './FFT.js';
+import type { III_psy_ratio } from './III_psy_ratio.js';
+import type { LameGlobalFlags } from './LameGlobalFlags.js';
+import type { LameInternalFlags } from './LameInternalFlags.js';
+import { MPEGMode } from './MPEGMode.js';
+import { ShortBlock } from './ShortBlock.js';
+import { VbrMode } from './VbrMode.js';
+import { fillArray } from './arrays.js';
+import { assert, assertDefined } from './assert.js';
 import {
 	BLKSIZE,
 	BLKSIZE_s,
@@ -21,7 +21,7 @@ import {
 	SHORT_TYPE,
 	START_TYPE,
 	STOP_TYPE,
-} from './constants';
+} from './constants.js';
 
 export class PsyModel {
 	private readonly fft = new FFT();
@@ -518,7 +518,7 @@ export class PsyModel {
 		assert(j === 129);
 		j = 0;
 		b = 0;
-		assert(gfc.s3_ss !== null);
+		assertDefined(gfc.s3_ss);
 		for (; b < gfc.npart_s; b++) {
 			let kk = gfc.s3ind_s[b][0];
 			let ecb = gfc.s3_ss[j++] * eb[kk];
@@ -732,7 +732,7 @@ export class PsyModel {
 		-0.313819 * 2,
 	] as const;
 
-	// eslint-disable-next-line complexity
+	// oxlint-disable-next-line complexity
 	L3psycho_anal_ns(
 		gfp: LameGlobalFlags,
 		buffer: Float32Array[],
@@ -945,7 +945,7 @@ export class PsyModel {
 
 			k = 0;
 
-			assert(gfc.s3_ll !== null);
+			assertDefined(gfc.s3_ll);
 			for (b = 0; b < gfc.npart_l; b++) {
 				let kk = gfc.s3ind[b][0];
 				let eb2 = eb_l[kk] * this.tab[mask_idx_l[kk]];
@@ -1100,7 +1100,7 @@ export class PsyModel {
 		-0.313819 * 2,
 	] as const;
 
-	// eslint-disable-next-line complexity
+	// oxlint-disable-next-line complexity
 	private vbrpsy_attack_detection(
 		gfp: LameGlobalFlags,
 		buffer: Float32Array[],
@@ -1356,7 +1356,7 @@ export class PsyModel {
 		j = 0;
 		b = 0;
 		this.psyvbr_calc_mask_index_s(gfc, max, avg, mask_idx_s);
-		assert(gfc.s3_ss !== null);
+		assertDefined(gfc.s3_ss);
 		for (; b < gfc.npart_s; b++) {
 			let kk = gfc.s3ind_s[b][0];
 			const last = gfc.s3ind_s[b][1];
@@ -1419,7 +1419,7 @@ export class PsyModel {
 		this.calc_mask_index_l(gfc, max, avg, mask_idx_l);
 
 		let k = 0;
-		assert(gfc.s3_ll !== null);
+		assertDefined(gfc.s3_ll);
 		for (b = 0; b < gfc.npart_l; b++) {
 			let x;
 			let ecb;
@@ -1595,7 +1595,7 @@ export class PsyModel {
 		}
 	}
 
-	// eslint-disable-next-line complexity
+	// oxlint-disable-next-line complexity
 	L3psycho_anal_vbr(
 		gfp: LameGlobalFlags,
 		buffer: Float32Array[],
@@ -2011,7 +2011,7 @@ export class PsyModel {
 		return Math.pow(10.0, 1.25 * (1 - Math.cos(Math.PI * arg)) - 2.5);
 	}
 
-	// eslint-disable-next-line complexity
+	// oxlint-disable-next-line complexity
 	psymodel_init(gfp: LameGlobalFlags) {
 		const gfc = gfp.internal_flags;
 		let i;
@@ -2204,7 +2204,7 @@ export class PsyModel {
 				eql_balance += gfc.ATH.eql_w[i];
 			}
 			eql_balance = 1.0 / eql_balance;
-			for (i = BLKSIZE / 2; --i >= 0; ) {
+			for (i = BLKSIZE / 2; --i >= 0;) {
 				gfc.ATH.eql_w[i] *= eql_balance;
 			}
 		}

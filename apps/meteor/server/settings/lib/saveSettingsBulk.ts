@@ -1,30 +1,33 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { ISetting, ISettingColor } from '@rocket.chat/core-typings';
 import { isSettingCode, isSettingColor } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
-import { Match, check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
+import { isRecord } from '@rocket.chat/tools';
 
 import { settings } from '..';
 import { updateAuditedByUser } from './auditedSettingUpdates';
-import { getSettingPermissionId } from '../../../app/authorization/lib';
+import { getSettingPermissionId } from '../../../lib/authorization';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { notifyOnSettingChangedById } from '../../lib/notifyListener';
 import { validateSettingRules } from '../../lib/settingValidationRules';
 import { disableCustomScripts } from '../../lib/shared/disableCustomScripts';
 import { checkSettingValueBounds } from '../checkSettingValueBonds';
 
-const validJSON = Match.Where((value: string) => {
-	try {
-		value === '' || JSON.parse(value);
-		return true;
-	} catch (_) {
-		throw new Meteor.Error('Invalid JSON provided');
+const checkJSON = (value: string) => {
+	if (value === '') {
+		return;
 	}
-});
 
-const checkInteger = (value: ISetting['value']) => {
-	if (!Number.isInteger(value)) {
-		throw new Meteor.Error('error-invalid-setting-value', `Invalid setting value ${value}`, {
+	try {
+		JSON.parse(value);
+	} catch (_) {
+		throw new ClientSafeError('Invalid JSON provided');
+	}
+};
+
+const assertValidSettingValue = (isValid: boolean, value: ISetting['value']) => {
+	if (!isValid) {
+		throw new ClientSafeError('error-invalid-setting-value', `Invalid setting value ${JSON.stringify(value)}`, {
 			method: 'saveSettings',
 		});
 	}
@@ -63,8 +66,6 @@ export const saveSettingsBulk = async (
 
 	await Promise.all(
 		params.map(async ({ _id, value }) => {
-			// Verify the _id passed in is a string.
-			check(_id, String);
 			if (!editPrivilegedSetting && !(manageSelectedSettings && (await hasPermissionAsync(uid, getSettingPermissionId(_id))))) {
 				return settingsNotAllowed.push(_id);
 			}
@@ -78,36 +79,36 @@ export const saveSettingsBulk = async (
 			// Verify the value is what it should be
 			switch (setting?.type) {
 				case 'roomPick':
-					check(value, Match.OneOf([Object], ''));
+					assertValidSettingValue(value === '' || (Array.isArray(value) && value.every(isRecord)), value);
 					break;
 				case 'boolean':
-					check(value, Boolean);
+					assertValidSettingValue(typeof value === 'boolean', value);
 					break;
 				case 'timespan':
 				case 'int':
 				case 'range':
-					check(value, Number);
-					checkInteger(value);
+					assertValidSettingValue(Number.isInteger(value), value);
 					checkSettingValueBounds(setting, value);
 					break;
 				case 'multiSelect':
-					check(value, Array);
+				case 'multiLookup':
+					assertValidSettingValue(Array.isArray(value), value);
 					break;
 				case 'code':
-					check(value, String);
+					assertValidSettingValue(typeof value === 'string', value);
 					if (isSettingCode(setting) && setting.code === 'application/json') {
-						check(value, validJSON);
+						checkJSON(value as string);
 					}
 					break;
 				default:
-					check(value, String);
+					assertValidSettingValue(typeof value === 'string', value);
 					break;
 			}
 		}),
 	);
 
 	if (settingsNotAllowed.length) {
-		throw new Meteor.Error('error-action-not-allowed', 'Editing settings is not allowed', {
+		throw new ClientSafeError('error-action-not-allowed', 'Editing settings is not allowed', {
 			method: 'saveSettings',
 			settingIds: settingsNotAllowed,
 		});

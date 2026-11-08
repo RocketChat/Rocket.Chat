@@ -35,7 +35,7 @@ test.describe('E2EE Server Settings', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 		createE2EEChannel = new CreateE2EEChannel(page);
-		await page.goto('/home');
+		await poHomeChannel.goto();
 	});
 
 	test.afterAll(async () => {
@@ -61,7 +61,7 @@ test.describe('E2EE Server Settings', () => {
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 
 		await page.locator('[name="msg"]').type('/');
-		await expect(page.locator('#popup-item-contextualbar')).not.toHaveClass(/disabled/);
+		await expect(page.locator('#popup-item-contextualbar')).not.toHaveAttribute('aria-disabled', 'true');
 		await page.locator('[name="msg"]').clear();
 
 		await poHomeChannel.content.dispatchSlashCommand('/contextualbar');
@@ -79,7 +79,7 @@ test.describe('E2EE Server Settings', () => {
 		test.beforeEach(async ({ page }) => {
 			poHomeChannel = new HomeChannel(page);
 			createE2EEChannel = new CreateE2EEChannel(page);
-			await page.goto('/home');
+			await poHomeChannel.goto();
 		});
 
 		test.beforeAll(async ({ api }) => {
@@ -105,7 +105,7 @@ test.describe('E2EE Server Settings', () => {
 			await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 
 			await page.locator('[name="msg"]').pressSequentially('/');
-			await expect(page.locator('#popup-item-contextualbar')).toHaveClass(/disabled/);
+			await expect(page.locator('#popup-item-contextualbar')).toHaveAttribute('aria-disabled', 'true');
 		});
 	});
 });

@@ -1,10 +1,10 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { OmnichannelAdmin } from './omnichannel-admin';
+import { OmnichannelAdmin, OmnichannelSectionsHref } from './omnichannel-admin';
 import { Listbox } from '../fragments/listbox';
 
 export class OmnichannelManager extends OmnichannelAdmin {
-	protected readonly route = 'managers';
+	protected readonly route = OmnichannelSectionsHref.managers;
 
 	protected readonly title = 'Managers';
 

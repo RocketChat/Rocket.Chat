@@ -1,30 +1,25 @@
 import type { ILivechatInquiryRecord, ISidebarCategory } from '@rocket.chat/core-typings';
 import { SIDEBAR_SYSTEM_GROUP_KEYS } from '@rocket.chat/core-typings';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { useIsEnterprise } from '@rocket.chat/ui-client';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useUserSubscriptions } from '@rocket.chat/ui-contexts';
-import { useVideoConfIncomingCalls } from '@rocket.chat/ui-video-conf';
+import { useVideoConfIncomingCalls, useVideoConfWindowEnabled } from '@rocket.chat/ui-video-conf';
 import { useMemo } from 'react';
 
 import { filterGroupVisibility, getRoomCategory, useCategoryList } from './useCategoryList';
-import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 import { useSortQueryOptions } from '../../hooks/useSortQueryOptions';
+import { useOpenedRoom } from '../../lib/RoomManager';
 import { useOmnichannelEnabled } from '../../views/omnichannel/hooks/useOmnichannelEnabled';
 import { useQueuedInquiries } from '../../views/omnichannel/hooks/useQueuedInquiries';
 import { useToggleUnreads } from '../categories/hooks/useToggleUnreads';
 import { useUserSidebarCategories } from '../categories/hooks/useUserSidebarCategories';
+import type { GroupUnreadInfo } from '../lib/unreadRooms';
+import { buildUnreadInfo, emptyUnreadInfo, isUnreadRoom } from '../lib/unreadRooms';
 
 const query = { open: { $ne: false } };
 
 const emptyQueue: ILivechatInquiryRecord[] = [];
-
-type GroupUnreadInfo = {
-	userMentions: number;
-	groupMentions: number;
-	tunread: string[];
-	tunreadUser: string[];
-	unread: number;
-};
 
 export type SidebarRoomListGroup = {
 	key: string;
@@ -45,13 +40,10 @@ type useRoomListReturnType = {
 	totalCount: number;
 };
 
-export const isUnreadRoom = (room: SubscriptionWithRoom): boolean =>
-	!room.hideUnreadStatus && Boolean(room.alert || room.unread || room.tunread?.length);
-
 export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] }): useRoomListReturnType => {
 	const showOmnichannel = useOmnichannelEnabled();
 
-	const { data: hasLicenseModule = false } = useHasLicenseModule('experimental-enterprise-features');
+	const { data: { isEnterprise = false } = {} } = useIsEnterprise();
 
 	const { customCategories } = useUserSidebarCategories();
 	const { isShowUnreads, isKeepUnreadsOnTop } = useToggleUnreads();
@@ -65,6 +57,13 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 	const categoryList = useCategoryList(showOmnichannel, inquiries.enabled);
 
 	const incomingCalls = useVideoConfIncomingCalls();
+
+	const openedRoom = useOpenedRoom();
+	// With the call window, a ringing call is listed with the calls already running, behind the navbar button —
+	// so the sidebar keeps no group of its own for it. Reported as no incoming call rather than by dropping the
+	// group: `Incoming_Calls` is a dynamic group, so an empty one is left out, and the room stays in whichever
+	// group it would otherwise be in.
+	const conferenceWindowEnabled = useVideoConfWindowEnabled();
 
 	const queue = inquiries.enabled ? inquiries.queue : emptyQueue;
 
@@ -81,7 +80,7 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 				const roomCategory = getRoomCategory(room, {
 					groups: unfilteredGroups,
 					hasIncomingCalls: (rid: SubscriptionWithRoom['rid']) => {
-						return !!incomingCalls.find((call) => call.rid === rid);
+						return !conferenceWindowEnabled && !!incomingCalls.find((call) => call.rid === rid);
 					},
 				});
 
@@ -102,41 +101,21 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 				unfilteredGroups.set('Incoming_Livechats', new Set(queue) as unknown as Set<SubscriptionWithRoom>);
 			}
 
-			const emptyUnreadInfo = (): GroupUnreadInfo => ({ userMentions: 0, groupMentions: 0, tunread: [], tunreadUser: [], unread: 0 });
-
-			const buildUnreadInfo = (set: Set<SubscriptionWithRoom>): GroupUnreadInfo =>
-				[...set].reduce<GroupUnreadInfo>((counter, room) => {
-					if (room.hideUnreadStatus) {
-						return counter;
-					}
-
-					counter.userMentions += room.userMentions || 0;
-					counter.groupMentions += room.groupMentions || 0;
-					counter.tunread = [...counter.tunread, ...(room.tunread || [])];
-					counter.tunreadUser = [...counter.tunreadUser, ...(room.tunreadUser || [])];
-					counter.unread += room.unread || 0;
-
-					if (!room.unread && !room.tunread?.length && room.alert) {
-						counter.unread += 1;
-					}
-
-					return counter;
-				}, emptyUnreadInfo());
-
 			const makeGroup = (key: string, set: Set<SubscriptionWithRoom>): SidebarRoomListGroup => {
 				const category = customCategories.find(({ _id }) => _id === key);
 
 				const title = category ? category.name : key;
 				const translateTitle = SIDEBAR_SYSTEM_GROUP_KEYS.includes(key as any);
 				const collapsed = isCollapsed(key);
-				const showUnreadsForGroup = hasLicenseModule ? isShowUnreads(key) : false;
+				const showUnreadsForGroup = isEnterprise ? isShowUnreads(key) : false;
 				const showUnreads = category ? Boolean(category.showUnreads) : showUnreadsForGroup;
-				const keepUnreadsOnTopForGroup = hasLicenseModule ? isKeepUnreadsOnTop(key) : false;
+				const keepUnreadsOnTopForGroup = isEnterprise ? isKeepUnreadsOnTop(key) : false;
 				const keepUnreadsOnTop = category ? Boolean(category.keepUnreadsOnTop) : keepUnreadsOnTopForGroup;
 				const allRooms = [...set];
-				// When collapsed, keep unread rooms visible if "Show unreads" is enabled.
-				const unreadRooms = allRooms.filter((room) => showUnreads && isUnreadRoom(room));
-				let displayRooms = collapsed ? unreadRooms : allRooms;
+				// A collapsed group still shows the room currently open, so the user can locate themselves in the
+				// sidebar, plus its unread rooms when "Show unreads" is enabled.
+				const isVisibleWhileCollapsed = (room: SubscriptionWithRoom) => room.rid === openedRoom || (showUnreads && isUnreadRoom(room));
+				let displayRooms = collapsed ? allRooms.filter(isVisibleWhileCollapsed) : allRooms;
 
 				// "Keep unreads on top": stable-partition so unread rooms come first, each partition keeping the
 				// configured sort (activity / a-z) it already has from the subscription query.
@@ -153,18 +132,30 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 					keepUnreadsOnTop,
 					collapsed,
 					rooms: displayRooms,
-					// The header total badge is only useful when the unread rooms are hidden — i.e. collapsed AND
-					// "Show unreads" off. With "Show unreads" on, the unread rooms stay visible (with their own
-					// counters) even collapsed, so the header acts as when open and shows no badge.
-					unreadInfo: collapsed && !showUnreads ? buildUnreadInfo(set) : emptyUnreadInfo(),
+					// The header total badge only accounts for what the collapsed group hides. Rooms kept visible
+					// while collapsed — the open one, and the unread ones when "Show unreads" is on — carry their
+					// own counters, so counting them here as well would duplicate them.
+					unreadInfo: collapsed ? buildUnreadInfo(allRooms.filter((room) => !isVisibleWhileCollapsed(room))) : emptyUnreadInfo(),
 					empty: allRooms.length === 0,
 				};
 			};
 
-			const groups = filterGroupVisibility(unfilteredGroups, hasLicenseModule, makeGroup);
+			const groups = filterGroupVisibility(unfilteredGroups, isEnterprise, makeGroup);
 
 			return groups;
-		}, [categoryList, rooms, hasLicenseModule, collapsedGroups, incomingCalls, queue, customCategories, isShowUnreads, isKeepUnreadsOnTop]),
+		}, [
+			categoryList,
+			rooms,
+			isEnterprise,
+			collapsedGroups,
+			incomingCalls,
+			conferenceWindowEnabled,
+			queue,
+			customCategories,
+			isShowUnreads,
+			isKeepUnreadsOnTop,
+			openedRoom,
+		]),
 		50,
 	);
 

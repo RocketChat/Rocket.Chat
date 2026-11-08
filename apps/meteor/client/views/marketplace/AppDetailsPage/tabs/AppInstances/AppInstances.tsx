@@ -1,6 +1,6 @@
 import type { AppStatus } from '@rocket.chat/apps';
 import { AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
-import { Box, Palette, Tag } from '@rocket.chat/fuselage';
+import { Box, Tag, type TableColumnWidth } from '@rocket.chat/fuselage';
 import {
 	GenericMenu,
 	CustomScrollbars,
@@ -10,11 +10,11 @@ import {
 	GenericTableHeader,
 	GenericTableHeaderCell,
 	GenericTableRow,
+	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
-import GenericNoResults from '../../../../../components/GenericNoResults';
 import AccordionLoading from '../../../components/AccordionLoading';
 import { useAppInstances } from '../../../hooks/useAppInstances';
 
@@ -26,13 +26,7 @@ const AppInstances = ({ id }: AppInstanceProps) => {
 	const { t } = useTranslation();
 	const { data, isSuccess, isError, isLoading } = useAppInstances({ appId: id });
 
-	const getStatusColor = (status: AppStatus) => {
-		if (AppStatusUtils.isDisabled(status) || AppStatusUtils.isError(status)) {
-			return Palette.text['font-danger'].toString();
-		}
-
-		return Palette.text['font-default'].toString();
-	};
+	const isFailing = (status: AppStatus) => AppStatusUtils.isDisabled(status) || AppStatusUtils.isError(status);
 
 	const router = useRouter();
 
@@ -47,6 +41,8 @@ const AppInstances = ({ id }: AppInstanceProps) => {
 		);
 	};
 
+	const columns: TableColumnWidth[] = ['auto', 'auto', 64];
+
 	return (
 		<Box height='full' width='full' marginInline='auto' color='default' paddingBlockStart={24}>
 			{isLoading && <AccordionLoading />}
@@ -57,11 +53,11 @@ const AppInstances = ({ id }: AppInstanceProps) => {
 			)}
 			{isSuccess && data.clusterStatus && data.clusterStatus.length > 0 && (
 				<CustomScrollbars>
-					<GenericTable width='full'>
+					<GenericTable columns={columns}>
 						<GenericTableHeader>
 							<GenericTableHeaderCell key='instanceId'>{t('Workspace_instance')}</GenericTableHeaderCell>
 							<GenericTableHeaderCell key='status'>{t('Status')}</GenericTableHeaderCell>
-							<GenericTableHeaderCell key='actions' width={64} />
+							<GenericTableHeaderCell key='actions' />
 						</GenericTableHeader>
 						<GenericTableBody>
 							{data?.clusterStatus?.map((instance) => (
@@ -69,7 +65,7 @@ const AppInstances = ({ id }: AppInstanceProps) => {
 									<GenericTableCell>{instance.instanceId}</GenericTableCell>
 									<GenericTableCell>
 										<Box justifyContent='flex-start' display='flex'>
-											<Tag medium color={getStatusColor(instance.status)}>
+											<Tag medium variant={isFailing(instance.status) ? 'secondary-danger' : undefined}>
 												{t(`App_status_${instance.status}`)}
 											</Tag>
 										</Box>

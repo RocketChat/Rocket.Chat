@@ -71,8 +71,6 @@ export interface IStats extends IRocketChatRecord {
 	totalLivechatRoomsWithDepartment: number;
 	totalTriggers: number;
 	totalMessages: number;
-	federatedServers: number;
-	federatedUsers: number;
 	lastLogin: string;
 	lastMessageSentAt: Date | undefined;
 	lastSeenSubscription: string;
@@ -134,11 +132,6 @@ export interface IStats extends IRocketChatRecord {
 	voipSuccessfulCalls: number;
 	voipErrorCalls: number;
 	voipOnHoldCalls: number;
-	federationOverviewData: {
-		numberOfEvents: number;
-		numberOfFederatedUsers: number;
-		numberOfServers: number;
-	};
 	readReceiptsEnabled: boolean;
 	readReceiptsDetailed: boolean;
 	uniqueUsersOfLastWeek: UserSessionAggregationResult;
@@ -272,6 +265,5 @@ export interface IStats extends IRocketChatRecord {
 	abacTotalAttributes?: number;
 	abacTotalAttributeValues?: number;
 	abacRoomsEnrolled?: number;
-	allowUnsafeQueryAndFieldsApiParamsEnabled?: boolean;
 	fips?: boolean;
 }

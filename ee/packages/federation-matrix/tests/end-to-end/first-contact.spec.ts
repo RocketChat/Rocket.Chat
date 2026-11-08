@@ -2,42 +2,38 @@ import type { IRoomNativeFederated, IUser } from '@rocket.chat/core-typings';
 import { Visibility } from 'matrix-js-sdk';
 
 import { api } from '../../../../../apps/meteor/tests/data/api-data';
+import { retry } from '../../../../../apps/meteor/tests/data/retry';
 import { acceptRoomInvite } from '../../../../../apps/meteor/tests/data/rooms.helper';
-import {
-	type IRequestConfig,
-	createUser,
-	deleteUser,
-	getRequestConfig,
-	getUserByUsername,
-} from '../../../../../apps/meteor/tests/data/users.helper';
+import { type IRequestConfig, createUser, deleteUser, getRequestConfig } from '../../../../../apps/meteor/tests/data/users.helper';
 import { IS_EE } from '../../../../../apps/meteor/tests/e2e/config/constants';
-import { retry } from '../../../../../apps/meteor/tests/end-to-end/api/helpers/retry';
 import { federationConfig } from '../helper/config';
 import { SynapseClient } from '../helper/synapse-client';
 
 const remoteUser = federationConfig.hs1.firstContactUser;
-const localUser = federationConfig.rc1.firstContactUser;
+
+const localUserName = `fed-first-contact-user-${Date.now()}`;
+const localUser = {
+	username: localUserName,
+	password: 'random',
+	matrixUserId: `@${localUserName}:${federationConfig.rc1.domain}`,
+};
 
 /**
  * Every other federation spec reuses Synapse users that earlier specs have already pulled into
  * the local database, so the membership handlers always find a complete user document and the
- * creation path is never observed. This spec reserves a Synapse user nobody else touches, removes
- * the local document if a previous run left one behind, and only then lets that user reach in.
+ * creation path is never observed. This spec reserves a Synapse user nobody else touches and lets
+ * that user reach in.
  *
  * The user is therefore created by the inbound invite itself, which is the one code path whose
  * result is consumed rather than discarded.
  */
+// TODO: register a fresh Synapse user per run so reruns on persistent containers still test first contact
+// Federated users cannot be deleted locally, so a rerun against warm containers finds this user already known.
 (IS_EE ? describe : describe.skip)('Federation first contact', () => {
 	let rc1AdminRequestConfig: IRequestConfig;
 	let rc1InviteeRequestConfig: IRequestConfig;
+	let rc1Invitee: IUser;
 	let hs1FirstContactApp: SynapseClient;
-
-	const forgetRemoteUserLocally = async () => {
-		const known = await getUserByUsername(remoteUser.matrixUserId, rc1AdminRequestConfig);
-		if (known?._id) {
-			await deleteUser({ _id: known._id }, { confirmRelinquish: true }, rc1AdminRequestConfig);
-		}
-	};
 
 	beforeAll(async () => {
 		rc1AdminRequestConfig = await getRequestConfig(
@@ -46,32 +42,28 @@ const localUser = federationConfig.rc1.firstContactUser;
 			federationConfig.rc1.adminPassword,
 		);
 
-		const existingLocalUser = await getUserByUsername(localUser.username, rc1AdminRequestConfig);
-		if (!existingLocalUser?._id) {
-			await createUser(
-				{
-					username: localUser.username,
-					password: localUser.password,
-					email: `${localUser.username}@rocket.chat`,
-					name: localUser.username,
-				},
-				rc1AdminRequestConfig,
-			);
-		}
+		rc1Invitee = await createUser(
+			{
+				username: localUser.username,
+				password: localUser.password,
+				email: `${localUser.username}@rocket.chat`,
+				name: localUser.username,
+			},
+			rc1AdminRequestConfig,
+		);
 
 		rc1InviteeRequestConfig = await getRequestConfig(federationConfig.rc1.url, localUser.username, localUser.password);
-
-		// a previous run leaves the user behind, which would make this spec exercise the warm path instead
-		await forgetRemoteUserLocally();
 
 		hs1FirstContactApp = new SynapseClient(federationConfig.hs1.url, remoteUser.username, remoteUser.password);
 		await hs1FirstContactApp.initialize();
 	}, 60000);
 
 	afterAll(async () => {
-		// leave the environment cold so a rerun against persistent containers still tests first contact
-		await forgetRemoteUserLocally();
 		await hs1FirstContactApp?.close();
+
+		if (rc1Invitee?._id) {
+			await deleteUser(rc1Invitee, {}, rc1AdminRequestConfig);
+		}
 	});
 
 	it('should not know the remote user before the first interaction', async () => {
@@ -148,9 +140,7 @@ const localUser = federationConfig.rc1.firstContactUser;
 		});
 
 		it('should let the local user accept the invite', async () => {
-			const response = await acceptRoomInvite(federatedRoomId, rc1InviteeRequestConfig);
-
-			expect(response).toHaveProperty('success', true);
+			await expect(acceptRoomInvite(federatedRoomId, rc1InviteeRequestConfig)).resolves.toMatchObject({ success: true });
 		});
 
 		it('should reach the local user on the Synapse side', async () => {

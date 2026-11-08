@@ -1,31 +1,17 @@
-import type {
-	FacebookOAuthConfiguration,
-	ILoginServiceConfiguration,
-	LinkedinOAuthConfiguration,
-	OAuthConfiguration,
-	TwitterOAuthConfiguration,
-} from '@rocket.chat/core-typings';
+import type { ILoginServiceConfiguration, OAuthConfiguration } from '@rocket.chat/core-typings';
 import { LoginServiceConfiguration } from '@rocket.chat/models';
 
 import { addPassportCustomOAuth } from './addPassportCustomOAuth';
 import { logger } from './logger';
 import { settings } from '../../settings/cached';
-import { CustomOAuth } from '../auth-providers/custom-oauth/custom_oauth_server';
 import { notifyOnLoginServiceConfigurationChanged, notifyOnLoginServiceConfigurationChangedByService } from '../notifyListener';
 
 export async function updateOAuthServices(): Promise<void> {
 	const services = settings.getByRegexp(/^(Accounts_OAuth_|Accounts_OAuth_Custom-)[a-z0-9_]+$/i);
 	const filteredServices = services.filter(([, value]) => typeof value === 'boolean');
 	for await (const [key, value] of filteredServices) {
-		if (key === 'Accounts_OAuth_Use_Modern_Flow') {
-			continue;
-		}
-
 		logger.debug({ oauth_updated: key });
 		let serviceName = key.replace('Accounts_OAuth_', '');
-		if (serviceName === 'Meteor') {
-			serviceName = 'meteor-developer';
-		}
 		if (/Accounts_OAuth_Custom-/.test(key)) {
 			serviceName = key.replace('Accounts_OAuth_Custom-', '');
 		}
@@ -99,24 +85,8 @@ export async function updateOAuthServices(): Promise<void> {
 					clientId: data.clientId,
 				};
 
-				new CustomOAuth(serviceKey, config);
 				addPassportCustomOAuth(serviceKey, config, true);
 			}
-			if (serviceName === 'Facebook') {
-				(data as FacebookOAuthConfiguration).appId = data.clientId as string;
-				delete data.clientId;
-			}
-			if (serviceName === 'Twitter') {
-				(data as TwitterOAuthConfiguration).consumerKey = data.clientId as string;
-				delete data.clientId;
-			}
-
-			if (serviceName === 'Linkedin') {
-				(data as LinkedinOAuthConfiguration).clientConfig = {
-					requestPermissions: ['openid', 'email', 'profile'],
-				};
-			}
-
 			if (serviceName === 'Nextcloud') {
 				data.buttonLabelText = settings.get('Accounts_OAuth_Nextcloud_button_label_text');
 				data.buttonLabelColor = settings.get('Accounts_OAuth_Nextcloud_button_label_color');

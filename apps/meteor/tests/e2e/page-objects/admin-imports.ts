@@ -1,10 +1,18 @@
 import type { Locator } from '@playwright/test';
 
-import { Admin } from './admin';
+import { Admin, AdminSectionsHref } from './admin';
 
 export class AdminImports extends Admin {
+	protected readonly route = AdminSectionsHref.import;
+
+	protected readonly title = 'Import';
+
+	override async waitForReady(): Promise<void> {
+		await this.btnImportNewFile.waitFor({ state: 'visible' });
+	}
+
 	get btnImportNewFile(): Locator {
-		return this.page.locator('.rcx-button--primary.rcx-button >> text="Import New File"');
+		return this.page.locator('.rcx-button--primary.rcx-button >> text="Import new file"');
 	}
 
 	async getOptionFileType(option: string): Promise<Locator> {
@@ -21,7 +29,7 @@ export class AdminImports extends Admin {
 	}
 
 	get btnStartImport(): Locator {
-		return this.page.locator('.rcx-button--primary.rcx-button >> text="Start Importing"');
+		return this.page.locator('.rcx-button--primary.rcx-button >> text="Start importing"');
 	}
 
 	get importStatusTableFirstRowCell(): Locator {

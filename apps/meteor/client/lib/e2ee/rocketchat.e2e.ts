@@ -12,9 +12,9 @@ import { generatePassphrase } from './helper';
 import { Keychain } from './keychain';
 import { createLogger } from './logger';
 import { E2ERoom } from './rocketchat.e2e.room';
-import { t } from '../../../app/utils/lib/i18n';
 import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
 import { getMessageUrlRegex } from '../../../lib/getMessageUrlRegex';
+import { t } from '../../../lib/i18n';
 import { Rooms, Subscriptions } from '../../stores';
 import EnterE2EPasswordModal from '../../views/e2e/EnterE2EPasswordModal';
 import SaveE2EPasswordModal from '../../views/e2e/SaveE2EPasswordModal';
@@ -878,6 +878,8 @@ class E2E extends Emitter {
 }
 
 export const e2e = new E2E();
+
+window.__rocketChatE2E = e2e;
 
 getDdpSdk().account.onLogout(() => {
 	void e2e.stopClient();

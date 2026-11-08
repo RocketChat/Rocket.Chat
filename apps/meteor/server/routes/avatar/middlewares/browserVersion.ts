@@ -2,12 +2,10 @@ import type { IncomingMessage, ServerResponse } from 'node:http';
 
 import type { IIncomingMessage } from '@rocket.chat/core-typings';
 import type { NextFunction } from 'connect';
-import { Cookies } from 'meteor/ostrio:cookies';
+import { parseCookie } from 'cookie';
 import parser from 'ua-parser-js';
 
 import { getURL } from '../../../lib/utils/getURL';
-
-const cookies = new Cookies();
 
 export const isIEOlderThan11 = (userAgent: ReturnType<typeof parser>) => {
 	if (!userAgent?.browser.name || !userAgent?.browser.version) {
@@ -19,7 +17,7 @@ export const isIEOlderThan11 = (userAgent: ReturnType<typeof parser>) => {
 export const handleBrowserVersionCheck = (request: IncomingMessage, res: ServerResponse, next: NextFunction) => {
 	const req = request as IIncomingMessage;
 
-	const browserVersionCheck = cookies.get('browser_version_check', req.headers.cookie);
+	const { browser_version_check: browserVersionCheck } = parseCookie(req.headers.cookie ?? '');
 	if (browserVersionCheck === 'bypass') {
 		next();
 		return;

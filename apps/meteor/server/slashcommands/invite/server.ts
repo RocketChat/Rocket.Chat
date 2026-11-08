@@ -1,15 +1,17 @@
-import { api, FederationMatrix, isMeteorError } from '@rocket.chat/core-services';
+import { api, FederationMatrix, isClientSafeError, ClientSafeError } from '@rocket.chat/core-services';
 import type { IUser, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { isBannedSubscription } from '@rocket.chat/core-typings';
 import { validateFederatedUsername } from '@rocket.chat/federation-matrix';
+import { Logger } from '@rocket.chat/logger';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { i18n } from '../../lib/i18n';
 import { slashCommands } from '../../lib/utils/slashCommand';
 import { addUsersToRoomMethod, sanitizeUsername } from '../../meteor-methods/rooms/addUsersToRoom';
 import { FederationActions } from '../../services/room/hooks/BeforeFederationActions';
 import { settings } from '../../settings';
+
+const logger = new Logger('SlashCommandInvite');
 
 // Type guards for the error
 function isStringError(error: unknown): error is { error: string } {
@@ -94,7 +96,7 @@ slashCommands.add({
 		const inviter = await Users.findOneById(userId);
 
 		if (!inviter) {
-			throw new Meteor.Error('error-user-not-found', 'Inviter not found', {
+			throw new ClientSafeError('error-user-not-found', 'Inviter not found', {
 				method: 'slashcommand-invite',
 			});
 		}
@@ -112,16 +114,23 @@ slashCommands.add({
 						inviter,
 					);
 				} catch (e: unknown) {
-					if (isMeteorError(e)) {
-						if (e.error === 'error-only-compliant-users-can-be-added-to-abac-rooms') {
-							void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
-								msg: i18n.t(e.error, { lng: settings.get('Language') || 'en' }),
-							});
-						} else {
-							void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
-								msg: i18n.t(e.message, { lng: settings.get('Language') || 'en' }),
-							});
+					if (isClientSafeError(e)) {
+						if (e.error === 'error-app-prevented' && e.reason) {
+							void api.broadcast('notify.ephemeralMessage', userId, message.rid, { msg: e.reason });
+							return;
 						}
+
+						const translationKey = typeof e.error === 'string' && i18n.exists(e.error) ? e.error : undefined;
+
+						if (!translationKey) {
+							logger.error({ msg: 'Failed to invite user to room', err: e, rid: message.rid, uid: userId });
+						}
+
+						void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
+							msg: i18n.t(translationKey ?? 'Error_something_went_wrong', {
+								lng: settings.get('Language') || 'en',
+							}),
+						});
 						return;
 					}
 

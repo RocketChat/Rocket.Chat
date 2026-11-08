@@ -72,6 +72,8 @@ export interface IBroker {
 	): Promise<void>;
 	broadcast<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void>;
 	broadcastLocal<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void>;
+	/** Delivers the event to one instance of each service that listens to it, rather than to every instance. */
+	emitToOne<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void>;
 	nodeList(): Promise<IBrokerNode[]>;
 	start(): Promise<void>;
 }

@@ -1,9 +1,9 @@
+import { PageSkeleton } from '@rocket.chat/ui-client';
 import { useAtLeastOnePermission, useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import { Suspense, useEffect } from 'react';
 
 import MarketPlaceSidebar from './MarketplaceSidebar';
-import PageSkeleton from '../../components/PageSkeleton';
 import SidebarPortal from '../../portals/SidebarPortal';
 import NotFoundPage from '../notFound/NotFoundPage';
 

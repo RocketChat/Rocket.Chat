@@ -1,9 +1,9 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { ISession, ISessionDevice, IUser } from '@rocket.chat/core-typings';
 import { cronJobs } from '@rocket.chat/cron';
 import { Logger } from '@rocket.chat/logger';
 import { Sessions, Users, aggregates } from '@rocket.chat/models';
 import mem from 'mem';
-import { Meteor } from 'meteor/meteor';
 import UAParser from 'ua-parser-js';
 
 import { UAParserMobile, UAParserDesktop } from './UAParserCustom';
@@ -97,7 +97,7 @@ export class SAUMonitorClass {
 			this._handleOnConnection();
 			await this._startCronjobs();
 		} catch (err: any) {
-			throw new Meteor.Error(err);
+			throw new ClientSafeError(err);
 		}
 	}
 

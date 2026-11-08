@@ -10,6 +10,8 @@ import MainContent from './MainContent';
 import { MainLayoutStyleTags } from './MainLayoutStyleTags';
 import NavBar from '../../../navbar';
 import Sidebar from '../../../sidebar';
+import SidebarRail from '../../../sidebar/SidebarRail';
+import SidebarRailHeader from '../../../sidebar/SidebarRail/SidebarRailHeader';
 import NavigationRegion from '../../navigation';
 import RoomsNavigationProvider from '../../navigation/providers/RoomsNavigationProvider';
 
@@ -18,7 +20,10 @@ const INVALID_ROOM_NAME_PREFIXES = ['#', '?'] as const;
 export type LayoutWithSidebarProps = { children: ReactNode };
 
 const LayoutWithSidebar = ({ children }: LayoutWithSidebarProps) => {
-	const { isEmbedded: embeddedLayout } = useLayout();
+	const {
+		isEmbedded: embeddedLayout,
+		sidebar: { shouldToggle },
+	} = useLayout();
 
 	const currentRoutePath = useCurrentRoutePath();
 	const router = useRouter();
@@ -56,13 +61,28 @@ const LayoutWithSidebar = ({ children }: LayoutWithSidebarProps) => {
 	return (
 		<>
 			<AccessibilityShortcut />
-			{!embeddedLayout && <NavBar />}
+			{!embeddedLayout && (
+				<FeaturePreview feature='sidebarRail' disabled={shouldToggle}>
+					<FeaturePreviewOn>
+						<SidebarRailHeader />
+					</FeaturePreviewOn>
+					<FeaturePreviewOff>
+						<NavBar />
+					</FeaturePreviewOff>
+				</FeaturePreview>
+			)}
 			<Box
 				backgroundColor='surface-light'
 				id='rocket-chat'
 				className={[embeddedLayout ? 'embedded-view' : undefined, 'menu-nav'].filter(Boolean).join(' ')}
 			>
 				<MainLayoutStyleTags />
+				<FeaturePreview feature='sidebarRail' disabled={shouldToggle || embeddedLayout}>
+					<FeaturePreviewOn>
+						<SidebarRail />
+					</FeaturePreviewOn>
+					<FeaturePreviewOff>{null}</FeaturePreviewOff>
+				</FeaturePreview>
 				{!removeSidenav && (
 					<FeaturePreview feature='secondarySidebar'>
 						<FeaturePreviewOn>

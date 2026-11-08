@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { OmnichannelAdmin } from './omnichannel-admin';
+import { OmnichannelAdmin, OmnichannelSectionsHref } from './omnichannel-admin';
 import { FlexTab } from '../fragments/flextabs/flextab';
 import { Listbox } from '../fragments/listbox';
 import { Table } from '../fragments/table';
@@ -13,32 +13,30 @@ export class OmnichannelUnitFlexTab extends FlexTab {
 		this.listbox = new Listbox(page);
 	}
 
-	private get fieldDepartments() {
+	get inputDepartments() {
 		return this.root.getByLabel('Departments');
 	}
 
-	get inputDepartments() {
-		return this.fieldDepartments.getByRole('textbox');
-	}
-
-	private get fieldMonitors() {
+	get inputMonitors() {
 		return this.root.getByLabel('Monitors');
 	}
 
-	get inputMonitors() {
-		return this.fieldMonitors.getByRole('textbox');
-	}
-
 	get inputVisibility(): Locator {
-		return this.root.getByText('Visibility');
+		return this.root.getByRole('combobox', { name: 'Visibility' });
 	}
 
 	findDepartmentsChipOption(name: string) {
-		return this.fieldDepartments.getByRole('option', { name, exact: true });
+		return this.root
+			.getByRole('listbox')
+			.filter({ has: this.root.page().getByLabel('Departments') })
+			.getByRole('option', { name, exact: true });
 	}
 
 	findMonitorChipOption(name: string) {
-		return this.fieldMonitors.getByRole('option', { name, exact: true });
+		return this.root
+			.getByRole('listbox')
+			.filter({ has: this.root.page().getByLabel('Monitors') })
+			.getByRole('option', { name, exact: true });
 	}
 
 	async selectDepartment(name: string) {
@@ -71,7 +69,7 @@ class OmnichannelUnitsTable extends Table {
 }
 
 export class OmnichannelUnits extends OmnichannelAdmin {
-	protected readonly route = 'units';
+	protected readonly route = OmnichannelSectionsHref.units;
 
 	protected readonly title = 'Units';
 

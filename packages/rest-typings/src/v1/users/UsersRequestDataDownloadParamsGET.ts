@@ -1,13 +1,13 @@
 import { ajvQuery } from '../Ajv';
 
-type UsersRequestDataDownloadParamsGET = {
-	fullExport?: string;
+export type UsersRequestDataDownloadParamsGET = {
+	fullExport?: 'true' | 'false';
 };
 
 const UsersRequestDataDownloadParamsGetSchema = {
 	type: 'object',
 	properties: {
-		fullExport: { type: 'string', nullable: true },
+		fullExport: { type: 'string', enum: ['true', 'false'], nullable: true },
 	},
 	additionalProperties: false,
 };

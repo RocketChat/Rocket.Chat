@@ -5,9 +5,11 @@ import { Random } from '@rocket.chat/random';
 import {
 	ajv,
 	ajvQuery,
-	validateUnauthorizedErrorResponse,
+	paginatedResponseProperties,
+	paginationQueryProperties,
 	validateBadRequestErrorResponse,
 	validateForbiddenErrorResponse,
+	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import objectPath from 'object-path';
 
@@ -46,9 +48,7 @@ const commandsListResponseSchema = ajv.compile<{
 			items: { $ref: '#/components/schemas/SlashCommand' },
 		},
 		appsLoaded: { type: 'boolean' },
-		offset: { type: 'number' },
-		count: { type: 'number' },
-		total: { type: 'number' },
+		...paginatedResponseProperties,
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['commands', 'appsLoaded', 'offset', 'count', 'total', 'success'],
@@ -59,18 +59,13 @@ type CommandsListParams = {
 	offset?: number;
 	count?: number;
 	sort?: string;
-	query?: string;
-	fields?: string;
 };
 
 const isCommandsListParams = ajvQuery.compile<CommandsListParams>({
 	type: 'object',
 	properties: {
-		offset: { type: 'number', nullable: true },
-		count: { type: 'number', nullable: true },
+		...paginationQueryProperties,
 		sort: { type: 'string', nullable: true },
-		query: { type: 'string', nullable: true },
-		fields: { type: 'string', nullable: true },
 	},
 	additionalProperties: false,
 });
@@ -161,26 +156,26 @@ const commandsEndpoints = API.v1
 			}
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, query } = await this.parseJsonQuery();
+			const { sort } = await this.parseJsonQuery();
 
-			let commands = Object.values(slashCommands.commands);
+			const commands = Object.values(slashCommands.commands);
 
-			if (query?.command) {
-				commands = commands.filter((command) => command.command === query.command);
-			}
+			// Read before paging: `processQueryOptionsOnResult` splices in place, so afterwards
+			// `commands` is the page rather than the collection.
+			const total = commands.length;
 
-			const totalCount = commands.length;
+			const page = processQueryOptionsOnResult(commands, {
+				sort: sort || { name: 1 },
+				skip: offset,
+				limit: count,
+			});
 
 			return API.v1.success({
-				commands: processQueryOptionsOnResult(commands, {
-					sort: sort || { name: 1 },
-					skip: offset,
-					limit: count,
-				}),
+				commands: page,
 				appsLoaded: true as const,
 				offset,
-				count: commands.length,
-				total: totalCount,
+				count: page.length,
+				total,
 			});
 		},
 	);
@@ -516,6 +511,6 @@ API.v1.post(
 export type CommandsEndpoints = ExtractRoutesFromAPI<typeof commandsEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
 	interface Endpoints extends CommandsEndpoints {}
 }

@@ -1,4 +1,6 @@
-import { startOfDay, addHours, format } from 'date-fns';
+import { addHours } from 'date-fns/addHours';
+import { format } from 'date-fns/format';
+import { startOfDay } from 'date-fns/startOfDay';
 
 export const getMomentChartLabelsAndData = (timestamp = Date.now()) => {
 	const timingLabels: string[] = [];

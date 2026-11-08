@@ -99,6 +99,7 @@ interface IUserServices extends IOAuthUserServices {
 		code: string;
 		expire: Date;
 		attempts: number;
+		sentAt?: Date;
 	};
 
 	/**
@@ -152,6 +153,13 @@ export interface IUserEmail {
 	address: string;
 	verified?: boolean;
 }
+
+export interface IUserPhoneNumber {
+	number: string;
+	label?: string;
+}
+
+export const MAX_USER_PHONES = 10;
 
 export interface IUserCalendar {
 	outlook?: {
@@ -213,6 +221,8 @@ export interface IUser extends IRocketChatRecord {
 	statusSource?: PresenceSource;
 	statusExpiresAt?: Date;
 	statusId?: string;
+	presenceDisabledByAdmin?: boolean;
+	statusVisibilityDeniedByAdmin?: string[];
 	previousState?: {
 		statusDefault: UserStatus;
 		statusText: string;
@@ -231,10 +241,10 @@ export interface IUser extends IRocketChatRecord {
 	settings?: IUserSettings;
 	defaultRoom?: string;
 	ldap?: boolean;
-	freeSwitchExtension?: string;
+	sipExtension?: string;
 	inviteToken?: string;
 	canViewAllInfo?: boolean;
-	phone?: string;
+	phones?: IUserPhoneNumber[];
 	reason?: string;
 	// TODO: move this to a specific federation user type
 	federated?: boolean;
@@ -246,6 +256,7 @@ export interface IUser extends IRocketChatRecord {
 		avatarUrl?: string;
 		searchedServerNames?: string[];
 	};
+	xmppFederation?: IUserXMPPFederation;
 	banners?: {
 		[key: string]: {
 			id: string;
@@ -293,6 +304,21 @@ export interface IUserNativeFederated extends IUser {
 
 export const isUserNativeFederated = (user: Partial<IUser>): user is IUserNativeFederated =>
 	isUserFederated(user) && 'federation' in user && typeof user.federation?.version === 'number';
+
+/** A remote XMPP user. `jid` equals `username`: the bare JID, or `<nick>#<room JID>` when a remote room disclosed none. */
+export type IUserXMPPFederation = {
+	version: 1;
+	jid: string;
+	origin: string;
+};
+
+interface IUserXMPPFederated extends IUser {
+	federated: true;
+	xmppFederation: IUserXMPPFederation;
+}
+
+export const isUserXMPPFederated = (user: Partial<IUser>): user is IUserXMPPFederated =>
+	'xmppFederation' in user && (user as Partial<IUserXMPPFederated>).xmppFederation !== undefined;
 
 export type IUserDataEvent = {
 	id: unknown;
@@ -345,3 +371,31 @@ export type AvatarObject = AvatarReset | AvatarUrlObj | FormData | AvatarService
 
 export const getUserDisplayName = (name: IUser['name'], username: IUser['username'], useRealName: boolean): string | undefined =>
 	useRealName ? name || username : username;
+
+/**
+ * Strips a leading '@' from a username if present.
+ *
+ * Federated usernames (e.g. @john.doe:matrix.org) are stored with a leading '@', while local usernames are not.
+ * This normalises both forms so callers that render `@{username}` don't accidentally produce `@@john.doe:matrix.org`.
+ */
+export const normalizeUsername = (username: string): string => (username.startsWith('@') ? username.slice(1) : username);
+
+/**
+ * Name and username in the order they are meant to be shown, rather than the one name `getUserDisplayName` picks.
+ *
+ * For callers that show both — a row with the name leading and the username beside it — which is a different
+ * question from "what is this person called".
+ */
+export const getUserDisplayNames = (
+	name: IUser['name'],
+	username: IUser['username'],
+	useRealName: boolean,
+): [nameOrUsername: string, username?: string] => {
+	if (!username) {
+		throw new Error('Username is required');
+	}
+
+	const normalizedUsername = normalizeUsername(username);
+
+	return useRealName && name ? [name, normalizedUsername] : [normalizedUsername];
+};

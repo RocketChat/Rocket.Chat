@@ -7,6 +7,7 @@ import { limitQuoteChain } from '../../../../lib/limitQuoteChain';
 export const createComposerAPI = (
 	input: HTMLTextAreaElement,
 	persistDraft: (value: string) => void,
+	discardDraft: () => void,
 	initialDraft: string,
 	quoteChainLimit: number,
 	composerRef: RefObject<HTMLElement | null>,
@@ -50,6 +51,7 @@ export const createComposerAPI = (
 		room: { rid, tmid },
 		initialValue: initialDraft,
 		save: () => persistDraft(input.value),
+		discardDraft,
 		setText,
 		focus,
 		prepareQuotedMessage: (message) => limitQuoteChain(message, quoteChainLimit),

@@ -2,6 +2,7 @@ import { Box } from '@rocket.chat/fuselage';
 import { WizardContext, StepsLinkedList } from '@rocket.chat/ui-client';
 import type { Meta, StoryObj } from '@storybook/react';
 import { action } from 'storybook/actions';
+import { userEvent } from 'storybook/test';
 
 import MessageStep from './MessageStep';
 import { createFakeContact } from '../../../../../../../../tests/mocks/data';
@@ -68,5 +69,12 @@ export const WithDefaultValues: Story = {
 				],
 			},
 		},
+	},
+};
+
+export const WithFocusedField: Story = {
+	...WithDefaultValues,
+	play: async () => {
+		await userEvent.tab();
 	},
 };

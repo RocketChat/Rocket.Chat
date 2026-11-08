@@ -1,30 +1,18 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IIntegration, INewIncomingIntegration, IUpdateIncomingIntegration } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Integrations, Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { wrapExceptions } from '@rocket.chat/tools';
-import { Meteor } from 'meteor/meteor';
 
 import { hasAllPermissionAsync, hasPermissionAsync } from '../../../lib/authorization/hasPermission';
-import { methodDeprecationLogger } from '../../../lib/deprecationWarningLogger';
-import { compileIntegrationScript } from '../../../lib/integrations/lib/compileIntegrationScript';
 import { isScriptEngineFrozen, validateScriptEngine } from '../../../lib/integrations/lib/validateScriptEngine';
+import { validateScriptSyntax } from '../../../lib/integrations/lib/validateScriptSyntax';
 import { notifyOnIntegrationChanged } from '../../../lib/notifyListener';
 
 const validChannelChars = ['@', '#'];
 
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		updateIncomingIntegration(
-			integrationId: string,
-			integration: INewIncomingIntegration | IUpdateIncomingIntegration,
-		): IIntegration | null;
-	}
-}
-
 function validateChannels(channelString: string | undefined): string[] {
 	if (!channelString || typeof channelString.valueOf() !== 'string' || channelString.trim() === '') {
-		throw new Meteor.Error('error-invalid-channel', 'Invalid channel', {
+		throw new ClientSafeError('error-invalid-channel', 'Invalid channel', {
 			method: 'updateIncomingIntegration',
 		});
 	}
@@ -33,7 +21,7 @@ function validateChannels(channelString: string | undefined): string[] {
 
 	for (const channel of channels) {
 		if (!validChannelChars.includes(channel[0])) {
-			throw new Meteor.Error('error-invalid-channel-start-with-chars', 'Invalid channel. Start with @ or #', {
+			throw new ClientSafeError('error-invalid-channel-start-with-chars', 'Invalid channel. Start with @ or #', {
 				method: 'updateIncomingIntegration',
 			});
 		}
@@ -59,13 +47,13 @@ export const updateIncomingIntegration = async (
 			'_createdBy._id': userId,
 		});
 	} else {
-		throw new Meteor.Error('not_authorized', 'Unauthorized', {
+		throw new ClientSafeError('not_authorized', 'Unauthorized', {
 			method: 'updateIncomingIntegration',
 		});
 	}
 
 	if (!currentIntegration) {
-		throw new Meteor.Error('error-invalid-integration', 'Invalid integration', {
+		throw new ClientSafeError('error-invalid-integration', 'Invalid integration', {
 			method: 'updateIncomingIntegration',
 		});
 	}
@@ -77,23 +65,21 @@ export const updateIncomingIntegration = async (
 		(scriptEngine !== oldScriptEngine || integration.script?.trim() !== currentIntegration.script?.trim())
 	) {
 		wrapExceptions(() => validateScriptEngine(scriptEngine)).catch((e) => {
-			throw new Meteor.Error(e.message);
+			throw new ClientSafeError(e.message);
 		});
 	}
 
 	const isFrozen = isScriptEngineFrozen(scriptEngine);
 
-	// Default to transpiling with Babel for backwards compatibility; integrations
-	// can opt-out per-record by setting `skipTranspile: true` (removed in 9.0.0).
-	const skipTranspile = integration.skipTranspile === true;
-
 	if (!isFrozen && integration.scriptEnabled === true && integration.script && integration.script.trim() !== '') {
-		const { script, error } = compileIntegrationScript(integration.script, { transpile: !skipTranspile });
+		// isolated-vm embeds modern V8 and runs the script natively, so no
+		// transpilation is needed. Syntax is still validated at save time.
+		const { script, error } = validateScriptSyntax(integration.script);
 		if (error) {
 			await Integrations.updateOne(
 				{ _id: integrationId },
 				{
-					$set: { scriptError: error, skipTranspile },
+					$set: { scriptError: error },
 					$unset: { scriptCompiled: 1 as const },
 				},
 			);
@@ -101,7 +87,7 @@ export const updateIncomingIntegration = async (
 			await Integrations.updateOne(
 				{ _id: integrationId },
 				{
-					$set: { scriptCompiled: script, skipTranspile },
+					$set: { scriptCompiled: script },
 					$unset: { scriptError: 1 as const },
 				},
 			);
@@ -127,7 +113,7 @@ export const updateIncomingIntegration = async (
 		}
 
 		if (!record) {
-			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
+			throw new ClientSafeError('error-invalid-room', 'Invalid room', {
 				method: 'updateIncomingIntegration',
 			});
 		}
@@ -136,7 +122,7 @@ export const updateIncomingIntegration = async (
 			!(await hasAllPermissionAsync(userId, ['manage-incoming-integrations', 'manage-own-incoming-integrations'])) &&
 			!(await Subscriptions.findOneByRoomIdAndUserId(record._id, userId, { projection: { _id: 1 } }))
 		) {
-			throw new Meteor.Error('error-invalid-channel', 'Invalid Channel', {
+			throw new ClientSafeError('error-invalid-channel', 'Invalid Channel', {
 				method: 'updateIncomingIntegration',
 			});
 		}
@@ -146,13 +132,13 @@ export const updateIncomingIntegration = async (
 	const user = await Users.findOneByUsername(username, { projection: { _id: 1, username: 1 } });
 
 	if (!user) {
-		throw new Meteor.Error('error-invalid-post-as-user', 'Invalid Post As User', {
+		throw new ClientSafeError('error-invalid-post-as-user', 'Invalid Post As User', {
 			method: 'updateIncomingIntegration',
 		});
 	}
 
 	if (!(await hasPermissionAsync(user._id, 'message-impersonate'))) {
-		throw new Meteor.Error(
+		throw new ClientSafeError(
 			'error-user-lacks-message-impersonate-permission',
 			"User selected for the incoming integration lacks the 'message-impersonate' permission.",
 			{
@@ -178,7 +164,6 @@ export const updateIncomingIntegration = async (
 							...(typeof integration.script !== 'undefined' && { script: integration.script }),
 							scriptEnabled: integration.scriptEnabled,
 							...(scriptEngine && { scriptEngine }),
-							skipTranspile,
 						}),
 				...(typeof integration.overrideDestinationChannelEnabled !== 'undefined' && {
 					overrideDestinationChannelEnabled: integration.overrideDestinationChannelEnabled,
@@ -196,16 +181,3 @@ export const updateIncomingIntegration = async (
 
 	return updatedIntegration;
 };
-
-Meteor.methods<ServerMethods>({
-	async updateIncomingIntegration(integrationId, integration) {
-		methodDeprecationLogger.method('updateIncomingIntegration', '9.0.0', '/v1/integrations.update');
-		if (!this.userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'updateOutgoingIntegration',
-			});
-		}
-
-		return updateIncomingIntegration(this.userId, integrationId, integration);
-	},
-});

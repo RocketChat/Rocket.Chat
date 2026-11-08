@@ -97,10 +97,12 @@ test.describe.serial('message-actions', () => {
 	});
 
 	test('should delete message ', async () => {
+		const messageToDelete = poHomeChannel.content.getMessageByText('Message to delete');
 		await poHomeChannel.content.sendMessage('Message to delete');
+		await expect(messageToDelete).toBeVisible();
 		await poHomeChannel.content.deleteLastMessage();
 
-		await expect(poHomeChannel.content.lastUserMessageBody).not.toHaveText('Message to delete');
+		await expect(messageToDelete).toHaveCount(0);
 	});
 
 	test('expect quote the message', async ({ page }) => {
@@ -122,7 +124,7 @@ test.describe.serial('message-actions', () => {
 
 		await poHomeChannel.content.sendMessage(message);
 		await poHomeChannel.content.openLastMessageMenu();
-		await page.locator('role=menuitem[name="Start a Discussion"]').click();
+		await page.locator('role=menuitem[name="Start a discussion"]').click();
 		const createDiscussionModal = new CreateNewDiscussionModal(page);
 		const createButton = createDiscussionModal.btnCreate;
 		// Name should be prefilled thus making the create button enabled

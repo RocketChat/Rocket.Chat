@@ -25,8 +25,8 @@ export class DevicesTable extends Table {
 		super(page.getByRole('table', { name: 'Devices' }));
 	}
 
-	async countRowsForUsername(username: string): Promise<number> {
-		return this.root.getByRole('row').getByRole('cell', { name: username, exact: true }).count();
+	getRowsForUsername(username: string): Locator {
+		return this.root.getByRole('row').getByRole('cell', { name: username, exact: true });
 	}
 
 	getDeviceRowById(deviceId: string): Locator {

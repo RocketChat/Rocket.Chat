@@ -1,5 +1,9 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { LivechatContacts, LivechatCustomField, LivechatVisitors } from '@rocket.chat/models';
 import {
+	isPOSTOmnichannelContactProps,
+	isGETOmnichannelContactProps,
+	isGETOmnichannelContactSearchProps,
 	isPOSTOmnichannelContactsProps,
 	isPOSTUpdateOmnichannelContactsProps,
 	isGETOmnichannelContactsProps,
@@ -15,8 +19,6 @@ import {
 	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp, removeEmpty } from '@rocket.chat/tools';
-import { Match, check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 
 import { API } from '../..';
 import { createContact } from '../../../lib/omnichannel/contacts/createContact';
@@ -35,32 +37,16 @@ API.v1.addRoute(
 	{
 		authRequired: true,
 		permissionsRequired: ['view-l-room'],
+		validateParams: { POST: isPOSTOmnichannelContactProps, GET: isGETOmnichannelContactProps },
 	},
 	{
 		async post() {
-			check(this.bodyParams, {
-				_id: Match.Maybe(String),
-				token: String,
-				name: String,
-				email: Match.Maybe(String),
-				phone: Match.Maybe(String),
-				username: Match.Maybe(String),
-				customFields: Match.Maybe(Object),
-				contactManager: Match.Maybe({
-					username: String,
-				}),
-			});
-
 			const contact = await registerContact(this.bodyParams, this.userId);
 
 			return API.v1.success({ contact });
 		},
 		async get() {
-			check(this.queryParams, {
-				contactId: String,
-			});
-
-			const contact = await LivechatVisitors.findOneEnabledById(this.queryParams.contactId);
+			const contact = await LivechatVisitors.findOneEnabledById(this.queryParams.contactId, { projection: { token: 0 } });
 
 			return API.v1.success({ contact });
 		},
@@ -72,25 +58,21 @@ API.v1.addRoute(
 	{
 		authRequired: true,
 		permissionsRequired: ['view-l-room'],
+		validateParams: isGETOmnichannelContactSearchProps,
 	},
 	{
 		async get() {
-			check(this.queryParams, {
-				email: Match.Maybe(String),
-				phone: Match.Maybe(String),
-				custom: Match.Maybe(String),
-			});
 			const { email, phone, custom } = this.queryParams;
 
 			let customCF: { [k: string]: string } = {};
 			try {
 				customCF = custom && JSON.parse(custom);
 			} catch (e) {
-				throw new Meteor.Error('error-invalid-params-custom');
+				throw new ClientSafeError('error-invalid-params-custom');
 			}
 
 			if (!email && !phone && !Object.keys(customCF).length) {
-				throw new Meteor.Error('error-invalid-params');
+				throw new ClientSafeError('error-invalid-params');
 			}
 
 			const foundCF = await (async () => {
@@ -107,7 +89,7 @@ API.v1.addRoute(
 				return Object.fromEntries(customFields.map(({ _id }) => [`livechatData.${_id}`, new RegExp(escapeRegExp(customCF[_id]), 'i')]));
 			})();
 
-			const contact = await LivechatVisitors.findOneByEmailAndPhoneAndCustomField(email, phone, foundCF);
+			const contact = await LivechatVisitors.findOneByEmailAndPhoneAndCustomField(email, phone, foundCF, { projection: { token: 0 } });
 			return API.v1.success({ contact });
 		},
 	},
@@ -263,6 +245,6 @@ const omnichannelContactsEndpoints = API.v1.post(
 type OmnichannelContactsEndpoints = ExtractRoutesFromAPI<typeof omnichannelContactsEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
 	interface Endpoints extends OmnichannelContactsEndpoints {}
 }

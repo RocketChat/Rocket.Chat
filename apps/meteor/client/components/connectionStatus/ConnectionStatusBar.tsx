@@ -71,7 +71,7 @@ function ConnectionStatusBar() {
 			paddingBlock={4}
 			paddingInline={12}
 			width='100%'
-			borderBlockEndWidth={2}
+			borderBlockEndWidth='medium'
 			role='alert'
 			fontScale='p2'
 		>
@@ -88,9 +88,9 @@ function ConnectionStatusBar() {
 			</span>
 			<Button
 				className='rcx-connection-status-bar--action'
-				primary
+				variant='primary'
 				onClick={reconnect}
-				small
+				size='small'
 				disabled={['connected', 'connecting'].includes(status)}
 			>
 				{t('Connect')}

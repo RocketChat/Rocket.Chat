@@ -12,6 +12,7 @@ type AISearch = {
 	fromUsernames?: string;
 	startDate?: string;
 	endDate?: string;
+	searchType?: 'semantic' | 'keyword' | 'hybrid';
 };
 
 const AISearchSchema = {
@@ -38,6 +39,7 @@ const AISearchSchema = {
 				{ type: 'string', format: 'date-time' },
 			],
 		},
+		searchType: { type: 'string', enum: ['semantic', 'keyword', 'hybrid'] },
 	},
 	required: ['query'],
 	additionalProperties: false,

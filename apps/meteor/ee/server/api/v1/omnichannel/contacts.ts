@@ -21,7 +21,6 @@ const blockContactSchema = {
 const isBlockContactProps = ajv.compile<blockContactProps>(blockContactSchema);
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Endpoints {
 		'/v1/omnichannel/contacts.block': {
 			POST: (params: blockContactProps) => void;
