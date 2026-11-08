@@ -48,7 +48,7 @@ function wrapAppCode(code: string): (require: SandboxRequire) => Promise<Record<
 	const extraParams = extraNames.length ? `,${extraNames.join(',')}` : '';
 	const extraArgs = extraNames.map((name) => `,__globals[${JSON.stringify(name)}]`).join('');
 
-	// eslint-disable-next-line @typescript-eslint/no-implied-eval -- This is the reason we run in a separate process
+	// oxlint-disable-next-line @typescript-eslint/no-implied-eval -- This is the reason we run in a separate process
 	const fn = new Function(
 		'require',
 		'__globals',

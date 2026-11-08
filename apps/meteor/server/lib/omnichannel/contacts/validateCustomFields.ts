@@ -1,6 +1,6 @@
 import type { AtLeast, ILivechatCustomField } from '@rocket.chat/core-typings';
 
-import { i18n } from '../../../../app/utils/lib/i18n';
+import { i18n } from '../../../../lib/i18n';
 import { trim } from '../../../../lib/utils/stringUtils';
 
 export function validateCustomFields(

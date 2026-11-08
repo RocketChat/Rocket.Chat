@@ -1,0 +1,45 @@
+@use '../../../styles/colors.scss';
+@use '../../../styles/functions.scss' as *;
+@use '../../../styles/lengths.scss';
+@use '../mixins.scss';
+
+$message-toolbar-border-radius: theme('message-toolbar-border-radius', lengths.border-radius(medium));
+
+.rcx-message-toolbar {
+	margin-inline: lengths.margin(20);
+	padding: lengths.padding(2);
+
+	border: lengths.border-width(default) solid colors.stroke(extra-light);
+	border-radius: $message-toolbar-border-radius;
+	background: colors.surface(room);
+
+	&__wrapper {
+		display: none;
+
+		user-select: none;
+
+		.rcx-message:hover &,
+		.rcx-message:focus-within & {
+			display: inline-block;
+		}
+
+		&--visible {
+			display: inline-block;
+
+			.rcx-message-toolbar {
+				opacity: 1;
+			}
+		}
+	}
+
+	@include mixins.message-focus-visible {
+		display: inline-block;
+	}
+
+	@at-root .rcx-message & {
+		position: absolute;
+		z-index: 10;
+		top: lengths.inset(-24);
+		inset-inline-end: 0;
+	}
+}

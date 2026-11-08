@@ -7,7 +7,7 @@ import ComposerInlineElements from './ComposerInlineElements';
 import ComposerList from './ComposerList';
 import { ComposerMarkupContext } from './ComposerMarkupContext';
 import ComposerPlainSpan from './ComposerPlainSpan';
-import { sourceLinesOf } from './sourceLines';
+import { nestedSourceOf, sourceLinesOf } from './sourceLines';
 import { blockSourceOf, sourceOf } from './sourceOf';
 
 type ComposerMarkupProps = {
@@ -86,15 +86,19 @@ const ComposerMarkup = ({ tokens }: ComposerMarkupProps): ReactElement => {
 						);
 
 					case 'CODE':
-						return <ComposerCodeBlock key={index} language={block.language} lines={block.value} />;
+						return (
+							<ComposerCodeBlock key={index} language={block.language} lines={block.value} fence={codeFenceOf(sourceLines[index]?.[0])} />
+						);
 
 					case 'UNORDERED_LIST':
-						return <ComposerList key={index} items={block.value} marker={unorderedMarker} />;
+						return <ComposerList key={index} items={block.value} marker={unorderedMarker} lines={sourceLines[index] ?? []} />;
 
 					case 'ORDERED_LIST':
-						return <ComposerList key={index} items={block.value} marker={orderedMarker} />;
+						return <ComposerList key={index} items={block.value} marker={orderedMarker} lines={sourceLines[index] ?? []} />;
 
-					case 'TASKS':
+					case 'TASKS': {
+						const nested = nestedSourceOf(block.value, sourceLines[index] ?? []);
+
 						return (
 							<span key={index}>
 								{block.value.map((task, tidx) => (
@@ -102,10 +106,12 @@ const ComposerMarkup = ({ tokens }: ComposerMarkupProps): ReactElement => {
 										{task.status ? '- [x] ' : '- [ ] '}
 										<ComposerInlineElements>{task.value}</ComposerInlineElements>
 										{'\n'}
+										<ComposerPlainSpan text={nested[tidx]} />
 									</span>
 								))}
 							</span>
 						);
+					}
 
 					case 'HORIZONTAL_RULE':
 					case 'TABLE':
@@ -129,6 +135,9 @@ const ComposerMarkup = ({ tokens }: ComposerMarkupProps): ReactElement => {
 // cursor landed on still looks like one: a bad line falls back to the canonical form rather than
 // pasting unrelated text into the composer.
 const quoteMarkerOf = (line: string | undefined): string => /^>[ \t]*/.exec(line ?? '')?.[0] ?? '> ';
+
+// A code block may be fenced by more than three backticks; its closing fence repeats the opening one.
+const codeFenceOf = (line: string | undefined): string => /^`{3,}/.exec(line ?? '')?.[0] ?? '```';
 
 const lineBreakOf = (line: string | undefined): string => (line !== undefined && /^[ \t]*$/.test(line) ? `${line}\n` : '\n');
 

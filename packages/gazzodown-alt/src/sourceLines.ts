@@ -4,15 +4,23 @@ import { blockSourceOf } from './sourceOf';
 
 type Block = MessageParser.Root[number];
 
+type ListEntry = MessageParser.ListItem | MessageParser.Task;
+
+// A list item covers its own line plus every line of the lists nested under it.
+const itemLineSpanOf = ({ nested }: ListEntry): number =>
+	1 + (nested ?? []).reduce((span, list) => span + list.value.reduce((sum, item) => sum + itemLineSpanOf(item), 0), 0);
+
 // How many source lines a block covers, so the next block can be lined up with the line it started
 // on.
 const lineSpanOf = (block: Block, source: string): number => {
 	switch (block.type) {
 		case 'QUOTE':
+			return block.value.length;
+
 		case 'TASKS':
 		case 'UNORDERED_LIST':
 		case 'ORDERED_LIST':
-			return block.value.length;
+			return block.value.reduce((span: number, item: ListEntry) => span + itemLineSpanOf(item), 0);
 
 		case 'CODE':
 		case 'SPOILER_BLOCK':
@@ -44,5 +52,20 @@ export const sourceLinesOf = (tokens: MessageParser.Root, source: string): strin
 		line += span;
 
 		return own;
+	});
+};
+
+// Hands each item of a list block the source text of the lists nested under it, since their
+// indentation is kept nowhere in the AST.
+export const nestedSourceOf = (items: ListEntry[], lines: string[]): string[] => {
+	let line = 0;
+
+	return items.map((item) => {
+		const span = itemLineSpanOf(item);
+		const own = lines.slice(line + 1, line + span);
+
+		line += span;
+
+		return own.map((nested) => `${nested}\n`).join('');
 	});
 };

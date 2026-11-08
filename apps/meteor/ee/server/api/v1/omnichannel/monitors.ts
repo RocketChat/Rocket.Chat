@@ -1,3 +1,4 @@
+import { isClientSafeError } from '@rocket.chat/core-services';
 import type { ILivechatMonitor } from '@rocket.chat/core-typings';
 import {
 	isPOSTLivechatMonitorCreateRequest,
@@ -8,7 +9,6 @@ import {
 	validateForbiddenErrorResponse,
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
-import { Meteor } from 'meteor/meteor';
 
 import { findMonitors, findMonitorByUsername } from './lib/monitors';
 import { API } from '../../../../../server/api';
@@ -111,7 +111,7 @@ const livechatMonitorsEndpoints = API.v1
 
 				return API.v1.success();
 			} catch (error: unknown) {
-				if (error instanceof Meteor.Error) {
+				if (isClientSafeError(error)) {
 					return API.v1.failure(error.reason);
 				}
 
@@ -123,6 +123,6 @@ const livechatMonitorsEndpoints = API.v1
 type LivechatMonitorsEndpoints = ExtractRoutesFromAPI<typeof livechatMonitorsEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
 	interface Endpoints extends LivechatMonitorsEndpoints {}
 }

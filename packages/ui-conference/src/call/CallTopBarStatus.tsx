@@ -25,7 +25,7 @@ const CallTopBarStatus = () => {
 	);
 
 	// The call reports hands by participant id; the membership is what names them.
-	const hands = useMemo(() => nameRaisedHands(raisedHands, members, t('User')), [raisedHands, members, t]);
+	const hands = useMemo(() => nameRaisedHands(raisedHands, members, t('User'), self.id), [raisedHands, members, t, self.id]);
 
 	return (
 		<>

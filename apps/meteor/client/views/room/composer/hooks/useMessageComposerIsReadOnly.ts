@@ -9,6 +9,6 @@ export const useMessageComposerIsReadOnly = (room: IRoom): boolean => {
 	// depend on post-readonly so this re-runs when the permission is granted/revoked at runtime;
 	// roomCoordinator.readOnly calls hasPermission internally and returns the up-to-date value.
 	const postReadOnly = usePermission('post-readonly', room._id);
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+	// oxlint-disable-next-line react-hooks/exhaustive-deps
 	return useMemo(() => roomCoordinator.readOnly(room, user), [room, user, postReadOnly]);
 };

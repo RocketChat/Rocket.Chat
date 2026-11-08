@@ -17,7 +17,7 @@ class OmnichannelEditAgentFlexTab extends FlexTab {
 	}
 
 	get inputDepartment(): Locator {
-		return this.root.getByLabel('Departments').getByRole('textbox');
+		return this.root.getByLabel('Departments');
 	}
 
 	getDepartmentOption(name: string) {
@@ -34,11 +34,14 @@ class OmnichannelEditAgentFlexTab extends FlexTab {
 	}
 
 	findSelectedDepartment(name: string) {
-		return this.root.getByLabel('Departments', { exact: true }).getByRole('option', { name });
+		return this.root
+			.getByRole('listbox')
+			.filter({ has: this.root.page().getByLabel('Departments', { exact: true }) })
+			.getByRole('option', { name });
 	}
 
 	private get inputStatus(): Locator {
-		return this.root.getByText('Status', { exact: true });
+		return this.root.getByRole('combobox', { name: 'Status', exact: true });
 	}
 
 	async selectStatus(status: string) {

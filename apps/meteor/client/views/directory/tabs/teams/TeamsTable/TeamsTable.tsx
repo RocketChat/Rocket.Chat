@@ -1,5 +1,5 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
-import { Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
+import { Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesAction, type TableColumnWidth } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
@@ -28,15 +28,15 @@ const TeamsTable = () => {
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'usersCount' | 'lastMessage' | 'createdAt'>('name');
 
+	const columns: TableColumnWidth[] = ['auto', '100px', ...(mediaQuery ? (['150px'] as const) : [])];
+
 	const headers = useMemo(
 		() =>
 			[
 				<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
 					{t('Name')}
 				</GenericTableHeaderCell>,
-				<GenericTableHeaderCell key='channelsCount' width='100px'>
-					{t('Channels')}
-				</GenericTableHeaderCell>,
+				<GenericTableHeaderCell key='channelsCount'>{t('Channels')}</GenericTableHeaderCell>,
 				mediaQuery && (
 					<GenericTableHeaderCell
 						key='createdAt'
@@ -44,7 +44,6 @@ const TeamsTable = () => {
 						active={sortBy === 'createdAt'}
 						onClick={setSort}
 						sort='createdAt'
-						width='150px'
 					>
 						{t('Created_at')}
 					</GenericTableHeaderCell>
@@ -76,7 +75,7 @@ const TeamsTable = () => {
 		<>
 			<FilterByText placeholder={t('Teams_Search_teams')} value={text} onChange={(event) => setText(event.target.value)} />
 			{isLoading && (
-				<GenericTable>
+				<GenericTable columns={columns}>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
 						<GenericTableLoadingTable headerCells={3} />
@@ -85,7 +84,7 @@ const TeamsTable = () => {
 			)}
 			{data?.result && data.result.length > 0 && isFetched && (
 				<>
-					<GenericTable>
+					<GenericTable columns={columns}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.result.map((team) => (

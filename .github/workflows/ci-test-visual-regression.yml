@@ -1,0 +1,115 @@
+name: Test Visual Regression
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        required: true
+        type: string
+
+    secrets:
+      NPM_TOKEN:
+        required: false
+
+env:
+  TOOL_NODE_FLAGS: ${{ vars.TOOL_NODE_FLAGS }}
+
+permissions: {}
+
+jobs:
+  changes:
+    runs-on: ubuntu-24.04-arm
+    permissions:
+      contents: read
+
+    name: Detect Fuselage Changes
+
+    outputs:
+      fuselage: ${{ steps.affected.outputs.fuselage }}
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 2
+
+      - name: Resolve comparison base
+        id: base
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          MERGE_GROUP_BASE_SHA: ${{ github.event.merge_group.base_sha }}
+          PUSH_BEFORE_SHA: ${{ github.event.before }}
+        run: |
+          case "$EVENT_NAME" in
+            # the pull request checkout is a merge commit whose first parent is the current base branch tip
+            pull_request) base="$(git rev-parse HEAD^1)" ;;
+            merge_group) base="$MERGE_GROUP_BASE_SHA" ;;
+            push) base="$PUSH_BEFORE_SHA" ;;
+            *) base="" ;;
+          esac
+
+          if [[ -n "$base" ]]; then
+            git fetch --no-tags --depth=1 origin "$base" || true
+          fi
+
+          echo "sha=${base}" >> "$GITHUB_OUTPUT"
+
+      # Affected covers fuselage's own files, its workspace dependencies and its locked external dependencies;
+      # an unresolvable base makes turbo treat every package as affected, so the tests run.
+      - name: Check whether fuselage is affected
+        id: affected
+        env:
+          TURBO_SCM_BASE: ${{ steps.base.outputs.sha }}
+          TURBO_SCM_HEAD: HEAD
+          TURBO_TELEMETRY_DISABLED: 1
+        run: |
+          if [[ -z "$TURBO_SCM_BASE" ]]; then
+            echo "fuselage=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          version="$(node -p "require('./package.json').devDependencies.turbo")"
+          affected="$(npx --yes "turbo@${version}" ls --affected --output=json | jq '[.packages.items[].name] | index("@rocket.chat/fuselage") != null')"
+
+          echo "@rocket.chat/fuselage affected: ${affected}"
+          echo "fuselage=${affected}" >> "$GITHUB_OUTPUT"
+
+  test:
+    needs: [changes]
+    if: needs.changes.outputs.fuselage == 'true'
+
+    # the snapshots are rendered by the arm64 Playwright image, which runs natively here
+    runs-on: ubuntu-24.04-arm
+    permissions:
+      contents: read
+
+    name: Test Visual Regression
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup NodeJS
+        uses: ./.github/actions/setup-node
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache-modules: true
+          install: true
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - uses: rharkor/caching-for-turbo@2238fae6eb9a9936f92356f54cb3660200d105e7 # v2.5.1
+
+      - uses: ./.github/actions/restore-packages
+
+      - name: Build Storybook
+        run: yarn workspace @rocket.chat/fuselage run build-storybook
+        env:
+          STORYBOOK_DISABLE_TELEMETRY: 1
+
+      - name: Run visual regression tests
+        run: yarn workspace @rocket.chat/fuselage run visual-regression
+
+      - name: Upload visual regression results
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: failure()
+        with:
+          name: playwright-visual-results-${{ github.event.number || github.run_id }}
+          path: packages/fuselage/test-results

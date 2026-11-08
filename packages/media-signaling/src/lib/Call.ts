@@ -216,6 +216,8 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	private remoteCallId: string | null;
 
+	private serverIceServers: RTCIceServer[];
+
 	private oldClientState: ClientState;
 
 	private hasFiredRingingEvent: boolean;
@@ -318,6 +320,7 @@ export class ClientMediaCall implements IClientMediaCall {
 
 		this.localCallId = callId;
 		this.remoteCallId = null;
+		this.serverIceServers = [];
 
 		this.acceptedLocally = false;
 		this.acceptedRemotely = false;
@@ -422,6 +425,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this._service = signal.service;
 		this._role = signal.role;
 		this._flags = signal.flags || [];
+		this.serverIceServers = signal.iceServers || [];
 		this.selfContact = { type: 'user', id: this.config.userId, ...signal.self };
 
 		this._transferredBy = signal.transferredBy || null;
@@ -1619,13 +1623,15 @@ export class ClientMediaCall implements IClientMediaCall {
 			this.throwError('webrtc-not-implemented');
 		}
 
+		const iceServers = [...this.config.iceServers, ...this.serverIceServers];
+
 		this.webrtcProcessor = webrtcFactory({
 			logger,
 			iceGatheringTimeout,
 			call: this,
 			inputTrack: this.inputTrack,
 			screenVideoTrack: this.screenVideoTrack,
-			...(this.config.iceServers.length && { rtc: { iceServers: this.config.iceServers } }),
+			...(iceServers.length && { rtc: { iceServers } }),
 		});
 		this.webrtcProcessor.emitter.on('internalStateChange', (stateName) => this.onWebRTCInternalStateChange(stateName));
 		this.webrtcProcessor.emitter.on('streamChanged', () => this.onWebRTCStreamChanged());

@@ -1,5 +1,5 @@
-import { parse } from '../src';
-import { paragraph, plain, quote, bold } from './helpers';
+import { paragraph, plain, quote, bold } from './helpers.js';
+import { parse } from '../src/index.js';
 
 test.each([
 	[

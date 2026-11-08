@@ -1,17 +1,17 @@
 import type { IRole, Serialized } from '@rocket.chat/core-typings';
-import { Box, Icon, Margins, Select, TextInput } from '@rocket.chat/fuselage';
-import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
+import { Select } from '@rocket.chat/fuselage';
 import type { OptionProp } from '@rocket.chat/ui-client';
 import { MultiSelectCustom } from '@rocket.chat/ui-client';
 import type { ChangeEvent, Dispatch, Key, SetStateAction } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { FilterBar, FilterBarFilters, FilterBarSearch } from '../../../../components/FilterBar';
 import type { UsersFilters } from '../AdminUsersPage';
 
 export type UsersTableFiltersProps = {
 	setUsersFilters: Dispatch<SetStateAction<UsersFilters>>;
-	roleData: { roles: Serialized<IRole>[] } | undefined;
+	roleData: { roles: Serialized<Omit<IRole, '_updatedAt'>>[] } | undefined;
 	showStatusManagementFilter?: boolean;
 };
 
@@ -76,33 +76,10 @@ const UsersTableFilters = ({ roleData, setUsersFilters, showStatusManagementFilt
 		[roleData],
 	);
 
-	const breakpoints = useBreakpoints();
-	const isLargeScreenOrBigger = breakpoints.includes('lg');
-	const fixFiltersSize = isLargeScreenOrBigger ? { maxWidth: 'x224', minWidth: 'x224' } : null;
-
 	return (
-		<Box
-			marginBlock={16}
-			is='form'
-			onSubmit={(event) => {
-				event.preventDefault();
-			}}
-			display='flex'
-			flexWrap='wrap'
-			alignItems='center'
-		>
-			<Margins inlineEnd={isLargeScreenOrBigger ? 16 : 0}>
-				<TextInput
-					placeholder={t('Search_Users')}
-					endAddon={<Icon name='magnifier' size='x20' />}
-					onChange={handleSearchTextChange}
-					value={text}
-					flexGrow={2}
-					minWidth='x220'
-					aria-label={t('Search_Users')}
-				/>
-			</Margins>
-			<Box marginBlock={4} width={isLargeScreenOrBigger ? 'unset' : '100%'}>
+		<FilterBar>
+			<FilterBarSearch placeholder={t('Search_Users')} onChange={handleSearchTextChange} value={text} />
+			<FilterBarFilters>
 				<MultiSelectCustom
 					dropdownOptions={userRolesFilterStructure}
 					defaultTitle='All_roles'
@@ -110,21 +87,17 @@ const UsersTableFilters = ({ roleData, setUsersFilters, showStatusManagementFilt
 					setSelectedOptions={handleRolesChange}
 					selectedOptions={selectedRoles}
 					searchBarText='Search_roles'
-					{...fixFiltersSize}
 				/>
-			</Box>
-			{showStatusManagementFilter && (
-				<Box marginBlock={4} marginInlineStart={isLargeScreenOrBigger ? 16 : 0} width={isLargeScreenOrBigger ? 'unset' : '100%'}>
+				{showStatusManagementFilter && (
 					<Select
 						aria-label={t('User_Status')}
 						options={statusManagementOptions}
 						value={statusManagement ?? 'all'}
 						onChange={handleStatusManagementChange}
-						{...fixFiltersSize}
 					/>
-				</Box>
-			)}
-		</Box>
+				)}
+			</FilterBarFilters>
+		</FilterBar>
 	);
 };
 

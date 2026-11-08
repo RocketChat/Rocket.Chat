@@ -1,4 +1,4 @@
-import { III_psy_xmin } from './III_psy_xmin';
+import { III_psy_xmin } from './III_psy_xmin.js';
 
 export class III_psy_ratio {
 	thm = new III_psy_xmin();

@@ -13,10 +13,10 @@ const RemoveCannedResponseButton = ({ id }: RemoveCannedResponseButtonProps) => 
 	const handleDelete = useRemoveCannedResponse(id);
 
 	return (
-		<GenericTableCell withTruncatedText>
+		<GenericTableCell truncate>
 			<IconButton
 				icon='trash'
-				small
+				size='small'
 				title={t('Remove')}
 				onClick={(e) => {
 					e.stopPropagation();

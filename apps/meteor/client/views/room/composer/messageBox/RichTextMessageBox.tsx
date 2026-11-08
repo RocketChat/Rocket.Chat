@@ -1,8 +1,8 @@
-/* eslint-disable complexity */
+/* oxlint-disable complexity */
 import { isRoomFederated, isRoomNativeFederated } from '@rocket.chat/core-typings';
 import { useContentBoxSize, useMediaQuery, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { Options } from '@rocket.chat/message-parser';
-import { useFormatDateAndTime } from '@rocket.chat/ui-client';
+import { useFormatDateAndTime, useMergedRefsV2 } from '@rocket.chat/ui-client';
 import { MessageComposerHint, RichTextComposerInputExpandable } from '@rocket.chat/ui-composer';
 import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
@@ -30,7 +30,6 @@ import {
 import { handleRichTextSelectionWrapping } from './wrapSelection';
 import { useExternalLink } from '../../../../hooks/useExternalLink';
 import { useIsFederationEnabled } from '../../../../hooks/useIsFederationEnabled';
-import { useMergedRefsV2 } from '../../../../hooks/useMergedRefsV2';
 import { createRichTextComposerAPI } from '../../../../lib/createRichTextComposerAPI';
 import { emoji } from '../../../../lib/emoji';
 import { formattingButtons } from '../../../../lib/messageBoxFormatting';
@@ -43,7 +42,7 @@ import { useFileUpload } from '../../body/hooks/useFileUpload';
 import { useChat } from '../../contexts/ChatContext';
 import { useComposerPopupOptions } from '../../contexts/ComposerPopupContext';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
-import { useComposerBoxPopup } from '../hooks/useComposerBoxPopup';
+import { getComposerPopupListboxId, useComposerBoxPopup } from '../hooks/useComposerBoxPopup';
 import { useEnablePopupPreview } from '../hooks/useEnablePopupPreview';
 
 // The first boolean will be used to enable/disable the send button
@@ -526,6 +525,8 @@ const RichTextMessageBox = ({
 					onMouseLeave={handleMouseLeave}
 					linkmodifier={linkModifier}
 					aria-activedescendant={popup.focused ? `popup-item-${popup.focused._id}` : undefined}
+					aria-autocomplete='list'
+					aria-controls={getComposerPopupListboxId(popup, shouldPopupPreview)}
 					onBlur={setLastCursorPosition}
 					onFocus={getLastCursorPosition}
 				/>

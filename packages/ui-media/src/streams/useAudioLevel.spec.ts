@@ -28,15 +28,15 @@ const microphone = () => ({ getAudioTracks: () => [{ kind: 'audio' }] }) as unkn
 it('measures a stream once however many read it, until the last one leaves', () => {
 	const stream = microphone();
 
-	const first = renderHook(() => useAudioLevel(stream));
-	const second = renderHook(() => useAudioLevel(stream));
+	const { unmount: unmountFirst } = renderHook(() => useAudioLevel(stream));
+	const { unmount: unmountSecond } = renderHook(() => useAudioLevel(stream));
 
 	expect(AudioContextMock).toHaveBeenCalledTimes(1);
 
-	first.unmount();
+	unmountFirst();
 	expect(close).not.toHaveBeenCalled();
 
-	second.unmount();
+	unmountSecond();
 	expect(close).toHaveBeenCalledTimes(1);
 });
 

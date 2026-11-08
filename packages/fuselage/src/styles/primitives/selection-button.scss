@@ -1,0 +1,108 @@
+@use '../lengths.scss';
+@use '../variables/button-colors.scss' as *;
+@use '../variables/input-colors.scss' as *;
+@use '../mixins/interactivity.scss' as *;
+@use '../mixins/shadows.scss' as *;
+@use './traits.scss';
+
+%selection-button__input {
+	@extend %visually-hidden;
+}
+
+%selection-button__fake {
+	position: relative;
+
+	height: lengths.size(20);
+
+	border-width: lengths.border-width(default);
+}
+
+%selection-button__fake--empty {
+	color: $button-empty-color;
+	border-color: $button-empty-border-color;
+	background-color: $button-empty-background-color;
+}
+
+%selection-button__fake--empty--hovered {
+	border-color: $button-empty-hover-border-color;
+	background-color: $button-empty-hover-background-color;
+	box-shadow: none;
+}
+
+%selection-button__fake--empty--active {
+	border-color: $button-empty-active-border-color;
+	background-color: $button-empty-active-background-color;
+	box-shadow: none;
+}
+
+%selection-button__fake--empty--focused {
+	border-color: $button-empty-focus-border-color;
+	background-color: $button-empty-focus-background-color;
+	@include use-focus-shadow($input-colors-focus-shadow-color);
+}
+
+%selection-button__fake--empty--disabled {
+	color: $button-empty-disabled-color;
+	border-color: $button-empty-disabled-border-color;
+	background-color: $button-empty-disabled-background-color;
+}
+
+%selection-button__fake--off {
+	color: $button-off-color;
+	border-color: $button-off-border-color;
+	background-color: $button-off-background-color;
+}
+
+%selection-button__fake--off--hovered {
+	border-color: $button-off-hover-border-color;
+	background-color: $button-off-hover-background-color;
+	box-shadow: none;
+}
+
+%selection-button__fake--off--active {
+	border-color: $button-off-active-border-color;
+	background-color: $button-off-active-background-color;
+	box-shadow: none;
+}
+
+%selection-button__fake--off--focused {
+	border-color: $button-off-focus-border-color;
+	background-color: $button-off-focus-background-color;
+	@include use-focus-shadow($input-colors-focus-shadow-color);
+}
+
+%selection-button__fake--off--disabled {
+	color: $button-off-disabled-color;
+	border-color: $button-off-disabled-border-color;
+	background-color: $button-off-disabled-background-color;
+}
+
+%selection-button__fake--primary {
+	color: $button-primary-color;
+	border-color: $button-primary-border-color;
+	background-color: $button-primary-background-color;
+}
+
+%selection-button__fake--primary--hovered {
+	border-color: $button-primary-hover-border-color;
+	background-color: $button-primary-hover-background-color;
+	box-shadow: none;
+}
+
+%selection-button__fake--primary--active {
+	border-color: $button-primary-active-border-color;
+	background-color: $button-primary-active-background-color;
+	box-shadow: none;
+}
+
+%selection-button__fake--primary--focused {
+	border-color: $button-primary-focus-border-color;
+	background-color: $button-primary-focus-background-color;
+	@include use-focus-shadow($input-colors-focus-shadow-color);
+}
+
+%selection-button__fake--primary--disabled {
+	color: $button-primary-disabled-color;
+	border-color: $button-primary-disabled-border-color;
+	background-color: $button-primary-disabled-background-color;
+}

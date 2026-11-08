@@ -208,7 +208,7 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 		}
 
 		// If we are running MS AND this.api is defined, we KNOW there is a local node
-		/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
+		/* oxlint-disable-next-line @typescript-eslint/no-non-null-assertion */
 		const { id: localNodeId } = (await this.api.nodeList()).find((node) => node.local)!;
 
 		const services: { name: string; nodes: string[] }[] = await this.api?.call('$node.services', { onlyActive: true });

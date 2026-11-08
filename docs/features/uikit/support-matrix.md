@@ -10,10 +10,10 @@ Each surface has one list of accepted layout blocks, exported by `@rocket.chat/u
 
 ## Divergences
 
-- **Livechat, message blocks**: `callout`, `info_card`, `input`, `preview` and `video_conf` are accepted, but Livechat's `MessageParser` has no method for them, so they render as nothing in the widget.
-- **element `conversations_select`** and **`multi_conversations_select`**: accepted by `actions` and `input`, but no renderer has a method for them, so they never render.
+- **Livechat, message blocks**: `callout`, `context_actions`, `header`, `info_card`, `input`, `markdown`, `preview`, `table`, `video` and `video_conf` are accepted, but Livechat's `MessageParser` has no method for them, so they render as nothing in the widget.
 - **element `multi_static_select` in Livechat**: the method exists but returns `null`.
 - **`attachment` surface**: has a parser and a list, but no client renderer.
+- **`feedback_buttons` and `icon_button` outside their containers**: the types only allow them in the containers marked below, but the Fuselage renderer draws them in any element container, so a `feedback_buttons` inside an `actions` block still renders in a message.
 
 ## Layout blocks per surface
 
@@ -24,13 +24,18 @@ Each surface has one list of accepted layout blocks, exported by `@rocket.chat/u
 | `actions` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | `callout` | ✅ | — | ✅ | ✅ | ✅ | ✅ |
 | `context` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `context_actions` | ✅ | — | — | — | — | — |
 | `divider` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `header` | ✅ | — | ✅ | — | ✅ | — |
 | `image` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | `info_card` | ✅ | — | — | ✅ | — | — |
 | `input` | ✅ | — | ✅ | ✅ | ✅ | — |
+| `markdown` | ✅ | — | ✅ | — | ✅ | — |
 | `preview` | ✅ | — | ✅ | ✅ | ✅ | — |
 | `section` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | `tab_navigation` | — | — | — | — | ✅ | — |
+| `table` | ✅ | — | ✅ | — | ✅ | — |
+| `video` | ✅ | — | ✅ | — | ✅ | — |
 | `video_conf` | ✅ | — | — | — | — | — |
 
 `input` in a message has no view state to submit to: its elements only reach the app through `dispatchActionConfig` (see [interactions.md](interactions.md#when-an-element-sends-blockaction)).
@@ -41,26 +46,31 @@ The attachment surface has no client renderer, so its column is the list only.
 
 Container columns come from the block types; renderer columns tell whether a method exists to draw the element.
 
-| Element | actions | input | section accessory | context | callout accessory | info_card row | info_card action | tab_navigation | Fuselage renders | Livechat renders |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `button` | ✅ | — | ✅ | — | ✅ | — | — | — | ✅ | ✅ |
-| `channels_select` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
-| `checkbox` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
-| `conversations_select` | ✅ | ✅ | — | — | — | — | — | — | — | — |
-| `datepicker` | ✅ | ✅ | ✅ | — | — | — | — | — | ✅ | ✅ |
-| `icon` | — | — | — | — | — | ✅ | — | — | ✅ | — |
-| `icon_button` | — | — | — | — | — | — | ✅ | — | ✅ | — |
-| `image` | — | — | ✅ | ✅ | — | — | — | — | ✅ | ✅ |
-| `linear_scale` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
-| `multi_channels_select` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
-| `multi_conversations_select` | ✅ | ✅ | — | — | — | — | — | — | — | — |
-| `multi_static_select` | ✅ | ✅ | ✅ | — | — | — | — | — | ✅ | — (returns `null`) |
-| `multi_users_select` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
-| `overflow` | ✅ | — | ✅ | — | ✅ | — | — | — | ✅ | ✅ |
-| `plain_text_input` | — | ✅ | — | — | — | — | — | — | ✅ | — |
-| `radio_button` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
-| `static_select` | ✅ | ✅ | ✅ | — | — | — | — | — | ✅ | ✅ |
-| `tab` (via `tab_navigation`) | — | — | — | — | — | — | — | ✅ | ✅ | — |
-| `time_picker` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
-| `toggle_switch` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
-| `users_select` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
+| Element | actions | input | section accessory | context | context_actions | callout accessory | info_card row | info_card action | tab_navigation | Fuselage renders | Livechat renders |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `button` | ✅ | — | ✅ | — | — | ✅ | — | — | — | ✅ | ✅ |
+| `channels_select` | ✅ | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
+| `checkbox` | ✅ | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
+| `conversations_select` | ✅ | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
+| `datepicker` | ✅ | ✅ | ✅ | — | — | — | — | — | — | ✅ | ✅ |
+| `datetimepicker` | ✅ | ✅ | — | — | — | — | — | — | — | ✅ | — |
+| `email_text_input` | — | ✅ | — | — | — | — | — | — | — | ✅ | — |
+| `feedback_buttons` | — | — | — | — | ✅ | — | — | — | — | ✅ | — |
+| `icon` | — | — | — | — | — | — | ✅ | — | — | ✅ | — |
+| `icon_button` | — | — | — | — | ✅ | — | — | ✅ | — | ✅ | — |
+| `image` | — | — | ✅ | ✅ | — | — | — | — | — | ✅ | ✅ |
+| `linear_scale` | ✅ | ✅ | — | — | — | — | — | — | — | ✅ | — |
+| `multi_channels_select` | ✅ | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
+| `multi_conversations_select` | ✅ | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
+| `multi_static_select` | ✅ | ✅ | ✅ | — | — | — | — | — | — | ✅ | — (returns `null`) |
+| `multi_users_select` | ✅ | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
+| `number_input` | — | ✅ | — | — | — | — | — | — | — | ✅ | — |
+| `overflow` | ✅ | — | ✅ | — | — | ✅ | — | — | — | ✅ | ✅ |
+| `plain_text_input` | — | ✅ | — | — | — | — | — | — | — | ✅ | — |
+| `radio_button` | ✅ | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
+| `static_select` | ✅ | ✅ | ✅ | — | — | — | — | — | — | ✅ | ✅ |
+| `tab` (via `tab_navigation`) | — | — | — | — | — | — | — | — | ✅ | ✅ | — |
+| `time_picker` | ✅ | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
+| `toggle_switch` | ✅ | ✅ | — | — | — | — | — | — | — | ✅ | — |
+| `url_text_input` | — | ✅ | — | — | — | — | — | — | — | ✅ | — |
+| `users_select` | ✅ | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |

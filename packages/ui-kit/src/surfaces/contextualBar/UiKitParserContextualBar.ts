@@ -7,11 +7,15 @@ export const contextualBarSurfaceLayoutBlockTypes = [
 	'callout',
 	'context',
 	'divider',
+	'header',
 	'image',
 	'input',
+	'markdown',
 	'preview',
 	'section',
 	'tab_navigation',
+	'table',
+	'video',
 ] as const satisfies readonly RenderableLayoutBlock['type'][];
 
 type ContextualBarSurfaceLayoutBlock = Extract<RenderableLayoutBlock, { type: (typeof contextualBarSurfaceLayoutBlockTypes)[number] }>;

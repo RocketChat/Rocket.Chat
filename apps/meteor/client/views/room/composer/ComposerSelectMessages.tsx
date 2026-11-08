@@ -18,7 +18,7 @@ import {
 import ForwardMessageModal from '../modals/ForwardMessageModal';
 import { selectedMessageStore } from '../providers/SelectedMessagesProvider';
 
-const ComposerSelectMessages = ({ onClickSelectAll }: ComposerMessageProps) => {
+const ComposerSelectMessages = ({ onClickSelectAll }: Pick<ComposerMessageProps, 'onClickSelectAll'>) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const [isLoading, setIsLoading] = useState(false);
@@ -92,6 +92,10 @@ const ComposerSelectMessages = ({ onClickSelectAll }: ComposerMessageProps) => {
 					{t('Clear_selection')}
 				</Button>
 				<Button icon='arrow-up' small disabled={countAvailable === 0} onClick={onClickSelectAll}>
+				<Button size='small' disabled={countSelected === 0} onClick={clearSelection}>
+					{t('Clear_selection')}
+				</Button>
+				<Button icon='arrow-up' size='small' variant='primary' disabled={countAvailable === 0} onClick={onClickSelectAll}>
 					{t('Select__count__messages', { count: countAvailable })}
 				</Button>
 				<Button

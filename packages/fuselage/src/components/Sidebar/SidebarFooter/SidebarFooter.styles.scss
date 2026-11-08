@@ -1,0 +1,22 @@
+@use '../../../styles/colors.scss';
+@use '../../../styles/lengths.scss';
+@use '../../../styles/typography.scss' as *;
+
+.rcx-sidebar-footer {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+
+	min-height: lengths.size(48);
+	padding-block: lengths.padding(12) lengths.padding(8);
+	padding-inline: lengths.padding(16);
+
+	color: colors.font(default);
+
+	background-color: colors.surface(sidebar);
+	gap: lengths.padding(4);
+
+	&__content {
+		@include use-font-scale(micro);
+	}
+}

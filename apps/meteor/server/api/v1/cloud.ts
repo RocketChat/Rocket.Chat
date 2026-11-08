@@ -307,7 +307,6 @@ API.v1.post(
  * Declaring endpoint here because we don't want this available to the sdk client
  */
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Endpoints {
 		'/v1/cloud.checkoutUrl': {
 			GET: () => { url: string };

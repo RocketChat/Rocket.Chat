@@ -93,7 +93,7 @@ export const normalizeHostForAllowlistMatch = (hostOrIp: string): string => {
 export const parseIpv4WithPort = (input: string): { ip: string; port?: string } | null => {
 	const match = input.match(ipv4WithPortPattern);
 	if (match) {
-		return { ip: match[1]!, port: match[2] };
+		return { ip: match[1], port: match[2] };
 	}
 	return null;
 };

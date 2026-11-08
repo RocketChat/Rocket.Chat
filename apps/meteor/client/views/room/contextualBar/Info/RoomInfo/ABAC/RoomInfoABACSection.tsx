@@ -28,13 +28,15 @@ const RoomInfoABACSection = ({ room }: RoomInfoABACSectionProps) => {
 
 	return (
 		<>
-			<Divider marginBlock={32} width='full' />
+			<Box marginBlock={32}>
+				<Divider />
+			</Box>
 			<InfoPanelField>
 				<Box display='flex' marginBlockEnd={16}>
 					<Tag medium>
 						<Box display='flex' alignItems='center'>
 							<RoomIcon room={room} />
-							<Box marginInlineStart={2}>{t('ABAC_Managed')}</Box>
+							<Box marginInlineStart='x4'>{t('ABAC_Managed')}</Box>
 						</Box>
 					</Tag>
 				</Box>

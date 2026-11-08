@@ -30,5 +30,4 @@ UiKit is the JSON block language Rocket.Chat Apps use to draw UI inside the clie
 ## Experimental and unfinished
 
 - `tab_navigation` and `tab` (`ExperimentalTabNavigationBlock`, `ExperimentalTabElement`) are experimental. Only the contextual bar renders them.
-- `conversations_select` and `multi_conversations_select` are declared (with a `@todo`) and accepted by `actions` and `input`, but no renderer draws them.
 - The `attachment` surface has a parser in `ui-kit` but no client renderer.

@@ -1,0 +1,337 @@
+@use '../colors.scss';
+@use '../lengths.scss';
+@use '../typography.scss' as *;
+@use './link.scss' as *;
+
+%with-inline-elements {
+	abbr,
+	b,
+	cite,
+	code,
+	del,
+	dfn,
+	em,
+	i,
+	ins,
+	kbd,
+	q,
+	samp,
+	small,
+	strong,
+	sub,
+	sup,
+	time,
+	var {
+		letter-spacing: inherit;
+
+		color: inherit;
+
+		font: inherit;
+	}
+
+	a {
+		@extend %link;
+
+		letter-spacing: inherit;
+
+		font: inherit;
+	}
+
+	strong {
+		letter-spacing: inherit;
+
+		font: inherit;
+		font-weight: bolder;
+	}
+
+	em {
+		letter-spacing: inherit;
+
+		font: inherit;
+		font-style: italic;
+	}
+
+	b {
+		letter-spacing: inherit;
+
+		font: inherit;
+		font-weight: bolder;
+	}
+
+	i {
+		letter-spacing: inherit;
+
+		font: inherit;
+		font-style: italic;
+	}
+
+	q {
+		letter-spacing: inherit;
+
+		font: inherit;
+
+		&::before {
+			content: open-quote;
+		}
+
+		&::after {
+			content: close-quote;
+		}
+
+		cite {
+			letter-spacing: inherit;
+
+			font: inherit;
+			font-style: italic;
+		}
+	}
+
+	ul,
+	ol {
+		display: inline-flex;
+	}
+
+	li {
+		display: list-item;
+
+		margin-inline: lengths.margin(24) lengths.margin(8);
+
+		&:first-child {
+			margin-inline-start: lengths.margin(16);
+		}
+	}
+
+	ul {
+		list-style-type: disc;
+
+		span {
+			margin-inline-end: lengths.margin(8);
+		}
+
+		input {
+			vertical-align: middle;
+		}
+	}
+
+	ol {
+		list-style-type: decimal;
+	}
+
+	code {
+		display: inline;
+
+		padding: lengths.padding(1) lengths.padding(4);
+
+		vertical-align: middle;
+
+		white-space: pre-wrap;
+		letter-spacing: inherit;
+		word-wrap: break-word;
+
+		color: colors.font(default);
+		border-width: lengths.border-width(default);
+		border-color: colors.stroke(light);
+		border-radius: lengths.border-radius(medium);
+		background-color: colors.surface(tint);
+
+		font: inherit;
+
+		font-family: font-family(mono);
+		direction: ltr;
+		-webkit-font-smoothing: auto;
+		@include use-font-scale(c2);
+
+		unicode-bidi: embed;
+	}
+
+	time {
+		letter-spacing: inherit;
+
+		color: colors.font(secondary-info);
+
+		font: inherit;
+	}
+
+	dfn {
+		letter-spacing: inherit;
+
+		color: colors.font(secondary-info);
+
+		font: inherit;
+		font-style: italic;
+	}
+
+	abbr {
+		letter-spacing: inherit;
+
+		font: inherit;
+
+		&[title] {
+			text-decoration: underline dashed;
+
+			border-block-end-width: lengths.border-width(none);
+		}
+	}
+
+	del {
+		text-decoration: line-through solid;
+		letter-spacing: inherit;
+
+		font: inherit;
+	}
+
+	ins {
+		text-decoration: underline solid;
+		letter-spacing: inherit;
+
+		font: inherit;
+	}
+
+	sup,
+	sub {
+		position: relative;
+
+		vertical-align: baseline;
+
+		font-size: 75%;
+		line-height: 0;
+	}
+
+	sup {
+		inset-block-start: -0.5em;
+	}
+
+	sub {
+		inset-block-end: -0.25em;
+	}
+
+	kbd {
+		padding: lengths.padding(4) lengths.padding(8);
+
+		letter-spacing: inherit;
+
+		border-width: lengths.border-width(default);
+		border-style: solid;
+		border-color: currentColor;
+		border-radius: lengths.border-radius(small);
+
+		font: inherit;
+		font-family: font-family(mono);
+		-webkit-font-smoothing: auto;
+	}
+
+	var {
+		letter-spacing: inherit;
+
+		font: inherit;
+		font-style: italic;
+	}
+
+	small {
+		letter-spacing: inherit;
+
+		font: inherit;
+		font-size: 80%;
+	}
+}
+
+%with-block-elements {
+	font: inherit;
+
+	h1 {
+		@include use-font-scale(h2);
+	}
+
+	h2 {
+		@include use-font-scale(h4);
+	}
+
+	h3 {
+		@include use-font-scale(p2m);
+	}
+
+	h4 {
+		@include use-font-scale(c2);
+	}
+
+	h5 {
+		@include use-font-scale(micro);
+	}
+
+	h6 {
+		@include use-font-scale(micro);
+	}
+
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6 {
+		display: block;
+
+		margin: lengths.margin(16) lengths.margin(none);
+	}
+
+	p {
+		@include use-font-scale(p2);
+
+		display: block;
+
+		margin: lengths.margin(16) lengths.margin(none);
+
+		color: inherit;
+	}
+
+	ul,
+	ol {
+		display: block;
+
+		margin: lengths.margin(16) lengths.margin(none);
+		padding-inline-start: lengths.padding(40);
+	}
+
+	ul {
+		@include use-font-scale(p2);
+		list-style-type: disc;
+	}
+
+	ol {
+		@include use-font-scale(p2);
+		list-style-type: decimal;
+	}
+
+	li {
+		display: list-item;
+
+		margin-inline-start: lengths.margin(0);
+
+		text-align: inherit;
+
+		color: inherit;
+
+		font: inherit;
+
+		&:first-child {
+			margin-inline-start: lengths.margin(0);
+		}
+	}
+
+	pre {
+		letter-spacing: inherit;
+
+		font: inherit;
+		font-family: font-family(mono);
+
+		code {
+			display: block;
+
+			overflow-y: hidden;
+
+			margin: lengths.margin(8) lengths.margin(none);
+			padding: lengths.margin(8);
+
+			letter-spacing: inherit;
+		}
+	}
+}

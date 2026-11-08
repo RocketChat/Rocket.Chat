@@ -62,6 +62,17 @@ describe('SystemMessage', () => {
 		expect(screen.queryByText('changed room description to: &amp; test &amp;')).not.toBeInTheDocument();
 	});
 
+	it('should show a placeholder instead of failing when the message cannot be rendered', () => {
+		jest.spyOn(console, 'error').mockImplementation(() => undefined);
+		const message = { ...createBaseMessage('test'), actionLinks: [null] } as unknown as IMessage;
+
+		render(<SystemMessage message={message} showUserAvatar />, { wrapper: wrapper.build() });
+
+		expect(screen.getByText('Message_could_not_be_displayed')).toBeInTheDocument();
+		expect(screen.getByRole('listitem')).toBeInTheDocument();
+		expect(screen.getByText('changed room description to: test')).toBeInTheDocument();
+	});
+
 	it('should not inject html', () => {
 		const message = createBaseMessage('<button title="test-title">OK</button>');
 

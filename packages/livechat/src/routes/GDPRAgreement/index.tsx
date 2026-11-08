@@ -1,7 +1,7 @@
 import { route } from 'preact-router';
 import { Trans, useTranslation } from 'react-i18next';
 
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 import { Button } from '../../components/Button';
 import { ButtonGroup } from '../../components/ButtonGroup';
 import MarkdownBlock from '../../components/MarkdownBlock';

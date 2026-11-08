@@ -1,10 +1,10 @@
 import type { IOmnichannelGenericRoom, IVisitor } from '@rocket.chat/core-typings';
 import { Avatar, Box } from '@rocket.chat/fuselage';
+import { FormSkeleton } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
-import { FormSkeleton } from './FormSkeleton';
 import { UserStatus } from '../../../../components/UserStatus';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import AgentInfoDetails from '../../components/AgentInfoDetails';
@@ -50,7 +50,7 @@ const ContactField = ({ contact, room }: ContactFieldProps) => {
 			<Label>{t('Contact')}</Label>
 			<Info style={{ display: 'flex' }}>
 				<Avatar size='x40' title={fname} url={avatarUrl} />
-				<AgentInfoDetails marginInlineStart={10} name={displayName} shortName={contactIdentifier} status={<UserStatus status={status} />} />
+				<AgentInfoDetails marginInlineStart='x8' name={displayName} shortName={contactIdentifier} status={<UserStatus status={status} />} />
 			</Info>
 		</Field>
 	);

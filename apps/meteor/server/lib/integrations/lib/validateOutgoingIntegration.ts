@@ -1,11 +1,10 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IUser, INewOutgoingIntegration, IOutgoingIntegration, IUpdateOutgoingIntegration } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
-import { Match } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 
-import { compileIntegrationScript } from './compileIntegrationScript';
 import { isScriptEngineFrozen } from './validateScriptEngine';
-import { outgoingEvents } from '../../../../app/integrations/lib/outgoingEvents';
+import { validateScriptSyntax } from './validateScriptSyntax';
+import { outgoingEvents } from '../../../../lib/integrations/outgoingEvents';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
 import { hasPermissionAsync, hasAllPermissionAsync } from '../../authorization/hasPermission';
 
@@ -13,31 +12,26 @@ const scopedChannels = ['all_public_channels', 'all_private_groups', 'all_direct
 const validChannelChars = ['@', '#'];
 
 function _verifyRequiredFields(integration: INewOutgoingIntegration | IUpdateOutgoingIntegration): void {
-	if (
-		!integration.event ||
-		!Match.test(integration.event, String) ||
-		integration.event.trim() === '' ||
-		!outgoingEvents[integration.event]
-	) {
-		throw new Meteor.Error('error-invalid-event-type', 'Invalid event type', {
+	if (!integration.event || integration.event.trim() === '' || !outgoingEvents[integration.event]) {
+		throw new ClientSafeError('error-invalid-event-type', 'Invalid event type', {
 			function: 'validateOutgoing._verifyRequiredFields',
 		});
 	}
 
-	if (!integration.username || !Match.test(integration.username, String) || integration.username.trim() === '') {
-		throw new Meteor.Error('error-invalid-username', 'Invalid username', {
+	if (!integration.username || integration.username.trim() === '') {
+		throw new ClientSafeError('error-invalid-username', 'Invalid username', {
 			function: 'validateOutgoing._verifyRequiredFields',
 		});
 	}
 
 	if (outgoingEvents[integration.event].use.targetRoom && !integration.targetRoom) {
-		throw new Meteor.Error('error-invalid-targetRoom', 'Invalid Target Room', {
+		throw new ClientSafeError('error-invalid-targetRoom', 'Invalid Target Room', {
 			function: 'validateOutgoing._verifyRequiredFields',
 		});
 	}
 
-	if (!Match.test(integration.urls, [String])) {
-		throw new Meteor.Error('error-invalid-urls', 'Invalid URLs', {
+	if (!Array.isArray(integration.urls) || !integration.urls.every((url) => typeof url === 'string')) {
+		throw new ClientSafeError('error-invalid-urls', 'Invalid URLs', {
 			function: 'validateOutgoing._verifyRequiredFields',
 		});
 	}
@@ -45,7 +39,7 @@ function _verifyRequiredFields(integration: INewOutgoingIntegration | IUpdateOut
 	integration.urls = integration.urls.filter((url) => url && url.trim() !== '');
 
 	if (integration.urls.length === 0) {
-		throw new Meteor.Error('error-invalid-urls', 'Invalid URLs', {
+		throw new ClientSafeError('error-invalid-urls', 'Invalid URLs', {
 			function: 'validateOutgoing._verifyRequiredFields',
 		});
 	}
@@ -57,7 +51,7 @@ async function _verifyUserHasPermissionForChannels(userId: IUser['_id'], channel
 			if (channel === 'all_public_channels') {
 				// No special permissions needed to add integration to public channels
 			} else if (!(await hasPermissionAsync(userId, 'manage-outgoing-integrations'))) {
-				throw new Meteor.Error('error-invalid-channel', 'Invalid Channel', {
+				throw new ClientSafeError('error-invalid-channel', 'Invalid Channel', {
 					function: 'validateOutgoing._verifyUserHasPermissionForChannels',
 				});
 			}
@@ -80,7 +74,7 @@ async function _verifyUserHasPermissionForChannels(userId: IUser['_id'], channel
 			}
 
 			if (!record) {
-				throw new Meteor.Error('error-invalid-room', 'Invalid room', {
+				throw new ClientSafeError('error-invalid-room', 'Invalid room', {
 					function: 'validateOutgoing._verifyUserHasPermissionForChannels',
 				});
 			}
@@ -89,7 +83,7 @@ async function _verifyUserHasPermissionForChannels(userId: IUser['_id'], channel
 				!(await hasAllPermissionAsync(userId, ['manage-outgoing-integrations', 'manage-own-outgoing-integrations'])) &&
 				!(await Subscriptions.findOneByRoomIdAndUserId(record._id, userId, { projection: { _id: 1 } }))
 			) {
-				throw new Meteor.Error('error-invalid-channel', 'Invalid Channel', {
+				throw new ClientSafeError('error-invalid-channel', 'Invalid Channel', {
 					function: 'validateOutgoing._verifyUserHasPermissionForChannels',
 				});
 			}
@@ -112,7 +106,7 @@ export const validateOutgoingIntegration = async function (
 	integration: INewOutgoingIntegration | IUpdateOutgoingIntegration,
 	userId: IUser['_id'],
 ): Promise<IOutgoingIntegration> {
-	if (integration.channel && Match.test(integration.channel, String) && integration.channel.trim() === '') {
+	if (integration.channel && typeof integration.channel === 'string' && integration.channel.trim() === '') {
 		delete integration.channel;
 	}
 
@@ -121,8 +115,8 @@ export const validateOutgoingIntegration = async function (
 
 	let channels: string[] = [];
 	if (outgoingEvents[integration.event].use.channel) {
-		if (!Match.test(integration.channel, String)) {
-			throw new Meteor.Error('error-invalid-channel', 'Invalid Channel', {
+		if (typeof integration.channel !== 'string') {
+			throw new ClientSafeError('error-invalid-channel', 'Invalid Channel', {
 				function: 'validateOutgoing',
 			});
 		} else {
@@ -130,14 +124,14 @@ export const validateOutgoingIntegration = async function (
 
 			for (const channel of channels) {
 				if (!validChannelChars.includes(channel[0]) && !scopedChannels.includes(channel.toLowerCase())) {
-					throw new Meteor.Error('error-invalid-channel-start-with-chars', 'Invalid channel. Start with @ or #', {
+					throw new ClientSafeError('error-invalid-channel-start-with-chars', 'Invalid channel. Start with @ or #', {
 						function: 'validateOutgoing',
 					});
 				}
 			}
 		}
 	} else if (!(await hasPermissionAsync(userId, 'manage-outgoing-integrations'))) {
-		throw new Meteor.Error('error-invalid-permissions', 'Invalid permission for required Integration creation.', {
+		throw new ClientSafeError('error-invalid-permissions', 'Invalid permission for required Integration creation.', {
 			function: 'validateOutgoing',
 		});
 	}
@@ -145,7 +139,9 @@ export const validateOutgoingIntegration = async function (
 	const user = await Users.findOne({ username: integration.username });
 
 	if (!user) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user (did you delete the `rocket.cat` user?)', { function: 'validateOutgoing' });
+		throw new ClientSafeError('error-invalid-user', 'Invalid user (did you delete the `rocket.cat` user?)', {
+			function: 'validateOutgoing',
+		});
 	}
 
 	const integrationData: IOutgoingIntegration = {
@@ -159,8 +155,8 @@ export const validateOutgoingIntegration = async function (
 	};
 
 	if (outgoingEvents[integration.event].use.triggerWords && integration.triggerWords) {
-		if (!Match.test(integration.triggerWords, [String])) {
-			throw new Meteor.Error('error-invalid-triggerWords', 'Invalid triggerWords', {
+		if (!Array.isArray(integration.triggerWords) || !integration.triggerWords.every((word) => typeof word === 'string')) {
+			throw new ClientSafeError('error-invalid-triggerWords', 'Invalid triggerWords', {
 				function: 'validateOutgoing',
 			});
 		}
@@ -181,7 +177,9 @@ export const validateOutgoingIntegration = async function (
 		integration.script &&
 		integration.script.trim() !== ''
 	) {
-		const { script, error } = compileIntegrationScript(integration.script, { transpile: !skipTranspile });
+		// isolated-vm embeds modern V8 and runs the script natively, so no
+		// transpilation is needed. Syntax is still validated at save time.
+		const { script, error } = validateScriptSyntax(integration.script);
 		integrationData.scriptCompiled = script;
 		integrationData.scriptError = error;
 	}

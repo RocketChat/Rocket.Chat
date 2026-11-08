@@ -24,8 +24,11 @@ if (components) {
 		}
 		const schema = components[key] as { properties?: Record<string, unknown> };
 		const props = schema?.properties;
-		const typeEnum = (props?.type as { enum?: unknown[] } | undefined)?.enum;
-		const isFileBranch = Array.isArray(typeEnum) && typeEnum.length === 1 && typeEnum[0] === 'file';
+		// typia writes single valued types as `enum: ['file']` for OpenAPI 3.0 and as `const: 'file'`
+		// for 3.1, so both spellings have to be recognized
+		const typeSchema = props?.type as { enum?: unknown[]; const?: unknown } | undefined;
+		const typeValues = typeSchema?.enum ?? (typeSchema && 'const' in typeSchema ? [typeSchema.const] : undefined);
+		const isFileBranch = Array.isArray(typeValues) && typeValues.length === 1 && typeValues[0] === 'file';
 		const hasMediaUrl = !!props && ('image_url' in props || 'video_url' in props || 'audio_url' in props);
 		if (isFileBranch && !hasMediaUrl) {
 			(schema as Record<string, unknown>).additionalProperties = false;

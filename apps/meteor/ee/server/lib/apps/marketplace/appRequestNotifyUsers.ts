@@ -81,7 +81,7 @@ export const appRequestNotififyForUsers = async (
 		requestsCollection.push(notifyBatchOfUsers(appName, learnMore, data.data).catch(notifyBatchOfUsersError));
 
 		// Batch requests
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		// oxlint-disable-next-line @typescript-eslint/no-unused-vars
 		for await (const _i of Array.from({ length: loops })) {
 			pagination.offset += pagination.limit;
 

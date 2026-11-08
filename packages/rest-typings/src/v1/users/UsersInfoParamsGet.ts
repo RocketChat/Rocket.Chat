@@ -1,9 +1,8 @@
 import { ajvQuery } from '../Ajv';
 
 export type UsersInfoParamsGet = (
-	{ userId: string } | { username: string } | { importId: string } | { email: string } | { freeSwitchExtension: string }
+	{ userId: string } | { username: string } | { importId: string } | { email: string } | { sipExtension: string }
 ) & {
-	fields?: string;
 	includeUserRooms?: string;
 };
 
@@ -21,11 +20,6 @@ const UsersInfoParamsGetSchema = {
 					type: 'string',
 					description: 'Set to "true" to include the rooms the user belongs to in the response.',
 				},
-				fields: {
-					type: 'string',
-					nullable: true,
-					description: 'JSON string describing which fields to include or exclude from the response.',
-				},
 			},
 			required: ['userId'],
 			additionalProperties: false,
@@ -41,11 +35,6 @@ const UsersInfoParamsGetSchema = {
 				includeUserRooms: {
 					type: 'string',
 					description: 'Set to "true" to include the rooms the user belongs to in the response.',
-				},
-				fields: {
-					type: 'string',
-					nullable: true,
-					description: 'JSON string describing which fields to include or exclude from the response.',
 				},
 			},
 			required: ['username'],
@@ -63,11 +52,6 @@ const UsersInfoParamsGetSchema = {
 					type: 'string',
 					description: 'Set to "true" to include the rooms the user belongs to in the response.',
 				},
-				fields: {
-					type: 'string',
-					nullable: true,
-					description: 'JSON string describing which fields to include or exclude from the response.',
-				},
 			},
 			required: ['importId'],
 			additionalProperties: false,
@@ -84,34 +68,24 @@ const UsersInfoParamsGetSchema = {
 					type: 'string',
 					description: 'Set to "true" to include the rooms the user belongs to in the response.',
 				},
-				fields: {
-					type: 'string',
-					nullable: true,
-					description: 'JSON string describing which fields to include or exclude from the response.',
-				},
 			},
 			required: ['email'],
 			additionalProperties: false,
 		},
 		{
 			type: 'object',
-			description: 'Get information about a user by their FreeSwitch extension.',
+			description: 'Get information about a user by their SIP extension.',
 			properties: {
-				freeSwitchExtension: {
+				sipExtension: {
 					type: 'string',
-					description: 'The FreeSwitch extension.',
+					description: 'The SIP extension.',
 				},
 				includeUserRooms: {
 					type: 'string',
 					description: 'Set to "true" to include the rooms the user belongs to in the response.',
 				},
-				fields: {
-					type: 'string',
-					nullable: true,
-					description: 'JSON string describing which fields to include or exclude from the response.',
-				},
 			},
-			required: ['freeSwitchExtension'],
+			required: ['sipExtension'],
 			additionalProperties: false,
 		},
 	],

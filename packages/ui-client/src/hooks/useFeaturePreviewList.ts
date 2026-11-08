@@ -31,14 +31,14 @@ export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 	{
 		name: 'aiSearch',
 		i18n: 'Intelligent_Search',
-		description: 'Intelligent_Search_upsell_description',
+		description: 'Intelligent_Search_description',
 		group: 'AI',
 		value: false,
 		enabled: true,
 	},
 	{
 		name: 'roomToolboxLayout',
-		i18n: 'Room_Toolbox_Layout',
+		i18n: 'Room_toolbox_layout',
 		description: 'Room_Toolbox_Layout_description',
 		group: 'Room',
 		value: false,

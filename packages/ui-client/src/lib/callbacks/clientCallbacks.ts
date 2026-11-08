@@ -8,7 +8,6 @@ import { Callbacks } from './Callbacks';
  *
  * TODO: move those to event-based systems
  */
-// eslint-disable-next-line @typescript-eslint/naming-convention
 interface EventLikeCallbackSignatures {
 	afterCreateChannel: (owner: IUser, room: IRoom) => void;
 	afterSaveMessage: (message: IMessage, params: { room: IRoom; user: IUser; roomUpdater?: Updater<IRoom> }) => void;

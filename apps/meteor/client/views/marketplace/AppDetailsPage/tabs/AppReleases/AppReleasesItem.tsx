@@ -1,4 +1,4 @@
-import { AccordionItem, Box } from '@rocket.chat/fuselage';
+import { AccordionItem, Box, Text } from '@rocket.chat/fuselage';
 import { useTimeAgo } from '@rocket.chat/ui-client';
 import DOMPurify from 'dompurify';
 import { useTranslation } from 'react-i18next';
@@ -27,9 +27,9 @@ const AppReleasesItem = ({ release, ...props }: ReleaseItemProps) => {
 			<Box is='h4' fontScale='p1b' color='default' marginInlineEnd={24}>
 				{release.version}
 			</Box>
-			<Box is='p' fontScale='p1' color='hint'>
+			<Text is='p' fontScale='p1' color='hint'>
 				{formatDate(release.createdDate)}
-			</Box>
+			</Text>
 		</Box>
 	);
 
@@ -38,7 +38,7 @@ const AppReleasesItem = ({ release, ...props }: ReleaseItemProps) => {
 			{release.detailedChangelog?.rendered ? (
 				<Box dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(release.detailedChangelog?.rendered, purifyOptions) }} color='default' />
 			) : (
-				<Box color='default'>{t('No_release_information_provided')}</Box>
+				<Text color='default'>{t('No_release_information_provided')}</Text>
 			)}
 		</AccordionItem>
 	);

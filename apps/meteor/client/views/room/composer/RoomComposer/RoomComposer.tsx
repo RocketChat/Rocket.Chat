@@ -6,8 +6,16 @@ import type { AllHTMLAttributes } from 'react';
 const customStyle = css`
 	&.rc-message-box {
 		position: relative;
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-end;
 		width: 100%;
+		max-height: 100%;
 		padding: 0 24px;
+
+		& > [role='group'] {
+			flex-shrink: 0;
+		}
 
 		&.embedded {
 			min-height: 36px;

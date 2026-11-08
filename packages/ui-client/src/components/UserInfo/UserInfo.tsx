@@ -1,5 +1,5 @@
 import type { IUser, Serialized } from '@rocket.chat/core-typings';
-import { Box, Margins, Tag } from '@rocket.chat/fuselage';
+import { Box, Tag } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 import { memo, useContext, useId } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -26,11 +26,10 @@ type UserInfoDataProps = Serialized<
 		| 'lastLogin'
 		| 'avatarETag'
 		| 'utcOffset'
-		| 'phone'
 		| 'createdAt'
 		| 'canViewAllInfo'
 		| 'customFields'
-		| 'freeSwitchExtension'
+		| 'sipExtension'
 		| 'abacAttributes'
 	>
 >;
@@ -38,10 +37,12 @@ type UserInfoDataProps = Serialized<
 export type UserInfoProps = UserInfoDataProps & {
 	status: ReactNode;
 	customStatus?: ReactNode;
+	phoneNumbers?: ReactNode;
 	email?: string;
 	verified?: boolean;
 	actions: ReactNode;
 	roles: ReactNode[];
+	roomRoles?: ReactNode[];
 	reason?: string;
 	invitationDate?: string;
 };
@@ -54,8 +55,9 @@ const UserInfo = ({
 	bio,
 	avatarETag,
 	roles,
+	roomRoles,
 	utcOffset,
-	phone,
+	phoneNumbers,
 	email,
 	verified,
 	createdAt,
@@ -65,7 +67,7 @@ const UserInfo = ({
 	canViewAllInfo,
 	actions,
 	reason,
-	freeSwitchExtension,
+	sipExtension,
 	abacAttributes,
 	invitationDate,
 	...props
@@ -107,7 +109,7 @@ const UserInfo = ({
 					{reason && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Reason_for_joining')}</InfoPanelLabel>
-							<UserInfoCopyableText text={reason} label={t('Reason_for_joining')} />
+							<UserInfoCopyableText text={reason} label={t('Reason_for_joining')} withTruncatedText={false} />
 						</InfoPanelField>
 					)}
 
@@ -120,8 +122,15 @@ const UserInfo = ({
 
 					{roles?.length !== 0 && (
 						<InfoPanelField>
-							<InfoPanelLabel>{t('Roles')}</InfoPanelLabel>
+							<InfoPanelLabel>{t('Workspace_roles')}</InfoPanelLabel>
 							<UserCardRoles>{roles}</UserCardRoles>
+						</InfoPanelField>
+					)}
+
+					{roomRoles && roomRoles.length !== 0 && (
+						<InfoPanelField>
+							<InfoPanelLabel>{t('Room_roles')}</InfoPanelLabel>
+							<UserCardRoles>{roomRoles}</UserCardRoles>
 						</InfoPanelField>
 					)}
 
@@ -150,14 +159,10 @@ const UserInfo = ({
 						</InfoPanelField>
 					)}
 
-					{phone && (
-						<InfoPanelField>
-							<InfoPanelLabel>{t('Phone')}</InfoPanelLabel>
-							<UserInfoCopyableText text={phone} label={t('Phone')}>
-								<Box is='a' withTruncatedText href={`tel:${phone}`}>
-									{phone}
-								</Box>
-							</UserInfoCopyableText>
+					{phoneNumbers && (
+						<InfoPanelField is='dl'>
+							<InfoPanelLabel is='dt'>{t('Phone_Numbers')}</InfoPanelLabel>
+							<InfoPanelText is='dd'>{phoneNumbers}</InfoPanelText>
 						</InfoPanelField>
 					)}
 
@@ -165,20 +170,20 @@ const UserInfo = ({
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Email')}</InfoPanelLabel>
 							<UserInfoCopyableText text={email} label={t('Email')}>
-								<Box is='a' withTruncatedText href={`mailto:${email}`}>
-									{email}
-								</Box>
-								<Margins inline={4}>
+								<Box display='flex' alignItems='center' gap={4} paddingInlineEnd={4} minWidth={0}>
+									<Box is='a' withTruncatedText href={`mailto:${email}`}>
+										{email}
+									</Box>
 									<Tag>{verified ? t('Verified') : t('Not_verified')}</Tag>
-								</Margins>
+								</Box>
 							</UserInfoCopyableText>
 						</InfoPanelField>
 					)}
 
-					{freeSwitchExtension && (
+					{sipExtension && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Voice_call_extension')}</InfoPanelLabel>
-							<UserInfoCopyableText text={freeSwitchExtension} label={t('Voice_call_extension')} />
+							<UserInfoCopyableText text={sipExtension} label={t('Voice_call_extension')} />
 						</InfoPanelField>
 					)}
 

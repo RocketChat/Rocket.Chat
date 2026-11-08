@@ -1,4 +1,4 @@
-import { RandomGenerator } from './RandomGenerator';
+import { RandomGenerator } from './RandomGenerator.js';
 
 // Alea PRNG, which is not cryptographically strong
 // see http://baagoe.org/en/wiki/Better_random_numbers_for_javascript

@@ -10,7 +10,14 @@ import {
 	FieldLabel,
 	FieldRow,
 } from '@rocket.chat/fuselage';
-import { ContextualbarFooter, ContextualbarScrollableContent, UserCardRole, GenericNoResults } from '@rocket.chat/ui-client';
+import {
+	ContextualbarFooter,
+	ContextualbarScrollableContent,
+	UserCardRole,
+	GenericNoResults,
+	UserCardRoles,
+	FormSkeleton,
+} from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
@@ -18,7 +25,6 @@ import { useTranslation } from 'react-i18next';
 
 import UserContextFooter from './UserContextFooter';
 import { normalizeUsername } from '../../../../../lib/utils/normalizeUsername';
-import { FormSkeleton } from '../../../../components/Skeleton';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import ReportReason from '../helpers/ReportReason';
 import UserColumn from '../helpers/UserColumn';
@@ -85,10 +91,12 @@ const UserReportInfo = ({ userId }: UserReportInfoProps) => {
 								<Field>{userProfile}</Field>
 								<Field>
 									<FieldLabel>{t('Roles')}</FieldLabel>
-									<FieldRow justifyContent='flex-start' spacing={1}>
-										{report.user.roles.map((role, index) => (
-											<UserCardRole key={index}>{role}</UserCardRole>
-										))}
+									<FieldRow>
+										<UserCardRoles>
+											{report.user.roles.map((role, index) => (
+												<UserCardRole key={index}>{role}</UserCardRole>
+											))}
+										</UserCardRoles>
 									</FieldRow>
 								</Field>
 								<Field>
@@ -101,9 +109,11 @@ const UserReportInfo = ({ userId }: UserReportInfoProps) => {
 								</Field>
 							</FieldGroup>
 						) : (
-							<Callout marginBlockStart={8} type='warning' icon='warning'>
-								{t('Moderation_User_deleted_warning')}
-							</Callout>
+							<Box paddingBlockStart={8}>
+								<Callout type='warning' icon='warning'>
+									{t('Moderation_User_deleted_warning')}
+								</Callout>
+							</Box>
 						)}
 						{report.reports.map((report, ind) => (
 							<ReportReason key={ind} ind={ind + 1} uinfo={report.reportedBy?.username} msg={report.description} ts={new Date(report.ts)} />

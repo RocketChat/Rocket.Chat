@@ -36,10 +36,12 @@ const AwaitingConfirmationForm = ({
 						one in the email.
 					</Trans>
 				</Box>
-				<Label display='block'>
-					<>{t('form.awaitConfirmationForm.content.securityCode')}</>
-					<Box padding='12px' width='full' fontScale='p2b' lineHeight='20px' backgroundColor='tint' elevation='1'>
-						{securityCode}
+				<Label>
+					<Box flexGrow={1}>
+						<>{t('form.awaitConfirmationForm.content.securityCode')}</>
+						<Box padding='12px' width='full' fontScale='p2b' lineHeight='20px' backgroundColor='tint' elevation='1'>
+							{securityCode}
+						</Box>
 					</Box>
 				</Label>
 			</FormContainer>

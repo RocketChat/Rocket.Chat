@@ -10,6 +10,8 @@ export type RadioButtonElementProps = BlockProps<UiKit.RadioButtonElement>;
 const RadioButtonElement = ({ block, context, surfaceRenderer }: RadioButtonElementProps) => {
 	const [{ loading, value }, action] = useUiKitState(block, context);
 	const { options } = block;
+	// Focus lands on the checked option, as with arrow-key navigation, so a Space press does not change the answer.
+	const focusedValue = options.some((option) => option.value === value) ? value : options[0]?.value;
 
 	return (
 		<Box>
@@ -18,7 +20,14 @@ const RadioButtonElement = ({ block, context, surfaceRenderer }: RadioButtonElem
 
 				return (
 					<Box key={option.value} display='flex' alignItems='flex-start' paddingBlock={4}>
-						<RadioButton id={id} disabled={loading} checked={value === option.value} value={option.value} onChange={action} />
+						<RadioButton
+							id={id}
+							autoFocus={block.focus_on_load && option.value === focusedValue}
+							disabled={loading}
+							checked={value === option.value}
+							value={option.value}
+							onChange={action}
+						/>
 						<OptionLabel htmlFor={id} option={option} surfaceRenderer={surfaceRenderer} />
 					</Box>
 				);

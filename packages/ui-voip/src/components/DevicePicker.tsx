@@ -33,7 +33,14 @@ const DevicePicker = ({ secondary = false }: DevicePickerProps) => {
 				title={t('Device_settings_lowercase')}
 				placement='top-end'
 				beforeOpen={() => revealDeviceLabels(['audioinput', 'audiooutput'], devices)}
-				button={<DeviceMenuButton secondary={secondary} tiny={!secondary} label={t('Device_settings_lowercase')} menuIcon='customize' />}
+				button={
+					<DeviceMenuButton
+						secondary={secondary}
+						size={secondary ? 'medium' : 'tiny'}
+						label={t('Device_settings_lowercase')}
+						menuIcon='customize'
+					/>
+				}
 			/>
 		</DeviceSelectionProvider>
 	);

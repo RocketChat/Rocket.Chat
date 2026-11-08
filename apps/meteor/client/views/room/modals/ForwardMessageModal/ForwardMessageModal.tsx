@@ -168,6 +168,14 @@ const ForwardMessageModal = ({ onClose, permalink = '', message, messages }: For
 						loading={sendMessageMutation.isPending}
 						onClick={() => sendMessageMutation.mutate()}
 						primary
+					<Button onClick={handleCopy} disabled={hasCopied}>
+						{hasCopied ? t('Copied') : t('Copy_Link')}
+					</Button>
+					<Button
+						disabled={!rooms.length}
+						loading={sendMessageMutation.isPending}
+						onClick={() => sendMessageMutation.mutate()}
+						variant='primary'
 					>
 						{t('Forward')}
 					</Button>

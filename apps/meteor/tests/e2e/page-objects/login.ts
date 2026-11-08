@@ -54,8 +54,8 @@ export class LoginPage {
 					window.localStorage.setItem(name, value);
 				});
 
-				// The storage poller skips a token it already saw, and every login of this user reuses the same token.
-				require('meteor/accounts-base').Accounts.loginWithToken(loginToken);
+				// The page already loaded without a session, so the injected token has to be logged in explicitly.
+				return (window as any).__rocketChatLoginWithToken(loginToken);
 			},
 			{ items: localStorageItems, loginToken: userState.data.loginToken },
 		);

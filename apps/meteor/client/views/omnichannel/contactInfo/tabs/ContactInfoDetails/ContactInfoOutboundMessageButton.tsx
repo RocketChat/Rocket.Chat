@@ -24,7 +24,7 @@ const ContactInfoOutboundMessageButton = ({ defaultValues, disabled, title }: Co
 		<IconButton
 			disabled={disabled}
 			onClick={() => outboundMessageModal.open(defaultValues)}
-			tiny
+			size='tiny'
 			icon='send'
 			title={`${t('Outbound_message')} ${title ? `(${title})` : ''}`}
 		/>

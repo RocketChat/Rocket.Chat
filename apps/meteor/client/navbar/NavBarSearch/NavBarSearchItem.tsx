@@ -1,6 +1,8 @@
 import { SidebarItem, SidebarItemAvatarWrapper, SidebarItemTitle } from '@rocket.chat/fuselage';
 import type { HTMLAttributes, ReactNode } from 'react';
 
+import { useSearchOptionProps } from './hooks/useSearchActiveOption';
+
 export type NavBarSearchItemProps = {
 	title: string;
 	avatar: ReactNode;
@@ -14,8 +16,10 @@ export type NavBarSearchItemProps = {
 } & Omit<HTMLAttributes<HTMLAnchorElement>, 'is'>;
 
 const NavBarSearchItem = ({ icon, title, avatar, actions, unread, badges, ...props }: NavBarSearchItemProps) => {
+	const optionProps = useSearchOptionProps(props.id);
+
 	return (
-		<SidebarItem role='option' {...props}>
+		<SidebarItem role='option' {...props} {...optionProps}>
 			{avatar && <SidebarItemAvatarWrapper>{avatar}</SidebarItemAvatarWrapper>}
 			{icon && icon}
 			<SidebarItemTitle unread={unread}>{title}</SidebarItemTitle>

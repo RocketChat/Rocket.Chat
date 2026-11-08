@@ -211,7 +211,7 @@ const EditTrigger = ({ triggerData, onClose }: { triggerData?: Serialized<ILivec
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button form={formId} type='submit' primary loading={isSubmitting}>
+					<Button form={formId} type='submit' variant='primary' loading={isSubmitting}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

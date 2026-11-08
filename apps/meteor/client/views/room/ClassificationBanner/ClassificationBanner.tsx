@@ -1,30 +1,20 @@
-import { Box } from '@rocket.chat/fuselage';
+import { Box, Text } from '@rocket.chat/fuselage';
 import { useSetting } from '@rocket.chat/ui-contexts';
-import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { buildClassificationBanner, parseClassificationBannersConfig } from './lib/engine';
-import { useIsABACManagedRoom } from '../../admin/ABAC/hooks/useIsABACManagedRoom';
 import { useRoom } from '../contexts/RoomContext';
+import { useRoomAbacInfo } from '../hooks/useRoomAbacInfo';
 
 const ClassificationBanner = () => {
 	const { t } = useTranslation();
 	const room = useRoom();
-	const isABACRoom = useIsABACManagedRoom(room);
 	const bannersEnabled = useSetting('ABAC_Classification_Banners_Enabled', false);
-	const rawConfig = useSetting('ABAC_Classification_Banners_Config', '');
-	const enabled = bannersEnabled && isABACRoom;
+	const { data: banner } = useRoomAbacInfo(room._id, room.abacAttributes, {
+		enabled: bannersEnabled,
+		select: (data) => data.classificationBanner,
+	});
 
-	const banner = useMemo(() => {
-		if (!enabled) {
-			return null;
-		}
-
-		const config = parseClassificationBannersConfig(rawConfig);
-		return config?.enabled ? buildClassificationBanner(config, room.abacAttributes ?? []) : null;
-	}, [enabled, rawConfig, room.abacAttributes]);
-
-	if (!banner) {
+	if (!bannersEnabled || !banner) {
 		return null;
 	}
 
@@ -32,7 +22,7 @@ const ClassificationBanner = () => {
 		<Box
 			role='region'
 			aria-live='polite'
-			aria-label={t('ABAC_Room_Attributes')}
+			aria-label={t('ABAC_Classification_Banner')}
 			{...(banner.monospace && { fontFamily: 'mono' })}
 			backgroundColor={banner.backgroundColor}
 			color={banner.color}
@@ -43,9 +33,9 @@ const ClassificationBanner = () => {
 			alignItems='center'
 			justifyContent='center'
 		>
-			<Box is='span' withTruncatedText>
+			<Text is='span' truncate>
 				{banner.text}
-			</Box>
+			</Text>
 		</Box>
 	);
 };

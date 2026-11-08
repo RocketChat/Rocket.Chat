@@ -1,3 +1,4 @@
+import { isClientSafeError } from '@rocket.chat/core-services';
 import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import { LivechatInquiry, LivechatDepartment, Users, LivechatRooms } from '@rocket.chat/models';
 import {
@@ -11,7 +12,6 @@ import {
 	isPOSTLivechatInquiriesReturnAsInquiry,
 	POSTLivechatInquiriesReturnAsInquirySuccessResponse,
 } from '@rocket.chat/rest-typings';
-import { Meteor } from 'meteor/meteor';
 
 import { API } from '../..';
 import { findInquiries, findOneInquiryByRoomId } from './lib/inquiries';
@@ -143,7 +143,7 @@ const livechatInquiriesEndpoints = API.v1.post(
 
 			return API.v1.success({ result });
 		} catch (error) {
-			if (error instanceof Meteor.Error && typeof error.error === 'string') {
+			if (isClientSafeError(error) && typeof error.error === 'string') {
 				return API.v1.failure(error.error as string);
 			}
 
@@ -155,6 +155,6 @@ const livechatInquiriesEndpoints = API.v1.post(
 type LivechatInquiriesEndpoints = ExtractRoutesFromAPI<typeof livechatInquiriesEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
 	interface Endpoints extends LivechatInquiriesEndpoints {}
 }

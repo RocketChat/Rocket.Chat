@@ -25,6 +25,9 @@ export const extractUrlsFromMessageAST = (md?: Root | Root[number] | Root[number
 		if (node.value !== undefined) {
 			walk(node.value);
 		}
+		if (node.nested !== undefined) {
+			walk(node.nested);
+		}
 	};
 
 	walk(md);
