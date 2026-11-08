@@ -1,5 +1,6 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import type { ContextType, ReactNode } from 'react';
 import { act, useState } from 'react';
 import type { ListRange } from 'react-virtuoso';
@@ -92,10 +93,22 @@ const renderPicker = () => {
 
 const scrollTo = (range: ListRange) => act(() => mockVirtuoso.rangeChanged?.(range));
 
-// the picker sits in a dropdown that jsdom cannot position, which keeps every tab out of the accessibility tree
+// the picker sits in a dropdown that jsdom cannot position, which keeps every tab out of the accessibility
+// tree and leaves it with no accessible name, so the tabs are matched on their label attribute instead
+const categoryTabs = () => screen.getAllByRole('tab', { hidden: true });
+
+const categoryTab = (label: string) => {
+	const tab = categoryTabs().find((candidate) => candidate.getAttribute('aria-label') === label);
+
+	if (!tab) {
+		throw new Error(`no category tab labelled ${label}`);
+	}
+
+	return tab;
+};
+
 const selectedCategory = () =>
-	screen
-		.getAllByRole('tab', { hidden: true })
+	categoryTabs()
 		.find((tab) => tab.getAttribute('aria-selected') === 'true')
 		?.getAttribute('aria-label');
 
@@ -120,5 +133,13 @@ describe('EmojiPicker', () => {
 		scrollTo({ startIndex: 5, endIndex: 20 });
 
 		expect(selectedCategory()).toBe('Frequently_Used');
+	});
+
+	it('should activate a category picked from the header even when the list cannot scroll', async () => {
+		renderPicker();
+
+		await userEvent.click(categoryTab('Custom'));
+
+		expect(selectedCategory()).toBe('Custom');
 	});
 });

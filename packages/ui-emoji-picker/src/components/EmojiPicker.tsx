@@ -185,6 +185,8 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji, onAddCustomEmoji }: Emoj
 			return;
 		}
 
+		// a list short enough not to scroll reports no new range, so the click alone has to select the tab
+		setCurrentCategory(category);
 		virtuosoRef.current?.scrollToIndex({ index: index > 0 ? index + 1 : 0 });
 	};
 
