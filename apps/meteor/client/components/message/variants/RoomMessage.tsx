@@ -5,7 +5,7 @@ import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
 import { useUserId, useUserCard } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, KeyboardEvent } from 'react';
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { MessageActionContext } from '../../../lib/MessageAction';
@@ -16,6 +16,7 @@ import {
 	useIsSelectedMessage,
 	useCountSelected,
 } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
+import { useRoom } from '../../../views/room/contexts/RoomContext';
 import Emoji from '../../Emoji';
 import IgnoredContent from '../IgnoredContent';
 import MessageHeader from '../MessageHeader';
@@ -80,18 +81,21 @@ const RoomMessage = ({
 	const ignored = (ignoredUser || message.ignored) && !displayIgnoredMessage;
 	const { openUserCard, openUserInfo } = useUserCard();
 
+	const room = useRoom();
 	const isE2E = isE2EEMessage(message);
+	const isABAC = Boolean(room?.abacAttributes);
+	const isRestricted = isE2E || isABAC;
 	const selecting = useIsSelecting();
 
 	const toggleSelected = useToggleSelect(message._id);
-	const selected = useIsSelectedMessage(message._id, isE2E);
+	const selected = useIsSelectedMessage(message._id, isRestricted);
 
 	const { enabled: readReceiptEnabled } = useMessageListReadReceipts();
 
 	useCountSelected();
 
 	const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-		if (!selecting || isE2E) return;
+		if (!selecting || isRestricted) return;
 
 		if (!(e.code === 'Space' || e.code === 'Enter')) return;
 
@@ -101,6 +105,16 @@ const RoomMessage = ({
 
 	const checkboxLabel = getCheckboxLabel(message, t);
 
+	const restrictionTitle = useMemo(() => {
+		if (isE2E) {
+			return t('Action_not_available_encrypted_content', { action: t('Forward_message') });
+		}
+		if (isABAC) {
+			return t('Not_available_for_ABAC_enabled_rooms');
+		}
+		return undefined;
+	}, [isE2E, isABAC, t]);
+
 	return (
 		<Message
 			id={message._id}
@@ -108,7 +122,7 @@ const RoomMessage = ({
 			tabIndex={0}
 			aria-roledescription={t('message')}
 			aria-labelledby={getAriaLabelledBy({ readReceiptEnabled, messageId: message._id, sequential })}
-			onClick={selecting && !isE2E ? toggleSelected : undefined}
+			onClick={selecting && !isRestricted ? toggleSelected : undefined}
 			onKeyDown={handleKeyDown}
 			isSelected={selected}
 			isEditing={editing}
@@ -140,9 +154,9 @@ const RoomMessage = ({
 				{selecting && (
 					<CheckBox
 						checked={selected}
-						onChange={isE2E ? undefined : toggleSelected}
-						disabled={isE2E}
-						title={isE2E ? t('Action_not_available_encrypted_content', { action: t('Forward_message') }) : undefined}
+						onChange={isRestricted ? undefined : toggleSelected}
+						disabled={isRestricted}
+						title={restrictionTitle}
 						aria-label={checkboxLabel}
 					/>
 				)}

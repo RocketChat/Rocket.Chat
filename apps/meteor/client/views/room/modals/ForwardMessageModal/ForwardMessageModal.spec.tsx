@@ -99,4 +99,34 @@ describe('ForwardMessageModal', () => {
 		expect(screen.getByText('Single message content')).toBeInTheDocument();
 		expect(screen.getByRole('button', { name: 'Copy link' })).toBeInTheDocument();
 	});
+
+	it('should keep modal open showing only failed messages on partial failure', async () => {
+		const msg1 = createMockMessage('m1', 'First message', 1000);
+		const msg2 = createMockMessage('m2', 'Second message', 2000);
+		const onClose = jest.fn();
+
+		postMessageEndpointMock.mockResolvedValueOnce({ success: true }).mockRejectedValueOnce(new Error('Network error'));
+
+		render(<ForwardMessageModal messages={[msg1, msg2]} onClose={onClose} />, {
+			wrapper: appRoot,
+		});
+
+		const selectRoomBtn = screen.getByTestId('mock-select-room');
+		await userEvent.click(selectRoomBtn);
+
+		const forwardButton = screen.getByRole('button', { name: 'Forward' });
+		await waitFor(() => {
+			expect(forwardButton).not.toBeDisabled();
+		});
+
+		await userEvent.click(forwardButton);
+
+		await waitFor(() => {
+			expect(postMessageEndpointMock).toHaveBeenCalledTimes(2);
+		});
+
+		expect(onClose).not.toHaveBeenCalled();
+		expect(screen.queryByText('First message')).not.toBeInTheDocument();
+		expect(screen.getByText('Second message')).toBeInTheDocument();
+	});
 });

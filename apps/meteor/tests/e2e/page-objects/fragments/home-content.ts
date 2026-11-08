@@ -187,12 +187,8 @@ export class HomeContent {
 		await this.page.locator('role=button[name="Forward message"]').click();
 
 		const footerForward = this.page.locator('footer').getByRole('button', { name: 'Forward', exact: true });
-		try {
-			await footerForward.waitFor({ state: 'visible', timeout: 3000 });
-			await footerForward.click();
-		} catch {
-			// Footer might not be visible if modal opens directly
-		}
+		await footerForward.waitFor({ state: 'visible' });
+		await footerForward.click();
 
 		await this.page.getByRole('textbox', { name: 'Person or channel', exact: true }).click();
 		await this.page.keyboard.type(chatName);

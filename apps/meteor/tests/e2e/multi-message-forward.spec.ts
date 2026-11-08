@@ -3,7 +3,7 @@ import type { Page } from '@playwright/test';
 
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { createTargetChannel, deleteChannel } from './utils';
+import { createTargetChannel, createTargetChannelAndReturnFullRoom, deleteChannel, sendMessage } from './utils';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -12,6 +12,7 @@ const uniqueMessage = (): string => `msg-${faker.string.uuid()}`;
 
 const dismissModals = async (page: Page) => {
 	const starterModal = page.getByRole('dialog', { name: 'Starter plan active' });
+	await starterModal.waitFor({ state: 'visible', timeout: 3000 }).catch(() => {});
 	if (await starterModal.isVisible()) {
 		await starterModal.getByRole('button', { name: 'Close' }).click();
 		await expect(starterModal).not.toBeVisible();
@@ -21,10 +22,13 @@ const dismissModals = async (page: Page) => {
 test.describe('multi-message-forward', () => {
 	let poHomeChannel: HomeChannel;
 	let sourceChannel: string;
+	let sourceRoomId: string;
 	let targetChannel: string;
 
 	test.beforeAll(async ({ api }) => {
-		sourceChannel = await createTargetChannel(api);
+		const source = await createTargetChannelAndReturnFullRoom(api);
+		sourceChannel = source.channel.name as string;
+		sourceRoomId = source.channel._id;
 		targetChannel = await createTargetChannel(api);
 	});
 
@@ -38,13 +42,12 @@ test.describe('multi-message-forward', () => {
 		await Promise.all([deleteChannel(api, sourceChannel), deleteChannel(api, targetChannel)]);
 	});
 
-	test('should enter selection mode and forward multiple messages to another channel', async ({ page }) => {
-		await dismissModals(page);
+	test('should enter selection mode and forward multiple messages to another channel', async ({ api, page }) => {
 		const msg1 = uniqueMessage();
 		const msg2 = uniqueMessage();
 
-		await poHomeChannel.content.sendMessage(msg1);
-		await poHomeChannel.content.sendMessage(msg2);
+		await sendMessage(api, sourceRoomId, msg1);
+		await sendMessage(api, sourceRoomId, msg2);
 
 		// Hover first message and click Forward
 		await poHomeChannel.content.getMessageByText(msg1).hover();
@@ -87,10 +90,9 @@ test.describe('multi-message-forward', () => {
 		await expect(page.getByText('messages selected')).not.toBeVisible();
 	});
 
-	test('should exit selection mode when Cancel is clicked', async ({ page }) => {
-		await dismissModals(page);
+	test('should exit selection mode when Cancel is clicked', async ({ api, page }) => {
 		const msg = uniqueMessage();
-		await poHomeChannel.content.sendMessage(msg);
+		await sendMessage(api, sourceRoomId, msg);
 
 		await poHomeChannel.content.getMessageByText(msg).hover();
 		await page.locator('role=button[name="Forward message"]').click();
