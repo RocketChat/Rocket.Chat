@@ -57,3 +57,48 @@ it('confirms nothing for a visitor', async () => {
 
 	expect(mockConfirmTemporaryFile).not.toHaveBeenCalled();
 });
+
+it('confirms the files of file inputs nested in container, layout and conditional blocks', async () => {
+	const blocks = [
+		{ type: 'container', child_blocks: [fileInput({ actionId: 'one' })] },
+		{ type: 'layout', rows: [{ items: [null, { block: fileInput({ actionId: 'two' }) }] }] },
+		{ type: 'conditional', render: [{ type: 'container', child_blocks: [fileInput({ actionId: 'three' })] }] },
+	];
+
+	await confirmViewFiles({ blocks, state: { block: { one: ['a'], two: ['b'], three: ['c'] } } }, 'user');
+
+	expect(mockConfirmTemporaryFile.mock.calls).toEqual([
+		['a', 'user'],
+		['b', 'user'],
+		['c', 'user'],
+	]);
+});
+
+it('looks a nested file input without a block id up under the block id of its holder', async () => {
+	const { blockId, ...nested } = fileInput();
+
+	await confirmViewFiles(
+		{ blocks: [{ type: 'container', blockId: 'holder', child_blocks: [nested] }], state: { holder: { files: ['a'] } } },
+		'user',
+	);
+
+	expect(mockConfirmTemporaryFile.mock.calls).toEqual([['a', 'user']]);
+});
+
+it('does not look under the block id of a conditional block, nor confirm files of a branch the web client does not draw', async () => {
+	const { blockId, ...nested } = fileInput();
+	const blocks = [
+		{
+			type: 'container',
+			blockId: 'holder',
+			child_blocks: [
+				{ type: 'conditional', blockId: 'cond', render: [nested] },
+				{ type: 'conditional', when: { engine: ['livechat'] }, render: [fileInput({ actionId: 'other' })] },
+			],
+		},
+	];
+
+	await confirmViewFiles({ blocks, state: { holder: { files: ['a'] }, cond: { files: ['b'] }, block: { other: ['c'] } } }, 'user');
+
+	expect(mockConfirmTemporaryFile.mock.calls).toEqual([['a', 'user']]);
+});
