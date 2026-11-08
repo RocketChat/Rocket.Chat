@@ -4,11 +4,53 @@
   "__count__conversations__period__": "{{count}} rozmowy, {{period}}",
   "__count__empty_rooms_will_be_removed_automatically": "Liczba pokojów do automatycznego usunięcia: {{count}}.",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "Puste pokoje (<bold>{{count}}</bold>) zostaną automatycznie usunięte:<br/> {{rooms}}.",
+  "__count__file_pruned": {
+    "one": "Usunięto {{count}} plik",
+    "few": "Usunięto {{count}} pliki",
+    "many": "Usunięto {{count}} plików",
+    "other": "Usunięto {{count}} pliku"
+  },
+  "__count__files_failed_to_upload": {
+    "one": "Nie udało się przesłać {{count}} pliku, więc nie zostanie wysłany: {{name}}",
+    "few": "Nie udało się przesłać {{count}} plików, więc nie zostaną wysłane.",
+    "many": "Nie udało się przesłać {{count}} plików, więc nie zostaną wysłane.",
+    "other": "Nie udało się przesłać {{count}} pliku, więc nie zostanie wysłany."
+  },
+  "__count__follower": {
+    "one": "+{{count}} obserwujący",
+    "few": "+{{count}} obserwujących",
+    "many": "+{{count}} obserwujących",
+    "other": "+{{count}} obserwującego"
+  },
   "__count__message_pruned": {
-    "one": "{{count}} wiadomość(i) usuniętych",
-    "few": "{{count}} wiadomość(i) usuniętych",
-    "many": "{{count}} wiadomość(i) usuniętych",
-    "other": "{{count}} wiadomość(i) usuniętych"
+    "one": "Usunięto {{count}} wiadomość",
+    "few": "Usunięto {{count}} wiadomości",
+    "many": "Usunięto {{count}} wiadomości",
+    "other": "Usunięto {{count}} wiadomości"
+  },
+  "__count__participants_cannot_see_the_chat": {
+    "one": "{{count}} osoba nie widzi czatu",
+    "few": "{{count}} osoby nie widzą czatu",
+    "many": "{{count}} osób nie widzi czatu",
+    "other": "{{count}} osoby nie widzi czatu"
+  },
+  "__count__people_in_the_call": {
+    "one": "{{count}} osoba w rozmowie",
+    "few": "{{count}} osoby w rozmowie",
+    "many": "{{count}} osób w rozmowie",
+    "other": "{{count}} osoby w rozmowie"
+  },
+  "__count__people_joined": {
+    "one": "{{count}} osoba dołączyła",
+    "few": "{{count}} osoby dołączyły",
+    "many": "{{count}} osób dołączyło",
+    "other": "{{count}} osoby dołączyło"
+  },
+  "__count__result_found": {
+    "one": "Znaleziono {{count}} wynik",
+    "few": "Znaleziono {{count}} wyniki",
+    "many": "Znaleziono {{count}} wyników",
+    "other": "Znaleziono {{count}} wyniku"
   },
   "__count__tags__and__count__conversations__period__": "{{count}} tagów i {{conversations}} konwersacji, {{period}}",
   "__count__without__assignee__": "{{count}} bez przypisania",
@@ -37,6 +79,78 @@
   "A_new_owner_will_be_assigned_automatically_to_those__count__rooms__rooms__": "Nowy właściciel zostanie automatyczne przypisany do tych <bold>{{count}}</bold> pokoi:<br/> {{rooms}}.",
   "A_secure_and_highly_private_self-managed_solution_for_conference_calls": "Bezpieczne i wysoce prywatne rozwiązanie do samodzielnego zarządzania połączeniami konferencyjnymi.",
   "A_workspace_admin_needs_to_install_and_configure_a_conference_call_app": "Administrator obszaru roboczego musi zainstalować i skonfigurować aplikację do połączeń konferencyjnych.",
+  "ABAC_Members_Not_Added": {
+    "one": "Nie dodano {{count}} członka, ponieważ nie ma atrybutów pokoju.",
+    "few": "Nie dodano {{count}} członków, ponieważ nie mają atrybutów pokoju.",
+    "many": "Nie dodano {{count}} członków, ponieważ nie mają atrybutów pokoju.",
+    "other": "Nie dodano {{count}} członka, ponieważ nie mają atrybutów pokoju."
+  },
+  "ABAC_Preview_Progress_Kept": {
+    "one": "{{count}} z {{total}} członków zachowuje dostęp do pokoju {{roomName}}.",
+    "few": "{{count}} z {{total}} członków zachowuje dostęp do pokoju {{roomName}}.",
+    "many": "{{count}} z {{total}} członków zachowuje dostęp do pokoju {{roomName}}.",
+    "other": "{{count}} z {{total}} członków zachowuje dostęp do pokoju {{roomName}}."
+  },
+  "ABAC_Preview_Progress_Kept_matching": {
+    "one": "{{count}} z {{total}} pasujących członków zachowuje dostęp do pokoju {{roomName}}.",
+    "few": "{{count}} z {{total}} pasujących członków zachowuje dostęp do pokoju {{roomName}}.",
+    "many": "{{count}} z {{total}} pasujących członków zachowuje dostęp do pokoju {{roomName}}.",
+    "other": "{{count}} z {{total}} pasujących członków zachowuje dostęp do pokoju {{roomName}}."
+  },
+  "ABAC_Preview_Progress_Kept_matching_so_far": {
+    "one": "Sprawdzono {{checked}} z {{total}} pasujących członków. Na razie {{count}} członek zachowuje dostęp do pokoju {{roomName}}.",
+    "few": "Sprawdzono {{checked}} z {{total}} pasujących członków. Na razie {{count}} członków zachowuje dostęp do pokoju {{roomName}}.",
+    "many": "Sprawdzono {{checked}} z {{total}} pasujących członków. Na razie {{count}} członków zachowuje dostęp do pokoju {{roomName}}.",
+    "other": "Sprawdzono {{checked}} z {{total}} pasujących członków. Na razie {{count}} członka zachowuje dostęp do pokoju {{roomName}}."
+  },
+  "ABAC_Preview_Progress_Kept_so_far": {
+    "one": "Sprawdzono {{checked}} z {{total}} członków. Na razie {{count}} członek zachowuje dostęp do pokoju {{roomName}}.",
+    "few": "Sprawdzono {{checked}} z {{total}} członków. Na razie {{count}} członków zachowuje dostęp do pokoju {{roomName}}.",
+    "many": "Sprawdzono {{checked}} z {{total}} członków. Na razie {{count}} członków zachowuje dostęp do pokoju {{roomName}}.",
+    "other": "Sprawdzono {{checked}} z {{total}} członków. Na razie {{count}} członka zachowuje dostęp do pokoju {{roomName}}."
+  },
+  "ABAC_Preview_Progress_Removed": {
+    "one": "{{count}} z {{total}} członków zostanie usunięty z pokoju {{roomName}}.",
+    "few": "{{count}} z {{total}} członków zostanie usuniętych z pokoju {{roomName}}.",
+    "many": "{{count}} z {{total}} członków zostanie usuniętych z pokoju {{roomName}}.",
+    "other": "{{count}} z {{total}} członków zostanie usuniętych z pokoju {{roomName}}."
+  },
+  "ABAC_Preview_Progress_Removed_matching": {
+    "one": "{{count}} z {{total}} pasujących członków zostanie usunięty z pokoju {{roomName}}.",
+    "few": "{{count}} z {{total}} pasujących członków zostanie usuniętych z pokoju {{roomName}}.",
+    "many": "{{count}} z {{total}} pasujących członków zostanie usuniętych z pokoju {{roomName}}.",
+    "other": "{{count}} z {{total}} pasujących członków zostanie usuniętych z pokoju {{roomName}}."
+  },
+  "ABAC_Preview_Progress_Removed_matching_so_far": {
+    "one": "Sprawdzono {{checked}} z {{total}} pasujących członków. Na razie {{count}} członek zostanie usunięty z pokoju {{roomName}}.",
+    "few": "Sprawdzono {{checked}} z {{total}} pasujących członków. Na razie {{count}} członków zostanie usuniętych z pokoju {{roomName}}.",
+    "many": "Sprawdzono {{checked}} z {{total}} pasujących członków. Na razie {{count}} członków zostanie usuniętych z pokoju {{roomName}}.",
+    "other": "Sprawdzono {{checked}} z {{total}} pasujących członków. Na razie {{count}} członka zostanie usunięte z pokoju {{roomName}}."
+  },
+  "ABAC_Preview_Progress_Removed_so_far": {
+    "one": "Sprawdzono {{checked}} z {{total}} członków. Na razie {{count}} członek zostanie usunięty z pokoju {{roomName}}.",
+    "few": "Sprawdzono {{checked}} z {{total}} członków. Na razie {{count}} członków zostanie usuniętych z pokoju {{roomName}}.",
+    "many": "Sprawdzono {{checked}} z {{total}} członków. Na razie {{count}} członków zostanie usuniętych z pokoju {{roomName}}.",
+    "other": "Sprawdzono {{checked}} z {{total}} członków. Na razie {{count}} członka zostanie usunięte z pokoju {{roomName}}."
+  },
+  "abac_removed_users_from_the_room": {
+    "one": "zmienił(a) atrybuty pokoju, a {{count}} członek został usunięty przez ABAC",
+    "few": "zmienił(a) atrybuty pokoju, a {{count}} członków zostało usuniętych przez ABAC",
+    "many": "zmienił(a) atrybuty pokoju, a {{count}} członków zostało usuniętych przez ABAC",
+    "other": "zmienił(a) atrybuty pokoju, a {{count}} członka zostało usunięte przez ABAC"
+  },
+  "ABAC_Required_Attributes_Removal_Content": {
+    "one": "Nie masz atrybutu <bold>{{attributes}}</bold>, więc nie dodasz go z powrotem do wymagań.",
+    "few": "Nie masz atrybutów <bold>{{attributes}}</bold>, więc nie dodasz ich z powrotem do wymagań.",
+    "many": "Nie masz atrybutów <bold>{{attributes}}</bold>, więc nie dodasz ich z powrotem do wymagań.",
+    "other": "Nie masz atrybutów <bold>{{attributes}}</bold>, więc nie dodasz ich z powrotem do wymagań."
+  },
+  "ABAC_Rooms_Affected": {
+    "one": "Dotyczy {{count}} pokoju",
+    "few": "Dotyczy {{count}} pokoi",
+    "many": "Dotyczy {{count}} pokoi",
+    "other": "Dotyczy {{count}} pokoju"
+  },
   "Accept": "Akceptuj",
   "Accept_Call": "Odbierz połączenie",
   "Accept_incoming_livechat_requests_even_if_there_are_no_online_agents": "Akceptuj przychodzące żądania wielokanałowe, nawet gdy brak agentów online",
@@ -412,6 +526,12 @@
   "APIs": "Interfejsy API",
   "App_author_homepage": "strona główna autora",
   "App_Details": "Szczegóły aplikacji",
+  "App_has_been_disabled_addon_message": {
+    "one": "Aplikacja {{appNames}} została wyłączona z powodu nieprawidłowego dodatku. Aby ją ponownie włączyć, potrzebna jest ważna subskrypcja dodatku",
+    "few": "Aplikacje {{appNames}} zostały wyłączone z powodu nieprawidłowych dodatków. Aby je ponownie włączyć, potrzebna jest ważna subskrypcja dodatków",
+    "many": "Aplikacje {{appNames}} zostały wyłączone z powodu nieprawidłowych dodatków. Aby je ponownie włączyć, potrzebna jest ważna subskrypcja dodatków",
+    "other": "Aplikacje {{appNames}} zostały wyłączone z powodu nieprawidłowych dodatków. Aby je ponownie włączyć, potrzebna jest ważna subskrypcja dodatków"
+  },
   "App_Info": "Info o aplikacji",
   "App_Information": "Informacje o aplikacji",
   "App_Installation": "Instalacja aplikacji",
@@ -443,6 +563,12 @@
   "Apps_context_installed": "Zainstalowana",
   "Apps_context_premium": "Enterprise",
   "Apps_context_requested": "Zażądane",
+  "Apps_Count_Enabled": {
+    "one": "{{count}} włączona aplikacja",
+    "few": "{{count}} włączone aplikacje",
+    "many": "{{count}} włączonych aplikacji",
+    "other": "{{count}} włączonej aplikacji"
+  },
   "Apps_disabled_when_Premium_trial_ended_description": "Przestrzenie robocze w wersji Community mogą mieć włączonych maksymalnie 5 aplikacji Marketplace i 3 aplikacje prywatne. Poproś administratora obszaru roboczego o ponowne włączenie aplikacji.",
   "Apps_disabled_when_Premium_trial_ended_description_admin": "Przestrzenie robocze w wersji Community mogą mieć włączonych maksymalnie 5 aplikacji Marketplace i 3 aplikacje prywatne. Włącz ponownie wymagane aplikacje.",
   "Apps_Engine_Version": "Wersja silnika aplikacji",
@@ -2036,6 +2162,12 @@
   "Flags": "Flagi",
   "Follow_message": "Śledź wiadomość",
   "Follow_social_profiles": "Śledź nas w portalach społecznościowych, forkuj projekt na githubie lub powiedz nam co myślisz o rocket.chat na naszym trello.",
+  "Follower": {
+    "one": "Obserwujący",
+    "few": "Obserwujący",
+    "many": "Obserwujący",
+    "other": "Obserwujący"
+  },
   "Following": "Następujący",
   "Font_Default": "Domyślny",
   "Font_Extra_large": "Bardzo duży",
@@ -2124,6 +2256,12 @@
   "Group_by_Type": "Grupuj według typu",
   "Group_discussions": "Dyskusje grupowe",
   "Group_favorites": "Grupuj ulubione",
+  "group_mentions_counter": {
+    "one": "{{count}} wzmianka grupowa",
+    "few": "{{count}} wzmianki grupowe",
+    "many": "{{count}} wzmianek grupowych",
+    "other": "{{count}} wzmianki grupowej"
+  },
   "Group_mentions_disabled_x_members": "Grupowe powiadomienia \"@ all\" i \"@ here\" zostały wyłączone dla pokoi z więcej niż {{total}} użytkownikami.",
   "Group_mentions_only": "Grupa tylko wzmianki",
   "Grouping": "Grupowanie",
@@ -2917,6 +3055,12 @@
   "mention-here": "Wzmianka @here",
   "mention-here_description": "Zezwolenie na użycie wzmianki @here",
   "Mentions": "Wzmianki o tobie",
+  "mentions_counter": {
+    "one": "{{count}} wzmianka",
+    "few": "{{count}} wzmianki",
+    "many": "{{count}} wzmianek",
+    "other": "{{count}} wzmianki"
+  },
   "Mentions_default": "Wzmianki (domyślnie)",
   "Mentions_only": "Tylko wzmianki",
   "Merge_Channels": "Scal kanały",
@@ -3069,10 +3213,10 @@
   "meteor_status_failed": "Serwer nie mógł się połączyć",
   "meteor_status_offline": "Tryb offline.",
   "meteor_status_reconnect_in": {
-    "one": "spróbuj jeszcze raz za chwilę...",
-    "few": "spróbuj jeszcze raz za {{count}} sekund...",
-    "many": "spróbuj jeszcze raz za {{count}} sekund...",
-    "other": "spróbuj jeszcze raz za {{count}} sekund..."
+    "one": "Ponowna próba połączenia za sekundę",
+    "few": "Ponowna próba połączenia za {{count}} sekundy",
+    "many": "Ponowna próba połączenia za {{count}} sekund",
+    "other": "Ponowna próba połączenia za {{count}} sekundy"
   },
   "meteor_status_try_now_offline": "Połącz ponownie",
   "meteor_status_try_now_waiting": "Spróbuj teraz",
@@ -3407,6 +3551,12 @@
   "onboarding.page.magicLinkEmail.title": "Wysłaliśmy Ci link do logowania",
   "onboarding.page.requestTrial.subtitle": "Wypróbuj nasz najlepszy plan Enterprise Edition przez 30 dni za darmo",
   "onboarding.page.requestTrial.title": "Zamów <1>30-dniową wersję próbną</1>.",
+  "Ongoing_calls_count": {
+    "one": "{{count}} trwające połączenie",
+    "few": "{{count}} trwające połączenia",
+    "many": "{{count}} trwających połączeń",
+    "other": "{{count}} trwającego połączenia"
+  },
   "Online": "Online",
   "online": "online",
   "Only_authorized_users_can_react_to_messages": "Tylko uprawnieni użytkownicy mogą reagować na wiadomości",
@@ -3461,6 +3611,12 @@
   "Other": "Inny",
   "Others": "Inni",
   "others": "inni",
+  "Others_count": {
+    "one": "{{count}} inna osoba",
+    "few": "{{count}} inne osoby",
+    "many": "{{count}} innych osób",
+    "other": "{{count}} innej osoby"
+  },
   "Out_of_seats": "Brak miejsc",
   "Outgoing": "Wychodzący",
   "Outgoing_WebHook": "Wychodzący WebHook",
@@ -3508,6 +3664,12 @@
   "Phone_call": "Połączenie telefoniczne",
   "Phone_Number": "Numer telefonu",
   "Phone_number": "Numer telefonu",
+  "Phone_numbers_limit": {
+    "one": "Możesz dodać maksymalnie {{count}} numer telefonu",
+    "few": "Możesz dodać maksymalnie {{count}} numery telefonu",
+    "many": "Możesz dodać maksymalnie {{count}} numerów telefonu",
+    "other": "Możesz dodać maksymalnie {{count}} numeru telefonu"
+  },
   "PID": "PID",
   "Pin": "Przypnij",
   "Pin_Message": "Przypnij wiadomość",
@@ -3590,6 +3752,12 @@
   "Privacy_summary": "Podsumowanie dotyczące prywatności",
   "Private": "Prywatny",
   "Private_apps_are_side-loaded": "Aplikacje prywatne są ładowane z boku i nie są dostępne w Marketplace.",
+  "Private_Apps_Count_Enabled": {
+    "one": "{{count}} włączona aplikacja prywatna",
+    "few": "{{count}} włączone aplikacje prywatne",
+    "many": "{{count}} włączonych aplikacji prywatnych",
+    "other": "{{count}} włączonej aplikacji prywatnej"
+  },
   "Private_Channel": "Prywatny kanał",
   "Private_Channels": "Kanały prywatne",
   "Private_channels": "Kanały prywatne",
@@ -4178,6 +4346,12 @@
   "Show_agent_email": "Pokaż adres e-mail agenta",
   "Show_agent_info": "Pokaż informacje o agencie",
   "Show_all": "Pokaż wszystko",
+  "Show_all__count__calls": {
+    "one": "Pokaż jeszcze {{count}} połączenie",
+    "few": "Pokaż jeszcze {{count}} połączenia",
+    "many": "Pokaż jeszcze {{count}} połączeń",
+    "other": "Pokaż jeszcze {{count}} połączenia"
+  },
   "Show_Avatars": "Pokaż awatary",
   "Show_counter": "Pokaż licznik",
   "Show_email_field": "Pokaż pole e-mail",
@@ -4363,6 +4537,18 @@
   "Subject": "Temat",
   "Submit": "Prześlij",
   "Subscribe": "Subskrybuj",
+  "subscription.callout.description.limitsExceeded": {
+    "one": "Twój obszar roboczy przekroczył limit licencji: <1>{{val}}</1>. <3>Zarządzaj subskrypcją</3>, aby zwiększyć limity.",
+    "few": "Twój obszar roboczy przekroczył limity licencji: <1>{{val, list}}</1>. <3>Zarządzaj subskrypcją</3>, aby zwiększyć limity.",
+    "many": "Twój obszar roboczy przekroczył limity licencji: <1>{{val, list}}</1>. <3>Zarządzaj subskrypcją</3>, aby zwiększyć limity.",
+    "other": "Twój obszar roboczy przekroczył limity licencji: <1>{{val, list}}</1>. <3>Zarządzaj subskrypcją</3>, aby zwiększyć limity."
+  },
+  "subscription.callout.description.limitsReached": {
+    "one": "Twój obszar roboczy osiągnął limit licencji: <1>{{val}}</1>. <3>Zarządzaj subskrypcją</3>, aby zwiększyć limity.",
+    "few": "Twój obszar roboczy osiągnął limity licencji: <1>{{val, list}}</1>. <3>Zarządzaj subskrypcją</3>, aby zwiększyć limity.",
+    "many": "Twój obszar roboczy osiągnął limity licencji: <1>{{val, list}}</1>. <3>Zarządzaj subskrypcją</3>, aby zwiększyć limity.",
+    "other": "Twój obszar roboczy osiągnął limity licencji: <1>{{val, list}}</1>. <3>Zarządzaj subskrypcją</3>, aby zwiększyć limity."
+  },
   "subscription.callout.marketplaceApps": "zainstalowane aplikacje marketplace",
   "Success": "Sukces",
   "Success_message": "sukces wiadomość",
@@ -4577,8 +4763,20 @@
   "thread": "wątek",
   "Thread_message": "Skomentowane *{{username}}'s* message: _ {{msg}} _",
   "Threads": "Wątki",
+  "threads_counter": {
+    "one": "{{count}} nieprzeczytana wiadomość w wątku",
+    "few": "{{count}} nieprzeczytane wiadomości w wątkach",
+    "many": "{{count}} nieprzeczytanych wiadomości w wątkach",
+    "other": "{{count}} nieprzeczytanej wiadomości w wątkach"
+  },
   "Threads_Description": "Wątki umożliwiają zorganizowane dyskusje wokół określonej wiadomości.",
   "Threads_unavailable_for_federation": "Wątki są niedostępne dla sfederowanych kanałów",
+  "Threads_unread_count": {
+    "one": "Wątki, {{count}} nieprzeczytany",
+    "few": "Wątki, {{count}} nieprzeczytane",
+    "many": "Wątki, {{count}} nieprzeczytanych",
+    "other": "Wątki, {{count}} nieprzeczytanego"
+  },
   "Thursday": "Czwartek",
   "Time_in_minutes": "Czas w minutach",
   "Time_in_seconds": "Czas w sekundach",
@@ -4720,6 +4918,12 @@
   "Unread_Count": "Liczba nieprzeczytanych",
   "Unread_Count_DM": "Liczba nieprzeczytanych dla bezpośrednich wiadomości",
   "Unread_Messages": "Nieprzeczytane wiadomości",
+  "unread_messages_counter": {
+    "one": "{{count}} nieprzeczytana wiadomość",
+    "few": "{{count}} nieprzeczytane wiadomości",
+    "many": "{{count}} nieprzeczytanych wiadomości",
+    "other": "{{count}} nieprzeczytanej wiadomości"
+  },
   "Unread_on_top": "Nieprzeczytane na górze",
   "Unread_Rooms": "Nieprzeczytane pokoje",
   "Unread_Rooms_Mode": "Tryb nieprzeczytanych pokoi",
@@ -4750,6 +4954,12 @@
   "Upload_Folder_Path": "Prześlij ścieżkę folderu",
   "Upload_From": "Prześlij z {{name}}",
   "Upload_user_avatar": "Załaduj awatar",
+  "Uploading__count__file": {
+    "one": "Przesyłanie {{count}} pliku",
+    "few": "Przesyłanie {{count}} plików",
+    "many": "Przesyłanie {{count}} plików",
+    "other": "Przesyłanie {{count}} pliku"
+  },
   "Uploading_file": "Przesyłanie pliku ...",
   "Uploads": "Przesyłane pliki",
   "Uptime": "Czas pracy",
@@ -4782,6 +4992,30 @@
   "User__username__removed_from__room_name__moderators": "Użytkownik {{username}} usunięty z moderatorów pokoju {{room_name}}",
   "User__username__removed_from__room_name__owners": "Użytkownik {{username}} został usunięty z pokoju {{room_name}} przez właściciela",
   "User__username__unmuted_in_room__roomName__": "Użytkownik {{username}} wyłączył wyciszenie w pokoju {{roomName}}",
+  "User_activity": {
+    "one": "{{users, list}} jest aktywny(-a)",
+    "few": "{{users, list}} są aktywni",
+    "many": "{{users, list}} są aktywni",
+    "other": "{{users, list}} są aktywni"
+  },
+  "User_activity_hidden_users": {
+    "one": "{{count}} inna osoba",
+    "few": "{{count}} inne osoby",
+    "many": "{{count}} innych osób",
+    "other": "{{count}} innej osoby"
+  },
+  "User_activity_playing": {
+    "one": "{{users, list}} odtwarza",
+    "few": "{{users, list}} odtwarzają",
+    "many": "{{users, list}} odtwarzają",
+    "other": "{{users, list}} odtwarzają"
+  },
+  "User_activity_recording": {
+    "one": "{{users, list}} nagrywa",
+    "few": "{{users, list}} nagrywają",
+    "many": "{{users, list}} nagrywają",
+    "other": "{{users, list}} nagrywają"
+  },
   "User_activity_typing": {
     "one": "{{users, list}} pisze",
     "few": "{{users, list}} piszą",
@@ -5137,6 +5371,12 @@
   "You_can_use_an_emoji_as_avatar": "Jako awatara można również używać emotikonu",
   "You_can_use_webhooks_to_easily_integrate_livechat_with_your_CRM": "Można użyć webhooks na łatwą integrację LiveChat z CRM.",
   "You_cant_leave_a_livechat_room_Please_use_the_close_button": "Nie można opuścić salę LiveChat. Proszę użyć przycisku zamykania.",
+  "You_cant_upload_more_than__count__files": {
+    "one": "Możesz przesłać naraz maksymalnie {{count}} plik.",
+    "few": "Możesz przesłać naraz maksymalnie {{count}} pliki.",
+    "many": "Możesz przesłać naraz maksymalnie {{count}} plików.",
+    "other": "Możesz przesłać naraz maksymalnie {{count}} pliku."
+  },
   "You_followed_this_message": "Śledziłeś tę wiadomość.",
   "You_have_a_new_message": "Masz nową wiadomość",
   "You_have_been_muted": "Zostałeś wyciszony i nie możesz mówić w tym pokoju",
