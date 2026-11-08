@@ -49,7 +49,7 @@ export type cssFn = Evaluable;
 export type keyframesFn = Evaluable;
 
 const evaluateValue = (value: unknown, args: readonly unknown[]): string => {
-	if (isEvaluable(value) || typeof value === 'function') {
+	if (isEvaluable(value)) {
 		return evaluateValue(value(...args), args);
 	}
 
@@ -61,8 +61,14 @@ const evaluateValue = (value: unknown, args: readonly unknown[]): string => {
 		return value.map((innerValue) => evaluateValue(innerValue, args)).join('');
 	}
 
+	// Interpolated values include objects that render through their own toString, such as fuselage's Var.
+	// Dropping this disable means typing interpolations and moving Var into this package so the type can name it.
+	// oxlint-disable-next-line typescript/no-base-to-string
 	return String(value);
 };
+
+const containsEvaluable = (value: unknown): boolean =>
+	typeof value === 'function' || (Array.isArray(value) && value.some(containsEvaluable));
 
 const reduceEvaluable = ([first, ...rest]: readonly string[], values: readonly unknown[], args: readonly unknown[]): string =>
 	values.reduce<string>((string, value, i) => string + evaluateValue(value, args) + rest[i], first).trim();
@@ -77,7 +83,7 @@ export const css = (slices: TemplateStringsArray, ...values: readonly unknown[])
 		return staticEvaluable('');
 	}
 
-	if (!values.some((value) => typeof value === 'function')) {
+	if (!values.some(containsEvaluable)) {
 		const content = reduceEvaluable(slices, values, []);
 
 		return staticEvaluable(content);
@@ -86,7 +92,14 @@ export const css = (slices: TemplateStringsArray, ...values: readonly unknown[])
 	return <T extends readonly unknown[]>(...args: T): string => {
 		const [, freeContext] = holdContext();
 
-		const content = reduceEvaluable(slices, values, args);
+		let content: string;
+
+		try {
+			content = reduceEvaluable(slices, values, args);
+		} catch (error) {
+			freeContext();
+			throw error;
+		}
 
 		return content + freeContext();
 	};
@@ -105,16 +118,18 @@ export const keyframes = (slices: TemplateStringsArray, ...values: unknown[]): k
 	const fn: keyframesFn = <T extends readonly unknown[]>(...args: T): string => {
 		const [context, freeContext] = holdContext();
 
-		const content = reduceEvaluable(slices, values, args);
+		try {
+			const content = reduceEvaluable(slices, values, args);
 
-		const animationName = createAnimationName(content);
-		const escapedAnimationName = escapeName(animationName);
+			const animationName = createAnimationName(content);
+			const escapedAnimationName = escapeName(animationName);
 
-		context.push(`@keyframes ${escapedAnimationName}{${content}}`);
+			context.push(`@keyframes ${escapedAnimationName}{${content}}`);
 
-		freeContext();
-
-		return escapedAnimationName;
+			return escapedAnimationName;
+		} finally {
+			freeContext();
+		}
 	};
 
 	return fn;

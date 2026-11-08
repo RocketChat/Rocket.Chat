@@ -12,7 +12,6 @@ import { Upload } from '@aws-sdk/lib-storage';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import type { IUpload } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
-import { check } from 'meteor/check';
 import _ from 'underscore';
 
 import { UploadFS } from '../../../../../ufs';
@@ -97,8 +96,6 @@ class AmazonS3Store extends UploadFS.Store {
 		 * Creates the file in the collection
 		 */
 		this.create = async (file) => {
-			check(file, Object);
-
 			if (file._id == null) {
 				file._id = Random.id();
 			}

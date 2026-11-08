@@ -6,9 +6,9 @@ import {
 	MessageMetricsItemLabel,
 	MessageMetricsReply,
 } from '@rocket.chat/fuselage';
+import { useTimeAgo } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
-import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import { useGoToRoom } from '../../../views/room/hooks/useGoToRoom';
 
 export type DiscussionMetricsProps = {

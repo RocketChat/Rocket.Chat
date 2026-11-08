@@ -8,4 +8,5 @@ export type PlainTextInputElement = Actionable<{
 	multiline?: boolean;
 	minLength?: number;
 	maxLength?: number;
+	focus_on_load?: boolean;
 }>;

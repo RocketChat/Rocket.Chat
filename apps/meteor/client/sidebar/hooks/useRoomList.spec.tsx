@@ -118,7 +118,7 @@ const getWrapperSettings = ({
 
 	if (isEnterprise) {
 		root.withEndpoint('GET', '/v1/licenses.info', () => ({
-			license: createFakeLicenseInfo({ hasValidLicense: true, activeModules: ['experimental-enterprise-features'] }),
+			license: createFakeLicenseInfo({ hasValidLicense: true }),
 		}));
 	}
 
@@ -242,7 +242,7 @@ it('should remove corresponding items from roomList and return groupCount 0 when
 	const { result } = renderHook(() => useRoomList({ collapsedGroups: ['Channels'] }), {
 		wrapper: getWrapperSettings({ sidebarGroupByType: true, isEnterprise: true }).build(),
 	});
-	// hasLicenseModule resolves asynchronously from the mock endpoint.
+	// isEnterprise resolves asynchronously from the mock endpoint.
 	await waitFor(() => {
 		const groupsList = groupsListOf(result.current.groups);
 		const roomList = roomListOf(result.current.groups);
@@ -305,7 +305,7 @@ it('should not duplicate the opened room when a collapsed group already shows it
 		}).build(),
 	});
 
-	// hasLicenseModule resolves asynchronously from the mock endpoint.
+	// isEnterprise resolves asynchronously from the mock endpoint.
 	await waitFor(() => {
 		const groupsList = groupsListOf(result.current.groups);
 		const channelsIndex = groupsList.indexOf('Channels');
@@ -321,7 +321,7 @@ it('should keep unread rooms visible (and show no header badge) when a group is 
 			sidebarCategories: [{ _id: 'Channels', name: 'Channels', default: true, showUnreads: true }],
 		}).build(),
 	});
-	// hasLicenseModule resolves asynchronously from the mock endpoint.
+	// isEnterprise resolves asynchronously from the mock endpoint.
 	await waitFor(() => {
 		const groupsList = groupsListOf(result.current.groups);
 		const channelsIndex = groupsList.indexOf('Channels');
@@ -376,7 +376,7 @@ it('should accumulate unread data into `groupedUnreadInfo` when group is collaps
 		wrapper: getWrapperSettings({ sidebarGroupByType: true, isEnterprise: true }).build(),
 	});
 
-	// hasLicenseModule resolves asynchronously from the mock endpoint.
+	// isEnterprise resolves asynchronously from the mock endpoint.
 	await waitFor(() => {
 		const groupsList = groupsListOf(result.current.groups);
 		const channelsIndex = groupsList.indexOf('Channels');

@@ -1,5 +1,5 @@
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
-import { useInvalidateLicense } from '@rocket.chat/ui-client';
+import { useInvalidateLicense, useIsEnterprise } from '@rocket.chat/ui-client';
 import { usePermission, useStream } from '@rocket.chat/ui-contexts';
 import type { UseQueryOptions, UseQueryResult } from '@tanstack/react-query';
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -7,7 +7,6 @@ import { useContext, useEffect } from 'react';
 
 import { useInvalidateAppsCountQueryCallback } from './useAppsCountQuery';
 import { AppsContext } from '../../../contexts/AppsContext';
-import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import { marketplaceQueryKeys } from '../../../lib/queryKeys';
 import type { App } from '../types';
 

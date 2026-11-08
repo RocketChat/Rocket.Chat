@@ -1,3 +1,4 @@
+import { Box } from '@rocket.chat/fuselage';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { Contextualbar } from '@rocket.chat/ui-client';
 import type { Meta } from '@storybook/react';
@@ -33,7 +34,9 @@ export default {
 
 			return (
 				<FormProvider {...methods}>
-					<Contextualbar height='100vh'> {fn()}</Contextualbar>
+					<Box height='100vh'>
+						<Contextualbar> {fn()}</Contextualbar>
+					</Box>
 				</FormProvider>
 			);
 		},

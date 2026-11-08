@@ -9,9 +9,9 @@ export function convertSubObjectsIntoPaths(object: Record<string, any>, parentPa
 			if (isRecord(value)) {
 				const flattened = convertSubObjectsIntoPaths(value, fullKey);
 
-				return Object.keys(flattened).map((newKey) => [newKey, flattened[newKey]]);
+				return Object.entries(flattened);
 			}
 			return [[fullKey, value]];
-		}) as [string, any][],
+		}),
 	);
 }

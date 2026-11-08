@@ -4,14 +4,14 @@ import { FlexTab } from './flextab';
 
 export class SearchMessagesFlexTab extends FlexTab {
 	constructor(page: Page) {
-		super(page.getByRole('dialog', { name: 'Search Messages' }));
+		super(page.getByRole('dialog', { name: 'Search messages' }));
 	}
 
 	async search(text: string, { global = false }: { global?: boolean } = {}) {
 		if (global) {
 			await this.root.getByText('Global search').click();
 		}
-		await this.root.getByPlaceholder('Search Messages').fill(text);
+		await this.root.getByPlaceholder('Search messages').fill(text);
 	}
 
 	async getResultItem(messageText: string) {
@@ -20,7 +20,8 @@ export class SearchMessagesFlexTab extends FlexTab {
 
 	async jumpToMessage(messageText: string) {
 		const message = (await this.getResultItem(messageText)).first();
-		await message.hover();
+		// Hover the body, not the item's center: the center can land on the author's name, whose hover card covers the toolbar.
+		await message.getByText(messageText).hover();
 		await message.getByRole('button', { name: 'Jump to message' }).click();
 	}
 }

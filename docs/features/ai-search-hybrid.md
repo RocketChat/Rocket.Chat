@@ -102,8 +102,13 @@ the request body:
 
 | Retriever | Pipeline request | Threshold sent |
 | --- | --- | --- |
-| semantic | `type: "similarity"`, `classification.search_type: 2` | yes |
-| keyword | `type: "search"`, `classification.search_type: 1` | no |
+| semantic | `type: "similarity"` | yes |
+| keyword | `type: "search"` | no |
+
+The top-level `type` is the only thing that selects the retriever. Both branches send the same
+`classification.search_type` (`CLASSIFICATION_SEARCH_TYPE`), which controls how the requested
+classifications resolve rather than which retriever runs: the strict values reject a request carrying a
+classification the pipeline does not know, and Rocket.Chat sends the user's roles alongside `user`.
 
 Which of them runs is decided by a single setting, `AI_Intelligent_Search_Semantic_Weight` (0-100):
 

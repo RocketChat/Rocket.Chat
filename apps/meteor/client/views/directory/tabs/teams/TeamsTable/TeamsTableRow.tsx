@@ -37,11 +37,11 @@ const TeamsTableRow = ({ onClick, team, mediaQuery }: TeamsTableRowProps) => {
 					</Box>
 				</Box>
 			</GenericTableCell>
-			<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
+			<GenericTableCell color='hint' truncate>
 				{roomsCount}
 			</GenericTableCell>
 			{mediaQuery && ts && (
-				<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
+				<GenericTableCell color='hint' truncate>
 					{formatDate(ts)}
 				</GenericTableCell>
 			)}

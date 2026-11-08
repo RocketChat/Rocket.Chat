@@ -5,25 +5,28 @@ import { useCallback } from 'react';
 import { useIsCollapsibleToggled } from './useIsCollapsibleToggled';
 import { RoomManager, useOpenedRoom } from '../../../lib/RoomManager';
 
-// `key` identifies this collapsible within the room's store, so its toggled state survives
-// the row unmounting and remounting (e.g. virtua recycling it on scroll), it falls back to
-// plain local state.
+// `key` identifies this collapsible within the opened room's store, so its toggled state survives
+// the row unmounting and remounting (e.g. virtua recycling it on scroll). Without a key, or when
+// rendered outside an opened room (e.g. Message Auditing), it falls back to plain local state.
 export const useCollapse = (attachmentCollapsed?: boolean, key?: string) => {
 	const collapseByDefault = useAttachmentIsCollapsedByDefault();
 	const defaultCollapsed = !!(collapseByDefault || attachmentCollapsed);
 
 	const rid = useOpenedRoom();
-	const toggled = useIsCollapsibleToggled(key);
+	const store = rid ? RoomManager.getStore(rid) : undefined;
+	const persistedKey = store ? key : undefined;
+
+	const toggled = useIsCollapsibleToggled(persistedKey);
 	const [localCollapsed, toggleLocalCollapsed] = useToggle(defaultCollapsed);
 
 	const togglePersistedCollapsed = useCallback(() => {
-		if (!key || !rid) {
+		if (!persistedKey) {
 			return;
 		}
-		RoomManager.getStore(rid)?.toggleCollapsible(key);
-	}, [key, rid]);
+		store?.toggleCollapsible(persistedKey);
+	}, [persistedKey, store]);
 
-	if (key) {
+	if (persistedKey) {
 		return [toggled !== defaultCollapsed, togglePersistedCollapsed] as const;
 	}
 

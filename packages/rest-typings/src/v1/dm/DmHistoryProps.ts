@@ -1,5 +1,6 @@
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 import { ajvQuery } from '../Ajv';
+import { paginationQueryProperties } from '../pagination';
 
 export type DmHistoryProps = PaginatedRequest<{
 	roomId: string;
@@ -37,12 +38,7 @@ const DmHistoryPropsSchema = {
 			type: 'string',
 			enum: ['true', 'false'],
 		},
-		count: {
-			type: 'number',
-		},
-		offset: {
-			type: 'number',
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 		},

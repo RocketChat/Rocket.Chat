@@ -1,24 +1,19 @@
-import type {
-	FacebookOAuthConfiguration,
-	ISetting,
-	ISettingColor,
-	LoginServiceConfiguration,
-	TwitterOAuthConfiguration,
-	OAuthConfiguration,
-} from '@rocket.chat/core-typings';
+import { ClientSafeError } from '@rocket.chat/core-services';
+import type { ISetting, ISettingColor, LoginServiceConfiguration, OAuthConfiguration } from '@rocket.chat/core-typings';
 import { isActionSettingWithEndpoint, isSettingAction, isSettingColor } from '@rocket.chat/core-typings';
 import { LoginServiceConfiguration as LoginServiceConfigurationModel, Settings } from '@rocket.chat/models';
 import {
 	ajv,
+	isSettingsBulkProps,
+	isSettingsGetParams,
+	isSettingsPublicWithPaginationProps,
 	isSettingsUpdatePropDefault,
 	isSettingsUpdatePropsActions,
 	isSettingsUpdatePropsColor,
-	isSettingsPublicWithPaginationProps,
-	isSettingsGetParams,
-	isSettingsBulkProps,
+	paginatedResponseProperties,
+	validateBadRequestErrorResponse,
 	validateForbiddenErrorResponse,
 	validateUnauthorizedErrorResponse,
-	validateBadRequestErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 import type { FindOptions } from 'mongodb';
@@ -64,9 +59,7 @@ const settingsPublicResponseSchema = ajv.compile<{ settings: FetchedSetting[]; c
 	type: 'object',
 	properties: {
 		settings: { type: 'array', items: { type: 'object' } },
-		count: { type: 'number' },
-		offset: { type: 'number' },
-		total: { type: 'number' },
+		...paginatedResponseProperties,
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['settings', 'count', 'offset', 'total', 'success'],
@@ -94,9 +87,7 @@ const settingsListResponseSchema = ajv.compile<{ settings: FetchedSetting[]; cou
 	type: 'object',
 	properties: {
 		settings: { type: 'array', items: { type: 'object' } },
-		count: { type: 'number' },
-		offset: { type: 'number' },
-		total: { type: 'number' },
+		...paginatedResponseProperties,
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['settings', 'count', 'offset', 'total', 'success'],
@@ -152,13 +143,12 @@ API.v1.get(
 	},
 	async function action() {
 		const { offset, count } = await getPaginationItems(this.queryParams);
-		const { sort, fields, query } = await this.parseJsonQuery();
+		const { sort, fields } = await this.parseJsonQuery();
 		const { _id } = this.queryParams;
 
 		const parsedQueryId = typeof _id === 'string' && _id ? { _id: { $in: _id.split(',').map((id) => id.trim()) } } : {};
 
 		const ourQuery = {
-			...query,
 			...parsedQueryId,
 			hidden: { $ne: true },
 			public: true,
@@ -185,7 +175,6 @@ API.v1.get(
 	},
 	async function action() {
 		const oAuthServicesEnabled = await LoginServiceConfigurationModel.find({}, { projection: { secret: 0 } }).toArray();
-		const isPassportFlowEnabled = settings.get<boolean>('Accounts_OAuth_Use_Modern_Flow');
 
 		return API.v1.success({
 			services: oAuthServicesEnabled.map((service) => {
@@ -202,25 +191,20 @@ API.v1.get(
 					return { ...service, hideButtonOnMobile: false };
 				}
 
-				if (
-					(service as OAuthConfiguration).custom ||
-					(service.service && (service.service === 'wordpress' || service.service === 'saml'))
-				) {
-					return { ...service, hideButtonOnMobile: isPassportFlowEnabled };
+				//	Older mobile app versions only support the legacy Meteor OAuth flow, so they must hide these buttons.
+				if ((service as OAuthConfiguration).custom || service.service === 'saml') {
+					return { ...service, hideButtonOnMobile: true };
 				}
 
 				return {
 					_id: service._id,
 					name: service.service,
-					clientId:
-						(service as FacebookOAuthConfiguration).appId ||
-						(service as OAuthConfiguration).clientId ||
-						(service as TwitterOAuthConfiguration).consumerKey,
+					clientId: (service as OAuthConfiguration).clientId,
 					buttonLabelText: service.buttonLabelText || '',
 					buttonColor: service.buttonColor || '',
 					buttonLabelColor: service.buttonLabelColor || '',
 					custom: false,
-					hideButtonOnMobile: isPassportFlowEnabled,
+					hideButtonOnMobile: true,
 				};
 			}),
 		});
@@ -232,6 +216,7 @@ API.v1.post(
 	{
 		authRequired: true,
 		twoFactorRequired: true,
+		license: ['oauth-enterprise'],
 		permissionsRequired: {
 			POST: { permissions: ['add-oauth-service'], operation: 'hasAll' },
 		},
@@ -251,7 +236,7 @@ API.v1.post(
 	async function action() {
 		const { name } = this.bodyParams;
 		if (!name?.trim()) {
-			throw new Meteor.Error('error-name-param-not-provided', 'The parameter "name" is required');
+			throw new ClientSafeError('error-name-param-not-provided', 'The parameter "name" is required');
 		}
 
 		await addOAuthServiceMethod(this.userId, name);
@@ -284,7 +269,7 @@ API.v1.post(
 	async function action() {
 		const { name } = this.bodyParams;
 		if (!name?.trim()) {
-			throw new Meteor.Error('error-name-param-not-provided', 'The parameter "name" is required');
+			throw new ClientSafeError('error-name-param-not-provided', 'The parameter "name" is required');
 		}
 
 		await removeCustomOAuthSettings(name);
@@ -332,17 +317,15 @@ API.v1.get(
 	async function action() {
 		const { includeDefaults } = this.queryParams;
 		const { offset, count } = await getPaginationItems(this.queryParams);
-		const { sort, fields, query } = await this.parseJsonQuery();
+		const { sort, fields } = await this.parseJsonQuery();
 
-		let ourQuery: Parameters<typeof Settings.find>[0] = {
+		const ourQuery: Parameters<typeof Settings.find>[0] = {
 			hidden: { $ne: true },
 		};
 
 		if (!(await hasPermissionAsync(this.user, 'view-privileged-setting'))) {
 			ourQuery.public = true;
 		}
-
-		ourQuery = Object.assign({}, query, ourQuery);
 
 		if (includeDefaults) {
 			fields.packageValue = 1;
@@ -407,7 +390,7 @@ API.v1.post(
 	async function action() {
 		const { _id } = this.urlParams;
 		if (typeof _id !== 'string') {
-			throw new Meteor.Error('error-id-param-not-provided', 'The parameter "id" is required');
+			throw new ClientSafeError('error-id-param-not-provided', 'The parameter "id" is required');
 		}
 
 		if (disableCustomScripts() && /^Custom_Script_/.test(_id)) {

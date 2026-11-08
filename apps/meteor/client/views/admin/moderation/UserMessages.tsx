@@ -1,6 +1,6 @@
 import { Box, Callout, Message, StatesAction, StatesActions, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { ContextualbarFooter } from '@rocket.chat/ui-client';
+import { ContextualbarFooter, GenericNoResults } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { Fragment } from 'react';
@@ -8,7 +8,6 @@ import { useTranslation } from 'react-i18next';
 
 import MessageContextFooter from './MessageContextFooter';
 import ContextMessage from './helpers/ContextMessage';
-import GenericNoResults from '../../../components/GenericNoResults';
 
 // TODO: We should use Contextualbar components here
 const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid: string) => void }) => {
@@ -41,14 +40,14 @@ const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid
 			<Box display='flex' flexDirection='column' width='full' height='full' overflowY='auto' overflowX='hidden'>
 				{isLoading && <Message>{t('Loading')}</Message>}
 				{isSuccess && (
-					<Box padding={24}>
+					<Box padding={24} display='flex' flexDirection='column' gap={8}>
 						{report.messages.length > 0 && (
 							<Callout title={t('Moderation_Duplicate_messages')} type='warning' icon='warning'>
 								{t('Moderation_Duplicate_messages_warning')}
 							</Callout>
 						)}
 						{!report.user && (
-							<Callout marginBlockStart={8} type='warning' icon='warning'>
+							<Callout type='warning' icon='warning'>
 								{t('Moderation_User_deleted_warning')}
 							</Callout>
 						)}

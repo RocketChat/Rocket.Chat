@@ -1,12 +1,11 @@
 import type { IInvite } from '@rocket.chat/core-typings';
-import { Box, IconButton } from '@rocket.chat/fuselage';
+import { IconButton, Text } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
-import { GenericTableCell, GenericTableRow } from '@rocket.chat/ui-client';
+import { GenericTableCell, GenericTableRow, useFormatDateAndTime } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import type { MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import { useTimeFromNow } from '../../../hooks/useTimeFromNow';
 
 const isExpired = (expires: IInvite['expires']): boolean => {
@@ -65,9 +64,9 @@ const InviteRow = ({ _id, createdAt, expires, uses, maxUses, onRemove }: InviteR
 	return (
 		<GenericTableRow>
 			<GenericTableCell>
-				<Box color='hint' fontScale='p2'>
+				<Text color='hint' fontScale='p2'>
 					{_id}
-				</Box>
+				</Text>
 			</GenericTableCell>
 			{notSmall && (
 				<>
@@ -78,7 +77,7 @@ const InviteRow = ({ _id, createdAt, expires, uses, maxUses, onRemove }: InviteR
 				</>
 			)}
 			<GenericTableCell>
-				<IconButton icon='cross' danger small onClick={handleRemoveButtonClick} />
+				<IconButton icon='cross' variant='danger' size='small' onClick={handleRemoveButtonClick} />
 			</GenericTableCell>
 		</GenericTableRow>
 	);

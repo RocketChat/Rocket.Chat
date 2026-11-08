@@ -1,6 +1,7 @@
-/* eslint-disable complexity */
+/* oxlint-disable complexity */
 import { isRoomFederated, isRoomNativeFederated, type IMessage, type ISubscription } from '@rocket.chat/core-typings';
 import { useContentBoxSize, useStableCallback, useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import { useFormatDateAndTime, useMergedRefsV2 } from '@rocket.chat/ui-client';
 import { MessageComposerInputExpandable } from '@rocket.chat/ui-composer';
 import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
@@ -16,9 +17,7 @@ import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
 import { emptySubscribe, getEmptyFalse, getEmptyArray, handleFormattingShortcut } from './messageBoxHelpers';
 import { handleSelectionWrapping } from './wrapSelection';
 import { getImageExtensionFromMime } from '../../../../../lib/getImageExtensionFromMime';
-import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { useIsFederationEnabled } from '../../../../hooks/useIsFederationEnabled';
-import { useMergedRefsV2 } from '../../../../hooks/useMergedRefsV2';
 import { emoji } from '../../../../lib/emoji';
 import { formattingButtons } from '../../../../lib/messageBoxFormatting';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
@@ -29,7 +28,7 @@ import { useChat } from '../../contexts/ChatContext';
 import { useComposerPopupOptions } from '../../contexts/ComposerPopupContext';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import { useAutoGrow } from '../RoomComposer/hooks/useAutoGrow';
-import { useComposerBoxPopup } from '../hooks/useComposerBoxPopup';
+import { getComposerPopupListboxId, useComposerBoxPopup } from '../hooks/useComposerBoxPopup';
 import { useEnablePopupPreview } from '../hooks/useEnablePopupPreview';
 
 const reducer = (_: unknown, event: ChangeEvent<HTMLInputElement>): boolean => {
@@ -89,7 +88,7 @@ const MessageBox = ({
 	const messageComposerRef = useRef<HTMLElement>(null);
 
 	const subscription = useRoomSubscription();
-	const { initialValue, persistLocal, flushDraft } = useDraft(
+	const { initialValue, persistLocal, flushDraft, discardDraft } = useDraft(
 		room._id,
 		tmid ? subscription?.threadDrafts?.[tmid] : subscription?.draft,
 		tmid,
@@ -100,7 +99,10 @@ const MessageBox = ({
 		(node: HTMLTextAreaElement) => {
 			if (!chat.composer) {
 				chat.setComposerAPI(
-					createComposerAPI(node, persistLocal, initialValue, quoteChainLimit, messageComposerRef, { rid: room._id, tmid }),
+					createComposerAPI(node, persistLocal, discardDraft, initialValue, quoteChainLimit, messageComposerRef, {
+						rid: room._id,
+						tmid,
+					}),
 				);
 			}
 
@@ -113,7 +115,7 @@ const MessageBox = ({
 				chat.setComposerAPI();
 			};
 		},
-		[chat, flushDraft, initialValue, persistLocal, quoteChainLimit, room._id, tmid],
+		[chat, discardDraft, flushDraft, initialValue, persistLocal, quoteChainLimit, room._id, tmid],
 	);
 
 	const isTouchDevice = useMediaQuery('(pointer: coarse)');
@@ -146,7 +148,6 @@ const MessageBox = ({
 
 		const text = chat.composer?.text ?? '';
 		popup.clear();
-		flushDraft('');
 
 		void onSend?.({
 			value: text,
@@ -418,6 +419,8 @@ const MessageBox = ({
 					placeholder={composerPlaceholder}
 					onPaste={handlePaste}
 					aria-activedescendant={popup.focused ? `popup-item-${popup.focused._id}` : undefined}
+					aria-autocomplete='list'
+					aria-controls={getComposerPopupListboxId(popup, shouldPopupPreview)}
 				/>
 			}
 			files={<MessageComposerFiles />}

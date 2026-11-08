@@ -13,7 +13,6 @@ import { Registration } from './page-objects';
 import { convertHexToRGB } from './utils/convertHexToRGB';
 import { createCustomRole, deleteCustomRole } from './utils/custom-role';
 import { getUserInfo } from './utils/getUserInfo';
-import { parseMeteorResponse } from './utils/parseMeteorResponse';
 import { saveSettings } from './utils/saveSettings';
 import { setSettingValueById } from './utils/setSettingValueById';
 import type { BaseTest } from './utils/test';
@@ -123,6 +122,9 @@ const setupCustomRole = async (api: BaseTest['api']) => {
 };
 
 test.describe('SAML', () => {
+	// SAML requires the `saml-enterprise` module since 9.0.0
+	test.skip(!constants.IS_EE);
+
 	let poRegistration: Registration;
 	let samlRoleId: string;
 	let targetInviteGroupId: string;
@@ -244,30 +246,6 @@ test.describe('SAML', () => {
 		});
 	});
 
-	test('Allow password change for OAuth users', async ({ api }) => {
-		await test.step("should not send password reset mail if 'Allow Password Change for OAuth Users' setting is disabled", async () => {
-			expect((await setSettingValueById(api, 'Accounts_AllowPasswordChangeForOAuthUsers', false)).status()).toBe(200);
-
-			const response = await api.post('/method.call/sendForgotPasswordEmail', {
-				message: JSON.stringify({ msg: 'method', id: 'id', method: 'sendForgotPasswordEmail', params: ['samluser1@example.com'] }),
-			});
-			const mailSent = await parseMeteorResponse<boolean>(response);
-			expect(response.status()).toBe(200);
-			expect(mailSent).toBe(false);
-		});
-
-		await test.step("should send password reset mail if 'Allow Password Change for OAuth Users' setting is enabled", async () => {
-			expect((await setSettingValueById(api, 'Accounts_AllowPasswordChangeForOAuthUsers', true)).status()).toBe(200);
-
-			const response = await api.post('/method.call/sendForgotPasswordEmail', {
-				message: JSON.stringify({ msg: 'method', id: 'id', method: 'sendForgotPasswordEmail', params: ['samluser1@example.com'] }),
-			});
-			const mailSent = await parseMeteorResponse<boolean>(response);
-			expect(response.status()).toBe(200);
-			expect(mailSent).toBe(true);
-		});
-	});
-
 	const doChangeSetting = async (api: any, settingId: string, settingValue: any) => {
 		await expect((await setSettingValueById(api, settingId, settingValue)).status()).toBe(200);
 	};
@@ -315,7 +293,7 @@ test.describe('SAML', () => {
 	const doLogoutStep = async (page: Page) => {
 		await test.step('logout', async () => {
 			await page.getByRole('button', { name: 'User menu' }).click();
-			await page.locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Logout")]').click();
+			await page.getByRole('menu', { name: 'User menu' }).getByRole('menuitemcheckbox', { name: 'Logout' }).click();
 
 			await expect(page).toHaveURL('/home');
 			await expect(page.getByRole('button', { name: 'User menu' })).not.toBeVisible();
@@ -481,8 +459,6 @@ test.describe('SAML', () => {
 	});
 
 	test('User Mapping - Custom Role', async ({ page, api }) => {
-		test.skip(!constants.IS_EE);
-
 		await doLoginStep(page, 'samluser4');
 
 		await test.step('expect users role to have been mapped correctly', async () => {
@@ -501,7 +477,7 @@ test.describe('SAML', () => {
 
 	test('Redirect to a specific group after login when using a valid invite link', async ({ page }) => {
 		await poRegistration.gotoInvite(inviteId);
-		await page.getByRole('link', { name: 'Back to Login' }).click();
+		await page.getByRole('link', { name: 'Back to login' }).click();
 
 		expect(await page.evaluate((key) => sessionStorage.getItem(key), KEY)).toEqual(JSON.stringify(inviteId));
 
@@ -515,7 +491,7 @@ test.describe('SAML', () => {
 
 	test('Remove invite token from session storage if invite is not used', async ({ page }) => {
 		await poRegistration.gotoInvite(inviteId);
-		await page.getByRole('link', { name: 'Back to Login' }).click();
+		await page.getByRole('link', { name: 'Back to login' }).click();
 
 		expect(await page.evaluate((key) => sessionStorage.getItem(key), KEY)).toEqual(JSON.stringify(inviteId));
 
@@ -541,7 +517,7 @@ test.describe('SAML', () => {
 		await expect(page2).toHaveURL('/home');
 
 		await poRegistration.gotoInvite(inviteId);
-		await page.getByRole('link', { name: 'Back to Login' }).click();
+		await page.getByRole('link', { name: 'Back to login' }).click();
 
 		expect(await page.evaluate((key) => sessionStorage.getItem(key), KEY)).toEqual(JSON.stringify(inviteId));
 		expect(await page2.evaluate((key) => sessionStorage.getItem(key), KEY)).toEqual('null');
@@ -822,14 +798,6 @@ test.describe('SAML', () => {
 				await connection.close();
 			}
 		};
-
-		test.beforeAll(async ({ api }) => {
-			await api.post('/settings/Accounts_OAuth_Use_Modern_Flow', { value: true });
-		});
-
-		test.afterAll(async ({ api }) => {
-			await api.post('/settings/Accounts_OAuth_Use_Modern_Flow', { value: false });
-		});
 
 		test('Hand the credential token to the desktop client without logging in the browser', async ({ page }) => {
 			await poRegistration.goto('/home?loginClient=desktop');

@@ -72,9 +72,12 @@ export const useDraft = (rid: string, serverDraft?: string, tmid?: string, threa
 		[saveDraft, rid, tmid, setLocalDraft],
 	);
 
+	const discardDraft = useCallback(() => flushDraft(''), [flushDraft]);
+
 	return {
 		initialValue: initialValueRef.current,
 		persistLocal,
 		flushDraft,
+		discardDraft,
 	};
 };

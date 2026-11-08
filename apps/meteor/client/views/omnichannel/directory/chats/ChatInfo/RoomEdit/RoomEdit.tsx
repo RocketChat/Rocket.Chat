@@ -1,6 +1,12 @@
 import type { ILivechatVisitor, IOmnichannelRoom, Serialized } from '@rocket.chat/core-typings';
 import { Field, FieldLabel, FieldRow, TextInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
-import { CustomFieldsForm, ContextualbarContent, ContextualbarFooter, ContextualbarScrollableContent } from '@rocket.chat/ui-client';
+import {
+	CustomFieldsForm,
+	ContextualbarContent,
+	ContextualbarFooter,
+	ContextualbarScrollableContent,
+	FormSkeleton,
+} from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useId } from 'react';
@@ -11,7 +17,6 @@ import { roomsQueryKeys } from '../../../../../../lib/queryKeys';
 import { SlaPoliciesSelect, PrioritiesSelect } from '../../../../additionalForms';
 import Tags from '../../../../components/Tags';
 import { useOmnichannelPriorities } from '../../../../hooks/useOmnichannelPriorities';
-import { FormSkeleton } from '../../../components/FormSkeleton';
 import { useCustomFieldsMetadata } from '../../../hooks/useCustomFieldsMetadata';
 import { useSlaPolicies } from '../../../hooks/useSlaPolicies';
 
@@ -137,7 +142,7 @@ function RoomEdit({ room, visitor, reload, reloadInfo, onClose }: RoomEditProps)
 				<Field>
 					<FieldLabel htmlFor={topicField}>{t('Topic')}</FieldLabel>
 					<FieldRow>
-						<TextInput {...register('topic')} id={topicField} flexGrow={1} />
+						<TextInput {...register('topic')} id={topicField} />
 					</FieldRow>
 				</Field>
 
@@ -155,18 +160,9 @@ function RoomEdit({ room, visitor, reload, reloadInfo, onClose }: RoomEditProps)
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button flexGrow={1} onClick={onClose}>
-						{t('Cancel')}
-					</Button>
+					<Button onClick={onClose}>{t('Cancel')}</Button>
 
-					<Button
-						marginInlineEnd='none'
-						flexGrow={1}
-						onClick={handleSubmit(handleSave)}
-						loading={isSubmitting}
-						disabled={!isFormValid || !isFormDirty}
-						primary
-					>
+					<Button onClick={handleSubmit(handleSave)} loading={isSubmitting} disabled={!isFormValid || !isFormDirty} variant='primary'>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

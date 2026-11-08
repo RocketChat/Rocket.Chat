@@ -25,7 +25,7 @@ const DIGITS = [
 
 const Keypad = ({ onKeyPress, autoFocus = true }: KeypadProps) => (
 	<FocusScope autoFocus={autoFocus}>
-		<Box display='flex' justifyContent='center' flexWrap='wrap' maxWidth={196}>
+		<Box display='flex' justifyContent='center' flexWrap='wrap' maxWidth={196} gap={8} padding={4}>
 			{DIGITS.map(([primaryDigit, alternativeDigit, longPressDigit]) => (
 				<Key
 					large={primaryDigit === '*'}

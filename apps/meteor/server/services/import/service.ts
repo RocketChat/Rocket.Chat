@@ -168,7 +168,7 @@ export class ImportService extends ServiceClassInternal implements IImportServic
 			throw new Error('error-importer-not-defined');
 		}
 
-		// eslint-disable-next-line new-cap
+		// oxlint-disable-next-line new-cap
 		const instance = new importer.importer(importer, operation, {
 			skipUserCallbacks: true,
 			skipDefaultChannels: true,

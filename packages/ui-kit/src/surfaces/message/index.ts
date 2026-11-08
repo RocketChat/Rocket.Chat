@@ -1,2 +1,2 @@
-export { UiKitParserMessage, type MessageSurfaceLayout } from './UiKitParserMessage';
+export { UiKitParserMessage, type MessageSurfaceLayout, messageSurfaceLayoutBlockTypes } from './UiKitParserMessage';
 export { uiKitMessage } from './uiKitMessage';

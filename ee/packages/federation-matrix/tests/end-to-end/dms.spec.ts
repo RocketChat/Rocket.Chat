@@ -3,16 +3,16 @@ import type { MatrixEvent, Room, RoomEmittedEvents } from 'matrix-js-sdk';
 import { RoomStateEvent } from 'matrix-js-sdk';
 
 import { api } from '../../../../../apps/meteor/tests/data/api-data';
+import { retry } from '../../../../../apps/meteor/tests/data/retry';
 import {
 	acceptRoomInvite,
-	addUserToRoomViaMethod,
+	addUserToRoomSlashCommand,
 	getRoomInfo,
 	getSubscriptionByRoomId,
 } from '../../../../../apps/meteor/tests/data/rooms.helper';
 import { getRequestConfig, createUser, deleteUser } from '../../../../../apps/meteor/tests/data/users.helper';
 import type { TestUser, IRequestConfig } from '../../../../../apps/meteor/tests/data/users.helper';
 import { IS_EE } from '../../../../../apps/meteor/tests/e2e/config/constants';
-import { retry } from '../../../../../apps/meteor/tests/end-to-end/api/helpers/retry';
 import { federationConfig } from '../helper/config';
 import { SynapseClient } from '../helper/synapse-client';
 import { withTimeout } from '../helper/withTimeout';
@@ -161,8 +161,7 @@ const waitForRoomEvent = async (
 						expect(event).toHaveProperty('state_key', userDmId);
 					});
 
-					const response = await acceptRoomInvite(rcRoom._id, rcUserConfig);
-					expect(response.success).toBe(true);
+					await acceptRoomInvite(rcRoom._id, rcUserConfig);
 
 					await waitForRoomEventPromise;
 				});
@@ -275,10 +274,7 @@ const waitForRoomEvent = async (
 							expect(event).toHaveProperty('content.membership', 'join');
 							expect(event).toHaveProperty('state_key', userDmId);
 						}),
-						(async () => {
-							const response = await acceptRoomInvite(rcRoom._id, rcUserConfig);
-							expect(response.success).toBe(true);
-						})(),
+						acceptRoomInvite(rcRoom._id, rcUserConfig),
 					]);
 				});
 
@@ -613,8 +609,7 @@ const waitForRoomEvent = async (
 						expect(event).toHaveProperty('state_key', userDmId1);
 					});
 
-					const response = await acceptRoomInvite(rcRoom1._id, rcUserConfig1);
-					expect(response.success).toBe(true);
+					await acceptRoomInvite(rcRoom1._id, rcUserConfig1);
 
 					await waitForRoomEventPromise1;
 
@@ -667,7 +662,6 @@ const waitForRoomEvent = async (
 			describe('Permission validations', () => {
 				const userDm3 = `dm-federation-user3-${Date.now()}`;
 				const userDm3Name = `DM Federation User3 ${Date.now()}`;
-				const userDmId3 = `@${userDm3}:${federationConfig.rc1.domain}`;
 
 				beforeAll(async () => {
 					rcUser3 = await createUser(
@@ -683,19 +677,9 @@ const waitForRoomEvent = async (
 
 				// TODO maybe we should allow it
 				it('should fail if a user from rc try to add another user to the group DM', async () => {
-					const response = await addUserToRoomViaMethod({
-						usernames: [userDmId3],
-						rid: rcRoom1._id,
-						config: rcUserConfig1,
-					});
-
-					expect(response.body).toHaveProperty('success', false);
-					expect(response.body).toHaveProperty('message');
-
-					// Parse the error message from the DDP response
-					const messageData = JSON.parse(response.body.message);
-
-					expect(messageData).toHaveProperty('error.error', 'error-not-allowed');
+					await expect(addUserToRoomSlashCommand({ usernames: [userDm3], rid: rcRoom1._id, config: rcUserConfig1 })).rejects.toThrow(
+						'error-forbidden',
+					);
 				});
 
 				it('should allow a user to leave the group DM', async () => {
@@ -811,8 +795,7 @@ const waitForRoomEvent = async (
 						expect(event).toHaveProperty('state_key', userDmIdA);
 					});
 
-					const response = await acceptRoomInvite(rcRoomConverted._id, rcUserConfigA);
-					expect(response.success).toBe(true);
+					await acceptRoomInvite(rcRoomConverted._id, rcUserConfigA);
 
 					await waitForJoinEventPromise;
 
@@ -855,8 +838,7 @@ const waitForRoomEvent = async (
 						expect(event).toHaveProperty('state_key', userDmIdB);
 					});
 
-					const response = await acceptRoomInvite(rcRoomConverted._id, rcUserConfigB);
-					expect(response.success).toBe(true);
+					await acceptRoomInvite(rcRoomConverted._id, rcUserConfigB);
 
 					await waitForRoomEventPromise;
 
@@ -1168,25 +1150,14 @@ const waitForRoomEvent = async (
 				});
 
 				it('should accept the invitation by the Rocket.Chat user', async () => {
-					const response = await acceptRoomInvite(rcRoom._id, rcUserConfig2);
-					expect(response.success).toBe(true);
+					await expect(acceptRoomInvite(rcRoom._id, rcUserConfig2)).resolves.toMatchObject({ success: true });
 				});
 
 				// TODO maybe we should allow it
 				it('should fail if a user from rc try to add another user to the group DM', async () => {
-					const response = await addUserToRoomViaMethod({
-						usernames: [rcUser3.username],
-						rid: rcRoom._id,
-						config: rcUserConfig2,
-					});
-
-					expect(response.body).toHaveProperty('success', false);
-					expect(response.body).toHaveProperty('message');
-
-					// Parse the error message from the DDP response
-					const messageData = JSON.parse(response.body.message);
-
-					expect(messageData).toHaveProperty('error.error', 'error-not-allowed');
+					await expect(
+						addUserToRoomSlashCommand({ usernames: [rcUser3.username], rid: rcRoom._id, config: rcUserConfig2 }),
+					).rejects.toThrow('error-forbidden');
 				});
 
 				it('should add another user by another user than the initial inviter', async () => {
@@ -1577,8 +1548,7 @@ const waitForRoomEvent = async (
 								{ retries: 5, delayMs: 1000 },
 							);
 
-							const response = await acceptRoomInvite(rcRoom._id, rcUser2.config);
-							expect(response.success).toBe(true);
+							await acceptRoomInvite(rcRoom._id, rcUser2.config);
 
 							await retry(
 								'wait for the join to be processed',
@@ -1745,19 +1715,16 @@ const waitForRoomEvent = async (
 					expect(dmCreate.body).toHaveProperty('success', true);
 					expect(dmCreate.body).toHaveProperty('room');
 
-					const response = await addUserToRoomViaMethod({
-						usernames: [federationConfig.hs1.additionalUser1.matrixUserId],
-						rid: dmCreate.body.room._id,
-						config: rcUser1.config,
-					});
+					await expect(
+						addUserToRoomSlashCommand({
+							usernames: [federationConfig.hs1.additionalUser1.matrixUserId],
+							rid: dmCreate.body.room._id,
+							config: rcUser1.config,
+						}),
+					).rejects.toThrow('error-forbidden');
 
-					expect(response.body).toHaveProperty('success', false);
-					expect(response.body).toHaveProperty('message');
-
-					// Parse the error message from the DDP response
-					const messageData = JSON.parse(response.body.message);
-
-					expect(messageData).toHaveProperty('error.error', 'error-cant-invite-for-direct-room');
+					const roomInfo = await getRoomInfo(dmCreate.body.room._id, rcUser1.config);
+					expect(roomInfo.room).toHaveProperty('usersCount', 2);
 				});
 
 				it('should create a 1:1 federated DM', async () => {
@@ -1796,13 +1763,11 @@ const waitForRoomEvent = async (
 
 				it('should send an invite to another Synapse user', async () => {
 					// invite from rocket.chat
-					const response = await addUserToRoomViaMethod({
+					await addUserToRoomSlashCommand({
 						usernames: [federationConfig.hs1.additionalUser1.matrixUserId],
 						rid: rcRoom._id,
 						config: rcUser1.config,
 					});
-
-					expect(response.body).toHaveProperty('success', true);
 
 					// Wait for invitation in Synapse
 					await retry('waiting for room invitation', async () => {
@@ -1920,8 +1885,7 @@ const waitForRoomEvent = async (
 		});
 
 		it('should accept the DM invitation from RC', async () => {
-			const response = await acceptRoomInvite(rcRoom._id, rcUserConfig);
-			expect(response.success).toBe(true);
+			await expect(acceptRoomInvite(rcRoom._id, rcUserConfig)).resolves.toMatchObject({ success: true });
 		});
 
 		it('should update DM room name after Synapse user changes their display name', async () => {

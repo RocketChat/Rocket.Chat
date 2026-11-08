@@ -10,7 +10,7 @@ import { onMouseEventPreventSideEffects } from '../../helpers/onMouseEventPreven
 import DropDownListWrapper from '../DropDownListWrapper';
 import RadioButtonList from '../RadioButtonList';
 
-const RadioDropDown = ({ group, onSelected, ...props }: RadioDropDownProps & ComponentProps<typeof Button>) => {
+const RadioDropDown = ({ group, onSelected, ...props }: RadioDropDownProps & Omit<ComponentProps<typeof Button>, 'onClick'>) => {
 	const reference = useRef<HTMLElement>(null);
 	const [collapsed, toggleCollapsed] = useToggle(false);
 

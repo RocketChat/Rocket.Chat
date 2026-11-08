@@ -1,4 +1,5 @@
 ---
+'@rocket.chat/ui-emoji-picker': patch
 '@rocket.chat/meteor': patch
 ---
 

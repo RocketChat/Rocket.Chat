@@ -12,7 +12,7 @@ const ImageElement = ({ block, context }: ImageElementProps) => {
 		return null;
 	}
 
-	return <Element imageUrl={block.imageUrl} size={size} />;
+	return <Element imageUrl={block.imageUrl} size={size} spaced={context === UiKit.BlockContext.SECTION} />;
 };
 
 export default ImageElement;

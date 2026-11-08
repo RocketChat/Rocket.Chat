@@ -6,7 +6,7 @@ import { ConfirmLogoutModal, DevicesTable } from './fragments';
 export class AccountManageDevices extends Account {
 	protected readonly route = AccountSectionsHref.manageDevices;
 
-	protected readonly title = 'Manage Devices';
+	protected readonly title = 'Manage devices';
 
 	readonly logoutModal: ConfirmLogoutModal;
 

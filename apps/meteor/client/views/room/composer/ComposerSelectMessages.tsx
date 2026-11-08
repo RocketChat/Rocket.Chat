@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import type { ComposerMessageProps } from './ComposerMessage';
 import { useCountSelected, useClearSelection, useAvailableMessagesCount } from '../MessageList/contexts/SelectedMessagesContext';
 
-const ComposerSelectMessages = ({ onClickSelectAll }: ComposerMessageProps) => {
+const ComposerSelectMessages = ({ onClickSelectAll }: Pick<ComposerMessageProps, 'onClickSelectAll'>) => {
 	const { t } = useTranslation();
 
 	const clearSelection = useClearSelection();
@@ -18,10 +18,10 @@ const ComposerSelectMessages = ({ onClickSelectAll }: ComposerMessageProps) => {
 				{t('__count__messages_selected', { count: countSelected })}
 			</MessageFooterCalloutContent>
 			<ButtonGroup>
-				<Button small disabled={countSelected === 0} onClick={clearSelection}>
+				<Button size='small' disabled={countSelected === 0} onClick={clearSelection}>
 					{t('Clear_selection')}
 				</Button>
-				<Button icon='arrow-up' small primary disabled={countAvailable === 0} onClick={onClickSelectAll}>
+				<Button icon='arrow-up' size='small' variant='primary' disabled={countAvailable === 0} onClick={onClickSelectAll}>
 					{t('Select__count__messages', { count: countAvailable })}
 				</Button>
 			</ButtonGroup>

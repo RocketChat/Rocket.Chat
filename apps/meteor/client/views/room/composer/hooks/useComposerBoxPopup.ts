@@ -1,7 +1,7 @@
-import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { useActiveDescendant, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { MutableRefObject, RefCallback } from 'react';
-import { useEffect, useCallback, useState, useRef } from 'react';
+import { useEffect, useCallback, useId, useState, useRef } from 'react';
 
 import { useComposerBoxPopupQueries } from './useComposerBoxPopupQueries';
 import { useChat } from '../../contexts/ChatContext';
@@ -22,7 +22,10 @@ type ComposerBoxPopupResult<T extends { _id: string; sort?: number }> =
 			option: ComposerPopupOption<T>;
 			items: UseQueryResult<T[]>[];
 			focused: T | undefined;
+			focusVisible: boolean;
+			listboxId: string;
 			select: (item: T) => void;
+			hover: (item: T) => void;
 			callbackRef: RefCallback<HTMLElement>;
 			commandsRef: ComposerBoxPopupImperativeCommands<T>;
 			suspended: boolean;
@@ -33,8 +36,11 @@ type ComposerBoxPopupResult<T extends { _id: string; sort?: number }> =
 			option: undefined;
 			items: undefined;
 			focused: undefined;
+			focusVisible: false;
+			listboxId: string;
 			callbackRef: RefCallback<HTMLElement>;
 			select: undefined;
+			hover: undefined;
 			commandsRef: ComposerBoxPopupImperativeCommands<T>;
 			suspended: undefined;
 			filter: unknown;
@@ -53,7 +59,8 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 	options: ComposerBoxPopupOptions<T>[],
 ): ComposerBoxPopupResult<T> => {
 	const [optionIndex, setOptionIndex] = useState<number>(-1);
-	const [focused, setFocused] = useState<T | undefined>(undefined);
+	const { active: focused, setActive: setFocused, focusVisible, setFocusVisible, moveByKeyboard, moveByPointer } = useActiveDescendant<T>();
+	const listboxId = useId();
 	const [filter, setFilter] = useState('');
 
 	const option = options[optionIndex];
@@ -83,7 +90,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 				.sort((a, b) => (('sort' in a && a.sort) || 0) - (('sort' in b && b.sort) || 0));
 			return sortedItems.find((item) => item._id === focused?._id) ?? sortedItems[0];
 		});
-	}, [items, option, suspended]);
+	}, [items, option, suspended, setFocused]);
 
 	const select = useStableCallback((item: T) => {
 		if (!option) {
@@ -148,14 +155,16 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 		return option;
 	});
 
-	const handleFocus = useStableCallback(() => {
+	const handleFocus = useStableCallback((event: FocusEvent) => {
 		if (option) {
 			return;
 		}
+		setFocusVisible(event.target instanceof Element && event.target.matches(':focus-visible'));
 		setOptionByInput();
 	});
 
 	const handleInput = useStableCallback(() => {
+		setFocusVisible(true);
 		setOptionByInput();
 	});
 
@@ -183,6 +192,15 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 				return;
 			}
 
+			if ('disabled' in focused && focused.disabled) {
+				if (event.which === keys.ENTER) {
+					event.preventDefault();
+					event.stopImmediatePropagation();
+					return true;
+				}
+				return;
+			}
+
 			select(focused);
 
 			event.preventDefault();
@@ -190,7 +208,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 			return true;
 		}
 		if (event.which === keys.ARROW_UP && !(event.shiftKey || event.ctrlKey || event.altKey || event.metaKey)) {
-			setFocused((focused) => {
+			moveByKeyboard((focused) => {
 				const list = items
 					.filter((item) => item.isSuccess)
 					.flatMap((item) => item.data)
@@ -209,7 +227,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 			return true;
 		}
 		if (event.which === keys.ARROW_DOWN && !(event.shiftKey || event.ctrlKey || event.altKey || event.metaKey)) {
-			setFocused((focused) => {
+			moveByKeyboard((focused) => {
 				const list = items
 					.filter((item) => item.isSuccess)
 					.flatMap((item) => item.data)
@@ -257,7 +275,10 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 			option: undefined,
 			items: undefined,
 			focused: undefined,
+			focusVisible: false,
+			listboxId,
 			select: undefined,
+			hover: undefined,
 			callbackRef,
 			commandsRef,
 			suspended: undefined,
@@ -270,11 +291,32 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 		option,
 		items,
 		focused,
+		focusVisible,
+		listboxId,
 		select,
+		hover: moveByPointer,
 		callbackRef,
 		commandsRef,
 		suspended,
 		filter,
 		clear,
 	};
+};
+
+/**
+ * The listbox the message field controls while a composer popup shows one.
+ */
+export const getComposerPopupListboxId = (
+	popup: Pick<ReturnType<typeof useComposerBoxPopup>, 'option' | 'suspended' | 'listboxId'>,
+	showsList?: boolean,
+) => {
+	if (popup.option?.preview && !popup.suspended) {
+		return `${popup.listboxId}-preview`;
+	}
+
+	if (popup.option && showsList) {
+		return popup.listboxId;
+	}
+
+	return undefined;
 };

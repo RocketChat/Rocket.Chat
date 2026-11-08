@@ -281,12 +281,12 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 				...(userData.bio && { bio: userData.bio }),
 				...(userData.services?.ldap && { ldap: true }),
 				...(userData.avatarUrl && { _pendingAvatarUrl: userData.avatarUrl }),
-				...(this._options.syncVoipExtension && userData.voipExtension && { freeSwitchExtension: userData.voipExtension }),
+				...(this._options.syncVoipExtension && userData.voipExtension && { sipExtension: userData.voipExtension }),
 			}),
 			...(this._options.syncVoipExtension &&
 				!userData.voipExtension && {
 					$unset: {
-						freeSwitchExtension: 1,
+						sipExtension: 1,
 					},
 				}),
 		});
@@ -361,7 +361,7 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 			...(userData.importIds?.length && { importIds: userData.importIds }),
 			...(!!userData.customFields && { customFields: userData.customFields }),
 			...(userData.deleted !== undefined && { active: !userData.deleted }),
-			...(this._options.syncVoipExtension && userData.voipExtension && { freeSwitchExtension: userData.voipExtension }),
+			...(this._options.syncVoipExtension && userData.voipExtension && { sipExtension: userData.voipExtension }),
 			...(userData.federated !== undefined && { federated: userData.federated }),
 		};
 	}

@@ -17,12 +17,12 @@ const UnitsTableRow = ({ _id, name, visibility }: UnitsTableRowProps) => {
 
 	return (
 		<GenericTableRow key={_id} tabIndex={0} onClick={onRowClick(_id)} action>
-			<GenericTableCell withTruncatedText>{name}</GenericTableCell>
-			<GenericTableCell withTruncatedText>{visibility}</GenericTableCell>
+			<GenericTableCell truncate>{name}</GenericTableCell>
+			<GenericTableCell truncate>{visibility}</GenericTableCell>
 			<GenericTableCell>
 				<IconButton
 					icon='trash'
-					small
+					size='small'
 					title={t('Remove')}
 					onClick={(e) => {
 						e.stopPropagation();

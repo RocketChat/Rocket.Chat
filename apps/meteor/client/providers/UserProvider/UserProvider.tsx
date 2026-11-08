@@ -22,6 +22,7 @@ import { getDdpSdk } from '../../lib/sdk/ddpSdk';
 import { settings } from '../../lib/settings';
 import { userIdStore } from '../../lib/user';
 import { logout } from '../../meteor/accounts';
+import { logoutFromSamlIdp } from '../../meteor/login/saml';
 import { Users, Rooms, Subscriptions } from '../../stores';
 import { useSamlInviteToken } from '../../views/invite/hooks/useSamlInviteToken';
 
@@ -159,7 +160,12 @@ const UserProvider = ({ children }: UserProviderProps) => {
 			querySubscription,
 			queryRoom,
 			querySubscriptions,
-			logout: async () => logout(),
+			logout: async () => {
+				if (await logoutFromSamlIdp()) {
+					return;
+				}
+				return logout();
+			},
 			onLogout: (cb) => {
 				return ee.on('logout', cb);
 			},

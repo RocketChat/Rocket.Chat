@@ -1,13 +1,17 @@
 // Runs the Rocket.Chat server and the Vite client together. The browser only
-// talks to Vite (PORT, default 3000), which proxies server routes to Meteor
-// (METEOR_PORT, default 3100). Meteor skips its own client build.
+// talks to Vite (PORT, default 3000), which serves the page Meteor renders with
+// its own client in it and proxies server routes to Meteor (METEOR_PORT, default 3100).
 // With RC_SERVER_URL set, only Vite starts and it proxies to that server instead.
-import { spawn } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
+import { rmSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { distOnlyWorkspacePackages, publicAssetWorkspacePackages } from './workspacePackages.mjs';
+
 const appRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
+const workspaceRoot = join(appRoot, '../..');
 const require = createRequire(import.meta.url);
 
 const port = process.env.PORT || '3000';
@@ -32,13 +36,33 @@ const stopTree = (child) => {
 	process.kill(-child.pid, 'SIGTERM');
 };
 
+// The client compiles workspace packages from source, so against a remote server only the packages it reads from
+// dist are built; the local Meteor server still loads every package from dist.
+const buildFilters = remoteServerUrl
+	? [...distOnlyWorkspacePackages, ...publicAssetWorkspacePackages].map((name) => `--filter=${name}...`)
+	: ['--filter=@rocket.chat/meteor^...'];
+const build = spawnSync('yarn', ['turbo', 'run', 'build', ...buildFilters], { cwd: workspaceRoot, stdio: 'inherit', shell: isWindows });
+if (build.status !== 0) {
+	process.exit(build.status ?? 1);
+}
+
+// A client built for production (`yarn build:client`) would make the local server add it to the page next to Vite's.
+if (!remoteServerUrl) {
+	rmSync(join(appRoot, 'public/bundle'), { recursive: true, force: true });
+	rmSync(join(appRoot, 'private/vite-manifest.json'), { force: true });
+}
+
 const children = [
 	!remoteServerUrl &&
-		run('meteor', ['run', '--port', meteorPort, '--exclude-archs', 'web.browser,web.browser.legacy,web.cordova'], {
+		run('meteor', ['run', '--port', meteorPort, '--exclude-archs', 'web.browser.legacy,web.cordova'], {
 			// Links the server builds (emails, OAuth callbacks, Site_Url) point at the Vite origin.
 			ROOT_URL: process.env.ROOT_URL || `http://localhost:${port}`,
 		}),
-	run(process.execPath, [viteBin, '--config', join(appRoot, 'vite/vite.config.mts')], { PORT: port, RC_SERVER_URL: serverUrl }),
+	run(process.execPath, [viteBin, '--config', join(appRoot, 'vite/vite.config.mts')], {
+		PORT: port,
+		RC_SERVER_URL: serverUrl,
+		RC_DEV_SERVER_PAGE: remoteServerUrl ? '' : '1',
+	}),
 ].filter(Boolean);
 
 let stopping = false;

@@ -1,13 +1,15 @@
-import { SetupWizardRoute } from '@rocket.chat/ui-client';
+import { SetupWizardRoute } from '@rocket.chat/ui-setup-wizard';
 import { createElement, lazy, useEffect } from 'react';
 
 import { appLayout } from '../lib/appLayout';
+import { preloadedLazy } from '../lib/preloadedLazy';
 import { router } from '../providers/RouterProvider';
 import OAuthTwoFactorAuthenticationRouter from '../views/OAuthTwoFactorAuthentication/OAuthTwoFactorAuthenticationRouter';
 import MainLayout from '../views/root/MainLayout';
 
 const IndexRoute = lazy(() => import('../views/root/IndexRoute'));
-const HomePage = lazy(() => import('../views/home/HomePage'));
+// the route most sessions land on
+const HomePage = preloadedLazy(() => import('../views/home/HomePage'));
 const DirectoryPage = lazy(() => import('../views/directory'));
 const OmnichannelDirectoryRouter = lazy(() => import('../views/omnichannel/directory/OmnichannelDirectoryRouter'));
 const OmnichannelQueueList = lazy(() => import('../views/omnichannel/queueList'));
@@ -85,10 +87,6 @@ declare module '@rocket.chat/ui-contexts' {
 		'conference': {
 			pathname: `/conference/${string}`;
 			pattern: '/conference/:id';
-		};
-		'setup-wizard': {
-			pathname: `/setup-wizard${`/${string}` | ''}`;
-			pattern: '/setup-wizard/:step?';
 		};
 		'mailer-unsubscribe': {
 			pathname: `/mailer/unsubscribe/${string}/${string}`;

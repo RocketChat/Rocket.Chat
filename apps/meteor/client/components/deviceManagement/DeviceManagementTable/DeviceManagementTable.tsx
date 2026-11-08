@@ -1,17 +1,26 @@
 import type { DeviceManagementSession, DeviceManagementPopulatedSession, Serialized } from '@rocket.chat/core-typings';
-import { Box, Pagination, States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
+import {
+	Box,
+	Pagination,
+	States,
+	StatesAction,
+	StatesActions,
+	StatesIcon,
+	StatesSubtitle,
+	StatesTitle,
+	type TableColumnWidth,
+} from '@rocket.chat/fuselage';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
-import { GenericTable, GenericTableHeader, GenericTableBody, GenericTableLoadingTable } from '@rocket.chat/ui-client';
+import { GenericTable, GenericTableHeader, GenericTableBody, GenericTableLoadingTable, GenericNoResults } from '@rocket.chat/ui-client';
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { ComponentProps, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import GenericNoResults from '../../GenericNoResults/GenericNoResults';
 
 // FIXME: this tight coupling with the query result is not ideal; it indicates visual components should not be tightly
 // coupled with data fetching logic.
 type DeviceManagementTableProps<T> = UseQueryResult<PaginatedResult<{ sessions: Serialized<T>[] }>> & {
 	headers: ReactNode[];
+	columns?: TableColumnWidth[];
 	renderRow: (data: Serialized<T>) => ReactNode;
 	current?: ComponentProps<typeof Pagination>['current'];
 	itemsPerPage?: ComponentProps<typeof Pagination>['itemsPerPage'];
@@ -29,6 +38,7 @@ const DeviceManagementTable = <T extends DeviceManagementSession | DeviceManagem
 	data,
 	refetch,
 	headers,
+	columns,
 	renderRow,
 	current,
 	itemsPerPage,
@@ -47,7 +57,7 @@ const DeviceManagementTable = <T extends DeviceManagementSession | DeviceManagem
 					<StatesSubtitle>{t('We_Could_not_retrive_any_data')}</StatesSubtitle>
 					<StatesSubtitle>{error.message}</StatesSubtitle>
 					<StatesActions>
-						<StatesAction onClick={refetch}>{t('Retry')}</StatesAction>
+						<StatesAction onClick={() => refetch()}>{t('Retry')}</StatesAction>
 					</StatesActions>
 				</States>
 			</Box>
@@ -57,7 +67,7 @@ const DeviceManagementTable = <T extends DeviceManagementSession | DeviceManagem
 	return (
 		<>
 			{data?.sessions.length === 0 && isSuccess && <GenericNoResults />}
-			<GenericTable aria-label={t('Devices')}>
+			<GenericTable columns={columns} aria-label={t('Devices')}>
 				{data?.sessions && data.sessions.length > 0 && headers && <GenericTableHeader>{headers}</GenericTableHeader>}
 				<GenericTableBody>
 					{isPending && <GenericTableLoadingTable headerCells={headers.filter(Boolean).length} />}

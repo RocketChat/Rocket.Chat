@@ -1,9 +1,8 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { Box, ModalBackdrop, Skeleton } from '@rocket.chat/fuselage';
+import { Box, ModalBackdrop, Skeleton, useStyle } from '@rocket.chat/fuselage';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import {
-	Contextualbar,
 	ContextualbarHeader,
 	ContextualbarAction,
 	ContextualbarActions,
@@ -44,6 +43,9 @@ const Thread = ({ tmid }: ThreadProps) => {
 	});
 
 	const t = useTranslation();
+	const backdropClassName = useStyle(css`
+		position: absolute !important;
+	`);
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const canExpand = useLayoutContextualBarExpanded();
@@ -87,7 +89,9 @@ const Thread = ({ tmid }: ThreadProps) => {
 	const portalTarget = isExpanded ? document.getElementById('main-content') : null;
 
 	const threadContent = (
-		<Contextualbar
+		// The thread view lays itself over the room, so it builds the contextual bar's surface itself instead of a Contextualbar
+		<Box
+			rcx-vertical-bar
 			rcx-thread-view
 			className={
 				isExpanded
@@ -99,14 +103,18 @@ const Thread = ({ tmid }: ThreadProps) => {
 						`
 					: undefined
 			}
-			position='absolute'
+			backgroundColor='room'
+			color='default'
 			display='flex'
 			flexDirection='column'
-			width='full'
-			overflow='hidden'
-			zIndex={100}
+			flexShrink={0}
+			width='100%'
+			height='full'
+			position='absolute'
+			insetInlineEnd='none'
 			insetBlock={0}
-			border='none'
+			zIndex={100}
+			overflow='hidden'
 		>
 			<ContextualbarHeader>
 				<ContextualbarBack onClick={handleGoBack} />
@@ -138,7 +146,7 @@ const Thread = ({ tmid }: ThreadProps) => {
 					</ChatProvider>
 				)) ||
 				null}
-		</Contextualbar>
+		</Box>
 	);
 
 	return (
@@ -147,12 +155,7 @@ const Thread = ({ tmid }: ThreadProps) => {
 				{portalTarget ? (
 					createPortal(
 						<>
-							<ModalBackdrop
-								className={css`
-									position: absolute !important;
-								`}
-								onClick={handleBackdropClick}
-							/>
+							<ModalBackdrop className={backdropClassName} onClick={handleBackdropClick} />
 							{threadContent}
 						</>,
 						portalTarget,

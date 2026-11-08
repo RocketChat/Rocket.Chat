@@ -1,4 +1,5 @@
 import { Icon } from '@rocket.chat/fuselage';
+import { useIsEnterprise } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -7,12 +8,11 @@ import { useCategoryModals } from './useCategoryModals';
 import { useMoveRoomCategory } from './useMoveRoomCategory';
 import type { MovableRoom } from './useUserSidebarCategories';
 import { FAVORITES_TARGET, useUserSidebarCategories } from './useUserSidebarCategories';
-import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 
 export const useRoomCategoryItems = (room: MovableRoom) => {
 	const { t } = useTranslation();
 	const { customCategories } = useUserSidebarCategories();
-	const { data: hasLicenseModule = false } = useHasLicenseModule('experimental-enterprise-features');
+	const { data: { isEnterprise = false } = {} } = useIsEnterprise();
 	const moveRoomCategory = useMoveRoomCategory();
 	const { openCreate } = useCategoryModals();
 	const isFavoritesEnabled = useSetting('Favorite_Rooms', true);
@@ -40,9 +40,7 @@ export const useRoomCategoryItems = (room: MovableRoom) => {
 				onClick: async () => moveRoomCategory.mutateAsync({ room, target: category._id }),
 				addon: current?._id === category._id ? selected : undefined,
 			})),
-			...(hasLicenseModule
-				? [{ id: 'newCategory', icon: 'plus' as const, content: t('New_category'), onClick: () => openCreate(room) }]
-				: []),
+			...(isEnterprise ? [{ id: 'newCategory', icon: 'plus' as const, content: t('New_category'), onClick: () => openCreate(room) }] : []),
 		];
 
 		const currentName = current?.name ?? (room.isFavorite ? t('Favorites') : undefined);
@@ -56,5 +54,5 @@ export const useRoomCategoryItems = (room: MovableRoom) => {
 			: undefined;
 
 		return { moveToItems, removeItem };
-	}, [room, customCategories, isFavoritesEnabled, t, hasLicenseModule, moveRoomCategory, openCreate]);
+	}, [room, customCategories, isFavoritesEnabled, t, isEnterprise, moveRoomCategory, openCreate]);
 };

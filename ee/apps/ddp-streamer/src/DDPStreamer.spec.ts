@@ -1,16 +1,12 @@
 import type { IApiService, IBroker, IServiceMetrics } from '@rocket.chat/core-services';
 import { Presence, asyncLocalStorage } from '@rocket.chat/core-services';
+import { ConnectionLifecycle, ConnectionRegistry, MeteorCollection, Server, createStreamAdapter } from '@rocket.chat/ddp-server';
 import { InstanceStatus } from '@rocket.chat/instance-status';
 import { Users } from '@rocket.chat/models';
 import { NotificationsModule } from '@rocket.chat/streamer';
 
 import { DDPStreamer } from './DDPStreamer';
 import { makeSession, sentPackets } from './__tests__/helpers';
-import { ConnectionRegistry } from './ddp/ConnectionRegistry';
-import { Server } from './ddp/Server';
-import { ConnectionLifecycle } from './ddp/lifecycle';
-import { MeteorCollection } from './lib/MeteorCollection';
-import { createStreamAdapter } from './streams/StreamAdapter';
 
 jest.mock('@rocket.chat/core-services', () => ({
 	...jest.requireActual('@rocket.chat/core-services'),
@@ -45,7 +41,7 @@ jest.mock('@rocket.chat/logger', () => ({
 const mockFindOneById = jest.mocked(Users.findOneById);
 
 const server = new Server();
-const notifications = new NotificationsModule(createStreamAdapter(server));
+const notifications = new NotificationsModule(createStreamAdapter(server), 'self');
 
 function makeMetrics(): jest.Mocked<IServiceMetrics> {
 	return {
@@ -106,6 +102,19 @@ describe('DDPStreamer lifecycle handling', () => {
 		expect(metrics.register).not.toHaveBeenCalled();
 		expect(lifecycle.has('loggedIn')).toBe(false);
 		expect(lifecycle.has('loggedOut')).toBe(false);
+	});
+
+	it('still handles logins and disconnects when the broker collects no metrics', async () => {
+		const { service, lifecycle, metrics } = makeService();
+
+		await asyncLocalStorage.run({ id: 'ctx', requestID: 'req', broker: {} as IBroker, nodeID: 'node1' }, () => service.created());
+		const session = makeSession();
+		lifecycle.emit('loggedIn', session);
+		lifecycle.emit('disconnected', session);
+
+		expect(metrics.register).not.toHaveBeenCalled();
+		expect(Presence.newConnection).toHaveBeenCalledWith('user1', 'connection1', 'node1');
+		expect(Presence.removeConnection).toHaveBeenCalledWith('user1', 'connection1', 'node1');
 	});
 
 	it('registers the subscription histogram and the connection gauges', async () => {
@@ -251,7 +260,6 @@ describe('DDPStreamer lifecycle handling', () => {
 					'username': 1,
 					'nickname': 1,
 					'emails': 1,
-					'status': 1,
 					'statusDefault': 1,
 					'statusText': 1,
 					'statusConnection': 1,

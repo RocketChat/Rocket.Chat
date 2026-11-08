@@ -6,6 +6,8 @@ import type { PaginatedResult, PaginatedRequest } from '@rocket.chat/rest-typing
 import {
 	ajv,
 	ajvQuery,
+	paginatedResponseProperties,
+	paginationQueryProperties,
 	validateBadRequestErrorResponse,
 	validateForbiddenErrorResponse,
 	validateNotFoundErrorResponse,
@@ -38,12 +40,7 @@ type SessionsPaginateProps = PaginatedRequest<{
 const isSessionsPaginateProps = ajvQuery.compile<SessionsPaginateProps>({
 	type: 'object',
 	properties: {
-		offset: {
-			type: 'number',
-		},
-		count: {
-			type: 'number',
-		},
+		...paginationQueryProperties,
 		filter: {
 			type: 'string',
 		},
@@ -62,7 +59,6 @@ const validateSortKeys = (sortKeys: string[]): boolean => {
 };
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Endpoints {
 		'/v1/sessions/list': {
 			GET: (params: SessionsPaginateProps) => PaginatedResult<{ sessions: Array<DeviceManagementSession> }>;
@@ -89,9 +85,7 @@ const sessionsListResponseSchema = ajv.compile<PaginatedResult<{ sessions: Devic
 	type: 'object',
 	properties: {
 		sessions: { type: 'array', items: { $ref: '#/components/schemas/DeviceManagementSession' } },
-		count: { type: 'number' },
-		offset: { type: 'number' },
-		total: { type: 'number' },
+		...paginatedResponseProperties,
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['sessions', 'count', 'offset', 'total', 'success'],
@@ -102,9 +96,7 @@ const sessionsListAllResponseSchema = ajv.compile<PaginatedResult<{ sessions: De
 	type: 'object',
 	properties: {
 		sessions: { type: 'array', items: { $ref: '#/components/schemas/DeviceManagementPopulatedSession' } },
-		count: { type: 'number' },
-		offset: { type: 'number' },
-		total: { type: 'number' },
+		...paginatedResponseProperties,
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['sessions', 'count', 'offset', 'total', 'success'],

@@ -1,6 +1,5 @@
 import { License } from '@rocket.chat/license';
 import { patchOmniCore } from '@rocket.chat/omni-core-ee';
-import { Meteor } from 'meteor/meteor';
 
 import '../../hooks/omnichannel/afterTakeInquiry';
 import '../../hooks/omnichannel/beforeNewInquiry';
@@ -8,7 +7,6 @@ import '../../hooks/omnichannel/beforeNewRoom';
 import '../../hooks/omnichannel/beforeRoutingChat';
 import '../../hooks/omnichannel/checkAgentBeforeTakeInquiry';
 import '../../hooks/omnichannel/handleNextAgentPreferredEvents';
-import '../../hooks/omnichannel/onCheckRoomParamsApi';
 import '../../hooks/omnichannel/onLoadConfigApi';
 import '../../hooks/omnichannel/onSaveVisitorInfo';
 import '../../hooks/omnichannel/scheduleAutoTransfer';
@@ -31,9 +29,7 @@ await License.onLicense('livechat-enterprise', async () => {
 	const { createSettings } = await import('./settings');
 	await import('./unit');
 
-	Meteor.startup(() => {
-		void createSettings();
-		void createPermissions();
-		void createDefaultPriorities();
-	});
+	void createSettings();
+	void createPermissions();
+	void createDefaultPriorities();
 });

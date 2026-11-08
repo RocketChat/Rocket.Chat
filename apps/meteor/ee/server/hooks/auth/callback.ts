@@ -1,4 +1,4 @@
-import { MeteorError } from '@rocket.chat/core-services';
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { License } from '@rocket.chat/license';
 
 import { callbacks } from '../../../../server/lib/callbacks';
@@ -47,7 +47,7 @@ License.onInstall(() => {
 		'beforeActivateUser',
 		async () => {
 			if (await License.shouldPreventAction('activeUsers')) {
-				throw new MeteorError('error-license-user-limit-reached', i18n.t('error-license-user-limit-reached'));
+				throw new ClientSafeError('error-license-user-limit-reached', i18n.t('error-license-user-limit-reached'));
 			}
 			return undefined;
 		},

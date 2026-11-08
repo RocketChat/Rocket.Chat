@@ -1,12 +1,12 @@
 import { ResponsiveBar } from '@nivo/bar';
 import { Box, FlexContainer, FlexItem, IconButton, Margins, Skeleton } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/dist/colors.json';
+import { formatDate } from '@rocket.chat/ui-client';
 import { format } from 'date-fns/format';
 import { subDays } from 'date-fns/subDays';
 import { useMemo } from 'react';
 
 import { useWeeklyChatActivity } from './useWeeklyChatActivity';
-import { formatDate } from '../../../../lib/utils/dateFormat';
 
 export type ContentForDaysProps = {
 	displacement: number;
@@ -46,7 +46,7 @@ const ContentForDays = ({ displacement, onPreviousDateClick, onNextDateClick, ti
 		<>
 			<FlexContainer alignItems='center' justifyContent='center'>
 				<Box>
-					<IconButton icon='chevron-down' verticalAlign='middle' small onClick={onPreviousDateClick} />
+					<IconButton icon='chevron-down' size='small' onClick={onPreviousDateClick} />
 					<FlexItem basis='50%'>
 						<Margins inline={8}>
 							<Box is='span' textAlign='center'>
@@ -54,7 +54,7 @@ const ContentForDays = ({ displacement, onPreviousDateClick, onNextDateClick, ti
 							</Box>
 						</Margins>
 					</FlexItem>
-					<IconButton icon='chevron-down' small disabled={displacement === 0} onClick={onNextDateClick} />
+					<IconButton icon='chevron-down' size='small' disabled={displacement === 0} onClick={onNextDateClick} />
 				</Box>
 			</FlexContainer>
 			<FlexContainer>

@@ -8,6 +8,9 @@ inputs:
   base-ref:
     description: "Base ref to use for the release"
     required: false
+  lts-versions:
+    description: "Comma separated list of LTS minor versions (e.g. 7.10,8.4)"
+    required: false
 
 runs:
   using: "node24"
