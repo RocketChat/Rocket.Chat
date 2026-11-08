@@ -197,6 +197,14 @@ export const Card = createStory(payloads.card);
 
 export const DataTable = createStory(payloads.dataTable);
 
+export const DataVisualizationPie = createStory(payloads.dataVisualizationPie);
+
+export const DataVisualizationBar = createStory(payloads.dataVisualizationBar);
+
+export const DataVisualizationArea = createStory(payloads.dataVisualizationArea);
+
+export const DataVisualizationLine = createStory(payloads.dataVisualizationLine);
+
 export const Callout = createStory(payloads.callout);
 
 export const CalloutWithAction = createStory(payloads.calloutWithAction);

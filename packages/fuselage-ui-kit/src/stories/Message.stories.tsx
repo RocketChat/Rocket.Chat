@@ -151,6 +151,14 @@ export const Carousel = createStory(payloads.carousel);
 
 export const DataTable = createStory(payloads.dataTable);
 
+export const DataVisualizationPie = createStory(payloads.dataVisualizationPie);
+
+export const DataVisualizationBar = createStory(payloads.dataVisualizationBar);
+
+export const DataVisualizationArea = createStory(payloads.dataVisualizationArea);
+
+export const DataVisualizationLine = createStory(payloads.dataVisualizationLine);
+
 export const File = createStory(payloads.file);
 
 export const Table = createStory(payloads.table);
