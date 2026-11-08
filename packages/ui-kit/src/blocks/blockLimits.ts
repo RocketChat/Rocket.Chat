@@ -1,3 +1,4 @@
+import { nestedBlocks } from './nestedBlocks';
 import type { LayoutBlockError } from './validateLayoutBlocks';
 
 export const maxBlocksPerMessage = 50;
@@ -15,6 +16,8 @@ const maxTextLength = {
 	alert: 200,
 	cardHeading: 150,
 	cardText: 200,
+	containerHeading: 150,
+	layoutLabel: 150,
 	header: 150,
 	section: 3000,
 	sectionField: 2000,
@@ -39,9 +42,15 @@ const dataVisualization = {
 export const maxChartsPerMessage = 2;
 
 export type BlockLimitOptions = {
-	/** Cap on data_visualization blocks; unset for surfaces that have none. */
+	/** Cap on data_visualization blocks, nested ones included; unset for surfaces that have none. */
 	maxCharts?: number;
 };
+
+const container = { maxChildren: 10 } as const;
+const layout = { maxRows: 5, maxItems: 3 } as const;
+const maxNestedLayoutsAndContainers = 2;
+const widthWeight = { narrow: 1, standard: 2, wide: 3 } as const;
+const wideBlockTypes = ['carousel', 'data_table', 'data_visualization'];
 
 type Node = Record<string, unknown>;
 
@@ -231,10 +240,94 @@ const checkDataVisualization = (block: Node, path: string, errors: LayoutBlockEr
 	});
 };
 
-const checkChartCount = (blocks: readonly unknown[], maxCharts: number | undefined, errors: LayoutBlockError[]): void => {
-	const charts = blocks.filter((block) => isNode(block) && block.type === 'data_visualization').length;
+const isNested = (block: Node): boolean => block.type === 'container' || block.type === 'layout';
 
-	if (maxCharts !== undefined && charts > maxCharts) {
+/**
+ * The blocks a block adds to the budget of its surface: itself and every block nested in it. A conditional block counts
+ * as the largest of the blocks it renders, because apps send one for each engine with the same content.
+ */
+const countBlocks = (block: unknown): number => {
+	if (!isNode(block)) {
+		return 1;
+	}
+
+	if (block.type === 'conditional') {
+		return Math.max(1, ...nestedBlocks(block).map(countBlocks));
+	}
+
+	return 1 + nestedBlocks(block).reduce<number>((total, child) => total + countBlocks(child), 0);
+};
+
+const countBlocksOfType = (blocks: readonly unknown[], type: string): number =>
+	blocks.reduce<number>(
+		(total, block) => total + (isNode(block) ? Number(block.type === type) + countBlocksOfType(nestedBlocks(block), type) : 0),
+		0,
+	);
+
+const checkContainer = (block: Node, path: string, errors: LayoutBlockError[]): void => {
+	if (block.type !== 'container') {
+		return;
+	}
+
+	if (block.title === undefined && block.rich_text_title === undefined) {
+		errors.push({ path, expected: 'a title or a rich_text_title' });
+	}
+
+	const children = block.child_blocks;
+
+	if (Array.isArray(children) && (children.length < 1 || children.length > container.maxChildren)) {
+		errors.push({ path: `${path}.child_blocks`, expected: `array of 1 to ${container.maxChildren} blocks` });
+	}
+};
+
+const checkLayout = (block: Node, path: string, errors: LayoutBlockError[]): void => {
+	if (block.type !== 'layout') {
+		return;
+	}
+
+	checkLength(block.label, maxTextLength.layoutLabel, `${path}.label`, errors);
+
+	const { rows } = block;
+
+	if (!Array.isArray(rows)) {
+		return;
+	}
+
+	if (rows.length < 1 || rows.length > layout.maxRows) {
+		errors.push({ path: `${path}.rows`, expected: `array of 1 to ${layout.maxRows} rows` });
+	}
+
+	rows.forEach((row, rowIndex) => {
+		if (!isNode(row) || !Array.isArray(row.items)) {
+			return;
+		}
+
+		const rowPath = `${path}.rows[${rowIndex}]`;
+		const items = row.items.filter(isNode);
+
+		if (items.length < 1 || items.length > layout.maxItems) {
+			errors.push({ path: `${rowPath}.items`, expected: `array of 1 to ${layout.maxItems} items` });
+		}
+
+		const weight = (item: Node) => widthWeight[item.width as keyof typeof widthWeight] ?? widthWeight.standard;
+		const isWide = (item: Node) => isNode(item.block) && wideBlockTypes.includes(item.block.type as string);
+
+		if (items.filter(isWide).length > 1) {
+			errors.push({ path: `${rowPath}.items`, expected: 'at most one carousel, data_table or data_visualization' });
+		}
+
+		const total = items.reduce((sum, item) => sum + weight(item), 0);
+
+		row.items.forEach((item, itemIndex) => {
+			if (isNode(item) && isNode(item.block) && item.block.type === 'data_visualization' && weight(item) * 2 <= total) {
+				errors.push({ path: `${rowPath}.items[${itemIndex}]`, expected: 'more than half of the width of the row' });
+			}
+		});
+	});
+};
+
+const checkChartCount = (blocks: readonly unknown[], maxCharts: number | undefined, errors: LayoutBlockError[]): void => {
+	if (maxCharts !== undefined && countBlocksOfType(blocks, 'data_visualization') > maxCharts) {
 		errors.push({ path: '$input', expected: `array of at most ${maxCharts} data_visualization blocks` });
 	}
 };
@@ -246,6 +339,10 @@ const textLimit = (parent: Node, key: string, inFields: boolean): number | undef
 
 	if (key === 'placeholder' || key === 'label' || key === 'hint') {
 		return maxTextLength[key];
+	}
+
+	if (parent.type === 'container' && (key === 'title' || key === 'subtitle')) {
+		return maxTextLength.containerHeading;
 	}
 
 	if (parent.type === 'card') {
@@ -274,7 +371,7 @@ const textLimit = (parent: Node, key: string, inFields: boolean): number | undef
 export const checkBlockLimits = (blocks: unknown, maxBlocks: number, options: BlockLimitOptions = {}): LayoutBlockError[] => {
 	const errors: LayoutBlockError[] = [];
 
-	const walk = (value: unknown, path: string, parent: Node | undefined, key: string, inFields: boolean): void => {
+	const walk = (value: unknown, path: string, parent: Node | undefined, key: string, inFields: boolean, nesting = 0): void => {
 		if (Array.isArray(value)) {
 			let max: number | undefined;
 			if (key === 'options') {
@@ -297,7 +394,7 @@ export const checkBlockLimits = (blocks: unknown, maxBlocks: number, options: Bl
 				errors.push({ path, expected: `array of at most ${max} items` });
 			}
 
-			value.forEach((item, index) => walk(item, `${path}[${index}]`, parent, key, key === 'fields'));
+			value.forEach((item, index) => walk(item, `${path}[${index}]`, parent, key, key === 'fields', nesting));
 			return;
 		}
 
@@ -315,7 +412,7 @@ export const checkBlockLimits = (blocks: unknown, maxBlocks: number, options: Bl
 			return;
 		}
 
-		if (value.type === 'image' && parent?.type === 'card') {
+		if (value.type === 'image' && (parent?.type === 'card' || (parent?.type === 'container' && key === 'icon'))) {
 			if (typeof value.image_url === 'string' && value.image_url.length > maxImageUrlLength) {
 				errors.push({ path: `${path}.image_url`, expected: `string of at most ${maxImageUrlLength} characters` });
 			}
@@ -327,15 +424,26 @@ export const checkBlockLimits = (blocks: unknown, maxBlocks: number, options: Bl
 
 		checkDataTable(value, path, errors);
 		checkDataVisualization(value, path, errors);
+		checkContainer(value, path, errors);
+		checkLayout(value, path, errors);
+
+		const depth = isNested(value) ? nesting + 1 : nesting;
+
+		if (isNested(value) && depth > maxNestedLayoutsAndContainers) {
+			errors.push({ path, expected: `at most ${maxNestedLayoutsAndContainers} nested layout and container blocks` });
+		}
 
 		for (const [childKey, child] of Object.entries(value)) {
-			walk(child, `${path}.${childKey}`, value, childKey, false);
+			walk(child, `${path}.${childKey}`, value, childKey, false, depth);
 		}
 	};
 
 	if (Array.isArray(blocks)) {
-		if (blocks.length > maxBlocks) {
-			errors.push({ path: '$input', expected: `array of at most ${maxBlocks} blocks` });
+		if (blocks.reduce<number>((total, block) => total + countBlocks(block), 0) > maxBlocks) {
+			errors.push({
+				path: '$input',
+				expected: `array of at most ${maxBlocks} blocks, counting those nested in layout and container blocks`,
+			});
 		}
 
 		checkChartCount(blocks, options.maxCharts, errors);

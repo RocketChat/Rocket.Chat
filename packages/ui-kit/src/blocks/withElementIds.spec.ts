@@ -36,6 +36,27 @@ it('fills the blocks a conditional block renders', () => {
 	]);
 });
 
+it('fills the blocks nested in containers and layouts, however deep', () => {
+	const actions = { type: 'actions', blockId: 'b', elements: [{ type: 'button' }] };
+	const filled = { type: 'actions', blockId: 'b', elements: [{ type: 'button', appId: '', blockId: 'b', actionId: '' }] };
+
+	expect(
+		withElementIds([
+			{
+				type: 'layout',
+				rows: [{ items: [{ width: 'wide', block: { type: 'container', child_blocks: [actions] } }, { block: actions }] }],
+				fallback: [actions],
+			},
+		]),
+	).toEqual([
+		{
+			type: 'layout',
+			rows: [{ items: [{ width: 'wide', block: { type: 'container', child_blocks: [filled] } }, { block: filled }] }],
+			fallback: [filled],
+		},
+	]);
+});
+
 it('leaves values that are not blocks as they are, for the validation to report', () => {
 	expect(withElementIds('blocks')).toBe('blocks');
 	expect(withElementIds([null, 'text'])).toEqual([null, 'text']);

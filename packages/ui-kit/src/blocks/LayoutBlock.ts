@@ -4,6 +4,7 @@ import type { CalloutBlock } from './layout/CalloutBlock';
 import type { CardBlock } from './layout/CardBlock';
 import type { CarouselBlock } from './layout/CarouselBlock';
 import type { ConditionalBlock } from './layout/ConditionalBlock';
+import type { ContainerBlock } from './layout/ContainerBlock';
 import type { ContextActionsBlock } from './layout/ContextActionsBlock';
 import type { ContextBlock } from './layout/ContextBlock';
 import type { DataTableBlock } from './layout/DataTableBlock';
@@ -15,6 +16,7 @@ import type { HeaderBlock } from './layout/HeaderBlock';
 import type { ImageBlock } from './layout/ImageBlock';
 import type { InfoCardBlock } from './layout/InfoCardBlock';
 import type { InputBlock } from './layout/InputBlock';
+import type { LayoutGridBlock } from './layout/LayoutGridBlock';
 import type { MarkdownBlock } from './layout/MarkdownBlock';
 import type { PlanBlock } from './layout/PlanBlock';
 import type { PreviewBlock } from './layout/PreviewBlock';
@@ -51,4 +53,6 @@ export type LayoutBlock =
 	| CardBlock
 	| CarouselBlock
 	| DataTableBlock
-	| DataVisualizationBlock;
+	| DataVisualizationBlock
+	| ContainerBlock
+	| LayoutGridBlock;

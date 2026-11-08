@@ -75,6 +75,10 @@ export type {
 	DataPoint,
 	AxisConfig,
 } from './blocks/layout/DataVisualizationBlock';
+export { containerChildBlockTypes } from './blocks/layout/ContainerBlock';
+export type { ContainerBlock, ContainerChildBlock } from './blocks/layout/ContainerBlock';
+export { layoutItemBlockTypes } from './blocks/layout/LayoutGridBlock';
+export type { LayoutGridBlock, LayoutItem, LayoutItemBlock, LayoutRow, LayoutFallbackBlock } from './blocks/layout/LayoutGridBlock';
 export type { ExperimentalTabNavigationBlock } from './blocks/layout/ExperimentalTabNavigationBlock';
 export type { InfoCardBlock } from './blocks/layout/InfoCardBlock';
 export type { FileBlock } from './blocks/layout/FileBlock';
@@ -112,3 +116,4 @@ export * from './interactions/ServerInteraction';
 
 export type { CanonicalElementType, ElementTypeAlias } from './blocks/elementTypeAliases';
 export { toCanonicalElement, toCanonicalElementType } from './blocks/elementTypeAliases';
+export { flattenBlocks, nestedBlocks } from './blocks/nestedBlocks';

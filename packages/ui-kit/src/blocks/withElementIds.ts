@@ -10,6 +10,23 @@ const withIds = (element: unknown, ids: Ids): unknown =>
 const withCellIds = (cell: unknown, ids: Ids): unknown =>
 	isObject(cell) && cell.type === 'action_cell' ? { ...cell, element: withIds(cell.element, ids) } : cell;
 
+const withItemIds = (row: unknown): unknown => {
+	if (!isObject(row) || !Array.isArray(row.items)) {
+		return row;
+	}
+
+	return {
+		...row,
+		items: row.items.map((item) => {
+			if (!isObject(item)) {
+				return item;
+			}
+
+			return { ...item, block: (withElementIds([item.block]) as unknown[])[0] };
+		}),
+	};
+};
+
 /**
  * Copies blocks as the renderers see them: an element without `appId`, `blockId` or `actionId` takes its block's
  * ids, or an empty one, because apps leave them out and the engine or the renderer fills them in.
@@ -40,6 +57,20 @@ export const withElementIds = (blocks: unknown): unknown => {
 
 		if (block.type === 'data_table' && Array.isArray(copy.rows)) {
 			copy.rows = copy.rows.map((row) => (Array.isArray(row) ? row.map((cell) => withCellIds(cell, block)) : row));
+		}
+
+		if (block.type === 'container' && Array.isArray(copy.child_blocks)) {
+			copy.child_blocks = withElementIds(copy.child_blocks);
+		}
+
+		if (block.type === 'layout') {
+			if (Array.isArray(copy.rows)) {
+				copy.rows = copy.rows.map(withItemIds);
+			}
+
+			if (Array.isArray(copy.fallback)) {
+				copy.fallback = withElementIds(copy.fallback);
+			}
 		}
 
 		if (Array.isArray(copy.render)) {

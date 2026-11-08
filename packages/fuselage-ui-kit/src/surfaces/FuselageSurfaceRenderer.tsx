@@ -6,6 +6,7 @@ import AlertBlock from '../blocks/AlertBlock';
 import CalloutBlock from '../blocks/CalloutBlock';
 import CardBlock from '../blocks/CardBlock';
 import CarouselBlock from '../blocks/CarouselBlock';
+import ContainerBlock from '../blocks/ContainerBlock';
 import ContextActionsBlock from '../blocks/ContextActionsBlock';
 import ContextBlock from '../blocks/ContextBlock';
 import DataTableBlock from '../blocks/DataTableBlock';
@@ -15,6 +16,7 @@ import HeaderBlock from '../blocks/HeaderBlock';
 import ImageBlock from '../blocks/ImageBlock';
 import InfoCard from '../blocks/InfoCard';
 import InputBlock from '../blocks/InputBlock';
+import LayoutGridBlock from '../blocks/LayoutGridBlock';
 import MarkdownBlock from '../blocks/MarkdownBlock';
 import PlanBlock from '../blocks/PlanBlock';
 import PreviewBlock from '../blocks/PreviewBlock';
@@ -503,6 +505,30 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
 			return (
 				<AppIdProvider key={index} appId={block.appId}>
 					<DataVisualizationBlock block={block} context={context} index={index} surfaceRenderer={this} />
+				</AppIdProvider>
+			);
+		}
+
+		return null;
+	}
+
+	container(block: UiKit.ContainerBlock, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return (
+				<AppIdProvider key={index} appId={block.appId}>
+					<ContainerBlock block={block} context={context} index={index} surfaceRenderer={this} />
+				</AppIdProvider>
+			);
+		}
+
+		return null;
+	}
+
+	layout(block: UiKit.LayoutGridBlock, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return (
+				<AppIdProvider key={index} appId={block.appId}>
+					<LayoutGridBlock block={block} context={context} index={index} surfaceRenderer={this} />
 				</AppIdProvider>
 			);
 		}

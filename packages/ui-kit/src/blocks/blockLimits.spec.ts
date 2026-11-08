@@ -204,6 +204,25 @@ describe('data_visualization', () => {
 		expect(result).not.toContain('$input[0].chart.series[0].data');
 	});
 
+	it('counts a conditional block as the largest block it renders', () => {
+		const dividers = { type: 'conditional', render: [{ type: 'divider' }, { type: 'divider' }] };
+		const nested = {
+			type: 'conditional',
+			render: [{ type: 'divider' }, { type: 'container', title: 't', child_blocks: [{ type: 'divider' }, { type: 'divider' }] }],
+		};
+
+		expect(paths([dividers], 1)).toEqual([]);
+		expect(paths([nested], 3)).toEqual([]);
+		expect(paths([nested], 2)).toEqual(['$input']);
+		expect(paths([nested, nested], 5)).toEqual(['$input']);
+	});
+
+	it('counts the charts a conditional block renders', () => {
+		const conditional = { type: 'conditional', render: [chart('bar', [valid()])] };
+
+		expect(paths([conditional, conditional, conditional])).toEqual(['$input']);
+	});
+
 	it('allows 2 charts in a message and any number in a view', () => {
 		const charts = [chart('bar', [valid()]), chart('bar', [valid()]), chart('bar', [valid()])];
 
@@ -211,5 +230,89 @@ describe('data_visualization', () => {
 		expect(paths(charts)).toEqual(['$input']);
 		expect(paths(charts, 100, {})).toEqual([]);
 		expect(paths(charts, 50, { maxCharts: 3 })).toEqual([]);
+	});
+});
+
+describe('container and layout blocks', () => {
+	const divider = { type: 'divider' };
+	const container = (children: unknown[] = [divider], extra: object = {}) => ({
+		type: 'container',
+		title: text(10),
+		child_blocks: children,
+		...extra,
+	});
+	const item = (block: unknown, width?: string) => ({ block, ...(width && { width }) });
+	const layout = (rows: unknown[], extra: object = {}) => ({ type: 'layout', label: 'Summary', rows, ...extra });
+	const row = (...items: unknown[]) => ({ items });
+	const chart = { type: 'data_visualization', title: 'c', chart: { type: 'pie', segments: [{ label: 'a', value: 1 }] } };
+
+	it.each([
+		['a title', container([divider], { title: text(151) }), '$input[0].title.text'],
+		['a subtitle', container([divider], { subtitle: text(151) }), '$input[0].subtitle.text'],
+		['no children', container([]), '$input[0].child_blocks'],
+		['11 children', container(Array.from({ length: 11 }, () => divider)), '$input[0].child_blocks'],
+		['no title', { type: 'container', child_blocks: [divider] }, '$input[0]'],
+		[
+			'an icon URL',
+			container([divider], { icon: { type: 'image', image_url: 'a'.repeat(3001), alt_text: 'a' } }),
+			'$input[0].icon.image_url',
+		],
+		['a layout label', layout([row(item(divider))], { label: 'l'.repeat(151) }), '$input[0].label'],
+		['no rows', layout([]), '$input[0].rows'],
+		['6 rows', layout(Array.from({ length: 6 }, () => row(item(divider)))), '$input[0].rows'],
+		['no items', layout([row()]), '$input[0].rows[0].items'],
+		['4 items', layout([row(...Array.from({ length: 4 }, () => item(divider)))]), '$input[0].rows[0].items'],
+	])('limits %s', (_, block, path) => {
+		expect(paths([block])).toEqual([path]);
+	});
+
+	it('accepts either title, and a container with 10 children', () => {
+		expect(paths([container(Array.from({ length: 10 }, () => divider))])).toEqual([]);
+		expect(paths([{ type: 'container', rich_text_title: { type: 'rich_text', elements: [] }, child_blocks: [divider] }])).toEqual([]);
+	});
+
+	it('allows two levels of layout and container and rejects a third', () => {
+		const inner = layout([row(item(divider))]);
+
+		expect(paths([layout([row(item(container()))])])).toEqual([]);
+		expect(paths([container([inner])])).toEqual([]);
+		expect(paths([layout([row(item(container([inner])))])])).toEqual(['$input[0].rows[0].items[0].block.child_blocks[0]']);
+		expect(paths([container([layout([row(item(container([inner])))])])])).toEqual([
+			'$input[0].child_blocks[0].rows[0].items[0].block',
+			'$input[0].child_blocks[0].rows[0].items[0].block.child_blocks[0]',
+		]);
+	});
+
+	it('keeps a carousel, a data table and a data visualization apart', () => {
+		const carousel = { type: 'carousel', elements: [{ type: 'card' }] };
+		const table = { type: 'data_table', rows: [[{ type: 'raw_text', text: 'a' }], [{ type: 'raw_text', text: 'b' }]] };
+
+		expect(paths([layout([row(item(carousel), item(divider))])])).toEqual([]);
+		expect(paths([layout([row(item(carousel), item(table))])])).toEqual(['$input[0].rows[0].items']);
+		expect(paths([layout([row(item(table), item(chart, 'wide'))])])).toEqual(['$input[0].rows[0].items']);
+	});
+
+	it('gives a data visualization more than half of the row', () => {
+		const chartPaths = (...items: unknown[]) => paths([layout([row(...items)])]);
+
+		expect(chartPaths(item(chart))).toEqual([]);
+		expect(chartPaths(item(chart, 'wide'), item(divider))).toEqual([]);
+		expect(chartPaths(item(chart), item(divider))).toEqual(['$input[0].rows[0].items[0]']);
+		expect(chartPaths(item(chart, 'narrow'), item(divider, 'wide'))).toEqual(['$input[0].rows[0].items[0]']);
+	});
+
+	it('counts the blocks nested in a layout or container toward the budget', () => {
+		const nested = [layout([row(item(divider), item(divider)), row(item(divider))]), container([divider, divider])];
+
+		expect(paths(nested, 7)).toEqual([]);
+		expect(paths(nested, 6)).toEqual(['$input']);
+	});
+
+	it('counts the charts nested in a layout toward the limit per message', () => {
+		expect(paths([layout([row(item(chart))]), layout([row(item(chart))]), layout([row(item(chart))])])).toEqual(['$input']);
+	});
+
+	it('limits the text of nested blocks', () => {
+		expect(paths([container([{ type: 'header', text: text(151) }])])).toEqual(['$input[0].child_blocks[0].text.text']);
 	});
 });
