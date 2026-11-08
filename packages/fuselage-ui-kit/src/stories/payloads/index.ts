@@ -5,6 +5,7 @@ export * from './conditional';
 export * from './callout';
 export * from './context';
 export * from './dataTable';
+export * from './dataVisualization';
 export * from './divider';
 export * from './header';
 export * from './markdown';

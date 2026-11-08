@@ -1,6 +1,7 @@
 import typia from 'typia';
 
 import type { LayoutBlock } from './LayoutBlock';
+import type { BlockLimitOptions } from './blockLimits';
 import { checkBlockLimits, maxBlocksPerMessage } from './blockLimits';
 import { withElementIds } from './withElementIds';
 
@@ -17,11 +18,15 @@ const validate = typia.createValidate<LayoutBlock[]>();
  * Lists where blocks sent by an app depart from the `LayoutBlock` types or exceed the size limits; an empty list
  * means they match. `maxBlocks` is what the surface allows: `maxBlocksPerMessage` unless it is a view.
  */
-export const validateLayoutBlocks = (blocks: unknown, maxBlocks: number = maxBlocksPerMessage): LayoutBlockError[] => {
+export const validateLayoutBlocks = (
+	blocks: unknown,
+	maxBlocks: number = maxBlocksPerMessage,
+	options: BlockLimitOptions = {},
+): LayoutBlockError[] => {
 	const result = validate(withElementIds(blocks));
 	const typeErrors = result.success ? [] : result.errors.map(({ path, expected }) => ({ path, expected }));
 
-	return [...typeErrors, ...checkBlockLimits(blocks, maxBlocks)];
+	return [...typeErrors, ...checkBlockLimits(blocks, maxBlocks, options)];
 };
 
-export { maxBlocksPerMessage, maxBlocksPerView } from './blockLimits';
+export { maxBlocksPerMessage, maxBlocksPerView, maxChartsPerMessage } from './blockLimits';

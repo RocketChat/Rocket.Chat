@@ -27,6 +27,22 @@ const maxTextLength = {
 
 const dataTable = { minRows: 2, maxRows: 201, maxColumns: 20, maxCharacters: 20000, maxPageSize: 100 } as const;
 
+const dataVisualization = {
+	maxTitle: 50,
+	maxSegments: 12,
+	maxSeries: 12,
+	maxCategories: 20,
+	maxLabel: 20,
+	maxAxisTitle: 50,
+} as const;
+
+export const maxChartsPerMessage = 2;
+
+export type BlockLimitOptions = {
+	/** Cap on data_visualization blocks; unset for surfaces that have none. */
+	maxCharts?: number;
+};
+
 type Node = Record<string, unknown>;
 
 const isNode = (value: unknown): value is Node => typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -112,6 +128,117 @@ const checkDataTable = (table: Node, path: string, errors: LayoutBlockError[]): 
 	}
 };
 
+const checkLength = (value: unknown, max: number, path: string, errors: LayoutBlockError[]): void => {
+	if (typeof value === 'string' && value.length > max) {
+		errors.push({ path, expected: `string of at most ${max} characters` });
+	}
+};
+
+const checkDataVisualization = (block: Node, path: string, errors: LayoutBlockError[]): void => {
+	const { chart } = block;
+
+	if (block.type !== 'data_visualization' || !isNode(chart)) {
+		return;
+	}
+
+	checkLength(block.title, dataVisualization.maxTitle, `${path}.title`, errors);
+
+	if (chart.type === 'pie') {
+		const { segments } = chart;
+
+		if (!Array.isArray(segments)) {
+			return;
+		}
+
+		if (segments.length < 1 || segments.length > dataVisualization.maxSegments) {
+			errors.push({ path: `${path}.chart.segments`, expected: `array of 1 to ${dataVisualization.maxSegments} segments` });
+		}
+
+		segments.forEach((segment, index) => {
+			if (!isNode(segment)) {
+				return;
+			}
+
+			checkLength(segment.label, dataVisualization.maxLabel, `${path}.chart.segments[${index}].label`, errors);
+
+			if (typeof segment.value === 'number' && !(segment.value > 0)) {
+				errors.push({ path: `${path}.chart.segments[${index}].value`, expected: 'number greater than 0' });
+			}
+		});
+
+		return;
+	}
+
+	const { series, axis_config: axis } = chart;
+
+	if (!Array.isArray(series) || !isNode(axis) || !Array.isArray(axis.categories)) {
+		return;
+	}
+
+	const categories = axis.categories.filter((category): category is string => typeof category === 'string');
+
+	if (categories.length < 1 || categories.length > dataVisualization.maxCategories) {
+		errors.push({ path: `${path}.chart.axis_config.categories`, expected: `array of 1 to ${dataVisualization.maxCategories} labels` });
+	}
+
+	const categorySet = new Set(categories);
+
+	if (categorySet.size !== categories.length) {
+		errors.push({ path: `${path}.chart.axis_config.categories`, expected: 'labels that no other category has' });
+	}
+
+	categories.forEach((category, index) =>
+		checkLength(category, dataVisualization.maxLabel, `${path}.chart.axis_config.categories[${index}]`, errors),
+	);
+	checkLength(axis.x_label, dataVisualization.maxAxisTitle, `${path}.chart.axis_config.x_label`, errors);
+	checkLength(axis.y_label, dataVisualization.maxAxisTitle, `${path}.chart.axis_config.y_label`, errors);
+
+	if (series.length < 1 || series.length > dataVisualization.maxSeries) {
+		errors.push({ path: `${path}.chart.series`, expected: `array of 1 to ${dataVisualization.maxSeries} series` });
+	}
+
+	// Past the limits the length error is recorded already; the per-series checks would only cost the server.
+	const withinLimits = categories.length <= dataVisualization.maxCategories && series.length <= dataVisualization.maxSeries;
+	const names = new Set<unknown>();
+
+	series.forEach((entry, index) => {
+		if (!isNode(entry)) {
+			return;
+		}
+
+		const seriesPath = `${path}.chart.series[${index}]`;
+
+		checkLength(entry.name, dataVisualization.maxLabel, `${seriesPath}.name`, errors);
+
+		if (names.has(entry.name)) {
+			errors.push({ path: `${seriesPath}.name`, expected: 'name that no other series of the chart has' });
+		}
+		names.add(entry.name);
+
+		if (!withinLimits || !Array.isArray(entry.data)) {
+			return;
+		}
+
+		const labels = new Set(entry.data.map((point) => (isNode(point) ? point.label : undefined)));
+
+		if (
+			entry.data.length !== categories.length ||
+			labels.size !== entry.data.length ||
+			![...labels].every((label) => categorySet.has(label as string))
+		) {
+			errors.push({ path: `${seriesPath}.data`, expected: 'one point for each of axis_config.categories, and no other' });
+		}
+	});
+};
+
+const checkChartCount = (blocks: readonly unknown[], maxCharts: number | undefined, errors: LayoutBlockError[]): void => {
+	const charts = blocks.filter((block) => isNode(block) && block.type === 'data_visualization').length;
+
+	if (maxCharts !== undefined && charts > maxCharts) {
+		errors.push({ path: '$input', expected: `array of at most ${maxCharts} data_visualization blocks` });
+	}
+};
+
 const textLimit = (parent: Node, key: string, inFields: boolean): number | undefined => {
 	if (inFields) {
 		return maxTextLength.sectionField;
@@ -144,7 +271,7 @@ const textLimit = (parent: Node, key: string, inFields: boolean): number | undef
  * Lists where blocks exceed the size limits of the UiKit surfaces. Kept apart from the type validator so the limits
  * stay in one place and cover block types added later; they apply only when blocks are validated, never when rendering.
  */
-export const checkBlockLimits = (blocks: unknown, maxBlocks: number): LayoutBlockError[] => {
+export const checkBlockLimits = (blocks: unknown, maxBlocks: number, options: BlockLimitOptions = {}): LayoutBlockError[] => {
 	const errors: LayoutBlockError[] = [];
 
 	const walk = (value: unknown, path: string, parent: Node | undefined, key: string, inFields: boolean): void => {
@@ -199,6 +326,7 @@ export const checkBlockLimits = (blocks: unknown, maxBlocks: number): LayoutBloc
 		}
 
 		checkDataTable(value, path, errors);
+		checkDataVisualization(value, path, errors);
 
 		for (const [childKey, child] of Object.entries(value)) {
 			walk(child, `${path}.${childKey}`, value, childKey, false);
@@ -209,6 +337,8 @@ export const checkBlockLimits = (blocks: unknown, maxBlocks: number): LayoutBloc
 		if (blocks.length > maxBlocks) {
 			errors.push({ path: '$input', expected: `array of at most ${maxBlocks} blocks` });
 		}
+
+		checkChartCount(blocks, options.maxCharts, errors);
 
 		blocks.forEach((block, index) => walk(block, `$input[${index}]`, undefined, '', false));
 	}

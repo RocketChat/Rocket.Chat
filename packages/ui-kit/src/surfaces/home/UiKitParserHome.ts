@@ -10,6 +10,7 @@ export const homeSurfaceLayoutBlockTypes = [
 	'carousel',
 	'context',
 	'data_table',
+	'data_visualization',
 	'divider',
 	'header',
 	'image',

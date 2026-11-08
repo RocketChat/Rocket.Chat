@@ -9,6 +9,7 @@ export const modalSurfaceLayoutBlockTypes = [
 	'card',
 	'context',
 	'data_table',
+	'data_visualization',
 	'divider',
 	'header',
 	'image',

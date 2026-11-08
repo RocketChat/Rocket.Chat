@@ -86,3 +86,14 @@ it('accepts a data table with buttons that leave out their ids and rejects inval
 	expect(validateLayoutBlocks(table([[cell], [{ type: 'raw_number', value: 'two' }]]))).not.toEqual([]);
 	expect(validateLayoutBlocks([{ type: 'data_table', rows: [[cell], [cell]] }])).not.toEqual([]);
 });
+
+it('accepts data visualization charts and rejects malformed ones', () => {
+	const series = [{ name: 'one', data: [{ label: 'a', value: 1 }] }];
+	const block = (chart: unknown) => [{ type: 'data_visualization', title: 'Chart', chart }];
+
+	expect(validateLayoutBlocks(block({ type: 'pie', segments: [{ label: 'a', value: 1 }] }))).toEqual([]);
+	expect(validateLayoutBlocks(block({ type: 'area', series, axis_config: { categories: ['a'], x_label: 'x' } }))).toEqual([]);
+	expect(validateLayoutBlocks(block({ type: 'donut', segments: [] }))).not.toEqual([]);
+	expect(validateLayoutBlocks(block({ type: 'bar', series }))).not.toEqual([]);
+	expect(validateLayoutBlocks([{ type: 'data_visualization', chart: { type: 'pie', segments: [] } }])).not.toEqual([]);
+});

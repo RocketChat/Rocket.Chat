@@ -9,6 +9,7 @@ import CarouselBlock from '../blocks/CarouselBlock';
 import ContextActionsBlock from '../blocks/ContextActionsBlock';
 import ContextBlock from '../blocks/ContextBlock';
 import DataTableBlock from '../blocks/DataTableBlock';
+import DataVisualizationBlock from '../blocks/DataVisualizationBlock';
 import DividerBlock from '../blocks/DividerBlock';
 import HeaderBlock from '../blocks/HeaderBlock';
 import ImageBlock from '../blocks/ImageBlock';
@@ -490,6 +491,18 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
 			return (
 				<AppIdProvider key={index} appId={block.appId}>
 					<DataTableBlock block={block} context={context} index={index} surfaceRenderer={this} />
+				</AppIdProvider>
+			);
+		}
+
+		return null;
+	}
+
+	data_visualization(block: UiKit.DataVisualizationBlock, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return (
+				<AppIdProvider key={index} appId={block.appId}>
+					<DataVisualizationBlock block={block} context={context} index={index} surfaceRenderer={this} />
 				</AppIdProvider>
 			);
 		}

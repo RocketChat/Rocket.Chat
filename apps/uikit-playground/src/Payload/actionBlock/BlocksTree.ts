@@ -21,6 +21,7 @@ import { card, carousel } from './card';
 import { contextWithPlainText, contextWithMrkdwn, contextWithImage, contextWithAllElements } from './context';
 import { contextActions, contextActionsWithFeedback } from './contextActions';
 import { dataTable } from './dataTable';
+import { dataVisualizationPie, dataVisualizationBar, dataVisualizationArea, dataVisualizationLine } from './dataVisualization';
 import { divider } from './divider';
 import { file, inputWithFileInput } from './file';
 import { header } from './header';
@@ -431,6 +432,15 @@ const BlocksTree: Item = [
 	{
 		label: 'data table',
 		branches: [{ label: 'Support tickets', payload: dataTable }],
+	},
+	{
+		label: 'data visualization',
+		branches: [
+			{ label: 'Pie chart', payload: dataVisualizationPie },
+			{ label: 'Bar chart', payload: dataVisualizationBar },
+			{ label: 'Area chart', payload: dataVisualizationArea },
+			{ label: 'Line chart', payload: dataVisualizationLine },
+		],
 	},
 	{
 		label: 'carousel',
