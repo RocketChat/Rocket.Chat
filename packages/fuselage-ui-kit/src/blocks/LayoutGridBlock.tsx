@@ -8,7 +8,8 @@ import { renderNestedBlocks } from '../utils/renderNestedBlocks';
 export type LayoutGridBlockProps = BlockProps<UiKit.LayoutGridBlock>;
 
 const weights = { narrow: 1, standard: 2, wide: 3 } as const;
-const minWidths = { narrow: 120, standard: 200, wide: 280 } as const;
+// Small enough that three standard items share a row inside a fixed-width message block.
+const minWidths = { narrow: 64, standard: 96, wide: 128 } as const;
 const alignments = { start: 'flex-start', center: 'center', end: 'flex-end' } as const;
 
 const isObject = (value: unknown): value is object => typeof value === 'object' && value !== null;
