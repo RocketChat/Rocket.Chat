@@ -1,6 +1,7 @@
-import type * as UiKit from '@rocket.chat/ui-kit';
+import * as UiKit from '@rocket.chat/ui-kit';
 
 import type { MentionNames } from './richTextToAst';
+import { messageHref } from './richTextToAst';
 
 const wrap = (text: string, style: UiKit.RichTextStyle | undefined) => {
 	let result = text;
@@ -29,6 +30,25 @@ const inlineToMarkdown = (element: UiKit.RichTextInlineElement, names: MentionNa
 			return `<t:${element.timestamp}:${element.format ?? 'f'}>`;
 		case 'broadcast':
 			return `@${broadcastNames[element.range]}`;
+		case 'color':
+			return element.value;
+		case 'tag':
+			return wrap(element.text, element.style);
+		case 'citation':
+			return UiKit.isSafeUrl(element.url) ? `[${element.index}](${element.url})` : `[${element.index}]`;
+		case 'message_mention': {
+			const href = messageHref(element, names);
+			return wrap(href ? `[${element.text ?? names.messageLabel}](${href})` : (element.text ?? names.messageLabel), element.style);
+		}
+		case 'attachment_mention':
+			return wrap(
+				UiKit.isSafeUrl(element.url) ? `[${element.text ?? element.url}](${element.url})` : (element.text ?? element.url),
+				element.style,
+			);
+		case 'usergroup':
+			return wrap(`@${names.teams[element.usergroup_id] ?? element.usergroup_id}`, element.style);
+		case 'team':
+			return wrap(`#${names.teams[element.team_id] ?? element.team_id}`, element.style);
 	}
 };
 
