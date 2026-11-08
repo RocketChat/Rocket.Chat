@@ -55,6 +55,46 @@ export const richText: readonly UiKit.LayoutBlock[] = [
 	},
 ] as const;
 
+export const richTextElements: readonly UiKit.LayoutBlock[] = [
+	{
+		type: 'rich_text',
+		elements: [
+			{
+				type: 'rich_text_section',
+				elements: [
+					{ type: 'text', text: 'Status ' },
+					{ type: 'tag', text: 'In progress', color: 'blue' },
+					{ type: 'text', text: ' ' },
+					{ type: 'tag', text: 'Blocked', color: 'red', style: { bold: true } },
+					{ type: 'text', text: ' brand color ' },
+					{ type: 'color', value: '#F405B3' },
+					{ type: 'text', text: ' as cited ' },
+					{
+						type: 'citation',
+						url: 'https://docs.rocket.chat',
+						text: 'Rocket.Chat docs',
+						index: 1,
+						details: { citation_type: 'web', display_name: 'docs.rocket.chat' },
+					},
+				],
+			},
+			{
+				type: 'rich_text_section',
+				elements: [
+					{ type: 'text', text: 'Ask ' },
+					{ type: 'usergroup', usergroup_id: 'team-id' },
+					{ type: 'text', text: ' in ' },
+					{ type: 'team', team_id: 'team-id' },
+					{ type: 'text', text: ', see ' },
+					{ type: 'message_mention', channel_id: 'GENERAL', message_id: 'message-id', text: 'this message' },
+					{ type: 'text', text: ' and ' },
+					{ type: 'attachment_mention', url: 'https://example.com/report.pdf', text: 'the report' },
+				],
+			},
+		],
+	},
+] as const;
+
 export const inputWithRichTextInput: readonly UiKit.LayoutBlock[] = [
 	{
 		type: 'input',

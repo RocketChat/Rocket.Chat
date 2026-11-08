@@ -364,8 +364,22 @@ Inline elements:
 | `channel` | `channel_id`: resolved to the room name through `/v1/rooms.info` |
 | `date` | `timestamp`: Unix seconds; `format?`: `t`, `T`, `d`, `D`, `f` (default), `F` or `R` |
 | `broadcast` | `range`: `'here'`, `'channel'` or `'everyone'`; the last two both mention `@all` |
+| `color` | `value`: `#RRGGBB` or `#RRGGBBAA`, drawn as a colour swatch; anything else is shown as text |
+| `tag` | `text`; `color?`: `gray`, `brown`, `purple`, `indigo`, `blue`, `green`, `yellow`, `orange` or `red`; `style?` |
+| `citation` | `url`, `text`, `index`; `details?`: `{ citation_type: 'web' \| 'external' \| 'message' \| 'file', … }`; `from_llm?` |
+| `message_mention` | `channel_id`, `message_id`; `text?` (defaults to "message"); `url?`; `author_id?`; `style?` |
+| `attachment_mention` | `url`; `text?` (defaults to the url); `app_id?`; `icon_url?`; `style?` |
+| `usergroup` | `usergroup_id`: a team id, shown as a user mention of the team's name; `style?` |
+| `team` | `team_id`: shown as a channel mention of the team's name; `style?` |
 
 Notes:
+
+- `tag` is drawn as a Fuselage `Tag`. Fuselage has no green, brown or orange tag, so the colours map to its variants as `gray`/`green` to `secondary`, `brown`/`orange` to `secondary-warning`, `purple` to `featured`, `indigo` to `primary`, `blue` to `secondary-info`, `yellow` to `warning` and `red` to `danger`; a tag without `color` is gray. A section, quote or list item that holds a tag or a citation is laid out as a wrapping row of text runs and chips.
+- `citation` is a link labelled `[index]`. Its accessible name is `[index] text`, with line breaks removed, and its title is `host — text`, where `host` is the host the link opens; the sender-supplied source names in `details` are not shown, so they cannot pass for the destination. `details` is not drawn, and `from_llm` is ignored. A citation whose `url` is not http(s) shows `[index]` as text.
+- `message_mention` links to `url` when it is an http(s) URL, and otherwise to the message's permalink, built from the room found through `/v1/rooms.info`. Messages are identified by `message_id`, not by a timestamp. Without a resolvable link the label shows as text.
+- `attachment_mention` only links http(s) URLs; `app_id` and `icon_url` are accepted and ignored.
+- `usergroup` and `team` both take a team id and read the name from `/v1/teams.info`. Rocket.Chat has no user groups, so `usergroup` mentions a team the way a user mention would. Both show the id until the name loads.
+- `style` on `message_mention`, `attachment_mention`, `usergroup`, `team` and `tag` applies `bold`, `italic` and `strike`; `code` only applies to text and tags. `color` has no `style`. The `style` of a `link` element is ignored, as it always was.
 
 - Mentions arrive by id and are resolved on the client with cached requests; the id is shown until the name loads, and stays if the lookup fails.
 - The message-parser AST has flat lists, so `indent` is ignored when rendering: a nested list shows at the top level.
