@@ -22,3 +22,12 @@ export const hasRequiredTwoFactorMethod = (error: unknown): error is { details: 
 		isTwoFactorMethod((details as { method: string }).method)
 	);
 };
+export class InvalidResponseError extends Error {
+	readonly response: Response;
+
+	constructor(message: string, response: Response, options?: { cause?: unknown }) {
+		super(message, options);
+		this.name = 'InvalidResponseError';
+		this.response = response;
+	}
+}
