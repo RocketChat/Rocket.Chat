@@ -198,9 +198,8 @@ export class RestClient implements RestClientInterface {
 			return {} as T;
 		}
 
-		let body: unknown;
 		try {
-			body = await response.json();
+			return (await response.json()) as T;
 		} catch (cause) {
 			// Rethrow aborts and network errors raised while reading the body as-is.
 			if (!(cause instanceof SyntaxError)) {
@@ -208,12 +207,6 @@ export class RestClient implements RestClientInterface {
 			}
 			throw new InvalidResponseError('Response body is not valid JSON', response, { cause });
 		}
-
-		if (body === null || typeof body !== 'object') {
-			throw new InvalidResponseError('Expected the response body to be a JSON object', response);
-		}
-
-		return body as T;
 	}
 
 	protected getCredentialsAsHeaders(): Record<string, string> {

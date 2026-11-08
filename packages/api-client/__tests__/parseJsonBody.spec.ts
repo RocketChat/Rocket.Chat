@@ -41,16 +41,12 @@ describe('RestClient response body validation', () => {
 		await expect((client as any).get('/v1/info')).rejects.toBeInstanceOf(InvalidResponseError);
 	});
 
-	it('throws InvalidResponseError when the body is null', async () => {
-		mockFetch(makeResponse({ json: async () => null }));
+	it('returns the parsed body as-is when it is not a JSON object', async () => {
+		mockFetch(makeResponse({ json: async () => true }));
+		await expect((client as any).delete('/v1/info')).resolves.toBe(true);
 
-		await expect((client as any).post('/v1/info', {})).rejects.toBeInstanceOf(InvalidResponseError);
-	});
-
-	it('throws InvalidResponseError when the body is a primitive', async () => {
-		mockFetch(makeResponse({ json: async () => 'not an object' }));
-
-		await expect((client as any).put('/v1/info', {})).rejects.toBeInstanceOf(InvalidResponseError);
+		mockFetch(makeResponse({ json: async () => [] }));
+		await expect((client as any).get('/v1/info')).resolves.toEqual([]);
 	});
 
 	it('returns an empty object for a 204 response without reading the body', async () => {
