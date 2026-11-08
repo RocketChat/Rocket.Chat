@@ -4,6 +4,7 @@ export * from './card';
 export * from './conditional';
 export * from './callout';
 export * from './context';
+export * from './dataTable';
 export * from './divider';
 export * from './header';
 export * from './markdown';

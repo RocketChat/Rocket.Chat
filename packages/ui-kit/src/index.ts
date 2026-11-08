@@ -64,6 +64,13 @@ export type { CalloutBlock } from './blocks/layout/CalloutBlock.js';
 export type { AlertBlock } from './blocks/layout/AlertBlock.js';
 export type { CardBlock, CardImage } from './blocks/layout/CardBlock.js';
 export type { CarouselBlock } from './blocks/layout/CarouselBlock.js';
+export type {
+	DataTableBlock,
+	DataTableCell,
+	RawNumberTableCell,
+	RichTextTableCell,
+	ActionTableCell,
+} from './blocks/layout/DataTableBlock.js';
 export type { ExperimentalTabNavigationBlock } from './blocks/layout/ExperimentalTabNavigationBlock.js';
 export type { InfoCardBlock } from './blocks/layout/InfoCardBlock.js';
 export type { FileBlock } from './blocks/layout/FileBlock.js';

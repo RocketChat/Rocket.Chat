@@ -7,6 +7,9 @@ const isObject = (value: unknown): value is Record<string, unknown> => typeof va
 const withIds = (element: unknown, ids: Ids): unknown =>
 	isObject(element) ? { appId: ids.appId ?? '', blockId: ids.blockId ?? '', actionId: '', ...element } : element;
 
+const withCellIds = (cell: unknown, ids: Ids): unknown =>
+	isObject(cell) && cell.type === 'action_cell' ? { ...cell, element: withIds(cell.element, ids) } : cell;
+
 /**
  * Copies blocks as the renderers see them: an element without `appId`, `blockId` or `actionId` takes its block's
  * ids, or an empty one, because apps leave them out and the engine or the renderer fills them in.
@@ -33,6 +36,10 @@ export const withElementIds = (blocks: unknown): unknown => {
 			}
 
 			copy[key] = Array.isArray(value) ? value.map((element) => withIds(element, block)) : withIds(value, block);
+		}
+
+		if (block.type === 'data_table' && Array.isArray(copy.rows)) {
+			copy.rows = copy.rows.map((row) => (Array.isArray(row) ? row.map((cell) => withCellIds(cell, block)) : row));
 		}
 
 		if (Array.isArray(copy.render)) {

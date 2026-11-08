@@ -114,6 +114,33 @@ Source: [`packages/ui-kit/src/blocks/layout/ContextActionsBlock.ts`](../../../pa
 | `appId` | `string` | no |  |
 | `blockId` | `string` | no |  |
 
+### `data_table`
+
+Source: [`packages/ui-kit/src/blocks/layout/DataTableBlock.ts`](../../../packages/ui-kit/src/blocks/layout/DataTableBlock.ts)
+
+A table the reader can filter, sort and page through. Unlike `table`, its cells can hold rich text and buttons. The filter box matches the text each cell shows (the label of a button, the `text` of a number when it has one); clicking a column header sorts by it, and a second click reverses the order. A column sorts by number when every cell below the header is a `raw_number`, and alphabetically otherwise. Rows, filtering and sorting live in the client: nothing is sent to the app until a button is clicked.
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'data_table'` | yes |  |
+| `caption` | `string` | yes | Names the table for assistive technology and is shown above it. |
+| `rows` | `readonly (readonly DataTableCell[])[]` | yes | The first row is the header and takes only `raw_text` and `raw_number` cells. From 2 to 201 rows, each with the same 1 to 20 cells; the text of all cells adds up to at most 20,000 characters, counting the label of every button. |
+| `page_size` | `number` | no | Rows per page, an integer from 1 to 100; 5 when omitted. |
+| `row_header_column_index` | `number` | no | The 0-based column that names each row for assistive technology, drawn as the row header; 0 when omitted. |
+| `appId` | `string` | no |  |
+| `blockId` | `string` | no |  |
+
+A `DataTableCell` is one of:
+
+| Cell | Fields |
+| --- | --- |
+| `raw_text` | `text`: shown as is |
+| `raw_number` | `value`: number; `text?`: shown instead of the number |
+| `rich_text` | a [`rich_text`](#rich_text) block; not allowed in the header row |
+| `action_cell` | `element`: a `button`; `fallback?`: a `raw_text` or `raw_number` cell for clients that cannot draw the button. Not allowed in the header row |
+
+The button of an `action_cell` gets the block's `appId` and `blockId` when it has none, and clicking it sends the usual block action, so set its `value` to tell the rows apart. Any other cell renders empty.
+
 ### `divider`
 
 Source: [`packages/ui-kit/src/blocks/layout/DividerBlock.ts`](../../../packages/ui-kit/src/blocks/layout/DividerBlock.ts)

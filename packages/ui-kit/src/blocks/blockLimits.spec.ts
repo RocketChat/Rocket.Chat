@@ -70,3 +70,62 @@ it('limits the buttons of a card and the cards of a carousel', () => {
 	expect(paths([{ type: 'carousel', elements: [] }])).toEqual(['$input[0].elements']);
 	expect(paths([{ type: 'carousel', elements: [{ type: 'card', title: text(151) }] }])).toEqual(['$input[0].elements[0].title.text']);
 });
+
+describe('data_table', () => {
+	const cell = (value: string) => ({ type: 'raw_text', text: value });
+	const table = (rows: unknown[][], extra: object = {}) => [{ type: 'data_table', caption: 'Table', rows, ...extra }];
+	const header = [cell('A'), cell('B')];
+	const row = [cell('a'), cell('b')];
+
+	it('accepts a table at its limits', () => {
+		const wide = Array.from({ length: 20 }, () => cell('a'));
+
+		expect(paths(table([header, ...Array.from({ length: 200 }, () => row)], { page_size: 100, row_header_column_index: 1 }))).toEqual([]);
+		expect(paths(table([wide, wide]))).toEqual([]);
+	});
+
+	it('limits the rows, columns and the length of every row', () => {
+		expect(paths(table([header]))).toEqual(['$input[0].rows']);
+		expect(paths(table([header, ...Array.from({ length: 201 }, () => row)]))).toEqual(['$input[0].rows']);
+		expect(paths(table([[], []]))).toEqual(['$input[0].rows[0]']);
+		expect(paths(table([Array.from({ length: 21 }, () => cell('a')), header]))).toEqual(['$input[0].rows[0]', '$input[0].rows[1]']);
+		expect(paths(table([header, [cell('a')]]))).toEqual(['$input[0].rows[1]']);
+	});
+
+	it('keeps rich text and buttons out of the header', () => {
+		const rich = { type: 'rich_text', elements: [] };
+		const action = { type: 'action_cell', element: { type: 'button', text: text(1) } };
+
+		expect(paths(table([[rich, action], row]))).toEqual(['$input[0].rows[0][0]', '$input[0].rows[0][1]']);
+		expect(paths(table([header, [rich, action]]))).toEqual([]);
+	});
+
+	it('limits the characters of all cells, counting button text and the shown text of a number', () => {
+		const long = (length: number) => [cell('a'.repeat(length)), cell('')];
+		const action = { type: 'action_cell', element: { type: 'button', text: text(75) } };
+		const full = Array.from({ length: 19 }, () => long(1000));
+
+		const number = (extra: object) => [{ type: 'raw_number', value: 123456, ...extra }, cell('')];
+
+		expect(paths(table([header, ...full, long(998)]))).toEqual([]);
+		expect(paths(table([header, ...full, long(999)]))).toEqual(['$input[0].rows']);
+		expect(paths(table([header, ...full, long(950), [action, cell('')]]))).toEqual(['$input[0].rows']);
+		expect(paths(table([header, ...full, long(900), [action, cell('')]]))).toEqual([]);
+		expect(paths(table([header, ...full, long(995), number({})]))).toEqual(['$input[0].rows']);
+		expect(paths(table([header, ...full, long(995), number({ text: 'n' })]))).toEqual([]);
+	});
+
+	it('limits the text of a button in a cell', () => {
+		const action = { type: 'action_cell', element: { type: 'button', text: text(76) } };
+
+		expect(paths(table([header, [action, cell('a')]]))).toEqual(['$input[0].rows[1][0].element.text.text']);
+	});
+
+	it('validates the page size and the row header column', () => {
+		expect(paths(table([header, row], { page_size: 0 }))).toEqual(['$input[0].page_size']);
+		expect(paths(table([header, row], { page_size: 101 }))).toEqual(['$input[0].page_size']);
+		expect(paths(table([header, row], { page_size: 1.5 }))).toEqual(['$input[0].page_size']);
+		expect(paths(table([header, row], { row_header_column_index: 2 }))).toEqual(['$input[0].row_header_column_index']);
+		expect(paths(table([header, row], { row_header_column_index: -1 }))).toEqual(['$input[0].row_header_column_index']);
+	});
+});

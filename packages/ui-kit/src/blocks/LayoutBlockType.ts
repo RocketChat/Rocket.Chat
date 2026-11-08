@@ -25,4 +25,5 @@ export const LayoutBlockType = {
 	ALERT: 'alert',
 	CARD: 'card',
 	CAROUSEL: 'carousel',
+	DATA_TABLE: 'data_table',
 } as const satisfies Record<Uppercase<LayoutBlock['type']>, LayoutBlock['type']>;
