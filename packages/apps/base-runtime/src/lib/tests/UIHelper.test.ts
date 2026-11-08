@@ -35,4 +35,28 @@ describe('UIHelper.assignIds', () => {
 		assert.strictEqual(section.blockId, 'b');
 		assert.strictEqual(section.accessory.actionId, 'kept');
 	});
+
+	it('assigns ids to blocks and elements nested in container, layout, conditional, carousel and data_table blocks', () => {
+		const button = () => ({ type: 'button', text: { type: 'plain_text', text: 'Go' } });
+		const actions = () => ({ type: 'actions', elements: [button()] });
+		const blocks = [
+			{ type: 'container', child_blocks: [actions()] },
+			{ type: 'layout', rows: [{ items: [{ block: actions() }, null] }], fallback: [actions()] },
+			{ type: 'conditional', render: [actions()] },
+			{ type: 'carousel', elements: [{ type: 'card', actions: [button()] }] },
+			{ type: 'data_table', rows: [[{ type: 'raw_text', text: 'A' }], [{ type: 'action_cell', element: button() }]] },
+		] as unknown as LayoutBlock[];
+
+		const [container, layout, conditional, carousel, table] = UIHelper.assignIds(blocks, 'app-id') as any[];
+		const nested = [container.child_blocks[0], layout.rows[0].items[0].block, layout.fallback[0], conditional.render[0]];
+
+		for (const block of nested) {
+			assert.strictEqual(block.appId, 'app-id');
+			assert.ok(block.blockId);
+			assert.ok(block.elements[0].actionId);
+		}
+		assert.strictEqual(carousel.elements[0].appId, 'app-id');
+		assert.ok(carousel.elements[0].actions[0].actionId);
+		assert.ok(table.rows[1][0].element.actionId);
+	});
 });

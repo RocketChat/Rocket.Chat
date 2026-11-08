@@ -81,6 +81,10 @@ export type {
 	DataPoint,
 	AxisConfig,
 } from './blocks/layout/DataVisualizationBlock.js';
+export { containerChildBlockTypes } from './blocks/layout/ContainerBlock.js';
+export type { ContainerBlock, ContainerChildBlock } from './blocks/layout/ContainerBlock.js';
+export { layoutItemBlockTypes } from './blocks/layout/LayoutGridBlock.js';
+export type { LayoutGridBlock, LayoutItem, LayoutItemBlock, LayoutRow, LayoutFallbackBlock } from './blocks/layout/LayoutGridBlock.js';
 export type { ExperimentalTabNavigationBlock } from './blocks/layout/ExperimentalTabNavigationBlock.js';
 export type { InfoCardBlock } from './blocks/layout/InfoCardBlock.js';
 export type { FileBlock } from './blocks/layout/FileBlock.js';
@@ -116,3 +120,4 @@ export * from './interactions/UserInteraction.js';
 export * from './interactions/ServerInteraction.js';
 export type { CanonicalElementType, ElementTypeAlias } from './blocks/elementTypeAliases.js';
 export { toCanonicalElement, toCanonicalElementType } from './blocks/elementTypeAliases.js';
+export { flattenBlocks, nestedBlocks } from './blocks/nestedBlocks.js';

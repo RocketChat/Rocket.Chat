@@ -149,6 +149,16 @@ export const Card = createStory(payloads.card);
 
 export const Carousel = createStory(payloads.carousel);
 
+export const Container = createStory(payloads.container);
+
+export const ContainerCollapsed = createStory(payloads.containerCollapsed);
+
+export const ContainerWithHeaderDivider = createStory(payloads.containerWithHeaderDivider);
+
+export const LayoutThreeColumns = createStory(payloads.layoutThreeColumns);
+
+export const LayoutWithGridLines = createStory(payloads.layoutWithGridLines);
+
 export const DataTable = createStory(payloads.dataTable);
 
 export const DataVisualizationPie = createStory(payloads.dataVisualizationPie);

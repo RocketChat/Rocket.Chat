@@ -1,4 +1,5 @@
 import { Uploads } from '@rocket.chat/models';
+import { flattenBlocks } from '@rocket.chat/ui-kit';
 
 const DEFAULT_MAX_FILES = 10;
 
@@ -13,12 +14,12 @@ const getFileInputIds = ({ blocks, state }: ViewLike): string[] => {
 
 	const ids = new Set<string>();
 
-	for (const block of blocks) {
-		if (!isObject(block) || block.type !== 'input' || !isObject(block.element) || block.element.type !== 'file_input') {
+	for (const { block, blockId: holderBlockId } of flattenBlocks(blocks)) {
+		if (block.type !== 'input' || !isObject(block.element) || block.element.type !== 'file_input') {
 			continue;
 		}
 
-		const { actionId, blockId = block.blockId, max_files: maxFiles } = block.element;
+		const { actionId, blockId = holderBlockId, max_files: maxFiles } = block.element;
 		const blockState = typeof blockId === 'string' ? state[blockId] : undefined;
 		const value = isObject(blockState) && typeof actionId === 'string' ? blockState[actionId] : undefined;
 

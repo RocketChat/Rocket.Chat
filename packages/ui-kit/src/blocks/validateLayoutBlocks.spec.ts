@@ -97,3 +97,34 @@ it('accepts data visualization charts and rejects malformed ones', () => {
 	expect(validateLayoutBlocks(block({ type: 'bar', series }))).not.toEqual([]);
 	expect(validateLayoutBlocks([{ type: 'data_visualization', chart: { type: 'pie', segments: [] } }])).not.toEqual([]);
 });
+
+describe('container and layout blocks', () => {
+	const section = { type: 'section', text: text('hi'), accessory: { type: 'button', text: text('go'), actionId: 'go' } };
+	const actions = { type: 'actions', elements: [{ type: 'button', text: text('go') }] };
+	const container = { type: 'container', title: text('Box'), child_blocks: [section, actions] };
+	const layout = {
+		type: 'layout',
+		label: 'Grid',
+		rows: [{ items: [{ block: container, width: 'wide', horizontal_alignment: 'end' }, { block: section }] }],
+		grid_lines: 'rows',
+		fallback: [section],
+	};
+
+	it('accepts nested blocks whose elements leave out their ids', () => {
+		expect(validateLayoutBlocks([container, layout])).toEqual([]);
+	});
+
+	it.each([
+		['a markdown child in a container', { ...container, child_blocks: [{ type: 'markdown', text: 'x' }] }],
+		['a card child in a container', { ...container, child_blocks: [{ type: 'card' }] }],
+		['a markdown item in a layout', { ...layout, rows: [{ items: [{ block: { type: 'markdown', text: 'x' } }] }] }],
+		['an unsupported fallback block', { ...layout, fallback: [container] }],
+		['an unknown width', { ...layout, rows: [{ items: [{ block: section, width: 'huge' }] }] }],
+		['an unknown alignment', { ...layout, rows: [{ items: [{ block: section, horizontal_alignment: 'left' }] }] }],
+		['an unknown grid line', { ...layout, grid_lines: 'columns' }],
+		['an unknown container width', { ...container, width: 'tiny' }],
+		['a layout without a label', { ...layout, label: undefined }],
+	])('rejects %s', (_, block) => {
+		expect(validateLayoutBlocks([block])).not.toEqual([]);
+	});
+});

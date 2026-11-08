@@ -1,4 +1,5 @@
 import { uiKitMessage, UiKitParserMessage, BlockContext } from '@rocket.chat/ui-kit';
+import { Fragment } from 'preact';
 import type { ComponentChild } from 'preact';
 import { Suspense } from 'preact/compat';
 
@@ -137,6 +138,9 @@ export class MessageParser extends UiKitParserMessage<ComponentChild> {
 
 	preview = (element: any, context: any, index: any) =>
 		context === BlockContext.BLOCK ? <PreviewBlock key={index} {...element} parser={this} /> : null;
+
+	layout = (element: any, context: any, index: any) =>
+		context === BlockContext.BLOCK ? <Fragment key={index}>{this.render(element.fallback, { engine: 'livechat' })}</Fragment> : null;
 
 	context_actions = (element: any, context: any, index: any) =>
 		context === BlockContext.BLOCK ? <ContextActionsBlock key={index} {...element} /> : null;

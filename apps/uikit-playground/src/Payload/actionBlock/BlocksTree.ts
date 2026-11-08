@@ -18,6 +18,7 @@ import {
 } from './action';
 import { alert } from './alert';
 import { card, carousel } from './card';
+import { container, containerCollapsed, containerWithHeaderDivider, layoutThreeColumns, layoutWithGridLines } from './containerLayout';
 import { contextWithPlainText, contextWithMrkdwn, contextWithImage, contextWithAllElements } from './context';
 import { contextActions, contextActionsWithFeedback } from './contextActions';
 import { dataTable } from './dataTable';
@@ -440,6 +441,21 @@ const BlocksTree: Item = [
 			{ label: 'Bar chart', payload: dataVisualizationBar },
 			{ label: 'Area chart', payload: dataVisualizationArea },
 			{ label: 'Line chart', payload: dataVisualizationLine },
+		],
+	},
+	{
+		label: 'container',
+		branches: [
+			{ label: 'Collapsible', payload: container },
+			{ label: 'Collapsed', payload: containerCollapsed },
+			{ label: 'Header divider', payload: containerWithHeaderDivider },
+		],
+	},
+	{
+		label: 'layout',
+		branches: [
+			{ label: 'Three columns', payload: layoutThreeColumns },
+			{ label: 'Grid lines', payload: layoutWithGridLines },
 		],
 	},
 	{

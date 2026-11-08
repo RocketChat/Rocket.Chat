@@ -92,6 +92,29 @@ Source: [`packages/ui-kit/src/blocks/layout/ConditionalBlock.ts`](../../../packa
 | `appId` | `string` | no |  |
 | `blockId` | `string` | no |  |
 
+### `container`
+
+Source: [`packages/ui-kit/src/blocks/layout/ContainerBlock.ts`](../../../packages/ui-kit/src/blocks/layout/ContainerBlock.ts)
+
+A titled frame around other blocks. The type does not say that one of `title` and `rich_text_title` is required; `validateLayoutBlocks` reports a container with neither. A collapsible container draws a button in its header that hides everything but the header, with `aria-expanded` and `aria-controls`; the children stay mounted while hidden, so inputs keep their value. `has_header_divider` is ignored when the container is collapsible. Children are drawn through the surface's renderer, so a child the surface does not accept is not drawn. The nested blocks count toward the block limit of the surface.
+
+Containers and layouts nest at most 2 deep: `layout` > `container` > `rich_text` is valid, `layout` > `container` > `layout` is not.
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'container'` | yes |  |
+| `title` | `PlainText` | no | At most 150 characters. |
+| `rich_text_title` | `RichTextBlock` | no | Wins over `title` when both are given. |
+| `subtitle` | `TextObject` | no | At most 150 characters. |
+| `child_blocks` | `readonly ContainerChildBlock[]` | yes | From 1 to 10 of `actions`, `context`, `divider`, `file`, `header`, `image`, `input`, `layout`, `rich_text`, `section`, `table` and `video`. |
+| `width` | `'narrow' \| 'standard' \| 'wide' \| 'full'` | no | Defaults to `standard`; the first three cap the width, `full` fills the space. |
+| `icon` | `CardImage` | no | Small image beside the title and subtitle; it must have a safe URL to be drawn. |
+| `is_collapsible` | `boolean` | no | Defaults to false. |
+| `default_collapsed` | `boolean` | no | Starts collapsed when `is_collapsible` is true. |
+| `has_header_divider` | `boolean` | no | Draws a line under the header when `is_collapsible` is not true. |
+| `appId` | `string` | no |  |
+| `blockId` | `string` | no |  |
+
 ### `context`
 
 Source: [`packages/ui-kit/src/blocks/layout/ContextBlock.ts`](../../../packages/ui-kit/src/blocks/layout/ContextBlock.ts)
@@ -239,6 +262,30 @@ Source: [`packages/ui-kit/src/blocks/layout/InputBlock.ts`](../../../packages/ui
 | `element` | `\| ChannelsSelectElement \| ConversationsSelectElement \| DatePickerElement \| DateTimePickerElement \| ExternalSelectElement \| LinearScaleElement \| MultiChannelsSelectElement \| MultiConversationsSelectElement \| MultiExternalSelectElement \| MultiStaticSelectElement \| MultiUsersSelectElement \| PlainTextInputElement \| NumberInputElement \| EmailTextInputElement \| UrlTextInputElement \| StaticSelectElement \| UsersSelectElement \| CheckboxElement \| RadioButtonElement \| TimePickerElement \| ToggleSwitchElement` | yes |  |
 | `hint` | `PlainText` | no |  |
 | `optional` | `boolean` | no |  |
+| `appId` | `string` | no |  |
+| `blockId` | `string` | no |  |
+
+### `layout`
+
+Source: [`packages/ui-kit/src/blocks/layout/LayoutGridBlock.ts`](../../../packages/ui-kit/src/blocks/layout/LayoutGridBlock.ts)
+
+Arranges blocks in rows of up to 3 items side by side. It is purely visual: it adds no grid, table or group role, and tab order follows the source order of the items. Items share a row in the ratio of their `width` weight (`narrow` 1, `standard` 2, `wide` 3) and wrap to the next line, in source order, when they cannot keep their minimum width; there are no vertical dividers. The label is only drawn, as bold text without heading semantics, when `is_label_visible` is true. `grid_lines` `rows` draws an outer border and a line between rows, `outer` the border only. `start` and `end` alignment follow the text direction.
+
+Beyond the types, `validateLayoutBlocks` reports a row with more than one of `carousel`, `data_table` and `data_visualization`, a `data_visualization` item whose weight is not more than half of its row, and layouts and containers nested more than 2 deep. Every nested block counts toward the block limit of the surface; the label does not. Items go through the surface's renderer, so an item the surface does not accept is not drawn.
+
+The web client never draws `fallback`; Livechat draws it in place of the layout, since it cannot draw the rows.
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'layout'` | yes |  |
+| `label` | `string` | yes | At most 150 characters. |
+| `is_label_visible` | `boolean` | no | Defaults to false; a hidden label is not drawn at all. |
+| `rows` | `readonly LayoutRow[]` | yes | From 1 to 5 rows of `{ items }`, with 1 to 3 items each. |
+| `rows[].items[].block` | `LayoutItemBlock` | yes | One of `actions`, `alert`, `card`, `carousel`, `container`, `context`, `data_table`, `data_visualization`, `divider`, `file`, `header`, `image`, `input`, `rich_text`, `section`, `table` and `video`; not `markdown`. |
+| `rows[].items[].width` | `'narrow' \| 'standard' \| 'wide'` | no | Defaults to `standard`. |
+| `rows[].items[].horizontal_alignment` | `'start' \| 'center' \| 'end'` | no | Omit to let the content fill the cell. |
+| `grid_lines` | `'none' \| 'rows' \| 'outer'` | no | Defaults to `none`. |
+| `fallback` | `readonly LayoutFallbackBlock[]` | no | `context`, `divider`, `header`, `image`, `rich_text`, `section`, `table` and `video`. |
 | `appId` | `string` | no |  |
 | `blockId` | `string` | no |  |
 

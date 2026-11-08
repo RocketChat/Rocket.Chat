@@ -3,6 +3,7 @@ export * from './alert';
 export * from './card';
 export * from './conditional';
 export * from './callout';
+export * from './containerLayout';
 export * from './context';
 export * from './dataTable';
 export * from './dataVisualization';
