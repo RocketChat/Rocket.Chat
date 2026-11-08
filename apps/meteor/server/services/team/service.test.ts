@@ -229,6 +229,8 @@ describe('Team service', () => {
 			notifyOnRoomChangedById.rejects(error);
 
 			await service.unsetTeamIdOfRooms(user, team);
+			sinon.assert.calledTwice(Rooms.detachOneRoomFromTeam);
+			sinon.assert.alwaysCalledWithExactly(Rooms.detachOneRoomFromTeam, team._id);
 
 			sinon.assert.calledOnceWithExactly(notifyOnRoomChangedById, [team.roomId], 'updated');
 			sinon.assert.calledOnceWithExactly(logError, {
