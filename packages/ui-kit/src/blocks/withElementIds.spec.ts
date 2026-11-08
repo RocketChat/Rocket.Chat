@@ -47,3 +47,30 @@ it('gives the buttons of a card, alone or in a carousel, the ids of the card', (
 
 	expect(withElementIds([card, { type: 'carousel', elements: [card] }])).toEqual([withIds, { type: 'carousel', elements: [withIds] }]);
 });
+
+it('gives the button of an action cell the ids of its data table', () => {
+	const cell = { type: 'action_cell', element: { type: 'button' } };
+	const table = { type: 'data_table', appId: 'app', blockId: 'table', rows: [[{ type: 'raw_text', text: 'A' }], [cell]] };
+
+	expect(withElementIds([table])).toEqual([
+		{
+			...table,
+			rows: [
+				[{ type: 'raw_text', text: 'A' }],
+				[{ type: 'action_cell', element: { type: 'button', appId: 'app', blockId: 'table', actionId: '' } }],
+			],
+		},
+	]);
+});
+
+it('keeps the ids a button of an action cell already has and rows that are not lists', () => {
+	const cell = { type: 'action_cell', element: { type: 'button', blockId: 'own', actionId: 'go' } };
+
+	expect(withElementIds([{ type: 'data_table', blockId: 'table', rows: [[cell], 'row'] }])).toEqual([
+		{
+			type: 'data_table',
+			blockId: 'table',
+			rows: [[{ type: 'action_cell', element: { type: 'button', appId: '', blockId: 'own', actionId: 'go' } }], 'row'],
+		},
+	]);
+});

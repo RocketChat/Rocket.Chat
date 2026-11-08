@@ -9,6 +9,7 @@ export const homeSurfaceLayoutBlockTypes = [
 	'card',
 	'carousel',
 	'context',
+	'data_table',
 	'divider',
 	'header',
 	'image',

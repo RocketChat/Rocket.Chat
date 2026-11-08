@@ -6,6 +6,7 @@ import type { CarouselBlock } from './layout/CarouselBlock';
 import type { ConditionalBlock } from './layout/ConditionalBlock';
 import type { ContextActionsBlock } from './layout/ContextActionsBlock';
 import type { ContextBlock } from './layout/ContextBlock';
+import type { DataTableBlock } from './layout/DataTableBlock';
 import type { DividerBlock } from './layout/DividerBlock';
 import type { ExperimentalTabNavigationBlock } from './layout/ExperimentalTabNavigationBlock';
 import type { FileBlock } from './layout/FileBlock';
@@ -47,4 +48,5 @@ export type LayoutBlock =
 	| PlanBlock
 	| AlertBlock
 	| CardBlock
-	| CarouselBlock;
+	| CarouselBlock
+	| DataTableBlock;

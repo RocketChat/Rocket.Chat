@@ -149,6 +149,8 @@ export const Card = createStory(payloads.card);
 
 export const Carousel = createStory(payloads.carousel);
 
+export const DataTable = createStory(payloads.dataTable);
+
 export const File = createStory(payloads.file);
 
 export const Table = createStory(payloads.table);

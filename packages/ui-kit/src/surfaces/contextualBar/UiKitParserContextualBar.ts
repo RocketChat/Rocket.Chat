@@ -8,6 +8,7 @@ export const contextualBarSurfaceLayoutBlockTypes = [
 	'callout',
 	'card',
 	'context',
+	'data_table',
 	'divider',
 	'header',
 	'image',
