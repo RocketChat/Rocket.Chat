@@ -1,4 +1,3 @@
-import type { ISetting } from '@rocket.chat/core-typings';
 import { extractTranslationNamespaces } from '@rocket.chat/i18n';
 import en from '@rocket.chat/i18n/dist/resources/en.i18n.json';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
@@ -8,38 +7,29 @@ import { userEvent, within } from 'storybook/test';
 
 import SetupWizardPage from './SetupWizardPage';
 import { SetupWizardContext } from './contexts/SetupWizardContext';
+import type { OrganizationOptions } from './hooks/useOrganizationOptions';
 
 type SetupWizardContextValue = ComponentProps<typeof SetupWizardContext.Provider>['value'];
 
 const translations = extractTranslationNamespaces(en);
 
-const selectSetting = (_id: string, values: Array<[key: string, i18nLabel: string]>): ISetting =>
-	({
-		_id,
-		type: 'select',
-		public: false,
-		value: '',
-		packageValue: '',
-		values: values.map(([key, i18nLabel]) => ({ key, i18nLabel })),
-	}) as unknown as ISetting;
-
-const settings: ISetting[] = [
-	selectSetting('Industry', [
-		['aerospaceDefense', 'Aerospace_and_Defense'],
+const organizationOptions: OrganizationOptions = {
+	industry: [
+		['aerospaceDefense', 'Aerospace and Defense'],
 		['consulting', 'Consulting'],
-		['consumerGoods', 'Consumer_Packaged_Goods'],
-	]),
-	selectSetting('Size', [
+		['consumerGoods', 'Consumer Packaged Goods'],
+	],
+	size: [
 		['0', '1-10 people'],
 		['1', '11-50 people'],
 		['2', '51-100 people'],
-	]),
-	selectSetting('Country', [
-		['afghanistan', 'Country_Afghanistan'],
-		['albania', 'Country_Albania'],
-		['algeria', 'Country_Algeria'],
-	]),
-];
+	],
+	country: [
+		['afghanistan', 'Afghanistan'],
+		['albania', 'Albania'],
+		['algeria', 'Algeria'],
+	],
+};
 
 const createContextValue = (overrides: Partial<SetupWizardContextValue> = {}): SetupWizardContextValue => ({
 	setupWizardData: {
@@ -58,9 +48,13 @@ const createContextValue = (overrides: Partial<SetupWizardContextValue> = {}): S
 	},
 	setSetupWizardData: () => undefined,
 	loaded: true,
-	settings,
+	organizationOptions,
 	currentStep: 1,
 	validateEmail: () => true,
+	validateUsername: () => true,
+	validatePassword: () => true,
+	passwordRulesHint: '',
+	canGoToPreviousStep: true,
 	skipCloudRegistration: false,
 	goToPreviousStep: () => undefined,
 	goToNextStep: () => undefined,

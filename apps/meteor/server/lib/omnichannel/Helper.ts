@@ -32,7 +32,6 @@ import {
 	LivechatContacts,
 } from '@rocket.chat/models';
 import { removeEmpty, validateEmail as validatorFunc } from '@rocket.chat/tools';
-import { Match, check } from 'meteor/check';
 import type { ClientSession } from 'mongodb';
 import { ObjectId } from 'mongodb';
 
@@ -163,23 +162,15 @@ export const createLivechatInquiry = async ({
 }: {
 	rid: string;
 	name?: string;
-	guest?: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'department' | 'name' | 'token' | 'activity'>;
+	guest: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'department' | 'name' | 'token' | 'activity'>;
 	message?: string;
 	initialStatus?: LivechatInquiryStatus;
 	extraData?: IOmnichannelInquiryExtraData;
 	session?: ClientSession;
 }) => {
-	check(name, String);
-	check(
-		guest,
-		Match.ObjectIncluding({
-			_id: String,
-			username: String,
-			status: Match.Maybe(String),
-			department: Match.Maybe(String),
-			activity: Match.Maybe([String]),
-		}),
-	);
+	if (typeof name !== 'string') {
+		throw new Error('error-invalid-inquiry-name');
+	}
 
 	const extraInquiryInfo = await callbacks.run('livechat.beforeInquiry', extraData);
 
@@ -816,25 +807,6 @@ export const updateDepartmentAgents = async (
 	},
 	departmentEnabled: boolean,
 ) => {
-	check(agents, {
-		upsert: Match.Maybe([
-			Match.ObjectIncluding({
-				agentId: String,
-				username: Match.Maybe(String),
-				count: Match.Maybe(Match.Integer),
-				order: Match.Maybe(Match.Integer),
-			}),
-		]),
-		remove: Match.Maybe([
-			Match.ObjectIncluding({
-				agentId: String,
-				username: Match.Maybe(String),
-				count: Match.Maybe(Match.Integer),
-				order: Match.Maybe(Match.Integer),
-			}),
-		]),
-	});
-
 	const { upsert = [], remove = [] } = agents;
 
 	const agentsUpdated = [];

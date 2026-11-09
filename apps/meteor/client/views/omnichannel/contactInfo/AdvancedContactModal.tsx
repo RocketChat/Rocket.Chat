@@ -1,4 +1,4 @@
-import { useHasLicenseModule } from '@rocket.chat/ui-client';
+import { links, useHasLicenseModule } from '@rocket.chat/ui-client';
 import { useRole, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -7,7 +7,6 @@ import GenericUpsellModal from '../../../components/GenericUpsellModal';
 import { useUpsellActions } from '../../../components/GenericUpsellModal/hooks';
 import { useExternalLink } from '../../../hooks/useExternalLink';
 import { getURL } from '../../../lib/getURL';
-import { links } from '../../../lib/links';
 
 export type AdvancedContactModalProps = {
 	onCancel: () => void;

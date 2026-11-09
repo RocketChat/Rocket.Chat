@@ -1,8 +1,8 @@
 import { States, StatesIcon, StatesTitle, StatesSubtitle, StatesActions, StatesAction, Icon } from '@rocket.chat/fuselage';
+import { CopyErrorReportAction } from '@rocket.chat/ui-client';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import CopyErrorReportAction from '../../../components/ErrorReport/CopyErrorReportAction';
 import ReportableErrorBoundary from '../../../components/ErrorReport/ReportableErrorBoundary';
 import { useRoom } from '../contexts/RoomContext';
 

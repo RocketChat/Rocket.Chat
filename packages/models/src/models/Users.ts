@@ -254,7 +254,9 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 	addRolesByUserId(uid: string, roles: string | string[]) {
 		if (!Array.isArray(roles)) {
 			roles = [roles];
-			process.env.NODE_ENV === 'development' && console.warn('[WARN] Users.addRolesByUserId: roles should be an array');
+			if (process.env.NODE_ENV === 'development') {
+				console.warn('[WARN] Users.addRolesByUserId: roles should be an array');
+			}
 		}
 
 		const query = {
@@ -3300,6 +3302,20 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		Object.assign(user, data);
 
 		return this.insertOne(user);
+	}
+
+	createIfNotExists({ _id, ...data }: Partial<IUser> & Pick<IUser, '_id'>): Promise<UpdateResult> {
+		return this.updateOne(
+			{ _id },
+			{
+				$setOnInsert: {
+					createdAt: new Date(),
+					avatarOrigin: 'none',
+					...data,
+				},
+			},
+			{ upsert: true },
+		);
 	}
 
 	// REMOVE

@@ -13,13 +13,13 @@ import {
 	useSort,
 	GenericNoResults,
 	useFormatDateAndTime,
+	links,
 } from '@rocket.chat/ui-client';
 import { useTranslation, usePermission, useToastMessageDispatch, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { hashKey, useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 
 import CannedResponseFilter from './CannedResponseFilter';
-import { links } from '../../../../lib/links';
 import RemoveCannedResponseButton from '../RemoveCannedResponseButton';
 
 type Scope = 'global' | 'department' | 'user';

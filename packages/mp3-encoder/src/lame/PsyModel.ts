@@ -1,12 +1,12 @@
-import { FFT } from './FFT';
-import type { III_psy_ratio } from './III_psy_ratio';
-import type { LameGlobalFlags } from './LameGlobalFlags';
-import type { LameInternalFlags } from './LameInternalFlags';
-import { MPEGMode } from './MPEGMode';
-import { ShortBlock } from './ShortBlock';
-import { VbrMode } from './VbrMode';
-import { fillArray } from './arrays';
-import { assert, assertDefined } from './assert';
+import { FFT } from './FFT.js';
+import type { III_psy_ratio } from './III_psy_ratio.js';
+import type { LameGlobalFlags } from './LameGlobalFlags.js';
+import type { LameInternalFlags } from './LameInternalFlags.js';
+import { MPEGMode } from './MPEGMode.js';
+import { ShortBlock } from './ShortBlock.js';
+import { VbrMode } from './VbrMode.js';
+import { fillArray } from './arrays.js';
+import { assert, assertDefined } from './assert.js';
 import {
 	BLKSIZE,
 	BLKSIZE_s,
@@ -21,7 +21,7 @@ import {
 	SHORT_TYPE,
 	START_TYPE,
 	STOP_TYPE,
-} from './constants';
+} from './constants.js';
 
 export class PsyModel {
 	private readonly fft = new FFT();

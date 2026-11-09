@@ -91,6 +91,7 @@ import { composeRoomWithLastMessage } from '../lib/composeRoomWithLastMessage';
 import { getPaginationItems } from '../lib/getPaginationItems';
 import { getRoomClassificationBanner } from '../lib/getRoomClassificationBanner';
 import { getUserFromParams } from '../lib/getUserFromParams';
+import { normalizeLegacyUfsLocation } from '../lib/normalizeLegacyUfsLocation';
 import {
 	findAdminRoom,
 	findAdminRooms,
@@ -492,6 +493,7 @@ API.v1.post(
 			}),
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
 	},
 	async function action() {
@@ -499,7 +501,7 @@ API.v1.post(
 		const { _id } = room;
 
 		if (!room || !(await canAccessRoomAsync(room, { _id: this.userId }))) {
-			return API.v1.failure('User does not have access to the room [error-not-allowed]', 'error-not-allowed');
+			return API.v1.forbidden('User does not have access to the room');
 		}
 
 		const { latest, oldest, inclusive = false, limit, excludePinned, filesOnly, ignoreThreads, ignoreDiscussion, users } = this.bodyParams;
@@ -541,6 +543,7 @@ API.v1.get(
 			}),
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
 	},
 	async function action() {
@@ -554,7 +557,7 @@ API.v1.get(
 				(await hasPermissionAsync(this.userId, 'view-room-administration')));
 
 		if (!canAccess) {
-			return API.v1.failure('not-allowed', 'Not Allowed');
+			return API.v1.forbidden('User does not have access to the room');
 		}
 
 		const discussionParent =
@@ -632,6 +635,7 @@ API.v1.get(
 			}),
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
 	},
 	async function action() {
@@ -640,7 +644,7 @@ API.v1.get(
 		const { sort, fields } = await this.parseJsonQuery();
 
 		if (!room || !(await canAccessRoomAsync(room, { _id: this.userId }))) {
-			return API.v1.failure('not-allowed', 'Not Allowed');
+			return API.v1.forbidden('User does not have access to the room');
 		}
 
 		const ourQuery = { prid: room._id };
@@ -693,17 +697,13 @@ API.v1.get(
 			return API.v1.forbidden();
 		}
 
-		let initialImage: IUpload | null = null;
-		if (this.queryParams.startingFromId) {
-			initialImage = await Uploads.findOneById(this.queryParams.startingFromId);
-			if (initialImage && initialImage.rid !== room._id) {
-				initialImage = null;
-			}
-		}
+		const initialImage = this.queryParams.startingFromId
+			? await Uploads.findOneConfirmedImageByIdAndRoomId(this.queryParams.startingFromId, room._id)
+			: null;
 
 		const { offset, count } = await getPaginationItems(this.queryParams);
 
-		const { cursor, totalCount } = Uploads.findImagesByRoomId(room._id, initialImage?.uploadedAt, {
+		const { cursor, totalCount } = Uploads.findConfirmedImagesByRoomId(room._id, initialImage?.uploadedAt, {
 			skip: offset,
 			limit: count,
 		});
@@ -716,7 +716,7 @@ API.v1.get(
 		}
 
 		return API.v1.success({
-			files,
+			files: files.map(normalizeLegacyUfsLocation),
 			count,
 			offset,
 			total,
@@ -834,7 +834,7 @@ API.v1.get(
 		});
 
 		if (!room) {
-			return API.v1.failure('not-allowed', 'Not Allowed');
+			return API.v1.forbidden('User does not have access to the room');
 		}
 		return API.v1.success(room);
 	},

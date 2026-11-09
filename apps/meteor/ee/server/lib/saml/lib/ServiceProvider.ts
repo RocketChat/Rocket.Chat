@@ -3,9 +3,8 @@ import querystring from 'node:querystring';
 import util from 'node:util';
 import zlib from 'node:zlib';
 
-import { Meteor } from 'meteor/meteor';
-
 import { SAMLUtils } from './Utils';
+import { getWorkspaceURL } from '../../../../../server/lib/utils/getURL';
 import type { ILogoutResponse } from '../definition/ILogoutResponse';
 import type { ISAMLRequest } from '../definition/ISAMLRequest';
 import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
@@ -141,7 +140,7 @@ export class SAMLServiceProvider {
 			let relayState;
 			if (operation === 'logout') {
 				// in case of logout we want to be redirected back to the Meteor app.
-				relayState = Meteor.absoluteUrl();
+				relayState = `${getWorkspaceURL()}/`;
 			} else {
 				relayState = SAMLUtils.encodeAuthorizeRelayState(this.serviceProviderOptions.provider, loginClient);
 			}

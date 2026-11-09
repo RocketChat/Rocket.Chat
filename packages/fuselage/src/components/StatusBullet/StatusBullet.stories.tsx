@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import type { Meta, StoryObj } from '@storybook/react';
 
 import { Box } from '../Box';
 import StatusBullet from './StatusBullet';
@@ -26,7 +26,7 @@ export default {
 		},
 		size: {
 			control: 'select',
-			options: ['small', 'large'],
+			options: ['small'],
 			description: 'Size of the bullet icon.',
 		},
 	},

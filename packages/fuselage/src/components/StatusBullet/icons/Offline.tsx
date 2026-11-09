@@ -1,3 +1,4 @@
+import { prependClassName } from '../../../helpers/prependClassName';
 import type { StatusBulletProps } from '../StatusBullet';
 
 const Offline = ({ size, className, ...props }: StatusBulletProps) => (
@@ -9,7 +10,10 @@ const Offline = ({ size, className, ...props }: StatusBulletProps) => (
 		fill='none'
 		aria-hidden='true'
 		xmlns='http://www.w3.org/2000/svg'
-		className={`rcx-status-bullet rcx-status-bullet--offline ${className} ${size === 'small' ? 'rcx-status-bullet--small' : ''}`}
+		className={prependClassName(
+			className,
+			`rcx-status-bullet rcx-status-bullet--offline${size === 'small' ? ' rcx-status-bullet--small' : ''}`,
+		)}
 	>
 		<circle cx='6' cy='6' r='5' className='rcx-status-bullet rcx-status-bullet--offline' strokeWidth='2' />
 	</svg>

@@ -1,9 +1,9 @@
-import { LameInternalFlags } from './LameInternalFlags';
-import { MPEGMode } from './MPEGMode';
-import type { Quality } from './Quality';
-import type { ShortBlock } from './ShortBlock';
-import { VbrMode } from './VbrMode';
-import type { SampleRate } from './sampleRates';
+import { LameInternalFlags } from './LameInternalFlags.js';
+import { MPEGMode } from './MPEGMode.js';
+import type { Quality } from './Quality.js';
+import type { ShortBlock } from './ShortBlock.js';
+import { VbrMode } from './VbrMode.js';
+import type { SampleRate } from './sampleRates.js';
 
 export class LameGlobalFlags {
 	num_channels: number;

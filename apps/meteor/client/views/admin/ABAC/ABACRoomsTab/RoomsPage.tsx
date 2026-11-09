@@ -1,4 +1,4 @@
-import { Box, Button, Icon, Margins, Pagination, Select, TextInput, Stack, type TableColumnWidth } from '@rocket.chat/fuselage';
+import { Box, Button, Margins, Pagination, Select, type TableColumnWidth } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
@@ -16,6 +16,7 @@ import { useMemo, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import RoomMenu from './RoomMenu';
+import { FilterBar, FilterBarFilters, FilterBarSearch } from '../../../../components/FilterBar';
 import { RoomIcon } from '../../../../components/RoomIcon';
 import { ABACQueryKeys } from '../../../../lib/queryKeys';
 import { useIsABACAvailable } from '../hooks/useIsABACAvailable';
@@ -71,32 +72,25 @@ const RoomsPage = () => {
 
 	return (
 		<>
-			<Margins block={24}>
-				<Stack direction='row' gap={8}>
-					<TextInput
-						endAddon={<Icon name='magnifier' size='x20' />}
-						placeholder={t('ABAC_Search_rooms')}
-						value={text}
-						onChange={(e) => setText((e.target as HTMLInputElement).value)}
+			<FilterBar>
+				<FilterBarSearch placeholder={t('ABAC_Search_rooms')} value={text} onChange={(e) => setText(e.target.value)} />
+				<FilterBarFilters>
+					<Select
+						aria-label={t('Filter')}
+						options={[
+							['all', t('All'), true],
+							['roomName', t('Rooms'), false],
+							['attribute', t('Attributes'), false],
+							['value', t('Values'), false],
+						]}
+						value={filterType}
+						onChange={(value) => setFilterType(value)}
 					/>
-					<Box maxWidth={192}>
-						<Select
-							aria-label={t('Filter')}
-							options={[
-								['all', t('All'), true],
-								['roomName', t('Rooms'), false],
-								['attribute', t('Attributes'), false],
-								['value', t('Values'), false],
-							]}
-							value={filterType}
-							onChange={(value) => setFilterType(value)}
-						/>
-					</Box>
-					<Button onClick={handleNewAttribute} variant='primary' disabled={isABACAvailable !== true}>
-						{t('Add_room')}
-					</Button>
-				</Stack>
-			</Margins>
+				</FilterBarFilters>
+				<Button onClick={handleNewAttribute} variant='primary' disabled={isABACAvailable !== true}>
+					{t('Add_room')}
+				</Button>
+			</FilterBar>
 			{(!data || data.rooms?.length === 0) && !isLoading ? (
 				<Box display='flex' justifyContent='center' height='full'>
 					<GenericNoResults icon='list-alt' title={t('ABAC_No_rooms')} description={t('ABAC_No_rooms_description')} />

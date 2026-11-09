@@ -24,4 +24,4 @@ const useServerLazyRef = <T>(init: () => T): RefObject<T> => useRef(init());
  * @returns the ref
  * @public
  */
-export const useLazyRef = typeof window !== 'undefined' && window.document ? useBrowserLazyRef : useServerLazyRef;
+export const useLazyRef = globalThis.window?.document ? useBrowserLazyRef : useServerLazyRef;

@@ -24,7 +24,6 @@ const callbacksAdd = sinon.stub();
 const slashCommandsAdd = sinon.stub();
 
 const { sendTestEmailToInbox } = proxyquire.noCallThru().load('./EmailInbox_Outgoing', {
-	'meteor/check': { Match: { test: (value: unknown, pattern: unknown) => pattern === String && typeof value === 'string' } },
 	'./EmailInbox': { inboxes },
 	'./logger': { logger: { info: sinon.stub(), error: sinon.stub() } },
 	'../../lib/callbacks': { callbacks: { add: callbacksAdd, priority: { LOW: 1 } } },

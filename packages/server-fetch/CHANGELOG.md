@@ -1,5 +1,18 @@
 # @rocket.chat/server-fetch
 
+## 0.2.6-rc.0
+
+### Patch Changes
+
+- ([#42709](https://github.com/RocketChat/Rocket.Chat/pull/42709)) Prevents outbound HTTP requests, such as SAML metadata fetches and public import file downloads, from keeping connections open after an error response or redirect while the remote server continues sending data.
+
+- <details><summary>Updated dependencies [1034e1f85d8e82788ca9590a185370aaf6efc4fb, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 6bb0d3bca9b5da401050697d51bc99e89871bbb7, 6be3614cd2660ab4024635802fdf9cd7dd7b502f, 588311c49bfce08e7106e7c0bb32741334fa5321, a9b2bb76d88e4d2743e0817b15e6447e7c9c46eb, eaf5cedcce9f8e800415b4c49bce242f661462ea, 40243c4ba0ed19120a571d37883aec203af1b747, 39a6e6e1397e1e89bc631fe4ab1cc10fa93b59e8, eb808dd70cfbd41a127d8655c62a21c4658fd2c0, 01204df7088b1362f14438d99c44bc4f6d6e840e, a39b03fe5c248079365162e31994e1dece63e7c2]:</summary>
+  - @rocket.chat/models@3.0.0-rc.0
+  - @rocket.chat/tools@0.5.0-rc.0
+  - @rocket.chat/logger@1.0.2-rc.0
+
+  </details>
+
 ## 0.2.5
 
 ### Patch Changes

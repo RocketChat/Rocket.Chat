@@ -3,7 +3,6 @@ import type { IUser } from '@rocket.chat/core-typings';
 import type { Updater } from '@rocket.chat/models';
 import { Users } from '@rocket.chat/models';
 import { escapeHTML } from '@rocket.chat/tools';
-import { Meteor } from 'meteor/meteor';
 import type { ClientSession } from 'mongodb';
 
 import { checkEmailAvailability } from './checkEmailAvailability';
@@ -14,10 +13,8 @@ import * as Mailer from '../notifications/email/api';
 import { validateEmailDomain } from '../validateEmailDomain';
 
 let html = '';
-Meteor.startup(() => {
-	Mailer.getTemplate('Email_Changed_Email', (template) => {
-		html = template;
-	});
+Mailer.getTemplate('Email_Changed_Email', (template) => {
+	html = template;
 });
 
 const _sendEmailChangeNotification = async function (to: string, newEmail: string) {

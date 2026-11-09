@@ -13,10 +13,9 @@ import { memo, type MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import StatusIndicators from './StatusIndicators';
-import MessageRoles from './header/MessageRoles';
+import MessageHeaderRoles from './header/MessageHeaderRoles';
 import { useMessageListShowRoles, useMessageListFormatDateAndTime, useMessageListFormatTime } from './list/MessageListContext';
 import { normalizeUsername } from '../../../lib/utils/normalizeUsername';
-import { useUserRolesByScope } from '../../hooks/useUserRolesByScope';
 import { useIsSelecting } from '../../views/room/MessageList/contexts/SelectedMessagesContext';
 
 export type MessageHeaderProps = {
@@ -36,16 +35,13 @@ const MessageHeader = ({ message }: MessageHeaderProps) => {
 	const normalizedUsername = normalizeUsername(user.username);
 
 	const showRoles = useMessageListShowRoles();
-	const { workspaceRoles, roomRoles } = useUserRolesByScope(message.u._id, message.rid, { enabled: showRoles });
-	const shouldShowRolesList = showRoles && (workspaceRoles.length > 0 || roomRoles.length > 0 || !!message.bot);
 
-	// While selecting, the whole row toggles the selection, so the name and the role tag stop being triggers.
+	// While selecting, the whole row toggles the selection, so the name stops being a trigger.
 	const isSelecting = useIsSelecting();
 	const authorTriggerProps = isSelecting
 		? {}
 		: {
 				...buttonProps,
-				style: { cursor: 'pointer' },
 				onMouseEnter: (e: MouseEvent) => openUserCard(e, message.u.username),
 			};
 
@@ -54,14 +50,7 @@ const MessageHeader = ({ message }: MessageHeaderProps) => {
 			<MessageNameContainer id={`${message._id}-displayName`} {...authorTriggerProps}>
 				<MessageName data-username={normalizedUsername}>{message.alias || displayName}</MessageName>
 			</MessageNameContainer>
-			{shouldShowRolesList && (
-				<MessageRoles
-					workspaceRoles={workspaceRoles}
-					roomRoles={roomRoles}
-					isBot={!!message.bot}
-					onClick={isSelecting ? undefined : (e) => openUserCard(e, message.u.username)}
-				/>
-			)}
+			{showRoles && <MessageHeaderRoles message={message} />}
 			<MessageTimestamp id={`${message._id}-time`} title={formatDateAndTime(message.ts)}>
 				{formatTime(message.ts)}
 			</MessageTimestamp>

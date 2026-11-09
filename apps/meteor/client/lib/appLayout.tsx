@@ -1,13 +1,14 @@
 import { Emitter } from '@rocket.chat/emitter';
 import type { ReactNode } from 'react';
-import { lazy } from 'react';
 
-const ConnectionStatusBar = lazy(() => import('../components/connectionStatus/ConnectionStatusBar'));
-const BannerRegion = lazy(() => import('../views/banners/BannerRegion'));
-const ModalRegion = lazy(() => import('@rocket.chat/ui-client').then(({ ModalRegion }) => ({ default: ModalRegion })));
-const ActionManagerBusyState = lazy(() => import('../components/ActionManagerBusyState'));
-const AppLayoutThemeWrapper = lazy(() => import('../components/AppLayoutThemeWrapper'));
-const CloudAnnouncementsRegion = lazy(() => import('../views/cloud/CloudAnnouncementsRegion'));
+import { preloadedLazy } from './preloadedLazy';
+
+const ConnectionStatusBar = preloadedLazy(() => import('../components/connectionStatus/ConnectionStatusBar'));
+const BannerRegion = preloadedLazy(() => import('../views/banners/BannerRegion'));
+const ModalRegion = preloadedLazy(() => import('@rocket.chat/ui-client').then(({ ModalRegion }) => ({ default: ModalRegion })));
+const ActionManagerBusyState = preloadedLazy(() => import('../components/ActionManagerBusyState'));
+const AppLayoutThemeWrapper = preloadedLazy(() => import('../components/AppLayoutThemeWrapper'));
+const CloudAnnouncementsRegion = preloadedLazy(() => import('../views/cloud/CloudAnnouncementsRegion'));
 
 class AppLayoutSubscription extends Emitter<{ update: void }> {
 	private descriptor: ReactNode = null;

@@ -222,6 +222,18 @@ describe('Thread Metrics', () => {
 			const badge = screen.getByTitle('Mentions_you');
 			expect(badge).toBeVisible();
 		});
+		it('names the unread state in the follow button, as its badge is hidden from assistive technology', () => {
+			render(<ThreadMetricsFollow unread={true} mention={true} all={false} mid='mid' rid='rid' following={true} />, {
+				wrapper: mockAppRoot().build(),
+			});
+			expect(screen.getByRole('button', { name: 'Following, Mentions_you' })).toBeInTheDocument();
+		});
+		it('names only the follow state when nothing is unread', () => {
+			render(<ThreadMetricsFollow unread={false} mention={false} all={false} mid='mid' rid='rid' following={false} />, {
+				wrapper: mockAppRoot().build(),
+			});
+			expect(screen.getByRole('button', { name: 'Not_following' })).toBeInTheDocument();
+		});
 	});
 	describe('ThreadMetricsParticipants', () => {
 		it('should render 1 avatars', () => {

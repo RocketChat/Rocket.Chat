@@ -50,7 +50,24 @@ When the table has no row for what you need, the answer is a new container, not 
 
 ### Filter bar
 
-Each filter is a `Field`, with a visually hidden label when the design shows none. A `Stack direction='row' gap={8} wrap` lays them out.
+The search, filters and actions above a list are a `FilterBar` (`client/components/FilterBar`):
+
+```tsx
+<FilterBar>
+	<FilterBarSearch placeholder={t('Search_rooms')} value={text} onChange={(event) => setText(event.target.value)} />
+	<FilterBarFilters>
+		<Select aria-label={t('Type')} options={typeOptions} value={type} onChange={setType} />
+		<MultiSelectCustom … />
+	</FilterBarFilters>
+	<Button variant='primary'>{t('Add_room')}</Button>
+</FilterBar>
+```
+
+- The search takes the room the filters leave. When the row is full, the filters move to the next row together and share it in equal widths; they never move one by one.
+- `FilterBarFilters` sizes each filter's slot; a filter sets no width of its own and only grows to fill that slot.
+- A bar with only a search, optionally followed by a button, is `FilterByText`.
+- Inside a contextual bar section, `<FilterBar compact>` keeps one row: the search shrinks and each filter stays narrow.
+- Filters that show a visible label are a form instead: each one a `Field`, laid out by `Stack direction='row' gap={8} wrap`.
 
 ### Actions
 

@@ -2,7 +2,6 @@
 import type { ISetting, SettingValue, LicenseModule } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { Settings } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { settings, SettingsEvents } from '../../../server/settings';
 import { use } from '../../../server/settings/Middleware';
@@ -56,10 +55,10 @@ async function updateSettings(): Promise<void> {
 	void enterpriseSettings.forEach((record: ISetting) => settings.set(record));
 }
 
-Meteor.startup(async () => {
+export const syncSettingsWithLicense = async (): Promise<void> => {
 	await updateSettings();
 
 	License.onValidateLicense(updateSettings);
 	License.onInvalidateLicense(updateSettings);
 	License.onRemoveLicense(updateSettings);
-});
+};

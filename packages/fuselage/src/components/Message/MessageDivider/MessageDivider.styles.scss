@@ -3,8 +3,6 @@
 @use '../../../styles/lengths.scss';
 @use '../../../styles/typography.scss' as *;
 
-$message-background-color: theme('message-background-color', colors.surface(room));
-
 $message-divider-background-color: theme('message-divider-background-color', colors.stroke(extra-light));
 $message-divider-color: theme('message-divider-color', colors.font(default));
 
@@ -31,9 +29,11 @@ $message-divider-size-neg: theme('message-divider-size-neg', lengths.margin(-1))
 
 	&__bar {
 		display: flex;
-		justify-content: flex-end;
 		align-items: center;
-		flex-grow: 1;
+		// Equal bars keep the date centred, whatever room the Unread label takes from its bar.
+		flex: 1 1 0;
+
+		min-width: 0;
 
 		&::after {
 			flex-grow: 1;
@@ -56,19 +56,14 @@ $message-divider-size-neg: theme('message-divider-size-neg', lengths.margin(-1))
 		margin-block: lengths.margin(8);
 		padding-inline: lengths.padding(8);
 
-		background-color: $message-background-color;
-
 		&--unread {
-			position: absolute;
-			z-index: 1;
-			// right: lengths.padding(8);
-
 			order: 1;
 
+			// Takes no block size, so a divider with only this label stays a 1px line that the label overhangs.
+			margin-block: lengths.margin(-8);
 			padding-inline-start: lengths.padding(8);
 
 			color: $message-divider-color-unread;
-			background-color: $message-background-color;
 		}
 	}
 }
