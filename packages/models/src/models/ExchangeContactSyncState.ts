@@ -2,7 +2,7 @@ import type { IExchangeContactSyncState, IUser } from '@rocket.chat/core-typings
 import type { ExchangeContactSyncIdentity, IExchangeContactSyncStateModel } from '@rocket.chat/model-typings';
 import type { Db, DeleteResult, IndexDescription, UpdateResult } from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
+import { BaseRaw } from './BaseRaw.js';
 
 export class ExchangeContactSyncStateRaw extends BaseRaw<IExchangeContactSyncState> implements IExchangeContactSyncStateModel {
 	constructor(db: Db) {

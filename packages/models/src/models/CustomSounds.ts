@@ -2,7 +2,7 @@ import type { ICustomSound, RocketChatRecordDeleted } from '@rocket.chat/core-ty
 import type { ICustomSoundsModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
 import type { Collection, FindCursor, Db, IndexDescription, InsertOneResult, UpdateResult, WithId, Document } from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
+import { BaseRaw } from './BaseRaw.js';
 
 export class CustomSoundsRaw extends BaseRaw<ICustomSound> implements ICustomSoundsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ICustomSound>>) {

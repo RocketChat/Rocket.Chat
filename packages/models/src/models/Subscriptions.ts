@@ -22,8 +22,8 @@ import type {
 	ClientSession,
 } from 'mongodb';
 
-import { Rooms, Users } from '../proxies';
-import { BaseRaw } from './BaseRaw';
+import { Rooms, Users } from '../proxies.js';
+import { BaseRaw } from './BaseRaw.js';
 
 export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscriptionsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ISubscription>>) {

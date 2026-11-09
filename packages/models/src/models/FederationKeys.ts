@@ -3,7 +3,7 @@ import type { IFederationKeysModel } from '@rocket.chat/model-typings';
 import type { Db, Collection } from 'mongodb';
 import NodeRSA from 'node-rsa';
 
-import { BaseRaw } from './BaseRaw';
+import { BaseRaw } from './BaseRaw.js';
 
 export class FederationKeysRaw extends BaseRaw<FederationKey> implements IFederationKeysModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<FederationKey>>) {

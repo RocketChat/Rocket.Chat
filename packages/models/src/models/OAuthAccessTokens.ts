@@ -2,7 +2,7 @@ import type { IOAuthAccessToken, RocketChatRecordDeleted } from '@rocket.chat/co
 import type { IOAuthAccessTokensModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
 import type { Db, Collection, DeleteResult, IndexDescription, Document } from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
+import { BaseRaw } from './BaseRaw.js';
 
 export class OAuthAccessTokensRaw extends BaseRaw<IOAuthAccessToken> implements IOAuthAccessTokensModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IOAuthAccessToken>>) {

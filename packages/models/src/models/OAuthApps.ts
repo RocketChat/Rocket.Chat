@@ -2,7 +2,7 @@ import type { IOAuthApps, RocketChatRecordDeleted } from '@rocket.chat/core-typi
 import type { IOAuthAppsModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
 import type { Db, Collection, IndexDescription, Document } from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
+import { BaseRaw } from './BaseRaw.js';
 
 export class OAuthAppsRaw extends BaseRaw<IOAuthApps> implements IOAuthAppsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IOAuthApps>>) {

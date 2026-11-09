@@ -29,10 +29,10 @@ import type {
 	FindOneAndUpdateOptions,
 } from 'mongodb';
 
-import { Subscriptions } from '../proxies';
-import { BaseRaw } from './BaseRaw';
-import { readSecondaryPreferred } from '../readSecondaryPreferred';
-import type { Updater } from '../updater';
+import { Subscriptions } from '../proxies.js';
+import { BaseRaw } from './BaseRaw.js';
+import { readSecondaryPreferred } from '../readSecondaryPreferred.js';
+import type { Updater } from '../updater.js';
 
 export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IRoom>>) {

@@ -1,7 +1,7 @@
 import type { Db } from 'mongodb';
 
-import { LivechatRoomsRaw } from './LivechatRooms';
-import { UpdaterImpl } from '../updater';
+import { LivechatRoomsRaw } from './LivechatRooms.js';
+import { UpdaterImpl } from '../updater.js';
 
 // `LivechatRooms` imports `..`, whose barrel pulls in every model and cycles back here.
 jest.mock('..', () => ({

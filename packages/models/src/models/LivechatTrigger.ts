@@ -2,7 +2,7 @@ import type { ILivechatTrigger, RocketChatRecordDeleted } from '@rocket.chat/cor
 import type { ILivechatTriggerModel } from '@rocket.chat/model-typings';
 import type { Collection, FindCursor, Db, IndexDescription, UpdateResult } from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
+import { BaseRaw } from './BaseRaw.js';
 
 export class LivechatTriggerRaw extends BaseRaw<ILivechatTrigger> implements ILivechatTriggerModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatTrigger>>) {

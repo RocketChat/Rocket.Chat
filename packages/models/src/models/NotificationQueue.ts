@@ -2,7 +2,7 @@ import type { INotification, RocketChatRecordDeleted } from '@rocket.chat/core-t
 import type { INotificationQueueModel } from '@rocket.chat/model-typings';
 import type { Collection, Db, Document, IndexDescription, UpdateResult } from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
+import { BaseRaw } from './BaseRaw.js';
 
 export class NotificationQueueRaw extends BaseRaw<INotification> implements INotificationQueueModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<INotification>>) {
