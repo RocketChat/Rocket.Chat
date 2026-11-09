@@ -41,6 +41,11 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		options?: O,
 	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>>;
 
+	findPaginatedVisibleByMention<
+		T extends Document = IMessage,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(username: IUser['username'], roomIds: IRoom['_id'][], options?: O): FindPaginated<FindCursor<DocumentWithProjection<T, O>>>;
+
 	findVisibleByMentionAndRoomId<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		username: IUser['username'],
 		rid: IRoom['_id'],
@@ -50,6 +55,12 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	findStarredByUserAtRoom<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		userId: IUser['_id'],
 		roomId: IRoom['_id'],
+		options?: O,
+	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>>;
+
+	findStarredByUser<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId: IUser['_id'],
+		roomIds: IRoom['_id'][],
 		options?: O,
 	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>>;
 
