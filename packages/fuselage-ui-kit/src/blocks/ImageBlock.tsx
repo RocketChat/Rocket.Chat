@@ -78,7 +78,9 @@ const ImageBlock = ({ className, block, surfaceRenderer }: ImageBlockProps) => {
 					</Box>
 				)}
 				{loading ? (
-					<Skeleton variant='rect' width={width} height={height} />
+					<Box display='flex' borderRadius='large' overflow='hidden'>
+						<Skeleton variant='rect' width={width} height={height} />
+					</Box>
 				) : (
 					<Image
 						imageUrl={block.imageUrl}
