@@ -5,10 +5,11 @@ import { BaseRaw } from '@rocket.chat/models';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import type { FindCursor, FindOptions } from 'mongodb';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
-const { BannerService } = proxyquire.noCallThru().load('./service', {});
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
+
+const { BannerService } = loadWithMocks('./service', {});
 
 class BannerModel extends BaseRaw<any> {
 	findActiveByRoleOrId(

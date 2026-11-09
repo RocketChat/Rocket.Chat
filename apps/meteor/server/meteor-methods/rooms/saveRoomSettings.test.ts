@@ -5,8 +5,9 @@ import type { IAuthorization, IMessageService, IRoomService, ITeamService } from
 import { TeamType } from '@rocket.chat/core-typings';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const sandbox = sinon.createSandbox();
 
@@ -88,11 +89,11 @@ const findRoomsByIds = sandbox.stub();
 const findUser = sandbox.stub();
 const disableAutoTranslate = sandbox.stub();
 
-const { isABACManagedRoom } = proxyquire.noCallThru().load('../../lib/authorization/isABACManagedRoom', {
+const { isABACManagedRoom } = loadWithMocks('../../lib/authorization/isABACManagedRoom', {
 	'../../settings': { settings: { get: settingsGet } },
 });
 
-const { saveRoomSettings } = proxyquire.noCallThru().load('./saveRoomSettings', {
+const { saveRoomSettings } = loadWithMocks('./saveRoomSettings', {
 	'../../lib/authorization/isABACManagedRoom': { isABACManagedRoom },
 	'../../lib/messaging/discussions/updateAndNotifyParentRoomWithParentMessage': {
 		updateAndNotifyParentRoomWithParentMessage: notifyParentRoom,

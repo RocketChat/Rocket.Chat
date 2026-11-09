@@ -3,10 +3,10 @@ import { before, beforeEach, describe, it } from 'node:test';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import moment from 'moment';
-import proxyquire from 'proxyquire';
 import Sinon from 'sinon';
 
 import { createFakeMessage, createFakeUser } from '../../../tests/mocks/data';
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const models = {
 	LivechatContacts: { isContactActiveOnPeriod: Sinon.stub(), markContactActiveForPeriod: Sinon.stub() },
@@ -24,7 +24,7 @@ const settingsGetMock = {
 
 const isMessageFromBotMock = { isMessageFromBot: Sinon.stub() };
 
-const { markRoomResponded } = proxyquire.noCallThru().load('./markRoomResponded.ts', {
+const { markRoomResponded } = loadWithMocks('./markRoomResponded.ts', {
 	'../../lib/callbacks': { callbacks: { add: Sinon.stub(), priority: { HIGH: 'high' } } },
 	'../../lib/notifyListener': { notifyOnLivechatInquiryChanged: Sinon.stub() },
 	'../../settings': { settings: settingsGetMock },

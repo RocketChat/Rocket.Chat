@@ -3,8 +3,9 @@ import { before, beforeEach, describe, it } from 'node:test';
 import type { IImportRecord, IImportRecordType } from '@rocket.chat/core-typings';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../../tests/mocks/utils/loadWithMocks';
 
 const settingsStub = sinon.stub();
 const modelsMock = {
@@ -17,7 +18,7 @@ const modelsMock = {
 	},
 };
 
-const { RecordConverter } = proxyquire.noCallThru().load('./RecordConverter', {
+const { RecordConverter } = loadWithMocks('./RecordConverter', {
 	'meteor/meteor': sinon.stub(),
 });
 

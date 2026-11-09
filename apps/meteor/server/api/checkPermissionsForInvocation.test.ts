@@ -1,10 +1,10 @@
 import { describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import mock from 'proxyquire';
 import Sinon from 'sinon';
 
 import type { PermissionsPayload } from './api.helpers';
+import { loadWithMocks } from '../../tests/mocks/utils/loadWithMocks';
 
 const userPermissions: { [k: string]: string[] } = {
 	'4r3fsadfasf': ['view-all', 'view-none'],
@@ -29,7 +29,7 @@ const mocks = {
 	},
 };
 
-const { checkPermissionsForInvocation } = mock.noCallThru().load('./api.helpers', mocks);
+const { checkPermissionsForInvocation } = loadWithMocks('./api.helpers', mocks);
 
 describe('checkPermissionsForInvocation', () => {
 	it('should return false when no permissions are provided', async () => {

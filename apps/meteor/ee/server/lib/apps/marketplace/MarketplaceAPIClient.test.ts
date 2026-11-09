@@ -1,15 +1,16 @@
 import { beforeEach, describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../../tests/mocks/utils/loadWithMocks';
 
 const hasOfflineLicenseStub = sinon.stub();
 const serverFetchStub = sinon.stub();
 
 class CloudOfflineLicenseError extends Error {}
 
-const { MarketplaceAPIClient } = proxyquire.noCallThru().load('./MarketplaceAPIClient.ts', {
+const { MarketplaceAPIClient } = loadWithMocks('./MarketplaceAPIClient.ts', {
 	'@rocket.chat/license': { License: { hasOfflineLicense: hasOfflineLicenseStub } },
 	'@rocket.chat/server-fetch': { serverFetch: serverFetchStub, Response: class {} },
 	'./isTesting': { isTesting: () => false },

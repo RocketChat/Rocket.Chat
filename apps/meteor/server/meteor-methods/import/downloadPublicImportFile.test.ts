@@ -2,8 +2,9 @@ import { PassThrough } from 'node:stream';
 import { beforeEach, describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const progressStep = {
 	DOWNLOADING_FILE: 'importer_downloading_file',
@@ -30,7 +31,7 @@ class MockImporter {
 	updateRecord = stubs.updateRecord;
 }
 
-const { executeDownloadPublicImportFile } = proxyquire.noCallThru().load('./downloadPublicImportFile.ts', {
+const { executeDownloadPublicImportFile } = loadWithMocks('./downloadPublicImportFile.ts', {
 	'@rocket.chat/core-services': { Import: { newOperation: stubs.newOperation } },
 	'@rocket.chat/server-fetch': { serverFetch: stubs.serverFetch },
 	'meteor/meteor': { Meteor: { methods: sinon.stub() } },

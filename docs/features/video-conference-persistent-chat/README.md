@@ -1035,7 +1035,7 @@ off, untouched from before the feature, and `tests/e2e/video-conference-call-win
 `beforeAll` and back off in an `afterAll`.
 
 Two things about the arrangement are worth knowing. `apps/meteor/server/services/video-conference/testHarness.ts`
-is what makes the service testable at all: `createService` proxyquires it with ~25 inert module stubs (one of
+is what makes the service testable at all: `createService` loads it through `loadWithMocks` with ~25 inert module stubs (one of
 which would otherwise open a Mongo driver at import time) and a models map each spec narrows to the collections
 it exercises. And the decisions worth pinning down were deliberately moved *out* of the service into pure
 functions — `resolveChatAccessMode`, `chatAccessLeadsWithDiscussion`

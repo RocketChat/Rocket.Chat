@@ -2,8 +2,9 @@ import { afterEach, before, beforeEach, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const mocks = {
 	settingsGet: sinon.stub(),
@@ -21,7 +22,7 @@ const {
 	wasFallbackModified,
 	serveSvgAvatarInRequestedFormat,
 	serveAvatarFile,
-} = proxyquire.noCallThru().load('./utils', {
+} = loadWithMocks('./utils', {
 	'../../lib/media/file-upload': {
 		FileUpload: {
 			get: mocks.fileUploadGet,

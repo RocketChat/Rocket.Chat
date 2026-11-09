@@ -3,8 +3,9 @@ import { before, beforeEach, describe, it } from 'node:test';
 import { ClientSafeError } from '@rocket.chat/core-services';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../tests/mocks/utils/loadWithMocks';
 
 const sandbox = sinon.createSandbox();
 
@@ -19,7 +20,7 @@ const notifyOnSubscriptionChangedByUserId = sandbox.stub();
 const settingsGet = sandbox.stub();
 const getFixedT = sandbox.stub();
 
-const { resetUserE2EEncriptionKey } = proxyquire.noCallThru().load('./resetUserE2EKey', {
+const { resetUserE2EEncriptionKey } = loadWithMocks('./resetUserE2EKey', {
 	'@rocket.chat/core-services': { api: { broadcast }, ClientSafeError },
 	'./i18n': { i18n: { getFixedT } },
 	'./isUserIdFederated': { isUserIdFederated },

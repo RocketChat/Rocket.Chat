@@ -3,8 +3,9 @@ import { before, describe, it } from 'node:test';
 
 import type { IRoom, IRoomAbacRedaction } from '@rocket.chat/core-typings';
 import { mockModel } from '@rocket.chat/models/testing';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 type Room = Pick<IRoom, '_id' | 't' | 'abacAttributes'>;
 type Scope = (
@@ -17,11 +18,11 @@ const scopeRoomsForAdmin = sinon.stub();
 const findOneById = sinon.stub();
 let scope: Scope;
 
-const { isABACManagedRoom } = proxyquire.noCallThru().load('../../../../server/lib/authorization/isABACManagedRoom.ts', {
+const { isABACManagedRoom } = loadWithMocks('../../../../server/lib/authorization/isABACManagedRoom.ts', {
 	'../../settings': { settings: { get: () => true } },
 });
 
-proxyquire.noCallThru().load('./scopeAdminRoomsForAbac.ts', {
+loadWithMocks('./scopeAdminRoomsForAbac.ts', {
 	'@rocket.chat/core-services': { Abac: { scopeRoomsForAdmin } },
 	'@rocket.chat/license': { License: { hasModule: () => true } },
 	'../../../../server/api/lib/scopeAdminRoomsForAbac': {

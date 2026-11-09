@@ -1,12 +1,13 @@
 import { beforeEach, describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const loggerStub = { debug: sinon.stub(), error: sinon.stub(), info: sinon.stub(), warn: sinon.stub() };
 
-const { LDAPConnection } = proxyquire.noCallThru().load('./Connection', {
+const { LDAPConnection } = loadWithMocks('./Connection', {
 	'../../../../server/settings': { settings: { get: sinon.stub() } },
 	'./getLDAPConditionalSetting': { getLDAPConditionalSetting: sinon.stub().returns('') },
 	'./Logger': {

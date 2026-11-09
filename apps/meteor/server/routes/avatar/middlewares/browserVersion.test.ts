@@ -1,10 +1,11 @@
 import { describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
-const { handleBrowserVersionCheck, isIEOlderThan11 } = proxyquire.noCallThru().load('./browserVersion', {
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
+
+const { handleBrowserVersionCheck, isIEOlderThan11 } = loadWithMocks('./browserVersion', {
 	'../../../lib/utils/getURL': {
 		getURL: () => '',
 	},

@@ -4,11 +4,11 @@ import { api } from '@rocket.chat/core-services';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import type { DeleteResult, UpdateResult } from 'mongodb';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import { MockedCronJobs } from '../../../tests/mocks/server/services/calendar/cronJobs';
 import { testPrivateMethod, createFreshServiceInstance } from '../../../tests/mocks/server/services/utils';
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const settingsMock = new Map<string, any>();
 const cronJobsMock = new MockedCronJobs();
@@ -50,7 +50,7 @@ const serviceMocks = {
 	'../../lib/i18n': { i18n: { t: sinon.stub().returns('Outlook: In a meeting') } },
 };
 
-const { CalendarService } = proxyquire.noCallThru().load('./service', serviceMocks);
+const { CalendarService } = loadWithMocks('./service', serviceMocks);
 
 describe('CalendarService', () => {
 	let sandbox: sinon.SinonSandbox;
@@ -332,7 +332,7 @@ describe('CalendarService', () => {
 
 	describe('#setupNextNotification', () => {
 		it('should call doSetupNextNotification internally', async () => {
-			const serviceExports = proxyquire.noCallThru().load('./service', serviceMocks);
+			const serviceExports = loadWithMocks('./service', serviceMocks);
 
 			const testService = createFreshServiceInstance<InstanceType<typeof CalendarService>>(serviceExports);
 

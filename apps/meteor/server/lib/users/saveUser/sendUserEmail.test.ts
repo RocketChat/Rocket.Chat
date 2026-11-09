@@ -2,8 +2,9 @@ import { afterEach, beforeEach, describe, it } from 'node:test';
 
 import { ClientSafeError } from '@rocket.chat/core-services';
 import { expect } from 'chai';
-import mock from 'proxyquire';
 import Sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 type SendUserEmailFn = (subject: string, html: string, user: { email?: string; password?: string; name?: string }) => Promise<void>;
 type SendHelperFn = (user: { email?: string; password?: string; name?: string }) => Promise<void>;
@@ -47,7 +48,7 @@ describe('sendUserEmail', () => {
 		MailerStub = stubs.MailerStub as any;
 		SettingsStub = stubs.SettingsStub as any;
 
-		const mod = mock.noCallThru().load('./sendUserEmail.ts', {
+		const mod = loadWithMocks('./sendUserEmail.ts', {
 			'../../notifications/email/api': MailerStub,
 			'../../../settings': SettingsStub,
 		}) as any;

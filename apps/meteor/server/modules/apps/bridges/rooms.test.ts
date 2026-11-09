@@ -5,15 +5,16 @@ import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const createPrivateGroupMethod = sinon.stub();
 const createChannelMethod = sinon.stub();
 const createDirectMessage = sinon.stub();
 const getSetting = sinon.stub();
 
-const { AppRoomBridge } = proxyquire.noCallThru().load('./rooms', {
+const { AppRoomBridge } = loadWithMocks('./rooms', {
 	'@rocket.chat/apps/dist/server/bridges/RoomBridge': { RoomBridge: class {}, suppliesAbacAttributes },
 	'../../../lib/rooms/addUserToRoom': {},
 	'../../../lib/rooms/deleteRoom': {},

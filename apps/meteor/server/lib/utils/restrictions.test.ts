@@ -1,11 +1,12 @@
 import { beforeEach, describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const settingValues = new Map<string, string>();
 
-const { fileUploadIsValidContentType } = proxyquire.noCallThru().load('./restrictions', {
+const { fileUploadIsValidContentType } = loadWithMocks('./restrictions', {
 	'../../settings': { settings: { get: (settingId: string) => settingValues.get(settingId) } },
 });
 

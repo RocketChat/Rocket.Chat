@@ -1,8 +1,9 @@
 import { afterEach, beforeEach, describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 describe('validateUsername', () => {
 	const getStub = sinon.stub();
@@ -13,7 +14,7 @@ describe('validateUsername', () => {
 		},
 	};
 
-	const { validateUsername } = proxyquire.noCallThru().load('./validateUsername', {
+	const { validateUsername } = loadWithMocks('./validateUsername', {
 		'../../settings': proxySettings,
 	});
 

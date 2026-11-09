@@ -2,8 +2,9 @@ import { before, beforeEach, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const settingsStub = { get: sinon.stub() };
 const roomsStub = { findOneByNonValidatedName: sinon.stub() };
@@ -20,7 +21,7 @@ class LDAPManagerStub {
 	static getLdapUsername = sinon.stub();
 }
 
-const { LDAPEEManager } = proxyquire.noCallThru().load('./EEManager', {
+const { LDAPEEManager } = loadWithMocks('./EEManager', {
 	'@rocket.chat/core-services': { Abac: {}, Team: {} },
 	'@rocket.chat/license': { License: { hasModule: () => false } },
 	'../../../../server/lib/import/definitions/IConversionCallbacks': {},
