@@ -6628,14 +6628,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@playwright/test@npm:~1.52.0":
-  version: 1.52.0
-  resolution: "@playwright/test@npm:1.52.0"
+"@playwright/test@npm:~1.53.2":
+  version: 1.53.2
+  resolution: "@playwright/test@npm:1.53.2"
   dependencies:
-    playwright: "npm:1.52.0"
+    playwright: "npm:1.53.2"
   bin:
     playwright: cli.js
-  checksum: 10/e18a4eb626c7bc6cba212ff2e197cf9ae2e4da1c91bfdf08a744d62e27222751173e4b220fa27da72286a89a3b4dea7c09daf384d23708f284b64f98e9a63a88
+  checksum: 10/063c4fd82e5022db7f53e85a3b31caa1c302e7d3f874b3acc751ee5fcf8f102068693e393dc5146cdeeb5850f2321366de4ebc5ef12ab81dae52e2c7113a6b49
   languageName: node
   linkType: hard
 
@@ -9803,7 +9803,7 @@ __metadata:
     "@opentelemetry/exporter-trace-otlp-grpc": "npm:^0.220.0"
     "@opentelemetry/sdk-node": "npm:^0.220.0"
     "@parse/node-apn": "npm:^8.1.0"
-    "@playwright/test": "npm:~1.52.0"
+    "@playwright/test": "npm:~1.53.2"
     "@react-aria/toolbar": "npm:^3.0.0-nightly.5042"
     "@react-pdf/renderer": "npm:~4.5.1"
     "@rocket.chat/abac": "workspace:^"
@@ -10103,7 +10103,7 @@ __metadata:
     path-to-regexp: "npm:^6.3.0"
     pino: "npm:10.3.1"
     pino-pretty: "npm:13.1.3"
-    playwright-core: "npm:~1.52.0"
+    playwright-core: "npm:~1.53.2"
     playwright-qase-reporter: "npm:~2.5.7"
     postcss: "npm:8.5.29"
     postcss-custom-properties: "npm:^14.0.6"
@@ -11396,7 +11396,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/ui-voip@workspace:packages/ui-voip"
   dependencies:
-    "@playwright/test": "npm:~1.52.0"
+    "@playwright/test": "npm:~1.53.2"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/css-in-js": "workspace:~"
     "@rocket.chat/desktop-api": "workspace:^"
@@ -11501,7 +11501,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/visual-regression@workspace:packages/visual-regression"
   dependencies:
-    "@playwright/test": "npm:~1.52.0"
+    "@playwright/test": "npm:~1.53.2"
     "@rocket.chat/tsconfig": "workspace:*"
     "@types/node": "npm:~24.13.6"
     typescript: "npm:~7.0.2"
@@ -30039,21 +30039,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright-core@npm:1.52.0":
-  version: 1.52.0
-  resolution: "playwright-core@npm:1.52.0"
+"playwright-core@npm:1.53.2":
+  version: 1.53.2
+  resolution: "playwright-core@npm:1.53.2"
   bin:
     playwright-core: cli.js
-  checksum: 10/42e13f5f98dc25ebc95525fb338a215b9097b2ba39d41e99972a190bf75d79979f163f5bc07b1ca06847ee07acb2c9b487d070fab67e9cd55e33310fc05aca3c
+  checksum: 10/575c37b66aa62e1300d8b42d4b021c9304a35266ea47b6f0c36b429c40674082700b7172ee3641de7451cd2a4c736c42e0e39fd5f6a7ba4c81a6eefd8c104efd
   languageName: node
   linkType: hard
 
-"playwright-core@patch:playwright-core@npm%3A1.52.0#~/.yarn/patches/playwright-core-npm-1.52.0-keep-cache.patch":
-  version: 1.52.0
-  resolution: "playwright-core@patch:playwright-core@npm%3A1.52.0#~/.yarn/patches/playwright-core-npm-1.52.0-keep-cache.patch::version=1.52.0&hash=9311c3"
+"playwright-core@patch:playwright-core@npm%3A1.53.2#~/.yarn/patches/playwright-core-npm-1.53.2-keep-cache.patch":
+  version: 1.53.2
+  resolution: "playwright-core@patch:playwright-core@npm%3A1.53.2#~/.yarn/patches/playwright-core-npm-1.53.2-keep-cache.patch::version=1.53.2&hash=9311c3"
   bin:
     playwright-core: cli.js
-  checksum: 10/bc17c2d6dd760cc64f855e756999e7c952cc9dc03602309aefa1e3bc94b2bfab3a779554fea6d6838ec9879cc2c94d639782058973aa745cd34b2a185d196236
+  checksum: 10/8af1f8278a5c8c40200948a0fad3d42ed00a4a7d262f6e6f75fd7df5ed83dc331f57e4737dd6c305d2bcc0fd9959790609cdf725b4cacfa68e03f16379c08bf3
   languageName: node
   linkType: hard
 
@@ -30069,18 +30069,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright@npm:1.52.0, playwright@npm:^1.14.0":
-  version: 1.52.0
-  resolution: "playwright@npm:1.52.0"
+"playwright@npm:1.53.2, playwright@npm:^1.14.0":
+  version: 1.53.2
+  resolution: "playwright@npm:1.53.2"
   dependencies:
     fsevents: "npm:2.3.2"
-    playwright-core: "npm:1.52.0"
+    playwright-core: "npm:1.53.2"
   dependenciesMeta:
     fsevents:
       optional: true
   bin:
     playwright: cli.js
-  checksum: 10/214175446089000c2ac997b925063b95f7d86d129c5d7c74caa5ddcb05bcad598dfd569d2133a10dc82d288bf67e7858877dcd099274b0b928b9c63db7d6ecec
+  checksum: 10/1c860c52a77f32793d7b1b5f5b15da9b809b8a09a82e5c89f79442fe9708ff6314b6ee6d13aa0961a6c9fddc9209f0a109ac524bdf586e0df52b641e96fa759d
   languageName: node
   linkType: hard
 

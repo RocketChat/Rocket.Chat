@@ -38,7 +38,7 @@
 		"react-i18next": "~17.0.16"
 	},
 	"devDependencies": {
-		"@playwright/test": "~1.52.0",
+		"@playwright/test": "~1.53.2",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/css-in-js": "workspace:~",
 		"@rocket.chat/fuselage": "workspace:~",
