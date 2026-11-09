@@ -9,6 +9,7 @@ const findOneByProviderNameAndSipAlias = sinon.stub();
 const findOneLiveByScheduledConferenceId = sinon.stub();
 const createGroup = sinon.stub().resolves('call1');
 const setSipAliasById = sinon.stub();
+const addMemberById = sinon.stub();
 const findOneById = sinon.stub();
 const findOneByEmailAddress = sinon.stub();
 const findRoomById = sinon.stub();
@@ -26,6 +27,7 @@ const stubs = [
 	findOneLiveByScheduledConferenceId,
 	createGroup,
 	setSipAliasById,
+	addMemberById,
 	findOneById,
 	findOneByEmailAddress,
 	findActiveByEmailAddresses,
@@ -42,13 +44,13 @@ const stubs = [
 const settingValues: Record<string, unknown> = {};
 
 const user = { _id: 'user1', name: 'User One', username: 'user.one' };
-const requester = { _id: 'requester1', name: 'Requester', username: 'requester' };
+const requester = { _id: 'requester1', name: 'Requester', username: 'requester', avatarETag: 'etag1' };
 
 const duplicateKeyError = () => new Error('E11000 duplicate key error collection');
 
 const VideoConfService = createService({
 	models: {
-		VideoConference: { findOneByProviderNameAndSipAlias, findOneLiveByScheduledConferenceId, createGroup, setSipAliasById },
+		VideoConference: { findOneByProviderNameAndSipAlias, findOneLiveByScheduledConferenceId, createGroup, setSipAliasById, addMemberById },
 		Users: { findOneById, findOneByEmailAddress, findActiveByEmailAddresses },
 		Rooms: { findOneById: findRoomById },
 		ScheduledConferences: {
@@ -86,6 +88,7 @@ beforeEach(() => {
 	findOneLiveByScheduledConferenceId.resolves(null);
 	createGroup.resolves('call1');
 	setSipAliasById.resolves();
+	addMemberById.resolves();
 	findOneById.callsFake(async (uid: string) => [user, requester].find(({ _id }) => _id === uid) ?? null);
 	findOneByEmailAddress.resolves({ _id: 'requester1', active: true });
 	findActiveByEmailAddresses.returns({ toArray: sinon.stub().resolves([]) });
@@ -220,7 +223,7 @@ describe('VideoConfService.initializeOrJoinScheduledConference', () => {
 		it('should build the conference on the requester, not on whoever arrived', async () => {
 			await service.initializeOrJoinScheduledConference('12345678', 'user1');
 
-			expect(createGroup.firstCall.args[0].createdBy).to.deep.equal(requester);
+			expect(createGroup.firstCall.args[0].createdBy).to.deep.equal({ _id: 'requester1', name: 'Requester', username: 'requester' });
 			expect(createGroup.firstCall.args[0]).to.include({ scheduledConferenceId: 'booking1', title: 'Weekly sync', sipAlias: '12345678' });
 		});
 
@@ -415,7 +418,7 @@ describe('VideoConfService.initializeOrJoinScheduledConferenceById', () => {
 			const callId = await service.initializeOrJoinScheduledConferenceById('booking1', 'user1');
 
 			expect(callId).to.equal('call1');
-			expect(createGroup.firstCall.args[0].createdBy).to.deep.equal(requester);
+			expect(createGroup.firstCall.args[0].createdBy).to.deep.equal({ _id: 'requester1', name: 'Requester', username: 'requester' });
 			expect(createGroup.firstCall.args[0]).to.include({ rid: 'external1', providerName: 'core.pexip', scheduledConferenceId: 'booking1' });
 		});
 
@@ -489,8 +492,23 @@ describe('VideoConfService.initializeOrJoinScheduledConferenceById', () => {
 			expect(setSipAliasById.called).to.be.false;
 		});
 
+		// Listed from the start, so the call shows who is still missing.
+		it('should list the requester and the invitees who have accounts as members, once each', async () => {
+			const guest = { _id: 'guest1', username: 'guest', name: 'Guest', avatarETag: 'etag2' };
+			findActiveByEmailAddresses.returns({ toArray: sinon.stub().resolves([guest, { ...requester }]) });
+
+			await service.initializeOrJoinScheduledConferenceById('booking1', 'user1');
+
+			expect(addMemberById.callCount).to.equal(2);
+			expect(addMemberById.firstCall.args[0]).to.equal('call1');
+			expect(addMemberById.firstCall.args[1]).to.include(requester);
+			expect(addMemberById.secondCall.args[1]).to.include(guest);
+		});
+
 		it('should subscribe the invitees who have accounts, and whoever arrived', async () => {
-			findActiveByEmailAddresses.returns({ toArray: sinon.stub().resolves([{ _id: 'guest1' }]) });
+			findActiveByEmailAddresses.returns({
+				toArray: sinon.stub().resolves([{ _id: 'guest1', username: 'guest', name: 'Guest', avatarETag: null }]),
+			});
 
 			await service.initializeOrJoinScheduledConferenceById('booking1', 'user1');
 
@@ -533,6 +551,7 @@ describe('VideoConfService.initializeOrJoinScheduledConferenceById', () => {
 
 			expect(callId).to.equal('existing1');
 			expect(createGroup.called).to.be.false;
+			expect(addMemberById.called).to.be.false;
 			expect(addUserToRoom.calledWith('discussion9', { _id: 'user1' })).to.be.true;
 		});
 	});
@@ -551,7 +570,7 @@ describe('VideoConfService.initializeScheduledConferenceBySipAlias', () => {
 		const callId = await service.initializeScheduledConferenceBySipAlias('12345678');
 
 		expect(callId).to.equal('call1');
-		expect(createGroup.firstCall.args[0].createdBy).to.deep.equal(requester);
+		expect(createGroup.firstCall.args[0].createdBy).to.deep.equal({ _id: 'requester1', name: 'Requester', username: 'requester' });
 		expect(addUserToRoom.called).to.be.false;
 	});
 

@@ -37,7 +37,7 @@ The first of these to happen starts the conference; every later one joins it:
 
 Whichever it is, the conference is built **on the requester's behalf**: they are its creator, and therefore its host, even if they are the last to arrive. Everyone else is a guest — any signed-in user who has the link may join.
 
-The conference hangs off the external room and uses the booking's discussion. Invitees whose address belongs to an active user are added to it when the conference starts, and anyone else is added when they join. The invitee list is matched against users each time a conference starts, so someone who gets an account after the booking is still picked up. Nobody is rung.
+The conference lists the requester and every invitee with an account as members from the moment it starts, so it shows who has not arrived yet. The conference hangs off the external room and uses the booking's discussion. Invitees whose address belongs to an active user are added to it when the conference starts, and anyone else is added when they join. The invitee list is matched against users each time a conference starts, so someone who gets an account after the booking is still picked up. Nobody is rung.
 
 The title is the booking's, or the number when it has none; with neither, the room names the conference, as for any untitled one. A booking without a number never gets one, even on a workspace that gives every other conference a temporary number.
 

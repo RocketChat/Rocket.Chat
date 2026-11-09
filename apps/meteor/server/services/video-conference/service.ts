@@ -2719,23 +2719,48 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			return winner;
 		}
 
-		await this.addInviteesToConferenceDiscussion(scheduledConference.inviteeEmails, discussionRid);
+		await this.addScheduledConferenceMembers(
+			{ _id: callId, discussionRid },
+			{
+				_id: requester._id,
+				username: requester.username as string,
+				name: requester.name as string,
+				avatarETag: requester.avatarETag as string,
+			},
+			scheduledConference.inviteeEmails,
+		);
 
 		return { _id: callId, discussionRid };
 	}
 
-	/** Like `addUserToConferenceDiscussion`, this reports rather than throws: the conference is already running. */
-	private async addInviteesToConferenceDiscussion(emails: string[], discussionRid: IRoom['_id']): Promise<void> {
-		if (!emails.length) {
-			return;
-		}
-
+	/**
+	 * Lists everyone the booking names as members, not yet in the call, and subscribes the invitees to its chat.
+	 *
+	 * Nobody is rung: they come in from the calendar. Like `addUserToConferenceDiscussion`, this reports rather
+	 * than throws, since the conference is already running.
+	 */
+	private async addScheduledConferenceMembers(
+		conference: Pick<IVideoConference, '_id' | 'discussionRid'>,
+		requester: Required<Pick<IUser, '_id' | 'username' | 'name' | 'avatarETag'>>,
+		inviteeEmails: string[],
+	): Promise<void> {
 		try {
-			const invitees = await Users.findActiveByEmailAddresses<Pick<IUser, '_id'>>(emails, { projection: { _id: 1 } }).toArray();
+			const invitees = inviteeEmails.length
+				? await Users.findActiveByEmailAddresses<Required<Pick<IUser, '_id' | 'username' | 'name' | 'avatarETag'>>>(inviteeEmails, {
+						projection: { username: 1, name: 1, avatarETag: 1 },
+					}).toArray()
+				: [];
 
-			await Promise.all(invitees.map(({ _id }) => this.addUserToConferenceDiscussion({ discussionRid }, _id)));
+			const ts = new Date();
+			for (const member of [requester, ...invitees.filter(({ _id }) => _id !== requester._id)]) {
+				await VideoConferenceModel.addMemberById(conference._id, { ...member, ts });
+			}
+
+			this.notifyConferenceUpdate(conference._id);
+
+			await Promise.all(invitees.map(({ _id }) => this.addUserToConferenceDiscussion(conference, _id)));
 		} catch (err) {
-			logger.error({ msg: `Failed to add invitees to conference's discussion`, discussionRid, err });
+			logger.error({ msg: 'Failed to add the invitees to a scheduled conference', conferenceId: conference._id, err });
 		}
 	}
 
