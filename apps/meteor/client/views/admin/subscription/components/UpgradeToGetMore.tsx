@@ -1,10 +1,11 @@
-import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, Button, ButtonGroup, CardGrid } from '@rocket.chat/fuselage';
+import { States, StatesIcon, StatesTitle, StatesSubtitle, Button, ButtonGroup, CardGrid } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
-import { memo } from 'react';
+import { Children, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { GenericCard } from '../../../../components/GenericCard';
 import { useExternalLink } from '../../../../hooks/useExternalLink';
+import UpgradeSection from '../layout/UpgradeSection';
 import { PRICING_LINK } from '../utils/links';
 
 export type UpgradeToGetMoreProps = {
@@ -36,6 +37,10 @@ const UpgradeToGetMore = ({ activeModules, children }: UpgradeToGetMoreProps) =>
 		});
 
 	if (upgradeModules?.length === 0) {
+		if (Children.toArray(children).length === 0) {
+			return null;
+		}
+
 		return (
 			<ButtonGroup large vertical>
 				{children}
@@ -44,7 +49,16 @@ const UpgradeToGetMore = ({ activeModules, children }: UpgradeToGetMoreProps) =>
 	}
 
 	return (
-		<Box width='full' padding={8} marginBlockStart={40}>
+		<UpgradeSection
+			actions={
+				<ButtonGroup large vertical>
+					<Button icon='new-window' onClick={() => handleOpenLink(PRICING_LINK)} role='link'>
+						{t('Compare_plans')}
+					</Button>
+					{children}
+				</ButtonGroup>
+			}
+		>
 			<States>
 				<StatesIcon name='rocket' />
 				<StatesTitle>{t('UpgradeToGetMore_Headline')}</StatesTitle>
@@ -63,15 +77,7 @@ const UpgradeToGetMore = ({ activeModules, children }: UpgradeToGetMoreProps) =>
 					return <GenericCard key={index} icon='check' type='success' height='full' {...card} />;
 				})}
 			</CardGrid>
-			<Box paddingBlockStart={24}>
-				<ButtonGroup large vertical>
-					<Button icon='new-window' onClick={() => handleOpenLink(PRICING_LINK)} role='link'>
-						{t('Compare_plans')}
-					</Button>
-					{children}
-				</ButtonGroup>
-			</Box>
-		</Box>
+		</UpgradeSection>
 	);
 };
 

@@ -1,5 +1,5 @@
 import type { LicenseInfo } from '@rocket.chat/core-typings';
-import { Box, Callout } from '@rocket.chat/fuselage';
+import { Callout, Stack } from '@rocket.chat/fuselage';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import { Trans, useTranslation } from 'react-i18next';
 
@@ -26,7 +26,7 @@ export const SubscriptionCalloutLimits = () => {
 	const toTranslationKey = (key: keyof LicenseInfo['limits']) => t(`subscription.callout.${key}`);
 
 	return (
-		<Box display='flex' flexDirection='column' gap={16} padding={8}>
+		<Stack gap='x16'>
 			{start_fair_policy && (
 				<Callout type='warning' title={t('subscription.callout.servicesDisruptionsMayOccur')}>
 					<Trans
@@ -114,6 +114,6 @@ export const SubscriptionCalloutLimits = () => {
 					</Trans>
 				</Callout>
 			)}
-		</Box>
+		</Stack>
 	);
 };

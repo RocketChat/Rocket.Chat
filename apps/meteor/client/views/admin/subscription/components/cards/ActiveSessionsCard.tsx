@@ -1,10 +1,10 @@
-import { Box, Skeleton } from '@rocket.chat/fuselage';
+import { Skeleton, Stack, Text } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import { useActiveConnections } from '../../../../hooks/useActiveConnections';
+import FeatureUsageCardBody from '../../layout/FeatureUsageCardBody';
 import type { CardProps } from '../FeatureUsageCard';
 import FeatureUsageCard from '../FeatureUsageCard';
-import FeatureUsageCardBody from '../FeatureUsageCardBody';
 import UpgradeButton from '../UpgradeButton';
 
 const getLimits = ({ max, current }: { max: number; current: number }) => {
@@ -57,12 +57,14 @@ const ActiveSessionsCard = () => {
 			}}
 		>
 			<FeatureUsageCardBody justifyContent='flex-start'>
-				<Box color='font-secondary-info' textAlign='center'>
-					<Box fontScale='h1' color={exceedLimit ? 'font-danger' : 'font-default'} marginBlockEnd={12}>
+				<Stack align='center' gap='x12'>
+					<Text fontScale='h1' color={exceedLimit ? 'danger' : 'default'}>
 						{used} / {total}
-					</Box>
-					{available} {t('ActiveSessions_available')}
-				</Box>
+					</Text>
+					<Text color='secondary-info'>
+						{available} {t('ActiveSessions_available')}
+					</Text>
+				</Stack>
 			</FeatureUsageCardBody>
 		</FeatureUsageCard>
 	);

@@ -25,6 +25,7 @@ import { useId, useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import ContentColumn from '../../../components/ContentColumn';
 import AutoCompleteDepartment from '../../omnichannel/components/AutoCompleteDepartment';
 
 type EmailInboxFormData = {
@@ -211,7 +212,7 @@ const EmailInboxForm = ({ inboxData }: EmailInboxFormProps) => {
 
 	return (
 		<PageScrollableContentWithShadow>
-			<Box maxWidth='x600' width='full' alignSelf='center'>
+			<ContentColumn>
 				<Accordion>
 					<AccordionItem defaultExpanded title={t('Inbox_Info')}>
 						<FieldGroup>
@@ -618,7 +619,7 @@ const EmailInboxForm = ({ inboxData }: EmailInboxFormProps) => {
 						</FieldRow>
 					</Field>
 				</Accordion>
-			</Box>
+			</ContentColumn>
 		</PageScrollableContentWithShadow>
 	);
 };

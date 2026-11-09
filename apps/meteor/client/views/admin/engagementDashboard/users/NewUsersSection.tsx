@@ -1,5 +1,5 @@
 import { ResponsiveBar } from '@nivo/bar';
-import { Box, FlexContainer, FlexItem, Skeleton, Tooltip } from '@rocket.chat/fuselage';
+import { Skeleton, Stack, Tooltip } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/dist/colors.json';
 import { addDays } from 'date-fns/addDays';
 import { differenceInDays } from 'date-fns/differenceInDays';
@@ -7,14 +7,15 @@ import { format } from 'date-fns/format';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useNewUsers } from './useNewUsers';
 import DownloadDataButton from '../../../../components/dashboards/DownloadDataButton';
 import PeriodSelector from '../../../../components/dashboards/PeriodSelector';
 import { usePeriodLabel } from '../../../../components/dashboards/usePeriodLabel';
 import { usePeriodSelectorState } from '../../../../components/dashboards/usePeriodSelectorState';
 import CounterSet from '../../../../components/dataView/CounterSet';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
-import EngagementDashboardCardFilter from '../EngagementDashboardCardFilter';
-import { useNewUsers } from './useNewUsers';
+import ChartFrame from '../layout/ChartFrame';
+import EngagementDashboardCardFilter from '../layout/EngagementDashboardCardFilter';
 
 export type NewUsersSectionProps = {
 	timezone: 'utc' | 'local';
@@ -79,87 +80,73 @@ const NewUsersSection = ({ timezone }: NewUsersSectionProps) => {
 					},
 				]}
 			/>
-			<FlexContainer>
-				{values ? (
-					<Box style={{ height: 300 }}>
-						<FlexItem align='stretch' grow={1} shrink={0}>
-							<Box style={{ position: 'relative' }}>
-								<Box
-									style={{
-										position: 'absolute',
-										width: '100%',
-										height: '100%',
-									}}
-								>
-									<ResponsiveBar
-										data={values}
-										indexBy='date'
-										keys={['newUsers']}
-										groupMode='grouped'
-										padding={0.25}
-										margin={{
-											// TODO: Get it from theme
-											bottom: 50,
-											left: 20,
-											top: 20,
-										}}
-										colors={[
-											// TODO: Get it from theme
-											colors.p500,
-										]}
-										enableLabel={false}
-										enableGridY={false}
-										axisTop={null}
-										axisRight={null}
-										axisBottom={{
-											tickSize: values.length > 31 ? 4 : 0,
-											// TODO: Get it from theme
-											tickPadding: 8,
-											tickRotation: values.length > 31 ? 90 : 0,
-											truncateTickAt: 0,
-											format: (date): string => format(new Date(date), 'dd/MM'),
-										}}
-										axisLeft={{
-											tickSize: 0,
-											// TODO: Get it from theme
-											tickPadding: 4,
-											tickRotation: 0,
-										}}
-										animate={true}
-										motionConfig='stiff'
-										theme={{
-											// TODO: Get it from theme
-											axis: {
-												ticks: {
-													text: {
-														fill: colors.n600,
-														fontFamily:
-															'Inter, -apple-system, system-ui, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Meiryo UI", Arial, sans-serif',
-														fontSize: '10px',
-														fontStyle: 'normal',
-														fontWeight: 600,
-														letterSpacing: '0.2px',
-														lineHeight: '12px',
-													},
-												},
-											},
-										}}
-										tooltip={({ value, indexValue }) => (
-											<Tooltip>
-												{t('Value_users', { value })}, {formatDate(indexValue)}
-											</Tooltip>
-										)}
-									/>
-								</Box>
-							</Box>
-						</FlexItem>
-					</Box>
-				) : (
-					<Box>
-						<Skeleton variant='rect' height={240} />
-					</Box>
-				)}
-			</FlexContainer>
+			{values ? (
+				<ChartFrame height={300}>
+					<ResponsiveBar
+						data={values}
+						indexBy='date'
+						keys={['newUsers']}
+						groupMode='grouped'
+						padding={0.25}
+						margin={{
+							// TODO: Get it from theme
+							bottom: 50,
+							left: 20,
+							top: 20,
+						}}
+						colors={[
+							// TODO: Get it from theme
+							colors.p500,
+						]}
+						enableLabel={false}
+						enableGridY={false}
+						axisTop={null}
+						axisRight={null}
+						axisBottom={{
+							tickSize: values.length > 31 ? 4 : 0,
+							// TODO: Get it from theme
+							tickPadding: 8,
+							tickRotation: values.length > 31 ? 90 : 0,
+							truncateTickAt: 0,
+							format: (date): string => format(new Date(date), 'dd/MM'),
+						}}
+						axisLeft={{
+							tickSize: 0,
+							// TODO: Get it from theme
+							tickPadding: 4,
+							tickRotation: 0,
+						}}
+						animate={true}
+						motionConfig='stiff'
+						theme={{
+							// TODO: Get it from theme
+							axis: {
+								ticks: {
+									text: {
+										fill: colors.n600,
+										fontFamily:
+											'Inter, -apple-system, system-ui, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Meiryo UI", Arial, sans-serif',
+										fontSize: '10px',
+										fontStyle: 'normal',
+										fontWeight: 600,
+										letterSpacing: '0.2px',
+										lineHeight: '12px',
+									},
+								},
+							},
+						}}
+						tooltip={({ value, indexValue }) => (
+							<Tooltip>
+								{t('Value_users', { value })}, {formatDate(indexValue)}
+							</Tooltip>
+						)}
+					/>
+				</ChartFrame>
+			) : (
+				<Stack direction='row'>
+					<Skeleton variant='rect' height={240} />
+				</Stack>
+			)}
 		</>
 	);
 };

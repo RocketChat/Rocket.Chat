@@ -23,6 +23,7 @@ import { useFormContext, Controller } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { outgoingEvents } from '../../../../../lib/integrations/outgoingEvents';
+import ContentColumn from '../../../../components/ContentColumn';
 import { useHighlightedCode } from '../../../../hooks/useHighlightedCode';
 import { useExampleData } from '../hooks/useExampleIncomingData';
 
@@ -117,7 +118,7 @@ const OutgoingWebhookForm = () => {
 	const runOnEditsField = useId();
 
 	return (
-		<Box maxWidth='x600' alignSelf='center' width='full'>
+		<ContentColumn>
 			<Accordion>
 				<AccordionItem defaultExpanded title={t('Settings')}>
 					<FieldGroup>
@@ -509,7 +510,7 @@ const OutgoingWebhookForm = () => {
 					</FieldGroup>
 				</AccordionItem>
 			</Accordion>
-		</Box>
+		</ContentColumn>
 	);
 };
 

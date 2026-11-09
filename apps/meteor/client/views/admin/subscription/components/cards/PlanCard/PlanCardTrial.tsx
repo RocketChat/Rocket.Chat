@@ -1,5 +1,5 @@
 import type { ILicenseV3 } from '@rocket.chat/core-typings';
-import { Box, Card, CardBody, CardControls, CardRow, Tag } from '@rocket.chat/fuselage';
+import { Card, CardBody, CardControls, CardRow, Stack, Tag, Text } from '@rocket.chat/fuselage';
 import { ExternalLink, useLicenseName } from '@rocket.chat/ui-client';
 import { differenceInDays } from 'date-fns/differenceInDays';
 import { Trans, useTranslation } from 'react-i18next';
@@ -26,14 +26,14 @@ const PlanCardTrial = ({ licenseInformation }: PlanCardProps) => {
 			<CardBody flexDirection='column'>
 				{visualExpiration && (
 					<CardRow>
-						<Box fontScale='p2b' marginInlineEnd={8}>
-							{t('Trial_active')}
-						</Box>
-						<Tag>{t('n_days_left', { n: differenceInDays(new Date(visualExpiration), new Date()) })}</Tag>
+						<Stack direction='row' align='center' gap='x16'>
+							<Text fontScale='p2b'>{t('Trial_active')}</Text>
+							<Tag>{t('n_days_left', { n: differenceInDays(new Date(visualExpiration), new Date()) })}</Tag>
+						</Stack>
 					</CardRow>
 				)}
 				<CardRow>
-					<span>
+					<Text is='span'>
 						{isSalesAssisted ? (
 							<Trans i18nKey='Contact_sales_trial'>
 								Contact sales to finish your purchase and avoid
@@ -44,7 +44,7 @@ const PlanCardTrial = ({ licenseInformation }: PlanCardProps) => {
 								Finish your purchase to avoid <ExternalLink to={DOWNGRADE_LINK}>downgrade consequences.</ExternalLink>
 							</Trans>
 						)}
-					</span>
+					</Text>
 				</CardRow>
 				<CardRow>
 					<Trans i18nKey='Why_has_a_trial_been_applied_to_this_workspace'>
@@ -54,11 +54,11 @@ const PlanCardTrial = ({ licenseInformation }: PlanCardProps) => {
 				<PlanCardLicenseDetails />
 			</CardBody>
 			<CardControls>
-				<Box display='flex' flexDirection='column' marginBlockStart='auto' width='full'>
+				<Stack grow>
 					<UpgradeButton target='plan_card_trial' action={isSalesAssisted ? 'finish_purchase' : 'contact_sales'} variant='primary'>
 						{isSalesAssisted ? t('Finish_purchase') : t('Contact_sales')}
 					</UpgradeButton>
-				</Box>
+				</Stack>
 			</CardControls>
 		</Card>
 	);
