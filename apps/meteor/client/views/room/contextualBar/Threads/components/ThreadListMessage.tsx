@@ -1,6 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import {
-	Message,
 	MessageLeftContainer,
 	MessageContainer,
 	MessageHeader,
@@ -13,7 +12,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
 import { useTimeAgo } from '@rocket.chat/ui-client';
-import type { ComponentProps, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -21,6 +20,9 @@ import ThreadListMetrics from './ThreadListMetrics';
 import Emoji from '../../../../../components/Emoji';
 import ThreadMetricsFollow from '../../../../../components/message/content/ThreadMetricsFollow';
 import ThreadMetricsUnreadBadge from '../../../../../components/message/content/ThreadMetricsUnreadBadge';
+import type { ThreadListMessageSurfaceProps } from '../layout/ThreadListMessageSurface';
+import ThreadListMessageSurface from '../layout/ThreadListMessageSurface';
+import ThreadUnreadBadgeSlot from '../layout/ThreadUnreadBadgeSlot';
 
 export type ThreadListMessageProps = {
 	_id: IMessage['_id'];
@@ -39,7 +41,7 @@ export type ThreadListMessageProps = {
 	emoji: IMessage['emoji'];
 	hasDraft?: boolean;
 	ignored?: boolean;
-} & Omit<ComponentProps<typeof Box>, 'is'>;
+} & ThreadListMessageSurfaceProps;
 
 const ThreadListMessage = ({
 	_id,
@@ -65,38 +67,36 @@ const ThreadListMessage = ({
 	const formatDate = useTimeAgo();
 
 	return (
-		<Box className={className}>
-			<Box paddingBlockStart={16} is={Message} {...props}>
-				<MessageLeftContainer>
-					<MessageAvatar emoji={emoji ? <Emoji emojiHandle={emoji} fillContainer /> : undefined} username={username} size='x36' />
-				</MessageLeftContainer>
-				<MessageContainer>
-					<MessageHeader>
-						<MessageName title={username}>{name}</MessageName>
-						<MessageTimestamp>{formatDate(ts)}</MessageTimestamp>
-						{hasDraft && <MessageStatusIndicatorItem name='pencil' title={t('Thread_draft')} />}
-					</MessageHeader>
-					<MessageBody clamp={2}>
-						{ignored ? (
-							<Box is='span' fontSize='c2' color='hint'>
-								{t('Message_Ignored')}
-							</Box>
-						) : (
-							msg
-						)}
-					</MessageBody>
-					<ThreadListMetrics lm={tlm} participants={participants || []} counter={replies} />
-				</MessageContainer>
-				<MessageContainerFixed>
-					<ThreadMetricsFollow following={following} mid={_id} rid={rid} mention={false} unread={false} all={false} />
-					{unread && (
-						<Box marginBlockStart={24}>
-							<ThreadMetricsUnreadBadge unread={unread} mention={mention} all={all} />
+		<ThreadListMessageSurface className={className} {...props}>
+			<MessageLeftContainer>
+				<MessageAvatar emoji={emoji ? <Emoji emojiHandle={emoji} fillContainer /> : undefined} username={username} size='x36' />
+			</MessageLeftContainer>
+			<MessageContainer>
+				<MessageHeader>
+					<MessageName title={username}>{name}</MessageName>
+					<MessageTimestamp>{formatDate(ts)}</MessageTimestamp>
+					{hasDraft && <MessageStatusIndicatorItem name='pencil' title={t('Thread_draft')} />}
+				</MessageHeader>
+				<MessageBody clamp={2}>
+					{ignored ? (
+						<Box is='span' fontSize='c2' color='hint'>
+							{t('Message_Ignored')}
 						</Box>
+					) : (
+						msg
 					)}
-				</MessageContainerFixed>
-			</Box>
-		</Box>
+				</MessageBody>
+				<ThreadListMetrics lm={tlm} participants={participants || []} counter={replies} />
+			</MessageContainer>
+			<MessageContainerFixed>
+				<ThreadMetricsFollow following={following} mid={_id} rid={rid} mention={false} unread={false} all={false} />
+				{unread && (
+					<ThreadUnreadBadgeSlot>
+						<ThreadMetricsUnreadBadge unread={unread} mention={mention} all={all} />
+					</ThreadUnreadBadgeSlot>
+				)}
+			</MessageContainerFixed>
+		</ThreadListMessageSurface>
 	);
 };
 

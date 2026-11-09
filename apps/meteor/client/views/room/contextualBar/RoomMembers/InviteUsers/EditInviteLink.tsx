@@ -1,8 +1,10 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Box, Field, FieldLabel, FieldRow, Select, Button } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, Select, Button } from '@rocket.chat/fuselage';
 import { useId, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+
+import InviteLinkAction from './layout/InviteLinkAction';
 
 export type EditInviteLinkProps = {
 	daysAndMaxUses: { days: string; maxUses: string };
@@ -68,11 +70,11 @@ const EditInviteLink = ({ daysAndMaxUses, onClickNewLink }: EditInviteLinkProps)
 					/>
 				</FieldRow>
 			</Field>
-			<Box marginBlockStart={8}>
+			<InviteLinkAction>
 				<Button loading={isSubmitting} disabled={!isDirty} variant='primary' onClick={handleSubmit(onClickNewLink)}>
 					{t('Generate_New_Link')}
 				</Button>
-			</Box>
+			</InviteLinkAction>
 		</>
 	);
 };
