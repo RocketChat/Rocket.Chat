@@ -1,27 +1,27 @@
 {
-	"name": "@rocket.chat/logger",
-	"version": "1.0.2-rc.0",
-	"private": true,
-	"main": "./dist/index.js",
-	"typings": "./dist/index.d.ts",
-	"files": [
-		"/dist"
-	],
-	"scripts": {
-		"build": "rm -rf dist && tsc -p tsconfig.json",
-		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
-		"lint": "yarn run -T oxlint",
-		"lint:fix": "yarn run -T oxlint --fix",
-		"typecheck": "tsc --noEmit"
-	},
-	"dependencies": {
-		"@rocket.chat/emitter": "workspace:~",
-		"pino": "10.3.1"
-	},
-	"devDependencies": {
-		"typescript": "~7.0.2"
-	},
-	"volta": {
-		"extends": "../../package.json"
-	}
+  "name": "@rocket.chat/logger",
+  "version": "1.0.2-rc.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "typings": "./dist/index.d.ts",
+  "files": [
+    "/dist"
+  ],
+  "scripts": {
+    "build": "node init && rm -rf dist && tsc -p tsconfig.json",
+    "dev": "node init && tsc -p tsconfig.json --watch --preserveWatchOutput",
+    "lint": "yarn run -T oxlint",
+    "lint:fix": "yarn run -T oxlint --fix",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@rocket.chat/emitter": "workspace:~",
+    "pino": "10.3.1"
+  },
+  "devDependencies": {
+    "typescript": "~7.0.2"
+  },
+  "volta": {
+    "extends": "../../package.json"
+  }
 }
