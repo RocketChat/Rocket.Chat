@@ -3,9 +3,9 @@ import { useRouteParameter } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
 import AppSetting from './AppSetting';
+import ContentColumn from '../../../../../components/ContentColumn';
 import type { ISettings } from '../../../definitions/ISettings';
 import { useAppTranslation } from '../../../hooks/useAppTranslation';
-import AppDetailsTabPanel from '../../layout/AppDetailsTabPanel';
 
 export type AppSettingsProps = { settings: ISettings };
 
@@ -30,7 +30,7 @@ const AppSettings = ({ settings }: AppSettingsProps) => {
 	}, [settings]);
 
 	return (
-		<AppDetailsTabPanel>
+		<ContentColumn size='wide'>
 			<Accordion>
 				{groupedSettings.map(([section, sectionSettings], index) => (
 					<AccordionItem key={section} title={tApp(section)} defaultExpanded={index === 0}>
@@ -42,7 +42,7 @@ const AppSettings = ({ settings }: AppSettingsProps) => {
 					</AccordionItem>
 				))}
 			</Accordion>
-		</AppDetailsTabPanel>
+		</ContentColumn>
 	);
 };
 

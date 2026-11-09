@@ -103,7 +103,7 @@ export const ExportLogsModal = ({ onClose, filterValues, onConfirm }: ExportLogs
 			</ModalHeader>
 			<ModalContent>
 				<ExportLogsOptions>
-					<FilterField inset>
+					<FilterField>
 						<Label>{t('Format')}</Label>
 						<Field>
 							<FieldRow>
@@ -142,7 +142,7 @@ export const ExportLogsModal = ({ onClose, filterValues, onConfirm }: ExportLogs
 							</FieldRow>
 						</Field>
 					</FilterField>
-					<FilterField inset>
+					<FilterField>
 						<Label>{t('Export_most_recent_logs')}</Label>
 						<Field>
 							<FieldRow>

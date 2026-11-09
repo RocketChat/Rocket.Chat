@@ -45,11 +45,11 @@ export const DateTimeModal = ({ onSave, onClose, defaultValues }: DateTimeModalP
 			onConfirm={handleSave}
 		>
 			<Stack gap='x24'>
-				<FilterField inset>
+				<FilterField>
 					<Label htmlFor='timeFilter'>{t('Logs_from')}</Label>
 					<DateTimeFilter control={control} type='start' />
 				</FilterField>
-				<FilterField inset>
+				<FilterField>
 					<Label htmlFor='timeFilter'>{t('Until')}</Label>
 					<DateTimeFilter control={control} type='end' />
 				</FilterField>

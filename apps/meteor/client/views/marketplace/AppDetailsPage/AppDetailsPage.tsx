@@ -1,5 +1,5 @@
 import type { App, SettingValue } from '@rocket.chat/core-typings';
-import { Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Stack } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { Page, PageFooter, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import { useTranslation, useRouteParameter, useToastMessageDispatch, usePermission, useRouter } from '@rocket.chat/ui-contexts';
@@ -114,15 +114,17 @@ const AppDetailsPage = ({ id }: AppDetailsPageProps) => {
 						{!appData && <AppDetailsPageLoading />}
 						{appData && (
 							<>
-								<AppDetailsPageHeader app={appData} />
-								<AppDetailsPageTabs
-									context={context || ''}
-									installed={installed}
-									isSecurityVisible={isSecurityVisible}
-									settings={settings}
-									tab={tab}
-									hasCluster={!!appData.clusterStatus}
-								/>
+								<Stack gap='x20'>
+									<AppDetailsPageHeader app={appData} />
+									<AppDetailsPageTabs
+										context={context || ''}
+										installed={installed}
+										isSecurityVisible={isSecurityVisible}
+										settings={settings}
+										tab={tab}
+										hasCluster={!!appData.clusterStatus}
+									/>
+								</Stack>
 								{Boolean(!tab || tab === 'details') && <AppDetails app={appData} />}
 								{tab === 'requests' && <AppRequests id={id} isAdminUser={isAdminUser} />}
 								{tab === 'security' && isSecurityVisible && (

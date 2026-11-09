@@ -7,15 +7,15 @@ import AppDetailsAPIs from './AppDetailsAPIs';
 import AppCategoryList from './layout/AppCategoryList';
 import AppContactRow from './layout/AppContactRow';
 import { normalizeUrl } from './normalizeUrl';
+import ContentColumn from '../../../../../components/ContentColumn';
+import RichContent from '../../../../../components/RichContent';
 import { useExternalLink } from '../../../../../hooks/useExternalLink';
 import { GET_ADDONS_LINK } from '../../../../admin/subscription/utils/links';
 import ScreenshotCarouselAnchor from '../../../components/ScreenshotCarouselAnchor';
 import type { AppInfo } from '../../../definitions/AppInfo';
 import { purifyOptions } from '../../../lib/purifyOptions';
-import AppDetailsTabPanel from '../../layout/AppDetailsTabPanel';
+import AppDetailsTabContent from '../../layout/AppDetailsTabContent';
 import AppInfoSection from '../../layout/AppInfoSection';
-import AppInfoSections from '../../layout/AppInfoSections';
-import RichContent from '../../layout/RichContent';
 
 export type AppDetailsProps = {
 	app: AppInfo;
@@ -54,100 +54,102 @@ const AppDetails = ({ app }: AppDetailsProps) => {
 	const licenseErrors = Object.keys(app.licenseValidation?.errors ?? {});
 
 	return (
-		<AppDetailsTabPanel offset>
-			<AppInfoSections>
-				{(showAddonCallout || licenseWarnings.length > 0 || licenseErrors.length > 0) && (
-					<Stack gap='x16'>
-						{showAddonCallout && (
-							<Callout
-								title={t('Subscription_add-on_required')}
-								type='info'
-								actions={
-									<Button size='small' onClick={() => openExternalLink(GET_ADDONS_LINK)}>
-										{t('Contact_sales')}
-									</Button>
-								}
-							>
-								{t('App_cannot_be_enabled_without_add-on')}
-							</Callout>
-						)}
-						{licenseWarnings.map((key) => (
-							<Callout key={key} type='warning'>
-								{t(`Apps_License_Message_${key}`)}
-							</Callout>
-						))}
-						{licenseErrors.map((key) => (
-							<Callout key={key} type='danger'>
-								{t(`Apps_License_Message_${key}`)}
-							</Callout>
-						))}
-					</Stack>
-				)}
-
-				{isCarouselVisible && <ScreenshotCarouselAnchor screenshots={screenshots} />}
-
-				<AppInfoSection
-					title={
-						<Text fontScale='h4' color='titles-labels'>
-							{t('Description')}
-						</Text>
-					}
-				>
-					<RichContent
-						dangerouslySetInnerHTML={{
-							__html: isMarkdown
-								? DOMPurify.sanitize(detailedDescription.rendered, purifyOptions)
-								: DOMPurify.sanitize(description, purifyOptions),
-						}}
-					/>
-				</AppInfoSection>
-
-				<AppInfoSection
-					title={
-						<Text fontScale='h4' color='titles-labels'>
-							{t('Categories')}
-						</Text>
-					}
-				>
-					{categories.length > 0 && (
-						<AppCategoryList>
-							{categories.map((current) => (
-								<Chip key={current} label>
-									{current}
-								</Chip>
+		<AppDetailsTabContent spaceAbove='x48' spaceBelow='x16'>
+			<ContentColumn size='wide'>
+				<Stack gap='x32'>
+					{(showAddonCallout || licenseWarnings.length > 0 || licenseErrors.length > 0) && (
+						<Stack gap='x16'>
+							{showAddonCallout && (
+								<Callout
+									title={t('Subscription_add-on_required')}
+									type='info'
+									actions={
+										<Button size='small' onClick={() => openExternalLink(GET_ADDONS_LINK)}>
+											{t('Contact_sales')}
+										</Button>
+									}
+								>
+									{t('App_cannot_be_enabled_without_add-on')}
+								</Callout>
+							)}
+							{licenseWarnings.map((key) => (
+								<Callout key={key} type='warning'>
+									{t(`Apps_License_Message_${key}`)}
+								</Callout>
 							))}
-						</AppCategoryList>
+							{licenseErrors.map((key) => (
+								<Callout key={key} type='danger'>
+									{t(`Apps_License_Message_${key}`)}
+								</Callout>
+							))}
+						</Stack>
 					)}
-				</AppInfoSection>
 
-				<AppInfoSection title={<Text fontScale='h4'>{t('Contact')}</Text>}>
-					<AppContactRow>
-						<>
-							<Text fontScale='h4' color='hint'>
-								{t('Author_Site')}
-							</Text>
-							{normalizedHomepageUrl ? <ExternalLink to={normalizedHomepageUrl}>{homepage}</ExternalLink> : homepage}
-						</>
-						<>
-							<Text fontScale='h4' color='hint'>
-								{t('Support')}
-							</Text>
-							{normalizedSupportUrl ? <ExternalLink to={normalizedSupportUrl}>{support}</ExternalLink> : support}
-						</>
-					</AppContactRow>
-					<Text fontScale='h4' color='hint'>
-						{t('Documentation')}
-					</Text>
-					{normalizedDocumentationUrl ? <ExternalLink to={normalizedDocumentationUrl}>{documentation}</ExternalLink> : documentation}
-				</AppInfoSection>
+					{isCarouselVisible && <ScreenshotCarouselAnchor screenshots={screenshots} />}
 
-				{apis?.length ? (
-					<AppInfoSection>
-						<AppDetailsAPIs apis={apis || []} />
+					<AppInfoSection
+						title={
+							<Text fontScale='h4' color='titles-labels'>
+								{t('Description')}
+							</Text>
+						}
+					>
+						<RichContent
+							dangerouslySetInnerHTML={{
+								__html: isMarkdown
+									? DOMPurify.sanitize(detailedDescription.rendered, purifyOptions)
+									: DOMPurify.sanitize(description, purifyOptions),
+							}}
+						/>
 					</AppInfoSection>
-				) : null}
-			</AppInfoSections>
-		</AppDetailsTabPanel>
+
+					<AppInfoSection
+						title={
+							<Text fontScale='h4' color='titles-labels'>
+								{t('Categories')}
+							</Text>
+						}
+					>
+						{categories.length > 0 && (
+							<AppCategoryList>
+								{categories.map((current) => (
+									<Chip key={current} label>
+										{current}
+									</Chip>
+								))}
+							</AppCategoryList>
+						)}
+					</AppInfoSection>
+
+					<AppInfoSection title={<Text fontScale='h4'>{t('Contact')}</Text>}>
+						<AppContactRow>
+							<>
+								<Text fontScale='h4' color='hint'>
+									{t('Author_Site')}
+								</Text>
+								{normalizedHomepageUrl ? <ExternalLink to={normalizedHomepageUrl}>{homepage}</ExternalLink> : homepage}
+							</>
+							<>
+								<Text fontScale='h4' color='hint'>
+									{t('Support')}
+								</Text>
+								{normalizedSupportUrl ? <ExternalLink to={normalizedSupportUrl}>{support}</ExternalLink> : support}
+							</>
+						</AppContactRow>
+						<Text fontScale='h4' color='hint'>
+							{t('Documentation')}
+						</Text>
+						{normalizedDocumentationUrl ? <ExternalLink to={normalizedDocumentationUrl}>{documentation}</ExternalLink> : documentation}
+					</AppInfoSection>
+
+					{apis?.length ? (
+						<AppInfoSection>
+							<AppDetailsAPIs apis={apis || []} />
+						</AppInfoSection>
+					) : null}
+				</Stack>
+			</ContentColumn>
+		</AppDetailsTabContent>
 	);
 };
 

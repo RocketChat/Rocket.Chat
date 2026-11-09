@@ -5,8 +5,8 @@ import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ApiReference from './layout/ApiReference';
+import RichContent from '../../../../../components/RichContent';
 import { apiCurlGetter } from '../../../helpers/apiCurlGetter';
-import RichContent from '../../layout/RichContent';
 
 export type AppDetailsAPIsProps = {
 	apis: IApiEndpointMetadata[];

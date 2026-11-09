@@ -1,5 +1,5 @@
 import type { App } from '@rocket.chat/core-typings';
-import { Pagination, States, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
+import { Pagination, Stack, States, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { SetStateAction } from 'react';
@@ -8,10 +8,10 @@ import { useTranslation } from 'react-i18next';
 
 import AppRequestItem from './AppRequestItem';
 import AppRequestsLoading from './AppRequestsLoading';
-import AppRequestsColumn from './layout/AppRequestsColumn';
-import AppRequestsPanel from './layout/AppRequestsPanel';
+import ContentColumn from '../../../../../components/ContentColumn';
 import { useAppRequests } from '../../../hooks/useAppRequests';
 import { useAppsReload } from '../../../hooks/useAppsReload';
+import AppDetailsTabContent from '../../layout/AppDetailsTabContent';
 
 type itemsPerPage = 25 | 50 | 100;
 
@@ -59,46 +59,48 @@ const AppRequests = ({ id, isAdminUser }: AppRequestsProps) => {
 
 	if (isLoading) {
 		return (
-			<AppRequestsColumn>
-				<AppRequestsLoading />
-			</AppRequestsColumn>
+			<AppDetailsTabContent spaceAbove='x32'>
+				<ContentColumn>
+					<AppRequestsLoading />
+				</ContentColumn>
+			</AppDetailsTabContent>
 		);
 	}
 
 	return (
-		<AppRequestsPanel
-			footer={
-				isSuccess &&
-				paginatedAppRequests.data?.length && (
-					<Pagination
-						divider
-						count={paginatedAppRequests.meta.total}
-						itemsPerPage={paginatedAppRequests.meta.limit}
-						current={paginatedAppRequests.meta.offset}
-						onSetItemsPerPage={onSetItemsPerPage}
-						onSetCurrent={onSetCurrent}
-					/>
-				)
-			}
-		>
-			{isSuccess && paginatedAppRequests.data?.length ? (
-				paginatedAppRequests.data.map((request) => (
-					<AppRequestItem
-						key={request.id}
-						seen={request.seen}
-						name={request.requester.name}
-						createdDate={request.createdDate}
-						message={request.message}
-						username={request.requester.username}
-					/>
-				))
-			) : (
-				<States>
-					<StatesTitle>{t('No_requests')}</StatesTitle>
-					<StatesSubtitle>{t('App_requests_by_workspace')}</StatesSubtitle>
-				</States>
+		<Stack grow justify='space-between'>
+			<AppDetailsTabContent spaceAbove='x32'>
+				<ContentColumn>
+					{isSuccess && paginatedAppRequests.data?.length ? (
+						paginatedAppRequests.data.map((request) => (
+							<AppRequestItem
+								key={request.id}
+								seen={request.seen}
+								name={request.requester.name}
+								createdDate={request.createdDate}
+								message={request.message}
+								username={request.requester.username}
+							/>
+						))
+					) : (
+						<States>
+							<StatesTitle>{t('No_requests')}</StatesTitle>
+							<StatesSubtitle>{t('App_requests_by_workspace')}</StatesSubtitle>
+						</States>
+					)}
+				</ContentColumn>
+			</AppDetailsTabContent>
+			{isSuccess && paginatedAppRequests.data?.length && (
+				<Pagination
+					divider
+					count={paginatedAppRequests.meta.total}
+					itemsPerPage={paginatedAppRequests.meta.limit}
+					current={paginatedAppRequests.meta.offset}
+					onSetItemsPerPage={onSetItemsPerPage}
+					onSetCurrent={onSetCurrent}
+				/>
 			)}
-		</AppRequestsPanel>
+		</Stack>
 	);
 };
 

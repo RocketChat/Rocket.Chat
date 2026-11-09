@@ -7,12 +7,12 @@ import { useTranslation } from 'react-i18next';
 
 import AppLogsItem from './AppLogsItem';
 import { AppLogsFilter } from './Filters/AppLogsFilter';
-import AppLogsToolbar from './layout/AppLogsToolbar';
 import { CollapsiblePanel } from './layout/CollapsiblePanel';
 import { useAppLogsFilterFormContext } from './useAppLogsFilterForm';
 import { marketplaceQueryKeys } from '../../../../../lib/queryKeys';
 import AccordionLoading from '../../../components/AccordionLoading';
 import { useLogs } from '../../../hooks/useLogs';
+import AppDetailsTabContent from '../../layout/AppDetailsTabContent';
 
 function expandedReducer(
 	expandedStates: { id: string; expanded: boolean }[],
@@ -111,7 +111,7 @@ const AppLogs = ({ id }: AppLogsProps) => {
 
 	return (
 		<>
-			<AppLogsToolbar>
+			<AppDetailsTabContent spaceAbove='x16' spaceBelow='x16'>
 				<AppLogsFilter
 					appId={id}
 					noResults={isFetching || !isSuccess || data?.logs?.length === 0}
@@ -120,7 +120,7 @@ const AppLogs = ({ id }: AppLogsProps) => {
 					collapseAll={() => handleCollapseAll()}
 					refetchLogs={() => refetch()}
 				/>
-			</AppLogsToolbar>
+			</AppDetailsTabContent>
 			{isFetching && <AccordionLoading />}
 			{isError && <GenericError title={parsedError} />}
 			{!isFetching && isSuccess && data?.logs?.length === 0 && <GenericNoResults />}
