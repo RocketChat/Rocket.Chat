@@ -60,7 +60,9 @@ const withoutFuselageGlobalStylesheet = (): Plugin => ({
 	name: 'livechat-without-fuselage-global-stylesheet',
 	enforce: 'pre',
 	resolveId(source, importer) {
-		return source === './index.scss' && importer === normalizePath(join(fuselageRoot, 'src/index.ts')) ? '\0livechat-fuselage-index.scss' : null;
+		return source === './index.scss' && importer === normalizePath(join(fuselageRoot, 'src/index.ts'))
+			? '\0livechat-fuselage-index.scss'
+			: null;
 	},
 	load(id) {
 		return id === '\0livechat-fuselage-index.scss' ? '' : null;
