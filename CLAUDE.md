@@ -78,4 +78,5 @@ Read the doc that matches the task instead of scanning `docs/` wholesale.
   - [web-client-hosting.md](docs/features/web-client-hosting.md) — how the server serves the Vite-built client (manifest, entry injection, CDN, cache) and how to serve the client from another host
 - [docs/proposals/](docs/proposals/) — design proposals, not yet implemented
   - [serve-client-without-meteor-webapp.md](docs/proposals/serve-client-without-meteor-webapp.md) — serving the client without Meteor's `web.browser` program
+  - [box-in-screens.md](docs/proposals/box-in-screens.md) — extending the no-raw-`Box` rule to `Stack`: what the current uses point to (parent `gap`, state component, user cell, narrow column…), the rollout, and how to regenerate the numbers
   - [finish-moving-http-and-ddp-off-meteor.md](docs/proposals/finish-moving-http-and-ddp-off-meteor.md) — what still reaches Meteor's HTTP and DDP servers, and the order to move it
