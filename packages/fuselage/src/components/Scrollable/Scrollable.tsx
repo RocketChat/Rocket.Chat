@@ -3,9 +3,9 @@ import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { PropsWithChildren, MouseEvent, RefObject } from 'react';
 import { useRef, useCallback } from 'react';
 
-import { appendClassName } from '../../helpers/appendClassName';
-import { useStyle } from '../../hooks/useStyle';
-import { BoxTransforms, useComposedBoxTransform } from '../Box/BoxTransforms';
+import { appendClassName } from '../../helpers/appendClassName.js';
+import { useStyle } from '../../hooks/useStyle.js';
+import { BoxTransforms, useComposedBoxTransform } from '../Box/BoxTransforms.js';
 
 export type ScrollableProps = PropsWithChildren<{
 	horizontal?: boolean;

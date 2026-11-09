@@ -1,8 +1,8 @@
 import type { AnchorHTMLAttributes, ReactNode } from 'react';
 
-import { prependClassName } from '../../helpers/prependClassName';
-import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
+import { prependClassName } from '../../helpers/prependClassName.js';
+import type { ElementProps } from '../../types/ElementProps.js';
+import { Box } from '../Box/index.js';
 
 export type TagProps = {
 	medium?: boolean;

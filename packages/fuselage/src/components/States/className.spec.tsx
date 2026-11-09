@@ -10,8 +10,8 @@ import {
 	StatesSuggestionListItem,
 	StatesSuggestionText,
 	StatesTitle,
-} from '.';
-import { render } from '../../testing';
+} from './index.js';
+import { render } from '../../testing.js';
 
 const cases: [string, ReactElement, string][] = [
 	['States', <States data-testid='part' className='custom' />, 'rcx-states'],

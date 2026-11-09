@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { action } from 'storybook/actions';
 
-import Bubble from './Bubble';
+import Bubble from './Bubble.js';
 
 export default {
 	title: 'Data Display/Bubble',

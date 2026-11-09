@@ -1,1 +1,1 @@
-export { default as EmailInput, type EmailInputProps } from './EmailInput';
+export { default as EmailInput, type EmailInputProps } from './EmailInput.js';

@@ -4,7 +4,7 @@ import type { AriaPopoverProps } from 'react-aria';
 import { usePopover, DismissButton, Overlay } from 'react-aria';
 import type { OverlayTriggerState } from 'react-stately';
 
-import { useOwnerDocument } from '../../contexts';
+import { useOwnerDocument } from '../../contexts/index.js';
 
 export type PopoverProps = Omit<AriaPopoverProps, 'popoverRef'> & {
 	children: ReactNode;

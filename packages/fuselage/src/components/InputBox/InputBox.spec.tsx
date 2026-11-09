@@ -3,9 +3,9 @@ import { waitFor } from '@testing-library/react';
 import { axe } from 'jest-axe';
 import { useEffect, useState } from 'react';
 
-import InputBox from './InputBox';
-import * as stories from './InputBox.stories';
-import { render } from '../../testing';
+import InputBox from './InputBox.js';
+import * as stories from './InputBox.stories.js';
+import { render } from '../../testing.js';
 
 const { WithAddon, WithFlushEndAddon } = composeStories(stories);
 

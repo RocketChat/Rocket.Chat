@@ -2,8 +2,8 @@ import { useBorderBoxSize, useButtonPattern } from '@rocket.chat/fuselage-hooks'
 import type { ReactNode, AllHTMLAttributes, HTMLAttributeAnchorTarget, MouseEvent } from 'react';
 import { useRef, useCallback, useMemo } from 'react';
 
-import { composeClassNames as cx } from '../../helpers/composeClassNames';
-import { IconButton } from '../Button';
+import { composeClassNames as cx } from '../../helpers/composeClassNames.js';
+import { IconButton } from '../Button/index.js';
 
 export type BannerVariant = 'neutral' | 'info' | 'success' | 'warning' | 'danger';
 

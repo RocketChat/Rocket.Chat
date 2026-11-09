@@ -1,7 +1,7 @@
 import type { AllHTMLAttributes, RefAttributes } from 'react';
 
-import { cx, cxx } from '../../helpers/composeClassNames';
-import Item from '../Item/Item';
+import { cx, cxx } from '../../helpers/composeClassNames.js';
+import Item from '../Item/Item.js';
 
 export type MessageProps = Omit<AllHTMLAttributes<HTMLDivElement>, 'is'> &
 	RefAttributes<HTMLDivElement> & {

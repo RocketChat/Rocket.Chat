@@ -1,11 +1,11 @@
-export { default as MessageMetricsItem, type MessageMetricsItemProps } from './MessageMetricsItem';
+export { default as MessageMetricsItem, type MessageMetricsItemProps } from './MessageMetricsItem.js';
 export {
 	default as MessageMetricsItemAvatarRow,
 	type MessageMetricsItemProps as MessageMetricsItemAvatarRowProps,
-} from './MessageMetricsItemAvatarRow';
+} from './MessageMetricsItemAvatarRow.js';
 export {
 	default as MessageMetricsItemAvatarRowContent,
 	type MessageMetricsItemAvatarRowContentProps,
-} from './MessageMetricsItemAvatarRowContent';
-export { default as MessageMetricsItemIcon, type MessageMetricsItemIconProps } from './MessageMetricsItemIcon';
-export { default as MessageMetricsItemLabel, type MessageMetricsItemLabelProps } from './MessageMetricsItemLabel';
+} from './MessageMetricsItemAvatarRowContent.js';
+export { default as MessageMetricsItemIcon, type MessageMetricsItemIconProps } from './MessageMetricsItemIcon.js';
+export { default as MessageMetricsItemLabel, type MessageMetricsItemLabelProps } from './MessageMetricsItemLabel.js';

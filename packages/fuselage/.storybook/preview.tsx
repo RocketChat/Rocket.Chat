@@ -1,11 +1,11 @@
-import breakpointTokens from '@rocket.chat/fuselage-tokens/dist/breakpoints.json';
+import breakpointTokens from '@rocket.chat/fuselage-tokens/dist/breakpoints.json' with { type: 'json' };
 import type { Preview } from '@storybook/react';
 import { useSyncExternalStore } from 'react';
 
-import { PaletteStyleTag } from '../src';
-import DocsContainer from './DocsContainer';
-import { globalTypes, initialGlobals } from './globals';
-import { resolveThemeMode, subscribeToSystemColorScheme } from './theme';
+import DocsContainer from './DocsContainer.js';
+import { globalTypes, initialGlobals } from './globals.js';
+import { resolveThemeMode, subscribeToSystemColorScheme } from './theme.js';
+import { PaletteStyleTag } from '../src/index.js';
 
 import 'normalize.css/normalize.css';
 import '@rocket.chat/icons/dist/rocketchat.css';

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { action } from 'storybook/actions';
 
-import ToastBar from './ToastBar';
+import ToastBar from './ToastBar.js';
 
 export default {
 	title: 'Feedback/ToastBar',

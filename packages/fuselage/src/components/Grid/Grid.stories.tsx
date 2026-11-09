@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { Fragment } from 'react';
 
-import { Table, TableBody, TableCell, TableHead, TableRow } from '../Table';
-import { Tile } from '../Tile';
-import Grid from './Grid';
-import GridItem from './GridItem';
+import Grid from './Grid.js';
+import GridItem from './GridItem.js';
+import { Table, TableBody, TableCell, TableHead, TableRow } from '../Table/index.js';
+import { Tile } from '../Tile/index.js';
 
 export default {
 	title: 'Layout/Grid',

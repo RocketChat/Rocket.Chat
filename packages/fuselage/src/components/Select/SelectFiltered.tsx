@@ -1,11 +1,11 @@
 import type { Dispatch, SetStateAction } from 'react';
 import { useState } from 'react';
 
-import type { IconProps } from '..';
-import SelectFilteredAnchor from './SelectFilteredAnchor';
-import { SelectFilteredContext } from './SelectFilteredContext';
-import type { SelectProps } from './SelectLegacy';
-import SelectLegacy from './SelectLegacy';
+import type { IconProps } from '../index.js';
+import SelectFilteredAnchor from './SelectFilteredAnchor.js';
+import { SelectFilteredContext } from './SelectFilteredContext.js';
+import type { SelectProps } from './SelectLegacy.js';
+import SelectLegacy from './SelectLegacy.js';
 
 export type SelectFilteredProps = Omit<SelectProps, 'anchor'> & {
 	filter?: string;

@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { useRef } from 'react';
 
-import { AnimatedVisibility } from '../AnimatedVisibility';
-import { Box } from '../Box';
-import { Tile } from '../Tile';
-import PositionAnimated from './PositionAnimated';
+import PositionAnimated from './PositionAnimated.js';
+import { AnimatedVisibility } from '../AnimatedVisibility/index.js';
+import { Box } from '../Box/index.js';
+import { Tile } from '../Tile/index.js';
 
 export default {
 	title: 'Layout/PositionAnimated',

@@ -1,6 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { action } from 'storybook/actions';
 
+import { SidebarCollapseGroupMenu } from './SidebarCollapseGroupMenu.js';
+import { CondensedItems as Condensed } from './SidebarItem/SidebarItem.stories.js';
+import { GenericNoAvatarItem, MenuTemplate } from './helpers.js';
 import {
 	Sidebar,
 	SidebarAccordion,
@@ -17,11 +20,8 @@ import {
 	SidebarListItem,
 	SidebarSection,
 	SidebarFooter,
-} from '.';
-import { IconButton, TextInput, Icon, Box } from '../..';
-import { SidebarCollapseGroupMenu } from './SidebarCollapseGroupMenu';
-import { CondensedItems as Condensed } from './SidebarItem/SidebarItem.stories';
-import { GenericNoAvatarItem, MenuTemplate } from './helpers';
+} from './index.js';
+import { IconButton, TextInput, Icon, Box } from '../../index.js';
 
 export default {
 	title: 'Navigation/Sidebar',

@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { BasicMessageTemplate } from '../helpers';
-import MessageReaction from './MessageReaction';
-import MessageReactionAction from './MessageReactionAction';
-import MessageReactionCounter from './MessageReactionCounter';
-import MessageReactionEmoji from './MessageReactionEmoji';
-import MessageReactions from './MessageReactions';
+import { BasicMessageTemplate } from '../helpers.js';
+import MessageReaction from './MessageReaction.js';
+import MessageReactionAction from './MessageReactionAction.js';
+import MessageReactionCounter from './MessageReactionCounter.js';
+import MessageReactionEmoji from './MessageReactionEmoji.js';
+import MessageReactions from './MessageReactions.js';
 
 export default {
 	title: 'Message/MessageReactions',

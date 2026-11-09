@@ -1,11 +1,11 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
 
-import { prependClassName } from '../../helpers/prependClassName';
-import { Avatar } from '../Avatar';
-import { Box } from '../Box';
-import { withBoxStyling } from '../Box/withBoxStyling';
-import { Icon } from '../Icon';
-import { Margins } from '../Margins';
+import { prependClassName } from '../../helpers/prependClassName.js';
+import { Avatar } from '../Avatar/index.js';
+import { Box } from '../Box/index.js';
+import { withBoxStyling } from '../Box/withBoxStyling.js';
+import { Icon } from '../Icon/index.js';
+import { Margins } from '../Margins/index.js';
 
 export type ChipProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type'> & {
 	thumbUrl?: string;

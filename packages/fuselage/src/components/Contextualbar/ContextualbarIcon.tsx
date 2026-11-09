@@ -1,4 +1,4 @@
-import { Icon, type IconProps } from '../Icon';
+import { Icon, type IconProps } from '../Icon/index.js';
 
 export type ContextualbarIconProps = IconProps;
 

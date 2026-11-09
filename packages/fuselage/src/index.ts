@@ -2,7 +2,7 @@
 /** @internal */
 import './index.scss';
 
-export * from './components';
+export * from './components/index.js';
 export {
 	backgroundColor,
 	borderRadius,
@@ -20,8 +20,9 @@ export {
 	type BorderWidth,
 	type FontScaleName,
 	type SpacingToken,
-} from './styleTokens';
-export * from './contexts';
-export { useStyle } from './hooks/useStyle';
+} from './styleTokens.js';
+export * from './contexts/index.js';
+export { useStyle } from './hooks/useStyle.js';
+export type { ElementProps } from './types/ElementProps.js';
 
-export { Palette, __setThrowErrorOnInvalidToken__, Var } from './Theme';
+export { Palette, __setThrowErrorOnInvalidToken__, Var } from './Theme.js';

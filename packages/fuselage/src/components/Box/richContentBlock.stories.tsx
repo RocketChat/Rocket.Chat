@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import Box from './Box';
+import Box from './Box.js';
 
 export default {
 	title: 'Layout/Box/Rich content/Block',

@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { action } from 'storybook/actions';
 
-import CheckBox from './CheckBox';
-import { DECORATOR_LABEL, PropsVariationSection, variationPseudoStates } from '../../../.storybook/helpers';
+import CheckBox from './CheckBox.js';
+import { DECORATOR_LABEL, PropsVariationSection, variationPseudoStates } from '../../../.storybook/helpers.js';
 
 export default {
 	title: 'Inputs/CheckBox',

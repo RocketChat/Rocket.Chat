@@ -81,8 +81,10 @@ const inlineProcessEnv = (): Plugin => ({
 	},
 });
 
+// JSON from dependencies (the design tokens) is bundled: the ES module build drops import attributes, and Node
+// refuses a JSON import without `with { type: 'json' }`.
 const external = [...Object.keys(pkg.dependencies ?? {}), ...Object.keys(pkg.peerDependencies ?? {})].map(
-	(dep) => new RegExp(`^${dep}(/.+)?$`),
+	(dep) => new RegExp(`^${dep}(/(?!.+\\.json$).+)?$`),
 );
 
 export default defineConfig(({ mode }) => {
@@ -105,16 +107,12 @@ export default defineConfig(({ mode }) => {
 			cssMinify: false,
 			lib: {
 				entry: resolve(import.meta.dirname, 'src/index.ts'),
-				formats: ['cjs'],
+				formats: ['es'],
 				fileName: () => `fuselage.${mode}.js`,
 			},
 			rollupOptions: {
 				external,
 				output: {
-					// Rollup's default (`if-default-prop`) omits `exports.__esModule`
-					// for a module with no default export; webpack always set it, and
-					// transpiled default imports interop off it.
-					esModule: true,
 					assetFileNames: (info) => {
 						if (!info.names?.[0]?.endsWith('.css')) {
 							return 'fonts/[name][extname]';
@@ -124,12 +122,6 @@ export default defineConfig(({ mode }) => {
 						// import; development is suffixed like the bundles are.
 						return production ? 'fuselage.css' : `fuselage.${mode}.css`;
 					},
-					...(production
-						? {}
-						: {
-								banner: `'use strict';\n\nif (process.env.NODE_ENV !== "production") {\n(function() {\n`,
-								footer: `\n})();\n}`,
-							}),
 				},
 			},
 		},

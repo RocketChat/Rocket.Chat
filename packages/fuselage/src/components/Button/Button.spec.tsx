@@ -2,9 +2,9 @@ import { composeStories } from '@storybook/react';
 import { screen } from '@testing-library/react';
 import { axe } from 'jest-axe';
 
-import Button from './Button';
-import * as stories from './Button.stories';
-import { render } from '../../testing';
+import Button from './Button.js';
+import * as stories from './Button.stories.js';
+import { render } from '../../testing.js';
 
 const { Default } = composeStories(stories);
 

@@ -16,12 +16,12 @@ import {
 	ModalTagline,
 	ModalThumb,
 	ModalTitle,
-} from '.';
-import { Box, type BoxProps } from '../Box';
-import { Button } from '../Button';
-import { Field, FieldLabel, FieldRow } from '../Field';
-import { FieldGroup } from '../FieldGroup';
-import { TextInput } from '../TextInput';
+} from './index.js';
+import { Box, type BoxProps } from '../Box/index.js';
+import { Button } from '../Button/index.js';
+import { Field, FieldLabel, FieldRow } from '../Field/index.js';
+import { FieldGroup } from '../FieldGroup/index.js';
+import { TextInput } from '../TextInput/index.js';
 
 export default {
 	title: 'Containers/Modal',

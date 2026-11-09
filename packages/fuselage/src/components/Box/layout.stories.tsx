@@ -2,9 +2,9 @@ import type { Meta, StoryObj, StoryFn, StoryContext } from '@storybook/react';
 import { cloneElement } from 'react';
 import flattenChildren from 'react-keyed-flatten-children';
 
-import { Divider } from '../Divider';
-import type { BoxProps } from './Box';
-import Box from './Box';
+import type { BoxProps } from './Box.js';
+import Box from './Box.js';
+import { Divider } from '../Divider/index.js';
 
 export default {
 	title: 'Layout/Box/Layout',

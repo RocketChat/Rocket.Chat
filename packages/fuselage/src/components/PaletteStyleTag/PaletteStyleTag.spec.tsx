@@ -1,6 +1,6 @@
-import PaletteStyleTag from './PaletteStyleTag';
-import { render } from '../../testing';
-import { dark, light } from './lib/themePalettes';
+import PaletteStyleTag from './PaletteStyleTag.js';
+import { render } from '../../testing.js';
+import { dark, light } from './lib/themePalettes.js';
 
 describe('[PaletteStyleTag colors]', () => {
 	it('creates the Light theme style tag', () => {

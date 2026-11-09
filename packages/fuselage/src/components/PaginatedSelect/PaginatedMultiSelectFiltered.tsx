@@ -1,10 +1,10 @@
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { InputEvent } from 'react';
 
-import { FlexItem } from '../Flex';
-import { Input, type InputProps } from '../InputBox';
-import type { PaginatedMultiSelectProps } from './PaginatedMultiSelect';
-import PaginatedMultiSelect from './PaginatedMultiSelect';
+import type { PaginatedMultiSelectProps } from './PaginatedMultiSelect.js';
+import PaginatedMultiSelect from './PaginatedMultiSelect.js';
+import { FlexItem } from '../Flex/index.js';
+import { Input, type InputProps } from '../InputBox/index.js';
 
 export type PaginatedMultiSelectFilteredProps = {
 	setFilter?: (value: string) => void;

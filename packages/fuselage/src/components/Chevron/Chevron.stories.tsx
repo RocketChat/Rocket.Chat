@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { Box } from '../Box';
-import Chevron from './Chevron';
+import Chevron from './Chevron.js';
+import { Box } from '../Box/index.js';
 
 export default {
 	title: 'Data Display/Chevron',

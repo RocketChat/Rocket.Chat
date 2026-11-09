@@ -1,4 +1,4 @@
-import { Button, type ButtonProps } from '../Button';
+import { Button, type ButtonProps } from '../Button/index.js';
 
 export type ContextualbarButtonProps = ButtonProps;
 

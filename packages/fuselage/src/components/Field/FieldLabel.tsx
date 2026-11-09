@@ -1,8 +1,8 @@
-import WithErrorWrapper from '../../helpers/WithErrorWrapper';
-import { prependClassName } from '../../helpers/prependClassName';
-import type { LabelProps } from '../Label';
-import { Label } from '../Label';
-import { FieldContext } from './Field';
+import { FieldContext } from './Field.js';
+import WithErrorWrapper from '../../helpers/WithErrorWrapper.js';
+import { prependClassName } from '../../helpers/prependClassName.js';
+import type { LabelProps } from '../Label/index.js';
+import { Label } from '../Label/index.js';
 
 export type FieldLabelProps = LabelProps;
 

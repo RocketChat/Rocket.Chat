@@ -1,6 +1,6 @@
 import type { HTMLAttributes } from 'react';
 
-import { Divider } from '../Divider';
+import { Divider } from '../Divider/index.js';
 
 export type SidepanelHeaderProps = HTMLAttributes<HTMLDivElement>;
 

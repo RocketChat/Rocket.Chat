@@ -1,5 +1,5 @@
-import { Icon } from '../../Icon';
-import ItemActions from '../../Item/ItemActions';
+import { Icon } from '../../Icon/index.js';
+import ItemActions from '../../Item/ItemActions.js';
 
 const ThreadMessageUnfollow = () => (
 	<ItemActions reveal='hover'>

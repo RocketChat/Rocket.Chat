@@ -1,16 +1,16 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import ThreadMessage from './ThreadMessage';
-import ThreadMessageBody from './ThreadMessageBody';
-import ThreadMessageContainer from './ThreadMessageContainer';
-import ThreadMessageEmoji from './ThreadMessageEmoji';
-import ThreadMessageIconThread from './ThreadMessageIconThread';
-import ThreadMessageOrigin from './ThreadMessageOrigin';
-import ThreadMessageRow from './ThreadMessageRow';
-import ThreadMessageUnfollow from './ThreadMessageUnfollow';
-import { Avatar } from '../../Avatar';
-import { Box } from '../../Box';
-import MessageLeftContainer from '../MessageLeftContainer';
+import ThreadMessage from './ThreadMessage.js';
+import ThreadMessageBody from './ThreadMessageBody.js';
+import ThreadMessageContainer from './ThreadMessageContainer.js';
+import ThreadMessageEmoji from './ThreadMessageEmoji.js';
+import ThreadMessageIconThread from './ThreadMessageIconThread.js';
+import ThreadMessageOrigin from './ThreadMessageOrigin.js';
+import ThreadMessageRow from './ThreadMessageRow.js';
+import ThreadMessageUnfollow from './ThreadMessageUnfollow.js';
+import { Avatar } from '../../Avatar/index.js';
+import { Box } from '../../Box/index.js';
+import MessageLeftContainer from '../MessageLeftContainer.js';
 
 export default {
 	title: 'Message/ThreadMessage',

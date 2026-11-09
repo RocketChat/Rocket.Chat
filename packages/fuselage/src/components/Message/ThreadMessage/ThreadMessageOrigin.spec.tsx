@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react';
 
-import ThreadMessageOrigin from './ThreadMessageOrigin';
-import { render } from '../../../testing';
+import ThreadMessageOrigin from './ThreadMessageOrigin.js';
+import { render } from '../../../testing.js';
 
 describe('ThreadMessageOrigin', () => {
 	it('renders without crashing', () => {

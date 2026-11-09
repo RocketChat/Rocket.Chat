@@ -1,7 +1,7 @@
 import type { HTMLAttributes } from 'react';
 
-import { cx } from '../../helpers/composeClassNames';
-import { ItemActions } from '../Item';
+import { cx } from '../../helpers/composeClassNames.js';
+import { ItemActions } from '../Item/index.js';
 
 export type OptionMenuProps = Omit<HTMLAttributes<HTMLDivElement>, 'is'>;
 

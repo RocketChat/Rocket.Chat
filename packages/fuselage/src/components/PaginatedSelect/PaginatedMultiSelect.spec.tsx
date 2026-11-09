@@ -1,8 +1,8 @@
 import { render } from '@testing-library/react';
 import { createRef } from 'react';
 
-import PaginatedMultiSelect from './PaginatedMultiSelect';
-import { withResizeObserverMock } from '../../../mocks/withResizeObserverMock';
+import PaginatedMultiSelect from './PaginatedMultiSelect.js';
+import { withResizeObserverMock } from '../../../mocks/withResizeObserverMock.js';
 
 withResizeObserverMock();
 

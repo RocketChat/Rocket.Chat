@@ -1,6 +1,6 @@
 import type { HTMLAttributes } from 'react';
 
-import { prependClassName } from '../../../../helpers/prependClassName';
+import { prependClassName } from '../../../../helpers/prependClassName.js';
 
 export type MessageMetricsItemAvatarRowContentProps = HTMLAttributes<HTMLDivElement>;
 

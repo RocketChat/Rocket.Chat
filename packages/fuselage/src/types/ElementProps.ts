@@ -1,6 +1,6 @@
 import type { HTMLAttributes, RefAttributes } from 'react';
 
-import type { StylingProps } from '../components/Box/stylingProps';
+import type { StylingProps } from '../components/Box/stylingProps.js';
 
 /**
  * The DOM and ARIA attributes a component forwards to the element it renders, without the ones `Box` would read as

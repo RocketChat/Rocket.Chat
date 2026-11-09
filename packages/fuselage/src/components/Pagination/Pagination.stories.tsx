@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { action } from 'storybook/actions';
 
-import Pagination from './Pagination';
+import Pagination from './Pagination.js';
 
 export default {
 	title: 'Navigation/Pagination',

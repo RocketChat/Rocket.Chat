@@ -3,14 +3,14 @@ import type { AllHTMLAttributes, FocusEvent, KeyboardEvent, Key, MouseEvent, Poi
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { useOverlayTriggerState } from 'react-stately';
 
-import { AnimatedVisibility } from '../AnimatedVisibility';
-import { Box } from '../Box';
-import { Icon } from '../Icon';
-import { Listbox, ListboxOption } from '../Listbox';
-import { OptionContainer } from '../Options';
-import { PositionAnimated } from '../PositionAnimated';
-import type { SelectOption } from './SelectLegacy';
-import { useTypeahead } from './useTypeahead';
+import type { SelectOption } from './SelectLegacy.js';
+import { useTypeahead } from './useTypeahead.js';
+import { AnimatedVisibility } from '../AnimatedVisibility/index.js';
+import { Box } from '../Box/index.js';
+import { Icon } from '../Icon/index.js';
+import { Listbox, ListboxOption } from '../Listbox/index.js';
+import { OptionContainer } from '../Options/index.js';
+import { PositionAnimated } from '../PositionAnimated/index.js';
 
 export type SelectProps<V extends Key = Key> = RefAttributes<HTMLElement> & {
 	/** The selectable options, as `[value, label]` tuples. */

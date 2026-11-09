@@ -2,15 +2,15 @@ import { useMergedRefs, useStableCallback, useResizeObserver } from '@rocket.cha
 import type { DependencyList, ElementType, MouseEvent, RefAttributes } from 'react';
 import { useState, useRef, useEffect, useMemo } from 'react';
 
-import type { ElementProps } from '../../types/ElementProps';
-import { AnimatedVisibility } from '../AnimatedVisibility';
-import { Box } from '../Box';
-import { Icon, type IconProps } from '../Icon';
-import type { OptionType } from '../Options';
-import { Options, useCursor } from '../Options';
-import { PositionAnimated } from '../PositionAnimated';
-import SelectAddon from './SelectAddon';
-import SelectFocus from './SelectFocus';
+import SelectAddon from './SelectAddon.js';
+import SelectFocus from './SelectFocus.js';
+import type { ElementProps } from '../../types/ElementProps.js';
+import { AnimatedVisibility } from '../AnimatedVisibility/index.js';
+import { Box } from '../Box/index.js';
+import { Icon, type IconProps } from '../Icon/index.js';
+import type { OptionType } from '../Options/index.js';
+import { Options, useCursor } from '../Options/index.js';
+import { PositionAnimated } from '../PositionAnimated/index.js';
 
 export type SelectOption = readonly [value: string, label: string, selected?: boolean];
 

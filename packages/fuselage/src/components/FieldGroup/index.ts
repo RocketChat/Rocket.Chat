@@ -1,1 +1,1 @@
-export { default as FieldGroup, type FieldGroupProps } from './FieldGroup';
+export { default as FieldGroup, type FieldGroupProps } from './FieldGroup.js';

@@ -1,1 +1,1 @@
-export * from './OwnerDocument';
+export * from './OwnerDocument.js';

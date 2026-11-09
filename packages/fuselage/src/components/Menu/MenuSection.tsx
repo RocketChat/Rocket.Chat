@@ -3,9 +3,9 @@ import type { RefObject } from 'react';
 import { useMenuSection, useSeparator } from 'react-aria';
 import type { RootMenuTriggerState, TreeState } from 'react-stately';
 
-import { ItemDivider, ItemGroupHeader, ItemGroupTitle } from '../Item';
-import MenuItem from './MenuItem';
-import MenuSubmenu from './MenuSubmenu';
+import MenuItem from './MenuItem.js';
+import MenuSubmenu from './MenuSubmenu.js';
+import { ItemDivider, ItemGroupHeader, ItemGroupTitle } from '../Item/index.js';
 
 type MenuSectionProps<T extends object> = {
 	section: Node<T>;

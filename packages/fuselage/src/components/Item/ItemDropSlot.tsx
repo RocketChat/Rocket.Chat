@@ -1,6 +1,6 @@
 import type { AllHTMLAttributes, ElementType, RefAttributes } from 'react';
 
-import { cx, cxx } from '../../helpers/composeClassNames';
+import { cx, cxx } from '../../helpers/composeClassNames.js';
 
 export type ItemDropSlotProps = {
 	/**

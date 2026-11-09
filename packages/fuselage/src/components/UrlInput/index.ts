@@ -1,1 +1,1 @@
-export { default as UrlInput, type UrlInputProps } from './UrlInput';
+export { default as UrlInput, type UrlInputProps } from './UrlInput.js';

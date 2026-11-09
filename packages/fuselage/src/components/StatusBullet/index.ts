@@ -1,1 +1,1 @@
-export { default as StatusBullet, type StatusBulletProps } from './StatusBullet';
+export { default as StatusBullet, type StatusBulletProps } from './StatusBullet.js';

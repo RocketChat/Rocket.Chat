@@ -1,6 +1,6 @@
-import tokenBorder from '@rocket.chat/fuselage-tokens/dist/border.json';
-import tokenSpacing from '@rocket.chat/fuselage-tokens/dist/spacing.json';
-import tokenTypography from '@rocket.chat/fuselage-tokens/dist/typography.json';
+import tokenBorder from '@rocket.chat/fuselage-tokens/dist/border.json' with { type: 'json' };
+import tokenSpacing from '@rocket.chat/fuselage-tokens/dist/spacing.json' with { type: 'json' };
+import tokenTypography from '@rocket.chat/fuselage-tokens/dist/typography.json' with { type: 'json' };
 import { memoize } from '@rocket.chat/memo';
 import invariant from 'invariant';
 
@@ -19,10 +19,10 @@ import {
 	throwErrorOnInvalidToken,
 	isBadgeColor,
 	badgeBackgroundColors,
-} from './Theme';
-import type { BadgeBackgroundColors, StatusBackgroundColors, StatusColors, StrokeColor, SurfaceColors, TextIconColors } from './Theme';
-import { getPaletteColor } from './getPaletteColor';
-import { toCSSColorValue, toCSSFontValue, toCSSValue } from './helpers/toCSSValue';
+} from './Theme.js';
+import type { BadgeBackgroundColors, StatusBackgroundColors, StatusColors, StrokeColor, SurfaceColors, TextIconColors } from './Theme.js';
+import { getPaletteColor } from './getPaletteColor.js';
+import { toCSSColorValue, toCSSFontValue, toCSSValue } from './helpers/toCSSValue.js';
 
 export type BorderWidth = keyof typeof tokenBorder.width;
 export type BorderRadius = keyof typeof tokenBorder.radius;

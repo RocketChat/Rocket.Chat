@@ -1,6 +1,6 @@
-import { cx } from '../../helpers/composeClassNames';
-import { Icon, type IconProps } from '../Icon';
-import { ItemIcon } from '../Item';
+import { cx } from '../../helpers/composeClassNames.js';
+import { Icon, type IconProps } from '../Icon/index.js';
+import { ItemIcon } from '../Item/index.js';
 
 export type OptionIconProps = IconProps;
 

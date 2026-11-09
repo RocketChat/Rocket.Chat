@@ -1,5 +1,5 @@
-import { FlexContainer, FlexItem } from '.';
-import { render } from '../../testing';
+import { FlexContainer, FlexItem } from './index.js';
+import { render } from '../../testing.js';
 
 describe('[Flex Component]', () => {
 	it('renders FlexContainer without crashing', () => {

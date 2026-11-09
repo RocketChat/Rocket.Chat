@@ -1,7 +1,7 @@
 import type { Meta, StoryFn, StoryObj } from '@storybook/react';
 
-import { Button, ButtonGroup, Callout } from '../..';
-import { setStoryDescription } from '../../helpers/setStoryDescription';
+import { setStoryDescription } from '../../helpers/setStoryDescription.js';
+import { Button, ButtonGroup, Callout } from '../../index.js';
 
 export default {
 	title: 'Feedback/Callout',

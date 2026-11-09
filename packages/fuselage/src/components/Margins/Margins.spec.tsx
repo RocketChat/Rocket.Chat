@@ -1,5 +1,5 @@
-import Margins from './Margins';
-import { render } from '../../testing';
+import Margins from './Margins.js';
+import { render } from '../../testing.js';
 
 describe('[Margins Component]', () => {
 	it('renders without crashing', () => {

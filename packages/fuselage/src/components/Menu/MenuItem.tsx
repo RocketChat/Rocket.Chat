@@ -4,8 +4,8 @@ import { useRef } from 'react';
 import { mergeProps, useFocusVisible, useMenuItem } from 'react-aria';
 import type { TreeState } from 'react-stately';
 
-import { Item, ItemContent, ItemTitle } from '../Item';
-import type { OptionProps } from '../Option';
+import { Item, ItemContent, ItemTitle } from '../Item/index.js';
+import type { OptionProps } from '../Option/index.js';
 
 type MenuItemProps = {
 	item: Node<{

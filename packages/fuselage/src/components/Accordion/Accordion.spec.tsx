@@ -2,9 +2,9 @@ import { composeStories } from '@storybook/react';
 import { fireEvent } from '@testing-library/react';
 import { axe } from 'jest-axe';
 
-import * as stories from './Accordion.stories';
-import AccordionItem from './AccordionItem';
-import { render } from '../../testing';
+import * as stories from './Accordion.stories.js';
+import AccordionItem from './AccordionItem.js';
+import { render } from '../../testing.js';
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 

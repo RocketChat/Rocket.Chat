@@ -1,5 +1,5 @@
-import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
+import type { ElementProps } from '../../types/ElementProps.js';
+import { Box } from '../Box/index.js';
 
 export type ContextualbarProps = ElementProps<HTMLElement> & {
 	/** Makes the bar as wide as its container, as when it is positioned over the room. */

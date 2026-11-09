@@ -1,7 +1,7 @@
 import type { AllHTMLAttributes, ElementType } from 'react';
 
-import { cx } from '../../../helpers/composeClassNames';
-import { Item, type ItemProps } from '../../Item';
+import { cx } from '../../../helpers/composeClassNames.js';
+import { Item, type ItemProps } from '../../Item/index.js';
 
 export type SidebarItemProps = {
 	selected?: boolean;

@@ -1,6 +1,6 @@
-import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
-import { Icon, type IconProps } from '../Icon';
+import type { ElementProps } from '../../types/ElementProps.js';
+import { Box } from '../Box/index.js';
+import { Icon, type IconProps } from '../Icon/index.js';
 
 export type ModalIconProps = ElementProps<HTMLDivElement> & {
 	name: IconProps['name'];

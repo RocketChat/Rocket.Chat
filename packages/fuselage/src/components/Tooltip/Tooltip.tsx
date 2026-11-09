@@ -1,5 +1,5 @@
-import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
+import type { ElementProps } from '../../types/ElementProps.js';
+import { Box } from '../Box/index.js';
 
 const parsePlacement = (placement: string | null | undefined) => {
 	const [direction, position] = placement ? placement.split('-') : [undefined, undefined];

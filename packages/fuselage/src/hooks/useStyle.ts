@@ -2,7 +2,7 @@ import type { cssFn } from '@rocket.chat/css-in-js';
 import { createClassName, escapeName, transpile, attachRules } from '@rocket.chat/css-in-js';
 import { useDebugValue, useInsertionEffect, useMemo } from 'react';
 
-import { useOwnerDocument } from '../contexts';
+import { useOwnerDocument } from '../contexts/index.js';
 
 /** Attaches a `css` style to the document and returns its class name, for a `className` that takes strings only. */
 export const useStyle = (cssFn: cssFn | undefined, arg?: unknown) => {

@@ -1,3 +1,3 @@
-export { SidebarMedia } from './SidebarMedia';
-export { SidebarMediaController } from './SidebarMediaController';
-export { SidebarMediaTitle } from './SidebarMediaTitle';
+export { SidebarMedia } from './SidebarMedia.js';
+export { SidebarMediaController } from './SidebarMediaController.js';
+export { SidebarMediaTitle } from './SidebarMediaTitle.js';

@@ -1,9 +1,10 @@
 import { composeStories } from '@storybook/react';
 import { screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 import { createRef, Profiler } from 'react';
 
+import * as stories from './Item.stories.js';
 import {
 	Item,
 	ItemActions,
@@ -19,9 +20,8 @@ import {
 	ItemMeta,
 	ItemSkeleton,
 	ItemTitle,
-} from '.';
-import * as stories from './Item.stories';
-import { render } from '../../testing';
+} from './index.js';
+import { render } from '../../testing.js';
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 

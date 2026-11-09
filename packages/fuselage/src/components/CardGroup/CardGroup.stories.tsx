@@ -1,12 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { Badge } from '../Badge';
-import { Button, IconButton } from '../Button';
-import type { CardProps } from '../Card';
-import { Card, CardBody, CardCol, CardControls, CardHeader, CardRow, CardTitle } from '../Card';
-import { Icon } from '../Icon';
-import { Tag } from '../Tag';
-import CardGroup from './CardGroup';
+import CardGroup from './CardGroup.js';
+import { Badge } from '../Badge/index.js';
+import { Button, IconButton } from '../Button/index.js';
+import type { CardProps } from '../Card/index.js';
+import { Card, CardBody, CardCol, CardControls, CardHeader, CardRow, CardTitle } from '../Card/index.js';
+import { Icon } from '../Icon/index.js';
+import { Tag } from '../Tag/index.js';
 
 export default {
 	title: 'Containers/CardGroup',

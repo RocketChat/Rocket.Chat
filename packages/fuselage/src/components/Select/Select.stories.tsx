@@ -2,9 +2,9 @@ import type { Meta, StoryObj } from '@storybook/react';
 import type { Key } from 'react';
 import { useState } from 'react';
 
-import Select from './Select';
-import type { SelectOption } from './SelectLegacy';
-import { PropsVariationSection, variationPseudoStates } from '../../../.storybook/helpers';
+import Select from './Select.js';
+import type { SelectOption } from './SelectLegacy.js';
+import { PropsVariationSection, variationPseudoStates } from '../../../.storybook/helpers.js';
 
 const options: SelectOption[] = Array.from({
 	length: 12,

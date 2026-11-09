@@ -1,6 +1,6 @@
 import type { HTMLAttributes } from 'react';
 
-import { Icon } from '../../Icon';
+import { Icon } from '../../Icon/index.js';
 
 export type MessageReactionActionProps = HTMLAttributes<HTMLDivElement>;
 

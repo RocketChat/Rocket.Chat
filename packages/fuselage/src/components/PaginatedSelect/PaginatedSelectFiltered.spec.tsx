@@ -1,13 +1,13 @@
 import { composeStories } from '@storybook/react';
 import { screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 import { VirtuosoMockContext } from 'react-virtuoso';
 
-import { render } from '../../testing';
-import { Option } from '../Option';
-import PaginatedSelectFiltered from './PaginatedSelectFiltered';
-import * as stories from './PaginatedSelectFiltered.stories';
+import PaginatedSelectFiltered from './PaginatedSelectFiltered.js';
+import * as stories from './PaginatedSelectFiltered.stories.js';
+import { render } from '../../testing.js';
+import { Option } from '../Option/index.js';
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 

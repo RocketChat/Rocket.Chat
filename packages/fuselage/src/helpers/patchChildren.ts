@@ -2,8 +2,8 @@ import type { ReactNode, Attributes } from 'react';
 import { cloneElement } from 'react';
 import { isElement } from 'react-is';
 
-import { flattenChildren } from './flattenChildren';
-import { shallowEqual } from './shallowEqual';
+import { flattenChildren } from './flattenChildren.js';
+import { shallowEqual } from './shallowEqual.js';
 
 export const patchChildren = <TProps>(children: ReactNode, patch: (props: TProps) => TProps & Attributes): ReactNode => {
 	let dirty = false;

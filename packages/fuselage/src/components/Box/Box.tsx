@@ -2,12 +2,12 @@ import type { cssFn } from '@rocket.chat/css-in-js';
 import type { AllHTMLAttributes, ElementType, RefAttributes, SVGAttributes } from 'react';
 import { createElement, memo } from 'react';
 
-import { useBoxTransform, BoxTransforms } from './BoxTransforms';
-import type { StylingProps } from './stylingProps';
-import { useStylingProps } from './useStylingProps';
-import { useArrayLikeClassNameProp } from '../../hooks/useArrayLikeClassNameProp';
-import { useBoxOnlyProps } from '../../hooks/useBoxOnlyProps';
-import type { Falsy } from '../../types/Falsy';
+import { useBoxTransform, BoxTransforms } from './BoxTransforms.js';
+import type { StylingProps } from './stylingProps.js';
+import { useStylingProps } from './useStylingProps.js';
+import { useArrayLikeClassNameProp } from '../../hooks/useArrayLikeClassNameProp.js';
+import { useBoxOnlyProps } from '../../hooks/useBoxOnlyProps.js';
+import type { Falsy } from '../../types/Falsy.js';
 
 export type BoxProps = Partial<StylingProps> &
 	Omit<AllHTMLAttributes<HTMLElement>, 'ref' | 'is' | 'className' | 'size' | 'elevation' | keyof StylingProps> &

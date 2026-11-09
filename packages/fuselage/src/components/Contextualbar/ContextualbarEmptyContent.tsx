@@ -1,7 +1,7 @@
-import { Box } from '../Box';
-import { StatesIcon, States, StatesTitle, StatesSubtitle, type StatesIconProps } from '../States';
-import type { ContextualbarContentProps } from './ContextualbarContent';
-import ContextualbarContent from './ContextualbarContent';
+import type { ContextualbarContentProps } from './ContextualbarContent.js';
+import ContextualbarContent from './ContextualbarContent.js';
+import { Box } from '../Box/index.js';
+import { StatesIcon, States, StatesTitle, StatesSubtitle, type StatesIconProps } from '../States/index.js';
 
 export type ContextualbarEmptyContentProps = ContextualbarContentProps & {
 	icon?: StatesIconProps['name'];

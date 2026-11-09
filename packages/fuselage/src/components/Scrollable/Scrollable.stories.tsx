@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { action } from 'storybook/actions';
 
-import { Box } from '../Box';
-import { Tile } from '../Tile';
-import Scrollable from './Scrollable';
+import Scrollable from './Scrollable.js';
+import { Box } from '../Box/index.js';
+import { Tile } from '../Tile/index.js';
 
 export default {
 	title: 'Layout/Scrollable',

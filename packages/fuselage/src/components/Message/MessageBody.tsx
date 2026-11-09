@@ -1,6 +1,6 @@
 import type { HTMLAttributes } from 'react';
 
-import { cx, cxx } from '../../helpers/composeClassNames';
+import { cx, cxx } from '../../helpers/composeClassNames.js';
 
 export type MessageBodyProps = HTMLAttributes<HTMLDivElement> & {
 	/**

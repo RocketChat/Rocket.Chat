@@ -2,9 +2,9 @@ import type { Keys as IconName } from '@rocket.chat/icons';
 import type { AllHTMLAttributes, ReactElement, ReactNode, RefAttributes } from 'react';
 import { isValidElement, useMemo } from 'react';
 
-import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
-import { Icon } from '../Icon';
+import type { ElementProps } from '../../types/ElementProps.js';
+import { Box } from '../Box/index.js';
+import { Icon } from '../Icon/index.js';
 
 export type IconButtonProps = {
 	icon: IconName | ReactElement<any>;

@@ -1,9 +1,9 @@
 import type { AllHTMLAttributes } from 'react';
 import { useMemo } from 'react';
 
-import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
-import { Icon, type IconProps } from '../Icon';
+import type { ElementProps } from '../../types/ElementProps.js';
+import { Box } from '../Box/index.js';
+import { Icon, type IconProps } from '../Icon/index.js';
 
 export type ButtonProps = {
 	/** Renders a link instead of a button, for actions that navigate or download. */

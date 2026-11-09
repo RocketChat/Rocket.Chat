@@ -1,5 +1,5 @@
-import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
+import type { ElementProps } from '../../types/ElementProps.js';
+import { Box } from '../Box/index.js';
 
 export type ContextualbarContentProps = ElementProps<HTMLElement> & {
 	/** Drops the inline padding, for content such as a list whose items bring their own. */

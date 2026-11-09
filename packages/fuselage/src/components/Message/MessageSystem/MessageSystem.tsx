@@ -1,7 +1,7 @@
 import type { ReactNode, MouseEvent as ReactMouseEvent, AllHTMLAttributes } from 'react';
 
-import { cx } from '../../../helpers/composeClassNames';
-import Item from '../../Item/Item';
+import { cx } from '../../../helpers/composeClassNames.js';
+import Item from '../../Item/Item.js';
 
 export type MessageSystemProps = {
 	children?: ReactNode;

@@ -1,9 +1,9 @@
 import type { HTMLAttributes } from 'react';
 
-import { appendClassName } from '../../helpers/appendClassName';
-import { cx } from '../../helpers/composeClassNames';
-import { patchChildren } from '../../helpers/patchChildren';
-import { ItemActions } from '../Item';
+import { appendClassName } from '../../helpers/appendClassName.js';
+import { cx } from '../../helpers/composeClassNames.js';
+import { patchChildren } from '../../helpers/patchChildren.js';
+import { ItemActions } from '../Item/index.js';
 
 export const SidebarCollapseGroupMenu = ({ children, className, ...props }: Omit<HTMLAttributes<HTMLDivElement>, 'is'>) => (
 	<ItemActions {...props} reveal='hover' className={cx('rcx-sidebar-collapse-group__menu-wrapper', className)}>

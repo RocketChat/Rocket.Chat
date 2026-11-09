@@ -1,8 +1,8 @@
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { HTMLAttributes, ReactNode } from 'react';
 
-import { prependClassName } from '../../helpers/prependClassName';
-import { Icon } from '../Icon';
+import { prependClassName } from '../../helpers/prependClassName.js';
+import { Icon } from '../Icon/index.js';
 
 type BubbleItemProps = {
 	label?: ReactNode;

@@ -2,13 +2,13 @@ import type { Meta, StoryObj } from '@storybook/react';
 import type { ReactNode } from 'react';
 import { useState } from 'react';
 
-import { exampleAvatar, DECORATOR_LABEL } from '../../../.storybook/helpers';
-import { Avatar } from '../Avatar';
-import { Box } from '../Box';
-import { Chip } from '../Chip';
-import { Option } from '../Option';
-import type { AutoCompleteProps } from './AutoComplete';
-import AutoComplete from './AutoComplete';
+import type { AutoCompleteProps } from './AutoComplete.js';
+import AutoComplete from './AutoComplete.js';
+import { exampleAvatar, DECORATOR_LABEL } from '../../../.storybook/helpers.js';
+import { Avatar } from '../Avatar/index.js';
+import { Box } from '../Box/index.js';
+import { Chip } from '../Chip/index.js';
+import { Option } from '../Option/index.js';
 
 export default {
 	title: 'Inputs/AutoComplete',

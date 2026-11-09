@@ -2,10 +2,10 @@ import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import type { HTMLAttributes, RefAttributes, TrackHTMLAttributes } from 'react';
 import { useState, useRef } from 'react';
 
-import { Box } from '../..';
-import AudioPlayerControls from './AudioPlayerControls';
-import { useOwnerDocument } from '../../contexts';
-import { prependClassName } from '../../helpers/prependClassName';
+import AudioPlayerControls from './AudioPlayerControls.js';
+import { useOwnerDocument } from '../../contexts/index.js';
+import { prependClassName } from '../../helpers/prependClassName.js';
+import { Box } from '../../index.js';
 
 function forceDownload(ownerDocument: Document, url: string, fileName?: string) {
 	const xhr = new XMLHttpRequest();

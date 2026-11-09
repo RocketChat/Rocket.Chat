@@ -1,10 +1,10 @@
 import { composeStories } from '@storybook/react';
 import { axe } from 'jest-axe';
 
-import { render } from '../../testing';
-import { Item, ItemContent, ItemTitle } from '../Item';
-import Options from './Options';
-import * as stories from './Options.stories';
+import Options from './Options.js';
+import * as stories from './Options.stories.js';
+import { render } from '../../testing.js';
+import { Item, ItemContent, ItemTitle } from '../Item/index.js';
 
 const { Grouped } = composeStories(stories);
 

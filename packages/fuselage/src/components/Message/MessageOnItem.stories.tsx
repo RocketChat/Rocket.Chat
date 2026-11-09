@@ -1,13 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import type { ReactNode } from 'react';
 
-import { Avatar } from '../Avatar';
-import Message, { type MessageProps } from './Message';
-import MessageBlock from './MessageBlock';
-import MessageBody from './MessageBody';
-import MessageContainer from './MessageContainer';
-import MessageHeader from './MessageHeader';
-import MessageLeftContainer from './MessageLeftContainer';
+import Message, { type MessageProps } from './Message.js';
+import MessageBlock from './MessageBlock.js';
+import MessageBody from './MessageBody.js';
+import MessageContainer from './MessageContainer.js';
+import MessageHeader from './MessageHeader.js';
+import MessageLeftContainer from './MessageLeftContainer.js';
 import {
 	MessageMetrics,
 	MessageMetricsFollowing,
@@ -15,17 +14,18 @@ import {
 	MessageMetricsItemIcon,
 	MessageMetricsItemLabel,
 	MessageMetricsReply,
-} from './MessageMetrics';
-import MessageName from './MessageName';
-import MessageNameContainer from './MessageNameContainer';
-import MessageReactions, { MessageReaction, MessageReactionAction, MessageReactionCounter } from './MessageReactions';
-import MessageRole from './MessageRole';
-import MessageRoles from './MessageRoles';
-import { MessageStatusIndicator, MessageStatusIndicatorItem } from './MessageStatusIndicator';
-import MessageTimestamp from './MessageTimestamp';
-import { MessageToolbar, MessageToolbarItem, MessageToolbarWrapper } from './MessageToolbar';
-import MessageUsername from './MessageUsername';
-import { avatarUrl } from './helpers';
+} from './MessageMetrics/index.js';
+import MessageName from './MessageName.js';
+import MessageNameContainer from './MessageNameContainer.js';
+import MessageReactions, { MessageReaction, MessageReactionAction, MessageReactionCounter } from './MessageReactions/index.js';
+import MessageRole from './MessageRole.js';
+import MessageRoles from './MessageRoles.js';
+import { Avatar } from '../Avatar/index.js';
+import { MessageStatusIndicator, MessageStatusIndicatorItem } from './MessageStatusIndicator/index.js';
+import MessageTimestamp from './MessageTimestamp.js';
+import { MessageToolbar, MessageToolbarItem, MessageToolbarWrapper } from './MessageToolbar/index.js';
+import MessageUsername from './MessageUsername.js';
+import { avatarUrl } from './helpers.js';
 
 export default {
 	title: 'Message/Message on Item',

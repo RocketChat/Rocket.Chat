@@ -1,11 +1,11 @@
 import type { CSSProperties, ReactNode } from 'react';
 import { Children, isValidElement } from 'react';
 
-import CardGridItem from './CardGridItem';
-import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
-import type { GridItemProps } from '../Grid';
-import { GridItem } from '../Grid';
+import CardGridItem from './CardGridItem.js';
+import type { ElementProps } from '../../types/ElementProps.js';
+import { Box } from '../Box/index.js';
+import type { GridItemProps } from '../Grid/index.js';
+import { GridItem } from '../Grid/index.js';
 
 export type CardGridProps = Omit<ElementProps<HTMLDivElement>, 'children'> & {
 	children: ReactNode;

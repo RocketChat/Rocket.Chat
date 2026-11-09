@@ -1,10 +1,10 @@
 import { composeStories } from '@storybook/react';
 import { screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 
-import Slider from './Slider';
-import * as stories from './Slider.stories';
-import { render } from '../../testing';
+import Slider from './Slider.js';
+import * as stories from './Slider.stories.js';
+import { render } from '../../testing.js';
 
 const { Default, WithLabel, MultiThumb, WithDefaultValue } = composeStories(stories);
 

@@ -1,7 +1,7 @@
 import type { ButtonHTMLAttributes, RefAttributes } from 'react';
 
-import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
+import type { ElementProps } from '../../types/ElementProps.js';
+import { Box } from '../Box/index.js';
 
 type SelectFocusProps = Omit<ElementProps<HTMLButtonElement, ButtonHTMLAttributes<HTMLButtonElement>>, 'ref'> & RefAttributes<Element>;
 

@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { action } from 'storybook/actions';
 
-import { Icon } from '../Icon';
-import Banner from './Banner';
+import Banner from './Banner.js';
+import { Icon } from '../Icon/index.js';
 
 export default {
 	title: 'Feedback/Banner',

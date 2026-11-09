@@ -1,11 +1,11 @@
 import type { ReactNode, MouseEvent, AllHTMLAttributes, ElementType, RefAttributes } from 'react';
 import { memo } from 'react';
 
-import { cx, cxx } from '../../helpers/composeClassNames';
-import { prevent } from '../../helpers/prevent';
-import { useArrayLikeClassNameProp } from '../../hooks/useArrayLikeClassNameProp';
-import { Icon, type IconProps } from '../Icon';
-import { Item, ItemContent, ItemIcon, ItemMedia, ItemTitle } from '../Item';
+import { cx, cxx } from '../../helpers/composeClassNames.js';
+import { prevent } from '../../helpers/prevent.js';
+import { useArrayLikeClassNameProp } from '../../hooks/useArrayLikeClassNameProp.js';
+import { Icon, type IconProps } from '../Icon/index.js';
+import { Item, ItemContent, ItemIcon, ItemMedia, ItemTitle } from '../Item/index.js';
 
 export type OptionProps<TLabel = ReactNode> = RefAttributes<HTMLElement> & {
 	is?: ElementType;

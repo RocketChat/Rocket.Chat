@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import Label from './Label';
-import { LabelInfo } from './LabelInfo';
+import Label from './Label.js';
+import { LabelInfo } from './LabelInfo.js';
 
 export default {
 	title: 'Inputs/Label',

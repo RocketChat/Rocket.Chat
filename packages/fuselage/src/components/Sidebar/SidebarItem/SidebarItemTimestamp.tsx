@@ -1,7 +1,7 @@
 import type { HTMLAttributes } from 'react';
 
-import { cx } from '../../../helpers/composeClassNames';
-import { ItemMeta } from '../../Item';
+import { cx } from '../../../helpers/composeClassNames.js';
+import { ItemMeta } from '../../Item/index.js';
 
 export const SidebarItemTimestamp = ({
 	className,

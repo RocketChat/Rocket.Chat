@@ -3,9 +3,9 @@ import { screen } from '@testing-library/react';
 import { axe } from 'jest-axe';
 import { createRef } from 'react';
 
-import CardGrid from './CardGrid';
-import * as stories from './CardGrid.stories';
-import { render } from '../../testing';
+import CardGrid from './CardGrid.js';
+import * as stories from './CardGrid.stories.js';
+import { render } from '../../testing.js';
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 
