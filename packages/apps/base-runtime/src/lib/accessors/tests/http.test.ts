@@ -1,8 +1,8 @@
 import * as assert from 'node:assert';
 import { beforeEach, describe, it, after, mock } from 'node:test';
 
-import { AppObjectRegistry } from '../../../AppObjectRegistry';
-import { Http } from '../http';
+import { AppObjectRegistry } from '../../../AppObjectRegistry.js';
+import { Http } from '../http.js';
 
 describe('Http accessor error handling integration', () => {
 	let http: Http;

@@ -1,8 +1,8 @@
 import type { ChildProcess } from 'node:child_process';
 
-import type { COMMAND_PING } from './LivenessManager';
-import { sanitizeForIpc } from '../../../lib/IpcSanitizer';
-import type { JsonRpc } from '../../../lib/jsonrpc';
+import type { COMMAND_PING } from './LivenessManager.js';
+import { sanitizeForIpc } from '../../../lib/IpcSanitizer.js';
+import type { JsonRpc } from '../../../lib/jsonrpc.js';
 
 type Message = JsonRpc | typeof COMMAND_PING;
 

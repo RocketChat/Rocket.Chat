@@ -1,6 +1,6 @@
-import type { IOnetimeSchedule, IProcessor, IRecurringSchedule } from '@rocket.chat/apps-engine/definition/scheduler';
+import type { IOnetimeSchedule, IProcessor, IRecurringSchedule } from '@rocket.chat/apps-engine/definition/scheduler/index.js';
 
-import { SchedulerBridge } from '../../../src/server/bridges';
+import { SchedulerBridge } from '../../../src/server/bridges/index.js';
 
 export class TestSchedulerBridge extends SchedulerBridge {
 	public async registerProcessors(processors: Array<IProcessor>, appId: string): Promise<void> {

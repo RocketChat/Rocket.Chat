@@ -1,7 +1,7 @@
 import * as assert from 'node:assert';
 import { describe, it } from 'node:test';
 
-import { NotEnoughMethodArgumentsError } from '../../../src/server/errors';
+import { NotEnoughMethodArgumentsError } from '../../../src/server/errors/index.js';
 
 describe('NotEnoughMethodArgumentsError', () => {
 	it('verifyCompilerError', () => {

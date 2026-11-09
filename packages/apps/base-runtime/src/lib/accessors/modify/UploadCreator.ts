@@ -1,11 +1,11 @@
-import type { IUploadCreator } from '@rocket.chat/apps-engine/definition/accessors';
-import type { IUpload } from '@rocket.chat/apps-engine/definition/uploads';
-import type { IUploadDescriptor } from '@rocket.chat/apps-engine/definition/uploads/IUploadDescriptor';
-import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails';
-import type { IUser } from '@rocket.chat/apps-engine/definition/users';
+import type { IUploadCreator } from '@rocket.chat/apps-engine/definition/accessors/index.js';
+import type { IUploadDescriptor } from '@rocket.chat/apps-engine/definition/uploads/IUploadDescriptor.js';
+import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails.js';
+import type { IUpload } from '@rocket.chat/apps-engine/definition/uploads/index.js';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users/index.js';
 
-import { bridgeCall } from '../../bridges/bridgeCall';
-import type * as Messenger from '../../messenger';
+import { bridgeCall } from '../../bridges/bridgeCall.js';
+import type * as Messenger from '../../messenger.js';
 
 export class UploadCreator implements IUploadCreator {
 	constructor(private readonly senderFn: typeof Messenger.sendRequest) {}

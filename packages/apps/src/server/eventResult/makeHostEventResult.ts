@@ -1,8 +1,8 @@
-import type { MarkedEventResult } from '@rocket.chat/apps-engine/definition/eventResult';
+import type { MarkedEventResult } from '@rocket.chat/apps-engine/definition/eventResult/index.js';
 
-import type { ProxiedApp } from '../ProxiedApp';
-import type { EventResultMeta, HostEventResult } from './HostEventResult';
-import { getAppTranslationNamespace, getAppTranslationsForKey } from '../misc/appTranslations';
+import type { ProxiedApp } from '../ProxiedApp.js';
+import type { EventResultMeta, HostEventResult } from './HostEventResult.js';
+import { getAppTranslationNamespace, getAppTranslationsForKey } from '../misc/appTranslations.js';
 
 /**
  * Everything the engine knows about the app, including what it takes to resolve the one key the

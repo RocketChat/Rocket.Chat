@@ -1,4 +1,4 @@
-import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
+import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata/index.js';
 
 export abstract class AppServerCommunicator {
 	public abstract getEnabledApps(): Promise<Array<IAppInfo>>;

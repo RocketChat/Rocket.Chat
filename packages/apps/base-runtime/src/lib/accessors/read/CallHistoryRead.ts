@@ -3,11 +3,11 @@ import type {
 	ICallHistorySearchFilters,
 	ICallHistorySearchPagination,
 	ICallHistorySearchResult,
-} from '@rocket.chat/apps-engine/definition/accessors';
-import type { ICallHistoryItem } from '@rocket.chat/apps-engine/definition/mediaCalls';
+} from '@rocket.chat/apps-engine/definition/accessors/index.js';
+import type { ICallHistoryItem } from '@rocket.chat/apps-engine/definition/mediaCalls/index.js';
 
-import { bridgeCall } from '../../bridges/bridgeCall';
-import type * as Messenger from '../../messenger';
+import { bridgeCall } from '../../bridges/bridgeCall.js';
+import type * as Messenger from '../../messenger.js';
 
 export class CallHistoryRead implements ICallHistoryRead {
 	constructor(private readonly senderFn: typeof Messenger.sendRequest) {}

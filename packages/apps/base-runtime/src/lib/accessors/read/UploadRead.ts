@@ -1,8 +1,8 @@
-import type { IUploadRead } from '@rocket.chat/apps-engine/definition/accessors';
-import type { IUpload } from '@rocket.chat/apps-engine/definition/uploads';
+import type { IUploadRead } from '@rocket.chat/apps-engine/definition/accessors/index.js';
+import type { IUpload } from '@rocket.chat/apps-engine/definition/uploads/index.js';
 
-import { bridgeCall } from '../../bridges/bridgeCall';
-import type * as Messenger from '../../messenger';
+import { bridgeCall } from '../../bridges/bridgeCall.js';
+import type * as Messenger from '../../messenger.js';
 
 export class UploadRead implements IUploadRead {
 	constructor(private readonly senderFn: typeof Messenger.sendRequest) {}

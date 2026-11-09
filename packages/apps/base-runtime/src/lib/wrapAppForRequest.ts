@@ -1,7 +1,7 @@
-import type { App } from '@rocket.chat/apps-engine/definition/App';
+import type { App } from '@rocket.chat/apps-engine/definition/App.js';
 
-import type { RequestContext } from './requestContext';
-import { isApp, isRecord } from '../handlers/lib/assertions';
+import type { RequestContext } from './requestContext.js';
+import { isApp, isRecord } from '../handlers/lib/assertions.js';
 
 export function wrapAppForRequest(app: App, req: RequestContext): App {
 	return new Proxy(app, {

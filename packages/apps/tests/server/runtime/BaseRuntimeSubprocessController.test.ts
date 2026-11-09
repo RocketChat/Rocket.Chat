@@ -3,15 +3,15 @@ import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import { describe, it, afterEach, mock, before, after } from 'node:test';
 
-import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
+import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus.js';
 
-import { isSuccessObject, request } from '../../../src/lib/jsonrpc';
-import type { AppManager } from '../../../src/server/AppManager';
-import type { IParseAppPackageResult } from '../../../src/server/compiler';
-import { AppApiManager } from '../../../src/server/managers';
-import { NodeRuntimeSubprocessController } from '../../../src/server/runtime/node/AppsEngineNodeRuntime';
-import type { IAppStorageItem } from '../../../src/server/storage';
-import { TestInfastructureSetup } from '../../test-data/utilities';
+import { isSuccessObject, request } from '../../../src/lib/jsonrpc.js';
+import type { AppManager } from '../../../src/server/AppManager.js';
+import type { IParseAppPackageResult } from '../../../src/server/compiler/index.js';
+import { AppApiManager } from '../../../src/server/managers/index.js';
+import { NodeRuntimeSubprocessController } from '../../../src/server/runtime/node/AppsEngineNodeRuntime.js';
+import type { IAppStorageItem } from '../../../src/server/storage/index.js';
+import { TestInfastructureSetup } from '../../test-data/utilities.js';
 
 // Exercises the platform-agnostic message loop in BaseRuntimeSubprocessController
 // through its concrete Node implementation.
@@ -29,7 +29,7 @@ describe('BaseRuntimeSubprocessController', () => {
 			const api = new AppApiManager(manager);
 			manager.getApiManager = () => api;
 
-			const appPackageBuffer = await fs.readFile(path.join(__dirname, '../../test-data/apps/hello-world-test_0.0.1.zip'));
+			const appPackageBuffer = await fs.readFile(path.join(import.meta.dirname, '../../test-data/apps/hello-world-test_0.0.1.zip'));
 			appPackage = await manager.getParser().unpackageApp(appPackageBuffer);
 
 			appStorageItem = {

@@ -1,9 +1,9 @@
-import type { IRole } from '@rocket.chat/apps-engine/definition/roles';
+import type { IRole } from '@rocket.chat/apps-engine/definition/roles/index.js';
 
-import { BaseBridge } from './BaseBridge';
-import { PermissionDeniedError } from '../errors/PermissionDeniedError';
-import { AppPermissionManager } from '../managers/AppPermissionManager';
-import { AppPermissions } from '../permissions/AppPermissions';
+import { BaseBridge } from './BaseBridge.js';
+import { PermissionDeniedError } from '../errors/PermissionDeniedError.js';
+import { AppPermissionManager } from '../managers/AppPermissionManager.js';
+import { AppPermissions } from '../permissions/AppPermissions.js';
 
 export abstract class RoleBridge extends BaseBridge {
 	public async doGetOneByIdOrName(idOrName: string, appId: string): Promise<IRole | null> {

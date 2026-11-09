@@ -1,6 +1,6 @@
 import { publicDecrypt } from 'node:crypto';
 
-import type { IInternalBridge } from '../../bridges';
+import type { IInternalBridge } from '../../bridges/index.js';
 
 export class Crypto {
 	constructor(private readonly internalBridge: IInternalBridge) {}

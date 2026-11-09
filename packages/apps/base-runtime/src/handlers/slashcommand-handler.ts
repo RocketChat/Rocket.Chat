@@ -1,14 +1,14 @@
-import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom';
-import type { ISlashCommand } from '@rocket.chat/apps-engine/definition/slashcommands/ISlashCommand';
-import { SlashCommandContext } from '@rocket.chat/apps-engine/definition/slashcommands/SlashCommandContext';
+import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom.js';
+import type { ISlashCommand } from '@rocket.chat/apps-engine/definition/slashcommands/ISlashCommand.js';
+import { SlashCommandContext } from '@rocket.chat/apps-engine/definition/slashcommands/SlashCommandContext.js';
 
-import { AppObjectRegistry } from '../AppObjectRegistry';
-import type { AppAccessors } from '../lib/accessors/mod';
-import { AppAccessorsInstance } from '../lib/accessors/mod';
-import { JsonRpcError, SERVER_ERROR, type Defined } from '../lib/jsonrpc';
-import type { RequestContext } from '../lib/requestContext';
-import createRoom from '../lib/roomFactory';
-import { wrapComposedApp } from '../lib/wrapAppForRequest';
+import { AppObjectRegistry } from '../AppObjectRegistry.js';
+import type { AppAccessors } from '../lib/accessors/mod.js';
+import { AppAccessorsInstance } from '../lib/accessors/mod.js';
+import { JsonRpcError, SERVER_ERROR, type Defined } from '../lib/jsonrpc.js';
+import type { RequestContext } from '../lib/requestContext.js';
+import createRoom from '../lib/roomFactory.js';
+import { wrapComposedApp } from '../lib/wrapAppForRequest.js';
 
 export default async function slashCommandHandler(request: RequestContext): Promise<JsonRpcError | Defined> {
 	const { method: call, params } = request;

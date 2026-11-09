@@ -3,8 +3,8 @@ import { parse } from 'acorn';
 import { fullAncestor } from 'acorn-walk';
 import { generate } from 'astring';
 
-import * as operations from './operations';
-import type { WalkerState } from './operations';
+import * as operations from './operations.js';
+import type { WalkerState } from './operations.js';
 
 function fixAst(ast: Node): boolean {
 	const pendingOperations = [

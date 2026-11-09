@@ -1,12 +1,12 @@
 import * as assert from 'node:assert';
 import { describe, it } from 'node:test';
 
-import type { ISlashCommand } from '@rocket.chat/apps-engine/definition/slashcommands';
+import type { ISlashCommand } from '@rocket.chat/apps-engine/definition/slashcommands/index.js';
 
-import type { AppManager } from '../../../src/server/AppManager';
-import { AppSlashCommand } from '../../../src/server/managers/AppSlashCommand';
-import type { IAppStorageItem } from '../../../src/server/storage';
-import { TestData } from '../../test-data/utilities';
+import type { AppManager } from '../../../src/server/AppManager.js';
+import { AppSlashCommand } from '../../../src/server/managers/AppSlashCommand.js';
+import type { IAppStorageItem } from '../../../src/server/storage/index.js';
+import { TestData } from '../../test-data/utilities.js';
 
 describe('AppSlashCommand', () => {
 	it('ensureAppSlashCommand', () => {

@@ -1,7 +1,7 @@
 import * as assert from 'node:assert';
 import { describe, it } from 'node:test';
 
-import { AppCompiler } from '../../../src/server/compiler';
+import { AppCompiler } from '../../../src/server/compiler/index.js';
 
 describe('AppCompiler', () => {
 	it('verifyStorageFileToCompiler', () => {

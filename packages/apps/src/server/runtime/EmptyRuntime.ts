@@ -1,8 +1,8 @@
 import { EventEmitter } from 'node:events';
 
-import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
+import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus.js';
 
-import type { IRuntimeController, RuntimeRequestOptions } from './IRuntimeController';
+import type { IRuntimeController, RuntimeRequestOptions } from './IRuntimeController.js';
 
 export class EmptyRuntime extends EventEmitter implements IRuntimeController {
 	private readonly appId: string;

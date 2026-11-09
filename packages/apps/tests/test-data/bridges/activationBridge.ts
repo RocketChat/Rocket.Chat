@@ -1,7 +1,7 @@
-import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
+import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus.js';
 
-import type { ProxiedApp } from '../../../src/server/ProxiedApp';
-import { AppActivationBridge } from '../../../src/server/bridges';
+import type { ProxiedApp } from '../../../src/server/ProxiedApp.js';
+import { AppActivationBridge } from '../../../src/server/bridges/index.js';
 
 export class TestsActivationBridge extends AppActivationBridge {
 	public async appAdded(app: ProxiedApp): Promise<void> {

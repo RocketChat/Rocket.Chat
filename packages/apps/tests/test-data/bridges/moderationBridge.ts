@@ -1,7 +1,7 @@
-import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
-import type { IUser } from '@rocket.chat/apps-engine/definition/users';
+import type { IMessage } from '@rocket.chat/apps-engine/definition/messages/index.js';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users/index.js';
 
-import { ModerationBridge } from '../../../src/server/bridges';
+import { ModerationBridge } from '../../../src/server/bridges/index.js';
 
 export class TestsModerationBridge extends ModerationBridge {
 	public report(messageId: string, description: string, userId: string, appId: string): Promise<void> {

@@ -1,10 +1,10 @@
 import * as assert from 'node:assert';
 import { describe, it } from 'node:test';
 
-import type { IExternalComponent } from '@rocket.chat/apps-engine/definition/externalComponent/IExternalComponent';
-import { ExternalComponentLocation } from '@rocket.chat/apps-engine/definition/externalComponent/IExternalComponent';
+import type { IExternalComponent } from '@rocket.chat/apps-engine/definition/externalComponent/IExternalComponent.js';
+import { ExternalComponentLocation } from '@rocket.chat/apps-engine/definition/externalComponent/IExternalComponent.js';
 
-import { AppExternalComponentManager } from '../../../src/server/managers';
+import { AppExternalComponentManager } from '../../../src/server/managers/index.js';
 
 describe('AppExternalComponentManager', () => {
 	const mockExternalComponent1: IExternalComponent = {

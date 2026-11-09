@@ -1,13 +1,17 @@
-import { AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
-import { AppMethod } from '@rocket.chat/apps-engine/definition/metadata';
-import type { ISlashCommand, ISlashCommandPreview, ISlashCommandPreviewItem } from '@rocket.chat/apps-engine/definition/slashcommands';
-import { SlashCommandContext } from '@rocket.chat/apps-engine/definition/slashcommands';
+import { AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus.js';
+import { AppMethod } from '@rocket.chat/apps-engine/definition/metadata/index.js';
+import type {
+	ISlashCommand,
+	ISlashCommandPreview,
+	ISlashCommandPreviewItem,
+} from '@rocket.chat/apps-engine/definition/slashcommands/index.js';
+import { SlashCommandContext } from '@rocket.chat/apps-engine/definition/slashcommands/index.js';
 
-import type { AppManager } from '../AppManager';
-import type { CommandBridge } from '../bridges';
-import { CommandAlreadyExistsError, CommandHasAlreadyBeenTouchedError } from '../errors';
-import { AppSlashCommand } from './AppSlashCommand';
-import { Room } from '../rooms/Room';
+import type { AppManager } from '../AppManager.js';
+import { AppSlashCommand } from './AppSlashCommand.js';
+import type { CommandBridge } from '../bridges/index.js';
+import { CommandAlreadyExistsError, CommandHasAlreadyBeenTouchedError } from '../errors/index.js';
+import { Room } from '../rooms/Room.js';
 
 /**
  * The command manager for the Apps.

@@ -1,24 +1,24 @@
 import * as assert from 'node:assert';
 import { afterEach, beforeEach, describe, it, mock } from 'node:test';
 
-import { AppMethod } from '@rocket.chat/apps-engine/definition/metadata';
-import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
+import { AppMethod } from '@rocket.chat/apps-engine/definition/metadata/index.js';
+import type { ISetting } from '@rocket.chat/apps-engine/definition/settings/index.js';
 
-import type { AppManager } from '../../../src/server/AppManager';
-import type { ProxiedApp } from '../../../src/server/ProxiedApp';
-import type { AppBridges } from '../../../src/server/bridges';
+import type { AppManager } from '../../../src/server/AppManager.js';
+import type { ProxiedApp } from '../../../src/server/ProxiedApp.js';
+import type { AppBridges } from '../../../src/server/bridges/index.js';
+import type { UIActionButtonManager } from '../../../src/server/managers/UIActionButtonManager.js';
 import type {
 	AppApiManager,
 	AppExternalComponentManager,
 	AppSchedulerManager,
 	AppSlashCommandManager,
 	AppVideoConfProviderManager,
-} from '../../../src/server/managers';
-import { AppSettingsManager } from '../../../src/server/managers';
-import type { UIActionButtonManager } from '../../../src/server/managers/UIActionButtonManager';
-import type { AppMetadataStorage, IAppStorageItem } from '../../../src/server/storage';
-import { TestsAppBridges } from '../../test-data/bridges/appBridges';
-import { TestData } from '../../test-data/utilities';
+} from '../../../src/server/managers/index.js';
+import { AppSettingsManager } from '../../../src/server/managers/index.js';
+import type { AppMetadataStorage, IAppStorageItem } from '../../../src/server/storage/index.js';
+import { TestsAppBridges } from '../../test-data/bridges/appBridges.js';
+import { TestData } from '../../test-data/utilities.js';
 
 describe('AppSettingsManager', () => {
 	let mockStorageItem: IAppStorageItem;

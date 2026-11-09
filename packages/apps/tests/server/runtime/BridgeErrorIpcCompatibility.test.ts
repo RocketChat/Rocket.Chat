@@ -8,8 +8,9 @@ import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
 import AdmZip from 'adm-zip';
 
-import * as jsonrpc from '../../../src/lib/jsonrpc';
-import type { AppManager } from '../../../src/server/AppManager';
+import * as jsonrpc from '../../../src/lib/jsonrpc.js';
+import type { AppManager } from '../../../src/server/AppManager.js';
+import { AppOutboundProcessError } from '../../../src/server/errors/AppOutboundProcessError.js';
 import {
 	CommandAlreadyExistsError,
 	CommandHasAlreadyBeenTouchedError,
@@ -17,12 +18,11 @@ import {
 	RequiredApiVersionError,
 	VideoConfProviderAlreadyExistsError,
 	VideoConfProviderNotRegisteredError,
-} from '../../../src/server/errors';
-import { AppOutboundProcessError } from '../../../src/server/errors/AppOutboundProcessError';
-import type { AppSlashCommandManager } from '../../../src/server/managers';
-import { NodeRuntimeSubprocessController } from '../../../src/server/runtime/node/AppsEngineNodeRuntime';
-import type { IAppStorageItem } from '../../../src/server/storage';
-import { TestInfastructureSetup } from '../../test-data/utilities';
+} from '../../../src/server/errors/index.js';
+import type { AppSlashCommandManager } from '../../../src/server/managers/index.js';
+import { NodeRuntimeSubprocessController } from '../../../src/server/runtime/node/AppsEngineNodeRuntime.js';
+import type { IAppStorageItem } from '../../../src/server/storage/index.js';
+import { TestInfastructureSetup } from '../../test-data/utilities.js';
 
 const errors: Record<string, () => unknown> = {
 	'command-already-exists': () => new CommandAlreadyExistsError('command-already-exists'),
@@ -68,7 +68,7 @@ describe('Bridge errors over the IPC channel (host → subprocess)', () => {
 					},
 				}) as unknown as AppSlashCommandManager;
 
-			const zip = new AdmZip(await fs.readFile(path.join(__dirname, '../../test-data/apps/hello-world-test_0.0.1.zip')));
+			const zip = new AdmZip(await fs.readFile(path.join(import.meta.dirname, '../../test-data/apps/hello-world-test_0.0.1.zip')));
 			zip.updateFile('HelloWorldTestApp.js', Buffer.from(appSource));
 			const appPackage = await manager.getParser().unpackageApp(zip.toBuffer());
 

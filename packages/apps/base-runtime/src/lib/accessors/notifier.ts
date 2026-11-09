@@ -1,13 +1,13 @@
-import type { IMessageBuilder, INotifier } from '@rocket.chat/apps-engine/definition/accessors';
-import type { ITypingOptions } from '@rocket.chat/apps-engine/definition/accessors/INotifier';
-import { TypingScope } from '@rocket.chat/apps-engine/definition/accessors/INotifier';
-import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
-import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
-import type { IUser } from '@rocket.chat/apps-engine/definition/users';
+import type { ITypingOptions } from '@rocket.chat/apps-engine/definition/accessors/INotifier.js';
+import { TypingScope } from '@rocket.chat/apps-engine/definition/accessors/INotifier.js';
+import type { IMessageBuilder, INotifier } from '@rocket.chat/apps-engine/definition/accessors/index.js';
+import type { IMessage } from '@rocket.chat/apps-engine/definition/messages/index.js';
+import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/index.js';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users/index.js';
 
-import { bridgeCall } from '../bridges/bridgeCall';
-import type * as Messenger from '../messenger';
-import { MessageBuilder } from './builders/MessageBuilder';
+import { bridgeCall } from '../bridges/bridgeCall.js';
+import type * as Messenger from '../messenger.js';
+import { MessageBuilder } from './builders/MessageBuilder.js';
 
 export class Notifier implements INotifier {
 	private readonly senderFn: typeof Messenger.sendRequest;

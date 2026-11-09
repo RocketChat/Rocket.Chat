@@ -1,13 +1,13 @@
-import type { IMessageBuilder } from '@rocket.chat/apps-engine/definition/accessors/IMessageBuilder';
-import type { IMessage } from '@rocket.chat/apps-engine/definition/messages/IMessage';
-import type { IMessageAttachment } from '@rocket.chat/apps-engine/definition/messages/IMessageAttachment';
-import { RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations';
-import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom';
-import type { IBlock } from '@rocket.chat/apps-engine/definition/uikit/blocks/Blocks';
-import type { IUser } from '@rocket.chat/apps-engine/definition/users/IUser';
+import type { IMessageBuilder } from '@rocket.chat/apps-engine/definition/accessors/IMessageBuilder.js';
+import type { IMessage } from '@rocket.chat/apps-engine/definition/messages/IMessage.js';
+import type { IMessageAttachment } from '@rocket.chat/apps-engine/definition/messages/IMessageAttachment.js';
+import { RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations.js';
+import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom.js';
+import type { IBlock } from '@rocket.chat/apps-engine/definition/uikit/blocks/Blocks.js';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users/IUser.js';
 import type { LayoutBlock } from '@rocket.chat/ui-kit';
 
-import { BlockBuilder } from './BlockBuilder';
+import { BlockBuilder } from './BlockBuilder.js';
 
 export class MessageBuilder implements IMessageBuilder {
 	public kind: RocketChatAssociationModel.MESSAGE;

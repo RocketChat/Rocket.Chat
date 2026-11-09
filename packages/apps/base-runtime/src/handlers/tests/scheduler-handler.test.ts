@@ -1,10 +1,10 @@
 import * as assert from 'node:assert';
 import { after, beforeEach, describe, it } from 'node:test';
 
-import { AppObjectRegistry } from '../../AppObjectRegistry';
-import { AppAccessors } from '../../lib/accessors/mod';
-import handleScheduler from '../scheduler-handler';
-import { createMockApp, createMockRequest } from './helpers/mod';
+import { AppObjectRegistry } from '../../AppObjectRegistry.js';
+import { AppAccessors } from '../../lib/accessors/mod.js';
+import handleScheduler from '../scheduler-handler.js';
+import { createMockApp, createMockRequest } from './helpers/mod.js';
 
 describe('handlers > scheduler', () => {
 	const mockAppAccessors = new AppAccessors(() =>

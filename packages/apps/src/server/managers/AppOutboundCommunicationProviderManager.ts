@@ -4,14 +4,14 @@ import type {
 	IOutboundPhoneMessageProvider,
 	ValidOutboundProvider,
 	IOutboundMessage,
-} from '@rocket.chat/apps-engine/definition/outboundCommunication';
+} from '@rocket.chat/apps-engine/definition/outboundCommunication/index.js';
 
-import type { AppManager } from '../AppManager';
-import type { OutboundMessageBridge } from '../bridges';
-import { OutboundMessageProvider } from './AppOutboundCommunicationProvider';
-import { AppPermissionManager } from './AppPermissionManager';
-import { PermissionDeniedError } from '../errors/PermissionDeniedError';
-import { AppPermissions } from '../permissions/AppPermissions';
+import type { AppManager } from '../AppManager.js';
+import { OutboundMessageProvider } from './AppOutboundCommunicationProvider.js';
+import { AppPermissionManager } from './AppPermissionManager.js';
+import type { OutboundMessageBridge } from '../bridges/index.js';
+import { PermissionDeniedError } from '../errors/PermissionDeniedError.js';
+import { AppPermissions } from '../permissions/AppPermissions.js';
 
 export class AppOutboundCommunicationProviderManager {
 	private readonly bridge: OutboundMessageBridge;

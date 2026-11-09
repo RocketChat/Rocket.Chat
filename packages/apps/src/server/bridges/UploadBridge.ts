@@ -1,10 +1,10 @@
-import type { IUpload } from '@rocket.chat/apps-engine/definition/uploads';
-import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails';
+import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails.js';
+import type { IUpload } from '@rocket.chat/apps-engine/definition/uploads/index.js';
 
-import { BaseBridge } from './BaseBridge';
-import { PermissionDeniedError } from '../errors/PermissionDeniedError';
-import { AppPermissionManager } from '../managers/AppPermissionManager';
-import { AppPermissions } from '../permissions/AppPermissions';
+import { BaseBridge } from './BaseBridge.js';
+import { PermissionDeniedError } from '../errors/PermissionDeniedError.js';
+import { AppPermissionManager } from '../managers/AppPermissionManager.js';
+import { AppPermissions } from '../permissions/AppPermissions.js';
 
 export abstract class UploadBridge extends BaseBridge {
 	public async doGetById(id: string, appId: string): Promise<IUpload> {

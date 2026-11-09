@@ -1,9 +1,9 @@
-import type { ILivechatContact } from '@rocket.chat/apps-engine/definition/livechat/ILivechatContact';
+import type { ILivechatContact } from '@rocket.chat/apps-engine/definition/livechat/ILivechatContact.js';
 
-import { BaseBridge } from './BaseBridge';
-import { PermissionDeniedError } from '../errors/PermissionDeniedError';
-import { AppPermissionManager } from '../managers/AppPermissionManager';
-import { AppPermissions } from '../permissions/AppPermissions';
+import { BaseBridge } from './BaseBridge.js';
+import { PermissionDeniedError } from '../errors/PermissionDeniedError.js';
+import { AppPermissionManager } from '../managers/AppPermissionManager.js';
+import { AppPermissions } from '../permissions/AppPermissions.js';
 
 export type VerifyContactChannelParams = {
 	contactId: string;

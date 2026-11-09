@@ -3,9 +3,9 @@ import { describe, it } from 'node:test';
 
 import { UIKitInteractionResponder } from '@rocket.chat/apps-engine/definition/uikit/UIKitInteractionResponder';
 
-import { AppObjectRegistry } from '../../AppObjectRegistry';
-import { UIController } from '../accessors/modify/UIController';
-import type * as Messenger from '../messenger';
+import { AppObjectRegistry } from '../../AppObjectRegistry.js';
+import { UIController } from '../accessors/modify/UIController.js';
+import type * as Messenger from '../messenger.js';
 
 const context = { triggerId: 'trigger' };
 const user = { id: 'user' } as never;

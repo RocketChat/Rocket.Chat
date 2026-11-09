@@ -2,10 +2,10 @@ import type * as http from 'node:http';
 import type * as https from 'node:https';
 import type * as net from 'node:net';
 
-import { ForbiddenNativeModuleAccess } from '.';
-import { PermissionDeniedError } from '../../errors/PermissionDeniedError';
-import { AppPermissionManager } from '../../managers/AppPermissionManager';
-import { AppPermissions } from '../../permissions/AppPermissions';
+import { ForbiddenNativeModuleAccess } from './index.js';
+import { PermissionDeniedError } from '../../errors/PermissionDeniedError.js';
+import { AppPermissionManager } from '../../managers/AppPermissionManager.js';
+import { AppPermissions } from '../../permissions/AppPermissions.js';
 
 type IHttp = typeof http;
 type IHttps = typeof https;

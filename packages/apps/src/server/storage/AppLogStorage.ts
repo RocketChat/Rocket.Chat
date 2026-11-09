@@ -1,4 +1,4 @@
-import type { ILoggerStorageEntry } from '../logging';
+import type { ILoggerStorageEntry } from '../logging/index.js';
 
 export interface IAppLogStorageFindOptions {
 	sort?: Record<string, 1 | -1>;

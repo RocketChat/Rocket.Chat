@@ -1,15 +1,15 @@
-import type { IEmailDescriptor, IPreEmailSentContext } from '@rocket.chat/apps-engine/definition/email';
-import type { MarkedEventResult } from '@rocket.chat/apps-engine/definition/eventResult';
-import { EssentialAppDisabledException } from '@rocket.chat/apps-engine/definition/exceptions';
-import type { IExternalComponent } from '@rocket.chat/apps-engine/definition/externalComponent';
+import type { IEmailDescriptor, IPreEmailSentContext } from '@rocket.chat/apps-engine/definition/email/index.js';
+import type { MarkedEventResult } from '@rocket.chat/apps-engine/definition/eventResult/index.js';
+import { EssentialAppDisabledException } from '@rocket.chat/apps-engine/definition/exceptions/index.js';
+import type { IExternalComponent } from '@rocket.chat/apps-engine/definition/externalComponent/index.js';
+import type { ILivechatDepartmentEventContext } from '@rocket.chat/apps-engine/definition/livechat/ILivechatEventContext.js';
 import type {
 	ILivechatEventContext,
 	ILivechatRoom,
 	ILivechatTransferEventContext,
 	IVisitor,
-} from '@rocket.chat/apps-engine/definition/livechat';
-import type { ILivechatDepartmentEventContext } from '@rocket.chat/apps-engine/definition/livechat/ILivechatEventContext';
-import type { IPreMediaCallCreatedContext } from '@rocket.chat/apps-engine/definition/mediaCalls';
+} from '@rocket.chat/apps-engine/definition/livechat/index.js';
+import type { IPreMediaCallCreatedContext } from '@rocket.chat/apps-engine/definition/mediaCalls/index.js';
 import type {
 	IMessage,
 	IMessageDeleteContext,
@@ -40,13 +40,13 @@ import type {
 import type { IFileUploadInternalContext } from '@rocket.chat/apps-engine/definition/uploads/IFileUploadContext';
 import type { IUser, IUserContext, IUserStatusContext, IUserUpdateContext } from '@rocket.chat/apps-engine/definition/users';
 
-import type { AppManager } from '../AppManager';
-import type { ProxiedApp } from '../ProxiedApp';
-import { isEventResult, makeHostEventResult } from '../eventResult';
-import type { MediaCallEvent, PreMediaCallCreatedOutcome } from '../mediaCalls';
-import { getMediaCallCreatePatch } from '../mediaCalls';
-import { Utilities } from '../misc/Utilities';
-import { JSONRPC_METHOD_NOT_FOUND } from '../runtime/base/BaseRuntimeSubprocessController';
+import type { AppManager } from '../AppManager.js';
+import type { ProxiedApp } from '../ProxiedApp.js';
+import { isEventResult, makeHostEventResult } from '../eventResult/index.js';
+import type { MediaCallEvent, PreMediaCallCreatedOutcome } from '../mediaCalls/index.js';
+import { getMediaCallCreatePatch } from '../mediaCalls/index.js';
+import { Utilities } from '../misc/Utilities.js';
+import { JSONRPC_METHOD_NOT_FOUND } from '../runtime/base/BaseRuntimeSubprocessController.js';
 
 export interface IListenerExecutor {
 	[AppInterface.IPreMessageSentPrevent]: {

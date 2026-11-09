@@ -1,11 +1,11 @@
-import { AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
-import type { IUIActionButton, IUIActionButtonDescriptor } from '@rocket.chat/apps-engine/definition/ui';
+import { AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus.js';
+import type { IUIActionButton, IUIActionButtonDescriptor } from '@rocket.chat/apps-engine/definition/ui/index.js';
 
-import type { AppManager } from '../AppManager';
-import type { AppActivationBridge } from '../bridges';
-import { AppPermissionManager } from './AppPermissionManager';
-import { PermissionDeniedError } from '../errors/PermissionDeniedError';
-import { AppPermissions } from '../permissions/AppPermissions';
+import type { AppManager } from '../AppManager.js';
+import { AppPermissionManager } from './AppPermissionManager.js';
+import type { AppActivationBridge } from '../bridges/index.js';
+import { PermissionDeniedError } from '../errors/PermissionDeniedError.js';
+import { AppPermissions } from '../permissions/AppPermissions.js';
 
 export class UIActionButtonManager {
 	private readonly activationBridge: AppActivationBridge;
