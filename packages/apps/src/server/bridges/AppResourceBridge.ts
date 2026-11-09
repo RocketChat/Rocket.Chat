@@ -1,14 +1,14 @@
-import type { IApi } from '@rocket.chat/apps-engine/definition/api';
-import type { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api/IApiEndpointMetadata';
-import type { IExternalComponent } from '@rocket.chat/apps-engine/definition/externalComponent/IExternalComponent';
-import type { IOutboundMessageProviders } from '@rocket.chat/apps-engine/definition/outboundCommunication';
-import type { IProcessor } from '@rocket.chat/apps-engine/definition/scheduler';
-import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
-import type { ISlashCommand } from '@rocket.chat/apps-engine/definition/slashcommands';
-import type { IUIActionButtonDescriptor } from '@rocket.chat/apps-engine/definition/ui';
-import type { IVideoConfProvider } from '@rocket.chat/apps-engine/definition/videoConfProviders';
+import type { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api/IApiEndpointMetadata.js';
+import type { IApi } from '@rocket.chat/apps-engine/definition/api/index.js';
+import type { IExternalComponent } from '@rocket.chat/apps-engine/definition/externalComponent/IExternalComponent.js';
+import type { IOutboundMessageProviders } from '@rocket.chat/apps-engine/definition/outboundCommunication/index.js';
+import type { IProcessor } from '@rocket.chat/apps-engine/definition/scheduler/index.js';
+import type { ISetting } from '@rocket.chat/apps-engine/definition/settings/index.js';
+import type { ISlashCommand } from '@rocket.chat/apps-engine/definition/slashcommands/index.js';
+import type { IUIActionButtonDescriptor } from '@rocket.chat/apps-engine/definition/ui/index.js';
+import type { IVideoConfProvider } from '@rocket.chat/apps-engine/definition/videoConfProviders/index.js';
 
-import type { AppManager } from '../AppManager';
+import type { AppManager } from '../AppManager.js';
 
 /**
  * Internal, engine-owned bridge that fronts the host manager registries and the app's settings

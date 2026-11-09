@@ -1,9 +1,9 @@
 import * as assert from 'node:assert';
 import { after, beforeEach, describe, it } from 'node:test';
 
-import { createRecordingSender } from './parityHarness';
-import { AppObjectRegistry } from '../../../../AppObjectRegistry';
-import { ModifyExtender } from '../../modify/ModifyExtender';
+import { createRecordingSender } from './parityHarness.js';
+import { AppObjectRegistry } from '../../../../AppObjectRegistry.js';
+import { ModifyExtender } from '../../modify/ModifyExtender.js';
 
 describe('parityHarness', () => {
 	beforeEach(() => {

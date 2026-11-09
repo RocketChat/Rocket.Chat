@@ -1,7 +1,7 @@
 import * as assert from 'node:assert';
 import { describe, it } from 'node:test';
 
-import { MustExtendAppError } from '../../../src/server/errors';
+import { MustExtendAppError } from '../../../src/server/errors/index.js';
 
 describe('MustExtendAppError', () => {
 	it('verifyCompilerError', () => {

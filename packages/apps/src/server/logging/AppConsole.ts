@@ -1,9 +1,9 @@
-import type { ILogEntry, ILogger } from '@rocket.chat/apps-engine/definition/accessors';
-import { LogMessageSeverity } from '@rocket.chat/apps-engine/definition/accessors';
-import type { AppMethod } from '@rocket.chat/apps-engine/definition/metadata';
+import type { ILogEntry, ILogger } from '@rocket.chat/apps-engine/definition/accessors/index.js';
+import { LogMessageSeverity } from '@rocket.chat/apps-engine/definition/accessors/index.js';
+import type { AppMethod } from '@rocket.chat/apps-engine/definition/metadata/index.js';
 import * as stackTrace from 'stack-trace';
 
-import type { ILoggerStorageEntry } from './ILoggerStorageEntry';
+import type { ILoggerStorageEntry } from './ILoggerStorageEntry.js';
 
 export class AppConsole implements ILogger {
 	public static toStorageEntry(appId: string, logger: AppConsole): ILoggerStorageEntry {

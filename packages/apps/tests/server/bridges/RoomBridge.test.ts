@@ -1,13 +1,13 @@
 import * as assert from 'node:assert';
 import { afterEach, beforeEach, describe, it, mock } from 'node:test';
 
-import type { IPermission } from '@rocket.chat/apps-engine/definition/permissions/IPermission';
-import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
-import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
+import type { IPermission } from '@rocket.chat/apps-engine/definition/permissions/IPermission.js';
+import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/index.js';
+import { RoomType } from '@rocket.chat/apps-engine/definition/rooms/index.js';
 
-import { PermissionDeniedError } from '../../../src/server/errors/PermissionDeniedError';
-import { AppPermissionManager } from '../../../src/server/managers/AppPermissionManager';
-import { TestsRoomBridge } from '../../test-data/bridges/roomBridge';
+import { PermissionDeniedError } from '../../../src/server/errors/PermissionDeniedError.js';
+import { AppPermissionManager } from '../../../src/server/managers/AppPermissionManager.js';
+import { TestsRoomBridge } from '../../test-data/bridges/roomBridge.js';
 
 const buildRoom = (): IRoom =>
 	({

@@ -1,10 +1,10 @@
 import * as assert from 'node:assert';
 import { after, beforeEach, describe, it, mock } from 'node:test';
 
-import type { IApi } from '@rocket.chat/apps-engine/definition/api';
+import type { IApi } from '@rocket.chat/apps-engine/definition/api/index.js';
 
-import { AppObjectRegistry } from '../../../AppObjectRegistry';
-import { AppAccessors } from '../mod';
+import { AppObjectRegistry } from '../../../AppObjectRegistry.js';
+import { AppAccessors } from '../mod.js';
 
 // The senderFn echoes the request as the SuccessObject `result`, so a bridge call resolves to the
 // `{ method, params }` descriptor and the recorded spy shows exactly what was sent.

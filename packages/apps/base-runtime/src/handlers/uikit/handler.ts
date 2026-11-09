@@ -1,11 +1,11 @@
-import type { App } from '@rocket.chat/apps-engine/definition/App';
+import type { App } from '@rocket.chat/apps-engine/definition/App.js';
 import type {
 	IUIKitBlockIncomingInteraction,
 	IUIKitBlockSuggestionIncomingInteraction,
 	IUIKitViewSubmitIncomingInteraction,
 	IUIKitViewCloseIncomingInteraction,
 	IUIKitActionButtonIncomingInteraction,
-} from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionTypes';
+} from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionTypes.js';
 import {
 	UIKitBlockInteractionContext,
 	UIKitBlockSuggestionInteractionContext,
@@ -24,12 +24,12 @@ import {
 	UIKitLivechatViewCloseInteractionContext,
 } from '@rocket.chat/apps-engine/definition/uikit/livechat/UIKitLivechatInteractionContext';
 
-import { AppObjectRegistry } from '../../AppObjectRegistry';
-import { AppAccessorsInstance } from '../../lib/accessors/mod';
-import { JsonRpcError, type Defined } from '../../lib/jsonrpc';
-import type { RequestContext } from '../../lib/requestContext';
-import { wrapAppForRequest } from '../../lib/wrapAppForRequest';
-import { isOneOf } from '../lib/assertions';
+import { AppObjectRegistry } from '../../AppObjectRegistry.js';
+import { AppAccessorsInstance } from '../../lib/accessors/mod.js';
+import { JsonRpcError, type Defined } from '../../lib/jsonrpc.js';
+import type { RequestContext } from '../../lib/requestContext.js';
+import { wrapAppForRequest } from '../../lib/wrapAppForRequest.js';
+import { isOneOf } from '../lib/assertions.js';
 
 export const uikitInteractions = [
 	'executeBlockActionHandler',

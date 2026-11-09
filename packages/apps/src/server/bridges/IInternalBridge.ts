@@ -1,4 +1,4 @@
-import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
+import type { ISetting } from '@rocket.chat/apps-engine/definition/settings/index.js';
 
 export interface IInternalBridge {
 	doGetUsernamesOfRoomById(roomId: string): Promise<Array<string>>;

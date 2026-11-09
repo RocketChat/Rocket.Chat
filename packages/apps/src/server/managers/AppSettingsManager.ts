@@ -1,9 +1,9 @@
-import { AppMethod } from '@rocket.chat/apps-engine/definition/metadata';
-import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
-import type { ISettingUpdateContext } from '@rocket.chat/apps-engine/definition/settings/ISettingUpdateContext';
+import { AppMethod } from '@rocket.chat/apps-engine/definition/metadata/index.js';
+import type { ISettingUpdateContext } from '@rocket.chat/apps-engine/definition/settings/ISettingUpdateContext.js';
+import type { ISetting } from '@rocket.chat/apps-engine/definition/settings/index.js';
 
-import type { AppManager } from '../AppManager';
-import { Utilities } from '../misc/Utilities';
+import type { AppManager } from '../AppManager.js';
+import { Utilities } from '../misc/Utilities.js';
 
 export class AppSettingsManager {
 	constructor(private manager: AppManager) {}

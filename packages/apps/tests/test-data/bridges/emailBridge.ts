@@ -1,6 +1,6 @@
-import type { IEmail } from '@rocket.chat/apps-engine/definition/email';
+import type { IEmail } from '@rocket.chat/apps-engine/definition/email/index.js';
 
-import { EmailBridge } from '../../../src/server/bridges/EmailBridge';
+import { EmailBridge } from '../../../src/server/bridges/EmailBridge.js';
 
 export class TestsEmailBridge extends EmailBridge {
 	protected sendEmail(email: IEmail, appId: string): Promise<void> {

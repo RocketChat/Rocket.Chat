@@ -8775,7 +8775,7 @@ __metadata:
     npm-run-all: "npm:^4.1.5"
     semver: "npm:^7.6.3"
     stack-trace: "npm:0.0.10"
-    ts-node: "npm:^10.9.2"
+    tsx: "npm:~4.22.5"
     typescript: "npm:~5.9.3"
     uuid: "npm:~11.1.1"
   languageName: unknown

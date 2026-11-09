@@ -1,10 +1,10 @@
-import type { IDiscussionBuilder } from '@rocket.chat/apps-engine/definition/accessors/IDiscussionBuilder';
-import type { IMessage } from '@rocket.chat/apps-engine/definition/messages/IMessage';
-import { RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations';
-import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom';
-import { RoomType } from '@rocket.chat/apps-engine/definition/rooms/RoomType';
+import type { IDiscussionBuilder } from '@rocket.chat/apps-engine/definition/accessors/IDiscussionBuilder.js';
+import type { IMessage } from '@rocket.chat/apps-engine/definition/messages/IMessage.js';
+import { RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations.js';
+import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom.js';
+import { RoomType } from '@rocket.chat/apps-engine/definition/rooms/RoomType.js';
 
-import { RoomBuilder } from './RoomBuilder';
+import { RoomBuilder } from './RoomBuilder.js';
 
 export class DiscussionBuilder extends RoomBuilder implements IDiscussionBuilder {
 	declare public kind: RocketChatAssociationModel.DISCUSSION;

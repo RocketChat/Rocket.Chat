@@ -1,10 +1,10 @@
-import type { IMessage, IMessageRaw } from '@rocket.chat/apps-engine/definition/messages';
-import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
-import type { IRoomRaw } from '@rocket.chat/apps-engine/definition/rooms/IRoomRaw';
-import type { IUser } from '@rocket.chat/apps-engine/definition/users';
+import type { IMessage, IMessageRaw } from '@rocket.chat/apps-engine/definition/messages/index.js';
+import type { IRoomRaw } from '@rocket.chat/apps-engine/definition/rooms/IRoomRaw.js';
+import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/index.js';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users/index.js';
 
-import { RoomBridge } from '../../../src/server/bridges';
-import type { GetMessagesOptions, GetRoomsOptions, GetRoomsFilters } from '../../../src/server/bridges/RoomBridge';
+import type { GetMessagesOptions, GetRoomsOptions, GetRoomsFilters } from '../../../src/server/bridges/RoomBridge.js';
+import { RoomBridge } from '../../../src/server/bridges/index.js';
 
 export class TestsRoomBridge extends RoomBridge {
 	public create(room: IRoom, members: Array<string>, appId: string): Promise<string> {

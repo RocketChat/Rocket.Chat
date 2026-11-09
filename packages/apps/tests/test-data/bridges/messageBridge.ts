@@ -1,9 +1,9 @@
-import type { IMessage, Reaction } from '@rocket.chat/apps-engine/definition/messages';
-import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
-import type { IUser } from '@rocket.chat/apps-engine/definition/users';
+import type { IMessage, Reaction } from '@rocket.chat/apps-engine/definition/messages/index.js';
+import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/index.js';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users/index.js';
 
-import { MessageBridge } from '../../../src/server/bridges';
-import type { ITypingDescriptor } from '../../../src/server/bridges/MessageBridge';
+import type { ITypingDescriptor } from '../../../src/server/bridges/MessageBridge.js';
+import { MessageBridge } from '../../../src/server/bridges/index.js';
 
 export class TestsMessageBridge extends MessageBridge {
 	public create(message: IMessage, appId: string): Promise<string> {

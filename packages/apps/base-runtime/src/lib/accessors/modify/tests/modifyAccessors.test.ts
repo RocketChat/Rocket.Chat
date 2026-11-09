@@ -1,16 +1,16 @@
 import * as assert from 'node:assert';
 import { after, beforeEach, describe, it } from 'node:test';
 
-import { AppObjectRegistry } from '../../../../AppObjectRegistry';
-import { createRecordingSender } from '../../tests/helpers/parityHarness';
-import { LivechatUpdater } from '../LivechatUpdater';
-import { ModerationModify } from '../ModerationModify';
-import { ModifyDeleter } from '../ModifyDeleter';
-import { OAuthAppsModify } from '../OAuthAppsModify';
-import { SchedulerModify } from '../SchedulerModify';
-import { UIController } from '../UIController';
-import { UploadCreator } from '../UploadCreator';
-import { UserUpdater } from '../UserUpdater';
+import { AppObjectRegistry } from '../../../../AppObjectRegistry.js';
+import { createRecordingSender } from '../../tests/helpers/parityHarness.js';
+import { LivechatUpdater } from '../LivechatUpdater.js';
+import { ModerationModify } from '../ModerationModify.js';
+import { ModifyDeleter } from '../ModifyDeleter.js';
+import { OAuthAppsModify } from '../OAuthAppsModify.js';
+import { SchedulerModify } from '../SchedulerModify.js';
+import { UIController } from '../UIController.js';
+import { UploadCreator } from '../UploadCreator.js';
+import { UserUpdater } from '../UserUpdater.js';
 
 const setup = (responses = {}) => {
 	const rec = createRecordingSender(responses);

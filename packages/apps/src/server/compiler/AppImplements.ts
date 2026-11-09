@@ -1,6 +1,6 @@
-import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata/AppInterface';
+import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata/AppInterface.js';
 
-import { Utilities } from '../misc/Utilities';
+import { Utilities } from '../misc/Utilities.js';
 
 export class AppImplements {
 	private implemented: Record<AppInterface, boolean>;

@@ -2,7 +2,7 @@ import * as path from 'node:path';
 
 import { build, type PluginBuild, type OnLoadArgs, type OnResolveArgs } from 'esbuild';
 
-import type { IParseAppPackageResult } from '../../compiler';
+import type { IParseAppPackageResult } from '../../compiler/index.js';
 
 /**
  * Some legacy apps that might be installed in workspaces have not been bundled after compilation,

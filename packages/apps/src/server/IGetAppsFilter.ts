@@ -1,4 +1,4 @@
-import type { AppInstallationSource } from './storage';
+import type { AppInstallationSource } from './storage/index.js';
 
 export interface IGetAppsFilter {
 	ids?: Array<string>;

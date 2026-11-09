@@ -1,7 +1,7 @@
 import * as assert from 'node:assert';
 import { describe, it } from 'node:test';
 
-import { CommandHasAlreadyBeenTouchedError } from '../../../src/server/errors';
+import { CommandHasAlreadyBeenTouchedError } from '../../../src/server/errors/index.js';
 
 describe('CommandHasAlreadyBeenTouchedError', () => {
 	it('verifyCommandHasAlreadyBeenTouched', () => {

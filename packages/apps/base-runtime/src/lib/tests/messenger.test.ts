@@ -1,10 +1,10 @@
 import * as assert from 'node:assert';
 import { after, beforeEach, describe, it, mock } from 'node:test';
 
-import { AppObjectRegistry } from '../../AppObjectRegistry';
-import { createMockRequest } from '../../handlers/tests/helpers/mod';
-import * as Messenger from '../messenger';
-import type { RequestContext } from '../requestContext';
+import { AppObjectRegistry } from '../../AppObjectRegistry.js';
+import { createMockRequest } from '../../handlers/tests/helpers/mod.js';
+import * as Messenger from '../messenger.js';
+import type { RequestContext } from '../requestContext.js';
 
 describe('Messenger', () => {
 	let context: RequestContext;

@@ -1,6 +1,6 @@
 import type { IRole } from '@rocket.chat/core-typings';
 
-import type { IAppsRole } from '../AppsEngine';
+import type { IAppsRole } from '../AppsEngine.js';
 
 export interface IAppRolesConverter {
 	convertById(roleId: IRole['_id']): Promise<IAppsRole | undefined>;

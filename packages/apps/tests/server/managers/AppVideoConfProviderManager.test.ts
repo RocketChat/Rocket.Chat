@@ -1,17 +1,22 @@
 import * as assert from 'node:assert';
 import { afterEach, beforeEach, describe, it, mock } from 'node:test';
 
-import type { AppManager } from '../../../src/server/AppManager';
-import type { ProxiedApp } from '../../../src/server/ProxiedApp';
-import type { AppBridges } from '../../../src/server/bridges';
-import type { AppApiManager, AppExternalComponentManager, AppSchedulerManager, AppSlashCommandManager } from '../../../src/server/managers';
-import { AppVideoConfProviderManager } from '../../../src/server/managers';
-import { AppVideoConfProvider } from '../../../src/server/managers/AppVideoConfProvider';
-import type { UIActionButtonManager } from '../../../src/server/managers/UIActionButtonManager';
-import type { AppLogStorage, IAppStorageItem } from '../../../src/server/storage';
-import { TestsAppBridges } from '../../test-data/bridges/appBridges';
-import { TestsAppLogStorage } from '../../test-data/storage/logStorage';
-import { TestData } from '../../test-data/utilities';
+import type { AppManager } from '../../../src/server/AppManager.js';
+import type { ProxiedApp } from '../../../src/server/ProxiedApp.js';
+import type { AppBridges } from '../../../src/server/bridges/index.js';
+import { AppVideoConfProvider } from '../../../src/server/managers/AppVideoConfProvider.js';
+import type { UIActionButtonManager } from '../../../src/server/managers/UIActionButtonManager.js';
+import type {
+	AppApiManager,
+	AppExternalComponentManager,
+	AppSchedulerManager,
+	AppSlashCommandManager,
+} from '../../../src/server/managers/index.js';
+import { AppVideoConfProviderManager } from '../../../src/server/managers/index.js';
+import type { AppLogStorage, IAppStorageItem } from '../../../src/server/storage/index.js';
+import { TestsAppBridges } from '../../test-data/bridges/appBridges.js';
+import { TestsAppLogStorage } from '../../test-data/storage/logStorage.js';
+import { TestData } from '../../test-data/utilities.js';
 
 describe('AppVideoConfProviderManager', () => {
 	let mockBridges: TestsAppBridges;

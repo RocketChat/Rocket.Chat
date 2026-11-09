@@ -1,8 +1,8 @@
-import type { IMessageUpdater } from '@rocket.chat/apps-engine/definition/accessors/IMessageUpdater';
-import type { Reaction } from '@rocket.chat/apps-engine/definition/messages';
+import type { IMessageUpdater } from '@rocket.chat/apps-engine/definition/accessors/IMessageUpdater.js';
+import type { Reaction } from '@rocket.chat/apps-engine/definition/messages/index.js';
 
-import { bridgeCall } from '../../bridges/bridgeCall';
-import type * as Messenger from '../../messenger';
+import { bridgeCall } from '../../bridges/bridgeCall.js';
+import type * as Messenger from '../../messenger.js';
 
 export class MessageUpdater implements IMessageUpdater {
 	constructor(private readonly senderFn: typeof Messenger.sendRequest) {}

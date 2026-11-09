@@ -1,13 +1,13 @@
 import * as assert from 'node:assert';
 import { describe, it } from 'node:test';
 
-import { MessageBuilder } from '../../lib/accessors/builders/MessageBuilder';
-import { RoomBuilder } from '../../lib/accessors/builders/RoomBuilder';
-import { MessageExtender } from '../../lib/accessors/extenders/MessageExtender';
-import { RoomExtender } from '../../lib/accessors/extenders/RoomExtender';
-import type { AppAccessors } from '../../lib/accessors/mod';
-import { Room } from '../../lib/room';
-import { parseArgs } from '../listener/handler';
+import { MessageBuilder } from '../../lib/accessors/builders/MessageBuilder.js';
+import { RoomBuilder } from '../../lib/accessors/builders/RoomBuilder.js';
+import { MessageExtender } from '../../lib/accessors/extenders/MessageExtender.js';
+import { RoomExtender } from '../../lib/accessors/extenders/RoomExtender.js';
+import type { AppAccessors } from '../../lib/accessors/mod.js';
+import { Room } from '../../lib/room.js';
+import { parseArgs } from '../listener/handler.js';
 
 describe('handlers > listeners', () => {
 	const mockAppAccessors = {

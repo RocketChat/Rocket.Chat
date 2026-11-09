@@ -1,6 +1,6 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 
-import type { IAppsSetting } from '../AppsEngine';
+import type { IAppsSetting } from '../AppsEngine.js';
 
 export interface IAppSettingsConverter {
 	convertById(settingId: ISetting['_id']): Promise<IAppsSetting>;

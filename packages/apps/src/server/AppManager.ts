@@ -1,22 +1,26 @@
 import { Buffer } from 'node:buffer';
 
-import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
-import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
-import { AppMethod } from '@rocket.chat/apps-engine/definition/metadata';
-import type { IPermission } from '@rocket.chat/apps-engine/definition/permissions/IPermission';
-import type { IUser } from '@rocket.chat/apps-engine/definition/users';
-import { UserType } from '@rocket.chat/apps-engine/definition/users';
+import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus.js';
+import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata/index.js';
+import { AppMethod } from '@rocket.chat/apps-engine/definition/metadata/index.js';
+import type { IPermission } from '@rocket.chat/apps-engine/definition/permissions/IPermission.js';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users/index.js';
+import { UserType } from '@rocket.chat/apps-engine/definition/users/index.js';
 
-import type { IGetAppsFilter } from './IGetAppsFilter';
-import { ProxiedApp } from './ProxiedApp';
-import { AppBridges } from './bridges';
-import type { PersistenceBridge, UserBridge } from './bridges';
-import { AppResourceBridge } from './bridges/AppResourceBridge';
-import type { IInternalPersistenceBridge } from './bridges/IInternalPersistenceBridge';
-import type { IInternalUserBridge } from './bridges/IInternalUserBridge';
-import { AppCompiler, AppFabricationFulfillment, AppPackageParser } from './compiler';
-import { InvalidLicenseError } from './errors';
-import { InvalidInstallationError } from './errors/InvalidInstallationError';
+import type { IGetAppsFilter } from './IGetAppsFilter.js';
+import { ProxiedApp } from './ProxiedApp.js';
+import { AppResourceBridge } from './bridges/AppResourceBridge.js';
+import type { IInternalPersistenceBridge } from './bridges/IInternalPersistenceBridge.js';
+import type { IInternalUserBridge } from './bridges/IInternalUserBridge.js';
+import type { PersistenceBridge, UserBridge } from './bridges/index.js';
+import { AppBridges } from './bridges/index.js';
+import { AppCompiler, AppFabricationFulfillment, AppPackageParser } from './compiler/index.js';
+import { InvalidInstallationError } from './errors/InvalidInstallationError.js';
+import { InvalidLicenseError } from './errors/index.js';
+import { AppOutboundCommunicationProviderManager } from './managers/AppOutboundCommunicationProviderManager.js';
+import { AppRuntimeManager } from './managers/AppRuntimeManager.js';
+import { AppSignatureManager } from './managers/AppSignatureManager.js';
+import { UIActionButtonManager } from './managers/UIActionButtonManager.js';
 import {
 	AppApiManager,
 	AppExternalComponentManager,
@@ -26,18 +30,14 @@ import {
 	AppSettingsManager,
 	AppSlashCommandManager,
 	AppVideoConfProviderManager,
-} from './managers';
-import { AppOutboundCommunicationProviderManager } from './managers/AppOutboundCommunicationProviderManager';
-import { AppRuntimeManager } from './managers/AppRuntimeManager';
-import { AppSignatureManager } from './managers/AppSignatureManager';
-import { UIActionButtonManager } from './managers/UIActionButtonManager';
-import type { IMarketplaceInfo } from './marketplace';
-import { defaultPermissions } from './permissions/AppPermissions';
-import { EmptyRuntime } from './runtime/EmptyRuntime';
-import type { IAppStorageItem } from './storage';
-import { AppLogStorage, AppMetadataStorage } from './storage';
-import { AppSourceStorage } from './storage/AppSourceStorage';
-import { AppInstallationSource } from './storage/IAppStorageItem';
+} from './managers/index.js';
+import type { IMarketplaceInfo } from './marketplace/index.js';
+import { defaultPermissions } from './permissions/AppPermissions.js';
+import { EmptyRuntime } from './runtime/EmptyRuntime.js';
+import { AppSourceStorage } from './storage/AppSourceStorage.js';
+import { AppInstallationSource } from './storage/IAppStorageItem.js';
+import { AppLogStorage, AppMetadataStorage } from './storage/index.js';
+import type { IAppStorageItem } from './storage/index.js';
 
 export interface IAppInstallParameters {
 	enable: boolean;

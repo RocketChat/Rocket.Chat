@@ -1,6 +1,6 @@
-import type { IUser, UserType } from '@rocket.chat/apps-engine/definition/users';
+import type { IUser, UserType } from '@rocket.chat/apps-engine/definition/users/index.js';
 
-import { UserBridge } from '../../../src/server/bridges';
+import { UserBridge } from '../../../src/server/bridges/index.js';
 
 export class TestsUserBridge extends UserBridge {
 	public getById(id: string, appId: string): Promise<IUser> {

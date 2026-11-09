@@ -1,10 +1,10 @@
-import type { IHttp, IHttpExtend, IHttpRequest, IHttpResponse } from '@rocket.chat/apps-engine/definition/accessors/IHttp';
-import type { IPersistence } from '@rocket.chat/apps-engine/definition/accessors/IPersistence';
-import type { IRead } from '@rocket.chat/apps-engine/definition/accessors/IRead';
+import type { IHttp, IHttpExtend, IHttpRequest, IHttpResponse } from '@rocket.chat/apps-engine/definition/accessors/IHttp.js';
+import type { IPersistence } from '@rocket.chat/apps-engine/definition/accessors/IPersistence.js';
+import type { IRead } from '@rocket.chat/apps-engine/definition/accessors/IRead.js';
 
-import { AppObjectRegistry } from '../../AppObjectRegistry';
-import { bridgeCall } from '../bridges/bridgeCall';
-import type * as Messenger from '../messenger';
+import { AppObjectRegistry } from '../../AppObjectRegistry.js';
+import { bridgeCall } from '../bridges/bridgeCall.js';
+import type * as Messenger from '../messenger.js';
 
 type RequestMethod = 'get' | 'post' | 'put' | 'head' | 'delete' | 'patch';
 

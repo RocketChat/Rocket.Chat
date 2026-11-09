@@ -1,6 +1,6 @@
 import { normalizeLanguage } from '@rocket.chat/tools';
 
-import type { ProxiedApp } from '../ProxiedApp';
+import type { ProxiedApp } from '../ProxiedApp.js';
 
 /**
  * What an app ships translations for, and where they resolve. Both answers are the apps

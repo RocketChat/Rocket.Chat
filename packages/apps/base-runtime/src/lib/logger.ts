@@ -1,9 +1,9 @@
-import type { ILogEntry } from '@rocket.chat/apps-engine/definition/accessors/ILogEntry';
-import type { ILogger } from '@rocket.chat/apps-engine/definition/accessors/ILogger';
-import type { AppMethod } from '@rocket.chat/apps-engine/definition/metadata/AppMethod';
+import type { ILogEntry } from '@rocket.chat/apps-engine/definition/accessors/ILogEntry.js';
+import type { ILogger } from '@rocket.chat/apps-engine/definition/accessors/ILogger.js';
+import type { AppMethod } from '@rocket.chat/apps-engine/definition/metadata/AppMethod.js';
 import stackTrace from 'stack-trace';
 
-import { AppObjectRegistry } from '../AppObjectRegistry';
+import { AppObjectRegistry } from '../AppObjectRegistry.js';
 
 export interface IStackFrame {
 	getTypeName(): string;
