@@ -2,10 +2,10 @@ import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { KeyboardEvent } from 'react';
 import { useState } from 'react';
 
-import { AnimatedVisibility } from '../AnimatedVisibility';
-import type { OptionType } from './OptionType';
-import type { VisibilityHandler } from './useVisible';
-import { useVisible } from './useVisible';
+import type { OptionType } from './OptionType.js';
+import type { VisibilityHandler } from './useVisible.js';
+import { useVisible } from './useVisible.js';
+import { AnimatedVisibility } from '../AnimatedVisibility/index.js';
 
 const keyCodes = {
 	ESC: 27,

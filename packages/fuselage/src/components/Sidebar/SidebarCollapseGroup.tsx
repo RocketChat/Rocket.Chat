@@ -1,9 +1,9 @@
 import type { HTMLAttributes, ReactNode, RefAttributes } from 'react';
 
-import { cx } from '../../helpers/composeClassNames';
-import { ItemGroup, type ItemGroupProps } from '../Item';
-import { SidebarGroupTitle } from './SidebarGroupTitle';
-import { useCollapse } from './hooks/useCollapse';
+import { SidebarGroupTitle } from './SidebarGroupTitle.js';
+import { cx } from '../../helpers/composeClassNames.js';
+import { ItemGroup, type ItemGroupProps } from '../Item/index.js';
+import { useCollapse } from './hooks/useCollapse.js';
 
 type SidebarCollapseGroupProps = HTMLAttributes<HTMLDivElement> &
 	RefAttributes<HTMLDivElement> & {

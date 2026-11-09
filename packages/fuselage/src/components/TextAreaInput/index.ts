@@ -1,1 +1,1 @@
-export { default as TextAreaInput, type TextAreaInputProps } from './TextAreaInput';
+export { default as TextAreaInput, type TextAreaInputProps } from './TextAreaInput.js';

@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react';
 
-import { MessageStatusIndicator, MessageStatusIndicatorItem } from '.';
-import { render } from '../../../testing';
+import { MessageStatusIndicator, MessageStatusIndicatorItem } from './index.js';
+import { render } from '../../../testing.js';
 
 it('renders without crashing', () => {
 	render(

@@ -1,8 +1,8 @@
 import type { Dispatch, HTMLAttributes, SetStateAction } from 'react';
 import { useId, useMemo } from 'react';
 
-import { cx } from '../../helpers/composeClassNames';
-import { Chevron } from '../Chevron';
+import { cx } from '../../helpers/composeClassNames.js';
+import { Chevron } from '../Chevron/index.js';
 
 export type ItemsPerPage = 25 | 50 | 100;
 

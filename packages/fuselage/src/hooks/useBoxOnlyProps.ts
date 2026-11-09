@@ -1,7 +1,7 @@
 import type { AllHTMLAttributes } from 'react';
 
-import { prependClassName } from '../helpers/prependClassName';
-import { prependRcxClassNames } from '../helpers/prependRcxClassNames';
+import { prependClassName } from '../helpers/prependClassName.js';
+import { prependRcxClassNames } from '../helpers/prependRcxClassNames.js';
 
 export const useBoxOnlyProps = <
 	T extends {

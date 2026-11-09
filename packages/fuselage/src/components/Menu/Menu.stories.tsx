@@ -3,20 +3,20 @@ import type { ReactNode } from 'react';
 import { useState } from 'react';
 import { action } from 'storybook/actions';
 
-import type { MenuItemIconProps } from '.';
-import { Menu, MenuItem, MenuSection, MenuSubmenuTrigger, MenuItemColumn, MenuItemContent, MenuItemIcon, MenuItemInput } from '.';
-import { Box } from '../Box';
-import type { IconButtonProps } from '../Button';
-import { IconButton } from '../Button';
-import { ButtonGroup } from '../ButtonGroup';
-import { CheckBox } from '../CheckBox';
-import { Icon } from '../Icon';
-import { ItemActions, ItemContent, ItemIcon, ItemTitle } from '../Item';
-import { NavBarGroup, NavBarItem } from '../NavBar';
-import { RadioButton } from '../RadioButton';
-import { StatusBullet } from '../StatusBullet';
-import { ToggleSwitch } from '../ToggleSwitch';
-import type { MenuProps } from './Menu';
+import type { MenuProps } from './Menu.js';
+import type { MenuItemIconProps } from './index.js';
+import { Menu, MenuItem, MenuSection, MenuSubmenuTrigger, MenuItemColumn, MenuItemContent, MenuItemIcon, MenuItemInput } from './index.js';
+import { Box } from '../Box/index.js';
+import type { IconButtonProps } from '../Button/index.js';
+import { IconButton } from '../Button/index.js';
+import { ButtonGroup } from '../ButtonGroup/index.js';
+import { CheckBox } from '../CheckBox/index.js';
+import { Icon } from '../Icon/index.js';
+import { ItemActions, ItemContent, ItemIcon, ItemTitle } from '../Item/index.js';
+import { NavBarGroup, NavBarItem } from '../NavBar/index.js';
+import { RadioButton } from '../RadioButton/index.js';
+import { StatusBullet } from '../StatusBullet/index.js';
+import { ToggleSwitch } from '../ToggleSwitch/index.js';
 
 export default {
 	title: 'Navigation/Menu',

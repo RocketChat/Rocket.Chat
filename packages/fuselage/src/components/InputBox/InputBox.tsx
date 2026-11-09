@@ -2,11 +2,11 @@ import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import type { AllHTMLAttributes, ReactNode } from 'react';
 import { useLayoutEffect, useRef } from 'react';
 
-import type { ElementProps } from '../../types/ElementProps';
-import { Icon } from '../Icon';
-import Input from './Input';
-import InputBoxAddon from './InputBoxAddon';
-import InputBoxWrapper from './InputBoxWrapper';
+import Input from './Input.js';
+import InputBoxAddon from './InputBoxAddon.js';
+import InputBoxWrapper from './InputBoxWrapper.js';
+import type { ElementProps } from '../../types/ElementProps.js';
+import { Icon } from '../Icon/index.js';
 
 export type InputBoxProps<T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement = any> = Omit<
 	ElementProps<T, AllHTMLAttributes<T>>,

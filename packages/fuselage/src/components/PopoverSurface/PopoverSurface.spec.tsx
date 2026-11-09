@@ -1,7 +1,7 @@
 import { composeStories } from '@storybook/react';
 
-import * as stories from './PopoverSurface.stories';
-import { render } from '../../testing';
+import * as stories from './PopoverSurface.stories.js';
+import { render } from '../../testing.js';
 
 const { Default, HalfScreen, Flush } = composeStories(stories);
 

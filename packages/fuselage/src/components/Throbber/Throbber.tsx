@@ -1,6 +1,6 @@
-import type { ElementProps } from '../../types/ElementProps';
-import { Box, type BoxProps } from '../Box';
-import Circle from './Circle';
+import Circle from './Circle.js';
+import type { ElementProps } from '../../types/ElementProps.js';
+import { Box, type BoxProps } from '../Box/index.js';
 
 export type ThrobberProps = ElementProps<HTMLElement> & {
 	size?: BoxProps['size'];

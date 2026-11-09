@@ -1,8 +1,8 @@
 import { composeStories } from '@storybook/react';
 import { screen } from '@testing-library/react';
 
-import * as stories from './Stack.stories';
-import { render } from '../../testing';
+import * as stories from './Stack.stories.js';
+import { render } from '../../testing.js';
 
 const { Default, Row, List, Form, Inline } = composeStories(stories);
 

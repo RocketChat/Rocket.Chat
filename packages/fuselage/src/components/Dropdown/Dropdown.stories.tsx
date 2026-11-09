@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { useRef } from 'react';
 
-import { Box } from '../Box';
-import { IconButton } from '../Button';
-import { Option } from '../Option';
-import Dropdown from './Dropdown';
+import Dropdown from './Dropdown.js';
+import { Box } from '../Box/index.js';
+import { IconButton } from '../Button/index.js';
+import { Option } from '../Option/index.js';
 
 export default {
 	title: 'Navigation/Dropdown',

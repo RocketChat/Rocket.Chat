@@ -1,6 +1,6 @@
 import type { AllHTMLAttributes, ReactNode, RefAttributes } from 'react';
 
-import { Box } from '../Box';
+import { Box } from '../Box/index.js';
 
 export type ListboxProps = {
 	/** Referenced by the combobox's `aria-controls`. */

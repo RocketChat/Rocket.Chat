@@ -2,13 +2,13 @@ import { useStableCallback, useDebouncedState } from '@rocket.chat/fuselage-hook
 import type { ComponentType, ElementType, MouseEvent, ReactNode, RefAttributes } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
-import { prevent } from '../../helpers/prevent';
-import type { ElementProps } from '../../types/ElementProps';
-import { AnimatedVisibility } from '../AnimatedVisibility';
-import { Box } from '../Box';
-import { CheckOption, Option } from '../Option';
-import { PopoverSurface } from '../PopoverSurface';
-import { Empty } from './Empty';
+import { Empty } from './Empty.js';
+import { prevent } from '../../helpers/prevent.js';
+import type { ElementProps } from '../../types/ElementProps.js';
+import { AnimatedVisibility } from '../AnimatedVisibility/index.js';
+import { Box } from '../Box/index.js';
+import { CheckOption, Option } from '../Option/index.js';
+import { PopoverSurface } from '../PopoverSurface/index.js';
 
 export type OptionsPaginatedProps = Omit<ElementProps<HTMLDivElement>, 'ref' | 'onSelect'> &
 	RefAttributes<Element> & {

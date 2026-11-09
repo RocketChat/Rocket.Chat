@@ -3,9 +3,9 @@ import { cloneElement, isValidElement, useRef } from 'react';
 import { useOverlayTrigger } from 'react-aria';
 import { useOverlayTriggerState } from 'react-stately';
 
-import { Button } from '../Button';
-import { Tile } from '../Tile';
-import Popover from './Popover';
+import Popover from './Popover.js';
+import { Button } from '../Button/index.js';
+import { Tile } from '../Tile/index.js';
 
 export default {
 	title: 'Layout/Popover',

@@ -1,1 +1,1 @@
-export { default as CodeSnippet, type CodeSnippetProps } from './CodeSnippet';
+export { default as CodeSnippet, type CodeSnippetProps } from './CodeSnippet.js';

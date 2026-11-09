@@ -1,1 +1,1 @@
-export { default as Throbber, type ThrobberProps } from './Throbber';
+export { default as Throbber, type ThrobberProps } from './Throbber.js';

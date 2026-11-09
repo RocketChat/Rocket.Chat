@@ -1,7 +1,7 @@
 import type { AllHTMLAttributes } from 'react';
 
-import { cx } from '../../../helpers/composeClassNames';
-import { Icon, type IconProps } from '../../Icon';
+import { cx } from '../../../helpers/composeClassNames.js';
+import { Icon, type IconProps } from '../../Icon/index.js';
 
 export type MessageStatusIndicatorItemProps = {
 	name: IconProps['name'];

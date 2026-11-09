@@ -1,8 +1,8 @@
 import { screen } from '@testing-library/react';
 
-import Tabs from './Tabs';
-import TabsItem from './TabsItem';
-import { render } from '../../testing';
+import Tabs from './Tabs.js';
+import TabsItem from './TabsItem.js';
+import { render } from '../../testing.js';
 
 describe('[Tabs Component]', () => {
 	it('renders without crashing', () => {

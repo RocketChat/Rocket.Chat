@@ -1,10 +1,10 @@
 import type { HTMLAttributes, RefAttributes } from 'react';
 
-import { appendClassName } from '../../helpers/appendClassName';
-import { cx } from '../../helpers/composeClassNames';
-import { patchChildren } from '../../helpers/patchChildren';
-import { IconButton } from '../Button';
-import type { IconButtonProps } from '../Button/IconButton';
+import { appendClassName } from '../../helpers/appendClassName.js';
+import { cx } from '../../helpers/composeClassNames.js';
+import { patchChildren } from '../../helpers/patchChildren.js';
+import type { IconButtonProps } from '../Button/IconButton.js';
+import { IconButton } from '../Button/index.js';
 
 export type NavbarItemProps = HTMLAttributes<HTMLElement> & Partial<Omit<IconButtonProps, 'ref'>> & RefAttributes<HTMLElement>;
 

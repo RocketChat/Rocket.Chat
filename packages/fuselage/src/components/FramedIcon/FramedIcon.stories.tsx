@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import FramedIcon from './FramedIcon';
+import FramedIcon from './FramedIcon.js';
 
 export default {
 	title: 'Data Display/FramedIcon',

@@ -1,4 +1,4 @@
-import { loadStories } from './loadStories';
+import { loadStories } from './loadStories.js';
 
 // The G0 characterization specs are `play` functions in stories tagged `g0`, so one source runs here in jsdom (runtime build)
 // and in the browser against the compiled zero-runtime Storybook (`yarn test:stories`). Demo plays, such as the Slider one,

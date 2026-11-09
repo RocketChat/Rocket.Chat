@@ -1,8 +1,8 @@
 import { createElement, type HTMLAttributes, type LabelHTMLAttributes, type TimeHTMLAttributes } from 'react';
 
-import type { statusColors, textIconColors } from '../../Theme';
-import { cx, cxx } from '../../helpers/composeClassNames';
-import type { ElementProps } from '../../types/ElementProps';
+import type { statusColors, textIconColors } from '../../Theme.js';
+import { cx, cxx } from '../../helpers/composeClassNames.js';
+import type { ElementProps } from '../../types/ElementProps.js';
 
 type FontColor<T> = T extends `font-${infer Color}` ? Color : never;
 

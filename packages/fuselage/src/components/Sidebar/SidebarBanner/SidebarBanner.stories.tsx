@@ -2,11 +2,11 @@ import type { Meta, StoryObj } from '@storybook/react';
 import type { CSSProperties } from 'react';
 import { action } from 'storybook/actions';
 
-import { SidebarBanner } from './SidebarBanner';
-import type { SidebarBannerVariant } from './SidebarBanner';
-import { SidebarBannerButton } from './SidebarBannerButton';
-import { SidebarBannerLink } from './SidebarBannerLink';
-import { Icon } from '../../..';
+import { SidebarBanner } from './SidebarBanner.js';
+import type { SidebarBannerVariant } from './SidebarBanner.js';
+import { SidebarBannerButton } from './SidebarBannerButton.js';
+import { SidebarBannerLink } from './SidebarBannerLink.js';
+import { Icon } from '../../../index.js';
 
 export default {
 	title: 'Navigation/Sidebar/SidebarBanner',

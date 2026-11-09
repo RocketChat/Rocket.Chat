@@ -1,8 +1,8 @@
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { AllHTMLAttributes, ButtonHTMLAttributes, ReactNode } from 'react';
 
-import { BubbleButton } from './BubbleButton';
-import { BubbleItem } from './BubbleItem';
+import { BubbleButton } from './BubbleButton.js';
+import { BubbleItem } from './BubbleItem.js';
 
 export type BubbleProps = {
 	secondary?: boolean;

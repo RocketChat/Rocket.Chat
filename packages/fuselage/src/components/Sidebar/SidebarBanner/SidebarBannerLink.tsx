@@ -1,6 +1,6 @@
 import type { AnchorHTMLAttributes } from 'react';
 
-import { cx } from '../../../helpers/composeClassNames';
+import { cx } from '../../../helpers/composeClassNames.js';
 
 export type SidebarBannerLinkProps = AnchorHTMLAttributes<HTMLAnchorElement>;
 

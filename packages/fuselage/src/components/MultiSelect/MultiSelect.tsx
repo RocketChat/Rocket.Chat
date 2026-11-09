@@ -2,20 +2,20 @@ import { useMergedRefs, useStableCallback, useResizeObserver } from '@rocket.cha
 import type { ElementType, MouseEventHandler, ReactNode, RefAttributes } from 'react';
 import { useState, useRef, useEffect } from 'react';
 
-import { prevent } from '../../helpers/prevent';
-import type { ElementProps } from '../../types/ElementProps';
-import { AnimatedVisibility } from '../AnimatedVisibility';
-import { Box } from '../Box';
-import type { IconProps } from '../Icon';
-import { Icon } from '../Icon';
-import { CheckOption } from '../Option';
-import { Options, useCursor } from '../Options';
-import { PositionAnimated } from '../PositionAnimated';
-import type { SelectOption } from '../Select';
-import MultiSelectAnchor from './MultiSelectAnchor';
-import type { MultiSelectAnchorParams } from './MultiSelectAnchorParams';
-import { SelectedOptions } from './SelectedOptions';
-import SelectAddon from '../Select/SelectAddon';
+import MultiSelectAnchor from './MultiSelectAnchor.js';
+import type { MultiSelectAnchorParams } from './MultiSelectAnchorParams.js';
+import { SelectedOptions } from './SelectedOptions.js';
+import { prevent } from '../../helpers/prevent.js';
+import type { ElementProps } from '../../types/ElementProps.js';
+import { AnimatedVisibility } from '../AnimatedVisibility/index.js';
+import { Box } from '../Box/index.js';
+import type { IconProps } from '../Icon/index.js';
+import { Icon } from '../Icon/index.js';
+import { CheckOption } from '../Option/index.js';
+import { Options, useCursor } from '../Options/index.js';
+import { PositionAnimated } from '../PositionAnimated/index.js';
+import SelectAddon from '../Select/SelectAddon.js';
+import type { SelectOption } from '../Select/index.js';
 
 export type MultiSelectProps = Omit<ElementProps<HTMLDivElement>, 'ref' | 'onChange'> &
 	RefAttributes<HTMLInputElement> & {

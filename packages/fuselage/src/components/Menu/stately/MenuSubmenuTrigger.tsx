@@ -2,7 +2,7 @@ import type { ItemProps } from '@react-types/shared';
 import type { ReactElement, ReactNode } from 'react';
 import { isValidElement } from 'react';
 
-import type { PartialNode } from './PartialNode';
+import type { PartialNode } from './PartialNode.js';
 
 export type MenuSubmenuTriggerProps<T> = Omit<ItemProps<T>, 'title' | 'children'> & {
 	/**

@@ -1,7 +1,7 @@
 import type { ComponentPropsWithoutRef, ComponentType } from 'react';
 
-import type { StylingProps } from './stylingProps';
-import { useStylingProps } from './useStylingProps';
+import type { StylingProps } from './stylingProps.js';
+import { useStylingProps } from './useStylingProps.js';
 
 export const withBoxStyling = <
 	TComponent extends ComponentType<{

@@ -1,6 +1,6 @@
 import type { HTMLAttributes, RefAttributes } from 'react';
 
-import { Box } from '../Box';
+import { Box } from '../Box/index.js';
 
 export type PopoverSurfaceProps = Omit<HTMLAttributes<HTMLElement>, 'color' | 'is'> &
 	RefAttributes<HTMLElement> & {

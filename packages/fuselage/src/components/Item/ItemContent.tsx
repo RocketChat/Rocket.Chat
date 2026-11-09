@@ -1,6 +1,6 @@
 import type { AllHTMLAttributes, ElementType, RefAttributes } from 'react';
 
-import { cx } from '../../helpers/composeClassNames';
+import { cx } from '../../helpers/composeClassNames.js';
 
 export type ItemContentProps = {
 	is?: ElementType;

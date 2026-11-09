@@ -1,5 +1,5 @@
-import { prependClassName } from '../../../helpers/prependClassName';
-import type { StatusBulletProps } from '../StatusBullet';
+import { prependClassName } from '../../../helpers/prependClassName.js';
+import type { StatusBulletProps } from '../StatusBullet.js';
 
 const Disabled = ({ size, className, ...props }: StatusBulletProps) => (
 	<svg

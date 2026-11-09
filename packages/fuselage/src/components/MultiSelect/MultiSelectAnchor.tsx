@@ -1,6 +1,6 @@
 import type { AriaAttributes, FocusEventHandler, KeyboardEventHandler, MouseEventHandler, ReactNode, RefAttributes } from 'react';
 
-import { Box } from '../Box';
+import { Box } from '../Box/index.js';
 
 type MultiSelectAnchorProps = RefAttributes<Element> & {
 	children: ReactNode;

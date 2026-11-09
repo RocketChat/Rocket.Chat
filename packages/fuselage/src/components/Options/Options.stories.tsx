@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { createRef, type ReactNode } from 'react';
 
-import { Options, type OptionType } from '.';
-import { Box } from '../Box';
-import { Option, CheckOption } from '../Option';
+import { Options, type OptionType } from './index.js';
+import { Box } from '../Box/index.js';
+import { Option, CheckOption } from '../Option/index.js';
 
 export default {
 	title: 'Navigation/Options',

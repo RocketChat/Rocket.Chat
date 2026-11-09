@@ -1,1 +1,1 @@
-export * from './OptionsPaginated';
+export * from './OptionsPaginated.js';

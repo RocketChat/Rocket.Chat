@@ -1,5 +1,5 @@
-import { cx } from '../../../helpers/composeClassNames';
-import { ItemActions, type ItemActionsProps } from '../../Item';
+import { cx } from '../../../helpers/composeClassNames.js';
+import { ItemActions, type ItemActionsProps } from '../../Item/index.js';
 
 export type SidebarItemActionsProps = Omit<ItemActionsProps, 'reveal'>;
 

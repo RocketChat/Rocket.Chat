@@ -1,6 +1,6 @@
 import type { CSSProperties } from 'react';
 
-import { Box, type BoxProps } from '../Box';
+import { Box, type BoxProps } from '../Box/index.js';
 
 type CircleProps = {
 	circleCount: number;

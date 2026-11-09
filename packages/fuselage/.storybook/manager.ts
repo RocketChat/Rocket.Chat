@@ -3,10 +3,10 @@ import { createElement } from 'react';
 import type { API_HashEntry } from 'storybook/internal/types';
 import { addons } from 'storybook/manager-api';
 
-import manifest from '../package.json';
+import manifest from '../package.json' with { type: 'json' };
 import logo from './logo.svg';
-import { applyComponentStatusColors, componentStatuses, findComponentStatus, getComponentStatusBadgeStyle } from './status';
-import { createBrandTitle, readThemeGlobalFromUrl, resolveThemeMode, subscribeToThemeMode, themes, type ThemeMode } from './theme';
+import { applyComponentStatusColors, componentStatuses, findComponentStatus, getComponentStatusBadgeStyle } from './status.js';
+import { createBrandTitle, readThemeGlobalFromUrl, resolveThemeMode, subscribeToThemeMode, themes, type ThemeMode } from './theme.js';
 
 const createManagerTheme = (mode: ThemeMode) => ({
 	...themes[mode],

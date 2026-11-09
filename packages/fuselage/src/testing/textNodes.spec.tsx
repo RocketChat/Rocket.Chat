@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 
-import { loadStories } from './loadStories';
+import { loadStories } from './loadStories.js';
 
 // A text node under a Tamagui `View` throws on React Native and is invisible on the web, so every story is rendered in
 // development mode and the console is checked for the warnings React and Tamagui print for it.

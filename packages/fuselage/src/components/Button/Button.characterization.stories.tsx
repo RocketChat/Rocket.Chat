@@ -3,9 +3,9 @@ import { createRef } from 'react';
 import type { MouseEvent } from 'react';
 import { expect, fn } from 'storybook/test';
 
-import { ariaSnapshot, classContract, expectForwards, expectKeyboardActivation } from '../../testing/g0';
-import { ButtonGroup } from '../ButtonGroup';
-import Button from './Button';
+import Button from './Button.js';
+import { ariaSnapshot, classContract, expectForwards, expectKeyboardActivation } from '../../testing/g0.js';
+import { ButtonGroup } from '../ButtonGroup/index.js';
 
 // G0 characterization of Button on its develop implementation. A rewrite passes these unedited, in jest and in the compiled
 // zero-runtime Storybook; see src/testing/README.md.

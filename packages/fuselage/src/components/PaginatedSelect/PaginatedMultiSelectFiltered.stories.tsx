@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { useArgs } from 'storybook/preview-api';
 
-import PaginatedMultiSelectFiltered from './PaginatedMultiSelectFiltered';
+import PaginatedMultiSelectFiltered from './PaginatedMultiSelectFiltered.js';
 
 export default {
 	title: 'Inputs/PaginatedMultiSelectFiltered',

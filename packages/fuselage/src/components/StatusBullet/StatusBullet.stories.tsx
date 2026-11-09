@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { Box } from '../Box';
-import StatusBullet from './StatusBullet';
+import StatusBullet from './StatusBullet.js';
+import { Box } from '../Box/index.js';
 
 export default {
 	title: 'Data Display/StatusBullet',

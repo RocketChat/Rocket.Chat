@@ -1,19 +1,19 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import type { ReactNode } from 'react';
 
-import { Box } from '../Box';
-import { Icon } from '../Icon';
-import Item, { type ItemProps } from './Item';
-import ItemActions from './ItemActions';
-import ItemContent from './ItemContent';
-import ItemDragHandle from './ItemDragHandle';
-import ItemDropSlot from './ItemDropSlot';
-import ItemGroup from './ItemGroup';
-import ItemGroupHeader from './ItemGroupHeader';
-import ItemGroupTitle from './ItemGroupTitle';
-import ItemLink from './ItemLink';
-import ItemMedia from './ItemMedia';
-import ItemTitle from './ItemTitle';
+import Item, { type ItemProps } from './Item.js';
+import ItemActions from './ItemActions.js';
+import ItemContent from './ItemContent.js';
+import ItemDragHandle from './ItemDragHandle.js';
+import ItemDropSlot from './ItemDropSlot.js';
+import ItemGroup from './ItemGroup.js';
+import ItemGroupHeader from './ItemGroupHeader.js';
+import ItemGroupTitle from './ItemGroupTitle.js';
+import ItemLink from './ItemLink.js';
+import ItemMedia from './ItemMedia.js';
+import ItemTitle from './ItemTitle.js';
+import { Box } from '../Box/index.js';
+import { Icon } from '../Icon/index.js';
 
 export default {
 	title: 'Navigation/Item/Drag and drop',

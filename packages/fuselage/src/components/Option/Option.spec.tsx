@@ -1,14 +1,14 @@
 import { composeStories } from '@storybook/react';
 import { screen, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 
-import CheckOption from './CheckOption';
-import Option from './Option';
-import * as stories from './Option.stories';
-import OptionContent from './OptionContent';
-import { prevent } from '../../helpers/prevent';
-import { render } from '../../testing';
+import CheckOption from './CheckOption.js';
+import Option from './Option.js';
+import * as stories from './Option.stories.js';
+import OptionContent from './OptionContent.js';
+import { prevent } from '../../helpers/prevent.js';
+import { render } from '../../testing.js';
 
 jest.mock('../../helpers/prevent');
 
