@@ -243,6 +243,20 @@
 			}
 		},
 		{
+			"files": ["packages/apps/**/*.ts"],
+			"rules": {
+				"typescript/only-throw-error": ["warn", { "allow": ["JsonRpcError", "ErrorObject"] }]
+			}
+		},
+		{
+			"files": ["packages/apps/**/*.test.ts"],
+			"rules": {
+				"testing-library/no-await-sync-queries": "off",
+				"testing-library/no-debugging-utils": "off",
+				"testing-library/prefer-explicit-assert": "off"
+			}
+		},
+		{
 			"files": ["packages/apps-engine/tests/**/*", "packages/apps/tests/**/*"],
 			"rules": {
 				"testing-library/no-await-sync-queries": "off",
