@@ -186,7 +186,8 @@ API.v1
 			userWithoutUsername: true,
 			body: isUsersUpdateOwnBasicInfoParamsPOST,
 			rateLimiterOptions: {
-				numRequestsAllowed: 1,
+				// a 2FA-confirmed save takes two requests: the challenge (totp-required) and the retry with the code
+				numRequestsAllowed: 5,
 				intervalTimeInMS: 60000,
 			},
 			response: {
