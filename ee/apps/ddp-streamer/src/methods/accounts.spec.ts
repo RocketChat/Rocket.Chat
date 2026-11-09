@@ -1,7 +1,7 @@
 import { Account, ClientSafeError } from '@rocket.chat/core-services';
 
-import { sessionAccounts } from './accounts';
-import { makeSession } from '../__tests__/helpers';
+import { sessionAccounts } from './accounts.js';
+import { makeSession } from '../__tests__/helpers.js';
 
 jest.mock('@rocket.chat/core-services', () => ({
 	...jest.requireActual('@rocket.chat/core-services'),

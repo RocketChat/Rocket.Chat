@@ -12,7 +12,7 @@ import polka from 'polka';
 import { throttle } from 'underscore';
 import { WebSocketServer } from 'ws';
 
-import { proxy } from './http/proxy';
+import { proxy } from './http/proxy.js';
 
 const { PORT = 4000 } = process.env;
 

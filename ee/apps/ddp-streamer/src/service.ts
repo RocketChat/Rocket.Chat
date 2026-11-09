@@ -17,9 +17,9 @@ import { startBroker } from '@rocket.chat/network-broker';
 import { NotificationsModule } from '@rocket.chat/streamer';
 import { startTracing } from '@rocket.chat/tracing';
 
-import { DDPStreamer } from './DDPStreamer';
-import { sessionAccounts } from './methods/accounts';
-import { callMeteorMethod } from './methods/meteorFallback';
+import { DDPStreamer } from './DDPStreamer.js';
+import { sessionAccounts } from './methods/accounts.js';
+import { callMeteorMethod } from './methods/meteorFallback.js';
 
 void (async () => {
 	const { db, client } = await getConnection();
