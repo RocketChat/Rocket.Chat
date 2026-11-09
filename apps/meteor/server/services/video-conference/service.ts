@@ -1246,7 +1246,11 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		user: AtLeast<IUser, '_id' | 'username' | 'name' | 'avatarETag'> | undefined,
 		options: VideoConferenceJoinOptions,
 	): Promise<string> {
-		void callbacks.runAsync('onJoinVideoConference', call._id, user?._id);
+		// Awaited: the window refetches the call once this answers, and must find the arrival already recorded — the
+		// broadcast announcing it can beat the window's subscription. Failing to record it still lets them in.
+		await Promise.resolve(callbacks.runAsync('onJoinVideoConference', call._id, user?._id)).catch((err) => {
+			logger.error({ msg: 'Failed to record a user joining a conference', callId: call._id, uid: user?._id, err });
+		});
 
 		await this.runOnUserJoinEvent(call._id, user as IVideoConferenceUser);
 
