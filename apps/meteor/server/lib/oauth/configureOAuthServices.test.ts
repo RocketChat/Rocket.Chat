@@ -1,8 +1,9 @@
 import { beforeEach, describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const sandbox = sinon.createSandbox();
 
@@ -12,7 +13,7 @@ const authenticate = sandbox.stub();
 const loginCallback = sandbox.stub();
 const loginErrorCallback = sandbox.stub();
 
-const { configureOAuthServices } = p.noCallThru().load('./configureOAuthServices.ts', {
+const { configureOAuthServices } = loadWithMocks('./configureOAuthServices.ts', {
 	'meteor/accounts-base': { Accounts: { updateOrCreateUserFromExternalService } },
 	'passport': { use: sandbox.stub(), unuse: sandbox.stub(), authenticate },
 	'./allowPassportOAuthMiddleware': { allowPassportOAuthMiddleware: () => sandbox.stub() },

@@ -3,7 +3,6 @@ import { before, beforeEach, describe, it } from 'node:test';
 import type { IImport, IImportChannel, IImportRecord, IImportUser, IImporterShortSelection } from '@rocket.chat/core-typings';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import { ImporterSelection } from './ImporterSelection';
@@ -11,6 +10,7 @@ import { SelectionChannel } from './ImporterSelectionChannel';
 import { SelectionUser } from './ImporterSelectionUser';
 import { RecordConverter } from './converters/RecordConverter';
 import { ProgressStep } from '../../../../lib/importer/ImporterProgressStep';
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 let imported: string[];
 let onRecordImported: (id: string) => void;
@@ -33,14 +33,14 @@ const fakeConverter = (dataType: IImportRecord['dataType']) =>
 		}
 	};
 
-const { ImportDataConverter } = proxyquire.noCallThru().load('./ImportDataConverter', {
+const { ImportDataConverter } = loadWithMocks('./ImportDataConverter', {
 	'./converters/UserConverter': { UserConverter: fakeConverter('user') },
 	'./converters/ContactConverter': { ContactConverter: fakeConverter('contact') },
 	'./converters/RoomConverter': { RoomConverter: fakeConverter('channel') },
 	'./converters/MessageConverter': { MessageConverter: fakeConverter('message') },
 });
 
-const { Importer } = proxyquire.noCallThru().load('./Importer', {
+const { Importer } = loadWithMocks('./Importer', {
 	'./ImportDataConverter': { ImportDataConverter },
 	'./ImporterWebsocket': { ImporterWebsocket: { progressUpdated: () => undefined } },
 	'../../notifyListener': { notifyOnSettingChanged: () => undefined, notifyOnSettingChangedById: () => undefined },

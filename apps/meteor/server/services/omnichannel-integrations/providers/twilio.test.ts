@@ -2,8 +2,9 @@ import crypto from 'crypto';
 import { beforeEach, describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const settingsStub = {
 	get: sinon.stub(),
@@ -14,7 +15,7 @@ const twilioStub = {
 	isRequestFromTwilio: sinon.stub(),
 };
 
-const { Twilio } = proxyquire.noCallThru().load('./twilio.ts', {
+const { Twilio } = loadWithMocks('./twilio.ts', {
 	'../../../settings': { settings: settingsStub },
 	'../../../lib/utils/restrictions': { fileUploadIsValidContentType: sinon.stub() },
 	'../../../lib/i18n': { i18n: sinon.stub() },

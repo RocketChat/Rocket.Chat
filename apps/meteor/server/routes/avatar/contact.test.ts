@@ -1,8 +1,9 @@
 import { beforeEach, describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const sandbox = sinon.createSandbox();
 
@@ -19,7 +20,7 @@ const mocks = {
 	},
 };
 
-const { contactAvatar } = proxyquire.noCallThru().load('./contact', {
+const { contactAvatar } = loadWithMocks('./contact', {
 	'@rocket.chat/account-utils': { hashLoginToken: mocks.hashLoginToken },
 	'@rocket.chat/models': {
 		Contacts: { findOneById: mocks.contactFindOneById },

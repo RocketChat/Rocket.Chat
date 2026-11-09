@@ -1,13 +1,14 @@
 import { beforeEach, describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const settingsGet = sinon.stub();
 const verify = sinon.stub();
 
-const { TOTPCheck } = proxyquire.noCallThru().load('./TOTPCheck', {
+const { TOTPCheck } = loadWithMocks('./TOTPCheck', {
 	'../../../settings': { settings: { get: settingsGet } },
 	'../lib/totp': { TOTP: { verify } },
 });

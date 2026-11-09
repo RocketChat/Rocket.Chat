@@ -2,8 +2,9 @@ import { EventEmitter } from 'events';
 import { beforeEach, describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 class MockIncomingMessage extends EventEmitter {
 	statusCode: number;
@@ -43,7 +44,7 @@ const createMockHttpModule = (responseFactory: () => MockIncomingMessage, errorO
 });
 
 const createPendingFileImporter = (httpMock: ReturnType<typeof createMockHttpModule>) => {
-	const { PendingFileImporter } = proxyquire.noCallThru().load('./PendingFileImporter', {
+	const { PendingFileImporter } = loadWithMocks('./PendingFileImporter', {
 		'node:http': httpMock,
 		'node:https': httpMock,
 		'@rocket.chat/core-services': { api: { broadcast: sinon.stub() } },

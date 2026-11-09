@@ -1,9 +1,10 @@
 import { describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 
-const { removeAttachmentMarkdown } = proxyquire.noCallThru().load('./removeAttachmentMarkdown', {
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
+
+const { removeAttachmentMarkdown } = loadWithMocks('./removeAttachmentMarkdown', {
 	'@rocket.chat/tools': { isRecord: (value: unknown) => typeof value === 'object' && value !== null && !Array.isArray(value) },
 });
 

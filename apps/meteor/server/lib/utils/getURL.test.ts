@@ -1,14 +1,15 @@
 import { after, before, describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const settingsValues: Record<string, string> = {
 	Site_Url: 'https://open.rocket.chat/chat/',
 	CDN_PREFIX: 'https://cdn.rocket.chat',
 };
 
-const { getWorkspaceURL } = proxyquire.noCallThru().load('./getURL', {
+const { getWorkspaceURL } = loadWithMocks('./getURL', {
 	'../../settings': { settings: { get: (key: string) => settingsValues[key] } },
 });
 

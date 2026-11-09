@@ -18,8 +18,9 @@ import type { IMediaCall } from '@rocket.chat/core-typings';
 import type { PreCallCreatedHookParams } from '@rocket.chat/media-calls';
 import { callHangupReasonList } from '@rocket.chat/media-signaling';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const triggerEvent = sinon.stub();
 const AppsMock: { self: { triggerEvent: sinon.SinonStub } | undefined } = { self: { triggerEvent } };
@@ -39,7 +40,7 @@ const i18nMock = {
 };
 
 const { notifyAppsOfMediaCallStarted, notifyAppsOfMediaCallParticipantJoined, notifyAppsOfMediaCallEnded, runPreMediaCallCreatedAppHook } =
-	proxyquire.noCallThru().load('./appEvents', {
+	loadWithMocks('./appEvents', {
 		'@rocket.chat/apps': { Apps: AppsMock, AppEvents: AppInterface },
 		'./logger': { logger: loggerMock },
 		'../../lib/i18n': { i18n: i18nMock },

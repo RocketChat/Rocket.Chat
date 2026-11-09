@@ -2,8 +2,9 @@ import { before, beforeEach, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const Rooms = {
 	findOneByName: sinon.stub(),
@@ -35,7 +36,7 @@ const addUserToRoom = sinon.stub();
 
 const filterDefaultChannelsForUser = sinon.stub();
 
-const { TeamService } = proxyquire.noCallThru().load('./service', {
+const { TeamService } = loadWithMocks('./service', {
 	'@rocket.chat/core-services': {
 		Room,
 		Authorization: {},

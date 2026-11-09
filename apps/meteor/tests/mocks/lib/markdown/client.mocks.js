@@ -1,4 +1,4 @@
-import proxyquire from 'proxyquire';
+import { loadWithMocks } from '../../utils/loadWithMocks';
 
 const mocks = {
 	'@rocket.chat/random': {
@@ -11,6 +11,6 @@ const mocks = {
 	},
 };
 
-export const { Markdown } = proxyquire.noCallThru().load('../../../../lib/markdown/markdown', mocks);
-export const { original } = proxyquire.noCallThru().load('../../../../lib/markdown/parser/original/original', mocks);
-export const { filtered } = proxyquire.noCallThru().load('../../../../lib/markdown/parser/filtered/filtered', mocks);
+export const { Markdown } = loadWithMocks('../../../../lib/markdown/markdown', mocks);
+export const { original } = loadWithMocks('../../../../lib/markdown/parser/original/original', mocks);
+export const { filtered } = loadWithMocks('../../../../lib/markdown/parser/filtered/filtered', mocks);

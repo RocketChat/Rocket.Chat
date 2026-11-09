@@ -3,8 +3,9 @@ import { before, beforeEach, describe, it } from 'node:test';
 import { ClientSafeError } from '@rocket.chat/core-services';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const modelsMock = {
 	Rooms: {
@@ -29,7 +30,7 @@ const notifyOnRoomChangedByIdMock = sinon.stub();
 const notifyOnSubscriptionChangedMock = sinon.stub();
 const afterBanFromRoomCallbackMock = { run: sinon.stub() };
 
-const { performUserBan, banUserFromRoom } = p.noCallThru().load('./banUserFromRoom.ts', {
+const { performUserBan, banUserFromRoom } = loadWithMocks('./banUserFromRoom.ts', {
 	'@rocket.chat/core-services': { Message: messageMock, ClientSafeError },
 	'../callbacks/afterBanFromRoomCallback': { afterBanFromRoomCallback: afterBanFromRoomCallbackMock },
 	'../roles/removeUserFromRoles': { removeUserFromRolesAsync: removeUserFromRolesAsyncMock },

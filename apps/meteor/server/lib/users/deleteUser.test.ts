@@ -3,8 +3,9 @@ import { beforeEach, describe, it } from 'node:test';
 import { ClientSafeError } from '@rocket.chat/core-services';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const settingsGet = sinon.stub();
 const triggerEvent = sinon.stub();
@@ -21,7 +22,7 @@ const notifyOnLivechatDepartmentAgentChanged = sinon.stub();
 const notifyOnUserChange = sinon.stub();
 const getStore = sinon.stub();
 
-const { deleteUser } = proxyquire.noCallThru().load('./deleteUser', {
+const { deleteUser } = loadWithMocks('./deleteUser', {
 	'@rocket.chat/apps': { Apps: { self: { triggerEvent } }, AppEvents: { IPostUserDeleted: 'IPostUserDeleted' } },
 	'@rocket.chat/core-services': { api: { broadcast }, ClientSafeError },
 	'./getUserSingleOwnedRooms': { getUserSingleOwnedRooms },

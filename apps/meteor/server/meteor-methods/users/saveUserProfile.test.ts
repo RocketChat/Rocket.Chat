@@ -3,8 +3,9 @@ import { beforeEach, describe, it } from 'node:test';
 import { ClientSafeError } from '@rocket.chat/core-services';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const settingsGet = sinon.stub();
 const hashPassword = sinon.stub();
@@ -22,7 +23,7 @@ const saveCustomFields = sinon.stub();
 const validateUserEditing = sinon.stub();
 const saveUserIdentity = sinon.stub();
 
-const { executeSaveUserProfile } = proxyquire.noCallThru().load('./saveUserProfile', {
+const { executeSaveUserProfile } = loadWithMocks('./saveUserProfile', {
 	'@rocket.chat/account-utils': { hashPassword },
 	'@rocket.chat/apps': { Apps: { self: { triggerEvent } }, AppEvents: { IPostUserUpdated: 'IPostUserUpdated' } },
 	'@rocket.chat/core-services': { ClientSafeError },

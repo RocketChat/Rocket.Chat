@@ -5,7 +5,6 @@ import { ClientSafeError } from '@rocket.chat/core-services';
 import { mockModel } from '@rocket.chat/models/testing';
 import { isTruthy } from '@rocket.chat/tools';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import { SAMLUtils } from './Utils';
@@ -51,6 +50,7 @@ import {
 	makeLogoutRequestEnvelope,
 	makeLogoutResponseEnvelope,
 } from '../../../../../tests/mocks/server/lib/saml/helpers';
+import { loadWithMocks } from '../../../../../tests/mocks/utils/loadWithMocks';
 
 const getURLStub = {
 	getWorkspaceURL: (path = '') => getURLWithoutSettings(path, { full: true, cdn: false }, '', 'http://localhost:3000', ''),
@@ -61,11 +61,12 @@ const getURLStubs = {
 	'../../../../../../server/lib/utils/getURL': getURLStub,
 };
 
-const { ServiceProviderMetadata } = proxyquire.noCallThru().load('./generators/ServiceProviderMetadata', getURLStubs);
+const { ServiceProviderMetadata } = loadWithMocks('./generators/ServiceProviderMetadata', getURLStubs);
 
-const { SAMLServiceProvider } = proxyquire
-	.noCallThru()
-	.load('./ServiceProvider', { ...getURLStubs, './generators/ServiceProviderMetadata': { ServiceProviderMetadata } });
+const { SAMLServiceProvider } = loadWithMocks('./ServiceProvider', {
+	...getURLStubs,
+	'./generators/ServiceProviderMetadata': { ServiceProviderMetadata },
+});
 
 describe('SAML', () => {
 	describe('[AuthorizeRequest]', () => {
@@ -1199,7 +1200,7 @@ describe('SAML', () => {
 		};
 
 		const loadSAML = () =>
-			proxyquire.noCallThru().load('./SAML', {
+			loadWithMocks('./SAML', {
 				'@rocket.chat/core-services': { ClientSafeError },
 				'@rocket.chat/random': { Random: { id: () => '__credentialToken__' } },
 				'@rocket.chat/tools': { escapeRegExp: (s: string) => s, escapeHTML: (s: string) => s },

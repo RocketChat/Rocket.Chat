@@ -4,8 +4,9 @@ import { AppsEngineException } from '@rocket.chat/apps-engine/definition/excepti
 import { ClientSafeError, isClientSafeError } from '@rocket.chat/core-services';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 class AbacContractError extends Error {}
 
@@ -30,7 +31,7 @@ const Subscriptions = { findOneByRoomIdAndUserId: sandbox.stub(), removeByRoomId
 
 const AppEvents = { IPreRoomUserJoined: 'IPreRoomUserJoined', IPostRoomUserJoined: 'IPostRoomUserJoined' };
 
-const { addUserToRoom } = p.noCallThru().load('./addUserToRoom.ts', {
+const { addUserToRoom } = loadWithMocks('./addUserToRoom.ts', {
 	'@rocket.chat/abac': { AbacContractError },
 	'@rocket.chat/apps': { Apps: { self: { triggerEvent } }, AppEvents },
 	'@rocket.chat/core-services': { Message, Team, Room, ClientSafeError, isClientSafeError },

@@ -1,12 +1,13 @@
 import { afterEach, describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../tests/mocks/utils/loadWithMocks';
 
 const configureMailTransport = sinon.stub();
 
-const { configureSMTP } = proxyquire.noCallThru().load('./configureSMTP', {
+const { configureSMTP } = loadWithMocks('./configureSMTP', {
 	'../lib/logger/system': { SystemLogger: { info: sinon.stub() } },
 	'../lib/notifications/email/transport': { configureMailTransport },
 });

@@ -1,9 +1,10 @@
 import { describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 
-const { splitSendMessageFields } = proxyquire.noCallThru().load('./splitSendMessageFields', {
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
+
+const { splitSendMessageFields } = loadWithMocks('./splitSendMessageFields', {
 	'@rocket.chat/rest-typings': { chatSendMessageFieldNames: ['rid', 'msg', 'tmid', 'location', 'parseUrls', 't', 'content'] },
 });
 

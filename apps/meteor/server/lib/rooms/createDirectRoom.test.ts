@@ -4,8 +4,9 @@ import { AppsEngineException } from '@rocket.chat/apps-engine/definition/excepti
 import { ClientSafeError } from '@rocket.chat/core-services';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const sandbox = sinon.createSandbox();
 
@@ -26,7 +27,7 @@ const AppEvents = {
 	IPostRoomCreate: 'IPostRoomCreate',
 };
 
-const { createDirectRoom } = p.noCallThru().load('./createDirectRoom.ts', {
+const { createDirectRoom } = loadWithMocks('./createDirectRoom.ts', {
 	'@rocket.chat/apps': { Apps: { self: { triggerEvent } }, AppEvents },
 	'@rocket.chat/core-services': { ClientSafeError },
 	'../../settings': { settings: { get: settingsGet } },
