@@ -32,6 +32,7 @@ import { Controller, useFormContext } from 'react-hook-form';
 
 import type { AccountProfileFormValues } from './getProfileInitialValues';
 import ProfileNameFields from './layout/ProfileNameFields';
+import StatusExpirationFields from './layout/StatusExpirationFields';
 import { useAccountProfileSettings } from './useAccountProfileSettings';
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import PhoneNumberFieldList, { getPersistedPhones } from '../../../components/PhoneNumberFieldList';
@@ -332,58 +333,62 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 						</Field>
 						<Field>
 							<FieldLabel>{t('Status_clear_after')}</FieldLabel>
-							<Stack gap='x8'>
-								<FieldRow>
-									<Controller
-										control={control}
-										name='statusDuration'
-										rules={{
-											deps: ['statusCustomDate', 'statusCustomTime'],
-											validate: (value, { statusCustomDate, statusCustomTime }) =>
-												validateStatusExpiration(value, { statusCustomDate, statusCustomTime }, t),
-										}}
-										render={({ field: { value, onChange } }) => (
-											<Select
-												value={value}
-												options={statusDurationOptions}
-												disabled={!allowUserStatusMessageChange || isExpirationDisabled}
-												onChange={(next) => onChange(String(next))}
+							<StatusExpirationFields
+								duration={
+									<FieldRow>
+										<Controller
+											control={control}
+											name='statusDuration'
+											rules={{
+												deps: ['statusCustomDate', 'statusCustomTime'],
+												validate: (value, { statusCustomDate, statusCustomTime }) =>
+													validateStatusExpiration(value, { statusCustomDate, statusCustomTime }, t),
+											}}
+											render={({ field: { value, onChange } }) => (
+												<Select
+													value={value}
+													options={statusDurationOptions}
+													disabled={!allowUserStatusMessageChange || isExpirationDisabled}
+													onChange={(next) => onChange(String(next))}
+												/>
+											)}
+										/>
+									</FieldRow>
+								}
+								custom={
+									statusDuration === 'custom' && (
+										<>
+											<Controller
+												control={control}
+												name='statusCustomDate'
+												render={({ field: { value, onChange } }) => (
+													<InputBox
+														aria-label={t('Status_expiration_date')}
+														type='date'
+														disabled={!allowUserStatusMessageChange}
+														value={value}
+														onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e.currentTarget.value)}
+														min={new Date().toLocaleDateString('en-CA')}
+													/>
+												)}
 											/>
-										)}
-									/>
-								</FieldRow>
-								{statusDuration === 'custom' && (
-									<Stack direction='row' gap='x8'>
-										<Controller
-											control={control}
-											name='statusCustomDate'
-											render={({ field: { value, onChange } }) => (
-												<InputBox
-													aria-label={t('Status_expiration_date')}
-													type='date'
-													disabled={!allowUserStatusMessageChange}
-													value={value}
-													onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e.currentTarget.value)}
-													min={new Date().toLocaleDateString('en-CA')}
-												/>
-											)}
-										/>
-										<Controller
-											control={control}
-											name='statusCustomTime'
-											render={({ field: { value, onChange } }) => (
-												<InputBox
-													aria-label={t('Status_expiration_time')}
-													type='time'
-													disabled={!allowUserStatusMessageChange}
-													value={value}
-													onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e.currentTarget.value)}
-												/>
-											)}
-										/>
-									</Stack>
-								)}
-							</Stack>
+											<Controller
+												control={control}
+												name='statusCustomTime'
+												render={({ field: { value, onChange } }) => (
+													<InputBox
+														aria-label={t('Status_expiration_time')}
+														type='time'
+														disabled={!allowUserStatusMessageChange}
+														value={value}
+														onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e.currentTarget.value)}
+													/>
+												)}
+											/>
+										</>
+									)
+								}
+							/>
 							{errors.statusDuration && <FieldError>{errors.statusDuration.message}</FieldError>}
 							<FieldHint>{t('Status_new_status_warning')}</FieldHint>
 						</Field>
