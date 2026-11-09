@@ -5,8 +5,9 @@ import type { IPushToken } from '@rocket.chat/core-typings/src/IPushToken';
 import { mockModel } from '@rocket.chat/models/testing';
 import { isRecord, pick, truncateString } from '@rocket.chat/tools';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const loggerStub = { debug: sinon.stub(), warn: sinon.stub(), error: sinon.stub(), info: sinon.stub(), log: sinon.stub() };
 const settingsStub = { get: sinon.stub().returns('') };
@@ -14,7 +15,7 @@ const sendAPNStub = sinon.stub();
 const sendFCMStub = sinon.stub();
 const pushTokenModelStub = { findAllTokensByUserId: sinon.stub() };
 
-const { Push } = proxyquire.noCallThru().load('./push', {
+const { Push } = loadWithMocks('./push', {
 	'@rocket.chat/license': { License: { hasOfflineLicense: () => false } },
 	'./logger': { logger: loggerStub },
 	'../../../settings': { settings: settingsStub },

@@ -2,7 +2,8 @@
 import { describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
+
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const mocks = {
 	'@rocket.chat/tools': {
@@ -60,7 +61,7 @@ const room = {
 
 describe('getEmailContent', () => {
 	it('should return preview string for encrypted message', async () => {
-		const { getEmailContent } = proxyquire.noCallThru().load('./email.js', mocks);
+		const { getEmailContent } = loadWithMocks('./email.js', mocks);
 
 		const result = await getEmailContent({
 			message: { ...message, t: 'e2e' },
@@ -71,7 +72,7 @@ describe('getEmailContent', () => {
 	});
 
 	it('should return header for encrypted message if Email_notification_show_message is turned off', async () => {
-		const { getEmailContent } = proxyquire.noCallThru().load('./email.js', {
+		const { getEmailContent } = loadWithMocks('./email.js', {
 			...mocks,
 			'../../../settings': {
 				settings: {

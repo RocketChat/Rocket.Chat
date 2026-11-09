@@ -2,8 +2,9 @@ import { before, beforeEach, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const models = {
 	Settings: { updateValueById: sinon.stub() },
@@ -11,7 +12,7 @@ const models = {
 
 const mockedFetchWorkspaceSyncPayload = sinon.stub();
 
-const { syncCloudData } = proxyquire.noCallThru().load('./syncCloudData.ts', {
+const { syncCloudData } = loadWithMocks('./syncCloudData.ts', {
 	'@rocket.chat/license': { DuplicatedLicenseError: sinon.stub() },
 	'../../callbacks': { callbacks: { run: sinon.stub() } },
 	'../../../../lib/errors/CloudWorkspaceAccessError': { CloudWorkspaceAccessError: sinon.stub() },

@@ -1,11 +1,11 @@
 import { describe, it } from 'node:test';
 
 import { expect, spy } from 'chai';
-import proxyquire from 'proxyquire';
 
 import type { AppServerOrchestrator } from './orchestrator';
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
-const { _disableAppsWithAddonsCallback } = proxyquire.noCallThru().load('./disableAppsWithAddonsCallback', {
+const { _disableAppsWithAddonsCallback } = loadWithMocks('./disableAppsWithAddonsCallback', {
 	'./orchestrator': {},
 	'../../../../server/lib/sendMessagesToAdmins': { sendMessagesToAdmins: () => undefined },
 	'../../../../server/lib/i18n': {

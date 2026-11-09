@@ -4,8 +4,9 @@ import { mockModel } from '@rocket.chat/models/testing';
 import chai, { expect } from 'chai';
 import chaiDateTime from 'chai-datetime';
 import moment from 'moment';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 chai.use(chaiDateTime);
 
@@ -60,7 +61,7 @@ const mocks = {
 	'./logger': { schedulerLogger: mockLogger },
 };
 
-const { AutoCloseOnHoldSchedulerClass } = proxyquire.noCallThru().load('./AutoCloseOnHoldScheduler', mocks);
+const { AutoCloseOnHoldSchedulerClass } = loadWithMocks('./AutoCloseOnHoldScheduler', mocks);
 
 describe('AutoCloseOnHoldScheduler', () => {
 	before(() => {

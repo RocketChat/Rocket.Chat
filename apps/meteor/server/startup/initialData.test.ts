@@ -2,8 +2,9 @@ import { after, before, beforeEach, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../tests/mocks/utils/loadWithMocks';
 
 const checkUsernameAvailability = sinon.stub();
 const validateEmail = sinon.stub();
@@ -35,7 +36,7 @@ const avatarStore = {
 	insert: sinon.stub(),
 };
 
-const { insertAdminUserFromEnv, insertInitialData } = proxyquire.noCallThru().load('./initialData', {
+const { insertAdminUserFromEnv, insertInitialData } = loadWithMocks('./initialData', {
 	'@rocket.chat/account-utils': {
 		hashPassword: async (password: string) => `hashed=${password}`,
 	},

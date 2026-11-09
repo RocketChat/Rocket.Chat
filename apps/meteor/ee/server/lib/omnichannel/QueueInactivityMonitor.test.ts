@@ -2,8 +2,9 @@ import { afterEach, before, beforeEach, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const AgendaJobStub = {
 	schedule: sinon.stub(),
@@ -30,7 +31,7 @@ const databaseUtilsMock = {
 const livechatMock = { closeRoom: sinon.stub() };
 const settingsMock = { settings: { get: sinon.stub() } };
 
-const { OmnichannelQueueInactivityMonitorClass } = proxyquire.noCallThru().load('./QueueInactivityMonitor', {
+const { OmnichannelQueueInactivityMonitorClass } = loadWithMocks('./QueueInactivityMonitor', {
 	'@rocket.chat/agenda': {
 		Agenda: sinon.stub().returns(AgendaStub),
 	},

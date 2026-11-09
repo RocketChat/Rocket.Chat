@@ -1,8 +1,9 @@
 import { beforeEach, describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const sandbox = sinon.createSandbox();
 
@@ -21,7 +22,7 @@ const apnMock = {
 	'@noCallThru': true,
 };
 
-const { initAPN, shutdownAPN } = proxyquire.noCallThru().load('./apn', {
+const { initAPN, shutdownAPN } = loadWithMocks('./apn', {
 	'@parse/node-apn': {
 		default: apnMock,
 		...apnMock,

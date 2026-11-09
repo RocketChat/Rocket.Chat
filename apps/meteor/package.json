@@ -25,7 +25,7 @@
 	"scripts": {
 		".testapi": "node --test --experimental-test-isolation=none --test-concurrency=1 --test-timeout=10000 --require tsx --require ./tests/setup/chaiPlugins.ts --require ./tests/end-to-end/dumpLastRequestOnFailure.ts",
 		".testunit:jest": "TZ=UTC TS_NODE_COMPILER_OPTIONS='{\"allowJs\": false}' jest",
-		".testunit:server": "node --test --experimental-test-isolation=none --require tsx --require ./tests/setup/chaiPlugins.ts '**/*.test.{ts,js}'",
+		".testunit:server": "node --test --experimental-test-module-mocks --experimental-test-isolation=none --require tsx --require ./tests/setup/chaiPlugins.ts '**/*.test.{ts,js}'",
 		".testunit:server:cov": "nyc -r text -r lcov yarn .testunit:server",
 		"build:ci": "yarn build:client && METEOR_DEBUG_BUILD=1 METEOR_DISABLE_OPTIMISTIC_CACHING=1 meteor build --verbose --server-only --directory /tmp/dist",
 		"build:client": "node vite/buildForServer.mjs",
@@ -57,7 +57,7 @@
 		"testapi": "yarn .testapi 'tests/end-to-end/api/**/*.ts' 'tests/end-to-end/apps/**/*.ts'",
 		"testapi:livechat": "yarn .testapi 'tests/end-to-end/api-livechat/**/*.ts'",
 		"testunit": "yarn .testunit:jest && yarn .testunit:server:cov",
-		"testunit-watch": "node --test --watch --experimental-test-isolation=none --require tsx --require ./tests/setup/chaiPlugins.ts '**/*.test.{ts,js}'",
+		"testunit-watch": "node --test --experimental-test-module-mocks --watch --experimental-test-isolation=none --require tsx --require ./tests/setup/chaiPlugins.ts '**/*.test.{ts,js}'",
 		"typecheck": "meteor lint && cross-env NODE_OPTIONS=\"--max-old-space-size=8192\" tsc --noEmit --skipLibCheck",
 		"version": "node .scripts/version.js"
 	},
@@ -410,7 +410,6 @@
 		"@types/passport-oauth2": "^1.8.0",
 		"@types/prometheus-gc-stats": "^0.6.4",
 		"@types/proxy-from-env": "^1.0.4",
-		"@types/proxyquire": "^1.3.31",
 		"@types/psl": "^1.1.3",
 		"@types/qs": "^6.14.0",
 		"@types/react": "~19.2.18",
@@ -459,7 +458,6 @@
 		"postcss-media-minmax": "^5.0.0",
 		"postcss-nested": "^7.0.2",
 		"postcss-url": "^10.1.4",
-		"proxyquire": "^2.1.3",
 		"raw-loader": "~4.0.2",
 		"sass": "~1.102.0",
 		"sinon": "^19.0.5",

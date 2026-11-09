@@ -2,8 +2,9 @@ import { afterEach, before, beforeEach, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const modelsMock = {
 	LivechatContacts: {
@@ -39,7 +40,7 @@ const queueManager = {
 	verifyInquiry: sinon.stub(),
 };
 
-const { runVerifyContactChannel } = proxyquire.noCallThru().load('./verifyContactChannel', {
+const { runVerifyContactChannel } = loadWithMocks('./verifyContactChannel', {
 	'../../../server/lib/omnichannel/contacts/mergeContacts': { mergeContacts: mergeContactsStub },
 	'../../../server/lib/omnichannel/contacts/verifyContactChannel': { verifyContactChannel: { patch: sinon.stub() } },
 	'../../../server/lib/omnichannel/QueueManager': { QueueManager: queueManager },

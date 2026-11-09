@@ -2,8 +2,9 @@ import { before, beforeEach, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const modelsMock = {
 	Users: {
@@ -18,7 +19,7 @@ const settingsGetMock = {
 	get: sinon.stub(),
 };
 
-const { parseTranscriptRequest } = p.noCallThru().load('./parseTranscriptRequest', {
+const { parseTranscriptRequest } = loadWithMocks('./parseTranscriptRequest', {
 	'../../settings': { settings: settingsGetMock },
 });
 

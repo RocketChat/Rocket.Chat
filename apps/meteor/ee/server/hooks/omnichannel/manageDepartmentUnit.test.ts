@@ -2,8 +2,9 @@ import { before, beforeEach, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const livechatDepartmentStub = {
 	findOneById: sinon.stub(),
@@ -20,7 +21,7 @@ const livechatUnitStub = {
 const hasAnyRoleStub = sinon.stub();
 const getUnitsFromUserStub = sinon.stub();
 
-const { manageDepartmentUnit } = proxyquire.noCallThru().load('./manageDepartmentUnit.ts', {
+const { manageDepartmentUnit } = loadWithMocks('./manageDepartmentUnit.ts', {
 	'@rocket.chat/omni-core-ee': {
 		getUnitsFromUser: getUnitsFromUserStub,
 	},

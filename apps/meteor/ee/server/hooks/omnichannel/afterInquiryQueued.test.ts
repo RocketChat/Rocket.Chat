@@ -2,8 +2,9 @@ import { beforeEach, describe, it } from 'node:test';
 
 import { expect } from 'chai';
 import moment from 'moment';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const settingStub = {
 	watch: sinon.stub(),
@@ -14,7 +15,7 @@ const queueMonitorStub = {
 	scheduleInquiry: sinon.stub(),
 };
 
-const { afterInquiryQueuedFunc: afterInquiryQueued } = proxyquire.noCallThru().load('./afterInquiryQueued.ts', {
+const { afterInquiryQueuedFunc: afterInquiryQueued } = loadWithMocks('./afterInquiryQueued.ts', {
 	'../../../../server/settings': {
 		settings: settingStub,
 	},

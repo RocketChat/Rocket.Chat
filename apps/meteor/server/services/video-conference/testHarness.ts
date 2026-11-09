@@ -7,8 +7,9 @@ import type {
 } from '@rocket.chat/core-typings';
 import { VideoConferenceStatus } from '@rocket.chat/core-typings';
 import { mockModel, type ModelName } from '@rocket.chat/models/testing';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 /**
  * What `videoConfProviders.getProviderCapabilities` answers, for every service loaded through this harness.
@@ -120,7 +121,7 @@ export const createService = ({
 	models?: Partial<Record<ModelName, object>>;
 	overrides?: Record<string, unknown>;
 } = {}) => {
-	const { VideoConfService } = proxyquire.noCallThru().load('./service', {
+	const { VideoConfService } = loadWithMocks('./service', {
 		...commonServiceStubs,
 		'@rocket.chat/core-services': {
 			api: { broadcast },

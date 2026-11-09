@@ -2,8 +2,9 @@ import { before, beforeEach, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const settingGetMock = sinon.stub();
 const usersModelMock = {
@@ -19,7 +20,7 @@ const mocks = {
 	'../../../../server/settings': { settings: { get: settingGetMock } },
 };
 
-const { isAgentWithinChatLimits } = proxyquire.noCallThru().load('./Helper.ts', mocks);
+const { isAgentWithinChatLimits } = loadWithMocks('./Helper.ts', mocks);
 
 describe('isAgentWithinChatLimits', () => {
 	before(() => {

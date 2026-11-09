@@ -5,8 +5,9 @@ import { ClientSafeError, LocalBroker, ServiceClass, api } from '@rocket.chat/co
 import type { IAISearchService, IAuthorization } from '@rocket.chat/core-services';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const sandbox = sinon.createSandbox();
 
@@ -60,7 +61,7 @@ const registerRoute = (path: string, options: (typeof routeOptions)[string], act
 	routeOptions[path] = options;
 };
 
-proxyquire.noCallThru().load('./ai-search', {
+loadWithMocks('./ai-search', {
 	'../../lib/utils/lib/normalizeMessagesForUser': { normalizeMessagesForUser: normalizeMessages },
 	'../api': {
 		API: {

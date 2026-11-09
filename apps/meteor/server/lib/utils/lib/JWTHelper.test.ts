@@ -1,8 +1,9 @@
 import { beforeEach, describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const jsrsasignStub = {
 	KJUR: {
@@ -19,7 +20,7 @@ const jsrsasignStub = {
 	},
 };
 
-const { generateJWT, validateAndDecodeJWT } = proxyquire.noCallThru().load('./JWTHelper', {
+const { generateJWT, validateAndDecodeJWT } = loadWithMocks('./JWTHelper', {
 	jsrsasign: jsrsasignStub,
 });
 

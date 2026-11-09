@@ -2,18 +2,15 @@ import { beforeEach, describe, it } from 'node:test';
 
 import { expect } from 'chai';
 
-const proxyquire = require('proxyquire');
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 let values: Record<string, unknown> = {};
 let modules: string[] = [];
 
-const { getLiveKitConfig, isLiveKitFullyConfigured, isLiveKitLicensed } = proxyquire
-	.noCallThru()
-	.noPreserveCache()
-	.load('./config', {
-		'@rocket.chat/license': { License: { hasModule: (module: string) => modules.includes(module) } },
-		'../../../../server/settings': { settings: { get: (key: string) => values[key] } },
-	});
+const { getLiveKitConfig, isLiveKitFullyConfigured, isLiveKitLicensed } = loadWithMocks('./config', {
+	'@rocket.chat/license': { License: { hasModule: (module: string) => modules.includes(module) } },
+	'../../../../server/settings': { settings: { get: (key: string) => values[key] } },
+});
 
 describe('LiveKit configuration', () => {
 	beforeEach(() => {

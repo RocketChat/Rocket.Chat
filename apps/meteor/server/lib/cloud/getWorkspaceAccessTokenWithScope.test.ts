@@ -1,10 +1,10 @@
 import { describe, it, beforeEach, afterEach } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import { workspaceScopes } from './oauthScopes';
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 class CloudWorkspaceAccessTokenError extends Error {}
 
@@ -15,7 +15,7 @@ const fetchStub = sinon.stub();
 const settingsGetStub = sinon.stub();
 const loggerErrorStub = sinon.stub();
 
-const { getWorkspaceAccessTokenWithScope } = proxyquire.noCallThru().load('./getWorkspaceAccessTokenWithScope.ts', {
+const { getWorkspaceAccessTokenWithScope } = loadWithMocks('./getWorkspaceAccessTokenWithScope.ts', {
 	'@rocket.chat/license': { License: { hasOfflineLicense: hasOfflineLicenseStub } },
 	'@rocket.chat/server-fetch': { serverFetch: fetchStub },
 	'./getRedirectUri': { getRedirectUri: () => 'https://open.rocket.chat/admin/cloud/oauth-callback' },

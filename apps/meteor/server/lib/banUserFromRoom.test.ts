@@ -2,8 +2,9 @@ import { before, beforeEach, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../tests/mocks/utils/loadWithMocks';
 
 const hasPermissionAsyncMock = sinon.stub();
 const hasRoleAsyncMock = sinon.stub();
@@ -34,7 +35,7 @@ const RoomMemberActions = {
 	BAN: 'ban',
 };
 
-const { banUserFromRoomMethod } = p.noCallThru().load('./banUserFromRoom.ts', {
+const { banUserFromRoomMethod } = loadWithMocks('./banUserFromRoom.ts', {
 	'@rocket.chat/core-typings': {
 		isBannedSubscription: (sub: { status?: string } | null) => sub?.status === 'BANNED',
 	},

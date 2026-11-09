@@ -4,7 +4,7 @@ import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
-const proxyquire = require('proxyquire');
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const findOneById = sinon.stub();
 const canAccessConference = sinon.stub();
@@ -13,7 +13,7 @@ const isLiveKitLicensed = sinon.stub();
 const createLiveKitAccessToken = sinon.stub();
 const settingsGet = sinon.stub();
 
-const { getCallConfig } = proxyquire.noCallThru().load('./callConfig', {
+const { getCallConfig } = loadWithMocks('./callConfig', {
 	'@rocket.chat/core-services': { Authorization: { canAccessConference } },
 	'@rocket.chat/logger': {
 		Logger: class {

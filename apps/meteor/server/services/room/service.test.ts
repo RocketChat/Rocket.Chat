@@ -5,10 +5,10 @@ import type { IRoomService } from '@rocket.chat/core-services';
 import type { ISubscription, IUser } from '@rocket.chat/core-typings';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import { createFakeOmnichannelRoom, createFakeRoom, createFakeSubscription, createFakeUser } from '../../../tests/mocks/data';
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const sandbox = sinon.createSandbox();
 
@@ -51,7 +51,7 @@ const roleMethods = {
 	removeRoomOwner: sandbox.stub(),
 };
 
-const { RoomService } = proxyquire.noCallThru().load('./service', {
+const { RoomService } = loadWithMocks('./service', {
 	'@rocket.chat/core-services': {
 		ServiceClassInternal: class {},
 		Authorization,

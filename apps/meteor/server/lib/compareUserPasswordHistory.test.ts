@@ -3,14 +3,15 @@ import { describe, it } from 'node:test';
 import { SHA256 } from '@rocket.chat/sha256';
 import bcrypt from 'bcrypt';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
+
+import { loadWithMocks } from '../../tests/mocks/utils/loadWithMocks';
 
 const settingsValues: Record<string, unknown> = {
 	Accounts_Password_History_Enabled: true,
 	Accounts_Password_History_Amount: 2,
 };
 
-const { compareUserPasswordHistory } = proxyquire.noCallThru().load('./compareUserPasswordHistory.ts', {
+const { compareUserPasswordHistory } = loadWithMocks('./compareUserPasswordHistory.ts', {
 	'../settings': { settings: { get: (id: string) => settingsValues[id] } },
 });
 

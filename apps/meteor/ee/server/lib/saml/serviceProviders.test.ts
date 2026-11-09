@@ -3,8 +3,9 @@ import { describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const setup = ({ samlModuleActiveAtStartup = false } = {}) => {
 	const store = new Map<string, unknown>([
@@ -71,7 +72,7 @@ const setup = ({ samlModuleActiveAtStartup = false } = {}) => {
 	mockModel('LoginServiceConfiguration', LoginServiceConfiguration);
 	const notifyOnLoginServiceConfigurationChanged = sinon.stub();
 
-	const samlSettings = proxyquire.noCallThru().load('./lib/settings', {
+	const samlSettings = loadWithMocks('./lib/settings', {
 		'@rocket.chat/license': { License },
 		'./Utils': { SAMLUtils },
 		'../../../../../server/lib/utils/getURL': { getWorkspaceURL: () => 'http://localhost:3000/' },
@@ -83,7 +84,7 @@ const setup = ({ samlModuleActiveAtStartup = false } = {}) => {
 		'../../../../../server/settings': { settings, settingsRegistry: {} },
 	});
 
-	const samlStartup = proxyquire.noCallThru().load('./serviceProviders', {
+	const samlStartup = loadWithMocks('./serviceProviders', {
 		'@rocket.chat/license': { License },
 		'./lib/Utils': { SAMLUtils },
 		'./lib/settings': samlSettings,

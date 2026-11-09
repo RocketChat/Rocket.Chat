@@ -2,15 +2,16 @@ import { before, beforeEach, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const hasOfflineLicenseStub = sinon.stub();
 const getOldestStub = sinon.stub();
 const fetchStub = sinon.stub();
 const buildRegistrationDataStub = sinon.stub();
 
-const { registerPreIntentWorkspaceWizard } = proxyquire.noCallThru().load('./registerPreIntentWorkspaceWizard.ts', {
+const { registerPreIntentWorkspaceWizard } = loadWithMocks('./registerPreIntentWorkspaceWizard.ts', {
 	'@rocket.chat/license': { License: { hasOfflineLicense: hasOfflineLicenseStub } },
 	'@rocket.chat/server-fetch': { serverFetch: fetchStub },
 	'./buildRegistrationData': { buildWorkspaceRegistrationData: buildRegistrationDataStub },

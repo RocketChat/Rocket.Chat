@@ -5,10 +5,10 @@ import { before, beforeEach, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import { createFakeMessageWithAttachment } from '../../../../../tests/mocks/data';
+import { loadWithMocks } from '../../../../../tests/mocks/utils/loadWithMocks';
 
 const fakeStorageModel = { findOneById: sinon.stub(), deleteFile: sinon.stub() };
 const settingsStub = { watch: sinon.stub(), get: sinon.stub() };
@@ -24,7 +24,7 @@ const roomCoordinatorStub = {
 	getRoomDirectives: sinon.stub(),
 };
 
-const { FileUpload, FileUploadClass } = proxyquire.noCallThru().load('./FileUpload', {
+const { FileUpload, FileUploadClass } = loadWithMocks('./FileUpload', {
 	'meteor/meteor': sinon.stub(),
 	'sharp': sinon.stub(),
 	'stream-buffers': sinon.stub(),
