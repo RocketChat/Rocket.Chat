@@ -1,0 +1,23 @@
+packages/model-typings/src/models/IUploadsModel.ts
+  s_56050d38e7516e::t_ce0ea12cd57d04 11-12
+apps/meteor/server/api/v1/rooms.ts
+  s_56050d38e7516e::t_ce0ea12cd57d04 699-701
+packages/models/src/models/Uploads.ts
+  s_56050d38e7516e::t_ce0ea12cd57d04 44-56,64
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "fee9647103c18225494f5c5a11c66dac9ef4ba72",
+  "prompts": {},
+  "sessions": {
+    "s_56050d38e7516e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a177c3b4-d9da-4202-86c6-7cf92da17a61",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
