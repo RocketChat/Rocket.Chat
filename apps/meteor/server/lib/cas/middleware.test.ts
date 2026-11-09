@@ -60,6 +60,16 @@ describe('middlewareCAS', () => {
 		expect(validate.called).to.be.false;
 	});
 
+	it('should close the login popup without validating the ticket while CAS is disabled', async () => {
+		settingValues.set('CAS_enabled', false);
+
+		const { body } = await request('/_cas/credential-token?ticket=ST-1');
+
+		expect(body).to.include('window.close()');
+		expect(validate.called).to.be.false;
+		expect(CredentialTokens.create.called).to.be.false;
+	});
+
 	it('should validate the ticket for this workspace and keep the CAS user and attributes under the credential token', async () => {
 		casAnswers(undefined, true, 'alice', { attributes: { mail: ['alice@example.com'] } });
 
