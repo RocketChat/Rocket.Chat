@@ -2,6 +2,13 @@
 	"name": "@rocket.chat/server-cloud-communication",
 	"version": "0.0.3",
 	"private": true,
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./src/index.ts",
+			"default": "./src/index.ts"
+		}
+	},
 	"main": "./src/index.ts",
 	"types": "./src/index.ts",
 	"files": [
