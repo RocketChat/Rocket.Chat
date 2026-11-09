@@ -149,7 +149,12 @@ const DataTableBlock = ({ className, block, context, surfaceRenderer }: DataTabl
 						{pageRows.map(({ cells, index }) => (
 							<TableRow key={index}>
 								{columns.map((_, column) => (
-									<TableCell key={column} rowHeader={column === rowHeaderColumn}>
+									// Not `rowHeader`: its surface background stands out inside a message.
+									<TableCell
+										key={column}
+										is={column === rowHeaderColumn ? 'th' : 'td'}
+										scope={column === rowHeaderColumn ? 'row' : undefined}
+									>
 										{renderCell(cells[column], column)}
 									</TableCell>
 								))}
