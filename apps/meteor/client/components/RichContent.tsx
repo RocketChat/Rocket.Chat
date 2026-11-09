@@ -1,11 +1,18 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { ComponentProps } from 'react';
+import type { ReactNode } from 'react';
 
-export type RichContentProps = Pick<ComponentProps<typeof Box>, 'children' | 'dangerouslySetInnerHTML'>;
+export type RichContentProps = {
+	children?: ReactNode;
+	dangerouslySetInnerHTML?: { __html: string };
+};
 
 /**
  * A block of formatted text, its headings, paragraphs, lists, links and code set in the rich text styles.
  */
-const RichContent = (props: RichContentProps) => <Box withRichContent {...props} />;
+const RichContent = ({ children, dangerouslySetInnerHTML }: RichContentProps) => (
+	<Box withRichContent dangerouslySetInnerHTML={dangerouslySetInnerHTML}>
+		{children}
+	</Box>
+);
 
 export default RichContent;

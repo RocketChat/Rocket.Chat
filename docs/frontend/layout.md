@@ -2,8 +2,8 @@
 
 Screens compose named layout containers. They don't lay themselves out with `Box`, with raw HTML elements, or with styling props passed to Fuselage components.
 
-- A **screen** (anything under `apps/meteor/client/views/`) builds its UI from containers whose name says what they are: `Page`, `PageContent`, `Contextualbar`, `GenericModal`, `GenericTable`, `FieldGroup`, `Stack`, `Card`…
-- **`Box` is for building containers**, inside their implementation. A raw `Box` in a screen means a container is missing. CI counts the raw `Box`, `div`, `span` and `section` elements screens render (`node scripts/scan-raw-layout.mjs`) and fails when that count rises above the limit it sets. Files in a `layout/` folder are containers and are not counted.
+- A **screen** (anything under `apps/meteor/client/views/`) builds its UI from containers whose name says what they are: `Page`, `PageContent`, `Contextualbar`, `GenericModal`, `GenericTable`, `FieldGroup`, `Card`…
+- **`Box` and `Stack` are for building containers**, inside their implementation. A raw `Box` or `Stack` in a screen means a container is missing: a `Stack` that only spaces a screen's own blocks is a container that has no name yet. CI doesn't count `Stack` yet; it counts the raw `Box`, `div`, `span` and `section` elements screens render (`node scripts/scan-raw-layout.mjs`) and fails when that count rises above the limit it sets. Files in a `layout/` folder are containers and are not counted.
 - A Fuselage component decides how it looks; its container decides where it sits. Nobody passes it a styling prop it doesn't declare as a variation (`margin*`, `width`/`height`/`size`, `flexGrow`/`alignSelf`, `color`, `fontScale`, `padding*`, `display`, `is`) or an `rcx-*` prop. CI enforces this part: `node scripts/scan-style-props.mjs` lists every violation with its `file:line`, and the lint job fails when their count rises above the limit it sets.
 
 ## The containers
@@ -18,7 +18,7 @@ Screens compose named layout containers. They don't lay themselves out with `Box
 | a form                                                      | `FieldGroup` › `Field` › `FieldLabel` / `FieldRow` / `FieldHint` / `FieldError`                                             |
 | a modal that submits its fields                             | `ModalForm`, as `GenericModal`'s `wrapperFunction`                                                                          |
 | a page's or a tab's content in a centred column             | `ContentColumn` (`size='form'`, 600px; `size='wide'`, 640px)                                                                |
-| things in a row or a column, with space                     | `Stack` (`direction`, `gap`, `align`, `justify`, `wrap`, and `is` for the element: `section`, `ul`, `li`, `form`…)          |
+| things in a row or a column, inside a container             | `Stack` (`direction`, `gap`, `align`, `justify`, `wrap`, and `is` for the element: `section`, `ul`, `li`, `form`…)          |
 | buttons side by side                                        | `ButtonGroup` (`stretch='equal'` for equal widths)                                                                          |
 | a grid of cards                                             | `CardGrid` › `Card`                                                                                                         |
 | a dropdown or popover surface                               | `PopoverSurface` (`elevation`, `maxHeight`, `flush`)                                                                        |
@@ -91,7 +91,7 @@ Look for one first, and otherwise create one, named for what it is, and grow it 
 4. **`packages/ui-client`** once another package or app needs it.
 5. **Fuselage** once it is part of the design system: a reusable layout or a variation of an existing component, reviewed with design.
 
-Name it for its role (`SettingsSection`, `ChatsFilterBar`, `EmptyState`), not its shape (`FlexRow`, `Wrapper`, `Container`). A container that only renames `Stack` isn't one; use `Stack`.
+Name it for its role (`SettingsSection`, `ChatsFilterBar`, `EmptyState`), not its shape (`FlexRow`, `Wrapper`, `Container`). A container that only renames `Stack`, with no role of its own, isn't one. Built from `Stack`, it carries what makes it that role: the gap, the element (`is='ul'`), the alignment.
 
 A wrapper that only sets a margin or a padding usually isn't a container either: the space belongs to the parent, as the `gap` of its `Stack`, or to the padding the surface already has (`PageScrollableContent`, `ContextualbarContent`, `ModalContent`).
 

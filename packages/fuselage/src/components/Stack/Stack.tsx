@@ -4,7 +4,7 @@ import { cx } from '../../helpers/composeClassNames';
 import { Box, type BoxProps } from '../Box';
 
 export type StackProps = RefAttributes<HTMLElement> & {
-	/** The element it renders, so a section, a list or a form keeps its meaning for assistive technology. */
+	/** The element it renders, so a section, a list or a form keeps its meaning for assistive technology. A `span` is still a block-level flex container. */
 	is?: 'div' | 'section' | 'ul' | 'li' | 'form' | 'fieldset' | 'span';
 	direction?: 'row' | 'column';
 	gap?: BoxProps['gap'];
@@ -30,6 +30,7 @@ function Stack({ is = 'div', direction = 'column', gap, align, justify, wrap, gr
 	return (
 		<Box
 			is={is}
+			role={is === 'ul' ? 'list' : undefined}
 			className={cx(resetClassNames[is], className) || undefined}
 			display='flex'
 			flexDirection={direction}

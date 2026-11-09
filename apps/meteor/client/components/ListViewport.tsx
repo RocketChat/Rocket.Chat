@@ -12,8 +12,21 @@ export type ListViewportProps = {
 /**
  * The clipped area a list fills, taking the space its panel leaves, so a virtualized list scrolls inside it.
  */
-const ListViewport = (props: ListViewportProps) => (
-	<Box width='full' height='full' flexGrow={1} flexShrink={1} flexBasis='0' overflow='hidden' {...props} />
+const ListViewport = ({ id, ref, role, 'aria-label': ariaLabel, children }: ListViewportProps) => (
+	<Box
+		id={id}
+		ref={ref}
+		role={role}
+		aria-label={ariaLabel}
+		width='full'
+		height='full'
+		flexGrow={1}
+		flexShrink={1}
+		flexBasis='0'
+		overflow='hidden'
+	>
+		{children}
+	</Box>
 );
 
 export default ListViewport;
