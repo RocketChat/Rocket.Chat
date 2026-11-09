@@ -29,7 +29,7 @@ import type { Actions } from '../helpers';
 import { appEnabledStatuses, appButtonProps } from '../helpers';
 import { handleAPIError } from '../helpers/handleAPIError';
 import { warnEnableDisableApp } from '../helpers/warnEnableDisableApp';
-import AppMenuOptionLabel from '../layout/AppMenuOptionLabel';
+import IconLabel from '../layout/IconLabel';
 
 export type AppMenuOption = {
 	id: string;
@@ -332,7 +332,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 				isAdminUser && {
 					id: 'subscribe',
 					section: 0,
-					content: <AppMenuOptionLabel icon={incompatibleIconName(app, 'subscribe')}>{t('Subscription')}</AppMenuOptionLabel>,
+					content: <IconLabel icon={incompatibleIconName(app, 'subscribe')}>{t('Subscription')}</IconLabel>,
 					onClick: handleSubscription,
 				},
 		];
@@ -343,9 +343,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 					id: 'acquire',
 					section: 0,
 					disabled: requestedEndUser,
-					content: (
-						<AppMenuOptionLabel icon={isAdminUser ? incompatibleIconName(app, 'install') : undefined}>{t(buttonLabel)}</AppMenuOptionLabel>
-					),
+					content: <IconLabel icon={isAdminUser ? incompatibleIconName(app, 'install') : undefined}>{t(buttonLabel)}</IconLabel>,
 					onClick: handleAcquireApp,
 				},
 		];
@@ -370,7 +368,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 				app.installed && {
 					id: 'viewLogs',
 					section: 0,
-					content: <AppMenuOptionLabel icon='desktop-text'>{t('View_Logs')}</AppMenuOptionLabel>,
+					content: <IconLabel icon='desktop-text'>{t('View_Logs')}</IconLabel>,
 					onClick: handleViewLogs,
 				},
 			isAdminUser &&
@@ -378,7 +376,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 				!isAppDetailsPage && {
 					id: 'update',
 					section: 0,
-					content: <AppMenuOptionLabel icon={incompatibleIconName(app, 'update')}>{t('Update')}</AppMenuOptionLabel>,
+					content: <IconLabel icon={incompatibleIconName(app, 'update')}>{t('Update')}</IconLabel>,
 					onClick: handleUpdate,
 				},
 			app.installed &&
@@ -387,9 +385,9 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 					id: 'disable',
 					section: 0,
 					content: (
-						<AppMenuOptionLabel icon='ban' color='status-font-on-warning'>
+						<IconLabel icon='ban' color='status-font-on-warning'>
 							{t('Disable')}
-						</AppMenuOptionLabel>
+						</IconLabel>
 					),
 					onClick: handleDisable,
 				},
@@ -397,7 +395,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 				id: 'enable',
 				section: 0,
 				disabled: doesItReachedTheLimit,
-				content: <AppMenuOptionLabel icon='check'>{t('Enable')}</AppMenuOptionLabel>,
+				content: <IconLabel icon='check'>{t('Enable')}</IconLabel>,
 				onClick: handleEnable,
 			},
 			app.installed &&
@@ -405,9 +403,9 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 					id: 'uninstall',
 					section: 1,
 					content: (
-						<AppMenuOptionLabel icon='trash' color='status-font-on-danger'>
+						<IconLabel icon='trash' color='status-font-on-danger'>
 							{t('Uninstall')}
-						</AppMenuOptionLabel>
+						</IconLabel>
 					),
 					onClick: handleUninstall,
 				},
