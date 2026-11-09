@@ -52,8 +52,9 @@ export type SearchIndexScheduler = {
 	 */
 	noteRoomActivity(): void;
 	/**
-	 * The user opened the room or its search. Its backfill pages go before the pages of the other rooms until its history
-	 * is done. The room that the user opened last goes first.
+	 * The user opened the room or its search. Its backfill gets most of the pages until its history is done: after every
+	 * OPENED_ROOM_PAGES_PER_TURN pages of opened rooms, one page goes to another room, so the other rooms never stop. The
+	 * room that the user opened last goes first.
 	 */
 	focusRoom(rid: string): void;
 	/** Indexes the messages of the room that waited for its room key. */
@@ -85,6 +86,9 @@ export const DEFAULT_REFRESH_MS = 5 * 60_000;
 const MAX_ATTEMPTS_WITHOUT_STATUS = 3;
 
 const NOT_ALLOWED = 'error-not-allowed';
+
+/** Backfill pages that opened rooms get in a row before one page goes to another room (3 of every 4 pages). */
+const OPENED_ROOM_PAGES_PER_TURN = 3;
 
 /** An HTTP error as `fetch` reports it: the `Response`. */
 type HttpErrorResponse = {
@@ -203,6 +207,8 @@ export const createSearchIndexScheduler = ({
 	let visitedThisPass = new Set<string>();
 	/** The rooms that the user opened, the last one first. */
 	let focusOrder: string[] = [];
+	/** Backfill pages in a row that went to opened rooms. After OPENED_ROOM_PAGES_PER_TURN of them, one page goes to another room. */
+	let openedRoomPagesInARow = 0;
 
 	const listeners = new Set<() => void>();
 	let wakeUp: (() => void) | undefined;
@@ -324,13 +330,20 @@ export const createSearchIndexScheduler = ({
 		}
 
 		if (backfill.length) {
+			// Opened rooms go first, but they never block the other rooms: those get one page after each run of opened-room pages.
 			const focused = focusOrder.find((rid) => backfill.some((room) => room.rid === rid));
-			if (focused) return { kind: 'backfill', rid: focused };
+			const others = backfill.filter(({ rid }) => !focusOrder.includes(rid));
+			if (focused && (openedRoomPagesInARow < OPENED_ROOM_PAGES_PER_TURN || !others.length)) {
+				openedRoomPagesInARow++;
+				return { kind: 'backfill', rid: focused };
+			}
+			openedRoomPagesInARow = 0;
 
-			let next = backfill.find(({ rid }) => !visitedThisPass.has(rid));
+			const pool = others.length ? others : backfill;
+			let next = pool.find(({ rid }) => !visitedThisPass.has(rid));
 			if (!next) {
 				visitedThisPass = new Set();
-				next = backfill[0];
+				next = pool[0];
 			}
 			visitedThisPass.add(next.rid);
 			return { kind: 'backfill', rid: next.rid };
@@ -507,6 +520,7 @@ export const createSearchIndexScheduler = ({
 			lastJobFromActivity = false;
 			visitedThisPass = new Set();
 			focusOrder = [];
+			openedRoomPagesInARow = 0;
 			refreshRooms();
 			loop = loop.then(() => runLoop(run));
 		},

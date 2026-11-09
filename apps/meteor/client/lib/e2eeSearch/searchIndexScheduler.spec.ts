@@ -226,8 +226,8 @@ describe('createSearchIndexScheduler', () => {
 			{ rid: 'c', lastActivityAt: NOW - 2 * HOUR },
 		];
 
-		it('backfills an opened room before the other rooms until its history is done, then goes on in turn', async () => {
-			const { scheduler, backend, roomsOf } = await setup({ rooms: threeRooms });
+		it('gives an opened room 3 of every 4 backfill pages, and the other rooms the 4th page in turn', async () => {
+			const { scheduler, roomsOf } = await setup({ rooms: threeRooms, messagesPerRoom: 100 });
 
 			scheduler.start();
 			await jest.advanceTimersByTimeAsync(REQUEST_MS);
@@ -235,13 +235,20 @@ describe('createSearchIndexScheduler', () => {
 			await jest.advanceTimersByTimeAsync(8 * (REQUEST_MS + PAUSE_MS));
 			scheduler.stop();
 
-			const order = roomsOf();
-			const lastOfA = order.lastIndexOf('a');
-			expect(order[0]).toBe('b');
-			expect(lastOfA).toBeGreaterThanOrEqual(3);
-			expect(order.slice(1, lastOfA + 1).every((rid) => rid === 'a')).toBe(true);
-			expect((await backend.getRoomState('a'))?.backfillDone).toBe(true);
-			expect(order[lastOfA + 1]).toBe('c');
+			expect(roomsOf().slice(0, 9)).toEqual(['b', 'a', 'a', 'a', 'c', 'a', 'a', 'a', 'b']);
+		});
+
+		it('backfills an opened room with every page when no other room has backfill left', async () => {
+			const { scheduler, backend, roomsOf } = await setup({ rooms: threeRooms.slice(0, 1), messagesPerRoom: 100 });
+
+			scheduler.start();
+			await jest.advanceTimersByTimeAsync(REQUEST_MS);
+			scheduler.focusRoom('a');
+			await jest.advanceTimersByTimeAsync(5 * (REQUEST_MS + PAUSE_MS));
+			scheduler.stop();
+
+			expect(roomsOf().slice(0, 6)).toEqual(['a', 'a', 'a', 'a', 'a', 'a']);
+			expect((await backend.getRoomState('a'))?.backfillDone).toBe(false);
 		});
 
 		it('backfills the room that the user opened last first', async () => {
