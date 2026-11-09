@@ -15,6 +15,10 @@ export class ThreadsFlexTab extends FlexTab {
 		return this.listThreadMessages.locator('[data-qa-type="message"]').last().locator('[data-qa-type="message-body"]');
 	}
 
+	get ignoredThreads(): Locator {
+		return this.root.getByText('This message was ignored');
+	}
+
 	getThreadMessageByText(messageText: string): Locator {
 		return this.listThreadMessages.getByRole('listitem').getByText(messageText);
 	}

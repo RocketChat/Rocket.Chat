@@ -247,6 +247,14 @@ test.describe.serial('channel-management', () => {
 			await user1Channel.content.toggleAlsoSendThreadToChannel(false);
 			await user1Channel.content.sendMessageInThread('thread reply from an ignored user');
 
+			await poHomeChannel.roomToolbar.openThreadsTab();
+			await poHomeChannel.tabs.threads.waitForDisplay();
+
+			await expect(poHomeChannel.tabs.threads.ignoredThreads).toHaveCount(1);
+			await expect(poHomeChannel.tabs.threads.root).not.toContainText('message to check ignore');
+
+			await poHomeChannel.tabs.threads.close();
+
 			await poHomeChannel.content.openReplyInThread();
 			await poHomeChannel.content.waitForThread();
 
