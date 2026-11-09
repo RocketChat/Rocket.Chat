@@ -42,6 +42,7 @@ export default async function apiHandler(request: RequestContext): Promise<JsonR
 
 		logger.debug(`${path}'s ${call} was successfully executed.`);
 
+		// oxlint-disable-next-line typescript/no-unsafe-return -- result of the app's endpoint method, whose shape is defined by the app and passed through to the host as the JSON-RPC result
 		return result;
 	} catch (e) {
 		logger.debug(`${path}'s ${call} was unsuccessful.`);

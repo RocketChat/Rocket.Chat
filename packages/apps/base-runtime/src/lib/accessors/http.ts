@@ -53,7 +53,7 @@ export class Http implements IHttp {
 
 		this.httpExtender.getDefaultHeaders().forEach((value: string, key: string) => {
 			if (typeof request.headers?.[key] !== 'string') {
-				request.headers![key] = value;
+				request.headers[key] = value;
 			}
 		});
 
@@ -63,7 +63,7 @@ export class Http implements IHttp {
 
 		this.httpExtender.getDefaultParams().forEach((value: string, key: string) => {
 			if (typeof request.params?.[key] !== 'string') {
-				request.params![key] = value;
+				request.params[key] = value;
 			}
 		});
 

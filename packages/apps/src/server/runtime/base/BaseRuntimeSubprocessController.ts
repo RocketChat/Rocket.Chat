@@ -344,6 +344,7 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 					clearTimeout(timeoutId);
 
 					if (error) {
+						// oxlint-disable-next-line typescript/prefer-promise-reject-errors -- error may be the subprocess's serialized JSON-RPC error (message/code/data), which sendRequest callers read as-is
 						reject(error);
 					}
 
