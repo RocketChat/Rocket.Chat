@@ -2,7 +2,7 @@ import { Box } from '@rocket.chat/fuselage';
 import type { ComponentProps, FormEventHandler } from 'react';
 
 export type ModalFormProps = Pick<ComponentProps<typeof Box>, 'elevation' | 'className' | 'children'> & {
-	onSubmit: FormEventHandler<HTMLFormElement>;
+	onSubmit: FormEventHandler<HTMLElement>;
 };
 
 /**
