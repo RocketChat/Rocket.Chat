@@ -156,7 +156,17 @@ function safeDateNotEqualCheck(a: Date | string | undefined, b: Date | string | 
 	return new Date(a).toISOString() !== new Date(b).toISOString();
 }
 
-const keys: (keyof RoomListRowProps)[] = ['id', 'style', 'viewMode', 'showAvatar', 'formatTime', 'selected', 'dragging', 't', 'videoConfActions'];
+const keys: (keyof RoomListRowProps)[] = [
+	'id',
+	'style',
+	'viewMode',
+	'showAvatar',
+	'formatTime',
+	'selected',
+	'dragging',
+	't',
+	'videoConfActions',
+];
 
 export default memo(SidebarItemTemplateWithData, (prevProps, nextProps) => {
 	if (keys.some((key) => prevProps[key] !== nextProps[key])) {

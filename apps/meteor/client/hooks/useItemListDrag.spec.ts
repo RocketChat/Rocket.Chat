@@ -1,4 +1,4 @@
-import { renderHook, act, fireEvent } from '@testing-library/react';
+import { renderHook, act, fireEvent, waitFor } from '@testing-library/react';
 
 import { useItemListDrag } from './useItemListDrag';
 import { useItemListNavigation } from './useItemListNavigation';
@@ -39,16 +39,14 @@ describe('useItemListDrag', () => {
 		});
 
 		rows[0].focus();
-		await act(async () => {
-			fireEvent.keyDown(rows[0], { key: 'ArrowDown', metaKey: true, shiftKey: true });
-		});
+		fireEvent.keyDown(rows[0], { key: 'ArrowDown', metaKey: true, shiftKey: true });
 
 		expect(onMove).toHaveBeenCalledWith({ key: 'Projects', kind: 'group', group: 'Projects' }, 'down');
+		await waitFor(() => expect(document.querySelector('[role="status"]')).toHaveTextContent('Projects moved to position 2 of 2'));
 		expect(document.activeElement).toBe(rows[0]);
-		expect(document.querySelector('[role="status"]')).toHaveTextContent('Projects moved to position 2 of 2');
 	});
 
-	it('advertises the shortcut only on the rows the keyboard can move', async () => {
+	it('advertises the shortcut only on the rows the keyboard can move', () => {
 		const { list, rows } = createList();
 		const onMove = jest.fn();
 
@@ -64,13 +62,11 @@ describe('useItemListDrag', () => {
 		expect(rows[0]).toHaveAttribute('aria-keyshortcuts', expect.stringContaining('Meta+Shift+ArrowDown'));
 		expect(rows[1]).not.toHaveAttribute('aria-keyshortcuts');
 
-		await act(async () => {
-			fireEvent.keyDown(rows[1], { key: 'ArrowDown', ctrlKey: true, shiftKey: true });
-		});
+		fireEvent.keyDown(rows[1], { key: 'ArrowDown', ctrlKey: true, shiftKey: true });
 		expect(onMove).not.toHaveBeenCalled();
 	});
 
-	it('leaves the plain arrows to the list navigation', async () => {
+	it('leaves the plain arrows to the list navigation', () => {
 		const { list, rows } = createList();
 		const onMove = jest.fn();
 
@@ -80,9 +76,7 @@ describe('useItemListDrag', () => {
 		});
 
 		rows[0].focus();
-		await act(async () => {
-			fireEvent.keyDown(rows[0], { key: 'ArrowDown', shiftKey: true });
-		});
+		fireEvent.keyDown(rows[0], { key: 'ArrowDown', shiftKey: true });
 
 		expect(onMove).not.toHaveBeenCalled();
 	});
