@@ -1,6 +1,6 @@
 import * as child_process from 'node:child_process';
+import { EventEmitter } from 'node:events';
 import * as path from 'node:path';
-import { EventEmitter } from 'node:stream';
 import { inspect as utilInspect } from 'node:util';
 
 import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
