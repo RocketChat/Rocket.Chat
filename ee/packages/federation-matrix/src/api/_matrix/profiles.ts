@@ -2,8 +2,8 @@ import { eventIdSchema, roomIdSchema, userIdSchema, federationSDK, type RoomVers
 import { Router } from '@rocket.chat/http-router';
 import { ajv, ajvQuery } from '@rocket.chat/rest-typings';
 
-import { canAccessResourceMiddleware } from '../middlewares/canAccessResource';
-import { isAuthenticatedMiddleware } from '../middlewares/isAuthenticated';
+import { canAccessResourceMiddleware } from '../middlewares/canAccessResource.js';
+import { isAuthenticatedMiddleware } from '../middlewares/isAuthenticated.js';
 
 const UsernameSchema = {
 	type: 'string',

@@ -2,7 +2,7 @@ import { FederationMatrix } from '@rocket.chat/core-services';
 import { federationSDK } from '@rocket.chat/federation-sdk';
 import { mockModel } from '@rocket.chat/models/testing';
 
-import { getMatrixInviteRoutes } from './invite';
+import { getMatrixInviteRoutes } from './invite.js';
 
 jest.mock('@rocket.chat/core-services', () => ({
 	FederationMatrix: {

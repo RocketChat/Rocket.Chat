@@ -1,6 +1,6 @@
 import { federationSDK } from '@rocket.chat/federation-sdk';
 
-import { isReservedByExclusiveBridge } from './isReservedByExclusiveBridge';
+import { isReservedByExclusiveBridge } from './isReservedByExclusiveBridge.js';
 
 jest.mock('@rocket.chat/federation-sdk', () => ({
 	federationSDK: {

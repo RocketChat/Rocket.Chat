@@ -1,4 +1,4 @@
-import { getFederatedRoomName } from './getFederatedRoomName';
+import { getFederatedRoomName } from './getFederatedRoomName.js';
 
 describe('getFederatedRoomName', () => {
 	it('should strip the leading `!` sigil and replace the `:` separator with `_`', () => {

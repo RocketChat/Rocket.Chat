@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 
-import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails';
+import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails.js';
 import { Upload } from '@rocket.chat/core-services';
 import type { IUpload } from '@rocket.chat/core-typings';
 import { federationSDK } from '@rocket.chat/federation-sdk';

@@ -1,7 +1,7 @@
 import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Hono } from 'hono';
 
-import { canAccessResourceMiddleware } from './canAccessResource';
+import { canAccessResourceMiddleware } from './canAccessResource.js';
 
 jest.mock('@rocket.chat/federation-sdk', () => ({
 	federationSDK: {

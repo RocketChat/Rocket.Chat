@@ -1,7 +1,7 @@
 import { federationSDK, init } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 
-import { registerEvents } from './events';
+import { registerEvents } from './events/index.js';
 
 const logger = new Logger('FederationSetup');
 

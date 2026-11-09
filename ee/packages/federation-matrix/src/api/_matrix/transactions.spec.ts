@@ -1,6 +1,6 @@
 import { federationSDK } from '@rocket.chat/federation-sdk';
 
-import { getMatrixTransactionsRoutes } from './transactions';
+import { getMatrixTransactionsRoutes } from './transactions.js';
 
 jest.mock('@rocket.chat/federation-sdk', () => ({
 	federationSDK: {

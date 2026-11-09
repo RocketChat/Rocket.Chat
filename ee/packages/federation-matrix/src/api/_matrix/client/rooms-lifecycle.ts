@@ -5,7 +5,7 @@ import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Rooms, Users } from '@rocket.chat/models';
 import { ajv } from '@rocket.chat/rest-typings';
 
-import type { ClientRouter } from './_shared';
+import type { ClientRouter } from './_shared.js';
 import {
 	MATRIX_ROOM_ID_PATTERN,
 	MATRIX_USER_ID_PATTERN,
@@ -17,10 +17,10 @@ import {
 	license,
 	notImplemented,
 	tags,
-} from './_shared';
-import { getFederatedRoomName } from '../../../helpers/getFederatedRoomName';
-import { logger } from '../../logger';
-import { isAppServiceAuthenticatedMiddleware } from '../../middlewares/isAppServiceAuthenticated';
+} from './_shared.js';
+import { getFederatedRoomName } from '../../../helpers/getFederatedRoomName.js';
+import { logger } from '../../logger.js';
+import { isAppServiceAuthenticatedMiddleware } from '../../middlewares/isAppServiceAuthenticated.js';
 
 const CreateRoomBodySchema = {
 	type: 'object',

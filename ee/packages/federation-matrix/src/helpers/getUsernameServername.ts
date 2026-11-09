@@ -1,4 +1,4 @@
-import { extractDomainFromMatrixUserId } from './extractDomainFromMatrixUserId';
+import { extractDomainFromMatrixUserId } from './extractDomainFromMatrixUserId.js';
 
 /**
  * Extract the username and the servername from a matrix user id

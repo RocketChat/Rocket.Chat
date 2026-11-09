@@ -1,4 +1,4 @@
-import { decodeXmppUserId, isFullXmppUserId, parseXmppUserId } from './parseXmppUserId';
+import { decodeXmppUserId, isFullXmppUserId, parseXmppUserId } from './parseXmppUserId.js';
 
 describe('decodeXmppUserId', () => {
 	it('should decode the `=xx` escapes back to their characters', () => {

@@ -2,7 +2,7 @@ import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
 import { ajv, ajvQuery } from '@rocket.chat/rest-typings';
 
-import { isAuthenticatedMiddleware } from '../middlewares/isAuthenticated';
+import { isAuthenticatedMiddleware } from '../middlewares/isAuthenticated.js';
 
 // All query params are optional per spec.
 const PublicRoomsQuerySchema = {

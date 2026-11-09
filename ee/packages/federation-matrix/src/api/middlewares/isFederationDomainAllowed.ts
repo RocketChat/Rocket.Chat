@@ -2,7 +2,7 @@ import { Settings } from '@rocket.chat/core-services';
 import type { MiddlewareHandler } from 'hono';
 import mem from 'mem';
 
-import { logger } from '../logger';
+import { logger } from '../logger.js';
 
 // cache for 60 seconds
 const getAllowList = mem(

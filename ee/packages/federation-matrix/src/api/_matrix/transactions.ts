@@ -2,9 +2,9 @@ import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
 import { ajv, ajvQuery } from '@rocket.chat/rest-typings';
 
-import { logger } from '../logger';
-import { canAccessResourceMiddleware } from '../middlewares/canAccessResource';
-import { isAuthenticatedMiddleware } from '../middlewares/isAuthenticated';
+import { logger } from '../logger.js';
+import { canAccessResourceMiddleware } from '../middlewares/canAccessResource.js';
+import { isAuthenticatedMiddleware } from '../middlewares/isAuthenticated.js';
 
 const SendTransactionParamsSchema = {
 	type: 'object',

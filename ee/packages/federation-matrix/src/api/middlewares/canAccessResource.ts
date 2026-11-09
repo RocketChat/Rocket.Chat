@@ -1,7 +1,7 @@
 import { errCodes, federationSDK } from '@rocket.chat/federation-sdk';
 import type { MiddlewareHandler } from 'hono';
 
-import { isAuthenticatedMiddleware } from './isAuthenticated';
+import { isAuthenticatedMiddleware } from './isAuthenticated.js';
 
 function extractEntityId(
 	params: { eventId?: string; mediaId?: string; roomId?: string },
