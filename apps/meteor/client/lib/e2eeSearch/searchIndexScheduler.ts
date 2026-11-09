@@ -51,6 +51,11 @@ export type SearchIndexScheduler = {
 	 * these catch-ups take turns with the backfill pages, so a busy room does not stop the backfill.
 	 */
 	noteRoomActivity(): void;
+	/**
+	 * The user opened the room or its search. Its backfill pages go before the pages of the other rooms until its history
+	 * is done. The room that the user opened last goes first.
+	 */
+	focusRoom(rid: string): void;
 	/** Indexes the messages of the room that waited for its room key. */
 	retryPendingDecrypt(rid: string): void;
 	/** Keeps a live message that failed to decrypt (room key missing) for the retry of its room. */
@@ -196,6 +201,8 @@ export const createSearchIndexScheduler = ({
 	/** True after a catch-up that activity asked for: the next turn goes to a backfill page, if one waits. */
 	let lastJobFromActivity = false;
 	let visitedThisPass = new Set<string>();
+	/** The rooms that the user opened, the last one first. */
+	let focusOrder: string[] = [];
 
 	const listeners = new Set<() => void>();
 	let wakeUp: (() => void) | undefined;
@@ -317,6 +324,9 @@ export const createSearchIndexScheduler = ({
 		}
 
 		if (backfill.length) {
+			const focused = focusOrder.find((rid) => backfill.some((room) => room.rid === rid));
+			if (focused) return { kind: 'backfill', rid: focused };
+
 			let next = backfill.find(({ rid }) => !visitedThisPass.has(rid));
 			if (!next) {
 				visitedThisPass = new Set();
@@ -378,6 +388,7 @@ export const createSearchIndexScheduler = ({
 		noKeyWait.delete(rid);
 		seenActivity.delete(rid);
 		activityPending.delete(rid);
+		focusOrder = focusOrder.filter((focused) => focused !== rid);
 		// The user left the room: the next refresh that lists it again sees that the user joined it again.
 		if (!getRooms().some((room) => room.rid === rid)) absentAfterRemoval.add(rid);
 		crawler.forgetRoom(rid);
@@ -495,6 +506,7 @@ export const createSearchIndexScheduler = ({
 			activityPending.clear();
 			lastJobFromActivity = false;
 			visitedThisPass = new Set();
+			focusOrder = [];
 			refreshRooms();
 			loop = loop.then(() => runLoop(run));
 		},
@@ -517,6 +529,12 @@ export const createSearchIndexScheduler = ({
 			if (!started) return;
 			refreshRooms((rid) => activityPending.set(rid, ++activityMarks));
 			if (activityPending.size) wake();
+		},
+
+		focusRoom(rid) {
+			if (!started) return;
+			focusOrder = [rid, ...focusOrder.filter((focused) => focused !== rid)];
+			wake();
 		},
 
 		retryPendingDecrypt(rid) {

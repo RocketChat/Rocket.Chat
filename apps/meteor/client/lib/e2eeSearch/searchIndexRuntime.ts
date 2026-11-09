@@ -163,12 +163,16 @@ export type SearchIndexRuntime = {
 	subscribe(listener: () => void): () => void;
 	/** Catches up every room, after the connection to the server came back. */
 	onReconnect(): void;
-	/** Catches up the room before the next backfill page, so a search in it finds its edits and misses its deletes. */
+	/**
+	 * Catches up the room before the next backfill page, so a search in it finds its edits and misses its deletes. Its
+	 * backfill also goes before the other rooms' backfill.
+	 */
 	requestRoomCatchUp(rid: string): void;
 	/** Catches up the rooms whose activity moved, after the user's subscriptions changed. */
 	onRoomsChanged(): void;
 	/**
-	 * The client opened a room. A room with no live room stream gets a catch-up, so its edits and deletes since the last
+	 * The client opened a room. Its backfill goes before the other rooms' backfill. A room with no live room stream also
+	 * gets a catch-up, so its edits and deletes since the last
 	 * catch-up reach the index. The client's message cache uses the same rule: it loads a room again when its stream is not live.
 	 */
 	onRoomOpened(rid: string): void;
@@ -351,9 +355,13 @@ export const createSearchIndexRuntime = ({
 			if (recordsSync && catchUpStartedAt === undefined) catchUpStartedAt = now();
 			scheduler.requestCatchUp();
 		},
-		requestRoomCatchUp: (rid) => scheduler?.requestCatchUp([rid]),
+		requestRoomCatchUp(rid) {
+			scheduler?.requestCatchUp([rid]);
+			scheduler?.focusRoom(rid);
+		},
 		onRoomsChanged: () => scheduler?.noteRoomActivity(),
 		onRoomOpened(rid) {
+			scheduler?.focusRoom(rid);
 			if (liveRooms.has(rid)) return;
 			liveRooms.add(rid);
 			scheduler?.requestCatchUp([rid]);
