@@ -100,7 +100,7 @@ export const SectionWithMrkdwn = createStory(payloads.sectionWithMrkdwn);
 
 export const SectionWithLongUnbreakableUrl = createStory(payloads.sectionWithLongUnbreakableUrl);
 
-export const SectionWithTextFields =createStory(payloads.sectionWithTextFields);
+export const SectionWithTextFields = createStory(payloads.sectionWithTextFields);
 
 export const SectionWithButtonAccessory = createStory(payloads.sectionWithButtonAccessory);
 
