@@ -105,19 +105,19 @@ async function cleanGuestHistory(_id: string) {
 		throw new Error('error-invalid-guest');
 	}
 
-	// TODO: optimize function => instead of removing one by one, fetch the _ids of the rooms and then remove them in bulk
-	const cursor = LivechatRooms.findByVisitorId(_id, { projection: { _id: 1 } });
-	for await (const room of cursor) {
+	const rooms = await LivechatRooms.findByVisitorId(_id, { projection: { _id: 1 } }).toArray();
+	const roomIds = rooms.map(({ _id }) => _id);
+	if (roomIds.length) {
 		await Promise.all([
-			Subscriptions.removeByRoomId(room._id, {
+			Promise.all(roomIds.map((roomId) => FileUpload.removeFilesByRoomId(roomId))),
+			Subscriptions.removeByRoomIds(roomIds, {
 				async onTrash(doc) {
 					void notifyOnSubscriptionChanged(doc, 'removed');
 				},
 			}),
-			FileUpload.removeFilesByRoomId(room._id),
-			Messages.removeByRoomId(room._id),
-			ReadReceipts.removeByRoomId(room._id),
-			ReadReceiptsArchive.removeByRoomId(room._id),
+			Messages.removeByRoomIds(roomIds),
+			ReadReceipts.removeByRoomIds(roomIds),
+			ReadReceiptsArchive.removeByRoomIds(roomIds),
 		]);
 	}
 
