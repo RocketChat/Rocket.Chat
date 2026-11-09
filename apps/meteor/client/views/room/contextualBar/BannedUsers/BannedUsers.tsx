@@ -14,8 +14,8 @@ import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
 import BannedUsersItem from './BannedUsersItem';
-import ContextualbarListArea from '../../../../components/ContextualbarList/ContextualbarListArea';
-import ContextualbarListStatus from '../../../../components/ContextualbarList/ContextualbarListStatus';
+import ContextualbarInset from '../../../../components/ContextualbarInset';
+import ListViewport from '../../../../components/ListViewport';
 import type { BannedUser } from '../../../hooks/useRoomBannedUsers';
 
 export type BannedUsersProps = {
@@ -42,9 +42,9 @@ const BannedUsers = ({ loading, error, bannedUsers, useRealName = false, onClick
 			</ContextualbarHeader>
 			<ContextualbarContent flush spaced>
 				{loading && (
-					<ContextualbarListStatus spaced>
+					<ContextualbarInset block='x12'>
 						<Throbber size='x12' />
-					</ContextualbarListStatus>
+					</ContextualbarInset>
 				)}
 
 				{error && <ContextualbarEmptyContent icon='warning' title={t('Banned_users_error')} subtitle={t('Please_try_again')} />}
@@ -54,7 +54,7 @@ const BannedUsers = ({ loading, error, bannedUsers, useRealName = false, onClick
 				)}
 
 				{!loading && !error && bannedUsers.length > 0 && (
-					<ContextualbarListArea role='list' aria-label={t('Banned_Users')}>
+					<ListViewport role='list' aria-label={t('Banned_Users')}>
 						<VirtualizedScrollbars>
 							<Virtuoso
 								style={{ height: '100%', width: '100%' }}
@@ -64,7 +64,7 @@ const BannedUsers = ({ loading, error, bannedUsers, useRealName = false, onClick
 								itemContent={(_index, user) => <BannedUsersItem user={user} useRealName={useRealName} onClickUnban={onClickUnban} />}
 							/>
 						</VirtualizedScrollbars>
-					</ContextualbarListArea>
+					</ListViewport>
 				)}
 			</ContextualbarContent>
 		</ContextualbarDialog>
