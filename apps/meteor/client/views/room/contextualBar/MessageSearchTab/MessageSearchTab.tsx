@@ -19,7 +19,8 @@ import { Virtuoso } from 'react-virtuoso';
 import MessageSearchForm from './components/MessageSearchForm';
 import { useMessageSearchProviderQuery } from './hooks/useMessageSearchProviderQuery';
 import { useMessageSearchQuery } from './hooks/useMessageSearchQuery';
-import MessageSearchResults from './layout/MessageSearchResults';
+import ContextualbarInset from '../../../../components/ContextualbarInset';
+import ListViewport from '../../../../components/ListViewport';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
 import RoomMessage from '../../../../components/message/variants/RoomMessage';
 import SystemMessage from '../../../../components/message/variants/SystemMessage';
@@ -28,8 +29,6 @@ import MessageListErrorBoundary from '../../MessageList/MessageListErrorBoundary
 import { isMessageNewDay } from '../../MessageList/lib/isMessageNewDay';
 import MessageListProvider from '../../MessageList/providers/MessageListProvider';
 import { useRoomSubscription } from '../../contexts/RoomContext';
-import ContextualbarInset from '../layout/ContextualbarInset';
-import MessageListSection from '../layout/MessageListSection';
 
 // TODO: Refactor this component to isolate the data from the visual
 const MessageSearchTab = () => {
@@ -67,64 +66,62 @@ const MessageSearchTab = () => {
 					<>
 						{searchText && isPending && <Throbber />}
 						{isSuccess && (
-							<MessageSearchResults id={searchListId}>
+							<ListViewport id={searchListId}>
 								{messageSearchData.length === 0 && <ContextualbarEmptyContent title={t('No_results_found')} />}
 								{messageSearchData.length > 0 && (
 									<MessageListErrorBoundary>
 										<MessageListProvider>
-											<MessageListSection>
-												<VirtualizedScrollbars>
-													<Virtuoso
-														totalCount={messageSearchData.length}
-														overscan={25}
-														data={messageSearchData}
-														itemContent={(index, message) => {
-															const previous = messageSearchData[index - 1];
+											<VirtualizedScrollbars>
+												<Virtuoso
+													totalCount={messageSearchData.length}
+													overscan={25}
+													data={messageSearchData}
+													itemContent={(index, message) => {
+														const previous = messageSearchData[index - 1];
 
-															const newDay = isMessageNewDay(message, previous);
+														const newDay = isMessageNewDay(message, previous);
 
-															const system = MessageTypes.isSystemMessage(message);
+														const system = MessageTypes.isSystemMessage(message);
 
-															const unread = subscription?.tunread?.includes(message._id) ?? false;
-															const mention = subscription?.tunreadUser?.includes(message._id) ?? false;
-															const all = subscription?.tunreadGroup?.includes(message._id) ?? false;
+														const unread = subscription?.tunread?.includes(message._id) ?? false;
+														const mention = subscription?.tunreadUser?.includes(message._id) ?? false;
+														const all = subscription?.tunreadGroup?.includes(message._id) ?? false;
 
-															return (
-																<Fragment key={message._id}>
-																	{newDay && <MessageDivider>{formatDate(message.ts)}</MessageDivider>}
+														return (
+															<Fragment key={message._id}>
+																{newDay && <MessageDivider>{formatDate(message.ts)}</MessageDivider>}
 
-																	{system ? (
-																		<SystemMessage message={message} showUserAvatar={showUserAvatar} />
-																	) : (
-																		<RoomMessage
-																			message={message}
-																			sequential={false}
-																			unread={unread}
-																			mention={mention}
-																			all={all}
-																			context='search'
-																			searchText={searchText}
-																			showUserAvatar={showUserAvatar}
-																		/>
-																	)}
-																</Fragment>
-															);
-														}}
-														endReached={() => {
-															setLimit((limit) => limit + pageSize);
-														}}
-													/>
-												</VirtualizedScrollbars>
-											</MessageListSection>
+																{system ? (
+																	<SystemMessage message={message} showUserAvatar={showUserAvatar} />
+																) : (
+																	<RoomMessage
+																		message={message}
+																		sequential={false}
+																		unread={unread}
+																		mention={mention}
+																		all={all}
+																		context='search'
+																		searchText={searchText}
+																		showUserAvatar={showUserAvatar}
+																	/>
+																)}
+															</Fragment>
+														);
+													}}
+													endReached={() => {
+														setLimit((limit) => limit + pageSize);
+													}}
+												/>
+											</VirtualizedScrollbars>
 										</MessageListProvider>
 									</MessageListErrorBoundary>
 								)}
-							</MessageSearchResults>
+							</ListViewport>
 						)}
 					</>
 				)}
 				{providerQuery.isError && (
-					<ContextualbarInset>
+					<ContextualbarInset block='x24'>
 						<Callout type='danger'>{t('Search_current_provider_not_active')}</Callout>
 					</ContextualbarInset>
 				)}

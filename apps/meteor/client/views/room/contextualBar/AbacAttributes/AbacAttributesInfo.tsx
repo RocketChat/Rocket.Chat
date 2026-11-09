@@ -11,7 +11,6 @@ import {
 } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
-import AbacAttributeSection from './layout/AbacAttributeSection';
 import AbacAttributeTags from './layout/AbacAttributeTags';
 
 export const getAttributeRows = (attributes: IAbacAttributeDefinition[], requiredKeys: string[]): IAbacAttributeDefinition[] => {
@@ -60,7 +59,7 @@ const AbacAttributesInfo = ({ attributes, requiredKeys, isTeam, onManage, onClos
 							</Text>
 						</Stack>
 						{rows.map(({ key, values }) => (
-							<AbacAttributeSection key={key} aria-label={key}>
+							<Stack is='section' key={key} aria-label={key} gap='x8'>
 								<Text fontScale='p1' color='default'>
 									{key}
 								</Text>
@@ -70,7 +69,7 @@ const AbacAttributesInfo = ({ attributes, requiredKeys, isTeam, onManage, onClos
 										<Tag key={value}>{value}</Tag>
 									))}
 								</AbacAttributeTags>
-							</AbacAttributeSection>
+							</Stack>
 						))}
 					</Stack>
 				</ContextualbarScrollableContent>

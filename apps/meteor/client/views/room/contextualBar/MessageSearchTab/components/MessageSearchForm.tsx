@@ -8,7 +8,6 @@ import { useTranslation } from 'react-i18next';
 
 import { getRoomTypeTranslation } from '../../../../../lib/getRoomTypeTranslation';
 import { useRoom } from '../../../contexts/RoomContext';
-import MessageSearchFormLayout from '../layout/MessageSearchFormLayout';
 
 export type MessageSearchFormProps = {
 	provider: IMessageSearchProvider;
@@ -51,7 +50,7 @@ const MessageSearchForm = ({ provider, onSearch, searchListId, isSuccess }: Mess
 	const { t } = useTranslation();
 
 	return (
-		<MessageSearchFormLayout onSubmit={submitHandler}>
+		<Stack is='form' gap='x12' grow onSubmit={submitHandler}>
 			<Stack>
 				<Field>
 					<TextInput
@@ -77,7 +76,7 @@ const MessageSearchForm = ({ provider, onSearch, searchListId, isSuccess }: Mess
 					{t('Encrypted_content_cannot_be_searched')}
 				</Callout>
 			)}
-		</MessageSearchFormLayout>
+		</Stack>
 	);
 };
 

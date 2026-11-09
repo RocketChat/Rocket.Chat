@@ -1,11 +1,10 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { Tag, Text } from '@rocket.chat/fuselage';
+import { Stack, Tag, Text } from '@rocket.chat/fuselage';
 import { InfoPanelField, InfoPanelLabel } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import AbacAttributeItem from './layout/AbacAttributeItem';
-import AbacAttributeValues from './layout/AbacAttributeValues';
 import AbacManagedTag from './layout/AbacManagedTag';
 import AbacSectionDivider from './layout/AbacSectionDivider';
 import { RoomIcon } from '../../../../../../components/RoomIcon';
@@ -45,13 +44,13 @@ const RoomInfoABACSection = ({ room }: RoomInfoABACSectionProps) => {
 							<Text is='span' id={`room-attribute-${attribute.key}-label`}>
 								{attribute.key}
 							</Text>
-							<AbacAttributeValues aria-labelledby={`room-attribute-${attribute.key}-label`}>
+							<Stack is='ul' direction='row' align='center' gap='x4' aria-labelledby={`room-attribute-${attribute.key}-label`}>
 								{attribute.values.map((value) => (
-									<Tag medium key={value}>
-										{value}
-									</Tag>
+									<Stack is='li' key={value}>
+										<Tag medium>{value}</Tag>
+									</Stack>
 								))}
-							</AbacAttributeValues>
+							</Stack>
 						</AbacAttributeItem>
 					))}
 				</ul>

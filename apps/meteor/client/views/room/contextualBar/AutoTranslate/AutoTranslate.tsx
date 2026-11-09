@@ -12,7 +12,7 @@ import { useId } from 'react';
 import type { ChangeEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import AutoTranslateSettings from './layout/AutoTranslateSettings';
+import ContextualbarInset from '../../../../components/ContextualbarInset';
 import { useRoom } from '../../contexts/RoomContext';
 
 export type AutoTranslateProps = {
@@ -37,8 +37,8 @@ const AutoTranslate = ({ language, languages, handleSwitch, translateEnable, han
 				<ContextualbarTitle>{t('Auto_Translate')}</ContextualbarTitle>
 				{handleClose && <ContextualbarClose onClick={handleClose} />}
 			</ContextualbarHeader>
-			<ContextualbarContent>
-				<AutoTranslateSettings>
+			<ContextualbarContent flush>
+				<ContextualbarInset block='x24'>
 					<FieldGroup>
 						{room.encrypted && (
 							<Callout title={t('Automatic_translation_not_available')} type='warning'>
@@ -69,7 +69,7 @@ const AutoTranslate = ({ language, languages, handleSwitch, translateEnable, han
 							</FieldRow>
 						</Field>
 					</FieldGroup>
-				</AutoTranslateSettings>
+				</ContextualbarInset>
 			</ContextualbarContent>
 		</ContextualbarDialog>
 	);

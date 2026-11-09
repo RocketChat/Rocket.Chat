@@ -18,7 +18,8 @@ import type { ReactNode } from 'react';
 import { useCallback } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
-import ContextualbarListStatus from '../../../components/ContextualbarList/ContextualbarListStatus';
+import ContextualbarInset from '../../../components/ContextualbarInset';
+import ListViewport from '../../../components/ListViewport';
 import RoomMessage from '../../../components/message/variants/RoomMessage';
 import SystemMessage from '../../../components/message/variants/SystemMessage';
 import { useFormatDate } from '../../../hooks/useFormatDate';
@@ -28,7 +29,6 @@ import MessageListErrorBoundary from '../MessageList/MessageListErrorBoundary';
 import { isMessageNewDay } from '../MessageList/lib/isMessageNewDay';
 import MessageListProvider from '../MessageList/providers/MessageListProvider';
 import { useRoomSubscription } from '../contexts/RoomContext';
-import MessageListSection from './layout/MessageListSection';
 
 export type MessageListTabProps = {
 	iconName: IconName;
@@ -59,9 +59,9 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 			</ContextualbarHeader>
 			<ContextualbarContent flush>
 				{queryResult.isLoading && (
-					<ContextualbarListStatus spaced>
+					<ContextualbarInset block='x12'>
 						<Throbber size='x12' />
-					</ContextualbarListStatus>
+					</ContextualbarInset>
 				)}
 				{queryResult.isSuccess && (
 					<>
@@ -70,7 +70,7 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 						{queryResult.data.length > 0 && (
 							<MessageListErrorBoundary>
 								<MessageListProvider>
-									<MessageListSection ref={messageListRef}>
+									<ListViewport ref={messageListRef}>
 										<VirtualizedScrollbars>
 											<Virtuoso
 												totalCount={queryResult.data.length}
@@ -109,7 +109,7 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 												}}
 											/>
 										</VirtualizedScrollbars>
-									</MessageListSection>
+									</ListViewport>
 								</MessageListProvider>
 							</MessageListErrorBoundary>
 						)}

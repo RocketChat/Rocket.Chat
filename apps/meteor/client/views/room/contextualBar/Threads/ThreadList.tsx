@@ -19,9 +19,9 @@ import { Virtuoso } from 'react-virtuoso';
 
 import ThreadListItem from './components/ThreadListItem';
 import { useThreadsList } from './hooks/useThreadsList';
+import ContextualbarInset from '../../../../components/ContextualbarInset';
 import { FilterBar, FilterBarFilters, FilterBarSearch } from '../../../../components/FilterBar';
-import ContextualbarListArea from '../../../../components/ContextualbarList/ContextualbarListArea';
-import ContextualbarListStatus from '../../../../components/ContextualbarList/ContextualbarListStatus';
+import ListViewport from '../../../../components/ListViewport';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
 import { useMessageRowListNavigation } from '../../../../hooks/useMessageRowListNavigation';
 import { getErrorMessage } from '../../../../lib/errorHandling';
@@ -149,17 +149,17 @@ const ThreadList = () => {
 			<ContextualbarContent flush ref={ref}>
 				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={itemCount} />
 				{isPending && (
-					<ContextualbarListStatus spaced>
+					<ContextualbarInset block='x12'>
 						<Throbber size='x12' />
-					</ContextualbarListStatus>
+					</ContextualbarInset>
 				)}
 				{error && (
-					<ContextualbarListStatus>
+					<ContextualbarInset>
 						<Callout type='danger'>{getErrorMessage(error, t('Something_went_wrong'))}</Callout>
-					</ContextualbarListStatus>
+					</ContextualbarInset>
 				)}
 				{isSuccess && (
-					<ContextualbarListArea id={threadListId} ref={threadListRef}>
+					<ListViewport id={threadListId} ref={threadListRef}>
 						{items.length === 0 && <ContextualbarEmptyContent title={t('No_Threads')} />}
 						{items.length > 0 && (
 							<VirtualizedScrollbars>
@@ -185,7 +185,7 @@ const ThreadList = () => {
 								/>
 							</VirtualizedScrollbars>
 						)}
-					</ContextualbarListArea>
+					</ListViewport>
 				)}
 			</ContextualbarContent>
 		</ContextualbarDialog>
