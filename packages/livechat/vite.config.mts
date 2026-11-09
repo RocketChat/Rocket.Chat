@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 
 import { tamaguiPlugin } from '@tamagui/vite-plugin';
 import type { Plugin, ResolvedConfig } from 'vite';
-import { defineConfig } from 'vite';
+import { defineConfig, normalizePath } from 'vite';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
@@ -60,7 +60,7 @@ const withoutFuselageGlobalStylesheet = (): Plugin => ({
 	name: 'livechat-without-fuselage-global-stylesheet',
 	enforce: 'pre',
 	resolveId(source, importer) {
-		return source === './index.scss' && importer === join(fuselageRoot, 'src/index.ts') ? '\0livechat-fuselage-index.scss' : null;
+		return source === './index.scss' && importer === normalizePath(join(fuselageRoot, 'src/index.ts')) ? '\0livechat-fuselage-index.scss' : null;
 	},
 	load(id) {
 		return id === '\0livechat-fuselage-index.scss' ? '' : null;
