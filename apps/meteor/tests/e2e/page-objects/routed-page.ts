@@ -27,8 +27,8 @@ export abstract class RoutedPage {
 	 * For routes that can legitimately settle on something else — an upsell dialog, a "not authorized"
 	 * message, a redirect to login — so the wait still matches what the test expects.
 	 */
-	async gotoExpecting(until: Locator): Promise<void> {
-		await this.navigateTo(this.route, until);
+	async gotoExpecting(until: Locator, options?: { state: 'attached' | 'visible' }): Promise<void> {
+		await this.navigateTo(this.route, () => until.waitFor(options));
 	}
 
 	/** Waits until the route has finished rendering and the page is usable, without navigating. */
