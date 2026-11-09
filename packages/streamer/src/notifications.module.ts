@@ -406,6 +406,23 @@ export class NotificationsModule {
 			const user = await getCachedUserForPublication(this);
 			return user ? Authorization.hasPermission(user, 'view-l-room') : false;
 		});
+		this.streamRoomData.allowEmit(async function (rid) {
+			const user = await getCachedUserForPublication(this);
+			if (!user) {
+				return false;
+			}
+
+			try {
+				const room = await Rooms.findOneById(rid);
+				if (!room) {
+					return false;
+				}
+
+				return await Authorization.canAccessRoom(room, user);
+			} catch (error) {
+				return false;
+			}
+		});
 
 		this.streamRoomData.allowWrite('none');
 		this.streamRoomData.allowRead(async function (rid) {

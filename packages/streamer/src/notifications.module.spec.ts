@@ -1,11 +1,13 @@
-import { api, MediaCall, Settings, VideoConf } from '@rocket.chat/core-services';
-import { Subscriptions, Users } from '@rocket.chat/models';
+import { api, Authorization, MediaCall, Settings, VideoConf } from '@rocket.chat/core-services';
+import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
 import { NotificationsModule } from './notifications.module';
+import { invalidate } from './publication-user-cache';
 import { Streamer } from './streamer.module';
 
 jest.mock('@rocket.chat/core-services', () => ({
 	...jest.requireActual('@rocket.chat/core-services'),
+	Authorization: { canAccessRoom: jest.fn() },
 	VideoConf: { validateAction: jest.fn() },
 	MediaCall: { processSerializedSignal: jest.fn() },
 	Settings: { get: jest.fn() },
@@ -13,6 +15,7 @@ jest.mock('@rocket.chat/core-services', () => ({
 
 jest.mock('@rocket.chat/models', () => ({
 	...jest.requireActual('@rocket.chat/models'),
+	Rooms: { findOneById: jest.fn() },
 	Subscriptions: {
 		countByRoomIdAndUserId: jest.fn(),
 		findByRoomIdAndNotUserId: jest.fn(),
@@ -60,6 +63,63 @@ describe('NotificationsModule', () => {
 
 	afterEach(() => {
 		jest.restoreAllMocks();
+	});
+
+	describe('room-data delivery', () => {
+		const userId = 'room-data-preview-user';
+
+		afterEach(() => {
+			invalidate(userId);
+		});
+
+		it('stops delivering updates when a public room becomes inaccessible', async () => {
+			const user = { _id: userId, roles: [] };
+			const publicRoom = { _id: 'preview-room', t: 'c' };
+			const privateRoom = { _id: 'preview-room', t: 'p' };
+			const send = jest.fn();
+			const publication = {
+				userId,
+				_session: { userId, socket: { send } },
+				_isDeactivated: () => false,
+				onStop: jest.fn(),
+				ready: jest.fn(),
+			};
+
+			invalidate(userId);
+			jest.mocked(Users.findOneById).mockResolvedValue(user as any);
+
+			const findRoom = jest.mocked(Rooms.findOneById);
+			findRoom.mockReset();
+			findRoom.mockResolvedValue(publicRoom as any);
+
+			const canAccess = jest.mocked(Authorization.canAccessRoom);
+			canAccess.mockReset();
+			canAccess.mockImplementation(async (room) => room?.t === 'c');
+
+			const stream = notifications.streamRoomData as unknown as Streamer<'room-data'>;
+			await stream._publish(publication as any, publicRoom._id);
+			expect(publication.ready).toHaveBeenCalledTimes(1);
+
+			const delivery = jest.spyOn(stream, 'sendToManySubscriptions');
+
+			stream.emitWithoutBroadcast(publicRoom._id, publicRoom as any);
+			await delivery.mock.results[0].value;
+			expect(send).toHaveBeenCalledTimes(1);
+
+			send.mockClear();
+			delivery.mockClear();
+			findRoom.mockClear();
+			canAccess.mockClear();
+			findRoom.mockResolvedValue(privateRoom as any);
+
+			stream.emitWithoutBroadcast(privateRoom._id, privateRoom as any);
+			await delivery.mock.results[0].value;
+
+			expect(findRoom).toHaveBeenCalledWith(privateRoom._id);
+			expect(canAccess).toHaveBeenCalledWith(privateRoom, user);
+			expect(send).not.toHaveBeenCalled();
+			expect(stream.subscriptions.size).toBe(1);
+		});
 	});
 
 	describe('notify-user allowWrite', () => {
