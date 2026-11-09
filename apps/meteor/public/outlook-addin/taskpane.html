@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Rocket.Chat</title>
+		<link rel="stylesheet" href="taskpane.css" />
+		<script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+		<script src="taskpane.js" defer></script>
+	</head>
+	<body>
+		<header class="header">
+			<img class="logo" src="icon-32.png" alt="" width="32" height="32" />
+			<h1 class="title">Rocket.Chat</h1>
+		</header>
+
+		<main>
+			<p id="status" class="status" role="status" aria-live="polite"></p>
+
+			<form id="form" class="form" hidden>
+				<p data-i18n="Outlook_AddIn_Intro"></p>
+				<label id="sip-alias-option" class="option" hidden>
+					<input id="sip-alias" type="checkbox" />
+					<span data-i18n="Outlook_AddIn_Add_SIP_Alias"></span>
+				</label>
+				<button id="confirm" class="button" type="submit" data-i18n="Outlook_AddIn_Confirm"></button>
+			</form>
+		</main>
+	</body>
+</html>

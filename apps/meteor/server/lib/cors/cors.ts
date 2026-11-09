@@ -8,7 +8,8 @@ import { WebApp, WebAppInternals } from 'meteor/webapp';
 
 import { getWebAppHash } from '../../configuration/configureBoilerplate';
 import { settings } from '../../settings';
-import { getOutlookAddInFrameOrigins, isOutlookAddInPath, OFFICE_JS_ORIGIN } from '../outlookAddIn';
+import { getOutlookAddInFrameOrigins } from '../outlookAddIn';
+import { isOutlookAddInPath, OFFICE_JS_ORIGIN } from '../outlookAddInPaths';
 
 // Taken from 'connect' types
 type NextFunction = (err?: any) => void;

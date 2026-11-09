@@ -41,6 +41,12 @@ The conference hangs off the external room and uses the booking's discussion. In
 
 The title is the booking's, or the number when it has none; with neither, the room names the conference, as for any untitled one. A booking without a number never gets one, even on a workspace that gives every other conference a temporary number.
 
+## The Outlook add-in
+
+The add-in ships with the workspace: a task pane under `/outlook-addin/` and a manifest the workspace generates at `/outlook-addin/manifest.xml`, pointing at itself. The manifest is the XML kind, because on-premises Exchange accepts no other, and it asks only for what every supported Exchange Server's webmail offers. An Exchange admin installs it from that URL, through the Exchange admin center or `New-App -Url`.
+
+In a meeting the organizer is editing, a button opens the task pane. It asks the workspace what the organizer may book, offers a dial-in number only when they may have one, and on confirmation books the meeting with the event's attendees and subject. It then appends the workspace's invitation text to the end of the event body. The pane speaks the workspace's default language.
+
 ## Showing the add-in inside Outlook on the web
 
 Outlook on the web shows an add-in inside an iframe, while the workspace refuses to be framed by anyone. The add-in's own pages, under `/outlook-addin/`, are the exception, and only for the webmail origins listed in *Pexip → Outlook Add-in → Outlook on the Web Addresses*. With none listed they stay as unframeable as everything else. Those pages may also load Office.js from Microsoft's CDN, which is the only place an add-in is allowed to load it from.

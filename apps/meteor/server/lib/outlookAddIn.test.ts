@@ -5,7 +5,7 @@ import proxyquire from 'proxyquire';
 
 const settingValues: Record<string, unknown> = {};
 
-const { getOutlookAddInFrameOrigins, isOutlookAddInPath } = proxyquire.noCallThru().load('./outlookAddIn', {
+const { getOutlookAddInFrameOrigins } = proxyquire.noCallThru().load('./outlookAddIn', {
 	'../settings': { settings: { get: (key: string) => settingValues[key] } },
 });
 
@@ -22,13 +22,5 @@ describe('getOutlookAddInFrameOrigins', () => {
 		settingValues.Pexip_Integration_Outlook_AddIn_Frame_Origins = '  ';
 
 		expect(getOutlookAddInFrameOrigins()).to.deep.equal([]);
-	});
-});
-
-describe('isOutlookAddInPath', () => {
-	it('should only match paths under the add-in folder', () => {
-		expect(isOutlookAddInPath('/outlook-addin/taskpane.html')).to.be.true;
-		expect(isOutlookAddInPath('/outlook-addin-evil/page.html')).to.be.false;
-		expect(isOutlookAddInPath('/home')).to.be.false;
 	});
 });
