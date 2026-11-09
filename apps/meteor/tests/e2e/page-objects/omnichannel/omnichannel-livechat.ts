@@ -19,6 +19,13 @@ export class OmnichannelLiveChat extends RoutedPage {
 		await this.btnOpenLiveChat.waitFor({ state: 'visible' });
 	}
 
+	async gotoRegistration(): Promise<void> {
+		await this.navigateTo(this.route, async () => {
+			await this.waitForReady();
+			await this.inputName.waitFor({ state: 'attached' });
+		});
+	}
+
 	btnOpenOnlineLiveChat(label: string): Locator {
 		return this.page.locator(`role=button[name="${label}"]`);
 	}
