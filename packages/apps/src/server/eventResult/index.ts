@@ -1,3 +1,3 @@
-export type { HostEventResult, EventResultMeta } from './HostEventResult';
-export { isEventResult } from './isEventResult';
-export { makeHostEventResult } from './makeHostEventResult';
+export type { HostEventResult, EventResultMeta } from './HostEventResult.js';
+export { isEventResult } from './isEventResult.js';
+export { makeHostEventResult } from './makeHostEventResult.js';

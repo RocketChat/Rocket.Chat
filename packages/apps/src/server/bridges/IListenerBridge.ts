@@ -1,10 +1,10 @@
-import type { IMessage as IAppsMessage } from '@rocket.chat/apps-engine/definition/messages';
-import type { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
-import type { IRoom as IAppsRoom } from '@rocket.chat/apps-engine/definition/rooms';
-import type { UIKitIncomingInteraction } from '@rocket.chat/apps-engine/definition/uikit';
+import type { IMessage as IAppsMessage } from '@rocket.chat/apps-engine/definition/messages/index.js';
+import type { AppInterface } from '@rocket.chat/apps-engine/definition/metadata/index.js';
+import type { IRoom as IAppsRoom } from '@rocket.chat/apps-engine/definition/rooms/index.js';
+import type { UIKitIncomingInteraction } from '@rocket.chat/apps-engine/definition/uikit/index.js';
 import type { ILivechatDepartment, ILivechatVisitor, IMessage, IOmnichannelRoom, IRoom, IUser } from '@rocket.chat/core-typings';
 
-import type { AppEvents } from '../../AppsEngine';
+import type { AppEvents } from '../../AppsEngine.js';
 
 export interface IListenerBridge {
 	messageEvent(int: AppInterface, message: IAppsMessage): Promise<void | boolean | IAppsMessage>;

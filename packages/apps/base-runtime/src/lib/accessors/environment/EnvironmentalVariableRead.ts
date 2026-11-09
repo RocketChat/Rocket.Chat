@@ -1,7 +1,7 @@
-import type { IEnvironmentalVariableRead } from '@rocket.chat/apps-engine/definition/accessors';
+import type { IEnvironmentalVariableRead } from '@rocket.chat/apps-engine/definition/accessors/index.js';
 
-import { bridgeCall } from '../../bridges/bridgeCall';
-import type * as Messenger from '../../messenger';
+import { bridgeCall } from '../../bridges/bridgeCall.js';
+import type * as Messenger from '../../messenger.js';
 
 export class EnvironmentalVariableRead implements IEnvironmentalVariableRead {
 	constructor(private readonly senderFn: typeof Messenger.sendRequest) {}

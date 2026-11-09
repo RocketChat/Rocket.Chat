@@ -1,8 +1,8 @@
-import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
-import type { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
-import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
+import type { IMessage } from '@rocket.chat/apps-engine/definition/messages/index.js';
+import type { AppInterface } from '@rocket.chat/apps-engine/definition/metadata/index.js';
+import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/index.js';
 
-import { BaseBridge } from './BaseBridge';
+import { BaseBridge } from './BaseBridge.js';
 
 export abstract class ListenerBridge extends BaseBridge {
 	public async doMessageEvent(int: AppInterface, message: IMessage): Promise<void | boolean | IMessage> {

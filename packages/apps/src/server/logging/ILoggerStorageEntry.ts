@@ -1,5 +1,5 @@
-import type { ILogEntry } from '@rocket.chat/apps-engine/definition/accessors';
-import type { AppMethod } from '@rocket.chat/apps-engine/definition/metadata';
+import type { ILogEntry } from '@rocket.chat/apps-engine/definition/accessors/index.js';
+import type { AppMethod } from '@rocket.chat/apps-engine/definition/metadata/index.js';
 
 export interface ILoggerStorageEntry {
 	appId: string;

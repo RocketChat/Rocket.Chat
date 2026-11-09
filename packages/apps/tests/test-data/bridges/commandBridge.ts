@@ -1,8 +1,8 @@
-import type { IHttp, IModify, IPersistence, IRead } from '@rocket.chat/apps-engine/definition/accessors';
-import type { ISlashCommand, SlashCommandContext } from '@rocket.chat/apps-engine/definition/slashcommands';
+import type { IHttp, IModify, IPersistence, IRead } from '@rocket.chat/apps-engine/definition/accessors/index.js';
+import type { ISlashCommand, SlashCommandContext } from '@rocket.chat/apps-engine/definition/slashcommands/index.js';
 
-import { CommandBridge } from '../../../src/server/bridges';
-import { TestData } from '../utilities';
+import { CommandBridge } from '../../../src/server/bridges/index.js';
+import { TestData } from '../utilities.js';
 
 export class TestsCommandBridge extends CommandBridge {
 	public commands: Map<string, (context: SlashCommandContext, read: IRead, modify: IModify, http: IHttp, persis: IPersistence) => void>;

@@ -1,8 +1,8 @@
-import type { IContactCreator } from '@rocket.chat/apps-engine/definition/accessors/IContactCreator';
-import type { ILivechatContact } from '@rocket.chat/apps-engine/definition/livechat';
+import type { IContactCreator } from '@rocket.chat/apps-engine/definition/accessors/IContactCreator.js';
+import type { ILivechatContact } from '@rocket.chat/apps-engine/definition/livechat/index.js';
 
-import { bridgeCall } from '../../bridges/bridgeCall';
-import type * as Messenger from '../../messenger';
+import { bridgeCall } from '../../bridges/bridgeCall.js';
+import type * as Messenger from '../../messenger.js';
 
 export class ContactCreator implements IContactCreator {
 	constructor(private readonly senderFn: typeof Messenger.sendRequest) {}

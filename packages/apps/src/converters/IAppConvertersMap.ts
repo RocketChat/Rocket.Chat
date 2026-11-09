@@ -1,14 +1,14 @@
-import type { IAppContactsConverter } from './IAppContactsConverter';
-import type { IAppDepartmentsConverter } from './IAppDepartmentsConverter';
-import type { IAppMessagesConverter } from './IAppMessagesConverter';
-import type { IAppRolesConverter } from './IAppRolesConverter';
-import type { IAppRoomsConverter } from './IAppRoomsConverter';
-import type { IAppSettingsConverter } from './IAppSettingsConverter';
-import type { IAppThreadsConverter } from './IAppThreadsConverter';
-import type { IAppUploadsConverter } from './IAppUploadsConverter';
-import type { IAppUsersConverter } from './IAppUsersConverter';
-import type { IAppVideoConferencesConverter } from './IAppVideoConferencesConverter';
-import type { IAppVisitorsConverter } from './IAppVisitorsConverter';
+import type { IAppContactsConverter } from './IAppContactsConverter.js';
+import type { IAppDepartmentsConverter } from './IAppDepartmentsConverter.js';
+import type { IAppMessagesConverter } from './IAppMessagesConverter.js';
+import type { IAppRolesConverter } from './IAppRolesConverter.js';
+import type { IAppRoomsConverter } from './IAppRoomsConverter.js';
+import type { IAppSettingsConverter } from './IAppSettingsConverter.js';
+import type { IAppThreadsConverter } from './IAppThreadsConverter.js';
+import type { IAppUploadsConverter } from './IAppUploadsConverter.js';
+import type { IAppUsersConverter } from './IAppUsersConverter.js';
+import type { IAppVideoConferencesConverter } from './IAppVideoConferencesConverter.js';
+import type { IAppVisitorsConverter } from './IAppVisitorsConverter.js';
 
 type AppConverters = {
 	contacts: IAppContactsConverter;

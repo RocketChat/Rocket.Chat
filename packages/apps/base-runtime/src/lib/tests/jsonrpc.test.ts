@@ -1,7 +1,7 @@
 import * as assert from 'node:assert';
 import { describe, it } from 'node:test';
 
-import * as jsonrpc from '../jsonrpc';
+import * as jsonrpc from '../jsonrpc.js';
 
 /**
  * The optional slots (`params`, `meta`, `error.data`) must stay ABSENT rather

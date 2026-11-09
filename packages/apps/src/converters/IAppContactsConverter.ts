@@ -1,6 +1,6 @@
 import type { ILivechatContact } from '@rocket.chat/core-typings';
 
-import type { IAppsLivechatContact } from '../AppsEngine';
+import type { IAppsLivechatContact } from '../AppsEngine.js';
 
 export interface IAppContactsConverter {
 	convertById(contactId: ILivechatContact['_id']): Promise<IAppsLivechatContact | undefined>;

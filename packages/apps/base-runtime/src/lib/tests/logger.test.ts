@@ -1,7 +1,7 @@
 import * as assert from 'node:assert';
 import { describe, it } from 'node:test';
 
-import { Logger } from '../logger';
+import { Logger } from '../logger.js';
 
 describe('Logger', () => {
 	it('getLogs should return an array of entries', () => {

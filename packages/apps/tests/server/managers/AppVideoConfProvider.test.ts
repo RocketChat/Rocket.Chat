@@ -1,10 +1,10 @@
 import * as assert from 'node:assert';
 import { describe, it } from 'node:test';
 
-import type { IVideoConfProvider } from '@rocket.chat/apps-engine/definition/videoConfProviders';
+import type { IVideoConfProvider } from '@rocket.chat/apps-engine/definition/videoConfProviders/index.js';
 
-import type { ProxiedApp } from '../../../src/server/ProxiedApp';
-import { AppVideoConfProvider } from '../../../src/server/managers/AppVideoConfProvider';
+import type { ProxiedApp } from '../../../src/server/ProxiedApp.js';
+import { AppVideoConfProvider } from '../../../src/server/managers/AppVideoConfProvider.js';
 
 describe('AppVideoConfProvider', () => {
 	it('ensureAppVideoConfManager', () => {

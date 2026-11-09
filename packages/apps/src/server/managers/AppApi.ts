@@ -1,10 +1,10 @@
-import type { IApi, IApiRequest, IApiResponse } from '@rocket.chat/apps-engine/definition/api';
-import { ApiSecurity, ApiVisibility } from '@rocket.chat/apps-engine/definition/api';
-import type { IApiEndpoint } from '@rocket.chat/apps-engine/definition/api/IApiEndpoint';
-import type { IApiEndpointInfo } from '@rocket.chat/apps-engine/definition/api/IApiEndpointInfo';
+import type { IApiEndpoint } from '@rocket.chat/apps-engine/definition/api/IApiEndpoint.js';
+import type { IApiEndpointInfo } from '@rocket.chat/apps-engine/definition/api/IApiEndpointInfo.js';
+import type { IApi, IApiRequest, IApiResponse } from '@rocket.chat/apps-engine/definition/api/index.js';
+import { ApiSecurity, ApiVisibility } from '@rocket.chat/apps-engine/definition/api/index.js';
 
-import type { ProxiedApp } from '../ProxiedApp';
-import type { AppLogStorage } from '../storage';
+import type { ProxiedApp } from '../ProxiedApp.js';
+import type { AppLogStorage } from '../storage/index.js';
 
 export class AppApi {
 	public readonly computedPath: string;

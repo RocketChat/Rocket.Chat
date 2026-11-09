@@ -1,7 +1,7 @@
-import type { IHttpResponse } from '@rocket.chat/apps-engine/definition/accessors';
+import type { IHttpResponse } from '@rocket.chat/apps-engine/definition/accessors/index.js';
 
-import type { IHttpBridgeRequestInfo } from '../../../src/server/bridges';
-import { HttpBridge } from '../../../src/server/bridges';
+import type { IHttpBridgeRequestInfo } from '../../../src/server/bridges/index.js';
+import { HttpBridge } from '../../../src/server/bridges/index.js';
 
 export class TestsHttpBridge extends HttpBridge {
 	public call(info: IHttpBridgeRequestInfo): Promise<IHttpResponse> {

@@ -1,11 +1,11 @@
 import * as assert from 'node:assert';
 import { describe, it } from 'node:test';
 
-import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
+import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata/index.js';
 
-import type { AppManager } from '../../../src/server/AppManager';
-import type { ProxiedApp } from '../../../src/server/ProxiedApp';
-import { AppListenerManager } from '../../../src/server/managers';
+import type { AppManager } from '../../../src/server/AppManager.js';
+import type { ProxiedApp } from '../../../src/server/ProxiedApp.js';
+import { AppListenerManager } from '../../../src/server/managers/index.js';
 
 describe('AppListenerManager', () => {
 	const mockApp = {

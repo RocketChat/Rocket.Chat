@@ -1,10 +1,10 @@
 import * as assert from 'node:assert';
 import { beforeEach, describe, it, mock } from 'node:test';
 
-import videoconfHandler from '../videoconference-handler';
-import { createMockRequest } from './helpers/mod';
-import { AppObjectRegistry } from '../../AppObjectRegistry';
-import { JsonRpcError } from '../../lib/jsonrpc';
+import videoconfHandler from '../videoconference-handler.js';
+import { createMockRequest } from './helpers/mod.js';
+import { AppObjectRegistry } from '../../AppObjectRegistry.js';
+import { JsonRpcError } from '../../lib/jsonrpc.js';
 
 describe('handlers > videoconference', () => {
 	const mockMethodWithoutParam = (read: any, modify: any, http: any, persis: any): Promise<string> => Promise.resolve('ok none');

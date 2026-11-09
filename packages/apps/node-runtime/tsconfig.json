@@ -8,10 +8,7 @@
 		"module": "nodenext",
 		"moduleResolution": "nodenext",
 		"target": "es2023",
-		"declaration": true,
-		"paths": {
-			"@rocket.chat/apps/*": ["../*"]
-		}
+		"declaration": true
 	},
 	"include": ["./src/**/*"]
 }

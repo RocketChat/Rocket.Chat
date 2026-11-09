@@ -2,13 +2,13 @@ import type {
 	ICallHistorySearchFilters,
 	ICallHistorySearchPagination,
 	ICallHistorySearchResult,
-} from '@rocket.chat/apps-engine/definition/accessors';
-import type { ICallHistoryItem } from '@rocket.chat/apps-engine/definition/mediaCalls';
+} from '@rocket.chat/apps-engine/definition/accessors/index.js';
+import type { ICallHistoryItem } from '@rocket.chat/apps-engine/definition/mediaCalls/index.js';
 
-import { BaseBridge } from './BaseBridge';
-import { PermissionDeniedError } from '../errors/PermissionDeniedError';
-import { AppPermissionManager } from '../managers/AppPermissionManager';
-import { AppPermissions } from '../permissions/AppPermissions';
+import { BaseBridge } from './BaseBridge.js';
+import { PermissionDeniedError } from '../errors/PermissionDeniedError.js';
+import { AppPermissionManager } from '../managers/AppPermissionManager.js';
+import { AppPermissions } from '../permissions/AppPermissions.js';
 
 export abstract class CallHistoryBridge extends BaseBridge {
 	public async doGetById(id: string, uid: string, appId: string): Promise<ICallHistoryItem | undefined> {

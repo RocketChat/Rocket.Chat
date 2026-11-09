@@ -1,7 +1,7 @@
-import type { App } from '@rocket.chat/apps-engine/definition/App';
-import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
+import type { App } from '@rocket.chat/apps-engine/definition/App.js';
+import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus.js';
 
-import { AppObjectRegistry } from '../../AppObjectRegistry';
+import { AppObjectRegistry } from '../../AppObjectRegistry.js';
 
 export default function handleGetStatus(): Promise<AppStatus> {
 	const app = AppObjectRegistry.get<App>('app');

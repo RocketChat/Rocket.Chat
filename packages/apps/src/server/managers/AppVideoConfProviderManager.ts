@@ -1,20 +1,20 @@
-import type { IBlock } from '@rocket.chat/apps-engine/definition/uikit';
+import type { IBlock } from '@rocket.chat/apps-engine/definition/uikit/index.js';
 import type {
 	IVideoConferenceOptions,
 	IVideoConfProvider,
 	VideoConfData,
 	VideoConfDataExtended,
-} from '@rocket.chat/apps-engine/definition/videoConfProviders';
-import type { VideoConference } from '@rocket.chat/apps-engine/definition/videoConferences';
-import type { IVideoConferenceUser } from '@rocket.chat/apps-engine/definition/videoConferences/IVideoConferenceUser';
+} from '@rocket.chat/apps-engine/definition/videoConfProviders/index.js';
+import type { IVideoConferenceUser } from '@rocket.chat/apps-engine/definition/videoConferences/IVideoConferenceUser.js';
+import type { VideoConference } from '@rocket.chat/apps-engine/definition/videoConferences/index.js';
 
-import type { AppManager } from '../AppManager';
-import type { VideoConferenceBridge } from '../bridges';
-import { VideoConfProviderAlreadyExistsError, VideoConfProviderNotRegisteredError } from '../errors';
-import { AppPermissionManager } from './AppPermissionManager';
-import { AppVideoConfProvider } from './AppVideoConfProvider';
-import { PermissionDeniedError } from '../errors/PermissionDeniedError';
-import { AppPermissions } from '../permissions/AppPermissions';
+import type { AppManager } from '../AppManager.js';
+import { AppPermissionManager } from './AppPermissionManager.js';
+import { AppVideoConfProvider } from './AppVideoConfProvider.js';
+import type { VideoConferenceBridge } from '../bridges/index.js';
+import { PermissionDeniedError } from '../errors/PermissionDeniedError.js';
+import { VideoConfProviderAlreadyExistsError, VideoConfProviderNotRegisteredError } from '../errors/index.js';
+import { AppPermissions } from '../permissions/AppPermissions.js';
 
 export class AppVideoConfProviderManager {
 	private readonly bridge: VideoConferenceBridge;

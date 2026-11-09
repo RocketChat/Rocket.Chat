@@ -1,11 +1,11 @@
 import * as assert from 'node:assert';
 import { describe, it } from 'node:test';
 
-import { createRecordingSender } from '../../tests/helpers/parityHarness';
-import { EnvironmentalVariableRead } from '../EnvironmentalVariableRead';
-import { ServerSettingRead } from '../ServerSettingRead';
-import { ServerSettingUpdater } from '../ServerSettingUpdater';
-import { ServerSettingsModify } from '../ServerSettingsModify';
+import { createRecordingSender } from '../../tests/helpers/parityHarness.js';
+import { EnvironmentalVariableRead } from '../EnvironmentalVariableRead.js';
+import { ServerSettingRead } from '../ServerSettingRead.js';
+import { ServerSettingUpdater } from '../ServerSettingUpdater.js';
+import { ServerSettingsModify } from '../ServerSettingsModify.js';
 
 const setup = (responses = {}) => {
 	const rec = createRecordingSender(responses);

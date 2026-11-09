@@ -1,8 +1,8 @@
-import type { AppManager } from '../AppManager';
-import type { IParseAppPackageResult } from '../compiler';
-import type { IRuntimeController } from '../runtime/IRuntimeController';
-import { NodeRuntimeSubprocessController } from '../runtime/node/AppsEngineNodeRuntime';
-import type { IAppStorageItem } from '../storage';
+import type { AppManager } from '../AppManager.js';
+import type { IParseAppPackageResult } from '../compiler/index.js';
+import type { IRuntimeController } from '../runtime/IRuntimeController.js';
+import { NodeRuntimeSubprocessController } from '../runtime/node/AppsEngineNodeRuntime.js';
+import type { IAppStorageItem } from '../storage/index.js';
 
 export type AppRuntimeParams = {
 	appId: string;

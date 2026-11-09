@@ -1,5 +1,5 @@
-import { EVENT_RESULT_KIND } from '@rocket.chat/apps-engine/definition/eventResult';
-import type { MarkedEventResult } from '@rocket.chat/apps-engine/definition/eventResult';
+import { EVENT_RESULT_KIND } from '@rocket.chat/apps-engine/definition/eventResult/index.js';
+import type { MarkedEventResult } from '@rocket.chat/apps-engine/definition/eventResult/index.js';
 
 /**
  * Runtime guard for the `EventResult` marker.

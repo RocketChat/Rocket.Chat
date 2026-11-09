@@ -1,26 +1,26 @@
 import * as assert from 'node:assert';
 import { afterEach, beforeEach, describe, it, mock } from 'node:test';
 
-import type { ISlashCommandPreviewItem } from '@rocket.chat/apps-engine/definition/slashcommands';
-import { SlashCommandContext } from '@rocket.chat/apps-engine/definition/slashcommands';
+import type { ISlashCommandPreviewItem } from '@rocket.chat/apps-engine/definition/slashcommands/index.js';
+import { SlashCommandContext } from '@rocket.chat/apps-engine/definition/slashcommands/index.js';
 
-import type { AppManager } from '../../../src/server/AppManager';
-import type { ProxiedApp } from '../../../src/server/ProxiedApp';
-import type { AppBridges } from '../../../src/server/bridges';
+import type { AppManager } from '../../../src/server/AppManager.js';
+import type { ProxiedApp } from '../../../src/server/ProxiedApp.js';
+import type { AppBridges } from '../../../src/server/bridges/index.js';
+import { AppSlashCommand } from '../../../src/server/managers/AppSlashCommand.js';
+import type { UIActionButtonManager } from '../../../src/server/managers/UIActionButtonManager.js';
 import type {
 	AppApiManager,
 	AppExternalComponentManager,
 	AppSchedulerManager,
 	AppVideoConfProviderManager,
-} from '../../../src/server/managers';
-import { AppSlashCommandManager } from '../../../src/server/managers';
-import { AppSlashCommand } from '../../../src/server/managers/AppSlashCommand';
-import type { UIActionButtonManager } from '../../../src/server/managers/UIActionButtonManager';
-import { Room } from '../../../src/server/rooms/Room';
-import type { AppLogStorage, IAppStorageItem } from '../../../src/server/storage';
-import { TestsAppBridges } from '../../test-data/bridges/appBridges';
-import { TestsAppLogStorage } from '../../test-data/storage/logStorage';
-import { TestData } from '../../test-data/utilities';
+} from '../../../src/server/managers/index.js';
+import { AppSlashCommandManager } from '../../../src/server/managers/index.js';
+import { Room } from '../../../src/server/rooms/Room.js';
+import type { AppLogStorage, IAppStorageItem } from '../../../src/server/storage/index.js';
+import { TestsAppBridges } from '../../test-data/bridges/appBridges.js';
+import { TestsAppLogStorage } from '../../test-data/storage/logStorage.js';
+import { TestData } from '../../test-data/utilities.js';
 
 describe('AppSlashCommandManager', () => {
 	let mockBridges: TestsAppBridges;

@@ -1,6 +1,6 @@
-import { BlockBuilder as AppsEngineBlockBuilder } from '@rocket.chat/apps-engine/definition/uikit/blocks/BlockBuilder';
+import { BlockBuilder as AppsEngineBlockBuilder } from '@rocket.chat/apps-engine/definition/uikit/blocks/BlockBuilder.js';
 
-import { AppObjectRegistry } from '../../../AppObjectRegistry';
+import { AppObjectRegistry } from '../../../AppObjectRegistry.js';
 
 /**
  * Local BlockBuilder that extends the apps-engine BlockBuilder.

@@ -5,9 +5,9 @@ import { describe, it, beforeEach, afterEach, mock, type Mock } from 'node:test'
 
 import debugFactory from 'debug';
 
-import type { BaseRuntimeSubprocessController } from '../../../../src/server/runtime/base/BaseRuntimeSubprocessController';
-import { COMMAND_PING, LivenessManager } from '../../../../src/server/runtime/base/LivenessManager';
-import { ProcessMessenger } from '../../../../src/server/runtime/base/ProcessMessenger';
+import type { BaseRuntimeSubprocessController } from '../../../../src/server/runtime/base/BaseRuntimeSubprocessController.js';
+import { COMMAND_PING, LivenessManager } from '../../../../src/server/runtime/base/LivenessManager.js';
+import { ProcessMessenger } from '../../../../src/server/runtime/base/ProcessMessenger.js';
 
 describe('LivenessManager ping mechanism', () => {
 	const PING_INTERVAL_MS = 100;

@@ -1,8 +1,8 @@
-import type { IServerSettingUpdater } from '@rocket.chat/apps-engine/definition/accessors';
-import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
+import type { IServerSettingUpdater } from '@rocket.chat/apps-engine/definition/accessors/index.js';
+import type { ISetting } from '@rocket.chat/apps-engine/definition/settings/index.js';
 
-import { bridgeCall } from '../../bridges/bridgeCall';
-import type * as Messenger from '../../messenger';
+import { bridgeCall } from '../../bridges/bridgeCall.js';
+import type * as Messenger from '../../messenger.js';
 
 export class ServerSettingUpdater implements IServerSettingUpdater {
 	constructor(private readonly senderFn: typeof Messenger.sendRequest) {}

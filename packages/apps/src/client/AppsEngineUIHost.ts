@@ -1,6 +1,6 @@
-import { MESSAGE_ID } from './constants';
-import type { IAppsEngineUIResponse, IExternalComponentRoomInfo, IExternalComponentUserInfo } from './definition';
-import { AppsEngineUIMethods } from './definition';
+import { MESSAGE_ID } from './constants/index.js';
+import type { IAppsEngineUIResponse, IExternalComponentRoomInfo, IExternalComponentUserInfo } from './definition/index.js';
+import { AppsEngineUIMethods } from './definition/index.js';
 
 type HandleActionData = IExternalComponentUserInfo | IExternalComponentRoomInfo;
 

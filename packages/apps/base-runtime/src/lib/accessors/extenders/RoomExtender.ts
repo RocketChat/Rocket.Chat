@@ -1,7 +1,7 @@
-import type { IRoomExtender } from '@rocket.chat/apps-engine/definition/accessors/IRoomExtender';
-import { RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations';
-import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom';
-import type { IUser } from '@rocket.chat/apps-engine/definition/users/IUser';
+import type { IRoomExtender } from '@rocket.chat/apps-engine/definition/accessors/IRoomExtender.js';
+import { RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations.js';
+import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom.js';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users/IUser.js';
 
 export class RoomExtender implements IRoomExtender {
 	public kind: RocketChatAssociationModel.ROOM;

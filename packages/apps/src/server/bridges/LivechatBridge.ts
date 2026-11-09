@@ -1,4 +1,4 @@
-import type { IExtraRoomParams } from '@rocket.chat/apps-engine/definition/accessors/ILivechatCreator';
+import type { IExtraRoomParams } from '@rocket.chat/apps-engine/definition/accessors/ILivechatCreator.js';
 import type {
 	IDepartment,
 	IVisitorExternalIdentifier,
@@ -7,14 +7,14 @@ import type {
 	ILivechatTransferData,
 	IVisitor,
 	ResolveVisitorContactData,
-} from '@rocket.chat/apps-engine/definition/livechat';
-import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
-import type { IUser } from '@rocket.chat/apps-engine/definition/users';
+} from '@rocket.chat/apps-engine/definition/livechat/index.js';
+import type { IMessage } from '@rocket.chat/apps-engine/definition/messages/index.js';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users/index.js';
 
-import { BaseBridge } from './BaseBridge';
-import { PermissionDeniedError } from '../errors/PermissionDeniedError';
-import { AppPermissionManager } from '../managers/AppPermissionManager';
-import { AppPermissions } from '../permissions/AppPermissions';
+import { BaseBridge } from './BaseBridge.js';
+import { PermissionDeniedError } from '../errors/PermissionDeniedError.js';
+import { AppPermissionManager } from '../managers/AppPermissionManager.js';
+import { AppPermissions } from '../permissions/AppPermissions.js';
 
 type LivechatReadPermissions = keyof Pick<
 	typeof AppPermissions,

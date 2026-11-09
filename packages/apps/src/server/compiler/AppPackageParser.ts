@@ -1,14 +1,14 @@
 import { randomUUID } from 'node:crypto';
 import * as path from 'node:path';
 
-import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata/IAppInfo';
-import { version } from '@rocket.chat/apps-engine/package.json';
+import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata/IAppInfo.js';
+import appsEnginePackage from '@rocket.chat/apps-engine/package.json' with { type: 'json' };
 import AdmZip from 'adm-zip';
 import * as semver from 'semver';
 
-import { AppImplements } from '.';
-import type { IParseAppPackageResult } from './IParseAppPackageResult';
-import { RequiredApiVersionError } from '../errors';
+import type { IParseAppPackageResult } from './IParseAppPackageResult.js';
+import { AppImplements } from './index.js';
+import { RequiredApiVersionError } from '../errors/index.js';
 
 export class AppPackageParser {
 	public static uuid4Regex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/;
@@ -18,7 +18,7 @@ export class AppPackageParser {
 	private readonly appsEngineVersion: string;
 
 	constructor() {
-		[this.appsEngineVersion] = version.split('-'); // In case there is a suffix like -dev, -rc.0, etc. We just want the version number for semver comparison
+		[this.appsEngineVersion] = appsEnginePackage.version.split('-'); // In case there is a suffix like -dev, -rc.0, etc. We just want the version number for semver comparison
 	}
 
 	public async unpackageApp(appPackage: Buffer): Promise<IParseAppPackageResult> {

@@ -1,8 +1,8 @@
 import * as assert from 'node:assert';
 import { describe, it } from 'node:test';
 
-import * as jsonrpc from '../../jsonrpc';
-import { formatErrorResponse } from '../formatResponseErrorHandler';
+import * as jsonrpc from '../../jsonrpc.js';
+import { formatErrorResponse } from '../formatResponseErrorHandler.js';
 
 describe('formatErrorResponse', () => {
 	describe('JSON-RPC ErrorObject handling', () => {

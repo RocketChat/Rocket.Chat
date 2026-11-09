@@ -1,14 +1,14 @@
-import type { ILivechatUpdater } from '@rocket.chat/apps-engine/definition/accessors';
+import type { ILivechatUpdater } from '@rocket.chat/apps-engine/definition/accessors/index.js';
 import type {
 	ILivechatRoom,
 	ILivechatTransferData,
 	IVisitor,
 	IVisitorExternalIdentifier,
-} from '@rocket.chat/apps-engine/definition/livechat';
-import type { IUser } from '@rocket.chat/apps-engine/definition/users';
+} from '@rocket.chat/apps-engine/definition/livechat/index.js';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users/index.js';
 
-import { bridgeCall } from '../../bridges/bridgeCall';
-import type * as Messenger from '../../messenger';
+import { bridgeCall } from '../../bridges/bridgeCall.js';
+import type * as Messenger from '../../messenger.js';
 
 export class LivechatUpdater implements ILivechatUpdater {
 	constructor(private readonly senderFn: typeof Messenger.sendRequest) {}

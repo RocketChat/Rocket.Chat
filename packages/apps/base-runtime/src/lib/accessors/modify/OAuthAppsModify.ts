@@ -1,8 +1,8 @@
-import type { IOAuthAppParams } from '@rocket.chat/apps-engine/definition/accessors/IOAuthApp';
-import type { IOAuthAppsModify } from '@rocket.chat/apps-engine/definition/accessors/IOAuthAppsModify';
+import type { IOAuthAppParams } from '@rocket.chat/apps-engine/definition/accessors/IOAuthApp.js';
+import type { IOAuthAppsModify } from '@rocket.chat/apps-engine/definition/accessors/IOAuthAppsModify.js';
 
-import { bridgeCall } from '../../bridges/bridgeCall';
-import type * as Messenger from '../../messenger';
+import { bridgeCall } from '../../bridges/bridgeCall.js';
+import type * as Messenger from '../../messenger.js';
 
 export class OAuthAppsModify implements IOAuthAppsModify {
 	constructor(private readonly senderFn: typeof Messenger.sendRequest) {}

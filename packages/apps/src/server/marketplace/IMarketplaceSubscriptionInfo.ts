@@ -1,6 +1,6 @@
-import type { IAppLicenseMetadata } from './IAppLicenseMetadata';
-import type { MarketplaceSubscriptionStatus } from './MarketplaceSubscriptionStatus';
-import type { MarketplaceSubscriptionType } from './MarketplaceSubscriptionType';
+import type { IAppLicenseMetadata } from './IAppLicenseMetadata.js';
+import type { MarketplaceSubscriptionStatus } from './MarketplaceSubscriptionStatus.js';
+import type { MarketplaceSubscriptionType } from './MarketplaceSubscriptionType.js';
 
 export interface IMarketplaceSubscriptionInfo {
 	seats: number;

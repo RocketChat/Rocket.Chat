@@ -1,13 +1,13 @@
-import { AppMethod } from '@rocket.chat/apps-engine/definition/metadata';
+import { AppMethod } from '@rocket.chat/apps-engine/definition/metadata/index.js';
 import type {
 	IOutboundMessage,
 	IOutboundMessageProviders,
 	ProviderMetadata,
-} from '@rocket.chat/apps-engine/definition/outboundCommunication';
+} from '@rocket.chat/apps-engine/definition/outboundCommunication/index.js';
 
-import type { ProxiedApp } from '../ProxiedApp';
-import { AppOutboundProcessError } from '../errors/AppOutboundProcessError';
-import type { AppLogStorage } from '../storage';
+import type { ProxiedApp } from '../ProxiedApp.js';
+import { AppOutboundProcessError } from '../errors/AppOutboundProcessError.js';
+import type { AppLogStorage } from '../storage/index.js';
 
 export class OutboundMessageProvider {
 	public isRegistered: boolean;

@@ -1,5 +1,5 @@
-import { formatErrorResponse } from '../accessors/formatResponseErrorHandler';
-import type * as Messenger from '../messenger';
+import { formatErrorResponse } from '../accessors/formatResponseErrorHandler.js';
+import type * as Messenger from '../messenger.js';
 
 /** The host bridges reachable from inside the subprocess. */
 export type BridgeName =

@@ -1,5 +1,5 @@
-import type { RequestObject } from './jsonrpc';
-import type { Logger } from './logger';
+import type { RequestObject } from './jsonrpc.js';
+import type { Logger } from './logger.js';
 
 export type RequestContext = RequestObject & {
 	context: {

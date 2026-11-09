@@ -1,6 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
 
-import type { IAppsUser } from '../AppsEngine';
+import type { IAppsUser } from '../AppsEngine.js';
 
 export interface IAppUsersConverter {
 	convertById(userId: IUser['_id']): Promise<IAppsUser | undefined>;

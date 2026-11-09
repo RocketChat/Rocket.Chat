@@ -1,7 +1,7 @@
 import * as assert from 'node:assert';
 import { describe, it } from 'node:test';
 
-import { MustContainFunctionError } from '../../../src/server/errors';
+import { MustContainFunctionError } from '../../../src/server/errors/index.js';
 
 describe('MustContainFunctionError', () => {
 	it('verifyCompilerError', () => {

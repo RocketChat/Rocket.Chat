@@ -1,9 +1,10 @@
 import * as path from 'node:path';
 
-import type { AppManager } from '../../AppManager';
-import type { IParseAppPackageResult } from '../../compiler';
-import type { IAppStorageItem } from '../../storage';
-import { BaseRuntimeSubprocessController, type ProcessConfiguration } from '../base/BaseRuntimeSubprocessController';
+import type { AppManager } from '../../AppManager.js';
+import type { IParseAppPackageResult } from '../../compiler/index.js';
+import type { IAppStorageItem } from '../../storage/index.js';
+import { BaseRuntimeSubprocessController, type ProcessConfiguration } from '../base/BaseRuntimeSubprocessController.js';
+import { nodeRuntimeScript } from '../paths.cjs';
 
 export class NodeRuntimeSubprocessController extends BaseRuntimeSubprocessController {
 	private readonly nodeBin = 'node';
@@ -13,7 +14,7 @@ export class NodeRuntimeSubprocessController extends BaseRuntimeSubprocessContro
 	constructor(manager: AppManager, appPackage: IParseAppPackageResult, storageItem: IAppStorageItem) {
 		super('node', manager, appPackage, storageItem);
 
-		this.scriptRuntimePath = require.resolve('../../../../node-runtime/dist/main.js');
+		this.scriptRuntimePath = nodeRuntimeScript;
 	}
 
 	protected buildProcessConfiguration(): ProcessConfiguration {

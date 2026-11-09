@@ -1,9 +1,9 @@
 import EventEmitter from 'node:events';
 
-import { sanitizeForIpc } from '@rocket.chat/apps/dist/lib/IpcSanitizer';
+import { sanitizeForIpc } from '@rocket.chat/apps/dist/lib/IpcSanitizer.js';
 
-import * as jsonrpc from './jsonrpc';
-import type { RequestContext } from './requestContext';
+import * as jsonrpc from './jsonrpc.js';
+import type { RequestContext } from './requestContext.js';
 
 export type RequestDescriptor = Pick<jsonrpc.RequestObject, 'method' | 'params' | 'meta'>;
 

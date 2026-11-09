@@ -1,14 +1,14 @@
 import * as assert from 'node:assert';
 import { beforeEach, describe, it, mock } from 'node:test';
 
-import type { IRead, IModify, IHttp, IPersistence } from '@rocket.chat/apps-engine/definition/accessors';
-import type { IApiRequest, IApiEndpointInfo, IApiResponse } from '@rocket.chat/apps-engine/definition/api';
-import type { IApiEndpoint } from '@rocket.chat/apps-engine/definition/api/IApiEndpoint';
+import type { IRead, IModify, IHttp, IPersistence } from '@rocket.chat/apps-engine/definition/accessors/index.js';
+import type { IApiEndpoint } from '@rocket.chat/apps-engine/definition/api/IApiEndpoint.js';
+import type { IApiRequest, IApiEndpointInfo, IApiResponse } from '@rocket.chat/apps-engine/definition/api/index.js';
 
-import { AppObjectRegistry } from '../../AppObjectRegistry';
-import { JsonRpcError } from '../../lib/jsonrpc';
-import apiHandler from '../api-handler';
-import { createMockRequest } from './helpers/mod';
+import { AppObjectRegistry } from '../../AppObjectRegistry.js';
+import { JsonRpcError } from '../../lib/jsonrpc.js';
+import apiHandler from '../api-handler.js';
+import { createMockRequest } from './helpers/mod.js';
 
 describe('handlers > api', () => {
 	const mockEndpoint: Required<Omit<IApiEndpoint, 'delete'>> = {

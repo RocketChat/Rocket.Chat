@@ -1,8 +1,8 @@
-import { AppCompiler } from './AppCompiler';
-import { AppFabricationFulfillment } from './AppFabricationFulfillment';
-import { AppImplements } from './AppImplements';
-import { AppPackageParser } from './AppPackageParser';
-import type { IParseAppPackageResult } from './IParseAppPackageResult';
+import { AppCompiler } from './AppCompiler.js';
+import { AppFabricationFulfillment } from './AppFabricationFulfillment.js';
+import { AppImplements } from './AppImplements.js';
+import { AppPackageParser } from './AppPackageParser.js';
+import type { IParseAppPackageResult } from './IParseAppPackageResult.js';
 
 export type { IParseAppPackageResult };
 

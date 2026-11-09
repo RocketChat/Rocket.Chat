@@ -1,10 +1,10 @@
-import type { IApiEndpoint } from '@rocket.chat/apps-engine/definition/api/IApiEndpoint';
+import type { IApiEndpoint } from '@rocket.chat/apps-engine/definition/api/IApiEndpoint.js';
 
-import { AppObjectRegistry } from '../AppObjectRegistry';
-import { AppAccessorsInstance } from '../lib/accessors/mod';
-import { JsonRpcError, SERVER_ERROR, type Defined } from '../lib/jsonrpc';
-import type { RequestContext } from '../lib/requestContext';
-import { wrapComposedApp } from '../lib/wrapAppForRequest';
+import { AppObjectRegistry } from '../AppObjectRegistry.js';
+import { AppAccessorsInstance } from '../lib/accessors/mod.js';
+import { JsonRpcError, SERVER_ERROR, type Defined } from '../lib/jsonrpc.js';
+import type { RequestContext } from '../lib/requestContext.js';
+import { wrapComposedApp } from '../lib/wrapAppForRequest.js';
 
 export default async function apiHandler(request: RequestContext): Promise<JsonRpcError | Defined> {
 	const { method: call, params } = request;

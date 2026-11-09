@@ -1,7 +1,7 @@
-import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
+import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus.js';
 
-import type { ProxiedApp } from '../ProxiedApp';
-import { BaseBridge } from './BaseBridge';
+import type { ProxiedApp } from '../ProxiedApp.js';
+import { BaseBridge } from './BaseBridge.js';
 
 export abstract class AppActivationBridge extends BaseBridge {
 	public async doAppAdded(app: ProxiedApp): Promise<void> {

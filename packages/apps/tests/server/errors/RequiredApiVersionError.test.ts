@@ -1,9 +1,9 @@
 import * as assert from 'node:assert';
 import { describe, it } from 'node:test';
 
-import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
+import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata/index.js';
 
-import { RequiredApiVersionError } from '../../../src/server/errors';
+import { RequiredApiVersionError } from '../../../src/server/errors/index.js';
 
 describe('RequiredApiVersionError', () => {
 	it('verifyCompilerError', () => {

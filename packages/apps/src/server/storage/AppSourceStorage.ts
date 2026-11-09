@@ -1,4 +1,4 @@
-import type { IAppStorageItem } from './IAppStorageItem';
+import type { IAppStorageItem } from './IAppStorageItem.js';
 
 export abstract class AppSourceStorage {
 	/**

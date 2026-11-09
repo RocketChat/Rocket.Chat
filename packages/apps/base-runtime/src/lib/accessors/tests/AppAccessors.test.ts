@@ -2,11 +2,11 @@
 import * as assert from 'node:assert';
 import { after, beforeEach, describe, it, mock } from 'node:test';
 
-import type { IRead, IModify, IHttp, IPersistence } from '@rocket.chat/apps-engine/definition/accessors';
-import type { SlashCommandContext } from '@rocket.chat/apps-engine/definition/slashcommands';
+import type { IRead, IModify, IHttp, IPersistence } from '@rocket.chat/apps-engine/definition/accessors/index.js';
+import type { SlashCommandContext } from '@rocket.chat/apps-engine/definition/slashcommands/index.js';
 
-import { AppObjectRegistry } from '../../../AppObjectRegistry';
-import { AppAccessors } from '../mod';
+import { AppObjectRegistry } from '../../../AppObjectRegistry.js';
+import { AppAccessors } from '../mod.js';
 
 describe('AppAccessors', () => {
 	let appAccessors: AppAccessors;

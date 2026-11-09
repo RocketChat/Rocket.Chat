@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 
-import type { IAppsRoom, IAppsLivechatRoom, IAppsRoomRaw } from '../AppsEngine';
+import type { IAppsRoom, IAppsLivechatRoom, IAppsRoomRaw } from '../AppsEngine.js';
 
 export interface IAppRoomsConverter {
 	convertById(roomId: IRoom['_id']): Promise<IAppsRoom | undefined>;

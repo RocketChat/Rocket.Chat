@@ -1,2 +1,2 @@
-export type { MediaCallEvent, PreMediaCallCreatedOutcome } from './IMediaCallEvent';
-export { getMediaCallCreatePatch } from './getMediaCallCreatePatch';
+export type { MediaCallEvent, PreMediaCallCreatedOutcome } from './IMediaCallEvent.js';
+export { getMediaCallCreatePatch } from './getMediaCallCreatePatch.js';

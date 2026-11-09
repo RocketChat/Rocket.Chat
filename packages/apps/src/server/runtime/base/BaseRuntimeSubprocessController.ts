@@ -1,23 +1,23 @@
 import * as child_process from 'node:child_process';
 import { EventEmitter } from 'node:events';
-import * as path from 'node:path';
 import { inspect as utilInspect } from 'node:util';
 
-import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
-import type { AppMethod } from '@rocket.chat/apps-engine/definition/metadata';
+import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus.js';
+import type { AppMethod } from '@rocket.chat/apps-engine/definition/metadata/index.js';
 import debugFactory from 'debug';
 
-import { LivenessManager } from './LivenessManager';
-import { ProcessMessenger } from './ProcessMessenger';
-import { bundleLegacyApp } from './bundler';
-import * as jsonrpc from '../../../lib/jsonrpc';
-import type { AppManager } from '../../AppManager';
-import type { AppBridges } from '../../bridges';
-import { AppResourceBridge } from '../../bridges/AppResourceBridge';
-import type { IParseAppPackageResult } from '../../compiler';
-import { AppConsole, type ILoggerStorageEntry } from '../../logging';
-import type { AppLogStorage, IAppStorageItem } from '../../storage';
-import type { IRuntimeController } from '../IRuntimeController';
+import { LivenessManager } from './LivenessManager.js';
+import { ProcessMessenger } from './ProcessMessenger.js';
+import { bundleLegacyApp } from './bundler.js';
+import * as jsonrpc from '../../../lib/jsonrpc.js';
+import type { AppManager } from '../../AppManager.js';
+import { AppResourceBridge } from '../../bridges/AppResourceBridge.js';
+import type { AppBridges } from '../../bridges/index.js';
+import type { IParseAppPackageResult } from '../../compiler/index.js';
+import { AppConsole, type ILoggerStorageEntry } from '../../logging/index.js';
+import type { AppLogStorage, IAppStorageItem } from '../../storage/index.js';
+import type { IRuntimeController } from '../IRuntimeController.js';
+import { appsEngineDir } from '../paths.cjs';
 
 const inspect = (value: unknown) => utilInspect(value, { depth: 10, compact: true, breakLength: Infinity });
 
@@ -40,12 +40,11 @@ function getRuntimeTimeout() {
 }
 
 /**
- * Resolves the absolute path to @rocket.chat/apps-engine's src/ directory.
- * Uses require.resolve so it works regardless of the runtime environment
- * (monorepo dev, Meteor bundle, standalone node_modules).
+ * Resolves the absolute path to @rocket.chat/apps-engine's package directory,
+ * wherever the package is installed (monorepo dev, Meteor bundle, standalone node_modules).
  */
 export function getAppsEngineDir(): string {
-	return path.dirname(require.resolve('@rocket.chat/apps-engine/package.json'));
+	return appsEngineDir;
 }
 
 type AbortFunction = (reason?: any) => void;

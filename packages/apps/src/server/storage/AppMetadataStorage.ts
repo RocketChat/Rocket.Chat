@@ -1,9 +1,9 @@
-import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
-import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata/IAppInfo';
-import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
+import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus.js';
+import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata/IAppInfo.js';
+import type { ISetting } from '@rocket.chat/apps-engine/definition/settings/index.js';
 
-import type { IAppStorageItem } from './IAppStorageItem';
-import type { IMarketplaceInfo } from '../marketplace';
+import type { IAppStorageItem } from './IAppStorageItem.js';
+import type { IMarketplaceInfo } from '../marketplace/index.js';
 
 export abstract class AppMetadataStorage {
 	constructor(private readonly engine: string) {}
