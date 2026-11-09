@@ -1,0 +1,19 @@
+packages/i18n/src/locales/en.i18n.json
+  s_f15b4a6b3cffae::t_303a78a448e12a 5845-5848
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "15e4fb74390ab19f536e3e6db61374fab96dc5e2",
+  "prompts": {},
+  "sessions": {
+    "s_f15b4a6b3cffae": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3fc8d543-a858-49f1-bf51-ceccf6d6ad1a",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
