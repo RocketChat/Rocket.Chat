@@ -10,7 +10,7 @@ import type { NotificationsModule, SettingsReader } from '@rocket.chat/streamer'
 import { ListenersModule, invalidatePublicationUserCache } from '@rocket.chat/streamer';
 import polka from 'polka';
 import { throttle } from 'underscore';
-import WebSocket from 'ws';
+import { WebSocketServer } from 'ws';
 
 import { proxy } from './http/proxy';
 
@@ -33,7 +33,7 @@ export class DDPStreamer extends ServiceClass {
 
 	private app?: polka.Polka;
 
-	private wss?: WebSocket.Server;
+	private wss?: WebSocketServer;
 
 	constructor(
 		private readonly server: Server,
@@ -229,7 +229,7 @@ export class DDPStreamer extends ServiceClass {
 			})
 			.listen(PORT);
 
-		this.wss = new WebSocket.Server({ server: this.app.server });
+		this.wss = new WebSocketServer({ server: this.app.server });
 
 		this.wss.on('connection', (ws, req) => new Session(this.server, this.lifecycle, ws, req.url !== '/websocket', req));
 
