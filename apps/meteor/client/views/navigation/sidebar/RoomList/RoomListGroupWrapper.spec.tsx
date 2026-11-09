@@ -37,8 +37,8 @@ describe('RoomListGroupWrapper', () => {
 
 		const list = screen.getByRole('list', { name: 'Channels' });
 		const [listItem] = within(list).getAllByRole('listitem');
-		const group = within(list).getByRole('region', { name: 'Collapse Favorites' });
+		const group = within(list).getByRole('group', { name: 'Collapse Favorites' });
 
-		expect(within(listItem).getByRole('region', { name: 'Collapse Favorites' })).toBe(group);
+		expect(within(listItem).getByRole('group', { name: 'Collapse Favorites' })).toBe(group);
 	});
 });

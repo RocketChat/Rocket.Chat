@@ -1,0 +1,25 @@
+@use '../../../styles/colors.scss';
+@use '../../../styles/lengths.scss';
+@use '../../../styles/typography.scss' as *;
+
+.rcx-message-system {
+	padding-block: lengths.padding(8);
+
+	// The row keeps the avatar at the top when an attachment makes it tall; a single line still centres on it.
+	&__container {
+		align-self: center;
+
+		margin-block: lengths.margin(-4);
+	}
+
+	&__body {
+		@include use-with-truncated-text();
+	}
+
+	&__name {
+		@include use-font-scale(p2b);
+		flex-shrink: 0;
+
+		color: colors.font(titles-labels);
+	}
+}

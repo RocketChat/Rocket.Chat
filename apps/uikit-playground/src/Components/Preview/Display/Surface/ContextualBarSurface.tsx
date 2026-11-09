@@ -53,7 +53,7 @@ const ContextualBarSurface = ({ children }: ContextualBarSurfaceProps) => (
 		<ContextualbarFooter>
 			<ButtonGroup stretch>
 				<Button>Cancel</Button>
-				<Button primary>Submit</Button>
+				<Button variant='primary'>Submit</Button>
 			</ButtonGroup>
 		</ContextualbarFooter>
 	</Contextualbar>

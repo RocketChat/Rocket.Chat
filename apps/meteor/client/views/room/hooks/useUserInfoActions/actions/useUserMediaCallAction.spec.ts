@@ -88,6 +88,7 @@ describe('useUserMediaCallAction', () => {
 				.withJohnDoe()
 				.withRoom(createFakeRoom())
 				.withSubscription(createFakeSubscription())
+				.withSetting('UI_Use_Real_Name', true)
 				.withTranslations('en', 'core', {
 					Voice_call__user_: 'Voice call {{user}}',
 				})
@@ -104,10 +105,33 @@ describe('useUserMediaCallAction', () => {
 		);
 	});
 
+	it('should identify the user by username when real names are disabled', () => {
+		const fakeUser = createFakeUser();
+		const { result } = renderHook(() => useUserMediaCallAction(fakeUser, mockRid), {
+			wrapper: mockAppRoot()
+				.withJohnDoe()
+				.withRoom(createFakeRoom())
+				.withSubscription(createFakeSubscription())
+				.withSetting('UI_Use_Real_Name', false)
+				.withTranslations('en', 'core', {
+					Voice_call__user_: 'Voice call {{user}}',
+				})
+				.build(),
+		});
+
+		expect(result.current?.title).toBe(`Voice call ${fakeUser.username}`);
+
+		act(() => result.current?.onClick());
+
+		expect(toggleWidgetMock).toHaveBeenCalledWith(expect.objectContaining({ displayName: fakeUser.username }));
+	});
+
 	it('should call onClick handler correctly', () => {
 		usePeekMediaSessionStateMock.mockReturnValueOnce('available');
 
-		const { result } = renderHook(() => useUserMediaCallAction(fakeUser, mockRid));
+		const { result } = renderHook(() => useUserMediaCallAction(fakeUser, mockRid), {
+			wrapper: mockAppRoot().withSetting('UI_Use_Real_Name', true).build(),
+		});
 
 		act(() => result.current?.onClick());
 

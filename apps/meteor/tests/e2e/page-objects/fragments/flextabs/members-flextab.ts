@@ -100,7 +100,7 @@ export class MembersFlexTab extends FlexTab {
 	}
 
 	memberOption(username: string) {
-		return this.root.locator('li', { hasText: username });
+		return this.root.getByRole('listitem').filter({ hasText: username });
 	}
 
 	getMenuItemAction(action: string) {
@@ -155,7 +155,7 @@ export class MembersFlexTab extends FlexTab {
 	}
 
 	async showAllUsers() {
-		await this.root.getByRole('button', { name: 'Online' }).click();
+		await this.root.getByRole('combobox', { name: 'Status' }).click();
 		await this.listbox.selectOption('All');
 	}
 

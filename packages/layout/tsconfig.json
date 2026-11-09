@@ -4,7 +4,7 @@
     "rootDirs": ["./src", "./.storybook"],
     "outDir": "./dist"
   },
-  "include": ["./src", "./.storybook/**/*"],
+  "include": ["./src", "./.storybook/**/*", "./jest.config.ts"],
   "exclude": ["./dist"],
   "typedocOptions": {
     "entryPoints": ["src/index.ts"],

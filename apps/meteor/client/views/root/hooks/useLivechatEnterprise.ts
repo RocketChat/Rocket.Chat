@@ -1,7 +1,7 @@
+import { useHasLicenseModule } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { MultipleBusinessHoursBehavior } from '../../../lib/omnichannel/businessHours/MultipleBusinessHoursBehavior';
 import { SingleBusinessHourBehavior } from '../../../lib/omnichannel/businessHours/SingleBusinessHourBehavior';
 import { businessHourManager } from '../../../lib/omnichannel/businessHours/businessHourManager';

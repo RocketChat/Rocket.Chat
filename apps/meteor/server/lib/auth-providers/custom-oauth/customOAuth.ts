@@ -1,10 +1,10 @@
-import { LDAP } from '@rocket.chat/core-services';
+import { LDAP, ClientSafeError } from '@rocket.chat/core-services';
 import type { IUser, OAuthConfiguration } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
-import { isAbsoluteURL } from '@rocket.chat/tools';
+import { capitalize, isAbsoluteURL } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
-import { Meteor } from 'meteor/meteor';
 import type { DoneCallback } from 'passport';
 import type { VerifyFunction, StrategyOptions } from 'passport-oauth2';
 import { Strategy } from 'passport-oauth2';
@@ -60,7 +60,7 @@ export class CustomOAuthStrategy extends Strategy {
 
 	constructor(name: string, config: OAuthConfiguration & { clientSecret: string }, verify: VerifyFunction) {
 		if (!config.serverURL || typeof config.serverURL !== 'string') {
-			throw new Meteor.Error('customOAuth: serverURL is required and must be String');
+			throw new ClientSafeError('customOAuth: serverURL is required and must be String');
 		}
 
 		const options: StrategyOptions = {
@@ -132,7 +132,7 @@ export class CustomOAuthStrategy extends Strategy {
 
 			if (!value) {
 				logger.debug({ msg: 'Username field not found in data', usernameField: this.usernameField, data });
-				throw new Meteor.Error('field_not_found', `Username field "${this.usernameField}" not found in data`);
+				throw new ClientSafeError('field_not_found', `Username field "${this.usernameField}" not found in data`);
 			}
 
 			return value as string;
@@ -147,7 +147,7 @@ export class CustomOAuthStrategy extends Strategy {
 
 			if (!value) {
 				logger.debug({ msg: 'Email field not found in data', emailField: this.emailField, data });
-				throw new Meteor.Error('field_not_found', `Email field "${this.emailField}" not found in data`);
+				throw new ClientSafeError('field_not_found', `Email field "${this.emailField}" not found in data`);
 			}
 			return value as string;
 		} catch (error) {
@@ -285,7 +285,7 @@ export class CustomOAuthStrategy extends Strategy {
 				}
 
 				if (this.mergeUsers !== true) {
-					throw new Meteor.Error('CustomOAuth', `User with username ${user.username} already exists`);
+					throw new ClientSafeError('CustomOAuth', `User with username ${user.username} already exists`);
 				}
 
 				const serviceIdKey = `services.${serviceName}.id`;
@@ -371,6 +371,11 @@ Accounts.validateNewUser((user: IUser & { email: string }) => {
 const { updateOrCreateUserFromExternalService } = Accounts;
 
 Accounts.updateOrCreateUserFromExternalService = async function (...args) {
+	// only admin-created services have this setting (built-in providers reuse this class); covers the window before services reload
+	if (settings.get(`Accounts_OAuth_Custom-${capitalize(args[0])}`) !== undefined && !License.hasModule('oauth-enterprise')) {
+		return undefined;
+	}
+
 	for (const hook of BeforeUpdateOrCreateUserFromExternalService.values()) {
 		await hook.apply(this, args as unknown as [string, Record<string, any>]);
 	}

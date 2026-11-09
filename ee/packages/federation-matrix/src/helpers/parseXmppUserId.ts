@@ -1,4 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export interface ParsedXmppUserId {
 	/** node / localpart of the JID, e.g. `mychannel` */
 	local: string;

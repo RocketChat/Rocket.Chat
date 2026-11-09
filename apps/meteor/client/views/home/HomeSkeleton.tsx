@@ -1,7 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
-import { Page } from '@rocket.chat/ui-client';
+import { ListSkeleton, Page } from '@rocket.chat/ui-client';
 
-import ListSkeleton from '../../components/ListSkeleton';
 import { RoomSkeleton } from '../room';
 import HeaderSkeleton from '../room/Header/HeaderSkeleton';
 

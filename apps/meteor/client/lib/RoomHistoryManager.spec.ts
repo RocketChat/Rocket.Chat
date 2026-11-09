@@ -1,6 +1,7 @@
 import { RoomHistoryManager } from './RoomHistoryManager';
 import { sdk } from './SDKClient';
-import { Messages } from '../stores';
+import { getUserId } from './user';
+import { Messages, PublicSettings } from '../stores';
 
 jest.mock('./SDKClient', () => ({
 	sdk: {
@@ -40,6 +41,11 @@ jest.mock('../stores', () => ({
 			some: jest.fn(),
 		},
 	},
+	PublicSettings: {
+		state: {
+			get: jest.fn(),
+		},
+	},
 	Subscriptions: {
 		state: {
 			find: jest.fn(),
@@ -48,6 +54,8 @@ jest.mock('../stores', () => ({
 }));
 
 const mockedGet = jest.mocked(sdk.rest.get);
+const mockedGetUserId = jest.mocked(getUserId);
+const mockedGetSetting = jest.mocked(PublicSettings.state.get);
 
 const createMessage = (rid: string, _id: string) => ({
 	_id,
@@ -95,5 +103,23 @@ describe('RoomHistoryManager', () => {
 		expect(Messages.state.storeMany).toHaveBeenCalledWith([expect.objectContaining({ _id: 'room-b-message', rid: 'room-b' })]);
 		expect(RoomHistoryManager.isLoading('room-a')).toBe(false);
 		expect(RoomHistoryManager.isLoading('room-b')).toBe(false);
+	});
+
+	it('does not request history once the session ended', async () => {
+		mockedGetUserId.mockReturnValue(undefined);
+
+		await expect(RoomHistoryManager.getMore('room-a')).resolves.toBeUndefined();
+		await expect(RoomHistoryManager.getSurroundingMessages({ _id: 'message-id', rid: 'room-a' })).resolves.toBeUndefined();
+
+		expect(mockedGet).not.toHaveBeenCalled();
+	});
+
+	it('requests history without a user when anonymous read is enabled', async () => {
+		mockedGetUserId.mockReturnValue(undefined);
+		mockedGetSetting.mockReturnValue({ value: true } as never);
+
+		await expect(RoomHistoryManager.getMore('room-a')).resolves.toBeUndefined();
+
+		expect(mockedGet).toHaveBeenCalledWith('/v1/rooms.history', { roomId: 'room-a', count: 50, showThreadMessages: false });
 	});
 });

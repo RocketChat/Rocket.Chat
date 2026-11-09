@@ -77,7 +77,7 @@ describe('inset', () => {
 
 describe('logical values', () => {
 	it('flips float per direction', () => {
-		expect(render('.a{float:inline-start;}')).toBe('[dir=rtl] .a{float:right;}.a{float:left;}');
+		expect(render('.a{float:inline-start;}')).toBe('html:not([dir=rtl]) .a{float:left;}[dir=rtl] .a{float:right;}');
 	});
 });
 

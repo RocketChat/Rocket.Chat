@@ -10,6 +10,7 @@ import {
 	HomeChannel,
 } from './page-objects';
 import { setSettingValueById } from './utils/setSettingValueById';
+import { setUserPhones } from './utils/setUserPhones';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.user3.state });
@@ -33,7 +34,7 @@ test.describe.serial('settings-account-profile', () => {
 		// FIXME: solve test intermitencies
 		test.skip('expect update profile with new name/username', async () => {
 			const newName = faker.person.fullName();
-			const newUsername = faker.internet.userName({ firstName: newName });
+			const newUsername = faker.internet.username({ firstName: newName });
 
 			await poAccountProfile.inputName.fill(newName);
 			await poAccountProfile.inputUsername.fill(newUsername);
@@ -45,7 +46,6 @@ test.describe.serial('settings-account-profile', () => {
 			await expect(poHomeChannel.content.lastUserMessageNotSequential).toContainText(newUsername);
 
 			await poHomeChannel.content.lastUserMessageNotSequential.locator('figure').click();
-			await poHomeChannel.userCard.openUserInfo();
 
 			await expect(poHomeChannel.tabs.userInfo.username).toHaveText(newUsername);
 		});
@@ -59,7 +59,9 @@ test.describe.serial('settings-account-profile', () => {
 			});
 
 			test('should change avatar image from url', async () => {
-				await poAccountProfile.inputAvatarLink.fill('https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50');
+				await poAccountProfile.inputAvatarLink.fill(
+					'https://raw.githubusercontent.com/RocketChat/Rocket.Chat.Artwork/master/Logos/2020/png/logo-horizontal-red.png',
+				);
 				await poAccountProfile.btnSetAvatarLink.click();
 
 				await poAccountProfile.btnSubmit.click();
@@ -85,6 +87,54 @@ test.describe.serial('settings-account-profile', () => {
 				await expect(poAccountProfile.btnSetAvatarLink).toBeDisabled();
 				await expect(poAccountProfile.inputAvatarLink).toBeDisabled();
 				await setSettingValueById(api, 'Accounts_AllowUserAvatarChange', true);
+			});
+		});
+
+		test.describe('Phones', () => {
+			test.beforeEach(async ({ api, page }) => {
+				await expect(await setUserPhones(api, Users.user3.data._id, [])).toBeOK();
+				await page.reload();
+			});
+
+			test.afterEach(async ({ api }) => {
+				await expect(await setUserPhones(api, Users.user3.data._id, [])).toBeOK();
+			});
+
+			test('should add and persist multiple phones on account profile', async ({ page }) => {
+				await expect(poAccountProfile.phoneNumber.inputPhoneNumber).toHaveCount(1);
+				await expect(poAccountProfile.phoneNumber.getPhoneNumberInput(0)).toHaveValue('');
+				await poAccountProfile.phoneNumber.setPhone(0, '+15554440001', 'Work');
+				await poAccountProfile.phoneNumber.addPhone('+15554440002', 'Home');
+
+				await poAccountProfile.btnSaveChanges.click();
+				await poAccountProfile.toastMessage.dismissToast();
+
+				await page.reload();
+
+				await expect(poAccountProfile.phoneNumber.inputPhoneNumber).toHaveCount(2);
+				await expect(poAccountProfile.phoneNumber.getPhoneNumberInput(0)).toHaveValue('+15554440001');
+				await expect(poAccountProfile.phoneNumber.getPhoneLabelInput(0)).toHaveValue('Work');
+				await expect(poAccountProfile.phoneNumber.getPhoneNumberInput(1)).toHaveValue('+15554440002');
+				await expect(poAccountProfile.phoneNumber.getPhoneLabelInput(1)).toHaveValue('Home');
+			});
+
+			test('should remove a phone on account profile and persist result', async ({ api, page }) => {
+				await setUserPhones(api, Users.user3.data._id, [
+					{ number: '+15554440001', label: 'Work' },
+					{ number: '+15554440002', label: 'Home' },
+				]);
+
+				await page.reload();
+
+				await poAccountProfile.phoneNumber.removePhone(0);
+				await poAccountProfile.btnSaveChanges.click();
+				await poAccountProfile.toastMessage.dismissToast();
+
+				await page.reload();
+
+				await expect(poAccountProfile.phoneNumber.inputPhoneNumber).toHaveCount(1);
+				await expect(poAccountProfile.phoneNumber.getPhoneNumberInput(0)).toHaveValue('+15554440002');
+				await expect(poAccountProfile.phoneNumber.getPhoneLabelInput(0)).toHaveValue('Home');
 			});
 		});
 	});

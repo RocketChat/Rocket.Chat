@@ -1,6 +1,7 @@
+import { after, before, describe, it } from 'node:test';
+
 import type { App, ILivechatVisitor } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
 import { MongoClient } from 'mongodb';
 
 import { getCredentials, request, credentials } from '../../data/api-data';
@@ -14,7 +15,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 (IS_EE ? describe : describe.skip)('Apps - resolveVisitor API', () => {
 	let app: App;
 
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);

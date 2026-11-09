@@ -1,5 +1,5 @@
 import type { AtLeast } from '@rocket.chat/core-typings';
-import { isRoomFederated } from '@rocket.chat/core-typings';
+import { isRoomFederated, isRoomXMPPFederated } from '@rocket.chat/core-typings';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 
 import type { IRoomTypeClientDirectives } from '../../../../definition/IRoomTypeConfig';
@@ -122,7 +122,7 @@ roomCoordinator.add(
 		},
 
 		getIcon(room) {
-			if (isRoomFederated(room)) {
+			if (isRoomFederated(room) || isRoomXMPPFederated(room)) {
 				return 'globe';
 			}
 

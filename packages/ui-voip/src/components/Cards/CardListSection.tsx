@@ -16,7 +16,7 @@ const CardListSection = ({ children }: CardListSectionProps) => {
 			overflow='auto'
 			justifyContent='stretch'
 			alignItems='center'
-			padding={2}
+			padding='x4'
 			maxHeight='full'
 		>
 			{children}

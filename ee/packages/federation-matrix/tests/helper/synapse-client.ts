@@ -92,15 +92,15 @@ export class SynapseClient {
 	 */
 	private async createClient(username: string, password: string, url: string): Promise<MatrixClient> {
 		const silentLogger = {
-			// eslint-disable-next-line @typescript-eslint/no-empty-function
+			// oxlint-disable-next-line @typescript-eslint/no-empty-function
 			trace: () => {},
-			// eslint-disable-next-line @typescript-eslint/no-empty-function
+			// oxlint-disable-next-line @typescript-eslint/no-empty-function
 			debug: () => {},
-			// eslint-disable-next-line @typescript-eslint/no-empty-function
+			// oxlint-disable-next-line @typescript-eslint/no-empty-function
 			info: () => {},
-			// eslint-disable-next-line @typescript-eslint/no-empty-function
+			// oxlint-disable-next-line @typescript-eslint/no-empty-function
 			warn: () => {},
-			// eslint-disable-next-line @typescript-eslint/no-empty-function
+			// oxlint-disable-next-line @typescript-eslint/no-empty-function
 			error: () => {},
 			getChild: () => silentLogger,
 		};

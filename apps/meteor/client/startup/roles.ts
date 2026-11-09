@@ -6,9 +6,11 @@ import { userIdStore } from '../lib/user';
 import { Roles } from '../stores';
 
 onLoggedIn(async () => {
+	// the endpoint projects _updatedAt away; stamp the sync time locally
 	const { roles } = await sdk.rest.get('/v1/roles.list');
 	// if a role is checked before this collection is populated, it will return undefined
-	Roles.state.replaceAll(roles.map((role) => ({ ...role, _updatedAt: new Date(role._updatedAt) })));
+	const _updatedAt = new Date();
+	Roles.state.replaceAll(roles.map((role) => ({ ...role, _updatedAt })));
 });
 
 type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';

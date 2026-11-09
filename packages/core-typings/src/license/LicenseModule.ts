@@ -26,6 +26,7 @@ export const CoreModules = [
 	'abac',
 	'fips',
 	'experimental-enterprise-features',
+	'video-conference-native',
 ] as const;
 
 export type InternalModuleName = (typeof CoreModules)[number];

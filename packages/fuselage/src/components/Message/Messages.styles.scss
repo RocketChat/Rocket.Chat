@@ -1,0 +1,253 @@
+@use '../../styles/colors.scss';
+@use '../../styles/functions.scss' as *;
+@use '../../styles/lengths.scss';
+@use '../../styles/mixins/size.scss';
+@use '../../styles/mixins/states.scss';
+@use '../../styles/typography.scss' as *;
+@use './MessageDivider/MessageDivider.styles.scss';
+@use './MessageGenericPreview/MessageGenericPreview.styles.scss';
+@use './MessageMetrics/MessageMetrics.styles.scss';
+@use './MessageReactions/MessageReactions.styles.scss';
+@use './MessageStatusIndicator/MessageStatusIndicator.styles.scss';
+@use './MessageSystem/MessageSystem.styles.scss';
+@use './MessageToolbar/MessageToolbar.styles.scss';
+@use './ThreadMessage/ThreadMessage.styles.scss';
+
+$message-background-color-editing: theme('message-background-color-editing', colors.status-background(warning-2));
+$message-color-editing: theme('message-color-editing', colors.status-font(on-warning-2));
+
+$message-highlight-colors-critical-color: theme('message-highlight-colors-critical-color', colors.status-font(on-danger));
+
+$message-highlight-colors-relevant-color: theme('message-highlight-colors-relevant-color', colors.status-font(on-service-1));
+
+$message-highlight-colors-other-color: theme('message-highlight-colors-other-color', colors.status-font(on-warning));
+
+$message-highlight-colors-link-color: theme('message-highlight-colors-link-color', colors.status-font(on-info));
+
+$message-block-width-fixed: theme('message-block-width-fixed', 368px);
+
+.rcx-message {
+	// The avatar centres on the header and the first body line, however long the body grows.
+	> .rcx-message-container--left {
+		min-block-size: calc(#{line-height(h5)} + #{line-height(p2)});
+	}
+
+	&--sequential > .rcx-message-container--left {
+		min-block-size: line-height(p2);
+	}
+
+	&-container {
+		&--left,
+		&--fixed {
+			flex-direction: column;
+		}
+
+		// A fixed-width column, so the content starts at the same x with or without an avatar.
+		&--left {
+			align-items: flex-end;
+
+			width: lengths.size(36);
+		}
+	}
+
+	&.rcx-message--editing {
+		color: $message-color-editing;
+		background: $message-background-color-editing;
+	}
+
+	&--pending {
+		.rcx-message-body {
+			opacity: 0.4;
+		}
+	}
+
+	&-header {
+		&__time {
+			// secondary-info fails contrast against the hover surface.
+			.rcx-message:hover & {
+				color: colors.font(default);
+			}
+		}
+
+		&__name-container {
+			@include use-with-truncated-text();
+			flex-shrink: 0;
+
+			// In the header a long name gives way before the timestamp and indicators do.
+			.rcx-message-header > & {
+				flex-shrink: 1;
+			}
+
+			// An outline takes no room, so the name keeps the header line's height; forced colors paint it too.
+			@include states.on-focus-visible {
+				border-radius: lengths.border-radius(medium);
+				outline: lengths.border-width(default) solid colors.stroke(highlight);
+				box-shadow: 0 0 0 calc(#{lengths.border-width(default)} + #{lengths.border-width(medium)}) colors.stroke(extra-light-highlight);
+			}
+
+			// This must match __name's color or the
+			// underline mismatches the text under it.
+			color: colors.font(titles-labels);
+
+			&[role='button'] {
+				cursor: pointer;
+
+				&:hover {
+					text-decoration: underline;
+				}
+			}
+		}
+
+		&__name {
+			@include use-font-scale(h5);
+			@include use-with-truncated-text();
+
+			color: colors.font(titles-labels);
+		}
+
+		&__username {
+			@include use-with-truncated-text();
+
+			color: colors.font(default);
+		}
+
+		&__roles {
+			overflow: hidden;
+		}
+	}
+
+	&-body {
+		@include use-font-scale(p2);
+
+		overflow: hidden;
+
+		// Padding rather than margin, so overflow: hidden leaves room for emoji glyphs
+		// that paint slightly past their line box.
+		padding-block: lengths.padding(2);
+
+		transition: opacity 0.3s linear;
+
+		word-break: break-word;
+
+		color: colors.font(default);
+
+		@each $heading in h1, h2, h3, h4 {
+			& #{$heading} {
+				@include use-font-scale($heading);
+			}
+		}
+
+		& ul,
+		ol {
+			margin: 0;
+			padding-block: lengths.padding(4) 0;
+			padding-inline: 0;
+
+			list-style: none;
+		}
+
+		& :is(ul, ol) > li::before {
+			padding: 0 lengths.padding(8);
+
+			font-weight: bold;
+		}
+
+		// Task lists mark their items with a checkbox instead.
+		& ul:not(.task-list) > li::before {
+			content: '•';
+		}
+
+		& ol > li::before {
+			content: attr(value) '.';
+		}
+
+		&--clamp {
+			display: -webkit-box;
+			-webkit-box-orient: vertical;
+			-webkit-line-clamp: 2;
+		}
+
+		& blockquote {
+			padding-inline: lengths.padding(8);
+
+			border: 1px solid colors.stroke(extra-light);
+			border-radius: lengths.border-radius(small);
+			background-color: colors.surface(tint);
+			border-inline-start-color: colors.stroke(medium);
+
+			&:hover {
+				border-color: colors.stroke(light);
+				background-color: colors.surface(hover);
+				border-inline-start-color: colors.stroke(medium);
+			}
+		}
+
+		& ul.task-list {
+			> li > .rcx-check-box > .rcx-check-box__input:focus + .rcx-check-box__fake {
+				z-index: 1;
+			}
+		}
+	}
+
+	&-block {
+		display: flex;
+		flex-direction: column;
+
+		&--width-fixed {
+			max-width: $message-block-width-fixed;
+		}
+	}
+
+	&__emoji {
+		display: inline-block;
+
+		margin-inline: lengths.margin(2);
+
+		background-size: contain;
+
+		font-size: var(--emoji-size, 1.25rem);
+		line-height: var(--emoji-size, 1.25rem);
+
+		@include size.square(var(--emoji-size, 1.25rem));
+
+		&--big {
+			--emoji-size: 3rem;
+		}
+	}
+
+	&__highlight {
+		white-space: nowrap;
+
+		font-weight: 500;
+
+		&--clickable {
+			cursor: pointer;
+
+			&:hover {
+				text-decoration: underline;
+			}
+		}
+
+		&--critical {
+			color: $message-highlight-colors-critical-color;
+		}
+
+		&--relevant {
+			color: $message-highlight-colors-relevant-color;
+		}
+
+		&--link {
+			color: $message-highlight-colors-link-color;
+		}
+
+		&--other {
+			color: $message-highlight-colors-other-color;
+		}
+
+		@include states.on-focus-visible {
+			border-radius: lengths.border-radius(medium);
+			outline: lengths.border-width(default) solid colors.stroke(highlight);
+			box-shadow: 0 0 0 calc(#{lengths.border-width(default)} + #{lengths.border-width(medium)}) colors.stroke(extra-light-highlight);
+		}
+	}
+}

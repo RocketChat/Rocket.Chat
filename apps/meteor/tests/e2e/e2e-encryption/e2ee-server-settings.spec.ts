@@ -61,7 +61,7 @@ test.describe('E2EE Server Settings', () => {
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 
 		await page.locator('[name="msg"]').type('/');
-		await expect(page.locator('#popup-item-contextualbar')).not.toHaveClass(/disabled/);
+		await expect(page.locator('#popup-item-contextualbar')).not.toHaveAttribute('aria-disabled', 'true');
 		await page.locator('[name="msg"]').clear();
 
 		await poHomeChannel.content.dispatchSlashCommand('/contextualbar');
@@ -105,7 +105,7 @@ test.describe('E2EE Server Settings', () => {
 			await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 
 			await page.locator('[name="msg"]').pressSequentially('/');
-			await expect(page.locator('#popup-item-contextualbar')).toHaveClass(/disabled/);
+			await expect(page.locator('#popup-item-contextualbar')).toHaveAttribute('aria-disabled', 'true');
 		});
 	});
 });

@@ -87,6 +87,7 @@ jobs:
     needs: build
     runs-on: ubuntu-24.04-arm
     permissions:
+      packages: write
       pull-requests: write
 
     steps:
@@ -118,7 +119,7 @@ jobs:
       - name: Delete superseded develop builds
         if: github.event_name == 'push'
         env:
-          GH_TOKEN: ${{ secrets.CR_PAT }}
+          GH_TOKEN: ${{ github.token }}
           PACKAGE: /orgs/${{ github.repository_owner }}/packages/container/rocket.chat-web/versions
         run: |
           # List every page before deleting, or deletions shift the pages still to be read.
@@ -146,7 +147,13 @@ jobs:
           | Latest build of this PR | \`rocketchat://ui-preview?pr=$NUMBER\` |
           | This exact build | \`rocketchat://ui-preview?pr=$NUMBER&sha=$HEAD_SHA\` |
 
-          To pick the workspace, add \`&host=https://your.server\`. Use **View > Restore server UI**, or restart the app, to go back."
+          To pick the workspace, add \`&host=https://your.server\`. Use **View > Restore server UI**, or restart the app, to go back.
+
+          Or run it in a browser against any server (default \`https://open.rocket.chat\`):
+
+          \`\`\`sh
+          npx @rocket.chat/ui-preview $NUMBER --server https://open.rocket.chat
+          \`\`\`"
 
           comment_id=$(gh api "repos/$REPO/issues/$NUMBER/comments" --paginate -q ".[] | select(.body | startswith(\"$marker\")) | .id" | head -n1)
           if [ -n "$comment_id" ]; then
@@ -165,12 +172,13 @@ jobs:
       )
     runs-on: ubuntu-24.04-arm
     permissions:
+      packages: write
       pull-requests: write
 
     steps:
       - name: Delete from ghcr.io
         env:
-          GH_TOKEN: ${{ secrets.CR_PAT }}
+          GH_TOKEN: ${{ github.token }}
           PACKAGE: /orgs/${{ github.repository_owner }}/packages/container/rocket.chat-web/versions
           NUMBER: ${{ github.event.pull_request.number }}
         run: |

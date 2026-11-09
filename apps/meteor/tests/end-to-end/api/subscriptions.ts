@@ -1,7 +1,8 @@
+import { after, before, describe, it } from 'node:test';
+
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IRoom, IThreadMessage, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
@@ -10,7 +11,7 @@ import type { TestUser } from '../../data/users.helper';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 
 describe('[Subscriptions]', () => {
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	let testChannel: IRoom;
 
@@ -59,8 +60,8 @@ describe('[Subscriptions]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401);
 
-			expect(res.body).to.have.property('status', 'error');
-			expect(res.body).to.have.property('message');
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 		});
 
 		it('should return the subscription with success', async () => {
@@ -193,7 +194,7 @@ describe('[Subscriptions]', () => {
 				.expect(400);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('errorType', 'invalid-params');
+			expect(res.body).to.have.property('errorType', 'error-invalid-params');
 		});
 
 		it('should fail on mark inexistent public channel as read', async () => {
@@ -252,7 +253,7 @@ describe('[Subscriptions]', () => {
 			const res = await request.post(api('subscriptions.read')).set(credentials).send({}).expect(400);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('errorType', 'invalid-params');
+			expect(res.body).to.have.property('errorType', 'error-invalid-params');
 		});
 
 		describe('should handle threads correctly', () => {

@@ -8,20 +8,29 @@ import type { UserRoles } from './useUserRolesQuery';
 import { useUserRolesQuery } from './useUserRolesQuery';
 import { Roles } from '../stores';
 
+type UseUserRolesByScopeOptions = {
+	enabled?: boolean;
+	// Views of a single user pass the roles from that user's record, so what they show is current when they open.
+	userRoleIds?: IRole['_id'][];
+};
+
 export const useUserRolesByScope = (
 	userId: IUser['_id'] | undefined,
 	roomId: IRoom['_id'],
-	enabled = true,
+	{ enabled = true, userRoleIds: ownUserRoleIds }: UseUserRolesByScopeOptions = {},
 ): { workspaceRoles: string[]; roomRoles: string[] } => {
-	const { data: userRoleIds } = useUserRolesQuery({
+	const { data: cachedUserRoleIds } = useUserRolesQuery({
 		select: useCallback((records: UserRoles[]) => records.find((record) => record.uid === userId)?.roles ?? [], [userId]),
-		enabled: enabled && !!userId,
+		enabled: enabled && !!userId && !ownUserRoleIds,
 	});
 
 	const { data: roomRoleIds } = useRoomRolesQuery(roomId, {
 		select: useCallback((records: RoomRoles[]) => records.find((record) => record.u._id === userId)?.roles ?? [], [userId]),
 		enabled: enabled && !!userId,
+		...(ownUserRoleIds && { refetchOnMount: 'always' as const }),
 	});
+
+	const userRoleIds = ownUserRoleIds ?? cachedUserRoleIds;
 
 	// roles without a description are not shown, matching what the role endpoints return
 	const belongsTo = (roleIds: IRole['_id'][] | undefined) => (record: IRole) => !!record.description && !!roleIds?.includes(record._id);

@@ -2,8 +2,6 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import {
 	VideoConfPopup,
 	VideoConfPopupContent,
-	VideoConfPopupControllers,
-	VideoConfController,
 	useVideoConfControllers,
 	VideoConfButton,
 	VideoConfPopupFooter,
@@ -15,6 +13,7 @@ import {
 } from '@rocket.chat/ui-video-conf';
 import { useTranslation } from 'react-i18next';
 
+import VideoConfPopupDeviceControllers from './VideoConfPopupDeviceControllers';
 import VideoConfPopupRoomInfo from './VideoConfPopupRoomInfo';
 import { useVideoConfRoomName } from '../../hooks/useVideoConfRoomName';
 
@@ -38,26 +37,7 @@ const OutgoingPopup = ({ room, onClose, id }: OutgoingPopupProps) => {
 		<VideoConfPopup aria-label={t('Calling__roomName__', { roomName })}>
 			<VideoConfPopupHeader>
 				<VideoConfPopupTitle text={t('Calling')} counter />
-				{(showCam || showMic) && (
-					<VideoConfPopupControllers>
-						{showCam && (
-							<VideoConfController
-								active={controllersConfig.cam}
-								title={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
-								icon={controllersConfig.cam ? 'video' : 'video-off'}
-								disabled
-							/>
-						)}
-						{showMic && (
-							<VideoConfController
-								active={controllersConfig.mic}
-								title={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
-								icon={controllersConfig.mic ? 'mic' : 'mic-off'}
-								disabled
-							/>
-						)}
-					</VideoConfPopupControllers>
-				)}
+				<VideoConfPopupDeviceControllers showCam={showCam} showMic={showMic} config={controllersConfig} />
 			</VideoConfPopupHeader>
 			<VideoConfPopupContent>
 				<VideoConfPopupRoomInfo room={room} />

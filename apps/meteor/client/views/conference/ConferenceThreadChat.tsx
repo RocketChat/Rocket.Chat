@@ -1,3 +1,4 @@
+import { Box } from '@rocket.chat/fuselage';
 import { ConferenceErrorState } from '@rocket.chat/ui-conference';
 import { useEffect } from 'react';
 
@@ -51,9 +52,11 @@ const ConferenceThreadChat = ({ tmid, onEscape }: ConferenceThreadChatProps) => 
 	}
 
 	return (
-		// `position='relative'` so the drop-target overlay covers the thread and not the panel around it, which is
-		// what it would find to anchor to otherwise.
-		<ThreadChat mainMessage={data} onEscape={onEscape} position='relative' />
+		// Positioned so the drop-target overlay covers the thread and not the panel around it, which is what it would find
+		// to anchor to otherwise.
+		<Box position='relative' display='flex' flexDirection='column' width='full' height='full' overflow='hidden'>
+			<ThreadChat mainMessage={data} onEscape={onEscape} />
+		</Box>
 	);
 };
 

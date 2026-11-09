@@ -1,10 +1,7 @@
-import { useLayout } from '@rocket.chat/ui-contexts';
-
 import { useMessageListOembedEnabled } from '../list/MessageListContext';
 
 type OembedLayout = {
 	enabled: boolean;
-	maxWidth: number | '100%';
 	maxHeight: number;
 };
 
@@ -12,16 +9,8 @@ type OembedLayout = {
  * Returns the layout parameters for oembeds
  */
 export const useOembedLayout = (): OembedLayout => {
-	/*
-  Note: both `useSetting` and `useLayout` are hooks that don't force a re-render
-  very often, so this hook is not going to be re-evaluated very often either;
-  this is why we don't need to memoize the result or store it in a context
-  */
 	const enabled = useMessageListOembedEnabled();
-	const { isMobile } = useLayout();
-
-	const maxWidth = isMobile ? ('100%' as const) : 368;
 	const maxHeight = 368;
 
-	return { enabled, maxWidth, maxHeight };
+	return { enabled, maxHeight };
 };

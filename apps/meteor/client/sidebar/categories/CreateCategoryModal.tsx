@@ -47,7 +47,7 @@ const CreateCategoryModal = ({ room, onClose }: CreateCategoryModalProps) => {
 			confirmText={room ? t('Create_and_move') : t('Create')}
 			confirmLoading={createCategoryMutation.isPending}
 			onCancel={onClose}
-			annotation={room ? undefined : t('You_can_add_rooms_after')}
+			annotation={room ? undefined : t('You_can_add_rooms_later')}
 			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleConfirm)} {...props} />}
 		>
 			<Box marginBlockEnd={16}>

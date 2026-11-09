@@ -1,20 +1,11 @@
-/* eslint-disable @typescript-eslint/no-this-alias */
+/* oxlint-disable @typescript-eslint/no-this-alias */
 
-import { RestClient } from '@rocket.chat/api-client';
 import type { IMessage, Serialized } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import type { OperationParams, OperationResult } from '@rocket.chat/rest-typings';
 
-import { ClientStreamImpl } from '../ClientStream';
-import { ConnectionImpl } from '../Connection';
-import { DDPDispatcher } from '../DDPDispatcher';
 import { DDPSDK } from '../DDPSDK';
-import { TimeoutControl } from '../TimeoutControl';
-import { AccountImpl } from '../types/Account';
-import type { ClientStream } from '../types/ClientStream';
-import type { DDPDispatchOptions } from '../types/DDPClient';
-import type { ServerMethodReturn, ServerMethods } from '../types/methods';
-import type { StreamNames, StreamKeys, StreamerCallbackArgs } from '../types/streams';
+import type { Subscription } from '../types/Subscription';
 import type {
 	APILegacy,
 	DPPLegacy,
@@ -22,30 +13,6 @@ import type {
 	RocketchatSdkLegacyEventsKeys,
 	RocketchatSdkLegacyEventsValues,
 } from './types/SDKLegacy';
-
-declare module '../ClientStream' {
-	interface ClientStream {
-		callAsync<MethodName extends keyof ServerMethods>(
-			methodName: MethodName,
-			...params: Parameters<ServerMethods[MethodName]>
-		): Promise<ServerMethodReturn<MethodName>>;
-		callAsyncWithOptions<MethodName extends keyof ServerMethods>(
-			methodName: MethodName,
-			options: DDPDispatchOptions,
-			...params: Parameters<ServerMethods[MethodName]>
-		): Promise<ServerMethodReturn<MethodName>>;
-	}
-}
-
-declare module '../types/SDK' {
-	interface SDK {
-		stream<N extends StreamNames, K extends StreamKeys<N>>(
-			streamName: N,
-			key: K,
-			callback: (...args: StreamerCallbackArgs<N, K>) => void,
-		): ReturnType<ClientStream['subscribe']>;
-	}
-}
 
 interface RocketchatSDKLegacy extends APILegacy, DPPLegacy {}
 
@@ -59,29 +26,23 @@ export class RocketchatSdkLegacyImpl extends DDPSDK implements RocketchatSDKLega
 	get users() {
 		const self = this;
 		return {
-			all(fields?: { name: 1; username: 1; status: 1; type: 1 }): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>> {
-				return self.rest.get('/v1/users.list', { fields: JSON.stringify(fields) });
+			all(): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>> {
+				return self.rest.get('/v1/users.list', {});
 			},
 			allNames(): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>> {
-				return self.rest.get('/v1/users.list', { fields: JSON.stringify({ name: 1 }) });
+				return self.rest.get('/v1/users.list', {});
 			},
 			allIDs(): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>> {
-				return self.rest.get('/v1/users.list', { fields: JSON.stringify({ _id: 1 }) });
+				return self.rest.get('/v1/users.list', {});
 			},
-			online(fields?: { name: 1; username: 1; status: 1; type: 1 }): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>> {
-				return self.rest.get('/v1/users.list', { fields: JSON.stringify(fields), query: JSON.stringify({ status: { $ne: 'offline' } }) });
+			online(): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>> {
+				return self.rest.get('/v1/users.list', {});
 			},
 			onlineNames(): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>> {
-				return self.rest.get('/v1/users.list', {
-					fields: JSON.stringify({ name: 1 }),
-					query: JSON.stringify({ status: { $ne: 'offline' } }),
-				});
+				return self.rest.get('/v1/users.list', {});
 			},
 			onlineIds(): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>> {
-				return self.rest.get('/v1/users.list', {
-					fields: JSON.stringify({ _id: 1 }),
-					query: JSON.stringify({ status: { $ne: 'offline' } }),
-				});
+				return self.rest.get('/v1/users.list', {});
 			},
 			info(username: string): Promise<Serialized<OperationResult<'GET', '/v1/users.info'>>> {
 				return self.rest.get('/v1/users.info', { username });
@@ -191,16 +152,16 @@ export class RocketchatSdkLegacyImpl extends DDPSDK implements RocketchatSDKLega
 		return this.client.subscribe(topic, ...args).ready();
 	}
 
-	subscribeRoom(rid: string): Promise<unknown> {
-		return Promise.all([
+	subscribeRoom(rid: string): Promise<Subscription[]> {
+		return Promise.resolve([
 			this.stream('room-messages', rid, (...args) => this.ev.emit('message', args)),
 			this.stream('notify-room', `${rid}/typing`, (...args) => this.ev.emit('typing', args)),
 			this.stream('notify-room', `${rid}/deleteMessage`, (...args) => this.ev.emit('deleteMessage', args)),
 		]);
 	}
 
-	subscribeNotifyAll(): Promise<any> {
-		return Promise.all([
+	subscribeNotifyAll(): Promise<Subscription[]> {
+		return Promise.resolve([
 			// this.stream('notify-all', 'roles-change', (...args) => this.ev.emit('roles-change', args)),
 			// this.stream('notify-all', 'updateEmojiCustom', (...args) => this.ev.emit('updateEmojiCustom', args)),
 			// this.stream('notify-all', 'deleteEmojiCustom', (...args) => this.ev.emit('deleteEmojiCustom', args)),
@@ -209,8 +170,8 @@ export class RocketchatSdkLegacyImpl extends DDPSDK implements RocketchatSDKLega
 		]);
 	}
 
-	subscribeLoggedNotify(): Promise<any> {
-		return Promise.all([
+	subscribeLoggedNotify(): Promise<Subscription[]> {
+		return Promise.resolve([
 			this.stream('notify-logged', 'Users:NameChanged', (...args) => this.ev.emit('Users:NameChanged', args)),
 			this.stream('notify-logged', 'Users:Deleted', (...args) => this.ev.emit('Users:Deleted', args)),
 			this.stream('notify-logged', 'updateAvatar', (...args) => this.ev.emit('updateAvatar', args)),
@@ -221,8 +182,8 @@ export class RocketchatSdkLegacyImpl extends DDPSDK implements RocketchatSDKLega
 		]);
 	}
 
-	subscribeNotifyUser = (): Promise<any> => {
-		return Promise.all([
+	subscribeNotifyUser = (): Promise<Subscription[]> => {
+		return Promise.resolve([
 			this.stream('notify-user', `${this.account.uid}/message`, (...args) => this.ev.emit('user-message', args)),
 			this.stream('notify-user', `${this.account.uid}/notification`, (...args) => this.ev.emit('notification', args)),
 			this.stream('notify-user', `${this.account.uid}/rooms-changed`, (...args) => this.ev.emit('rooms-changed', args)),
@@ -248,40 +209,6 @@ export class RocketchatSdkLegacyImpl extends DDPSDK implements RocketchatSDKLega
 	}
 
 	unsubscribeAll(): Promise<unknown> {
-		return Promise.all(Object.entries(this.client.subscriptions).map(([, subscription]) => this.client.unsubscribe(subscription)));
-	}
-
-	static override create(url: string, retryOptions = { retryCount: 1, retryTime: 100 }): RocketchatSdkLegacyImpl {
-		const ddp = new DDPDispatcher();
-
-		const connection = ConnectionImpl.create(url, WebSocket, ddp, retryOptions);
-
-		const stream = new ClientStreamImpl(ddp, ddp);
-
-		const account = new AccountImpl(stream);
-
-		const timeoutControl = TimeoutControl.create(ddp, connection);
-
-		const rest = new (class RestApiClient extends RestClient {
-			override getCredentials() {
-				if (!account.uid || !account.user?.token) {
-					return;
-				}
-				return {
-					'X-User-Id': account.uid,
-					'X-Auth-Token': account.user?.token,
-				};
-			}
-		})({ baseUrl: url });
-
-		const sdk = new RocketchatSdkLegacyImpl(connection, stream, account, timeoutControl, rest);
-
-		connection.on('connected', () => {
-			Object.entries(stream.subscriptions).forEach(([, sub]) => {
-				ddp.subscribeWithId(sub.id, sub.name, sub.params);
-			});
-		});
-
-		return sdk;
+		return Promise.all([...this.client.subscriptions.keys()].map((id) => this.client.unsubscribe(id)));
 	}
 }

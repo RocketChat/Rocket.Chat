@@ -1,6 +1,5 @@
-import { Omnichannel } from '@rocket.chat/core-services';
+import { Omnichannel, ClientSafeError } from '@rocket.chat/core-services';
 import { LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { RoutingManager } from './RoutingManager';
 import { isAgentAvailableToTakeContactInquiry } from './contacts/isAgentAvailableToTakeContactInquiry';
@@ -15,13 +14,13 @@ export const takeInquiry = async (
 	const inquiry = await LivechatInquiry.findOneById(inquiryId);
 
 	if (!inquiry) {
-		throw new Meteor.Error('error-not-found', 'Inquiry not found', {
+		throw new ClientSafeError('error-not-found', 'Inquiry not found', {
 			method: 'livechat:takeInquiry',
 		});
 	}
 
 	if (inquiry.status === 'taken') {
-		throw new Meteor.Error('error-inquiry-taken', 'Inquiry already taken', {
+		throw new ClientSafeError('error-inquiry-taken', 'Inquiry already taken', {
 			method: 'livechat:takeInquiry',
 		});
 	}
@@ -33,7 +32,7 @@ export const takeInquiry = async (
 		{},
 	);
 	if (!user) {
-		throw new Meteor.Error('error-agent-status-service-offline', 'Agent status is offline or Omnichannel service is not active', {
+		throw new ClientSafeError('error-agent-status-service-offline', 'Agent status is offline or Omnichannel service is not active', {
 			method: 'livechat:takeInquiry',
 			...(process.env.TEST_MODE && {
 				Livechat_enabled_when_agent_idle: settings.get<boolean>('Livechat_enabled_when_agent_idle'),
@@ -45,14 +44,14 @@ export const takeInquiry = async (
 
 	const room = await LivechatRooms.findOneById(inquiry.rid);
 	if (!room || !(await Omnichannel.isWithinMACLimit(room))) {
-		throw new Meteor.Error('error-mac-limit-reached');
+		throw new ClientSafeError('error-mac-limit-reached');
 	}
 
 	const contactId = room.contactId ?? (await migrateVisitorIfMissingContact(room.v._id, room.source));
 	if (contactId) {
 		const isAgentAvailableToTakeContactInquiryResult = await isAgentAvailableToTakeContactInquiry(inquiry.v._id, room.source, contactId);
 		if (!isAgentAvailableToTakeContactInquiryResult.value) {
-			throw new Meteor.Error(isAgentAvailableToTakeContactInquiryResult.error);
+			throw new ClientSafeError(isAgentAvailableToTakeContactInquiryResult.error);
 		}
 	}
 

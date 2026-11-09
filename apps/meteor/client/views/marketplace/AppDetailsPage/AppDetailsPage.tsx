@@ -21,7 +21,7 @@ import AppRequests from './tabs/AppRequests/AppRequests';
 import AppSecurity from './tabs/AppSecurity/AppSecurity';
 import AppSettings from './tabs/AppSettings';
 import { useCompactMode } from './useCompactMode';
-import { AppClientOrchestratorInstance } from '../../../apps/orchestrator';
+import { AppClientOrchestratorInstance } from '../../../lib/apps/orchestrator';
 
 type AppDetailsPageFormData = Record<string, SettingValue>;
 
@@ -152,7 +152,7 @@ const AppDetailsPage = ({ id }: AppDetailsPageProps) => {
 					<ButtonGroup>
 						<Button onClick={() => reset()}>{t('Cancel')}</Button>
 						{installed && isAdminUser && (
-							<Button primary loading={isSubmitting} onClick={handleSubmit(saveAppSettings)}>
+							<Button variant='primary' loading={isSubmitting} onClick={handleSubmit(saveAppSettings)}>
 								{t('Save_changes')}
 							</Button>
 						)}

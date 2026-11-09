@@ -1,7 +1,8 @@
 import type { IRoom, IUser, IVideoConferenceUser, VideoConferenceCapabilities, VideoConferenceChatAccess } from '@rocket.chat/core-typings';
 import type { Badge } from '@rocket.chat/fuselage';
-import type { ComponentProps, ReactNode } from 'react';
+import type { ComponentProps, ComponentType, ReactNode } from 'react';
 
+import type { PreviewVideoProviderProps } from '../call/previewVideo';
 import type { CallPreferences } from '../hooks/useCallDevicesInitialState';
 
 /**
@@ -152,6 +153,14 @@ export type ConferenceSlots = {
 	 * different way out, so the two are not one screen with two titles.
 	 */
 	joinRefused?: ReactNode;
+	/** The preflight's self-view and device choices, for a provider that can be told which devices to use. */
+	preflightMedia?: PreflightMedia;
+};
+
+/** What the preflight needs from the application to show the reader's own camera, which only the call's SDK opens. */
+export type PreflightMedia = {
+	/** Mounted around the preview for as long as the preflight is on screen; it may suspend while it loads. */
+	PreviewVideoProvider: ComponentType<PreviewVideoProviderProps>;
 };
 
 /**

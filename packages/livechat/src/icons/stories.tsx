@@ -1,6 +1,6 @@
-import path from 'path';
-
+/// <reference types="vite/client" />
 import type { Meta, StoryFn } from '@storybook/preact';
+import type { ComponentType, JSX } from 'preact';
 
 export default {
 	title: 'Components/Icons',
@@ -16,42 +16,33 @@ export default {
 	},
 } satisfies Meta<{ color: string }>;
 
-const req = require.context('./', true, /\.svg$/);
-const iconset = req.keys().map((filename) => ({
-	component: req(filename),
-	name: path.basename(filename, '.svg'),
+const icons = import.meta.glob<ComponentType<JSX.SVGAttributes<SVGSVGElement>>>('./**/*.svg', { eager: true, import: 'default' });
+const iconset = Object.entries(icons).map(([filename, component]) => ({
+	component,
+	name: filename.replace(/^.*\//, '').replace(/\.svg$/, ''),
 }));
 
 export const All: StoryFn<{ color: string }> = ({ color }) => (
 	<>
-		{iconset.map(
-			(
-				{
-					// eslint-disable-next-line @typescript-eslint/naming-convention
-					component: Icon,
-					name,
-				},
-				i,
-			) => (
-				<div
-					key={i}
-					style={{
-						width: 130,
-						height: 130,
-						margin: 10,
-						display: 'flex',
-						flexDirection: 'column',
-						alignItems: 'center',
-						justifyContent: 'stretch',
-					}}
-				>
-					<div style={{ flex: 1, display: 'flex', alignItems: 'center', color }}>
-						<Icon width={48} height={48} />
-					</div>
-					<div style={{ flex: 0 }}>{name}</div>
+		{iconset.map(({ component: Icon, name }, i) => (
+			<div
+				key={i}
+				style={{
+					width: 130,
+					height: 130,
+					margin: 10,
+					display: 'flex',
+					flexDirection: 'column',
+					alignItems: 'center',
+					justifyContent: 'stretch',
+				}}
+			>
+				<div style={{ flex: 1, display: 'flex', alignItems: 'center', color }}>
+					<Icon width={48} height={48} />
 				</div>
-			),
-		)}
+				<div style={{ flex: 0 }}>{name}</div>
+			</div>
+		))}
 	</>
 );
 All.storyName = 'all';

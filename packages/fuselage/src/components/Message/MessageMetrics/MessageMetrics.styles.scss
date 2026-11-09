@@ -1,0 +1,34 @@
+@use '../../../styles/colors.scss';
+@use '../../../styles/lengths.scss';
+@use '../../../styles/typography.scss' as *;
+
+.rcx-message-metrics {
+	&__content-wrapper {
+		display: flex;
+
+		margin-block: lengths.margin(4);
+		margin-inline: lengths.margin(-4);
+	}
+
+	&__item {
+		@include use-font-scale(micro);
+
+		display: flex;
+		justify-content: center;
+		align-items: center;
+
+		margin-inline: lengths.margin(4);
+
+		color: colors.font(default);
+
+		&-label {
+			margin-inline-start: lengths.margin(4);
+		}
+	}
+
+	&__avatar-row {
+		display: flex;
+
+		gap: lengths.margin(4);
+	}
+}

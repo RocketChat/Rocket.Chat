@@ -11,6 +11,8 @@ import {
 	StatesTitle,
 	StatesActions,
 	StatesAction,
+	Stack,
+	type TableColumnWidth,
 } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import {
@@ -23,16 +25,17 @@ import {
 	GenericTableHeaderCell,
 	GenericTableLoadingTable,
 	GenericTableRow,
+	usePaginatedQuery,
 	usePagination,
 	useSort,
+	GenericNoResults,
+	links,
 } from '@rocket.chat/ui-client';
 import { useTranslation, useToastMessageDispatch, useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
-import { useMutation, useQuery, hashKey, useQueryClient } from '@tanstack/react-query';
+import { useMutation, hashKey, useQueryClient } from '@tanstack/react-query';
 import { useId, useMemo, useState } from 'react';
 
 import FilterByText from '../../../components/FilterByText';
-import GenericNoResults from '../../../components/GenericNoResults';
-import { links } from '../../../lib/links';
 
 const MonitorsTable = () => {
 	const t = useTranslation();
@@ -44,7 +47,6 @@ const MonitorsTable = () => {
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const pagination = usePagination();
 	const sort = useSort<'name' | 'username' | 'email'>('name');
 
 	const getMonitors = useEndpoint('GET', '/v1/livechat/monitors');
@@ -52,7 +54,6 @@ const MonitorsTable = () => {
 	const deleteMonitor = useEndpoint('POST', '/v1/livechat/monitors.delete');
 	const addMonitor = useEndpoint('POST', '/v1/livechat/monitors.create');
 
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = pagination;
 	const { sortBy, sortDirection, setSort } = sort;
 
 	const query = useDebouncedValue(
@@ -60,21 +61,33 @@ const MonitorsTable = () => {
 			() => ({
 				text,
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
-				...(itemsPerPage && { count: itemsPerPage }),
-				...(current && { offset: current }),
 			}),
-			[text, itemsPerPage, current, sortBy, sortDirection],
+			[text, sortBy, sortDirection],
 		),
 		500,
 	);
 
-	const { data, refetch, isLoading, isSuccess, isError } = useQuery({
-		queryKey: ['omnichannel', 'monitors', query],
-		queryFn: () => getMonitors(query),
+	const queryKey = ['omnichannel', 'monitors', query];
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({ resetKey: queryKey });
+
+	const { data, refetch, isLoading, isSuccess, isError } = usePaginatedQuery({
+		query: {
+			queryKey,
+			queryFn: (page) => getMonitors({ ...query, ...page }),
+		},
+		itemsKey: 'monitors',
+		offset: current,
+		count: itemsPerPage,
 	});
 
-	const [defaultQuery] = useState(hashKey([query]));
-	const queryHasChanged = defaultQuery !== hashKey([query]);
+	const [defaultQuery] = useState(hashKey([query, current, itemsPerPage]));
+	const queryHasChanged = defaultQuery !== hashKey([query, current, itemsPerPage]);
 
 	const queryClient = useQueryClient();
 
@@ -112,6 +125,8 @@ const MonitorsTable = () => {
 		setModal(<GenericModal variant='danger' onConfirm={onDeleteMonitor} onCancel={() => setModal()} confirmText={t('Delete')} />);
 	};
 
+	const columns: TableColumnWidth[] = ['auto', 'auto', 'auto', 40];
+
 	const headers = useMemo(
 		() => [
 			<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort}>
@@ -123,7 +138,7 @@ const MonitorsTable = () => {
 			<GenericTableHeaderCell key='email' direction={sortDirection} active={sortBy === 'email'} onClick={setSort}>
 				{t('Email')}
 			</GenericTableHeaderCell>,
-			<GenericTableHeaderCell key='spacer' width={40} />,
+			<GenericTableHeaderCell key='spacer' />,
 		],
 		[setSort, sortBy, sortDirection, t],
 	);
@@ -134,10 +149,12 @@ const MonitorsTable = () => {
 				<Field>
 					<FieldLabel htmlFor={usernameFieldId}>{t('Username')}</FieldLabel>
 					<FieldRow>
-						<UserAutoComplete id={usernameFieldId} name='monitor' value={username} onChange={setUsername as () => void} />
-						<Button primary disabled={!username} loading={addMutation.isPending} onClick={() => handleAdd()} marginInlineStart={8}>
-							{t('Add_monitor')}
-						</Button>
+						<Stack direction='row' align='center' justify='space-between' grow gap={8}>
+							<UserAutoComplete id={usernameFieldId} name='monitor' value={username} onChange={setUsername as () => void} />
+							<Button variant='primary' disabled={!username} loading={addMutation.isPending} onClick={() => handleAdd()}>
+								{t('Add_monitor')}
+							</Button>
+						</Stack>
 					</FieldRow>
 				</Field>
 			</Box>
@@ -145,7 +162,7 @@ const MonitorsTable = () => {
 				<FilterByText value={text} onChange={(event) => setText(event.target.value)} />
 			)}
 			{isLoading && (
-				<GenericTable>
+				<GenericTable columns={columns}>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
 						<GenericTableLoadingTable headerCells={4} />
@@ -164,16 +181,16 @@ const MonitorsTable = () => {
 			)}
 			{isSuccess && data.monitors.length > 0 && (
 				<>
-					<GenericTable aria-busy={isLoading} aria-live='polite' aria-label={t('Monitors')}>
+					<GenericTable columns={columns} aria-busy={isLoading} aria-live='polite' aria-label={t('Monitors')}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.monitors?.map((monitor) => (
-								<GenericTableRow key={monitor._id} tabIndex={0} width='full'>
-									<GenericTableCell withTruncatedText>{monitor.name}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{monitor.username}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{monitor.email}</GenericTableCell>
-									<GenericTableCell withTruncatedText>
-										<IconButton icon='trash' small title={t('Remove')} onClick={() => handleRemove(monitor.username)} />
+								<GenericTableRow key={monitor._id} tabIndex={0}>
+									<GenericTableCell truncate>{monitor.name}</GenericTableCell>
+									<GenericTableCell truncate>{monitor.username}</GenericTableCell>
+									<GenericTableCell truncate>{monitor.email}</GenericTableCell>
+									<GenericTableCell truncate>
+										<IconButton icon='trash' size='small' title={t('Remove')} onClick={() => handleRemove(monitor.username)} />
 									</GenericTableCell>
 								</GenericTableRow>
 							))}

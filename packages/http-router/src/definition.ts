@@ -1,6 +1,7 @@
 import type { LicenseModule } from '@rocket.chat/core-typings';
 import type { ValidateFunction } from 'ajv';
-import type { Request } from 'express';
+
+import type { OpenAPIDocumentation } from './openapi';
 
 type Range<N extends number, Result extends number[] = []> = Result['length'] extends N
 	? Result[number]
@@ -26,18 +27,6 @@ export type ResponseSchema<T extends TypedOptions> = {
 		: never;
 }[keyof T['response']];
 
-export type TypedRequest = Request & {
-	response: {
-		setHeader: (name: string, value: string) => void;
-	};
-	routePath: string;
-	queryParams: Record<string, any>;
-	bodyParams: Record<string, any>;
-	urlParams: Record<string, any>;
-	requestIp: string;
-	path: string;
-};
-
 export type TypedResponse = {
 	statusCode?: number;
 	body: any;
@@ -53,5 +42,6 @@ export type TypedOptions = {
 	tags?: string[];
 	typed?: boolean;
 	license?: LicenseModule[];
+	licenseRequired?: boolean;
 	authRequired?: boolean;
-};
+} & OpenAPIDocumentation;

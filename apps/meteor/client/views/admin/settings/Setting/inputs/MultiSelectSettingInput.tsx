@@ -16,7 +16,7 @@ function MultiSelectSettingInput({
 	value,
 	hint,
 	placeholder,
-	readonly,
+	readonly: _readonly,
 	disabled,
 	required,
 	values = [],
@@ -47,7 +47,6 @@ function MultiSelectSettingInput({
 					value={value}
 					placeholder={placeholder}
 					disabled={disabled}
-					readOnly={readonly}
 					// autoComplete={autocomplete === false ? 'off' : undefined}
 					onChange={handleChange}
 					options={values.map(({ key, i18nLabel }) => [key, t(i18nLabel)])}

@@ -1,13 +1,15 @@
-import { useOverlayTriggerState } from '@react-stately/overlays';
-import { Popover } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { HoverCardPopover, useHoverCard } from '@rocket.chat/ui-client';
 import { useRoomToolbox, UserCardContext } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, ReactNode, UIEvent } from 'react';
-import { Suspense, lazy, useEffect, useMemo, useRef, useState } from 'react';
+import type { ReactNode } from 'react';
+import { lazy, useMemo } from 'react';
 
 import { useRoom } from '../contexts/RoomContext';
 
 const UserCard = lazy(() => import('../UserCard'));
+
+// Anchored elements sit 0.25rem away from their trigger; the positioning engine takes px.
+const getPopoverOffset = () => 0.25 * parseFloat(window.getComputedStyle(document.documentElement).fontSize || '16');
 
 const cardTriggerProps = { 'aria-haspopup': 'dialog' } as const;
 
@@ -15,12 +17,10 @@ export type UserCardProviderProps = { children: ReactNode };
 
 const UserCardProvider = ({ children }: UserCardProviderProps) => {
 	const room = useRoom();
-	const [userCardData, setUserCardData] = useState<ComponentProps<typeof UserCard> | null>(null);
+	const hoverCard = useHoverCard<string>();
+	const { open, dismiss, shownKey: username } = hoverCard;
 
-	const triggerRef = useRef<Element | null>(null);
-	const state = useOverlayTriggerState({});
-
-	const { openTab } = useRoomToolbox();
+	const { actions, openTab } = useRoomToolbox();
 
 	const openUserInfo = useStableCallback((username?: string) => {
 		switch (room.t) {
@@ -33,57 +33,33 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 				break;
 
 			default:
-				openTab('members-list', username);
+				openTab(actions.some(({ id }) => id === 'members-list') ? 'members-list' : 'user-info', username);
 				break;
 		}
 	});
 
-	const closeUserCard = useStableCallback(() => setUserCardData(null));
-
-	const handleSetUserCard = useStableCallback((e: UIEvent, username: string) => {
-		triggerRef.current = e.currentTarget ?? e.target;
-		state.open();
-		setUserCardData({
-			username,
-			rid: room._id,
-			onOpenUserInfo: () => openUserInfo(username),
-			onClose: closeUserCard,
-		});
+	const handleOpenUserInfo = useStableCallback((username: string) => {
+		dismiss();
+		openUserInfo(username);
 	});
-
-	const isOpen = state.isOpen && !!userCardData;
-
-	// Only the trigger that opened the card is expanded; the shared triggerProps can't carry this state.
-	useEffect(() => {
-		const trigger = triggerRef.current;
-		if (!isOpen || !trigger) {
-			return;
-		}
-		trigger.setAttribute('aria-expanded', 'true');
-		return () => trigger.removeAttribute('aria-expanded');
-	}, [isOpen, userCardData]);
 
 	// Every entry is identity-stable, so the message headers, avatars and mentions subscribed to the context don't re-render when a card opens or closes.
 	const contextValue = useMemo(
 		() => ({
-			openUserCard: handleSetUserCard,
-			openUserInfo,
-			closeUserCard,
+			openUserCard: open,
+			openUserInfo: handleOpenUserInfo,
+			closeUserCard: dismiss,
 			triggerProps: cardTriggerProps,
 		}),
-		[handleSetUserCard, openUserInfo, closeUserCard],
+		[open, handleOpenUserInfo, dismiss],
 	);
 
 	return (
 		<UserCardContext.Provider value={contextValue}>
 			{children}
-			{isOpen && userCardData && (
-				<Suspense fallback={null}>
-					<Popover placement='top left' triggerRef={triggerRef} state={state}>
-						<UserCard {...userCardData} />
-					</Popover>
-				</Suspense>
-			)}
+			<HoverCardPopover hoverCard={hoverCard} placement='top left' offset={getPopoverOffset()}>
+				{username && <UserCard username={username} rid={room._id} onOpenUserInfo={() => openUserInfo(username)} onClose={dismiss} />}
+			</HoverCardPopover>
 		</UserCardContext.Provider>
 	);
 };

@@ -5,6 +5,7 @@ import { e2e } from './rocketchat.e2e';
 import { dispatchToastMessage } from '../toast';
 
 jest.mock('@rocket.chat/ui-client', () => ({
+	...jest.requireActual('@rocket.chat/ui-client'),
 	imperativeModal: {
 		open: jest.fn(),
 		close: jest.fn(),
@@ -15,7 +16,7 @@ jest.mock('../../../client/lib/getUserAvatarURL', () => ({
 	getUserAvatarURL: jest.fn(),
 }));
 
-jest.mock('../../../app/utils/lib/i18n', () => ({
+jest.mock('../../../lib/i18n', () => ({
 	t: (key: string) => key,
 }));
 

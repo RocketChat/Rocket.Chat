@@ -1,13 +1,15 @@
 import type { IAuditLog, IMessage, IUser, IRoom } from '@rocket.chat/core-typings';
 import { Rooms, AuditLog, ServerEvents } from '@rocket.chat/models';
 import {
-	isServerEventsAuditSettingsProps,
 	ajv,
 	ajvQuery,
+	isServerEventsAuditSettingsProps,
+	paginatedResponseProperties,
+	paginationQueryProperties,
 	validateBadRequestErrorResponse,
-	validateUnauthorizedErrorResponse,
 	validateForbiddenErrorResponse,
 	validateNotFoundErrorResponse,
+	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import type { PaginatedRequest, PaginatedResult } from '@rocket.chat/rest-typings';
 import { convertSubObjectsIntoPaths } from '@rocket.chat/tools';
@@ -28,8 +30,7 @@ const auditRoomMembersSchema = {
 	properties: {
 		roomId: { type: 'string', minLength: 1 },
 		filter: { type: 'string' },
-		count: { type: 'number' },
-		offset: { type: 'number' },
+		...paginationQueryProperties,
 		sort: { type: 'string' },
 	},
 	required: ['roomId'],
@@ -109,7 +110,6 @@ const auditOmnichannelMessagesSchema = {
 const isAuditOmnichannelMessagesProps = ajv.compile<AuditOmnichannelMessagesPayload>(auditOmnichannelMessagesSchema);
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Endpoints {
 		'/v1/audit/rooms.members': {
 			GET: (
@@ -154,9 +154,7 @@ const auditRoomMembersResponseSchema = ajv.compile<
 				additionalProperties: false,
 			},
 		},
-		count: { type: 'number' },
-		offset: { type: 'number' },
-		total: { type: 'number' },
+		...paginatedResponseProperties,
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['members', 'count', 'offset', 'total', 'success'],
@@ -242,18 +240,7 @@ API.v1.get(
 							type: 'object',
 						},
 					},
-					count: {
-						type: 'number',
-						description: 'The number of events returned in this response.',
-					},
-					offset: {
-						type: 'number',
-						description: 'The number of events that were skipped in this response.',
-					},
-					total: {
-						type: 'number',
-						description: 'The total number of events that match the query.',
-					},
+					...paginatedResponseProperties,
 					success: {
 						type: 'boolean',
 						description: 'Indicates if the request was successful.',

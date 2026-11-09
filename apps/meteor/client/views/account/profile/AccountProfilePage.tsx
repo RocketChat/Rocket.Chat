@@ -1,18 +1,10 @@
 import { ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
 import { SHA256 } from '@rocket.chat/sha256';
 import { Page, PageFooter, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
-import {
-	useSetModal,
-	useToastMessageDispatch,
-	useUser,
-	useLogout,
-	useEndpoint,
-	useTranslation,
-	useSetting,
-	useLayout,
-} from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useUser, useLogout, useEndpoint, useSetting, useLayout } from '@rocket.chat/ui-contexts';
 import { useId, useState, useCallback } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import AccountProfileForm from './AccountProfileForm';
 import ActionConfirmModal from './ActionConfirmModal';
@@ -22,7 +14,7 @@ import { useAllowPasswordChange } from '../security/useAllowPasswordChange';
 
 // TODO: enforce useMutation
 const AccountProfilePage = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const user = useUser();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { isMobile } = useLayout();
@@ -124,13 +116,13 @@ const AccountProfilePage = () => {
 					<FormProvider {...methods}>
 						<AccountProfileForm id={profileFormId} />
 					</FormProvider>
-					<Box marginBlock={12}>
-						<ButtonGroup stretch vertical={isMobile}>
-							<Button onClick={handleLogoutOtherLocations} flexGrow={0} loading={loggingOut}>
+					<Box marginBlock={12} marginBlockStart={24}>
+						<ButtonGroup stretch={isMobile} vertical={isMobile}>
+							<Button onClick={handleLogoutOtherLocations} loading={loggingOut}>
 								{t('Logout_Others')}
 							</Button>
 							{allowDeleteOwnAccount && (
-								<Button icon='trash' danger onClick={handleDeleteOwnAccount}>
+								<Button icon='trash' variant='danger' onClick={handleDeleteOwnAccount}>
 									{t('Delete_my_account')}
 								</Button>
 							)}
@@ -143,7 +135,7 @@ const AccountProfilePage = () => {
 					<Button disabled={!isDirty} onClick={() => reset(getProfileInitialValues(user))}>
 						{t('Cancel')}
 					</Button>
-					<Button form={profileFormId} primary disabled={!isDirty || loggingOut} loading={isSubmitting} type='submit'>
+					<Button form={profileFormId} variant='primary' disabled={!isDirty || loggingOut} loading={isSubmitting} type='submit'>
 						{t('Save_changes')}
 					</Button>
 				</ButtonGroup>

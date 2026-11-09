@@ -120,7 +120,10 @@ export interface IBaseModel<
 
 	deleteOne(filter: Filter<T>, options?: DeleteOptions & { bypassDocumentValidation?: boolean }): Promise<DeleteResult>;
 
-	deleteMany(filter: Filter<T>, options?: DeleteOptions & { onTrash?: (record: ResultFields<T, C>) => void }): Promise<DeleteResult>;
+	deleteMany(
+		filter: Filter<T>,
+		options?: DeleteOptions & { onTrash?: (record: ResultFields<T, C>) => void; bulkTrash?: boolean },
+	): Promise<DeleteResult>;
 
 	// Trash
 	trashFind<P extends TDeleted>(

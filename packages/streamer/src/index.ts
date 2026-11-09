@@ -15,3 +15,5 @@ export type {
 	StreamRelay,
 	TransformMessage,
 } from './types';
+export { statusVisibilityGate } from './StatusVisibilityGate';
+export { NOTHING_HIDDEN, hiddenIds, isHiddenFor, scopeHidesAnyone } from './presenceScope';

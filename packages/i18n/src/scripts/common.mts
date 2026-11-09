@@ -16,7 +16,8 @@ export const getLanguagePlurals = (language: string): string[] => {
 		i18next.init({ initAsync: false });
 	}
 
-	return i18next.services.pluralResolver.getSuffixes(language).map((suffix: string) => suffix.slice(1));
+	const pluralResolver = i18next.services.pluralResolver as { getSuffixes(language: string): string[] };
+	return pluralResolver.getSuffixes(language).map((suffix) => suffix.slice(1));
 };
 
 export async function readContent(language: string) {

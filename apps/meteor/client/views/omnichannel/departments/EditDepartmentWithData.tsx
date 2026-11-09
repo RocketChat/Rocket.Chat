@@ -1,11 +1,11 @@
 import { Box } from '@rocket.chat/fuselage';
+import { FormSkeleton } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
 import EditDepartment from './EditDepartment';
 import EditDepartmentWithAllowedForwardData from './EditDepartmentWithAllowedForwardData';
-import { FormSkeleton } from '../../../components/Skeleton';
 
 const params = { onlyMyDepartments: 'true' } as const;
 
@@ -24,7 +24,7 @@ const EditDepartmentWithData = ({ id, title }: EditDepartmentWithDataProps) => {
 	});
 
 	if (isLoading) {
-		return <FormSkeleton padding='1.5rem 1rem' maxWidth='37.5rem' margin='0 auto' />;
+		return <FormSkeleton paddingBlock='x24' paddingInline='x16' maxWidth='37.5rem' margin='0 auto' />;
 	}
 
 	if (isError || (id && !data?.department)) {

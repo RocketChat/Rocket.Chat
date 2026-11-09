@@ -3,9 +3,9 @@ import { useTranslation, useSetting, useAtLeastOnePermission } from '@rocket.cha
 
 import { useCreateRoomModal } from './useCreateRoomModal';
 import CreateDiscussion from '../../../components/CreateDiscussion';
-import CreateChannelModal from '../actions/CreateChannelModal';
+import CreateChannelModal from '../actions/CreateChannelModalWithData';
 import CreateDirectMessage from '../actions/CreateDirectMessage';
-import CreateTeamModal from '../actions/CreateTeamModal';
+import CreateTeamModal from '../actions/CreateTeamModalWithData';
 
 const CREATE_CHANNEL_PERMISSIONS = ['create-c', 'create-p'];
 const CREATE_TEAM_PERMISSIONS = ['create-team'];

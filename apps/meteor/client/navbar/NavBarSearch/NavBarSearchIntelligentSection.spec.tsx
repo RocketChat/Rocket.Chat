@@ -1,4 +1,4 @@
-import { emptySearchFilters, type NavBarSearchFormValues } from '@rocket.chat/ai-search';
+import { createAppliedFilter, type AppliedFilter, type NavBarSearchFormValues } from '@rocket.chat/ai-search';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { RouterContextValue } from '@rocket.chat/ui-contexts';
 import { render, screen } from '@testing-library/react';
@@ -12,11 +12,11 @@ import '@testing-library/jest-dom';
 
 jest.mock('./NavBarSearchMessageRow', () => () => null);
 
-const SearchFormProvider = ({ children }: { children: ReactNode }) => {
+const SearchFormProvider = ({ children, filterText }: { children: ReactNode; filterText: string }) => {
 	const methods = useForm<NavBarSearchFormValues>({
 		defaultValues: {
-			filterText: 'deployment errors',
-			appliedFilters: { ...emptySearchFilters(), roomNames: ['general'] },
+			filterText,
+			filters: [createAppliedFilter('in', 'general') as AppliedFilter],
 		},
 	});
 
@@ -27,6 +27,7 @@ const renderSection = (
 	items: Parameters<typeof NavBarSearchIntelligentSection>[0]['items'],
 	router: Partial<RouterContextValue> = {},
 	onClose = jest.fn(),
+	filterText = 'deployment errors',
 ) => {
 	const appWrapper = mockAppRoot()
 		.withTranslations('en', 'core', {
@@ -38,7 +39,7 @@ const renderSection = (
 		.build();
 
 	render(
-		<SearchFormProvider>
+		<SearchFormProvider filterText={filterText}>
 			<NavBarSearchIntelligentSection items={items} onSelect={jest.fn()} onClose={onClose} />
 		</SearchFormProvider>,
 		{ wrapper: appWrapper },
@@ -50,11 +51,11 @@ describe('NavBarSearchIntelligentSection', () => {
 		const buildRoutePath = jest.fn(() => '/search' as const);
 		renderSection([], { buildRoutePath });
 
-		expect(screen.queryByText('View all results')).not.toBeInTheDocument();
+		expect(screen.queryByRole('link', { name: 'View all results' })).not.toBeInTheDocument();
 		expect(buildRoutePath).not.toHaveBeenCalled();
 	});
 
-	it('renders a native link to the AI Search page when related results are available', async () => {
+	it('links to the AI Search page from the section header and the footer when related results are available', async () => {
 		const user = userEvent.setup();
 		const buildRoutePath = jest.fn(() => '/search?q=in%3Ageneral%20deployment%20errors' as const);
 		const onClose = jest.fn();
@@ -70,16 +71,44 @@ describe('NavBarSearchIntelligentSection', () => {
 			onClose,
 		);
 
-		const action = screen.getByRole('option', { name: 'View all results' });
-		expect(action.tagName).toBe('A');
-		expect(action).toHaveAttribute('href', '/search?q=in%3Ageneral%20deployment%20errors');
+		const actions = screen.getAllByRole('link', { name: 'View all results' });
+		expect(actions).toHaveLength(2);
 		expect(buildRoutePath).toHaveBeenCalledWith({
 			name: 'search',
 			search: { q: 'in:general deployment errors' },
 		});
 
-		action.addEventListener('click', (event) => event.preventDefault(), { once: true });
-		await user.click(action);
-		expect(onClose).toHaveBeenCalledTimes(1);
+		for (const action of actions) {
+			expect(action.tagName).toBe('A');
+			expect(action).toHaveAttribute('href', '/search?q=in%3Ageneral%20deployment%20errors');
+
+			action.addEventListener('click', (event) => event.preventDefault(), { once: true });
+			await user.click(action);
+		}
+		expect(onClose).toHaveBeenCalledTimes(2);
+	});
+
+	it('leaves a filter that is still being typed out of the AI Search page link', () => {
+		const buildRoutePath = jest.fn(() => '/search' as const);
+		renderSection(
+			[{ _id: 'message-id', msgId: 'message-id', text: 'Deployment failed' }],
+			{ buildRoutePath },
+			jest.fn(),
+			'deployment errors from:jo',
+		);
+
+		expect(buildRoutePath).toHaveBeenCalledWith({ name: 'search', search: { q: 'in:general deployment errors' } });
+	});
+
+	it('keeps a filter that is followed by whitespace in the AI Search page link', () => {
+		const buildRoutePath = jest.fn(() => '/search' as const);
+		renderSection(
+			[{ _id: 'message-id', msgId: 'message-id', text: 'Deployment failed' }],
+			{ buildRoutePath },
+			jest.fn(),
+			'deployment errors from:john ',
+		);
+
+		expect(buildRoutePath).toHaveBeenCalledWith({ name: 'search', search: { q: 'in:general deployment errors from:john' } });
 	});
 });
