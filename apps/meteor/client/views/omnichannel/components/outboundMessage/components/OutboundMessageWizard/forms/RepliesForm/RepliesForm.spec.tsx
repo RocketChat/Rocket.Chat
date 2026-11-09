@@ -132,7 +132,7 @@ describe('RepliesForm', () => {
 		expect(screen.getByLabelText('Department (optional)')).toBeInTheDocument();
 		expect(screen.getByLabelText('Agent (optional)')).toBeInTheDocument();
 
-		expect(screen.getByLabelText('Department (optional)')).not.toHaveAttribute('aria-disabled');
+		expect(screen.getByLabelText('Department (optional)')).toBeEnabled();
 		expect(screen.getByLabelText('Agent (optional)')).toBeDisabled();
 	});
 
@@ -146,8 +146,8 @@ describe('RepliesForm', () => {
 			wrapper: appRoot().build(),
 		});
 
-		await waitFor(() => expect(screen.getByLabelText('Department (optional)')).toHaveTextContent('Department 1'));
-		await waitFor(() => expect(screen.getByLabelText('Agent (optional)')).toHaveTextContent('agent.one'));
+		await waitFor(() => expect(screen.getByLabelText('Department (optional)').parentElement).toHaveTextContent('Department 1'));
+		await waitFor(() => expect(screen.getByLabelText('Agent (optional)').parentElement).toHaveTextContent('agent.one'));
 	});
 
 	it('should enable agent selection when a department is selected', async () => {
@@ -156,7 +156,7 @@ describe('RepliesForm', () => {
 		const departmentInput = screen.getByLabelText('Department (optional)');
 		const agentInput = screen.getByLabelText('Agent (optional)');
 
-		await waitFor(() => expect(departmentInput).not.toHaveAttribute('aria-busy', 'true'));
+		await waitFor(() => expect(departmentInput).not.toHaveAttribute('placeholder', 'Loading...'));
 		expect(agentInput).toBeDisabled();
 
 		await userEvent.click(departmentInput);

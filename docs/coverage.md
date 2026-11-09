@@ -46,6 +46,10 @@ fs.writeFileSync('./apps/meteor/.swcrc', JSON.stringify(swcrc, null, 2) + '\n');
 
 This approach ensures the same build pipeline (SWC) is used for both regular and coverage builds, avoiding behavioral differences between build modes.
 
+### Web client (Vite)
+
+The web client is built by Vite (`yarn build:client`, see [features/web-client-hosting.md](features/web-client-hosting.md)), not by Meteor's SWC, so the step above only instruments the server. With `BABEL_ENV=coverage`, the `rocketchat-coverage` plugin in `apps/meteor/vite/vite.config.mts` instruments the app's own client files (not `node_modules`) with `istanbul-lib-instrument`, naming each by its absolute path. The UI e2e tests read the counters from `window.__coverage__`. Production builds are not instrumented.
+
 ### Legacy build stack (Babel)
 
 Before the modern build stack, coverage was handled via `babel-plugin-istanbul` configured in `.babelrc`:
@@ -91,6 +95,10 @@ Coverage is collected in the `ci-test-e2e.yml` workflow:
 3. **Merge**: `nyc merge` combines per-shard JSON reports into a single coverage file
 4. **Upload**: Coverage data is uploaded to Codecov
 
+## Unit tests (`apps/meteor`)
+
+`yarn testunit` runs the `node:test` suite under nyc. nyc does not count `*.test.ts` files.
+
 ## Local development
 
 To build with coverage locally:
@@ -115,11 +123,14 @@ COVERAGE_DIR=/tmp/coverage COVERAGE_FILE_NAME=local.json COVERAGE_REPORTER=lcov 
 
 Remember to restore `.swcrc` and `.meteor/packages` after testing.
 
+This covers the server only: `yarn dev` serves the client from Vite's dev server, which is never instrumented. To cover the client too, build it with `BABEL_ENV=coverage yarn build:client`, start the server with `meteor` rather than `yarn dev` (which deletes the built client), and run the UI tests with `E2E_COVERAGE=true`; the counters land in `.nyc_output`.
+
 ## Dependencies
 
 | Package | Purpose |
 |---|---|
 | `swc-plugin-coverage-instrument` | SWC plugin for Istanbul-compatible instrumentation |
+| `istanbul-lib-instrument` | Instruments the Vite-built web client in coverage builds |
 | `istanbul-lib-coverage` | Coverage map creation (used by `rocketchat:coverage`) |
 | `istanbul-lib-report` | Report context creation |
 | `istanbul-reports` | Report formatters (json, lcov, etc.) |

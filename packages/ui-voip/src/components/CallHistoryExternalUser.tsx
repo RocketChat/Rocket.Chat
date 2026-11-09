@@ -11,7 +11,7 @@ const CallHistoryExternalUser = ({ contact: { number }, showIcon = true }: CallH
 	return (
 		<Box display='flex' flexDirection='row' alignItems='center'>
 			<Box marginInlineEnd={8}>
-				<FramedIcon icon='user' size={28} />
+				<FramedIcon icon='user' />
 			</Box>
 			{showIcon && (
 				<Box marginInlineEnd={8}>

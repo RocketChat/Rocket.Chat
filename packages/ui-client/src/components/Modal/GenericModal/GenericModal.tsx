@@ -52,12 +52,12 @@ const iconMap: Record<string, IconName> = {
 const getButtonProps = (variant: VariantType): ComponentPropsWithoutRef<typeof Button> => {
 	switch (variant) {
 		case 'danger':
-			return { danger: true };
+			return { variant: 'danger' };
 		case 'secondary-danger':
-			return { secondary: true, danger: true };
+			return { variant: 'secondary-danger' };
 		case 'warning':
 		case 'upsell':
-			return { primary: true };
+			return { variant: 'primary' };
 		default:
 			return {};
 	}
@@ -69,7 +69,12 @@ const renderIcon = (icon: GenericModalProps['icon'], variant: VariantType): Reac
 	}
 
 	if (icon === undefined) {
-		return <ModalIcon color={variant} name={iconMap[variant]} />;
+		return (
+			<ModalIcon
+				variant={variant === 'danger' || variant === 'info' || variant === 'warning' || variant === 'success' ? variant : undefined}
+				name={iconMap[variant]}
+			/>
+		);
 	}
 
 	if (typeof icon === 'string') {
@@ -103,8 +108,6 @@ const GenericModal = ({
 	const genericModalId = useId();
 
 	const dismissedRef = useRef(true);
-
-	const taglineColor = variant === 'upsell' ? 'annotation' : undefined;
 
 	const handleConfirm = useStableCallback(() => {
 		dismissedRef.current = false;
@@ -141,18 +144,18 @@ const GenericModal = ({
 			<ModalHeader>
 				{renderIcon(icon, variant)}
 				<ModalHeaderText>
-					{tagline && <ModalTagline color={taglineColor}>{tagline}</ModalTagline>}
+					{tagline && <ModalTagline subtle={variant === 'upsell'}>{tagline}</ModalTagline>}
 					<ModalTitle id={`${genericModalId}-title`}>{title ?? t('Are_you_sure')}</ModalTitle>
 				</ModalHeaderText>
 				{onClose && <ModalClose tabIndex={-1} aria-label={t('Close')} onClick={handleCloseButtonClick} />}
 			</ModalHeader>
-			<ModalContent fontScale='p2'>{children}</ModalContent>
-			<ModalFooter justifyContent={dontAskAgain || annotation ? 'space-between' : 'end'}>
+			<ModalContent>{children}</ModalContent>
+			<ModalFooter justify={dontAskAgain || annotation ? 'space-between' : 'end'}>
 				{dontAskAgain}
 				{annotation && !dontAskAgain && <ModalFooterAnnotation>{annotation}</ModalFooterAnnotation>}
 				<ModalFooterControllers>
 					{onCancel && (
-						<Button secondary disabled={cancelDisabled} onClick={handleCancel}>
+						<Button variant='secondary' disabled={cancelDisabled} onClick={handleCancel}>
 							{cancelText ?? t('Cancel')}
 						</Button>
 					)}

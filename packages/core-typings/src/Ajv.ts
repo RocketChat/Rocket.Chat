@@ -30,7 +30,7 @@ import type { VideoConferenceCapabilities } from './VideoConferenceCapabilities'
 import type { IImport } from './import/IImport';
 import type { IMediaCall } from './mediaCalls/IMediaCall';
 
-const generatedSchemas = typia.json.schemas<
+export const schemas = typia.json.schemas<
 	[
 		(
 			| ISubscription
@@ -72,71 +72,77 @@ const generatedSchemas = typia.json.schemas<
 		ICustomUserStatus,
 		SlashCommand,
 	],
+	// JSON Schema 2020-12 (OpenAPI 3.1): the consuming Ajv is `ajv/dist/2020`, which
+	// only knows 2020-12 tuple keywords (prefixItems/items).
 	'3.1'
 >();
 
-/**
- * typia mixes dialects on tuples: it emits `prefixItems` (JSON Schema 2020) alongside
- * `additionalItems`, a keyword 2020 removed in favour of `items` applied after `prefixItems`. AJV
- * runs in 2020 and refuses the unknown keyword, so the fix happens once, here, and both the runtime
- * validation and the OpenAPI document get schemas in a single dialect. `minItems` comes along
- * because a closed tuple has a known length, and AJV asks for it.
- *
- * Two more differences between what typia writes for 3.1 and what AJV reads:
- *
- * - the `mapping` of a discriminator, which AJV rejects outright. A validator that chokes on
- *   `IMessage` leaves every schema referencing it unresolvable, so the mapping goes and the
- *   `propertyName` stays;
- * - a nullable field written as `oneOf: [{ type: 'null' }, { type: 'string' }]`, where 3.0 wrote
- *   `nullable`. The API validates with `coerceTypes`, which coerces the value for each branch in
- *   turn until more than one matches, and then `oneOf` - exactly one - fails on a perfectly valid
- *   payload. Branches that only name a type collapse into a single `type` array, which says the same
- *   thing and leaves nothing to disambiguate.
- */
-/** Keys whose values are maps of names to schemas, where a name is not a keyword. */
-const SCHEMA_MAPS = ['properties', 'patternProperties', '$defs', 'definitions', 'dependentSchemas'];
-
-const toDraft2020 = <T>(node: T, insideSchemaMap = false): T => {
+// typia emits OpenAPI 3.1 shapes that `ajv/dist/2020` rejects in strict mode at boot.
+// Rewrite them in place to the equivalent 2020-12 form the runtime Ajv accepts, without
+// changing what any schema actually validates:
+//   - closed tuples: `additionalItems: false` (draft-07 keyword) -> `items: false`, and
+//     pin minItems/maxItems to the tuple length so strictTuples is satisfied;
+//   - discriminator: drop the `mapping` (Ajv resolves via propertyName + oneOf; mapping is
+//     an unsupported redirection hint) and ensure `type: 'object'` for strictTypes;
+//   - open objects: typia 13's 3.1 emit closes object schemas with
+//     `additionalProperties: false`; the 9.x 3.0 emit left these components open,
+//     and the REST response schemas rely on that — they compose
+//     a component `$ref` with the `success` flag via `allOf` (+ `unevaluatedProperties`),
+//     which a closed subschema can never satisfy (the sibling `success` is "additional"
+//     inside the ref'd branch, 400-ing every such response in TEST_MODE). Dropping the
+//     `false` restores the open components; `additionalProperties` carrying a schema
+//     (Record types) is preserved.
+const normalizeForAjv2020 = (node: unknown): void => {
 	if (Array.isArray(node)) {
-		return node.map((entry) => toDraft2020(entry)) as T;
+		node.forEach(normalizeForAjv2020);
+		return;
 	}
-
 	if (!node || typeof node !== 'object') {
-		return node;
+		return;
 	}
+	const record = node as Record<string, unknown>;
 
-	const schema = Object.fromEntries(
-		Object.entries(node).map(([key, value]) => [
-			!insideSchemaMap && key === 'additionalItems' ? 'items' : key,
-			toDraft2020(value, SCHEMA_MAPS.includes(key)),
-		]),
-	) as Record<string, unknown>;
-
-	if (insideSchemaMap) {
-		return schema as T;
+	if (record.additionalProperties === false) {
+		delete record.additionalProperties;
 	}
-
-	if (Array.isArray(schema.prefixItems) && schema.items === false && schema.minItems === undefined) {
-		schema.minItems = schema.prefixItems.length;
+	if (
+		!('type' in record) &&
+		Array.isArray(record.oneOf) &&
+		record.oneOf.length > 0 &&
+		record.oneOf.every(
+			(branch: unknown) =>
+				!!branch &&
+				typeof branch === 'object' &&
+				!Array.isArray(branch) &&
+				Object.keys(branch).every((key) => key === 'type') &&
+				typeof (branch as Record<string, unknown>).type === 'string',
+		)
+	) {
+		// Nullable scalars: typia 13 emits `T | null` as `oneOf: [{type:'null'},{type:'string'}]`
+		// (9.x used `nullable: true`, which Ajv ignores). Under `coerceTypes`, `''` and `null`
+		// satisfy BOTH branches (Ajv coerces between them), so oneOf's "exactly one" fails on
+		// real data. A 2020-12 union `type` array validates the same values, and Ajv skips
+		// coercion when the data already matches one of the listed types.
+		record.type = [...new Set(record.oneOf.map((branch: { type: string }) => branch.type))];
+		delete record.oneOf;
 	}
-
-	if (schema.discriminator && typeof schema.discriminator === 'object') {
-		const { mapping, ...discriminator } = schema.discriminator as Record<string, unknown>;
-		schema.discriminator = discriminator;
+	if ('additionalItems' in record) {
+		if (!('items' in record)) {
+			record.items = record.additionalItems;
+		}
+		delete record.additionalItems;
 	}
-
-	if (Array.isArray(schema.oneOf)) {
-		const branches = schema.oneOf as Record<string, unknown>[];
-		const namesATypeOnly = (branch: Record<string, unknown>) => Object.keys(branch).length === 1 && typeof branch.type === 'string';
-
-		if (branches.length > 1 && branches.every(namesATypeOnly)) {
-			const { oneOf, ...rest } = schema;
-
-			return { ...rest, type: branches.map((branch) => branch.type) } as T;
+	if (Array.isArray(record.prefixItems) && record.items === false) {
+		record.minItems = record.prefixItems.length;
+		record.maxItems = record.prefixItems.length;
+	}
+	if (record.discriminator && typeof record.discriminator === 'object') {
+		delete (record.discriminator as Record<string, unknown>).mapping;
+		if (!('type' in record)) {
+			record.type = 'object';
 		}
 	}
 
-	return schema as T;
+	Object.values(record).forEach(normalizeForAjv2020);
 };
-
-export const schemas = toDraft2020(generatedSchemas);
+normalizeForAjv2020(schemas);

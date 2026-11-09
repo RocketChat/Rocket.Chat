@@ -1,6 +1,6 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../settings';
 import { i18n } from '../../i18n';
@@ -13,7 +13,7 @@ const sendResetNotification = async function (uid: string): Promise<void> {
 		projection: { language: 1, emails: 1 },
 	});
 	if (!user) {
-		throw new Meteor.Error('invalid-user');
+		throw new ClientSafeError('invalid-user');
 	}
 
 	const language = user.language || settings.get('Language') || 'en';
@@ -47,7 +47,7 @@ const sendResetNotification = async function (uid: string): Promise<void> {
 			} as any);
 		} catch (error) {
 			const message = error instanceof Error ? error.message : String(error);
-			throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${message}`, {
+			throw new ClientSafeError('error-email-send-failed', `Error trying to send email: ${message}`, {
 				function: 'resetUserTOTP',
 				message,
 			});
@@ -62,7 +62,7 @@ export async function resetTOTP(userId: string, notifyUser = false): Promise<boo
 
 	const isUserFederated = await isUserIdFederated(userId);
 	if (isUserFederated) {
-		throw new Meteor.Error('error-not-allowed', 'Federated Users cant have TOTP', { function: 'resetTOTP' });
+		throw new ClientSafeError('error-not-allowed', 'Federated Users cant have TOTP', { function: 'resetTOTP' });
 	}
 
 	const result = await Users.resetTOTPById(userId);

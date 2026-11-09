@@ -16,6 +16,7 @@ dist
 # misc
 .DS_Store
 *.pem
+!ee/packages/xmpp-server/tests/fixtures/*.pem
 
 # debug
 npm-debug.log*

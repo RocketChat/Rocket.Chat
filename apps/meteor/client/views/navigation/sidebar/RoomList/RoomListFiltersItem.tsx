@@ -1,4 +1,4 @@
-import { Icon, Item, ItemContent, ItemIcon, ItemTitle } from '@rocket.chat/fuselage';
+import { Icon, ItemContent, ItemIcon, ItemTitle, SidebarItem } from '@rocket.chat/fuselage';
 import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import { memo } from 'react';
@@ -10,8 +10,8 @@ import {
 	sidePanelFiltersConfig,
 	useSidePanelFilter,
 	useSwitchSidePanelTab,
+	useUnreadGroupData,
 } from '../../contexts/RoomsNavigationContext';
-import { useUnreadGroupData } from '../../contexts/RoomsNavigationContext';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
 export type RoomListFiltersItemProps = {
@@ -34,7 +34,7 @@ const RoomListFiltersItem = ({ group, icon }: RoomListFiltersItemProps) => {
 	const selected = group === currentTab;
 
 	return (
-		<Item
+		<SidebarItem
 			{...buttonProps}
 			is='div'
 			role='tab'
@@ -50,7 +50,7 @@ const RoomListFiltersItem = ({ group, icon }: RoomListFiltersItemProps) => {
 				<ItemTitle>{roomTitle}</ItemTitle>
 			</ItemContent>
 			{showUnread && <RoomListFiltersItemBadge roomTitle={roomTitle} unreadGroupCount={unreadGroupCount} />}
-		</Item>
+		</SidebarItem>
 	);
 };
 

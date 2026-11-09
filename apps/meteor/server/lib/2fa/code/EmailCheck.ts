@@ -80,9 +80,13 @@ ${t('If_you_didnt_try_to_login_in_your_account_please_ignore_this_email')}
 		// Remove non digits
 		codeFromEmail = codeFromEmail.replace(/([^\d])/g, '');
 
-		const { code, expire } = user.services.emailCode;
+		const { code, expire, attempts } = user.services.emailCode;
 
 		if (expire < new Date()) {
+			return false;
+		}
+
+		if (attempts >= settings.get<number>('Accounts_TwoFactorAuthentication_Max_Invalid_Email_Code_Attempts')) {
 			return false;
 		}
 
@@ -96,7 +100,7 @@ ${t('If_you_didnt_try_to_login_in_your_account_please_ignore_this_email')}
 		return false;
 	}
 
-	public async sendEmailCode(user: TwoFactorUser): Promise<void> {
+	public async sendEmailCode(user: TwoFactorUser): Promise<boolean> {
 		const emails = this.getUserVerifiedEmails(user);
 		const random = Random._randomString(6, '0123456789');
 		const encryptedRandom = await bcrypt.hash(random, Accounts._bcryptRounds());
@@ -105,11 +109,16 @@ ${t('If_you_didnt_try_to_login_in_your_account_please_ignore_this_email')}
 
 		expire.setSeconds(expire.getSeconds() + expirationInSeconds);
 
-		await Users.addEmailCodeByUserId(user._id, encryptedRandom, expire);
+		const { modifiedCount } = await Users.addEmailCodeByUserId(user._id, encryptedRandom, expire, new Date(Date.now() - 60_000));
+		if (!modifiedCount) {
+			return false;
+		}
 
 		for (const address of emails) {
 			await this.send2FAEmail(address, random, user);
 		}
+
+		return true;
 	}
 
 	public async processInvalidCode(user: TwoFactorUser): Promise<IProcessInvalidCodeResult> {
@@ -135,10 +144,8 @@ ${t('If_you_didnt_try_to_login_in_your_account_please_ignore_this_email')}
 			};
 		}
 
-		await this.sendEmailCode(user);
-
 		return {
-			codeGenerated: true,
+			codeGenerated: await this.sendEmailCode(user),
 			emailOrUsername,
 		};
 	}

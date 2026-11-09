@@ -33,7 +33,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 			login,
 			logout,
 		}),
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// oxlint-disable-next-line react-hooks/exhaustive-deps
 		[user],
 	);
 

@@ -26,8 +26,8 @@ export const useGetAutocompleteOptions = (instance: MediaSignalingSession | unde
 				peerExtension || forceSIPRouting
 					? {
 							$and: [
-								forceSIPRouting && { freeSwitchExtension: { $exists: true } },
-								peerExtension && { freeSwitchExtension: { $ne: peerExtension } },
+								forceSIPRouting && { sipExtension: { $exists: true } },
+								peerExtension && { sipExtension: { $ne: peerExtension } },
 							].filter(Boolean),
 						}
 					: undefined;

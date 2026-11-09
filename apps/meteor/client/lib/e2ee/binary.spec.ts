@@ -31,7 +31,7 @@ describe('Binary', () => {
 
 		it('should throw RangeError for illegal char code', () => {
 			const str = 'Hello\u0100'; // Character with char code 256
-			expect(() => Binary.decode(str)).toThrowErrorMatchingInlineSnapshot(`"illegal char code: 256"`);
+			expect(() => Binary.decode(str)).toThrow('illegal char code: 256');
 		});
 	});
 });

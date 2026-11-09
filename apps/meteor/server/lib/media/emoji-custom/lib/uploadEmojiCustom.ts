@@ -1,8 +1,7 @@
-import { api, Media } from '@rocket.chat/core-services';
+import { api, Media, ClientSafeError } from '@rocket.chat/core-services';
 import { EmojiCustom } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import limax from 'limax';
-import { Meteor } from 'meteor/meteor';
 import sharp from 'sharp';
 
 import type { EmojiData } from './insertOrUpdateEmoji';
@@ -38,7 +37,7 @@ export async function uploadEmojiCustomWithBuffer(
 	// technically, since this method doesnt have any datatype validations, users can
 	// upload videos as emojis. The FE won't play them, but they will waste space for sure.
 	if (!userId || !(await hasPermissionAsync(userId, 'manage-emoji'))) {
-		throw new Meteor.Error('not_authorized');
+		throw new ClientSafeError('not_authorized');
 	}
 
 	if (!Array.isArray(emojiData.aliases)) {

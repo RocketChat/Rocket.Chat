@@ -3,7 +3,7 @@ import { ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.cha
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ChangeEvent } from 'react';
-import { useCallback, useState } from 'react';
+import { useCallback, useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useEndpointUploadMutation } from '../../../hooks/useEndpointUploadMutation';
@@ -16,6 +16,7 @@ export type AddCustomEmojiProps = {
 
 const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps) => {
 	const { t } = useTranslation();
+	const emojiLabelId = useId();
 	const [name, setName] = useState('');
 	const [aliases, setAliases] = useState('');
 	const [emojiFile, setEmojiFile] = useState<Blob>();
@@ -99,10 +100,10 @@ const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps) => {
 					{errors.aliases && <FieldError>{t('Custom_Emoji_Error_Same_Name_And_Alias')}</FieldError>}
 				</Field>
 				<Field>
-					<FieldLabel alignSelf='stretch' display='flex' justifyContent='space-between' alignItems='center'>
-						{t('Custom_Emoji')}
-						<IconButton secondary small icon='upload' onClick={clickUpload} />
-					</FieldLabel>
+					<FieldRow>
+						<FieldLabel id={emojiLabelId}>{t('Custom_Emoji')}</FieldLabel>
+						<IconButton aria-labelledby={emojiLabelId} variant='secondary' size='small' icon='upload' onClick={clickUpload} />
+					</FieldRow>
 					{errors.emoji && <FieldError>{t('Required_field', { field: t('Custom_Emoji') })}</FieldError>}
 					{newEmojiPreview && (
 						<Box display='flex' flexDirection='row' marginInline='neg-x4' justifyContent='center'>
@@ -116,7 +117,7 @@ const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps) => {
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={close}>{t('Cancel')}</Button>
-					<Button primary onClick={handleSave}>
+					<Button variant='primary' onClick={handleSave}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

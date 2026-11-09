@@ -1,7 +1,7 @@
 import type { OperationResult } from '@rocket.chat/rest-typings';
+import type { PaginatedQueryResult } from '@rocket.chat/ui-client';
+import { usePaginatedQuery } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import type { UseQueryResult } from '@tanstack/react-query';
-import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
 import { marketplaceQueryKeys } from '../../../lib/queryKeys';
@@ -24,23 +24,26 @@ export const useLogs = ({
 	startDate?: string;
 	endDate?: string;
 	instanceId?: string;
-}): UseQueryResult<OperationResult<'GET', '/apps/:id/logs'>> => {
+}): PaginatedQueryResult<OperationResult<'GET', '/apps/:id/logs'>> => {
 	const query = useMemo(
 		() => ({
-			count: itemsPerPage,
-			offset: current,
 			...(logLevel && { logLevel }),
 			...(method && { method }),
 			...(startDate && { startDate }),
 			...(endDate && { endDate }),
 			...(instanceId && { instanceId }),
 		}),
-		[itemsPerPage, current, logLevel, method, startDate, endDate, instanceId],
+		[logLevel, method, startDate, endDate, instanceId],
 	);
 	const logs = useEndpoint('GET', '/apps/:id/logs', { id: appId });
 
-	return useQuery({
-		queryKey: marketplaceQueryKeys.appLogs(appId, query),
-		queryFn: () => logs(query),
+	return usePaginatedQuery({
+		query: {
+			queryKey: marketplaceQueryKeys.appLogs(appId, query),
+			queryFn: (page) => logs({ ...query, ...page }),
+		},
+		itemsKey: 'logs',
+		offset: current,
+		count: itemsPerPage,
 	});
 };

@@ -1,5 +1,5 @@
 import type { ISettingsService, IStatusVisibilityService } from '@rocket.chat/core-services';
-import { LocalBroker, MeteorError, ServiceClass, api } from '@rocket.chat/core-services';
+import { LocalBroker, ClientSafeError, ServiceClass, api } from '@rocket.chat/core-services';
 import type { IUser, SettingValue } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import { cronJobs } from '@rocket.chat/cron';
@@ -17,7 +17,7 @@ const usersModel = {
 const sessionsModel = {
 	findOneById: jest.fn(),
 	addConnectionById: jest.fn(),
-	removeConnectionByConnectionId: jest.fn(),
+	removeConnectionById: jest.fn(),
 	updateOne: jest.fn(),
 	updateConnectionStatusById: jest.fn(),
 	findByInstanceId: jest.fn(),
@@ -181,7 +181,7 @@ describe('Presence', () => {
 			aliceIsConnected();
 
 			await expect(presence.setStatus('alice', UserStatus.BUSY, 'Focus')).rejects.toThrow(
-				new MeteorError('error-presence-disabled', 'Presence is disabled for this user'),
+				new ClientSafeError('error-presence-disabled', 'Presence is disabled for this user'),
 			);
 			expect(listener.received).toEqual([]);
 		});
@@ -283,6 +283,7 @@ describe('Presence', () => {
 			aliceIsDisconnected();
 
 			await expect(presence.removeConnection('alice', 'alice-desktop')).resolves.toEqual({ uid: 'alice', session: 'alice-desktop' });
+			expect(sessionsModel.removeConnectionById).toHaveBeenCalledWith('alice', 'alice-desktop');
 			expect(broadcastStatuses()).toEqual([UserStatus.ONLINE, UserStatus.OFFLINE]);
 		});
 
@@ -300,6 +301,20 @@ describe('Presence', () => {
 
 			await expect(presence.updateConnection('alice', 'unknown-session')).resolves.toBeUndefined();
 			await expect(presence.updateConnection('alice', 'alice-desktop')).resolves.toEqual({ uid: 'alice', connectionId: 'alice-desktop' });
+		});
+
+		it('should write and broadcast a heartbeat only when it changes the status', async () => {
+			sessionsModel.updateOne.mockResolvedValue({ modifiedCount: 1 });
+			aliceIsConnected();
+
+			await presence.updateConnection('alice', 'alice-desktop');
+			expect(usersModel.updatePresenceAndStatus).not.toHaveBeenCalled();
+			expect(listener.received).toEqual([]);
+
+			aliceIsConnected(UserStatus.AWAY);
+
+			await presence.updateConnection('alice', 'alice-desktop');
+			expect(broadcastStatuses()).toEqual([UserStatus.AWAY]);
 		});
 
 		it('should mark the user away when their connection reports away', async () => {

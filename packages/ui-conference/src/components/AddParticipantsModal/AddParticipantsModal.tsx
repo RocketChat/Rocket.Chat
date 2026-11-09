@@ -109,10 +109,12 @@ const AddParticipantsModal = ({ onClose }: AddParticipantsModalProps) => {
 				{/* Under the names, because it is a question about the people just chosen. */}
 				{canRingUsers && (
 					<Field>
-						<FieldRow justifyContent='flex-start'>
-							<CheckBox checked={ring} onChange={toggleRing} />
-							<Box marginInlineStart={8}>
-								<FieldLabel>{t('Ring_people')}</FieldLabel>
+						<FieldRow>
+							<Box display='flex' alignItems='center'>
+								<CheckBox checked={ring} onChange={toggleRing} />
+								<Box marginInlineStart={8}>
+									<FieldLabel>{t('Ring_people')}</FieldLabel>
+								</Box>
 							</Box>
 						</FieldRow>
 					</Field>

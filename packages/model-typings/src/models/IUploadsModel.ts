@@ -8,7 +8,9 @@ import type { DocumentWithProjection, FindOptionsWithProjection } from '../types
 export interface IUploadsModel extends IBaseUploadsModel<IUpload> {
 	findPaginatedWithoutThumbs(query: Filter<IUpload>, options?: any): FindPaginated<FindCursor<WithId<IUpload>>>;
 
-	findImagesByRoomId(
+	findOneConfirmedImageByIdAndRoomId(_id: IUpload['_id'], rid: IRoom['_id']): Promise<IUpload | null>;
+
+	findConfirmedImagesByRoomId(
 		rid: IRoom['_id'],
 		uploadedAt?: Date,
 		options?: Omit<FindOptions<IUpload>, 'sort'>,

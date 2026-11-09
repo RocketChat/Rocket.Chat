@@ -1,7 +1,7 @@
 import type { Keys } from '@rocket.chat/icons';
 import type { AllHTMLAttributes } from 'react';
 
-import { Icon } from '../Icon';
+import { Icon, type IconProps } from '../Icon';
 
 export type FramedIconProps = {
 	info?: boolean;
@@ -10,19 +10,25 @@ export type FramedIconProps = {
 	danger?: boolean;
 	neutral?: boolean;
 	icon: Keys;
-} & Omit<AllHTMLAttributes<HTMLElement>, 'is'>;
+	size?: IconProps['size'];
+} & Omit<AllHTMLAttributes<HTMLElement>, 'is' | 'color' | 'size'>;
 
-const FramedIcon = ({ info, success, warning, danger, neutral, icon, ...props }: FramedIconProps) => (
+const FramedIcon = ({ info, success, warning, danger, neutral, icon, size = 20, className, ...props }: FramedIconProps) => (
 	<Icon
 		{...props}
-		rcx-framed-icon
-		rcx-framed-icon--info={info}
-		rcx-framed-icon--success={success}
-		rcx-framed-icon--warning={warning}
-		rcx-framed-icon--danger={danger}
-		rcx-framed-icon--neutral={neutral || (!info && !success && !warning && !danger)}
+		className={[
+			className,
+			'rcx-framed-icon',
+			info && 'rcx-framed-icon--info',
+			success && 'rcx-framed-icon--success',
+			warning && 'rcx-framed-icon--warning',
+			danger && 'rcx-framed-icon--danger',
+			(neutral || (!info && !success && !warning && !danger)) && 'rcx-framed-icon--neutral',
+		]
+			.filter(Boolean)
+			.join(' ')}
 		name={icon}
-		size={20}
+		size={size}
 	/>
 );
 

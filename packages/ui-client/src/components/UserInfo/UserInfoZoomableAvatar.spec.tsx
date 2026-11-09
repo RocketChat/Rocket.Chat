@@ -30,8 +30,8 @@ it('opens the avatar in the provided gallery and closes it again', async () => {
 });
 
 it('shows a plain avatar when no gallery is provided', () => {
-	const { container } = render(<UserInfoZoomableAvatar username='jane.doe' />, { wrapper: mockAppRoot().build() });
+	render(<UserInfoZoomableAvatar username='jane.doe' />, { wrapper: mockAppRoot().build() });
 
 	expect(screen.queryByRole('button', { name: 'View_avatar' })).not.toBeInTheDocument();
-	expect(container.querySelector('img')).toBeInTheDocument();
+	expect(screen.getByAltText('Avatar')).toBeInTheDocument();
 });

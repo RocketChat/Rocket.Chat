@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Button } from '@rocket.chat/fuselage';
+import { Button, useStyle } from '@rocket.chat/fuselage';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
@@ -22,9 +22,10 @@ const AccessibilityShortcut = () => {
 			border: 0;
 		}
 	`;
+	const customButtonClassName = useStyle(customButtonClass);
 
 	return (
-		<Button className={customButtonClass} is='a' href={`${currentRoutePath}#main-content`} primary>
+		<Button className={customButtonClassName} is='a' href={`${currentRoutePath}#main-content`} variant='primary'>
 			{t('Skip_to_main_content')}
 		</Button>
 	);

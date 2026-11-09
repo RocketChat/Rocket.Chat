@@ -4,7 +4,7 @@ import { useCallback } from 'react';
 
 import SortIcon from './SortIcon';
 
-type GenericTableHeaderCellProps<T extends string> = Omit<ComponentProps<typeof Box>, 'onClick'> & {
+type GenericTableHeaderCellProps<T extends string> = Omit<ComponentProps<typeof TableCell>, 'onClick'> & {
 	active?: boolean;
 	direction?: 'asc' | 'desc';
 	sort?: T;

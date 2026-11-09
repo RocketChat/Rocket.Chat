@@ -1,5 +1,21 @@
 # Change Log
 
+## 0.33.3-rc.0
+
+### Patch Changes
+
+- ([#42512](https://github.com/RocketChat/Rocket.Chat/pull/42512)) Moved `@rocket.chat/logo` into the Rocket.Chat monorepo, continuing from the frozen Fuselage 0.33.2 release. The exported components keep the same API.
+
+- ([#42512](https://github.com/RocketChat/Rocket.Chat/pull/42512)) The CommonJS build no longer ships a duplicate copy of the type declarations, leaving `dist/esm` as the single source of types, where `types` already pointed.
+
+- ([#42512](https://github.com/RocketChat/Rocket.Chat/pull/42512)) Declared `@rocket.chat/fuselage-tokens` as a dependency. Both logo components load its colors at runtime, but it was only a devDependency, so installing `@rocket.chat/logo` on its own failed to resolve it.
+
+- <details><summary>Updated dependencies [ec381cf4a88002601fd2b83b7eed734a2e8165b6, 25fd477c2c38f71e9a16b7e2896d39efd43bfc61, ec381cf4a88002601fd2b83b7eed734a2e8165b6, cd88334c72f7f2310706abc4d481a2712019e373]:</summary>
+  - @rocket.chat/fuselage-tokens@0.36.0-rc.0
+  - @rocket.chat/styled@0.34.2-rc.0
+
+  </details>
+
 ## 0.33.2
 
 ### Patch Changes

@@ -34,10 +34,6 @@ const CustomSoundsListSchema = {
 			type: 'string',
 			nullable: true,
 		},
-		query: {
-			type: 'string',
-			nullable: true,
-		},
 	},
 	required: [],
 	additionalProperties: false,

@@ -3,6 +3,7 @@
 	"compilerOptions": {
 		"rootDir": "./src",
 		"declaration": true,
+		"rootDir": "./src",
 	},
 	"include": ["./src/**/*"],
 	"exclude": ["./src/**/*.spec.ts", "./jest.config.ts"]

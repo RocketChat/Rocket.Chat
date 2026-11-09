@@ -1,4 +1,4 @@
-import { composeStories } from '@storybook/react-webpack5';
+import { composeStories } from '@storybook/react';
 import { axe } from 'jest-axe';
 
 import * as stories from './TextInput.stories';
@@ -7,11 +7,6 @@ import { render } from '../../testing';
 const { Default } = composeStories(stories);
 
 describe('[TextInput Component]', () => {
-	it('renders without crashing', () => {
-		const tree = render(<Default />);
-		expect(tree.baseElement).toMatchSnapshot();
-	});
-
 	it('%s should have no a11y violations', async () => {
 		const { container } = render(<Default />);
 

@@ -16,7 +16,6 @@ import {
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/tools';
-import { Match, check } from 'meteor/check';
 import type { Filter } from 'mongodb';
 
 import { clearIntegrationHistoryMethod, replayOutgoingIntegrationMethod } from '../../lib/integrations/functions/clearIntegrationHistory';
@@ -105,8 +104,8 @@ API.v1.get(
 
 		const { id } = queryParams;
 		const { offset, count } = await getPaginationItems(this.queryParams);
-		const { sort, fields: projection, query } = await this.parseJsonQuery();
-		const ourQuery = Object.assign(await mountIntegrationHistoryQueryBasedOnPermissions(userId, id), query);
+		const { sort, fields: projection } = await this.parseJsonQuery();
+		const ourQuery = await mountIntegrationHistoryQueryBasedOnPermissions(userId, id);
 
 		const { cursor, totalCount } = IntegrationHistory.findPaginated(ourQuery, {
 			sort: sort || { _updatedAt: -1 },
@@ -167,11 +166,10 @@ API.v1.get(
 	},
 	async function action() {
 		const { offset, count } = await getPaginationItems(this.queryParams);
-		const { sort, fields, query } = await this.parseJsonQuery();
+		const { sort, fields } = await this.parseJsonQuery();
 		const { name, type } = this.queryParams;
 
 		const filter = {
-			...query,
 			...(name ? { name: { $regex: escapeRegExp(name), $options: 'i' } } : {}),
 			...(type ? { type } : {}),
 		};
@@ -248,13 +246,6 @@ API.v1.post(
 					integration,
 				});
 			case 'webhook-incoming':
-				check(
-					bodyParams,
-					Match.ObjectIncluding({
-						integrationId: String,
-					}),
-				);
-
 				integration = await Integrations.findOne({ _id: bodyParams.integrationId });
 
 				if (!integration) {

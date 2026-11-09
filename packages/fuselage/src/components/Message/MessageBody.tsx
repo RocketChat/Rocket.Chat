@@ -1,19 +1,16 @@
 import type { HTMLAttributes } from 'react';
 
-import { prependClassName } from '../../helpers/prependClassName';
+import { cx, cxx } from '../../helpers/composeClassNames';
 
 export type MessageBodyProps = HTMLAttributes<HTMLDivElement> & {
-	clamp?: 2 | 3 | 4;
+	/**
+	 * Cuts the body at two lines, as in list previews.
+	 */
+	clamp?: 2;
 };
 
 const MessageBody = ({ clamp, className, ...props }: MessageBodyProps) => (
-	<div
-		className={prependClassName(
-			className,
-			['rcx-message-body', clamp && `rcx-message-body--clamp rcx-message-body--clamp-${clamp}`].filter(Boolean).join(' '),
-		)}
-		{...props}
-	/>
+	<div {...props} className={cx(cxx('rcx-message-body')({ clamp: !!clamp }), className)} />
 );
 
 export default MessageBody;

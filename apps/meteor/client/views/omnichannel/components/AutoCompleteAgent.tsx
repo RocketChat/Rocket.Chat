@@ -1,4 +1,4 @@
-import { PaginatedSelectFiltered } from '@rocket.chat/fuselage';
+import { Box, PaginatedSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { ComponentProps } from 'react';
 import { memo, useState } from 'react';
@@ -41,16 +41,17 @@ const AutoCompleteAgent = ({
 	});
 
 	return (
-		<PaginatedSelectFiltered
-			{...props}
-			value={value}
-			flexShrink={0}
-			filter={agentsFilter}
-			setFilter={setAgentsFilter as (value: string | number | undefined) => void}
-			options={agentsItems}
-			onChange={onChange}
-			endReached={() => fetchNextPage()}
-		/>
+		<Box display='flex' flexGrow={1} flexShrink={0}>
+			<PaginatedSelectFiltered
+				{...props}
+				value={value}
+				filter={agentsFilter}
+				setFilter={setAgentsFilter as (value: string | number | undefined) => void}
+				options={agentsItems}
+				onChange={onChange}
+				endReached={() => fetchNextPage()}
+			/>
+		</Box>
 	);
 };
 

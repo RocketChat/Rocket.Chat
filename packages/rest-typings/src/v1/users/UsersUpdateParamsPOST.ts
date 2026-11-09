@@ -1,6 +1,7 @@
-import type { IUserSettings } from '@rocket.chat/core-typings';
+import type { IUserPhoneNumber, IUserSettings } from '@rocket.chat/core-typings';
 
 import { ajv } from '../Ajv';
+import { phonesSchema } from './phonesSchema';
 
 export type UsersUpdateParamsPOST = {
 	userId: string;
@@ -24,7 +25,8 @@ export type UsersUpdateParamsPOST = {
 		settings?: IUserSettings;
 		language?: string;
 		status?: string;
-		freeSwitchExtension?: string;
+		sipExtension?: string;
+		phones?: IUserPhoneNumber[];
 	};
 	confirmRelinquish?: boolean;
 };
@@ -114,10 +116,11 @@ const UsersUpdateParamsPostSchema = {
 					type: 'string',
 					nullable: true,
 				},
-				freeSwitchExtension: {
+				sipExtension: {
 					type: 'string',
 					nullable: true,
 				},
+				phones: phonesSchema,
 			},
 			required: [],
 			additionalProperties: false,

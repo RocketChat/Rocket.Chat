@@ -1,11 +1,11 @@
 import { createContext } from 'react';
 
+import type { ElementProps } from '../../types/ElementProps';
 import { Box } from '../Box';
-import type { TableProps } from './Table';
 
 export const TableHeadContext = createContext(false);
 
-export type TableHeadProps = TableProps;
+export type TableHeadProps = ElementProps<HTMLTableSectionElement>;
 
 const TableHead = (props: TableHeadProps) => (
 	<TableHeadContext.Provider value={true}>

@@ -11,9 +11,9 @@ import type { IMarketplaceInfo } from '@rocket.chat/apps/dist/server/marketplace
 import { AppInstallationSource } from '@rocket.chat/apps/dist/server/storage/IAppStorageItem';
 import { EssentialAppDisabledException } from '@rocket.chat/apps-engine/definition/exceptions';
 import type { IExternalComponent } from '@rocket.chat/apps-engine/definition/externalComponent';
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { Logger } from '@rocket.chat/logger';
 import { AppLogs, Apps as AppsModel, AppsPersistence, Statistics } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { MarketplaceAPIClient } from './marketplace/MarketplaceAPIClient';
 import { isTesting } from './marketplace/isTesting';
@@ -438,7 +438,7 @@ export class AppServerOrchestrator implements IAppServerOrchestrator {
 			.handleEvent({ event, payload } as HandleEvent)
 			.catch((error: unknown) => {
 				if (error instanceof EssentialAppDisabledException) {
-					throw new Meteor.Error('error-essential-app-disabled');
+					throw new ClientSafeError('error-essential-app-disabled');
 				}
 
 				throw error;

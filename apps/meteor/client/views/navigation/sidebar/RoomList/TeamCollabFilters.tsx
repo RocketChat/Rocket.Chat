@@ -11,12 +11,14 @@ const TeamCollabFilters = () => {
 
 	return (
 		<>
-			<Box role='tablist' paddingInline={4} aria-label={t('Team_collaboration_filters')} aria-orientation='vertical'>
+			<Box role='tablist' aria-label={t('Team_collaboration_filters')} aria-orientation='vertical'>
 				<RoomListFiltersItem group='all' icon={sidePanelFiltersConfig.all.icon} />
 				<RoomListFiltersItem group='favorites' icon={sidePanelFiltersConfig.favorites.icon} />
 				{isDiscussionEnabled && <RoomListFiltersItem group='discussions' icon={sidePanelFiltersConfig.discussions.icon} />}
 			</Box>
-			<Divider borderColor='stroke-light' marginBlock={4} marginInline={16} />
+			<Box paddingBlock={4} paddingInline={12}>
+				<Divider variation='light' flush />
+			</Box>
 		</>
 	);
 };

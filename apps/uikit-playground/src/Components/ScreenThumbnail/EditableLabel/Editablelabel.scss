@@ -16,7 +16,12 @@
     }
 
     >.editableLabel-icon{
+        visibility: hidden;
         cursor: pointer;
         scale: 1.2;
+    }
+
+    &:hover>.editableLabel-icon{
+        visibility: visible;
     }
 }

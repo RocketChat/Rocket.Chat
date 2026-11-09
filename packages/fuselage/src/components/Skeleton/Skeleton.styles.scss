@@ -37,6 +37,10 @@
 		border-radius: lengths.border-radius(full);
 	}
 
+	&--inverted {
+		background-color: colors.surface(light);
+	}
+
 	@extend .rcx-box;
 }
 

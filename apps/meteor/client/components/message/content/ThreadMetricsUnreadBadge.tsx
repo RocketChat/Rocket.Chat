@@ -3,7 +3,7 @@ import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 
-const getBadgeVariantAndTitle = (
+export const getBadgeVariantAndTitle = (
 	unread: boolean,
 	mention: boolean,
 	all: boolean,

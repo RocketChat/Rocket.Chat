@@ -12,7 +12,7 @@ const CardSlotStopSharing = ({ onClick, showOnHover = false }: CardSlotStopShari
 	const { t } = useTranslation();
 	return (
 		<CardSlotContainer position='middle' variant='transparent' showOnHover={showOnHover} margin={0}>
-			<Button danger small icon='desktop-cross' onClick={onClick}>
+			<Button variant='danger' size='small' icon='desktop-cross' onClick={onClick}>
 				{t('Stop_sharing')}
 			</Button>
 		</CardSlotContainer>
