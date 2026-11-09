@@ -138,19 +138,20 @@ const nativeModules = (): Plugin => {
 	};
 };
 
-// Keeps the first copy of each identical top-level rule or `@media` block: the zero stylesheet repeats them once per
-// frame that uses them, and no base/pseudo-state pair changes order when the later copies go.
+// Keeps the last copy of each identical top-level rule or `@media` block, which the zero stylesheet repeats once per
+// frame that uses them: the last copy is the one that wins the cascade, so the stylesheet resolves the same without
+// the others.
 const dedupeTopLevelRules = (css: string) => {
 	const root = postcss.parse(css);
 	const seen = new Set<string>();
-	root.each((node) => {
+	for (const node of [...(root.nodes ?? [])].reverse()) {
 		const key = node.toString();
 		if (seen.has(key)) {
 			node.remove();
 		} else {
 			seen.add(key);
 		}
-	});
+	}
 	return root.toString();
 };
 
