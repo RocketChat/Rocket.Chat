@@ -1,5 +1,5 @@
 import type { VideoConference } from '@rocket.chat/core-typings';
-import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, Throbber } from '@rocket.chat/fuselage';
+import { States, StatesIcon, StatesTitle, StatesSubtitle, Throbber } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import {
 	VirtualizedScrollbars,
@@ -15,6 +15,9 @@ import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
 import VideoConfListItem from './VideoConfListItem';
+import CallHistoryState from './layout/CallHistoryState';
+import ContextualbarInset from '../../../../../components/ContextualbarInset';
+import ListViewport from '../../../../../components/ListViewport';
 import { getErrorMessage } from '../../../../../lib/errorHandling';
 
 export type VideoConfListProps = {
@@ -43,12 +46,12 @@ const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loa
 			</ContextualbarHeader>
 			<ContextualbarContent flush ref={ref}>
 				{loading && (
-					<Box paddingInline={24} paddingBlock={12}>
+					<ContextualbarInset block='x12'>
 						<Throbber size='x12' />
-					</Box>
+					</ContextualbarInset>
 				)}
 				{(total === 0 || error) && (
-					<Box display='flex' flexDirection='column' justifyContent='center' height='100%'>
+					<CallHistoryState>
 						{error && (
 							<States>
 								<StatesIcon name='circle-exclamation' variation='danger' />
@@ -63,9 +66,9 @@ const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loa
 								subtitle={t('There_is_no_video_conference_history_in_this_room')}
 							/>
 						)}
-					</Box>
+					</CallHistoryState>
 				)}
-				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
+				<ListViewport>
 					{videoConfs.length > 0 && (
 						<VirtualizedScrollbars>
 							<Virtuoso
@@ -81,7 +84,7 @@ const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loa
 							/>
 						</VirtualizedScrollbars>
 					)}
-				</Box>
+				</ListViewport>
 			</ContextualbarContent>
 		</ContextualbarDialog>
 	);

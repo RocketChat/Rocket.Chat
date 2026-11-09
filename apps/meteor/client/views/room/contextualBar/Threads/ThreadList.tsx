@@ -1,5 +1,5 @@
 import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
-import { Box, Select, Callout, Throbber } from '@rocket.chat/fuselage';
+import { Select, Callout, Throbber } from '@rocket.chat/fuselage';
 import { useResizeObserver, useAutoFocus, useLocalStorage, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import {
 	VirtualizedScrollbars,
@@ -19,7 +19,9 @@ import { Virtuoso } from 'react-virtuoso';
 
 import ThreadListItem from './components/ThreadListItem';
 import { useThreadsList } from './hooks/useThreadsList';
+import ContextualbarInset from '../../../../components/ContextualbarInset';
 import { FilterBar, FilterBarFilters, FilterBarSearch } from '../../../../components/FilterBar';
+import ListViewport from '../../../../components/ListViewport';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
 import { useMessageRowListNavigation } from '../../../../hooks/useMessageRowListNavigation';
 import { getErrorMessage } from '../../../../lib/errorHandling';
@@ -147,17 +149,17 @@ const ThreadList = () => {
 			<ContextualbarContent flush ref={ref}>
 				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={itemCount} />
 				{isPending && (
-					<Box paddingInline={24} paddingBlock={12}>
+					<ContextualbarInset block='x12'>
 						<Throbber size='x12' />
-					</Box>
+					</ContextualbarInset>
 				)}
 				{error && (
-					<Box paddingInline={24}>
+					<ContextualbarInset>
 						<Callout type='danger'>{getErrorMessage(error, t('Something_went_wrong'))}</Callout>
-					</Box>
+					</ContextualbarInset>
 				)}
 				{isSuccess && (
-					<Box id={threadListId} ref={threadListRef} width='full' height='full' overflow='hidden' flexShrink={1}>
+					<ListViewport id={threadListId} ref={threadListRef}>
 						{items.length === 0 && <ContextualbarEmptyContent title={t('No_Threads')} />}
 						{items.length > 0 && (
 							<VirtualizedScrollbars>
@@ -183,7 +185,7 @@ const ThreadList = () => {
 								/>
 							</VirtualizedScrollbars>
 						)}
-					</Box>
+					</ListViewport>
 				)}
 			</ContextualbarContent>
 		</ContextualbarDialog>

@@ -1,5 +1,4 @@
 import {
-	Box,
 	Button,
 	Callout,
 	Modal,
@@ -17,6 +16,9 @@ import {
 	Text,
 } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
+
+import ConfigModalFeatureList from './layout/ConfigModalFeatureList';
+import ConfigModalRequiredAction from './layout/ConfigModalRequiredAction';
 
 export type VideoConfConfigModalProps = {
 	onClose: () => void;
@@ -39,12 +41,10 @@ const VideoConfConfigModal = ({ onClose, onConfirm, isAdmin }: VideoConfConfigMo
 			<ModalContent>
 				<ModalHeroImage src='/images/conf-call-config.svg' />
 				<Text fontScale='h3'>{t('Premium_capabilities')}</Text>
-				<Box withRichContent>
-					<Box is='ul' paddingInlineStart={24}>
-						<li>{t('Ringtones_and_visual_indicators_notify_people_of_incoming_calls')}</li>
-						<li>{t('Call_history_provides_a_record_of_when_calls_took_place_and_who_joined')}</li>
-					</Box>
-				</Box>
+				<ConfigModalFeatureList>
+					<li>{t('Ringtones_and_visual_indicators_notify_people_of_incoming_calls')}</li>
+					<li>{t('Call_history_provides_a_record_of_when_calls_took_place_and_who_joined')}</li>
+				</ConfigModalFeatureList>
 				<Stack gap={12}>
 					<Text fontScale='h3'>{t('Conference_call_apps')}</Text>
 					<Callout icon='team' title={isAdmin ? t('Jitsi_included_with_Community') : 'Jitsi'}>
@@ -57,14 +57,14 @@ const VideoConfConfigModal = ({ onClose, onConfirm, isAdmin }: VideoConfConfigMo
 						{t('Secure_SaaS_solution')} {t('A_cloud-based_platform_for_those_needing_a_plug-and-play_app')}
 					</Callout>
 				</Stack>
-				<Box display='flex' flexDirection='column' gap={12} marginBlock={24}>
+				<ConfigModalRequiredAction>
 					<Text fontScale='h3'>{t('Required_action')}</Text>
 					<Callout title={t('Missing_configuration')} type='warning'>
 						{isAdmin
 							? t('An_app_needs_to_be_installed_and_configured')
 							: t('A_workspace_admin_needs_to_install_and_configure_a_conference_call_app')}
 					</Callout>
-				</Box>
+				</ConfigModalRequiredAction>
 			</ModalContent>
 			<ModalFooter justify='space-between'>
 				<ModalFooterAnnotation>

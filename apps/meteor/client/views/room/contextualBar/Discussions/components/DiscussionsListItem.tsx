@@ -1,7 +1,5 @@
 import type { IDiscussionMessage } from '@rocket.chat/core-typings';
 import {
-	Box,
-	Message,
 	MessageLeftContainer,
 	MessageContainer,
 	MessageHeader,
@@ -15,12 +13,14 @@ import {
 	MessageMetricsItemIcon,
 } from '@rocket.chat/fuselage';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
-import type { ComponentProps, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import Emoji from '../../../../../components/Emoji';
 import { clickableItem } from '../../../../../lib/clickableItem';
+import type { DiscussionsListItemSurfaceProps } from '../layout/DiscussionsListItemSurface';
+import DiscussionsListItemSurface from '../layout/DiscussionsListItemSurface';
 
 export type DiscussionListItemProps = {
 	_id: IDiscussionMessage['_id'];
@@ -32,7 +32,7 @@ export type DiscussionListItemProps = {
 	name?: IDiscussionMessage['u']['name'];
 	ts: IDiscussionMessage['ts'];
 	emoji: IDiscussionMessage['emoji'];
-} & Omit<ComponentProps<typeof Box>, 'is'>;
+} & DiscussionsListItemSurfaceProps;
 
 const DiscussionListItem = ({
 	_id,
@@ -49,7 +49,7 @@ const DiscussionListItem = ({
 }: DiscussionListItemProps) => {
 	const { t } = useTranslation();
 	return (
-		<Box is={Message} {...props} className={className} paddingBlockStart={16} paddingBlockEnd={8}>
+		<DiscussionsListItemSurface {...props} className={className}>
 			<MessageLeftContainer>
 				<MessageAvatar emoji={emoji ? <Emoji emojiHandle={emoji} fillContainer /> : undefined} username={username} size='x36' />
 			</MessageLeftContainer>
@@ -81,7 +81,7 @@ const DiscussionListItem = ({
 					</MessageMetrics>
 				</MessageBlock>
 			</MessageContainer>
-		</Box>
+		</DiscussionsListItemSurface>
 	);
 };
 

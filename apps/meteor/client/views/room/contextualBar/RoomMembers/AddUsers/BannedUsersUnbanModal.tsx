@@ -1,6 +1,5 @@
 import {
 	Modal,
-	Box,
 	Button,
 	Label,
 	CheckBox,
@@ -13,6 +12,7 @@ import {
 	ModalFooterAnnotation,
 	ModalFooterControllers,
 	Stack,
+	Text,
 } from '@rocket.chat/fuselage';
 import { useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -50,12 +50,14 @@ const BannedUsersUnbanModal = ({ onClose, onConfirm }: BannedUsersUnbanModalProp
 				<ModalClose title={t('Close')} onClick={onClose} />
 			</ModalHeader>
 			<ModalContent>
-				<Box>{t('User_is_banned_from_room_confirm_unban')}</Box>
-				{error && (
-					<Box color='danger' fontScale='c1' marginBlockStart={8}>
-						{error}
-					</Box>
-				)}
+				<Stack gap='x8'>
+					<Text>{t('User_is_banned_from_room_confirm_unban')}</Text>
+					{error && (
+						<Text color='danger' fontScale='c1'>
+							{error}
+						</Text>
+					)}
+				</Stack>
 			</ModalContent>
 			<ModalFooter justify='space-between'>
 				<ModalFooterAnnotation>

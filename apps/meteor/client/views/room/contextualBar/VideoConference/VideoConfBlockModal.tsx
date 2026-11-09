@@ -1,4 +1,4 @@
-import { Box, Icon } from '@rocket.chat/fuselage';
+import { Icon, Stack, Text } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
@@ -8,10 +8,10 @@ const VideoConfBlockModal = ({ onClose, onConfirm }: { onClose: () => void; onCo
 	const workspaceUrl = useSetting('Site_Url');
 
 	const confirmButtonContent = (
-		<Box display='flex' alignItems='center' gap={8}>
+		<Stack direction='row' align='center' gap='x8'>
 			<Icon size='x20' name='new-window' />
 			{t('Open_call')}
-		</Box>
+		</Stack>
 	);
 
 	const handleConfirm = useCallback(() => {
@@ -30,15 +30,13 @@ const VideoConfBlockModal = ({ onClose, onConfirm }: { onClose: () => void; onCo
 			onCancel={onClose}
 			onClose={onClose}
 		>
-			<>
-				<Box marginBlockEnd={24}>{t('Your_web_browser_blocked_Rocket_Chat_from_opening_tab')}</Box>
-				<Box>
+			<Stack gap='x24'>
+				<Text>{t('Your_web_browser_blocked_Rocket_Chat_from_opening_tab')}</Text>
+				<Text>
 					{t('To_prevent_seeing_this_message_again_allow_popups_from_workspace_URL')}
-					<Box is='span' fontWeight={700}>
-						{workspaceUrl as string}
-					</Box>
-				</Box>
-			</>
+					<Text is='strong'>{workspaceUrl as string}</Text>
+				</Text>
+			</Stack>
 		</GenericModal>
 	);
 };

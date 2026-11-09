@@ -1,6 +1,6 @@
 import type { IRoom, IUpload, IUploadWithUser } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Box, Select, Throbber } from '@rocket.chat/fuselage';
+import { Select, Throbber } from '@rocket.chat/fuselage';
 import {
 	VirtualizedScrollbars,
 	ContextualbarHeader,
@@ -20,6 +20,8 @@ import { Virtuoso } from 'react-virtuoso';
 import RoomFileItemWrapper from './RoomFileItemWrapper';
 import RoomFilesListWrapper from './RoomFilesListWrapper';
 import FileItem from './components/FileItem';
+import RoomFilesListArea from './layout/RoomFilesListArea';
+import ContextualbarInset from '../../../../components/ContextualbarInset';
 import { FilterBar, FilterBarFilters, FilterBarSearch } from '../../../../components/FilterBar';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
 
@@ -92,12 +94,12 @@ const RoomFiles = ({
 			<ContextualbarContent flush>
 				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={total} />
 				{isPending && (
-					<Box padding={24}>
+					<ContextualbarInset block='x24'>
 						<Throbber size='x12' />
-					</Box>
+					</ContextualbarInset>
 				)}
 				{isSuccess && (
-					<Box width='full' height='full' id={filesListId} flexShrink={1} overflow='hidden' marginBlock={8}>
+					<RoomFilesListArea id={filesListId}>
 						{filesItems.length === 0 && <ContextualbarEmptyContent title={t('No_files_found')} />}
 						{filesItems.length > 0 && (
 							<VirtualizedScrollbars>
@@ -118,7 +120,7 @@ const RoomFiles = ({
 								/>
 							</VirtualizedScrollbars>
 						)}
-					</Box>
+					</RoomFilesListArea>
 				)}
 			</ContextualbarContent>
 		</ContextualbarDialog>
