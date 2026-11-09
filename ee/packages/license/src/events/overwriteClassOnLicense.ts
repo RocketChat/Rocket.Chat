@@ -1,7 +1,7 @@
 import type { LicenseModule } from '@rocket.chat/core-typings';
 
-import type { LicenseManager } from '../license';
-import { onLicense } from './deprecated';
+import type { LicenseManager } from '../license.js';
+import { onLicense } from './deprecated.js';
 
 interface IOverrideClassProperties {
 	[key: string]: (...args: any[]) => unknown;

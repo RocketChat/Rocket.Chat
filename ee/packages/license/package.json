@@ -2,6 +2,14 @@
 	"name": "@rocket.chat/license",
 	"version": "1.2.2",
 	"private": true,
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		},
+		"./src/*": "./src/*.ts"
+	},
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"files": [

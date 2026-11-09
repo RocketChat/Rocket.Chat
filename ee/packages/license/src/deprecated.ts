@@ -1,8 +1,8 @@
 import type { ILicenseV3, LicenseLimitKind } from '@rocket.chat/core-typings';
 
-import type { LicenseManager } from './license';
-import { getModules } from './modules';
-import { defaultLimits } from './validation/validateDefaultLimits';
+import type { LicenseManager } from './license.js';
+import { getModules } from './modules.js';
+import { defaultLimits } from './validation/validateDefaultLimits.js';
 
 export const getLicenseLimit = (license: ILicenseV3 | undefined, kind: LicenseLimitKind) => {
 	const limitList = license ? license.limits[kind] : defaultLimits[kind as keyof typeof defaultLimits];

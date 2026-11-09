@@ -15,13 +15,13 @@ import type {
 } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 
-import { getLicenseLimit } from './deprecated';
-import type { getAppsConfig, getMaxActiveUsers, getUnmodifiedLicenseAndModules } from './deprecated';
-import { DuplicatedLicenseError } from './errors/DuplicatedLicenseError';
-import { InvalidLicenseError } from './errors/InvalidLicenseError';
-import { NotReadyForValidation } from './errors/NotReadyForValidation';
-import type { onLicense } from './events/deprecated';
-import { behaviorTriggered, behaviorTriggeredToggled, licenseInvalidated, licenseValidated } from './events/emitter';
+import { getLicenseLimit } from './deprecated.js';
+import type { getAppsConfig, getMaxActiveUsers, getUnmodifiedLicenseAndModules } from './deprecated.js';
+import { DuplicatedLicenseError } from './errors/DuplicatedLicenseError.js';
+import { InvalidLicenseError } from './errors/InvalidLicenseError.js';
+import { NotReadyForValidation } from './errors/NotReadyForValidation.js';
+import type { onLicense } from './events/deprecated.js';
+import { behaviorTriggered, behaviorTriggeredToggled, licenseInvalidated, licenseValidated } from './events/emitter.js';
 import type {
 	onBehaviorTriggered,
 	onInvalidFeature,
@@ -31,26 +31,26 @@ import type {
 	onToggledFeature,
 	onValidFeature,
 	onValidateLicense,
-} from './events/listeners';
-import type { overwriteClassOnLicense } from './events/overwriteClassOnLicense';
-import { logger } from './logger';
-import type { getModuleDefinition, hasModule } from './modules';
-import { getExternalModules, getModules, invalidateAll, replaceModules } from './modules';
-import { applyPendingLicense, clearPendingLicense, hasPendingLicense, isPendingLicense, setPendingLicense } from './pendingLicense';
-import type { getTags } from './tags';
-import { replaceTags } from './tags';
-import { decrypt } from './token';
-import { convertToV3 } from './v2/convertToV3';
-import { filterBehaviorsResult } from './validation/filterBehaviorsResult';
-import type { setLicenseLimitCounter } from './validation/getCurrentValueForLicenseLimit';
-import { getCurrentValueForLicenseLimit } from './validation/getCurrentValueForLicenseLimit';
-import { getModulesToDisable } from './validation/getModulesToDisable';
-import { isBehaviorsInResult } from './validation/isBehaviorsInResult';
-import { isReadyForValidation } from './validation/isReadyForValidation';
-import { runValidation } from './validation/runValidation';
-import { validateDefaultLimits } from './validation/validateDefaultLimits';
-import { validateFormat } from './validation/validateFormat';
-import { validateLicenseLimits } from './validation/validateLicenseLimits';
+} from './events/listeners.js';
+import type { overwriteClassOnLicense } from './events/overwriteClassOnLicense.js';
+import { logger } from './logger.js';
+import type { getModuleDefinition, hasModule } from './modules.js';
+import { getExternalModules, getModules, invalidateAll, replaceModules } from './modules.js';
+import { applyPendingLicense, clearPendingLicense, hasPendingLicense, isPendingLicense, setPendingLicense } from './pendingLicense.js';
+import type { getTags } from './tags.js';
+import { replaceTags } from './tags.js';
+import { decrypt } from './token.js';
+import { convertToV3 } from './v2/convertToV3.js';
+import { filterBehaviorsResult } from './validation/filterBehaviorsResult.js';
+import type { setLicenseLimitCounter } from './validation/getCurrentValueForLicenseLimit.js';
+import { getCurrentValueForLicenseLimit } from './validation/getCurrentValueForLicenseLimit.js';
+import { getModulesToDisable } from './validation/getModulesToDisable.js';
+import { isBehaviorsInResult } from './validation/isBehaviorsInResult.js';
+import { isReadyForValidation } from './validation/isReadyForValidation.js';
+import { runValidation } from './validation/runValidation.js';
+import { validateDefaultLimits } from './validation/validateDefaultLimits.js';
+import { validateFormat } from './validation/validateFormat.js';
+import { validateLicenseLimits } from './validation/validateLicenseLimits.js';
 
 const globalLimitKinds: LicenseLimitKind[] = ['activeUsers', 'guestUsers', 'privateApps', 'marketplaceApps', 'monthlyActiveContacts'];
 

@@ -1,8 +1,8 @@
 import type { LicenseLimitKind, LimitContext } from '@rocket.chat/core-typings';
 
-import type { LicenseManager } from '../license';
-import { logger } from '../logger';
-import { applyPendingLicense, hasPendingLicense } from '../pendingLicense';
+import type { LicenseManager } from '../license.js';
+import { logger } from '../logger.js';
+import { applyPendingLicense, hasPendingLicense } from '../pendingLicense.js';
 
 export function setLicenseLimitCounter<T extends LicenseLimitKind>(
 	this: LicenseManager,

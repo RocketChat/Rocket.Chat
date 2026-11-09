@@ -1,8 +1,8 @@
 import type { ILicenseV3, BehaviorWithContext, LicenseValidationOptions } from '@rocket.chat/core-typings';
 
-import { isBehaviorAllowed } from '../isItemAllowed';
-import { logger } from '../logger';
-import { getResultingBehavior } from './getResultingBehavior';
+import { isBehaviorAllowed } from '../isItemAllowed.js';
+import { logger } from '../logger.js';
+import { getResultingBehavior } from './getResultingBehavior.js';
 
 export const isPeriodInvalid = (from: string | undefined, until: string | undefined) => {
 	const now = new Date();

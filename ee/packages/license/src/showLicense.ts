@@ -1,7 +1,7 @@
 import type { ILicenseV3 } from '@rocket.chat/core-typings';
 
-import type { LicenseManager } from './license';
-import { getModules } from './modules';
+import type { LicenseManager } from './license.js';
+import { getModules } from './modules.js';
 
 export function showLicense(this: LicenseManager, license: ILicenseV3 | undefined, valid: boolean | undefined) {
 	if (!process.env.LICENSE_DEBUG || process.env.LICENSE_DEBUG === 'false') {

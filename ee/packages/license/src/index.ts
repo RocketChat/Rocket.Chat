@@ -1,7 +1,7 @@
-export { DuplicatedLicenseError } from './errors/DuplicatedLicenseError';
-export * from './licenseImp';
-export * from './license';
-export * from './MockedLicenseBuilder';
-export * from './applyLicense';
-export * from './getLicenseCreatedAt';
-export * from './AirGappedRestriction';
+export { DuplicatedLicenseError } from './errors/DuplicatedLicenseError.js';
+export * from './licenseImp.js';
+export * from './license.js';
+export * from './MockedLicenseBuilder.js';
+export * from './applyLicense.js';
+export * from './getLicenseCreatedAt.js';
+export * from './AirGappedRestriction.js';
