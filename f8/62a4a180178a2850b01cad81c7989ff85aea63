@@ -1,0 +1,19 @@
+apps/meteor/server/meteor-methods/users/saveUserProfile.ts
+  s_abb9231db54e44::t_666d974bde87bd 164
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "f862a4a180178a2850b01cad81c7989ff85aea63",
+  "prompts": {},
+  "sessions": {
+    "s_abb9231db54e44": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "68a1b4f3-731a-4a41-9f8c-a68e8902e169",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
