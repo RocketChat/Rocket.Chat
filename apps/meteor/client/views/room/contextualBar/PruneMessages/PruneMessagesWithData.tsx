@@ -1,19 +1,20 @@
 import { isDirectMessageRoom } from '@rocket.chat/core-typings';
+import { Stack, Text } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { formatDate, GenericModal } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useEndpoint, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import { useCallback, useMemo, useState } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 import PruneMessages from './PruneMessages';
 import { useRoom } from '../../contexts/RoomContext';
 
-const getTimeZoneOffset = (): string => {
-	const offset = new Date().getTimezoneOffset();
-	const absOffset = Math.abs(offset);
-	return `${offset < 0 ? '+' : '-'}${`00${Math.floor(absOffset / 60)}`.slice(-2)}:${`00${absOffset % 60}`.slice(-2)}`;
-};
+type DateTimeValue = { date: string; time: string };
+
+const getFromDate = ({ date, time }: DateTimeValue) => new Date(`${date || '0001-01-01'}T${time || '00:00'}:00`);
+
+const getUntilDate = ({ date, time }: DateTimeValue) => new Date(`${date || '9999-12-31'}T${time || '23:59'}:59.999`);
 
 export const initialValues = {
 	newer: {
@@ -24,13 +25,15 @@ export const initialValues = {
 		date: '',
 		time: '',
 	},
-	users: [],
-	inclusive: false,
-	pinned: false,
-	discussion: false,
-	threads: false,
-	attached: false,
+	users: [] as string[],
+	content: 'messages',
+	deletePinned: true,
+	deleteThreads: true,
+	deleteDiscussion: true,
+	deleteDiscussionOrigin: true,
 };
+
+export type PruneMessagesFormValues = typeof initialValues;
 
 const DEFAULT_PRUNE_LIMIT = 2000;
 
@@ -51,20 +54,33 @@ const PruneMessagesWithData = () => {
 		newer: { date: newerDate, time: newerTime },
 		older: { date: olderDate, time: olderTime },
 		users,
-		inclusive,
-		pinned,
-		discussion,
-		threads,
-		attached,
+		content,
+		deletePinned,
+		deleteThreads,
+		deleteDiscussion,
+		deleteDiscussionOrigin,
 	} = methods.watch();
 
-	const fromDate = useMemo(() => {
-		return new Date(`${newerDate || '0001-01-01'}T${newerTime || '00:00'}:00${getTimeZoneOffset()}`);
-	}, [newerDate, newerTime]);
+	const filesOnly = content === 'files';
 
-	const toDate = useMemo(() => {
-		return new Date(`${olderDate || '9999-12-31'}T${olderTime || '23:59'}:59${getTimeZoneOffset()}`);
-	}, [olderDate, olderTime]);
+	const fromDate = useMemo(() => getFromDate({ date: newerDate, time: newerTime }), [newerDate, newerTime]);
+
+	const toDate = useMemo(() => getUntilDate({ date: olderDate, time: olderTime }), [olderDate, olderTime]);
+
+	const validateDateRange = useStableCallback(({ newer, older }: PruneMessagesFormValues) => {
+		const from = getFromDate(newer);
+		const until = getUntilDate(older);
+
+		if (isNaN(from.getTime()) || isNaN(until.getTime())) {
+			return t('error-invalid-date');
+		}
+
+		if (from > until) {
+			return t('Newer_than_may_not_exceed_Older_than');
+		}
+
+		return true;
+	});
 
 	const handlePrune = useStableCallback((): void => {
 		const handlePruneAction = async () => {
@@ -79,24 +95,25 @@ const PruneMessagesWithData = () => {
 					roomId: room._id,
 					latest: toDate.toISOString(),
 					oldest: fromDate.toISOString(),
-					inclusive,
+					inclusive: true,
 					limit,
-					excludePinned: pinned,
-					filesOnly: attached,
-					ignoreDiscussion: discussion,
-					ignoreThreads: threads,
+					excludePinned: !deletePinned,
+					filesOnly,
+					ignoreDiscussion: !deleteDiscussion,
+					ignoreDiscussionOrigin: !deleteDiscussionOrigin,
+					ignoreThreads: !deleteThreads,
 					users,
 				});
 
 				setCounter(count);
 
 				if (count < 1) {
-					throw new Error(attached ? t('No_files_found_to_prune') : t('No_messages_found_to_prune'));
+					throw new Error(filesOnly ? t('No_files_found_to_prune') : t('No_messages_found_to_prune'));
 				}
 
 				dispatchToastMessage({
 					type: 'success',
-					message: attached ? t('__count__file_pruned', { count }) : t('__count__message_pruned', { count }),
+					message: filesOnly ? t('__count__file_pruned', { count }) : t('__count__message_pruned', { count }),
 				});
 				methods.reset();
 			} catch (error: unknown) {
@@ -109,65 +126,57 @@ const PruneMessagesWithData = () => {
 		return setModal(
 			<GenericModal
 				variant='danger'
+				icon={null}
+				title={t('Bulk_delete')}
 				onClose={closeModal}
 				onCancel={closeModal}
 				onConfirm={handlePruneAction}
-				confirmText={t('Yes_prune_them')}
+				confirmText={filesOnly ? t('Delete_files') : t('Delete_messages_and_files')}
+				annotation={t('This_cannot_be_undone')}
 			>
-				{t('Prune_Modal')}
+				<Stack gap='x16'>
+					<Text is='p'>
+						<Trans i18nKey={summaryKey} values={summaryValues} components={{ bold: <strong /> }} />
+					</Text>
+					{excludedTypes.length > 0 && (
+						<Text is='p'>{t(filesOnly ? 'Bulk_delete_excluding_files' : 'Bulk_delete_excluding', { types: excludedTypes })}</Text>
+					)}
+				</Stack>
 			</GenericModal>,
 		);
 	});
 
-	const callOutText = useMemo(() => {
-		const name = room && ((isDirectMessageRoom(room) && room.usernames?.join(' x ')) || room.fname || room.name);
-		const exceptPinned = pinned ? ` ${t('except_pinned')}` : '';
-		const ifFrom = users.length ? ` ${t('if_they_are_from', { users: users.map((element) => element).join(', ') })}` : '';
-		const filesOrMessages = attached ? t('files') : t('messages');
-
+	const summaryKey = useMemo(() => {
 		if (newerDate && olderDate) {
-			return (
-				t('Prune_Warning_between', {
-					items: filesOrMessages,
-					roomName: name,
-					fromDate: formatDate(fromDate, 'L LT'),
-					toDate: formatDate(toDate, 'L LT'),
-				}) +
-				exceptPinned +
-				ifFrom
-			);
+			return 'Bulk_delete_summary_between';
 		}
-
 		if (newerDate) {
-			return (
-				t('Prune_Warning_after', { items: filesOrMessages, roomName: name, fromDate: formatDate(fromDate, 'L LT') }) + exceptPinned + ifFrom
-			);
+			return 'Bulk_delete_summary_from';
 		}
-
 		if (olderDate) {
-			return (
-				t('Prune_Warning_before', { items: filesOrMessages, roomName: name, toDate: formatDate(toDate, 'L LT') }) + exceptPinned + ifFrom
-			);
+			return 'Bulk_delete_summary_until';
 		}
+		return 'Bulk_delete_summary';
+	}, [newerDate, olderDate]);
 
-		return t('Prune_Warning_all', { items: filesOrMessages, roomName: name }) + exceptPinned + ifFrom;
-	}, [attached, fromDate, newerDate, olderDate, pinned, room, t, toDate, users]);
+	const summaryValues = {
+		items: filesOnly ? t('Files') : t('Messages_and_files'),
+		roomName: room && ((isDirectMessageRoom(room) && room.usernames?.join(' x ')) || room.fname || room.name),
+		users: users.length ? users : [t('Bulk_delete_all_users')],
+		fromDate: formatDate(fromDate, 'L LT'),
+		toDate: formatDate(toDate, 'L LT'),
+	};
 
-	const validateText = useMemo(() => {
-		if (fromDate > toDate) {
-			return t('Newer_than_may_not_exceed_Older_than');
-		}
-
-		if (isNaN(fromDate.getTime()) || isNaN(toDate.getTime())) {
-			return t('error-invalid-date');
-		}
-
-		return undefined;
-	}, [fromDate, t, toDate]);
+	const excludedTypes = [
+		!deletePinned && t('Bulk_delete_type_pinned'),
+		!deleteThreads && t('Bulk_delete_type_thread'),
+		!deleteDiscussion && t('Bulk_delete_type_discussion'),
+		!deleteDiscussion && !deleteDiscussionOrigin && t('Bulk_delete_type_original_discussion'),
+	].filter((type): type is string => Boolean(type));
 
 	return (
 		<FormProvider {...methods}>
-			<PruneMessages callOutText={callOutText} validateText={validateText} users={users} onClickClose={close} onClickPrune={handlePrune} />
+			<PruneMessages validateDateRange={validateDateRange} onClickClose={close} onSubmit={methods.handleSubmit(handlePrune)} />
 		</FormProvider>
 	);
 };

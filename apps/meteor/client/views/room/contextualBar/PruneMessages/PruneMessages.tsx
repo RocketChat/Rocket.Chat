@@ -1,4 +1,6 @@
-import { Field, FieldLabel, FieldRow, ButtonGroup, Button, CheckBox, Callout } from '@rocket.chat/fuselage';
+import type { SelectOption } from '@rocket.chat/fuselage';
+import { ButtonGroup, Button } from '@rocket.chat/fuselage';
+import { Field, FieldGroup, FieldHint, FieldLabel, FieldRow, CheckBox, Select } from '@rocket.chat/fuselage-forms';
 import {
 	ContextualbarHeader,
 	ContextualbarIcon,
@@ -8,108 +10,122 @@ import {
 	ContextualbarClose,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
-import { useId } from 'react';
+import type { FormEvent } from 'react';
+import { useId, useMemo } from 'react';
 import { useFormContext, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import PruneMessagesDateTimeRow from './PruneMessagesDateTimeRow';
+import type { PruneMessagesFormValues } from './PruneMessagesWithData';
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 
 export type PruneMessagesProps = {
-	callOutText?: string;
-	validateText?: string;
-	users: string[];
+	validateDateRange: (values: PruneMessagesFormValues) => string | true;
 	onClickClose: () => void;
-	onClickPrune: () => void;
+	onSubmit: (event: FormEvent<HTMLFormElement>) => void;
 };
 
-const PruneMessages = ({ callOutText, validateText, onClickClose, onClickPrune }: PruneMessagesProps) => {
+const PruneMessages = ({ validateDateRange, onClickClose, onSubmit }: PruneMessagesProps) => {
 	const { t } = useTranslation();
-	const { control } = useFormContext();
+	const { control, watch } = useFormContext<PruneMessagesFormValues>();
 
-	const inclusiveCheckboxId = useId();
-	const pinnedCheckboxId = useId();
-	const discussionCheckboxId = useId();
-	const threadsCheckboxId = useId();
-	const attachedCheckboxId = useId();
+	const formId = useId();
+
+	const [content, deleteDiscussion] = watch(['content', 'deleteDiscussion']);
+
+	const contentOptions = useMemo<SelectOption[]>(
+		() => [
+			['messages', t('Messages_and_files')],
+			['files', t('Only_files')],
+		],
+		[t],
+	);
 
 	return (
 		<ContextualbarDialog>
 			<ContextualbarHeader>
-				<ContextualbarIcon name='eraser' />
-				<ContextualbarTitle>{t('Prune_Messages')}</ContextualbarTitle>
+				<ContextualbarIcon name='trash' />
+				<ContextualbarTitle>{t('Bulk_delete')}</ContextualbarTitle>
 				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent>
-				<PruneMessagesDateTimeRow label={t('Newer_than')} field='newer' />
-				<PruneMessagesDateTimeRow label={t('Older_than')} field='older' />
-				<Field>
-					<FieldLabel>{t('Only_from_users')}</FieldLabel>
-					<Controller
-						control={control}
-						name='users'
-						render={({ field: { onChange, value } }) => (
-							<UserAutoCompleteMultiple value={value} onChange={onChange} placeholder={t('Please_enter_usernames')} />
-						)}
-					/>
-				</Field>
-				<Field>
-					<FieldRow>
-						<FieldLabel htmlFor={inclusiveCheckboxId}>{t('Inclusive')}</FieldLabel>
-						<Controller
-							control={control}
-							name='inclusive'
-							render={({ field: { value, ...field } }) => <CheckBox id={inclusiveCheckboxId} {...field} checked={value} />}
-						/>
-					</FieldRow>
-				</Field>
-				<Field>
-					<FieldRow>
-						<FieldLabel htmlFor={pinnedCheckboxId}>{t('RetentionPolicy_DoNotPrunePinned')}</FieldLabel>
-						<Controller
-							control={control}
-							name='pinned'
-							render={({ field: { value, ...field } }) => <CheckBox id={pinnedCheckboxId} {...field} checked={value} />}
-						/>
-					</FieldRow>
-				</Field>
-				<Field>
-					<FieldRow>
-						<FieldLabel htmlFor={discussionCheckboxId}>{t('RetentionPolicy_DoNotPruneDiscussion')}</FieldLabel>
-						<Controller
-							control={control}
-							name='discussion'
-							render={({ field: { value, ...field } }) => <CheckBox id={discussionCheckboxId} {...field} checked={value} />}
-						/>
-					</FieldRow>
-				</Field>
-				<Field>
-					<FieldRow>
-						<FieldLabel htmlFor={threadsCheckboxId}>{t('RetentionPolicy_DoNotPruneThreads')}</FieldLabel>
-						<Controller
-							control={control}
-							name='threads'
-							render={({ field: { value, ...field } }) => <CheckBox id={threadsCheckboxId} {...field} checked={value} />}
-						/>
-					</FieldRow>
-				</Field>
-				<Field>
-					<FieldRow>
-						<FieldLabel htmlFor={attachedCheckboxId}>{t('Files_only')}</FieldLabel>
-						<Controller
-							control={control}
-							name='attached'
-							render={({ field: { value, ...field } }) => <CheckBox id={attachedCheckboxId} {...field} checked={value} />}
-						/>
-					</FieldRow>
-				</Field>
-				{callOutText && !validateText && <Callout type='warning'>{callOutText}</Callout>}
-				{validateText && <Callout type='warning'>{validateText}</Callout>}
+				<form id={formId} onSubmit={onSubmit}>
+					<FieldGroup>
+						<Field>
+							<FieldLabel>{t('Delete')}</FieldLabel>
+							<FieldRow>
+								<Controller
+									control={control}
+									name='content'
+									render={({ field: { value, onChange } }) => <Select options={contentOptions} value={value} onChange={onChange} />}
+								/>
+							</FieldRow>
+						</Field>
+						<PruneMessagesDateTimeRow label={t('From')} field='newer' />
+						<PruneMessagesDateTimeRow label={t('Until')} field='older' validate={validateDateRange} />
+						<Field>
+							<FieldLabel>{t('Only_delete_if_sent_by')}</FieldLabel>
+							<FieldRow>
+								<Controller
+									control={control}
+									name='users'
+									render={({ field: { onChange, value } }) => (
+										<UserAutoCompleteMultiple value={value} onChange={onChange} placeholder={t('Enter_usernames')} />
+									)}
+								/>
+							</FieldRow>
+							<FieldHint>{t('Leave_empty_to_apply_to_all_users')}</FieldHint>
+						</Field>
+						<Field>
+							<FieldRow>
+								<FieldLabel>{t('Delete_pinned_messages_and_files')}</FieldLabel>
+								<Controller
+									control={control}
+									name='deletePinned'
+									render={({ field: { value, ...field } }) => <CheckBox {...field} checked={value} />}
+								/>
+							</FieldRow>
+						</Field>
+						<Field>
+							<FieldRow>
+								<FieldLabel>{t('Delete_thread_messages_and_files')}</FieldLabel>
+								<Controller
+									control={control}
+									name='deleteThreads'
+									render={({ field: { value, ...field } }) => <CheckBox {...field} checked={value} />}
+								/>
+							</FieldRow>
+						</Field>
+						<Field>
+							<FieldRow>
+								<FieldLabel>{t('Delete_discussion_messages_and_files')}</FieldLabel>
+								<Controller
+									control={control}
+									name='deleteDiscussion'
+									render={({ field: { value, ...field } }) => <CheckBox {...field} checked={value} />}
+								/>
+							</FieldRow>
+						</Field>
+						<Field>
+							<FieldRow>
+								<FieldLabel>{t('RetentionPolicy_DeleteDiscussionOrigin')}</FieldLabel>
+								<Controller
+									control={control}
+									name='deleteDiscussionOrigin'
+									render={({ field: { value, ...field } }) => (
+										<CheckBox {...field} checked={deleteDiscussion || value} disabled={deleteDiscussion} />
+									)}
+								/>
+							</FieldRow>
+							<FieldHint>{t('RetentionPolicy_DeleteDiscussionOrigin_Description')}</FieldHint>
+						</Field>
+					</FieldGroup>
+				</form>
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button variant='danger' disabled={Boolean(validateText)} onClick={onClickPrune}>
-						{t('Prune')}
+					<Button variant='danger' type='submit' form={formId}>
+						{content === 'files' ? t('Delete_files') : t('Delete_messages_and_files')}
 					</Button>
 				</ButtonGroup>
 			</ContextualbarFooter>
