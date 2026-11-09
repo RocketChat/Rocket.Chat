@@ -35,24 +35,13 @@ export class Sidepanel {
 		return this.sidepanel.getByRole('heading', { name, exact: true });
 	}
 
-	getTeamItemByName(name: string): Locator {
-		return this.sidepanelList
-			.getByRole('link')
-			.filter({ hasText: name })
-			.filter({ hasNot: this.page.getByRole('button', { name }) });
-	}
-
-	getMainRoomByName(name: string): Locator {
-		return this.getTeamItemByName(name);
-	}
-
+	/** The whole row, so tests reach the badges, preview and menu that sit beside the room link. */
 	getItemByName(name: string): Locator {
-		return this.sidepanelList.getByRole('link', { name });
+		return this.sidepanelList.getByRole('listitem').filter({ has: this.page.getByRole('link', { name }) });
 	}
 
-	getSidepanelItem(name: string, subtitle?: string): Locator {
-		const regex = new RegExp(`${name}.*${subtitle}`);
-		return this.sidepanelList.getByRole('link', { name: regex });
+	getItemLinkByName(name: string): Locator {
+		return this.sidepanelList.getByRole('link', { name });
 	}
 
 	getItemUnreadBadge(item: Locator): Locator {

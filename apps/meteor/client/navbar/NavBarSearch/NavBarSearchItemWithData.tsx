@@ -1,4 +1,4 @@
-import { SidebarItemIcon } from '@rocket.chat/fuselage';
+import { ItemIcon } from '@rocket.chat/fuselage';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -6,8 +6,8 @@ import { useTranslation } from 'react-i18next';
 import NavBarSearchItem from './NavBarSearchItem';
 import { RoomIcon } from '../../components/RoomIcon';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
-import SidebarItemBadges from '../../sidebar/badges/SidebarItemBadges';
-import { useUnreadDisplay } from '../../sidebar/hooks/useUnreadDisplay';
+import SidebarItemBadges from '../../views/navigation/sidebar/badges/SidebarItemBadges';
+import { useUnreadDisplay } from '../../views/navigation/sidebar/hooks/useUnreadDisplay';
 
 export type NavBarSearchItemWithDataProps = {
 	room: SubscriptionWithRoom;
@@ -23,7 +23,11 @@ const NavBarSearchItemWithData = ({ room, AvatarTemplate, ...props }: NavBarSear
 
 	const { unreadTitle, showUnread, highlightUnread: highlighted } = useUnreadDisplay(room);
 
-	const icon = <SidebarItemIcon highlighted={highlighted} icon={<RoomIcon room={room} placement='sidebar' size='x20' />} />;
+	const icon = (
+		<ItemIcon>
+			<RoomIcon room={room} placement='sidebar' size='x20' />
+		</ItemIcon>
+	);
 
 	return (
 		<NavBarSearchItem
@@ -33,7 +37,7 @@ const NavBarSearchItemWithData = ({ room, AvatarTemplate, ...props }: NavBarSear
 			aria-label={showUnread ? t('__unreadTitle__from__roomTitle__', { unreadTitle, roomTitle: title }) : title}
 			title={title}
 			icon={icon}
-			badges={<SidebarItemBadges room={room} roomTitle={title} />}
+			badges={<SidebarItemBadges room={room} roomTitle={title} showOmnichannelBadges />}
 			avatar={AvatarTemplate}
 		/>
 	);
