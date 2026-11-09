@@ -1,14 +1,6 @@
 import proxyquire from 'proxyquire';
 
 const mocks = {
-	'meteor/meteor': {
-		'Meteor': {
-			absoluteUrl() {
-				return 'http://localhost:3000/';
-			},
-		},
-		'@global': true,
-	},
 	'@rocket.chat/random': {
 		'Random': {
 			id() {

@@ -11,12 +11,9 @@ rocketchat:version
 
 meteor@2.3.1
 
-standard-minifier-css@1.10.1
-dynamic-import@0.7.4
 ecmascript@0.19.1
 typescript@5.11.1
 
 # photoswipe
 
-zodern:types
 standard-minifier-js@3.2.0

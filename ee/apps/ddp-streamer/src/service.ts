@@ -6,6 +6,7 @@ import {
 	ConnectionRegistry,
 	Server,
 	createStreamAdapter,
+	registerAccountMethods,
 	registerAutoupdatePublication,
 	registerLoginServiceConfigurationPublication,
 	registerPresenceMethods,
@@ -17,7 +18,7 @@ import { NotificationsModule } from '@rocket.chat/streamer';
 import { startTracing } from '@rocket.chat/tracing';
 
 import { DDPStreamer } from './DDPStreamer';
-import { registerAccountMethods } from './methods/accounts';
+import { sessionAccounts } from './methods/accounts';
 import { callMeteorMethod } from './methods/meteorFallback';
 
 void (async () => {
@@ -41,7 +42,7 @@ void (async () => {
 		loginServices: registerLoginServiceConfigurationPublication(server),
 		clientVersions: registerAutoupdatePublication(server),
 	};
-	registerAccountMethods(server, lifecycle);
+	registerAccountMethods(server, lifecycle, sessionAccounts);
 	registerPresenceMethods(server);
 
 	const notifications = new NotificationsModule(createStreamAdapter(server), InstanceStatus.id());

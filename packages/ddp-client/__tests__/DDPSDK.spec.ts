@@ -11,7 +11,7 @@ import { LivechatClientImpl } from '../src/livechat/LivechatClientImpl';
 
 (global as any).WebSocket = (global as any).WebSocket || WebSocket;
 
-export let server: WS;
+let server: WS;
 
 const callXTimes = <F extends (...args: any) => any>(fn: F, times: number): F => {
 	return (async (...args) => {
@@ -285,6 +285,7 @@ it('should create and connect to a stream', async () => {
 	const promise = DDPSDK.createAndConnect('ws://localhost:1234');
 	await handleConnection(server, promise);
 	const sdk = await promise;
+	expect(sdk.connection.status).toBe('connected');
 	sdk.connection.close();
 });
 

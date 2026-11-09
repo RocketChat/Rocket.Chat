@@ -1,12 +1,12 @@
 import type { IMediaCall, IUser, MediaCallContact, MediaCallActorType } from '@rocket.chat/core-typings';
 import type { VoipPushNotificationEventType } from '@rocket.chat/media-calls';
 import { MediaCalls, Users } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { getPushNotificationType } from './getPushNotificationType';
 import { metrics } from '../../../lib/metrics/lib/metrics';
 import { Push } from '../../../lib/notifications/push/push';
 import PushNotification from '../../../lib/notifications/push-config/lib/PushNotification';
+import { getWorkspaceURL } from '../../../lib/utils/getURL';
 import { getUserAvatarURL } from '../../../lib/utils/getUserAvatarURL';
 import { getUserPreference } from '../../../lib/utils/lib/getUserPreference';
 import { settings } from '../../../settings';
@@ -101,7 +101,7 @@ async function sendVoipPushNotificationAsync(callId: IMediaCall['_id'], event: V
 		useVoipToken,
 		priority: 10,
 		payload: {
-			host: Meteor.absoluteUrl(),
+			host: `${getWorkspaceURL()}/`,
 			hostName: settings.get<string>('Site_Name'),
 			notificationType: 'voip',
 			type,

@@ -1,5 +1,6 @@
 import type { AllHTMLAttributes, ReactNode } from 'react';
 
+import { cx } from '../../helpers/composeClassNames';
 import { IconButton } from '../Button';
 
 export type SidebarBannerVariant = 'default' | 'info' | 'success' | 'warning' | 'danger';
@@ -13,6 +14,7 @@ export type SidebarBannerProps = {
 	onClose?: () => void;
 	children?: ReactNode;
 	addon?: ReactNode;
+	className?: string;
 };
 
 export const SidebarBanner = ({
@@ -23,9 +25,10 @@ export const SidebarBanner = ({
 	addon,
 	onClose,
 	children,
+	className,
 	...props
 }: SidebarBannerProps) => (
-	<div className={`rcx-box rcx-box--full rcx-sidebar-banner rcx-sidebar-banner--${variant}`} {...props}>
+	<div {...props} className={cx('rcx-box rcx-box--full rcx-sidebar-banner', `rcx-sidebar-banner--${variant}`, className)}>
 		<div className='rcx-box rcx-box--full rcx-sidebar-banner__content'>
 			{title && <h5 className='rcx-box rcx-box--full rcx-sidebar-banner__title'>{title}</h5>}
 			{linkText && (

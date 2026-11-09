@@ -1,7 +1,7 @@
 import { useEffect } from 'preact/hooks';
 
 import type { ScreenTheme } from './ScreenProvider';
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 
 export type CssVarProps = {
 	theme: ScreenTheme;

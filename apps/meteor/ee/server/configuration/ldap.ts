@@ -4,7 +4,6 @@ import { cronJobs } from '@rocket.chat/cron';
 import { License } from '@rocket.chat/license';
 import { Settings } from '@rocket.chat/models';
 import { isValidCron } from 'cron-validator';
-import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../server/lib/callbacks';
 import { settings } from '../../../server/settings';
@@ -13,7 +12,7 @@ import { LDAPEEManager } from '../lib/ldap/EEManager';
 import { logger } from '../lib/ldap/Logger';
 import { addSettings, ldapIntervalValuesToCronMap } from '../settings/ldap';
 
-Meteor.startup(async () => {
+export const configureLdapEnterprise = async (): Promise<void> => {
 	await License.onLicense('ldap-enterprise', async () => {
 		await addSettings();
 
@@ -124,4 +123,4 @@ Meteor.startup(async () => {
 			'advancedLDAPSync',
 		);
 	});
-});
+};

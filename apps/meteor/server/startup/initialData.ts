@@ -9,6 +9,7 @@ import { Meteor } from 'meteor/meteor';
 import { addCallHistoryTestData } from './callHistoryTestData';
 import { FileUpload } from '../lib/media/file-upload';
 import { notifyOnSettingChangedById } from '../lib/notifyListener';
+import { readPrivateAsset } from '../lib/privateAssets';
 import { addUserRolesAsync } from '../lib/roles/addUserRoles';
 import { addUserToDefaultChannels } from '../lib/rooms/addUserToDefaultChannels';
 import { checkUsernameAvailability } from '../lib/users/checkUsernameAvailability';
@@ -84,7 +85,7 @@ export async function insertAdminUserFromEnv() {
 	}
 }
 
-Meteor.startup(async () => {
+export const insertInitialData = async (): Promise<void> => {
 	const dynamicImport = {
 		'dynamic-import': {
 			useLocationOrigin: true,
@@ -116,11 +117,8 @@ Meteor.startup(async () => {
 	Meteor.settings.public.packages['dynamic-import'] = dynamicImport['dynamic-import'];
 
 	if (!settings.get('Initial_Channel_Created')) {
-		const exists = await Rooms.findOneById('GENERAL', { projection: { _id: 1 } });
-		if (!exists) {
-			await Rooms.createWithIdTypeAndName('GENERAL', 'c', 'general', {
-				default: true,
-			});
+		if (!(await Rooms.findOneById('GENERAL', { projection: { _id: 1 } }))) {
+			await Rooms.createWithIdTypeAndNameIfNotExists('GENERAL', 'c', 'general', { default: true });
 		}
 
 		(await Settings.updateValueById('Initial_Channel_Created', true)).modifiedCount &&
@@ -128,36 +126,37 @@ Meteor.startup(async () => {
 	}
 
 	try {
-		if (!(await Users.findOneById('rocket.cat', { projection: { _id: 1 } }))) {
-			await Users.create({
-				_id: 'rocket.cat',
-				name: 'Rocket.Cat',
-				username: 'rocket.cat',
-				status: UserStatus.ONLINE,
-				statusDefault: UserStatus.ONLINE,
-				utcOffset: 0,
-				active: true,
-				type: 'bot',
-			});
+		const createdRocketCat =
+			!(await Users.findOneById('rocket.cat', { projection: { _id: 1 } })) &&
+			(
+				await Users.createIfNotExists({
+					_id: 'rocket.cat',
+					name: 'Rocket.Cat',
+					username: 'rocket.cat',
+					status: UserStatus.ONLINE,
+					statusDefault: UserStatus.ONLINE,
+					utcOffset: 0,
+					active: true,
+					type: 'bot',
+				})
+			).upsertedCount > 0;
 
+		if (createdRocketCat) {
 			await addUserRolesAsync('rocket.cat', ['bot']);
 
-			const asset = await Assets.getBinaryAsync('avatars/rocketcat.png');
-			if (asset) {
-				const buffer = Buffer.from(asset);
+			const buffer = await readPrivateAsset('avatars/rocketcat.png');
 
-				const fileStore = FileUpload.getStore('Avatars');
-				await fileStore.deleteByName('rocket.cat');
+			const fileStore = FileUpload.getStore('Avatars');
+			await fileStore.deleteByName('rocket.cat');
 
-				const file = {
-					userId: 'rocket.cat',
-					type: 'image/png',
-					size: buffer.length,
-				};
+			const file = {
+				userId: 'rocket.cat',
+				type: 'image/png',
+				size: buffer.length,
+			};
 
-				const upload = await fileStore.insert(file, buffer);
-				await Users.setAvatarData('rocket.cat', 'local', upload.etag);
-			}
+			const upload = await fileStore.insert(file, buffer);
+			await Users.setAvatarData('rocket.cat', 'local', upload.etag);
 		}
 	} catch (error) {
 		console.log(
@@ -255,4 +254,4 @@ Meteor.startup(async () => {
 		// Create sample call history for API tests
 		return addCallHistoryTestData('rocketchat.internal.admin.test', 'rocket.cat');
 	}
-});
+};

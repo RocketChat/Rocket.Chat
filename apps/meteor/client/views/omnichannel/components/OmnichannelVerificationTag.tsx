@@ -1,7 +1,6 @@
 import { Icon, Tag } from '@rocket.chat/fuselage';
+import { useHasLicenseModule } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
-
-import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 
 export type OmnichannelVerificationTagProps = {
 	verified?: boolean;

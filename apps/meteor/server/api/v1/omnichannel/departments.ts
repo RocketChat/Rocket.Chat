@@ -1,12 +1,11 @@
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatDepartmentAgents } from '@rocket.chat/models';
 import { isDepartmentCreationAvailable } from '@rocket.chat/omni-core';
-import { isGETLivechatDepartmentProps, isPOSTLivechatDepartmentProps } from '@rocket.chat/rest-typings';
+import { isGETLivechatDepartmentProps, isPOSTLivechatDepartmentProps, isPUTLivechatDepartmentProps } from '@rocket.chat/rest-typings';
 import {
 	isLivechatDepartmentDepartmentIdAgentsGETProps,
 	isLivechatDepartmentDepartmentIdAgentsPOSTProps,
 } from '@rocket.chat/rest-typings/src/v1/omnichannel';
-import { Match, check } from 'meteor/check';
 
 import { API } from '../..';
 import {
@@ -64,12 +63,6 @@ API.v1.addRoute(
 			return API.v1.success({ departments, count: departments.length, offset, total });
 		},
 		async post() {
-			check(this.bodyParams, {
-				department: Object,
-				agents: Match.Maybe(Array),
-				departmentUnit: Match.Maybe({ _id: Match.Optional(String) }),
-			});
-
 			const agents = this.bodyParams.agents ? { upsert: this.bodyParams.agents } : {};
 			const { departmentUnit } = this.bodyParams;
 			const department = await saveDepartment(
@@ -112,6 +105,7 @@ API.v1.addRoute(
 	'livechat/department/:_id',
 	{
 		authRequired: true,
+		validateParams: { PUT: isPUTLivechatDepartmentProps },
 		permissionsRequired: {
 			GET: { permissions: ['view-livechat-departments', 'view-l-room'], operation: 'hasAny' },
 			PUT: { permissions: ['manage-livechat-departments', 'add-livechat-department-agents'], operation: 'hasAny' },
@@ -120,10 +114,6 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			check(this.urlParams, {
-				_id: String,
-			});
-
 			const { onlyMyDepartments } = this.queryParams;
 
 			const { department, agents } = await findDepartmentById({
@@ -143,12 +133,6 @@ API.v1.addRoute(
 			const permissionToSave = await hasPermissionAsync(this.user, 'manage-livechat-departments');
 			const permissionToAddAgents = await hasPermissionAsync(this.user, 'add-livechat-department-agents');
 
-			check(this.bodyParams, {
-				department: Object,
-				agents: Match.Maybe(Array),
-				departmentUnit: Match.Maybe({ _id: Match.Optional(String) }),
-			});
-
 			const { _id } = this.urlParams;
 			const { department, agents, departmentUnit } = this.bodyParams;
 
@@ -165,10 +149,6 @@ API.v1.addRoute(
 			});
 		},
 		async delete() {
-			check(this.urlParams, {
-				_id: String,
-			});
-
 			const isRemoveEnabled = settings.get<boolean>('Omnichannel_enable_department_removal');
 
 			if (!isRemoveEnabled) {

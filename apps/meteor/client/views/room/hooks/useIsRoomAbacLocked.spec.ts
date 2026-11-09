@@ -6,7 +6,8 @@ import { createFakeRoom } from '../../../../tests/mocks/data';
 
 const hasLicenseModule = jest.fn(() => true);
 
-jest.mock('../../../hooks/useHasLicenseModule', () => ({
+jest.mock('@rocket.chat/ui-client', () => ({
+	...jest.requireActual('@rocket.chat/ui-client'),
 	useHasLicenseModule: () => ({ data: hasLicenseModule() }),
 }));
 

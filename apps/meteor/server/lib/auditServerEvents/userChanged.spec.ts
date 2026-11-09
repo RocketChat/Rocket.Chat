@@ -159,6 +159,31 @@ describe('userChanged audit module', () => {
 		]);
 	});
 
+	it('should build event when the user did not have the changed field before', async () => {
+		const [user, updater, actor] = createUserAndUpdater({ ...createEmailsField() });
+
+		const store = new UserChangedAuditStore(actor);
+
+		const phones = [{ number: faker.phone.number() }];
+
+		updater.set('phones', phones);
+
+		store.setOriginalUser(user as IUser);
+		store.setUpdateFilter(updater.getUpdateFilter());
+
+		const event = await store.commitAuditEvent();
+
+		expect(event).toEqual([
+			'user.changed',
+			{
+				user: { _id: user._id, username: user.username },
+				operation: { $set: { phones } },
+				user_data: {},
+			},
+			{ ...actor, type: 'user' },
+		]);
+	});
+
 	it('should build event with every changed field', async () => {
 		const [user, updater, actor] = createUserAndUpdater({ ...createEmailsField(), active: false });
 

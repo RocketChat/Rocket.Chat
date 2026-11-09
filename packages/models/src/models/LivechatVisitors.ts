@@ -1,4 +1,4 @@
-import type { IVisitorExternalIdentifier, ILivechatVisitor, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { DeepWritable, IVisitorExternalIdentifier, ILivechatVisitor, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { FindPaginated, ILivechatVisitorsModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
 import { escapeRegExp } from '@rocket.chat/tools';
 import type {
@@ -173,7 +173,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		// TODO remove dependency from another model - this logic should be inside a service/function
 		const livechatCount = await Settings.incrementValueById('Livechat_guest_count', 1, { returnDocument: 'after' });
 
-		if (!livechatCount) {
+		if (typeof livechatCount?.value !== 'number') {
 			throw new Error("Can't find Livechat_guest_count setting");
 		}
 
@@ -362,10 +362,10 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 
 	saveGuestById(
 		_id: string,
-		data: { name?: string; username?: string; email?: string; phone?: string; livechatData: { [k: string]: any } },
+		data: { name?: string; username?: string; email?: string; phone?: string; livechatData: { [k: string]: string | undefined } },
 	): Promise<UpdateResult | Document | boolean> {
-		const setData: DeepWriteable<UpdateFilter<ILivechatVisitor>['$set']> = {};
-		const unsetData: DeepWriteable<UpdateFilter<ILivechatVisitor>['$unset']> = {};
+		const setData: DeepWritable<UpdateFilter<ILivechatVisitor>['$set']> = {};
+		const unsetData: DeepWritable<UpdateFilter<ILivechatVisitor>['$unset']> = {};
 
 		if (data.name) {
 			if (data.name?.trim()) {
@@ -525,5 +525,3 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.find<T, O>(query, options);
 	}
 }
-
-type DeepWriteable<T> = { -readonly [P in keyof T]: DeepWriteable<T[P]> };

@@ -26,5 +26,6 @@ it('leaves out the details list when there is nothing to list', () => {
 	render(<UserCard user={{ name: 'bruno.admin', username: 'bruno.admin' }} />, { wrapper: mockAppRoot().build() });
 
 	const dialog = screen.getByRole('dialog');
+	// oxlint-disable-next-line testing-library/no-node-access -- `dl` has no ARIA role, so no Testing Library query can find it
 	expect(dialog.querySelector('dl')).toBeNull();
 });

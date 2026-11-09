@@ -1,7 +1,6 @@
 import { Button } from '@rocket.chat/fuselage';
+import { links } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
-
-import { links } from '../../../lib/links';
 
 const UpdateRocketChatButton = () => {
 	const { t } = useTranslation();

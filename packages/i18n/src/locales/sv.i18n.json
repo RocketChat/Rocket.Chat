@@ -5884,7 +5884,7 @@
   "room_set_read_only": "rum markerad som skrivskyddad av {{user_by}}",
   "room_set_read_only_permission": "ställ in rum till skrivskyddad",
   "Room_Status_Open": "Öppen",
-  "Room_Toolbox_Layout": "rum Verktygslådans utformning",
+  "Room_toolbox_layout": "rum Verktygslådans utformning",
   "Room_Toolbox_Layout_description": "Konfigurera layouten för knapparna i verktygslådan ” rum ” (Utvalda åtgärder, Synliga åtgärder och Överflöde) med hjälp av en JSON-konfiguration.",
   "Room_Toolbox_Layout_Invalid": "rum Verktygslådans layout måste vara giltig JSON som överensstämmer med det dokumenterade schemat.",
   "Room_Toolbox_Layout_Setting_description": "Gäller endast för användare som har aktiverat förhandsvisningen av funktionen ”rum -verktygslådans layout”. En JSON-array där varje post anger sin `roomType` (`c` för offentliga kanaler, `p` för privata kanaler, `d` för direktmeddelanden), `items` och `maxVisibleNormal`. rum Typer som inte omfattas behåller standardlayouten och får endast förekomma i en post: okända nycklar, rum -typer som inte stöds samt överlappande poster avvisas vid sparandet. Exempel: `[{\"roomType\":[\"c\",\"p\"],\"maxVisibleNormal\":3,\"items\":[{\"id\":\"members-list\",\"featured\":true,\"order\":1}]},{\"roomType\":[\"d\"],\"maxVisibleNormal\":1}]`",

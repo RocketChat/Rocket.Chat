@@ -1,31 +1,25 @@
 import type { ILivechatInquiryRecord, ISidebarCategory } from '@rocket.chat/core-typings';
 import { SIDEBAR_SYSTEM_GROUP_KEYS } from '@rocket.chat/core-typings';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { useIsEnterprise } from '@rocket.chat/ui-client';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useUserSubscriptions } from '@rocket.chat/ui-contexts';
 import { useVideoConfIncomingCalls, useVideoConfWindowEnabled } from '@rocket.chat/ui-video-conf';
 import { useMemo } from 'react';
 
 import { filterGroupVisibility, getRoomCategory, useCategoryList } from './useCategoryList';
-import { useIsEnterprise } from '../../hooks/useIsEnterprise';
 import { useSortQueryOptions } from '../../hooks/useSortQueryOptions';
 import { useOpenedRoom } from '../../lib/RoomManager';
 import { useOmnichannelEnabled } from '../../views/omnichannel/hooks/useOmnichannelEnabled';
 import { useQueuedInquiries } from '../../views/omnichannel/hooks/useQueuedInquiries';
 import { useToggleUnreads } from '../categories/hooks/useToggleUnreads';
 import { useUserSidebarCategories } from '../categories/hooks/useUserSidebarCategories';
+import type { GroupUnreadInfo } from '../lib/unreadRooms';
+import { buildUnreadInfo, emptyUnreadInfo, isUnreadRoom } from '../lib/unreadRooms';
 
 const query = { open: { $ne: false } };
 
 const emptyQueue: ILivechatInquiryRecord[] = [];
-
-type GroupUnreadInfo = {
-	userMentions: number;
-	groupMentions: number;
-	tunread: string[];
-	tunreadUser: string[];
-	unread: number;
-};
 
 export type SidebarRoomListGroup = {
 	key: string;
@@ -45,9 +39,6 @@ type useRoomListReturnType = {
 	groupsCount: number[];
 	totalCount: number;
 };
-
-export const isUnreadRoom = (room: SubscriptionWithRoom): boolean =>
-	!room.hideUnreadStatus && Boolean(room.alert || room.unread || room.tunread?.length);
 
 export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] }): useRoomListReturnType => {
 	const showOmnichannel = useOmnichannelEnabled();
@@ -109,27 +100,6 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 			if (unfilteredGroups.has('Incoming_Livechats')) {
 				unfilteredGroups.set('Incoming_Livechats', new Set(queue) as unknown as Set<SubscriptionWithRoom>);
 			}
-
-			const emptyUnreadInfo = (): GroupUnreadInfo => ({ userMentions: 0, groupMentions: 0, tunread: [], tunreadUser: [], unread: 0 });
-
-			const buildUnreadInfo = (roomsToCount: SubscriptionWithRoom[]): GroupUnreadInfo =>
-				roomsToCount.reduce<GroupUnreadInfo>((counter, room) => {
-					if (room.hideUnreadStatus) {
-						return counter;
-					}
-
-					counter.userMentions += room.userMentions || 0;
-					counter.groupMentions += room.groupMentions || 0;
-					counter.tunread = [...counter.tunread, ...(room.tunread || [])];
-					counter.tunreadUser = [...counter.tunreadUser, ...(room.tunreadUser || [])];
-					counter.unread += room.unread || 0;
-
-					if (!room.unread && !room.tunread?.length && room.alert) {
-						counter.unread += 1;
-					}
-
-					return counter;
-				}, emptyUnreadInfo());
 
 			const makeGroup = (key: string, set: Set<SubscriptionWithRoom>): SidebarRoomListGroup => {
 				const category = customCategories.find(({ _id }) => _id === key);

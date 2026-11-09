@@ -1,6 +1,6 @@
-import { parse } from '../src';
-import { lineBreak, paragraph, plain, link } from './helpers';
-import { autoLink } from '../src/utils';
+import { lineBreak, paragraph, plain, link } from './helpers.js';
+import { parse } from '../src/index.js';
+import { autoLink } from '../src/utils.js';
 
 test.each([
 	[

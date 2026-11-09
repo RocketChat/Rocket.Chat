@@ -18,6 +18,11 @@ export class ConnectionRegistry {
 		return this.sessions.size;
 	}
 
+	/** The user of every logged-in session, repeated for a user with several sessions. */
+	userIds(): string[] {
+		return Array.from(this.sessions, (session) => session.userId).filter((userId): userId is string => !!userId);
+	}
+
 	closeSession(sessionId: string): void {
 		for (const session of this.sessions) {
 			if (session.connection.id === sessionId) {
@@ -45,6 +50,15 @@ export class ConnectionRegistry {
 			}, FORCE_LOGOUT_GRACE_MS);
 			ws.once('close', () => clearTimeout(guard));
 		}
+	}
+
+	/** Ends the sessions a forced logout of `userId` targets: only `sessionId` when it is given, otherwise all of the user's. */
+	forceLogout(userId: string, sessionId?: string): void {
+		if (sessionId) {
+			this.closeSession(sessionId);
+			return;
+		}
+		this.closeForUser(userId);
 	}
 
 	terminateAll(): void {

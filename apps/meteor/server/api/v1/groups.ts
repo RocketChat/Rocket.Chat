@@ -33,7 +33,6 @@ import {
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { isTruthy } from '@rocket.chat/tools';
-import { check, Match } from 'meteor/check';
 import type { Filter } from 'mongodb';
 
 import { canAccessRoomAsync, roomAccessAttributes } from '../../lib/authorization';
@@ -1116,14 +1115,6 @@ API.v1.get(
 
 		const { offset: skip, count: limit } = await getPaginationItems(this.queryParams);
 		const { sort = {} } = await this.parseJsonQuery();
-
-		check(
-			this.queryParams,
-			Match.ObjectIncluding({
-				status: Match.Maybe([String]),
-				filter: Match.Maybe(String),
-			}),
-		);
 
 		const { status, filter } = this.queryParams;
 
