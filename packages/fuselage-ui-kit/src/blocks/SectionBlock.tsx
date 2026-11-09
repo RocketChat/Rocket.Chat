@@ -7,6 +7,9 @@ import type { BlockProps } from '../utils/BlockProps';
 
 export type SectionBlockProps = BlockProps<UiKit.SectionBlock>;
 
+// A URL has no break point, so without this it overflows the message instead of wrapping.
+const wrapAnywhere = { overflowWrap: 'anywhere' } as const;
+
 const SectionBlock = ({ className, block, surfaceRenderer }: SectionBlockProps) => {
 	const { text, fields } = block;
 
@@ -27,7 +30,7 @@ const SectionBlock = ({ className, block, surfaceRenderer }: SectionBlockProps) 
 		return (
 			<Box className={className}>
 				{text && (
-					<Box is='span' fontScale='p2' color='default'>
+					<Box is='span' fontScale='p2' color='default' style={wrapAnywhere}>
 						{surfaceRenderer.renderTextObject(text, 0)}
 					</Box>
 				)}
@@ -43,7 +46,7 @@ const SectionBlock = ({ className, block, surfaceRenderer }: SectionBlockProps) 
 		<Box className={className} display='flex' alignItems='flex-start' gap='x16'>
 			<Box display='flex' flexDirection='column' gap='x8' flexGrow={1} minWidth={0}>
 				{text && (
-					<Box is='span' fontScale='p2' color='default'>
+					<Box is='span' fontScale='p2' color='default' style={wrapAnywhere}>
 						{surfaceRenderer.renderTextObject(text, 0)}
 					</Box>
 				)}

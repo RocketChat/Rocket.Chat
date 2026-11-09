@@ -21,6 +21,16 @@ export const sectionWithMrkdwn: readonly UiKit.LayoutBlock[] = [
 	},
 ] as const;
 
+export const sectionWithLongUnbreakableUrl: readonly UiKit.LayoutBlock[] = [
+	{
+		type: 'section',
+		text: {
+			type: 'mrkdwn',
+			text: 'This sentence has spaces so it must wrap next to a URL that has none\n<https://github.com/RocketChat/Rocket.Chat/pull/43606/files/0123456789abcdef0123456789abcdef01234567/some/long/path|https://github.com/RocketChat/Rocket.Chat/pull/43606/files/0123456789abcdef0123456789abcdef01234567/some/long/path>',
+		},
+	},
+] as const;
+
 export const sectionWithTextFields: readonly UiKit.LayoutBlock[] = [
 	{
 		type: 'section',

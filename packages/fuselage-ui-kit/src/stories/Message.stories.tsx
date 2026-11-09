@@ -9,7 +9,7 @@ import {
 	MessageUsername,
 	MessageRole,
 	MessageTimestamp,
-	MessageBody,
+	MessageBlock,
 	MessageToolbarWrapper,
 	MessageToolbar,
 	MessageToolbarItem,
@@ -57,7 +57,7 @@ export default {
 					<MessageRole>Owner</MessageRole>
 					<MessageTimestamp>12:00 PM</MessageTimestamp>
 				</MessageHeader>
-				<MessageBody>
+				<MessageBlock fixedWidth>
 					<UiKitContext.Provider
 						value={{
 							action: action('action'),
@@ -68,7 +68,7 @@ export default {
 					>
 						{UiKitMessage(blocks)}
 					</UiKitContext.Provider>
-				</MessageBody>
+				</MessageBlock>
 			</MessageContainer>
 			<MessageToolbarWrapper>
 				<MessageToolbar>
@@ -98,7 +98,9 @@ export const SectionWithPlainText = createStory(payloads.sectionWithPlainText);
 
 export const SectionWithMrkdwn = createStory(payloads.sectionWithMrkdwn);
 
-export const SectionWithTextFields = createStory(payloads.sectionWithTextFields);
+export const SectionWithLongUnbreakableUrl = createStory(payloads.sectionWithLongUnbreakableUrl);
+
+export const SectionWithTextFields =createStory(payloads.sectionWithTextFields);
 
 export const SectionWithButtonAccessory = createStory(payloads.sectionWithButtonAccessory);
 
