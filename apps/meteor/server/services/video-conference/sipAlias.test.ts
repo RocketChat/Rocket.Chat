@@ -18,10 +18,11 @@ const getRandomValues = (buffer: Uint8Array): Uint8Array => {
 const cryptoStub = { getRandomValues };
 
 const setSipAliasById = sinon.stub().resolves();
+const findScheduledConferenceBySipAlias = sinon.stub().resolves(null);
 const settingValues: Record<string, unknown> = {};
 
 const VideoConfService = createService({
-	models: { VideoConference: { setSipAliasById } },
+	models: { VideoConference: { setSipAliasById }, ScheduledConferences: { findOneBySipAlias: findScheduledConferenceBySipAlias } },
 	overrides: {
 		'crypto': { ...cryptoStub, 'default': cryptoStub, '@noCallThru': true },
 		'../../settings': { settings: { get: (key: string) => settingValues[key] } },
@@ -35,11 +36,13 @@ describe('VideoConfService SIP alias', () => {
 
 	beforeEach(() => {
 		service = new VideoConfService();
-		resetAll(setSipAliasById);
+		resetAll(setSipAliasById, findScheduledConferenceBySipAlias);
 		// History alone is not enough: `onFirstCall` and friends survive it, so a queued rejection from the
 		// previous test would still be in force here.
 		setSipAliasById.resetBehavior();
 		setSipAliasById.resolves();
+		findScheduledConferenceBySipAlias.resetBehavior();
+		findScheduledConferenceBySipAlias.resolves(null);
 		byteQueue = [];
 		settingValues.Pexip_Integration_SIP_AddAlias = true;
 	});
@@ -90,6 +93,16 @@ describe('VideoConfService SIP alias', () => {
 
 			expect(setSipAliasById.callCount).to.equal(2);
 			expect(alias).to.match(/^[1-9][0-9]{7}$/);
+		});
+
+		// The index only sees live conferences; a booked alias must keep reaching its booking while nothing runs on it.
+		it('should try another number when a booking holds the one it picked', async () => {
+			findScheduledConferenceBySipAlias.onFirstCall().resolves({ _id: 'booking1' });
+
+			const alias = await service.addSipAlias('call1');
+
+			expect(findScheduledConferenceBySipAlias.calledTwice).to.be.true;
+			expect(setSipAliasById.calledOnceWith('call1', alias)).to.be.true;
 		});
 
 		it('should give up after twenty collisions rather than retrying forever', async () => {

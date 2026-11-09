@@ -59,6 +59,15 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 			// would collide with every other one on a missing field.
 			{ key: { mediaCallIds: 1 }, unique: true, sparse: true },
 			{ key: { providerName: 1, sipAlias: 1 }, unique: true, partialFilterExpression: { sipAlias: { $exists: true } } },
+			// One live conference per booking: two people opening its link at once must not start two.
+			{
+				key: { scheduledConferenceId: 1 },
+				unique: true,
+				partialFilterExpression: {
+					scheduledConferenceId: { $exists: true },
+					status: { $in: [VideoConferenceStatus.CALLING, VideoConferenceStatus.STARTED] },
+				},
+			},
 		];
 	}
 
@@ -166,9 +175,10 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 		mediaCallIds,
 		sipAlias,
 		discussionRid,
+		scheduledConferenceId,
 		...callDetails
 	}: Required<Pick<IGroupVideoConference, 'rid' | 'title' | 'createdBy' | 'providerName' | 'ringing'>> &
-		Pick<IGroupVideoConference, 'mediaCallIds' | 'sipAlias' | 'discussionRid'>): Promise<string> {
+		Pick<IGroupVideoConference, 'mediaCallIds' | 'sipAlias' | 'discussionRid' | 'scheduledConferenceId'>): Promise<string> {
 		const call: InsertionModel<IGroupVideoConference> = {
 			type: 'videoconference',
 			users: [],
@@ -182,6 +192,7 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 			// collide with the last.
 			...(sipAlias ? { sipAlias } : {}),
 			...(discussionRid ? { discussionRid } : {}),
+			...(scheduledConferenceId ? { scheduledConferenceId } : {}),
 			...(mediaCallIds?.length && { mediaCallIds }),
 			...callDetails,
 		};
@@ -563,6 +574,19 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 			{
 				providerName,
 				sipAlias,
+			},
+			options || {},
+		);
+	}
+
+	public async findOneLiveByScheduledConferenceId<T extends VideoConference>(
+		scheduledConferenceId: string,
+		options?: FindOptions<T>,
+	): Promise<T | null> {
+		return this.findOne<T>(
+			{
+				scheduledConferenceId,
+				status: { $in: [VideoConferenceStatus.CALLING, VideoConferenceStatus.STARTED] },
 			},
 			options || {},
 		);

@@ -461,6 +461,10 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		emailAddress: string,
 		options?: O,
 	): Promise<DocumentWithProjection<T, O> | null>;
+	findActiveByEmailAddresses<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		emailAddresses: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 	findOneWithoutLDAPByEmailAddress<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		emailAddress: string,
 		options?: O,

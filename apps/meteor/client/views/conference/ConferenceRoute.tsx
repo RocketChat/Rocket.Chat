@@ -34,12 +34,12 @@ const ConferenceRoute = () => {
 		);
 	}
 
-	// The id is the number that was dialled rather than a conference's, and may not stand for one yet.
+	// The id is the number that was dialled or a booking's rather than a conference's, and may not stand for one yet.
 	if (id && scheduled) {
 		return (
 			<AuthenticationCheck guest={false} loadingElement={<PageLoading />}>
 				<ConferenceViewport>
-					<ConferenceScheduledPage sipAlias={id} />
+					<ConferenceScheduledPage id={id} />
 				</ConferenceViewport>
 			</AuthenticationCheck>
 		);

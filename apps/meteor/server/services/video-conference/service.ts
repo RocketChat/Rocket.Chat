@@ -31,6 +31,10 @@ import type {
 	IVoIPVideoConference,
 	RequiredField,
 	IRegisterUser,
+	IScheduledConference,
+	ConferenceSchedulingOptions,
+	ConferenceScheduleRequest,
+	ScheduledConferenceInvitation,
 } from '@rocket.chat/core-typings';
 import {
 	UserStatus,
@@ -43,7 +47,7 @@ import {
 } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import type { InsertionModel } from '@rocket.chat/model-typings';
-import { Users, VideoConference as VideoConferenceModel, Rooms, Messages, Subscriptions } from '@rocket.chat/models';
+import { Users, VideoConference as VideoConferenceModel, Rooms, Messages, Subscriptions, ScheduledConferences } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import { wrapExceptions } from '@rocket.chat/tools';
@@ -59,7 +63,7 @@ import { expiredPresenceLeases, INFERRED_LEAVE_REASONS } from '../../../lib/vide
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { db } from '../../database/utils';
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
-import { hasAtLeastOnePermissionAsync } from '../../lib/authorization/hasPermission';
+import { hasAtLeastOnePermissionAsync, hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { callbacks } from '../../lib/callbacks';
 import { i18n } from '../../lib/i18n';
 import { isRoomCompatibleWithVideoConfRinging } from '../../lib/isRoomCompatibleWithVideoConfRinging';
@@ -81,6 +85,12 @@ import { addUsersToRoomMethod } from '../../meteor-methods/rooms/addUsersToRoom'
 import { settings } from '../../settings';
 
 const logger = new Logger('VideoConference');
+
+const MAX_SIP_ALIAS_ATTEMPTS = 20;
+
+const NO_SCHEDULING: ConferenceSchedulingOptions = { canSchedule: false, canUseSipAlias: false };
+
+const isDuplicateKeyError = (err: unknown): boolean => err instanceof Error && err.message.includes('E11000');
 
 export class VideoConfService extends ServiceClassInternal implements IVideoConfService {
 	protected name = 'video-conference';
@@ -1022,20 +1032,53 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		const alias = this.makeSipAlias();
 
 		try {
-			await VideoConferenceModel.setSipAliasById(callId, alias);
-			return alias;
-		} catch (err) {
-			if (err && typeof err === 'object' && err instanceof Error && err.message.includes('E11000')) {
-				if (attempt >= 20) {
-					logger.error({ msg: 'Failed to generate a unique SIP alias for this conference.', err });
-					return null;
-				}
-				return this.addSipAlias(callId, attempt + 1);
+			// The index only sees live conferences, and a booked alias stays held while nothing runs on it.
+			if (!(await ScheduledConferences.findOneBySipAlias(alias, { projection: { _id: 1 } }))) {
+				await VideoConferenceModel.setSipAliasById(callId, alias);
+				return alias;
 			}
+		} catch (err) {
+			if (!isDuplicateKeyError(err)) {
+				logger.error({ msg: 'Failed to add Sip Alias to video conference', err });
+				return null;
+			}
+		}
 
-			logger.error({ msg: 'Failed to add Sip Alias to video conference', err });
+		if (attempt >= MAX_SIP_ALIAS_ATTEMPTS) {
+			logger.error({ msg: 'Failed to generate a unique SIP alias for this conference.', callId });
 			return null;
 		}
+
+		return this.addSipAlias(callId, attempt + 1);
+	}
+
+	/**
+	 * Books a conference under a fresh alias, which it then holds for good.
+	 *
+	 * The booking's own index catches another booking, but a live conference can hold an alias that nothing
+	 * booked, so that has to be asked separately.
+	 */
+	private async createScheduledConferenceWithSipAlias(
+		data: Omit<IScheduledConference, '_id' | '_updatedAt' | 'createdAt' | 'sipAlias'>,
+		attempt = 0,
+	): Promise<Required<Pick<IScheduledConference, '_id' | 'sipAlias'>>> {
+		const sipAlias = this.makeSipAlias();
+
+		try {
+			if (!(await VideoConferenceModel.findOneByProviderNameAndSipAlias('core.pexip', sipAlias, { projection: { _id: 1 } }))) {
+				return { _id: await ScheduledConferences.create({ ...data, sipAlias }), sipAlias };
+			}
+		} catch (err) {
+			if (!isDuplicateKeyError(err)) {
+				throw err;
+			}
+		}
+
+		if (attempt >= MAX_SIP_ALIAS_ATTEMPTS) {
+			throw new Error('error-sip-alias-unavailable');
+		}
+
+		return this.createScheduledConferenceWithSipAlias(data, attempt + 1);
 	}
 
 	/** Only the internal Pexip provider can be dialled into, and only while the workspace asks for aliases. */
@@ -2474,16 +2517,202 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 	}
 
+	public async getSchedulingOptions(email: string): Promise<ConferenceSchedulingOptions> {
+		const user = await this.findActiveUserByEmail(email);
+		if (!user) {
+			return NO_SCHEDULING;
+		}
+
+		return this.getSchedulingOptionsForUser(user._id);
+	}
+
+	public async scheduleConference(
+		email: string,
+		{ invitees, sipAlias: withSipAlias, title }: ConferenceScheduleRequest,
+	): Promise<ScheduledConferenceInvitation> {
+		const user = await this.findActiveUserByEmail(email);
+		if (!user) {
+			throw new Error('error-invalid-user');
+		}
+
+		const { canSchedule, canUseSipAlias } = await this.getSchedulingOptionsForUser(user._id);
+		if (!canSchedule || (withSipAlias && !canUseSipAlias)) {
+			throw new Error('error-not-allowed');
+		}
+
+		const data = { uid: user._id, requesterEmail: email, inviteeEmails: invitees, ...(title ? { title } : {}) };
+
+		if (!withSipAlias) {
+			const scheduledConferenceId = await ScheduledConferences.create(data);
+			return { url: this.makeScheduledConferenceUrl(scheduledConferenceId) };
+		}
+
+		const { _id, sipAlias } = await this.createScheduledConferenceWithSipAlias(data);
+		return { url: this.makeScheduledConferenceUrl(_id), sipAlias };
+	}
+
+	public async initializeOrJoinScheduledConferenceById(
+		scheduledConferenceId: IScheduledConference['_id'],
+		uid: IUser['_id'],
+	): Promise<VideoConference['_id']> {
+		if (!settings.get('Pexip_Integration_Enabled')) {
+			throw new Error('feature-disabled');
+		}
+
+		const scheduledConference = await ScheduledConferences.findOneById(scheduledConferenceId);
+		if (!scheduledConference) {
+			throw new Error('invalid-scheduled-conference');
+		}
+
+		return this.initializeOrJoinFromScheduledConference(scheduledConference, uid);
+	}
+
+	public async initializeScheduledConferenceBySipAlias(sipAlias: string): Promise<VideoConference['_id'] | null> {
+		if (!settings.get('Pexip_Integration_Enabled')) {
+			return null;
+		}
+
+		const scheduledConference = await ScheduledConferences.findOneBySipAlias(sipAlias);
+		if (!scheduledConference) {
+			return null;
+		}
+
+		return this.initializeOrJoinFromScheduledConference(scheduledConference);
+	}
+
+	private async findActiveUserByEmail(email: string): Promise<Pick<IUser, '_id'> | null> {
+		const user = await Users.findOneByEmailAddress<Pick<IUser, '_id' | 'active'>>(email, { projection: { active: 1 } });
+
+		return user?.active ? user : null;
+	}
+
+	private async getSchedulingOptionsForUser(uid: IUser['_id']): Promise<ConferenceSchedulingOptions> {
+		// A booking is only worth handing out if a conference can actually be built from it.
+		if (!settings.get('Pexip_Integration_Enabled') || !(await this.getRidForExternalConference())) {
+			return NO_SCHEDULING;
+		}
+
+		const canSchedule = await hasPermissionAsync(uid, 'schedule-conference');
+		const canUseSipAlias =
+			canSchedule &&
+			Boolean(settings.get('Pexip_Integration_SIP_AddAlias')) &&
+			(await hasPermissionAsync(uid, 'schedule-conference-sip-alias'));
+
+		return { canSchedule, canUseSipAlias };
+	}
+
+	private makeScheduledConferenceUrl(scheduledConferenceId: IScheduledConference['_id']): string {
+		const baseUrl = settings.get<string>('Site_Url').replace(/\/+$/, '');
+
+		return `${baseUrl}/conference/${scheduledConferenceId}?scheduled=1`;
+	}
+
+	/**
+	 * The conference running for a booking, starting one if none is.
+	 *
+	 * Always built on the requester's behalf — they are the host however the booking was reached. `uid` is
+	 * whoever is arriving from inside Rocket.Chat, if anyone; a SIP endpoint dialling in has no user.
+	 */
+	private async initializeOrJoinFromScheduledConference(
+		scheduledConference: IScheduledConference,
+		uid?: IUser['_id'],
+	): Promise<VideoConference['_id']> {
+		const conference =
+			(await this.findLiveConferenceFromSchedule(scheduledConference._id)) ||
+			(await this.createConferenceFromSchedule(scheduledConference));
+
+		if (uid) {
+			await this.addUserToConferenceDiscussion(conference, uid);
+		}
+
+		return conference._id;
+	}
+
+	private async findLiveConferenceFromSchedule(
+		scheduledConferenceId: IScheduledConference['_id'],
+	): Promise<Pick<IVideoConference, '_id' | 'discussionRid'> | null> {
+		return VideoConferenceModel.findOneLiveByScheduledConferenceId(scheduledConferenceId, { projection: { discussionRid: 1 } });
+	}
+
+	private async createConferenceFromSchedule(
+		scheduledConference: IScheduledConference,
+	): Promise<Pick<IVideoConference, '_id' | 'discussionRid'>> {
+		const rid = await this.getRidForExternalConference();
+		if (!rid) {
+			throw new Error('invalid-room');
+		}
+
+		const requester = await Users.findOneById(scheduledConference.uid);
+		if (!requester) {
+			throw new Error('invalid-user');
+		}
+
+		// Before the conference, not after: `createGroup` takes the discussion, so the chat has to exist first.
+		const discussionRid = await this.createDiscussionForConferenceData(this.getDiscussionDisplayName(), rid, requester);
+
+		let callId: VideoConference['_id'];
+		try {
+			callId = await VideoConferenceModel.createGroup({
+				rid,
+				createdBy: {
+					_id: requester._id,
+					name: requester.name as string,
+					username: requester.username as string,
+				},
+				// Empty leaves the name to the room, like any conference nobody titled.
+				title: scheduledConference.title || scheduledConference.sipAlias || '',
+				providerName: 'core.pexip',
+				sipAlias: scheduledConference.sipAlias,
+				discussionRid,
+				scheduledConferenceId: scheduledConference._id,
+			});
+		} catch (err) {
+			// Somebody else reached the booking at the same moment and their conference was saved first.
+			const winner = isDuplicateKeyError(err) ? await this.findLiveConferenceFromSchedule(scheduledConference._id) : null;
+
+			if (!winner) {
+				throw err;
+			}
+
+			return winner;
+		}
+
+		await this.addInviteesToConferenceDiscussion(scheduledConference.inviteeEmails, discussionRid);
+
+		return { _id: callId, discussionRid };
+	}
+
+	/** Like `addUserToConferenceDiscussion`, this reports rather than throws: the conference is already running. */
+	private async addInviteesToConferenceDiscussion(emails: string[], discussionRid: IRoom['_id']): Promise<void> {
+		if (!emails.length) {
+			return;
+		}
+
+		try {
+			const invitees = await Users.findActiveByEmailAddresses<Pick<IUser, '_id'>>(emails, { projection: { _id: 1 } }).toArray();
+
+			await Promise.all(invitees.map(({ _id }) => this.addUserToConferenceDiscussion({ discussionRid }, _id)));
+		} catch (err) {
+			logger.error({ msg: `Failed to add invitees to conference's discussion`, discussionRid, err });
+		}
+	}
+
 	/**
 	 * The conference a dialled alias stands for, creating it if this is the first person to ask.
 	 *
 	 * An alias can be handed out before the conference behind it exists — a scheduled invitation carries the
 	 * number, and whoever dials first brings the call into being. So this is both "join" and "create", and
-	 * everyone after the first is simply subscribed to the chat that is already there.
+	 * everyone after the first is simply subscribed to the chat that is already there. A booked alias builds its
+	 * conference from the booking; any other is taken as it comes.
 	 */
 	public async initializeOrJoinScheduledConference(sipAlias: string, uid: IUser['_id']): Promise<VideoConference['_id']> {
 		if (!settings.get('Pexip_Integration_Enabled') || !settings.get('Pexip_Integration_SIP_AddAlias')) {
 			throw new Error('feature-disabled');
+		}
+
+		const scheduledConference = await ScheduledConferences.findOneBySipAlias(sipAlias);
+		if (scheduledConference) {
+			return this.initializeOrJoinFromScheduledConference(scheduledConference, uid);
 		}
 
 		const providerName = 'core.pexip';

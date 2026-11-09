@@ -2468,6 +2468,19 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		} as unknown as O);
 	}
 
+	findActiveByEmailAddresses<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		emailAddresses: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
+		const query = { 'active': true, 'emails.address': { $in: emailAddresses.map((emailAddress) => String(emailAddress).trim()) } };
+
+		// safe to merge into `O`: only `O['projection']` feeds the return type, and it survives the spread.
+		return this.find<T, O>(query, {
+			...options,
+			collation: { locale: 'en', strength: 2 }, // Case insensitive
+		} as unknown as O);
+	}
+
 	findOneWithoutLDAPByEmailAddress<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		emailAddress: string,
 		options?: O,
