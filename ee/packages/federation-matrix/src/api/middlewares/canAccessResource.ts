@@ -1,5 +1,6 @@
 import { errCodes, federationSDK } from '@rocket.chat/federation-sdk';
 import type { MiddlewareHandler } from 'hono';
+import { every } from 'hono/combine';
 
 import { isAuthenticatedMiddleware } from './isAuthenticated';
 
@@ -52,15 +53,5 @@ const canAccessResource =
 		}
 	};
 
-export const canAccessResourceMiddleware = (entityType: 'event' | 'media' | 'room'): MiddlewareHandler => {
-	const authenticate = isAuthenticatedMiddleware();
-	const authorize = canAccessResource(entityType);
-
-	return (c, next) =>
-		authenticate(c, async () => {
-			const response = await authorize(c, next);
-			if (response instanceof Response) {
-				c.res = response;
-			}
-		});
-};
+export const canAccessResourceMiddleware = (entityType: 'event' | 'media' | 'room') =>
+	every(isAuthenticatedMiddleware(), canAccessResource(entityType));
