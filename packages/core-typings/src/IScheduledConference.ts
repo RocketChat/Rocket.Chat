@@ -35,4 +35,6 @@ export type ConferenceScheduleRequest = {
 export type ScheduledConferenceInvitation = {
 	url: string;
 	sipAlias?: string;
+	/** How to join, as the workspace words it, ready to put in the invitation. */
+	text: string;
 };

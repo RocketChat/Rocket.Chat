@@ -102,6 +102,8 @@ beforeEach(() => {
 	settingValues.Pexip_Integration_SIP_AddAlias = true;
 	settingValues.Pexip_Integration_PersistentChat_ExternalRoom = [{ _id: 'external1' }];
 	settingValues.Site_Url = 'https://chat.example.com/';
+	settingValues.Pexip_Integration_Outlook_AddIn_Text_With_Alias = 'Join at {url} or dial {sipAlias} # ({sipAlias})';
+	settingValues.Pexip_Integration_Outlook_AddIn_Text_Without_Alias = 'Join at {url}';
 });
 
 const booking = (overrides: Record<string, unknown> = {}) => ({
@@ -343,7 +345,10 @@ describe('VideoConfService.scheduleConference', () => {
 	it('should answer with the booking link and no alias when none was asked for', async () => {
 		const invitation = await service.scheduleConference('requester@example.com', request);
 
-		expect(invitation).to.deep.equal({ url: 'https://chat.example.com/conference/booking1?scheduled=1' });
+		expect(invitation).to.deep.equal({
+			url: 'https://chat.example.com/conference/booking1?scheduled=1',
+			text: 'Join at https://chat.example.com/conference/booking1?scheduled=1',
+		});
 		expect(createScheduledConference.firstCall.args[0]).to.not.have.property('sipAlias');
 	});
 
@@ -352,6 +357,21 @@ describe('VideoConfService.scheduleConference', () => {
 
 		expect(invitation.sipAlias).to.match(/^[1-9]\d{7}$/);
 		expect(createScheduledConference.firstCall.args[0].sipAlias).to.equal(invitation.sipAlias);
+	});
+
+	it('should word the invitation from the template for meetings with an alias, filling in every placeholder', async () => {
+		const { url, sipAlias, text } = await service.scheduleConference('requester@example.com', { ...request, sipAlias: true });
+
+		expect(text).to.equal(`Join at ${url} or dial ${sipAlias} # (${sipAlias})`);
+	});
+
+	// An empty template is the admin choosing to add nothing, not a reason to fail the booking.
+	it('should answer with empty text when the template is empty', async () => {
+		settingValues.Pexip_Integration_Outlook_AddIn_Text_Without_Alias = '';
+
+		const { text } = await service.scheduleConference('requester@example.com', request);
+
+		expect(text).to.equal('');
 	});
 
 	it('should not reserve an alias a live conference holds', async () => {

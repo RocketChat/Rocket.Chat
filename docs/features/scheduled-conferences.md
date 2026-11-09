@@ -9,7 +9,9 @@ Scheduled conferences only exist on the internal Pexip provider.
 The add-in asks two things, identifying the person booking by email address:
 
 1. **What may this person book?** Booking needs an active user with that address, Pexip enabled, a room named in *Pexip → Persistent Chat → External room*, and the `schedule-conference` permission. Reserving a SIP number also needs *Add SIP alias* on and the `schedule-conference-sip-alias` permission. An address that belongs to nobody may book nothing.
-2. **Book it.** The request — the requester's address, the invitees' addresses, an optional title, and whether to reserve a number — is stored as it arrived, together with the booking's discussion, created right away off the external room and owned by the requester. It is named after the title, or gets the usual dated conference-chat name. No conference exists yet. The answer is the link and, if one was asked for, the number.
+2. **Book it.** The request — the requester's address, the invitees' addresses, an optional title, and whether to reserve a number — is stored as it arrived, together with the booking's discussion, created right away off the external room and owned by the requester. It is named after the title, or gets the usual dated conference-chat name. No conference exists yet. The answer is the link, the number if one was asked for, and the text to put in the invitation.
+
+The invitation text comes from one of two templates under *Pexip → Outlook Add-in*, one for bookings with a number and one without, so each workspace words it its own way. They are filled in on the server; `{url}` and `{sipAlias}` stand for the link and the number.
 
 Asking for a number the person may not have is refused outright, rather than booked without one.
 

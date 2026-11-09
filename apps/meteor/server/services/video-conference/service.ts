@@ -2545,12 +2545,21 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		const data = { uid: user._id, requesterEmail: email, inviteeEmails: invitees, discussionRid, ...(title ? { title } : {}) };
 
 		if (!withSipAlias) {
-			const scheduledConferenceId = await ScheduledConferences.create(data);
-			return { url: this.makeScheduledConferenceUrl(scheduledConferenceId) };
+			const url = this.makeScheduledConferenceUrl(await ScheduledConferences.create(data));
+			return { url, text: this.makeScheduledConferenceText(url) };
 		}
 
 		const { _id, sipAlias } = await this.createScheduledConferenceWithSipAlias(data);
-		return { url: this.makeScheduledConferenceUrl(_id), sipAlias };
+		const url = this.makeScheduledConferenceUrl(_id);
+		return { url, sipAlias, text: this.makeScheduledConferenceText(url, sipAlias) };
+	}
+
+	private makeScheduledConferenceText(url: string, sipAlias?: string): string {
+		const template = sipAlias
+			? settings.get<string>('Pexip_Integration_Outlook_AddIn_Text_With_Alias')
+			: settings.get<string>('Pexip_Integration_Outlook_AddIn_Text_Without_Alias');
+
+		return (template || '').replaceAll('{url}', url).replaceAll('{sipAlias}', sipAlias || '');
 	}
 
 	public async initializeOrJoinScheduledConferenceById(

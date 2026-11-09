@@ -129,6 +129,36 @@ export function createPexipSettings(): Promise<void> {
 			});
 		});
 
+		await this.section('Pexip_Integration_Outlook_AddIn', async function () {
+			await this.add(
+				'Pexip_Integration_Outlook_AddIn_Text_With_Alias',
+				[
+					'Please join the Meeting Room in one of the following ways:',
+					'From a web browser:',
+					'{url}',
+					'From a telephone:',
+					'[Configured number], then {sipAlias} #',
+				].join('\n'),
+				{
+					type: 'string',
+					multiline: true,
+					public: false,
+					i18nDescription: 'Pexip_Integration_Outlook_AddIn_Text_With_Alias_Description',
+				},
+			);
+
+			await this.add(
+				'Pexip_Integration_Outlook_AddIn_Text_Without_Alias',
+				['Please join the Meeting Room from a web browser:', '{url}'].join('\n'),
+				{
+					type: 'string',
+					multiline: true,
+					public: false,
+					i18nDescription: 'Pexip_Integration_Outlook_AddIn_Text_Without_Alias_Description',
+				},
+			);
+		});
+
 		await this.section('Pexip_Integration_PersistentChat', async function () {
 			await this.add('Pexip_Integration_PersistentChat_ExternalRoom', '', {
 				type: 'roomPick',

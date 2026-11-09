@@ -149,9 +149,10 @@ const scheduleResponseSchema = ajv.compile<ScheduledConferenceInvitation>({
 	properties: {
 		url: { type: 'string', description: 'Opens the conference for whoever follows it, starting one if none is running.' },
 		sipAlias: { type: 'string', description: 'Present only when one was asked for.' },
+		text: { type: 'string', description: 'How to join, from the workspace template for meetings with or without an alias.' },
 		success: { type: 'boolean', enum: [true] },
 	},
-	required: ['url', 'success'],
+	required: ['url', 'text', 'success'],
 	additionalProperties: false,
 });
 
