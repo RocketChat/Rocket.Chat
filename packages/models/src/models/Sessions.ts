@@ -27,9 +27,9 @@ import type {
 	OptionalId,
 } from 'mongodb';
 
-import { getCollectionName } from '../getCollectionName';
-import { BaseRaw } from './BaseRaw';
-import { readSecondaryPreferred } from '../readSecondaryPreferred';
+import { getCollectionName } from '../getCollectionName.js';
+import { BaseRaw } from './BaseRaw.js';
+import { readSecondaryPreferred } from '../readSecondaryPreferred.js';
 
 type DestructuredDate = { year: number; month: number; day: number };
 type DestructuredDateWithType = {

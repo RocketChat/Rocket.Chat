@@ -2,7 +2,7 @@ import type { IUiKitView } from '@rocket.chat/core-typings';
 import type { IUiKitViewsModel } from '@rocket.chat/model-typings';
 import type { Db, IndexDescription } from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
+import { BaseRaw } from './BaseRaw.js';
 
 // ponytail: a day covers a form left open; an app that needs longer-lived views can refresh them by updating
 const VIEW_TTL_MS = 24 * 60 * 60 * 1000;

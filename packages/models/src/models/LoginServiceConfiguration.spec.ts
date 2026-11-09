@@ -1,6 +1,6 @@
 import type { Db } from 'mongodb';
 
-import { LoginServiceConfigurationRaw } from './LoginServiceConfiguration';
+import { LoginServiceConfigurationRaw } from './LoginServiceConfiguration.js';
 
 // `BaseRaw` imports `..`, whose barrel pulls in every model and cycles back here.
 jest.mock('..', () => ({

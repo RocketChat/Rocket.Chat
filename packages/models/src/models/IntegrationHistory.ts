@@ -2,7 +2,7 @@ import type { IIntegrationHistory } from '@rocket.chat/core-typings';
 import type { IIntegrationHistoryModel } from '@rocket.chat/model-typings';
 import type { Db, IndexDescription, InsertOneResult, FindOneAndUpdateOptions } from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
+import { BaseRaw } from './BaseRaw.js';
 
 export class IntegrationHistoryRaw extends BaseRaw<IIntegrationHistory> implements IIntegrationHistoryModel {
 	constructor(db: Db) {

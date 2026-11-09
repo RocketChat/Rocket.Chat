@@ -13,7 +13,7 @@ import type {
 	UpdateOptions,
 } from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
+import { BaseRaw } from './BaseRaw.js';
 
 type PublicSettingFields<T extends ISetting> = T extends ISettingColor
 	? Pick<T, '_id' | 'value' | 'editor' | 'enterprise' | 'invalidValue' | 'modules' | 'requiredOnWizard'>

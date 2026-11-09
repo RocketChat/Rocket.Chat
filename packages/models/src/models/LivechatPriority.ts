@@ -3,7 +3,7 @@ import type { ILivechatPriorityModel } from '@rocket.chat/model-typings';
 import { escapeRegExp } from '@rocket.chat/tools';
 import type { Db, UpdateFilter, WithId, IndexDescription, FindCursor } from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
+import { BaseRaw } from './BaseRaw.js';
 
 // TODO need to define type for LivechatPriority object
 export class LivechatPriorityRaw extends BaseRaw<ILivechatPriority> implements ILivechatPriorityModel {

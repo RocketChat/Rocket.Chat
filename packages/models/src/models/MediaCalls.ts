@@ -10,7 +10,7 @@ import type {
 import type { IMediaCallsModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
 import type { IndexDescription, Collection, Db, UpdateFilter, UpdateOptions, UpdateResult, Document, FindCursor } from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
+import { BaseRaw } from './BaseRaw.js';
 
 export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IMediaCall>>) {

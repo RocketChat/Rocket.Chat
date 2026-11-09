@@ -1,4 +1,4 @@
-import { proxify, registerModel } from './proxify';
+import { proxify, registerModel } from './proxify.js';
 
 type MockedModel = {
 	method: () => MockedModel;

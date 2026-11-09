@@ -1,7 +1,7 @@
 import { UserStatus } from '@rocket.chat/core-typings';
 import type { Db } from 'mongodb';
 
-import { UsersRaw } from './Users';
+import { UsersRaw } from './Users.js';
 
 const findOne = jest.fn();
 const findOneAndUpdate = jest.fn();
