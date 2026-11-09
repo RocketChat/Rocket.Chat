@@ -1,7 +1,7 @@
 import Ajv from 'ajv/dist/2020';
 
-import type { OpenAPIDocsOptions } from './openapi';
-import { buildOperation, buildOperationId, getSharedSchemas, toOpenAPIPath, withOperationIds } from './openapi';
+import type { OpenAPIDocsOptions } from './openapi.js';
+import { buildOperation, buildOperationId, getSharedSchemas, toOpenAPIPath, withOperationIds } from './openapi.js';
 
 const ajv = new Ajv();
 ajv.addVocabulary(['example']);
