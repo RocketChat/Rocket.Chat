@@ -1,7 +1,7 @@
-import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
-import { PopoverSurface } from '../PopoverSurface';
-import { Scrollable } from '../Scrollable';
+import type { ElementProps } from '../../types/ElementProps.js';
+import { Box } from '../Box/index.js';
+import { PopoverSurface } from '../PopoverSurface/index.js';
+import { Scrollable } from '../Scrollable/index.js';
 
 export type OptionContainerProps = ElementProps<HTMLElement>;
 

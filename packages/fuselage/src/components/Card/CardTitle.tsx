@@ -1,7 +1,7 @@
 import type { AllHTMLAttributes, ReactNode } from 'react';
 
-import { Box } from '../Box';
-import { LabelInfo } from '../Label/LabelInfo';
+import { Box } from '../Box/index.js';
+import { LabelInfo } from '../Label/LabelInfo.js';
 
 export type CardTitleProps = {
 	children: ReactNode;

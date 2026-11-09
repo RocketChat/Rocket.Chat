@@ -1,8 +1,8 @@
 import type { AriaAttributes, HTMLAttributes, ReactNode } from 'react';
 
-import { cx } from '../../helpers/composeClassNames';
-import { Chevron } from '../Chevron';
-import { ItemGroupHeader, ItemGroupTitle } from '../Item';
+import { cx } from '../../helpers/composeClassNames.js';
+import { Chevron } from '../Chevron/index.js';
+import { ItemGroupHeader, ItemGroupTitle } from '../Item/index.js';
 
 export type SidebarGroupTitleProps = {
 	expanded?: boolean;

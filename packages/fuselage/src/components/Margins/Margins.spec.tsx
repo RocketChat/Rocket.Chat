@@ -1,8 +1,8 @@
 import { screen } from '@testing-library/react';
 
-import Margins from './Margins';
-import { render } from '../../testing';
-import { Box } from '../Box';
+import Margins from './Margins.js';
+import { render } from '../../testing.js';
+import { Box } from '../Box/index.js';
 
 describe('[Margins Component]', () => {
 	it('renders without crashing', () => {

@@ -1,6 +1,6 @@
 import type { AriaAttributes, ReactNode } from 'react';
 
-import { cx, cxx } from '../../helpers/composeClassNames';
+import { cx, cxx } from '../../helpers/composeClassNames.js';
 
 export type AccordionProps = {
 	children: ReactNode;

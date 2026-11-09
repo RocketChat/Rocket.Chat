@@ -7,12 +7,12 @@ import { createPortal } from 'react-dom';
 import type { MenuTriggerProps } from 'react-stately';
 import { useMenuTriggerState } from 'react-stately';
 
-import { useOwnerDocument } from '../../contexts';
-import { IconButton } from '../Button';
-import MenuDropDown from './MenuDropdown';
-import MenuPopover from './MenuPopover';
-import type { IconButtonProps } from '../Button/IconButton';
-import { getPlacement } from './helpers/helpers';
+import MenuDropDown from './MenuDropdown.js';
+import MenuPopover from './MenuPopover.js';
+import type { IconButtonProps } from '../Button/IconButton.js';
+import { getPlacement } from './helpers/helpers.js';
+import { useOwnerDocument } from '../../contexts/index.js';
+import { IconButton } from '../Button/index.js';
 
 export type MenuProps<T> = AriaMenuProps<T> &
 	MenuTriggerProps & {

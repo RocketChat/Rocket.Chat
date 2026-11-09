@@ -1,8 +1,8 @@
 import type { ImgHTMLAttributes } from 'react';
 
-import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
-import type { ModalSize } from './Modal';
+import type { ModalSize } from './Modal.js';
+import type { ElementProps } from '../../types/ElementProps.js';
+import { Box } from '../Box/index.js';
 
 export type ModalHeroImageProps = ElementProps<HTMLImageElement, ImgHTMLAttributes<HTMLImageElement>> & {
 	/** The rendered width, which the `width` attribute alone cannot set over the fluid default. */

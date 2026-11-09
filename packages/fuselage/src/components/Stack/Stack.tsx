@@ -1,7 +1,7 @@
 import type { FieldsetHTMLAttributes, FormHTMLAttributes, HTMLAttributes, RefAttributes } from 'react';
 
-import { cx } from '../../helpers/composeClassNames';
-import { Box, type BoxProps } from '../Box';
+import { cx } from '../../helpers/composeClassNames.js';
+import { Box, type BoxProps } from '../Box/index.js';
 
 export type StackProps = RefAttributes<HTMLElement> & {
 	/** The element it renders, so a section, a list or a form keeps its meaning for assistive technology. A `span` is still a block-level flex container. */

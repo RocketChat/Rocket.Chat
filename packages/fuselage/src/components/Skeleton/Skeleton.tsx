@@ -1,7 +1,7 @@
-import { cx, cxx } from '../../helpers/composeClassNames';
-import type { ElementProps } from '../../types/ElementProps';
-import type { BoxProps } from '../Box';
-import { StylingBox } from '../Box';
+import { cx, cxx } from '../../helpers/composeClassNames.js';
+import type { ElementProps } from '../../types/ElementProps.js';
+import type { BoxProps } from '../Box/index.js';
+import { StylingBox } from '../Box/index.js';
 
 export type SkeletonProps = ElementProps<HTMLSpanElement> & {
 	variant?: 'text' | 'rect' | 'circle';

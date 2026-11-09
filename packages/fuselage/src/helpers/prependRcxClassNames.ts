@@ -1,4 +1,4 @@
-import { prependClassName } from './prependClassName';
+import { prependClassName } from './prependClassName.js';
 
 /** Turns each `rcx-*` prop into a class name, removing the prop. */
 export const prependRcxClassNames = <T extends { className: string }>(props: T): T => {

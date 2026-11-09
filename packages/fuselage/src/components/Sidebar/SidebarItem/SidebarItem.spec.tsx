@@ -1,12 +1,12 @@
 import { composeStories } from '@storybook/react';
 import { screen, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 
-import { SidebarItem, SidebarItemActions, SidebarItemIcon, SidebarItemLink, SidebarItemMenu, SidebarItemTitle } from '.';
-import { render } from '../../../testing';
-import SidebarLink from '../SidebarLink';
-import * as stories from './SidebarItem.stories';
+import { SidebarItem, SidebarItemActions, SidebarItemIcon, SidebarItemLink, SidebarItemMenu, SidebarItemTitle } from './index.js';
+import { render } from '../../../testing.js';
+import SidebarLink from '../SidebarLink.js';
+import * as stories from './SidebarItem.stories.js';
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story] as const);
 

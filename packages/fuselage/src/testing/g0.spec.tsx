@@ -13,7 +13,7 @@ import {
 	expectKeyboardActivation,
 	expectMenu,
 	expectTabOrder,
-} from './g0';
+} from './g0.js';
 
 describe('expectForwards', () => {
 	const setup = (className: string) => {

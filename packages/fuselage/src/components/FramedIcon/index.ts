@@ -1,1 +1,1 @@
-export { default as FramedIcon, type FramedIconProps } from './FramedIcon';
+export { default as FramedIcon, type FramedIconProps } from './FramedIcon.js';

@@ -1,6 +1,6 @@
 import type { HTMLAttributes, ReactNode } from 'react';
 
-import { cx } from '../../../helpers/composeClassNames';
+import { cx } from '../../../helpers/composeClassNames.js';
 
 export type ThreadMessageContainerProps = {
 	children?: ReactNode;

@@ -2,8 +2,8 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
 import { screen, userEvent } from 'storybook/test';
 
-import { Box } from '../Box';
-import Slider from './Slider';
+import Slider from './Slider.js';
+import { Box } from '../Box/index.js';
 
 export default {
 	title: 'Inputs/Slider',

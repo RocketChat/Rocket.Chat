@@ -1,5 +1,5 @@
-import { cx } from '../../../helpers/composeClassNames';
-import type { MessageNameProps } from '../MessageName';
+import { cx } from '../../../helpers/composeClassNames.js';
+import type { MessageNameProps } from '../MessageName.js';
 
 export type MessageSystemNameProps = MessageNameProps;
 

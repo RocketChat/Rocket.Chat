@@ -2,9 +2,9 @@ import { composeStories } from '@storybook/react';
 import { screen } from '@testing-library/react';
 import { axe } from 'jest-axe';
 
-import ToastBar from './ToastBar';
-import * as stories from './ToastBar.stories';
-import { render } from '../../testing';
+import ToastBar from './ToastBar.js';
+import * as stories from './ToastBar.stories.js';
+import { render } from '../../testing.js';
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 

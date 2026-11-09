@@ -1,6 +1,6 @@
 import type { ButtonHTMLAttributes } from 'react';
 
-import { cx } from '../../../helpers/composeClassNames';
+import { cx } from '../../../helpers/composeClassNames.js';
 
 export type SidebarBannerButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type'>;
 

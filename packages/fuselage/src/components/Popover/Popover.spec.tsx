@@ -1,8 +1,8 @@
 import { composeStories } from '@storybook/react';
 import { axe } from 'jest-axe';
 
-import * as stories from './Popover.stories';
-import { render } from '../../testing';
+import * as stories from './Popover.stories.js';
+import { render } from '../../testing.js';
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 

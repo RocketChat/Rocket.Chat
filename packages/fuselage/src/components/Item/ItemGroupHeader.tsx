@@ -1,7 +1,7 @@
 import type { AllHTMLAttributes, ElementType, RefAttributes } from 'react';
 
-import type { ItemInset } from './types';
-import { cx, cxx } from '../../helpers/composeClassNames';
+import type { ItemInset } from './types.js';
+import { cx, cxx } from '../../helpers/composeClassNames.js';
 
 export type ItemGroupHeaderProps = {
 	/**

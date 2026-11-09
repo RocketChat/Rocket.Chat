@@ -5,11 +5,11 @@ import type { AriaPopoverProps } from 'react-aria';
 import { useInteractOutside } from 'react-aria';
 import type { OverlayTriggerState } from 'react-stately';
 
-import { Box } from '../Box';
-import { DropdownDesktop } from '../Dropdown/DropdownDesktop';
-import { DropdownMobile } from '../Dropdown/DropdownMobile';
-import { Popover } from '../Popover';
-import { MenuPortalContext, useMenuPortalContainer } from './MenuPortalContext';
+import { MenuPortalContext, useMenuPortalContainer } from './MenuPortalContext.js';
+import { Box } from '../Box/index.js';
+import { DropdownDesktop } from '../Dropdown/DropdownDesktop.js';
+import { DropdownMobile } from '../Dropdown/DropdownMobile.js';
+import { Popover } from '../Popover/index.js';
 
 type MenuPopoverProps = Omit<AriaPopoverProps, 'popoverRef'> & {
 	children: ReactNode;

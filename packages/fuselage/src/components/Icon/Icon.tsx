@@ -1,9 +1,9 @@
 import type { Keys as IconName } from '@rocket.chat/icons';
 import nameToCharacterMapping from '@rocket.chat/icons';
 
-import type { statusColors, textIconColors } from '../../Theme';
-import type { ElementProps } from '../../types/ElementProps';
-import { Box, type BoxProps } from '../Box';
+import type { statusColors, textIconColors } from '../../Theme.js';
+import type { ElementProps } from '../../types/ElementProps.js';
+import { Box, type BoxProps } from '../Box/index.js';
 
 type FontColor<T> = T extends `font-${infer Color}` ? Color : never;
 

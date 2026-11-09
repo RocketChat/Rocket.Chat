@@ -2,8 +2,8 @@ import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import type { ChangeEvent, InputHTMLAttributes, ReactNode } from 'react';
 import { useLayoutEffect, useRef, useCallback } from 'react';
 
-import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
+import type { ElementProps } from '../../types/ElementProps.js';
+import { Box } from '../Box/index.js';
 
 export type CheckBoxProps = ElementProps<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>> & {
 	indeterminate?: boolean;

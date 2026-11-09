@@ -1,7 +1,7 @@
 import type { DialogHTMLAttributes } from 'react';
 
-import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
+import type { ElementProps } from '../../types/ElementProps.js';
+import { Box } from '../Box/index.js';
 
 /** A Fuselage size (`x480`) or a length in pixels. */
 export type ModalSize = `x${number}` | number;

@@ -1,9 +1,9 @@
 import type { AllHTMLAttributes, ElementType, RefAttributes } from 'react';
 import { useMemo } from 'react';
 
-import { ItemGroupContext } from './ItemGroupContext';
-import { useIdRegistry } from './useIdRegistry';
-import { cx, cxx } from '../../helpers/composeClassNames';
+import { ItemGroupContext } from './ItemGroupContext.js';
+import { useIdRegistry } from './useIdRegistry.js';
+import { cx, cxx } from '../../helpers/composeClassNames.js';
 
 export type ItemGroupProps = {
 	/**

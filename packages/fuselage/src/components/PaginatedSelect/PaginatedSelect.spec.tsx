@@ -1,6 +1,6 @@
 import { screen, render } from '@testing-library/react';
 
-import { PaginatedSelect } from './PaginatedSelect';
+import { PaginatedSelect } from './PaginatedSelect.js';
 
 describe('[PaginatedSelect Component]', () => {
 	test('should render placeholder when provided', () => {

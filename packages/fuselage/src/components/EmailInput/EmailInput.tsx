@@ -1,4 +1,4 @@
-import { InputBox, type InputBoxProps } from '../InputBox';
+import { InputBox, type InputBoxProps } from '../InputBox/index.js';
 
 export type EmailInputProps = Omit<InputBoxProps<HTMLInputElement>, 'type'>;
 

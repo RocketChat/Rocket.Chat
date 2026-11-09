@@ -5,11 +5,11 @@ import { mergeProps, useFocusVisible, useMenuItem, useSubmenuTrigger } from 'rea
 import type { RootMenuTriggerState, TreeState } from 'react-stately';
 import { useSubmenuTriggerState } from 'react-stately';
 
-import { Icon } from '../Icon';
-import { Item, ItemIcon } from '../Item';
-import MenuDropDown from './MenuDropdown';
-import type { OptionProps } from '../Option';
-import MenuPopover from './MenuPopover';
+import MenuDropDown from './MenuDropdown.js';
+import MenuPopover from './MenuPopover.js';
+import { Icon } from '../Icon/index.js';
+import { Item, ItemIcon } from '../Item/index.js';
+import type { OptionProps } from '../Option/index.js';
 
 type MenuSubmenuProps = {
 	item: Node<{

@@ -1,12 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { Box } from '../Box';
-import { Button } from '../Button';
-import { Card, CardBody, CardCol, CardControls, CardHeader, CardTitle } from '../Card';
-import { Divider } from '../Divider';
-import { FramedIcon } from '../FramedIcon';
-import { ProgressBar } from '../ProgressBar';
-import PaletteStyleTag from './PaletteStyleTag';
+import PaletteStyleTag from './PaletteStyleTag.js';
+import { Box } from '../Box/index.js';
+import { Button } from '../Button/index.js';
+import { Card, CardBody, CardCol, CardControls, CardHeader, CardTitle } from '../Card/index.js';
+import { Divider } from '../Divider/index.js';
+import { FramedIcon } from '../FramedIcon/index.js';
+import { ProgressBar } from '../ProgressBar/index.js';
 
 export default {
 	title: 'Layout/PaletteStyleTag',

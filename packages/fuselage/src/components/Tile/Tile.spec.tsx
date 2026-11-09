@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react';
 
-import Tile from './Tile';
-import { render } from '../../testing';
+import Tile from './Tile.js';
+import { render } from '../../testing.js';
 
 describe('[Tile Component]', () => {
 	it('renders its content at the default elevation', () => {

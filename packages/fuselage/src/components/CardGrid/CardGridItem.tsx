@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 
-import type { GridItemProps } from '../Grid';
-import { GridItem } from '../Grid';
+import type { GridItemProps } from '../Grid/index.js';
+import { GridItem } from '../Grid/index.js';
 
 export type CardGridItemProps = Pick<GridItemProps, 'xs' | 'sm' | 'md' | 'lg' | 'xl'> & {
 	children: ReactNode;

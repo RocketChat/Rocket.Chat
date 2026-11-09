@@ -1,6 +1,6 @@
 import type { AllHTMLAttributes, CSSProperties } from 'react';
 
-import AvatarContainer, { type AvatarContainerProps } from './AvatarContainer';
+import AvatarContainer, { type AvatarContainerProps } from './AvatarContainer.js';
 
 export type AvatarProps = AvatarContainerProps & {
 	rounded?: boolean;

@@ -1,4 +1,4 @@
-import { IconButton, type IconButtonProps } from '../Button';
+import { IconButton, type IconButtonProps } from '../Button/index.js';
 
 export type ModalCloseProps = Omit<IconButtonProps, 'icon'>;
 

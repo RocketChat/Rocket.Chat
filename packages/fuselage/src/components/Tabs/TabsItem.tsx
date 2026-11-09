@@ -1,7 +1,7 @@
 import type { ButtonHTMLAttributes } from 'react';
 
-import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
+import type { ElementProps } from '../../types/ElementProps.js';
+import { Box } from '../Box/index.js';
 
 export type TabsItemProps = ElementProps<HTMLButtonElement, ButtonHTMLAttributes<HTMLButtonElement>> & {
 	selected?: boolean;

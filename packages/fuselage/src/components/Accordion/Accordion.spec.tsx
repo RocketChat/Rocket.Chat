@@ -1,12 +1,12 @@
 import { composeStories } from '@storybook/react';
 import { screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 
-import Accordion from './Accordion';
-import * as stories from './Accordion.stories';
-import AccordionItem from './AccordionItem';
-import { render } from '../../testing';
+import Accordion from './Accordion.js';
+import * as stories from './Accordion.stories.js';
+import AccordionItem from './AccordionItem.js';
+import { render } from '../../testing.js';
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 

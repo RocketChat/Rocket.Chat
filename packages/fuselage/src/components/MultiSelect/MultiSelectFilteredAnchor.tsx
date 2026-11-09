@@ -1,9 +1,9 @@
 import { useContext, type InputEvent } from 'react';
 
-import { FlexItem } from '../Flex';
-import { Input } from '../InputBox';
-import type { MultiSelectAnchorParams } from './MultiSelectAnchorParams';
-import { MultiSelectFilteredContext } from './MultiSelectFilteredContext';
+import type { MultiSelectAnchorParams } from './MultiSelectAnchorParams.js';
+import { MultiSelectFilteredContext } from './MultiSelectFilteredContext.js';
+import { FlexItem } from '../Flex/index.js';
+import { Input } from '../InputBox/index.js';
 
 type MultiSelectFilteredAnchorProps = MultiSelectAnchorParams;
 

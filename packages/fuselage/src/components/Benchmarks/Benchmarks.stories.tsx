@@ -3,22 +3,22 @@ import type { ReactElement } from 'react';
 import { useState } from 'react';
 import { flushSync } from 'react-dom';
 
-import { Avatar } from '../Avatar';
-import { Box } from '../Box';
-import Message from '../Message/Message';
-import MessageBody from '../Message/MessageBody';
-import MessageContainer from '../Message/MessageContainer';
-import MessageHeader from '../Message/MessageHeader';
-import MessageLeftContainer from '../Message/MessageLeftContainer';
-import MessageName from '../Message/MessageName';
-import MessageNameContainer from '../Message/MessageNameContainer';
-import MessageReactions, { MessageReaction, MessageReactionCounter } from '../Message/MessageReactions';
-import MessageTimestamp from '../Message/MessageTimestamp';
-import { MessageToolbar, MessageToolbarItem, MessageToolbarWrapper } from '../Message/MessageToolbar';
-import MessageUsername from '../Message/MessageUsername';
-import { avatarUrl } from '../Message/helpers';
-import { Sidebar } from '../Sidebar';
-import { GenericCondensedItem } from '../Sidebar/helpers';
+import { Avatar } from '../Avatar/index.js';
+import { Box } from '../Box/index.js';
+import Message from '../Message/Message.js';
+import MessageBody from '../Message/MessageBody.js';
+import MessageContainer from '../Message/MessageContainer.js';
+import MessageHeader from '../Message/MessageHeader.js';
+import MessageLeftContainer from '../Message/MessageLeftContainer.js';
+import MessageName from '../Message/MessageName.js';
+import MessageNameContainer from '../Message/MessageNameContainer.js';
+import MessageReactions, { MessageReaction, MessageReactionCounter } from '../Message/MessageReactions/index.js';
+import MessageTimestamp from '../Message/MessageTimestamp.js';
+import { MessageToolbar, MessageToolbarItem, MessageToolbarWrapper } from '../Message/MessageToolbar/index.js';
+import MessageUsername from '../Message/MessageUsername.js';
+import { avatarUrl } from '../Message/helpers.js';
+import { GenericCondensedItem } from '../Sidebar/helpers.js';
+import { Sidebar } from '../Sidebar/index.js';
 
 declare global {
 	interface Window {

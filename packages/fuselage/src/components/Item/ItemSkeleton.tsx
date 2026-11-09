@@ -1,11 +1,11 @@
-import type { AvatarProps } from '../Avatar';
-import { Skeleton } from '../Skeleton';
-import type { ItemProps } from './Item';
-import Item from './Item';
-import ItemContent from './ItemContent';
-import ItemDescription from './ItemDescription';
-import ItemMedia from './ItemMedia';
-import ItemTitle from './ItemTitle';
+import type { ItemProps } from './Item.js';
+import Item from './Item.js';
+import ItemContent from './ItemContent.js';
+import ItemDescription from './ItemDescription.js';
+import ItemMedia from './ItemMedia.js';
+import ItemTitle from './ItemTitle.js';
+import type { AvatarProps } from '../Avatar/index.js';
+import { Skeleton } from '../Skeleton/index.js';
 
 export type ItemSkeletonProps = Pick<ItemProps, 'is' | 'inset'> & {
 	/**

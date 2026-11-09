@@ -1,17 +1,16 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
 
-import { Avatar } from '../Avatar';
-import { Box } from '../Box';
-import Message from './Message';
-import MessageBlock from './MessageBlock';
-import MessageBody from './MessageBody';
-import MessageContainer from './MessageContainer';
-import { MessageDivider } from './MessageDivider';
-import MessageEmoji from './MessageEmoji';
-import MessageHeader from './MessageHeader';
-import MessageHighlight from './MessageHighlight';
-import MessageLeftContainer from './MessageLeftContainer';
+import Message from './Message.js';
+import MessageBlock from './MessageBlock.js';
+import MessageBody from './MessageBody.js';
+import MessageContainer from './MessageContainer.js';
+import { Box } from '../Box/index.js';
+import { MessageDivider } from './MessageDivider/index.js';
+import MessageEmoji from './MessageEmoji.js';
+import MessageHeader from './MessageHeader.js';
+import MessageHighlight from './MessageHighlight.js';
+import MessageLeftContainer from './MessageLeftContainer.js';
 import {
 	MessageMetrics,
 	MessageMetricsFollowing,
@@ -19,15 +18,16 @@ import {
 	MessageMetricsItemIcon,
 	MessageMetricsItemLabel,
 	MessageMetricsReply,
-} from './MessageMetrics';
-import MessageName from './MessageName';
-import MessageNameContainer from './MessageNameContainer';
-import MessageReactions, { MessageReaction, MessageReactionAction, MessageReactionCounter } from './MessageReactions';
-import MessageRole from './MessageRole';
-import MessageRoles from './MessageRoles';
-import MessageTimestamp from './MessageTimestamp';
-import { MessageToolbar, MessageToolbarItem, MessageToolbarWrapper } from './MessageToolbar';
-import MessageUsername from './MessageUsername';
+} from './MessageMetrics/index.js';
+import MessageName from './MessageName.js';
+import MessageNameContainer from './MessageNameContainer.js';
+import MessageReactions, { MessageReaction, MessageReactionAction, MessageReactionCounter } from './MessageReactions/index.js';
+import MessageRole from './MessageRole.js';
+import MessageRoles from './MessageRoles.js';
+import MessageTimestamp from './MessageTimestamp.js';
+import { MessageToolbar, MessageToolbarItem, MessageToolbarWrapper } from './MessageToolbar/index.js';
+import MessageUsername from './MessageUsername.js';
+import { Avatar } from '../Avatar/index.js';
 import {
 	ThreadMessage,
 	ThreadMessageBody,
@@ -37,8 +37,8 @@ import {
 	ThreadMessageOrigin,
 	ThreadMessageRow,
 	ThreadMessageUnfollow,
-} from './ThreadMessage';
-import { avatarUrl } from './helpers';
+} from './ThreadMessage/index.js';
+import { avatarUrl } from './helpers.js';
 
 export default {
 	title: 'Message/Message',
