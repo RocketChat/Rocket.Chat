@@ -60,6 +60,68 @@ describe('useOpenRoom', () => {
 			expect(room).not.toHaveProperty('teamMain');
 		});
 	});
+	it('groups preview updates and cancels pending refreshes on unmount', async () => {
+		const rid = 'preview-burst-room';
+		const name = 'preview-burst';
+		const room = createFakeRoom({ _id: rid, t: 'c', name });
+		const getRoomByTypeAndName = jest.fn(() => room as any);
+		const streamRef: StreamControllerRef<'room-data'> = {};
+
+		const { result, unmount } = renderHook(() => useOpenRoom({ type: 'c', reference: name }), {
+			wrapper: mockAppRoot()
+				.withJohnDoe()
+				.withPermission('preview-c-room')
+				.withStream('room-data', streamRef)
+				.withMethod('getRoomByTypeAndName', getRoomByTypeAndName)
+				.build(),
+		});
+
+		await waitFor(() => expect(result.current.isSuccess).toBe(true));
+		const { controller } = streamRef;
+		if (!controller) {
+			throw new Error('Expected room-data stream controller');
+		}
+		getRoomByTypeAndName.mockClear();
+
+		jest.useFakeTimers();
+		try {
+			await act(async () => {
+				controller.emit(rid, [{ _id: rid }]);
+			});
+			expect(getRoomByTypeAndName).toHaveBeenCalledTimes(1);
+
+			await act(async () => {
+				for (let i = 0; i < 10; i++) {
+					controller.emit(rid, [{ _id: rid }]);
+				}
+			});
+			expect(getRoomByTypeAndName).toHaveBeenCalledTimes(1);
+
+			await act(async () => {
+				await jest.advanceTimersByTimeAsync(1000);
+			});
+			expect(getRoomByTypeAndName).toHaveBeenCalledTimes(2);
+			await act(async () => {
+				controller.emit(rid, [{ _id: rid }]);
+			});
+			expect(getRoomByTypeAndName).toHaveBeenCalledTimes(3);
+
+			await act(async () => {
+				controller.emit(rid, [{ _id: rid }]);
+			});
+			expect(getRoomByTypeAndName).toHaveBeenCalledTimes(3);
+
+			unmount();
+
+			await act(async () => {
+				await jest.advanceTimersByTimeAsync(1000);
+			});
+			expect(getRoomByTypeAndName).toHaveBeenCalledTimes(3);
+		} finally {
+			unmount();
+			jest.useRealTimers();
+		}
+	});
 	describe('type-aware subscription cache lookup', () => {
 		it('resolves /channel/<name> to the channel even when a DM with the same name is cached', async () => {
 			const channelRid = 'channel-rid-abc';

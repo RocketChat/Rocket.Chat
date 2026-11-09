@@ -3,6 +3,7 @@ import { getObjectKeys } from '@rocket.chat/tools';
 import { useEmbeddedLayout } from '@rocket.chat/ui-client';
 import { useEndpoint, useMethod, usePermission, useRoute, useSetting, useStream, useUser } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import debounce from 'lodash.debounce';
 import { useCallback, useEffect } from 'react';
 
 import { useOpenRoomMutation } from './useOpenRoomMutation';
@@ -188,12 +189,25 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 			return;
 		}
 
-		return subscribeToRoomData(rid, () => {
-			void queryClient.invalidateQueries({
-				queryKey: roomsQueryKeys.roomReference(reference, type, userId, user?.username),
-				exact: true,
-			});
+		const refreshRoom = debounce(
+			() => {
+				void queryClient.invalidateQueries({
+					queryKey: roomsQueryKeys.roomReference(reference, type, userId, user?.username),
+					exact: true,
+				});
+			},
+			1000,
+			{ leading: true, trailing: true, maxWait: 1000 },
+		);
+
+		const unsubscribe = subscribeToRoomData(rid, () => {
+			refreshRoom();
 		});
+
+		return () => {
+			unsubscribe();
+			refreshRoom.cancel();
+		};
 	}, [rid, userId, user?.username, type, hasPreviewPermission, reference, subscribeToRoomData, queryClient]);
 
 	useEffect(() => {
