@@ -19,7 +19,7 @@ import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 
-import ModalFooterNote from '../layout/ModalFooterNote';
+import RegistrationSmallPrint from '../layout/RegistrationSmallPrint';
 
 type Props = {
 	email: string;
@@ -104,19 +104,21 @@ const RegisterWorkspaceSetupStepTwoModal = ({ email, step, setStep, onClose, int
 					</Field>
 				</Stack>
 			</ModalContent>
-			<ModalFooter>
-				<ModalFooterNote>
-					<Trans i18nKey='RegisterWorkspace_Didnt_Receive_Email'>
-						Didn't receive email?{' '}
-						<Box is='a' paddingInline='x4' onClick={handleResendRegistrationEmail}>
-							Resend
-						</Box>{' '}
-						or{' '}
-						<Box is='a' paddingInline='x4' onClick={handleBackFromConfirmation}>
-							change email
-						</Box>
-					</Trans>
-				</ModalFooterNote>
+			<ModalFooter justify='space-between'>
+				<RegistrationSmallPrint>
+					<Stack direction='row'>
+						<Trans i18nKey='RegisterWorkspace_Didnt_Receive_Email'>
+							Didn't receive email?{' '}
+							<Box is='a' paddingInline='x4' onClick={handleResendRegistrationEmail}>
+								Resend
+							</Box>{' '}
+							or{' '}
+							<Box is='a' paddingInline='x4' onClick={handleBackFromConfirmation}>
+								change email
+							</Box>
+						</Trans>
+					</Stack>
+				</RegistrationSmallPrint>
 			</ModalFooter>
 		</Modal>
 	);

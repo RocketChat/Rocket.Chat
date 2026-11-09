@@ -16,7 +16,7 @@ import { useTranslation } from 'react-i18next';
 
 import useFeatureBullets from '../hooks/useFeatureBullets';
 import FeatureBullet from './layout/FeatureBullet';
-import RegistrationProse from './layout/RegistrationProse';
+import RichContent from '../../../../../components/RichContent';
 
 export type RegisteredWorkspaceModalProps = {
 	onClose: () => void;
@@ -62,7 +62,7 @@ const RegisteredWorkspaceModal = ({ onClose, onStatusChange, ...props }: Registe
 				<ModalClose onClick={onClose} />
 			</ModalHeader>
 			<ModalContent>
-				<RegistrationProse>
+				<RichContent>
 					{`${t('RegisterWorkspace_Registered_Subtitle')}: `}
 					<ul>
 						{bulletFeatures.map((item, index) => (
@@ -71,7 +71,7 @@ const RegisteredWorkspaceModal = ({ onClose, onStatusChange, ...props }: Registe
 							</FeatureBullet>
 						))}
 					</ul>
-				</RegistrationProse>
+				</RichContent>
 			</ModalContent>
 			<ModalFooter>
 				<ButtonGroup align='end'>

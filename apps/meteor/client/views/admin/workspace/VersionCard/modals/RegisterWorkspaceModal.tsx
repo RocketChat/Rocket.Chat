@@ -17,7 +17,7 @@ import { useTranslation } from 'react-i18next';
 import RegisterWorkspaceSetupModal from './RegisterWorkspaceSetupModal';
 import RegisterWorkspaceTokenModal from './RegisterWorkspaceTokenModal';
 import FeatureBullet from './layout/FeatureBullet';
-import RegistrationProse from './layout/RegistrationProse';
+import RichContent from '../../../../../components/RichContent';
 import useFeatureBullets from '../hooks/useFeatureBullets';
 
 export type RegisterWorkspaceModalProps = {
@@ -51,7 +51,7 @@ const RegisterWorkspaceModal = ({ onClose, onStatusChange, ...props }: RegisterW
 				<ModalClose onClick={onClose} />
 			</ModalHeader>
 			<ModalContent>
-				<RegistrationProse>
+				<RichContent>
 					{`${t('RegisterWorkspace_NotRegistered_Subtitle')}:`}
 					<ul>
 						{bulletFeatures.map((features) => (
@@ -61,7 +61,7 @@ const RegisterWorkspaceModal = ({ onClose, onStatusChange, ...props }: RegisterW
 						))}
 					</ul>
 					<Text is='p'>{t('RegisterWorkspace_Registered_Benefits')}</Text>
-				</RegistrationProse>
+				</RichContent>
 			</ModalContent>
 			<ModalFooter justify='space-between'>
 				<ExternalLink to={documentationLink}>{t('Learn_more')}</ExternalLink>
