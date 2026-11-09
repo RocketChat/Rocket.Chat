@@ -51,7 +51,6 @@ const createMockRequest = () => {
 				),
 			);
 		},
-
 		sendSecondFile() {
 			controller.enqueue(
 				Buffer.from(
@@ -66,10 +65,8 @@ const createMockRequest = () => {
 					].join('\r\n'),
 				),
 			);
-
 			controller.close();
 		},
-
 		sendSingleFile() {
 			controller.enqueue(
 				Buffer.from(
@@ -88,6 +85,10 @@ const createMockRequest = () => {
 
 			controller.close();
 		},
+
+		abortBody(error = new Error('Request body aborted')) {
+			controller.error(error);
+		},
 	};
 };
 
@@ -97,6 +98,7 @@ describe('MultipartUploadHandler', () => {
 		const tempFilePath = path.join(tempDir, 'first-upload');
 
 		let releaseWrite: (() => void) | undefined;
+		let uploadWriteStream: Writable | undefined;
 		let resolveWriteStarted!: () => void;
 
 		const writeStarted = new Promise<void>((resolve) => {
@@ -147,6 +149,8 @@ describe('MultipartUploadHandler', () => {
 				},
 			});
 
+			uploadWriteStream = stream;
+
 			writeClosed = new Promise<void>((resolve) => {
 				stream.once('close', resolve);
 			});
@@ -177,9 +181,6 @@ describe('MultipartUploadHandler', () => {
 			// Send the second file to trigger the filesLimit event.
 			mockRequest.sendSecondFile();
 
-			// Release the pending write if the stream has not been destroyed.
-			releaseWrite?.();
-
 			const result = await parseResult;
 
 			expect('error' in result).to.equal(true);
@@ -188,6 +189,8 @@ describe('MultipartUploadHandler', () => {
 				expect(result.error).to.be.instanceOf(MockClientSafeError);
 				expect((result.error as Error).message).to.equal('Too many files in upload');
 			}
+
+			expect(uploadWriteStream?.destroyed).to.equal(true);
 
 			await writeClosed;
 
@@ -346,6 +349,116 @@ describe('MultipartUploadHandler', () => {
 			expect(fs.existsSync(tempFilePath)).to.equal(true);
 			expect(fs.readFileSync(tempFilePath, 'utf8')).to.equal('Single file content\r\n');
 		} finally {
+			await fs.promises.rm(tempDir, {
+				recursive: true,
+				force: true,
+			});
+		}
+	});
+
+	it('should clean up a temporary file when the request body is aborted', async () => {
+		const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'multipart-upload-'));
+		const tempFilePath = path.join(tempDir, 'aborted-upload');
+
+		let resolveWriteStarted!: () => void;
+		let releaseWrite: (() => void) | undefined;
+		let uploadWriteStream: Writable | undefined;
+
+		const writeStarted = new Promise<void>((resolve) => {
+			resolveWriteStarted = resolve;
+		});
+
+		let writeClosed!: Promise<void>;
+
+		const { MultipartUploadHandler } = proxyquire.noCallThru().load('./MultipartUploadHandler', {
+			'@rocket.chat/core-services': {
+				ClientSafeError: MockClientSafeError,
+			},
+			'@rocket.chat/random': {
+				Random: {
+					id: () => 'aborted-upload',
+				},
+			},
+			'../../ufs': {
+				UploadFS: {
+					getTempFilePath: () => tempFilePath,
+				},
+			},
+			'../../../lib/mimeTypes': {
+				getMimeType: () => 'text/plain',
+			},
+			'exif-be-gone': {
+				__esModule: true,
+				default: class {},
+			},
+		}) as typeof import('./MultipartUploadHandler');
+
+		const createWriteStreamStub = sinon.stub(fs, 'createWriteStream').callsFake(((filePath: fs.PathLike) => {
+			const stream = new Writable({
+				write(chunk, _encoding, callback) {
+					fs.writeFileSync(filePath, chunk);
+					resolveWriteStarted();
+
+					releaseWrite = () => {
+						if (stream.destroyed) {
+							return;
+						}
+
+						releaseWrite = undefined;
+						callback();
+					};
+				},
+			});
+
+			uploadWriteStream = stream;
+
+			writeClosed = new Promise<void>((resolve) => {
+				stream.once('close', resolve);
+			});
+
+			return stream;
+		}) as any);
+
+		try {
+			const mockRequest = createMockRequest();
+
+			const parsePromise = MultipartUploadHandler.parseRequest(mockRequest.request, {
+				field: 'file',
+			});
+
+			const parseResult = parsePromise.then(
+				(value) => ({ value }),
+				(error: unknown) => ({ error }),
+			);
+
+			mockRequest.sendFirstFile();
+
+			await writeStarted;
+
+			expect(fs.existsSync(tempFilePath)).to.equal(true);
+
+			// Simulate the incoming request body failing during upload.
+			mockRequest.abortBody();
+
+			const result = await parseResult;
+
+			expect('error' in result).to.equal(true);
+
+			if ('error' in result) {
+				expect(result.error).to.be.instanceOf(MockClientSafeError);
+				expect((result.error as MockClientSafeError).error).to.equal('error-upload-failed');
+			}
+
+			expect(uploadWriteStream?.destroyed).to.equal(true);
+
+			await writeClosed;
+
+			expect(fs.existsSync(tempFilePath)).to.equal(false);
+		} finally {
+			releaseWrite?.();
+
+			createWriteStreamStub.restore();
+
 			await fs.promises.rm(tempDir, {
 				recursive: true,
 				force: true,

@@ -153,6 +153,10 @@ export class MultipartUploadHandler {
 			++filePendingCount;
 			activeStreams.add(file);
 
+			file.on('error', (error: Error) => {
+				void fail(new ClientSafeError('error-file-upload', error.message));
+			});
+
 			if (options.field && fieldname !== options.field) {
 				void fail(new ClientSafeError('invalid-field'));
 				return;
@@ -256,8 +260,20 @@ export class MultipartUploadHandler {
 			}
 
 			const nodeStream = Readable.fromWeb(request.body as any);
+
 			requestStream = nodeStream;
 			activeStreams.add(nodeStream);
+
+			nodeStream.on('error', (error: Error) => {
+				void fail(new ClientSafeError('error-upload-failed', error.message));
+			});
+
+			nodeStream.on('close', () => {
+				if (!nodeStream.readableEnded && !settled) {
+					void fail(new ClientSafeError('error-upload-failed', 'Request body stream closed unexpectedly'));
+				}
+			});
+
 			nodeStream.pipe(bb);
 		}
 
