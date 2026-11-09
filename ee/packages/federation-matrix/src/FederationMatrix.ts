@@ -21,19 +21,19 @@ import type { EventID, FileMessageType, PduForType, PresenceState } from '@rocke
 import { Logger } from '@rocket.chat/logger';
 import { Users, Subscriptions, Messages, Rooms } from '@rocket.chat/models';
 
-import { createOrUpdateFederatedUser } from './helpers/createOrUpdateFederatedUser';
-import { extractDomainFromMatrixUserId } from './helpers/extractDomainFromMatrixUserId';
-import { getThreadMessageId } from './helpers/getThreadMessageId';
-import { handleMediaMessage } from './helpers/handleMediaMessage';
+import { createOrUpdateFederatedUser } from './helpers/createOrUpdateFederatedUser.js';
+import { extractDomainFromMatrixUserId } from './helpers/extractDomainFromMatrixUserId.js';
+import { getThreadMessageId } from './helpers/getThreadMessageId.js';
+import { handleMediaMessage } from './helpers/handleMediaMessage.js';
 import {
 	toExternalMessageFormat,
 	toExternalQuoteMessageFormat,
 	toInternalMessageFormat,
 	toInternalQuoteMessageFormat,
-} from './helpers/message.parsers';
-import { validateFederatedUsername } from './helpers/validateFederatedUsername';
-import { MatrixMediaService } from './services/MatrixMediaService';
-import { shortnameToUnicode } from './utils/emojiConverter';
+} from './helpers/message.parsers.js';
+import { validateFederatedUsername } from './helpers/validateFederatedUsername.js';
+import { MatrixMediaService } from './services/MatrixMediaService.js';
+import { shortnameToUnicode } from './utils/emojiConverter.js';
 
 export const fileTypes: Record<string, FileMessageType> = {
 	image: 'm.image',

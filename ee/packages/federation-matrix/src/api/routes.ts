@@ -1,21 +1,21 @@
 import { Router } from '@rocket.chat/http-router';
 
-import { getWellKnownRoutes } from './.well-known/server';
-import { getClientRoutes } from './_matrix/client';
-import { getMatrixInviteRoutes } from './_matrix/invite';
-import { getKeyServerRoutes } from './_matrix/key/server';
-import { getMatrixMakeLeaveRoutes } from './_matrix/make-leave';
-import { getMatrixMediaRoutes } from './_matrix/media';
-import { getMatrixMediaBridgeRoutes } from './_matrix/media-bridge';
-import { getMatrixProfilesRoutes } from './_matrix/profiles';
-import { getMatrixRoomsRoutes } from './_matrix/rooms';
-import { getMatrixSendJoinRoutes } from './_matrix/send-join';
-import { getMatrixSendLeaveRoutes } from './_matrix/send-leave';
-import { getMatrixTransactionsRoutes } from './_matrix/transactions';
-import { getFederationVersionsRoutes } from './_matrix/versions';
-import { isFederationDomainAllowedMiddleware } from './middlewares/isFederationDomainAllowed';
-import { isFederationEnabledMiddleware } from './middlewares/isFederationEnabled';
-import { isLicenseEnabledMiddleware } from './middlewares/isLicenseEnabled';
+import { getWellKnownRoutes } from './.well-known/server.js';
+import { getClientRoutes } from './_matrix/client/index.js';
+import { getMatrixInviteRoutes } from './_matrix/invite.js';
+import { getKeyServerRoutes } from './_matrix/key/server.js';
+import { getMatrixMakeLeaveRoutes } from './_matrix/make-leave.js';
+import { getMatrixMediaBridgeRoutes } from './_matrix/media-bridge.js';
+import { getMatrixMediaRoutes } from './_matrix/media.js';
+import { getMatrixProfilesRoutes } from './_matrix/profiles.js';
+import { getMatrixRoomsRoutes } from './_matrix/rooms.js';
+import { getMatrixSendJoinRoutes } from './_matrix/send-join.js';
+import { getMatrixSendLeaveRoutes } from './_matrix/send-leave.js';
+import { getMatrixTransactionsRoutes } from './_matrix/transactions.js';
+import { getFederationVersionsRoutes } from './_matrix/versions.js';
+import { isFederationDomainAllowedMiddleware } from './middlewares/isFederationDomainAllowed.js';
+import { isFederationEnabledMiddleware } from './middlewares/isFederationEnabled.js';
+import { isLicenseEnabledMiddleware } from './middlewares/isLicenseEnabled.js';
 
 export const getFederationRoutes = (version: string): { matrix: Router<'/_matrix'>; wellKnown: Router<'/.well-known/matrix'> } => {
 	const matrix = new Router('/_matrix');

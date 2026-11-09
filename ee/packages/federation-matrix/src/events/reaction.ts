@@ -3,7 +3,7 @@ import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Users, Messages } from '@rocket.chat/models'; // Rooms
 
-import { unicodeToShortname } from '../utils/emojiConverter';
+import { unicodeToShortname } from '../utils/emojiConverter.js';
 
 const logger = new Logger('federation-matrix:reaction');
 

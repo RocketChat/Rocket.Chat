@@ -3,7 +3,7 @@ import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Users, Rooms, Messages } from '@rocket.chat/models';
 
-import { getThreadMessageId } from '../helpers/getThreadMessageId';
+import { getThreadMessageId } from '../helpers/getThreadMessageId.js';
 
 const logger = new Logger('federation-matrix:message');
 

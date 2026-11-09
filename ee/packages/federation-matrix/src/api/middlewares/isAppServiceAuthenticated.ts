@@ -1,7 +1,7 @@
 import { errCodes, federationSDK } from '@rocket.chat/federation-sdk';
 import type { Context, MiddlewareHandler } from 'hono';
 
-import { decodeXmppUserId, isFullXmppUserId, parseXmppUserId } from '../../helpers/parseXmppUserId';
+import { decodeXmppUserId, isFullXmppUserId, parseXmppUserId } from '../../helpers/parseXmppUserId.js';
 
 export const isAppServiceAuthenticatedMiddleware = (): MiddlewareHandler => async (c: Context, next) => {
 	try {

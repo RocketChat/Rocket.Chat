@@ -2,7 +2,7 @@ import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
 import { ajv } from '@rocket.chat/rest-typings';
 
-import { canAccessResourceMiddleware } from '../middlewares/canAccessResource';
+import { canAccessResourceMiddleware } from '../middlewares/canAccessResource.js';
 
 const UsernameSchema = {
 	type: 'string',

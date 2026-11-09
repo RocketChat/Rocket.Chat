@@ -2,8 +2,8 @@ import { NotAllowedError, federationSDK } from '@rocket.chat/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
 import { ajv } from '@rocket.chat/rest-typings';
 
-import { logger } from '../logger';
-import { isAuthenticatedMiddleware } from '../middlewares/isAuthenticated';
+import { logger } from '../logger.js';
+import { isAuthenticatedMiddleware } from '../middlewares/isAuthenticated.js';
 
 const isSendLeaveParamsProps = ajv.compile({
 	type: 'object',
