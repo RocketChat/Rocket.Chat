@@ -9,16 +9,20 @@ export type ItemDescriptionProps = {
 	 * In narrow lists it moves to its own line.
 	 */
 	inline?: boolean;
+	/**
+	 * Set to `false` to wrap long text instead of ending it in an ellipsis.
+	 */
+	truncate?: boolean;
 } & Omit<AllHTMLAttributes<HTMLElement>, 'is'> &
 	RefAttributes<HTMLElement>;
 
 /**
  * The secondary line of an `Item`, such as a last message preview or a username.
  */
-const ItemDescription = ({ is, inline, className, ...props }: ItemDescriptionProps) => {
+const ItemDescription = ({ is, inline, truncate = true, className, ...props }: ItemDescriptionProps) => {
 	const Tag = is ?? (inline ? 'span' : 'div');
 
-	return <Tag {...props} className={cx(cxx('rcx-item__description')({ inline: !!inline }), className)} />;
+	return <Tag {...props} className={cx(cxx('rcx-item__description')({ inline: !!inline, wrap: !truncate }), className)} />;
 };
 
 export default ItemDescription;
