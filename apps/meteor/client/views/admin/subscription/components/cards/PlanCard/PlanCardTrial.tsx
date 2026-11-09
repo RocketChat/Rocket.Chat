@@ -6,7 +6,6 @@ import { Trans, useTranslation } from 'react-i18next';
 
 import PlanCardHeader from './PlanCardHeader';
 import PlanCardLicenseDetails from './PlanCardLicenseDetails';
-import PlanCardCallToAction from '../../../layout/PlanCardCallToAction';
 import { DOWNGRADE_LINK, TRIAL_LINK } from '../../../utils/links';
 import UpgradeButton from '../../UpgradeButton';
 
@@ -55,11 +54,11 @@ const PlanCardTrial = ({ licenseInformation }: PlanCardProps) => {
 				<PlanCardLicenseDetails />
 			</CardBody>
 			<CardControls>
-				<PlanCardCallToAction>
+				<Stack grow>
 					<UpgradeButton target='plan_card_trial' action={isSalesAssisted ? 'finish_purchase' : 'contact_sales'} variant='primary'>
 						{isSalesAssisted ? t('Finish_purchase') : t('Contact_sales')}
 					</UpgradeButton>
-				</PlanCardCallToAction>
+				</Stack>
 			</CardControls>
 		</Card>
 	);

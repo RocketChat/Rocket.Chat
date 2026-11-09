@@ -1,10 +1,9 @@
-import { Skeleton, Text } from '@rocket.chat/fuselage';
+import { Skeleton, Stack, Text } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import { useFormatDate } from '../../../../../hooks/useFormatDate';
 import { useStatistics } from '../../../../hooks/useStatistics';
 import FeatureUsageCardBody from '../../layout/FeatureUsageCardBody';
-import UsageFigure from '../../layout/UsageFigure';
 import type { CardProps } from '../FeatureUsageCard';
 import FeatureUsageCard from '../FeatureUsageCard';
 import UpgradeButton from '../UpgradeButton';
@@ -45,12 +44,12 @@ const ActiveSessionsPeakCard = () => {
 
 	return (
 		<FeatureUsageCard card={card}>
-			<UsageFigure>
+			<Stack align='center' gap='x12'>
 				<Text fontScale='h1' color={exceedLimit ? 'danger' : 'default'}>
 					{used} / {total}
 				</Text>
 				<Text color='secondary-info'>{formatDate(new Date())}</Text>
-			</UsageFigure>
+			</Stack>
 		</FeatureUsageCard>
 	);
 };

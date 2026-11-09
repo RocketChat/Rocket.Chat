@@ -1,9 +1,8 @@
-import { Skeleton, Text } from '@rocket.chat/fuselage';
+import { Skeleton, Stack, Text } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import { useActiveConnections } from '../../../../hooks/useActiveConnections';
 import FeatureUsageCardBody from '../../layout/FeatureUsageCardBody';
-import UsageFigure from '../../layout/UsageFigure';
 import type { CardProps } from '../FeatureUsageCard';
 import FeatureUsageCard from '../FeatureUsageCard';
 import UpgradeButton from '../UpgradeButton';
@@ -58,14 +57,14 @@ const ActiveSessionsCard = () => {
 			}}
 		>
 			<FeatureUsageCardBody justifyContent='flex-start'>
-				<UsageFigure>
+				<Stack align='center' gap='x12'>
 					<Text fontScale='h1' color={exceedLimit ? 'danger' : 'default'}>
 						{used} / {total}
 					</Text>
 					<Text color='secondary-info'>
 						{available} {t('ActiveSessions_available')}
 					</Text>
-				</UsageFigure>
+				</Stack>
 			</FeatureUsageCardBody>
 		</FeatureUsageCard>
 	);

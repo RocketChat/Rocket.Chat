@@ -1,8 +1,7 @@
-import { Card, CardBody, CardControls, CardTitle, FramedIcon, Text } from '@rocket.chat/fuselage';
+import { Card, CardBody, CardControls, CardTitle, FramedIcon, Stack, Text } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from 'react-i18next';
 
-import FeatureList from '../../layout/FeatureList';
 import FeatureListItem from '../../layout/FeatureListItem';
 import { PRICING_LINK } from '../../utils/links';
 import InfoTextIconModal from '../InfoTextIconModal';
@@ -68,7 +67,7 @@ const FeaturesCard = ({ activeModules, isEnterprise }: FeaturesCardProps) => {
 		<Card>
 			<CardTitle>{!isEnterprise ? t('Unlock_premium_capabilities') : t('Includes')}</CardTitle>
 			<CardBody>
-				<FeatureList twoColumns={isSmall}>
+				<Stack is='ul' direction={isSmall ? 'row' : 'column'} justify='space-between' wrap>
 					{getFeatureSet(activeModules, isEnterprise).map(({ success, title, infoText }, index) => (
 						<FeatureListItem
 							key={`feature_${index}`}
@@ -81,7 +80,7 @@ const FeaturesCard = ({ activeModules, isEnterprise }: FeaturesCardProps) => {
 							</Text>
 						</FeatureListItem>
 					))}
-				</FeatureList>
+				</Stack>
 			</CardBody>
 			<CardControls>
 				<a target='_blank' rel='noopener noreferrer' href={PRICING_LINK}>
