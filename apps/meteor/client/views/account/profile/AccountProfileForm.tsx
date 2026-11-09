@@ -244,47 +244,52 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 					/>
 				</Field>
 				<Stack gap='x16'>
-					<ProfileNameFields stacked={isMobile}>
-						<Field>
-							<FieldLabel required={requireName}>{t('Name')}</FieldLabel>
-							<FieldRow>
-								<Controller
-									control={control}
-									name='name'
-									rules={{ required: requireName && t('Required_field', { field: t('Name') }) }}
-									render={({ field }) => (
-										<TextInput {...field} disabled={!allowRealNameChange} error={errors.name?.message} aria-required={true} />
-									)}
-								/>
-							</FieldRow>
-							{errors.name && <FieldError>{errors.name.message}</FieldError>}
-							{!allowRealNameChange && <FieldHint>{t('RealName_Change_Disabled')}</FieldHint>}
-						</Field>
-						<Field>
-							<FieldLabel required>{t('Username')}</FieldLabel>
-							<FieldRow>
-								<Controller
-									control={control}
-									name='username'
-									rules={{
-										required: t('Required_field', { field: t('Username') }),
-										validate: validateUsername,
-									}}
-									render={({ field }) => (
-										<TextInput
-											{...field}
-											aria-required={true}
-											disabled={!canChangeUsername}
-											endAddon={<Icon name='at' size='x20' />}
-											error={errors.username?.message}
-										/>
-									)}
-								/>
-							</FieldRow>
-							{errors.username && <FieldError>{errors.username.message}</FieldError>}
-							{!canChangeUsername && <FieldHint>{t('Username_Change_Disabled')}</FieldHint>}
-						</Field>
-					</ProfileNameFields>
+					<ProfileNameFields
+						stacked={isMobile}
+						name={
+							<Field>
+								<FieldLabel required={requireName}>{t('Name')}</FieldLabel>
+								<FieldRow>
+									<Controller
+										control={control}
+										name='name'
+										rules={{ required: requireName && t('Required_field', { field: t('Name') }) }}
+										render={({ field }) => (
+											<TextInput {...field} disabled={!allowRealNameChange} error={errors.name?.message} aria-required={true} />
+										)}
+									/>
+								</FieldRow>
+								{errors.name && <FieldError>{errors.name.message}</FieldError>}
+								{!allowRealNameChange && <FieldHint>{t('RealName_Change_Disabled')}</FieldHint>}
+							</Field>
+						}
+						username={
+							<Field>
+								<FieldLabel required>{t('Username')}</FieldLabel>
+								<FieldRow>
+									<Controller
+										control={control}
+										name='username'
+										rules={{
+											required: t('Required_field', { field: t('Username') }),
+											validate: validateUsername,
+										}}
+										render={({ field }) => (
+											<TextInput
+												{...field}
+												aria-required={true}
+												disabled={!canChangeUsername}
+												endAddon={<Icon name='at' size='x20' />}
+												error={errors.username?.message}
+											/>
+										)}
+									/>
+								</FieldRow>
+								{errors.username && <FieldError>{errors.username.message}</FieldError>}
+								{!canChangeUsername && <FieldHint>{t('Username_Change_Disabled')}</FieldHint>}
+							</Field>
+						}
+					/>
 					<Divider />
 					<Stack gap='x24'>
 						<Field>

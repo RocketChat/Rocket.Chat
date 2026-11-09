@@ -1,12 +1,12 @@
 import { Field, FieldLabel, FieldRow, Stack, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useUser } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, ChangeEvent } from 'react';
+import type { ChangeEvent } from 'react';
 import { useCallback, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useEndpointMutation } from '../../../hooks/useEndpointMutation';
 
-const TwoFactorEmail = (props: Omit<ComponentProps<typeof Stack>, 'children'>) => {
+const TwoFactorEmail = () => {
 	const { t } = useTranslation();
 	const user = useUser();
 	const emailId = useId();
@@ -38,7 +38,7 @@ const TwoFactorEmail = (props: Omit<ComponentProps<typeof Stack>, 'children'>) =
 	);
 
 	return (
-		<Stack align='start' {...props}>
+		<Stack align='start'>
 			<Field>
 				<FieldRow>
 					<FieldLabel htmlFor={emailId}>{t('Two-factor_authentication_email')}</FieldLabel>

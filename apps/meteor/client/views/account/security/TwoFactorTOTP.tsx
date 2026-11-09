@@ -1,7 +1,7 @@
 import { Button, Field, FieldLabel, FieldRow, Stack, Text, TextInput, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useStableCallback, useSafely } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useUser, useEndpoint } from '@rocket.chat/ui-contexts';
-import type { ComponentPropsWithoutRef, ChangeEvent } from 'react';
+import type { ChangeEvent } from 'react';
 import { useState, useCallback, useEffect, useId } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -16,14 +16,12 @@ type TwoFactorTOTPFormData = {
 	authCode: string;
 };
 
-export type TwoFactorTOTPProps = Omit<ComponentPropsWithoutRef<typeof Stack>, 'children'>;
-
 const isInvalidTotpError = (error: unknown): boolean => {
 	const { error: errorCode, errorType } = (error ?? {}) as { error?: string; errorType?: string };
 	return errorCode === 'invalid-totp' || errorType === 'invalid-totp';
 };
 
-const TwoFactorTOTP = (props: TwoFactorTOTPProps) => {
+const TwoFactorTOTP = () => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const user = useUser();
@@ -146,7 +144,7 @@ const TwoFactorTOTP = (props: TwoFactorTOTPProps) => {
 	}, [closeModal, dispatchToastMessage, setModal, regenerateCodesFn, t]);
 
 	return (
-		<Stack align='start' gap='x8' {...props}>
+		<Stack align='start' gap='x8'>
 			<Field>
 				<FieldRow>
 					<FieldLabel htmlFor={totpId}>{t('Two-factor_authentication_via_TOTP')}</FieldLabel>
