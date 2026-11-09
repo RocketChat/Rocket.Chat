@@ -8,10 +8,6 @@ type PreferencesInsetSectionProps = {
 /**
  * A group of preferences shown above the accordion, inset to line up with the accordion items' content.
  */
-const PreferencesInsetSection = ({ children }: PreferencesInsetSectionProps) => (
-	<Box marginBlockEnd='x24' paddingInline='x8'>
-		{children}
-	</Box>
-);
+const PreferencesInsetSection = ({ children }: PreferencesInsetSectionProps) => <Box paddingInline='x8'>{children}</Box>;
 
 export default PreferencesInsetSection;

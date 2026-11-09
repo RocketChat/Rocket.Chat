@@ -1,4 +1,4 @@
-import { ButtonGroup, Button, Accordion } from '@rocket.chat/fuselage';
+import { ButtonGroup, Button, Accordion, Stack } from '@rocket.chat/fuselage';
 import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useTranslation, useEndpoint, useUserPreference, useSetting } from '@rocket.chat/ui-contexts';
 import { useForm, FormProvider } from 'react-hook-form';
@@ -52,12 +52,14 @@ const OmnichannelPreferencesPage = () => {
 			<PageHeader title={t('Omnichannel')} />
 			<PageScrollableContentWithShadow is='form' onSubmit={handleSubmit(handleSave)}>
 				<ContentColumn>
-					<Accordion>
-						<FormProvider {...methods}>
+					<FormProvider {...methods}>
+						<Stack gap='x24'>
 							<PreferencesGeneral />
-							<PreferencesConversationTranscript />
-						</FormProvider>
-					</Accordion>
+							<Accordion>
+								<PreferencesConversationTranscript />
+							</Accordion>
+						</Stack>
+					</FormProvider>
 				</ContentColumn>
 			</PageScrollableContentWithShadow>
 			<PageFooter isDirty={isDirty}>
