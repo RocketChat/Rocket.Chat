@@ -1,7 +1,7 @@
 import type { BehaviorWithContext, LicenseLimit, LicenseValidationOptions } from '@rocket.chat/core-typings';
 
-import type { LicenseManager } from '../license';
-import { validateLimits } from './validateLimits';
+import type { LicenseManager } from '../license.js';
+import { validateLimits } from './validateLimits.js';
 
 export const defaultLimits: {
 	privateApps: LicenseLimit[];

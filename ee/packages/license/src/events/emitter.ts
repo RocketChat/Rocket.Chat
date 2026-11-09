@@ -1,8 +1,8 @@
 import type { BehaviorWithContext, LicenseModule } from '@rocket.chat/core-typings';
 
-import type { LicenseManager } from '../license';
-import { logger } from '../logger';
-import { isInternalModuleName } from '../modules';
+import type { LicenseManager } from '../license.js';
+import { logger } from '../logger.js';
+import { isInternalModuleName } from '../modules.js';
 
 export function moduleValidated(this: LicenseManager, module: LicenseModule) {
 	try {

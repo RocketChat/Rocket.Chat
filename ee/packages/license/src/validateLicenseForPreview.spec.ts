@@ -1,6 +1,6 @@
-import { LicenseImp } from '.';
-import { MockedLicenseBuilder, getReadyLicenseManager } from '../__tests__/MockedLicenseBuilder';
-import { NotReadyForValidation } from './errors/NotReadyForValidation';
+import { LicenseImp } from './index.js';
+import { MockedLicenseBuilder, getReadyLicenseManager } from '../__tests__/MockedLicenseBuilder.js';
+import { NotReadyForValidation } from './errors/NotReadyForValidation.js';
 
 describe('validateLicenseForPreview', () => {
 	it('should report a non-license string as invalid with no reasons', async () => {

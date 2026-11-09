@@ -1,9 +1,9 @@
 import type { ILicenseV3, BehaviorWithContext, LicenseValidationOptions } from '@rocket.chat/core-typings';
 
-import { isBehaviorAllowed } from '../isItemAllowed';
-import type { LicenseManager } from '../license';
-import { logger } from '../logger';
-import { getResultingBehavior } from './getResultingBehavior';
+import { isBehaviorAllowed } from '../isItemAllowed.js';
+import type { LicenseManager } from '../license.js';
+import { logger } from '../logger.js';
+import { getResultingBehavior } from './getResultingBehavior.js';
 
 const validateRegex = (licenseURL: string, url: string) => {
 	licenseURL = licenseURL

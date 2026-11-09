@@ -1,9 +1,9 @@
 import type { ILicenseV3, BehaviorWithContext, LicenseValidationOptions } from '@rocket.chat/core-typings';
 
-import type { LicenseManager } from '../license';
-import { validateLicenseLimits } from './validateLicenseLimits';
-import { validateLicensePeriods } from './validateLicensePeriods';
-import { validateLicenseUrl } from './validateLicenseUrl';
+import type { LicenseManager } from '../license.js';
+import { validateLicenseLimits } from './validateLicenseLimits.js';
+import { validateLicensePeriods } from './validateLicensePeriods.js';
+import { validateLicenseUrl } from './validateLicenseUrl.js';
 
 export async function runValidation(
 	this: LicenseManager,

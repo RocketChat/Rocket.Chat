@@ -5,8 +5,8 @@
 
 import type { ILicenseV2, ILicenseV3, InternalModuleName } from '@rocket.chat/core-typings';
 
-import { isBundle, getBundleFromModule, getBundleModules } from './bundles';
-import { getTagColor } from './getTagColor';
+import { isBundle, getBundleFromModule, getBundleModules } from './bundles.js';
+import { getTagColor } from './getTagColor.js';
 
 export const convertToV3 = (v2: ILicenseV2): ILicenseV3 => {
 	return {

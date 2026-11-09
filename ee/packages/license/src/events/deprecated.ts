@@ -1,7 +1,7 @@
 import type { LicenseModule } from '@rocket.chat/core-typings';
 
-import type { LicenseManager } from '../license';
-import { hasModule } from '../modules';
+import type { LicenseManager } from '../license.js';
+import { hasModule } from '../modules.js';
 
 // #TODO: Remove this onLicense handler
 export function onLicense(this: LicenseManager, feature: LicenseModule, cb: (...args: any[]) => void): void | Promise<void> {
