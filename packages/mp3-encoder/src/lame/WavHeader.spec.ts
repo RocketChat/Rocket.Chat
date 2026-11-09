@@ -1,4 +1,4 @@
-import { WavHeader } from './WavHeader';
+import { WavHeader } from './WavHeader.js';
 
 const writeFourcc = (view: DataView, offset: number, fourcc: string) => {
 	for (let i = 0; i < 4; i++) view.setUint8(offset + i, fourcc.charCodeAt(i));

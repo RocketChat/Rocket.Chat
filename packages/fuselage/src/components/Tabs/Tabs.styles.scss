@@ -72,14 +72,12 @@ $tabs-border-radius: theme('tabs-border-radius', lengths.border-radius(medium));
 	@include clickable;
 	@include use-font-scale(h4);
 
-	&.hover,
 	&:hover {
 		color: $tabs-hover-color;
 		border-block-end-color: $tabs-hover-color;
 		border-block-end-width: lengths.border-width(large);
 	}
 
-	&.active,
 	&:active {
 		color: $tabs-active-color;
 		border-block-end-color: $tabs-active-color;
@@ -111,13 +109,11 @@ $tabs-border-radius: theme('tabs-border-radius', lengths.border-radius(medium));
 		border-block-end-width: lengths.border-width(default);
 		border-inline-width: lengths.border-width(default);
 
-		&:hover:not(.rcx-tabs__item--selected--disabled),
-		&.hover:not(.rcx-tabs__item--selected--disabled) {
+		&:hover:not(.rcx-tabs__item--selected--disabled) {
 			color: $tabs-hover-selected-color;
 			border-block-end-color: $tabs-hover-selected-border-color;
 		}
 
-		&.active:not(.rcx-tabs__item--selected--disabled),
 		&:active:not(.rcx-tabs__item--selected--disabled) {
 			color: $tabs-active-selected-color;
 			border-block-end-color: $tabs-active-selected-border-color;

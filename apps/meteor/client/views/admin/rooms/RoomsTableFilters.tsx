@@ -1,9 +1,10 @@
-import { Box, Icon, TextInput } from '@rocket.chat/fuselage';
 import type { OptionProp } from '@rocket.chat/ui-client';
 import { MultiSelectCustom } from '@rocket.chat/ui-client';
 import { useCallback, useMemo, useState } from 'react';
-import type { ChangeEvent, Dispatch, FormEvent, SetStateAction } from 'react';
+import type { ChangeEvent, Dispatch, SetStateAction } from 'react';
 import { useTranslation } from 'react-i18next';
+
+import { FilterBar, FilterBarFilters, FilterBarSearch } from '../../../components/FilterBar';
 
 const initialRoomTypeFilterStructure = [
 	{
@@ -76,25 +77,9 @@ const RoomsTableFilters = ({ setFilters }: RoomsTableFiltersProps) => {
 	);
 
 	return (
-		<Box
-			is='form'
-			onSubmit={useCallback((e: FormEvent) => e.preventDefault(), [])}
-			marginBlock='x8'
-			display='flex'
-			flexWrap='wrap'
-			alignItems='center'
-			justifyContent='center'
-		>
-			<Box minWidth='x224' display='flex' margin='x4' flexGrow={2}>
-				<TextInput
-					name='search-rooms'
-					placeholder={t('Search_rooms')}
-					endAddon={<Icon name='magnifier' size='x20' />}
-					onChange={handleSearchTextChange}
-					value={text}
-				/>
-			</Box>
-			<Box minWidth='x224' margin='x4'>
+		<FilterBar>
+			<FilterBarSearch name='search-rooms' placeholder={t('Search_rooms')} onChange={handleSearchTextChange} value={text} />
+			<FilterBarFilters>
 				<MultiSelectCustom
 					dropdownOptions={roomTypeFilterStructure}
 					defaultTitle='All_rooms'
@@ -102,8 +87,8 @@ const RoomsTableFilters = ({ setFilters }: RoomsTableFiltersProps) => {
 					setSelectedOptions={handleRoomTypeChange}
 					selectedOptions={roomTypeSelectedOptions}
 				/>
-			</Box>
-		</Box>
+			</FilterBarFilters>
+		</FilterBar>
 	);
 };
 

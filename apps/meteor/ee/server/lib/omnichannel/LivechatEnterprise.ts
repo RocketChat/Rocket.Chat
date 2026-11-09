@@ -2,7 +2,6 @@ import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IOmnichannelBusinessUnit, IOmnichannelServiceLevelAgreements, IUser, ILivechatTag } from '@rocket.chat/core-typings';
 import { Users, OmnichannelServiceLevelAgreements, LivechatTag, LivechatUnitMonitors, LivechatUnit } from '@rocket.chat/models';
 import { getUnitsFromUser } from '@rocket.chat/omni-core-ee';
-import { Match, check } from 'meteor/check';
 
 import { updateSLAInquiries } from './Helper';
 import { removeSLAFromRooms } from './SlaHelper';
@@ -66,32 +65,10 @@ export const LivechatEnterprise = {
 	async saveUnit(
 		_id: string | null,
 		unitData: Omit<IOmnichannelBusinessUnit, '_id'>,
-		unitMonitors: { monitorId: string; username: string },
+		unitMonitors: { monitorId: string; username: string }[],
 		unitDepartments: { departmentId: string }[],
 		userId: string,
 	) {
-		check(unitData, {
-			name: String,
-			visibility: String,
-			enabled: Match.Optional(Boolean),
-			description: Match.Optional(String),
-			email: Match.Optional(String),
-			showOnOfflineForm: Match.Optional(Boolean),
-		});
-
-		check(unitMonitors, [
-			Match.ObjectIncluding({
-				monitorId: String,
-				username: String,
-			}),
-		]);
-
-		check(unitDepartments, [
-			Match.ObjectIncluding({
-				departmentId: String,
-			}),
-		]);
-
 		let ancestors: string[] = [];
 		if (_id) {
 			const unitsFromUser = await getUnitsFromUser(userId);

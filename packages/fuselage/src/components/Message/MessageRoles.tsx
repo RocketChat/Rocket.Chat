@@ -1,7 +1,12 @@
 import type { HTMLAttributes } from 'react';
 
-export type MessageRolesProps = HTMLAttributes<HTMLDivElement>;
+import { cx } from '../../helpers/composeClassNames';
+import ItemRow from '../Item/ItemRow';
 
-const MessageRoles = (props: MessageRolesProps) => <div className='rcx-box rcx-box--full rcx-message-header__roles' {...props} />;
+export type MessageRolesProps = Omit<HTMLAttributes<HTMLDivElement>, 'is'>;
+
+const MessageRoles = ({ className, ...props }: MessageRolesProps) => (
+	<ItemRow {...props} className={cx('rcx-message-header__roles', className)} />
+);
 
 export default MessageRoles;

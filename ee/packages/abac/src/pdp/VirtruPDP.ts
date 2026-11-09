@@ -241,10 +241,6 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 	}
 
 	async assertCreatorMayAssign(attributes: IAbacAttributeDefinition[], actor: AbacActor): Promise<{ creatorAdmitted: boolean }> {
-		if (!actor.username) {
-			throw new OnlyCompliantCanBeAddedToRoomError();
-		}
-
 		await this.checkUsernamesMatchAttributes([actor.username], attributes, { _id: 'room-creation' });
 		return { creatorAdmitted: true };
 	}

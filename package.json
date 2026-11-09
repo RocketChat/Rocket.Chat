@@ -135,7 +135,7 @@
 		"ws@npm:^7.5.3": "7.5.11",
 		"ws@npm:^8": "^8.20.1",
 		"ws@npm:^8.18.0": "^8.20.1",
-		"websocket-driver@npm:>=0.5.1": "0.7.5",
+		"websocket-driver": "0.7.5",
 		"undici@npm:^6.19.5": "6.29.1",
 		"undici@npm:^6.23.0": "6.29.1",
 		"webpack": "~5.104.0",

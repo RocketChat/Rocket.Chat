@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { Box, Callout, States, StatesIcon, StatesSubtitle, StatesTitle, Tabs, TabsItem, Text } from '@rocket.chat/fuselage';
-import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
+import { Box, Callout, States, StatesIcon, StatesSubtitle, StatesTitle, Text } from '@rocket.chat/fuselage';
+import { ListSkeleton, Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -8,7 +8,7 @@ import AuditForm from './components/AuditForm';
 import AuditResult from './components/AuditResult';
 import { useAuditMutation } from './hooks/useAuditMutation';
 import { useAuditTab } from './hooks/useAuditTab';
-import ListSkeleton from '../../components/ListSkeleton';
+import { PageTabs } from '../../components/PageTabs';
 import { getErrorMessage } from '../../lib/errorHandling';
 
 const AuditPage = () => {
@@ -20,20 +20,16 @@ const AuditPage = () => {
 	return (
 		<Page background='room'>
 			<PageHeader title={t('Message_auditing')} />
-			<Tabs>
-				<TabsItem selected={type === ''} onClick={() => setType('')}>
-					{t('Rooms')}
-				</TabsItem>
-				<TabsItem selected={type === 'u'} onClick={() => setType('u')}>
-					{t('Users')}
-				</TabsItem>
-				<TabsItem selected={type === 'd'} onClick={() => setType('d')}>
-					{t('Direct_Messages')}
-				</TabsItem>
-				<TabsItem selected={type === 'l'} onClick={() => setType('l')}>
-					{t('Omnichannel')}
-				</TabsItem>
-			</Tabs>
+			<PageTabs
+				items={[
+					{ id: '', label: t('Rooms') },
+					{ id: 'u', label: t('Users') },
+					{ id: 'd', label: t('Direct_Messages') },
+					{ id: 'l', label: t('Omnichannel') },
+				]}
+				selected={type}
+				onSelect={setType}
+			/>
 			<PageScrollableContentWithShadow gap={8}>
 				<AuditForm key={type} type={type} setSelectedRoom={setSelectedRoom} onSubmit={auditMutation.mutate} />
 				{selectedRoom?.encrypted && type === '' ? (

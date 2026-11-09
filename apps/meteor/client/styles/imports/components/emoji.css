@@ -50,14 +50,6 @@ emoji boxes, which load after this file. */
 	background-size: contain;
 }
 
-.rcx-message__emoji--big {
-	--emoji-size: 3rem;
-}
-
-.rcx-message-reactions__reaction {
-	--emoji-size: 0.875rem;
-}
-
 /* The box is shorter than the preview line, so it is centered rather than pinned to
 the top, where the line's overflow: hidden would cut glyphs that paint above it. */
 .rcx-message-thread__emoji.emoji {

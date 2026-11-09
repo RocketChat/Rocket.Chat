@@ -1,9 +1,9 @@
 import type { IRole, IRoom } from '@rocket.chat/core-typings';
 import { Box, Field, FieldLabel, FieldRow, ButtonGroup, Button, Callout, FieldError, Stack } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { usePagination, Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
+import { usePaginatedQuery, usePagination, Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { useId, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -60,22 +60,31 @@ const UsersInRolePage = ({ role }: UsersInRolePageProps) => {
 
 	const getUsersInRoleEndpoint = useEndpoint('GET', '/v1/roles.getUsersInRole');
 
-	const paginationData = usePagination();
-	const { itemsPerPage, current } = paginationData;
-
 	const query = useMemo(
 		() => ({
 			role: _id,
 			...(rid && { roomId: rid }),
-			...(itemsPerPage && { count: itemsPerPage }),
-			...(current && { offset: current }),
 		}),
-		[itemsPerPage, current, rid, _id],
+		[rid, _id],
 	);
 
-	const { data, isLoading, isSuccess, refetch, isError } = useQuery({
-		queryKey: ['getUsersInRole', _id, query],
-		queryFn: async () => getUsersInRoleEndpoint(query),
+	const queryKey = ['getUsersInRole', _id, query];
+	const paginationData = usePagination({ resetKey: queryKey });
+	const { itemsPerPage, current } = paginationData;
+
+	const getUsersInRole = async (params: Parameters<typeof getUsersInRoleEndpoint>[0]) => {
+		const result = await getUsersInRoleEndpoint(params);
+		return { ...result, count: result.users.length };
+	};
+
+	const { data, isLoading, isSuccess, refetch, isError } = usePaginatedQuery({
+		query: {
+			queryKey,
+			queryFn: (page) => getUsersInRole({ ...query, ...page }),
+		},
+		itemsKey: 'users',
+		offset: current,
+		count: itemsPerPage,
 	});
 
 	const handleRemove = useRemoveUserFromRole({ rid, roleId: _id, roleName: name, roleDescription: description });

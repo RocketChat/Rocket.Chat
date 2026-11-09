@@ -1,16 +1,16 @@
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import type { Meta, StoryObj } from '@storybook/react';
 
 import ThreadMessage from './ThreadMessage';
 import ThreadMessageBody from './ThreadMessageBody';
 import ThreadMessageContainer from './ThreadMessageContainer';
 import ThreadMessageEmoji from './ThreadMessageEmoji';
 import ThreadMessageIconThread from './ThreadMessageIconThread';
-import ThreadMessageLeftContainer from './ThreadMessageLeftContainer';
 import ThreadMessageOrigin from './ThreadMessageOrigin';
 import ThreadMessageRow from './ThreadMessageRow';
 import ThreadMessageUnfollow from './ThreadMessageUnfollow';
 import { Avatar } from '../../Avatar';
 import { Box } from '../../Box';
+import MessageLeftContainer from '../MessageLeftContainer';
 
 export default {
 	title: 'Message/ThreadMessage',
@@ -51,11 +51,6 @@ export default {
 			description: 'Applies the pending (not yet sent) visual state.',
 			table: { category: 'State' },
 		},
-		highlight: {
-			control: 'boolean',
-			description: 'Applies the highlighted visual state.',
-			table: { category: 'State' },
-		},
 		onClick: {
 			control: false,
 			description: 'Called when the thread message is activated.',
@@ -74,9 +69,9 @@ export const Default: Story = {
 		<Box>
 			<ThreadMessage>
 				<ThreadMessageRow>
-					<ThreadMessageLeftContainer>
+					<MessageLeftContainer>
 						<ThreadMessageIconThread />
-					</ThreadMessageLeftContainer>
+					</MessageLeftContainer>
 					<ThreadMessageContainer>
 						<ThreadMessageOrigin>
 							Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat a duis aute irure
@@ -87,9 +82,9 @@ export const Default: Story = {
 					</ThreadMessageContainer>
 				</ThreadMessageRow>
 				<ThreadMessageRow>
-					<ThreadMessageLeftContainer>
+					<MessageLeftContainer>
 						<Avatar url={avatarUrl} size='x16' />
-					</ThreadMessageLeftContainer>
+					</MessageLeftContainer>
 					<ThreadMessageContainer>
 						<ThreadMessageBody>
 							Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat a duis aute irure
@@ -108,9 +103,9 @@ export const WithEmoji: Story = {
 		<Box>
 			<ThreadMessage>
 				<ThreadMessageRow>
-					<ThreadMessageLeftContainer>
+					<MessageLeftContainer>
 						<ThreadMessageIconThread />
-					</ThreadMessageLeftContainer>
+					</MessageLeftContainer>
 					<ThreadMessageContainer>
 						<ThreadMessageOrigin>
 							Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat a duis aute irure
@@ -121,9 +116,9 @@ export const WithEmoji: Story = {
 					</ThreadMessageContainer>
 				</ThreadMessageRow>
 				<ThreadMessageRow>
-					<ThreadMessageLeftContainer>
+					<MessageLeftContainer>
 						<Avatar url={avatarUrl} size='x16' />
-					</ThreadMessageLeftContainer>
+					</MessageLeftContainer>
 					<ThreadMessageContainer>
 						<ThreadMessageBody>
 							Thread Emoji test: <ThreadMessageEmoji name='test' image={`url(${avatarUrl})`} />{' '}
@@ -141,18 +136,18 @@ export const WithSystemMessage: Story = {
 		<Box>
 			<ThreadMessage>
 				<ThreadMessageRow>
-					<ThreadMessageLeftContainer>
+					<MessageLeftContainer>
 						<ThreadMessageIconThread />
-					</ThreadMessageLeftContainer>
+					</MessageLeftContainer>
 					<ThreadMessageContainer>
 						<ThreadMessageOrigin system>system message</ThreadMessageOrigin>
 						<ThreadMessageUnfollow />
 					</ThreadMessageContainer>
 				</ThreadMessageRow>
 				<ThreadMessageRow>
-					<ThreadMessageLeftContainer>
+					<MessageLeftContainer>
 						<Avatar url={avatarUrl} size='x16' />
-					</ThreadMessageLeftContainer>
+					</MessageLeftContainer>
 					<ThreadMessageContainer>
 						<ThreadMessageBody>
 							Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat a duis aute irure

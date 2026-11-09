@@ -2,8 +2,8 @@ import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useMemo, useState } from 'react';
 
-import { isUnreadRoom } from './useRoomList';
 import type { SidebarVirtualListRange } from '../components/SidebarVirtualList';
+import { isUnreadRoom } from '../lib/unreadRooms';
 
 type RoomsGroup = { rooms: SubscriptionWithRoom[] };
 

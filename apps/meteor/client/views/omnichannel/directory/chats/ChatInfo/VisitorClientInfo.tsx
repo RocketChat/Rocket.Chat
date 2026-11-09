@@ -1,3 +1,4 @@
+import { FormSkeleton } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -7,7 +8,6 @@ import { omnichannelQueryKeys } from '../../../../../lib/queryKeys';
 import Field from '../../../components/Field';
 import Info from '../../../components/Info';
 import Label from '../../../components/Label';
-import { FormSkeleton } from '../../components/FormSkeleton';
 
 export type VisitorClientInfoProps = {
 	uid: string;

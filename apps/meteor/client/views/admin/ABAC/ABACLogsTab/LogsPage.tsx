@@ -1,5 +1,5 @@
 import type { AbacAttributeDefinitionChangeType, AbacActionPerformed } from '@rocket.chat/core-typings';
-import { Box, InputBox, Margins, Pagination, Stack } from '@rocket.chat/fuselage';
+import { Box, InputBox, Pagination } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import {
 	GenericTable,
@@ -8,15 +8,16 @@ import {
 	GenericTableHeader,
 	GenericTableHeaderCell,
 	GenericTableRow,
+	usePaginatedQuery,
 	usePagination,
 	GenericNoResults,
 	useFormatDateAndTime,
 } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
-import { useMemo, useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { FilterBar, FilterBarFilters } from '../../../../components/FilterBar';
 import { ABACQueryKeys } from '../../../../lib/queryKeys';
 import DateRangePicker, { type DateRangePreset } from '../../moderation/helpers/DateRangePicker';
 
@@ -29,22 +30,17 @@ const LogsPage = () => {
 
 	const formatDate = useFormatDateAndTime();
 
-	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 	const getLogs = useEndpoint('GET', '/v1/abac/audit');
 	const query = useMemo(
 		() => ({
 			...(startDate && { start: new Date(`${startDate}T00:00:00.000`).toISOString() }),
 			...(endDate && { end: new Date(`${endDate}T23:59:59.999`).toISOString() }),
-			offset: current,
-			count: itemsPerPage,
 		}),
-		[current, itemsPerPage, startDate, endDate],
+		[startDate, endDate],
 	);
 
-	// Whenever the user changes the filter or the text, reset the pagination to the first page
-	useEffect(() => {
-		setCurrent(0);
-	}, [startDate, endDate, setCurrent]);
+	const queryKey = ABACQueryKeys.logs.list(query);
+	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination({ resetKey: queryKey });
 
 	const getActionLabel = (action?: AbacAttributeDefinitionChangeType | AbacActionPerformed | null) => {
 		switch (action) {
@@ -75,91 +71,98 @@ const LogsPage = () => {
 		}
 	};
 
-	const { data, isLoading } = useQuery({
-		queryKey: ABACQueryKeys.logs.list(query),
-		queryFn: () => getLogs(query),
-		select: (data) => ({
-			events: data.events.map((event) => {
-				const eventInfo = {
-					id: event._id,
-					user: event.actor?.type === 'user' ? event.actor.username : t('System'),
-					...(event.actor?.type === 'user' && { userAvatar: <UserAvatar size='x28' userId={event.actor._id} /> }),
-					timestamp: new Date(event.ts),
-					element: t('ABAC_Room'),
-					action: getActionLabel(event.data?.find((item) => item.key === 'change')?.value),
-					room: undefined,
-				};
-				switch (event.t) {
-					case 'abac.attribute.changed':
-						return {
-							...eventInfo,
-							element: t('ABAC_Room_Attribute'),
-							name: event.data?.find((item) => item.key === 'attributeKey')?.value ?? '',
-						};
-					case 'abac.action.performed':
-						return {
-							...eventInfo,
-							name: event.data?.find((item) => item.key === 'subject')?.value?.username ?? '',
-							action: getActionLabel(event.data?.find((item) => item.key === 'action')?.value),
-							room: event.data?.find((item) => item.key === 'object')?.value?.name ?? '',
-							element: t('ABAC_room_membership'),
-						};
-					case 'abac.object.attribute.changed': {
-						const app = event.data?.find((item) => item.key === 'app')?.value;
-						return {
-							...eventInfo,
-							...(app && { user: t('ABAC_User_via_App', { username: eventInfo.user, appName: app.name ?? app._id }) }),
-							name:
-								event.data
-									?.find((item) => item.key === 'current')
-									?.value?.map((item) => item.key)
-									.join(', ') ?? t('Empty'),
-							room: event.data?.find((item) => item.key === 'room')?.value?.name ?? '',
-						};
-					}
-					case 'abac.object.attributes.removed':
-						return {
-							...eventInfo,
-							name:
-								event.data
-									?.find((item) => item.key === 'current')
-									?.value?.map((item) => item.key)
-									.join(', ') ?? t('Empty'),
-							room: event.data?.find((item) => item.key === 'room')?.value?.name ?? '',
-						};
-					case 'abac.attribute.store.switched':
-						return {
-							...eventInfo,
-							element: t('ABAC_Attribute_Store'),
-							action: t('ABAC_Attribute_Store_Switched'),
-							name: `${event.data?.find((item) => item.key === 'from')?.value} -> ${event.data?.find((item) => item.key === 'to')?.value}`,
-							room: t('ABAC_Rooms_Affected', { count: Number(event.data?.find((item) => item.key === 'roomsAffected')?.value ?? 0) }),
-						};
-					case 'abac.membership.evaluated':
-						return {
-							...eventInfo,
-							element: t('ABAC_room_membership'),
-							action: t('ABAC_Membership_Evaluated'),
-							name:
-								event.data
-									?.find((item) => item.key === 'subjects')
-									?.value?.map((item) => item.username)
-									.join(', ') ?? '',
-						};
-					default:
-						return null;
-				}
-			}),
-			count: data.count,
-			offset: data.offset,
-			total: data.total,
-		}),
+	const { data: logs, isLoading } = usePaginatedQuery({
+		query: {
+			queryKey,
+			queryFn: (page) => getLogs({ ...query, ...page }),
+		},
+		itemsKey: 'events',
+		offset: current,
+		count: itemsPerPage,
 	});
+
+	// TODO: Move this mapping from useQuery's old `select` into a usePaginatedQuery `combine`
+	const data = logs && {
+		events: logs.events.map((event) => {
+			const eventInfo = {
+				id: event._id,
+				user: event.actor?.type === 'user' ? event.actor.username : t('System'),
+				...(event.actor?.type === 'user' && { userAvatar: <UserAvatar size='x28' userId={event.actor._id} /> }),
+				timestamp: new Date(event.ts),
+				element: t('ABAC_Room'),
+				action: getActionLabel(event.data?.find((item) => item.key === 'change')?.value),
+				room: undefined,
+			};
+			switch (event.t) {
+				case 'abac.attribute.changed':
+					return {
+						...eventInfo,
+						element: t('ABAC_Room_Attribute'),
+						name: event.data?.find((item) => item.key === 'attributeKey')?.value ?? '',
+					};
+				case 'abac.action.performed':
+					return {
+						...eventInfo,
+						name: event.data?.find((item) => item.key === 'subject')?.value?.username ?? '',
+						action: getActionLabel(event.data?.find((item) => item.key === 'action')?.value),
+						room: event.data?.find((item) => item.key === 'object')?.value?.name ?? '',
+						element: t('ABAC_room_membership'),
+					};
+				case 'abac.object.attribute.changed': {
+					const app = event.data?.find((item) => item.key === 'app')?.value;
+					return {
+						...eventInfo,
+						...(app && { user: t('ABAC_User_via_App', { username: eventInfo.user, appName: app.name ?? app._id }) }),
+						name:
+							event.data
+								?.find((item) => item.key === 'current')
+								?.value?.map((item) => item.key)
+								.join(', ') ?? t('Empty'),
+						room: event.data?.find((item) => item.key === 'room')?.value?.name ?? '',
+					};
+				}
+				case 'abac.object.attributes.removed':
+					return {
+						...eventInfo,
+						name:
+							event.data
+								?.find((item) => item.key === 'current')
+								?.value?.map((item) => item.key)
+								.join(', ') ?? t('Empty'),
+						room: event.data?.find((item) => item.key === 'room')?.value?.name ?? '',
+					};
+				case 'abac.attribute.store.switched':
+					return {
+						...eventInfo,
+						element: t('ABAC_Attribute_Store'),
+						action: t('ABAC_Attribute_Store_Switched'),
+						name: `${event.data?.find((item) => item.key === 'from')?.value} -> ${event.data?.find((item) => item.key === 'to')?.value}`,
+						room: t('ABAC_Rooms_Affected', { count: Number(event.data?.find((item) => item.key === 'roomsAffected')?.value ?? 0) }),
+					};
+				case 'abac.membership.evaluated':
+					return {
+						...eventInfo,
+						element: t('ABAC_room_membership'),
+						action: t('ABAC_Membership_Evaluated'),
+						name:
+							event.data
+								?.find((item) => item.key === 'subjects')
+								?.value?.map((item) => item.username)
+								.join(', ') ?? '',
+					};
+				default:
+					return null;
+			}
+		}),
+		count: logs.count,
+		offset: logs.offset,
+		total: logs.total,
+	};
 
 	return (
 		<>
-			<Margins block={24}>
-				<Stack direction='row' gap={8}>
+			<FilterBar>
+				<FilterBarFilters>
 					<InputBox
 						type='date'
 						placeholder={t('Start_date')}
@@ -187,8 +190,8 @@ const LogsPage = () => {
 							setEndDate(range.end);
 						}}
 					/>
-				</Stack>
-			</Margins>
+				</FilterBarFilters>
+			</FilterBar>
 			{(!data || data.events?.length === 0) && !isLoading ? (
 				<Box display='flex' justifyContent='center' height='full'>
 					<GenericNoResults icon='extended-view' title={t('ABAC_No_logs')} description={t('ABAC_No_logs_description')} />

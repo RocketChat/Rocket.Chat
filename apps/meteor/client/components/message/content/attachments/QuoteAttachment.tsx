@@ -19,13 +19,7 @@ import { toPlainTextRoot } from '../../../../lib/toPlainTextRoot';
 
 // TODO: remove this team collaboration
 const quoteStyles = css`
-	.rcx-attachment__details {
-		.rcx-message-body {
-			color: ${Palette.text['font-default']};
-		}
-	}
-	&:hover,
-	&:focus {
+	&:hover {
 		.rcx-attachment__details {
 			background: ${Palette.surface['surface-hover']};
 			border-color: ${Palette.stroke['stroke-light']};

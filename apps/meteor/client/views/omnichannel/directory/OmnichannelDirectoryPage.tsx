@@ -1,7 +1,7 @@
-import { Box, Callout, Tabs, TabsItem } from '@rocket.chat/fuselage';
+import { Box, Callout } from '@rocket.chat/fuselage';
 import { Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { useRouteParameter } from '@rocket.chat/ui-contexts';
-import { useEffect, useCallback } from 'react';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ContextualBarRouter from './ContextualBarRouter';
@@ -9,6 +9,7 @@ import ChatsTab from './chats/ChatsTab';
 import ContactTab from './contacts/ContactTab';
 import { useOmnichannelDirectoryRouter } from './hooks/useOmnichannelDirectoryRouter';
 import ChatsProvider from './providers/ChatsProvider';
+import { PageTabs } from '../../../components/PageTabs';
 import { useIsOverMacLimit } from '../hooks/useIsOverMacLimit';
 
 const OmnichannelDirectoryPage = () => {
@@ -27,21 +28,19 @@ const OmnichannelDirectoryPage = () => {
 		omnichannelDirectoryRouter.navigate({ tab: 'chats' });
 	}, [omnichannelDirectoryRouter, tab]);
 
-	const handleTabClick = useCallback((tab: string) => omnichannelDirectoryRouter.navigate({ tab }), [omnichannelDirectoryRouter]);
-
 	return (
 		<ChatsProvider>
 			<Page flexDirection='row'>
 				<Page>
 					<PageHeader title={t('Omnichannel_Contact_Center')} />
-					<Tabs>
-						<TabsItem selected={tab === 'chats'} onClick={() => handleTabClick('chats')}>
-							{t('Chats')}
-						</TabsItem>
-						<TabsItem selected={tab === 'contacts'} onClick={() => handleTabClick('contacts')}>
-							{t('Contacts')}
-						</TabsItem>
-					</Tabs>
+					<PageTabs<string>
+						items={[
+							{ id: 'chats', label: t('Chats') },
+							{ id: 'contacts', label: t('Contacts') },
+						]}
+						selected={tab}
+						onSelect={(tab) => omnichannelDirectoryRouter.navigate({ tab })}
+					/>
 					<PageContent>
 						{isWorkspaceOverMacLimit && (
 							<Box marginBlockStart={16}>

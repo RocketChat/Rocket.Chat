@@ -14,7 +14,6 @@ type SidebarCollapseGroupProps = HTMLAttributes<HTMLDivElement> &
 		empty?: boolean;
 		badge?: ReactNode;
 		menu?: ReactNode;
-		actions?: ReactNode;
 	} & Pick<ItemGroupProps, 'dragging'>;
 
 export function SidebarCollapseGroup({
@@ -25,7 +24,6 @@ export function SidebarCollapseGroup({
 	children,
 	badge,
 	menu,
-	actions: _actions,
 	title,
 	empty,
 	role = 'group',
@@ -43,10 +41,10 @@ export function SidebarCollapseGroup({
 
 	return (
 		<div
-			className={cx('rcx-box rcx-box--full rcx-sidebar-collapse-group', { 'rcx-item-group--dragging': !!dragging }, className)}
 			role={role}
 			aria-labelledby={labelledBy}
 			{...props}
+			className={cx('rcx-box rcx-box--full rcx-sidebar-collapse-group', { 'rcx-item-group--dragging': !!dragging }, className)}
 		>
 			<SidebarGroupTitle
 				expanded={expanded}

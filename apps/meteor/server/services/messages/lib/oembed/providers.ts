@@ -1,9 +1,7 @@
 import type { OEmbedMeta, OEmbedUrlContent, OEmbedProvider } from '@rocket.chat/core-typings';
 import { camelCase } from 'change-case';
 
-import { Info } from '../../../../../rocketchat.info';
 import { SystemLogger } from '../../../../lib/logger/system';
-import { settings } from '../../../../settings';
 
 class Providers {
 	private providers: OEmbedProvider[];
@@ -67,27 +65,13 @@ providers.registerProvider({
 });
 
 providers.registerProvider({
-	urls: [new RegExp('https?://www\\.rdio\\.com/\\S+'), new RegExp('https?://rd\\.io/\\S+')],
-	endPoint: 'https://www.rdio.com/api/oembed/?format=json&maxheight=150',
-});
-
-providers.registerProvider({
-	urls: [new RegExp('https?://www\\.slideshare\\.net/[^/]+/[^/]+')],
-	endPoint: 'https://www.slideshare.net/api/oembed/2?format=json&maxheight=200',
-});
-
-providers.registerProvider({
 	urls: [new RegExp('https?://www\\.dailymotion\\.com/video/\\S+')],
 	endPoint: 'https://www.dailymotion.com/services/oembed?maxheight=200',
 });
 
 providers.registerProvider({
 	urls: [new RegExp('https?://(twitter|x)\\.com/[^/]+/status/\\S+')],
-	getHeaderOverrides: () => {
-		return {
-			'User-Agent': `${settings.get('API_Embed_UserAgent')} Rocket.Chat/${Info.version} Googlebot/2.1`,
-		};
-	},
+	endPoint: 'https://publish.x.com/oembed',
 });
 
 providers.registerProvider({
