@@ -20,6 +20,9 @@ const canRenderAsMenuItem = (item: RoomToolboxActionConfig): boolean => Boolean(
 
 const isSelfRendering = (item: RoomToolboxActionConfig): boolean => Boolean(item.renderToolboxItem) && !canRenderAsMenuItem(item);
 
+const menuItemLabel = ({ title, count }: Pick<RoomToolboxActionConfig, 'title' | 'count'>, t: (key: string) => string) =>
+	count ? `${t(title)} (${count})` : t(title);
+
 const actionToMenuItem = (
 	item: RoomToolboxBaseAction,
 	openTab: RoomToolboxContextValue['openTab'],
@@ -27,7 +30,7 @@ const actionToMenuItem = (
 ): GenericMenuItemProps => ({
 	...(item as Record<string, unknown>),
 	id: item.id,
-	content: t(item.title as string),
+	content: menuItemLabel(item as RoomToolboxActionConfig, t),
 	onClick:
 		(item.action as (() => void) | undefined) ??
 		((): void => {
@@ -105,7 +108,7 @@ export const useRoomToolboxActions = ({ actions, openTab }: Pick<RoomToolboxCont
 	const hiddenActions = (!roomToolboxExpanded ? actions : [...appsActions, ...normalActions.slice(6)])
 		.filter((item) => !item.disabled && !item.featured)
 		.map((item) => ({
-			content: t(item.title),
+			content: menuItemLabel(item, t),
 			onClick:
 				item.action ??
 				((): void => {
