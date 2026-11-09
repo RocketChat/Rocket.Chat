@@ -1,6 +1,6 @@
 import type { IPushToken, RegisterPushTokenInput } from '@rocket.chat/core-typings';
 
-import type { IServiceClass } from './ServiceClass';
+import type { IServiceClass } from './ServiceClass.js';
 
 export interface IPushService extends IServiceClass {
 	registerPushToken(data: RegisterPushTokenInput): Promise<Omit<IPushToken, 'authToken'>>;

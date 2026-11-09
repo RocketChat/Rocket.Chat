@@ -1,6 +1,6 @@
 import type { LoginServiceConfiguration } from '@rocket.chat/core-typings';
 
-import type { IServiceClass } from './ServiceClass';
+import type { IServiceClass } from './ServiceClass.js';
 
 export type AutoUpdateRecord = {
 	_id: string;

@@ -1,4 +1,4 @@
-import { api } from '../api';
+import { api } from '../api.js';
 
 type Promisify<T> = {
 	[K in keyof T as T[K] extends (...params: any[]) => unknown ? K : never]: T[K] extends (...params: any[]) => Promise<any>

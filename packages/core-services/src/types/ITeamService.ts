@@ -14,7 +14,7 @@ import type {
 } from '@rocket.chat/core-typings';
 import type { Document, Filter, FindOptions } from 'mongodb';
 
-import type { ICreateRoomParams } from './IRoomService';
+import type { ICreateRoomParams } from './IRoomService.js';
 
 export interface ITeamCreateRoom extends Omit<ICreateRoomParams, 'type'> {
 	id?: string;
