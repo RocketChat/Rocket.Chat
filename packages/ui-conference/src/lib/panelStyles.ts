@@ -20,15 +20,9 @@ export const narrowRoomStyle = css`
 		padding-inline: ${PANEL_INLINE_PADDING}px;
 	}
 
-	& .rcx-message {
+	& .rcx-message,
+	& .rcx-message-system,
+	& .rcx-message-thread {
 		padding-inline-start: ${PANEL_INLINE_PADDING}px;
-	}
-
-	& .rcx-message-system {
-		padding-inline-start: ${PANEL_INLINE_PADDING}px;
-	}
-
-	& .rcx-message-container--left {
-		margin-inline-start: 0px;
 	}
 `;

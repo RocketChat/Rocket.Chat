@@ -7,7 +7,7 @@ export type ThreadMessageBodyProps = {
 } & HTMLAttributes<HTMLDivElement>;
 
 const ThreadMessageBody = ({ className, ...props }: ThreadMessageBodyProps) => (
-	<div {...props} className={cx('rcx-box rcx-box--full rcx-message-thread__message', className)} />
+	<div {...props} className={cx('rcx-message-thread__message', className)} />
 );
 
 export default ThreadMessageBody;

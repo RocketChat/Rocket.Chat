@@ -1,11 +1,7 @@
-import type { HTMLAttributes } from 'react';
+import ItemContent, { type ItemContentProps } from '../Item/ItemContent';
 
-import { cx } from '../../helpers/composeClassNames';
+export type MessageContainerProps = Omit<ItemContentProps, 'is'>;
 
-export type MessageContainerProps = HTMLAttributes<HTMLDivElement>;
-
-const MessageContainer = ({ className, ...props }: MessageContainerProps) => (
-	<div {...props} className={cx('rcx-box rcx-box--full rcx-message-container', className)} />
-);
+const MessageContainer = (props: MessageContainerProps) => <ItemContent {...props} />;
 
 export default MessageContainer;
