@@ -1,15 +1,16 @@
 import { beforeEach, describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const AppEvents = {
 	IUIKitInteractionHandler: 'IUIKitInteractionHandler',
 	IUIKitLivechatInteractionHandler: 'IUIKitLivechatInteractionHandler',
 };
 
-const { AppUIKitInteractionApi } = proxyquire.noCallThru().load('./uikit', {
+const { AppUIKitInteractionApi } = loadWithMocks('./uikit', {
 	'@rocket.chat/apps': { AppEvents },
 	'@rocket.chat/core-services': { UiKitCoreApp: { isRegistered: sinon.stub() } },
 	'@rocket.chat/http-router': { nodeHandler: () => () => undefined },

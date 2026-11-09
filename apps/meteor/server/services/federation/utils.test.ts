@@ -1,12 +1,13 @@
 import { beforeEach, describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const settingsGet = sinon.stub();
 
-const { isXMPPServerEnabled } = p.noCallThru().load('./utils', {
+const { isXMPPServerEnabled } = loadWithMocks('./utils', {
 	'../../settings': { settings: { get: settingsGet } },
 });
 

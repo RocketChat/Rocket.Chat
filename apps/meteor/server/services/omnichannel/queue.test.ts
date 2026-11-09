@@ -2,8 +2,9 @@ import { after, afterEach, before, beforeEach, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import Sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const dispatchAgentDelegated = Sinon.stub();
 const getConfig = Sinon.stub();
@@ -44,7 +45,7 @@ const license = {
 	shouldPreventAction: Sinon.stub(),
 };
 
-const { OmnichannelQueue } = p.noCallThru().load('./queue', {
+const { OmnichannelQueue } = loadWithMocks('./queue', {
 	'../../lib/omnichannel/Helper': {
 		dispatchAgentDelegated,
 	},

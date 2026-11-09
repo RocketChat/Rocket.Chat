@@ -3,8 +3,9 @@ import { afterEach, before, beforeEach, describe, it } from 'node:test';
 import { ClientSafeError } from '@rocket.chat/core-services';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const permissions: Record<string, string[]> = {};
 const hasPermissionAsync = sinon.stub();
@@ -23,7 +24,7 @@ const usersFindOne = sinon.stub();
 const usersFindOneByUsername = sinon.stub();
 const subscriptionsFindOneByRoomIdAndUserId = sinon.stub();
 
-const { updateIncomingIntegration } = proxyquire.noCallThru().load('./updateIncomingIntegration', {
+const { updateIncomingIntegration } = loadWithMocks('./updateIncomingIntegration', {
 	'@rocket.chat/core-services': { ClientSafeError },
 	'../../../lib/authorization/hasPermission': { hasAllPermissionAsync, hasPermissionAsync },
 	'../../../lib/integrations/lib/validateScriptEngine': { isScriptEngineFrozen, validateScriptEngine },

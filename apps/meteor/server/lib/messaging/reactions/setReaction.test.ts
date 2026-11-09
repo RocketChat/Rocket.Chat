@@ -3,8 +3,9 @@ import { before, beforeEach, describe, it } from 'node:test';
 import { ClientSafeError } from '@rocket.chat/core-services';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const emojiList: Record<string, any> = {};
 const modelsMock = {
@@ -32,7 +33,7 @@ const hasPermissionAsyncMock = sinon.stub();
 const i18nMock = { t: sinon.stub() };
 const callbacksRunMock = sinon.stub();
 
-const { removeUserReaction, executeSetReaction, setReaction } = p.noCallThru().load('./setReaction.ts', {
+const { removeUserReaction, executeSetReaction, setReaction } = loadWithMocks('./setReaction.ts', {
 	'@rocket.chat/core-services': { Message: { beforeReacted: sinon.stub() }, ClientSafeError },
 	'../../callbacks': { callbacks: { run: callbacksRunMock } },
 	'../../i18n': { i18n: i18nMock },

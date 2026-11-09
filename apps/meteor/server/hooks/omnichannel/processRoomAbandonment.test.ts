@@ -2,8 +2,9 @@ import { before, beforeEach, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const settingsStub = sinon.stub();
 const models = {
@@ -25,9 +26,9 @@ const businessHourManagerMock = {
 	getBusinessHour: sinon.stub(),
 };
 
-const { getSecondsWhenOfficeHoursIsDisabled, parseDays, getSecondsSinceLastAgentResponse, onCloseRoom } = p
-	.noCallThru()
-	.load('./processRoomAbandonment.ts', {
+const { getSecondsWhenOfficeHoursIsDisabled, parseDays, getSecondsSinceLastAgentResponse, onCloseRoom } = loadWithMocks(
+	'./processRoomAbandonment.ts',
+	{
 		'../../lib/callbacks': {
 			callbacks: { add: sinon.stub(), priority: { HIGH: 'high' } },
 		},
@@ -35,7 +36,8 @@ const { getSecondsWhenOfficeHoursIsDisabled, parseDays, getSecondsSinceLastAgent
 			settings: { get: settingsStub },
 		},
 		'../../lib/omnichannel/business-hour': { businessHourManager: businessHourManagerMock },
-	});
+	},
+);
 
 describe('processRoomAbandonment', () => {
 	before(() => {

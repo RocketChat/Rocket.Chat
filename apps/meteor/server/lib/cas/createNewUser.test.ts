@@ -2,8 +2,9 @@ import { before, beforeEach, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const sandbox = sinon.createSandbox();
 
@@ -12,7 +13,7 @@ const createRoom = sandbox.stub();
 const Users = { findOneById: sandbox.stub() };
 const Rooms = { findOneByNameAndType: sandbox.stub() };
 
-const { createNewUser } = p.noCallThru().load('./createNewUser.ts', {
+const { createNewUser } = loadWithMocks('./createNewUser.ts', {
 	'meteor/accounts-base': { Accounts: { insertUserDoc } },
 	'../rooms/createRoom': { createRoom },
 });

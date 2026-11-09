@@ -2,8 +2,9 @@ import { before, beforeEach, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const findOneByIdAndUserIdAndRoomId = sinon.stub();
 const updateFileMetadata = sinon.stub().resolves();
@@ -13,7 +14,7 @@ const getFileExtension = sinon.stub().returns('txt');
 
 const executeSendMessage = sinon.stub().resolves({});
 
-const { parseFileIntoMessageAttachments, sendFileMessage } = proxyquire.noCallThru().load('./sendFileMessage', {
+const { parseFileIntoMessageAttachments, sendFileMessage } = loadWithMocks('./sendFileMessage', {
 	'meteor/meteor': {
 		Meteor: {
 			methods: sinon.stub(),

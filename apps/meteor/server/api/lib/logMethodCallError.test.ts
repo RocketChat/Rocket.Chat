@@ -1,8 +1,9 @@
 import { before, beforeEach, describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const debugMock = sinon.stub();
 const errorMock = sinon.stub();
@@ -13,7 +14,7 @@ describe('logMethodCallError', () => {
 	let logMethodCallError: (method: string, err: unknown) => void;
 
 	before(() => {
-		({ logMethodCallError } = proxyquire.noCallThru().load('./logMethodCallError', {
+		({ logMethodCallError } = loadWithMocks('./logMethodCallError', {
 			'meteor/meteor': {
 				Meteor: { _debug: meteorDebugMock },
 			},

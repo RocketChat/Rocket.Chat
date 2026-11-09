@@ -1,7 +1,8 @@
 import { beforeEach, describe, it } from 'node:test';
 
-import p from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const sandbox = sinon.createSandbox();
 const settingValues = new Map<string, unknown>();
@@ -9,7 +10,7 @@ const LoginServiceConfiguration = { createOrUpdateService: sandbox.stub(), remov
 const notifyOnLoginServiceConfigurationChanged = sandbox.stub();
 const notifyOnLoginServiceConfigurationChangedByService = sandbox.stub();
 
-const { updateCasServices } = p.noCallThru().load('./updateCasService.ts', {
+const { updateCasServices } = loadWithMocks('./updateCasService.ts', {
 	'@rocket.chat/models': { LoginServiceConfiguration },
 	'./logger': { logger: { info: sandbox.stub() } },
 	'../../settings/cached': { settings: { get: (id: string) => settingValues.get(id) } },

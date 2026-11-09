@@ -2,8 +2,9 @@ import { afterEach, beforeEach, describe, it } from 'node:test';
 
 import type { IAppsEngineService } from '@rocket.chat/core-services';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const AppsMock = {
 	self: {
@@ -35,7 +36,7 @@ const serviceMocks = {
 	'../../lib/logger/system': { SystemLogger: { error: sinon.stub() } },
 };
 
-const { AppsEngineService, AppsEngineNoNodesFoundError } = proxyquire.noCallThru().load('./service', serviceMocks);
+const { AppsEngineService, AppsEngineNoNodesFoundError } = loadWithMocks('./service', serviceMocks);
 
 describe('AppsEngineService', () => {
 	let service: IAppsEngineService;

@@ -3,7 +3,6 @@ import { afterEach, before, beforeEach, describe, it } from 'node:test';
 import type { VideoConference } from '@rocket.chat/core-typings';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import {
@@ -15,6 +14,7 @@ import {
 	resetAll,
 	ringedUserIds,
 } from './testHarness';
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 /**
  * What joining a call does *besides* recording the join, and for whom.
@@ -56,7 +56,7 @@ const UsersMock = { findOneById: sinon.stub().resolves({ _id: 'joiner', username
 
 const broadcastStub = sinon.stub().resolves();
 
-const { VideoConfService } = proxyquire.noCallThru().load('./service', {
+const { VideoConfService } = loadWithMocks('./service', {
 	...commonServiceStubs,
 	'@rocket.chat/core-services': {
 		api: { broadcast: broadcastStub },

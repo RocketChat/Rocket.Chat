@@ -1,7 +1,8 @@
 import { describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
+
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const Authorization = {
 	hasPermission: async (_uid: string, _permission: string, _room?: string): Promise<boolean> => true,
@@ -9,7 +10,7 @@ const Authorization = {
 
 class ClientSafeError extends Error {}
 
-const { BeforeSavePreventMention } = proxyquire.noCallThru().load('./BeforeSavePreventMention', {
+const { BeforeSavePreventMention } = loadWithMocks('./BeforeSavePreventMention', {
 	'@rocket.chat/core-services': {
 		Authorization,
 		ClientSafeError,

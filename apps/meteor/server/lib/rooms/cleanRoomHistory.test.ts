@@ -2,8 +2,9 @@ import { before, beforeEach, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const modelsMock = {
 	Messages: {
@@ -34,7 +35,7 @@ const broadcastMock = sinon.stub();
 const notifyOnSubscriptionChangedByIdMock = sinon.stub();
 const notifyOnMessageChangeMock = sinon.stub();
 
-const { cleanRoomHistory } = p.noCallThru().load('./cleanRoomHistory.ts', {
+const { cleanRoomHistory } = loadWithMocks('./cleanRoomHistory.ts', {
 	'@rocket.chat/core-services': { api: { broadcast: broadcastMock } },
 	'./deleteRoom': { deleteRoom: sinon.stub() },
 	'../media/file-upload': { FileUpload: { getStore: sinon.stub() } },

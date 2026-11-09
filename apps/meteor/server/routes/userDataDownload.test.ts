@@ -3,8 +3,9 @@ import { before, beforeEach, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../tests/mocks/utils/loadWithMocks';
 
 const sandbox = sinon.createSandbox();
 
@@ -14,7 +15,7 @@ const getStore = sandbox.stub();
 const UserDataFiles = { findOneById: sandbox.stub() };
 const Users = { findOneByIdAndLoginToken: sandbox.stub() };
 
-proxyquire.noCallThru().load('./userDataDownload', {
+loadWithMocks('./userDataDownload', {
 	'@rocket.chat/account-utils': { hashLoginToken: (token: string) => `hashed:${token}` },
 	'meteor/webapp': { WebApp: { connectHandlers: { use: connectHandlersUse } } },
 	'../lib/media/file-upload': { FileUpload: { getStore } },

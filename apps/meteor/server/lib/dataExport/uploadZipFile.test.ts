@@ -2,8 +2,9 @@ import { before, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 // Create stubs for dependencies
 const stubs = {
@@ -15,7 +16,7 @@ const stubs = {
 	createReadStream: sinon.stub(),
 };
 
-const { uploadZipFile } = proxyquire.noCallThru().load('./uploadZipFile.ts', {
+const { uploadZipFile } = loadWithMocks('./uploadZipFile.ts', {
 	'@rocket.chat/random': {
 		Random: {
 			id: stubs.randomId,

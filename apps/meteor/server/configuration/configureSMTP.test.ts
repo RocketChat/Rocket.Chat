@@ -1,14 +1,15 @@
 import { afterEach, describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../tests/mocks/utils/loadWithMocks';
 
 const configureMailTransport = sinon.stub();
 const sendMail = sinon.stub().resolves();
 const Email: { customTransport?: (mail: Record<string, unknown>) => Promise<void> } = {};
 
-const { configureSMTP } = proxyquire.noCallThru().load('./configureSMTP', {
+const { configureSMTP } = loadWithMocks('./configureSMTP', {
 	'meteor/email': { Email },
 	'../lib/logger/system': { SystemLogger: { info: sinon.stub() } },
 	'../lib/notifications/email/transport': { configureMailTransport, sendMail },

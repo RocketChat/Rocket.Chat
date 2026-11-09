@@ -2,8 +2,9 @@ import { beforeEach, describe, it } from 'node:test';
 
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const settingsMock = { get: sinon.stub() };
 const licenseMock = { hasModule: sinon.stub() };
@@ -21,7 +22,7 @@ type Patched = (
 
 let filterDefaultChannels: Patched;
 
-p.noCallThru().load('./filterDefaultChannelsForUser.ts', {
+loadWithMocks('./filterDefaultChannelsForUser.ts', {
 	'@rocket.chat/core-services': { Abac: abacMock },
 	'@rocket.chat/license': { License: licenseMock },
 	'../../../../server/lib/authorization/getRoomAbacLockContext': { getRoomAbacLockContext: getRoomAbacLockContextMock },
