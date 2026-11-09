@@ -11,6 +11,7 @@ const createGroup = sinon.stub().resolves('call1');
 const setSipAliasById = sinon.stub();
 const findOneById = sinon.stub();
 const findOneByEmailAddress = sinon.stub();
+const findRoomById = sinon.stub();
 const findActiveByEmailAddresses = sinon.stub();
 const addUserToRoom = sinon.stub().resolves();
 const createRoom = sinon.stub().resolves({ _id: 'discussion1' });
@@ -18,6 +19,7 @@ const hasPermissionAsync = sinon.stub();
 const createScheduledConference = sinon.stub();
 const findScheduledConferenceById = sinon.stub();
 const findScheduledConferenceBySipAlias = sinon.stub();
+const setScheduledConferenceDiscussionRid = sinon.stub();
 
 const stubs = [
 	findOneByProviderNameAndSipAlias,
@@ -33,6 +35,8 @@ const stubs = [
 	createScheduledConference,
 	findScheduledConferenceById,
 	findScheduledConferenceBySipAlias,
+	setScheduledConferenceDiscussionRid,
+	findRoomById,
 ];
 
 const settingValues: Record<string, unknown> = {};
@@ -46,11 +50,12 @@ const VideoConfService = createService({
 	models: {
 		VideoConference: { findOneByProviderNameAndSipAlias, findOneLiveByScheduledConferenceId, createGroup, setSipAliasById },
 		Users: { findOneById, findOneByEmailAddress, findActiveByEmailAddresses },
-		Rooms: { findOneById: sinon.stub().resolves({ _id: 'parent1', t: 'c' }) },
+		Rooms: { findOneById: findRoomById },
 		ScheduledConferences: {
 			create: createScheduledConference,
 			findOneById: findScheduledConferenceById,
 			findOneBySipAlias: findScheduledConferenceBySipAlias,
+			setDiscussionRidById: setScheduledConferenceDiscussionRid,
 		},
 	},
 	overrides: {
@@ -90,6 +95,8 @@ beforeEach(() => {
 	createScheduledConference.resolves('booking1');
 	findScheduledConferenceById.resolves(null);
 	findScheduledConferenceBySipAlias.resolves(null);
+	setScheduledConferenceDiscussionRid.resolves();
+	findRoomById.resolves({ _id: 'parent1', t: 'c' });
 
 	settingValues.Pexip_Integration_Enabled = true;
 	settingValues.Pexip_Integration_SIP_AddAlias = true;
@@ -102,6 +109,7 @@ const booking = (overrides: Record<string, unknown> = {}) => ({
 	uid: 'requester1',
 	requesterEmail: 'requester@example.com',
 	inviteeEmails: [],
+	discussionRid: 'discussion1',
 	createdAt: new Date('2026-11-09T00:00:00.000Z'),
 	_updatedAt: new Date('2026-11-09T00:00:00.000Z'),
 	...overrides,
@@ -305,8 +313,31 @@ describe('VideoConfService.scheduleConference', () => {
 			uid: 'requester1',
 			requesterEmail: 'Requester@Example.com',
 			inviteeEmails: ['guest@example.com'],
+			discussionRid: 'discussion1',
 			title: 'Weekly sync',
 		});
+	});
+
+	// Booked once, the chat is shared by every conference started from the booking.
+	it('should create the discussion with the booking, owned by the requester and named after the title', async () => {
+		await service.scheduleConference('requester@example.com', request);
+
+		expect(createRoom.calledOnce).to.be.true;
+		expect(createRoom.firstCall.args[2]).to.equal(requester);
+		expect(createRoom.firstCall.args[6]).to.include({ fname: 'Weekly sync', prid: 'parent1' });
+	});
+
+	it('should give an untitled booking the usual dated discussion name', async () => {
+		await service.scheduleConference('requester@example.com', { ...request, title: undefined });
+
+		expect(createRoom.firstCall.args[6].fname).to.match(/^\d{4}-\d{2}-\d{2} Video Call Chat$/);
+	});
+
+	it('should create no discussion for a refused request', async () => {
+		hasPermissionAsync.withArgs('requester1', 'schedule-conference').resolves(false);
+
+		await expect(service.scheduleConference('requester@example.com', request)).to.be.rejectedWith('error-not-allowed');
+		expect(createRoom.called).to.be.false;
 	});
 
 	it('should answer with the booking link and no alias when none was asked for', async () => {
@@ -368,10 +399,35 @@ describe('VideoConfService.initializeOrJoinScheduledConferenceById', () => {
 			expect(createGroup.firstCall.args[0]).to.include({ rid: 'external1', providerName: 'core.pexip', scheduledConferenceId: 'booking1' });
 		});
 
-		it('should hang the chat off the requester', async () => {
+		it("should reuse the booking's discussion rather than creating one", async () => {
+			findScheduledConferenceById.resolves(booking({ discussionRid: 'discussion7' }));
+
+			await service.initializeOrJoinScheduledConferenceById('booking1', 'user1');
+
+			expect(createRoom.called).to.be.false;
+			expect(createGroup.firstCall.args[0].discussionRid).to.equal('discussion7');
+		});
+
+		it("should replace the booking's discussion when it has been deleted", async () => {
+			findScheduledConferenceById.resolves(booking({ discussionRid: 'deleted9', title: 'Weekly sync' }));
+			findRoomById.withArgs('deleted9').resolves(null);
+
 			await service.initializeOrJoinScheduledConferenceById('booking1', 'user1');
 
 			expect(createRoom.firstCall.args[2]).to.equal(requester);
+			expect(createRoom.firstCall.args[6].fname).to.equal('Weekly sync');
+			expect(setScheduledConferenceDiscussionRid.calledOnceWith('booking1', 'discussion1')).to.be.true;
+			expect(createGroup.firstCall.args[0].discussionRid).to.equal('discussion1');
+		});
+
+		// The race used to leave the loser's freshly created discussion behind.
+		it('should create no room at all when two people start it at once', async () => {
+			createGroup.rejects(duplicateKeyError());
+			findOneLiveByScheduledConferenceId.onSecondCall().resolves({ _id: 'winner1', discussionRid: 'discussion1' });
+
+			await service.initializeOrJoinScheduledConferenceById('booking1', 'user1');
+
+			expect(createRoom.called).to.be.false;
 		});
 
 		it('should title it after the booking', async () => {

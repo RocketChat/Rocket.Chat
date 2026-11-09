@@ -2540,7 +2540,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('error-not-allowed');
 		}
 
-		const data = { uid: user._id, requesterEmail: email, inviteeEmails: invitees, ...(title ? { title } : {}) };
+		const discussionRid = await this.createScheduledConferenceDiscussion(user._id, title);
+
+		const data = { uid: user._id, requesterEmail: email, inviteeEmails: invitees, discussionRid, ...(title ? { title } : {}) };
 
 		if (!withSipAlias) {
 			const scheduledConferenceId = await ScheduledConferences.create(data);
@@ -2601,6 +2603,34 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return { canSchedule, canUseSipAlias };
 	}
 
+	private async createScheduledConferenceDiscussion(uid: IUser['_id'], title?: string): Promise<IRoom['_id']> {
+		const rid = await this.getRidForExternalConference();
+		if (!rid) {
+			throw new Error('invalid-room');
+		}
+
+		const requester = await Users.findOneById(uid);
+		if (!requester) {
+			throw new Error('invalid-user');
+		}
+
+		return this.createDiscussionForConferenceData(title || this.getDiscussionDisplayName(), rid, requester);
+	}
+
+	/** The booking's discussion, replaced with a new one if the room has been deleted since. */
+	private async getScheduledConferenceDiscussion(scheduledConference: IScheduledConference): Promise<IRoom['_id']> {
+		const { _id, discussionRid, uid, title } = scheduledConference;
+
+		if (discussionRid && (await Rooms.findOneById(discussionRid, { projection: { _id: 1 } }))) {
+			return discussionRid;
+		}
+
+		const newDiscussionRid = await this.createScheduledConferenceDiscussion(uid, title);
+		await ScheduledConferences.setDiscussionRidById(_id, newDiscussionRid);
+
+		return newDiscussionRid;
+	}
+
 	private makeScheduledConferenceUrl(scheduledConferenceId: IScheduledConference['_id']): string {
 		const baseUrl = settings.get<string>('Site_Url').replace(/\/+$/, '');
 
@@ -2647,8 +2677,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('invalid-user');
 		}
 
-		// Before the conference, not after: `createGroup` takes the discussion, so the chat has to exist first.
-		const discussionRid = await this.createDiscussionForConferenceData(this.getDiscussionDisplayName(), rid, requester);
+		const discussionRid = await this.getScheduledConferenceDiscussion(scheduledConference);
 
 		let callId: VideoConference['_id'];
 		try {

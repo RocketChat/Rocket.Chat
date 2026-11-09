@@ -32,4 +32,8 @@ export class ScheduledConferencesRaw extends BaseRaw<IScheduledConference> imple
 	public async findOneBySipAlias<T extends IScheduledConference>(sipAlias: string, options?: FindOptions<T>): Promise<T | null> {
 		return this.findOne<T>({ sipAlias }, options || {});
 	}
+
+	public async setDiscussionRidById(_id: IScheduledConference['_id'], discussionRid: IScheduledConference['discussionRid']): Promise<void> {
+		await this.updateOne({ _id }, { $set: { discussionRid } });
+	}
 }

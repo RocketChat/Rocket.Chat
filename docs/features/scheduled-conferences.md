@@ -9,7 +9,7 @@ Scheduled conferences only exist on the internal Pexip provider.
 The add-in asks two things, identifying the person booking by email address:
 
 1. **What may this person book?** Booking needs an active user with that address, Pexip enabled, a room named in *Pexip → Persistent Chat → External room*, and the `schedule-conference` permission. Reserving a SIP number also needs *Add SIP alias* on and the `schedule-conference-sip-alias` permission. An address that belongs to nobody may book nothing.
-2. **Book it.** The request — the requester's address, the invitees' addresses, an optional title, and whether to reserve a number — is stored as it arrived. Nothing else happens yet: no conference, no room, no chat. The answer is the link and, if one was asked for, the number.
+2. **Book it.** The request — the requester's address, the invitees' addresses, an optional title, and whether to reserve a number — is stored as it arrived, together with the booking's discussion, created right away off the external room and owned by the requester. It is named after the title, or gets the usual dated conference-chat name. No conference exists yet. The answer is the link and, if one was asked for, the number.
 
 Asking for a number the person may not have is refused outright, rather than booked without one.
 
@@ -20,6 +20,7 @@ Asking for a number the person may not have is refused outright, rather than boo
 A booking is not a conference. It is the recipe every conference started from it is built from, and it is kept for good:
 
 - the link keeps working after a conference ends — the next person to follow it starts a fresh one;
+- every conference started from it shares the booking's discussion, so the conversation carries over from one meeting to the next. If that room has been deleted, the next conference gets a new one, which then takes its place;
 - a reserved number stays reserved forever. Ordinary conferences borrow a number for their lifetime and give it back when they end; a booked number is never handed to any other conference, and never reserved twice.
 
 At most one conference runs for a booking at a time.
@@ -34,7 +35,7 @@ The first of these to happen starts the conference; every later one joins it:
 
 Whichever it is, the conference is built **on the requester's behalf**: they are its creator, and therefore its host, even if they are the last to arrive. Everyone else is a guest — any signed-in user who has the link may join.
 
-The conference hangs off the external room, with its own discussion. The requester owns the discussion; invitees whose address belongs to an active user are added to it when the conference starts, and anyone else is added when they join. The invitee list is matched against users each time a conference starts, so someone who gets an account after the booking is still picked up. Nobody is rung.
+The conference hangs off the external room and uses the booking's discussion. Invitees whose address belongs to an active user are added to it when the conference starts, and anyone else is added when they join. The invitee list is matched against users each time a conference starts, so someone who gets an account after the booking is still picked up. Nobody is rung.
 
 The title is the booking's, or the number when it has none; with neither, the room names the conference, as for any untitled one. A booking without a number never gets one, even on a workspace that gives every other conference a temporary number.
 

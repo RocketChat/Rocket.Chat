@@ -1,4 +1,5 @@
 import type { IRocketChatRecord } from './IRocketChatRecord';
+import type { IRoom } from './IRoom';
 import type { IUser } from './IUser';
 
 /**
@@ -15,6 +16,8 @@ export interface IScheduledConference extends IRocketChatRecord {
 	inviteeEmails: string[];
 	title?: string;
 	sipAlias?: string;
+	/** Created with the booking and shared by every conference started from it, so the conversation carries over. */
+	discussionRid: IRoom['_id'];
 	createdAt: Date;
 }
 
