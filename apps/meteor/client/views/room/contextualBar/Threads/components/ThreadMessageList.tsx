@@ -2,7 +2,6 @@ import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { MessageTypes } from '@rocket.chat/message-types';
-import { isTruthy } from '@rocket.chat/tools';
 import { clientCallbacks, CustomVirtuaScrollbars, useMergedRefsV2 } from '@rocket.chat/ui-client';
 import { useSearchParameter, useSetting, useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
 import { differenceInSeconds } from 'date-fns/differenceInSeconds';
@@ -25,7 +24,9 @@ import { useRoom } from '../../../contexts/RoomContext';
 import { useDateScroll } from '../../../hooks/useDateScroll';
 import { useFirstUnreadMessageId } from '../../../hooks/useFirstUnreadMessageId';
 import { useMessageListNavigation } from '../../../hooks/useMessageListNavigation';
+import MessageListLoadMore from '../../../layout/MessageListLoadMore';
 import { useThreadMessagesQuery } from '../hooks/useThreadMessagesQuery';
+import ThreadMessageListFrame from '../layout/ThreadMessageListFrame';
 import './threads.css';
 
 const isMessageSequential = (current: IMessage, previous: IMessage | undefined, groupingRange: number): boolean => {
@@ -372,7 +373,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 	const keepMountedMessages = useKeepMountedMessages(items);
 
 	return (
-		<div className={['thread-list js-scroll-thread', hideUsernames && 'hide-usernames'].filter(isTruthy).join(' ')}>
+		<ThreadMessageListFrame hideUsernames={hideUsernames}>
 			<BubbleDate ref={bubbleRef} store={bubbleDateStore} />
 			<CustomVirtuaScrollbars ref={mergedRefs}>
 				<MessageListProvider>
@@ -411,14 +412,12 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 						}}
 					>
 						{loading ? (
-							<div className='load-more' role='presentation'>
+							<MessageListLoadMore>
 								<LoadingMessagesIndicator />
-							</div>
+							</MessageListLoadMore>
 						) : null}
 						{!loading && hasPreviousPage ? (
-							<div className='load-more' role='presentation'>
-								{isFetchingPreviousPage ? <LoadingMessagesIndicator /> : null}
-							</div>
+							<MessageListLoadMore>{isFetchingPreviousPage ? <LoadingMessagesIndicator /> : null}</MessageListLoadMore>
 						) : null}
 						{!loading &&
 							items.map((message, index, { [index - 1]: previous }) => {
@@ -443,14 +442,14 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 								);
 							})}
 						{!loading && hasNextPage ? (
-							<div className='load-more' role='presentation'>
+							<MessageListLoadMore>
 								{isFetchingNextPage ? <LoadingMessagesIndicator /> : <InfiniteListAnchor loadMore={loadMoreMessages} />}
-							</div>
+							</MessageListLoadMore>
 						) : null}
 					</VList>
 				</MessageListProvider>
 			</CustomVirtuaScrollbars>
-		</div>
+		</ThreadMessageListFrame>
 	);
 };
 

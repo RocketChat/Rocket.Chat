@@ -1,7 +1,10 @@
-import { Box, Field, FieldLabel, FieldRow, UrlInput, Icon, Button, InputBoxSkeleton } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, UrlInput, Icon, Button, InputBoxSkeleton } from '@rocket.chat/fuselage';
 import { useClipboardWithToast } from '@rocket.chat/ui-client';
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
+
+import InviteLinkAction from './layout/InviteLinkAction';
+import InviteLinkCaption from './layout/InviteLinkCaption';
 
 export type InviteLinkProps = {
 	linkText: string;
@@ -24,16 +27,12 @@ const InviteLink = ({ linkText, captionText, onClickEdit }: InviteLinkProps) => 
 						<UrlInput id={inviteLinkId} value={linkText} endAddon={<Icon onClick={(): Promise<void> => copy()} name='copy' size='x16' />} />
 					)}
 				</FieldRow>
-				{captionText && (
-					<Box paddingBlock={8} color='annotation' fontScale='c2'>
-						{captionText}
-					</Box>
-				)}
+				{captionText && <InviteLinkCaption>{captionText}</InviteLinkCaption>}
 			</Field>
 			{onClickEdit && (
-				<Box marginBlockStart={8}>
+				<InviteLinkAction>
 					<Button onClick={onClickEdit}>{t('Edit_Invite')}</Button>
-				</Box>
+				</InviteLinkAction>
 			)}
 		</>
 	);

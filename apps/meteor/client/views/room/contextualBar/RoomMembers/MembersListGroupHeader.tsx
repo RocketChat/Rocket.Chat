@@ -1,6 +1,8 @@
-import { Box, ItemGroupHeader, ItemGroupTitle } from '@rocket.chat/fuselage';
+import { ItemGroupHeader, ItemGroupTitle } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
+
+import MembersListGroupHeaderSurface from './layout/MembersListGroupHeaderSurface';
 
 export type MembersListGroupHeaderProps = {
 	title: TranslationKey;
@@ -12,12 +14,12 @@ export const MembersListGroupHeader = ({ title, count, isFirst = false }: Member
 	const { t } = useTranslation();
 
 	return (
-		<Box backgroundColor='room' paddingBlockStart={isFirst ? 0 : 8}>
+		<MembersListGroupHeaderSurface first={isFirst}>
 			<ItemGroupHeader inset='lg'>
 				<ItemGroupTitle>
 					{t(title)} ({count})
 				</ItemGroupTitle>
 			</ItemGroupHeader>
-		</Box>
+		</MembersListGroupHeaderSurface>
 	);
 };

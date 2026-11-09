@@ -1,5 +1,5 @@
 import type { IDiscussionMessage } from '@rocket.chat/core-typings';
-import { Box, Icon, TextInput, Callout, Throbber } from '@rocket.chat/fuselage';
+import { Icon, TextInput, Callout, Throbber } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import {
 	ContextualbarHeader,
@@ -18,6 +18,9 @@ import { useCallback, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import DiscussionsListRow from './DiscussionsListRow';
+import DiscussionsListViewport from './layout/DiscussionsListViewport';
+import ContextualbarListArea from '../../../../components/ContextualbarList/ContextualbarListArea';
+import ContextualbarListStatus from '../../../../components/ContextualbarList/ContextualbarListStatus';
 import { PaginatedVirtualList } from '../../../../components/PaginatedVirtualList';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
 import { useMessageRowListNavigation } from '../../../../hooks/useMessageRowListNavigation';
@@ -84,20 +87,20 @@ function DiscussionsList({
 			<ContextualbarContent flush>
 				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={itemCount} />
 				{isPending && (
-					<Box paddingInline={24} paddingBlock={12}>
+					<ContextualbarListStatus spaced>
 						<Throbber size='x12' />
-					</Box>
+					</ContextualbarListStatus>
 				)}
 				{error instanceof Error && (
-					<Box paddingInline={24}>
+					<ContextualbarListStatus>
 						<Callout type='danger'>{error.toString()}</Callout>
-					</Box>
+					</ContextualbarListStatus>
 				)}
 				{isSuccess && (
-					<Box id={discussionListId} ref={discussionListRef} width='full' height='full' overflow='hidden' flexShrink={1}>
+					<ContextualbarListArea id={discussionListId} ref={discussionListRef}>
 						{discussions.length === 0 && <ContextualbarEmptyContent title={t('No_Discussions_found')} />}
 						{discussions.length > 0 && (
-							<Box height='full' width='full' style={{ minHeight: 0 }}>
+							<DiscussionsListViewport>
 								<PaginatedVirtualList
 									items={discussions}
 									totalCount={itemCount}
@@ -107,9 +110,9 @@ function DiscussionsList({
 										<DiscussionsListRow discussion={discussion} showRealNames={showRealNames} onClick={onClick} />
 									)}
 								/>
-							</Box>
+							</DiscussionsListViewport>
 						)}
-					</Box>
+					</ContextualbarListArea>
 				)}
 			</ContextualbarContent>
 		</ContextualbarDialog>
