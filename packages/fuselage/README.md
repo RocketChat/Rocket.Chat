@@ -188,7 +188,14 @@ yarn workspace @rocket.chat/fuselage build-storybook
 
 With `FUSELAGE_ZERO_RUNTIME=1`, Storybook compiles Fuselage with Tamagui's zero runtime, as the web client does; without it,
 components run on the Tamagui runtime, as npm consumers and Jest run them. To check that a component renders the same both
-ways, build both and compare them with `node packages/fuselage/scripts/verify/story-computed.mjs <runtime build> <zero build>`.
+ways, build both into separate directories and compare them:
+
+```sh
+yarn workspace @rocket.chat/fuselage build-storybook -o storybook-static/runtime
+FUSELAGE_ZERO_RUNTIME=1 yarn workspace @rocket.chat/fuselage build-storybook -o storybook-static/zero
+node packages/fuselage/scripts/verify/story-computed.mjs packages/fuselage/storybook-static/runtime packages/fuselage/storybook-static/zero
+```
+
 The zero build leaves out the MDX documentation pages (`Box.mdx`, `Flex.mdx`), which need the docs addon.
 
 Visual regression tests compare Storybook screenshots:
