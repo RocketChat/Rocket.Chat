@@ -1,0 +1,11 @@
+apps/meteor/client/components/InfoPanel/RetentionPolicyCallout.tsx
+  ai_agent 15
+.changeset/bulk-delete-panel.md
+  ai_agent 6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "b9db297fc97a7f681c6e406f1679f4286fdf8cb0",
+  "prompts": {}
+}
