@@ -107,7 +107,7 @@ Containers and layouts nest at most 2 deep: `layout` > `container` > `rich_text`
 | `rich_text_title` | `RichTextBlock` | no | Wins over `title` when both are given. |
 | `subtitle` | `TextObject` | no | At most 150 characters. |
 | `child_blocks` | `readonly ContainerChildBlock[]` | yes | From 1 to 10 of `actions`, `context`, `divider`, `file`, `header`, `image`, `input`, `layout`, `rich_text`, `section`, `table` and `video`. |
-| `width` | `'narrow' \| 'standard' \| 'wide' \| 'full'` | no | Defaults to `standard`; the first three cap the width, `full` fills the space. |
+| `width` | `'narrow' \| 'standard' \| 'wide' \| 'full'` | no | Defaults to `standard`. `narrow` is 280px, `standard` is the width of a message block (368px), `wide` is 640px and `full` fills the space. The caps apply on every surface. |
 | `icon` | `CardImage` | no | Small image beside the title and subtitle; it must have a safe URL to be drawn. |
 | `is_collapsible` | `boolean` | no | Defaults to false. |
 | `default_collapsed` | `boolean` | no | Starts collapsed when `is_collapsible` is true. |
