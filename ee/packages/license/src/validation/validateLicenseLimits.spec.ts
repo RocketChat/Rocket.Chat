@@ -1,4 +1,4 @@
-import { MockedLicenseBuilder, getReadyLicenseManager } from '../../__tests__/MockedLicenseBuilder';
+import { MockedLicenseBuilder, getReadyLicenseManager } from '../../__tests__/MockedLicenseBuilder.js';
 
 describe('validateLicenseLimits', () => {
 	describe('limit max: -1', () => {

@@ -9,7 +9,7 @@ import type {
 	LicensePeriod,
 } from '@rocket.chat/core-typings';
 
-import { encrypt, encryptStatsToken } from './token';
+import { encrypt, encryptStatsToken } from './token.js';
 
 export class MockedLicenseBuilder {
 	information: {

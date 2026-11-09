@@ -4,8 +4,8 @@
 
 import crypto from 'node:crypto';
 
-import { validateLicenseUrl } from './validateLicenseUrl';
-import { MockedLicenseBuilder, getReadyLicenseManager } from '../../__tests__/MockedLicenseBuilder';
+import { validateLicenseUrl } from './validateLicenseUrl.js';
+import { MockedLicenseBuilder, getReadyLicenseManager } from '../../__tests__/MockedLicenseBuilder.js';
 
 describe('Url Validation', () => {
 	describe('url method', () => {

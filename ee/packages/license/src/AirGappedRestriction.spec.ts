@@ -1,6 +1,6 @@
-import { AirGappedRestriction } from './AirGappedRestriction';
-import { StatsTokenBuilder } from './MockedLicenseBuilder';
-import { License } from './licenseImp';
+import { AirGappedRestriction } from './AirGappedRestriction.js';
+import { StatsTokenBuilder } from './MockedLicenseBuilder.js';
+import { License } from './licenseImp.js';
 
 jest.mock('./licenseImp', () => ({
 	License: {

@@ -1,6 +1,6 @@
-import { getLicenseCreatedAt } from './getLicenseCreatedAt';
-import type { LicenseImp } from './licenseImp';
-import { License } from './licenseImp';
+import { getLicenseCreatedAt } from './getLicenseCreatedAt.js';
+import type { LicenseImp } from './licenseImp.js';
+import { License } from './licenseImp.js';
 
 export const applyLicense = async (license: string, isNewLicense: boolean, manager: LicenseImp = License): Promise<boolean> => {
 	const enterpriseLicense = (license ?? '').trim();

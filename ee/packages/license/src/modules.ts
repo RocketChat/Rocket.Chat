@@ -1,8 +1,8 @@
 import type { LicenseModule, InternalModuleName, ExternalModule } from '@rocket.chat/core-typings';
 import { CoreModules } from '@rocket.chat/core-typings';
 
-import { moduleRemoved, moduleValidated } from './events/emitter';
-import type { LicenseManager } from './license';
+import { moduleRemoved, moduleValidated } from './events/emitter.js';
+import type { LicenseManager } from './license.js';
 
 export function isInternalModuleName(module: string): module is InternalModuleName {
 	return CoreModules.includes(module as InternalModuleName);
