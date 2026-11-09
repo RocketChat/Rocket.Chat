@@ -639,9 +639,8 @@ $item-group-narrow-width: 320px;
 	.rcx-item-group--drop-before::before,
 	.rcx-item-group--drop-after::before,
 	.rcx-item-drop-line {
-		forced-color-adjust: none;
-
 		background-color: Highlight;
+		forced-color-adjust: none;
 	}
 
 	.rcx-item--drop-target-active,
@@ -679,10 +678,11 @@ $item-group-narrow-width: 320px;
 	&--available {
 		z-index: 9996;
 
-		background-color: transparent;
-		box-shadow: none;
 		outline: lengths.border-width(default) dashed $item-color-stroke-focus;
 		outline-offset: calc(-1 * #{lengths.border-width(default)});
+
+		background-color: transparent;
+		box-shadow: none;
 	}
 }
 
