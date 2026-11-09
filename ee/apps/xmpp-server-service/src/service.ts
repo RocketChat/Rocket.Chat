@@ -6,8 +6,8 @@ import { startBroker } from '@rocket.chat/network-broker';
 import { startTracing } from '@rocket.chat/tracing';
 import polka from 'polka';
 
-import { parseDnsOverrides } from './dnsOverrides';
-import { createInboundMetrics } from './metrics';
+import { parseDnsOverrides } from './dnsOverrides.js';
+import { createInboundMetrics } from './metrics.js';
 
 const PORT = process.env.PORT || 3039;
 
