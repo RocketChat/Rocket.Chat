@@ -7,7 +7,8 @@ import { useTranslation } from 'react-i18next';
 
 import AppsList from '../AppsList';
 import FeaturedAppsSections from './FeaturedAppsSections';
-import AppsListScrollArea from './layout/AppsListScrollArea';
+import AppsListScroller from './layout/AppsListScroller';
+import ListViewport from '../../../components/ListViewport';
 
 export type AppsPageContentBodyProps = {
 	isMarketplace: boolean;
@@ -44,10 +45,12 @@ const AppsPageContentBody = ({
 
 	return (
 		<>
-			<AppsListScrollArea ref={scrollableRef}>
-				{isMarketplace && !isFiltered && <FeaturedAppsSections appsListId={appsListId} appsResult={appsResult?.allApps || []} />}
-				<AppsList appsListId={appsListId} apps={appsResult?.items || []} title={isMarketplace ? t('All_Apps') : undefined} />
-			</AppsListScrollArea>
+			<ListViewport>
+				<AppsListScroller ref={scrollableRef}>
+					{isMarketplace && !isFiltered && <FeaturedAppsSections appsListId={appsListId} appsResult={appsResult?.allApps || []} />}
+					<AppsList appsListId={appsListId} apps={appsResult?.items || []} title={isMarketplace ? t('All_Apps') : undefined} />
+				</AppsListScroller>
+			</ListViewport>
 			{Boolean(appsResult?.count) && (
 				<Pagination
 					divider

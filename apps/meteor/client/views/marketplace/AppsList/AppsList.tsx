@@ -1,8 +1,7 @@
 import type { App } from '@rocket.chat/core-typings';
-import { CardGroup, Text } from '@rocket.chat/fuselage';
+import { CardGroup, Stack, Text } from '@rocket.chat/fuselage';
 
 import AppRow from './AppRow';
-import AppsListSection from './layout/AppsListSection';
 
 export type AppsListProps = {
 	apps: App[];
@@ -12,7 +11,7 @@ export type AppsListProps = {
 
 const AppsList = ({ apps, title, appsListId }: AppsListProps) => {
 	return (
-		<AppsListSection>
+		<Stack gap='x20'>
 			{title && (
 				<Text is='h2' id={appsListId} fontScale='h3' color='default'>
 					{title}
@@ -23,7 +22,7 @@ const AppsList = ({ apps, title, appsListId }: AppsListProps) => {
 					<AppRow key={app.id} {...app} />
 				))}
 			</CardGroup>
-		</AppsListSection>
+		</Stack>
 	);
 };
 
