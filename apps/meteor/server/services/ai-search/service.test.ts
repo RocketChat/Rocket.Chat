@@ -2,8 +2,9 @@ import { before, beforeEach, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const License = {
 	hasModule: sinon.stub(),
@@ -33,7 +34,7 @@ const Users = {
 
 const serverFetch = sinon.stub();
 
-const { AISearchService } = proxyquire.noCallThru().load('./service', {
+const { AISearchService } = loadWithMocks('./service', {
 	'@rocket.chat/core-services': {
 		License,
 		ServiceClass: class {

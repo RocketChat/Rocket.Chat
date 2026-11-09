@@ -2,8 +2,9 @@ import { beforeEach, describe, it } from 'node:test';
 
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 type Room = Pick<IRoom, '_id' | 'abacAttributes'>;
 type Actor = Pick<IUser, '_id' | 'username' | 'name'>;
@@ -16,7 +17,7 @@ const getRoomAbacLockContextMock = sinon.stub();
 
 let guard: Guard;
 
-p.noCallThru().load('./beforeRemoveRoomAbacAttributes.ts', {
+loadWithMocks('./beforeRemoveRoomAbacAttributes.ts', {
 	'@rocket.chat/license': { License: licenseMock },
 	'../../../../server/hooks/rooms/beforeRemoveRoomAbacAttributes': {
 		beforeRemoveRoomAbacAttributes: {

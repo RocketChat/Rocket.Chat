@@ -2,8 +2,9 @@ import { before, beforeEach, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../../tests/mocks/utils/loadWithMocks';
 
 const user = {
 	_id: 'user1',
@@ -23,7 +24,7 @@ const mocks = {
 	},
 };
 
-const { sendMail } = proxyquire.noCallThru().load('./sendMail', {
+const { sendMail } = loadWithMocks('./sendMail', {
 	'@rocket.chat/core-services': { ClientSafeError: Error },
 	'../../../logger/system': { SystemLogger: { debug: sinon.stub() } },
 	'../../../utils/getURL': { getWorkspaceURL: (path: string) => `https://open.rocket.chat/${path}` },

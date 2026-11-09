@@ -2,7 +2,6 @@ import { before, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 
 import {
 	appMessageMock,
@@ -13,8 +12,9 @@ import { MessagesMock } from '../../../../tests/mocks/server/modules/apps/models
 import { RoomsMock } from '../../../../tests/mocks/server/modules/apps/models/Rooms.mock';
 import { UsersMock } from '../../../../tests/mocks/server/modules/apps/models/Users.mock';
 import { AppServerOrchestratorMock } from '../../../../tests/mocks/server/modules/apps/orchestrator.mock';
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
-const { AppMessagesConverter } = proxyquire.noCallThru().load('./messages', {
+const { AppMessagesConverter } = loadWithMocks('./messages', {
 	'@rocket.chat/random': {
 		Random: {
 			id: () => 1,

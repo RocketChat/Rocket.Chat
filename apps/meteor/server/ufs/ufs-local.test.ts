@@ -2,13 +2,13 @@ import fs from 'node:fs';
 import { afterEach, before, beforeEach, describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 import type { SinonStub } from 'sinon';
 
 // import { Config } from './ufs-config';
 // import { UploadFS } from './ufs';
 import type { LocalStore as LocalStoreClass } from './ufs-local';
+import { loadWithMocks } from '../../tests/mocks/utils/loadWithMocks';
 
 const fakeCollection = {
 	removeById: sinon.stub(),
@@ -16,12 +16,12 @@ const fakeCollection = {
 };
 
 // Proxyquire chain to mock all Meteor dependencies
-const ufsFilterMock = proxyquire.noCallThru().load('./ufs-filter', {
+const ufsFilterMock = loadWithMocks('./ufs-filter', {
 	'meteor/meteor': {},
 	'meteor/mongo': {},
 });
 
-const { UploadFS } = proxyquire.noCallThru().load('./ufs', {
+const { UploadFS } = loadWithMocks('./ufs', {
 	'meteor/meteor': {},
 	'meteor/mongo': {},
 	'./ufs-filter': ufsFilterMock,
@@ -46,7 +46,7 @@ const ufsMock = { UploadFS };
 const ufsMockModule = { UploadFS };
 const ufsIndexMock = { UploadFS };
 
-const ufsStoreMockRaw = proxyquire.noCallThru().load('./ufs-store', {
+const ufsStoreMockRaw = loadWithMocks('./ufs-store', {
 	'meteor/meteor': {},
 	'meteor/mongo': {},
 	'./ufs': ufsMockModule,
@@ -55,7 +55,7 @@ const ufsStoreMockRaw = proxyquire.noCallThru().load('./ufs-store', {
 });
 // Patch ufsStoreMock to export all possible ways (default, named, etc)
 const ufsStoreMock = Object.assign({}, ufsStoreMockRaw, { default: ufsStoreMockRaw, ufsStoreMock: ufsStoreMockRaw });
-const localStoreProxy = proxyquire.noCallThru().load('./ufs-local', {
+const localStoreProxy = loadWithMocks('./ufs-local', {
 	// 'mkdirp': sinon.stub(),
 	'meteor/meteor': {},
 	'meteor/mongo': {},

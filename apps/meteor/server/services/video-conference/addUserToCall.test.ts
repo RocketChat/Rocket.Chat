@@ -15,6 +15,7 @@ import {
 	resetAll,
 	ringedUserIds,
 } from './testHarness';
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 /**
  * What joining a call does *besides* recording the join, and for whom.
@@ -56,7 +57,7 @@ const UsersMock = { findOneById: sinon.stub().resolves({ _id: 'joiner', username
 
 const broadcastStub = sinon.stub().resolves();
 
-const { VideoConfService } = proxyquire.noCallThru().load('./service', {
+const { VideoConfService } = loadWithMocks('./service', {
 	...commonServiceStubs,
 	'@rocket.chat/core-services': {
 		api: { broadcast: broadcastStub },

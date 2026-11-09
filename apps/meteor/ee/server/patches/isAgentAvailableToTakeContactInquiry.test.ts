@@ -2,8 +2,9 @@ import { afterEach, before, beforeEach, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const modelsMock = {
 	LivechatContacts: {
@@ -15,7 +16,7 @@ const settingsMock = {
 	get: sinon.stub(),
 };
 
-const { runIsAgentAvailableToTakeContactInquiry } = proxyquire.noCallThru().load('./isAgentAvailableToTakeContactInquiry', {
+const { runIsAgentAvailableToTakeContactInquiry } = loadWithMocks('./isAgentAvailableToTakeContactInquiry', {
 	'../../../server/settings': {
 		settings: settingsMock,
 	},

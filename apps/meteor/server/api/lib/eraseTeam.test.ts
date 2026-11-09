@@ -2,10 +2,9 @@ import { afterEach, beforeEach, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquireRaw from 'proxyquire';
 import * as sinon from 'sinon';
 
-const proxyquire = proxyquireRaw.noCallThru();
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 type Stubbed = { [k: string]: any };
 
@@ -66,7 +65,7 @@ describe('eraseTeam (TypeScript) module', () => {
 
 		mockModel('Rooms', stubs.Rooms);
 
-		subject = proxyquire('./eraseTeam', {
+		subject = loadWithMocks('./eraseTeam', {
 			'@rocket.chat/apps': stubs['@rocket.chat/apps'],
 			'../../lib/eraseRoom': { __esModule: true, eraseRoom: stubs.eraseRoomStub },
 			'../../lib/rooms/deleteRoom': { __esModule: true, deleteRoom: stubs.deleteRoomStub },
@@ -152,7 +151,7 @@ describe('eraseTeam (TypeScript) module', () => {
 			stubs.deleteRoomStub.withArgs('r1').resolves();
 			stubs.deleteRoomStub.withArgs('r2').rejects(new Error('boom'));
 
-			const base = proxyquire('./eraseTeam', {
+			const base = loadWithMocks('./eraseTeam', {
 				'@rocket.chat/apps': stubs['@rocket.chat/apps'],
 				'../../lib/eraseRoom': { __esModule: true, eraseRoom: stubs.eraseRoomStub },
 				'../../lib/rooms/deleteRoom': { __esModule: true, deleteRoom: stubs.deleteRoomStub },
@@ -172,7 +171,7 @@ describe('eraseTeam (TypeScript) module', () => {
 		let baseModule: any;
 
 		beforeEach(() => {
-			baseModule = proxyquire('./eraseTeam', {
+			baseModule = loadWithMocks('./eraseTeam', {
 				'@rocket.chat/apps': stubs['@rocket.chat/apps'],
 				'../../lib/eraseRoom': { __esModule: true, eraseRoom: stubs.eraseRoomStub },
 				'../../lib/rooms/deleteRoom': { __esModule: true, deleteRoom: stubs.deleteRoomStub },
@@ -208,7 +207,7 @@ describe('eraseTeam (TypeScript) module', () => {
 				},
 			};
 
-			const m = proxyquire('./eraseTeam', {
+			const m = loadWithMocks('./eraseTeam', {
 				'@rocket.chat/apps': AppsStub,
 				'../../lib/eraseRoom': { __esModule: true, eraseRoom: stubs.eraseRoomStub },
 				'../../lib/rooms/deleteRoom': { __esModule: true, deleteRoom: stubs.deleteRoomStub },
@@ -230,7 +229,7 @@ describe('eraseTeam (TypeScript) module', () => {
 			stubs.Rooms.findOneById.resolves({ _id: 'r', federated: false });
 			stubs.deleteRoomStub.rejects(new Error('boom'));
 
-			const m = proxyquire('./eraseTeam', {
+			const m = loadWithMocks('./eraseTeam', {
 				'@rocket.chat/apps': stubs['@rocket.chat/apps'],
 				'../../lib/eraseRoom': { __esModule: true, eraseRoom: stubs.eraseRoomStub },
 				'../../lib/rooms/deleteRoom': { __esModule: true, deleteRoom: stubs.deleteRoomStub },
@@ -259,7 +258,7 @@ describe('eraseTeam (TypeScript) module', () => {
 			};
 
 			stubs.deleteRoomStub.resolves();
-			const m = proxyquire('./eraseTeam', {
+			const m = loadWithMocks('./eraseTeam', {
 				'@rocket.chat/apps': AppsStub,
 				'../../lib/eraseRoom': { __esModule: true, eraseRoom: stubs.eraseRoomStub },
 				'../../lib/rooms/deleteRoom': { __esModule: true, deleteRoom: stubs.deleteRoomStub },

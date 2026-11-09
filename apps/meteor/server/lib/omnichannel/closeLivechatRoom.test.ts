@@ -2,10 +2,10 @@ import { before, beforeEach, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import { createFakeRoom, createFakeSubscription, createFakeUser } from '../../../tests/mocks/data';
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const subscriptionsStub = {
 	findOneByRoomIdAndUserId: sinon.stub(),
@@ -23,7 +23,7 @@ const livechatStub = {
 
 const hasPermissionStub = sinon.stub();
 
-const { closeLivechatRoom } = proxyquire.noCallThru().load('./closeLivechatRoom.ts', {
+const { closeLivechatRoom } = loadWithMocks('./closeLivechatRoom.ts', {
 	'./closeRoom': livechatStub,
 	'../authorization/hasPermission': {
 		hasPermissionAsync: hasPermissionStub,

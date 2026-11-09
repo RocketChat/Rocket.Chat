@@ -2,19 +2,19 @@ import { after, before, beforeEach, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
 import speakeasy from 'speakeasy';
 
 import { createFakeUser } from '../../../../tests/mocks/data';
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const sandbox = sinon.createSandbox();
 
 const settings = { get: (key: string) => key === 'Accounts_TwoFactorAuthentication_By_TOTP_Enabled' };
 
-const { TOTP } = p.noCallThru().load('../lib/totp.ts', { '../../../settings': { settings } });
-const { TOTPCheck } = p.noCallThru().load('./TOTPCheck.ts', { '../../../settings': { settings }, '../lib/totp': { TOTP } });
-const { TOTPCheckForOAuth } = p.noCallThru().load('./TOTPCheckForOAuth.ts', { './TOTPCheck': { TOTPCheck } });
+const { TOTP } = loadWithMocks('../lib/totp.ts', { '../../../settings': { settings } });
+const { TOTPCheck } = loadWithMocks('./TOTPCheck.ts', { '../../../settings': { settings }, '../lib/totp': { TOTP } });
+const { TOTPCheckForOAuth } = loadWithMocks('./TOTPCheckForOAuth.ts', { './TOTPCheck': { TOTPCheck } });
 
 const TwoFactorChallenges = {
 	findOneByPendingChallengeId: sandbox.stub(),

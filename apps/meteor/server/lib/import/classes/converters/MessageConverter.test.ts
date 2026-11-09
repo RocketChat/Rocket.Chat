@@ -1,13 +1,14 @@
 import { beforeEach, describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../../tests/mocks/utils/loadWithMocks';
 
 const settingsStub = sinon.stub();
 const insertMessage = sinon.stub();
 
-const { MessageConverter } = proxyquire.noCallThru().load('./MessageConverter', {
+const { MessageConverter } = loadWithMocks('./MessageConverter', {
 	'../../../messages/insertMessage': {
 		insertMessage,
 	},

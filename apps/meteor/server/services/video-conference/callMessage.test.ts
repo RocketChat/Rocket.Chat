@@ -6,6 +6,7 @@ import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import { buildDirectCall, buildGroupCall, buildMember, commonServiceStubs, providerCapabilities, resetAll } from './testHarness';
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 /**
  * What the call's own message in the room carries as text.
@@ -21,7 +22,7 @@ let settingsValues: Record<string, unknown> = {};
 
 const sendMessageStub = sinon.stub().resolves({ _id: 'msg1' });
 
-const { VideoConfService } = proxyquire.noCallThru().load('./service', {
+const { VideoConfService } = loadWithMocks('./service', {
 	...commonServiceStubs,
 	'../../lib/messages/sendMessage': { sendMessage: sendMessageStub },
 	'../../settings': { settings: { get: (key: string) => settingsValues[key] } },

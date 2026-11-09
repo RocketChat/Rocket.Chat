@@ -3,8 +3,9 @@ import { before, beforeEach, describe, it } from 'node:test';
 import { ClientSafeError } from '@rocket.chat/core-services';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const modelsMock = {
 	LivechatRooms: {
@@ -58,7 +59,7 @@ const getBufferMock = sinon.stub();
 
 const tStub = sinon.stub();
 
-const { sendTranscript } = p.noCallThru().load('./sendTranscript', {
+const { sendTranscript } = loadWithMocks('./sendTranscript', {
 	// mocked so the spec doesn't depend on whichever broker a previously-run spec installed
 	'@rocket.chat/core-services': {
 		Message: { saveSystemMessage: sinon.stub().resolves() },

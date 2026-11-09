@@ -1,8 +1,9 @@
 import { describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../tests/mocks/utils/loadWithMocks';
 
 type Env = { TEST_MODE?: string; ROCKET_CHAT_DEPRECATION_THROW_ERRORS_FOR_VERSIONS_UNDER?: string };
 
@@ -30,7 +31,7 @@ const loadLogger = (env: Env = {}) => {
 
 	setEnv(env);
 	try {
-		const module = proxyquire.noCallThru().load('./deprecationWarningLogger', {
+		const module = loadWithMocks('./deprecationWarningLogger', {
 			'@rocket.chat/logger': {
 				Logger: class {
 					section(name: string) {
