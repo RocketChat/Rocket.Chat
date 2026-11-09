@@ -1,0 +1,32 @@
+apps/meteor/client/hooks/notification/useNotification.ts
+  h_a14d455b9c5e4f 12,53
+  s_aa92acb00d5d32::t_9758315e60cf18 54-57
+apps/meteor/client/hooks/notification/useNotification.spec.ts
+  s_aa92acb00d5d32::t_00d88378520086 186-194,196-202
+apps/meteor/client/views/root/hooks/loggedIn/useNotifyUser.ts
+  s_aa92acb00d5d32::t_4283c9b1fef0a4 63,65-67
+apps/meteor/client/views/root/hooks/loggedIn/useNotifyUser.spec.ts
+  s_aa92acb00d5d32::t_96f8cb12e99854 1,8-16,20-21,26,29
+  s_aa92acb00d5d32::t_644caa51940722 2-5,7,17-19,22-25,27-28,30-33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "bedd5502227b657e6cd2c885fcbadd61fdfa4e5c",
+  "prompts": {},
+  "humans": {
+    "h_a14d455b9c5e4f": {
+      "author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_aa92acb00d5d32": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "46f25f04-7c5c-421f-8e80-ed18950b7bfe",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
