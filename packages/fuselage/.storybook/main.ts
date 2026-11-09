@@ -18,6 +18,7 @@ const config: StorybookConfig = {
 		getAbsolutePath('storybook-addon-pseudo-states'),
 	],
 
+	// MDX documentation pages render through the docs addon, so the zero build has only the TSX stories to compare.
 	stories: zeroRuntime ? ['../src/**/*.stories.tsx'] : ['../src/**/*.stories.{mdx,js,tsx}', '../src/**/*.mdx'],
 
 	staticDirs: [{ from: '../src/fonts', to: '/fuselage-fonts' }],
