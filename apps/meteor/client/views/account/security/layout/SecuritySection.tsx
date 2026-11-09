@@ -2,18 +2,17 @@ import { Stack, Text } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 
 type SecuritySectionProps = {
-	title: string;
-	headingLevel?: 'h3' | 'h4';
-	/** Keeps a lone action at its own width instead of stretching it across the section. */
-	compact?: boolean;
+	title: ReactNode;
+	headingLevel: 'h3' | 'h4';
+	fitContent?: boolean;
 	children: ReactNode;
 };
 
 /**
- * A security setting: its heading, then the text, fields or action that change it.
+ * A titled block of a settings page: the heading, then its content.
  */
-const SecuritySection = ({ title, headingLevel = 'h3', compact, children }: SecuritySectionProps) => (
-	<Stack align={compact ? 'start' : undefined} gap='x12'>
+const SecuritySection = ({ title, headingLevel, fitContent = false, children }: SecuritySectionProps) => (
+	<Stack align={fitContent ? 'start' : undefined} gap='x12'>
 		<Text is={headingLevel} fontScale='h4'>
 			{title}
 		</Text>

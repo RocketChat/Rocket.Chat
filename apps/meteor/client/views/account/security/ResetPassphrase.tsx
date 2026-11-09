@@ -8,7 +8,7 @@ export const ResetPassphrase = () => {
 	const { t } = useTranslation();
 	const resetE2EPassword = useResetE2EPasswordMutation();
 	return (
-		<SecuritySection title={t('Reset_E2EE_password')} headingLevel='h4' compact>
+		<SecuritySection title={t('Reset_E2EE_password')} headingLevel='h4' fitContent>
 			<Text is='p' fontScale='p1'>
 				{t('Reset_E2EE_password_description')}
 			</Text>

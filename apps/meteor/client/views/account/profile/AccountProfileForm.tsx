@@ -2,18 +2,8 @@ import { VisuallyHidden } from '@react-aria/visually-hidden';
 import type { AvatarObject } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Button, Divider, Icon, InputBox, Stack } from '@rocket.chat/fuselage';
-import {
-	Field,
-	FieldGroup,
-	FieldLabel,
-	FieldRow,
-	FieldError,
-	FieldHint,
-	TextInput,
-	TextAreaInput,
-	Select,
-} from '@rocket.chat/fuselage-forms';
+import { Button, Divider, Icon, Stack } from '@rocket.chat/fuselage';
+import { Field, FieldGroup, FieldLabel, FieldRow, FieldError, FieldHint, TextInput, TextAreaInput } from '@rocket.chat/fuselage-forms';
 import { validateEmail } from '@rocket.chat/tools';
 import { CustomFieldsForm } from '@rocket.chat/ui-client';
 import {
@@ -26,13 +16,13 @@ import {
 	useSetting,
 } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type { AllHTMLAttributes, ChangeEvent } from 'react';
+import type { AllHTMLAttributes } from 'react';
 import { useCallback, useEffect, useMemo } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
 import type { AccountProfileFormValues } from './getProfileInitialValues';
 import ProfileNameFields from './layout/ProfileNameFields';
-import StatusExpirationFields from './layout/StatusExpirationFields';
+import StatusExpirationField from './layout/StatusExpirationField';
 import { useAccountProfileSettings } from './useAccountProfileSettings';
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import PhoneNumberFieldList, { getPersistedPhones } from '../../../components/PhoneNumberFieldList';
@@ -43,7 +33,7 @@ import UserStatusMenu from '../../../components/UserStatusMenu';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';
 import { USER_STATUS_TEXT_MAX_LENGTH, BIO_TEXT_MAX_LENGTH } from '../../../lib/constants';
-import { STATUS_DURATION_OPTIONS, validateStatusExpiration } from '../../../lib/statusDurations';
+import { STATUS_DURATION_OPTIONS } from '../../../lib/statusDurations';
 
 const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 	const t = useTranslation();
@@ -82,7 +72,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 		formState: { errors, dirtyFields },
 	} = useFormContext<AccountProfileFormValues>();
 
-	const { email, avatar, username, name: userFullName, statusDuration, statusType, statusText } = watch();
+	const { email, avatar, username, name: userFullName, statusType, statusText } = watch();
 
 	const isExpirationDisabled = presenceDisabledByAdmin || (statusType === UserStatus.ONLINE && !statusText?.trim());
 
@@ -331,67 +321,11 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 							{!allowUserStatusMessageChange && <FieldHint>{t('StatusMessage_Change_Disabled')}</FieldHint>}
 							{allowUserStatusMessageChange && !presenceDisabledByAdmin && <FieldHint>{t('Status_you_can_use_emoji')}</FieldHint>}
 						</Field>
-						<Field>
-							<FieldLabel>{t('Status_clear_after')}</FieldLabel>
-							<StatusExpirationFields
-								duration={
-									<FieldRow>
-										<Controller
-											control={control}
-											name='statusDuration'
-											rules={{
-												deps: ['statusCustomDate', 'statusCustomTime'],
-												validate: (value, { statusCustomDate, statusCustomTime }) =>
-													validateStatusExpiration(value, { statusCustomDate, statusCustomTime }, t),
-											}}
-											render={({ field: { value, onChange } }) => (
-												<Select
-													value={value}
-													options={statusDurationOptions}
-													disabled={!allowUserStatusMessageChange || isExpirationDisabled}
-													onChange={(next) => onChange(String(next))}
-												/>
-											)}
-										/>
-									</FieldRow>
-								}
-								custom={
-									statusDuration === 'custom' && (
-										<>
-											<Controller
-												control={control}
-												name='statusCustomDate'
-												render={({ field: { value, onChange } }) => (
-													<InputBox
-														aria-label={t('Status_expiration_date')}
-														type='date'
-														disabled={!allowUserStatusMessageChange}
-														value={value}
-														onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e.currentTarget.value)}
-														min={new Date().toLocaleDateString('en-CA')}
-													/>
-												)}
-											/>
-											<Controller
-												control={control}
-												name='statusCustomTime'
-												render={({ field: { value, onChange } }) => (
-													<InputBox
-														aria-label={t('Status_expiration_time')}
-														type='time'
-														disabled={!allowUserStatusMessageChange}
-														value={value}
-														onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e.currentTarget.value)}
-													/>
-												)}
-											/>
-										</>
-									)
-								}
-							/>
-							{errors.statusDuration && <FieldError>{errors.statusDuration.message}</FieldError>}
-							<FieldHint>{t('Status_new_status_warning')}</FieldHint>
-						</Field>
+						<StatusExpirationField
+							statusDurationOptions={statusDurationOptions}
+							durationDisabled={!allowUserStatusMessageChange || isExpirationDisabled}
+							customDateTimeDisabled={!allowUserStatusMessageChange}
+						/>
 						{statusVisibilityEnabled && (
 							<Field>
 								<FieldLabel>{t('Accounts_StatusVisibility_HideStatusFromUsers')}</FieldLabel>
