@@ -1,17 +1,15 @@
 import { createServer } from 'node:http';
 import type { IncomingMessage, Server } from 'node:http';
 
-import { getRequestListener } from '@hono/node-server';
 import type { HttpBindings } from '@hono/node-server';
 import { Hono } from 'hono';
 import type { MiddlewareHandler } from 'hono';
-import { every } from 'hono/combine';
-import { TrieRouter } from 'hono/router/trie-router';
 
-import type { Router } from './Router';
+import type { Router } from './Router.js';
+import { every, getRequestListener, TrieRouter } from './hono.cjs';
 
 export type { HttpBindings } from '@hono/node-server';
-export { RESPONSE_ALREADY_SENT } from '@hono/node-server/utils/response';
+export { RESPONSE_ALREADY_SENT } from './hono.cjs';
 
 export type RootApp = Hono<{ Bindings: HttpBindings }>;
 

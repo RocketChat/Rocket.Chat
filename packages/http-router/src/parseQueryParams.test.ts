@@ -1,4 +1,4 @@
-import { parseQueryParams } from './parseQueryParams';
+import { parseQueryParams } from './parseQueryParams.js';
 
 describe('parseQueryParams', () => {
 	it('should parse simple query string', () => {
