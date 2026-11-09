@@ -1,16 +1,17 @@
 import { describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const resultObj = {
 	result: true,
 };
 
-const { sendMessageType, isOmnichannelNavigationMessage, isOmnichannelClosingMessage, getAdditionalFieldsByType } = p
-	.noCallThru()
-	.load('./sendToCRM', {
+const { sendMessageType, isOmnichannelNavigationMessage, isOmnichannelClosingMessage, getAdditionalFieldsByType } = loadWithMocks(
+	'./sendToCRM',
+	{
 		'../../settings': {
 			settings: {
 				get() {
@@ -23,7 +24,8 @@ const { sendMessageType, isOmnichannelNavigationMessage, isOmnichannelClosingMes
 		},
 		'../../lib/omnichannel/webhooks': {},
 		'../../lib/omnichannel/guests': { getLivechatRoomGuestInfo: sinon.stub() },
-	});
+	},
+);
 
 describe('[OC] Send TO CRM', () => {
 	describe('isOmnichannelNavigationMessage', () => {

@@ -2,12 +2,13 @@ import { before, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const findBefore = sinon.stub();
 
-const { loadRoomHistory } = proxyquire.noCallThru().load('./loadRoomHistory', {
+const { loadRoomHistory } = loadWithMocks('./loadRoomHistory', {
 	'../../settings/cached': { settings: { get: () => [] } },
 	'../utils/lib/normalizeMessagesForUser': { normalizeMessagesForUser: async (messages: unknown[]) => messages },
 });

@@ -3,8 +3,9 @@ import { before, beforeEach, describe, it } from 'node:test';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const models = {
 	LivechatVisitors: { findOneGuestByEmailAddress: sinon.stub(), removeDepartmentById: sinon.stub() },
@@ -18,7 +19,7 @@ const sendMessage = sinon.stub();
 const notifyOnMessageChange = sinon.stub();
 const fileStore = { insert: sinon.stub() };
 
-const { onEmailReceived } = proxyquire.noCallThru().load('./EmailInbox_Incoming', {
+const { onEmailReceived } = loadWithMocks('./EmailInbox_Incoming', {
 	'@rocket.chat/omni-core': { registerGuest },
 	'./logger': { logger: { info: sinon.stub(), debug: sinon.stub(), error: sinon.stub() } },
 	'../../lib/media/file-upload': {

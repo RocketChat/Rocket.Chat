@@ -3,8 +3,9 @@ import { afterEach, before, beforeEach, describe, it } from 'node:test';
 import { ClientSafeError } from '@rocket.chat/core-services';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 describe('setUsername', () => {
 	const userId = 'userId';
@@ -48,7 +49,7 @@ describe('setUsername', () => {
 		SystemLogger: sinon.stub(),
 	};
 
-	const { setUsernameWithValidation, _setUsername } = proxyquire.noCallThru().load('./setUsername', {
+	const { setUsernameWithValidation, _setUsername } = loadWithMocks('./setUsername', {
 		'../../database/utils': { onceTransactionCommitedSuccessfully: async (cb: any, _sess: any) => cb() },
 		'@rocket.chat/core-services': { api: stubs.api, ClientSafeError },
 		'meteor/accounts-base': { Accounts: stubs.Accounts },

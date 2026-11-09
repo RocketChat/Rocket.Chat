@@ -2,15 +2,16 @@ import { before, beforeEach, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const sandbox = sinon.createSandbox();
 
 const settingValues = new Map<string, unknown>();
 const Users = { findOne: sandbox.stub(), setCasExternalIdByUsername: sandbox.stub() };
 
-const { findExistingCASUser } = p.noCallThru().load('./findExistingCASUser.ts', {
+const { findExistingCASUser } = loadWithMocks('./findExistingCASUser.ts', {
 	'../../settings': { settings: { get: (key: string) => settingValues.get(key) } },
 });
 

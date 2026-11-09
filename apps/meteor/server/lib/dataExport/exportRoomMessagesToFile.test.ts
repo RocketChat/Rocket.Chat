@@ -3,11 +3,11 @@ import { before, describe, it } from 'node:test';
 import { faker } from '@faker-js/faker';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import type { MessageData } from './exportRoomMessagesToFile';
 import { exportMessagesMock } from '../../../tests/mocks/server/modules/apps/messages.data';
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 // Create stubs for dependencies
 const stubs = {
@@ -20,7 +20,7 @@ const stubs = {
 	settings: sinon.stub(),
 };
 
-const { getMessageData, exportRoomMessages, exportMessageObject } = proxyquire.noCallThru().load('./exportRoomMessagesToFile.ts', {
+const { getMessageData, exportRoomMessages, exportMessageObject } = loadWithMocks('./exportRoomMessagesToFile.ts', {
 	'fs/promises': {
 		mkdir: stubs.mkdir,
 		writeFile: stubs.writeFile,

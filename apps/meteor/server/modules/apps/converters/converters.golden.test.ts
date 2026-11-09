@@ -1,7 +1,6 @@
 import { describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 
 import { AppContactsConverter } from './contacts';
 import { AppDepartmentsConverter } from './departments';
@@ -13,6 +12,7 @@ import { AppThreadsConverter } from './threads';
 import { AppUsersConverter } from './users';
 import { AppVideoConferencesConverter } from './videoConferences';
 import { AppVisitorsConverter } from './visitors';
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 /*
  * Golden snapshots of the converters' deterministic transform methods, captured from the
@@ -483,7 +483,7 @@ describe('apps converters — golden snapshots (pre-codec behaviour)', () => {
 		// `server/settings` — a module with a top-level await that esbuild cannot emit as CJS. `@global`
 		// reaches it through the codec; its key resolves from the converter's directory, hence one level
 		// less than the codec's own import path.
-		const { AppUploadsConverter } = proxyquire.noCallThru().load('./uploads', {
+		const { AppUploadsConverter } = loadWithMocks('./uploads', {
 			'../../../../server/lib/utils/getURL': { 'getURL': (path: string) => `http://siteurl.test${path}`, '@global': true },
 		});
 

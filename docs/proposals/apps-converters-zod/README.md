@@ -202,9 +202,9 @@ extended with the nested `{ from, map, list }` branch so it fully reproduces `tr
 two were migrated by swapping their `transformMappedData` calls for the shared `mappedDecodeAsync`
 helper *in place*, rather than being wrapped in `create*Codec` factories. Reasons:
 
-1. **Test harness.** `messages.test.js` uses `proxyquire` to stub `@rocket.chat/models`,
+1. **Test harness.** `messages.test.js` uses `loadWithMocks` to stub `@rocket.chat/models`,
    `@rocket.chat/random` and `@rocket.chat/core-typings` (`isMessageFromVisitor`) on the `messages.ts`
-   module. `proxyquire` only replaces a module's *own* `require`s, so moving `convertAppMessage`'s
+   module. `loadWithMocks` only replaces a module's *own* `require`s, so moving `convertAppMessage`'s
    model/`Random` usage into a separate `codecs/messages.ts` module would bypass the stubs and break
    the test (real `Rooms.findOneById` → no `GENERAL` room → the "proper schema"/"invalid room" cases
    fail). Keeping that usage in the class preserves the harness without editing it.
@@ -218,7 +218,7 @@ The migration goal for these two is therefore narrower but still met: the `trans
 dependency is removed and the mapping logic is the shared, tested `mappedDecodeAsync`. The
 attachment sub-maps stayed per-converter because messages' and threads' variants differ (threads has
 extra `author`/`timestamp`/`fileId` guards) — sharing them would change behaviour. Wrapping messages
-in a codec later remains possible (e.g. via `proxyquire`'s `@global` stubs) if desired.
+in a codec later remains possible (e.g. via `loadWithMocks`'s `@global` stubs) if desired.
 
 ### Phase 5 — Cleanup (done)
 
@@ -246,7 +246,7 @@ messages and threads memoization, which remained in the class layer (see the Pha
   during the migration.
 - **Async codec ergonomics** — de-risked in Phase 0, but the factory wiring for rooms/messages should
   still be spiked before committing to Phase 3.
-- **Test rewrite** — the existing tests use `proxyquire.noCallThru()` against module paths; codec-ing
+- **Test rewrite** — the existing tests use `loadWithMocks` against module paths; codec-ing
   each converter means updating those loaders.
 
 ## Type strategy for the mapping helpers

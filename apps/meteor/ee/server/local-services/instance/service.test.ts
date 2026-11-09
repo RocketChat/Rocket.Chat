@@ -2,9 +2,9 @@ import { afterEach, beforeEach, describe, it } from 'node:test';
 
 import type { ClusterTransport } from '@rocket.chat/core-services';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 import type { IInstanceService } from '../../sdk/types/IInstanceService';
 
 const ServiceBrokerMock = {
@@ -51,7 +51,7 @@ const serviceMocks = {
 	},
 };
 
-const { InstanceService } = proxyquire.noPreserveCache().noCallThru().load('./service', serviceMocks);
+const { InstanceService } = loadWithMocks('./service', serviceMocks);
 
 describe('InstanceService', () => {
 	let service: IInstanceService;
