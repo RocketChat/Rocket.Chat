@@ -185,3 +185,17 @@ it('draws no heading when neither title renders anything', () => {
 
 	expect(screen.queryByRole('heading')).not.toBeInTheDocument();
 });
+
+it.each([
+	[undefined, 'var(--rcx-message-block-width-fixed, 368px)'],
+	['standard', 'var(--rcx-message-block-width-fixed, 368px)'],
+	['narrow', '280px'],
+	['wide', '640px'],
+	['full', ''],
+] as const)('limits a %s container to %s', (width, maxWidth) => {
+	render(<MockedServerContext>{modalParser.render([container({ width })])}</MockedServerContext>);
+
+	const box = screen.getByRole('heading', { name: 'Bulk update' }).parentElement?.parentElement?.parentElement;
+
+	expect(box && getComputedStyle(box).maxWidth).toBe(maxWidth);
+});

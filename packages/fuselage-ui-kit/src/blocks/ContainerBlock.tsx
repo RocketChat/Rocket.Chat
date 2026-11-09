@@ -5,11 +5,12 @@ import { useTranslation } from 'react-i18next';
 
 import type { BlockProps } from '../utils/BlockProps';
 import { isTextObject } from '../utils/isTextObject';
+import { messageBlockWidth } from '../utils/messageBlockWidth';
 import { renderNestedBlocks } from '../utils/renderNestedBlocks';
 
 export type ContainerBlockProps = BlockProps<UiKit.ContainerBlock>;
 
-const maxWidths = { narrow: 320, standard: 480, wide: 640, full: undefined } as const;
+const maxWidths = { narrow: 280, standard: messageBlockWidth, wide: 640, full: undefined } as const;
 
 const ContainerBlock = ({ className, block, surfaceRenderer }: ContainerBlockProps) => {
 	const { t } = useTranslation();

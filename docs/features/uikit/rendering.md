@@ -49,6 +49,10 @@ A renderer still needs a method for every block in its list. Fuselage has a spec
 
 `FuselageSurfaceRenderer` keeps a default list for subclasses that pass none. Only internal surfaces should rely on it.
 
+## Width in a message
+
+A top-level block of a message is capped to the message block width (`--rcx-message-block-width-fixed`, 368px by default). `layout`, `data_table`, `data_visualization`, `carousel`, `table` and `container` take the full width of the message instead; a `container` is sized by its own `width` (see the `container` reference), so `wide` reaches 640px. Which blocks do so is decided by `sizesItselfInMessage` in `packages/fuselage-ui-kit/src/utils/messageBlockWidth.tsx`, applied by `UiKitMessage`. Blocks held by another block are never capped on their own, and the other surfaces do not cap their blocks.
+
 ## Links
 
 `button`, `icon_button` and overflow options open their `url` unless `isSafeUrl` from `@rocket.chat/ui-kit` rejects it. It rejects URLs whose scheme runs code in the page (`javascript:`, `data:`, `vbscript:`, in any letter case or with leading whitespace) and URLs that cannot be parsed. Everything else opens in a new tab without access to the opener, including app deep links such as `zoommtg:` or `msteams:` and relative URLs. A rejected URL is ignored, and the element behaves as if it had none: it sends its `blockAction` instead of opening a link. Both Fuselage and Livechat apply the same check.
