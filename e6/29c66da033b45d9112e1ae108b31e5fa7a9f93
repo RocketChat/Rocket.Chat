@@ -1,0 +1,48 @@
+apps/meteor/client/sidebar/RoomList/ScheduledMessagesIndicator.spec.tsx
+  s_478a7742cf0448::t_7fad3114e42de8 45,52
+apps/meteor/client/views/room/composer/messageBox/ScheduleMessage/ScheduleMessageMenu.tsx
+  s_478a7742cf0448::t_7f425182fd775c 116
+apps/meteor/client/views/room/Header/RoomToolbox/hooks/useRoomToolboxActions.ts
+  s_478a7742cf0448::t_2767bfd588dada 23-25,33,111
+.changeset/scheduled-messages.md
+  s_478a7742cf0448::t_6a04ce63e5e907 15
+  s_478a7742cf0448::t_4fd77a81126878 11
+apps/meteor/client/views/room/composer/messageBox/ScheduleMessage/ScheduleMessageMenu.spec.tsx
+  s_478a7742cf0448::t_7fad3114e42de8 22,75,80
+  s_478a7742cf0448::t_9765abdf141f1f 129,132-139
+apps/meteor/client/views/room/Header/RoomToolbox/hooks/useRoomToolboxActions.spec.tsx
+  s_478a7742cf0448::t_2767bfd588dada 310-336
+packages/ui-contexts/src/RoomToolboxContext.ts
+  s_478a7742cf0448::t_2767bfd588dada 16
+docs/features/message-scheduling.md
+  s_478a7742cf0448::t_eb7ff9df2195e8 70
+  s_478a7742cf0448::t_10f2a5a6c4db80 73
+  s_478a7742cf0448::t_efe4bd82c0041e 9
+  s_478a7742cf0448::t_6a04ce63e5e907 76
+packages/ui-client/src/hooks/useFeaturePreviewList.ts
+  s_478a7742cf0448::t_efe4bd82c0041e 3
+apps/meteor/client/views/room/composer/messageBox/MessageBox.spec.tsx
+  s_478a7742cf0448::t_1a77abb3ea291d 182
+apps/meteor/client/hooks/useCanScheduleMessages.ts
+  s_478a7742cf0448::t_efe4bd82c0041e 7
+apps/meteor/client/hooks/roomActions/useScheduledMessagesRoomAction.ts
+  s_478a7742cf0448::t_2767bfd588dada 6,13-16,27,33
+apps/meteor/client/hooks/roomActions/useScheduledMessagesRoomAction.spec.tsx
+  s_478a7742cf0448::t_2767bfd588dada 1-33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "e629c66da033b45d9112e1ae108b31e5fa7a9f93",
+  "prompts": {},
+  "sessions": {
+    "s_478a7742cf0448": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "78511215-04eb-4d9d-beb9-8d0ec0460bb1",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
