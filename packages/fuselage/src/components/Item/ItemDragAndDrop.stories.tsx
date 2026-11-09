@@ -40,21 +40,21 @@ export default {
 type Story = StoryObj<typeof Item>;
 
 const Section = ({ title, description, children }: { title: string; description: string; children: ReactNode }) => (
-	<Box display='flex' flexDirection='column' maxWidth='x720' marginBlockEnd={32}>
+	<Box display='flex' flexDirection='column' maxWidth='x720' marginBlockEnd='x32'>
 		<Box is='h3' fontScale='h4' color='titles-labels' margin={0}>
 			{title}
 		</Box>
-		<Box fontScale='p2' color='hint' marginBlock={4}>
+		<Box fontScale='p2' color='hint' marginBlock='x4'>
 			{description}
 		</Box>
-		<Box display='flex' flexDirection='column' marginBlockStart={8}>
+		<Box display='flex' flexDirection='column' marginBlockStart='x8'>
 			{children}
 		</Box>
 	</Box>
 );
 
 const State = ({ name, prop, children }: { name: string; prop?: string; children: ReactNode }) => (
-	<Box display='grid' style={{ gridTemplateColumns: '220px 280px', columnGap: 24 }} alignItems='center' marginBlock={8}>
+	<Box display='grid' style={{ gridTemplateColumns: '220px 280px', columnGap: 24 }} alignItems='center' marginBlock='x8'>
 		<Box display='flex' flexDirection='column'>
 			<Box fontScale='p2b' color='titles-labels'>
 				{name}
@@ -70,7 +70,7 @@ const State = ({ name, prop, children }: { name: string; prop?: string; children
 );
 
 const Surface = ({ children, label }: { children: ReactNode; label: string }) => (
-	<Box backgroundColor='sidebar' paddingBlock={8} paddingInline={4} borderRadius='medium' width='x280'>
+	<Box backgroundColor='sidebar' paddingBlock='x8' paddingInline='x4' borderRadius='medium' width='x280'>
 		<ItemGroup is='ul' aria-label={label}>
 			{children}
 		</ItemGroup>
