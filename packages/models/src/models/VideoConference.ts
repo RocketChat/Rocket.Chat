@@ -21,7 +21,7 @@ import type {
 	CountDocumentsOptions,
 } from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
+import { BaseRaw } from './BaseRaw.js';
 
 export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVideoConferenceModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<VideoConference>>) {

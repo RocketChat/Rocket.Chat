@@ -30,8 +30,8 @@ import type {
 	AggregationCursor,
 } from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
-import { readSecondaryPreferred } from '../readSecondaryPreferred';
+import { BaseRaw } from './BaseRaw.js';
+import { readSecondaryPreferred } from '../readSecondaryPreferred.js';
 
 export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements ILivechatContactsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatContact>>) {

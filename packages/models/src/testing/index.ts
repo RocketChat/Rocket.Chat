@@ -1,7 +1,7 @@
 import type { IBaseModel } from '@rocket.chat/model-typings';
 
-import type * as models from '../index';
-import { registerModel } from '../proxify';
+import type * as models from '../index.js';
+import { registerModel } from '../proxify.js';
 
 type Models = typeof models;
 

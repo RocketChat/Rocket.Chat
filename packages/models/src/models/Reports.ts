@@ -2,7 +2,7 @@ import type { IMessage, IReport, RocketChatRecordDeleted } from '@rocket.chat/co
 import type { IReportsModel } from '@rocket.chat/model-typings';
 import type { Db, Collection } from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
+import { BaseRaw } from './BaseRaw.js';
 
 export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IReport>>) {

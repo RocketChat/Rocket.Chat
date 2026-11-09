@@ -3,7 +3,7 @@ import { BannerPlatform } from '@rocket.chat/core-typings';
 import type { IBannersModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
 import type { Collection, FindCursor, Db, IndexDescription, InsertOneResult, UpdateResult, Document } from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
+import { BaseRaw } from './BaseRaw.js';
 
 export class BannersRaw extends BaseRaw<IBanner> implements IBannersModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IBanner>>) {

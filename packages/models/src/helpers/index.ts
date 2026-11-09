@@ -1,1 +1,1 @@
-export * from './omnichannel';
+export * from './omnichannel/index.js';

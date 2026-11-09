@@ -27,21 +27,21 @@ import {
 	SamlUsedAssertionsRaw,
 	CronHistoryRaw,
 	VideoConferenceRaw,
-} from './modelClasses';
-import { registerModel } from './proxify';
+} from './modelClasses.js';
+import { registerModel } from './proxify.js';
 
-export { getCollectionName } from './getCollectionName';
+export { getCollectionName } from './getCollectionName.js';
 
-export * from './modelClasses';
+export * from './modelClasses.js';
 
-export * from './dummy/ReadReceipts';
+export * from './dummy/ReadReceipts.js';
 
-export * from './helpers';
+export * from './helpers/index.js';
 
-export { registerModel } from './proxify';
-export * from './proxies';
-export { type Updater, UpdaterImpl } from './updater';
-export { readSecondaryPreferred } from './readSecondaryPreferred';
+export { registerModel } from './proxify.js';
+export * from './proxies.js';
+export { type Updater, UpdaterImpl } from './updater.js';
+export { readSecondaryPreferred } from './readSecondaryPreferred.js';
 
 export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecordDeleted<any>>): void {
 	registerModel('IUsersSessionsModel', () => new UsersSessionsRaw(db));

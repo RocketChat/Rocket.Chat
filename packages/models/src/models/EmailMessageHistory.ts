@@ -2,7 +2,7 @@ import type { IEmailMessageHistory, RocketChatRecordDeleted } from '@rocket.chat
 import type { IEmailMessageHistoryModel, InsertionModel } from '@rocket.chat/model-typings';
 import type { Collection, Db, InsertOneResult, WithId, IndexDescription } from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
+import { BaseRaw } from './BaseRaw.js';
 
 export class EmailMessageHistoryRaw extends BaseRaw<IEmailMessageHistory> implements IEmailMessageHistoryModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IEmailMessageHistory>>) {

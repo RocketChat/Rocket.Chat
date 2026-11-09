@@ -1,7 +1,7 @@
 import type { IAppLogsModel } from '@rocket.chat/model-typings';
 import type { Db, IndexDescription } from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
+import { BaseRaw } from './BaseRaw.js';
 
 export class AppsLogsModel extends BaseRaw<any> implements IAppLogsModel {
 	constructor(db: Db) {

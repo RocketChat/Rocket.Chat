@@ -81,7 +81,7 @@ import type {
 	ISamlUsedAssertionsModel,
 } from '@rocket.chat/model-typings';
 
-import { proxify } from './proxify';
+import { proxify } from './proxify.js';
 
 export const Apps = proxify<IAppsModel>('IAppsModel');
 export const AppsPersistence = proxify<IAppsPersistenceModel>('IAppsPersistenceModel');

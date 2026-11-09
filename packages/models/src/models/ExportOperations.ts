@@ -2,7 +2,7 @@ import type { IExportOperation, RocketChatRecordDeleted } from '@rocket.chat/cor
 import type { IExportOperationsModel } from '@rocket.chat/model-typings';
 import type { Collection, Db, IndexDescription, UpdateResult } from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
+import { BaseRaw } from './BaseRaw.js';
 
 export class ExportOperationsRaw extends BaseRaw<IExportOperation> implements IExportOperationsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IExportOperation>>) {

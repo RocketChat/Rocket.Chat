@@ -2,7 +2,7 @@ import type { IUserSession, IUserSessionConnection, RocketChatRecordDeleted } fr
 import type { IUsersSessionsModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
 import type { FindCursor, Collection, Db, Document } from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
+import { BaseRaw } from './BaseRaw.js';
 
 export class UsersSessionsRaw extends BaseRaw<IUserSession> implements IUsersSessionsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IUserSession>>) {

@@ -3,8 +3,8 @@ import type { ILivechatDepartmentModel, DocumentWithProjection, FindOptionsWithP
 import { escapeRegExp } from '@rocket.chat/tools';
 import type { Collection, FindCursor, Db, Filter, FindOptions, UpdateResult, Document, IndexDescription, AggregationCursor } from 'mongodb';
 
-import { LivechatDepartmentAgents, LivechatUnitMonitors } from '../proxies';
-import { BaseRaw } from './BaseRaw';
+import { LivechatDepartmentAgents, LivechatUnitMonitors } from '../proxies.js';
+import { BaseRaw } from './BaseRaw.js';
 
 export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implements ILivechatDepartmentModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatDepartment>>) {
