@@ -1,6 +1,6 @@
 import { States, StatesIcon, StatesTitle, StatesSubtitle, Button, ButtonGroup, CardGrid } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
-import { memo } from 'react';
+import { Children, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { GenericCard } from '../../../../components/GenericCard';
@@ -37,6 +37,10 @@ const UpgradeToGetMore = ({ activeModules, children }: UpgradeToGetMoreProps) =>
 		});
 
 	if (upgradeModules?.length === 0) {
+		if (Children.toArray(children).length === 0) {
+			return null;
+		}
+
 		return (
 			<ButtonGroup large vertical>
 				{children}

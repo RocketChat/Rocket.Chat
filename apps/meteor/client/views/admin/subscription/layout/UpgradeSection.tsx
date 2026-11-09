@@ -7,12 +7,12 @@ type UpgradeSectionProps = {
 };
 
 /**
- * The upgrade offer below the subscription cards, with its actions at the end.
+ * The upgrade offer below the subscription cards, set further apart from them than the cards are from each other, with its actions at the end.
  */
 const UpgradeSection = ({ children, actions }: UpgradeSectionProps) => (
-	<Box width='full' padding='x8' marginBlockStart='x40'>
-		{children}
-		<Box paddingBlockStart='x24'>{actions}</Box>
+	<Box display='flex' flexDirection='column' gap='x24' marginBlockStart='x40'>
+		<div>{children}</div>
+		{actions}
 	</Box>
 );
 
