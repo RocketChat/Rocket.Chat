@@ -23,11 +23,11 @@ import { GroupedVirtuoso } from 'react-virtuoso';
 import { MembersListGroupHeader } from './MembersListGroupHeader';
 import RoomMembersListWrapper from './RoomMembersListWrapper';
 import RoomMembersRow from './RoomMembersRow';
+import ContextualbarInset from '../../../../components/ContextualbarInset';
+import ContextualbarListSummary from '../../../../components/ContextualbarListSummary';
 import { FilterBar, FilterBarFilters, FilterBarSearch } from '../../../../components/FilterBar';
-import ContextualbarListArea from '../../../../components/ContextualbarList/ContextualbarListArea';
-import ContextualbarListStatus from '../../../../components/ContextualbarList/ContextualbarListStatus';
-import ContextualbarListSummary from '../../../../components/ContextualbarList/ContextualbarListSummary';
 import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
+import ListViewport from '../../../../components/ListViewport';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
 import type { RoomMember } from '../../../hooks/useMembersList';
 
@@ -175,21 +175,21 @@ const RoomMembers = ({
 			<ContextualbarContent flush spaced>
 				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={members.length} />
 				{isPending && (
-					<ContextualbarListStatus spaced>
+					<ContextualbarInset block='x12'>
 						<Throbber size='x12' />
-					</ContextualbarListStatus>
+					</ContextualbarInset>
 				)}
 				{error && (
-					<ContextualbarListStatus spaced>
+					<ContextualbarInset block='x12'>
 						<Callout type='danger'>{error.message}</Callout>
-					</ContextualbarListStatus>
+					</ContextualbarInset>
 				)}
 				{isSuccess && (
 					<>
 						{members.length > 0 && (
 							<ContextualbarListSummary>{t('Showing_current_of_total', { current: members.length, total })}</ContextualbarListSummary>
 						)}
-						<ContextualbarListArea id={membersListId}>
+						<ListViewport id={membersListId}>
 							{members.length <= 0 && <ContextualbarEmptyContent title={t('No_members_found')} />}
 							{members.length > 0 && (
 								<VirtualizedScrollbars>
@@ -211,7 +211,7 @@ const RoomMembers = ({
 									/>
 								</VirtualizedScrollbars>
 							)}
-						</ContextualbarListArea>
+						</ListViewport>
 					</>
 				)}
 			</ContextualbarContent>

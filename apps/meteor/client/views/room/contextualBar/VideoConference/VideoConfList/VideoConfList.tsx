@@ -15,9 +15,9 @@ import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
 import VideoConfListItem from './VideoConfListItem';
-import CallHistoryListArea from './layout/CallHistoryListArea';
 import CallHistoryState from './layout/CallHistoryState';
-import ContextualbarListStatus from '../../../../../components/ContextualbarList/ContextualbarListStatus';
+import ContextualbarInset from '../../../../../components/ContextualbarInset';
+import ListViewport from '../../../../../components/ListViewport';
 import { getErrorMessage } from '../../../../../lib/errorHandling';
 
 export type VideoConfListProps = {
@@ -46,9 +46,9 @@ const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loa
 			</ContextualbarHeader>
 			<ContextualbarContent flush ref={ref}>
 				{loading && (
-					<ContextualbarListStatus spaced>
+					<ContextualbarInset block='x12'>
 						<Throbber size='x12' />
-					</ContextualbarListStatus>
+					</ContextualbarInset>
 				)}
 				{(total === 0 || error) && (
 					<CallHistoryState>
@@ -68,7 +68,7 @@ const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loa
 						)}
 					</CallHistoryState>
 				)}
-				<CallHistoryListArea>
+				<ListViewport>
 					{videoConfs.length > 0 && (
 						<VirtualizedScrollbars>
 							<Virtuoso
@@ -84,7 +84,7 @@ const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loa
 							/>
 						</VirtualizedScrollbars>
 					)}
-				</CallHistoryListArea>
+				</ListViewport>
 			</ContextualbarContent>
 		</ContextualbarDialog>
 	);

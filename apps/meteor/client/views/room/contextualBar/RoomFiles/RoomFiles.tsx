@@ -20,10 +20,10 @@ import { Virtuoso } from 'react-virtuoso';
 import RoomFileItemWrapper from './RoomFileItemWrapper';
 import RoomFilesListWrapper from './RoomFilesListWrapper';
 import FileItem from './components/FileItem';
-import { FilterBar, FilterBarFilters, FilterBarSearch } from '../../../../components/FilterBar';
 import RoomFilesListArea from './layout/RoomFilesListArea';
+import ContextualbarInset from '../../../../components/ContextualbarInset';
+import { FilterBar, FilterBarFilters, FilterBarSearch } from '../../../../components/FilterBar';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
-import ContextualbarInset from '../layout/ContextualbarInset';
 
 export type RoomFilesProps = {
 	rid: IRoom['_id'];
@@ -94,7 +94,7 @@ const RoomFiles = ({
 			<ContextualbarContent flush>
 				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={total} />
 				{isPending && (
-					<ContextualbarInset>
+					<ContextualbarInset block='x24'>
 						<Throbber size='x12' />
 					</ContextualbarInset>
 				)}

@@ -6,10 +6,10 @@ export type AbacAttributeItemProps = {
 };
 
 /**
- * One attribute in the room's attribute list: its name above its values.
+ * One attribute in the room's attribute list, its name above its values, spaced like the info panel's fields around it.
  */
 const AbacAttributeItem = ({ children }: AbacAttributeItemProps) => (
-	<Box is='li' marginBlock='x16'>
+	<Box is='li' marginBlock='x16' display='flex' flexDirection='column' gap='x8'>
 		{children}
 	</Box>
 );

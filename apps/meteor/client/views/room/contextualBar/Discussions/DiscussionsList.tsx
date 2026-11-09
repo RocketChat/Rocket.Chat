@@ -18,9 +18,8 @@ import { useCallback, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import DiscussionsListRow from './DiscussionsListRow';
-import DiscussionsListViewport from './layout/DiscussionsListViewport';
-import ContextualbarListArea from '../../../../components/ContextualbarList/ContextualbarListArea';
-import ContextualbarListStatus from '../../../../components/ContextualbarList/ContextualbarListStatus';
+import ContextualbarInset from '../../../../components/ContextualbarInset';
+import ListViewport from '../../../../components/ListViewport';
 import { PaginatedVirtualList } from '../../../../components/PaginatedVirtualList';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
 import { useMessageRowListNavigation } from '../../../../hooks/useMessageRowListNavigation';
@@ -87,32 +86,28 @@ function DiscussionsList({
 			<ContextualbarContent flush>
 				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={itemCount} />
 				{isPending && (
-					<ContextualbarListStatus spaced>
+					<ContextualbarInset block='x12'>
 						<Throbber size='x12' />
-					</ContextualbarListStatus>
+					</ContextualbarInset>
 				)}
 				{error instanceof Error && (
-					<ContextualbarListStatus>
+					<ContextualbarInset>
 						<Callout type='danger'>{error.toString()}</Callout>
-					</ContextualbarListStatus>
+					</ContextualbarInset>
 				)}
 				{isSuccess && (
-					<ContextualbarListArea id={discussionListId} ref={discussionListRef}>
+					<ListViewport id={discussionListId} ref={discussionListRef}>
 						{discussions.length === 0 && <ContextualbarEmptyContent title={t('No_Discussions_found')} />}
 						{discussions.length > 0 && (
-							<DiscussionsListViewport>
-								<PaginatedVirtualList
-									items={discussions}
-									totalCount={itemCount}
-									overscan={25}
-									onEndReached={isPending ? undefined : loadMoreItems}
-									renderItem={(discussion) => (
-										<DiscussionsListRow discussion={discussion} showRealNames={showRealNames} onClick={onClick} />
-									)}
-								/>
-							</DiscussionsListViewport>
+							<PaginatedVirtualList
+								items={discussions}
+								totalCount={itemCount}
+								overscan={25}
+								onEndReached={isPending ? undefined : loadMoreItems}
+								renderItem={(discussion) => <DiscussionsListRow discussion={discussion} showRealNames={showRealNames} onClick={onClick} />}
+							/>
 						)}
-					</ContextualbarListArea>
+					</ListViewport>
 				)}
 			</ContextualbarContent>
 		</ContextualbarDialog>
