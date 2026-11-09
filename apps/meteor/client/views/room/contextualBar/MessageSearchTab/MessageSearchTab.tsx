@@ -87,7 +87,7 @@ const MessageSearchTab = () => {
 				<ResultsLiveRegion shouldAnnounce={localSearch ? localQuery.isSuccess : isSuccess} itemCount={itemCount} />
 				{providerQuery.isSuccess && localSearch && (
 					<>
-						<LocalSearchIndexStatus />
+						<LocalSearchIndexStatus backend={localBackend} rid={room._id} />
 						{searchText.trim() && (localQuery.isPending || !localBackend) && <Throbber />}
 						{searchText.trim() && localQuery.isSuccess && localQuery.data.length === 0 && (
 							<ContextualbarEmptyContent title={t('No_results_found')} />

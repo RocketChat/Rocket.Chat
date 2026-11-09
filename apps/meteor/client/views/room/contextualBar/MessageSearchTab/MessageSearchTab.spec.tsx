@@ -111,7 +111,8 @@ const renderTab = () =>
 			.withMethod('rocketchatSearch.search', () => ({ message: { docs: [] } }))
 			.withTranslations('en', 'core', {
 				Encrypted_content_cannot_be_searched: 'Encrypted content cannot be searched.',
-				E2E_Local_Search_Indexing_Progress: 'Indexing encrypted history: {{done}} of {{total}} rooms',
+				E2E_Local_Search_Room_Indexed_Since: 'Results include every message since {{date}}. Older messages are still being indexed.',
+				E2E_Local_Search_Room_Not_Indexed_Yet: 'Older messages of this room are not indexed yet.',
 				E2E_Local_Search_Memory_Only: 'On this device, the app keeps the search index in memory only and builds it again after a restart.',
 			})
 			.build(),
@@ -206,11 +207,31 @@ describe('MessageSearchTab local search', () => {
 		expect(screen.queryByRole('button', { name: /note/ })).not.toBeInTheDocument();
 	});
 
-	it.each(['indexing', 'backing-off'] as const)('shows the indexing progress while the history is not complete (%s)', async (status) => {
-		mockProgress = progress(status, 12);
+	const progressLine = () => screen.queryByText(/Results include every message since|not indexed yet/);
+
+	it.each(['indexing', 'backing-off'] as const)(
+		'shows how far back the index holds the room while its backfill runs (%s)',
+		async (status) => {
+			mockProgress = progress(status, 12);
+			await mockBackend?.setRoomState('r1', {
+				lastUpdate: Date.UTC(2026, 10, 9),
+				backfillCursor: `${Date.UTC(2026, 7, 14, 15)}_m1`,
+				backfillDone: false,
+			});
+			renderTab();
+
+			expect(
+				await screen.findByText(/^Results include every message since .*2026.*\. Older messages are still being indexed\.$/),
+			).toBeInTheDocument();
+			expect(screen.getByText(/since August 14th, 2026 /)).toBeInTheDocument();
+		},
+	);
+
+	it('says that the room is not indexed yet before its first backfill page', async () => {
+		mockProgress = progress('indexing', 12);
 		renderTab();
 
-		expect(await screen.findByText('Indexing encrypted history: 12 of 40 rooms')).toBeInTheDocument();
+		expect(await screen.findByText('Older messages of this room are not indexed yet.')).toBeInTheDocument();
 	});
 
 	it.each([
@@ -223,7 +244,17 @@ describe('MessageSearchTab local search', () => {
 		renderTab();
 
 		expect(await screen.findByRole('textbox', { name: 'Search_Messages' })).toBeInTheDocument();
-		expect(screen.queryByText(/Indexing encrypted history/)).not.toBeInTheDocument();
+		expect(progressLine()).not.toBeInTheDocument();
+	});
+
+	it('shows no indexing progress when the backfill of this room is done, while other rooms still index', async () => {
+		mockProgress = progress('indexing', 12);
+		await mockBackend?.setRoomState('r1', { lastUpdate: Date.UTC(2026, 10, 9), backfillDone: true });
+		renderTab();
+
+		expect(await screen.findByRole('textbox', { name: 'Search_Messages' })).toBeInTheDocument();
+		await new Promise((resolve) => setTimeout(resolve, 100));
+		expect(progressLine()).not.toBeInTheDocument();
 	});
 
 	it('shows a note when the index is kept in memory only (encryptedAtRest false)', async () => {
@@ -341,7 +372,7 @@ describe('MessageSearchTab without a local search backend', () => {
 		renderTab();
 
 		expect(await screen.findByText('Encrypted content cannot be searched.')).toBeInTheDocument();
-		expect(screen.queryByText(/Indexing encrypted history/)).not.toBeInTheDocument();
+		expect(screen.queryByText(/Results include every message since|not indexed yet/)).not.toBeInTheDocument();
 		expect(screen.queryByText(/in memory only/)).not.toBeInTheDocument();
 		mockProgress = undefined;
 		mockEncryptedAtRest = undefined;
