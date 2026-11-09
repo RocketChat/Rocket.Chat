@@ -34,6 +34,7 @@ describe('findExistingCASUser', () => {
 		Users.findOne.resolves(casAlice);
 
 		expect(await findExistingCASUser('alice')).to.equal(casAlice);
+		expect(Users.findOne.calledOnceWith({ 'services.cas.external_id': 'alice' })).to.be.true;
 		expect(Users.setCasExternalIdByUsername.called).to.be.false;
 	});
 

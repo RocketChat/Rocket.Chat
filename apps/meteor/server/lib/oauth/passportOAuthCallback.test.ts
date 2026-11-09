@@ -98,7 +98,11 @@ describe('passportOAuthCallback', () => {
 			expect(popupPayload(res)).to.deep.equal({ oauthPopupCommand: 'oauth-login-with-token', token: 'resume-token' });
 
 			const html: string = res.send.firstCall.args[0];
-			expect(html).to.match(/window\.location\.origin\s*\);/);
+			const postMessageCall = html.slice(
+				html.indexOf('postMessage(') + 'postMessage('.length,
+				html.indexOf(');', html.indexOf('postMessage(')),
+			);
+			expect(postMessageCall.slice(postMessageCall.lastIndexOf(',') + 1).trim()).to.equal('window.location.origin');
 			const [, nonce] = /nonce="([^"]+)"/.exec(html) ?? [];
 			expect(res.setHeader.calledOnceWith('Content-Security-Policy', `script-src 'nonce-${nonce}'`)).to.be.true;
 		});
