@@ -172,3 +172,40 @@ it('should NOT send systemMessages when something else changed', async () => {
 
 	expect(saveFn.mock.calls[0][0]).not.toHaveProperty('systemMessages');
 });
+
+it('shows pinned and thread messages as deleted by the room policy, and saves them as kept once turned off', async () => {
+	const saveFn = jest.fn((_data: Record<string, unknown>) => ({ rid: 'room-id', success: true }));
+	const room = createFakeRoom<IRoomWithRetentionPolicy>({
+		t: 'c',
+		name: 'test-room',
+		retention: { enabled: true, overrideGlobal: true, maxAge: 30, excludePinned: false, filesOnly: false, ignoreThreads: false },
+	});
+	const wrapper = mockAppRoot()
+		.withJohnDoe()
+		.withPermission('edit-room')
+		.withPermission('edit-room-retention-policy')
+		.withEndpoint('POST', '/v1/rooms.saveRoomSettings', saveFn as never)
+		.withEndpoint('GET', '/v1/rooms.nameExists', () => ({ exists: false }) as never)
+		.withSetting('UTF8_Channel_Names_Validation', '[0-9a-zA-Z-_.]+')
+		.withSetting('RetentionPolicy_Enabled', true)
+		.withSetting('RetentionPolicy_AppliesToChannels', true)
+		.withTranslations('en', 'core', { Save: 'Save' })
+		.withRoom(room)
+		.build();
+
+	render(<EditRoomInfo room={room} onClickClose={noop} onClickBack={noop} />, { wrapper });
+	await userEvent.click(await screen.findByRole('button', { name: 'RetentionPolicy' }));
+
+	const deletePinned = screen.getByRole('checkbox', { name: 'RetentionPolicyRoom_DeletePinned' });
+	const deleteThreads = screen.getByRole('checkbox', { name: 'RetentionPolicyRoom_DeleteThreads' });
+	expect(deletePinned).toBeChecked();
+	expect(deleteThreads).toBeChecked();
+
+	await userEvent.click(deletePinned);
+	await userEvent.click(deleteThreads);
+	await clickSave();
+
+	await waitFor(() =>
+		expect(saveFn).toHaveBeenCalledWith(expect.objectContaining({ retentionExcludePinned: true, retentionIgnoreThreads: true })),
+	);
+});
