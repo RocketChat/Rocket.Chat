@@ -1237,6 +1237,7 @@ describe('[Rooms]', () => {
 
 		describe('with a discussion started from a message with a file', () => {
 			let originId: IMessage['_id'];
+			let drid: IRoom['_id'];
 
 			const startDiscussionFromOrigin = () =>
 				request
@@ -1271,30 +1272,89 @@ describe('[Rooms]', () => {
 						.send({ msg: 'discussion origin' })
 						.expect(200)
 				).body.message._id;
-				await startDiscussionFromOrigin();
+				drid = (await startDiscussionFromOrigin()).body.discussion._id;
 			});
 
-			it('should keep the origin message and its file when ignoreDiscussion is set', async () => {
+			it('should keep the origin message and its file when ignoreDiscussion and ignoreDiscussionOrigin are set', async () => {
 				await startDiscussionFromOrigin();
 				await sendSimpleMessage({ roomId: publicChannel._id });
 
-				const res = await pruneAll({ ignoreDiscussion: true });
+				const res = await pruneAll({ ignoreDiscussion: true, ignoreDiscussionOrigin: true });
 
 				expect(res.body).to.have.property('count', 1);
 				expect((await getMessages(publicChannel._id)).map(({ _id }) => _id)).to.include(originId);
 				expect(await getFiles()).to.have.lengthOf(1);
 			});
 
-			it('should delete the origin message when ignoreDiscussion is not set', async () => {
-				await pruneAll({ ignoreDiscussion: false });
+			it('should delete the origin message when only ignoreDiscussion is set', async () => {
+				await pruneAll({ ignoreDiscussion: true });
 
 				expect((await getMessages(publicChannel._id)).map(({ _id }) => _id)).not.to.include(originId);
 			});
 
-			it('should keep the origin file when filesOnly and ignoreDiscussion are set', async () => {
-				await pruneAll({ filesOnly: true, ignoreDiscussion: true });
+			it('should delete the origin message when ignoreDiscussionOrigin is set without ignoreDiscussion', async () => {
+				await pruneAll({ ignoreDiscussion: false, ignoreDiscussionOrigin: true });
+
+				expect((await getMessages(publicChannel._id)).map(({ _id }) => _id)).not.to.include(originId);
+			});
+
+			it('should keep the origin file when filesOnly, ignoreDiscussion and ignoreDiscussionOrigin are set', async () => {
+				await pruneAll({ filesOnly: true, ignoreDiscussion: true, ignoreDiscussionOrigin: true });
 
 				expect(await getFiles()).to.have.lengthOf(1);
+			});
+
+			it('should show the deleted file in the discussion post and in the discussion room when the origin is pruned', async () => {
+				await pruneAll({ ignoreDiscussion: true });
+
+				const getQuote = (message: IMessage) => message.attachments?.find(isQuoteAttachment);
+				const post = (await getMessages(publicChannel._id)).find((message) => message.drid === drid);
+				const copy = (await getMessages(drid)).find((message) => getQuote(message)?.message_link.endsWith(`?msg=${originId}`));
+				expect(post && getQuote(post)?.attachments?.[0]).to.have.property('type', 'removed-file');
+				expect(copy && getQuote(copy)?.attachments?.[0]).to.have.property('type', 'removed-file');
+			});
+
+			it('should show the deleted file in a discussion that survives a prune of discussion messages', async () => {
+				const post = (await getMessages(publicChannel._id)).find((message) => message.drid === drid);
+				await request.post(api('chat.pinMessage')).set(credentials).send({ messageId: post?._id }).expect(200);
+
+				await pruneAll({ ignoreDiscussion: false, excludePinned: true });
+
+				const prunedPost = (await getMessages(publicChannel._id)).find((message) => message.drid === drid);
+				expect(prunedPost?.attachments?.find(isQuoteAttachment)?.attachments?.[0]).to.have.property('type', 'removed-file');
+			});
+
+			it('should keep the file of another quote in a message that also quotes the pruned origin', async () => {
+				const siteUrl = (await getSettingValueById('Site_Url')) as string;
+				const mediaResponse = await request
+					.post(api(`rooms.media/${drid}`))
+					.set(credentials)
+					.attach('file', imgURL)
+					.expect(200);
+				const otherId = (
+					await request
+						.post(api(`rooms.mediaConfirm/${drid}/${mediaResponse.body.file._id}`))
+						.set(credentials)
+						.send({ msg: 'other' })
+						.expect(200)
+				).body.message._id;
+				const quoteBoth = (
+					await sendMessage({
+						message: {
+							rid: drid,
+							msg: `${new URL(`/channel/x?msg=${originId}`, siteUrl)} ${new URL(`/channel/x?msg=${otherId}`, siteUrl)}`,
+						},
+					})
+				).body.message;
+
+				await pruneAll({ ignoreDiscussion: true });
+
+				const quotes = (await getMessages(drid)).find(({ _id }) => _id === quoteBoth._id)?.attachments?.filter(isQuoteAttachment);
+				expect(quotes?.find(({ message_link }) => message_link.endsWith(otherId))?.attachments?.[0]).to.have.property('type', 'file');
+				expect(quotes?.find(({ message_link }) => message_link.endsWith(originId))?.attachments?.[0]).to.have.property(
+					'type',
+					'removed-file',
+				);
 			});
 		});
 

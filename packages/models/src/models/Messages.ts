@@ -1870,6 +1870,56 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		]);
 	}
 
+	findByDiscussionIdsOrQuotingInRoomIds<
+		T extends Document = IMessage,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(drids: IRoom['_id'][], messageLinkPattern: string, options?: O): FindCursor<DocumentWithProjection<T, O>> {
+		return this.find<T, O>(
+			{ $or: [{ drid: { $in: drids } }, { 'rid': { $in: drids }, 'attachments.message_link': { $regex: messageLinkPattern } }] },
+			options,
+		);
+	}
+
+	replaceQuotedFileAttachmentsByMessageIds(_ids: string[], messageLinkPattern: string, replaceWith: MessageAttachment) {
+		return this.updateMany({ _id: { $in: _ids } }, [
+			{
+				$set: {
+					attachments: {
+						$map: {
+							input: '$attachments',
+							as: 'att',
+							in: {
+								$cond: [
+									{
+										$and: [
+											{ $isArray: '$$att.attachments' },
+											{ $regexMatch: { input: { $ifNull: ['$$att.message_link', ''] }, regex: messageLinkPattern } },
+										],
+									},
+									{
+										$mergeObjects: [
+											'$$att',
+											{
+												attachments: {
+													$map: {
+														input: '$$att.attachments',
+														as: 'nested',
+														in: { $cond: [{ $eq: ['$$nested.type', 'file'] }, replaceWith, '$$nested'] },
+													},
+												},
+											},
+										],
+									},
+									'$$att',
+								],
+							},
+						},
+					},
+				},
+			},
+		]);
+	}
+
 	clearFilesByMessageIds(_ids: string[]) {
 		if (!_ids || _ids.length === 0) {
 			return Promise.resolve({ acknowledged: true, modifiedCount: 0, upsertedId: null, upsertedCount: 0, matchedCount: 0 });
