@@ -167,6 +167,13 @@ export type SearchIndexRuntime = {
 	requestRoomCatchUp(rid: string): void;
 	/** Catches up the rooms whose activity moved, after the user's subscriptions changed. */
 	onRoomsChanged(): void;
+	/**
+	 * The client opened a room. A room with no live room stream gets a catch-up, so its edits and deletes since the last
+	 * catch-up reach the index. The client's message cache uses the same rule: it loads a room again when its stream is not live.
+	 */
+	onRoomOpened(rid: string): void;
+	/** The client closed the room stream (it keeps a few rooms open). The next open of the room catches it up again. */
+	onRoomClosed(rid: string): void;
 	/** Indexes the messages that waited for the room key, after the key arrived. */
 	onRoomKeyReady(rid: string): void;
 	/** Keeps a live message that failed to decrypt (room key missing), so `onRoomKeyReady` indexes it. Pass the encrypted message. */
@@ -326,6 +333,9 @@ export const createSearchIndexRuntime = ({
 	const unsubscribe = session.subscribe(sync);
 	sync();
 
+	// The rooms whose stream sends their edits and deletes live. The open of the index catches up every room.
+	const liveRooms = new Set<string>();
+
 	return {
 		getScheduler: () => scheduler,
 		getProgress: () => scheduler?.getProgress(),
@@ -343,6 +353,14 @@ export const createSearchIndexRuntime = ({
 		},
 		requestRoomCatchUp: (rid) => scheduler?.requestCatchUp([rid]),
 		onRoomsChanged: () => scheduler?.noteRoomActivity(),
+		onRoomOpened(rid) {
+			if (liveRooms.has(rid)) return;
+			liveRooms.add(rid);
+			scheduler?.requestCatchUp([rid]);
+		},
+		onRoomClosed(rid) {
+			liveRooms.delete(rid);
+		},
 		onRoomKeyReady: (rid) => scheduler?.retryPendingDecrypt(rid),
 		onDecryptFailed: (message) => scheduler?.addPendingDecrypt(message),
 		async onRoomRemoved(rid) {

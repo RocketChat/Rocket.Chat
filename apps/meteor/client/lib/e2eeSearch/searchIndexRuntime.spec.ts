@@ -151,6 +151,23 @@ describe('createSearchIndexRuntime', () => {
 		expect(schedulers[0].scheduler.noteRoomActivity).toHaveBeenCalledTimes(1);
 	});
 
+	it('catches up a room when it opens with no live stream, and again only after its stream closed', () => {
+		const { session, schedulers, runtime } = stubRuntime();
+
+		runtime.onRoomOpened('r0');
+		session.set(backendA);
+		const { requestCatchUp } = schedulers[0].scheduler;
+
+		runtime.onRoomOpened('r1');
+		runtime.onRoomOpened('r1');
+		runtime.onRoomOpened('r0');
+		expect(requestCatchUp.mock.calls).toEqual([[['r1']]]);
+
+		runtime.onRoomClosed('r1');
+		runtime.onRoomOpened('r1');
+		expect(requestCatchUp.mock.calls).toEqual([[['r1']], [['r1']]]);
+	});
+
 	it('keeps a live message that failed to decrypt for the retry of its room', () => {
 		const { schedulers, runtime } = stubRuntime(backendA);
 		const message = { _id: 'm1', rid: 'r1', t: 'e2e', e2e: 'pending', msg: 'ciphertext' } as IMessage;

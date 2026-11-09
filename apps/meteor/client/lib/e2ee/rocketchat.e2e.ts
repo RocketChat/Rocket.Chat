@@ -20,6 +20,7 @@ import { Messages, PublicSettings, Rooms, Subscriptions } from '../../stores';
 import EnterE2EPasswordModal from '../../views/e2e/EnterE2EPasswordModal';
 import SaveE2EPasswordModal from '../../views/e2e/SaveE2EPasswordModal';
 import { APIClient } from '../RestApiClient';
+import { RoomManager } from '../RoomManager';
 import { sdk } from '../SDKClient';
 import { absoluteUrl } from '../absoluteUrl';
 import * as banners from '../banners';
@@ -1155,6 +1156,15 @@ e2e.on('E2E_ROOM_READY', (rid: string) => {
 // burst of messages, an edit or a delete of an older message, a thread reply.
 Subscriptions.use.subscribe(() => {
 	e2eSearchIndexRuntime.onRoomsChanged();
+});
+
+// An edit or a delete does not move the room's activity. The client keeps a few rooms open with a live stream and loads a
+// room again when it opens with none; the index catches up the room at the same point.
+RoomManager.on('opened', (rid) => {
+	e2eSearchIndexRuntime.onRoomOpened(rid);
+});
+RoomManager.on('closed', (rid) => {
+	e2eSearchIndexRuntime.onRoomClosed(rid);
 });
 
 {
