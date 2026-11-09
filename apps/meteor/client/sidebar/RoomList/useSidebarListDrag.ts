@@ -1,38 +1,17 @@
 import { useIsEnterprise } from '@rocket.chat/ui-client';
-import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
+import { getRoomDropTarget } from './getRoomDropTarget';
 import { useItemListDrag } from '../../hooks/useItemListDrag';
 import type { ItemListDragSource, ItemListDropHover, ItemListDropTarget } from '../../hooks/useItemListDrag';
 import { useMoveRoomCategory } from '../categories/hooks/useMoveRoomCategory';
 import { useSaveCategoryOrder } from '../categories/hooks/useSaveCategoryOrder';
-import { FAVORITES_TARGET, useUserSidebarCategories } from '../categories/hooks/useUserSidebarCategories';
+import { useUserSidebarCategories } from '../categories/hooks/useUserSidebarCategories';
 import { SIDEBAR_DYNAMIC_GROUP_KEYS } from '../hooks/useCategoryList';
 import type { SidebarRoomListGroup } from '../hooks/useRoomList';
 
 const isDynamicGroup = (key: string) => SIDEBAR_DYNAMIC_GROUP_KEYS.includes(key);
-
-const getSystemGroupKey = (room: SubscriptionWithRoom) => {
-	if (room.teamMain) {
-		return 'Teams';
-	}
-	if (room.prid) {
-		return 'Discussions';
-	}
-	if (room.t === 'c' || room.t === 'p') {
-		return 'Channels';
-	}
-	if (room.t === 'd') {
-		return 'Direct_Messages';
-	}
-	return undefined;
-};
-
-const getSystemGroup = (room: SubscriptionWithRoom, groupKeys: string[]) => {
-	const key = getSystemGroupKey(room);
-	return key && groupKeys.includes(key) ? key : 'Conversations';
-};
 
 const moveKey = (keys: string[], key: string, target: string, position: 'before' | 'after') => {
 	const rest = keys.filter((k) => k !== key);
@@ -56,24 +35,15 @@ export const useSidebarListDrag = (groups: SidebarRoomListGroup[]) => {
 
 	const getRoomTarget = (source: ItemListDragSource, group: string) => {
 		const room = findRoom(source.key);
-		if (!room || group === source.group) {
+		if (!room) {
 			return undefined;
 		}
 
-		if (group === 'Favorites' && isFavoritesEnabled) {
-			return FAVORITES_TARGET;
-		}
-
-		if (customCategories.some((category) => category._id === group)) {
-			return group;
-		}
-
-		// Dropping on the room's own system group takes it out of its category.
-		if ((room.category || room.f) && group === getSystemGroup(room, groupKeys)) {
-			return null;
-		}
-
-		return undefined;
+		return getRoomDropTarget(room, source.group, group, {
+			customCategoryIds: customCategories.map((category) => category._id),
+			groupKeys,
+			isFavoritesEnabled,
+		});
 	};
 
 	const resolveTarget = (source: ItemListDragSource, hover: ItemListDropHover): ItemListDropTarget | undefined => {
