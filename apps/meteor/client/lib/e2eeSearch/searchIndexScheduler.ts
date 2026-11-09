@@ -46,6 +46,11 @@ export type SearchIndexScheduler = {
 	stop(): Promise<void>;
 	/** Catches up the rooms again (every room when none is given), for example after a reconnect. */
 	requestCatchUp(rids?: string[]): void;
+	/**
+	 * Reads the room list again after it changed. A room with new activity gets a catch-up, also while a backfill runs:
+	 * these catch-ups take turns with the backfill pages, so a busy room does not stop the backfill.
+	 */
+	noteRoomActivity(): void;
 	/** Indexes the messages of the room that waited for its room key. */
 	retryPendingDecrypt(rid: string): void;
 	/** Keeps a live message that failed to decrypt (room key missing) for the retry of its room. */
@@ -85,8 +90,12 @@ type HttpErrorResponse = {
 
 type Failure = { kind: 'retry'; retryAfterMs?: number; limited: boolean } | { kind: 'room-gone' } | { kind: 'skip-room' };
 
-/** `waitForKey: false` indexes a page whose messages all failed to decrypt, instead of waiting for the room key. */
-type Job = { kind: 'catch-up' | 'backfill'; rid: string; waitForKey?: boolean };
+/**
+ * `waitForKey: false` indexes a page whose messages all failed to decrypt, instead of waiting for the room key.
+ * `fromActivity` marks a catch-up that new room activity asked for. `activityMark` is the room's activity mark when the
+ * job was picked: a finished catch-up clears only that mark, so activity during the catch-up asks for another one.
+ */
+type Job = { kind: 'catch-up' | 'backfill'; rid: string; waitForKey?: boolean; fromActivity?: boolean; activityMark?: number };
 
 const isHttpErrorResponse = (error: unknown): error is HttpErrorResponse =>
 	typeof error === 'object' && error !== null && typeof (error as { status?: unknown }).status === 'number';
@@ -181,6 +190,11 @@ export const createSearchIndexScheduler = ({
 	const seenActivity = new Map<string, number>();
 	/** Removed rooms that were then absent from the room list: when one comes back, the user joined it again. */
 	const absentAfterRemoval = new Set<string>();
+	/** Rooms whose activity moved while the scheduler ran, with a mark that grows on each new activity. */
+	const activityPending = new Map<string, number>();
+	let activityMarks = 0;
+	/** True after a catch-up that activity asked for: the next turn goes to a backfill page, if one waits. */
+	let lastJobFromActivity = false;
 	let visitedThisPass = new Set<string>();
 
 	const listeners = new Set<() => void>();
@@ -259,7 +273,7 @@ export const createSearchIndexScheduler = ({
 	};
 
 	/** Reads the room list again: rooms with new activity get a catch-up, and a room that the user joined again re-enters. */
-	const refreshRooms = () => {
+	const refreshRooms = (markActivity: (rid: string) => void = (rid) => catchUpPending.add(rid)) => {
 		const listed = getRooms();
 		const present = new Set(listed.map(({ rid }) => rid));
 		for (const rid of removedRooms) {
@@ -276,7 +290,7 @@ export const createSearchIndexScheduler = ({
 			if (removedRooms.has(rid)) continue;
 			const seen = seenActivity.get(rid);
 			seenActivity.set(rid, lastActivityAt);
-			if (seen === undefined || lastActivityAt > seen) catchUpPending.add(rid);
+			if (seen === undefined || lastActivityAt > seen) markActivity(rid);
 		}
 	};
 
@@ -286,11 +300,22 @@ export const createSearchIndexScheduler = ({
 
 		for (const { rid } of active) {
 			if (!catchUpPending.has(rid)) continue;
-			if ((await backend.getRoomState(rid))?.lastUpdate !== undefined) return { kind: 'catch-up', rid };
+			if ((await backend.getRoomState(rid))?.lastUpdate !== undefined) return { kind: 'catch-up', rid, activityMark: activityPending.get(rid) };
 			catchUpPending.delete(rid);
 		}
 
 		const backfill = active.filter(({ rid }) => backfillDone.get(rid) === false);
+
+		// A room with no lastUpdate has no backfill page yet: its first page starts now, so it covers the new activity.
+		if (!(lastJobFromActivity && backfill.length)) {
+			for (const { rid } of active) {
+				const activityMark = activityPending.get(rid);
+				if (activityMark === undefined) continue;
+				if ((await backend.getRoomState(rid))?.lastUpdate !== undefined) return { kind: 'catch-up', rid, fromActivity: true, activityMark };
+				activityPending.delete(rid);
+			}
+		}
+
 		if (backfill.length) {
 			let next = backfill.find(({ rid }) => !visitedThisPass.has(rid));
 			if (!next) {
@@ -321,16 +346,20 @@ export const createSearchIndexScheduler = ({
 		return undefined;
 	};
 
-	const runJob = async ({ kind, rid, waitForKey: jobWaitsForKey = true }: Job) => {
+	const runJob = async ({ kind, rid, waitForKey: jobWaitsForKey = true, fromActivity = false, activityMark }: Job) => {
 		// A job picked before `removeRoom` must not index the removed room again.
 		if (removedRooms.has(rid)) return;
+		lastJobFromActivity = fromActivity;
 		const options = { waitForKey: jobWaitsForKey && !noKeyWait.has(rid) };
 		const result = kind === 'catch-up' ? await crawler.catchUpRoomPage(rid, options) : await crawler.backfillRoomPage(rid, options);
 		indexed += result.indexed;
 		// A key that arrived while the page ran is retried at once, so the room does not wait for it.
 		if (result.waitingForKey && !keyArrived.has(rid)) waitingForKey.add(rid);
 		if (kind === 'catch-up') {
-			if (result.done) catchUpPending.delete(rid);
+			if (result.done) {
+				catchUpPending.delete(rid);
+				if (activityMark !== undefined && activityPending.get(rid) === activityMark) activityPending.delete(rid);
+			}
 			return;
 		}
 
@@ -348,6 +377,7 @@ export const createSearchIndexScheduler = ({
 		waitingForKey.delete(rid);
 		noKeyWait.delete(rid);
 		seenActivity.delete(rid);
+		activityPending.delete(rid);
 		// The user left the room: the next refresh that lists it again sees that the user joined it again.
 		if (!getRooms().some((room) => room.rid === rid)) absentAfterRemoval.add(rid);
 		crawler.forgetRoom(rid);
@@ -462,6 +492,8 @@ export const createSearchIndexScheduler = ({
 			noKeyWait.clear();
 			seenActivity.clear();
 			absentAfterRemoval.clear();
+			activityPending.clear();
+			lastJobFromActivity = false;
 			visitedThisPass = new Set();
 			refreshRooms();
 			loop = loop.then(() => runLoop(run));
@@ -480,6 +512,12 @@ export const createSearchIndexScheduler = ({
 		},
 
 		requestCatchUp,
+
+		noteRoomActivity() {
+			if (!started) return;
+			refreshRooms((rid) => activityPending.set(rid, ++activityMarks));
+			if (activityPending.size) wake();
+		},
 
 		retryPendingDecrypt(rid) {
 			keyArrived.add(rid);

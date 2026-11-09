@@ -39,6 +39,7 @@ const createSchedulerStub = (): jest.Mocked<SearchIndexScheduler> => ({
 	start: jest.fn(),
 	stop: jest.fn(),
 	requestCatchUp: jest.fn(),
+	noteRoomActivity: jest.fn(),
 	retryPendingDecrypt: jest.fn(),
 	addPendingDecrypt: jest.fn(),
 	removeRoom: jest.fn(),
@@ -138,6 +139,16 @@ describe('createSearchIndexRuntime', () => {
 
 		expect(schedulers[0].scheduler.requestCatchUp).toHaveBeenCalledTimes(1);
 		expect(schedulers[0].scheduler.retryPendingDecrypt).toHaveBeenCalledWith('r1');
+	});
+
+	it('passes a change of the room list to the scheduler of the open index, and does nothing with no index open', () => {
+		const { session, schedulers, runtime } = stubRuntime();
+
+		runtime.onRoomsChanged();
+		session.set(backendA);
+		runtime.onRoomsChanged();
+
+		expect(schedulers[0].scheduler.noteRoomActivity).toHaveBeenCalledTimes(1);
 	});
 
 	it('keeps a live message that failed to decrypt for the retry of its room', () => {

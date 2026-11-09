@@ -777,6 +777,18 @@ class E2E extends Emitter {
 	}
 
 	/**
+	 * Returns a function that queues a decrypted message for the local search index that is open now. It drops the message
+	 * when a logout or another user's login ended this session first. Call it before the decrypt starts.
+	 */
+	bindSearchIndex(): (message: IMessage) => void {
+		const generation = this.startGeneration;
+		const indexDecrypted = e2eSearchIndexWriter.bindToOpenIndex();
+		return (message) => {
+			if (!this.isStale(generation)) indexDecrypted(message);
+		};
+	}
+
+	/**
 	 * `quoteDepth` is how many levels of quoted message links the decrypt follows. A quote deeper than the quote chain limit
 	 * is never shown, and each level is a request, so a chain of messages that quote each other stops there.
 	 */
@@ -1137,6 +1149,12 @@ subscriptionRemovals.on('removed', ({ rid }) => {
 
 e2e.on('E2E_ROOM_READY', (rid: string) => {
 	e2eSearchIndexRuntime.onRoomKeyReady(rid);
+});
+
+// A new message moves its room's last activity. The catch-up indexes what the room's last message does not carry: a
+// burst of messages, an edit or a delete of an older message, a thread reply.
+Subscriptions.use.subscribe(() => {
+	e2eSearchIndexRuntime.onRoomsChanged();
 });
 
 {

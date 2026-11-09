@@ -165,6 +165,8 @@ export type SearchIndexRuntime = {
 	onReconnect(): void;
 	/** Catches up the room before the next backfill page, so a search in it finds its edits and misses its deletes. */
 	requestRoomCatchUp(rid: string): void;
+	/** Catches up the rooms whose activity moved, after the user's subscriptions changed. */
+	onRoomsChanged(): void;
 	/** Indexes the messages that waited for the room key, after the key arrived. */
 	onRoomKeyReady(rid: string): void;
 	/** Keeps a live message that failed to decrypt (room key missing), so `onRoomKeyReady` indexes it. Pass the encrypted message. */
@@ -340,6 +342,7 @@ export const createSearchIndexRuntime = ({
 			scheduler.requestCatchUp();
 		},
 		requestRoomCatchUp: (rid) => scheduler?.requestCatchUp([rid]),
+		onRoomsChanged: () => scheduler?.noteRoomActivity(),
 		onRoomKeyReady: (rid) => scheduler?.retryPendingDecrypt(rid),
 		onDecryptFailed: (message) => scheduler?.addPendingDecrypt(message),
 		async onRoomRemoved(rid) {

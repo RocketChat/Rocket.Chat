@@ -454,6 +454,65 @@ describe('createSearchIndexScheduler', () => {
 	});
 
 	describe('room list changes', () => {
+		const busyAndBig = (): SearchIndexRoom[] => [
+			{ rid: 'busy', lastActivityAt: NOW - HOUR },
+			{ rid: 'big', lastActivityAt: NOW - 2 * HOUR },
+		];
+
+		it('catches up a room with new activity between two backfill pages of another room', async () => {
+			const rooms = busyAndBig();
+			const { scheduler, server, backend, indexed, requests } = await setup({ rooms, messagesPerRoom: 100 });
+			await backend.setRoomState('busy', { lastUpdate: NOW - HOUR, backfillDone: true });
+
+			scheduler.start();
+			await jest.advanceTimersByTimeAsync(5 * (REQUEST_MS + PAUSE_MS));
+			expect(scheduler.getProgress().roomsDone).toBe(1);
+			const sent = requests.length;
+
+			server.send('new1', 'busy');
+			rooms[0] = { rid: 'busy', lastActivityAt: server.now() };
+			scheduler.noteRoomActivity();
+			await jest.advanceTimersByTimeAsync(3 * (REQUEST_MS + PAUSE_MS));
+
+			expect(indexed.has('new1')).toBe(true);
+			expect(requests.slice(sent).some(({ params }) => params.roomId === 'busy')).toBe(true);
+			// The backfill of the big room is not done: the catch-up did not wait for it.
+			expect(scheduler.getProgress().roomsDone).toBe(1);
+			scheduler.stop();
+		});
+
+		it('keeps the backfill going while a busy room has new activity before every turn', async () => {
+			const rooms = busyAndBig();
+			const { scheduler, server, backend, requests } = await setup({ rooms, messagesPerRoom: 100 });
+			await backend.setRoomState('busy', { lastUpdate: NOW - HOUR, backfillDone: true });
+
+			scheduler.start();
+			await jest.advanceTimersByTimeAsync(3 * (REQUEST_MS + PAUSE_MS));
+			const sent = requests.length;
+
+			for (let i = 0; i < 8; i++) {
+				server.send(`busy-new${i}`, 'busy');
+				rooms[0] = { rid: 'busy', lastActivityAt: server.now() };
+				scheduler.noteRoomActivity();
+				await jest.advanceTimersByTimeAsync(REQUEST_MS + PAUSE_MS);
+			}
+
+			const turns = requests.slice(sent).map(({ params }) => params.roomId);
+			expect(turns.filter((rid) => rid === 'busy').length).toBeGreaterThanOrEqual(3);
+			expect(turns.filter((rid) => rid === 'big').length).toBeGreaterThanOrEqual(3);
+			scheduler.stop();
+		});
+
+		it('ignores a change of the room list before start', async () => {
+			const rooms = busyAndBig();
+			const { scheduler, requests } = await setup({ rooms });
+
+			scheduler.noteRoomActivity();
+			await jest.advanceTimersByTimeAsync(10 * (REQUEST_MS + PAUSE_MS));
+
+			expect(requests).toHaveLength(0);
+		});
+
 		it('catches up an idle room whose activity moved, after the refresh interval, with no reconnect', async () => {
 			const rooms = [{ rid: 'recent', lastActivityAt: NOW }];
 			const { scheduler, server, indexed, requests } = await setup({ rooms, messagesPerRoom: 5 });

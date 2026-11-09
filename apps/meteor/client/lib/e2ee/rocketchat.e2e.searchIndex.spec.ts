@@ -122,6 +122,62 @@ describe('E2E client and the local search index', () => {
 		expect(bridge.upsert).toHaveBeenCalledTimes(1);
 	});
 
+	it('indexes the last message of a room that is not open when the client decrypts it for the room list', async () => {
+		const { privateKey } = await generate();
+		(e2e as unknown as { userId: string }).userId = 'u1';
+		e2e.privateKey = privateKey;
+		const encrypted = {
+			_id: 'm-last',
+			rid: 'r1',
+			t: 'e2e',
+			e2e: 'pending',
+			msg: '',
+			u: { _id: 'u2', username: 'bob' },
+			ts: new Date(),
+			_updatedAt: new Date(),
+		};
+		const decrypted = { ...encrypted, e2e: 'done', msg: 'invoice sent to the client' };
+		Subscriptions.state.replaceAll([{ _id: 's1', rid: 'r1', u: { _id: 'u1' }, encrypted: true, lastMessage: encrypted } as never]);
+		const room = { roomId: 'r1', decryptMessage: jest.fn(async () => decrypted) };
+
+		e2e.setState('READY');
+		await e2eSearchIndexSession.whenSettled();
+		await E2ERoom.prototype.decryptSubscription.call(room as never);
+		await e2eSearchIndexWriter.flush();
+
+		expect(bridge.upsert).toHaveBeenCalledTimes(1);
+		expect(bridge.upsert.mock.calls[0][0]).toEqual([expect.objectContaining({ id: 'm-last', rid: 'r1', body: 'invoice sent to the client' })]);
+	});
+
+	it('does not index the last message of a room when its decrypt ends after the logout', async () => {
+		const { privateKey } = await generate();
+		(e2e as unknown as { userId: string }).userId = 'u1';
+		e2e.privateKey = privateKey;
+		const encrypted = {
+			_id: 'm-last',
+			rid: 'r1',
+			t: 'e2e',
+			e2e: 'pending',
+			msg: '',
+			u: { _id: 'u2', username: 'bob' },
+			ts: new Date(),
+			_updatedAt: new Date(),
+		};
+		Subscriptions.state.replaceAll([{ _id: 's1', rid: 'r1', u: { _id: 'u1' }, encrypted: true, lastMessage: encrypted } as never]);
+		const decrypt = deferred<unknown>();
+		const room = { roomId: 'r1', decryptMessage: jest.fn(() => decrypt.promise) };
+
+		e2e.setState('READY');
+		await e2eSearchIndexSession.whenSettled();
+		const decrypting = E2ERoom.prototype.decryptSubscription.call(room as never);
+		await e2e.stopClient();
+		decrypt.resolve({ ...encrypted, e2e: 'done', msg: 'invoice sent to the client' });
+		await decrypting;
+		await e2eSearchIndexWriter.flush();
+
+		expect(bridge.upsert).not.toHaveBeenCalled();
+	});
+
 	it('removes a message from the index when it arrives again as a deletion placeholder, and does not index it again', async () => {
 		const { privateKey } = await generate();
 		(e2e as unknown as { userId: string }).userId = 'u1';
