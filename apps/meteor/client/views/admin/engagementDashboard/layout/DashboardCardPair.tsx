@@ -9,10 +9,10 @@ type DashboardCardPairProps = {
 };
 
 /**
- * Two dashboard cards that share a row in equal halves, or take a row each.
+ * Two dashboard cards that share a row in equal halves, or take a row each and sit further apart.
  */
 const DashboardCardPair = ({ stacked, start, end }: DashboardCardPairProps) => (
-	<Box display='flex' flexWrap='wrap' columnGap='x16'>
+	<Box display='flex' flexWrap='wrap' rowGap='x32' columnGap='x16'>
 		<Box flexGrow={1} flexShrink={0} flexBasis={stacked ? '100%' : '0'}>
 			{start}
 		</Box>

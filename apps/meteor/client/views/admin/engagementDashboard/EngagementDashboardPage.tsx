@@ -4,7 +4,6 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ChannelsTab from './channels/ChannelsTab';
-import EngagementDashboardContent from './layout/EngagementDashboardContent';
 import MessagesTab from './messages/MessagesTab';
 import UsersTab from './users/UsersTab';
 import { PageTabs } from '../../../components/PageTabs';
@@ -47,12 +46,10 @@ const EngagementDashboardPage = ({ tab = 'users', onSelectTab }: EngagementDashb
 				selected={tab}
 				onSelect={(tab) => onSelectTab?.(tab)}
 			/>
-			<PageScrollableContent padding={0}>
-				<EngagementDashboardContent>
-					{(tab === 'users' && <UsersTab timezone={timezoneId} />) ||
-						(tab === 'messages' && <MessagesTab timezone={timezoneId} />) ||
-						(tab === 'channels' && <ChannelsTab />)}
-				</EngagementDashboardContent>
+			<PageScrollableContent paddingInline='x24' paddingBlock='x40'>
+				{(tab === 'users' && <UsersTab timezone={timezoneId} />) ||
+					(tab === 'messages' && <MessagesTab timezone={timezoneId} />) ||
+					(tab === 'channels' && <ChannelsTab />)}
 			</PageScrollableContent>
 		</Page>
 	);

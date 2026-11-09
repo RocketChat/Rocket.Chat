@@ -1,3 +1,4 @@
+import { Stack } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from 'react-i18next';
 
@@ -18,13 +19,15 @@ const UsersTab = ({ timezone }: UsersTabProps) => {
 	const isXxlScreen = useBreakpoints().includes('xxl');
 
 	return (
-		<>
-			<EngagementDashboardCard title={t('New_users')}>
-				<NewUsersSection timezone={timezone} />
-			</EngagementDashboardCard>
-			<EngagementDashboardCard title={t('Active_users')}>
-				<ActiveUsersSection timezone={timezone} />
-			</EngagementDashboardCard>
+		<Stack gap='x32'>
+			<Stack gap='x16'>
+				<EngagementDashboardCard title={t('New_users')}>
+					<NewUsersSection timezone={timezone} />
+				</EngagementDashboardCard>
+				<EngagementDashboardCard title={t('Active_users')}>
+					<ActiveUsersSection timezone={timezone} />
+				</EngagementDashboardCard>
+			</Stack>
 			<DashboardCardPair
 				stacked={!isXxlScreen}
 				start={
@@ -38,7 +41,7 @@ const UsersTab = ({ timezone }: UsersTabProps) => {
 					</EngagementDashboardCard>
 				}
 			/>
-		</>
+		</Stack>
 	);
 };
 

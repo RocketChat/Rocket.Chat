@@ -12,16 +12,14 @@ export type EngagementDashboardCardProps = {
  * The card a dashboard section sits in, which contains the section's failure instead of letting it take the tab down.
  */
 const EngagementDashboardCard = ({ children, title = undefined }: EngagementDashboardCardProps) => (
-	<Box marginBlock='x16'>
-		<Card>
-			{title && <CardTitle>{title}</CardTitle>}
-			<CardBody>
-				<EngagementDashboardCardErrorBoundary>
-					<Box width='full'>{children}</Box>
-				</EngagementDashboardCardErrorBoundary>
-			</CardBody>
-		</Card>
-	</Box>
+	<Card>
+		{title && <CardTitle>{title}</CardTitle>}
+		<CardBody>
+			<EngagementDashboardCardErrorBoundary>
+				<Box width='full'>{children}</Box>
+			</EngagementDashboardCardErrorBoundary>
+		</CardBody>
+	</Card>
 );
 
 export default EngagementDashboardCard;
