@@ -186,7 +186,7 @@ API.v1
 			userWithoutUsername: true,
 			body: isUsersUpdateOwnBasicInfoParamsPOST,
 			rateLimiterOptions: {
-				numRequestsAllowed: 1,
+				numRequestsAllowed: 5,
 				intervalTimeInMS: 60000,
 			},
 			response: {
