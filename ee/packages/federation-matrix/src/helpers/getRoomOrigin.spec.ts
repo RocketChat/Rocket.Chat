@@ -1,4 +1,4 @@
-import { getRoomOrigin } from './getRoomOrigin';
+import { getRoomOrigin } from './getRoomOrigin.js';
 
 const createEvent = (sender: string) => ({ type: 'm.room.create', sender });
 

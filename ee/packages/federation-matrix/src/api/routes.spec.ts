@@ -2,7 +2,7 @@ import { Settings } from '@rocket.chat/core-services';
 import { createRootApp, mountRouter } from '@rocket.chat/http-router';
 import type { HttpBindings } from '@rocket.chat/http-router';
 
-import { getFederationRoutes } from './routes';
+import { getFederationRoutes } from './routes.js';
 
 jest.mock('@rocket.chat/core-services', () => ({
 	Settings: { get: jest.fn() },

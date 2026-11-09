@@ -4,7 +4,7 @@ import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Messages, Rooms, Users } from '@rocket.chat/models';
 
-import { getActivityDisplayName } from '../helpers/getActivityDisplayName';
+import { getActivityDisplayName } from '../helpers/getActivityDisplayName.js';
 
 const logger = new Logger('federation-matrix:edu');
 

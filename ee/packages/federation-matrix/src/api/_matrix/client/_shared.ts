@@ -2,7 +2,7 @@ import { ROOM_ID_REGEX } from '@rocket.chat/federation-sdk';
 import type { Router } from '@rocket.chat/http-router';
 import { ajv, ajvQuery } from '@rocket.chat/rest-typings';
 
-import { logger } from '../../logger';
+import { logger } from '../../logger.js';
 
 export type ClientRouter = Router<'/client', any>;
 

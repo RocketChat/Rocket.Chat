@@ -1,4 +1,4 @@
-import { extractDomainFromMatrixUserId } from './extractDomainFromMatrixUserId';
+import { extractDomainFromMatrixUserId } from './extractDomainFromMatrixUserId.js';
 
 // The server whose user created the room. Up to room version 11 the room id names it; from
 // version 12 on only the create event does, and an invite carries that event in its stripped state.

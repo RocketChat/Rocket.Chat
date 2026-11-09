@@ -1,7 +1,7 @@
 import { ajv } from '@rocket.chat/rest-typings';
 
-import type { ClientRouter } from './_shared';
-import { license, tags } from './_shared';
+import type { ClientRouter } from './_shared.js';
+import { license, tags } from './_shared.js';
 
 const VersionsResponseSchema = {
 	type: 'object',
