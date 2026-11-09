@@ -5424,6 +5424,8 @@
   "Pexip_Integration_Meeting_Url": "Meeting URL",
   "Pexip_Integration_Meeting_Url_Description": "The path added to the base URL to form the full meeting URL.",
   "Pexip_Integration_Outlook_AddIn": "Outlook Add-in",
+  "Pexip_Integration_Outlook_AddIn_Frame_Origins": "Outlook on the Web Addresses",
+  "Pexip_Integration_Outlook_AddIn_Frame_Origins_Description": "Origins of the Outlook on the web (OWA) servers allowed to show the add-in, e.g. `https://mail.example.com`. Separate several with spaces or commas. While empty, the add-in cannot be shown inside Outlook on the web.",
   "Pexip_Integration_Outlook_AddIn_Text_With_Alias": "Meeting Text with SIP Alias",
   "Pexip_Integration_Outlook_AddIn_Text_With_Alias_Description": "Added to the Outlook event of a meeting booked with a SIP alias. `{url}` is replaced with the meeting link and `{sipAlias}` with the number to dial.",
   "Pexip_Integration_Outlook_AddIn_Text_Without_Alias": "Meeting Text without SIP Alias",

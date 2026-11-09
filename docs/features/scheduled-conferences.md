@@ -41,6 +41,10 @@ The conference hangs off the external room and uses the booking's discussion. In
 
 The title is the booking's, or the number when it has none; with neither, the room names the conference, as for any untitled one. A booking without a number never gets one, even on a workspace that gives every other conference a temporary number.
 
+## Showing the add-in inside Outlook on the web
+
+Outlook on the web shows an add-in inside an iframe, while the workspace refuses to be framed by anyone. The add-in's own pages, under `/outlook-addin/`, are the exception, and only for the webmail origins listed in *Pexip → Outlook Add-in → Outlook on the Web Addresses*. With none listed they stay as unframeable as everything else. Those pages may also load Office.js from Microsoft's CDN, which is the only place an add-in is allowed to load it from.
+
 ## Not covered yet
 
 - Editing or cancelling a booking: once made, it never changes.

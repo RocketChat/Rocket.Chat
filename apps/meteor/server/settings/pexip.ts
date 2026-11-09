@@ -130,6 +130,12 @@ export function createPexipSettings(): Promise<void> {
 		});
 
 		await this.section('Pexip_Integration_Outlook_AddIn', async function () {
+			await this.add('Pexip_Integration_Outlook_AddIn_Frame_Origins', '', {
+				type: 'string',
+				public: false,
+				i18nDescription: 'Pexip_Integration_Outlook_AddIn_Frame_Origins_Description',
+			});
+
 			await this.add(
 				'Pexip_Integration_Outlook_AddIn_Text_With_Alias',
 				[

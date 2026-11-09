@@ -8,6 +8,7 @@ import { WebApp, WebAppInternals } from 'meteor/webapp';
 
 import { getWebAppHash } from '../../configuration/configureBoilerplate';
 import { settings } from '../../settings';
+import { getOutlookAddInFrameOrigins, isOutlookAddInPath, OFFICE_JS_ORIGIN } from '../outlookAddIn';
 
 // Taken from 'connect' types
 type NextFunction = (err?: any) => void;
@@ -19,7 +20,7 @@ export async function setInlineScriptsAllowed(allowed: boolean): Promise<void> {
 	templatePromise = WebAppInternals.setInlineScriptsAllowed(allowed);
 }
 
-WebApp.rawConnectHandlers.use(async (_req: http.IncomingMessage, res: http.ServerResponse, next: NextFunction) => {
+WebApp.rawConnectHandlers.use(async (req: http.IncomingMessage, res: http.ServerResponse, next: NextFunction) => {
 	if (templatePromise) {
 		await templatePromise;
 		templatePromise = void 0;
@@ -31,7 +32,13 @@ WebApp.rawConnectHandlers.use(async (_req: http.IncomingMessage, res: http.Serve
 	// X-Content-Type-Options header to prevent MIME Sniffing
 	res.setHeader('X-Content-Type-Options', 'nosniff');
 
-	if (settings.get('Iframe_Restrict_Access')) {
+	const isAddIn = isOutlookAddInPath(new URL(req.url || '/', 'http://localhost').pathname);
+	// Outlook on the web shows an add-in inside an iframe, so its pages may be framed — but only by the webmail named.
+	const addInFrameOrigins = isAddIn ? getOutlookAddInFrameOrigins() : [];
+
+	if (addInFrameOrigins.length) {
+		res.setHeader('Content-Security-Policy', `frame-ancestors ${addInFrameOrigins.join(' ')}`);
+	} else if (settings.get('Iframe_Restrict_Access')) {
 		res.setHeader('X-Frame-Options', settings.get<string>('Iframe_X_Frame_Options'));
 	}
 
@@ -73,8 +80,9 @@ WebApp.rawConnectHandlers.use(async (_req: http.IncomingMessage, res: http.Serve
 				'frame-src *',
 				'img-src * data: blob:',
 				'media-src * data:',
-				`script-src 'self' 'unsafe-eval' ${inlineHashes} ${cdn_prefixes} ${external}`,
+				`script-src 'self' 'unsafe-eval' ${inlineHashes} ${cdn_prefixes} ${external}${isAddIn ? ` ${OFFICE_JS_ORIGIN}` : ''}`,
 				`style-src 'self' 'unsafe-inline' ${cdn_prefixes}`,
+				...(addInFrameOrigins.length ? [`frame-ancestors ${addInFrameOrigins.join(' ')}`] : []),
 			].join('; '),
 		);
 	}

@@ -4876,6 +4876,8 @@
   "Pexip_Integration_Meeting_Url": "Meeting-URL",
   "Pexip_Integration_Meeting_Url_Description": "Der Pfad, der zur Basis-URL hinzugefügt wird, um die vollständige Meeting-URL zu bilden.",
   "Pexip_Integration_Outlook_AddIn": "Outlook-Add-in",
+  "Pexip_Integration_Outlook_AddIn_Frame_Origins": "Adressen von Outlook im Web",
+  "Pexip_Integration_Outlook_AddIn_Frame_Origins_Description": "Ursprünge der Outlook-im-Web-Server (OWA), die das Add-in anzeigen dürfen, z. B. `https://mail.example.com`. Mehrere durch Leerzeichen oder Kommas trennen. Solange das Feld leer ist, kann das Add-in nicht in Outlook im Web angezeigt werden.",
   "Pexip_Integration_Outlook_AddIn_Text_With_Alias": "Besprechungstext mit SIP-Alias",
   "Pexip_Integration_Outlook_AddIn_Text_With_Alias_Description": "Wird dem Outlook-Termin einer Besprechung mit SIP-Alias hinzugefügt. `{url}` wird durch den Besprechungslink und `{sipAlias}` durch die zu wählende Nummer ersetzt.",
   "Pexip_Integration_Outlook_AddIn_Text_Without_Alias": "Besprechungstext ohne SIP-Alias",
