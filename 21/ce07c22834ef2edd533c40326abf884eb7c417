@@ -1,0 +1,21 @@
+apps/meteor/client/components/ScheduledMessages/ScheduledMessageRow.tsx
+  s_478a7742cf0448::t_52d2d581bd77d9 84,107
+apps/meteor/client/components/ScheduledMessages/ScheduleMessageModal.tsx
+  s_478a7742cf0448::t_52d2d581bd77d9 51-52
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "21ce07c22834ef2edd533c40326abf884eb7c417",
+  "prompts": {},
+  "sessions": {
+    "s_478a7742cf0448": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "78511215-04eb-4d9d-beb9-8d0ec0460bb1",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}

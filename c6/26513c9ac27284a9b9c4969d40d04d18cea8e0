@@ -1,0 +1,19 @@
+apps/meteor/client/views/room/contextualBar/ScheduledMessagesTab.spec.tsx
+  s_478a7742cf0448::t_46252a1beceddd 8-9
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "c626513c9ac27284a9b9c4969d40d04d18cea8e0",
+  "prompts": {},
+  "sessions": {
+    "s_478a7742cf0448": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "78511215-04eb-4d9d-beb9-8d0ec0460bb1",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}

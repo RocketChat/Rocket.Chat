@@ -1,0 +1,25 @@
+.changeset/bulk-delete-panel.md
+  ai_agent 1-6
+packages/i18n/src/locales/en.i18n.json
+  ai_agent 1258-1268,2147,2149,2151,2153,2159,2582,3972,4551,4763,5135-5136,6845
+apps/meteor/client/views/room/contextualBar/PruneMessages/PruneMessages.stories.tsx
+  ai_agent 7,18,32,34
+apps/meteor/client/views/room/contextualBar/PruneMessages/PruneMessagesWithData.tsx
+  ai_agent 2,8,19-24,34-39,42-43,63-67,70,72-89,104,106-110,117,122,135-136,140-141,143-148,153,155,158,161,163-179,183
+apps/meteor/client/views/room/contextualBar/PruneMessages/PruneMessagesWithData.spec.tsx
+  ai_agent 1-161
+apps/meteor/tests/e2e/page-objects/fragments/flextabs/prune-messages-flextab.ts
+  ai_agent 8,12,20-21,25-42,45-47,51
+apps/meteor/tests/e2e/prune-messages.spec.ts
+  ai_agent 1,59-60,64-65,69-70,74-75,78-79,83,116,120,167-215
+apps/meteor/client/views/room/contextualBar/PruneMessages/PruneMessages.tsx
+  ai_agent 1-3,13-14,19,23,25,28,30,32-42,47-48,52-123,127-128
+apps/meteor/client/views/room/contextualBar/PruneMessages/PruneMessagesDateTimeRow.tsx
+  ai_agent 1-2,6-7,11-12,15-19,22-26,28,31-37,39,43
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "697bf10319da2e81c7c603bbf5d755712d4dcb21",
+  "prompts": {}
+}
