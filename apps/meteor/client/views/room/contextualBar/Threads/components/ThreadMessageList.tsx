@@ -32,6 +32,7 @@ import { useRoom } from '../../../contexts/RoomContext';
 import { useDateScroll } from '../../../hooks/useDateScroll';
 import { useFirstUnreadMessageId } from '../../../hooks/useFirstUnreadMessageId';
 import { useMessageListNavigation } from '../../../hooks/useMessageListNavigation';
+import MessageListLoadMore from '../../../layout/MessageListLoadMore';
 import { SelectedMessageStore } from '../../../providers/SelectedMessageStore';
 import { useThreadMessagesQuery } from '../hooks/useThreadMessagesQuery';
 import './threads.css';
@@ -444,14 +445,12 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 							}}
 						>
 							{loading ? (
-								<div className='load-more' role='presentation'>
+								<MessageListLoadMore>
 									<LoadingMessagesIndicator />
-								</div>
+								</MessageListLoadMore>
 							) : null}
 							{!loading && hasPreviousPage ? (
-								<div className='load-more' role='presentation'>
-									{isFetchingPreviousPage ? <LoadingMessagesIndicator /> : null}
-								</div>
+								<MessageListLoadMore>{isFetchingPreviousPage ? <LoadingMessagesIndicator /> : null}</MessageListLoadMore>
 							) : null}
 							{!loading &&
 								items.map((message, index, { [index - 1]: previous }) => {
@@ -476,9 +475,9 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 									);
 								})}
 							{!loading && hasNextPage ? (
-								<div className='load-more' role='presentation'>
+								<MessageListLoadMore>
 									{isFetchingNextPage ? <LoadingMessagesIndicator /> : <InfiniteListAnchor loadMore={loadMoreMessages} />}
-								</div>
+								</MessageListLoadMore>
 							) : null}
 						</VList>
 					</SelectedMessageContext.Provider>

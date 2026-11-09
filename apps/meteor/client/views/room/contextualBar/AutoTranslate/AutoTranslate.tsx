@@ -1,4 +1,4 @@
-import { Box, Callout, FieldGroup, Field, FieldLabel, FieldRow, ToggleSwitch, Select } from '@rocket.chat/fuselage';
+import { Callout, FieldGroup, Field, FieldLabel, FieldRow, ToggleSwitch, Select } from '@rocket.chat/fuselage';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import {
 	ContextualbarClose,
@@ -12,6 +12,7 @@ import { useId } from 'react';
 import type { ChangeEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import AutoTranslateSettings from './layout/AutoTranslateSettings';
 import { useRoom } from '../../contexts/RoomContext';
 
 export type AutoTranslateProps = {
@@ -37,7 +38,7 @@ const AutoTranslate = ({ language, languages, handleSwitch, translateEnable, han
 				{handleClose && <ContextualbarClose onClick={handleClose} />}
 			</ContextualbarHeader>
 			<ContextualbarContent>
-				<Box paddingBlockStart='x24'>
+				<AutoTranslateSettings>
 					<FieldGroup>
 						{room.encrypted && (
 							<Callout title={t('Automatic_translation_not_available')} type='warning'>
@@ -68,7 +69,7 @@ const AutoTranslate = ({ language, languages, handleSwitch, translateEnable, han
 							</FieldRow>
 						</Field>
 					</FieldGroup>
-				</Box>
+				</AutoTranslateSettings>
 			</ContextualbarContent>
 		</ContextualbarDialog>
 	);
