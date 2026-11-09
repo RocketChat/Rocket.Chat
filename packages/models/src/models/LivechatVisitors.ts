@@ -18,7 +18,7 @@ import type {
 } from 'mongodb';
 import { ObjectId } from 'mongodb';
 
-import { Settings } from '../index';
+import { Settings } from '../proxies';
 import { BaseRaw } from './BaseRaw';
 
 export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements ILivechatVisitorsModel {

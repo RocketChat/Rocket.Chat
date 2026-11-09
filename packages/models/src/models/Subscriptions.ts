@@ -23,7 +23,7 @@ import type {
 	ClientSession,
 } from 'mongodb';
 
-import { Rooms, Users } from '../index';
+import { Rooms, Users } from '../proxies';
 import { BaseRaw } from './BaseRaw';
 
 export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscriptionsModel {

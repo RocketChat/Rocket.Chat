@@ -28,7 +28,8 @@ import type {
 	WithId,
 } from 'mongodb';
 
-import { getCollectionName, UpdaterImpl } from '../index';
+import { getCollectionName } from '../getCollectionName';
+import { UpdaterImpl } from '../updater';
 import type { Updater } from '../updater';
 
 export class BaseDummy<
