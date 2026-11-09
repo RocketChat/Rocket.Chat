@@ -36,21 +36,21 @@ export const AppLogsFilterContextualBar = ({ appId, onClose = () => undefined }:
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent is='form'>
-				<FilterField inset>
+				<FilterField>
 					<Label id='timeFilterLabel' htmlFor='timeFilter'>
 						{t('Time')}
 					</Label>
 					<TimeFilterSelect aria-labelledby='timeFilterLabel' id='timeFilter' compactView={true} />
 				</FilterField>
-				<FilterField inset>
+				<FilterField>
 					<Label htmlFor='timeFilter'>{t('Logs_from')}</Label>
 					<DateTimeFilter control={control} type='start' />
 				</FilterField>
-				<FilterField inset>
+				<FilterField>
 					<Label htmlFor='timeFilter'>{t('Until')}</Label>
 					<DateTimeFilter control={control} type='end' />
 				</FilterField>
-				<FilterField inset>
+				<FilterField>
 					<Label id='instanceFilterLabel' htmlFor='instanceFilter'>
 						{t('Instance')}
 					</Label>
@@ -62,7 +62,7 @@ export const AppLogsFilterContextualBar = ({ appId, onClose = () => undefined }:
 						)}
 					/>
 				</FilterField>
-				<FilterField inset>
+				<FilterField>
 					<Label id='severityFilterLabel' htmlFor='severityFilter'>
 						{t('Severity')}
 					</Label>

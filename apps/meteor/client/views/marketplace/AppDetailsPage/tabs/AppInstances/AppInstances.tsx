@@ -15,9 +15,9 @@ import {
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
-import AppInstancesPanel from './layout/AppInstancesPanel';
 import AccordionLoading from '../../../components/AccordionLoading';
 import { useAppInstances } from '../../../hooks/useAppInstances';
+import AppDetailsTabContent from '../../layout/AppDetailsTabContent';
 
 type AppInstanceProps = {
 	id: string;
@@ -45,7 +45,7 @@ const AppInstances = ({ id }: AppInstanceProps) => {
 	const columns: TableColumnWidth[] = ['auto', 'auto', 64];
 
 	return (
-		<AppInstancesPanel>
+		<AppDetailsTabContent spaceAbove='x24' fill>
 			{isLoading && <AccordionLoading />}
 			{isError && t('App_not_found')}
 			{isSuccess && data.clusterStatus && data.clusterStatus.length > 0 && (
@@ -91,7 +91,7 @@ const AppInstances = ({ id }: AppInstanceProps) => {
 					<GenericNoResults />
 				</CustomScrollbars>
 			)}
-		</AppInstancesPanel>
+		</AppDetailsTabContent>
 	);
 };
 

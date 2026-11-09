@@ -1,13 +1,14 @@
-import { Skeleton } from '@rocket.chat/fuselage';
-
-import AppDetailsHeaderLayout from './layout/AppDetailsHeaderLayout';
+import { Skeleton, Stack } from '@rocket.chat/fuselage';
 
 const AppDetailsPageLoading = () => (
-	<AppDetailsHeaderLayout avatar={<Skeleton variant='rect' width='x120' height='x120' />} spread>
-		<Skeleton variant='rect' width='full' height='x32' />
-		<Skeleton variant='rect' width='full' height='x32' />
-		<Skeleton variant='rect' width='full' height='x32' />
-	</AppDetailsHeaderLayout>
+	<Stack direction='row' gap='x32'>
+		<Skeleton variant='rect' width='x120' height='x120' />
+		<Stack grow justify='space-between'>
+			<Skeleton variant='rect' width='full' height='x32' />
+			<Skeleton variant='rect' width='full' height='x32' />
+			<Skeleton variant='rect' width='full' height='x32' />
+		</Stack>
+	</Stack>
 );
 
 export default AppDetailsPageLoading;

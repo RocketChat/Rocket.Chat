@@ -2,8 +2,8 @@ import type { ILogItem } from '@rocket.chat/core-typings';
 import { Text } from '@rocket.chat/fuselage';
 import DOMPurify from 'dompurify';
 
+import RichContent from '../../../../../components/RichContent';
 import { useHighlightedCode } from '../../../../../hooks/useHighlightedCode';
-import RichContent from '../../layout/RichContent';
 
 export type AppLogsItemEntryProps = {
 	fullLog: ILogItem;

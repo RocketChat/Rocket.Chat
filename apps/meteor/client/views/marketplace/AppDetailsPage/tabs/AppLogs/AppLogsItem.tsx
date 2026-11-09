@@ -1,10 +1,9 @@
 import type { ILogItem } from '@rocket.chat/core-typings';
+import { Stack, Text } from '@rocket.chat/fuselage';
 import { useFormatDateAndTime } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
 import AppLogsItemEntry from './AppLogsItemEntry';
-import { AppsLogItemField } from './layout/AppLogsItemField';
-import AppLogsItemHeading from './layout/AppLogsItemHeading';
 import { CollapseButton } from './layout/CollapseButton';
 import CollapsibleDivider from './layout/CollapsibleDivider';
 import { CollapsibleRegion } from './layout/CollapsibleRegion';
@@ -40,12 +39,36 @@ const AppLogsItem = ({ regionId, expanded, onExpand, ...props }: AppLogsItemProp
 			</CollapseButton>
 
 			<CollapsibleRegion expanded={expanded} id={regionId} paddingBlockStart={expanded ? 'x16' : '0px'} marginInlineStart='x32'>
-				{props.instanceId && <AppsLogItemField first field={props.instanceId} label={t('Instance')} />}
-				{props.totalTime !== undefined && <AppsLogItemField field={`${props.totalTime}ms`} label={t('Total_time')} />}
-				{props.startTime && <AppsLogItemField field={formatDateAndTime(Date.parse(props.startTime))} label={t('Time')} />}
-				{props.method && <AppsLogItemField field={props.method} label={t('Event')} />}
-				<AppLogsItemHeading>{t('Full_log')}</AppLogsItemHeading>
-				<AppLogsItemEntry fullLog={props} />
+				<Stack gap='x16'>
+					{props.instanceId && (
+						<Stack>
+							<Text is='strong'>{t('Instance')}</Text>
+							{props.instanceId}
+						</Stack>
+					)}
+					{props.totalTime !== undefined && (
+						<Stack>
+							<Text is='strong'>{t('Total_time')}</Text>
+							{`${props.totalTime}ms`}
+						</Stack>
+					)}
+					{props.startTime && (
+						<Stack>
+							<Text is='strong'>{t('Time')}</Text>
+							{formatDateAndTime(Date.parse(props.startTime))}
+						</Stack>
+					)}
+					{props.method && (
+						<Stack>
+							<Text is='strong'>{t('Event')}</Text>
+							{props.method}
+						</Stack>
+					)}
+					<Stack>
+						<Text is='strong'>{t('Full_log')}</Text>
+						<AppLogsItemEntry fullLog={props} />
+					</Stack>
+				</Stack>
 			</CollapsibleRegion>
 			<CollapsibleDivider />
 		</>

@@ -7,8 +7,6 @@ import { useTranslation } from 'react-i18next';
 import AppMenu from '../AppMenu';
 import BundleChips from '../BundleChips';
 import { appIncompatibleStatusProps } from '../helpers';
-import AppDetailsHeaderLayout from './layout/AppDetailsHeaderLayout';
-import AppDetailsMetadata from './layout/AppDetailsMetadata';
 import AppStatus from './tabs/AppStatus';
 
 const versioni18nKey = (app: App): string => {
@@ -38,7 +36,8 @@ const AppDetailsPageHeader = ({ app }: AppDetailsPageHeaderProps) => {
 	const incompatibleStatus = versionIncompatible ? appIncompatibleStatusProps() : undefined;
 
 	return (
-		<AppDetailsHeaderLayout avatar={<AppAvatar size='x124' iconFileContent={iconFileContent} iconFileData={iconFileData} />}>
+		<Stack direction='row' gap='x32'>
+			<AppAvatar size='x124' iconFileContent={iconFileContent} iconFileData={iconFileData} />
 			<Stack gap='x8'>
 				<Stack direction='row' align='center' gap='x8'>
 					<Text fontScale='h1'>{name}</Text>
@@ -57,36 +56,38 @@ const AppDetailsPageHeader = ({ app }: AppDetailsPageHeaderProps) => {
 						{(installed || isSubscribed) && <AppMenu app={app} isAppDetailsPage />}
 					</Stack>
 
-					<AppDetailsMetadata>
-						{author?.name}
-						<Text color='disabled'>|</Text>
-						<Text>{t('Version_version', { version: versioni18nKey(app) })}</Text>
-						{lastUpdated && (
-							<>
-								<Text color='disabled'>|</Text>
-								<Text>
-									{t('Marketplace_app_last_updated', {
-										lastUpdated,
-									})}
-								</Text>
-							</>
-						)}
+					<Text fontScale='c1' color='hint'>
+						<Stack direction='row' align='center' gap='x16'>
+							{author?.name}
+							<Text color='disabled'>|</Text>
+							<Text>{t('Version_version', { version: versioni18nKey(app) })}</Text>
+							{lastUpdated && (
+								<>
+									<Text color='disabled'>|</Text>
+									<Text>
+										{t('Marketplace_app_last_updated', {
+											lastUpdated,
+										})}
+									</Text>
+								</>
+							)}
 
-						{versionIncompatible && (
-							<>
-								<Text color='disabled'>|</Text>
-								<Tag
-									title={incompatibleStatus?.tooltipText}
-									variant={incompatibleStatus?.label === 'Disabled' ? 'secondary-danger' : 'secondary'}
-								>
-									{incompatibleStatus?.label}
-								</Tag>
-							</>
-						)}
-					</AppDetailsMetadata>
+							{versionIncompatible && (
+								<>
+									<Text color='disabled'>|</Text>
+									<Tag
+										title={incompatibleStatus?.tooltipText}
+										variant={incompatibleStatus?.label === 'Disabled' ? 'secondary-danger' : 'secondary'}
+									>
+										{incompatibleStatus?.label}
+									</Tag>
+								</>
+							)}
+						</Stack>
+					</Text>
 				</Stack>
 			</Stack>
-		</AppDetailsHeaderLayout>
+		</Stack>
 	);
 };
 
