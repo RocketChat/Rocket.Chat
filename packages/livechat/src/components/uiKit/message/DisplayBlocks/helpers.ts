@@ -1,7 +1,7 @@
 import * as uikit from '@rocket.chat/ui-kit';
 import type { ComponentChild } from 'preact';
 
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 import { createClassName } from '../../../../helpers/createClassName';
 
 export type Parser = uikit.SurfaceRenderer<ComponentChild>;
