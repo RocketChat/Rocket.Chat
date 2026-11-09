@@ -16,7 +16,7 @@ import { Rooms, Subscriptions, Users, VideoConference } from '@rocket.chat/model
 import { emit, StreamPresence } from './StreamPresence';
 import { getCachedUserForPublication } from './publication-user-cache';
 import { Streamer as StreamerModule } from './streamer.module';
-import type { IStreamer, IStreamerConstructor, StreamerOptions, StreamRelay } from './types';
+import type { IPublication, IStreamer, IStreamerConstructor, StreamerOptions, StreamRelay } from './types';
 
 const logger = new Logger('NotificationsModule');
 
@@ -406,13 +406,14 @@ export class NotificationsModule {
 			const user = await getCachedUserForPublication(this);
 			return user ? Authorization.hasPermission(user, 'view-l-room') : false;
 		});
-		this.streamRoomData.allowEmit(async function (rid) {
-			const user = await getCachedUserForPublication(this);
-			if (!user) {
-				return false;
-			}
 
+		async function canAccessRoomData(this: IPublication, rid: string): Promise<boolean> {
 			try {
+				const user = await getCachedUserForPublication(this);
+				if (!user) {
+					return false;
+				}
+
 				const room = await Rooms.findOneById(rid);
 				if (!room) {
 					return false;
@@ -420,33 +421,18 @@ export class NotificationsModule {
 
 				return await Authorization.canAccessRoom(room, user);
 			} catch (error) {
+				logger.error({
+					msg: 'Failed to check room-data access',
+					roomId: rid,
+					err: error,
+				});
 				return false;
 			}
-		});
+		}
 
 		this.streamRoomData.allowWrite('none');
-		this.streamRoomData.allowRead(async function (rid) {
-			const user = await getCachedUserForPublication(this);
-			if (!user) {
-				return false;
-			}
-
-			try {
-				const room = await Rooms.findOneById(rid);
-				if (!room) {
-					return false;
-				}
-
-				const canAccess = await Authorization.canAccessRoom(room, user);
-				if (!canAccess) {
-					return false;
-				}
-
-				return true;
-			} catch (error) {
-				return false;
-			}
-		});
+		this.streamRoomData.allowRead(canAccessRoomData);
+		this.streamRoomData.allowEmit(canAccessRoomData);
 
 		this.streamRoles.allowWrite('none');
 		this.streamRoles.allowRead('logged');

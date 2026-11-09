@@ -1,4 +1,5 @@
 import { api, Authorization, MediaCall, Settings, VideoConf } from '@rocket.chat/core-services';
+import { Logger } from '@rocket.chat/logger';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
 import { NotificationsModule } from './notifications.module';
@@ -70,6 +71,52 @@ describe('NotificationsModule', () => {
 
 		afterEach(() => {
 			invalidate(userId);
+		});
+
+		it('logs room lookup errors and blocks delivery', async () => {
+			const user = { _id: userId, roles: [] };
+			const room = { _id: 'preview-room', t: 'c' };
+			const send = jest.fn();
+			const publication = {
+				userId,
+				_session: { userId, socket: { send } },
+				_isDeactivated: () => false,
+				onStop: jest.fn(),
+				ready: jest.fn(),
+			};
+
+			invalidate(userId);
+			jest.mocked(Users.findOneById).mockResolvedValue(user as any);
+
+			const findRoom = jest.mocked(Rooms.findOneById);
+			findRoom.mockReset();
+			findRoom.mockResolvedValue(room as any);
+
+			const canAccess = jest.mocked(Authorization.canAccessRoom);
+			canAccess.mockReset();
+			canAccess.mockResolvedValue(true);
+
+			const stream = notifications.streamRoomData as unknown as Streamer<'room-data'>;
+			await stream._publish(publication as any, room._id);
+
+			const logError = jest.mocked(new Logger('NotificationsModule').error);
+			logError.mockClear();
+			canAccess.mockClear();
+
+			const error = new Error('Room lookup failed');
+			findRoom.mockRejectedValueOnce(error);
+
+			const delivery = jest.spyOn(stream, 'sendToManySubscriptions');
+			stream.emitWithoutBroadcast(room._id, room as any);
+			await delivery.mock.results[0].value;
+
+			expect(send).not.toHaveBeenCalled();
+			expect(canAccess).not.toHaveBeenCalled();
+			expect(logError).toHaveBeenCalledWith({
+				msg: 'Failed to check room-data access',
+				roomId: room._id,
+				err: error,
+			});
 		});
 
 		it('stops delivering updates when a public room becomes inaccessible', async () => {
