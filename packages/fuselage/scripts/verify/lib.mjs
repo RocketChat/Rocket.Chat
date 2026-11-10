@@ -81,6 +81,7 @@ export const openStory = async (page, base, id, globals) => {
 };
 
 // Runs fn(page, id) over the ids on `jobs` pages. A failure only costs that story: the browser is relaunched and the run goes on.
+// If a browser cannot be relaunched its worker stops, and ids nobody picked up are reported as errors.
 export const runPool = async (ids, { jobs, width }, fn) => {
 	const results = new Map();
 	let next = 0;
@@ -93,11 +94,17 @@ export const runPool = async (ids, { jobs, width }, fn) => {
 			} catch (error) {
 				results.set(id, { error: error.message.split('\n')[0] });
 				await session.browser.close().catch(() => undefined);
-				session = await open(Number(width));
+				try {
+					session = await open(Number(width));
+				} catch {
+					return;
+				}
 			}
 		}
 		await session.browser.close().catch(() => undefined);
 	};
-	await Promise.all(Array.from({ length: Math.max(1, Math.min(Number(jobs), ids.length)) }, worker));
+	const workers = Math.min(Math.max(1, Math.floor(Number(jobs)) || 1), ids.length);
+	await Promise.all(Array.from({ length: workers }, worker));
+	for (const id of ids) if (!results.has(id)) results.set(id, { error: 'no browser could be started for this story' });
 	return results;
 };
