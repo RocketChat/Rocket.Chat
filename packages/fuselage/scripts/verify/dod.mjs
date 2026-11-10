@@ -1,4 +1,4 @@
-// Usage: node scripts/verify/dod.mjs <Component> [--before <storybook-static>] [--after <storybook-static>] [--dts <base ref>] [--size <json>] [--perf]
+// Usage: node scripts/verify/dod.mjs <Component> [--before <storybook-static>] [--after <storybook-static>] [--dts <base ref>] [--size <json>] [--perf] [--class <rcx-root-class>]
 // Runs the Definition-of-Done checks for one component and prints the evidence as a markdown table. The A/B checks need
 // both Storybook builds; the .d.ts diff builds two refs, so it only runs when a base ref is given (compared with HEAD).
 // G0 runs the component's characterization stories in jest, and in the --after build when given. G5 size reads a report written
@@ -9,6 +9,8 @@ import { readFileSync, readdirSync, rmSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { parseArgs } from 'node:util';
 
+import { rootClass } from './component-class.mjs';
+
 const { values: opts, positionals } = parseArgs({
 	allowPositionals: true,
 	options: {
@@ -17,13 +19,14 @@ const { values: opts, positionals } = parseArgs({
 		dts: { type: 'string' },
 		size: { type: 'string' },
 		perf: { type: 'boolean' },
+		class: { type: 'string' },
 	},
 });
 const [component] = positionals;
 if (!component) throw new Error('usage: dod.mjs <Component> [--before dir] [--after dir] [--dts ref]');
 
 const [before, after] = [opts.before, opts.after].map((dir) => dir && resolve(dir));
-const cls = `rcx-${component.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase()}`;
+const cls = opts.class ?? rootClass(component);
 const here = (file) => join(import.meta.dirname, file);
 const tmp = (name) => join(process.env.TMPDIR ?? '/tmp', `dod-${component}-${name}`);
 
