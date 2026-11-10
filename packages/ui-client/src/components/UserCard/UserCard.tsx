@@ -36,6 +36,7 @@ const UserCard = ({
 	const isLayoutEmbedded = useEmbeddedLayout();
 	const MarkdownText = useContext(MarkdownTextContext);
 	const showUsername = !!username && name !== username;
+	const showProfileLink = !!onOpenUserInfo && !isLayoutEmbedded;
 
 	return (
 		<HoverCard aria-label={t('User_card')}>
@@ -55,8 +56,8 @@ const UserCard = ({
 						))
 					}
 				/>
-				<Box display='flex' flexDirection='column' marginBlockStart='x16'>
-					{(showUsername || roles || localTime) && (
+				{(showUsername || roles || localTime || showProfileLink) && (
+					<Box marginBlockStart='x16'>
 						<HoverCardInfoList>
 							{showUsername && (
 								<HoverCardInfoItem icon='at' label={t('Username')}>
@@ -73,18 +74,16 @@ const UserCard = ({
 									{localTime}
 								</HoverCardInfoItem>
 							)}
+							{showProfileLink && (
+								<HoverCardInfoItem icon='link' onClick={onOpenUserInfo}>
+									<Box is='span' color='info' textDecorationLine='underline'>
+										{t('Full_profile')}
+									</Box>
+								</HoverCardInfoItem>
+							)}
 						</HoverCardInfoList>
-					)}
-					{onOpenUserInfo && !isLayoutEmbedded && (
-						<HoverCardInfoList>
-							<HoverCardInfoItem icon='link' onClick={onOpenUserInfo}>
-								<Box is='span' color='info' textDecorationLine='underline'>
-									{t('Full_profile')}
-								</Box>
-							</HoverCardInfoItem>
-						</HoverCardInfoList>
-					)}
-				</Box>
+					</Box>
+				)}
 				{actions && (
 					<Box display='flex' flexDirection='column' marginBlockStart='x24'>
 						<HoverCardActions aria-label={t('User_card_actions')} stretch='equal'>
