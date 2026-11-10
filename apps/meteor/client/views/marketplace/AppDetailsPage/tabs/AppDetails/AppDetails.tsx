@@ -96,9 +96,7 @@ const AppDetails = ({ app }: AppDetailsProps) => {
 					>
 						<RichContent
 							dangerouslySetInnerHTML={{
-								__html: isMarkdown
-									? DOMPurify.sanitize(detailedDescription.rendered, purifyOptions)
-									: DOMPurify.sanitize(description, purifyOptions),
+								__html: DOMPurify.sanitize(isMarkdown ? detailedDescription.rendered : description, purifyOptions),
 							}}
 						/>
 					</AppInfoSection>
