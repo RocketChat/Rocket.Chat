@@ -35,13 +35,13 @@ The answer is either a design note decision or a row in [Deviations](#deviations
 | --- | --- |
 | No frame bails to the runtime; no `@tamagui/*` reachable from the client | zero `enforce` mode in `build:vite`, and the zero graph receipt |
 | Compiled output looks like the runtime output | visual regression, runtime and zero legs against the same baselines |
-| `className` never in a render-element spread; no `{...props}` on a frame | lint rule `rocket.chat/render-element-spread` |
-| Values come from `fuselage-tokens`; generated sections are in sync | `generate:frame-values --check` |
-| No text node directly in a `View` | jest dev-mode check |
+| `className` never in a render-element spread; no `{...props}` on a frame | lint rule `rocket.chat/render-element-spread` (arrives with L1, not yet available) |
+| Values come from `fuselage-tokens`; generated sections are in sync | `generate:frame-values --check` (arrives with L1, not yet available) |
+| No text node directly in a `View` | jest dev-mode check ([`textNodes.spec.tsx`](../../packages/fuselage/src/testing/textNodes.spec.tsx)) |
 | Raw layout and style props don't grow | `scripts/scan-raw-layout.mjs`, `scripts/scan-style-props.mjs` ratchets |
-| No new override of a migrated part without `[class]`; CSS hacks don't grow | selector inventory and CSS-hack ratchets |
-| Class contract, `.d.ts` and accessibility tree changes are visible | the DoD script diffs; each change is a G6 row |
-| Size budget per batch | size-report CI job |
+| No new override of a migrated part without `[class]`; CSS hacks don't grow | selector inventory and CSS-hack ratchets ([`selector-inventory.mjs`](../../packages/fuselage/scripts/verify/selector-inventory.mjs), [`css-hacks.mjs`](../../packages/fuselage/scripts/verify/css-hacks.mjs)), run by `yarn lint` |
+| Class contract, `.d.ts` and accessibility tree changes are visible | the DoD script diffs ([`dod.mjs`](../../packages/fuselage/scripts/verify/dod.mjs), [`story-classes.mjs`](../../packages/fuselage/scripts/verify/story-classes.mjs), [`dts-diff.mjs`](../../packages/fuselage/scripts/verify/dts-diff.mjs)); each change is a G6 row |
+| Size budget per batch | size-report CI job ([`sizeReport.mjs`](../../apps/meteor/vite/sizeReport.mjs)) |
 
 ### Enforced by review
 
@@ -59,14 +59,14 @@ Every component, with the evidence table in the pull request.
 
 | Gate | Requirement | Checked by |
 | --- | --- | --- |
-| **G0** Characterization | Specs (forwarding, keyboard, handlers, accessibility snapshot, class contract) land in a commit below the component, green on `develop`. The migration passes them unedited; only an intended API change edits them, each edit a G6 row. | Commit order; the specs run in jest and in the zero Storybook |
+| **G0** Characterization | Specs (forwarding, keyboard, handlers, accessibility snapshot, class contract) land in a commit below the component, green on `develop`. The migration passes them unedited; only an intended API change edits them, each edit a G6 row. | Commit order; the specs run in jest and in the zero Storybook ([how to write one](../../packages/fuselage/src/testing/README.md)) |
 | **G1** Zero-runtime | 0 bailed, 0 partial, 0 diagnostics for the component's modules; `build:vite` enforce passes; no `@tamagui/*` in the client; no new `.yarn/patches/@tamagui-*` hunk without a G6 decision and a Deviations row. | Zero stats file, enforce build, graph receipt |
 | **G2** No CSS hacks | Ratchets green. No `!important` or specificity bump inside Fuselage; no `:has()`, sibling or parent-state rule for what the component renders itself; no raw px/rem, literal colour or literal z-index; no static inline `style`; no Box styling. | Ratchets and lint; review for the rest |
-| **G3** A/B | Over every story that renders the component: pixel A/B develop to runtime and runtime to zero (light, desktop, LTR; hover, focus-visible, press and disabled via story args); computed-style A/B for dark, high contrast, RTL, and mobile width where the component has media queries; accessibility tree, tags and class contract identical or decided; real app on the main consumer screens in `build:vite` and `dev:next`. | `scripts/verify/dod.mjs <Component>`, visual regression CI |
+| **G3** A/B | Over every story that renders the component: pixel A/B develop to runtime and runtime to zero (light, desktop, LTR; hover, focus-visible, press and disabled via story args); computed-style A/B for dark, high contrast, RTL, and mobile width where the component has media queries; accessibility tree, tags and class contract identical or decided; real app on the main consumer screens in `build:vite` and `dev:next`. | [`dod.mjs <Component>`](../../packages/fuselage/scripts/verify/dod.mjs) (runs [`story-ab.mjs`](../../packages/fuselage/scripts/verify/story-ab.mjs) and [`story-computed.mjs`](../../packages/fuselage/scripts/verify/story-computed.mjs)), visual regression CI |
 | **G4** Behaviour and API | G0 specs green in jest and zero Storybook; axe on every story; `.d.ts` diff reviewed; consumer survey, spreading wrappers included; Fuselage typecheck, lint and jest; Meteor `tsc`; `ui-client`, `fuselage-ui-kit` and `ui-*` typecheck and jest. e2e runs per pull request, not per component; a class-contract change greps e2e, apps and docs. | CI, the DoD script |
-| **G5** Budgets | Size inside the batch's share of +25 kB gzip JS; CSS reported, no growth beyond dedupe; Message and Sidebar benches within +10% of `develop`, from the first batch on. | Size-report CI, perf bench |
+| **G5** Budgets | Size inside the batch's share of +25 kB gzip JS; CSS reported, no growth beyond dedupe; Message and Sidebar benches within +10% of `develop`, from the first batch on. | Size-report CI, [`perf-bench.mjs`](../../packages/fuselage/scripts/verify/perf-bench.mjs), both read by [`dod.mjs`](../../packages/fuselage/scripts/verify/dod.mjs) |
 | **G6** Diff decisions | Every non-zero result is a row: what, why, and **noise** (reproduces on two `develop` captures), **intended** (reason and approver) or **regression** (fixed before merge). Precedents go in [Precedents](#precedents), deviations in [Deviations](#deviations). | The evidence table, reviewed |
-| **G7** Tamagui by the book | Frames follow the rules above. React Native readiness is narrow: frames and neutral prop types are portable; values and CSS are web-only, by decision. | Static check that frame modules import no DOM types and no `react-dom`; review |
+| **G7** Tamagui by the book | Frames follow the rules above. React Native readiness is narrow: frames and neutral prop types are portable; values and CSS are web-only, by decision. | [`frame-platform.mjs`](../../packages/fuselage/scripts/verify/frame-platform.mjs) (`yarn workspace @rocket.chat/fuselage test:verify`): frame modules import no DOM types and no `react-dom`; review |
 | **G8** Review and release | Code review pass; human CODEOWNER review; changeset per [Releases](#releases); `@rocket.chat/meteor` changeset or release note when the class contract changes (Custom CSS impact); the program checklist updated. | Review, changeset check |
 
 ## Policies
