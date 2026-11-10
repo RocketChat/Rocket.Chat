@@ -1,6 +1,6 @@
 import breakpointTokens from '@rocket.chat/fuselage-tokens/dist/breakpoints.json';
 import type { Preview } from '@storybook/react';
-import { useSyncExternalStore } from 'react';
+import { useLayoutEffect, useSyncExternalStore } from 'react';
 
 import { PaletteStyleTag } from '../src';
 import DocsContainer from './DocsContainer';
@@ -50,6 +50,10 @@ export default {
 	loaders: [() => Promise.all([...document.fonts].map((font) => font.load()))],
 	decorators: [
 		function PaletteDecorator(Story, { globals }) {
+			useLayoutEffect(() => {
+				document.documentElement.dir = globals.direction === 'rtl' ? 'rtl' : 'ltr';
+			}, [globals.direction]);
+
 			const mode = useSyncExternalStore(subscribeToSystemColorScheme, () => resolveThemeMode(globals.theme));
 
 			return (
