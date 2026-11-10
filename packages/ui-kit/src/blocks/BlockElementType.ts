@@ -19,6 +19,7 @@ export const BlockElementType = {
 	PLAIN_TEXT_INPUT: 'plain_text_input',
 	NUMBER_INPUT: 'number_input',
 	EMAIL_TEXT_INPUT: 'email_text_input',
+	FEEDBACK_BUTTONS: 'feedback_buttons',
 	URL_TEXT_INPUT: 'url_text_input',
 	RADIO_BUTTON: 'radio_button',
 	STATIC_SELECT: 'static_select',

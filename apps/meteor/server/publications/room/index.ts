@@ -1,3 +1,4 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IOmnichannelRoom, IRoom, RoomType } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms } from '@rocket.chat/models';
@@ -14,7 +15,6 @@ type PublicRoomField = keyof typeof roomFields;
 type PublicRoom = Pick<IRoom, PublicRoomField & keyof IRoom> & Pick<IOmnichannelRoom, PublicRoomField & keyof IOmnichannelRoom>;
 
 declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		'rooms/get'(updatedAt?: Date): IRoom[] | { update: IRoom[]; remove: IRoom[] };
 		'getRoomByTypeAndName': (type: RoomType, name: string) => PublicRoom;
@@ -52,7 +52,7 @@ Meteor.methods<ServerMethods>({
 
 	async 'getRoomByTypeAndName'(type, name) {
 		if (!type || !name) {
-			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
+			throw new ClientSafeError('error-invalid-room', 'Invalid room', {
 				method: 'getRoomByTypeAndName',
 			});
 		}
@@ -63,7 +63,7 @@ Meteor.methods<ServerMethods>({
 		if (isAnonymous) {
 			const allowAnon = settings.get('Accounts_AllowAnonymousRead');
 			if (!allowAnon || type !== 'c') {
-				throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				throw new ClientSafeError('error-unauthenticated', 'Unauthenticated', {
 					method: 'getRoomByTypeAndName',
 				});
 			}
@@ -74,7 +74,7 @@ Meteor.methods<ServerMethods>({
 		const room = roomFind ? await roomFind.call(this, name, user?._id) : await Rooms.findByTypeAndNameOrId(type, name);
 
 		if (!room) {
-			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
+			throw new ClientSafeError('error-invalid-room', 'Invalid room', {
 				method: 'getRoomByTypeAndName',
 			});
 		}
@@ -85,7 +85,7 @@ Meteor.methods<ServerMethods>({
 				includeInvitations: true,
 			}))
 		) {
-			throw new Meteor.Error('error-no-permission', 'No permission', {
+			throw new ClientSafeError('error-no-permission', 'No permission', {
 				method: 'getRoomByTypeAndName',
 			});
 		}

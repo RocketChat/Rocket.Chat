@@ -25,11 +25,20 @@ const SidebarFooterDefault = () => {
 	`;
 
 	return (
-		<Footer>
+		<>
 			<SidebarDivider />
-			<Box paddingBlock={12} height='x48' width='auto' className={sidebarFooterStyle} dangerouslySetInnerHTML={dangerousLogo} />
-			<SidebarFooterWatermark />
-		</Footer>
+			<Footer>
+				<Box
+					paddingBlockStart='x4'
+					paddingBlockEnd='x12'
+					height='x40'
+					width='auto'
+					className={sidebarFooterStyle}
+					dangerouslySetInnerHTML={dangerousLogo}
+				/>
+				<SidebarFooterWatermark />
+			</Footer>
+		</>
 	);
 };
 

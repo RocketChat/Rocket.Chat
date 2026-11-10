@@ -1,6 +1,5 @@
-import { Import } from '@rocket.chat/core-services';
+import { Import, ClientSafeError } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
-import { Meteor } from 'meteor/meteor';
 
 import { ProgressStep } from '../../../lib/importer/ImporterProgressStep';
 import { Importers } from '../../lib/import';
@@ -16,12 +15,16 @@ export const executeUploadImportFile = async (
 ): Promise<void> => {
 	const importer = Importers.get(importerKey);
 	if (!importer) {
-		throw new Meteor.Error('error-importer-not-defined', `The importer (${importerKey}) has no import class defined.`, 'uploadImportFile');
+		throw new ClientSafeError(
+			'error-importer-not-defined',
+			`The importer (${importerKey}) has no import class defined.`,
+			'uploadImportFile',
+		);
 	}
 
 	const operation = await Import.newOperation(userId, importer.name, importer.key);
 
-	const instance = new importer.importer(importer, operation); // eslint-disable-line new-cap
+	const instance = new importer.importer(importer, operation); // oxlint-disable-line new-cap
 
 	const date = new Date();
 	const dateStr = `${date.getUTCFullYear()}${date.getUTCMonth()}${date.getUTCDate()}${date.getUTCHours()}${date.getUTCMinutes()}${date.getUTCSeconds()}`;
@@ -33,7 +36,7 @@ export const executeUploadImportFile = async (
 	// Save the file on the File Store
 	const file = Buffer.from(binaryContent, 'base64');
 	const readStream = RocketChatFile.bufferToStream(file);
-	const writeStream = RocketChatImportFileInstance.createWriteStream(newFileName, contentType);
+	const writeStream = RocketChatImportFileInstance.createWriteStream(newFileName);
 
 	await new Promise<void>((resolve, reject) => {
 		try {

@@ -5,7 +5,7 @@
  * It redacts the following URL components:
  * - Username in the authentication section
  * - Password in the authentication section
- * - Query parameters named: 'query', 'access_token'
+ * - Query parameters named: 'query', 'access_token', 'code'
  *
  * Note: We use `*Redacted*` instead of `[Redacted]` for legibility, as `[` and `]` would be encoded by toString()
  *
@@ -30,12 +30,10 @@ export function censorUrl(url: string | URL): string {
 			parsedUrl.password = '*Redacted*';
 		}
 
-		if (parsedUrl.searchParams.has('query')) {
-			parsedUrl.searchParams.set('query', '*Redacted*');
-		}
-
-		if (parsedUrl.searchParams.has('access_token')) {
-			parsedUrl.searchParams.set('access_token', '*Redacted*');
+		for (const param of ['query', 'access_token', 'code']) {
+			if (parsedUrl.searchParams.has(param)) {
+				parsedUrl.searchParams.set(param, '*Redacted*');
+			}
 		}
 
 		return parsedUrl.toString();

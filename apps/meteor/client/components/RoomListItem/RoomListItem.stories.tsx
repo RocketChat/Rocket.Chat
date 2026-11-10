@@ -17,8 +17,8 @@ const meta: Meta<RoomListItemProps> = {
 		icon: <Icon name='hashtag' size='x20' />,
 		iconLabel: 'Public channel',
 		subtitle: 'Rafael: release notes are up',
-		time: new Date(),
-		menu: <IconButton mini icon='kebab' aria-label='Options' />,
+		timeLabel: '10:24 AM',
+		menu: <IconButton size='mini' icon='kebab' aria-label='Options' />,
 	},
 	decorators: [
 		mockAppRoot().buildStoryDecorator(),
@@ -73,8 +73,8 @@ export const WithoutAvatar: Story = {
 
 const incomingCallActions = (
 	<SidebarItemActions>
-		<IconButton mini secondary success icon='phone' aria-label='Accept call' />
-		<IconButton mini secondary danger icon='phone-off' aria-label='Reject call' />
+		<IconButton size='mini' variant='secondary-success' icon='phone' aria-label='Accept call' />
+		<IconButton size='mini' variant='secondary-danger' icon='phone-off' aria-label='Reject call' />
 	</SidebarItemActions>
 );
 

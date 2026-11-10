@@ -34,7 +34,16 @@ const RemoveChatButton = ({ _id }: RemoveChatButtonProps) => {
 		setModal(<GenericModal variant='danger' onConfirm={onDeleteAgent} onCancel={() => setModal(null)} confirmText={t('Delete')} />);
 	});
 
-	return <IconButton danger small icon='trash' title={t('Remove')} disabled={removeCurrentChatMutation.isPending} onClick={handleDelete} />;
+	return (
+		<IconButton
+			variant='danger'
+			size='small'
+			icon='trash'
+			title={t('Remove')}
+			disabled={removeCurrentChatMutation.isPending}
+			onClick={handleDelete}
+		/>
+	);
 };
 
 export default RemoveChatButton;

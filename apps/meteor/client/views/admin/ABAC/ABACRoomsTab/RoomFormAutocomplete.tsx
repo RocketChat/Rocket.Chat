@@ -45,7 +45,7 @@ const RoomFormAutocomplete = ({ value, onSelectedRoom, ...props }: RoomFormAutoc
 			filter={filter}
 			setFilter={setFilter}
 			renderSelected={({ selected: { label } }) => (
-				<Box margin='none' marginInline={2}>
+				<Box margin='none' marginInline='x4'>
 					{label?.name}
 				</Box>
 			)}

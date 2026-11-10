@@ -2,6 +2,12 @@
 	"name": "@rocket.chat/release-changelog",
 	"version": "0.1.1",
 	"private": true,
+	"type": "module",
+	"exports": {
+		".": {
+			"default": "./dist/index.js"
+		}
+	},
 	"main": "dist/index.js",
 	"scripts": {
 		"build": "tsc",
@@ -15,7 +21,6 @@
 	"devDependencies": {
 		"@changesets/types": "^6.0.0",
 		"@types/node": "~24.13.6",
-		"eslint": "~10.12.0",
 		"typescript": "~7.0.2"
 	},
 	"volta": {

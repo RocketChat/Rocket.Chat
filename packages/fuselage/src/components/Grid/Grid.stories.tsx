@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import type { Meta, StoryObj } from '@storybook/react';
 import { Fragment } from 'react';
 
 import { Table, TableBody, TableCell, TableHead, TableRow } from '../Table';

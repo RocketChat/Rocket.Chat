@@ -8,6 +8,7 @@ import {
 	Page,
 	PageHeader,
 	PageContent,
+	useIsEnterprise,
 } from '@rocket.chat/ui-client';
 import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -20,7 +21,6 @@ import type { StatusAndPresenceTab } from './StatusAndPresenceTabs';
 import UserPresenceEditorFormWithData from './UserPresenceEditorFormWithData';
 import UserPresenceTab from './UserPresenceTab';
 import type { ManagedPresenceUser } from './useManagedPresenceUsers';
-import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import CustomUserActiveConnections from '../customUserStatus/CustomUserActiveConnections';
 import CustomUserStatusFormWithData from '../customUserStatus/CustomUserStatusFormWithData';
 import CustomUserStatusService from '../customUserStatus/CustomUserStatusService';

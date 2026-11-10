@@ -1,4 +1,4 @@
-import { Avatar } from '@rocket.chat/fuselage';
+import { Avatar, Box } from '@rocket.chat/fuselage';
 import {
 	ContextualbarTitle,
 	ContextualbarHeader,
@@ -29,8 +29,10 @@ const GameCenterContainer = ({ handleClose, handleBack, game }: IGameCenterConta
 				</ContextualbarTitle>
 				{handleClose && <ContextualbarClose onClick={handleClose} />}
 			</ContextualbarHeader>
-			<ContextualbarContent paddingBlock={16}>
-				<iframe title={t('Apps_Game_Center')} style={{ position: 'absolute', width: '95%', height: '80%' }} src={game.url} />
+			<ContextualbarContent>
+				<Box paddingBlock={16}>
+					<iframe title={t('Apps_Game_Center')} style={{ position: 'absolute', width: '95%', height: '80%' }} src={game.url} />
+				</Box>
 			</ContextualbarContent>
 		</ContextualbarDialog>
 	);

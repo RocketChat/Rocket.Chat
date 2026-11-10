@@ -1,5 +1,5 @@
 import type { LicenseInfo } from '@rocket.chat/core-typings';
-import { Callout, Skeleton, Tabs, TabsItem } from '@rocket.chat/fuselage';
+import { Box, Callout, Skeleton } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { UsersListStatusParamsGET } from '@rocket.chat/rest-typings';
 import type { OptionProp } from '@rocket.chat/ui-client';
@@ -10,7 +10,6 @@ import {
 	ContextualbarTitle,
 	ContextualbarClose,
 	ContextualbarDialog,
-	usePagination,
 	useSort,
 	Page,
 	PageHeader,
@@ -18,7 +17,7 @@ import {
 } from '@rocket.chat/ui-client';
 import { useRouteParameter, useTranslation, useRouter, useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Trans } from 'react-i18next';
 
 import AdminInviteUsers from './AdminInviteUsers';
@@ -32,6 +31,7 @@ import UsersTable from './UsersTable';
 import useFilteredUsers from './hooks/useFilteredUsers';
 import usePendingUsersCount from './hooks/usePendingUsersCount';
 import { useSeatsCap } from './useSeatsCap';
+import { PageTabs } from '../../../components/PageTabs';
 import { useCanManageUserStatus } from '../../../hooks/useCanManageUserStatus';
 import { useLicenseLimitsByBehavior } from '../../../hooks/useLicenseLimitsByBehavior';
 import { useShouldPreventAction } from '../../../hooks/useShouldPreventAction';
@@ -68,7 +68,6 @@ const AdminUsersPage = () => {
 		queryFn: async () => getRoles(),
 	});
 
-	const paginationData = usePagination();
 	const sortData = useSort<UsersTableSortingOption>('name');
 
 	const [tab, setTab] = useState<AdminUsersTab>('all');
@@ -79,13 +78,10 @@ const AdminUsersPage = () => {
 	const canFilterByUserStatus = canManageUserStatus && userStatusEnabled;
 
 	const searchTerm = useDebouncedValue(userFilters.text, 500);
-	const prevSearchTerm = useRef('');
 
-	const filteredUsersQueryResult = useFilteredUsers({
+	const { usersListQueryResult: filteredUsersQueryResult, paginationData } = useFilteredUsers({
 		searchTerm,
-		prevSearchTerm,
 		sortData,
-		paginationData,
 		tab,
 		selectedRoles: useMemo(() => userFilters.roles.map((role) => role.id), [userFilters.roles]),
 		statusManagement: canFilterByUserStatus ? userFilters.statusManagement : undefined,
@@ -101,15 +97,10 @@ const AdminUsersPage = () => {
 	const handleTabChange = (tab: AdminUsersTab) => {
 		setTab(tab);
 
-		paginationData.setCurrent(0);
 		sortData.setSort(tab === 'pending' ? 'active' : 'name', 'asc');
 	};
 
 	const handleCloseContextualbar = useStableCallback(() => router.navigate('/admin/users'));
-
-	useEffect(() => {
-		prevSearchTerm.current = searchTerm;
-	}, [searchTerm]);
 
 	const isRoutePrevented = useMemo(
 		() => context && ['new', 'invite'].includes(context) && isCreateUserDisabled,
@@ -125,42 +116,45 @@ const AdminUsersPage = () => {
 					<UsersPageHeaderContent isSeatsCapExceeded={isSeatsCapExceeded} seatsCap={seatsCap} />
 				</PageHeader>
 				{preventAction?.includes('activeUsers') && (
-					<Callout type='danger' title={t('subscription.callout.servicesDisruptionsOccurring')} marginBlockEnd={19} marginInline={24}>
-						<Trans
-							i18nKey='subscription.callout.description.limitsExceeded'
-							count={preventAction.length}
-							values={{ val: preventAction.map(toTranslationKey) }}
-						>
-							Your workspace exceeded the <>{preventAction.map(toTranslationKey)}</> license limit.
-							<ExternalLink
-								to={manageSubscriptionUrl({
-									target: 'callout',
-									action: 'prevent_action',
-									limits: preventAction.join(','),
-								})}
+					<Box paddingInline='x24' paddingBlockEnd='x20'>
+						<Callout type='danger' title={t('subscription.callout.servicesDisruptionsOccurring')}>
+							<Trans
+								i18nKey='subscription.callout.description.limitsExceeded'
+								count={preventAction.length}
+								values={{ val: preventAction.map(toTranslationKey) }}
 							>
-								Manage your subscription
-							</ExternalLink>
-							to increase limits.
-						</Trans>
-					</Callout>
+								Your workspace exceeded the <>{preventAction.map(toTranslationKey)}</> license limit.
+								<ExternalLink
+									to={manageSubscriptionUrl({
+										target: 'callout',
+										action: 'prevent_action',
+										limits: preventAction.join(','),
+									})}
+								>
+									Manage your subscription
+								</ExternalLink>
+								to increase limits.
+							</Trans>
+						</Callout>
+					</Box>
 				)}
-				<Tabs>
-					<TabsItem selected={!tab || tab === 'all'} onClick={() => handleTabChange('all')}>
-						{t('All')}
-					</TabsItem>
-					<TabsItem selected={tab === 'pending'} onClick={() => handleTabChange('pending')} display='flex' flexDirection='row'>
-						{`${t('Pending')} `}
-						{pendingUsersCount.isLoading && <Skeleton variant='circle' height='x16' width='x16' marginInlineStart={8} />}
-						{pendingUsersCount.isSuccess && `(${pendingUsersCount.data})`}
-					</TabsItem>
-					<TabsItem selected={tab === 'active'} onClick={() => handleTabChange('active')}>
-						{t('Active')}
-					</TabsItem>
-					<TabsItem selected={tab === 'deactivated'} onClick={() => handleTabChange('deactivated')}>
-						{t('Deactivated')}
-					</TabsItem>
-				</Tabs>
+				<PageTabs
+					items={[
+						{ id: 'all', label: t('All') },
+						{
+							id: 'pending',
+							label: t('Pending'),
+							counter:
+								(pendingUsersCount.isLoading && <Skeleton variant='circle' height='x16' width='x16' />) ||
+								(pendingUsersCount.isSuccess && `(${pendingUsersCount.data})`) ||
+								undefined,
+						},
+						{ id: 'active', label: t('Active') },
+						{ id: 'deactivated', label: t('Deactivated') },
+					]}
+					selected={tab}
+					onSelect={handleTabChange}
+				/>
 				<PageContent>
 					<UsersTable
 						users={filteredUsersQueryResult.data?.users || []}

@@ -182,6 +182,45 @@ describe('CreateChannelModal', () => {
 			expect(screen.getByRole('button', { name: 'Next' })).toBeEnabled();
 		});
 
+		it('should release ABAC-managed and Private for an XMPP federated room under enforcement, and take them back when XMPP Federated is off', async () => {
+			render(<CreateChannelModalWithData onClose={() => null} />, { wrapper: abacRoot({ enforced: true, xmpp: true }) });
+
+			const managed = await screen.findByLabelText('ABAC_Managed');
+			const xmppFederated = screen.getByLabelText('XMPP_Federated');
+			await waitFor(() => expect(xmppFederated).toBeEnabled());
+
+			await userEvent.click(xmppFederated);
+
+			await waitFor(() => expect(managed).not.toBeChecked());
+			expect(managed).toBeDisabled();
+			expect(managed).toHaveAccessibleDescription('ABAC_Managed_Federated_Hint');
+			expect(screen.getByLabelText('Private')).toBeEnabled();
+			expect(screen.getByText('Step 1 of 2')).toBeInTheDocument();
+
+			await userEvent.click(xmppFederated);
+
+			await waitFor(() => expect(managed).toBeChecked());
+			expect(managed).toHaveAccessibleDescription('ABAC_Managed_Enforced_Hint');
+			expect(screen.getByLabelText('Private')).toBeDisabled();
+			expect(screen.getByText('Step 1 of 4')).toBeInTheDocument();
+		});
+
+		it('should let a creator who cannot create an ABAC-managed room under enforcement go ahead with an XMPP federated one', async () => {
+			render(<CreateChannelModalWithData onClose={() => null} />, {
+				wrapper: abacRoot({ enforced: true, xmpp: true, permissions: ['create-c', 'create-p'] }),
+			});
+
+			expect(await screen.findByText('ABAC_Room_Creation_Federated_Only')).toBeInTheDocument();
+			expect(screen.getByRole('button', { name: 'Next' })).toBeDisabled();
+
+			const xmppFederated = screen.getByLabelText('XMPP_Federated');
+			await waitFor(() => expect(xmppFederated).toBeEnabled());
+			await userEvent.click(xmppFederated);
+
+			await waitFor(() => expect(screen.queryByText('ABAC_Room_Creation_Federated_Only')).not.toBeInTheDocument());
+			expect(screen.getByRole('button', { name: 'Next' })).toBeEnabled();
+		});
+
 		it('should create a federated room as a public channel for a creator who can only create public channels under enforcement', async () => {
 			const createChannel = jest.fn(() => ({ channel: { _id: 'channel-room' } }));
 			const createGroup = jest.fn(() => ({ group: { _id: 'group-room' } }));

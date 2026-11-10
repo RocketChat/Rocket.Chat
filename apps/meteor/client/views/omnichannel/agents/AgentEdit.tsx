@@ -179,7 +179,7 @@ const AgentEdit = ({ agentData, agentDepartments }: AgentEditProps) => {
 					<Button type='reset' disabled={!isDirty} onClick={() => reset()}>
 						{t('Reset')}
 					</Button>
-					<Button form={formId} primary type='submit' disabled={!isDirty}>
+					<Button form={formId} variant='primary' type='submit' disabled={!isDirty}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

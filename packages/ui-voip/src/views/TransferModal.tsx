@@ -77,10 +77,10 @@ const TransferModal = ({ onCancel, onConfirm }: TransferModalProps) => {
 			</ModalContent>
 			<ModalFooter>
 				<ModalFooterControllers>
-					<Button secondary onClick={onCancel}>
+					<Button variant='secondary' onClick={onCancel}>
 						{t('Cancel')}
 					</Button>
-					<Button danger onClick={confirm} icon='phone-off'>
+					<Button variant='danger' onClick={confirm} icon='phone-off'>
 						{t('Hang_up_and_transfer_call')}
 					</Button>
 				</ModalFooterControllers>

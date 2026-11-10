@@ -2,6 +2,13 @@
 	"name": "@rocket.chat/mongo-adapter",
 	"version": "0.0.3",
 	"private": true,
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		}
+	},
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"files": [
@@ -17,7 +24,6 @@
 	},
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
-		"eslint": "~10.12.0",
 		"jest": "~30.5.2",
 		"mongodb": "6.16.0",
 		"typescript": "~7.0.2"

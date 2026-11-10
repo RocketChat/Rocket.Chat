@@ -9,7 +9,7 @@ import type {
 	ISubscription,
 	IUser,
 } from '@rocket.chat/core-typings';
-import { isDiscussion, isRoomFederated } from '@rocket.chat/core-typings';
+import { isDiscussion, isRoomFederated, isRoomXMPPFederated } from '@rocket.chat/core-typings';
 import { AbacAttributes, Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import mem from 'mem';
 
@@ -410,7 +410,7 @@ export async function getAbacRoom(rid: string): Promise<IRoom> {
 }
 
 export function assertRoomAcceptsAttributes(room: IRoom): void {
-	if (isRoomFederated(room)) {
+	if (isRoomFederated(room) || isRoomXMPPFederated(room)) {
 		throw new AbacContractError(AbacErrorCode.FederatedRoomAttributes);
 	}
 

@@ -5,10 +5,9 @@ import { useTranslation } from 'react-i18next';
 
 import ParentRoomButton from './ParentRoomButton';
 import { useTeamInfoQuery } from '../../../../hooks/useTeamInfoQuery';
+import { isForbiddenError } from '../../../../lib/utils/isForbiddenError';
 import { useGoToRoom } from '../../hooks/useGoToRoom';
 import { useUserTeamsQuery } from '../../hooks/useUserTeamsQuery';
-
-type APIErrorResult = { success: boolean; error: string };
 
 export type ParentTeamProps = {
 	room: IRoom;
@@ -32,7 +31,7 @@ const ParentTeam = ({ room }: ParentTeamProps) => {
 		data: teamInfo,
 		isLoading: teamInfoLoading,
 		isError: teamInfoError,
-	} = useTeamInfoQuery(teamId, { retry: (_, error) => (error as unknown as APIErrorResult)?.error !== 'unauthorized' });
+	} = useTeamInfoQuery(teamId, { retry: (_, error) => !isForbiddenError(error) });
 
 	const { data: userTeams, isLoading: userTeamsLoading } = useUserTeamsQuery(userId);
 

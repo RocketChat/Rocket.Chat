@@ -1,4 +1,4 @@
-import { Box } from '@rocket.chat/fuselage';
+import { Text } from '@rocket.chat/fuselage';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -22,12 +22,12 @@ export const useCustomFieldsSection = ({ customFields, onSelect }: UseCustomFiel
 			onClick: () => onSelect(String(value)),
 			content: (
 				<p>
-					<Box is='span' fontScale='p2m'>
+					<Text is='span' fontScale='p2m'>
 						{label}
-					</Box>{' '}
-					<Box is='span' fontScale='p2'>
+					</Text>{' '}
+					<Text is='span' fontScale='p2'>
 						{String(value)}
-					</Box>
+					</Text>
 				</p>
 			),
 		}));

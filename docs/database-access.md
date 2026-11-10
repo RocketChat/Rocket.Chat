@@ -44,6 +44,12 @@ add an `options: UpdateOptions` parameter and forward it, as its own refactor co
   finder in the same model.
 - Reuse an existing method only when it does exactly the same write. A method with a similar
   name may also touch other fields or skip `_updatedAt`.
+- Build it on the methods inherited from `BaseRaw` (`findOne`, `updateOne`, `findOneAndUpdate`,
+  …), not on the raw driver collection `this.col`. The insert and update methods set `_updatedAt`
+  by default; models can opt out with `preventSetUpdatedAt`. On upserts, `updateOne` and
+  `findOneAndUpdate` generate a string `_id` when the filter, the top-level update, and its `$set`
+  have no `_id`. `updateMany` does not generate a string `_id` on upserts. `this.col` bypasses
+  these safeguards.
 
 ## Models hold no business logic
 
@@ -81,3 +87,13 @@ Many inline queries, models that import other models from `../index`, and models
 validate their input predate these rules. Don't add new ones. When you touch one, move the
 logic to where it belongs as its own refactor commit, below the change that needed it
 ([change organization](change-organization.md)).
+
+## Migrations
+
+These rules do not apply to migrations in `apps/meteor/server/startup/migrations/`. A migration
+normally runs once during a forward upgrade, against the data shape of the version it upgrades
+from; the runner also supports explicit reruns (`MIGRATION_VERSION=<version>,rerun`) and down
+migrations. Keep a migration unchanged once it ships. Its queries are not queries the product
+runs, so they don't belong in the model interface, and a method added only for a migration is
+left behind with no caller once that shape is gone. Write the filter and update inline in the
+migration.

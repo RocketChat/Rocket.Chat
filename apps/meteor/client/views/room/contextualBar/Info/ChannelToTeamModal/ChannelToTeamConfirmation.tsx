@@ -1,4 +1,4 @@
-import { Box } from '@rocket.chat/fuselage';
+import { Box, Stack } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
@@ -23,8 +23,10 @@ const ChannelToTeamConfirmation = ({ onCancel, onConfirm, removesAbacAttributes 
 			onCancel={onCancel}
 			onConfirm={onConfirm}
 		>
-			<Box>{t('Teams_move_channel_to_team_confirm_description')}</Box>
-			{removesAbacAttributes && <AbacAttributesRemovalWarning />}
+			<Stack gap={16}>
+				<Box>{t('Teams_move_channel_to_team_confirm_description')}</Box>
+				{removesAbacAttributes && <AbacAttributesRemovalWarning />}
+			</Stack>
 		</GenericModal>
 	);
 };

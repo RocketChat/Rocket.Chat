@@ -3,7 +3,6 @@ import './audit';
 import './deviceManagement';
 import './engagementDashboard';
 import './maxRoomsPerGuest';
-import './upsell';
 import './services';
 import './readReceiptsArchive';
 import './mcp';

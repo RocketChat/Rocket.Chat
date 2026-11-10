@@ -1,7 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { isDiscussion, isPrivateRoom, isPublicRoom, isRoomFederated } from '@rocket.chat/core-typings';
+import { isDiscussion, isPrivateRoom, isPublicRoom, isRoomFederated, isRoomXMPPFederated } from '@rocket.chat/core-typings';
 
-export type AbacLockableRoom = Pick<IRoom, 't' | 'abacAttributes' | 'federated' | 'prid'>;
+export type AbacLockableRoom = Pick<IRoom, 't' | 'abacAttributes' | 'federated' | 'xmppFederation' | 'prid'>;
 
 export type RoomAbacLockContext = {
 	enforcementOn: boolean;
@@ -13,7 +13,7 @@ export const isRoomAbacLocked = (room: AbacLockableRoom, { enforcementOn, requir
 		return false;
 	}
 
-	if (isRoomFederated(room)) {
+	if (isRoomFederated(room) || isRoomXMPPFederated(room)) {
 		return false;
 	}
 

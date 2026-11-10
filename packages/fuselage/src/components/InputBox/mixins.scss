@@ -14,19 +14,16 @@
 		color: $placeholder-color;
 	}
 
-	&:focus,
-	&.focus {
+	&:focus {
 		caret-color: $focus-caret-color;
 	}
 
-	&:active,
-	&.active {
+	&:active {
 		caret-color: $active-caret-color;
 	}
 
 	*:disabled &,
-	&:disabled,
-	&.disabled {
+	&:disabled {
 		color: $disabled-color;
 
 		&::placeholder {
@@ -41,30 +38,14 @@
 		color: $color;
 	}
 
-	.rcx-input-box__wrapper.focus > & {
-		caret-color: $focus-caret-color;
-	}
-
 	&:focus + .rcx-input-box__addon,
-	&.focus + .rcx-input-box__addon,
-	.rcx-input-box__wrapper.focus > & + .rcx-input-box__addon,
-	.rcx-input-box__addon:has(+ &:focus),
-	.rcx-input-box__addon:has(+ &.focus),
-	.rcx-input-box__wrapper.focus > .rcx-input-box__addon:has(+ &) {
+	.rcx-input-box__addon:has(+ &:focus) {
 		color: $focus-icon-color;
-	}
-
-	.rcx-input-box__wrapper.disabled > & {
-		color: $disabled-color;
 	}
 
 	*:disabled & + .rcx-input-box__addon,
 	&:disabled + .rcx-input-box__addon,
-	&.disabled + .rcx-input-box__addon,
-	.rcx-input-box__wrapper.disabled > & + .rcx-input-box__addon,
-	.rcx-input-box__addon:has(+ &:disabled),
-	.rcx-input-box__addon:has(+ &.disabled),
-	.rcx-input-box__wrapper.disabled > .rcx-input-box__addon:has(+ &) {
+	.rcx-input-box__addon:has(+ &:disabled) {
 		color: $disabled-color;
 	}
 }

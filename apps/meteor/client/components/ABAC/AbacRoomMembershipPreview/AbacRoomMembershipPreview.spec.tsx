@@ -143,8 +143,8 @@ describe('AbacRoomMembershipPreview', () => {
 			return after ? new Promise<never>(() => undefined) : page({ members: [bob], total: 1000, next: { _id: 'bob', username: 'bob' } });
 		});
 
-		await userEvent.click(await screen.findByRole('button', { name: 'ABAC_Preview_Loses_access' }));
-		await userEvent.click(screen.getByRole('option', { name: 'ABAC_Preview_Retains_access' }));
+		await userEvent.click(await screen.findByRole('combobox', { name: 'ABAC_Preview_Access_filter' }));
+		await userEvent.click(await screen.findByRole('option', { name: 'ABAC_Preview_Retains_access' }));
 
 		expect(await screen.findByText('ABAC_Preview_No_members_retain_access')).toBeInTheDocument();
 		expect(screen.getByText('ABAC_Preview_Empty_room_warning')).toBeInTheDocument();
@@ -175,12 +175,12 @@ describe('AbacRoomMembershipPreview', () => {
 			return after ? new Promise<never>(() => undefined) : page({ members: [bob], total: 1000, next: { _id: 'bob', username: 'bob' } });
 		});
 
-		await userEvent.click(await screen.findByRole('button', { name: 'ABAC_Preview_Loses_access' }));
-		await userEvent.click(screen.getByRole('option', { name: 'ABAC_Preview_Retains_access' }));
+		await userEvent.click(await screen.findByRole('combobox', { name: 'ABAC_Preview_Access_filter' }));
+		await userEvent.click(await screen.findByRole('option', { name: 'ABAC_Preview_Retains_access' }));
 		expect(await screen.findByText('ABAC_Preview_No_members_retain_access')).toBeInTheDocument();
 
-		await userEvent.click(screen.getByRole('button', { name: 'ABAC_Preview_Retains_access' }));
-		await userEvent.click(screen.getByRole('option', { name: 'ABAC_Preview_Loses_access' }));
+		await userEvent.click(screen.getByRole('combobox', { name: 'ABAC_Preview_Access_filter' }));
+		await userEvent.click(await screen.findByRole('option', { name: 'ABAC_Preview_Loses_access' }));
 		expect(await screen.findByText('Bob')).toBeInTheDocument();
 
 		const dialog = await pressSave();
@@ -297,8 +297,8 @@ describe('AbacRoomMembershipPreview', () => {
 		const dave: AbacRoomPreviewMember = { _id: 'dave', username: 'dave', name: 'Dave', verdict: 'compliant' };
 		renderPreview(({ group }) => page({ members: group === 'retains' ? [dave] : [], editor: 'compliant' }));
 
-		await userEvent.click(await screen.findByRole('button', { name: 'ABAC_Preview_Loses_access' }));
-		await userEvent.click(screen.getByRole('option', { name: 'ABAC_Preview_Retains_access' }));
+		await userEvent.click(await screen.findByRole('combobox', { name: 'ABAC_Preview_Access_filter' }));
+		await userEvent.click(await screen.findByRole('option', { name: 'ABAC_Preview_Retains_access' }));
 
 		const list = await screen.findByRole('list', { name: 'ABAC_Preview_Retains_access' });
 		const row = await within(list).findByRole('listitem');
@@ -380,8 +380,8 @@ describe('AbacRoomMembershipPreview', () => {
 
 		expect(await screen.findByText('ABAC_Preview_Unavailable')).toBeInTheDocument();
 
-		await userEvent.click(screen.getByRole('button', { name: 'ABAC_Preview_Loses_access' }));
-		await userEvent.click(screen.getByRole('option', { name: 'ABAC_Preview_Retains_access' }));
+		await userEvent.click(screen.getByRole('combobox', { name: 'ABAC_Preview_Access_filter' }));
+		await userEvent.click(await screen.findByRole('option', { name: 'ABAC_Preview_Retains_access' }));
 
 		expect(await screen.findByText('Dave')).toBeInTheDocument();
 		expect(screen.queryByText('ABAC_Preview_Unavailable')).not.toBeInTheDocument();
@@ -396,8 +396,8 @@ describe('AbacRoomMembershipPreview', () => {
 			return page({ editor: 'compliant' });
 		});
 
-		await userEvent.click(await screen.findByRole('button', { name: 'ABAC_Preview_Loses_access' }));
-		await userEvent.click(screen.getByRole('option', { name: 'ABAC_Preview_Retains_access' }));
+		await userEvent.click(await screen.findByRole('combobox', { name: 'ABAC_Preview_Access_filter' }));
+		await userEvent.click(await screen.findByRole('option', { name: 'ABAC_Preview_Retains_access' }));
 
 		expect(await screen.findByText('ABAC_Preview_Unavailable')).toBeInTheDocument();
 		expect(saveButton()).toBeDisabled();

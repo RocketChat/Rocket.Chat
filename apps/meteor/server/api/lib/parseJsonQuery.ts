@@ -1,4 +1,4 @@
-import { Meteor } from 'meteor/meteor';
+import { ClientSafeError } from '@rocket.chat/core-services';
 
 import { isPlainObject } from '../../../lib/utils/isPlainObject';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
@@ -19,7 +19,7 @@ export async function parseJsonQuery(api: GenericRouteExecutionContext): Promise
 			sort = JSON.parse(params.sort);
 			Object.entries(sort).forEach(([key, value]) => {
 				if (value !== 1 && value !== -1) {
-					throw new Meteor.Error('error-invalid-sort-parameter', `Invalid sort parameter: ${key}`, {
+					throw new ClientSafeError('error-invalid-sort-parameter', `Invalid sort parameter: ${key}`, {
 						helperMethod: 'parseJsonQuery',
 					});
 				}
@@ -30,7 +30,7 @@ export async function parseJsonQuery(api: GenericRouteExecutionContext): Promise
 				sort: params.sort,
 				err: e,
 			});
-			throw new Meteor.Error('error-invalid-sort', `Invalid sort parameter provided: \"${params.sort}\"`, {
+			throw new ClientSafeError('error-invalid-sort', `Invalid sort parameter provided: \"${params.sort}\"`, {
 				helperMethod: 'parseJsonQuery',
 			});
 		}

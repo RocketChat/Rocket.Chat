@@ -204,4 +204,56 @@ test.describe.serial('Apps > UIKit components', () => {
 		const containerEntry = blockActionLog?.entries.find((e) => e.args[0] === 'block_action_container');
 		expect(containerEntry?.args[1]).toBe('message');
 	});
+
+	test('should display the table, video and context actions blocks of a message', async ({ api, page }) => {
+		const seed = Date.now().toString();
+
+		await poHomeChannel.content.dispatchSlashCommand(`/open-uikit-components-test display ${seed}`);
+
+		const message = poHomeChannel.content.lastUserMessage;
+		const table = message.getByRole('table');
+
+		await test.step('the table shows its header and rows', async () => {
+			// Playwright gives a `th` the columnheader role only with `scope="col"`.
+			await expect(table.getByRole('cell', { name: 'Service' })).toBeVisible();
+			await expect(table.getByRole('cell', { name: 'API' })).toBeVisible();
+			await expect(table.getByRole('cell', { name: '99.98%' })).toBeVisible();
+		});
+
+		await test.step('the video shows its thumbnail and title', async () => {
+			await expect(message.getByRole('button', { name: 'Big Buck Bunny, an animated short film' })).toBeVisible();
+			await expect(message.getByText('Big Buck Bunny', { exact: true })).toBeVisible();
+		});
+
+		const getBlockActionValue = async (actionId: string) => {
+			const { logs } = await getAppLogs(api, appId);
+			const blockActionLog = findAppLogItem(logs, 'executeBlockActionHandler', ['block_action_actionId', actionId]);
+			expect(blockActionLog, `Block action handler log not found for ${actionId}`).toBeTruthy();
+
+			const containerEntry = blockActionLog?.entries.find((e) => e.args[0] === 'block_action_container');
+			expect(containerEntry?.args[1]).toBe('message');
+
+			const valueEntry = blockActionLog?.entries.find((e) => e.args[0] === 'block_action_value');
+			return JSON.parse(valueEntry?.args[1] ?? 'null');
+		};
+
+		await test.step('a feedback button sends its value and stays pressed', async () => {
+			const goodAnswer = message.getByRole('button', { name: 'Good answer' });
+
+			const interactionResponse = page.waitForResponse('**/ui.interaction/*');
+			await goodAnswer.click();
+			await interactionResponse;
+
+			await expect(goodAnswer).toHaveAttribute('aria-pressed', 'true');
+			expect(await getBlockActionValue('feedback')).toBe('good');
+		});
+
+		await test.step('an icon button sends its value', async () => {
+			const interactionResponse = page.waitForResponse('**/ui.interaction/*');
+			await message.getByRole('button', { name: 'Show details' }).click();
+			await interactionResponse;
+
+			expect(await getBlockActionValue('details')).toBe('details');
+		});
+	});
 });

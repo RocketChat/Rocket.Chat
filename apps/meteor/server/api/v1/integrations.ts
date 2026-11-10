@@ -16,7 +16,6 @@ import {
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/tools';
-import { Match, check } from 'meteor/check';
 import type { Filter } from 'mongodb';
 
 import { clearIntegrationHistoryMethod, replayOutgoingIntegrationMethod } from '../../lib/integrations/functions/clearIntegrationHistory';
@@ -247,13 +246,6 @@ API.v1.post(
 					integration,
 				});
 			case 'webhook-incoming':
-				check(
-					bodyParams,
-					Match.ObjectIncluding({
-						integrationId: String,
-					}),
-				);
-
 				integration = await Integrations.findOne({ _id: bodyParams.integrationId });
 
 				if (!integration) {

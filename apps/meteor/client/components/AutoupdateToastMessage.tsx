@@ -19,7 +19,7 @@ export const AutoupdateToastMessage = () => {
 			`}
 		>
 			{t('An_update_is_available')}
-			<Button primary small onClick={() => window.location.reload()}>
+			<Button variant='primary' size='small' onClick={() => window.location.reload()}>
 				{t('Reload_to_update')}
 			</Button>
 		</Box>

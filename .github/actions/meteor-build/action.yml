@@ -175,7 +175,9 @@ runs:
         #     "meteor/babel-compiler/node_modules/@babel" # Removes 14M
 
             "@rocket.chat/i18n/src" # Removes 16M
+            "@rocket.chat/fuselage/test" # Removes 9M - visual regression snapshots
             "typescript" # Removes 19M
+            "@typescript" # Removes 47M - TypeScript 7 native compiler, one package per arch
             # "@babel" # Removes 34M - Needed by Minimongo
         )
 

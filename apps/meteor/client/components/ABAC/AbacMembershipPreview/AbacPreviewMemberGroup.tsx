@@ -21,12 +21,12 @@ const AbacPreviewMemberGroup = ({ title, members, verdict }: AbacPreviewMemberGr
 	}
 
 	return (
-		<Box is='section' aria-label={title} marginBlockEnd={16}>
+		<Box is='section' aria-label={title}>
 			<Box display='flex' justifyContent='space-between' fontScale='c2' color='hint'>
 				<span>{title}</span>
 				<span>{members.length}</span>
 			</Box>
-			<Divider marginBlock={8} />
+			<Divider />
 			<Box is='ul'>
 				{members.map(({ _id, username, name }) => (
 					<Box is='li' key={_id} display='flex' alignItems='center' paddingBlock={4}>
@@ -35,7 +35,7 @@ const AbacPreviewMemberGroup = ({ title, members, verdict }: AbacPreviewMemberGr
 								<UserAvatar username={username} size='x20' />
 							</Box>
 						)}
-						<Box flexGrow={1} withTruncatedText marginInlineStart={8}>
+						<Box flexGrow={1} withTruncatedText marginInline={8}>
 							<Box is='span' fontScale='p2m' color='default'>
 								{name || username}
 							</Box>
@@ -45,16 +45,7 @@ const AbacPreviewMemberGroup = ({ title, members, verdict }: AbacPreviewMemberGr
 								</Box>
 							)}
 						</Box>
-						<Icon
-							{...verdictIcons[verdict]}
-							size='x16'
-							flexShrink={0}
-							marginInlineStart={8}
-							role='img'
-							aria-hidden={false}
-							aria-label={title}
-							title={title}
-						/>
+						<Icon {...verdictIcons[verdict]} size='x16' role='img' aria-hidden={false} aria-label={title} title={title} />
 					</Box>
 				))}
 			</Box>

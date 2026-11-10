@@ -63,7 +63,7 @@ const ProjectsThumbnail = ({ id, name: _name, date, blocks }: ProjectsThumbnailP
 				onBlur={nameSaveHandler}
 				labelProps={{ fontScale: 'h5' }}
 			/>
-			<ScreenThumbnailWrapper onClick={activeProjectHandler} width='200px' height='260px' padding='30px'>
+			<ScreenThumbnailWrapper onClick={activeProjectHandler} width='200px' height='260px' padding='32px'>
 				<Thumbnail of={<RenderPayload blocks={blocks} />} />
 				<Box onClick={(e) => e.stopPropagation()}></Box>
 			</ScreenThumbnailWrapper>

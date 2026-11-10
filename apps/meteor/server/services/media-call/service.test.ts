@@ -31,7 +31,7 @@ const loggerMock = { info: sandbox.stub(), warn: sandbox.stub(), error: sandbox.
 class ServiceClassInternalMock {
 	protected name = '';
 
-	// eslint-disable-next-line @typescript-eslint/no-empty-function
+	// oxlint-disable-next-line @typescript-eslint/no-empty-function
 	onEvent(): void {}
 }
 

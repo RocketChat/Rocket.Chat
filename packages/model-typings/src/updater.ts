@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import type { Join, NestedPaths, PropertyType, ArrayElement, KeysOfAType, UpdateFilter } from 'mongodb';
 
 export interface Updater<T extends { _id: string }> {

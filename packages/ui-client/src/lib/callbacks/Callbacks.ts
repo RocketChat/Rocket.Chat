@@ -222,8 +222,8 @@ export class Callbacks<
 
 		return {
 			add: (callback, priority, id) => callbacks.add(hook as any, callback, priority, id),
-			remove: (id) => callbacks.remove(hook as any, id),
-			run: (item, constant) => callbacks.run(hook as any, item, constant) as any,
+			remove: (id) => callbacks.remove(hook, id),
+			run: (item, constant) => callbacks.run<I, C, R>(hook, item, constant),
 		};
 	}
 }

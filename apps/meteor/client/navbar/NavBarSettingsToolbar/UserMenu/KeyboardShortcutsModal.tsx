@@ -124,7 +124,7 @@ const KeyboardShortcutsModal = ({ onClose }: KeyboardShortcutsModalProps) => {
 								);
 							})}
 						</Box>
-						<Divider aria-hidden='true' margin={0} />
+						<Divider aria-hidden='true' flush />
 					</Box>
 				))}
 			</Box>

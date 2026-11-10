@@ -1,5 +1,5 @@
-import { parse } from '../src';
-import { paragraph, plain } from './helpers';
+import { paragraph, plain } from './helpers.js';
+import { parse } from '../src/index.js';
 
 test.each([
 	['free text', [paragraph([plain('free text')])]],

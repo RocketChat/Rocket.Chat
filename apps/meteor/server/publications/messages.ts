@@ -1,6 +1,6 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 import type { FindOptions } from 'mongodb';
 
 import { canAccessRoomIdAsync } from '../lib/authorization/canAccessRoom';
@@ -47,7 +47,7 @@ export function mountCursorFromMessage(message: IMessage & { _deletedAt?: Date }
 		return `${message._deletedAt.getTime()}`;
 	}
 
-	throw new Meteor.Error('error-cursor-not-found', 'Cursor not found', { method: 'messages/get' });
+	throw new ClientSafeError('error-cursor-not-found', 'Cursor not found', { method: 'messages/get' });
 }
 
 export function mountNextCursor(
@@ -204,23 +204,26 @@ export const getMessageHistory = async (
 	| { messages: IMessage[]; firstUnread?: any; unreadNotLoaded?: number }
 > => {
 	if (!(await canAccessRoomIdAsync(rid, fromId))) {
-		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'messages/get' });
+		throw new ClientSafeError('error-not-allowed', 'Not allowed', { method: 'messages/get' });
 	}
 
 	if (type && !['UPDATED', 'DELETED'].includes(type)) {
-		throw new Meteor.Error('error-type-param-not-supported', 'The "type" parameter must be either "UPDATED" or "DELETED"');
+		throw new ClientSafeError('error-type-param-not-supported', 'The "type" parameter must be either "UPDATED" or "DELETED"');
 	}
 
 	if ((next || previous) && !type) {
-		throw new Meteor.Error('error-type-param-required', 'The "type" parameter is required when using the "next" or "previous" parameters');
+		throw new ClientSafeError(
+			'error-type-param-required',
+			'The "type" parameter is required when using the "next" or "previous" parameters',
+		);
 	}
 
 	if (next && previous) {
-		throw new Meteor.Error('error-cursor-conflict', 'You cannot provide both "next" and "previous" parameters');
+		throw new ClientSafeError('error-cursor-conflict', 'You cannot provide both "next" and "previous" parameters');
 	}
 
 	if ((next || previous) && lastUpdate) {
-		throw new Meteor.Error(
+		throw new ClientSafeError(
 			'error-cursor-and-lastUpdate-conflict',
 			'The attributes "next", "previous" and "lastUpdate" cannot be used together',
 		);
@@ -229,7 +232,7 @@ export const getMessageHistory = async (
 	// `fromTs` only bounds the query on the `lastUpdate` path; neither cursor pagination nor the channel
 	// history fallback honors it, so accepting it there would silently widen the result set.
 	if (fromTs && !lastUpdate) {
-		throw new Meteor.Error('error-fromTs-requires-lastUpdate', 'The "fromTs" parameter can only be used together with "lastUpdate"');
+		throw new ClientSafeError('error-fromTs-requires-lastUpdate', 'The "fromTs" parameter can only be used together with "lastUpdate"');
 	}
 
 	const hasCursorPagination = !!((next || previous) && count !== null && type);
@@ -243,7 +246,7 @@ export const getMessageHistory = async (
 	}
 
 	if (!type) {
-		throw new Meteor.Error('error-param-required', 'The "type" or "lastUpdate" parameters must be provided');
+		throw new ClientSafeError('error-param-required', 'The "type" or "lastUpdate" parameters must be provided');
 	}
 
 	return handleCursorPagination(type, rid, count, next, previous);

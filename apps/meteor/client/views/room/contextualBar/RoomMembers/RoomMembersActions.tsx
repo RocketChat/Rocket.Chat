@@ -26,7 +26,7 @@ const RoomMembersActions = ({ username, _id, name, rid, sipExtension, federated,
 		return null;
 	}
 
-	return <GenericMenu detached tiny title={t('More')} key='menu' sections={menuOptions} placement='bottom-end' />;
+	return <GenericMenu detached size='tiny' title={t('More')} key='menu' sections={menuOptions} placement='bottom-end' />;
 };
 
 export default RoomMembersActions;

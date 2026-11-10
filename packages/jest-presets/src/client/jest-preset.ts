@@ -30,11 +30,14 @@ export default {
 	transformIgnorePatterns: [
 		'<rootDir>/node_modules/@babel',
 		'<rootDir>/node_modules/@jest',
-		'/node_modules/(?!@testing-library/|@faker-js/)',
+		'/node_modules/(?!@testing-library/|@faker-js/|@storybook/|storybook/)',
 	],
 	moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node', 'mjs'],
 
 	moduleNameMapper: {
+		// jest-resolve doesn't apply TypeScript's `.js` → `.ts` mapping for the explicit
+		// extensions that `moduleResolution: nodenext` requires in the sources.
+		'^(\\.{1,2}/.*)\\.js$': '$1',
 		'\\.css$': 'identity-obj-proxy',
 	},
 

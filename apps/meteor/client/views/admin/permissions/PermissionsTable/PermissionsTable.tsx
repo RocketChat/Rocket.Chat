@@ -1,6 +1,6 @@
 import type { IPermission, IRole } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { Pagination, Palette } from '@rocket.chat/fuselage';
+import { Pagination, Palette, useStyle } from '@rocket.chat/fuselage';
 import type { usePagination } from '@rocket.chat/ui-client';
 import { GenericTable, GenericTableHeader, GenericTableHeaderCell, GenericTableBody, GenericNoResults } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
@@ -73,6 +73,7 @@ const PermissionsTable = ({ roleList, permissions, setFilter, total, paginationD
 			}
 		}
 	`;
+	const tableCustomClassName = useStyle(tableCustomStyle);
 
 	return (
 		<>
@@ -80,9 +81,9 @@ const PermissionsTable = ({ roleList, permissions, setFilter, total, paginationD
 			{permissions?.length === 0 && <GenericNoResults />}
 			{permissions?.length > 0 && (
 				<>
-					<GenericTable className={[tableCustomStyle]} fixed={false}>
+					<GenericTable className={tableCustomClassName} fixed={false} columns={['x120']}>
 						<GenericTableHeader>
-							<GenericTableHeaderCell width='x120'>{t('Name')}</GenericTableHeaderCell>
+							<GenericTableHeaderCell>{t('Name')}</GenericTableHeaderCell>
 							{roleList?.map(({ _id, name, description }) => (
 								<RoleHeader key={_id} _id={_id} name={name} description={description} />
 							))}

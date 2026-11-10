@@ -6,6 +6,7 @@ import type { DatePickerElement } from './elements/DatePickerElement';
 import type { DateTimePickerElement } from './elements/DateTimePickerElement';
 import type { EmailTextInputElement } from './elements/EmailTextInputElement';
 import type { ExperimentalTabElement } from './elements/ExperimentalTabElement';
+import type { FeedbackButtonsElement } from './elements/FeedbackButtonsElement';
 import type { IconButtonElement } from './elements/IconButtonElement';
 import type { LinearScaleElement } from './elements/LinearScaleElement';
 import type { MultiChannelsSelectElement } from './elements/MultiChannelsSelectElement';
@@ -38,6 +39,7 @@ export type ActionableElement =
 	| NumberInputElement
 	| EmailTextInputElement
 	| UrlTextInputElement
+	| FeedbackButtonsElement
 	| StaticSelectElement
 	| UsersSelectElement
 	| ToggleSwitchElement

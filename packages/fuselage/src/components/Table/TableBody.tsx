@@ -1,7 +1,7 @@
+import type { ElementProps } from '../../types/ElementProps';
 import { Box } from '../Box';
-import type { TableProps } from './Table';
 
-export type TableBodyProps = TableProps;
+export type TableBodyProps = ElementProps<HTMLTableSectionElement>;
 
 const TableBody = (props: TableBodyProps) => <Box is='tbody' rcx-table__body {...props} />;
 

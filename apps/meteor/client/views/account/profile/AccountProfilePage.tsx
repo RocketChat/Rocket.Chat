@@ -1,4 +1,4 @@
-import { ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
+import { ButtonGroup, Button, Stack } from '@rocket.chat/fuselage';
 import { SHA256 } from '@rocket.chat/sha256';
 import { Page, PageFooter, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useUser, useLogout, useEndpoint, useSetting, useLayout } from '@rocket.chat/ui-contexts';
@@ -10,6 +10,7 @@ import AccountProfileForm from './AccountProfileForm';
 import ActionConfirmModal from './ActionConfirmModal';
 import { getProfileInitialValues } from './getProfileInitialValues';
 import ConfirmOwnerChangeModal from '../../../components/ConfirmOwnerChangeModal';
+import ContentColumn from '../../../components/ContentColumn';
 import { useAllowPasswordChange } from '../security/useAllowPasswordChange';
 
 // TODO: enforce useMutation
@@ -112,30 +113,30 @@ const AccountProfilePage = () => {
 		<Page>
 			<PageHeader title={t('Profile')} />
 			<PageScrollableContentWithShadow>
-				<Box maxWidth='600px' width='full' alignSelf='center'>
-					<FormProvider {...methods}>
-						<AccountProfileForm id={profileFormId} />
-					</FormProvider>
-					<Box marginBlock={12}>
-						<ButtonGroup stretch vertical={isMobile}>
-							<Button onClick={handleLogoutOtherLocations} flexGrow={0} loading={loggingOut}>
+				<ContentColumn>
+					<Stack gap='x24'>
+						<FormProvider {...methods}>
+							<AccountProfileForm id={profileFormId} />
+						</FormProvider>
+						<ButtonGroup stretch={isMobile} vertical={isMobile}>
+							<Button onClick={handleLogoutOtherLocations} loading={loggingOut}>
 								{t('Logout_Others')}
 							</Button>
 							{allowDeleteOwnAccount && (
-								<Button icon='trash' danger onClick={handleDeleteOwnAccount}>
+								<Button icon='trash' variant='danger' onClick={handleDeleteOwnAccount}>
 									{t('Delete_my_account')}
 								</Button>
 							)}
 						</ButtonGroup>
-					</Box>
-				</Box>
+					</Stack>
+				</ContentColumn>
 			</PageScrollableContentWithShadow>
 			<PageFooter isDirty={isDirty}>
 				<ButtonGroup>
 					<Button disabled={!isDirty} onClick={() => reset(getProfileInitialValues(user))}>
 						{t('Cancel')}
 					</Button>
-					<Button form={profileFormId} primary disabled={!isDirty || loggingOut} loading={isSubmitting} type='submit'>
+					<Button form={profileFormId} variant='primary' disabled={!isDirty || loggingOut} loading={isSubmitting} type='submit'>
 						{t('Save_changes')}
 					</Button>
 				</ButtonGroup>

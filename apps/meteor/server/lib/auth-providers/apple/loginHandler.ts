@@ -1,5 +1,5 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { Accounts } from 'meteor/accounts-base';
-import { Meteor } from 'meteor/meteor';
 
 import { handleIdentityToken } from './handleIdentityToken';
 import { settings } from '../../../settings';
@@ -32,7 +32,7 @@ Accounts.registerLoginHandler('apple', async (loginRequest) => {
 		if (result?.userId === undefined) {
 			return {
 				type: 'apple',
-				error: new Meteor.Error(Accounts.LoginCancelledError.numericError, 'User creation failed from Apple response token'),
+				error: new ClientSafeError(Accounts.LoginCancelledError.numericError, 'User creation failed from Apple response token'),
 			};
 		}
 
@@ -40,7 +40,7 @@ Accounts.registerLoginHandler('apple', async (loginRequest) => {
 	} catch (error: any) {
 		return {
 			type: 'apple',
-			error: new Meteor.Error(Accounts.LoginCancelledError.numericError, error.message),
+			error: new ClientSafeError(Accounts.LoginCancelledError.numericError, error.message),
 		};
 	}
 });

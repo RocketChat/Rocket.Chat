@@ -1,8 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from 'react-i18next';
 
-import FilterByText from '../../../components/FilterByText';
+import { FilterBar, FilterBarFilters, FilterBarSearch } from '../../../components/FilterBar';
 import CategoryDropDown from '../components/CategoryFilter/CategoryDropDown';
 import TagList from '../components/CategoryFilter/TagList';
 import RadioDropDown from '../components/RadioDropDown/RadioDropDown';
@@ -43,7 +42,6 @@ const AppsFilters = ({
 	const { t } = useTranslation();
 
 	const isPrivateAppsPage = context === 'private';
-	const breakpoints = useBreakpoints();
 
 	const appsSearchPlaceholders: { [key: string]: string } = {
 		explore: t('Search_Apps'),
@@ -53,20 +51,19 @@ const AppsFilters = ({
 		private: t('Search_Private_apps'),
 	};
 
-	const fixFiltersSize = breakpoints.includes('lg') ? { maxWidth: 'x200', minWidth: 'x200' } : null;
-
 	return (
 		<Box paddingInline={24}>
-			<FilterByText value={text} onChange={(event) => setText(event.target.value)} placeholder={appsSearchPlaceholders[context]}>
-				{!isPrivateAppsPage && (
-					<RadioDropDown group={freePaidFilterStructure} onSelected={freePaidFilterOnSelected} flexGrow={1} {...fixFiltersSize} />
-				)}
-				<RadioDropDown group={statusFilterStructure} onSelected={statusFilterOnSelected} flexGrow={1} {...fixFiltersSize} />
-				{!isPrivateAppsPage && (
-					<CategoryDropDown categories={categories} selectedCategories={selectedCategories} onSelected={onSelected} flexGrow={1} />
-				)}
-				<RadioDropDown group={sortFilterStructure} onSelected={sortFilterOnSelected} flexGrow={1} {...fixFiltersSize} />
-			</FilterByText>
+			<FilterBar>
+				<FilterBarSearch value={text} onChange={(event) => setText(event.target.value)} placeholder={appsSearchPlaceholders[context]} />
+				<FilterBarFilters>
+					{!isPrivateAppsPage && <RadioDropDown group={freePaidFilterStructure} onSelected={freePaidFilterOnSelected} />}
+					<RadioDropDown group={statusFilterStructure} onSelected={statusFilterOnSelected} />
+					{!isPrivateAppsPage && (
+						<CategoryDropDown categories={categories} selectedCategories={selectedCategories} onSelected={onSelected} />
+					)}
+					<RadioDropDown group={sortFilterStructure} onSelected={sortFilterOnSelected} />
+				</FilterBarFilters>
+			</FilterBar>
 			<TagList categories={categoryTagList} onClick={onSelected} />
 		</Box>
 	);

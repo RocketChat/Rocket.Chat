@@ -68,7 +68,7 @@ const TeamsChannelItem = ({ room, mainRoom, onClickView, reload }: TeamsChannelI
 					{menuVisibility ? (
 						<TeamsChannelItemMenu room={room} mainRoom={mainRoom} reload={reload} />
 					) : (
-						<IconButton small icon='kebab' aria-hidden tabIndex={-1} onPointerDown={mountNow} />
+						<IconButton size='small' icon='kebab' aria-hidden tabIndex={-1} onPointerDown={mountNow} />
 					)}
 				</ItemActions>
 			)}

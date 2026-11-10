@@ -1,5 +1,5 @@
 import type { ILogItem } from '@rocket.chat/core-typings';
-import { Box } from '@rocket.chat/fuselage';
+import { Box, Text } from '@rocket.chat/fuselage';
 import DOMPurify from 'dompurify';
 
 import { useHighlightedCode } from '../../../../../hooks/useHighlightedCode';
@@ -10,7 +10,7 @@ export type AppLogsItemEntryProps = {
 
 const AppLogsItemEntry = ({ fullLog }: AppLogsItemEntryProps) => {
 	return (
-		<Box color='default'>
+		<Text color='default'>
 			<Box withRichContent width='full'>
 				<pre>
 					<code
@@ -20,7 +20,7 @@ const AppLogsItemEntry = ({ fullLog }: AppLogsItemEntryProps) => {
 					/>
 				</pre>
 			</Box>
-		</Box>
+		</Text>
 	);
 };
 

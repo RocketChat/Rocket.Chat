@@ -26,7 +26,7 @@ export const useFileInput = (props: AllHTMLAttributes<HTMLInputElement>) => {
 			fileInputRef.current = undefined;
 			fileInput.remove();
 		};
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// oxlint-disable-next-line react-hooks/exhaustive-deps
 	}, [props]);
 
 	return fileInputRef;

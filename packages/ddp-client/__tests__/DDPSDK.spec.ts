@@ -11,12 +11,12 @@ import { LivechatClientImpl } from '../src/livechat/LivechatClientImpl';
 
 (global as any).WebSocket = (global as any).WebSocket || WebSocket;
 
-export let server: WS;
+let server: WS;
 
 const callXTimes = <F extends (...args: any) => any>(fn: F, times: number): F => {
 	return (async (...args) => {
 		const methods = [].concat(...Array(times));
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		// oxlint-disable-next-line @typescript-eslint/no-unused-vars
 		for (const _ of methods) {
 			await fn(...args);
 		}
@@ -285,6 +285,7 @@ it('should create and connect to a stream', async () => {
 	const promise = DDPSDK.createAndConnect('ws://localhost:1234');
 	await handleConnection(server, promise);
 	const sdk = await promise;
+	expect(sdk.connection.status).toBe('connected');
 	sdk.connection.close();
 });
 

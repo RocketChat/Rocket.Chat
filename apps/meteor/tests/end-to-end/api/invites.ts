@@ -25,8 +25,8 @@ describe('Invites', () => {
 				})
 				.expect(401);
 
-			expect(res.body).to.have.property('status', 'error');
-			expect(res.body).to.have.property('message');
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 		});
 
 		it('should fail if invalid roomid', async () => {
@@ -86,8 +86,8 @@ describe('Invites', () => {
 		it('should fail if not logged in', async () => {
 			const res = await request.get(api('listInvites')).expect(401);
 
-			expect(res.body).to.have.property('status', 'error');
-			expect(res.body).to.have.property('message');
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 		});
 
 		it('should return the existing invite for GENERAL', async () => {
@@ -97,12 +97,56 @@ describe('Invites', () => {
 		});
 	});
 
+	describe('Permission checks', () => {
+		let user: TestUser<IUser>;
+		let userCredentials: Credentials;
+
+		before(async () => {
+			user = await createUser();
+			userCredentials = await login(user.username, password);
+		});
+
+		after(() => deleteUser(user));
+
+		it('should refuse to create an invite when the user lacks create-invite-links', async () => {
+			const res = await request
+				.post(api('findOrCreateInvite'))
+				.set(userCredentials)
+				.send({
+					rid: 'GENERAL',
+					days: 1,
+					maxUses: 10,
+				})
+				.expect(403);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
+		});
+
+		it('should refuse to list invites when the user lacks create-invite-links', async () => {
+			const res = await request.get(api('listInvites')).set(userCredentials).expect(403);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
+		});
+
+		it('should refuse to remove an invite when the user lacks create-invite-links', async () => {
+			const res = await request
+				.delete(api(`removeInvite/${testInviteID}`))
+				.set(userCredentials)
+				.expect(403);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
+		});
+	});
+
 	describe('POST [/useInviteToken]', () => {
 		it('should fail if not logged in', async () => {
 			const res = await request.post(api('useInviteToken')).expect(401);
 
-			expect(res.body).to.have.property('status', 'error');
-			expect(res.body).to.have.property('message');
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 		});
 
 		it('should fail if invalid token', async () => {
@@ -122,7 +166,7 @@ describe('Invites', () => {
 			const res = await request.post(api('useInviteToken')).set(credentials).send({}).expect(400);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('errorType', 'invalid-params');
+			expect(res.body).to.have.property('errorType', 'error-invalid-params');
 		});
 
 		it('should use the existing invite for GENERAL', async () => {
@@ -228,8 +272,8 @@ describe('Invites', () => {
 		it('should fail if not logged in', async () => {
 			const res = await request.delete(api(`removeInvite/${testInviteID}`)).expect(401);
 
-			expect(res.body).to.have.property('status', 'error');
-			expect(res.body).to.have.property('message');
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 		});
 
 		it('should fail if invalid token', async () => {

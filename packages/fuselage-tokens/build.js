@@ -32,6 +32,13 @@ StyleDictionary.registerTransform({
 });
 
 StyleDictionary.registerTransform({
+	name: 'size/spacing/rocketchat',
+	type: 'value',
+	filter: (token) => token.type === 'spacing',
+	transform: (token) => `${token.value}px`,
+});
+
+StyleDictionary.registerTransform({
 	name: 'fontFamily/css/rocketchat',
 	type: 'value',
 	filter: (token) => token.attributes.type === 'fontFamily',
@@ -53,6 +60,7 @@ StyleDictionary.registerTransformGroup({
 		'html/icon',
 		'size/pxToRem',
 		'size/borderWidth/rocketchat',
+		'size/spacing/rocketchat',
 		'color/css',
 		'asset/url',
 		'fontFamily/css/rocketchat',

@@ -20,13 +20,13 @@ const ModConsoleUserTableRow = ({ report, onClick, isDesktopOrLarger }: ModConso
 
 	return (
 		<GenericTableRow key={_id} onClick={(): void => onClick(_id)} tabIndex={0} role='link' action>
-			<GenericTableCell withTruncatedText>
+			<GenericTableCell truncate>
 				<UserColumn name={name} username={username} fontSize='micro' size={isDesktopOrLarger ? 'x20' : 'x40'} />
 			</GenericTableCell>
-			<GenericTableCell withTruncatedText>{formatDateAndTime(createdAt)}</GenericTableCell>
-			<GenericTableCell withTruncatedText>{emails?.[0].address}</GenericTableCell>
-			<GenericTableCell withTruncatedText>{formatDateAndTime(ts)}</GenericTableCell>
-			<GenericTableCell withTruncatedText>{count}</GenericTableCell>
+			<GenericTableCell truncate>{formatDateAndTime(createdAt)}</GenericTableCell>
+			<GenericTableCell truncate>{emails?.[0].address}</GenericTableCell>
+			<GenericTableCell truncate>{formatDateAndTime(ts)}</GenericTableCell>
+			<GenericTableCell truncate>{count}</GenericTableCell>
 			<GenericTableCell onClick={(e): void => e.stopPropagation()}>
 				<ModConsoleUserActions report={report} onClick={onClick} />
 			</GenericTableCell>

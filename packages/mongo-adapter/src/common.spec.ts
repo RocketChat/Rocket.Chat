@@ -8,7 +8,7 @@ import {
 	isIndexable,
 	equals,
 	isEmptyArray,
-} from './common';
+} from './common.js';
 
 describe('assertIsValidFieldName', () => {
 	it('should not throw for valid field names', () => {
@@ -134,7 +134,7 @@ describe('clone', () => {
 
 	it('should handle Arguments objects', () => {
 		function getArgs(..._: any) {
-			// eslint-disable-next-line prefer-rest-params
+			// oxlint-disable-next-line prefer-rest-params
 			return arguments;
 		}
 

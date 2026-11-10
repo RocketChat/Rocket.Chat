@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import type { DispatchLoginRouter } from './hooks/useLoginRouter';
 import { useSendForgotPassword } from './hooks/useSendForgotPassword';
+import { EMAIL_PATTERN } from './lib/emailPattern';
 
 export type ResetPasswordFormProps = { setLoginRoute: DispatchLoginRouter };
 
@@ -47,7 +48,7 @@ export const ResetPasswordForm = ({ setLoginRoute }: ResetPasswordFormProps) => 
 			<FormHeader>
 				<FormTitle id={formLabelId}>{t('registration.component.resetPassword')}</FormTitle>
 			</FormHeader>
-			<FormContainer>
+			<FormContainer display='flex' flexDirection='column' gap={24}>
 				<FieldGroup>
 					<Field>
 						<FieldLabel required htmlFor={emailId}>
@@ -58,7 +59,7 @@ export const ResetPasswordForm = ({ setLoginRoute }: ResetPasswordFormProps) => 
 								{...register('email', {
 									required: t('Required_field', { field: t('registration.component.form.email') }),
 									pattern: {
-										value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+										value: EMAIL_PATTERN,
 										message: t('registration.page.resetPassword.errors.invalidEmail'),
 									},
 								})}
@@ -79,7 +80,7 @@ export const ResetPasswordForm = ({ setLoginRoute }: ResetPasswordFormProps) => 
 				</FieldGroup>
 				{isSuccess && (
 					<FieldGroup>
-						<Callout aria-live='assertive' role='status' marginBlockStart={24} icon='mail'>
+						<Callout aria-live='assertive' role='status' icon='mail'>
 							{t('registration.page.resetPassword.sent')}
 						</Callout>
 					</FieldGroup>
@@ -87,7 +88,7 @@ export const ResetPasswordForm = ({ setLoginRoute }: ResetPasswordFormProps) => 
 			</FormContainer>
 			<FormFooter>
 				<ButtonGroup>
-					<Button type='submit' loading={isSubmitting} primary>
+					<Button type='submit' loading={isSubmitting} variant='primary'>
 						{t('registration.page.resetPassword.sendInstructions')}
 					</Button>
 				</ButtonGroup>

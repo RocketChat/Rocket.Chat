@@ -4,14 +4,12 @@ import { setStorageBackend } from './storage';
 export const FORGET_SESSION_SETTING_ID = 'Accounts_ForgetUserSessionOnWindowClose';
 
 declare global {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Window {
 		[FORGET_SESSION_SETTING_ID]?: boolean;
 	}
 }
 
 declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface DDPSDK {
 		storage: {
 			changeStorageBackend: () => void;

@@ -1,8 +1,7 @@
-import type { RefAttributes } from 'react';
+import type { ElementProps } from '../../types/ElementProps';
+import { Box } from '../Box';
 
-import { Box, type BoxProps } from '../Box';
-
-export type InputBoxAddonProps = Omit<BoxProps, 'ref'> & RefAttributes<HTMLSpanElement>;
+export type InputBoxAddonProps = ElementProps<HTMLSpanElement>;
 
 /**
  * An addon for the input box.

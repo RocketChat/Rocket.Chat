@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import ChatContent from './ChatContent';
 import ChatFooter from './ChatFooter';
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 import { useChatEffects } from './useChatEffects';
 import { useChatSubscriptions } from './useChatSubscriptions';
 import { useStableCallback } from './useStableCallback';

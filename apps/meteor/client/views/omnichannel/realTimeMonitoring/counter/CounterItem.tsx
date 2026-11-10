@@ -1,4 +1,4 @@
-import { Box } from '@rocket.chat/fuselage';
+import { Box, Text } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 
 const CounterItem = ({
@@ -16,7 +16,7 @@ const CounterItem = ({
 		<Box fontScale='h4' textTransform='uppercase' color='hint' textAlign='center' paddingInline={8}>
 			{title}
 		</Box>
-		<Box fontScale='h2'>{count}</Box>
+		<Text fontScale='h2'>{count}</Text>
 	</Box>
 );
 

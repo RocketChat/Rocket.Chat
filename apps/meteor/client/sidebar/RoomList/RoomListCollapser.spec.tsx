@@ -7,7 +7,8 @@ import type { ReactNode } from 'react';
 import RoomListCollapser from './RoomListCollapser';
 import type { SidebarRoomListGroup } from '../hooks/useRoomList';
 
-jest.mock('../../hooks/useIsEnterprise', () => ({
+jest.mock('@rocket.chat/ui-client', () => ({
+	...jest.requireActual('@rocket.chat/ui-client'),
 	useIsEnterprise: () => ({ data: { isEnterprise: true } }),
 }));
 

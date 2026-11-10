@@ -80,6 +80,6 @@ const samlEndpoints = API.v1.post(
 export type SAMLEndpoints = ExtractRoutesFromAPI<typeof samlEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface, @typescript-eslint/no-empty-object-type
+	// oxlint-disable-next-line @typescript-eslint/no-empty-interface, @typescript-eslint/no-empty-object-type
 	interface Endpoints extends SAMLEndpoints {}
 }
