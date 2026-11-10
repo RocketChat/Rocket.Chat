@@ -17,10 +17,7 @@ describe('[Story play functions]', () => {
 		flag.IS_REACT_ACT_ENVIRONMENT = true;
 	});
 
-	afterEach(() => {
-		document.body.innerHTML = '';
-	});
-
+	// No DOM wipe between stories: run() unmounts the previous story's React tree before it removes the container
 	it('finds the specs', () => {
 		expect(specs.length).toBeGreaterThan(0);
 	});
