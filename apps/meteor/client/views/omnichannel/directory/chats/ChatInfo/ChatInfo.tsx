@@ -97,7 +97,7 @@ function ChatInfo({ id, route }: ChatInfoProps) {
 
 	return (
 		<>
-			<ContextualbarScrollableContent padding={24} gap={0}>
+			<ContextualbarScrollableContent padding='x24' gap={0}>
 				{source && <SourceField room={room as unknown as IOmnichannelRoom} />}
 				{room && v && <ContactField contact={v as IVisitor} room={room as unknown as IOmnichannelRoom} />}
 				{visitorId && <VisitorClientInfo uid={visitorId} />}
