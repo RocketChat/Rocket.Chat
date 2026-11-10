@@ -17,8 +17,8 @@ export type ItemDropSlotProps = {
 /**
  * The row-high place a dragged row can land in an empty group. Its children are the hint, such as "Drop here".
  */
-const ItemDropSlot = ({ is: Tag = 'div', dropTarget, className, ...props }: ItemDropSlotProps) => (
-	<Tag {...props} className={cx(cxx('rcx-item-drop-slot')({ 'drop-target': dropTarget ?? false }), className)} />
+const ItemDropSlot = ({ is: Component = 'div', dropTarget, className, ...props }: ItemDropSlotProps) => (
+	<Component {...props} className={cx(cxx('rcx-item-drop-slot')({ 'drop-target': dropTarget ?? false }), className)} />
 );
 
 export default ItemDropSlot;
