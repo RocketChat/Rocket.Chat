@@ -23,7 +23,6 @@ import { useId } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 
 import WorkspaceRegistrationModal from '../RegisterWorkspaceModal';
-import RegistrationSmallPrint from '../layout/RegistrationSmallPrint';
 
 type Props = {
 	email: string;
@@ -98,18 +97,18 @@ const RegisterWorkspaceSetupStepOneModal = ({
 							</FieldRow>
 						</Field>
 					</Stack>
-					<RegistrationSmallPrint>
+					<Text fontScale='c1'>
 						<Text is='p'>
 							<strong>{t('RegisterWorkspace_Setup_Have_Account_Title')}</strong>
 						</Text>
 						<Text is='p'>{t('RegisterWorkspace_Setup_Have_Account_Subtitle')}</Text>
-					</RegistrationSmallPrint>
-					<RegistrationSmallPrint>
+					</Text>
+					<Text fontScale='c1'>
 						<Text is='p'>
 							<strong>{t('RegisterWorkspace_Setup_No_Account_Title')}</strong>
 						</Text>
 						<Text is='p'>{t('RegisterWorkspace_Setup_No_Account_Subtitle')}</Text>
-					</RegistrationSmallPrint>
+					</Text>
 					<Field>
 						<FieldRow>
 							<Stack direction='row' align='center'>

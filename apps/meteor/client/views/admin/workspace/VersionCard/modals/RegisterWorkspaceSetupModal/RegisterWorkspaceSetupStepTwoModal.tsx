@@ -19,8 +19,6 @@ import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 
-import RegistrationSmallPrint from '../layout/RegistrationSmallPrint';
-
 type Props = {
 	email: string;
 	step: number;
@@ -105,7 +103,7 @@ const RegisterWorkspaceSetupStepTwoModal = ({ email, step, setStep, onClose, int
 				</Stack>
 			</ModalContent>
 			<ModalFooter justify='space-between'>
-				<RegistrationSmallPrint>
+				<Text fontScale='c1'>
 					<Stack direction='row'>
 						<Trans i18nKey='RegisterWorkspace_Didnt_Receive_Email'>
 							Didn't receive email?{' '}
@@ -118,7 +116,7 @@ const RegisterWorkspaceSetupStepTwoModal = ({ email, step, setStep, onClose, int
 							</Box>
 						</Trans>
 					</Stack>
-				</RegistrationSmallPrint>
+				</Text>
 			</ModalFooter>
 		</Modal>
 	);
