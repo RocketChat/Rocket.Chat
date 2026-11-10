@@ -46,7 +46,7 @@ const AddPersonalAccessTokenForm = ({ onCreate }: AddPersonalAccessTokenFormProp
 			<FieldGroup>
 				<Field>
 					<FieldRow>
-						<Stack direction='row' align='center' gap={4} grow>
+						<Stack is='span' direction='row' align='center' gap='x4' grow>
 							<Controller
 								name='name'
 								control={control}
