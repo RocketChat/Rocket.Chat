@@ -98,6 +98,10 @@ export type ActionAttributes<TElement extends Element> = CommonAttributes &
 	WebAttributes<TElement> &
 	WebPressHandlers<TElement>;
 
+/** What a part that is always a `button` forwards: its action attributes and its form name, value and disabled state. */
+export type ButtonActionAttributes = ActionAttributes<HTMLButtonElement> &
+	Pick<ButtonHTMLAttributes<HTMLButtonElement>, 'name' | 'value' | 'disabled'>;
+
 /**
  * What a part rendered as a `button` or, through `is`, as an `a` forwards besides its action attributes; each reaches
  * only the element it belongs to. One flat type rather than a union per tag, so the callers' `Omit<…Props, …>` keeps
