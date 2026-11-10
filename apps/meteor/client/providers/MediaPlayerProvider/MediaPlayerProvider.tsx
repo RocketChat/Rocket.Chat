@@ -31,7 +31,7 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 
 	const trackRef = useRef<PersistentAudioTrack | null>(null);
 	trackRef.current = track;
-	// Not every browser honors a seek made before the metadata is loaded, so a new track's start time waits for it.
+	// Not every browser honors a seek made before the metadata is loaded, so such a seek waits for it.
 	const pendingStartTimeRef = useRef(0);
 
 	// Reuse the message player's signed-URL recovery on the shared element.
@@ -75,6 +75,10 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 	const seek = useStableCallback((time: number) => {
 		const audio = audioRef.current;
 		if (!audio) {
+			return;
+		}
+		if (audio.readyState === HTMLMediaElement.HAVE_NOTHING) {
+			pendingStartTimeRef.current = Math.max(0, time);
 			return;
 		}
 		audio.currentTime = Math.max(0, Math.min(time, audio.duration || time));
