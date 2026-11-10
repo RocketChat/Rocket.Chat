@@ -102,7 +102,7 @@ export const SidebarItems: StoryObj = {
 	render: () => (
 		<Box width='x280'>
 			<Sidebar>
-				<List rows={200} row={(index) => <GenericCondensedItem key={index} i={index} />} />
+				<List rows={200} row={(index, active) => <GenericCondensedItem key={index} i={index} selected={index === active} />} />
 			</Sidebar>
 		</Box>
 	),

@@ -57,9 +57,9 @@ export const MenuTemplate = () => (
 	</Menu>
 );
 
-export const GenericCondensedItem = ({ i = 0 }: { i: number }) => (
+export const GenericCondensedItem = ({ i = 0, selected = i === 2 }: { i: number; selected?: boolean }) => (
 	<SidebarListItem>
-		<SidebarItem selected={i === 2} href='#'>
+		<SidebarItem selected={selected} href='#'>
 			<SidebarItemAvatarWrapper>
 				<Avatar size='x20' url={leterAvatarUrls[i % 4]} alt='avatar' />
 			</SidebarItemAvatarWrapper>
