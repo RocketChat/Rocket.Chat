@@ -93,21 +93,18 @@ export const useReloadOnError = (url: string, type: 'video' | 'audio') => {
 			cleanup = renderBufferingUIFallback(node as HTMLVideoElement);
 		}
 
+		const wasPlaying = !node.paused;
+		const { currentTime } = node;
+
 		try {
 			const { redirectUrl: newUrl, expires: newExpiresAt } = await getRedirectURLInfo(url);
 			setExpiresAt(newExpiresAt);
-
-			const wasPlaying = !node.paused;
-			const hasPosition = node.readyState > HTMLMediaElement.HAVE_NOTHING;
-			const restoreTime = hasPosition ? node.currentTime : undefined;
 			node.src = newUrl || url;
 
 			const onCanPlay = async () => {
 				node.removeEventListener('canplay', onCanPlay);
 
-				if (restoreTime !== undefined) {
-					node.currentTime = restoreTime;
-				}
+				node.currentTime = currentTime;
 				if (wasPlaying) {
 					try {
 						await node.play();

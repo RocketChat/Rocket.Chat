@@ -7,11 +7,10 @@ interface ITestMediaElement extends HTMLAudioElement {
 	_emit: (type: string) => void;
 }
 
-function makeMediaEl(readyState: number = HTMLMediaElement.HAVE_METADATA): ITestMediaElement {
+function makeMediaEl(): ITestMediaElement {
 	const el = document.createElement('audio') as ITestMediaElement;
 	(el as any).play = jest.fn().mockResolvedValue(undefined);
 	Object.defineProperty(el, 'paused', { value: false, configurable: true });
-	Object.defineProperty(el, 'readyState', { value: readyState, configurable: true });
 	el._emit = (type: string) => el.dispatchEvent(new Event(type));
 	return el;
 }
@@ -74,31 +73,6 @@ describe('useReloadOnError', () => {
 		expect(loadSpy).toHaveBeenCalled();
 		expect(media.currentTime).toBe(12);
 		expect((media as any).play).toHaveBeenCalled();
-	});
-
-	it('keeps a position set on loadedmetadata when the media failed before loading any metadata', async () => {
-		const { result } = renderHook(() => useReloadOnError('/sampleurl?token=abc', 'audio'));
-
-		const media = makeMediaEl(HTMLMediaElement.HAVE_NOTHING);
-
-		act(() => {
-			result.current.mediaRef(media);
-		});
-
-		await act(async () => {
-			media._emit('error');
-		});
-
-		media.addEventListener('loadedmetadata', () => {
-			media.currentTime = 42;
-		});
-
-		await act(async () => {
-			media._emit('loadedmetadata');
-			media._emit('canplay');
-		});
-
-		expect(media.currentTime).toBe(42);
 	});
 
 	it('refreshes media src on stalled and preserves playback position', async () => {
