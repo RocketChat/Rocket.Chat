@@ -1,12 +1,12 @@
-import { Box, Field, FieldLabel, FieldRow, ToggleSwitch } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, Stack, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useUser } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, ChangeEvent } from 'react';
+import type { ChangeEvent } from 'react';
 import { useCallback, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useEndpointMutation } from '../../../hooks/useEndpointMutation';
 
-const TwoFactorEmail = (props: ComponentProps<typeof Box>) => {
+const TwoFactorEmail = () => {
 	const { t } = useTranslation();
 	const user = useUser();
 	const emailId = useId();
@@ -38,14 +38,14 @@ const TwoFactorEmail = (props: ComponentProps<typeof Box>) => {
 	);
 
 	return (
-		<Box display='flex' flexDirection='column' alignItems='flex-start' marginBlockStart={16} paddingBlockEnd={8} {...props}>
+		<Stack align='start'>
 			<Field>
 				<FieldRow>
 					<FieldLabel htmlFor={emailId}>{t('Two-factor_authentication_email')}</FieldLabel>
 					<ToggleSwitch id={emailId} checked={isEnabled} onChange={handleEnable} />
 				</FieldRow>
 			</Field>
-		</Box>
+		</Stack>
 	);
 };
 
