@@ -12,7 +12,7 @@ const { values: opts } = parseArgs({ options: { check: { type: 'string' }, write
 
 const pkg = join(import.meta.dirname, '../..');
 const files = readdirSync(join(pkg, 'src/components'), { recursive: true })
-	.filter((f) => /\.styles\.s?css$/.test(f))
+	.filter((f) => /\.s?css$/.test(f))
 	.map((f) => join('src/components', f))
 	.sort();
 
@@ -30,7 +30,7 @@ const count = (file) => {
 			if (/\[class\]|(\.[\w-]+)\1(?![\w-])|:(is|where)\(/.test(node.selector)) c.specificityBumps++;
 		} else if (node.type === 'decl') {
 			if (node.important) c.important++;
-			if (/^margin/.test(node.prop) && /(^|[\s(,*])-[\d.$]/.test(node.value)) c.negativeMargins++;
+			if (/^margin/.test(node.prop) && /(^|[\s(,*])-[^\s-]/.test(node.value)) c.negativeMargins++;
 			if (node.prop === 'display' && node.value === 'contents') c.displayContents++;
 		}
 	});
