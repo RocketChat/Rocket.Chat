@@ -66,3 +66,20 @@ it('should close the modal without running the action on cancel', async () => {
 	expect(dispatch).not.toHaveBeenCalled();
 	await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
 });
+
+it('should run the action only once when confirm is clicked repeatedly while pending', async () => {
+	const { promise, resolve } = Promise.withResolvers<void>();
+	const action = jest.fn(() => promise);
+	const { dispatch } = renderConfirmAction(action);
+
+	const confirm = await screen.findByRole('button', { name: 'Delete' });
+	await userEvent.click(confirm);
+	await userEvent.click(confirm);
+
+	expect(action).toHaveBeenCalledTimes(1);
+
+	await act(async () => resolve());
+
+	expect(dispatch).toHaveBeenCalledTimes(1);
+	await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+});

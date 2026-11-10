@@ -1,9 +1,28 @@
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import GenericModal from '../components/Modal/GenericModal';
+
+type ConfirmActionModalProps = {
+	confirmText: ReactNode;
+	onConfirm: () => Promise<void>;
+	onCancel: () => void;
+};
+
+/** Runs the confirmation at most once, showing it as pending until it settles. */
+const ConfirmActionModal = ({ confirmText, onConfirm, onCancel }: ConfirmActionModalProps) => {
+	const [pending, setPending] = useState(false);
+
+	const handleConfirm = async () => {
+		setPending(true);
+		await onConfirm();
+	};
+
+	return <GenericModal variant='danger' onConfirm={handleConfirm} onCancel={onCancel} confirmText={confirmText} confirmLoading={pending} />;
+};
 
 type UseConfirmActionOptions = {
 	successMessage: string;
@@ -31,8 +50,6 @@ export const useConfirmAction = <TArgs extends unknown[]>(
 			}
 		};
 
-		setModal(
-			<GenericModal variant='danger' onConfirm={handleConfirm} onCancel={() => setModal(null)} confirmText={confirmText ?? t('Delete')} />,
-		);
+		setModal(<ConfirmActionModal confirmText={confirmText ?? t('Delete')} onConfirm={handleConfirm} onCancel={() => setModal(null)} />);
 	});
 };
