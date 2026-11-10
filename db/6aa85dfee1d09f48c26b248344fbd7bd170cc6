@@ -1,0 +1,25 @@
+.changeset/cas-ticket-while-disabled.md
+  s_f15b4a6b3cffae::t_a5c1abba8fc3e6 1,3-5
+  s_f15b4a6b3cffae::t_4add077d406d5f 2
+apps/meteor/server/lib/cas/middleware.test.ts
+  s_f15b4a6b3cffae::t_72bc04538a3644 1-62,73-78,84,87-127
+  s_f15b4a6b3cffae::t_0e691d5be4cc8a 79-83,85-86
+apps/meteor/server/lib/cas/middleware.ts
+  s_f15b4a6b3cffae::t_ef8f86f76c4efe 26
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "db6aa85dfee1d09f48c26b248344fbd7bd170cc6",
+  "prompts": {},
+  "sessions": {
+    "s_f15b4a6b3cffae": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3fc8d543-a858-49f1-bf51-ceccf6d6ad1a",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
