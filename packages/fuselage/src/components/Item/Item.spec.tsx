@@ -401,6 +401,38 @@ describe('ItemDescription', () => {
 	});
 });
 
+describe('ItemTitle and ItemDescription text', () => {
+	it('truncate by default and wrap when `truncate` is false', () => {
+		render(
+			<Item>
+				<ItemContent>
+					<ItemTitle>Name</ItemTitle>
+					<ItemDescription>Status</ItemDescription>
+					<ItemTitle truncate={false}>Long name</ItemTitle>
+					<ItemDescription truncate={false}>Long status</ItemDescription>
+				</ItemContent>
+			</Item>,
+		);
+
+		expect(screen.getByText('Name')).not.toHaveClass('rcx-item__title--wrap');
+		expect(screen.getByText('Status')).not.toHaveClass('rcx-item__description--wrap');
+		expect(screen.getByText('Long name')).toHaveClass('rcx-item__title--wrap');
+		expect(screen.getByText('Long status')).toHaveClass('rcx-item__description--wrap');
+	});
+
+	it('uses the title text size for a `large` description', () => {
+		render(
+			<>
+				<ItemDescription>Away</ItemDescription>
+				<ItemDescription size='large'>Busy</ItemDescription>
+			</>,
+		);
+
+		expect(screen.getByText('Away')).not.toHaveClass('rcx-item__description--large');
+		expect(screen.getByText('Busy')).toHaveClass('rcx-item__description--large');
+	});
+});
+
 describe('ItemMeta', () => {
 	it('does not truncate by default', () => {
 		render(<ItemMeta>10:42</ItemMeta>);

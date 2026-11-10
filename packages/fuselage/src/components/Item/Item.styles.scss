@@ -240,6 +240,10 @@ $item-group-narrow-width: 320px;
 			overflow-wrap: anywhere;
 		}
 
+		&--large {
+			@include use-font-scale(p2);
+		}
+
 		&--inline {
 			display: inline;
 

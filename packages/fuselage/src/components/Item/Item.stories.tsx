@@ -358,6 +358,29 @@ export const Heights: Story = {
 	),
 };
 
+export const DescriptionSizes: Story = {
+	render: () => (
+		<Box display='flex' flexDirection='column'>
+			{(['default', 'large'] as const).map((size) => (
+				<div key={size}>
+					<Caption>{size}</Caption>
+					<ItemGroup is='ul' aria-label={`${size} description`}>
+						<Item is='li'>
+							<ItemMedia>
+								<Avatar size='x36' url={leterAvatarUrls[1]} alt='' />
+							</ItemMedia>
+							<ItemContent>
+								<ItemTitle>Michael</ItemTitle>
+								<ItemDescription size={size}>Away</ItemDescription>
+							</ItemContent>
+						</Item>
+					</ItemGroup>
+				</div>
+			))}
+		</Box>
+	),
+};
+
 export const Insets: Story = {
 	render: () => (
 		<Box display='flex' flexDirection='column' width='x400'>

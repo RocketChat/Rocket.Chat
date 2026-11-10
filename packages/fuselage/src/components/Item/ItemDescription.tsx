@@ -13,16 +13,20 @@ export type ItemDescriptionProps = {
 	 * Set to `false` to wrap long text instead of ending it in an ellipsis.
 	 */
 	truncate?: boolean;
-} & Omit<AllHTMLAttributes<HTMLElement>, 'is'> &
+	/**
+	 * `large` uses the title's text size, for a status or any line that should read as much as the title.
+	 */
+	size?: 'default' | 'large';
+} & Omit<AllHTMLAttributes<HTMLElement>, 'is' | 'size'> &
 	RefAttributes<HTMLElement>;
 
 /**
  * The secondary line of an `Item`, such as a last message preview or a username.
  */
-const ItemDescription = ({ is, inline, truncate = true, className, ...props }: ItemDescriptionProps) => {
+const ItemDescription = ({ is, inline, truncate = true, size = 'default', className, ...props }: ItemDescriptionProps) => {
 	const Tag = is ?? (inline ? 'span' : 'div');
 
-	return <Tag {...props} className={cx(cxx('rcx-item__description')({ inline: !!inline, wrap: !truncate }), className)} />;
+	return <Tag {...props} className={cx(cxx('rcx-item__description')({ inline: !!inline, wrap: !truncate, large: size === 'large' }), className)} />;
 };
 
 export default ItemDescription;
