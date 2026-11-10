@@ -6,7 +6,7 @@ export type CardWidgetContainerProps = {
 };
 
 const CardWidgetContainer = ({ children }: CardWidgetContainerProps) => {
-	return <Stack gap={8}>{children}</Stack>;
+	return <Stack gap='x8'>{children}</Stack>;
 };
 
 export default CardWidgetContainer;

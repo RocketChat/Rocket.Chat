@@ -7,7 +7,7 @@ import CustomSoundsTable from './CustomSoundsTable';
 
 export default {
 	component: CustomSoundsTable,
-	decorators: [(fn) => <PageContent gap={16}>{fn()}</PageContent>],
+	decorators: [(fn) => <PageContent gap='x16'>{fn()}</PageContent>],
 } satisfies Meta<typeof CustomSoundsTable>;
 
 const Template: StoryFn<typeof CustomSoundsTable> = (args) => {

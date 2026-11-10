@@ -53,7 +53,7 @@ const PermissionsPage = ({ isEnterprise }: PermissionsPageProps) => {
 					selected={type}
 					onSelect={setType}
 				/>
-				<PageContent marginBlockStart={8} gap={8}>
+				<PageContent marginBlockStart='x8' gap='x8'>
 					<PermissionsTable
 						roleList={roleList}
 						permissions={permissions}

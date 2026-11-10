@@ -71,7 +71,7 @@ const AgentInfo = ({ uid }: AgentInfoProps) => {
 				<Box marginBlockStart='x20'>
 					<UserInfoUsername username={username} status={<UserStatus status={userStatus} />} />
 				</Box>
-				<Stack gap={8}>
+				<Stack gap='x8'>
 					{statusLivechat && (
 						<>
 							<InfoPanelLabel>{t('Livechat_status')}</InfoPanelLabel>
