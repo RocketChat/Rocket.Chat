@@ -17,6 +17,9 @@ export type Forwarded = {
 
 const ATTRIBUTES = ['id', 'title', 'data-qa', 'data-anything', 'aria-label'] as const;
 
+// React does not listen to focus, blur, mouseenter or mouseleave: it derives these props from the bubbling events
+const REACT_EVENTS: Record<string, string> = { focus: 'focusIn', blur: 'focusOut', mouseEnter: 'mouseOver', mouseLeave: 'mouseOut' };
+
 const callCount = (handler: Spy) => (handler as any).mock.calls.length as number;
 
 /**
@@ -49,8 +52,8 @@ export const expectForwards = async (canvas: HTMLElement, part: string | HTMLEle
 	}
 
 	for (const [name, handler] of Object.entries(expected.handlers ?? {})) {
-		const event = name.replace(/^on/, '').replace(/^./, (letter) => letter.toLowerCase()) as keyof typeof fireEvent;
-		const fire = fireEvent[event];
+		const domEvent = name.replace(/^on/, '').replace(/^./, (letter) => letter.toLowerCase());
+		const fire = fireEvent[(REACT_EVENTS[domEvent] ?? domEvent) as keyof typeof fireEvent];
 		if (typeof fire !== 'function') throw new Error(`Cannot fire ${name}`);
 		const before = callCount(handler);
 		fire(element);

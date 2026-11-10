@@ -21,7 +21,7 @@ export const expectKeyboardActivation = async (element: HTMLElement, handler: Sp
 	await expect(callCount(handler)).toBe(before + 2);
 };
 
-/** Tab walks exactly `elements`, in this order, starting from the first. */
+/** Tab moves through `elements` in this order, starting from the first; what follows the last one is not checked. */
 export const expectTabOrder = async (elements: HTMLElement[]) => {
 	const user = userEvent.setup();
 	await focus(elements[0]);
@@ -31,32 +31,34 @@ export const expectTabOrder = async (elements: HTMLElement[]) => {
 	}
 };
 
-const rowOf = (element: Element | null, list: HTMLElement) => {
-	const row = element?.closest('[data-index], [role="listitem"], li');
+const DEFAULT_ROW = '[data-index], [role="listitem"], li, .rcx-item, .rcx-item-group-header';
+
+const rowOf = (element: Element | null, list: HTMLElement, rowSelector: string) => {
+	const row = element?.closest(rowSelector);
 	return row && list.contains(row) ? row : null;
 };
 
 /**
  * Composite list, as docs/frontend/list-keyboard-navigation.md describes it: Down and Up move between rows, Tab walks the
  * focused row and then leaves the list without entering the next row. Needs at least two rows; `firstTarget` is the focus
- * target of the first row.
+ * target of the first row. `rowSelector` matches a row when the list's rows are none of Fuselage's own.
  */
-export const expectCompositeList = async (list: HTMLElement, firstTarget: HTMLElement) => {
+export const expectCompositeList = async (list: HTMLElement, firstTarget: HTMLElement, rowSelector = DEFAULT_ROW) => {
 	const user = userEvent.setup();
 	await focus(firstTarget);
 
 	await user.keyboard('{ArrowDown}');
 	const second = document.activeElement as HTMLElement;
 	await expect(list).toContainElement(second);
-	await expect(rowOf(second, list)).not.toBe(rowOf(firstTarget, list));
+	await expect(rowOf(second, list, rowSelector)).not.toBe(rowOf(firstTarget, list, rowSelector));
 
 	await user.keyboard('{ArrowUp}');
 	await expect(firstTarget).toHaveFocus();
 
-	const row = rowOf(firstTarget, list);
+	const row = rowOf(firstTarget, list, rowSelector);
 	for (let presses = 0; presses < 20 && list.contains(document.activeElement); presses++) {
 		await user.tab();
-		if (list.contains(document.activeElement)) await expect(rowOf(document.activeElement, list)).toBe(row);
+		if (list.contains(document.activeElement)) await expect(rowOf(document.activeElement, list, rowSelector)).toBe(row);
 	}
 	await expect(list).not.toContainElement(document.activeElement as HTMLElement);
 };
