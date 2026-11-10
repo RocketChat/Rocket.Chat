@@ -38,6 +38,7 @@
 		"start": "vite build --watch --mode development",
 		"storybook": "storybook dev -p 6006",
 		"test": "jest",
+		"test:stories": "node scripts/test-stories.mjs",
 		"testunit": "jest",
 		"typecheck": "tsc --noEmit",
 		"verify:box-usage": "node scripts/verify/box-usage.mjs",
