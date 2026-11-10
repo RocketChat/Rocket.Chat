@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Chevron, Palette } from '@rocket.chat/fuselage';
+import { Box, Chevron, Palette, Stack } from '@rocket.chat/fuselage';
 import type { CSSProperties, ReactNode } from 'react';
 
 export type CollapseButtonProps = {
@@ -33,7 +33,9 @@ export const CollapseButton = ({ regionId, children, expanded, onClick }: Collap
 				focusable
 				color={Palette.text['font-default']}
 			>
-				<Chevron size={32} down={!expanded} up={expanded} style={{ alignSelf: 'flex-start' }} />
+				<Stack is='span'>
+					<Chevron size={32} down={!expanded} up={expanded} />
+				</Stack>
 				<Box paddingBlock='x4' paddingInline='x4' fontWeight='700'>
 					{children}
 				</Box>
