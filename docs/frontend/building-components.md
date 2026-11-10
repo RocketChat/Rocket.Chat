@@ -13,6 +13,8 @@ A component that starts in one application and turns out useful in others (as `V
 
 How screens use components, and why they compose named containers instead of `Box`, is in [Layout in the app](layout.md).
 
+Moving a Fuselage component to Tamagui follows [Fuselage components on Tamagui](fuselage-tamagui-components.md).
+
 ## Layout containers
 
 A layout container arranges other components: `Page`, `FieldGroup`, `Stack`, `ChatsFilterBar`. It is the one place where `Box` and raw layout belong, so screens don't need them.
