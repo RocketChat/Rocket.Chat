@@ -24,10 +24,10 @@ const HeroLayout = ({
 					textAlign='center'
 					width='100%'
 					maxWidth={576}
-					gap={32}
-					paddingBlockStart={32}
+					gap='x32'
+					paddingBlockStart='x32'
 					paddingBlockEnd={64}
-					paddingInline={16}
+					paddingInline='x16'
 				>
 					<LayoutLogo />
 					{children}

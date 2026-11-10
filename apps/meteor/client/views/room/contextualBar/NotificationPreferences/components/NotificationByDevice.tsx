@@ -14,14 +14,14 @@ const NotificationByDevice = ({ device, icon, children }: NotificationByDevicePr
 		title={
 			<Box display='flex' alignItems='center'>
 				<Icon name={icon} size='x18' />
-				<Box fontScale='p2m' marginInline={16}>
+				<Box fontScale='p2m' marginInline='x16'>
 					{device}
 				</Box>
 			</Box>
 		}
 	>
 		<FieldGroup>
-			<Stack gap={16}>{children}</Stack>
+			<Stack gap='x16'>{children}</Stack>
 		</FieldGroup>
 	</AccordionItem>
 );
