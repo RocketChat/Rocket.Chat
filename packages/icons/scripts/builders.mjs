@@ -35,17 +35,11 @@ const fromIconDescriptorsToCharacters = (icons) =>
 		.then((glyphsMapping) => icons.filter(({ name }) => !!glyphsMapping[name]).map(({ name }) => [name, glyphsMapping[name].start]))
 		.then(Object.fromEntries);
 
-export const buildCommonJsModule = (icons) =>
-	Promise.resolve(icons)
-		.then(fromIconDescriptorsToCharacters)
-		.then((characters) => `module.exports = ${encodeJson(characters)};`)
-		.then(writeSource('dist/index.js'));
-
 export const buildEsmModule = (icons) =>
 	Promise.resolve(icons)
 		.then(fromIconDescriptorsToCharacters)
 		.then((characters) => `export default ${encodeJson(characters)};`)
-		.then(writeSource('dist/index.mjs'));
+		.then(writeSource('dist/index.js'));
 
 export const buildFont = (icons) =>
 	Promise.resolve(icons)

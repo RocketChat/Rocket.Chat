@@ -1,9 +1,8 @@
 import type { IOmnichannelServiceLevelAgreements, Serialized } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Field, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
+import { useHasLicenseModule } from '@rocket.chat/ui-client';
 import { useId, useMemo } from 'react';
-
-import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 
 export type SlaPoliciesSelectProps = {
 	value: string;

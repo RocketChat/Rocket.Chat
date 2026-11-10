@@ -1,4 +1,4 @@
-import { Box, Button, Text } from '@rocket.chat/fuselage';
+import { Button, Stack, Text } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { GenericTableCell, GenericTableRow, useFormatDateAndTime } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
@@ -25,7 +25,7 @@ const DeviceManagementAccountRow = ({ _id, deviceName, deviceType = 'browser', d
 	return (
 		<GenericTableRow key={_id} aria-label={_id}>
 			<GenericTableCell>
-				<Box display='flex' alignItems='center'>
+				<Stack direction='row' align='center'>
 					<DeviceIcon deviceType={deviceType} />
 					{deviceName && (
 						<Text truncate>
@@ -33,7 +33,7 @@ const DeviceManagementAccountRow = ({ _id, deviceName, deviceType = 'browser', d
 							{current && ` (${t('current')})`}
 						</Text>
 					)}
-				</Box>
+				</Stack>
 			</GenericTableCell>
 			<GenericTableCell>{deviceOSName || ''}</GenericTableCell>
 			<GenericTableCell>{formatDateAndTime(loginAt)}</GenericTableCell>

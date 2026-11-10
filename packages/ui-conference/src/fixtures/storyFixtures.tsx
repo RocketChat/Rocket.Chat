@@ -95,8 +95,12 @@ export const buildConferenceContext = ({
 	actions: {
 		join: action('join'),
 		leave: action('leave'),
-		ringMember: async (memberId) => action('ringMember')(memberId),
-		shareChat: async (mode) => action('shareChat')(mode),
+		ringMember: async (memberId) => {
+			action('ringMember')(memberId);
+		},
+		shareChat: async (mode) => {
+			action('shareChat')(mode);
+		},
 		addParticipants: async (users, ring) => {
 			action('addParticipants')(users, ring);
 			return { added: users.length };

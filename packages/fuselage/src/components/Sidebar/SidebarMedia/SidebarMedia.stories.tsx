@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import type { Meta, StoryObj } from '@storybook/react';
 
 import { Sidebar, SidebarMedia, SidebarMediaTitle, SidebarMediaController, Box, IconButton } from '../..';
 import { GenericCallItem } from '../helpers';

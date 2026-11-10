@@ -1,5 +1,5 @@
 import type { ComponentType, MouseEventHandler, ReactNode } from 'react';
-import { useLayoutEffect, useMemo, useRef } from 'react';
+import { useId, useLayoutEffect, useMemo, useRef } from 'react';
 
 import { prevent } from '../../helpers/prevent';
 import type { ElementProps } from '../../types/ElementProps';
@@ -20,6 +20,7 @@ export type OptionsProps<TValue extends string | number = string | number, TLabe
 	options: OptionType<TValue, TLabel>[];
 	cursor: number;
 	renderItem?: ComponentType<{
+		id?: string;
 		role?: string;
 		label: TLabel;
 		value: TValue;
@@ -39,7 +40,7 @@ export type OptionsProps<TValue extends string | number = string | number, TLabe
  * An input for selection of options.
  */
 function Options<TValue extends string | number = string | number, TLabel = ReactNode>({
-	maxHeight = 'x144',
+	maxHeight,
 	multiple,
 	renderEmpty: EmptyComponent = OptionsEmpty,
 	options,
@@ -51,20 +52,21 @@ function Options<TValue extends string | number = string | number, TLabel = Reac
 	...props
 }: OptionsProps<TValue, TLabel>) {
 	const liRef = useRef<HTMLElement>(null);
+	const optionIdPrefix = useId();
 
 	useLayoutEffect(() => {
 		if (!liRef.current) {
 			return;
 		}
 		const { current } = liRef;
-		const li = current?.querySelector<HTMLLIElement>('.rcx-option--focus, .rcx-item--focused');
+		const li = current.querySelector<HTMLElement>(`[id="${optionIdPrefix}-${cursor}"]`);
 		if (!li) {
 			return;
 		}
 		if (li.offsetTop + li.clientHeight > current.scrollTop + current.clientHeight || li.offsetTop - li.clientHeight < current.scrollTop) {
 			current.scrollTop = li.offsetTop;
 		}
-	}, [cursor]);
+	}, [cursor, optionIdPrefix]);
 
 	const optionsMemoized = useMemo(
 		() =>
@@ -77,6 +79,7 @@ function Options<TValue extends string | number = string | number, TLabel = Reac
 					default:
 						return (
 							<OptionComponent
+								id={`${optionIdPrefix}-${i}`}
 								role='option'
 								label={label}
 								onMouseDown={(e) => {
@@ -94,7 +97,7 @@ function Options<TValue extends string | number = string | number, TLabel = Reac
 						);
 				}
 			}),
-		[options, cursor, onSelect, OptionComponent],
+		[options, cursor, onSelect, OptionComponent, optionIdPrefix],
 	);
 
 	return (
@@ -103,13 +106,12 @@ function Options<TValue extends string | number = string | number, TLabel = Reac
 				<Scrollable vertical smooth>
 					<Box
 						ref={liRef}
-						borderRadius='medium'
-						backgroundColor='light'
+						rcx-options__list
 						maxHeight={maxHeight}
 						onMouseDown={prevent}
 						onClick={prevent}
 						is='ol'
-						aria-multiselectable={multiple || true}
+						aria-multiselectable={!!multiple}
 						role='listbox'
 						id={id}
 						aria-activedescendant={options?.[cursor]?.[0] ? String(options?.[cursor]?.[0]) : undefined}

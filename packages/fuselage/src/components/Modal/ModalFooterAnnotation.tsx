@@ -3,6 +3,6 @@ import { Box } from '../Box';
 
 export type ModalFooterAnnotationProps = ElementProps<HTMLDivElement>;
 
-const ModalFooterAnnotation = ({ children }: ModalFooterAnnotationProps) => <Box rcx-modal__footer-annotation>{children}</Box>;
+const ModalFooterAnnotation = (props: ModalFooterAnnotationProps) => <Box rcx-modal__footer-annotation {...props} />;
 
 export default ModalFooterAnnotation;

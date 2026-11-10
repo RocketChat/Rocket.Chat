@@ -4,15 +4,14 @@
 // @ts-nocheck
 import { Rooms, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
-import { Match } from 'meteor/check';
 
 import { SlackBridge } from './slackbridge';
 import { i18n } from '../../lib/i18n';
 import { msgStream } from '../../lib/messaging/msgStream';
 import { slashCommands } from '../../lib/utils/slashCommand';
 
-async function SlackBridgeImport({ command, params, message, userId }) {
-	if (command !== 'slackbridge-import' || !Match.test(params, String)) {
+async function SlackBridgeImport({ command, message, userId }) {
+	if (command !== 'slackbridge-import') {
 		return;
 	}
 

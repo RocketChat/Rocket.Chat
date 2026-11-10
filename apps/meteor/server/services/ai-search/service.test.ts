@@ -216,9 +216,27 @@ describe('AISearchService', () => {
 			).to.be.true;
 			expect(
 				Subscriptions.findByUserIdAndRoomIds.calledWith('user-id', ['blocked', 'allowed'], {
-					projection: { rid: 1, status: 1 },
+					projection: { rid: 1, status: 1, name: 1, fname: 1 },
 				}),
 			).to.be.true;
+		});
+
+		it('labels direct message results with the other participant from the user subscription', async () => {
+			Rooms.findByIds.returns(cursor([{ _id: 'allowed', t: 'd' }]));
+			Subscriptions.findByUserIdAndRoomIds.returns(cursor([{ rid: 'allowed', name: 'jane.doe', fname: 'Jane Doe' }]));
+			serverFetch.resolves({
+				ok: true,
+				status: 200,
+				json: async () => ({
+					results: [{ metadata: { room_id: 'allowed', msg_id: 'dm-msg' }, text: 'dm pipeline text', score: 0.39 }],
+				}),
+				text: async () => '',
+			});
+
+			const results = await createService().search({ query: 'fruit', userId: 'user-id', limit: 5 });
+
+			expect(results).to.have.lengthOf(1);
+			expect(results[0].room).to.deep.equal({ _id: 'allowed', t: 'd', name: 'jane.doe', fname: 'Jane Doe' });
 		});
 
 		it('uses explicit searchType keyword when requested', async () => {

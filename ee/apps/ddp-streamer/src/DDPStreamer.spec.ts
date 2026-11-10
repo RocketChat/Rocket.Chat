@@ -260,7 +260,6 @@ describe('DDPStreamer lifecycle handling', () => {
 					'username': 1,
 					'nickname': 1,
 					'emails': 1,
-					'status': 1,
 					'statusDefault': 1,
 					'statusText': 1,
 					'statusConnection': 1,

@@ -97,6 +97,50 @@ describe('Invites', () => {
 		});
 	});
 
+	describe('Permission checks', () => {
+		let user: TestUser<IUser>;
+		let userCredentials: Credentials;
+
+		before(async () => {
+			user = await createUser();
+			userCredentials = await login(user.username, password);
+		});
+
+		after(() => deleteUser(user));
+
+		it('should refuse to create an invite when the user lacks create-invite-links', async () => {
+			const res = await request
+				.post(api('findOrCreateInvite'))
+				.set(userCredentials)
+				.send({
+					rid: 'GENERAL',
+					days: 1,
+					maxUses: 10,
+				})
+				.expect(403);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
+		});
+
+		it('should refuse to list invites when the user lacks create-invite-links', async () => {
+			const res = await request.get(api('listInvites')).set(userCredentials).expect(403);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
+		});
+
+		it('should refuse to remove an invite when the user lacks create-invite-links', async () => {
+			const res = await request
+				.delete(api(`removeInvite/${testInviteID}`))
+				.set(userCredentials)
+				.expect(403);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
+		});
+	});
+
 	describe('POST [/useInviteToken]', () => {
 		it('should fail if not logged in', async () => {
 			const res = await request.post(api('useInviteToken')).expect(401);

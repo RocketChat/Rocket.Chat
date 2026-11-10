@@ -42,7 +42,6 @@ const models = {
 const onEmailReceived = sinon.stub();
 
 const { configureEmailInboxes, inboxes } = proxyquire.noCallThru().load('./EmailInbox', {
-	'meteor/meteor': { Meteor: { startup: sinon.stub() } },
 	'./EmailInbox_Incoming': { onEmailReceived },
 	'./logger': { logger: { info: sinon.stub(), error: sinon.stub() } },
 	'../../email/IMAPInterceptor': { IMAPInterceptor: FakeIMAPInterceptor },

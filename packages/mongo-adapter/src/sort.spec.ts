@@ -1,4 +1,4 @@
-import { createComparatorFromSort } from './sort';
+import { createComparatorFromSort } from './sort.js';
 
 describe('createComparatorFromSort', () => {
 	describe('object specification format', () => {

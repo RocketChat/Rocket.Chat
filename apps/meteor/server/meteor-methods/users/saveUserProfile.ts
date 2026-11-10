@@ -3,7 +3,6 @@ import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IUserPhoneNumber, UserStatus, IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
-import { Match, check } from 'meteor/check';
 import type { UpdateFilter } from 'mongodb';
 
 import { setEmailFunction } from './setEmail';
@@ -52,10 +51,12 @@ async function saveUserProfile(
 		});
 	}
 
+	const username = settings.username || undefined;
+
 	await validateUserEditing(this.userId, {
 		_id: this.userId,
 		email: settings.email,
-		username: settings.username,
+		username,
 		name: settings.realname,
 		password: settings.newPassword,
 		statusText: settings.statusText,
@@ -69,14 +70,9 @@ async function saveUserProfile(
 		});
 	}
 
-	if (settings.realname || settings.username) {
-		if (
-			!(await saveUserIdentity({
-				_id: this.userId,
-				name: settings.realname,
-				username: settings.username,
-			}))
-		) {
+	// An empty name removes the optional display name; a username can be changed but never removed, so an empty one is ignored.
+	if (settings.realname !== undefined || username !== undefined) {
+		if (!(await saveUserIdentity({ _id: this.userId, name: settings.realname, username }))) {
 			throw new ClientSafeError('error-could-not-save-identity', 'Could not save user identity', {
 				method: 'saveUserProfile',
 			});
@@ -242,9 +238,6 @@ export function executeSaveUserProfile(
 	customFields: Record<string, any> = {},
 	...args: unknown[]
 ) {
-	check(settings, Object);
-	check(customFields, Match.Maybe(Object));
-
 	if (
 		(settings.email && user.emails?.length) ||
 		(settings.newPassword && Object.keys(user.services || {}).length && !user.requirePasswordChange)

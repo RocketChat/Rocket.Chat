@@ -22,7 +22,6 @@ import {
 	ReadReceipts,
 	ReadReceiptsArchive,
 } from '@rocket.chat/models';
-import { check } from 'meteor/check';
 
 import { normalizeTransferredByData } from './Helper';
 import { QueueManager } from './QueueManager';
@@ -268,7 +267,6 @@ export async function returnRoomAsInquiry(room: IOmnichannelRoom, departmentId?:
 
 export async function removeOmnichannelRoom(rid: string) {
 	livechatLogger.debug({ msg: 'Deleting room', roomId: rid });
-	check(rid, String);
 	const room = await LivechatRooms.findOneById(rid);
 	if (!room) {
 		throw new ClientSafeError('error-invalid-room', 'Invalid room');

@@ -301,7 +301,7 @@ function setCustomFields(fields: [key: string, value: string, overwrite?: boolea
 function setTheme(theme: StoreState['iframe']['theme']) {
 	if (theme?.position !== 'left' && theme?.position !== 'right') {
 		if (theme?.position) {
-			console.warn(`Error: Position "${theme?.position}" is invalid. It must be "left" or "right"`);
+			console.warn(`Error: Position "${String(theme.position)}" is invalid. It must be "left" or "right"`);
 		}
 
 		delete theme.position;
@@ -405,7 +405,7 @@ function setHiddenSystemMessages(hidden: StoreState['iframe']['hiddenSystemMessa
 
 function initialize(initParams: Partial<InitializeParams>) {
 	for (const initKey in initParams) {
-		if (!initParams.hasOwnProperty(initKey)) {
+		if (!Object.hasOwn(initParams, initKey)) {
 			continue;
 		}
 
@@ -531,7 +531,9 @@ const api: InternalWidgetAPI = {
 	},
 
 	setFullScreenDocumentMobile() {
-		smallScreen && document.body.classList.add('rc-livechat-mobile-full-screen');
+		if (smallScreen) {
+			document.body.classList.add('rc-livechat-mobile-full-screen');
+		}
 	},
 
 	setWidgetPosition,
@@ -655,7 +657,7 @@ function onNewMessage(event: MessageEvent<LivechatMessageEventData<InternalWidge
 
 	const { fn, args } = event.data;
 
-	if (!api.hasOwnProperty(fn)) {
+	if (!Object.hasOwn(api, fn)) {
 		return;
 	}
 
@@ -720,7 +722,7 @@ if (typeof window.RocketChat.url !== 'undefined') {
 	init(window.RocketChat.url);
 }
 
-const queue = window.RocketChat._;
+const queue: (() => void)[] = window.RocketChat._;
 
 window.RocketChat._.push = function (c: () => void) {
 	c.call(window.RocketChat.livechat);

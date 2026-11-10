@@ -188,8 +188,13 @@ const _saveUser = (session?: ClientSession) =>
 			sendPassword = false;
 		}
 
-		handleBio(updater, userData.bio);
-		handleNickname(updater, userData.nickname);
+		if (typeof userData.bio !== 'undefined') {
+			handleBio(updater, userData.bio);
+		}
+
+		if (typeof userData.nickname !== 'undefined') {
+			handleNickname(updater, userData.nickname);
+		}
 
 		if (userData.roles) {
 			updater.set('roles', userData.roles);
@@ -275,7 +280,9 @@ const _saveUser = (session?: ClientSession) =>
 			await saveCustomFields(userData._id, userData.customFields, { _updater: updater, session });
 		}
 
-		await Users.updateFromUpdater({ _id: userData._id }, updater, { session });
+		if (updater.hasChanges()) {
+			await Users.updateFromUpdater({ _id: userData._id }, updater, { session });
+		}
 
 		await onceTransactionCommitedSuccessfully(async () => {
 			if (presenceChanged || deniedByAdminChanged) {
@@ -298,8 +305,13 @@ const _saveUser = (session?: ClientSession) =>
 				if (userData.active !== undefined) {
 					updater.set('active', userData.active);
 				}
-				options.auditStore.setUpdateFilter(updater.getRawUpdateFilter());
-				void options.auditStore.commitAuditEvent();
+				if (userData.username && userData.username !== oldUserData.username) {
+					updater.set('username', userData.username);
+				}
+				if (updater.hasChanges()) {
+					options.auditStore.setUpdateFilter(updater.getRawUpdateFilter());
+					void options.auditStore.commitAuditEvent();
+				}
 			}
 
 			// App IPostUserUpdated event hook

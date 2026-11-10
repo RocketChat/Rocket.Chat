@@ -55,7 +55,6 @@ export const commonServiceStubs = {
 	},
 	'@rocket.chat/random': { Random: { id: () => 'randomId' } },
 	'@rocket.chat/tools': { wrapExceptions: (fn: () => unknown) => fn() },
-	'meteor/meteor': { Meteor: { startup: () => undefined } },
 	'../../../definition/IRoomTypeConfig': { RoomMemberActions: {} },
 	'../../../lib/videoConference/chatAccess': { resolveChatAccessMode: () => undefined },
 	'../../database/readSecondaryPreferred': { readSecondaryPreferred: () => undefined },
@@ -80,6 +79,7 @@ export const commonServiceStubs = {
 		roomCoordinator: { getRoomDirectives: () => ({ allowMemberAction: async () => true, getDiscussionType: () => 'p' }) },
 	},
 	'../../lib/statistics/functions/updateStatsCounter': { updateCounter: () => undefined },
+	'../../lib/utils/getURL': { getWorkspaceURL: () => '' },
 	'../../lib/utils/getUserAvatarURL': { getUserAvatarURL: () => '' },
 	'../../lib/utils/lib/getUserPreference': { getUserPreference: async () => false },
 	'../../lib/videoConfProviders': {

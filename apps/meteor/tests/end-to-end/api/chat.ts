@@ -8,7 +8,8 @@ import type { Response } from 'supertest';
 
 import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials, apiUrl } from '../../data/api-data';
-import { followMessage, sendMessage, sendSimpleMessage, deleteMessage, updateMessage } from '../../data/chat.helper';
+import { followMessage, getMessageById, sendMessage, sendSimpleMessage, deleteMessage, updateMessage } from '../../data/chat.helper';
+import { withDatabase } from '../../data/database.helper';
 import { imgURL } from '../../data/interactions';
 import { mockServerHealthy, mockServerReset, mockServerSet } from '../../data/mock-server.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
@@ -2440,6 +2441,126 @@ describe('[Chat]', () => {
 					});
 			});
 		});
+
+		describe('Edit rules', () => {
+			let author: TestUser<IUser>;
+			let authorCredentials: Credentials;
+			let member: TestUser<IUser>;
+			let memberCredentials: Credentials;
+			let owner: TestUser<IUser>;
+			let ownerCredentials: Credentials;
+			let room: IRoom;
+			let msgId: IMessage['_id'];
+
+			const edit = (userCredentials: Credentials, text: string) =>
+				request.post(api('chat.update')).set(userCredentials).send({ roomId: room._id, msgId, text });
+
+			const storedText = async () => (await getMessageById({ msgId })).msg;
+
+			before(async () => {
+				[author, member, owner] = await Promise.all([createUser(), createUser(), createUser()]);
+				[authorCredentials, memberCredentials, ownerCredentials] = await Promise.all([
+					login(author.username, password),
+					login(member.username, password),
+					login(owner.username, password),
+				]);
+				room = (
+					await createRoom({
+						type: 'c',
+						name: `chat.edit-rules-${Date.now()}`,
+						members: [author.username, member.username, owner.username],
+					})
+				).body.channel;
+				await request.post(api('channels.addOwner')).set(credentials).send({ roomId: room._id, userId: owner._id }).expect(200);
+			});
+
+			beforeEach(async () => {
+				msgId = (await sendMessage({ message: { rid: room._id, msg: 'original' }, requestCredentials: authorCredentials })).body.message
+					._id;
+			});
+
+			after(() => Promise.all([deleteRoom({ type: 'c', roomId: room._id }), deleteUser(author), deleteUser(member), deleteUser(owner)]));
+
+			it('should let the author edit their own message', async () => {
+				await edit(authorCredentials, 'edited by the author').expect(200);
+
+				expect(await storedText()).to.equal('edited by the author');
+			});
+
+			it('should refuse a member who edits the message of another user, and keep the text', async () => {
+				const res = await edit(memberCredentials, 'edited by a member').expect(400);
+
+				expect(res.body).to.have.property('errorType', 'error-action-not-allowed');
+				expect(await storedText()).to.equal('original');
+			});
+
+			it('should let a room owner edit the message of another user', async () => {
+				await edit(ownerCredentials, 'edited by the owner').expect(200);
+
+				expect(await storedText()).to.equal('edited by the owner');
+			});
+
+			describe('when message editing is turned off', () => {
+				before(() => updateSetting('Message_AllowEditing', false));
+
+				after(() => updateSetting('Message_AllowEditing', true));
+
+				it('should refuse the author and keep the text', async () => {
+					const res = await edit(authorCredentials, 'edited while editing is off').expect(400);
+
+					expect(res.body).to.have.property('errorType', 'error-action-not-allowed');
+					expect(await storedText()).to.equal('original');
+				});
+			});
+
+			describe('when the edit time limit has passed', () => {
+				before(() => updateSetting('Message_AllowEditing_BlockEditInMinutes', 5));
+
+				after(() => updateSetting('Message_AllowEditing_BlockEditInMinutes', 0));
+
+				beforeEach(() =>
+					withDatabase((db) =>
+						db
+							.collection<IMessage>('rocketchat_message')
+							.updateOne({ _id: msgId }, { $set: { ts: new Date(Date.now() - 10 * 60 * 1000) } }),
+					),
+				);
+
+				it('should refuse the author and keep the text', async () => {
+					const res = await edit(authorCredentials, 'edited too late').expect(400);
+
+					expect(res.body).to.have.property('errorType', 'error-message-editing-blocked');
+					expect(await storedText()).to.equal('original');
+				});
+
+				describe('with the bypass-time-limit-edit-and-delete permission', () => {
+					before(() => updatePermission('bypass-time-limit-edit-and-delete', ['bot', 'app', 'user']));
+
+					after(() => updatePermission('bypass-time-limit-edit-and-delete', ['bot', 'app']));
+
+					it('should let the author edit', async () => {
+						await edit(authorCredentials, 'edited with the bypass').expect(200);
+
+						expect(await storedText()).to.equal('edited with the bypass');
+					});
+				});
+			});
+
+			describe('when the author is muted in the room', () => {
+				beforeEach(() =>
+					request.post(api('rooms.muteUser')).set(credentials).send({ roomId: room._id, username: author.username }).expect(200),
+				);
+
+				afterEach(() => request.post(api('rooms.unmuteUser')).set(credentials).send({ roomId: room._id, username: author.username }));
+
+				it('should refuse the author and keep the text', async () => {
+					const res = await edit(authorCredentials, 'edited while muted').expect(400);
+
+					expect(res.body).to.have.property('error', 'You_have_been_muted');
+					expect(await storedText()).to.equal('original');
+				});
+			});
+		});
 	});
 
 	describe('[/chat.delete]', () => {
@@ -2572,6 +2693,30 @@ describe('[Chat]', () => {
 				.expect(200);
 
 			expect(res.body).to.have.property('success', true);
+		});
+
+		describe('as another user', () => {
+			let user: TestUser<IUser>;
+			let userCredentials: Credentials;
+
+			before(async () => {
+				user = await createUser();
+				userCredentials = await login(user.username, password);
+			});
+
+			after(() => deleteUser(user));
+
+			it('should refuse to delete the message of another user as that user without the permission', async () => {
+				const { body } = await sendSimpleMessage({ roomId: testChannel._id });
+
+				await request
+					.post(api('chat.delete'))
+					.set(userCredentials)
+					.send({ roomId: testChannel._id, msgId: body.message._id, asUser: true })
+					.expect(403);
+
+				await request.get(api('chat.getMessage')).set(credentials).query({ msgId: body.message._id }).expect(200);
+			});
 		});
 
 		describe('when deleting by fileId', () => {
@@ -3331,7 +3476,7 @@ describe('[Chat]', () => {
 					messageId: message._id,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400);
+				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
 			expect(res.body).to.have.property('error');
@@ -3417,7 +3562,7 @@ describe('[Chat]', () => {
 					messageId: message._id,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400);
+				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
 			expect(res.body).to.have.property('error');
@@ -3533,61 +3678,58 @@ describe('[Chat]', () => {
 
 		after(() => Promise.all([deleteRoom({ type: 'd', roomId: testDM.rid }), deleteUser(user)]));
 
-		it('should fail if invalid roomId', (_t, done) => {
-			void request
+		it('should fail if invalid roomId', async () => {
+			await request
 				.get(api('chat.ignoreUser'))
 				.set(credentials)
 				.query({
 					rid: 'invalid',
 					userId: 'rocket.cat',
+					ignore: true,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('errorType', 'error-invalid-subscription');
-				})
-				.end(() => {
-					done();
 				});
 		});
-		it('should fail if invalid userId', (_t, done) => {
-			void request
+		it('should fail if invalid userId', async () => {
+			await request
 				.get(api('chat.ignoreUser'))
 				.set(credentials)
 				.query({
 					rid: testDM.rid,
 					userId: 'invalid',
+					ignore: true,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('errorType', 'error-invalid-subscription');
-				})
-				.end(() => {
-					done();
 				});
 		});
-		it('should successfully ignore user', (_t, done) => {
-			void request
+		it('should successfully ignore user', async () => {
+			await request
 				.get(api('chat.ignoreUser'))
 				.set(credentials)
 				.query({
 					rid: testDM.rid,
 					userId: user._id,
+					ignore: true,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-				})
-				.end(() => {
-					done();
 				});
+
+			const subscription = await getSubscriptionByRoomId(testDM.rid);
+			expect(subscription.ignored).to.include(user._id);
 		});
-		it('should successfully unignore user', (_t, done) => {
-			void request
+		it('should successfully unignore user', async () => {
+			await request
 				.get(api('chat.ignoreUser'))
 				.set(credentials)
 				.query({
@@ -3599,10 +3741,10 @@ describe('[Chat]', () => {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-				})
-				.end(() => {
-					done();
 				});
+
+			const subscription = await getSubscriptionByRoomId(testDM.rid);
+			expect(subscription.ignored).to.not.include(user._id);
 		});
 	});
 
@@ -3720,10 +3862,10 @@ describe('[Chat]', () => {
 				.query({ roomId: 'invalid-room' })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
-				.expect(400);
+				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.error).to.be.equal('error-not-allowed');
+			expect(res.body.errorType).to.be.equal('error-forbidden');
 		});
 
 		it('should return the mentioned messages', async () => {
@@ -3769,10 +3911,10 @@ describe('[Chat]', () => {
 				.query({ roomId: 'invalid-room' })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
-				.expect(400);
+				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.error).to.be.equal('error-not-allowed');
+			expect(res.body.errorType).to.be.equal('error-forbidden');
 		});
 
 		it('should return the starred messages', async () => {
@@ -3834,10 +3976,10 @@ describe('[Chat]', () => {
 				.query({ roomId: 'invalid-room' })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
-				.expect(400);
+				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.error).to.be.equal('error-not-allowed');
+			expect(res.body.errorType).to.be.equal('error-forbidden');
 		});
 
 		it('should return the discussions of a room', async () => {
@@ -3971,11 +4113,10 @@ describe('[Chat]', () => {
 				.set(credentials)
 				.query({ roomId: 'invalid-room', lastUpdate: new Date().toISOString() })
 				.expect('Content-Type', 'application/json')
-				.expect(400);
+				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.errorType).to.be.equal('error-not-allowed');
-			expect(res.body.error).to.include('Not allowed');
+			expect(res.body.errorType).to.be.equal('error-forbidden');
 		});
 
 		it('should return an error when the "type" parameter is not supported', async () => {
@@ -4405,11 +4546,10 @@ describe('Threads', () => {
 					rid: testChannel._id,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400);
+				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('errorType', 'error-not-allowed');
-			expect(res.body).to.have.property('error', 'Threads Disabled [error-not-allowed]');
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
 		});
 
 		it('should return an error when the user is not allowed access the room', (_t, done) => {
@@ -4425,11 +4565,10 @@ describe('Threads', () => {
 									rid: testChannel._id,
 								})
 								.expect('Content-Type', 'application/json')
-								.expect(400)
+								.expect(403)
 								.expect((res) => {
 									expect(res.body).to.have.property('success', false);
-									expect(res.body).to.have.property('errorType', 'error-not-allowed');
-									expect(res.body).to.have.property('error', 'Not Allowed [error-not-allowed]');
+									expect(res.body).to.have.property('errorType', 'error-forbidden');
 								})
 								.end(done);
 						});
@@ -4641,11 +4780,10 @@ describe('Threads', () => {
 					rid: testChannel._id,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400);
+				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('errorType', 'error-not-allowed');
-			expect(res.body).to.have.property('error', 'Threads Disabled [error-not-allowed]');
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
 		});
 
 		it('should return an error when the required param "rid" is missing', async () => {
@@ -4708,11 +4846,10 @@ describe('Threads', () => {
 								updatedSince: new Date().toISOString(),
 							})
 							.expect('Content-Type', 'application/json')
-							.expect(400)
+							.expect(403)
 							.expect((res) => {
 								expect(res.body).to.have.property('success', false);
-								expect(res.body).to.have.property('errorType', 'error-not-allowed');
-								expect(res.body).to.have.property('error', 'Not Allowed [error-not-allowed]');
+								expect(res.body).to.have.property('errorType', 'error-forbidden');
 							})
 							.end(done);
 					});
@@ -4786,11 +4923,10 @@ describe('Threads', () => {
 					tmid: threadMessage.tmid,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400);
+				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('errorType', 'error-not-allowed');
-			expect(res.body).to.have.property('error', 'Threads Disabled [error-not-allowed]');
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
 		});
 
 		it('should return an error when the user is not allowed access the room', (_t, done) => {
@@ -4806,11 +4942,10 @@ describe('Threads', () => {
 									tmid: threadMessage.tmid,
 								})
 								.expect('Content-Type', 'application/json')
-								.expect(400)
+								.expect(403)
 								.expect((res) => {
 									expect(res.body).to.have.property('success', false);
-									expect(res.body).to.have.property('errorType', 'error-not-allowed');
-									expect(res.body).to.have.property('error', 'Not Allowed [error-not-allowed]');
+									expect(res.body).to.have.property('errorType', 'error-forbidden');
 								})
 								.end(done);
 						});
@@ -4925,10 +5060,10 @@ describe('Threads', () => {
 					.set(credentials)
 					.send({ tmid: parentMessage._id })
 					.expect('Content-Type', 'application/json')
-					.expect(400)
+					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-not-allowed');
+						expect(res.body).to.have.property('errorType', 'error-forbidden');
 					});
 			} finally {
 				await updateSetting('Threads_enabled', true);
@@ -5033,11 +5168,10 @@ describe('Threads', () => {
 					updatedSince: new Date().toISOString(),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400);
+				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('errorType', 'error-not-allowed');
-			expect(res.body).to.have.property('error', 'Threads Disabled [error-not-allowed]');
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
 		});
 
 		it('should return an error when the required param "tmid" is missing', async () => {
@@ -5100,11 +5234,10 @@ describe('Threads', () => {
 								updatedSince: new Date().toISOString(),
 							})
 							.expect('Content-Type', 'application/json')
-							.expect(400)
+							.expect(403)
 							.expect((res) => {
 								expect(res.body).to.have.property('success', false);
-								expect(res.body).to.have.property('errorType', 'error-not-allowed');
-								expect(res.body).to.have.property('error', 'Not Allowed [error-not-allowed]');
+								expect(res.body).to.have.property('errorType', 'error-forbidden');
 							})
 							.end(done);
 					});
@@ -5175,11 +5308,10 @@ describe('Threads', () => {
 					mid: threadMessage.tmid,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400);
+				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('errorType', 'error-not-allowed');
-			expect(res.body).to.have.property('error', 'not-allowed [error-not-allowed]');
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
 		});
 
 		it('should return an error when the message does not exist', async () => {
@@ -5211,11 +5343,10 @@ describe('Threads', () => {
 								mid: threadMessage.tmid,
 							})
 							.expect('Content-Type', 'application/json')
-							.expect(400)
+							.expect(403)
 							.expect((res) => {
 								expect(res.body).to.have.property('success', false);
-								expect(res.body).to.have.property('errorType', 'error-not-allowed');
-								expect(res.body).to.have.property('error', 'not-allowed [error-not-allowed]');
+								expect(res.body).to.have.property('errorType', 'error-forbidden');
 							})
 							.end(done);
 					});
@@ -5278,11 +5409,10 @@ describe('Threads', () => {
 					mid: threadMessage.tmid,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400);
+				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('errorType', 'error-not-allowed');
-			expect(res.body).to.have.property('error', 'not-allowed [error-not-allowed]');
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
 		});
 
 		it('should return an error when the message does not exist', async () => {
@@ -5314,11 +5444,10 @@ describe('Threads', () => {
 								mid: threadMessage.tmid,
 							})
 							.expect('Content-Type', 'application/json')
-							.expect(400)
+							.expect(403)
 							.expect((res) => {
 								expect(res.body).to.have.property('success', false);
-								expect(res.body).to.have.property('errorType', 'error-not-allowed');
-								expect(res.body).to.have.property('error', 'not-allowed [error-not-allowed]');
+								expect(res.body).to.have.property('errorType', 'error-forbidden');
 							})
 							.end(done);
 					});
@@ -5398,10 +5527,10 @@ describe('Threads', () => {
 						url,
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
+					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body.errorType).to.be.equal('error-not-allowed');
+						expect(res.body.errorType).to.be.equal('error-forbidden');
 					});
 			});
 		});

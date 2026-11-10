@@ -1,6 +1,5 @@
 import { License } from '@rocket.chat/license';
 import { Settings } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { notifyOnSettingChangedById } from '../../../server/lib/notifyListener';
 import { updateAuditedBySystem } from '../../../server/settings/lib/auditedSettingUpdates';
@@ -17,6 +16,6 @@ const handleHadTrial = (): void => {
 	}
 };
 
-Meteor.startup(() => {
+export const registerHadTrialHandler = (): void => {
 	License.onValidateLicense(handleHadTrial);
-});
+};

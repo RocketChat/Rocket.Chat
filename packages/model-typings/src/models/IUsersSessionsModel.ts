@@ -7,7 +7,7 @@ import type { DocumentWithProjection, FindOptionsWithProjection } from '../types
 export interface IUsersSessionsModel extends IBaseModel<IUserSession> {
 	updateConnectionStatusById(uid: string, connectionId: string, status: string): ReturnType<IBaseModel<IUserSession>['updateOne']>;
 	removeConnectionsFromInstanceId(instanceId: string): ReturnType<IBaseModel<IUserSession>['updateMany']>;
-	removeConnectionByConnectionId(connectionId: string): ReturnType<IBaseModel<IUserSession>['updateMany']>;
+	removeConnectionById(uid: string, connectionId: string): ReturnType<IBaseModel<IUserSession>['updateOne']>;
 	findByInstanceId(instanceId: string): FindCursor<IUserSession>;
 	addConnectionById(
 		userId: string,

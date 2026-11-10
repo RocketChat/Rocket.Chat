@@ -1,10 +1,10 @@
 import type { IOmnichannelCannedResponse, Serialized } from '@rocket.chat/core-typings';
+import { FormSkeleton } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
 import CannedResponseEdit from './CannedResponseEdit';
-import { FormSkeleton } from '../../../../components/Skeleton';
 import { omnichannelQueryKeys } from '../../../../lib/queryKeys';
 import NotAvailableCallout from '../../components/NotAvailableCallout';
 

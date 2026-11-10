@@ -18,6 +18,7 @@ import { imgURL, tiffURL } from '../../data/interactions';
 import { createAgent, makeAgentAvailable } from '../../data/livechat/rooms';
 import { removeAgent, getAgent } from '../../data/livechat/users';
 import { updatePermission, updateSetting, restorePermissionToRoles, getSettingValueById } from '../../data/permissions.helper';
+import { retry } from '../../data/retry';
 import type { ActionRoomParams } from '../../data/rooms.helper';
 import { actionRoom, createRoom, deleteRoom } from '../../data/rooms.helper';
 import { createTeam, deleteTeam } from '../../data/teams.helper';
@@ -2474,7 +2475,7 @@ describe('[Users]', () => {
 						.expect(403)
 						.expect((res) => {
 							expect(res.body).to.have.property('success', false);
-							expect(res.body).to.have.property('error', 'forbidden');
+							expect(res.body).to.have.property('errorType', 'error-forbidden');
 						});
 				});
 			});
@@ -2566,7 +2567,7 @@ describe('[Users]', () => {
 					.attach('image', imgURL)
 					.field({ userId: credentials['X-User-Id'] })
 					.expect('Content-Type', 'application/json')
-					.expect(400);
+					.expect(403);
 
 				expect(res.body).to.have.property('success', false);
 			});
@@ -2675,7 +2676,7 @@ describe('[Users]', () => {
 						userId: credentials['X-User-Id'],
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400);
+					.expect(403);
 
 				expect(res.body).to.have.property('success', false);
 			});
@@ -3000,6 +3001,24 @@ describe('[Users]', () => {
 			expect(res.body).to.not.have.nested.property('user.e2e');
 		});
 
+		it("should keep a user's bio and nickname when the update omits them", async () => {
+			const res = await request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: targetUser._id,
+					data: {
+						statusText: 'edited-status-text-test',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.nested.property('user.bio', 'edited-bio-test');
+			expect(res.body).to.have.nested.property('user.nickname', 'edited-nickname-test');
+		});
+
 		it(`should return an error when trying to set a nickname longer than ${MAX_NICKNAME_LENGTH} characters`, async () => {
 			const res = await request
 				.post(api('users.update'))
@@ -3139,6 +3158,29 @@ describe('[Users]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				});
+		});
+
+		it('should record a username-only change in the audit log', async () => {
+			const username = `audited.name.${Date.now()}`;
+
+			await request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: targetUser._id,
+					data: { username },
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			await retry('wait for the user.changed audit event', async () => {
+				const event = await withDatabase((db) =>
+					db
+						.collection('rocketchat_server_events')
+						.findOne({ t: 'user.changed', data: { $elemMatch: { 'key': 'operation', 'value.$set.username': username } } }),
+				);
+				expect(event).to.not.be.null;
+			});
 		});
 
 		it('should return an error when trying update user real name and it is not allowed', async () => {
@@ -3822,6 +3864,56 @@ describe('[Users]', () => {
 			expect(user.username).to.be.equal(editedUsername);
 			expect(user.name).to.be.equal(editedName);
 			expect(user).to.not.have.property('e2e');
+		});
+
+		describe('clearing the name', () => {
+			after(() => updateSetting('Accounts_RequireNameForSignUp', true));
+
+			it('should reject removing the name when it is required', async () => {
+				await updateSetting('Accounts_RequireNameForSignUp', true);
+
+				await request
+					.post(api('users.updateOwnBasicInfo'))
+					.set(userCredentials)
+					.send({ data: { name: '' } })
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'error-could-not-save-identity');
+					});
+
+				const res = await request.get(api('me')).set(userCredentials).expect(200);
+				expect(res.body.name).to.be.equal(editedName);
+			});
+
+			it('should remove the name when it is optional and sent alone', async () => {
+				await updateSetting('Accounts_RequireNameForSignUp', false);
+
+				const res = await request
+					.post(api('users.updateOwnBasicInfo'))
+					.set(userCredentials)
+					.send({ data: { name: '' } })
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body.user).to.not.have.property('name');
+				expect(res.body.user.username).to.be.equal(editedUsername);
+			});
+
+			it('should ignore an empty username sent alongside a name', async () => {
+				const res = await request
+					.post(api('users.updateOwnBasicInfo'))
+					.set(userCredentials)
+					.send({ data: { name: editedName, username: '' } })
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body.user.name).to.be.equal(editedName);
+				expect(res.body.user.username).to.be.equal(editedUsername);
+			});
 		});
 
 		it('should update the user own phones', async () => {
@@ -4975,7 +5067,7 @@ describe('[Users]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
 				});
 		});
 
@@ -5302,10 +5394,10 @@ describe('[Users]', () => {
 							tokenName,
 						})
 						.expect('Content-Type', 'application/json')
-						.expect(400);
+						.expect(403);
 
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('not-authorized');
+					expect(res.body.errorType).to.be.equal('error-forbidden');
 				});
 				it('/users.regeneratePersonalAccessToken', async () => {
 					const res = await request
@@ -5315,10 +5407,10 @@ describe('[Users]', () => {
 							tokenName,
 						})
 						.expect('Content-Type', 'application/json')
-						.expect(400);
+						.expect(403);
 
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('not-authorized');
+					expect(res.body.errorType).to.be.equal('error-forbidden');
 				});
 				it('/users.getPersonalAccessTokens', async () => {
 					const res = await request
@@ -5328,7 +5420,7 @@ describe('[Users]', () => {
 						.expect(403);
 
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+					expect(res.body.errorType).to.be.equal('error-forbidden');
 				});
 				it('/users.removePersonalAccessToken', async () => {
 					const res = await request
@@ -5338,10 +5430,10 @@ describe('[Users]', () => {
 							tokenName,
 						})
 						.expect('Content-Type', 'application/json')
-						.expect(400);
+						.expect(403);
 
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('not-authorized');
+					expect(res.body.errorType).to.be.equal('error-forbidden');
 				});
 				it('should throw an error when user tries remove a token that does not exist', async () => {
 					const res = await request
@@ -5351,10 +5443,10 @@ describe('[Users]', () => {
 							tokenName: 'tokenthatdoesnotexist',
 						})
 						.expect('Content-Type', 'application/json')
-						.expect(400);
+						.expect(403);
 
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('not-authorized');
+					expect(res.body.errorType).to.be.equal('error-forbidden');
 				});
 			});
 		});
@@ -5440,7 +5532,7 @@ describe('[Users]', () => {
 				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
 		});
 		it('should return an error when trying to set user own active status and has not the necessary permission(edit-other-user-active-status)', async () => {
 			const res = await request
@@ -5454,7 +5546,7 @@ describe('[Users]', () => {
 				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
 		});
 		it('should set user own active status to false when the user has the necessary permission(edit-other-user-active-status)', async () => {
 			await updatePermission('edit-other-user-active-status', ['admin']);
@@ -5470,7 +5562,7 @@ describe('[Users]', () => {
 				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
 		});
 		it('users should retain their roles when they are deactivated', async () => {
 			const testUser = await createUser({ roles: ['user', 'livechat-agent'] });
@@ -5695,7 +5787,7 @@ describe('[Users]', () => {
 				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
 		});
 		it('should deactivate no users when no users in time range', async () => {
 			await updatePermission('edit-other-user-active-status', ['admin']);
@@ -6237,11 +6329,10 @@ describe('[Users]', () => {
 					message: 'test',
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400);
+				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.errorType).to.be.equal('error-not-allowed');
-			expect(res.body.error).to.be.equal('Change status is not allowed [error-not-allowed]');
+			expect(res.body.errorType).to.be.equal('error-forbidden');
 		});
 		it('should update my own status', async () => {
 			await updateSetting('Accounts_AllowUserStatusMessageChange', true);
@@ -6276,7 +6367,7 @@ describe('[Users]', () => {
 				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.error).to.be.equal('forbidden');
+			expect(res.body.errorType).to.be.equal('error-forbidden');
 		});
 		it('should update another user status succesfully', async () => {
 			await updatePermission('edit-other-user-info', ['admin']);
@@ -6356,7 +6447,7 @@ describe('[Users]', () => {
 				.expect(400);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.error).to.be.equal('Match error: Failed Match.OneOf, Match.Maybe or Match.Optional validation');
+			expect(res.body.error).to.be.equal("The 'status' or 'message' param is required");
 		});
 
 		it('should return 401 when not authenticated', async () => {
@@ -6880,7 +6971,7 @@ describe('[Users]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+					expect(res.body.errorType).to.be.equal('error-forbidden');
 				});
 		});
 
@@ -6894,7 +6985,7 @@ describe('[Users]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+					expect(res.body.errorType).to.be.equal('error-forbidden');
 				});
 		});
 	});
@@ -7058,6 +7149,130 @@ describe('[Users]', () => {
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 				});
+		});
+	});
+
+	describe('resetting account security', () => {
+		const createdUsers: TestUser<IUser>[] = [];
+		let caller: TestUser<IUser>;
+		let callerCredentials: Credentials;
+
+		const createLoggedInUser = async (options: { verified?: boolean } = { verified: true }) => {
+			const user = await createUser({ username: Random.id(), email: `${Random.id()}@example.com`, ...options });
+			createdUsers.push(user);
+			return { user, userCredentials: await login(user.username, password) };
+		};
+
+		const createUserWithTotp = async () => {
+			const { user, userCredentials } = await createLoggedInUser();
+			const { body } = await request.post(api('users.enableTotp')).set(userCredentials).send({}).expect(200);
+			await request
+				.post(api('users.validateTotp'))
+				.set(userCredentials)
+				.send({ code: speakeasy.totp({ secret: body.secret, encoding: 'base32' }) })
+				.expect(200);
+			return { user, userCredentials };
+		};
+
+		const isLoggedIn = async (userCredentials: Credentials) => (await request.get(api('me')).set(userCredentials)).status === 200;
+
+		before(async () => {
+			({ user: caller, userCredentials: callerCredentials } = await createLoggedInUser());
+		});
+
+		after(async () => {
+			await Promise.all(createdUsers.map((user) => deleteUserIfExists(user)));
+		});
+
+		describe('[/users.resetTOTP]', () => {
+			it('should refuse a user without the permission to reset another user', async () => {
+				const { user, userCredentials } = await createUserWithTotp();
+
+				await request.post(api('users.resetTOTP')).set(callerCredentials).send({ userId: user._id }).expect(403);
+
+				expect(await isLoggedIn(userCredentials)).to.be.true;
+			});
+
+			it('should reset another user and end the sessions of that user', async () => {
+				const { user, userCredentials } = await createUserWithTotp();
+
+				await request.post(api('users.resetTOTP')).set(credentials).send({ userId: user._id }).expect(200);
+
+				expect(await isLoggedIn(userCredentials)).to.be.false;
+			});
+
+			it('should reset the caller and end the sessions of the caller', async () => {
+				const { userCredentials } = await createUserWithTotp();
+
+				await request.post(api('users.resetTOTP')).set(userCredentials).send({}).expect(200);
+
+				expect(await isLoggedIn(userCredentials)).to.be.false;
+			});
+
+			it('should refuse an unknown user', async () => {
+				const { body } = await request.post(api('users.resetTOTP')).set(credentials).send({ userId: 'unknown-user' }).expect(400);
+
+				expect(body).to.have.property('errorType', 'error-invalid-user');
+			});
+
+			describe('when two-factor authentication is off', () => {
+				before(() => updateSetting('Accounts_TwoFactorAuthentication_Enabled', false));
+
+				after(() => updateSetting('Accounts_TwoFactorAuthentication_Enabled', true));
+
+				it('should refuse to reset another user', async () => {
+					const { body } = await request.post(api('users.resetTOTP')).set(credentials).send({ userId: caller._id }).expect(400);
+
+					expect(body).to.have.property('errorType', 'error-two-factor-not-enabled');
+					expect(await isLoggedIn(callerCredentials)).to.be.true;
+				});
+			});
+		});
+
+		describe('[/users.resetE2EKey]', () => {
+			it('should refuse a user without the permission to reset another user', async () => {
+				const { user, userCredentials } = await createLoggedInUser();
+
+				await request.post(api('users.resetE2EKey')).set(callerCredentials).send({ userId: user._id }).expect(403);
+
+				expect(await isLoggedIn(userCredentials)).to.be.true;
+			});
+
+			it('should reset another user and end the sessions of that user', async () => {
+				const { user, userCredentials } = await createLoggedInUser();
+
+				await request.post(api('users.resetE2EKey')).set(credentials).send({ userId: user._id }).expect(200);
+
+				expect(await isLoggedIn(userCredentials)).to.be.false;
+			});
+
+			it('should reset the caller and end the sessions of the caller', async () => {
+				const { userCredentials } = await createLoggedInUser();
+
+				await request.post(api('users.resetE2EKey')).set(userCredentials).send({}).expect(200);
+
+				expect(await isLoggedIn(userCredentials)).to.be.false;
+			});
+		});
+
+		describe('[/users.2fa.enableEmail]', () => {
+			it('should refuse a user with an unverified email', async () => {
+				const { userCredentials } = await createLoggedInUser({ verified: false });
+
+				const { body } = await request.post(api('users.2fa.enableEmail')).set(userCredentials).expect(400);
+
+				expect(body).to.have.property('errorType', 'error-invalid-user');
+			});
+
+			it('should end the other sessions of the user and keep the current one', async () => {
+				const { user, userCredentials } = await createLoggedInUser();
+				const otherSession = await login(user.username, password);
+
+				await request.post(api('users.2fa.enableEmail')).set(userCredentials).expect(200);
+
+				expect(await isLoggedIn(userCredentials)).to.be.true;
+				expect(await isLoggedIn(otherSession)).to.be.false;
+			});
 		});
 	});
 

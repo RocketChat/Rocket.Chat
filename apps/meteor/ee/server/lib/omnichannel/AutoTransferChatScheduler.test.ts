@@ -14,7 +14,6 @@ const mockAgendaScheduler = sinon.stub();
 const mockAgendaCancel = sinon.stub();
 const mockAgendaDefine = sinon.stub();
 const returnRoomAsInquiryMock = sinon.stub();
-const mockMeteorStartup = sinon.stub();
 const mockLivechatRooms = {
 	findOneById: sinon.stub(),
 	setAutoTransferOngoingById: sinon.stub(),
@@ -61,7 +60,6 @@ const getNextAgent = sinon.stub();
 
 const mocks = {
 	'@rocket.chat/agenda': { Agenda: MockAgendaClass },
-	'meteor/meteor': { Meteor: { startup: mockMeteorStartup } },
 	'../../../../server/database/utils': { client: { db: sinon.stub() } },
 	'../../../../server/lib/omnichannel/RoutingManager': { RoutingManager: { getConfig: routingConfigMock, getNextAgent } },
 	'../../../../server/lib/omnichannel/Helper': { forwardRoomToAgent },

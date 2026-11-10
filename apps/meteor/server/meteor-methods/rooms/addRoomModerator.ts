@@ -2,7 +2,6 @@ import { api, Message, Team, ClientSafeError } from '@rocket.chat/core-services'
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { Subscriptions, Rooms, Users } from '@rocket.chat/models';
-import { check } from 'meteor/check';
 
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { beforeChangeRoomRole } from '../../lib/callbacks/beforeChangeRoomRole';
@@ -12,9 +11,6 @@ import { isFederationEnabled, FederationMatrixInvalidConfigurationError } from '
 import { settings } from '../../settings';
 
 export const addRoomModerator = async (fromUserId: IUser['_id'], rid: IRoom['_id'], userId: IUser['_id']): Promise<boolean> => {
-	check(rid, String);
-	check(userId, String);
-
 	const room = await Rooms.findOneById(rid, { projection: { t: 1, federated: 1, federation: 1 } });
 	if (!room) {
 		throw new ClientSafeError('error-invalid-room', 'Invalid room', {

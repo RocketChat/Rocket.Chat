@@ -1,6 +1,7 @@
-import { Router } from '@rocket.chat/http-router';
+import type { Server } from 'node:http';
+
+import { Router, createNodeServer, createRootApp, mountRouter } from '@rocket.chat/http-router';
 import Ajv from 'ajv';
-import express from 'express';
 import request from 'supertest';
 
 import { cors } from './cors';
@@ -27,12 +28,12 @@ const buildApp = ({ corsEnabled }: { corsEnabled: boolean }) => {
 		.use(route(new Router('/v1')))
 		.use(route(new Router('/experimental')));
 
-	const app = express();
-	app.use(api.router);
-	return app;
+	const app = createRootApp();
+	mountRouter(app, api);
+	return createNodeServer(app);
 };
 
-const preflight = (app: express.Express, path: string, origin: string) =>
+const preflight = (app: Server, path: string, origin: string) =>
 	request(app).options(path).set('Origin', origin).set('Access-Control-Request-Method', 'GET');
 
 describe('Experimental middleware', () => {

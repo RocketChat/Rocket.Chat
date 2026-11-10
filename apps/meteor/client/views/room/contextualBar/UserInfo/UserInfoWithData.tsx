@@ -8,6 +8,7 @@ import {
 	ContextualbarHeader,
 	ContextualbarIcon,
 	ContextualbarTitle,
+	FormSkeleton,
 	UserCardRole,
 	UserInfo,
 } from '@rocket.chat/ui-client';
@@ -18,7 +19,6 @@ import { useTranslation } from 'react-i18next';
 
 import UserInfoActions from './UserInfoActions';
 import { getUserEmailAddress } from '../../../../../lib/getUserEmailAddress';
-import { FormSkeleton } from '../../../../components/Skeleton';
 import UserInfoPhoneNumberList from '../../../../components/UserInfoPhoneNumberList';
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
 import { ReactiveUserStatusText } from '../../../../components/UserStatusText';

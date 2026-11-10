@@ -11,7 +11,7 @@ type WithErrorWrapperProps<T> = {
 function WithErrorWrapper<T>({ context, componentName, children, parentComponent: parentName }: WithErrorWrapperProps<T>) {
 	const isInsideParent = useContext(context);
 	if (!isInsideParent) {
-		throw new Error(`${componentName} should be used as children of ${parentName} Component`);
+		console.error(`${componentName} should be used as children of ${parentName} Component`);
 	}
 
 	return children;

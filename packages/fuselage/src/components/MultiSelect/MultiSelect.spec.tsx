@@ -1,8 +1,10 @@
-import { composeStories } from '@storybook/react-webpack5';
+import { composeStories } from '@storybook/react';
 import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 
+import MultiSelect from './MultiSelect';
+import { Chip } from '../Chip';
 import * as stories from './MultiSelect.stories';
 import { withResizeObserverMock } from '../../../mocks/withResizeObserverMock';
 import { render } from '../../testing';
@@ -52,4 +54,60 @@ test('unchecks the option checkbox on deselect', async () => {
 
 	expect(option).toHaveAttribute('aria-selected', 'false');
 	expect(checkbox).not.toBeChecked();
+});
+
+test('shows the selection of a controlled value changed after mount', () => {
+	const options: [string, string][] = [
+		['1', 'Apple'],
+		['2', 'Banana'],
+	];
+	const { rerender } = render(<MultiSelect options={options} value={['1']} onChange={jest.fn()} />);
+	expect(screen.getByText('Apple')).toBeInTheDocument();
+
+	rerender(<MultiSelect options={options} value={['2']} onChange={jest.fn()} />);
+	expect(screen.getByText('Banana')).toBeInTheDocument();
+	expect(screen.queryByText('Apple')).not.toBeInTheDocument();
+});
+
+test('removes a default chip on click and keeps the list open', async () => {
+	const onChange = jest.fn();
+	const options: [string, string][] = [
+		['1', 'Apple'],
+		['2', 'Banana'],
+	];
+	render(<MultiSelect options={options} value={['1', '2']} onChange={onChange} />);
+
+	await userEvent.click(screen.getByRole('combobox'));
+	expect(await screen.findByRole('listbox')).toBeInTheDocument();
+
+	await userEvent.click(screen.getByRole('button', { name: 'Apple' }));
+
+	expect(onChange).toHaveBeenCalledWith(['2']);
+	expect(screen.getByRole('combobox')).toHaveFocus();
+	expect(screen.getByRole('combobox')).toHaveAttribute('aria-expanded', 'true');
+});
+
+test.each(['{Enter}', ' '])('removes a custom chip from the keyboard with %s', async (key) => {
+	const onChange = jest.fn();
+	const options: [string, string][] = [
+		['1', 'Apple'],
+		['2', 'Banana'],
+	];
+	render(
+		<MultiSelect
+			options={options}
+			value={['1', '2']}
+			onChange={onChange}
+			renderSelected={({ label, onMouseDown, onClick }) => (
+				<Chip onMouseDown={onMouseDown} onClick={onClick}>
+					{label}
+				</Chip>
+			)}
+		/>,
+	);
+
+	screen.getByRole('button', { name: 'Apple' }).focus();
+	await userEvent.keyboard(key);
+
+	expect(onChange).toHaveBeenCalledWith(['2']);
 });

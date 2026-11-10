@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, Tabs, TabsItem } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import IntegrationsTable from './IntegrationsTable';
 import NewBot from './NewBot';
 import NewZapier from './NewZapier';
+import { PageTabs } from '../../../components/PageTabs';
 
 const IntegrationsPage = () => {
 	const { t } = useTranslation();
@@ -26,23 +27,17 @@ const IntegrationsPage = () => {
 					</Button>
 				</ButtonGroup>
 			</PageHeader>
-			<Tabs>
-				<TabsItem selected={!context} onClick={() => router.navigate('/admin/integrations')}>
-					{t('All')}
-				</TabsItem>
-				<TabsItem selected={context === 'webhook-incoming'} onClick={() => router.navigate('/admin/integrations/webhook-incoming')}>
-					{t('Incoming')}
-				</TabsItem>
-				<TabsItem selected={context === 'webhook-outgoing'} onClick={() => router.navigate('/admin/integrations/webhook-outgoing')}>
-					{t('Outgoing')}
-				</TabsItem>
-				<TabsItem selected={context === 'zapier'} onClick={() => router.navigate('/admin/integrations/zapier')}>
-					{t('Zapier')}
-				</TabsItem>
-				<TabsItem selected={context === 'bots'} onClick={() => router.navigate('/admin/integrations/bots')}>
-					{t('Bots')}
-				</TabsItem>
-			</Tabs>
+			<PageTabs
+				items={[
+					{ id: '', label: t('All') },
+					{ id: 'webhook-incoming', label: t('Incoming') },
+					{ id: 'webhook-outgoing', label: t('Outgoing') },
+					{ id: 'zapier', label: t('Zapier') },
+					{ id: 'bots', label: t('Bots') },
+				]}
+				selected={context ?? ''}
+				onSelect={(context) => router.navigate(context ? `/admin/integrations/${context}` : '/admin/integrations')}
+			/>
 			<PageContent>
 				{context === 'zapier' && <NewZapier />}
 				{context === 'bots' && <NewBot />}

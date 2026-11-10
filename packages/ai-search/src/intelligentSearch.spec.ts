@@ -1,4 +1,4 @@
-import { filterSemanticCandidatesByMinimumSimilarity } from './fusion';
+import { filterSemanticCandidatesByMinimumSimilarity } from './fusion.js';
 import {
 	buildIntelligentSearchPipelineFilters,
 	getSemanticDistanceThreshold,
@@ -6,8 +6,8 @@ import {
 	normalizeIntelligentSearchCandidates,
 	normalizeSimilarityPercent,
 	searchIntelligentPipeline,
-} from './intelligentSearch';
-import type { AIServiceFetch } from './types';
+} from './intelligentSearch.js';
+import type { AIServiceFetch } from './types.js';
 
 describe('AI Search intelligent search helpers', () => {
 	describe('normalizeSimilarityPercent', () => {

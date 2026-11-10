@@ -1,4 +1,4 @@
-import { BSONType } from './types';
+import { BSONType } from './types.js';
 
 export const getBSONType = <T>(v: T): BSONType => {
 	if (typeof v === 'number') {

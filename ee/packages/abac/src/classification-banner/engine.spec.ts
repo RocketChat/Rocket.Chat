@@ -306,7 +306,7 @@ describe('buildRoomClassificationBanner', () => {
 	});
 
 	describe('matching a room', () => {
-		type Room = Pick<IRoom, 't' | 'abacAttributes' | 'uids' | 'federated' | 'prid' | 'teamMain' | 'teamId'>;
+		type Room = Pick<IRoom, 't' | 'abacAttributes' | 'uids' | 'federated' | 'xmppFederation' | 'prid' | 'teamMain' | 'teamId'>;
 
 		const dm: Room = { t: 'd', uids: ['alice', 'bob'] };
 		const groupDm: Room = { t: 'd', uids: ['alice', 'bob', 'carol'] };
@@ -314,6 +314,10 @@ describe('buildRoomClassificationBanner', () => {
 		const privateRoom: Room = { t: 'p' };
 		const federatedPublicRoom: Room = { t: 'c', federated: true };
 		const federatedPrivateRoom: Room = { t: 'p', federated: true };
+		const xmppRoom: Room = {
+			t: 'p',
+			xmppFederation: { version: 1, role: 'host-muc', muc: 'room@conference.example.com', origin: 'example.com' },
+		};
 		const discussion: Room = { t: 'p', prid: 'parent' };
 		const teamRoom: Room = { t: 'p', teamMain: true, teamId: 'team' };
 		const roomInTeam: Room = { t: 'c', teamId: 'team' };
@@ -328,6 +332,8 @@ describe('buildRoomClassificationBanner', () => {
 			['private and federated does not match a private room', { type: ['private'], federated: true }, privateRoom, false],
 			['federated false does not match a federated room', { federated: false }, federatedPublicRoom, false],
 			['federated false matches a room that is not federated', { federated: false }, publicRoom, true],
+			['federated matches an XMPP federated room', { federated: true }, xmppRoom, true],
+			['federated false does not match an XMPP federated room', { federated: false }, xmppRoom, false],
 			['discussion matches a discussion', { discussion: true }, discussion, true],
 			['discussion false does not match a discussion', { discussion: false }, discussion, false],
 			["team matches the team's own room", { team: true }, teamRoom, true],

@@ -1,11 +1,20 @@
 {
 	"$schema": "./node_modules/oxlint/configuration_schema.json",
 	"extends": ["./packages/lint-config/oxlint.json"],
+	"settings": {
+		"react": {
+			"version": "19.2"
+		}
+	},
 	"options": {
 		"typeAware": true,
 		"reportUnusedDisableDirectives": "error"
 	},
 	"ignorePatterns": [
+		"**/dist",
+		"**/coverage",
+		"**/storybook-static",
+		".yarn/**",
 		"apps/meteor/**/public",
 		"apps/meteor/**/private/moment-locales",
 		"apps/meteor/**/imports",
@@ -117,11 +126,21 @@
 					}
 				],
 				"import/named": "error",
-				"react/exhaustive-deps": "warn"
+				"react/exhaustive-deps": "warn",
+				"no-restricted-imports": [
+					"error",
+					{
+						"paths": [
+							{
+								"name": "meteor/check",
+								"message": "Validate with an ajv schema (endpoint `body`/`query` from @rocket.chat/rest-typings) or a type guard instead."
+							}
+						]
+					}
+				]
 			},
 			"globals": {
 				"__meteor_runtime_config__": "readonly",
-				"Assets": "readonly",
 				"chrome": "readonly",
 				"jscolor": "readonly",
 				"AsyncDisposableStack": "readonly",
@@ -163,7 +182,7 @@
 			"plugins": ["jest"]
 		},
 		{
-			"files": ["apps/meteor/tests/{end-to-end,unit}/**/*.ts"],
+			"files": ["apps/meteor/tests/{end-to-end,unit}/**/*.ts", "apps/meteor/**/*.{test,spec}.ts"],
 			"rules": {
 				"no-unused-expressions": "off"
 			}
@@ -306,6 +325,14 @@
 					{
 						"selector": "TSQualifiedName[left.name='Meteor'][right.name='Error']",
 						"message": "Use ClientSafeError from '@rocket.chat/core-services' instead."
+					},
+					{
+						"selector": "MemberExpression[object.name='Meteor'][property.name='absoluteUrl']",
+						"message": "Use getWorkspaceURL(path) from 'server/lib/utils/getURL' instead."
+					},
+					{
+						"selector": "MemberExpression[object.name='Meteor'][property.name='startup']",
+						"message": "Register at module level, or export a function and call it from runStartupTasks() in server/startup/startupTasks.ts."
 					}
 				]
 			}

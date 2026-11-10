@@ -1,13 +1,14 @@
 import type http from 'node:http';
 import url from 'node:url';
 
+import type { RootMiddleware } from '@rocket.chat/http-router';
 import { Logger } from '@rocket.chat/logger';
-import { Meteor } from 'meteor/meteor';
 import type { StaticFiles } from 'meteor/webapp';
 import { WebApp, WebAppInternals } from 'meteor/webapp';
 
 import { getWebAppHash } from '../../configuration/configureBoilerplate';
 import { settings } from '../../settings';
+import { getWorkspaceURL } from '../utils/getURL';
 
 // Taken from 'connect' types
 type NextFunction = (err?: any) => void;
@@ -19,7 +20,36 @@ export async function setInlineScriptsAllowed(allowed: boolean): Promise<void> {
 	templatePromise = WebAppInternals.setInlineScriptsAllowed(allowed);
 }
 
-WebApp.rawConnectHandlers.use(async (_req: http.IncomingMessage, res: http.ServerResponse, next: NextFunction) => {
+const localhostRegexp = /^\s*(127\.0\.0\.1|::1)\s*$/;
+const isLocalhost = (address: string) => localhostRegexp.test(address);
+
+export const forceSsl: RootMiddleware = async (c, next) => {
+	if (settings.get('Force_SSL') !== true) {
+		return next();
+	}
+
+	const req = c.env.incoming;
+	const remoteAddress = req.socket.remoteAddress || '';
+	const isLocal =
+		isLocalhost(remoteAddress) &&
+		(!req.headers['x-forwarded-for'] || (req.headers['x-forwarded-for'] as string).split(',').every(isLocalhost));
+	// @ts-expect-error - `pair` is valid, but doesnt exists on types
+	const isSsl = req.socket.pair || (req.headers['x-forwarded-proto'] && req.headers['x-forwarded-proto'].indexOf('https') !== -1);
+
+	logger.debug({ msg: 'CORS request info', url: req.url, remoteAddress, isLocal, isSsl, headers: req.headers });
+
+	if (!isLocal && !isSsl) {
+		let host = req.headers.host || url.parse(getWorkspaceURL()).hostname || '';
+		host = host.replace(/:\d+$/, '');
+		return c.redirect(`https://${host}${req.url}`, 302);
+	}
+
+	return next();
+};
+
+// set on the node response so they reach both our routes and the ones Meteor still answers
+export const securityHeaders: RootMiddleware = async (c, next) => {
+	const res = c.env.outgoing;
 	if (templatePromise) {
 		await templatePromise;
 		templatePromise = void 0;
@@ -80,7 +110,7 @@ WebApp.rawConnectHandlers.use(async (_req: http.IncomingMessage, res: http.Serve
 	}
 
 	return next();
-});
+};
 
 const _staticFilesMiddleware = WebAppInternals.staticFilesMiddleware;
 
@@ -118,48 +148,16 @@ WebAppInternals.staticFilesMiddleware = function (
 		res.setHeader('Cache-Control', 'public, max-age=3600');
 	}
 
+	// The web client's files are named by their content hash, so they never change under the same URL.
+	if (path.startsWith('/bundle/')) {
+		res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+	}
+
 	return _staticFilesMiddleware(staticFiles, req, res, next);
 };
 
-const oldHttpServerListeners = WebApp.httpServer.listeners('request').slice(0);
-
-WebApp.httpServer.removeAllListeners('request');
-
-WebApp.httpServer.addListener('request', (req, res, ...args) => {
-	const next = () => {
-		for (const oldListener of oldHttpServerListeners) {
-			oldListener.apply(WebApp.httpServer, [req, res, ...args]);
-		}
-	};
-
-	if (settings.get('Force_SSL') !== true) {
-		next();
-		return;
-	}
-
-	const remoteAddress = req.connection.remoteAddress || req.socket.remoteAddress || '';
-	const localhostRegexp = /^\s*(127\.0\.0\.1|::1)\s*$/;
-	const localhostTest = function (x: string) {
-		return localhostRegexp.test(x);
-	};
-
-	const isLocal =
-		localhostRegexp.test(remoteAddress) &&
-		(!req.headers['x-forwarded-for'] || (req.headers['x-forwarded-for'] as string).split(',').every(localhostTest));
-	// @ts-expect-error - `pair` is valid, but doesnt exists on types
-	const isSsl = req.connection.pair || (req.headers['x-forwarded-proto'] && req.headers['x-forwarded-proto'].indexOf('https') !== -1);
-
-	logger.debug({ msg: 'CORS request info', url: req.url, remoteAddress, isLocal, isSsl, headers: req.headers });
-
-	if (!isLocal && !isSsl) {
-		let host = req.headers.host || url.parse(Meteor.absoluteUrl()).hostname || '';
-		host = host.replace(/:\d+$/, '');
-		res.writeHead(302, {
-			Location: `https://${host}${req.url}`,
-		});
-		res.end();
-		return;
-	}
-
-	return next();
+// A chunk missing from the build must fail to load, not be cached for good as the page.
+WebApp.connectHandlers.use('/bundle/', (_req: http.IncomingMessage, res: http.ServerResponse) => {
+	res.writeHead(404, { 'Cache-Control': 'no-cache' });
+	res.end();
 });

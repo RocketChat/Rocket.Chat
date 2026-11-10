@@ -47,7 +47,7 @@ describe('licenses', () => {
 				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
 		});
 
 		it('should fail if license is invalid', async () => {
