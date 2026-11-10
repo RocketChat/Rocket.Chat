@@ -21,4 +21,11 @@ export interface IUploadDescriptor {
 	 * The token of a Livechat visitor
 	 */
 	visitorToken?: string;
+	/**
+	 * The id of the thread's parent message. When set, the file
+	 * message posts as a reply in that thread.
+	 *
+	 * NOTE: not supported for uploads by a Livechat visitor.
+	 */
+	threadId?: string;
 }

@@ -21,6 +21,7 @@ export class UploadCreator implements IUploadCreator {
 			rid: descriptor.room.id,
 			userId: descriptor.user?.id,
 			visitorToken: descriptor.visitorToken,
+			...(descriptor.threadId && { threadId: descriptor.threadId }),
 		} as IUploadDetails;
 
 		return bridgeCall<IUpload>(this.senderFn, 'getUploadBridge', 'doCreateUpload', details, buffer, 'APP_ID');
