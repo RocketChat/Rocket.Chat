@@ -55,8 +55,16 @@ export default {
 				if (globals.direction !== 'rtl') {
 					return;
 				}
-				document.documentElement.dir = 'rtl';
-				return () => document.documentElement.removeAttribute('dir');
+				const root = document.documentElement;
+				const previous = root.getAttribute('dir');
+				root.dir = 'rtl';
+				return () => {
+					if (previous === null) {
+						root.removeAttribute('dir');
+					} else {
+						root.dir = previous;
+					}
+				};
 			}, [globals.direction]);
 
 			const mode = useSyncExternalStore(subscribeToSystemColorScheme, () => resolveThemeMode(globals.theme));
