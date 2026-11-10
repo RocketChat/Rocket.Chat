@@ -219,6 +219,14 @@ export const Sizes: Story = {
 	),
 };
 
+export const Loading: Story = {
+	args: {
+		'icon': 'reload',
+		'aria-label': 'reload',
+		'loading': true,
+	},
+};
+
 export const _IconButtonDisabled: Story = {
 	args: {
 		'icon': 'balloon',

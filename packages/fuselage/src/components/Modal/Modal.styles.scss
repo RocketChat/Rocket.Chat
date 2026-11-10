@@ -58,6 +58,11 @@ $modal-border-radius: theme('modal-border-radius', lengths.border-radius(large))
 		margin: -4px;
 	}
 
+	// The header's children get their 4px from `Margins`, which reaches Box children only: a button frame takes it here
+	&__header-inner > .rcx-button {
+		margin: lengths.margin(4);
+	}
+
 	&__title {
 		@include use-text-ellipsis;
 		flex-grow: 1;
