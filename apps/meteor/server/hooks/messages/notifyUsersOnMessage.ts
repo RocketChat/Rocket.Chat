@@ -110,13 +110,13 @@ async function updateUsersSubscriptions(message: IMessage, room: IRoom): Promise
 
 	// Give priority to user mentions over group mentions
 	if (userIds.length) {
-		await Subscriptions.incUserMentionsAndUnreadForRoomIdAndUserIds(room._id, userIds, 1, userMentionInc);
+		await Subscriptions.incUserMentionsAndUnreadForRoomIdAndUserIds(room._id, userIds, 1, userMentionInc, message.u._id);
 	} else if (toAll || toHere) {
 		await Subscriptions.incGroupMentionsAndUnreadForRoomIdExcludingUserId(room._id, message.u._id, 1, groupMentionInc);
 	}
 
 	if (!toAll && !toHere && unreadAllMessages) {
-		await Subscriptions.incUnreadForRoomIdExcludingUserIds(room._id, [...userIds, message.u._id], 1);
+		await Subscriptions.incUnreadForRoomIdExcludingUserIds(room._id, [...userIds, message.u._id], 1, message.u._id);
 	}
 
 	// update subscriptions of other members of the room
@@ -126,6 +126,11 @@ async function updateUsersSubscriptions(message: IMessage, room: IRoom): Promise
 	]);
 
 	subs.forEach((sub) => {
+		if (sub.ignored?.includes(message.u._id)) {
+			void notifyOnSubscriptionChanged({ ...sub, open: true }, 'updated');
+			return;
+		}
+
 		const hasUserMention = userIds.includes(sub.u._id);
 		const shouldIncUnread = hasUserMention || toAll || toHere || unreadAllMessages;
 		void notifyOnSubscriptionChanged(
@@ -153,7 +158,7 @@ export async function updateThreadUsersSubscriptions(message: IMessage, replies:
 	const repliesPlusSender = [...new Set([message.u._id, ...replies])];
 
 	const responses = await Promise.all([
-		Subscriptions.setAlertForRoomIdAndUserIds(message.rid, replies),
+		Subscriptions.setAlertForRoomIdAndUserIds(message.rid, replies, message.u._id),
 		Subscriptions.setOpenForRoomIdAndUserIds(message.rid, repliesPlusSender),
 		Subscriptions.setLastReplyForRoomIdAndUserIds(message.rid, repliesPlusSender, new Date()),
 	]);
