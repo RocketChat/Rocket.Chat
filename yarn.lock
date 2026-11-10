@@ -10171,7 +10171,6 @@ __metadata:
     twilio: "npm:~5.4.5"
     twitter-api-v2: "npm:^1.29.1"
     typescript: "npm:~7.0.2"
-    typia: "patch:typia@npm%3A9.7.2#~/.yarn/patches/typia-npm-9.7.2-5c5d9c80b4.patch"
     ua-parser-js: "npm:~1.0.41"
     underscore: "npm:^1.13.8"
     universal-perf-hooks: "npm:^1.0.1"
@@ -11949,13 +11948,6 @@ __metadata:
   version: 4.62.5
   resolution: "@rollup/rollup-win32-x64-msvc@npm:4.62.5"
   conditions: os=win32 & cpu=x64
-  languageName: node
-  linkType: hard
-
-"@samchon/openapi@npm:^4.7.1":
-  version: 4.7.1
-  resolution: "@samchon/openapi@npm:4.7.1"
-  checksum: 10/4e0a3d529f4113b2a86a369759ecf0d3629af58e4de58d4c9ece737e99219a8f7cf2b9e78ea60a0b99005d5fcdad2269f19c1b792856766025788e1b7b7d00ad
   languageName: node
   linkType: hard
 
@@ -17819,13 +17811,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"array-timsort@npm:^1.0.3":
-  version: 1.0.3
-  resolution: "array-timsort@npm:1.0.3"
-  checksum: 10/f417f073b3733baec3a80decdf5d45bf763f04676ef3610b0e71f9b1d88c6e4c38154c05b28b31529d308bfd0e043d08059fcd9df966245a1276af15b5584936
-  languageName: node
-  linkType: hard
-
 "array-union@npm:^1.0.1":
   version: 1.0.2
   resolution: "array-union@npm:1.0.2"
@@ -19675,19 +19660,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"comment-json@npm:^4.2.3":
-  version: 4.2.3
-  resolution: "comment-json@npm:4.2.3"
-  dependencies:
-    array-timsort: "npm:^1.0.3"
-    core-util-is: "npm:^1.0.3"
-    esprima: "npm:^4.0.1"
-    has-own-prop: "npm:^2.0.0"
-    repeat-string: "npm:^1.6.1"
-  checksum: 10/97eb6ff8231653864cea5c7721636e823194f0322cd7f0faa6154a1c5b5eb1cab2ca60526bc36d5b39e7c2bcf7eb175b57fd8e44b1c398f0c70ea8c9a114e834
-  languageName: node
-  linkType: hard
-
 "comment-parser@npm:^1.4.1":
   version: 1.4.7
   resolution: "comment-parser@npm:1.4.7"
@@ -19886,7 +19858,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"core-util-is@npm:^1.0.3, core-util-is@npm:~1.0.0":
+"core-util-is@npm:~1.0.0":
   version: 1.0.3
   resolution: "core-util-is@npm:1.0.3"
   checksum: 10/9de8597363a8e9b9952491ebe18167e3b36e7707569eed0ebf14f8bba773611376466ae34575bca8cfe3c767890c859c74056084738f09d4e4a6f902b2ad7d99
@@ -22438,7 +22410,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esprima@npm:^4.0.0, esprima@npm:^4.0.1, esprima@npm:~4.0.0":
+"esprima@npm:^4.0.0, esprima@npm:~4.0.0":
   version: 4.0.1
   resolution: "esprima@npm:4.0.1"
   bin:
@@ -24012,13 +23984,6 @@ __metadata:
   version: 5.0.1
   resolution: "has-flag@npm:5.0.1"
   checksum: 10/e0a151db8e43b528258c4269c23224c691b42c1f5168f6d88b61c3f9398ef16d44226a78a0596642da55851cf306a8afe57d6936d4d69a24b66fd10de1373da8
-  languageName: node
-  linkType: hard
-
-"has-own-prop@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "has-own-prop@npm:2.0.0"
-  checksum: 10/ca6336e85ead2295c9603880cbc199e2d3ff7eaea0e9035d68fbc79892e9cf681abc62c0909520f112c671dad9961be2173b21dff951358cc98425c560e789e0
   languageName: node
   linkType: hard
 
@@ -32488,7 +32453,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"repeat-string@npm:^1.0.0, repeat-string@npm:^1.6.1":
+"repeat-string@npm:^1.0.0":
   version: 1.6.1
   resolution: "repeat-string@npm:1.6.1"
   checksum: 10/1b809fc6db97decdc68f5b12c4d1a671c8e3f65ec4a40c238bc5200e44e85bcc52a54f78268ab9c29fcf5fe4f1343e805420056d1f30fa9a9ee4c2d93e3cc6c0
@@ -35958,44 +35923,6 @@ __metadata:
   bin:
     typia: lib/executable/typia.js
   checksum: 10/a6aeb24b8e3a50e4cb20f514cdd82b296980c9928f51a4a56acc5337eef007b23074a08b62c07d3ba49b10399cc107bdcd04765aee89647040922b1a3e9a6842
-  languageName: node
-  linkType: hard
-
-"typia@npm:9.7.2":
-  version: 9.7.2
-  resolution: "typia@npm:9.7.2"
-  dependencies:
-    "@samchon/openapi": "npm:^4.7.1"
-    "@standard-schema/spec": "npm:^1.0.0"
-    commander: "npm:^10.0.0"
-    comment-json: "npm:^4.2.3"
-    inquirer: "npm:^8.2.5"
-    package-manager-detector: "npm:^0.2.0"
-    randexp: "npm:^0.5.3"
-  peerDependencies:
-    typescript: ">=4.8.0 <5.10.0"
-  bin:
-    typia: lib/executable/typia.js
-  checksum: 10/dffe50bd624793cc22d37ccd2bdc8bfe814ee32fd51b35fd988772e9fba9bb2391218a83883bad09c6e7c9bbae6b5c853f607b5c3c57c7ed7d40308c4f273c30
-  languageName: node
-  linkType: hard
-
-"typia@patch:typia@npm%3A9.7.2#~/.yarn/patches/typia-npm-9.7.2-5c5d9c80b4.patch":
-  version: 9.7.2
-  resolution: "typia@patch:typia@npm%3A9.7.2#~/.yarn/patches/typia-npm-9.7.2-5c5d9c80b4.patch::version=9.7.2&hash=cc0415"
-  dependencies:
-    "@samchon/openapi": "npm:^4.7.1"
-    "@standard-schema/spec": "npm:^1.0.0"
-    commander: "npm:^10.0.0"
-    comment-json: "npm:^4.2.3"
-    inquirer: "npm:^8.2.5"
-    package-manager-detector: "npm:^0.2.0"
-    randexp: "npm:^0.5.3"
-  peerDependencies:
-    typescript: ">=4.8.0 <5.10.0"
-  bin:
-    typia: lib/executable/typia.js
-  checksum: 10/db5a671719afedcafff4f48b684d7afb76803d32ccb98df64071fd02e32bd932496d5b1c348112a4deab97d65f53be554ae9fd391ce6f6a90a92a33a6e1086d8
   languageName: node
   linkType: hard
 
