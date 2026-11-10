@@ -26,7 +26,12 @@ export type ItemDescriptionProps = {
 const ItemDescription = ({ is, inline, truncate = true, size = 'default', className, ...props }: ItemDescriptionProps) => {
 	const Tag = is ?? (inline ? 'span' : 'div');
 
-	return <Tag {...props} className={cx(cxx('rcx-item__description')({ inline: !!inline, wrap: !truncate, large: size === 'large' }), className)} />;
+	return (
+		<Tag
+			{...props}
+			className={cx(cxx('rcx-item__description')({ inline: !!inline, wrap: !truncate, large: size === 'large' }), className)}
+		/>
+	);
 };
 
 export default ItemDescription;

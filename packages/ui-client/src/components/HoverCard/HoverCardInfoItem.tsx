@@ -25,13 +25,21 @@ export type HoverCardInfoItemProps = {
 
 const HoverCardInfoItem = ({ icon, label, onClick, children }: HoverCardInfoItemProps) => {
 	const media = (
-		<ItemMedia variant='icon'>{icon ? <Icon name={icon} size='x20' title={label} aria-hidden /> : <Box width='x20' aria-hidden />}</ItemMedia>
+		<ItemMedia variant='icon'>
+			{icon ? <Icon name={icon} size='x20' title={label} aria-hidden /> : <Box width='x20' aria-hidden />}
+		</ItemMedia>
 	);
 
 	const title = (
 		<ItemTitle truncate={false}>
 			{label && <Box is='span' className={srOnly}>{`${label}: `}</Box>}
-			{onClick ? <ItemLink is='button' onClick={onClick}>{children}</ItemLink> : children}
+			{onClick ? (
+				<ItemLink is='button' onClick={onClick}>
+					{children}
+				</ItemLink>
+			) : (
+				children
+			)}
 		</ItemTitle>
 	);
 

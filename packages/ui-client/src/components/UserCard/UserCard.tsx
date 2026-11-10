@@ -5,14 +5,7 @@ import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useEmbeddedLayout } from '../../hooks/useEmbeddedLayout';
-import {
-	HoverCard,
-	HoverCardActions,
-	HoverCardBand,
-	HoverCardInfoItem,
-	HoverCardInfoList,
-	HoverCardSection,
-} from '../HoverCard';
+import { HoverCard, HoverCardActions, HoverCardBand, HoverCardInfoItem, HoverCardInfoList, HoverCardSection } from '../HoverCard';
 import { MarkdownTextContext } from '../MarkdownTextContext';
 import * as Status from '../UserStatus';
 import UserCardHeader from './UserCardHeader';
