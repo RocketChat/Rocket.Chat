@@ -15,9 +15,10 @@ import {
 	GenericNoResults,
 	links,
 } from '@rocket.chat/ui-client';
-import { useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { hashKey, keepPreviousData } from '@tanstack/react-query';
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import DepartmentItemMenu from './DepartmentItemMenu';
 import FilterByText from '../../../../components/FilterByText';
@@ -30,7 +31,7 @@ const DEPARTMENTS_ENDPOINTS = {
 export type DepartmentsTableProps = { archived: boolean };
 
 const DepartmentsTable = ({ archived }: DepartmentsTableProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const router = useRouter();
 	const [text, setText] = useState('');
 

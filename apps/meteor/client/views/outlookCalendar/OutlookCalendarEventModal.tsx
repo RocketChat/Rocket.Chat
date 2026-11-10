@@ -1,7 +1,8 @@
 import { GenericModal, GenericModalSkeleton } from '@rocket.chat/ui-client';
-import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ComponentProps } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import OutlookEventItemContent from './OutlookEventsList/OutlookEventItemContent';
 import { useOutlookOpenCall } from './hooks/useOutlookOpenCall';
@@ -14,7 +15,7 @@ export type OutlookCalendarEventModalProps = ComponentProps<typeof GenericModal>
 };
 
 const OutlookCalendarEventModal = ({ id, subject, meetingUrl, description, ...props }: OutlookCalendarEventModalProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const calendarInfoEndpoint = useEndpoint('GET', '/v1/calendar-events.info');
 
 	const { data, isLoading } = useQuery({

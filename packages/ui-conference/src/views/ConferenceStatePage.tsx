@@ -1,8 +1,8 @@
 import { States, StatesIcon, StatesTitle, StatesSubtitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import { Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 
 type ConferenceStatePageProps = {
 	icon: IconName;
@@ -20,7 +20,7 @@ type ConferenceStatePageProps = {
  * still reads as the call it was opened for.
  */
 const ConferenceStatePage = ({ icon, title, subtitle, action }: ConferenceStatePageProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<Page background='tint'>

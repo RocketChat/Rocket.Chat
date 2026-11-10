@@ -1,4 +1,4 @@
-import type { TranslationContextValue } from '@rocket.chat/ui-contexts';
+import type { TFunction } from 'i18next';
 
 type DurationOption = {
 	value: string;
@@ -34,7 +34,7 @@ export const STATUS_DURATION_OPTIONS: DurationOption[] = [
 export const validateStatusExpiration = (
 	value: string,
 	{ statusCustomDate, statusCustomTime }: { statusCustomDate?: string; statusCustomTime?: string },
-	t: TranslationContextValue['translate'],
+	t: TFunction,
 ): string | true => {
 	if (value !== 'custom') {
 		return true;

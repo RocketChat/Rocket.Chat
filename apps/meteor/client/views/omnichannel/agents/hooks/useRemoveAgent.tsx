@@ -1,13 +1,14 @@
 import type { ILivechatAgent } from '@rocket.chat/core-typings';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
-import { useSetModal, useToastMessageDispatch, useTranslation, useRouter, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useRouter, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 
 import { omnichannelQueryKeys } from '../../../../lib/queryKeys';
 
 export const useRemoveAgent = (uid: ILivechatAgent['_id']) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const router = useRouter();
 	const setModal = useSetModal();
 	const queryClient = useQueryClient();
