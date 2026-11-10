@@ -242,6 +242,15 @@
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
+	"InputBox/mixins.scss": {
+		"rules": 9,
+		"nested": 1,
+		"combinators": 4,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
 	"Item/Item.styles.scss": {
 		"rules": 88,
 		"nested": 60,
@@ -350,13 +359,22 @@
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
+	"Message/mixins.scss": {
+		"rules": 2,
+		"nested": 0,
+		"combinators": 2,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
 	"Modal/Modal.styles.scss": {
 		"rules": 22,
 		"nested": 21,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
-		"negativeMargins": 1,
+		"negativeMargins": 2,
 		"displayContents": 0
 	},
 	"NavBar/NavBar.styles.scss": {
@@ -452,6 +470,15 @@
 	"Sidebar/SidebarMedia/SidebarMedia.styles.scss": {
 		"rules": 4,
 		"nested": 3,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"Sidebar/variables.scss": {
+		"rules": 0,
+		"nested": 0,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
@@ -600,6 +627,15 @@
 		"important": 0,
 		"specificityBumps": 0,
 		"negativeMargins": 3,
+		"displayContents": 0
+	},
+	"index.scss": {
+		"rules": 0,
+		"nested": 0,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
 		"displayContents": 0
 	}
 }
