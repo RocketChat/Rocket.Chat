@@ -18,7 +18,9 @@ const here = dirname(fileURLToPath(import.meta.url));
 const workspaceRoot = join(here, '../../..');
 const dist = join(here, 'dist');
 
-const { values: args } = parseArgs({ options: { json: { type: 'string' }, compare: { type: 'string' }, markdown: { type: 'string' }, report: { type: 'string' } } });
+const { values: args } = parseArgs({
+	options: { json: { type: 'string' }, compare: { type: 'string' }, markdown: { type: 'string' }, report: { type: 'string' } },
+});
 
 const toPosix = (path) => path.replaceAll('\\', '/');
 const fuselageSrc = toPosix(join(workspaceRoot, 'packages/fuselage/src/'));
