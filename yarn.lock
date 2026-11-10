@@ -9308,7 +9308,7 @@ __metadata:
     autoprefixer: "npm:~10.5.6"
     caniuse-lite: "npm:~1.0.30001810"
     cssnano: "npm:~9.0.4"
-    dom-accessibility-api: "npm:^0.5.9"
+    dom-accessibility-api: "npm:~0.6.3"
     invariant: "npm:^2.2.4"
     jest: "npm:~30.5.2"
     jest-axe: "npm:~11.0.0"
@@ -21133,7 +21133,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dom-accessibility-api@npm:^0.6.3":
+"dom-accessibility-api@npm:^0.6.3, dom-accessibility-api@npm:~0.6.3":
   version: 0.6.3
   resolution: "dom-accessibility-api@npm:0.6.3"
   checksum: 10/83d3371f8226487fbad36e160d44f1d9017fb26d46faba6a06fcad15f34633fc827b8c3e99d49f71d5f3253d866e2131826866fd0a3c86626f8eccfc361881ff
