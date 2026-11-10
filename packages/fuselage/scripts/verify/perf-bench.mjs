@@ -1,6 +1,6 @@
 // Usage: node scripts/verify/perf-bench.mjs <storybook-static A> <storybook-static B> [runs=20]
 // Times mounting and updating 150 Message rows and 200 Sidebar items (the `Benchmarks/Lists` stories) in two production
-// Storybook builds, with the CPU throttled. Runs alternate A, B, A, B so drift hits both sides alike; each run is a fresh
+// Storybook builds, with the CPU throttled. Sides alternate and the lead side flips every run (A B, B A, ...) so drift and order effects hit both alike; each run is a fresh
 // page. Prints the median of each side, the change, and the spread (interquartile range over median, IQR) as the noise floor:
 // a change inside the spread is noise. For a floor between builds, pass the same build twice (two captures of `develop`).
 // Measured floor, one build against itself at 20 runs and 4x throttle: IQR 3.0% to 8.1%, change between -0.5% and +1.1%.
@@ -38,7 +38,13 @@ const stats = (samples) => {
 	return { median, spread: (quantile(sorted, 0.75) - quantile(sorted, 0.25)) / median };
 };
 
-const servers = { A: await serve(dirA), B: await serve(dirB) };
+const missing = benchStories(dirA).filter((story) => !benchStories(dirB).some((other) => other.id === story.id));
+if (missing.length) {
+	console.error(`Build B has no story ${missing.map((story) => story.id).join(', ')}; both builds must have the same Benchmarks/Lists stories.`);
+	process.exit(1);
+}
+
+const servers = { A:await serve(dirA), B: await serve(dirB) };
 const browser = await chromium.launch();
 
 const measure = async (base, id) => {
@@ -65,7 +71,7 @@ const results = [];
 for (const story of benchStories(dirA)) {
 	const samples = { A: { mount: [], update: [] }, B: { mount: [], update: [] } };
 	for (let run = 0; run < runs; run++) {
-		for (const side of ['A', 'B']) {
+		for (const side of run % 2 ? ['B', 'A'] : ['A', 'B']) {
 			const { mount, update } = await measure(servers[side].url, story.id);
 			samples[side].mount.push(mount);
 			samples[side].update.push(update);
