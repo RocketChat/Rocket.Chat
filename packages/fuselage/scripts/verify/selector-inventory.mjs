@@ -23,7 +23,7 @@ const folderOf = new Map(
 );
 const classes = positionals.length ? positionals : [...folderOf.keys()];
 
-const NOT_OVERRIDES = /\.(spec|test|stories)\.[tj]sx?$|\.d\.ts$|\/tests?\/|\/e2e\//;
+const NOT_OVERRIDES = /\.(spec|test|stories)\.[tj]sx?$|\.d\.ts$|\/(?:tests?|testing)\/|\/e2e\//;
 const pattern = `\\.(${classes.join('|')})(--|__|[^A-Za-z0-9_-]|$)`;
 
 // git grep exits 1 when nothing matches, which is an empty inventory rather than an error
