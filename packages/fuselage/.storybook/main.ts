@@ -43,6 +43,16 @@ const config: StorybookConfig = {
 		...config,
 		// Tamagui links its zero-runtime stylesheet at `<base>tamagui-zero.css`, which its dev server answers only at an absolute base.
 		...(zeroRuntime && configType === 'DEVELOPMENT' && { base: '/' }),
+		// The stories import the Tamagui config through this name: the runtime needs it, the compiled stories must not reach it
+		resolve: {
+			...config.resolve,
+			alias: [
+				...(Array.isArray(config.resolve?.alias)
+					? config.resolve.alias
+					: Object.entries(config.resolve?.alias ?? {}).map(([find, replacement]) => ({ find, replacement }))),
+				{ find: 'fuselage-tamagui-config', replacement: join(import.meta.dirname, zeroRuntime ? 'empty.ts' : '../src/tamagui.config.ts') },
+			],
+		},
 		// Stories render the stylesheets as written, with no PostCSS plugin (autoprefixer included), as webpack's Storybook
 		// did: the library build's plugins and the CSS minifier reorder and round declarations.
 		css: { ...config.css, postcss: { plugins: [] } },
