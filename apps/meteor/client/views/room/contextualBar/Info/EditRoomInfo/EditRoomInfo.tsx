@@ -273,7 +273,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 				<ContextualbarTitle>{title}</ContextualbarTitle>
 				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
 			</ContextualbarHeader>
-			<ContextualbarScrollableContent padding={24} is='form' id={formId} onSubmit={handleSubmit(handleSave)}>
+			<ContextualbarScrollableContent padding='x24' is='form' id={formId} onSubmit={handleSubmit(handleSave)}>
 				<Box display='flex' justifyContent='center'>
 					<Controller
 						control={control}
