@@ -1,19 +1,20 @@
 import {
-	Modal,
-	Button,
 	Box,
+	Button,
 	Callout,
-	Margins,
-	ModalHeader,
-	ModalHeaderText,
-	ModalTagline,
-	ModalTitle,
+	Modal,
 	ModalClose,
 	ModalContent,
-	ModalHeroImage,
 	ModalFooter,
 	ModalFooterAnnotation,
 	ModalFooterControllers,
+	ModalHeader,
+	ModalHeaderText,
+	ModalHeroImage,
+	ModalTagline,
+	ModalTitle,
+	Stack,
+	Text,
 } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
@@ -36,16 +37,16 @@ const VideoConfConfigModal = ({ onClose, onConfirm, isAdmin }: VideoConfConfigMo
 				<ModalClose title={t('Close')} onClick={onClose} />
 			</ModalHeader>
 			<ModalContent>
-				<ModalHeroImage maxHeight='initial' src='/images/conf-call-config.svg' />
-				<Box fontScale='h3'>{t('Premium_capabilities')}</Box>
+				<ModalHeroImage src='/images/conf-call-config.svg' />
+				<Text fontScale='h3'>{t('Premium_capabilities')}</Text>
 				<Box withRichContent>
 					<Box is='ul' paddingInlineStart={24}>
 						<li>{t('Ringtones_and_visual_indicators_notify_people_of_incoming_calls')}</li>
 						<li>{t('Call_history_provides_a_record_of_when_calls_took_place_and_who_joined')}</li>
 					</Box>
 				</Box>
-				<Box fontScale='h3'>{t('Conference_call_apps')}</Box>
-				<Margins blockStart={12}>
+				<Stack gap={12}>
+					<Text fontScale='h3'>{t('Conference_call_apps')}</Text>
 					<Callout icon='team' title={isAdmin ? t('Jitsi_included_with_Community') : 'Jitsi'}>
 						{t('Open-source_conference_call_solution')}
 					</Callout>
@@ -55,17 +56,17 @@ const VideoConfConfigModal = ({ onClose, onConfirm, isAdmin }: VideoConfConfigMo
 					<Callout icon='lightning' title={t('Google_Meet_Premium_only')}>
 						{t('Secure_SaaS_solution')} {t('A_cloud-based_platform_for_those_needing_a_plug-and-play_app')}
 					</Callout>
-				</Margins>
-				<Box fontScale='h3' marginBlockStart={24}>
-					{t('Required_action')}
+				</Stack>
+				<Box display='flex' flexDirection='column' gap={12} marginBlock={24}>
+					<Text fontScale='h3'>{t('Required_action')}</Text>
+					<Callout title={t('Missing_configuration')} type='warning'>
+						{isAdmin
+							? t('An_app_needs_to_be_installed_and_configured')
+							: t('A_workspace_admin_needs_to_install_and_configure_a_conference_call_app')}
+					</Callout>
 				</Box>
-				<Callout marginBlockStart={12} marginBlockEnd={24} title={t('Missing_configuration')} type='warning'>
-					{isAdmin
-						? t('An_app_needs_to_be_installed_and_configured')
-						: t('A_workspace_admin_needs_to_install_and_configure_a_conference_call_app')}
-				</Callout>
 			</ModalContent>
-			<ModalFooter justifyContent='space-between'>
+			<ModalFooter justify='space-between'>
 				<ModalFooterAnnotation>
 					{isAdmin
 						? t('Configure_video_conference_to_make_it_available_on_this_workspace')
@@ -74,7 +75,7 @@ const VideoConfConfigModal = ({ onClose, onConfirm, isAdmin }: VideoConfConfigMo
 				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Close')}</Button>
 					{onConfirm && isAdmin && (
-						<Button primary onClick={onConfirm}>
+						<Button variant='primary' onClick={onConfirm}>
 							{t('Open_settings')}
 						</Button>
 					)}

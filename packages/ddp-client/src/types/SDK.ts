@@ -4,6 +4,7 @@ import type { Connection } from '../Connection';
 import type { TimeoutControl } from '../TimeoutControl';
 import type { Account } from './Account';
 import type { ClientStream } from './ClientStream';
+import type { StreamKeys, StreamNames, StreamerCallbackArgs } from './streams';
 
 /*
 * The following procedure is used for streaming data:
@@ -22,6 +23,11 @@ import type { ClientStream } from './ClientStream';
 */
 
 export interface SDK {
+	stream<N extends StreamNames, K extends StreamKeys<N>>(
+		streamName: N,
+		key: K | [K, unknown],
+		callback: (...args: StreamerCallbackArgs<N, K>) => void,
+	): ReturnType<ClientStream['subscribe']>;
 	stream(name: string, params: unknown[], cb: (...data: unknown[]) => void): ReturnType<ClientStream['subscribe']>;
 
 	connection: Connection;

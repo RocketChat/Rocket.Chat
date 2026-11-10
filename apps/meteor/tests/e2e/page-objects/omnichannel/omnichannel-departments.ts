@@ -89,7 +89,7 @@ export class OmnichannelDepartments extends OmnichannelAdmin {
 	}
 
 	get inputUnit(): Locator {
-		return this.page.getByLabel('Unit').getByRole('textbox', { name: 'Select an option' });
+		return this.page.getByRole('textbox', { name: 'Unit' });
 	}
 
 	btnTag(tagName: string) {

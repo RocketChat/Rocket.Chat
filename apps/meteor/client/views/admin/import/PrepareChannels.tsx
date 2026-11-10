@@ -29,10 +29,10 @@ const PrepareChannels = ({ channels, channelsCount, setChannels }: PrepareChanne
 
 	return (
 		<>
-			<Table>
+			<Table columns={['x36', 'auto', 'auto']}>
 				<TableHead>
 					<TableRow>
-						<TableCell width='x36'>
+						<TableCell>
 							<CheckBox
 								checked={channelsCount > 0}
 								indeterminate={channelsCount > 0 && channelsCount !== channels.length}
@@ -54,14 +54,14 @@ const PrepareChannels = ({ channels, channelsCount, setChannels }: PrepareChanne
 								}}
 							/>
 						</TableCell>
-						<TableCell is='th'>{t('Name')}</TableCell>
-						<TableCell is='th' align='end'></TableCell>
+						<TableCell>{t('Name')}</TableCell>
+						<TableCell align='end'></TableCell>
 					</TableRow>
 				</TableHead>
 				<TableBody>
 					{channels.slice(current, current + itemsPerPage).map((channel) => (
 						<TableRow key={channel.channel_id}>
-							<TableCell width='x36'>
+							<TableCell>
 								<CheckBox
 									checked={channel.do_import}
 									onChange={(event: ChangeEvent<HTMLInputElement>): void => {

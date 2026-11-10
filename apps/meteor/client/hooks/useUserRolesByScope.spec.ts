@@ -54,3 +54,22 @@ it('leaves out roles without a description', async () => {
 
 	await waitFor(() => expect(result.current).toEqual({ workspaceRoles: ['Administrator'], roomRoles: [] }));
 });
+
+it("prefers the roles from the user's record and refetches the room roles on every mount", async () => {
+	const getRoomRoles = jest.fn(() => ({ roles: [{ rid, u: { _id: uid, username: 'member' }, roles: ['owner'] }] }));
+	const wrapper = mockAppRoot()
+		.withJohnDoe()
+		.withEndpoint('GET', '/v1/roles.getUsersInPublicRoles', () => ({
+			users: [{ _id: uid, username: 'member', roles: ['admin'] }],
+		}))
+		.withEndpoint('GET', '/v1/rooms.roles', getRoomRoles)
+		.build();
+
+	const first = renderHook(() => useUserRolesByScope(uid, rid, { userRoleIds: ['guest'] }), { wrapper });
+	await waitFor(() => expect(first.result.current).toEqual({ workspaceRoles: ['Guest'], roomRoles: ['Owner'] }));
+	first.unmount();
+
+	const second = renderHook(() => useUserRolesByScope(uid, rid, { userRoleIds: ['guest'] }), { wrapper });
+	await waitFor(() => expect(getRoomRoles).toHaveBeenCalledTimes(2));
+	expect(second.result.current).toEqual({ workspaceRoles: ['Guest'], roomRoles: ['Owner'] });
+});

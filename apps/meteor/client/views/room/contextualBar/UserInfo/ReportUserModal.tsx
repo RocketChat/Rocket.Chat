@@ -52,17 +52,17 @@ const ReportUserModal = ({ username, displayName, onConfirm, onClose }: ReportUs
 				<Field>
 					<FieldLabel htmlFor={reasonForReportId}>{t('Report_reason')}</FieldLabel>
 					<FieldDescription id={`${reasonForReportId}-description`}>{t('Let_moderators_know_what_the_issue_is')}</FieldDescription>
-					<FieldRow>
-						<TextAreaInput
-							id={reasonForReportId}
-							rows={3}
-							{...register('reasonForReport', { required: t('Required_field', { field: t('Reason_for_report') }) })}
-							width='full'
-							marginBlockEnd={4}
-							aria-required='true'
-							aria-describedby={`${reasonForReportId}-description ${reasonForReportId}-error`}
-						/>
-					</FieldRow>
+					<Box paddingBlockEnd={4}>
+						<FieldRow>
+							<TextAreaInput
+								id={reasonForReportId}
+								rows={3}
+								{...register('reasonForReport', { required: t('Required_field', { field: t('Reason_for_report') }) })}
+								aria-required='true'
+								aria-describedby={`${reasonForReportId}-description ${reasonForReportId}-error`}
+							/>
+						</FieldRow>
+					</Box>
 					{errors.reasonForReport && (
 						<FieldError aria-live='assertive' id={`${reasonForReportId}-error`}>
 							{errors.reasonForReport.message}

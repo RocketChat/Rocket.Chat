@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, ButtonGroup, Palette, RadioButton, borderRadius } from '@rocket.chat/fuselage';
+import { Box, ButtonGroup, Palette, RadioButton, SplitButton, borderRadius } from '@rocket.chat/fuselage';
 import type { Keys } from '@rocket.chat/icons';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
@@ -125,22 +125,6 @@ const controlNoticesStyles = css`
 	}
 `;
 
-// A device toggle and its selector fused into one control, the selector first and a shade quieter.
-const deviceControlStyles = css`
-	display: inline-flex;
-	align-items: stretch;
-	overflow: hidden;
-	border-radius: ${borderRadius('medium')};
-
-	& button {
-		border-radius: 0;
-	}
-
-	& > *:first-child button {
-		opacity: 0.7;
-	}
-`;
-
 export type CallControlsProps = {
 	layout: StageLayout;
 	onLayoutChange: (layout: StageLayout) => void;
@@ -197,57 +181,51 @@ const CallControls = ({ layout, onLayoutChange, onOpenDiagnostics }: CallControl
 
 	return (
 		<ButtonGroup style={{ position: 'relative' }}>
-			<Box className={deviceControlStyles}>
-				<Box>
-					<AudioDevicePicker />
-				</Box>
-				<Box>
-					<ToggleButton
-						label={t('Mute')}
-						icons={['mic', 'mic-off']}
-						titles={self.speakingWhileMuted ? [t('You_are_muted'), t('You_are_muted')] : [t('Mute'), t('Unmute')]}
-						pressed={self.muted}
-						aria-pressed={self.muted}
-						dangerWhenPressed
-						large
-						onToggle={toggleMic}
-					/>
-				</Box>
-			</Box>
-			<Box className={deviceControlStyles}>
-				<Box>
-					<CameraPicker />
-				</Box>
-				<Box>
-					<ToggleButton
-						label={t('Camera')}
-						icons={['video', 'video-off']}
-						titles={[t('Stop_camera'), t('Start_camera')]}
-						pressed={!self.cameraOn}
-						// Pressed as its label reads: "Camera" is pressed while the camera is on, whichever way it is drawn.
-						aria-pressed={self.cameraOn}
-						dangerWhenPressed
-						large
-						onToggle={toggleCamera}
-					/>
-				</Box>
-			</Box>
+			<SplitButton danger={self.muted} aria-label={t('Microphone')}>
+				<AudioDevicePicker />
+				<ToggleButton
+					label={t('Mute')}
+					icons={['mic', 'mic-off']}
+					titles={self.speakingWhileMuted ? [t('You_are_muted'), t('You_are_muted')] : [t('Mute'), t('Unmute')]}
+					pressed={self.muted}
+					aria-pressed={self.muted}
+					dangerWhenPressed
+					size='large'
+					onToggle={toggleMic}
+				/>
+			</SplitButton>
+			<SplitButton danger={!self.cameraOn} aria-label={t('Camera_controls')}>
+				<CameraPicker />
+				<ToggleButton
+					label={t('Camera')}
+					icons={['video', 'video-off']}
+					titles={[t('Stop_camera'), t('Start_camera')]}
+					pressed={!self.cameraOn}
+					// Pressed as its label reads: "Camera" is pressed while the camera is on, whichever way it is drawn.
+					aria-pressed={self.cameraOn}
+					dangerWhenPressed
+					size='large'
+					onToggle={toggleCamera}
+				/>
+			</SplitButton>
 			<ToggleButton
 				label={t('Share_screen')}
 				icons={['desktop-arrow-up', 'desktop-cross']}
 				titles={[t('Share_screen'), t('Stop_sharing_screen')]}
 				pressed={self.screenSharing}
 				aria-pressed={self.screenSharing}
-				large
+				info
+				size='large'
 				onToggle={toggleScreenShare}
 			/>
 			<ToggleButton
 				label={t('Raise_hand')}
-				icons={['hand-pointer', 'hand-pointer']}
+				icons={['hand', 'hand']}
 				titles={[t('Raise_hand'), t('Lower_hand')]}
 				pressed={self.handRaised}
 				aria-pressed={self.handRaised}
-				large
+				info
+				size='large'
 				onToggle={toggleHand}
 			/>
 			<Box className={reactionPickerWrapStyles} ref={reactionPickerRef}>
@@ -257,7 +235,8 @@ const CallControls = ({ layout, onLayoutChange, onOpenDiagnostics }: CallControl
 					titles={[t('Send_reaction'), t('Send_reaction')]}
 					pressed={reactionPickerOpen}
 					aria-expanded={reactionPickerOpen}
-					large
+					info
+					size='large'
 					onToggle={() => setReactionPickerOpen((p) => !p)}
 				/>
 			</Box>
@@ -266,9 +245,9 @@ const CallControls = ({ layout, onLayoutChange, onOpenDiagnostics }: CallControl
 				sections={[{ items: layoutItems }, { items: moreItems }]}
 				placement='top-end'
 				selectionMode='multiple'
-				button={<ActionButton secondary label={t('More')} icon='kebab' large />}
+				button={<ActionButton secondary label={t('More')} icon='kebab' size='large' />}
 			/>
-			<ActionButton label={hangupLabel} icon='phone-off' danger large onClick={leave} />
+			<ActionButton label={hangupLabel} icon='phone-off' danger size='large' onClick={leave} />
 			{(self.speakingWhileMuted || reactionPickerOpen) && (
 				<Box className={controlNoticesStyles}>
 					{self.speakingWhileMuted && (

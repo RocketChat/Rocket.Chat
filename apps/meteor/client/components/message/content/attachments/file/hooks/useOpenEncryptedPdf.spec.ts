@@ -154,6 +154,32 @@ describe('useOpenEncryptedPdf', () => {
 		});
 	});
 
+	describe('when the desktop size limit call throws', () => {
+		beforeEach(() => {
+			window.RocketChatDesktop = {
+				getE2ePdfPreviewSizeLimit: jest.fn(() => {
+					throw new Error('desktop failure');
+				}),
+			} as any;
+			jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+		});
+
+		it('should fall back to 10MB limit and download if file exceeds it', async () => {
+			const { result } = renderHook(() => useOpenEncryptedPdf(), {
+				wrapper: mockAppRoot().build(),
+			});
+
+			const exceededSize = 11 * 1024 * 1024; // 11 MB
+
+			await act(async () => {
+				await result.current(link, title, exceededSize, format, mockOpenDocumentViewer);
+			});
+
+			expect(mockForAttachmentDownload).toHaveBeenCalledWith(expect.any(String), link);
+			expect(mockOpenDocumentViewer).not.toHaveBeenCalled();
+		});
+	});
+
 	describe('when RocketChatDesktop is undefined', () => {
 		beforeEach(() => {
 			delete (window as any).RocketChatDesktop;

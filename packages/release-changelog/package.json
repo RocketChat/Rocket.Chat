@@ -2,10 +2,16 @@
 	"name": "@rocket.chat/release-changelog",
 	"version": "0.1.1",
 	"private": true,
+	"type": "module",
+	"exports": {
+		".": {
+			"default": "./dist/index.js"
+		}
+	},
 	"main": "dist/index.js",
 	"scripts": {
 		"build": "tsc",
-		"lint": "eslint .",
+		"lint": "yarn run -T oxlint",
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
@@ -15,8 +21,7 @@
 	"devDependencies": {
 		"@changesets/types": "^6.0.0",
 		"@types/node": "~24.13.6",
-		"eslint": "~10.11.0",
-		"typescript": "~5.9.3"
+		"typescript": "~7.0.2"
 	},
 	"volta": {
 		"extends": "../../package.json"

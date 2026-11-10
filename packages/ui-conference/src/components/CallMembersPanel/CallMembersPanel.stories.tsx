@@ -76,6 +76,24 @@ export const WithoutChatAccess: Story = {
 };
 
 /**
+ * Members who aren't in the call and can't read its chat either: the row says both, and still offers the ring —
+ * not reading the chat is no reason not to call them back.
+ */
+export const NotInCallWithoutChatAccess: Story = {
+	decorators: [
+		withMembers(
+			[
+				members.joined,
+				members.declined,
+				{ _id: 'invited', username: 'linus', name: 'Linus Torvalds', joined: false },
+				{ ...members.left, _id: 'left-with-access' },
+			],
+			{ chatAccess: buildChatAccess({ membersWithoutAccess: ['declined', 'invited'] }) },
+		),
+	],
+};
+
+/**
  * Nobody has answered yet. One member's phone is ringing and the other is only invited — rung at some point, or
  * never — which is what the two rows are for: a ring is offered to whoever isn't hearing one now.
  */

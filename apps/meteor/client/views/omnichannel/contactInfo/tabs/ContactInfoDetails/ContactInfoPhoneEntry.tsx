@@ -22,7 +22,7 @@ const ContactInfoPhoneEntry = ({ contact, value, ...props }: ContactInfoPhoneEnt
 			icon='phone'
 			value={parseOutboundPhoneNumber(value)}
 			actions={[
-				<IconButton key={`${value}-copy`} onClick={() => copy()} tiny icon='copy' title={t('Copy')} />,
+				<IconButton key={`${value}-copy`} onClick={() => copy()} size='tiny' icon='copy' title={t('Copy')} />,
 				null,
 				<ContactInfoOutboundMessageButton
 					key={`${value}-outbound-message`}

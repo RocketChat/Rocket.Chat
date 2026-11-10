@@ -1,19 +1,27 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
 import type { ComponentProps, ReactNode } from 'react';
 
+const iconColors = {
+	hint: 'hint',
+	info: 'info',
+	danger: 'danger',
+	warning: 'status-font-on-warning',
+	success: 'status-font-on-success',
+} as const;
+
 const ListItem = ({
 	children,
 	icon,
-	iconColor = 'success',
+	iconColor,
 	fontScale = 'c1',
 }: {
 	children: ReactNode;
 	icon?: ComponentProps<typeof Icon>['name'];
-	iconColor?: ComponentProps<typeof Icon>['color'];
+	iconColor?: keyof typeof iconColors;
 	fontScale?: ComponentProps<typeof Box>['fontScale'];
 }) => (
-	<Box display='flex' is='li' fontScale={fontScale}>
-		{icon && <Icon name={icon} color={iconColor} size='x16' marginInlineEnd={4} />}
+	<Box display='flex' is='li' fontScale={fontScale} gap={icon ? 4 : undefined}>
+		{icon && <Icon name={icon} color={iconColor && iconColors[iconColor]} size='x16' />}
 		{children}
 	</Box>
 );

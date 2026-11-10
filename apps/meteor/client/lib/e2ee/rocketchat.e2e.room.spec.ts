@@ -6,7 +6,7 @@ jest.mock('./crypto/aes');
 jest.mock('../../../client/lib/SDKClient', () => ({
 	sdk: { rest: { post: jest.fn() } },
 }));
-jest.mock('../../../app/utils/rocketchat.info', () => ({
+jest.mock('../../../rocketchat.info', () => ({
 	Info: { version: '8.7.0' },
 }));
 

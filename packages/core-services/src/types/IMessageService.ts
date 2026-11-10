@@ -10,6 +10,7 @@ export interface IMessageService {
 		extraData?: Partial<T>,
 	): Promise<IMessage>;
 	saveMessageFromFederation({
+		_id,
 		fromId,
 		rid,
 		federation_event_id,
@@ -21,6 +22,8 @@ export interface IMessageService {
 		thread,
 		ts,
 	}: {
+		/** Stores the message under this id instead of a random one; a message already stored under it is kept and the new one dropped. */
+		_id?: string;
 		fromId: string;
 		rid: string;
 		federation_event_id: string;

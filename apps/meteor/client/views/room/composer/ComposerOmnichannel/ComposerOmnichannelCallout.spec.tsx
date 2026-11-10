@@ -15,7 +15,7 @@ jest.mock('../../../omnichannel/contactInfo/tabs/ContactInfoChannels/useBlockCha
 const fakeVisitor = {
 	_id: faker.string.uuid(),
 	token: faker.string.uuid(),
-	username: faker.internet.userName(),
+	username: faker.internet.username(),
 };
 
 const fakeRoom = createFakeRoom<IOmnichannelRoom>({ t: 'l', v: fakeVisitor });

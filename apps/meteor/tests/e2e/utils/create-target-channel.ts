@@ -32,13 +32,20 @@ export async function sendTargetChannelMessage(api: BaseTest['api'], roomName: s
 		channel: { _id: rid },
 	}: { channel: IRoom } = await response.json();
 
-	await api.post('/chat.sendMessage', {
+	const { pinned, ...messageOptions } = options ?? {};
+
+	const sendResponse = await api.post('/chat.sendMessage', {
 		message: {
 			rid,
 			msg: options?.msg || 'simple message',
-			...options,
+			...messageOptions,
 		},
 	});
+
+	if (pinned) {
+		const { message }: { message: IMessage } = await sendResponse.json();
+		await api.post('/chat.pinMessage', { messageId: message._id });
+	}
 
 	return options?.msg || 'simple message';
 }

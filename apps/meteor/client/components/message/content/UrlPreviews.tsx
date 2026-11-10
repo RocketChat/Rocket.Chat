@@ -1,7 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { MessageBlock } from '@rocket.chat/fuselage';
+import { useLayout } from '@rocket.chat/ui-contexts';
 
-import { useOembedLayout } from '../hooks/useOembedLayout';
 import type { OEmbedPreviewMetadata } from './urlPreviews/OEmbedPreviewMetadata';
 import OEmbedResolver from './urlPreviews/OEmbedResolver';
 import UrlPreview from './urlPreviews/UrlPreview';
@@ -107,7 +107,7 @@ const isMetaPreview = (_data: PreviewData['data'], type: PreviewTypes): _data is
 export type UrlPreviewsProps = { urls: OembedUrlLegacy[] };
 
 const UrlPreviews = ({ urls }: UrlPreviewsProps) => {
-	const { maxWidth: oembedMaxWidth } = useOembedLayout();
+	const { isMobile } = useLayout();
 	const metaAndHeaders = urls.map(processMetaAndHeaders).filter(isPreviewData);
 
 	return (
@@ -115,13 +115,13 @@ const UrlPreviews = ({ urls }: UrlPreviewsProps) => {
 			{metaAndHeaders.map(({ type, data }, index) => {
 				if (isMetaPreview(data, type)) {
 					return (
-						<MessageBlock width='100%' maxWidth={oembedMaxWidth} key={index}>
+						<MessageBlock fixedWidth={!isMobile} key={index}>
 							<OEmbedResolver meta={data} />
 						</MessageBlock>
 					);
 				}
 				return (
-					<MessageBlock width='100%' maxWidth={oembedMaxWidth} key={index}>
+					<MessageBlock fixedWidth={!isMobile} key={index}>
 						<UrlPreview {...data} />
 					</MessageBlock>
 				);

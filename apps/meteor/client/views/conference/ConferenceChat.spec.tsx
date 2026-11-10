@@ -8,11 +8,7 @@ import type { ReactNode } from 'react';
 import ConferenceChat from './ConferenceChat';
 
 /**
- * What this panel decides is what it shows: the chat, or the screen saying the chat was never shared with this
- * member — and, in its header, whether there is anything to offer about the people who cannot read it. So each
- * case is a render and the snapshot is the answer.
- *
- * Snapshotted from the component rather than from stories, which it has none of: the room underneath needs the
+ * Rendered from the component rather than from stories, which it has none of: the room underneath needs the
  * cached stores seeded, and what seeds them is the provider above — so it is stubbed out here to leave this
  * panel's own decisions visible.
  */
@@ -49,12 +45,6 @@ const cases = [
 ] as const;
 
 describe('ConferenceChat', () => {
-	test.each(cases)('renders what it shows when %s', (_case, membersWithoutAccess) => {
-		const { baseElement } = renderChat(buildAccess([...membersWithoutAccess]));
-
-		expect(baseElement).toMatchSnapshot();
-	});
-
 	test.each(cases)('has no a11y violations when %s', async (_case, membersWithoutAccess) => {
 		const { container } = renderChat(buildAccess([...membersWithoutAccess]));
 

@@ -99,6 +99,7 @@ interface IUserServices extends IOAuthUserServices {
 		code: string;
 		expire: Date;
 		attempts: number;
+		sentAt?: Date;
 	};
 
 	/**
@@ -153,6 +154,13 @@ export interface IUserEmail {
 	verified?: boolean;
 }
 
+export interface IUserPhoneNumber {
+	number: string;
+	label?: string;
+}
+
+export const MAX_USER_PHONES = 10;
+
 export interface IUserCalendar {
 	outlook?: {
 		Enabled: boolean;
@@ -181,11 +189,6 @@ export const SIDEBAR_SYSTEM_GROUP_KEYS = [
 	'Conversations',
 ] as const;
 
-export type SidebarSystemGroupKey = (typeof SIDEBAR_SYSTEM_GROUP_KEYS)[number];
-
-export const isSidebarSystemGroupKey = (key: string): key is SidebarSystemGroupKey =>
-	SIDEBAR_SYSTEM_GROUP_KEYS.includes(key as SidebarSystemGroupKey);
-
 export interface ISidebarCategory {
 	_id: string;
 	name: string;
@@ -193,14 +196,6 @@ export interface ISidebarCategory {
 	showUnreads?: boolean;
 	keepUnreadsOnTop?: boolean;
 }
-
-/**
- * An entry left behind by a system group that no longer exists (e.g. `Drafts`). Read-time guard
- * until a migration can rewrite `Accounts_Default_User_Preferences_sidebarSectionsOrder` and the
- * per-user `sidebarCategories` arrays; drop this together with `useSidebarSectionsOrder`.
- */
-export const isStaleSidebarCategory = ({ _id, default: isDefault }: ISidebarCategory): boolean =>
-	Boolean(isDefault) && !isSidebarSystemGroupKey(_id);
 
 export interface IUser extends IRocketChatRecord {
 	createdAt: Date;
@@ -246,10 +241,10 @@ export interface IUser extends IRocketChatRecord {
 	settings?: IUserSettings;
 	defaultRoom?: string;
 	ldap?: boolean;
-	freeSwitchExtension?: string;
+	sipExtension?: string;
 	inviteToken?: string;
 	canViewAllInfo?: boolean;
-	phone?: string;
+	phones?: IUserPhoneNumber[];
 	reason?: string;
 	// TODO: move this to a specific federation user type
 	federated?: boolean;
@@ -261,6 +256,7 @@ export interface IUser extends IRocketChatRecord {
 		avatarUrl?: string;
 		searchedServerNames?: string[];
 	};
+	xmppFederation?: IUserXMPPFederation;
 	banners?: {
 		[key: string]: {
 			id: string;
@@ -308,6 +304,21 @@ export interface IUserNativeFederated extends IUser {
 
 export const isUserNativeFederated = (user: Partial<IUser>): user is IUserNativeFederated =>
 	isUserFederated(user) && 'federation' in user && typeof user.federation?.version === 'number';
+
+/** A remote XMPP user. `jid` equals `username`: the bare JID, or `<nick>#<room JID>` when a remote room disclosed none. */
+export type IUserXMPPFederation = {
+	version: 1;
+	jid: string;
+	origin: string;
+};
+
+interface IUserXMPPFederated extends IUser {
+	federated: true;
+	xmppFederation: IUserXMPPFederation;
+}
+
+export const isUserXMPPFederated = (user: Partial<IUser>): user is IUserXMPPFederated =>
+	'xmppFederation' in user && (user as Partial<IUserXMPPFederated>).xmppFederation !== undefined;
 
 export type IUserDataEvent = {
 	id: unknown;

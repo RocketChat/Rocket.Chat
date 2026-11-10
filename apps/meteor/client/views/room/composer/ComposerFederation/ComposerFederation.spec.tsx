@@ -6,6 +6,7 @@ import type { ReactNode } from 'react';
 import ComposerFederation from './ComposerFederation';
 import FakeRoomProvider from '../../../../../tests/mocks/client/FakeRoomProvider';
 import { createFakeLicenseInfo } from '../../../../../tests/mocks/data';
+import type { ComposerActions } from '../hooks/useComposerActions';
 
 jest.mock('../ComposerMessage', () => ({
 	__esModule: true,
@@ -21,16 +22,24 @@ const appRoot = ({ enabled = true, activeModules = ['federation'] }: { enabled?:
 			Federation_Matrix_Federated_Description_invalid_version:
 				'This room was created by an old Federation version and its blocked indeterminately. <1>Click here</1> for more information about Matrix Federation support',
 		})
-		.withSetting('Federation_Matrix_enabled', enabled ?? true)
+		.withSetting('Federation_Service_Enabled', enabled ?? true)
 		.withEndpoint('GET', '/v1/licenses.info', () => ({
 			license: createFakeLicenseInfo({ activeModules }),
 		}))
 		.wrap((children) => <FakeRoomProvider>{children}</FakeRoomProvider>)
 		.build();
 
+const actions: ComposerActions = {
+	onJoin: jest.fn(),
+	onSend: jest.fn(),
+	onTyping: jest.fn(),
+	onNavigateToPreviousMessage: jest.fn(),
+	onNavigateToNextMessage: jest.fn(),
+};
+
 describe('ComposerFederation', () => {
 	it('should display blocked composer if federation version is invalid', () => {
-		render(<ComposerFederation blocked />, {
+		render(<ComposerFederation blocked actions={actions} />, {
 			wrapper: appRoot(),
 		});
 
@@ -38,7 +47,7 @@ describe('ComposerFederation', () => {
 	});
 
 	it('should display disabled composer if federation is disabled', () => {
-		render(<ComposerFederation />, {
+		render(<ComposerFederation actions={actions} />, {
 			wrapper: appRoot({ enabled: false }),
 		});
 
@@ -46,7 +55,7 @@ describe('ComposerFederation', () => {
 	});
 
 	it('should display disabled composer with premium message if federation addon is missing', () => {
-		render(<ComposerFederation />, {
+		render(<ComposerFederation actions={actions} />, {
 			wrapper: appRoot({ activeModules: [] }),
 		});
 
@@ -54,7 +63,7 @@ describe('ComposerFederation', () => {
 	});
 
 	it('should display normal composer if federation is enabled and valid', async () => {
-		render(<ComposerFederation />, { wrapper: appRoot() });
+		render(<ComposerFederation actions={actions} />, { wrapper: appRoot() });
 
 		const composer = await screen.findByTestId('composer-message');
 		expect(composer).toBeInTheDocument();

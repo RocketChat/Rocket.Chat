@@ -1,8 +1,9 @@
 import type { IIntegrationHistory, Serialized } from '@rocket.chat/core-typings';
-import { Skeleton, Box, Accordion } from '@rocket.chat/fuselage';
+import { Skeleton, Box, Accordion, Stack } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import HistoryItem from './HistoryItem';
+import ContentColumn from '../../../../../components/ContentColumn';
 
 export type HistoryContentProps = { data: Serialized<IIntegrationHistory>[]; isLoading: boolean };
 
@@ -11,13 +12,19 @@ const HistoryContent = ({ data, isLoading }: HistoryContentProps) => {
 
 	if (isLoading) {
 		return (
-			<Box width='full' paddingBlock={24}>
-				<Skeleton marginBlockEnd={4} />
-				<Skeleton marginBlockEnd={8} />
-				<Skeleton marginBlockEnd={4} />
-				<Skeleton marginBlockEnd={8} />
-				<Skeleton marginBlockEnd={4} />
-				<Skeleton marginBlockEnd={8} />
+			<Box width='full' paddingBlock={24} display='flex' flexDirection='column' gap={8}>
+				<Stack gap={4}>
+					<Skeleton />
+					<Skeleton />
+				</Stack>
+				<Stack gap={4}>
+					<Skeleton />
+					<Skeleton />
+				</Stack>
+				<Box display='flex' flexDirection='column' gap={4} paddingBlockEnd={8}>
+					<Skeleton />
+					<Skeleton />
+				</Box>
 			</Box>
 		);
 	}
@@ -27,13 +34,13 @@ const HistoryContent = ({ data, isLoading }: HistoryContentProps) => {
 	}
 
 	return (
-		<Box display='flex' alignItems='center' flexDirection='column'>
-			<Accordion width='full' maxWidth='x600' alignSelf='center' key='content'>
+		<ContentColumn>
+			<Accordion key='content'>
 				{data.map((current) => (
 					<HistoryItem data={current} key={current._id} />
 				))}
 			</Accordion>
-		</Box>
+		</ContentColumn>
 	);
 };
 

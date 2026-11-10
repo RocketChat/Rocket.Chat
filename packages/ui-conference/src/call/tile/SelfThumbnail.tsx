@@ -17,6 +17,7 @@ const SelfThumbnail = ({
 	cameraStream,
 	audioStream,
 	handPosition,
+	reaction,
 	sendHeight,
 }: SelfThumbnailProps) => (
 	<TileFrame
@@ -25,6 +26,7 @@ const SelfThumbnail = ({
 		held={held}
 		audioStream={audioStream}
 		handPosition={handPosition}
+		reaction={reaction}
 		ringWidth={THUMBNAIL_RING_WIDTH}
 		sendHeight={sendHeight}
 	>

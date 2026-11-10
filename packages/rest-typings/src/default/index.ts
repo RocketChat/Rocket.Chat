@@ -16,7 +16,6 @@ const OpenAPIJSONEndpointSchema = {
 
 export const isOpenAPIJSONEndpoint = ajvQuery.compile<OpenAPIJSONEndpoint>(OpenAPIJSONEndpointSchema);
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export interface DefaultEndpoints {
 	'/info': {
 		GET: () =>
@@ -77,6 +76,8 @@ export interface DefaultEndpoints {
 				schemas: unknown;
 			};
 			paths: Record<string, Record<string, unknown>>;
+			/** The plain OpenAPI document: it is NOT wrapped in the `{ success: true }` envelope */
+			success?: never;
 		};
 	};
 }

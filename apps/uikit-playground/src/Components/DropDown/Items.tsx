@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Label, Chevron } from '@rocket.chat/fuselage';
+import { Box, Label, Chevron, useStyle } from '@rocket.chat/fuselage';
 import { useState, useContext } from 'react';
 
 import ItemsIcon from './ItemsIcon';
@@ -12,6 +12,9 @@ const Items = ({ label, children, layer, payload }: ItemProps) => {
 	const [isOpen, toggleItemOpen] = useState<boolean>(layer === 1);
 	const [hover, setHover] = useState<boolean>(false);
 	const { state, dispatch } = useContext(context);
+	const labelClassName = useStyle(css`
+		${labelStyle(layer, hover)}
+	`);
 
 	const itemClickHandler = () => {
 		toggleItemOpen(!isOpen);
@@ -25,10 +28,11 @@ const Items = ({ label, children, layer, payload }: ItemProps) => {
 	};
 
 	return (
-		<Box marginBlockEnd={layer === 1 ? '10px' : '0px'}>
+		<Box marginBlockEnd={layer === 1 ? 'x8' : '0px'}>
 			<Box
 				display='flex'
 				alignItems='center'
+				color={hover ? 'pure-white' : 'secondary-info'}
 				className={itemStyle(layer, hover)}
 				onMouseEnter={() => setHover(true)}
 				onMouseLeave={() => setHover(false)}
@@ -45,13 +49,13 @@ const Items = ({ label, children, layer, payload }: ItemProps) => {
 								transition: var(--animation-very-fast);
 							`}
 						>
-							<Chevron width='12px' color={hover ? '#fff' : '#000'} />
+							<Chevron size='x12' />
 						</Box>
 					)}
 				</Box>
 				<Box height='25px' display='flex' alignItems='center'>
-					<ItemsIcon layer={layer} hover={hover} lastNode={children === undefined} />
-					<Label className={labelStyle(layer, hover)}>{label}</Label>
+					<ItemsIcon layer={layer} lastNode={children === undefined} />
+					<Label className={labelClassName}>{label}</Label>
 				</Box>
 			</Box>
 			<Box>{isOpen && children}</Box>

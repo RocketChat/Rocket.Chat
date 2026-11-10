@@ -8,10 +8,12 @@ import { sdk } from './SDKClient';
 import { getUserPreference } from './getUserPreference';
 import { onClientMessageReceived } from './onClientMessageReceived';
 import { dispatchToastMessage } from './toast';
-import { Messages, Subscriptions } from '../stores';
+import { Messages, PublicSettings, Subscriptions } from '../stores';
 import { getUserId } from './user';
 import { getConfig } from './utils/getConfig';
 import { mapMessageFromApi } from './utils/mapMessageFromApi';
+
+const canReadHistory = () => Boolean(getUserId()) || PublicSettings.state.get('Accounts_AllowAnonymousRead')?.value === true;
 
 const processMessage = async (msg: IMessage & { ignored?: boolean }, { subscription }: { subscription?: ISubscription }) => {
 	const userId = msg.u?._id;
@@ -144,7 +146,7 @@ class RoomHistoryManagerClass extends Emitter {
 	public async getMore(rid: IRoom['_id'], { limit = defaultLimit }: { limit?: number } = {}): Promise<void> {
 		const room = this.getRoom(rid);
 
-		if (room.hasMore !== true) {
+		if (room.hasMore !== true || !canReadHistory()) {
 			return;
 		}
 
@@ -254,7 +256,7 @@ class RoomHistoryManagerClass extends Emitter {
 
 	public async getMoreNext(rid: IRoom['_id']) {
 		const room = this.getRoom(rid);
-		if (room.hasMoreNext !== true) {
+		if (room.hasMoreNext !== true || !canReadHistory()) {
 			return;
 		}
 
@@ -374,7 +376,7 @@ class RoomHistoryManagerClass extends Emitter {
 	}
 
 	private async loadSurroundingMessages(message: (Pick<IMessage, '_id' | 'rid'> & { ts?: Date }) | undefined, showThreadMessages: boolean) {
-		if (!message?.rid) {
+		if (!message?.rid || !canReadHistory()) {
 			return;
 		}
 

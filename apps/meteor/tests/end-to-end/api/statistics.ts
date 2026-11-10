@@ -1,11 +1,12 @@
+import { after, before, describe, it } from 'node:test';
+
 import { expect } from 'chai';
-import { before, describe, it, after } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { updatePermission } from '../../data/permissions.helper';
 
 describe('[Statistics]', () => {
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	after(() => updatePermission('view-statistics', ['admin']));
 
@@ -14,10 +15,10 @@ describe('[Statistics]', () => {
 		it('should return an error when the user does not have the necessary permission', async () => {
 			await updatePermission('view-statistics', []);
 
-			const res = await request.get(api('statistics')).set(credentials).expect(400);
+			const res = await request.get(api('statistics')).set(credentials).expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.error).to.be.equal('error-not-allowed');
+			expect(res.body.errorType).to.be.equal('error-forbidden');
 		});
 
 		it('should return an object with the statistics', async () => {
@@ -46,10 +47,10 @@ describe('[Statistics]', () => {
 		it('should return an error when the user does not have the necessary permission', async () => {
 			await updatePermission('view-statistics', []);
 
-			const res = await request.get(api('statistics.list')).set(credentials).expect(400);
+			const res = await request.get(api('statistics.list')).set(credentials).expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.error).to.be.equal('error-not-allowed');
+			expect(res.body.errorType).to.be.equal('error-forbidden');
 		});
 
 		it('should return an array with the statistics', async () => {

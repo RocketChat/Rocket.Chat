@@ -1,0 +1,48 @@
+{
+	"name": "@rocket.chat/ddp-server",
+	"version": "0.0.1",
+	"private": true,
+	"description": "Meteor-free DDP server: protocol codec, sessions, method and publication dispatch, and the Streamer adapter",
+	"keywords": [
+		"rocketchat"
+	],
+	"author": "Rocket.Chat",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"files": [
+		"/dist"
+	],
+	"scripts": {
+		"build": "tsc -p tsconfig.build.json",
+		"lint": "yarn run -T oxlint",
+		"lint:fix": "yarn run -T oxlint --fix",
+		"test": "jest",
+		"testunit": "jest",
+		"typecheck": "tsc --noEmit -p tsconfig.json"
+	},
+	"dependencies": {
+		"@rocket.chat/core-services": "workspace:^",
+		"@rocket.chat/core-typings": "workspace:^",
+		"@rocket.chat/ddp-client": "workspace:~",
+		"@rocket.chat/emitter": "workspace:~",
+		"@rocket.chat/logger": "workspace:^",
+		"@rocket.chat/streamer": "workspace:^",
+		"ejson": "^2.2.3",
+		"underscore": "^1.13.8",
+		"uuid": "^11.1.1",
+		"ws": "~8.21.3"
+	},
+	"devDependencies": {
+		"@rocket.chat/jest-presets": "workspace:~",
+		"@types/ejson": "^2.2.2",
+		"@types/node": "~24.13.6",
+		"@types/underscore": "^1.13.0",
+		"@types/uuid": "^10.0.0",
+		"@types/ws": "^8.18.2",
+		"jest": "~30.5.2",
+		"typescript": "~7.0.2"
+	},
+	"volta": {
+		"extends": "../../package.json"
+	}
+}

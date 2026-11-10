@@ -1,42 +1,35 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import {
 	MessageSystem,
-	MessageSystemBody,
 	MessageSystemContainer,
-	MessageSystemLeftContainer,
+	MessageLeftContainer,
 	MessageSystemName,
 	MessageSystemTimestamp,
 	MessageSystemBlock,
 	CheckBox,
-	MessageUsername,
 	MessageNameContainer,
+	MessageUsername,
 } from '@rocket.chat/fuselage';
 import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
-import { MessageTypes } from '@rocket.chat/message-types';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useUserPresence, useUserCard } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, KeyboardEvent, MouseEvent } from 'react';
 import { memo } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 import { useTranslation } from 'react-i18next';
 
-import { normalizeUsername } from '../../../../lib/utils/normalizeUsername';
 import {
 	useIsSelecting,
 	useToggleSelect,
 	useIsSelectedMessage,
 	useCountSelected,
 } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
-import Attachments from '../content/Attachments';
-import MessageActions from '../content/MessageActions';
+import MessageContentFallback from '../MessageContentFallback';
 import { getCheckboxLabel } from '../helpers/getCheckboxLabel';
-import {
-	useMessageListShowRealName,
-	useMessageListShowUsername,
-	useMessageListFormatDateAndTime,
-	useMessageListFormatTime,
-} from '../list/MessageListContext';
+import { useMessageListAuthorUsername, useMessageListFormatDateAndTime, useMessageListFormatTime } from '../list/MessageListContext';
+import SystemMessageBody from './system/SystemMessageBody';
+import SystemMessageContent from './system/SystemMessageContent';
 
 export type SystemMessageProps = {
 	message: IMessage;
@@ -49,14 +42,9 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 	const formatDateAndTime = useMessageListFormatDateAndTime();
 	const { openUserCard, openUserInfo } = useUserCard();
 
-	const showRealName = useMessageListShowRealName();
 	const user = { ...message.u, roles: [], ...useUserPresence(message.u._id) };
-	const normalizedUsername = normalizeUsername(user.username);
-	const usernameAndRealNameAreSame = !user.name || normalizedUsername === user.name;
-	const showUsername = useMessageListShowUsername() && showRealName && !usernameAndRealNameAreSame;
+	const { normalizedUsername, showUsername } = useMessageListAuthorUsername(user);
 	const displayName = useUserDisplayName(user);
-
-	const messageType = MessageTypes.getType(message);
 
 	const isSelecting = useIsSelecting();
 	const toggleSelected = useToggleSelect(message._id);
@@ -87,7 +75,7 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 			data-system-message-type={message.t}
 			{...props}
 		>
-			<MessageSystemLeftContainer>
+			<MessageLeftContainer>
 				{!isSelecting && showUserAvatar && (
 					<UserAvatar
 						username={message.u.username}
@@ -101,13 +89,12 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 					/>
 				)}
 				{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} aria-label={checkboxLabel} />}
-			</MessageSystemLeftContainer>
+			</MessageLeftContainer>
 			<MessageSystemContainer>
 				<MessageSystemBlock>
 					<MessageNameContainer
 						{...(!isSelecting && {
 							...buttonProps,
-							style: { cursor: 'pointer' },
 							onMouseEnter: openUserCardOnHover,
 						})}
 					>
@@ -119,28 +106,14 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 							</>
 						)}
 					</MessageNameContainer>
-					{messageType && (
-						<MessageSystemBody role='document' aria-roledescription={t('system_message_body')}>
-							{messageType.text(t, message)}
-						</MessageSystemBody>
-					)}
+					<ErrorBoundary fallback={<MessageContentFallback />} resetKeys={[message]}>
+						<SystemMessageBody message={message} />
+					</ErrorBoundary>
 					<MessageSystemTimestamp title={formatDateAndTime(message.ts)}>{formatTime(message.ts)}</MessageSystemTimestamp>
 				</MessageSystemBlock>
-				{message.attachments && (
-					<MessageSystemBlock>
-						<Attachments attachments={message.attachments} />
-					</MessageSystemBlock>
-				)}
-				{message.actionLinks?.length && (
-					<MessageActions
-						message={message}
-						actions={message.actionLinks.map(({ method_id: methodId, i18nLabel, ...action }) => ({
-							methodId,
-							i18nLabel: i18nLabel as TranslationKey,
-							...action,
-						}))}
-					/>
-				)}
+				<ErrorBoundary fallback={<MessageContentFallback />} resetKeys={[message]}>
+					<SystemMessageContent message={message} />
+				</ErrorBoundary>
 			</MessageSystemContainer>
 		</MessageSystem>
 	);

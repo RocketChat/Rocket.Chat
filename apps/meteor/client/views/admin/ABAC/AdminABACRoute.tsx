@@ -1,3 +1,4 @@
+import { PageSkeleton, useHasLicenseModule } from '@rocket.chat/ui-client';
 import { usePermission, useSetModal, useCurrentModal, useRouter, useRouteParameter, useSettingStructure } from '@rocket.chat/ui-contexts';
 import { memo, useEffect, useLayoutEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -8,8 +9,6 @@ import { ABAC_TAB_ORDER, useABACTabPermissions } from './hooks/useABACTabPermiss
 import { useIsExternalAttributeStore } from './hooks/useIsExternalAttributeStore';
 import ABACUpsellModal from '../../../components/ABAC/ABACUpsellModal/ABACUpsellModal';
 import { useUpsellActions } from '../../../components/GenericUpsellModal/hooks';
-import PageSkeleton from '../../../components/PageSkeleton';
-import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import SettingsProvider from '../../../providers/SettingsProvider';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import EditableSettingsProvider from '../settings/EditableSettingsProvider';

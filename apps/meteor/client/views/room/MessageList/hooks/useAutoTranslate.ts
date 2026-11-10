@@ -5,7 +5,6 @@ import { useCallback, useMemo } from 'react';
 import { AutoTranslate } from '../../../../lib/autotranslate';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { hasTranslationLanguageInAttachments, hasTranslationLanguageInMessage } from '../lib/autoTranslate';
-import { isOwnUserMessage } from '../lib/isOwnUserMessage';
 
 export type AutoTranslateOptions = {
 	autoTranslateEnabled: boolean;
@@ -16,9 +15,12 @@ export type AutoTranslateOptions = {
 export const useAutoTranslate = (subscription?: ISubscription): AutoTranslateOptions => {
 	const autoTranslateSettingEnabled = useSetting('AutoTranslate_Enabled', false);
 	const isSubscriptionEnabled = autoTranslateSettingEnabled && subscription?.autoTranslateLanguage && subscription?.autoTranslate;
-	const isLivechatRoom = useMemo(() => subscription && roomCoordinator.isLivechatRoom(subscription?.t), [subscription]);
+	const roomType = subscription?.t;
+	const rid = subscription?.rid;
+	const subscriptionUserId = subscription?.u._id;
+	const isLivechatRoom = useMemo(() => !!roomType && roomCoordinator.isLivechatRoom(roomType), [roomType]);
 	const autoTranslateEnabled = Boolean(isSubscriptionEnabled || isLivechatRoom);
-	const autoTranslateLanguage = autoTranslateEnabled && subscription ? AutoTranslate.getLanguage(subscription.rid) : undefined;
+	const autoTranslateLanguage = autoTranslateEnabled && rid ? AutoTranslate.getLanguage(rid) : undefined;
 
 	const showAutoTranslate = useCallback(
 		(message: IMessage): boolean => {
@@ -27,13 +29,13 @@ export const useAutoTranslate = (subscription?: ISubscription): AutoTranslateOpt
 			}
 
 			return (
-				!isOwnUserMessage(message, subscription) &&
+				message.u._id !== subscriptionUserId &&
 				!(message as { autoTranslateShowInverse?: boolean }).autoTranslateShowInverse &&
 				(hasTranslationLanguageInMessage(message, autoTranslateLanguage) ||
 					hasTranslationLanguageInAttachments(message.attachments, autoTranslateLanguage))
 			);
 		},
-		[subscription, autoTranslateEnabled, autoTranslateLanguage],
+		[subscriptionUserId, autoTranslateEnabled, autoTranslateLanguage],
 	);
 
 	return useMemo(() => {

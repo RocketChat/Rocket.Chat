@@ -26,7 +26,51 @@ export type CustomNotificationOptions = {
 	};
 };
 
+export type DesktopUserStatus = 'online' | 'away' | 'busy' | 'offline';
+
+export type DesktopUserPresence = {
+	loggedIn: boolean;
+	connection: 'connected' | 'connecting' | 'disconnected';
+	status?: DesktopUserStatus;
+	statusText?: string;
+	statusExpiresAt?: string;
+	availableStatuses: DesktopUserStatus[];
+	customStatuses: DesktopCustomUserStatus[];
+};
+
+export type DesktopCustomUserStatus = {
+	id: string;
+	name: string;
+	status: DesktopUserStatus;
+};
+
+export type DesktopUserStatusChangeRequest = {
+	status: DesktopUserStatus;
+	customStatusId?: string;
+};
+
+/**
+ * The version of this contract the web client implements. A web client that announces version 1 pushes the server info,
+ * URL resolver, title, favicon, user roles, badge, login state, unread alert preference, git commit hash and Outlook
+ * credentials through the bridge itself, so the desktop app has no reason to read those from the web client's modules.
+ * Version 1 does not cover presence.
+ */
+export type WebClientBridgeVersion = 1;
+
+/** The `CustomEvent`s the web client fires on `window` for the desktop app. Renaming one breaks the apps in the field. */
+export type DesktopWindowEvent =
+	| 'startup'
+	| 'unread-changed'
+	| 'unread-changed-by-subscription'
+	| 'status-changed'
+	| 'Custom_Script_Logged_In'
+	| 'Custom_Script_Logged_Out';
+
 export interface IRocketChatDesktop {
+	/** Announces which version of this contract the web client implements (see `WebClientBridgeVersion`). */
+	setWebClientBridgeVersion?: (version: WebClientBridgeVersion) => void;
+	/** Whether the user wants the unread indicator in the badge (the `unreadAlert` preference). */
+	setUnreadAlertEnabled?: (enabled: boolean) => void;
 	dispatchCustomNotification: (options: CustomNotificationOptions) => void;
 	closeCustomNotification: (id: string) => void;
 	onReady: (cb: (serverInfo: ServerInfo) => void) => void;
@@ -44,6 +88,8 @@ export interface IRocketChatDesktop {
 		idleThreshold: number | null;
 		setUserOnline: (online: boolean) => void;
 	}) => void;
+	setUserPresenceState?: (presence: DesktopUserPresence) => void;
+	setUserStatusChangeHandler?: (handler: (request: DesktopUserStatusChangeRequest) => Promise<void>) => void;
 	setUserThemeAppearance: (themeAppearance: ThemeAppearance) => void;
 	createNotification: (
 		options: NotificationOptions & {
@@ -67,11 +113,18 @@ export interface IRocketChatDesktop {
 	reloadServer: () => void;
 	getE2ePdfPreviewSizeLimit: () => number;
 	openInBrowser: (url: string) => void;
+	/**
+	 * Present only in the desktop app's video call window (4.18 and later), whose `RocketChatDesktop` carries this and
+	 * nothing of the main window's but no-op setters.
+	 */
+	videoCall?: IVideoCallWindow;
 }
 
+/** What the desktop app's video call window offers the page loaded in it. */
 export interface IVideoCallWindow {
 	openInMainWindow: (path: string) => void;
 	close: () => void;
 	requestScreenSharing: () => Promise<string | null>;
-	getAuthCredentials: () => Promise<{ userId: string; authToken: string; serverUrl: string } | null>;
+	/** @deprecated Removed in desktop 4.18, and never used: it handed the user's session token to the provider's page. */
+	getAuthCredentials?: () => Promise<{ userId: string; authToken: string; serverUrl: string } | null>;
 }

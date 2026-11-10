@@ -1,6 +1,6 @@
-import type { LameInternalFlags } from './LameInternalFlags';
-import { copyArray, fillArray } from './arrays';
-import { SHORT_TYPE } from './constants';
+import type { LameInternalFlags } from './LameInternalFlags.js';
+import { copyArray, fillArray } from './arrays.js';
+import { SHORT_TYPE } from './constants.js';
 
 export class NewMDCT {
 	private readonly enwindow = [

@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View } from '@react-pdf/renderer';
 import type * as MessageParser from '@rocket.chat/message-parser';
 
+import NestedListsBlock from './NestedListsBlock';
 import InlineElements from '../elements/InlineElements';
 
 const styles = StyleSheet.create({
@@ -22,10 +23,13 @@ export type OrderedListBlockProps = {
 
 const OrderedListBlock = ({ items }: OrderedListBlockProps) => (
 	<View style={styles.wrapper} wrap>
-		{items.map(({ value, number }, index) => (
-			<Text style={styles.list} key={index}>
-				<Text style={styles.number}>{number}.</Text> <InlineElements>{value}</InlineElements>
-			</Text>
+		{items.map(({ value, number, nested }, index) => (
+			<View key={index}>
+				<Text style={styles.list}>
+					<Text style={styles.number}>{number}.</Text> <InlineElements>{value}</InlineElements>
+				</Text>
+				{nested && <NestedListsBlock lists={nested} />}
+			</View>
 		))}
 	</View>
 );

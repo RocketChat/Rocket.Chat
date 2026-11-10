@@ -24,9 +24,14 @@ Because the call only renders in the window, the server registers the provider o
 **and** `VideoConf_Conference_Window_Enabled` is on. A provider in the registry is one the camera button offers, and
 offering one that has nowhere to render turns a misconfiguration into a silent, audio-only call.
 
+LiveKit is also sold apart from the rest of video conferencing: it needs the `video-conference-native` license module
+on top of `videoconference-enterprise`. The provider is registered only while the license includes it, and is withdrawn
+as soon as a license without it is applied, no restart needed. `video-conference.callConfig` checks it too, since a call
+started while it was licensed outlives the license: from then on nobody can join or rejoin it.
+
 ## Settings
 
-Under **Video Conference → LiveKit** (enterprise):
+Under **Video Conference → LiveKit** (the `video-conference-native` module):
 
 | Setting | Purpose |
 | --- | --- |
@@ -70,16 +75,48 @@ The camera menu offers *Auto / 1080p / 720p / 360p / 180p*, and the local tile s
 Choosing restarts the camera at the new preset, and the choice is remembered only once the restart succeeded. Chosen
 with the camera off, it is remembered straight away and applied when the camera comes back on.
 
+## Noise cancellation
+
+The microphone menu offers *Off / Standard / Advanced*: no filter, the browser's `noiseSuppression`, or RNNoise
+(`@sapphi-red/web-noise-suppressor`) in an AudioWorklet. The browser's filter is the default, since it is what calls
+had before there was a choice.
+
+- **RNNoise never runs on top of the browser's filter.** Two suppressors in a row eat into the voice, so choosing it
+  first restarts the microphone with `noiseSuppression: false`, and the room's audio capture defaults follow the
+  choice so a microphone opened later starts that way. The restart passes every constraint the track has: the ones
+  passed replace them all, and without the device the restart opens the browser's default microphone.
+- **RNNoise gets its own 48 kHz `AudioContext`.** It was trained at that rate, and the room's context runs at the
+  output device's, often 44.1 kHz.
+- **It fails rather than sends silence.** A context the browser keeps suspended (no user gesture yet in this window), or
+  one the browser cannot feed a microphone into at another rate (Firefox), would publish a silent track. The processor
+  throws instead and the call falls back to the browser's filter. A failure at the start of the call keeps the choice
+  on offer, since choosing it from the menu is the gesture it lacked; a failure the reader asked for hides it.
+- **The workspace serves the files** at `/video-conference/rnnoise/` from the installed package, by its package exports,
+  so clients never reach a third party. About 125 KB gzipped, fetched the first time it is chosen; the WebAssembly is
+  kept for the page. The URLs carry no version, so the files are revalidated (`Last-Modified`) rather than cached for
+  a while: an upgrade would otherwise pair a new client with an old worklet.
+- **A browser that cannot run RNNoise** (no AudioWorklet) never tries: a remembered *Advanced* runs, and shows, as
+  *Standard*.
+
 ## Data-channel messages
 
 | Type | Reliable | Payload | Meaning |
 | --- | --- | --- | --- |
 | `hand` | yes | `{ raised, raisedAt, rebroadcast? }` | Raised hands. `rebroadcast` restates a hand for someone who arrived later; only new hands chime. |
-| `reaction` | no | `{ emoji, reactionId? }` | Floating reactions, 3.5s on receivers. |
+| `reaction` | no | `{ emoji, reactionId? }` | Floating reactions: seen for 3s, kept for 3.5s on receivers. |
 | `mute` | yes | `{ target }` | Asks one participant to mute. Only the target acts on it, by muting itself; nothing reaches into anyone's machine. |
 
 Reactions rise from the call area with the sender's name, and raised hands are listed next to the participants button,
 because a call can be larger than the tiles it shows.
+
+Raised hands are a queue. The top bar names the front of it — "You" when that is the reader — and lists the whole line,
+including hands whose tiles are not on screen. On the tiles that are, only the front of the queue gets a green plate:
+anyone else in line gets a white one with their place in it, so whose turn is next reads at a glance however many hands
+are up.
+
+A sender's latest reaction also sits in the top-left corner of their own tile, opposite the microphone, for exactly as
+long as it rises (`REACTION_VISIBLE_MS`) — not for the provider's longer `REACTION_TTL_MS`, which only bounds how long it
+is kept. A newer reaction from the same person replaces it and starts the time over.
 
 ## Who gets rung
 
@@ -97,4 +134,4 @@ The preflight's **Ring participants** switch lets the caller decide, and is reme
 - The resolution picker restarts the camera with a capture preset, which is a hint to the camera rather than a cap on
   the encoder. Publish options would be the right tool.
 - No e2e coverage for the native flow yet.
-- Background blur and noise suppression ship in a follow-up.
+- Background blur ships in a follow-up.

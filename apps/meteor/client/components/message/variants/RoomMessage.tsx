@@ -5,6 +5,7 @@ import { MessageAvatar } from '@rocket.chat/ui-avatar';
 import { useUserId, useUserCard } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, KeyboardEvent } from 'react';
 import { memo } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 import { useTranslation } from 'react-i18next';
 
 import type { MessageActionContext } from '../../../lib/MessageAction';
@@ -17,6 +18,7 @@ import {
 } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
 import Emoji from '../../Emoji';
 import IgnoredContent from '../IgnoredContent';
+import MessageContentFallback from '../MessageContentFallback';
 import MessageHeader from '../MessageHeader';
 import MessageToolbarHolder from '../MessageToolbarHolder';
 import StatusIndicators from '../StatusIndicators';
@@ -129,7 +131,10 @@ const RoomMessage = ({
 						title=''
 						size='x36'
 						onMouseEnter={(e) => openUserCard(e, message.u.username)}
-						onClick={() => openUserInfo(message.u.username)}
+						onClick={(e) => {
+							e.stopPropagation();
+							openUserInfo(message.u.username);
+						}}
 						style={{ cursor: 'pointer' }}
 						// Redundant pointer-only shortcut for the accessible name button next to it
 						aria-hidden='true'
@@ -143,7 +148,9 @@ const RoomMessage = ({
 				{ignored ? (
 					<IgnoredContent messageId={message._id} onShowMessageIgnored={toggleDisplayIgnoredMessage} />
 				) : (
-					<RoomMessageContent message={message} unread={unread} mention={mention} all={all} searchText={searchText} />
+					<ErrorBoundary fallback={<MessageContentFallback id={`${message._id}-content`} />} resetKeys={[message]}>
+						<RoomMessageContent message={message} unread={unread} mention={mention} all={all} searchText={searchText} />
+					</ErrorBoundary>
 				)}
 			</MessageContainer>
 			{!message.private && message?.e2e !== 'pending' && !selecting && <MessageToolbarHolder message={message} context={context} />}

@@ -13,5 +13,9 @@ export interface ITwoFactorChallengesModel extends IBaseModel<ITwoFactorChalleng
 		options?: O,
 	): Promise<DocumentWithProjection<T, O> | null>;
 	removeByPendingChallengeId(id: string): Promise<DeleteResult>;
-	createTwoFactorChallenge(userId: string, method: ITwoFactorChallenge['method']): Promise<string>;
+	createTwoFactorChallenge(
+		userId: string,
+		method: ITwoFactorChallenge['method'],
+		purpose?: ITwoFactorChallenge['purpose'],
+	): Promise<string>;
 }

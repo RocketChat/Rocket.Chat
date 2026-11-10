@@ -17,6 +17,7 @@ const ThumbnailTile = ({ tile }: ThumbnailTileProps) =>
 			cameraStream={tile.cameraStream}
 			audioStream={tile.audioStream}
 			handPosition={tile.handPosition}
+			reaction={tile.reaction}
 			sendHeight={tile.sendHeight}
 		/>
 	) : (
@@ -28,6 +29,7 @@ const ThumbnailTile = ({ tile }: ThumbnailTileProps) =>
 			cameraStream={tile.cameraStream}
 			audioStream={tile.audioStream}
 			handPosition={tile.handPosition}
+			reaction={tile.reaction}
 		/>
 	);
 

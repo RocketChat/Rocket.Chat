@@ -1,3 +1,4 @@
+import { Box } from '@rocket.chat/fuselage';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { Contextualbar } from '@rocket.chat/ui-client';
 import type { Meta, StoryObj } from '@storybook/react';
@@ -41,9 +42,11 @@ export const NewAttribute: StoryObj<typeof AttributesForm> = {
 
 			return (
 				<FormProvider {...methods}>
-					<Contextualbar width='400px' padding={16}>
-						{fn()}
-					</Contextualbar>
+					<Box width='400px'>
+						<Contextualbar>
+							<Box padding={16}>{fn()}</Box>
+						</Contextualbar>
+					</Box>
 				</FormProvider>
 			);
 		},
@@ -67,9 +70,11 @@ export const WithLockedAttributes: StoryObj<typeof AttributesForm> = {
 
 			return (
 				<FormProvider {...methods}>
-					<Contextualbar width='400px' padding={16}>
-						{fn()}
-					</Contextualbar>
+					<Box width='400px'>
+						<Contextualbar>
+							<Box padding={16}>{fn()}</Box>
+						</Contextualbar>
+					</Box>
 				</FormProvider>
 			);
 		},

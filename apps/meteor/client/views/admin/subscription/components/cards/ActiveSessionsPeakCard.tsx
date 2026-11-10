@@ -25,7 +25,7 @@ const ActiveSessionsPeakCard = () => {
 		infoText: t('ActiveSessionsPeak_InfoText'),
 		...(exceedLimit && {
 			upgradeButton: (
-				<UpgradeButton target='active-session-peak-card' action='upgrade' small>
+				<UpgradeButton target='active-session-peak-card' action='upgrade' size='small'>
 					{t('Upgrade')}
 				</UpgradeButton>
 			),

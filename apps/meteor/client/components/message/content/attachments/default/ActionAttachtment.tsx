@@ -21,7 +21,7 @@ export const ActionAttachment = ({ actions }: ActionAttachmentProps) => {
 						const content = image ? <Box is='img' src={image} maxHeight={200} /> : text;
 						if (url) {
 							return (
-								<Button role='link' onClick={() => handleLinkClick(url)} key={index} small>
+								<Button role='link' onClick={() => handleLinkClick(url)} key={index} size='small'>
 									{content}
 								</Button>
 							);

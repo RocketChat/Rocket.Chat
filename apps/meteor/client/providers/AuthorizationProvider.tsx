@@ -1,11 +1,12 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { AuthorizationContext, useUserId } from '@rocket.chat/ui-contexts';
 import type { ContextType, ReactNode } from 'react';
-import { useMemo, useSyncExternalStore } from 'react';
+import { useEffect, useMemo, useSyncExternalStore } from 'react';
 
-import { createAuthorizationFunctions } from '../../lib/authorization/createAuthorizationFunctions';
 import { PermissionsCachedStore } from '../cachedStores';
+import { createAuthorizationFunctions } from '../lib/authorization/createAuthorizationFunctions';
 import { Permissions, Roles, Subscriptions, Users } from '../stores';
+import PageLoading from '../views/root/PageLoading';
 
 // Only the slice of IUser that the authorization helpers actually read.
 // Snapshotting just `roles` (instead of the full user document) keeps the
@@ -27,14 +28,17 @@ const selectUserRoles = (userId: IUser['_id'] | undefined): AuthorizableUser['ro
 };
 
 const AuthorizationProvider = ({ children }: AuthorizationProviderProps) => {
+	// waits for permissions without suspending, see ../../../../docs/features/client-boot.md
 	const isReady = PermissionsCachedStore.useReady();
 
-	if (!isReady) {
-		throw (async () => {
-			PermissionsCachedStore.listen();
-			await PermissionsCachedStore.init();
-		})();
-	}
+	useEffect(() => {
+		if (isReady) {
+			return;
+		}
+
+		PermissionsCachedStore.listen();
+		void PermissionsCachedStore.init();
+	}, [isReady]);
 
 	const userId = useUserId();
 
@@ -66,11 +70,7 @@ const AuthorizationProvider = ({ children }: AuthorizationProviderProps) => {
 				getRoleScope: (id) => rolesState.get(id)?.scope,
 				// Read Subscriptions live — reactivity for scoped checks is wired through
 				// the per-call subscribe returned by queryPermission/queryRole below.
-				hasSubscriptionRole: (rid, roleId) =>
-					Subscriptions.use
-						.getState()
-						.find((s) => s.rid === rid)
-						?.roles?.includes(roleId) ?? false,
+				getSubscriptionRoles: (rid) => Subscriptions.use.getState().find((s) => s.rid === rid)?.roles ?? [],
 				isReady: () => true,
 			}),
 		[userId, currentUserRoles, permissionsState, rolesState],
@@ -78,9 +78,9 @@ const AuthorizationProvider = ({ children }: AuthorizationProviderProps) => {
 
 	const contextValue = useMemo(
 		(): ContextType<typeof AuthorizationContext> => ({
-			// Callers without `scope` never touch Subscriptions (the factory short-circuits
-			// at the role-scope gate). They rely on context-value identity for re-renders
-			// from Users/Permissions/Roles changes — which is why subscribe is noop.
+			// Callers without `scope` never touch Subscriptions. They rely on context-value
+			// identity for re-renders from Users/Permissions/Roles changes — which is why
+			// subscribe is noop.
 			// Callers with a `scope` (room id) DO touch Subscriptions, so we attach a
 			// per-call subscribe to that store so they re-evaluate when subscriptions
 			// for the relevant room flip without dragging the rest of the tree along.
@@ -105,6 +105,10 @@ const AuthorizationProvider = ({ children }: AuthorizationProviderProps) => {
 		}),
 		[auth, userId],
 	);
+
+	if (!isReady) {
+		return <PageLoading />;
+	}
 
 	return <AuthorizationContext.Provider value={contextValue}>{children}</AuthorizationContext.Provider>;
 };

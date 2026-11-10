@@ -1,5 +1,5 @@
 import type { IUser, Serialized } from '@rocket.chat/core-typings';
-import { Box, Margins, Tag } from '@rocket.chat/fuselage';
+import { Box, Tag } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 import { memo, useContext, useId } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -8,21 +8,13 @@ import { useTimeAgo } from '../../hooks/useTimeAgo';
 import { useUserCustomFields } from '../../hooks/useUserCustomFields';
 import { useUserDisplayName } from '../../hooks/useUserDisplayName';
 import { ContextualbarScrollableContent } from '../Contextualbar';
-import {
-	InfoPanel,
-	InfoPanelActionGroup,
-	InfoPanelAvatar,
-	InfoPanelField,
-	InfoPanelLabel,
-	InfoPanelSection,
-	InfoPanelText,
-	InfoPanelTitle,
-} from '../InfoPanel';
+import { InfoPanel, InfoPanelActionGroup, InfoPanelField, InfoPanelLabel, InfoPanelSection, InfoPanelText } from '../InfoPanel';
 import { MarkdownTextContext } from '../MarkdownTextContext';
 import UTCClock from '../UTCClock';
-import { UserCardRoles } from '../UserCard';
+import { UserCardHeader, UserCardRoles } from '../UserCard';
 import UserInfoABACAttributes from './UserInfoABACAttributes';
-import UserInfoAvatar from './UserInfoAvatar';
+import UserInfoCopyableText from './UserInfoCopyableText';
+import UserInfoZoomableAvatar from './UserInfoZoomableAvatar';
 
 type UserInfoDataProps = Serialized<
 	Pick<
@@ -34,11 +26,10 @@ type UserInfoDataProps = Serialized<
 		| 'lastLogin'
 		| 'avatarETag'
 		| 'utcOffset'
-		| 'phone'
 		| 'createdAt'
 		| 'canViewAllInfo'
 		| 'customFields'
-		| 'freeSwitchExtension'
+		| 'sipExtension'
 		| 'abacAttributes'
 	>
 >;
@@ -46,10 +37,12 @@ type UserInfoDataProps = Serialized<
 export type UserInfoProps = UserInfoDataProps & {
 	status: ReactNode;
 	customStatus?: ReactNode;
+	phoneNumbers?: ReactNode;
 	email?: string;
 	verified?: boolean;
 	actions: ReactNode;
 	roles: ReactNode[];
+	roomRoles?: ReactNode[];
 	reason?: string;
 	invitationDate?: string;
 };
@@ -62,8 +55,9 @@ const UserInfo = ({
 	bio,
 	avatarETag,
 	roles,
+	roomRoles,
 	utcOffset,
-	phone,
+	phoneNumbers,
 	email,
 	verified,
 	createdAt,
@@ -73,7 +67,7 @@ const UserInfo = ({
 	canViewAllInfo,
 	actions,
 	reason,
-	freeSwitchExtension,
+	sipExtension,
 	abacAttributes,
 	invitationDate,
 	...props
@@ -83,56 +77,57 @@ const UserInfo = ({
 	const userDisplayName = useUserDisplayName({ name, username });
 	const userCustomFields = useUserCustomFields(customFields);
 	const MarkdownText = useContext(MarkdownTextContext);
-
 	const usernameId = useId();
 
 	return (
 		<ContextualbarScrollableContent padding={24} {...props}>
 			<InfoPanel>
-				{username && (
-					<InfoPanelAvatar>
-						<UserInfoAvatar username={username} etag={avatarETag} />
-					</InfoPanelAvatar>
-				)}
+				<InfoPanelSection>
+					<UserCardHeader
+						avatar={username && <UserInfoZoomableAvatar username={username} etag={avatarETag} />}
+						name={userDisplayName}
+						status={status}
+						subtitle={customStatus}
+					/>
+				</InfoPanelSection>
 
 				{actions && <InfoPanelActionGroup>{actions}</InfoPanelActionGroup>}
 
 				<InfoPanelSection>
-					{userDisplayName && <InfoPanelTitle icon={status} title={userDisplayName} />}
+					{username && username !== name && (
+						<InfoPanelField is='dl'>
+							<InfoPanelLabel is='dt' id={usernameId}>
+								{t('Username')}
+							</InfoPanelLabel>
+							<UserInfoCopyableText is='dd' aria-labelledby={usernameId} text={username} label={t('Username')} />
+						</InfoPanelField>
+					)}
 
-					{customStatus && <InfoPanelText>{customStatus}</InfoPanelText>}
-				</InfoPanelSection>
-
-				<InfoPanelSection>
 					{reason && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Reason_for_joining')}</InfoPanelLabel>
-							<InfoPanelText>{reason}</InfoPanelText>
+							<UserInfoCopyableText text={reason} label={t('Reason_for_joining')} withTruncatedText={false} />
 						</InfoPanelField>
 					)}
 
 					{nickname && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Nickname')}</InfoPanelLabel>
-							<InfoPanelText>{nickname}</InfoPanelText>
+							<UserInfoCopyableText text={nickname} label={t('Nickname')} />
 						</InfoPanelField>
 					)}
 
 					{roles?.length !== 0 && (
 						<InfoPanelField>
-							<InfoPanelLabel>{t('Roles')}</InfoPanelLabel>
+							<InfoPanelLabel>{t('Workspace_roles')}</InfoPanelLabel>
 							<UserCardRoles>{roles}</UserCardRoles>
 						</InfoPanelField>
 					)}
 
-					{username && username !== name && (
-						<InfoPanelField is='dl'>
-							<InfoPanelLabel is='dt' id={usernameId}>
-								{t('Username')}
-							</InfoPanelLabel>
-							<InfoPanelText is='dd' aria-labelledby={usernameId}>
-								{username}
-							</InfoPanelText>
+					{roomRoles && roomRoles.length !== 0 && (
+						<InfoPanelField>
+							<InfoPanelLabel>{t('Room_roles')}</InfoPanelLabel>
+							<UserCardRoles>{roomRoles}</UserCardRoles>
 						</InfoPanelField>
 					)}
 
@@ -148,9 +143,9 @@ const UserInfo = ({
 					{bio && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Bio')}</InfoPanelLabel>
-							<InfoPanelText withTruncatedText={false}>
+							<UserInfoCopyableText text={bio} label={t('Bio')} withTruncatedText={false}>
 								<MarkdownText variant='inline' content={bio} />
-							</InfoPanelText>
+							</UserInfoCopyableText>
 						</InfoPanelField>
 					)}
 
@@ -161,35 +156,31 @@ const UserInfo = ({
 						</InfoPanelField>
 					)}
 
-					{phone && (
-						<InfoPanelField>
-							<InfoPanelLabel>{t('Phone')}</InfoPanelLabel>
-							<InfoPanelText display='flex' flexDirection='row' alignItems='center'>
-								<Box is='a' withTruncatedText href={`tel:${phone}`}>
-									{phone}
-								</Box>
-							</InfoPanelText>
+					{phoneNumbers && (
+						<InfoPanelField is='dl'>
+							<InfoPanelLabel is='dt'>{t('Phone_Numbers')}</InfoPanelLabel>
+							<InfoPanelText is='dd'>{phoneNumbers}</InfoPanelText>
 						</InfoPanelField>
 					)}
 
 					{email && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Email')}</InfoPanelLabel>
-							<InfoPanelText display='flex' flexDirection='row' alignItems='center'>
-								<Box is='a' withTruncatedText href={`mailto:${email}`}>
-									{email}
-								</Box>
-								<Margins inline={4}>
+							<UserInfoCopyableText text={email} label={t('Email')}>
+								<Box display='flex' alignItems='center' gap={4} paddingInlineEnd={4} minWidth={0}>
+									<Box is='a' withTruncatedText href={`mailto:${email}`}>
+										{email}
+									</Box>
 									<Tag>{verified ? t('Verified') : t('Not_verified')}</Tag>
-								</Margins>
-							</InfoPanelText>
+								</Box>
+							</UserInfoCopyableText>
 						</InfoPanelField>
 					)}
 
-					{freeSwitchExtension && (
+					{sipExtension && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Voice_call_extension')}</InfoPanelLabel>
-							<InfoPanelText>{freeSwitchExtension}</InfoPanelText>
+							<UserInfoCopyableText text={sipExtension} label={t('Voice_call_extension')} />
 						</InfoPanelField>
 					)}
 
@@ -204,9 +195,9 @@ const UserInfo = ({
 							customField?.value && (
 								<InfoPanelField key={customField.value}>
 									<InfoPanelLabel>{t(customField.label)}</InfoPanelLabel>
-									<InfoPanelText>
+									<UserInfoCopyableText text={customField.value} label={t(customField.label)}>
 										<MarkdownText content={customField.value} variant='inline' />
-									</InfoPanelText>
+									</UserInfoCopyableText>
 								</InfoPanelField>
 							),
 					)}

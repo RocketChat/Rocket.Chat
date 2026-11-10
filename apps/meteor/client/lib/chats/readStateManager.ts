@@ -116,7 +116,13 @@ export class ReadStateManager extends Emitter {
 		this.isUnreadMarkVisible = callback;
 	}
 
-	// This will only mark as read if the unread mark is visible
+	private hasUserReachedLatestMessage: () => boolean = () => false;
+
+	public setHasUserReachedLatestMessageCallback(callback: () => boolean) {
+		this.hasUserReachedLatestMessage = callback;
+	}
+
+	// This will only mark as read if the unread mark is visible or the user scrolled to the latest message
 	public attemptMarkAsRead() {
 		const { alert, unread } = this.subscription || {};
 		if (!alert && unread === 0) {
@@ -125,6 +131,10 @@ export class ReadStateManager extends Emitter {
 
 		if (!document.hasFocus()) {
 			return;
+		}
+
+		if (this.hasUserReachedLatestMessage()) {
+			return this.markAsRead();
 		}
 
 		if (this.firstUnreadRecordId && this.isUnreadMarkVisible() === false) {

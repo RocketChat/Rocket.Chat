@@ -21,6 +21,7 @@ import { Virtuoso } from 'react-virtuoso';
 import RoomMessage from '../../../components/message/variants/RoomMessage';
 import SystemMessage from '../../../components/message/variants/SystemMessage';
 import { useFormatDate } from '../../../hooks/useFormatDate';
+import { useMessageRowListNavigation } from '../../../hooks/useMessageRowListNavigation';
 import type { MessageActionContext } from '../../../lib/MessageAction';
 import MessageListErrorBoundary from '../MessageList/MessageListErrorBoundary';
 import { isMessageNewDay } from '../MessageList/lib/isMessageNewDay';
@@ -37,6 +38,7 @@ export type MessageListTabProps = {
 
 const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryResult }: MessageListTabProps) => {
 	const formatDate = useFormatDate();
+	const messageListRef = useMessageRowListNavigation();
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
 
 	const { closeTab } = useRoomToolbox();
@@ -53,7 +55,7 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 				<ContextualbarTitle>{title}</ContextualbarTitle>
 				<ContextualbarClose onClick={handleTabBarCloseButtonClick} />
 			</ContextualbarHeader>
-			<ContextualbarContent flexShrink={1} flexGrow={1} paddingInline={0}>
+			<ContextualbarContent flush>
 				{queryResult.isLoading && (
 					<Box paddingInline={24} paddingBlock={12}>
 						<Throbber size='x12' />
@@ -66,7 +68,16 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 						{queryResult.data.length > 0 && (
 							<MessageListErrorBoundary>
 								<MessageListProvider>
-									<Box is='section' display='flex' flexDirection='column' flexGrow={1} flexShrink={1} flexBasis='auto' height='full'>
+									<Box
+										is='section'
+										ref={messageListRef}
+										display='flex'
+										flexDirection='column'
+										flexGrow={1}
+										flexShrink={1}
+										flexBasis='auto'
+										height='full'
+									>
 										<VirtualizedScrollbars>
 											<Virtuoso
 												totalCount={queryResult.data.length}

@@ -1,7 +1,7 @@
+import { useHasLicenseModule } from '@rocket.chat/ui-client';
 import { usePermission } from '@rocket.chat/ui-contexts';
 
 import UnitsPage from './UnitsPage';
-import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 
 const UnitsRoute = () => {

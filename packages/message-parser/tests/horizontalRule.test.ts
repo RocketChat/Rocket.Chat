@@ -1,5 +1,5 @@
-import { parse } from '../src';
-import { bold, horizontalRule, paragraph, plain } from './helpers';
+import { bold, horizontalRule, paragraph, plain } from './helpers.js';
+import { parse } from '../src/index.js';
 
 // Only dashes form a horizontal rule; `fallback` is the [start, end] offset span of the run.
 test.each([

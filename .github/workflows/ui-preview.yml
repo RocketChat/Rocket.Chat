@@ -147,7 +147,13 @@ jobs:
           | Latest build of this PR | \`rocketchat://ui-preview?pr=$NUMBER\` |
           | This exact build | \`rocketchat://ui-preview?pr=$NUMBER&sha=$HEAD_SHA\` |
 
-          To pick the workspace, add \`&host=https://your.server\`. Use **View > Restore server UI**, or restart the app, to go back."
+          To pick the workspace, add \`&host=https://your.server\`. Use **View > Restore server UI**, or restart the app, to go back.
+
+          Or run it in a browser against any server (default \`https://open.rocket.chat\`):
+
+          \`\`\`sh
+          npx @rocket.chat/ui-preview $NUMBER --server https://open.rocket.chat
+          \`\`\`"
 
           comment_id=$(gh api "repos/$REPO/issues/$NUMBER/comments" --paginate -q ".[] | select(.body | startswith(\"$marker\")) | .id" | head -n1)
           if [ -n "$comment_id" ]; then

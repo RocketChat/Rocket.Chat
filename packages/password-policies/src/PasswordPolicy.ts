@@ -1,4 +1,4 @@
-import { PasswordPolicyError } from './PasswordPolicyError';
+import { PasswordPolicyError } from './PasswordPolicyError.js';
 
 type PasswordPolicyMap = {
 	minLength: number;

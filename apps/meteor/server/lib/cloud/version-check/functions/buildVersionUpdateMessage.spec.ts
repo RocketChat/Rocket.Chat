@@ -5,7 +5,7 @@ const originalTestMode = process.env.TEST_MODE;
 
 const mockInfoVersion = jest.fn(() => '7.5.0');
 
-jest.mock('../../../../../app/utils/rocketchat.info', () => ({
+jest.mock('../../../../../rocketchat.info', () => ({
 	Info: {
 		get version() {
 			return mockInfoVersion();

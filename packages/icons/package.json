@@ -1,7 +1,15 @@
 {
 	"name": "@rocket.chat/icons",
-	"version": "0.51.0",
+	"version": "0.52.0",
 	"description": "Rocket.Chat's Icons",
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		},
+		"./dist/*": "./dist/*"
+	},
 	"homepage": "https://github.com/RocketChat/Rocket.Chat#readme",
 	"bugs": {
 		"url": "https://github.com/RocketChat/Rocket.Chat/issues"
@@ -17,16 +25,16 @@
 		"url": "https://rocket.chat/"
 	},
 	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
 	"files": [
 		"/dist"
 	],
 	"scripts": {
 		"build": "node scripts/buildIcons.mjs",
-		"lint": "eslint .",
-		"lint:fix": "eslint --fix ."
+		"lint": "yarn run -T oxlint",
+		"lint:fix": "yarn run -T oxlint --fix"
 	},
 	"devDependencies": {
-		"eslint": "~10.11.0",
 		"svg2ttf": "~6.1.0",
 		"svgicons2svgfont": "~16.0.0",
 		"ttf2eot": "~3.1.0",

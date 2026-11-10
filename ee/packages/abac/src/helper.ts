@@ -1,17 +1,187 @@
-import type { ILDAPEntry, IAbacAttributeDefinition, IRoom } from '@rocket.chat/core-typings';
-import { AbacAttributes, Rooms } from '@rocket.chat/models';
+import type { AbacCreationAttributesResult, AbacRoomMembershipPreviewPage } from '@rocket.chat/core-services';
+import type {
+	AbacMembershipGroup,
+	AbacMembershipVerdict,
+	AbacRoomPreviewMember,
+	ILDAPEntry,
+	IAbacAttributeDefinition,
+	IRoom,
+	ISubscription,
+	IUser,
+} from '@rocket.chat/core-typings';
+import { isDiscussion, isRoomFederated, isRoomXMPPFederated } from '@rocket.chat/core-typings';
+import { AbacAttributes, Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import mem from 'mem';
 
 import {
 	AbacAttributeDefinitionNotFoundError,
-	AbacCannotConvertDefaultRoomToAbacError,
+	AbacAttributeStoreExternalError,
+	AbacContractError,
+	AbacEntityResolutionFailedError,
+	AbacError,
+	AbacErrorCode,
 	AbacInvalidAttributeKeyError,
 	AbacInvalidAttributeValuesError,
 	AbacRoomNotFoundError,
+	PdpUnavailableError,
 } from './errors';
+import type { Evaluation, IResourceDecision, RoomMembersPreview } from './pdp/types';
 
 export const MAX_ABAC_ATTRIBUTE_KEYS = 10;
 export const MAX_ABAC_ATTRIBUTE_VALUES = 10;
+export const PREVIEW_SCAN_LIMIT = 1000;
+export const PREVIEW_READ_OPTIONS = { projection: { _id: 1, username: 1, name: 1, emails: 1 } } as const;
+
+const MEMBERSHIP_VERDICTS: AbacMembershipVerdict[] = ['compliant', 'nonCompliant', 'inconclusive'];
+
+export function toCreationDenial(
+	err: unknown,
+	reasonForAttributeError: 'invalid' | 'not-entitled' | 'creator-not-admitted',
+): Extract<AbacCreationAttributesResult, { allowed: false }> {
+	if (err instanceof PdpUnavailableError || err instanceof AbacAttributeStoreExternalError) {
+		return { allowed: false, reason: 'unavailable', code: err.code };
+	}
+	if (err instanceof AbacEntityResolutionFailedError) {
+		return { allowed: false, reason: 'inconclusive', code: err.code };
+	}
+	if (err instanceof AbacError) {
+		const { key, attributes } = (err.details ?? {}) as { key?: string; attributes?: IAbacAttributeDefinition[] };
+		return {
+			allowed: false,
+			reason: reasonForAttributeError,
+			code: err.code,
+			...(key && { key }),
+			...(attributes && { attributes }),
+		};
+	}
+	throw err;
+}
+
+export function verdictOf({ compliant, nonCompliant }: Evaluation, id: string): AbacMembershipVerdict {
+	if (compliant.includes(id)) {
+		return 'compliant';
+	}
+	if (nonCompliant.includes(id)) {
+		return 'nonCompliant';
+	}
+	return 'inconclusive';
+}
+
+function verdictsOf(evaluation: Evaluation): (id: string) => AbacMembershipVerdict {
+	const verdicts = new Map(MEMBERSHIP_VERDICTS.flatMap((verdict) => evaluation[verdict].map((id) => [id, verdict] as const)));
+	return (id) => verdicts.get(id) ?? 'inconclusive';
+}
+
+export type PreviewSubject = Pick<IUser, '_id' | 'username' | 'name' | 'emails'>;
+
+export type PreviewWindow = AbacRoomMembershipPreviewPage & { count: number };
+
+const isInGroup = (group: AbacMembershipGroup, verdict: AbacMembershipVerdict): boolean =>
+	(group === 'loses') === (verdict !== 'compliant');
+
+export async function withRoomRoles(rid: IRoom['_id'], members: AbacRoomPreviewMember[]): Promise<AbacRoomPreviewMember[]> {
+	if (!members.length) {
+		return members;
+	}
+
+	const subscriptions = await Subscriptions.findByRoomIdAndUserIds<Pick<ISubscription, 'u' | 'roles'>>(
+		rid,
+		members.map(({ _id }) => _id),
+		{ projection: { 'u._id': 1, 'roles': 1 } },
+	).toArray();
+	const rolesOf = new Map(subscriptions.flatMap(({ u, roles }) => (roles?.length ? [[u._id, roles] as const] : [])));
+
+	return members.map((member) => {
+		const roles = rolesOf.get(member._id);
+		return roles ? { ...member, roles } : member;
+	});
+}
+
+export async function previewRoomMembersInSteps(
+	rid: IRoom['_id'],
+	{ filter, after, count, group }: PreviewWindow,
+	evaluate: (subjects: PreviewSubject[]) => Promise<Evaluation>,
+	step?: number,
+): Promise<RoomMembersPreview> {
+	const size = group ? PREVIEW_SCAN_LIMIT : count;
+
+	const read = await Users.findActiveByRoomIdAfterUsername<PreviewSubject>(
+		rid,
+		{ search: filter, after, limit: size + 1 },
+		PREVIEW_READ_OPTIONS,
+	).toArray();
+	const subjects = read.slice(0, size);
+	const batchSize = step ?? subjects.length;
+	const members: AbacRoomPreviewMember[] = [];
+	let checked = 0;
+
+	while (checked < subjects.length && members.length < count) {
+		const batch = subjects.slice(checked, checked + batchSize);
+		const verdictFor = verdictsOf(await evaluate(batch));
+		members.push(
+			...batch
+				.map(({ _id, username, name }) => ({ _id, username, name, verdict: verdictFor(_id) }))
+				.filter(({ verdict }) => !group || isInGroup(group, verdict)),
+		);
+		checked += batch.length;
+	}
+
+	const last = subjects[checked - 1];
+	const next = last?.username && checked < read.length ? { _id: last._id, username: last.username } : undefined;
+	return {
+		members,
+		checked,
+		...(!after && { total: await Users.countActiveByRoomIdAfterUsername(rid, { search: filter }) }),
+		...(next && { next }),
+	};
+}
+
+export async function previewRetainingEveryone(rid: IRoom['_id'], page: PreviewWindow): Promise<RoomMembersPreview> {
+	if (page.group === 'loses') {
+		const remaining = await Users.countActiveByRoomIdAfterUsername(rid, { search: page.filter, after: page.after });
+		return { members: [], checked: remaining, ...(!page.after && { total: remaining }) };
+	}
+
+	return previewRoomMembersInSteps(rid, { ...page, group: undefined }, async (subjects) => ({
+		compliant: subjects.map(({ _id }) => _id),
+		nonCompliant: [],
+		inconclusive: [],
+	}));
+}
+
+const filterValuesByOwnership = (
+	attributes: IAbacAttributeDefinition[],
+	owned: Map<string, Set<string>>,
+	keepOwned: boolean,
+): IAbacAttributeDefinition[] =>
+	attributes.flatMap(({ key, values }) => {
+		const kept = values.filter((value) => (owned.get(key)?.has(value) ?? false) === keepOwned);
+		return kept.length ? [{ key, values: kept }] : [];
+	});
+
+export const findUnownedValues = (attributes: IAbacAttributeDefinition[], owned: Map<string, Set<string>>) =>
+	filterValuesByOwnership(attributes, owned, false);
+
+export const findOwnedValues = (attributes: IAbacAttributeDefinition[], owned: Map<string, Set<string>>) =>
+	filterValuesByOwnership(attributes, owned, true);
+
+export function withAttributeValues(
+	owned: Map<string, Set<string>>,
+	attributes: IAbacAttributeDefinition[] = [],
+): Map<string, Set<string>> {
+	const merged = new Map(Array.from(owned, ([key, values]) => [key, new Set(values)]));
+	for (const { key, values } of attributes) {
+		merged.set(key, new Set([...(merged.get(key) ?? []), ...values]));
+	}
+
+	return merged;
+}
+
+export const toAttributeDefinitions = (entitlements: Map<string, Set<string>>): IAbacAttributeDefinition[] =>
+	Array.from(entitlements, ([key, values]) => ({ key, values: [...values] }));
+
+export const sortByKey = (attributes: IAbacAttributeDefinition[]): IAbacAttributeDefinition[] =>
+	[...attributes].sort((a, b) => a.key.localeCompare(b.key));
 
 export const extractAttribute = (ldapUser: ILDAPEntry, ldapKey: string, abacKey: string): IAbacAttributeDefinition | undefined => {
 	if (!ldapKey || !abacKey) {
@@ -145,6 +315,11 @@ export function validateAndNormalizeAttributes(attributes: Record<string, string
 const getAttributeDefinitionsFromDb = async (keys: string[]) =>
 	AbacAttributes.find({ key: { $in: keys } }, { projection: { key: 1, values: 1 } }).toArray();
 
+export const listAttributeDefinitions = async (): Promise<IAbacAttributeDefinition[]> =>
+	AbacAttributes.findAll({ projection: { key: 1, values: 1 } })
+		.map(({ key, values }) => ({ key, values }))
+		.toArray();
+
 const getAttributeDefinitionsCached = mem(getAttributeDefinitionsFromDb, {
 	maxAge: 30_000,
 	cacheKey: JSON.stringify,
@@ -230,11 +405,18 @@ export async function getAbacRoom(rid: string): Promise<IRoom> {
 	if (!room) {
 		throw new AbacRoomNotFoundError();
 	}
-	if (room.default || room.teamDefault) {
-		throw new AbacCannotConvertDefaultRoomToAbacError();
-	}
 
 	return room;
+}
+
+export function assertRoomAcceptsAttributes(room: IRoom): void {
+	if (isRoomFederated(room) || isRoomXMPPFederated(room)) {
+		throw new AbacContractError(AbacErrorCode.FederatedRoomAttributes);
+	}
+
+	if (isDiscussion(room)) {
+		throw new AbacContractError(AbacErrorCode.DiscussionRoomAttributes);
+	}
 }
 
 export function diffAttributeSets(
@@ -318,3 +500,15 @@ export function diffAttributeSets(
 }
 
 export const stripTrailingSlashes = (value: string): string => value.replace(/\/+$/, '');
+
+export const classifyDecisions = (decisions: IResourceDecision[] = []): keyof Evaluation => {
+	if (decisions.some((rd) => rd.decision === 'DECISION_DENY')) {
+		return 'nonCompliant';
+	}
+
+	if (decisions.length && decisions.every((rd) => rd.decision === 'DECISION_PERMIT')) {
+		return 'compliant';
+	}
+
+	return 'inconclusive';
+};

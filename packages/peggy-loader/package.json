@@ -2,6 +2,13 @@
 	"name": "@rocket.chat/peggy-loader",
 	"version": "0.31.28",
 	"description": "Peggy loader for webpack",
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		}
+	},
 	"keywords": [
 		"peggy",
 		"loader",
@@ -28,14 +35,13 @@
 	],
 	"scripts": {
 		"build": "rm -rf dist && tsc -p tsconfig.build.json",
-		"lint": "eslint .",
+		"lint": "yarn run -T oxlint",
 		"typecheck": "tsc --noEmit"
 	},
 	"devDependencies": {
 		"@types/node": "~24.13.6",
-		"eslint": "~10.11.0",
 		"peggy": "4.1.1",
-		"typescript": "~5.9.3",
+		"typescript": "~7.0.2",
 		"webpack": "~5.104.1"
 	},
 	"peerDependencies": {

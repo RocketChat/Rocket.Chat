@@ -60,4 +60,6 @@ export interface ISettingsModel extends IBaseModel<ISetting> {
 	addOptionValueById(_id: ISetting['_id'], option: ISettingSelectOption): Promise<Document | UpdateResult>;
 
 	findNotHiddenPublicUpdatedAfter(updatedAt: Date): FindCursor<ISetting>;
+
+	insertIfNotExists(setting: ISetting): Promise<WithId<ISetting> | null>;
 }

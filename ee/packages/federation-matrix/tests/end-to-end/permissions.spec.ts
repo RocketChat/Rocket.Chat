@@ -1,11 +1,11 @@
 import type { IRoomNativeFederated, IUser } from '@rocket.chat/core-typings';
 
 import { api } from '../../../../../apps/meteor/tests/data/api-data';
+import { retry } from '../../../../../apps/meteor/tests/data/retry';
 import { addUserToRoom, createRoom, getSubscriptionByRoomId, getSubscriptions } from '../../../../../apps/meteor/tests/data/rooms.helper';
 import { createUser, deleteUser, getRequestConfig } from '../../../../../apps/meteor/tests/data/users.helper';
 import type { IRequestConfig, TestUser } from '../../../../../apps/meteor/tests/data/users.helper';
 import { IS_EE } from '../../../../../apps/meteor/tests/e2e/config/constants';
-import { retry } from '../../../../../apps/meteor/tests/end-to-end/api/helpers/retry.ts';
 import { federationConfig } from '../helper/config';
 import { SynapseClient } from '../helper/synapse-client';
 
@@ -152,7 +152,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						},
 						config: rc1User1RequestConfig,
 					}),
-				).rejects.toMatchObject({ status: 400, body: { success: false, errorType: 'error-not-authorized-federation' } });
+				).rejects.toMatchObject({ status: 403, body: { success: false, errorType: 'error-forbidden' } });
 			});
 
 			describe('Inviting from a local server', () => {
@@ -196,8 +196,8 @@ import { SynapseClient } from '../helper/synapse-client';
 					await expect(
 						addUserToRoom({ usernames: [user.username], rid: createResponse.body.group._id, type: 'p', config: rc1AdminRequestConfig }),
 					).rejects.toMatchObject({
-						status: 400,
-						body: { success: false, errorType: expect.stringContaining('error-not-authorized-federation') },
+						status: 403,
+						body: { success: false, errorType: 'error-forbidden' },
 					});
 				});
 
@@ -495,7 +495,7 @@ import { SynapseClient } from '../helper/synapse-client';
 							},
 							config: userRequestConfig,
 						}),
-					).rejects.toMatchObject({ status: 400, body: { success: false, errorType: 'error-not-authorized-federation' } });
+					).rejects.toMatchObject({ status: 403, body: { success: false, errorType: 'error-forbidden' } });
 				});
 
 				it('should NOT be able to be added to a federated room', async () => {
@@ -518,8 +518,8 @@ import { SynapseClient } from '../helper/synapse-client';
 							config: rcValidUser1.config,
 						}),
 					).rejects.toMatchObject({
-						status: 400,
-						body: { success: false, errorType: expect.stringContaining('error-not-authorized-federation') },
+						status: 403,
+						body: { success: false, errorType: 'error-forbidden' },
 					});
 				});
 
@@ -535,7 +535,7 @@ import { SynapseClient } from '../helper/synapse-client';
 							},
 							config: userRequestConfig,
 						}),
-					).rejects.toMatchObject({ status: 400, body: { success: false, errorType: 'error-not-authorized-federation' } });
+					).rejects.toMatchObject({ status: 403, body: { success: false, errorType: 'error-forbidden' } });
 				});
 			});
 
@@ -573,7 +573,7 @@ import { SynapseClient } from '../helper/synapse-client';
 							},
 							config: userRequestConfig,
 						}),
-					).rejects.toMatchObject({ status: 400, body: { success: false, errorType: 'error-not-authorized-federation' } });
+					).rejects.toMatchObject({ status: 403, body: { success: false, errorType: 'error-forbidden' } });
 				});
 
 				it('should NOT be able to be added to a federated room', async () => {
@@ -596,8 +596,8 @@ import { SynapseClient } from '../helper/synapse-client';
 							config: rcValidUser1.config,
 						}),
 					).rejects.toMatchObject({
-						status: 400,
-						body: { success: false, errorType: expect.stringContaining('error-not-authorized-federation') },
+						status: 403,
+						body: { success: false, errorType: 'error-forbidden' },
 					});
 				});
 			});
@@ -635,7 +635,7 @@ import { SynapseClient } from '../helper/synapse-client';
 							},
 							config: userRequestConfig,
 						}),
-					).rejects.toMatchObject({ status: 400, body: { success: false, errorType: 'error-not-authorized-federation' } });
+					).rejects.toMatchObject({ status: 403, body: { success: false, errorType: 'error-forbidden' } });
 				});
 
 				it('should NOT be able to be added to a federated room', async () => {
@@ -658,8 +658,8 @@ import { SynapseClient } from '../helper/synapse-client';
 							config: rcValidUser1.config,
 						}),
 					).rejects.toMatchObject({
-						status: 400,
-						body: { success: false, errorType: expect.stringContaining('error-not-authorized-federation') },
+						status: 403,
+						body: { success: false, errorType: 'error-forbidden' },
 					});
 				});
 			});

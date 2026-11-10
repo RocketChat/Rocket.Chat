@@ -3,6 +3,7 @@ import type { Room } from 'matrix-js-sdk';
 import { EventTimeline } from 'matrix-js-sdk';
 
 import { api } from '../../../../../apps/meteor/tests/data/api-data';
+import { retry } from '../../../../../apps/meteor/tests/data/retry';
 import {
 	createRoom,
 	getRoomInfo,
@@ -17,7 +18,6 @@ import {
 } from '../../../../../apps/meteor/tests/data/rooms.helper';
 import { type IRequestConfig, getRequestConfig, createUser, deleteUser } from '../../../../../apps/meteor/tests/data/users.helper';
 import { IS_EE } from '../../../../../apps/meteor/tests/e2e/config/constants';
-import { retry } from '../../../../../apps/meteor/tests/end-to-end/api/helpers/retry';
 import { federationConfig } from '../helper/config';
 import { createDDPListener } from '../helper/ddp-listener';
 import { SynapseClient } from '../helper/synapse-client';
@@ -1662,7 +1662,7 @@ import { SynapseClient } from '../helper/synapse-client';
 
 					expect(pendingInvitation).not.toBeUndefined();
 
-					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+					// oxlint-disable-next-line @typescript-eslint/no-non-null-assertion
 					rid = pendingInvitation!.rid!;
 
 					await acceptRoomInvite(rid, rc1AdminRequestConfig);
@@ -1706,7 +1706,7 @@ import { SynapseClient } from '../helper/synapse-client';
 
 				expect(pendingInvitation).not.toBeUndefined();
 
-				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+				// oxlint-disable-next-line @typescript-eslint/no-non-null-assertion
 				rid = pendingInvitation!.rid!;
 			}, 15000);
 
@@ -1739,7 +1739,7 @@ import { SynapseClient } from '../helper/synapse-client';
 
 					expect(pendingInvitation).not.toBeUndefined();
 
-					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+					// oxlint-disable-next-line @typescript-eslint/no-non-null-assertion
 					rid = pendingInvitation!.rid!;
 
 					// hs1 revokes the invitation by kicking the invited user
@@ -1751,9 +1751,15 @@ import { SynapseClient } from '../helper/synapse-client';
 				});
 
 				it('should not have the subscription on the RC side after revoked invitation', async () => {
-					const subscriptions = await getSubscriptions(rc1AdminRequestConfig);
-					const invitedSub = subscriptions.update.find((sub) => sub.fname?.includes(channelName));
-					expect(invitedSub).toBeFalsy();
+					await retry(
+						'waiting for the revoked invitation to propagate to RC',
+						async () => {
+							const subscriptions = await getSubscriptions(rc1AdminRequestConfig);
+							const invitedSub = subscriptions.update.find((sub) => sub.fname?.includes(channelName));
+							expect(invitedSub).toBeFalsy();
+						},
+						{ retries: 5, delayMs: 1000 },
+					);
 				});
 
 				it('should have the RC user with leave membership on Synapse side after revoked invitation', async () => {

@@ -1,26 +1,15 @@
-import { css } from '@rocket.chat/css-in-js';
-import { Box, Button, IconButton } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import type { ReactNode, ComponentProps } from 'react';
+import type { ReactNode } from 'react';
 import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useEmbeddedLayout } from '../../hooks/useEmbeddedLayout';
+import { HoverCard, HoverCardActions, HoverCardBand, HoverCardInfoItem, HoverCardInfoList, HoverCardSection } from '../HoverCard';
 import { MarkdownTextContext } from '../MarkdownTextContext';
 import * as Status from '../UserStatus';
-import UserCardActions from './UserCardActions';
-import UserCardDialog from './UserCardDialog';
-import UserCardInfo from './UserCardInfo';
+import UserCardHeader from './UserCardHeader';
 import UserCardRoles from './UserCardRoles';
-import UserCardUsername from './UserCardUsername';
-
-const clampStyle = css`
-	display: -webkit-box;
-	overflow: hidden;
-	-webkit-line-clamp: 3;
-	-webkit-box-orient: vertical;
-	word-break: break-word;
-`;
 
 export type UserCardProps = {
 	user?: {
@@ -30,78 +19,80 @@ export type UserCardProps = {
 		etag?: string;
 		customStatus?: ReactNode;
 		roles?: ReactNode;
-		bio?: ReactNode;
+		workspaceRoles?: ReactNode;
 		status?: ReactNode;
 		localTime?: ReactNode;
 	};
 	actions?: ReactNode;
 	onOpenUserInfo?: () => void;
-	onClose?: () => void;
-} & ComponentProps<typeof UserCardDialog>;
+};
 
 const UserCard = ({
-	user: { name, username, etag, customStatus, roles, bio, status = <Status.Offline />, localTime, nickname } = {},
+	user: { name, username, etag, customStatus, roles, workspaceRoles, status = <Status.Offline />, localTime, nickname } = {},
 	actions,
 	onOpenUserInfo,
-	onClose,
-	...props
 }: UserCardProps) => {
 	const { t } = useTranslation();
 	const isLayoutEmbedded = useEmbeddedLayout();
 	const MarkdownText = useContext(MarkdownTextContext);
+	const showUsername = !!username && name !== username;
+	const showProfileLink = !!onOpenUserInfo && !isLayoutEmbedded;
 
 	return (
-		<UserCardDialog aria-label={t('User_card')} {...props}>
-			<div>
-				{username && <UserAvatar username={username} etag={etag} size='x124' />}
-				<Box flexGrow={0} display='flex' marginBlockStart={12} alignItems='center' justifyContent='center'>
-					<UserCardActions aria-label={t('User_card_actions')}>{actions}</UserCardActions>
-				</Box>
-			</div>
-			<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1} marginInlineStart={16} width='1px'>
-				<Box marginBlockEnd={4} withTruncatedText display='flex' alignItems='center'>
-					<UserCardUsername status={status} name={name} />
-					{nickname && (
-						<Box
-							flexGrow={1}
-							flexShrink={1}
-							flexBasis={0}
-							title={nickname}
-							color='hint'
-							marginInlineStart={4}
-							fontScale='p2'
-							withTruncatedText
-						>
-							({nickname})
-						</Box>
-					)}
-				</Box>
-				{customStatus && (
-					<UserCardInfo marginBlockEnd={16}>
-						{typeof customStatus === 'string' ? (
+		<HoverCard aria-label={t('User_card')}>
+			{workspaceRoles && <HoverCardBand label={t('Workspace_roles')}>{workspaceRoles}</HoverCardBand>}
+			<HoverCardSection>
+				<UserCardHeader
+					avatar={username && <UserAvatar username={username} etag={etag} size='x36' />}
+					name={name}
+					status={status}
+					nickname={nickname}
+					subtitle={
+						customStatus &&
+						(typeof customStatus === 'string' ? (
 							<MarkdownText withTruncatedText variant='inlineWithoutBreaks' content={customStatus} parseEmoji={true} />
 						) : (
 							customStatus
-						)}
-					</UserCardInfo>
+						))
+					}
+				/>
+				{(showUsername || roles || localTime || showProfileLink) && (
+					<Box marginBlockStart='x16'>
+						<HoverCardInfoList>
+							{showUsername && (
+								<HoverCardInfoItem icon='at' label={t('Username')}>
+									{username}
+								</HoverCardInfoItem>
+							)}
+							{roles && (
+								<HoverCardInfoItem icon='shield-blank' label={t('Room_roles')}>
+									<UserCardRoles>{roles}</UserCardRoles>
+								</HoverCardInfoItem>
+							)}
+							{localTime && (
+								<HoverCardInfoItem icon='clock' label={t('Local_Time')}>
+									{localTime}
+								</HoverCardInfoItem>
+							)}
+							{showProfileLink && (
+								<HoverCardInfoItem icon='link' onClick={onOpenUserInfo}>
+									<Box is='span' color='info' textDecorationLine='underline'>
+										{t('Full_profile')}
+									</Box>
+								</HoverCardInfoItem>
+							)}
+						</HoverCardInfoList>
+					</Box>
 				)}
-				<UserCardRoles>{roles}</UserCardRoles>
-				<UserCardInfo>{localTime}</UserCardInfo>
-				{bio && (
-					<UserCardInfo withTruncatedText={false} className={clampStyle} height='x60'>
-						{typeof bio === 'string' ? <MarkdownText variant='inline' content={bio} /> : bio}
-					</UserCardInfo>
+				{actions && (
+					<Box display='flex' flexDirection='column' marginBlockStart='x24'>
+						<HoverCardActions aria-label={t('User_card_actions')} stretch='equal'>
+							{actions}
+						</HoverCardActions>
+					</Box>
 				)}
-				{onOpenUserInfo && !isLayoutEmbedded && (
-					<div>
-						<Button small onClick={onOpenUserInfo}>
-							{t('See_full_profile')}
-						</Button>
-					</div>
-				)}
-			</Box>
-			{onClose && <IconButton marginInlineStart={16} small aria-label={t('Close')} icon='cross' onClick={onClose} />}
-		</UserCardDialog>
+			</HoverCardSection>
+		</HoverCard>
 	);
 };
 

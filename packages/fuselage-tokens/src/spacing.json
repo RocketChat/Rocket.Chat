@@ -1,0 +1,12 @@
+{
+	"spacing": {
+		"x4": { "value": 4, "type": "spacing" },
+		"x8": { "value": 8, "type": "spacing" },
+		"x12": { "value": 12, "type": "spacing" },
+		"x16": { "value": 16, "type": "spacing" },
+		"x20": { "value": 20, "type": "spacing" },
+		"x24": { "value": 24, "type": "spacing" },
+		"x32": { "value": 32, "type": "spacing" },
+		"x40": { "value": 40, "type": "spacing" }
+	}
+}

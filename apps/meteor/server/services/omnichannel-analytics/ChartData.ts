@@ -2,7 +2,7 @@ import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
 import type { Filter } from 'mongodb';
 
-/* eslint-disable new-cap */
+/* oxlint-disable new-cap */
 type ChartDataValidActions =
 	| 'Total_conversations'
 	| 'Avg_chat_duration'

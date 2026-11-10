@@ -1,7 +1,8 @@
+import { after, before, describe, it } from 'node:test';
+
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import { sleep } from '../../../lib/utils/sleep';
@@ -15,7 +16,7 @@ describe('[Calendar Events]', () => {
 	let user2: IUser;
 	let userCredentials: Credentials;
 
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	before(async () => {
 		user2 = await createUser();
@@ -119,7 +120,7 @@ describe('[Calendar Events]', () => {
 		let eventId2: string | undefined;
 		let eventId3: string | undefined;
 
-		before('create sample events', async () => {
+		before(async () => {
 			await request
 				.post(api('calendar-events.create'))
 				.set(credentials)
@@ -212,7 +213,7 @@ describe('[Calendar Events]', () => {
 		let eventId: string | undefined;
 		let eventId2: string | undefined;
 
-		before('create sample events', async () => {
+		before(async () => {
 			await request
 				.post(api('calendar-events.create'))
 				.set(credentials)
@@ -524,7 +525,7 @@ describe('[Calendar Events]', () => {
 		const testSubject = `calendar-events.update-${Date.now()}`;
 		let eventId: string | undefined;
 
-		before('create sample events', async () => {
+		before(async () => {
 			await request
 				.post(api('calendar-events.create'))
 				.set(userCredentials)
@@ -608,7 +609,7 @@ describe('[Calendar Events]', () => {
 	describe('[/calendar-events.delete]', () => {
 		let eventId: string | undefined;
 
-		before('create sample events', async () => {
+		before(async () => {
 			await request
 				.post(api('calendar-events.create'))
 				.set(userCredentials)

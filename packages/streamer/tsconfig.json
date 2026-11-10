@@ -7,6 +7,6 @@
 	},
 	"include": ["./src/**/*"],
 	// a child `exclude` replaces the parent's rather than adding to it; keeping only `node_modules`
-	// lets ESLint and `yarn typecheck` cover the specs, while the build config drops them.
+	// lets oxlint and `yarn typecheck` cover the specs, while the build config drops them.
 	"exclude": ["node_modules"]
 }

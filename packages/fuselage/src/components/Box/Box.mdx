@@ -1,0 +1,30 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title='Layout/Box/Overview' />
+
+# Box
+
+A primitive component with normalized styles and a lot of props for prototyping.
+
+### `rcx-` prefixed props
+
+As the class names used in Fuselage are prefixed by `rcx-`, props named as `rcx-*` are automatically converted into
+values appended to the `className` prop.
+
+For instance,
+
+```jsx
+<Box
+  rcx-component
+  rcx-component--bool-modifier
+  rcx-component--string-modifier='value'
+/>
+```
+
+is rendered as
+
+```html
+<div
+  class="rcx-box rcx-component rcx-component--bool-modifier rcx-component--string-modifier-value"
+></div>
+```

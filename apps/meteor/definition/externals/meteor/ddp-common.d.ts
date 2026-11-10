@@ -9,7 +9,7 @@ declare module 'meteor/ddp-common' {
 					close: () => void;
 					clientAddress: string;
 					httpHeaders: Record<string, any>;
-				};
+				} | null;
 				isSimulation?: boolean;
 				userId?: string;
 			});

@@ -1,62 +1,38 @@
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
-import {
-	useVideoConfAcceptCall,
-	useVideoConfIncomingCalls,
-	useVideoConfRejectIncomingCall,
-	useVideoConfWindowEnabled,
-} from '@rocket.chat/ui-video-conf';
 import type { TFunction } from 'i18next';
-import { memo, useMemo } from 'react';
+import { memo } from 'react';
 
 import SidebarItemTemplateWithData from './SidebarItemTemplateWithData';
-import type { useAvatarTemplate } from '../hooks/useAvatarTemplate';
-import type { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
+import type { RoomListItemViewMode } from '../../components/RoomListItem/RoomListItem';
+import { useIsOpenedRoom } from '../../lib/RoomManager';
+import type { RingingCallActions } from '../hooks/useRingingCalls';
 
 export type RoomListRowProps = {
 	data: {
-		extended: boolean;
 		t: TFunction;
-		SidebarItemTemplate: ReturnType<typeof useTemplateByViewMode>;
-		AvatarTemplate: ReturnType<typeof useAvatarTemplate>;
-		openedRoom: string;
-		sidebarViewMode: 'extended' | 'condensed' | 'medium';
+		viewMode: RoomListItemViewMode;
+		showAvatar: boolean;
+		formatTime: (time: Date | string) => string;
 		isAnonymous: boolean;
 		userId?: string;
 	};
 	item: SubscriptionWithRoom;
+	/** Present only while this room's call is ringing and this list is where it is answered. */
+	videoConfActions?: RingingCallActions;
 };
 
-const RoomListRow = ({ data, item }: RoomListRowProps) => {
-	const { extended, t, SidebarItemTemplate, AvatarTemplate, openedRoom, sidebarViewMode, userId } = data;
-
-	const acceptCall = useVideoConfAcceptCall();
-	const rejectCall = useVideoConfRejectIncomingCall();
-	const incomingCalls = useVideoConfIncomingCalls();
-	const conferenceWindowEnabled = useVideoConfWindowEnabled();
-	const currentCall = incomingCalls.find((call) => call.rid === item.rid);
-
-	// With the call window, a ringing call is answered from the list of the calls already running rather than
-	// from the row for its room — so the row keeps no accept/reject of its own.
-	const videoConfActions = useMemo(
-		() =>
-			!conferenceWindowEnabled && currentCall
-				? {
-						acceptCall: (): void => acceptCall(currentCall.callId),
-						rejectCall: (): void => rejectCall(currentCall.callId),
-					}
-				: undefined,
-		[acceptCall, rejectCall, currentCall, conferenceWindowEnabled],
-	);
+const RoomListRow = ({ data, item, videoConfActions }: RoomListRowProps) => {
+	const { t, viewMode, showAvatar, formatTime, userId } = data;
+	const selected = useIsOpenedRoom(item.rid);
 
 	return (
 		<SidebarItemTemplateWithData
-			sidebarViewMode={sidebarViewMode}
-			selected={item.rid === openedRoom}
+			viewMode={viewMode}
+			showAvatar={showAvatar}
+			formatTime={formatTime}
+			selected={selected}
 			t={t}
 			room={item}
-			extended={extended}
-			SidebarItemTemplate={SidebarItemTemplate}
-			AvatarTemplate={AvatarTemplate}
 			videoConfActions={videoConfActions}
 			userId={userId}
 		/>

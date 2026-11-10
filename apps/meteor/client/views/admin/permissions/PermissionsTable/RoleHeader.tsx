@@ -1,5 +1,5 @@
 import type { IRole } from '@rocket.chat/core-typings';
-import { Button } from '@rocket.chat/fuselage';
+import { Box, Button } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericTableHeaderCell } from '@rocket.chat/ui-client';
 import { useRoute } from '@rocket.chat/ui-contexts';
@@ -22,10 +22,12 @@ const RoleHeader = ({ _id, name, description }: RoleHeaderProps) => {
 	});
 
 	return (
-		<GenericTableHeaderCell paddingInline={4} padding={8}>
-			<Button small icon='edit' secondary onClick={handleEditRole}>
-				{description || name}
-			</Button>
+		<GenericTableHeaderCell>
+			<Box marginInline='neg-x4'>
+				<Button size='small' icon='edit' variant='secondary' onClick={handleEditRole}>
+					{description || name}
+				</Button>
+			</Box>
 		</GenericTableHeaderCell>
 	);
 };

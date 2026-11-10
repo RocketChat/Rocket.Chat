@@ -1,4 +1,4 @@
-import type { HuffCodeTab } from './HuffCodeTab';
+import type { HuffCodeTab } from './HuffCodeTab.js';
 
 const t1HB = [1, 1, 1, 0] as const;
 

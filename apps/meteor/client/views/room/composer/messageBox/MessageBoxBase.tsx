@@ -96,8 +96,11 @@ const MessageBoxBase = ({
 			{shouldPopupPreview && popup.option && (
 				<ComposerBoxPopup
 					select={popup.select}
+					hover={popup.hover}
 					items={popup.items}
 					focused={popup.focused}
+					focusVisible={popup.focusVisible}
+					listboxId={popup.listboxId}
 					title={popup.option.title}
 					renderItem={popup.option.renderItem}
 				/>
@@ -111,8 +114,11 @@ const MessageBoxBase = ({
 			{popup.option?.preview && (
 				<ComposerBoxPopupPreview
 					select={popup.select}
+					hover={popup.hover}
 					items={popup.items as any}
 					focused={popup.focused as any}
+					focusVisible={popup.focusVisible}
+					listboxId={popup.listboxId}
 					title={popup.option.title}
 					renderItem={popup.option.renderItem}
 					ref={popup.commandsRef}
@@ -156,7 +162,7 @@ const MessageBoxBase = ({
 					</MessageComposerToolbarActions>
 					<MessageComposerToolbarSubmit>
 						{!canSend && (
-							<MessageComposerButton primary onClick={onJoin} loading={joinPending}>
+							<MessageComposerButton variant='primary' onClick={onJoin} loading={joinPending}>
 								{t('Join')}
 							</MessageComposerButton>
 						)}
@@ -168,8 +174,7 @@ const MessageBoxBase = ({
 									icon='send'
 									disabled={!sendEnabled}
 									onClick={onSend}
-									secondary={sendActive}
-									info={sendActive}
+									variant={sendActive ? 'primary' : undefined}
 								/>
 							</>
 						)}

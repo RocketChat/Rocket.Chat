@@ -14,4 +14,7 @@ export interface IServerEventsModel extends IBaseModel<IServerEvent> {
 		data: ExtractDataToParams<E>,
 		actor: IAuditServerActor,
 	): Promise<void>;
+	createAuditServerEvents<K extends keyof IServerEvents>(
+		events: Array<{ key: K; data: ExtractDataToParams<IServerEvents[K]>; actor: IAuditServerActor }>,
+	): Promise<void>;
 }

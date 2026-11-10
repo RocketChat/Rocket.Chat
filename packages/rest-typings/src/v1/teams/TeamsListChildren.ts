@@ -2,6 +2,7 @@ import type { ITeam } from '@rocket.chat/core-typings';
 
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 import { ajvQuery } from '../Ajv';
+import { paginationQueryProperties } from '../pagination';
 
 type GeneralProps = {
 	filter?: string;
@@ -25,8 +26,7 @@ const TeamsListChildrenPropsSchema = {
 		type: { type: 'string', enum: ['channels', 'discussions'] },
 		roomId: { type: 'string' },
 		filter: { type: 'string' },
-		offset: { type: 'number' },
-		count: { type: 'number' },
+		...paginationQueryProperties,
 		sort: { type: 'string' },
 	},
 	additionalProperties: false,

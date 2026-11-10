@@ -21,3 +21,14 @@ export const ToggleButtonStory: StoryObj<typeof ToggleButton> = {
 		);
 	},
 };
+
+/** Pressed, for something the user is doing rather than something they have turned off: the glyph goes blue. */
+export const PressedInfo: StoryObj<typeof ToggleButton> = {
+	args: {
+		label: 'Raise hand',
+		titles: ['Raise hand', 'Lower hand'],
+		icons: ['hand', 'hand'],
+		pressed: true,
+		info: true,
+	},
+};
