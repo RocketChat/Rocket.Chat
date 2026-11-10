@@ -1,5 +1,6 @@
 import type { IUser, Serialized } from '@rocket.chat/core-typings';
-import { Box, Tag } from '@rocket.chat/fuselage';
+import { css } from '@rocket.chat/css-in-js';
+import { Box, Item, ItemContent, ItemDescription, ItemMedia, ItemTitle, Tag } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 import { memo, useContext, useId } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -15,6 +16,11 @@ import { UserCardRoles, UserCardUsername } from '../UserCard';
 import UserInfoABACAttributes from './UserInfoABACAttributes';
 import UserInfoCopyableText from './UserInfoCopyableText';
 import UserInfoZoomableAvatar from './UserInfoZoomableAvatar';
+
+// Item pads its row by 4px; pull it back so the avatar lines up with the fields below.
+const alignWithContent = css`
+	margin-inline: -0.25rem;
+`;
 
 type UserInfoDataProps = Serialized<
 	Pick<
@@ -82,15 +88,21 @@ const UserInfo = ({
 	return (
 		<ContextualbarScrollableContent padding={24} {...props}>
 			<InfoPanel>
-				<InfoPanelSection display='flex' alignItems='center'>
-					{username && <UserInfoZoomableAvatar username={username} etag={avatarETag} />}
-					<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1} marginInlineStart='x8' withTruncatedText>
-						{userDisplayName && <UserCardUsername is='h2' flexGrow={0} flexBasis='auto' status={status} name={userDisplayName} />}
-						{customStatus && (
-							<Box color='hint' fontScale='p2' paddingInlineStart='x4' withTruncatedText>
-								{customStatus}
-							</Box>
-						)}
+				<InfoPanelSection>
+					<Box className={alignWithContent}>
+						<Item>
+							{username && (
+								<ItemMedia>
+									<UserInfoZoomableAvatar username={username} etag={avatarETag} />
+								</ItemMedia>
+							)}
+							<ItemContent>
+								<ItemTitle>
+									{userDisplayName && <UserCardUsername is='h2' flexGrow={0} flexBasis='auto' status={status} name={userDisplayName} />}
+								</ItemTitle>
+								{customStatus && <ItemDescription>{customStatus}</ItemDescription>}
+							</ItemContent>
+						</Item>
 					</Box>
 				</InfoPanelSection>
 
