@@ -51,6 +51,11 @@ export default {
 			description: 'Renders the disabled visual style.',
 			table: { category: 'State' },
 		},
+		inline: {
+			control: 'boolean',
+			description: 'Flows with the surrounding text instead of being a block of its own.',
+			table: { category: 'Shape' },
+		},
 		icon: {
 			control: false,
 			description: 'Element rendered before the tag label.',

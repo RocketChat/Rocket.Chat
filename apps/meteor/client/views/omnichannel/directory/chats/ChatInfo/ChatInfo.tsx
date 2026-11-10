@@ -109,7 +109,7 @@ function ChatInfo({ id, route }: ChatInfoProps) {
 							<ul aria-labelledby={`${roomId}-tags`}>
 								{tags.map((tag) => (
 									<Box is='li' key={tag} marginInlineEnd={4} display='inline'>
-										<Tag style={{ display: 'inline' }} disabled>
+										<Tag inline disabled>
 											{tag}
 										</Tag>
 									</Box>

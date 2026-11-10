@@ -144,3 +144,10 @@ export type InputAttributes = CommonAttributes &
 		| 'onClick'
 		| 'onKeyDown'
 	>;
+
+/**
+ * What a part rendered as a `span`, or as an `a` when it has an `href`, forwards: its action attributes and the link's
+ * address. The `ref` is typed for both tags; the `a` branch casts it to `AnchorRef`.
+ */
+export type SpanOrAnchorAttributes = ActionAttributes<HTMLElement> &
+	Pick<AnchorHTMLAttributes<HTMLAnchorElement>, 'href' | 'target' | 'rel'>;

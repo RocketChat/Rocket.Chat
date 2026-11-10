@@ -69,7 +69,7 @@ const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
 						<Box color='hint' display='flex' flex-direction='row'>
 							{tags.map((tag: string) => (
 								<Box marginBlockStart={4} marginInlineEnd={4} withTruncatedText overflow={tag.length > 10 ? 'hidden' : 'visible'} key={tag}>
-									<Tag style={{ display: 'inline' }} disabled>
+									<Tag inline disabled>
 										{tag}
 									</Tag>
 								</Box>
