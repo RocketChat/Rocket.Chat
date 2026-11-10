@@ -132,6 +132,10 @@ jobs:
       - name: Run visual regression tests
         run: yarn workspace @rocket.chat/fuselage run visual-regression
 
+      - name: Run the g0 characterization specs against the zero-runtime Storybook
+        if: matrix.zero-runtime == '1'
+        run: yarn workspace @rocket.chat/fuselage run test:stories storybook-static
+
       - name: Upload visual regression results
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: failure()

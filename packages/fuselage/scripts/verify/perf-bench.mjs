@@ -1,8 +1,9 @@
-// Usage: node scripts/verify/perf-bench.mjs <storybook-static A> <storybook-static B> [runs=10]
+// Usage: node scripts/verify/perf-bench.mjs <storybook-static A> <storybook-static B> [runs=20]
 // Times mounting and updating 150 Message rows and 200 Sidebar items (the `Benchmarks/Lists` stories) in two production
 // Storybook builds, with the CPU throttled. Runs alternate A, B, A, B so drift hits both sides alike; each run is a fresh
-// page. Prints the median of each side, the change, and the spread (interquartile range over median) as the noise floor:
+// page. Prints the median of each side, the change, and the spread (interquartile range over median, IQR) as the noise floor:
 // a change inside the spread is noise. For a floor between builds, pass the same build twice (two captures of `develop`).
+// Measured floor, one build against itself at 20 runs and 4x throttle: IQR 3.0% to 8.1%, change between -0.5% and +1.1%.
 // BENCH_CPU_THROTTLE sets the slowdown factor (default 4).
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
@@ -13,11 +14,11 @@ import { serve } from './serve.mjs';
 const require = createRequire(join(import.meta.dirname, '../..', 'package.json'));
 const { chromium } = require('playwright-core');
 
-const [dirA, dirB, runsArg = '10'] = process.argv.slice(2);
+const [dirA, dirB, runsArg = '20'] = process.argv.slice(2);
 const runs = Number(runsArg);
 const throttle = Number(process.env.BENCH_CPU_THROTTLE ?? 4);
 if (!dirA || !dirB || !(runs >= 1)) {
-	console.error('Usage: node scripts/verify/perf-bench.mjs <storybook-static A> <storybook-static B> [runs=10]');
+	console.error('Usage: node scripts/verify/perf-bench.mjs <storybook-static A> <storybook-static B> [runs=20]');
 	process.exit(2);
 }
 
@@ -78,8 +79,8 @@ for (const story of benchStories(dirA)) {
 			'A median ms': a.median.toFixed(1),
 			'B median ms': b.median.toFixed(1),
 			'B vs A': `${((b.median / a.median - 1) * 100).toFixed(1)}%`,
-			'noise A': `${(a.spread * 100).toFixed(1)}%`,
-			'noise B': `${(b.spread * 100).toFixed(1)}%`,
+			'IQR A': `${(a.spread * 100).toFixed(1)}%`,
+			'IQR B': `${(b.spread * 100).toFixed(1)}%`,
 		});
 	}
 }
