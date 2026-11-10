@@ -138,7 +138,7 @@ const EditTrigger = ({ triggerData, onClose }: { triggerData?: Serialized<ILivec
 				<ContextualbarTitle>{triggerData?._id ? t('Edit_Trigger') : t('New_Trigger')}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
-			<ContextualbarScrollableContent>
+			<ContextualbarScrollableContent paddingBlockEnd='x32'>
 				<form id={formId} onSubmit={handleSubmit(handleSave)}>
 					<FieldGroup>
 						<Field>
