@@ -1,0 +1,85 @@
+name: Size Report
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        required: true
+        type: string
+
+    secrets:
+      NPM_TOKEN:
+        required: false
+
+env:
+  TOOL_NODE_FLAGS: ${{ vars.TOOL_NODE_FLAGS }}
+
+permissions: {}
+
+# Builds the web client with Vite for the pull request and for its merge-base, and prints the JS and CSS gzip totals and
+# the per-chunk change in the job summary (apps/meteor/vite/sizeReport.mjs, runnable locally with `yarn size:client`).
+jobs:
+  size-report:
+    # a pull request's checkout is a merge commit whose first parent is the current base branch tip
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04-arm
+    permissions:
+      contents: read
+
+    name: Size Report
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 2
+
+      - name: Detect client changes
+        id: changes
+        run: |
+          if git diff --quiet HEAD^1 HEAD -- packages/fuselage apps/meteor/client apps/meteor/vite; then
+            echo "affected=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "affected=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Setup NodeJS
+        if: steps.changes.outputs.affected == 'true'
+        uses: ./.github/actions/setup-node
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache-modules: true
+          install: true
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - uses: rharkor/caching-for-turbo@2238fae6eb9a9936f92356f54cb3660200d105e7 # v2.5.1
+        if: steps.changes.outputs.affected == 'true'
+
+      - uses: ./.github/actions/restore-packages
+        if: steps.changes.outputs.affected == 'true'
+
+      - name: Measure the pull request
+        if: steps.changes.outputs.affected == 'true'
+        run: yarn workspace @rocket.chat/meteor size:client --json "$RUNNER_TEMP/pr.json"
+
+      # The base is built in the same workspace: its own sources and packages, measured by the pull request's script.
+      - name: Measure the merge-base
+        if: steps.changes.outputs.affected == 'true'
+        env:
+          PR_SHA: ${{ github.sha }}
+        run: |
+          git checkout --detach HEAD^1
+          git checkout "$PR_SHA" -- apps/meteor/vite/sizeReport.mjs
+          yarn
+          yarn turbo run build --filter='@rocket.chat/meteor^...'
+          yarn workspace @rocket.chat/meteor size:client --json "$RUNNER_TEMP/base.json"
+          git checkout "$PR_SHA" -- .
+
+      - name: Compare
+        if: steps.changes.outputs.affected == 'true'
+        run: |
+          cd apps/meteor
+          node vite/sizeReport.mjs --report "$RUNNER_TEMP/pr.json" --compare "$RUNNER_TEMP/base.json" --markdown "$RUNNER_TEMP/size.md"
+          {
+            echo "### Web client size (gzip), pull request against its merge-base"
+            cat "$RUNNER_TEMP/size.md"
+          } >> "$GITHUB_STEP_SUMMARY"
