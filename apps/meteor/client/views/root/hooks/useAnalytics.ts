@@ -2,7 +2,6 @@ import { useSetting, useUserId } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
 declare global {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Window {
 		_paq?: [string, ...unknown[]][];
 		GoogleAnalyticsObject: unknown;

@@ -1,12 +1,11 @@
-import type { AllHTMLAttributes, ReactNode, RefAttributes } from 'react';
+import type { InputHTMLAttributes, ReactNode } from 'react';
 
-import { Box, type BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
+import { Box } from '../Box';
 
-export type ToggleSwitchProps = Omit<BoxProps, 'ref'> &
-	RefAttributes<HTMLInputElement> &
-	AllHTMLAttributes<HTMLInputElement> & {
-		labelChildren?: ReactNode;
-	};
+export type ToggleSwitchProps = ElementProps<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>> & {
+	labelChildren?: ReactNode;
+};
 
 function ToggleSwitch({ className, labelChildren, ...props }: ToggleSwitchProps) {
 	return (

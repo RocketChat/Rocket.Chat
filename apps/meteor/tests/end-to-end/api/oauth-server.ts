@@ -113,7 +113,7 @@ describe('[OAuth Server]', () => {
 					const location = new URL(res.headers.location);
 					expect(location.origin).to.be.equal(redirectUri);
 					expect(location.searchParams.get('code')).to.be.string;
-					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+					// oxlint-disable-next-line @typescript-eslint/no-non-null-assertion
 					code = location.searchParams.get('code')!;
 				});
 		});
@@ -257,8 +257,8 @@ describe('[OAuth Server]', () => {
 					.expect('Content-Type', 'application/json')
 					.expect(401)
 					.expect((res: Response) => {
-						expect(res.body).to.have.property('status', 'error');
-						expect(res.body).to.have.property('message', 'You must be logged in to do this.');
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 					});
 			});
 		});

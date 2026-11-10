@@ -1,5 +1,16 @@
 # Change Log
 
+## 0.34.2-rc.0
+
+### Patch Changes
+
+- ([#42732](https://github.com/RocketChat/Rocket.Chat/pull/42732)) Moved `@rocket.chat/styled` into the Rocket.Chat monorepo, continuing from the frozen Fuselage 0.34.1 release. The exported API is unchanged.
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/css-in-js@0.33.3-rc.0
+
+  </details>
+
 ## 0.34.1
 
 ### Patch Changes

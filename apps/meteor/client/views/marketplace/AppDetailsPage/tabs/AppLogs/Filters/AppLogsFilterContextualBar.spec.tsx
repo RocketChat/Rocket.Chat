@@ -36,10 +36,10 @@ it('Instance select should have correct options', async () => {
 
 	await userEvent.click(select);
 
-	expect(screen.getByRole('option', { name: 'All' })).toBeVisible();
-	expect(screen.getByRole('option', { name: 'instance-1' })).toBeVisible();
-	expect(screen.getByRole('option', { name: 'instance-2' })).toBeVisible();
-	expect(screen.getByRole('option', { name: 'instance-3' })).toBeVisible();
+	expect(await screen.findByRole('option', { name: 'All' })).toBeVisible();
+	expect(await screen.findByRole('option', { name: 'instance-1' })).toBeVisible();
+	expect(await screen.findByRole('option', { name: 'instance-2' })).toBeVisible();
+	expect(await screen.findByRole('option', { name: 'instance-3' })).toBeVisible();
 });
 
 it('Time select should not have custom time range', async () => {
@@ -75,8 +75,8 @@ describe('Time range', () => {
 
 			await userEvent.click(timeSelect);
 
-			expect(screen.getByRole('option', { name })).toBeVisible();
-			await userEvent.click(screen.getByRole('option', { name }));
+			expect(await screen.findByRole('option', { name })).toBeVisible();
+			await userEvent.click(await screen.findByRole('option', { name }));
 
 			expect(startDate).toHaveValue(value[0]);
 			expect(endDate).toHaveValue(value[1]);
@@ -118,8 +118,8 @@ it('Should clear time range', async () => {
 
 	await userEvent.click(timeSelect);
 
-	expect(screen.getByRole('option', { name: 'Last_30_minutes' })).toBeVisible();
-	await userEvent.click(screen.getByRole('option', { name: 'Last_30_minutes' }));
+	expect(await screen.findByRole('option', { name: 'Last_30_minutes' })).toBeVisible();
+	await userEvent.click(await screen.findByRole('option', { name: 'Last_30_minutes' }));
 
 	expect(startDate).toHaveValue('2017-05-19');
 	expect(endDate).toHaveValue('2017-05-19');

@@ -111,12 +111,11 @@ $pagination-border-radius: theme('pagination-border-radius', lengths.border-radi
 	color: colors.font(info);
 	background: transparent;
 
-	&:hover:not(.disabled):not(:disabled),
-	&:focus:not(.disabled):not(:disabled) {
+	&:hover:not(:disabled),
+	&:focus:not(:disabled) {
 		text-decoration: underline;
 	}
 
-	&.disabled,
 	&:disabled {
 		@include use-font-scale(c2);
 		cursor: default;
@@ -134,7 +133,6 @@ $pagination-border-radius: theme('pagination-border-radius', lengths.border-radi
 	color: colors.font(secondary-info);
 	background: transparent;
 
-	&.disabled,
 	&:disabled {
 		color: colors.font(secondary-info);
 	}

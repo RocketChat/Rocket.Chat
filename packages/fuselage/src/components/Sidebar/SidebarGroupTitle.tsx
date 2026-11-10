@@ -12,7 +12,7 @@ export type SidebarGroupTitleProps = {
 	badge?: ReactNode;
 	menu?: ReactNode;
 	barProps?: AriaAttributes;
-} & HTMLAttributes<HTMLDivElement>;
+} & Omit<HTMLAttributes<HTMLDivElement>, 'is'>;
 
 /**
  * The header of a sidebar group. It renders an `ItemGroupHeader`, so its menu reveals on hover like a row's.
@@ -30,7 +30,7 @@ export const SidebarGroupTitle = ({
 	...props
 }: SidebarGroupTitleProps) => (
 	<ItemGroupHeader
-		{...(props as Omit<HTMLAttributes<HTMLDivElement>, 'is'>)}
+		{...props}
 		inset='md'
 		className={cx(
 			'rcx-sidebar-collapse-group__bar',

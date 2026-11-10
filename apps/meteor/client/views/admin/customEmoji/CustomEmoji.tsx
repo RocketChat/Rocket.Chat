@@ -1,4 +1,13 @@
-import { Box, Pagination, States, StatesActions, StatesAction, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
+import {
+	Pagination,
+	States,
+	StatesAction,
+	StatesActions,
+	StatesIcon,
+	StatesTitle,
+	type TableColumnWidth,
+	Text,
+} from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
@@ -8,12 +17,12 @@ import {
 	GenericTableHeaderCell,
 	GenericTableLoadingTable,
 	GenericTableRow,
+	usePaginatedQuery,
 	usePagination,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
 import type { MutableRefObject } from 'react';
 import { useEffect, useMemo, useState } from 'react';
 
@@ -29,37 +38,48 @@ const CustomEmoji = ({ onClick, reload }: CustomEmojiProps) => {
 
 	const [text, setText] = useState('');
 	const { sortBy, sortDirection, setSort } = useSort<'name'>('name');
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 
 	const query = useDebouncedValue(
 		useMemo(
 			() => ({
 				name: text,
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
-				count: itemsPerPage,
-				offset: current,
 			}),
-			[text, itemsPerPage, current, sortBy, sortDirection],
+			[text, sortBy, sortDirection],
 		),
 		500,
 	);
 
+	const columns: TableColumnWidth[] = ['x200', 'x200'];
+
+	const queryKey = ['getEmojiList', query];
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({ resetKey: queryKey });
+
 	const headers = useMemo(
 		() => [
-			<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name' width='x200'>
+			<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
 				{t('Name')}
 			</GenericTableHeaderCell>,
-			<GenericTableHeaderCell key='aliases' width='x200'>
-				{t('Aliases')}
-			</GenericTableHeaderCell>,
+			<GenericTableHeaderCell key='aliases'>{t('Aliases')}</GenericTableHeaderCell>,
 		],
 		[setSort, sortDirection, sortBy, t],
 	);
 
 	const getEmojiList = useEndpoint('GET', '/v1/emoji-custom.all');
-	const { data, refetch, isSuccess, isLoading, isError } = useQuery({
-		queryKey: ['getEmojiList', query],
-		queryFn: () => getEmojiList(query),
+	const { data, refetch, isSuccess, isLoading, isError } = usePaginatedQuery({
+		query: {
+			queryKey,
+			queryFn: (page) => getEmojiList({ ...query, ...page }),
+		},
+		itemsKey: 'emojis',
+		offset: current,
+		count: itemsPerPage,
 	});
 
 	useEffect(() => {
@@ -70,7 +90,7 @@ const CustomEmoji = ({ onClick, reload }: CustomEmojiProps) => {
 		<>
 			<FilterByText value={text} onChange={(event) => setText(event.target.value)} />
 			{isLoading && (
-				<GenericTable>
+				<GenericTable columns={columns}>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
 						<GenericTableLoadingTable headerCells={2} />
@@ -79,7 +99,7 @@ const CustomEmoji = ({ onClick, reload }: CustomEmojiProps) => {
 			)}
 			{isSuccess && data && data.emojis.length > 0 && (
 				<>
-					<GenericTable aria-label={t('Emoji')}>
+					<GenericTable columns={columns} aria-label={t('Emoji')}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{isSuccess &&
@@ -94,10 +114,10 @@ const CustomEmoji = ({ onClick, reload }: CustomEmojiProps) => {
 										qa-emoji-id={emojis._id}
 									>
 										<GenericTableCell color='default'>
-											<Box withTruncatedText>{emojis.name}</Box>
+											<Text truncate>{emojis.name}</Text>
 										</GenericTableCell>
 										<GenericTableCell color='default'>
-											<Box withTruncatedText>{Array.isArray(emojis.aliases) ? emojis.aliases.join(', ') : emojis.aliases}</Box>
+											<Text truncate>{Array.isArray(emojis.aliases) ? emojis.aliases.join(', ') : emojis.aliases}</Text>
 										</GenericTableCell>
 									</GenericTableRow>
 								))}

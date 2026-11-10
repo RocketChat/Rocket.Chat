@@ -86,8 +86,8 @@ export const ActionExternalServiceUrl = ({ control, trigger, index, disabled, ..
 
 			<Button loading={webhookTest.isPending} disabled={disabled || isSuccessMessageVisible} onClick={() => trigger(serviceUrlFieldName)}>
 				{isSuccessMessageVisible ? (
-					<Box is='span' color='status-font-on-success'>
-						<Icon name='success-circle' size='x20' verticalAlign='middle' /> {t('Success')}!
+					<Box is='span' color='status-font-on-success' display='inline-flex' alignItems='center' gap={4}>
+						<Icon name='success-circle' size='x20' /> {t('Success')}!
 					</Box>
 				) : (
 					t('Send_Test')

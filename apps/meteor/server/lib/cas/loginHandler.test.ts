@@ -18,9 +18,6 @@ const { loginHandlerCAS: handler } = proxyquire.noCallThru().load('./loginHandle
 			LoginCancelledError: { numericError: 403 },
 		},
 	},
-	'meteor/meteor': {
-		Meteor: { Error },
-	},
 	'./createNewUser': { createNewUser: sinon.stub().resolves({ _id: 'newUserId' }) },
 	'./findExistingCASUser': { findExistingCASUser },
 	'./logger': { logger: { debug: sinon.stub(), error: sinon.stub() } },

@@ -31,19 +31,12 @@ const makeStubs = () => {
 		},
 	};
 
-	const MeteorStub = {
-		Meteor: {
-			startup: Sinon.stub(),
-		},
-	};
-
-	return { MailerStub, SettingsStub, MeteorStub };
+	return { MailerStub, SettingsStub };
 };
 
 describe('sendUserEmail', () => {
 	let MailerStub: { getTemplate: Sinon.SinonStub; send: Sinon.SinonStub };
 	let SettingsStub: { settings: { get: Sinon.SinonStub } };
-	let MeteorStub: { Meteor: { startup: Sinon.SinonStub } };
 
 	let sendUserEmail: SendUserEmailFn;
 	let sendWelcomeEmail: SendHelperFn;
@@ -53,12 +46,10 @@ describe('sendUserEmail', () => {
 		const stubs = makeStubs();
 		MailerStub = stubs.MailerStub as any;
 		SettingsStub = stubs.SettingsStub as any;
-		MeteorStub = stubs.MeteorStub as any;
 
 		const mod = mock.noCallThru().load('./sendUserEmail.ts', {
 			'../../notifications/email/api': MailerStub,
 			'../../../settings': SettingsStub,
-			'meteor/meteor': MeteorStub,
 		}) as any;
 
 		sendUserEmail = mod.sendUserEmail as SendUserEmailFn;

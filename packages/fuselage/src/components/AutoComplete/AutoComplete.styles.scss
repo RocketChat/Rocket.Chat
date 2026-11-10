@@ -2,4 +2,8 @@
 
 .rcx-autocomplete {
 	@extend .rcx-select;
+
+	&__input {
+		order: 1;
+	}
 }

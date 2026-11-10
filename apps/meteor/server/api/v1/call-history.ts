@@ -212,9 +212,9 @@ const callHistoryInfoEndpoints = API.v1.get(
 type CallHistoryInfoEndpoints = ExtractRoutesFromAPI<typeof callHistoryInfoEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
 	interface Endpoints extends CallHistoryListEndpoints {}
 
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
 	interface Endpoints extends CallHistoryInfoEndpoints {}
 }

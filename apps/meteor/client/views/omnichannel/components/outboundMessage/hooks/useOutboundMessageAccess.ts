@@ -1,6 +1,6 @@
+import { useHasLicenseModule } from '@rocket.chat/ui-client';
 import { usePermission } from '@rocket.chat/ui-contexts';
 
-import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
 import { useOmnichannelEnabled } from '../../../hooks/useOmnichannelEnabled';
 
 export const useOutboundMessageAccess = (): boolean => {

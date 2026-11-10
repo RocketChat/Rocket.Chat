@@ -1,4 +1,5 @@
 import type { PasswordPolicyOptions } from '@rocket.chat/password-policies';
+import { useMemo } from 'react';
 
 import { useSetting } from './useSetting';
 
@@ -13,16 +14,29 @@ export const usePasswordPolicyOptions = (): PasswordPolicyOptions => {
 	const mustContainAtLeastOneNumber = useSetting('Accounts_Password_Policy_AtLeastOneNumber', true);
 	const mustContainAtLeastOneSpecialCharacter = useSetting('Accounts_Password_Policy_AtLeastOneSpecialCharacter', true);
 
-	return {
-		enabled,
-		minLength,
-		maxLength,
-		forbidRepeatingCharacters,
-		forbidRepeatingCharactersCount,
-		mustContainAtLeastOneLowercase,
-		mustContainAtLeastOneUppercase,
-		mustContainAtLeastOneNumber,
-		mustContainAtLeastOneSpecialCharacter,
-		throwError: false,
-	};
+	return useMemo(
+		() => ({
+			enabled,
+			minLength,
+			maxLength,
+			forbidRepeatingCharacters,
+			forbidRepeatingCharactersCount,
+			mustContainAtLeastOneLowercase,
+			mustContainAtLeastOneUppercase,
+			mustContainAtLeastOneNumber,
+			mustContainAtLeastOneSpecialCharacter,
+			throwError: false,
+		}),
+		[
+			enabled,
+			minLength,
+			maxLength,
+			forbidRepeatingCharacters,
+			forbidRepeatingCharactersCount,
+			mustContainAtLeastOneLowercase,
+			mustContainAtLeastOneUppercase,
+			mustContainAtLeastOneNumber,
+			mustContainAtLeastOneSpecialCharacter,
+		],
+	);
 };

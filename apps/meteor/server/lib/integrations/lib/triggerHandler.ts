@@ -1,3 +1,4 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type {
 	IIntegrationHistory,
 	IMessage,
@@ -11,7 +12,6 @@ import type {
 import { Integrations, Users, Rooms, Messages } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { wrapExceptions } from '@rocket.chat/tools';
-import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import type { OutgoingRequestData } from './ScriptEngine';
@@ -486,11 +486,11 @@ class RocketChatIntegrationHandler {
 		}
 	}
 
-	// Ensure that any errors thrown by the script engine will contibue to be compatible with Meteor.Error
+	// Script engine errors are rethrown as client-safe ClientSafeError
 	async wrapScriptEngineCall(getter: () => Promise<any>) {
 		return wrapExceptions(getter).catch((error) => {
 			if (error instanceof Error) {
-				throw new Meteor.Error(error.message);
+				throw new ClientSafeError(error.message);
 			}
 
 			throw error;
@@ -797,11 +797,11 @@ class RocketChatIntegrationHandler {
 
 	async replay(integration: IOutgoingIntegration, history: IIntegrationHistory) {
 		if (integration?.type !== 'webhook-outgoing') {
-			throw new Meteor.Error('integration-type-must-be-outgoing', 'The integration type to replay must be an outgoing webhook.');
+			throw new ClientSafeError('integration-type-must-be-outgoing', 'The integration type to replay must be an outgoing webhook.');
 		}
 
 		if (!history?.data) {
-			throw new Meteor.Error('history-data-must-be-defined', 'The history data must be defined to replay an integration.');
+			throw new ClientSafeError('history-data-must-be-defined', 'The history data must be defined to replay an integration.');
 		}
 
 		const { event } = history;

@@ -68,6 +68,20 @@ describe('LocalServiceRegistry', () => {
 		expect(registry.resolve('accounts.login')).toBeUndefined();
 	});
 
+	it('should reject a call to a registered name that is not a function', async () => {
+		class Settings extends ServiceClass {
+			protected name = 'settings';
+
+			get cached(): string {
+				return 'value';
+			}
+		}
+		const registry = new LocalServiceRegistry();
+		registry.add(new Settings());
+
+		await expect(registry.resolve('settings.cached')?.([])).rejects.toThrow(new TypeError('settings.cached is not a function'));
+	});
+
 	it('should keep the newer instance when a replaced one is removed', async () => {
 		const registry = new LocalServiceRegistry();
 		const replaced = new Accounts();

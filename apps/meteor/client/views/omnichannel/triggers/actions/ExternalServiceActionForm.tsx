@@ -1,16 +1,16 @@
 import { FieldError, Field, FieldHint, FieldLabel, FieldRow, NumberInput, TextAreaInput, FieldGroup } from '@rocket.chat/fuselage';
+import { useHasLicenseModule } from '@rocket.chat/ui-client';
 import { useId, type ComponentProps, type FocusEvent } from 'react';
 import type { Control, UseFormTrigger } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
 import type { TriggersPayload } from '../EditTrigger';
 import { useFieldError } from '../hooks';
 import { ActionExternalServiceUrl } from './ActionExternalServiceUrl';
 import { ActionSender } from './ActionSender';
 
-type SendMessageActionFormType = ComponentProps<typeof Field> & {
+type SendMessageActionFormType = ComponentProps<typeof FieldGroup> & {
 	index: number;
 	control: Control<TriggersPayload>;
 	trigger: UseFormTrigger<TriggersPayload>;

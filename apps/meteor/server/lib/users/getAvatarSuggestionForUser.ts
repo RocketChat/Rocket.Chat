@@ -1,6 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
-import { check } from 'meteor/check';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
 import { settings } from '../../settings';
@@ -74,8 +73,6 @@ const avatarProviders = {
 export async function getAvatarSuggestionForUser(
 	user: IUser,
 ): Promise<Record<string, { blob: string; contentType: string; service: string; url: string }>> {
-	check(user, Object);
-
 	const avatars = [];
 
 	for (const avatarProvider of Object.values(avatarProviders)) {

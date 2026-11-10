@@ -5,12 +5,12 @@ import { mergeProps, useFocusVisible, useMenuItem } from 'react-aria';
 import type { TreeState } from 'react-stately';
 
 import { Item, ItemContent, ItemTitle } from '../Item';
-import type { MenuOptionProps } from './MenuOption';
+import type { OptionProps } from '../Option';
 
 type MenuItemProps = {
 	item: Node<{
 		description?: ReactNode;
-		variant?: MenuOptionProps['variant'];
+		variant?: OptionProps['variant'];
 	}>;
 	state: TreeState<unknown>;
 };

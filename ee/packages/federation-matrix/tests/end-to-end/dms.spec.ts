@@ -678,7 +678,7 @@ const waitForRoomEvent = async (
 				// TODO maybe we should allow it
 				it('should fail if a user from rc try to add another user to the group DM', async () => {
 					await expect(addUserToRoomSlashCommand({ usernames: [userDm3], rid: rcRoom1._id, config: rcUserConfig1 })).rejects.toThrow(
-						'error-not-authorized',
+						'error-forbidden',
 					);
 				});
 
@@ -1157,7 +1157,7 @@ const waitForRoomEvent = async (
 				it('should fail if a user from rc try to add another user to the group DM', async () => {
 					await expect(
 						addUserToRoomSlashCommand({ usernames: [rcUser3.username], rid: rcRoom._id, config: rcUserConfig2 }),
-					).rejects.toThrow('error-not-authorized');
+					).rejects.toThrow('error-forbidden');
 				});
 
 				it('should add another user by another user than the initial inviter', async () => {
@@ -1721,7 +1721,7 @@ const waitForRoomEvent = async (
 							rid: dmCreate.body.room._id,
 							config: rcUser1.config,
 						}),
-					).rejects.toThrow('error-not-authorized');
+					).rejects.toThrow('error-forbidden');
 
 					const roomInfo = await getRoomInfo(dmCreate.body.room._id, rcUser1.config);
 					expect(roomInfo.room).toHaveProperty('usersCount', 2);

@@ -43,7 +43,12 @@ const getMessageContext = (message: IMessage, room: IRoom, context?: MessageActi
 
 const itemsByContext: Record<
 	MessageActionContext,
-	ElementType<{ message: IMessage; room: IRoom; subscription: ISubscription | undefined }>
+	ElementType<{
+		message: IMessage;
+		room: IRoom;
+		subscription: ISubscription | undefined;
+		onChangeMenuVisibility?: (visible: boolean) => void;
+	}>
 > = {
 	'message': DefaultItems,
 	'message-mobile': MobileItems,
@@ -78,7 +83,7 @@ const MessageToolbar = ({ message, messageContext, room, subscription, onChangeM
 
 	return (
 		<FuselageMessageToolbar ref={toolbarRef} {...toolbarProps} aria-label={t('Message_actions')} {...props}>
-			<MessageToolbarItems message={message} room={room} subscription={subscription} />
+			<MessageToolbarItems message={message} room={room} subscription={subscription} onChangeMenuVisibility={onChangeMenuVisibility} />
 			<MessageToolbarStarsActionMenu message={message} context={context} onChangeMenuVisibility={onChangeMenuVisibility} />
 			<MessageToolbarActionMenu
 				message={message}

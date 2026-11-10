@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
+/* oxlint-disable @typescript-eslint/no-empty-function */
 import { describe, it } from 'node:test';
 
 import { expect } from 'chai';
@@ -7,11 +7,6 @@ import proxyquire from 'proxyquire';
 const mocks = {
 	'@rocket.chat/tools': {
 		escapeHTML: (str: string) => str,
-	},
-	'meteor/meteor': {
-		Meteor: {
-			startup: () => {},
-		},
 	},
 	'../../callbacks': {
 		callbacks: {

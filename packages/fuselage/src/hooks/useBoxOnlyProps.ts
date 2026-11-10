@@ -1,6 +1,7 @@
 import type { AllHTMLAttributes } from 'react';
 
 import { prependClassName } from '../helpers/prependClassName';
+import { prependRcxClassNames } from '../helpers/prependRcxClassNames';
 
 export const useBoxOnlyProps = <
 	T extends {
@@ -15,20 +16,7 @@ export const useBoxOnlyProps = <
 		focusable?: boolean;
 	},
 ): T => {
-	Object.entries(props).forEach(([key, value]) => {
-		if (key.slice(0, 4) === 'rcx-') {
-			try {
-				if (!value) {
-					return;
-				}
-
-				const newClassName = value === true ? key : `${key}-${value}`;
-				props.className = prependClassName(props.className, newClassName);
-			} finally {
-				delete (props as Record<string, unknown>)[key];
-			}
-		}
-	});
+	prependRcxClassNames(props);
 
 	if (props.animated) {
 		props.className = prependClassName(props.className, 'rcx-box--animated');

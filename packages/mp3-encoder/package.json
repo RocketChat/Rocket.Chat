@@ -1,7 +1,8 @@
 {
 	"name": "@rocket.chat/mp3-encoder",
-	"version": "0.31.26",
+	"version": "0.31.27-rc.0",
 	"description": "A LAME encoder to be used in web workers",
+	"type": "module",
 	"keywords": [
 		"rocket.chat",
 		"mp3",
@@ -21,7 +22,6 @@
 		"url": "https://rocket.chat/"
 	},
 	"main": "dist/index.js",
-	"module": "dist/index.mjs",
 	"types": "dist/index.d.ts",
 	"files": [
 		"/dist"
@@ -41,7 +41,6 @@
 		"@rollup/plugin-commonjs": "~29.0.3",
 		"@rollup/plugin-node-resolve": "~16.0.3",
 		"@rollup/plugin-typescript": "~12.3.0",
-		"eslint": "~10.12.0",
 		"jest": "~30.5.2",
 		"rollup": "~4.62.5",
 		"typescript": "~5.9.3"

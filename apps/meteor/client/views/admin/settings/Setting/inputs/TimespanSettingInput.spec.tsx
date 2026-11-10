@@ -77,9 +77,9 @@ describe('TimespanSettingInput component', () => {
 			{ wrapper: mockAppRoot().build() },
 		);
 
-		const selectInput = screen.getByRole('button', { name: 'hours' });
+		const selectInput = screen.getByRole('combobox');
 		await userEvent.click(selectInput);
-		const minutesOption = screen.getByRole('option', { name: 'minutes' });
+		const minutesOption = await screen.findByRole('option', { name: 'minutes' });
 		await userEvent.click(minutesOption);
 
 		expect(onChangeValueMock).toHaveBeenCalledWith(60000); // 1 min in milliseconds
@@ -102,9 +102,9 @@ describe('TimespanSettingInput component', () => {
 			{ wrapper: mockAppRoot().build() },
 		);
 
-		const selectInput = screen.getByRole('button', { name: 'days' });
+		const selectInput = screen.getByRole('combobox');
 		await userEvent.click(selectInput);
-		const hoursOption = screen.getByRole('option', { name: 'hours' });
+		const hoursOption = await screen.findByRole('option', { name: 'hours' });
 		await userEvent.click(hoursOption);
 
 		expect(onChangeValueMock).toHaveBeenCalledWith(3600000); // 1 hour in milliseconds
@@ -127,9 +127,9 @@ describe('TimespanSettingInput component', () => {
 			{ wrapper: mockAppRoot().build() },
 		);
 
-		const selectInput = screen.getByRole('button', { name: 'hours' });
+		const selectInput = screen.getByRole('combobox');
 		await userEvent.click(selectInput);
-		const daysOption = screen.getByRole('option', { name: 'days' });
+		const daysOption = await screen.findByRole('option', { name: 'days' });
 		await userEvent.click(daysOption);
 
 		expect(onChangeValueMock).toHaveBeenCalledWith(1036800000); // 12 days in milliseconds

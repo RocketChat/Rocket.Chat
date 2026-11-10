@@ -15,6 +15,14 @@ export type ItemProps = {
 	 * Adds space between the row edge and its first and last slots.
 	 */
 	inset?: ItemInset;
+	/**
+	 * Aligns the slots to the top edge, so a tall avatar sits above a multi-line body. Slots center by default.
+	 */
+	align?: 'center' | 'start';
+	/**
+	 * Shows the hover surface even when the row has no click target, as for rows whose content is interactive.
+	 */
+	hoverable?: boolean;
 	selected?: boolean;
 	/**
 	 * Emphasizes the title, icon, description and meta, as for unread rooms.
@@ -34,8 +42,18 @@ export type ItemProps = {
 	 */
 	disabled?: boolean;
 	variant?: 'danger';
+	/**
+	 * Declares that the content takes two lines, which widens the gap, without waiting for the browser to match the content.
+	 */
+	multiline?: boolean;
+	/**
+	 * Declares that the row reacts to the pointer, without waiting for the browser to find a link, button or option.
+	 */
+	interactive?: boolean;
 } & Omit<AllHTMLAttributes<HTMLElement>, 'is' | 'selected' | 'disabled'> &
 	RefAttributes<HTMLElement>;
+
+const skipRegistration = () => () => undefined;
 
 /**
  * A list row composed from slots: media, icon, content and actions.
@@ -43,12 +61,16 @@ export type ItemProps = {
 const Item = ({
 	is: Tag = 'div',
 	inset = 'none',
+	align = 'center',
+	hoverable,
 	selected,
 	highlighted,
 	focused,
 	focusVisible,
 	disabled,
 	variant,
+	multiline,
+	interactive,
 	className,
 	onClick,
 	children,
@@ -57,13 +79,14 @@ const Item = ({
 	const [descriptionIds, registerDescription] = useIdRegistry();
 	const [titleIds, registerTitle] = useIdRegistry();
 
-	const contextValue = useMemo(
-		() => ({ descriptionIds, registerDescription, registerTitle }),
-		[descriptionIds, registerDescription, registerTitle],
-	);
-
 	// A menu item is named by its titles and described by its labelled icons, as an `ItemLink` is.
 	const isMenuItem = !!props.role?.startsWith('menuitem');
+
+	// Only a menu item reads its titles' ids, so any other row skips the render a title's registration causes on mount
+	const contextValue = useMemo(
+		() => ({ descriptionIds, registerDescription, registerTitle: isMenuItem ? registerTitle : skipRegistration }),
+		[descriptionIds, registerDescription, registerTitle, isMenuItem],
+	);
 
 	const ariaLabelledBy = isMenuItem ? (props['aria-labelledby'] ?? (titleIds.join(' ') || undefined)) : props['aria-labelledby'];
 
@@ -89,7 +112,11 @@ const Item = ({
 				className={cx(
 					cxx('rcx-item')({
 						[`inset-${inset}`]: inset !== 'none',
+						[`align-${align}`]: align !== 'center',
+						'hoverable': !!hoverable,
 						'clickable': !!onClick,
+						'interactive': !!interactive,
+						'multiline': !!multiline,
 						'selected': !!selected,
 						'highlighted': !!highlighted,
 						'focused': !!focused,

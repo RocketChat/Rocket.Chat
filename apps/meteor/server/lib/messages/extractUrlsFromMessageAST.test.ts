@@ -115,4 +115,39 @@ describe('extractUrlsFromMessageAST', () => {
 		expect(extractUrlsFromMessageAST(null as any)).to.deep.equal([]);
 		expect(extractUrlsFromMessageAST({} as any)).to.deep.equal([]);
 	});
+
+	it('should extract URLs from nested list items', () => {
+		const md = [
+			{
+				type: 'UNORDERED_LIST',
+				value: [
+					{
+						type: 'LIST_ITEM',
+						value: [{ type: 'PLAIN_TEXT', value: 'Nested case' }],
+						nested: [
+							{
+								type: 'UNORDERED_LIST',
+								value: [
+									{
+										type: 'LIST_ITEM',
+										value: [
+											{
+												type: 'LINK',
+												value: {
+													src: { type: 'PLAIN_TEXT', value: 'https://example.com' },
+													label: [{ type: 'PLAIN_TEXT', value: 'https://example.com' }],
+												},
+											},
+										],
+									},
+								],
+							},
+						],
+					},
+				],
+			},
+		];
+
+		expect(extractUrlsFromMessageAST(md as any)).to.deep.equal(['https://example.com']);
+	});
 });

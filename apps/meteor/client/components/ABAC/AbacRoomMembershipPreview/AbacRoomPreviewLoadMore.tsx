@@ -10,8 +10,8 @@ const AbacRoomPreviewLoadMore = ({ context }: { context?: AbacRoomPreviewLoadMor
 	const { t } = useTranslation();
 
 	return (
-		<Box paddingInline={24} paddingBlock={12}>
-			<Button small secondary width='full' disabled={!context?.canLoadMore} onClick={context?.onLoadMore}>
+		<Box paddingInline={24} paddingBlock={12} display='flex' flexDirection='column'>
+			<Button size='small' variant='secondary' disabled={!context?.canLoadMore} onClick={context?.onLoadMore}>
 				{t('Load_more')}
 			</Button>
 		</Box>

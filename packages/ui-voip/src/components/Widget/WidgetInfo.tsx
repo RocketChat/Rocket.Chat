@@ -32,8 +32,12 @@ const WidgetInfo = ({ slots, variant = 'default' }: WidgetInfoProps) => {
 					color={slot.type === 'warning' ? 'status-font-on-warning' : undefined}
 					fontScale={variant === 'card-content' ? 'c1' : 'p2'}
 					key={slot.text}
+					display='flex'
+					alignItems='flex-start'
+					columnGap={4}
 				>
-					{slot.icon && <Icon name={slot.icon} marginBlockEnd={4} />} {slot.text}
+					{slot.icon && <Icon name={slot.icon} />}
+					{slot.text}
 				</Box>
 			))}
 		</Box>

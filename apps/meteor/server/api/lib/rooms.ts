@@ -1,3 +1,4 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IRoom, IRoomAbacRedaction, ISubscription, RoomAdminFieldsType, RoomType } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions } from '@rocket.chat/models';
 import type { RoomAvailableForTeams } from '@rocket.chat/rest-typings';
@@ -25,7 +26,7 @@ export async function findAdminRooms({
 	total: number;
 }> {
 	if (!(await hasPermissionAsync(uid, 'view-room-administration'))) {
-		throw new Error('error-not-authorized');
+		throw new ClientSafeError('error-not-authorized', 'Not authorized');
 	}
 	const name = filter?.trim();
 	const discussion = types?.includes('discussions');
@@ -66,7 +67,7 @@ export async function findAdminRoom({
 	rid: string;
 }): Promise<(Pick<IRoom, RoomAdminFieldsType> & IRoomAbacRedaction) | null> {
 	if (!(await hasPermissionAsync(uid, 'view-room-administration'))) {
-		throw new Error('error-not-authorized');
+		throw new ClientSafeError('error-not-authorized', 'Not authorized');
 	}
 
 	const room = await Rooms.findOneById(rid, { projection: adminFields });
@@ -111,7 +112,7 @@ export async function findAdminRoomsAutocomplete({ uid, selector }: { uid: strin
 	items: IRoom[];
 }> {
 	if (!(await hasAtLeastOnePermissionAsync(uid, ['view-room-administration', 'can-audit']))) {
-		throw new Error('error-not-authorized');
+		throw new ClientSafeError('error-not-authorized', 'Not authorized');
 	}
 	const options: FindOptions<IRoom> = {
 		projection: {

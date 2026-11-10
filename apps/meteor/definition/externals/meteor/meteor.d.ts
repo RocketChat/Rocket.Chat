@@ -7,14 +7,6 @@ type StringifyBuffers<T extends unknown[]> = {
 	[P in keyof T]: T[P] extends Buffer ? string : T[P];
 };
 
-declare global {
-	namespace Assets {
-		function getBinaryAsync(assetPath: string): Promise<Uint8Array | undefined>;
-
-		function getTextAsync(assetPath: string): Promise<string | undefined>;
-	}
-}
-
 declare module 'meteor/meteor' {
 	namespace Meteor {
 		const Streamer: IStreamerConstructor & IStreamer;
@@ -39,8 +31,6 @@ declare module 'meteor/meteor' {
 				meteor_autoupdate_clientVersions(): void;
 			};
 		};
-
-		const runAsUser: <T>(userId: string, scope: () => T) => T;
 
 		function userAsync(): Promise<IUser | null>;
 
@@ -184,7 +174,6 @@ declare module 'meteor/meteor' {
 }
 
 declare module 'meteor/meteor' {
-	// eslint-disable-next-line no-var
 	var Meteor: {
 		[key: `loginWith${string}`]: any;
 	};

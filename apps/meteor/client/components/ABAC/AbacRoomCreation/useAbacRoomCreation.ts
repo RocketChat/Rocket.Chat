@@ -1,9 +1,9 @@
 import type { Serialized } from '@rocket.chat/core-typings';
 import type { OperationResult } from '@rocket.chat/rest-typings';
+import { useHasLicenseModule } from '@rocket.chat/ui-client';
 import { useEndpoint, usePermission, useSetting } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 
-import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { ABACQueryKeys } from '../../../lib/queryKeys';
 
 export type AbacRoomCreation = {

@@ -119,7 +119,8 @@ describe('[CustomUserStatus]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 
@@ -131,10 +132,10 @@ describe('[CustomUserStatus]', () => {
 				.set(unauthorizedUserCredentials)
 				.send({ name: 'test-status' })
 				.expect('Content-Type', 'application/json')
-				.expect(400)
+				.expect(403)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'not_authorized');
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
 				});
 		});
 
@@ -214,7 +215,8 @@ describe('[CustomUserStatus]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 
@@ -226,10 +228,10 @@ describe('[CustomUserStatus]', () => {
 				.set(unauthorizedUserCredentials)
 				.send({ _id: customUserStatusId, name: 'updated-name' })
 				.expect('Content-Type', 'application/json')
-				.expect(400)
+				.expect(403)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'not_authorized');
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
 				});
 		});
 
@@ -321,7 +323,8 @@ describe('[CustomUserStatus]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 
@@ -333,10 +336,10 @@ describe('[CustomUserStatus]', () => {
 				.set(unauthorizedUserCredentials)
 				.send({ customUserStatusId })
 				.expect('Content-Type', 'application/json')
-				.expect(400)
+				.expect(403)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'not_authorized');
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
 				});
 		});
 

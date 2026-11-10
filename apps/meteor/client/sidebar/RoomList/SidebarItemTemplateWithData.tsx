@@ -24,6 +24,7 @@ type RoomListRowProps = {
 	t: TFunction;
 	viewMode: RoomListItemViewMode;
 	showAvatar: boolean;
+	formatTime: (time: Date | string) => string;
 	openedRoom?: string;
 	isAnonymous?: boolean;
 	userId?: string;
@@ -47,6 +48,7 @@ const SidebarItemTemplateWithData = ({
 	style,
 	viewMode,
 	showAvatar,
+	formatTime,
 	t,
 	isAnonymous,
 	videoConfActions,
@@ -75,8 +77,20 @@ const SidebarItemTemplateWithData = ({
 		() =>
 			videoConfActions && (
 				<SidebarItemActions>
-					<IconButton onClick={videoConfActions.acceptCall} mini secondary success icon='phone' aria-label={t('Accept_Call')} />
-					<IconButton onClick={videoConfActions.rejectCall} mini secondary danger icon='phone-off' aria-label={t('Reject_call')} />
+					<IconButton
+						onClick={videoConfActions.acceptCall}
+						size='mini'
+						variant='secondary-success'
+						icon='phone'
+						aria-label={t('Accept_Call')}
+					/>
+					<IconButton
+						onClick={videoConfActions.rejectCall}
+						size='mini'
+						variant='secondary-danger'
+						icon='phone-off'
+						aria-label={t('Reject_call')}
+					/>
 				</SidebarItemActions>
 			),
 		[t, videoConfActions],
@@ -104,7 +118,7 @@ const SidebarItemTemplateWithData = ({
 			}}
 			aria-label={showUnread ? t('__unreadTitle__from__roomTitle__', { unreadTitle, roomTitle: title }) : title}
 			title={title}
-			time={lastMessage?.ts}
+			timeLabel={viewMode === 'extended' && lastMessage?.ts ? formatTime(lastMessage.ts) : undefined}
 			subtitle={subtitle}
 			icon={<RoomIcon room={room} placement='sidebar' size='x20' isIncomingCall={isIncomingCall} />}
 			iconLabel={iconLabel}
@@ -139,7 +153,7 @@ function safeDateNotEqualCheck(a: Date | string | undefined, b: Date | string | 
 	return new Date(a).toISOString() !== new Date(b).toISOString();
 }
 
-const keys: (keyof RoomListRowProps)[] = ['id', 'style', 'viewMode', 'showAvatar', 'selected', 't', 'videoConfActions'];
+const keys: (keyof RoomListRowProps)[] = ['id', 'style', 'viewMode', 'showAvatar', 'formatTime', 'selected', 't', 'videoConfActions'];
 
 export default memo(SidebarItemTemplateWithData, (prevProps, nextProps) => {
 	if (keys.some((key) => prevProps[key] !== nextProps[key])) {

@@ -103,7 +103,6 @@ describe('AppRuntimeManager', () => {
 	it('Starts runtime for app successfully', async () => {
 		await assert.doesNotReject(() => runtimeManager.startRuntimeForApp(mockAppPackage, mockStorageItem));
 
-		/* eslint-disable-next-line dot-notation -- We need to access the property like this for the compile not to complain */
 		assert.strictEqual(runtimeManager['subprocesses'][mockAppPackage.info.id], mockSubprocessController);
 	});
 
@@ -121,7 +120,6 @@ describe('AppRuntimeManager', () => {
 
 		await assert.doesNotReject(() => runtimeManager.startRuntimeForApp(mockAppPackage, mockStorageItem, { force: true }));
 
-		/* eslint-disable-next-line dot-notation -- We need to access the property like this for the compile not to complain */
 		assert.strictEqual(runtimeManager['subprocesses'][mockAppPackage.info.id], mockSubprocessController);
 	});
 
@@ -133,7 +131,6 @@ describe('AppRuntimeManager', () => {
 			message: 'Nope',
 		});
 
-		/* eslint-disable-next-line dot-notation -- We need to access the property like this for the compile not to complain */
 		assert.strictEqual(runtimeManager['subprocesses'][mockAppPackage.info.id], undefined);
 	});
 });

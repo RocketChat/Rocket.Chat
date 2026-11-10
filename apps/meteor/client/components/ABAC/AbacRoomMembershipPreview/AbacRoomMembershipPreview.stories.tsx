@@ -196,7 +196,7 @@ const meta = {
 		(Story) => (
 			<TooltipProvider>
 				<Box width='x500' height='100vh' display='flex'>
-					<Contextualbar width='full'>
+					<Contextualbar stretch>
 						<Story />
 					</Contextualbar>
 				</Box>

@@ -1,3 +1,4 @@
+import { Box } from '@rocket.chat/fuselage';
 import type { Meta, StoryFn } from '@storybook/react';
 
 import UserInfo from './UserInfo';
@@ -13,9 +14,9 @@ export default {
 	},
 	decorators: [
 		(fn) => (
-			<ContextualbarDialog aria-label='User Info' height='100vh'>
-				{fn()}
-			</ContextualbarDialog>
+			<Box height='100vh'>
+				<ContextualbarDialog aria-label='User Info'>{fn()}</ContextualbarDialog>
+			</Box>
 		),
 	],
 } satisfies Meta<typeof UserInfo>;
@@ -67,5 +68,18 @@ export const InvitedUser = {
 
 	args: {
 		invitationDate: '2025-01-01T12:00:00Z',
+	},
+};
+
+export const WithPhoneNumbers = {
+	render: Template,
+
+	args: {
+		phoneNumbers: (
+			<ul>
+				<li>+55 11 99999-9999 (Mobile)</li>
+				<li>+55 11 88888-8888 (Work)</li>
+			</ul>
+		),
 	},
 };

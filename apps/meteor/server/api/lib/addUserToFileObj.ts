@@ -1,6 +1,8 @@
 import type { IUpload, IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
+import { normalizeLegacyUfsLocation } from './normalizeLegacyUfsLocation';
+
 const isString = (value: unknown): value is string => typeof value === 'string';
 
 export async function addUserToFileObj(files: IUpload[]): Promise<(IUpload & { user?: Pick<IUser, '_id' | 'name' | 'username'> })[]> {
@@ -9,7 +11,8 @@ export async function addUserToFileObj(files: IUpload[]): Promise<(IUpload & { u
 	const users = await Users.findByIds(uids, { projection: { name: 1, username: 1 } }).toArray();
 	const usersById = new Map(users.map((user) => [user._id, user]));
 
-	return files.map((file) => {
+	return files.map((upload) => {
+		const file = normalizeLegacyUfsLocation(upload);
 		const user = file.userId ? usersById.get(file.userId) : undefined;
 		if (!user) {
 			return file;

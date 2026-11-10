@@ -1,5 +1,5 @@
-import ThreadMessageIcon from './ThreadMessageIcon';
+import { Icon } from '../../Icon';
 
-const ThreadMessageIconThread = () => <ThreadMessageIcon name='thread' />;
+const ThreadMessageIconThread = () => <Icon size='x16' name='thread' />;
 
 export default ThreadMessageIconThread;

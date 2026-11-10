@@ -311,14 +311,6 @@ describe('VirtruPDP.assertCreatorMayAssign', () => {
 
 		await expect(pdp.assertCreatorMayAssign(attrs, actor)).rejects.toBeInstanceOf(OnlyCompliantCanBeAddedToRoomError);
 	});
-
-	it('refuses a creator without a username rather than asking Virtru about nobody', async () => {
-		const apiCall = jest.fn();
-		const pdp = new VirtruPDP(mkClient({ apiCall }));
-
-		await expect(pdp.assertCreatorMayAssign(attrs, { _id: 'u1' })).rejects.toBeInstanceOf(OnlyCompliantCanBeAddedToRoomError);
-		expect(apiCall).not.toHaveBeenCalled();
-	});
 });
 
 describe('VirtruPDP.evaluateSubjectsAgainstAttributes', () => {

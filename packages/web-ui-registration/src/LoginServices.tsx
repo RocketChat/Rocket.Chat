@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, Divider } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Divider } from '@rocket.chat/fuselage';
 import { useLoginServices, useSetting } from '@rocket.chat/ui-contexts';
 import { useMemo, type Dispatch, type SetStateAction } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -40,23 +40,22 @@ const LoginServices = ({ disabled, setError }: LoginServicesProps) => {
 	return (
 		<>
 			{showFormLogin && (
-				<Divider marginBlock={24} padding={0}>
-					{t('registration.component.form.divider')}
-				</Divider>
+				<Box paddingBlock={24}>
+					<Divider>{t('registration.component.form.divider')}</Divider>
+				</Box>
 			)}
 
-			{servicesToShow.length > 0 && (
+			{(servicesToShow.length > 0 || isDesktopApp) && (
 				<ButtonGroup vertical stretch small>
 					{servicesToShow.map((service) => (
 						<LoginServicesButton disabled={disabled} key={service.service} {...service} setError={setError} />
 					))}
+					{isDesktopApp && (
+						<Button variant='primary' onClick={handleLoginOnWeb}>
+							{t('registration.component.login.onWeb')}
+						</Button>
+					)}
 				</ButtonGroup>
-			)}
-
-			{isDesktopApp && (
-				<Button width='100%' primary onClick={handleLoginOnWeb} marginBlockStart={4}>
-					{t('registration.component.login.onWeb')}
-				</Button>
 			)}
 		</>
 	);

@@ -2,7 +2,7 @@ import { Component, type ComponentProps } from 'preact';
 
 import { PopoverContext } from './PopoverContext';
 import PopoverOverlay from './PopoverOverlay';
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 import { createClassName } from '../../helpers/createClassName';
 import { normalizeDOMRect } from '../../helpers/normalizeDOMRect';
 

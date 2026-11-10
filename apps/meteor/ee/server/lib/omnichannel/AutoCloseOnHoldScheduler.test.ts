@@ -14,7 +14,6 @@ const mockAgendaScheduler = sinon.stub();
 const mockAgendaCancel = sinon.stub();
 const mockAgendaDefine = sinon.stub();
 const mockLivechatCloseRoom = sinon.stub();
-const mockMeteorStartup = sinon.stub();
 const mockLivechatRooms = {
 	findOneById: sinon.stub(),
 };
@@ -55,16 +54,7 @@ const mockLogger = {
 
 const mocks = {
 	'@rocket.chat/agenda': { Agenda: MockAgendaClass },
-	'meteor/meteor': { Meteor: { startup: mockMeteorStartup } },
-	'meteor/mongo': {
-		MongoInternals: {
-			defaultRemoteCollectionDriver: () => {
-				return {
-					mongo: { client: { db: sinon.stub() } },
-				};
-			},
-		},
-	},
+	'../../../../server/database/utils': { client: { db: sinon.stub() } },
 	'../../../../server/lib/omnichannel/closeRoom': { closeRoom: mockLivechatCloseRoom },
 	'./logger': { schedulerLogger: mockLogger },
 	'@rocket.chat/models': {
@@ -76,10 +66,6 @@ const mocks = {
 const { AutoCloseOnHoldSchedulerClass } = proxyquire.noCallThru().load('./AutoCloseOnHoldScheduler', mocks);
 
 describe('AutoCloseOnHoldScheduler', () => {
-	beforeEach(() => {
-		mockMeteorStartup.resetHistory();
-	});
-
 	it('should call logger.section upon instantiating', () => {
 		expect(mockLogger.section.called).to.be.true;
 	});

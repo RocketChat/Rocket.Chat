@@ -6,18 +6,11 @@ import pkg from './package.json' with { type: 'json' };
 
 export default defineConfig({
 	input: 'src/index.ts',
-	output: [
-		{
-			file: pkg.main,
-			format: 'cjs',
-			sourcemap: true,
-		},
-		{
-			file: pkg.module,
-			format: 'es',
-			sourcemap: true,
-		},
-	],
+	output: {
+		file: pkg.main,
+		format: 'es',
+		sourcemap: true,
+	},
 	plugins: [
 		typescript({
 			tsconfig: './tsconfig.build.json',

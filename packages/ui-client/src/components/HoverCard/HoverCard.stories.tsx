@@ -10,7 +10,7 @@ export default {
 } satisfies Meta<typeof HoverCard>;
 
 const avatar = <Box width='x36' height='x36' borderRadius='medium' backgroundColor='surface-neutral' />;
-const favorite = <IconButton icon='star' small aria-label='Favorite' />;
+const favorite = <IconButton icon='star' size='small' aria-label='Favorite' />;
 
 const Card = ({ header, band }: { header: ComponentProps<typeof HoverCardHeader>; band?: ComponentProps<typeof HoverCardBand> }) => (
 	<HoverCard aria-label='Hover card'>
@@ -30,10 +30,10 @@ const Card = ({ header, band }: { header: ComponentProps<typeof HoverCardHeader>
 		</HoverCardSection>
 		<HoverCardSection tinted>
 			<HoverCardActions aria-label='Actions'>
-				<Button small primary>
+				<Button size='small' variant='primary'>
 					Open
 				</Button>
-				<Button small>Mark as read</Button>
+				<Button size='small'>Mark as read</Button>
 			</HoverCardActions>
 		</HoverCardSection>
 	</HoverCard>

@@ -1,5 +1,4 @@
-import { Button } from '@rocket.chat/fuselage';
-import type { ButtonProps } from '@rocket.chat/fuselage/dist/components/Button/Button';
+import { Button, type ButtonProps } from '@rocket.chat/fuselage';
 import { memo } from 'react';
 
 import { useExternalLink } from '../../../../hooks/useExternalLink';

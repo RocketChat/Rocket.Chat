@@ -251,7 +251,7 @@ export class Presence extends ServiceClass implements IPresence {
 		if (!uid || !session) {
 			return;
 		}
-		await UsersSessions.removeConnectionByConnectionId(session);
+		await UsersSessions.removeConnectionById(uid, session);
 
 		await this.updateUserPresence(uid);
 

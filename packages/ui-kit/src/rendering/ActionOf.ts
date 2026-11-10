@@ -7,6 +7,7 @@ import type { ConversationsSelectElement } from '../blocks/elements/Conversation
 import type { DatePickerElement } from '../blocks/elements/DatePickerElement';
 import type { DateTimePickerElement } from '../blocks/elements/DateTimePickerElement';
 import type { EmailTextInputElement } from '../blocks/elements/EmailTextInputElement';
+import type { FeedbackButtonsElement } from '../blocks/elements/FeedbackButtonsElement';
 import type { LinearScaleElement } from '../blocks/elements/LinearScaleElement';
 import type { MultiChannelsSelectElement } from '../blocks/elements/MultiChannelsSelectElement';
 import type { MultiConversationsSelectElement } from '../blocks/elements/MultiConversationsSelectElement';
@@ -46,7 +47,7 @@ export type ActionOf<TElement extends ActionableElement> = TElement extends Butt
 											? OverflowElement['options'][number]['value']
 											: TElement extends PlainTextInputElement
 												? PlainTextInputElement['initialValue']
-												: TElement extends NumberInputElement | EmailTextInputElement | UrlTextInputElement
+												: TElement extends NumberInputElement | EmailTextInputElement | UrlTextInputElement | FeedbackButtonsElement
 													? string
 													: TElement extends StaticSelectElement
 														? StaticSelectElement['initialValue']

@@ -1,4 +1,4 @@
-/* eslint-disable */
+/* oxlint-disable */
 //prettier-ignore
 module.exports = {
 name: "@yarnpkg/plugin-engines",

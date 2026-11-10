@@ -349,11 +349,11 @@ describe('with the call window, from a page that never held a handle on it', () 
 		let openCall!: (target: string) => void;
 
 		jest.isolateModules(() => {
-			/* eslint-disable @typescript-eslint/no-require-imports */
+			/* oxlint-disable @typescript-eslint/no-require-imports */
 			const testingLibrary = require('@testing-library/react/pure') as typeof import('@testing-library/react/pure');
 			const providers = require('@rocket.chat/mock-providers') as typeof import('@rocket.chat/mock-providers');
 			const hook = require('./useVideoConfOpenCall') as typeof import('./useVideoConfOpenCall');
-			/* eslint-enable @typescript-eslint/no-require-imports */
+			/* oxlint-enable @typescript-eslint/no-require-imports */
 
 			const view = testingLibrary.renderHook(() => hook.useVideoConfOpenCall(), {
 				wrapper: providers.mockAppRoot().withSetting('VideoConf_Conference_Window_Enabled', true).build(),

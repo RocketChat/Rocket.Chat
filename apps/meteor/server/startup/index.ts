@@ -1,12 +1,9 @@
 import './appcache';
 import './callbacks';
 import { ensureMessagesTextIndex } from './ensureMessagesTextIndex';
-import './initialData';
-import './serverRunning';
 import './coreApps';
 import { generateFederationKeys } from './generateKeys';
 import './presenceTroubleshoot';
-import './httpSocketTimeout';
 import '../hooks';
 import '../lib/rooms/roomTypes';
 import '../lib/settingsRegenerator';

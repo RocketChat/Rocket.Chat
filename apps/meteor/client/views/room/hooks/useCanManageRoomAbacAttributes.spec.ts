@@ -81,6 +81,13 @@ describe('useCanManageRoomAbacAttributes', () => {
 		['a public team', { t: 'c' as const, teamMain: true }],
 		['a private discussion', { t: 'p' as const, prid: 'parent-room' }],
 		['a federated private room', { t: 'p' as const, federated: true }],
+		[
+			'an XMPP federated private room',
+			{
+				t: 'p' as const,
+				xmppFederation: { version: 1, role: 'host-muc', muc: 'room@conference.example.com', origin: 'example.com' } as const,
+			},
+		],
 	])('should not offer attributes on %s, which no attribute set unlocks', (_name, overrides) => {
 		isLocked.mockReturnValue(true);
 

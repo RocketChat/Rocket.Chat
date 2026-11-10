@@ -56,7 +56,7 @@ import { loadSlashCommand } from '../../tests/mocks/server/slashcommands/helpers
 		it('does not change rooms without an authenticated user', async () => {
 			const result = slashCommand.runCommand(command, { userId: '' });
 			if (command === 'unarchive') {
-				await expect(result).to.be.rejectedWith('Invalid user');
+				await expect(result).to.be.rejectedWith('Unauthenticated');
 			} else {
 				await result;
 			}

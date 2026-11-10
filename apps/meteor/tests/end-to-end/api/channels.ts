@@ -370,7 +370,7 @@ describe('[Channels]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
 				});
 		});
 
@@ -531,7 +531,8 @@ describe('[Channels]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 
@@ -842,6 +843,22 @@ describe('[Channels]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
+					expect(res.body).to.have.property('error', 'unauthorized');
+				});
+		});
+
+		it('should fail creating a channel when the user lacks the create-c permission', async () => {
+			const guestCredentials = await login(guestUser.username, password);
+
+			await request
+				.post(api('channels.create'))
+				.set(guestCredentials)
+				.send({ name: `guest-channel-${Date.now()}` })
+				.expect(403)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
 					expect(res.body).to.have.property('error', 'unauthorized');
 				});
 		});
@@ -2413,7 +2430,7 @@ describe('[Channels]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
 				});
 		});
 
@@ -3299,12 +3316,12 @@ describe('[Channels]', () => {
 					roomName: testTeamChannel.name,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
+				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.a.property('error');
 					expect(res.body).to.have.a.property('errorType');
-					expect(res.body.errorType).to.be.equal('error-not-allowed');
+					expect(res.body.errorType).to.be.equal('error-forbidden');
 				});
 		});
 		it(`should fail deleting a team's channel when member has the necessary permission in the team, but not in the deleted room`, async () => {
@@ -3315,12 +3332,12 @@ describe('[Channels]', () => {
 					roomName: testTeamChannel.name,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
+				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.a.property('error');
 					expect(res.body).to.have.a.property('errorType');
-					expect(res.body.errorType).to.be.equal('error-not-allowed');
+					expect(res.body.errorType).to.be.equal('error-forbidden');
 				});
 		});
 		it(`should successfully delete a team's channel when member has both team and channel permissions`, async () => {
@@ -4216,12 +4233,10 @@ describe('[Channels]', () => {
 				{
 					rid: testChannel._id,
 					msg: `@${firstUser.username} youre being mentioned`,
-					mentions: [{ username: firstUser.username, _id: firstUser._id, name: firstUser.name }],
 				},
 				{
 					rid: testChannel._id,
 					msg: `@${secondUser.username} youre being mentioned`,
-					mentions: [{ username: secondUser.username, _id: secondUser._id, name: secondUser.name }],
 				},
 				{
 					rid: testChannel._id,
@@ -4296,7 +4311,7 @@ describe('[Channels]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
 				});
 			await updatePermission('view-c-room', ['admin', 'user', 'bot', 'app']);
 		});

@@ -1,5 +1,27 @@
 # @rocket.chat/license
 
+## 1.2.2-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [4f350b4ffb76024d9bf44c02f3322c8f9071f1cf, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 6bb0d3bca9b5da401050697d51bc99e89871bbb7, 6be3614cd2660ab4024635802fdf9cd7dd7b502f, 588311c49bfce08e7106e7c0bb32741334fa5321, 10b4e00e08951ace8f9c27d83fc0c48be010bdc7, 5e82e67eaa4c998870d3eb0597f485b30c244f02, a9b2bb76d88e4d2743e0817b15e6447e7c9c46eb, cdd948cb67ecf282f6cc8f411615c3de0db0b9f1, 6b3ec3e667c99015e381a4e8ea43146accb5f7f7, a11ffff8acb74fd016e9ddb972da6eebda0c3e5e, f3fa7abd6b9d311f76619d0fe27793ac68f6d208, daa677895dad92d6aab1e84a09f190efd2755ef9, 642d9e528a8572208e2f0bb51f45ea78400bcea3, bd92e8abc5a8f0161f3de5308979a0f88d09f351, 39a6e6e1397e1e89bc631fe4ab1cc10fa93b59e8, a39b03fe5c248079365162e31994e1dece63e7c2]:</summary>
+  - @rocket.chat/core-typings@9.0.0-rc.0
+  - @rocket.chat/jwt@0.3.0-rc.0
+  - @rocket.chat/logger@1.0.2-rc.0
+
+  </details>
+
+## 1.2.1
+
+### Patch Changes
+
+- ([#41548](https://github.com/RocketChat/Rocket.Chat/pull/41548)) Improves performance of several hot code paths without changing behavior: generates random IDs with a single `crypto.randomBytes` call instead of one per character, caches constant regular expressions used by the markdown/mention/autotranslate parsers instead of recompiling them for every message, skips the channel-mention database query for messages without channel mentions, deduplicates the room member count query when a message contains both `@all` and `@here`, and replaces linear array scans and spread-accumulators with Map/Set lookups in API response shaping (files, DM members, directory search and team listing).
+
+- <details><summary>Updated dependencies [17dfc71b4ad7294655e7fab9043cddbea23cb071, 71add68eca423511c0189f2f541b5a2c46a5e7a0, 53b519cc692587a63beaeb780e28d368ed70e94c, 7d7a5c403e175df889afe303c34b9154c4ad6d70, bab7af7e18ea2e70e2b3211904a4adfc6ae33e7c, 37faaa89ad1b4b721d6054e40a91327bd8140525]:</summary>
+  - @rocket.chat/core-typings@8.9.0
+
+  </details>
+
 ## 1.2.1-rc.0
 
 ### Patch Changes

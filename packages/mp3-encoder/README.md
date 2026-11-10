@@ -14,7 +14,7 @@ The package has no exports. You load its built file as a worker and talk to it w
 npm install @rocket.chat/mp3-encoder
 ```
 
-There are no dependencies. The worker script is published in two builds: `dist/index.js` (a classic script, suitable for `new Worker(url)`) and `dist/index.mjs` (an ES module).
+There are no dependencies. The worker script is published as `dist/index.js`, a classic script suitable for `new Worker(url)`.
 
 ## Usage
 

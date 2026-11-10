@@ -1,5 +1,5 @@
 import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
-import { Box, Icon, TextInput, Select, Callout, Throbber } from '@rocket.chat/fuselage';
+import { Box, Select, Callout, Throbber } from '@rocket.chat/fuselage';
 import { useResizeObserver, useAutoFocus, useLocalStorage, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import {
 	VirtualizedScrollbars,
@@ -19,6 +19,7 @@ import { Virtuoso } from 'react-virtuoso';
 
 import ThreadListItem from './components/ThreadListItem';
 import { useThreadsList } from './hooks/useThreadsList';
+import { FilterBar, FilterBarFilters, FilterBarSearch } from '../../../../components/FilterBar';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
 import { useMessageRowListNavigation } from '../../../../hooks/useMessageRowListNavigation';
 import { getErrorMessage } from '../../../../lib/errorHandling';
@@ -129,25 +130,21 @@ const ThreadList = () => {
 				<ContextualbarClose onClick={handleTabBarCloseButtonClick} />
 			</ContextualbarHeader>
 			<ContextualbarSection>
-				<TextInput
-					aria-label={t('Search_Messages')}
-					aria-controls={isSuccess ? threadListId : undefined}
-					placeholder={t('Search_Messages')}
-					endAddon={<Icon name='magnifier' size='x20' />}
-					ref={autoFocusRef}
-					value={searchText}
-					onChange={handleSearchTextChange}
-				/>
-				<Box width='x144' marginInlineStart={8}>
-					<Select
+				<FilterBar compact>
+					<FilterBarSearch
+						aria-label={t('Search_Messages')}
 						aria-controls={isSuccess ? threadListId : undefined}
-						options={typeOptions}
-						value={type}
-						onChange={(value) => handleTypeChange(String(value))}
+						placeholder={t('Search_Messages')}
+						ref={autoFocusRef}
+						value={searchText}
+						onChange={handleSearchTextChange}
 					/>
-				</Box>
+					<FilterBarFilters>
+						<Select aria-label={t('Filter')} options={typeOptions} value={type} onChange={(value) => handleTypeChange(String(value))} />
+					</FilterBarFilters>
+				</FilterBar>
 			</ContextualbarSection>
-			<ContextualbarContent paddingInline={0} ref={ref}>
+			<ContextualbarContent flush ref={ref}>
 				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={itemCount} />
 				{isPending && (
 					<Box paddingInline={24} paddingBlock={12}>
@@ -155,9 +152,9 @@ const ThreadList = () => {
 					</Box>
 				)}
 				{error && (
-					<Callout marginInline={24} type='danger'>
-						{getErrorMessage(error, t('Something_went_wrong'))}
-					</Callout>
+					<Box paddingInline={24}>
+						<Callout type='danger'>{getErrorMessage(error, t('Something_went_wrong'))}</Callout>
+					</Box>
 				)}
 				{isSuccess && (
 					<Box id={threadListId} ref={threadListRef} width='full' height='full' overflow='hidden' flexShrink={1}>

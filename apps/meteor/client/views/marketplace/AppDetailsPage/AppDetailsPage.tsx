@@ -152,7 +152,7 @@ const AppDetailsPage = ({ id }: AppDetailsPageProps) => {
 					<ButtonGroup>
 						<Button onClick={() => reset()}>{t('Cancel')}</Button>
 						{installed && isAdminUser && (
-							<Button primary loading={isSubmitting} onClick={handleSubmit(saveAppSettings)}>
+							<Button variant='primary' loading={isSubmitting} onClick={handleSubmit(saveAppSettings)}>
 								{t('Save_changes')}
 							</Button>
 						)}

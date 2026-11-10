@@ -168,42 +168,6 @@ describe('when the adjacent row is outside the render window', () => {
 	});
 });
 
-describe('arrow keys within a row', () => {
-	it('moves from the `ItemLink` to the first action and back', () => {
-		const { rows } = setup({ withAction: true });
-		rows[1].link.focus();
-
-		pressKey(rows[1].link, 'ArrowRight');
-		expect(document.activeElement).toBe(rows[1].action);
-
-		pressKey(rows[1].action!, 'ArrowLeft');
-		expect(document.activeElement).toBe(rows[1].link);
-	});
-
-	it('swaps the directions in right-to-left layouts', () => {
-		const { rows } = setup({ withAction: true });
-		// jsdom does not inherit `direction` into the computed style
-		rows[0].link.style.direction = 'rtl';
-		rows[0].link.focus();
-
-		pressKey(rows[0].link, 'ArrowRight');
-		expect(document.activeElement).toBe(rows[0].link);
-
-		pressKey(rows[0].link, 'ArrowLeft');
-		expect(document.activeElement).toBe(rows[0].action);
-	});
-
-	it('stays on the `ItemLink` when the row has no focusable action', () => {
-		const { rows } = setup();
-		rows[0].link.focus();
-
-		const event = pressKey(rows[0].link, 'ArrowRight');
-
-		expect(document.activeElement).toBe(rows[0].link);
-		expect(event.defaultPrevented).toBe(true);
-	});
-});
-
 describe('Escape', () => {
 	it('returns from a control to its row', () => {
 		const { rows } = setup({ withAction: true });
@@ -289,6 +253,29 @@ describe('Tab', () => {
 
 		expect(event.defaultPrevented).toBe(true);
 		expect(document.activeElement).toBe(rows[0].link);
+	});
+
+	it('reaches the actions of a group header', () => {
+		const list = document.createElement('div');
+		const header = document.createElement('div');
+		header.className = 'rcx-item-group-header';
+		const title = document.createElement('div');
+		title.className = 'rcx-item-group-title';
+		title.tabIndex = 0;
+		const menu = document.createElement('button');
+		header.append(title, menu);
+		list.appendChild(header);
+		document.body.appendChild(list);
+
+		const isTitle = (node: Element) => node.classList.contains('rcx-item-group-title');
+		const { result } = renderHook(() => useItemListNavigation({ isItem: isTitle }));
+		act(() => result.current(list));
+		detachers.push(() => act(() => result.current(null)));
+		title.focus();
+
+		pressKey(title, 'Tab');
+
+		expect(document.activeElement).toBe(menu);
 	});
 });
 
@@ -468,31 +455,6 @@ describe('with a custom `isItem`', () => {
 			return { row, link, actions, after };
 		};
 
-		it('walks the row with the arrow keys, entering the toolbar as one stop', () => {
-			const { row, link, actions } = setupToolbarRow();
-			row.focus();
-
-			pressKey(row, 'ArrowRight');
-			expect(document.activeElement).toBe(link);
-
-			pressKey(link, 'ArrowRight');
-			expect(document.activeElement).toBe(actions[0]);
-		});
-
-		it('leaves the arrow keys inside the toolbar to the toolbar', () => {
-			const { actions } = setupToolbarRow();
-			// Stands in for a toolbar's React `onKeyDownCapture`, which runs at the app root, after the list's listener
-			const toolbarKeyDown = jest.fn();
-			document.body.addEventListener('keydown', toolbarKeyDown, { capture: true });
-			actions[0].focus();
-
-			const event = pressKey(actions[0], 'ArrowRight');
-
-			expect(event.defaultPrevented).toBe(false);
-			expect(toolbarKeyDown).toHaveBeenCalled();
-			document.body.removeEventListener('keydown', toolbarKeyDown, { capture: true });
-		});
-
 		it('tabs over the toolbar as one stop, coming back to the button it focused last', () => {
 			const { link, actions, after } = setupToolbarRow();
 			actions[1].focus();
@@ -513,42 +475,5 @@ describe('with a custom `isItem`', () => {
 
 			expect(document.activeElement).toBe(link);
 		});
-	});
-});
-
-describe('rows with several actions', () => {
-	it('reaches each action in turn', () => {
-		const { rows } = setup({ withAction: true });
-		const second = document.createElement('button');
-		rows[0].action!.after(second);
-		rows[0].link.focus();
-
-		pressKey(rows[0].link, 'ArrowRight');
-		pressKey(rows[0].action!, 'ArrowRight');
-
-		expect(document.activeElement).toBe(second);
-	});
-
-	it('reaches the actions of a group header', () => {
-		const list = document.createElement('div');
-		const header = document.createElement('div');
-		header.className = 'rcx-item-group-header';
-		const title = document.createElement('div');
-		title.className = 'rcx-item-group-title';
-		title.tabIndex = 0;
-		const menu = document.createElement('button');
-		header.append(title, menu);
-		list.appendChild(header);
-		document.body.appendChild(list);
-
-		const isTitle = (node: Element) => node.classList.contains('rcx-item-group-title');
-		const { result } = renderHook(() => useItemListNavigation({ isItem: isTitle }));
-		act(() => result.current(list));
-		detachers.push(() => act(() => result.current(null)));
-		title.focus();
-
-		pressKey(title, 'ArrowRight');
-
-		expect(document.activeElement).toBe(menu);
 	});
 });

@@ -1,15 +1,19 @@
-import { Router } from '@rocket.chat/http-router';
+import { Router, createNodeServer, createRootApp, mountRouter } from '@rocket.chat/http-router';
 import Ajv from 'ajv';
-import express from 'express';
 import request from 'supertest';
 
 import { metricsMiddleware } from './metrics';
 import { CachedSettings } from '../../../settings/CachedSettings';
 
+const serve = (router: Parameters<typeof mountRouter>[1]) => {
+	const app = createRootApp();
+	mountRouter(app, router);
+	return createNodeServer(app);
+};
+
 describe('Metrics middleware', () => {
 	it('should handle metrics', async () => {
 		const ajv = new Ajv();
-		const app = express();
 		const api = new Router('/api');
 		const settings = new CachedSettings();
 		settings.set({
@@ -61,7 +65,7 @@ describe('Metrics middleware', () => {
 					};
 				},
 			);
-		app.use(api.router);
+		const app = serve(api);
 		const response = await request(app).get('/api/test').set('user-agent', 'test');
 		expect(response.statusCode).toBe(200);
 		expect(response.body).toHaveProperty('message', 'Metrics test successful');
@@ -72,7 +76,6 @@ describe('Metrics middleware', () => {
 
 	it('should strip path from metrics', async () => {
 		const ajv = new Ajv();
-		const app = express();
 		const api = new Router('/api');
 		const settings = new CachedSettings();
 		settings.set({
@@ -125,7 +128,7 @@ describe('Metrics middleware', () => {
 					};
 				},
 			);
-		app.use(api.router);
+		const app = serve(api);
 		const response = await request(app).get('/api/test').set('user-agent', 'test');
 		expect(response.statusCode).toBe(200);
 		expect(response.body).toHaveProperty('message', 'Metrics test successful');
@@ -136,7 +139,6 @@ describe('Metrics middleware', () => {
 
 	it('should decode path for method.call endpoints', async () => {
 		const ajv = new Ajv();
-		const app = express();
 		const settings = new CachedSettings();
 
 		const api = new Router('/api');
@@ -186,7 +188,7 @@ describe('Metrics middleware', () => {
 					};
 				},
 			);
-		app.use(api.router);
+		const app = serve(api);
 		const response = await request(app).get('/api/method.call/get%3Aparam').set('user-agent', 'test');
 		expect(response.statusCode).toBe(200);
 		expect(response.body).toHaveProperty('message', 'Metrics test successful');
@@ -202,7 +204,6 @@ describe('Metrics middleware', () => {
 
 	it('should only record requests matching its own base path', async () => {
 		const ajv = new Ajv();
-		const app = express();
 		const settings = new CachedSettings();
 
 		const makeMetrics = () => {
@@ -266,7 +267,7 @@ describe('Metrics middleware', () => {
 			.use(route(new Router('/v1')))
 			.use(route(new Router('/experimental')));
 
-		app.use(api.router);
+		const app = serve(api);
 
 		expect((await request(app).get('/api/v1/test')).statusCode).toBe(200);
 
@@ -289,7 +290,6 @@ describe('Metrics middleware', () => {
 
 	it('should sample the default router and unmatched paths exactly once', async () => {
 		const ajv = new Ajv();
-		const app = express();
 		const settings = new CachedSettings();
 
 		const makeMetrics = () => {
@@ -329,7 +329,9 @@ describe('Metrics middleware', () => {
 		api.use(route(new Router(''), 'info'));
 		api.use(route(new Router('/v1'), '/test'));
 
-		expect((await request(app.use(api.router)).get('/api/info')).statusCode).toBe(200);
+		const app = serve(api);
+
+		expect((await request(app).get('/api/info')).statusCode).toBe(200);
 
 		expect(v1Metrics.summary.startTimer).not.toHaveBeenCalled();
 		expect(defaultMetrics.endTimer).toHaveBeenCalledWith({ status: 200, method: 'get', version: 'default', entrypoint: '/api/info' });

@@ -1,7 +1,6 @@
 import type { RefObject, CSSProperties } from 'react';
 import { useEffect, useRef, useState } from 'react';
 
-import { useDebouncedCallback } from '../useDebouncedCallback';
 import { useSafely } from '../useSafely';
 import { useStableCallback } from '../useStableCallback';
 import type { Placement } from './Placement';
@@ -11,7 +10,6 @@ import type { TargetBoundaries } from './getTargetBoundaries';
 import { getTargetBoundaries } from './getTargetBoundaries';
 import type { VariantBoundaries } from './getVariantBoundaries';
 import { getVariantBoundaries } from './getVariantBoundaries';
-import { useBoundingClientRectChanges } from './useBoundingClientRectChanges';
 
 export type { Placement } from './Placement';
 export type { Position } from './Position';
@@ -21,6 +19,7 @@ export type { VariantBoundaries } from './getVariantBoundaries';
 
 export type UsePositionOptions = {
 	margin?: number;
+	/** The element the target must fit in; the viewport of the anchor's window when not given. */
 	container?: Element;
 	placement?: Placement;
 };
@@ -161,10 +160,49 @@ export function getPositionStyle({
 	};
 }
 
-const UPDATE_DEBOUNCE_DELAY = 30;
+const getViewportRect = (view: Window) =>
+	({
+		x: 0,
+		y: 0,
+		top: 0,
+		left: 0,
+		right: view.innerWidth,
+		bottom: view.innerHeight,
+		width: view.innerWidth,
+		height: view.innerHeight,
+	}) as DOMRect;
+
+const isSamePosition = (a: UsePositionResult, b: UsePositionResult) => {
+	const keys = new Set([...Object.keys(a.style), ...Object.keys(b.style)] as (keyof UsePositionResult['style'])[]);
+
+	return a.placement === b.placement && [...keys].every((key) => a.style[key] === b.style[key]);
+};
+
+// The target is sized by where it was last placed: the fallback placement limits it with `bottom`, and a viewport edge
+// wraps it narrower. Neither may limit the size it is placed by.
+const measureTarget = (target: Element) => {
+	// Checked by shape, since a target in another window is not an instance of this window's element classes.
+	if (!('style' in target)) {
+		return target.getBoundingClientRect();
+	}
+
+	const { style } = target as Element & ElementCSSInlineStyle;
+	const { bottom, left } = style;
+	style.bottom = '';
+	style.left = '0px';
+	const rect = target.getBoundingClientRect();
+	style.bottom = bottom;
+	style.left = left;
+
+	return rect;
+};
 
 /**
- * Hook to deal and position an element using an anchor
+ * Hook to deal and position an element using an anchor.
+ *
+ * The position follows the anchor as the page or any of its scroll containers scrolls, and as the anchor, the target or
+ * the window resizes, at most once per frame.
+ *
  * @param anchorRef - the anchor
  * @param targetRef - the element to be positioned
  * @param options - options to position
@@ -174,62 +212,83 @@ const UPDATE_DEBOUNCE_DELAY = 30;
 export function usePosition<TTarget extends Element, TAnchor extends Element>(
 	anchorRef: RefObject<TAnchor | null>,
 	targetRef: RefObject<TTarget | null>,
-	{ margin = 8, placement = 'bottom-start', container = document.body }: UsePositionOptions = {},
+	{ margin = 8, placement = 'bottom-start', container }: UsePositionOptions = {},
 ): UsePositionResult {
 	const [style, setStyle] = useSafely(useState<UsePositionResult>(emptyStyle));
+	const lastPositionRef = useRef(emptyStyle);
 
-	const containerRef = useRef(container);
+	const updatePosition = useStableCallback(() => {
+		const target = targetRef.current;
+		const anchor = anchorRef.current;
+		const view = anchor?.ownerDocument.defaultView;
+
+		if (!target || !anchor || !view) {
+			return;
+		}
+
+		// An anchor that left the page has no place to follow: the target stays where it was.
+		if (!anchor.isConnected) {
+			return;
+		}
+
+		const targetRect = measureTarget(target);
+		const anchorRect = anchor.getBoundingClientRect();
+
+		const position = getPositionStyle({
+			placement,
+			containerRect: container ? container.getBoundingClientRect() : getViewportRect(view),
+			targetBoundaries: getTargetBoundaries({ anchorRect, targetRect, margin }),
+			variantBoundaries: getVariantBoundaries({ anchorRect, targetRect }),
+			targetRect,
+			margin,
+		});
+
+		// Most scrolls and resizes leave the target where it is, and those must not render it again.
+		if (isSamePosition(position, lastPositionRef.current)) {
+			return;
+		}
+
+		lastPositionRef.current = position;
+		setStyle(position);
+	});
 
 	useEffect(() => {
-		containerRef.current = container;
-	}, [container]);
+		const anchor = anchorRef.current;
+		const target = targetRef.current;
+		const view = anchor?.ownerDocument.defaultView;
 
-	const handleBoundingClientRectChange = useDebouncedCallback(
-		useStableCallback(() => {
-			const target = targetRef.current;
-			const anchor = anchorRef.current;
-			const targetParent = target?.parentElement;
+		if (!anchor || !target || !view) {
+			return;
+		}
 
-			if (!target || !anchor || !targetParent) {
-				return;
-			}
+		let frame = 0;
 
-			const clone = target.cloneNode(true) as HTMLElement;
-			clone.style.bottom = '';
-			clone.id = 'clone';
-			targetParent.appendChild(clone);
-			const targetRect = clone.getBoundingClientRect();
-			targetParent.removeChild(clone);
+		const scheduleUpdate = () => {
+			view.cancelAnimationFrame(frame);
+			frame = view.requestAnimationFrame(updatePosition);
+		};
 
-			const anchorRect = anchor.getBoundingClientRect();
+		// The first placement waits for the frame in which the target's content has rendered, so it is measured once, at its size.
+		scheduleUpdate();
 
-			const targetBoundaries = getTargetBoundaries({
-				anchorRect,
-				targetRect,
-				margin,
-			});
+		const observer = new ResizeObserver(scheduleUpdate);
+		observer.observe(anchor);
+		observer.observe(target);
 
-			const variantBoundaries = getVariantBoundaries({
-				anchorRect,
-				targetRect,
-			});
+		if (container) {
+			observer.observe(container);
+		}
 
-			setStyle(
-				getPositionStyle({
-					placement,
-					containerRect: container.getBoundingClientRect(),
-					targetBoundaries,
-					variantBoundaries,
-					targetRect,
-					margin,
-				}),
-			);
-		}),
-		UPDATE_DEBOUNCE_DELAY,
-	);
+		view.addEventListener('scroll', scheduleUpdate, { capture: true, passive: true });
+		view.addEventListener('resize', scheduleUpdate);
 
-	useBoundingClientRectChanges(targetRef, handleBoundingClientRectChange);
-	useBoundingClientRectChanges(anchorRef, handleBoundingClientRectChange);
-	useBoundingClientRectChanges(containerRef, handleBoundingClientRectChange);
+		return () => {
+			view.cancelAnimationFrame(frame);
+			observer.disconnect();
+			view.removeEventListener('scroll', scheduleUpdate, { capture: true });
+			view.removeEventListener('resize', scheduleUpdate);
+		};
+	}, [anchorRef, targetRef, container, margin, placement, updatePosition]);
+
 	return style;
 }

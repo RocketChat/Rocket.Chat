@@ -60,7 +60,7 @@ const MessageComposerGenericFile = ({
 		isLoading && !isActive ? (
 			<MessageComposerFileLoader />
 		) : (
-			<IconButton {...buttonProps} aria-label={isLoading ? t('Cancel') : t('Remove')} mini icon='cross' />
+			<IconButton {...buttonProps} aria-label={isLoading ? t('Cancel') : t('Remove')} size='mini' icon='cross' />
 		);
 
 	if (upload.error) {

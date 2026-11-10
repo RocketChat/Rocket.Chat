@@ -1,5 +1,5 @@
 import type { ISetting, ISettingColor } from '@rocket.chat/core-typings';
-import { Accordion, Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { Accordion, Box, Button, ButtonGroup, Text } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
@@ -149,9 +149,9 @@ const SettingsGroupPage = ({
 				<PageScrollableContentWithShadow>
 					<Box marginBlock='none' marginInline='auto' width='full' maxWidth='x580'>
 						{i18nDescription && i18n.exists(i18nDescription) && (
-							<Box is='p' color='hint' fontScale='p2'>
+							<Text is='p' color='hint' fontScale='p2'>
 								{t(i18nDescription)}
-							</Box>
+							</Text>
 						)}
 
 						<Accordion>{children}</Accordion>
@@ -165,7 +165,7 @@ const SettingsGroupPage = ({
 							{t('Cancel')}
 						</Button>
 					)}
-					<Button className='save' disabled={isSaveDisabled} primary type='submit' onClick={handleSaveClick}>
+					<Button className='save' disabled={isSaveDisabled} variant='primary' type='submit' onClick={handleSaveClick}>
 						{t('Save_changes')}
 					</Button>
 				</ButtonGroup>

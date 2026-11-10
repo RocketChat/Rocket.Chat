@@ -1,5 +1,5 @@
 import type { ClassificationBannerPayload, ClassificationBannerSegment, IAbacAttributeDefinition, IRoom } from '@rocket.chat/core-typings';
-import { isABACManagedRoom, isDiscussion, isOmnichannelRoom, isRoomFederated } from '@rocket.chat/core-typings';
+import { isABACManagedRoom, isDiscussion, isOmnichannelRoom, isRoomFederated, isRoomXMPPFederated } from '@rocket.chat/core-typings';
 import { isTruthy } from '@rocket.chat/tools';
 
 import { readableTextColor } from './colors';
@@ -87,7 +87,7 @@ export const buildClassificationBanner = (
 	};
 };
 
-type ClassifiedRoom = Pick<IRoom, 't' | 'abacAttributes' | 'federated' | 'prid' | 'teamId'>;
+type ClassifiedRoom = Pick<IRoom, 't' | 'abacAttributes' | 'federated' | 'xmppFederation' | 'prid' | 'teamId'>;
 
 const roomTypes: Record<ClassificationRoomType, IRoom['t']> = {
 	direct: 'd',
@@ -97,7 +97,7 @@ const roomTypes: Record<ClassificationRoomType, IRoom['t']> = {
 
 const matchesRoom = (room: ClassifiedRoom, { type, federated, discussion, team }: ClassificationRoomMatch): boolean =>
 	(!type || type.some((name) => roomTypes[name] === room.t)) &&
-	(federated === undefined || federated === isRoomFederated(room)) &&
+	(federated === undefined || federated === (isRoomFederated(room) || isRoomXMPPFederated(room))) &&
 	(discussion === undefined || discussion === isDiscussion(room)) &&
 	(team === undefined || team === !!room.teamId);
 

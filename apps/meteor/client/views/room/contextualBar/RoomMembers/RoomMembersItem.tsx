@@ -83,7 +83,7 @@ const RoomMembersItem = ({
 						reload={reload}
 					/>
 				) : (
-					<IconButton tiny icon='kebab' aria-hidden tabIndex={-1} onPointerDown={mountNow} />
+					<IconButton size='tiny' icon='kebab' aria-hidden tabIndex={-1} onPointerDown={mountNow} />
 				)}
 			</ItemActions>
 		</Item>

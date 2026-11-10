@@ -1,36 +1,39 @@
 import type { AllHTMLAttributes, RefAttributes } from 'react';
 
-import { prependClassName } from '../../helpers/prependClassName';
+import { cx, cxx } from '../../helpers/composeClassNames';
+import Item from '../Item/Item';
 
-export type MessageProps = AllHTMLAttributes<HTMLDivElement> &
+export type MessageProps = Omit<AllHTMLAttributes<HTMLDivElement>, 'is'> &
 	RefAttributes<HTMLDivElement> & {
 		clickable?: boolean;
+		/**
+		 * Shows the hover surface, for rows whose content reacts to the pointer. Turn it off for rows with nothing to act on.
+		 */
+		hoverable?: boolean;
 		sequential?: boolean;
-		className?: string;
 		isSelected?: boolean;
 		isEditing?: boolean;
 		isPending?: boolean;
-		highlight?: boolean;
 	};
 
-function Message({ className, clickable, sequential, isSelected, isEditing, isPending, highlight, ...props }: MessageProps) {
+function Message({ className, clickable, hoverable = true, sequential, isSelected, isEditing, isPending, ...props }: MessageProps) {
 	return (
-		<div
-			className={prependClassName(
-				className,
-				[
-					'rcx-message',
-					(clickable || props.onClick) && 'rcx-message--clickable',
-					sequential && 'rcx-message--sequential',
-					isSelected && 'rcx-message--selected',
-					isEditing && 'rcx-message--editing',
-					isPending && 'rcx-message--pending',
-					highlight && 'rcx-message--highlight',
-				]
-					.filter(Boolean)
-					.join(' '),
-			)}
+		<Item
 			{...props}
+			align='start'
+			inset='lg'
+			multiline
+			hoverable={hoverable}
+			interactive={clickable}
+			selected={isSelected}
+			className={cx(
+				cxx('rcx-message')({
+					sequential: !!sequential,
+					editing: !!isEditing,
+					pending: !!isPending,
+				}),
+				className,
+			)}
 		/>
 	);
 }

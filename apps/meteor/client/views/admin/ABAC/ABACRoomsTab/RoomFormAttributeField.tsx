@@ -69,54 +69,51 @@ const RoomFormAttributeField = ({
 	}, [attributeList, keyField.value]);
 
 	return (
-		<Box display='flex' flexDirection='column' width='full'>
-			<FieldRow>
-				<SelectFiltered
-					{...keyField}
-					options={options}
-					required={required}
-					aria-required={required}
-					aria-labelledby={labelId}
-					aria-invalid={keyFieldState.error ? 'true' : 'false'}
-					aria-describedby={keyFieldState.error ? `${keyField.name}-error` : undefined}
-					placeholder={t('ABAC_Search_Attribute')}
-					marginBlockEnd={4}
-					error={keyFieldState.error?.message}
-					withTruncatedText
-					disabled={disabled || lockKey}
-					onChange={(value) => {
-						keyField.onChange(value);
-						resetField(`attributes.${index}.values`, { defaultValue: [] });
-					}}
-				/>
-			</FieldRow>
-			{keyFieldState.error && (
-				<FieldError id={`${keyField.name}-error`} role='alert'>
-					{keyFieldState.error.message}
-				</FieldError>
-			)}
-			<FieldRow>
-				<MultiSelectFiltered
-					required={required}
-					aria-required={required}
-					aria-labelledby={labelId}
-					aria-invalid={valuesFieldState.error ? 'true' : 'false'}
-					aria-describedby={valuesFieldState.error ? `${valuesField.name}-error` : undefined}
-					withTruncatedText
-					{...valuesField}
-					options={valueOptions}
-					placeholder={t('ABAC_Select_Attribute_Values')}
-					error={valuesFieldState.error?.message}
-					disabled={disabled}
-				/>
-			</FieldRow>
-			{valuesFieldState.error && (
-				<FieldError id={`${valuesField.name}-error`} role='alert'>
-					{valuesFieldState.error.message}
-				</FieldError>
-			)}
+		<Box display='flex' flexDirection='column' width='full' gap={8}>
+			<Box display='flex' flexDirection='column'>
+				<FieldRow>
+					<SelectFiltered
+						{...keyField}
+						options={options}
+						aria-required={required}
+						aria-labelledby={labelId}
+						aria-invalid={keyFieldState.error ? 'true' : 'false'}
+						aria-describedby={keyFieldState.error ? `${keyField.name}-error` : undefined}
+						placeholder={t('ABAC_Search_Attribute')}
+						error={keyFieldState.error?.message}
+						disabled={disabled || lockKey}
+						onChange={(value) => {
+							keyField.onChange(value);
+							resetField(`attributes.${index}.values`, { defaultValue: [] });
+						}}
+					/>
+				</FieldRow>
+				{keyFieldState.error && (
+					<FieldError id={`${keyField.name}-error`} role='alert'>
+						{keyFieldState.error.message}
+					</FieldError>
+				)}
+				<FieldRow>
+					<MultiSelectFiltered
+						aria-required={required}
+						aria-labelledby={labelId}
+						aria-invalid={valuesFieldState.error ? 'true' : 'false'}
+						aria-describedby={valuesFieldState.error ? `${valuesField.name}-error` : undefined}
+						{...valuesField}
+						options={valueOptions}
+						placeholder={t('ABAC_Select_Attribute_Values')}
+						error={valuesFieldState.error?.message}
+						disabled={disabled}
+					/>
+				</FieldRow>
+				{valuesFieldState.error && (
+					<FieldError id={`${valuesField.name}-error`} role='alert'>
+						{valuesFieldState.error.message}
+					</FieldError>
+				)}
+			</Box>
 			{index !== 0 && removable && (
-				<Button onClick={onRemove} title={t('Remove')} marginBlockStart={8} disabled={disabled}>
+				<Button onClick={onRemove} title={t('Remove')} disabled={disabled}>
 					{t('Remove')}
 				</Button>
 			)}

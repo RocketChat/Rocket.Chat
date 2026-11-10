@@ -1,5 +1,105 @@
 # @rocket.chat/ddp-client
 
+## 2.0.0-rc.0
+
+### Major Changes
+
+- ([#41948](https://github.com/RocketChat/Rocket.Chat/pull/41948)) Removes the deprecated `query` and `fields` REST API parameters, along with the `ALLOW_UNSAFE_QUERY_AND_FIELDS_API_PARAMS` environment variable that re-enabled them. Deprecated in 6.3.0 and disabled by default since 7.0.0, they let callers run raw MongoDB queries and projections against the database.
+
+  Endpoints that validate their query string now reject both with `400 error-invalid-params` instead of ignoring them; the few without validation keep accepting and ignoring them. `users.create` likewise rejects a `fields` property in its body. `channels.online` and `groups.online` now require `_id`. On `users.list`, fields outside the default projection — `customFields`, `utcOffset`, `nickname`, `bio`, `statusText`, `federated` and `freeSwitchExtension` — are no longer reachable in bulk; use `users.info` instead. Callers should move to the dedicated filter parameters each endpoint exposes, such as `name`, `type`, `_id` and `text`.
+
+### Minor Changes
+
+- ([#42953](https://github.com/RocketChat/Rocket.Chat/pull/42953)) Changes the reconnection strategy to an exponential backoff with jitter, capped at 30 seconds, and makes `DDPSDK.create` and `RocketchatSdkLegacyImpl.create` keep reconnecting by default (`retryCount: Infinity`, `retryTime: 1000`) instead of giving up after one retry at 100 ms. `LivechatClientImpl` keeps its own defaults (3 retries from 10 seconds).
+
+- ([#42953](https://github.com/RocketChat/Rocket.Chat/pull/42953)) Adds `encode`, `decode` and `WebSocket` options to `DDPSDK.create` and `DDPSDK.createAndConnect`, next to `retryCount` and `retryTime`, so clients can use EJSON or a custom WebSocket without reaching into the SDK internals. `LivechatClientImpl.create` and `RocketchatSdkLegacyImpl.create` share the same factory: they now also log in again after a reconnection, log the account out when the server refuses the token on that login, and send the account's credentials with REST calls.
+
+- ([#42953](https://github.com/RocketChat/Rocket.Chat/pull/42953)) Adds `account.setCredentials()` to adopt a login made outside the SDK and `account.clearCredentials()` to forget the logged-in user locally
+
+- ([#42953](https://github.com/RocketChat/Rocket.Chat/pull/42953)) Adds the `inFlightMethods` option (`'reject'` by default, or `'resend'`) to choose whether method calls lost with the connection reject or are sent again after the reconnection's login, and the `logoutOnRefusedResume` option (`true` by default) to keep the account logged in when the server refuses the token after a reconnection. Only a refusal (a 401/403 answer) logs the account out; other failures of that login keep it. `connection.close()` now rejects every pending call.
+
+- ([#42979](https://github.com/RocketChat/Rocket.Chat/pull/42979)) Exposes the connection's reconnection attempt count and when the next attempt is due (`retryCount`, `nextRetryAt`).
+
+- ([#42953](https://github.com/RocketChat/Rocket.Chat/pull/42953)) Adds `Subscription.onStop(listener)`, called with the reason when the server stops a subscription or stream
+
+- ([#42953](https://github.com/RocketChat/Rocket.Chat/pull/42953)) Adds `sdk.publish(name, key, ...args)` to emit events on streams that accept them from clients, typed from `StreamerEvents`
+
+- ([#42953](https://github.com/RocketChat/Rocket.Chat/pull/42953)) Adds `connection.whenConnected()`, which resolves once the connection is established
+
+### Patch Changes
+
+- ([#42953](https://github.com/RocketChat/Rocket.Chat/pull/42953)) Fixes `client.call()` and `client.callWithOptions()` sending `[null]` as the parameters of a call made without parameters or callback
+
+- ([#42953](https://github.com/RocketChat/Rocket.Chat/pull/42953)) Fixes the heartbeat timers and a pending reconnect timer that kept running after `connection.close()`
+
+- ([#42953](https://github.com/RocketChat/Rocket.Chat/pull/42953)) Fixes `connection.connect()` never settling when the socket closes before the DDP handshake, and the process crashing on an unreachable server when the `ws` package provides `WebSocket`
+
+- ([#42953](https://github.com/RocketChat/Rocket.Chat/pull/42953)) Fixes method calls hanging forever when the connection drops before their result arrives. They now reject with `ConnectionLostError`, and calls queued behind a lost `login` are sent after the reconnection instead of staying blocked.
+
+- ([#42953](https://github.com/RocketChat/Rocket.Chat/pull/42953)) Fixes `RocketchatSdkLegacyImpl` never restoring subscriptions after a reconnection and `unsubscribeAll()` unsubscribing from nothing
+
+- ([#42953](https://github.com/RocketChat/Rocket.Chat/pull/42953)) Fixes the Livechat client ignoring a visitor token set through `credentials.token`, `onQueuePositionChange` subscribing without the visitor token, and visitor endpoints throwing synchronously instead of rejecting when there is no token
+
+- ([#42953](https://github.com/RocketChat/Rocket.Chat/pull/42953)) Fixes subscriptions stopped by the server: a `nosub` without an error no longer counts as ready, a subscription stopped after it was ready is no longer kept and resent on every reconnection, and `Subscription.onChange` now fires on every change instead of only the first
+
+- ([#42953](https://github.com/RocketChat/Rocket.Chat/pull/42953)) Fixes subscriptions restored after a reconnection being refused because they went out before the new login, and the session staying "logged in" with a token the server refused during that login. A refused token now logs the account out (`onLogout` fires) instead of surfacing as an unhandled rejection.
+
+- ([#42953](https://github.com/RocketChat/Rocket.Chat/pull/42953)) Fixes `sdk.rest` calls failing when the SDK is created with a `ws(s)://` URL, and the socket path doubling when the URL already ends with `/websocket`
+
+- ([#42953](https://github.com/RocketChat/Rocket.Chat/pull/42953)) Fixes stream callbacks firing once per listener for each event when the same stream key is listened to more than once: `sdk.stream` now shares one server subscription per stream key and unsubscribes when its last listener stops
+
+- ([#42953](https://github.com/RocketChat/Rocket.Chat/pull/42953)) Fixes the login token expiry becoming an invalid date when the client decodes EJSON, and `loginWithToken` resolving with the raw server result instead of its declared `{ id, token, tokenExpires: Date }`
+
+- ([#42953](https://github.com/RocketChat/Rocket.Chat/pull/42953)) Fixes `client.callAsync` and `client.callAsyncWithOptions` returning `any` for the methods declared in `ServerMethods`; they now resolve with the declared return type
+
+- ([#42953](https://github.com/RocketChat/Rocket.Chat/pull/42953)) Fixes the published typings depending on `@rocket.chat/ui-kit` without declaring it, and on Node.js types for a timer field
+
+- ([#42953](https://github.com/RocketChat/Rocket.Chat/pull/42953)) Fixes `account.user` taking the id and username of other users' documents the server publishes once logged in, instead of only the logged-in user's
+
+- ([#43036](https://github.com/RocketChat/Rocket.Chat/pull/43036)) Fixes UI Kit buttons in messages sending the clicker's credentials to an endpoint other than the app's interaction endpoint when their `appId` is not a valid app ID
+
+- <details><summary>Updated dependencies [4f350b4ffb76024d9bf44c02f3322c8f9071f1cf, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 12f0c0a9d48ded61bd12ba2e3dcee7b3d877e860, dd082311778ac467d36a72589bc675f1ab2b2cbe, 6bb0d3bca9b5da401050697d51bc99e89871bbb7, 6be3614cd2660ab4024635802fdf9cd7dd7b502f, 588311c49bfce08e7106e7c0bb32741334fa5321, 10b4e00e08951ace8f9c27d83fc0c48be010bdc7, a11ffff8acb74fd016e9ddb972da6eebda0c3e5e, 5e82e67eaa4c998870d3eb0597f485b30c244f02, a9b2bb76d88e4d2743e0817b15e6447e7c9c46eb, cdd948cb67ecf282f6cc8f411615c3de0db0b9f1, 6b3ec3e667c99015e381a4e8ea43146accb5f7f7, 9e401e55fbd71b95dc7c4b273024219ce2564856, a11ffff8acb74fd016e9ddb972da6eebda0c3e5e, bb69cb6c2e190cc3dffe33c3970f0e7c706d24a1, cc5554d63e7341925dd7fd5844d77bd51834b572, 2559423eb2c897c5f1fe8c968c02380009a97df9, 9a520fcd54321e154374182698c825aa09e87cc7, f3fa7abd6b9d311f76619d0fe27793ac68f6d208, daa677895dad92d6aab1e84a09f190efd2755ef9, 642d9e528a8572208e2f0bb51f45ea78400bcea3, bd92e8abc5a8f0161f3de5308979a0f88d09f351, 39a6e6e1397e1e89bc631fe4ab1cc10fa93b59e8, 61bdf0d5afb6714ea3cef087758f1d0eb3bfef45, c3e4da2025942803ddcf19f5298fe707e37bf9c4, a39b03fe5c248079365162e31994e1dece63e7c2, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, 9dfedc72439d12f5d2985b9dd54daccd97e11e74, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, 9dfedc72439d12f5d2985b9dd54daccd97e11e74, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, bb586dc723b3dccdf725d28f530b28cfa857020a, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, 23698f9d08d34d3c145f116b5303b542e8342f9e, 9dfedc72439d12f5d2985b9dd54daccd97e11e74, e1070288debfecc5e49e118c3dc535f95936281f, 9dfedc72439d12f5d2985b9dd54daccd97e11e74, 6c23db12912236374f41ae8f43ca7409b7b8b56c, 5feb08c8d83883c4142fda5d98cd1e1435d5d3b8]:</summary>
+  - @rocket.chat/core-typings@9.0.0-rc.0
+  - @rocket.chat/rest-typings@9.0.0-rc.0
+  - @rocket.chat/emitter@0.33.1-rc.0
+  - @rocket.chat/ui-kit@2.0.0-rc.0
+  - @rocket.chat/media-signaling@1.4.0-rc.0
+  - @rocket.chat/api-client@0.2.57
+
+  </details>
+
+## 1.2.0
+
+### Minor Changes
+
+- ([#41657](https://github.com/RocketChat/Rocket.Chat/pull/41657)) Gives a video conference a chat that outlives it, and a window of its own to hold both — behind a new Premium setting, **`VideoConf_Conference_Window_Enabled`**, which is **off by default**.
+
+  Nothing below happens until an administrator turns that setting on. With it off, calls behave exactly as they did before: the provider's own page opens in a tab, an incoming call is a popup over the screen, a direct call rings from the room and waits there, and no new request is made of the server. The setting is also independent of `VideoConf_Enable_Persistent_Chat`, which keeps meaning only what it always meant — a discussion or thread per call — so a workspace already running persistent chat sees no change either until the new setting is turned on.
+
+  With it on:
+
+  Joining a conference opens a dedicated call window at `/conference/:id` — the provider's call beside the conference's chat, with the people on the call in a panel of their own — instead of handing the user off to the provider's page. A preflight screen opens first: it is where the camera and microphone are chosen, where whoever started a group call can name it, and where confirming is what actually creates the call, so a call nobody confirmed leaves no message, no ring and no history behind. Closing the window reports leaving, and a call nobody is left in ends by itself.
+
+  Where a call's chat lives becomes a choice. `VideoConf_Persistent_Chat_Mode`, editable only with both the call window and persistent chat on, either puts the chat in a thread off the call's message — listed under the call's name — or leaves it in the room, with the discussion per call that persistent chat has always created. The thread is Rocket.Chat's own chat panel rather than anything the provider supplies, so it applies whoever runs the media, an iframed provider included. Turning the window off puts the answer back to the discussion whatever the mode was left at, so a workspace already running persistent chat is left exactly where it was.
+
+  Adding someone to a conference makes them a member of the **conference** rather than putting them in a room. Membership authorizes joining the call alongside room access, so a person from outside the conference's room can join without being handed the room's history — and whether they can read the chat becomes a separate question, surfaced once it matters with a choice of how to resolve it: bring them into the room, or move the chat to a discussion. `video-conference.info` reports the members who can't read it and `POST /v1/video-conference.share-chat` applies the remedy; `video-conference.add-participants` takes the call and the usernames to add, and returns the ids it added.
+
+  An incoming call is no longer a popup demanding an answer. It is the first item of a list of the calls running now — behind a navigation-bar button — where it can be accepted, turned down, or silenced and left ringing while the user finishes what they were doing. That list is also how a call is reached when its ring was missed entirely, which a one-shot ring in a room of more than ten people always is (`GET /v1/video-conference.joinable`).
+
+  Conferences appear in the personal Call History from the moment they start, as `ongoing`, settling per member into `ended` or `not-answered` when the call stops — so a call that was declined or never answered is still in the log, and still joinable from it. The room's own call list stops counting members who were added but never joined.
+
+  New endpoints: `video-conference.decline` (recorded against the caller's own membership, never ending the call for anyone else), `.leave`, `.ring` (to try someone again — a ring is one-shot, so there was previously no second attempt), `.rename` and `.share-chat`. A single `video-conference.updated` stream event tells an open call window that the conference it is showing has changed.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [3e51ba30e3d48a418adb3bfa1bd41fa69cf636e9, 17dfc71b4ad7294655e7fab9043cddbea23cb071, 38ea6ba80fd0e8d7c41a44278d54703b5d70da56, 71add68eca423511c0189f2f541b5a2c46a5e7a0, 53b519cc692587a63beaeb780e28d368ed70e94c, 7d7a5c403e175df889afe303c34b9154c4ad6d70, 2f18297792c973da326be7253f497d239ea6f2b0, 4be043d9356fd50d2e3e1b585008368f90e95505, 781a3bccc16378284afabae87abf11897c6e1013, b263243745917337314259cf987c0e989cf0cdc9, 4be043d9356fd50d2e3e1b585008368f90e95505, bab7af7e18ea2e70e2b3211904a4adfc6ae33e7c, 37faaa89ad1b4b721d6054e40a91327bd8140525]:</summary>
+  - @rocket.chat/media-signaling@1.3.0
+  - @rocket.chat/core-typings@8.9.0
+  - @rocket.chat/rest-typings@8.9.0
+  - @rocket.chat/api-client@0.2.57
+
+  </details>
+
 ## 1.2.0-rc.0
 
 ### Minor Changes

@@ -5,6 +5,7 @@ import { Users } from '@rocket.chat/models';
 
 import { scopeAdminRoomsForAbac } from '../../../../server/api/lib/scopeAdminRoomsForAbac';
 import { isABACManagedRoom } from '../../../../server/lib/authorization/isABACManagedRoom';
+import { toAbacActor } from '../../lib/abac/toAbacActor';
 
 const redact = <T extends Pick<IRoom, 't' | 'abacAttributes'>>(rooms: T[]): Array<T & IRoomAbacRedaction> =>
 	rooms.map((room) => (isABACManagedRoom(room) ? { ...room, abacAttributes: [], abacAttributesRedacted: true } : room));
@@ -21,7 +22,7 @@ scopeAdminRoomsForAbac.patch(async (next, rooms, uid) => {
 			return redact(rooms);
 		}
 
-		const scoped = await Abac.scopeRoomsForAdmin(managed, user);
+		const scoped = await Abac.scopeRoomsForAdmin(managed, toAbacActor(user));
 		const scopedById = new Map(scoped.map((room) => [room._id, room]));
 		return rooms.map((room) => scopedById.get(room._id) ?? room);
 	} catch (err) {

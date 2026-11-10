@@ -1,4 +1,4 @@
-import type { Meta, StoryFn, StoryObj } from '@storybook/react-webpack5';
+import type { Meta, StoryFn, StoryObj } from '@storybook/react';
 
 import { Button, ButtonGroup, Callout } from '../..';
 import { setStoryDescription } from '../../helpers/setStoryDescription';
@@ -115,8 +115,8 @@ export const WithActions: Story = {
 		children: 'This is a generic description.',
 		actions: (
 			<ButtonGroup>
-				<Button small>Button</Button>
-				<Button small>Button</Button>
+				<Button size='small'>Button</Button>
+				<Button size='small'>Button</Button>
 			</ButtonGroup>
 		),
 	},

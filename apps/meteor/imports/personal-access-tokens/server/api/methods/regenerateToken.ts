@@ -1,4 +1,4 @@
-import { Meteor } from 'meteor/meteor';
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
 import { isPersonalAccessToken } from '@rocket.chat/core-typings';
 
@@ -8,7 +8,7 @@ import { generatePersonalAccessTokenOfUser } from './generateToken';
 
 export const regeneratePersonalAccessTokenOfUser = async (tokenName: string, userId: string): Promise<string> => {
 	if (!(await hasPermissionAsync(userId, 'create-personal-access-tokens'))) {
-		throw new Meteor.Error('not-authorized', 'Not Authorized', {
+		throw new ClientSafeError('not-authorized', 'Not Authorized', {
 			method: 'personalAccessTokens:regenerateToken',
 		});
 	}
@@ -18,7 +18,7 @@ export const regeneratePersonalAccessTokenOfUser = async (tokenName: string, use
 		tokenName,
 	});
 	if (!tokenExist) {
-		throw new Meteor.Error('error-token-does-not-exists', 'Token does not exist', {
+		throw new ClientSafeError('error-token-does-not-exists', 'Token does not exist', {
 			method: 'personalAccessTokens:regenerateToken',
 		});
 	}

@@ -328,7 +328,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		users: string[],
 		ignoreThreads: boolean,
 		selectedMessageIds?: string[],
-	): Promise<number>;
+	): Promise<{ count: number; deletedIds: string[] }>;
 	findByIdPinnedTimestampLimitAndUsers(
 		rid: string,
 		ignorePinned: boolean,

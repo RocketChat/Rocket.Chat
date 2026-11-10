@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 
 import { invalidFile, validFile, validMessage, validSystemMessage } from '../ChatTranscript.fixtures';
 import { MessageList } from './MessageList';
@@ -13,32 +13,84 @@ jest.mock('@react-pdf/renderer', () => ({
 
 describe('components/MessageList', () => {
 	it('should render correctly', () => {
-		const { getByText } = render(<MessageList messages={[validMessage]} invalidFileMessage='' />);
-		expect(getByText(validMessage.msg)).toBeInTheDocument();
+		render(<MessageList messages={[validMessage]} invalidFileMessage='' />);
+		expect(screen.getByText(validMessage.msg)).toBeInTheDocument();
 	});
 
 	it('should render divider', () => {
-		const { getByText } = render(<MessageList messages={[{ ...validMessage, divider: 'divider' }]} invalidFileMessage='' />);
-		expect(getByText(validMessage.msg)).toBeInTheDocument();
-		expect(getByText('divider')).toBeInTheDocument();
+		render(<MessageList messages={[{ ...validMessage, divider: 'divider' }]} invalidFileMessage='' />);
+		expect(screen.getByText(validMessage.msg)).toBeInTheDocument();
+		expect(screen.getByText('divider')).toBeInTheDocument();
 	});
 
 	it('should render file', () => {
-		const { getByText } = render(<MessageList messages={[{ ...validMessage, files: [validFile] }]} invalidFileMessage='' />);
-		expect(getByText(validMessage.msg)).toBeInTheDocument();
-		expect(getByText(validFile.name)).toBeInTheDocument();
+		render(<MessageList messages={[{ ...validMessage, files: [validFile] }]} invalidFileMessage='' />);
+		expect(screen.getByText(validMessage.msg)).toBeInTheDocument();
+		expect(screen.getByText(validFile.name)).toBeInTheDocument();
 	});
 
 	it('should render invalid file message', () => {
-		const { getByText } = render(
-			<MessageList messages={[{ ...validMessage, files: [invalidFile] }]} invalidFileMessage='invalid message' />,
+		render(<MessageList messages={[{ ...validMessage, files: [invalidFile] }]} invalidFileMessage='invalid message' />);
+		expect(screen.getByText(validMessage.msg)).toBeInTheDocument();
+		expect(screen.getByText('invalid message')).toBeInTheDocument();
+	});
+
+	it('should render the raw message when its markup has content the PDF cannot draw', () => {
+		const msg = '- [ ] unsupported task';
+		render(
+			<MessageList
+				messages={[
+					{
+						...validMessage,
+						msg,
+						md: [
+							{
+								type: 'TASKS',
+								value: [{ type: 'TASK', status: false, value: [{ type: 'PLAIN_TEXT', value: 'unsupported task' }] }],
+							},
+						],
+					},
+				]}
+				invalidFileMessage=''
+			/>,
 		);
-		expect(getByText(validMessage.msg)).toBeInTheDocument();
-		expect(getByText('invalid message')).toBeInTheDocument();
+		expect(screen.getByText(msg)).toBeInTheDocument();
+	});
+
+	it('should render items nested in a list', () => {
+		render(
+			<MessageList
+				messages={[
+					{
+						...validMessage,
+						md: [
+							{
+								type: 'UNORDERED_LIST',
+								value: [
+									{
+										type: 'LIST_ITEM',
+										value: [{ type: 'PLAIN_TEXT', value: 'parent item' }],
+										nested: [
+											{
+												type: 'ORDERED_LIST',
+												value: [{ type: 'LIST_ITEM', number: 1, value: [{ type: 'PLAIN_TEXT', value: 'nested item' }] }],
+											},
+										],
+									},
+								],
+							},
+						],
+					},
+				]}
+				invalidFileMessage=''
+			/>,
+		);
+		expect(screen.getByText('parent item')).toBeInTheDocument();
+		expect(screen.getByText('nested item')).toBeInTheDocument();
 	});
 
 	it('should render valid system message', () => {
-		const { getByText } = render(<MessageList messages={[{ ...validSystemMessage, files: [] }]} invalidFileMessage='' />);
-		expect(getByText(validSystemMessage.t)).toBeInTheDocument();
+		render(<MessageList messages={[{ ...validSystemMessage, files: [] }]} invalidFileMessage='' />);
+		expect(screen.getByText(validSystemMessage.t)).toBeInTheDocument();
 	});
 });

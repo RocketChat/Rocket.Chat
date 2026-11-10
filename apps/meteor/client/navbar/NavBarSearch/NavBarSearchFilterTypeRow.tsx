@@ -1,6 +1,6 @@
 import type { DraftSearchFilter } from '@rocket.chat/ai-search';
 import { SEARCH_FILTER_KEYS, getSearchFilterConfig } from '@rocket.chat/ai-search';
-import { Box, Button, Icon } from '@rocket.chat/fuselage';
+import { Box, Button } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -26,9 +26,9 @@ const NavBarSearchFilterTypeRow = ({ draft }: NavBarSearchFilterTypeRowProps): R
 						size='small'
 						variant={isActive ? 'primary' : 'secondary'}
 						aria-pressed={isActive}
+						icon={icon}
 						onClick={() => startFilter(key)}
 					>
-						<Icon name={icon} size='x16' marginInlineEnd={4} />
 						{t(pillLabel)}
 					</Button>
 				);

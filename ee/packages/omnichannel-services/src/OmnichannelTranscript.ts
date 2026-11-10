@@ -54,7 +54,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 	) {
 		super();
 		this.worker = new PdfWorker('chat-transcript');
-		// eslint-disable-next-line new-cap
+		// oxlint-disable-next-line new-cap
 		this.log = new loggerConstructor('OmnichannelTranscript');
 
 		this.onSettingChanged('Site_Name', async ({ setting }): Promise<void> => {

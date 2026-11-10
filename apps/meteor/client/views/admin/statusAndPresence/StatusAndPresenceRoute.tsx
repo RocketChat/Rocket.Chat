@@ -1,3 +1,4 @@
+import { PageSkeleton, useHasLicenseModule } from '@rocket.chat/ui-client';
 import {
 	useIsPrivilegedSettingsContext,
 	usePermission,
@@ -30,6 +31,7 @@ const StatusAndPresenceRoute = () => {
 	const hasPrivateSettings = useIsPrivilegedSettingsContext();
 	const statusSettings = useSettings(statusSettingsQuery);
 	const canManageUserPresence = useCanManageUserStatus();
+	const { isLoading: isLicenseLoading } = useHasLicenseModule('unlimited-presence');
 
 	const settingIds = useMemo(
 		() => (hasPrivateSettings ? STATUS_SETTING_IDS.filter((id) => statusSettings.some((setting) => setting._id === id)) : []),
@@ -46,10 +48,10 @@ const StatusAndPresenceRoute = () => {
 	const currentTab = TAB_ORDER.find((name) => name === tab && allowed[name]);
 
 	useLayoutEffect(() => {
-		if (firstAllowedTab && !currentTab) {
+		if (!isLicenseLoading && firstAllowedTab && !currentTab) {
 			router.navigate({ name: 'user-status', params: { tab: firstAllowedTab } }, { replace: true });
 		}
-	}, [router, firstAllowedTab, currentTab]);
+	}, [router, isLicenseLoading, firstAllowedTab, currentTab]);
 
 	useEffect(() => {
 		if (!presenceDisabled) {
@@ -67,6 +69,10 @@ const StatusAndPresenceRoute = () => {
 			router.navigate({ name: 'user-status', params: { tab: currentTab, context: 'presence-service' } }, { replace: true });
 		}
 	}, [presenceDisabled, canManageCustomStatus, currentTab, context, router]);
+
+	if (isLicenseLoading) {
+		return <PageSkeleton />;
+	}
 
 	if (!firstAllowedTab) {
 		return <NotAuthorizedPage />;

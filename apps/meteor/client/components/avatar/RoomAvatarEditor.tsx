@@ -62,13 +62,19 @@ const RoomAvatarEditor = ({ disabled = false, room, roomAvatar, onChangeAvatar }
 				margin={12}
 			>
 				<ButtonGroup>
-					<Button icon='upload' disabled={isRoomFederated(room) || disabled} small title={t('Upload_user_avatar')} onClick={clickUpload}>
+					<Button
+						icon='upload'
+						disabled={isRoomFederated(room) || disabled}
+						size='small'
+						title={t('Upload_user_avatar')}
+						onClick={clickUpload}
+					>
 						{t('Upload')}
 					</Button>
 
 					<Button
-						small
-						danger
+						size='small'
+						variant='danger'
 						icon='trash'
 						title={t('Accounts_SetDefaultAvatar')}
 						disabled={!roomAvatar || isRoomFederated(room) || disabled}

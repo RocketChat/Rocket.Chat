@@ -1,5 +1,3 @@
-/* eslint no-multi-spaces: 0 */
-/* eslint comma-spacing: 0 */
 import { capitalize } from '@rocket.chat/tools';
 
 import { settingsRegistry } from '../../../../server/settings';

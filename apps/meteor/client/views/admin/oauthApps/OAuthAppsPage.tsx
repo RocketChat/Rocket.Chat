@@ -19,7 +19,7 @@ const OAuthAppsPage = () => {
 				<PageHeader title={t('Third_party_login')} onClickBack={context ? () => router.navigate('/admin/third-party-login') : undefined}>
 					{!context && (
 						<ButtonGroup>
-							<Button primary onClick={() => router.navigate('/admin/third-party-login/new')}>
+							<Button variant='primary' onClick={() => router.navigate('/admin/third-party-login/new')}>
 								{t('New_Application')}
 							</Button>
 						</ButtonGroup>

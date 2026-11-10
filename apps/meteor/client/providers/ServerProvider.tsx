@@ -42,19 +42,19 @@ const callEndpoint = <TMethod extends Method, TPathPattern extends PathPattern>(
 
 	switch (method) {
 		case 'GET':
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unnecessary-type-assertion
+			// oxlint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unnecessary-type-assertion
 			return sdk.rest.get(compiledPath, params as any, { signal, keepalive }) as any;
 
 		case 'POST':
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unnecessary-type-assertion
+			// oxlint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unnecessary-type-assertion
 			return sdk.rest.post(compiledPath, params as any, { signal, keepalive }) as any;
 
 		case 'PUT':
-			// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+			// oxlint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
 			return sdk.rest.put(compiledPath, params as never, { signal, keepalive }) as never;
 
 		case 'DELETE':
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unnecessary-type-assertion
+			// oxlint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unnecessary-type-assertion
 			return sdk.rest.delete(compiledPath, params as any, { signal, keepalive }) as any;
 
 		default:
