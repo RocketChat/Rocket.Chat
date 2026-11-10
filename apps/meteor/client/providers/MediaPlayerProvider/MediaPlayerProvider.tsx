@@ -79,6 +79,7 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 		}
 		if (audio.readyState === HTMLMediaElement.HAVE_NOTHING) {
 			pendingStartTimeRef.current = Math.max(0, time);
+			setCurrentTime(pendingStartTimeRef.current);
 			return;
 		}
 		audio.currentTime = Math.max(0, Math.min(time, audio.duration || time));
