@@ -210,17 +210,40 @@ describe('Team service', () => {
 	describe('unsetTeamIdOfRooms', () => {
 		const user = { _id: 'user-1', username: 'user-1', name: 'User One' };
 		const team = { _id: 'team-id', roomId: 'team-room' };
-		it('should notify every detached room, including one returned on a later call', async () => {
+		it('should detach rooms concurrently and wait for the batch before notifying', async () => {
 			const detach = Rooms.detachOneRoomFromTeam;
-			detach.onFirstCall().resolves({ _id: team.roomId });
+
+			let finishFirst: (room: { _id: string }) => void = () => undefined;
+			const firstResult = new Promise<{ _id: string }>((resolve) => {
+				finishFirst = resolve;
+			});
+
+			let markBatchStarted: () => void = () => undefined;
+			const batchStarted = new Promise<void>((resolve) => {
+				markBatchStarted = resolve;
+			});
+
+			detach.onFirstCall().returns(firstResult);
 			detach.onSecondCall().resolves({ _id: 'late-room' });
+			detach.onCall(4).callsFake(async () => {
+				markBatchStarted();
+				return null;
+			});
 
-			await service.unsetTeamIdOfRooms(user, team);
+			const conversion = service.unsetTeamIdOfRooms(user, team);
+			await batchStarted;
 
-			sinon.assert.calledThrice(detach);
+			// Five operations have started while the first is still pending.
+			expect(detach.callCount).to.equal(5);
+			sinon.assert.notCalled(notifyOnRoomChangedById);
+
+			finishFirst({ _id: team.roomId });
+			await conversion;
+
+			// A second, empty batch confirms there are no remaining rooms.
+			expect(detach.callCount).to.equal(10);
 			sinon.assert.alwaysCalledWithExactly(detach, team._id);
 			sinon.assert.calledOnceWithExactly(notifyOnRoomChangedById, [team.roomId, 'late-room'], 'updated');
-			expect(detach.thirdCall.calledBefore(notifyOnRoomChangedById.firstCall)).to.be.true;
 		});
 
 		it('should log a notification failure and allow cleanup to continue', async () => {
@@ -229,7 +252,7 @@ describe('Team service', () => {
 			notifyOnRoomChangedById.rejects(error);
 
 			await service.unsetTeamIdOfRooms(user, team);
-			sinon.assert.calledTwice(Rooms.detachOneRoomFromTeam);
+			expect(Rooms.detachOneRoomFromTeam.callCount).to.equal(10);
 			sinon.assert.alwaysCalledWithExactly(Rooms.detachOneRoomFromTeam, team._id);
 
 			sinon.assert.calledOnceWithExactly(notifyOnRoomChangedById, [team.roomId], 'updated');
@@ -249,12 +272,38 @@ describe('Team service', () => {
 			sinon.assert.notCalled(logError);
 		});
 
-		it('should notify rooms already detached when a later detach fails', async () => {
-			Rooms.detachOneRoomFromTeam.onFirstCall().resolves({ _id: team.roomId });
-			Rooms.detachOneRoomFromTeam.onSecondCall().rejects(new Error('database-update-failed'));
+		it('should notify successful detachments even when another operation in the batch fails', async () => {
+			const detach = Rooms.detachOneRoomFromTeam;
+			const error = new Error('database-update-failed');
 
-			await expect(service.unsetTeamIdOfRooms(user, team)).to.be.rejectedWith('database-update-failed');
+			let finishDetach: (room: { _id: string }) => void = () => undefined;
+			const pendingDetach = new Promise<{ _id: string }>((resolve) => {
+				finishDetach = resolve;
+			});
 
+			let markFailure: () => void = () => undefined;
+			const failureReached = new Promise<void>((resolve) => {
+				markFailure = resolve;
+			});
+
+			detach.onFirstCall().returns(pendingDetach);
+			detach.onSecondCall().callsFake(async () => {
+				markFailure();
+				throw error;
+			});
+
+			const conversion = service.unsetTeamIdOfRooms(user, team);
+			const rejection = expect(conversion).to.be.rejectedWith('database-update-failed');
+
+			await failureReached;
+			sinon.assert.notCalled(notifyOnRoomChangedById);
+
+			// This operation succeeds after another operation has failed.
+			finishDetach({ _id: team.roomId });
+			await rejection;
+
+			expect(detach.callCount).to.equal(5);
+			sinon.assert.alwaysCalledWithExactly(detach, team._id);
 			sinon.assert.calledOnceWithExactly(notifyOnRoomChangedById, [team.roomId], 'updated');
 		});
 
@@ -264,7 +313,8 @@ describe('Team service', () => {
 			await service.unsetTeamIdOfRooms(user, team);
 
 			expect(Message.saveSystemMessage.calledOnceWith('user-converted-to-channel', 'team-room', 'team-room-name', user)).to.be.true;
-			sinon.assert.calledOnceWithExactly(Rooms.detachOneRoomFromTeam, team._id);
+			expect(Rooms.detachOneRoomFromTeam.callCount).to.equal(5);
+			sinon.assert.alwaysCalledWithExactly(Rooms.detachOneRoomFromTeam, team._id);
 		});
 
 		it('should move the remaining rooms back to the workspace when the main room no longer exists', async () => {
@@ -273,7 +323,8 @@ describe('Team service', () => {
 			await service.unsetTeamIdOfRooms(user, team);
 
 			expect(Message.saveSystemMessage.called).to.be.false;
-			sinon.assert.calledOnceWithExactly(Rooms.detachOneRoomFromTeam, team._id);
+			expect(Rooms.detachOneRoomFromTeam.callCount).to.equal(5);
+			sinon.assert.alwaysCalledWithExactly(Rooms.detachOneRoomFromTeam, team._id);
 		});
 	});
 });

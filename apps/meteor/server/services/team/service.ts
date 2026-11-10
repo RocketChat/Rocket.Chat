@@ -471,7 +471,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		};
 	}
 
-		async unsetTeamIdOfRooms(user: AtLeast<IUser, '_id' | 'username' | 'name'>, team: AtLeast<ITeam, '_id' | 'roomId'>): Promise<void> {
+	async unsetTeamIdOfRooms(user: AtLeast<IUser, '_id' | 'username' | 'name'>, team: AtLeast<ITeam, '_id' | 'roomId'>): Promise<void> {
 		if (!team) {
 			throw new Error('invalid-team');
 		}
@@ -488,10 +488,28 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		const detachedRoomIds: IRoom['_id'][] = [];
 
 		try {
-			let detachedRoom = await Rooms.detachOneRoomFromTeam(team._id);
-			while (detachedRoom) {
-				detachedRoomIds.push(detachedRoom._id);
-				detachedRoom = await Rooms.detachOneRoomFromTeam(team._id);
+			const concurrency = 5;
+
+			while (true) {
+				const results = await Promise.allSettled(Array.from({ length: concurrency }, () => Rooms.detachOneRoomFromTeam(team._id)));
+
+				let detachedAny = false;
+
+				for (const result of results) {
+					if (result.status === 'fulfilled' && result.value) {
+						detachedRoomIds.push(result.value._id);
+						detachedAny = true;
+					}
+				}
+
+				const failure = results.find((result) => result.status === 'rejected');
+				if (failure?.status === 'rejected') {
+					throw failure.reason;
+				}
+
+				if (!detachedAny) {
+					break;
+				}
 			}
 		} finally {
 			if (detachedRoomIds.length > 0) {
