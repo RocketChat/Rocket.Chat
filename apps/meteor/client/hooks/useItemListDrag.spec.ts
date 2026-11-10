@@ -96,6 +96,30 @@ describe('useItemListDrag', () => {
 		expect(document.activeElement).toBe(rows[0]);
 	});
 
+	it('ignores the shortcut while a move is still saving', async () => {
+		const { list, rows } = createList();
+		let save: (message?: string) => void = () => undefined;
+		const onMove = jest.fn(
+			() =>
+				new Promise<string | undefined>((resolve) => {
+					save = resolve;
+				}),
+		);
+
+		const { result } = renderHook(() => useItemListDrag({ resolveTarget: () => undefined, onDrop: jest.fn(), onMove }));
+		attachDrag(result.current.ref, list);
+
+		rows[0].focus();
+		fireEvent.keyDown(rows[0], { key: 'ArrowDown', metaKey: true, shiftKey: true });
+		fireEvent.keyDown(rows[0], { key: 'ArrowUp', metaKey: true, shiftKey: true });
+		expect(onMove).toHaveBeenCalledTimes(1);
+
+		await act(async () => save());
+		fireEvent.keyDown(rows[0], { key: 'ArrowUp', metaKey: true, shiftKey: true });
+		expect(onMove).toHaveBeenCalledTimes(2);
+		expect(onMove).toHaveBeenLastCalledWith({ key: 'Projects', kind: 'group', group: 'Projects' }, 'up');
+	});
+
 	it('leaves the plain arrows to the list navigation', () => {
 		const { list, rows } = createList();
 		const onMove = jest.fn();

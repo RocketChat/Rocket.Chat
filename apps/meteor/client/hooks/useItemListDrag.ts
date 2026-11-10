@@ -175,6 +175,7 @@ export const useItemListDrag = ({
 			const preventNativeDrag = (event: DragEvent) => event.preventDefault();
 
 			let cancelActiveDrag: (() => void) | undefined;
+			let isMoving = false;
 
 			const handlePointerDown = (event: PointerEvent) => {
 				if (event.button !== 0) {
@@ -472,13 +473,21 @@ export const useItemListDrag = ({
 				event.preventDefault();
 				event.stopPropagation();
 
+				// Each move starts from the order the previous one saved, so presses made while one is saving are dropped.
+				if (isMoving) {
+					return;
+				}
+
 				const focused = event.target;
 				const sourceTop = sourceElement.getBoundingClientRect().top;
 				let message: string | undefined;
+				isMoving = true;
 				try {
 					message = await stableOnMove(dragSource, event.key === 'ArrowUp' ? 'up' : 'down');
 				} catch {
 					message = undefined;
+				} finally {
+					isMoving = false;
 				}
 
 				// Reordering detaches or remounts the row, which drops its focus; give it back to the same control once it lands.
