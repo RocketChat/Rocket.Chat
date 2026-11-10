@@ -25,7 +25,7 @@ const callCount = (handler: Spy) => (handler as any).mock.calls.length as number
  */
 export const expectForwards = async (canvas: HTMLElement, part: string | HTMLElement, expected: Forwarded) => {
 	const element = typeof part === 'string' ? canvas.querySelector<HTMLElement>(part) : part;
-	if (!element) throw new Error(`No element matches ${String(part)}`);
+	if (!element) throw new Error(`No element matches ${typeof part === 'string' ? part : 'the given element'}`);
 
 	for (const name of ATTRIBUTES) {
 		if (expected[name] !== undefined) {
