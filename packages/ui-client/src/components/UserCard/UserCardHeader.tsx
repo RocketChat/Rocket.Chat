@@ -25,7 +25,7 @@ const UserCardHeader = ({ avatar, name, status, nickname, subtitle }: UserCardHe
 					)}
 				</Box>
 			</ItemTitle>
-			{subtitle && <ItemDescription>{subtitle}</ItemDescription>}
+			{subtitle && <ItemDescription size='large'>{subtitle}</ItemDescription>}
 		</ItemContent>
 	</Item>
 );
