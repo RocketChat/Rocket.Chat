@@ -67,24 +67,30 @@ const uploadToEndpoint = (endpoint: PathFor<'POST'>, formData: any): Promise<Upl
 const getStream: ServerContextValue['getStream'] = (streamName, _options) => (eventName, callback, options) => {
 	const subscription = sdk.stream(streamName, [eventName], callback);
 	let stopped = false;
+	let failed = false;
+
+	const handleError = (error: unknown) => {
+		if (stopped || failed) {
+			return;
+		}
+
+		failed = true;
+		options?.onError?.(error);
+	};
+
+	const removeStopListener = options?.onReady || options?.onError ? subscription.onStop(handleError) : undefined;
 
 	if (options?.onReady || options?.onError) {
-		void subscription.ready().then(
-			() => {
-				if (!stopped) {
-					options.onReady?.();
-				}
-			},
-			(error: unknown) => {
-				if (!stopped) {
-					options.onError?.(error);
-				}
-			},
-		);
+		void subscription.ready().then(() => {
+			if (!stopped && !failed) {
+				options.onReady?.();
+			}
+		}, handleError);
 	}
 
 	return () => {
 		stopped = true;
+		removeStopListener?.();
 		subscription.stop();
 	};
 };

@@ -1,5 +1,5 @@
 import { mockAppRoot, type StreamControllerRef } from '@rocket.chat/mock-providers';
-import { LayoutContext } from '@rocket.chat/ui-contexts';
+import { LayoutContext, useStream } from '@rocket.chat/ui-contexts';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { createElement, useContext, type ReactNode } from 'react';
 
@@ -298,4 +298,55 @@ describe('useOpenRoom', () => {
 			expect(getRoomByTypeAndName).toHaveBeenCalledTimes(2);
 		});
 	});
+});
+it('retains stream readiness until the last subscriber leaves', async () => {
+	const rid = 'shared-preview-room';
+	const streamRef: StreamControllerRef<'room-data'> = {};
+	const { result, unmount } = renderHook(() => useStream('room-data'), {
+		wrapper: mockAppRoot().withStream('room-data', streamRef).build(),
+	});
+
+	const { controller } = streamRef;
+	if (!controller) {
+		throw new Error('Expected room-data stream controller');
+	}
+
+	const firstReady = jest.fn();
+	const stopFirst = result.current(rid, jest.fn(), { onReady: firstReady });
+
+	await act(async () => {
+		controller.ready(rid);
+	});
+	expect(firstReady).toHaveBeenCalledTimes(1);
+
+	const secondReady = jest.fn();
+	const stopSecond = result.current(rid, jest.fn(), { onReady: secondReady });
+
+	expect(secondReady).not.toHaveBeenCalled();
+	await act(async () => {
+		await Promise.resolve();
+	});
+	expect(secondReady).toHaveBeenCalledTimes(1);
+	expect(firstReady).toHaveBeenCalledTimes(1);
+
+	stopFirst();
+	expect(controller.has(rid)).toBe(true);
+	stopSecond();
+	expect(controller.has(rid)).toBe(false);
+
+	const thirdReady = jest.fn();
+	const stopThird = result.current(rid, jest.fn(), { onReady: thirdReady });
+
+	await act(async () => {
+		await Promise.resolve();
+	});
+	expect(thirdReady).not.toHaveBeenCalled();
+
+	await act(async () => {
+		controller.ready(rid);
+	});
+	expect(thirdReady).toHaveBeenCalledTimes(1);
+
+	stopThird();
+	unmount();
 });

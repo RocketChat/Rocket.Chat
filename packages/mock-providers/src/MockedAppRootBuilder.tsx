@@ -355,6 +355,15 @@ export class MockedAppRootBuilder {
 			onError?: (error: unknown) => void;
 		};
 		const listeners = new Map<string, Set<LifecycleCallbacks>>();
+		const readyEvents = new Set<string>();
+
+		const notifyReady = (key: string, callbacks: LifecycleCallbacks) => {
+			void Promise.resolve().then(() => {
+				if (readyEvents.has(key) && listeners.get(key)?.has(callbacks)) {
+					callbacks.onReady?.();
+				}
+			});
+		};
 
 		const outerFn: ServerContextValue['getStream'] = (innerStreamName) => {
 			if (innerStreamName === String(streamName)) {
@@ -364,10 +373,17 @@ export class MockedAppRootBuilder {
 					},
 					has: (eventName: string) => this.events.has(`stream-${innerStreamName}-${eventName}` as AllStreamerEventKeys),
 					ready: (eventName) => {
-						listeners.get(eventName)?.forEach((callbacks) => callbacks.onReady?.());
+						const key = String(eventName);
+						if (readyEvents.has(key)) {
+							return;
+						}
+						readyEvents.add(key);
+						listeners.get(key)?.forEach((callbacks) => notifyReady(key, callbacks));
 					},
 					fail: (eventName, error) => {
-						listeners.get(eventName)?.forEach((callbacks) => callbacks.onError?.(error));
+						const key = String(eventName);
+						readyEvents.delete(key);
+						listeners.get(key)?.forEach((callbacks) => callbacks.onError?.(error));
 					},
 				};
 
@@ -381,6 +397,10 @@ export class MockedAppRootBuilder {
 					}
 					subscriptions.add(callbacks);
 
+					if (readyEvents.has(key)) {
+						notifyReady(key, callbacks);
+					}
+
 					const unsubscribe = this.events.on(`stream-${innerStreamName}-${eventName}` as AllStreamerEventKeys, callback);
 
 					return () => {
@@ -388,6 +408,7 @@ export class MockedAppRootBuilder {
 						subscriptions.delete(callbacks);
 						if (subscriptions.size === 0) {
 							listeners.delete(key);
+							readyEvents.delete(key);
 						}
 					};
 				};

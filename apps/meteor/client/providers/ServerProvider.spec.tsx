@@ -219,3 +219,53 @@ it.each(['ready', 'error'] as const)('ignores a late %s acknowledgement after un
 	expect(onError).not.toHaveBeenCalled();
 	unmount();
 });
+it('reports a server stop after readiness and removes the stop listener on cleanup', async () => {
+	let serverStop: (error: unknown) => void = () => undefined;
+	const removeStopListener = jest.fn();
+	const stop = jest.fn();
+
+	jest.mocked(sdk.stream).mockReturnValueOnce({
+		id: 'later-stopped-subscription',
+		name: 'stream-room-data',
+		params: ['preview-room'],
+		isReady: true,
+		ready: jest.fn(() => Promise.resolve()),
+		stop,
+		onChange: jest.fn(),
+		onStop: jest.fn((listener: (error: unknown) => void) => {
+			serverStop = listener;
+			return removeStopListener;
+		}),
+	});
+
+	const onReady = jest.fn();
+	const onError = jest.fn();
+	const { result, unmount } = renderHook(() => useStream('room-data'), {
+		wrapper: ServerProvider,
+	});
+
+	const unsubscribe = result.current('preview-room', jest.fn(), {
+		onReady,
+		onError,
+	});
+
+	await act(async () => {
+		await Promise.resolve();
+	});
+
+	expect(onReady).toHaveBeenCalledTimes(1);
+	expect(onError).not.toHaveBeenCalled();
+
+	const error = new Error('Subscription stopped by server');
+	act(() => {
+		serverStop(error);
+	});
+
+	expect(onError).toHaveBeenCalledTimes(1);
+	expect(onError).toHaveBeenCalledWith(error);
+
+	unsubscribe();
+	expect(removeStopListener).toHaveBeenCalledTimes(1);
+	expect(stop).toHaveBeenCalledTimes(1);
+	unmount();
+});
