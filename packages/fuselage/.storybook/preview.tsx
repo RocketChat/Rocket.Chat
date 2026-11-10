@@ -50,8 +50,13 @@ export default {
 	loaders: [() => Promise.all([...document.fonts].map((font) => font.load()))],
 	decorators: [
 		function PaletteDecorator(Story, { globals }) {
+			// Only the rtl global touches `dir`, so a story that sets its own direction keeps it
 			useLayoutEffect(() => {
-				document.documentElement.dir = globals.direction === 'rtl' ? 'rtl' : 'ltr';
+				if (globals.direction !== 'rtl') {
+					return;
+				}
+				document.documentElement.dir = 'rtl';
+				return () => document.documentElement.removeAttribute('dir');
 			}, [globals.direction]);
 
 			const mode = useSyncExternalStore(subscribeToSystemColorScheme, () => resolveThemeMode(globals.theme));
