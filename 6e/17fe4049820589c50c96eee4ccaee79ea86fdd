@@ -1,0 +1,13 @@
+packages/ui-contexts/src/RoomToolboxContext.ts
+  ai_agent 16
+apps/meteor/client/views/room/Header/RoomToolbox/hooks/useRoomToolboxActions.spec.tsx
+  ai_agent 310-336
+apps/meteor/client/views/room/Header/RoomToolbox/hooks/useRoomToolboxActions.ts
+  ai_agent 23-25,33,111
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "6e17fe4049820589c50c96eee4ccaee79ea86fdd",
+  "prompts": {}
+}
