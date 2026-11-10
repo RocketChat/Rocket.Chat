@@ -1826,7 +1826,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	}
 
 	decreaseReplyCountById(_id: string, inc = -1): Promise<IMessage | null> {
-		const query = { _id };
+		const query: Filter<IMessage> = { _id, tcount: { $gt: 0 } };
 		const update: UpdateFilter<IMessage> = {
 			$inc: {
 				tcount: inc,
