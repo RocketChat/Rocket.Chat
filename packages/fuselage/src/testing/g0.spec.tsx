@@ -32,6 +32,16 @@ describe('expectForwards', () => {
 		await expectForwards(container, 'button', { 'className': 'mine', 'id': 'a', 'data-qa': 'qa', ref, 'handlers': { onClick } });
 	});
 
+	it('fires the events React derives focus and hover props from', async () => {
+		const [onFocus, onBlur, onMouseEnter, onMouseLeave] = [fn(), fn(), fn(), fn()];
+		const { container } = render(
+			<button onFocus={onFocus} onBlur={onBlur} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
+				x
+			</button>,
+		);
+		await expectForwards(container, 'button', { handlers: { onFocus, onBlur, onMouseEnter, onMouseLeave } });
+	});
+
 	it('fails when the class comes before an rcx class', async () => {
 		const { container } = setup('mine rcx-box');
 		await expect(expectForwards(container, 'button', { className: 'mine' })).rejects.toThrow();
@@ -58,6 +68,31 @@ describe('ariaSnapshot and classContract', () => {
 			</div>,
 		);
 		expect(ariaSnapshot(container)).toBe('- button "Save" [disabled]\n- checkbox "Agree" [checked]');
+	});
+
+	it('models heading levels, content names, presentational roles and inputs', () => {
+		const { container } = render(
+			<div>
+				<h2>
+					Title <span>3</span>
+				</h2>
+				<ul>
+					<li role='presentation'>plain</li>
+				</ul>
+				<input type='hidden' />
+				<input type='number' aria-label='Qty' />
+				<select multiple aria-label='Tags'>
+					<option>a</option>
+				</select>
+				<div style={{ display: 'none' }}>
+					<button>gone</button>
+				</div>
+				<button style={{ visibility: 'hidden' }}>invisible</button>
+			</div>,
+		);
+		expect(ariaSnapshot(container)).toBe(
+			['- heading "Title 3" [level=2]', '- list:', '  - text: "plain"', '- spinbutton "Qty"', '- listbox "Tags":', '  - option "a"'].join('\n'),
+		);
 	});
 
 	it('lists the rcx classes per element path without generated classes', () => {
@@ -119,6 +154,33 @@ describe('keyboard helpers', () => {
 		};
 		const { container, getByText } = render(<Rows />);
 		await expectCompositeList(container.querySelector('ul') as HTMLElement, getByText('row 0'));
+	});
+
+	it('finds the rows of a list that uses Fuselage item classes', async () => {
+		const Rows = () => {
+			const [active, setActive] = useState(0);
+			return (
+				<>
+					<div
+						onKeyDown={(event) => {
+							if (event.key === 'ArrowDown') setActive(1);
+							if (event.key === 'ArrowUp') setActive(0);
+						}}
+					>
+						{[0, 1].map((index) => (
+							<div key={index} className='rcx-item'>
+								<a href='#' tabIndex={active === index ? 0 : -1} ref={(el) => void (active === index && el?.focus())}>
+									row {index}
+								</a>
+							</div>
+						))}
+					</div>
+					<button>after</button>
+				</>
+			);
+		};
+		const { container, getByText } = render(<Rows />);
+		await expectCompositeList(container.firstElementChild as HTMLElement, getByText('row 0'));
 	});
 
 	it('checks a combobox that moves aria-activedescendant', async () => {
