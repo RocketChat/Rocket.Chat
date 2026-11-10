@@ -36,7 +36,7 @@ jobs:
       - name: Detect client changes
         id: changes
         run: |
-          if git diff --quiet HEAD^1 HEAD -- packages/fuselage apps/meteor/client apps/meteor/vite; then
+          if git diff --quiet HEAD^1 HEAD -- packages apps/meteor/client apps/meteor/vite apps/meteor/package.json yarn.lock .yarn/patches; then
             echo "affected=false" >> "$GITHUB_OUTPUT"
           else
             echo "affected=true" >> "$GITHUB_OUTPUT"

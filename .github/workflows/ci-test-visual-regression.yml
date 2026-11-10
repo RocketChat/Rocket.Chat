@@ -88,9 +88,9 @@ jobs:
     # from the previous compiler.
     #
     # The `visual-change-approved` label means the pull request changes pixels on purpose: the legs still run and
-    # report their diffs, but don't fail the check, and `update-baselines` produces the new baselines. CI only
-    # re-evaluates the label on the next push or re-run: adding it doesn't start a run.
-    continue-on-error: ${{ contains(github.event.pull_request.labels.*.name, 'visual-change-approved') }}
+    # report their diffs, but only the pixel comparison is tolerated (a broken build or a failing g0 spec still fails
+    # the leg), and `update-baselines` produces the new baselines. A re-run reuses the original event payload, so the
+    # label is only seen by a run a new push starts: adding it doesn't start one.
     strategy:
       fail-fast: false
       matrix:
@@ -130,18 +130,20 @@ jobs:
           FUSELAGE_ZERO_RUNTIME: ${{ matrix.zero-runtime }}
 
       - name: Run visual regression tests
+        id: visual
+        continue-on-error: ${{ contains(github.event.pull_request.labels.*.name, 'visual-change-approved') }}
         run: yarn workspace @rocket.chat/fuselage run visual-regression
 
       - uses: ./.github/actions/setup-playwright
-        if: matrix.zero-runtime == '1'
+        if: ${{ !cancelled() && matrix.zero-runtime == '1' }}
 
       - name: Run the g0 characterization specs against the zero-runtime Storybook
-        if: matrix.zero-runtime == '1'
+        if: ${{ !cancelled() && matrix.zero-runtime == '1' }}
         run: yarn workspace @rocket.chat/fuselage run test:stories storybook-static
 
       - name: Upload visual regression results
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        if: failure()
+        if: ${{ failure() || steps.visual.outcome == 'failure' }}
         with:
           name: ${{ matrix.artifact }}-${{ github.event.number || github.run_id }}
           path: packages/fuselage/test-results
