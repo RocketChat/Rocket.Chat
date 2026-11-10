@@ -3,13 +3,15 @@ import { links } from '@rocket.chat/ui-client';
 import type { ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useHomeCardClassName } from './useHomeCardClassName';
 import { GenericCard, GenericCardButton } from '../../../components/GenericCard';
 import { useExternalLink } from '../../../hooks/useExternalLink';
 
 const GOOGLE_PLAY_URL = links.go.mobileAppGoogle;
 const APP_STORE_URL = links.go.mobileAppApple;
 
-const MobileAppsCard = (props: Omit<ComponentProps<typeof Card>, 'type'>) => {
+const MobileAppsCard = ({ className, ...props }: Omit<ComponentProps<typeof Card>, 'type'>) => {
+	const homeCardClassName = useHomeCardClassName(className);
 	const { t } = useTranslation();
 	const handleOpenLink = useExternalLink();
 
@@ -25,7 +27,7 @@ const MobileAppsCard = (props: Omit<ComponentProps<typeof Card>, 'type'>) => {
 					{t('App_Store')}
 				</GenericCardButton>,
 			]}
-			width='x340'
+			className={homeCardClassName}
 			{...props}
 		/>
 	);

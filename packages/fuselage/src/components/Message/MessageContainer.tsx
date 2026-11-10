@@ -1,6 +1,6 @@
 import ItemContent, { type ItemContentProps } from '../Item/ItemContent';
 
-export type MessageContainerProps = Omit<ItemContentProps, 'is'>;
+export type MessageContainerProps = ItemContentProps;
 
 const MessageContainer = (props: MessageContainerProps) => <ItemContent {...props} />;
 

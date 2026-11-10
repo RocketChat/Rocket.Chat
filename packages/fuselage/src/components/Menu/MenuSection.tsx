@@ -28,11 +28,15 @@ function MenuSection<T extends object>({ section, state, rootMenuTriggerState, p
 	// If the section is not the first, add a separator element.
 	return (
 		<>
-			{section.key !== state.collection.getFirstKey() && <ItemDivider {...separatorProps} />}
+			{section.key !== state.collection.getFirstKey() && (
+				<ItemDivider role={separatorProps.role} aria-orientation={separatorProps['aria-orientation']} />
+			)}
 			<div {...itemProps}>
 				{section.rendered && (
 					<ItemGroupHeader inset='md'>
-						<ItemGroupTitle {...headingProps}>{section.rendered}</ItemGroupTitle>
+						<ItemGroupTitle id={headingProps.id} role={headingProps.role}>
+							{section.rendered}
+						</ItemGroupTitle>
 					</ItemGroupHeader>
 				)}
 				<div {...groupProps}>

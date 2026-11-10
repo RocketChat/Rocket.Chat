@@ -1,4 +1,5 @@
-import { Pagination, States, StatesActions, StatesAction, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
+import { css } from '@rocket.chat/css-in-js';
+import { Pagination, States, StatesActions, StatesAction, StatesIcon, StatesTitle, useStyle } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { escapeRegExp } from '@rocket.chat/tools';
 import {
@@ -18,11 +19,16 @@ import { useMemo, useCallback, useState } from 'react';
 import IntegrationRow from './IntegrationRow';
 import FilterByText from '../../../components/FilterByText';
 
+const nameColumn = css`
+	width: 17.5rem;
+`;
+
 export type IntegrationsTableProps = { type?: string };
 
 const IntegrationsTable = ({ type }: IntegrationsTableProps) => {
 	const t = useTranslation();
 	const { isMobile } = useLayout();
+	const nameColumnClassName = useStyle(nameColumn);
 
 	const [text, setText] = useState('');
 	const router = useRoute('admin-integrations');
@@ -78,7 +84,7 @@ const IntegrationsTable = ({ type }: IntegrationsTableProps) => {
 				active={sortBy === 'name'}
 				onClick={setSort}
 				sort='name'
-				{...(!isMobile && { width: 'x280' })}
+				className={isMobile ? undefined : nameColumnClassName}
 			>
 				{t('Name')}
 			</GenericTableHeaderCell>

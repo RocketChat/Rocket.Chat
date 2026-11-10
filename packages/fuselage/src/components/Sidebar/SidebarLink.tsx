@@ -1,18 +1,18 @@
 import type { Keys as Icons } from '@rocket.chat/icons';
-import type { AnchorHTMLAttributes, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 import { appendClassName } from '../../helpers/appendClassName';
 import { cx } from '../../helpers/composeClassNames';
 import { patchChildren } from '../../helpers/patchChildren';
 import { Icon } from '../Icon';
-import { Item, ItemActions, ItemIcon, ItemTitle } from '../Item';
+import { Item, ItemActions, ItemIcon, ItemTitle, type ItemProps } from '../Item';
 
 export type SidebarLinkProps = {
 	selected?: boolean;
 	icon?: Icons;
 	badge?: ReactNode;
 	menu?: ReactNode;
-} & Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'is'>;
+} & Omit<ItemProps, 'is' | 'inset' | 'variant' | 'disabled' | 'multiline' | 'interactive'>;
 
 const SidebarLink = ({ selected, icon, badge, menu, className, children, ...props }: SidebarLinkProps) => (
 	<Item

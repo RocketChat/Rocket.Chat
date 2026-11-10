@@ -2,9 +2,11 @@ import type { Card } from '@rocket.chat/fuselage';
 import { useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 
+import { useHomeCardClassName } from './useHomeCardClassName';
 import { GenericCard, GenericCardButton } from '../../../components/GenericCard';
 
-const AddUsersCard = (props: Omit<ComponentProps<typeof Card>, 'type'>) => {
+const AddUsersCard = ({ className, ...props }: Omit<ComponentProps<typeof Card>, 'type'>) => {
+	const homeCardClassName = useHomeCardClassName(className);
 	const t = useTranslation();
 
 	const router = useRouter();
@@ -21,7 +23,7 @@ const AddUsersCard = (props: Omit<ComponentProps<typeof Card>, 'type'>) => {
 					{t('Add_users')}
 				</GenericCardButton>,
 			]}
-			width='x340'
+			className={homeCardClassName}
 			{...props}
 		/>
 	);

@@ -1,53 +1,40 @@
-import type { ReactNode, MouseEvent, AllHTMLAttributes, ElementType, RefAttributes } from 'react';
+import type { ReactNode, MouseEvent } from 'react';
 import { memo } from 'react';
 
 import { cx, cxx } from '../../helpers/composeClassNames';
 import { prevent } from '../../helpers/prevent';
-import { useArrayLikeClassNameProp } from '../../hooks/useArrayLikeClassNameProp';
 import { Icon, type IconProps } from '../Icon';
-import { Item, ItemContent, ItemIcon, ItemMedia, ItemTitle } from '../Item';
+import { Item, ItemContent, ItemIcon, ItemMedia, ItemTitle, type ItemProps } from '../Item';
 
-export type OptionProps<TLabel = ReactNode> = RefAttributes<HTMLElement> & {
-	is?: ElementType;
-	id?: string;
+export type OptionProps<TLabel = ReactNode> = Omit<
+	ItemProps,
+	| 'is'
+	| 'children'
+	| 'inset'
+	| 'focused'
+	| 'highlighted'
+	| 'multiline'
+	| 'interactive'
+	| 'variant'
+	| 'onClick'
+	| 'href'
+	| 'target'
+	| 'rel'
+	| 'download'
+> & {
+	is?: 'li' | 'div';
 	children?: ReactNode;
 	label?: TLabel;
 	focus?: boolean;
-	/** Shows the focus ring on the option when a script moves focus to it, such as a combobox's active descendant. */
-	focusVisible?: boolean;
-	selected?: boolean;
-	className?: string;
 	icon?: IconProps['name'];
 	/** Names what the `icon` conveys, such as "Federated". Without it, the icon is decorative. */
 	iconLabel?: string;
 	gap?: boolean;
 	avatar?: ReactNode;
-	title?: string;
-	disabled?: boolean;
-	value?: string | number;
 	variant?: 'danger' | 'success' | 'warning' | 'primary';
 	onClick?: (event: MouseEvent<HTMLElement>) => void;
 	description?: ReactNode;
-} & Omit<
-		AllHTMLAttributes<HTMLElement>,
-		| 'is'
-		| 'id'
-		| 'children'
-		| 'label'
-		| 'focusVisible'
-		| 'selected'
-		| 'className'
-		| 'ref'
-		| 'icon'
-		| 'gap'
-		| 'avatar'
-		| 'title'
-		| 'disabled'
-		| 'value'
-		| 'variant'
-		| 'onClick'
-		| 'description'
-	>;
+};
 
 /**
  * The generic `Option` item of options. Can be freely used or inside the `Options` as well.
@@ -73,10 +60,6 @@ function Option<TLabel = ReactNode>({
 	description,
 	...props
 }: OptionProps<TLabel>) {
-	const { className: normalizedClassName } = useArrayLikeClassNameProp({
-		className,
-	});
-
 	return (
 		<Item
 			{...props}
@@ -102,7 +85,7 @@ function Option<TLabel = ReactNode>({
 					},
 					variant,
 				),
-				normalizedClassName,
+				className,
 			)}
 		>
 			{avatar && <ItemMedia className='rcx-option__avatar'>{avatar}</ItemMedia>}

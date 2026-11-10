@@ -1,6 +1,7 @@
 import { composeStories } from '@storybook/react';
-import { screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 import { axe } from 'jest-axe';
+import { createRef } from 'react';
 
 import Button from './Button';
 import * as stories from './Button.stories';
@@ -50,5 +51,50 @@ describe('[Button Component]', () => {
 			</Button>,
 		);
 		expect(screen.getByRole('link', { name: 'Go' })).not.toHaveAttribute('type');
+	});
+
+	it('should keep the handlers of a disabled button', () => {
+		const onBlur = jest.fn();
+		const onFocus = jest.fn();
+		render(
+			<Button disabled onFocus={onFocus} onBlur={onBlur}>
+				Save
+			</Button>,
+		);
+		const button = screen.getByRole('button', { name: 'Save' });
+
+		expect(button).toBeDisabled();
+		fireEvent.focus(button);
+		fireEvent.blur(button);
+		expect(onFocus).toHaveBeenCalledTimes(1);
+		expect(onBlur).toHaveBeenCalledTimes(1);
+	});
+
+	it('should keep onTouchStart next to a press handler', () => {
+		const onTouchStart = jest.fn();
+		render(
+			<Button onClick={() => undefined} onTouchStart={onTouchStart}>
+				Save
+			</Button>,
+		);
+
+		fireEvent.touchStart(screen.getByRole('button', { name: 'Save' }));
+		expect(onTouchStart).toHaveBeenCalledTimes(1);
+	});
+
+	it('should forward the aria and data attributes it does not declare', () => {
+		const ref = createRef<HTMLButtonElement>();
+		render(
+			<Button ref={ref} className='custom' id='save' data-tooltip='Save it' aria-keyshortcuts='Control+S'>
+				Save
+			</Button>,
+		);
+		const button = screen.getByRole('button', { name: 'Save' });
+
+		expect(button).toHaveAttribute('data-tooltip', 'Save it');
+		expect(button).toHaveAttribute('aria-keyshortcuts', 'Control+S');
+		expect(button).toHaveAttribute('id', 'save');
+		expect(button).toHaveClass('rcx-button', 'custom');
+		expect(ref.current).toBe(button);
 	});
 });

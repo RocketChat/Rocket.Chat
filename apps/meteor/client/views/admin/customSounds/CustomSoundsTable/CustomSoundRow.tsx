@@ -38,7 +38,7 @@ const CustomSoundRow = ({ onClick, sound }: CustomSoundRowProps) => {
 			tabIndex={0}
 			role='link'
 			action
-			qa-emoji-id={sound._id}
+			data-qa-emoji-id={sound._id}
 		>
 			<GenericTableCell>
 				<Text truncate>{sound.name}</Text>

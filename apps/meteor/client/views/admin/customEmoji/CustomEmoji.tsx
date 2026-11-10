@@ -111,7 +111,7 @@ const CustomEmoji = ({ onClick, reload }: CustomEmojiProps) => {
 										tabIndex={0}
 										role='link'
 										action
-										qa-emoji-id={emojis._id}
+										data-qa-emoji-id={emojis._id}
 									>
 										<GenericTableCell color='default'>
 											<Text truncate>{emojis.name}</Text>

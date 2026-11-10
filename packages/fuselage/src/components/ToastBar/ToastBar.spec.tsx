@@ -1,4 +1,5 @@
 import { composeStories } from '@storybook/react';
+import { fireEvent, screen } from '@testing-library/react';
 import { axe } from 'jest-axe';
 
 import ToastBar from './ToastBar';
@@ -46,5 +47,19 @@ describe('[ToastBar id]', () => {
 	it('renders the id it receives on the root', () => {
 		const { container } = render(<ToastBar id='toast-1'>Message</ToastBar>);
 		expect(container.querySelector('#toast-1.rcx-toastbar')).toBeInTheDocument();
+	});
+});
+
+describe('[ToastBar onClose]', () => {
+	it('calls onClose with the toast id when dismissed', () => {
+		const onClose = jest.fn();
+		render(
+			<ToastBar id='toast-1' onClose={onClose}>
+				Saved
+			</ToastBar>,
+		);
+
+		fireEvent.click(screen.getByRole('button', { name: 'Dismiss alert' }));
+		expect(onClose).toHaveBeenCalledWith('toast-1');
 	});
 });

@@ -2,16 +2,19 @@ import { useStableCallback, useResizeObserver } from '@rocket.chat/fuselage-hook
 import { type ElementType, useState, useRef } from 'react';
 
 import type { OptionType, SelectOption, SelectProps } from '..';
+import { ariaAndDataAttributes } from '../../helpers/ariaAndDataAttributes';
 import { prevent } from '../../helpers/prevent';
 import { AnimatedVisibility } from '../AnimatedVisibility';
-import { Box } from '../Box';
 import { Icon } from '../Icon';
 import { Option } from '../Option';
 import { useVisible } from '../Options/useVisible';
 import { OptionsPaginated } from '../OptionsPaginated';
 import { PositionAnimated } from '../PositionAnimated';
 import SelectAddon from '../Select/SelectAddon';
+import SelectContainer from '../Select/SelectContainer';
 import SelectFocus from '../Select/SelectFocus';
+import SelectItem from '../Select/SelectItem';
+import SelectWrapper from '../Select/SelectWrapper';
 
 export type PaginatedOptionType = {
 	value: string | number;
@@ -44,6 +47,9 @@ export const PaginatedSelect = ({
 	'aria-labelledby': ariaLabelledBy,
 	'aria-describedby': ariaDescribedBy,
 	'aria-invalid': ariaInvalid,
+	className,
+	title,
+	onBlur,
 	...props
 }: PaginatedSelectProps) => {
 	const [internalValue, setInternalValue] = useState(value);
@@ -62,7 +68,7 @@ export const PaginatedSelect = ({
 
 	const ref = useRef<HTMLInputElement>(null);
 
-	const { ref: containerRef, borderBoxSize } = useResizeObserver();
+	const { ref: containerRef, borderBoxSize } = useResizeObserver<HTMLDivElement>();
 
 	const valueLabel = option?.label;
 
@@ -81,25 +87,21 @@ export const PaginatedSelect = ({
 	});
 
 	return (
-		<Box
-			animated
-			rcx-select
+		<SelectContainer
+			{...ariaAndDataAttributes(props)}
+			kind='select'
+			invalid={!!error}
 			disabled={disabled}
 			ref={containerRef}
 			onClick={handleClick}
-			rcx-select--invalid={!!error}
-			rcx-select--disabled={disabled}
-			{...props}
+			onBlur={onBlur}
+			className={className}
+			title={title}
 		>
-			<Box is='div' rcx-select__wrapper display='flex' marginInline='neg-x4' rcx-select__wrapper--hidden={!!visibleText}>
-				{visibleText && (
-					<Box flexGrow={1} is='span' marginInline={4} rcx-select__item fontScale='p2m' color={valueLabel ? 'titles-labels' : 'hint'}>
-						{visibleText}
-					</Box>
-				)}
+			<SelectWrapper hidden={!!visibleText}>
+				{visibleText && <SelectItem placeholder={!valueLabel}>{visibleText}</SelectItem>}
 				<Anchor
 					disabled={disabled}
-					rcx-input-box--undecorated
 					filter={filter}
 					ref={ref}
 					aria-haspopup='listbox'
@@ -113,7 +115,7 @@ export const PaginatedSelect = ({
 				<SelectAddon>
 					<Icon name={visible === AnimatedVisibility.VISIBLE ? 'chevron-up' : 'chevron-down'} size='x20' />
 				</SelectAddon>
-			</Box>
+			</SelectWrapper>
 			<PositionAnimated visible={visible} anchor={containerRef}>
 				<_Options
 					withTitle={withTitle}
@@ -127,6 +129,6 @@ export const PaginatedSelect = ({
 					renderItem={renderItem}
 				/>
 			</PositionAnimated>
-		</Box>
+		</SelectContainer>
 	);
 };

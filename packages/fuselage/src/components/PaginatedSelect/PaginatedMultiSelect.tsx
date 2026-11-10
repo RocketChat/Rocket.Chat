@@ -1,10 +1,20 @@
 import { useStableCallback, useResizeObserver, useMergedRefs } from '@rocket.chat/fuselage-hooks';
-import { useState, useRef, type ComponentType, type ReactNode, type MouseEvent, type CSSProperties } from 'react';
+import {
+	useState,
+	useRef,
+	type AriaAttributes,
+	type ComponentType,
+	type ReactNode,
+	type MouseEvent,
+	type CSSProperties,
+	type Ref,
+	type FocusEventHandler,
+} from 'react';
 
+import { ariaAndDataAttributes } from '../../helpers/ariaAndDataAttributes';
 import { prevent } from '../../helpers/prevent';
-import type { ElementProps } from '../../types/ElementProps';
+import type { CommonAttributes, WebAttributes } from '../../types/ElementAttributes';
 import { AnimatedVisibility } from '../AnimatedVisibility';
-import { Box } from '../Box';
 import { Chip } from '../Chip';
 import { Icon } from '../Icon';
 import { Option } from '../Option';
@@ -12,6 +22,7 @@ import { useVisible } from '../Options/useVisible';
 import { OptionsPaginated } from '../OptionsPaginated';
 import { PositionAnimated } from '../PositionAnimated';
 import SelectAddon from '../Select/SelectAddon';
+import SelectContainer from '../Select/SelectContainer';
 import SelectFocus from '../Select/SelectFocus';
 
 export type PaginatedMultiSelectOption = {
@@ -19,25 +30,43 @@ export type PaginatedMultiSelectOption = {
 	label: string;
 };
 
-export type PaginatedMultiSelectProps = Omit<ElementProps<HTMLDivElement>, 'onChange'> & {
-	error?: boolean;
-	name?: string;
-	disabled?: boolean;
-	filter?: string;
-	options: PaginatedMultiSelectOption[];
-	withTitle?: boolean;
-	placeholder?: string;
-	endReached?: (start?: number, end?: number) => void;
-	value?: PaginatedMultiSelectOption[];
-	onChange: (values: PaginatedMultiSelectOption[]) => void;
-	renderOptions?: ComponentType<{
-		width?: CSSProperties['width'];
-		multiple?: boolean;
+export type PaginatedMultiSelectProps = CommonAttributes &
+	Pick<WebAttributes<HTMLDivElement>, 'className' | 'title'> &
+	Pick<AriaAttributes, 'aria-label' | 'aria-labelledby' | 'aria-describedby' | 'aria-invalid' | 'aria-required'> & {
+		ref?: Ref<HTMLDivElement>;
+		/** Fires when the focus leaves a control inside the select. */
+		onBlur?: FocusEventHandler<HTMLDivElement>;
+		error?: boolean;
+		name?: string;
+		disabled?: boolean;
 		filter?: string;
-		role?: string;
 		options: PaginatedMultiSelectOption[];
-		cursor: number;
+		withTitle?: boolean;
+		placeholder?: string;
 		endReached?: (start?: number, end?: number) => void;
+		value?: PaginatedMultiSelectOption[];
+		onChange: (values: PaginatedMultiSelectOption[]) => void;
+		renderOptions?: ComponentType<{
+			width?: CSSProperties['width'];
+			multiple?: boolean;
+			filter?: string;
+			role?: string;
+			options: PaginatedMultiSelectOption[];
+			cursor: number;
+			endReached?: (start?: number, end?: number) => void;
+			renderItem?: ComponentType<{
+				role?: string;
+				label?: ReactNode;
+				title?: string;
+				selected?: boolean;
+				index?: number;
+				focus?: boolean;
+				value?: string | number;
+				onMouseDown?: (e: MouseEvent<HTMLElement>) => void;
+			}>;
+			onSelect: (option: [unknown, string]) => void;
+			onMouseDown?: (e: MouseEvent<HTMLElement>) => void;
+		}>;
 		renderItem?: ComponentType<{
 			role?: string;
 			label?: ReactNode;
@@ -48,21 +77,8 @@ export type PaginatedMultiSelectProps = Omit<ElementProps<HTMLDivElement>, 'onCh
 			value?: string | number;
 			onMouseDown?: (e: MouseEvent<HTMLElement>) => void;
 		}>;
-		onSelect: (option: [unknown, string]) => void;
-		onMouseDown?: (e: MouseEvent<HTMLElement>) => void;
-	}>;
-	renderItem?: ComponentType<{
-		role?: string;
-		label?: ReactNode;
-		title?: string;
-		selected?: boolean;
-		index?: number;
-		focus?: boolean;
-		value?: string | number;
-		onMouseDown?: (e: MouseEvent<HTMLElement>) => void;
-	}>;
-	anchor?: any;
-};
+		anchor?: any;
+	};
 
 const PaginatedMultiSelect = ({
 	'ref': outerRef,
@@ -82,6 +98,9 @@ const PaginatedMultiSelect = ({
 	'aria-labelledby': ariaLabelledBy,
 	'aria-describedby': ariaDescribedBy,
 	'aria-invalid': ariaInvalid,
+	className,
+	title,
+	onBlur,
 	...props
 }: PaginatedMultiSelectProps) => {
 	const [internalValue, setInternalValue] = useState(value || []);
@@ -134,18 +153,19 @@ const PaginatedMultiSelect = ({
 	};
 
 	return (
-		<Box
-			is='div'
-			rcx-select
-			rcx-select--invalid={!!error}
-			rcx-select--disabled={disabled}
-			onClick={handleClick}
+		<SelectContainer
+			{...ariaAndDataAttributes(props)}
+			kind='select'
+			invalid={!!error}
 			disabled={disabled}
-			{...props}
+			onClick={handleClick}
+			onBlur={onBlur}
+			className={className}
+			title={title}
 			ref={containerMergedRef}
 		>
-			<Box is='div' rcx-select__field>
-				<Box is='div' rcx-select__values rcx-select__values--spacious role='listbox'>
+			<div className='rcx-box rcx-box--full rcx-select__field'>
+				<div className='rcx-box rcx-box--full rcx-select__values rcx-select__values--spacious' role='listbox'>
 					<Anchor
 						disabled={disabled}
 						ref={ref}
@@ -156,8 +176,7 @@ const PaginatedMultiSelect = ({
 						aria-invalid={ariaInvalid}
 						onClick={show}
 						onBlur={hide}
-						order={1}
-						rcx-input-box--undecorated
+						last
 					>
 						{placeholder ?? null}
 					</Anchor>
@@ -177,8 +196,8 @@ const PaginatedMultiSelect = ({
 							{label}
 						</Chip>
 					))}
-				</Box>
-			</Box>
+				</div>
+			</div>
 			<SelectAddon>
 				<Icon name={visible === AnimatedVisibility.VISIBLE ? 'cross' : 'chevron-down'} size='x20' />
 			</SelectAddon>
@@ -198,7 +217,7 @@ const PaginatedMultiSelect = ({
 					}}
 				/>
 			</PositionAnimated>
-		</Box>
+		</SelectContainer>
 	);
 };
 

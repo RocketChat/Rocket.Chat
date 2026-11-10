@@ -1,5 +1,6 @@
 import { type IThreadMessage, type IThreadMainMessage, isVideoConfMessage } from '@rocket.chat/core-typings';
-import { Message, MessageLeftContainer, MessageContainer } from '@rocket.chat/fuselage';
+import { css } from '@rocket.chat/css-in-js';
+import { Message, MessageLeftContainer, MessageContainer, useStyle } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation, useUserId, useUserCard } from '@rocket.chat/ui-contexts';
@@ -24,11 +25,17 @@ export type ThreadMessageProps = {
 	ignoredUser?: boolean;
 };
 
+// The avatar's container takes the class; the image inherits the cursor
+const pointer = css`
+	cursor: pointer;
+`;
+
 const ThreadMessage = ({ message, sequential, unread, showUserAvatar, ignoredUser }: ThreadMessageProps) => {
 	const t = useTranslation();
 	const uid = useUserId();
 	const editing = useIsMessageHighlight(message._id);
 	const [displayIgnoredMessage, toggleDisplayIgnoredMessage] = useToggle(false);
+	const pointerClassName = useStyle(pointer);
 	const ignored = ignoredUser && !displayIgnoredMessage;
 	const { openUserCard, openUserInfo } = useUserCard();
 
@@ -60,7 +67,7 @@ const ThreadMessage = ({ message, sequential, unread, showUserAvatar, ignoredUse
 						size='x36'
 						onMouseEnter={(e) => openUserCard(e, message.u.username)}
 						onClick={() => openUserInfo(message.u.username)}
-						style={{ cursor: 'pointer' }}
+						className={pointerClassName}
 						// Redundant pointer-only shortcut for the accessible name button next to it
 						aria-hidden='true'
 					/>

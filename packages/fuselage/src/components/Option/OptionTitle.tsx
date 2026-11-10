@@ -1,11 +1,7 @@
-import type { HTMLAttributes, ReactNode } from 'react';
-
 import { cx } from '../../helpers/composeClassNames';
-import { ItemGroupHeader, ItemGroupTitle } from '../Item';
+import { ItemGroupHeader, ItemGroupTitle, type ItemGroupHeaderProps } from '../Item';
 
-export type OptionTitleProps = {
-	children?: ReactNode;
-} & Omit<HTMLAttributes<HTMLDivElement>, 'is'>;
+export type OptionTitleProps = Omit<ItemGroupHeaderProps, 'is' | 'inset'>;
 
 const OptionTitle = ({ children, className, ...props }: OptionTitleProps) => (
 	<ItemGroupHeader {...props} inset='md' className={cx('rcx-option__title', className)}>

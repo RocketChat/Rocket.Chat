@@ -1,9 +1,7 @@
-import type { HTMLAttributes } from 'react';
-
 import { cx } from '../../helpers/composeClassNames';
-import { ItemActions } from '../Item';
+import { ItemActions, type ItemActionsProps } from '../Item';
 
-export type OptionMenuProps = Omit<HTMLAttributes<HTMLDivElement>, 'is'>;
+export type OptionMenuProps = Omit<ItemActionsProps, 'reveal'>;
 
 const OptionMenu = ({ className, ...props }: OptionMenuProps) => (
 	<ItemActions {...props} reveal='hover' className={cx('rcx-option__menu-wrapper', className)} />

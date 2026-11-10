@@ -1,0 +1,5327 @@
+// Writes the style values of a component's Tamagui frames into the module that declares them.
+//
+//   yarn tsx scripts/generate-frame-values.mts          rewrite the generated section of every component below
+//   yarn tsx scripts/generate-frame-values.mts --check  fail if one is stale (what `yarn lint` runs)
+//
+// Tamagui's compiler reads a `styled()` definition from the source of its module and skips one it cannot read, so the
+// values cannot be computed there or imported. They are computed here from `@rocket.chat/fuselage-tokens`, under the
+// custom properties Fuselage already reads for them, and written between the markers below.
+import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
+import { join } from 'node:path';
+
+import prettier from 'prettier';
+
+import {
+	badgeBackgroundColors,
+	shadowColors,
+	statusBackgroundColors,
+	statusColors,
+	strokeColors,
+	surfaceColors,
+	textIconColors,
+} from '../src/Theme.ts';
+import { toCSSColorValue, toCSSValue } from '../src/helpers/toCSSValue.ts';
+import {
+	backgroundColor,
+	borderRadius,
+	borderWidth,
+	fontColor,
+	fontFamily,
+	fontScale,
+	inset,
+	size,
+	spacing,
+	spacingScale,
+} from '../src/styleTokens.ts';
+
+const require = createRequire(import.meta.url);
+const breakpoints: Record<
+	string,
+	{ minViewportWidth: number | null; columns: number; gutterWidth: number }
+> = require('@rocket.chat/fuselage-tokens/dist/breakpoints.json');
+const buttonTokens: { light: Record<string, string> } = require('@rocket.chat/fuselage-tokens/dist/button.json');
+const colors: Record<string, string> = require('@rocket.chat/fuselage-tokens/dist/colors.json');
+const statusBulletTokens: { light: Record<string, string> } = require('@rocket.chat/fuselage-tokens/dist/statusBullet.json');
+
+const GENERATED_BY = 'by scripts/generate-frame-values.mts from @rocket.chat/fuselage-tokens, do not edit';
+
+// A file with several generated sections names each one; a file with one keeps the bare markers
+const markers = (css: boolean | undefined, section: string | undefined) => {
+	const name = section ? ` ${section}` : '';
+	return css
+		? [`/* generated${name} ${GENERATED_BY} */`, `/* end of generated${name} */`]
+		: [`// generated${name} ${GENERATED_BY}`, `// end of generated${name}`];
+};
+
+type Value = string | number | { [key: string]: Value };
+
+// The one way a spacing value leaves the scale: for the lengths the scale has no step for, carried over from the SCSS
+const offScale = (pixels: number) => {
+	if (Object.hasOwn(spacingScale, `x${Math.abs(pixels)}`)) {
+		throw new Error(`${pixels}px is on the spacing scale: use spacing('${pixels < 0 ? '-' : ''}x${Math.abs(pixels)}')`);
+	}
+	return `${pixels}px`;
+};
+
+const camelCase = (name: string) => name.replace(/-(\w)/g, (_, letter: string) => letter.toUpperCase());
+
+// button.json has no warning, secondary-warning or secondary-success groups yet, so these take primitives
+const primitiveBackgrounds: Record<string, Record<string, string>> = {
+	'warning': { default: colors.y400, hover: colors.y500, press: colors.y600, focus: colors.y400, disabled: colors.y200 },
+	'secondary-warning': { default: colors.n400, hover: colors.n500, press: colors.n600, focus: colors.n400, disabled: colors.n300 },
+	'secondary-success': { default: colors.n400, hover: colors.n500, press: colors.n600, focus: colors.n400, disabled: colors.n300 },
+};
+
+const primitiveFonts: Record<string, string> = {
+	'warning': colors.n900,
+	'warning-disabled': colors.n600,
+	'secondary-warning': colors.y900,
+	'secondary-warning-disabled': colors.y600,
+	'secondary-success': colors.g800,
+	'secondary-success-disabled': colors.g400,
+};
+
+const buttonBackground = (kind: string, state: string) =>
+	toCSSColorValue(
+		`button-background-${kind}-${state}`,
+		primitiveBackgrounds[kind]?.[state] ?? buttonTokens.light[camelCase(`background-${kind}-${state}`)],
+	);
+
+// `button.json` names its disabled font on secondary-danger without the `font`
+const buttonFont = (name: string) =>
+	toCSSColorValue(
+		`button-font-on-${name}`,
+		primitiveFonts[name] ?? buttonTokens.light[camelCase(`font-on-${name}`)] ?? buttonTokens.light[camelCase(`on-${name}`)],
+	);
+
+const highlightShadow = shadowColors['shadow-highlight'].toString();
+const errorShadow = toCSSColorValue('shadow-extra-light-error', colors.r200);
+const lightStroke = strokeColors['stroke-light'].toString();
+
+const kinds = {
+	'primary': highlightShadow,
+	'secondary': highlightShadow,
+	'danger': errorShadow,
+	'secondary-danger': errorShadow,
+	'warning': lightStroke,
+	'secondary-warning': lightStroke,
+	'success': lightStroke,
+	'secondary-success': lightStroke,
+};
+
+const states = ['default', 'focus-visible', 'hover', 'press'];
+
+// Every color is its own `--rcx-button-<kind>-…` property over the palette's `--rcx-color-button-…` one
+const kindColors = (kind: string, shadow: string) => {
+	const themed = (name: string, value: string) => toCSSValue(`--rcx-button-${kind}-${name}`, value);
+
+	return {
+		color: themed('color', buttonFont(kind)),
+		background: themed('background-color', buttonBackground(kind, 'default')),
+		border: themed('border-color', buttonBackground(kind, 'default')),
+		hoverBackground: themed('hover-background-color', buttonBackground(kind, 'hover')),
+		hoverBorder: themed('hover-border-color', buttonBackground(kind, 'hover')),
+		activeBackground: themed('active-background-color', buttonBackground(kind, 'press')),
+		activeBorder: themed('active-border-color', buttonBackground(kind, 'press')),
+		focusBackground: themed('focus-background-color', buttonBackground(kind, 'focus')),
+		focusBorder: themed('focus-border-color', strokeColors['stroke-extra-dark'].toString()),
+		focusShadow: themed('focus-shadow-color', shadow),
+		disabledBackground: themed('disabled-background-color', buttonBackground(kind, 'disabled')),
+		disabledBorder: themed('disabled-border-color', buttonBackground(kind, 'disabled')),
+		disabledColor: themed('disabled-color', buttonFont(`${kind}-disabled`)),
+	};
+};
+
+const statesOf = (values: string[]) => Object.fromEntries(states.map((state, index) => [state, values[index]]));
+
+const boxShadow = (c: ReturnType<typeof kindColors>) => ({
+	'focus-visible': `0 0 0 ${borderWidth('medium')} ${c.focusShadow}`,
+	'hover': 'none',
+	'press': 'none',
+});
+
+const kindStyle = (c: ReturnType<typeof kindColors>): Value => ({
+	color: c.color,
+	borderColor: statesOf([c.border, c.focusBorder, c.hoverBorder, c.activeBorder]),
+	backgroundColor: statesOf([c.background, c.focusBackground, c.hoverBackground, c.activeBackground]),
+	boxShadow: boxShadow(c),
+});
+
+// The disabled colors win over every state
+const disabledStyle = (c: ReturnType<typeof kindColors>): Value => ({
+	cursor: 'not-allowed',
+	color: c.disabledColor,
+	borderColor: statesOf(Array(4).fill(c.disabledBorder) as string[]),
+	backgroundColor: statesOf(Array(4).fill(c.disabledBackground) as string[]),
+	boxShadow: boxShadow(c),
+});
+
+const lineHeightOf = (scale: string) => fontScale(scale)!.lineHeight;
+
+const rectangularSize = (height: number, paddingX: number, lineHeightScale: string) => ({
+	minWidth: `calc(${size(`x${height}`)} * 2)`,
+	height: size(`x${height}`)!,
+	paddingBlock: `calc((${size(`x${height}`)} - ${lineHeightOf(lineHeightScale)}) / 2 - ${offScale(2)})`,
+	paddingInline: `calc(${spacing(`x${paddingX}`)} - ${offScale(2)})`,
+});
+
+const squaredSize = (side: number) => ({
+	width: size(`x${side}`)!,
+	minWidth: size(`x${side}`)!,
+	height: size(`x${side}`)!,
+	paddingBlock: 0,
+	paddingInline: 0,
+});
+
+const font = (name: string) => fontScale(name) as unknown as Record<string, Value>;
+
+const literal = (value: Value, indent = ''): string => {
+	if (typeof value !== 'object') {
+		return JSON.stringify(value);
+	}
+
+	return `{\n${Object.entries(value)
+		.filter(([, entry]) => entry !== undefined)
+		.map(([key, entry]) => `${indent}\t${JSON.stringify(key)}: ${literal(entry, `${indent}\t`)},`)
+		.join('\n')}\n${indent}}`;
+};
+
+const camelName = (kind: string) => camelCase(kind);
+
+const generateButton = () => {
+	const out: string[] = [];
+	const constant = (name: string, value: Value) => out.push(`const ${name} = ${literal(value)} as const;`);
+
+	for (const [kind, shadow] of Object.entries(kinds)) {
+		constant(camelName(kind), kindStyle(kindColors(kind, shadow)));
+	}
+
+	constant('smallSize', { ...font('c2'), ...rectangularSize(28, 8, 'c1') });
+	constant('mediumSize', { ...font('c2'), ...rectangularSize(32, 12, 'c1') });
+	constant('largeSize', { ...font('p2'), ...rectangularSize(48, 24, 'p2') });
+	out.push("const compactWidth = { minWidth: '4ch' } as const;");
+	constant('squareLayout', { display: 'flex', justifyContent: 'center', alignItems: 'center', flexShrink: 0 });
+
+	const squareSides = { Default: 40, Mini: 20, Tiny: 24, Small: 28, Medium: 32, Large: 40 };
+	for (const [name, side] of Object.entries(squareSides)) {
+		constant(`squared${name}`, squaredSize(side));
+	}
+
+	constant('frame', {
+		render: 'button',
+		display: 'inline-block',
+		flexDirection: 'row',
+		flexShrink: 1,
+		alignItems: 'normal',
+		minHeight: 'auto',
+		textAlign: 'center',
+		whiteSpace: 'nowrap',
+		textDecoration: 'none',
+		cursor: 'pointer',
+		outlineStyle: 'none',
+		overflow: 'hidden',
+		textOverflow: 'ellipsis',
+		fontFamily: fontFamily('sans')!,
+		fontVariantNumeric: 'tabular-nums',
+		...font('p2m'),
+		...rectangularSize(40, 16, 'p2'),
+		borderWidth: toCSSValue('--rcx-button-border-width', '1px'),
+		borderStyle: 'solid',
+		borderRadius: toCSSValue('--rcx-button-border-radius', toCSSValue('--rcx-border-radius-medium', borderRadius('medium')!)),
+	});
+	out[out.length - 1] = out[out.length - 1].replace(/ as const;$/, ';');
+
+	const sizing: string[] = [];
+	for (const name of ['', 'mini', 'tiny', 'small', 'medium', 'large']) {
+		for (const compact of [false, true]) {
+			for (const square of [false, true]) {
+				const label = name ? name[0].toUpperCase() + name.slice(1) : 'Default';
+				const parts = [
+					['small', 'medium', 'large'].includes(name) ? `...${name}Size` : '',
+					compact && !square ? '...compactWidth' : '',
+					square ? `...squareLayout, ...squared${label}` : '',
+				].filter(Boolean);
+				sizing.push(`${JSON.stringify(`|${name}|${compact}|${square}`)}: { ${parts.join(', ')} },`);
+			}
+		}
+	}
+
+	const paint = Object.keys(kinds).flatMap((kind) => [
+		`${JSON.stringify(kind)}: ${camelName(kind)},`,
+		`${JSON.stringify(`${kind}-disabled`)}: ${literal(disabledStyle(kindColors(kind, kinds[kind as keyof typeof kinds])), '\t\t\t')},`,
+	]);
+
+	out.push(`// Declared where they render: zero-runtime only erases a \`styled()\` whose every use is in its own module
+const ButtonFrame = styled(View, {
+	...frame,
+	variants: {
+		// Size, compact and square set the same properties, so each combination is one variant
+		sizing: {
+			${sizing.join('\n')}
+		},
+		// The compiler reads a shorthand property as a live reference, which it cannot lower
+		/* oxlint-disable object-shorthand */
+		paint: {
+			${paint.join('\n')}
+		},
+		/* oxlint-enable object-shorthand */
+	},
+});`);
+
+	out.push(`const ButtonContent = styled(Text, {
+	render: 'span',
+	display: 'inline-block',
+	width: '100%',
+	verticalAlign: 'top',
+	overflow: 'hidden',
+	textOverflow: 'ellipsis',
+	whiteSpace: 'nowrap',
+	wordWrap: 'inherit',
+});`);
+
+	return out.join('\n\n');
+};
+
+// IconButton's palettes sit over the secondary one: each color is its own `--rcx-color-button-<kind>-…` property
+const iconPalettes = () => {
+	const secondary = kindColors('secondary', kinds.secondary);
+	const statusFont = (name: string) => statusColors[`status-font-on-${name}` as keyof typeof statusColors].toString();
+
+	const palette = (
+		kind: string,
+		own: { color: string; activeBorder: string; pressedBorder: string; focusShadow: string; disabledColor: string },
+	) => {
+		const themed = (name: string, value: string) => toCSSColorValue(`button-${kind}-${name}`, value);
+		const iconThemed = (name: string, value: string) => toCSSColorValue(`button-icon-${name}`, value);
+
+		return {
+			colors: {
+				color: themed('color', own.color),
+				background: themed('background-color', 'transparent'),
+				border: themed('border-color', 'transparent'),
+				hoverBackground: themed('hover-background-color', secondary.hoverBackground),
+				hoverBorder: themed('hover-border-color', secondary.hoverBorder),
+				activeBackground: themed('active-background-color', secondary.activeBackground),
+				activeBorder: themed('active-border-color', own.activeBorder),
+				focusBackground: themed('focus-background-color', secondary.focusBackground),
+				focusBorder: themed('focus-border-color', secondary.focusBorder),
+				focusShadow: themed('focus-shadow-color', own.focusShadow),
+				disabledBackground: iconThemed('disabled-background-color', 'transparent'),
+				disabledBorder: iconThemed('disabled-border-color', 'transparent'),
+				disabledColor: themed('disabled-color', own.disabledColor),
+			},
+			pressedBackground: themed('pressed-background-color', secondary.activeBackground),
+			pressedBorder: themed('pressed-border-color', own.pressedBorder),
+		};
+	};
+
+	// info presses and activates over the secondary background; the others over its border
+	const statusPalette = (name: string, owner: ReturnType<typeof kindColors>) => {
+		const border = name === 'info' ? secondary.activeBackground : secondary.activeBorder;
+
+		return palette(name, {
+			color: statusFont(name),
+			activeBorder: border,
+			pressedBorder: border,
+			focusShadow: name === 'info' ? secondary.focusShadow : owner.focusShadow,
+			disabledColor: owner.disabledBackground,
+		});
+	};
+
+	return {
+		icon: palette('icon', {
+			color: secondary.color,
+			activeBorder: secondary.activeBorder,
+			pressedBorder: secondary.activeBorder,
+			focusShadow: secondary.focusShadow,
+			disabledColor: secondary.disabledColor,
+		}),
+		info: statusPalette('info', kindColors('primary', kinds.primary)),
+		success: statusPalette('success', kindColors('success', kinds.success)),
+		warning: statusPalette('warning', kindColors('warning', kinds.warning)),
+		danger: statusPalette('danger', kindColors('danger', kinds.danger)),
+	};
+};
+
+const generateIconButton = () => {
+	const out: string[] = [];
+	const constant = (name: string, value: Value) => out.push(`const ${name} = ${literal(value)} as const;`);
+
+	const paints: string[] = [];
+	const addPaint = (name: string, base: Value, pressed: Value, disabled: Value) => {
+		paints.push(
+			`${JSON.stringify(name)}: ${camelName(name)},`,
+			`${JSON.stringify(`${name}-pressed`)}: ${camelName(name)}Pressed,`,
+			`${JSON.stringify(`${name}-disabled`)}: ${literal(disabled, '\t\t\t')},`,
+		);
+		constant(camelName(name), base);
+		constant(`${camelName(name)}Pressed`, pressed);
+	};
+
+	const withPressed = (style: Value, background: string, border: string): Value => {
+		const { backgroundColor, borderColor, ...rest } = style as Record<string, Value>;
+
+		return {
+			...rest,
+			borderColor: { ...(borderColor as Record<string, Value>), default: border },
+			backgroundColor: { ...(backgroundColor as Record<string, Value>), default: background },
+		};
+	};
+
+	for (const [name, { colors: c, pressedBackground, pressedBorder }] of Object.entries(iconPalettes())) {
+		const base = kindStyle(c);
+		addPaint(name, base, withPressed(base, pressedBackground, pressedBorder), disabledStyle(c));
+	}
+
+	// Only the icon palettes have a pressed color; for these, pressing changes nothing
+	const kindOf: Record<string, keyof typeof kinds> = {
+		'secondary': 'secondary',
+		'secondary-info': 'primary',
+		'secondary-success': 'success',
+		'secondary-warning': 'warning',
+		'secondary-danger': 'danger',
+	};
+
+	for (const [name, kind] of Object.entries(kindOf)) {
+		const c = kindColors(kind, kinds[kind]);
+		addPaint(name, kindStyle(c), kindStyle(c), disabledStyle(c));
+	}
+
+	const sides = { mini: 20, tiny: 24, small: 28, medium: 32, large: 40 };
+	const label = (name: string) => `${name[0].toUpperCase()}${name.slice(1)}`;
+	for (const [name, side] of Object.entries(sides)) {
+		constant(`squared${label(name)}`, squaredSize(side));
+	}
+
+	constant('frame', {
+		render: 'button',
+		display: 'flex',
+		flexDirection: 'row',
+		justifyContent: 'center',
+		alignItems: 'center',
+		flexShrink: 0,
+		minHeight: 'auto',
+		textAlign: 'center',
+		whiteSpace: 'nowrap',
+		textDecoration: 'none',
+		cursor: 'pointer',
+		outlineStyle: 'none',
+		overflow: 'hidden',
+		textOverflow: 'ellipsis',
+		...font('p2m'),
+		lineHeight: 0,
+		borderWidth: toCSSValue('--rcx-button-border-width', '1px'),
+		borderStyle: 'solid',
+		borderRadius: toCSSValue('--rcx-button-border-radius', toCSSValue('--rcx-border-radius-medium', borderRadius('medium')!)),
+	});
+	out[out.length - 1] = out[out.length - 1].replace(/ as const;$/, ';');
+
+	const sizing = Object.keys(sides).map((name) => `${name}: { ...squared${label(name)} },`);
+
+	out.push(`// Declared where they render: zero-runtime only erases a \`styled()\` whose every use is in its own module
+const IconButtonFrame = styled(View, {
+	...frame,
+	variants: {
+		sizing: {
+			${sizing.join('\n')}
+		},
+		// A badge sits over the corner, so the frame must not clip it
+		badged: {
+			true: { overflow: 'visible', position: 'relative' },
+			false: {},
+		},
+		// The compiler reads a shorthand property as a live reference, which it cannot lower
+		/* oxlint-disable object-shorthand */
+		paint: {
+			${paints.join('\n')}
+		},
+		/* oxlint-enable object-shorthand */
+	},
+});`);
+
+	return out.join('\n\n');
+};
+
+// The checkbox, radio button and toggle switch share a native input (hidden) and a fake element that follows its
+// states. The fake's resting look is a frame; the sibling rules cannot be one, so they are generated into the CSS.
+const selectionColors = () => {
+	const stroke = (name: string) => strokeColors[`stroke-${name}` as keyof typeof strokeColors].toString();
+	const surface = backgroundColor('light')!;
+	const rule = (kind: string, name: string, value: string) => toCSSValue(`--rcx-button-${kind}-${name}`, value);
+	const white = fontColor('white');
+	const hint = fontColor('hint');
+	const extraDark = stroke('extra-dark');
+	const secondaryDisabled = buttonBackground('secondary', 'disabled');
+
+	const palette = (
+		kind: string,
+		c: {
+			color: string;
+			border: string;
+			background: string;
+			hover: [string, string];
+			active: [string, string];
+			focus: [string, string];
+			disabled: [string, string, string];
+		},
+	) => ({
+		color: rule(kind, 'color', c.color),
+		border: rule(kind, 'border-color', c.border),
+		background: rule(kind, 'background-color', c.background),
+		hover: { border: rule(kind, 'hover-border-color', c.hover[0]), background: rule(kind, 'hover-background-color', c.hover[1]) },
+		active: { border: rule(kind, 'active-border-color', c.active[0]), background: rule(kind, 'active-background-color', c.active[1]) },
+		focus: { border: rule(kind, 'focus-border-color', c.focus[0]), background: rule(kind, 'focus-background-color', c.focus[1]) },
+		disabled: {
+			color: rule(kind, 'disabled-color', c.disabled[0]),
+			border: rule(kind, 'disabled-border-color', c.disabled[1]),
+			background: rule(kind, 'disabled-background-color', c.disabled[2]),
+		},
+	});
+
+	return {
+		empty: palette('empty', {
+			color: white,
+			border: stroke('dark'),
+			background: surface,
+			hover: [extraDark, surface],
+			active: [extraDark, surface],
+			focus: [extraDark, surface],
+			disabled: [white, stroke('light'), secondaryDisabled],
+		}),
+		off: palette('off', {
+			color: white,
+			border: stroke('medium'),
+			background: stroke('medium'),
+			hover: [hint, hint],
+			active: [stroke('dark'), stroke('dark')],
+			focus: [extraDark, stroke('medium')],
+			disabled: [buttonFont('secondary-disabled'), secondaryDisabled, secondaryDisabled],
+		}),
+		primary: palette('primary', {
+			color: buttonFont('primary'),
+			border: buttonBackground('primary', 'default'),
+			background: buttonBackground('primary', 'default'),
+			hover: [buttonBackground('primary', 'hover'), buttonBackground('primary', 'hover')],
+			active: [buttonBackground('primary', 'press'), buttonBackground('primary', 'press')],
+			focus: [extraDark, buttonBackground('primary', 'focus')],
+			disabled: [buttonFont('primary-disabled'), buttonBackground('primary', 'disabled'), buttonBackground('primary', 'disabled')],
+		}),
+	};
+};
+
+type SelectionControl = {
+	name: string;
+	frames: string;
+	unchecked: 'empty' | 'off';
+	// the input states that show the primary palette
+	checked: string[];
+	fakeRadius: string;
+	fakeSize: Record<string, Value>;
+	extraStates?: string;
+};
+
+const frameBlock = (name: string, tag: string, style: Value) =>
+	`const ${name} = styled(View, ${literal({ render: tag, ...(style as Record<string, Value>) })});`;
+
+const selectionFrames = ({ frames, unchecked, fakeRadius, fakeSize }: SelectionControl) => {
+	const palette = selectionColors()[unchecked];
+	// Tamagui's View is a column flex box that does not shrink; these restate what each element is in CSS
+	const flexReset = { flexDirection: 'row', flexShrink: 1, alignItems: 'normal', minWidth: 'auto', minHeight: 'auto' } as const;
+
+	return [
+		frameBlock(`${frames}Label`, 'label', {
+			...flexReset,
+			position: 'relative',
+			display: 'inline-flex',
+			verticalAlign: 'middle',
+			cursor: 'pointer',
+			outlineWidth: 0,
+		}),
+		frameBlock(`${frames}Input`, 'input', {
+			...flexReset,
+			position: 'absolute',
+			display: 'block',
+			overflow: 'hidden',
+			clip: 'rect(0, 0, 0, 0)',
+			clipPath: 'inset(50%)',
+			width: '1px',
+			height: '1px',
+			margin: offScale(-1),
+			padding: 0,
+			whiteSpace: 'nowrap',
+			borderWidth: 0,
+		}),
+		frameBlock(`${frames}Fake`, 'i', {
+			...flexReset,
+			position: 'relative',
+			height: size('x20')!,
+			borderWidth: borderWidth('default')!,
+			borderRadius: fakeRadius,
+			...fakeSize,
+			color: palette.color,
+			borderColor: palette.border,
+			backgroundColor: palette.background,
+		}),
+	].join('\n\n');
+};
+
+const selectionStates = ({ name, unchecked, checked, extraStates }: SelectionControl) => {
+	const palettes = selectionColors();
+	const shadow = toCSSValue('--rcx-input-colors-focus-shadow-color', shadowColors['shadow-highlight'].toString());
+	const focusShadow = `0 0 0 ${borderWidth('medium')} ${shadow}`;
+	const selectors = (inputs: string[], state: string) =>
+		inputs.map((input) => `.rcx-${name}__input${input}${state} + .rcx-${name}__fake`).join(',\n');
+	const out: string[] = [];
+
+	const emit = (inputs: string[], palette: ReturnType<typeof selectionColors>['empty'], withDefault: boolean) => {
+		if (withDefault) {
+			out.push(
+				`${selectors(inputs, '')} {\n\tcolor: ${palette.color};\n\tborder-color: ${palette.border};\n\tbackground-color: ${palette.background};\n}`,
+			);
+		}
+		for (const state of ['hover', 'active'] as const) {
+			out.push(
+				`${selectors(inputs, `:${state}`)} {\n\tborder-color: ${palette[state].border};\n\tbackground-color: ${palette[state].background};\n\tbox-shadow: none;\n}`,
+			);
+		}
+		out.push(
+			`${selectors(inputs, ':focus')} {\n\tborder-color: ${palette.focus.border};\n\tbackground-color: ${palette.focus.background};\n\tbox-shadow: ${focusShadow};\n}`,
+		);
+		out.push(
+			`${selectors(inputs, ':disabled')} {\n\tcursor: not-allowed;\n\tcolor: ${palette.disabled.color};\n\tborder-color: ${palette.disabled.border};\n\tbackground-color: ${palette.disabled.background};\n}`,
+		);
+	};
+
+	emit([''], palettes[unchecked], false);
+	emit(checked, palettes.primary, true);
+	if (extraStates) {
+		out.push(extraStates);
+	}
+
+	return out.join('\n\n');
+};
+
+const checkBox: SelectionControl = {
+	name: 'check-box',
+	frames: 'CheckBox',
+	unchecked: 'empty',
+	checked: [':indeterminate', ':checked'],
+	fakeRadius: toCSSValue('--rcx-check-box-border-radius', toCSSValue('--rcx-border-radius-small', borderRadius('small')!)),
+	fakeSize: { display: 'flex', justifyContent: 'center', alignItems: 'center', width: size('x20')! },
+};
+
+const radioButton: SelectionControl = {
+	name: 'radio-button',
+	frames: 'RadioButton',
+	unchecked: 'empty',
+	checked: [':checked'],
+	fakeRadius: toCSSValue('--rcx-border-radius-full', borderRadius('full')!),
+	fakeSize: { display: 'flex', justifyContent: 'center', alignItems: 'center', width: size('x20')! },
+};
+
+const toggleSwitchRadius = toCSSValue('--rcx-toggle-switch-border-radius', toCSSValue('--rcx-border-radius-full', borderRadius('full')!));
+const knobSize = `calc(${size('x16')} - 2 * ${borderWidth('default')})`;
+
+// The knob sits in the fake's ::before; it slides to the end when checked, white even when disabled
+const toggleSwitchKnob = `.rcx-toggle-switch__input + .rcx-toggle-switch__fake::before {
+	position: absolute;
+	top: 50%;
+	inset-inline-start: ${inset('x1')};
+	width: ${knobSize};
+	height: ${knobSize};
+	content: '';
+	transform: translateY(-50%);
+	border-radius: ${toggleSwitchRadius};
+	background-color: ${buttonFont('primary')};
+}
+
+.rcx-toggle-switch__input:disabled + .rcx-toggle-switch__fake::before {
+	background-color: ${buttonFont('secondary-disabled')};
+}
+
+.rcx-toggle-switch__input:checked + .rcx-toggle-switch__fake::before {
+	inset-inline-start: calc(100% - (${size('x16')} - ${borderWidth('default')}));
+	background-color: ${buttonFont('primary')};
+}`;
+
+const generateChevron = () =>
+	`${declaredWhereTheyRender}${frame(
+		'ChevronFrame',
+		{ render: 'span', ...flexBox, display: 'inline-flex', alignSelf: 'center' },
+		{
+			direction: {
+				up: { transform: 'rotate(-180deg)' },
+				down: { transform: 'rotate(0deg)' },
+				right: { transform: 'rotate(-90deg)' },
+				left: { transform: 'rotate(-270deg)' },
+			},
+		},
+	)}`;
+
+// A frame cannot test the writing direction, so the horizontal chevrons turn the other way here
+const generateChevronCss = () => `.rcx-chevron.rcx-chevron--right:dir(rtl) {
+	transform: rotate(-270deg);
+}
+
+.rcx-chevron.rcx-chevron--left:dir(rtl) {
+	transform: rotate(-90deg);
+}`;
+
+const generateCodeSnippet = () =>
+	`${declaredWhereTheyRender}${frame('CodeSnippetFrame', {
+		render: 'pre',
+		...flexBox,
+		justifyContent: 'space-between',
+		alignItems: 'center',
+		width: size('full')!,
+		minHeight: size('x60')!,
+		padding: spacing('x16')!,
+		color: fontDefault,
+		borderRadius: theme('code-snippet-border-radius', radius('medium')),
+		backgroundColor: String(surfaceColors['surface-neutral']),
+	})}
+
+${frame('CodeSnippetCodeBoxFrame', {
+	render: 'div',
+	...blockBox,
+	marginRight: spacing('x8')!,
+	whiteSpace: 'pre-line',
+	wordBreak: 'break-all',
+	fontFamily: 'monospace',
+})}
+
+${frame('CodeSnippetActionFrame', { render: 'div', ...blockBox })}`;
+
+// A frame over an `Icon` keeps the inline-block box `.rcx-icon` gives it, as the frame's own display would outrank it
+const iconBase = {
+	display: 'inline-block',
+	flexDirection: 'row',
+	alignItems: 'normal',
+	flexShrink: 0,
+	minWidth: 'auto',
+	minHeight: 'auto',
+} as const;
+
+const framedIconFont = (name: string) => String(statusColors[`status-font-on-${name}` as keyof typeof statusColors]);
+
+const generateFramedIcon = () =>
+	`${declaredWhereTheyRender}${frame(
+		'FramedIconFrame',
+		{
+			render: 'i',
+			...iconBase,
+			fontSize: 'var(--rcx-framed-icon-size)',
+			padding: spacing('x4')!,
+			color: fontColorOf('secondary-info'),
+			borderRadius: radius('medium'),
+			backgroundColor: String(surfaceColors['surface-tint']),
+		},
+		{
+			tone: {
+				neutral: {},
+				info: { color: framedIconFont('info') },
+				success: { color: framedIconFont('success') },
+				warning: { color: framedIconFont('warning') },
+				danger: { color: framedIconFont('danger') },
+			},
+		},
+	)}`;
+
+const flexBox = { display: 'flex', flexDirection: 'row', alignItems: 'normal', flexShrink: 1, minWidth: 'auto', minHeight: 'auto' };
+const blockBox = { ...flexBox, display: 'block' };
+
+const frame = (name: string, base: Record<string, Value>, variants?: Record<string, Record<string, Value>>) =>
+	`const ${name} = styled(View, ${literal(variants ? { ...base, variants } : base)});`;
+
+const declaredWhereTheyRender =
+	'// Declared where they render: zero-runtime only erases a `styled()` whose every use is in its own module\n';
+
+const toggleSwitch: SelectionControl = {
+	name: 'toggle-switch',
+	frames: 'ToggleSwitch',
+	unchecked: 'off',
+	checked: [':checked'],
+	fakeRadius: toggleSwitchRadius,
+	fakeSize: { display: 'block', width: size('x36')!, height: `calc(${size('x20')} - 2 * ${borderWidth('default')})` },
+	extraStates: toggleSwitchKnob,
+};
+
+const themed = (name: string, value: string) => toCSSValue(`--rcx-${name}`, value);
+const textIconColor = (name: keyof typeof textIconColors) => textIconColors[name].toString();
+const statusFont = (name: string) => statusColors[`status-font-on-${name}` as keyof typeof statusColors].toString();
+
+const generateButtonGroup = () =>
+	Object.entries({ small: 'x4', medium: 'x8', large: 'x16' })
+		.map(([name, step]) => `const ${name}Gap = ${literal({ gap: spacing(step)! })} as const;`)
+		.join('\n');
+
+const generateTag = () => {
+	const out: string[] = [];
+
+	const kindsOfTag: Record<string, { color: string; background: string; hover: string }> = {
+		'default': {
+			color: buttonFont('secondary'),
+			background: buttonBackground('secondary', 'default'),
+			hover: buttonBackground('secondary', 'hover'),
+		},
+		'primary': {
+			color: buttonFont('primary'),
+			background: buttonBackground('primary', 'default'),
+			hover: buttonBackground('primary', 'hover'),
+		},
+		'secondary': {
+			color: buttonFont('secondary'),
+			background: buttonBackground('secondary', 'default'),
+			hover: buttonBackground('secondary', 'hover'),
+		},
+		'danger': {
+			color: buttonFont('danger'),
+			background: buttonBackground('danger', 'default'),
+			hover: buttonBackground('danger', 'hover'),
+		},
+		'warning': {
+			color: buttonFont('warning'),
+			background: buttonBackground('warning', 'default'),
+			hover: buttonBackground('warning', 'hover'),
+		},
+		'featured': {
+			color: buttonFont('primary'),
+			background: surfaceColors['surface-featured'].toString(),
+			hover: surfaceColors['surface-featured-hover'].toString(),
+		},
+		'secondary-danger': {
+			color: buttonFont('secondary-danger'),
+			background: buttonBackground('secondary-danger', 'default'),
+			hover: buttonBackground('secondary-danger', 'hover'),
+		},
+		'secondary-warning': {
+			color: statusFont('warning'),
+			background: buttonBackground('secondary', 'default'),
+			hover: buttonBackground('secondary', 'hover'),
+		},
+		'secondary-info': {
+			color: statusFont('info'),
+			background: buttonBackground('secondary', 'default'),
+			hover: buttonBackground('secondary', 'hover'),
+		},
+	};
+
+	const disabledColor = themed('tag-colors-disabled-color', textIconColor('font-secondary-info'));
+	const disabledBackground = themed('tag-colors-disabled-background-color', surfaceColors['surface-neutral'].toString());
+
+	const looks: string[] = [];
+	for (const [kind, k] of Object.entries(kindsOfTag)) {
+		const color = themed(`tag-colors-${kind}-color`, k.color);
+		const background = themed(`tag-colors-${kind}-background-color`, k.background);
+		const hover = themed(`tag-colors-${kind}-hover-background-color`, k.hover);
+		const link = {
+			default: themed('link-color', color),
+			focus: themed('link-focus-color', color),
+			press: themed('link-active-color', color),
+		};
+		const entries: Record<string, Value> = {
+			'false|false': { color, backgroundColor: background },
+			'true|false': { cursor: 'pointer', color: link, backgroundColor: { default: background, hover } },
+			'false|true': { cursor: 'not-allowed', color: disabledColor, backgroundColor: disabledBackground },
+			// the clickable link color outranks the disabled one, and so does its hover
+			'true|true': { cursor: 'not-allowed', color: link, backgroundColor: { default: disabledBackground, hover } },
+		};
+		for (const [key, value] of Object.entries(entries)) {
+			looks.push(`${JSON.stringify(`${kind}|${key}`)}: ${literal(value, '\t\t\t')},`);
+		}
+	}
+
+	const small = themed('border-radius-small', borderRadius('small')!);
+	const focusRadius = themed('border-radius-medium', borderRadius('medium')!);
+	const full = themed('border-radius-full', borderRadius('full')!);
+
+	const frame = literal({
+		render: 'span',
+		boxSizing: 'border-box',
+		display: 'flex',
+		flexDirection: 'row',
+		flexShrink: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+		minWidth: 'auto',
+		minHeight: 'auto',
+		overflow: 'hidden',
+		paddingBlock: offScale(2),
+		paddingInline: spacing('x4'),
+		gap: spacing('x4')!,
+		whiteSpace: 'nowrap',
+		textDecoration: 'none',
+		textOverflow: 'ellipsis',
+		wordBreak: 'keep-all',
+		outlineStyle: 'none',
+		borderWidth: '1px',
+		borderStyle: 'solid',
+		borderColor: { 'default': 'transparent', 'focus-visible': strokeColors['stroke-highlight'].toString() },
+		borderRadius: { 'default': themed('tag-border-radius', small), 'focus-visible': focusRadius },
+		boxShadow: { 'focus-visible': `0 0 0 ${borderWidth('medium')} ${strokeColors['stroke-extra-light-highlight'].toString()}` },
+	});
+
+	out.push(`// Declared where they render: zero-runtime only erases a \`styled()\` whose every use is in its own module
+const TagFrame = styled(View, {
+	...${frame},
+	variants: {
+		// kind, clickable and disabled all set the colors, so each combination is one variant
+		look: {
+			${looks.join('\n')}
+		},
+		scale: {
+			default: ${literal(font('micro'), '\t\t\t')},
+			medium: ${literal(font('c2'), '\t\t\t')},
+			large: ${literal(font('p2b'), '\t\t\t')},
+		},
+		pill: {
+			true: { borderRadius: ${literal({ 'default': themed('tag-border-radius', full), 'focus-visible': focusRadius }, '\t\t\t')} },
+			false: {},
+		},
+	},
+});`);
+	return out.join('\n\n');
+};
+
+const generateBadge = () => {
+	const levels = { primary: 2, secondary: 1, warning: 3, danger: 4 } as const;
+	const looks = Object.entries(levels).map(([variant, level]) => {
+		const color = themed(`badge-colors-${variant}-color`, textIconColor('font-pure-white'));
+		const backgroundColor = themed(
+			`badge-colors-${variant}-background-color`,
+			badgeBackgroundColors[`badge-background-level-${level}` as keyof typeof badgeBackgroundColors].toString(),
+		);
+		return `${variant}: ${literal({ color, backgroundColor }, '\t\t\t')},`;
+	});
+
+	const frame = literal({
+		render: 'span',
+		boxSizing: 'border-box',
+		display: 'flex',
+		flexDirection: 'row',
+		flexShrink: 1,
+		alignItems: 'normal',
+		justifyContent: 'center',
+		overflow: 'hidden',
+		width: 'fit-content',
+		paddingBlock: offScale(2),
+		paddingInline: spacing('x4'),
+		textAlign: 'center',
+		whiteSpace: 'nowrap',
+		textDecoration: 'none',
+		textOverflow: 'ellipsis',
+		wordBreak: 'keep-all',
+		borderRadius: themed('badge-border-radius', themed('border-radius-full', borderRadius('full')!)),
+		...font('micro'),
+	});
+
+	return `// Declared where they render: zero-runtime only erases a \`styled()\` whose every use is in its own module
+const BadgeFrame = styled(View, {
+	...${frame},
+	variants: {
+		look: {
+			${looks.join('\n')}
+		},
+		sizing: {
+			regular: { minWidth: '${size('x16')}', minHeight: '${size('x16')}' },
+			small: { minWidth: '${size('x8')}', minHeight: '${size('x8')}' },
+		},
+	},
+});`;
+};
+
+const generateChip = () => {
+	const secondary = (state: string) => buttonBackground('secondary', state);
+	const border = (name: string, value: string) => themed(`chip-${name}-border-color`, value);
+	const bg = (name: string, value: string) => themed(`chip-${name}-background-color`, value);
+	const shadow = themed('chip-focus-shadow-color', strokeColors['stroke-extra-light-highlight'].toString());
+
+	const enabled = {
+		cursor: 'pointer',
+		color: themed('chip-color', textIconColor('font-secondary-info')),
+		borderColor: {
+			'default': themed('chip-border-color', secondary('default')),
+			'focus-visible': themed('chip-focus-border-color', strokeColors['stroke-extra-dark'].toString()),
+			'hover': border('hover', secondary('hover')),
+			'press': border('active', secondary('press')),
+		},
+		backgroundColor: {
+			'default': themed('chip-background-color', secondary('default')),
+			'focus-visible': bg('focus', secondary('focus')),
+			'hover': bg('hover', secondary('hover')),
+			'press': bg('active', secondary('press')),
+		},
+		boxShadow: {
+			'focus-visible': `0 0 0 ${borderWidth('medium')} ${shadow}`,
+			'hover': 'none',
+			'press': 'none',
+		},
+	};
+
+	const disabled = {
+		cursor: 'not-allowed',
+		color: themed('button-secondary-color', buttonFont('secondary')),
+		borderColor: themed('button-secondary-border-color', secondary('default')),
+		backgroundColor: themed('button-secondary-background-color', secondary('default')),
+	};
+
+	const frame = literal({
+		render: 'button',
+		boxSizing: 'border-box',
+		display: 'flex',
+		flexDirection: 'row',
+		flexShrink: 1,
+		alignItems: 'center',
+		minWidth: 'auto',
+		overflow: 'hidden',
+		margin: 0,
+		padding: 0,
+		outlineStyle: 'none',
+		borderWidth: 0,
+		borderStyle: 'solid',
+		borderRadius: toCSSValue('--rcx-button-border-radius', toCSSValue('--rcx-border-radius-medium', borderRadius('medium')!)),
+		fontFamily: fontFamily('sans')!,
+		...font('p2'),
+	});
+
+	return `// Declared where they render: zero-runtime only erases a \`styled()\` whose every use is in its own module
+const ChipFrame = styled(View, {
+	...${frame},
+	variants: {
+		// the disabled colors win over every state
+		look: {
+			enabled: ${literal(enabled, '\t\t\t')},
+			disabled: ${literal(disabled, '\t\t\t')},
+		},
+		sizing: {
+			regular: { height: '${size('x28')}', minHeight: '${size('x28')}' },
+			small: { height: '${size('x20')}', minHeight: '${size('x20')}' },
+		},
+		label: {
+			true: { textTransform: 'uppercase' },
+			false: {},
+		},
+	},
+});`;
+};
+
+const frameDeclaration = (
+	name: string,
+	config: Value,
+) => `// Declared where they render: zero-runtime only erases a \`styled()\` whose every use is in its own module
+const ${name} = styled(View, ${literal(config)});`;
+
+// What `.rcx-box` gave an element that is not a Tamagui View: the View's own defaults would otherwise show through
+const boxBase = {
+	boxSizing: 'border-box',
+	flexDirection: 'row',
+	alignItems: 'normal',
+	flexShrink: 1,
+	minWidth: 'auto',
+	minHeight: 'auto',
+	outlineStyle: 'none',
+	fontVariantNumeric: 'tabular-nums',
+};
+
+const generateSkeleton = () => {
+	const stroke = strokeColors['stroke-extra-dark'].toString();
+	const gradient = `repeat 0% 0%/100vw 100% linear-gradient(to right, ${stroke}, color-mix(in srgb, ${stroke}, transparent 50%) 50%, ${stroke})`;
+
+	return frameDeclaration('SkeletonFrame', {
+		render: 'span',
+		...boxBase,
+		display: 'block',
+		// The size of the content it stands in for comes from the caller, as custom properties
+		width: 'var(--rcx-skeleton-width, auto)',
+		height: 'var(--rcx-skeleton-height, 1.2em)',
+		opacity: 0.1,
+		borderRadius: radiusOf('medium'),
+		background: gradient,
+		variants: {
+			variant: {
+				text: { height: 'var(--rcx-skeleton-height, auto)', marginBlock: 0, transform: 'scale(1, 0.6)', transformOrigin: '0 60%' },
+				rect: {},
+				circle: { borderRadius: radiusOf('full') },
+			},
+			// The whole shorthand: the color has to sit under the gradient whatever order the atomic rules land in
+			inverted: {
+				true: { background: `${gradient} ${surfaceColors['surface-light']}` },
+				false: {},
+			},
+		},
+	});
+};
+
+const generateThrobber = () => {
+	const circleColor = (name: string, token: string) => toCSSColorValue(`button-background-${name}-default`, buttonTokens.light[token]);
+
+	return `${frameDeclaration('ThrobberFrame', {
+		render: 'div',
+		...boxBase,
+		display: 'flex',
+		justifyContent: 'center',
+		marginBlock: offScale(-1),
+	})}
+
+${frameDeclaration('ThrobberCircleFrame', {
+	render: 'span',
+	...boxBase,
+	display: 'block',
+	width: 'var(--rcx-throbber-size)',
+	height: 'var(--rcx-throbber-size)',
+	marginInline: offScale(1),
+	borderRadius: '100%',
+	backgroundColor: circleColor('primary', 'backgroundPrimaryDefault'),
+	variants: {
+		// Not `disabled`: Tamagui turns that prop into `aria-disabled`
+		tone: {
+			primary: {},
+			muted: { backgroundColor: circleColor('secondary', 'backgroundSecondaryDefault') },
+			inherit: { backgroundColor: 'currentColor' },
+		},
+	},
+})}`;
+};
+
+const generateProgressBar = () => {
+	const themedRadius = toCSSValue('--rcx-progress-bar-border-radius', radiusOf('large'));
+	const fills: Record<string, Value> = {};
+
+	for (const name of ['info', 'success', 'warning', 'danger']) {
+		fills[`status-font-on-${name}`] = { backgroundColor: statusColors[`status-font-on-${name}` as keyof typeof statusColors].toString() };
+		fills[`status-background-${name}`] = {
+			backgroundColor: statusBackgroundColors[`status-background-${name}` as keyof typeof statusBackgroundColors].toString(),
+		};
+	}
+
+	return `${frameDeclaration('ProgressBarFrame', {
+		render: 'div',
+		...boxBase,
+		display: 'block',
+		overflow: 'hidden',
+		width: '100%',
+		height: 8,
+		borderRadius: themedRadius,
+		backgroundColor: toCSSValue('--rcx-progress-bar-color-background', surfaceColors['surface-neutral'].toString()),
+	})}
+
+${frameDeclaration('ProgressBarFill', {
+	render: 'div',
+	...boxBase,
+	display: 'block',
+	height: 8,
+	borderRadius: themedRadius,
+	width: 'var(--rcx-progress-bar-fill-width)',
+	variants: { fillColor: fills },
+})}`;
+};
+
+// The shine is a pseudo-element, which a frame cannot style
+const generateProgressBarShine = () => `.rcx-progress-bar__fill--animated::before {
+	background: ${toCSSValue('--rcx-progress-bar-color-shine', surfaceColors['surface-light'].toString())};
+}`;
+
+const avatarSizes = [16, 18, 20, 24, 28, 32, 36, 40, 48, 124, 200, 332];
+const avatarRadiusTokens: Record<number, string> = { 16: 'small', 18: 'small', 332: 'large' };
+const avatarRadius = (px: number) => toCSSValue(`--rcx-avatar-border-radius-${px}`, radiusOf(avatarRadiusTokens[px] ?? 'medium'));
+
+const generateAvatar = () => {
+	const shape: Record<string, Value> = {};
+
+	for (const px of avatarSizes) {
+		shape[`x${px}`] = { borderRadius: avatarRadius(px) };
+		shape[`x${px}-rounded`] = { borderRadius: toCSSValue('--rcx-avatar-border-radius-rounded', radiusOf('full')) };
+	}
+
+	return frameDeclaration('AvatarElementFrame', {
+		render: 'img',
+		display: 'inline',
+		flexDirection: 'row',
+		alignItems: 'normal',
+		flexShrink: 1,
+		minWidth: 'auto',
+		minHeight: 'auto',
+		position: 'relative',
+		width: '100%',
+		height: '100%',
+		variants: {
+			// Size and rounded both set the radius, so each combination is one variant
+			shape,
+			objectFit: Object.fromEntries(['contain', 'cover', 'fill', 'none', 'scale-down'].map((fit) => [fit, { objectFit: fit }])),
+		},
+	});
+};
+
+const generateAvatarContainer = () => {
+	const sizing: Record<string, Value> = {};
+
+	for (const px of avatarSizes) {
+		sizing[`x${px}`] = { width: size(`x${px}`)!, height: size(`x${px}`)! };
+	}
+
+	return frameDeclaration('AvatarContainerFrame', {
+		render: 'figure',
+		alignItems: 'normal',
+		flexShrink: 1,
+		minWidth: 'auto',
+		minHeight: 'auto',
+		display: 'inline-flex',
+		flexDirection: 'row',
+		verticalAlign: 'middle',
+		variants: { sizing },
+	});
+};
+
+const generateAvatarStack = () =>
+	frameDeclaration('AvatarStackFrame', {
+		render: 'div',
+		alignItems: 'normal',
+		flexShrink: 1,
+		minWidth: 'auto',
+		minHeight: 'auto',
+		display: 'flex',
+		flexDirection: 'row-reverse',
+		justifyContent: 'center',
+		backgroundColor: toCSSValue('--rcx-avatar-background-color', surfaceColors['surface-light'].toString()),
+	});
+
+const generateStatusBullet = () => {
+	const bullet = (name: string) => toCSSColorValue(`status-bullet-${name}`, statusBulletTokens.light[name]);
+
+	return frameDeclaration('StatusBulletFrame', {
+		alignItems: 'normal',
+		flexDirection: 'row',
+		minWidth: 'auto',
+		minHeight: 'auto',
+		display: 'inline-block',
+		flexGrow: 0,
+		flexShrink: 0,
+		borderRadius: radiusOf('full'),
+		backgroundSize: 'contain',
+		width: size('x12')!,
+		height: size('x12')!,
+		variants: {
+			small: { true: { width: size('x10')!, height: size('x10')! }, false: {} },
+			status: {
+				online: { fill: bullet('online') },
+				away: { fill: bullet('away') },
+				busy: { fill: bullet('busy') },
+				disabled: { fill: bullet('disabled') },
+				offline: { stroke: bullet('offline') },
+				loading: { stroke: bullet('loading') },
+			},
+		},
+	});
+};
+
+const generateTooltip = () =>
+	frameDeclaration('TooltipFrame', {
+		render: 'div',
+		position: 'relative',
+		display: 'inline-block',
+		flexDirection: 'row',
+		alignItems: 'normal',
+		flexShrink: 1,
+		minWidth: 'auto',
+		minHeight: 'auto',
+		maxWidth: 240,
+		paddingBlock: spacing('x8')!,
+		paddingInline: spacing('x12'),
+		userSelect: 'none',
+		wordBreak: 'break-word',
+		pointerEvents: 'none',
+		fontVariantNumeric: 'tabular-nums',
+		borderRadius: toCSSValue('--rcx-tooltip-border-radius', radiusOf('medium')),
+		...font('p2m'),
+		variants: {
+			variation: {
+				dark: {
+					color: toCSSValue('--rcx-tooltip-dark-text-color', textIconColors['font-white'].toString()),
+					backgroundColor: toCSSValue('--rcx-tooltip-dark-background-color', surfaceColors['surface-dark'].toString()),
+				},
+				light: {
+					color: toCSSValue('--rcx-tooltip-light-text-color', textIconColors['font-default'].toString()),
+					backgroundColor: toCSSValue('--rcx-tooltip-light-background-color', surfaceColors['surface-neutral'].toString()),
+				},
+			},
+		},
+	});
+
+// The arrow is a pseudo-element, which a frame cannot style
+const generateTooltipArrow = () => `.rcx-tooltip--dir-top::after,
+.rcx-tooltip--dir-bottom::after,
+.rcx-tooltip--dir-left::after,
+.rcx-tooltip--dir-right::after {
+	border-color: transparent transparent ${toCSSValue('--rcx-tooltip-dark-background-color', surfaceColors['surface-dark'].toString())}
+		${toCSSValue('--rcx-tooltip-dark-background-color', surfaceColors['surface-dark'].toString())};
+}
+
+.rcx-tooltip--dir-left::after,
+.rcx-tooltip--dir-right::after {
+	margin-block-start: ${spacing('-x4')};
+}
+
+.rcx-tooltip--pos-middle::after {
+	margin-left: ${spacing('-x4')};
+}`;
+
+const frames = (relative: string) => join(import.meta.dirname, '../src/components', relative);
+
+const theme = (name: string, value: string) => toCSSValue(`--rcx-${name}`, value);
+const px = (value: number) => `${value}px`;
+const radius = (name: string) => theme(`border-radius-${name}`, borderRadius(name)!);
+const fontDefault = String(textIconColors['font-default']);
+const surfaceLight = String(surfaceColors['surface-light']);
+
+// A Tamagui View is a column that does not shrink; these put back the block or flex box the SCSS left
+const part = (name: string, base: Record<string, Value>, variants?: Record<string, Record<string, Value>>) =>
+	declaredWhereTheyRender + frame(name, base, variants);
+
+const generateTile = () => {
+	const border = { borderWidth: '1px', borderStyle: 'solid', borderColor: String(shadowColors['shadow-elevation-border']) };
+
+	return (
+		declaredWhereTheyRender +
+		frame(
+			'TileFrame',
+			{
+				render: 'div',
+				...blockBox,
+				color: fontDefault,
+				borderRadius: theme('tile-border-radius', radius('medium')),
+				backgroundColor: surfaceLight,
+				...font('p2'),
+			},
+			{
+				elevation: {
+					'0': { boxShadow: 'none' },
+					'1': { boxShadow: `0 0 12px 0 ${shadowColors['shadow-elevation-1']}`, ...border },
+					'2': {
+						boxShadow: `0 0 2px 0 ${shadowColors['shadow-elevation-2x']}, 0 0 12px 0 ${shadowColors['shadow-elevation-2y']}`,
+						...border,
+					},
+					'1nb': {},
+					'2nb': {},
+				},
+				flush: {
+					true: { padding: 0 },
+					false: { padding: spacing('x16') },
+				},
+			},
+		)
+	);
+};
+
+const generateDivider = () => {
+	const width = theme('divider-size', borderWidth('default')!);
+	const color = theme('divider-color', String(strokeColors['stroke-extra-light']));
+	const tones = { default: undefined, danger: String(strokeColors['stroke-error']), light: String(strokeColors['stroke-light']) };
+	const looks: Record<string, Value> = {};
+
+	for (const [tone, toneColor] of Object.entries(tones)) {
+		const paint = (side: 'Top' | 'Left') => (toneColor ? {} : { [`border${side}Color`]: color });
+		const toned = toneColor ? { borderColor: toneColor } : {};
+
+		for (const flush of [false, true]) {
+			looks[`horizontal${flush ? '-flush' : ''}:${tone}`] = {
+				marginBlock: flush ? 0 : spacing('x8'),
+				marginInline: 0,
+				...paint('Top'),
+				...toned,
+			};
+
+			for (const small of [false, true]) {
+				const inline = spacing(small ? 'x4' : 'x8');
+				for (const stretch of [false, true]) {
+					looks[`vertical${small ? '-small' : ''}${stretch ? '-stretch' : ''}${flush ? '-flush' : ''}:${tone}`] = {
+						width: 0,
+						height: stretch ? 'auto' : size('x20')!,
+						...(stretch && { alignSelf: 'stretch' }),
+						marginBlock: 0,
+						marginInline: flush ? 0 : inline,
+						borderLeftWidth: width,
+						borderLeftStyle: 'solid',
+						...paint('Top'),
+						...paint('Left'),
+						...toned,
+					};
+				}
+			}
+		}
+	}
+
+	return (
+		declaredWhereTheyRender +
+		[
+			frame('DividerLine', { render: 'hr', ...blockBox, borderTopWidth: width, borderTopStyle: 'solid' }, { look: looks }),
+			frame('DividerBar', { ...flexBox, justifyContent: 'flex-end', alignItems: 'center', flexGrow: 1 }),
+			frame('DividerLabel', { ...blockBox, marginBlock: spacing('x8'), paddingInline: spacing('x8') }),
+		].join('\n\n')
+	);
+};
+
+const generateDividerCss = () => `.rcx-divider__bar::after {
+	flex-grow: 1;
+
+	content: '';
+
+	border: ${theme('divider-size', borderWidth('default')!)} solid ${theme('divider-color', String(strokeColors['stroke-extra-light']))};
+}`;
+
+const calloutKinds = ['info', 'success', 'warning', 'danger'];
+const calloutColor = (kind: string) =>
+	theme(`callout-${kind}-color`, String(statusColors[`status-font-on-${kind}` as keyof typeof statusColors]));
+
+const generateCallout = () =>
+	declaredWhereTheyRender +
+	[
+		frame(
+			'CalloutFrame',
+			{
+				render: 'section',
+				...flexBox,
+				padding: spacing('x12'),
+				color: theme('callout-text-color', fontDefault),
+				borderWidth: borderWidth('default')!,
+				borderStyle: 'solid',
+				borderColor: theme('callout-default-color', String(textIconColors['font-secondary-info'])),
+				borderRadius: theme('callout-border-radius', radius('medium')),
+				backgroundColor: theme('callout-background-color', surfaceLight),
+			},
+			{ type: Object.fromEntries(calloutKinds.map((kind) => [kind, { borderColor: calloutColor(kind) }])) },
+		),
+		frame(
+			'CalloutWrapper',
+			{
+				...blockBox,
+				overflow: 'hidden',
+				justifyContent: 'space-between',
+				flexGrow: 1,
+				flexShrink: 1,
+				flexBasis: 0,
+				marginInlineStart: spacing('x12'),
+			},
+			{ large: { true: { display: 'flex', alignItems: 'center' }, false: {} } },
+		),
+		frame('CalloutBody', { ...flexBox, flexDirection: 'column', overflow: 'hidden' }),
+		frame('CalloutTitle', { ...blockBox, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', ...font('p2b') }),
+		frame('CalloutContent', { ...blockBox, ...font('p2') }, { afterTitle: { true: { marginBlockStart: spacing('x4') }, false: {} } }),
+		frame('CalloutActions', blockBox, { large: { true: {}, false: { marginBlockStart: spacing('x12') } } }),
+	].join('\n\n');
+
+const generateCalloutCss = () =>
+	calloutKinds
+		.map(
+			(kind) => `.rcx-callout--${kind} .rcx-callout__icon {
+	color: ${calloutColor(kind)};
+}`,
+		)
+		.join('\n\n');
+
+const cardGap = spacing('x8');
+
+const fontColorOf = (name: string) => textIconColors[`font-${name}` as keyof typeof textIconColors].toString();
+
+const frameCode = (name: string, base: 'View' | 'Text', value: Value) =>
+	`// Declared where they render: zero-runtime only erases a \`styled()\` whose every use is in its own module
+const ${name} = styled(${base}, ${literal(value)});`;
+
+const inlineBase = { display: 'inline', whiteSpace: 'normal', wordWrap: 'normal' } as const;
+
+const radiusOf = (name: string) => toCSSValue(`--rcx-border-radius-${name}`, borderRadius(name)!);
+
+const strokeExtraLight = String(strokeColors['stroke-extra-light']);
+const surfaceOf = (name: string) => String(surfaceColors[`surface-${name}` as keyof typeof surfaceColors]);
+const statusFontOf = (kind: string) => String(statusColors[`status-font-on-${kind}` as keyof typeof statusColors]);
+const generateContextualbar = () =>
+	part(
+		'ContextualbarFrame',
+		{
+			...flexBox,
+			flexDirection: 'column',
+			flexShrink: 0,
+			insetInlineEnd: 0,
+			insetBlockStart: 0,
+			zIndex: 10,
+			height: '100%',
+			color: fontDefault,
+			backgroundColor: surfaceOf('room'),
+			borderInlineStartWidth: borderWidth('default')!,
+			borderInlineStartStyle: 'solid',
+			borderInlineStartColor: strokeExtraLight,
+		},
+		{
+			stretch: { true: { width: '100%' }, false: {} },
+			placement: {
+				static: { position: 'static' },
+				relative: { position: 'relative' },
+				absolute: { position: 'absolute' },
+				fixed: { position: 'fixed' },
+			},
+		},
+	);
+
+const generateCard = () =>
+	declaredWhereTheyRender +
+	frame(
+		'CardFrame',
+		{
+			render: 'div',
+			...flexBox,
+			color: theme('card-color', fontDefault),
+			borderRadius: radius('large'),
+			backgroundColor: theme('card-background-color', surfaceLight),
+		},
+		{
+			// Direction and padding set overlapping flex properties, so each combination is one variant
+			layout: Object.fromEntries(
+				[false, true].flatMap((hero) =>
+					(['horizontal', 'vertical'] as const).map((kind): [string, Value] => [
+						`${kind}${hero ? '-hero' : ''}`,
+						kind === 'horizontal'
+							? { alignItems: 'center', padding: hero ? offScale(28) : spacing('x12'), gap: spacing('x16') }
+							: { flexDirection: 'column', padding: hero ? offScale(28) : spacing('x20'), gap: spacing('x24') },
+					]),
+				),
+			),
+			clickable: {
+				true: {
+					cursor: { hover: 'pointer', focus: 'pointer' },
+					outlineWidth: { hover: 0, focus: 0 },
+					backgroundColor: {
+						default: theme('card-background-color', surfaceLight),
+						hover: String(surfaceColors['surface-hover']),
+						focus: String(surfaceColors['surface-hover']),
+					},
+				},
+				false: {},
+			},
+		},
+	);
+
+const cardPart = (name: string, extra: Record<string, Value> = {}) =>
+	declaredWhereTheyRender + frame(name, { render: 'div', ...flexBox, alignItems: 'center', gap: cardGap, ...extra });
+
+const generateCardBody = () =>
+	declaredWhereTheyRender +
+	frame(
+		'CardBodyFrame',
+		{ ...flexBox, flexGrow: 1, gap: cardGap, ...font('p2m') },
+		{ direction: { row: {}, column: { flexDirection: 'column' } }, fullHeight: { true: { height: '100%' }, false: {} } },
+	);
+const generateCardCol = () => cardPart('CardColFrame', { alignItems: 'normal', flexDirection: 'column' });
+const generateCardControls = () => cardPart('CardControlsFrame');
+const generateCardHeader = () => cardPart('CardHeaderFrame');
+const generateCardRow = () => cardPart('CardRowFrame', { flexGrow: 1, flexShrink: 1 });
+const generateCardTitle = () =>
+	declaredWhereTheyRender +
+	frame(
+		'CardTitleFrame',
+		{ ...flexBox, alignItems: 'center', gap: cardGap },
+		{ scale: { h3: font('h3'), h4: font('h4'), h5: font('h5') } },
+	);
+
+const generateCardGroup = () =>
+	declaredWhereTheyRender +
+	frame(
+		'CardGroupFrame',
+		{ render: 'div', ...flexBox, alignItems: 'center', flexWrap: 'nowrap', justifyContent: 'flex-start' },
+		{
+			// Direction, wrap and stretch set overlapping flex properties, so each combination is one variant
+			flow: Object.fromEntries(
+				[false, true].flatMap((vertical) =>
+					[false, true].flatMap((wrap) =>
+						[false, true].map((stretch): [string, Value] => [
+							`${vertical ? 'column' : 'row'}-${wrap ? 'wrap' : 'nowrap'}-${stretch ? 'stretch' : 'start'}`,
+							{
+								...(vertical && { flexDirection: 'column' }),
+								...(wrap && { flexWrap: 'wrap', marginBlockEnd: spacing('-x16') }),
+								...(stretch && { alignItems: 'stretch' }),
+							},
+						]),
+					),
+				),
+			),
+			align: { start: { justifyContent: 'flex-start' }, center: { justifyContent: 'center' }, end: { justifyContent: 'flex-end' } },
+		},
+	);
+
+const containerMargin = theme('modal-container-margin', size('x24')!);
+const modalPart = (name: string, base: Record<string, Value>, variants?: Record<string, Record<string, Value>>) =>
+	declaredWhereTheyRender + frame(name, base, variants);
+
+const generateModal = () =>
+	// The open sizes arrive as custom properties the dialog element sets
+	`${modalPart('ModalFrame', {
+		render: 'dialog',
+		...flexBox,
+		position: 'static',
+		width: 'var(--rcx-modal-width, 100%)',
+		height: 'var(--rcx-modal-height, auto)',
+		maxHeight: 'var(--rcx-modal-max-height, 100%)',
+		margin: theme('modal-margin', 'auto'),
+		backgroundColor: 'transparent',
+	})}\n\n${frame('ModalInnerFrame', {
+		render: 'div',
+		...flexBox,
+		flexDirection: 'column',
+		flexGrow: 1,
+		width: '100%',
+		minWidth: 0,
+		padding: 0,
+		color: fontDefault,
+		borderRadius: theme('modal-border-radius', radius('large')),
+		borderWidth: '1px',
+		borderStyle: 'solid',
+		borderColor: String(shadowColors['shadow-elevation-border']),
+		backgroundColor: surfaceLight,
+		boxShadow: `0 0 2px 0 ${shadowColors['shadow-elevation-2x']}, 0 0 12px 0 ${shadowColors['shadow-elevation-2y']}`,
+		...font('p2'),
+	})}`;
+
+const generateModalBackdrop = () =>
+	modalPart(
+		'ModalBackdropFrame',
+		{ ...flexBox, flexDirection: 'column', position: 'fixed', zIndex: 100, top: 0, right: 0, bottom: 0, left: 0 },
+		{ tone: { overlay: { backgroundColor: String(surfaceColors['surface-overlay']) }, transparent: { backgroundColor: 'transparent' } } },
+	);
+
+const generateModalHeader = () => modalPart('ModalHeaderFrame', { ...blockBox, margin: containerMargin });
+const generateModalHeaderInner = () => modalPart('ModalHeaderInnerFrame', { ...flexBox, flexWrap: 'nowrap', gap: spacing('x8')! });
+const generateModalHeaderText = () =>
+	modalPart('ModalHeaderTextFrame', {
+		...flexBox,
+		flexDirection: 'column',
+		flexGrow: 1,
+		flexShrink: 1,
+		overflow: 'hidden',
+		textOverflow: 'ellipsis',
+	});
+
+const generateModalTitle = () =>
+	modalPart('ModalTitleFrame', {
+		...blockBox,
+		overflow: 'hidden',
+		textOverflow: 'ellipsis',
+		flexGrow: 1,
+		flexShrink: 1,
+		whiteSpace: 'nowrap',
+		color: fontDefault,
+		...font('h2'),
+	});
+
+const generateModalTagline = () =>
+	modalPart(
+		'ModalTaglineFrame',
+		{ ...blockBox, color: fontDefault, ...font('c2') },
+		{ subtle: { true: { color: String(textIconColors['font-annotation']) }, false: {} } },
+	);
+
+const generateModalHeroImage = () =>
+	`${declaredWhereTheyRender}${frame('ModalHeroImageFrame', {
+		...blockBox,
+		width: 'var(--rcx-modal-hero-image-width, 100%)',
+		height: 'var(--rcx-modal-hero-image-height, auto)',
+		objectFit: 'contain',
+	})}\n\n${frame('ModalHeroFigureFrame', {
+		render: 'figure',
+		...blockBox,
+		marginBlockStart: 0,
+		marginBlockEnd: size('x24')!,
+		marginInline: size('-x24')!,
+	})}`;
+
+const generateModalFooter = () =>
+	modalPart(
+		'ModalFooterFrame',
+		{ ...flexBox, alignItems: 'center', margin: containerMargin },
+		{ justify: { 'end': { justifyContent: 'end' }, 'space-between': { justifyContent: 'space-between' } } },
+	);
+
+const generateModalIcon = () =>
+	modalPart(
+		'ModalIconFrame',
+		{ render: 'div', ...flexBox, alignItems: 'center' },
+		{
+			align: { center: {}, end: { alignItems: 'end' } },
+			tone: {
+				default: {},
+				danger: { color: fontColorOf('danger') },
+				warning: { color: statusFontOf('warning') },
+				info: { color: fontColorOf('info') },
+				success: { color: statusFontOf('success') },
+			},
+		},
+	);
+
+const generateModalFooterAnnotation = () =>
+	modalPart('ModalFooterAnnotationFrame', { ...blockBox, color: String(textIconColors['font-secondary-info']), ...font('c1') });
+
+const generateModalCss = () => {
+	const p2 = fontScale('p2')!;
+
+	return `.rcx-modal.rcx-modal[hidden] {
+	display: none;
+}
+
+.rcx-modal__inner {
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1;
+
+	width: 100%;
+	min-width: 0;
+	padding: 0;
+
+	color: ${fontDefault};
+	border-radius: ${theme('modal-border-radius', radius('large'))};
+	background-color: ${surfaceLight};
+
+	font-size: ${p2.fontSize};
+	font-weight: ${p2.fontWeight};
+	line-height: ${p2.lineHeight};
+	letter-spacing: ${p2.letterSpacing};
+}
+
+@media screen and (min-width: ${breakpoints.sm.minViewportWidth / 16}em) {
+	.rcx-modal {
+		max-width: ${size('x640')};
+		padding: ${spacing('x16')};
+	}
+}
+
+.rcx-modal__content-wrapper {
+	margin-inline: ${spacing('x24')};
+}
+
+.rcx-modal__content-wrapper--fill {
+	padding-block-end: ${spacing('x16')};
+}
+
+.rcx-modal__icon {
+	padding-block: ${spacing('x4')};
+}`;
+};
+
+// Code outside Fuselage styles its own elements with these classes; the zero specificity lets a frame's own styles win
+const generateConsumerClasses = () => {
+	const p2 = fontScale('p2')!;
+	const border = `1px solid ${shadowColors['shadow-elevation-border']}`;
+
+	return `.rcx-tile[class] {
+	display: block;
+
+	color: ${fontDefault};
+	border-radius: ${theme('tile-border-radius', radius('medium'))};
+	background-color: ${surfaceLight};
+
+	font-size: ${p2.fontSize};
+	font-weight: ${p2.fontWeight};
+	line-height: ${p2.lineHeight};
+	letter-spacing: ${p2.letterSpacing};
+}
+
+.rcx-tile--elevation-0[class] {
+	box-shadow: none;
+}
+
+.rcx-tile--elevation-1[class] {
+	border: ${border};
+	box-shadow: 0 0 12px 0 ${shadowColors['shadow-elevation-1']};
+}
+
+.rcx-tile--elevation-2[class] {
+	border: ${border};
+	box-shadow:
+		0 0 2px 0 ${shadowColors['shadow-elevation-2x']},
+		0 0 12px 0 ${shadowColors['shadow-elevation-2y']};
+}
+
+.rcx-card__header:where(.rcx-card__header),
+.rcx-card__row:where(.rcx-card__row) {
+	display: flex;
+	align-items: center;
+	gap: ${cardGap};
+}
+
+.rcx-card__row:where(.rcx-card__row) {
+	flex-grow: 1;
+	flex-shrink: 1;
+}
+
+.rcx-modal__backdrop:where(.rcx-modal__backdrop) {
+	position: fixed;
+	z-index: 100;
+	inset: 0;
+
+	display: flex;
+	flex-direction: column;
+
+	background-color: ${String(surfaceColors['surface-overlay'])};
+}`;
+};
+
+type SplitKind = 'default' | 'danger' | 'warning' | 'success' | 'primary';
+const splitKinds: SplitKind[] = ['default', 'danger', 'warning', 'success', 'primary'];
+const splitBase = (kind: SplitKind) => (kind === 'default' ? 'secondary' : kind);
+const translucent = (kind: SplitKind, state: string) => `color-mix(in srgb, ${buttonBackground(splitBase(kind), state)} 70%, transparent)`;
+const splitColor = (kind: SplitKind) =>
+	kind === 'default' ? buttonFont('secondary') : theme(`split-button-${kind}-color`, buttonFont(kind));
+const splitBackground = (kind: SplitKind) =>
+	theme(kind === 'default' ? 'split-button-background-color' : `split-button-${kind}-background-color`, translucent(kind, 'default'));
+const ghost = (kind: SplitKind, state: 'focus' | 'hover' | 'active') =>
+	theme(
+		kind === 'default' ? `button-ghost-${state}-background-color` : `button-ghost-${kind}-${state}-background-color`,
+		translucent(kind, state === 'active' ? 'press' : state),
+	);
+const splitRadius = toCSSValue('--rcx-button-border-radius', toCSSValue('--rcx-border-radius-medium', borderRadius('medium')!));
+
+const generateSplitButton = () =>
+	part(
+		'SplitButtonFrame',
+		{
+			render: 'div',
+			display: 'inline-flex',
+			flexDirection: 'row',
+			flexWrap: 'nowrap',
+			alignItems: 'stretch',
+			flexShrink: 1,
+			minWidth: 'auto',
+			minHeight: 'auto',
+			borderRadius: splitRadius,
+		},
+		{ tone: Object.fromEntries(splitKinds.map((kind) => [kind, { backgroundColor: splitBackground(kind) }])) },
+	);
+
+const generateSplitButtonCss = () => {
+	const trigger = '> .rcx-button.rcx-split-button__trigger[class]';
+
+	return `.rcx-split-button[class] > .rcx-button[class] {
+	border-radius: 0;
+}
+
+.rcx-split-button[class] > .rcx-button[class]:first-child {
+	border-start-start-radius: ${splitRadius};
+	border-end-start-radius: ${splitRadius};
+}
+
+.rcx-split-button[class] > .rcx-button[class]:last-child {
+	border-start-end-radius: ${splitRadius};
+	border-end-end-radius: ${splitRadius};
+}
+
+.rcx-split-button[class] > .rcx-button[class]:focus-visible,
+.rcx-split-button[class] > .rcx-button[class].focus.focus-visible {
+	position: relative;
+	z-index: 1;
+}
+
+${splitKinds
+	.map((kind) => {
+		const root = `.rcx-split-button${kind === 'default' ? '' : `.rcx-split-button--${kind}`}[class]`;
+		const on = (...states: string[]) => states.map((state) => `${root} ${trigger}${state}`).join(',\n');
+
+		return `${on('')} {
+	color: ${splitColor(kind)};
+	border-color: transparent;
+	background-color: transparent;
+}
+
+${on(':focus-visible', '.focus.focus-visible')} {
+	border-color: transparent;
+	background-color: ${ghost(kind, 'focus')};
+}
+
+${on(':hover', '.hover', '.is-hovered')} {
+	border-color: transparent;
+	background-color: ${ghost(kind, 'hover')};
+}
+
+${on(':active', '.active', '.is-active')} {
+	border-color: transparent;
+	background-color: ${ghost(kind, 'active')};
+}`;
+	})
+	.join('\n\n')}`;
+};
+
+const bubbleChrome = (tag: 'button' | 'span'): Record<string, Value> => ({
+	render: tag,
+	...flexBox,
+	display: 'flex',
+	justifyContent: 'center',
+	alignItems: 'center',
+	height: size('x28')!,
+	paddingInline: spacing('x8'),
+	columnGap: spacing('x4'),
+	overflow: 'hidden',
+	textOverflow: 'ellipsis',
+	whiteSpace: 'nowrap',
+	borderRadius: radius('extra-large'),
+	...font('c2'),
+});
+
+const bubbleKinds = ['primary', 'secondary'] as const;
+
+const generateBubble = () => part('BubbleFrame', { render: 'div', ...flexBox, display: 'flex', overflow: 'hidden', alignItems: 'center' });
+
+const generateBubbleButton = () => {
+	const looks: Record<string, Record<string, Value>> = {};
+
+	for (const kind of bubbleKinds) {
+		const colors = kindColors(kind, kinds[kind]);
+
+		looks[kind] = { ...(kindStyle(colors) as Record<string, Value>), cursor: 'pointer' };
+		looks[`${kind}-disabled`] = disabledStyle(colors) as Record<string, Value>;
+	}
+
+	return part(
+		'BubbleButtonFrame',
+		{
+			...bubbleChrome('button'),
+			margin: 0,
+			appearance: 'none',
+			outlineStyle: 'none',
+			borderWidth: borderWidth('default')!,
+			borderStyle: 'solid',
+		},
+		{ look: looks },
+	);
+};
+
+const generateBubbleItem = () =>
+	part(
+		'BubbleItemFrame',
+		{ ...bubbleChrome('span') },
+		{
+			look: Object.fromEntries(
+				bubbleKinds.map((kind) => {
+					const colors = kindColors(kind, kinds[kind]);
+
+					return [kind, { color: colors.color, backgroundColor: colors.background }];
+				}),
+			),
+		},
+	);
+
+const generateBubbleCss = () => {
+	const micro = fontScale('micro')!;
+
+	return `.rcx-bubble__button > span,
+.rcx-bubble__item > span {
+	overflow: hidden;
+
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.rcx-bubble__item > .rcx-icon {
+	margin-inline-end: ${spacing('x8')};
+}
+
+.rcx-bubble__button:active > *:not([role='false']),
+.rcx-bubble__button.active > *:not([role='false']),
+.rcx-bubble__button.is-active > *:not([role='false']) {
+	transform: translateY(1px);
+}
+
+.rcx-bubble:not(.rcx-bubble__group) .rcx-bubble__button[class]:has(> .rcx-icon),
+.rcx-bubble:not(.rcx-bubble__group) .rcx-bubble__item[class]:has(> .rcx-icon) {
+	padding-inline-end: ${spacing('x12')};
+}
+
+.rcx-bubble--small .rcx-bubble__button[class],
+.rcx-bubble--small .rcx-bubble__item[class] {
+	height: ${size('x20')};
+
+	font-size: ${micro.fontSize};
+	font-weight: ${micro.fontWeight};
+	line-height: ${micro.lineHeight};
+	letter-spacing: ${micro.letterSpacing};
+}
+
+.rcx-bubble__group[class] > :first-child[class] {
+	border-top-right-radius: 0;
+	border-bottom-right-radius: 0;
+}
+
+.rcx-bubble__group[class] > :last-child[class] {
+	border-top-left-radius: 0;
+	border-bottom-left-radius: 0;
+}`;
+};
+
+const bannerKinds = ['info', 'success', 'warning', 'danger'];
+const bannerColor = (kind: string) => theme(`banner-colors-${kind}-color`, statusFontOf(kind));
+
+const genBanner = () =>
+	part(
+		'BannerFrame',
+		{
+			...flexBox,
+			flexDirection: 'row',
+			flexWrap: 'nowrap',
+			justifyContent: 'space-between',
+			alignItems: 'flex-start',
+			flexGrow: 0,
+			flexShrink: 1,
+			flexBasis: 'auto',
+			boxSizing: 'border-box',
+			paddingInline: spacing('x16'),
+			color: theme('banner-colors-neutral-color', fontDefault),
+			borderTopWidth: borderWidth('large')!,
+			borderTopStyle: 'solid',
+			borderBottomWidth: borderWidth('default')!,
+			borderBottomStyle: 'solid',
+			borderBottomColor: strokeExtraLight,
+			backgroundColor: theme('banner-colors-neutral-background-color', surfaceOf('tint')),
+			fontFamily: fontFamily('sans')!,
+		},
+		{
+			tone: {
+				neutral: { borderTopColor: 'transparent' },
+				...Object.fromEntries(bannerKinds.map((kind) => [kind, { borderTopColor: bannerColor(kind) }])),
+			},
+			inline: { true: { paddingBlock: spacing('x12') }, false: { paddingBlock: offScale(14) } },
+			actionable: { true: { cursor: 'pointer' }, false: {} },
+		},
+	);
+
+const genBannerIcon = () =>
+	part(
+		'BannerIconFrame',
+		{ ...blockBox, paddingBlock: spacing('x8'), paddingInlineEnd: spacing('x12') },
+		{ tone: { neutral: {}, ...Object.fromEntries(bannerKinds.map((kind) => [kind, { color: bannerColor(kind) }])) } },
+	);
+
+const genBannerContent = () =>
+	part(
+		'BannerContentFrame',
+		{ ...blockBox, flexGrow: 1, alignSelf: 'center', ...font('p2') },
+		{ inline: { true: { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }, false: {} } },
+	);
+
+const genBannerTitle = () =>
+	part(
+		'BannerTitleFrame',
+		{ render: 'h6', ...blockBox, margin: 0, paddingBlock: 0, paddingInlineStart: 0, ...font('h5') },
+		{ inline: { true: { display: 'inline', paddingInlineEnd: spacing('x8') }, false: { paddingInlineEnd: 0 } } },
+	);
+
+const genBannerLink = () => frameCode('BannerLinkFrame', 'Text', { render: 'a', ...inlineBase, paddingLeft: offScale(10) });
+
+const genBannerCloseButton = () =>
+	part(
+		'BannerCloseButtonFrame',
+		{ ...blockBox, paddingInline: spacing('x8') },
+		{ inline: { true: { marginBlock: spacing('-x4'), paddingBlock: 0 }, false: { paddingBlock: offScale(6) } } },
+	);
+
+const generateBanner = () =>
+	[genBanner, genBannerIcon, genBannerContent, genBannerTitle, genBannerLink, genBannerCloseButton]
+		.map((generate) => generate())
+		.join('\n\n');
+
+const generateBannerCss = () => `.rcx-banner {
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.rcx-banner.rcx-banner[hidden] {
+	display: none;
+}`;
+
+const toastBarRadius = theme('toastbar-border-radius', radius('medium'));
+const toastBarKinds = { success: 'on-success', error: 'on-danger' } as const;
+const toastBarColor = (kind: keyof typeof toastBarKinds) =>
+	theme(`toastbar-${kind}-color`, String(statusColors[`status-font-${toastBarKinds[kind]}` as keyof typeof statusColors]));
+
+const generateToastBar = () =>
+	`${part('ToastBarFrame', {
+		...blockBox,
+		position: 'relative',
+		minWidth: size('x232')!,
+		maxWidth: size('x416')!,
+		color: theme('toastbar-color', fontDefault),
+		borderRadius: toastBarRadius,
+		backgroundColor: theme('toastbar-background-color', surfaceOf('tint')),
+		boxShadow: `0 0 2px 0 ${shadowColors['shadow-elevation-2x']}, 0 0 12px 0 ${shadowColors['shadow-elevation-2y']}`,
+		...font('p2'),
+	})}\n\n${frame('ToastBarInnerFrame', { ...flexBox, padding: spacing('x16') })}\n\n${frame('ToastBarContentFrame', {
+		...blockBox,
+		width: '100%',
+		marginBlock: 0,
+		marginInline: spacing('x16'),
+	})}\n\n${frame('ToastBarProgressFrame', {
+		...blockBox,
+		position: 'absolute',
+		bottom: 0,
+		overflow: 'hidden',
+		width: '100%',
+		height: size('x4')!,
+		borderBottomLeftRadius: toastBarRadius,
+		borderBottomRightRadius: toastBarRadius,
+	})}`;
+
+const generateToastBarCss = () => `.rcx-toastbar {
+	animation: rcx-toastbar-side-open 0.5s;
+}
+
+.rcx-toastbar::before {
+	position: absolute;
+	top: 0;
+
+	display: block;
+
+	width: 100%;
+	height: ${size('x4')};
+
+	content: '';
+
+	border-radius: ${toastBarRadius} ${toastBarRadius} 0 0;
+	background-color: transparent;
+}
+
+.rcx-toastbar--success::before {
+	background-color: ${toastBarColor('success')};
+}
+
+.rcx-toastbar--error::before {
+	background-color: ${toastBarColor('error')};
+}
+
+.rcx-toastbar_icon--success {
+	color: ${toastBarColor('success')};
+}
+
+.rcx-toastbar_icon--error {
+	color: ${toastBarColor('error')};
+}
+
+.rcx-toastbar_progressbar::after {
+	display: block;
+
+	width: 0%;
+	height: 100%;
+
+	content: '';
+	animation: rcx-toastbar-progress var(--rcx-toastbar-progress-time, 5s) forwards;
+	animation-play-state: var(--rcx-toastbar-progress-state, running);
+
+	background-color: ${theme('toastbar-progressbar-background-color', surfaceOf('neutral'))};
+}`;
+
+const statesColumn = {
+	...flexBox,
+	display: 'flex',
+	flexDirection: 'column',
+	justifyContent: 'center',
+	alignItems: 'center',
+} as const;
+
+// The subtitle, list and suggestion are the same centered, capped column
+const statesText = (scale: string, extra: Record<string, Value> = {}): Value => ({
+	...statesColumn,
+	width: size('full')!,
+	maxWidth: '462px',
+	marginTop: 0,
+	marginBottom: 0,
+	marginLeft: 0,
+	marginRight: 0,
+	paddingTop: 0,
+	paddingBottom: 0,
+	paddingLeft: 0,
+	paddingRight: 0,
+	listStylePosition: 'inside',
+	textAlign: 'center',
+	...font(scale),
+	...extra,
+});
+
+const statesIconColor = (name: string) => theme(`states-icons-color-${name}`, framedIconFont(name === 'primary' ? 'info' : name));
+
+const generateStates = () =>
+	`${declaredWhereTheyRender}${frame('StatesFrame', {
+		render: 'div',
+		...statesColumn,
+		padding: spacing('x16')!,
+		color: fontColorOf('secondary-info'),
+	})}`;
+
+const generateStatesIcon = () =>
+	`${declaredWhereTheyRender}${frame(
+		'StatesIconFrame',
+		{
+			render: 'i',
+			...iconBase,
+			fontSize: 'var(--rcx-states-icon-size)',
+			marginBottom: spacing('x20')!,
+			padding: spacing('x16')!,
+			color: fontColorOf('secondary-info'),
+			borderRadius: radius('full'),
+			backgroundColor: String(surfaceColors['surface-neutral']),
+		},
+		{
+			variation: Object.fromEntries(['success', 'danger', 'warning', 'primary'].map((name) => [name, { color: statesIconColor(name) }])),
+		},
+	)}`;
+
+const generateStatesTitle = () =>
+	`${declaredWhereTheyRender}${frame('StatesTitleFrame', {
+		render: 'h3',
+		...blockBox,
+		marginTop: 0,
+		marginBottom: spacing('x8')!,
+		textAlign: 'center',
+		color: fontDefault,
+		...font('h3'),
+	})}`;
+
+const generateStatesSubtitle = () =>
+	`${declaredWhereTheyRender}${frame('StatesSubtitleFrame', { render: 'div', ...(statesText('p1', { marginBottom: spacing('x24')! }) as object) })}`;
+
+const generateStatesSuggestion = () =>
+	`${declaredWhereTheyRender}${frame('StatesSuggestionFrame', { render: 'div', ...(statesText('p2m', { marginBottom: spacing('x24')! }) as object) })}`;
+
+const generateStatesSuggestionList = () =>
+	`${declaredWhereTheyRender}${frame('StatesSuggestionListFrame', {
+		render: 'ul',
+		...(statesText('p2m', { listStyleType: 'disc', listStylePosition: 'outside' }) as object),
+	})}`;
+
+const generateStatesSuggestionListItem = () =>
+	frameCode('StatesSuggestionListItemWrapperFrame', 'Text', { render: 'span', ...inlineBase, marginInlineStart: spacing('-x4') });
+
+const generateStatesLink = () =>
+	frameCode('StatesLinkFrame', 'Text', {
+		render: 'a',
+		...inlineBase,
+		...font('p2'),
+		marginTop: spacing('x16')!,
+		marginBottom: spacing('x16')!,
+		color: fontColorOf('info'),
+	});
+
+// CardGrid renders on these classes without the Grid components, so they stay classes; the gutters and column spans also depend on the viewport, which a frame cannot hold
+const generateGridCss = () => {
+	const rem = (value: number) => `${value / 16}rem`;
+	const rules: string[] = [
+		'.rcx-grid {\n\tdisplay: flex;\n\tflex-flow: row wrap;\n}',
+		'.rcx-grid__wrapper {\n\toverflow: hidden;\n}',
+		'.rcx-grid__item {\n\tflex: 1 1 0;\n}',
+	];
+
+	const onBreakpoint = (name: string, selectors: (pinned: string) => string[], body: string) => {
+		const { minViewportWidth } = breakpoints[name];
+		const rule = (list: string[]) => `${list.join(',\n')} {\n${body}\n}`;
+		const media = (css: string) =>
+			minViewportWidth === null ? css : `@media screen and (min-width: ${rem(minViewportWidth)}) {\n${css}\n}`;
+
+		rules.push(media(rule(selectors(''))), rule(selectors(`.rcx-grid--${name} > `)));
+	};
+
+	for (const [name, { columns, gutterWidth }] of Object.entries(breakpoints)) {
+		const half = `calc(${rem(gutterWidth)} / 2)`;
+		const negativeHalf = `calc(${rem(gutterWidth)} / -2)`;
+
+		onBreakpoint(name, (pinned) => [`${pinned}.rcx-grid`], `\tmargin-block: ${negativeHalf};\n\tmargin-inline: ${negativeHalf};`);
+		onBreakpoint(name, (pinned) => [`${pinned}.rcx-grid__item`], `\tpadding-block: ${half};\n\tpadding-inline: ${half};`);
+
+		for (let span = 1; span <= columns; span++) {
+			const width = `${Number(((span / columns) * 100).toFixed(10))}%`;
+
+			onBreakpoint(
+				name,
+				(pinned) => [`${pinned}.rcx-grid__item--${name}-${span}`],
+				`\tflex-grow: 0;\n\tflex-basis: ${width};\n\n\tmax-width: ${width};`,
+			);
+		}
+	}
+
+	return rules.join('\n\n');
+};
+const generateContextualbarContent = () =>
+	part(
+		'ContextualbarContentFrame',
+		{ ...flexBox, flexDirection: 'column', overflowY: 'hidden', height: '100%' },
+		{
+			// both set `padding`, so one variant holds each combination
+			padding: {
+				'default': { paddingInline: spacing('x24') },
+				'flush': { paddingInline: 0 },
+				'spaced': { paddingInline: spacing('x24'), paddingBlock: spacing('x12') },
+				'flush-spaced': { paddingInline: 0, paddingBlock: spacing('x12') },
+			},
+		},
+	);
+
+const generateContextualbarEmptyContent = () =>
+	part('ContextualbarEmptyContentFrame', { ...flexBox, flexDirection: 'column', justifyContent: 'center', flexGrow: 1 });
+
+const generateContextualbarFooter = () =>
+	part('ContextualbarFooterFrame', { ...blockBox, paddingInline: spacing('x16'), paddingBlock: spacing('x20') });
+
+const generateContextualbarHeader = () =>
+	`${part('ContextualbarHeaderFrame', {
+		...flexBox,
+		alignItems: 'center',
+		flexShrink: 0,
+		height: size('x44')!,
+		paddingInline: spacing('x16')!,
+		borderBlockEndWidth: borderWidth('default')!,
+		borderBlockEndStyle: 'solid',
+		borderBlockColor: strokeExtraLight,
+	})}\n\n${frame('ContextualbarHeaderInnerFrame', {
+		...flexBox,
+		alignItems: 'center',
+		justifyContent: 'space-between',
+		flexGrow: 1,
+		height: '100%',
+		overflow: 'hidden',
+		marginInline: spacing('-x4'),
+		paddingInline: spacing('x4'),
+		gap: spacing('x8'),
+	})}`;
+
+const generateContextualbarSection = () =>
+	part('ContextualbarSectionFrame', {
+		...flexBox,
+		alignItems: 'center',
+		flexGrow: 1,
+		padding: spacing('x16')!,
+		borderBlockEndWidth: borderWidth('default')!,
+		borderBlockEndStyle: 'solid',
+		borderBlockColor: strokeExtraLight,
+	});
+
+const generateContextualbarSkeleton = () =>
+	part('ContextualbarSkeletonBodyFrame', { ...flexBox, flexDirection: 'column', padding: spacing('x24'), gap: spacing('x4') });
+
+const generateContextualbarTitle = () =>
+	part('ContextualbarTitleFrame', {
+		...blockBox,
+		flexGrow: 1,
+		flexShrink: 1,
+		overflow: 'hidden',
+		textOverflow: 'ellipsis',
+		whiteSpace: 'nowrap',
+		...font('h5'),
+	});
+
+// The Item family: one frame per module, over the values the SCSS read under `--rcx-item-…`
+const itemTokens = {
+	font: toCSSValue('--rcx-item-color-font-default', textIconColors['font-default']),
+	highlighted: toCSSValue('--rcx-item-color-font-highlighted', textIconColors['font-titles-labels']),
+	secondary: toCSSValue('--rcx-item-color-font-secondary', textIconColors['font-secondary-info']),
+	disabled: toCSSValue('--rcx-item-color-font-disabled', textIconColors['font-disabled']),
+	danger: toCSSValue('--rcx-item-color-font-danger', statusColors['status-font-on-danger']),
+	hover: toCSSValue('--rcx-item-color-surface-hover', surfaceColors['surface-hover']),
+	selected: toCSSValue('--rcx-item-color-surface-selected', surfaceColors['surface-selected']),
+	focus: toCSSValue('--rcx-item-color-stroke-focus', strokeColors['stroke-highlight']),
+	divider: toCSSValue('--rcx-item-color-stroke-divider', strokeColors['stroke-extra-light']),
+	headerSurface: toCSSValue('--rcx-item-group-header-color-surface', surfaceColors['surface-light']),
+};
+
+// Tamagui's View is a flex column with its own box model; the elements Item renders were plain ones
+const plain = {
+	position: 'static',
+	display: 'block',
+	flexDirection: 'row',
+	flexShrink: 1,
+	alignItems: 'normal',
+	minWidth: 'auto',
+	minHeight: 'auto',
+} as const;
+
+const itemRadius = toCSSValue('--rcx-border-radius-small', borderRadius('small')!);
+const ring = `inset 0 0 0 ${borderWidth('medium')} ${itemTokens.focus}`;
+const truncating = { overflow: 'hidden', minWidth: 0, whiteSpace: 'nowrap', textOverflow: 'ellipsis' };
+
+const itemFrame = (name: string, base: Record<string, Value>, variants?: Record<string, Value>) =>
+	`// Declared where it renders: zero-runtime only erases a \`styled()\` whose every use is in its own module
+const ${name} = styled(View, ${literal({ render: 'div', ...plain, ...base, ...(variants && { variants }) })});`;
+
+const generateItem = () =>
+	itemFrame(
+		'ItemFrame',
+		{
+			position: 'relative',
+			display: 'flex',
+			alignItems: 'center',
+			boxSizing: 'border-box',
+			minWidth: 0,
+			margin: 0,
+			paddingBlock: spacing('x4')!,
+			paddingInline: `calc(${spacing('x4')} + var(--rcx-item-inset-inline))`,
+			textAlign: 'start',
+			textDecorationLine: 'none',
+			color: itemTokens.font,
+			borderRadius: itemRadius,
+			fontFamily: fontFamily('sans')!,
+			gap: 'var(--rcx-item-gap)',
+			...font('p2'),
+		},
+		{
+			// A multi-line row keeps its avatar at the top
+			align: { center: {}, start: { alignItems: 'flex-start' } },
+			// The disabled text wins over danger
+			tone: { default: {}, danger: { color: itemTokens.danger }, disabled: { color: itemTokens.disabled } },
+			// Selected wins over focused; disabled wins over both
+			surface: {
+				none: {},
+				focused: { backgroundColor: itemTokens.hover },
+				selected: { backgroundColor: itemTokens.selected },
+				disabled: { backgroundColor: 'transparent', cursor: 'not-allowed' },
+			},
+			// A row whose owner moves focus (`focusVisible`) draws its ring from `Item.styles.css`
+			ring: {
+				native: {
+					outlineWidth: { 'focus-visible': borderWidth('medium')! },
+					outlineStyle: { 'focus-visible': 'solid' },
+					outlineColor: { 'focus-visible': 'transparent' },
+					outlineOffset: { 'focus-visible': `calc(-1 * ${borderWidth('medium')})` },
+					boxShadow: { 'focus-visible': ring },
+				},
+				managed: {},
+			},
+		},
+	);
+
+const generateItemGroup = () => itemFrame('ItemGroupFrame', { display: 'flex', flexDirection: 'column', margin: 0, padding: 0 });
+
+const generateItemGroupHeader = () =>
+	itemFrame(
+		'ItemGroupHeaderFrame',
+		{
+			position: 'relative',
+			display: 'flex',
+			alignItems: 'center',
+			boxSizing: 'border-box',
+			minWidth: 0,
+			minHeight: size('x28')!,
+			margin: 0,
+			paddingBlock: spacing('x4')!,
+			paddingInline: `calc(${spacing('x4')} + var(--rcx-item-inset-inline))`,
+			color: itemTokens.secondary,
+			borderRadius: itemRadius,
+			fontFamily: fontFamily('sans')!,
+			gap: 'var(--rcx-item-gap)',
+			...font('c2'),
+		},
+		{
+			sticky: { true: { position: 'sticky', zIndex: 2, top: 0, backgroundColor: itemTokens.headerSurface }, false: {} },
+		},
+	);
+
+const generateItemGroupTitle = () =>
+	itemFrame('ItemGroupTitleFrame', {
+		display: 'block',
+		...truncating,
+		flexGrow: 1,
+		flexBasis: 'auto',
+		margin: 0,
+		color: 'inherit',
+	});
+
+const generateItemDivider = () =>
+	itemFrame('ItemDividerFrame', {
+		display: 'block',
+		margin: 0,
+		paddingBlock: spacing('x4')!,
+		paddingInline: 0,
+		borderWidth: 0,
+		borderStyle: 'none',
+	});
+
+const slot = { display: 'flex', justifyContent: 'center', alignItems: 'center', flexGrow: 0, flexShrink: 0, flexBasis: 'auto' };
+
+const generateItemMedia = () =>
+	itemFrame('ItemMediaFrame', slot, { icon: { true: { width: size('x20')!, height: size('x20')! }, false: {} } });
+
+const generateItemIcon = () => itemFrame('ItemIconFrame', { ...slot, width: size('x20')!, height: size('x20')! });
+
+const generateItemContent = () =>
+	itemFrame('ItemContentFrame', { display: 'flex', flexDirection: 'column', flexGrow: 1, flexShrink: 1, flexBasis: 'auto', minWidth: 0 });
+
+const generateItemRow = () => itemFrame('ItemRowFrame', { display: 'flex', alignItems: 'center', minWidth: 0, gap: 'var(--rcx-item-gap)' });
+
+const generateItemTitle = () =>
+	itemFrame('ItemTitleFrame', { display: 'block', ...truncating, flexGrow: 1, flexShrink: 1, flexBasis: 'auto' });
+
+const generateItemDescription = () =>
+	itemFrame(
+		'ItemDescriptionFrame',
+		{ display: undefined, ...truncating, flexGrow: 1, flexShrink: 1, flexBasis: 'auto', color: itemTokens.secondary, ...font('c1') },
+		{ inline: { true: { display: 'inline', marginInlineStart: spacing('x4') }, false: { display: 'block' } } },
+	);
+
+const generateItemMeta = () =>
+	itemFrame(
+		'ItemMetaFrame',
+		{ display: 'block', flexShrink: undefined, whiteSpace: 'nowrap', color: itemTokens.secondary, ...font('c1') },
+		{
+			truncate: {
+				true: { overflow: 'hidden', flexGrow: 0, flexShrink: 1, flexBasis: 'auto', minWidth: 0, textOverflow: 'ellipsis' },
+				false: { flexGrow: 0, flexShrink: 0, flexBasis: 'auto' },
+			},
+		},
+	);
+
+const generateItemActions = () =>
+	`${itemFrame('ItemActionsFrame', {
+		position: 'relative',
+		zIndex: 1,
+		display: 'flex',
+		alignItems: 'center',
+		flexGrow: 0,
+		flexShrink: 0,
+		flexBasis: 'auto',
+		gap: offScale(2),
+	})}
+
+${itemFrame('ItemActionsInnerFrame', { display: 'flex', overflow: 'hidden', alignItems: 'center', minWidth: 0, gap: offScale(2) })}`;
+
+const generateItemLink = () =>
+	itemFrame('ItemLinkFrame', {
+		display: 'block',
+		overflow: 'hidden',
+		width: '100%',
+		margin: 0,
+		padding: 0,
+		cursor: 'pointer',
+		textAlign: 'start',
+		whiteSpace: 'nowrap',
+		textDecorationLine: 'none',
+		textOverflow: 'ellipsis',
+		color: 'inherit',
+		borderWidth: 0,
+		borderStyle: 'none',
+		borderColor: 'currentcolor',
+		backgroundColor: 'transparent',
+	});
+
+const clickable =
+	":where(.rcx-item--clickable, .rcx-item--interactive, a, button, [role='option'], [role^='menuitem'], :has(.rcx-item__link))";
+// A row whose content is interactive shows the hover surface without being a click target
+const hoverable = clickable.replace(':where(', ':where(.rcx-item--hoverable, ');
+
+// What a Tamagui frame cannot say, for the colors it takes from the tokens
+const generateItemStyles = () => `.rcx-item${clickable}:where(:not(.rcx-item--disabled)) {
+	cursor: pointer;
+}
+
+.rcx-item${hoverable}:where(:not(.rcx-item--selected, .rcx-item--disabled)):hover {
+	background-color: ${itemTokens.hover};
+}
+
+/* Forced colors drop the box-shadow and paint the transparent outline instead */
+.rcx-item:has(.rcx-item__link:focus-visible),
+.rcx-item.rcx-item--focus-visible,
+.rcx-item-group-header:has(.rcx-item-group-title:is(button):focus-visible) {
+	outline: ${borderWidth('medium')} solid transparent;
+	outline-offset: calc(-1 * ${borderWidth('medium')});
+	box-shadow: ${ring};
+}
+
+.rcx-item-group-header:has(.rcx-item-group-title:is(button)):hover {
+	background-color: ${itemTokens.hover};
+}
+
+.rcx-item--highlighted .rcx-item__title,
+.rcx-item--highlighted .rcx-item__icon,
+.rcx-item--highlighted .rcx-item__description,
+.rcx-item--highlighted .rcx-item__meta {
+	font-weight: 500;
+	color: ${itemTokens.highlighted};
+}
+
+.rcx-item-divider::before {
+	display: block;
+
+	content: '';
+
+	border-top: ${borderWidth('default')} solid ${itemTokens.divider};
+}
+
+.rcx-item-divider.rcx-item-divider--inset-sm,
+.rcx-item-divider.rcx-item-divider--inset-md,
+.rcx-item-divider.rcx-item-divider--inset-lg {
+	margin-inline: calc(${spacing('x4')} + var(--rcx-item-inset-inline));
+}
+
+.rcx-item-group + .rcx-item-group {
+	margin-block-start: ${spacing('x8')};
+}
+
+.rcx-item-group-title:is(button) {
+	gap: ${spacing('x4')};
+}
+
+@media (pointer: coarse) {
+	.rcx-item.rcx-item {
+		padding-block: ${spacing('x8')};
+	}
+}`;
+
+const itemFile = (name: string) => join(import.meta.dirname, `../src/components/Item/${name}`);
+
+const fontColor = (name: string) => textIconColors[`font-${name}` as keyof typeof textIconColors].toString();
+const surfaceColor = (name: string) => surfaceColors[`surface-${name}` as keyof typeof surfaceColors].toString();
+const strokeColor = (name: string) => strokeColors[`stroke-${name}` as keyof typeof strokeColors].toString();
+const statusBackground = (name: string) =>
+	statusBackgroundColors[`status-background-${name}` as keyof typeof statusBackgroundColors].toString();
+const themedVar = (name: string, value: string) => toCSSValue(`--rcx-${name}`, value);
+const fontScaleOf = (name: string) => fontScale(name) as unknown as Record<string, Value>;
+// One `const` per entry, for the frames of the module to read
+const constants = (entries: Record<string, Value>) =>
+	Object.entries(entries)
+		.map(([name, value]) => `const ${name} = ${literal(value)} as const;`)
+		.join('\n\n');
+
+const generateTabs = () =>
+	constants({
+		divider: {
+			borderBottomWidth: borderWidth('default')!,
+			borderBottomStyle: 'solid',
+			borderBottomColor: strokeColor('light'),
+		},
+	});
+
+const generateTabsItem = () => {
+	const t = (name: string, value: string) => themedVar(`tabs-${name}`, value);
+	const color = t('color', fontColor('hint'));
+	const hover = t('hover-border-color', fontColor('default'));
+	const active = t('active-color', fontColor('titles-labels'));
+	const selected = t('selected-color', fontColor('info'));
+	const selectedBorder = t('selected-border-color', fontColor('info'));
+	const hoverSelected = t('hover-selected-color', buttonBackground('primary', 'hover'));
+	const hoverSelectedBorder = t('hover-selected-border-color', buttonBackground('primary', 'hover'));
+	const activeSelected = t('active-selected-color', buttonBackground('primary', 'press'));
+	const activeSelectedBorder = t('active-selected-border-color', buttonBackground('primary', 'press'));
+	const disabled = t('disabled-color', fontColor('disabled'));
+	const disabledSelected = t('disabled-selected-color', statusBackground('info'));
+	const disabledSelectedBorder = t('disabled-selected-border-color', statusBackground('info'));
+	const thin = borderWidth('default')!;
+	const thick = borderWidth('large')!;
+	const unselectedPadding = `calc(${spacing('x4')} + ${thin})`;
+	const underlined = { default: thin, hover: thick, press: thick };
+
+	return constants({
+		frame: {
+			render: 'button',
+			display: 'inline-block',
+			position: 'relative',
+			flexDirection: 'row',
+			alignItems: 'center',
+			flexGrow: 0,
+			flexShrink: 0,
+			flexBasis: 'auto',
+			minWidth: 'auto',
+			minHeight: size('x40')!,
+			marginBlock: 0,
+			marginInline: spacing('x12')!,
+			cursor: 'pointer',
+			outlineStyle: 'none',
+			...fontScaleOf('h4'),
+			borderWidth: thin,
+			borderStyle: 'solid',
+			borderColor: { 'default': 'transparent', 'focus-visible': t('focus-border-color', buttonBackground('primary', 'default')) },
+			backgroundColor: 'transparent',
+			borderRadius: { 'focus-visible': t('border-radius', radiusOf('medium')) },
+			boxShadow: {
+				'focus-visible': `0 0 0 ${borderWidth('medium')} ${t('focus-shadow-color', strokeColor('extra-light-highlight'))}`,
+			},
+		},
+		idle: {
+			paddingBlock: unselectedPadding,
+			paddingInline: 0,
+			color: { default: color, hover, press: active },
+			borderBottomColor: { hover, press: active },
+			borderBottomWidth: underlined,
+		},
+		idleDisabled: {
+			paddingBlock: unselectedPadding,
+			paddingInline: 0,
+			cursor: 'not-allowed',
+			color: { default: disabled, hover: disabled, press: active },
+			borderBottomColor: { hover, press: active },
+			borderBottomWidth: underlined,
+		},
+		selected: {
+			paddingBlock: spacing('x4')!,
+			paddingInline: 0,
+			color: { default: selected, hover: hoverSelected, press: activeSelected },
+			borderBottomColor: { default: selectedBorder, hover: hoverSelectedBorder, press: activeSelectedBorder },
+			borderBottomWidth: thin,
+		},
+		selectedDisabled: {
+			paddingBlock: spacing('x4')!,
+			paddingInline: 0,
+			cursor: 'not-allowed',
+			color: disabledSelected,
+			borderBottomColor: disabledSelectedBorder,
+			borderBottomWidth: thin,
+		},
+	});
+};
+
+const inputColor = (name: string, fallback: { toString: () => string }) => toCSSValue(`--rcx-input-colors-${name}`, fallback.toString());
+
+// The input box's resting and pointer states
+const inputChrome = (focusState: string): Value => ({
+	borderWidth: borderWidth('default')!,
+	borderStyle: 'solid',
+	borderColor: {
+		default: inputColor('border-color', strokeColors['stroke-light']),
+		hover: inputColor('hover-border-color', strokeColors['stroke-dark']),
+		[focusState]: inputColor('focus-border-color', strokeColors['stroke-highlight']),
+		press: inputColor('active-border-color', strokeColors['stroke-dark']),
+	},
+	borderRadius: toCSSValue('--rcx-input-border-radius', toCSSValue('--rcx-border-radius-medium', borderRadius('medium')!)),
+	backgroundColor: inputColor('background-color', surfaceColors['surface-light']),
+	boxShadow: {
+		[focusState]: `0 0 0 ${borderWidth('medium')} ${inputColor('focus-shadow-color', shadowColors['shadow-highlight'])}`,
+		press: 'none',
+	},
+});
+
+const inputDisabled = {
+	borderColor: inputColor('disabled-border-color', strokeColors['stroke-light']),
+	backgroundColor: inputColor('disabled-background-color', surfaceColors['surface-disabled']),
+};
+const inputInvalidDisabled = {
+	borderColor: inputColor('invalid-disabled-border-color', strokeColors['stroke-light']),
+	backgroundColor: inputColor('invalid-disabled-background-color', surfaceColors['surface-disabled']),
+};
+const inputBoxStates: Record<'invalid' | 'disabled' | 'invalid-disabled', Value> = {
+	'invalid': {
+		borderColor: {
+			'default': inputColor('invalid-border-color', strokeColors['stroke-error']),
+			'hover': inputColor('invalid-hover-border-color', strokeColors['stroke-error']),
+			'focus-within': inputColor('invalid-focus-border-color', strokeColors['stroke-error']),
+			'press': inputColor('invalid-active-border-color', strokeColors['stroke-error']),
+		},
+		backgroundColor: inputColor('invalid-background-color', surfaceColors['surface-light']),
+		boxShadow: {
+			'default': 'none',
+			'focus-within': `0 0 0 ${borderWidth('medium')} ${inputColor('invalid-focus-shadow-color', shadowColors['shadow-danger'])}`,
+			'press': 'none',
+		},
+	},
+	// A disabled input takes no pointer, so its wrapper keeps one look in every state
+	'disabled': { ...inputDisabled, cursor: 'not-allowed', pointerEvents: 'none' },
+	'invalid-disabled': { ...inputInvalidDisabled, cursor: 'not-allowed', pointerEvents: 'none' },
+};
+const inputAddonStates: Record<'default' | 'invalid' | 'disabled' | 'invalid-disabled', Value> = {
+	'default': { color: inputColor('color', textIconColors['font-titles-labels']) },
+	'invalid': { color: inputColor('invalid-color', textIconColors['font-titles-labels']) },
+	'disabled': { color: inputColor('disabled-color', textIconColors['font-disabled']), pointerEvents: 'none' },
+	'invalid-disabled': { color: inputColor('invalid-disabled-color', textIconColors['font-disabled']), pointerEvents: 'none' },
+};
+
+const generateInput = () => {
+	const chrome = inputChrome('focus');
+	const frame: Value = {
+		render: 'input',
+		position: 'relative',
+		display: 'inline-flex',
+		flexDirection: 'row',
+		alignItems: 'normal',
+		flexGrow: 1,
+		flexShrink: 0,
+		flexBasis: 'auto',
+		width: size('none')!,
+		minWidth: size('x128')!,
+		minHeight: 'auto',
+		verticalAlign: 'baseline',
+		whiteSpace: 'nowrap',
+		wordBreak: 'break-all',
+		overflow: 'hidden',
+		textOverflow: 'ellipsis',
+		backgroundColor: 'transparent',
+		color: inputColor('color', textIconColors['font-titles-labels']),
+		...font('p2m'),
+	};
+	const decorated = (minWidth: string, minHeight: string, paddingBlock: string, paddingInline: string): Value => ({
+		minWidth,
+		minHeight,
+		paddingBlock,
+		paddingInline,
+		...(chrome as Record<string, Value>),
+	});
+
+	return `const frame = ${literal(frame)};
+
+// Declared where they render: zero-runtime only erases a \`styled()\` whose every use is in its own module
+const InputFrame = styled(View, {
+	...frame,
+	variants: {
+		// Decoration, size and the wrapper set the same properties, so each combination is one variant
+		look: {
+			'plain': {},
+			'plain-small': ${literal(font('c1'), '\t\t\t')},
+			'wrapped': { minWidth: ${JSON.stringify(size('none'))} },
+			'wrapped-small': ${literal({ minWidth: size('none')!, ...font('c1') }, '\t\t\t')},
+			'decorated': ${literal(decorated(size('x128')!, size('x40')!, spacing('x8')!, `calc(${spacing('x16')} - ${borderWidth('default')})`), '\t\t\t')},
+			'small': ${literal({ ...font('c1'), ...(decorated(size('x112')!, size('x28')!, spacing('x4')!, spacing('x8')!) as Record<string, Value>) }, '\t\t\t')},
+		},
+		kind: {
+			text: {},
+			textarea: { overflow: 'auto', resize: 'none', verticalAlign: 'middle', whiteSpace: 'normal' },
+			select: { overflow: 'auto', appearance: 'none' },
+			multiple: { overflow: 'auto', appearance: 'none', verticalAlign: 'middle' },
+		},
+		placeholderVisible: {
+			true: { color: ${JSON.stringify(inputColor('placeholder-color', textIconColors['font-hint']))} },
+			false: {},
+		},
+		invisible: {
+			true: { visibility: 'hidden', opacity: 0 },
+			false: {},
+		},
+	},
+});`;
+};
+
+const generateInputBoxWrapper = () => {
+	const chrome = inputChrome('focus-within') as Record<string, Value>;
+	const frame: Value = {
+		render: 'label',
+		position: 'relative',
+		// Label's `display: flex` comes after the input box's `inline-flex` in the stylesheet
+		display: 'flex',
+		flexDirection: 'row',
+		flexGrow: 1,
+		flexShrink: 1,
+		alignItems: 'center',
+		minWidth: size('x144')!,
+		minHeight: size('x40')!,
+		paddingBlock: spacing('x8')!,
+		paddingInline: `calc(${spacing('x16')} - ${borderWidth('default')})`,
+		verticalAlign: 'baseline',
+		wordBreak: 'break-all',
+		cursor: 'default',
+		color: fontColorOf('default'),
+		...font('p2m'),
+		...chrome,
+	};
+
+	return `const frame = ${literal(frame)};
+
+// Declared where they render: zero-runtime only erases a \`styled()\` whose every use is in its own module
+const InputBoxWrapperFrame = styled(View, {
+	...frame,
+	variants: {
+		// Small, flush and textarea set the same properties, so each combination is one variant
+		layout: {
+			'default': {},
+			'flush': ${literal({ paddingBlock: spacing('x4')!, paddingInlineEnd: spacing('x4')! }, '\t\t\t')},
+			'textarea': { alignItems: 'flex-start' },
+			'textarea-flush': ${literal({ alignItems: 'flex-start', paddingBlock: spacing('x4')!, paddingInlineEnd: spacing('x4')! }, '\t\t\t')},
+			'small': ${literal({ minWidth: size('x112')!, minHeight: size('x28')!, maxHeight: size('x28')!, paddingBlock: spacing('x4')!, paddingInline: spacing('x8')! }, '\t\t\t')},
+		},
+		// The state of the input it holds, which \`InputBox\` knows from its \`error\` and \`disabled\`
+		state: {
+			'default': {},
+			'invalid': ${literal(inputBoxStates.invalid, '\t\t\t')},
+			'disabled': ${literal(inputBoxStates.disabled, '\t\t\t')},
+			'invalid-disabled': ${literal(inputBoxStates['invalid-disabled'], '\t\t\t')},
+		},
+		invisible: {
+			true: { visibility: 'hidden', opacity: 0 },
+			false: {},
+		},
+	},
+});`;
+};
+
+// The addons on either side of the input, and the color of their icons, which follows the input's state
+const generateInputBoxAddon = () => {
+	const frame: Value = {
+		render: 'span',
+		display: 'flex',
+		flexDirection: 'row',
+		alignItems: 'flex-start',
+		flexGrow: 0,
+		flexShrink: 0,
+		flexBasis: 'auto',
+		minWidth: 'auto',
+		minHeight: 'auto',
+		cursor: 'pointer',
+	};
+
+	return `const frame = ${literal(frame)};
+
+// Declared where they render: zero-runtime only erases a \`styled()\` whose every use is in its own module
+const InputBoxAddonFrame = styled(View, {
+	...frame,
+	variants: {
+		position: {
+			start: { marginInlineEnd: ${JSON.stringify(spacing('x8'))} },
+			end: { marginInlineStart: ${JSON.stringify(spacing('x8'))} },
+		},
+		state: {
+			'default': ${literal(inputAddonStates.default, '\t\t\t')},
+			'invalid': ${literal(inputAddonStates.invalid, '\t\t\t')},
+			'disabled': ${literal(inputAddonStates.disabled, '\t\t\t')},
+			'invalid-disabled': ${literal(inputAddonStates['invalid-disabled'], '\t\t\t')},
+		},
+	},
+});`;
+};
+
+const generateInputBoxSkeleton = () => {
+	const frame: Value = {
+		display: 'inline-flex',
+		flexDirection: 'row',
+		alignItems: 'normal',
+		flexGrow: 1,
+		flexShrink: 0,
+		flexBasis: size('none')!,
+		minWidth: size('x128')!,
+		minHeight: size('x40')!,
+		paddingBlock: `calc(${spacing('x12')} - ${borderWidth('default')})`,
+		paddingInline: `calc(${spacing('x16')} - ${borderWidth('default')})`,
+		verticalAlign: 'baseline',
+		overflow: 'hidden',
+		textOverflow: 'ellipsis',
+		color: inputColor('color', textIconColors['font-titles-labels']),
+		borderWidth: borderWidth('default')!,
+		borderStyle: 'solid',
+		borderColor: inputColor('border-color', strokeColors['stroke-light']),
+		borderRadius: toCSSValue('--rcx-input-border-radius', toCSSValue('--rcx-border-radius-medium', borderRadius('medium')!)),
+		backgroundColor: inputColor('background-color', surfaceColors['surface-light']),
+		...font('p2m'),
+	};
+
+	return `// Declared where they render: zero-runtime only erases a \`styled()\` whose every use is in its own module
+const InputBoxSkeletonFrame = styled(View, ${literal(frame)});`;
+};
+
+// Boxes the field parts used to render as spans or divs: a Tamagui View starts as a column flex box, a Text as a pre-wrapped inline one
+const flexBase = {
+	display: 'flex',
+	flexDirection: 'row',
+	alignItems: 'normal',
+	flexShrink: 1,
+	minWidth: 'auto',
+	minHeight: 'auto',
+} as const;
+const field = (scale: string, color: string): Value => ({
+	...inlineBase,
+	...font(scale),
+	marginTop: offScale(2),
+	marginBottom: offScale(2),
+	color: fontColorOf(color),
+});
+
+const generateField = () =>
+	frameCode('FieldFrame', 'View', {
+		render: 'div',
+		...flexBase,
+		flexDirection: 'column',
+		alignItems: 'stretch',
+		flexShrink: 0,
+		width: size('full')!,
+	});
+
+const generateFieldRow = () =>
+	frameCode('FieldRowFrame', 'View', {
+		render: 'span',
+		...flexBase,
+		justifyContent: 'space-between',
+		alignItems: 'center',
+		marginTop: spacing('x4')!,
+		marginBottom: offScale(2),
+		color: fontColorOf('secondary-info'),
+		variants: { justify: { start: {}, end: { justifyContent: 'flex-end' } } },
+	});
+
+const generateFieldDescription = () => frameCode('FieldDescriptionFrame', 'Text', { render: 'span', ...field('p2', 'secondary-info') });
+const generateFieldHint = () => frameCode('FieldHintFrame', 'Text', { render: 'span', ...field('c1', 'secondary-info') });
+const generateFieldError = () => frameCode('FieldErrorFrame', 'Text', { render: 'span', ...field('c1', 'danger') });
+const generateFieldLink = () => frameCode('FieldLinkFrame', 'Text', { render: 'a', ...field('c1', 'info') });
+
+const generateFieldGroup = () =>
+	frameCode('FieldGroupFrame', 'View', {
+		render: 'fieldset',
+		...flexBase,
+		flexDirection: 'column',
+		justifyContent: 'center',
+		alignItems: 'stretch',
+		minWidth: size('none')!,
+	});
+
+const generateLabel = () =>
+	`${frameCode('LabelFrame', 'View', {
+		render: 'label',
+		...flexBase,
+		cursor: 'default',
+		color: fontColorOf('default'),
+		...font('p2m'),
+		variants: { unavailable: { true: { pointerEvents: 'none', color: fontColorOf('secondary-info') }, false: {} } },
+	})}
+
+${frameCode('LabelRequiredFrame', 'Text', { render: 'span', ...inlineBase, marginInlineStart: spacing('x4')!, color: fontColorOf('danger') })}`;
+
+const generateLabelInfo = () =>
+	frameCode('LabelInfoFrame', 'View', { render: 'span', ...flexBase, alignItems: 'center', order: 1, marginInline: spacing('x4')! });
+
+// The Sidebar family: one frame per element, over the values the SCSS read under `--rcx-sidebar-…`
+const sb = {
+	surface: themedVar('sidebar-color-surface-default', surfaceColor('sidebar')),
+	surfaceHover: themedVar('sidebar-color-surface-hover', surfaceColor('hover')),
+	surfaceSelected: themedVar('sidebar-color-surface-selected', surfaceColor('selected')),
+	font: themedVar('sidebar-color-font-default', fontColor('default')),
+	fontActive: themedVar('sidebar-color-font-active', fontColor('titles-labels')),
+	accordionBorder: themedVar('sidebar-accordion-border-color', strokeColor('light')),
+	link: themedVar('sidebar-link-color', fontColor('titles-labels')),
+	highlighted: themedVar('sidebar-item-color-highlighted', fontColor('titles-labels')),
+	divider: themedVar('sidebar-color-stroke-extra-light', strokeColor('light')),
+	mediaColor: themedVar('sidebar-media-color', fontColor('titles-labels')),
+	mediaBorder: themedVar('sidebar-media-border-color', strokeColor('light')),
+	bannerBackground: themedVar('sidebar-banner-background-default', surfaceColor('sidebar')),
+	bannerColor: themedVar('sidebar-banner-color-default', fontColor('titles-labels')),
+};
+
+const sbBanner = (kind: string) => ({
+	color: themedVar(`sidebar-banner-color-${kind}`, statusColors[`status-font-on-${kind}` as keyof typeof statusColors].toString()),
+	backgroundColor: themedVar(`sidebar-banner-background-${kind}`, statusBackground(kind)),
+});
+
+// `link-*` over a fallback: the generic link properties, then the sidebar's own color
+const sbLinkColor = (state: string, fallback: string) => themedVar(`link-${state}`, fallback);
+const sbLink = {
+	outline: themedVar('link-focus-outline-color', strokeColor('highlight')),
+	shadow: themedVar('link-focus-box-shadow-color', strokeColor('extra-light-highlight')),
+};
+
+const sbSmall = radiusOf('small');
+const sbMedium = radiusOf('medium');
+const sbHighlight = strokeColor('highlight');
+const sbBorder = borderWidth('default')!;
+
+// A Tamagui View is a flex column; `plain` is the box the SCSS left, and `box` adds what `rcx-box` gave it
+const sbFrame = (name: string, render: string, base: Record<string, Value>, variants?: Record<string, Value>, box = false) =>
+	`// Declared where it renders: zero-runtime only erases a \`styled()\` whose every use is in its own module
+const ${name} = styled(View, ${literal({ render, ...plain, ...(box && { boxSizing: 'border-box' }), ...base, ...(variants && { variants }) })});`;
+
+const sbTitle = {
+	overflow: 'hidden',
+	flexGrow: 0,
+	flexShrink: 1,
+	flexBasis: 'auto',
+	margin: 0,
+	whiteSpace: 'nowrap',
+	textOverflow: 'ellipsis',
+};
+
+const sbRow = { display: 'flex', alignItems: 'center' };
+
+const generateSidebar = () =>
+	sbFrame(
+		'SidebarFrame',
+		'nav',
+		{ position: 'relative', display: 'flex', flexDirection: 'column', height: '100%', color: sb.font, backgroundColor: sb.surface },
+		{ collapsed: { true: { overflow: 'hidden', width: size('x48')! }, false: {} } },
+		true,
+	);
+
+const generateSidebarSection = () =>
+	sbFrame(
+		'SidebarSectionFrame',
+		'div',
+		{ ...sbRow, height: size('x44')!, paddingInline: spacing('x16')!, gap: spacing('x8')! },
+		undefined,
+		true,
+	);
+
+const generateSidebarAccordion = () =>
+	`${sbFrame(
+		'SidebarAccordionFrame',
+		'div',
+		{
+			display: 'flex',
+			overflow: 'hidden',
+			flexDirection: 'column',
+			flexWrap: 'nowrap',
+			justifyContent: 'stretch',
+			flexGrow: 0,
+			flexShrink: 1,
+			flexBasis: 'auto',
+			height: '100%',
+		},
+		undefined,
+		true,
+	)}
+
+${sbFrame('SidebarAccordionWrapperFrame', 'div', { display: 'flex', overflow: 'scroll', flexDirection: 'column' })}`;
+
+const generateSidebarAccordionItem = () =>
+	`${sbFrame(
+		'SidebarAccordionItemFrame',
+		'section',
+		{
+			display: 'flex',
+			flexDirection: 'column',
+			flexWrap: 'nowrap',
+			flexGrow: 0,
+			flexShrink: 1,
+			flexBasis: 0,
+			borderTopWidth: '2px',
+			borderRightWidth: '2px',
+			borderLeftWidth: '2px',
+			borderBottomWidth: sbBorder,
+			borderStyle: 'solid',
+			borderTopColor: 'transparent',
+			borderRightColor: 'transparent',
+			borderLeftColor: 'transparent',
+			borderBottomColor: sb.accordionBorder,
+		},
+		undefined,
+		true,
+	)}
+
+${sbFrame(
+	'SidebarAccordionBarFrame',
+	'div',
+	{
+		group: 'sidebarAccordionBar',
+		position: 'sticky',
+		zIndex: 1,
+		top: 0,
+		display: 'flex',
+		flexDirection: 'row',
+		flexWrap: 'nowrap',
+		alignItems: 'center',
+		minHeight: size('x24')!,
+		paddingBlock: `calc(${spacing('x8')} - ${sbBorder})`,
+		paddingInline: `calc(${spacing('x16')} - ${sbBorder})`,
+		columnGap: spacing('x4')!,
+		textAlign: 'start',
+		color: fontColor('default'),
+		borderRadius: sbSmall,
+		backgroundColor: sb.surface,
+	},
+	{
+		// The bar is a button only while it has a tabindex, which a disabled one lacks
+		mode: {
+			static: {},
+			interactive: {
+				cursor: 'pointer',
+				borderWidth: sbBorder,
+				borderStyle: 'solid',
+				borderColor: { 'default': 'transparent', 'focus-visible': sbHighlight },
+				borderRadius: { 'default': sbSmall, 'focus-visible': sbMedium },
+				backgroundColor: { default: sb.surface, hover: surfaceColor('tint') },
+			},
+			disabled: { cursor: 'not-allowed', color: fontColor('disabled') },
+		},
+	},
+	true,
+)}
+
+${sbFrame('SidebarAccordionChevronSlotFrame', 'span', {
+	display: 'flex',
+	visibility: {
+		'default': 'hidden',
+		'group-hover/sidebarAccordionBar': 'visible',
+		'group-focus-visible/sidebarAccordionBar': 'visible',
+	},
+})}
+
+${sbFrame('SidebarAccordionTitleFrame', 'h5', { ...sbTitle, ...font('h5') })}
+
+${sbFrame(
+	'SidebarAccordionPanelFrame',
+	'div',
+	{ visibility: 'hidden', overflow: 'hidden', height: 0, margin: 0, padding: 0 },
+	{
+		expanded: {
+			true: { visibility: 'visible', flexGrow: 1, height: '100%', paddingBlock: `${spacing('x4')} ${spacing('x8')}` },
+			false: {},
+		},
+	},
+)}`;
+
+const generateSidebarCollapseGroup = () =>
+	sbFrame('SidebarCollapseGroupFrame', 'div', { display: 'flex', flexDirection: 'column', flexWrap: 'nowrap' }, undefined, true);
+
+const generateSidebarGroupTitle = () =>
+	`${sbFrame('SidebarGroupHeadingFrame', 'div', {
+		...sbRow,
+		flexGrow: 1,
+		flexShrink: 1,
+		flexBasis: 0,
+		minWidth: 0,
+		columnGap: spacing('x4')!,
+	})}
+
+${sbFrame('SidebarGroupTitleFrame', 'h4', { ...sbTitle, ...font('c1') })}`;
+
+const generateSidebarBanner = () =>
+	`${sbFrame(
+		'SidebarBannerFrame',
+		'div',
+		{
+			display: 'flex',
+			justifyContent: 'space-between',
+			alignItems: 'center',
+			padding: spacing('x16')!,
+			color: sb.bannerColor,
+			borderBottomWidth: sbBorder,
+			borderBottomStyle: 'solid',
+			borderBottomColor: sb.accordionBorder,
+			backgroundColor: sb.bannerBackground,
+			gap: spacing('x12')!,
+		},
+		{
+			tone: {
+				default: {},
+				info: sbBanner('info'),
+				success: sbBanner('success'),
+				warning: sbBanner('warning'),
+				danger: sbBanner('danger'),
+			},
+		},
+		true,
+	)}
+
+${sbFrame('SidebarBannerAddonFrame', 'div', sbRow, undefined, true)}
+
+${sbFrame('SidebarBannerTitleFrame', 'h5', { margin: 0, padding: 0, ...font('h5') }, undefined, true)}
+
+${sbFrame(
+	'SidebarBannerLinkFrame',
+	'a',
+	{ display: 'inline-block', cursor: 'pointer', outlineWidth: 0, textDecorationLine: 'underline', ...font('p2m') },
+	undefined,
+	true,
+)}`;
+
+const generateSidebarFooter = () =>
+	sbFrame('SidebarFooterFrame', 'footer', {
+		display: 'flex',
+		flexDirection: 'column',
+		justifyContent: 'center',
+		minHeight: size('x48')!,
+		paddingBlock: `${spacing('x12')} ${spacing('x8')}`,
+		paddingInline: spacing('x16')!,
+		color: fontColor('default'),
+		backgroundColor: surfaceColor('sidebar'),
+		gap: spacing('x4')!,
+	});
+
+const generateSidebarFooterContent = () => sbFrame('SidebarFooterContentFrame', 'div', font('micro'), undefined, true);
+
+const generateSidebarMedia = () =>
+	sbFrame('SidebarMediaFrame', 'div', {
+		paddingBlock: spacing('x8')!,
+		color: sb.mediaColor,
+		borderBottomWidth: sbBorder,
+		borderBottomStyle: 'solid',
+		borderBottomColor: sb.mediaBorder,
+		backgroundColor: sb.surface,
+	});
+
+const generateSidebarMediaTitle = () =>
+	sbFrame('SidebarMediaTitleFrame', 'div', {
+		flexGrow: 1,
+		paddingBlockEnd: spacing('x4')!,
+		paddingInline: spacing('x16')!,
+		textAlign: 'center',
+		...font('c1'),
+	});
+
+const generateSidebarMediaController = () =>
+	`${sbFrame('SidebarMediaControllerFrame', 'div', {
+		display: 'flex',
+		justifyContent: 'space-between',
+		alignItems: 'center',
+		paddingInline: spacing('x16')!,
+	})}
+
+${sbFrame('SidebarMediaLabelFrame', 'div', font('p2'))}`;
+
+// SidebarItemAction is the one sidebar row that is not an Item, so it takes what `.rcx-sidebar-item` gave a bare element
+const generateSidebarItemAction = () =>
+	sbFrame(
+		'SidebarItemActionFrame',
+		'div',
+		{
+			display: 'flex',
+			justifyContent: 'flex-start',
+			alignItems: 'center',
+			overflow: 'hidden',
+			paddingBlock: `calc(${spacing('x4')} - ${sbBorder})`,
+			paddingInline: `calc(${spacing('x16')} - ${sbBorder})`,
+			gap: spacing('x4')!,
+			cursor: 'pointer',
+			whiteSpace: 'nowrap',
+			textOverflow: 'ellipsis',
+			textDecorationLine: 'none',
+			color: {
+				default: sbLinkColor('color', fontColor('default')),
+				focus: sbLinkColor('focus-color', fontColor('default')),
+				press: sbLinkColor('active-color', fontColor('default')),
+			},
+			borderWidth: sbBorder,
+			borderStyle: 'solid',
+			borderColor: { 'default': 'transparent', 'focus-visible': sbHighlight },
+			borderRadius: { 'default': sbSmall, 'focus-visible': sbMedium },
+			backgroundColor: { default: 'transparent', hover: sb.surfaceHover, press: sb.surfaceSelected },
+			...font('p2'),
+		},
+		undefined,
+		true,
+	);
+
+// What the frames cannot say: rules on the parts that `Item` renders, and the sidebar's collapsed and hover states
+const generateSidebarStyles = () => `.rcx-sidebar--divider {
+	border-color: ${sb.divider};
+}
+
+.rcx-sidebar--divider.rcx-item-divider::before {
+	border-color: ${sb.divider};
+}
+
+/* Tamagui has no list-style: the panel's children inherit it */
+.rcx-sidebar-accordion-item__panel {
+	list-style: none;
+}
+
+.rcx-sidebar-collapse-group__bar {
+	color: ${fontColor('secondary-info')};
+}
+
+.rcx-sidebar-collapse-group__bar--empty {
+	color: ${fontColor('disabled')};
+}
+
+.rcx-sidebar-collapse-group__bar--unread {
+	color: ${sb.highlighted};
+}
+
+.rcx-sidebar-collapse-group__bar--unread .rcx-sidebar-collapse-group__title[class] {
+	font-size: ${fontScale('c2')!.fontSize};
+	font-weight: ${fontScale('c2')!.fontWeight};
+	line-height: ${fontScale('c2')!.lineHeight};
+	letter-spacing: ${fontScale('c2')!.letterSpacing};
+}
+
+.rcx-sidebar-collapse-group__bar-button[class] {
+	display: flex;
+	align-items: center;
+	flex: 1 1 0;
+
+	min-width: 0;
+
+	text-align: start;
+
+	column-gap: ${spacing('x4')};
+}
+
+.rcx-sidebar-collapse-group__bar-button[class][tabindex] {
+	cursor: pointer;
+
+	outline: 0;
+
+	border-width: ${sbBorder};
+	border-style: solid;
+	border-color: transparent;
+}
+
+.rcx-sidebar-collapse-group__bar-button[class][tabindex]:focus-visible {
+	border-color: ${sbHighlight};
+	border-radius: ${sbMedium};
+	outline: 0;
+
+	box-shadow: none;
+}
+
+.rcx-sidebar-collapse-group__bar:has(.rcx-sidebar-collapse-group__bar-button:hover) {
+	background-color: ${sb.surfaceHover};
+}
+
+.rcx-sidebar-collapse-group__bar.rcx-item-group-header {
+	padding-block: ${spacing('x8')};
+}
+
+.rcx-sidebar-collapse-group__panel {
+	visibility: hidden;
+	overflow: hidden;
+
+	height: 0;
+	margin: 0;
+	padding: 0;
+
+	list-style: none;
+}
+
+.rcx-sidebar-collapse-group__panel--expanded {
+	visibility: visible;
+
+	flex-grow: 1;
+
+	height: 100%;
+	padding-block: 0;
+}
+
+.rcx-sidebar-link[class] {
+	color: ${sbLinkColor('color', sb.link)};
+}
+
+.rcx-sidebar-link[class]:is(:focus, :focus-within) {
+	color: ${sbLinkColor('focus-color', sb.link)};
+}
+
+.rcx-sidebar-link[class]:focus-visible {
+	text-decoration: none;
+
+	color: ${sbLinkColor('focus-color', sb.link)};
+	border-radius: ${sbSmall};
+	outline: ${sbLink.outline} solid 1px;
+	outline-offset: 0;
+	box-shadow: 0 0 0 ${borderWidth('medium')} ${sbLink.shadow};
+}
+
+.rcx-sidebar-link[class]:where(:visited) {
+	color: ${sbLinkColor('visited-color', sb.link)};
+}
+
+.rcx-sidebar-link[class]:where(:active) {
+	color: ${sbLinkColor('active-color', sb.link)};
+}
+
+.rcx-sidebar-item.rcx-item.rcx-sidebar-item--level-2 {
+	padding-block: ${spacing('x8')};
+}
+
+.rcx-sidebar-item--level-2:not(.rcx-item)[class] {
+	padding-block: calc(${spacing('x8')} - ${sbBorder});
+}
+
+.rcx-sidebar-item:not(.rcx-item)[class]:active {
+	color: ${sb.fontActive};
+}
+
+.rcx-sidebar-item--selected:not(.rcx-item)[class],
+.rcx-sidebar-item:not(.rcx-item)[class]:active:not(:focus-within) {
+	background-color: ${sb.surfaceSelected};
+}
+
+.rcx-sidebar-item__title--highlighted[class],
+.rcx-sidebar-item__icon--highlighted[class],
+.rcx-sidebar-item__subtitle--highlighted[class],
+.rcx-sidebar-item__timestamp--highlighted[class] {
+	font-weight: 500;
+	color: ${sb.highlighted};
+}
+
+.rcx-sidebar-item__icon {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	width: ${size('x20')};
+	height: ${size('x20')};
+}
+
+.rcx-item__row > .rcx-sidebar-item__subtitle.rcx-item__description {
+	flex-basis: 0;
+}
+
+.rcx-sidebar-item__content {
+	flex-grow: 1;
+}
+
+.rcx-sidebar--collapsed:not(:hover) .rcx-sidebar-item.rcx-sidebar-link > .rcx-sidebar-item__title,
+.rcx-sidebar--collapsed:not(:hover) .rcx-sidebar-banner__content {
+	display: none;
+}
+
+.rcx-sidebar--collapsed:not(:hover) .rcx-sidebar-media__title,
+.rcx-sidebar--collapsed:not(:hover) .rcx-sidebar-footer {
+	visibility: hidden;
+
+	white-space: nowrap;
+}`;
+
+const sbFile = (name: string) => join(import.meta.dirname, `../src/components/${name}`);
+
+// The NavBar family
+const generateNavBar = () =>
+	sbFrame('NavBarFrame', 'nav', {
+		display: 'flex',
+		justifyContent: 'space-between',
+		alignItems: 'center',
+		width: '100%',
+		paddingBlock: spacing('x8')!,
+		paddingInline: spacing('x16')!,
+		borderBottomWidth: sbBorder,
+		borderBottomStyle: 'solid',
+		borderBottomColor: strokeColor('light'),
+		backgroundColor: surfaceColor('sidebar'),
+	});
+
+const generateNavBarSection = () => sbFrame('NavBarSectionFrame', 'span', sbRow);
+
+// The divider is a `Divider`, so its color is a rule over the frame's
+const generateNavBarStyles = () => `.rcx-navbar-divider.rcx-divider[class] {
+	border-color: ${strokeColor('medium')};
+}`;
+
+// The Sidepanel family
+const spLight = strokeColor('light');
+
+const spSection = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: spacing('x8')! };
+
+const generateSidepanel = () =>
+	sbFrame('SidepanelFrame', 'div', {
+		display: 'flex',
+		flexDirection: 'column',
+		flexGrow: 1,
+		flexShrink: 0,
+		flexBasis: 'auto',
+		height: '100%',
+		color: fontColor('default'),
+		borderTopWidth: 0,
+		borderRightWidth: sbBorder,
+		borderBottomWidth: 0,
+		borderLeftWidth: sbBorder,
+		borderStyle: 'solid',
+		borderColor: spLight,
+		backgroundColor: surfaceColor('sidebar'),
+	});
+
+const generateSidepanelSection = () => sbFrame('SidepanelSectionFrame', 'div', { ...spSection, padding: spacing('x16')! });
+
+const generateSidepanelHeader = () =>
+	sbFrame('SidepanelHeaderFrame', 'div', { ...spSection, height: size('x44')!, paddingInline: spacing('x16')! });
+
+const generateSidepanelHeaderTitle = () =>
+	sbFrame('SidepanelHeaderTitleFrame', 'div', {
+		overflow: 'hidden',
+		whiteSpace: 'nowrap',
+		textOverflow: 'ellipsis',
+		color: fontColor('titles-labels'),
+		...font('h5'),
+	});
+
+// The dividers and the list are `Item` parts, so their values are rules over the frames'
+const generateSidepanelStyles = () => `.rcx-sidepanel--divider {
+	border-color: ${spLight};
+}
+
+.rcx-sidepanel--divider.rcx-divider[class] {
+	margin-block: ${offScale(-2)} 0;
+
+	border-color: ${spLight};
+}
+
+.rcx-sidepanel--divider.rcx-item-divider::before {
+	border-color: ${spLight};
+}
+
+.rcx-sidepanel-list[class] {
+	padding-block: ${spacing('x8')};
+}`;
+
+// The Select family: one container frame (Select, SelectLegacy, MultiSelect, PaginatedSelect, AutoComplete) and its parts
+const generateSelectContainer = () => {
+	const frame: Value = {
+		render: 'div',
+		position: 'relative',
+		display: 'inline-flex',
+		flexDirection: 'row',
+		alignItems: 'center',
+		flexGrow: 1,
+		flexShrink: 1,
+		flexBasis: 'auto',
+		minWidth: size('x144')!,
+		minHeight: size('x40')!,
+		paddingBlock: spacing('x8')!,
+		paddingInline: `calc(${spacing('x16')} - ${borderWidth('default')})`,
+		verticalAlign: 'baseline',
+		wordBreak: 'break-all',
+		outlineWidth: 0,
+		...(inputChrome('focus-within') as Record<string, Value>),
+	};
+	// The trigger keeps its p2 font when small: the label inside is the one that shrinks
+	const small: Record<string, Value> = {
+		minWidth: size('x112')!,
+		minHeight: size('x28')!,
+		paddingBlock: spacing('x4')!,
+		paddingInline: spacing('x8')!,
+	};
+
+	return frameCode('SelectContainerFrame', 'View', {
+		...frame,
+		variants: {
+			// The trigger button spreads its label and icon, and small sets the box's own sizes
+			layout: {
+				'default': {},
+				'trigger': { display: 'flex', justifyContent: 'space-between', ...font('p2') },
+				'trigger-small': { ...small, display: 'flex', justifyContent: 'space-between', ...font('p2') },
+			},
+		},
+	});
+};
+
+const generateSelectWrapper = () =>
+	frameCode('SelectWrapperFrame', 'View', {
+		render: 'div',
+		display: 'flex',
+		flexDirection: 'row',
+		alignItems: 'center',
+		flexGrow: 1,
+		flexShrink: 1,
+		minWidth: 0,
+		minHeight: 'auto',
+		marginInline: spacing('-x4')!,
+		userSelect: 'none',
+		whiteSpace: 'nowrap',
+		opacity: 1,
+	});
+
+const generateSelectItem = () =>
+	frameCode('SelectItemFrame', 'Text', {
+		render: 'span',
+		display: 'inline',
+		whiteSpace: 'inherit',
+		wordWrap: 'normal',
+		overflow: 'hidden',
+		textOverflow: 'ellipsis',
+	});
+
+const selectFocus: Record<string, Value> = {
+	display: 'inline-block',
+	flexDirection: 'row',
+	alignItems: 'normal',
+	flexShrink: 1,
+	minWidth: 'auto',
+	minHeight: 'auto',
+	userSelect: 'none',
+	textAlign: 'start',
+	verticalAlign: 'middle',
+	whiteSpace: 'nowrap',
+	textDecorationLine: 'none',
+	backgroundColor: 'inherit',
+	cursor: 'pointer',
+	outlineWidth: 0,
+	overflow: 'hidden',
+	textOverflow: 'ellipsis',
+};
+
+const generateSelectFocus = () => frameCode('SelectFocusFrame', 'View', { render: 'button', ...selectFocus, appearance: 'none' });
+// The multi select's button keeps the browser's own appearance
+// Placed after the chips of the selected values
+const generateMultiSelectAnchor = () => frameCode('SelectFocusFrame', 'View', { render: 'button', ...selectFocus, order: 1 });
+
+const generateSelectAddon = () =>
+	frameCode('SelectAddonFrame', 'View', {
+		render: 'div',
+		display: 'flex',
+		flexDirection: 'row',
+		alignItems: 'flex-start',
+		flexGrow: 0,
+		flexShrink: 0,
+		flexBasis: 'auto',
+		minWidth: 'auto',
+		minHeight: 'auto',
+		padding: 0,
+		marginInline: spacing('x4')!,
+		cursor: 'pointer',
+		outlineWidth: 0,
+	});
+
+const selectRoots = ['.rcx-select', '.rcx-autocomplete'];
+// Doubled, so the rule out-ranks the frame's atomic classes, which load after this file
+const onRoots = (suffix: string, scope = '') => selectRoots.map((root) => `${scope}${root}${root}${suffix}`).join(',\n');
+
+const generateSelectCss = () => {
+	const c = (name: string, fallback: { toString: () => string }) => inputColor(name, fallback);
+	const stroke = (name: string) => strokeColors[name as keyof typeof strokeColors];
+	const disabledOn = (extra = '') =>
+		[onRoots(`${extra}:disabled`), onRoots(`${extra}.rcx-select--disabled`), onRoots(extra, '*:disabled ')].join(',\n');
+
+	return `${onRoots(' > .rcx-icon.rcx-icon')} {
+	color: ${fontColorOf('titles-labels')};
+}
+
+${onRoots('.rcx-select--disabled')},
+${onRoots(':disabled')},
+${onRoots('', '*:disabled ')} {
+	pointer-events: none;
+	border-color: ${c('disabled-border-color', stroke('stroke-light'))};
+	background-color: ${c('disabled-background-color', surfaceColors['surface-disabled'])};
+}
+
+${onRoots('.rcx-select--invalid')} {
+	color: ${c('invalid-color', textIconColors['font-titles-labels'])};
+	border-width: ${borderWidth('default')};
+	border-color: ${c('invalid-border-color', stroke('stroke-error'))};
+	border-radius: ${toCSSValue('--rcx-input-border-radius', toCSSValue('--rcx-border-radius-medium', borderRadius('medium')!))};
+	background-color: ${c('invalid-background-color', surfaceColors['surface-light'])};
+	box-shadow: none;
+}
+
+${onRoots('.rcx-select--invalid:hover')} {
+	border-color: ${c('invalid-hover-border-color', stroke('stroke-error'))};
+}
+
+${onRoots('.rcx-select--invalid:focus-within')} {
+	border-color: ${c('invalid-focus-border-color', stroke('stroke-error'))};
+	box-shadow: 0 0 0 ${borderWidth('medium')} ${c('invalid-focus-shadow-color', shadowColors['shadow-danger'])};
+}
+
+${onRoots('.rcx-select--invalid:active')} {
+	border-color: ${c('invalid-active-border-color', stroke('stroke-error'))};
+	box-shadow: none;
+}
+
+${disabledOn('.rcx-select--invalid')} {
+	color: ${c('invalid-disabled-color', textIconColors['font-disabled'])};
+	border-color: ${c('invalid-disabled-border-color', stroke('stroke-light'))};
+	background-color: ${c('invalid-disabled-background-color', surfaceColors['surface-disabled'])};
+}
+
+.rcx-select__filter.rcx-select__filter {
+	margin-inline: ${spacing('x4')};
+}
+
+.rcx-select__item.rcx-select__item {
+	margin-inline: ${spacing('x4')};
+	${fontDeclarations('p2')}
+}
+
+.rcx-select__value--small {
+	${fontDeclarations('c1')}
+}
+
+.rcx-select__field {
+	margin-inline: ${spacing('x4')};
+}
+
+.rcx-select__values {
+	margin: ${spacing('-x4')};
+	gap: ${spacing('x4')};
+}
+
+.rcx-select__values--spacious {
+	gap: ${spacing('x8')};
+}
+
+.rcx-autocomplete__values {
+	gap: ${spacing('x4')};
+}
+
+.rcx-select__focus--button.rcx-select__focus--button {
+	${fontDeclarations('p2m')}
+}`;
+};
+
+const fontDeclarations = (name: string) => {
+	const { fontSize, fontWeight, lineHeight, letterSpacing } = fontScale(name)!;
+	return `letter-spacing: ${letterSpacing}; font-size: ${fontSize}; font-weight: ${fontWeight}; line-height: ${lineHeight};`;
+};
+
+// Option and Menu: the description blocks are plain divs, and the status colors apply to the Item rows Option renders
+const generateOptionDescriptionBlock = () =>
+	itemFrame('OptionDescriptionBlockFrame', {
+		padding: spacing('x4')!,
+		whiteSpace: 'normal',
+		wordBreak: 'break-word',
+		color: fontColorOf('secondary-info'),
+		...font('p2'),
+	});
+
+const generateMenuItemDescription = () =>
+	itemFrame('MenuItemDescriptionFrame', {
+		flexBasis: '100%',
+		whiteSpace: 'normal',
+		wordBreak: 'break-word',
+		color: fontColorOf('secondary-info'),
+		...font('p2'),
+	});
+
+// The tokens have no primary status color, so it only follows the custom properties, as the SCSS did
+const optionKindColor = (kind: string) => {
+	const own = `--rcx-option-color-variant-${kind}`;
+	const fallback =
+		kind === 'primary'
+			? 'var(--rcx-color-status-font-on-primary)'
+			: toCSSValue(own, statusColors[`status-font-on-${kind}` as keyof typeof statusColors]);
+
+	return `.rcx-option--${kind}.rcx-option--${kind}.rcx-item {
+	color: ${kind === 'primary' ? `var(${own}, ${fallback})` : fallback};
+}`;
+};
+
+const generateOptionCss = () => ['success', 'warning', 'primary'].map(optionKindColor).join('\n\n');
+
+// The Message family. Its parts are plain `div`s and `span`s: a Tamagui View starts as a column flex box that does not
+// shrink and a Text as a pre-wrapped inline one, so each frame states the box the stylesheet left
+type Token = { toString: () => string };
+const token = (group: object, key: string) => {
+	const value = (group as Record<string, Token | undefined>)[key];
+
+	if (!value) {
+		throw new Error(`unknown token ${key}`);
+	}
+
+	return value.toString();
+};
+const mFont = (name: string) => token(textIconColors, `font-${name}`);
+const mSurface = (name: string) => token(surfaceColors, `surface-${name}`);
+const mStroke = (name: string) => token(strokeColors, `stroke-${name}`);
+const mStatusFont = (name: string) => token(statusColors, `status-font-${name}`);
+const mStatusBackground = (name: string) => token(statusBackgroundColors, `status-background-${name}`);
+
+const mBox = {
+	position: 'static',
+	display: 'flex',
+	flexDirection: 'row',
+	alignItems: 'normal',
+	flexShrink: 1,
+	minWidth: 'auto',
+	minHeight: 'auto',
+} as const;
+const mTruncate = { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } as const;
+const mInline = { display: 'inline', wordWrap: 'normal' } as const;
+
+const mPart = (name: string, base: 'View' | 'Text', value: Record<string, Value>, variants?: Record<string, Record<string, Value>>) =>
+	`const ${name} = styled(${base}, ${literal(variants ? { ...value, variants } : value)});`;
+const mParts = (...parts: string[]) => `${declaredWhereTheyRender}${parts.join('\n\n')}`;
+const view = (name: string, value: Record<string, Value>, variants?: Record<string, Record<string, Value>>) =>
+	mParts(mPart(name, 'View', value, variants));
+const text = (name: string, value: Record<string, Value>, variants?: Record<string, Record<string, Value>>) =>
+	mParts(mPart(name, 'Text', value, variants));
+const inView = (name: string, value: Record<string, Value>, variants?: Record<string, Record<string, Value>>) =>
+	mPart(name, 'View', value, variants);
+
+const messageDir = (relative: string) => join(import.meta.dirname, '../src/components/Message', relative);
+// The frames' atomic classes can be doubled, so a rule that overrides one needs three
+const raised = (selector: string) => `${selector}[class][class]`;
+
+// The row, its avatar column, header, roles and timestamp are `Item` parts; these are the parts that keep their own frame.
+
+const nameFocusRing = {
+	borderRadius: { 'focus-visible': radius('medium') },
+	outlineWidth: { 'focus-visible': px(1) },
+	outlineStyle: { 'default': 'none', 'focus-visible': 'solid' },
+	outlineColor: { 'focus-visible': mStroke('highlight') },
+	boxShadow: { 'focus-visible': `0 0 0 calc(${px(1)} + ${px(2)}) ${mStroke('extra-light-highlight')}` },
+} as const;
+
+const generateMessageNameContainer = () =>
+	text('MessageNameContainerFrame', {
+		render: 'span',
+		...mTruncate,
+		flexShrink: 0,
+		// Matches the name's color, so the hover underline matches the text under it
+		color: mFont('titles-labels'),
+		...nameFocusRing,
+	});
+
+const generateMessageName = () =>
+	text('MessageNameFrame', {
+		render: 'span',
+		...mInline,
+		...mTruncate,
+		...font('h5'),
+		color: mFont('titles-labels'),
+	});
+
+const generateMessageUsername = () =>
+	text('MessageUsernameFrame', {
+		render: 'span',
+		...mInline,
+		...mTruncate,
+		color: mFont('default'),
+	});
+
+const generateMessageBody = () =>
+	view('MessageBodyFrame', {
+		render: 'div',
+		...mBox,
+		display: 'block',
+		overflow: 'hidden',
+		// Padding rather than margin, so overflow: hidden leaves room for emoji glyphs that paint past their line box
+		paddingBlock: offScale(2),
+		wordBreak: 'break-word',
+		color: mFont('default'),
+		...font('p2'),
+	});
+
+const generateMessageBlock = () =>
+	view(
+		'MessageBlockFrame',
+		{ render: 'div', ...mBox, flexDirection: 'column' },
+		{
+			width: {
+				fixed: { maxWidth: theme('message-block-width-fixed', px(368)) },
+				fluid: {},
+			},
+		},
+	);
+
+const emojiSize = 'var(--emoji-size, 1.25rem)';
+
+const generateMessageEmoji = () =>
+	text('MessageEmojiFrame', {
+		render: 'span',
+		display: 'inline-block',
+		whiteSpace: 'inherit',
+		wordWrap: 'inherit',
+		marginInline: offScale(2),
+		backgroundSize: 'contain',
+		fontSize: emojiSize,
+		lineHeight: emojiSize,
+		width: emojiSize,
+		height: emojiSize,
+	});
+
+const highlightColors = {
+	critical: theme('message-highlight-colors-critical-color', mStatusFont('on-danger')),
+	relevant: theme('message-highlight-colors-relevant-color', mStatusFont('on-service-1')),
+	other: theme('message-highlight-colors-other-color', mStatusFont('on-warning')),
+	link: theme('message-highlight-colors-link-color', mStatusFont('on-info')),
+};
+
+const generateMessageHighlight = () =>
+	text(
+		'MessageHighlightFrame',
+		{
+			render: 'span',
+			whiteSpace: 'nowrap',
+			fontWeight: 500,
+			...nameFocusRing,
+		},
+		{
+			tone: Object.fromEntries(Object.entries(highlightColors).map(([name, color]) => [name, { color }])),
+			clickable: { true: { cursor: 'pointer', textDecorationLine: { hover: 'underline' } }, false: {} },
+		},
+	);
+
+const bodyHeading = (level: string) => {
+	const scale = fontScale(level)!;
+
+	return `.rcx-message-body ${level} {
+	font-size: ${scale.fontSize};
+	font-weight: ${scale.fontWeight};
+	line-height: ${scale.lineHeight};
+	letter-spacing: ${scale.letterSpacing};
+}`;
+};
+
+const generateMessageCss = () => `/* The avatar centers on the header and the first body line, however long the body grows */
+${raised('.rcx-message > .rcx-message-container--left')} {
+	min-block-size: calc(${fontScale('h5')!.lineHeight} + ${fontScale('p2')!.lineHeight});
+}
+
+${raised('.rcx-message--sequential > .rcx-message-container--left')} {
+	min-block-size: ${fontScale('p2')!.lineHeight};
+}
+
+${raised('.rcx-message-container--left')},
+${raised('.rcx-message-container--fixed')} {
+	flex-direction: column;
+}
+
+/* A fixed-width column, so the content starts at the same x with or without an avatar */
+${raised('.rcx-message-container--left')} {
+	align-items: flex-end;
+
+	width: ${size('x36')};
+}
+
+${raised('.rcx-message.rcx-message--editing')} {
+	color: ${theme('message-color-editing', mStatusFont('on-warning-2'))};
+	background: ${theme('message-background-color-editing', mStatusBackground('warning-2'))};
+}
+
+${raised('.rcx-message--pending .rcx-message-body')} {
+	opacity: 0.4;
+}
+
+/* secondary-info fails contrast against the hover surface */
+${raised('.rcx-message:hover .rcx-message-header__time')} {
+	color: ${mFont('default')};
+}
+
+/* In the header a long name gives way before the timestamp and indicators do */
+${raised('.rcx-message-header > .rcx-message-header__name-container')} {
+	flex-shrink: 1;
+}
+
+${raised(".rcx-message-header__name-container[role='button']")} {
+	cursor: pointer;
+}
+
+.rcx-message-header__name-container[role='button']:hover {
+	text-decoration: underline;
+}
+
+${raised('.rcx-message-header__roles')} {
+	overflow: hidden;
+}
+
+.rcx-message-body {
+	transition: opacity 0.3s linear;
+}
+
+${['h1', 'h2', 'h3', 'h4'].map(bodyHeading).join('\n\n')}
+
+.rcx-message-body ul,
+.rcx-message-body ol {
+	margin: 0;
+	padding-block: ${spacing('x4')} 0;
+	padding-inline: 0;
+
+	list-style: none;
+}
+
+.rcx-message-body :is(ul, ol) > li::before {
+	padding: 0 ${spacing('x8')};
+
+	font-weight: bold;
+}
+
+/* Task lists mark their items with a checkbox instead */
+.rcx-message-body ul:not(.task-list) > li::before {
+	content: '•';
+}
+
+.rcx-message-body ol > li::before {
+	content: attr(value) '.';
+}
+
+${raised('.rcx-message-body--clamp')} {
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+}
+
+.rcx-message-body blockquote {
+	padding-inline: ${spacing('x8')};
+
+	border: 1px solid ${mStroke('extra-light')};
+	border-radius: ${radius('small')};
+	background-color: ${mSurface('tint')};
+	border-inline-start-color: ${mStroke('medium')};
+}
+
+.rcx-message-body blockquote:hover {
+	border-color: ${mStroke('light')};
+	background-color: ${mSurface('hover')};
+	border-inline-start-color: ${mStroke('medium')};
+}
+
+.rcx-message-body ul.task-list > li > .rcx-check-box > .rcx-check-box__input:focus + .rcx-check-box__fake {
+	z-index: 1;
+}
+
+.rcx-message__emoji--big {
+	--emoji-size: 3rem;
+}`;
+
+const messageCore = [
+	{ file: messageDir('MessageNameContainer.tsx'), generate: generateMessageNameContainer },
+	{ file: messageDir('MessageName.tsx'), generate: generateMessageName },
+	{ file: messageDir('MessageUsername.tsx'), generate: generateMessageUsername },
+	{ file: messageDir('MessageBody.tsx'), generate: generateMessageBody },
+	{ file: messageDir('MessageBlock.tsx'), generate: generateMessageBlock },
+	{ file: messageDir('MessageEmoji.tsx'), generate: generateMessageEmoji },
+	{ file: messageDir('MessageHighlight.tsx'), generate: generateMessageHighlight },
+	{ file: messageDir('Message.styles.css'), generate: generateMessageCss, css: true },
+];
+
+const generateMessageToolbar = () =>
+	view('MessageToolbarFrame', {
+		render: 'div',
+		...mBox,
+		display: 'block',
+		pointerEvents: 'none',
+		opacity: 0,
+		marginInline: spacing('x20'),
+		padding: offScale(2),
+		borderWidth: px(1),
+		borderStyle: 'solid',
+		borderColor: mStroke('extra-light'),
+		borderRadius: theme('message-toolbar-border-radius', radius('medium')),
+		backgroundColor: mSurface('room'),
+	});
+
+const generateMessageToolbarWrapper = () =>
+	view(
+		'MessageToolbarWrapperFrame',
+		{ render: 'div', ...mBox, userSelect: 'none' },
+		{ shown: { true: { display: 'inline-block' }, false: { display: 'none' } } },
+	);
+
+const generateMessageToolbarCss = () => `${raised('.rcx-message .rcx-message-toolbar')} {
+	position: absolute;
+	z-index: 10;
+	inset-block-start: ${-24 / 16}rem;
+	inset-inline-end: 0;
+}
+
+${raised('.rcx-message:hover .rcx-message-toolbar')},
+${raised('.rcx-message:focus-visible .rcx-message-toolbar')},
+${raised('.rcx-message-toolbar__wrapper--visible .rcx-message-toolbar')} {
+	pointer-events: auto;
+
+	opacity: 1;
+}
+
+${raised('.rcx-message:has(:focus-visible) .rcx-message-toolbar')} {
+	pointer-events: auto;
+
+	opacity: 1;
+}
+
+/* Out of the row's flow, so it takes no room and no gap */
+${raised('.rcx-message > .rcx-message-toolbar__wrapper')} {
+	position: absolute;
+	inset-block-start: 0;
+	inset-inline-end: 0;
+}
+
+${raised('.rcx-message:hover .rcx-message-toolbar__wrapper')},
+${raised('.rcx-message:focus-within .rcx-message-toolbar__wrapper')} {
+	display: inline-block;
+}`;
+
+const messageToolbar = [
+	{ file: messageDir('MessageToolbar/MessageToolbar.tsx'), generate: generateMessageToolbar },
+	{ file: messageDir('MessageToolbar/MessageToolbarWrapper.tsx'), generate: generateMessageToolbarWrapper },
+	{ file: messageDir('MessageToolbar/MessageToolbar.styles.css'), generate: generateMessageToolbarCss, css: true },
+];
+
+const generateMessageMetrics = () =>
+	view('MessageMetricsContentWrapperFrame', { render: 'div', ...mBox, marginBlock: spacing('x4'), marginInline: spacing('-x4') });
+
+const generateMessageMetricsItem = () =>
+	view('MessageMetricsItemFrame', {
+		render: 'div',
+		...mBox,
+		justifyContent: 'center',
+		alignItems: 'center',
+		...font('micro'),
+		marginInline: spacing('x4')!,
+		color: mFont('default'),
+	});
+
+const generateMessageMetricsItemLabel = () =>
+	view('MessageMetricsItemLabelFrame', { render: 'div', ...mBox, display: 'block', marginInlineStart: spacing('x4') });
+
+const generateMessageMetricsItemAvatarRow = () => view('MessageMetricsItemAvatarRowFrame', { render: 'div', ...mBox, gap: spacing('x4') });
+
+const generateMessageMetricsItemAvatarRowContent = () =>
+	view('MessageMetricsItemAvatarRowContentFrame', { render: 'div', ...mBox, display: 'block' });
+
+const messageMetrics = [
+	{ file: messageDir('MessageMetrics/MessageMetrics.tsx'), generate: generateMessageMetrics },
+	{ file: messageDir('MessageMetrics/MessageMetricsItem/MessageMetricsItem.tsx'), generate: generateMessageMetricsItem },
+	{ file: messageDir('MessageMetrics/MessageMetricsItem/MessageMetricsItemLabel.tsx'), generate: generateMessageMetricsItemLabel },
+	{ file: messageDir('MessageMetrics/MessageMetricsItem/MessageMetricsItemAvatarRow.tsx'), generate: generateMessageMetricsItemAvatarRow },
+	{
+		file: messageDir('MessageMetrics/MessageMetricsItem/MessageMetricsItemAvatarRowContent.tsx'),
+		generate: generateMessageMetricsItemAvatarRowContent,
+	},
+];
+
+const reactionBorderRadius = {
+	'default': theme('message-reaction-border-radius', radius('medium')),
+	'focus-visible': radius('medium'),
+};
+const reactionHoverBackground = theme('message-reaction-hover-background-color', mSurface('hover'));
+const reactionHoverBorder = theme('message-reaction-hover-border-color', mStroke('dark'));
+
+const reactionBase = {
+	render: 'div',
+	...mBox,
+	display: 'inline-flex',
+	alignItems: 'center',
+	padding: offScale(2),
+	cursor: 'pointer',
+	...font('c1'),
+	borderWidth: px(1),
+	borderStyle: 'solid',
+	borderRadius: reactionBorderRadius,
+	outlineStyle: 'none',
+	boxShadow: { 'focus-visible': `0 0 0 2px ${mStroke('extra-light-highlight')}` },
+} as const;
+
+const reactionLook = (look: 'default' | 'mine') => ({
+	color: look === 'mine' ? theme('message-reaction-color', mFont('default')) : mFont('hint'),
+	borderColor: {
+		'default': look === 'mine' ? theme('message-reaction-border-color', mStroke('dark')) : 'transparent',
+		'hover': reactionHoverBorder,
+		'focus-visible': mStroke('highlight'),
+	},
+	backgroundColor: {
+		default: look === 'mine' ? theme('message-reaction-background-color', mSurface('selected')) : reactionHoverBackground,
+		hover: reactionHoverBackground,
+	},
+});
+
+const generateMessageReaction = () =>
+	view('MessageReactionFrame', reactionBase, { look: { default: reactionLook('default'), mine: reactionLook('mine') } });
+
+const generateMessageReactionAction = () =>
+	view('MessageReactionActionFrame', { ...reactionBase, pointerEvents: 'none', opacity: 0, ...reactionLook('default') });
+
+const generateMessageReactionCounter = () =>
+	view('MessageReactionCounterFrame', { render: 'div', ...mBox, display: 'block', ...font('c1'), marginInline: offScale(2) });
+
+const generateMessageReactionEmoji = () =>
+	text('MessageReactionEmojiFrame', {
+		render: 'span',
+		display: 'block',
+		whiteSpace: 'inherit',
+		wordWrap: 'inherit',
+		fontSize: 'var(--emoji-size)',
+		lineHeight: 'var(--emoji-size)',
+		width: 'var(--emoji-size)',
+		height: 'var(--emoji-size)',
+	});
+
+const generateMessageReactions = () =>
+	view('MessageReactionsContainerFrame', { render: 'div', ...mBox, flexWrap: 'wrap', gap: spacing('x4') });
+
+const generateMessageReactionsCss = () => `.rcx-message-reactions__reaction {
+	--emoji-size: 0.875rem;
+}
+
+${raised('.rcx-message:hover .rcx-message-reactions__reaction--action')},
+${raised('.rcx-message:focus-visible .rcx-message-reactions__reaction--action')} {
+	pointer-events: auto;
+
+	opacity: 1;
+}
+
+${raised('.rcx-message:has(:focus-visible) .rcx-message-reactions__reaction--action')} {
+	pointer-events: auto;
+
+	opacity: 1;
+}`;
+
+const messageReactions = [
+	{ file: messageDir('MessageReactions/MessageReaction.tsx'), generate: generateMessageReaction },
+	{ file: messageDir('MessageReactions/MessageReactionAction.tsx'), generate: generateMessageReactionAction },
+	{ file: messageDir('MessageReactions/MessageReactionCounter.tsx'), generate: generateMessageReactionCounter },
+	{ file: messageDir('MessageReactions/MessageReactionEmoji.tsx'), generate: generateMessageReactionEmoji },
+	{ file: messageDir('MessageReactions/MessageReactions.tsx'), generate: generateMessageReactions },
+	{ file: messageDir('MessageReactions/MessageReactions.styles.css'), generate: generateMessageReactionsCss, css: true },
+];
+
+const rem = (px: number) => `${px / 16}rem`;
+const previewContext = theme('message-generic-preview-context-color', mFont('secondary-info'));
+const previewTitleColor = theme('message-generic-preview-title-color', mFont('default'));
+
+const generateMessageGenericPreview = () =>
+	view('MessageGenericPreviewFrame', {
+		render: 'div',
+		...mBox,
+		flexDirection: 'column',
+		overflow: 'hidden',
+		fontSize: 0,
+		color: previewContext,
+		borderWidth: px(1),
+		borderStyle: 'solid',
+		borderColor: theme('message-generic-preview-border-color', mStroke('extra-light')),
+		borderRadius: radius('medium'),
+		backgroundColor: theme('message-generic-preview-content-background-color', mSurface('tint')),
+	});
+
+const generateMessageGenericPreviewContent = () =>
+	mParts(
+		inView('MessageGenericPreviewContentFrame', { render: 'div', ...mBox }),
+		inView('MessageGenericPreviewContentWrapperFrame', {
+			render: 'div',
+			...mBox,
+			...mTruncate,
+			flexDirection: 'column',
+			justifyContent: 'center',
+			flexGrow: 1,
+			paddingBlock: spacing('x8'),
+			paddingInline: spacing('x16'),
+		}),
+	);
+
+const generateMessageGenericPreviewTitle = () =>
+	text('MessageGenericPreviewTitleFrame', {
+		render: 'span',
+		...mInline,
+		...mTruncate,
+		display: 'block',
+		...font('p2'),
+		marginBlockEnd: spacing('x4'),
+		color: previewTitleColor,
+	});
+
+const generateMessageGenericPreviewDescription = () =>
+	view(
+		'MessageGenericPreviewDescriptionFrame',
+		{
+			render: 'div',
+			...mBox,
+			display: 'block',
+			...font('c1'),
+			marginBlockEnd: spacing('x4'),
+			color: theme('message-generic-preview-description-color', mFont('default')),
+		},
+		{ clamp: { true: { whiteSpace: 'normal' }, false: { ...mTruncate } } },
+	);
+
+const generateMessageGenericPreviewFooter = () =>
+	view('MessageGenericPreviewFooterFrame', {
+		render: 'div',
+		...mBox,
+		display: 'block',
+		...mTruncate,
+		...font('c1'),
+		width: '100%',
+		color: previewContext,
+	});
+
+const generateMessageGenericPreviewThumb = () =>
+	view('MessageGenericPreviewThumbFrame', {
+		render: 'div',
+		...mBox,
+		display: 'block',
+		flexShrink: 0,
+		width: rem(96),
+		height: rem(96),
+	});
+
+const generateMessageGenericPreviewIcon = () =>
+	mParts(
+		inView('MessageGenericPreviewIconFrame', {
+			render: 'div',
+			...mBox,
+			flexDirection: 'column',
+			justifyContent: 'center',
+			alignItems: 'center',
+			flexShrink: 0,
+			alignSelf: 'center',
+			width: rem(48),
+			height: rem(52),
+			marginBlock: spacing('x12'),
+			marginInlineStart: spacing('x16'),
+			color: mFont('default'),
+			borderRadius: radius('medium'),
+			backgroundColor: theme('message-generic-preview-icon-background-color', mSurface('neutral')),
+		}),
+		inView('MessageGenericPreviewIconTitleFrame', {
+			render: 'div',
+			...mBox,
+			display: 'block',
+			...mTruncate,
+			...font('micro'),
+			maxWidth: rem(40),
+			color: previewTitleColor,
+		}),
+	);
+
+const generateMessageGenericPreviewImage = () =>
+	view('MessageGenericPreviewImageFrame', {
+		render: 'img',
+		...mBox,
+		display: 'inline',
+		width: 'fit-content',
+		maxWidth: 'inherit',
+		maxHeight: 'inherit',
+		cursor: 'pointer',
+	});
+
+const linkStates = (selector: string, color: string, theLink: boolean) => {
+	const states = (names: string[]) => names.map((name) => (theLink ? raised(`${selector}${name}`) : `${selector}${name}`)).join(',\n');
+	const link = (name: string) => theme(`link-${name}`, color);
+
+	return `${states([''])} {
+	color: ${link('color')};
+}
+
+${states([':focus', ':focus-within'])} {
+	color: ${link('focus-color')};
+}
+
+${states([':focus-visible'])} {
+	text-decoration: none;
+
+	color: ${link('focus-color')};
+	border-radius: ${radius('small')};
+	outline: ${theme('link-focus-outline-color', mStroke('highlight'))} solid ${px(1)};
+	outline-offset: 0;
+	box-shadow: 0 0 0 2px ${theme('link-focus-box-shadow-color', mStroke('extra-light-highlight'))};
+}
+
+${states([':where(:visited)'])} {
+	color: ${link('visited-color')};
+}
+
+${states([':where(:active)'])} {
+	color: ${link('active-color')};
+}`;
+};
+
+const generateMessageGenericPreviewCss = () => `${raised('.rcx-message-generic-preview__description--clamp')} {
+	display: -webkit-box;
+	overflow: hidden;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+}
+
+.rcx-message-generic-preview__preview {
+	overflow: hidden;
+
+	width: 100%;
+	height: 100%;
+
+	background-repeat: no-repeat;
+	background-position: 50%;
+	background-size: cover;
+}
+
+${linkStates('.rcx-message-generic-preview__title-link', mFont('info'), true)}
+
+${linkStates('.rcx-message-generic-preview__footer a', mFont('secondary-info'), false)}`;
+
+const messagePreviews = [
+	{ file: messageDir('MessageGenericPreview/MessageGenericPreview.tsx'), generate: generateMessageGenericPreview },
+	{ file: messageDir('MessageGenericPreview/MessageGenericPreviewContent.tsx'), generate: generateMessageGenericPreviewContent },
+	{ file: messageDir('MessageGenericPreview/MessageGenericPreviewTitle.tsx'), generate: generateMessageGenericPreviewTitle },
+	{ file: messageDir('MessageGenericPreview/MessageGenericPreviewDescription.tsx'), generate: generateMessageGenericPreviewDescription },
+	{ file: messageDir('MessageGenericPreview/MessageGenericPreviewFooter.tsx'), generate: generateMessageGenericPreviewFooter },
+	{ file: messageDir('MessageGenericPreview/MessageGenericPreviewThumb.tsx'), generate: generateMessageGenericPreviewThumb },
+	{ file: messageDir('MessageGenericPreview/MessageGenericPreviewIcon.tsx'), generate: generateMessageGenericPreviewIcon },
+	{ file: messageDir('MessageGenericPreview/MessageGenericPreviewImage.tsx'), generate: generateMessageGenericPreviewImage },
+	{ file: messageDir('MessageGenericPreview/MessageGenericPreview.styles.css'), generate: generateMessageGenericPreviewCss, css: true },
+];
+
+const generateMessageDivider = () =>
+	mParts(
+		inView('MessageDividerBarFrame', {
+			render: 'div',
+			...mBox,
+			alignItems: 'center',
+			// Equal bars keep the date centred, whatever room the Unread label takes from its bar
+			flexGrow: 1,
+			flexBasis: 0,
+			minWidth: 0,
+		}),
+		inView('MessageDividerWrapperFrame', {
+			render: 'div',
+			...mBox,
+			display: 'block',
+			marginBlock: spacing('x8'),
+			paddingInline: spacing('x8')!,
+		}),
+		inView('MessageDividerUnreadFrame', {
+			render: 'div',
+			...mBox,
+			display: 'block',
+			order: 1,
+			// Takes no block size, so a divider with only this label stays a 1px line that the label overhangs
+			marginBlock: spacing('-x8'),
+			paddingInlineStart: spacing('x8'),
+			color: theme('message-divider-color-unread', mFont('danger')),
+		}),
+	);
+
+// Divider's labelled variant renders this root through the `rcx-message-divider` class, so the root cannot be a frame
+const generateMessageDividerCss = () => {
+	const c2 = fontScale('c2')!;
+	const barHeight = theme('message-divider-size', px(1));
+
+	return `.rcx-message-divider {
+	position: relative;
+	z-index: 1;
+
+	display: flex;
+	align-items: center;
+
+	margin-bottom: ${theme('message-divider-size-neg', offScale(-1))};
+	padding-inline: ${spacing('x20')};
+
+	color: ${theme('message-divider-color', mFont('default'))};
+
+	font-size: ${c2.fontSize};
+	font-weight: ${c2.fontWeight};
+	line-height: ${c2.lineHeight};
+	letter-spacing: ${c2.letterSpacing};
+}
+
+.rcx-message-divider__bar::after {
+	flex-grow: 1;
+
+	height: ${barHeight};
+
+	content: '';
+
+	background: ${theme('message-divider-background-color', mStroke('extra-light'))};
+}
+
+.rcx-message-divider--unread .rcx-message-divider__bar::after {
+	background: ${theme('message-divider-background-color-unread', mStroke('error'))};
+}`;
+};
+
+// The system row, its container, block and timestamp are `Item` parts
+const generateMessageSystemBody = () => view('MessageSystemBodyFrame', { render: 'div', ...mBox, display: 'block', ...mTruncate });
+
+const generateMessageSystemName = () =>
+	text('MessageSystemNameFrame', {
+		render: 'span',
+		...mInline,
+		...font('p2b'),
+		flexShrink: 0,
+		color: mFont('titles-labels'),
+	});
+
+const generateMessageSystemCss = () => `${raised('.rcx-message-system')} {
+	padding-block: ${spacing('x8')};
+}
+
+/* The row keeps the avatar at the top when an attachment makes it tall; a single line still centres on it */
+${raised('.rcx-message-system__container')} {
+	align-self: center;
+
+	margin-block: ${spacing('-x4')};
+}`;
+
+const generateMessageStatusIndicator = () =>
+	view('MessageStatusIndicatorFrame', {
+		render: 'div',
+		...mBox,
+		display: 'block',
+		userSelect: 'none',
+	});
+
+// The item is an `Icon` or a plain span, neither of them a frame, so its color stays a stylesheet
+const generateMessageStatusIndicatorCss = () => `${raised('.rcx-message-status-indicator:empty')} {
+	display: none;
+}
+
+.rcx-message-status-indicator__item {
+	color: ${mFont('secondary-info')};
+}`;
+
+const generateThreadMessageBody = () =>
+	view('ThreadMessageBodyFrame', { render: 'div', ...mBox, display: 'block', ...mTruncate, color: mFont('default') });
+
+const generateThreadMessageContainer = () =>
+	view('ThreadMessageContainerFrame', {
+		render: 'div',
+		...mBox,
+		...mTruncate,
+		width: '100%',
+	});
+
+const generateThreadMessageOrigin = () =>
+	view(
+		'ThreadMessageOriginFrame',
+		{
+			render: 'div',
+			...mBox,
+			display: 'block',
+			...mTruncate,
+		},
+		{ look: { default: {}, system: { color: mFont('default') } } },
+	);
+
+const generateThreadMessageEmoji = () =>
+	text('ThreadMessageEmojiFrame', {
+		render: 'span',
+		display: 'inline-block',
+		whiteSpace: 'inherit',
+		wordWrap: 'inherit',
+		marginInline: offScale(2),
+		backgroundSize: 'contain',
+		fontSize: size('x12')!,
+		lineHeight: size('x8')!,
+		width: size('x12')!,
+		height: size('x12')!,
+	});
+
+const generateThreadMessageCss = () => {
+	const c1 = fontScale('c1')!;
+
+	return `${raised('.rcx-message-thread')} {
+	overflow: hidden;
+
+	color: ${mFont('info')};
+
+	font-size: ${c1.fontSize};
+	font-weight: ${c1.fontWeight};
+	line-height: ${c1.lineHeight};
+	letter-spacing: ${c1.letterSpacing};
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+${raised('.rcx-message-thread__content')} {
+	gap: ${spacing('x8')};
+}
+
+/* Same gap as the message row, so the preview text starts on the message text column */
+.rcx-message-thread__row {
+	--rcx-item-gap: ${spacing('x8')};
+}
+
+.rcx-message-thread__origin--system::first-letter {
+	text-transform: uppercase;
+}`;
+};
+
+const messageSystem = [
+	{ file: messageDir('MessageDivider/MessageDivider.tsx'), generate: generateMessageDivider },
+	{ file: messageDir('MessageDivider/MessageDivider.styles.css'), generate: generateMessageDividerCss, css: true },
+	{ file: messageDir('MessageSystem/MessageSystemBody.tsx'), generate: generateMessageSystemBody },
+	{ file: messageDir('MessageSystem/MessageSystemName.tsx'), generate: generateMessageSystemName },
+	{ file: messageDir('MessageSystem/MessageSystem.styles.css'), generate: generateMessageSystemCss, css: true },
+	{ file: messageDir('MessageStatusIndicator/MessageStatusIndicator.tsx'), generate: generateMessageStatusIndicator },
+	{ file: messageDir('MessageStatusIndicator/MessageStatusIndicator.styles.css'), generate: generateMessageStatusIndicatorCss, css: true },
+	{ file: messageDir('ThreadMessage/ThreadMessageBody.tsx'), generate: generateThreadMessageBody },
+	{ file: messageDir('ThreadMessage/ThreadMessageContainer.tsx'), generate: generateThreadMessageContainer },
+	{ file: messageDir('ThreadMessage/ThreadMessageOrigin.tsx'), generate: generateThreadMessageOrigin },
+	{ file: messageDir('ThreadMessage/ThreadMessageEmoji.tsx'), generate: generateThreadMessageEmoji },
+	{ file: messageDir('ThreadMessage/ThreadMessage.styles.css'), generate: generateThreadMessageCss, css: true },
+];
+
+const generateAccordion = () =>
+	constants({
+		border: {
+			borderBottomWidth: borderWidth('default')!,
+			borderBottomColor: strokeColor('extra-light'),
+		},
+	});
+
+const generateAccordionItem = () => {
+	const thin = borderWidth('default')!;
+	const separator = strokeColor('extra-light');
+	const highlight = strokeColor('highlight');
+	const sides = (top: Value, others: Value) => ({
+		borderTopColor: top,
+		borderRightColor: others,
+		borderBottomColor: others,
+		borderLeftColor: others,
+	});
+
+	return constants({
+		barLayout: {
+			minHeight: `${(2 * 32 + 24) / 16}rem`,
+			paddingBlock: `calc(${spacing('x32')} - ${thin})`,
+			paddingInline: `calc(${spacing('x8')} - ${thin})`,
+			textAlign: 'start',
+			borderWidth: thin,
+			...sides(separator, 'transparent'),
+		},
+		barPlain: {
+			color: fontColor('titles-labels'),
+		},
+		barInteractive: {
+			color: fontColor('titles-labels'),
+			cursor: 'pointer',
+			outlineStyle: 'none',
+			backgroundColor: { hover: surfaceColor('tint') },
+			...sides({ default: separator, focus: highlight }, { default: 'transparent', focus: highlight }),
+			boxShadow: { focus: `0 0 0 ${borderWidth('medium')} ${strokeColor('extra-light-highlight')}` },
+		},
+		barDisabled: {
+			color: fontColor('disabled'),
+			cursor: 'not-allowed',
+			backgroundColor: surfaceColor('disabled'),
+		},
+		titleLine: {
+			flexGrow: 1,
+			flexShrink: 1,
+			flexBasis: size('none')!,
+			minWidth: 'auto',
+			minHeight: 'auto',
+			overflow: 'hidden',
+			textOverflow: 'ellipsis',
+			whiteSpace: 'nowrap',
+			...fontScaleOf('h4'),
+		},
+		panelCollapsed: {
+			visibility: 'hidden',
+			height: size('none')!,
+			paddingBlock: 0,
+			paddingInline: spacing('x8')!,
+		},
+		panelExpanded: {
+			visibility: 'visible',
+			height: 'auto',
+			paddingBlock: spacing('x32')!,
+			paddingInline: spacing('x8')!,
+		},
+	});
+};
+
+const generateTableRow = () => {
+	const tint = surfaceColor('tint');
+	const hover = surfaceColor('hover');
+	const clickable = { cursor: { hover: 'pointer', focus: 'pointer' }, outlineStyle: { hover: 'none', focus: 'none' } };
+
+	return constants({
+		rowPlain: {},
+		rowSelected: { backgroundColor: tint },
+		rowAction: { ...clickable, backgroundColor: { hover, focus: hover } },
+		rowSelectedAction: { ...clickable, backgroundColor: { default: tint, hover, focus: hover } },
+	});
+};
+
+const generateTableCell = () => {
+	const secondary = fontColor('secondary-info');
+	const hint = fontColor('hint');
+	const strong = fontScaleOf('p2m');
+
+	return constants({
+		cell: {
+			render: 'td',
+			display: 'table-cell',
+			position: 'static',
+			flexDirection: 'row',
+			alignItems: 'normal',
+			flexShrink: 1,
+			minWidth: 'auto',
+			minHeight: 'auto',
+			padding: spacing('x8')!,
+			userSelect: 'text',
+			textAlign: 'inherit',
+			verticalAlign: 'middle',
+			color: secondary,
+		},
+		body: { ...fontScaleOf('p2') },
+		header: { position: 'relative', ...fontScaleOf('c2') },
+		strong: { ...strong },
+		headerStrong: { position: 'relative', ...strong },
+		secondaryTone: { color: secondary },
+		defaultTone: { color: fontColor('default') },
+		hintTone: { color: hint },
+		rowHeaderTone: { color: hint, backgroundColor: surfaceColor('light') },
+		rowHeaderDefaultTone: { color: fontColor('default'), backgroundColor: surfaceColor('light') },
+	});
+};
+
+const generateTableSelection = () =>
+	constants({
+		selection: {
+			color: fontColor('titles-labels'),
+			borderRadius: themedVar('table-selected-border-radius', radiusOf('medium')),
+			backgroundColor: surfaceColor('neutral'),
+		},
+	});
+
+const generatePagination = () => {
+	const small = fontScaleOf('c1');
+	const clickable = { cursor: 'pointer', outlineStyle: 'none' };
+	const button = { display: 'inline-flex', backgroundColor: 'transparent', ...small };
+
+	return constants({
+		root: {
+			paddingBlock: spacing('x12')!,
+			paddingInline: spacing('x24')!,
+		},
+		label: { color: fontColor('annotation'), ...small },
+		item: {
+			marginInline: offScale(2),
+			padding: spacing('x4')!,
+			color: fontColor('secondary-info'),
+			...small,
+		},
+		link: {
+			...button,
+			...clickable,
+			color: fontColor('info'),
+			textDecorationLine: { hover: 'underline', focus: 'underline' },
+		},
+		linkCurrent: {
+			...button,
+			...clickable,
+			cursor: 'default',
+			color: fontColor('default'),
+			...fontScaleOf('c2'),
+		},
+		step: { ...button, ...clickable, color: fontColor('secondary-info') },
+		stepInactive: { ...button, ...clickable, cursor: 'not-allowed', color: fontColor('secondary-info') },
+	});
+};
+
+const components: { file: string; generate: () => string; css?: boolean; section?: string }[] = [
+	{ file: join(import.meta.dirname, '../src/components/Button/Button.tsx'), generate: generateButton },
+	{ file: join(import.meta.dirname, '../src/components/Button/IconButton.tsx'), generate: generateIconButton },
+	{ file: join(import.meta.dirname, '../src/components/Tag/Tag.tsx'), generate: generateTag },
+	{ file: join(import.meta.dirname, '../src/components/Badge/Badge.tsx'), generate: generateBadge },
+	{ file: join(import.meta.dirname, '../src/components/Chip/Chip.tsx'), generate: generateChip },
+	{ file: itemFile('Item.tsx'), generate: generateItem },
+	{ file: itemFile('ItemGroup.tsx'), generate: generateItemGroup },
+	{ file: itemFile('ItemGroupHeader.tsx'), generate: generateItemGroupHeader },
+	{ file: itemFile('ItemGroupTitle.tsx'), generate: generateItemGroupTitle },
+	{ file: itemFile('ItemDivider.tsx'), generate: generateItemDivider },
+	{ file: itemFile('ItemMedia.tsx'), generate: generateItemMedia },
+	{ file: itemFile('ItemIcon.tsx'), generate: generateItemIcon },
+	{ file: itemFile('ItemContent.tsx'), generate: generateItemContent },
+	{ file: itemFile('ItemRow.tsx'), generate: generateItemRow },
+	{ file: itemFile('ItemTitle.tsx'), generate: generateItemTitle },
+	{ file: itemFile('ItemDescription.tsx'), generate: generateItemDescription },
+	{ file: itemFile('ItemMeta.tsx'), generate: generateItemMeta },
+	{ file: itemFile('ItemActions.tsx'), generate: generateItemActions },
+	{ file: itemFile('ItemLink.tsx'), generate: generateItemLink },
+	{ file: itemFile('Item.styles.css'), generate: generateItemStyles, css: true },
+	{ file: join(import.meta.dirname, '../src/components/Tabs/Tabs.tsx'), generate: generateTabs },
+	{ file: join(import.meta.dirname, '../src/components/Tabs/TabsItem.tsx'), generate: generateTabsItem },
+	{ file: join(import.meta.dirname, '../src/components/Accordion/Accordion.tsx'), generate: generateAccordion },
+	{ file: join(import.meta.dirname, '../src/components/Pagination/Pagination.tsx'), generate: generatePagination },
+	{ file: join(import.meta.dirname, '../src/components/Table/TableRow.tsx'), generate: generateTableRow },
+	{ file: join(import.meta.dirname, '../src/components/Table/TableCell.tsx'), generate: generateTableCell },
+	{ file: join(import.meta.dirname, '../src/components/Table/TableSelection/TableSelection.tsx'), generate: generateTableSelection },
+	{ file: join(import.meta.dirname, '../src/components/Accordion/AccordionItem.tsx'), generate: generateAccordionItem },
+	{
+		file: join(import.meta.dirname, '../src/components/Chip/Chip.styles.css'),
+		css: true,
+		// The margin `Margins` gave the thumb, the text and the dismiss symbol
+		generate: () => `.rcx-chip > * {
+	margin: ${spacing('x4')};
+}`,
+	},
+	{ file: join(import.meta.dirname, '../src/components/ButtonGroup/ButtonGroup.tsx'), generate: generateButtonGroup },
+	{ file: join(import.meta.dirname, '../src/components/Chevron/Chevron.tsx'), generate: generateChevron },
+	{ file: join(import.meta.dirname, '../src/components/Chevron/Chevron.styles.css'), generate: generateChevronCss, css: true },
+	{ file: join(import.meta.dirname, '../src/components/CodeSnippet/CodeSnippet.tsx'), generate: generateCodeSnippet },
+	{ file: join(import.meta.dirname, '../src/components/FramedIcon/FramedIcon.tsx'), generate: generateFramedIcon },
+	{ file: join(import.meta.dirname, '../src/components/States/States.tsx'), generate: generateStates },
+	{ file: join(import.meta.dirname, '../src/components/States/StatesIcon.tsx'), generate: generateStatesIcon },
+	{ file: join(import.meta.dirname, '../src/components/States/StatesTitle.tsx'), generate: generateStatesTitle },
+	{ file: join(import.meta.dirname, '../src/components/States/StatesSubtitle.tsx'), generate: generateStatesSubtitle },
+	{ file: join(import.meta.dirname, '../src/components/States/StatesSuggestion.tsx'), generate: generateStatesSuggestion },
+	{ file: join(import.meta.dirname, '../src/components/States/StatesSuggestionList.tsx'), generate: generateStatesSuggestionList },
+	{ file: join(import.meta.dirname, '../src/components/States/StatesSuggestionListItem.tsx'), generate: generateStatesSuggestionListItem },
+	{ file: join(import.meta.dirname, '../src/components/States/StatesLink.tsx'), generate: generateStatesLink },
+	{ file: join(import.meta.dirname, '../src/components/Grid/Grid.styles.css'), generate: generateGridCss, css: true },
+	{ file: join(import.meta.dirname, '../src/components/Contextualbar/Contextualbar.tsx'), generate: generateContextualbar },
+	{ file: join(import.meta.dirname, '../src/components/Contextualbar/ContextualbarContent.tsx'), generate: generateContextualbarContent },
+	{
+		file: join(import.meta.dirname, '../src/components/Contextualbar/ContextualbarEmptyContent.tsx'),
+		generate: generateContextualbarEmptyContent,
+	},
+	{ file: join(import.meta.dirname, '../src/components/Contextualbar/ContextualbarFooter.tsx'), generate: generateContextualbarFooter },
+	{ file: join(import.meta.dirname, '../src/components/Contextualbar/ContextualbarHeader.tsx'), generate: generateContextualbarHeader },
+	{ file: join(import.meta.dirname, '../src/components/Contextualbar/ContextualbarSection.tsx'), generate: generateContextualbarSection },
+	{ file: join(import.meta.dirname, '../src/components/Contextualbar/ContextualbarSkeleton.tsx'), generate: generateContextualbarSkeleton },
+	{ file: join(import.meta.dirname, '../src/components/Contextualbar/ContextualbarTitle.tsx'), generate: generateContextualbarTitle },
+	{ file: frames('Skeleton/Skeleton.tsx'), generate: generateSkeleton },
+	{ file: frames('Throbber/Throbber.tsx'), generate: generateThrobber },
+	{ file: frames('ProgressBar/ProgressBar.tsx'), generate: generateProgressBar },
+	{ file: frames('ProgressBar/ProgressBar.styles.css'), generate: generateProgressBarShine, css: true },
+	{ file: frames('Avatar/Avatar.tsx'), generate: generateAvatar },
+	{ file: frames('Avatar/AvatarContainer.tsx'), generate: generateAvatarContainer },
+	{ file: frames('Avatar/AvatarStack.tsx'), generate: generateAvatarStack },
+	{ file: frames('StatusBullet/StatusBullet.tsx'), generate: generateStatusBullet },
+	{ file: frames('Tooltip/Tooltip.tsx'), generate: generateTooltip },
+	{ file: frames('Tooltip/Tooltip.styles.css'), generate: generateTooltipArrow, css: true },
+
+	{ file: join(import.meta.dirname, '../src/components/Divider/Divider.tsx'), generate: generateDivider },
+	{ file: join(import.meta.dirname, '../src/components/Divider/Divider.styles.css'), generate: generateDividerCss, css: true },
+	{ file: join(import.meta.dirname, '../src/components/Tile/Tile.tsx'), generate: generateTile },
+	{ file: join(import.meta.dirname, '../src/styles/consumer-classes.css'), generate: generateConsumerClasses, css: true },
+	{ file: join(import.meta.dirname, '../src/components/Callout/Callout.tsx'), generate: generateCallout },
+	{ file: join(import.meta.dirname, '../src/components/Callout/Callout.styles.css'), generate: generateCalloutCss, css: true },
+	{ file: join(import.meta.dirname, '../src/components/CardGroup/CardGroup.tsx'), generate: generateCardGroup },
+	{ file: join(import.meta.dirname, '../src/components/Card/Card.tsx'), generate: generateCard },
+	{ file: join(import.meta.dirname, '../src/components/Card/CardBody.tsx'), generate: generateCardBody },
+	{ file: join(import.meta.dirname, '../src/components/Card/CardCol.tsx'), generate: generateCardCol },
+	{ file: join(import.meta.dirname, '../src/components/Card/CardControls.tsx'), generate: generateCardControls },
+	{ file: join(import.meta.dirname, '../src/components/Card/CardHeader.tsx'), generate: generateCardHeader },
+	{ file: join(import.meta.dirname, '../src/components/Card/CardRow.tsx'), generate: generateCardRow },
+	{ file: join(import.meta.dirname, '../src/components/Card/CardTitle.tsx'), generate: generateCardTitle },
+	{ file: join(import.meta.dirname, '../src/components/Modal/Modal.styles.css'), generate: generateModalCss, css: true },
+	{ file: join(import.meta.dirname, '../src/components/Modal/Modal.tsx'), generate: generateModal },
+	{ file: join(import.meta.dirname, '../src/components/Modal/ModalBackdrop.tsx'), generate: generateModalBackdrop },
+	{ file: join(import.meta.dirname, '../src/components/Modal/ModalHeader.tsx'), generate: generateModalHeader },
+	{ file: join(import.meta.dirname, '../src/components/Modal/ModalHeaderInner.tsx'), generate: generateModalHeaderInner },
+	{ file: join(import.meta.dirname, '../src/components/Modal/ModalHeaderText.tsx'), generate: generateModalHeaderText },
+	{ file: join(import.meta.dirname, '../src/components/Modal/ModalTitle.tsx'), generate: generateModalTitle },
+	{ file: join(import.meta.dirname, '../src/components/Modal/ModalTagline.tsx'), generate: generateModalTagline },
+	{ file: join(import.meta.dirname, '../src/components/Modal/ModalHeroImage.tsx'), generate: generateModalHeroImage },
+	{ file: join(import.meta.dirname, '../src/components/Modal/ModalFooter.tsx'), generate: generateModalFooter },
+	{ file: join(import.meta.dirname, '../src/components/Modal/ModalFooterAnnotation.tsx'), generate: generateModalFooterAnnotation },
+	{ file: join(import.meta.dirname, '../src/components/Modal/ModalIcon.tsx'), generate: generateModalIcon },
+	{ file: join(import.meta.dirname, '../src/components/SplitButton/SplitButton.tsx'), generate: generateSplitButton },
+	{ file: join(import.meta.dirname, '../src/components/SplitButton/SplitButton.styles.css'), generate: generateSplitButtonCss, css: true },
+	{ file: join(import.meta.dirname, '../src/components/Bubble/Bubble.tsx'), generate: generateBubble },
+	{ file: join(import.meta.dirname, '../src/components/Bubble/BubbleButton.tsx'), generate: generateBubbleButton },
+	{ file: join(import.meta.dirname, '../src/components/Bubble/BubbleItem.tsx'), generate: generateBubbleItem },
+	{ file: join(import.meta.dirname, '../src/components/Bubble/Bubble.styles.css'), generate: generateBubbleCss, css: true },
+	{ file: join(import.meta.dirname, '../src/components/Banner/Banner.tsx'), generate: generateBanner },
+	{ file: join(import.meta.dirname, '../src/components/Banner/Banner.styles.css'), generate: generateBannerCss, css: true },
+	{ file: join(import.meta.dirname, '../src/components/ToastBar/ToastBar.tsx'), generate: generateToastBar },
+	{ file: join(import.meta.dirname, '../src/components/ToastBar/ToastBar.styles.css'), generate: generateToastBarCss, css: true },
+	{ file: join(import.meta.dirname, '../src/components/InputBox/Input.tsx'), generate: generateInput },
+	{ file: join(import.meta.dirname, '../src/components/InputBox/InputBoxWrapper.tsx'), generate: generateInputBoxWrapper },
+	{ file: join(import.meta.dirname, '../src/components/InputBox/InputBoxAddon.tsx'), generate: generateInputBoxAddon },
+	{ file: join(import.meta.dirname, '../src/components/InputBox/InputBoxSkeleton.tsx'), generate: generateInputBoxSkeleton },
+	{ file: join(import.meta.dirname, '../src/components/Field/Field.tsx'), generate: generateField },
+	{ file: join(import.meta.dirname, '../src/components/Field/FieldRow.tsx'), generate: generateFieldRow },
+	{ file: join(import.meta.dirname, '../src/components/Field/FieldDescription.tsx'), generate: generateFieldDescription },
+	{ file: join(import.meta.dirname, '../src/components/Field/FieldHint.tsx'), generate: generateFieldHint },
+	{ file: join(import.meta.dirname, '../src/components/Field/FieldError.tsx'), generate: generateFieldError },
+	{ file: join(import.meta.dirname, '../src/components/Field/FieldLink.tsx'), generate: generateFieldLink },
+	{ file: join(import.meta.dirname, '../src/components/FieldGroup/FieldGroup.tsx'), generate: generateFieldGroup },
+	{ file: join(import.meta.dirname, '../src/components/Label/Label.tsx'), generate: generateLabel },
+	{ file: join(import.meta.dirname, '../src/components/Label/LabelInfo.tsx'), generate: generateLabelInfo },
+	{ file: sbFile('Sidebar/Sidebar.tsx'), generate: generateSidebar },
+	{ file: sbFile('Sidebar/SidebarSection.tsx'), generate: generateSidebarSection },
+	{ file: sbFile('Sidebar/SidebarAccordion.tsx'), generate: generateSidebarAccordion },
+	{ file: sbFile('Sidebar/SidebarAccordionItem.tsx'), generate: generateSidebarAccordionItem },
+	{ file: sbFile('Sidebar/SidebarCollapseGroup.tsx'), generate: generateSidebarCollapseGroup },
+	{ file: sbFile('Sidebar/SidebarGroupTitle.tsx'), generate: generateSidebarGroupTitle },
+	{ file: sbFile('Sidebar/SidebarBanner.tsx'), generate: generateSidebarBanner },
+	{ file: sbFile('Sidebar/SidebarFooter/SidebarFooter.tsx'), generate: generateSidebarFooter },
+	{ file: sbFile('Sidebar/SidebarFooter/SidebarFooterContent.tsx'), generate: generateSidebarFooterContent },
+	{ file: sbFile('Sidebar/SidebarMedia/SidebarMedia.tsx'), generate: generateSidebarMedia },
+	{ file: sbFile('Sidebar/SidebarMedia/SidebarMediaTitle.tsx'), generate: generateSidebarMediaTitle },
+	{ file: sbFile('Sidebar/SidebarMedia/SidebarMediaController.tsx'), generate: generateSidebarMediaController },
+	{ file: sbFile('Sidebar/SidebarItem/SidebarItemAction.tsx'), generate: generateSidebarItemAction },
+	{ file: sbFile('Sidebar/Sidebar.styles.css'), generate: generateSidebarStyles, css: true },
+	{ file: sbFile('NavBar/NavBar.tsx'), generate: generateNavBar },
+	{ file: sbFile('NavBar/NavBarSection.tsx'), generate: generateNavBarSection },
+	{ file: sbFile('NavBar/NavBar.styles.css'), generate: generateNavBarStyles, css: true },
+	{ file: sbFile('Sidepanel/Sidepanel.tsx'), generate: generateSidepanel },
+	{ file: sbFile('Sidepanel/SidepanelSection.tsx'), generate: generateSidepanelSection },
+	{ file: sbFile('Sidepanel/SidepanelHeader.tsx'), generate: generateSidepanelHeader },
+	{ file: sbFile('Sidepanel/SidepanelHeaderTitle.tsx'), generate: generateSidepanelHeaderTitle },
+	{ file: sbFile('Sidepanel/Sidepanel.styles.css'), generate: generateSidepanelStyles, css: true },
+	{ file: frames('Select/SelectContainer.tsx'), generate: generateSelectContainer },
+	{ file: frames('Select/SelectWrapper.tsx'), generate: generateSelectWrapper },
+	{ file: frames('Select/SelectItem.tsx'), generate: generateSelectItem },
+	{ file: frames('Select/SelectFocus.tsx'), generate: generateSelectFocus },
+	{ file: frames('MultiSelect/MultiSelectAnchor.tsx'), generate: generateMultiSelectAnchor },
+	{ file: frames('Select/SelectAddon.tsx'), generate: generateSelectAddon },
+	{ file: frames('Select/Select.styles.css'), generate: generateSelectCss, css: true },
+	{ file: frames('Option/OptionDescriptionBlock.tsx'), generate: generateOptionDescriptionBlock },
+	{ file: frames('Option/Option.styles.css'), generate: generateOptionCss, css: true },
+	{ file: frames('Menu/MenuItem.tsx'), generate: generateMenuItemDescription },
+];
+
+components.push(...messageCore, ...messageSystem, ...messagePreviews, ...messageReactions, ...messageMetrics, ...messageToolbar);
+
+for (const [dir, control] of [
+	['CheckBox', checkBox],
+	['RadioButton', radioButton],
+	['ToggleSwitch', toggleSwitch],
+] as const) {
+	const base = join(import.meta.dirname, `../src/components/${dir}/${dir}`);
+	components.push(
+		{ file: `${base}.tsx`, generate: () => selectionFrames(control) },
+		{ file: `${base}.styles.css`, generate: () => selectionStates(control), css: true },
+	);
+}
+
+// The spacing and type of the hand-written stylesheets, each section where its rules sit so their order holds
+const stylesheet = (name: string) => join(import.meta.dirname, `../src/components/${name}.styles.css`);
+const inputPaddingInline = `calc(${spacing('x16')} - ${borderWidth('default')})`;
+
+components.push(
+	{
+		file: stylesheet('Avatar/Avatar'),
+		css: true,
+		generate: () => `.rcx-avatar-stack > .rcx-avatar {
+	margin: auto ${offScale(-2)};
+}`,
+	},
+	{
+		file: stylesheet('Button/Button'),
+		css: true,
+		generate: () => `.rcx-button .rcx-button__icon {
+	margin-inline-end: ${spacing('x4')};
+}`,
+	},
+	{
+		file: stylesheet('Card/Card'),
+		css: true,
+		generate: () => `.rcx-card__horizontal .rcx-card__col {
+	row-gap: ${spacing('x4')};
+}`,
+	},
+	{
+		file: stylesheet('CardGrid/CardGrid'),
+		css: true,
+		section: 'grid',
+		generate: () => `.rcx-grid.rcx-card-grid {
+	margin: ${spacing('-x8')};
+}`,
+	},
+	{
+		file: stylesheet('CardGrid/CardGrid'),
+		css: true,
+		section: 'item',
+		generate: () => `.rcx-grid__item.rcx-card-grid__item {
+	padding: ${spacing('x8')};
+}`,
+	},
+	{
+		file: stylesheet('CardGroup/CardGroup'),
+		css: true,
+		section: 'row',
+		generate: () => `.rcx-card-group__item {
+	margin-inline: ${spacing('x8')};
+}
+
+.rcx-card-group__item:first-of-type {
+	margin-inline-start: 0;
+}
+
+.rcx-card-group__item:last-of-type {
+	margin-inline-end: 0;
+}
+
+.rcx-card-group--wrap > .rcx-card-group__item {
+	margin-block-end: ${spacing('x16')};
+	margin-inline: ${spacing('x8')} ${spacing('x8')};
+}`,
+	},
+	{
+		file: stylesheet('CardGroup/CardGroup'),
+		css: true,
+		section: 'vertical',
+		generate: () => `.rcx-card-group--vertical .rcx-card-group__item {
+	margin-block: ${spacing('x4')};
+	margin-inline: 0;
+}
+
+.rcx-card-group--vertical .rcx-card-group__item:first-child {
+	margin-block-start: 0;
+}
+
+.rcx-card-group--vertical .rcx-card-group__item:last-child {
+	margin-block-end: 0;
+}`,
+	},
+	{
+		file: stylesheet('Dropdown/Dropdown'),
+		css: true,
+		generate: () => `.rcx-dropdown__bottom-sheet-content {
+	padding-block: ${spacing('x16')};
+}`,
+	},
+	{
+		file: stylesheet('FieldGroup/FieldGroup'),
+		css: true,
+		generate: () => `.rcx-field-group__item + .rcx-field-group__item {
+	margin-block-start: ${spacing('x24')};
+}`,
+	},
+	{
+		file: stylesheet('Tabs/Tabs'),
+		css: true,
+		generate: () => `.rcx-tabs--with-divider .rcx-tabs__item.rcx-tabs__item {
+	margin-block-end: ${offScale(-1)};
+}`,
+	},
+	{
+		file: stylesheet('Table/Table'),
+		css: true,
+		section: 'selection',
+		generate: () => `.rcx-table__selection.rcx-table__selection {
+	padding-inline: ${spacing('x24')};
+}
+
+.rcx-table__selection-text {
+	margin-block: ${spacing('x16')};
+	${fontDeclarations('p2b')}
+}`,
+	},
+	{
+		file: stylesheet('Table/Table'),
+		css: true,
+		section: 'selection-actions',
+		generate: () => `.rcx-table__selection-actions {
+	margin-inline: ${spacing('-x8')};
+	${fontDeclarations('p2m')}
+}`,
+	},
+	{
+		file: stylesheet('InputBox/InputBox'),
+		css: true,
+		section: 'box',
+		generate: () => `.rcx-input-box__wrapper:where(:not(.is_View)) {
+	padding-block: ${spacing('x8')};
+	padding-inline: ${inputPaddingInline};
+}
+
+.rcx-input-box:where(:not(.is_View)) {
+	${fontDeclarations('p2m')}
+}`,
+	},
+	{
+		file: stylesheet('InputBox/InputBox'),
+		css: true,
+		section: 'decorated',
+		generate: () => `.rcx-input-box:where(:not(.is_View)):not(.rcx-input-box--undecorated) {
+	padding: ${spacing('x8')} ${inputPaddingInline};
+}`,
+	},
+	{
+		file: stylesheet('InputBox/InputBox'),
+		css: true,
+		section: 'text',
+		generate: () => `.rcx-input-box__placeholder {
+	${fontDeclarations('p2m')}
+}
+
+.rcx-input-box__option {
+	${fontDeclarations('p2m')}
+}`,
+	},
+	{
+		file: itemFile('Item.styles.css'),
+		css: true,
+		section: 'gap',
+		generate: () => `.rcx-item,
+.rcx-item-group-header {
+	--rcx-item-gap: ${spacing('x4')};
+}
+
+.rcx-item__row {
+	--rcx-item-gap: ${spacing('x4')};
+}
+
+.rcx-item:has(> .rcx-item__content > :nth-child(2)),
+.rcx-item--multiline {
+	--rcx-item-gap: ${spacing('x8')};
+}`,
+	},
+	{
+		file: itemFile('Item.styles.css'),
+		css: true,
+		section: 'inset',
+		generate:
+			() => `/* The inset widens the row's own padding and a divider's margin, so it stays a custom property; a unitless zero would make their calc() invalid */
+.rcx-item,
+.rcx-item-group-header,
+.rcx-item-divider {
+	--rcx-item-inset-inline: 0px; /* stylelint-disable-line length-zero-no-unit */
+}
+
+.rcx-item--inset-sm,
+.rcx-item-group-header--inset-sm,
+.rcx-item-divider--inset-sm {
+	--rcx-item-inset-inline: ${spacing('x4')};
+}
+
+.rcx-item--inset-md,
+.rcx-item-group-header--inset-md,
+.rcx-item-divider--inset-md {
+	--rcx-item-inset-inline: ${spacing('x8')};
+}
+
+.rcx-item--inset-lg,
+.rcx-item-group-header--inset-lg,
+.rcx-item-divider--inset-lg {
+	--rcx-item-inset-inline: ${spacing('x20')};
+}`,
+	},
+	{
+		file: itemFile('Item.styles.css'),
+		css: true,
+		section: 'narrow-inset',
+		generate: () => `@container rcx-item-group (width < 320px) {
+	.rcx-item--inset-lg,
+	.rcx-item-group-header--inset-lg,
+	.rcx-item-divider--inset-lg {
+		--rcx-item-inset-inline: ${spacing('x12')};
+	}
+}`,
+	},
+);
+
+// Frames whose children are text are a Tamagui Text: a string child of a View throws on React Native
+const textFrames = [
+	'BadgeFrame',
+	'BannerContentFrame',
+	'BannerTitleFrame',
+	'CalloutContent',
+	'CalloutTitle',
+	'CardBodyFrame',
+	'CardTitleFrame',
+	'CheckBoxLabel',
+	'CodeSnippetCodeBoxFrame',
+	'ContextualbarFooterFrame',
+	'ContextualbarTitleFrame',
+	'DividerLabel',
+	'FramedIconFrame',
+	'ItemDescriptionFrame',
+	'ItemGroupTitleFrame',
+	'ItemMetaFrame',
+	'ItemTitleFrame',
+	'LabelFrame',
+	'MenuItemDescriptionFrame',
+	'MessageBodyFrame',
+	'MessageDividerUnreadFrame',
+	'MessageDividerWrapperFrame',
+	'MessageGenericPreviewDescriptionFrame',
+	'MessageGenericPreviewIconTitleFrame',
+	'MessageMetricsItemLabelFrame',
+	'MessageReactionCounterFrame',
+	'MessageSystemBodyFrame',
+	'ModalFooterAnnotationFrame',
+	'ModalTaglineFrame',
+	'ModalTitleFrame',
+	'OptionDescriptionBlockFrame',
+	'RadioButtonLabel',
+	'SidebarAccordionTitleFrame',
+	'SidebarBannerLinkFrame',
+	'SidebarBannerTitleFrame',
+	'SidebarFooterContentFrame',
+	'SidebarGroupTitleFrame',
+	'SidebarMediaLabelFrame',
+	'SidebarMediaTitleFrame',
+	'SidepanelHeaderTitleFrame',
+	'StatesIconFrame',
+	'StatesSubtitleFrame',
+	'StatesTitleFrame',
+	'ThreadMessageOriginFrame',
+	'TileFrame',
+	'ToastBarContentFrame',
+	'ToggleSwitchLabel',
+	'TooltipFrame',
+];
+
+// A Text is an inline, pre-wrapped span where a View is a column flex div: what the frame doesn't state stays a View's
+const viewDefaults: Record<string, Value> = {
+	render: 'div',
+	display: 'flex',
+	alignItems: 'stretch',
+	flexDirection: 'column',
+	flexBasis: 'auto',
+	flexShrink: 0,
+	minWidth: 0,
+	minHeight: 0,
+	whiteSpace: 'inherit',
+	wordWrap: 'inherit',
+};
+
+const onText = (code: string) =>
+	textFrames.reduce(
+		(out, name) =>
+			out.replace(new RegExp(`const ${name} = styled\\(View, \\{\\n([\\s\\S]*?)\\n\\}\\);`), (_, body: string) => {
+				const stated = new Set([...body.matchAll(/^\t"?(\w+)"?:/gm)].map(([, key]) => key));
+				const defaults = Object.entries(viewDefaults)
+					.filter(([key]) => !stated.has(key))
+					.map(([key, value]) => `\t${key}: ${JSON.stringify(value)},\n`)
+					.join('');
+				return `const ${name} = styled(Text, {\n${defaults}${body}\n});`;
+			}),
+		code,
+	);
+
+const check = process.argv.includes('--check');
+let stale = false;
+
+// A spacing or font value above comes from `spacing()`, `fontScale()` or, off the scale, `offScale()`; a raw length there would not
+const spacingOrFont =
+	/['"]?\b(?:padding|margin|gap|rowGap|columnGap|row-gap|column-gap|fontSize|font-size|lineHeight|line-height|letterSpacing|letter-spacing)[\w-]*['"]?\s*:\s*/g;
+
+const valueEnd = (text: string, from: number) => {
+	let depth = 0;
+	for (let i = from; i < text.length; i++) {
+		if ('([{'.includes(text[i])) {
+			depth++;
+		} else if (')]}'.includes(text[i])) {
+			if (depth === 0) {
+				return i;
+			}
+			depth--;
+		} else if (depth === 0 && ',;\n'.includes(text[i])) {
+			return i;
+		}
+	}
+	return text.length;
+};
+
+if (check) {
+	const self = readFileSync(import.meta.filename, 'utf8');
+	const lineOf = (index: number) => self.slice(0, index).split('\n').length;
+
+	for (const match of self.matchAll(spacingOrFont)) {
+		const from = match.index + match[0].length;
+		const value = self.slice(from, valueEnd(self, from)).trim();
+		if (/\d(?:px|rem)\b|\bpx\(|^-?[1-9][\d.]*$/.test(value)) {
+			console.error(
+				`generate-frame-values.mts:${lineOf(match.index)}: raw length in \`${match[0].trim()} ${value}\`, use spacing(), fontScale() or offScale()`,
+			);
+			stale = true;
+		}
+	}
+
+	for (const match of self.matchAll(/\bspacing\(['"](?:-|neg-)?(x\d+)['"]\)/g)) {
+		if (!Object.hasOwn(spacingScale, match[1])) {
+			console.error(`generate-frame-values.mts:${lineOf(match.index)}: ${match[1]} is not on the spacing scale, use offScale()`);
+			stale = true;
+		}
+	}
+
+	// The hand-written stylesheets hold no spacing or type either: outside a generated section, a raw length there fails
+	const srcDir = join(import.meta.dirname, '../src');
+	const sources = readdirSync(srcDir, { recursive: true, encoding: 'utf8' })
+		.filter((name) => /\.(?:css|tsx?)$/.test(name))
+		.map((name) => ({ name, text: readFileSync(join(srcDir, name), 'utf8') }));
+
+	const spacingProperties = new Set<string>();
+	for (const text of [self, ...sources.map(({ text }) => text)]) {
+		for (const match of text.matchAll(spacingOrFont)) {
+			const from = match.index + match[0].length;
+			for (const [, name] of text.slice(from, valueEnd(text, from)).matchAll(/var\((--[\w-]+)/g)) {
+				spacingProperties.add(name);
+			}
+		}
+	}
+
+	for (const { name, text } of sources.filter(({ name }) => name.endsWith('.css'))) {
+		const handWritten = text.replace(/\/\* generated [\s\S]*?\/\* end of generated[^*]*\*\//g, (section) => section.replace(/[^\n]/g, ' '));
+		for (const match of handWritten.matchAll(/^[ \t]*([\w-]+)\s*:\s*([^;{}]*)/gm)) {
+			const [, property, value] = match;
+			const spacingOrFontProperty = property.startsWith('--')
+				? spacingProperties.has(property)
+				: /^(?:padding|margin|gap|row-gap|column-gap|font-size|line-height|letter-spacing)/.test(property);
+			if (spacingOrFontProperty && /\d(?:px|r?em)\b/.test(value)) {
+				console.error(
+					`src/${name}:${text.slice(0, match.index).split('\n').length}: raw length in \`${property}: ${value.trim()}\`, move it into a generated section`,
+				);
+				stale = true;
+			}
+		}
+	}
+}
+
+for (const { file, generate, css, section } of components) {
+	const source = readFileSync(file, 'utf8');
+	const [START, END] = markers(css, section);
+	const start = source.indexOf(START);
+	const end = source.indexOf(END);
+
+	if (start === -1 || end === -1) {
+		throw new Error(`${file} has no generated section: add the ${START} and ${END} markers`);
+	}
+
+	const config = (await prettier.resolveConfig(file)) ?? {};
+	const body = await prettier.format(onText(generate()), { ...config, parser: css ? 'css' : 'typescript' });
+	const next = `${source.slice(0, start)}${START}\n\n${body}\n${source.slice(end)}`;
+
+	if (next !== source) {
+		if (check) {
+			console.error(`${file} is out of date: run \`yarn generate:frame-values\``);
+			stale = true;
+		} else {
+			writeFileSync(file, next);
+		}
+	}
+}
+
+process.exit(stale ? 1 : 0);

@@ -1,0 +1,4 @@
+/* The frame sets `display`, which would otherwise beat the `hidden` attribute */
+.rcx-status-bullet[hidden] {
+	display: none;
+}

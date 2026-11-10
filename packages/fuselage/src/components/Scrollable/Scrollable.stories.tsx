@@ -1,9 +1,25 @@
+import { css } from '@rocket.chat/css-in-js';
 import type { Meta, StoryObj } from '@storybook/react';
+import type { ReactNode } from 'react';
 import { action } from 'storybook/actions';
 
+import { useStyle } from '../../hooks/useStyle';
 import { Box } from '../Box';
 import { Tile } from '../Tile';
 import Scrollable from './Scrollable';
+
+const ScrollingTile = ({ maxWidth, height, children }: { maxWidth?: string; height?: number; children: ReactNode }) => {
+	const className = useStyle(css`
+		${maxWidth !== undefined && `max-width: ${maxWidth};`}
+		${height !== undefined && `height: ${height}px;`}
+	`);
+
+	return (
+		<Tile flush className={className}>
+			{children}
+		</Tile>
+	);
+};
 
 export default {
 	title: 'Layout/Scrollable',
@@ -41,50 +57,60 @@ type Story = StoryObj<typeof Scrollable>;
 
 export const Default: Story = {
 	render: () => (
-		<Scrollable>
-			<Tile flush style={{ maxWidth: '100%', height: 100 }}>
-				<Box width='200%' height='1000%' />
-			</Tile>
-		</Scrollable>
+		<ScrollingTile maxWidth='100%' height={100}>
+			<Scrollable>
+				<Box width='full' height='full'>
+					<Box width='200%' height='1000%' />
+				</Box>
+			</Scrollable>
+		</ScrollingTile>
 	),
 };
 
 export const HorizontalScrolling: Story = {
 	render: () => (
-		<Scrollable horizontal>
-			<Tile flush style={{ maxWidth: '100%' }}>
-				<Box width='200%' height={100} />
-			</Tile>
-		</Scrollable>
+		<ScrollingTile maxWidth='100%'>
+			<Scrollable horizontal>
+				<Box width='full' height='full'>
+					<Box width='200%' height={100} />
+				</Box>
+			</Scrollable>
+		</ScrollingTile>
 	),
 };
 
 export const VerticalScrolling: Story = {
 	render: () => (
-		<Scrollable vertical>
-			<Tile flush style={{ height: 100 }}>
-				<Box height='1000%' />
-			</Tile>
-		</Scrollable>
+		<ScrollingTile height={100}>
+			<Scrollable vertical>
+				<Box width='full' height='full'>
+					<Box height='1000%' />
+				</Box>
+			</Scrollable>
+		</ScrollingTile>
 	),
 };
 
 export const SmoothScrolling: Story = {
 	render: () => (
-		<Scrollable smooth>
-			<Tile flush style={{ height: 100 }}>
-				<Box height='1000%' />
-			</Tile>
-		</Scrollable>
+		<ScrollingTile height={100}>
+			<Scrollable smooth>
+				<Box width='full' height='full'>
+					<Box height='1000%' />
+				</Box>
+			</Scrollable>
+		</ScrollingTile>
 	),
 };
 
 export const OnScrollContentEvent: Story = {
 	render: () => (
-		<Scrollable onScrollContent={action('scrollContent')}>
-			<Tile flush style={{ height: 100 }}>
-				<Box height='1000%' />
-			</Tile>
-		</Scrollable>
+		<ScrollingTile height={100}>
+			<Scrollable onScrollContent={action('scrollContent')}>
+				<Box width='full' height='full'>
+					<Box height='1000%' />
+				</Box>
+			</Scrollable>
+		</ScrollingTile>
 	),
 };

@@ -1,4 +1,5 @@
-import { Button } from '@rocket.chat/fuselage';
+import { css } from '@rocket.chat/css-in-js';
+import { Button, useStyle } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { LoginService } from '@rocket.chat/ui-contexts';
 import { useLoginWithService } from '@rocket.chat/ui-contexts';
@@ -64,14 +65,19 @@ const LoginServicesButton = <T extends LoginService>({
 		});
 	}, [handler, setError, service, loginStyle]);
 
+	// The colors the admin set for this service, in every state of the button
+	const colorsClassName = useStyle(css`
+		${buttonLabelColor && `color: ${buttonLabelColor} !important;`}
+		${buttonColor && `background-color: ${buttonColor} !important;`}
+	`);
+
 	return (
 		<Button
 			icon={icon as IconName}
-			className={className}
+			className={[className, colorsClassName].filter(Boolean).join(' ')}
 			onClick={handleOnClick}
 			title={buttonLabelText && buttonLabelText !== title ? title : undefined}
 			disabled={disabled}
-			style={{ color: buttonLabelColor, backgroundColor: buttonColor }}
 		>
 			{buttonLabelText || t('Sign_in_with__provider__', { provider: title })}
 		</Button>

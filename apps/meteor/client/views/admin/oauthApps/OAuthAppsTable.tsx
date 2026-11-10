@@ -71,7 +71,7 @@ const OAuthAppsTable = () => {
 								tabIndex={0}
 								role='link'
 								action
-								qa-oauth-app-id={_id}
+								data-qa-oauth-app-id={_id}
 							>
 								<GenericTableCell truncate color='default' strong>
 									{name}

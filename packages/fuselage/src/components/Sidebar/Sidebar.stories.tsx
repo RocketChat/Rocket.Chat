@@ -168,3 +168,27 @@ export const Default: Story = {
 		</Box>
 	),
 };
+
+export const Collapsed: Story = {
+	...Default,
+	args: { collapsed: true },
+};
+
+export const BannerVariants: Story = {
+	render: () => (
+		<Box height='90vh' width='x280'>
+			<Sidebar>
+				{(['default', 'info', 'success', 'warning', 'danger'] as const).map((variant) => (
+					<SidebarBanner
+						key={variant}
+						variant={variant}
+						title={`A ${variant} banner`}
+						linkText='Learn more'
+						linkProps={{ href: '#' }}
+						onClose={action('close')}
+					/>
+				))}
+			</Sidebar>
+		</Box>
+	),
+};

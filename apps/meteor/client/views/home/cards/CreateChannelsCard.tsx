@@ -2,10 +2,12 @@ import type { Card } from '@rocket.chat/fuselage';
 import { useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 
+import { useHomeCardClassName } from './useHomeCardClassName';
 import { GenericCard, GenericCardButton } from '../../../components/GenericCard';
 import CreateChannelModal from '../../../navbar/NavBarPagesGroup/actions/CreateChannelModalWithData';
 
-const CreateChannelsCard = (props: Omit<ComponentProps<typeof Card>, 'type'>) => {
+const CreateChannelsCard = ({ className, ...props }: Omit<ComponentProps<typeof Card>, 'type'>) => {
+	const homeCardClassName = useHomeCardClassName(className);
 	const t = useTranslation();
 	const setModal = useSetModal();
 
@@ -20,7 +22,7 @@ const CreateChannelsCard = (props: Omit<ComponentProps<typeof Card>, 'type'>) =>
 					{t('Create_channel')}
 				</GenericCardButton>,
 			]}
-			width='x340'
+			className={homeCardClassName}
 			{...props}
 		/>
 	);

@@ -48,7 +48,6 @@ const ContactTableRow = ({ _id, name, contactManager, lastChat, channels }: ILiv
 			action
 			key={_id}
 			tabIndex={0}
-			rcx-show-call-button-on-hover
 			className={customAlignTopClassName}
 			onClick={() => onRowClick(_id)}
 		>

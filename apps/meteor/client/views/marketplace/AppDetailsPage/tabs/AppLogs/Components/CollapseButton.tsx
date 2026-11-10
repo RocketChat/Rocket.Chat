@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Chevron, Palette } from '@rocket.chat/fuselage';
+import { Box, Chevron, Palette, useStyle } from '@rocket.chat/fuselage';
 import type { CSSProperties, ReactNode } from 'react';
 
 export type CollapseButtonProps = {
@@ -9,7 +9,15 @@ export type CollapseButtonProps = {
 	onClick: () => void;
 };
 
+// `[class]` outranks the Chevron frame's own alignment
+const topChevron = css`
+	&[class] {
+		align-self: flex-start;
+	}
+`;
+
 export const CollapseButton = ({ regionId, children, expanded, onClick }: CollapseButtonProps) => {
+	const topChevronClassName = useStyle(topChevron);
 	const clickable = css`
 		background: ${Palette.surface['surface-light']};
 
@@ -33,7 +41,7 @@ export const CollapseButton = ({ regionId, children, expanded, onClick }: Collap
 				focusable
 				color={Palette.text['font-default']}
 			>
-				<Chevron size={32} down={!expanded} up={expanded} style={{ alignSelf: 'flex-start' }} />
+				<Chevron size={32} down={!expanded} up={expanded} className={topChevronClassName} />
 				<Box paddingBlock='x4' paddingInline='x4' fontWeight='700'>
 					{children}
 				</Box>

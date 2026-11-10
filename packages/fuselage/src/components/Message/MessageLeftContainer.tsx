@@ -1,9 +1,7 @@
-import type { HTMLAttributes } from 'react';
-
 import { cx } from '../../helpers/composeClassNames';
-import ItemMedia from '../Item/ItemMedia';
+import ItemMedia, { type ItemMediaProps } from '../Item/ItemMedia';
 
-export type MessageLeftContainerProps = Omit<HTMLAttributes<HTMLDivElement>, 'is'>;
+export type MessageLeftContainerProps = Omit<ItemMediaProps, 'variant'>;
 
 const MessageLeftContainer = ({ className, ...props }: MessageLeftContainerProps) => (
 	<ItemMedia {...props} className={cx('rcx-message-container--left', className)} />

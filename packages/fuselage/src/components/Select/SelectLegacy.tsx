@@ -1,16 +1,19 @@
 import { useMergedRefs, useStableCallback, useResizeObserver } from '@rocket.chat/fuselage-hooks';
-import type { DependencyList, ElementType, MouseEvent, RefAttributes } from 'react';
+import type { AriaAttributes, DependencyList, ElementType, FocusEventHandler, MouseEvent, RefAttributes } from 'react';
 import { useState, useRef, useEffect, useMemo } from 'react';
 
-import type { ElementProps } from '../../types/ElementProps';
+import { ariaAndDataAttributes } from '../../helpers/ariaAndDataAttributes';
+import type { CommonAttributes, WebAttributes } from '../../types/ElementAttributes';
 import { AnimatedVisibility } from '../AnimatedVisibility';
-import { Box } from '../Box';
 import { Icon, type IconProps } from '../Icon';
 import type { OptionType } from '../Options';
 import { Options, useCursor } from '../Options';
 import { PositionAnimated } from '../PositionAnimated';
 import SelectAddon from './SelectAddon';
+import SelectContainer from './SelectContainer';
 import SelectFocus from './SelectFocus';
+import SelectItem from './SelectItem';
+import SelectWrapper from './SelectWrapper';
 
 export type SelectOption = readonly [value: string, label: string, selected?: boolean];
 
@@ -26,8 +29,12 @@ const useDidUpdate = (func: () => void, deps: DependencyList | undefined) => {
 	}, deps || []);
 };
 
-export type SelectProps = Omit<ElementProps<HTMLDivElement>, 'ref' | 'onChange'> &
+export type SelectProps = CommonAttributes &
+	Pick<WebAttributes<HTMLDivElement>, 'className' | 'title'> &
+	Pick<AriaAttributes, 'aria-label' | 'aria-labelledby' | 'aria-describedby' | 'aria-invalid' | 'aria-required'> &
 	RefAttributes<HTMLInputElement> & {
+		/** Fires when the focus leaves a control inside the select. */
+		onBlur?: FocusEventHandler<HTMLDivElement>;
 		value?: string | number;
 		name?: string;
 		disabled?: boolean;
@@ -67,6 +74,9 @@ function SelectLegacy({
 	'aria-labelledby': ariaLabelledBy,
 	'aria-describedby': ariaDescribedBy,
 	'aria-invalid': ariaInvalid,
+	className,
+	title,
+	onBlur,
 	...props
 }: SelectProps) {
 	const [internalValue, setInternalValue] = useState(value || '');
@@ -109,7 +119,7 @@ function SelectLegacy({
 		hide();
 	});
 
-	const { ref: containerRef, borderBoxSize } = useResizeObserver();
+	const { ref: containerRef, borderBoxSize } = useResizeObserver<HTMLDivElement>();
 
 	useDidUpdate(reset, [filter, internalValue]);
 
@@ -133,17 +143,18 @@ function SelectLegacy({
 	});
 
 	return (
-		<Box
-			animated
-			rcx-select
+		<SelectContainer
+			{...ariaAndDataAttributes(props)}
+			kind='select'
+			invalid={!!error}
 			disabled={disabled}
 			ref={containerRef}
 			onClick={handleClick}
-			rcx-select--invalid={!!error}
-			rcx-select--disabled={disabled}
-			{...props}
+			onBlur={onBlur}
+			className={className}
+			title={title}
 		>
-			<Box is='div' rcx-select__wrapper rcx-select__wrapper--hidden={!!visibleText}>
+			<SelectWrapper hidden={!!visibleText}>
 				{visibleText &&
 					(RenderSelected ? (
 						<RenderSelected
@@ -154,9 +165,7 @@ function SelectLegacy({
 							onClick={internalChangedByClick}
 						/>
 					) : (
-						<Box is='span' rcx-select__item rcx-select__item--placeholder={!valueLabel}>
-							{visibleText}
-						</Box>
+						<SelectItem placeholder={!valueLabel}>{visibleText}</SelectItem>
 					))}
 				<Anchor
 					ref={anchorRef}
@@ -175,7 +184,7 @@ function SelectLegacy({
 				<SelectAddon>
 					<Icon name={visible === AnimatedVisibility.VISIBLE ? 'chevron-up' : addonIcon || 'chevron-down'} size='x20' />
 				</SelectAddon>
-			</Box>
+			</SelectWrapper>
 			<PositionAnimated visible={visible} anchor={containerRef}>
 				<_Options
 					width={borderBoxSize.inlineSize}
@@ -188,7 +197,7 @@ function SelectLegacy({
 					customEmpty={customEmpty}
 				/>
 			</PositionAnimated>
-		</Box>
+		</SelectContainer>
 	);
 }
 

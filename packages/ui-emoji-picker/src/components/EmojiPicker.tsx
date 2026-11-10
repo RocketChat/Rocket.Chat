@@ -1,4 +1,5 @@
-import { Box, TextInput, Icon, Button, Divider } from '@rocket.chat/fuselage';
+import { css } from '@rocket.chat/css-in-js';
+import { Box, TextInput, Icon, Button, Divider, useStyle } from '@rocket.chat/fuselage';
 import { useMediaQuery, useOutsideClick } from '@rocket.chat/fuselage-hooks';
 import { useMergedRefsV2, useIsVisible } from '@rocket.chat/ui-client';
 import { useTranslation, usePermission } from '@rocket.chat/ui-contexts';
@@ -33,8 +34,13 @@ export type EmojiPickerProps = {
 const isFocusable = (element: Element): element is Element & Pick<HTMLOrSVGElement, 'focus'> =>
 	'focus' in element && typeof element.focus === 'function';
 
+const scrollingCategories = css`
+	overflow-x: scroll;
+`;
+
 const EmojiPicker = ({ reference, onClose, onPickEmoji, onAddCustomEmoji }: EmojiPickerProps) => {
 	const t = useTranslation();
+	const scrollingCategoriesClassName = useStyle(scrollingCategories);
 
 	const ref = useRef<Element | null>(reference);
 	const virtuosoRef = useRef<VirtuosoHandle>(null);
@@ -212,7 +218,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji, onAddCustomEmoji }: Emoj
 						aria-label={t('Search')}
 					/>
 				</EmojiPickerHeader>
-				<EmojiPickerCategoryHeader role='tablist' {...(scrollCategories && { style: { overflowX: 'scroll' } })}>
+				<EmojiPickerCategoryHeader role='tablist' className={scrollCategories ? scrollingCategoriesClassName : undefined}>
 					{emojiCategories.map((category) => (
 						<EmojiPickerCategoryItem
 							key={category.key}

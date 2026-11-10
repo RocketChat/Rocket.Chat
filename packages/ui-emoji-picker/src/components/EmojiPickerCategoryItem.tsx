@@ -1,5 +1,4 @@
-import { IconButton } from '@rocket.chat/fuselage';
-import type { AllHTMLAttributes } from 'react';
+import { IconButton, type IconButtonProps } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import type { EmojiCategory } from '../lib/types';
@@ -8,7 +7,7 @@ export type EmojiPickerCategoryItemProps = {
 	category: EmojiCategory;
 	active: boolean;
 	handleGoToCategory: () => void;
-} & Omit<AllHTMLAttributes<HTMLButtonElement>, 'is' | 'color' | 'size'>;
+} & Omit<IconButtonProps, 'icon' | 'color' | 'size'>;
 
 const mapCategoryIcon = (category: string) => {
 	switch (category) {

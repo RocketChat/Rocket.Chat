@@ -1,4 +1,5 @@
 import { isQuoteAttachment, type IMessage, type MessageAttachment } from '@rocket.chat/core-typings';
+import { css } from '@rocket.chat/css-in-js';
 import {
 	Message as MessageTemplate,
 	MessageLeftContainer,
@@ -15,6 +16,7 @@ import {
 	MessageSystemBody,
 	MessageSystemTimestamp,
 	Bubble,
+	useStyle,
 } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useFormatTime, useUserDisplayName } from '@rocket.chat/ui-client';
@@ -36,9 +38,15 @@ export type ContactHistoryMessageProps = {
 	showUserAvatar: boolean;
 };
 
+// The avatar's container takes the class; the image inherits the cursor
+const pointer = css`
+	cursor: pointer;
+`;
+
 const ContactHistoryMessage = ({ message, sequential, isNewDay, showUserAvatar }: ContactHistoryMessageProps) => {
 	const { t } = useTranslation();
 	const { triggerProps, openUserCard } = useUserCard();
+	const pointerClassName = useStyle(pointer);
 
 	const format = useFormatDate();
 	const formatTime = useFormatTime();
@@ -58,7 +66,7 @@ const ContactHistoryMessage = ({ message, sequential, isNewDay, showUserAvatar }
 							username={message.u.username}
 							size='x18'
 							onClick={(e) => openUserCard(e, message.u.username)}
-							style={{ cursor: 'pointer' }}
+							className={pointerClassName}
 							role='button'
 							{...triggerProps}
 						/>
@@ -94,7 +102,7 @@ const ContactHistoryMessage = ({ message, sequential, isNewDay, showUserAvatar }
 							username={message.u.username}
 							size='x36'
 							onClick={(e) => openUserCard(e, message.u.username)}
-							style={{ cursor: 'pointer' }}
+							className={pointerClassName}
 							role='button'
 							{...triggerProps}
 						/>

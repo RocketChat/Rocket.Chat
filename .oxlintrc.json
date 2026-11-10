@@ -410,6 +410,13 @@
 			}
 		},
 		{
+			"files": ["packages/fuselage/src/**/*.tsx"],
+			"jsPlugins": [{ "name": "rocket.chat", "specifier": "./packages/lint-config/rules/index.js" }],
+			"rules": {
+				"rocket.chat/render-element-spread": ["error", { "safeCalls": ["ariaAndDataAttributes", "useButtonPattern"] }]
+			}
+		},
+		{
 			"files": ["packages/mp3-encoder/src/lame/**/*.ts"],
 			"rules": {
 				"new-cap": "off"

@@ -21,7 +21,7 @@ const PersonalAccessTokenRow = ({
 	const formatDateAndTime = useFormatDateAndTime();
 
 	return (
-		<GenericTableRow tabIndex={0} role='link' qa-token-name={name}>
+		<GenericTableRow tabIndex={0} role='link' data-qa-token-name={name}>
 			<GenericTableCell truncate color='default' strong>
 				{name}
 			</GenericTableCell>

@@ -1,14 +1,22 @@
-import type { AllHTMLAttributes, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
+import { ariaAndDataAttributes } from '../../helpers/ariaAndDataAttributes';
 import { cx } from '../../helpers/composeClassNames';
+import type { PartAttributes } from '../../types/ElementAttributes';
 
-export type StatesSuggestionTextProps = {
+export type StatesSuggestionTextProps = PartAttributes<HTMLDivElement> & {
 	children?: ReactNode;
-} & AllHTMLAttributes<HTMLDivElement>;
+};
 
-const StatesSuggestionText = ({ children, className, ...props }: StatesSuggestionTextProps) => (
-	<div {...props} className={cx('rcx-states__suggestion-text', className)}>
-		{children}
+const StatesSuggestionText = (props: StatesSuggestionTextProps) => (
+	<div
+		{...ariaAndDataAttributes(props)}
+		ref={props.ref}
+		id={props.id}
+		title={props.title}
+		className={cx('rcx-states__suggestion-text', props.className)}
+	>
+		{props.children}
 	</div>
 );
 

@@ -39,7 +39,7 @@ const NavBarSearchFilterChips = ({ filters, onRemove, wrap = false }: NavBarSear
 						aria-label={t('Remove_filter', { filter: label })}
 						renderDismissSymbol={() => <Icon name='cross' size='x12' />}
 					>
-						<Box is='span' maxWidth='x104' withTruncatedText>
+						<Box is='span' margin='x4' maxWidth='x104' withTruncatedText>
 							{label}
 						</Box>
 					</Chip>

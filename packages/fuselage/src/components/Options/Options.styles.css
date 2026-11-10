@@ -1,0 +1,32 @@
+/* While the pointer is over the list, the keyboard's focused option stops looking focused unless the pointer is on it */
+.rcx-options:hover .rcx-option--focus.rcx-option--focus:not(.rcx-option--selected):not(:hover),
+.rcx-options:hover .rcx-item--focused.rcx-item--focused:not(.rcx-item--selected):not(:hover) {
+	background: initial;
+}
+
+.rcx-options {
+	width: var(--rcx-options-width);
+}
+
+.rcx-options__list {
+	max-height: var(--rcx-options-max-height, 9rem);
+
+	border-radius: var(--rcx-border-radius-medium, 0.25rem);
+	background-color: var(--rcx-color-surface-light, #ffffff);
+}
+
+.rcx-options__list--container {
+	width: var(--rcx-options-width);
+	max-height: 15rem;
+}
+
+/* The width and height the caller measures or picks, which stay on the element that sets them */
+@property --rcx-options-width {
+	syntax: '*';
+	inherits: false;
+}
+
+@property --rcx-options-max-height {
+	syntax: '*';
+	inherits: false;
+}

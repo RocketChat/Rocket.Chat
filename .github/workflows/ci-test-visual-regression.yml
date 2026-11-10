@@ -82,7 +82,21 @@ jobs:
     permissions:
       contents: read
 
-    name: Test Visual Regression
+    # Both builds compare against the same baselines: Fuselage must render the same compiled as on the Tamagui runtime.
+    # No Tamagui plan cache crosses runs (node_modules/.cache is neither cached nor in the packages build), so a
+    # @tamagui/static patch change can't be masked by plans from the previous compiler.
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Test Visual Regression
+            artifact: playwright-visual-results
+            zero-runtime: ''
+          - name: Test Visual Regression (zero-runtime)
+            artifact: playwright-visual-results-zero-runtime
+            zero-runtime: '1'
+
+    name: ${{ matrix.name }}
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -103,6 +117,7 @@ jobs:
         run: yarn workspace @rocket.chat/fuselage run build-storybook
         env:
           STORYBOOK_DISABLE_TELEMETRY: 1
+          FUSELAGE_ZERO_RUNTIME: ${{ matrix.zero-runtime }}
 
       - name: Run visual regression tests
         run: yarn workspace @rocket.chat/fuselage run visual-regression
@@ -111,5 +126,5 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: failure()
         with:
-          name: playwright-visual-results-${{ github.event.number || github.run_id }}
+          name: ${{ matrix.artifact }}-${{ github.event.number || github.run_id }}
           path: packages/fuselage/test-results

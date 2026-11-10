@@ -3,6 +3,7 @@ import { links } from '@rocket.chat/ui-client';
 import type { ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useHomeCardClassName } from './useHomeCardClassName';
 import { GenericCard, GenericCardButton } from '../../../components/GenericCard';
 import { useExternalLink } from '../../../hooks/useExternalLink';
 
@@ -10,7 +11,8 @@ const WINDOWS_APP_URL = links.go.desktopAppWindows;
 const LINUX_APP_URL = links.go.desktopAppLinux;
 const MAC_APP_URL = links.go.desktopAppMac;
 
-const DesktopAppsCard = (props: Omit<ComponentProps<typeof Card>, 'type'>) => {
+const DesktopAppsCard = ({ className, ...props }: Omit<ComponentProps<typeof Card>, 'type'>) => {
+	const homeCardClassName = useHomeCardClassName(className);
 	const { t } = useTranslation();
 	const handleOpenLink = useExternalLink();
 
@@ -29,7 +31,7 @@ const DesktopAppsCard = (props: Omit<ComponentProps<typeof Card>, 'type'>) => {
 					{t('Platform_Mac')}
 				</GenericCardButton>,
 			]}
-			width='x340'
+			className={homeCardClassName}
 			{...props}
 		/>
 	);

@@ -1,0 +1,43 @@
+/* Doubled classes outrank the frames' atomic classes (two classes) wherever the stylesheets are ordered */
+.rcx-pagination--divider::before {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+
+	height: 1px;
+
+	content: '';
+
+	border-radius: var(--rcx-pagination-border-radius, var(--rcx-border-radius-small, 0.125rem));
+	background-color: var(--rcx-color-stroke-extra-light, #ebecef);
+}
+
+@media screen and (min-width: 37.5em) {
+	.rcx-pagination.rcx-pagination {
+		flex-direction: column;
+	}
+
+	.rcx-pagination__left.rcx-pagination__left {
+		margin-inline-start: auto;
+	}
+
+	.rcx-pagination__right.rcx-pagination__right {
+		flex-direction: row;
+		margin-inline-start: auto;
+	}
+}
+
+@media screen and (min-width: 48em) {
+	.rcx-pagination.rcx-pagination {
+		flex-direction: row;
+	}
+
+	.rcx-pagination__left.rcx-pagination__left {
+		margin-inline: 0 auto;
+	}
+}
+
+:is(.rcx-pagination, .rcx-pagination__left, .rcx-pagination__right, .rcx-pagination__label, .rcx-pagination__list, .rcx-pagination__list-item, .rcx-pagination__link, .rcx-pagination__back, .rcx-pagination__forward)[hidden][hidden] {
+	display: none;
+}

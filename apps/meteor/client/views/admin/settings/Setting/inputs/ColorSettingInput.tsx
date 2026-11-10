@@ -1,5 +1,6 @@
 import type { SettingEditor } from '@rocket.chat/core-typings';
-import { Box, FieldLabel, FieldRow, FieldHint, FlexItem, InputBox, TextInput, Select, Field } from '@rocket.chat/fuselage';
+import { css } from '@rocket.chat/css-in-js';
+import { Box, FieldLabel, FieldRow, FieldHint, InputBox, TextInput, Select, Field } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, Key } from 'react';
 import { useCallback } from 'react';
@@ -7,6 +8,13 @@ import { useTranslation } from 'react-i18next';
 
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
+
+// The value input takes twice the room the editor select takes
+const editorRow = css`
+	& > .rcx-input-box[class][class] {
+		flex-grow: 2;
+	}
+`;
 
 export type ColorSettingInputProps = SettingInputProps & {
 	value: string;
@@ -56,40 +64,35 @@ function ColorSettingInput({
 				{hasResetButton && <ResetSettingButton onClick={onResetButtonClick} />}
 			</FieldRow>
 			<FieldRow>
-				<Box display='flex' flexGrow={1} gap={8}>
-					<FlexItem grow={2}>
-						{editor === 'color' && (
-							<InputBox
-								type='color'
-								id={_id}
-								value={value}
-								placeholder={placeholder}
-								disabled={disabled}
-								readOnly={readonly}
-								autoComplete={autocomplete === false ? 'off' : undefined}
-								onChange={handleChange}
-							/>
-						)}
-						{editor === 'expression' && (
-							<TextInput
-								id={_id}
-								value={value}
-								placeholder={placeholder}
-								disabled={disabled}
-								readOnly={readonly}
-								autoComplete={autocomplete === false ? 'off' : undefined}
-								onChange={handleChange}
-							/>
-						)}
-					</FlexItem>
+				<Box display='flex' flexGrow={1} gap={8} className={editorRow}>
+					{editor === 'color' && (
+						<InputBox
+							type='color'
+							id={_id}
+							value={value}
+							placeholder={placeholder}
+							disabled={disabled}
+							readOnly={readonly}
+							autoComplete={autocomplete === false ? 'off' : undefined}
+							onChange={handleChange}
+						/>
+					)}
+					{editor === 'expression' && (
+						<TextInput
+							id={_id}
+							value={value}
+							placeholder={placeholder}
+							disabled={disabled}
+							readOnly={readonly}
+							autoComplete={autocomplete === false ? 'off' : undefined}
+							onChange={handleChange}
+						/>
+					)}
 					<Select
-						type='color'
 						id={`${_id}_editor`}
 						aria-label={t('Setting_color_editor', { setting: label })}
 						value={editor}
 						disabled={disabled}
-						readOnly={readonly}
-						autoComplete={autocomplete === false ? 'off' : undefined}
 						onChange={handleEditorTypeChange}
 						options={allowedTypes.map((type) => [type, t(type)])}
 					/>

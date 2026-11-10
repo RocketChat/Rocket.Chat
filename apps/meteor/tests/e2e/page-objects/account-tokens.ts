@@ -32,7 +32,7 @@ export class AccountTokens extends Account {
 	}
 
 	tokenInTable(name: string): Locator {
-		return this.page.locator(`tr[qa-token-name="${name}"]`);
+		return this.page.locator(`tr[data-qa-token-name="${name}"]`);
 	}
 
 	get btnRegenerateTokenModal(): Locator {

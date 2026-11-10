@@ -1,0 +1,8 @@
+/* The box the app's reset gives every element, owned by Fuselage so its parts keep it where that reset isn't loaded */
+@layer fuselage {
+	:where([class*='rcx-']),
+	:where([class*='rcx-'])::before,
+	:where([class*='rcx-'])::after {
+		box-sizing: border-box;
+	}
+}

@@ -3,12 +3,14 @@ import { links } from '@rocket.chat/ui-client';
 import type { ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useHomeCardClassName } from './useHomeCardClassName';
 import { GenericCard, GenericCardButton } from '../../../components/GenericCard';
 import { useExternalLink } from '../../../hooks/useExternalLink';
 
 const DOCS_URL = links.go.documentation;
 
-const DocumentationCard = (props: Omit<ComponentProps<typeof Card>, 'type'>) => {
+const DocumentationCard = ({ className, ...props }: Omit<ComponentProps<typeof Card>, 'type'>) => {
+	const homeCardClassName = useHomeCardClassName(className);
 	const { t } = useTranslation();
 	const handleOpenLink = useExternalLink();
 
@@ -21,7 +23,7 @@ const DocumentationCard = (props: Omit<ComponentProps<typeof Card>, 'type'>) => 
 					{t('See_documentation')}
 				</GenericCardButton>,
 			]}
-			width='x340'
+			className={homeCardClassName}
 			{...props}
 		/>
 	);

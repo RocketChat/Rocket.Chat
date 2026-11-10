@@ -1,11 +1,11 @@
 import { useMergedRefs, useStableCallback, useResizeObserver } from '@rocket.chat/fuselage-hooks';
-import type { ElementType, MouseEventHandler, ReactNode, RefAttributes } from 'react';
+import type { AriaAttributes, ElementType, FocusEventHandler, MouseEventHandler, ReactNode, RefAttributes } from 'react';
 import { useState, useRef, useEffect } from 'react';
 
+import { ariaAndDataAttributes } from '../../helpers/ariaAndDataAttributes';
 import { prevent } from '../../helpers/prevent';
-import type { ElementProps } from '../../types/ElementProps';
+import type { CommonAttributes, WebAttributes } from '../../types/ElementAttributes';
 import { AnimatedVisibility } from '../AnimatedVisibility';
-import { Box } from '../Box';
 import type { IconProps } from '../Icon';
 import { Icon } from '../Icon';
 import { CheckOption } from '../Option';
@@ -16,9 +16,14 @@ import MultiSelectAnchor from './MultiSelectAnchor';
 import type { MultiSelectAnchorParams } from './MultiSelectAnchorParams';
 import { SelectedOptions } from './SelectedOptions';
 import SelectAddon from '../Select/SelectAddon';
+import SelectContainer from '../Select/SelectContainer';
 
-export type MultiSelectProps = Omit<ElementProps<HTMLDivElement>, 'ref' | 'onChange'> &
+export type MultiSelectProps = CommonAttributes &
+	Pick<WebAttributes<HTMLDivElement>, 'className' | 'title'> &
+	Pick<AriaAttributes, 'aria-label' | 'aria-labelledby' | 'aria-describedby' | 'aria-invalid' | 'aria-required'> &
 	RefAttributes<HTMLInputElement> & {
+		/** Fires when the focus leaves a control inside the select. */
+		onBlur?: FocusEventHandler<HTMLDivElement>;
 		name?: string;
 		disabled?: boolean;
 		placeholder?: string;
@@ -110,7 +115,7 @@ function MultiSelect({
 	const innerRef = useRef<HTMLElement>(null);
 	const anchorRef = useMergedRefs(ref, innerRef);
 
-	const { ref: containerRef, borderBoxSize } = useResizeObserver();
+	const { ref: containerRef, borderBoxSize } = useResizeObserver<HTMLDivElement>();
 
 	const handleClick = useStableCallback(() => {
 		if (visible === AnimatedVisibility.VISIBLE) {
@@ -130,23 +135,26 @@ function MultiSelect({
 		'aria-describedby': ariaDescribedBy,
 		'aria-invalid': ariaInvalid,
 		'aria-required': ariaRequired,
+		className,
+		title,
+		onBlur,
 		...containerProps
 	} = props;
 
 	return (
-		<Box
-			is='div'
-			animated
-			rcx-select
-			rcx-select--invalid={!!error}
-			rcx-select--disabled={disabled}
+		<SelectContainer
+			{...ariaAndDataAttributes(containerProps)}
+			kind='select'
+			invalid={!!error}
+			disabled={disabled}
 			ref={containerRef}
 			onClick={handleClick}
-			disabled={disabled}
-			{...containerProps}
+			onBlur={onBlur}
+			className={className}
+			title={title}
 		>
-			<Box is='div' rcx-select__field>
-				<Box is='div' rcx-select__values>
+			<div className='rcx-box rcx-box--full rcx-select__field'>
+				<div className='rcx-box rcx-box--full rcx-select__values'>
 					<Anchor
 						ref={anchorRef}
 						disabled={disabled ?? false}
@@ -197,8 +205,8 @@ function MultiSelect({
 							</SelectedOptions>
 						);
 					})}
-				</Box>
-			</Box>
+				</div>
+			</div>
 			<SelectAddon>
 				<Icon name={visible === AnimatedVisibility.VISIBLE ? 'chevron-up' : addonIcon || 'chevron-down'} size='x20' />
 			</SelectAddon>
@@ -216,7 +224,7 @@ function MultiSelect({
 					customEmpty={customEmpty}
 				/>
 			</PositionAnimated>
-		</Box>
+		</SelectContainer>
 	);
 }
 

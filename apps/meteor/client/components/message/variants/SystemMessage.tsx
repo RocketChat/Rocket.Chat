@@ -1,4 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
+import { css } from '@rocket.chat/css-in-js';
 import {
 	MessageSystem,
 	MessageSystemContainer,
@@ -8,6 +9,7 @@ import {
 	MessageSystemBlock,
 	CheckBox,
 	MessageNameContainer,
+	useStyle,
 } from '@rocket.chat/fuselage';
 import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
@@ -35,11 +37,17 @@ export type SystemMessageProps = {
 	showUserAvatar: boolean;
 } & ComponentProps<typeof MessageSystem>;
 
+// The avatar's container takes the class; the image inherits the cursor
+const pointer = css`
+	cursor: pointer;
+`;
+
 const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps) => {
 	const { t } = useTranslation();
 	const formatTime = useMessageListFormatTime();
 	const formatDateAndTime = useMessageListFormatDateAndTime();
 	const { openUserCard, openUserInfo } = useUserCard();
+	const pointerClassName = useStyle(pointer);
 
 	const user = { ...message.u, roles: [], ...useUserPresence(message.u._id) };
 	const displayName = useUserDisplayName(user);
@@ -79,7 +87,7 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 						username={message.u.username}
 						size='x18'
 						title=''
-						style={{ cursor: 'pointer' }}
+						className={pointerClassName}
 						onMouseEnter={openUserCardOnHover}
 						onClick={() => openUserInfo(user.username)}
 						// a pointer-only shortcut for the name button next to it

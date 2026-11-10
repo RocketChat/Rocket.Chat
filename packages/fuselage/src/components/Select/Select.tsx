@@ -1,14 +1,16 @@
 import { useActiveDescendant, useMergedRefs, useResizeObserver, useStableCallback } from '@rocket.chat/fuselage-hooks';
-import type { AllHTMLAttributes, FocusEvent, KeyboardEvent, Key, MouseEvent, PointerEvent, RefAttributes } from 'react';
+import type { AriaAttributes, DOMAttributes, FocusEvent, KeyboardEvent, Key, MouseEvent, PointerEvent, RefAttributes } from 'react';
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { useOverlayTriggerState } from 'react-stately';
 
+import { ariaAndDataAttributes } from '../../helpers/ariaAndDataAttributes';
+import type { CommonAttributes } from '../../types/ElementAttributes';
 import { AnimatedVisibility } from '../AnimatedVisibility';
-import { Box } from '../Box';
 import { Icon } from '../Icon';
 import { Listbox, ListboxOption } from '../Listbox';
 import { OptionContainer } from '../Options';
 import { PositionAnimated } from '../PositionAnimated';
+import SelectContainer from './SelectContainer';
 import type { SelectOption } from './SelectLegacy';
 import { useTypeahead } from './useTypeahead';
 
@@ -26,15 +28,15 @@ export type SelectProps<V extends Key = Key> = RefAttributes<HTMLElement> & {
 	disabled?: boolean;
 	/** Submits the selected key under this name with the surrounding form. */
 	name?: string;
-} & Omit<AllHTMLAttributes<HTMLElement>, 'value' | 'onChange' | 'defaultValue' | 'name' | 'disabled' | 'placeholder'>;
+	className?: string;
+	title?: string;
+	tabIndex?: number;
+	autoFocus?: boolean;
+} & CommonAttributes &
+	Pick<AriaAttributes, 'aria-label' | 'aria-labelledby' | 'aria-describedby' | 'aria-invalid' | 'aria-required' | 'aria-disabled'> &
+	Pick<DOMAttributes<HTMLButtonElement>, 'onFocus' | 'onBlur' | 'onKeyDown'>;
 
 const PAGE_SIZE = 10;
-
-const isTriggerProp = (name: string) =>
-	name.startsWith('aria-') || name.startsWith('data-') || ['className', 'title', 'autoFocus', 'tabIndex'].includes(name);
-
-const pickTriggerProps = (props: Record<string, unknown>) =>
-	Object.fromEntries(Object.entries(props).filter(([name]) => isTriggerProp(name)));
 
 const isPrintableCharacter = (event: KeyboardEvent) => event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey;
 
@@ -60,7 +62,6 @@ function Select<V extends Key = Key>({
 	disabled,
 	name,
 	id: idProp,
-	style,
 	onFocus,
 	onBlur,
 	onKeyDown,
@@ -287,10 +288,10 @@ function Select<V extends Key = Key>({
 					value={selectedKey === null || selectedKey === undefined ? '' : String(selectedKey)}
 				/>
 			)}
-			<Box
-				{...pickTriggerProps(props)}
+			<SelectContainer
+				{...ariaAndDataAttributes(props)}
 				is='button'
-				type='button'
+				kind='select'
 				ref={mergedRef}
 				id={id}
 				role='combobox'
@@ -299,26 +300,34 @@ function Select<V extends Key = Key>({
 				aria-controls={isOpen ? listboxId : undefined}
 				aria-activedescendant={isOpen && active !== undefined ? getOptionId(active) : undefined}
 				aria-invalid={props['aria-invalid'] ?? (error ? true : undefined)}
+				invalid={!!error}
 				disabled={disabled}
-				animated
-				rcx-select
-				rcx-select--trigger
-				rcx-input-box--small={small}
-				rcx-select--invalid={!!error}
-				rcx-select--disabled={disabled}
+				trigger
+				small={small}
 				className={props.className}
-				style={style}
+				title={props.title}
+				tabIndex={props.tabIndex}
+				autoFocus={props.autoFocus}
 				onMouseDown={handleMouseDown}
 				onClick={handleClick}
 				onKeyDown={handleKeyDown}
 				onFocus={onFocus}
 				onBlur={handleBlur}
 			>
-				<Box is='span' rcx-select__value rcx-select__value--placeholder={!selectedOption} rcx-select__value--small={small}>
+				<span
+					className={[
+						'rcx-box rcx-box--full',
+						small && 'rcx-select__value--small',
+						!selectedOption && 'rcx-select__value--placeholder',
+						'rcx-select__value',
+					]
+						.filter(Boolean)
+						.join(' ')}
+				>
 					{selectedOption ? (selectedOption[1] ?? selectedOption[0]) : placeholder}
-				</Box>
+				</span>
 				<Icon name={isOpen ? 'chevron-up' : 'chevron-down'} size='x20' />
-			</Box>
+			</SelectContainer>
 			<PositionAnimated
 				visible={isOpen ? AnimatedVisibility.VISIBLE : AnimatedVisibility.HIDDEN}
 				anchor={triggerRef}
@@ -326,12 +335,13 @@ function Select<V extends Key = Key>({
 				margin={4}
 				preventScroll={isOpen}
 			>
-				<Box
+				<div
+					className='rcx-box rcx-box--full'
 					aria-hidden={!isOpen || undefined}
 					style={isOpen ? undefined : { pointerEvents: 'none' }}
 					onPointerDown={(event: PointerEvent) => event.preventDefault()}
 				>
-					<OptionContainer style={{ width: borderBoxSize?.inlineSize }}>
+					<OptionContainer width={borderBoxSize?.inlineSize}>
 						<Listbox
 							id={listboxId}
 							aria-labelledby={props['aria-labelledby']}
@@ -352,7 +362,7 @@ function Select<V extends Key = Key>({
 							))}
 						</Listbox>
 					</OptionContainer>
-				</Box>
+				</div>
 			</PositionAnimated>
 		</>
 	);

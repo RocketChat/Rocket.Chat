@@ -1,16 +1,15 @@
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
-import type { AllHTMLAttributes, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { useLayoutEffect, useRef } from 'react';
 
-import type { ElementProps } from '../../types/ElementProps';
 import { Icon } from '../Icon';
-import Input from './Input';
+import Input, { type InputProps } from './Input';
 import InputBoxAddon from './InputBoxAddon';
 import InputBoxWrapper from './InputBoxWrapper';
 
 export type InputBoxProps<T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement = any> = Omit<
-	ElementProps<T, AllHTMLAttributes<T>>,
-	'type'
+	InputProps<T>,
+	'type' | 'is' | 'htmlSize'
 > & {
 	/** Lands on the wrapper when there is an addon, and on the input otherwise. */
 	className?: string;
@@ -78,6 +77,7 @@ function InputBox<T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaE
 	const innerRef = useRef<T>(null);
 	const mergedRef = useMergedRefs(ref, innerRef);
 	let defaultAddon = endAddon;
+	const state = (error && props.disabled && 'invalid-disabled') || (error && 'invalid') || (props.disabled && 'disabled') || 'default';
 
 	useLayoutEffect(() => {
 		if (innerRef.current && innerRef.current.setCustomValidity) {
@@ -116,8 +116,20 @@ function InputBox<T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaE
 	}
 
 	return (
-		<InputBoxWrapper className={className} hidden={hidden} invisible={invisible} rcx-input-box__wrapper--end-addon-flush={endAddonFlush}>
-			{startAddon && <InputBoxAddon>{startAddon}</InputBoxAddon>}
+		<InputBoxWrapper
+			className={className}
+			hidden={hidden}
+			invisible={invisible}
+			small={small}
+			textarea={type === 'textarea'}
+			endAddonFlush={endAddonFlush}
+			state={state}
+		>
+			{startAddon && (
+				<InputBoxAddon position='start' state={state}>
+					{startAddon}
+				</InputBoxAddon>
+			)}
 			<Input
 				is={(type === 'textarea' && 'textarea') || (type === 'select' && 'select') || 'input'}
 				cols={(type === 'textarea' && 1) || (type === 'select' && 0) || 0}
@@ -132,7 +144,11 @@ function InputBox<T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaE
 				rcx-input-box--small={small}
 				{...props}
 			/>
-			{defaultAddon && <InputBoxAddon>{defaultAddon}</InputBoxAddon>}
+			{defaultAddon && (
+				<InputBoxAddon position='end' state={state}>
+					{defaultAddon}
+				</InputBoxAddon>
+			)}
 		</InputBoxWrapper>
 	);
 }

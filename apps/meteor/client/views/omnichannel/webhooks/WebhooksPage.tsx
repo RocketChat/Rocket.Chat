@@ -1,4 +1,5 @@
 import type { SettingValue } from '@rocket.chat/core-typings';
+import { css } from '@rocket.chat/css-in-js';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import {
 	Box,
@@ -11,6 +12,7 @@ import {
 	ButtonGroup,
 	NumberInput,
 	FieldLabel,
+	useStyle,
 } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { ExternalLink, links, Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
@@ -84,8 +86,16 @@ const getInitialValues = ({
 	} as WebhooksPageFormData;
 };
 
+// `[class]` outranks the Box reset the field group's frame carries
+const fieldGroupSpacing = css`
+	&[class] {
+		margin-block-start: 1.5rem;
+	}
+`;
+
 const WebhooksPage = ({ settings }: WebhooksPageProps) => {
 	const t = useTranslation();
+	const fieldGroupClassName = useStyle(fieldGroupSpacing);
 	const dispatchToastMessage = useToastMessageDispatch();
 	const defaultValues = getInitialValues(settings);
 	const {
@@ -172,7 +182,7 @@ const WebhooksPage = ({ settings }: WebhooksPageProps) => {
 					<p>
 						<ExternalLink to={INTEGRATION_URL}>{t('Click_here')}</ExternalLink> {t('to_see_more_details_on_how_to_integrate')}
 					</p>
-					<FieldGroup style={{ marginTop: '1.5rem' }}>
+					<FieldGroup className={fieldGroupClassName}>
 						<Field>
 							<FieldLabel>{t('Webhook_URL')}</FieldLabel>
 							<FieldRow>

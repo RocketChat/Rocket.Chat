@@ -76,7 +76,7 @@ describe('[SelectLegacy Component] keyboard', () => {
 		const { container } = render(<SelectLegacy placeholder='Pick one' options={options} onChange={jest.fn()} />);
 		const isOpen = () => container.querySelector('.rcx-icon--name-chevron-up') !== null;
 
-		screen.getByRole('button').focus();
+		act(() => screen.getByRole('button').focus());
 		await user.keyboard('[Space>]');
 		act(() => jest.advanceTimersByTime(20));
 		expect(isOpen()).toBe(true);

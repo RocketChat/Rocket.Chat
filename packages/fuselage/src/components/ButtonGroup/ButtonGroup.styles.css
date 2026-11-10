@@ -1,0 +1,11 @@
+.rcx-button-group--stretch > * {
+	flex-grow: 1;
+}
+
+.rcx-button-group--stretch > .rcx-button--square {
+	flex: 0 0 auto;
+}
+
+.rcx-button-group--stretch-equal > * {
+	flex-basis: 0;
+}

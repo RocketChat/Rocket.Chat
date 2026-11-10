@@ -1,6 +1,8 @@
 import { composeStories } from '@storybook/react';
+import { fireEvent, screen } from '@testing-library/react';
 import { axe, toHaveNoViolations } from 'jest-axe';
 
+import CodeSnippet from './CodeSnippet';
 import * as stories from './CodeSnippet.stories';
 import { render } from '../../testing';
 
@@ -14,5 +16,18 @@ describe('[CodeSnippet Rendering]', () => {
 
 		const results = await axe(container);
 		expect(results).toHaveNoViolations();
+	});
+});
+
+describe('[CodeSnippet copy button]', () => {
+	it('calls onClick when the button is pressed, and shows no button without it', () => {
+		const onClick = jest.fn();
+		const { rerender } = render(<CodeSnippet onClick={onClick}>npm i</CodeSnippet>);
+
+		fireEvent.click(screen.getByRole('button', { name: 'Copy' }));
+		expect(onClick).toHaveBeenCalledTimes(1);
+
+		rerender(<CodeSnippet>npm i</CodeSnippet>);
+		expect(screen.queryByRole('button')).not.toBeInTheDocument();
 	});
 });
