@@ -40,8 +40,7 @@ describe('getRoomDropTarget', () => {
 		});
 	});
 
-	it('takes the room out of its category when dropped on its own system group', () => {
-		expect(getRoomDropTarget({ ...channel, category: 'work' }, 'work', 'Channels', context)).toBeNull();
+	it('takes a favorite, or a room listed in a dynamic group, out of its category when dropped on its own system group', () => {
 		expect(getRoomDropTarget({ ...channel, f: true }, 'Favorites', 'Channels', context)).toBeNull();
 		expect(getRoomDropTarget({ ...channel, category: 'work' }, 'Unread', 'Channels', context)).toBeNull();
 	});

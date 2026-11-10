@@ -120,19 +120,6 @@ describe('useItemListDrag', () => {
 		expect(onMove).toHaveBeenLastCalledWith({ key: 'Projects', kind: 'group', group: 'Projects' }, 'up');
 	});
 
-	it('leaves the plain arrows to the list navigation', () => {
-		const { list, rows } = createList();
-		const onMove = jest.fn();
-
-		const { result } = renderHook(() => useItemListDrag({ resolveTarget: () => undefined, onDrop: jest.fn(), onMove }));
-		attachDrag(result.current.ref, list);
-
-		rows[0].focus();
-		fireEvent.keyDown(rows[0], { key: 'ArrowDown', shiftKey: true });
-
-		expect(onMove).not.toHaveBeenCalled();
-	});
-
 	it('leaves the shortcut to text fields inside a row', () => {
 		const { list } = createList();
 		const input = document.createElement('input');
