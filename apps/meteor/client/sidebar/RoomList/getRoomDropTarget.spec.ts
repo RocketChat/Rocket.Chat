@@ -46,6 +46,23 @@ describe('getRoomDropTarget', () => {
 		expect(getRoomDropTarget({ ...channel, category: 'work' }, 'Unread', 'Channels', context)).toBeNull();
 	});
 
+	it.each<[string, DropRoom]>([
+		['Teams', { t: 'c', teamMain: true }],
+		['Discussions', { t: 'p', prid: 'parent' }],
+		['Channels', { t: 'p' }],
+		['Direct_Messages', { t: 'd' }],
+	])('takes the room out of its category when dropped on %s, its own system group', (systemGroup, room) => {
+		const grouped = { ...context, groupKeys: ['work', 'Teams', 'Discussions', 'Channels', 'Direct_Messages'] };
+		expect(getRoomDropTarget({ ...room, category: 'work' }, 'work', systemGroup, grouped)).toBeNull();
+	});
+
+	it('treats a discussion as listed under Channels when the Discussions group is not shown', () => {
+		const withoutDiscussions = { ...context, groupKeys: ['work', 'Teams', 'Channels', 'Direct_Messages'] };
+		const discussion: DropRoom = { t: 'c', prid: 'parent', category: 'work' };
+		expect(getRoomDropTarget(discussion, 'work', 'Channels', withoutDiscussions)).toBeNull();
+		expect(getRoomDropTarget({ ...discussion, t: 'd' }, 'work', 'Direct_Messages', withoutDiscussions)).toBeNull();
+	});
+
 	it('falls back to Conversations as the system group when rooms are not grouped by type', () => {
 		const ungrouped = { ...context, groupKeys: ['Favorites', 'work', 'Conversations'] };
 		expect(getRoomDropTarget({ ...channel, category: 'work' }, 'work', 'Conversations', ungrouped)).toBeNull();

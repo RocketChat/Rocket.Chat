@@ -10,25 +10,15 @@ type RoomDropContext = {
 	isFavoritesEnabled: boolean;
 };
 
-const getSystemGroupKey = (room: DropRoom) => {
-	if (room.teamMain) {
-		return 'Teams';
-	}
-	if (room.prid) {
-		return 'Discussions';
-	}
-	if (room.t === 'c' || room.t === 'p') {
-		return 'Channels';
-	}
-	if (room.t === 'd') {
-		return 'Direct_Messages';
-	}
-	return undefined;
-};
-
+// Same precedence as getRoomCategory, so the group found is the one the room is listed in once it leaves its category.
 const getSystemGroup = (room: DropRoom, groupKeys: string[]) => {
-	const key = getSystemGroupKey(room);
-	return key && groupKeys.includes(key) ? key : 'Conversations';
+	const candidates = [
+		room.teamMain && 'Teams',
+		room.prid && 'Discussions',
+		(room.t === 'c' || room.t === 'p') && 'Channels',
+		room.t === 'd' && 'Direct_Messages',
+	];
+	return candidates.find((key): key is string => !!key && groupKeys.includes(key)) ?? 'Conversations';
 };
 
 /**
