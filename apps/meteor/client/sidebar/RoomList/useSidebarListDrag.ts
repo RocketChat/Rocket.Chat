@@ -105,7 +105,7 @@ export const useSidebarListDrag = (groups: SidebarRoomListGroup[]) => {
 
 	return useItemListDrag({
 		disabled: !isEnterprise,
-		canDrag: (source) => source.kind === 'item' || !isDynamicGroup(source.key),
+		canDrag: (source) => (source.kind === 'item' ? findRoom(source.key)?.t !== 'l' : !isDynamicGroup(source.key)),
 		resolveTarget,
 		onDrop,
 		canMove: (source) => source.kind === 'group',
