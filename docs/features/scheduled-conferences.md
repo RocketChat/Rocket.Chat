@@ -45,7 +45,9 @@ The title is the booking's, or the number when it has none; with neither, the ro
 
 The add-in ships with the workspace: a task pane under `/outlook-addin/` and a manifest the workspace generates at `/outlook-addin/manifest.xml`, pointing at itself. The manifest is the XML kind, because on-premises Exchange accepts no other, and it asks only for what every supported Exchange Server's webmail offers. An Exchange admin installs it from that URL, through the Exchange admin center or `New-App -Url`.
 
-In a meeting the organizer is editing, a button opens the task pane. It asks the workspace what the organizer may book, offers a dial-in number only when they may have one, and on confirmation books the meeting with the event's attendees and subject. It then appends the workspace's invitation text to the end of the event body. The pane speaks the workspace's default language.
+In a meeting the organizer is editing, a button opens the task pane. It asks the workspace what the organizer may book, offers a dial-in number only when they may have one, and on confirmation books the meeting with the event's attendees and subject. It then appends the workspace's invitation text to the end of the event body.
+
+Every text the add-in shows is a setting under *Pexip → Outlook Add-in*, so a workspace words it in whatever language it uses. The pane's script is served by the workspace with those texts written into it, uncached, so a change reaches the next pane that opens — including the messages shown before the workspace has answered anything. The manifest's texts — the add-in's name and its toolbar button — are copied into Outlook when the add-in is installed, so changing them takes installing it again.
 
 ## Showing the add-in inside Outlook on the web
 

@@ -5,9 +5,11 @@ import proxyquire from 'proxyquire';
 
 const settingValues: Record<string, unknown> = {};
 
-const { getOutlookAddInFrameOrigins } = proxyquire.noCallThru().load('./outlookAddIn', {
-	'../settings': { settings: { get: (key: string) => settingValues[key] } },
-});
+const { getOutlookAddInFrameOrigins, getOutlookAddInManifestStrings, getOutlookAddInPaneStrings } = proxyquire
+	.noCallThru()
+	.load('./outlookAddIn', {
+		'../settings': { settings: { get: (key: string) => settingValues[key] } },
+	});
 
 describe('getOutlookAddInFrameOrigins', () => {
 	// Admins paste lists however they like; both separators the description mentions have to work.
@@ -22,5 +24,42 @@ describe('getOutlookAddInFrameOrigins', () => {
 		settingValues.Pexip_Integration_Outlook_AddIn_Frame_Origins = '  ';
 
 		expect(getOutlookAddInFrameOrigins()).to.deep.equal([]);
+	});
+});
+
+describe('getOutlookAddInPaneStrings', () => {
+	it('should use what the workspace set', () => {
+		settingValues.Pexip_Integration_Outlook_AddIn_String_Confirm = 'Termin hinzufügen';
+
+		expect(getOutlookAddInPaneStrings().confirm).to.equal('Termin hinzufügen');
+	});
+
+	// A cleared string would otherwise leave a button with no label.
+	it('should fall back to the default for a string the admin cleared', () => {
+		settingValues.Pexip_Integration_Outlook_AddIn_String_Confirm = '';
+
+		expect(getOutlookAddInPaneStrings().confirm).to.equal('Add meeting');
+	});
+
+	it('should hand out every string the pane uses', () => {
+		expect(Object.keys(getOutlookAddInPaneStrings())).to.have.members([
+			'loading',
+			'unreachable',
+			'intro',
+			'addSipAlias',
+			'confirm',
+			'adding',
+			'added',
+			'error',
+			'notAvailable',
+		]);
+	});
+});
+
+describe('getOutlookAddInManifestStrings', () => {
+	it('should read the manifest texts from their own settings', () => {
+		settingValues.Pexip_Integration_Outlook_AddIn_String_Button = 'Besprechung';
+
+		expect(getOutlookAddInManifestStrings()).to.include({ button: 'Besprechung', name: 'Rocket.Chat Meetings' });
 	});
 });

@@ -4,11 +4,12 @@ import type { IncomingMessage, ServerResponse } from 'node:http';
 import { Settings } from '@rocket.chat/models';
 import { WebApp } from 'meteor/webapp';
 
-import { i18n } from '../lib/i18n';
 import { SystemLogger } from '../lib/logger/system';
 import { notifyOnSettingChangedById } from '../lib/notifyListener';
+import { getOutlookAddInManifestStrings, getOutlookAddInPaneStrings } from '../lib/outlookAddIn';
 import { buildOutlookAddInManifest } from '../lib/outlookAddInManifest';
 import { OUTLOOK_ADDIN_PATH } from '../lib/outlookAddInPaths';
+import { buildOutlookAddInScript, sendOutlookAddInScript } from '../lib/outlookAddInScript';
 import { settings } from '../settings';
 
 const ID_SETTING = 'Pexip_Integration_Outlook_AddIn_Id';
@@ -28,19 +29,10 @@ const getAddInId = async (): Promise<string> => {
 
 const manifestHandler = async (_req: IncomingMessage, res: ServerResponse) => {
 	try {
-		const lng = settings.get<string>('Language') || 'en';
-		const t = (key: string) => i18n.t(key, { lng });
-
 		const manifest = buildOutlookAddInManifest({
 			id: await getAddInId(),
 			siteUrl: settings.get<string>('Site_Url'),
-			strings: {
-				name: t('Outlook_AddIn_Name'),
-				description: t('Outlook_AddIn_Description'),
-				group: t('Outlook_AddIn_Group'),
-				button: t('Outlook_AddIn_Button'),
-				buttonDescription: t('Outlook_AddIn_Button_Description'),
-			},
+			strings: getOutlookAddInManifestStrings(),
 		});
 
 		res.setHeader('Content-Type', 'application/xml; charset=utf-8');
@@ -54,4 +46,21 @@ const manifestHandler = async (_req: IncomingMessage, res: ServerResponse) => {
 	}
 };
 
+const scriptSource = await Assets.getTextAsync('outlook-addin/taskpane.js');
+
+const scriptHandler = async (req: IncomingMessage, res: ServerResponse) => {
+	try {
+		if (!scriptSource) {
+			throw new Error('The Outlook add-in script is missing from the build');
+		}
+
+		sendOutlookAddInScript(req, res, buildOutlookAddInScript(scriptSource, getOutlookAddInPaneStrings()));
+	} catch (err) {
+		SystemLogger.error({ msg: 'Failed to build the Outlook add-in script', err });
+		res.writeHead(500);
+		res.end();
+	}
+};
+
 WebApp.connectHandlers.use(`${OUTLOOK_ADDIN_PATH}manifest.xml`, manifestHandler);
+WebApp.connectHandlers.use(`${OUTLOOK_ADDIN_PATH}taskpane.js`, scriptHandler);

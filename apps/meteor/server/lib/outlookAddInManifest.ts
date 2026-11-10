@@ -1,12 +1,5 @@
 import { OUTLOOK_ADDIN_PATH } from './outlookAddInPaths';
-
-type ManifestStrings = {
-	name: string;
-	description: string;
-	group: string;
-	button: string;
-	buttonDescription: string;
-};
+import type { OutlookAddInManifestStrings as ManifestStrings } from './outlookAddInStrings';
 
 const escapeXml = (value: string): string =>
 	value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');

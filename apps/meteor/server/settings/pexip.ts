@@ -1,6 +1,7 @@
 import type { PexipLayout, PexipSettings } from '@rocket.chat/pexip';
 
 import { settingsRegistry, settings } from '.';
+import { OUTLOOK_ADDIN_MANIFEST_STRINGS, OUTLOOK_ADDIN_PANE_STRINGS } from '../lib/outlookAddInStrings';
 
 export function createPexipSettings(): Promise<void> {
 	return settingsRegistry.addGroup('Pexip_Integration', async function () {
@@ -170,6 +171,18 @@ export function createPexipSettings(): Promise<void> {
 					i18nDescription: 'Pexip_Integration_Outlook_AddIn_Text_Without_Alias_Description',
 				},
 			);
+
+			for (const { settingId, defaultValue } of Object.values(OUTLOOK_ADDIN_MANIFEST_STRINGS)) {
+				await this.add(settingId, defaultValue, {
+					type: 'string',
+					public: false,
+					i18nDescription: 'Pexip_Integration_Outlook_AddIn_String_Manifest_Description',
+				});
+			}
+
+			for (const { settingId, defaultValue } of Object.values(OUTLOOK_ADDIN_PANE_STRINGS)) {
+				await this.add(settingId, defaultValue, { type: 'string', public: false });
+			}
 		});
 
 		await this.section('Pexip_Integration_PersistentChat', async function () {
