@@ -350,3 +350,36 @@ it('retains stream readiness until the last subscriber leaves', async () => {
 	stopThird();
 	unmount();
 });
+
+it('discards readiness callbacks queued before a stream failure', async () => {
+	const rid = 'preview-readiness-cycle';
+	const streamRef: StreamControllerRef<'room-data'> = {};
+	const { result, unmount } = renderHook(() => useStream('room-data'), {
+		wrapper: mockAppRoot().withStream('room-data', streamRef).build(),
+	});
+
+	const { controller } = streamRef;
+	if (!controller) {
+		throw new Error('Expected room-data stream controller');
+	}
+
+	const onReady = jest.fn();
+	const onError = jest.fn();
+	const unsubscribe = result.current(rid, jest.fn(), { onReady, onError });
+	const error = new Error('Stream failed');
+
+	await act(async () => {
+		controller.ready(rid);
+		controller.fail(rid, error);
+		controller.ready(rid);
+
+		expect(onReady).not.toHaveBeenCalled();
+	});
+
+	expect(onError).toHaveBeenCalledTimes(1);
+	expect(onError).toHaveBeenCalledWith(error);
+	expect(onReady).toHaveBeenCalledTimes(1);
+
+	unsubscribe();
+	unmount();
+});

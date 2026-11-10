@@ -355,11 +355,13 @@ export class MockedAppRootBuilder {
 			onError?: (error: unknown) => void;
 		};
 		const listeners = new Map<string, Set<LifecycleCallbacks>>();
-		const readyEvents = new Set<string>();
+		const readyEvents = new Map<string, symbol>();
 
 		const notifyReady = (key: string, callbacks: LifecycleCallbacks) => {
+			const readiness = readyEvents.get(key);
+
 			void Promise.resolve().then(() => {
-				if (readyEvents.has(key) && listeners.get(key)?.has(callbacks)) {
+				if (readiness !== undefined && readyEvents.get(key) === readiness && listeners.get(key)?.has(callbacks)) {
 					callbacks.onReady?.();
 				}
 			});
@@ -377,7 +379,7 @@ export class MockedAppRootBuilder {
 						if (readyEvents.has(key)) {
 							return;
 						}
-						readyEvents.add(key);
+						readyEvents.set(key, Symbol());
 						listeners.get(key)?.forEach((callbacks) => notifyReady(key, callbacks));
 					},
 					fail: (eventName, error) => {
