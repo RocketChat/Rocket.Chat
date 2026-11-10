@@ -55,6 +55,16 @@ const AudioAttachment = ({
 
 	const active = isActive(track.id);
 	const [previewDuration, setPreviewDuration] = useState(0);
+	const [inactiveSeekTime, setInactiveSeekTime] = useState(0);
+
+	const handleTogglePlay = () => {
+		if (active) {
+			toggle();
+			return;
+		}
+		play(track, inactiveSeekTime);
+		setInactiveSeekTime(0);
+	};
 
 	return (
 		<>
@@ -74,11 +84,11 @@ const AudioAttachment = ({
 				>
 					<AudioPlayerControls
 						isPlaying={active && playing}
-						currentTime={active ? currentTime : 0}
+						currentTime={active ? currentTime : inactiveSeekTime}
 						durationTime={active && duration ? duration : previewDuration}
 						playbackSpeed={playbackRate}
-						onTogglePlay={() => (active ? toggle() : play(track))}
-						onSeek={(time) => (active ? seek(time) : play(track))}
+						onTogglePlay={handleTogglePlay}
+						onSeek={(time) => (active ? seek(time) : setInactiveSeekTime(time))}
 						onChangePlaybackSpeed={cyclePlaybackRate}
 					/>
 					{/* Loads only metadata so the controls show the length before this track becomes the shared player's active one. */}
