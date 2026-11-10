@@ -39,7 +39,7 @@
 		"packages/fuselage/src/components/Sidebar/SidebarItem/SidebarItem.styles.scss: &__timestamp:not(.rcx-item__meta) {",
 		"packages/fuselage/src/components/Sidebar/SidebarItem/SidebarItem.styles.scss: &__title:not(.rcx-item__title) {",
 		"packages/fuselage/src/components/Sidebar/SidebarItem/SidebarItem.styles.scss: .rcx-item__row > &__subtitle.rcx-item__description {",
-		"packages/fuselage/src/components/Sidebar/SidebarItem/SidebarItem.styles.scss: // Inside an `Item` the row owns layout and states; the rules under `:not(.rcx-item)`"
+		"packages/fuselage/src/styles/normalize.scss: a:where(:not(.rcx-button, .rcx-item, .rcx-item__link)) {"
 	],
 	"rcx-message": [
 		"apps/meteor/client/hooks/useMessageRowListNavigation.ts: export const messageRowSelector = '.rcx-message[tabindex=\"0\"], .rcx-message-system[tabindex=\"0\"], .rcx-message-thread[tabindex=\"0\"]';",
@@ -77,12 +77,6 @@
 		"packages/fuselage/src/components/Margins/Margins.tsx: &:not(.rcx-box--full) {",
 		"packages/fuselage/src/components/Skeleton/Skeleton.styles.scss: @extend .rcx-box;"
 	],
-	"rcx-input-box": [
-		"apps/meteor/client/styles/imports/general/base.css: * (.rcx-input-box is 0.875rem and fuselage.css is imported after this file).",
-		"packages/fuselage/src/components/Select/Select.styles.scss: // TODO move to .rcx-input-box",
-		"packages/fuselage/src/components/Select/Select.styles.scss: // beats the spacing .rcx-input-box__addon gets next to an input",
-		"packages/fuselage/src/components/Select/Select.styles.scss: @extend .rcx-input-box__addon;"
-	],
 	"rcx-modal": [
 		"apps/meteor/client/views/modal/uikit/ModalBlock.tsx: const container = element.querySelector('.rcx-modal__content') as HTMLElement;",
 		"apps/uikit-playground/src/_global.css: .rcx-modal:has(.uiKitWrapper){",
@@ -94,14 +88,25 @@
 	"rcx-tile": [
 		"apps/meteor/client/views/root/MainLayout/MainLayoutStyleTags.tsx: <PaletteStyleTag theme={theme} selector='.rcx-content--main, .rcx-tile' tagId={`main-palette-${theme}`} />"
 	],
+	"rcx-navbar": [
+		"apps/meteor/client/views/root/MainLayout/MainLayoutStyleTags.tsx: <PaletteStyleTag theme='dark' selector='.rcx-sidebar--main, .rcx-sidebar-rail, .rcx-sidepanel, .rcx-navbar' tagId='sidebar-palette' />"
+	],
+	"rcx-sidepanel": [
+		"apps/meteor/client/views/root/MainLayout/MainLayoutStyleTags.tsx: <PaletteStyleTag theme='dark' selector='.rcx-sidebar--main, .rcx-sidebar-rail, .rcx-sidepanel, .rcx-navbar' tagId='sidebar-palette' />"
+	],
 	"rcx-select": [
 		"packages/fuselage/src/components/AutoComplete/AutoComplete.styles.scss: @extend .rcx-select;"
 	],
 	"rcx-icon": [
+		"packages/fuselage/src/components/Bubble/Bubble.styles.scss: &:not(.rcx-bubble__group) &__button:has(> .rcx-icon),",
+		"packages/fuselage/src/components/Bubble/Bubble.styles.scss: &:not(.rcx-bubble__group) &__item:has(> .rcx-icon) {",
 		"packages/fuselage/src/components/Bubble/Bubble.styles.scss: > .rcx-icon {",
 		"packages/fuselage/src/components/Button/Button.styles.scss: .rcx-icon--name-loading {",
-		"packages/fuselage/src/components/Select/Select.styles.scss: .rcx-select > .rcx-icon {",
-		"packages/ui-voip/src/generate-landing-view.tsx: //    fuselage.css sets font-family:RocketChat on .rcx-icon but does not include the"
+		"packages/fuselage/src/components/Select/Select.styles.scss: .rcx-select > .rcx-icon {"
+	],
+	"rcx-grid": [
+		"packages/fuselage/src/components/CardGrid/CardGrid.styles.css: .rcx-grid.rcx-card-grid {",
+		"packages/fuselage/src/components/CardGrid/CardGrid.styles.css: .rcx-grid__item.rcx-card-grid__item {"
 	],
 	"rcx-skeleton": [
 		"packages/fuselage/src/components/InputBox/InputBox.styles.scss: .rcx-skeleton__input {"
@@ -111,6 +116,9 @@
 	],
 	"rcx-option": [
 		"packages/fuselage/src/components/Options/Options.styles.scss: .rcx-option--focus:not(.rcx-option--selected):not(:hover),"
+	],
+	"rcx-input-box": [
+		"packages/fuselage/src/components/Select/Select.styles.scss: @extend .rcx-input-box__addon;"
 	],
 	"rcx-divider": [
 		"packages/fuselage/src/components/Sidepanel/Sidepanel.styles.scss: &.rcx-divider {"
