@@ -90,7 +90,7 @@
 		"autoprefixer": "~10.5.6",
 		"caniuse-lite": "~1.0.30001810",
 		"cssnano": "~9.0.4",
-		"dom-accessibility-api": "^0.5.9",
+		"dom-accessibility-api": "~0.6.3",
 		"jest": "~30.5.2",
 		"jest-axe": "~11.0.0",
 		"magic-string": "~0.30.21",
