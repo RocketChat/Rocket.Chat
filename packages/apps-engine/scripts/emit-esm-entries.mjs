@@ -4,7 +4,7 @@
 // extensionless directory specifiers (`definition/accessors`) for both formats.
 // No declarations go in `esm/`: consumers emitting declarations must name every type by a path `exports` allows,
 // so both formats read the ones in `definition/`.
-import { existsSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 
 const root = join(import.meta.dirname, '..');
@@ -44,13 +44,14 @@ for (const path of paths) {
 		continue;
 	}
 
-	if (existsSync(`${path}.js`)) {
+	const index = `./${relative(dirname(path), path)}/index.js`;
+	const cjsEntry = `module.exports = require('${index}');\n`;
+	if (existsSync(`${path}.js`) && readFileSync(`${path}.js`, 'utf8') !== cjsEntry) {
 		throw new Error(`${relative(root, path)}: a module and a directory share this name`);
 	}
 
-	const index = `./${relative(dirname(path), path)}/index.js`;
 	const esmPath = join(esmRoot, relative(cjsRoot, path));
-	write(`${path}.js`, `module.exports = require('${index}');\n`);
+	write(`${path}.js`, cjsEntry);
 	write(`${path}.d.ts`, `export * from '${index}';\n`);
 	write(`${esmPath}.js`, `export * from '${index}';\n`);
 }

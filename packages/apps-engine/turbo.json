@@ -5,6 +5,10 @@
             "dependsOn": ["^build"],
             "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/.tool-versions"],
             "outputs": ["definition/**", "esm/**", "lib/**"]
+        },
+        "testunit": {
+            "dependsOn": ["build"],
+            "outputs": ["coverage/**"]
         }
     }
 }
