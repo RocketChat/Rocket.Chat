@@ -12,7 +12,7 @@ type ConfirmActionModalProps = {
 	onCancel: () => void;
 };
 
-/** Runs the confirmation at most once, showing it as pending until it settles. */
+/** Runs the confirmation at most once and stays open until it settles, since an action under way cannot be called back. */
 const ConfirmActionModal = ({ confirmText, onConfirm, onCancel }: ConfirmActionModalProps) => {
 	const [pending, setPending] = useState(false);
 
@@ -21,7 +21,22 @@ const ConfirmActionModal = ({ confirmText, onConfirm, onCancel }: ConfirmActionM
 		await onConfirm();
 	};
 
-	return <GenericModal variant='danger' onConfirm={handleConfirm} onCancel={onCancel} confirmText={confirmText} confirmLoading={pending} />;
+	const handleCancel = () => {
+		if (!pending) {
+			onCancel();
+		}
+	};
+
+	return (
+		<GenericModal
+			variant='danger'
+			onConfirm={handleConfirm}
+			onCancel={handleCancel}
+			confirmText={confirmText}
+			confirmLoading={pending}
+			cancelDisabled={pending}
+		/>
+	);
 };
 
 type UseConfirmActionOptions = {

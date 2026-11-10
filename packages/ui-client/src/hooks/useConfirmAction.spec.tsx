@@ -83,3 +83,19 @@ it('should run the action only once when confirm is clicked repeatedly while pen
 	expect(dispatch).toHaveBeenCalledTimes(1);
 	await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
 });
+
+it('should keep the modal open while the action is pending', async () => {
+	const { promise, resolve } = Promise.withResolvers<void>();
+	const action = jest.fn(() => promise);
+	renderConfirmAction(action);
+
+	await userEvent.click(await screen.findByRole('button', { name: 'Delete' }));
+
+	expect(screen.getByRole('button', { name: 'Cancel' })).toBeDisabled();
+	await userEvent.click(screen.getByRole('button', { name: 'Close' }));
+	expect(screen.getByRole('dialog')).toBeInTheDocument();
+
+	await act(async () => resolve());
+
+	await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+});
