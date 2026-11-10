@@ -224,7 +224,7 @@ describe('Team service', () => {
 			});
 
 			detach.onFirstCall().returns(firstResult);
-			detach.onSecondCall().resolves({ _id: 'late-room' });
+			detach.onCall(5).resolves({ _id: 'late-room' });
 			detach.onCall(4).callsFake(async () => {
 				markBatchStarted();
 				return null;
@@ -240,8 +240,8 @@ describe('Team service', () => {
 			finishFirst({ _id: team.roomId });
 			await conversion;
 
-			// A second, empty batch confirms there are no remaining rooms.
-			expect(detach.callCount).to.equal(10);
+			// A third, empty batch confirms there are no remaining rooms.
+			expect(detach.callCount).to.equal(15);
 			sinon.assert.alwaysCalledWithExactly(detach, team._id);
 			sinon.assert.calledOnceWithExactly(notifyOnRoomChangedById, [team.roomId, 'late-room'], 'updated');
 		});
