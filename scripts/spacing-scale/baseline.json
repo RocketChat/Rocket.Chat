@@ -236,7 +236,6 @@
 	"apps/meteor/client/views/omnichannel/cannedResponses/modals/CannedResponseFilter.tsx": 3,
 	"apps/meteor/client/views/omnichannel/cannedResponses/modals/CannedResponsesTable.tsx": 1,
 	"apps/meteor/client/views/omnichannel/components/AgentInfoDetails.tsx": 3,
-	"apps/meteor/client/views/omnichannel/components/CustomField.tsx": 1,
 	"apps/meteor/client/views/omnichannel/components/Field.tsx": 1,
 	"apps/meteor/client/views/omnichannel/components/FormSkeleton.tsx": 3,
 	"apps/meteor/client/views/omnichannel/components/Label.tsx": 1,

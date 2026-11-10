@@ -170,7 +170,7 @@ function ChatInfo({ id, route }: ChatInfoProps) {
 					</InfoPanelField>
 				)}
 				{customFieldEntries?.length > 0 &&
-					customFieldEntries.map(([key, value]) => <CustomField key={key} id={key} value={value as string} />)}
+					customFieldEntries.map(([key, value]) => <CustomField key={key} id={key} value={value as string} notFoundMarginBlock='x4' />)}
 				{slaId && <SlaField id={slaId} />}
 				{priorityId && <PriorityField id={priorityId} />}
 			</ContextualbarScrollableContent>
