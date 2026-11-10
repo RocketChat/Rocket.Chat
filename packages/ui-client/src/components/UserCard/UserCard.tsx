@@ -1,5 +1,4 @@
-import { css } from '@rocket.chat/css-in-js';
-import { Box, Palette } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type { ReactNode } from 'react';
 import { useContext } from 'react';
@@ -19,18 +18,6 @@ import { MarkdownTextContext } from '../MarkdownTextContext';
 import * as Status from '../UserStatus';
 import UserCardRoles from './UserCardRoles';
 import UserCardUsername from './UserCardUsername';
-
-const linkButtonStyle = css`
-	padding: 0;
-	border: none;
-	background: none;
-	cursor: pointer;
-
-	&:focus-visible {
-		outline: 0.125rem solid ${Palette.stroke['stroke-highlight']};
-		outline-offset: 0.125rem;
-	}
-`;
 
 export type UserCardProps = {
 	user?: {
@@ -107,19 +94,13 @@ const UserCard = ({
 						</HoverCardInfoList>
 					)}
 					{onOpenUserInfo && !isLayoutEmbedded && (
-						<HoverCardInfoItem icon='link'>
-							<Box
-								is='button'
-								type='button'
-								className={linkButtonStyle}
-								fontScale='p2'
-								color='info'
-								textDecorationLine='underline'
-								onClick={onOpenUserInfo}
-							>
-								{t('Full_profile')}
-							</Box>
-						</HoverCardInfoItem>
+						<HoverCardInfoList>
+							<HoverCardInfoItem icon='link' onClick={onOpenUserInfo}>
+								<Box is='span' color='info' textDecorationLine='underline'>
+									{t('Full_profile')}
+								</Box>
+							</HoverCardInfoItem>
+						</HoverCardInfoList>
 					)}
 				</Box>
 				{actions && (
