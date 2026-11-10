@@ -2,7 +2,7 @@ import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { RefCallback } from 'react';
 import { useCallback, useState } from 'react';
 
-import { isMoveRowShortcut } from './useItemListNavigation';
+import { isMoveRowShortcut, isTextField } from './useItemListNavigation';
 
 export type ItemListDragKind = 'item' | 'group';
 
@@ -45,7 +45,8 @@ type ItemListDragOptions = {
 	 */
 	canMove?: (source: ItemListDragSource) => boolean;
 	/**
-	 * Moves the focused row one step with Cmd+Shift (Ctrl+Shift) and the up or down arrow. Resolves with what to announce.
+	 * Moves the focused row one step with Cmd+Shift (Ctrl+Shift) and the up or down arrow. Resolves with what to announce; a rejection
+	 * leaves the row where it was, and telling the user about it is up to the callback.
 	 */
 	onMove?: (source: ItemListDragSource, direction: 'up' | 'down') => Promise<string | undefined> | string | undefined;
 };
@@ -172,6 +173,8 @@ export const useItemListDrag = ({
 			}
 
 			const preventNativeDrag = (event: DragEvent) => event.preventDefault();
+
+			let cancelActiveDrag: (() => void) | undefined;
 
 			const handlePointerDown = (event: PointerEvent) => {
 				if (event.button !== 0) {
@@ -377,6 +380,7 @@ export const useItemListDrag = ({
 				};
 
 				const finish = (drop: boolean, buttonReleased = true) => {
+					cancelActiveDrag = undefined;
 					clearTimeout(holdTimer);
 					window.removeEventListener('pointermove', handlePointerMove);
 					window.removeEventListener('pointerup', handlePointerUp);
@@ -423,6 +427,7 @@ export const useItemListDrag = ({
 					}
 				};
 
+				cancelActiveDrag = () => finish(false);
 				window.addEventListener('pointermove', handlePointerMove);
 				window.addEventListener('pointerup', handlePointerUp);
 				window.addEventListener('pointercancel', handlePointerCancel);
@@ -454,7 +459,7 @@ export const useItemListDrag = ({
 			};
 
 			const handleKeyDown = async (event: KeyboardEvent) => {
-				if (!isMoveRowShortcut(event) || !(event.target instanceof HTMLElement)) {
+				if (!isMoveRowShortcut(event) || !(event.target instanceof HTMLElement) || isTextField(event.target)) {
 					return;
 				}
 
@@ -469,7 +474,12 @@ export const useItemListDrag = ({
 
 				const focused = event.target;
 				const sourceTop = sourceElement.getBoundingClientRect().top;
-				const message = await stableOnMove(dragSource, event.key === 'ArrowUp' ? 'up' : 'down');
+				let message: string | undefined;
+				try {
+					message = await stableOnMove(dragSource, event.key === 'ArrowUp' ? 'up' : 'down');
+				} catch {
+					message = undefined;
+				}
 
 				// Reordering detaches or remounts the row, which drops its focus; give it back to the same control once it lands.
 				const focusedClass = focused.classList[0];
@@ -508,6 +518,7 @@ export const useItemListDrag = ({
 			list.addEventListener('focusin', handleFocusIn);
 
 			return () => {
+				cancelActiveDrag?.();
 				list.removeEventListener('pointerdown', handlePointerDown);
 				list.removeEventListener('dragstart', preventNativeDrag);
 				list.removeEventListener('keydown', handleKeyDown);

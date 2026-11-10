@@ -3,9 +3,27 @@ import { renderHook, act, fireEvent, waitFor } from '@testing-library/react';
 import { useItemListDrag } from './useItemListDrag';
 import { useItemListNavigation } from './useItemListNavigation';
 
+const detachers: (() => void)[] = [];
+
 afterEach(() => {
+	detachers.splice(0).forEach((detach) => detach());
+	jest.restoreAllMocks();
 	document.body.innerHTML = '';
 });
+
+const attachDrag = (ref: (list: HTMLElement) => void | (() => void), list: HTMLElement) => {
+	act(() => {
+		const detach = ref(list);
+		if (detach) {
+			detachers.push(detach);
+		}
+	});
+};
+
+const attachNavigation = (ref: (node: HTMLElement | null) => void, list: HTMLElement) => {
+	act(() => ref(list));
+	detachers.push(() => ref(null));
+};
 
 const createList = () => {
 	const list = document.createElement('div');
@@ -33,10 +51,8 @@ describe('useItemListDrag', () => {
 
 		const { result } = renderHook(() => useItemListDrag({ resolveTarget: () => undefined, onDrop: jest.fn(), onMove }));
 		const { result: navigation } = renderHook(() => useItemListNavigation({ isItem: (node) => node.tagName === 'BUTTON' }));
-		act(() => {
-			result.current.ref(list);
-			navigation.current(list);
-		});
+		attachDrag(result.current.ref, list);
+		attachNavigation(navigation.current, list);
 
 		rows[0].focus();
 		fireEvent.keyDown(rows[0], { key: 'ArrowDown', metaKey: true, shiftKey: true });
@@ -53,9 +69,7 @@ describe('useItemListDrag', () => {
 		const { result } = renderHook(() =>
 			useItemListDrag({ resolveTarget: () => undefined, onDrop: jest.fn(), onMove, canMove: (source) => source.key === 'Projects' }),
 		);
-		act(() => {
-			result.current.ref(list);
-		});
+		attachDrag(result.current.ref, list);
 
 		rows[0].focus();
 		rows[1].focus();
@@ -66,18 +80,71 @@ describe('useItemListDrag', () => {
 		expect(onMove).not.toHaveBeenCalled();
 	});
 
+	it('keeps the focus and announces nothing when the move fails', async () => {
+		const { list, rows } = createList();
+		const onMove = jest.fn().mockRejectedValue(new Error('offline'));
+
+		const { result } = renderHook(() => useItemListDrag({ resolveTarget: () => undefined, onDrop: jest.fn(), onMove }));
+		attachDrag(result.current.ref, list);
+
+		rows[0].focus();
+		fireEvent.keyDown(rows[0], { key: 'ArrowDown', metaKey: true, shiftKey: true });
+
+		await waitFor(() => expect(onMove).toHaveBeenCalled());
+		await act(async () => undefined);
+		expect(document.querySelector('[role="status"]')).toBeEmptyDOMElement();
+		expect(document.activeElement).toBe(rows[0]);
+	});
+
 	it('leaves the plain arrows to the list navigation', () => {
 		const { list, rows } = createList();
 		const onMove = jest.fn();
 
 		const { result } = renderHook(() => useItemListDrag({ resolveTarget: () => undefined, onDrop: jest.fn(), onMove }));
-		act(() => {
-			result.current.ref(list);
-		});
+		attachDrag(result.current.ref, list);
 
 		rows[0].focus();
 		fireEvent.keyDown(rows[0], { key: 'ArrowDown', shiftKey: true });
 
 		expect(onMove).not.toHaveBeenCalled();
+	});
+
+	it('leaves the shortcut to text fields inside a row', () => {
+		const { list } = createList();
+		const input = document.createElement('input');
+		list.querySelector('[data-drag-key="Projects"]')!.appendChild(input);
+		const onMove = jest.fn();
+
+		const { result } = renderHook(() => useItemListDrag({ resolveTarget: () => undefined, onDrop: jest.fn(), onMove }));
+		attachDrag(result.current.ref, list);
+
+		input.focus();
+		fireEvent.keyDown(input, { key: 'ArrowDown', metaKey: true, shiftKey: true });
+
+		expect(onMove).not.toHaveBeenCalled();
+	});
+
+	it('ends a drag in progress when the list is detached', () => {
+		const { list, rows } = createList();
+
+		const { result } = renderHook(() => useItemListDrag({ resolveTarget: () => undefined, onDrop: jest.fn() }));
+		let detach: void | (() => void);
+		act(() => {
+			detach = result.current.ref(list);
+		});
+
+		// jsdom has no hit testing nor PointerEvent: nothing is under the pointer, and mouse events carry its coordinates.
+		jest.spyOn(document, 'elementsFromPoint').mockReturnValue([]);
+		rows[0].dispatchEvent(new MouseEvent('pointerdown', { bubbles: true, button: 0, clientX: 0, clientY: 0 }));
+		act(() => {
+			window.dispatchEvent(new MouseEvent('pointermove', { clientX: 0, clientY: 20 }));
+		});
+		expect(document.querySelector('.rcx-item-drag-shield')).toBeInTheDocument();
+
+		act(() => detach?.());
+
+		expect(document.querySelector('.rcx-item-drag-shield')).not.toBeInTheDocument();
+		expect(document.querySelector('.rcx-item-drag-preview')).not.toBeInTheDocument();
+		expect(result.current.source).toBeUndefined();
 	});
 });

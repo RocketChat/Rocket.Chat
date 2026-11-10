@@ -4,7 +4,7 @@ import { useCallback, useRef } from 'react';
 
 const isItemLink = (node: Element) => node.classList.contains('rcx-item__link');
 
-const isTextField = (element: HTMLElement) =>
+export const isTextField = (element: HTMLElement) =>
 	element.isContentEditable || element.tagName === 'INPUT' || element.tagName === 'TEXTAREA' || element.tagName === 'SELECT';
 
 // The arrows with these modifiers move the focused row instead of the focus.
