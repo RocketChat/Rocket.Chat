@@ -22,7 +22,7 @@ const SlaField = ({ id }: SlaFieldProps) => {
 	}
 
 	if (isError || !data) {
-		return <Box marginBlock={16}>{t('Custom_Field_Not_Found')}</Box>;
+		return <Box marginBlock='x4'>{t('Custom_Field_Not_Found')}</Box>;
 	}
 
 	const { name } = data;
