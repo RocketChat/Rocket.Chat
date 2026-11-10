@@ -48,7 +48,7 @@ export const EmailConfirmationForm = ({ email, onBackToLogin }: { email?: string
 									required: true,
 								})}
 								error={errors.email && t('registration.component.form.requiredField')}
-								aria-invalid={errors?.email?.type === 'required'}
+								aria-invalid={errors.email ? 'true' : undefined}
 								placeholder={t('registration.component.form.emailPlaceholder')}
 								id='email'
 							/>
