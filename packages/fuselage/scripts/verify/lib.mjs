@@ -86,7 +86,12 @@ export const runPool = async (ids, { jobs, width }, fn) => {
 	const results = new Map();
 	let next = 0;
 	const worker = async () => {
-		let session = await open(Number(width));
+		let session;
+		try {
+			session = await open(Number(width));
+		} catch {
+			return;
+		}
 		while (next < ids.length) {
 			const id = ids[next++];
 			try {
