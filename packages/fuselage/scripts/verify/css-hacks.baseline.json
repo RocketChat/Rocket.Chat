@@ -611,10 +611,10 @@
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
-	"ToggleSwitch/ToggleSwitch.styles.scss": {
-		"rules": 6,
-		"nested": 5,
-		"combinators": 3,
+	"ToggleSwitch/ToggleSwitch.styles.css": {
+		"rules": 13,
+		"nested": 0,
+		"combinators": 13,
 		"important": 0,
 		"specificityBumps": 0,
 		"negativeMargins": 0,
