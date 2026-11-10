@@ -27,7 +27,7 @@ if (args.markdown && !args.compare) {
 	process.exit(1);
 }
 
-const toPosix =(path) => path.replaceAll('\\', '/');
+const toPosix = (path) => path.replaceAll('\\', '/');
 const fuselageSrc = toPosix(join(workspaceRoot, 'packages/fuselage/src/'));
 
 const tracked = (id) => {
