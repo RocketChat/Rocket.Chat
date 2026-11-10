@@ -95,6 +95,7 @@
 		"jest-axe": "~11.0.0",
 		"magic-string": "~0.30.21",
 		"normalize.css": "^8.0.1",
+		"playwright-core": "~1.52.0",
 		"postcss": "8.5.26",
 		"postcss-scss": "~4.0.9",
 		"react": "~19.2.8",
