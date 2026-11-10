@@ -22,7 +22,12 @@ const { values: args } = parseArgs({
 	options: { json: { type: 'string' }, compare: { type: 'string' }, markdown: { type: 'string' }, report: { type: 'string' } },
 });
 
-const toPosix = (path) => path.replaceAll('\\', '/');
+if (args.markdown && !args.compare) {
+	console.error('--markdown needs --compare: the table is the change against a base report');
+	process.exit(1);
+}
+
+const toPosix =(path) => path.replaceAll('\\', '/');
 const fuselageSrc = toPosix(join(workspaceRoot, 'packages/fuselage/src/'));
 
 const tracked = (id) => {
@@ -41,7 +46,8 @@ const count = (kind, content, file) => {
 	const size = { bytes: Buffer.byteLength(content), gzip: gzipSync(content).length };
 	totals[kind].bytes += size.bytes;
 	totals[kind].gzip += size.gzip;
-	chunks[chunkName(file)] = size;
+	const name = chunkName(file);
+	chunks[name] = { bytes: (chunks[name]?.bytes ?? 0) + size.bytes, gzip: (chunks[name]?.gzip ?? 0) + size.gzip };
 };
 if (args.report) {
 	const loaded = JSON.parse(readFileSync(args.report, 'utf8'));
