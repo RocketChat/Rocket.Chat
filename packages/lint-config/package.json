@@ -20,7 +20,8 @@
 	],
 	"scripts": {
 		"lint": "yarn run -T oxlint",
-		"lint:fix": "yarn run -T oxlint --fix"
+		"lint:fix": "yarn run -T oxlint --fix",
+		"test": "node --test"
 	},
 	"dependencies": {
 		"eslint": "~10.12.0",
