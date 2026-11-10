@@ -1,79 +1,89 @@
 // Usage: node scripts/verify/story-computed.mjs <storybook-static A> <storybook-static B> [story id filter] [max elements]
-// Diffs tag, rcx classes and computed styles of every element each story renders in two Storybook builds, over every
-// story whose id contains the filter (all of them without one). Lists up to `max` differing elements per story (6).
-// STORY_AB_WAIT=2000 lets addons such as storybook-addon-pseudo-states apply first.
-import { readFileSync } from 'node:fs';
-import { createRequire } from 'node:module';
-import { join } from 'node:path';
-
+//   [--renders rcx-button --class-index story-classes.json] [--globals 'theme:dark;direction:rtl'] [--jobs 4] [--width 1024]
+// Diffs tag, rcx classes and computed styles (incl. ::before/::after) of everything each story renders in <body>, portals
+// included, in two Storybook builds. Elements pair by their rcx path, so a changed wrapper does not misalign the rest.
+// Lists up to `max` differing elements per story (6). STORY_AB_WAIT=2000 lets addons such as pseudo-states apply first.
+import { cli, openStory, runPool, storyIds } from './lib.mjs';
 import { serve } from './serve.mjs';
 
-const require = createRequire(join(import.meta.dirname, '../..', 'package.json'));
-const { chromium } = require('playwright-core');
-
-const [dirA, dirB, filter = '', maxArg = '6'] = process.argv.slice(2);
+const { values: opts, positionals } = cli();
+const [dirA, dirB, filter = '', maxArg = '6'] = positionals;
 const max = Number.parseInt(maxArg, 10) > 0 ? Number.parseInt(maxArg, 10) : 6;
-
-const { entries } = JSON.parse(readFileSync(join(dirA, 'index.json'), 'utf8'));
-const ids = Object.values(entries)
-	.filter((e) => e.type === 'story' && e.id.includes(filter))
-	.map((e) => e.id);
+const ids = storyIds(dirA, { match: (e) => e.id.includes(filter), renders: opts.renders, classIndex: opts['class-index'] });
 
 const [serverA, serverB] = await Promise.all([serve(dirA), serve(dirB)]);
-const browser = await chromium.launch();
-const page = await browser.newPage({ viewport: { width: 1024, height: 768 } });
 
-const snapshot = async (base, id) => {
-	await page.goto(`${base}/iframe.html?id=${id}&viewMode=story`);
-	await page.waitForSelector('#storybook-root > *', { timeout: 15000, state: 'attached' });
-	await page.evaluate(() => globalThis.document.fonts.ready);
-	await page.waitForTimeout(Number(process.env.STORY_AB_WAIT ?? 0));
-	return page.evaluate(() =>
-		[...globalThis.document.querySelectorAll('#storybook-root *')].map((el) => {
-			const style = globalThis.getComputedStyle(el);
-			return {
+// Path = first rcx class (and nth among same-class siblings) of each rcx ancestor, then the element itself.
+const snapshot = async (page, base, id) => {
+	await openStory(page, base, id, opts.globals);
+	return page.evaluate(() => {
+		const rcxOf = (el) => [...el.classList].find((c) => c.startsWith('rcx-') && !c.startsWith('rcx-css-'));
+		const label = (el) => {
+			const own = rcxOf(el);
+			const same = [...el.parentElement.children].filter((s) => (own ? rcxOf(s) === own : !rcxOf(s) && s.tagName === el.tagName));
+			return `${own ?? el.tagName.toLowerCase()}[${same.indexOf(el)}]`;
+		};
+		const seen = new Map();
+		const out = {};
+		const read = (style) => Object.fromEntries([...style].map((p) => [p, style.getPropertyValue(p)]));
+		for (const el of globalThis.document.body.querySelectorAll('*')) {
+			if (['SCRIPT', 'STYLE', 'LINK', 'NOSCRIPT'].includes(el.tagName)) continue;
+			const chain = [];
+			for (let n = el.parentElement; n && n !== globalThis.document.body; n = n.parentElement) if (rcxOf(n)) chain.unshift(label(n));
+			let key = [...chain, label(el)].join(' > ');
+			const count = seen.get(key) ?? 0;
+			seen.set(key, count + 1);
+			if (count) key += `#${count}`;
+			out[key] = {
 				tag: el.tagName,
 				rcx: [...el.classList].filter((c) => c.startsWith('rcx-') && !c.startsWith('rcx-css-')).join(' '),
-				style: Object.fromEntries([...style].map((p) => [p, style.getPropertyValue(p)])),
+				style: read(globalThis.getComputedStyle(el)),
 			};
-		}),
-	);
+			for (const pseudo of ['::before', '::after']) {
+				const style = globalThis.getComputedStyle(el, pseudo);
+				if (style.content !== 'none' && style.content !== 'normal') out[key + pseudo] = { tag: pseudo, rcx: '', style: read(style) };
+			}
+		}
+		return out;
+	});
 };
+
+const results = await runPool(ids, { jobs: opts.jobs, width: opts.width }, async (page, id) => [
+	await snapshot(page, serverA.url, id),
+	await snapshot(page, serverB.url, id),
+]);
 
 let identical = 0;
 let failed = 0;
 for (const id of ids) {
-	let a;
-	let b;
-	try {
-		[a, b] = [await snapshot(serverA.url, id), await snapshot(serverB.url, id)];
-	} catch (error) {
+	const { value, error } = results.get(id);
+	if (error) {
 		failed++;
-		console.log(`ERROR ${id}: ${error.message.split('\n')[0]}`);
+		console.log(`COULD NOT CAPTURE ${id}: ${error}`);
 		continue;
 	}
+	const [a, b] = value;
 	const lines = [];
-	// Elements pair by document order, so after a count mismatch every later pair would be misaligned.
-	if (a.length !== b.length) {
-		lines.push(`   element count ${a.length} vs ${b.length}`);
-	} else {
-		let differing = 0;
-		for (let i = 0; i < a.length; i++) {
-			const [x, y] = [a[i], b[i]];
-			const props = Object.keys(x.style).filter((p) => x.style[p] !== y.style[p] && !/origin$/.test(p));
-			if (x.tag === y.tag && x.rcx === y.rcx && !props.length) continue;
-			differing++;
-			if (differing > max) continue;
-			lines.push(`   #${i} ${x.tag}.${x.rcx}${x.rcx !== y.rcx ? ` -> rcx "${y.rcx}"` : ''}`);
-			for (const p of props.slice(0, 8)) lines.push(`      ${p}: ${x.style[p]} -> ${y.style[p]}`);
-		}
-		if (differing > max) lines.push(`   … ${differing - max} more differing elements`);
+	const removed = Object.keys(a).filter((k) => !(k in b));
+	const added = Object.keys(b).filter((k) => !(k in a));
+	for (const k of removed.slice(0, max)) lines.push(`   only in A: ${k}`);
+	for (const k of added.slice(0, max)) lines.push(`   only in B: ${k}`);
+	let differing = 0;
+	for (const key of Object.keys(a).filter((k) => k in b)) {
+		const [x, y] = [a[key], b[key]];
+		const props = Object.keys(x.style).filter((p) => x.style[p] !== y.style[p] && !/origin$/.test(p));
+		if (x.tag === y.tag && x.rcx === y.rcx && !props.length) continue;
+		differing++;
+		if (differing > max) continue;
+		lines.push(`   ${key} ${x.tag}.${x.rcx}${x.rcx !== y.rcx ? ` -> rcx "${y.rcx}"` : ''}`);
+		for (const p of props.slice(0, 8)) lines.push(`      ${p}: ${x.style[p]} -> ${y.style[p]}`);
 	}
+	if (differing > max) lines.push(`   … ${differing - max} more differing elements`);
+	if (removed.length > max || added.length > max) lines.push(`   … ${removed.length} only in A, ${added.length} only in B`);
 	if (lines.length) console.log(`DIFF ${id}\n${lines.join('\n')}`);
 	else identical++;
 }
 console.log(`${identical} of ${ids.length} stories with identical computed styles, ${failed} could not be captured`);
 
-await browser.close();
 serverA.close();
 serverB.close();
