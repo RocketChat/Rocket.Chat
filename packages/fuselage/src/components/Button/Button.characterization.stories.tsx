@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { createRef } from 'react';
+import type { MouseEvent } from 'react';
 import { expect, fn } from 'storybook/test';
 
 import { ariaSnapshot, classContract, expectForwards, expectKeyboardActivation } from '../../testing/g0';
@@ -20,7 +21,7 @@ type Story = StoryObj<typeof Button>;
 const onClick = fn();
 const forwardedRef = createRef<HTMLButtonElement>();
 const callbackRef = fn();
-const onLinkClick = fn((event: MouseEvent) => event.preventDefault());
+const onLinkClick = fn((event: MouseEvent<HTMLElement>) => event.preventDefault());
 
 export const Forwarding: Story = {
 	render: () => (
