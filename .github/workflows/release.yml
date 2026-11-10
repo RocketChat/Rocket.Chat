@@ -1,0 +1,79 @@
+name: Release
+
+# Single entry point for every path that publishes to npm. npm allows one trusted
+# publisher per package and validates the entry-point workflow filename, so `cut`,
+# `next` and `publish-final` all have to run from this file.
+on:
+  push:
+    branches:
+      - master
+  schedule:
+    - cron: '28 21 20 * *' # run at minute 28 to avoid the chance of delay due to high load on GH
+  workflow_dispatch:
+    inputs:
+      name:
+        type: choice
+        description: Release type
+        default: next
+        required: true
+        options:
+          - next
+          - patch
+          - cut
+      base-ref:
+        description: Base version
+        default: develop
+        required: false
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+env:
+  HUSKY: 0
+
+permissions: {}
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      id-token: write # npm trusted publishing (OIDC)
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event_name == 'schedule' && github.ref_name || github.event_name == 'workflow_dispatch' && inputs.base-ref || '' }}
+          fetch-depth: 0
+          token: ${{ secrets.CI_PAT }}
+
+      - name: Setup NodeJS
+        uses: ./.github/actions/setup-node
+        with:
+          cache-modules: true
+          install: true
+          # Transitional: npm attempts the OIDC exchange first and overrides this token on
+          # success, so it only takes effect when the exchange fails. That keeps releases
+          # alive while packages are registered as trusted publishers one by one. Remove
+          # once every package reports a non-null dist.attestations — see docs/npm-publishing.md.
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # Node 22 bundles npm 10, trusted publishing needs >= 11.5.1
+      - name: Setup npm
+        run: |
+          npm install -g npm@^11.15.0
+          npm --version
+
+      - uses: rharkor/caching-for-turbo@2238fae6eb9a9936f92356f54cb3660200d105e7 # v2.5.1
+
+      - name: Build packages
+        run: yarn build
+
+      - name: Release
+        uses: ./packages/release-action
+        with:
+          action: ${{ github.event_name == 'push' && 'publish-final' || github.event_name == 'schedule' && 'next' || inputs.name }}
+          base-ref: ${{ github.event_name == 'schedule' && github.ref_name || github.event_name == 'workflow_dispatch' && inputs.base-ref || '' }}
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }} # transitional, see the Setup NodeJS step
+          GITHUB_TOKEN: ${{ secrets.CI_PAT }}
