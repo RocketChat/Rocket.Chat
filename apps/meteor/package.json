@@ -464,7 +464,7 @@
 		"sass": "~1.102.0",
 		"sinon": "^19.0.5",
 		"storybook": "~10.6.5",
-		"stylelint": "^16.10.0",
+		"stylelint": "^18.0.0",
 		"stylelint-config-standard": "^36.0.1",
 		"stylelint-order": "^6.0.4",
 		"stylelint-selector-bem-pattern": "^4.0.1",
