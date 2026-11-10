@@ -101,7 +101,6 @@
 		"packages/fuselage/src/components/Bubble/Bubble.styles.scss: &:not(.rcx-bubble__group) &__button:has(> .rcx-icon),",
 		"packages/fuselage/src/components/Bubble/Bubble.styles.scss: &:not(.rcx-bubble__group) &__item:has(> .rcx-icon) {",
 		"packages/fuselage/src/components/Bubble/Bubble.styles.scss: > .rcx-icon {",
-		"packages/fuselage/src/components/Button/Button.styles.scss: .rcx-icon--name-loading {",
 		"packages/fuselage/src/components/Select/Select.styles.scss: .rcx-select > .rcx-icon {"
 	],
 	"rcx-grid": [

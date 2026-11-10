@@ -80,6 +80,9 @@ export const webDropHandlerKeys = ['onDragOver', 'onDrop'] as const;
 
 export type WebDropHandlers<TElement extends Element> = Pick<DOMAttributes<TElement>, (typeof webDropHandlerKeys)[number]>;
 
+/** The drop handlers of a part rendered as a `button` or, through `is`, as an `a`. */
+export type ButtonOrAnchorDropHandlers = WebDropHandlers<HTMLButtonElement | HTMLAnchorElement>;
+
 /** What a toolbar container listens to: its own click and the capture-phase keyboard and focus events. */
 export const webCaptureHandlerKeys = ['onClick', 'onKeyDownCapture', 'onFocusCapture', 'onBlurCapture'] as const;
 
