@@ -180,7 +180,12 @@ export const LoginForm = ({ setLoginRoute }: LoginFormProps) => {
 								<FieldRow>
 									<TextInput
 										{...register('usernameOrEmail', {
-											required: t('Required_field', { field: t('registration.component.form.emailOrUsername') }),
+											validate: (value) => {
+												if (!value?.trim()) {
+													return t('Required_field', { field: t('registration.component.form.emailOrUsername') });
+												}
+												return true;
+											},
 										})}
 										autoCapitalize='none'
 										autoCorrect='off'
