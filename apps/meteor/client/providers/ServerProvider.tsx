@@ -64,17 +64,30 @@ const callEndpoint = <TMethod extends Method, TPathPattern extends PathPattern>(
 
 const uploadToEndpoint = (endpoint: PathFor<'POST'>, formData: any): Promise<UploadResult> => sdk.rest.post(endpoint as any, formData);
 
-const getStream =
-	<N extends StreamNames>(
-		streamName: N,
-		_options?: {
-			retransmit?: boolean | undefined;
-			retransmitToSelf?: boolean | undefined;
-		},
-	) =>
-	<K extends StreamKeys<N>>(eventName: K, callback: (...args: StreamerCallbackArgs<N, K>) => void): (() => void) =>
-		sdk.stream(streamName, [eventName], callback).stop;
+const getStream: ServerContextValue['getStream'] = (streamName, _options) => (eventName, callback, options) => {
+	const subscription = sdk.stream(streamName, [eventName], callback);
+	let stopped = false;
 
+	if (options?.onReady || options?.onError) {
+		void subscription.ready().then(
+			() => {
+				if (!stopped) {
+					options.onReady?.();
+				}
+			},
+			(error: unknown) => {
+				if (!stopped) {
+					options.onError?.(error);
+				}
+			},
+		);
+	}
+
+	return () => {
+		stopped = true;
+		subscription.stop();
+	};
+};
 const getStreamAll =
 	<N extends StreamNames>(streamName: N) =>
 	(callback: (eventName: string, args: StreamerEvents[N][number]['args']) => void): (() => void) =>

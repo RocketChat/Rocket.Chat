@@ -200,10 +200,21 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 			{ leading: true, trailing: true, maxWait: 1000 },
 		);
 
-		const unsubscribe = subscribeToRoomData(rid, () => {
-			refreshRoom();
-		});
-
+		const unsubscribe = subscribeToRoomData(
+			rid,
+			() => {
+				refreshRoom();
+			},
+			{
+				onReady: () => {
+					refreshRoom();
+				},
+				onError: () => {
+					// Recheck access through the room query if the subscription fails.
+					refreshRoom();
+				},
+			},
+		);
 		return () => {
 			unsubscribe();
 			refreshRoom.cancel();

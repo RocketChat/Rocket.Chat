@@ -46,7 +46,14 @@ export type ServerContextValue = {
 			retransmit?: boolean | undefined;
 			retransmitToSelf?: boolean | undefined;
 		},
-	) => (eventName: K, callback: (...args: StreamerCallbackArgs<N, K>) => void) => () => void;
+	) => (
+		eventName: K,
+		callback: (...args: StreamerCallbackArgs<N, K>) => void,
+		options?: {
+			onReady?: () => void;
+			onError?: (error: unknown) => void;
+		},
+	) => () => void;
 	getStreamAll: <N extends StreamNames>(
 		streamName: N,
 	) => (callback: (eventName: string, args: StreamerEvents[N][number]['args']) => void) => () => void;

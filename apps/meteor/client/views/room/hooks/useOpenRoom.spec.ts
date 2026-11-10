@@ -60,6 +60,49 @@ describe('useOpenRoom', () => {
 			expect(room).not.toHaveProperty('teamMain');
 		});
 	});
+	it('refreshes a public preview after the stream becomes ready', async () => {
+		const rid = 'preview-ready-room';
+		const name = 'preview-ready';
+		const channel = { ...createFakeRoom({ _id: rid, t: 'c', name }), t: 'c' as const, name };
+		const teamRoom = { ...channel, teamId: 'team-id', teamMain: true };
+		const streamRef: StreamControllerRef<'room-data'> = {};
+		let converted = false;
+		const getRoomByTypeAndName = jest.fn(() => (converted ? channel : teamRoom) as any);
+
+		const { result } = renderHook(() => useOpenRoom({ type: 'c', reference: name }), {
+			wrapper: mockAppRoot()
+				.withJohnDoe()
+				.withPermission('preview-c-room')
+				.withStream('room-data', streamRef)
+				.withMethod('getRoomByTypeAndName', getRoomByTypeAndName)
+				.build(),
+		});
+
+		await waitFor(() => expect(result.current.isSuccess).toBe(true));
+		expect(Rooms.state.get(rid)).toMatchObject({ teamId: 'team-id', teamMain: true });
+
+		const { controller } = streamRef;
+		if (!controller) {
+			throw new Error('Expected room-data stream controller');
+		}
+		expect(controller.has(rid)).toBe(true);
+		expect(getRoomByTypeAndName).toHaveBeenCalledTimes(1);
+
+		// Conversion happens before server acknowledgement; no stream event arrives.
+		converted = true;
+
+		await act(async () => {
+			controller.ready(rid);
+		});
+
+		await waitFor(() => {
+			expect(getRoomByTypeAndName).toHaveBeenCalledTimes(2);
+			const room = Rooms.state.get(rid);
+			expect(room).toMatchObject({ _id: rid, name });
+			expect(room).not.toHaveProperty('teamId');
+			expect(room).not.toHaveProperty('teamMain');
+		});
+	});
 	it('groups preview updates and cancels pending refreshes on unmount', async () => {
 		const rid = 'preview-burst-room';
 		const name = 'preview-burst';
