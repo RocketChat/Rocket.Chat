@@ -40,11 +40,13 @@ const stats = (samples) => {
 
 const missing = benchStories(dirA).filter((story) => !benchStories(dirB).some((other) => other.id === story.id));
 if (missing.length) {
-	console.error(`Build B has no story ${missing.map((story) => story.id).join(', ')}; both builds must have the same Benchmarks/Lists stories.`);
+	console.error(
+		`Build B has no story ${missing.map((story) => story.id).join(', ')}; both builds must have the same Benchmarks/Lists stories.`,
+	);
 	process.exit(1);
 }
 
-const servers = { A:await serve(dirA), B: await serve(dirB) };
+const servers = { A: await serve(dirA), B: await serve(dirB) };
 const browser = await chromium.launch();
 
 const measure = async (base, id) => {
