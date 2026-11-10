@@ -5,25 +5,39 @@ import { render, screen } from '@testing-library/react';
 import ConferenceViewport from './ConferenceViewport';
 import { CONFERENCE_THEMED_CLASS } from '../lib/panelStyles';
 
-const REFERENCE_TAG_ID = 'reference-palette';
+/** The palette custom properties an element resolves. jsdom does not inherit them, so this is what its own rules set. */
+const paletteOf = (element: Element) => {
+	const style = getComputedStyle(element);
+	return Object.fromEntries(
+		Array.from(style)
+			.filter((name) => name.startsWith('--rcx-'))
+			.map((name) => [name, style.getPropertyValue(name)]),
+	);
+};
 
-/** The palette Fuselage emits for a theme at `:root`, to compare against the ones this component scopes. */
+/** The palette Fuselage emits for a theme, to compare against the ones this component applies. */
 const paletteFor = (theme: 'light' | 'dark' | 'high-contrast') => {
-	const { unmount } = render(<PaletteStyleTag theme={theme} tagId={REFERENCE_TAG_ID} />);
-	const css = document.getElementById(REFERENCE_TAG_ID)?.textContent;
+	const { unmount } = render(
+		<>
+			<PaletteStyleTag theme={theme} selector='.reference' tagId='reference-palette' />
+			<div className='reference'>reference</div>
+		</>,
+	);
+	const palette = paletteOf(screen.getByText('reference'));
 	unmount();
-	return css;
+	return palette;
 };
 
 const renderViewport = (themeAppearence: string) =>
-	render(<ConferenceViewport>the call</ConferenceViewport>, {
-		wrapper: mockAppRoot().withUserPreference('themeAppearence', themeAppearence).build(),
-	});
-
-const themedCss = (theme: string) => document.getElementById(`conference-themed-palette-${theme}`)?.textContent;
-
-/** The window's own palette, compared at `:root` — the doubled selector is only there to outrank the app's. */
-const pinnedCss = () => document.getElementById('conference-palette')?.textContent?.replaceAll(':root:root', ':root');
+	render(
+		<ConferenceViewport>
+			the call
+			<div className={CONFERENCE_THEMED_CLASS}>a panel</div>
+		</ConferenceViewport>,
+		{
+			wrapper: mockAppRoot().withUserPreference('themeAppearence', themeAppearence).build(),
+		},
+	);
 
 describe('ConferenceViewport', () => {
 	it('renders what it is given', () => {
@@ -38,7 +52,7 @@ describe('ConferenceViewport', () => {
 	it.each(['light', 'dark'] as const)('pins the window dark, whatever the reader prefers (%s)', (themeAppearence) => {
 		renderViewport(themeAppearence);
 
-		expect(pinnedCss()).toBe(paletteFor('dark'));
+		expect(paletteOf(document.documentElement)).toEqual(paletteFor('dark'));
 	});
 
 	// Unlike light and dark, high contrast answers a legibility need rather than a taste, so it is the one
@@ -46,7 +60,7 @@ describe('ConferenceViewport', () => {
 	it('gives way to high contrast', () => {
 		renderViewport('high-contrast');
 
-		expect(pinnedCss()).toBe(paletteFor('high-contrast'));
+		expect(paletteOf(document.documentElement)).toEqual(paletteFor('high-contrast'));
 	});
 
 	// And this is what hands the reader's own theme back to the panels beside the call, and only to them. It
@@ -54,9 +68,6 @@ describe('ConferenceViewport', () => {
 	it.each(['light', 'dark'] as const)('scopes the %s palette to the panels', (themeAppearence) => {
 		renderViewport(themeAppearence);
 
-		const css = themedCss(themeAppearence);
-
-		expect(css).toContain(`.${CONFERENCE_THEMED_CLASS}`);
-		expect(css?.replace(`.${CONFERENCE_THEMED_CLASS}`, ':root')).toBe(paletteFor(themeAppearence));
+		expect(paletteOf(screen.getByText('a panel'))).toEqual(paletteFor(themeAppearence));
 	});
 });

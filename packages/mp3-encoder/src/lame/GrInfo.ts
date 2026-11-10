@@ -1,4 +1,4 @@
-import { SFBMAX } from './constants';
+import { SFBMAX } from './constants.js';
 
 export class GrInfo {
 	xr = new Float32Array(576);

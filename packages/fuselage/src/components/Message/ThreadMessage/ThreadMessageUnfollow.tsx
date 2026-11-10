@@ -1,7 +1,10 @@
-import ThreadMessageIcon from './ThreadMessageIcon';
+import { Icon } from '../../Icon';
+import ItemActions from '../../Item/ItemActions';
 
 const ThreadMessageUnfollow = () => (
-	<ThreadMessageIcon className='rcx-box rcx-box--full rcx-message-thread__icon rcx-message-thread__icon--unfollow' name='bell-off' />
+	<ItemActions reveal='hover'>
+		<Icon size='x16' name='bell-off' color='secondary-info' />
+	</ItemActions>
 );
 
 export default ThreadMessageUnfollow;

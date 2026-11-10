@@ -1,7 +1,6 @@
 import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IMessage, IUser, AtLeast } from '@rocket.chat/core-typings';
 import { Messages, Users } from '@rocket.chat/models';
-import { Match } from 'meteor/check';
 import moment from 'moment';
 
 import { canSendMessageAsync } from '../../lib/authorization/canSendMessage';
@@ -61,11 +60,11 @@ export async function executeUpdateMessage(
 	const blockEditInMinutes = settings.get('Message_AllowEditing_BlockEditInMinutes');
 	const bypassBlockTimeLimit = await hasPermissionAsync(uid, 'bypass-time-limit-edit-and-delete', message.rid);
 
-	if (!bypassBlockTimeLimit && Match.test(blockEditInMinutes, Number) && blockEditInMinutes !== 0) {
+	if (!bypassBlockTimeLimit && typeof blockEditInMinutes === 'number' && blockEditInMinutes !== 0) {
 		let currentTsDiff = 0;
 		let msgTs;
 
-		if (originalMessage.ts instanceof Date || Match.test(originalMessage.ts, Number)) {
+		if (originalMessage.ts instanceof Date || typeof originalMessage.ts === 'number') {
 			msgTs = moment(originalMessage.ts);
 		}
 		if (msgTs) {

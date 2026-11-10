@@ -19,7 +19,6 @@ import { streamToBuffer } from '@rocket.chat/tools';
 import type { NextFunction } from 'connect';
 import { parseCookie } from 'cookie';
 import filesize from 'filesize';
-import { Match } from 'meteor/check';
 import type { ClientSession, OptionalId } from 'mongodb';
 import sharp from 'sharp';
 import type { WritableStreamBuffer } from 'stream-buffers';
@@ -124,7 +123,7 @@ export const FileUpload = {
 	async validateFileUpload(file: IUpload, content?: Buffer | string) {
 		const isFederationUpload = Boolean(file.federation?.mxcUri);
 
-		if (!isFederationUpload && !Match.test(file.rid, String)) {
+		if (!isFederationUpload && typeof file.rid !== 'string') {
 			return false;
 		}
 
@@ -191,7 +190,7 @@ export const FileUpload = {
 	},
 
 	async validateAvatarUpload(file: IUpload) {
-		if (!Match.test(file.rid, String) && !Match.test(file.userId, String)) {
+		if (typeof file.rid !== 'string' && typeof file.userId !== 'string') {
 			return false;
 		}
 

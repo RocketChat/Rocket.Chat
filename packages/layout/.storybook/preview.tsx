@@ -1,5 +1,4 @@
-import { parameters, decorators } from '@rocket.chat/storybook-config/preview';
-import { useDarkMode } from '@rocket.chat/storybook-dark-mode';
+import { parameters, decorators, useThemeMode } from '@rocket.chat/storybook-config/preview';
 import type { Preview } from '@storybook/react-webpack5';
 import { Suspense } from 'react';
 
@@ -11,8 +10,8 @@ const preview: Preview = {
 	},
 	decorators: [
 		...decorators,
-		(Story) => {
-			const dark = useDarkMode();
+		(Story, { globals }) => {
+			const dark = useThemeMode(globals.theme) === 'dark';
 
 			return (
 				<Suspense fallback={null}>

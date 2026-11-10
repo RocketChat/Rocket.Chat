@@ -1,9 +1,3 @@
-*,
-*::before,
-*::after {
-	box-sizing: border-box;
-}
-
 html {
 	overflow-y: auto;
 	height: 100%;
@@ -25,12 +19,16 @@ body {
 	font-size: var(--text-small-size);
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
+	font-variant-numeric: tabular-nums;
 }
 
-:focus {
-	outline: 0;
-	outline-style: none;
-	outline-color: transparent;
+/* Element rules sit in the `reset` layer, so Fuselage component styles, unlayered or in a later layer, win over them as their classes used to */
+@layer reset {
+	:focus {
+		outline: 0;
+		outline-style: none;
+		outline-color: transparent;
+	}
 }
 
 .clearfix {
@@ -43,15 +41,18 @@ body {
 	}
 }
 
-button {
-	padding: 0;
-	cursor: pointer;
-	text-align: left;
-	text-transform: inherit;
-	color: inherit;
-	border-width: 0;
-	background: none;
-	font-style: inherit;
+/* Element rules sit in the `reset` layer, so Fuselage component styles, unlayered or in a later layer, win over them as their classes used to */
+@layer reset {
+	button {
+		padding: 0;
+		cursor: pointer;
+		text-align: left;
+		text-transform: inherit;
+		color: inherit;
+		border-width: 0;
+		background: none;
+		font-style: inherit;
+	}
 }
 
 #rocket-chat {

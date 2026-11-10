@@ -108,7 +108,9 @@ Meteor.publish(
 		// `null` happens when a client doesn't have an appId and passes
 		// `undefined` to `Meteor.subscribe`. `undefined` is translated to
 		// `null` as JSON doesn't have `undefined.
-		check(appId, Match.OneOf(String, undefined, null));
+		if (appId != null && typeof appId !== 'string') {
+			throw new Meteor.Error('error-invalid-arguments', 'Invalid appId');
+		}
 
 		// Don't notify clients using wrong appId such as mobile apps built with a
 		// different server but pointing at the same local url

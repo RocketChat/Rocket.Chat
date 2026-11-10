@@ -867,7 +867,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			federated: true,
 		};
 
-		const room = await (
+		const room = (
 			await this.find(query, options)
 				.sort({ usersCount: asc ? 1 : -1 })
 				.limit(1)
@@ -2091,7 +2091,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	async getSubscribedRoomIdsWithoutE2EKeys(uid: IUser['_id']): Promise<IRoom['_id'][]> {
 		return (
 			await this.col
-				.aggregate([
+				.aggregate<Pick<IRoom, '_id'>>([
 					{ $match: { encrypted: true } },
 					{
 						$lookup: {

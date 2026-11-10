@@ -5,11 +5,11 @@ export function withMiddleware<F extends (...args: any[]) => any>(fn: F) {
 	const middlewares: Middleware<F>[] = [];
 
 	const buildRunner = (): ((ctx: Parameters<F>) => ReturnType<F>) => {
-		return middlewares.reduce(
+		return middlewares.reduce<(ctx: Parameters<F>) => ReturnType<F>>(
 			(next, middleware) => {
 				return (ctx) => middleware(ctx, (...args) => next(args.length ? (args as Parameters<F>) : ctx));
 			},
-			(ctx: Parameters<F>) => fn(...ctx),
+			(ctx) => fn(...ctx) as ReturnType<F>,
 		);
 	};
 

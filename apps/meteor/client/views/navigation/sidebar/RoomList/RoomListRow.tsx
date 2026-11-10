@@ -13,7 +13,6 @@ import SidebarItemWithData from './SidebarItemWithData';
 export type RoomListRowProps = {
 	data: {
 		t: TFunction;
-		openedRoom: string;
 		isAnonymous: boolean;
 	};
 	item: SubscriptionWithRoom;

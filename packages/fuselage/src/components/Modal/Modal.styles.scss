@@ -101,11 +101,52 @@ $modal-border-radius: theme('modal-border-radius', lengths.border-radius(large))
 		background-color: colors.surface(overlay);
 	}
 
-	&__footer {
+	&__content-wrapper {
+		margin-inline: lengths.margin(24);
+
+		&--fill {
+			height: 100%;
+			padding-block-end: lengths.padding(16);
+		}
+	}
+
+	&__icon {
 		display: flex;
 		align-items: center;
 
+		padding-block: lengths.padding(4);
+
+		&--align-end {
+			align-items: end;
+		}
+
+		&--variant-danger {
+			color: colors.font(danger);
+		}
+
+		&--variant-warning {
+			color: colors.status-font(on-warning);
+		}
+
+		&--variant-info {
+			color: colors.font(info);
+		}
+
+		&--variant-success {
+			color: colors.status-font(on-success);
+		}
+	}
+
+	&__footer {
+		display: flex;
+		justify-content: end;
+		align-items: center;
+
 		margin: $modal-container-margin;
+
+		&--justify-space-between {
+			justify-content: space-between;
+		}
 
 		&-annotation {
 			color: colors.font(secondary-info);

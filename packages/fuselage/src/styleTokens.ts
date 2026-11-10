@@ -20,6 +20,7 @@ import {
 	isBadgeColor,
 	badgeBackgroundColors,
 } from './Theme';
+import type { BadgeBackgroundColors, StatusBackgroundColors, StatusColors, StrokeColor, SurfaceColors, TextIconColors } from './Theme';
 import { getPaletteColor } from './getPaletteColor';
 import { toCSSColorValue, toCSSFontValue, toCSSValue } from './helpers/toCSSValue';
 
@@ -56,21 +57,17 @@ const measure = (computeSpecialValue?: (value: string) => null | undefined | str
 		return value;
 	});
 
-export const borderWidth = (value: unknown) => {
-	if (typeof value === 'string' && value in tokenBorder.width) {
-		return `${tokenBorder.width[value as keyof typeof tokenBorder.width]}px`;
-	}
+export const borderWidth = (value: BorderWidth) => `${tokenBorder.width[value]}px`;
 
-	return undefined;
-};
+export const borderRadius = (value: BorderRadius) => `${tokenBorder.radius[value] / 16}rem`;
 
-export const borderRadius = (value: unknown) => {
-	if (typeof value === 'string' && value in tokenBorder.radius) {
-		return `${tokenBorder.radius[value as keyof typeof tokenBorder.radius] / 16}rem`;
-	}
+/** Resolves a border width that is only known at runtime, such as a `Box` prop, to its token, if it names one. */
+export const resolveBorderWidth = (value: unknown) =>
+	typeof value === 'string' && value in tokenBorder.width ? borderWidth(value as BorderWidth) : undefined;
 
-	return undefined;
-};
+/** Resolves a border radius that is only known at runtime, such as a `Box` prop, to its token, if it names one. */
+export const resolveBorderRadius = (value: unknown) =>
+	typeof value === 'string' && value in tokenBorder.radius ? borderRadius(value as BorderRadius) : undefined;
 
 const mapTypeToPrefix = {
 	neutral: 'n',
@@ -92,7 +89,8 @@ const isPaletteColorAlpha = (alpha: unknown): alpha is number | undefined =>
 
 const paletteColorRegex = /^(neutral|blue|green|yellow|red|orange|purple)-(\d+)(-(\d+))?$/;
 
-export const strokeColor = memoize((value) => {
+/** Resolves a stroke color that is only known at runtime, such as a `Box` prop; anything else falls back to `color`. */
+export const resolveStrokeColor = memoize((value) => {
 	const colorName = `stroke-${value}`;
 	if (isStrokeColor(colorName)) {
 		return strokeColors[colorName].toString();
@@ -100,7 +98,8 @@ export const strokeColor = memoize((value) => {
 	return color(value);
 });
 
-export const backgroundColor = memoize((value) => {
+/** Resolves a background color that is only known at runtime, such as a `Box` prop; anything else falls back to `color`. */
+export const resolveBackgroundColor = memoize((value) => {
 	const colorName = `surface-${value}`;
 
 	if (isSurfaceColor(value)) {
@@ -129,7 +128,8 @@ export const backgroundColor = memoize((value) => {
 	return color(value);
 });
 
-export const fontColor = memoize((value) => {
+/** Resolves a text color that is only known at runtime, such as a `Box` prop; anything else falls back to `color`. */
+export const resolveFontColor = memoize((value) => {
 	const colorName = `font-${value}`;
 	if (isTextIconColor(colorName)) {
 		return textIconColors[colorName].toString();
@@ -139,6 +139,16 @@ export const fontColor = memoize((value) => {
 	}
 	return color(value);
 });
+
+type Unprefixed<TName extends string, TPrefix extends string> = TName extends `${TPrefix}-${infer TRest}` ? TRest : never;
+
+export const strokeColor = (value: Unprefixed<StrokeColor, 'stroke'>) => strokeColors[`stroke-${value}`].toString();
+
+export const backgroundColor = (
+	value: SurfaceColors | Unprefixed<SurfaceColors, 'surface'> | StatusBackgroundColors | BadgeBackgroundColors,
+) => resolveBackgroundColor(value) as string;
+
+export const fontColor = (value: Unprefixed<TextIconColors, 'font'> | StatusColors) => resolveFontColor(value) as string;
 
 /** @deprecated **/
 export const color = memoize((value) => {
@@ -260,42 +270,29 @@ type FontFamily = keyof typeof tokenTypography.fontFamily;
 
 const isFontFamily = (value: unknown): value is FontFamily => typeof value === 'string' && value in tokenTypography.fontFamily;
 
-export const fontFamily = memoize((value: unknown): string | undefined => {
-	if (!isFontFamily(value)) {
-		return undefined;
-	}
-
+export const fontFamily = memoize((value: FontFamily): string => {
 	const fontFamily = tokenTypography.fontFamily[value].map((fontFace) => (fontFace.includes(' ') ? `'${fontFace}'` : fontFace)).join(', ');
 
 	return toCSSFontValue(value, fontFamily);
 });
 
-type FontScale = keyof typeof tokenTypography.fontScale;
+/** Resolves a font family that is only known at runtime, such as a `Box` prop, to its token, if it names one. */
+export const resolveFontFamily = (value: unknown) => (isFontFamily(value) ? fontFamily(value) : undefined);
 
-const isFontScale = (value: unknown): value is FontScale => typeof value === 'string' && value in tokenTypography.fontScale;
+export type FontScaleName = keyof typeof tokenTypography.fontScale;
 
-export const fontScale = memoize(
-	(
-		value: unknown,
-	):
-		| {
-				fontSize: string;
-				fontWeight: number;
-				lineHeight: string;
-				letterSpacing: string;
-		  }
-		| undefined => {
-		if (!isFontScale(value)) {
-			return undefined;
-		}
+const isFontScale = (value: unknown): value is FontScaleName => typeof value === 'string' && value in tokenTypography.fontScale;
 
-		const { fontSize, fontWeight, lineHeight, letterSpacing } = tokenTypography.fontScale[value];
+export const fontScale = memoize((value: FontScaleName) => {
+	const { fontSize, fontWeight, lineHeight, letterSpacing } = tokenTypography.fontScale[value];
 
-		return {
-			fontSize: `${fontSize / 16}rem`,
-			fontWeight,
-			lineHeight: `${lineHeight / 16}rem`,
-			letterSpacing: `${letterSpacing / 16}rem`,
-		};
-	},
-);
+	return {
+		fontSize: `${fontSize / 16}rem`,
+		fontWeight,
+		lineHeight: `${lineHeight / 16}rem`,
+		letterSpacing: `${letterSpacing / 16}rem`,
+	};
+});
+
+/** Resolves a font scale that is only known at runtime, such as a `Box` prop, to its token, if it names one. */
+export const resolveFontScale = (value: unknown) => (isFontScale(value) ? fontScale(value) : undefined);

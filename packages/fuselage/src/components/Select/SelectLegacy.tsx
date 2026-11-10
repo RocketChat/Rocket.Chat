@@ -1,5 +1,5 @@
-import { useMergedRefs, useStableCallback, useResizeObserver, useOutsideClick } from '@rocket.chat/fuselage-hooks';
-import type { DependencyList, ElementType, RefAttributes } from 'react';
+import { useMergedRefs, useStableCallback, useResizeObserver } from '@rocket.chat/fuselage-hooks';
+import type { DependencyList, ElementType, MouseEvent, RefAttributes } from 'react';
 import { useState, useRef, useEffect, useMemo } from 'react';
 
 import type { ElementProps } from '../../types/ElementProps';
@@ -70,6 +70,11 @@ function SelectLegacy({
 	...props
 }: SelectProps) {
 	const [internalValue, setInternalValue] = useState(value || '');
+	const [syncedValue, setSyncedValue] = useState(value);
+	if (value !== syncedValue) {
+		setSyncedValue(value);
+		setInternalValue(value || '');
+	}
 
 	const internalChangedByKeyboard = useStableCallback(([value]: OptionType) => {
 		setInternalValue(value);
@@ -98,32 +103,31 @@ function SelectLegacy({
 	const innerRef = useRef<HTMLInputElement | null>(null);
 	const anchorRef = useMergedRefs(ref, innerRef);
 
-	const removeFocusClass = () => innerRef.current?.classList.remove('focus-visible');
-
 	const internalChangedByClick = useStableCallback(([value]: OptionType) => {
 		setInternalValue(value);
 		onChange(value as SelectOption[0]); // FIXME
-		removeFocusClass();
 		hide();
 	});
 
 	const { ref: containerRef, borderBoxSize } = useResizeObserver();
 
 	useDidUpdate(reset, [filter, internalValue]);
-	useOutsideClick([containerRef], removeFocusClass);
 
 	const valueLabel = getLabel(option);
 
 	const visibleText =
 		(filter === undefined || visible === AnimatedVisibility.HIDDEN) && (valueLabel || placeholder || typeof placeholder === 'string');
 
-	const handleClick = useStableCallback(() => {
-		if (innerRef.current?.classList.contains('focus-visible')) {
-			removeFocusClass();
+	const handleClick = useStableCallback((event: MouseEvent) => {
+		// A keyboard click (Space keyup) arrives after the keydown already opened the list.
+		if (event.detail === 0) {
+			return;
+		}
+
+		if (visible === AnimatedVisibility.VISIBLE) {
 			return hide();
 		}
 
-		innerRef.current?.classList.add('focus-visible');
 		innerRef.current?.focus();
 		return show();
 	});
@@ -135,10 +139,11 @@ function SelectLegacy({
 			disabled={disabled}
 			ref={containerRef}
 			onClick={handleClick}
-			className={useMemo(() => [error && 'invalid', disabled && 'disabled'], [error, disabled])}
+			rcx-select--invalid={!!error}
+			rcx-select--disabled={disabled}
 			{...props}
 		>
-			<Box is='div' rcx-select__wrapper display='flex' marginInline='neg-x4' rcx-select__wrapper--hidden={!!visibleText}>
+			<Box is='div' rcx-select__wrapper rcx-select__wrapper--hidden={!!visibleText}>
 				{visibleText &&
 					(RenderSelected ? (
 						<RenderSelected
@@ -149,7 +154,7 @@ function SelectLegacy({
 							onClick={internalChangedByClick}
 						/>
 					) : (
-						<Box flexGrow={1} is='span' marginInline={4} rcx-select__item fontScale='p2' color={valueLabel ? 'titles-labels' : 'hint'}>
+						<Box is='span' rcx-select__item rcx-select__item--placeholder={!valueLabel}>
 							{visibleText}
 						</Box>
 					))}

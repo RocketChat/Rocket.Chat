@@ -21,8 +21,6 @@ const modelsMock = {
 	},
 };
 
-const checkMock = sinon.stub();
-
 const mockLogger = class {
 	debug() {
 		return null;
@@ -68,7 +66,6 @@ const { sendTranscript } = p.noCallThru().load('./sendTranscript', {
 	},
 	'@rocket.chat/models': modelsMock,
 	'@rocket.chat/logger': { Logger: mockLogger },
-	'meteor/check': { check: checkMock },
 	'../callbacks': {
 		callbacks: {
 			run: sinon.stub(),
@@ -83,7 +80,6 @@ const { sendTranscript } = p.noCallThru().load('./sendTranscript', {
 
 describe('Send transcript', () => {
 	beforeEach(() => {
-		checkMock.reset();
 		modelsMock.LivechatRooms.findOneById.reset();
 		modelsMock.Messages.findLivechatClosingMessage.reset();
 		modelsMock.Messages.findVisibleByRoomIdNotContainingTypesBeforeTs.reset();
@@ -177,10 +173,6 @@ describe('Send transcript', () => {
 		});
 	});
 
-	it('should throw error when rid or email are invalid params', async () => {
-		checkMock.throws(new Error('Invalid params'));
-		await expect(sendTranscript({})).to.be.rejectedWith(Error);
-	});
 	it('should throw error when visitor not found', async () => {
 		await expect(sendTranscript({ rid: 'rid', email: 'email', logger: mockLogger })).to.be.rejectedWith(Error);
 	});

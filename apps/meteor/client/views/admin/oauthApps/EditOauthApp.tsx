@@ -1,6 +1,5 @@
 import type { IOAuthApps, Serialized } from '@rocket.chat/core-typings';
 import {
-	Box,
 	Button,
 	ButtonGroup,
 	TextInput,
@@ -20,6 +19,8 @@ import type { ComponentProps } from 'react';
 import { useCallback, useId, useMemo } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm, Controller } from 'react-hook-form';
+
+import ContentColumn from '../../../components/ContentColumn';
 
 type EditOAuthAddAppPayload = {
 	name: string;
@@ -107,7 +108,7 @@ const EditOauthApp = ({ onChange, data, ...props }: EditOauthAppProps) => {
 
 	return (
 		<ContextualbarScrollableContent width='full' {...props}>
-			<Box maxWidth='x600' width='full' alignSelf='center'>
+			<ContentColumn>
 				<FieldGroup>
 					<Field>
 						<FieldRow>
@@ -180,7 +181,7 @@ const EditOauthApp = ({ onChange, data, ...props }: EditOauthAppProps) => {
 						</FieldRow>
 					</Field>
 				</FieldGroup>
-			</Box>
+			</ContentColumn>
 		</ContextualbarScrollableContent>
 	);
 };

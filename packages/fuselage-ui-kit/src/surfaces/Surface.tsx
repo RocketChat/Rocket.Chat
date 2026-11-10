@@ -10,7 +10,12 @@ export type SurfaceProps = {
 
 export const Surface = ({ children, type }: SurfaceProps) => (
 	<SurfaceContext.Provider value={type}>
-		<Box display='flex' flexDirection='column' gap={16} paddingBlockEnd={type === 'message' ? 16 : undefined}>
+		<Box
+			display='flex'
+			flexDirection='column'
+			gap={type === 'message' ? 'x8' : 'x16'}
+			paddingBlockEnd={type === 'message' ? 'x16' : undefined}
+		>
 			{children}
 		</Box>
 	</SurfaceContext.Provider>

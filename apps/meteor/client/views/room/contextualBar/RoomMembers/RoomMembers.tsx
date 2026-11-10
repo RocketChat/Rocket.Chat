@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Box, Icon, TextInput, Select, Throbber, ButtonGroup, Button, Callout, Stack, Text } from '@rocket.chat/fuselage';
+import { Box, Select, Throbber, ButtonGroup, Button, Callout, Stack, Text } from '@rocket.chat/fuselage';
 import { useAutoFocus, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	VirtualizedScrollbars,
@@ -23,6 +23,7 @@ import { GroupedVirtuoso } from 'react-virtuoso';
 import { MembersListGroupHeader } from './MembersListGroupHeader';
 import RoomMembersListWrapper from './RoomMembersListWrapper';
 import RoomMembersRow from './RoomMembersRow';
+import { FilterBar, FilterBarFilters, FilterBarSearch } from '../../../../components/FilterBar';
 import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
 import type { RoomMember } from '../../../hooks/useMembersList';
@@ -149,18 +150,24 @@ const RoomMembers = ({
 				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
 			</ContextualbarHeader>
 			<ContextualbarSection>
-				<TextInput
-					placeholder={t('Search_by_username')}
-					aria-label={t('Search_by_username')}
-					aria-controls={isSuccess ? membersListId : undefined}
-					value={text}
-					ref={inputRef}
-					onChange={setText}
-					endAddon={<Icon name='magnifier' size='x20' />}
-				/>
-				<Box width='x144' marginInlineStart={8}>
-					<Select aria-label={t('Status')} options={options} value={type} onChange={(value): void => setType(value as 'online' | 'all')} />
-				</Box>
+				<FilterBar compact>
+					<FilterBarSearch
+						placeholder={t('Search_by_username')}
+						aria-label={t('Search_by_username')}
+						aria-controls={isSuccess ? membersListId : undefined}
+						value={text}
+						ref={inputRef}
+						onChange={setText}
+					/>
+					<FilterBarFilters>
+						<Select
+							aria-label={t('Status')}
+							options={options}
+							value={type}
+							onChange={(value): void => setType(value as 'online' | 'all')}
+						/>
+					</FilterBarFilters>
+				</FilterBar>
 			</ContextualbarSection>
 			<ContextualbarContent flush spaced>
 				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={members.length} />

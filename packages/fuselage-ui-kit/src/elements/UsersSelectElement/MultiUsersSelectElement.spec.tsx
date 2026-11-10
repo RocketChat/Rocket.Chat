@@ -44,19 +44,20 @@ describe('UiKit MultiUsersSelect Element', () => {
 		jest.useRealTimers();
 	});
 
-	beforeEach(() => {
+	const renderElement = () =>
 		render(
 			<MockedServerContext>
 				<MultiUsersSelectElement index={0} block={usersBlock} context={BlockContext.FORM} surfaceRenderer={contextualBarParser} />
 			</MockedServerContext>,
 		);
-	});
 
 	it('should render a UiKit multiple users selector', async () => {
+		renderElement();
 		expect(await screen.findByRole('textbox')).toBeInTheDocument();
 	});
 
 	it('should open the users selector', async () => {
+		renderElement();
 		const input = await screen.findByRole('textbox');
 		input.focus();
 
@@ -64,6 +65,7 @@ describe('UiKit MultiUsersSelect Element', () => {
 	});
 
 	it('should select users', async () => {
+		renderElement();
 		const input = await screen.findByRole('textbox');
 
 		input.focus();
@@ -80,6 +82,7 @@ describe('UiKit MultiUsersSelect Element', () => {
 	});
 
 	it('should remove a user', async () => {
+		renderElement();
 		const input = await screen.findByRole('textbox');
 
 		input.focus();

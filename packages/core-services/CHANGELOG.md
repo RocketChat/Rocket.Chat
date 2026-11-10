@@ -1,5 +1,17 @@
 # @rocket.chat/core-services
 
+## 1.0.0-rc.1
+
+### Patch Changes
+
+- Fixes federated requests being rejected when the remote server sends unquoted parameters in its `X-Matrix` authorization header
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@9.0.0-rc.6
+  - @rocket.chat/rest-typings@9.0.0-rc.6
+
+  </details>
+
 ## 1.0.0-rc.0
 
 ### Major Changes

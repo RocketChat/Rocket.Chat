@@ -32,8 +32,6 @@ declare module 'meteor/meteor' {
 			};
 		};
 
-		const runAsUser: <T>(userId: string, scope: () => T) => T;
-
 		function userAsync(): Promise<IUser | null>;
 
 		interface MethodThisType {

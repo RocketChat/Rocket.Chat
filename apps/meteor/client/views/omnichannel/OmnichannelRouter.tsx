@@ -1,9 +1,9 @@
+import { PageSkeleton } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import { Suspense, useEffect } from 'react';
 
 import OmnichannelSidebar from './sidebar/OmnichannelSidebar';
-import PageSkeleton from '../../components/PageSkeleton';
 import SidebarPortal from '../../portals/SidebarPortal';
 
 export type OmnichannelRouterProps = {

@@ -1,11 +1,11 @@
 import { useDebouncedState, useStableCallback, useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import { useRoute } from '@rocket.chat/ui-contexts';
+import { EmojiPicker, EmojiPickerContext, EmojiRegistryContext } from '@rocket.chat/ui-emoji-picker';
 import type { ReactNode, ContextType } from 'react';
-import { useState, useCallback, useMemo, useRef, useSyncExternalStore } from 'react';
+import { Suspense, useState, useCallback, useMemo, useRef, useSyncExternalStore } from 'react';
 
 import { useUpdateCustomEmoji } from './useUpdateCustomEmoji';
-import { EmojiPickerContext } from '../../contexts/EmojiPickerContext';
 import { emoji, getFrequentEmoji, createEmojiListByCategorySubscription } from '../../lib/emoji';
-import EmojiPicker from '../../views/composer/EmojiPicker';
 
 const DEFAULT_ITEMS_LIMIT = 90;
 
@@ -78,6 +78,9 @@ const EmojiPickerProvider = ({ children }: EmojiPickerProviderProps) => {
 		[recentEmojis, setRecentEmojis, addFrequentEmojis],
 	);
 
+	const customEmojiRoute = useRoute('emoji-custom');
+	const goToAddCustomEmoji = useStableCallback(() => customEmojiRoute.push());
+
 	const onCloseRef = useRef<() => void>(undefined);
 
 	const close = useCallback(() => {
@@ -95,9 +98,11 @@ const EmojiPickerProvider = ({ children }: EmojiPickerProviderProps) => {
 			onCloseRef.current = onClose;
 			previousOnClose?.();
 
-			setEmojiPicker(<EmojiPicker reference={ref} onClose={close} onPickEmoji={(emoji) => callback(emoji)} />);
+			setEmojiPicker(
+				<EmojiPicker reference={ref} onClose={close} onPickEmoji={(emoji) => callback(emoji)} onAddCustomEmoji={goToAddCustomEmoji} />,
+			);
 		},
-		[close],
+		[close, goToAddCustomEmoji],
 	);
 
 	const handlePreview = useCallback(
@@ -156,10 +161,12 @@ const EmojiPickerProvider = ({ children }: EmojiPickerProviderProps) => {
 	);
 
 	return (
-		<EmojiPickerContext.Provider value={contextValue}>
-			{children}
-			{emojiPicker}
-		</EmojiPickerContext.Provider>
+		<EmojiRegistryContext.Provider value={emoji}>
+			<EmojiPickerContext.Provider value={contextValue}>
+				{children}
+				<Suspense fallback={null}>{emojiPicker}</Suspense>
+			</EmojiPickerContext.Provider>
+		</EmojiRegistryContext.Provider>
 	);
 };
 

@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import type { ReactNode } from 'react';
 
 import { invalidFile, validFile } from '../ChatTranscript.fixtures';
@@ -13,18 +13,18 @@ jest.mock('@react-pdf/renderer', () => ({
 
 describe('components/Files', () => {
 	it('should renders file name and invalid message when buffer is null', () => {
-		const { getByText } = render(<Files files={[invalidFile]} invalidMessage='invalid' />);
-		const invalidText = getByText('invalid');
-		const fileName = getByText(invalidFile.name);
+		render(<Files files={[invalidFile]} invalidMessage='invalid' />);
+		const invalidText = screen.getByText('invalid');
+		const fileName = screen.getByText(invalidFile.name);
 
 		expect(invalidText).toBeInTheDocument();
 		expect(fileName).toBeInTheDocument();
 	});
 
 	it('should renders file name and image when buffer is not null', () => {
-		const { getByRole, getByText } = render(<Files files={[validFile]} invalidMessage='' />);
-		const image = getByRole('presentation');
-		const fileName = getByText(validFile.name);
+		render(<Files files={[validFile]} invalidMessage='' />);
+		const image = screen.getByRole('presentation');
+		const fileName = screen.getByText(validFile.name);
 
 		expect(image).toBeInTheDocument();
 		expect(fileName).toBeInTheDocument();

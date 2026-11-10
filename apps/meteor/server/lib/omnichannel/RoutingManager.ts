@@ -15,7 +15,6 @@ import type {
 import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { LivechatInquiry, LivechatRooms, Subscriptions, Rooms, Users } from '@rocket.chat/models';
-import { Match, check } from 'meteor/check';
 
 import {
 	createLivechatSubscription,
@@ -67,7 +66,7 @@ type Routing = {
 	delegateAgent(agent: SelectedAgent | undefined, inquiry: ILivechatInquiryRecord): Promise<SelectedAgent | null | undefined>;
 	removeAllRoomSubscriptions(room: Pick<IOmnichannelRoom, '_id'>, ignoreUser?: { _id: string }): Promise<void>;
 
-	assignAgent(inquiry: InquiryWithAgentInfo, agent: SelectedAgent): Promise<{ inquiry: InquiryWithAgentInfo; user: IUser }>;
+	assignAgent(inquiry: InquiryWithAgentInfo, agent: Required<SelectedAgent>): Promise<{ inquiry: InquiryWithAgentInfo; user: IUser }>;
 };
 
 export const RoutingManager: Routing = {
@@ -137,15 +136,10 @@ export const RoutingManager: Routing = {
 		return this.takeInquiry(inquiry, agent, options, room);
 	},
 
-	async assignAgent(inquiry: InquiryWithAgentInfo, agent: SelectedAgent): Promise<{ inquiry: InquiryWithAgentInfo; user: IUser }> {
-		check(
-			agent,
-			Match.ObjectIncluding({
-				agentId: String,
-				username: String,
-			}),
-		);
-
+	async assignAgent(
+		inquiry: InquiryWithAgentInfo,
+		agent: Required<SelectedAgent>,
+	): Promise<{ inquiry: InquiryWithAgentInfo; user: IUser }> {
 		logger.debug({ msg: 'Assigning agent to inquiry', agentId: agent.agentId, inquiryId: inquiry._id });
 
 		const { rid, name, v, department } = inquiry;
@@ -231,13 +225,10 @@ export const RoutingManager: Routing = {
 	},
 
 	async takeInquiry(inquiry, agent, options = { clientAction: false }, room) {
-		check(
-			agent,
-			Match.ObjectIncluding({
-				agentId: String,
-				username: String,
-			}),
-		);
+		const username = agent?.username;
+		if (typeof agent?.agentId !== 'string' || typeof username !== 'string') {
+			throw new Error('error-invalid-agent');
+		}
 
 		logger.debug({ msg: 'Attempting to take Inquiry', inquiryId: inquiry._id, agentId: agent.agentId });
 
@@ -300,7 +291,7 @@ export const RoutingManager: Routing = {
 			logger.info({ msg: 'Inquiry taken', inquiryId: _id, agentId: agent.agentId });
 
 			// assignAgent changes the room data to add the agent serving the conversation. afterTakeInquiry expects room object to be updated
-			const { inquiry: returnedInquiry, user } = await this.assignAgent(inquiry, agent);
+			const { inquiry: returnedInquiry, user } = await this.assignAgent(inquiry, { ...agent, username });
 			const roomAfterUpdate = await LivechatRooms.findOneById(rid);
 
 			if (!roomAfterUpdate) {
@@ -309,7 +300,7 @@ export const RoutingManager: Routing = {
 			}
 
 			void Apps.self?.triggerEvent(AppEvents.IPostLivechatAgentAssigned, { room: roomAfterUpdate, user });
-			void afterTakeInquiry({ inquiry: returnedInquiry, room: roomAfterUpdate, agent });
+			void afterTakeInquiry({ inquiry: returnedInquiry, room: roomAfterUpdate, agent: { ...agent, username } });
 
 			void notifyOnLivechatInquiryChangedById(inquiry._id, 'updated', {
 				status: LivechatInquiryStatus.TAKEN,

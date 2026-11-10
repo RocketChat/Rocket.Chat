@@ -2,7 +2,6 @@ import { api, ClientSafeError } from '@rocket.chat/core-services';
 import { isBannedSubscription, isRoomNativeFederated, isRoomXMPPHostedMuc, type IRoom, type IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { normalizeBareJid } from '@rocket.chat/tools';
-import { Match } from 'meteor/check';
 
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { beforeAddUsersToRoom } from '../../lib/callbacks/beforeAddUserToRoom';
@@ -55,7 +54,7 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 		});
 	}
 
-	if (!Match.test(data.rid, String)) {
+	if (typeof data.rid !== 'string') {
 		throw new ClientSafeError('error-invalid-room', 'Invalid room', {
 			method: 'addUsersToRoom',
 		});

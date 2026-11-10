@@ -83,6 +83,35 @@ describe('AssetSettingInput', () => {
 		expect(remove).not.toHaveBeenCalled();
 	});
 
+	it('names the select file button after the setting label', () => {
+		setup();
+
+		const labelId = screen.getByText('Site logo').closest('label')?.id;
+		const button = screen.getByRole('button', { name: /Select file/ });
+		expect(labelId).toBeTruthy();
+		expect(button.getAttribute('aria-labelledby')?.split(' ')).toEqual([labelId, button.id]);
+	});
+
+	it('uploads a file dropped on the select file button', async () => {
+		const { upload } = setup();
+		const file = new File(['image contents'], 'logo.png', { type: 'image/png' });
+
+		fireEvent.drop(screen.getByRole('button', { name: /Select file/ }), { dataTransfer: { files: [file] } });
+
+		await waitFor(() => expect(upload).toHaveBeenCalledTimes(1));
+		expectUploadedFile(upload.mock.calls[0][1], file);
+	});
+
+	it('ignores a file dropped on the disabled select file button', () => {
+		const { upload } = setup({ disabled: true });
+
+		fireEvent.drop(screen.getByRole('button', { name: /Select file/ }), {
+			dataTransfer: { files: [new File(['image'], 'logo.png', { type: 'image/png' })] },
+		});
+
+		expect(upload).not.toHaveBeenCalled();
+	});
+
 	it.each([[], null])('does not upload or show a toast when input files are %p', (files) => {
 		const { getFileInput, upload, remove, dispatchToast } = setup();
 
@@ -177,7 +206,7 @@ describe('AssetSettingInput', () => {
 		const { getFileInput, upload, dispatchToast } = setup({ disabled: true });
 
 		expect(getFileInput()).toBeDisabled();
-		expect(screen.getByText('Select file')).toHaveClass('is-disabled');
+		expect(screen.getByText('Select file').closest('.rcx-button')).toHaveAttribute('disabled');
 		await userEvent.upload(getFileInput(), new File(['image'], 'logo.png', { type: 'image/png' }));
 		expect(upload).not.toHaveBeenCalled();
 		expect(dispatchToast).not.toHaveBeenCalled();

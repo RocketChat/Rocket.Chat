@@ -9,6 +9,7 @@ import Online from './icons/Online';
 
 export type StatusBulletProps = {
 	status?: 'loading' | 'online' | 'busy' | 'away' | 'offline' | 'disabled';
+	/** `'large'` renders the same as the default size and is deprecated. */
 	size?: 'small' | 'large';
 } & Omit<AllHTMLAttributes<SVGElement>, 'size'>;
 

@@ -1,5 +1,72 @@
 # @rocket.chat/meteor
 
+## 9.0.0-rc.6
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Fixes federated requests being rejected when the remote server sends unquoted parameters in its `X-Matrix` authorization header
+
+- <details><summary>Updated dependencies [203d5ff96b613a12f85d9e59c57b4d177a4858c0]:</summary>
+  - @rocket.chat/federation-matrix@0.3.1-rc.1
+  - @rocket.chat/core-services@1.0.0-rc.1
+  - @rocket.chat/core-typings@9.0.0-rc.6
+  - @rocket.chat/rest-typings@9.0.0-rc.6
+
+  </details>
+
+## 9.0.0-rc.5
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#43507](https://github.com/RocketChat/Rocket.Chat/pull/43507)) Fixes features of a removed license, such as the ABAC message composer lock, staying active for connected users until they reload the page
+
+- ([#43500](https://github.com/RocketChat/Rocket.Chat/pull/43500)) Fixes requests to the federation, Apps-Engine endpoint, UiKit interaction, OAuth login, `.well-known` metadata, health probe, `/_timesync` and `/theme.css` routes not appearing in the HTTP request log, and redacts OAuth authorization codes from logged URLs
+
+- <details><summary>Updated dependencies [8b00fa367d7be9793c31bf578eb1b6c99bf240e9]:</summary>
+  - @rocket.chat/tools@0.5.0-rc.1
+  - @rocket.chat/omni-core@0.1.6-rc.0
+  - @rocket.chat/core-typings@9.0.0-rc.5
+  - @rocket.chat/rest-typings@9.0.0-rc.5
+
+  </details>
+
+## 9.0.0-rc.4
+
+### Patch Changes
+
+- ([#43277](https://github.com/RocketChat/Rocket.Chat/pull/43277)) Fixes high database load on busy workspaces with the Engagement Dashboard enabled, where every sent or deleted message read all of the day's dashboard records
+
+- Bump @rocket.chat/meteor version.
+
+- ([#43477](https://github.com/RocketChat/Rocket.Chat/pull/43477)) Fixes the server staying up without ever accepting connections when a step of its startup fails; it now logs the error and exits
+
+- ([#43469](https://github.com/RocketChat/Rocket.Chat/pull/43469)) Fixes instances started at the same time on a new database hanging at startup on a duplicate key error while creating the `GENERAL` room or the `rocket.cat` user
+
+- ([#43282](https://github.com/RocketChat/Rocket.Chat/pull/43282)) Fixes push and email notifications piling up under load because the server paused for 2 seconds after every 100 notifications, even when more were waiting
+
+- ([#43271](https://github.com/RocketChat/Rocket.Chat/pull/43271)) Fixes high database load when many users disconnect at once, such as after a network outage or an instance restart
+
+- ([#43279](https://github.com/RocketChat/Rocket.Chat/pull/43279)) Stops the presence service from writing and broadcasting the user's status on every connection heartbeat when the status did not change
+
+- ([#43282](https://github.com/RocketChat/Rocket.Chat/pull/43282)) Fixes push notifications arriving minutes late under load when the push gateway is slow to answer; each server now sends many push notifications at once instead of one at a time
+
+- ([#43459](https://github.com/RocketChat/Rocket.Chat/pull/43459)) Fixes SAML login failing after a server restart until a SAML setting was saved, when the license finished loading after the SAML service providers were first built
+
+- ([#43278](https://github.com/RocketChat/Rocket.Chat/pull/43278)) Fixes instances started at the same time after an upgrade hanging at startup on a duplicate key error; they now start without a restart
+
+- <details><summary>Updated dependencies [687d88ff58975ac7d21ec059a0d151dcb75d8bd6, 3dcddc61941c7896bc750220220cc7d5b72b9b46, 4c152661022d34bfbe9bf78811eac286a31c47a5, 40ea1c7b7192282d077a9d5496f6b7e4211f74b3, bff76c34b21caddbc316d69b62fac858a73d7164]:</summary>
+  - @rocket.chat/models@3.0.0-rc.1
+  - @rocket.chat/model-typings@3.0.0-rc.1
+  - @rocket.chat/presence@0.4.0-rc.1
+  - @rocket.chat/core-typings@9.0.0-rc.4
+  - @rocket.chat/rest-typings@9.0.0-rc.4
+
+  </details>
+
 ## 9.0.0-rc.3
 
 ### Major Changes

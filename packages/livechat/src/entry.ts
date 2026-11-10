@@ -11,8 +11,6 @@ const init = async () => {
 	render(h(App, {}), document.body, root);
 };
 
-if (module.hot) {
-	module.hot.accept();
-}
+import.meta.hot?.accept();
 
 void init();

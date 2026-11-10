@@ -1,12 +1,14 @@
+import type { AttributeValue } from '@opentelemetry/api';
+
 import { tracerActiveSpan } from '.';
 
-const getArguments = (args: any[]): any[] => {
+const getArguments = (args: unknown[]): AttributeValue => {
 	return args.map((arg) => {
 		if (typeof arg === 'object' && arg != null && 'session' in arg) {
 			return '[mongo options with session]';
 		}
 		return arg;
-	});
+	}) as AttributeValue;
 };
 
 export function traceInstanceMethods<T extends object>(instance: T, ignoreMethods: string[] = []): T {

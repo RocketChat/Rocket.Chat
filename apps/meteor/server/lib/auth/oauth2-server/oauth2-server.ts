@@ -1,4 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
+import { nodeHandler } from '@rocket.chat/http-router';
+import { Logger } from '@rocket.chat/logger';
 import { OAuthAccessTokens, Users } from '@rocket.chat/models';
 import type { NextFunction, Request, Response } from 'express';
 import type express from 'express';
@@ -8,6 +10,7 @@ import { WebApp } from 'meteor/webapp';
 import { registerOAuthClient } from './registerOAuthClient';
 import { isPlainObject } from '../../../../lib/utils/isPlainObject';
 import { API } from '../../../api';
+import { nodeLoggerMiddleware } from '../../../api/v1/middlewares/logger';
 import { serveAuthorizationServerMetadata } from '../../../oauth2-server/metadata';
 import { OAuth2Server } from '../../../oauth2-server/oauth';
 import { settings } from '../../../settings/cached';
@@ -115,4 +118,8 @@ API.v1.addAuthMethod((routeContext) => {
 });
 
 (WebApp.connectHandlers as unknown as ReturnType<typeof express>).use(oauth2server.app);
-httpApp.get('/.well-known/oauth-authorization-server/*', serveAuthorizationServerMetadata);
+httpApp.get(
+	'/.well-known/oauth-authorization-server/*',
+	nodeHandler(nodeLoggerMiddleware(new Logger('OAuth'))),
+	serveAuthorizationServerMetadata,
+);

@@ -24,7 +24,7 @@ export const nodeHandler =
 				outgoing.off('finish', answered);
 				outgoing.off('close', answered);
 				if (err) {
-					reject(err);
+					reject(err instanceof Error ? err : new Error('Node handler passed a non-Error value to next()', { cause: err }));
 					return;
 				}
 				resolve(true);

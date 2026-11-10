@@ -1,7 +1,6 @@
 import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IUser, INewOutgoingIntegration, IOutgoingIntegration, IUpdateOutgoingIntegration } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
-import { Match } from 'meteor/check';
 
 import { isScriptEngineFrozen } from './validateScriptEngine';
 import { validateScriptSyntax } from './validateScriptSyntax';
@@ -31,7 +30,7 @@ function _verifyRequiredFields(integration: INewOutgoingIntegration | IUpdateOut
 		});
 	}
 
-	if (!Match.test(integration.urls, [String])) {
+	if (!Array.isArray(integration.urls) || !integration.urls.every((url) => typeof url === 'string')) {
 		throw new ClientSafeError('error-invalid-urls', 'Invalid URLs', {
 			function: 'validateOutgoing._verifyRequiredFields',
 		});
@@ -107,7 +106,7 @@ export const validateOutgoingIntegration = async function (
 	integration: INewOutgoingIntegration | IUpdateOutgoingIntegration,
 	userId: IUser['_id'],
 ): Promise<IOutgoingIntegration> {
-	if (integration.channel && Match.test(integration.channel, String) && integration.channel.trim() === '') {
+	if (integration.channel && typeof integration.channel === 'string' && integration.channel.trim() === '') {
 		delete integration.channel;
 	}
 
@@ -116,7 +115,7 @@ export const validateOutgoingIntegration = async function (
 
 	let channels: string[] = [];
 	if (outgoingEvents[integration.event].use.channel) {
-		if (!Match.test(integration.channel, String)) {
+		if (typeof integration.channel !== 'string') {
 			throw new ClientSafeError('error-invalid-channel', 'Invalid Channel', {
 				function: 'validateOutgoing',
 			});
@@ -156,7 +155,7 @@ export const validateOutgoingIntegration = async function (
 	};
 
 	if (outgoingEvents[integration.event].use.triggerWords && integration.triggerWords) {
-		if (!Match.test(integration.triggerWords, [String])) {
+		if (!Array.isArray(integration.triggerWords) || !integration.triggerWords.every((word) => typeof word === 'string')) {
 			throw new ClientSafeError('error-invalid-triggerWords', 'Invalid triggerWords', {
 				function: 'validateOutgoing',
 			});

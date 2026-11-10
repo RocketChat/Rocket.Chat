@@ -15,7 +15,6 @@ import { startCloudWorkspaceSync } from '../lib/cloud';
 import { scheduleVersionCheck } from '../lib/cloud/version-check';
 import { invalidateStaleImports } from '../lib/import/startup/setImportsToInvalid';
 import { loadOutgoingIntegrations } from '../lib/integrations/startup';
-import { createDiscussionPermissions } from '../lib/messaging/discussions/permissions';
 import { registerMarkdownRenderers } from '../lib/messaging/markdown';
 import { watchPrometheusSettings } from '../lib/metrics/lib/collectMetrics';
 import { Notification } from '../lib/notifications/queue/NotificationQueue';
@@ -35,7 +34,6 @@ export const runStartupTasks = async (): Promise<void> => {
 	await invalidateStaleImports();
 	await createAutoTranslatePermissions();
 	registerHadTrialHandler();
-	await createDiscussionPermissions();
 	await watchPrometheusSettings();
 	startSessionsMonitor();
 	await startCloudWorkspaceSync();

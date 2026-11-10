@@ -1,11 +1,14 @@
 import { monitorEventLoopDelay } from 'node:perf_hooks';
 import { getHeapStatistics } from 'node:v8';
 
+import { nodeHandler } from '@rocket.chat/http-router';
 import type { Context } from 'hono';
 import type { ContentfulStatusCode } from 'hono/utils/http-status';
 
+import { nodeLoggerMiddleware } from '../api/v1/middlewares/logger';
 import { db } from '../database/utils';
 import { httpApp } from '../lib/http/httpServer';
+import { HttpLogger } from '../lib/logger/http';
 import { SystemLogger } from '../lib/logger/system';
 
 export function pingMongo() {
@@ -20,12 +23,14 @@ function respondUncached(c: Context, statusCode: ContentfulStatusCode, body: obj
 	});
 }
 
+const logRequest = nodeHandler(nodeLoggerMiddleware(HttpLogger));
+
 /**
  * DEPRECATED Liveness Probe (`/health`)
  * Maintained for backward compatibility. Behaves like a simple liveness probe.
  * @deprecated Update infrastructure to use /livez and /readyz.
  */
-httpApp.all('/health/*', (c) => respondUncached(c, 200, { status: 'ok' }));
+httpApp.all('/health/*', logRequest, (c) => respondUncached(c, 200, { status: 'ok' }));
 
 /**
  * Readiness Probe Configuration
@@ -113,7 +118,7 @@ async function performHealthChecks(histogram: ReturnType<typeof monitorEventLoop
  * Performs a non-destructive health check. A failure here indicates a pod is
  * unrecoverable and should be restarted.
  */
-httpApp.all('/livez/*', async (c) => {
+httpApp.all('/livez/*', logRequest, async (c) => {
 	const { statusCode, body, isHealthy } = await performHealthChecks(eventLoopHistogramLiveness);
 
 	if (!isHealthy) {
@@ -128,7 +133,7 @@ httpApp.all('/livez/*', async (c) => {
  * Performs a destructive health check, resetting the histogram for the next interval.
  * A failure tells the orchestrator to stop sending traffic to this instance.
  */
-httpApp.all('/readyz/*', async (c) => {
+httpApp.all('/readyz/*', logRequest, async (c) => {
 	const { statusCode, body, isHealthy } = await performHealthChecks(eventLoopHistogramReadiness);
 
 	if (!isHealthy) {

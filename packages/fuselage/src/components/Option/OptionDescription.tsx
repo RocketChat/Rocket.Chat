@@ -1,11 +1,14 @@
-import type { ReactNode } from 'react';
+import type { HTMLAttributes, ReactNode } from 'react';
 
+import { cx } from '../../helpers/composeClassNames';
 import { ItemDescription } from '../Item';
 
 export type OptionDescriptionProps = {
 	children?: ReactNode;
-};
+} & Omit<HTMLAttributes<HTMLSpanElement>, 'is'>;
 
-const OptionDescription = (props: OptionDescriptionProps) => <ItemDescription inline className='rcx-option__description' {...props} />;
+const OptionDescription = ({ className, ...props }: OptionDescriptionProps) => (
+	<ItemDescription inline {...props} className={cx('rcx-option__description', className)} />
+);
 
 export default OptionDescription;

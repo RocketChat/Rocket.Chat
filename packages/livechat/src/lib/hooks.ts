@@ -355,10 +355,6 @@ class Hooks {
 	private _started: boolean;
 
 	constructor() {
-		if (instance) {
-			throw new Error('Hooks already has an instance.');
-		}
-
 		this._started = false;
 	}
 
