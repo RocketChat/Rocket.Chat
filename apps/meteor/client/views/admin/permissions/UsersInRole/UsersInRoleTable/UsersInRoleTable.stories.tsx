@@ -6,7 +6,7 @@ import { createMockedPagination } from '../../../../../../tests/mocks/data';
 
 export default {
 	component: UsersInRoleTable,
-	decorators: [(fn) => <PageContent gap={16}>{fn()}</PageContent>],
+	decorators: [(fn) => <PageContent gap='x16'>{fn()}</PageContent>],
 } satisfies Meta<typeof UsersInRoleTable>;
 
 const generateMockedUsers = (count: number) =>

@@ -14,7 +14,7 @@ const DateTimeFilter = ({ type, control, id, error }: DateTimeFilterProps) => {
 	const { t } = useTranslation();
 
 	return (
-		<Box display='flex' flexDirection='row' gap={8} id={id}>
+		<Box display='flex' flexDirection='row' gap='x8' id={id}>
 			<Controller
 				control={control}
 				name={type === 'start' ? 'startDate' : 'endDate'}

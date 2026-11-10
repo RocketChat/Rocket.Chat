@@ -7,7 +7,7 @@ import { createMockedPagination } from '../../../../../tests/mocks/data';
 
 export default {
 	component: PermissionsTable,
-	decorators: [(fn) => <PageContent gap={16}>{fn()}</PageContent>],
+	decorators: [(fn) => <PageContent gap='x16'>{fn()}</PageContent>],
 } satisfies Meta<typeof PermissionsTable>;
 
 const roles: IRole[] = [
