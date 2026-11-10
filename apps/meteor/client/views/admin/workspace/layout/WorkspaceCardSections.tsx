@@ -1,19 +1,15 @@
-import type { BoxProps } from '@rocket.chat/fuselage';
 import { Box } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 
 type WorkspaceCardSectionsProps = {
-	gap: BoxProps['gap'];
-	spaceAbove?: BoxProps['paddingBlockStart'];
-	spaceBelow: BoxProps['paddingBlockEnd'];
 	children: ReactNode;
 };
 
 /**
- * The sections of a workspace card's body, spaced apart and kept clear of the card's heading and controls.
+ * The titled sections of a card's body, spaced apart and kept clear of the card's controls.
  */
-const WorkspaceCardSections = ({ gap, spaceAbove, spaceBelow, children }: WorkspaceCardSectionsProps) => (
-	<Box display='flex' flexDirection='column' gap={gap} paddingBlockStart={spaceAbove} paddingBlockEnd={spaceBelow}>
+const WorkspaceCardSections = ({ children }: WorkspaceCardSectionsProps) => (
+	<Box display='flex' flexDirection='column' gap='x32' paddingBlockEnd='x24'>
 		{children}
 	</Box>
 );

@@ -11,7 +11,7 @@ import InstancesModal from './components/InstancesModal';
 import { Info } from '../../../../../rocketchat.info';
 import WorkspaceCardDetail from '../components/WorkspaceCardDetail';
 import WorkspaceCardSectionTitle from '../components/WorkspaceCardSectionTitle';
-import WorkspaceCardSections from '../layout/WorkspaceCardSections';
+import WorkspaceCardDetails from '../layout/WorkspaceCardDetails';
 
 export type DeploymentCardProps = {
 	serverInfo: IWorkspaceInfo;
@@ -39,7 +39,7 @@ const DeploymentCard = ({
 		<Card>
 			<CardBody flexDirection='column'>
 				<WorkspaceCardSectionTitle title={t('Deployment')} variant='h4' />
-				<WorkspaceCardSections gap='x16' spaceAbove='x20' spaceBelow='x8'>
+				<WorkspaceCardDetails>
 					<WorkspaceCardDetail label={t('Version')}>{statistics.version}</WorkspaceCardDetail>
 					{workspaceUrl && <WorkspaceCardDetail label={t('Site_Url')}>{workspaceUrl}</WorkspaceCardDetail>}
 					{hashedWorkspaceUrl && (
@@ -71,7 +71,7 @@ const DeploymentCard = ({
 						</WorkspaceCardDetail>
 					)}
 					<WorkspaceCardDetail label={t('PID')}>{statistics.process.pid}</WorkspaceCardDetail>
-				</WorkspaceCardSections>
+				</WorkspaceCardDetails>
 			</CardBody>
 
 			{!!instances.length && (

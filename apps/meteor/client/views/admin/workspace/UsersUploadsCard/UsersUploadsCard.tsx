@@ -30,7 +30,7 @@ const UsersUploadsCard = ({ statistics }: UsersUploadsCardProps) => {
 	return (
 		<Card>
 			<CardBody flexDirection='column'>
-				<WorkspaceCardSections gap='x32' spaceBelow='x24'>
+				<WorkspaceCardSections>
 					<WorkspaceCardSection title={t('Users')}>
 						<WorkspaceCardTextSeparator label={t('Online')} status='online' value={statistics.onlineUsers} />
 						<WorkspaceCardTextSeparator label={t('Busy')} status='busy' value={statistics.busyUsers} />
