@@ -61,7 +61,14 @@ export const useNotifyUser = (user: IUser) => {
 
 		const unsubSubs = notifyUserStream(`${user._id}/subscriptions-changed`, (action, sub) => {
 			if (action === 'updated') {
-				openNotifications.closeNotificationsOfReadRoom(sub);
+				openNotifications.closeReadNotifications(sub);
+				return;
+			}
+
+			if (action === 'removed') {
+				if (sub.rid) {
+					openNotifications.closeRoomNotifications(sub.rid);
+				}
 				return;
 			}
 
@@ -77,6 +84,8 @@ export const useNotifyUser = (user: IUser) => {
 			unsubSubs();
 		};
 	}, [notifyNewMessageAudioAndDesktop, notifyNewRoom, notifyUserStream, router, user._id]);
+
+	useEffect(() => () => openNotifications.closeAll(), [user._id]);
 
 	useEffect(() => () => notificationSounds.stopNewRoom(), [notificationSounds]);
 };
