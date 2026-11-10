@@ -5,8 +5,15 @@ import { useCallback, useEffect, useState } from 'react';
 import { appendClassName } from '../../helpers/appendClassName';
 import { patchChildren } from '../../helpers/patchChildren';
 import { useStyle } from '../../hooks/useStyle';
+import type { BoxProps } from '../Box';
 
 export type VisibilityType = 'hidden' | 'visible' | 'hiding' | 'unhiding' | undefined;
+
+type ClassNameProp = BoxProps['className'];
+
+// A Box child accepts a css function or an array; Box turns those into a class name, so they are kept as an array
+const appendAnimation = (current: ClassNameProp, animation: string): ClassNameProp =>
+	typeof current === 'function' || Array.isArray(current) ? [...[current].flat(), animation] : appendClassName(current, animation);
 
 export type AnimatedVisibilityProps = {
 	children: ReactNode;
@@ -94,9 +101,9 @@ const AnimatedVisibility = (props: AnimatedVisibilityProps) => {
 		return null;
 	}
 
-	return patchChildren(props.children, (childProps: { className?: string; onAnimationEnd?: AnimationEventHandler }) => ({
+	return patchChildren(props.children, (childProps: { className?: ClassNameProp; onAnimationEnd?: AnimationEventHandler }) => ({
 		...childProps,
-		className: className ? appendClassName(childProps.className, className) : childProps.className,
+		className: className ? appendAnimation(childProps.className, className) : childProps.className,
 		onAnimationEnd: childProps.onAnimationEnd ?? handleAnimationEnd,
 	}));
 };
