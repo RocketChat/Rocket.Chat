@@ -13,8 +13,8 @@ const trailingGap = css`
 `;
 
 const ContextualbarScrollableContent = forwardRef<HTMLElement, ComponentProps<typeof PageScrollableContent>>(
-	function ContextualbarScrollableContent(props, ref) {
-		return <PageScrollableContent paddingInline={16} gap={16} className={trailingGap} {...props} ref={ref} />;
+	function ContextualbarScrollableContent({ className, ...props }, ref) {
+		return <PageScrollableContent paddingInline='x16' gap='x16' {...props} className={[className, trailingGap].flat()} ref={ref} />;
 	},
 );
 
