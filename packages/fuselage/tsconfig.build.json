@@ -4,5 +4,5 @@
 		"rootDir": "./src"
 	},
 	"include": ["src"],
-	"exclude": ["src/**/*.stories.tsx", "src/**/*.spec.*"]
+	"exclude": ["src/**/*.stories.tsx", "src/**/*.spec.*", "src/testing"]
 }
