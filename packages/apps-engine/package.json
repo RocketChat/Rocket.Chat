@@ -57,7 +57,7 @@
 		"build:clean": "rm -rf definition esm",
 		"build:default": "tsc -p tsconfig.json",
 		"build:esm": "node scripts/emit-esm-entries.mjs",
-		"dev": "yarn build && yarn build:default --watch",
+		"dev": "yarn build && run-p \"build:default --watch\" \"build:esm --watch\"",
 		"gen-doc": "typedoc",
 		"lint": "yarn run -T oxlint",
 		"testunit": "node --test tests/*.test.mjs",
