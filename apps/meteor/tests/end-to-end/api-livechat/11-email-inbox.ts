@@ -213,4 +213,14 @@ describe('Email inbox', () => {
 			await request.get(api('email-inbox.search')).query({ email: 'test' }).set(credentials).expect(200);
 		});
 	});
+	describe('POST email-inbox.send-test/:_id', () => {
+		it('should fail if user doesnt have manage-email-inbox permission', async () => {
+			await updatePermission('manage-email-inbox', []);
+			await request.post(api('email-inbox.send-test/123')).set(credentials).expect(403);
+		});
+		it('should fail when email inbox does not exist', async () => {
+			await updatePermission('manage-email-inbox', ['admin']);
+			await request.post(api('email-inbox.send-test/123')).set(credentials).expect(404);
+		});
+	});
 });

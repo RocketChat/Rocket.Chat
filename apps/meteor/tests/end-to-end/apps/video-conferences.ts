@@ -1,13 +1,18 @@
 import { after, before, describe, it } from 'node:test';
 
+import type { Credentials } from '@rocket.chat/api-client';
+import { VideoConferenceStatus } from '@rocket.chat/core-typings';
+import type { IUser, VideoConference } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import type { Response } from 'supertest';
 
 import { getCredentials, request, api, credentials } from '../../data/api-data';
 import { cleanupApps, installTestApp } from '../../data/apps/helper';
+import { withDatabase } from '../../data/database.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
-import { createRoom, deleteRoom } from '../../data/rooms.helper';
+import { createRoom, deleteRoom, getSubscriptionByRoomId } from '../../data/rooms.helper';
 import { adminUsername, password } from '../../data/user';
+import type { TestUser } from '../../data/users.helper';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 import { IS_EE } from '../../e2e/config/constants';
 
@@ -1150,6 +1155,243 @@ describe('Apps - Video Conferences', () => {
 					.expect((res: Response) => {
 						expect(res.body.success).to.be.equal(true);
 					});
+			});
+		});
+
+		describe('[Conference actions]', () => {
+			let actionsRoomId: string;
+			let callId: string;
+			let member: TestUser<IUser>;
+			let guest: TestUser<IUser>;
+			let outsider: TestUser<IUser>;
+			let memberCredentials: Credentials;
+			let guestCredentials: Credentials;
+			let outsiderCredentials: Credentials;
+			let discussionId: string;
+
+			const getCall = async () => (await request.get(api('video-conference.info')).set(credentials).query({ callId }).expect(200)).body;
+			const callUser = async (userId: string) =>
+				(await getCall()).users.find(({ _id }: { _id: string }) => _id === userId) as Record<string, unknown> | undefined;
+
+			before(async () => {
+				await updateSetting('VideoConf_Default_Provider', 'test');
+				[member, guest, outsider] = await Promise.all([createUser(), createUser(), createUser()]);
+				[memberCredentials, guestCredentials, outsiderCredentials] = await Promise.all([
+					login(member.username, password),
+					login(guest.username, password),
+					login(outsider.username, password),
+				]);
+				actionsRoomId = (await createRoom({ type: 'p', name: `videoconf-actions-${Date.now()}`, members: [member.username], credentials }))
+					.body.group._id;
+				callId = (await request.post(api('video-conference.start')).set(credentials).send({ roomId: actionsRoomId }).expect(200)).body.data
+					.callId;
+			});
+
+			after(async () => {
+				if (discussionId) {
+					await deleteRoom({ type: 'p', roomId: discussionId });
+				}
+				await deleteRoom({ type: 'p', roomId: actionsRoomId });
+				await Promise.all([deleteUser(member), deleteUser(guest), deleteUser(outsider)]);
+			});
+
+			describe('[/video-conference.add-participants]', () => {
+				it('should give a user from outside the room access to the call', async () => {
+					const res = await request
+						.post(api('video-conference.add-participants'))
+						.set(credentials)
+						.send({ callId, users: [guest.username] })
+						.expect(200);
+
+					expect(res.body.added).to.deep.equal([guest._id]);
+					await request.get(api('video-conference.info')).set(guestCredentials).query({ callId }).expect(200);
+				});
+
+				it('should fail to add participants when the user cannot access the call', async () => {
+					await request
+						.post(api('video-conference.add-participants'))
+						.set(outsiderCredentials)
+						.send({ callId, users: [outsider.username] })
+						.expect(404);
+
+					expect(await callUser(outsider._id)).to.be.undefined;
+				});
+			});
+
+			describe('[/video-conference.ring]', () => {
+				it('should ring a member who is not in the call', async () => {
+					const res = await request.post(api('video-conference.ring')).set(credentials).send({ callId, userId: guest._id }).expect(200);
+
+					expect(res.body.rang).to.be.true;
+					expect(await callUser(guest._id)).to.have.property('ringingAt');
+				});
+
+				it('should fail to ring when the user does not have the videoconf-ring-users permission', async () => {
+					await updatePermission('videoconf-ring-users', ['admin']);
+					try {
+						await request.post(api('video-conference.ring')).set(memberCredentials).send({ callId, userId: guest._id }).expect(403);
+					} finally {
+						await updatePermission('videoconf-ring-users', ['admin', 'owner', 'moderator', 'user']);
+					}
+				});
+
+				it('should fail to ring when the user cannot access the call', async () => {
+					await request.post(api('video-conference.ring')).set(outsiderCredentials).send({ callId, userId: guest._id }).expect(404);
+				});
+			});
+
+			describe('[/video-conference.decline]', () => {
+				it("should record the decline on the caller's own membership and keep the call going", async () => {
+					await request.post(api('video-conference.decline')).set(guestCredentials).send({ callId }).expect(200);
+
+					expect(await callUser(guest._id)).to.have.property('declined', true);
+					expect((await getCall()).endedAt).to.be.undefined;
+				});
+
+				it('should fail to decline when the user cannot access the call', async () => {
+					await request.post(api('video-conference.decline')).set(outsiderCredentials).send({ callId }).expect(404);
+
+					expect(await callUser(outsider._id)).to.be.undefined;
+				});
+			});
+
+			describe('[/video-conference.heartbeat]', () => {
+				const markLeft = (userId: string, leftReason: 'reported' | 'timeout') =>
+					withDatabase((db) =>
+						db
+							.collection<VideoConference>('rocketchat_video_conference')
+							.updateOne(
+								{ _id: callId },
+								{ $set: { 'users.$[user].leftAt': new Date(), 'users.$[user].leftReason': leftReason } },
+								{ arrayFilters: [{ 'user._id': userId }] },
+							),
+					);
+
+				it('should keep out a member who reported leaving the call', async () => {
+					await markLeft(guest._id, 'reported');
+
+					await request.post(api('video-conference.heartbeat')).set(guestCredentials).send({ callId }).expect(200);
+
+					expect(await callUser(guest._id)).to.include({ leftReason: 'reported' });
+				});
+
+				it('should bring back a member whose presence timed out', async () => {
+					await markLeft(guest._id, 'timeout');
+
+					await request.post(api('video-conference.heartbeat')).set(guestCredentials).send({ callId }).expect(200);
+
+					const user = await callUser(guest._id);
+					expect(user).to.not.have.any.keys('leftAt', 'leftReason');
+					expect(user).to.have.property('lastSeenAt');
+				});
+
+				it('should fail to send a heartbeat when the user cannot access the call', async () => {
+					await request.post(api('video-conference.heartbeat')).set(outsiderCredentials).send({ callId }).expect(404);
+				});
+			});
+
+			describe('[/video-conference.rename]', () => {
+				it('should let the user who started the call rename it', async () => {
+					await request.post(api('video-conference.rename')).set(credentials).send({ callId, title: '  Planning  ' }).expect(200);
+
+					expect((await getCall()).title).to.equal('Planning');
+				});
+
+				it('should fail to rename the call as a member who did not start it', async () => {
+					await request.post(api('video-conference.rename')).set(memberCredentials).send({ callId, title: 'By member' }).expect(403);
+
+					expect((await getCall()).title).to.equal('Planning');
+				});
+
+				it('should fail to rename the call to a blank name', async () => {
+					const res = await request.post(api('video-conference.rename')).set(credentials).send({ callId, title: '   ' }).expect(400);
+
+					expect(res.body).to.have.property('error', 'error-invalid-name');
+
+					expect((await getCall()).title).to.equal('Planning');
+				});
+
+				it('should fail to rename when the user cannot access the call', async () => {
+					await request.post(api('video-conference.rename')).set(outsiderCredentials).send({ callId, title: 'By outsider' }).expect(404);
+				});
+			});
+
+			describe('[/video-conference.share-chat]', () => {
+				it('should fail to share the chat when the user cannot access the call', async () => {
+					await request.post(api('video-conference.share-chat')).set(outsiderCredentials).send({ callId, mode: 'invite' }).expect(404);
+
+					const res = await request.get(api('subscriptions.getOne')).set(guestCredentials).query({ roomId: actionsRoomId }).expect(200);
+					expect(res.body.subscription).to.be.null;
+				});
+
+				it('should invite the call members who cannot read the chat into the room', async () => {
+					const res = await request.post(api('video-conference.share-chat')).set(credentials).send({ callId, mode: 'invite' }).expect(200);
+
+					expect(res.body.rid).to.equal(actionsRoomId);
+					expect(await getSubscriptionByRoomId(actionsRoomId, guestCredentials)).to.have.property('rid', actionsRoomId);
+				});
+
+				it('should move the chat to a discussion that the call members who cannot read the room can join', async () => {
+					await updateSetting('Discussion_enabled', true);
+					await request
+						.post(api('video-conference.add-participants'))
+						.set(credentials)
+						.send({ callId, users: [outsider.username] })
+						.expect(200);
+
+					const res = await request
+						.post(api('video-conference.share-chat'))
+						.set(credentials)
+						.send({ callId, mode: 'discussion' })
+						.expect(200);
+					discussionId = res.body.rid;
+
+					expect(discussionId).to.not.equal(actionsRoomId);
+					expect(await getSubscriptionByRoomId(discussionId, outsiderCredentials)).to.have.property('prid', actionsRoomId);
+					const roomSubscription = await request
+						.get(api('subscriptions.getOne'))
+						.set(outsiderCredentials)
+						.query({ roomId: actionsRoomId })
+						.expect(200);
+					expect(roomSubscription.body.subscription).to.be.null;
+				});
+			});
+
+			describe('[/video-conference.cancel]', () => {
+				let directCallId: string;
+				let dmId: string;
+
+				before(async () => {
+					dmId = (await createRoom({ type: 'd', username: member.username, credentials })).body.room._id;
+					directCallId = (
+						await request.post(api('video-conference.start')).set(credentials).send({ roomId: dmId, allowRinging: true }).expect(200)
+					).body.data.callId;
+				});
+
+				after(() => deleteRoom({ type: 'd', roomId: dmId }));
+
+				const getDirectCall = async () =>
+					(await request.get(api('video-conference.info')).set(credentials).query({ callId: directCallId }).expect(200)).body;
+
+				it('should fail to cancel when the user cannot access the call', async () => {
+					const res = await request
+						.post(api('video-conference.cancel'))
+						.set(outsiderCredentials)
+						.send({ callId: directCallId })
+						.expect(400);
+
+					expect(res.body).to.have.property('error', 'invalid-params');
+
+					expect((await getDirectCall()).status).to.equal(VideoConferenceStatus.CALLING);
+				});
+
+				it('should end a ringing direct call as declined by the caller', async () => {
+					await request.post(api('video-conference.cancel')).set(credentials).send({ callId: directCallId }).expect(200);
+
+					const call = await getDirectCall();
+					expect(call.status).to.equal(VideoConferenceStatus.DECLINED);
+					expect(call.endedBy).to.have.property('_id', credentials['X-User-Id']);
+				});
 			});
 		});
 	});

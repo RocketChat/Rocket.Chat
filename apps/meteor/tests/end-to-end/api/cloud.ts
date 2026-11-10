@@ -319,4 +319,44 @@ describe('[Cloud]', () => {
 				});
 		});
 	});
+
+	describe('[/cloud.syncWorkspace]', () => {
+		after(() => updatePermission('manage-cloud', ['admin']));
+
+		it('should finish a sync of a workspace that is not registered without failing', async () => {
+			await request.post(api('cloud.syncWorkspace')).set(credentials).expect(200);
+		});
+
+		it('should fail when user does not have the manage-cloud permission', async () => {
+			await updatePermission('manage-cloud', []);
+
+			await request.post(api('cloud.syncWorkspace')).set(credentials).expect(403);
+		});
+	});
+
+	describe('[/cloud.checkoutUrl]', () => {
+		after(() => updatePermission('manage-cloud', ['admin']));
+
+		it('should send a workspace that is not registered to the contact sales page instead of a checkout', async () => {
+			const res = await request.get(api('cloud.checkoutUrl')).set(credentials).expect(200);
+
+			expect(res.body).to.have.property('url', 'https://go.rocket.chat/i/contact-sales');
+		});
+
+		it('should fail when user does not have the manage-cloud permission', async () => {
+			await updatePermission('manage-cloud', []);
+
+			await request.get(api('cloud.checkoutUrl')).set(credentials).expect(403);
+		});
+	});
+
+	describe('[/cloud.removeLicense]', () => {
+		after(() => updatePermission('manage-cloud', ['admin']));
+
+		it('should fail when user does not have the manage-cloud permission', async () => {
+			await updatePermission('manage-cloud', []);
+
+			await request.post(api('cloud.removeLicense')).set(credentials).expect(403);
+		});
+	});
 });

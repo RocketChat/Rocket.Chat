@@ -21,6 +21,7 @@ import { assert, expect } from 'chai';
 import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { sendSimpleMessage, sendMessage, deleteMessage } from '../../data/chat.helper';
+import { withDatabase } from '../../data/database.helper';
 import { imgURL } from '../../data/interactions';
 import {
 	getSettingValueById,
@@ -6181,5 +6182,68 @@ describe('[/rooms.history]', () => {
 
 	it('should fail for a room that does not exist', async () => {
 		await request.get(api('rooms.history')).set(credentials).query({ roomId: 'does-not-exist' }).expect(404);
+	});
+});
+
+describe('[/uploads.delete]', () => {
+	let member: TestUser<IUser>;
+	let memberCredentials: Credentials;
+	let room: IRoom;
+
+	const uploadFile = async (as: Credentials = credentials) => {
+		const res = await request
+			.post(api(`rooms.media/${room._id}`))
+			.set(as)
+			.attach('file', imgURL)
+			.expect(200);
+		return res.body.file._id as string;
+	};
+
+	const sendFile = async (as: Credentials = credentials) => {
+		const fileId = await uploadFile(as);
+		const res = await request
+			.post(api(`rooms.mediaConfirm/${room._id}/${fileId}`))
+			.set(as)
+			.send({})
+			.expect(200);
+		return { fileId, messageId: res.body.message._id as string };
+	};
+
+	before((_t, done) => getCredentials(done));
+
+	before(async () => {
+		member = await createUser();
+		memberCredentials = await login(member.username, password);
+		room = (await createRoom({ type: 'c', name: `uploads-delete-${Date.now()}`, members: [member.username] })).body.channel;
+	});
+
+	after(() => Promise.all([deleteRoom({ type: 'c', roomId: room._id }), deleteUser(member)]));
+
+	it('should delete a file its uploader has not sent yet', async () => {
+		const fileId = await uploadFile();
+
+		const res = await request.post(api('uploads.delete')).set(credentials).send({ fileId }).expect(200);
+
+		expect(res.body.deletedFiles).to.include(fileId);
+		await request.post(api('uploads.delete')).set(credentials).send({ fileId }).expect(404);
+	});
+
+	it('should fail if a member deletes a file another user sent', async () => {
+		const { fileId, messageId } = await sendFile();
+
+		await request.post(api('uploads.delete')).set(memberCredentials).send({ fileId }).expect(403);
+
+		const res = await request.get(api('chat.getMessage')).set(credentials).query({ msgId: messageId }).expect(200);
+		expect(res.body.message.files.map(({ _id }: { _id: string }) => _id)).to.include(fileId);
+	});
+
+	it('should remove the file from its message when the sender deletes it', async () => {
+		const { fileId, messageId } = await sendFile(memberCredentials);
+
+		await request.post(api('uploads.delete')).set(memberCredentials).send({ fileId }).expect(200);
+
+		const message = await withDatabase((db) => db.collection<IMessage>('rocketchat_message').findOne({ _id: messageId }));
+		expect(message?.files?.map(({ _id }) => _id)).to.not.include(fileId);
+		expect(message?.attachments).to.deep.include({ type: 'removed-file', color: '#FD745E', text: '_File removed_', fileId });
 	});
 });

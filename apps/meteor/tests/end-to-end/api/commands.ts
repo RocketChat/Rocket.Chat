@@ -608,4 +608,95 @@ describe('[Commands]', () => {
 			expect(res.body.errorType).to.be.equal('error-forbidden');
 		});
 	});
+
+	describe('[/commands.preview]', () => {
+		const previewItem = { id: 'item-1', type: 'text', value: 'picked' };
+		let privateRoom: IRoom;
+		let otherRoom: IRoom;
+		let outsider: TestUser<IUser>;
+		let outsiderCredentials: Credentials;
+
+		before(async () => {
+			outsider = await createUser();
+			outsiderCredentials = await login(outsider.username, password);
+			[privateRoom, otherRoom] = await Promise.all([
+				createRoom({ type: 'p', name: `commands-preview-${Date.now()}` }).then((res) => res.body.group),
+				createRoom({ type: 'p', name: `commands-preview-other-${Date.now()}` }).then((res) => res.body.group),
+			]);
+		});
+
+		after(() =>
+			Promise.all([
+				deleteRoom({ type: 'p', roomId: privateRoom._id }),
+				deleteRoom({ type: 'p', roomId: otherRoom._id }),
+				deleteUser(outsider),
+			]),
+		);
+
+		it('should return an error when the command does not provide previews', async () => {
+			const res = await request
+				.get(api('commands.preview'))
+				.set(credentials)
+				.query({ command: 'shrug', params: 'hello', roomId: privateRoom._id })
+				.expect(400);
+
+			expect(res.body.errorType).to.equal('error-invalid-command');
+		});
+
+		it('should return an error when the command does not exist', async () => {
+			const res = await request
+				.get(api('commands.preview'))
+				.set(credentials)
+				.query({ command: `missing-${Date.now()}`, roomId: privateRoom._id })
+				.expect(400);
+
+			expect(res.body.error).to.equal('The command provided does not exist (or is disabled).');
+		});
+
+		it('should return an error when the user cannot access the room', async () => {
+			await request.get(api('commands.preview')).set(outsiderCredentials).query({ command: 'shrug', roomId: privateRoom._id }).expect(403);
+		});
+
+		it('should accept a preview item picked in a thread of the room and refuse it only at the command', async () => {
+			const thread = (await sendSimpleMessage({ roomId: privateRoom._id })).body.message;
+
+			const res = await request
+				.post(api('commands.preview'))
+				.set(credentials)
+				.send({ command: 'shrug', roomId: privateRoom._id, tmid: thread._id, previewItem })
+				.expect(400);
+
+			expect(res.body.errorType).to.equal('error-invalid-command');
+		});
+
+		it('should return an error when the picked preview item is for a thread of another room', async () => {
+			const thread = (await sendSimpleMessage({ roomId: otherRoom._id })).body.message;
+
+			const res = await request
+				.post(api('commands.preview'))
+				.set(credentials)
+				.send({ command: 'shrug', roomId: privateRoom._id, tmid: thread._id, previewItem })
+				.expect(400);
+
+			expect(res.body.error).to.equal('Invalid thread.');
+		});
+
+		it('should return an error when the picked preview item is for a command that does not exist', async () => {
+			const res = await request
+				.post(api('commands.preview'))
+				.set(credentials)
+				.send({ command: `missing-${Date.now()}`, roomId: privateRoom._id, previewItem })
+				.expect(400);
+
+			expect(res.body.error).to.equal('The command provided does not exist (or is disabled).');
+		});
+
+		it('should return an error when the user picks a preview item in a room they cannot access', async () => {
+			await request
+				.post(api('commands.preview'))
+				.set(outsiderCredentials)
+				.send({ command: 'shrug', roomId: privateRoom._id, previewItem })
+				.expect(403);
+		});
+	});
 });
