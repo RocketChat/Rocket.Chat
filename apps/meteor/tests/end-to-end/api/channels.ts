@@ -547,6 +547,10 @@ describe('[Channels]', () => {
 				});
 		});
 
+		it('should refuse the counters of another user to a user without room administration', async () => {
+			await request.get(api('channels.counters')).set(user1Creds).query({ roomId: room._id, userId: user2._id }).expect(403);
+		});
+
 		it('should return counters for a channel with correct fields', async () => {
 			await request
 				.get(api('channels.counters'))
