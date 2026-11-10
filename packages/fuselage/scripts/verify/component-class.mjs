@@ -9,7 +9,9 @@ const components = join(import.meta.dirname, '../../src/components');
  */
 export const rootClass = (component, directory = components) => {
 	const flat = `rcx-${component.toLowerCase()}`;
-	const sources = readdirSync(join(directory, component), { recursive: true }).filter((f) => /\.(?:tsx?|s?css)$/.test(f) && !/\.(?:spec|stories)\./.test(f));
+	const sources = readdirSync(join(directory, component), { recursive: true }).filter(
+		(f) => /\.(?:tsx?|s?css)$/.test(f) && !/\.(?:spec|stories)\./.test(f),
+	);
 	for (const file of sources) {
 		const literal = [...readFileSync(join(directory, component, file), 'utf8').matchAll(/rcx-[a-z0-9]+(?:-[a-z0-9]+)*/g)].find(
 			([name]) => name.replaceAll('-', '') === flat.replaceAll('-', ''),
