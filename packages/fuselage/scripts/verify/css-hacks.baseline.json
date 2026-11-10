@@ -125,10 +125,10 @@
 		"negativeMargins": 1,
 		"displayContents": 0
 	},
-	"CheckBox/CheckBox.styles.scss": {
-		"rules": 9,
-		"nested": 8,
-		"combinators": 2,
+	"CheckBox/CheckBox.styles.css": {
+		"rules": 15,
+		"nested": 0,
+		"combinators": 14,
 		"important": 0,
 		"specificityBumps": 0,
 		"negativeMargins": 0,
