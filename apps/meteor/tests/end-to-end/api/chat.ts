@@ -3760,7 +3760,29 @@ describe('[Chat]', () => {
 				await sendMessage({ message: { rid: channel._id, msg: `@${adminUsername} hi` }, requestCredentials: ignoredUserCredentials });
 
 				const subscription = await getSubscriptionByRoomId(channel._id);
-				expect(subscription).to.include({ alert: false, userMentions: 0 });
+				expect(subscription).to.include({ alert: false, unread: 0, userMentions: 0 });
+			});
+
+			it('should not mark the room as unread for an @all mention', async () => {
+				await sendMessage({ message: { rid: channel._id, msg: '@all hi' }, requestCredentials: ignoredUserCredentials });
+
+				const subscription = await getSubscriptionByRoomId(channel._id);
+				expect(subscription).to.include({ alert: false, unread: 0, groupMentions: 0 });
+			});
+
+			it('should not mark a DM as unread for a message from the ignored user', async () => {
+				const dm = (await request.post(api('im.create')).set(credentials).send({ username: ignoredUser.username }).expect(200)).body.room;
+				await request
+					.get(api('chat.ignoreUser'))
+					.set(credentials)
+					.query({ rid: dm.rid, userId: ignoredUser._id, ignore: true })
+					.expect(200);
+
+				await sendSimpleMessage({ roomId: dm.rid, userCredentials: ignoredUserCredentials });
+
+				const subscription = await getSubscriptionByRoomId(dm.rid);
+				await deleteRoom({ type: 'd', roomId: dm.rid });
+				expect(subscription).to.include({ alert: false, unread: 0 });
 			});
 
 			it('should not mark the thread as unread for a reply', async () => {

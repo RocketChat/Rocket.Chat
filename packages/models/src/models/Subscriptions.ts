@@ -1450,8 +1450,8 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 	incUserMentionsAndUnreadForRoomIdAndUserIds(
 		roomId: IRoom['_id'],
 		userIds: IUser['_id'][],
-		incUser = 1,
-		incUnread = 1,
+		incUser: number,
+		incUnread: number,
 		senderId: IUser['_id'],
 	): Promise<UpdateResult | Document> {
 		const query = {

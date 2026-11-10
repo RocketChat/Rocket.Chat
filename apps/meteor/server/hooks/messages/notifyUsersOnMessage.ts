@@ -127,7 +127,9 @@ async function updateUsersSubscriptions(message: IMessage, room: IRoom): Promise
 
 	subs.forEach((sub) => {
 		if (sub.ignored?.includes(message.u._id)) {
-			void notifyOnSubscriptionChanged({ ...sub, open: true }, 'updated');
+			if (!sub.open) {
+				void notifyOnSubscriptionChanged({ ...sub, open: true }, 'updated');
+			}
 			return;
 		}
 
