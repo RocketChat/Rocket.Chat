@@ -38,6 +38,11 @@ const stats = (samples) => {
 	return { median, spread: (quantile(sorted, 0.75) - quantile(sorted, 0.25)) / median };
 };
 
+if (!benchStories(dirA).length) {
+	console.error('Build A has no Benchmarks/Lists stories; both builds must have them.');
+	process.exit(1);
+}
+
 const missing = benchStories(dirA).filter((story) => !benchStories(dirB).some((other) => other.id === story.id));
 if (missing.length) {
 	console.error(
