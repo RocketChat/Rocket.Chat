@@ -9314,6 +9314,7 @@ __metadata:
     jest-axe: "npm:~11.0.0"
     magic-string: "npm:~0.30.21"
     normalize.css: "npm:^8.0.1"
+    playwright-core: "npm:~1.52.0"
     postcss: "npm:8.5.26"
     postcss-scss: "npm:~4.0.9"
     react: "npm:~19.2.8"
