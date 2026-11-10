@@ -9,8 +9,10 @@ const storybookStaticDir = path.join(packageDir, 'storybook-static') ?? path.joi
 
 const storybook = JSON.parse(fs.readFileSync(path.join(storybookStaticDir, 'index.json'), 'utf-8'));
 
-// Only run tests on stories, not other documentation pages, and not on the g0 characterization specs, which assert behavior.
-const stories = Object.values(storybook.entries).filter((e: any) => e.type === 'story' && !e.tags?.includes('g0'));
+// Only run tests on stories, not other documentation pages; g0 characterization specs assert behavior and benchmark stories measure time, not pixels.
+const stories = Object.values(storybook.entries).filter(
+	(e: any) => e.type === 'story' && !e.tags?.includes('g0') && !e.title.startsWith('Benchmarks/'),
+);
 
 for (const story of stories as any[]) {
 	test(`${story.title} ${story.name} should not have visual regressions`, async ({ page }) => {
