@@ -154,3 +154,9 @@ export type InputAttributes = CommonAttributes &
  */
 export type SpanOrAnchorAttributes = ActionAttributes<HTMLElement> &
 	Pick<AnchorHTMLAttributes<HTMLAnchorElement>, 'href' | 'target' | 'rel'>;
+
+/** What a part rendered as a `div` that only shows something forwards. */
+export type DivAttributes = PartAttributes<HTMLDivElement>;
+
+/** What a toolbar rendered as a `div` listens to. */
+export type DivCaptureHandlers = WebCaptureHandlers<HTMLDivElement>;

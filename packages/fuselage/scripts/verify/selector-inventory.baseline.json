@@ -55,7 +55,6 @@
 		"apps/meteor/client/styles/imports/components/emoji.css: .rcx-button {",
 		"apps/meteor/server/routes/avatar/middlewares/browserVersion.ts: .rcx-button {",
 		"apps/meteor/server/routes/avatar/middlewares/browserVersion.ts: .rcx-button--primary {",
-		"packages/fuselage/src/components/ButtonGroup/ButtonGroup.styles.scss: > .rcx-button--square {",
 		"packages/fuselage/src/components/Modal/Modal.styles.scss: &__header-inner > .rcx-button {",
 		"packages/fuselage/src/components/SplitButton/SplitButton.styles.scss: > .rcx-button {",
 		"packages/fuselage/src/components/SplitButton/SplitButton.styles.scss: > .rcx-button.rcx-split-button__trigger {",

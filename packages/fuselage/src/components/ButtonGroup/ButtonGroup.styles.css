@@ -1,0 +1,9 @@
+/* The children are other components' frames. These rules touch only flex-grow and flex-basis, which a square frame states
+   itself in a rule of more specificity, so they never reach a property a frame sets here */
+.rcx-button-group--stretch > * {
+	flex-grow: 1;
+}
+
+.rcx-button-group--stretch-equal > * {
+	flex-basis: 0;
+}

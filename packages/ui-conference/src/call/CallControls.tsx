@@ -1,5 +1,15 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, ButtonGroup, Palette, RadioButton, SplitButton, borderRadius, backgroundColor, fontColor } from '@rocket.chat/fuselage';
+import {
+	Box,
+	ButtonGroup,
+	Palette,
+	RadioButton,
+	SplitButton,
+	borderRadius,
+	backgroundColor,
+	fontColor,
+	useStyle,
+} from '@rocket.chat/fuselage';
 import type { Keys } from '@rocket.chat/icons';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
@@ -129,6 +139,11 @@ const controlNoticesStyles = css`
 	}
 `;
 
+// What the notices and the reaction picker position themselves against
+const controlsRowStyles = css`
+	position: relative;
+`;
+
 export type CallControlsProps = {
 	layout: StageLayout;
 	onLayoutChange: (layout: StageLayout) => void;
@@ -138,6 +153,7 @@ export type CallControlsProps = {
 /** The controls of a call running in this window: devices, sharing, hands, reactions, layout and leaving. */
 const CallControls = ({ layout, onLayoutChange, onOpenDiagnostics }: CallControlsProps) => {
 	const { t } = useTranslation();
+	const controlsRowClassName = useStyle(controlsRowStyles);
 	const { self, remoteParticipants } = useCallState();
 	const { toggleMic, toggleCamera, toggleScreenShare, toggleHand, sendReaction, leave } = useCallActions();
 
@@ -184,7 +200,7 @@ const CallControls = ({ layout, onLayoutChange, onOpenDiagnostics }: CallControl
 	];
 
 	return (
-		<ButtonGroup style={{ position: 'relative' }}>
+		<ButtonGroup className={controlsRowClassName}>
 			<SplitButton danger={self.muted} aria-label={t('Microphone')}>
 				<AudioDevicePicker />
 				<ToggleButton

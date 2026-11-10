@@ -89,10 +89,10 @@
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
-	"ButtonGroup/ButtonGroup.styles.scss": {
-		"rules": 12,
-		"nested": 11,
-		"combinators": 3,
+	"ButtonGroup/ButtonGroup.styles.css": {
+		"rules": 2,
+		"nested": 0,
+		"combinators": 2,
 		"important": 0,
 		"specificityBumps": 0,
 		"negativeMargins": 0,
