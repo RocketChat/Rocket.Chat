@@ -1,0 +1,14 @@
+@use '../../styles/lengths.scss';
+
+.rcx-grid.rcx-card-grid {
+	margin: lengths.margin(-8);
+}
+
+.rcx-card-grid__item {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+}
+
+.rcx-grid__item.rcx-card-grid__item {
+	padding: lengths.padding(8);
+}

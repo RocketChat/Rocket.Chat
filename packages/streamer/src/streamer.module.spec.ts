@@ -1,4 +1,4 @@
-import { Streamer, StreamerCentral } from './streamer.module';
+import { Streamer } from './streamer.module';
 
 class TestStreamer extends Streamer<any> {
 	registerPublication(): void {
@@ -49,7 +49,6 @@ describe('Streamer.sendToManySubscriptions', () => {
 
 	afterEach(() => {
 		jest.restoreAllMocks();
-		delete StreamerCentral.instances[streamer.name];
 	});
 
 	it('waits for async permission checks before resolving', async () => {

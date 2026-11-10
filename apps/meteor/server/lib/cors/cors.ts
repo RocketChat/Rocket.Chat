@@ -36,7 +36,6 @@ WebApp.rawConnectHandlers.use(async (_req: http.IncomingMessage, res: http.Serve
 	}
 
 	if (settings.get<boolean>('Enable_CSP')) {
-		// eslint-disable-next-line @typescript-eslint/naming-convention
 		const cdn_prefixes = [
 			settings.get<string>('CDN_PREFIX'),
 			settings.get<string>('CDN_PREFIX_ALL') ? null : settings.get<string>('CDN_JSCSS_PREFIX'),

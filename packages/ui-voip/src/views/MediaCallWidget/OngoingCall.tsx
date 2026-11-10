@@ -1,10 +1,10 @@
 import { ButtonGroup } from '@rocket.chat/fuselage';
+import { ActionButton, ToggleButton } from '@rocket.chat/ui-media';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import Dialpad from './Dialpad';
 import {
-	ToggleButton,
 	PeerInfo,
 	Widget,
 	WidgetFooter,
@@ -14,18 +14,18 @@ import {
 	WidgetInfo,
 	Timer,
 	DevicePicker,
-	ActionButton,
 	useInfoSlots,
 	useDraggableWidget,
+	getPeerDisplayName,
 } from '../../components';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
-import { isExternalPeer } from '../../utils/isExternalPeer';
+import { isUnknownPeer } from '../../utils/isUnknownPeer';
 
 const OngoingCall = () => {
 	const { t } = useTranslation();
 
-	const { sessionState, onMute, onHold, onForward, onEndCall, onClickDirectMessage } = useMediaCallView();
-	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, supportedFeatures, startedAt } = sessionState;
+	const { sessionState, allowedFeatures, onMute, onHold, onForward, onEndCall, onClickDirectMessage } = useMediaCallView();
+	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, startedAt } = sessionState;
 	const isInline = !useDraggableWidget();
 
 	// The floating widget keeps a collapsible DTMF dialpad in the footer.
@@ -39,27 +39,22 @@ const OngoingCall = () => {
 	const connecting = connectionState === 'CONNECTING';
 	const reconnecting = connectionState === 'RECONNECTING';
 
-	const holdAvailable = supportedFeatures.includes('hold');
-	const transferAvailable = supportedFeatures.includes('transfer');
+	const holdAvailable = allowedFeatures.includes('hold');
+	const transferAvailable = allowedFeatures.includes('transfer');
 
-	// TODO: Figure out how to ensure this always exist before rendering the component
-	if (!peerInfo) {
-		throw new Error('Peer info is required');
-	}
-
-	const isSip = 'number' in peerInfo;
+	const isSip = peerInfo?.type === 'sip';
 
 	return (
 		<Widget>
 			<WidgetHandle />
 			<WidgetHeader title={connecting ? t('meteor_status_connecting') : <Timer startAt={startedAt} />}>
 				{onClickDirectMessage && (
-					<ActionButton tiny secondary={false} label={t('Direct_Message')} icon='balloon' onClick={onClickDirectMessage} />
+					<ActionButton size='tiny' secondary={false} label={t('Direct_Message')} icon='balloon' onClick={onClickDirectMessage} />
 				)}
 				<DevicePicker />
 			</WidgetHeader>
 			<WidgetContent>
-				<PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />
+				{peerInfo && !isUnknownPeer(peerInfo) && <PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />}
 				{isInline && isSip && <Dialpad autoFocus={false} />}
 			</WidgetContent>
 			<WidgetInfo slots={slots} />
@@ -91,7 +86,7 @@ const OngoingCall = () => {
 					)}
 					<ActionButton
 						label={t('Voice_call__user__hangup', {
-							user: isExternalPeer(peerInfo) ? peerInfo.displayName || peerInfo.number : peerInfo.displayName,
+							user: getPeerDisplayName(t, peerInfo),
 						})}
 						icon='phone-off'
 						danger

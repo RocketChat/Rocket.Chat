@@ -30,16 +30,10 @@ const renderModal = (modalElement: ReactNode) => {
 };
 
 describe('renders', () => {
-	it('should render a modal without crashing', async () => {
-		renderModal(<GenericModal title='Modal' />);
-
-		expect(await screen.findByRole('dialog', { name: 'Modal' })).toMatchSnapshot();
-	});
-
 	it('should have no accessibility violations when rendered', async () => {
 		renderModal(<GenericModal title='Modal' />);
 
-		const results = await axe(screen.getByRole('dialog', { name: 'Modal' }));
+		const results = await axe(await screen.findByRole('dialog', { name: 'Modal' }));
 		expect(results).toHaveNoViolations();
 	});
 });

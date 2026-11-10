@@ -99,7 +99,7 @@ const CannedResponse = ({
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					{allowEdit && <Button onClick={onClickEdit}>{t('Edit')}</Button>}
-					<Button primary disabled={!allowUse} onClick={onClickUse}>
+					<Button variant='primary' disabled={!allowUse} onClick={onClickUse}>
 						{t('Use')}
 					</Button>
 				</ButtonGroup>

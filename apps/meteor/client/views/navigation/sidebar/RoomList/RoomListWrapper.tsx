@@ -9,7 +9,7 @@ export type RoomListWrapperProps = HTMLAttributes<HTMLDivElement>;
 
 const RoomListWrapper = forwardRef(function RoomListWrapper(props: RoomListWrapperProps, ref: ForwardedRef<HTMLDivElement>) {
 	const { t } = useTranslation();
-	const { sidebarListRef } = useSidebarListNavigation();
+	const sidebarListRef = useSidebarListNavigation();
 	const mergedRefs = useMergedRefsV2(ref, sidebarListRef);
 
 	return <div role='list' aria-label={t('Channels')} ref={mergedRefs} {...props} />;

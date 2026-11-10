@@ -1,19 +1,23 @@
+import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
 import bodyParser from 'body-parser';
 import MongoStore from 'connect-mongo';
 import express from 'express';
 import rateLimit from 'express-rate-limit';
 import session from 'express-session';
-import { MongoInternals } from 'meteor/mongo';
 import { WebApp } from 'meteor/webapp';
 import passport from 'passport';
 
+import { nodeLoggerMiddleware } from '../api/v1/middlewares/logger';
+import { client } from '../database/utils';
 import { configureOAuthServices } from '../lib/oauth/configureOAuthServices';
 import { createOAuthServiceConfig } from '../lib/oauth/createOAuthServiceConfig';
 import { getOAuthServices } from '../lib/oauth/getOAuthServices';
 import type { ICachedSettings } from '../settings/CachedSettings';
 
 const oAuthPaths = ['/oauth', '/_oauth'];
+
+const oAuthLogger = new Logger('OAuth');
 
 const { Router: router } = express;
 
@@ -23,8 +27,6 @@ const oAuthApp = express();
 oAuthApp.set('trust proxy', 1);
 
 export const configurePassport = (settings: ICachedSettings) => {
-	const { client } = MongoInternals.defaultRemoteCollectionDriver().mongo;
-
 	oAuthApp.use(
 		oAuthPaths,
 		session({
@@ -90,15 +92,12 @@ export const configurePassport = (settings: ICachedSettings) => {
 		done(null, user);
 	});
 
-	settings.watchByRegex(/^(Accounts_OAuth_[a-z0-9_]+|API_GitHub_Enterprise_URL)$/i, () => {
-		if (!settings.get<boolean>('Accounts_OAuth_Use_Modern_Flow')) {
-			return;
-		}
-
+	settings.watchByRegex(/^Accounts_OAuth_[a-z0-9_]+$/i, () => {
 		const services = getOAuthServices(settings);
 		const oauthServiceConfigs = createOAuthServiceConfig(settings, services);
 		configureOAuthServices(oauthServiceConfigs, settings);
 	});
 
+	(WebApp.rawConnectHandlers as unknown as ReturnType<typeof express>).use(oAuthPaths, nodeLoggerMiddleware(oAuthLogger));
 	WebApp.rawConnectHandlers.use(oAuthApp);
 };

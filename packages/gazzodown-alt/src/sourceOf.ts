@@ -89,3 +89,10 @@ export const sourceOf = (node: SourceNode, source: string): string => {
 			return '';
 	}
 };
+
+// Blocks consume their own line ending, but a node rebuilt from the source may or may not carry it.
+export const blockSourceOf = (block: MessageParser.HorizontalRule | MessageParser.Table, source: string): string => {
+	const text = sourceOf(block, source);
+
+	return text.endsWith('\n') ? text : `${text}\n`;
+};

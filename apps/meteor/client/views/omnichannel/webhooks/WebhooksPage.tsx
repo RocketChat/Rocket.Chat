@@ -161,7 +161,7 @@ const WebhooksPage = ({ settings }: WebhooksPageProps) => {
 					>
 						{testWebhook.isPending ? t('Sending') : t('Send_Test')}
 					</Button>
-					<Button primary onClick={handleSubmit(handleSave)} loading={isSubmitting} disabled={!isDirty}>
+					<Button variant='primary' onClick={handleSubmit(handleSave)} loading={isSubmitting} disabled={!isDirty}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
@@ -205,13 +205,7 @@ const WebhooksPage = ({ settings }: WebhooksPageProps) => {
 										control={control}
 										name='sendOn'
 										render={({ field: { onChange, value } }) => (
-											<MultiSelect
-												width='full'
-												value={value}
-												onChange={onChange}
-												options={sendOptions}
-												placeholder={t('Select_an_option')}
-											/>
+											<MultiSelect value={value} onChange={onChange} options={sendOptions} placeholder={t('Select_an_option')} />
 										)}
 									/>
 								</Box>

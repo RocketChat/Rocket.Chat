@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.31.27-rc.0
+
+### Patch Changes
+
+- ([#42340](https://github.com/RocketChat/Rocket.Chat/pull/42340)) Fixes latent bugs in encoder code paths that are currently disabled (ReplayGain analysis hanging on sample windows that are not a multiple of 8, and small-spectrum truncation sorting the wrong range lexically), and reduces per-frame allocations and per-chunk copying in the worker. The encoded MP3 output is unchanged.
+
 ## 0.31.26
 
 ### Patch Changes

@@ -1,13 +1,14 @@
+import type { IMessage } from '@rocket.chat/core-typings';
 import { isThreadMainMessage, isRoomFederated } from '@rocket.chat/core-typings';
+import { useFormatTime, useFormatDateAndTime } from '@rocket.chat/ui-client';
 import { useLayout, useUser, useUserPreference, useSetting, useEndpoint, useSearchParameter } from '@rocket.chat/ui-contexts';
-import type { ReactNode } from 'react';
+import type { KeyboardEvent, MouseEvent, ReactNode } from 'react';
 import { useMemo, memo } from 'react';
 
+import { normalizeUsername } from '../../../../../lib/utils/normalizeUsername';
 import type { MessageListContextValue } from '../../../../components/message/list/MessageListContext';
 import { MessageListContext } from '../../../../components/message/list/MessageListContext';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
-import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
-import { useFormatTime } from '../../../../hooks/useFormatTime';
 import { getRegexHighlight, getRegexHighlightUrl } from '../../../../lib/highlightWords';
 import AttachmentProvider from '../../../../providers/AttachmentProvider';
 import { useChat } from '../../contexts/ChatContext';
@@ -64,16 +65,17 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 
 	const chat = useChat();
 
-	const context: MessageListContextValue = useMemo(
+	const context: MessageListContextValue = useMemo<MessageListContextValue>(
 		() => ({
 			showColors,
 			useUserHasReacted: username
-				? (message) =>
-						(reaction): boolean =>
+				? (message: IMessage) =>
+						(reaction: string): boolean =>
 							Boolean(message.reactions?.[reaction]?.usernames.includes(username))
 				: () => (): boolean => false,
 			useShowFollowing: uid
-				? ({ message }): boolean => Boolean(message.replies && message.replies.indexOf(uid) > -1 && !isThreadMainMessage(message))
+				? ({ message }: { message: IMessage }): boolean =>
+						Boolean(message.replies && message.replies.indexOf(uid) > -1 && !isThreadMainMessage(message))
 				: (): boolean => false,
 
 			autoTranslate: {
@@ -82,7 +84,8 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 				showAutoTranslate,
 			},
 			useShowStarred: hasSubscription
-				? ({ message }): boolean => Boolean(Array.isArray(message.starred) && message.starred.find((star) => star._id === uid))
+				? ({ message }: { message: IMessage }): boolean =>
+						Boolean(Array.isArray(message.starred) && message.starred.find((star) => star._id === uid))
 				: (): boolean => false,
 			useMessageDateFormatter:
 				() =>
@@ -92,7 +95,11 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 			autoLinkDomains,
 			showRoles,
 			showRealName,
-			showUsername,
+			getAuthorUsername: ({ name, username }) => {
+				const normalizedUsername = normalizeUsername(username);
+				const nameRepeatsUsername = !name || normalizeUsername(name) === normalizedUsername;
+				return { normalizedUsername, showUsername: showUsername && showRealName && !nameRepeatsUsername };
+			},
 			jumpToMessageParam: msgParameter,
 			...(katexEnabled && {
 				katex: {
@@ -109,8 +116,8 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 				})),
 
 			useOpenEmojiPicker: uid
-				? (message) =>
-						(e): void => {
+				? (message: IMessage) =>
+						(e: MouseEvent | KeyboardEvent): void => {
 							e.nativeEvent.stopImmediatePropagation();
 							chat?.emojiPicker.open(e.currentTarget, (emoji: string) => reactToMessage({ messageId: message._id, reaction: emoji }));
 						}

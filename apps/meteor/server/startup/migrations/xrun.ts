@@ -1,10 +1,11 @@
 import { Permissions, Roles, Settings, Users } from '@rocket.chat/models';
 import type { UpdateResult } from 'mongodb';
 
+import { gateCustomOAuthSettings } from '../../../ee/server/lib/oauth/gateCustomOAuthSettings';
 import { upsertPermissions } from '../../lib/authorization/upsertPermissions';
 import { migrateDatabase, onServerVersionChange } from '../../lib/migrations';
-import { addCustomOAuthPremiumAlert } from '../../lib/oauth/addCustomOAuthPremiumAlert';
 import { settings } from '../../settings';
+import { reloadSettings } from '../../settings/startup';
 import { ensureCloudWorkspaceRegistered } from '../cloudRegistration';
 
 const { MIGRATION_VERSION = 'latest' } = process.env;
@@ -99,6 +100,9 @@ export const performMigrationProcedure = async (): Promise<void> => {
 		await upsertPermissions();
 		await ensureCloudWorkspaceRegistered();
 		await moveRetentionSetting();
-		await addCustomOAuthPremiumAlert();
+		await gateCustomOAuthSettings();
 	});
+
+	// another instance may have run the migrations after this one loaded its settings, and it has no way to tell this one
+	await reloadSettings({ model: Settings, settings });
 };

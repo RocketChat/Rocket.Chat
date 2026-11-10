@@ -7,6 +7,7 @@ import { WebApp } from 'meteor/webapp';
 
 import { API } from '../../../server/api';
 import { getTrimmedServerVersion } from '../../../server/api/lib/getTrimmedServerVersion';
+import { nodeLoggerMiddleware } from '../../../server/api/v1/middlewares/logger';
 
 const logger = new Logger('FederationRoutes');
 
@@ -45,7 +46,10 @@ export async function registerFederationRoutes(): Promise<void> {
 	try {
 		const routes = getFederationRoutes(getTrimmedServerVersion());
 
-		(WebApp.rawConnectHandlers as unknown as ReturnType<typeof express>).use(routes.matrix.router).use(routes.wellKnown.router);
+		(WebApp.rawConnectHandlers as unknown as ReturnType<typeof express>)
+			.use([routes.matrix.base, routes.wellKnown.base], nodeLoggerMiddleware(logger))
+			.use(routes.matrix.router)
+			.use(routes.wellKnown.router);
 	} catch (error) {
 		logger.error({ msg: '[Federation] Failed to register routes:', err: error });
 		throw error;

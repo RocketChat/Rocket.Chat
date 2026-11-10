@@ -5,13 +5,6 @@ import type { Server } from '../ddp/Server';
 
 export function registerPresenceMethods(server: Server): void {
 	server.methods({
-		'UserPresence:setDefaultStatus'(status) {
-			const { userId } = this;
-			if (!userId) {
-				return;
-			}
-			return Presence.setStatus(userId, status);
-		},
 		'UserPresence:online'() {
 			const { userId, session } = this;
 			if (!userId) {

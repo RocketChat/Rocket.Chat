@@ -1,12 +1,14 @@
+import { after, before, describe, it } from 'node:test';
+
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { updatePermission } from '../../data/permissions.helper';
+import { IS_EE } from '../../e2e/config/constants';
 
-describe('SAML', () => {
-	before((done) => getCredentials(done));
+(IS_EE ? describe : describe.skip)('SAML', () => {
+	before((_t, done) => getCredentials(done));
 
 	describe('[/saml.parseMetadata]', () => {
 		after(() => updatePermission('test-admin-options', ['admin']));

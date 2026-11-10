@@ -1,4 +1,5 @@
 {
 	"extends": "@rocket.chat/tsconfig/base.json",
-	"include": ["src/**/*"]
+	"include": ["src/**/*"],
+	"exclude": []
 }

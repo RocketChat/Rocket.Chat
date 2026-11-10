@@ -1,0 +1,67 @@
+@use '../../styles/colors.scss';
+@use '../../styles/lengths.scss';
+@use '../../styles/functions.scss' as *;
+
+$divider-size: theme('divider-size', lengths.border-width(default));
+$divider-color: theme('divider-color', colors.stroke(extra-light));
+
+.rcx-divider {
+	margin-block: lengths.margin(8);
+
+	border-top: $divider-size solid $divider-color;
+
+	&__bar {
+		display: flex;
+		justify-content: flex-end;
+		align-items: center;
+		flex-grow: 1;
+
+		&::after {
+			flex-grow: 1;
+
+			content: '';
+
+			border: $divider-size solid $divider-color;
+		}
+	}
+
+	&__wrapper {
+		margin-block: lengths.margin(8);
+		padding-inline: lengths.padding(8);
+	}
+
+	&--vertical {
+		width: 0;
+		height: lengths.size(20);
+		margin-block: 0;
+		margin-inline: lengths.margin(8);
+
+		border-left: $divider-size solid $divider-color;
+	}
+
+	&--danger {
+		border-color: colors.stroke(error);
+	}
+
+	&--light {
+		border-color: colors.stroke(light);
+	}
+
+	&--small {
+		margin-inline: lengths.margin(4);
+	}
+
+	&--stretch {
+		align-self: stretch;
+
+		height: auto;
+	}
+
+	&#{&}--flush {
+		margin: 0;
+	}
+}
+
+.rcx-message-divider.rcx-divider--labelled {
+	padding-inline: 0;
+}

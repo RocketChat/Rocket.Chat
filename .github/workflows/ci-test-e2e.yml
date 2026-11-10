@@ -181,9 +181,9 @@ jobs:
           TEST_MODE: ${{ startsWith(inputs.type, 'api') && 'api' || 'true' }}
           TEST_TYPE: ${{ inputs.type }}
         run: |
-          # when we are testing CE, we only need to start the rocketchat container (plus mock-server for the api suite)
+          # CE needs Rocket.Chat plus the mock server for API and UI fixtures.
           services=(rocketchat)
-          if [ "$TEST_TYPE" == "api" ]; then
+          if [[ "$TEST_TYPE" == "api" || "$TEST_TYPE" == "ui" ]]; then
             services+=(mock-server)
           fi
           DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose -f docker-compose-ci.yml up -d "${services[@]}" --wait
@@ -193,7 +193,7 @@ jobs:
         env:
           ENTERPRISE_LICENSE: ${{ inputs.enterprise-license }}
           TRANSPORTER: ${{ inputs.transporter }}
-          COMPOSE_PROFILES: ${{ inputs.type == 'api' && 'api' || '' }}
+          COMPOSE_PROFILES: ${{ (inputs.type == 'api' || inputs.type == 'ui') && inputs.type || '' }}
           TEST_MODE: ${{ startsWith(inputs.type, 'api') && 'api' || 'true' }}
           FIPS_OVERRIDE: ${{ inputs.fips && '-f docker-compose-ci.fips.yml' || '' }}
         run: |
@@ -208,7 +208,7 @@ jobs:
         run: |
           docker ps
 
-          until docker compose -f docker-compose-ci.yml logs ddp-streamer-service | grep -q "NetworkBroker started successfully"; do
+          until docker compose -f docker-compose-ci.yml logs ddp-streamer-service | grep -q "MoleculerBroker started successfully"; do
             echo "Waiting 'ddp-streamer' to start up"
             ((c++)) && ((c==10)) && docker compose -f docker-compose-ci.yml logs ddp-streamer-service && exit 1
             sleep 10
@@ -221,7 +221,7 @@ jobs:
         if: inputs.type == 'api'
         working-directory: ./apps/meteor
         env:
-          WEBHOOK_TEST_URL: 'http://httpbin'
+          WEBHOOK_TEST_URL: 'http://httpbin.dev'
           IS_EE: ${{ inputs.release == 'ee' && 'true' || '' }}
         run: |
           set -o xtrace
@@ -237,7 +237,7 @@ jobs:
         if: inputs.type == 'api-livechat'
         working-directory: ./apps/meteor
         env:
-          WEBHOOK_TEST_URL: 'http://httpbin'
+          WEBHOOK_TEST_URL: 'http://httpbin.dev'
           IS_EE: ${{ inputs.release == 'ee' && 'true' || '' }}
         run: |
           set -o xtrace
@@ -295,7 +295,7 @@ jobs:
 
       - name: Show server logs if E2E test failed
         if: failure()
-        run: docker compose -f docker-compose-ci.yml logs rocketchat authorization-service queue-worker-service ddp-streamer-service account-service presence-service omnichannel-transcript-service
+        run: docker compose -f docker-compose-ci.yml logs rocketchat authorization-service queue-worker-service ddp-streamer-service account-service presence-service omnichannel-transcript-service xmpp-server-service
 
       - name: Show mongo logs if E2E test failed
         if: failure()

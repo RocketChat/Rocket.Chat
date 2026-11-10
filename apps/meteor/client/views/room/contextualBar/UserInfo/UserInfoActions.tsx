@@ -1,16 +1,15 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { ButtonGroup, IconButton, Skeleton } from '@rocket.chat/fuselage';
-import { GenericMenu } from '@rocket.chat/ui-client';
+import { GenericMenu, UserInfoAction } from '@rocket.chat/ui-client';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { UserInfoAction } from '../../../../components/UserInfo';
 import { useMemberExists } from '../../../hooks/useMemberExists';
 import type { UserInfoAction as UserInfoActionType } from '../../hooks/useUserInfoActions';
 import { useUserInfoActions } from '../../hooks/useUserInfoActions';
 
 export type UserInfoActionsProps = {
-	user: Pick<IUser, '_id' | 'username' | 'name' | 'freeSwitchExtension'>;
+	user: Pick<IUser, '_id' | 'username' | 'name' | 'sipExtension' | 'federated'>;
 	rid: IRoom['_id'];
 	isInvited?: boolean;
 	backToList?: () => void;
@@ -26,11 +25,11 @@ const UserInfoActions = ({ user, rid, isInvited, backToList }: UserInfoActionsPr
 	} = useMemberExists({ roomId: rid, username: user.username as string });
 
 	const isMember = membershipCheckSuccess && isMemberData?.isMember;
-	const { _id: userId, username, name, freeSwitchExtension } = user;
+	const { _id: userId, username, name, sipExtension, federated } = user;
 
 	const { actions: actionsDefinition, menuActions: menuOptions } = useUserInfoActions({
 		rid,
-		user: { _id: userId, username, name, freeSwitchExtension },
+		user: { _id: userId, username, name, sipExtension, federated },
 		size: 2,
 		isMember,
 		isInvited,
@@ -47,7 +46,7 @@ const UserInfoActions = ({ user, rid, isInvited, backToList }: UserInfoActionsPr
 
 		return (
 			<GenericMenu
-				button={<IconButton icon='kebab' secondary />}
+				button={<IconButton icon='kebab' variant='secondary' />}
 				title={t('More')}
 				key='menu'
 				sections={menuOptions}
@@ -59,7 +58,7 @@ const UserInfoActions = ({ user, rid, isInvited, backToList }: UserInfoActionsPr
 
 	const actions = useMemo(() => {
 		const mapAction = ([key, action]: [string, UserInfoActionType]) => (
-			<UserInfoAction key={key} title={action.title} label={action.content} onClick={action.onClick} icon={action.icon ?? 'kebab'} />
+			<UserInfoAction key={key} label={action.content ?? action.title} onClick={action.onClick} icon={action.icon ?? 'kebab'} />
 		);
 
 		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);
@@ -68,7 +67,7 @@ const UserInfoActions = ({ user, rid, isInvited, backToList }: UserInfoActionsPr
 	if (isPending) {
 		return <Skeleton width='full' />;
 	}
-	return <ButtonGroup align='center'>{actions}</ButtonGroup>;
+	return <ButtonGroup stretch>{actions}</ButtonGroup>;
 };
 
 export default UserInfoActions;

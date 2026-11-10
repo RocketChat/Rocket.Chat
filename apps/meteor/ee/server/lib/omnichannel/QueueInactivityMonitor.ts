@@ -3,10 +3,10 @@ import type { IUser, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import type { MainLogger } from '@rocket.chat/logger';
 import { LivechatRooms, LivechatInquiry as LivechatInquiryRaw, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
-import { MongoInternals } from 'meteor/mongo';
 import type { Db } from 'mongodb';
 
 import { schedulerLogger } from './logger';
+import { client, db } from '../../../../server/database/utils';
 import { i18n } from '../../../../server/lib/i18n';
 import { closeRoom } from '../../../../server/lib/omnichannel/closeRoom';
 import { settings } from '../../../../server/settings';
@@ -31,12 +31,12 @@ export class OmnichannelQueueInactivityMonitorClass {
 	bindedCloseRoom: any;
 
 	constructor() {
-		this._db = MongoInternals.defaultRemoteCollectionDriver().mongo.db;
+		this._db = db;
 		this.running = false;
 		this._name = 'Omnichannel-Queue-Inactivity-Monitor';
 		this.logger = schedulerLogger.section(this._name);
 		this.scheduler = new Agenda({
-			mongo: (MongoInternals.defaultRemoteCollectionDriver().mongo as any).client.db(),
+			mongo: client.db(),
 			db: { collection: SCHEDULER_NAME },
 			defaultConcurrency: 1,
 			processEvery: process.env.TEST_MODE === 'true' || process.env.TEST_MODE === 'api' ? '3 seconds' : '1 minute',

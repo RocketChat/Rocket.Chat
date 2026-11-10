@@ -1,4 +1,4 @@
-import { Account, MeteorError } from '@rocket.chat/core-services';
+import { Account, ClientSafeError } from '@rocket.chat/core-services';
 
 import { registerAccountMethods } from './accounts';
 import { makeSession, makePacket, sentPackets } from '../__tests__/helpers';
@@ -76,7 +76,7 @@ describe('account methods', () => {
 			expect(sentPackets(session)[0]).toEqual({
 				msg: 'result',
 				id: 'test-id',
-				error: new MeteorError(403, "You've been logged out by the server. Please log in again").toJSON(),
+				error: new ClientSafeError(403, "You've been logged out by the server. Please log in again").toJSON(),
 			});
 		});
 	});

@@ -22,7 +22,7 @@ const agent = {
 	status: 'online',
 	username: 'guilherme.gazzo',
 	emails: [{ address: 'guilherme.gazzo@rocket.chat' }],
-	phone: [{ phoneNumber: '+55 99 99999 9999' }],
+	phones: [{ number: '+55 99 99999 9999' }],
 };
 
 export default {

@@ -1,11 +1,10 @@
 import { ButtonGroup, IconButton } from '@rocket.chat/fuselage';
-import { GenericMenu } from '@rocket.chat/ui-client';
+import { GenericMenu, UserInfoAction } from '@rocket.chat/ui-client';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { AdminUserAction, AdminUserInfoActionsProps } from './hooks/useAdminUserInfoActions';
 import { useAdminUserInfoActions } from './hooks/useAdminUserInfoActions';
-import { UserInfoAction } from '../../../components/UserInfo';
 
 const AdminUserInfoActions = ({
 	username,
@@ -37,7 +36,7 @@ const AdminUserInfoActions = ({
 		return (
 			<GenericMenu
 				key='menu'
-				button={<IconButton icon='kebab' secondary />}
+				button={<IconButton icon='kebab' variant='secondary' />}
 				title={t('More')}
 				sections={menuOptions}
 				placement='bottom-end'

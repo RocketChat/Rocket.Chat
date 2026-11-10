@@ -14,6 +14,6 @@ export function secureFieldsMapper<T extends Record<string, unknown>>(
 	return { [kSecureFields]: mapper };
 }
 
-export function hasSecureFields(object: unknown): boolean {
-	return !!object?.[kSecureFields];
+export function hasSecureFields<T extends Record<string, unknown>>(object: T): object is WithSecureFields<T> {
+	return Array.isArray(object?.[kSecureFields]);
 }

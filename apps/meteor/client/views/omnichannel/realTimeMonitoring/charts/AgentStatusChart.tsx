@@ -1,6 +1,6 @@
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import type { Box } from '@rocket.chat/fuselage';
-import { useEndpoint, type TranslationKey } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type * as chartjs from 'chart.js';
 import type { TFunction } from 'i18next';
@@ -28,7 +28,7 @@ const init = (canvas: HTMLCanvasElement, context: chartjs.Chart<'doughnut'> | un
 		canvas,
 		t('Agents'),
 		context,
-		labels.map((l) => t(l as TranslationKey)),
+		labels.map((l) => t(l)),
 		Object.values(initialData),
 	);
 

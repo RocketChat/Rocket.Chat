@@ -12,18 +12,16 @@ describe('Messenger', () => {
 	beforeEach(() => {
 		AppObjectRegistry.clear();
 		AppObjectRegistry.set('id', 'test');
-		Messenger.setTransport(Messenger.noopTransport);
 
 		context = createMockRequest({ method: 'test', params: [] });
 	});
 
 	after(() => {
 		AppObjectRegistry.clear();
-		Messenger.setTransport(Messenger.noopTransport);
 	});
 
 	it('should add logs to success responses', async () => {
-		const theSpy = mock.method(Messenger.Queue, 'enqueue');
+		const theSpy = mock.method(Messenger.ipcChannel, 'send', () => Promise.resolve());
 		const { logger } = context.context;
 
 		logger.info('test');
@@ -50,7 +48,7 @@ describe('Messenger', () => {
 	});
 
 	it('should add logs to error responses', async () => {
-		const theSpy = mock.method(Messenger.Queue, 'enqueue');
+		const theSpy = mock.method(Messenger.ipcChannel, 'send', () => Promise.resolve());
 		const { logger } = context.context;
 
 		logger.info('test');
@@ -81,7 +79,7 @@ describe('Messenger', () => {
 		const meta = { traceId: 'trace-1' };
 
 		it('should forward the meta of a success response', async () => {
-			const theSpy = mock.method(Messenger.Queue, 'enqueue');
+			const theSpy = mock.method(Messenger.ipcChannel, 'send', () => Promise.resolve());
 
 			await Messenger.successResponse({ id: 'test', result: 'test', meta }, context);
 
@@ -93,7 +91,7 @@ describe('Messenger', () => {
 		});
 
 		it('should forward the meta of an error response', async () => {
-			const theSpy = mock.method(Messenger.Queue, 'enqueue');
+			const theSpy = mock.method(Messenger.ipcChannel, 'send', () => Promise.resolve());
 
 			await Messenger.errorResponse({ id: 'test', error: { code: -32000, message: 'test' }, meta }, context);
 
@@ -105,7 +103,7 @@ describe('Messenger', () => {
 		});
 
 		it('should forward the meta of a notification', () => {
-			const theSpy = mock.method(Messenger.Queue, 'enqueue');
+			const theSpy = mock.method(Messenger.ipcChannel, 'send', () => Promise.resolve());
 
 			Messenger.sendNotification({ method: 'test', params: [], meta });
 
@@ -117,7 +115,7 @@ describe('Messenger', () => {
 		});
 
 		it('should forward the meta of a request', () => {
-			const theSpy = mock.method(Messenger.Queue, 'enqueue');
+			const theSpy = mock.method(Messenger.ipcChannel, 'send', () => Promise.resolve());
 
 			// The response never arrives here, so we only assert on what was enqueued.
 			void Messenger.sendRequest({ method: 'test', params: [], meta });
@@ -130,7 +128,7 @@ describe('Messenger', () => {
 		});
 
 		it('should leave meta absent when the descriptor omits it', async () => {
-			const theSpy = mock.method(Messenger.Queue, 'enqueue');
+			const theSpy = mock.method(Messenger.ipcChannel, 'send', () => Promise.resolve());
 
 			await Messenger.successResponse({ id: 'test', result: 'test' }, context);
 

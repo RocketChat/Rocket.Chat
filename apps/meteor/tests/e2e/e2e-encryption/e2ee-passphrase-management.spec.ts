@@ -81,6 +81,7 @@ test.describe('E2EE Passphrase Management - Initial Setup', () => {
 			// Reset the E2EE key to start the flow from the beginning
 			await accountSecurityPage.goto();
 			await accountSecurityPage.resetE2EEPassword();
+			await loginPage.waitForIt();
 
 			await loginPage.loginByUserState(Users.admin);
 		});
@@ -104,6 +105,7 @@ test.describe('E2EE Passphrase Management - Initial Setup', () => {
 			await enterE2EEPasswordBanner.click();
 			await enterE2EEPasswordModal.forgotPassword();
 			await resetE2EEPasswordModal.confirmReset();
+			await loginPage.waitForIt();
 
 			// restore login
 			await loginPage.loginByUserState(Users.admin);

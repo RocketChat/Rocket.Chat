@@ -24,7 +24,7 @@ export class ConfirmMuteModal extends Modal {
 
 export class RemoveTeamMemberModal extends Modal {
 	constructor(page: Page) {
-		super(page.getByRole('dialog', { name: 'Removing Member' }));
+		super(page.getByRole('dialog', { name: 'Removing member' }));
 	}
 
 	get description() {
@@ -100,7 +100,7 @@ export class MembersFlexTab extends FlexTab {
 	}
 
 	memberOption(username: string) {
-		return this.root.locator('li', { hasText: username });
+		return this.root.getByRole('listitem').filter({ hasText: username });
 	}
 
 	getMenuItemAction(action: string) {
@@ -126,7 +126,7 @@ export class MembersFlexTab extends FlexTab {
 	}
 
 	private get btnInviteLink() {
-		return this.root.getByRole('button', { name: 'Invite Link' });
+		return this.root.getByRole('button', { name: 'Invite link' });
 	}
 
 	async inviteUser() {
@@ -155,7 +155,7 @@ export class MembersFlexTab extends FlexTab {
 	}
 
 	async showAllUsers() {
-		await this.root.getByRole('button', { name: 'Online' }).click();
+		await this.root.getByRole('combobox', { name: 'Status' }).click();
 		await this.listbox.selectOption('All');
 	}
 

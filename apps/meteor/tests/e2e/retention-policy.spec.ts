@@ -112,7 +112,7 @@ test.describe.serial('retention-policy', () => {
 				await auxContext.poHomeChannel.tabs.editRoom.checkboxReadOnly.check();
 				await auxContext.poHomeChannel.tabs.editRoom.btnSave.click();
 
-				await expect(auxContext.poHomeChannel.content.getSystemMessageByText('set room to read only')).toBeVisible();
+				await expect(auxContext.poHomeChannel.content.getSystemMessageByText('set room to read-only')).toBeVisible();
 			});
 		});
 

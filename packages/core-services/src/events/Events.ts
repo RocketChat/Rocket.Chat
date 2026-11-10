@@ -29,7 +29,6 @@ import type {
 	ILivechatVisitor,
 	LicenseLimitKind,
 	ICustomUserStatus,
-	IWebdavAccount,
 	MessageAttachment,
 } from '@rocket.chat/core-typings';
 import type { ClientMediaSignalBody, ServerMediaSignal } from '@rocket.chat/media-signaling';
@@ -52,8 +51,18 @@ type LoginServiceConfigurationEvent = {
 	  }
 );
 
+/** A stream emit relayed to the other processes; `origin` identifies the process that emitted it. */
+export type RelayedStreamEvent = {
+	stream: string;
+	eventName: string;
+	args: unknown[];
+	origin: string;
+};
+
 export type EventSignatures = {
 	'room.video-conference': (params: { rid: string; callId: string }) => void;
+	/** A local client reported what its user is doing in a room, such as typing. */
+	'room.user-activity': (data: { rid: string; uid: string; activities: string[] }) => void;
 	'shutdown': (params: Record<string, string[]>) => void;
 	'$services.changed': (info: { localService: boolean }) => void;
 	'accounts.login': (info: { userId: string; connection: ISocketConnection }) => void;
@@ -78,18 +87,6 @@ export type EventSignatures = {
 	'notify.uiInteraction'(uid: string, data: UiKit.ServerInteraction): void;
 	'notify.updateInvites'(uid: string, data: { invite: Omit<IInvite, '_updatedAt'> }): void;
 	'notify.ephemeralMessage'(uid: string, rid: string, message: AtLeast<IMessage, 'msg'>): void;
-	'notify.webdav'(
-		uid: string,
-		data:
-			| {
-					type: 'changed';
-					account: Partial<IWebdavAccount>;
-			  }
-			| {
-					type: 'removed';
-					account: { _id: IWebdavAccount['_id'] };
-			  },
-	): void;
 	'notify.e2e.keyRequest'(rid: string, data: IRoom['e2eKeyId']): void;
 	'notify.deleteMessage'(rid: string, data: { _id: string }): void;
 	'notify.deleteMessageBulk'(
@@ -121,7 +118,7 @@ export type EventSignatures = {
 	'room'(data: { action: string; room: Partial<IRoom> }): void;
 	'room.avatarUpdate'(room: Pick<IRoom, '_id' | 'avatarETag'>): void;
 	'setting'(data: { action: string; setting: Partial<ISetting> }): void;
-	'stream'([streamer, eventName, payload]: [string, string, any[]]): void;
+	'stream'(relayed: RelayedStreamEvent): void;
 	'subscription'(data: { action: string; subscription: Partial<ISubscription> }): void;
 	'user.avatarUpdate'(user: Partial<IUser>): void;
 	'user.deleted'(
@@ -299,7 +296,6 @@ export type EventSignatures = {
 	// Send all events from here
 	'call.callerhangup'(userId: string, data: { roomId: string }): void;
 	'connector.statuschanged'(enabled: boolean): void;
-	'federation.userRoleChanged'(update: Record<string, any>): void;
 	'watch.priorities'(data: { clientAction: ClientAction; id: ILivechatPriority['_id']; diff?: Record<string, string> }): void;
 	'apps.added'(appId: string): void;
 	'apps.removed'(appId: string): void;

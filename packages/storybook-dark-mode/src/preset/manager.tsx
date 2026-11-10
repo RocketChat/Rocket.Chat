@@ -1,4 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import * as React from 'react';
 import { Addon_TypesEnum } from 'storybook/internal/types';
 import { addons } from 'storybook/manager-api';

@@ -12,15 +12,15 @@ export type WorkspaceCardTextSeparatorProps = {
 const WorkspaceCardTextSeparator = ({ icon, label, value, status }: WorkspaceCardTextSeparatorProps) => (
 	<TextSeparator
 		label={
-			<>
-				{icon && <Icon name={icon} size='x16' marginInlineEnd={4} />}
+			<Box display='flex' alignItems='center' columnGap={icon ? 4 : undefined}>
+				{icon && <Icon name={icon} size='x16' />}
 				{status && (
 					<Box minWidth='x16' display='inline-flex' flexDirection='row' alignItems='flex-end' justifyContent='center'>
 						<StatusBullet status={status} />
 					</Box>
 				)}
 				{label && label}
-			</>
+			</Box>
 		}
 		value={value}
 	/>

@@ -16,6 +16,7 @@ type UseRoomRolesQueryOptions<TData = RoomRoles[]> = Omit<
 	'queryKey' | 'queryFn'
 >;
 
+// Cached records are replaced, never mutated: react-query keeps the old reference for deep-equal data, so observers would not be notified.
 export const useRoomRolesQuery = <TData = RoomRoles[]>(rid: IRoom['_id'], options?: UseRoomRolesQueryOptions<TData>) => {
 	const queryClient = useQueryClient();
 
@@ -32,7 +33,7 @@ export const useRoomRolesQuery = <TData = RoomRoles[]>(rid: IRoom['_id'], option
 			switch (role.type) {
 				case 'added': {
 					const { _id: roleId, scope, u } = role;
-					if (!scope || !u) return;
+					if (!scope || !u || scope !== rid) return;
 
 					queryClient.setQueryData(roomsQueryKeys.roles(rid), (data: RoomRoles[] | undefined = []): RoomRoles[] => {
 						const index = data?.findIndex((record) => record.rid === rid && record.u._id === u._id) ?? -1;
@@ -41,29 +42,21 @@ export const useRoomRolesQuery = <TData = RoomRoles[]>(rid: IRoom['_id'], option
 							return [...data, { rid, u, roles: [roleId] }];
 						}
 
-						const roles = new Set(data[index].roles);
-						roles.add(roleId);
-						data[index] = { ...data[index], roles: [...roles] };
-
-						return [...data];
+						return data.map((record, i) => (i === index ? { ...record, roles: [...new Set([...record.roles, roleId])] } : record));
 					});
 					break;
 				}
 
 				case 'removed': {
 					const { _id: roleId, scope, u } = role;
-					if (!!scope || !u) return;
+					if (!scope || !u || scope !== rid) return;
 
 					queryClient.setQueryData(roomsQueryKeys.roles(rid), (data: RoomRoles[] | undefined = []) => {
 						const index = data?.findIndex((record) => record.rid === rid && record.u._id === u._id) ?? -1;
 
 						if (index < 0) return data;
 
-						const roles = new Set(data[index].roles);
-						roles.delete(roleId);
-						data[index] = { ...data[index], roles: [...roles] };
-
-						return [...data];
+						return data.map((record, i) => (i === index ? { ...record, roles: record.roles.filter((r) => r !== roleId) } : record));
 					});
 					break;
 				}
@@ -86,16 +79,7 @@ export const useRoomRolesQuery = <TData = RoomRoles[]>(rid: IRoom['_id'], option
 					return [...data, { rid, u: { _id: uid, username, name }, roles: [] }];
 				}
 
-				data[index] = {
-					...data[index],
-					u: {
-						...data[index].u,
-						username,
-						name,
-					},
-				};
-
-				return [...data];
+				return data.map((record, i) => (i === index ? { ...record, u: { ...record.u, username, name } } : record));
 			});
 		});
 	}, [enabled, queryClient, rid, subscribeToNotifyLogged]);

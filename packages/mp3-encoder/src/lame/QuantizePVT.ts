@@ -286,7 +286,7 @@ export class QuantizePVT {
 		return Math.pow(10, 0.1 * u);
 	}
 
-	// eslint-disable-next-line complexity
+	// oxlint-disable-next-line complexity
 	calc_xmin(gfp: LameGlobalFlags, ratio: III_psy_ratio, cod_info: GrInfo, pxmin: Float32Array) {
 		let pxminPos = 0;
 		const gfc = gfp.internal_flags;

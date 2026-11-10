@@ -19,7 +19,7 @@ const ContextBlock = ({ className, block, surfaceRenderer }: ContextBlockProps) 
 	);
 
 	return (
-		<Box className={className} display='flex' alignItems='center' margin={-4}>
+		<Box className={className} display='flex' alignItems='center' columnGap={8}>
 			{itemElements.map((element, i) => (
 				<Item key={i} block={element} surfaceRenderer={surfaceRenderer} index={i} />
 			))}

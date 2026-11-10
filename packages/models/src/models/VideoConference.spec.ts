@@ -9,7 +9,7 @@ jest.mock('./BaseRaw', () => ({
 	},
 }));
 
-// eslint-disable-next-line import-x/first -- must be registered before the module under test is loaded
+// oxlint-disable-next-line import-x/first -- must be registered before the module under test is loaded
 import { VideoConferenceRaw } from './VideoConference';
 
 const member = { _id: 'user-1', username: 'user.one', name: 'User One', avatarETag: 'etag' };

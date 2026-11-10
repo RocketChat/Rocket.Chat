@@ -304,7 +304,7 @@ export class GainAnalysis {
 				rgData.lsum += fsqr(curleftBase[curleft++]);
 				rgData.rsum += fsqr(currightBase[curright++]);
 			}
-			i = cursamples / 8;
+			i = Math.trunc(cursamples / 8);
 			while (i-- !== 0) {
 				rgData.lsum +=
 					fsqr(curleftBase[curleft + 0]) +

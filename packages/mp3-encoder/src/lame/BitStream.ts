@@ -7,7 +7,7 @@ import { Takehiro } from './Takehiro';
 import { TotalBytes } from './TotalBytes';
 import { VBRTag } from './VBRTag';
 import { copyArray, fillArray } from './arrays';
-import { assert } from './assert';
+import { assert, assertDefined } from './assert';
 import { getBitrate } from './bitrates';
 import { LAME_MAXMP3BUFFER, MAX_HEADER_BUF, NORM_TYPE, SHORT_TYPE } from './constants';
 import { getLameShortVersion } from './getLameShortVersion';
@@ -322,8 +322,8 @@ export class BitStream {
 				assert(v <= 1);
 			}
 
-			assert(h.table !== undefined);
-			assert(h.hlen !== undefined);
+			assertDefined(h.table);
+			assertDefined(h.hlen);
 
 			ix += 4;
 			xr += 4;
@@ -381,8 +381,8 @@ export class BitStream {
 			}
 
 			assert((x1 | x2) < 16);
-			assert(h.hlen !== undefined);
-			assert(h.table !== undefined);
+			assertDefined(h.hlen);
+			assertDefined(h.table);
 
 			x1 = x1 * xlen + x2;
 			xbits -= cbits;
@@ -390,7 +390,7 @@ export class BitStream {
 
 			assert(cbits <= BitStream.MAX_LENGTH);
 			assert(xbits <= BitStream.MAX_LENGTH);
-			assert(h.table !== undefined);
+			assertDefined(h.table);
 
 			this.putbits2(gfc, h.table[x1], cbits);
 			this.putbits2(gfc, ext, xbits);
@@ -489,11 +489,11 @@ export class BitStream {
 
 		gr = 0;
 		for (ch = 0; ch < gfc.channels_out; ch++) {
-			const gi = l3_side.tt[gr][ch];
+			const gi: GrInfo = l3_side.tt[gr][ch];
 			let i;
 			let sfb_partition;
 			let scale_bits = 0;
-			assert(gi.sfb_partition_table !== null);
+			assertDefined(gi.sfb_partition_table);
 			data_bits = 0;
 			sfb = 0;
 			sfb_partition = 0;

@@ -46,7 +46,7 @@ const CustomSoundRow = ({ onClick, sound }: CustomSoundRowProps) => {
 			<GenericTableCell>
 				<IconButton
 					icon={!isPlay ? 'play' : 'pause'}
-					small
+					size='small'
 					aria-label={!isPlay ? t('Play') : t('Pause')}
 					onClick={(e): void => {
 						e.preventDefault();

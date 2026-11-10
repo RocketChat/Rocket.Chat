@@ -1,5 +1,5 @@
 import type { ISidebarCategory } from '@rocket.chat/core-typings';
-import { Menu, MenuItem, MenuItemContent, MenuItemIcon, MenuSection, MenuSubmenuTrigger, ToggleSwitch } from '@rocket.chat/fuselage';
+import { Menu, MenuItem, MenuSection, MenuSubmenuTrigger, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { GenericMenuItem, useHandleMenuAction } from '@rocket.chat/ui-client';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
@@ -151,8 +151,7 @@ const CategoryMenu = ({
 						{category && createItems.length > 0 && (
 							<MenuSubmenuTrigger key='create-new' textValue={t('Create_new')}>
 								<MenuItem aria-label={t('Create_new')}>
-									<MenuItemIcon name='plus' />
-									<MenuItemContent>{t('Create_new')}</MenuItemContent>
+									<GenericMenuItem id='create-new' icon='plus' content={t('Create_new')} />
 								</MenuItem>
 								<MenuSection items={createItems}>
 									{(item) => (

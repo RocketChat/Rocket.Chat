@@ -1,4 +1,4 @@
-import { Omnichannel } from '@rocket.chat/core-services';
+import { Omnichannel, isClientSafeError } from '@rocket.chat/core-services';
 import type {
 	ILivechatAgent,
 	IOmnichannelInquiryExtraData,
@@ -28,7 +28,6 @@ import {
 } from '@rocket.chat/rest-typings';
 import { isPOSTLivechatVisitorDepartmentTransferParams } from '@rocket.chat/rest-typings/src/v1/omnichannel';
 import { check, Match } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 
 import { API } from '../..';
 import { findGuest, findRoom, settings, findAgent, onCheckRoomParams } from './lib/livechat';
@@ -335,7 +334,7 @@ const livechatVisitorDepartmentTransfer = API.v1.post(
 	'livechat/visitor/department.transfer',
 	{
 		response: {
-			200: ajv.compile<void>({
+			200: ajv.compile<{ success: boolean }>({
 				type: 'object',
 				properties: {
 					success: {
@@ -389,13 +388,13 @@ const livechatVisitorDepartmentTransfer = API.v1.post(
 			return API.v1.failure('error-transfering-chat');
 		}
 
-		return API.v1.success();
+		return API.v1.success({ success: true });
 	},
 );
 
 type LivechatAnalyticsEndpoints = ExtractRoutesFromAPI<typeof livechatVisitorDepartmentTransfer>;
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
 	interface Endpoints extends LivechatAnalyticsEndpoints {}
 }
 
@@ -409,7 +408,7 @@ API.v1.addRoute(
 			const { user } = this;
 
 			if (!user) {
-				throw new Error('error-invalid-user');
+				throw new Error('error-unauthenticated');
 			}
 
 			const room = await LivechatRooms.findOneById(roomId);
@@ -498,7 +497,7 @@ const livechatRoomsEndpoints = API.v1
 				await removeOmnichannelRoom(roomId);
 				return API.v1.success();
 			} catch (error: unknown) {
-				if (error instanceof Meteor.Error) {
+				if (isClientSafeError(error)) {
 					return API.v1.failure(error.reason);
 				}
 
@@ -536,6 +535,6 @@ const livechatRoomsEndpoints = API.v1
 type LivechatRoomsEndpoints = ExtractRoutesFromAPI<typeof livechatRoomsEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
 	interface Endpoints extends LivechatRoomsEndpoints {}
 }

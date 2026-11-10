@@ -1,5 +1,5 @@
 import type { IAbacAttribute } from '@rocket.chat/core-typings';
-import type { Document } from 'mongodb';
+import type { Document, FindCursor } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
@@ -9,5 +9,9 @@ export interface IAbacAttributesModel extends IBaseModel<IAbacAttribute> {
 		key: string,
 		options?: O,
 	): Promise<DocumentWithProjection<T, O> | null>;
+	findAll<T extends Document = IAbacAttribute, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 	countTotalValues(): Promise<number>;
+	findAllKeys(): Promise<string[]>;
 }

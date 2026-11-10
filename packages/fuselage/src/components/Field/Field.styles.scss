@@ -1,0 +1,70 @@
+@use '../../styles/colors.scss';
+@use '../../styles/lengths.scss';
+@use '../../styles/typography.scss' as *;
+@use '../../styles/primitives/rich-text.scss';
+
+.rcx-field {
+	display: flex;
+	flex-flow: column nowrap;
+	align-items: stretch;
+	flex-shrink: 0;
+
+	width: 100%;
+
+	&__label {
+		@include use-font-scale(p2m);
+		align-self: flex-start;
+
+		margin-block: lengths.margin(2);
+		margin-inline-end: lengths.margin(8);
+
+		color: colors.font(default);
+	}
+
+	&__description {
+		@include use-font-scale(p2);
+		margin-block: lengths.margin(2);
+
+		color: colors.font(secondary-info);
+		@extend %with-inline-elements;
+	}
+
+	&__row {
+		display: flex;
+		flex-flow: row nowrap;
+		justify-content: space-between;
+		align-items: center;
+
+		margin-block: lengths.margin(4) lengths.margin(2);
+
+		color: colors.font(secondary-info);
+
+		&--justify-end {
+			justify-content: flex-end;
+		}
+	}
+
+	&__hint {
+		@include use-font-scale(c1);
+		margin-block: lengths.margin(2);
+
+		color: colors.font(secondary-info);
+		@extend %with-inline-elements;
+	}
+
+	&__error {
+		@include use-font-scale(c1);
+		margin-block: lengths.margin(2);
+
+		color: colors.font(danger);
+		@extend %with-inline-elements;
+	}
+
+	&__link {
+		@include use-font-scale(c1);
+		margin-block: lengths.margin(2);
+
+		color: colors.font(info);
+		@extend %with-inline-elements;
+	}
+}

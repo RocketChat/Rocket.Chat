@@ -1,6 +1,7 @@
+import { after, before, describe, it } from 'node:test';
+
 import type { App, IMessage, IRoom } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, request, credentials } from '../../data/api-data';
 import { apps } from '../../data/apps/apps-data';
@@ -12,7 +13,7 @@ import { IS_EE } from '../../e2e/config/constants';
 (IS_EE ? describe : describe.skip)('Apps - Send Messages As APP User', () => {
 	let app: App;
 
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 	before(async () => {
 		await cleanupApps();
 		app = await installTestApp();
@@ -21,7 +22,7 @@ import { IS_EE } from '../../e2e/config/constants';
 	after(() => cleanupApps());
 
 	describe('[Send Message as app user]', () => {
-		it('should return an error when the room is not found', (done) => {
+		it('should return an error when the room is not found', (_t, done) => {
 			void request
 				.post(apps(`/public/${app.id}/send-message-as-app-user`))
 				.send({
@@ -39,7 +40,7 @@ import { IS_EE } from '../../e2e/config/constants';
 		});
 		describe('Send to a Public Channel', () => {
 			let publicMessageId: IMessage['_id'];
-			it('should send a message as app user', (done) => {
+			it('should send a message as app user', (_t, done) => {
 				void request
 					.post(apps(`/public/${app.id}/send-message-as-app-user`))
 					.set(credentials)
@@ -74,7 +75,7 @@ import { IS_EE } from '../../e2e/config/constants';
 
 			after(() => deleteRoom({ type: 'p', roomId: group._id }));
 
-			it('should send a message as app user', (done) => {
+			it('should send a message as app user', (_t, done) => {
 				void request
 					.post(apps(`/public/${app.id}/send-message-as-app-user`))
 					.set(credentials)
@@ -109,7 +110,7 @@ import { IS_EE } from '../../e2e/config/constants';
 
 			after(() => deleteRoom({ type: 'd', roomId: dmRoom._id }));
 
-			it('should send a message as app user', (done) => {
+			it('should send a message as app user', (_t, done) => {
 				void request
 					.post(apps(`/public/${app.id}/send-message-as-app-user`))
 					.set(credentials)

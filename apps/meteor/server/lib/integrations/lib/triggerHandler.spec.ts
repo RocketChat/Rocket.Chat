@@ -1,7 +1,7 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IOutgoingIntegration, IUser } from '@rocket.chat/core-typings';
 import { Integrations, Messages, Rooms, Users } from '@rocket.chat/models';
 import { serverFetch } from '@rocket.chat/server-fetch';
-import { Meteor } from 'meteor/meteor';
 import { Response } from 'node-fetch';
 
 import { triggerHandler as sharedTriggerHandler } from './triggerHandler';
@@ -12,7 +12,6 @@ import { processWebhookMessage } from '../../messages/processWebhookMessage';
 import { notifyOnIntegrationChangedById } from '../../notifyListener';
 import { getRoomByNameOrIdWithOptionToJoin } from '../../rooms/getRoomByNameOrIdWithOptionToJoin';
 
-jest.mock('meteor/meteor', () => ({ Meteor: { Error: class extends Error {} } }), { virtual: true });
 jest.mock('@rocket.chat/models', () => ({
 	Integrations: { updateOne: jest.fn() },
 	Users: { findOneByUsernameIgnoringCase: jest.fn(), findOneById: jest.fn() },
@@ -625,14 +624,14 @@ describe('executeTriggerUrl', () => {
 		expect(serverFetch).not.toHaveBeenCalled();
 	});
 
-	it('wraps script engine errors in Meteor errors and rethrows anything else untouched', async () => {
+	it('wraps script engine errors in ClientSafeError and rethrows anything else untouched', async () => {
 		const integration = register();
 		engine.prepareOutgoingRequest.mockRejectedValueOnce(new Error('the script blew up'));
 		engine.prepareOutgoingRequest.mockRejectedValueOnce('just a string');
 
 		const error = await runUrl(integration).catch((e) => e);
-		expect(error).toBeInstanceOf(Meteor.Error);
-		expect(error.message).toBe('the script blew up');
+		expect(error).toBeInstanceOf(ClientSafeError);
+		expect(error.error).toBe('the script blew up');
 		await expect(runUrl(integration)).rejects.toBe('just a string');
 		expect(serverFetch).not.toHaveBeenCalled();
 	});

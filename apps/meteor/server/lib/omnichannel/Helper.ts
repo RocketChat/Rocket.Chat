@@ -1,6 +1,6 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/livechat';
-import { api, Message, Omnichannel } from '@rocket.chat/core-services';
+import { api, Message, Omnichannel, ClientSafeError } from '@rocket.chat/core-services';
 import type {
 	ILivechatVisitor,
 	IOmnichannelRoom,
@@ -33,7 +33,6 @@ import {
 } from '@rocket.chat/models';
 import { removeEmpty, validateEmail as validatorFunc } from '@rocket.chat/tools';
 import { Match, check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 import type { ClientSession } from 'mongodb';
 import { ObjectId } from 'mongodb';
 
@@ -955,7 +954,7 @@ export const updateDepartmentAgents = async (
 
 export const validateEmail = (email: string) => {
 	if (!validatorFunc(email)) {
-		throw new Meteor.Error('error-invalid-email', `Invalid email ${email}`, {
+		throw new ClientSafeError('error-invalid-email', `Invalid email ${email}`, {
 			function: 'Livechat.validateEmail',
 			email,
 		});

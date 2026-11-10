@@ -1,5 +1,5 @@
 import type { IServiceMetrics } from '@rocket.chat/core-services';
-import { MeteorError, MeteorService } from '@rocket.chat/core-services';
+import { ClientSafeError, MeteorService } from '@rocket.chat/core-services';
 import WebSocket from 'ws';
 
 import { Publication } from './Publication';
@@ -111,11 +111,11 @@ describe('Server method contracts', () => {
 		it.each([
 			[
 				'expected error',
-				new MeteorError(403, 'Forbidden', { permission: 'view-room' }),
-				new MeteorError(403, 'Forbidden', { permission: 'view-room' }).toJSON(),
+				new ClientSafeError(403, 'Forbidden', { permission: 'view-room' }),
+				new ClientSafeError(403, 'Forbidden', { permission: 'view-room' }).toJSON(),
 			],
-			['unexpected error', new Error('private database details'), new MeteorError(500, 'Internal server error').toJSON()],
-			['non-Error rejection', 'private rejection details', new MeteorError(500, 'Internal server error').toJSON()],
+			['unexpected error', new Error('private database details'), new ClientSafeError(500, 'Internal server error').toJSON()],
+			['non-Error rejection', 'private rejection details', new ClientSafeError(500, 'Internal server error').toJSON()],
 		])('sends a safe result followed by updated for an %s', async (_name, error, expectedError) => {
 			const method = jest.fn().mockRejectedValue(error);
 			if (source === 'local') {
@@ -204,7 +204,7 @@ describe('Server subscriptions', () => {
 		await server.subscribe(session, makeSubscription('missing'));
 
 		expect(sentPackets(session)).toEqual([
-			{ msg: 'nosub', id: 'test-id', error: new MeteorError(404, "Subscription 'missing' not found").toJSON() },
+			{ msg: 'nosub', id: 'test-id', error: new ClientSafeError(404, "Subscription 'missing' not found").toJSON() },
 		]);
 		expect(session.subscriptions.size).toBe(0);
 	});
@@ -212,10 +212,10 @@ describe('Server subscriptions', () => {
 	it.each([
 		[
 			'expected',
-			new MeteorError('not-authorized', 'Access denied', { room: 'room1' }),
-			new MeteorError('not-authorized', 'Access denied', { room: 'room1' }).toJSON(),
+			new ClientSafeError('not-authorized', 'Access denied', { room: 'room1' }),
+			new ClientSafeError('not-authorized', 'Access denied', { room: 'room1' }).toJSON(),
 		],
-		['unexpected', new Error('private subscription details'), new MeteorError(500, 'Internal server error').toJSON()],
+		['unexpected', new Error('private subscription details'), new ClientSafeError(500, 'Internal server error').toJSON()],
 	])('sends a safe nosub response for an %s subscription failure', async (_name, error, expectedError) => {
 		const handler = jest.fn().mockRejectedValue(error);
 		server.publish('messages', handler);
@@ -224,18 +224,49 @@ describe('Server subscriptions', () => {
 
 		expect(handler).toHaveBeenCalledTimes(1);
 		expect(sentPackets(session)).toEqual([{ msg: 'nosub', id: 'test-id', error: expectedError }]);
+		expect(session.subscriptions.size).toBe(0);
+		expect(session.listenerCount('close')).toBe(0);
 	});
 
 	it('handles a synchronous publication failure', async () => {
 		const handler = jest.fn(() => {
-			throw new MeteorError(403, 'Forbidden');
+			throw new ClientSafeError(403, 'Forbidden');
 		});
 		server.publish('messages', handler);
 
 		await server.subscribe(session, makeSubscription());
 
 		expect(handler).toHaveBeenCalledTimes(1);
-		expect(sentPackets(session)).toEqual([{ msg: 'nosub', id: 'test-id', error: new MeteorError(403, 'Forbidden').toJSON() }]);
+		expect(sentPackets(session)).toEqual([{ msg: 'nosub', id: 'test-id', error: new ClientSafeError(403, 'Forbidden').toJSON() }]);
+		expect(session.subscriptions.size).toBe(0);
+		expect(session.listenerCount('close')).toBe(0);
+	});
+
+	it('runs the stop callbacks a failed publication registered before failing', async () => {
+		const onStop = jest.fn();
+		server.publish('messages', function (this: Publication) {
+			this.onStop(onStop);
+			throw new ClientSafeError(403, 'Forbidden');
+		});
+
+		await server.subscribe(session, makeSubscription());
+
+		expect(onStop).toHaveBeenCalledTimes(1);
+	});
+
+	it('still answers a failed subscription when one of its stop callbacks throws', async () => {
+		server.publish('messages', function (this: Publication) {
+			this.onStop(() => {
+				throw new Error('stop callback failure');
+			});
+			throw new ClientSafeError(403, 'Forbidden');
+		});
+
+		await expect(server.subscribe(session, makeSubscription())).rejects.toThrow('stop callback failure');
+
+		expect(sentPackets(session)).toEqual([{ msg: 'nosub', id: 'test-id', error: new ClientSafeError(403, 'Forbidden').toJSON() }]);
+		expect(session.subscriptions.size).toBe(0);
+		expect(session.listenerCount('close')).toBe(0);
 	});
 
 	it('starts metrics before execution and completes them after the async publication finishes', async () => {

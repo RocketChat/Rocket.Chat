@@ -1,0 +1,70 @@
+@use '../lengths.scss';
+@use '../variables/input-colors.scss' as *;
+@use '../functions.scss' as *;
+@use '../mixins/shadows.scss' as *;
+@use '../mixins/states.scss' as *;
+
+$input-border-radius: theme('input-border-radius', lengths.border-radius(medium));
+
+@mixin as-input(
+	$background-color,
+	$border-color,
+	$hover-border-color,
+	$focus-border-color,
+	$focus-shadow-color,
+	$active-border-color,
+	$disabled-background-color,
+	$disabled-border-color
+) {
+	border-width: lengths.border-width(default);
+
+	border-color: $border-color;
+	border-radius: $input-border-radius;
+	background-color: $background-color;
+	box-shadow: none;
+
+	@include on-hover {
+		border-color: $hover-border-color;
+	}
+
+	@include on-focus {
+		border-color: $focus-border-color;
+		@include use-focus-shadow($focus-shadow-color);
+	}
+
+	@include on-active {
+		border-color: $active-border-color;
+		box-shadow: none;
+	}
+
+	@include on-disabled {
+		border-color: $disabled-border-color;
+		background-color: $disabled-background-color;
+	}
+}
+
+%input {
+	@include as-input(
+		$background-color: $input-colors-background-color,
+		$border-color: $input-colors-border-color,
+		$hover-border-color: $input-colors-hover-border-color,
+		$focus-border-color: $input-colors-focus-border-color,
+		$focus-shadow-color: $input-colors-focus-shadow-color,
+		$active-border-color: $input-colors-active-border-color,
+		$disabled-background-color: $input-colors-disabled-background-color,
+		$disabled-border-color: $input-colors-disabled-border-color
+	);
+}
+
+%input--invalid {
+	@include as-input(
+		$background-color: $input-colors-invalid-background-color,
+		$border-color: $input-colors-invalid-border-color,
+		$hover-border-color: $input-colors-invalid-hover-border-color,
+		$focus-border-color: $input-colors-invalid-focus-border-color,
+		$focus-shadow-color: $input-colors-invalid-focus-shadow-color,
+		$active-border-color: $input-colors-invalid-active-border-color,
+		$disabled-background-color: $input-colors-invalid-disabled-background-color,
+		$disabled-border-color: $input-colors-invalid-disabled-border-color
+	);
+}

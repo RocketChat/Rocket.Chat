@@ -64,7 +64,7 @@ export type TransformMessage = (
 ) => string | false;
 
 export interface IStreamer<N extends StreamNames> {
-	serverOnly: boolean;
+	readonly name: string;
 
 	subscriptions: Set<DDPSubscription>;
 
@@ -85,6 +85,8 @@ export interface IStreamer<N extends StreamNames> {
 
 	on(event: '_afterPublish', fn: (streamer: this, publication: IPublication, eventName: string, ...data: any[]) => void): void;
 
+	on(event: '_afterWrite', fn: (eventName: string, args: unknown[], userId: string | null) => void): void;
+
 	removeSubscription(subscription: DDPSubscription, eventName: string): void;
 
 	removeListener(event: string, fn: (...data: any[]) => void): void;
@@ -102,6 +104,15 @@ export interface IStreamer<N extends StreamNames> {
 	_publish(publication: IPublication, eventName: string, options: boolean | { useCollection?: boolean; args?: any }): Promise<void>;
 }
 
+/** Carries a broadcasting emit to the other processes that host this stream. */
+export type StreamRelay = (stream: string, eventName: string, args: unknown[]) => void;
+
+export type StreamerOptions = {
+	retransmit?: boolean;
+	retransmitToSelf?: boolean;
+	relay?: StreamRelay;
+};
+
 export interface IStreamerConstructor {
-	new <N extends StreamNames>(name: N, options?: { retransmit?: boolean; retransmitToSelf?: boolean }): IStreamer<N>;
+	new <N extends StreamNames>(name: N, options?: StreamerOptions): IStreamer<N>;
 }

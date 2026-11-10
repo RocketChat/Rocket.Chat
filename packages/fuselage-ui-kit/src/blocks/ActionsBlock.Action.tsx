@@ -18,7 +18,6 @@ const Action = ({ element, parser, index }: ActionProps) => {
 	return (
 		<Box
 			display='flex'
-			margin={4}
 			flexGrow={element.type !== UiKit.BlockElementType.BUTTON ? 1 : undefined}
 			flexBasis={element.type !== UiKit.BlockElementType.BUTTON ? '45%' : undefined}
 		>

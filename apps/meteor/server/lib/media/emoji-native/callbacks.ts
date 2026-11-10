@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { shortnameToUnicode } from '../../../../app/emoji-native/lib/shortnameToUnicode';
+import { shortnameToUnicode } from '../../../../lib/emoji-native/shortnameToUnicode';
 import { callbacks } from '../../callbacks';
 
 Meteor.startup(() => {

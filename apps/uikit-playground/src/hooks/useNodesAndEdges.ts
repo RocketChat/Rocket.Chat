@@ -1,4 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+/* oxlint-disable react-hooks/exhaustive-deps */
 import { useContext, useEffect } from 'react';
 import { type Edge, MarkerType, useEdgesState, useNodesState } from 'reactflow';
 

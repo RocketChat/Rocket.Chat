@@ -182,3 +182,8 @@ over the call rather than as the window's new contents.
 
 Because the two cases are told apart by height as well as width, the breakpoint alone is never the question
 asked.
+
+## Providers that run inside Rocket.Chat
+
+A provider that declares `embedded` has no page of its own: its call is mounted inside the conference window. LiveKit
+is the one built in; see [native video conference](native-video-conference/README.md).

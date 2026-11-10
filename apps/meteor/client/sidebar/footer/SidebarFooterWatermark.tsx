@@ -26,12 +26,12 @@ export const SidebarFooterWatermark = () => {
 	}
 
 	return (
-		<FooterContent paddingBlockEnd={8}>
+		<FooterContent>
 			<Box is='a' href={links.rocketChat} target='_blank' rel='noopener noreferrer'>
 				<Box color='hint' paddingBlockEnd={4}>
 					{t('Powered_by_RocketChat')}
 				</Box>
-				<Box color='pure-white' paddingBlockEnd={4}>
+				<Box color='pure-white' paddingBlockEnd={12}>
 					{licenseName.data}
 				</Box>
 			</Box>

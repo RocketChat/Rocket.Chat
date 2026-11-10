@@ -7,7 +7,7 @@ import { License } from '@rocket.chat/license';
 import { Meteor } from 'meteor/meteor';
 import semver from 'semver';
 
-import { Info } from '../../app/utils/rocketchat.info';
+import { Info } from '../../rocketchat.info';
 import { showErrorBox, showSuccessBox, showWarningBox } from '../lib/logger/showBox';
 import { getMongoInfo } from '../lib/utils/functions/getMongoInfo';
 // import { i18n } from '../lib/i18n';

@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 
 import OutboundMessageWizardErrorState from './components/OutboundMessageWizardErrorState';
 import OutboubdMessageWizardSkeleton from './components/OutboundMessageWizardSkeleton';
-import type { SubmitPayload } from './forms';
+import type { SubmitPayload } from './forms/SubmitPayload';
 import { ReviewStep, MessageStep, RecipientStep, RepliesStep } from './steps';
 import GenericError from '../../../../../../components/GenericError';
 import { useEndpointMutation } from '../../../../../../hooks/useEndpointMutation';

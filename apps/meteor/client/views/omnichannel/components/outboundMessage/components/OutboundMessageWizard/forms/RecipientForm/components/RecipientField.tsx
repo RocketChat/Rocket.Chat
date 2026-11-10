@@ -36,7 +36,7 @@ const RecipientField = ({ control, contact, type, disabled = false, isLoading = 
 
 	return (
 		<Field {...props}>
-			<FieldLabel is='span' required id={`${recipientFieldId}`}>
+			<FieldLabel required id={`${recipientFieldId}`}>
 				{t('To')}
 			</FieldLabel>
 			<FieldRow>

@@ -1,5 +1,4 @@
 import { Field } from '@rocket.chat/fuselage';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { Meta } from '@storybook/react';
 
 import SelectSettingInput from './SelectSettingInput';
@@ -20,9 +19,9 @@ export const Default = {
 		label: 'Label',
 		placeholder: 'Placeholder',
 		values: [
-			{ key: '1', i18nLabel: '1' as TranslationKey },
-			{ key: '2', i18nLabel: '2' as TranslationKey },
-			{ key: '3', i18nLabel: '3' as TranslationKey },
+			{ key: '1', i18nLabel: '1' },
+			{ key: '2', i18nLabel: '2' },
+			{ key: '3', i18nLabel: '3' },
 		],
 	},
 };
@@ -33,9 +32,9 @@ export const Disabled = {
 		label: 'Label',
 		placeholder: 'Placeholder',
 		values: [
-			{ key: '1', i18nLabel: '1' as TranslationKey },
-			{ key: '2', i18nLabel: '2' as TranslationKey },
-			{ key: '3', i18nLabel: '3' as TranslationKey },
+			{ key: '1', i18nLabel: '1' },
+			{ key: '2', i18nLabel: '2' },
+			{ key: '3', i18nLabel: '3' },
 		],
 		disabled: true,
 	},
@@ -48,9 +47,9 @@ export const WithValue = {
 		placeholder: 'Placeholder',
 		value: '2',
 		values: [
-			{ key: '1', i18nLabel: '1' as TranslationKey },
-			{ key: '2', i18nLabel: '2' as TranslationKey },
-			{ key: '3', i18nLabel: '3' as TranslationKey },
+			{ key: '1', i18nLabel: '1' },
+			{ key: '2', i18nLabel: '2' },
+			{ key: '3', i18nLabel: '3' },
 		],
 	},
 };
@@ -61,9 +60,9 @@ export const WithResetButton = {
 		label: 'Label',
 		placeholder: 'Placeholder',
 		values: [
-			{ key: '1', i18nLabel: '1' as TranslationKey },
-			{ key: '2', i18nLabel: '2' as TranslationKey },
-			{ key: '3', i18nLabel: '3' as TranslationKey },
+			{ key: '1', i18nLabel: '1' },
+			{ key: '2', i18nLabel: '2' },
+			{ key: '3', i18nLabel: '3' },
 		],
 		hasResetButton: true,
 	},

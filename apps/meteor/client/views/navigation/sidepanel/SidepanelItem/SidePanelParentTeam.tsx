@@ -13,12 +13,7 @@ const SidePanelParentTeam = ({ room }: SidePanelParentTeamProps) => {
 		return null;
 	}
 
-	return (
-		<SidePanelTag>
-			<SidePanelTagIcon icon={{ name: isTeamPublic ? 'team' : 'team-lock' }} />
-			{teamName}
-		</SidePanelTag>
-	);
+	return <SidePanelTag icon={<SidePanelTagIcon icon={{ name: isTeamPublic ? 'team' : 'team-lock' }} />}>{teamName}</SidePanelTag>;
 };
 
 export default SidePanelParentTeam;

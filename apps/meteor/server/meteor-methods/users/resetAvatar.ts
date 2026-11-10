@@ -1,26 +1,16 @@
-import { Upload } from '@rocket.chat/core-services';
+import { Upload, ClientSafeError } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Users } from '@rocket.chat/models';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
-import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
-import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { settings } from '../../settings';
-
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		resetAvatar(userId: IUser['_id']): void;
-	}
-}
 
 export const resetAvatar = async (fromUserId: IUser['_id'], userId: IUser['_id']): Promise<void> => {
 	const canEditOtherUserAvatar = await hasPermissionAsync(fromUserId, 'edit-other-user-avatar');
 
 	if (!settings.get('Accounts_AllowUserAvatarChange') && !canEditOtherUserAvatar) {
-		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+		throw new ClientSafeError('error-not-allowed', 'Not allowed', {
 			method: 'resetAvatar',
 		});
 	}
@@ -29,7 +19,7 @@ export const resetAvatar = async (fromUserId: IUser['_id'], userId: IUser['_id']
 
 	if (userId !== fromUserId) {
 		if (!canEditOtherUserAvatar) {
-			throw new Meteor.Error('error-unauthorized', 'Unauthorized', {
+			throw new ClientSafeError('error-unauthorized', 'Unauthorized', {
 				method: 'resetAvatar',
 			});
 		}
@@ -40,27 +30,13 @@ export const resetAvatar = async (fromUserId: IUser['_id'], userId: IUser['_id']
 	}
 
 	if (!user?.username) {
-		throw new Meteor.Error('error-invalid-desired-user', 'Invalid desired user', {
+		throw new ClientSafeError('error-invalid-desired-user', 'Invalid desired user', {
 			method: 'resetAvatar',
 		});
 	}
 
 	await Upload.resetUserAvatar(user);
 };
-
-Meteor.methods<ServerMethods>({
-	async resetAvatar(userId) {
-		methodDeprecationLogger.method('resetAvatar', '9.0.0', '/v1/users.resetAvatar');
-		const uid = Meteor.userId();
-		if (!uid) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'resetAvatar',
-			});
-		}
-
-		return resetAvatar(uid, userId);
-	},
-});
 
 DDPRateLimiter.addRule(
 	{

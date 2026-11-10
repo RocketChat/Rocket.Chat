@@ -9,11 +9,10 @@ import {
 	SidebarItemTimestamp,
 	SidebarItemTitle,
 } from '@rocket.chat/fuselage';
+import { useShortTimeAgo } from '@rocket.chat/ui-client';
 import { useLayout } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import { memo, useState } from 'react';
-
-import { useShortTimeAgo } from '../../../../hooks/useTimeAgo';
 
 export type SidePanelItemProps = {
 	href: string;
@@ -77,9 +76,7 @@ const SidePanelItem = ({
 					{titleIcon}
 					{badges}
 					{menu && (
-						<SidebarItemMenu>
-							{menuVisibility ? menu : <IconButton tabIndex={-1} aria-hidden mini rcx-sidebar-item__menu icon='kebab' />}
-						</SidebarItemMenu>
+						<SidebarItemMenu>{menuVisibility ? menu : <IconButton tabIndex={-1} aria-hidden size='mini' icon='kebab' />}</SidebarItemMenu>
 					)}
 				</SidebarItemRow>
 			</SidebarItemCol>

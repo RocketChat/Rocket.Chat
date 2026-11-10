@@ -3,10 +3,10 @@ import type { IUser } from '@rocket.chat/core-typings';
 import type { MainLogger } from '@rocket.chat/logger';
 import { LivechatRooms, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
-import { MongoInternals } from 'meteor/mongo';
 import moment from 'moment';
 
 import { schedulerLogger } from './logger';
+import { client } from '../../../../server/database/utils';
 import { closeRoom } from '../../../../server/lib/omnichannel/closeRoom';
 
 const SCHEDULER_NAME = 'omnichannel_auto_close_on_hold_scheduler';
@@ -30,7 +30,7 @@ export class AutoCloseOnHoldSchedulerClass {
 		}
 
 		this.scheduler = new Agenda({
-			mongo: (MongoInternals.defaultRemoteCollectionDriver().mongo as any).client.db(),
+			mongo: client.db(),
 			db: { collection: SCHEDULER_NAME },
 			defaultConcurrency: 1,
 			processEvery: process.env.TEST_MODE === 'true' || process.env.TEST_MODE === 'api' ? '3 seconds' : '1 minute',

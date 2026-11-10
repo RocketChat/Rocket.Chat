@@ -7,7 +7,7 @@ import { AppIdProvider } from '../contexts/AppIdContext';
 
 export class ContextualBarSurfaceRenderer extends FuselageSurfaceRenderer {
 	public constructor() {
-		super(['actions', 'context', 'divider', 'image', 'input', 'section', 'preview', 'callout', 'tab_navigation']);
+		super(UiKit.contextualBarSurfaceLayoutBlockTypes);
 	}
 
 	override plain_text = renderTextObject;

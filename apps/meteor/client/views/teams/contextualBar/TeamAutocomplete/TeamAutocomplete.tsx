@@ -1,5 +1,5 @@
 import { AutoComplete, Option, Box } from '@rocket.chat/fuselage';
-import { RoomAvatar } from '@rocket.chat/ui-avatar';
+import { ITEM_MEDIA_SIZE, RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ComponentProps } from 'react';
@@ -40,7 +40,7 @@ const TeamAutocomplete = ({ value, onChange, ...props }: TeamAutocompleteProps) 
 				</Box>
 			)}
 			renderItem={({ value, label: room, ...props }) => (
-				<Option key={value} {...props} label={room.name} avatar={<RoomAvatar size='x20' room={room} />} />
+				<Option key={value} {...props} label={room.name} avatar={<RoomAvatar size={ITEM_MEDIA_SIZE.condensed} room={room} />} />
 			)}
 			options={options}
 		/>

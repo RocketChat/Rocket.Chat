@@ -2,15 +2,15 @@ import type { IncomingMessage, ServerResponse } from 'node:http';
 import { monitorEventLoopDelay } from 'node:perf_hooks';
 import { getHeapStatistics } from 'node:v8';
 
-import { MongoInternals } from 'meteor/mongo';
 import { WebApp } from 'meteor/webapp';
 
+import { nodeLoggerMiddleware } from '../api/v1/middlewares/logger';
+import { db } from '../database/utils';
+import { HttpLogger } from '../lib/logger/http';
 import { SystemLogger } from '../lib/logger/system';
 
-const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
-
 export function pingMongo() {
-	return mongo.db.command({ ping: 1 });
+	return db.command({ ping: 1 });
 }
 
 function setDefaultHeaders(res: ServerResponse) {
@@ -20,6 +20,8 @@ function setDefaultHeaders(res: ServerResponse) {
 	res.setHeader('Expires', '0');
 	res.setHeader('Content-Type', 'application/json');
 }
+
+WebApp.rawHandlers.use(['/health', '/livez', '/readyz'], nodeLoggerMiddleware(HttpLogger));
 
 /**
  * DEPRECATED Liveness Probe (`/health`)

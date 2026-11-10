@@ -149,7 +149,7 @@ const ResetPasswordPage = () => {
 				</FormContainer>
 				<FormFooter>
 					<ButtonGroup>
-						<Button primary loading={isSubmitting} type='submit'>
+						<Button variant='primary' loading={isSubmitting} type='submit'>
 							{t('Reset')}
 						</Button>
 					</ButtonGroup>

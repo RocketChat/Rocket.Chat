@@ -1,10 +1,23 @@
-import { Box, Option, OptionSkeleton, Tile } from '@rocket.chat/fuselage';
+import {
+	Box,
+	Item,
+	ItemContent,
+	ItemGroup,
+	ItemGroupHeader,
+	ItemGroupTitle,
+	ItemSkeleton,
+	ItemTitle,
+	PopoverSurface,
+} from '@rocket.chat/fuselage';
 import { useContentBoxSize } from '@rocket.chat/fuselage-hooks';
+import { ITEM_MEDIA_SIZE } from '@rocket.chat/ui-avatar';
 import { CustomScrollbars } from '@rocket.chat/ui-client';
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
 import { useEffect, memo, useMemo, useRef, useId } from 'react';
 import { useTranslation } from 'react-i18next';
+
+import { getActiveDescendantOptionProps } from '../../../hooks/getActiveDescendantOptionProps';
 
 export type ComposerBoxPopupProps<
 	T extends {
@@ -15,8 +28,11 @@ export type ComposerBoxPopupProps<
 > = {
 	title?: string;
 	focused?: T;
+	focusVisible?: boolean;
+	listboxId?: string;
 	items: UseQueryResult<T[]>[];
 	select: (item: T) => void;
+	hover?: (item: T) => void;
 	renderItem?: ({ item }: { item: T }) => ReactNode;
 };
 
@@ -26,7 +42,16 @@ function ComposerBoxPopup<
 		sort?: number;
 		disabled?: boolean;
 	},
->({ title, items, focused, select, renderItem = ({ item }: { item: T }) => <>{JSON.stringify(item)}</> }: ComposerBoxPopupProps<T>) {
+>({
+	title,
+	items,
+	focused,
+	focusVisible = false,
+	listboxId,
+	select,
+	hover,
+	renderItem = ({ item }: { item: T }) => <>{JSON.stringify(item)}</>,
+}: ComposerBoxPopupProps<T>) {
 	const { t } = useTranslation();
 	const id = useId();
 	const composerBoxPopupRef = useRef<HTMLElement>(null);
@@ -79,44 +104,51 @@ function ComposerBoxPopup<
 	}, [focused]);
 
 	return (
-		<Box position='relative'>
-			<Tile
-				ref={composerBoxPopupRef}
-				padding={0}
-				role='menu'
-				marginBlockEnd={8}
-				overflow='hidden'
-				aria-labelledby={id}
-				name='ComposerBoxPopup'
-			>
+		<Box position='relative' marginBlockEnd={8}>
+			<PopoverSurface elevation='1' flush ref={composerBoxPopupRef}>
 				{title && (
-					<Box backgroundColor='tint' paddingInline={16} paddingBlock={8} id={id}>
-						{title}
+					<Box backgroundColor='tint'>
+						<ItemGroupHeader inset='md'>
+							<ItemGroupTitle id={id}>{title}</ItemGroupTitle>
+						</ItemGroupHeader>
 					</Box>
 				)}
 				<CustomScrollbars>
 					<Box paddingBlock={8} maxHeight='x320'>
-						{!isLoading && itemsFlat.length === 0 && <Option>{t('No_results_found')}</Option>}
-						{isLoading && <OptionSkeleton />}
-						{itemsFlat.map((item, index) => {
-							return (
-								<Option
-									title={getOptionTitle(item)}
-									onClick={() => select(item)}
-									selected={item === focused}
+						{!isLoading && itemsFlat.length === 0 && (
+							<Item inset='md' role='status'>
+								<ItemContent>
+									<ItemTitle>{t('No_results_found')}</ItemTitle>
+								</ItemContent>
+							</Item>
+						)}
+						{isLoading && <ItemSkeleton mediaSize={ITEM_MEDIA_SIZE.medium} inset='md' />}
+						<ItemGroup
+							id={listboxId}
+							role='listbox'
+							aria-labelledby={title ? id : undefined}
+							aria-label={title ? undefined : t('Results')}
+							aria-busy={isLoading}
+						>
+							{itemsFlat.map((item, index) => (
+								<Item
 									key={index}
 									id={`popup-item-${item._id}`}
-									tabIndex={item === focused ? 0 : -1}
-									aria-selected={item === focused}
+									role='option'
+									inset='md'
+									title={getOptionTitle(item)}
+									{...getActiveDescendantOptionProps(item === focused, focusVisible, () => !item.disabled && hover?.(item))}
 									disabled={item.disabled}
+									aria-disabled={item.disabled || undefined}
+									onClick={() => select(item)}
 								>
 									{renderItem({ item: { ...item, variant } })}
-								</Option>
-							);
-						})}
+								</Item>
+							))}
+						</ItemGroup>
 					</Box>
 				</CustomScrollbars>
-			</Tile>
+			</PopoverSurface>
 		</Box>
 	);
 }

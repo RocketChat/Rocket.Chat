@@ -39,7 +39,7 @@ const ResetKeysE2EEModal = ({ roomType, roomId, onCancel }: ResetKeysE2EEModalPr
 
 	return (
 		<GenericModal
-			icon={<ModalIcon color='danger' name='key' />}
+			icon={<ModalIcon variant='danger' name='key' />}
 			title={t('E2E_reset_encryption_keys')}
 			variant='danger'
 			confirmText={t('E2E_reset_encryption_keys')}

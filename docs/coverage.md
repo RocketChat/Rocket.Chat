@@ -91,6 +91,10 @@ Coverage is collected in the `ci-test-e2e.yml` workflow:
 3. **Merge**: `nyc merge` combines per-shard JSON reports into a single coverage file
 4. **Upload**: Coverage data is uploaded to Codecov
 
+## Unit tests (`apps/meteor`)
+
+`yarn testunit` runs the `node:test` suite under nyc. nyc does not count `*.test.ts` files.
+
 ## Local development
 
 To build with coverage locally:

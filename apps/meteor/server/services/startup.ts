@@ -1,8 +1,8 @@
 import { api } from '@rocket.chat/core-services';
 import { Logger } from '@rocket.chat/logger';
 import { OmnichannelTranscript, QueueWorker } from '@rocket.chat/omnichannel-services';
-import { MongoInternals } from 'meteor/mongo';
 
+import { db } from '../database/utils';
 import { isRunningMs } from '../lib/isRunningMs';
 import { AISearchService } from './ai-search/service';
 import { AnalyticsService } from './analytics/service';
@@ -13,7 +13,6 @@ import { CallHistoryService } from './call-history/service';
 import { DeviceManagementService } from './device-management/service';
 import { MediaService } from './image/service';
 import { ImportService } from './import/service';
-import { LDAPService } from './ldap/service';
 import { MediaCallService } from './media-call/service';
 import { MessageService } from './messages/service';
 import { MeteorService } from './meteor/service';
@@ -35,14 +34,11 @@ import { i18n } from '../lib/i18n';
 import { AuthorizationLivechat } from '../lib/omnichannel/roomAccessValidator.internalService';
 
 export const registerServices = async (): Promise<void> => {
-	const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
-
 	api.registerService(new AppsEngineService());
 	api.registerService(new AnalyticsService());
 	api.registerService(new AuthorizationLivechat());
 	api.registerService(new BannerService());
 	api.registerService(new CalendarService());
-	api.registerService(new LDAPService());
 	api.registerService(new MediaService());
 	api.registerService(new MeteorService());
 	api.registerService(new NPSService());

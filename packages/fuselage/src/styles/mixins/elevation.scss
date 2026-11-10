@@ -1,0 +1,15 @@
+@use '../colors.scss';
+
+@mixin elevation-level($level, $border: true) {
+	@if $level == 1 {
+		box-shadow: 0 0 12px 0 colors.shadow(elevation-1);
+	}
+	@if $level == 2 {
+		box-shadow:
+			0 0 2px 0 colors.shadow(elevation-2x),
+			0 0 12px 0 colors.shadow(elevation-2y);
+	}
+	@if $border {
+		border: 1px solid colors.shadow(elevation-border);
+	}
+}

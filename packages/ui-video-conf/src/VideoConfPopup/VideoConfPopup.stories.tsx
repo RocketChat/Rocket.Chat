@@ -46,7 +46,7 @@ export const StartCall: StoryObj<typeof VideoConfPopup> = {
 			</VideoConfPopupContent>
 			<VideoConfPopupFooter>
 				<VideoConfPopupFooterButtons>
-					<VideoConfButton primary onClick={action('click')}>
+					<VideoConfButton variant='primary' onClick={action('click')}>
 						Start Call
 					</VideoConfButton>
 				</VideoConfPopupFooterButtons>

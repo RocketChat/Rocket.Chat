@@ -15,6 +15,7 @@ import {
 	ModalClose,
 	ModalContent,
 	ModalFooter,
+	Stack,
 } from '@rocket.chat/fuselage';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import { useEndpoint, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
@@ -83,20 +84,22 @@ const RegisterWorkspaceSetupStepOneModal = ({
 			</ModalHeader>
 			<ModalContent>
 				<Box>
-					<Box is='p' fontSize='p2' withRichContent>
-						{t('RegisterWorkspace_Setup_Subtitle')}
-					</Box>
-					<Field paddingBlockStart={10}>
-						<FieldLabel htmlFor={emailField}>{t('RegisterWorkspace_Setup_Label')}</FieldLabel>
-						<FieldRow>
-							<TextInput
-								id={emailField}
-								onChange={(e) => {
-									setEmail((e.target as HTMLInputElement).value);
-								}}
-							/>
-						</FieldRow>
-					</Field>
+					<Stack gap='x8'>
+						<Box is='p' fontSize='p2' withRichContent>
+							{t('RegisterWorkspace_Setup_Subtitle')}
+						</Box>
+						<Field>
+							<FieldLabel htmlFor={emailField}>{t('RegisterWorkspace_Setup_Label')}</FieldLabel>
+							<FieldRow>
+								<TextInput
+									id={emailField}
+									onChange={(e) => {
+										setEmail((e.target as HTMLInputElement).value);
+									}}
+								/>
+							</FieldRow>
+						</Field>
+					</Stack>
 					<Box marginBlock={16} fontSize='c1'>
 						<Box is='p'>
 							<strong>{t('RegisterWorkspace_Setup_Have_Account_Title')}</strong>
@@ -108,14 +111,18 @@ const RegisterWorkspaceSetupStepOneModal = ({
 						<Box is='p'>{t('RegisterWorkspace_Setup_No_Account_Subtitle')}</Box>
 					</Box>
 					<Field>
-						<FieldRow justifyContent='initial'>
-							<FieldLabel display='block' fontScale='c1' htmlFor={termsField}>
-								<Trans i18nKey='RegisterWorkspace_Setup_Terms_Privacy'>
-									I agree with <ExternalLink to={links.terms}>Terms and Conditions</ExternalLink> and{' '}
-									<ExternalLink to={links.privacy}>Privacy Policy</ExternalLink>
-								</Trans>
-							</FieldLabel>
-							<CheckBox id={termsField} checked={terms} onChange={() => setTerms(!terms)} />
+						<FieldRow>
+							<Box display='flex' alignItems='center' minWidth={0}>
+								<FieldLabel htmlFor={termsField}>
+									<Box is='span' fontScale='c1'>
+										<Trans i18nKey='RegisterWorkspace_Setup_Terms_Privacy'>
+											I agree with <ExternalLink to={links.terms}>Terms and Conditions</ExternalLink> and{' '}
+											<ExternalLink to={links.privacy}>Privacy Policy</ExternalLink>
+										</Trans>
+									</Box>
+								</FieldLabel>
+								<CheckBox id={termsField} checked={terms} onChange={() => setTerms(!terms)} />
+							</Box>
 						</FieldRow>
 					</Field>
 				</Box>
@@ -123,7 +130,7 @@ const RegisterWorkspaceSetupStepOneModal = ({
 			<ModalFooter>
 				<ButtonGroup align='end'>
 					<Button onClick={handleBack}>{t('Back')}</Button>
-					<Button primary onClick={handleRegisterWorkspace} disabled={!validInfo}>
+					<Button variant='primary' onClick={handleRegisterWorkspace} disabled={!validInfo}>
 						{t('Next')}
 					</Button>
 				</ButtonGroup>

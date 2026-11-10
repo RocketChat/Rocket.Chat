@@ -1,5 +1,5 @@
 import type { IHttp, IPersistence, IRead } from '../accessors';
-import { AppMethod } from '../metadata';
+import type { AppMethod } from '../metadata';
 import type { ILivechatRoom } from './ILivechatRoom';
 
 /**

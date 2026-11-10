@@ -1,10 +1,12 @@
-import { useCallback, useRef, useSyncExternalStore } from 'react';
-
 import { useMediaCallInstance } from './MediaCallInstanceContext';
 import type { PeerInfo } from './definitions';
+import { useInstanceSnapshot } from './useInstanceSnapshot';
 import { derivePeerInfoFromInstanceState } from '../utils/derivePeerInfoFromInstanceState';
 
-const areEqual = (a: PeerInfo, b: PeerInfo) => {
+const areEqual = (a: PeerInfo | undefined, b: PeerInfo | undefined) => {
+	if (!a || !b) {
+		return a === b;
+	}
 	if (Object.keys(a).length !== Object.keys(b).length) {
 		return false;
 	}
@@ -13,34 +15,13 @@ const areEqual = (a: PeerInfo, b: PeerInfo) => {
 
 export const usePeekMediaSessionPeerInfo = (): PeerInfo | undefined => {
 	const { instance } = useMediaCallInstance();
-	const cache = useRef<PeerInfo | undefined>(undefined);
 
-	const subscribe = useCallback(
-		(onStoreChange: () => void): (() => void) => {
-			if (!instance) {
-				return () => undefined;
-			}
-			return instance?.on('sessionStateChange', onStoreChange);
+	return useInstanceSnapshot(
+		instance,
+		(instance) => {
+			const instanceState = instance?.getState();
+			return instanceState ? derivePeerInfoFromInstanceState(instanceState) : undefined;
 		},
-		[instance],
+		areEqual,
 	);
-
-	const getSnapshot = useCallback(() => {
-		if (!instance) {
-			return undefined;
-		}
-		const instanceState = instance.getState();
-		if (!instanceState) {
-			return undefined;
-		}
-		const peerInfo = derivePeerInfoFromInstanceState(instanceState);
-
-		if (!cache.current || !areEqual(peerInfo, cache.current)) {
-			cache.current = peerInfo;
-			return peerInfo;
-		}
-		return cache.current;
-	}, [instance]);
-
-	return useSyncExternalStore(subscribe, getSnapshot);
 };

@@ -1,11 +1,10 @@
 import { Badge, IconButton, SidebarCollapseGroup, SidebarCollapseGroupMenu } from '@rocket.chat/fuselage';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import type { HTMLAttributes, KeyboardEvent, MouseEventHandler } from 'react';
+import { useDeferredMenuMount } from '@rocket.chat/ui-client';
+import type { HTMLAttributes, KeyboardEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useIsEnterprise } from '../../hooks/useIsEnterprise';
 import { usePreventPropagation } from '../../hooks/usePreventPropagation';
-import { useDeferredMenuMount } from '../Item/useDeferredMenuMount';
 import CategoryMenu from '../categories/CategoryMenu';
 import type { SidebarRoomListGroup } from '../hooks/useRoomList';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
@@ -16,22 +15,31 @@ type RoomListCollapserProps = {
 	canMoveDown: boolean;
 	onMoveUp: () => void;
 	onMoveDown: () => void;
-	onClick: MouseEventHandler<HTMLElement>;
-	onKeyDown: (e: KeyboardEvent) => void;
-} & Omit<HTMLAttributes<HTMLElement>, 'onClick' | 'onKeyDown'>;
+	onClick: () => void;
+} & Omit<HTMLAttributes<HTMLDivElement>, 'onClick' | 'onKeyDown'>;
 
-const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown, ...props }: RoomListCollapserProps) => {
+const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown, onClick, ...props }: RoomListCollapserProps) => {
 	const { t } = useTranslation();
 	const { data: { isEnterprise = false } = {} } = useIsEnterprise();
-	const preventPropagation = usePreventPropagation();
 	const { mounted: menuVisibility, requestMount, mountNow } = useDeferredMenuMount();
 	const { unreadTitle, unreadVariant, showUnread, unreadCount } = useUnreadDisplay(group.unreadInfo);
+	const preventPropagation = usePreventPropagation();
 
-	const title = group.translateTitle ? t(group.title as TranslationKey) : group.title;
+	const title = group.translateTitle ? t(group.title) : group.title;
+
+	const toggleOnEnterOrSpace = (event: KeyboardEvent<HTMLDivElement>) => {
+		if (event.repeat || !['Enter', 'Space'].includes(event.code)) {
+			return;
+		}
+
+		event.preventDefault();
+		onClick();
+	};
 
 	return (
 		<SidebarCollapseGroup
 			title={title}
+			role='listitem'
 			empty={group.empty}
 			expanded={!group.collapsed}
 			badge={
@@ -41,11 +49,9 @@ const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown
 					</Badge>
 				) : undefined
 			}
-			onFocus={mountNow}
-			onPointerEnter={requestMount}
 			menu={
 				isEnterprise ? (
-					<SidebarCollapseGroupMenu onClick={preventPropagation}>
+					<SidebarCollapseGroupMenu onClick={preventPropagation} onKeyDown={preventPropagation}>
 						{menuVisibility ? (
 							<CategoryMenu
 								category={group.category}
@@ -58,12 +64,16 @@ const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown
 								onMoveDown={onMoveDown}
 							/>
 						) : (
-							<IconButton tabIndex={-1} aria-hidden mini icon='kebab' onPointerDown={mountNow} />
+							<IconButton tabIndex={-1} aria-hidden size='mini' icon='kebab' onPointerDown={mountNow} />
 						)}
 					</SidebarCollapseGroupMenu>
 				) : undefined
 			}
 			aria-label={group.collapsed ? t('Expand_group', { group: title }) : t('Collapse_group', { group: title })}
+			onFocus={mountNow}
+			onPointerEnter={requestMount}
+			onClick={onClick}
+			onKeyDown={toggleOnEnterOrSpace}
 			{...props}
 		/>
 	);

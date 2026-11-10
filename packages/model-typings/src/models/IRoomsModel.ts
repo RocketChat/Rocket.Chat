@@ -221,6 +221,32 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		options?: O,
 	): Promise<DocumentWithProjection<T, O> | null>;
 
+	findByXMPPRole<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		role: NonNullable<IRoom['xmppFederation']>['role'],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+
+	findOneByXMPPMucJid<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		mucJid: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
+
+	findXMPPDirectMessagesByUserId<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		uid: IUser['_id'],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+
+	findOneXMPPDirectMessageByUserIdAndRemoteJid<
+		T extends Document = IRoom,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
+		uid: IUser['_id'],
+		remoteJid: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
+
+	setXMPPFederationById(rid: IRoom['_id'], xmppFederation: NonNullable<IRoom['xmppFederation']>): Promise<UpdateResult>;
+
 	findBiggestFederatedRoomInNumberOfUsers(options?: FindOptions<IRoom>): Promise<IRoom | undefined>;
 
 	findSmallestFederatedRoomInNumberOfUsers(options?: FindOptions<IRoom>): Promise<IRoom | undefined>;

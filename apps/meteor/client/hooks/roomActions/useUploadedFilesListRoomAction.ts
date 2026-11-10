@@ -11,7 +11,7 @@ export const useUploadedFilesListRoomAction = () => {
 			title: 'Files',
 			icon: 'clip',
 			tabComponent: RoomFiles,
-			order: 8,
+			order: 9,
 			type: 'organization',
 		};
 	}, []);

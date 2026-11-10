@@ -47,9 +47,9 @@ export const PARSE_ERROR = -32700;
 export const SERVER_ERROR = -32000;
 
 /**
- * The shape an error payload has on the wire. A decoded payload is one of these
- * and nothing more: msgpack rebuilds it as a plain map, so it carries no identity
- * of its own.
+ * The shape an error payload has on the wire. A received payload is one of these
+ * and nothing more: the IPC channel drops the prototype, so it arrives as a plain
+ * map with no identity of its own.
  */
 export type SerializedJsonRpcError = {
 	message: string;
@@ -62,10 +62,11 @@ export type SerializedJsonRpcError = {
 };
 
 /**
- * Intentionally NOT an `Error` subclass: its `message`/`code`/`data` must be own,
- * enumerable properties so msgpack serializes them across the process boundary (an
- * `Error`'s `message` is non-enumerable and would be dropped). That is also why
- * this class needs no `toJson()`, unlike its counterparts in `vscode-jsonrpc` and
+ * Intentionally NOT an `Error` subclass: the IPC channel clones an `Error` through
+ * its own path, which keeps `name`/`message`/`stack` and drops every other own
+ * property, so `code` and `data` would never reach the other side. As a plain
+ * object it crosses as its own enumerable properties. That is also why this class
+ * needs no `toJson()`, unlike its counterparts in `vscode-jsonrpc` and
  * `@metamask/rpc-errors`, which convert because they extend `Error`.
  */
 export class JsonRpcError implements SerializedJsonRpcError {
@@ -79,8 +80,8 @@ export class JsonRpcError implements SerializedJsonRpcError {
 		this.message = message;
 		this.code = code;
 
-		// `data` must stay ABSENT rather than present-and-undefined: msgpack
-		// distinguishes the two.
+		// `data` must stay ABSENT rather than present-and-undefined: the IPC channel
+		// carries the key either way, so the receiver sees the two apart.
 		if (data !== undefined && data !== null) {
 			this.data = data;
 		}
@@ -145,7 +146,7 @@ export function request(id: ID, method: string, params?: RpcParams, meta?: JsonR
 	const message: RequestObject = { jsonrpc: JSONRPC_VERSION, id, method };
 
 	// The optional slots must stay ABSENT rather than present-and-undefined, here
-	// and in every factory below: msgpack distinguishes the two.
+	// and in every factory below: the IPC channel carries the key either way.
 	if (params !== undefined) {
 		message.params = params;
 	}
@@ -216,8 +217,8 @@ function isEnvelope(message: unknown): message is JsonRpc {
  * is what routes a response back to its pending request: an object or an array there
  * would resolve `result:[object Object]` and orphan the call it belongs to.
  *
- * A non-finite number is rejected too. msgpack carries `NaN` and `Infinity`, but JSON
- * cannot: `JSON.stringify({ id: NaN })` yields `{"id":null}`. Such an id would change
+ * A non-finite number is rejected too. The IPC channel carries `NaN` and `Infinity`,
+ * but JSON cannot: `JSON.stringify({ id: NaN })` yields `{"id":null}`. Such an id would change
  * meaning at any JSON boundary it crosses, so it never becomes a routing key here.
  */
 function isValidId(value: unknown): value is ID {

@@ -1,5 +1,6 @@
+import { after, before, describe, it } from 'node:test';
+
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, request, api, credentials } from '../../data/api-data';
@@ -11,7 +12,7 @@ import { createUser, deleteUser, login } from '../../data/users.helper';
 import { IS_EE } from '../../e2e/config/constants';
 
 describe('Apps - Video Conferences', () => {
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	const roomName = `apps-e2etest-room-${Date.now()}-videoconf`;
 	let roomId: string | undefined;
@@ -247,11 +248,7 @@ describe('Apps - Video Conferences', () => {
 					});
 			});
 
-			it('should start a call successfully when using a provider that supports persistent chat', async function () {
-				if (!process.env.IS_EE) {
-					this.skip();
-				}
-
+			it('should start a call successfully when using a provider that supports persistent chat', async () => {
 				await updateSetting('VideoConf_Default_Provider', 'persistentchat');
 				await updateSetting('VideoConf_Enable_Persistent_Chat', true);
 
@@ -271,11 +268,7 @@ describe('Apps - Video Conferences', () => {
 					});
 			});
 
-			it('should start a call successfully when using a provider that supports persistent chat with the feature disabled', async function () {
-				if (!process.env.IS_EE) {
-					this.skip();
-				}
-
+			it('should start a call successfully when using a provider that supports persistent chat with the feature disabled', async () => {
 				await updateSetting('VideoConf_Default_Provider', 'persistentchat');
 				await updateSetting('VideoConf_Enable_Persistent_Chat', false);
 
@@ -295,11 +288,7 @@ describe('Apps - Video Conferences', () => {
 					});
 			});
 
-			it('should start a call successfully when using a provider that supports persistent chat with discussions disabled', async function () {
-				if (!process.env.IS_EE) {
-					this.skip();
-				}
-
+			it('should start a call successfully when using a provider that supports persistent chat with discussions disabled', async () => {
 				await updateSetting('VideoConf_Default_Provider', 'persistentchat');
 				await updateSetting('VideoConf_Enable_Persistent_Chat', true);
 				await updateSetting('Discussion_enabled', false);
@@ -556,11 +545,7 @@ describe('Apps - Video Conferences', () => {
 					callId = res.body.data.callId;
 				});
 
-				it('should load the video conference data successfully', async function () {
-					if (!process.env.IS_EE) {
-						this.skip();
-					}
-
+				it('should load the video conference data successfully', async () => {
 					await request
 						.get(api('video-conference.info'))
 						.set(credentials)
@@ -609,11 +594,7 @@ describe('Apps - Video Conferences', () => {
 					callId = res.body.data.callId;
 				});
 
-				it('should include a discussion room id on the response', async function () {
-					if (!process.env.IS_EE) {
-						this.skip();
-					}
-
+				it('should include a discussion room id on the response', async () => {
 					await request
 						.get(api('video-conference.info'))
 						.set(credentials)
@@ -633,11 +614,7 @@ describe('Apps - Video Conferences', () => {
 						});
 				});
 
-				it('should have created the discussion room using the configured name', async function () {
-					if (!process.env.IS_EE) {
-						this.skip();
-					}
-
+				it('should have created the discussion room using the configured name', async () => {
 					await request
 						.get(api('rooms.info'))
 						.set(credentials)
@@ -657,11 +634,7 @@ describe('Apps - Video Conferences', () => {
 						});
 				});
 
-				it('should have created a subscription with open = false', async function () {
-					if (!process.env.IS_EE) {
-						this.skip();
-					}
-
+				it('should have created a subscription with open = false', async () => {
 					await request
 						.get(api('subscriptions.getOne'))
 						.set(credentials)
@@ -712,11 +685,7 @@ describe('Apps - Video Conferences', () => {
 					await Promise.all([updateSetting('E2E_Enable', false), updateSetting('E2E_Force_Encryption_For_Private_Rooms', false)]);
 				});
 
-				it('should start the call and treat persistent chat as disabled', async function () {
-					if (!process.env.IS_EE) {
-						this.skip();
-					}
-
+				it('should start the call and treat persistent chat as disabled', async () => {
 					expect(callId).to.be.a('string');
 
 					await request
@@ -774,11 +743,7 @@ describe('Apps - Video Conferences', () => {
 					]);
 				});
 
-				it('should still create the persistent chat discussion', async function () {
-					if (!process.env.IS_EE) {
-						this.skip();
-					}
-
+				it('should still create the persistent chat discussion', async () => {
 					expect(callId).to.be.a('string');
 
 					await request
@@ -819,11 +784,7 @@ describe('Apps - Video Conferences', () => {
 					callId = res.body.data.callId;
 				});
 
-				it('should include a discussion room id on the response', async function () {
-					if (!process.env.IS_EE) {
-						this.skip();
-					}
-
+				it('should include a discussion room id on the response', async () => {
 					await request
 						.get(api('video-conference.info'))
 						.set(credentials)
@@ -843,11 +804,7 @@ describe('Apps - Video Conferences', () => {
 						});
 				});
 
-				it('should have created the discussion room using the configured name', async function () {
-					if (!process.env.IS_EE) {
-						this.skip();
-					}
-
+				it('should have created the discussion room using the configured name', async () => {
 					await request
 						.get(api('rooms.info'))
 						.set(credentials)
@@ -921,11 +878,7 @@ describe('Apps - Video Conferences', () => {
 					callId = res.body.data.callId;
 				});
 
-				it('should not include a discussion room id on the response', async function () {
-					if (!process.env.IS_EE) {
-						this.skip();
-					}
-
+				it('should not include a discussion room id on the response', async () => {
 					await request
 						.get(api('video-conference.info'))
 						.set(credentials)
@@ -1077,11 +1030,7 @@ describe('Apps - Video Conferences', () => {
 					callId4 = res4.body.data.callId;
 				});
 
-				it('should load the list of video conferences sorted by new', async function () {
-					if (!process.env.IS_EE) {
-						this.skip();
-					}
-
+				it('should load the list of video conferences sorted by new', async () => {
 					await request
 						.get(api('video-conference.list'))
 						.set(credentials)

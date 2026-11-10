@@ -34,7 +34,7 @@ const OmnichannelDirectoryPage = () => {
 			<Page flexDirection='row'>
 				<Page>
 					<PageHeader title={t('Omnichannel_Contact_Center')} />
-					<Tabs flexShrink={0}>
+					<Tabs>
 						<TabsItem selected={tab === 'chats'} onClick={() => handleTabClick('chats')}>
 							{t('Chats')}
 						</TabsItem>

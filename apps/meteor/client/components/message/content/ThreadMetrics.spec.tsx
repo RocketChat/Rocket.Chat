@@ -287,7 +287,7 @@ describe('Thread Metrics', () => {
 			const follower = screen.getByTitle('follower');
 			expect(follower).toBeVisible();
 
-			// eslint-disable-next-line testing-library/no-node-access
+			// oxlint-disable-next-line testing-library/no-node-access
 			expect(follower.querySelector('.rcx-icon--name-user')).toBeVisible();
 
 			expect(screen.getByText('1')).toBeVisible();
@@ -303,7 +303,7 @@ describe('Thread Metrics', () => {
 			const follower = screen.getByTitle('followers');
 			expect(follower).toBeVisible();
 
-			// eslint-disable-next-line testing-library/no-node-access
+			// oxlint-disable-next-line testing-library/no-node-access
 			expect(follower.querySelector('.rcx-icon--name-user')).toBeVisible();
 
 			expect(screen.getByText('5')).toBeVisible();

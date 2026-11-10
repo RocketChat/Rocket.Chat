@@ -1,13 +1,14 @@
 import type { ConferenceContextValue, ConferenceFailure, ConferencePanel } from '@rocket.chat/ui-conference';
-import { ConferenceContext } from '@rocket.chat/ui-conference';
+import { ConferenceContext, useCallDevicesInitialState } from '@rocket.chat/ui-conference';
 import { useEndpoint, usePermission, useSetting, useUserId, useUserPreference, useUserSubscription } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
-import { useCallback, useMemo, useState } from 'react';
+import { Suspense, useCallback, useMemo, useState } from 'react';
 
 import { ReactiveUserStatus } from '../../../components/UserStatus';
 import { videoConferenceQueryKeys } from '../../../lib/queryKeys';
 import { isRefusal } from '../../../lib/utils/isRefusal';
+import { embeddedCallProviders } from '../../../lib/videoConference/embeddedCallProviders';
 import { useUnreadDisplay } from '../../../sidebar/hooks/useUnreadDisplay';
 import PageLoading from '../../root/PageLoading';
 import ConferenceChat from '../ConferenceChat';
@@ -20,6 +21,7 @@ import { useConferenceSubscription } from '../hooks/useConferenceSubscription';
 import { useConfinedNavigation } from '../hooks/useConfinedNavigation';
 import { useLeaveConferenceOnClose } from '../hooks/useLeaveConferenceOnClose';
 import { useProviderPlugin } from '../hooks/useProviderPlugin';
+import { conferencePreflightMedia } from '../lib/conferencePreflightMedia';
 
 const emptyUnreadData = { alert: false, userMentions: 0, unread: 0, groupMentions: 0 } as const;
 
@@ -37,7 +39,7 @@ const failureFor = (error: unknown): ConferenceFailure | undefined =>
  *
  * The window itself reaches no server and knows no route: this is the whole of the wiring between it and the
  * workspace — the reads, the five things that can be done to a call, the effects that keep a participant
- * counted as present, and the three parts of the window the product has to build itself.
+ * counted as present, the parts of the window only the product can build, and the provider of a call that runs in here.
  */
 const ConferenceProvider = ({ callId, children }: { callId: string; children: ReactNode }) => {
 	const { call, room, conference } = useConferenceEmbedded(callId);
@@ -101,6 +103,16 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 		// close the window, rather than leave a dead frame open and the roster claiming they are still in it.
 		onLeave: leaveNow,
 	});
+
+	// A provider that runs the call in here wraps the window from before the join, so joining connects it rather than
+	// mounting anything. Without one registered, a join with no URL has nothing to show.
+	const EmbeddedCallProvider = conference.providerName ? embeddedCallProviders.get(conference.providerName) : undefined;
+	const embedded = conference.embedded && Boolean(EmbeddedCallProvider);
+
+	// Read from where the preflight put it rather than from this window's own join: starting a call joins on the
+	// *start* screen, and this window then finds the result in the cache having never asked.
+	const { preferences, devices } = useCallDevicesInitialState(call.capabilities);
+	const callPreferences = useMemo(() => ({ ...preferences, ...devices }), [preferences, devices]);
 
 	const thread = useMemo(
 		() => ({
@@ -173,7 +185,7 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 			},
 			session: {
 				url: conference.url,
-				embedded: conference.embedded,
+				embedded,
 				joined: conference.joined,
 				loading: conference.loading,
 				error: failureFor(conference.error),
@@ -189,6 +201,7 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 				loading: <PageLoading />,
 				unauthorized: <ConferenceUnauthorizedPage />,
 				joinRefused: <ConferencePageError />,
+				preflightMedia: conferencePreflightMedia,
 			},
 			viewer: { uid, useRealName, displayAvatars, canRingUsers },
 			thread,
@@ -202,6 +215,7 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 			conference,
 			canRingUsers,
 			displayAvatars,
+			embedded,
 			panel,
 			provider,
 			renderMemberStatus,
@@ -218,7 +232,19 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 		],
 	);
 
-	return <ConferenceContext.Provider value={value}>{children}</ConferenceContext.Provider>;
+	const conferenceWindow = <ConferenceContext.Provider value={value}>{children}</ConferenceContext.Provider>;
+
+	if (!EmbeddedCallProvider) {
+		return conferenceWindow;
+	}
+
+	return (
+		<Suspense fallback={<PageLoading />}>
+			<EmbeddedCallProvider callId={callId} connect={conference.joined && embedded} preferences={callPreferences} onEnded={leaveNow}>
+				{conferenceWindow}
+			</EmbeddedCallProvider>
+		</Suspense>
+	);
 };
 
 export default ConferenceProvider;

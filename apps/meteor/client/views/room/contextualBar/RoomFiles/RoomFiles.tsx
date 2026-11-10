@@ -84,10 +84,10 @@ const RoomFiles = ({
 					endAddon={<Icon name='magnifier' size='x20' />}
 				/>
 				<Box width='x144' marginInlineStart={8}>
-					<Select aria-controls={isSuccess ? filesListId : undefined} onChange={setType} value={type} options={options} />
+					<Select aria-label={t('File_Type')} onChange={setType} value={type} options={options} />
 				</Box>
 			</ContextualbarSection>
-			<ContextualbarContent paddingInline={0}>
+			<ContextualbarContent flush>
 				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={total} />
 				{isPending && (
 					<Box padding={24}>
@@ -95,7 +95,7 @@ const RoomFiles = ({
 					</Box>
 				)}
 				{isSuccess && (
-					<Box width='full' height='full' id={filesListId} flexShrink={1} overflow='hidden'>
+					<Box width='full' height='full' id={filesListId} flexShrink={1} overflow='hidden' marginBlock={8}>
 						{filesItems.length === 0 && <ContextualbarEmptyContent title={t('No_files_found')} />}
 						{filesItems.length > 0 && (
 							<VirtualizedScrollbars>

@@ -11,7 +11,6 @@ interface ABRPreset {
 	readonly nsmsfix: number;
 	readonly st_lrm: number;
 	readonly st_s: number;
-	readonly nsbass: number;
 	readonly scale: number;
 	readonly masking_adj: number;
 	readonly ath_lower: number;
@@ -62,7 +61,6 @@ export class ABRPresets {
 			nsmsfix: 0,
 			st_lrm: 6.6,
 			st_s: 145,
-			nsbass: 0,
 			scale: 0.95,
 			masking_adj: 0,
 			ath_lower: -30,
@@ -78,7 +76,6 @@ export class ABRPresets {
 			nsmsfix: 0,
 			st_lrm: 6.6,
 			st_s: 145,
-			nsbass: 0,
 			scale: 0.95,
 			masking_adj: 0,
 			ath_lower: -25,
@@ -94,7 +91,6 @@ export class ABRPresets {
 			nsmsfix: 0,
 			st_lrm: 6.6,
 			st_s: 145,
-			nsbass: 0,
 			scale: 0.95,
 			masking_adj: 0,
 			ath_lower: -20,
@@ -110,7 +106,6 @@ export class ABRPresets {
 			nsmsfix: 0,
 			st_lrm: 6.6,
 			st_s: 145,
-			nsbass: 0,
 			scale: 0.95,
 			masking_adj: 0,
 			ath_lower: -15,
@@ -126,7 +121,6 @@ export class ABRPresets {
 			nsmsfix: 0,
 			st_lrm: 6.6,
 			st_s: 145,
-			nsbass: 0,
 			scale: 0.95,
 			masking_adj: 0,
 			ath_lower: -10,
@@ -142,7 +136,6 @@ export class ABRPresets {
 			nsmsfix: 0,
 			st_lrm: 6.6,
 			st_s: 145,
-			nsbass: 0,
 			scale: 0.95,
 			masking_adj: 0,
 			ath_lower: -10,
@@ -158,7 +151,6 @@ export class ABRPresets {
 			nsmsfix: 0,
 			st_lrm: 6.6,
 			st_s: 145,
-			nsbass: 0,
 			scale: 0.95,
 			masking_adj: 0,
 			ath_lower: -6,
@@ -174,7 +166,6 @@ export class ABRPresets {
 			nsmsfix: 0,
 			st_lrm: 6.6,
 			st_s: 145,
-			nsbass: 0,
 			scale: 0.95,
 			masking_adj: 0,
 			ath_lower: -2,
@@ -190,7 +181,6 @@ export class ABRPresets {
 			nsmsfix: 0,
 			st_lrm: 6.6,
 			st_s: 145,
-			nsbass: 0,
 			scale: 0.95,
 			masking_adj: 0,
 			ath_lower: 0,
@@ -206,7 +196,6 @@ export class ABRPresets {
 			nsmsfix: 2.5,
 			st_lrm: 6.6,
 			st_s: 145,
-			nsbass: 0,
 			scale: 0.95,
 			masking_adj: 0,
 			ath_lower: 1,
@@ -222,7 +211,6 @@ export class ABRPresets {
 			nsmsfix: 2.25,
 			st_lrm: 6.6,
 			st_s: 145,
-			nsbass: 0,
 			scale: 0.95,
 			masking_adj: 0,
 			ath_lower: 2,
@@ -238,7 +226,6 @@ export class ABRPresets {
 			nsmsfix: 1.95,
 			st_lrm: 6.4,
 			st_s: 140,
-			nsbass: 0,
 			scale: 0.95,
 			masking_adj: 0,
 			ath_lower: 3,
@@ -254,7 +241,6 @@ export class ABRPresets {
 			nsmsfix: 1.79,
 			st_lrm: 6,
 			st_s: 135,
-			nsbass: 0,
 			scale: 0.95,
 			masking_adj: -2,
 			ath_lower: 5,
@@ -270,7 +256,6 @@ export class ABRPresets {
 			nsmsfix: 1.49,
 			st_lrm: 5.6,
 			st_s: 125,
-			nsbass: 0,
 			scale: 0.97,
 			masking_adj: -4,
 			ath_lower: 7,
@@ -286,7 +271,6 @@ export class ABRPresets {
 			nsmsfix: 1.25,
 			st_lrm: 5.2,
 			st_s: 125,
-			nsbass: 0,
 			scale: 0.98,
 			masking_adj: -6,
 			ath_lower: 9,
@@ -302,7 +286,6 @@ export class ABRPresets {
 			nsmsfix: 0.97,
 			st_lrm: 5.2,
 			st_s: 125,
-			nsbass: 0,
 			scale: 1,
 			masking_adj: -8,
 			ath_lower: 10,
@@ -318,7 +301,6 @@ export class ABRPresets {
 			nsmsfix: 0.9,
 			st_lrm: 5.2,
 			st_s: 125,
-			nsbass: 0,
 			scale: 1,
 			masking_adj: -10,
 			ath_lower: 12,
@@ -343,14 +325,6 @@ export class ABRPresets {
 
 		if (preset.sfscale > 0) {
 			gfp.internal_flags.noise_shaping = 2;
-		}
-
-		if (Math.abs(preset.nsbass) > 0) {
-			let k = Math.trunc(preset.nsbass * 4);
-			if (k < 0) {
-				k += 64;
-			}
-			gfp.exp_nspsytune |= k << 2;
 		}
 
 		if (equals(gfp.quant_comp, -1)) {

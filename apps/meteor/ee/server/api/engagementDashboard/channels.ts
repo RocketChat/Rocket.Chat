@@ -1,9 +1,10 @@
 import type { IDirectMessageRoom, IRoom } from '@rocket.chat/core-typings';
 import {
 	ajv,
+	paginatedResponseProperties,
 	validateBadRequestErrorResponse,
-	validateUnauthorizedErrorResponse,
 	validateForbiddenErrorResponse,
+	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { check, Match } from 'meteor/check';
 
@@ -13,7 +14,6 @@ import { findChannelsWithNumberOfMessages } from '../../lib/engagementDashboard/
 import { isDateISOString, mapDateForAPI } from '../../lib/engagementDashboard/date';
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Endpoints {
 		'/v1/engagement-dashboard/channels/list': {
 			GET: (params: { start: string; end: string; offset?: number; count?: number }) => {
@@ -84,9 +84,7 @@ const channelsListResponseSchema = ajv.compile<{
 				additionalProperties: false,
 			},
 		},
-		count: { type: 'number' },
-		offset: { type: 'number' },
-		total: { type: 'number' },
+		...paginatedResponseProperties,
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['channels', 'count', 'offset', 'total', 'success'],

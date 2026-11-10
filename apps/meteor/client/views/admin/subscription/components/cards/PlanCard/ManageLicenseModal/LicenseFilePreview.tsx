@@ -27,7 +27,7 @@ const LicenseFilePreview = ({ selectedFile, handleRemoveFile }: { selectedFile: 
 					{`${formatBytes(selectedFile.size, 2)} - ${getFileExtension(selectedFile.name)}`}
 				</Box>
 			</Box>
-			<IconButton icon='cross' tiny title={t('Remove_file')} onClick={handleRemoveFile} />
+			<IconButton icon='cross' size='tiny' title={t('Remove_file')} onClick={handleRemoveFile} />
 		</Box>
 	);
 };

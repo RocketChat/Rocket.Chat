@@ -1,8 +1,14 @@
 import { WebApp } from 'meteor/webapp';
+
+import { nodeLoggerMiddleware } from '../api/v1/middlewares/logger';
+import { HttpLogger } from '../lib/logger/http';
+
 // Use rawConnectHandlers so we get a response as quickly as possible
 // https://github.com/meteor/meteor/blob/devel/packages/webapp/webapp_server.js
 
 const syncUrl = `${(global as any)?.ROOT_URL_PATH_PREFIX || ''}/_timesync`;
+
+WebApp.rawConnectHandlers.use(syncUrl, nodeLoggerMiddleware(HttpLogger));
 
 WebApp.rawConnectHandlers.use(syncUrl, (_req, res) => {
 	// Never ever cache this, otherwise weird times are shown on reload

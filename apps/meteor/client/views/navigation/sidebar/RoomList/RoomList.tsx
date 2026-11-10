@@ -8,6 +8,7 @@ import { GroupedVirtuoso } from 'react-virtuoso';
 
 import RoomListCollapser from './RoomListCollapser';
 import RoomsListFilters from './RoomListFilters';
+import RoomListGroupWrapper from './RoomListGroupWrapper';
 import RoomListRow from './RoomListRow';
 import RoomListRowWrapper from './RoomListRowWrapper';
 import RoomListWrapper from './RoomListWrapper';
@@ -21,7 +22,7 @@ const RoomList = () => {
 	const { t } = useTranslation();
 	const isAnonymous = !useUserId();
 
-	const { roomListGroups, groupCounts, collapsedGroups, handleClick, handleKeyDown, totalCount } = useSideBarRoomsList();
+	const { roomListGroups, groupCounts, collapsedGroups, handleClick, totalCount } = useSideBarRoomsList();
 	const { ref: resizeObserverRef } = useResizeObserver<HTMLElement>({ debounceDelay: 100 });
 	const openedRoom = useOpenedRoom() ?? '';
 
@@ -50,7 +51,6 @@ const RoomList = () => {
 							<RoomListCollapser
 								collapsedGroups={collapsedGroups}
 								onClick={() => handleClick(group)}
-								onKeyDown={(e) => handleKeyDown(e, group)}
 								groupTitle={sidePanelFiltersConfig[group].title}
 								group={group}
 								unreadCount={unreadInfo}
@@ -66,7 +66,7 @@ const RoomList = () => {
 							return <RoomListRow data={itemData} item={rooms[correctedIndex]} />;
 						},
 					})}
-					components={{ Header: RoomsListFilters, Item: RoomListRowWrapper, List: RoomListWrapper }}
+					components={{ Header: RoomsListFilters, Item: RoomListRowWrapper, List: RoomListWrapper, Group: RoomListGroupWrapper }}
 				/>
 			</VirtualizedScrollbars>
 		</Box>

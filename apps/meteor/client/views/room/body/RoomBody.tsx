@@ -3,9 +3,10 @@ import { isTruthy } from '@rocket.chat/tools';
 import { CustomVirtuaScrollbars, useEmbeddedLayout } from '@rocket.chat/ui-client';
 import { usePermission, useRole, useSetting, useTranslation, useUser, useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { MouseEvent } from 'react';
-import { memo, useCallback, useMemo, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useMergedRefsV2 } from '../../../hooks/useMergedRefsV2';
+import { RoomHistoryManager } from '../../../lib/RoomHistoryManager';
 import { BubbleDate } from '../BubbleDate';
 import { MessageList } from '../MessageList';
 import DropTargetOverlay from './DropTargetOverlay';
@@ -31,6 +32,7 @@ import { useGetMore } from './hooks/useGetMore';
 import { useHasNewMessages } from './hooks/useHasNewMessages';
 import { useSelectAllAndScrollToTop } from './hooks/useSelectAllAndScrollToTop';
 import { useHandleUnread } from './hooks/useUnreadMessages';
+import { useUserScrollIntent } from './hooks/useUserScrollIntent';
 import { useKeepAtBottom } from '../MessageList/hooks/useKeepAtBottom';
 import useTryToJumpToThreadMessage from '../MessageList/hooks/useTryToJumpToThreadMessage';
 
@@ -125,6 +127,14 @@ const RoomBody = () => {
 
 	const { keepAtBottomRef, setKeepAtBottom } = useKeepAtBottom(isAtBottom);
 
+	const { ref: userScrollIntentRef, hasUserScrolled } = useUserScrollIntent(debouncedMessageRead);
+
+	useEffect(() => {
+		chat.readStateManager.setHasUserReachedLatestMessageCallback(
+			() => hasUserScrolled.current && isAtBottom.current && !hasMoreNextMessages && RoomHistoryManager.isLoaded(room._id),
+		);
+	}, [chat.readStateManager, hasUserScrolled, isAtBottom, hasMoreNextMessages, room._id]);
+
 	const innerRef = useMergedRefsV2(getMoreInnerRef, selectAndScrollRef, messageListRef, keepAtBottomRef);
 
 	const handleNavigateToPreviousMessage = useCallback((): void => {
@@ -195,7 +205,7 @@ const RoomBody = () => {
 								)}
 								<BubbleDate ref={bubbleRef} {...bubbleDate} />
 							</Box>
-							<div className={['messages-box'].filter(isTruthy).join(' ')}>
+							<div ref={userScrollIntentRef} className={['messages-box'].filter(isTruthy).join(' ')}>
 								<JumpToRecentMessageButton visible={hasNewMessages} onClick={handleNewMessageButtonClick} text={t('New_messages')} />
 								<JumpToRecentMessageButton
 									visible={hasMoreNextMessages}

@@ -1,4 +1,4 @@
-import { Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
+import { Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesAction, type TableColumnWidth } from '@rocket.chat/fuselage';
 import { useMediaQuery, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { OptionProp } from '@rocket.chat/ui-client';
 import {
@@ -9,6 +9,7 @@ import {
 	GenericTableLoadingTable,
 	usePagination,
 	useSort,
+	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -18,7 +19,6 @@ import { useTranslation } from 'react-i18next';
 
 import RoomRow from './RoomRow';
 import RoomsTableFilters from './RoomsTableFilters';
-import GenericNoResults from '../../../components/GenericNoResults';
 
 type RoomFilters = {
 	searchText: string;
@@ -72,57 +72,31 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 		prevRoomFilterText.current = searchText;
 	}, [searchText]);
 
+	const columns: TableColumnWidth[] = ['x200', 'x100', 'x80', ...(mediaQuery ? (['x80', 'x80', 'x80', 'x120'] as const) : [])];
+
 	const headers = (
 		<>
-			<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name' width='x200'>
+			<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
 				{t('Name')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key='type' direction={sortDirection} active={sortBy === 't'} onClick={setSort} sort='t' width='x100'>
+			<GenericTableHeaderCell key='type' direction={sortDirection} active={sortBy === 't'} onClick={setSort} sort='t'>
 				{t('Type')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell
-				key='users'
-				direction={sortDirection}
-				active={sortBy === 'usersCount'}
-				onClick={setSort}
-				sort='usersCount'
-				width='x80'
-			>
+			<GenericTableHeaderCell key='users' direction={sortDirection} active={sortBy === 'usersCount'} onClick={setSort} sort='usersCount'>
 				{t('Users')}
 			</GenericTableHeaderCell>
 			{mediaQuery && (
 				<>
-					<GenericTableHeaderCell
-						key='messages'
-						direction={sortDirection}
-						active={sortBy === 'msgs'}
-						onClick={setSort}
-						sort='msgs'
-						width='x80'
-					>
+					<GenericTableHeaderCell key='messages' direction={sortDirection} active={sortBy === 'msgs'} onClick={setSort} sort='msgs'>
 						{t('Msgs')}
 					</GenericTableHeaderCell>
-					<GenericTableHeaderCell
-						key='default'
-						direction={sortDirection}
-						active={sortBy === 'default'}
-						onClick={setSort}
-						sort='default'
-						width='x80'
-					>
+					<GenericTableHeaderCell key='default' direction={sortDirection} active={sortBy === 'default'} onClick={setSort} sort='default'>
 						{t('Default')}
 					</GenericTableHeaderCell>
-					<GenericTableHeaderCell
-						key='featured'
-						direction={sortDirection}
-						active={sortBy === 'featured'}
-						onClick={setSort}
-						sort='featured'
-						width='x80'
-					>
+					<GenericTableHeaderCell key='featured' direction={sortDirection} active={sortBy === 'featured'} onClick={setSort} sort='featured'>
 						{t('Featured')}
 					</GenericTableHeaderCell>
-					<GenericTableHeaderCell key='ts' direction={sortDirection} active={sortBy === 'ts'} onClick={setSort} sort='ts' width='x120'>
+					<GenericTableHeaderCell key='ts' direction={sortDirection} active={sortBy === 'ts'} onClick={setSort} sort='ts'>
 						{t('Created_at')}
 					</GenericTableHeaderCell>
 				</>
@@ -134,7 +108,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 		<>
 			<RoomsTableFilters setFilters={setRoomFilters} />
 			{isLoading && (
-				<GenericTable>
+				<GenericTable columns={columns}>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
 						<GenericTableLoadingTable headerCells={mediaQuery ? 7 : 4} />
@@ -144,7 +118,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 			{isSuccess && data.rooms.length === 0 && <GenericNoResults />}
 			{isSuccess && data.rooms.length > 0 && (
 				<>
-					<GenericTable>
+					<GenericTable columns={columns}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.rooms?.map((room) => (

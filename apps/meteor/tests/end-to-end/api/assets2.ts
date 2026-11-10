@@ -1,12 +1,13 @@
+import { after, before, describe, it } from 'node:test';
+
 import { expect } from 'chai';
-import { before, describe, it, after } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { imgURL } from '../../data/interactions';
 import { updatePermission } from '../../data/permissions.helper';
 
 describe('[Assets]', () => {
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	before(() => updatePermission('manage-assets', ['admin']));
 

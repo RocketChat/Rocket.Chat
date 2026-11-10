@@ -14,6 +14,7 @@ import type { AdminUsersTab } from '../AdminUsersPage';
 import { useChangeAdminStatusAction } from '../hooks/useChangeAdminStatusAction';
 import { useChangeUserStatusAction } from '../hooks/useChangeUserStatusAction';
 import { useDeleteUserAction } from '../hooks/useDeleteUserAction';
+import { useManageUserStatusAction } from '../hooks/useManageUserStatusAction';
 import { useResetE2EEKeyAction } from '../hooks/useResetE2EEKeyAction';
 import { useResetTOTPAction } from '../hooks/useResetTOTPAction';
 import { useSendWelcomeEmailMutation } from '../hooks/useSendWelcomeEmailMutation';
@@ -32,20 +33,7 @@ export type UsersTableRowProps = {
 const UsersTableRow = ({ user, tab, isMobile, isLaptop, isSeatsCapExceeded, showVoipExtension, onClick, onReload }: UsersTableRowProps) => {
 	const { t } = useTranslation();
 
-	const {
-		_id,
-		emails,
-		username = '',
-		name = '',
-		roles,
-		status,
-		active,
-		avatarETag,
-		lastLogin,
-		type,
-		freeSwitchExtension,
-		federated,
-	} = user;
+	const { _id, emails, username = '', name = '', roles, status, active, avatarETag, lastLogin, type, sipExtension, federated } = user;
 
 	const registrationStatusText = useMemo(() => {
 		const usersExcludedFromPending = ['bot', 'app'];
@@ -81,6 +69,7 @@ const UsersTableRow = ({ user, tab, isMobile, isLaptop, isSeatsCapExceeded, show
 
 	const changeAdminStatusAction = useChangeAdminStatusAction(username, isAdmin, onReload);
 	const changeUserStatusAction = useChangeUserStatusAction(userId, isActive, onReload);
+	const manageUserStatusAction = useManageUserStatusAction(userId);
 	const deleteUserAction = useDeleteUserAction(userId, onReload, onReload);
 	const resetTOTPAction = useResetTOTPAction(userId);
 	const resetE2EKeyAction = useResetE2EEKeyAction(userId);
@@ -102,6 +91,10 @@ const UsersTableRow = ({ user, tab, isMobile, isLaptop, isSeatsCapExceeded, show
 				!isFederatedUser && {
 					changeUserStatusAction,
 				}),
+			...(manageUserStatusAction &&
+				!isFederatedUser && {
+					manageUserStatusAction,
+				}),
 			...(deleteUserAction && {
 				deleteUserAction,
 			}),
@@ -109,6 +102,7 @@ const UsersTableRow = ({ user, tab, isMobile, isLaptop, isSeatsCapExceeded, show
 		[
 			changeAdminStatusAction,
 			changeUserStatusAction,
+			manageUserStatusAction,
 			deleteUserAction,
 			isFederatedUser,
 			isNotPendingDeactivatedNorFederated,
@@ -129,7 +123,7 @@ const UsersTableRow = ({ user, tab, isMobile, isLaptop, isSeatsCapExceeded, show
 
 	return (
 		<GenericTableRow onKeyDown={(e) => onClick(_id, e)} onClick={(e) => onClick(_id, e)} tabIndex={0} role='link' action qa-user-id={_id}>
-			<GenericTableCell withTruncatedText>
+			<GenericTableCell truncate>
 				<Box display='flex' alignItems='center'>
 					{username && <UserAvatar size={isMobile || isLaptop ? 'x28' : 'x40'} username={username} etag={avatarETag} />}
 					<Box display='flex' flexGrow={1} flexShrink={1} flexBasis='0%' alignSelf='center' alignItems='center' withTruncatedText>
@@ -149,18 +143,18 @@ const UsersTableRow = ({ user, tab, isMobile, isLaptop, isSeatsCapExceeded, show
 				</Box>
 			</GenericTableCell>
 
-			{!isLaptop && <GenericTableCell withTruncatedText>{emails?.length && emails[0].address}</GenericTableCell>}
+			{!isLaptop && <GenericTableCell truncate>{emails?.length && emails[0].address}</GenericTableCell>}
 
-			{!isLaptop && <GenericTableCell withTruncatedText>{roleNames}</GenericTableCell>}
+			{!isLaptop && <GenericTableCell truncate>{roleNames}</GenericTableCell>}
 
 			{tab === 'all' && !isMobile && (
-				<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
+				<GenericTableCell color='hint' truncate>
 					{registrationStatusText}
 				</GenericTableCell>
 			)}
 
 			{tab === 'pending' && !isMobile && (
-				<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
+				<GenericTableCell color='hint' truncate>
 					<Box display='flex' flexDirection='row' alignContent='flex-end'>
 						{active ? t('User_first_log_in') : t('Activation')}
 					</Box>
@@ -168,8 +162,8 @@ const UsersTableRow = ({ user, tab, isMobile, isLaptop, isSeatsCapExceeded, show
 			)}
 
 			{tab === 'all' && showVoipExtension && (
-				<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
-					{freeSwitchExtension || t('Not_assigned')}
+				<GenericTableCell color='hint' truncate>
+					{sipExtension || t('Not_assigned')}
 				</GenericTableCell>
 			)}
 
@@ -182,11 +176,11 @@ const UsersTableRow = ({ user, tab, isMobile, isLaptop, isSeatsCapExceeded, show
 					{tab === 'pending' && (
 						<>
 							{active ? (
-								<Button small secondary onClick={handleResendWelcomeEmail}>
+								<Button size='small' variant='secondary' onClick={handleResendWelcomeEmail}>
 									{t('Resend_welcome_email')}
 								</Button>
 							) : (
-								<Button small primary onClick={changeUserStatusAction?.onClick} disabled={isSeatsCapExceeded}>
+								<Button size='small' variant='primary' onClick={changeUserStatusAction?.onClick} disabled={isSeatsCapExceeded}>
 									{t('Activate')}
 								</Button>
 							)}

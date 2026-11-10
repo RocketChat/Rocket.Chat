@@ -1,6 +1,6 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import { LivechatDepartment } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../server/lib/callbacks';
 
@@ -29,7 +29,7 @@ callbacks.add(
 		if (isAllowedToTransfer) {
 			return options;
 		}
-		throw new Meteor.Error('error-forwarding-department-target-not-allowed', 'The forwarding to the target department is not allowed.');
+		throw new ClientSafeError('error-forwarding-department-target-not-allowed', 'The forwarding to the target department is not allowed.');
 	},
 	callbacks.priority.HIGH,
 	'livechat-before-forward-room-to-department',

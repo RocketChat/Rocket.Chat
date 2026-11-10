@@ -18,7 +18,7 @@ import {
 	Bubble,
 } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useUserDisplayName } from '@rocket.chat/ui-client';
+import { useFormatTime, useUserDisplayName } from '@rocket.chat/ui-client';
 import { useUserCard } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -28,7 +28,6 @@ import StatusIndicators from '../../../../components/message/StatusIndicators';
 import Attachments from '../../../../components/message/content/Attachments';
 import UiKitMessageBlock from '../../../../components/message/uikit/UiKitMessageBlock';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
-import { useFormatTime } from '../../../../hooks/useFormatTime';
 import { toPlainTextRoot } from '../../../../lib/toPlainTextRoot';
 
 export type ContactHistoryMessageProps = {

@@ -4,13 +4,13 @@ import {
 	ButtonGroup,
 	Icon,
 	IconButton,
-	Margins,
 	States,
 	StatesIcon,
 	StatesSubtitle,
 	StatesTitle,
 	TextInput,
 	Throbber,
+	Stack,
 } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import { VirtualizedScrollbars, ContextualbarContent, ContextualbarEmptyContent, ContextualbarFooter } from '@rocket.chat/ui-client';
@@ -58,7 +58,7 @@ const ContactInfoHistoryMessages = ({ chatId, onBack, onOpenRoom }: ContactHisto
 
 	return (
 		<>
-			<ContextualbarContent paddingInline={0}>
+			<ContextualbarContent flush>
 				<Box
 					display='flex'
 					flexDirection='row'
@@ -68,17 +68,15 @@ const ContactInfoHistoryMessages = ({ chatId, onBack, onOpenRoom }: ContactHisto
 					borderBlockEndColor='extra-light'
 					flexShrink={0}
 				>
-					<Box display='flex' alignItems='center' flexDirection='row' flexGrow={1} marginInline='neg-x4'>
-						<Margins inline={4}>
-							<TextInput
-								placeholder={t('Search')}
-								value={text}
-								onChange={handleSearchChange}
-								endAddon={<Icon name='magnifier' size='x20' />}
-							/>
-							<IconButton title={t('Back')} small icon='back' onClick={onBack} />
-						</Margins>
-					</Box>
+					<Stack direction='row' align='center' grow gap={8}>
+						<TextInput
+							placeholder={t('Search')}
+							value={text}
+							onChange={handleSearchChange}
+							endAddon={<Icon name='magnifier' size='x20' />}
+						/>
+						<IconButton title={t('Back')} size='small' icon='back' onClick={onBack} />
+					</Stack>
 				</Box>
 				{isPending && (
 					<Box paddingInline={24} paddingBlock={12}>

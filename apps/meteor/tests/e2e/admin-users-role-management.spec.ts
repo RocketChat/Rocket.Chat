@@ -34,7 +34,7 @@ test.describe('Admin > Users Role Management', () => {
 			});
 
 			await test.step('make a user admin', async () => {
-				await admin.dispatchUserAction(userWithoutAdminAccess.data.username, 'Make Admin');
+				await admin.dispatchUserAction(userWithoutAdminAccess.data.username, 'Make admin');
 				await admin.toastMessage.waitForDisplay({ type: 'success', message: 'User is now an admin' });
 			});
 
@@ -52,7 +52,7 @@ test.describe('Admin > Users Role Management', () => {
 			});
 
 			await test.step('remove admin role', async () => {
-				await admin.dispatchUserAction(userWithAdminAccess.data.username, 'Remove Admin');
+				await admin.dispatchUserAction(userWithAdminAccess.data.username, 'Remove admin');
 				await admin.toastMessage.waitForDisplay({ type: 'success', message: 'User is no longer an admin' });
 			});
 

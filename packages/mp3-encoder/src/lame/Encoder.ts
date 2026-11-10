@@ -6,7 +6,7 @@ import { MPEGMode } from './MPEGMode';
 import { NewMDCT } from './NewMDCT';
 import type { PsyModel } from './PsyModel';
 import { VbrMode } from './VbrMode';
-import { assert } from './assert';
+import { assert, assertDefined } from './assert';
 import { BLKSIZE, FFTOFFSET, MPG_MD_LR_LR, MPG_MD_MS_LR, NORM_TYPE, SHORT_TYPE } from './constants';
 
 export class Encoder {
@@ -144,11 +144,6 @@ export class Encoder {
 
 		const masking_MS = Array.from({ length: 2 }, () => Array.from({ length: 2 }, () => new III_psy_ratio()));
 
-		masking_MS[0][0] = new III_psy_ratio();
-		masking_MS[0][1] = new III_psy_ratio();
-		masking_MS[1][0] = new III_psy_ratio();
-		masking_MS[1][1] = new III_psy_ratio();
-
 		let masking;
 
 		const gfc = gfp.internal_flags;
@@ -279,7 +274,7 @@ export class Encoder {
 				}
 			}
 		}
-		assert(gfc.iteration_loop !== null);
+		assertDefined(gfc.iteration_loop);
 		gfc.iteration_loop.iteration_loop(gfp, pe_use, ms_ener_ratio, masking);
 
 		this.bs.format_bitstream(gfp);

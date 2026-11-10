@@ -40,12 +40,12 @@ const OutlookSettingItem = ({ id, title, subTitle, enabled, handleEnable }: Outl
 			</Box>
 			<Box>
 				{id === 'authentication' && (
-					<Button small onClick={() => handleEnable(!enabled)}>
+					<Button size='small' onClick={() => handleEnable(!enabled)}>
 						{t('Disable')}
 					</Button>
 				)}
 				{id !== 'authentication' && (
-					<Button primary={!enabled} small onClick={() => handleEnable(!enabled)}>
+					<Button variant={!enabled ? 'primary' : undefined} size='small' onClick={() => handleEnable(!enabled)}>
 						{enabled ? t('Disable') : t('Enable')}
 					</Button>
 				)}

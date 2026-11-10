@@ -1,3 +1,4 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
@@ -74,7 +75,7 @@ Meteor.startup(async () => {
 			if (!isOmnichannelRoom(room)) {
 				return;
 			}
-			throw new Meteor.Error(
+			throw new ClientSafeError(
 				i18n.t('You_cant_leave_a_livechat_room_Please_use_the_close_button', {
 					lng: user.language || settings.get('Language') || 'en',
 				}),
@@ -88,7 +89,7 @@ Meteor.startup(async () => {
 		'beforeJoinRoom',
 		async (user, room) => {
 			if (isOmnichannelRoom(room) && !(await hasPermissionAsync(user, 'view-l-room'))) {
-				throw new Meteor.Error('error-user-is-not-agent', 'User is not an Omnichannel Agent', {
+				throw new ClientSafeError('error-user-is-not-agent', 'User is not an Omnichannel Agent', {
 					method: 'beforeJoinRoom',
 				});
 			}

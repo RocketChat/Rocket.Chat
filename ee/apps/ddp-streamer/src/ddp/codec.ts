@@ -1,4 +1,4 @@
-import { MeteorError, isMeteorError } from '@rocket.chat/core-services';
+import { ClientSafeError, isClientSafeError } from '@rocket.chat/core-services';
 import ejson from 'ejson';
 import WebSocket from 'ws';
 
@@ -14,7 +14,7 @@ const serialize = ejson.stringify;
 /** Decodes an incoming DDP message, unwrapping the SockJS array envelope when present. */
 export function decode(data: WebSocket.Data, isBinary: boolean): IPacket {
 	if (isBinary) {
-		throw new MeteorError(500, 'Binary data not supported');
+		throw new ClientSafeError(500, 'Binary data not supported');
 	}
 	const packet = data.toString();
 
@@ -22,7 +22,7 @@ export function decode(data: WebSocket.Data, isBinary: boolean): IPacket {
 	return ejson.parse(payload);
 }
 
-const serializeError = (error: Error | MeteorError): object => (isMeteorError(error) ? error.toJSON() : error);
+const serializeError = (error: Error | ClientSafeError): object => (isClientSafeError(error) ? error.toJSON() : error);
 
 export const encodeConnected = (session: string): string => serialize({ [DDP_EVENTS.MSG]: DDP_EVENTS.CONNECTED, session });
 
@@ -30,7 +30,7 @@ export const encodePing = (id?: string): string => serialize({ [DDP_EVENTS.MSG]:
 
 export const encodePong = (id?: string): string => serialize({ [DDP_EVENTS.MSG]: DDP_EVENTS.PONG, ...(id && { [DDP_EVENTS.ID]: id }) });
 
-export const encodeResult = (id: string, result?: any, error?: Error | MeteorError): string =>
+export const encodeResult = (id: string, result?: any, error?: Error | ClientSafeError): string =>
 	serialize({
 		[DDP_EVENTS.MSG]: DDP_EVENTS.RESULT,
 		id,
@@ -40,7 +40,7 @@ export const encodeResult = (id: string, result?: any, error?: Error | MeteorErr
 
 export const encodeUpdated = (id: string): string => serialize({ [DDP_EVENTS.MSG]: DDP_EVENTS.UPDATED, [DDP_EVENTS.METHODS]: [id] });
 
-export const encodeNosub = (id: string, error?: Error | MeteorError): string =>
+export const encodeNosub = (id: string, error?: Error | ClientSafeError): string =>
 	serialize({
 		[DDP_EVENTS.MSG]: DDP_EVENTS.NO_SUBSCRIBE,
 		id,

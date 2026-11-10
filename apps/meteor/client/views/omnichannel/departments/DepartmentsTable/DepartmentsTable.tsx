@@ -1,5 +1,5 @@
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
-import { Pagination } from '@rocket.chat/fuselage';
+import { Pagination, type TableColumnWidth } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
@@ -11,6 +11,7 @@ import {
 	GenericTableRow,
 	usePagination,
 	useSort,
+	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery, hashKey, keepPreviousData } from '@tanstack/react-query';
@@ -18,7 +19,6 @@ import { useState, useMemo } from 'react';
 
 import DepartmentItemMenu from './DepartmentItemMenu';
 import FilterByText from '../../../../components/FilterByText';
-import GenericNoResults from '../../../../components/GenericNoResults/GenericNoResults';
 import { links } from '../../../../lib/links';
 
 const DEPARTMENTS_ENDPOINTS = {
@@ -63,6 +63,8 @@ const DepartmentsTable = ({ archived }: DepartmentsTableProps) => {
 	const [defaultQuery] = useState(hashKey([query]));
 	const queryHasChanged = defaultQuery !== hashKey([query]);
 
+	const columns: TableColumnWidth[] = ['auto', 'auto', 'auto', 'auto', 'auto', 40];
+
 	const headers = (
 		<>
 			<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
@@ -92,7 +94,7 @@ const DepartmentsTable = ({ archived }: DepartmentsTableProps) => {
 			>
 				{t('Show_on_registration_page')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key='spacer' width={40} />
+			<GenericTableHeaderCell key='spacer' />
 		</>
 	);
 
@@ -102,7 +104,7 @@ const DepartmentsTable = ({ archived }: DepartmentsTableProps) => {
 				<FilterByText value={text} onChange={(event) => setText(event.target.value)} />
 			)}
 			{isLoading && (
-				<GenericTable>
+				<GenericTable columns={columns}>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
 						<GenericTableLoadingTable headerCells={6} />
@@ -123,17 +125,17 @@ const DepartmentsTable = ({ archived }: DepartmentsTableProps) => {
 			)}
 			{isSuccess && data?.departments.length > 0 && (
 				<>
-					<GenericTable aria-label={t('Departments')} aria-busy={isLoading} aria-live='polite'>
+					<GenericTable columns={columns} aria-label={t('Departments')} aria-busy={isLoading} aria-live='polite'>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.departments.map((department: Omit<ILivechatDepartment, '_updatedAt'>) => (
-								<GenericTableRow key={department._id} tabIndex={0} width='full'>
-									<GenericTableCell withTruncatedText>{department.name}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{department.description}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{department.numAgents || '0'}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{department.enabled ? t('Yes') : t('No')}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{department.showOnRegistration ? t('Yes') : t('No')}</GenericTableCell>
-									<GenericTableCell withTruncatedText>
+								<GenericTableRow key={department._id} tabIndex={0}>
+									<GenericTableCell truncate>{department.name}</GenericTableCell>
+									<GenericTableCell truncate>{department.description}</GenericTableCell>
+									<GenericTableCell truncate>{department.numAgents || '0'}</GenericTableCell>
+									<GenericTableCell truncate>{department.enabled ? t('Yes') : t('No')}</GenericTableCell>
+									<GenericTableCell truncate>{department.showOnRegistration ? t('Yes') : t('No')}</GenericTableCell>
+									<GenericTableCell truncate>
 										<DepartmentItemMenu department={department} archived={archived} />
 									</GenericTableCell>
 								</GenericTableRow>

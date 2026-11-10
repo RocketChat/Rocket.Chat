@@ -1,9 +1,10 @@
-import { Box, Button } from '@rocket.chat/fuselage';
-import { MembersListDivider } from '@rocket.chat/ui-client';
+import { Box, Button, ItemGroup, ItemGroupHeader, ItemGroupTitle } from '@rocket.chat/fuselage';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import VoiceActivity from '../../call/VoiceActivity';
 import { ConferenceContext, useConference } from '../../context/ConferenceContext';
 import type { CallParticipantEntry } from '../../lib/callParticipants';
 import { composeCallParticipants } from '../../lib/callParticipants';
@@ -14,14 +15,24 @@ import CallMemberItem from '../CallMemberItem/CallMemberItem';
 import CallPanelHeader from '../CallPanelHeader';
 import CallParticipantItem from '../CallParticipantItem/CallParticipantItem';
 
+/** What a call running in this window knows about its members, by user id. */
+export type MembersInCall = {
+	raisedHands: ReadonlySet<string>;
+	mutedMembers: ReadonlySet<string>;
+	audioStreams: ReadonlyMap<string, MediaStream | undefined>;
+	muteMember: (memberId: string) => void;
+};
+
 type CallMembersPanelProps = {
+	/** Absent for a provider at an address of its own, whose call this window cannot see into. */
+	inCall?: MembersInCall;
 	onClose: () => void;
 };
 
 // A stable empty list, so a provider with no plugin does not recompose the groups on every render.
 const NO_PARTICIPANTS: PluginParticipant[] = [];
 
-const CallMembersPanel = ({ onClose }: CallMembersPanelProps) => {
+const CallMembersPanel = ({ inCall, onClose }: CallMembersPanelProps) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -47,6 +58,15 @@ const CallMembersPanel = ({ onClose }: CallMembersPanelProps) => {
 		() => composeCallParticipants(claimants, provider?.participants ?? NO_PARTICIPANTS),
 		[claimants, provider?.participants],
 	);
+
+	// The lobby first, because everyone in it is waiting on somebody in this panel to let them in.
+	const groups = (
+		[
+			{ title: 'Waiting_to_join', entries: waiting },
+			{ title: 'In_call', entries: present },
+			{ title: 'Not_in_the_call', entries: absent },
+		] satisfies { title: TranslationKey; entries: CallParticipantEntry[] }[]
+	).filter(({ entries }) => entries.length > 0);
 
 	// A set rather than one pending request: ringing a second member put the first back in reach.
 	const [ringingMembers, setRingingMembers] = useState<string[]>([]);
@@ -82,6 +102,10 @@ const CallMembersPanel = ({ onClose }: CallMembersPanelProps) => {
 					// Until the server's answer comes back, this is what says the ask is already on its way.
 					ringing={ringingMembers.includes(member._id)}
 					controls={controls}
+					handRaised={inCall?.raisedHands.has(member._id)}
+					muted={inCall?.mutedMembers.has(member._id)}
+					onMute={inCall?.muteMember}
+					activity={inCall && <VoiceActivity stream={inCall.audioStreams.get(member._id)} size={14} badge />}
 					onRing={ringMember}
 				/>
 			);
@@ -96,7 +120,7 @@ const CallMembersPanel = ({ onClose }: CallMembersPanelProps) => {
 			<CallPanelHeader title={t('People')} onClose={onClose}>
 				{rid && (
 					<Button
-						small
+						size='small'
 						icon='user-plus'
 						// The modal region is mounted outside the conference's provider, so the context is carried
 						// across by hand or the modal loses the user picker and the ring option.
@@ -113,39 +137,22 @@ const CallMembersPanel = ({ onClose }: CallMembersPanelProps) => {
 				)}
 			</CallPanelHeader>
 
-			{/* Said out loud, because the rows are Fuselage `Option`s — `li` elements in a plain box, which made
-			    them neither countable nor individually referrable.
-
-			    A list per group rather than one list around everything: the dividers between the groups are not
-			    list items, and a `list` whose children are not `listitem`s is a list a screen reader may skip or
-			    miscount. Each group is its own list, named by the divider that heads it, and the box around them
-			    is a `group` so the panel still has one handle. */}
-			<Box role='group' aria-label={t('Members')} flexGrow={1} overflowY='auto'>
-				{/* First, because everyone here is waiting on somebody in this panel to let them in. */}
-				{waiting.length > 0 && (
-					<>
-						<MembersListDivider title='Waiting_to_join' count={waiting.length} />
-						<Box role='list' aria-label={t('Waiting_to_join')}>
-							{waiting.map(renderEntry)}
+			{/* A list per group rather than one list around everything, so each group is named by its own heading and
+			    the box around them is a `group` so the panel still has one handle. The heading is hidden from the
+			    list's contents: it already names the list, and a `list` should report only its rows. */}
+			<Box role='group' aria-label={t('Members')} flexGrow={1} overflowY='auto' paddingBlock={12}>
+				{groups.map(({ title, entries }) => (
+					<ItemGroup key={title} role='list' aria-label={t(title)}>
+						<Box aria-hidden>
+							<ItemGroupHeader inset='lg'>
+								<ItemGroupTitle>
+									{t(title)} ({entries.length})
+								</ItemGroupTitle>
+							</ItemGroupHeader>
 						</Box>
-					</>
-				)}
-				{present.length > 0 && (
-					<>
-						<MembersListDivider title='In_call' count={present.length} />
-						<Box role='list' aria-label={t('In_call')}>
-							{present.map(renderEntry)}
-						</Box>
-					</>
-				)}
-				{absent.length > 0 && (
-					<>
-						<MembersListDivider title='Not_in_the_call' count={absent.length} />
-						<Box role='list' aria-label={t('Not_in_the_call')}>
-							{absent.map(renderEntry)}
-						</Box>
-					</>
-				)}
+						{entries.map(renderEntry)}
+					</ItemGroup>
+				))}
 			</Box>
 		</>
 	);

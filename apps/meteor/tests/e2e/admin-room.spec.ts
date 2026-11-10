@@ -45,7 +45,7 @@ test.describe.serial('admin-rooms', () => {
 		const selectedDropdown = await adminRooms.dropdownFilterRoomType('Rooms (1)');
 		await expect(selectedDropdown).toBeVisible();
 
-		await expect(page.locator('text=Private Channel').first()).toBeVisible();
+		await expect(page.locator('text=Private channel').first()).toBeVisible();
 	});
 
 	test('should filter rooms by type and name', async ({ page }) => {

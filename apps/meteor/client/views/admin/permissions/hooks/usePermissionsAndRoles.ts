@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 import { useShallow } from 'zustand/shallow';
 
 import { useFilteredPermissions } from './useFilteredPermissions';
-import { CONSTANTS } from '../../../../../app/authorization/lib';
+import { CONSTANTS } from '../../../../../lib/authorization';
 import { pipe } from '../../../../lib/cachedStores/pipe';
 import { Permissions, Roles } from '../../../../stores';
 

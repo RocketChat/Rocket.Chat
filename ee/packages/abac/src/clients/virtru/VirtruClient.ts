@@ -89,20 +89,26 @@ export class VirtruClient {
 	}
 
 	async apiCall<T>(endpoint: string, body: unknown): Promise<T> {
-		const token = await this.getClientToken();
+		let response: Awaited<ReturnType<typeof serverFetch>>;
+		try {
+			const token = await this.getClientToken();
 
-		virtruClientLogger.debug({ msg: 'Virtru PDP API call request', endpoint, body });
+			virtruClientLogger.debug({ msg: 'Virtru PDP API call request', endpoint, body });
 
-		const response = await serverFetch(`${this.config.baseUrl}${endpoint}`, {
-			method: 'POST',
-			timeout: REQUEST_TIMEOUT,
-			headers: {
-				'Content-Type': 'application/json',
-				'Authorization': `Bearer ${token}`,
-			},
-			body: JSON.stringify(body),
-			ignoreSsrfValidation: true,
-		});
+			response = await serverFetch(`${this.config.baseUrl}${endpoint}`, {
+				method: 'POST',
+				timeout: REQUEST_TIMEOUT,
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${token}`,
+				},
+				body: JSON.stringify(body),
+				ignoreSsrfValidation: true,
+			});
+		} catch (err) {
+			virtruClientLogger.error({ msg: 'Virtru PDP API call failed', endpoint, err });
+			throw err;
+		}
 
 		if (!response.ok) {
 			const text = await response.text().catch(() => '');

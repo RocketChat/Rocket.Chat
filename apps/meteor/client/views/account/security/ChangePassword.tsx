@@ -74,7 +74,6 @@ const ChangePassword = (props: AllHTMLAttributes<HTMLFormElement>) => {
 									{...field}
 									id={passwordId}
 									error={errors.password?.message}
-									flexGrow={1}
 									disabled={!allowPasswordChange}
 									aria-describedby={getAriaDescribedbyForPassword(
 										passwordVerifierId,
@@ -110,7 +109,6 @@ const ChangePassword = (props: AllHTMLAttributes<HTMLFormElement>) => {
 									{...field}
 									id={confirmPasswordId}
 									error={errors.confirmationPassword?.message}
-									flexGrow={1}
 									disabled={!allowPasswordChange || !passwordIsValid}
 									aria-required={password !== '' ? 'true' : 'false'}
 									aria-invalid={errors.confirmationPassword ? 'true' : 'false'}

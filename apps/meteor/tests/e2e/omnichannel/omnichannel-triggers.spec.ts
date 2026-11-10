@@ -31,6 +31,7 @@ test.describe.serial('OC - Livechat Triggers', () => {
 	});
 
 	test.beforeEach(async ({ page, api }) => {
+		await page.emulateMedia({ reducedMotion: 'reduce' });
 		poLiveChat = new OmnichannelLiveChat(page, api);
 	});
 

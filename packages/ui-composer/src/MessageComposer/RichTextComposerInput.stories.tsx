@@ -44,11 +44,11 @@ export const Default: StoryObj<typeof RichTextComposerInput> = {
 				Experiment: Real Time Composer
 			</MessageComposerHint>
 			<MessageComposer>
-				<RichTextComposerInput placeholder='Type a message...' />
+				<RichTextComposerInput aria-label='Message' placeholder='Type a message...' />
 				<MessageComposerToolbar>
 					<MessageToolbarActions />
 					<MessageComposerToolbarSubmit>
-						<MessageComposerAction aria-label='Send' icon='send' disabled={false} secondary={true} info={true} />
+						<MessageComposerAction aria-label='Send' icon='send' disabled={false} variant='primary' />
 					</MessageComposerToolbarSubmit>
 				</MessageComposerToolbar>
 			</MessageComposer>
@@ -63,11 +63,11 @@ export const WithHiddenPlaceholder: StoryObj<typeof RichTextComposerInput> = {
 				Experiment: Real Time Composer
 			</MessageComposerHint>
 			<MessageComposer>
-				<RichTextComposerInput placeholder='Type a message...' hideplaceholder={true} />
+				<RichTextComposerInput aria-label='Message' placeholder='Type a message...' hideplaceholder={true} />
 				<MessageComposerToolbar>
 					<MessageToolbarActions />
 					<MessageComposerToolbarSubmit>
-						<MessageComposerAction aria-label='Send' icon='send' disabled={false} secondary={true} info={true} />
+						<MessageComposerAction aria-label='Send' icon='send' disabled={false} variant='primary' />
 					</MessageComposerToolbarSubmit>
 				</MessageComposerToolbar>
 			</MessageComposer>

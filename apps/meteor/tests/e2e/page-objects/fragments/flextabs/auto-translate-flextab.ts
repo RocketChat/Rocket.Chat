@@ -8,11 +8,11 @@ export class AutoTranslateFlexTab extends FlexTab {
 	}
 
 	get checkboxAutomaticTranslation(): Locator {
-		return this.root.getByRole('checkbox', { name: 'Automatic Translation' });
+		return this.root.getByRole('checkbox', { name: 'Automatic translation' });
 	}
 
 	get textAutomaticTranslation(): Locator {
-		return this.root.getByText('Automatic Translation', { exact: true });
+		return this.root.getByText('Automatic translation', { exact: true });
 	}
 
 	get textEncryptedRoomCallout(): Locator {

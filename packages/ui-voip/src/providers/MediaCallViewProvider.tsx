@@ -7,10 +7,12 @@ import {
 	useSelectedDevices,
 	useToastMessageDispatch,
 } from '@rocket.chat/ui-contexts';
+import { stopTracks, useDevicePermissionPrompt2 } from '@rocket.chat/ui-media';
 import type { ReactNode } from 'react';
 import { useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useAllowedFeatures } from './useAllowedFeatures';
 import { useCallSounds } from './useCallSounds';
 import { useDesktopNotifications } from './useDesktopNotifications';
 import { useMediaSession } from './useMediaSession';
@@ -20,8 +22,9 @@ import useWidgetPositionTracker from './useWidgetPositionTracker';
 import { useMediaCallInstance } from '../context/MediaCallInstanceContext';
 import MediaCallViewContext from '../context/MediaCallViewContext';
 import type { PeerInfo } from '../context/definitions';
-import { stopTracks, useDevicePermissionPrompt2 } from '../hooks/useDevicePermissionPrompt';
 import { isValidTone, useTonePlayer } from '../hooks/useTonePlayer';
+import { isExternalPeer } from '../utils/isExternalPeer';
+import { isInternalPeer } from '../utils/isInternalPeer';
 import TransferModal from '../views/TransferModal';
 
 export type MediaCallViewProviderProps = {
@@ -37,6 +40,7 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 	const { instance, audioElement, openRoomId, registerView, unregisterView, setTargetPeer, targetPeer } = useMediaCallInstance();
 
 	const sessionState = useMediaSession(instance);
+	const allowedFeatures = useAllowedFeatures(sessionState.supportedFeatures);
 	const controls = useMediaSessionControls(instance);
 
 	useDesktopNotifications(sessionState);
@@ -60,7 +64,7 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 	}, [audioInput?.id, controls, sessionState.hidden]);
 
 	useCallSounds(
-		sessionState.hidden ? 'none' : sessionState.state,
+		!sessionState.ringing ? 'none' : sessionState.state,
 		useCallback(
 			(callback) => {
 				if (!instance) {
@@ -87,18 +91,17 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 			return;
 		}
 
+		if (!isInternalPeer(targetPeer) && !isExternalPeer(targetPeer)) {
+			console.error('MediaCall - New call - something went wrong when trying to call. PeerInfo is missing userId and/or number.');
+			return;
+		}
+
 		const startCall = (micless: boolean) => {
-			if ('userId' in targetPeer) {
+			if (isInternalPeer(targetPeer)) {
 				void controls.startCall(targetPeer.userId, 'user', micless);
-				return;
-			}
-
-			if ('number' in targetPeer) {
+			} else {
 				void controls.startCall(targetPeer.number, 'sip', micless);
-				return;
 			}
-
-			throw new Error('MediaCall - New call - something went wrong when trying to call. PeerInfo is missing userId and/or number.');
 		};
 
 		try {
@@ -222,6 +225,7 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 
 	const contextValue = {
 		sessionState,
+		allowedFeatures,
 		targetPeer,
 		onClickDirectMessage,
 		onMute,

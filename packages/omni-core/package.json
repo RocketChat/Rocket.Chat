@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/omni-core",
-	"version": "0.1.5",
+	"version": "0.1.6-rc.0",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -10,8 +10,8 @@
 	"scripts": {
 		"build": "rm -rf dist && tsc -p tsconfig.json",
 		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
-		"lint": "eslint .",
-		"lint:fix": "eslint --fix .",
+		"lint": "yarn run -T oxlint",
+		"lint:fix": "yarn run -T oxlint --fix",
 		"test": "jest",
 		"testunit": "jest",
 		"typecheck": "tsc --noEmit"
@@ -25,10 +25,8 @@
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tools": "workspace:*",
 		"@rocket.chat/tsconfig": "workspace:*",
-		"@types/jest": "~30.0.0",
-		"eslint": "~9.39.5",
-		"jest": "~30.2.0",
-		"typescript": "~5.9.3"
+		"jest": "~30.5.2",
+		"typescript": "~7.0.2"
 	},
 	"volta": {
 		"extends": "../../package.json"

@@ -1,9 +1,8 @@
-/* eslint no-multi-spaces: 0 */
 import type { IPermission, ISetting } from '@rocket.chat/core-typings';
 import { Permissions, Settings } from '@rocket.chat/models';
 
 import { permissions } from './constant/permissions';
-import { getSettingPermissionId, CONSTANTS } from '../../../app/authorization/lib';
+import { getSettingPermissionId, CONSTANTS } from '../../../lib/authorization';
 import { settings } from '../../settings';
 import { createOrUpdateProtectedRoleAsync } from '../roles/createOrUpdateProtectedRole';
 
@@ -20,9 +19,8 @@ export const upsertPermissions = async (): Promise<void> => {
 		{ name: 'user', scope: 'Users', description: '' },
 		{ name: 'federated-external', scope: 'Users', description: '' },
 		{ name: 'bot', scope: 'Users', description: '' },
-		{ name: 'app', scope: 'Users', description: '' },
+		{ name: 'app', scope: 'Users', description: 'App' },
 		{ name: 'guest', scope: 'Users', description: '' },
-		{ name: 'anonymous', scope: 'Users', description: '' },
 		{ name: 'livechat-agent', scope: 'Users', description: 'Livechat Agent' },
 		{ name: 'livechat-manager', scope: 'Users', description: 'Livechat Manager' },
 	] as const;
@@ -50,7 +48,7 @@ export const upsertPermissions = async (): Promise<void> => {
 	): Promise<void> {
 		const permissionId = getSettingPermissionId(setting._id);
 		const permission: Omit<IPermission, '_id' | '_updatedAt'> = {
-			level: CONSTANTS.SETTINGS_LEVEL as 'settings' | undefined,
+			level: CONSTANTS.SETTINGS_LEVEL,
 			// copy those setting-properties which are needed to properly publish the setting-based permissions
 			settingId: setting._id,
 			// TODO: migrate settings with group and section with null to undefined
