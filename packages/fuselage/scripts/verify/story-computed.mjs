@@ -2,7 +2,7 @@
 //   [--renders rcx-button --class-index story-classes.json] [--globals 'theme:dark;direction:rtl'] [--jobs 4] [--width 1024]
 // Diffs tag, rcx classes and computed styles (incl. ::before/::after) of everything each story renders in <body>, portals
 // included, in two Storybook builds. Elements pair by their rcx path, so a changed wrapper does not misalign the rest.
-// Lists up to `max` differing elements per story (6). STORY_AB_WAIT=2000 lets addons such as pseudo-states apply first.
+// Lists up to `max` differing elements per story (6). Exits 1 when a story differs or could not be captured, or when none matched. STORY_AB_WAIT=2000 lets addons such as pseudo-states apply first.
 import { cli, openStory, runPool, storyIds } from './lib.mjs';
 import { serve } from './serve.mjs';
 
@@ -55,6 +55,7 @@ const results = await runPool(ids, { jobs: opts.jobs, width: opts.width }, async
 
 let identical = 0;
 let failed = 0;
+let differs = 0;
 for (const id of ids) {
 	const { value, error } = results.get(id);
 	if (error) {
@@ -80,10 +81,14 @@ for (const id of ids) {
 	}
 	if (differing > max) lines.push(`   … ${differing - max} more differing elements`);
 	if (removed.length > max || added.length > max) lines.push(`   … ${removed.length} only in A, ${added.length} only in B`);
-	if (lines.length) console.log(`DIFF ${id}\n${lines.join('\n')}`);
-	else identical++;
+	if (lines.length) {
+		differs++;
+		console.log(`DIFF ${id}\n${lines.join('\n')}`);
+	} else identical++;
 }
 console.log(`${identical} of ${ids.length} stories with identical computed styles, ${failed} could not be captured`);
+if (!ids.length) console.error('No story matched, nothing was compared.');
+process.exitCode = !ids.length || failed || differs ? 1 : 0;
 
 serverA.close();
 serverB.close();
