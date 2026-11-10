@@ -217,6 +217,13 @@ $item-group-narrow-width: 320px;
 
 		white-space: nowrap;
 		text-overflow: ellipsis;
+
+		&--wrap {
+			overflow: visible;
+
+			white-space: normal;
+			overflow-wrap: anywhere;
+		}
 	}
 
 	&__description {
@@ -230,6 +237,17 @@ $item-group-narrow-width: 320px;
 
 		color: $item-color-font-secondary;
 		@include use-font-scale(c1);
+
+		&--wrap {
+			overflow: visible;
+
+			white-space: normal;
+			overflow-wrap: anywhere;
+		}
+
+		&--large {
+			@include use-font-scale(p2);
+		}
 
 		&--inline {
 			display: inline;
