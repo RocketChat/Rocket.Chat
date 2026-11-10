@@ -9,15 +9,14 @@ import {
 	HoverCard,
 	HoverCardActions,
 	HoverCardBand,
-	HoverCardHeader,
 	HoverCardInfoItem,
 	HoverCardInfoList,
 	HoverCardSection,
 } from '../HoverCard';
 import { MarkdownTextContext } from '../MarkdownTextContext';
 import * as Status from '../UserStatus';
+import UserCardHeader from './UserCardHeader';
 import UserCardRoles from './UserCardRoles';
-import UserCardUsername from './UserCardUsername';
 
 export type UserCardProps = {
 	user?: {
@@ -49,28 +48,18 @@ const UserCard = ({
 		<HoverCard aria-label={t('User_card')}>
 			{workspaceRoles && <HoverCardBand label={t('Workspace_roles')}>{workspaceRoles}</HoverCardBand>}
 			<HoverCardSection>
-				<HoverCardHeader
+				<UserCardHeader
 					avatar={username && <UserAvatar username={username} etag={etag} size='x36' />}
-					title={
-						<Box display='flex' alignItems='center' withTruncatedText>
-							<UserCardUsername is='h2' flexGrow={0} flexBasis='auto' status={status} name={name} />
-							{nickname && (
-								<Box flexShrink={1} title={nickname} color='hint' marginInlineStart='x4' fontScale='p1' withTruncatedText>
-									({nickname})
-								</Box>
-							)}
-						</Box>
-					}
+					name={name}
+					status={status}
+					nickname={nickname}
 					subtitle={
-						customStatus && (
-							<Box fontScale='p2' color='default' paddingInlineStart='x4' withTruncatedText>
-								{typeof customStatus === 'string' ? (
-									<MarkdownText withTruncatedText variant='inlineWithoutBreaks' content={customStatus} parseEmoji={true} />
-								) : (
-									customStatus
-								)}
-							</Box>
-						)
+						customStatus &&
+						(typeof customStatus === 'string' ? (
+							<MarkdownText withTruncatedText variant='inlineWithoutBreaks' content={customStatus} parseEmoji={true} />
+						) : (
+							customStatus
+						))
 					}
 				/>
 				<Box display='flex' flexDirection='column' marginBlockStart='x16'>
