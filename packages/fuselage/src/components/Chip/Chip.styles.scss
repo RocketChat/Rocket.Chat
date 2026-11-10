@@ -51,8 +51,12 @@ $chip-disabled-color: theme('chip-disabled-color', colors.font(disabled));
 	overflow: hidden;
 	align-items: center;
 
+	gap: lengths.margin(8);
+
 	height: lengths.size(28);
 	min-height: lengths.size(28);
+
+	padding: lengths.padding(4);
 
 	border-width: 0;
 
