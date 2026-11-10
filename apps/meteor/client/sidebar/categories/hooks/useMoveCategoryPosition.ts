@@ -1,9 +1,14 @@
 import { useCallback } from 'react';
 
-import { useSaveCategoryOrder } from './useSaveCategoryOrder';
+import { usePersistCategoriesMutation } from './usePersistCategoriesMutation';
+import { useUserSidebarCategories } from './useUserSidebarCategories';
+import { withDynamicFirst } from '../../hooks/useCategoryList';
+import { useSidebarSectionsOrder } from '../../hooks/useSidebarSectionsOrder';
 
 export const useMoveCategoryPosition = () => {
-	const saveCategoryOrder = useSaveCategoryOrder();
+	const { rawCategories } = useUserSidebarCategories();
+	const sidebarSectionsOrder = useSidebarSectionsOrder();
+	const { mutateAsync: persistCategories } = usePersistCategoriesMutation();
 
 	return useCallback(
 		async (currentKeys: string[], key: string, direction: 'up' | 'down') => {
@@ -14,8 +19,10 @@ export const useMoveCategoryPosition = () => {
 			const swappedKeys = [...currentKeys];
 			[swappedKeys[i], swappedKeys[target]] = [swappedKeys[target], swappedKeys[i]];
 
-			await saveCategoryOrder(swappedKeys);
+			const entryMap = new Map(rawCategories.map((e) => [e._id, e]));
+			const finalIds = withDynamicFirst(swappedKeys, sidebarSectionsOrder);
+			await persistCategories(finalIds.map((k) => entryMap.get(k) ?? { _id: k, name: k, default: true }));
 		},
-		[saveCategoryOrder],
+		[rawCategories, sidebarSectionsOrder, persistCategories],
 	);
 };

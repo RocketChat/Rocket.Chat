@@ -19,10 +19,9 @@ export type RoomListRowProps = {
 	item: SubscriptionWithRoom;
 	/** Present only while this room's call is ringing and this list is where it is answered. */
 	videoConfActions?: RingingCallActions;
-	dragging?: boolean;
 };
 
-const RoomListRow = ({ data, item, videoConfActions, dragging }: RoomListRowProps) => {
+const RoomListRow = ({ data, item, videoConfActions }: RoomListRowProps) => {
 	const { t, viewMode, showAvatar, formatTime, userId } = data;
 	const selected = useIsOpenedRoom(item.rid);
 
@@ -36,7 +35,6 @@ const RoomListRow = ({ data, item, videoConfActions, dragging }: RoomListRowProp
 			room={item}
 			videoConfActions={videoConfActions}
 			userId={userId}
-			dragging={dragging}
 		/>
 	);
 };

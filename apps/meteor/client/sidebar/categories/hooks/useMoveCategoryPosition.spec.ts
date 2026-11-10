@@ -8,7 +8,6 @@ import { SIDEBAR_DYNAMIC_GROUP_KEYS } from '../../hooks/useCategoryList';
 
 jest.mock('@rocket.chat/ui-contexts', () => ({
 	useUserPreference: jest.fn(),
-	useToastMessageDispatch: () => jest.fn(),
 }));
 
 jest.mock('./usePersistCategoriesMutation', () => ({

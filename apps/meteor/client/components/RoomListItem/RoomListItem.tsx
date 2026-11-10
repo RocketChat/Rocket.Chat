@@ -48,7 +48,6 @@ export type RoomListItemProps = {
 	'menu'?: ReactNode;
 	'selected'?: boolean;
 	'highlighted'?: boolean;
-	'dragging'?: boolean;
 	'aria-label'?: string;
 	'aria-current'?: AriaAttributes['aria-current'];
 } & RoomListItemIconProps &
