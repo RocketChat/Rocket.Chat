@@ -92,6 +92,9 @@ export type AnchorRef = Ref<HTMLAnchorElement>;
 /** What a part that only shows something forwards. */
 export type PartAttributes<TElement extends Element> = CommonAttributes & WebAttributes<TElement>;
 
+/** What a part that only shows something and renders a `span` forwards. */
+export type SpanAttributes = PartAttributes<HTMLSpanElement>;
+
 /** What a part that acts when pressed (a button, a link, a dismissable chip) forwards. */
 export type ActionAttributes<TElement extends Element> = CommonAttributes &
 	ActionAccessibilityAttributes &

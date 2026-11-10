@@ -40,11 +40,6 @@ export default {
 			description: 'Renders the badge in a smaller size.',
 			table: { category: 'Size' },
 		},
-		is: {
-			control: false,
-			description: 'Underlying element or component rendered.',
-			table: { category: 'Polymorphism', defaultValue: { summary: 'span' } },
-		},
 	},
 	render: (args) => (
 		<Box display='inline-flex'>
