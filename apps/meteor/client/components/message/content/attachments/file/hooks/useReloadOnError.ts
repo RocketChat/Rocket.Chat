@@ -93,12 +93,11 @@ export const useReloadOnError = (url: string, type: 'video' | 'audio') => {
 			cleanup = renderBufferingUIFallback(node as HTMLVideoElement);
 		}
 
-		const wasPlaying = !node.paused;
-
 		try {
 			const { redirectUrl: newUrl, expires: newExpiresAt } = await getRedirectURLInfo(url);
 			setExpiresAt(newExpiresAt);
 
+			const wasPlaying = !node.paused;
 			const hasPosition = node.readyState > HTMLMediaElement.HAVE_NOTHING;
 			const restoreTime = hasPosition ? node.currentTime : undefined;
 			node.src = newUrl || url;
