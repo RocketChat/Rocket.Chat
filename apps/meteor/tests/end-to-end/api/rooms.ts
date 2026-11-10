@@ -3368,6 +3368,156 @@ describe('[Rooms]', () => {
 		});
 	});
 
+	describe('access to rooms', () => {
+		let outsider: TestUser<IUser>;
+		let outsiderCredentials: Credentials;
+		let privateRoom: IRoom;
+
+		before(async () => {
+			outsider = await createUser();
+			outsiderCredentials = await login(outsider.username, password);
+			privateRoom = (await createRoom({ type: 'p', name: `rooms.access.${Date.now()}` })).body.group;
+		});
+
+		after(async () => {
+			await deleteRoom({ type: 'p', roomId: privateRoom._id });
+			await deleteUser(outsider);
+		});
+
+		const expectRefusal = (endpoint: 'rooms.history' | 'rooms.getDiscussions' | 'rooms.bannedUsers') => async () => {
+			await request.get(api(endpoint)).set(outsiderCredentials).query({ roomId: privateRoom._id }).expect(403);
+		};
+
+		it('should refuse the history of a room the user is not in', expectRefusal('rooms.history'));
+
+		it('should refuse the discussions of a room the user is not in', expectRefusal('rooms.getDiscussions'));
+
+		it('should refuse the banned users of a room the user is not in', expectRefusal('rooms.bannedUsers'));
+
+		it('should refuse the pinned messages of a room the user is not in', async () => {
+			await request.get(api('chat.getPinnedMessages')).set(outsiderCredentials).query({ roomId: privateRoom._id }).expect(403);
+		});
+
+		it('should refuse an upload to a room the user is not in', async () => {
+			await request
+				.post(api(`rooms.media/${privateRoom._id}`))
+				.set(outsiderCredentials)
+				.attach('file', imgURL)
+				.expect(403);
+		});
+
+		it('should refuse to confirm an upload to a room the user is not in', async () => {
+			await request
+				.post(api(`rooms.mediaConfirm/${privateRoom._id}/unknown-file`))
+				.set(outsiderCredentials)
+				.send({})
+				.expect(403);
+		});
+
+		describe('without the permission to preview channels', () => {
+			let channel: IRoom;
+
+			before(async () => {
+				channel = (await createRoom({ type: 'c', name: `rooms.preview.${Date.now()}` })).body.channel;
+				await updatePermission('preview-c-room', []);
+			});
+
+			after(async () => {
+				await restorePermissionToRoles('preview-c-room');
+				await deleteRoom({ type: 'c', roomId: channel._id });
+			});
+
+			it('should refuse the history of a public channel the user did not join', async () => {
+				await request.get(api('rooms.history')).set(outsiderCredentials).query({ roomId: channel._id }).expect(403);
+			});
+		});
+
+		describe('broadcast rooms', () => {
+			let broadcastRoom: IRoom;
+
+			before(async () => {
+				broadcastRoom = (
+					await createRoom({
+						type: 'c',
+						name: `rooms.broadcast.${Date.now()}`,
+						members: [outsider.username],
+						extraData: { broadcast: true },
+					})
+				).body.channel;
+			});
+
+			after(() => deleteRoom({ type: 'c', roomId: broadcastRoom._id }));
+
+			it('should refuse the member list to a member without the permission', async () => {
+				await request.get(api('rooms.membersOrderedByRole')).set(outsiderCredentials).query({ roomId: broadcastRoom._id }).expect(403);
+			});
+		});
+	});
+
+	describe('/rooms.changeArchivationState', () => {
+		let owner: TestUser<IUser>;
+		let member: TestUser<IUser>;
+		let ownerCredentials: Credentials;
+		let memberCredentials: Credentials;
+		let channel: IRoom;
+
+		const changeState = (rid: IRoom['_id'], action: 'archive' | 'unarchive', userCredentials: Credentials) =>
+			request.post(api('rooms.changeArchivationState')).set(userCredentials).send({ rid, action });
+
+		const isArchived = async () => {
+			const { body } = await request.get(api('rooms.info')).set(credentials).query({ roomId: channel._id }).expect(200);
+			return Boolean(body.room.archived);
+		};
+
+		before(async () => {
+			[owner, member] = await Promise.all([createUser(), createUser()]);
+			[ownerCredentials, memberCredentials] = await Promise.all([login(owner.username, password), login(member.username, password)]);
+		});
+
+		beforeEach(async () => {
+			channel = (
+				await createRoom({
+					type: 'c',
+					name: `rooms.archive.${Date.now()}-${Random.id()}`,
+					members: [member.username],
+					credentials: ownerCredentials,
+				})
+			).body.channel;
+		});
+
+		afterEach(() => deleteRoom({ type: 'c', roomId: channel._id }));
+
+		after(() => Promise.all([deleteUser(owner, { confirmRelinquish: true }), deleteUser(member)]));
+
+		it('should let the owner archive the room', async () => {
+			await changeState(channel._id, 'archive', ownerCredentials).expect(200);
+
+			expect(await isArchived()).to.be.true;
+		});
+
+		it('should refuse a member', async () => {
+			await changeState(channel._id, 'archive', memberCredentials).expect(403);
+
+			expect(await isArchived()).to.be.false;
+		});
+
+		it('should refuse the owner who tries to unarchive the room', async () => {
+			await changeState(channel._id, 'archive', ownerCredentials).expect(200);
+
+			await changeState(channel._id, 'unarchive', ownerCredentials).expect(403);
+
+			expect(await isArchived()).to.be.true;
+		});
+
+		it('should let an admin unarchive the room', async () => {
+			await changeState(channel._id, 'archive', ownerCredentials).expect(200);
+
+			await changeState(channel._id, 'unarchive', credentials).expect(200);
+
+			expect(await isArchived()).to.be.false;
+		});
+	});
+
 	describe('rooms.images', () => {
 		let testUserCreds: Credentials;
 		before(async () => {
