@@ -1,0 +1,20 @@
+apps/meteor/client/hooks/notification/useNotification.spec.ts
+  s_4626e8f9bd1f85::t_8c47d57826865d 219-235,251-281
+  s_4626e8f9bd1f85::t_b8ee911a3a6d04 236-250
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "23d849de69ecfdeacabcc78ed166c7a95c4c44f3",
+  "prompts": {},
+  "sessions": {
+    "s_4626e8f9bd1f85": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "46768286-3eea-4075-904b-6696c3822019",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
