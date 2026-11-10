@@ -5,8 +5,10 @@ jest.mock('../getUserAvatarURL', () => ({
 }));
 
 const loadAvatar = (width: number, height: number) => {
-	const drawImage = jest.fn();
-	jest.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue({ drawImage } as unknown as CanvasRenderingContext2D);
+	const context: Partial<CanvasRenderingContext2D> = {};
+	const drawImage = jest.fn((..._args: unknown[]) => context.imageSmoothingQuality);
+	context.drawImage = drawImage;
+	jest.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(context as CanvasRenderingContext2D);
 	const toDataURL = jest.spyOn(HTMLCanvasElement.prototype, 'toDataURL').mockReturnValue('data:image/png;base64,');
 	jest.spyOn(window, 'Image').mockImplementation(() => {
 		const image = document.createElement('img');
@@ -33,4 +35,5 @@ it.each([
 
 	expect(canvas).toMatchObject({ width: iconWidth, height: iconHeight });
 	expect(drawImage).toHaveBeenCalledWith(expect.anything(), 0, 0, iconWidth, iconHeight);
+	expect(drawImage).toHaveReturnedWith('high');
 });

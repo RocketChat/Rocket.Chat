@@ -18,6 +18,7 @@ export const getAvatarAsPng = (username: IUser['username'], cb: (dataURL: string
 			throw new Error('failed to get canvas context');
 		}
 
+		context.imageSmoothingQuality = 'high';
 		context.drawImage(image, 0, 0, canvas.width, canvas.height);
 		try {
 			return cb(canvas.toDataURL('image/png'));
