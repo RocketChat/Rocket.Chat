@@ -20,6 +20,7 @@ type Story = StoryObj<typeof Button>;
 const onClick = fn();
 const forwardedRef = createRef<HTMLButtonElement>();
 const callbackRef = fn();
+const onLinkClick = fn((event: MouseEvent) => event.preventDefault());
 
 export const Forwarding: Story = {
 	render: () => (
@@ -37,7 +38,18 @@ export const Forwarding: Story = {
 			>
 				Save
 			</Button>
-			<Button is='a' href='/somewhere' ref={callbackRef} className='consumer-link' data-qa='link-qa'>
+			<Button
+				is='a'
+				href='/somewhere'
+				ref={callbackRef}
+				className='consumer-link'
+				id='link-id'
+				title='link title'
+				data-qa='link-qa'
+				data-anything='link-anything'
+				aria-label='link label'
+				onClick={onLinkClick}
+			>
 				Go
 			</Button>
 		</>
@@ -53,7 +65,16 @@ export const Forwarding: Story = {
 			'ref': forwardedRef,
 			'handlers': { onClick },
 		});
-		await expectForwards(canvasElement, 'a', { 'className': 'consumer-link', 'data-qa': 'link-qa', 'ref': callbackRef });
+		await expectForwards(canvasElement, 'a', {
+			'className': 'consumer-link',
+			'id': 'link-id',
+			'title': 'link title',
+			'data-qa': 'link-qa',
+			'data-anything': 'link-anything',
+			'aria-label': 'link label',
+			'ref': callbackRef,
+			'handlers': { onClick: onLinkClick },
+		});
 	},
 };
 
