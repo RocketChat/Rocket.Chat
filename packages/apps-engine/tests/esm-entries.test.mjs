@@ -14,7 +14,7 @@ const walk = (dir) =>
 	});
 
 // Interop markers Node adds to every CommonJS module, not part of the package's API.
-const isApiName = (name) => name !== '__esModule' && name !== 'module.exports';
+const isApiName = (name) => name !== '__esModule' && name !== 'module.exports' && name !== 'default';
 
 const subpaths = walk(definitionDir)
 	.filter((path) => path.endsWith('.js'))
@@ -31,6 +31,7 @@ describe('the ES module entries of `@rocket.chat/apps-engine`', () => {
 			// oxlint-disable-next-line import/no-dynamic-require -- every module of the build is checked
 			assert.equal(require(`${specifier}.js`), cjs);
 			assert.equal(await import(`${specifier}.js`), esm);
+			assert.equal(esm.default, cjs, 'the default export is not the CommonJS `module.exports`');
 			const names = Object.keys(esm).filter(isApiName).sort();
 			assert.deepEqual(names, Object.keys(cjs).filter(isApiName).sort());
 
@@ -46,5 +47,6 @@ describe('the ES module entries of `@rocket.chat/apps-engine`', () => {
 
 		assert.equal(cjs, require('@rocket.chat/apps-engine/definition/accessors/index'));
 		assert.equal(esm.HttpStatusCode, cjs.HttpStatusCode);
+		assert.equal(esm.default, cjs);
 	});
 });

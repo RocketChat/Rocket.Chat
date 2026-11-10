@@ -42,7 +42,7 @@ const emit = () => {
 
 		const esmFile = join(esmRoot, relative(cjsRoot, path));
 		const target = toSpecifier(esmFile, path);
-		write(esmFile, `export * from '${target}';\n`);
+		write(esmFile, `export * from '${target}';\nexport { default } from '${target}';\n`);
 	}
 
 	for (const path of paths) {
@@ -59,7 +59,7 @@ const emit = () => {
 		const esmPath = join(esmRoot, relative(cjsRoot, path));
 		write(`${path}.js`, cjsEntry);
 		write(`${path}.d.ts`, `export * from '${index}';\n`);
-		write(`${esmPath}.js`, `export * from '${index}';\n`);
+		write(`${esmPath}.js`, `export * from '${index}';\nexport { default } from '${index}';\n`);
 	}
 
 	write(join(root, 'esm', 'package.json'), `${JSON.stringify({ type: 'module' }, null, '\t')}\n`);
