@@ -35,6 +35,9 @@ export default {
 		instanceId: 'b97ce445-b9ff-4513-8206-966afd799cd6',
 		_updatedAt: '2025-06-02T13:06:43.778Z',
 	},
+	argTypes: {
+		onExpand: { action: 'onExpand' },
+	},
 	parameters: {
 		layout: 'fullscreen',
 	},
