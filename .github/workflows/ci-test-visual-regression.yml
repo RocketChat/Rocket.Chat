@@ -132,6 +132,9 @@ jobs:
       - name: Run visual regression tests
         run: yarn workspace @rocket.chat/fuselage run visual-regression
 
+      - uses: ./.github/actions/setup-playwright
+        if: matrix.zero-runtime == '1'
+
       - name: Run the g0 characterization specs against the zero-runtime Storybook
         if: matrix.zero-runtime == '1'
         run: yarn workspace @rocket.chat/fuselage run test:stories storybook-static
