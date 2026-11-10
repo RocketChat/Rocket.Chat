@@ -144,6 +144,7 @@ const defaultProps = {
 	shouldJumpToBottom: false,
 	setShouldJumpToBottom: jest.fn(),
 	isAtBottom: { current: false },
+	scrollerRef: { current: null },
 	isJumpingToMessage: false,
 	setIsJumpingToMessage: jest.fn(),
 	setUnreadCount: jest.fn(),
@@ -296,6 +297,26 @@ describe('MessageList scroll position', () => {
 		await waitFor(() => {
 			expect(store.update).toHaveBeenCalledWith({ scroll: 50, atBottom: false, cache: undefined, cacheMessageCount: 2 });
 		});
+	});
+
+	it('should stay at the bottom when the window grows before the virtualizer has measured it', () => {
+		(RoomManager.getStore as jest.Mock).mockReturnValue({ scroll: undefined, atBottom: true, update: jest.fn() });
+		mockVirtualizerHandle.scrollOffset = 2760;
+		mockVirtualizerHandle.scrollSize = 3609;
+		mockVirtualizerHandle.viewportSize = 493;
+		const scroller = document.createElement('div');
+		Object.defineProperties(scroller, {
+			scrollHeight: { value: 3640 },
+			clientHeight: { value: 880 },
+			scrollTop: { value: 2760 },
+		});
+		const isAtBottom = { current: false };
+
+		render(<MessageList {...defaultProps} isAtBottom={isAtBottom} scrollerRef={{ current: scroller }} />, { wrapper: root.build() });
+
+		fireEvent.scroll(screen.getByTestId('message-list'));
+
+		expect(isAtBottom.current).toBe(true);
 	});
 
 	it('should persist the virtualizer cache snapshot alongside the scroll position and the message count it was measured against', async () => {
