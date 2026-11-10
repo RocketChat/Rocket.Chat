@@ -39,6 +39,7 @@
 		"storybook": "storybook dev -p 6006",
 		"test": "jest",
 		"test:stories": "node scripts/test-stories.mjs",
+		"test:verify": "node --test scripts/verify/frame-platform.test.mjs",
 		"testunit": "jest",
 		"typecheck": "tsc --noEmit",
 		"verify:box-usage": "node scripts/verify/box-usage.mjs",
