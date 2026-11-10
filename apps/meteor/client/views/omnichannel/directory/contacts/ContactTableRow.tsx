@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box } from '@rocket.chat/fuselage';
+import { Box, Text, useStyle } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { ILivechatContactWithManagerData } from '@rocket.chat/rest-typings';
 import { GenericTableCell, GenericTableRow } from '@rocket.chat/ui-client';
@@ -21,6 +21,7 @@ const customAlignTop = css`
 `;
 
 const ContactTableRow = ({ _id, name, contactManager, lastChat, channels }: ILivechatContactWithManagerData) => {
+	const customAlignTopClassName = useStyle(customAlignTop);
 	const { getSourceLabel } = useOmnichannelSource();
 	const getTimeFromNow = useTimeFromNow(true);
 	const formatDate = useFormatDate();
@@ -47,15 +48,14 @@ const ContactTableRow = ({ _id, name, contactManager, lastChat, channels }: ILiv
 			action
 			key={_id}
 			tabIndex={0}
-			height='40px'
 			rcx-show-call-button-on-hover
-			className={customAlignTop}
+			className={customAlignTopClassName}
 			onClick={() => onRowClick(_id)}
 		>
-			<GenericTableCell fontScale='p2m' color='default' withTruncatedText>
+			<GenericTableCell strong color='default' truncate>
 				{name}
 			</GenericTableCell>
-			<GenericTableCell withTruncatedText>
+			<GenericTableCell truncate>
 				{latestChannel?.details && (
 					<Box withTruncatedText display='flex' alignItems='center'>
 						<OmnichannelRoomIcon size='x20' source={latestChannel?.details} />
@@ -65,14 +65,14 @@ const ContactTableRow = ({ _id, name, contactManager, lastChat, channels }: ILiv
 					</Box>
 				)}
 			</GenericTableCell>
-			<GenericTableCell withTruncatedText>{contactManager?.username}</GenericTableCell>
-			<GenericTableCell withTruncatedText>
+			<GenericTableCell truncate>{contactManager?.username}</GenericTableCell>
+			<GenericTableCell truncate>
 				{lastChat && (
 					<Box display='flex' flexDirection='column'>
-						<Box fontScale='p2m' withTruncatedText color='default'>
+						<Text fontScale='p2m' truncate color='default'>
 							{formatDate(lastChat.ts)}
-						</Box>
-						<Box withTruncatedText>{getTimeFromNow(lastChat.ts)}</Box>
+						</Text>
+						<Text truncate>{getTimeFromNow(lastChat.ts)}</Text>
 					</Box>
 				)}
 			</GenericTableCell>

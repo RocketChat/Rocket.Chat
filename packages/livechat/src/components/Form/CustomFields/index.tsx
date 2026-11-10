@@ -1,4 +1,4 @@
-import type { Control, FieldErrors, FieldValues } from 'react-hook-form';
+import type { Control, FieldErrors } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -21,7 +21,7 @@ type RenderCustomFieldsProps = {
 	customFields: CustomField[];
 	loading: boolean;
 	control: Control<RegisterFormValues>;
-	errors: FieldErrors<FieldValues>;
+	errors: FieldErrors<Record<string, string>>;
 };
 
 export const CustomFields = ({ customFields, loading, control, errors }: RenderCustomFieldsProps) => {

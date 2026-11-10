@@ -24,12 +24,12 @@ test.describe('Preview public channel', () => {
 		targetChannel = await createTargetChannel(api);
 		targetChannelMessage = await sendTargetChannelMessage(api, targetChannel, { msg: 'This message' });
 
-		await api.post('/permissions.update', { permissions: [{ _id: 'preview-c-room', roles: ['admin', 'user', 'anonymous'] }] });
+		await api.post('/permissions.update', { permissions: [{ _id: 'preview-c-room', roles: ['admin', 'user'] }] });
 	});
 
 	test.afterAll(async ({ api }) => {
 		await api.post('/channels.delete', { roomName: targetChannel });
-		await api.post('/permissions.update', { permissions: [{ _id: 'preview-c-room', roles: ['admin', 'user', 'anonymous'] }] });
+		await api.post('/permissions.update', { permissions: [{ _id: 'preview-c-room', roles: ['admin', 'user'] }] });
 	});
 
 	test.describe('User', () => {
@@ -85,7 +85,7 @@ test.describe('Preview public channel', () => {
 		test.use({ storageState: Users.userNotAllowedByApp.state });
 
 		test('should prevent user from join the room', async ({ api, page }) => {
-			await api.post('/permissions.update', { permissions: [{ _id: 'preview-c-room', roles: ['admin', 'user', 'anonymous'] }] });
+			await api.post('/permissions.update', { permissions: [{ _id: 'preview-c-room', roles: ['admin', 'user'] }] });
 
 			await poDirectory.goto();
 			await poDirectory.openChannel(targetChannel);

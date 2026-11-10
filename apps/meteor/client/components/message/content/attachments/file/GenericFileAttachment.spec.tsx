@@ -37,7 +37,7 @@ window.RocketChatDesktop = {
 	supportedDocumentViewerFormats: mockSupportedDocumentViewerFormats,
 } as any;
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
+// oxlint-disable-next-line @typescript-eslint/no-require-imports
 const GenericFileAttachment = require('./GenericFileAttachment').default;
 
 /** Built the same way the component builds it, so the assertion does not depend on the jsdom origin. */

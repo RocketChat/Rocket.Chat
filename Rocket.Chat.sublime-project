@@ -30,24 +30,13 @@
 	],
 	"settings": {
 		"LSP": {
-			"LSP-typescript": {
+			"LSP-tsgo": {
 				"enabled": true,
 				"disabled_capabilities": {
 					// Uncomment the line below to load auto complete suggestions from sublime's index instead of typescript.
 					// The index is much faster, but doesn't filter out results based on the current context.
 
 					// "completionProvider": true,
-				},
-			},
-			"LSP-eslint": {
-				"settings": {
-					// If node path is not automatically detected, you can specify it here (use the global eslint settings if you have a global node)
-					// "nodePath": null
-					"workingDirectories": [
-						{
-							"mode": "auto",
-						}
-					],
 				},
 			},
 		},

@@ -20,6 +20,12 @@ export interface IBaseUploadsModel<T extends IUpload> extends IBaseModel<T> {
 
 	findOneByRoomId(rid: string): Promise<T | null>;
 
+	findOneByIdAndRoomId<T_ extends Document = T, O extends FindOptionsWithProjection<T_> = FindOptionsWithProjection<T_>>(
+		fileId: string,
+		rid: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T_, O> | null>;
+
 	findExpiredTemporaryFiles<T_ extends Document = T, O extends FindOptionsWithProjection<T_> = FindOptionsWithProjection<T_>>(
 		options?: O,
 	): FindCursor<DocumentWithProjection<T_, O>>;

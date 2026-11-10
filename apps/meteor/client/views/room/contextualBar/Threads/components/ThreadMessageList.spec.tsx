@@ -74,6 +74,7 @@ jest.mock('@rocket.chat/ui-client', () => ({
 			</div>
 		);
 	}),
+	useMergedRefsV2: jest.requireActual('@rocket.chat/ui-client').useMergedRefsV2,
 }));
 
 jest.mock('../hooks/useThreadMessagesQuery', () => ({

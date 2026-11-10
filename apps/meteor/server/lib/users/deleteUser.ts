@@ -1,5 +1,5 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
-import { api } from '@rocket.chat/core-services';
+import { api, ClientSafeError } from '@rocket.chat/core-services';
 import { isUserFederated, type IUser } from '@rocket.chat/core-typings';
 import {
 	Integrations,
@@ -14,7 +14,6 @@ import {
 	LivechatUnitMonitors,
 	ModerationReports,
 } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
 import { settings } from '../../settings';
@@ -33,7 +32,7 @@ import { updateGroupDMsName } from '../rooms/updateGroupDMsName';
 
 export async function deleteUser(userId: string, confirmRelinquish = false, deletedBy?: IUser['_id']): Promise<{ deletedRooms: string[] }> {
 	if (userId === 'rocket.cat') {
-		throw new Meteor.Error('error-action-not-allowed', 'Deleting the rocket.cat user is not allowed', {
+		throw new ClientSafeError('error-action-not-allowed', 'Deleting the rocket.cat user is not allowed', {
 			method: 'deleteUser',
 			action: 'Delete_user',
 		});
@@ -48,7 +47,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 	}
 
 	if (isUserFederated(user)) {
-		throw new Meteor.Error('error-not-allowed', 'User participated in federation, this user can only be deactivated permanently', {
+		throw new ClientSafeError('error-not-allowed', 'User participated in federation, this user can only be deactivated permanently', {
 			method: 'deleteUser',
 		});
 	}
@@ -57,7 +56,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 
 	if (shouldRemoveOrChangeOwner(subscribedRooms) && !confirmRelinquish) {
 		const rooms = await getUserSingleOwnedRooms(subscribedRooms);
-		throw new Meteor.Error('user-last-owner', '', rooms);
+		throw new ClientSafeError('user-last-owner', '', rooms);
 	}
 
 	let deletedRooms: string[] = [];

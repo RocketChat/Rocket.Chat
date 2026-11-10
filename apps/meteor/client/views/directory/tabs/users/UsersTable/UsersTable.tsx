@@ -1,5 +1,5 @@
 import type { IDirectoryUserResult, IUser, Serialized } from '@rocket.chat/core-typings';
-import { Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
+import { Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesAction, type TableColumnWidth } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
@@ -7,12 +7,12 @@ import {
 	GenericTableHeaderCell,
 	GenericTableBody,
 	GenericTableLoadingTable,
+	usePaginatedQuery,
 	usePagination,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { usePermission, useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
 import type { KeyboardEvent, MouseEvent } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 
@@ -33,8 +33,14 @@ const UsersTable = ({ workspace = 'local' }: UsersTableProps) => {
 	const [text, setText] = useState('');
 	const canViewFullOtherUserInfo = usePermission('view-full-other-user-info');
 
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'email' | 'origin' | 'createdAt'>('name');
+
+	const columns: TableColumnWidth[] = [
+		'auto',
+		...(mediaQuery && canViewFullOtherUserInfo ? (['x200'] as const) : []),
+		...(federation ? (['x200'] as const) : []),
+		...(mediaQuery ? (['x200'] as const) : []),
+	];
 
 	const headers = useMemo(
 		() =>
@@ -43,26 +49,12 @@ const UsersTable = ({ workspace = 'local' }: UsersTableProps) => {
 					{t('Name')}
 				</GenericTableHeaderCell>,
 				mediaQuery && canViewFullOtherUserInfo && (
-					<GenericTableHeaderCell
-						key='email'
-						direction={sortDirection}
-						active={sortBy === 'email'}
-						onClick={setSort}
-						sort='email'
-						width='x200'
-					>
+					<GenericTableHeaderCell key='email' direction={sortDirection} active={sortBy === 'email'} onClick={setSort} sort='email'>
 						{t('Email')}
 					</GenericTableHeaderCell>
 				),
 				federation && (
-					<GenericTableHeaderCell
-						key='origin'
-						direction={sortDirection}
-						active={sortBy === 'origin'}
-						onClick={setSort}
-						sort='origin'
-						width='x200'
-					>
+					<GenericTableHeaderCell key='origin' direction={sortDirection} active={sortBy === 'origin'} onClick={setSort} sort='origin'>
 						{t('Domain')}
 					</GenericTableHeaderCell>
 				),
@@ -73,7 +65,6 @@ const UsersTable = ({ workspace = 'local' }: UsersTableProps) => {
 						active={sortBy === 'createdAt'}
 						onClick={setSort}
 						sort='createdAt'
-						width='x200'
 					>
 						{t('Joined_at')}
 					</GenericTableHeaderCell>
@@ -82,12 +73,27 @@ const UsersTable = ({ workspace = 'local' }: UsersTableProps) => {
 		[setSort, sortBy, sortDirection, t, mediaQuery, canViewFullOtherUserInfo, federation],
 	);
 
-	const query = useDirectoryQuery({ text, current, itemsPerPage }, [sortBy, sortDirection], 'users', workspace);
+	const query = useDirectoryQuery({ text }, [sortBy, sortDirection], 'users', workspace);
 	const getDirectoryData = useEndpoint('GET', '/v1/directory');
 
-	const { data, isFetched, isLoading, isError, refetch } = useQuery({
-		queryKey: ['getDirectoryData', query],
-		queryFn: () => getDirectoryData(query),
+	const queryKey = ['getDirectoryData', query];
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({
+		resetKey: queryKey,
+	});
+	const { data, isFetched, isLoading, isError, refetch } = usePaginatedQuery({
+		query: {
+			queryKey,
+			queryFn: (page) => getDirectoryData({ ...query, ...page }),
+		},
+		itemsKey: 'result',
+		offset: current,
+		count: itemsPerPage,
 	});
 
 	const handleClick = useCallback(
@@ -104,7 +110,7 @@ const UsersTable = ({ workspace = 'local' }: UsersTableProps) => {
 		<>
 			<FilterByText placeholder={t('Search_Users')} value={text} onChange={(event) => setText(event.target.value)} />
 			{isLoading && (
-				<GenericTable>
+				<GenericTable columns={columns}>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
 						<GenericTableLoadingTable headerCells={5} />
@@ -113,7 +119,7 @@ const UsersTable = ({ workspace = 'local' }: UsersTableProps) => {
 			)}
 			{data?.result && data.result.length > 0 && isFetched && (
 				<>
-					<GenericTable>
+					<GenericTable columns={columns}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data?.result.map((user) => (

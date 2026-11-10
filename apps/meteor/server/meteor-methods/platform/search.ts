@@ -1,4 +1,4 @@
-import type { IMessageSearchProvider, IMessageSearchSuggestion, IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IMessageSearchProvider, IRoom, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Meteor } from 'meteor/meteor';
 
@@ -7,15 +7,9 @@ import type { IRawSearchResult, ISearchResult } from '../../lib/search/model/ISe
 import { searchProviderService, validationService } from '../../lib/search/service';
 
 declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		'rocketchatSearch.getProvider'(): IMessageSearchProvider | undefined;
 		'rocketchatSearch.search'(text: string, context: { uid?: IUser['_id']; rid: IRoom['_id'] }, payload: unknown): Promise<ISearchResult>;
-		'rocketchatSearch.suggest'(
-			text: string,
-			context: { uid?: IUser['_id']; rid: IRoom['_id'] },
-			payload: unknown,
-		): Promise<IMessageSearchSuggestion[]>;
 	}
 }
 
@@ -69,26 +63,5 @@ Meteor.methods<ServerMethods>({
 				return resolve(data);
 			});
 		}).then((result) => validationService.validateSearchResult(result));
-	},
-
-	async 'rocketchatSearch.suggest'(text, context, payload) {
-		payload ??= undefined; // TODO is this cleanup necessary?
-
-		if (!searchProviderService.activeProvider) {
-			throw new Error('Provider currently not active');
-		}
-
-		SearchLogger.debug({ msg: 'suggest', text, context, payload });
-
-		return new Promise((resolve, reject) => {
-			searchProviderService.activeProvider?.suggest(text, context, payload, (error, data) => {
-				if (error) {
-					reject(error);
-					return;
-				}
-
-				resolve(data);
-			});
-		});
 	},
 });

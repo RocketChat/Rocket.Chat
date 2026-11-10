@@ -1,11 +1,11 @@
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 import { ajvQuery } from '../Ajv';
+import { paginationQueryProperties } from '../pagination';
 
 export type DmFileProps = PaginatedRequest<
 	({ roomId: string; username?: string } | { roomId?: string; username: string }) & {
 		name?: string;
 		typeGroup?: string;
-		query?: string;
 		onlyConfirmed?: boolean;
 	}
 >;
@@ -21,14 +21,7 @@ const dmFilesListPropsSchema = {
 			type: 'string',
 			nullable: true,
 		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 			nullable: true,
@@ -38,10 +31,6 @@ const dmFilesListPropsSchema = {
 			nullable: true,
 		},
 		typeGroup: {
-			type: 'string',
-			nullable: true,
-		},
-		query: {
 			type: 'string',
 			nullable: true,
 		},

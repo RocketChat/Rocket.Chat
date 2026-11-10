@@ -8,8 +8,8 @@ import { DragContext } from '../../components';
 import MediaCallViewContext from '../../context/MediaCallViewContext';
 import type { PeerInfo, SessionState } from '../../context/definitions';
 
-const externalPeer = { number: '+15551234567' } as PeerInfo;
-const internalPeer = { displayName: 'John Doe', userId: 'u1', username: 'john.doe' } as PeerInfo;
+const externalPeer = { type: 'sip', number: '+15551234567' } as PeerInfo;
+const internalPeer = { type: 'user', displayName: 'John Doe', userId: 'u1', username: 'john.doe' } as PeerInfo;
 
 type RenderOptions = {
 	peerInfo: PeerInfo;

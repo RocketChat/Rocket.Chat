@@ -3,7 +3,6 @@ import type { IRoom, IUser, VideoConference } from '@rocket.chat/core-typings';
 import { VideoConferenceStatus } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { Rooms } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../server/lib/callbacks';
 import { CORE_PROVIDER_APP_ID, videoConfProviders } from '../../../server/lib/videoConfProviders';
@@ -26,7 +25,7 @@ const refreshLiveKitProviderRegistration = (): void => {
 	}
 };
 
-Meteor.startup(async () => {
+export const configureVideoConferenceEnterprise = async (): Promise<void> => {
 	await License.onLicense('videoconference-enterprise', async () => {
 		await addSettings();
 
@@ -73,4 +72,4 @@ Meteor.startup(async () => {
 			down: refreshLiveKitProviderRegistration,
 		});
 	});
-});
+};

@@ -1,31 +1,24 @@
-import type { ReactNode, RefAttributes } from 'react';
+import type { HTMLAttributes, ReactNode, RefAttributes } from 'react';
 
-import { Box, Tile } from '..';
+import { appendClassName } from '../../helpers/appendClassName';
+import { Box } from '../Box';
+import { PopoverSurface } from '../PopoverSurface';
 
-export type DropdownMobileProps = RefAttributes<HTMLElement> & {
-	children: ReactNode;
-};
+export type DropdownMobileProps = Omit<HTMLAttributes<HTMLElement>, 'children' | 'style' | 'color'> &
+	RefAttributes<HTMLElement> & {
+		children: ReactNode;
+	};
 
-export function DropdownMobile({ children, ...props }: DropdownMobileProps) {
+export function DropdownMobile({ children, className, ...props }: DropdownMobileProps) {
 	return (
-		<Tile
-			elevation='2'
-			paddingInline='0'
-			paddingBlock='0'
-			width='100vw'
-			maxHeight='80%'
-			position='fixed'
-			display='flex'
-			flexDirection='column'
-			overflow='auto'
-			style={{ bottom: 0, left: 0 }}
-			zIndex={2}
+		<PopoverSurface
+			flush
+			maxHeight='most-of-screen'
 			data-testid='dropdown'
 			{...props}
+			className={appendClassName(className, 'rcx-dropdown__bottom-sheet')}
 		>
-			<Box flexShrink={1} paddingBlock={16}>
-				{children}
-			</Box>
-		</Tile>
+			<Box rcx-dropdown__bottom-sheet-content>{children}</Box>
+		</PopoverSurface>
 	);
 }

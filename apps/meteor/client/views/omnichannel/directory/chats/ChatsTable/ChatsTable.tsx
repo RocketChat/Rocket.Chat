@@ -1,4 +1,5 @@
-import { Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
+import { Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesAction, type TableColumnWidth } from '@rocket.chat/fuselage';
+import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
 	GenericTableBody,
@@ -8,6 +9,7 @@ import {
 	usePagination,
 	useSort,
 	GenericNoResults,
+	links,
 } from '@rocket.chat/ui-client';
 import { usePermission } from '@rocket.chat/ui-contexts';
 import { hashKey } from '@tanstack/react-query';
@@ -18,7 +20,6 @@ import ChatFilterByText from './ChatsTableFilter';
 import ChatsTableRow from './ChatsTableRow';
 import { useCurrentChats } from './hooks/useCurrentChats';
 import { useChatsQuery } from './useChatsQuery';
-import { links } from '../../../../../lib/links';
 import { useOmnichannelPriorities } from '../../../hooks/useOmnichannelPriorities';
 import { useChatsContext } from '../../contexts/ChatsContext';
 
@@ -31,39 +32,56 @@ const ChatsTable = () => {
 
 	const chatsQuery = useChatsQuery();
 
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'fname' | 'ts'>('ts', 'desc');
 
-	const query = useMemo(
-		() => chatsQuery(filters, [sortBy, sortDirection], current, itemsPerPage),
-		[itemsPerPage, filters, sortBy, sortDirection, current, chatsQuery],
+	const query = useDebouncedValue(
+		useMemo(() => chatsQuery(filters, [sortBy, sortDirection]), [filters, sortBy, sortDirection, chatsQuery]),
+		500,
 	);
 
-	const { data, isLoading, isSuccess, isError, refetch } = useCurrentChats(query);
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({
+		resetKey: [query],
+	});
+	const { data, isLoading, isSuccess, isError, refetch } = useCurrentChats(query, { offset: current, count: itemsPerPage });
 
-	const [defaultQuery] = useState(hashKey([query]));
-	const queryHasChanged = defaultQuery !== hashKey([query]);
+	const [defaultQuery] = useState(hashKey([query, current, itemsPerPage]));
+	const queryHasChanged = defaultQuery !== hashKey([query, current, itemsPerPage]);
+
+	const columns: TableColumnWidth[] = [
+		'auto',
+		...(isPriorityEnabled ? (['auto'] as const) : []),
+		'auto',
+		'auto',
+		'x100',
+		'auto',
+		'auto',
+		'auto',
+		'auto',
+		...(canRemoveClosedChats ? (['x60'] as const) : []),
+	];
 
 	const headers = (
 		<>
 			<GenericTableHeaderCell key='fname' direction={sortDirection} active={sortBy === 'fname'} onClick={setSort} sort='fname'>
 				{t('Name')}
 			</GenericTableHeaderCell>
-			{isPriorityEnabled && (
-				<GenericTableHeaderCell key='priorityWeight' alignItems='center'>
-					{t('Priority')}
-				</GenericTableHeaderCell>
-			)}
+			{isPriorityEnabled && <GenericTableHeaderCell key='priorityWeight'>{t('Priority')}</GenericTableHeaderCell>}
 			<GenericTableHeaderCell key='source.type'>{t('Channel')}</GenericTableHeaderCell>
 			<GenericTableHeaderCell key='servedBy'>{t('Agent')}</GenericTableHeaderCell>
-			<GenericTableHeaderCell width='x100'>{t('Verification')}</GenericTableHeaderCell>
+			<GenericTableHeaderCell>{t('Verification')}</GenericTableHeaderCell>
 			<GenericTableHeaderCell key='department.name'>{t('Department')}</GenericTableHeaderCell>
 			<GenericTableHeaderCell key='ts' direction={sortDirection} active={sortBy === 'ts'} onClick={setSort} sort='ts'>
 				{t('Started_At')}
 			</GenericTableHeaderCell>
 			<GenericTableHeaderCell key='lm'>{t('Last_Message')}</GenericTableHeaderCell>
 			<GenericTableHeaderCell key='status'>{t('Status')}</GenericTableHeaderCell>
-			{canRemoveClosedChats && <GenericTableHeaderCell key='remove' width='x60' />}
+			{canRemoveClosedChats && <GenericTableHeaderCell key='remove' />}
 		</>
 	);
 
@@ -71,7 +89,7 @@ const ChatsTable = () => {
 		<>
 			<ChatFilterByText />
 			{isLoading && (
-				<GenericTable>
+				<GenericTable columns={columns}>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
 						<GenericTableLoadingTable headerCells={headers.props.children.filter(Boolean).length} />
@@ -90,7 +108,7 @@ const ChatsTable = () => {
 			)}
 			{isSuccess && data?.rooms.length > 0 && (
 				<>
-					<GenericTable aria-label={t('Omnichannel_Contact_Center_Chats')} fixed={false}>
+					<GenericTable columns={columns} aria-label={t('Omnichannel_Contact_Center_Chats')} fixed={false}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data?.rooms.map((room) => (

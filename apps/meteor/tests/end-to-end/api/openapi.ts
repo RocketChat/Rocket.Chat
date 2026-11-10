@@ -1,5 +1,6 @@
+import { before, describe, it } from 'node:test';
+
 import { expect } from 'chai';
-import { before, describe, it } from 'mocha';
 
 import { getCredentials, request, credentials } from '../../data/api-data';
 
@@ -28,7 +29,7 @@ describe('[OpenAPI]', () => {
 	let document: OpenAPIDocument;
 	let documentWithUndocumented: OpenAPIDocument;
 
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	before(async () => {
 		document = (await request.get('/api/docs/json').set(credentials).expect(200)).body;

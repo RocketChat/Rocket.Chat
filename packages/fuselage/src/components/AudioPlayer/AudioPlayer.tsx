@@ -1,10 +1,11 @@
-import { useMergedRefs, useResizeObserver } from '@rocket.chat/fuselage-hooks';
-import type { RefAttributes, TrackHTMLAttributes } from 'react';
+import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
+import type { HTMLAttributes, RefAttributes, TrackHTMLAttributes } from 'react';
 import { useState, useRef } from 'react';
 
 import { Box } from '../..';
 import AudioPlayerControls from './AudioPlayerControls';
 import { useOwnerDocument } from '../../contexts';
+import { prependClassName } from '../../helpers/prependClassName';
 
 function forceDownload(ownerDocument: Document, url: string, fileName?: string) {
 	const xhr = new XMLHttpRequest();
@@ -51,20 +52,21 @@ const getDurationForInfinityDurationAudioFile = (src: string, callback: (duratio
 /**
  * A Fuselage’s custom AudioPlayer.
  */
-export type AudioPlayerProps = RefAttributes<HTMLAudioElement> & {
-	src: string;
-	type?: string;
-	maxPlaybackSpeed?: number;
-	minPlaybackSpeed?: number;
-	playbackSpeedStep?: number;
-	download?: boolean;
-	playLabel?: string;
-	pauseLabel?: string;
-	audioPlaybackRangeLabel?: string;
-	changePlaybackSpeedLabel?: string;
-	downloadAudioFileLabel?: string;
-	trackProps?: TrackHTMLAttributes<HTMLTrackElement>;
-};
+export type AudioPlayerProps = RefAttributes<HTMLAudioElement> &
+	Omit<HTMLAttributes<HTMLDivElement>, 'children' | 'is'> & {
+		src: string;
+		type?: string;
+		maxPlaybackSpeed?: number;
+		minPlaybackSpeed?: number;
+		playbackSpeedStep?: number;
+		download?: boolean;
+		playLabel?: string;
+		pauseLabel?: string;
+		audioPlaybackRangeLabel?: string;
+		changePlaybackSpeedLabel?: string;
+		downloadAudioFileLabel?: string;
+		trackProps?: TrackHTMLAttributes<HTMLTrackElement>;
+	};
 
 const AudioPlayer = ({
 	ref,
@@ -80,6 +82,8 @@ const AudioPlayer = ({
 	changePlaybackSpeedLabel = 'Change Playback Speed',
 	downloadAudioFileLabel = 'Download Audio File',
 	trackProps,
+	className,
+	...props
 }: AudioPlayerProps) => {
 	const audioRef = useRef<HTMLAudioElement>(null);
 	const refs = useMergedRefs(ref, audioRef);
@@ -87,7 +91,6 @@ const AudioPlayer = ({
 	const [currentTime, setCurrentTime] = useState(0);
 	const [durationTime, setDurationTime] = useState(0);
 	const [playbackSpeed, setPlaybackSpeed] = useState(1);
-	const { ref: containerRef } = useResizeObserver();
 
 	const handlePlay = () => {
 		const isPlaying = audioRef.current?.paused;
@@ -120,20 +123,7 @@ const AudioPlayer = ({
 	const { document: ownerDocument } = useOwnerDocument();
 
 	return (
-		<Box
-			borderWidth='default'
-			backgroundColor='tint'
-			borderColor='extra-light'
-			paddingBlock={12}
-			paddingInlineEnd={8}
-			paddingInlineStart={16}
-			borderRadius='medium'
-			width='100%'
-			maxWidth='x300'
-			ref={containerRef}
-			display='flex'
-			alignItems='center'
-		>
+		<Box className={prependClassName(className, 'rcx-audio-player')} {...props}>
 			<AudioPlayerControls
 				isPlaying={isPlaying}
 				currentTime={currentTime}

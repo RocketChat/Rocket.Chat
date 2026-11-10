@@ -13,7 +13,7 @@ const StopShareButton = ({ onStop }: StopShareButtonProps) => {
 
 	return (
 		<Box className={stopShareButtonStyles}>
-			<IconButton icon='cross' small secondary onClick={onStop} title={t('Stop_sharing')} aria-label={t('Stop_sharing')} />
+			<IconButton icon='cross' size='small' variant='secondary' onClick={onStop} title={t('Stop_sharing')} aria-label={t('Stop_sharing')} />
 		</Box>
 	);
 };

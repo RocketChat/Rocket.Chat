@@ -1,4 +1,5 @@
 import fs from 'fs';
+import { after, afterEach, before, beforeEach, describe, it } from 'node:test';
 import path from 'path';
 
 import type { Credentials } from '@rocket.chat/api-client';
@@ -16,7 +17,6 @@ import type {
 import { isFileAttachment, isQuoteAttachment, TeamType } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { assert, expect } from 'chai';
-import { after, afterEach, before, beforeEach, describe, it } from 'mocha';
 
 import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials } from '../../data/api-data';
@@ -42,7 +42,7 @@ const svgLogoURL = './public/images/logo/logo.svg';
 const svgLogoFileName = 'logo.svg';
 
 describe('[Rooms]', () => {
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	it('/rooms.get', async () => {
 		const res = await request.get(api('rooms.get')).set(credentials).expect(200);
@@ -459,7 +459,6 @@ describe('[Rooms]', () => {
 		});
 
 		let fileNewUrl: string;
-		let fileOldUrl: string;
 		let fileId: string;
 		it('should upload a PNG file to room', async () => {
 			await request
@@ -477,7 +476,6 @@ describe('[Rooms]', () => {
 					// expect(res.body.message.files[0]).to.have.property('name', '1024x1024.png');
 
 					fileNewUrl = res.body.file.url;
-					fileOldUrl = res.body.file.url.replace('/file-upload/', '/ufs/GridFS:Uploads/');
 					fileId = res.body.file._id;
 				});
 
@@ -551,7 +549,6 @@ describe('[Rooms]', () => {
 						expect(res.body.file).to.have.property('url');
 
 						fileNewUrl = res.body.file.url;
-						fileOldUrl = res.body.file.url.replace('/file-upload/', '/ufs/GridFS:Uploads/');
 						fileId = res.body.file._id;
 					});
 
@@ -591,7 +588,6 @@ describe('[Rooms]', () => {
 						expect(res.body.file).to.have.property('url');
 
 						fileNewUrl = res.body.file.url;
-						fileOldUrl = res.body.file.url.replace('/file-upload/', '/ufs/GridFS:Uploads/');
 						fileId = res.body.file._id;
 					});
 
@@ -625,36 +621,30 @@ describe('[Rooms]', () => {
 
 		it('should be able to get the file', async () => {
 			await request.get(fileNewUrl).set(credentials).expect('Content-Type', 'image/png').expect(200);
-			await request.get(fileOldUrl).set(credentials).expect('Content-Type', 'image/png').expect(200);
 		});
 
 		it('should be able to get the file when no access to the room if setting allows it', async () => {
 			await updateSetting('FileUpload_Restrict_to_room_members', false);
 			await request.get(fileNewUrl).set(userCredentials).expect('Content-Type', 'image/png').expect(200);
-			await request.get(fileOldUrl).set(userCredentials).expect('Content-Type', 'image/png').expect(200);
 		});
 
 		it('should not be able to get the file when no access to the room if setting blocks', async () => {
 			await updateSetting('FileUpload_Restrict_to_room_members', true);
 			await request.get(fileNewUrl).set(userCredentials).expect(403);
-			await request.get(fileOldUrl).set(userCredentials).expect(403);
 		});
 
 		it('should be able to get the file if member and setting blocks outside access', async () => {
 			await updateSetting('FileUpload_Restrict_to_room_members', true);
 			await request.get(fileNewUrl).set(credentials).expect('Content-Type', 'image/png').expect(200);
-			await request.get(fileOldUrl).set(credentials).expect('Content-Type', 'image/png').expect(200);
 		});
 
 		it('should not be able to get the file without credentials', async () => {
 			await request.get(fileNewUrl).attach('file', imgURL).expect(403);
-			await request.get(fileOldUrl).attach('file', imgURL).expect(403);
 		});
 
 		it('should be able to get the file without credentials if setting allows', async () => {
 			await updateSetting('FileUpload_ProtectFiles', false);
 			await request.get(fileNewUrl).expect('Content-Type', 'image/png').expect(200);
-			await request.get(fileOldUrl).expect('Content-Type', 'image/png').expect(200);
 		});
 
 		it('should generate thumbnail for SVG files correctly', async () => {
@@ -966,7 +956,8 @@ describe('[Rooms]', () => {
 		it('should return 401 unauthorized when user is not logged in', async () => {
 			const res = await request.get(api('rooms.nameExists')).expect('Content-Type', 'application/json').expect(401);
 
-			expect(res.body).to.have.property('message');
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 		});
 
 		it('should return true if this room name exists', async () => {
@@ -1088,7 +1079,7 @@ describe('[Rooms]', () => {
 					expect(res.body).to.have.property('count', 0);
 				});
 		});
-		it('should successfully delete an image and thumbnail from public channel', (done) => {
+		it('should successfully delete an image and thumbnail from public channel', (_t, done) => {
 			void request
 				.post(api(`rooms.media/${publicChannel._id}`))
 				.set(credentials)
@@ -1282,10 +1273,10 @@ describe('[Rooms]', () => {
 					oldest: '2016-08-30T13:42:25.304Z',
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400);
+				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('errorType', 'error-not-allowed');
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
 		});
 		describe('test user is not part of room', async () => {
 			beforeEach(async () => {
@@ -1307,11 +1298,10 @@ describe('[Rooms]', () => {
 						limit: 2000,
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
+					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-not-allowed');
-						expect(res.body).to.have.property('error', 'User does not have access to the room [error-not-allowed]');
+						expect(res.body).to.have.property('errorType', 'error-forbidden');
 					});
 			});
 		});
@@ -1610,10 +1600,10 @@ describe('[Rooms]', () => {
 					.set(nonMemberCredentials)
 					.query({ roomId: privateArchivedGroup._id })
 					.expect('Content-Type', 'application/json')
-					.expect(400)
+					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'not-allowed');
+						expect(res.body).to.have.property('errorType', 'error-forbidden');
 					});
 			});
 		});
@@ -1732,9 +1722,9 @@ describe('[Rooms]', () => {
 					.set(credentials)
 					.query({ roomId: ownerDM._id })
 					.expect('Content-Type', 'application/json')
-					.expect(400);
+					.expect(403);
 
-				expect(res.body).to.have.property('error', 'not-allowed');
+				expect(res.body).to.have.property('errorType', 'error-forbidden');
 			});
 
 			it('should not return a private group to a user without view-room-administration', async () => {
@@ -1743,9 +1733,9 @@ describe('[Rooms]', () => {
 					.set(outsiderCredentials)
 					.query({ roomId: ownerGroup._id })
 					.expect('Content-Type', 'application/json')
-					.expect(400);
+					.expect(403);
 
-				expect(res.body).to.have.property('error', 'not-allowed');
+				expect(res.body).to.have.property('errorType', 'error-forbidden');
 			});
 
 			it('should not return a private group to an admin once view-room-administration is revoked', async () => {
@@ -1757,9 +1747,9 @@ describe('[Rooms]', () => {
 						.set(credentials)
 						.query({ roomId: ownerGroup._id })
 						.expect('Content-Type', 'application/json')
-						.expect(400);
+						.expect(403);
 
-					expect(res.body).to.have.property('error', 'not-allowed');
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
 				} finally {
 					await restorePermissionToRoles('view-room-administration');
 				}
@@ -1789,8 +1779,8 @@ describe('[Rooms]', () => {
 				deleteRoom({ type: 'd', roomId: testDM._id }),
 				deleteRoom({ type: 'c', roomId: testChannel._id }),
 				deleteRoom({ type: 'p', roomId: testGroup._id }),
-				updatePermission('leave-c', ['admin', 'user', 'bot', 'anonymous', 'app']),
-				updatePermission('leave-p', ['admin', 'user', 'bot', 'anonymous', 'app']),
+				updatePermission('leave-c', ['admin', 'user', 'bot', 'app']),
+				updatePermission('leave-p', ['admin', 'user', 'bot', 'app']),
 				updateSetting('API_User_Limit', 10000),
 			]);
 			await deleteUser(user2);
@@ -1803,10 +1793,10 @@ describe('[Rooms]', () => {
 				.send({
 					roomId: testDM._id,
 				})
-				.expect(400);
+				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('errorType', 'error-not-allowed');
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
 		});
 		it('should return an Error when trying to leave a public channel and you are the last owner', async () => {
 			const res = await request
@@ -1841,10 +1831,10 @@ describe('[Rooms]', () => {
 				.send({
 					roomId: testChannel._id,
 				})
-				.expect(400);
+				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('errorType', 'error-not-allowed');
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
 		});
 		it('should return an Error when trying to leave a private group and not have the necessary permission(leave-p)', async () => {
 			await updatePermission('leave-p', []);
@@ -1855,10 +1845,10 @@ describe('[Rooms]', () => {
 				.send({
 					roomId: testGroup._id,
 				})
-				.expect(400);
+				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('errorType', 'error-not-allowed');
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
 		});
 		it('should leave the public channel when the room has at least another owner and the user has the necessary permission(leave-c)', async () => {
 			await updatePermission('leave-c', ['admin']);
@@ -1934,7 +1924,7 @@ describe('[Rooms]', () => {
 			]),
 		);
 
-		it('should throw an error when the user tries to create a discussion and the feature is disabled', (done) => {
+		it('should throw an error when the user tries to create a discussion and the feature is disabled', (_t, done) => {
 			void updateSetting('Discussion_enabled', false).then(() => {
 				void request
 					.post(api('rooms.createDiscussion'))
@@ -1951,7 +1941,7 @@ describe('[Rooms]', () => {
 					.end(() => updateSetting('Discussion_enabled', true).then(done));
 			});
 		});
-		it('should throw an error when the user tries to create a discussion and does not have at least one of the required permissions', (done) => {
+		it('should throw an error when the user tries to create a discussion and does not have at least one of the required permissions', (_t, done) => {
 			void updatePermission('start-discussion', []).then(() => {
 				void updatePermission('start-discussion-other-user', []).then(() => {
 					void request
@@ -2100,6 +2090,63 @@ describe('[Rooms]', () => {
 			expect(res.body.discussion).to.have.property('fname').and.to.be.equal(`discussion-create-from-tests-${testChannel.name}`);
 		});
 
+		describe('when the user is not a member of the parent room', () => {
+			let nonMember: TestUser<IUser>;
+			let nonMemberCredentials: Credentials;
+
+			before(async () => {
+				nonMember = await createUser({ joinDefaultChannels: false });
+				nonMemberCredentials = await login(nonMember.username, password);
+			});
+
+			after(() => deleteUser(nonMember, { confirmRelinquish: true }));
+
+			it('should not allow creating a discussion in a public channel the user has not joined', async () => {
+				const res = await request
+					.post(api('rooms.createDiscussion'))
+					.set(nonMemberCredentials)
+					.send({
+						prid: testChannel._id,
+						t_name: `discussion-non-member-${Date.now()}`,
+					})
+					.expect(400);
+
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('errorType', 'error-user-not-in-room');
+			});
+
+			it('should not allow creating a discussion from a message of a public channel the user has not joined', async () => {
+				const res = await request
+					.post(api('rooms.createDiscussion'))
+					.set(nonMemberCredentials)
+					.send({
+						prid: testChannel._id,
+						pmid: messageSent._id,
+						t_name: `discussion-non-member-${Date.now()}`,
+					})
+					.expect(400);
+
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('errorType', 'error-user-not-in-room');
+			});
+
+			it('should allow creating a discussion once the user joins the channel', async () => {
+				await request.post(api('rooms.join')).set(nonMemberCredentials).send({ roomId: testChannel._id }).expect(200);
+
+				const res = await request
+					.post(api('rooms.createDiscussion'))
+					.set(nonMemberCredentials)
+					.send({
+						prid: testChannel._id,
+						t_name: `discussion-after-join-${Date.now()}`,
+					})
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.nested.property('discussion.prid', testChannel._id);
+			});
+		});
+
 		describe('it should create a *private* discussion if the parent channel is public and inside a private team', async () => {
 			it('should create a team', async () => {
 				const res = await request
@@ -2223,10 +2270,7 @@ describe('[Rooms]', () => {
 		});
 
 		after(() =>
-			Promise.all([
-				deleteRoom({ type: 'c', roomId: testChannel._id }),
-				updatePermission('view-c-room', ['admin', 'user', 'bot', 'app', 'anonymous']),
-			]),
+			Promise.all([deleteRoom({ type: 'c', roomId: testChannel._id }), updatePermission('view-c-room', ['admin', 'user', 'bot', 'app'])]),
 		);
 
 		it('should throw an error when the user tries to gets a list of discussion without a required parameter "roomId"', async () => {
@@ -2235,7 +2279,7 @@ describe('[Rooms]', () => {
 			expect(res.body).to.have.property('success', false);
 			expect(res.body).to.have.property('error', 'The parameter "roomId" or "roomName" is required [error-roomid-param-not-provided]');
 		});
-		it('should throw an error when the user tries to gets a list of discussion and he cannot access the room', (done) => {
+		it('should throw an error when the user tries to gets a list of discussion and he cannot access the room', (_t, done) => {
 			void updatePermission('view-c-room', []).then(() => {
 				void request
 					.get(api('rooms.getDiscussions'))
@@ -2246,7 +2290,7 @@ describe('[Rooms]', () => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error', 'Not Allowed');
 					})
-					.end(() => updatePermission('view-c-room', ['admin', 'user', 'bot', 'anonymous']).then(done));
+					.end(() => updatePermission('view-c-room', ['admin', 'user', 'bot']).then(done));
 			});
 		});
 		it('should return a list of discussions with ONE discussion', async () => {
@@ -2436,10 +2480,10 @@ describe('[Rooms]', () => {
 				.set(testUserCredentials)
 				.send({ roomId: testGroup._id })
 				.expect('Content-Type', 'application/json')
-				.expect(400);
+				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('errorType', 'error-not-allowed');
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
 		});
 
 		describe('with a join code', () => {
@@ -2622,7 +2666,7 @@ describe('[Rooms]', () => {
 
 		after(() => Promise.all([deleteRoom({ type: 'p', roomId: testGroup._id }), updateEEPermission('can-audit', ['admin', 'auditor'])]));
 
-		(IS_EE ? it : it.skip)('should return an error when the required parameter "selector" is not provided', (done) => {
+		(IS_EE ? it : it.skip)('should return an error when the required parameter "selector" is not provided', (_t, done) => {
 			void updateEEPermission('can-audit', ['admin']).then(() => {
 				void request
 					.get(api('rooms.autocomplete.adminRooms'))
@@ -2689,17 +2733,17 @@ describe('[Rooms]', () => {
 			]),
 		);
 
-		it('should throw an error when the user tries to gets a list of discussion and he cannot access the room', (done) => {
+		it('should throw an error when the user tries to gets a list of discussion and he cannot access the room', (_t, done) => {
 			void updatePermission('view-room-administration', []).then(() => {
 				void request
 					.get(api('rooms.adminRooms'))
 					.set(credentials)
-					.expect(400)
+					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal('error-not-authorized');
+						expect(res.body.errorType).to.be.equal('error-forbidden');
 					})
-					.end(() => updatePermission('view-room-administration', ['admin']).then(done));
+					.end((err) => updatePermission('view-room-administration', ['admin']).then(() => done(err)));
 			});
 		});
 		it('should return a list of admin rooms', async () => {
@@ -2997,7 +3041,7 @@ describe('[Rooms]', () => {
 		it('should return an error for users without view-room-administration permission', async () => {
 			await updatePermission('view-room-administration', []);
 
-			const res = await request.get(api('rooms.adminRooms.getRoom')).set(credentials).query({ rid: privateRoom._id }).expect(400);
+			const res = await request.get(api('rooms.adminRooms.getRoom')).set(credentials).query({ rid: privateRoom._id }).expect(403);
 
 			expect(res.body).to.have.property('success', false);
 
@@ -3090,7 +3134,7 @@ describe('[Rooms]', () => {
 		let testUser2: IUser;
 		let userCredentials: Credentials;
 
-		before('create channel and team', async () => {
+		before(async () => {
 			testUser = await createUser();
 			testUser2 = await createUser();
 			userCredentials = await login(testUser.username, password);
@@ -3105,7 +3149,7 @@ describe('[Rooms]', () => {
 			]);
 		});
 
-		after('delete channel and team', async () => {
+		after(async () => {
 			await deleteTeam(userCredentials, testTeam.name);
 			await deleteRoom({ type: 'c', roomId: testChannel._id });
 		});
@@ -3114,7 +3158,7 @@ describe('[Rooms]', () => {
 			const res = await request.post(api('rooms.delete')).set(credentials).send({}).expect('Content-Type', 'application/json').expect(400);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('errorType', 'invalid-params');
+			expect(res.body).to.have.property('errorType', 'error-invalid-params');
 			expect(res.body).to.have.property('error').include("must have required property 'roomId'");
 		});
 
@@ -3182,7 +3226,7 @@ describe('[Rooms]', () => {
 			]),
 		);
 
-		it('should update the room settings', (done) => {
+		it('should update the room settings', (_t, done) => {
 			const imageDataUri = `data:image/png;base64,${fs.readFileSync(path.join(process.cwd(), imgURL)).toString('base64')}`;
 
 			void request
@@ -3324,6 +3368,156 @@ describe('[Rooms]', () => {
 		});
 	});
 
+	describe('access to rooms', () => {
+		let outsider: TestUser<IUser>;
+		let outsiderCredentials: Credentials;
+		let privateRoom: IRoom;
+
+		before(async () => {
+			outsider = await createUser();
+			outsiderCredentials = await login(outsider.username, password);
+			privateRoom = (await createRoom({ type: 'p', name: `rooms.access.${Date.now()}` })).body.group;
+		});
+
+		after(async () => {
+			await deleteRoom({ type: 'p', roomId: privateRoom._id });
+			await deleteUser(outsider);
+		});
+
+		const expectRefusal = (endpoint: 'rooms.history' | 'rooms.getDiscussions' | 'rooms.bannedUsers') => async () => {
+			await request.get(api(endpoint)).set(outsiderCredentials).query({ roomId: privateRoom._id }).expect(403);
+		};
+
+		it('should refuse the history of a room the user is not in', expectRefusal('rooms.history'));
+
+		it('should refuse the discussions of a room the user is not in', expectRefusal('rooms.getDiscussions'));
+
+		it('should refuse the banned users of a room the user is not in', expectRefusal('rooms.bannedUsers'));
+
+		it('should refuse the pinned messages of a room the user is not in', async () => {
+			await request.get(api('chat.getPinnedMessages')).set(outsiderCredentials).query({ roomId: privateRoom._id }).expect(403);
+		});
+
+		it('should refuse an upload to a room the user is not in', async () => {
+			await request
+				.post(api(`rooms.media/${privateRoom._id}`))
+				.set(outsiderCredentials)
+				.attach('file', imgURL)
+				.expect(403);
+		});
+
+		it('should refuse to confirm an upload to a room the user is not in', async () => {
+			await request
+				.post(api(`rooms.mediaConfirm/${privateRoom._id}/unknown-file`))
+				.set(outsiderCredentials)
+				.send({})
+				.expect(403);
+		});
+
+		describe('without the permission to preview channels', () => {
+			let channel: IRoom;
+
+			before(async () => {
+				channel = (await createRoom({ type: 'c', name: `rooms.preview.${Date.now()}` })).body.channel;
+				await updatePermission('preview-c-room', []);
+			});
+
+			after(async () => {
+				await restorePermissionToRoles('preview-c-room');
+				await deleteRoom({ type: 'c', roomId: channel._id });
+			});
+
+			it('should refuse the history of a public channel the user did not join', async () => {
+				await request.get(api('rooms.history')).set(outsiderCredentials).query({ roomId: channel._id }).expect(403);
+			});
+		});
+
+		describe('broadcast rooms', () => {
+			let broadcastRoom: IRoom;
+
+			before(async () => {
+				broadcastRoom = (
+					await createRoom({
+						type: 'c',
+						name: `rooms.broadcast.${Date.now()}`,
+						members: [outsider.username],
+						extraData: { broadcast: true },
+					})
+				).body.channel;
+			});
+
+			after(() => deleteRoom({ type: 'c', roomId: broadcastRoom._id }));
+
+			it('should refuse the member list to a member without the permission', async () => {
+				await request.get(api('rooms.membersOrderedByRole')).set(outsiderCredentials).query({ roomId: broadcastRoom._id }).expect(403);
+			});
+		});
+	});
+
+	describe('/rooms.changeArchivationState', () => {
+		let owner: TestUser<IUser>;
+		let member: TestUser<IUser>;
+		let ownerCredentials: Credentials;
+		let memberCredentials: Credentials;
+		let channel: IRoom;
+
+		const changeState = (rid: IRoom['_id'], action: 'archive' | 'unarchive', userCredentials: Credentials) =>
+			request.post(api('rooms.changeArchivationState')).set(userCredentials).send({ rid, action });
+
+		const isArchived = async () => {
+			const { body } = await request.get(api('rooms.info')).set(credentials).query({ roomId: channel._id }).expect(200);
+			return Boolean(body.room.archived);
+		};
+
+		before(async () => {
+			[owner, member] = await Promise.all([createUser(), createUser()]);
+			[ownerCredentials, memberCredentials] = await Promise.all([login(owner.username, password), login(member.username, password)]);
+		});
+
+		beforeEach(async () => {
+			channel = (
+				await createRoom({
+					type: 'c',
+					name: `rooms.archive.${Date.now()}-${Random.id()}`,
+					members: [member.username],
+					credentials: ownerCredentials,
+				})
+			).body.channel;
+		});
+
+		afterEach(() => deleteRoom({ type: 'c', roomId: channel._id }));
+
+		after(() => Promise.all([deleteUser(owner, { confirmRelinquish: true }), deleteUser(member)]));
+
+		it('should let the owner archive the room', async () => {
+			await changeState(channel._id, 'archive', ownerCredentials).expect(200);
+
+			expect(await isArchived()).to.be.true;
+		});
+
+		it('should refuse a member', async () => {
+			await changeState(channel._id, 'archive', memberCredentials).expect(403);
+
+			expect(await isArchived()).to.be.false;
+		});
+
+		it('should refuse the owner who tries to unarchive the room', async () => {
+			await changeState(channel._id, 'archive', ownerCredentials).expect(200);
+
+			await changeState(channel._id, 'unarchive', ownerCredentials).expect(403);
+
+			expect(await isArchived()).to.be.true;
+		});
+
+		it('should let an admin unarchive the room', async () => {
+			await changeState(channel._id, 'archive', ownerCredentials).expect(200);
+
+			await changeState(channel._id, 'unarchive', credentials).expect(200);
+
+			expect(await isArchived()).to.be.false;
+		});
+	});
+
 	describe('rooms.images', () => {
 		let testUserCreds: Credentials;
 		before(async () => {
@@ -3451,6 +3645,59 @@ describe('[Rooms]', () => {
 
 			await deleteRoom({ type: 'p', roomId });
 		});
+		describe('with an image that was uploaded but never sent', () => {
+			let roomId: IRoom['_id'];
+			let sentFileId: string;
+			let unsentFileId: string;
+
+			before(async () => {
+				const { body } = await createRoom({ type: 'p', name: `test-${Date.now()}` });
+				roomId = body.group._id;
+
+				const { title_link } = await uploadFile({
+					roomId,
+					file: fs.createReadStream(path.join(process.cwd(), imgURL)),
+				});
+				sentFileId = getIdFromImgPath(title_link);
+
+				const res = await request
+					.post(api(`rooms.media/${roomId}`))
+					.set(credentials)
+					.attach('file', fs.createReadStream(path.join(process.cwd(), imgURL)))
+					.expect(200);
+				unsentFileId = res.body.file._id;
+			});
+
+			after(() => deleteRoom({ type: 'p', roomId }));
+
+			it('should not return the unsent image', async () => {
+				await request
+					.get(api('rooms.images'))
+					.set(credentials)
+					.query({ roomId })
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('files').and.to.be.an('array').and.to.have.lengthOf(1);
+						expect(res.body.files[0]).to.have.property('_id', sentFileId);
+						expect(res.body).to.have.property('total', 1);
+					});
+			});
+
+			it('should ignore the unsent image when passed as startingFromId', async () => {
+				await request
+					.get(api('rooms.images'))
+					.set(credentials)
+					.query({ roomId, startingFromId: unsentFileId })
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('files').and.to.be.an('array').and.to.have.lengthOf(1);
+						expect(res.body.files[0]).to.have.property('_id', sentFileId);
+						expect(res.body).to.have.property('total', 1);
+					});
+			});
+		});
 		it('should allow to filter images passing the startingFromId parameter', async () => {
 			const { body } = await createRoom({ type: 'p', name: `test-${Date.now()}` });
 			const {
@@ -3484,7 +3731,7 @@ describe('[Rooms]', () => {
 	describe('/rooms.muteUser', () => {
 		let testChannel: IRoom;
 
-		before('create a channel', async () => {
+		before(async () => {
 			const result = await createRoom({ type: 'c', name: `channel.test.${Date.now()}-${Math.random()}` });
 			testChannel = result.body.channel;
 		});
@@ -3493,8 +3740,8 @@ describe('[Rooms]', () => {
 			await deleteRoom({ type: 'c', roomId: testChannel._id });
 		});
 
-		it('should invite rocket.cat user to room', () => {
-			return request
+		it('should invite rocket.cat user to room', async () => {
+			await request
 				.post(api('channels.invite'))
 				.set(credentials)
 				.send({
@@ -3509,8 +3756,8 @@ describe('[Rooms]', () => {
 				});
 		});
 
-		it('should mute the rocket.cat user', () => {
-			return request
+		it('should mute the rocket.cat user', async () => {
+			await request
 				.post(api('rooms.muteUser'))
 				.set(credentials)
 				.send({
@@ -3524,8 +3771,8 @@ describe('[Rooms]', () => {
 				});
 		});
 
-		it('should contain rocket.cat user in mute list', () => {
-			return request
+		it('should contain rocket.cat user in mute list', async () => {
+			await request
 				.get(api('channels.info'))
 				.set(credentials)
 				.query({
@@ -3546,7 +3793,7 @@ describe('[Rooms]', () => {
 	describe('/rooms.unmuteUser', () => {
 		let testChannel: IRoom;
 
-		before('create a channel', async () => {
+		before(async () => {
 			const result = await createRoom({ type: 'c', name: `channel.test.${Date.now()}-${Math.random()}` });
 			testChannel = result.body.channel;
 
@@ -3582,8 +3829,8 @@ describe('[Rooms]', () => {
 			await deleteRoom({ type: 'c', roomId: testChannel._id });
 		});
 
-		it('should unmute the rocket.cat user in read-only room', () => {
-			return request
+		it('should unmute the rocket.cat user in read-only room', async () => {
+			await request
 				.post(api('rooms.unmuteUser'))
 				.set(credentials)
 				.send({
@@ -3597,8 +3844,8 @@ describe('[Rooms]', () => {
 				});
 		});
 
-		it('should contain rocket.cat user in unmute list', () => {
-			return request
+		it('should contain rocket.cat user in unmute list', async () => {
+			await request
 				.get(api('channels.info'))
 				.set(credentials)
 				.query({
@@ -3633,7 +3880,7 @@ describe('[Rooms]', () => {
 		after(() => deleteRoom({ type: 'c', roomId: testChannel._id }));
 
 		it('should fail exporting room as file if dates are incorrectly provided', async () => {
-			return request
+			await request
 				.post(api('rooms.export'))
 				.set(credentials)
 				.send({
@@ -3647,12 +3894,12 @@ describe('[Rooms]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 				});
 		});
 
 		it('should fail exporting room as file if no roomId is provided', async () => {
-			return request
+			await request
 				.post(api('rooms.export'))
 				.set(credentials)
 				.send({
@@ -3665,13 +3912,13 @@ describe('[Rooms]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 					expect(res.body).to.have.property('error').include("must have required property 'rid'");
 				});
 		});
 
 		it('should fail exporting room as file if no type is provided', async () => {
-			return request
+			await request
 				.post(api('rooms.export'))
 				.set(credentials)
 				.send({
@@ -3684,13 +3931,13 @@ describe('[Rooms]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 					expect(res.body).to.have.property('error').include("must have required property 'type'");
 				});
 		});
 
 		it('should fail exporting room as file if fromDate is after toDate (incorrect date interval)', async () => {
-			return request
+			await request
 				.post(api('rooms.export'))
 				.set(credentials)
 				.send({
@@ -3710,7 +3957,7 @@ describe('[Rooms]', () => {
 		});
 
 		it('should fail exporting room as file if invalid roomId is provided', async () => {
-			return request
+			await request
 				.post(api('rooms.export'))
 				.set(credentials)
 				.send({
@@ -3729,7 +3976,7 @@ describe('[Rooms]', () => {
 		});
 
 		it('should fail exporting room as file if no format is provided', async () => {
-			return request
+			await request
 				.post(api('rooms.export'))
 				.set(credentials)
 				.send({
@@ -3742,12 +3989,12 @@ describe('[Rooms]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 				});
 		});
 
 		it('should fail exporting room as file if an invalid format is provided', async () => {
-			return request
+			await request
 				.post(api('rooms.export'))
 				.set(credentials)
 				.send({
@@ -3761,12 +4008,12 @@ describe('[Rooms]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 				});
 		});
 
 		it('should fail exporting room as file if an invalid type is provided', async () => {
-			return request
+			await request
 				.post(api('rooms.export'))
 				.set(credentials)
 				.send({
@@ -3780,12 +4027,12 @@ describe('[Rooms]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 				});
 		});
 
 		it('should succesfully export room as file', async () => {
-			return request
+			await request
 				.post(api('rooms.export'))
 				.set(credentials)
 				.send({
@@ -3803,7 +4050,7 @@ describe('[Rooms]', () => {
 		});
 
 		it('should succesfully export room as file even if no dates are provided', async () => {
-			return request
+			await request
 				.post(api('rooms.export'))
 				.set(credentials)
 				.send({
@@ -3819,7 +4066,7 @@ describe('[Rooms]', () => {
 		});
 
 		it('should fail exporting room via email if target users AND target emails are NOT provided', async () => {
-			return request
+			await request
 				.post(api('rooms.export'))
 				.set(credentials)
 				.send({
@@ -3838,7 +4085,7 @@ describe('[Rooms]', () => {
 		});
 
 		it('should fail exporting room via email if no target e-mails are provided', async () => {
-			return request
+			await request
 				.post(api('rooms.export'))
 				.set(credentials)
 				.send({
@@ -3857,7 +4104,7 @@ describe('[Rooms]', () => {
 		});
 
 		it('should fail exporting room via email if no target users or e-mails params are provided', async () => {
-			return request
+			await request
 				.post(api('rooms.export'))
 				.set(credentials)
 				.send({
@@ -3875,7 +4122,7 @@ describe('[Rooms]', () => {
 		});
 
 		it('should fail exporting room via email if no messages are provided', async () => {
-			return request
+			await request
 				.post(api('rooms.export'))
 				.set(credentials)
 				.send({
@@ -3889,12 +4136,12 @@ describe('[Rooms]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 				});
 		});
 
 		it('should succesfully export room via email', async () => {
-			return request
+			await request
 				.post(api('rooms.export'))
 				.set(credentials)
 				.send({
@@ -3983,8 +4230,8 @@ describe('[Rooms]', () => {
 			]),
 		);
 
-		it('should return error if room not found', () => {
-			return request
+		it('should return error if room not found', async () => {
+			await request
 				.get(api('rooms.isMember'))
 				.set(testUser1Credentials)
 				.query({
@@ -4001,8 +4248,8 @@ describe('[Rooms]', () => {
 				});
 		});
 
-		it('should return error if user not found with the given userId', () => {
-			return request
+		it('should return error if user not found with the given userId', async () => {
+			await request
 				.get(api('rooms.isMember'))
 				.set(testUser1Credentials)
 				.query({
@@ -4016,8 +4263,8 @@ describe('[Rooms]', () => {
 				});
 		});
 
-		it('should return error if user not found with the given username', () => {
-			return request
+		it('should return error if user not found with the given username', async () => {
+			await request
 				.get(api('rooms.isMember'))
 				.set(testUser1Credentials)
 				.query({
@@ -4031,8 +4278,8 @@ describe('[Rooms]', () => {
 				});
 		});
 
-		it('should return success with isMember=true if given userId is a member of the channel', () => {
-			return request
+		it('should return success with isMember=true if given userId is a member of the channel', async () => {
+			await request
 				.get(api('rooms.isMember'))
 				.set(testUser1Credentials)
 				.query({
@@ -4046,8 +4293,8 @@ describe('[Rooms]', () => {
 				});
 		});
 
-		it('should return success with isMember=true if given username is a member of the channel', () => {
-			return request
+		it('should return success with isMember=true if given username is a member of the channel', async () => {
+			await request
 				.get(api('rooms.isMember'))
 				.set(testUser1Credentials)
 				.query({
@@ -4061,8 +4308,8 @@ describe('[Rooms]', () => {
 				});
 		});
 
-		it('should return success with isMember=false if user is not a member of the channel', () => {
-			return request
+		it('should return success with isMember=false if user is not a member of the channel', async () => {
+			await request
 				.get(api('rooms.isMember'))
 				.set(testUser1Credentials)
 				.query({
@@ -4076,8 +4323,8 @@ describe('[Rooms]', () => {
 				});
 		});
 
-		it('should return success with isMember=true if given userId is a member of the group', () => {
-			return request
+		it('should return success with isMember=true if given userId is a member of the group', async () => {
+			await request
 				.get(api('rooms.isMember'))
 				.set(testUser1Credentials)
 				.query({
@@ -4091,8 +4338,8 @@ describe('[Rooms]', () => {
 				});
 		});
 
-		it('should return success with isMember=true if given username is a member of the group', () => {
-			return request
+		it('should return success with isMember=true if given username is a member of the group', async () => {
+			await request
 				.get(api('rooms.isMember'))
 				.set(testUser1Credentials)
 				.query({
@@ -4106,8 +4353,8 @@ describe('[Rooms]', () => {
 				});
 		});
 
-		it('should return success with isMember=false if user is not a member of the group', () => {
-			return request
+		it('should return success with isMember=false if user is not a member of the group', async () => {
+			await request
 				.get(api('rooms.isMember'))
 				.set(testUser1Credentials)
 				.query({
@@ -4121,8 +4368,8 @@ describe('[Rooms]', () => {
 				});
 		});
 
-		it('should return unauthorized if caller cannot access the group', () => {
-			return request
+		it('should return unauthorized if caller cannot access the group', async () => {
+			await request
 				.get(api('rooms.isMember'))
 				.set(testUserNonMemberCredentials)
 				.query({
@@ -4132,12 +4379,12 @@ describe('[Rooms]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'unauthorized');
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
 				});
 		});
 
-		it('should return success with isMember=true if given userId is a member of the DM', () => {
-			return request
+		it('should return success with isMember=true if given userId is a member of the DM', async () => {
+			await request
 				.get(api('rooms.isMember'))
 				.set(testUser1Credentials)
 				.query({
@@ -4151,8 +4398,8 @@ describe('[Rooms]', () => {
 				});
 		});
 
-		it('should return success with isMember=true if given username is a member of the DM', () => {
-			return request
+		it('should return success with isMember=true if given username is a member of the DM', async () => {
+			await request
 				.get(api('rooms.isMember'))
 				.set(testUser1Credentials)
 				.query({
@@ -4166,8 +4413,8 @@ describe('[Rooms]', () => {
 				});
 		});
 
-		it('should return success with isMember=false if user is not a member of the DM', () => {
-			return request
+		it('should return success with isMember=false if user is not a member of the DM', async () => {
+			await request
 				.get(api('rooms.isMember'))
 				.set(testUser1Credentials)
 				.query({
@@ -4181,8 +4428,8 @@ describe('[Rooms]', () => {
 				});
 		});
 
-		it('should return unauthorized if caller cannot access the DM', () => {
-			return request
+		it('should return unauthorized if caller cannot access the DM', async () => {
+			await request
 				.get(api('rooms.isMember'))
 				.set(testUserNonMemberCredentials)
 				.query({
@@ -4192,7 +4439,7 @@ describe('[Rooms]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'unauthorized');
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
 				});
 		});
 	});
@@ -4208,7 +4455,7 @@ describe('[Rooms]', () => {
 			await deleteRoom({ type: 'c', roomId: room._id });
 		});
 
-		it('should open the room', (done) => {
+		it('should open the room', (_t, done) => {
 			void request
 				.post(api('rooms.open'))
 				.set(credentials)
@@ -4905,8 +5152,8 @@ describe('[Rooms]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res) => {
-					expect(res.body).to.have.property('status', 'error');
-					expect(res.body).to.have.property('message');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 
@@ -4916,7 +5163,7 @@ describe('[Rooms]', () => {
 				.set(nonMemberCredentials)
 				.send({ roomId: roomB._id })
 				.expect('Content-Type', 'application/json')
-				.expect(401)
+				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 				});
@@ -4974,8 +5221,8 @@ describe('[Rooms]', () => {
 			await deleteUser(bannableUser);
 		});
 
-		it('should fail if not authenticated', () => {
-			return request
+		it('should fail if not authenticated', async () => {
+			await request
 				.post(api('rooms.banUser'))
 				.send({
 					roomId: testChannel._id,
@@ -4985,8 +5232,8 @@ describe('[Rooms]', () => {
 				.expect(401);
 		});
 
-		it('should fail if roomId is missing', () => {
-			return request
+		it('should fail if roomId is missing', async () => {
+			await request
 				.post(api('rooms.banUser'))
 				.set(credentials)
 				.send({
@@ -4996,8 +5243,8 @@ describe('[Rooms]', () => {
 				.expect(400);
 		});
 
-		it('should fail if userId and username are both missing', () => {
-			return request
+		it('should fail if userId and username are both missing', async () => {
+			await request
 				.post(api('rooms.banUser'))
 				.set(credentials)
 				.send({
@@ -5007,8 +5254,8 @@ describe('[Rooms]', () => {
 				.expect(400);
 		});
 
-		it('should ban a user from the room', () => {
-			return request
+		it('should ban a user from the room', async () => {
+			await request
 				.post(api('rooms.banUser'))
 				.set(credentials)
 				.send({
@@ -5022,8 +5269,8 @@ describe('[Rooms]', () => {
 				});
 		});
 
-		it('should fail if user is already banned', () => {
-			return request
+		it('should fail if user is already banned', async () => {
+			await request
 				.post(api('rooms.banUser'))
 				.set(credentials)
 				.send({
@@ -5038,8 +5285,8 @@ describe('[Rooms]', () => {
 				});
 		});
 
-		it('should prevent banned user from sending messages', () => {
-			return request
+		it('should prevent banned user from sending messages', async () => {
+			const res = await request
 				.post(api('chat.sendMessage'))
 				.set(bannableUserCredentials)
 				.send({
@@ -5049,11 +5296,13 @@ describe('[Rooms]', () => {
 					},
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400);
+				.expect(403);
+
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
 		});
 
-		it('should not list the banned user in channel members', () => {
-			return request
+		it('should not list the banned user in channel members', async () => {
+			await request
 				.get(api('channels.members'))
 				.set(credentials)
 				.query({
@@ -5069,8 +5318,8 @@ describe('[Rooms]', () => {
 		});
 
 		describe('unban via re-invite', () => {
-			it('should fail to invite a banned user', () => {
-				return request
+			it('should fail to invite a banned user', async () => {
+				await request
 					.post(api('channels.invite'))
 					.set(credentials)
 					.send({
@@ -5140,8 +5389,8 @@ describe('[Rooms]', () => {
 				expect(res.body.subscription).not.to.have.property('status');
 			});
 
-			it('should list the re-invited user in channel members', () => {
-				return request
+			it('should list the re-invited user in channel members', async () => {
+				await request
 					.get(api('channels.members'))
 					.set(credentials)
 					.query({
@@ -5156,8 +5405,8 @@ describe('[Rooms]', () => {
 					});
 			});
 
-			it('should no longer list the user as banned', () => {
-				return request
+			it('should no longer list the user as banned', async () => {
+				await request
 					.get(api('rooms.bannedUsers'))
 					.set(credentials)
 					.query({
@@ -5211,8 +5460,8 @@ describe('[Rooms]', () => {
 			await deleteUser(bannableUser);
 		});
 
-		it('should fail if not authenticated', () => {
-			return request
+		it('should fail if not authenticated', async () => {
+			await request
 				.post(api('rooms.unbanUser'))
 				.send({
 					roomId: testChannel._id,
@@ -5222,8 +5471,8 @@ describe('[Rooms]', () => {
 				.expect(401);
 		});
 
-		it('should unban a user from the room', () => {
-			return request
+		it('should unban a user from the room', async () => {
+			await request
 				.post(api('rooms.unbanUser'))
 				.set(credentials)
 				.send({
@@ -5237,8 +5486,8 @@ describe('[Rooms]', () => {
 				});
 		});
 
-		it('should NOT list the unbanned user in channel members', () => {
-			return request
+		it('should NOT list the unbanned user in channel members', async () => {
+			await request
 				.get(api('channels.members'))
 				.set(credentials)
 				.query({
@@ -5253,8 +5502,8 @@ describe('[Rooms]', () => {
 				});
 		});
 
-		it('should NOT list the user as banned after unban', () => {
-			return request
+		it('should NOT list the user as banned after unban', async () => {
+			await request
 				.get(api('rooms.bannedUsers'))
 				.set(credentials)
 				.query({
@@ -5299,8 +5548,8 @@ describe('[Rooms]', () => {
 				});
 		});
 
-		it('should fail to unban a user that is not banned', () => {
-			return request
+		it('should fail to unban a user that is not banned', async () => {
+			await request
 				.post(api('rooms.unbanUser'))
 				.set(credentials)
 				.send({
@@ -5453,7 +5702,7 @@ describe('[/rooms.history]', () => {
 	const messageIds: IMessage['_id'][] = [];
 	const messageCount = 12;
 
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	before(async () => {
 		testChannel = (await createRoom({ type: 'c', name: `rooms-history-${Date.now()}` })).body.channel;

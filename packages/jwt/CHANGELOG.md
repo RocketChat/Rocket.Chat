@@ -1,5 +1,11 @@
 # @rocket.chat/jwt
 
+## 0.3.0-rc.0
+
+### Minor Changes
+
+- ([#42439](https://github.com/RocketChat/Rocket.Chat/pull/42439)) Adds LiveKit as a built-in video conference provider (alpha, off by default), configurable under Video Conference settings with a server URL, API key and secret. It is offered only while the conference window is enabled, since its calls run there, and only with the new `video-conference-native` license add-on.
+
 ## 0.2.1
 
 ### Patch Changes

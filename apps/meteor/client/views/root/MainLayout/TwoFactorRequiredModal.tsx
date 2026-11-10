@@ -19,7 +19,7 @@ const TwoFactorRequiredModal = () => {
 			<ModalContent>{t('Enable_two-factor_authentication_callout_description')}</ModalContent>
 			<ModalFooter>
 				<ModalFooterControllers>
-					<Button primary onClick={closeModal}>
+					<Button variant='primary' onClick={closeModal}>
 						{t('Set_up_2FA')}
 					</Button>
 				</ModalFooterControllers>

@@ -1,5 +1,8 @@
 import type { HTMLAttributes } from 'react';
 
-export const SidebarItemRow = ({ className, ...props }: HTMLAttributes<HTMLDivElement>) => (
-	<div className={['rcx-box rcx-box--full rcx-sidebar-item__row', className].filter(Boolean).join(' ')} {...props} />
+import { cx } from '../../../helpers/composeClassNames';
+import { ItemRow } from '../../Item';
+
+export const SidebarItemRow = ({ className, ...props }: Omit<HTMLAttributes<HTMLDivElement>, 'is'>) => (
+	<ItemRow {...props} className={cx('rcx-sidebar-item__row', className)} />
 );

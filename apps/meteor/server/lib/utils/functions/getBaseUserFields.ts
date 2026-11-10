@@ -7,6 +7,7 @@ export const getBaseUserFields = (allowServiceKeys = false): UserFields => ({
 	'username': 1,
 	'nickname': 1,
 	'emails': 1,
+	'phones': 1,
 	'status': 1,
 	'statusDefault': 1,
 	'statusText': 1,

@@ -1,7 +1,8 @@
-import { Box, type BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
+import { Box } from '../Box';
 import { Skeleton } from '../Skeleton';
 
-export type InputBoxSkeletonProps = BoxProps;
+export type InputBoxSkeletonProps = ElementProps<HTMLDivElement>;
 
 const InputBoxSkeleton = (props: InputBoxSkeletonProps) => (
 	<Box rcx-skeleton__input {...props}>

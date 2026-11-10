@@ -1,5 +1,5 @@
-import { parse } from '../src';
-import { lineBreak, paragraph, plain, spoilerBlock } from './helpers';
+import { lineBreak, paragraph, plain, spoilerBlock } from './helpers.js';
+import { parse } from '../src/index.js';
 
 describe('block spoiler parsing', () => {
 	test.each([

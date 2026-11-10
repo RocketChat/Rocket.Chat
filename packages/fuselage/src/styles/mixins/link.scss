@@ -13,14 +13,11 @@
 		color: theme('link-focus-color', $color);
 	}
 
-	&:where(:visited),
-	&:where(.is-visited) {
+	&:where(:visited) {
 		color: theme('link-visited-color', $color);
 	}
 
-	&:where(:active),
-	&:where(.active),
-	&:where(.is-active) {
+	&:where(:active) {
 		color: theme('link-active-color', $color);
 	}
 }

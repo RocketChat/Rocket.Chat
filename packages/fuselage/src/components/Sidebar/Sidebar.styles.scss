@@ -25,6 +25,10 @@ $sidebar-color-stroke-extra-light: theme('sidebar-color-stroke-extra-light', col
 
 	&--divider {
 		border-color: $sidebar-color-stroke-extra-light;
+
+		&.rcx-item-divider::before {
+			border-color: $sidebar-color-stroke-extra-light;
+		}
 	}
 
 	&-section {
@@ -59,7 +63,7 @@ $sidebar-color-stroke-extra-light: theme('sidebar-color-stroke-extra-light', col
 		display: flex;
 		flex-flow: column nowrap;
 
-		&__bar {
+		&__bar:not(.rcx-item-group-header) {
 			display: flex;
 			flex-flow: row nowrap;
 			align-items: center;
@@ -96,7 +100,7 @@ $sidebar-color-stroke-extra-light: theme('sidebar-color-stroke-extra-light', col
 			@include use-font-scale(c1);
 		}
 
-		&__menu-wrapper {
+		&__menu-wrapper:not(.rcx-item__actions) {
 			display: flex;
 			align-items: center;
 			flex-shrink: 0;
@@ -109,9 +113,9 @@ $sidebar-color-stroke-extra-light: theme('sidebar-color-stroke-extra-light', col
 			opacity: 0;
 		}
 
-		&__bar:hover &__menu-wrapper,
-		&__bar:focus-within &__menu-wrapper,
-		&__bar:has(&__menu-wrapper [aria-expanded='true']) &__menu-wrapper {
+		&__bar:hover &__menu-wrapper:not(.rcx-item__actions),
+		&__bar:focus-within &__menu-wrapper:not(.rcx-item__actions),
+		&__bar:has(&__menu-wrapper [aria-expanded='true']) &__menu-wrapper:not(.rcx-item__actions) {
 			width: lengths.size(20);
 
 			margin-inline-end: lengths.margin(none);
@@ -179,6 +183,10 @@ $sidebar-color-stroke-extra-light: theme('sidebar-color-stroke-extra-light', col
 			background-color: $sidebar-color-surface-hover;
 		}
 
+		&__bar.rcx-item-group-header {
+			padding-block: lengths.padding(8);
+		}
+
 		&__panel--expanded {
 			padding-block: lengths.padding(none);
 		}
@@ -208,7 +216,6 @@ $sidebar-color-stroke-extra-light: theme('sidebar-color-stroke-extra-light', col
 				@include clickable;
 				@include focus-state($shadow: false);
 
-				&.hover,
 				&:hover {
 					background-color: colors.surface(tint);
 				}
@@ -226,7 +233,6 @@ $sidebar-color-stroke-extra-light: theme('sidebar-color-stroke-extra-light', col
 			}
 
 			&:focus-visible,
-			&.hover,
 			&:hover {
 				.rcx-sidebar-accordion-item__chevron {
 					visibility: visible;

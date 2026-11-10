@@ -44,6 +44,14 @@ $sidepanel-color-default: colors.font(default);
 
 	&--divider {
 		border-color: colors.stroke(light);
+
+		&.rcx-divider {
+			margin-block: lengths.margin(-2) lengths.margin(none);
+		}
+
+		&.rcx-item-divider::before {
+			border-color: colors.stroke(light);
+		}
 	}
 
 	&-list {

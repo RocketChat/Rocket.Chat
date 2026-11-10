@@ -1,4 +1,4 @@
-/* eslint-disable new-cap */
+/* oxlint-disable new-cap */
 import {
 	Message,
 	MessageLeftContainer,
@@ -90,6 +90,10 @@ const createStory = (blocks: readonly UiKit.LayoutBlock[]): StoryObj<StoryArgs> 
 
 export const Divider = createStory(payloads.divider);
 
+export const Header = createStory(payloads.header);
+
+export const Markdown = createStory(payloads.markdown);
+
 export const SectionWithPlainText = createStory(payloads.sectionWithPlainText);
 
 export const SectionWithMrkdwn = createStory(payloads.sectionWithMrkdwn);
@@ -103,6 +107,8 @@ export const SectionWithImageAccessory = createStory(payloads.sectionWithImageAc
 export const SectionWithOverflowMenuAccessory = createStory(payloads.sectionWithOverflowMenuAccessory);
 
 export const SectionWithDatePickerAccessory = createStory(payloads.sectionWithDatePickerAccessory);
+
+export const SectionWithRadioButtonAccessory = createStory(payloads.sectionWithRadioButtonAccessory);
 
 export const ImageWithTitle = createStory(payloads.imageWithTitle);
 
@@ -134,3 +140,11 @@ export const PreviewWithExternalUrl = createStory(payloads.previewWithExternalUr
 export const InfoCard = createStory(payloads.infoCard);
 export const InfoCardMultiple = createStory(payloads.infoCardMultiple);
 export const InfoCardMultipleIcons = createStory(payloads.infoCardMultipleIcons);
+
+export const Table = createStory(payloads.table);
+
+export const Video = createStory(payloads.video);
+
+export const ContextActions = createStory(payloads.contextActions);
+
+export const ContextActionsWithFeedback = createStory(payloads.contextActionsWithFeedback);

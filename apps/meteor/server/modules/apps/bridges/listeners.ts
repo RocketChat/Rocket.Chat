@@ -184,7 +184,7 @@ export type HandleEvent =
 export class AppListenerBridge {
 	constructor(private readonly orch: IAppServerOrchestrator) {}
 
-	// eslint-disable-next-line complexity
+	// oxlint-disable-next-line complexity
 	async handleEvent(args: HandleEvent): Promise<any> {
 		switch (args.event) {
 			case AppInterface.IPreFileUpload:

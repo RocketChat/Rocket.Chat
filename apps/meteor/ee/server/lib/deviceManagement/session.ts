@@ -1,7 +1,7 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { ISocketConnection } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
-import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 import { UAParser } from 'ua-parser-js';
 
@@ -14,10 +14,8 @@ import { settings } from '../../../../server/settings';
 
 let mailTemplates: string;
 
-Meteor.startup(() => {
-	Mailer.getTemplate('Device_Management_Email_Body', (template) => {
-		mailTemplates = template;
-	});
+Mailer.getTemplate('Device_Management_Email_Body', (template) => {
+	mailTemplates = template;
 });
 
 const uaParser = async (
@@ -110,7 +108,7 @@ export const listenSessionLogin = () => {
 				data: mailData,
 			});
 		} catch ({ message }: any) {
-			throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${message}`, {
+			throw new ClientSafeError('error-email-send-failed', `Error trying to send email: ${message}`, {
 				method: 'listenSessionLogin',
 				message,
 			});

@@ -1,12 +1,22 @@
+import { GenericError } from '@rocket.chat/ui-client';
 import type { ComponentType, ReactNode, ComponentProps } from 'react';
-import { ErrorBoundary } from 'react-error-boundary';
+
+import ReportableErrorBoundary from './ErrorReport/ReportableErrorBoundary';
 
 function withErrorBoundary<T extends object>(Component: ComponentType<T>, fallback: ReactNode = null) {
 	const WrappedComponent = function (props: ComponentProps<typeof Component>) {
 		return (
-			<ErrorBoundary fallback={<>{fallback}</>}>
+			<ReportableErrorBoundary
+				fallbackRender={(fallbackProps) => {
+					if (fallback !== null) {
+						return fallback;
+					}
+
+					return <GenericError errorReport={fallbackProps} />;
+				}}
+			>
 				<Component {...props} />
-			</ErrorBoundary>
+			</ReportableErrorBoundary>
 		);
 	};
 

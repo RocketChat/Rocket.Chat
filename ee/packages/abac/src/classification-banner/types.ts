@@ -22,6 +22,22 @@ export type ClassificationBannerAttribute = {
 	values: ClassificationBannerValue[];
 };
 
+export type ClassificationRoomType = 'direct' | 'public' | 'private';
+
+export type ClassificationRoomMatch = {
+	type?: ClassificationRoomType[];
+	federated?: boolean;
+	discussion?: boolean;
+	team?: boolean;
+};
+
+export type ClassificationNonAbacBanner = {
+	enabled: boolean;
+	text: string;
+	color: string;
+	match?: ClassificationRoomMatch;
+};
+
 export type ClassificationBannersConfig = {
 	version: 1;
 	enabled: boolean;
@@ -34,5 +50,6 @@ export type ClassificationBannersConfig = {
 		fallbackText: string;
 		fallbackColor: string;
 	};
+	nonAbacBanner?: ClassificationNonAbacBanner[];
 	attributes: ClassificationBannerAttribute[];
 };

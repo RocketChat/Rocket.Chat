@@ -105,7 +105,7 @@ const UserAndRoomAutoCompleteMultiple = ({
 			setFilter={setFilter}
 			multiple
 			renderSelected={({ selected: { value, label }, onRemove, ...props }) => (
-				<Chip {...props} height='x20' value={value} onClick={onRemove} marginInlineEnd={4}>
+				<Chip {...props} value={value} onClick={onRemove}>
 					<RoomAvatar size='x20' room={{ ...label, _id: value }} />
 					<Box is='span' margin='none' marginInlineStart={4}>
 						{label.name}

@@ -1,7 +1,8 @@
-import { Box, type BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
+import { Box } from '../Box';
 import { Margins } from '../Margins';
 
-export type ModalHeaderProps = BoxProps;
+export type ModalHeaderProps = ElementProps<HTMLElement>;
 
 const ModalHeader = ({ children, ...props }: ModalHeaderProps) => (
 	<Box rcx-modal__header is='header' {...props}>

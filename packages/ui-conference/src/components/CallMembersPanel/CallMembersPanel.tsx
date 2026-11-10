@@ -120,7 +120,7 @@ const CallMembersPanel = ({ inCall, onClose }: CallMembersPanelProps) => {
 			<CallPanelHeader title={t('People')} onClose={onClose}>
 				{rid && (
 					<Button
-						small
+						size='small'
 						icon='user-plus'
 						// The modal region is mounted outside the conference's provider, so the context is carried
 						// across by hand or the modal loses the user picker and the ring option.

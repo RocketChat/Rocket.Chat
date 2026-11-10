@@ -1,4 +1,3 @@
-import './startup/monitor';
 import './functions/slashCommandsStats';
 
 export { statistics } from './lib/statistics';

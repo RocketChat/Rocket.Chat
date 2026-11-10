@@ -1,5 +1,7 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IRoom, IRoomAbacRedaction, ISubscription, RoomAdminFieldsType, RoomType } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions } from '@rocket.chat/models';
+import type { RoomAvailableForTeams } from '@rocket.chat/rest-typings';
 import type { FindOptions, Sort } from 'mongodb';
 
 import { scopeAdminRoomsForAbac } from './scopeAdminRoomsForAbac';
@@ -24,7 +26,7 @@ export async function findAdminRooms({
 	total: number;
 }> {
 	if (!(await hasPermissionAsync(uid, 'view-room-administration'))) {
-		throw new Error('error-not-authorized');
+		throw new ClientSafeError('error-not-authorized', 'Not authorized');
 	}
 	const name = filter?.trim();
 	const discussion = types?.includes('discussions');
@@ -65,7 +67,7 @@ export async function findAdminRoom({
 	rid: string;
 }): Promise<(Pick<IRoom, RoomAdminFieldsType> & IRoomAbacRedaction) | null> {
 	if (!(await hasPermissionAsync(uid, 'view-room-administration'))) {
-		throw new Error('error-not-authorized');
+		throw new ClientSafeError('error-not-authorized', 'Not authorized');
 	}
 
 	const room = await Rooms.findOneById(rid, { projection: adminFields });
@@ -110,7 +112,7 @@ export async function findAdminRoomsAutocomplete({ uid, selector }: { uid: strin
 	items: IRoom[];
 }> {
 	if (!(await hasAtLeastOnePermissionAsync(uid, ['view-room-administration', 'can-audit']))) {
-		throw new Error('error-not-authorized');
+		throw new ClientSafeError('error-not-authorized', 'Not authorized');
 	}
 	const options: FindOptions<IRoom> = {
 		projection: {
@@ -174,7 +176,7 @@ export async function findChannelAndPrivateAutocompleteWithPagination({
 }
 
 export async function findRoomsAvailableForTeams({ uid, name }: { uid: string; name?: string }): Promise<{
-	items: IRoom[];
+	items: RoomAvailableForTeams[];
 }> {
 	const options: FindOptions<IRoom> = {
 		projection: {
@@ -183,6 +185,7 @@ export async function findRoomsAvailableForTeams({ uid, name }: { uid: string; n
 			name: 1,
 			t: 1,
 			avatarETag: 1,
+			abacAttributes: 1,
 		},
 		limit: 10,
 		sort: {
@@ -197,6 +200,6 @@ export async function findRoomsAvailableForTeams({ uid, name }: { uid: string; n
 	const rooms = await Rooms.findChannelAndGroupListWithoutTeamsByNameStartingByOwner(name, userRooms, options).toArray();
 
 	return {
-		items: rooms,
+		items: rooms.map(({ abacAttributes, ...room }) => ({ ...room, hasAbacAttributes: !!abacAttributes?.length })),
 	};
 }

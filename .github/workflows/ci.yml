@@ -16,7 +16,7 @@ on:
       - '**.md'
 
 concurrency:
-  # merge_group runs group by the merge-group ref so a recreated group cancels the stale run;
+  # merge_group refs embed the base SHA, so a rebuilt queue never shares a group: cancel-stale-merge-group handles those;
   # push/release runs group by run_id on purpose (never cancel a deploy in progress)
   group: ${{ github.workflow }}-${{ github.head_ref || (github.event_name == 'merge_group' && github.ref) || github.run_id }}
   cancel-in-progress: true
@@ -29,6 +29,30 @@ permissions:
   actions: read
 
 jobs:
+  cancel-stale-merge-group:
+    name: 🧹 Cancel superseded merge queue runs
+    if: github.event_name == 'merge_group'
+    runs-on: ubuntu-24.04
+    permissions:
+      actions: write
+    steps:
+      - name: Cancel older runs for the same pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          # gh-readonly-queue/<base>/pr-<number>-<base sha> -> gh-readonly-queue/<base>/pr-<number>-
+          branch="${GITHUB_REF#refs/heads/}"
+          prefix="${branch%-*}-"
+          for status in queued in_progress; do
+            gh run list --workflow "$GITHUB_WORKFLOW" --event merge_group --status "$status" --limit 100 \
+              --json databaseId,headBranch \
+              --jq ".[] | select(.headBranch != \"$branch\" and (.headBranch | startswith(\"$prefix\")) and .databaseId < $GITHUB_RUN_ID) | .databaseId"
+          done | while read -r id; do
+            echo "Cancelling superseded run $id"
+            gh run cancel "$id" || true
+          done
+
   release-versions:
     name: ⚙️ Variables Setup
     runs-on: ubuntu-24.04-arm
@@ -385,7 +409,7 @@ jobs:
         arch: [arm64, amd64]
         service:
           [
-            [authorization-service, queue-worker-service, ddp-streamer-service],
+            [authorization-service, queue-worker-service, ddp-streamer-service, xmpp-server-service],
             [account-service, presence-service, omnichannel-transcript-service],
             [rocketchat],
           ]
@@ -599,6 +623,19 @@ jobs:
         run: |
           ./actionlint -color
 
+  lockfile:
+    name: 🔎 Code Check - Lockfile Duplicates
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup NodeJS
+        uses: ./.github/actions/setup-node
+
+      - name: Check that no lockfile entry can be deduplicated
+        run: yarn dedupe --check
 
   # gating `checks` also skips every e2e test job (they all `need` it);
   # test-storybook and test-unit don't, so they carry the same gate below
@@ -991,7 +1028,7 @@ jobs:
   tests-done:
     name: ✅ Tests Done
     runs-on: ubuntu-24.04-arm
-    needs: [test-guard, checks, test-unit, test-visual-regression, test-api, test-ui, test-api-ee, test-ui-ee, test-api-livechat, test-api-livechat-ee, test-api-fips, test-api-livechat-fips, test-ui-fips, test-federation-matrix]
+    needs: [test-guard, checks, test-unit, test-visual-regression, test-api, test-ui, test-api-ee, test-ui-ee, test-api-livechat, test-api-livechat-ee, test-api-fips, test-api-livechat-fips, test-ui-fips, test-federation-matrix, lockfile]
     if: always() && needs.test-guard.outputs.skip-tests != 'true'
     steps:
       - name: Test finish aggregation
@@ -1048,6 +1085,10 @@ jobs:
           fi
 
           if [[ '${{ needs.test-federation-matrix.result }}' != 'success' ]]; then
+            exit 1
+          fi
+
+          if [[ '${{ needs.lockfile.result }}' != 'success' ]]; then
             exit 1
           fi
 

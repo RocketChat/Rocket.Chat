@@ -44,13 +44,12 @@ export class TeamRaw extends BaseRaw<ITeam> implements ITeamModel {
 	findByIdsPaginated<T extends Document = ITeam, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		ids: Array<string>,
 		options?: O,
-		query?: Filter<ITeam>,
 	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>> {
 		if (options === undefined) {
-			return this.findPaginated<T, O>({ ...query, _id: { $in: ids } });
+			return this.findPaginated<T, O>({ _id: { $in: ids } });
 		}
 
-		return this.findPaginated<T, O>({ ...query, _id: { $in: ids } }, options);
+		return this.findPaginated<T, O>({ _id: { $in: ids } }, options);
 	}
 
 	findByIdsAndType(ids: Array<string>, type: TeamType): FindCursor<ITeam>;

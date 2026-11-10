@@ -222,7 +222,7 @@ test.describe.serial('Sidebar', () => {
 			await poHomeChannel.sidebar.markItemAsUnread(item);
 
 			const collapser = poHomeChannel.sidebar.getCollapseGroupByName('Channels');
-			await collapser.click();
+			await collapser.getByRole('button', { name: 'Channels', exact: true }).click();
 			await expect(poHomeChannel.sidebar.getItemUnreadBadge(collapser)).toBeVisible();
 		});
 	});

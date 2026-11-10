@@ -23,6 +23,7 @@ import { useFormContext, Controller } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { outgoingEvents } from '../../../../../lib/integrations/outgoingEvents';
+import ContentColumn from '../../../../components/ContentColumn';
 import { useHighlightedCode } from '../../../../hooks/useHighlightedCode';
 import { useExampleData } from '../hooks/useExampleIncomingData';
 
@@ -117,7 +118,7 @@ const OutgoingWebhookForm = () => {
 	const runOnEditsField = useId();
 
 	return (
-		<Box maxWidth='x600' alignSelf='center' width='full'>
+		<ContentColumn>
 			<Accordion>
 				<AccordionItem defaultExpanded title={t('Settings')}>
 					<FieldGroup>
@@ -128,7 +129,7 @@ const OutgoingWebhookForm = () => {
 									name='event'
 									control={control}
 									render={({ field }) => (
-										<Select id={eventField} {...field} options={eventOptions} aria-description={`${eventField}-hint`} />
+										<Select id={eventField} {...field} options={eventOptions} aria-describedby={`${eventField}-hint`} />
 									)}
 								/>
 							</FieldRow>
@@ -316,14 +317,7 @@ const OutgoingWebhookForm = () => {
 										<TextInput
 											id={avatarField}
 											{...field}
-											endAddon={
-												<Icon
-													name='user-rounded'
-													size='x20'
-													alignSelf='center'
-													aria-describedby={`${avatarField}-hint-1 ${avatarField}-hint-2`}
-												/>
-											}
+											endAddon={<Icon name='user-rounded' size='x20' aria-describedby={`${avatarField}-hint-1 ${avatarField}-hint-2`} />}
 										/>
 									)}
 								/>
@@ -341,9 +335,7 @@ const OutgoingWebhookForm = () => {
 										<TextInput
 											id={emojiField}
 											{...field}
-											endAddon={
-												<Icon name='emoji' size='x20' alignSelf='center' aria-describedby={`${emojiField}-hint-1 ${emojiField}-hint-2`} />
-											}
+											endAddon={<Icon name='emoji' size='x20' aria-describedby={`${emojiField}-hint-1 ${emojiField}-hint-2`} />}
 										/>
 									)}
 								/>
@@ -414,9 +406,7 @@ const OutgoingWebhookForm = () => {
 								<Controller
 									name='script'
 									control={control}
-									render={({ field }) => (
-										<TextAreaInput id={scriptField} rows={10} {...field} endAddon={<Icon name='code' size='x20' alignSelf='center' />} />
-									)}
+									render={({ field }) => <TextAreaInput id={scriptField} rows={10} {...field} endAddon={<Icon name='code' size='x20' />} />}
 								/>
 							</FieldRow>
 						</Field>
@@ -520,7 +510,7 @@ const OutgoingWebhookForm = () => {
 					</FieldGroup>
 				</AccordionItem>
 			</Accordion>
-		</Box>
+		</ContentColumn>
 	);
 };
 

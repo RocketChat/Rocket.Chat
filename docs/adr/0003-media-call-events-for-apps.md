@@ -205,7 +205,7 @@ app's namespace and follows the *reader's* language; once the app is uninstalled
 longer registered, i18next falls through to the snapshot, and a raw key never reaches a reader. The
 engine supplies the snapshot material for free — `EventResultMeta.app.translations` is the app's own
 translation of the key it named, one entry per language it ships, stamped by `makeHostEventResult`
-(see [ADR 0002](./0002-unified-event-result-for-pre-events.md)). Plural suffixes are not consulted,
+(see [ADR 0007](./0007-unified-event-result-for-pre-events.md)). Plural suffixes are not consulted,
 so an explanation whose wording changes with a number reads in the form the app shipped under the
 bare key.
 
@@ -328,7 +328,7 @@ With SIP integration enabled *for internal calls*, a single user-to-user call is
 for the leg Rocket.Chat sends to the PBX, and once for the INVITE the PBX routes straight back in.
 An app can tell that *a* SIP leg is involved; it cannot tell that the two legs are one conversation,
 and has no reason to expect two. The two payloads are side by side under
-[What an app receives today](#what-an-app-receives-today).
+[What an app receives today](#what-an-app-receives).
 
 ### How one call becomes two
 
@@ -411,7 +411,7 @@ dispatches**.
 may veto. VideoConfProvider selects *one* provider by name and RPCs into it, so P2 had to
 re-implement the prevent-wins and patch-chaining Pattern A gives for free — the core objection to it.
 P3 keeps the listener engine but trades away per-event return-type narrowing, which `EventResult`'s
-restricted unions depend on ([ADR 0002](./0002-unified-event-result-for-pre-events.md), decision 5);
+restricted unions depend on ([ADR 0007](./0007-unified-event-result-for-pre-events.md), decision 5);
 if two media-call pre-events ever permit different variants, P3 cannot express it. P4 keeps every
 type-level guarantee P1 has, collapses N interfaces into one app-facing surface, and adds no
 conceptual novelty because `IUIKitActionHandler` already has that shape. As built it also grows more
@@ -646,7 +646,8 @@ outcomes are written as system messages via `saveCallToHistory` / `sendHistoryMe
   `isAnsweredCall` helpers.
 - Host-side envelopes: `packages/apps/src/server/mediaCalls/IMediaCallEvent.ts` — `MediaCallEvent`
   and `PreMediaCallCreatedOutcome`, re-exported from `@rocket.chat/apps`. Apps never see either, so
-  neither belongs in the package an app imports. See ADR 0002's implementation record.
+  neither belongs in the package an app imports. See [ADR 0007's implementation
+  record](./0007-unified-event-result-for-pre-events.md#implementation-record).
   `PreMediaCallCreatedOutcome` is `HostEventResult<MediaCallCreateEventResult>`, so the host reads
   back the same `pass` / `patch` / `prevent` vocabulary the app spoke, with `meta` naming the app on
   a `prevent`. A `patch` outcome carries the **accumulated** context, not the last app's fragment;
@@ -663,7 +664,7 @@ outcomes are written as system messages via `saveCallToHistory` / `sendHistoryMe
 - Host bridge: `apps/meteor/app/apps/server/bridges/listeners.ts`.
 - Host trigger, mappers and `getCallOrigin`: `apps/meteor/server/services/media-call/appEvents.ts`,
   wired in `service.ts`; covered by
-  `apps/meteor/tests/unit/server/services/media-call/appEvents.spec.ts` — `origin` for each of the
+  `apps/meteor/server/services/media-call/appEvents.test.ts` — `origin` for each of the
   three contact-type combinations, on the pre context and on `toAppMediaCall`.
 - EE hook bus: `IMediaCallServer.setHooks` / `runPreCallCreatedHook`, consulted in
   `MediaCallDirector.createCall` (`ee/packages/media-calls/src/`).

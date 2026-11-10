@@ -1,14 +1,14 @@
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
-import type { AllHTMLAttributes, ChangeEvent, ReactNode, RefAttributes } from 'react';
+import type { ChangeEvent, InputHTMLAttributes, ReactNode } from 'react';
 import { useLayoutEffect, useRef, useCallback } from 'react';
 
-import { Box, type BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
+import { Box } from '../Box';
 
-export type CheckBoxProps = Omit<BoxProps, 'ref'> &
-	RefAttributes<HTMLInputElement> & {
-		indeterminate?: boolean;
-		labelChildren?: ReactNode;
-	} & AllHTMLAttributes<HTMLInputElement>;
+export type CheckBoxProps = ElementProps<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>> & {
+	indeterminate?: boolean;
+	labelChildren?: ReactNode;
+};
 
 function CheckBox({ ref, indeterminate, onChange, className, labelChildren, ...props }: CheckBoxProps) {
 	const innerRef = useRef<HTMLInputElement>(null);

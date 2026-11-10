@@ -1,17 +1,14 @@
-#!/usr/bin/env npx ts-node
 /**
  * Benchmark suite for @rocket.chat/message-parser
  *
  * Measures parsing performance (ops/sec) across various message categories.
  * Run with: `yarn bench` from packages/message-parser/
- *
- * Uses a custom loader (pegjs-register.js) to compile .pegjs at runtime — no build needed.
  */
 
 import { Bench, type Task } from 'tinybench';
 
-import { parse } from '../src';
-import type { Options } from '../src';
+import { parse } from '../src/index.js';
+import type { Options } from '../src/index.js';
 
 // ── Options presets ────────────────────────────────────────────────────────
 

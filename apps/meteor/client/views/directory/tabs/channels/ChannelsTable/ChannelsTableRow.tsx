@@ -38,21 +38,21 @@ const ChannelsTableRow = ({ onClick, room, mediaQuery }: ChannelsTableRowProps) 
 					</Box>
 				</Box>
 			</GenericTableCell>
-			<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
+			<GenericTableCell color='hint' truncate>
 				{usersCount}
 			</GenericTableCell>
 			{mediaQuery && ts && (
-				<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
+				<GenericTableCell color='hint' truncate>
 					{formatDate(ts)}
 				</GenericTableCell>
 			)}
 			{mediaQuery && (
-				<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
+				<GenericTableCell color='hint' truncate>
 					{lastMessageTs && formatDate(lastMessageTs)}
 				</GenericTableCell>
 			)}
 			{mediaQuery && (
-				<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
+				<GenericTableCell color='hint' truncate>
 					{belongsTo}
 				</GenericTableCell>
 			)}

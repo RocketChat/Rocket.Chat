@@ -2,20 +2,20 @@ import type { IIntegration, IIntegrationHistory, INewIncomingIntegration, INewOu
 import { Integrations, IntegrationHistory } from '@rocket.chat/models';
 import {
 	ajv,
-	isIntegrationsCreateProps,
-	isIntegrationsHistoryProps,
-	isIntegrationsRemoveProps,
-	isIntegrationsGetProps,
-	isIntegrationsUpdateProps,
-	isIntegrationsListProps,
 	isIntegrationsClearHistoryProps,
+	isIntegrationsCreateProps,
+	isIntegrationsGetProps,
+	isIntegrationsHistoryProps,
+	isIntegrationsListProps,
+	isIntegrationsRemoveProps,
 	isIntegrationsReplayProps,
+	isIntegrationsUpdateProps,
+	paginatedResponseProperties,
 	validateBadRequestErrorResponse,
 	validateForbiddenErrorResponse,
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/tools';
-import { Match, check } from 'meteor/check';
 import type { Filter } from 'mongodb';
 
 import { clearIntegrationHistoryMethod, replayOutgoingIntegrationMethod } from '../../lib/integrations/functions/clearIntegrationHistory';
@@ -83,10 +83,8 @@ API.v1.get(
 				type: 'object',
 				properties: {
 					history: { type: 'array', items: { $ref: '#/components/schemas/IIntegrationHistory' } },
-					offset: { type: 'number' },
+					...paginatedResponseProperties,
 					items: { type: 'number' },
-					count: { type: 'number' },
-					total: { type: 'number' },
 					success: { type: 'boolean', enum: [true] },
 				},
 				required: ['history', 'offset', 'items', 'count', 'total', 'success'],
@@ -106,8 +104,8 @@ API.v1.get(
 
 		const { id } = queryParams;
 		const { offset, count } = await getPaginationItems(this.queryParams);
-		const { sort, fields: projection, query } = await this.parseJsonQuery();
-		const ourQuery = Object.assign(await mountIntegrationHistoryQueryBasedOnPermissions(userId, id), query);
+		const { sort, fields: projection } = await this.parseJsonQuery();
+		const ourQuery = await mountIntegrationHistoryQueryBasedOnPermissions(userId, id);
 
 		const { cursor, totalCount } = IntegrationHistory.findPaginated(ourQuery, {
 			sort: sort || { _updatedAt: -1 },
@@ -154,10 +152,8 @@ API.v1.get(
 							oneOf: [{ $ref: '#/components/schemas/IIncomingIntegration' }, { $ref: '#/components/schemas/IOutgoingIntegration' }],
 						},
 					},
-					offset: { type: 'number' },
+					...paginatedResponseProperties,
 					items: { type: 'number' },
-					count: { type: 'number' },
-					total: { type: 'number' },
 					success: { type: 'boolean', enum: [true] },
 				},
 				required: ['integrations', 'offset', 'items', 'count', 'total', 'success'],
@@ -170,11 +166,10 @@ API.v1.get(
 	},
 	async function action() {
 		const { offset, count } = await getPaginationItems(this.queryParams);
-		const { sort, fields, query } = await this.parseJsonQuery();
+		const { sort, fields } = await this.parseJsonQuery();
 		const { name, type } = this.queryParams;
 
 		const filter = {
-			...query,
 			...(name ? { name: { $regex: escapeRegExp(name), $options: 'i' } } : {}),
 			...(type ? { type } : {}),
 		};
@@ -251,13 +246,6 @@ API.v1.post(
 					integration,
 				});
 			case 'webhook-incoming':
-				check(
-					bodyParams,
-					Match.ObjectIncluding({
-						integrationId: String,
-					}),
-				);
-
 				integration = await Integrations.findOne({ _id: bodyParams.integrationId });
 
 				if (!integration) {

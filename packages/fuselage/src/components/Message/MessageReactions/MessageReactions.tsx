@@ -1,15 +1,11 @@
 import type { HTMLAttributes, RefAttributes } from 'react';
 
-import MessageBlock from '../MessageBlock';
+import { cx } from '../../../helpers/composeClassNames';
 
 export type MessageReactionsProps = HTMLAttributes<HTMLDivElement> & RefAttributes<HTMLDivElement>;
 
-function MessageReactions(props: MessageReactionsProps) {
-	return (
-		<MessageBlock className='rcx-message-reactions'>
-			<div className='rcx-message-reactions__container' {...props} />
-		</MessageBlock>
-	);
+function MessageReactions({ className, ...props }: MessageReactionsProps) {
+	return <div {...props} className={cx('rcx-message-reactions__container', className)} />;
 }
 
 export default MessageReactions;

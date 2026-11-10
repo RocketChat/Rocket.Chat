@@ -9,6 +9,14 @@
 	@return $length;
 }
 
+@function to-px($length) {
+	@if meta.type-of($length) == 'number' and math.is-unitless($length) {
+		@return $length * 1px;
+	}
+
+	@return $length;
+}
+
 @function to-rem($length) {
 	@if meta.type-of($length) == 'number' and math.is-unitless($length) {
 		@return math.div($length, 16) * 1rem;

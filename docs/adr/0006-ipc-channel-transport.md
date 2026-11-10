@@ -105,7 +105,7 @@ replaces — a sanitizer that misses a path fails the whole send rather than los
   enumerable properties, so a raw `Error` decoded to `{}`. Structured clone keeps `name`, `message`
   and `stack`, and drops every *other* own property — including anything mutated onto that `Error`,
   such as `logs`. A declared `data` shape per code is the fix.
-  [ADR 0006](./0006-apps-subprocess-protocol.md) decides it.
+  The follow-up ADR on the apps subprocess protocol decides it.
 - **`JsonRpcError` keeps its shape, on a new argument.** It stayed off `Error` because msgpack
   encodes only own enumerable properties. Structured clone carries an `Error` through its own path
   instead, which keeps `message` and drops `code` and `data`. Same conclusion, different reason.
@@ -154,7 +154,7 @@ decision 4.
    with a large file is the fixture that matters, and ADR 0004's harness is the closest prior art.
    A raw pipe with msgpack can beat the channel on very large or very frequent payloads, and nothing
    here rules that out for the upload path.
-2. **`protocol/` still has to be built.** [ADR 0006](./0006-apps-subprocess-protocol.md) decides
+2. **`protocol/` still has to be built.** The follow-up ADR on the apps subprocess protocol decides
    that extraction, and the sanitizer and the secure-fields walk are part of what moves into it.
 
 ## Reference index

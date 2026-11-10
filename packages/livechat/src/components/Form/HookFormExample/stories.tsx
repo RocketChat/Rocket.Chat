@@ -1,5 +1,5 @@
 import type { Meta, StoryFn } from '@storybook/preact';
-import type { ComponentProps, JSX as JSXInternal } from 'preact';
+import type { ComponentProps } from 'preact';
 import { Controller, useForm } from 'react-hook-form';
 import { action } from 'storybook/actions';
 
@@ -26,10 +26,10 @@ export const Default: StoryFn<ComponentProps<typeof Form>> = (args) => {
 		formState: { errors },
 		control,
 		reset,
-	} = useForm();
+	} = useForm<{ text: string; password: string; options: string }>();
 
 	return (
-		<Form onSubmit={handleSubmit(args.onSubmit as any) as unknown as JSXInternal.GenericEventHandler<HTMLFormElement>}>
+		<Form onSubmit={handleSubmit(args.onSubmit as any)}>
 			<FormField label='Text' description='Input field for plain text' error={errors?.text?.message?.toString()}>
 				<Controller name='text' control={control} rules={{ required: true }} render={({ field }) => <TextInput {...field} />} />
 			</FormField>

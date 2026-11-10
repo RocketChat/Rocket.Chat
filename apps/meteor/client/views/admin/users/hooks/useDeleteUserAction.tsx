@@ -2,11 +2,13 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useRoute, useSetting, usePermission, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { AdminUserAction } from './useAdminUserInfoActions';
 import { useConfirmOwnerChanges } from './useConfirmOwnerChanges';
+import { usersQueryKeys } from '../../../../lib/queryKeys';
 
 export const useDeleteUserAction = (userId: IUser['_id'], onChange: () => void, onReload: () => void): AdminUserAction | undefined => {
 	const { t } = useTranslation();
@@ -16,11 +18,13 @@ export const useDeleteUserAction = (userId: IUser['_id'], onChange: () => void, 
 	const erasureType = useSetting<'Delete' | 'Keep' | 'Unlink'>('Message_ErasureType', 'Delete');
 	const confirmOwnerChanges = useConfirmOwnerChanges();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const queryClient = useQueryClient();
 
 	const handleDeletedUser = (): void => {
 		setModal();
 		userRoute.push({});
 		onReload();
+		queryClient.invalidateQueries({ queryKey: usersQueryKeys.list() });
 	};
 
 	const deleteUserQuery = useMemo(() => ({ userId, confirmRelinquish: false }), [userId]);

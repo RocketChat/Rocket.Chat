@@ -13,7 +13,7 @@ const PrototypeContainer = () => {
 
 	const activeActions = useMemo(() => {
 		return projects[activeProject]?.flowEdges.map((edge) => edge.sourceHandle);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// oxlint-disable-next-line react-hooks/exhaustive-deps
 	}, [activeProject, projects, projects[activeProject].flowEdges]);
 
 	if (!projects[activeProject].screens.length) return null;

@@ -1,13 +1,14 @@
+import { after, before, describe, it } from 'node:test';
+
 import type { IMessage } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, request, credentials, api } from '../../data/api-data';
 import { cleanupApps, installTestApp } from '../../data/apps/helper';
 import { IS_EE } from '../../e2e/config/constants';
 
 (IS_EE ? describe : describe.skip)('Apps - Slash Command "test-with-arguments"', () => {
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 	before(async () => {
 		await cleanupApps();
 		await installTestApp();
@@ -17,7 +18,7 @@ import { IS_EE } from '../../e2e/config/constants';
 
 	describe('[Slash command "test-with-arguments"]', () => {
 		const params = 'argument';
-		it('should execute the slash command successfully', (done) => {
+		it('should execute the slash command successfully', (_t, done) => {
 			void request
 				.post(api('commands.run'))
 				.send({
@@ -32,7 +33,7 @@ import { IS_EE } from '../../e2e/config/constants';
 				})
 				.end(done);
 		});
-		it('should have sent the message correctly', (done) => {
+		it('should have sent the message correctly', (_t, done) => {
 			const searchText = `Slashcommand \'test-with-arguments\' successfully executed with arguments: "${params}"`;
 			void request
 				.get(api('chat.search'))

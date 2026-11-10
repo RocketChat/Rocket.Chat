@@ -1,7 +1,7 @@
 import type { ComponentChildren, RefObject } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 import { createClassName } from '../../../helpers/createClassName';
 
 export const FormScrollShadow = ({
@@ -18,8 +18,12 @@ export const FormScrollShadow = ({
 
 	const callback: IntersectionObserverCallback = (entries) => {
 		entries.forEach((entry) => {
-			entry.target.id === 'top' && setAtTop(entry.isIntersecting);
-			entry.target.id === 'bottom' && setAtBottom(entry.isIntersecting);
+			if (entry.target.id === 'top') {
+				setAtTop(entry.isIntersecting);
+			}
+			if (entry.target.id === 'bottom') {
+				setAtBottom(entry.isIntersecting);
+			}
 		});
 	};
 

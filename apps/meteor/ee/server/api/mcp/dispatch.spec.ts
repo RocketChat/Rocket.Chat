@@ -62,6 +62,34 @@ describe('MCP tool dispatch', () => {
 		expect(result).toEqual({ ok: true, status: 200, body: { message: { _id: 'message-id' } } });
 	});
 
+	it('forwards an OAuth access token as a Bearer credential', async () => {
+		const fetchMock = jest.spyOn(global, 'fetch').mockResolvedValue(new Response(JSON.stringify({ success: true }), { status: 200 }));
+
+		await dispatchTool(
+			{
+				name: 'chat_postMessage',
+				description: 'Post a message',
+				inputSchema: { type: 'object' },
+				path: '/api/v1/chat.postMessage',
+				method: 'post',
+			},
+			{ roomId: 'room-id', text: 'Hello' },
+			{ userId: 'user-id', accessToken: 'access-token' },
+			'192.0.2.1',
+		);
+
+		expect(fetchMock).toHaveBeenCalledWith(
+			expect.any(String),
+			expect.objectContaining({
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': 'Bearer access-token',
+					'X-Real-IP': '192.0.2.1',
+				},
+			}),
+		);
+	});
+
 	it('preserves non-JSON error responses', async () => {
 		jest.spyOn(global, 'fetch').mockResolvedValue(new Response('Service unavailable', { status: 503 }));
 

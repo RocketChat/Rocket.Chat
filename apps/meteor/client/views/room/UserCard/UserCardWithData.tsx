@@ -43,7 +43,7 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 	const user = useMemo(() => {
 		const defaultValue = isLoading ? undefined : null;
 
-		const { _id, name, utcOffset = defaultValue, nickname, avatarETag, freeSwitchExtension, federated } = data?.user || {};
+		const { _id, name, utcOffset = defaultValue, nickname, avatarETag, sipExtension, federated } = data?.user || {};
 
 		return {
 			_id,
@@ -56,7 +56,7 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 			status: _id && <ReactiveUserStatus uid={_id} />,
 			customStatus: _id && <ReactiveUserStatusText uid={_id} />,
 			nickname,
-			freeSwitchExtension,
+			sipExtension,
 			federated,
 		};
 	}, [data, username, showRealNames, isLoading, workspaceRoles, roomRoles]);
@@ -72,7 +72,7 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 			_id: user._id ?? '',
 			username: user.username,
 			name: user.name,
-			freeSwitchExtension: user.freeSwitchExtension,
+			sipExtension: user.sipExtension,
 			federated: user.federated,
 		},
 		size: 2,
@@ -87,7 +87,7 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 
 		return (
 			<GenericMenu
-				button={<IconButton icon='kebab' secondary small />}
+				button={<IconButton icon='kebab' variant='secondary' size='small' />}
 				title={t('More')}
 				key='menu'
 				sections={menuOptions}

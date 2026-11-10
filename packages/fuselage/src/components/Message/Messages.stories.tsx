@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import type { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
 
 import { Avatar } from '../Avatar';
@@ -22,7 +22,7 @@ import {
 } from './MessageMetrics';
 import MessageName from './MessageName';
 import MessageNameContainer from './MessageNameContainer';
-import MessageReactions, { MessageReaction, MessageReactionAction } from './MessageReactions';
+import MessageReactions, { MessageReaction, MessageReactionAction, MessageReactionCounter } from './MessageReactions';
 import MessageRole from './MessageRole';
 import MessageRoles from './MessageRoles';
 import MessageTimestamp from './MessageTimestamp';
@@ -34,7 +34,6 @@ import {
 	ThreadMessageContainer,
 	ThreadMessageEmoji,
 	ThreadMessageIconThread,
-	ThreadMessageLeftContainer,
 	ThreadMessageOrigin,
 	ThreadMessageRow,
 	ThreadMessageUnfollow,
@@ -89,11 +88,6 @@ export default {
 		isPending: {
 			control: 'boolean',
 			description: 'Applies the pending (not yet sent) visual state.',
-			table: { category: 'State' },
-		},
-		highlight: {
-			control: 'boolean',
-			description: 'Applies the highlighted visual state.',
 			table: { category: 'State' },
 		},
 		onClick: {
@@ -156,9 +150,15 @@ export const Default: Story = {
 						. aliqua. Ut enim ad minim veniam...
 					</MessageBody>
 					<MessageReactions>
-						<MessageReaction mine counter={1} />
-						<MessageReaction counter={2} />
-						<MessageReaction counter={3} />
+						<MessageReaction mine>
+							<MessageReactionCounter counter={1} />
+						</MessageReaction>
+						<MessageReaction>
+							<MessageReactionCounter counter={2} />
+						</MessageReaction>
+						<MessageReaction>
+							<MessageReactionCounter counter={3} />
+						</MessageReaction>
 						<MessageReactionAction />
 					</MessageReactions>
 				</MessageContainer>
@@ -304,9 +304,15 @@ export const WithSequential: Story = {
 						eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam...
 					</MessageBody>
 					<MessageReactions>
-						<MessageReaction counter={1} />
-						<MessageReaction counter={2} />
-						<MessageReaction counter={3} />
+						<MessageReaction>
+							<MessageReactionCounter counter={1} />
+						</MessageReaction>
+						<MessageReaction>
+							<MessageReactionCounter counter={2} />
+						</MessageReaction>
+						<MessageReaction>
+							<MessageReactionCounter counter={3} />
+						</MessageReaction>
 						<MessageReactionAction />
 					</MessageReactions>
 				</MessageContainer>
@@ -414,9 +420,15 @@ export const MessageWithThread: Story = {
 						eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam...
 					</MessageBody>
 					<MessageReactions>
-						<MessageReaction counter={1} />
-						<MessageReaction counter={2} />
-						<MessageReaction counter={3} />
+						<MessageReaction>
+							<MessageReactionCounter counter={1} />
+						</MessageReaction>
+						<MessageReaction>
+							<MessageReactionCounter counter={2} />
+						</MessageReaction>
+						<MessageReaction>
+							<MessageReactionCounter counter={3} />
+						</MessageReaction>
 						<MessageReactionAction />
 					</MessageReactions>
 				</MessageContainer>
@@ -462,9 +474,9 @@ export const MessageWithThread: Story = {
 			</Message>
 			<ThreadMessage>
 				<ThreadMessageRow>
-					<ThreadMessageLeftContainer>
+					<MessageLeftContainer>
 						<ThreadMessageIconThread />
-					</ThreadMessageLeftContainer>
+					</MessageLeftContainer>
 					<ThreadMessageContainer>
 						<ThreadMessageOrigin>
 							Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat a duis aute irure
@@ -475,9 +487,9 @@ export const MessageWithThread: Story = {
 					</ThreadMessageContainer>
 				</ThreadMessageRow>
 				<ThreadMessageRow>
-					<ThreadMessageLeftContainer>
+					<MessageLeftContainer>
 						<Avatar url={avatarUrl} size='x16' />
-					</ThreadMessageLeftContainer>
+					</MessageLeftContainer>
 					<ThreadMessageContainer>
 						<ThreadMessageBody>
 							<ThreadMessageEmoji image={`url(${avatarUrl})`} name='test' />
@@ -534,9 +546,15 @@ export const MessageSelected: Story = {
 							eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam...
 						</MessageBody>
 						<MessageReactions>
-							<MessageReaction counter={1} />
-							<MessageReaction counter={2} />
-							<MessageReaction counter={3} />
+							<MessageReaction>
+								<MessageReactionCounter counter={1} />
+							</MessageReaction>
+							<MessageReaction>
+								<MessageReactionCounter counter={2} />
+							</MessageReaction>
+							<MessageReaction>
+								<MessageReactionCounter counter={3} />
+							</MessageReaction>
 							<MessageReactionAction />
 						</MessageReactions>
 					</MessageContainer>
@@ -572,9 +590,15 @@ export const MessageEditing: Story = {
 						eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam...
 					</MessageBody>
 					<MessageReactions>
-						<MessageReaction counter={1} />
-						<MessageReaction counter={2} />
-						<MessageReaction counter={3} />
+						<MessageReaction>
+							<MessageReactionCounter counter={1} />
+						</MessageReaction>
+						<MessageReaction>
+							<MessageReactionCounter counter={2} />
+						</MessageReaction>
+						<MessageReaction>
+							<MessageReactionCounter counter={3} />
+						</MessageReaction>
 						<MessageReactionAction />
 					</MessageReactions>
 				</MessageContainer>
@@ -651,9 +675,15 @@ export const MessageUnorderedList: Story = {
 						</ul>
 					</MessageBody>
 					<MessageReactions>
-						<MessageReaction counter={1} />
-						<MessageReaction counter={2} />
-						<MessageReaction counter={3} />
+						<MessageReaction>
+							<MessageReactionCounter counter={1} />
+						</MessageReaction>
+						<MessageReaction>
+							<MessageReactionCounter counter={2} />
+						</MessageReaction>
+						<MessageReaction>
+							<MessageReactionCounter counter={3} />
+						</MessageReaction>
 						<MessageReactionAction />
 					</MessageReactions>
 				</MessageContainer>
@@ -698,87 +728,17 @@ export const MessageOrderedList: Story = {
 						</ol>
 					</MessageBody>
 					<MessageReactions>
-						<MessageReaction counter={1} />
-						<MessageReaction counter={2} />
-						<MessageReaction counter={3} />
+						<MessageReaction>
+							<MessageReactionCounter counter={1} />
+						</MessageReaction>
+						<MessageReaction>
+							<MessageReactionCounter counter={2} />
+						</MessageReaction>
+						<MessageReaction>
+							<MessageReactionCounter counter={3} />
+						</MessageReaction>
 						<MessageReactionAction />
 					</MessageReactions>
-				</MessageContainer>
-				<MessageToolbarWrapper>
-					<MessageToolbar>
-						<MessageToolbarItem icon='quote' />
-						<MessageToolbarItem icon='clock' />
-						<MessageToolbarItem icon='thread' />
-					</MessageToolbar>
-				</MessageToolbarWrapper>
-			</Message>
-		</Box>
-	),
-};
-
-export const MessageHighlighted: Story = {
-	render: () => (
-		<Box>
-			<MessageDivider>May, 24, 2020</MessageDivider>
-			<Message className='customclass' highlight>
-				<MessageLeftContainer>
-					<Avatar url={avatarUrl} size='x36' />
-				</MessageLeftContainer>
-				<MessageContainer>
-					<MessageHeader>
-						<MessageNameContainer>
-							<MessageName>Haylie George</MessageName> <MessageUsername>@haylie.george</MessageUsername>
-						</MessageNameContainer>
-						<MessageRoles>
-							<MessageRole>Admin</MessageRole>
-							<MessageRole>User</MessageRole>
-							<MessageRole>Owner</MessageRole>
-						</MessageRoles>
-						<MessageTimestamp>12:00 PM</MessageTimestamp>
-					</MessageHeader>
-					<MessageBody>
-						Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat a duis aute irure
-						dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Consectetur adipiscing elit, sed do
-						eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam...
-					</MessageBody>
-					<MessageReactions>
-						<MessageReaction counter={1} />
-						<MessageReaction counter={2} />
-						<MessageReaction counter={3} />
-						<MessageReactionAction />
-					</MessageReactions>
-				</MessageContainer>
-				<MessageToolbarWrapper>
-					<MessageToolbar>
-						<MessageToolbarItem icon='quote' />
-						<MessageToolbarItem icon='clock' />
-						<MessageToolbarItem icon='thread' />
-					</MessageToolbar>
-				</MessageToolbarWrapper>
-			</Message>
-			<Message className='customclass' sequential>
-				<MessageLeftContainer />
-				<MessageContainer>
-					<MessageBody>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</MessageBody>
-				</MessageContainer>
-				<MessageToolbarWrapper>
-					<MessageToolbar>
-						<MessageToolbarItem icon='quote' />
-						<MessageToolbarItem icon='clock' />
-						<MessageToolbarItem icon='thread' />
-					</MessageToolbar>
-				</MessageToolbarWrapper>
-			</Message>
-			<Message className='customclass' sequential>
-				<MessageLeftContainer />
-				<MessageContainer>
-					<MessageBody>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</MessageBody>
-				</MessageContainer>
-			</Message>
-			<Message className='customclass' sequential>
-				<MessageLeftContainer />
-				<MessageContainer>
-					<MessageBody>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</MessageBody>
 				</MessageContainer>
 				<MessageToolbarWrapper>
 					<MessageToolbar>
@@ -987,7 +947,9 @@ export const LotsOfReactions: Story = {
 					</MessageBody>
 					<MessageReactions>
 						{Array.from({ length: 100 }).map((_, index) => (
-							<MessageReaction key={index} counter={index} mine={!(index % 3)} />
+							<MessageReaction key={index} mine={!(index % 3)}>
+								<MessageReactionCounter counter={index} />
+							</MessageReaction>
 						))}
 						<MessageReactionAction />
 					</MessageReactions>

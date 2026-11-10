@@ -7,12 +7,11 @@ import {
 	type ISubscription,
 } from '@rocket.chat/core-typings';
 import { useUser, useEndpoint, usePermission } from '@rocket.chat/ui-contexts';
+import { EmojiElement, useEmojiPickerData } from '@rocket.chat/ui-emoji-picker';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useEmojiPickerData } from '../../../../../contexts/EmojiPickerContext';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
-import EmojiElement from '../../../../../views/composer/EmojiPicker/EmojiElement';
 import { useChat } from '../../../../../views/room/contexts/ChatContext';
 import MessageToolbarItem from '../../MessageToolbarItem';
 
@@ -20,9 +19,10 @@ export type ReactionMessageActionProps = {
 	message: IMessage;
 	room: IRoom;
 	subscription: ISubscription | undefined;
+	onChangeMenuVisibility?: (visible: boolean) => void;
 };
 
-const ReactionMessageAction = ({ message, room, subscription }: ReactionMessageActionProps) => {
+const ReactionMessageAction = ({ message, room, subscription, onChangeMenuVisibility }: ReactionMessageActionProps) => {
 	const chat = useChat();
 	const user = useUser();
 	const setReaction = useEndpoint('POST', '/v1/chat.react');
@@ -50,7 +50,7 @@ const ReactionMessageAction = ({ message, room, subscription }: ReactionMessageA
 
 			return true;
 		},
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// oxlint-disable-next-line react-hooks/exhaustive-deps
 		[chat, room, subscription, message.private, user, isFederationBlocked, postReadOnly],
 	);
 
@@ -77,9 +77,14 @@ const ReactionMessageAction = ({ message, room, subscription }: ReactionMessageA
 				title={t('Add_Reaction')}
 				onClick={(event) => {
 					event.stopPropagation();
-					chat?.emojiPicker.open(event.currentTarget, (emoji) => {
-						toggleReaction(emoji);
-					});
+					chat?.emojiPicker.open(
+						event.currentTarget,
+						(emoji) => {
+							toggleReaction(emoji);
+						},
+						() => onChangeMenuVisibility?.(false),
+					);
+					onChangeMenuVisibility?.(true);
 				}}
 			/>
 		</>
