@@ -1,0 +1,69 @@
+// Copyright 2018-2026 the Deno authors. MIT license.
+// This module is browser compatible.
+
+import type { Writer, WriterSync } from "./types.ts";
+
+export type { Writer, WriterSync } from "./types.ts";
+
+/**
+ * Write all the content of the array buffer (`arr`) to the writer (`w`).
+ *
+ * @example Writing to stdout
+ * ```ts no-assert
+ * import { writeAll } from "@std/io/write-all";
+ *
+ * const contentBytes = new TextEncoder().encode("Hello World");
+ * await writeAll(Deno.stdout, contentBytes);
+ * ```
+ *
+ * @example Writing to file
+ * ```ts ignore no-assert
+ * import { writeAll } from "@std/io/write-all";
+ *
+ * const contentBytes = new TextEncoder().encode("Hello World");
+ * using file = await Deno.open('test.file', { write: true });
+ * await writeAll(file, contentBytes);
+ * ```
+ *
+ * @param writer The writer to write to
+ * @param data The data to write
+ */
+export async function writeAll(writer: Writer, data: Uint8Array) {
+  let nwritten = 0;
+  while (nwritten < data.length) {
+    nwritten += await writer.write(data.subarray(nwritten));
+  }
+}
+
+/**
+ * Synchronously write all the content of the array buffer (`arr`) to the
+ * writer (`w`).
+ *
+ * @example "riting to stdout
+ * ```ts no-assert
+ * import { writeAllSync } from "@std/io/write-all";
+ *
+ * const contentBytes = new TextEncoder().encode("Hello World");
+ * writeAllSync(Deno.stdout, contentBytes);
+ * ```
+ *
+ * @example Writing to file
+ * ```ts ignore no-assert
+ * import { writeAllSync } from "@std/io/write-all";
+ *
+ * const contentBytes = new TextEncoder().encode("Hello World");
+ * using file = Deno.openSync("test.file", { write: true });
+ * writeAllSync(file, contentBytes);
+ * ```
+ *
+ * @param writer The writer to write to
+ * @param data The data to write
+ */
+export function writeAllSync(writer: WriterSync, data: Uint8Array) {
+  let nwritten = 0;
+  while (nwritten < data.length) {
+    nwritten += writer.writeSync(data.subarray(nwritten));
+  }
+}
+
+// denoCacheMetadata={"headers":{"cross-origin-resource-policy":"cross-origin","server":"cloudflare","x-content-type-options":"nosniff","vary":"Origin","content-type":"text/typescript","cache-control":"public, max-age=31536000, immutable","x-jsr-backend":"modules","x-robots-tag":"noindex","cf-ray":"9e9c7c255d3b1920-CWB","nel":"{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}","report-to":"{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=lJzaxnp2kjRvEIyxsScxUw3Gva%2FVVe%2FmmgGG4J2%2BnQULh5YPhJybtPLSma3AdTYIXbGyEzLEP0jR2x5g%2F0JpojvxDacF37ETlSgx3FeXQU79uofBtqMRyT4%3D\"}]}","content-security-policy":"default-src 'none'; script-src 'none'; style-src 'none'; img-src 'none'; font-src 'none'; connect-src 'none'; frame-src 'none'; object-src 'none'; frame-ancestors 'none'; sandbox; form-action 'none';","content-length":"1927","access-control-allow-origin":"*","date":"Thu, 09 Apr 2026 21:08:04 GMT","access-control-expose-headers":"*","alt-svc":"h3=\":443\"; ma=86400","etag":"\"5b60a7e1dbae953462d499a30cfd8351\""},"url":"https://jsr.io/@std/io/0.225.3/write_all.ts","time":1775768884}

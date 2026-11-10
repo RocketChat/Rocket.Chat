@@ -1,0 +1,33 @@
+/**
+ * Represents  the slash command's context when a user
+ * executes a slash command.
+ */ export class SlashCommandContext {
+  sender;
+  room;
+  params;
+  threadId;
+  triggerId;
+  constructor(sender, room, params, threadId, triggerId){
+    this.sender = sender;
+    this.room = room;
+    this.params = params;
+    this.threadId = threadId;
+    this.triggerId = triggerId;
+  }
+  /** The user who sent the command. */ getSender() {
+    return this.sender;
+  }
+  /** The room where the command was sent in. */ getRoom() {
+    return this.room;
+  }
+  /** The arguments passed into the command. */ getArguments() {
+    return this.params;
+  }
+  getThreadId() {
+    return this.threadId;
+  }
+  getTriggerId() {
+    return this.triggerId;
+  }
+}
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImZpbGU6Ly8vVXNlcnMvZ3VpbGhlcm1lZ2F6em8vZGV2L2l1c2VyL3BhY2thZ2VzL2FwcHMtZW5naW5lL3NyYy9kZWZpbml0aW9uL3NsYXNoY29tbWFuZHMvU2xhc2hDb21tYW5kQ29udGV4dC50cyJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgdHlwZSB7IElSb29tIH0gZnJvbSAnLi4vcm9vbXMnO1xuaW1wb3J0IHR5cGUgeyBJVXNlciB9IGZyb20gJy4uL3VzZXJzJztcblxuLyoqXG4gKiBSZXByZXNlbnRzICB0aGUgc2xhc2ggY29tbWFuZCdzIGNvbnRleHQgd2hlbiBhIHVzZXJcbiAqIGV4ZWN1dGVzIGEgc2xhc2ggY29tbWFuZC5cbiAqL1xuZXhwb3J0IGNsYXNzIFNsYXNoQ29tbWFuZENvbnRleHQge1xuXHRjb25zdHJ1Y3Rvcihcblx0XHRwcml2YXRlIHNlbmRlcjogSVVzZXIsXG5cdFx0cHJpdmF0ZSByb29tOiBJUm9vbSxcblx0XHRwcml2YXRlIHBhcmFtczogQXJyYXk8c3RyaW5nPixcblx0XHRwcml2YXRlIHRocmVhZElkPzogc3RyaW5nLFxuXHRcdHByaXZhdGUgdHJpZ2dlcklkPzogc3RyaW5nLFxuXHQpIHt9XG5cblx0LyoqIFRoZSB1c2VyIHdobyBzZW50IHRoZSBjb21tYW5kLiAqL1xuXHRwdWJsaWMgZ2V0U2VuZGVyKCk6IElVc2VyIHtcblx0XHRyZXR1cm4gdGhpcy5zZW5kZXI7XG5cdH1cblxuXHQvKiogVGhlIHJvb20gd2hlcmUgdGhlIGNvbW1hbmQgd2FzIHNlbnQgaW4uICovXG5cdHB1YmxpYyBnZXRSb29tKCk6IElSb29tIHtcblx0XHRyZXR1cm4gdGhpcy5yb29tO1xuXHR9XG5cblx0LyoqIFRoZSBhcmd1bWVudHMgcGFzc2VkIGludG8gdGhlIGNvbW1hbmQuICovXG5cdHB1YmxpYyBnZXRBcmd1bWVudHMoKTogQXJyYXk8c3RyaW5nPiB7XG5cdFx0cmV0dXJuIHRoaXMucGFyYW1zO1xuXHR9XG5cblx0cHVibGljIGdldFRocmVhZElkKCk6IHN0cmluZyB8IHVuZGVmaW5lZCB7XG5cdFx0cmV0dXJuIHRoaXMudGhyZWFkSWQ7XG5cdH1cblxuXHRwdWJsaWMgZ2V0VHJpZ2dlcklkKCk6IHN0cmluZyB8IHVuZGVmaW5lZCB7XG5cdFx0cmV0dXJuIHRoaXMudHJpZ2dlcklkO1xuXHR9XG59XG4iXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBR0E7OztDQUdDLEdBQ0QsT0FBTyxNQUFNOzs7Ozs7RUFDWixZQUNDLEFBQVEsTUFBYSxFQUNyQixBQUFRLElBQVcsRUFDbkIsQUFBUSxNQUFxQixFQUM3QixBQUFRLFFBQWlCLEVBQ3pCLEFBQVEsU0FBa0IsQ0FDekI7U0FMTyxTQUFBO1NBQ0EsT0FBQTtTQUNBLFNBQUE7U0FDQSxXQUFBO1NBQ0EsWUFBQTtFQUNOO0VBRUgsbUNBQW1DLEdBQ25DLEFBQU8sWUFBbUI7SUFDekIsT0FBTyxJQUFJLENBQUMsTUFBTTtFQUNuQjtFQUVBLDRDQUE0QyxHQUM1QyxBQUFPLFVBQWlCO0lBQ3ZCLE9BQU8sSUFBSSxDQUFDLElBQUk7RUFDakI7RUFFQSwyQ0FBMkMsR0FDM0MsQUFBTyxlQUE4QjtJQUNwQyxPQUFPLElBQUksQ0FBQyxNQUFNO0VBQ25CO0VBRU8sY0FBa0M7SUFDeEMsT0FBTyxJQUFJLENBQUMsUUFBUTtFQUNyQjtFQUVPLGVBQW1DO0lBQ3pDLE9BQU8sSUFBSSxDQUFDLFNBQVM7RUFDdEI7QUFDRCJ9

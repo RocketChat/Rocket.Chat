@@ -1,0 +1,49 @@
+import { JsonRpcError } from 'jsonrpc-lite';
+import { AppObjectRegistry } from '../AppObjectRegistry.ts';
+import { AppAccessorsInstance } from '../lib/accessors/mod.ts';
+import { wrapComposedApp } from '../lib/wrapAppForRequest.ts';
+export default async function videoConferenceHandler(request) {
+  const { method: call, params } = request;
+  const { logger } = request.context;
+  const [, providerName, methodName] = call.split(':');
+  const provider = AppObjectRegistry.get(`videoConfProvider:${providerName}`);
+  if (!provider) {
+    return new JsonRpcError(`Provider ${providerName} not found`, -32000);
+  }
+  const method = provider[methodName];
+  if (typeof method !== 'function') {
+    return JsonRpcError.methodNotFound({
+      message: `Method ${methodName} not found on provider ${providerName}`
+    });
+  }
+  const [videoconf, user, options] = params;
+  logger.debug(`Executing ${methodName} on video conference provider...`);
+  const args = [
+    ...videoconf ? [
+      videoconf
+    ] : [],
+    ...user ? [
+      user
+    ] : [],
+    ...options ? [
+      options
+    ] : []
+  ];
+  try {
+    // deno-lint-ignore ban-types
+    const result = await method.apply(wrapComposedApp(provider, request), [
+      ...args,
+      AppAccessorsInstance.getReader(),
+      AppAccessorsInstance.getModifier(),
+      AppAccessorsInstance.getHttp(),
+      AppAccessorsInstance.getPersistence()
+    ]);
+    logger.debug(`Video Conference Provider's ${methodName} was successfully executed.`);
+    return result;
+  } catch (e) {
+    logger.debug(`Video Conference Provider's ${methodName} was unsuccessful.`);
+    return new JsonRpcError(e.message, -32000);
+  }
+}
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImZpbGU6Ly8vVXNlcnMvZ3VpbGhlcm1lZ2F6em8vZGV2L1JvY2tldC5DaGF0L3BhY2thZ2VzL2FwcHMtZW5naW5lL2Rlbm8tcnVudGltZS9oYW5kbGVycy92aWRlb2NvbmZlcmVuY2UtaGFuZGxlci50cyJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgdHlwZSB7IElWaWRlb0NvbmZQcm92aWRlciB9IGZyb20gJ0Byb2NrZXQuY2hhdC9hcHBzLWVuZ2luZS9kZWZpbml0aW9uL3ZpZGVvQ29uZlByb3ZpZGVycy9JVmlkZW9Db25mUHJvdmlkZXIudHMnO1xuaW1wb3J0IHsgRGVmaW5lZCwgSnNvblJwY0Vycm9yIH0gZnJvbSAnanNvbnJwYy1saXRlJztcblxuaW1wb3J0IHsgQXBwT2JqZWN0UmVnaXN0cnkgfSBmcm9tICcuLi9BcHBPYmplY3RSZWdpc3RyeS50cyc7XG5pbXBvcnQgeyBBcHBBY2Nlc3NvcnNJbnN0YW5jZSB9IGZyb20gJy4uL2xpYi9hY2Nlc3NvcnMvbW9kLnRzJztcbmltcG9ydCB7IFJlcXVlc3RDb250ZXh0IH0gZnJvbSAnLi4vbGliL3JlcXVlc3RDb250ZXh0LnRzJztcbmltcG9ydCB7IHdyYXBDb21wb3NlZEFwcCB9IGZyb20gJy4uL2xpYi93cmFwQXBwRm9yUmVxdWVzdC50cyc7XG5cbmV4cG9ydCBkZWZhdWx0IGFzeW5jIGZ1bmN0aW9uIHZpZGVvQ29uZmVyZW5jZUhhbmRsZXIocmVxdWVzdDogUmVxdWVzdENvbnRleHQpOiBQcm9taXNlPEpzb25ScGNFcnJvciB8IERlZmluZWQ+IHtcblx0Y29uc3QgeyBtZXRob2Q6IGNhbGwsIHBhcmFtcyB9ID0gcmVxdWVzdDtcblx0Y29uc3QgeyBsb2dnZXIgfSA9IHJlcXVlc3QuY29udGV4dDtcblxuXHRjb25zdCBbLCBwcm92aWRlck5hbWUsIG1ldGhvZE5hbWVdID0gY2FsbC5zcGxpdCgnOicpO1xuXG5cdGNvbnN0IHByb3ZpZGVyID0gQXBwT2JqZWN0UmVnaXN0cnkuZ2V0PElWaWRlb0NvbmZQcm92aWRlcj4oYHZpZGVvQ29uZlByb3ZpZGVyOiR7cHJvdmlkZXJOYW1lfWApO1xuXG5cdGlmICghcHJvdmlkZXIpIHtcblx0XHRyZXR1cm4gbmV3IEpzb25ScGNFcnJvcihgUHJvdmlkZXIgJHtwcm92aWRlck5hbWV9IG5vdCBmb3VuZGAsIC0zMjAwMCk7XG5cdH1cblxuXHRjb25zdCBtZXRob2QgPSBwcm92aWRlclttZXRob2ROYW1lIGFzIGtleW9mIElWaWRlb0NvbmZQcm92aWRlcl07XG5cblx0aWYgKHR5cGVvZiBtZXRob2QgIT09ICdmdW5jdGlvbicpIHtcblx0XHRyZXR1cm4gSnNvblJwY0Vycm9yLm1ldGhvZE5vdEZvdW5kKHtcblx0XHRcdG1lc3NhZ2U6IGBNZXRob2QgJHttZXRob2ROYW1lfSBub3QgZm91bmQgb24gcHJvdmlkZXIgJHtwcm92aWRlck5hbWV9YCxcblx0XHR9KTtcblx0fVxuXG5cdGNvbnN0IFt2aWRlb2NvbmYsIHVzZXIsIG9wdGlvbnNdID0gcGFyYW1zIGFzIEFycmF5PHVua25vd24+O1xuXG5cdGxvZ2dlci5kZWJ1ZyhgRXhlY3V0aW5nICR7bWV0aG9kTmFtZX0gb24gdmlkZW8gY29uZmVyZW5jZSBwcm92aWRlci4uLmApO1xuXG5cdGNvbnN0IGFyZ3MgPSBbLi4uKHZpZGVvY29uZiA/IFt2aWRlb2NvbmZdIDogW10pLCAuLi4odXNlciA/IFt1c2VyXSA6IFtdKSwgLi4uKG9wdGlvbnMgPyBbb3B0aW9uc10gOiBbXSldO1xuXG5cdHRyeSB7XG5cdFx0Ly8gZGVuby1saW50LWlnbm9yZSBiYW4tdHlwZXNcblx0XHRjb25zdCByZXN1bHQgPSBhd2FpdCAobWV0aG9kIGFzIEZ1bmN0aW9uKS5hcHBseSh3cmFwQ29tcG9zZWRBcHAocHJvdmlkZXIsIHJlcXVlc3QpLCBbXG5cdFx0XHQuLi5hcmdzLFxuXHRcdFx0QXBwQWNjZXNzb3JzSW5zdGFuY2UuZ2V0UmVhZGVyKCksXG5cdFx0XHRBcHBBY2Nlc3NvcnNJbnN0YW5jZS5nZXRNb2RpZmllcigpLFxuXHRcdFx0QXBwQWNjZXNzb3JzSW5zdGFuY2UuZ2V0SHR0cCgpLFxuXHRcdFx0QXBwQWNjZXNzb3JzSW5zdGFuY2UuZ2V0UGVyc2lzdGVuY2UoKSxcblx0XHRdKTtcblxuXHRcdGxvZ2dlci5kZWJ1ZyhgVmlkZW8gQ29uZmVyZW5jZSBQcm92aWRlcidzICR7bWV0aG9kTmFtZX0gd2FzIHN1Y2Nlc3NmdWxseSBleGVjdXRlZC5gKTtcblxuXHRcdHJldHVybiByZXN1bHQ7XG5cdH0gY2F0Y2ggKGUpIHtcblx0XHRsb2dnZXIuZGVidWcoYFZpZGVvIENvbmZlcmVuY2UgUHJvdmlkZXIncyAke21ldGhvZE5hbWV9IHdhcyB1bnN1Y2Nlc3NmdWwuYCk7XG5cdFx0cmV0dXJuIG5ldyBKc29uUnBjRXJyb3IoZS5tZXNzYWdlLCAtMzIwMDApO1xuXHR9XG59XG4iXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQ0EsU0FBa0IsWUFBWSxRQUFRLGVBQWU7QUFFckQsU0FBUyxpQkFBaUIsUUFBUSwwQkFBMEI7QUFDNUQsU0FBUyxvQkFBb0IsUUFBUSwwQkFBMEI7QUFFL0QsU0FBUyxlQUFlLFFBQVEsOEJBQThCO0FBRTlELGVBQWUsZUFBZSx1QkFBdUIsT0FBdUI7RUFDM0UsTUFBTSxFQUFFLFFBQVEsSUFBSSxFQUFFLE1BQU0sRUFBRSxHQUFHO0VBQ2pDLE1BQU0sRUFBRSxNQUFNLEVBQUUsR0FBRyxRQUFRLE9BQU87RUFFbEMsTUFBTSxHQUFHLGNBQWMsV0FBVyxHQUFHLEtBQUssS0FBSyxDQUFDO0VBRWhELE1BQU0sV0FBVyxrQkFBa0IsR0FBRyxDQUFxQixDQUFDLGtCQUFrQixFQUFFLGNBQWM7RUFFOUYsSUFBSSxDQUFDLFVBQVU7SUFDZCxPQUFPLElBQUksYUFBYSxDQUFDLFNBQVMsRUFBRSxhQUFhLFVBQVUsQ0FBQyxFQUFFLENBQUM7RUFDaEU7RUFFQSxNQUFNLFNBQVMsUUFBUSxDQUFDLFdBQXVDO0VBRS9ELElBQUksT0FBTyxXQUFXLFlBQVk7SUFDakMsT0FBTyxhQUFhLGNBQWMsQ0FBQztNQUNsQyxTQUFTLENBQUMsT0FBTyxFQUFFLFdBQVcsdUJBQXVCLEVBQUUsY0FBYztJQUN0RTtFQUNEO0VBRUEsTUFBTSxDQUFDLFdBQVcsTUFBTSxRQUFRLEdBQUc7RUFFbkMsT0FBTyxLQUFLLENBQUMsQ0FBQyxVQUFVLEVBQUUsV0FBVyxnQ0FBZ0MsQ0FBQztFQUV0RSxNQUFNLE9BQU87T0FBSyxZQUFZO01BQUM7S0FBVSxHQUFHLEVBQUU7T0FBTyxPQUFPO01BQUM7S0FBSyxHQUFHLEVBQUU7T0FBTyxVQUFVO01BQUM7S0FBUSxHQUFHLEVBQUU7R0FBRTtFQUV4RyxJQUFJO0lBQ0gsNkJBQTZCO0lBQzdCLE1BQU0sU0FBUyxNQUFNLEFBQUMsT0FBb0IsS0FBSyxDQUFDLGdCQUFnQixVQUFVLFVBQVU7U0FDaEY7TUFDSCxxQkFBcUIsU0FBUztNQUM5QixxQkFBcUIsV0FBVztNQUNoQyxxQkFBcUIsT0FBTztNQUM1QixxQkFBcUIsY0FBYztLQUNuQztJQUVELE9BQU8sS0FBSyxDQUFDLENBQUMsNEJBQTRCLEVBQUUsV0FBVywyQkFBMkIsQ0FBQztJQUVuRixPQUFPO0VBQ1IsRUFBRSxPQUFPLEdBQUc7SUFDWCxPQUFPLEtBQUssQ0FBQyxDQUFDLDRCQUE0QixFQUFFLFdBQVcsa0JBQWtCLENBQUM7SUFDMUUsT0FBTyxJQUFJLGFBQWEsRUFBRSxPQUFPLEVBQUUsQ0FBQztFQUNyQztBQUNEIn0=
+// denoCacheMetadata=14903741595394084811,4267345829258854681

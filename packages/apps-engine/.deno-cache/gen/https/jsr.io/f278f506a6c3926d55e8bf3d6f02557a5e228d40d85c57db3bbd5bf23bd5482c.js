@@ -1,0 +1,26 @@
+// Copyright 2018-2025 the Deno authors. MIT license.
+// This module is browser compatible.
+export const DEFAULT_CHUNK_SIZE = 16_640;
+export const DEFAULT_BUFFER_SIZE = 32 * 1024;
+/** Generate longest proper prefix which is also suffix array. */ export function createLPS(pat) {
+  const length = pat.length;
+  const lps = new Uint8Array(length);
+  lps[0] = 0;
+  let prefixEnd = 0;
+  let i = 1;
+  while(i < length){
+    if (pat[i] === pat[prefixEnd]) {
+      prefixEnd++;
+      lps[i] = prefixEnd;
+      i++;
+    } else if (prefixEnd === 0) {
+      lps[i] = 0;
+      i++;
+    } else {
+      prefixEnd = lps[prefixEnd - 1];
+    }
+  }
+  return lps;
+}
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHBzOi8vanNyLmlvL0BzdGQvc3RyZWFtcy8xLjAuMTYvX2NvbW1vbi50cyJdLCJzb3VyY2VzQ29udGVudCI6WyIvLyBDb3B5cmlnaHQgMjAxOC0yMDI1IHRoZSBEZW5vIGF1dGhvcnMuIE1JVCBsaWNlbnNlLlxuLy8gVGhpcyBtb2R1bGUgaXMgYnJvd3NlciBjb21wYXRpYmxlLlxuXG5leHBvcnQgY29uc3QgREVGQVVMVF9DSFVOS19TSVpFID0gMTZfNjQwO1xuZXhwb3J0IGNvbnN0IERFRkFVTFRfQlVGRkVSX1NJWkUgPSAzMiAqIDEwMjQ7XG5cbi8qKiBHZW5lcmF0ZSBsb25nZXN0IHByb3BlciBwcmVmaXggd2hpY2ggaXMgYWxzbyBzdWZmaXggYXJyYXkuICovXG5leHBvcnQgZnVuY3Rpb24gY3JlYXRlTFBTKHBhdDogVWludDhBcnJheSk6IFVpbnQ4QXJyYXkge1xuICBjb25zdCBsZW5ndGggPSBwYXQubGVuZ3RoO1xuICBjb25zdCBscHMgPSBuZXcgVWludDhBcnJheShsZW5ndGgpO1xuICBscHNbMF0gPSAwO1xuICBsZXQgcHJlZml4RW5kID0gMDtcbiAgbGV0IGkgPSAxO1xuICB3aGlsZSAoaSA8IGxlbmd0aCkge1xuICAgIGlmIChwYXRbaV0gPT09IHBhdFtwcmVmaXhFbmRdKSB7XG4gICAgICBwcmVmaXhFbmQrKztcbiAgICAgIGxwc1tpXSA9IHByZWZpeEVuZDtcbiAgICAgIGkrKztcbiAgICB9IGVsc2UgaWYgKHByZWZpeEVuZCA9PT0gMCkge1xuICAgICAgbHBzW2ldID0gMDtcbiAgICAgIGkrKztcbiAgICB9IGVsc2Uge1xuICAgICAgcHJlZml4RW5kID0gbHBzW3ByZWZpeEVuZCAtIDFdITtcbiAgICB9XG4gIH1cbiAgcmV0dXJuIGxwcztcbn1cbiJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSxxREFBcUQ7QUFDckQscUNBQXFDO0FBRXJDLE9BQU8sTUFBTSxxQkFBcUIsT0FBTztBQUN6QyxPQUFPLE1BQU0sc0JBQXNCLEtBQUssS0FBSztBQUU3QywrREFBK0QsR0FDL0QsT0FBTyxTQUFTLFVBQVUsR0FBZTtFQUN2QyxNQUFNLFNBQVMsSUFBSSxNQUFNO0VBQ3pCLE1BQU0sTUFBTSxJQUFJLFdBQVc7RUFDM0IsR0FBRyxDQUFDLEVBQUUsR0FBRztFQUNULElBQUksWUFBWTtFQUNoQixJQUFJLElBQUk7RUFDUixNQUFPLElBQUksT0FBUTtJQUNqQixJQUFJLEdBQUcsQ0FBQyxFQUFFLEtBQUssR0FBRyxDQUFDLFVBQVUsRUFBRTtNQUM3QjtNQUNBLEdBQUcsQ0FBQyxFQUFFLEdBQUc7TUFDVDtJQUNGLE9BQU8sSUFBSSxjQUFjLEdBQUc7TUFDMUIsR0FBRyxDQUFDLEVBQUUsR0FBRztNQUNUO0lBQ0YsT0FBTztNQUNMLFlBQVksR0FBRyxDQUFDLFlBQVksRUFBRTtJQUNoQztFQUNGO0VBQ0EsT0FBTztBQUNUIn0=
+// denoCacheMetadata=15818124456715122346,13168419600651991920

@@ -1,0 +1,77 @@
+// Copyright 2018-2025 the Deno authors. MIT license.
+// This module is browser compatible.
+
+/**
+ * A transform stream that only transforms from the zero-indexed `start` and
+ * `end` bytes (both inclusive).
+ *
+ * @example Basic usage
+ * ```ts
+ * import { ByteSliceStream } from "@std/streams/byte-slice-stream";
+ * import { assertEquals } from "@std/assert";
+ *
+ * const stream = ReadableStream.from([
+ *   new Uint8Array([0, 1]),
+ *   new Uint8Array([2, 3, 4]),
+ * ]);
+ * const slicedStream = stream.pipeThrough(new ByteSliceStream(1, 3));
+ *
+ * assertEquals(
+ *   await Array.fromAsync(slicedStream),
+ *  [new Uint8Array([1]), new Uint8Array([2, 3])]
+ * );
+ * ```
+ *
+ * @example Get a range of bytes from a fetch response body
+ * ```ts
+ * import { ByteSliceStream } from "@std/streams/byte-slice-stream";
+ * import { assertEquals } from "@std/assert";
+ *
+ * const response = await fetch("https://example.com");
+ * const rangedStream = response.body!
+ *   .pipeThrough(new ByteSliceStream(3, 8));
+ * const collected = await Array.fromAsync(rangedStream);
+ * assertEquals(collected[0]?.length, 6);
+ * ```
+ */
+export class ByteSliceStream extends TransformStream<Uint8Array, Uint8Array> {
+  #offsetStart = 0;
+  #offsetEnd = 0;
+
+  /**
+   * Constructs a new instance.
+   *
+   * @param start The zero-indexed byte index to start reading from.
+   * @param end The zero-indexed byte index to stop reading at. Inclusive.
+   */
+  constructor(start = 0, end: number = Infinity) {
+    super({
+      start: () => {
+        if (start < 0) {
+          throw new RangeError(
+            `Cannot construct ByteSliceStream as start must be >= 0: received ${start}`,
+          );
+        }
+        end += 1;
+      },
+      transform: (chunk, controller) => {
+        this.#offsetStart = this.#offsetEnd;
+        this.#offsetEnd += chunk.byteLength;
+        if (this.#offsetEnd > start) {
+          if (this.#offsetStart < start) {
+            chunk = chunk.slice(start - this.#offsetStart);
+          }
+          if (this.#offsetEnd >= end) {
+            chunk = chunk.slice(0, chunk.byteLength - this.#offsetEnd + end);
+            controller.enqueue(chunk);
+            controller.terminate();
+          } else {
+            controller.enqueue(chunk);
+          }
+        }
+      },
+    });
+  }
+}
+
+// denoCacheMetadata={"headers":{"date":"Thu, 09 Apr 2026 21:08:04 GMT","cross-origin-resource-policy":"cross-origin","x-jsr-backend":"modules","content-length":"2282","cache-control":"public, max-age=31536000, immutable","x-robots-tag":"noindex","report-to":"{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=MwYDVWjivxWvWpkx3AS10Ge2HKuoFCx3uhfIOaQKZ1BCTY7MX%2BGL6ZhBvspDpawO9XAo9DtE6Enb94Mlqk0DPLA0oDA6Zd1O5CaxMND1XBXYlGLZWlMXi3Y%3D\"}]}","nel":"{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}","cf-ray":"9e9c7c255d421920-CWB","access-control-expose-headers":"*","x-content-type-options":"nosniff","alt-svc":"h3=\":443\"; ma=86400","access-control-allow-origin":"*","vary":"Origin","server":"cloudflare","content-type":"text/typescript","etag":"\"cad8b20b957a5341c7f232bf3e107a28\"","content-security-policy":"default-src 'none'; script-src 'none'; style-src 'none'; img-src 'none'; font-src 'none'; connect-src 'none'; frame-src 'none'; object-src 'none'; frame-ancestors 'none'; sandbox; form-action 'none';"},"url":"https://jsr.io/@std/streams/1.0.16/byte_slice_stream.ts","time":1775768884}

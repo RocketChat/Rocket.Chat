@@ -1,0 +1,14 @@
+import { createRequire } from 'node:module';
+const _require = createRequire(import.meta.url);
+export const require = (mod)=>{
+  // When we try to import something from the apps-engine, we resolve the path using import maps from Deno
+  // However, the import maps are configured to look at the source folder for typescript files, but during
+  // runtime those files are not available
+  if (mod.startsWith('@rocket.chat/apps-engine')) {
+    // Only remove "src/" substring when it comes after "apps-engine/"
+    mod = import.meta.resolve(mod).replace('file://', '').replace('apps-engine/src/', 'apps-engine/');
+  }
+  return _require(mod);
+};
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImZpbGU6Ly8vdmFyL2ZvbGRlcnMvcHQvNnBqM3hjMzk3ZzkxZF9qa3F6eDdtbmp3MDAwMGduL1QvYXBwcy1lbmdpbmUtdGVtcC9kZW5vLXJ1bnRpbWUvbGliL3JlcXVpcmUudHMiXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgY3JlYXRlUmVxdWlyZSB9IGZyb20gJ25vZGU6bW9kdWxlJztcblxuY29uc3QgX3JlcXVpcmUgPSBjcmVhdGVSZXF1aXJlKGltcG9ydC5tZXRhLnVybCk7XG5cbmV4cG9ydCBjb25zdCByZXF1aXJlID0gKG1vZDogc3RyaW5nKSA9PiB7XG5cdC8vIFdoZW4gd2UgdHJ5IHRvIGltcG9ydCBzb21ldGhpbmcgZnJvbSB0aGUgYXBwcy1lbmdpbmUsIHdlIHJlc29sdmUgdGhlIHBhdGggdXNpbmcgaW1wb3J0IG1hcHMgZnJvbSBEZW5vXG5cdC8vIEhvd2V2ZXIsIHRoZSBpbXBvcnQgbWFwcyBhcmUgY29uZmlndXJlZCB0byBsb29rIGF0IHRoZSBzb3VyY2UgZm9sZGVyIGZvciB0eXBlc2NyaXB0IGZpbGVzLCBidXQgZHVyaW5nXG5cdC8vIHJ1bnRpbWUgdGhvc2UgZmlsZXMgYXJlIG5vdCBhdmFpbGFibGVcblx0aWYgKG1vZC5zdGFydHNXaXRoKCdAcm9ja2V0LmNoYXQvYXBwcy1lbmdpbmUnKSkge1xuXHRcdC8vIE9ubHkgcmVtb3ZlIFwic3JjL1wiIHN1YnN0cmluZyB3aGVuIGl0IGNvbWVzIGFmdGVyIFwiYXBwcy1lbmdpbmUvXCJcblx0XHRtb2QgPSBpbXBvcnQubWV0YS5yZXNvbHZlKG1vZCkucmVwbGFjZSgnZmlsZTovLycsICcnKS5yZXBsYWNlKCdhcHBzLWVuZ2luZS9zcmMvJywgJ2FwcHMtZW5naW5lLycpO1xuXHR9XG5cblx0cmV0dXJuIF9yZXF1aXJlKG1vZCk7XG59O1xuIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBLFNBQVMsYUFBYSxRQUFRLGNBQWM7QUFFNUMsTUFBTSxXQUFXLGNBQWMsWUFBWSxHQUFHO0FBRTlDLE9BQU8sTUFBTSxVQUFVLENBQUM7RUFDdkIsd0dBQXdHO0VBQ3hHLHdHQUF3RztFQUN4Ryx3Q0FBd0M7RUFDeEMsSUFBSSxJQUFJLFVBQVUsQ0FBQyw2QkFBNkI7SUFDL0Msa0VBQWtFO0lBQ2xFLE1BQU0sWUFBWSxPQUFPLENBQUMsS0FBSyxPQUFPLENBQUMsV0FBVyxJQUFJLE9BQU8sQ0FBQyxvQkFBb0I7RUFDbkY7RUFFQSxPQUFPLFNBQVM7QUFDakIsRUFBRSJ9
+// denoCacheMetadata=5652225965962167083,17172121378573133400

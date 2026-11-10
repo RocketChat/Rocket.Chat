@@ -1,0 +1,29 @@
+// Copyright 2018-2025 the Deno authors. MIT license.
+// This module is browser compatible.
+
+export const DEFAULT_CHUNK_SIZE = 16_640;
+export const DEFAULT_BUFFER_SIZE = 32 * 1024;
+
+/** Generate longest proper prefix which is also suffix array. */
+export function createLPS(pat: Uint8Array): Uint8Array {
+  const length = pat.length;
+  const lps = new Uint8Array(length);
+  lps[0] = 0;
+  let prefixEnd = 0;
+  let i = 1;
+  while (i < length) {
+    if (pat[i] === pat[prefixEnd]) {
+      prefixEnd++;
+      lps[i] = prefixEnd;
+      i++;
+    } else if (prefixEnd === 0) {
+      lps[i] = 0;
+      i++;
+    } else {
+      prefixEnd = lps[prefixEnd - 1]!;
+    }
+  }
+  return lps;
+}
+
+// denoCacheMetadata={"headers":{"server":"cloudflare","access-control-expose-headers":"*","content-security-policy":"default-src 'none'; script-src 'none'; style-src 'none'; img-src 'none'; font-src 'none'; connect-src 'none'; frame-src 'none'; object-src 'none'; frame-ancestors 'none'; sandbox; form-action 'none';","x-robots-tag":"noindex","access-control-allow-origin":"*","vary":"Origin","cf-ray":"9e9c7c255d7c1920-CWB","alt-svc":"h3=\":443\"; ma=86400","nel":"{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}","cross-origin-resource-policy":"cross-origin","cache-control":"public, max-age=31536000, immutable","x-content-type-options":"nosniff","content-type":"text/typescript","etag":"\"741b3675df942cec77b15f3a6a1d30a3\"","x-jsr-backend":"modules","date":"Thu, 09 Apr 2026 21:08:04 GMT","content-length":"677","report-to":"{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=ioxPZMhMtf6jDxjJGOiS5lIYczmuAmPx%2FP2OIFfGzeAzG70u2918U29TR0rR58U%2FkSK%2FYFSfhrb7upOemVssfqyAFpv01%2B%2BdWlAX%2BaK2VvJCt04BF1R8xQY%3D\"}]}"},"url":"https://jsr.io/@std/streams/1.0.16/_common.ts","time":1775768883}

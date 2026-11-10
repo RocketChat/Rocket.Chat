@@ -1,0 +1,46 @@
+// Copyright 2018-2026 the Deno authors. MIT license.
+// This module is browser compatible.
+
+import { Buffer } from "./buffer.ts";
+import { writeAll } from "./write_all.ts";
+import type { Reader } from "./types.ts";
+
+/**
+ * Create a {@linkcode Reader} from a {@linkcode ReadableStreamDefaultReader}.
+ *
+ * @example Usage
+ * ```ts ignore
+ * import { copy } from "@std/io/copy";
+ * import { readerFromStreamReader } from "@std/io/reader-from-stream-reader";
+ *
+ * const res = await fetch("https://deno.land");
+ *
+ * const reader = readerFromStreamReader(res.body!.getReader());
+ * await copy(reader, Deno.stdout);
+ * ```
+ *
+ * @param streamReader The stream reader to read from
+ * @returns The reader
+ */
+export function readerFromStreamReader(
+  streamReader: ReadableStreamDefaultReader<Uint8Array>,
+): Reader {
+  const buffer = new Buffer();
+
+  return {
+    async read(p: Uint8Array): Promise<number | null> {
+      if (buffer.empty()) {
+        const res = await streamReader.read();
+        if (res.done) {
+          return null; // EOF
+        }
+
+        await writeAll(buffer, res.value);
+      }
+
+      return buffer.read(p);
+    },
+  };
+}
+
+// denoCacheMetadata={"headers":{"cache-control":"public, max-age=31536000, immutable","vary":"Origin","date":"Thu, 09 Apr 2026 21:08:04 GMT","content-type":"text/typescript","x-content-type-options":"nosniff","x-jsr-backend":"modules","alt-svc":"h3=\":443\"; ma=86400","cf-ray":"9e9c7c255d271920-CWB","etag":"\"e4fd49a44d39c3b8adb67d9d61574a4e\"","access-control-expose-headers":"*","nel":"{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}","content-security-policy":"default-src 'none'; script-src 'none'; style-src 'none'; img-src 'none'; font-src 'none'; connect-src 'none'; frame-src 'none'; object-src 'none'; frame-ancestors 'none'; sandbox; form-action 'none';","server":"cloudflare","content-length":"1146","x-robots-tag":"noindex","cross-origin-resource-policy":"cross-origin","access-control-allow-origin":"*","report-to":"{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=E7171hWgU5OV7741CKLmN9RvFO%2BeniZcDtyXewOQflLBFl0iNRFhqJkLZLkWNvlCn5xNPvp4uHRad3g7gj5WdF7OE2mOO6SS1D3lR5ISGuKdpRh5MlQrvhY%3D\"}]}"},"url":"https://jsr.io/@std/io/0.225.3/reader_from_stream_reader.ts","time":1775768884}

@@ -1,0 +1,30 @@
+// Copyright 2018-2026 the Deno authors. MIT license.
+// This module is browser compatible.
+
+/**
+ * Utilities for working with Deno's readers, writers, and web streams.
+ *
+ * `Reader` and `Writer` interfaces are deprecated in Deno, and so many of these
+ * utilities are also deprecated. Consider using web streams instead.
+ *
+ * ```ts ignore
+ * import { toReadableStream, toWritableStream } from "@std/io";
+ *
+ * await toReadableStream(Deno.stdin)
+ *   .pipeTo(toWritableStream(Deno.stdout));
+ * ```
+ *
+ * @module
+ */
+
+export * from "./buffer.ts";
+export * from "./copy.ts";
+export * from "./iterate_reader.ts";
+export * from "./read_all.ts";
+export * from "./reader_from_stream_reader.ts";
+export * from "./to_readable_stream.ts";
+export * from "./to_writable_stream.ts";
+export * from "./types.ts";
+export * from "./write_all.ts";
+
+// denoCacheMetadata={"headers":{"x-content-type-options":"nosniff","content-type":"text/typescript","report-to":"{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=Q82f%2FizZcJVKKv8v3W2v1dnrFds9O5qV8NMLtrVaf1CShnEtuHozHf1HjIycvKKXg8WyKC0kVRDbs2y44xuggvXT%2FqyxOlWAom%2BktqQk4CVksPu%2FDUy6CIc%3D\"}]}","x-jsr-backend":"modules","server":"cloudflare","content-security-policy":"default-src 'none'; script-src 'none'; style-src 'none'; img-src 'none'; font-src 'none'; connect-src 'none'; frame-src 'none'; object-src 'none'; frame-ancestors 'none'; sandbox; form-action 'none';","date":"Thu, 09 Apr 2026 21:08:04 GMT","access-control-allow-origin":"*","access-control-expose-headers":"*","cf-ray":"9e9c7c255d0e1920-CWB","alt-svc":"h3=\":443\"; ma=86400","x-robots-tag":"noindex","content-length":"833","cache-control":"public, max-age=31536000, immutable","cross-origin-resource-policy":"cross-origin","vary":"Origin","nel":"{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}","etag":"\"a0dd10b9f280e8d54aae517d6dca358c\""},"url":"https://jsr.io/@std/io/0.225.3/mod.ts","time":1775768884}

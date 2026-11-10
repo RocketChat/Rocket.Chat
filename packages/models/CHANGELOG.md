@@ -63,6 +63,25 @@
 
   </details>
 
+## 2.6.1
+
+### Patch Changes
+
+- ([#43277](https://github.com/RocketChat/Rocket.Chat/pull/43277)) Fixes high database load on busy workspaces with the Engagement Dashboard enabled, where every sent or deleted message read all of the day's dashboard records
+
+- ([#43469](https://github.com/RocketChat/Rocket.Chat/pull/43469)) Fixes instances started at the same time on a new database hanging at startup on a duplicate key error while creating the `GENERAL` room or the `rocket.cat` user
+
+- ([#43271](https://github.com/RocketChat/Rocket.Chat/pull/43271)) Fixes high database load when many users disconnect at once, such as after a network outage or an instance restart
+
+- ([#43278](https://github.com/RocketChat/Rocket.Chat/pull/43278)) Fixes instances started at the same time after an upgrade hanging at startup on a duplicate key error; they now start without a restart
+
+- <details><summary>Updated dependencies [968b1ee6c3779961d49c9a0a440262ab3966029f, 9d1afa454d964374e9cd6e10433b83ae16dc90ef, f871858c7dd52cd6849032425dce3a4670e14285]:</summary>
+  - @rocket.chat/model-typings@2.6.1
+  - @rocket.chat/core-typings@8.9.1
+  - @rocket.chat/rest-typings@8.9.1
+
+  </details>
+
 ## 2.6.0
 
 ### Minor Changes

@@ -1,0 +1,48 @@
+// Copyright 2018-2025 the Deno authors. MIT license.
+// This module is browser compatible.
+
+import { toText } from "./to_text.ts";
+
+/**
+ * Converts a
+ * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON}-formatted
+ * {@linkcode ReadableSteam} of strings or {@linkcode Uint8Array}s to an object.
+ * Works the same as {@linkcode Response.json} and {@linkcode Request.json}, but
+ * also extends to support streams of strings.
+ *
+ * @param stream A `ReadableStream` whose chunks compose a JSON.
+ * @returns A promise that resolves to the parsed JSON.
+ *
+ * @example Usage with a stream of strings
+ * ```ts
+ * import { toJson } from "@std/streams/to-json";
+ * import { assertEquals } from "@std/assert";
+ *
+ * const stream = ReadableStream.from([
+ *   "[1, true",
+ *   ', [], {}, "hello',
+ *   '", null]',
+ * ]);
+ * assertEquals(await toJson(stream), [1, true, [], {}, "hello", null]);
+ * ```
+ *
+ * @example Usage with a stream of `Uint8Array`s
+ * ```ts
+ * import { toJson } from "@std/streams/to-json";
+ * import { assertEquals } from "@std/assert";
+ *
+ * const stream = ReadableStream.from([
+ *   "[1, true",
+ *   ', [], {}, "hello',
+ *   '", null]',
+ * ]).pipeThrough(new TextEncoderStream());
+ * assertEquals(await toJson(stream), [1, true, [], {}, "hello", null]);
+ * ```
+ */
+export function toJson(
+  stream: ReadableStream<string> | ReadableStream<Uint8Array>,
+): Promise<unknown> {
+  return toText(stream).then(JSON.parse);
+}
+
+// denoCacheMetadata={"headers":{"cache-control":"public, max-age=31536000, immutable","x-jsr-backend":"modules","date":"Thu, 09 Apr 2026 21:08:04 GMT","vary":"Origin","content-security-policy":"default-src 'none'; script-src 'none'; style-src 'none'; img-src 'none'; font-src 'none'; connect-src 'none'; frame-src 'none'; object-src 'none'; frame-ancestors 'none'; sandbox; form-action 'none';","content-type":"text/typescript","server":"cloudflare","cf-ray":"9e9c7c255d631920-CWB","alt-svc":"h3=\":443\"; ma=86400","etag":"\"8a576c70246567252cdd54623dce6f36\"","access-control-allow-origin":"*","access-control-expose-headers":"*","x-robots-tag":"noindex","x-content-type-options":"nosniff","report-to":"{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=kkRlNUe%2BL%2FgD6GWT9pOsPXKWfTNvLbirl%2FUggVAFYlrQuUgLjs2lT4qYpcKOoc9oJ4dCkhHgaW2OvbgjSkJpf0t9F0snXR9%2FYfgJe3RcjJ%2FfMc87b8u7zs4%3D\"}]}","cross-origin-resource-policy":"cross-origin","content-length":"1473","nel":"{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}"},"url":"https://jsr.io/@std/streams/1.0.16/to_json.ts","time":1775768884}

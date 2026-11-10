@@ -941,6 +941,49 @@
 
   </details>
 
+## 8.9.1
+
+### Patch Changes
+
+- ([#43277](https://github.com/RocketChat/Rocket.Chat/pull/43277)) Fixes high database load on busy workspaces with the Engagement Dashboard enabled, where every sent or deleted message read all of the day's dashboard records
+
+- ([#43439](https://github.com/RocketChat/Rocket.Chat/pull/43439) by [@dionisio-bot](https://github.com/dionisio-bot)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#43477](https://github.com/RocketChat/Rocket.Chat/pull/43477)) Fixes the server staying up without ever accepting connections when a step of its startup fails; it now logs the error and exits
+
+- ([#43469](https://github.com/RocketChat/Rocket.Chat/pull/43469)) Fixes instances started at the same time on a new database hanging at startup on a duplicate key error while creating the `GENERAL` room or the `rocket.cat` user
+
+- ([#43398](https://github.com/RocketChat/Rocket.Chat/pull/43398) by [@dionisio-bot](https://github.com/dionisio-bot)) Bump the Node.js base image of the Docker images to 24.22.1 (the Debian image moves from bullseye to bookworm), which fixes a Brotli decoder out-of-bounds write (CVE-2026-111497).
+
+- ([#43282](https://github.com/RocketChat/Rocket.Chat/pull/43282)) Fixes push and email notifications piling up under load because the server paused for 2 seconds after every 100 notifications, even when more were waiting
+
+- ([#43271](https://github.com/RocketChat/Rocket.Chat/pull/43271)) Fixes high database load when many users disconnect at once, such as after a network outage or an instance restart
+
+- ([#43279](https://github.com/RocketChat/Rocket.Chat/pull/43279)) Stops the presence service from writing and broadcasting the user's status on every connection heartbeat when the status did not change
+
+- ([#43282](https://github.com/RocketChat/Rocket.Chat/pull/43282)) Fixes push notifications arriving minutes late under load when the push gateway is slow to answer; each server now sends many push notifications at once instead of one at a time
+
+- ([#43444](https://github.com/RocketChat/Rocket.Chat/pull/43444) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes app slash commands that declare a permission being listed and executed for users without that permission
+
+- ([#43466](https://github.com/RocketChat/Rocket.Chat/pull/43466) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes SAML login failing after a server restart until a SAML setting was saved, when the license finished loading after the SAML service providers were first built
+
+- ([#43278](https://github.com/RocketChat/Rocket.Chat/pull/43278)) Fixes instances started at the same time after an upgrade hanging at startup on a duplicate key error; they now start without a restart
+
+- ([#43403](https://github.com/RocketChat/Rocket.Chat/pull/43403) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes a permission check in team member management
+
+- <details><summary>Updated dependencies [cdb0bc05288986f8682d5eb11ac7d9fcf19684b5, 968b1ee6c3779961d49c9a0a440262ab3966029f, 9d1afa454d964374e9cd6e10433b83ae16dc90ef, ec037bac9859dfb30bd2c5822b31c326269c6348, f871858c7dd52cd6849032425dce3a4670e14285]:</summary>
+  - @rocket.chat/models@2.6.1
+  - @rocket.chat/model-typings@2.6.1
+  - @rocket.chat/presence@0.3.4
+  - @rocket.chat/core-typings@8.9.1
+  - @rocket.chat/rest-typings@8.9.1
+
+  </details>
+
 ## 8.9.0
 
 ### Minor Changes

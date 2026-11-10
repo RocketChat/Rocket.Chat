@@ -1,0 +1,38 @@
+import { Buffer } from 'node:buffer';
+import { Decoder, Encoder, ExtensionCodec } from '@msgpack/msgpack';
+import { require } from './require.ts';
+const { App } = require('@rocket.chat/apps-engine/definition/App.js');
+const extensionCodec = new ExtensionCodec();
+extensionCodec.register({
+  type: 0,
+  encode: (object)=>{
+    // We don't care about functions, but also don't want to throw an error
+    if (typeof object === 'function' || object instanceof App) {
+      return new Uint8Array(0);
+    }
+    return null;
+  },
+  decode: (_data)=>undefined
+});
+// Since Deno doesn't have Buffer by default, we need to use Uint8Array
+extensionCodec.register({
+  type: 1,
+  encode: (object)=>{
+    if (object instanceof Buffer) {
+      return new Uint8Array(object.buffer, object.byteOffset, object.byteLength);
+    }
+    return null;
+  },
+  // msgpack will reuse the Uint8Array instance, so WE NEED to copy it instead of simply creating a view
+  decode: (data)=>{
+    return Buffer.from(data);
+  }
+});
+export const encoder = new Encoder({
+  extensionCodec
+});
+export const decoder = new Decoder({
+  extensionCodec
+});
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImZpbGU6Ly8vdmFyL2ZvbGRlcnMvcHQvNnBqM3hjMzk3ZzkxZF9qa3F6eDdtbmp3MDAwMGduL1QvYXBwcy1lbmdpbmUtdGVtcC9kZW5vLXJ1bnRpbWUvbGliL2NvZGVjLnRzIl0sInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7IEJ1ZmZlciB9IGZyb20gJ25vZGU6YnVmZmVyJztcbmltcG9ydCB7IERlY29kZXIsIEVuY29kZXIsIEV4dGVuc2lvbkNvZGVjIH0gZnJvbSAnQG1zZ3BhY2svbXNncGFjayc7XG5cbmltcG9ydCB0eXBlIHsgQXBwIGFzIF9BcHAgfSBmcm9tICdAcm9ja2V0LmNoYXQvYXBwcy1lbmdpbmUvZGVmaW5pdGlvbi9BcHAudHMnO1xuaW1wb3J0IHsgcmVxdWlyZSB9IGZyb20gJy4vcmVxdWlyZS50cyc7XG5cbmNvbnN0IHsgQXBwIH0gPSByZXF1aXJlKCdAcm9ja2V0LmNoYXQvYXBwcy1lbmdpbmUvZGVmaW5pdGlvbi9BcHAuanMnKSBhcyB7XG5cdEFwcDogdHlwZW9mIF9BcHA7XG59O1xuXG5jb25zdCBleHRlbnNpb25Db2RlYyA9IG5ldyBFeHRlbnNpb25Db2RlYygpO1xuXG5leHRlbnNpb25Db2RlYy5yZWdpc3Rlcih7XG5cdHR5cGU6IDAsXG5cdGVuY29kZTogKG9iamVjdDogdW5rbm93bikgPT4ge1xuXHRcdC8vIFdlIGRvbid0IGNhcmUgYWJvdXQgZnVuY3Rpb25zLCBidXQgYWxzbyBkb24ndCB3YW50IHRvIHRocm93IGFuIGVycm9yXG5cdFx0aWYgKHR5cGVvZiBvYmplY3QgPT09ICdmdW5jdGlvbicgfHwgb2JqZWN0IGluc3RhbmNlb2YgQXBwKSB7XG5cdFx0XHRyZXR1cm4gbmV3IFVpbnQ4QXJyYXkoMCk7XG5cdFx0fVxuXG5cdFx0cmV0dXJuIG51bGw7XG5cdH0sXG5cdGRlY29kZTogKF9kYXRhOiBVaW50OEFycmF5KSA9PiB1bmRlZmluZWQsXG59KTtcblxuLy8gU2luY2UgRGVubyBkb2Vzbid0IGhhdmUgQnVmZmVyIGJ5IGRlZmF1bHQsIHdlIG5lZWQgdG8gdXNlIFVpbnQ4QXJyYXlcbmV4dGVuc2lvbkNvZGVjLnJlZ2lzdGVyKHtcblx0dHlwZTogMSxcblx0ZW5jb2RlOiAob2JqZWN0OiB1bmtub3duKSA9PiB7XG5cdFx0aWYgKG9iamVjdCBpbnN0YW5jZW9mIEJ1ZmZlcikge1xuXHRcdFx0cmV0dXJuIG5ldyBVaW50OEFycmF5KG9iamVjdC5idWZmZXIsIG9iamVjdC5ieXRlT2Zmc2V0LCBvYmplY3QuYnl0ZUxlbmd0aCk7XG5cdFx0fVxuXG5cdFx0cmV0dXJuIG51bGw7XG5cdH0sXG5cdC8vIG1zZ3BhY2sgd2lsbCByZXVzZSB0aGUgVWludDhBcnJheSBpbnN0YW5jZSwgc28gV0UgTkVFRCB0byBjb3B5IGl0IGluc3RlYWQgb2Ygc2ltcGx5IGNyZWF0aW5nIGEgdmlld1xuXHRkZWNvZGU6IChkYXRhOiBVaW50OEFycmF5KSA9PiB7XG5cdFx0cmV0dXJuIEJ1ZmZlci5mcm9tKGRhdGEpO1xuXHR9LFxufSk7XG5cbmV4cG9ydCBjb25zdCBlbmNvZGVyID0gbmV3IEVuY29kZXIoeyBleHRlbnNpb25Db2RlYyB9KTtcbmV4cG9ydCBjb25zdCBkZWNvZGVyID0gbmV3IERlY29kZXIoeyBleHRlbnNpb25Db2RlYyB9KTtcbiJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSxTQUFTLE1BQU0sUUFBUSxjQUFjO0FBQ3JDLFNBQVMsT0FBTyxFQUFFLE9BQU8sRUFBRSxjQUFjLFFBQVEsbUJBQW1CO0FBR3BFLFNBQVMsT0FBTyxRQUFRLGVBQWU7QUFFdkMsTUFBTSxFQUFFLEdBQUcsRUFBRSxHQUFHLFFBQVE7QUFJeEIsTUFBTSxpQkFBaUIsSUFBSTtBQUUzQixlQUFlLFFBQVEsQ0FBQztFQUN2QixNQUFNO0VBQ04sUUFBUSxDQUFDO0lBQ1IsdUVBQXVFO0lBQ3ZFLElBQUksT0FBTyxXQUFXLGNBQWMsa0JBQWtCLEtBQUs7TUFDMUQsT0FBTyxJQUFJLFdBQVc7SUFDdkI7SUFFQSxPQUFPO0VBQ1I7RUFDQSxRQUFRLENBQUMsUUFBc0I7QUFDaEM7QUFFQSx1RUFBdUU7QUFDdkUsZUFBZSxRQUFRLENBQUM7RUFDdkIsTUFBTTtFQUNOLFFBQVEsQ0FBQztJQUNSLElBQUksa0JBQWtCLFFBQVE7TUFDN0IsT0FBTyxJQUFJLFdBQVcsT0FBTyxNQUFNLEVBQUUsT0FBTyxVQUFVLEVBQUUsT0FBTyxVQUFVO0lBQzFFO0lBRUEsT0FBTztFQUNSO0VBQ0Esc0dBQXNHO0VBQ3RHLFFBQVEsQ0FBQztJQUNSLE9BQU8sT0FBTyxJQUFJLENBQUM7RUFDcEI7QUFDRDtBQUVBLE9BQU8sTUFBTSxVQUFVLElBQUksUUFBUTtFQUFFO0FBQWUsR0FBRztBQUN2RCxPQUFPLE1BQU0sVUFBVSxJQUFJLFFBQVE7RUFBRTtBQUFlLEdBQUcifQ==
+// denoCacheMetadata=10117682485559677174,15701995962856566010

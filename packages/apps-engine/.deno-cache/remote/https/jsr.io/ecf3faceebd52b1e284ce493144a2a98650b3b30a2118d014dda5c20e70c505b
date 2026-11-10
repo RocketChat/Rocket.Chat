@@ -1,0 +1,30 @@
+// Copyright 2018-2025 the Deno authors. MIT license.
+// This module is browser compatible.
+
+/**
+ * Converts a {@linkcode ReadableStream} of {@linkcode Uint8Array}s to a
+ * {@linkcode Blob}. Works the same as {@linkcode Response.blob}.
+ *
+ * @param stream A `ReadableStream` of `Uint8Array`s to convert into a `Blob`.
+ * @returns A `Promise` that resolves to the `Blob`.
+ *
+ * @example Basic usage
+ * ```ts
+ * import { toBlob } from "@std/streams/to-blob";
+ * import { assertEquals } from "@std/assert";
+ *
+ * const stream = ReadableStream.from([
+ *   new Uint8Array([1, 2]),
+ *   new Uint8Array([3, 4, 5]),
+ * ]);
+ * const blob = await toBlob(stream);
+ * assertEquals(blob.size, 5);
+ * ```
+ */
+export async function toBlob(
+  stream: ReadableStream<Uint8Array>,
+): Promise<Blob> {
+  return await new Response(stream).blob();
+}
+
+// denoCacheMetadata={"headers":{"alt-svc":"h3=\":443\"; ma=86400","access-control-expose-headers":"*","content-type":"text/typescript","access-control-allow-origin":"*","etag":"\"07c241b5b915080a141b79c3310b8953\"","nel":"{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}","cache-control":"public, max-age=31536000, immutable","content-security-policy":"default-src 'none'; script-src 'none'; style-src 'none'; img-src 'none'; font-src 'none'; connect-src 'none'; frame-src 'none'; object-src 'none'; frame-ancestors 'none'; sandbox; form-action 'none';","server":"cloudflare","x-robots-tag":"noindex","report-to":"{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=zZO%2BSZou%2F%2FhsaNC%2FZVNqLRNCxm6tcrUf2Qpz9Sc7JBhRnPbzyjCMVMfx0Gk93YN6qPKtdzsLch%2B%2FvjHP%2BW%2B2d0tq9E7u9Sy8H6lzWTTJjvsaWlOJ9hEYElA%3D\"}]}","content-length":"828","x-content-type-options":"nosniff","date":"Thu, 09 Apr 2026 21:08:04 GMT","cross-origin-resource-policy":"cross-origin","vary":"Origin","cf-ray":"9e9c7c255d5d1920-CWB","x-jsr-backend":"modules"},"url":"https://jsr.io/@std/streams/1.0.16/to_blob.ts","time":1775768884}
