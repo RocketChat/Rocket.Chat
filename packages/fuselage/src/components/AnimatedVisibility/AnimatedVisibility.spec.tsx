@@ -1,4 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
+import { fireEvent } from '@testing-library/react';
 
 import AnimatedVisibility from './AnimatedVisibility';
 import { render } from '../../testing';
@@ -51,5 +52,26 @@ describe('[AnimatedVisibility Component]', () => {
 		expect(container.firstElementChild).toHaveClass('own');
 		expect(container.firstElementChild?.className).not.toMatch(/=>|function/);
 		expect(cssClassCount(container.firstElementChild)).toBeGreaterThanOrEqual(2);
+	});
+
+	it('runs the child onAnimationEnd and still hides once the animation ends', () => {
+		const onAnimationEnd = jest.fn();
+		const { container, rerender } = render(
+			<AnimatedVisibility visibility={AnimatedVisibility.VISIBLE}>
+				<Box data-qa='child' onAnimationEnd={onAnimationEnd} />
+			</AnimatedVisibility>,
+		);
+
+		rerender(
+			<AnimatedVisibility visibility={AnimatedVisibility.HIDDEN}>
+				<Box data-qa='child' onAnimationEnd={onAnimationEnd} />
+			</AnimatedVisibility>,
+		);
+		expect(container.firstElementChild).not.toBeNull();
+
+		fireEvent.animationEnd(container.firstElementChild as Element);
+
+		expect(onAnimationEnd).toHaveBeenCalledTimes(1);
+		expect(container.firstElementChild).toBeNull();
 	});
 });
