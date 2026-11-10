@@ -14,10 +14,18 @@ describe('[Text nodes in stories]', () => {
 	});
 
 	test.each(loadStories().map(({ title, Story }) => [title, Story] as const))('%s renders no text node under a View', (_title, Story) => {
-		const spies = [jest.spyOn(console, 'error'), jest.spyOn(console, 'warn')];
+		// Development mode makes unrelated libraries chatty too, which is not printed here
+		const spies = [jest.spyOn(console, 'error'), jest.spyOn(console, 'warn')].map((spy) => spy.mockImplementation(() => undefined));
 		const before = spies.map((spy) => spy.mock.calls.length);
 
-		render(<Story />);
+		// Tamagui prints the warning only when NODE_ENV is "development" at render time, and jest runs with "test"
+		const { NODE_ENV } = process.env;
+		process.env.NODE_ENV = 'development';
+		try {
+			render(<Story />);
+		} finally {
+			process.env.NODE_ENV = NODE_ENV;
+		}
 
 		const messages = spies.flatMap((spy, index) => spy.mock.calls.slice(before[index]).map((args) => args.join(' ')));
 		// Other warnings are not this spec's concern
