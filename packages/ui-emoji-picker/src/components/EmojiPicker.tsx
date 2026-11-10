@@ -167,12 +167,12 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji, onAddCustomEmoji }: Emoj
 		setCustomItemsLimit(customItemsLimit + 90);
 	};
 
-	const handleScroll = (range: ListRange) => {
-		const { startIndex } = range;
+	const handleScroll = ({ startIndex, endIndex }: ListRange) => {
+		const isAtBottom = endIndex >= emojiListByCategory.length - 1;
 
-		const category = categoriesIndexes.find(
-			(category, index) => category.index <= startIndex + 1 && categoriesIndexes[index + 1]?.index >= startIndex,
-		);
+		const category = isAtBottom
+			? categoriesIndexes[categoriesIndexes.length - 1]
+			: categoriesIndexes.findLast(({ index }) => index <= startIndex);
 
 		if (!category) {
 			return;

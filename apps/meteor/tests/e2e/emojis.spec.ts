@@ -32,6 +32,12 @@ test.describe.serial('emoji', () => {
 			await activityEmojiTab.click();
 			//Picker search input can steal focus and cause failures here
 			await expect(activityEmojiTab).toHaveAttribute('aria-selected', 'true');
+		});
+
+		await test.step('should select the custom emoji tab', async () => {
+			const customEmojiTab = poHomeChannel.getEmojiPickerTabByName('Custom');
+			await customEmojiTab.click();
+			await expect(customEmojiTab).toHaveAttribute('aria-selected', 'true');
 			await poHomeChannel.composer.inputMessage.click(); // To close the emoji picker
 		});
 
