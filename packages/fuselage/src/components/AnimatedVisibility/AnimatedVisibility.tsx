@@ -1,5 +1,5 @@
 import { css, keyframes } from '@rocket.chat/css-in-js';
-import type { AnimationEventHandler, ReactNode } from 'react';
+import type { AnimationEvent, AnimationEventHandler, ReactNode } from 'react';
 import { useCallback, useEffect, useState } from 'react';
 
 import { appendClassName } from '../../helpers/appendClassName';
@@ -104,7 +104,10 @@ const AnimatedVisibility = (props: AnimatedVisibilityProps) => {
 	return patchChildren(props.children, (childProps: { className?: ClassNameProp; onAnimationEnd?: AnimationEventHandler }) => ({
 		...childProps,
 		className: className ? appendAnimation(childProps.className, className) : childProps.className,
-		onAnimationEnd: childProps.onAnimationEnd ?? handleAnimationEnd,
+		onAnimationEnd: (event: AnimationEvent<Element>) => {
+			childProps.onAnimationEnd?.(event);
+			handleAnimationEnd();
+		},
 	}));
 };
 
