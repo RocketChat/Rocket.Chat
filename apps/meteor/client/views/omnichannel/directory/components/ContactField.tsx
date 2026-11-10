@@ -34,7 +34,7 @@ const ContactField = ({ contact, room }: ContactFieldProps) => {
 	}
 
 	if (isError || !data?.visitor) {
-		return <Box marginBlockStart={16}>{t('Contact_not_found')}</Box>;
+		return <Box marginBlock={16}>{t('Contact_not_found')}</Box>;
 	}
 
 	const {
