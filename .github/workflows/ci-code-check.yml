@@ -115,6 +115,14 @@ jobs:
         if: matrix.check == 'lint'
         run: yarn workspaces foreach -A run stylelint
 
+      - name: Fuselage CSS hacks ratchet
+        if: matrix.check == 'lint'
+        run: yarn workspace @rocket.chat/fuselage verify:css-hacks:check
+
+      - name: Fuselage selector inventory ratchet
+        if: matrix.check == 'lint'
+        run: yarn workspace @rocket.chat/fuselage verify:selectors:check
+
       - name: i18n check
         if: matrix.check == 'lint'
         run: yarn workspace @rocket.chat/i18n run check
