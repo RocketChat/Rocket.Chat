@@ -91,7 +91,9 @@ describe('ariaSnapshot and classContract', () => {
 			</div>,
 		);
 		expect(ariaSnapshot(container)).toBe(
-			['- heading "Title 3" [level=2]', '- list:', '  - text: "plain"', '- spinbutton "Qty"', '- listbox "Tags":', '  - option "a"'].join('\n'),
+			['- heading "Title 3" [level=2]', '- list:', '  - text: "plain"', '- spinbutton "Qty"', '- listbox "Tags":', '  - option "a"'].join(
+				'\n',
+			),
 		);
 	});
 
