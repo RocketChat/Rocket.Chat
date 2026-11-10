@@ -1,6 +1,6 @@
 // Usage: node scripts/verify/dts-diff.mjs <git ref A> <git ref B>      per-export diff of the .d.ts Fuselage's build emits at each ref
 //        node scripts/verify/dts-diff.mjs --dirs <dist A> <dist B>     the same over two existing dist folders
-// Each ref is built in a temporary detached worktree that is removed afterwards. Comments are ignored.
+// Each ref is built in a temporary detached worktree that is removed afterwards. Comments are ignored. Exits 1 when any export differs.
 import { execFileSync } from 'node:child_process';
 import { mkdtempSync, readdirSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -8,6 +8,11 @@ import { join } from 'node:path';
 import { parseArgs } from 'node:util';
 
 const { values: opts, positionals } = parseArgs({ allowPositionals: true, options: { dirs: { type: 'boolean', default: false } } });
+
+if (positionals.length !== 2) {
+	console.error('Usage: node scripts/verify/dts-diff.mjs <git ref A> <git ref B> | --dirs <dist A> <dist B>');
+	process.exit(2);
+}
 
 const run = (cmd, args, cwd) =>
 	execFileSync(cmd, args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'inherit'], maxBuffer: 1 << 28 });
@@ -56,6 +61,12 @@ const buildAt = (ref) => {
 	}
 };
 
+const lineCounts = (chunk) => {
+	const counts = new Map();
+	for (const l of chunk.split('\n')) counts.set(l, (counts.get(l) ?? 0) + 1);
+	return counts;
+};
+
 const [a, b] = opts.dirs ? positionals.map(exports_) : positionals.map(buildAt);
 let changed = 0;
 for (const key of [...new Set([...a.keys(), ...b.keys()])].sort()) {
@@ -65,9 +76,10 @@ for (const key of [...new Set([...a.keys(), ...b.keys()])].sort()) {
 	else if (!b.has(key)) console.log(`- ${key}`);
 	else {
 		console.log(`~ ${key}`);
-		const [la, lb] = [new Set(a.get(key).split('\n')), new Set(b.get(key).split('\n'))];
-		for (const l of la) if (!lb.has(l)) console.log(`    - ${l.trim()}`);
-		for (const l of lb) if (!la.has(l)) console.log(`    + ${l.trim()}`);
+		const [la, lb] = [lineCounts(a.get(key)), lineCounts(b.get(key))];
+		for (const [l, n] of la) for (let i = lb.get(l) ?? 0; i < n; i++) console.log(`    - ${l.trim()}`);
+		for (const [l, n] of lb) for (let i = la.get(l) ?? 0; i < n; i++) console.log(`    + ${l.trim()}`);
 	}
 }
 console.log(`${changed} exports differ`);
+process.exitCode = changed ? 1 : 0;
