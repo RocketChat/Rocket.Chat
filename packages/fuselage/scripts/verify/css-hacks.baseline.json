@@ -72,8 +72,17 @@
 		"displayContents": 0
 	},
 	"Button/Button.styles.scss": {
-		"rules": 41,
-		"nested": 37,
+		"rules": 26,
+		"nested": 22,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"Button/IconButton.styles.scss": {
+		"rules": 20,
+		"nested": 12,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
