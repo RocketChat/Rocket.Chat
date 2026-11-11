@@ -11,7 +11,10 @@ describe('Message Broadcast Tests', () => {
 	let usersFindByUsernamesStub: sinon.SinonStub;
 	let messagesFindOneStub: sinon.SinonStub;
 	let broadcastStub: sinon.SinonStub;
-	let findByIdsStub: sinon.SinonStub;
+	let roomsByIdsStub: sinon.SinonStub;
+	let roomsByUsernamesOrUidsStub: sinon.SinonStub;
+	let notifyOnRoomChanged: typeof import('./notifyListener').notifyOnRoomChanged;
+	let notifyOnRoomChangedByUsernamesOrUids: typeof import('./notifyListener').notifyOnRoomChangedByUsernamesOrUids;
 	let logErrorStub: sinon.SinonStub;
 	let notifyOnRoomChangedById: typeof import('./notifyListener').notifyOnRoomChangedById;
 	let getMessageToBroadcast: any;
@@ -30,7 +33,10 @@ describe('Message Broadcast Tests', () => {
 	};
 
 	const modelsStubs = () => ({
-		Rooms: { findByIds: findByIdsStub },
+		Rooms: {
+			findByIds: roomsByIdsStub,
+			findByUsernamesOrUids: roomsByUsernamesOrUidsStub,
+		},
 		Messages: {
 			findOneById: messagesFindOneStub,
 		},
@@ -55,7 +61,8 @@ describe('Message Broadcast Tests', () => {
 		usersFindByUsernamesStub = sinon.stub();
 		messagesFindOneStub = sinon.stub();
 		broadcastStub = sinon.stub();
-		findByIdsStub = sinon.stub();
+		roomsByIdsStub = sinon.stub();
+		roomsByUsernamesOrUidsStub = sinon.stub();
 		logErrorStub = sinon.stub();
 		memStub = sinon.stub().callsFake((fn: any) => fn);
 
@@ -73,26 +80,48 @@ describe('Message Broadcast Tests', () => {
 		getMessageToBroadcast = proxyMock.getMessageToBroadcast;
 		notifyOnMessageChange = proxyMock.notifyOnMessageChange;
 		notifyOnRoomChangedById = proxyMock.notifyOnRoomChangedById;
+		notifyOnRoomChanged = proxyMock.notifyOnRoomChanged;
+		notifyOnRoomChangedByUsernamesOrUids = proxyMock.notifyOnRoomChangedByUsernamesOrUids;
 	});
 
-	it('logs a rejected room broadcast and still broadcasts the next room', async () => {
-		const firstRoom = { _id: 'room-a' };
-		const secondRoom = { _id: 'room-b' };
-		const error = new Error('room broadcast failed');
+	(['direct', 'byId', 'byUsernamesOrUids'] as const).forEach((helper) => {
+		it(`${helper}: logs a rejected room broadcast and still broadcasts the next room`, async () => {
+			const firstRoom = { _id: 'room-a', _updatedAt: new Date() };
+			const secondRoom = { _id: 'room-b', _updatedAt: new Date() };
+			const error = new Error('room broadcast failed');
 
-		findByIdsStub.returns([firstRoom, secondRoom]);
-		broadcastStub.onFirstCall().rejects(error);
-		broadcastStub.onSecondCall().resolves();
+			roomsByIdsStub.returns([firstRoom, secondRoom]);
+			roomsByUsernamesOrUidsStub.returns([firstRoom, secondRoom]);
+			broadcastStub.onFirstCall().rejects(error);
+			broadcastStub.onSecondCall().resolves();
 
-		await notifyOnRoomChangedById([firstRoom._id, secondRoom._id], 'updated');
+			switch (helper) {
+				case 'direct':
+					await notifyOnRoomChanged([firstRoom, secondRoom], 'updated');
+					break;
+				case 'byId':
+					await notifyOnRoomChangedById([firstRoom._id, secondRoom._id], 'updated');
+					break;
+				case 'byUsernamesOrUids':
+					await notifyOnRoomChangedByUsernamesOrUids(['user-1'], ['alice'], 'updated');
+					sinon.assert.calledOnceWithExactly(roomsByUsernamesOrUidsStub, ['user-1'], ['alice']);
+					break;
+			}
 
-		sinon.assert.calledTwice(broadcastStub);
-		sinon.assert.calledWithExactly(broadcastStub.firstCall, 'watch.rooms', { clientAction: 'updated', room: firstRoom });
-		sinon.assert.calledWithExactly(broadcastStub.secondCall, 'watch.rooms', { clientAction: 'updated', room: secondRoom });
-		sinon.assert.calledOnceWithExactly(logErrorStub, {
-			msg: 'Failed to broadcast room change',
-			roomId: firstRoom._id,
-			err: error,
+			sinon.assert.calledTwice(broadcastStub);
+			sinon.assert.calledWithExactly(broadcastStub.firstCall, 'watch.rooms', {
+				clientAction: 'updated',
+				room: firstRoom,
+			});
+			sinon.assert.calledWithExactly(broadcastStub.secondCall, 'watch.rooms', {
+				clientAction: 'updated',
+				room: secondRoom,
+			});
+			sinon.assert.calledOnceWithExactly(logErrorStub, {
+				msg: 'Failed to broadcast room change',
+				roomId: firstRoom._id,
+				err: error,
+			});
 		});
 	});
 	describe('getMessageToBroadcast', () => {

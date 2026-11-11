@@ -60,7 +60,13 @@ export const notifyOnRoomChanged = async <T extends IRocketChatRecord>(
 ): Promise<void> => {
 	const items = Array.isArray(data) ? data : [data];
 	for (const item of items) {
-		void api.broadcast('watch.rooms', { clientAction, room: item });
+		void api.broadcast('watch.rooms', { clientAction, room: item }).catch((error: unknown) => {
+			logger.error({
+				msg: 'Failed to broadcast room change',
+				roomId: item._id,
+				err: error,
+			});
+		});
 	}
 };
 
@@ -88,7 +94,13 @@ export const notifyOnRoomChangedByUsernamesOrUids = async <T extends IRoom>(
 ): Promise<void> => {
 	const items = Rooms.findByUsernamesOrUids(uids, usernames);
 	for await (const item of items) {
-		void api.broadcast('watch.rooms', { clientAction, room: item });
+		void api.broadcast('watch.rooms', { clientAction, room: item }).catch((error: unknown) => {
+			logger.error({
+				msg: 'Failed to broadcast room change',
+				roomId: item._id,
+				err: error,
+			});
+		});
 	}
 };
 
