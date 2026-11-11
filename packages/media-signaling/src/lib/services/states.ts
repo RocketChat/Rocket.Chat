@@ -1,4 +1,4 @@
-import type { CallState } from '../../definition';
+import type { CallState } from '../../definition/index.js';
 
 /* returns true if the value represents a state in which the underlying service has not been involved yet */
 export function isPendingState(state: CallState): boolean {

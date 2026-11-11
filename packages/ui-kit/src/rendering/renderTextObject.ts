@@ -1,7 +1,7 @@
-import type { BlockContext } from './BlockContext';
-import type { BlockRenderers } from './BlockRenderers';
-import type { TextObjectRenderer } from './TextObjectRenderer';
-import type { TextObject } from '../blocks/TextObject';
+import type { BlockContext } from './BlockContext.js';
+import type { BlockRenderers } from './BlockRenderers.js';
+import type { TextObjectRenderer } from './TextObjectRenderer.js';
+import type { TextObject } from '../blocks/TextObject.js';
 
 const getTextObjectRenderer = <T>(renderers: BlockRenderers<T>, type: TextObject['type']): TextObjectRenderer<T> | undefined =>
 	renderers[type] as TextObjectRenderer<T> | undefined;

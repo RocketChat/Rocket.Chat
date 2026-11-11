@@ -1,5 +1,5 @@
-import type { ClientState } from '../client';
-import type { CallState } from './IClientMediaCall';
+import type { ClientState } from '../client.js';
+import type { CallState } from './IClientMediaCall.js';
 
 export type CallEvents = {
 	/* Triggered when the call's server state is changed on this client, with the old state as param */

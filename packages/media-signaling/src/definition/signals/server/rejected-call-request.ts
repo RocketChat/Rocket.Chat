@@ -1,4 +1,4 @@
-import type { CallRejectedReason } from '../../call';
+import type { CallRejectedReason } from '../../call/index.js';
 
 export type ServerMediaSignalRejectedCallRequest = {
 	callId: string;
