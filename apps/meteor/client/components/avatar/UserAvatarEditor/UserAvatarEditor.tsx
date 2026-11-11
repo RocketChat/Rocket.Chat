@@ -1,5 +1,6 @@
 import type { IUser, AvatarObject } from '@rocket.chat/core-typings';
-import { Box, Button, Avatar, IconButton } from '@rocket.chat/fuselage';
+import { css } from '@rocket.chat/css-in-js';
+import { Box, Button, Avatar, IconButton, useStyle } from '@rocket.chat/fuselage';
 import { Field, FieldLabel, FieldRow, FieldError, TextInput } from '@rocket.chat/fuselage-forms';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
@@ -27,6 +28,9 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 	const { t } = useTranslation();
 	const useFullNameForDefaultAvatar = useSetting('UI_Use_Name_Avatar');
 	const rotateImages = useSetting('FileUpload_RotateImages');
+	const avatarClassName = useStyle(css`
+		image-orientation: ${rotateImages ? 'from-image' : 'none'};
+	`);
 	const [avatarFromUrl, setAvatarFromUrl] = useState('');
 	const [newAvatarSource, setNewAvatarSource] = useState<string>();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -108,9 +112,7 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 					username={currentUsername || ''}
 					etag={etag}
 					objectFit='contain'
-					style={{
-						imageOrientation: rotateImages ? 'from-image' : 'none',
-					}}
+					className={avatarClassName}
 					onError={() => setAvatarUrlError(t('error-invalid-image-url'))}
 				/>
 				<Box display='flex' flexDirection='column' flexGrow='1' marginInlineStart={4}>

@@ -81,7 +81,6 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 						username={message.u.username}
 						size='x18'
 						title=''
-						style={{ cursor: 'pointer' }}
 						onMouseEnter={openUserCardOnHover}
 						onClick={() => openUserInfo(user.username)}
 						// a pointer-only shortcut for the name button next to it
