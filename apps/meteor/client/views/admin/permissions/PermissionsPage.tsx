@@ -19,8 +19,9 @@ const PermissionsPage = ({ isEnterprise }: PermissionsPageProps) => {
 	const canViewPermission = usePermission('access-permissions');
 	const canViewSettingPermission = usePermission('access-setting-permissions');
 	const defaultType = canViewPermission ? 'permissions' : 'settings';
-	// TODO: evaluate switching to the other tab when the selected tab's permission is revoked mid-session
-	const [type, setType] = useState(defaultType);
+	const [selectedType, setSelectedType] = useState(defaultType);
+	const canViewSelectedType = selectedType === 'permissions' ? canViewPermission : canViewSettingPermission;
+	const type = canViewSelectedType ? selectedType : defaultType;
 	const router = useRoute('admin-permissions');
 	const setModal = useSetModal();
 
@@ -51,7 +52,7 @@ const PermissionsPage = ({ isEnterprise }: PermissionsPageProps) => {
 						{ id: 'settings', label: t('Settings'), disabled: !canViewSettingPermission },
 					]}
 					selected={type}
-					onSelect={setType}
+					onSelect={setSelectedType}
 				/>
 				<PageContent marginBlockStart={8} marginBlockEnd='neg-x8'>
 					<Margins block={8}>
