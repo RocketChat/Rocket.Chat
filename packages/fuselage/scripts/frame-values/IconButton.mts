@@ -125,6 +125,8 @@ const generateIconButton = () => {
 	});
 	constant('content', {
 		render: 'span',
+		// Tamagui's `:where(.is_Text)` reset only exists in the zero build
+		boxSizing: 'content-box',
 		display: 'flex',
 		flexDirection: 'row',
 		justifyContent: 'center',
