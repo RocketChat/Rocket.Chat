@@ -16,6 +16,7 @@ function MultiSelectFilteredAnchor({ children: _children, ...props }: MultiSelec
 			onInput={(e: InputEvent<HTMLInputElement>) => setFilter?.(e.currentTarget.value)}
 			{...props}
 			undecorated
+			last
 			className='rcx-select__anchor--grow rcx-select__anchor--last'
 			autoComplete='off'
 		/>

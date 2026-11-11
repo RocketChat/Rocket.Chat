@@ -28,6 +28,7 @@ const chipFrame = {
 	flexShrink: 1,
 	alignItems: 'center',
 	minWidth: 'auto',
+	maxWidth: 'var(--rcx-chip-max-width, none)',
 	overflow: 'hidden',
 	margin: 0,
 	padding: '4px',

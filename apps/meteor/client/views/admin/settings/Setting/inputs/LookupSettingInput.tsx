@@ -15,8 +15,6 @@ function LookupSettingInput({
 	value,
 	hint,
 	placeholder,
-	readonly,
-	autocomplete,
 	disabled,
 	required,
 	lookupEndpoint,
@@ -44,8 +42,6 @@ function LookupSettingInput({
 					value={value}
 					placeholder={placeholder}
 					disabled={disabled}
-					readOnly={readonly}
-					autoComplete={autocomplete === false ? 'off' : undefined}
 					onChange={(value) => handleChange(String(value))}
 					options={options.map(({ key, label }) => [key, label])}
 				/>

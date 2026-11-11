@@ -223,42 +223,8 @@
 	color: var(--rcx-input-colors-invalid-disabled-color, var(--rcx-color-font-disabled, #cbced1));
 }
 
-.rcx-input-box + .rcx-select__addon,
-.rcx-select__addon:has(+ .rcx-input-box) {
-	color: var(--rcx-input-colors-color, var(--rcx-color-font-titles-labels, #1f2329));
-}
-
-.rcx-input-box:focus + .rcx-select__addon,
-.rcx-select__addon:has(+ .rcx-input-box:focus) {
-	color: var(--rcx-input-colors-focus-icon-color, var(--rcx-color-font-titles-labels, #1f2329));
-}
-
-*:disabled .rcx-input-box + .rcx-select__addon,
-.rcx-input-box:disabled + .rcx-select__addon,
-.rcx-select__addon:has(+ .rcx-input-box:disabled) {
-	color: var(--rcx-input-colors-disabled-color, var(--rcx-color-font-disabled, #cbced1));
-}
-
-.rcx-input-box:invalid + .rcx-select__addon,
-.rcx-select__addon:has(+ .rcx-input-box:invalid) {
-	color: var(--rcx-input-colors-invalid-color, var(--rcx-color-font-titles-labels, #1f2329));
-}
-
-.rcx-input-box:invalid:focus + .rcx-select__addon,
-.rcx-select__addon:has(+ .rcx-input-box:invalid:focus) {
-	color: var(--rcx-input-colors-invalid-focus-icon-color, var(--rcx-color-font-titles-labels, #1f2329));
-}
-
-*:disabled .rcx-input-box:invalid + .rcx-select__addon,
-.rcx-input-box:invalid:disabled + .rcx-select__addon,
-.rcx-select__addon:has(+ .rcx-input-box:invalid:disabled) {
-	color: var(--rcx-input-colors-invalid-disabled-color, var(--rcx-color-font-disabled, #cbced1));
-}
-
 *:disabled .rcx-input-box + .rcx-input-box__addon,
-.rcx-input-box:disabled + .rcx-input-box__addon,
-*:disabled .rcx-input-box + .rcx-select__addon,
-.rcx-input-box:disabled + .rcx-select__addon {
+.rcx-input-box:disabled + .rcx-input-box__addon {
 	pointer-events: none;
 }
 

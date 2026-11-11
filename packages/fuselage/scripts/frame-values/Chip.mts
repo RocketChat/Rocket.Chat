@@ -47,6 +47,7 @@ const generate = () => {
 		flexShrink: 1,
 		alignItems: 'center',
 		minWidth: 'auto',
+		maxWidth: 'var(--rcx-chip-max-width, none)',
 		overflow: 'hidden',
 		margin: 0,
 		padding: spacing('x4')!,

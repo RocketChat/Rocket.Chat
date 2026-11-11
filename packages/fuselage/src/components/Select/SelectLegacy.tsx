@@ -1,16 +1,19 @@
 import { useMergedRefs, useStableCallback, useResizeObserver } from '@rocket.chat/fuselage-hooks';
-import type { DependencyList, ElementType, MouseEvent, RefAttributes } from 'react';
+import type { AriaAttributes, DependencyList, ElementType, MouseEvent, RefAttributes } from 'react';
 import { useState, useRef, useEffect, useMemo } from 'react';
 
-import type { ElementProps } from '../../types/ElementProps';
+import { ariaAndDataAttributes } from '../../helpers/ariaAndDataAttributes';
+import { pickWebPressHandlers } from '../../helpers/pickAttributes';
+import type { ElementActionAttributes } from '../../types/ElementAttributes';
 import { AnimatedVisibility } from '../AnimatedVisibility';
-import { Box } from '../Box';
 import { Icon, type IconProps } from '../Icon';
 import type { OptionType } from '../Options';
 import { Options, useCursor } from '../Options';
 import { PositionAnimated } from '../PositionAnimated';
 import SelectAddon from './SelectAddon';
+import SelectBox from './SelectBox';
 import SelectFocus from './SelectFocus';
+import { SelectItem, SelectWrapper } from './SelectLayout';
 
 export type SelectOption = readonly [value: string, label: string, selected?: boolean];
 
@@ -26,7 +29,8 @@ const useDidUpdate = (func: () => void, deps: DependencyList | undefined) => {
 	}, deps || []);
 };
 
-export type SelectProps = Omit<ElementProps<HTMLDivElement>, 'ref' | 'onChange'> &
+export type SelectProps = Omit<ElementActionAttributes, 'ref'> &
+	AriaAttributes &
 	RefAttributes<HTMLInputElement> & {
 		value?: string | number;
 		name?: string;
@@ -133,17 +137,20 @@ function SelectLegacy({
 	});
 
 	return (
-		<Box
-			animated
-			rcx-select
-			disabled={disabled}
+		<SelectBox
+			layout='wrapped'
 			ref={containerRef}
+			invalid={!!error}
+			disabled={disabled}
 			onClick={handleClick}
-			rcx-select--invalid={!!error}
-			rcx-select--disabled={disabled}
-			{...props}
+			{...ariaAndDataAttributes(props)}
+			{...pickWebPressHandlers(props)}
+			className={props.className}
+			title={props.title}
+			role={props.role}
+			tabIndex={props.tabIndex}
 		>
-			<Box is='div' rcx-select__wrapper rcx-select__wrapper--hidden={!!visibleText}>
+			<SelectWrapper hidden={!!visibleText}>
 				{visibleText &&
 					(RenderSelected ? (
 						<RenderSelected
@@ -154,9 +161,7 @@ function SelectLegacy({
 							onClick={internalChangedByClick}
 						/>
 					) : (
-						<Box is='span' rcx-select__item rcx-select__item--placeholder={!valueLabel}>
-							{visibleText}
-						</Box>
+						<SelectItem placeholder={!valueLabel}>{visibleText}</SelectItem>
 					))}
 				<Anchor
 					ref={anchorRef}
@@ -175,7 +180,7 @@ function SelectLegacy({
 				<SelectAddon>
 					<Icon name={visible === AnimatedVisibility.VISIBLE ? 'chevron-up' : addonIcon || 'chevron-down'} size='x20' />
 				</SelectAddon>
-			</Box>
+			</SelectWrapper>
 			<PositionAnimated visible={visible} anchor={containerRef}>
 				<_Options
 					width={borderBoxSize.inlineSize}
@@ -188,7 +193,7 @@ function SelectLegacy({
 					customEmpty={customEmpty}
 				/>
 			</PositionAnimated>
-		</Box>
+		</SelectBox>
 	);
 }
 

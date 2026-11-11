@@ -17,15 +17,6 @@
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
-	"AutoComplete/AutoComplete.styles.scss": {
-		"rules": 4,
-		"nested": 3,
-		"combinators": 0,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 0,
-		"displayContents": 0
-	},
 	"Banner/Banner.styles.css": {
 		"rules": 1,
 		"nested": 0,
@@ -189,18 +180,9 @@
 		"displayContents": 0
 	},
 	"InputBox/InputBox.styles.css": {
-		"rules": 62,
+		"rules": 56,
 		"nested": 0,
-		"combinators": 25,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 0,
-		"displayContents": 0
-	},
-	"InputBox/mixins.scss": {
-		"rules": 9,
-		"nested": 1,
-		"combinators": 4,
+		"combinators": 19,
 		"important": 0,
 		"specificityBumps": 0,
 		"negativeMargins": 0,
@@ -386,21 +368,12 @@
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
-	"Select/Select.styles.scss": {
-		"rules": 29,
-		"nested": 23,
-		"combinators": 4,
-		"important": 0,
-		"specificityBumps": 1,
-		"negativeMargins": 2,
-		"displayContents": 0
-	},
-	"Select/select-box.scss": {
-		"rules": 5,
+	"Select/Select.styles.css": {
+		"rules": 45,
 		"nested": 0,
-		"combinators": 1,
+		"combinators": 16,
 		"important": 0,
-		"specificityBumps": 1,
+		"specificityBumps": 0,
 		"negativeMargins": 0,
 		"displayContents": 0
 	},

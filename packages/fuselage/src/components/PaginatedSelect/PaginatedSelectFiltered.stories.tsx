@@ -12,8 +12,14 @@ export default {
 			value: i,
 			label: `Item #${i}`,
 		})),
-		style: { width: '250px' },
 	},
+	decorators: [
+		(Story) => (
+			<div style={{ display: 'flex', width: '250px' }}>
+				<Story />
+			</div>
+		),
+	],
 	parameters: {
 		actions: { argTypesRegex: '^on.*' },
 		layout: 'centered',

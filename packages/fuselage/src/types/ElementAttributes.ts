@@ -309,6 +309,7 @@ export type SpanOrAnchorAttributes = ActionAttributes<HTMLElement> &
 
 /** The element of a part rendered as an `input`, and of one rendered as an `input` or a `textarea`. */
 export type InputElement = HTMLInputElement;
+export type ButtonElement = HTMLButtonElement;
 export type TextControlElement = HTMLInputElement | HTMLTextAreaElement;
 
 /** The press handlers of a part rendered as a `span`. */

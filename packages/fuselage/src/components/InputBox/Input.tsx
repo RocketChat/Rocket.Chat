@@ -33,6 +33,8 @@ export type InputProps<TElement extends TextControlElement = InputElement> = Com
 		invisible?: boolean;
 		/** Drops the border, background and padding of the box, for an input that sits inside another control. */
 		undecorated?: boolean;
+		/** Comes after the chips of a multiple select, or of an autocomplete, whatever its place in the document. */
+		last?: boolean;
 		/** Sits inside an input box wrapper, which draws the box and sizes the input by the room it leaves. */
 		wrapped?: boolean;
 		small?: boolean;
@@ -109,6 +111,9 @@ const inputShapes = {
 		width: '0px',
 		minWidth: '0px',
 	},
+	'plain-last': {
+		order: 1,
+	},
 } as const;
 
 const inputTextArea = {
@@ -140,7 +145,8 @@ const InputFrame = styled(View, {
 	},
 });
 
-const shapeOf = ({ undecorated, wrapped, small }: Pick<AnyInputProps, 'undecorated' | 'wrapped' | 'small'>) => {
+const shapeOf = ({ undecorated, wrapped, small, last }: Pick<AnyInputProps, 'undecorated' | 'wrapped' | 'small' | 'last'>) => {
+	if (last) return 'plain-last';
 	const kind = wrapped ? 'wrapped' : (undecorated && 'plain') || 'decorated';
 	return small ? (`${kind}-small` as const) : kind;
 };

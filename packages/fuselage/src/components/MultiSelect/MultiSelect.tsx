@@ -1,11 +1,12 @@
 import { useMergedRefs, useStableCallback, useResizeObserver } from '@rocket.chat/fuselage-hooks';
-import type { ElementType, MouseEventHandler, ReactNode, RefAttributes } from 'react';
+import type { AriaAttributes, ElementType, MouseEventHandler, ReactNode, RefAttributes } from 'react';
 import { useState, useRef, useEffect } from 'react';
 
+import { ariaAndDataAttributes } from '../../helpers/ariaAndDataAttributes';
+import { pickWebPressHandlers } from '../../helpers/pickAttributes';
 import { prevent } from '../../helpers/prevent';
-import type { ElementProps } from '../../types/ElementProps';
+import type { ElementActionAttributes } from '../../types/ElementAttributes';
 import { AnimatedVisibility } from '../AnimatedVisibility';
-import { Box } from '../Box';
 import type { IconProps } from '../Icon';
 import { Icon } from '../Icon';
 import { CheckOption } from '../Option';
@@ -16,8 +17,11 @@ import MultiSelectAnchor from './MultiSelectAnchor';
 import type { MultiSelectAnchorParams } from './MultiSelectAnchorParams';
 import { SelectedOptions } from './SelectedOptions';
 import SelectAddon from '../Select/SelectAddon';
+import SelectBox from '../Select/SelectBox';
+import { SelectField, SelectValues } from '../Select/SelectLayout';
 
-export type MultiSelectProps = Omit<ElementProps<HTMLDivElement>, 'ref' | 'onChange'> &
+export type MultiSelectProps = Omit<ElementActionAttributes, 'ref'> &
+	AriaAttributes &
 	RefAttributes<HTMLInputElement> & {
 		name?: string;
 		disabled?: boolean;
@@ -134,19 +138,21 @@ function MultiSelect({
 	} = props;
 
 	return (
-		<Box
-			is='div'
-			animated
-			rcx-select
-			rcx-select--invalid={!!error}
-			rcx-select--disabled={disabled}
+		<SelectBox
+			layout='multi'
+			invalid={!!error}
+			disabled={disabled}
 			ref={containerRef}
 			onClick={handleClick}
-			disabled={disabled}
-			{...containerProps}
+			{...ariaAndDataAttributes(containerProps)}
+			{...pickWebPressHandlers(containerProps)}
+			className={containerProps.className}
+			title={containerProps.title}
+			role={containerProps.role}
+			tabIndex={containerProps.tabIndex}
 		>
-			<Box is='div' rcx-select__field>
-				<Box is='div' rcx-select__values>
+			<SelectField>
+				<SelectValues>
 					<Anchor
 						ref={anchorRef}
 						disabled={disabled ?? false}
@@ -197,8 +203,8 @@ function MultiSelect({
 							</SelectedOptions>
 						);
 					})}
-				</Box>
-			</Box>
+				</SelectValues>
+			</SelectField>
 			<SelectAddon>
 				<Icon name={visible === AnimatedVisibility.VISIBLE ? 'chevron-up' : addonIcon || 'chevron-down'} size='x20' />
 			</SelectAddon>
@@ -216,7 +222,7 @@ function MultiSelect({
 					customEmpty={customEmpty}
 				/>
 			</PositionAnimated>
-		</Box>
+		</SelectBox>
 	);
 }
 

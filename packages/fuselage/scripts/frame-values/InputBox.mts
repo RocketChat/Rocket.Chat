@@ -1,6 +1,7 @@
 import { join } from 'node:path';
 
 import { font, textIconColor, themed } from './lib/frameTokens.mts';
+import { inputFrame } from './lib/inputFrame.mts';
 import {
 	inputAddonStates,
 	inputBoxStates,
@@ -23,27 +24,7 @@ const radius = () => themed('input-border-radius', themed('border-radius-medium'
 const paddingInline = offScale(16 - 1);
 
 const generateInput = () => {
-	const frame = {
-		render: 'input',
-		position: 'relative',
-		display: 'inline-flex',
-		flexDirection: 'row',
-		alignItems: 'normal',
-		flexGrow: 1,
-		flexShrink: 0,
-		flexBasis: 'auto',
-		width: size('none')!,
-		minWidth: size('x128')!,
-		minHeight: 'auto',
-		userSelect: 'auto',
-		verticalAlign: 'baseline',
-		whiteSpace: 'nowrap',
-		wordBreak: 'break-all',
-		outlineStyle: 'none',
-		overflow: 'hidden',
-		textOverflow: 'ellipsis',
-		...font('p2m'),
-	};
+	const frame = inputFrame();
 
 	const decorated = {
 		minWidth: size('x128')!,
@@ -75,6 +56,8 @@ const generateInput = () => {
 		// Inside the wrapper, which draws the box and sizes the input by the room it leaves
 		'wrapped': { width: size('none')!, minWidth: size('none')! },
 		'wrapped-small': { ...small, width: size('none')!, minWidth: size('none')! },
+		// The input of a multiple select or of an autocomplete, which comes after the chips
+		'plain-last': { order: 1 },
 	};
 
 	const textarea = { overflow: 'auto', resize: 'none', verticalAlign: 'middle', whiteSpace: 'normal' };
@@ -219,13 +202,8 @@ const generateCss = () => {
 		inputTextStates({ element: input, placeholderVisible: '.rcx-input-box--placeholder-visible' }),
 		block(selectorsFor(input, disabled), { cursor: 'not-allowed' }),
 		inputAddonStates({ element: input, addon: '.rcx-input-box__addon' }),
-		// The addon of a select that follows its filter input is not an input box part, and follows it the same way
-		inputAddonStates({ element: input, addon: '.rcx-select__addon' }),
 		block(
-			[
-				...selectorsFor(input, disabled).map((selector) => `${selector} + .rcx-input-box__addon`),
-				...selectorsFor(input, disabled).map((selector) => `${selector} + .rcx-select__addon`),
-			],
+			selectorsFor(input, disabled).map((selector) => `${selector} + .rcx-input-box__addon`),
 			{ 'pointer-events': 'none' },
 		),
 		'/* Not a frame: the part of a date, time or number input the browser draws */',

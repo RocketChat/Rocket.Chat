@@ -18,6 +18,7 @@ const PaginatedMultiSelectFiltered = ({ filter, setFilter, options, placeholder,
 				onInput={(e: InputEvent<HTMLInputElement>) => setFilter?.(e.currentTarget.value)}
 				{...props}
 				undecorated
+				last
 				className={['rcx-select__anchor--grow', className].filter(Boolean).join(' ')}
 			/>
 		),

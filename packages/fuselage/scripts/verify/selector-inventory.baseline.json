@@ -80,27 +80,11 @@
 	"rcx-icon": [
 		"packages/fuselage/src/components/Bubble/Bubble.styles.scss: &:not(.rcx-bubble__group) &__button:has(> .rcx-icon),",
 		"packages/fuselage/src/components/Bubble/Bubble.styles.scss: &:not(.rcx-bubble__group) &__item:has(> .rcx-icon) {",
-		"packages/fuselage/src/components/Bubble/Bubble.styles.scss: > .rcx-icon {",
-		"packages/fuselage/src/components/Select/Select.styles.scss: .rcx-select > .rcx-icon {"
+		"packages/fuselage/src/components/Bubble/Bubble.styles.scss: > .rcx-icon {"
 	],
 	"rcx-grid": [
 		"packages/fuselage/src/components/CardGrid/CardGrid.styles.css: .rcx-grid.rcx-card-grid {",
 		"packages/fuselage/src/components/CardGrid/CardGrid.styles.css: .rcx-grid__item.rcx-card-grid__item {"
-	],
-	"rcx-select": [
-		"packages/fuselage/src/components/InputBox/InputBox.styles.css: .rcx-input-box + .rcx-select__addon,",
-		"packages/fuselage/src/components/InputBox/InputBox.styles.css: .rcx-input-box:disabled + .rcx-select__addon {",
-		"packages/fuselage/src/components/InputBox/InputBox.styles.css: .rcx-input-box:disabled + .rcx-select__addon,",
-		"packages/fuselage/src/components/InputBox/InputBox.styles.css: .rcx-input-box:focus + .rcx-select__addon,",
-		"packages/fuselage/src/components/InputBox/InputBox.styles.css: .rcx-input-box:invalid + .rcx-select__addon,",
-		"packages/fuselage/src/components/InputBox/InputBox.styles.css: .rcx-input-box:invalid:disabled + .rcx-select__addon,",
-		"packages/fuselage/src/components/InputBox/InputBox.styles.css: .rcx-input-box:invalid:focus + .rcx-select__addon,",
-		"packages/fuselage/src/components/InputBox/InputBox.styles.css: .rcx-select__addon:has(+ .rcx-input-box) {",
-		"packages/fuselage/src/components/InputBox/InputBox.styles.css: .rcx-select__addon:has(+ .rcx-input-box:disabled) {",
-		"packages/fuselage/src/components/InputBox/InputBox.styles.css: .rcx-select__addon:has(+ .rcx-input-box:focus) {",
-		"packages/fuselage/src/components/InputBox/InputBox.styles.css: .rcx-select__addon:has(+ .rcx-input-box:invalid) {",
-		"packages/fuselage/src/components/InputBox/InputBox.styles.css: .rcx-select__addon:has(+ .rcx-input-box:invalid:disabled) {",
-		"packages/fuselage/src/components/InputBox/InputBox.styles.css: .rcx-select__addon:has(+ .rcx-input-box:invalid:focus) {"
 	],
 	"rcx-skeleton": [
 		"packages/fuselage/src/components/InputBox/InputBox.styles.css: .rcx-skeleton__input {"
@@ -108,8 +92,44 @@
 	"rcx-check-box": [
 		"packages/fuselage/src/components/Message/Messages.styles.scss: > li > .rcx-check-box > .rcx-check-box__input:focus + .rcx-check-box__fake {"
 	],
+	"rcx-autocomplete": [
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-autocomplete {",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-autocomplete.rcx-autocomplete--disabled {",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-autocomplete.rcx-autocomplete--disabled {",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-autocomplete.rcx-autocomplete--invalid {",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-autocomplete.rcx-autocomplete--invalid {",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-autocomplete.rcx-autocomplete--invalid.rcx-autocomplete--disabled {",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-autocomplete.rcx-autocomplete--invalid.rcx-autocomplete--disabled {",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-autocomplete.rcx-autocomplete--invalid:active {",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-autocomplete.rcx-autocomplete--invalid:active {",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-autocomplete.rcx-autocomplete--invalid:disabled,",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-autocomplete.rcx-autocomplete--invalid:disabled,",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-autocomplete.rcx-autocomplete--invalid:focus {",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-autocomplete.rcx-autocomplete--invalid:focus,",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-autocomplete.rcx-autocomplete--invalid:focus-within {",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-autocomplete.rcx-autocomplete--invalid:hover {",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-autocomplete:active {",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-autocomplete:disabled {",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-autocomplete:disabled,",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-autocomplete:focus,",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-autocomplete:focus-within {",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-autocomplete:hover {"
+	],
 	"rcx-input-box": [
-		"packages/fuselage/src/components/Select/select-box.scss: &:has(> .rcx-input-box:invalid),"
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-input-box + .rcx-select__addon,",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-input-box.rcx-select__focus:not(:disabled) {",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-input-box:disabled + .rcx-select__addon {",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-input-box:disabled + .rcx-select__addon,",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-input-box:focus + .rcx-select__addon,",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-input-box:invalid + .rcx-select__addon,",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-input-box:invalid:disabled + .rcx-select__addon,",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-input-box:invalid:focus + .rcx-select__addon,",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-select__addon:has(+ .rcx-input-box) {",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-select__addon:has(+ .rcx-input-box:disabled) {",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-select__addon:has(+ .rcx-input-box:focus) {",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-select__addon:has(+ .rcx-input-box:invalid) {",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-select__addon:has(+ .rcx-input-box:invalid:disabled) {",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-select__addon:has(+ .rcx-input-box:invalid:focus) {"
 	],
 	"rcx-tag": [
 		"packages/fuselage/src/styles/normalize.scss: a:where(:not(.rcx-button, .rcx-item, .rcx-item__link, .rcx-tag)) {"
