@@ -182,12 +182,6 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 				border-inline-start-color: colors.stroke(medium);
 			}
 		}
-
-		& ul.task-list {
-			> li > .rcx-check-box > .rcx-check-box__input:focus + .rcx-check-box__fake {
-				z-index: 1;
-			}
-		}
 	}
 
 	&-block {

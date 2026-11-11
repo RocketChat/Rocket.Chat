@@ -10,6 +10,7 @@ const control: SelectionControl = {
 	name: 'check-box',
 	prefix: 'checkBox',
 	unchecked: 'empty',
+	focusRaised: true,
 	checked: [':indeterminate', ':checked'],
 	radius: toCSSValue('--rcx-check-box-border-radius', toCSSValue('--rcx-border-radius-small', borderRadius('small'))),
 	fake: { display: 'flex', justifyContent: 'center', alignItems: 'center', width: size('x20')! },

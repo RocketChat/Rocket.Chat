@@ -2,6 +2,7 @@ import { buttonBackground, buttonFont } from './buttonPalettes.mts';
 import { literal } from './literal.mts';
 import type { Value } from './literal.mts';
 import { textFrameDefaults } from './textFrameDefaults.mts';
+import { zIndex } from './tokens.mts';
 import { shadowColors, strokeColors } from '../../../src/Theme.ts';
 import { toCSSValue } from '../../../src/helpers/toCSSValue.ts';
 import { backgroundColor, borderWidth, fontColor, size } from '../../../src/styleTokens.ts';
@@ -83,6 +84,8 @@ export type SelectionControl = {
 	/** The input pseudo-classes that draw the primary palette. */
 	checked: string[];
 	radius: string;
+	/** Lifts the focused fake so its ring isn't clipped by a sibling. */
+	focusRaised?: boolean;
 	/** What the fake adds to the layout the three controls share. */
 	fake: Record<string, Value>;
 };
@@ -144,22 +147,22 @@ export const selectionFrames = ({ prefix, radius, fake }: SelectionControl) => {
 };
 
 /** The CSS that follows a hidden input's pseudo-classes: every colour of the fake, from resting to disabled. */
-export const selectionStates = ({ name, unchecked, checked }: SelectionControl) => {
+export const selectionStates = ({ name, unchecked, checked, focusRaised }: SelectionControl) => {
 	const palettes = selectionColors();
 	const shadow = toCSSValue('--rcx-input-colors-focus-shadow-color', shadowColors['shadow-highlight'].toString());
 	const focusShadow = `0 0 0 ${borderWidth('medium')} ${shadow}`;
 	const selectors = (inputs: string[], state: string) =>
 		inputs.map((input) => `.rcx-${name}__input${input}${state} + .rcx-${name}__fake`).join(',\n');
 
-	const rules = (inputs: string[], palette: Palette) => [
+	const rules = (inputs: string[], palette: Palette, raised = false) => [
 		`${selectors(inputs, '')} {\n\tcolor: ${palette.color};\n\tborder-color: ${palette.border};\n\tbackground-color: ${palette.background};\n}`,
 		...(['hover', 'active'] as const).map(
 			(state) =>
 				`${selectors(inputs, `:${state}`)} {\n\tborder-color: ${palette[state].border};\n\tbackground-color: ${palette[state].background};\n\tbox-shadow: none;\n}`,
 		),
-		`${selectors(inputs, ':focus')} {\n\tborder-color: ${palette.focus.border};\n\tbackground-color: ${palette.focus.background};\n\tbox-shadow: ${focusShadow};\n}`,
+		`${selectors(inputs, ':focus')} {${raised ? `\n\tz-index: ${zIndex.raised};\n` : ''}\n\tborder-color: ${palette.focus.border};\n\tbackground-color: ${palette.focus.background};\n\tbox-shadow: ${focusShadow};\n}`,
 		`${selectors(inputs, ':disabled')} {\n\tcursor: not-allowed;\n\n\tcolor: ${palette.disabled.color};\n\tborder-color: ${palette.disabled.border};\n\tbackground-color: ${palette.disabled.background};\n}`,
 	];
 
-	return [...rules([''], palettes[unchecked]), ...rules(checked, palettes.primary)].join('\n\n');
+	return [...rules([''], palettes[unchecked], focusRaised), ...rules(checked, palettes.primary)].join('\n\n');
 };
