@@ -21,7 +21,8 @@ const BaseAvatar = ({ url, onLoad, onError, size, ...props }: BaseAvatarProps) =
 	});
 
 	if (unloaded && url === prevUrl) {
-		return <Skeleton aria-hidden='true' variant='rect' width={size} height={size} {...props} />;
+		const { className, id, title } = props;
+		return <Skeleton aria-hidden='true' variant='rect' width={size} height={size} className={className} id={id} title={title} />;
 	}
 
 	return <Avatar aria-hidden='true' onLoad={handleLoad} onError={handleError} url={url} size={size} {...props} />;

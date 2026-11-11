@@ -494,9 +494,9 @@
 		"negativeMargins": 1,
 		"displayContents": 0
 	},
-	"Skeleton/Skeleton.styles.scss": {
-		"rules": 7,
-		"nested": 4,
+	"Skeleton/Skeleton.styles.css": {
+		"rules": 4,
+		"nested": 0,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,

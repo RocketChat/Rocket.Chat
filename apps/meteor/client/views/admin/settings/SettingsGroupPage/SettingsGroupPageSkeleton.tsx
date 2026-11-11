@@ -6,7 +6,7 @@ import SettingsSectionSkeleton from '../SettingsSection/SettingsSectionSkeleton'
 
 const SettingsGroupPageSkeleton = () => (
 	<Page>
-		<PageHeader title={<Skeleton style={{ width: '20rem' }} />} />
+		<PageHeader title={<Skeleton width='20rem' />} />
 		<PageContent>
 			<Box style={useMemo(() => ({ margin: '0 auto', width: '100%', maxWidth: '590px' }), [])}>
 				<Text is='p' color='hint' fontScale='p2'>
