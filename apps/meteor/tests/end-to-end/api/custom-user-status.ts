@@ -313,6 +313,22 @@ describe('[CustomUserStatus]', () => {
 			customUserStatusName = newName;
 		});
 
+		it('should allow updating statusType while keeping the same name', async () => {
+			await request
+				.post(api('custom-user-status.update'))
+				.set(credentials)
+				.send({ _id: customUserStatusId, name: customUserStatusName, statusType: 'busy' })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('customUserStatus');
+					expect(res.body.customUserStatus).to.have.property('_id', customUserStatusId);
+					expect(res.body.customUserStatus).to.have.property('name', customUserStatusName);
+					expect(res.body.customUserStatus).to.have.property('statusType', 'busy');
+				});
+		});
+
 		it('should throw an error if status name already exists', async () => {
 			const existingStatusName = `test-update-duplicate-${Date.now()}`;
 			const existingStatusId = await createCustomUserStatus(existingStatusName);

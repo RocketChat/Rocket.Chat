@@ -53,7 +53,8 @@ export const insertOrUpdateUserStatus = async (userId: string, userStatusData: I
 	}
 
 	const validStatusTypes = ['online', 'away', 'busy', 'offline'];
-	if (userStatusData.statusType && validStatusTypes.indexOf(userStatusData.statusType) < 0) {
+	const isStatusTypeChanged = !userStatusData._id || userStatusData.statusType !== userStatusData.previousStatusType;
+	if (isStatusTypeChanged && userStatusData.statusType && validStatusTypes.indexOf(userStatusData.statusType) < 0) {
 		throw new ClientSafeError('error-input-is-not-a-valid-field', `${userStatusData.statusType} is not a valid status type`, {
 			method: 'insertOrUpdateUserStatus',
 			input: userStatusData.statusType,
@@ -84,7 +85,8 @@ export const insertOrUpdateUserStatus = async (userId: string, userStatusData: I
 		await CustomUserStatus.setStatusType(userStatusData._id, userStatusData.statusType);
 	}
 
-	void api.broadcast('user.updateCustomStatus', { ...userStatusData, _id: userStatusData._id });
+	const { previousName: _prevName, previousStatusType: _prevStatusType, ...broadcastData } = userStatusData;
+	void api.broadcast('user.updateCustomStatus', { ...broadcastData, _id: userStatusData._id });
 
 	return true;
 };

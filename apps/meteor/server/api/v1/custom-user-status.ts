@@ -241,8 +241,9 @@ API.v1.post(
 		const userStatusData = {
 			_id,
 			name,
-			statusType: isStatusTypeOmitted ? customUserStatusToUpdate.statusType : (statusType ?? ''),
-			...(isStatusTypeOmitted && { previousStatusType: customUserStatusToUpdate.statusType }),
+			statusType: (isStatusTypeOmitted ? customUserStatusToUpdate.statusType : statusType) ?? '',
+			previousName: customUserStatusToUpdate.name,
+			previousStatusType: customUserStatusToUpdate.statusType ?? '',
 		};
 
 		await insertOrUpdateUserStatus(this.userId, userStatusData);
