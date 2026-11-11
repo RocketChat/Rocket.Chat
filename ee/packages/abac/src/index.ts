@@ -25,7 +25,7 @@ import type {
 	MinimalApp,
 } from '@rocket.chat/core-typings';
 import { Rooms, AbacAttributes, Users, Subscriptions } from '@rocket.chat/models';
-import { escapeRegExp, isTruthy } from '@rocket.chat/tools';
+import { escapeRegExp, isDuplicateKeyError, isTruthy } from '@rocket.chat/tools';
 import type { Document, UpdateFilter } from 'mongodb';
 import pLimit from 'p-limit';
 
@@ -400,7 +400,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 			await AbacAttributes.insertOne(attribute);
 			void Audit.attributeCreated(attribute, actor);
 		} catch (e) {
-			if (e instanceof Error && e.message.includes('E11000')) {
+			if (isDuplicateKeyError(e)) {
 				throw new AbacDuplicateAttributeKeyError();
 			}
 			throw e;
@@ -542,7 +542,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 			await AbacAttributes.updateOne({ _id }, { $set: modifier });
 			void Audit.attributeUpdated(existing, modifier as IAbacAttributeDefinition, actor);
 		} catch (e) {
-			if (e instanceof Error && e.message.includes('E11000')) {
+			if (isDuplicateKeyError(e)) {
 				throw new AbacDuplicateAttributeKeyError();
 			}
 			throw e;

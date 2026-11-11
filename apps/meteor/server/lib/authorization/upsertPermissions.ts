@@ -1,5 +1,6 @@
 import type { IPermission, ISetting } from '@rocket.chat/core-typings';
 import { Permissions, Settings } from '@rocket.chat/models';
+import { isDuplicateKeyError } from '@rocket.chat/tools';
 
 import { permissions } from './constant/permissions';
 import { getSettingPermissionId, CONSTANTS } from '../../../lib/authorization';
@@ -80,9 +81,7 @@ export const upsertPermissions = async (): Promise<void> => {
 			try {
 				await Permissions.updateOne({ _id: permissionId }, { $set: permission }, { upsert: true });
 			} catch (e) {
-				if (!(e as Error).message.includes('E11000')) {
-					// E11000 refers to a MongoDB error that can occur when using unique indexes for upserts
-					// https://docs.mongodb.com/manual/reference/method/db.collection.update/#use-unique-indexes
+				if (!isDuplicateKeyError(e)) {
 					await Permissions.updateOne({ _id: permissionId }, { $set: permission }, { upsert: true });
 				}
 			}
