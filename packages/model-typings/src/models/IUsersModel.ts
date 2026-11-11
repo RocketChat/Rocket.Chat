@@ -302,6 +302,15 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	resetTOTPById(userId: any): any;
 
+	addLoginToken(userId: IUser['_id'], loginToken: IMeteorLoginToken): Promise<UpdateResult>;
+
+	findWithLoginTokensOlderThan<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		date: Date,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+
+	removeLoginTokensOlderThan(date: Date): Promise<UpdateResult>;
+
 	unsetLoginTokens(userId: any): any;
 
 	unsetOneLoginToken(userId: IUser['_id'], token: string): Promise<UpdateResult>;

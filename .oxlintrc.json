@@ -333,6 +333,14 @@
 					{
 						"selector": "MemberExpression[object.name='Meteor'][property.name='startup']",
 						"message": "Register at module level, or export a function and call it from runStartupTasks() in server/startup/startupTasks.ts."
+					},
+					{
+						"selector": "MemberExpression[object.name='Accounts'][property.name=/^_(generateStampedLoginToken|insertLoginToken|insertHashedLoginToken|hashStampedToken|hashLoginToken)$/]",
+						"message": "Use issueLoginToken from 'server/lib/auth/issueLoginToken', or the helpers in '@rocket.chat/account-utils', instead."
+					},
+					{
+						"selector": "MemberExpression[object.name='Accounts'][property.name='_clearAllLoginTokens']",
+						"message": "Use Users.unsetLoginTokens(userId) instead."
 					}
 				]
 			}
