@@ -1,0 +1,21 @@
+packages/models/src/models/BaseUploadModel.ts
+  s_6d25fee5493949::t_b2aa791178e037 138-141
+packages/model-typings/src/models/IBaseUploadsModel.ts
+  s_6d25fee5493949::t_dda29b1c503acd 29
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "b5f8b0c0b8a20004220ebe0df7f924d764656d2a",
+  "prompts": {},
+  "sessions": {
+    "s_6d25fee5493949": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3e99f8ee-6ed4-4991-ae6d-57c7a4df1f63",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
