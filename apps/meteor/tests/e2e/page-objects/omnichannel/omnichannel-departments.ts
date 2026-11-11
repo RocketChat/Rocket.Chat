@@ -32,7 +32,14 @@ export class OmnichannelDepartments extends OmnichannelAdmin {
 	}
 
 	override async search(text: string) {
-		await super.search(text);
+		if ((await this.inputSearch.inputValue()) !== text) {
+			const listResponse = this.page.waitForResponse((response) => {
+				const url = new URL(response.url());
+				return /\/v1\/livechat\/(department|departments\/archived)$/.test(url.pathname) && url.searchParams.get('text') === text;
+			});
+			await super.search(text);
+			await listResponse;
+		}
 		await expect(this.table.findRowsWithoutText(text)).toHaveCount(0);
 	}
 
