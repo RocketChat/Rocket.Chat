@@ -3,19 +3,22 @@ import { useId, useLayoutEffect, useMemo, useRef } from 'react';
 
 import { prevent } from '../../helpers/prevent';
 import type { ElementProps } from '../../types/ElementProps';
-import { Box, type BoxProps } from '../Box';
+import { Box } from '../Box';
 import { ItemDivider } from '../Item';
 import { Option, OptionHeader } from '../Option';
 import { PopoverSurface } from '../PopoverSurface';
-import { Scrollable } from '../Scrollable';
 import type { OptionType } from './OptionType';
 import OptionsEmpty from './OptionsEmpty';
+import { optionsCustomProperties, type OptionsSize } from './optionsCustomProperties';
 
 export type OptionsProps<TValue extends string | number = string | number, TLabel = ReactNode> = Omit<
 	ElementProps<HTMLElement>,
 	'onSelect'
 > & {
-	maxHeight?: BoxProps['maxHeight'];
+	/** A number is a height in pixels; a string is any CSS size. */
+	maxHeight?: OptionsSize;
+	/** A number is a width in pixels; a string is any CSS size. */
+	width?: OptionsSize;
 	multiple?: boolean;
 	options: OptionType<TValue, TLabel>[];
 	cursor: number;
@@ -41,6 +44,8 @@ export type OptionsProps<TValue extends string | number = string | number, TLabe
  */
 function Options<TValue extends string | number = string | number, TLabel = ReactNode>({
 	maxHeight,
+	width,
+	style,
 	multiple,
 	renderEmpty: EmptyComponent = OptionsEmpty,
 	options,
@@ -105,25 +110,23 @@ function Options<TValue extends string | number = string | number, TLabel = Reac
 	);
 
 	return (
-		<Box rcx-options {...props}>
+		<Box rcx-options {...props} style={optionsCustomProperties({ width }, style)}>
 			<PopoverSurface>
-				<Scrollable vertical smooth>
-					<Box
-						ref={liRef}
-						rcx-options__list
-						maxHeight={maxHeight}
-						onMouseDown={prevent}
-						onClick={prevent}
-						is='ol'
-						aria-multiselectable={!!multiple}
-						role='listbox'
-						id={id}
-						aria-activedescendant={activeDescendant}
-					>
-						{!options.length && <EmptyComponent customEmpty={customEmpty} />}
-						{optionsMemoized}
-					</Box>
-				</Scrollable>
+				<Box
+					ref={liRef}
+					rcx-options__list
+					style={optionsCustomProperties({ maxHeight })}
+					onMouseDown={prevent}
+					onClick={prevent}
+					is='ol'
+					aria-multiselectable={!!multiple}
+					role='listbox'
+					id={id}
+					aria-activedescendant={activeDescendant}
+				>
+					{!options.length && <EmptyComponent customEmpty={customEmpty} />}
+					{optionsMemoized}
+				</Box>
 			</PopoverSurface>
 		</Box>
 	);

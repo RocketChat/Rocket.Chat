@@ -33,6 +33,20 @@
 		}
 	}
 
+	&__item--medium {
+		@include use-font-scale(p2m);
+	}
+
+	&__anchor {
+		&--last {
+			order: 1;
+		}
+
+		&--grow {
+			flex-grow: 1;
+		}
+	}
+
 	&__value {
 		color: colors.font(titles-labels);
 

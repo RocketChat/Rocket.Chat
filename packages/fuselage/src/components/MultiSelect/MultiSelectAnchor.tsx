@@ -15,7 +15,17 @@ type MultiSelectAnchorProps = RefAttributes<Element> & {
 } & AriaAttributes;
 
 function MultiSelectAnchor(props: MultiSelectAnchorProps) {
-	return <Box rcx-select__focus rcx-select__focus--button is='button' type='button' rcx-input-box--undecorated order={1} {...props} />;
+	return (
+		<Box
+			rcx-select__focus
+			rcx-select__focus--button
+			is='button'
+			type='button'
+			rcx-input-box--undecorated
+			rcx-select__anchor--last
+			{...props}
+		/>
+	);
 }
 
 export default MultiSelectAnchor;

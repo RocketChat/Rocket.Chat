@@ -70,6 +70,16 @@ describe('[Options]', () => {
 		expect(screen.getByRole('listbox')).not.toHaveAttribute('aria-activedescendant');
 	});
 
+	it('should size the list through custom properties', () => {
+		const { getByRole, container } = render(
+			<Options options={[['a', 'A']]} cursor={0} onSelect={() => undefined} width={320} maxHeight='12rem' style={{ opacity: 0.5 }} />,
+		);
+
+		expect(getByRole('listbox').style.getPropertyValue('--rcx-options-max-height')).toBe('12rem');
+		expect((container.firstElementChild as HTMLElement).style.getPropertyValue('--rcx-options-width')).toBe('320px');
+		expect((container.firstElementChild as HTMLElement).style.opacity).toBe('0.5');
+	});
+
 	it('should scroll to the row focused by the cursor when it renders as `Item`', () => {
 		const options = Array.from({ length: 10 }, (_, i) => [i, `Option ${i}`] as [number, string]);
 		const offsetTop = jest.spyOn(HTMLElement.prototype, 'offsetTop', 'get').mockImplementation(function (this: HTMLElement) {

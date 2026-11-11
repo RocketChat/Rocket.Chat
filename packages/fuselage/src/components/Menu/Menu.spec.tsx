@@ -36,6 +36,36 @@ describe('[Menu Component]', () => {
 			});
 		});
 
+		it.each([
+			['100%', '100%'],
+			[undefined, ''],
+		])('should set the popup max width to %s through a custom property', async (maxWidth, expected) => {
+			const matchMedia = Object.getOwnPropertyDescriptor(window, 'matchMedia');
+			Object.defineProperty(window, 'matchMedia', {
+				configurable: true,
+				value: (media: string) => ({
+					media,
+					matches: true,
+					addEventListener: () => undefined,
+					removeEventListener: () => undefined,
+				}),
+			});
+
+			render(<Simple {...Simple.args} maxWidth={maxWidth} />);
+
+			await userEvent.click(screen.getByRole('button'));
+			const popup = (await screen.findByRole('menu')).closest('.rcx-menu__popover');
+
+			expect(popup).toBeInstanceOf(HTMLElement);
+			expect((popup as HTMLElement).style.getPropertyValue('--rcx-menu-max-width')).toBe(expected);
+
+			if (matchMedia) {
+				Object.defineProperty(window, 'matchMedia', matchMedia);
+			} else {
+				Reflect.deleteProperty(window, 'matchMedia');
+			}
+		});
+
 		it('should display menu items with icons', async () => {
 			render(<Complex {...Complex.args} />);
 
