@@ -28,6 +28,11 @@ Import the helpers from `../../testing/g0`, and `expect` and `fn` from `storyboo
 | `expectKeyboardActivation`, `expectTabOrder`           | Enter and Space on a control; the Tab order                                                        |
 | `expectCompositeList`, `expectCombobox`, `expectMenu`  | the three keyboard models of [list-keyboard-navigation.md](../../../../docs/frontend/list-keyboard-navigation.md) |
 
+A computed style is read in the browser only: guard it with `isJsdom()`. `forcePseudo(element, 'hover')` applies a state that a `play`
+function cannot drive with the pointer (storybook-addon-pseudo-states rewrites every `:hover` rule to a `.pseudo-hover` one), and
+`expectComputed(element, property, value)` waits for the style to settle. `atViewport(width, storyId, read)` renders another story in an
+iframe of that width, for the media queries of a narrower viewport.
+
 ## What a spec covers
 
 - **Forwarding**: render the component with `className`, `id`, `title`, `data-qa`, `data-anything`, `aria-label`, a `ref` and the handlers, for
