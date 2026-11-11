@@ -193,3 +193,8 @@ export type DivAttributes = PartAttributes<HTMLDivElement>;
 
 /** What a toolbar rendered as a `div` listens to. */
 export type DivCaptureHandlers = WebCaptureHandlers<HTMLDivElement>;
+
+/** What a part rendered as an `hr`, or as a `div` when it has a label, forwards. The `ref` is typed for both tags; each branch casts it to `HrRef` or `DivRef`. */
+export type SeparatorAttributes = PartAttributes<HTMLElement>;
+export type HrRef = Ref<HTMLHRElement>;
+export type DivRef = Ref<HTMLDivElement>;
