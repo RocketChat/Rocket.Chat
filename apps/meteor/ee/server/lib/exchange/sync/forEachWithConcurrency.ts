@@ -29,7 +29,11 @@ export const forEachWithConcurrency = async <T>(
 		),
 	);
 
-	await Promise.resolve(iterator.return?.()).catch(() => undefined);
+	try {
+		await iterator.return?.();
+	} catch {
+		// Closing the source must not replace the run's own outcome.
+	}
 
 	if (failure) {
 		throw failure.err;
