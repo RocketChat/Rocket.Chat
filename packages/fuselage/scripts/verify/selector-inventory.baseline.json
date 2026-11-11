@@ -116,9 +116,6 @@
 	"rcx-input-box": [
 		"packages/fuselage/src/components/Select/Select.styles.scss: @extend .rcx-input-box__addon;"
 	],
-	"rcx-divider": [
-		"packages/fuselage/src/components/Sidepanel/Sidepanel.styles.scss: &.rcx-divider {"
-	],
 	"rcx-tag": [
 		"packages/fuselage/src/styles/normalize.scss: a:where(:not(.rcx-button, .rcx-item, .rcx-item__link, .rcx-tag)) {"
 	]
