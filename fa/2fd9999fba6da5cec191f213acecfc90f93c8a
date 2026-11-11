@@ -1,0 +1,25 @@
+apps/meteor/server/lib/users/saveUser/setPasswordUpdater.ts
+  s_abb9231db54e44::t_7b05aa2662ccc4 1
+apps/meteor/server/lib/import/classes/converters/UserConverter.ts
+  s_abb9231db54e44::t_7b05aa2662ccc4 1,331
+apps/meteor/server/lib/2fa/code/EmailCheck.ts
+  s_abb9231db54e44::t_7b05aa2662ccc4 1,106
+apps/meteor/server/lib/import/classes/converters/UserConverter.test.ts
+  s_abb9231db54e44::t_7b05aa2662ccc4 21,47-48,135
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "fa2fd9999fba6da5cec191f213acecfc90f93c8a",
+  "prompts": {},
+  "sessions": {
+    "s_abb9231db54e44": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "68a1b4f3-731a-4a41-9f8c-a68e8902e169",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
