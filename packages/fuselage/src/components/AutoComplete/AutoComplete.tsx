@@ -156,11 +156,10 @@ function AutoComplete<TLabel = ReactNode>({
 			rcx-autocomplete
 			ref={containerRef}
 			onClick={useStableCallback(() => innerRef.current?.focus())}
-			flexGrow={1}
 			rcx-select--invalid={!!error}
 			rcx-select--disabled={disabled}
 		>
-			<Box display='flex' flexGrow={1} alignItems='center' flexWrap='wrap' gap={4} role='group'>
+			<Box rcx-autocomplete__group role='group'>
 				<Input
 					ref={mergedRefs}
 					onChange={useStableCallback((e: ChangeEvent<HTMLInputElement>) => setFilter?.(e.currentTarget.value))}
@@ -183,12 +182,12 @@ function AutoComplete<TLabel = ReactNode>({
 					),
 				)}
 			</Box>
-			<Box rcx-autocomplete__addon color='titles-labels'>
+			<Box rcx-autocomplete__addon>
 				<Icon name={optionsAreVisible === AnimatedVisibility.VISIBLE ? 'cross' : 'magnifier'} size='x20' />
 			</Box>
 			<PositionAnimated visible={optionsAreVisible} anchor={containerRef}>
 				<Options
-					style={{ width: borderBoxSize.inlineSize }}
+					width={borderBoxSize.inlineSize}
 					onSelect={handleSelect}
 					renderItem={renderItem}
 					renderEmpty={renderEmpty}

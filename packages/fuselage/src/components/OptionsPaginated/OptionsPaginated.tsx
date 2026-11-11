@@ -8,10 +8,13 @@ import type { ElementProps } from '../../types/ElementProps';
 import { AnimatedVisibility } from '../AnimatedVisibility';
 import { Box } from '../Box';
 import { CheckOption, Option } from '../Option';
+import { optionsCustomProperties, type OptionsSize } from '../Options/optionsCustomProperties';
 import { PopoverSurface } from '../PopoverSurface';
 
 export type OptionsPaginatedProps = Omit<ElementProps<HTMLDivElement>, 'ref' | 'onSelect'> &
 	RefAttributes<Element> & {
+		/** A number is a width in pixels; a string is any CSS size. */
+		width?: OptionsSize;
 		multiple?: boolean;
 		options: { value: string | number; label: string; selected?: boolean }[];
 		cursor: number;
@@ -48,6 +51,8 @@ export function OptionsPaginated({
 	renderItem: OptionComponent = Option,
 	onSelect,
 	endReached,
+	width,
+	style,
 	...props
 }: OptionsPaginatedProps) {
 	const OptionsComponentWithData = ({ index, data }: { index: number; data: OptionsPaginatedProps['options'][0] }) => {
@@ -72,7 +77,7 @@ export function OptionsPaginated({
 	};
 
 	return (
-		<Box rcx-options {...props} ref={ref}>
+		<Box rcx-options {...props} style={optionsCustomProperties({ width }, style)} ref={ref}>
 			<PopoverSurface>
 				{!options.length ? (
 					<EmptyComponent />

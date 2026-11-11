@@ -1,7 +1,24 @@
+@use '../../styles/colors.scss';
+@use '../../styles/lengths.scss';
 @use '../Select/Select.styles.scss' as *;
 
 .rcx-autocomplete {
 	@extend .rcx-select;
+
+	flex-grow: 1;
+
+	&__group {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		flex-grow: 1;
+
+		gap: lengths.margin(4);
+	}
+
+	&__addon {
+		color: colors.font(titles-labels);
+	}
 
 	&__input {
 		order: 1;
