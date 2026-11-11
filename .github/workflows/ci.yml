@@ -265,8 +265,13 @@ jobs:
           if [[ '${{ github.event_name }}' = 'release' ]]; then
             GIT_TAG="${GITHUB_REF#*tags/}"
             GIT_BRANCH=""
-            ARTIFACT_NAME="${REPO_VERSION}"
+            ARTIFACT_NAME="${GIT_TAG}"
             RC_VERSION=$GIT_TAG
+
+            if [[ "${REPO_VERSION}" != "${GIT_TAG}" ]]; then
+              echo "::error::package.json version (${REPO_VERSION}) does not match release tag (${GIT_TAG})"
+              exit 1
+            fi
 
             if [[ '${{ needs.release-versions.outputs.release }}' = 'release-candidate' ]]; then
               RC_RELEASE=candidate
@@ -1124,7 +1129,13 @@ jobs:
           REPO_VERSION=$(node -p "require('./package.json').version")
 
           if [[ "${{ github.event_name }}" = 'release' ]]; then
-            ARTIFACT_NAME="${REPO_VERSION}"
+            GIT_TAG="${GITHUB_REF#*tags/}"
+            ARTIFACT_NAME="${GIT_TAG}"
+
+            if [[ "${REPO_VERSION}" != "${GIT_TAG}" ]]; then
+              echo "::error::package.json version (${REPO_VERSION}) does not match release tag (${GIT_TAG})"
+              exit 1
+            fi
           else
             ARTIFACT_NAME="${REPO_VERSION}.$GITHUB_SHA"
           fi;
@@ -1298,8 +1309,13 @@ jobs:
           if [[ '${{ github.event_name }}' = 'release' ]]; then
             GIT_TAG="${GITHUB_REF#*tags/}"
             GIT_BRANCH=""
-            ARTIFACT_NAME="${REPO_VERSION}"
+            ARTIFACT_NAME="${GIT_TAG}"
             RC_VERSION=$GIT_TAG
+
+            if [[ "${REPO_VERSION}" != "${GIT_TAG}" ]]; then
+              echo "::error::package.json version (${REPO_VERSION}) does not match release tag (${GIT_TAG})"
+              exit 1
+            fi
 
             if [[ '${{ needs.release-versions.outputs.release }}' = 'release-candidate' ]]; then
               RC_RELEASE=candidate
