@@ -85,6 +85,29 @@ const generateOptionsStyles = () => `@property --rcx-options-width {
 	background-color: ${themed('theme-scrollbar-thumb-hover-color', 'rgba(0, 0, 0, 0.15)')};
 }`;
 
+const generateMenuItem = () => {
+	const frame = webDefaults({
+		render: 'div',
+		display: 'block',
+		flexBasis: '100%',
+		whiteSpace: 'normal',
+		wordBreak: 'break-word',
+		color: textIconColor('font-secondary-info'),
+		...font('p2'),
+	});
+
+	return constant('menuItemDescriptionFrame', { ...textFrameDefaults(frame), ...frame });
+};
+
+const generateMenuPopover = () =>
+	constant('menuPopoverFrame', webDefaults({ render: 'div', display: 'block', maxWidth: 'var(--rcx-menu-max-width, 250px)' }));
+
+// Registration of the open value the popup's width is read from
+const generateMenuStyles = () => `@property --rcx-menu-max-width {
+	inherits: false;
+	syntax: '*';
+}`;
+
 // Single-class rule on the non-frame icon an option renders: it takes the color of its row, tone included
 const generateOptionStyles = () => `.rcx-option__icon {
 	color: inherit;
@@ -98,6 +121,9 @@ const targets: Target[] = [
 	{ file: join(components, 'Listbox/Listbox.tsx'), generate: generateListbox },
 	{ file: join(components, 'Option/OptionDescriptionBlock.tsx'), generate: generateOptionDescriptionBlock },
 	{ file: join(components, 'Option/Option.styles.css'), generate: generateOptionStyles, css: true },
+	{ file: join(components, 'Menu/MenuItem.tsx'), generate: generateMenuItem },
+	{ file: join(components, 'Menu/MenuPopover.tsx'), generate: generateMenuPopover },
+	{ file: join(components, 'Menu/Menu.styles.css'), generate: generateMenuStyles, css: true },
 ];
 
 export default targets;

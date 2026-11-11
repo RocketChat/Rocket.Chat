@@ -242,9 +242,9 @@
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
-	"Menu/Menu.styles.scss": {
-		"rules": 4,
-		"nested": 2,
+	"Menu/Menu.styles.css": {
+		"rules": 0,
+		"nested": 0,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,

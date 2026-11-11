@@ -340,6 +340,7 @@ export type PreAttributes = PartAttributes<HTMLPreElement>;
 /** The elements a part reads or measures through a ref it creates, named so a frame's module needs no DOM type. */
 export type HtmlElementOf = HTMLElement;
 export type OlElement = HTMLOListElement;
+export type LabelElement = HTMLLabelElement;
 
 /** What a part rendered as a `ul` that acts when pressed forwards. */
 export type UlActionAttributes = ActionAttributes<HTMLUListElement>;
