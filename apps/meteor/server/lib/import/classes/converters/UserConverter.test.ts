@@ -128,10 +128,8 @@ describe('User Converter', () => {
 		});
 
 		const converter = new UserConverter({ workInMemory: true });
-		const hashPassword = sinon.stub(converter, 'hashPassword');
 
 		generateTempPassword.returns('tempPassword');
-		hashPassword.callsFake(async (pass) => `hashed=${pass}`);
 		hashPasswordMock.callsFake(async (pass: string) => `hashed=${pass}`);
 
 		it('should map an empty object', async () => {
