@@ -124,6 +124,7 @@ jobs:
         run: rm -rf node_modules/.cache/tamagui packages/fuselage/node_modules/.cache/tamagui packages/fuselage/.tamagui
 
       - name: Build Storybook
+        id: build
         run: yarn workspace @rocket.chat/fuselage run build-storybook
         env:
           STORYBOOK_DISABLE_TELEMETRY: 1
@@ -135,10 +136,10 @@ jobs:
         run: yarn workspace @rocket.chat/fuselage run visual-regression
 
       - uses: ./.github/actions/setup-playwright
-        if: ${{ !cancelled() && matrix.zero-runtime == '1' }}
+        if: ${{ !cancelled() && steps.build.outcome == 'success' && matrix.zero-runtime == '1' }}
 
       - name: Run the g0 characterization specs against the zero-runtime Storybook
-        if: ${{ !cancelled() && matrix.zero-runtime == '1' }}
+        if: ${{ !cancelled() && steps.build.outcome == 'success' && matrix.zero-runtime == '1' }}
         run: yarn workspace @rocket.chat/fuselage run test:stories storybook-static
 
       - name: Upload visual regression results
