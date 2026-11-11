@@ -11,8 +11,5 @@ it('keeps the trailing gap when the caller passes a className', () => {
 		return screen.getByText('plain');
 	})();
 
-	expect(withTrailingGap).toHaveClass('caller');
-	expect(withTrailingGap.className.split(' ').filter((name) => name.startsWith('rcx-css-')).length).toBeGreaterThanOrEqual(
-		withoutTrailingGap.className.split(' ').filter((name) => name.startsWith('rcx-css-')).length,
-	);
+	expect(withTrailingGap).toHaveClass('caller', ...withoutTrailingGap.classList);
 });
