@@ -40,7 +40,7 @@
 		"storybook": "storybook dev -p 6006",
 		"test": "jest",
 		"test:stories": "node scripts/test-stories.mjs",
-		"test:verify": "node --test scripts/verify/frame-platform.test.mjs scripts/verify/component-class.test.mjs && yarn run -T tsx --test scripts/frame-values/lib/lib.test.mjs",
+		"test:verify": "node --test scripts/verify/frame-platform.test.mjs scripts/verify/component-class.test.mjs scripts/verify/zero-css.test.mjs && yarn run -T tsx --test scripts/frame-values/lib/lib.test.mjs",
 		"testunit": "jest",
 		"typecheck": "tsc --noEmit",
 		"verify:box-usage": "node scripts/verify/box-usage.mjs",
