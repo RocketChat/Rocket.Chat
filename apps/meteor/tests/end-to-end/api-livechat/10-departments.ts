@@ -268,6 +268,24 @@ import { IS_EE } from '../../e2e/config/constants';
 						expect(res.body.departments).to.have.lengthOf(1);
 						expect(res.body.departments[0]._id).to.be.equal(disabledDept?._id);
 					});
+
+				// Test omitted enabled (should return all departments matching prefix)
+				await request
+					.get(api('livechat/department'))
+					.set(credentials)
+					.query({ text: prefix })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('departments').that.is.an('array');
+						expect(res.body.total).to.be.equal(2);
+						expect(res.body.departments).to.have.lengthOf(2);
+						const foundEnabled = res.body.departments.find((d: ILivechatDepartment) => d._id === enabledDept?._id);
+						const foundDisabled = res.body.departments.find((d: ILivechatDepartment) => d._id === disabledDept?._id);
+						expect(foundEnabled).to.not.be.undefined;
+						expect(foundDisabled).to.not.be.undefined;
+					});
 			} finally {
 				if (enabledDept?._id) {
 					await deleteDepartment(enabledDept._id);
