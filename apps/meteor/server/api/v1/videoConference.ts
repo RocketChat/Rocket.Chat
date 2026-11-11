@@ -97,10 +97,19 @@ const oneValueResponseSchema = <T>(name: string, value: Record<string, unknown>)
 		additionalProperties: false,
 	});
 
-const addParticipantsResponseSchema = oneValueResponseSchema<{ added: string[] }>('added', {
-	type: 'array',
-	items: { type: 'string' },
-	description: 'Ids of the users newly added as members.',
+const addParticipantsResponseSchema = ajv.compile<{ added: string[]; dial: string[] }>({
+	type: 'object',
+	properties: {
+		added: { type: 'array', items: { type: 'string' }, description: 'Ids of the users newly added as members.' },
+		dial: {
+			type: 'array',
+			items: { type: 'string' },
+			description: 'Numbers for the caller to dial into the call, for members added who take calls on an external device.',
+		},
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['added', 'dial', 'success'],
+	additionalProperties: false,
 });
 
 const joinableResponseSchema = oneValueResponseSchema<{ calls: unknown[] }>('calls', {
@@ -471,7 +480,7 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		const { callId, users, ring } = this.bodyParams;
+		const { callId, users, ring, dialOut } = this.bodyParams;
 
 		const call = await loadAccessibleConference(callId, this.userId);
 		if (!call) {
@@ -479,13 +488,14 @@ API.v1.post(
 		}
 
 		// Membership authorizes joining the call and nothing else — it puts nobody in a room.
-		const added = await VideoConf.addMembers(this.userId, callId, users, {
+		const { added, dial } = await VideoConf.addMembers(this.userId, callId, users, {
 			// Not ringing unless asked: adding someone to a call in progress is often to have them join when
 			// they can, and an unrequested ring is an interruption nobody chose.
 			ring: (ring ?? false) && (await hasPermissionAsync(this.user, 'videoconf-ring-users')),
+			dialOut: dialOut ?? false,
 		});
 
-		return API.v1.success({ added });
+		return API.v1.success({ added, dial });
 	},
 );
 

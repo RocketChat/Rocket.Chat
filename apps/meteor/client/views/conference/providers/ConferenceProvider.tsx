@@ -166,8 +166,8 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 				// wait for the round trip to see their own notice go away.
 				void queryClient.invalidateQueries({ queryKey: videoConferenceQueryKeys.conference(callId) });
 			},
-			addParticipants: async (users, ringThem) => {
-				const { added } = await addParticipantsEndpoint({ callId, users, ring: ringThem });
+			addParticipants: async (users, ringThem, dialOut) => {
+				const { added, dial } = await addParticipantsEndpoint({ callId, users, ring: ringThem, dialOut });
 
 				// Read the call again rather than waiting to be told about our own doing: the window is watching the
 				// conference for changes other people make, and leaning on that for a change made *here* left the
@@ -176,7 +176,7 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 					void queryClient.invalidateQueries({ queryKey: videoConferenceQueryKeys.conference(callId) });
 				}
 
-				return { added: added.length };
+				return { added: added.length, dial };
 			},
 		}),
 		[addParticipantsEndpoint, callId, conference, leaveNow, queryClient, ring, shareChatEndpoint],

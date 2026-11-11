@@ -144,9 +144,10 @@ export type ConferenceActions = {
 	/**
 	 * Associates people with the call, which is what lets them join it — deliberately putting them in no room.
 	 * Answers how many were actually added, since anyone already associated is skipped and a selection can come
-	 * back empty.
+	 * back empty, and the numbers to dial for those who take calls on an external device, when `dialOut` says
+	 * the caller can dial them.
 	 */
-	addParticipants: (users: string[], ring: boolean) => Promise<{ added: number }>;
+	addParticipants: (users: string[], ring: boolean, dialOut: boolean) => Promise<{ added: number; dial: string[] }>;
 };
 
 /**

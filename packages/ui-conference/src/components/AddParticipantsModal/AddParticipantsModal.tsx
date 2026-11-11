@@ -88,7 +88,10 @@ const AddParticipantsModal = ({ onClose }: AddParticipantsModalProps) => {
 				return { added: 0, chatShared: true };
 			}
 
-			const { added } = await addParticipants(users, canRingUsers && ring);
+			const { added, dial } = await addParticipants(users, canRingUsers && ring, canDialOut);
+
+			// People who take calls on a device join from it, called in the same way as a typed number.
+			dial.forEach((destination) => provider?.actions.dialOut(destination));
 
 			// Membership is what lets them into the call and puts them in no room, so the chat is a second ask:
 			// either the room they are joining as it stands, or a fresh one started for the call. Refused, the

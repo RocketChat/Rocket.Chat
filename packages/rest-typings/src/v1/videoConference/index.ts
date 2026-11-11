@@ -84,7 +84,7 @@ export type VideoConferenceEndpoints = {
 	};
 
 	'/v1/video-conference.add-participants': {
-		POST: (params: VideoConfAddParticipantsProps) => { added: string[] };
+		POST: (params: VideoConfAddParticipantsProps) => { added: string[]; dial: string[] };
 	};
 
 	/** Renames a running group conference. Only the person who started it may. */

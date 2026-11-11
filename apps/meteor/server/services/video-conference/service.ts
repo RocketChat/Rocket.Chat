@@ -1519,8 +1519,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		uid: IUser['_id'],
 		callId: VideoConference['_id'],
 		usernames: NonNullable<IUser['username']>[],
-		{ ring = true }: { ring?: boolean } = {},
-	): Promise<IUser['_id'][]> {
+		{ ring = true, dialOut = false }: { ring?: boolean; dialOut?: boolean } = {},
+	): Promise<{ added: IUser['_id'][]; dial: string[] }> {
 		const call = await VideoConferenceModel.findOneById(callId, { projection: { rid: 1, users: 1, endedAt: 1 } });
 		if (!call) {
 			throw new Error('invalid-video-conference');
@@ -1529,18 +1529,22 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		// A finished call is not something to add people to — and certainly not something to ring them into.
 		// Same answer `ringMember` gives: nobody was added.
 		if (call.endedAt) {
-			return [];
+			return { added: [], dial: [] };
 		}
 
-		const users = await Users.find<Required<Pick<IUser, '_id' | 'username' | 'name' | 'avatarETag'>>>(
+		const users = await Users.find<
+			Required<Pick<IUser, '_id' | 'username' | 'name' | 'avatarETag'>> & Pick<IUser, 'sipExtension' | 'mediaCallDevice'>
+		>(
 			{ username: { $in: usernames } },
-			{ projection: { username: 1, name: 1, avatarETag: 1 } },
+			{ projection: { username: 1, name: 1, avatarETag: 1, sipExtension: 1, mediaCallDevice: 1 } },
 		).toArray();
 
 		const added: IUser['_id'][] = [];
+		const toRing: IUser['_id'][] = [];
+		const dial: string[] = [];
 		const ts = new Date();
 
-		for (const user of users) {
+		for (const { sipExtension, mediaCallDevice, ...user } of users) {
 			// Already associated with the call — leave their entry (and any `joinedAt`) untouched.
 			if (call.users.some(({ _id }) => _id === user._id)) {
 				continue;
@@ -1548,6 +1552,16 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 			await VideoConferenceModel.addMemberById(callId, { ...user, ts });
 			added.push(user._id);
+
+			// Someone who takes calls on a device is not listening to Rocket.Chat: they join from the device, dialled
+			// by the adder the way a typed number is. Only an adder who can dial out gets to do that; for anyone
+			// else they are rung like everybody, rather than left with no way in.
+			if (dialOut && mediaCallDevice && sipExtension) {
+				dial.push(sipExtension);
+				continue;
+			}
+
+			toRing.push(user._id);
 		}
 
 		if (added.length) {
@@ -1558,11 +1572,11 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		// The list being rung is just the people added, and the endpoint caps a single add at the ringing limit —
 		// so unlike starting a call in a large room, an add can always ring. Whether it does is the adder's to
 		// say: someone added to carry on later is not someone to interrupt now.
-		if (ring && shouldRingRecipients(added.length)) {
-			await this.ringUsers(callId, call.rid, uid, added);
+		if (ring && shouldRingRecipients(toRing.length)) {
+			await this.ringUsers(callId, call.rid, uid, toRing);
 		}
 
-		return added;
+		return { added, dial };
 	}
 
 	/**

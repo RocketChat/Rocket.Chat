@@ -95,7 +95,7 @@ export const defaultConferenceContextValue: ConferenceContextValue = {
 		leave: () => undefined,
 		ringMember: () => Promise.resolve(),
 		shareChat: () => Promise.resolve(),
-		addParticipants: () => Promise.resolve({ added: 0 }),
+		addParticipants: () => Promise.resolve({ added: 0, dial: [] }),
 	},
 	slots: {},
 	viewer: {

@@ -10,8 +10,9 @@ import AddParticipantsModal from './AddParticipantsModal';
 import * as stories from './AddParticipantsModal.stories';
 import { ConferenceContext } from '../../context/ConferenceContext';
 import type { UserPickerProps } from '../../context/definitions';
-import { buildConferenceContext } from '../../fixtures/storyFixtures';
+import { buildConferenceContext, speakingProvider } from '../../fixtures/storyFixtures';
 import { callPreferencesStorageKey } from '../../hooks/useCallDevicesInitialState';
+import type { ProviderPluginControls } from '../../lib/providerPlugin';
 
 // The mocked app root leaves its toast provider commented out, so what the modal reports has to be observed
 // at the dispatch instead of in the DOM.
@@ -38,7 +39,7 @@ const StubPicker = ({ value, onChange, placeholder }: UserPickerProps) => (
 	</>
 );
 
-const addParticipants = jest.fn(async (users: string[]) => ({ added: users.length }));
+const addParticipants = jest.fn(async (users: string[]) => ({ added: users.length, dial: [] as string[] }));
 const shareChat = jest.fn(async () => undefined);
 
 const preferencesKey = callPreferencesStorageKey('john.doe');
@@ -47,13 +48,15 @@ const renderModal = ({
 	canRing = true,
 	ring = true,
 	canInvite,
+	provider,
 	onClose = jest.fn(),
-}: { canRing?: boolean; ring?: boolean; canInvite?: boolean; onClose?: () => void } = {}) => {
+}: { canRing?: boolean; ring?: boolean; canInvite?: boolean; provider?: ProviderPluginControls; onClose?: () => void } = {}) => {
 	localStorage.setItem(preferencesKey, JSON.stringify({ mic: true, cam: false, ring }));
 
 	const AppRoot = mockAppRoot().withJohnDoe().build();
 	const conference = buildConferenceContext({
 		actions: { addParticipants, shareChat },
+		provider,
 		room:
 			canInvite === undefined
 				? {}
@@ -80,7 +83,7 @@ const choose = async (...usernames: string[]) => {
 beforeEach(() => {
 	addParticipants.mockClear();
 	shareChat.mockClear();
-	addParticipants.mockImplementation(async (users: string[]) => ({ added: users.length }));
+	addParticipants.mockImplementation(async (users: string[]) => ({ added: users.length, dial: [] }));
 	dispatchToastMessage.mockClear();
 	localStorage.removeItem(preferencesKey);
 });
@@ -112,7 +115,21 @@ it('adds the selected user to the conference', async () => {
 	await choose('grace');
 	await userEvent.click(screen.getByRole('button', { name: 'Add' }));
 
-	await waitFor(() => expect(addParticipants).toHaveBeenCalledWith(['grace'], true));
+	await waitFor(() => expect(addParticipants).toHaveBeenCalledWith(['grace'], true, false));
+});
+
+// People who take calls on a device are called on it, the same way a typed number is.
+it('dials the numbers the server hands back for people who take calls on a device', async () => {
+	const provider = speakingProvider();
+	const dialOut = jest.spyOn(provider.actions, 'dialOut');
+	addParticipants.mockImplementation(async (users: string[]) => ({ added: users.length, dial: ['1001'] }));
+	renderModal({ provider });
+
+	await choose('grace');
+	await userEvent.click(screen.getByRole('button', { name: 'Add' }));
+
+	await waitFor(() => expect(addParticipants).toHaveBeenCalledWith(['grace'], true, true));
+	await waitFor(() => expect(dialOut).toHaveBeenCalledWith('1001'));
 });
 
 // The endpoint takes at most `RING_RECIPIENTS_LIMIT` at a time and refuses the whole body past that, so a
@@ -136,7 +153,7 @@ it('refuses to add more people than the call can take at once', async () => {
 // Anyone already associated with the call is skipped, so a selection can come back empty. Reporting that as
 // success would claim people were called who never were.
 it('says so when everyone selected was already in the call', async () => {
-	addParticipants.mockImplementation(async () => ({ added: 0 }));
+	addParticipants.mockImplementation(async () => ({ added: 0, dial: [] }));
 
 	renderModal();
 
@@ -163,7 +180,7 @@ it('adds without ringing when ringing is turned off', async () => {
 	await choose('grace');
 	await userEvent.click(screen.getByRole('button', { name: 'Add' }));
 
-	await waitFor(() => expect(addParticipants).toHaveBeenCalledWith(['grace'], false));
+	await waitFor(() => expect(addParticipants).toHaveBeenCalledWith(['grace'], false, false));
 });
 
 // The server checks the same permission before it honours `ring`: without it the request is accepted and the
@@ -176,7 +193,7 @@ it('does not offer to ring where the workspace would not let this caller ring', 
 	await choose('grace');
 	await userEvent.click(screen.getByRole('button', { name: 'Add' }));
 
-	await waitFor(() => expect(addParticipants).toHaveBeenCalledWith(['grace'], false));
+	await waitFor(() => expect(addParticipants).toHaveBeenCalledWith(['grace'], false, false));
 });
 
 it('keeps the chat history by default', async () => {
@@ -211,7 +228,7 @@ it('says so, and closes, when the people were added but the chat could not be sh
 	await userEvent.click(screen.getByRole('button', { name: 'Add' }));
 
 	await waitFor(() => expect(onClose).toHaveBeenCalled());
-	expect(addParticipants).toHaveBeenCalledWith(['grace'], true);
+	expect(addParticipants).toHaveBeenCalledWith(['grace'], true, false);
 	expect(dispatchToastMessage).toHaveBeenCalledWith({ type: 'error', message: 'Users_added_but_chat_could_not_be_shared' });
 });
 

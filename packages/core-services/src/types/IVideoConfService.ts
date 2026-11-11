@@ -54,8 +54,8 @@ export interface IVideoConfService {
 		uid: IUser['_id'],
 		callId: VideoConference['_id'],
 		usernames: NonNullable<IUser['username']>[],
-		options?: { ring?: boolean },
-	): Promise<IUser['_id'][]>;
+		options?: { ring?: boolean; dialOut?: boolean },
+	): Promise<{ added: IUser['_id'][]; dial: string[] }>;
 	declineCall(uid: IUser['_id'], callId: VideoConference['_id']): Promise<void>;
 	leaveCall(uid: IUser['_id'], callId: VideoConference['_id']): Promise<void>;
 	renewPresence(uid: IUser['_id'], callId: VideoConference['_id']): Promise<void>;
