@@ -9,6 +9,8 @@ import { stripTags } from '../../../lib/utils/stringUtils';
 import { sdk } from '../../lib/SDKClient';
 import { getUserAvatarURL } from '../../lib/getUserAvatarURL';
 import { onClientMessageReceived } from '../../lib/onClientMessageReceived';
+import { isSeenLater, openNotifications } from '../../lib/openNotifications';
+import { Subscriptions } from '../../stores';
 
 export const useNotification = () => {
 	const requireInteractionPreference = useUserPreference('desktopNotificationRequireInteraction');
@@ -24,19 +26,35 @@ export const useNotification = () => {
 			return;
 		}
 
-		const { rid, name: roomName, _id: msgId } = notification.payload;
+		const { rid, tmid, name: roomName, _id: msgId, conferenceId } = notification.payload;
 		if (!rid) {
 			return;
 		}
+
+		const findSubscription = () => Subscriptions.state.find((record) => record.rid === rid);
+		const subscription = findSubscription();
+		const { ls, tunread } = subscription ?? {};
+		const session = openNotifications.currentSession;
+
 		const message = await onClientMessageReceived({
 			rid,
 			msg: notification.text,
 			notification: true,
 		} as any);
 
+		if (session !== openNotifications.currentSession) {
+			return;
+		}
+
 		// A notification may demand interaction on its own — a conference ring outlives the
 		// recipient's preference, per INotificationDesktop.requireInteraction.
 		const requireInteraction = requireInteractionPreference || notification.requireInteraction;
+
+		// The room was read or left while the message was being prepared, so there is nothing left to notify.
+		const current = findSubscription();
+		if (!conferenceId && subscription && (!current || (isSeenLater(current.ls, ls) && !(tmid && current.tunread?.includes(tmid))))) {
+			return;
+		}
 
 		const n = new Notification(notification.title, {
 			icon: notification.icon || getUserAvatarURL(notification.payload.sender?.username),
@@ -49,6 +67,11 @@ export const useNotification = () => {
 		} as NotificationOptions & {
 			canReply?: boolean;
 		});
+
+		if (!conferenceId) {
+			openNotifications.track(n, { rid, tmid, ls, tunread });
+		}
+
 		const notificationDuration = !requireInteraction && notification.duration ? notification.duration - 0 : 0;
 		if (notificationDuration > 0) {
 			setTimeout(() => n.close(), notificationDuration * 1000);
@@ -63,7 +86,7 @@ export const useNotification = () => {
 							_id: Random.id(),
 							rid,
 							msg: response,
-							...(notification.payload.tmid && { tmid: notification.payload.tmid }),
+							...(tmid && { tmid }),
 						},
 					}),
 			);
@@ -71,7 +94,6 @@ export const useNotification = () => {
 			// "Join" action (desktop app): join the call the same way the ongoing-call banner does. The event fires
 			// for whichever button was pressed, so it has to say which — the server names this one `join`
 			// (`video-conference/service.ts`), and a second action added later must not silently join a call.
-			const { conferenceId } = notification.payload;
 			if (conferenceId) {
 				n.addEventListener('action', (event) => {
 					if (event.action !== 'join') {
