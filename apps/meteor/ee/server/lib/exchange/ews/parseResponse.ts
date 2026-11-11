@@ -107,11 +107,28 @@ const backOffMsIn = (scope: Document | Element): number | undefined => {
 const unwrapServerBusy = (code: string, scope: Document | Element): string =>
 	code === 'ErrorInternalServerError' && messageXmlValue(scope, 'InnerErrorResponseCode') === 'ErrorServerBusy' ? 'ErrorServerBusy' : code;
 
-const toExchangeError = (code: string, detail: string | undefined, scope: Document | Element): ExchangeError => {
+/** A batch is resent whole, so it waits out the longest back-off among its throttled messages. */
+const longestBackOffIn = (doc: Document): number | undefined => {
+	const backOffs = responseCodesIn(doc).flatMap((node) => {
+		const message = node.parentNode as Element;
+		const backOffMs = unwrapServerBusy(textOf(node) ?? '', message) === 'ErrorServerBusy' ? backOffMsIn(message) : undefined;
+
+		return backOffMs === undefined ? [] : [backOffMs];
+	});
+
+	return backOffs.length ? Math.max(...backOffs) : undefined;
+};
+
+const toExchangeError = (
+	code: string,
+	detail: string | undefined,
+	scope: Document | Element,
+	retryAfterMs = backOffMsIn(scope),
+): ExchangeError => {
 	const mapped = RESPONSE_CODE_TO_ERROR[unwrapServerBusy(code, scope)];
 
 	return mapped
-		? new ExchangeError(mapped.code, mapped.message, { detail: detail ?? code, retryAfterMs: backOffMsIn(scope) })
+		? new ExchangeError(mapped.code, mapped.message, { detail: detail ?? code, retryAfterMs })
 		: new ExchangeError('unexpected-response', `Exchange returned ${code}`, { detail });
 };
 
@@ -146,7 +163,7 @@ const assertNoResponseCodeErrors = (doc: Document): void => {
 		}
 
 		const message = node.parentNode as Element;
-		throw toExchangeError(code, textOf(firstByTag(message, MESSAGES_NS, 'MessageText')), message);
+		throw toExchangeError(code, textOf(firstByTag(message, MESSAGES_NS, 'MessageText')), message, longestBackOffIn(doc));
 	}
 };
 

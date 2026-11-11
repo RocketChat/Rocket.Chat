@@ -67,10 +67,6 @@ describe('parseEwsResponse on a batched response', () => {
 		});
 	});
 
-	it('takes the back-off only from the message that failed', () => {
-		expect(errorFrom(batch(serverBusy(), serverBusy(300000)))).toMatchObject({ code: 'rate-limited', retryAfterMs: undefined });
-	});
-
 	const internalError = (innerCode: string, backOffMs?: number) => {
 		const backOff = backOffMs === undefined ? '' : `<t:Value Name="BackOffMilliseconds">${backOffMs}</t:Value>`;
 
@@ -87,5 +83,19 @@ describe('parseEwsResponse on a batched response', () => {
 
 	it('leaves an internal error wrapping anything else as unexpected', () => {
 		expect(errorFrom(batch(internalError('ErrorQuotaExceeded')))).toMatchObject({ code: 'unexpected-response' });
+	});
+
+	it('waits out the longest back-off among the throttled messages', () => {
+		expect(errorFrom(batch(serverBusy(), serverBusy(2000), internalError('ErrorServerBusy', 300000)))).toMatchObject({
+			code: 'rate-limited',
+			retryAfterMs: 300000,
+		});
+	});
+
+	it('ignores a back-off on a message that is not throttled', () => {
+		expect(errorFrom(batch(serverBusy(), internalError('ErrorQuotaExceeded', 300000)))).toMatchObject({
+			code: 'rate-limited',
+			retryAfterMs: undefined,
+		});
 	});
 });
