@@ -90,9 +90,6 @@
 	"rcx-sidepanel": [
 		"apps/meteor/client/views/root/MainLayout/MainLayoutStyleTags.tsx: <PaletteStyleTag theme='dark' selector='.rcx-sidebar--main, .rcx-sidebar-rail, .rcx-sidepanel, .rcx-navbar' tagId='sidebar-palette' />"
 	],
-	"rcx-select": [
-		"packages/fuselage/src/components/AutoComplete/AutoComplete.styles.scss: @extend .rcx-select;"
-	],
 	"rcx-icon": [
 		"packages/fuselage/src/components/Bubble/Bubble.styles.scss: &:not(.rcx-bubble__group) &__button:has(> .rcx-icon),",
 		"packages/fuselage/src/components/Bubble/Bubble.styles.scss: &:not(.rcx-bubble__group) &__item:has(> .rcx-icon) {",
@@ -113,7 +110,8 @@
 		"packages/fuselage/src/components/Options/Options.styles.scss: .rcx-option--focus:not(.rcx-option--selected):not(:hover),"
 	],
 	"rcx-input-box": [
-		"packages/fuselage/src/components/Select/Select.styles.scss: @extend .rcx-input-box__addon;"
+		"packages/fuselage/src/components/Select/Select.styles.scss: @extend .rcx-input-box__addon;",
+		"packages/fuselage/src/components/Select/select-box.scss: &:has(> .rcx-input-box:invalid),"
 	],
 	"rcx-tag": [
 		"packages/fuselage/src/styles/normalize.scss: a:where(:not(.rcx-button, .rcx-item, .rcx-item__link, .rcx-tag)) {"
