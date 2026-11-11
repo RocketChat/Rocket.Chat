@@ -1,5 +1,6 @@
 import {
 	pickPositionStyle,
+	pickVirtualizerStyle,
 	pickSvgTitle,
 	pickWebAnimationHandlers,
 	pickWebCaptureHandlers,
@@ -51,6 +52,31 @@ describe('pickPositionStyle', () => {
 	it('returns nothing when there is no style, or none of its keys', () => {
 		expect(pickPositionStyle({})).toEqual({});
 		expect(pickPositionStyle({ style: { color: 'red' } })).toEqual({});
+	});
+});
+
+describe('pickVirtualizerStyle', () => {
+	it('keeps the offsets and the scroll anchoring a virtualizer sets and drops the rest', () => {
+		expect(
+			pickVirtualizerStyle({
+				style: {
+					boxSizing: 'border-box',
+					marginTop: 0,
+					paddingTop: 120,
+					paddingBottom: 40,
+					visibility: 'visible',
+					overflowAnchor: 'none',
+					color: 'red',
+				},
+			}),
+		).toEqual({
+			style: { boxSizing: 'border-box', marginTop: 0, paddingTop: 120, paddingBottom: 40, visibility: 'visible', overflowAnchor: 'none' },
+		});
+	});
+
+	it('returns nothing when there is no style, or none of its keys', () => {
+		expect(pickVirtualizerStyle({})).toEqual({});
+		expect(pickVirtualizerStyle({ style: { color: 'red' } })).toEqual({});
 	});
 });
 

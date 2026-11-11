@@ -9,6 +9,7 @@ const safeCalls = [
 	'ariaAndDataAttributes',
 	'customProperties',
 	'pickPositionStyle',
+	'pickVirtualizerStyle',
 	'pickWebAnimationHandlers',
 	'pickWebPressHandlers',
 	'pickWebRowHandlers',

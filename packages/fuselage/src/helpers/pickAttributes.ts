@@ -1,6 +1,7 @@
-import type { PositionStyle } from '../types/ElementAttributes';
+import type { PositionStyle, VirtualizerStyle } from '../types/ElementAttributes';
 import {
 	positionStyleKeys,
+	virtualizerStyleKeys,
 	webAnimationHandlerKeys,
 	webCaptureHandlerKeys,
 	webDropHandlerKeys,
@@ -42,6 +43,13 @@ export const pickWebAnimationHandlers = pick(webAnimationHandlerKeys);
 export const pickPositionStyle = ({ style }: { style?: object }): { style?: PositionStyle } => {
 	if (!style) return {};
 	const picked = pick(positionStyleKeys)(style);
+	return Object.keys(picked).length > 0 ? { style: picked } : {};
+};
+
+/** The `style` a virtualizer handed the list or the row, narrowed to `VirtualizerStyle`, to spread on the literal render element. */
+export const pickVirtualizerStyle = ({ style }: { style?: object }): { style?: VirtualizerStyle } => {
+	if (!style) return {};
+	const picked = pick(virtualizerStyleKeys)(style);
 	return Object.keys(picked).length > 0 ? { style: picked } : {};
 };
 

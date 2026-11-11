@@ -145,6 +145,28 @@ export const positionStyleKeys = ['position', 'top', 'left', 'bottom', 'zIndex',
 
 export type PositionStyle = Pick<CSSProperties, (typeof positionStyleKeys)[number]>;
 
+/** The `style` keys a virtualizer (react-virtuoso) gives the list it renders: the offsets that stand in for the rows it leaves out. */
+export const virtualizedListStyleKeys = ['boxSizing', 'marginTop', 'paddingTop', 'paddingBottom', 'visibility'] as const;
+
+/** The `style` key a virtualizer gives each row it renders. */
+export const virtualizedItemStyleKeys = ['overflowAnchor'] as const;
+
+export const virtualizerStyleKeys = [...virtualizedListStyleKeys, ...virtualizedItemStyleKeys] as const;
+
+export type VirtualizedListStyle = Pick<CSSProperties, (typeof virtualizedListStyleKeys)[number]>;
+export type VirtualizedItemStyle = Pick<CSSProperties, (typeof virtualizedItemStyleKeys)[number]>;
+export type VirtualizerStyle = VirtualizedListStyle & VirtualizedItemStyle;
+
+/** What the list a virtualizer renders accepts besides its `data-*`: the offsets the virtualizer computes. The one exception to a part taking no `style`, with Position's. */
+export type VirtualizedListAttributes = {
+	style?: VirtualizedListStyle;
+};
+
+/** What a row a virtualizer renders accepts besides its `data-*` (`data-index`, `data-known-size`, `data-item-index`). */
+export type VirtualizedItemAttributes = {
+	style?: VirtualizedItemStyle;
+};
+
 /** Where a placed part sits relative to its anchor, as `usePosition` resolves it. */
 export type Placement =
 	'top-start' | 'top-middle' | 'top-end' | 'bottom-start' | 'bottom-middle' | 'bottom-end' | 'top' | 'left' | 'bottom' | 'right';

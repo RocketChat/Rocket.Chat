@@ -429,6 +429,7 @@
 							"customProperties",
 							"pickPositionStyle",
 							"pickSvgTitle",
+							"pickVirtualizerStyle",
 							"pickWebAnimationHandlers",
 							"pickWebCaptureHandlers",
 							"pickWebDropHandlers",
