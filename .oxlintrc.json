@@ -428,6 +428,7 @@
 							"ariaAndDataAttributes",
 							"customProperties",
 							"pickPositionStyle",
+							"pickSvgTitle",
 							"pickWebAnimationHandlers",
 							"pickWebCaptureHandlers",
 							"pickWebDropHandlers",

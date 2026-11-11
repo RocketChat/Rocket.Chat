@@ -198,3 +198,6 @@ export type DivCaptureHandlers = WebCaptureHandlers<HTMLDivElement>;
 export type SeparatorAttributes = PartAttributes<HTMLElement>;
 export type HrRef = Ref<HTMLHRElement>;
 export type DivRef = Ref<HTMLDivElement>;
+
+/** What a part that only shows something and renders an `svg` forwards. */
+export type SvgAttributes = PartAttributes<SVGSVGElement>;

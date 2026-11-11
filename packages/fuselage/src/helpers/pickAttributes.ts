@@ -36,3 +36,6 @@ export const pickPositionStyle = ({ style }: { style?: object }): { style?: Posi
 	const picked = pick(positionStyleKeys)(style);
 	return Object.keys(picked).length > 0 ? { style: picked } : {};
 };
+
+/** The `title` of a part that renders an `svg`, whose typings leave the attribute out, to spread on the literal render element. */
+export const pickSvgTitle = ({ title }: { title?: string }): { title?: string } => (title === undefined ? {} : { title });

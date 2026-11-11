@@ -1,5 +1,6 @@
 import {
 	pickPositionStyle,
+	pickSvgTitle,
 	pickWebAnimationHandlers,
 	pickWebCaptureHandlers,
 	pickWebDropHandlers,
@@ -48,5 +49,12 @@ describe('pickPositionStyle', () => {
 	it('returns nothing when there is no style, or none of its keys', () => {
 		expect(pickPositionStyle({})).toEqual({});
 		expect(pickPositionStyle({ style: { color: 'red' } })).toEqual({});
+	});
+});
+
+describe('pickSvgTitle', () => {
+	it('carries the title only when there is one', () => {
+		expect(pickSvgTitle({ title: 'Online' })).toEqual({ title: 'Online' });
+		expect(pickSvgTitle({})).toEqual({});
 	});
 });

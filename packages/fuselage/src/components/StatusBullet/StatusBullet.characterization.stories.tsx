@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import { createRef } from 'react';
 import { expect } from 'storybook/test';
 
 import StatusBullet from './StatusBullet';
@@ -15,9 +16,19 @@ export default {
 
 type Story = StoryObj<typeof StatusBullet>;
 
+const ref = createRef<SVGSVGElement>();
+
 export const Forwarding: Story = {
 	render: () => (
-		<StatusBullet status='online' className='consumer-class' id='bullet-id' title='Online' data-qa='bullet-qa' data-anything='anything' />
+		<StatusBullet
+			ref={ref}
+			status='online'
+			className='consumer-class'
+			id='bullet-id'
+			title='Online'
+			data-qa='bullet-qa'
+			data-anything='anything'
+		/>
 	),
 	play: async ({ canvasElement }) => {
 		await expectForwards(canvasElement, 'svg', {
@@ -26,6 +37,7 @@ export const Forwarding: Story = {
 			'title': 'Online',
 			'data-qa': 'bullet-qa',
 			'data-anything': 'anything',
+			ref,
 		});
 	},
 };
