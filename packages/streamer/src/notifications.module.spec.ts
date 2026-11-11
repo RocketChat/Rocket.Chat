@@ -73,6 +73,86 @@ describe('NotificationsModule', () => {
 			invalidate(userId);
 		});
 
+		it('shares a room lookup per emission while checking each recipient separately', async () => {
+			const secondUserId = 'room-data-second-user';
+			const firstUser = { _id: userId, roles: [] };
+			const secondUser = { _id: secondUserId, roles: [] };
+			const publicRoom = { _id: 'shared-preview-room', t: 'c' };
+			const privateRoom = { ...publicRoom, t: 'p' };
+			const firstSend = jest.fn();
+			const secondSend = jest.fn();
+
+			const makePublication = (id: string, send: typeof firstSend) => ({
+				userId: id,
+				_session: { userId: id, socket: { send } },
+				_isDeactivated: () => false,
+				onStop: jest.fn(),
+				ready: jest.fn(),
+			});
+
+			invalidate(userId);
+			invalidate(secondUserId);
+
+			const findUser = jest.mocked(Users.findOneById);
+			findUser.mockReset();
+			findUser.mockImplementation(async (id) => (id === userId ? firstUser : secondUser) as any);
+
+			const findRoom = jest.mocked(Rooms.findOneById);
+			findRoom.mockReset();
+			findRoom.mockResolvedValue(publicRoom as any);
+
+			const canAccess = jest.mocked(Authorization.canAccessRoom);
+			canAccess.mockReset();
+			canAccess.mockResolvedValue(true);
+
+			const stream = notifications.streamRoomData as unknown as Streamer<'room-data'>;
+
+			try {
+				await stream._publish(makePublication(userId, firstSend) as any, publicRoom._id, false);
+				await stream._publish(makePublication(secondUserId, secondSend) as any, publicRoom._id, false);
+
+				expect(stream.subscriptions.size).toBe(2);
+
+				findRoom.mockClear();
+				canAccess.mockClear();
+				canAccess.mockImplementation(async (room, user) => room?.t === 'c' && user?._id === userId);
+
+				const delivery = jest.spyOn(stream, 'sendToManySubscriptions');
+
+				stream.emitWithoutBroadcast(publicRoom._id, publicRoom as any);
+				await delivery.mock.results[0].value;
+
+				expect(findRoom).toHaveBeenCalledTimes(1);
+				expect(findRoom).toHaveBeenCalledWith(publicRoom._id);
+				expect(canAccess).toHaveBeenCalledTimes(2);
+				expect(canAccess).toHaveBeenCalledWith(publicRoom, firstUser);
+				expect(canAccess).toHaveBeenCalledWith(publicRoom, secondUser);
+				expect(firstSend).toHaveBeenCalledTimes(1);
+				expect(secondSend).not.toHaveBeenCalled();
+
+				findRoom.mockClear();
+				canAccess.mockClear();
+				firstSend.mockClear();
+				secondSend.mockClear();
+				delivery.mockClear();
+				findRoom.mockResolvedValue(privateRoom as any);
+
+				// Reuse the old payload: authorization must use a fresh database lookup.
+				stream.emitWithoutBroadcast(publicRoom._id, publicRoom as any);
+				await delivery.mock.results[0].value;
+
+				expect(findRoom).toHaveBeenCalledTimes(1);
+				expect(canAccess).toHaveBeenCalledTimes(2);
+				expect(canAccess).toHaveBeenCalledWith(privateRoom, firstUser);
+				expect(canAccess).toHaveBeenCalledWith(privateRoom, secondUser);
+				expect(firstSend).not.toHaveBeenCalled();
+				expect(secondSend).not.toHaveBeenCalled();
+			} finally {
+				invalidate(userId);
+				invalidate(secondUserId);
+			}
+		});
+
 		it('logs room lookup errors and blocks delivery', async () => {
 			const user = { _id: userId, roles: [] };
 			const room = { _id: 'preview-room', t: 'c' };

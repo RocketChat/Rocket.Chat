@@ -8,6 +8,7 @@ import type {
 	IUserDataEvent,
 	PresenceSource,
 	PresenceStatusCode,
+	IRoom,
 } from '@rocket.chat/core-typings';
 import type { StreamerCallbackArgs, StreamKeys, StreamNames } from '@rocket.chat/ddp-client';
 import { Logger } from '@rocket.chat/logger';
@@ -407,14 +408,18 @@ export class NotificationsModule {
 			return user ? Authorization.hasPermission(user, 'view-l-room') : false;
 		});
 
-		async function canAccessRoomData(this: IPublication, rid: string): Promise<boolean> {
+		async function canAccessRoomData(
+			this: IPublication,
+			rid: string,
+			getRoom: () => Promise<IRoom | null> = () => Rooms.findOneById(rid),
+		): Promise<boolean> {
 			try {
 				const user = await getCachedUserForPublication(this);
 				if (!user) {
 					return false;
 				}
 
-				const room = await Rooms.findOneById(rid);
+				const room = await getRoom();
 				if (!room) {
 					return false;
 				}
@@ -431,8 +436,21 @@ export class NotificationsModule {
 		}
 
 		this.streamRoomData.allowWrite('none');
-		this.streamRoomData.allowRead(canAccessRoomData);
-		this.streamRoomData.allowEmit(canAccessRoomData);
+		this.streamRoomData.allowRead(async function (rid) {
+			return canAccessRoomData.call(this, rid);
+		});
+		this.streamRoomData.allowEmitWithContext((rid) => {
+			let roomPromise: Promise<IRoom | null> | undefined;
+
+			const getRoom = () => {
+				roomPromise ??= Rooms.findOneById(rid);
+				return roomPromise;
+			};
+
+			return async function () {
+				return canAccessRoomData.call(this, rid, getRoom);
+			};
+		});
 
 		this.streamRoles.allowWrite('none');
 		this.streamRoles.allowRead('logged');
