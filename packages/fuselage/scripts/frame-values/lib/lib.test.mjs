@@ -7,7 +7,7 @@ import { literal } from './literal.mts';
 import { markers } from './markers.mts';
 import { statusPalettes } from './statusPalettes.mts';
 import { textFrameDefaults } from './textFrameDefaults.mts';
-import { offScale } from './tokens.mts';
+import { offScale, zIndex, zIndexAbove } from './tokens.mts';
 
 test('markers name the section when there are several', () => {
 	assert.deepEqual(
@@ -99,4 +99,11 @@ test('an elevation level has a border unless it is no-border', () => {
 	assert.equal(Object.hasOwn(levels['1'], 'borderColor'), true);
 	assert.equal(Object.hasOwn(levels['2nb'], 'borderColor'), false);
 	assert.equal(levels['1nb'].boxShadow, levels['1'].boxShadow);
+});
+
+test('the drag layer sits above every overlay and its stacking offsets add to it', () => {
+	assert.equal(zIndex.drag, 9996);
+	assert.equal(zIndex.drag > zIndex.overlay, true);
+	assert.equal(zIndexAbove('drag', 0), 9996);
+	assert.equal(zIndexAbove('drag', 3), 9999);
 });

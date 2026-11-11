@@ -83,7 +83,7 @@ Every category is available as `dist/<category>.json`, `dist/<category>.d.json.t
 | `breakpoints`  | `xs`, `sm`, `md`, `lg`, `xl`, `xxl` and `xxxl`, each with `minViewportWidth`, `columns` and `gutterWidth`.                                                |
 | `border`       | `radius` (`none`, `default`, `small`, `medium`, `large`, `extra-large`, `full`) and `width` (`none`, `default`, `medium`, `large`, `extra-large`).        |
 | `spacing`      | The spacing scale for margins, paddings and gaps: `x4`, `x8`, `x12`, `x16`, `x20`, `x24`, `x32` and `x40`. The SCSS map holds them in `px`.               |
-| `zIndex`       | Stacking layers: `raised` (1), `overlap` (2), `sticky` (10) and `overlay` (100).                                                                          |
+| `zIndex`       | Stacking layers: `raised` (1), `overlap` (2), `sticky` (10), `overlay` (100) and `drag` (9996, above every overlay, for the layers a drag creates). |
 
 `surface`, `font`, `stroke`, `status`, `statusBullet`, `badge`, `button` and `shadow` are split by theme: `light`, `dark` and `high-contrast`.
 
