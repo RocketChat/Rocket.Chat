@@ -5,7 +5,10 @@ import { spacingScale } from '../../../src/styleTokens.ts';
 const require = createRequire(import.meta.url);
 
 export const buttonTokens: { light: Record<string, string> } = require('@rocket.chat/fuselage-tokens/dist/button.json');
-export const zIndex: Record<'raised' | 'overlap' | 'sticky' | 'overlay' | 'drag', number> = require('@rocket.chat/fuselage-tokens/dist/zIndex.json');
+export const zIndex: Record<
+	'raised' | 'overlap' | 'sticky' | 'overlay' | 'drag',
+	number
+> = require('@rocket.chat/fuselage-tokens/dist/zIndex.json');
 
 /** A layer `offset` above a z-index token, for the layers that stack in a fixed order above it. */
 export const zIndexAbove = (token: keyof typeof zIndex, offset: number) => zIndex[token] + offset;
