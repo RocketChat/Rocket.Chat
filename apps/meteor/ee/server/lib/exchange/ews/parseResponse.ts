@@ -139,7 +139,8 @@ const assertNoResponseCodeErrors = (doc: Document): void => {
 			continue;
 		}
 
-		throw toExchangeError(code, textOf(firstByTag(doc, MESSAGES_NS, 'MessageText')), doc);
+		const message = node.parentNode as Element;
+		throw toExchangeError(code, textOf(firstByTag(message, MESSAGES_NS, 'MessageText')), message);
 	}
 };
 

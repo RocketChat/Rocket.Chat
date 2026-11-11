@@ -1,4 +1,4 @@
-import { parseEwsDateTime } from './parseResponse';
+import { MESSAGES_NS, TYPES_NS, parseEwsDateTime, parseEwsResponse } from './parseResponse';
 
 describe('parseEwsDateTime', () => {
 	it('parses the EWS UTC format', () => {
@@ -27,5 +27,47 @@ describe('parseEwsDateTime', () => {
 		['nothing at all', undefined],
 	])('returns undefined rather than epoch for %s', (_case, value) => {
 		expect(parseEwsDateTime(value)).toBeUndefined();
+	});
+});
+
+describe('parseEwsResponse on a batched response', () => {
+	const batch = (...messages: string[]) =>
+		`<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" xmlns:m="${MESSAGES_NS}" xmlns:t="${TYPES_NS}">` +
+		`<s:Body><m:GetItemResponse><m:ResponseMessages>${messages.join('')}</m:ResponseMessages></m:GetItemResponse></s:Body>` +
+		'</s:Envelope>';
+
+	const itemNotFound =
+		'<m:GetItemResponseMessage ResponseClass="Error"><m:MessageText>The specified object was not found in the store.</m:MessageText>' +
+		'<m:ResponseCode>ErrorItemNotFound</m:ResponseCode></m:GetItemResponseMessage>';
+
+	const serverBusy = (backOffMs?: number) => {
+		const messageXml =
+			backOffMs === undefined ? '' : `<m:MessageXml><t:Value Name="BackOffMilliseconds">${backOffMs}</t:Value></m:MessageXml>`;
+
+		return (
+			'<m:GetItemResponseMessage ResponseClass="Error"><m:MessageText>The server cannot service this request right now.</m:MessageText>' +
+			`<m:ResponseCode>ErrorServerBusy</m:ResponseCode>${messageXml}</m:GetItemResponseMessage>`
+		);
+	};
+
+	const errorFrom = (xml: string): unknown => {
+		try {
+			parseEwsResponse(xml);
+		} catch (err) {
+			return err;
+		}
+		throw new Error('expected the response to be rejected');
+	};
+
+	it('reports the message that failed, not the first one in the batch', () => {
+		expect(errorFrom(batch(itemNotFound, serverBusy(2000)))).toMatchObject({
+			code: 'rate-limited',
+			detail: 'The server cannot service this request right now.',
+			retryAfterMs: 2000,
+		});
+	});
+
+	it('takes the back-off only from the message that failed', () => {
+		expect(errorFrom(batch(serverBusy(), serverBusy(300000)))).toMatchObject({ code: 'rate-limited', retryAfterMs: undefined });
 	});
 });
