@@ -193,9 +193,13 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 	}
 
 	&__emoji {
-		display: inline-block;
+		display: inline-flex;
+		overflow: visible;
+		justify-content: center;
 
 		margin-inline: lengths.margin(2);
+
+		vertical-align: top;
 
 		background-size: contain;
 
