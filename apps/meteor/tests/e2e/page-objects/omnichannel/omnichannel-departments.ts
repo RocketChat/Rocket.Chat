@@ -33,7 +33,7 @@ export class OmnichannelDepartments extends OmnichannelAdmin {
 
 	override async search(text: string) {
 		await super.search(text);
-		await expect(this.table.findRowsNotNamed(text)).toHaveCount(0);
+		await expect(this.table.findRowsWithoutText(text)).toHaveCount(0);
 	}
 
 	async createNew() {

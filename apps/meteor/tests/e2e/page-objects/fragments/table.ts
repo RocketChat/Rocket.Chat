@@ -19,13 +19,13 @@ export class Table {
 		});
 	}
 
-	findRowsNotNamed(name: string): Locator {
+	findRowsWithoutText(text: string): Locator {
 		return this.root
 			.getByRole('rowgroup')
 			.last()
 			.getByRole('row')
 			.filter({
-				hasNot: this.root.page().getByText(name, { exact: true }),
+				hasNot: this.root.page().getByText(text),
 			});
 	}
 }
