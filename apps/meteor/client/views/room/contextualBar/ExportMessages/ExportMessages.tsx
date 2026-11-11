@@ -191,7 +191,7 @@ const ExportMessages = () => {
 				<ContextualbarTitle id={`${formId}-title`}>{t('Export_Messages')}</ContextualbarTitle>
 				<ContextualbarClose onClick={closeTab} />
 			</ContextualbarHeader>
-			<ContextualbarScrollableContent paddingBlockEnd='x32'>
+			<ContextualbarScrollableContent>
 				<form ref={formFocus} tabIndex={-1} aria-labelledby={`${formId}-title`} id={formId} onSubmit={handleSubmit(handleExport)}>
 					<FieldGroup>
 						<Field>

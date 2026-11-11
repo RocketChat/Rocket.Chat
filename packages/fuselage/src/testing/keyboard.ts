@@ -3,8 +3,10 @@ import { expect } from 'storybook/test';
 
 type Spy = (...args: any[]) => unknown;
 
+/** Returns the call count of a mock spy handler. */
 const callCount = (handler: Spy) => (handler as any).mock.calls.length as number;
 
+/** Focuses an element and verifies it has focus. */
 const focus = async (element: HTMLElement) => {
 	element.focus();
 	await expect(element).toHaveFocus();
@@ -33,6 +35,7 @@ export const expectTabOrder = async (elements: HTMLElement[]) => {
 
 const DEFAULT_ROW = '[data-index], [role="listitem"], li, .rcx-item, .rcx-item-group-header';
 
+/** Finds the closest ancestor row element within the given list. */
 const rowOf = (element: Element | null, list: HTMLElement, rowSelector: string) => {
 	const row = element?.closest(rowSelector);
 	return row && list.contains(row) ? row : null;
@@ -52,7 +55,9 @@ export const expectCompositeList = async (list: HTMLElement, firstTarget: HTMLEl
 	await user.keyboard('{ArrowDown}');
 	const second = document.activeElement as HTMLElement;
 	await expect(list).toContainElement(second);
-	await expect(rowOf(second, list, rowSelector)).not.toBe(row);
+	const secondRow = rowOf(second, list, rowSelector);
+	await expect(secondRow).not.toBeNull();
+	await expect(secondRow).not.toBe(row);
 
 	await user.keyboard('{ArrowUp}');
 	await expect(firstTarget).toHaveFocus();
