@@ -36,42 +36,51 @@ type PersistedUpload = {
 	};
 };
 
+type PersistedUploadsChange = { removed: readonly PersistedUpload['id'][] };
+
 // Every store of a room or thread hears about writes to its key, including writes from a store whose composer has
 // already been left.
-const persistedUploadsEvents = new Emitter<Record<string, void>>();
+const persistedUploadsEvents = new Emitter<Record<string, PersistedUploadsChange>>();
 
 const readPersistedUploads = (storageKey: string): PersistedUpload[] => {
+	let persisted: PersistedUpload[];
 	try {
 		const stored = localStorage.getItem(storageKey);
-		if (!stored) {
-			return [];
-		}
-
-		const persisted: unknown = JSON.parse(stored);
+		persisted = stored ? JSON.parse(stored) : [];
 		if (!Array.isArray(persisted)) {
 			throw new Error('Invalid persisted uploads');
 		}
-
-		const now = Date.now();
-		const live = (persisted as PersistedUpload[]).filter((entry) => typeof entry.expiresAt === 'number' && entry.expiresAt > now);
-		if (live.length !== persisted.length) {
-			writePersistedUploads(storageKey, live);
-		}
-
-		return live;
 	} catch {
-		localStorage.removeItem(storageKey);
+		writePersistedUploads(storageKey, []);
 		return [];
 	}
+
+	const now = Date.now();
+	const live = persisted.filter((entry) => typeof entry?.expiresAt === 'number' && entry.expiresAt > now);
+	if (live.length !== persisted.length) {
+		writePersistedUploads(
+			storageKey,
+			live,
+			persisted.filter((entry) => !live.includes(entry)).map((entry) => entry?.id),
+		);
+	}
+
+	return live;
 };
 
-const writePersistedUploads = (storageKey: string, entries: PersistedUpload[]): void => {
-	if (entries.length === 0) {
-		localStorage.removeItem(storageKey);
-	} else {
-		localStorage.setItem(storageKey, JSON.stringify(entries));
+// Keeping uploads is best effort: when storage is full or unavailable, they stay in the composer but won't come back
+// on the next visit.
+const writePersistedUploads = (storageKey: string, entries: PersistedUpload[], removed: readonly PersistedUpload['id'][] = []): void => {
+	try {
+		if (entries.length === 0) {
+			localStorage.removeItem(storageKey);
+		} else {
+			localStorage.setItem(storageKey, JSON.stringify(entries));
+		}
+	} catch {
+		return;
 	}
-	persistedUploadsEvents.emit(storageKey);
+	persistedUploadsEvents.emit(storageKey, { removed });
 };
 
 // Stands in for a file whose bytes are already on the server: it reports the size the user picked, so the chip and the
@@ -182,14 +191,16 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 
 	private stopListeningToStorage?: () => void;
 
+	private expiryTimer?: ReturnType<typeof setTimeout>;
+
 	attach = (): void => {
 		this.attachments++;
 		if (this.attachments > 1) {
 			return;
 		}
 
-		this.stopListeningToStorage = persistedUploadsEvents.on(this.storageKey, this.restoreFromStorage);
-		this.restoreFromStorage();
+		this.stopListeningToStorage = persistedUploadsEvents.on(this.storageKey, this.syncWithStorage);
+		this.syncWithStorage();
 	};
 
 	detach = (): void => {
@@ -200,18 +211,36 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 
 		this.stopListeningToStorage?.();
 		this.stopListeningToStorage = undefined;
+		clearTimeout(this.expiryTimer);
+		this.expiryTimer = undefined;
 		this.set([]);
 		UserAction.stop(this.rid, USER_ACTIVITIES.USER_UPLOADING, { tmid: this.tmid });
 	};
 
-	private restoreFromStorage = (): void => {
-		const missing = readPersistedUploads(this.storageKey).filter((entry) => !this.uploads.some((upload) => upload.id === entry.id));
-		if (missing.length === 0) {
+	// An open composer shows what is kept for its room or thread: uploads kept elsewhere appear, and uploads discarded
+	// elsewhere or expired disappear.
+	private syncWithStorage = ({ removed }: PersistedUploadsChange = { removed: [] }): void => {
+		const entries = readPersistedUploads(this.storageKey);
+		const kept = this.uploads.filter((upload) => !removed.includes(upload.id));
+		const missing = entries.filter((entry) => !kept.some((upload) => upload.id === entry.id));
+
+		if (kept.length !== this.uploads.length || missing.length > 0) {
+			this.set([...kept, ...missing.map(fromPersistedUpload)]);
+		}
+
+		this.scheduleExpiry(entries);
+	};
+
+	private scheduleExpiry(entries: PersistedUpload[]): void {
+		clearTimeout(this.expiryTimer);
+		this.expiryTimer = undefined;
+		if (entries.length === 0) {
 			return;
 		}
 
-		this.set([...this.uploads, ...missing.map(fromPersistedUpload)]);
-	};
+		const nextExpiry = Math.min(...entries.map((entry) => entry.expiresAt));
+		this.expiryTimer = setTimeout(() => readPersistedUploads(this.storageKey), Math.max(0, nextExpiry - Date.now()));
+	}
 
 	private persistUpload(upload: Upload): void {
 		const entries = readPersistedUploads(this.storageKey);
@@ -233,6 +262,7 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 		writePersistedUploads(
 			this.storageKey,
 			entries.filter((entry) => entry.id !== id),
+			[id],
 		);
 	}
 
@@ -339,7 +369,11 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 	clear = () => {
 		this.uploads.filter((upload) => !upload.url && !upload.error).forEach((upload) => this.cancel(upload.id));
 		this.set([]);
-		writePersistedUploads(this.storageKey, []);
+		writePersistedUploads(
+			this.storageKey,
+			[],
+			readPersistedUploads(this.storageKey).map((entry) => entry.id),
+		);
 		UserAction.stop(this.rid, USER_ACTIVITIES.USER_UPLOADING, { tmid: this.tmid });
 	};
 

@@ -58,9 +58,17 @@ const uploadFile = async (store: ReturnType<typeof createUploadsAPI>, fileId: st
 
 const readStorage = () => JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '[]');
 
+let attachedStores: ReturnType<typeof createUploadsAPI>[];
+
+const attach = (store: ReturnType<typeof createUploadsAPI>) => {
+	store.attach();
+	attachedStores.push(store);
+};
+
 beforeEach(() => {
 	localStorage.clear();
 	xhrs = [];
+	attachedStores = [];
 	jest.mocked(sdk.rest.upload).mockImplementation((_endpoint, _params, events) => {
 		const xhr: FakeXhr = {
 			readyState: 1,
@@ -76,18 +84,20 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+	attachedStores.forEach((store) => store.detach());
 	jest.useRealTimers();
+	jest.restoreAllMocks();
 });
 
 describe('UploadsStore persistence', () => {
 	it('brings a finished upload back in the next composer for the same room', async () => {
 		const first = createUploadsAPI({ rid: 'room' });
-		first.attach();
+		attach(first);
 		await uploadFile(first, 'file-1');
 		first.detach();
 
 		const second = createUploadsAPI({ rid: 'room' });
-		second.attach();
+		attach(second);
 
 		expect(second.get()).toHaveLength(1);
 		expect(second.get()[0]).toMatchObject({ id: 'file-1', url: '/file-upload/file-1/file', percentage: 100, restored: true });
@@ -96,18 +106,18 @@ describe('UploadsStore persistence', () => {
 
 	it('keeps uploads of a thread apart from the room', async () => {
 		const thread = createUploadsAPI({ rid: 'room', tmid: 'thread' });
-		thread.attach();
+		attach(thread);
 		await uploadFile(thread, 'file-1');
 
 		const room = createUploadsAPI({ rid: 'room' });
-		room.attach();
+		attach(room);
 
 		expect(room.get()).toHaveLength(0);
 	});
 
 	it('does not keep uploads that are still in flight or failed', () => {
 		const store = createUploadsAPI({ rid: 'room' });
-		store.attach();
+		attach(store);
 		void store.send(createFile());
 
 		expect(localStorage.getItem(STORAGE_KEY)).toBeNull();
@@ -116,20 +126,20 @@ describe('UploadsStore persistence', () => {
 
 	it('shows the uploads again when the same store is attached after being detached', async () => {
 		const store = createUploadsAPI({ rid: 'room' });
-		store.attach();
+		attach(store);
 		await uploadFile(store, 'file-1');
 
 		store.detach();
 		expect(store.get()).toHaveLength(0);
 
-		store.attach();
+		attach(store);
 		expect(store.get().map(({ id }) => id)).toEqual(['file-1']);
 	});
 
 	it('only drops the uploads when the last of its consumers detaches', async () => {
 		const store = createUploadsAPI({ rid: 'room' });
-		store.attach();
-		store.attach();
+		attach(store);
+		attach(store);
 		await uploadFile(store, 'file-1');
 
 		store.detach();
@@ -138,21 +148,21 @@ describe('UploadsStore persistence', () => {
 
 	it('discards kept uploads on clear, so they do not come back on the next visit', async () => {
 		const first = createUploadsAPI({ rid: 'room' });
-		first.attach();
+		attach(first);
 		await uploadFile(first, 'file-1');
 
 		first.clear();
 		first.detach();
 
 		const second = createUploadsAPI({ rid: 'room' });
-		second.attach();
+		attach(second);
 		expect(second.get()).toHaveLength(0);
 		expect(localStorage.getItem(STORAGE_KEY)).toBeNull();
 	});
 
 	it('cancels the uploads still in flight on clear', () => {
 		const store = createUploadsAPI({ rid: 'room' });
-		store.attach();
+		attach(store);
 		void store.send(createFile());
 
 		store.clear();
@@ -162,7 +172,7 @@ describe('UploadsStore persistence', () => {
 
 	it('forgets an upload once it is removed', async () => {
 		const store = createUploadsAPI({ rid: 'room' });
-		store.attach();
+		attach(store);
 		await uploadFile(store, 'file-1');
 		await uploadFile(store, 'file-2');
 
@@ -173,14 +183,14 @@ describe('UploadsStore persistence', () => {
 
 	it('keeps an upload that finishes after its composer was left, without losing the ones already kept', async () => {
 		const first = createUploadsAPI({ rid: 'room' });
-		first.attach();
+		attach(first);
 		await uploadFile(first, 'file-1');
 
 		const inFlight = first.send(createFile('second.png'));
 		first.detach();
 
 		const second = createUploadsAPI({ rid: 'room' });
-		second.attach();
+		attach(second);
 		expect(second.get().map(({ id }) => id)).toEqual(['file-1']);
 
 		completeUpload(xhrs[xhrs.length - 1], 'file-2');
@@ -194,45 +204,102 @@ describe('UploadsStore persistence', () => {
 		jest.useFakeTimers({ now: new Date('2026-11-06T10:00:00Z') });
 
 		const first = createUploadsAPI({ rid: 'room' });
-		first.attach();
+		attach(first);
 		await uploadFile(first, 'file-1');
 		first.detach();
 
 		jest.setSystemTime(new Date(Date.now() + DAY));
 
 		const second = createUploadsAPI({ rid: 'room' });
-		second.attach();
+		attach(second);
 
 		expect(second.get()).toHaveLength(0);
 		expect(localStorage.getItem(STORAGE_KEY)).toBeNull();
 	});
 
+	it('drops an upload from an open composer once it expires', async () => {
+		jest.useFakeTimers({ now: new Date('2026-11-06T10:00:00Z') });
+
+		const store = createUploadsAPI({ rid: 'room' });
+		attach(store);
+		await uploadFile(store, 'file-1');
+
+		jest.advanceTimersByTime(DAY);
+
+		expect(store.get()).toHaveLength(0);
+		expect(localStorage.getItem(STORAGE_KEY)).toBeNull();
+	});
+
+	it('drops an upload from an open composer once another composer of the room removes it', async () => {
+		const first = createUploadsAPI({ rid: 'room' });
+		attach(first);
+		await uploadFile(first, 'file-1');
+		await uploadFile(first, 'file-2');
+
+		const second = createUploadsAPI({ rid: 'room' });
+		attach(second);
+		second.removeUpload('file-1');
+
+		expect(first.get().map(({ id }) => id)).toEqual(['file-2']);
+
+		second.clear();
+
+		expect(first.get()).toHaveLength(0);
+	});
+
+	it('keeps an upload in the composer when it cannot be stored', async () => {
+		jest.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+			throw new DOMException('Quota exceeded', 'QuotaExceededError');
+		});
+
+		const store = createUploadsAPI({ rid: 'room' });
+		attach(store);
+		await uploadFile(store, 'file-1');
+
+		expect(store.get()).toEqual([expect.objectContaining({ id: 'file-1', url: '/file-upload/file-1/file', percentage: 100 })]);
+		expect(store.get()[0].error).toBeUndefined();
+	});
+
+	it('starts empty when storage is unavailable', () => {
+		jest.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+			throw new DOMException('Access denied', 'SecurityError');
+		});
+		jest.spyOn(Storage.prototype, 'removeItem').mockImplementation(() => {
+			throw new DOMException('Access denied', 'SecurityError');
+		});
+
+		const store = createUploadsAPI({ rid: 'room' });
+
+		expect(() => attach(store)).not.toThrow();
+		expect(store.get()).toHaveLength(0);
+	});
+
 	it('keeps the alt text', async () => {
 		const first = createUploadsAPI({ rid: 'room' });
-		first.attach();
+		attach(first);
 		await uploadFile(first, 'file-1');
 		first.editUploadAltText('file-1', 'A cat');
 		first.detach();
 
 		const second = createUploadsAPI({ rid: 'room' });
-		second.attach();
+		attach(second);
 
 		expect(second.get()[0].altText).toBe('A cat');
 	});
 
 	it('keeps the new name and the original size when a restored upload is renamed', async () => {
 		const first = createUploadsAPI({ rid: 'room' });
-		first.attach();
+		attach(first);
 		await uploadFile(first, 'file-1');
 		first.detach();
 
 		const second = createUploadsAPI({ rid: 'room' });
-		second.attach();
+		attach(second);
 		second.editUploadFileName('file-1', 'renamed.png');
 		second.detach();
 
 		const third = createUploadsAPI({ rid: 'room' });
-		third.attach();
+		attach(third);
 
 		expect(third.get()[0].file).toMatchObject({ name: 'renamed.png', size: 6 });
 	});
@@ -247,14 +314,14 @@ describe('UploadsStore persistence', () => {
 		};
 
 		const first = createUploadsAPI({ rid: 'room' });
-		first.attach();
+		attach(first);
 		const sending = first.send(encrypted.encryptedFile.file, encrypted);
 		completeUpload(xhrs[0], 'file-1');
 		await sending;
 		first.detach();
 
 		const second = createUploadsAPI({ rid: 'room' });
-		second.attach();
+		attach(second);
 		const [restored] = second.get();
 
 		expect(isEncryptedUpload(restored)).toBe(true);
@@ -269,7 +336,7 @@ describe('UploadsStore persistence', () => {
 		localStorage.setItem(STORAGE_KEY, '{not json');
 
 		const store = createUploadsAPI({ rid: 'room' });
-		store.attach();
+		attach(store);
 
 		expect(store.get()).toHaveLength(0);
 		expect(localStorage.getItem(STORAGE_KEY)).toBeNull();
@@ -285,7 +352,7 @@ describe('UploadsStore unload warning', () => {
 
 	it('asks before leaving the page only while an upload is in flight', async () => {
 		const store = createUploadsAPI({ rid: 'room' });
-		store.attach();
+		attach(store);
 		expect(unloadIsBlocked()).toBe(false);
 
 		const sending = store.send(createFile());
@@ -298,7 +365,7 @@ describe('UploadsStore unload warning', () => {
 
 	it('stops asking once the upload is cancelled', async () => {
 		const store = createUploadsAPI({ rid: 'room' });
-		store.attach();
+		attach(store);
 		const sending = store.send(createFile());
 
 		store.clear();
@@ -311,7 +378,7 @@ describe('UploadsStore unload warning', () => {
 		window.RocketChatDesktop = {} as typeof window.RocketChatDesktop;
 		try {
 			const store = createUploadsAPI({ rid: 'room' });
-			store.attach();
+			attach(store);
 			void store.send(createFile());
 
 			expect(unloadIsBlocked()).toBe(false);
