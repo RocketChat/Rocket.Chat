@@ -1,4 +1,4 @@
-import { MeteorError, Omnichannel } from '@rocket.chat/core-services';
+import { ClientSafeError, Omnichannel } from '@rocket.chat/core-services';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import type { IRoom, IMessage } from '@rocket.chat/core-typings';
 
@@ -18,7 +18,7 @@ export class BeforeSaveCheckMAC {
 
 		const canSendMessage = await Omnichannel.isWithinMACLimit(room);
 		if (!canSendMessage) {
-			throw new MeteorError('error-mac-limit-reached');
+			throw new ClientSafeError('error-mac-limit-reached');
 		}
 	}
 }

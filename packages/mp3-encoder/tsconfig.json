@@ -1,6 +1,8 @@
 {
 	"extends": "@rocket.chat/tsconfig/client.json",
 	"compilerOptions": {
+		"module": "nodenext",
+		"moduleResolution": "nodenext",
 		"rootDir": "./src",
 		"target": "es2024",
 		"lib": ["WebWorker"],
@@ -10,10 +12,5 @@
 		"noFallthroughCasesInSwitch": false
 	},
 	"include": ["src/**/*"],
-	"typedocOptions": {
-		"entryPoints": ["src/index.ts"],
-		"out": "../../static/mp3-encoder",
-		"skipErrorChecking": true
-	},
 	"exclude": ["./dist", "./jest.config.ts"]
 }

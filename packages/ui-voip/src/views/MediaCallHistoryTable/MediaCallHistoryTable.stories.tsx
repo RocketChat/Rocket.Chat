@@ -14,6 +14,7 @@ const mockedContexts = mockAppRoot()
 		Ended: 'Ended',
 		Not_answered: 'Not answered',
 		Failed: 'Failed',
+		Prevented: 'Prevented',
 		Transferred: 'Transferred',
 		Contact: 'Contact',
 		Type: 'Type',
@@ -29,18 +30,9 @@ export default {
 	decorators: [mockedContexts],
 } satisfies Meta<typeof MediaCallHistoryTable>;
 
-const getStatus = (index: number) => {
-	if (index % 4 === 0) {
-		return 'ended';
-	}
-	if (index % 4 === 1) {
-		return 'not-answered';
-	}
-	if (index % 4 === 2) {
-		return 'failed';
-	}
-	return 'transferred';
-};
+// Each row cycles to the next status, so the table shows every variant in order.
+const STATUSES = ['ended', 'not-answered', 'failed', 'prevented', 'transferred'] as const;
+const getStatus = (index: number) => STATUSES[index % STATUSES.length];
 
 const getDate = (index: number) => {
 	const date = new Date(2025, 5, 1, 12, 0, 0);
@@ -78,18 +70,16 @@ const getContact = (index: number): CallHistoryContact => {
 	};
 };
 
-const results = Array.from({ length: 100 }).map(
-	(_, index): CallHistoryTableRowProps<CallHistoryInternalContact> => ({
-		_id: `call_${index}`,
-		contact: getContact(index) as CallHistoryInternalContact,
-		type: index % 2 ? 'outbound' : 'inbound',
-		status: getStatus(index),
-		duration: index % 2 ? 120 : 0,
-		timestamp: getDate(index).toISOString(),
-		onClick: action(`onClick call_${index}`),
-		menu: <GenericMenu title='Menu' sections={[]} />,
-	}),
-);
+const results = Array.from({ length: 100 }).map((_, index): CallHistoryTableRowProps<CallHistoryInternalContact> => ({
+	_id: `call_${index}`,
+	contact: getContact(index) as CallHistoryInternalContact,
+	type: index % 2 ? 'outbound' : 'inbound',
+	status: getStatus(index),
+	duration: index % 2 ? 120 : 0,
+	timestamp: getDate(index).toISOString(),
+	onClick: action(`onClick call_${index}`),
+	menu: <GenericMenu title='Menu' sections={[]} />,
+}));
 
 export const MediaCallHistoryTableStory: StoryObj<typeof MediaCallHistoryTable> = {
 	render: () => {

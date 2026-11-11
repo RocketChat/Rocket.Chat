@@ -12,10 +12,7 @@ export const getOAuthServices = (settings: ICachedSettings) => {
 				return;
 			}
 
-			let serviceName = key.replace('Accounts_OAuth_', '');
-			if (serviceName === 'Meteor') {
-				serviceName = 'meteor-developer';
-			}
+			const serviceName = key.replace('Accounts_OAuth_', '');
 
 			if (/Accounts_OAuth_Custom-/.test(key)) {
 				return;

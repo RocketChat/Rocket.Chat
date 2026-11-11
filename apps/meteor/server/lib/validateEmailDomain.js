@@ -1,8 +1,8 @@
 import dns from 'node:dns';
 import util from 'node:util';
 
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { validateEmail } from '@rocket.chat/tools';
-import { Meteor } from 'meteor/meteor';
 
 import { emailDomainDefaultBlackList } from './defaultBlockedDomainsList';
 import { settings } from '../settings';
@@ -37,7 +37,7 @@ settings.watch('Accounts_AllowedDomainsList', (value) => {
 
 export const validateEmailDomain = async function (email) {
 	if (!validateEmail(email)) {
-		throw new Meteor.Error('error-invalid-email', `Invalid email ${email}`, {
+		throw new ClientSafeError('error-invalid-email', `Invalid email ${email}`, {
 			function: 'RocketChat.validateEmailDomain',
 			email,
 		});
@@ -46,7 +46,7 @@ export const validateEmailDomain = async function (email) {
 	const emailDomain = email.substr(email.lastIndexOf('@') + 1);
 
 	if (emailDomainWhiteList.length && !emailDomainWhiteList.includes(emailDomain)) {
-		throw new Meteor.Error('error-invalid-domain', 'The email domain is not in whitelist', {
+		throw new ClientSafeError('error-invalid-domain', 'The email domain is not in whitelist', {
 			function: 'RocketChat.validateEmailDomain',
 		});
 	}
@@ -55,7 +55,7 @@ export const validateEmailDomain = async function (email) {
 		(emailDomainBlackList.indexOf(emailDomain) !== -1 ||
 			(settings.get('Accounts_UseDefaultBlockedDomainsList') && emailDomainDefaultBlackList.indexOf(emailDomain) !== -1))
 	) {
-		throw new Meteor.Error('error-email-domain-blacklisted', 'The email domain is blacklisted', {
+		throw new ClientSafeError('error-email-domain-blacklisted', 'The email domain is blacklisted', {
 			function: 'RocketChat.validateEmailDomain',
 		});
 	}
@@ -64,7 +64,7 @@ export const validateEmailDomain = async function (email) {
 		try {
 			await dnsResolveMx(emailDomain);
 		} catch (e) {
-			throw new Meteor.Error('error-invalid-domain', 'Invalid domain', {
+			throw new ClientSafeError('error-invalid-domain', 'Invalid domain', {
 				function: 'RocketChat.validateEmailDomain',
 			});
 		}

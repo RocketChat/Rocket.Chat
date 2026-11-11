@@ -6,7 +6,7 @@ import type { ComponentProps } from 'react';
 import { useMemo, useState, useEffect } from 'react';
 
 import HistoryContent from './HistoryContent';
-import { sdk } from '../../../../../../app/utils/client/lib/SDKClient';
+import { sdk } from '../../../../../lib/SDKClient';
 
 const OutgoingWebhookHistoryPage = (props: ComponentProps<typeof Page>) => {
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -107,7 +107,7 @@ const OutgoingWebhookHistoryPage = (props: ComponentProps<typeof Page>) => {
 				onClickBack={() => router.navigate(`/admin/integrations/edit/outgoing/${id}`)}
 			>
 				<ButtonGroup>
-					<Button icon='trash' danger onClick={handleClearHistory} disabled={total === 0}>
+					<Button icon='trash' variant='danger' onClick={handleClearHistory} disabled={total === 0}>
 						{t('clear_history')}
 					</Button>
 				</ButtonGroup>

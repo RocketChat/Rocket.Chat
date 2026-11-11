@@ -1,8 +1,8 @@
 import { useOverlayScrollbars } from 'overlayscrollbars-react';
 import type { HTMLAttributes, ReactNode } from 'react';
-import { useEffect, memo, forwardRef, useRef } from 'react';
+import { useEffect, memo, forwardRef, useRef, useState } from 'react';
 
-import BaseScrollbars from './BaseScrollbars';
+import BaseScrollbars, { getScrollbarsOptions } from './BaseScrollbars';
 
 export type CustomScrollbarsProps = {
 	children: ReactNode;
@@ -10,8 +10,10 @@ export type CustomScrollbarsProps = {
 
 const CustomVirtuaScrollbars = forwardRef<HTMLElement, CustomScrollbarsProps>(function CustomScrollbars({ ...props }, ref) {
 	const rootRef = useRef<HTMLElement | null>(null);
+	const [viewport, setViewport] = useState<HTMLElement | null>(null);
 
 	const [initialize] = useOverlayScrollbars({
+		options: getScrollbarsOptions(),
 		defer: true,
 		events: {
 			initialized(osInstance) {
@@ -20,11 +22,7 @@ const CustomVirtuaScrollbars = forwardRef<HTMLElement, CustomScrollbarsProps>(fu
 				viewport.style.overflowX = `var(--os-viewport-overflow-x)`;
 				viewport.style.overflowY = `var(--os-viewport-overflow-y)`;
 
-				if (typeof ref === 'function') {
-					ref(viewport);
-				} else if (ref) {
-					ref.current = viewport;
-				}
+				setViewport(viewport);
 			},
 		},
 	});
@@ -41,6 +39,22 @@ const CustomVirtuaScrollbars = forwardRef<HTMLElement, CustomScrollbarsProps>(fu
 			});
 		}
 	}, [initialize]);
+
+	useEffect(() => {
+		if (!viewport || !ref) {
+			return;
+		}
+
+		if (typeof ref === 'function') {
+			const cleanup = ref(viewport);
+			return typeof cleanup === 'function' ? cleanup : () => ref(null);
+		}
+
+		ref.current = viewport;
+		return () => {
+			ref.current = null;
+		};
+	}, [ref, viewport]);
 
 	return <BaseScrollbars ref={rootRef} {...props} />;
 });

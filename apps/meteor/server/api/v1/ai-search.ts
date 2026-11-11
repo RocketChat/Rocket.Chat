@@ -1,5 +1,10 @@
-import { AI_SEARCH_PAGE_SIZE, MAX_INTELLIGENT_SEARCH_RESULTS, MAX_SEARCH_FILTER_VALUES } from '@rocket.chat/ai-search';
-import { AISearch } from '@rocket.chat/core-services';
+import {
+	AI_SEARCH_PAGE_SIZE,
+	isIntelligentSearchErrorCode,
+	MAX_INTELLIGENT_SEARCH_RESULTS,
+	MAX_SEARCH_FILTER_VALUES,
+} from '@rocket.chat/ai-search';
+import { AISearch, ClientSafeError } from '@rocket.chat/core-services';
 import { isBannedSubscription, type IRoom } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Subscriptions } from '@rocket.chat/models';
 import {
@@ -11,9 +16,8 @@ import {
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import type { AISearchResult, SearchAnswer } from '@rocket.chat/rest-typings';
-import { Meteor } from 'meteor/meteor';
 
-import { getSettingPermissionId } from '../../../app/authorization/lib';
+import { getSettingPermissionId } from '../../../lib/authorization';
 import { hasAllPermissionAsync, hasAtLeastOnePermissionAsync } from '../../lib/authorization/hasPermission';
 import { normalizeMessagesForUser } from '../../lib/utils/lib/normalizeMessagesForUser';
 import { API } from '../api';
@@ -132,6 +136,13 @@ const parseCommaList = (value: string | undefined): string[] => {
 };
 
 const parseQueryDate = (value: string | undefined): Date | undefined => (value ? new Date(value) : undefined);
+const parseSearchType = (value: string | undefined): 'semantic' | 'keyword' | 'hybrid' | undefined => {
+	if (value === 'semantic' || value === 'keyword' || value === 'hybrid') {
+		return value;
+	}
+
+	return undefined;
+};
 
 const getRoomMap = async (roomIds: string[]): Promise<Map<string, Pick<IRoom, '_id' | 't' | 'name' | 'fname'>>> => {
 	if (!roomIds.length) {
@@ -187,7 +198,7 @@ const getSearchAnswerMessagesForUser = async (userId: string, messages: SearchAn
 		scoreByMessageId.set(_id, clampScore(score));
 	}
 	if (!messageIds.length) {
-		throw new Meteor.Error('error-invalid-search-answer-sources');
+		throw new ClientSafeError('error-invalid-search-answer-sources');
 	}
 
 	const docs = await Messages.findVisibleByIds(messageIds, {
@@ -198,7 +209,7 @@ const getSearchAnswerMessagesForUser = async (userId: string, messages: SearchAn
 		docs.map((message) => message.rid),
 	);
 	if (docs.length !== messageIds.length || docs.some((message) => !subscribedRoomIds.has(message.rid))) {
-		throw new Meteor.Error('error-invalid-search-answer-sources');
+		throw new ClientSafeError('error-invalid-search-answer-sources');
 	}
 
 	const normalizedDocs = await normalizeMessagesForUser(docs, userId);
@@ -222,7 +233,7 @@ const getSearchAnswerMessagesForUser = async (userId: string, messages: SearchAn
 	}
 
 	if (!answerMessages.length) {
-		throw new Meteor.Error('error-invalid-search-answer-sources');
+		throw new ClientSafeError('error-invalid-search-answer-sources');
 	}
 
 	return answerMessages;
@@ -254,6 +265,7 @@ API.v1.get(
 		const fromUsernames = parseCommaList(this.queryParams.fromUsernames);
 		const startDate = parseQueryDate(this.queryParams.startDate);
 		const endDate = parseQueryDate(this.queryParams.endDate);
+		const searchType = parseSearchType(this.queryParams.searchType);
 		const aiSearchStatus = await AISearch.status().catch((error) => {
 			this.logger.warn({ msg: 'AI search status unavailable', err: error });
 
@@ -283,11 +295,13 @@ API.v1.get(
 						startDate: startDate?.toISOString(),
 						endDate: endDate?.toISOString(),
 					},
+					searchType,
 					limit: intelligentLimit,
 				});
 			} catch (error) {
 				this.logger.warn({ msg: 'AI search request failed', err: error });
-				intelligentResults = [];
+				const message = error instanceof Error ? error.message : '';
+				throw new ClientSafeError(isIntelligentSearchErrorCode(message) ? message : 'error-ai-search-request-failed');
 			}
 		}
 
@@ -357,7 +371,7 @@ API.v1.post(
 			!aiSearchStatus.intelligentSearchEnabled ||
 			!aiSearchStatus.answerGenerationConfigured
 		) {
-			throw new Meteor.Error('error-ai-not-enabled');
+			throw new ClientSafeError('error-ai-not-enabled');
 		}
 
 		const answerMessages = await getSearchAnswerMessagesForUser(this.userId, messages);
@@ -371,15 +385,15 @@ API.v1.post(
 		} catch (error) {
 			const message = error instanceof Error ? error.message : '';
 			if (message === 'error-ai-not-enabled') {
-				throw new Meteor.Error('error-ai-not-enabled');
+				throw new ClientSafeError('error-ai-not-enabled');
 			}
 			if (message === 'error-ai-provider-not-configured') {
-				throw new Meteor.Error('error-ai-provider-not-configured');
+				throw new ClientSafeError('error-ai-provider-not-configured');
 			}
 			if (message === 'error-ai-provider-empty-response') {
-				throw new Meteor.Error('error-ai-provider-empty-response');
+				throw new ClientSafeError('error-ai-provider-empty-response');
 			}
-			throw new Meteor.Error('error-ai-provider-request-failed');
+			throw new ClientSafeError('error-ai-provider-request-failed');
 		}
 	},
 );

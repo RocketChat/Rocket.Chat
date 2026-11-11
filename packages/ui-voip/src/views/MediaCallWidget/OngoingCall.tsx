@@ -1,9 +1,10 @@
-import { Box, ButtonGroup, Divider, Field, FieldRow, TextInput } from '@rocket.chat/fuselage';
+import { ButtonGroup } from '@rocket.chat/fuselage';
+import { ActionButton, ToggleButton } from '@rocket.chat/ui-media';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import Dialpad from './Dialpad';
 import {
-	ToggleButton,
 	PeerInfo,
 	Widget,
 	WidgetFooter,
@@ -13,20 +14,24 @@ import {
 	WidgetInfo,
 	Timer,
 	DevicePicker,
-	ActionButton,
 	useInfoSlots,
-	Keypad,
+	useDraggableWidget,
+	getPeerDisplayName,
 } from '../../components';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
+import { isUnknownPeer } from '../../utils/isUnknownPeer';
 
 const OngoingCall = () => {
 	const { t } = useTranslation();
 
-	const { sessionState, onMute, onHold, onForward, onEndCall, onTone, onClickDirectMessage } = useMediaCallView();
-	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, supportedFeatures } = sessionState;
+	const { sessionState, allowedFeatures, onMute, onHold, onForward, onEndCall, onClickDirectMessage } = useMediaCallView();
+	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, startedAt } = sessionState;
+	const isInline = !useDraggableWidget();
 
-	const [open, setOpen] = useState(false);
-	const [inputValue, setInputValue] = useState('');
+	// The floating widget keeps a collapsible DTMF dialpad in the footer.
+	// The inline (sidebar rail) dialpad is permanently expanded in the content instead,
+	// so the toggle is only shown while floating to avoid showing both.
+	const [dialpadOpen, setDialpadOpen] = useState(false);
 
 	const slots = useInfoSlots(muted, held, connectionState);
 	const remoteSlots = useInfoSlots(remoteMuted, remoteHeld);
@@ -34,52 +39,37 @@ const OngoingCall = () => {
 	const connecting = connectionState === 'CONNECTING';
 	const reconnecting = connectionState === 'RECONNECTING';
 
-	const holdAvailable = supportedFeatures.includes('hold');
-	const transferAvailable = supportedFeatures.includes('transfer');
+	const holdAvailable = allowedFeatures.includes('hold');
+	const transferAvailable = allowedFeatures.includes('transfer');
 
-	// TODO: Figure out how to ensure this always exist before rendering the component
-	if (!peerInfo) {
-		throw new Error('Peer info is required');
-	}
+	const isSip = peerInfo?.type === 'sip';
 
 	return (
 		<Widget>
 			<WidgetHandle />
-			<WidgetHeader title={connecting ? t('meteor_status_connecting') : <Timer />}>
+			<WidgetHeader title={connecting ? t('meteor_status_connecting') : <Timer startAt={startedAt} />}>
 				{onClickDirectMessage && (
-					<ActionButton tiny secondary={false} label={t('Direct_Message')} icon='balloon' onClick={onClickDirectMessage} />
+					<ActionButton size='tiny' secondary={false} label={t('Direct_Message')} icon='balloon' onClick={onClickDirectMessage} />
 				)}
 				<DevicePicker />
 			</WidgetHeader>
 			<WidgetContent>
-				<PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />
+				{peerInfo && !isUnknownPeer(peerInfo) && <PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />}
+				{isInline && isSip && <Dialpad autoFocus={false} />}
 			</WidgetContent>
 			<WidgetInfo slots={slots} />
 			<WidgetFooter>
-				{open ? (
-					<Box display='flex' justifyContent='center' alignItems='center' width='100%' flexDirection='column' marginBlockEnd={8}>
-						<Field marginBlockEnd={8}>
-							<FieldRow>
-								<TextInput value={inputValue} readOnly small marginInline={24} />
-							</FieldRow>
-						</Field>
-						<Keypad
-							onKeyPress={(...args) => {
-								setInputValue((inputValue) => inputValue + args[0]);
-								onTone(...args);
-							}}
+				{!isInline && dialpadOpen && <Dialpad />}
+				<ButtonGroup large>
+					{!isInline && (
+						<ActionButton
+							disabled={connecting || reconnecting}
+							icon='dialpad'
+							label={t('Dialpad')}
+							title={dialpadOpen ? t('Close_dialpad') : t('Open_dialpad')}
+							onClick={() => setDialpadOpen((open) => !open)}
 						/>
-						<Divider width='100%' />
-					</Box>
-				) : null}
-				<ButtonGroup large align='center'>
-					<ActionButton
-						disabled={connecting || reconnecting}
-						icon='dialpad'
-						label={t('Dialpad')}
-						title={open ? t('Close_dialpad') : t('Open_dialpad')}
-						onClick={() => setOpen((open) => !open)}
-					/>
+					)}
 					<ToggleButton label={t('Mute')} icons={['mic', 'mic-off']} titles={[t('Mute'), t('Unmute')]} pressed={muted} onToggle={onMute} />
 					{holdAvailable && (
 						<ToggleButton
@@ -95,7 +85,9 @@ const OngoingCall = () => {
 						<ActionButton disabled={connecting || reconnecting} label={t('Forward')} icon='arrow-forward' onClick={onForward} />
 					)}
 					<ActionButton
-						label={t('Voice_call__user__hangup', { user: 'userId' in peerInfo ? peerInfo.displayName : peerInfo.number })}
+						label={t('Voice_call__user__hangup', {
+							user: getPeerDisplayName(t, peerInfo),
+						})}
 						icon='phone-off'
 						danger
 						onClick={onEndCall}

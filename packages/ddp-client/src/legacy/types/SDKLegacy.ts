@@ -1,14 +1,15 @@
 import type { IMessage, Serialized } from '@rocket.chat/core-typings';
 import type { OperationParams, OperationResult } from '@rocket.chat/rest-typings';
 
+import type { Subscription } from '../../types/Subscription';
 import type { StreamerCallbackArgs } from '../../types/streams';
 
 export interface APILegacy {
 	users: {
-		all(fields?: { name: 1; username: 1; status: 1; type: 1 }): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>>;
+		all(): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>>;
 		allNames(): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>>;
 		allIDs(): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>>;
-		online(fields?: { name: 1; username: 1; status: 1; type: 1 }): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>>;
+		online(): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>>;
 		onlineNames(): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>>;
 		onlineIds(): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>>;
 		info(username: string): Promise<Serialized<OperationResult<'GET', '/v1/users.info'>>>;
@@ -63,10 +64,10 @@ export interface DPPLegacy {
 	unsubscribe(subscription: unknown): Promise<unknown>;
 	unsubscribeAll(): Promise<unknown>;
 
-	subscribeRoom(rid: string, ...args: any[]): Promise<unknown>;
-	subscribeNotifyAll(): Promise<unknown>;
-	subscribeLoggedNotify(): Promise<unknown>;
-	subscribeNotifyUser(): Promise<unknown>;
+	subscribeRoom(rid: string, ...args: any[]): Promise<Subscription[]>;
+	subscribeNotifyAll(): Promise<Subscription[]>;
+	subscribeLoggedNotify(): Promise<Subscription[]>;
+	subscribeNotifyUser(): Promise<Subscription[]>;
 
 	url: string;
 

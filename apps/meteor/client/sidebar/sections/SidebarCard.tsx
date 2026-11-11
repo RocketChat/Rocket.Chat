@@ -10,8 +10,8 @@ export type SidebarCardProps = { children: ReactNode };
 const SidebarCard = ({ children }: SidebarCardProps) => (
 	<Box
 		margin={8}
-		padding={10}
-		borderRadius='x8'
+		padding='x8'
+		borderRadius='large'
 		borderWidth='default'
 		borderStyle='solid'
 		borderColor='stroke-light'

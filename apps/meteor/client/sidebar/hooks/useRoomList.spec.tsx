@@ -7,9 +7,15 @@ import { useRoomList } from './useRoomList';
 import type { SidebarRoomListGroup } from './useRoomList';
 import { createFakeLicenseInfo, createFakeRoom, createFakeSubscription, createFakeUser } from '../../../tests/mocks/data';
 
+let mockOpenedRoom: string | undefined;
+
 jest.mock('../../lib/RoomManager', () => ({
-	useOpenedRoom: () => undefined,
+	useOpenedRoom: () => mockOpenedRoom,
 }));
+
+afterEach(() => {
+	mockOpenedRoom = undefined;
+});
 
 // The hook returns a rich `groups` array; these helpers reproduce the legacy flat views used by the assertions.
 const groupsListOf = (groups: SidebarRoomListGroup[]) => groups.map((group) => group.key);
@@ -112,7 +118,7 @@ const getWrapperSettings = ({
 
 	if (isEnterprise) {
 		root.withEndpoint('GET', '/v1/licenses.info', () => ({
-			license: createFakeLicenseInfo({ hasValidLicense: true, activeModules: ['experimental-enterprise-features'] }),
+			license: createFakeLicenseInfo({ hasValidLicense: true }),
 		}));
 	}
 
@@ -236,7 +242,7 @@ it('should remove corresponding items from roomList and return groupCount 0 when
 	const { result } = renderHook(() => useRoomList({ collapsedGroups: ['Channels'] }), {
 		wrapper: getWrapperSettings({ sidebarGroupByType: true, isEnterprise: true }).build(),
 	});
-	// hasLicenseModule resolves asynchronously from the mock endpoint.
+	// isEnterprise resolves asynchronously from the mock endpoint.
 	await waitFor(() => {
 		const groupsList = groupsListOf(result.current.groups);
 		const roomList = roomListOf(result.current.groups);
@@ -258,6 +264,55 @@ it('should hide all rooms and show a badge when a group is collapsed in CE ("Sho
 	expect(result.current.groups[channelsIndex].unreadInfo.tunread.length).toBeGreaterThan(0);
 });
 
+it('should keep the opened room visible when its group is collapsed', async () => {
+	// Every seeded DM is read, so without this behaviour collapsing "Direct_Messages" would hide all of them.
+	mockOpenedRoom = directRooms[0].rid;
+	const { result } = renderHook(() => useRoomList({ collapsedGroups: ['Direct_Messages'] }), {
+		wrapper: getWrapperSettings({ sidebarGroupByType: true }).build(),
+	});
+
+	const groupsList = groupsListOf(result.current.groups);
+	const directIndex = groupsList.indexOf('Direct_Messages');
+	expect(result.current.groupsCount[directIndex]).toEqual(1);
+	expect(result.current.groups[directIndex].rooms).toEqual([directRooms[0]]);
+});
+
+it('should not count the opened room in the header badge of its collapsed group', async () => {
+	// The opened room stays visible with its own counters, so the collapsed header must not count it again.
+	mockOpenedRoom = unreadChannels[0].rid;
+	const { result } = renderHook(() => useRoomList({ collapsedGroups: ['Channels'] }), {
+		wrapper: getWrapperSettings({ sidebarGroupByType: true }).build(),
+	});
+
+	const groupsList = groupsListOf(result.current.groups);
+	const channelsIndex = groupsList.indexOf('Channels');
+	const hiddenChannels = unreadChannels.slice(1);
+	const { unreadInfo } = result.current.groups[channelsIndex];
+
+	expect(result.current.groups[channelsIndex].rooms).toEqual([unreadChannels[0]]);
+	expect(unreadInfo.tunread).toEqual(hiddenChannels.flatMap((room) => room.tunread || []));
+	expect(unreadInfo.tunreadUser).toEqual(hiddenChannels.flatMap((room) => room.tunreadUser || []));
+	expect(unreadInfo.unread).toEqual(hiddenChannels.reduce((acc, room) => acc + room.unread, 0));
+});
+
+it('should not duplicate the opened room when a collapsed group already shows it as unread', async () => {
+	mockOpenedRoom = unreadChannels[0].rid;
+	const { result } = renderHook(() => useRoomList({ collapsedGroups: ['Channels'] }), {
+		wrapper: getWrapperSettings({
+			sidebarGroupByType: true,
+			isEnterprise: true,
+			sidebarCategories: [{ _id: 'Channels', name: 'Channels', default: true, showUnreads: true }],
+		}).build(),
+	});
+
+	// isEnterprise resolves asynchronously from the mock endpoint.
+	await waitFor(() => {
+		const groupsList = groupsListOf(result.current.groups);
+		const channelsIndex = groupsList.indexOf('Channels');
+		expect(result.current.groupsCount[channelsIndex]).toEqual(unreadChannels.length);
+	});
+});
+
 it('should keep unread rooms visible (and show no header badge) when a group is collapsed and "Show unreads" is on in EE', async () => {
 	const { result } = renderHook(() => useRoomList({ collapsedGroups: ['Channels'] }), {
 		wrapper: getWrapperSettings({
@@ -266,7 +321,7 @@ it('should keep unread rooms visible (and show no header badge) when a group is 
 			sidebarCategories: [{ _id: 'Channels', name: 'Channels', default: true, showUnreads: true }],
 		}).build(),
 	});
-	// hasLicenseModule resolves asynchronously from the mock endpoint.
+	// isEnterprise resolves asynchronously from the mock endpoint.
 	await waitFor(() => {
 		const groupsList = groupsListOf(result.current.groups);
 		const channelsIndex = groupsList.indexOf('Channels');
@@ -321,7 +376,7 @@ it('should accumulate unread data into `groupedUnreadInfo` when group is collaps
 		wrapper: getWrapperSettings({ sidebarGroupByType: true, isEnterprise: true }).build(),
 	});
 
-	// hasLicenseModule resolves asynchronously from the mock endpoint.
+	// isEnterprise resolves asynchronously from the mock endpoint.
 	await waitFor(() => {
 		const groupsList = groupsListOf(result.current.groups);
 		const channelsIndex = groupsList.indexOf('Channels');
@@ -332,5 +387,56 @@ it('should accumulate unread data into `groupedUnreadInfo` when group is collaps
 		expect(userMentions).toEqual(unreadChannels.reduce((acc, cv) => acc + cv.userMentions, 0));
 		expect(tunread).toEqual(unreadChannels.reduce((acc, cv) => [...acc, ...(cv.tunread || [])], [] as string[]));
 		expect(tunreadUser).toEqual(unreadChannels.reduce((acc, cv) => [...acc, ...(cv.tunreadUser || [])], [] as string[]));
+	});
+});
+
+/**
+ * The sidebar's own group for a call that is ringing. With the call window it goes away — a ringing call is
+ * listed with the ones already running, behind the navbar button — so it has to still be here without it.
+ */
+describe('the Incoming calls group', () => {
+	const ringingRoom = { ...createFakeSubscription({ t: 'd' }), ...createFakeRoom({ t: 'd' }) } as unknown as SubscriptionWithRoom;
+
+	// Stable: `useSyncExternalStore` compares snapshots by identity, and a fresh array per read never settles.
+	const ringingCalls = [{ callId: 'a-call', uid: 'caller', rid: ringingRoom.rid }];
+
+	const renderWithRingingCall = (conferenceWindowEnabled: boolean) =>
+		renderHook(() => useRoomList({ collapsedGroups: [] }), {
+			wrapper: mockAppRoot()
+				.wrap((children) => (
+					<VideoConfContext.Provider
+						value={
+							{
+								queryIncomingCalls: () => [() => () => undefined, () => ringingCalls],
+								conferenceWindowEnabled,
+							} as any
+						}
+					>
+						{children}
+					</VideoConfContext.Provider>
+				))
+				.withUser(user)
+				.withSubscriptions([ringingRoom])
+				.withSetting('VideoConf_Conference_Window_Enabled', conferenceWindowEnabled)
+				.build(),
+		});
+
+	it('is listed for a ringing call without the call window', () => {
+		const { result } = renderWithRingingCall(false);
+
+		expect(groupsListOf(result.current.groups)).toContain('Incoming_Calls');
+	});
+
+	// An empty dynamic group is left out of the list, so gating the categorisation is what removes the group.
+	it('is gone once the calls are listed elsewhere', () => {
+		const { result } = renderWithRingingCall(true);
+
+		expect(groupsListOf(result.current.groups)).not.toContain('Incoming_Calls');
+	});
+
+	// The room itself must not go missing with the group: it belongs to whichever group it would otherwise be in.
+	it('leaves the ringing room in the list either way', () => {
+		expect(roomListOf(renderWithRingingCall(false).result.current.groups)).toHaveLength(1);
+		expect(roomListOf(renderWithRingingCall(true).result.current.groups)).toHaveLength(1);
 	});
 });

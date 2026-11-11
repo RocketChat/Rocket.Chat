@@ -4,6 +4,7 @@ import type {
 	IRoom,
 	IUser,
 	VideoConference,
+	VideoConferenceLeaveReason,
 	VideoConferenceStatus,
 	IVoIPVideoConference,
 } from '@rocket.chat/core-typings';
@@ -53,9 +54,34 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 
 	setUrlById(callId: string, url: string): Promise<void>;
 
+	/** Names a group conference. Only that kind carries a title of its own. */
+	setTitleById(callId: string, title: string): Promise<void>;
+
 	setProviderDataById(callId: string, providerData: Record<string, any> | undefined): Promise<void>;
 
-	addUserById(callId: string, user: Required<Pick<IUser, '_id' | 'name' | 'username' | 'avatarETag'>> & { ts?: Date }): Promise<void>;
+	/** Associates a user with the call. It never marks them present — `setUserJoinedById` is what arriving does. */
+	addMemberById(callId: string, user: Required<Pick<IUser, '_id' | 'name' | 'username' | 'avatarETag'>> & { ts?: Date }): Promise<void>;
+
+	setUserJoinedById(callId: string, uid: IUser['_id'], joinedAt?: Date): Promise<void>;
+
+	setUserDeclinedById(callId: string, uid: IUser['_id'], declinedAt?: Date): Promise<void>;
+	setUserLeftById(callId: string, uid: IUser['_id'], leftAt?: Date, reason?: VideoConferenceLeaveReason): Promise<void>;
+	setUsersRingingById(callId: string, uids: IUser['_id'][], ringingAt?: Date): Promise<void>;
+
+	/**
+	 * Renews one member's presence lease, and with it any departure that was inferred rather than reported.
+	 * Answers atomically with what the write found: `null` when nothing matched (ended call, unknown member,
+	 * reported leave), otherwise whether an inferred departure was revived, with the call's room and provider.
+	 */
+	renewUserPresenceById(
+		callId: string,
+		uid: IUser['_id'],
+		lastSeenAt?: Date,
+		inferredReasons?: VideoConferenceLeaveReason[],
+	): Promise<{ revived: boolean; rid: IRoom['_id']; providerName: string } | null>;
+
+	/** Every open call, with the roster and provider the presence sweep judges it by. */
+	findActiveWithMembers(): FindCursor<Pick<VideoConference, '_id' | 'rid' | 'users' | 'providerName'>>;
 
 	setMessageById(callId: string, messageType: keyof VideoConference['messages'], messageId: string): Promise<void>;
 

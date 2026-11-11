@@ -1,6 +1,6 @@
+import { PersonalAccessTokensPage } from '@rocket.chat/ui-account';
 import { usePermission } from '@rocket.chat/ui-contexts';
 
-import AccountTokensPage from './AccountTokensPage';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 
 const AccountTokensRoute = () => {
@@ -10,7 +10,7 @@ const AccountTokensRoute = () => {
 		return <NotAuthorizedPage />;
 	}
 
-	return <AccountTokensPage />;
+	return <PersonalAccessTokensPage />;
 };
 
 export default AccountTokensRoute;

@@ -7,3 +7,5 @@ export * from './image';
 export * from './menu';
 
 export * from './datePicker';
+
+export * from './accessories';

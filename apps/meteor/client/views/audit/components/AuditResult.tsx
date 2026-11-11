@@ -1,8 +1,8 @@
 import type { IMessage } from '@rocket.chat/core-typings';
+import { GenericNoResults } from '@rocket.chat/ui-client';
 import { memo } from 'react';
 
 import AuditMessageList from './AuditMessageList';
-import GenericNoResults from '../../../components/GenericNoResults';
 
 export type AuditResultProps = {
 	className?: string;

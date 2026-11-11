@@ -147,7 +147,7 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	updateSurveyFeedbackById(_id: string, surveyFeedback: unknown): Promise<UpdateResult>;
 	updateDataByToken(token: string, key: string, value: string, overwrite?: boolean): Promise<UpdateResult | Document | boolean>;
 	saveRoomById(
-		data: { _id: string; topic?: string; tags?: string[]; livechatData?: Record<string, any> } & Record<string, unknown>,
+		data: { _id: string; topic?: string; tags?: string[]; livechatData?: Record<string, string> } & Record<string, unknown>,
 	): Promise<UpdateResult | undefined>;
 	findByIds(
 		ids: string[],
@@ -282,7 +282,11 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	getVisitorLastMessageTsUpdateQueryByRoomId(lastMessageTs: Date, updater?: Updater<IOmnichannelRoom>): Updater<IOmnichannelRoom>;
 	setVisitorInactivityInSecondsById(roomId: string, visitorInactivity: any): Promise<UpdateResult>;
 	unarchiveOneById(roomId: string): Promise<UpdateResult>;
-	getVisitorActiveForPeriodUpdateQuery(period: string, updater?: Updater<IOmnichannelRoom>): Updater<IOmnichannelRoom>;
+	getVisitorActiveForPeriodUpdateQuery(
+		period: string,
+		updater?: Updater<IOmnichannelRoom>,
+		currentActivity?: string[] | null,
+	): Updater<IOmnichannelRoom>;
 	getMACStatisticsForPeriod(period: string): Promise<MACStats[]>;
 	getMACStatisticsBetweenDates(start: Date, end: Date): Promise<MACStats[]>;
 	findNewestByContactVisitorAssociation<T extends Document = IOmnichannelRoom>(

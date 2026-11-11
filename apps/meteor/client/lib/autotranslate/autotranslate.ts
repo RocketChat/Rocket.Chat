@@ -2,10 +2,10 @@ import type { IRoom, ISubscription, ISupportedLanguage, ITranslatedMessage, Mess
 import { isTranslatedMessageAttachment } from '@rocket.chat/core-typings';
 import mem from 'mem';
 
-import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { PermissionsCachedStore } from '../../cachedStores';
 import { Messages, Subscriptions, Users } from '../../stores';
 import { hasTranslationLanguageInAttachments, hasTranslationLanguageInMessage } from '../../views/room/MessageList/lib/autoTranslate';
+import { sdk } from '../SDKClient';
 import { hasPermission } from '../authorization';
 import { settings } from '../settings';
 import { getUserId, userIdStore } from '../user';
@@ -92,11 +92,11 @@ export const AutoTranslate = {
 
 		const loadProviders = async () => {
 			try {
-				const [providersMetadata, supportedLanguagesResponse] = await Promise.all([
-					sdk.call('autoTranslate.getProviderUiMetadata'),
+				const [providersResponse, supportedLanguagesResponse] = await Promise.all([
+					sdk.rest.get('/v1/autotranslate.getProviderUiMetadata'),
 					sdk.rest.get('/v1/autotranslate.getSupportedLanguages', { targetLanguage: 'en' }),
 				]);
-				this.providersMetadata = providersMetadata;
+				this.providersMetadata = providersResponse.providers;
 				this.supportedLanguages = supportedLanguagesResponse.languages;
 			} catch (e: unknown) {
 				// Avoid unwanted error message on UI when autotranslate is disabled while fetching data

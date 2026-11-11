@@ -14,5 +14,6 @@ export const useOutlookOpenCall = (meetingUrl?: string | null) => {
 		return;
 	}
 
-	return () => handleOpenCall(namedMeetingUrl);
+	// Discards the window it returns: nothing here watches a call it didn't start.
+	return () => void handleOpenCall(namedMeetingUrl);
 };

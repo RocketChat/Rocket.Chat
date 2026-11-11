@@ -1,7 +1,7 @@
 import type { MediaSignalingSession } from '@rocket.chat/media-signaling';
+import { stopTracks, useDevicePermissionPrompt2 } from '@rocket.chat/ui-media';
 import { useMemo } from 'react';
 
-import { stopTracks, useDevicePermissionPrompt2 } from '../hooks';
 import { getEndCall } from '../utils/instanceControlsGetters';
 
 export type MediaSessionControls = {

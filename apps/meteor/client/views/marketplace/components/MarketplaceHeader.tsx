@@ -69,7 +69,7 @@ const MarketplaceHeader = ({ title, unsupportedVersion }: MarketplaceHeaderProps
 				{isAdmin && context === 'private' && <Button onClick={handleClickPrivate}>{t('Upload_private_app')}</Button>}
 
 				{isAdmin && result.isSuccess && !privateAppsEnabled && context === 'private' && (
-					<UpgradeButton primary target='private-apps-header' action='upgrade'>
+					<UpgradeButton variant='primary' target='private-apps-header' action='upgrade'>
 						{t('Upgrade')}
 					</UpgradeButton>
 				)}

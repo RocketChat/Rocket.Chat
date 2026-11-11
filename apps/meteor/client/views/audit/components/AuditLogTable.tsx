@@ -1,12 +1,18 @@
 import type { IAuditLog } from '@rocket.chat/core-typings';
-import { Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
-import { GenericTable, GenericTableHeaderCell, GenericTableBody, GenericTableLoadingRow, GenericTableHeader } from '@rocket.chat/ui-client';
+import { Field, FieldLabel, FieldRow, type TableColumnWidth } from '@rocket.chat/fuselage';
+import {
+	GenericTable,
+	GenericTableHeaderCell,
+	GenericTableBody,
+	GenericTableLoadingRow,
+	GenericTableHeader,
+	GenericNoResults,
+} from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 
 import AuditLogEntry from './AuditLogEntry';
-import GenericNoResults from '../../../components/GenericNoResults';
 import { createEndOfToday, createStartOfToday } from '../utils/dateRange';
 import type { DateRange } from '../utils/dateRange';
 import DateRangePicker from './forms/DateRangePicker';
@@ -32,44 +38,44 @@ const AuditLogTable = () => {
 			});
 			// the REST payload serializes Date fields to strings; deserialize back to Date so the entry
 			// components can keep their IAuditLog (Date) typings instead of force-casting per row
-			return auditions.map(
-				(audition): IAuditLog => ({
-					...audition,
-					ts: new Date(audition.ts),
-					_updatedAt: new Date(audition._updatedAt),
-					fields: {
-						...audition.fields,
-						startDate: audition.fields.startDate ? new Date(audition.fields.startDate) : undefined,
-						endDate: audition.fields.endDate ? new Date(audition.fields.endDate) : undefined,
-					},
-				}),
-			);
+			return auditions.map((audition): IAuditLog => ({
+				...audition,
+				ts: new Date(audition.ts),
+				_updatedAt: new Date(audition._updatedAt),
+				fields: {
+					...audition.fields,
+					startDate: audition.fields.startDate ? new Date(audition.fields.startDate) : undefined,
+					endDate: audition.fields.endDate ? new Date(audition.fields.endDate) : undefined,
+				},
+			}));
 		},
 		meta: {
 			apiErrorToastMessage: true,
 		},
 	});
 
+	const columns: TableColumnWidth[] = ['auto', 'auto', 'auto', 80];
+
 	const headers = (
 		<>
 			<GenericTableHeaderCell>{t('User')}</GenericTableHeaderCell>
 			<GenericTableHeaderCell>{t('Looked_for')}</GenericTableHeaderCell>
 			<GenericTableHeaderCell>{t('When')}</GenericTableHeaderCell>
-			<GenericTableHeaderCell width={80}>{t('Results')}</GenericTableHeaderCell>
+			<GenericTableHeaderCell>{t('Results')}</GenericTableHeaderCell>
 			<GenericTableHeaderCell>{t('Filters_applied')}</GenericTableHeaderCell>
 		</>
 	);
 
 	return (
 		<>
-			<Field alignSelf='stretch'>
+			<Field>
 				<FieldLabel>{t('Date')}</FieldLabel>
 				<FieldRow>
-					<DateRangePicker display='flex' flexGrow={1} value={dateRange} onChange={setDateRange} />
+					<DateRangePicker flexGrow={1} value={dateRange} onChange={setDateRange} />
 				</FieldRow>
 			</Field>
 			{isLoading && (
-				<GenericTable>
+				<GenericTable columns={columns}>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
 						<GenericTableLoadingRow cols={4} />
@@ -78,7 +84,7 @@ const AuditLogTable = () => {
 			)}
 			{isSuccess && data.length === 0 && <GenericNoResults />}
 			{isSuccess && data.length > 0 && (
-				<GenericTable>
+				<GenericTable columns={columns}>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
 						{data.map((auditLog) => (

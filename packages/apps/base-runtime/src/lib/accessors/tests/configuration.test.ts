@@ -11,7 +11,7 @@ import { AppAccessors } from '../mod';
 const senderFn = (r: any) =>
 	Promise.resolve({
 		id: 'test',
-		jsonrpc: '2.0',
+		jsonrpc: '2.0' as const,
 		result: r,
 		serialize() {
 			return JSON.stringify(this);

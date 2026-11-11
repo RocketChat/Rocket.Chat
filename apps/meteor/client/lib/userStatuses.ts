@@ -13,8 +13,6 @@ export type UserStatusStreamer = (event: 'updateCustomUserStatus' | 'deleteCusto
 export type UserStatusLister = () => Promise<ICustomUserStatus[] | null | undefined>;
 
 export class UserStatuses implements Iterable<UserStatusDescriptor> {
-	public invisibleAllowed = true;
-
 	private store: Map<UserStatusDescriptor['id'], UserStatusDescriptor> = new Map(
 		[UserStatus.ONLINE, UserStatus.AWAY, UserStatus.BUSY, UserStatus.OFFLINE].map((status) => [
 			status,
@@ -43,7 +41,7 @@ export class UserStatuses implements Iterable<UserStatusDescriptor> {
 		return {
 			name: customUserStatus.name,
 			id: customUserStatus._id,
-			statusType: customUserStatus.statusType as UserStatus,
+			statusType: customUserStatus.statusType,
 			localizeName: false,
 		};
 	}
@@ -53,11 +51,7 @@ export class UserStatuses implements Iterable<UserStatusDescriptor> {
 	}
 
 	public *[Symbol.iterator]() {
-		for (const value of this.store.values()) {
-			if (this.invisibleAllowed || value.statusType !== UserStatus.OFFLINE) {
-				yield value;
-			}
-		}
+		yield* this.store.values();
 	}
 
 	public async sync(listCustomUserStatus: UserStatusLister) {

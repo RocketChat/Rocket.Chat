@@ -1,9 +1,9 @@
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { LicenseImp } from '@rocket.chat/license';
 
+import { Apps } from './orchestrator';
 import { i18n } from '../../../../server/lib/i18n';
 import { sendMessagesToAdmins } from '../../../../server/lib/sendMessagesToAdmins';
-import { Apps } from '../../apps';
 
 type OnModuleCallbackParameter = Parameters<Parameters<LicenseImp['onModule']>[0]>[0];
 

@@ -1,4 +1,6 @@
 import { createComposerAPI } from './createComposerAPI';
+import { isLinePrefixButton } from '../../../../lib/messageBoxFormatting';
+import { ORDERED_LINE_PREFIX, UNORDERED_LINE_PREFIX, toggleLinePrefix } from '../../../../lib/toggleLinePrefix';
 
 jest.mock('../../../../lib/chats/uploads', () => ({
 	createUploadsAPI: () => ({}),
@@ -8,12 +10,13 @@ const setupComposer = (initialValue: string, cursor: { start: number; end: numbe
 	const input = document.createElement('textarea');
 	document.body.appendChild(input);
 
-	const composer = createComposerAPI(input, jest.fn(), '', Number.MAX_SAFE_INTEGER, { current: null }, { rid: 'GENERAL' });
+	const discardDraft = jest.fn();
+	const composer = createComposerAPI(input, jest.fn(), discardDraft, '', Number.MAX_SAFE_INTEGER, { current: null }, { rid: 'GENERAL' });
 
 	input.value = initialValue;
 	input.setSelectionRange(cursor.start, cursor.end);
 
-	return { composer, input };
+	return { composer, input, discardDraft };
 };
 
 describe('ChatMessages Composer API - replaceText', () => {
@@ -57,5 +60,47 @@ describe('ChatMessages Composer API - replaceText', () => {
 		composer.replaceText('@john ', { start: 0, end: 2 });
 
 		expect(input.selectionStart).toBe(input.selectionEnd);
+	});
+});
+
+describe('ChatMessages Composer API - clear', () => {
+	afterEach(() => {
+		document.body.innerHTML = '';
+	});
+
+	it('should discard the stored draft, since clearing means the text was consumed', () => {
+		const { composer, discardDraft } = setupComposer('a message', { start: 0, end: 0 });
+
+		composer.clear();
+
+		expect(discardDraft).toHaveBeenCalledTimes(1);
+	});
+});
+
+describe('ChatMessages Composer API - line prefixes', () => {
+	afterEach(() => {
+		document.body.innerHTML = '';
+	});
+
+	it('should offer the list buttons', () => {
+		const { composer } = setupComposer('', { start: 0, end: 0 });
+
+		expect(composer.formatters.get().filter(isLinePrefixButton)).toHaveLength(2);
+	});
+
+	it('should write the bullets as plain text', () => {
+		const { composer, input } = setupComposer('one\ntwo', { start: 0, end: 7 });
+
+		toggleLinePrefix(composer, UNORDERED_LINE_PREFIX);
+
+		expect(input.value).toBe('- one\n- two');
+	});
+
+	it('should write the numbers as plain text', () => {
+		const { composer, input } = setupComposer('one\ntwo', { start: 0, end: 7 });
+
+		toggleLinePrefix(composer, ORDERED_LINE_PREFIX);
+
+		expect(input.value).toBe('1. one\n2. two');
 	});
 });

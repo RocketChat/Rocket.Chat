@@ -1,4 +1,14 @@
-import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle, Box, Button } from '@rocket.chat/fuselage';
+import {
+	Pagination,
+	States,
+	StatesAction,
+	StatesActions,
+	StatesIcon,
+	StatesTitle,
+	Box,
+	Button,
+	type TableColumnWidth,
+} from '@rocket.chat/fuselage';
 import { useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
@@ -8,6 +18,8 @@ import {
 	GenericTableLoadingTable,
 	usePagination,
 	useSort,
+	GenericNoResults,
+	links,
 } from '@rocket.chat/ui-client';
 import { hashKey } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
@@ -16,8 +28,6 @@ import { useTranslation } from 'react-i18next';
 import ContactTableRow from './ContactTableRow';
 import { useCurrentContacts } from './hooks/useCurrentContacts';
 import FilterByText from '../../../../components/FilterByText';
-import GenericNoResults from '../../../../components/GenericNoResults';
-import { links } from '../../../../lib/links';
 import { useOmnichannelDirectoryRouter } from '../hooks/useOmnichannelDirectoryRouter';
 
 function ContactTable() {
@@ -26,7 +36,6 @@ function ContactTable() {
 	const [term, setTerm] = useState('');
 	const omnichannelDirectoryRouter = useOmnichannelDirectoryRouter();
 
-	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'channels.lastChat.ts' | 'contactManager.username' | 'lastChat.ts'>('name');
 
 	const query = useDebouncedValue(
@@ -34,10 +43,8 @@ function ContactTable() {
 			() => ({
 				searchText: term,
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
-				...(itemsPerPage && { count: itemsPerPage }),
-				...(current && { offset: current }),
 			}),
-			[itemsPerPage, current, sortBy, sortDirection, term],
+			[sortBy, sortDirection, term],
 		),
 		500,
 	);
@@ -49,10 +56,13 @@ function ContactTable() {
 		}),
 	);
 
-	const { data, isLoading, isError, isSuccess, refetch } = useCurrentContacts(query);
+	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination({ resetKey: [query] });
+	const { data, isLoading, isError, isSuccess, refetch } = useCurrentContacts(query, { offset: current, count: itemsPerPage });
 
-	const [defaultQuery] = useState(hashKey([query]));
-	const queryHasChanged = defaultQuery !== hashKey([query]);
+	const [defaultQuery] = useState(hashKey([query, current, itemsPerPage]));
+	const queryHasChanged = defaultQuery !== hashKey([query, current, itemsPerPage]);
+
+	const columns: TableColumnWidth[] = ['auto', 'auto', 'auto', 'auto', 40];
 
 	const headers = (
 		<>
@@ -86,7 +96,7 @@ function ContactTable() {
 			>
 				{t('Last_Chat')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key='spacer' width={40} />
+			<GenericTableHeaderCell key='spacer' />
 		</>
 	);
 
@@ -94,13 +104,13 @@ function ContactTable() {
 		<>
 			{((isSuccess && data?.contacts.length > 0) || queryHasChanged) && (
 				<FilterByText value={term} onChange={(event) => setTerm(event.target.value)}>
-					<Button onClick={onButtonNewClick} primary>
+					<Button onClick={onButtonNewClick} variant='primary'>
 						{t('New_contact')}
 					</Button>
 				</FilterByText>
 			)}
 			{isLoading && (
-				<GenericTable>
+				<GenericTable columns={columns}>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
 						<GenericTableLoadingTable headerCells={headers.props.children.filter(Boolean).length} />
@@ -121,9 +131,13 @@ function ContactTable() {
 			)}
 			{isSuccess && data?.contacts.length > 0 && (
 				<>
-					<GenericTable aria-label={t('Omnichannel_Contact_Center_Contacts')}>
+					<GenericTable columns={columns} aria-label={t('Omnichannel_Contact_Center_Contacts')}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
-						<GenericTableBody>{data?.contacts.map((contact) => <ContactTableRow key={contact._id} {...contact} />)}</GenericTableBody>
+						<GenericTableBody>
+							{data?.contacts.map((contact) => (
+								<ContactTableRow key={contact._id} {...contact} />
+							))}
+						</GenericTableBody>
 					</GenericTable>
 					<Pagination
 						divider

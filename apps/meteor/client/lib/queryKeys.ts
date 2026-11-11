@@ -1,4 +1,5 @@
 import type {
+	AbacMembershipGroup,
 	ILivechatDepartment,
 	IMessage,
 	IRoom,
@@ -8,7 +9,8 @@ import type {
 	IOutboundProvider,
 	RoomType,
 } from '@rocket.chat/core-typings';
-import type { PaginatedRequest } from '@rocket.chat/rest-typings';
+import type { PaginatedRequest, UsersListStatusParamsGET } from '@rocket.chat/rest-typings';
+import { videoConferenceInfoQueryKey } from '@rocket.chat/ui-video-conf';
 
 export const roomsQueryKeys = {
 	all: ['rooms'] as const,
@@ -27,6 +29,7 @@ export const roomsQueryKeys = {
 		[...roomsQueryKeys.room(rid), 'threads', ...args] as const,
 	roles: (rid: IRoom['_id']) => [...roomsQueryKeys.room(rid), 'roles'] as const,
 	info: (rid: IRoom['_id']) => [...roomsQueryKeys.room(rid), 'info'] as const,
+	abacInfo: (rid: IRoom['_id'], abacAttributes: IRoom['abacAttributes']) => [...roomsQueryKeys.info(rid), 'abac', abacAttributes] as const,
 	members: (rid: IRoom['_id'], roomType: RoomType, type?: 'all' | 'online', filter?: string) =>
 		!type && !filter
 			? ([...roomsQueryKeys.room(rid), 'members', roomType] as const)
@@ -35,6 +38,7 @@ export const roomsQueryKeys = {
 	files: (rid: IRoom['_id'], options?: { type: string; text: string }) => [...roomsQueryKeys.room(rid), 'files', options] as const,
 	images: (rid: IRoom['_id'], options?: { startingFromId?: string }) => [...roomsQueryKeys.room(rid), 'images', options] as const,
 	autocomplete: (text: string) => [...roomsQueryKeys.all, 'autocomplete', text] as const,
+	adminList: (...args: [query?: PaginatedRequest]) => [...roomsQueryKeys.all, 'admin-list', ...args] as const,
 	discussions: (rid: IRoom['_id'], ...args: [filter: { text?: string }]) => [...roomsQueryKeys.room(rid), 'discussions', ...args] as const,
 	threadMessages: (rid: IRoom['_id'], tmid: IMessage['_id']) => [...roomsQueryKeys.room(rid), 'threads', tmid, 'messages'] as const,
 	threadMainMessage: (rid: IRoom['_id'], tmid: IMessage['_id']) => [...roomsQueryKeys.room(rid), 'threads', tmid, 'main-message'] as const,
@@ -113,7 +117,6 @@ export const deviceManagementQueryKeys = {
 };
 
 export const miscQueryKeys = {
-	personalAccessTokens: ['personal-access-tokens'] as const,
 	lookup: (endpoint: string) => ['lookup', endpoint] as const,
 	autotranslateSupportedLanguages: (targetLanguage: string) => ['autotranslate', 'supported-languages', targetLanguage] as const,
 };
@@ -122,8 +125,9 @@ export const usersQueryKeys = {
 	all: ['users'] as const,
 	userInfo: ({ uid, username }: { uid?: IUser['_id']; username?: IUser['username'] }) =>
 		[...usersQueryKeys.all, 'info', { uid, username }] as const,
-	userAutoComplete: (filter: string, federated: boolean, exceptions: string[] = []) =>
-		[...usersQueryKeys.all, 'autocomplete', filter, federated, exceptions] as const,
+	userAutoComplete: (filter: string, { federated, xmpp }: { federated: boolean; xmpp: boolean }, exceptions: string[] = []) =>
+		[...usersQueryKeys.all, 'autocomplete', filter, { federated, xmpp }, exceptions] as const,
+	list: (...args: [query?: UsersListStatusParamsGET, tab?: string]) => [...usersQueryKeys.all, 'list', ...args] as const,
 };
 
 export const teamsQueryKeys = {
@@ -153,9 +157,17 @@ export const ABACQueryKeys = {
 		list: (...args: [query?: PaginatedRequest]) => [...ABACQueryKeys.roomAttributes.all(), ...args] as const,
 		attribute: (attributeId: string) => [...ABACQueryKeys.roomAttributes.all(), attributeId] as const,
 	},
+	assignableAttributes: (rid?: string) => [...ABACQueryKeys.all, 'assignable-attributes', ...(rid ? [{ rid }] : [])] as const,
+	membershipPreview: (members: string[], attributes: Record<string, string[]>) =>
+		[...ABACQueryKeys.all, 'membership-preview', { members, attributes }] as const,
+	roomMembershipPreview: {
+		all: (rid: string) => [...ABACQueryKeys.all, 'room-membership-preview', rid] as const,
+		group: (rid: string, attributes: Record<string, string[]>, filter: string, group: AbacMembershipGroup) =>
+			[...ABACQueryKeys.roomMembershipPreview.all(rid), { attributes, filter, group }] as const,
+	},
 	rooms: {
 		all: () => [...ABACQueryKeys.all, 'rooms'] as const,
-		list: (...args: [query?: PaginatedRequest]) => [...ABACQueryKeys.rooms.all(), ...args] as const,
+		list: (...args: [query?: PaginatedRequest]) => [...ABACQueryKeys.rooms.all(), 'list', ...args] as const,
 		autocomplete: (...args: [query?: PaginatedRequest]) => [...ABACQueryKeys.rooms.all(), 'autocomplete', ...args] as const,
 		room: (roomId: string) => [...ABACQueryKeys.rooms.all(), roomId] as const,
 	},
@@ -181,8 +193,6 @@ export const marketplaceQueryKeys = {
 			startDate?: string | undefined;
 			method?: string | undefined;
 			logLevel?: '0' | '1' | '2' | undefined;
-			count: number;
-			offset: number;
 		},
 	) => [...marketplaceQueryKeys.app(appId), 'logs', query] as const,
 } as const;
@@ -190,9 +200,25 @@ export const marketplaceQueryKeys = {
 export const videoConferenceQueryKeys = {
 	all: ['video-conference'] as const,
 	fromRoom: (roomId: IRoom['_id']) => [...videoConferenceQueryKeys.all, 'rooms', roomId] as const,
+	/**
+	 * Taken from the hook that owns the entry rather than restated here, so there is one spelling of it.
+	 *
+	 * @see useVideoConferenceInfo
+	 */
+	conference: videoConferenceInfoQueryKey,
+	join: (callId: string) => [...videoConferenceQueryKeys.conference(callId), 'join'] as const,
+	joinable: () => [...videoConferenceQueryKeys.all, 'joinable'] as const,
+	/** What the provider can be told about devices — asked before any conference exists. */
+	capabilities: () => [...videoConferenceQueryKeys.all, 'capabilities'] as const,
 } as const;
 
 export const messagesQueryKeys = {
 	all: ['messages'] as const,
 	message: (messageId: IMessage['_id']) => [...messagesQueryKeys.all, messageId] as const,
+};
+
+export const managedPresenceQueryKeys = {
+	all: ['admin', 'managed-presence-users'] as const,
+	list: (query: PaginatedRequest) => [...managedPresenceQueryKeys.all, query] as const,
+	byUsername: (username?: IUser['username']) => [...managedPresenceQueryKeys.all, 'byUsername', username] as const,
 };

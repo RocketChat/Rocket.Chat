@@ -9,6 +9,7 @@ import {
 	useToastMessageDispatch,
 	useTranslation,
 	useUser,
+	useUserId,
 	useUserRoom,
 	useUserSubscription,
 } from '@rocket.chat/ui-contexts';
@@ -38,6 +39,7 @@ export const useRemoveUserAction = (
 	const t = useTranslation();
 	const queryClient = useQueryClient();
 	const currentUser = useUser();
+	const ownUserId = useUserId();
 	const subscription = useUserSubscription(rid);
 
 	const { _id: uid } = user;
@@ -128,7 +130,7 @@ export const useRemoveUserAction = (
 	}, [invited, room?.teamMain, t]);
 
 	const removeUserOption = useMemo(() => {
-		if (!roomCanRemove || !userCanRemove) {
+		if (!roomCanRemove || !userCanRemove || uid === ownUserId) {
 			return undefined;
 		}
 
@@ -139,7 +141,7 @@ export const useRemoveUserAction = (
 			type: 'moderation' as const,
 			variant: 'danger' as const,
 		};
-	}, [roomCanRemove, userCanRemove, removeUserOptionAction, content]);
+	}, [roomCanRemove, userCanRemove, removeUserOptionAction, content, uid, ownUserId]);
 
 	return removeUserOption;
 };

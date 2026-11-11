@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 
-import { getURL } from '../../../app/utils/client';
 import GenericUpsellModal from '../../components/GenericUpsellModal';
+import { getURL } from '../../lib/getURL';
 
 export type CustomCategoryUpsellModalProps = {
 	onClose: () => void;

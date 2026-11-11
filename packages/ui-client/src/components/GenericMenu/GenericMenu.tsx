@@ -36,7 +36,7 @@ const GenericMenu = ({ title, icon = 'menu', disabled, onAction, callbackAction,
 	const sections = 'sections' in props && props.sections;
 	const items = 'items' in props && props.items;
 
-	const itemsList = sections ? sections.reduce((acc, { items }) => [...acc, ...items], [] as GenericMenuItemProps[]) : items || [];
+	const itemsList = sections ? sections.flatMap(({ items }) => items) : items || [];
 
 	const disabledKeys = itemsList.filter(({ disabled }) => disabled).map(({ id }) => id);
 	const handleAction = useHandleMenuAction(itemsList || [], callbackAction);
@@ -51,10 +51,10 @@ const GenericMenu = ({ title, icon = 'menu', disabled, onAction, callbackAction,
 		if (button) {
 			// FIXME: deprecate prop `button` as there's no way to ensure it is actually a button
 			// (e.g cloneElement could be passing props to a fragment)
-			return cloneElement(button, { small: true, icon, disabled, title, className } as any);
+			return cloneElement(button, { size: button.props.size ?? 'small', icon, disabled, title, className } as any);
 		}
 
-		return <IconButton small icon={icon} className={className} title={title} disabled />;
+		return <IconButton size='small' icon={icon} className={className} title={title} disabled />;
 	}
 
 	return (
@@ -73,10 +73,10 @@ const GenericMenu = ({ title, icon = 'menu', disabled, onAction, callbackAction,
 						<MenuSection
 							title={typeof title === 'string' && i18n.exists(title) ? t(title) : title}
 							items={handleItems(items)}
-							key={`${title}-${key}`}
+							key={typeof title === 'string' ? `${title}-${key}` : key}
 						>
 							{(item) => (
-								<MenuItem key={item.id}>
+								<MenuItem key={item.id} {...(item.textValue && { textValue: item.textValue })}>
 									<GenericMenuItem {...item} />
 								</MenuItem>
 							)}
@@ -95,7 +95,7 @@ const GenericMenu = ({ title, icon = 'menu', disabled, onAction, callbackAction,
 					{...props}
 				>
 					{handleItems(items).map((item) => (
-						<MenuItem key={item.id}>
+						<MenuItem key={item.id} {...(item.textValue && { textValue: item.textValue })}>
 							<GenericMenuItem {...item} />
 						</MenuItem>
 					))}

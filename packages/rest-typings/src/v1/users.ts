@@ -11,7 +11,10 @@ import type { UsersAutocompleteParamsGET } from './users/UsersAutocompleteParams
 import type { UsersInfoParamsGet } from './users/UsersInfoParamsGet';
 import type { UsersListParamsGET } from './users/UsersListParamsGET';
 import type { UsersListStatusParamsGET } from './users/UsersListStatusParamsGET';
+import type { UsersListStatusVisibilityParamsGET } from './users/UsersListStatusVisibilityParamsGET';
 import type { UsersListTeamsParamsGET } from './users/UsersListTeamsParamsGET';
+import type { UsersPresenceParamsGET } from './users/UsersPresenceParamsGET';
+import type { UsersRequestDataDownloadParamsGET } from './users/UsersRequestDataDownloadParamsGET';
 import type { UsersSendConfirmationEmailParamsPOST } from './users/UsersSendConfirmationEmailParamsPOST';
 import type { UsersSendWelcomeEmailParamsPOST } from './users/UsersSendWelcomeEmailParamsPOST';
 import type { UsersSetPreferencesParamsPOST } from './users/UsersSetPreferenceParamsPOST';
@@ -124,7 +127,7 @@ export type DefaultUserInfo = Pick<
 	| 'lastLogin'
 	| 'type'
 	| 'federated'
-	| 'freeSwitchExtension'
+	| 'sipExtension'
 >;
 
 export type UsersEndpoints = {
@@ -156,13 +159,22 @@ export type UsersEndpoints = {
 
 	'/v1/users.list': {
 		GET: (params: UsersListParamsGET) => PaginatedResult<{
-			users: DefaultUserInfo[];
+			users: (DefaultUserInfo & Pick<Partial<IUser>, 'customFields'>)[];
 		}>;
 	};
 
 	'/v1/users.listByStatus': {
 		GET: (params: UsersListStatusParamsGET) => PaginatedResult<{
 			users: DefaultUserInfo[];
+		}>;
+	};
+
+	'/v1/users.listStatusVisibility': {
+		GET: (params: UsersListStatusVisibilityParamsGET) => PaginatedResult<{
+			users: (Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'statusText'> & {
+				presenceDisabledByAdmin: boolean;
+				statusVisibilityDeniedByAdmin: NonNullable<IUser['username']>[];
+			})[];
 		}>;
 	};
 
@@ -179,7 +191,7 @@ export type UsersEndpoints = {
 	};
 
 	'/v1/users.requestDataDownload': {
-		GET: (params: { fullExport?: 'true' | 'false' }) => {
+		GET: (params: UsersRequestDataDownloadParamsGET) => {
 			requested: boolean;
 			exportOperation: IExportOperation;
 			url: string | null;
@@ -230,7 +242,7 @@ export type UsersEndpoints = {
 	};
 
 	'/v1/users.presence': {
-		GET: (params: { from?: string; ids: string | string[] }) => UsersPresencePayload;
+		GET: (params: UsersPresenceParamsGET) => UsersPresencePayload;
 	};
 
 	'/v1/users.removePersonalAccessToken': {
@@ -419,3 +431,4 @@ export * from './users/UserRegisterParamsPOST';
 export * from './users/UserLogoutParamsPOST';
 export * from './users/UsersListTeamsParamsGET';
 export * from './users/UsersAutocompleteParamsGET';
+export * from './users/UsersListStatusVisibilityParamsGET';

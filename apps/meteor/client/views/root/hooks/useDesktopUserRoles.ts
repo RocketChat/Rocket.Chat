@@ -1,23 +1,30 @@
-import { useUser } from '@rocket.chat/ui-contexts';
-import { useEffect } from 'react';
+import { useUser, useUserId } from '@rocket.chat/ui-contexts';
+import { useEffect, useRef } from 'react';
+
+import { callDesktopBridge } from '../../../lib/utils/callDesktopBridge';
 
 /**
  * Pushes the logged-in user's roles to the desktop app so it can decide which
  * supportedVersions messages to show (e.g. restricting version-expiration
- * warnings to admins). The desktop app falls back to its own role lookup when
- * this bridge is unavailable, so `setUserRoles` is called optionally.
+ * warnings to admins). The desktop app trusts the first pushed list over its
+ * own role lookup, so only resolved roles are pushed: an empty list goes out
+ * for a loaded user with no roles, and once on logout.
  */
 export const useDesktopUserRoles = () => {
-	// A single canonical value derived from the reactive user. Logout, login and
-	// account switch all surface as a change to this key, so the effect re-runs
-	// and re-pushes only when the roles actually change — no userId branch and no
-	// effect cleanup (which would fire on every deps change and flicker
-	// role-targeted UI). Logged-out and "logged in with no roles" both resolve to
-	// an empty list, which is the correct signal for the desktop either way.
-	const rolesKey = (useUser()?.roles ?? []).join(',');
+	const loggedOut = !useUserId();
+	const rolesKey = useUser()?.roles?.join(',');
+	const pushed = useRef(false);
 
 	useEffect(() => {
-		if (typeof window === 'undefined') return;
-		window.RocketChatDesktop?.setUserRoles?.(rolesKey ? rolesKey.split(',') : []);
-	}, [rolesKey]);
+		if (rolesKey !== undefined) {
+			pushed.current = true;
+			callDesktopBridge((desktop) => desktop.setUserRoles?.(rolesKey ? rolesKey.split(',') : []));
+			return;
+		}
+
+		if (loggedOut && pushed.current) {
+			pushed.current = false;
+			callDesktopBridge((desktop) => desktop.setUserRoles?.([]));
+		}
+	}, [rolesKey, loggedOut]);
 };

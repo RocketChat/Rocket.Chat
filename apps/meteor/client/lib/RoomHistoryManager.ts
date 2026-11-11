@@ -1,16 +1,19 @@
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
-import { differenceInMilliseconds } from 'date-fns';
+import { Random } from '@rocket.chat/random';
+import { differenceInMilliseconds } from 'date-fns/differenceInMilliseconds';
 import { useCallback, useSyncExternalStore } from 'react';
 
-import { getUserPreference } from '../../app/utils/client';
-import { Messages, Subscriptions } from '../stores';
+import { sdk } from './SDKClient';
+import { getUserPreference } from './getUserPreference';
 import { onClientMessageReceived } from './onClientMessageReceived';
+import { dispatchToastMessage } from './toast';
+import { Messages, PublicSettings, Subscriptions } from '../stores';
 import { getUserId } from './user';
-import { callWithErrorHandling } from './utils/callWithErrorHandling';
 import { getConfig } from './utils/getConfig';
 import { mapMessageFromApi } from './utils/mapMessageFromApi';
-import { sdk } from '../../app/utils/client/lib/SDKClient';
+
+const canReadHistory = () => Boolean(getUserId()) || PublicSettings.state.get('Accounts_AllowAnonymousRead')?.value === true;
 
 const processMessage = async (msg: IMessage & { ignored?: boolean }, { subscription }: { subscription?: ISubscription }) => {
 	const userId = msg.u?._id;
@@ -50,7 +53,6 @@ export type RoomHistoryState = {
 	unreadNotLoaded: number;
 	firstUnread: IMessage | undefined;
 	loaded: number | undefined;
-	oldestTs?: Date;
 	cursorPrevious?: string | null;
 	cursorNext?: string | null;
 	scroll?: {
@@ -59,9 +61,6 @@ export type RoomHistoryState = {
 	};
 };
 
-// Bridge until `loadSurroundingMessages` migrates: a jump rebuilds the window without cursors.
-const cursorFromMessageTs = (ts: Date): string => `${ts.getTime()}`;
-
 const roomStateEvent = (rid: IRoom['_id']) => `state:${rid}` as const;
 
 class RoomHistoryManagerClass extends Emitter {
@@ -69,7 +68,15 @@ class RoomHistoryManagerClass extends Emitter {
 
 	private histories: Record<IRoom['_id'], RoomHistoryState> = {};
 
+	// Bumped by `clear`/`close`. In-flight requests capture it at entry and discard their
+	// response if it changed, so a page from a dead window can't touch the rebuilt one.
+	private generations: Record<IRoom['_id'], number> = {};
+
 	private requestsList: string[] = [];
+
+	private generation(rid: IRoom['_id']): number {
+		return this.generations[rid] ?? 0;
+	}
 
 	public getRoom(rid: IRoom['_id']): RoomHistoryState {
 		if (!this.histories[rid]) {
@@ -98,7 +105,7 @@ class RoomHistoryManagerClass extends Emitter {
 
 	private async queue(): Promise<void> {
 		return new Promise((resolve) => {
-			const requestId = crypto.randomUUID();
+			const requestId = Random.id();
 			const done = () => {
 				this.lastRequest = new Date();
 				resolve();
@@ -139,14 +146,22 @@ class RoomHistoryManagerClass extends Emitter {
 	public async getMore(rid: IRoom['_id'], { limit = defaultLimit }: { limit?: number } = {}): Promise<void> {
 		const room = this.getRoom(rid);
 
-		if (room.hasMore !== true) {
+		if (room.hasMore !== true || !canReadHistory()) {
 			return;
 		}
+
+		const generation = this.generation(rid);
 
 		try {
 			this.updateRoom(rid, { isLoading: true });
 
 			await this.queue();
+
+			// A `clear` may have run while queued (jump to message, jump to recent): the window this
+			// cursor belonged to is gone, and a rebuild may already have installed a different one.
+			if (generation !== this.generation(rid)) {
+				return;
+			}
 
 			let ls = undefined;
 
@@ -157,8 +172,7 @@ class RoomHistoryManagerClass extends Emitter {
 
 			const showThreadsInMainChannel = getUserPreference(getUserId(), 'showThreadsInMainChannel', false);
 
-			// Not `??`: a null cursor means exhausted and must not fall back to a stale `oldestTs`.
-			const previous = room.cursorPrevious !== undefined ? room.cursorPrevious : room.oldestTs && cursorFromMessageTs(room.oldestTs);
+			const { cursorPrevious: previous } = room;
 
 			const result = await sdk.rest.get('/v1/rooms.history', {
 				roomId: rid,
@@ -170,6 +184,10 @@ class RoomHistoryManagerClass extends Emitter {
 
 			this.unqueue();
 
+			if (generation !== this.generation(rid)) {
+				return;
+			}
+
 			const messages = result.messages.map((msg) => mapMessageFromApi(msg));
 			this.updateRoom(rid, {
 				unreadNotLoaded: result.unreadNotLoaded ?? 0,
@@ -177,10 +195,6 @@ class RoomHistoryManagerClass extends Emitter {
 				cursorPrevious: result.cursor.previous,
 				hasMore: result.cursor.previous !== null,
 			});
-
-			if (messages.length > 0) {
-				room.oldestTs = messages[messages.length - 1].ts;
-			}
 
 			const wrapper = document.querySelector<HTMLElement>('.messages-box .wrapper [data-overlayscrollbars-viewport]');
 			if (wrapper) {
@@ -194,6 +208,10 @@ class RoomHistoryManagerClass extends Emitter {
 				msgs: messages.filter((msg) => msg.t !== 'command'),
 				subscription,
 			});
+
+			if (generation !== this.generation(rid)) {
+				return;
+			}
 
 			this.emit('loaded-messages');
 
@@ -212,7 +230,10 @@ class RoomHistoryManagerClass extends Emitter {
 
 			this.emit('loaded-messages');
 		} finally {
-			this.updateRoom(rid, { isLoading: false });
+			// When stale, `clear` already reset the flag and the rebuild owns it now.
+			if (generation === this.generation(rid)) {
+				this.updateRoom(rid, { isLoading: false });
+			}
 		}
 	}
 
@@ -235,25 +256,29 @@ class RoomHistoryManagerClass extends Emitter {
 
 	public async getMoreNext(rid: IRoom['_id']) {
 		const room = this.getRoom(rid);
-		if (room.hasMoreNext !== true) {
+		if (room.hasMoreNext !== true || !canReadHistory()) {
 			return;
 		}
 
-		await this.queue();
+		const generation = this.generation(rid);
 
-		this.updateRoom(rid, { isLoading: true });
+		try {
+			this.updateRoom(rid, { isLoading: true });
 
-		const lastMessage = Messages.state.findFirst(
-			(record) => record.rid === rid && record._hidden !== true,
-			(a, b) => b.ts.getTime() - a.ts.getTime(),
-		);
+			await this.queue();
 
-		const subscription = Subscriptions.state.find((record) => record.rid === rid);
+			// A `clear` may have run while queued (jump to message, jump to recent): the window this
+			// cursor belonged to is gone, and a rebuild may already have installed a different one.
+			if (generation !== this.generation(rid)) {
+				return;
+			}
 
-		// Not `??`: a null cursor means exhausted and must not fall back to the newest loaded message.
-		const next = room.cursorNext !== undefined ? room.cursorNext : lastMessage?.ts && cursorFromMessageTs(lastMessage.ts);
+			const { cursorNext: next } = room;
+			if (!next) {
+				return;
+			}
 
-		if (next) {
+			const subscription = Subscriptions.state.find((record) => record.rid === rid);
 			const showThreadsInMainChannel = getUserPreference(getUserId(), 'showThreadsInMainChannel', false);
 
 			const result = await sdk.rest.get('/v1/rooms.history', {
@@ -263,6 +288,11 @@ class RoomHistoryManagerClass extends Emitter {
 				showThreadMessages: showThreadsInMainChannel,
 			});
 
+			// Covers a `clear` that landed while the request was on the wire.
+			if (generation !== this.generation(rid)) {
+				return;
+			}
+
 			const messages = result.messages.map((msg) => mapMessageFromApi(msg));
 
 			await upsertMessageBulk({
@@ -270,10 +300,13 @@ class RoomHistoryManagerClass extends Emitter {
 				subscription,
 			});
 
+			if (generation !== this.generation(rid)) {
+				return;
+			}
+
 			this.emit('loaded-messages');
 
 			this.updateRoom(rid, {
-				isLoading: false,
 				cursorNext: result.cursor.next,
 				hasMoreNext: result.cursor.next !== null,
 			});
@@ -282,8 +315,12 @@ class RoomHistoryManagerClass extends Emitter {
 			}
 
 			room.loaded += messages.length;
+		} finally {
+			if (generation === this.generation(rid)) {
+				this.updateRoom(rid, { isLoading: false });
+			}
+			this.unqueue();
 		}
-		this.unqueue();
 	}
 
 	public hasMore(rid: IRoom['_id']) {
@@ -307,14 +344,15 @@ class RoomHistoryManagerClass extends Emitter {
 	}
 
 	public close(rid: IRoom['_id']) {
+		this.generations[rid] = this.generation(rid) + 1;
 		Messages.state.remove((record) => record.rid === rid);
 		delete this.histories[rid];
 	}
 
 	public clear(rid: IRoom['_id']) {
+		this.generations[rid] = this.generation(rid) + 1;
 		const room = this.getRoom(rid);
 		Messages.state.remove((record) => record.rid === rid);
-		room.oldestTs = undefined;
 		room.loaded = undefined;
 		this.updateRoom(rid, {
 			isLoading: false,
@@ -322,7 +360,11 @@ class RoomHistoryManagerClass extends Emitter {
 			hasMoreNext: false,
 			cursorPrevious: undefined,
 			cursorNext: undefined,
+			// The snapshot describes the DOM of the window being discarded; a stale restoreScroll
+			// resuming after this clear must no-op instead of applying it to the rebuilt window.
+			scroll: undefined,
 		});
+		this.emit('room-cleared', rid);
 	}
 
 	public async getSurroundingMessages(message?: Pick<IMessage, '_id' | 'rid'> & { ts?: Date }) {
@@ -334,7 +376,7 @@ class RoomHistoryManagerClass extends Emitter {
 	}
 
 	private async loadSurroundingMessages(message: (Pick<IMessage, '_id' | 'rid'> & { ts?: Date }) | undefined, showThreadMessages: boolean) {
-		if (!message?.rid) {
+		if (!message?.rid || !canReadHistory()) {
 			return;
 		}
 
@@ -348,33 +390,78 @@ class RoomHistoryManagerClass extends Emitter {
 		this.updateRoom(message.rid, { isLoading: true });
 
 		const subscription = Subscriptions.state.find((record) => record.rid === message.rid);
-		const result = await callWithErrorHandling('loadSurroundingMessages', message, defaultLimit, showThreadMessages);
 
-		this.clear(message.rid);
+		let generation = this.generation(message.rid);
 
-		if (!result) {
-			this.updateRoom(message.rid, { isLoading: false });
-			return;
+		try {
+			const result = await sdk.rest.get('/v1/rooms.history', {
+				roomId: message.rid,
+				aroundId: message._id,
+				count: defaultLimit,
+				showThreadMessages,
+			});
+
+			// A `clear`/`close` that landed while the fetch was on the wire superseded this jump;
+			// clearing here would wipe the newer window and rebuild a stale one over it.
+			if (generation !== this.generation(message.rid)) {
+				return;
+			}
+
+			// Rebuilds the window around the target, so the store does not grow monotonically here.
+			this.clear(message.rid);
+
+			// This rebuild owns the window created by its own `clear`; a later `clear`
+			// (jump to recent, messagesImported) makes the rest of this flow stale.
+			generation = this.generation(message.rid);
+
+			// `clear` drops the cursors and clears `isLoading`, so restore the previous side before the
+			// upsert yields: a `getMore` landing in that window has no cursor and would page from the
+			// newest end instead.
+			this.updateRoom(message.rid, {
+				isLoading: true,
+				cursorPrevious: result.cursor.previous,
+				hasMore: result.cursor.previous !== null,
+			});
+
+			const messages = result.messages.map((msg) => mapMessageFromApi(msg));
+
+			await upsertMessageBulk({ msgs: messages.filter((msg) => msg.t !== 'command'), subscription });
+
+			if (generation !== this.generation(message.rid)) {
+				return;
+			}
+
+			// The next side only lands after the upsert: `hasMoreNext` arms jump-to-recent
+			// (useHasNewMessages), which would clear the store while the upsert is still pending.
+			this.updateRoom(message.rid, {
+				cursorNext: result.cursor.next,
+				hasMoreNext: result.cursor.next !== null,
+			});
+
+			this.emit('loaded-messages');
+
+			if (!room.loaded) {
+				room.loaded = 0;
+			}
+			room.loaded += messages.length;
+		} catch (error) {
+			if (generation !== this.generation(message.rid)) {
+				return;
+			}
+
+			// The target may have been deleted since the link was created; no window to build then.
+			if (!(error instanceof Response && error.status === 404)) {
+				dispatchToastMessage({ type: 'error', message: error });
+			}
+
+			if (!this.isLoaded(message.rid)) {
+				await this.getMore(message.rid);
+			}
+		} finally {
+			if (generation === this.generation(message.rid)) {
+				this.updateRoom(message.rid, { isLoading: false });
+			}
 		}
-		const { messages = [] } = result;
-
-		if (messages.length > 0) {
-			room.oldestTs = messages[messages.length - 1].ts;
-		}
-
-		await upsertMessageBulk({ msgs: Array.from(result.messages).filter((msg) => msg.t !== 'command'), subscription });
-
-		this.emit('loaded-messages');
-		this.updateRoom(message.rid, { isLoading: false });
-
-		if (!room.loaded) {
-			room.loaded = 0;
-		}
-		room.loaded += result.messages.length;
-		this.updateRoom(message.rid, {
-			hasMore: result.moreBefore,
-			hasMoreNext: result.moreAfter,
-		});
 	}
 }
 

@@ -1,19 +1,21 @@
+import type { IMessage } from '@rocket.chat/core-typings';
 import { isThreadMainMessage, isRoomFederated } from '@rocket.chat/core-typings';
+import { useFormatTime, useFormatDateAndTime } from '@rocket.chat/ui-client';
 import { useLayout, useUser, useUserPreference, useSetting, useEndpoint, useSearchParameter } from '@rocket.chat/ui-contexts';
-import type { ReactNode } from 'react';
+import type { KeyboardEvent, MouseEvent, ReactNode } from 'react';
 import { useMemo, memo } from 'react';
 
+import { normalizeUsername } from '../../../../../lib/utils/normalizeUsername';
 import type { MessageListContextValue } from '../../../../components/message/list/MessageListContext';
 import { MessageListContext } from '../../../../components/message/list/MessageListContext';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
-import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
-import { useFormatTime } from '../../../../hooks/useFormatTime';
 import { getRegexHighlight, getRegexHighlightUrl } from '../../../../lib/highlightWords';
 import AttachmentProvider from '../../../../providers/AttachmentProvider';
 import { useChat } from '../../contexts/ChatContext';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import { useAutoTranslate } from '../hooks/useAutoTranslate';
 import { useKatex } from '../hooks/useKatex';
+import { useRolesByUser } from '../hooks/useRolesByUser';
 
 export type MessageListProviderProps = {
 	children: ReactNode;
@@ -50,11 +52,35 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 	const displayRolesGlobal = useSetting('UI_DisplayRoles', true);
 	const hideRolesPreference = Boolean(!useUserPreference<boolean>('hideRoles') && !isMobile);
 	const showRoles = displayRolesGlobal && hideRolesPreference;
+	const userRoles = useRolesByUser(room._id, showRoles);
 	const showUsername = Boolean(!useUserPreference<boolean>('hideUsernames') && !isMobile);
 	const highlights = useUserPreference<string[]>('highlights');
 
-	const { showAutoTranslate, autoTranslateLanguage, autoTranslateEnabled } = useAutoTranslate(subscription);
+	const autoTranslate = useAutoTranslate(subscription);
 	const { katexEnabled, katexDollarSyntaxEnabled, katexParenthesisSyntaxEnabled } = useKatex();
+
+	const katex = useMemo(
+		() =>
+			katexEnabled ? { dollarSyntaxEnabled: katexDollarSyntaxEnabled, parenthesisSyntaxEnabled: katexParenthesisSyntaxEnabled } : undefined,
+		[katexEnabled, katexDollarSyntaxEnabled, katexParenthesisSyntaxEnabled],
+	);
+
+	const parsedHighlights = useMemo(
+		() =>
+			highlights
+				?.map((str) => str.trim())
+				.map((highlight) => ({
+					highlight,
+					regex: getRegexHighlight(highlight),
+					urlRegex: getRegexHighlightUrl(highlight),
+				})),
+		[highlights],
+	);
+
+	const readReceipts = useMemo(
+		() => ({ enabled: readReceiptsEnabled, storeUsers: readReceiptsStoreUsers }),
+		[readReceiptsEnabled, readReceiptsStoreUsers],
+	);
 
 	const formatDateAndTime = useFormatDateAndTime();
 	const formatTime = useFormatTime();
@@ -64,25 +90,23 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 
 	const chat = useChat();
 
-	const context: MessageListContextValue = useMemo(
+	const context: MessageListContextValue = useMemo<MessageListContextValue>(
 		() => ({
 			showColors,
 			useUserHasReacted: username
-				? (message) =>
-						(reaction): boolean =>
+				? (message: IMessage) =>
+						(reaction: string): boolean =>
 							Boolean(message.reactions?.[reaction]?.usernames.includes(username))
 				: () => (): boolean => false,
 			useShowFollowing: uid
-				? ({ message }): boolean => Boolean(message.replies && message.replies.indexOf(uid) > -1 && !isThreadMainMessage(message))
+				? ({ message }: { message: IMessage }): boolean =>
+						Boolean(message.replies && message.replies.indexOf(uid) > -1 && !isThreadMainMessage(message))
 				: (): boolean => false,
 
-			autoTranslate: {
-				autoTranslateEnabled,
-				autoTranslateLanguage,
-				showAutoTranslate,
-			},
+			autoTranslate,
 			useShowStarred: hasSubscription
-				? ({ message }): boolean => Boolean(Array.isArray(message.starred) && message.starred.find((star) => star._id === uid))
+				? ({ message }: { message: IMessage }): boolean =>
+						Boolean(Array.isArray(message.starred) && message.starred.find((star) => star._id === uid))
 				: (): boolean => false,
 			useMessageDateFormatter:
 				() =>
@@ -91,35 +115,26 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 			apiEmbedEnabled,
 			autoLinkDomains,
 			showRoles,
+			userRoles,
 			showRealName,
-			showUsername,
+			getAuthorUsername: ({ name, username }) => {
+				const normalizedUsername = normalizeUsername(username);
+				const nameRepeatsUsername = !name || normalizeUsername(name) === normalizedUsername;
+				return { normalizedUsername, showUsername: showUsername && showRealName && !nameRepeatsUsername };
+			},
 			jumpToMessageParam: msgParameter,
-			...(katexEnabled && {
-				katex: {
-					dollarSyntaxEnabled: katexDollarSyntaxEnabled,
-					parenthesisSyntaxEnabled: katexParenthesisSyntaxEnabled,
-				},
-			}),
-			highlights: highlights
-				?.map((str) => str.trim())
-				.map((highlight) => ({
-					highlight,
-					regex: getRegexHighlight(highlight),
-					urlRegex: getRegexHighlightUrl(highlight),
-				})),
+			...(katex && { katex }),
+			highlights: parsedHighlights,
 
 			useOpenEmojiPicker: uid
-				? (message) =>
-						(e): void => {
+				? (message: IMessage) =>
+						(e: MouseEvent | KeyboardEvent): void => {
 							e.nativeEvent.stopImmediatePropagation();
 							chat?.emojiPicker.open(e.currentTarget, (emoji: string) => reactToMessage({ messageId: message._id, reaction: emoji }));
 						}
 				: () => (): void => undefined,
 			username,
-			readReceipts: {
-				enabled: readReceiptsEnabled,
-				storeUsers: readReceiptsStoreUsers,
-			},
+			readReceipts,
 			formatDateAndTime,
 			formatTime,
 			formatDate,
@@ -127,23 +142,19 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 		[
 			username,
 			uid,
-			showAutoTranslate,
-			autoTranslateEnabled,
+			autoTranslate,
 			hasSubscription,
-			autoTranslateLanguage,
 			showRoles,
+			userRoles,
 			showRealName,
 			showUsername,
-			katexEnabled,
-			katexDollarSyntaxEnabled,
-			katexParenthesisSyntaxEnabled,
-			highlights,
+			katex,
+			parsedHighlights,
 			reactToMessage,
 			showColors,
 			msgParameter,
 			chat?.emojiPicker,
-			readReceiptsEnabled,
-			readReceiptsStoreUsers,
+			readReceipts,
 			apiEmbedEnabled,
 			autoLinkDomains,
 			formatDateAndTime,

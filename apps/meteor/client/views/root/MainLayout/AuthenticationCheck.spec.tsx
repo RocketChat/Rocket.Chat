@@ -7,6 +7,7 @@ import { useContext } from 'react';
 
 import AuthenticationCheck from './AuthenticationCheck';
 import { STORAGE_KEYS, removeStoredItem } from '../../../lib/sdk/storage';
+import HomeSkeleton from '../../home/HomeSkeleton';
 
 // The chain below this gate reaches for a great deal of app; what this spec is about is which of the three
 // outcomes the gate picks, so stand the rest of it down.
@@ -16,7 +17,7 @@ jest.mock('./LoginPage', () => ({ __esModule: true, default: () => <div>login-pa
 jest.mock('../../home/HomeSkeleton', () => ({ __esModule: true, default: () => <div>home-skeleton</div> }));
 
 const renderGate = (root: ReturnType<typeof mockAppRoot>) =>
-	render(<AuthenticationCheck>conference</AuthenticationCheck>, { wrapper: root.build() });
+	render(<AuthenticationCheck loadingElement={<HomeSkeleton />}>conference</AuthenticationCheck>, { wrapper: root.build() });
 
 afterEach(() => {
 	localStorage.clear();
@@ -69,7 +70,7 @@ describe('while the session is being resumed', () => {
 	it.each(['waiting', 'failed'] as const)('shows the login page when the connection has given up (%s)', (status) => {
 		localStorage.setItem(STORAGE_KEYS.LOGIN_TOKEN, 'a-stored-token');
 
-		renderGate(mockAppRoot().withAnonymous().withServerContext({ connected: false, status }));
+		renderGate(mockAppRoot().withAnonymous().withConnectionStatus({ connected: false, status }));
 
 		expect(screen.getByText('login-page')).toBeInTheDocument();
 		expect(screen.queryByText('home-skeleton')).not.toBeInTheDocument();
@@ -80,7 +81,7 @@ describe('while the session is being resumed', () => {
 	it('keeps the skeleton up while the connection is merely idle', () => {
 		localStorage.setItem(STORAGE_KEYS.LOGIN_TOKEN, 'a-stored-token');
 
-		renderGate(mockAppRoot().withAnonymous().withServerContext({ connected: false, status: 'offline' }));
+		renderGate(mockAppRoot().withAnonymous().withConnectionStatus({ connected: false, status: 'offline' }));
 
 		expect(screen.getByText('home-skeleton')).toBeInTheDocument();
 		expect(screen.queryByText('login-page')).not.toBeInTheDocument();
@@ -90,7 +91,7 @@ describe('while the session is being resumed', () => {
 	it('keeps the skeleton up while the connection is still being made', () => {
 		localStorage.setItem(STORAGE_KEYS.LOGIN_TOKEN, 'a-stored-token');
 
-		renderGate(mockAppRoot().withAnonymous().withServerContext({ connected: false, status: 'connecting' }));
+		renderGate(mockAppRoot().withAnonymous().withConnectionStatus({ connected: false, status: 'connecting' }));
 
 		expect(screen.getByText('home-skeleton')).toBeInTheDocument();
 		expect(screen.queryByText('login-page')).not.toBeInTheDocument();
@@ -153,7 +154,7 @@ it('shows the login page when the user goes away with a token still stored', () 
 	const { rerender } = render(
 		<Root>
 			<MaybeSessionEnded ended={false}>
-				<AuthenticationCheck>conference</AuthenticationCheck>
+				<AuthenticationCheck loadingElement={<HomeSkeleton />}>conference</AuthenticationCheck>
 			</MaybeSessionEnded>
 		</Root>,
 	);
@@ -163,7 +164,7 @@ it('shows the login page when the user goes away with a token still stored', () 
 	rerender(
 		<Root>
 			<MaybeSessionEnded ended={true}>
-				<AuthenticationCheck>conference</AuthenticationCheck>
+				<AuthenticationCheck loadingElement={<HomeSkeleton />}>conference</AuthenticationCheck>
 			</MaybeSessionEnded>
 		</Root>,
 	);

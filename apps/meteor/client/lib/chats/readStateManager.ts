@@ -1,11 +1,11 @@
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 
-import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { withDebouncing } from '../../../lib/utils/highOrderFunctions';
 import { Messages } from '../../stores';
 import { LegacyRoomManager } from '../LegacyRoomManager';
 import { RoomHistoryManager } from '../RoomHistoryManager';
+import { sdk } from '../SDKClient';
 import { getUserId } from '../user';
 
 export class ReadStateManager extends Emitter {
@@ -116,7 +116,13 @@ export class ReadStateManager extends Emitter {
 		this.isUnreadMarkVisible = callback;
 	}
 
-	// This will only mark as read if the unread mark is visible
+	private hasUserReachedLatestMessage: () => boolean = () => false;
+
+	public setHasUserReachedLatestMessageCallback(callback: () => boolean) {
+		this.hasUserReachedLatestMessage = callback;
+	}
+
+	// This will only mark as read if the unread mark is visible or the user scrolled to the latest message
 	public attemptMarkAsRead() {
 		const { alert, unread } = this.subscription || {};
 		if (!alert && unread === 0) {
@@ -125,6 +131,10 @@ export class ReadStateManager extends Emitter {
 
 		if (!document.hasFocus()) {
 			return;
+		}
+
+		if (this.hasUserReachedLatestMessage()) {
+			return this.markAsRead();
 		}
 
 		if (this.firstUnreadRecordId && this.isUnreadMarkVisible() === false) {

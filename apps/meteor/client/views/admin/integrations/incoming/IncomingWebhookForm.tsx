@@ -17,6 +17,7 @@ import {
 	FieldRow,
 	FieldHint,
 } from '@rocket.chat/fuselage';
+import { useClipboardWithToast } from '@rocket.chat/ui-client';
 import { useAbsoluteUrl } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
 import { useId, useMemo } from 'react';
@@ -24,7 +25,7 @@ import { Controller, useFormContext } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
 import type { EditIncomingWebhookFormData } from './EditIncomingWebhook';
-import useClipboardWithToast from '../../../../hooks/useClipboardWithToast';
+import ContentColumn from '../../../../components/ContentColumn';
 import { useHighlightedCode } from '../../../../hooks/useHighlightedCode';
 import { useExampleData } from '../hooks/useExampleIncomingData';
 
@@ -81,7 +82,7 @@ const IncomingWebhookForm = ({ webhookData }: IncomingWebhookFormProps) => {
 	const curlField = useId();
 
 	return (
-		<Box maxWidth='x600' alignSelf='center' width='full'>
+		<ContentColumn>
 			<Accordion>
 				<AccordionItem defaultExpanded={Boolean(webhookData?._id)} title={t('Instructions')}>
 					<FieldGroup>
@@ -93,7 +94,7 @@ const IncomingWebhookForm = ({ webhookData }: IncomingWebhookFormProps) => {
 									value={webhookData?._id ? url : t('Will_be_available_here_after_saving')}
 									readOnly
 									endAddon={
-										webhookData?._id ? <IconButton mini onClick={() => copyWebhookUrl()} title={t('Copy')} icon='copy' /> : undefined
+										webhookData?._id ? <IconButton size='mini' onClick={() => copyWebhookUrl()} title={t('Copy')} icon='copy' /> : undefined
 									}
 									aria-describedby={`${webhookUrlField}-hint`}
 								/>
@@ -107,7 +108,9 @@ const IncomingWebhookForm = ({ webhookData }: IncomingWebhookFormProps) => {
 									id={tokenField}
 									value={webhookData?._id ? `${webhookData?._id}/${webhookData?.token}` : t('Will_be_available_here_after_saving')}
 									readOnly
-									endAddon={webhookData?._id ? <IconButton mini onClick={() => copyToken()} title={t('Copy')} icon='copy' /> : undefined}
+									endAddon={
+										webhookData?._id ? <IconButton size='mini' onClick={() => copyToken()} title={t('Copy')} icon='copy' /> : undefined
+									}
 								/>
 							</FieldRow>
 						</Field>
@@ -130,7 +133,7 @@ const IncomingWebhookForm = ({ webhookData }: IncomingWebhookFormProps) => {
 										value={curlData}
 										readOnly
 										endAddon={
-											webhookData?._id ? <IconButton mini onClick={() => copyCurlData()} title={t('Copy')} icon='copy' /> : undefined
+											webhookData?._id ? <IconButton size='mini' onClick={() => copyCurlData()} title={t('Copy')} icon='copy' /> : undefined
 										}
 									/>
 								</FieldRow>
@@ -252,7 +255,7 @@ const IncomingWebhookForm = ({ webhookData }: IncomingWebhookFormProps) => {
 											id={avatarField}
 											{...field}
 											aria-describedby={`${avatarField}-hint-1 ${avatarField}-hint-2`}
-											endAddon={<Icon name='user-rounded' size='x20' alignSelf='center' />}
+											endAddon={<Icon name='user-rounded' size='x20' />}
 										/>
 									)}
 								/>
@@ -271,7 +274,7 @@ const IncomingWebhookForm = ({ webhookData }: IncomingWebhookFormProps) => {
 											id={emojiField}
 											{...field}
 											aria-describedby={`${emojiField}-hint-1 ${emojiField}-hint-2`}
-											endAddon={<Icon name='emoji' size='x20' alignSelf='center' />}
+											endAddon={<Icon name='emoji' size='x20' />}
 										/>
 									)}
 								/>
@@ -327,16 +330,14 @@ const IncomingWebhookForm = ({ webhookData }: IncomingWebhookFormProps) => {
 								<Controller
 									name='script'
 									control={control}
-									render={({ field }) => (
-										<TextAreaInput id={scriptField} {...field} rows={10} endAddon={<Icon name='code' size='x20' alignSelf='center' />} />
-									)}
+									render={({ field }) => <TextAreaInput id={scriptField} {...field} rows={10} endAddon={<Icon name='code' size='x20' />} />}
 								/>
 							</FieldRow>
 						</Field>
 					</FieldGroup>
 				</AccordionItem>
 			</Accordion>
-		</Box>
+		</ContentColumn>
 	);
 };
 

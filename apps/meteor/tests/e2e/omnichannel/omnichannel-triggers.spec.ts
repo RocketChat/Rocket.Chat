@@ -31,6 +31,7 @@ test.describe.serial('OC - Livechat Triggers', () => {
 	});
 
 	test.beforeEach(async ({ page, api }) => {
+		await page.emulateMedia({ reducedMotion: 'reduce' });
 		poLiveChat = new OmnichannelLiveChat(page, api);
 	});
 
@@ -49,8 +50,8 @@ test.describe.serial('OC - Livechat Triggers', () => {
 		await agent.page.close();
 	});
 
-	test('OC - Livechat Triggers - Baseline', async ({ page }) => {
-		await page.goto('/livechat');
+	test('OC - Livechat Triggers - Baseline', async () => {
+		await poLiveChat.goto();
 		await poLiveChat.openLiveChat();
 
 		await test.step('expect to register visitor', async () => {
@@ -83,9 +84,9 @@ test.describe.serial('OC - Livechat Triggers', () => {
 		});
 	});
 
-	test('OC - Livechat Triggers - Condition: chat opened by visitor', async ({ page }) => {
+	test('OC - Livechat Triggers - Condition: chat opened by visitor', async () => {
 		await test.step('expect to start conversation', async () => {
-			await page.goto('/livechat');
+			await poLiveChat.goto();
 			await poLiveChat.openLiveChat();
 		});
 
@@ -114,7 +115,7 @@ test.describe.serial('OC - Livechat Triggers', () => {
 		});
 	});
 
-	test('OC - Livechat Triggers - Condition: after guest registration', async ({ page }) => {
+	test('OC - Livechat Triggers - Condition: after guest registration', async () => {
 		triggerMessage = 'This is a trigger message after guest registration';
 		await test.step('expect update trigger to after guest registration', async () => {
 			await agent.poHomeOmnichannelTriggers.table.findRowByName(`edited-${triggersName}`).click();
@@ -122,7 +123,7 @@ test.describe.serial('OC - Livechat Triggers', () => {
 		});
 
 		await test.step('expect to start conversation', async () => {
-			await page.goto('/livechat');
+			await poLiveChat.goto();
 			await poLiveChat.openLiveChat();
 		});
 

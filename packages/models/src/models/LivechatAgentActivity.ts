@@ -1,6 +1,7 @@
 import type { ILivechatAgentActivity, IServiceHistory, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ILivechatAgentActivityModel } from '@rocket.chat/model-typings';
-import { parseISO, format } from 'date-fns';
+import { format } from 'date-fns/format';
+import { parseISO } from 'date-fns/parseISO';
 import type { AggregationCursor, Collection, Document, FindCursor, Db, WithId, IndexDescription, UpdateResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';

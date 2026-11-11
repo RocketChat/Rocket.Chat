@@ -1,4 +1,4 @@
-import { format } from 'date-fns';
+import { format } from 'date-fns/format';
 
 const momentToDateFns: Record<string, string> = {
 	L: 'PP',

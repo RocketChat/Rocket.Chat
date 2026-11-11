@@ -29,7 +29,7 @@ test.describe.serial('OC - Manage Monitors', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poMonitors = new OmnichannelMonitors(page);
-		await poMonitors.goTo();
+		await poMonitors.goto();
 	});
 
 	test('OC - Manager Monitors - Add monitor', async () => {

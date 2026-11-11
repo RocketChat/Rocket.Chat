@@ -22,8 +22,8 @@ test.describe.serial('sidebar custom categories', () => {
 		await expect(poHomeChannel.sidebar.getCategoryCollapser(name)).toBeVisible();
 	};
 
-	const roomBelongsToGroup = async (groupName: string) => {
-		const present = await poHomeChannel.content.header.checkRoomBelongsToGroup(`Remove from ${groupName}`);
+	const roomBelongsToGroup = async (groupName: string, belongs = true) => {
+		const present = await poHomeChannel.content.header.checkRoomBelongsToGroup(`Remove from ${groupName}`, belongs);
 		return present;
 	};
 
@@ -46,8 +46,7 @@ test.describe.serial('sidebar custom categories', () => {
 		await setUserPreferences(api, { sidebarCategories: [] });
 		await api.post('/rooms.favorite', { roomId: targetChannelId, favorite: false });
 		poHomeChannel = new HomeChannel(page);
-		await page.goto('/home');
-		await poHomeChannel.waitForHome();
+		await poHomeChannel.goto();
 	});
 
 	test.describe('create (+) menu', () => {
@@ -121,6 +120,40 @@ test.describe.serial('sidebar custom categories', () => {
 		});
 	});
 
+	test.describe('drag and drop', () => {
+		const orderOf = async (names: string[]) => (await poHomeChannel.sidebar.getCategoryOrder()).filter((name) => names.includes(name));
+
+		test('should move a room into a category by dragging it onto the category header', async ({ api }) => {
+			const category = uniqueName('drag');
+			await createCategory(api, category);
+			// Favorites is listed right after the custom categories, so the room and the header are both on screen.
+			await api.post('/rooms.favorite', { roomId: targetChannelId, favorite: true });
+			await poHomeChannel.gotoChannel(targetChannel);
+			await expect(poHomeChannel.sidebar.getSidebarItemByName(targetChannel)).toBeVisible();
+
+			await poHomeChannel.sidebar.dragRoomToCategory(targetChannel, category);
+
+			expect(await roomBelongsToGroup(category)).toBe(true);
+			expect(await roomBelongsToGroup('Favorites', false)).toBe(false);
+		});
+
+		test('should reorder categories by dragging a category header above another', async ({ api }) => {
+			const first = uniqueName('first');
+			const second = uniqueName('second');
+			await setUserPreferences(api, {
+				sidebarCategories: [
+					{ _id: faker.string.uuid(), name: first },
+					{ _id: faker.string.uuid(), name: second },
+				],
+			});
+			await expect.poll(() => orderOf([first, second])).toEqual([first, second]);
+
+			await poHomeChannel.sidebar.dragCategoryAbove(second, first);
+
+			await expect.poll(() => orderOf([first, second])).toEqual([second, first]);
+		});
+	});
+
 	test.describe('manage category in room actions', () => {
 		const category = uniqueName('ren');
 
@@ -139,7 +172,7 @@ test.describe.serial('sidebar custom categories', () => {
 			expect(await roomBelongsToGroup('Favorites')).toBe(true);
 
 			await poHomeChannel.sidebar.removeRoomFromFavorites(targetChannel);
-			expect(await roomBelongsToGroup('Favorites')).toBe(false);
+			expect(await roomBelongsToGroup('Favorites', false)).toBe(false);
 		});
 
 		test('should remove a room from a category', async () => {
@@ -147,7 +180,7 @@ test.describe.serial('sidebar custom categories', () => {
 			expect(await roomBelongsToGroup(category)).toBe(true);
 
 			await poHomeChannel.sidebar.removeRoomFromCategory(targetChannel, category);
-			expect(await roomBelongsToGroup(category)).toBe(false);
+			expect(await roomBelongsToGroup(category, false)).toBe(false);
 		});
 
 		test('should create a category and move the room into it in one step', async () => {
@@ -170,7 +203,7 @@ test.describe.serial('sidebar custom categories', () => {
 			expect(await roomBelongsToGroup('Favorites')).toBe(true);
 
 			await poHomeChannel.content.header.pickCategoryMenuItem('Remove from Favorites');
-			expect(await roomBelongsToGroup('Favorites')).toBe(false);
+			expect(await roomBelongsToGroup('Favorites', false)).toBe(false);
 		});
 
 		test('should move the room into an existing category from the header', async () => {

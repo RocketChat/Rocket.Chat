@@ -1,4 +1,9 @@
 {
 	"extends": "@rocket.chat/tsconfig/base.json",
-	"include": ["src/**/*"]
+	"compilerOptions": {
+		"module": "nodenext",
+		"moduleResolution": "nodenext"
+	},
+	"include": ["src/**/*"],
+	"exclude": []
 }

@@ -1,5 +1,5 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
-import { Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
+import { Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesAction, type TableColumnWidth } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
@@ -7,17 +7,17 @@ import {
 	GenericTableHeaderCell,
 	GenericTableBody,
 	GenericTableLoadingTable,
+	usePaginatedQuery,
 	usePagination,
 	useSort,
+	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
 import type { KeyboardEvent, MouseEvent } from 'react';
 import { useMemo, useState } from 'react';
 
 import ChannelsTableRow from './ChannelsTableRow';
 import FilterByText from '../../../../../components/FilterByText';
-import GenericNoResults from '../../../../../components/GenericNoResults';
 import { useDirectoryQuery } from '../../../hooks/useDirectoryQuery';
 
 const ChannelsTable = () => {
@@ -28,8 +28,9 @@ const ChannelsTable = () => {
 	const channelRoute = useRoute('channel');
 	const groupsRoute = useRoute('group');
 
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'usersCount' | 'lastMessage' | 'createdAt'>('name');
+
+	const columns: TableColumnWidth[] = ['auto', '100px', ...(mediaQuery ? (['150px', '150px', '150px'] as const) : [])];
 
 	const headers = useMemo(
 		() =>
@@ -43,7 +44,6 @@ const ChannelsTable = () => {
 					active={sortBy === 'usersCount'}
 					onClick={setSort}
 					sort='usersCount'
-					width='100px'
 				>
 					{t('Users')}
 				</GenericTableHeaderCell>,
@@ -54,7 +54,6 @@ const ChannelsTable = () => {
 						active={sortBy === 'createdAt'}
 						onClick={setSort}
 						sort='createdAt'
-						width='150px'
 					>
 						{t('Created_at')}
 					</GenericTableHeaderCell>
@@ -66,25 +65,35 @@ const ChannelsTable = () => {
 						active={sortBy === 'lastMessage'}
 						onClick={setSort}
 						sort='lastMessage'
-						width='150px'
 					>
 						{t('Last_Message')}
 					</GenericTableHeaderCell>
 				),
-				mediaQuery && (
-					<GenericTableHeaderCell key='belongsTo' width='150px'>
-						{t('Belongs_To')}
-					</GenericTableHeaderCell>
-				),
+				mediaQuery && <GenericTableHeaderCell key='belongsTo'>{t('Belongs_To')}</GenericTableHeaderCell>,
 			].filter(Boolean),
 		[setSort, sortBy, t, sortDirection, mediaQuery],
 	);
 
 	const getDirectoryData = useEndpoint('GET', '/v1/directory');
-	const query = useDirectoryQuery({ text, current, itemsPerPage }, [sortBy, sortDirection], 'channels');
-	const { data, isFetched, isLoading, isError, refetch } = useQuery({
-		queryKey: ['getDirectoryData', query],
-		queryFn: () => getDirectoryData(query),
+	const query = useDirectoryQuery({ text }, [sortBy, sortDirection], 'channels');
+	const queryKey = ['getDirectoryData', query];
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({
+		resetKey: queryKey,
+	});
+	const { data, isFetched, isLoading, isError, refetch } = usePaginatedQuery({
+		query: {
+			queryKey,
+			queryFn: (page) => getDirectoryData({ ...query, ...page }),
+		},
+		itemsKey: 'result',
+		offset: current,
+		count: itemsPerPage,
 	});
 
 	const onClick = useMemo(
@@ -100,16 +109,16 @@ const ChannelsTable = () => {
 		<>
 			<FilterByText placeholder={t('Search_Channels')} value={text} onChange={(event) => setText(event.target.value)} />
 			{isLoading && (
-				<GenericTable>
+				<GenericTable columns={columns}>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
-						<GenericTableLoadingTable headerCells={5} />
+						<GenericTableLoadingTable headerCells={columns.length} />
 					</GenericTableBody>
 				</GenericTable>
 			)}
 			{data?.result && data.result.length > 0 && isFetched && (
 				<>
-					<GenericTable>
+					<GenericTable columns={columns}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.result.map((room) => (

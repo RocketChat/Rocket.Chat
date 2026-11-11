@@ -1,9 +1,9 @@
 import type { MessageQuoteAttachment } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Palette } from '@rocket.chat/fuselage';
+import { useTimeAgo } from '@rocket.chat/ui-client';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
 
-import { useTimeAgo } from '../../../../hooks/useTimeAgo';
 import MessageContentBody from '../../MessageContentBody';
 import Attachments from '../Attachments';
 import type { AudioAttachmentSource } from './file/AudioAttachment';
@@ -19,13 +19,7 @@ import { toPlainTextRoot } from '../../../../lib/toPlainTextRoot';
 
 // TODO: remove this team collaboration
 const quoteStyles = css`
-	.rcx-attachment__details {
-		.rcx-message-body {
-			color: ${Palette.text['font-default']};
-		}
-	}
-	&:hover,
-	&:focus {
+	&:hover {
 		.rcx-attachment__details {
 			background: ${Palette.surface['surface-hover']};
 			border-color: ${Palette.stroke['stroke-light']};
@@ -37,9 +31,11 @@ const quoteStyles = css`
 export type QuoteAttachmentProps = {
 	attachment: MessageQuoteAttachment;
 	source?: AudioAttachmentSource;
+	/** This quote's own path, used to prefix its nested attachments' collapse-state keys. */
+	path?: string;
 };
 
-export const QuoteAttachment = ({ attachment, source }: QuoteAttachmentProps) => {
+export const QuoteAttachment = ({ attachment, source, path }: QuoteAttachmentProps) => {
 	const formatTime = useTimeAgo();
 	const displayAvatarPreference = useUserPreference<boolean>('displayAvatars');
 
@@ -48,7 +44,7 @@ export const QuoteAttachment = ({ attachment, source }: QuoteAttachmentProps) =>
 			<AttachmentContent className={quoteStyles} width='full'>
 				<AttachmentDetails
 					is='blockquote'
-					borderRadius='x4'
+					borderRadius='medium'
 					borderWidth='default'
 					borderStyle='solid'
 					borderColor='extra-light'
@@ -72,6 +68,7 @@ export const QuoteAttachment = ({ attachment, source }: QuoteAttachmentProps) =>
 								attachments={attachment.attachments}
 								id={attachment.attachments[0]?.title_link}
 								source={source && { rid: source.rid, mid: source.mid, name: attachment.author_name }}
+								keyPrefix={path}
 							/>
 						</AttachmentInner>
 					)}

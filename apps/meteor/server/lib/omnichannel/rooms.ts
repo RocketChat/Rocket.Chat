@@ -1,5 +1,5 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
-import { Omnichannel } from '@rocket.chat/core-services';
+import { Omnichannel, ClientSafeError } from '@rocket.chat/core-services';
 import type {
 	ILivechatVisitor,
 	IMessage,
@@ -22,8 +22,6 @@ import {
 	ReadReceipts,
 	ReadReceiptsArchive,
 } from '@rocket.chat/models';
-import { check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 
 import { normalizeTransferredByData } from './Helper';
 import { QueueManager } from './QueueManager';
@@ -33,7 +31,7 @@ import { getRequiredDepartment } from './departmentsLib';
 import { checkDefaultAgentOnNewRoom } from './hooks';
 import { livechatLogger } from './logger';
 import { saveTransferHistory } from './transfer';
-import { i18n } from '../../../app/utils/lib/i18n';
+import { i18n } from '../../../lib/i18n';
 import { trim } from '../../../lib/utils/stringUtils';
 import { settings } from '../../settings';
 import { hasPermissionAsync } from '../authorization/hasPermission';
@@ -55,7 +53,7 @@ export async function getRoom(
 	extraData?: IOmnichannelRoomExtraData,
 ) {
 	if (!settings.get('Livechat_enabled')) {
-		throw new Meteor.Error('error-omnichannel-is-disabled');
+		throw new ClientSafeError('error-omnichannel-is-disabled');
 	}
 	livechatLogger.debug({ msg: 'Attempting to find or create a room for visitor', visitorId: guest._id });
 	const room = await LivechatRooms.findOneById(message.rid);
@@ -77,7 +75,7 @@ export async function getRoom(
 
 	if (room.v.token !== guest.token) {
 		livechatLogger.debug({ msg: 'Visitor trying to access another visitor room', visitorId: guest._id });
-		throw new Meteor.Error('cannot-access-room');
+		throw new ClientSafeError('cannot-access-room');
 	}
 
 	return { room, newRoom: false };
@@ -99,7 +97,7 @@ export async function createRoom({
 	extraData?: IOmnichannelRoomExtraData;
 }) {
 	if (!settings.get('Livechat_enabled')) {
-		throw new Meteor.Error('error-omnichannel-is-disabled');
+		throw new ClientSafeError('error-omnichannel-is-disabled');
 	}
 
 	if (await LivechatContacts.isChannelBlocked(Visitors.makeVisitorAssociation(visitor._id, roomInfo.source))) {
@@ -174,7 +172,7 @@ export async function saveRoomInfo(
 			if (value !== '' && field.regexp !== undefined && field.regexp !== '') {
 				const regexp = new RegExp(field.regexp);
 				if (!regexp.test(value)) {
-					throw new Meteor.Error(i18n.t('error-invalid-custom-field-value', { field: field.label }));
+					throw new ClientSafeError(i18n.t('error-invalid-custom-field-value', { field: field.label }));
 				}
 			}
 			customFields[field._id] = value;
@@ -220,15 +218,15 @@ export async function saveRoomInfo(
 export async function returnRoomAsInquiry(room: IOmnichannelRoom, departmentId?: string, overrideTransferData: Partial<TransferData> = {}) {
 	livechatLogger.debug({ msg: 'Transferring room to queue', scope: departmentId ? 'department' : undefined, room });
 	if (!room.open) {
-		throw new Meteor.Error('room-closed', 'Room closed');
+		throw new ClientSafeError('room-closed', 'Room closed');
 	}
 
 	if (room.onHold) {
-		throw new Meteor.Error('error-room-onHold');
+		throw new ClientSafeError('error-room-onHold');
 	}
 
 	if (!(await Omnichannel.isWithinMACLimit(room))) {
-		throw new Meteor.Error('error-mac-limit-reached');
+		throw new ClientSafeError('error-mac-limit-reached');
 	}
 
 	if (!room.servedBy) {
@@ -237,7 +235,7 @@ export async function returnRoomAsInquiry(room: IOmnichannelRoom, departmentId?:
 
 	const user = await Users.findOneById(room.servedBy._id);
 	if (!user?._id) {
-		throw new Meteor.Error('error-invalid-user');
+		throw new ClientSafeError('error-invalid-user');
 	}
 
 	const inquiry = await LivechatInquiry.findOne({ rid: room._id });
@@ -259,7 +257,7 @@ export async function returnRoomAsInquiry(room: IOmnichannelRoom, departmentId?:
 		await RoutingManager.unassignAgent(inquiry, departmentId);
 	} catch (err) {
 		livechatLogger.error({ err });
-		throw new Meteor.Error('error-returning-inquiry');
+		throw new ClientSafeError('error-returning-inquiry');
 	}
 
 	callbacks.runAsync('livechat:afterReturnRoomAsInquiry', { room });
@@ -269,18 +267,17 @@ export async function returnRoomAsInquiry(room: IOmnichannelRoom, departmentId?:
 
 export async function removeOmnichannelRoom(rid: string) {
 	livechatLogger.debug({ msg: 'Deleting room', roomId: rid });
-	check(rid, String);
 	const room = await LivechatRooms.findOneById(rid);
 	if (!room) {
-		throw new Meteor.Error('error-invalid-room', 'Invalid room');
+		throw new ClientSafeError('error-invalid-room', 'Invalid room');
 	}
 
 	if (!isOmnichannelRoom(room)) {
-		throw new Meteor.Error('error-this-is-not-a-livechat-room');
+		throw new ClientSafeError('error-this-is-not-a-livechat-room');
 	}
 
 	if (room.open) {
-		throw new Meteor.Error('error-room-is-not-closed');
+		throw new ClientSafeError('error-room-is-not-closed');
 	}
 
 	const inquiry = await LivechatInquiry.findOneByRoomId(rid);
@@ -308,7 +305,7 @@ export async function removeOmnichannelRoom(rid: string) {
 	for (const r of result) {
 		if (r.status === 'rejected') {
 			livechatLogger.error({ msg: 'Error removing room', roomId: rid, err: r.reason });
-			throw new Meteor.Error('error-removing-room', 'Error removing room');
+			throw new ClientSafeError('error-removing-room', 'Error removing room');
 		}
 	}
 }

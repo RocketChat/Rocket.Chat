@@ -1,6 +1,6 @@
-import { sdk } from '../../../app/utils/client/lib/SDKClient';
-import { t } from '../../../app/utils/lib/i18n';
+import { t } from '../../../lib/i18n';
 import { PublicSettingsCachedStore, SubscriptionsCachedStore } from '../../cachedStores';
+import { sdk } from '../../lib/SDKClient';
 import { getDdpSdk } from '../../lib/sdk/ddpSdk';
 import { FORGET_SESSION_SETTING_ID } from '../../lib/sdk/meteorBackedSdk';
 import { settings } from '../../lib/settings';
@@ -11,7 +11,6 @@ import { useUserDataSyncReady } from '../../lib/userData';
 // Meteor's accounts-password package registers `verifyEmail` server-side; declare
 // it here so the typed `sdk.call` accepts it from client code.
 declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		verifyEmail(token: string): void;
 	}

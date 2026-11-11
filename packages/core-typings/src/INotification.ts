@@ -54,13 +54,25 @@ export interface INotificationDesktop {
 	text: string;
 	icon?: string;
 	duration?: number;
+	// Force the notification to stay until the user interacts with it, regardless of the recipient's
+	// `desktopNotificationRequireInteraction` preference.
+	requireInteraction?: boolean;
+	// Optional action buttons rendered on the notification (desktop app only; ignored elsewhere).
+	actions?: {
+		action: string;
+		title: string;
+	}[];
 	payload: {
 		_id: IMessage['_id'];
 		rid: IMessage['rid'];
 		tmid?: IMessage['tmid'];
 		sender: IMessage['u'];
-		type: IRoom['t'];
-		name: IRoom['name'];
+		// Omitted by notifications that aren't about a room the recipient can open — a conference ring, for
+		// one. Without a name the click doesn't navigate anywhere, which is the point.
+		type?: IRoom['t'];
+		name?: IRoom['name'];
+		// When set, the notification can offer a "Join" action that opens this conference directly.
+		conferenceId?: string;
 		message: {
 			msg: IMessage['msg'];
 			t?: IMessage['t'];

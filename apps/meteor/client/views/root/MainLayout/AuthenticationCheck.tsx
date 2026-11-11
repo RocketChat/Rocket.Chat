@@ -1,5 +1,5 @@
 import { useConnectionStatus, useSession, useUser, useSetting } from '@rocket.chat/ui-contexts';
-import RegistrationRoute from '@rocket.chat/web-ui-registration';
+import RegistrationRoute from '@rocket.chat/ui-registration';
 import type { ReactNode } from 'react';
 import { useEffect, useRef, useState } from 'react';
 
@@ -8,18 +8,22 @@ import LoginPage from './LoginPage';
 import UsernameCheck from './UsernameCheck';
 import { useStoredItem } from '../../../hooks/useStoredItem';
 import { STORAGE_KEYS } from '../../../lib/sdk/storage';
-import HomeSkeleton from '../../home/HomeSkeleton';
 
 /*
  * Anonymous and guest are similar in some way
  *
- * Anonymous is an old feature that allows the user to navigate as an anonymus user
- * by default the user dont need to do anything its hadled by the system but by behind the scenes a new    * user is registered
+ * Anonymous (Accounts_AllowAnonymousRead) lets an unauthenticated visitor read public rooms;
+ * no user is created and the composer only offers signing in
  *
  * Guest is only for certain locations, it shows a form asking if the user wants to stay as guest and if so
- * renders the page, without creating an user (not even an anonymous user)
+ * renders the page, without creating an user
  */
-export type AuthenticationCheckProps = { children: ReactNode; guest?: boolean };
+export type AuthenticationCheckProps = {
+	children: ReactNode;
+	guest?: boolean;
+	/** Shown while the user is resolved, here and in the `UsernameCheck` below — see its own prop. */
+	loadingElement: ReactNode;
+};
 
 /**
  * The connection states that mean a server was reached for and lost, as opposed to not having answered yet.
@@ -30,7 +34,7 @@ export type AuthenticationCheckProps = { children: ReactNode; guest?: boolean };
  */
 const hasGivenUp = (status: ReturnType<typeof useConnectionStatus>['status']): boolean => status === 'waiting' || status === 'failed';
 
-const AuthenticationCheck = ({ children, guest }: AuthenticationCheckProps) => {
+const AuthenticationCheck = ({ children, guest, loadingElement }: AuthenticationCheckProps) => {
 	const user = useUser();
 	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead');
 	const forceLogin = useSession('forceLogin');
@@ -93,13 +97,13 @@ const AuthenticationCheck = ({ children, guest }: AuthenticationCheckProps) => {
 	const isResumingSession = !user && !hasSeenUser.current && !forceLogin && !unreachable && !!loginToken;
 
 	if (isResumingSession) {
-		return <HomeSkeleton />;
+		return <>{loadingElement}</>;
 	}
 
 	if (user) {
 		return (
 			<LoggedInArea>
-				<UsernameCheck>{children}</UsernameCheck>
+				<UsernameCheck loadingElement={loadingElement}>{children}</UsernameCheck>
 			</LoggedInArea>
 		);
 	}
@@ -109,7 +113,7 @@ const AuthenticationCheck = ({ children, guest }: AuthenticationCheckProps) => {
 	}
 
 	if (!forceLogin && allowAnonymousRead) {
-		return <UsernameCheck>{children}</UsernameCheck>;
+		return <UsernameCheck loadingElement={loadingElement}>{children}</UsernameCheck>;
 	}
 
 	return <LoginPage />;

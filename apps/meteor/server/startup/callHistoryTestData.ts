@@ -200,6 +200,7 @@ export async function addCallHistoryTestData(uid: string, extraUid: string): Pro
 			activatedAt: new Date(),
 			uids: [uid],
 			features: ['audio'],
+			sipCallId: 'sipCallId3',
 		},
 		{
 			_id: callId4,
@@ -233,6 +234,7 @@ export async function addCallHistoryTestData(uid: string, extraUid: string): Pro
 			activatedAt: new Date(),
 			uids: [uid],
 			features: ['audio'],
+			sipCallId: 'sipCallId4',
 		},
 	]);
 }

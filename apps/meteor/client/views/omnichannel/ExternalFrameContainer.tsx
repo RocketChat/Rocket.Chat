@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
 import { encrypt, getKeyFromString } from './crypto';
-import { sdk } from '../../../app/utils/client/lib/SDKClient';
+import { sdk } from '../../lib/SDKClient';
 import { useRoom } from '../room/contexts/RoomContext';
 
 function ExternalFrameContainer() {

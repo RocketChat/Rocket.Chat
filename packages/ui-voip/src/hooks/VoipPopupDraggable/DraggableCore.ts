@@ -1,6 +1,5 @@
 import { Emitter } from '@rocket.chat/emitter';
 import type { OffCallbackHandler } from '@rocket.chat/emitter';
-import { useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
 import { useCallback, useRef, useState } from 'react';
 
 const GRAB_DOM_EVENTS = ['pointerdown'] as const;
@@ -538,48 +537,42 @@ export const useDraggable = (options?: useDraggableOptions) => {
 	const [handleElement] = useState<HandleElement>(() => new HandleElement(new HandleDomElement(), draggableElement));
 	const restorePositionRef = useRef<IGenericRect | null>(restorePosition || null);
 
-	const handleElementCallbackRef = useSafeRefCallback(
-		useCallback(
-			(node: HTMLElement) => {
-				return handleElement.element.setElement(node);
-			},
-			[handleElement],
-		),
+	const handleElementCallbackRef = useCallback(
+		(node: HTMLElement) => {
+			return handleElement.element.setElement(node);
+		},
+		[handleElement],
 	);
 
-	const draggableCallbackRef = useSafeRefCallback(
-		useCallback(
-			(node: HTMLElement) => {
-				const offMove = draggableElement.onMove(() => {
-					const position = node.getBoundingClientRect();
-					restorePositionRef.current = position;
-					if (onChangePosition) {
-						onChangePosition(position);
-					}
-				});
-
-				const offDomEvents = draggableElement.element.setElement(node);
-
-				if (restorePositionRef.current) {
-					draggableElement.moveToCoordinates(restorePositionRef.current, node.getBoundingClientRect());
+	const draggableCallbackRef = useCallback(
+		(node: HTMLElement) => {
+			const offMove = draggableElement.onMove(() => {
+				const position = node.getBoundingClientRect();
+				restorePositionRef.current = position;
+				if (onChangePosition) {
+					onChangePosition(position);
 				}
+			});
 
-				return () => {
-					offDomEvents();
-					offMove();
-				};
-			},
-			[draggableElement, onChangePosition],
-		),
+			const offDomEvents = draggableElement.element.setElement(node);
+
+			if (restorePositionRef.current) {
+				draggableElement.moveToCoordinates(restorePositionRef.current, node.getBoundingClientRect());
+			}
+
+			return () => {
+				offDomEvents();
+				offMove();
+			};
+		},
+		[draggableElement, onChangePosition],
 	);
 
-	const boundingCallbackRef = useSafeRefCallback(
-		useCallback(
-			(node: HTMLElement) => {
-				return boundingElement.element.setElement(node);
-			},
-			[boundingElement],
-		),
+	const boundingCallbackRef = useCallback(
+		(node: HTMLElement) => {
+			return boundingElement.element.setElement(node);
+		},
+		[boundingElement],
 	);
 
 	return [draggableCallbackRef, boundingCallbackRef, handleElementCallbackRef];

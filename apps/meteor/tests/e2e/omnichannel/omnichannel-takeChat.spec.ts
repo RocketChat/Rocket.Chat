@@ -52,7 +52,7 @@ test.describe('omnichannel-takeChat', () => {
 
 		poLiveChat = new OmnichannelLiveChat(page, api);
 
-		await page.goto('/livechat');
+		await poLiveChat.goto();
 	});
 
 	test('When agent is online should take the chat', async () => {

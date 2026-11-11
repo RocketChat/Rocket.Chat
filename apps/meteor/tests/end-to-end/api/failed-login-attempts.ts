@@ -1,6 +1,7 @@
+import { after, afterEach, before, beforeEach, describe, it } from 'node:test';
+
 import type { IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { after, before, beforeEach, afterEach, describe, it } from 'mocha';
 
 import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials } from '../../data/api-data';
@@ -15,7 +16,7 @@ describe('[Failed Login Attempts]', () => {
 	const userBlockSeconds = 3;
 	const ipBlockSeconds = 8;
 
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	before(() =>
 		Promise.all([
@@ -53,7 +54,8 @@ describe('[Failed Login Attempts]', () => {
 			.expect('Content-Type', 'application/json')
 			.expect(401)
 			.expect((res) => {
-				expect(res.body).to.have.property('status', 'error');
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.not.have.property('status');
 				expect(res.body).to.have.property('message', 'Unauthorized');
 			});
 	}
@@ -89,7 +91,8 @@ describe('[Failed Login Attempts]', () => {
 			.expect('Content-Type', 'application/json')
 			.expect(401)
 			.expect((res) => {
-				expect(res.body).to.have.property('status', 'error');
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.not.have.property('status');
 				expect(res.body).to.have.property('error', `error-login-blocked-for-${reason}`);
 			});
 	}
@@ -191,16 +194,16 @@ describe('[Failed Login Attempts]', () => {
 			await shouldBlockLogin(userLogin.username, password, 'ip');
 		});
 
-		it('should unblock IP after block time', async () => {
+		it('should unblock IP after block time', { timeout: 20000 }, async () => {
 			await failMaxAttempts(user.username, `${password}-incorrect`);
 			await failMaxAttempts(user2.username, `${password}-incorrect`);
 
 			await shouldBlockLogin(userLogin.username, password, 'ip');
 			await sleep(ipBlockSeconds * 1000);
 			await shouldSuccesfullyLoginWithUser(userLogin.username, password);
-		}).timeout(20000);
+		});
 
-		it('should reset counter of failed attempts after a successful login', async () => {
+		it('should reset counter of failed attempts after a successful login', { timeout: 20000 }, async () => {
 			await failMaxAttempts(user.username, `${password}-incorrect`);
 			await failMaxAttempts(user2.username, `${password}-incorrect`);
 
@@ -212,6 +215,6 @@ describe('[Failed Login Attempts]', () => {
 			await failMaxAttempts(user.username, `${password}-incorrect`);
 			await failMaxAttempts(user2.username, `${password}-incorrect`);
 			await shouldBlockLogin(userLogin.username, password, 'ip');
-		}).timeout(20000);
+		});
 	});
 });

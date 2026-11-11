@@ -1,9 +1,13 @@
 import { faker } from '@faker-js/faker';
 
 import { DEFAULT_USER_CREDENTIALS } from './config/constants';
+import { createAuxContext } from './fixtures/createAuxContext';
 import { Users } from './fixtures/userStates';
 import { AccountProfile, HomeChannel, Login } from './page-objects';
+import { expectPollUserStatus } from './utils/expectPollUserStatus';
 import { test, expect } from './utils/test';
+import type { ITestUser } from './utils/user-helpers';
+import { createTestUser, loginTestUser } from './utils/user-helpers';
 
 test.describe.serial('Presence', () => {
 	let poLogin: Login;
@@ -14,21 +18,45 @@ test.describe.serial('Presence', () => {
 		poLogin = new Login(page);
 		poHomeChannel = new HomeChannel(page);
 		poAccountProfile = new AccountProfile(page);
-
-		await page.goto('/home');
 	});
 
 	test.describe('Login using default settings', () => {
 		test('should user be online after log in', async () => {
+			await poLogin.goto();
 			await poLogin.login('user1', DEFAULT_USER_CREDENTIALS.password);
 
 			await expect(poHomeChannel.navbar.btnUserMenu).toBeVisible();
 		});
 	});
 
+	test.describe('Disconnection', () => {
+		let user: ITestUser;
+
+		test.beforeAll(async ({ api }) => {
+			user = await createTestUser(api);
+		});
+
+		test.afterAll(async () => {
+			await user.delete();
+		});
+
+		test('should user be offline right after closing their only tab', async ({ api, browser }) => {
+			const { page } = await createAuxContext(browser, await loginTestUser(api, user));
+			await expectPollUserStatus(api, user.data.username, 'online');
+
+			await page.close();
+
+			await expectPollUserStatus(api, user.data.username, 'offline');
+		});
+	});
+
 	test.describe('Custom status', () => {
 		const customStatus = faker.string.alpha(10);
 		test.use({ storageState: Users.admin.state });
+
+		test.beforeEach(async () => {
+			await poHomeChannel.goto();
+		});
 
 		test('should user custom status be reactive', async ({ browser }) => {
 			await test.step('user1 custom status should be empty', async () => {
@@ -39,8 +67,8 @@ test.describe.serial('Presence', () => {
 
 			await test.step('update user1 custom status', async () => {
 				const user1Page = await browser.newPage({ storageState: Users.user1.state });
-				await user1Page.goto('/home');
 				const user1Channel = new HomeChannel(user1Page);
+				await user1Channel.goto();
 
 				await user1Channel.navbar.changeUserCustomStatus(customStatus);
 				await user1Page.close();
@@ -105,6 +133,10 @@ test.describe.serial('Presence', () => {
 
 	test.describe('Status expiration', () => {
 		test.use({ storageState: Users.admin.state });
+
+		test.beforeEach(async () => {
+			await poHomeChannel.goto();
+		});
 
 		test('should toggle custom date/time inputs when selecting duration', async () => {
 			await poHomeChannel.navbar.openEditStatusModal();
@@ -218,19 +250,18 @@ test.describe.serial('Presence', () => {
 			const text = faker.string.alpha(10);
 
 			await test.step('fill Status field + Clear-after on /account/profile and save', async () => {
-				await page.goto('/account/profile');
+				await poAccountProfile.goto();
 				await poAccountProfile.inputStatusText.fill(text);
 				await poAccountProfile.chooseClearStatusAfter('30 minutes');
 				await Promise.all([
 					page.waitForResponse((r) => r.url().endsWith('/v1/users.setStatus') && r.ok()),
-					page.waitForResponse((r) => r.url().endsWith('/v1/users.updateOwnBasicInfo') && r.ok()),
 					poAccountProfile.btnSaveChanges.click(),
 				]);
 				await expect(page.getByText('Profile saved successfully')).toBeVisible();
 			});
 
 			await test.step('status with expiration appears in user menu', async () => {
-				await page.goto('/home');
+				await poHomeChannel.goto();
 				await poHomeChannel.navbar.btnUserMenu.click();
 				await expect(poHomeChannel.navbar.userMenu).toContainText(text);
 				await expect(poHomeChannel.navbar.userMenu).toContainText('Until');

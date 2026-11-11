@@ -132,9 +132,9 @@ export function message() {
 		}
 	});
 
-	federationSDK.eventEmitterService.on('homeserver.matrix.redaction', async ({ event }) => {
+	federationSDK.eventEmitterService.on('homeserver.matrix.redaction', async ({ event, redacts }) => {
 		try {
-			const redactedEventId = event.redacts;
+			const redactedEventId = redacts || event.redacts;
 			if (!redactedEventId) {
 				logger.debug('No redacts field in redaction event');
 				return;
@@ -146,9 +146,9 @@ export function message() {
 				return;
 			}
 
-			const rcMessage = await Messages.findOneByFederationId(event.redacts);
+			const rcMessage = await Messages.findOneByFederationId(redactedEventId);
 			if (!rcMessage) {
-				logger.debug({ msg: 'No RC message found for event', eventId: event.redacts });
+				logger.debug({ msg: 'No RC message found for event', eventId: redactedEventId });
 				return;
 			}
 			const internalUsername = event.sender;

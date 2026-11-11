@@ -2,11 +2,14 @@ import type { VideoConferenceCapabilities } from '@rocket.chat/core-typings';
 
 import { settings } from '../settings';
 
+/** The `appId` of a provider built into Rocket.Chat rather than supplied by an app, which has no app hooks to call. */
+export const CORE_PROVIDER_APP_ID = 'core';
+
 const providers = new Map<string, { capabilities: VideoConferenceCapabilities; label: string; appId: string }>();
 
 export const videoConfProviders = {
-	registerProvider(providerName: string, capabilities: VideoConferenceCapabilities, appId: string): void {
-		providers.set(providerName.toLowerCase(), { capabilities, label: providerName, appId });
+	registerProvider(providerName: string, capabilities: VideoConferenceCapabilities, appId: string, label = providerName): void {
+		providers.set(providerName.toLowerCase(), { capabilities, label, appId });
 	},
 
 	unRegisterProvider(providerName: string): void {

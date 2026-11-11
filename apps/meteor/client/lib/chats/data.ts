@@ -1,11 +1,11 @@
 import { isEncryptedMessageContent, type IEditedMessage, type IMessage, type IRoom, type ISubscription } from '@rocket.chat/core-typings';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { Random } from '@rocket.chat/random';
-import { differenceInMinutes } from 'date-fns';
+import { differenceInMinutes } from 'date-fns/differenceInMinutes';
 
 import type { DataAPI } from './ChatAPI';
-import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { Messages, Rooms, Subscriptions } from '../../stores';
+import { sdk } from '../SDKClient';
 import { hasAtLeastOnePermission, hasPermission } from '../authorization';
 import { settings } from '../settings';
 import { getUserId } from '../user';
@@ -311,12 +311,6 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 
 	const getSubscription = createStrictGetter(findSubscription, 'Subscription not found');
 
-	const findSubscriptionFromMessage = async (message: IMessage): Promise<ISubscription | undefined> => {
-		return Subscriptions.state.find((record) => record.rid === message.rid);
-	};
-
-	const getSubscriptionFromMessage = createStrictGetter(findSubscriptionFromMessage, 'Subscription not found');
-
 	return {
 		composeMessage,
 		findMessageByID,
@@ -343,7 +337,5 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		getDiscussionByID,
 		findSubscription,
 		getSubscription,
-		findSubscriptionFromMessage,
-		getSubscriptionFromMessage,
 	};
 };

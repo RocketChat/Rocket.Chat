@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 
-import { credentials, methodCall, request } from './api-data';
+import { api, assertSuccess, credentials, request } from './api-data';
 import type { IRequestConfig } from './users.helper';
 
 type SendMessageParams = {
@@ -10,18 +10,11 @@ type SendMessageParams = {
 };
 
 /**
- * Sends a text message to a room using the method.call/sendMessage DDP endpoint.
+ * Sends a text message through chat.sendMessage, on the instance `config` points to.
  *
- * This helper function allows sending messages to rooms (channels, groups, DMs)
- * for federation testing scenarios using the DDP method format. It supports
- * custom request configurations for cross-domain federation testing.
- *
- * @param rid - The unique identifier of the room
- * @param msg - The message text to send
- * @param config - Optional request configuration for custom domains
- * @returns Promise resolving to the API response
+ * @throws {RequestFailedError} when the message is not sent
  */
-export const sendMessage = ({ rid, msg, config }: SendMessageParams) => {
+export const sendMessage = async ({ rid, msg, config }: SendMessageParams) => {
 	if (!rid) {
 		throw new Error('"rid" is required in "sendMessage" test helper');
 	}
@@ -32,21 +25,7 @@ export const sendMessage = ({ rid, msg, config }: SendMessageParams) => {
 	const requestInstance = config?.request || request;
 	const credentialsInstance = config?.credentials || credentials;
 
-	return requestInstance
-		.post(methodCall('sendMessage'))
-		.set(credentialsInstance)
-		.send({
-			message: JSON.stringify({
-				method: 'sendMessage',
-				params: [
-					{
-						_id: `${Date.now()}-${Math.random()}`,
-						rid,
-						msg,
-					},
-				],
-				id: `${Date.now()}-${Math.random()}`,
-				msg: 'method',
-			}),
-		});
+	const res = await requestInstance.post(api('chat.sendMessage')).set(credentialsInstance).send({ message: { rid, msg } });
+
+	return assertSuccess('chat.sendMessage', res);
 };

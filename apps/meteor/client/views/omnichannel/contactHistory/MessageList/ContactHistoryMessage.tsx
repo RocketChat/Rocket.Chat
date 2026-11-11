@@ -9,7 +9,6 @@ import {
 	MessageTimestamp,
 	MessageHeader as MessageHeaderTemplate,
 	MessageSystem,
-	MessageSystemLeftContainer,
 	MessageSystemContainer,
 	MessageSystemBlock,
 	MessageSystemName,
@@ -18,7 +17,7 @@ import {
 	Bubble,
 } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useUserDisplayName } from '@rocket.chat/ui-client';
+import { useFormatTime, useUserDisplayName } from '@rocket.chat/ui-client';
 import { useUserCard } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -28,7 +27,6 @@ import StatusIndicators from '../../../../components/message/StatusIndicators';
 import Attachments from '../../../../components/message/content/Attachments';
 import UiKitMessageBlock from '../../../../components/message/uikit/UiKitMessageBlock';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
-import { useFormatTime } from '../../../../hooks/useFormatTime';
 import { toPlainTextRoot } from '../../../../lib/toPlainTextRoot';
 
 export type ContactHistoryMessageProps = {
@@ -53,7 +51,7 @@ const ContactHistoryMessage = ({ message, sequential, isNewDay, showUserAvatar }
 	if (message.t === 'livechat-close') {
 		return (
 			<MessageSystem>
-				<MessageSystemLeftContainer>
+				<MessageLeftContainer>
 					{showUserAvatar && (
 						<UserAvatar
 							url={message.avatar}
@@ -65,7 +63,7 @@ const ContactHistoryMessage = ({ message, sequential, isNewDay, showUserAvatar }
 							{...triggerProps}
 						/>
 					)}
-				</MessageSystemLeftContainer>
+				</MessageLeftContainer>
 				<MessageSystemContainer>
 					<MessageSystemBlock>
 						<MessageSystemName data-username={message.u.username} data-qa-type='username'>

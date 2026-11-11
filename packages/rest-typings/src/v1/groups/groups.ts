@@ -68,6 +68,7 @@ export type GroupsEndpoints = {
 	'/v1/groups.create': {
 		POST: (params: GroupsCreateProps) => {
 			group: Omit<IRoom, 'joinCode' | 'members' | 'importIds' | 'e2e'>;
+			skippedMembers?: string[];
 		};
 	};
 	'/v1/groups.convertToTeam': {

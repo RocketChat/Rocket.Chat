@@ -32,7 +32,15 @@ const CategoryRoomMenu = ({ rid, name = '', sections }: CategoryRoomMenuProps) =
 	const handleAction = useHandleMenuAction(allItems);
 
 	return (
-		<Menu detached title={t('Options')} mini icon='kebab' aria-keyshortcuts='alt' onAction={handleAction} disabledKeys={disabledKeys}>
+		<Menu
+			detached
+			title={t('Options')}
+			size='mini'
+			icon='kebab'
+			aria-keyshortcuts='alt'
+			onAction={handleAction}
+			disabledKeys={disabledKeys}
+		>
 			{[
 				...actionSections.map(({ title, items }, index) => (
 					<MenuSection key={title || String(index)} aria-label={title || t('Options')} title={title || undefined} items={items}>

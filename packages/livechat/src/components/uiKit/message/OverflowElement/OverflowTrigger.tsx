@@ -1,7 +1,7 @@
 import type { TargetedEvent } from 'preact/compat';
 import { useCallback } from 'preact/compat';
 
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 import { createClassName } from '../../../../helpers/createClassName';
 import KebabIcon from '../../../../icons/kebab.svg';
 import { Button } from '../../../Button';

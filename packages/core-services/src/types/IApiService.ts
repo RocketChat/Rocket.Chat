@@ -21,5 +21,8 @@ export interface IApiService {
 
 	broadcastLocal<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void>;
 
+	/** Delivers the event to one instance of each service that listens to it, rather than to every instance. */
+	emitToOne<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void>;
+
 	nodeList(): Promise<IBrokerNode[]>;
 }

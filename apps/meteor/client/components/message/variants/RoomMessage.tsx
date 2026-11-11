@@ -5,6 +5,7 @@ import { MessageAvatar } from '@rocket.chat/ui-avatar';
 import { useUserId, useUserCard } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, KeyboardEvent } from 'react';
 import { memo } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 import { useTranslation } from 'react-i18next';
 
 import type { MessageActionContext } from '../../../lib/MessageAction';
@@ -17,6 +18,7 @@ import {
 } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
 import Emoji from '../../Emoji';
 import IgnoredContent from '../IgnoredContent';
+import MessageContentFallback from '../MessageContentFallback';
 import MessageHeader from '../MessageHeader';
 import MessageToolbarHolder from '../MessageToolbarHolder';
 import StatusIndicators from '../StatusIndicators';
@@ -77,7 +79,7 @@ const RoomMessage = ({
 	const editing = useIsMessageHighlight(message._id);
 	const [displayIgnoredMessage, toggleDisplayIgnoredMessage] = useToggle(false);
 	const ignored = (ignoredUser || message.ignored) && !displayIgnoredMessage;
-	const { openUserCard, triggerProps } = useUserCard();
+	const { openUserCard, openUserInfo } = useUserCard();
 
 	const selecting = useIsSelecting();
 
@@ -126,11 +128,16 @@ const RoomMessage = ({
 						emoji={message.emoji ? <Emoji emojiHandle={message.emoji} fillContainer /> : undefined}
 						avatarUrl={message.avatar}
 						username={message.u.username}
+						title=''
 						size='x36'
-						onClick={(e) => openUserCard(e, message.u.username)}
+						onMouseEnter={(e) => openUserCard(e, message.u.username)}
+						onClick={(e) => {
+							e.stopPropagation();
+							openUserInfo(message.u.username);
+						}}
 						style={{ cursor: 'pointer' }}
-						role='button'
-						{...triggerProps}
+						// Redundant pointer-only shortcut for the accessible name button next to it
+						aria-hidden='true'
 					/>
 				)}
 				{selecting && <CheckBox checked={selected} onChange={toggleSelected} aria-label={checkboxLabel} />}
@@ -141,7 +148,9 @@ const RoomMessage = ({
 				{ignored ? (
 					<IgnoredContent messageId={message._id} onShowMessageIgnored={toggleDisplayIgnoredMessage} />
 				) : (
-					<RoomMessageContent message={message} unread={unread} mention={mention} all={all} searchText={searchText} />
+					<ErrorBoundary fallback={<MessageContentFallback id={`${message._id}-content`} />} resetKeys={[message]}>
+						<RoomMessageContent message={message} unread={unread} mention={mention} all={all} searchText={searchText} />
+					</ErrorBoundary>
 				)}
 			</MessageContainer>
 			{!message.private && message?.e2e !== 'pending' && !selecting && <MessageToolbarHolder message={message} context={context} />}

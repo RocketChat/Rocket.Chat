@@ -1,5 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { Pagination } from '@rocket.chat/fuselage';
+import { Pagination, type TableColumnWidth } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
@@ -7,17 +7,18 @@ import {
 	GenericTableHeaderCell,
 	GenericTableBody,
 	GenericTableHeader,
+	usePaginatedQuery,
 	usePagination,
 	useSort,
+	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
-import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { keepPreviousData } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ModerationConsoleTableRow from './ModerationConsoleTableRow';
 import ModerationFilter from './helpers/ModerationFilter';
-import GenericNoResults from '../../../components/GenericNoResults';
 
 // TODO: Missing error state
 const ModerationConsoleTable = () => {
@@ -29,7 +30,6 @@ const ModerationConsoleTable = () => {
 	const { sortBy, sortDirection, setSort } = useSort<'reports.ts' | 'reports.message.u.username' | 'reports.description' | 'count'>(
 		'reports.ts',
 	);
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 
 	const [dateRange, setDateRange] = useState<{ start: string | null; end: string | null }>({
 		start: '',
@@ -42,25 +42,37 @@ const ModerationConsoleTable = () => {
 			() => ({
 				selector: text,
 				sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
-				count: itemsPerPage,
-				offset: current,
 				...(end && { latest: `${new Date(end).toISOString().slice(0, 10)}T23:59:59.999Z` }),
 				...(start && { oldest: `${new Date(start).toISOString().slice(0, 10)}T00:00:00.000Z` }),
 			}),
-			[current, end, itemsPerPage, sortBy, sortDirection, start, text],
+			[end, sortBy, sortDirection, start, text],
 		),
 		500,
 	);
 
 	const getReports = useEndpoint('GET', '/v1/moderation.reportsByUsers');
 
-	const { data, isLoading, isSuccess } = useQuery({
-		queryKey: ['moderation', 'msgReports', 'fetchAll', query],
-		queryFn: async () => getReports(query),
-		meta: {
-			apiErrorToastMessage: true,
+	const queryKey = ['moderation', 'msgReports', 'fetchAll', query];
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({ resetKey: queryKey });
+
+	const { data, isLoading, isSuccess } = usePaginatedQuery({
+		query: {
+			queryKey,
+			queryFn: (page) => getReports({ ...query, ...page }),
+			meta: {
+				apiErrorToastMessage: true,
+			},
+			placeholderData: keepPreviousData,
 		},
-		placeholderData: keepPreviousData,
+		itemsKey: 'reports',
+		offset: current,
+		count: itemsPerPage,
 	});
 
 	const handleClick = useStableCallback((id: IUser['_id']): void => {
@@ -73,6 +85,8 @@ const ModerationConsoleTable = () => {
 			},
 		});
 	});
+
+	const columns: TableColumnWidth[] = ['auto', 'auto', 'auto', 'auto', 'x48'];
 
 	const headers = useMemo(
 		() => [
@@ -94,7 +108,7 @@ const ModerationConsoleTable = () => {
 			<GenericTableHeaderCell key='reports' direction={sortDirection} active={sortBy === 'count'} onClick={setSort} sort='count'>
 				{t('Moderation_Reports')}
 			</GenericTableHeaderCell>,
-			<GenericTableHeaderCell key='actions' width='x48' />,
+			<GenericTableHeaderCell key='actions' />,
 		],
 		[sortDirection, sortBy, setSort, t],
 	);
@@ -103,14 +117,14 @@ const ModerationConsoleTable = () => {
 		<>
 			<ModerationFilter text={text} setText={setText} setDateRange={setDateRange} />
 			{isLoading && (
-				<GenericTable>
+				<GenericTable columns={columns}>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>{isLoading && <GenericTableLoadingTable headerCells={headers.length} />}</GenericTableBody>
 				</GenericTable>
 			)}
 			{isSuccess && data.reports.length > 0 && (
 				<>
-					<GenericTable>
+					<GenericTable columns={columns}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.reports.map((report) => (

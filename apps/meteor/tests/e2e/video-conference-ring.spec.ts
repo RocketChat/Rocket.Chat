@@ -16,7 +16,7 @@ test.describe('video conference ringing', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 
-		await page.goto('/home');
+		await poHomeChannel.goto();
 	});
 
 	let auxContext: { page: Page; poHomeChannel: HomeChannel; poAccountProfile: AccountProfile };

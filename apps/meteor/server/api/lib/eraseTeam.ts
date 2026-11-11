@@ -1,5 +1,5 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
-import { MeteorError, Team } from '@rocket.chat/core-services';
+import { ClientSafeError, Team } from '@rocket.chat/core-services';
 import type { IRoom, ITeam, IUser, AtLeast } from '@rocket.chat/core-typings';
 import { Rooms } from '@rocket.chat/models';
 
@@ -20,7 +20,7 @@ export const eraseTeamShared = async <T extends AtLeast<IUser, '_id' | 'name' | 
 		: [];
 
 	if (!user) {
-		throw new MeteorError('Invalid user provided for erasing team', 'error-invalid-user', {
+		throw new ClientSafeError('Invalid user provided for erasing team', 'error-invalid-user', {
 			method: 'eraseTeamShared',
 		});
 	}
@@ -31,8 +31,10 @@ export const eraseTeamShared = async <T extends AtLeast<IUser, '_id' | 'name' | 
 	// Move every other room back to the workspace
 	await Team.unsetTeamIdOfRooms(user, team);
 
-	// Remove the team's main room
-	await eraseRoomFn(team.roomId, user);
+	const room = await Rooms.findOneById<Pick<IRoom, '_id'>>(team.roomId, { projection: { _id: 1 } });
+	if (room) {
+		await eraseRoomFn(team.roomId, user);
+	}
 
 	// Delete all team memberships
 	await Team.removeAllMembersFromTeam(team._id);

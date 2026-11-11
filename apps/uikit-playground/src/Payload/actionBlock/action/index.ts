@@ -7,3 +7,5 @@ export * from './menu';
 export * from './datePicker';
 
 export * from './linearScale';
+
+export * from './dateTimePicker';

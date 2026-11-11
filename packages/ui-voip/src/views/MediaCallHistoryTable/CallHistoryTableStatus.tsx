@@ -16,6 +16,8 @@ const getCallStateText = (status: CallHistoryItemState, t: TFunction) => {
 			return t('Ended');
 		case 'not-answered':
 			return t('Not_answered');
+		case 'prevented':
+			return t('Prevented');
 		case 'failed':
 		case 'error':
 			return t('Failed');
@@ -32,6 +34,7 @@ const getIcon = (status: CallHistoryItemState) => {
 			return 'phone-question-mark';
 		case 'failed':
 		case 'error':
+		case 'prevented':
 			return 'phone-issue';
 		case 'transferred':
 			return 'arrow-forward';
@@ -44,6 +47,7 @@ const getVariant = (status: CallHistoryItemState) => {
 			return 'status-font-on-warning';
 		case 'failed':
 		case 'error':
+		case 'prevented':
 			return 'status-font-on-danger';
 		default:
 			return 'secondary';
@@ -57,8 +61,8 @@ const CallHistoryTableStatus = ({ status, duration }: CallHistoryTableStatusProp
 	const { t } = useTranslation();
 
 	return (
-		<Box display='flex' flexDirection='row' alignItems='center' color={variant}>
-			<Icon name={icon} color={variant} size={20} marginInlineEnd={8} />
+		<Box display='flex' flexDirection='row' alignItems='center' color={variant} gap={8}>
+			<Icon name={icon} size={20} />
 			{getCallStateText(status, t)}
 			{durationText && <> - {durationText}</>}
 		</Box>

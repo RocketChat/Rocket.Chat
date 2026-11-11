@@ -50,6 +50,7 @@ import { OAuthAppsModify } from './modify/OAuthAppsModify';
 import { SchedulerModify } from './modify/SchedulerModify';
 import { UIController } from './modify/UIController';
 import { Notifier } from './notifier';
+import { CallHistoryRead } from './read/CallHistoryRead';
 import { CloudWorkspaceRead } from './read/CloudWorkspaceRead';
 import { ContactRead } from './read/ContactRead';
 import { ExperimentalRead } from './read/ExperimentalRead';
@@ -302,6 +303,7 @@ export class AppAccessors {
 				new ThreadRead(this.senderFn),
 				new RoleRead(this.senderFn),
 				new ExperimentalRead(this.senderFn),
+				new CallHistoryRead(this.senderFn),
 			);
 		}
 

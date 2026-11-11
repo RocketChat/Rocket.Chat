@@ -2,6 +2,7 @@ import { ApiBridge } from './ApiBridge';
 import { AppActivationBridge } from './AppActivationBridge';
 import { AppBridges } from './AppBridges';
 import { AppDetailChangesBridge } from './AppDetailChangesBridge';
+import { CallHistoryBridge } from './CallHistoryBridge';
 import { CloudWorkspaceBridge } from './CloudWorkspaceBridge';
 import { CommandBridge } from './CommandBridge';
 import { ContactBridge } from './ContactBridge';
@@ -30,6 +31,7 @@ import { VideoConferenceBridge } from './VideoConferenceBridge';
 export type { IHttpBridgeRequestInfo, IListenerBridge, IInternalBridge, IInternalFederationBridge };
 
 export {
+	CallHistoryBridge,
 	CloudWorkspaceBridge,
 	ContactBridge,
 	EnvironmentalVariableBridge,

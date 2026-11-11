@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { MessageComposerFileItemProps } from './MessageComposerFileItem';
-import { getMimeType } from '../../../../../app/utils/lib/mimeTypes';
+import { getMimeType } from '../../../../../lib/mimeTypes';
 import { getFileExtension } from '../../../../../lib/utils/getFileExtension';
 import { usePreventPropagation } from '../../../../hooks/usePreventPropagation';
 import { formatBytes } from '../../../../lib/utils/formatBytes';
@@ -60,7 +60,7 @@ const MessageComposerGenericFile = ({
 		isLoading && !isActive ? (
 			<MessageComposerFileLoader />
 		) : (
-			<IconButton {...buttonProps} aria-label={isLoading ? t('Cancel') : t('Remove')} mini icon='cross' />
+			<IconButton {...buttonProps} aria-label={isLoading ? t('Cancel') : t('Remove')} size='mini' icon='cross' />
 		);
 
 	if (upload.error) {

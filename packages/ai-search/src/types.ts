@@ -50,6 +50,38 @@ export type IntelligentSearchPipelineConfig = {
 	minimumSimilarityPercent?: number;
 };
 
+export type IntelligentSearchType = 'semantic' | 'keyword' | 'hybrid';
+
+export type IntelligentSearchCandidateSource = 'semantic' | 'keyword';
+
+export type IntelligentSearchCandidate = {
+	_id: string;
+	rid?: string;
+	msgId?: string;
+	pipelineText: string;
+	/** Display similarity clamped to [0, 1]. Unset for keyword candidates. */
+	score?: number;
+	/** Cosine similarity in [-1, 1], retained at full precision for filtering. */
+	semanticSimilarity?: number;
+	/** Cosine distance in [0, 2]. */
+	semanticDistance?: number;
+	source?: IntelligentSearchCandidateSource;
+	ts?: string;
+};
+
+export type FusedIntelligentSearchCandidate = IntelligentSearchCandidate & {
+	rrfScore: number;
+	semanticRank?: number;
+	fulltextRank?: number;
+};
+
+export type TemporalRerankOptions = {
+	/** 0 disables the boost, 100 doubles the freshest candidate's score */
+	recencyWeight: number;
+	halfLifeDays: number;
+	now?: Date;
+};
+
 export type IntelligentSearchFilters = {
 	rid?: string;
 	rids?: string[];
@@ -62,14 +94,6 @@ export type IntelligentSearchFilters = {
 
 export type IntelligentSearchPipelineFilters = Record<string, unknown>;
 
-export type IntelligentSearchCandidate = {
-	_id: string;
-	rid?: string;
-	msgId?: string;
-	pipelineText: string;
-	score?: number;
-};
-
 export type IntelligentSearchPipelineRequest = {
 	query: string;
 	config: IntelligentSearchPipelineConfig;
@@ -78,4 +102,6 @@ export type IntelligentSearchPipelineRequest = {
 	limit: number;
 	fetch: AIServiceFetch;
 	logger?: AIServiceLogger;
+	/** a single request targets one retriever; `hybrid` is resolved before reaching this layer */
+	mode?: IntelligentSearchCandidateSource;
 };

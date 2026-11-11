@@ -1,8 +1,7 @@
 import { readFile } from 'node:fs/promises';
-import { EOL } from 'node:os';
 import path from 'node:path';
 
-import { readPackageJson } from './utils';
+import { readPackageJson } from './utils.js';
 
 export async function getMongoVersion(cwd: string) {
 	try {
@@ -20,10 +19,13 @@ export async function getMongoVersion(cwd: string) {
 	return [];
 }
 
-export async function getNodeNpmVersions(cwd: string): Promise<{ node: string; yarn: string; npm: string }> {
-	const packageJson = await readPackageJson(cwd);
+export async function getNodeNpmVersions(cwd: string) {
+	const { engines } = await readPackageJson(cwd);
+	if (!engines) {
+		throw new Error(`${cwd}/package.json has no engines field`);
+	}
 
-	return packageJson.engines;
+	return engines;
 }
 
 export async function getAppsEngineVersion(cwd: string) {
@@ -31,23 +33,6 @@ export async function getAppsEngineVersion(cwd: string) {
 		const result = await readPackageJson(path.join(cwd, 'packages/apps-engine'));
 
 		return result.version ?? 'Not Available';
-	} catch (e) {
-		console.error(e);
-	}
-}
-
-export async function getDenoVersion(cwd: string) {
-	try {
-		const toolVersionsContent = await readFile(path.join(cwd, '.tool-versions'));
-		const data = toolVersionsContent.toString().replace(EOL, ' ').split(' ');
-
-		for (let i = 0; i < data.length; i++) {
-			if (data[i] === 'deno') {
-				return data[i + 1];
-			}
-		}
-
-		return 'Not available';
 	} catch (e) {
 		console.error(e);
 	}

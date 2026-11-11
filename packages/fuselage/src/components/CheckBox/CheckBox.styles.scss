@@ -1,0 +1,79 @@
+@use 'sass:math';
+@use '../../styles/lengths.scss';
+@use '../../styles/functions.scss' as *;
+@use '../../styles/mixins/selection-button.scss' as *;
+@use '../../styles/primitives/selection-button.scss';
+
+$check-box-border-radius: theme('check-box-border-radius', lengths.border-radius(small));
+
+.rcx-check-box {
+	@include is-selection-button($checked: 'primary', $unchecked: 'empty', $indeterminate: 'primary');
+
+	&__input {
+		@extend %selection-button__input;
+	}
+
+	$icon-smoothness: to-rem(1);
+	$icon-thickness: to-rem(2);
+	$icon-size: 0.6;
+
+	&__fake {
+		@extend %selection-button__fake;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+
+		border-radius: $check-box-border-radius;
+		inline-size: lengths.size(20);
+
+		&::before,
+		&::after {
+			position: absolute;
+
+			display: block;
+			visibility: hidden;
+
+			content: '';
+
+			opacity: 0;
+
+			background-color: currentColor;
+		}
+	}
+
+	&__input:indeterminate + &__fake::before {
+		visibility: visible;
+
+		width: $icon-size * lengths.size(20);
+		height: $icon-thickness;
+
+		opacity: 1;
+
+		border-radius: $icon-smoothness;
+	}
+
+	&__input:checked + &__fake {
+		&::before,
+		&::after {
+			visibility: visible;
+
+			opacity: 1;
+			border-radius: $icon-smoothness;
+		}
+
+		&::before {
+			width: $icon-size * lengths.size(20);
+			height: $icon-thickness;
+
+			transform: translate($icon-size * math.div(lengths.size(20), -3), $icon-size * math.div(lengths.size(20), 6)) rotate(-45deg)
+				translate($icon-size * math.div(lengths.size(20), 2), $icon-size * math.div(lengths.size(20), 6));
+		}
+
+		&::after {
+			width: $icon-thickness;
+			height: 0.5 * $icon-size * lengths.size(20);
+
+			transform: translate($icon-size * math.div(lengths.size(20), -3), $icon-size * math.div(lengths.size(20), 6)) rotate(-45deg);
+		}
+	}
+}

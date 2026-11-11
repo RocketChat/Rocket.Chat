@@ -1,6 +1,6 @@
+import { useHasLicenseModule } from '@rocket.chat/ui-client';
 import type { ComponentProps } from 'react';
 
-import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import AutoCompleteTagsMultiple from '../tags/AutoCompleteTagsMultiple';
 
 export type CurrentChatTagsProps = Pick<ComponentProps<typeof AutoCompleteTagsMultiple>, 'id' | 'aria-labelledby'> & {

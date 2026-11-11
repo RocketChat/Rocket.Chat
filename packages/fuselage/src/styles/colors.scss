@@ -1,0 +1,310 @@
+@use 'sass:color';
+@use 'sass:map';
+@use 'sass:meta';
+@use 'sass:string';
+@use '~@rocket.chat/fuselage-tokens/dist/colors.scss' as token-colors;
+@use '~@rocket.chat/fuselage-tokens/dist/surface.scss' as token-surface;
+@use '~@rocket.chat/fuselage-tokens/dist/font.scss' as token-font;
+@use '~@rocket.chat/fuselage-tokens/dist/status.scss' as token-status;
+@use '~@rocket.chat/fuselage-tokens/dist/statusBullet.scss' as token-status-bullet;
+@use '~@rocket.chat/fuselage-tokens/dist/stroke.scss' as token-stroke;
+@use '~@rocket.chat/fuselage-tokens/dist/badge.scss' as token-badge;
+@use '~@rocket.chat/fuselage-tokens/dist/shadow.scss' as token-shadow;
+@use '~@rocket.chat/fuselage-tokens/dist/button.scss' as token-button;
+
+$colors: token-colors.$colors;
+$surface: token-surface.$surface;
+$font: token-font.$font;
+$status: token-status.$status;
+$status-bullet: token-status-bullet.$status-bullet;
+$stroke: token-stroke.$stroke;
+$badge: token-badge.$badge;
+$shadow: token-shadow.$shadow;
+$button: token-button.$button;
+
+// fuselage only ships the light theme today; every token map above is keyed
+// `light-<name>`. Centralizing the prefix here means switching themes later
+// is a one-line change.
+$-theme: light;
+
+// unquotes rgba(...) tokens, which are exported as quoted strings and would
+// otherwise keep their literal quotes if passed as-is into var(--x, $value).
+@function -unquote($value) {
+	@if meta.type-of($value) == 'string' {
+		@return string.unquote($value);
+	}
+
+	@return $value;
+}
+
+// Reads a semantic token for the current theme, e.g. token($surface, tint)
+// reads $surface's "light-tint" entry.
+@function token($map, $key) {
+	$full-key: #{$-theme}-#{$key};
+	$value: map.get($map, $full-key);
+
+	@if not $value {
+		@error 'invalid token reference: #{$full-key}';
+	}
+
+	@return -unquote($value);
+}
+
+// ---------------------------------------------------------------------------
+// Primitive fallback
+//
+// fuselage-tokens doesn't expose semantic tokens for these yet:
+// - button "warning" / "secondary-warning" / "secondary-success" (whole
+//   groups missing from fuselage-tokens/src/button)
+// - shadow "extra-light-error" (used by the danger button focus ring)
+// - the scrollbar-thumb neutral overlay in primitives/traits.scss
+// Falls back to the primitive palette directly until fuselage-tokens adds
+// them. TODO(fuselage-tokens): remove `primitive()` and its call sites below
+// once those tokens exist.
+// ---------------------------------------------------------------------------
+@function primitive($grade, $alpha: null) {
+	$base-color: map.get($colors, $grade);
+
+	@if not $base-color {
+		@error 'invalid primitive color reference: #{$grade}';
+	}
+
+	@if ($alpha != null) {
+		@return color.change($base-color, $alpha: $alpha);
+	}
+
+	@return $base-color;
+}
+
+$-surfaces: (
+	light: token($surface, light),
+	tint: token($surface, tint),
+	room: token($surface, room),
+	neutral: token($surface, neutral),
+	disabled: token($surface, disabled),
+	selected: token($surface, selected),
+	hover: token($surface, hover),
+	dark: token($surface, dark),
+	featured: token($surface, featured),
+	featured-hover: token($surface, featured-hover),
+	overlay: token($surface, overlay),
+	sidebar: token($surface, sidebar),
+);
+
+@function surface($type) {
+	$color: map.get($-surfaces, $type);
+	@return var(--rcx-color-surface-#{$type}, $color);
+}
+
+$-font: (
+	white: token($font, white),
+	disabled: token($font, disabled),
+	annotation: token($font, annotation),
+	hint: token($font, hint),
+	secondary-info: token($font, secondary-info),
+	default: token($font, default),
+	titles-labels: token($font, titles-labels),
+	info: token($font, info),
+	danger: token($font, danger),
+	pure-black: token($font, pure-black),
+	pure-white: token($font, pure-white),
+);
+
+@function font($type, $scape: false) {
+	$color: map.get($-font, $type);
+
+	@if $scape {
+		@return $color;
+	}
+
+	@return var(--rcx-color-font-#{$type}, $color);
+}
+
+$-status-bullet: (
+	online: token($status-bullet, online),
+	away: token($status-bullet, away),
+	busy: token($status-bullet, busy),
+	disabled: token($status-bullet, disabled),
+	offline: token($status-bullet, offline),
+	loading: token($status-bullet, loading),
+);
+
+@function status-bullet($type) {
+	$color: map.get($-status-bullet, $type);
+	@return var(--rcx-color-status-bullet-#{$type}, $color);
+}
+
+$-status-backgrounds: (
+	success: token($status, success),
+	warning: token($status, warning),
+	warning-2: token($status, warning-2),
+	danger: token($status, danger),
+	service-1: token($status, service-1),
+	service-2: token($status, service-2),
+	info: token($status, info),
+);
+
+@function status-background($type) {
+	$color: map.get($-status-backgrounds, $type);
+	@return var(--rcx-color-status-background-#{$type}, $color);
+}
+
+$-status-font: (
+	on-success: token($status, font-on-success),
+	on-warning: token($status, font-on-warning),
+	on-warning-2: token($status, font-on-warning-2),
+	on-danger: token($status, font-on-danger),
+	on-service-1: token($status, font-on-service-1),
+	on-service-2: token($status, font-on-service-2),
+	on-info: token($status, font-on-info),
+);
+
+@function status-font($type) {
+	$color: map.get($-status-font, $type);
+	@return var(--rcx-color-status-font-#{$type}, $color);
+}
+
+$-strokes: (
+	extra-light: token($stroke, extra-light),
+	light: token($stroke, light),
+	medium: token($stroke, medium),
+	dark: token($stroke, dark),
+	extra-dark: token($stroke, extra-dark),
+	extra-light-highlight: token($stroke, extra-light-highlight),
+	highlight: token($stroke, highlight),
+	extra-light-error: token($stroke, extra-light-error),
+	error: token($stroke, error),
+);
+
+@function stroke($type) {
+	$color: map.get($-strokes, $type);
+	@return var(--rcx-color-stroke-#{$type}, $color);
+}
+
+$-badge-backgrounds: (
+	level-0: token($badge, level-0),
+	level-1: token($badge, level-1),
+	level-2: token($badge, level-2),
+	level-3: token($badge, level-3),
+	level-4: token($badge, level-4),
+);
+
+@function badge($type) {
+	$color: map.get($-badge-backgrounds, $type);
+	@return var(--rcx-color-badge-background-#{$type}, $color);
+}
+
+$shadow-colors: (
+	highlight: token($shadow, highlight),
+	// TODO(fuselage-tokens): no semantic "extra-light-error" shadow token yet;
+	// used for the danger button focus ring. Falls back to primitive red-200.
+	extra-light-error: primitive(r200),
+	danger: token($shadow, danger),
+	elevation-1: token($shadow, elevation-1),
+	elevation-2x: token($shadow, elevation-2x),
+	elevation-2y: token($shadow, elevation-2y),
+	elevation-border: token($shadow, elevation-border),
+);
+
+@function shadow($type) {
+	$color: map.get($shadow-colors, $type);
+	@return var(--rcx-color-shadow-#{$type}, $color);
+}
+
+$-button-backgrounds: (
+	// primary
+	primary-default: token($button, background-primary-default),
+	primary-hover: token($button, background-primary-hover),
+	primary-press: token($button, background-primary-press),
+	primary-focus: token($button, background-primary-focus),
+	primary-keyfocus: token($button, background-primary-keyfocus),
+	primary-disabled: token($button, background-primary-disabled),
+	// secondary
+	secondary-default: token($button, background-secondary-default),
+	secondary-hover: token($button, background-secondary-hover),
+	secondary-press: token($button, background-secondary-press),
+	secondary-focus: token($button, background-secondary-focus),
+	secondary-keyfocus: token($button, background-secondary-keyfocus),
+	secondary-disabled: token($button, background-secondary-disabled),
+	// danger
+	danger-default: token($button, background-danger-default),
+	danger-hover: token($button, background-danger-hover),
+	danger-press: token($button, background-danger-press),
+	danger-focus: token($button, background-danger-focus),
+	danger-keyfocus: token($button, background-danger-keyfocus),
+	danger-disabled: token($button, background-danger-disabled),
+	// secondary-danger
+	secondary-danger-default: token($button, background-secondary-danger-default),
+	secondary-danger-hover: token($button, background-secondary-danger-hover),
+	secondary-danger-press: token($button, background-secondary-danger-press),
+	secondary-danger-focus: token($button, background-secondary-danger-focus),
+	secondary-danger-keyfocus: token($button, background-secondary-danger-keyfocus),
+	secondary-danger-disabled: token($button, background-secondary-danger-disabled),
+	// warning (fuselage-tokens gap — see block comment above)
+	warning-default: primitive(y400),
+	warning-hover: primitive(y500),
+	warning-press: primitive(y600),
+	warning-focus: primitive(y400),
+	warning-keyfocus: primitive(y400),
+	warning-disabled: primitive(y200),
+	// secondary-warning (fuselage-tokens gap — see block comment above)
+	secondary-warning-default: primitive(n400),
+	secondary-warning-hover: primitive(n500),
+	secondary-warning-press: primitive(n600),
+	secondary-warning-focus: primitive(n400),
+	secondary-warning-keyfocus: primitive(n400),
+	secondary-warning-disabled: primitive(n300),
+	// success
+	success-default: token($button, background-success-default),
+	success-hover: token($button, background-success-hover),
+	success-press: token($button, background-success-press),
+	success-focus: token($button, background-success-focus),
+	success-keyfocus: token($button, background-success-keyfocus),
+	success-disabled: token($button, background-success-disabled),
+	// secondary-success (fuselage-tokens gap — see block comment above)
+	secondary-success-default: primitive(n400),
+	secondary-success-hover: primitive(n500),
+	secondary-success-press: primitive(n600),
+	secondary-success-focus: primitive(n400),
+	secondary-success-keyfocus: primitive(n400),
+	secondary-success-disabled: primitive(n300)
+);
+
+$-button-fonts: (
+	// primary
+	on-primary: token($button, font-on-primary),
+	on-primary-disabled: token($button, font-on-primary-disabled),
+	// secondary
+	on-secondary: token($button, font-on-secondary),
+	on-secondary-disabled: token($button, font-on-secondary-disabled),
+	// danger
+	on-danger: token($button, font-on-danger),
+	on-danger-disabled: token($button, font-on-danger-disabled),
+	// secondary-danger
+	on-secondary-danger: token($button, font-on-secondary-danger),
+	on-secondary-danger-disabled: token($button, on-secondary-danger-disabled),
+	// warning (fuselage-tokens gap — see block comment above)
+	on-warning: primitive(n900),
+	on-warning-disabled: primitive(n600),
+	// secondary-warning (fuselage-tokens gap — see block comment above)
+	on-secondary-warning: primitive(y900),
+	on-secondary-warning-disabled: primitive(y600),
+	// success
+	on-success: token($button, font-on-success),
+	on-success-disabled: token($button, font-on-success-disabled),
+	// secondary-success (fuselage-tokens gap — see block comment above)
+	on-secondary-success: primitive(g800),
+	on-secondary-success-disabled: primitive(g400)
+);
+
+@function button($type) {
+	@if (map.get($-button-backgrounds, $type)) {
+		$background: map.get($-button-backgrounds, $type);
+		@return var(--rcx-color-button-background-#{$type}, $background);
+	}
+	@if map.get($-button-fonts, $type) {
+		$foreground: map.get($-button-fonts, $type);
+		@return var(--rcx-color-button-font-#{$type}, $foreground);
+	}
+	@error "Unknown button type #{$type}.";
+}

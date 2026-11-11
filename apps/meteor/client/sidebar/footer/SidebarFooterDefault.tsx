@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, SidebarV2Divider, Palette, SidebarV2Footer as Footer } from '@rocket.chat/fuselage';
+import { Box, SidebarDivider, Palette, SidebarFooter as Footer } from '@rocket.chat/fuselage';
 import { useThemeMode } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
@@ -25,11 +25,20 @@ const SidebarFooterDefault = () => {
 	`;
 
 	return (
-		<Footer>
-			<SidebarV2Divider />
-			<Box paddingBlock={12} height='x48' width='auto' className={sidebarFooterStyle} dangerouslySetInnerHTML={dangerousLogo} />
-			<SidebarFooterWatermark />
-		</Footer>
+		<>
+			<SidebarDivider />
+			<Footer>
+				<Box
+					paddingBlockStart='x4'
+					paddingBlockEnd='x12'
+					height='x40'
+					width='auto'
+					className={sidebarFooterStyle}
+					dangerouslySetInnerHTML={dangerousLogo}
+				/>
+				<SidebarFooterWatermark />
+			</Footer>
+		</>
 	);
 };
 

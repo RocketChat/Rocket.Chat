@@ -1,19 +1,15 @@
+import { StatusVisibility } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
-import { License } from '@rocket.chat/license';
 import { Users } from '@rocket.chat/models';
-import Gravatar from 'gravatar';
 import { Accounts } from 'meteor/accounts-base';
 
-import { notifyOnUserChangeById } from '../../notifyListener';
-import { validateEmailDomain } from '../../validateEmailDomain';
-import { warnGravatarDeprecation } from '../gravatarDeprecation';
-import { setUserAvatar } from '../setUserAvatar';
 import { handleBio } from './handleBio';
 import { handleNickname } from './handleNickname';
 import type { SaveUserData } from './saveUser';
 import { sendPasswordEmail, sendWelcomeEmail } from './sendUserEmail';
 import { getNewUserRoles } from '../../../services/user/lib/getNewUserRoles';
-import { settings } from '../../../settings';
+import { notifyOnUserChangeById } from '../../notifyListener';
+import { validateEmailDomain } from '../../validateEmailDomain';
 
 export const saveNewUser = async function (userData: SaveUserData, sendPassword: boolean, performedBy: IUser) {
 	await validateEmailDomain(userData.email);
@@ -53,14 +49,26 @@ export const saveNewUser = async function (userData: SaveUserData, sendPassword:
 		updater.set('emails.0.verified', userData.verified);
 	}
 
-	if (typeof userData.freeSwitchExtension === 'string' && userData.freeSwitchExtension !== '') {
-		updater.set('freeSwitchExtension', userData.freeSwitchExtension);
+	if (typeof userData.sipExtension === 'string' && userData.sipExtension !== '') {
+		updater.set('sipExtension', userData.sipExtension);
+	}
+
+	if (userData.presenceDisabledByAdmin) {
+		updater.set('presenceDisabledByAdmin', true);
+	}
+
+	if (Array.isArray(userData.phones) && userData.phones.length > 0) {
+		updater.set('phones', userData.phones);
 	}
 
 	handleBio(updater, userData.bio);
 	handleNickname(updater, userData.nickname);
 
 	await Users.updateFromUpdater({ _id }, updater);
+
+	if (userData.presenceDisabledByAdmin) {
+		void StatusVisibility.invalidate([_id], { allViewers: true });
+	}
 
 	if (userData.sendWelcomeEmail) {
 		await sendWelcomeEmail(userData);
@@ -71,24 +79,6 @@ export const saveNewUser = async function (userData: SaveUserData, sendPassword:
 	}
 
 	userData._id = _id;
-
-	// Offline (air-gapped) licenses suppress the default Gravatar fetch — a
-	// default-on outbound call the workspace must never initiate on its own.
-	if (settings.get('Accounts_SetDefaultAvatar') === true && userData.email && !License.hasOfflineLicense()) {
-		warnGravatarDeprecation();
-
-		const gravatarUrl = Gravatar.url(userData.email, {
-			default: '404',
-			size: '200',
-			protocol: 'https',
-		});
-
-		try {
-			await setUserAvatar({ ...userData, _id }, gravatarUrl, '', 'url');
-		} catch (e) {
-			// Ignore this error for now, as it not being successful isn't bad
-		}
-	}
 
 	void notifyOnUserChangeById({ clientAction: 'inserted', id: _id });
 

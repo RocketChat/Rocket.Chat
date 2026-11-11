@@ -52,7 +52,7 @@ export class WavHeader {
 			if (WavHeader.data === header) {
 				break;
 			}
-			pos += len + 8;
+			pos += 8 + len + (len & 1);
 		}
 
 		return new WavHeader(pos + 8, len, channels, sampleRate);

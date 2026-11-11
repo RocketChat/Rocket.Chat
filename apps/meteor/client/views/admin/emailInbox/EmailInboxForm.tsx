@@ -10,7 +10,6 @@ import {
 	ToggleSwitch,
 	FieldGroup,
 	Box,
-	Margins,
 	NumberInput,
 	PasswordInput,
 	FieldLabel,
@@ -26,6 +25,7 @@ import { useId, useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import ContentColumn from '../../../components/ContentColumn';
 import AutoCompleteDepartment from '../../omnichannel/components/AutoCompleteDepartment';
 
 type EmailInboxFormData = {
@@ -212,7 +212,7 @@ const EmailInboxForm = ({ inboxData }: EmailInboxFormProps) => {
 
 	return (
 		<PageScrollableContentWithShadow>
-			<Box maxWidth='x600' width='full' alignSelf='center'>
+			<ContentColumn>
 				<Accordion>
 					<AccordionItem defaultExpanded title={t('Inbox_Info')}>
 						<FieldGroup>
@@ -601,27 +601,25 @@ const EmailInboxForm = ({ inboxData }: EmailInboxFormProps) => {
 					</AccordionItem>
 					<Field>
 						<FieldRow>
-							<ButtonGroup stretch>
-								<Button onClick={handleBack}>{t('Cancel')}</Button>
-								<Button disabled={!isDirty} primary onClick={handleSubmit(handleSave)}>
-									{t('Save')}
-								</Button>
-							</ButtonGroup>
-						</FieldRow>
-						<FieldRow>
-							<Margins blockStart={16}>
+							<Box display='flex' flexDirection='column' flexGrow={1} gap={22}>
+								<ButtonGroup stretch>
+									<Button onClick={handleBack}>{t('Cancel')}</Button>
+									<Button disabled={!isDirty} variant='primary' onClick={handleSubmit(handleSave)}>
+										{t('Save')}
+									</Button>
+								</ButtonGroup>
 								<ButtonGroup stretch>
 									{inboxData?._id && (
-										<Button danger onClick={handleDelete}>
+										<Button variant='danger' onClick={handleDelete}>
 											{t('Delete')}
 										</Button>
 									)}
 								</ButtonGroup>
-							</Margins>
+							</Box>
 						</FieldRow>
 					</Field>
 				</Accordion>
-			</Box>
+			</ContentColumn>
 		</PageScrollableContentWithShadow>
 	);
 };

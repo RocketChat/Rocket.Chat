@@ -3,7 +3,7 @@ import { Box } from '@rocket.chat/fuselage';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useUiKitActionManager } from '../uikit/hooks/useUiKitActionManager';
+import { useUiKitActionManager } from '../hooks/uikit/useUiKitActionManager';
 
 const ActionManagerBusyState = () => {
 	const { t } = useTranslation();
@@ -39,7 +39,8 @@ const ActionManagerBusyState = () => {
 				textAlign='center'
 				fontSize='p2'
 				elevation='2'
-				borderRadius='0 0 4px 4px'
+				borderEndStartRadius='medium'
+				borderEndEndRadius='medium'
 				zIndex={99999}
 			>
 				{t('Loading')}

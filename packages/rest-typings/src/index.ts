@@ -39,6 +39,7 @@ import type { RolesEndpoints } from './v1/roles';
 import type { RoomsEndpoints } from './v1/rooms';
 import type { ServerEventsEndpoints } from './v1/server-events';
 import type { SettingsEndpoints } from './v1/settings';
+import type { SetupWizardEndpoints } from './v1/setupWizard';
 import type { StatisticsEndpoints } from './v1/statistics';
 import type { SubscriptionsEndpoints } from './v1/subscriptionsEndpoints';
 import type { TeamsEndpoints } from './v1/teams';
@@ -46,9 +47,9 @@ import type { TwoFactorChallengesEndpoints } from './v1/twoFactorChallenges';
 import type { UsersEndpoints } from './v1/users';
 import type { VideoConferenceEndpoints } from './v1/videoConference';
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export interface Endpoints
-	extends AISearchEndpoints,
+	extends
+		AISearchEndpoints,
 		ChannelsEndpoints,
 		MeEndpoints,
 		ModerationEndpoints,
@@ -69,6 +70,7 @@ export interface Endpoints
 		RolesEndpoints,
 		TeamsEndpoints,
 		SettingsEndpoints,
+		SetupWizardEndpoints,
 		UsersEndpoints,
 		AppsEndpoints,
 		OmnichannelEndpoints,
@@ -132,11 +134,13 @@ type MethodToPathWithParamsMap = {
 };
 
 type MethodToPathWithoutParamsMap = {
-	[TOperation in Operations as Parameters<TOperation['fn']> extends { length: 0 }
-		? TOperation['method']
-		: undefined extends Parameters<TOperation['fn']>[0]
+	[
+		TOperation in Operations as Parameters<TOperation['fn']> extends { length: 0 }
 			? TOperation['method']
-			: never]: TOperation['path'];
+			: undefined extends Parameters<TOperation['fn']>[0]
+				? TOperation['method']
+				: never
+	]: TOperation['path'];
 };
 
 export type PathFor<TMethod extends Method> = MethodToPathMap[TMethod];
@@ -214,6 +218,7 @@ export * from './v1/teams';
 export * from './v1/videoConference';
 export * from './v1/assets';
 export * from './v1/aiSearch';
+export { abacCreationAttributesSchema } from './v1/abacCreationAttributes';
 export * from './v1/channels';
 export * from './v1/customSounds';
 export type * from './v1/customUserStatus';
@@ -262,7 +267,7 @@ export * from './v1/e2e';
 export * from './v1/import';
 export * from './v1/email-inbox';
 export * from './v1/calendar';
-export * from './v1/federation';
+export type * from './v1/federation';
 export * from './v1/rooms';
 export * from './v1/groups';
 export * from './v1/chat';
@@ -278,3 +283,4 @@ export type * from './experimental';
 
 // Export the ajv instance for use in other packages
 export * from './v1/Ajv';
+export * from './v1/pagination';

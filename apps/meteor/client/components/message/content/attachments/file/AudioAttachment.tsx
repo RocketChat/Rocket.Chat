@@ -68,7 +68,7 @@ const AudioAttachment = ({
 					paddingBlock={12}
 					paddingInlineEnd={8}
 					paddingInlineStart={16}
-					borderRadius='x4'
+					borderRadius='medium'
 					width='100%'
 					maxWidth='x300'
 				>

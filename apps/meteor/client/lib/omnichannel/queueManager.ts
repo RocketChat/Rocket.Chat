@@ -6,8 +6,8 @@ import {
 	type Serialized,
 } from '@rocket.chat/core-typings';
 
-import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { useLivechatInquiryStore } from '../../hooks/useLivechatInquiryStore';
+import { sdk } from '../SDKClient';
 import { queryClient } from '../queryClient';
 import { roomsQueryKeys } from '../queryKeys';
 import { settings } from '../settings';

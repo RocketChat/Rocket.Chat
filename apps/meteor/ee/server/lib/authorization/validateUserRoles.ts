@@ -1,4 +1,4 @@
-import { MeteorError } from '@rocket.chat/core-services';
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 
@@ -23,7 +23,7 @@ export async function validateUserRoles(userData: Partial<IUser>, currentUserDat
 	}
 
 	if (hasGuestToChanged && (await License.shouldPreventAction('guestUsers'))) {
-		throw new MeteorError('error-max-guests-number-reached', 'Maximum number of guests reached.', {
+		throw new ClientSafeError('error-max-guests-number-reached', 'Maximum number of guests reached.', {
 			method: 'insertOrUpdateUser',
 			field: 'Assign_role',
 		});
@@ -47,6 +47,6 @@ export async function validateUserRoles(userData: Partial<IUser>, currentUserDat
 	}
 
 	if (await License.shouldPreventAction('activeUsers')) {
-		throw new MeteorError('error-license-user-limit-reached', i18n.t('error-license-user-limit-reached'));
+		throw new ClientSafeError('error-license-user-limit-reached', i18n.t('error-license-user-limit-reached'));
 	}
 }

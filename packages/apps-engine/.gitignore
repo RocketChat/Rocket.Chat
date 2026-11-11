@@ -37,9 +37,6 @@ jspm_packages
 # Optional npm cache directory
 .npm
 
-.deno
-.deno-cache
-
 # Optional REPL history
 .node_repl_history
 
@@ -54,6 +51,7 @@ jspm_packages
 /tests/test-data/dbs
 /client
 /definition
+/esm
 /server
 /lib
 

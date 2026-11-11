@@ -8,8 +8,8 @@ import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { getAvatarURL } from '../../../app/utils/client/getAvatarURL';
 import { useSingleFileInput } from '../../hooks/useSingleFileInput';
+import { getAvatarURL } from '../../lib/getAvatarURL';
 import { isValidImageFormat } from '../../lib/utils/isValidImageFormat';
 
 export type RoomAvatarEditorProps = {
@@ -49,7 +49,7 @@ const RoomAvatarEditor = ({ disabled = false, room, roomAvatar, onChangeAvatar }
 	const defaultUrl = room.prid ? getAvatarURL({ roomId: room.prid }) : getAvatarURL({ username: `@${room.name}` }); // Discussions inherit avatars from the parent room
 
 	return (
-		<Box borderRadius='x2' maxWidth='x332' width='full' position='relative'>
+		<Box borderRadius='small' maxWidth='x332' width='full' position='relative'>
 			<RoomAvatar {...(roomAvatar !== undefined && { url: roomAvatar === null ? defaultUrl : roomAvatar })} room={room} size='x332' />
 			<Box
 				className={[
@@ -62,13 +62,19 @@ const RoomAvatarEditor = ({ disabled = false, room, roomAvatar, onChangeAvatar }
 				margin={12}
 			>
 				<ButtonGroup>
-					<Button icon='upload' disabled={isRoomFederated(room) || disabled} small title={t('Upload_user_avatar')} onClick={clickUpload}>
+					<Button
+						icon='upload'
+						disabled={isRoomFederated(room) || disabled}
+						size='small'
+						title={t('Upload_user_avatar')}
+						onClick={clickUpload}
+					>
 						{t('Upload')}
 					</Button>
 
 					<Button
-						small
-						danger
+						size='small'
+						variant='danger'
 						icon='trash'
 						title={t('Accounts_SetDefaultAvatar')}
 						disabled={!roomAvatar || isRoomFederated(room) || disabled}

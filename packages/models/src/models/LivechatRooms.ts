@@ -1227,7 +1227,9 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		};
 		const sort = { $sort: options.sort || { ts: -1 } };
 
-		params.push(project, unwindClosingMsg, sort);
+		const unsetVisitorToken = { $unset: ['v.token', 'closingMessage.token'] };
+
+		params.push(project, unsetVisitorToken, unwindClosingMsg, sort);
 
 		if (onlyCount) {
 			params.push({ $count: 'count' });
@@ -1294,7 +1296,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		options?: { offset?: number; count?: number; sort?: { [k: string]: SortDirection } };
 		extraQuery?: Filter<IOmnichannelRoom>;
 	}) {
-		const isRoomNameExactTerm = roomName?.startsWith(`"`) && roomName?.endsWith(`"`);
+		const isRoomNameExactTerm = roomName?.startsWith(`"`) && roomName.endsWith(`"`);
 		const roomNameQuery = isRoomNameExactTerm ? roomName?.slice(1, -1) : roomName;
 
 		const query: Filter<IOmnichannelRoom> = {
@@ -1704,7 +1706,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			if (!room) {
 				return false;
 			}
-			if (room.livechatData && typeof room.livechatData[key] !== 'undefined') {
+			if (typeof room.livechatData?.[key] !== 'undefined') {
 				return true;
 			}
 		}
@@ -1728,7 +1730,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		_id: string;
 		topic?: string;
 		tags?: string[];
-		livechatData?: Record<string, any>;
+		livechatData?: Record<string, string>;
 	} & Record<string, any>) {
 		const setData: DeepWritable<UpdateFilter<IOmnichannelRoom>['$set']> = { ...extra };
 		const unsetData: DeepWritable<UpdateFilter<IOmnichannelRoom>['$unset']> = {};
@@ -2441,7 +2443,15 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.updateOne(query, update);
 	}
 
-	getVisitorActiveForPeriodUpdateQuery(period: string, updater: Updater<IOmnichannelRoom> = this.getUpdater()): Updater<IOmnichannelRoom> {
+	getVisitorActiveForPeriodUpdateQuery(
+		period: string,
+		updater: Updater<IOmnichannelRoom> = this.getUpdater(),
+		currentActivity?: string[] | null,
+	): Updater<IOmnichannelRoom> {
+		if (currentActivity === null) {
+			return updater.set('v.activity', [period]);
+		}
+
 		return updater.addToSet('v.activity', period);
 	}
 

@@ -1,7 +1,14 @@
 {
 	"name": "@rocket.chat/emitter",
-	"version": "0.33.0",
+	"version": "0.33.1",
 	"description": "Event Emitter by Rocket.Chat",
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		}
+	},
 	"keywords": [
 		"rocket.chat"
 	],
@@ -19,7 +26,6 @@
 		"url": "https://rocket.chat/"
 	},
 	"main": "dist/index.js",
-	"module": "dist/index.module.js",
 	"source": "src/index.ts",
 	"types": "dist/index.d.ts",
 	"files": [
@@ -27,8 +33,8 @@
 	],
 	"scripts": {
 		"build": "rollup -c",
-		"lint": "eslint .",
-		"lint:fix": "eslint --fix .",
+		"lint": "yarn run -T oxlint",
+		"lint:fix": "yarn run -T oxlint --fix",
 		"test": "jest",
 		"testunit": "jest",
 		"typecheck": "tsc --noEmit"
@@ -38,11 +44,8 @@
 		"@rocket.chat/tsconfig": "workspace:~",
 		"@rollup/plugin-terser": "~1.0.0",
 		"@rollup/plugin-typescript": "~12.3.0",
-		"eslint": "~9.39.5",
-		"jest": "~30.2.0",
-		"prettier": "~3.3.3",
-		"rollup": "~4.62.3",
-		"ts-jest": "~29.4.11",
+		"jest": "~30.5.2",
+		"rollup": "~4.62.5",
 		"typescript": "~5.9.3"
 	},
 	"volta": {

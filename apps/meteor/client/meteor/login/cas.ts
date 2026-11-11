@@ -1,20 +1,19 @@
 import { Random } from '@rocket.chat/random';
-import { Meteor } from 'meteor/meteor';
 
-import { callLoginMethod } from '../../lib/2fa/overrideLoginMethod';
+import { callLoginMethod, registerLoginWithMethod } from '../accounts';
 
 declare module 'meteor/meteor' {
-	// eslint-disable-next-line @typescript-eslint/no-namespace
+	// oxlint-disable-next-line @typescript-eslint/no-namespace
 	namespace Meteor {
 		function loginWithCas(_?: unknown, callback?: (err?: any) => void): void;
 	}
 }
 
-Meteor.loginWithCas = (_, callback) => {
+registerLoginWithMethod('loginWithCas', (_?: unknown, callback?: (err?: any) => void) => {
 	const credentialToken = Random.id();
 	import('../../lib/openCASLoginPopup')
 		.then(({ openCASLoginPopup }) => openCASLoginPopup(credentialToken))
 		.then(() => callLoginMethod({ methodArguments: [{ cas: { credentialToken } }] }))
 		.then(() => callback?.())
 		.catch(callback);
-};
+});

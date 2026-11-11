@@ -1,4 +1,4 @@
-import { Pagination } from '@rocket.chat/fuselage';
+import { Pagination, type TableColumnWidth } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
@@ -6,25 +6,25 @@ import {
 	GenericTableHeaderCell,
 	GenericTableBody,
 	GenericTableLoadingRow,
+	usePaginatedQuery,
 	usePagination,
 	useSort,
+	GenericNoResults,
+	links,
 } from '@rocket.chat/ui-client';
 import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
-import { useQuery, hashKey } from '@tanstack/react-query';
+import { hashKey } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import UnitTableRow from './UnitTableRow';
 import FilterByText from '../../../components/FilterByText';
-import GenericNoResults from '../../../components/GenericNoResults/GenericNoResults';
-import { links } from '../../../lib/links';
 
 const UnitsTable = () => {
 	const { t } = useTranslation();
 	const [filter, setFilter] = useState('');
 	const router = useRouter();
 
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'visibility'>('name');
 
 	const query = useDebouncedValue(
@@ -32,24 +32,38 @@ const UnitsTable = () => {
 			() => ({
 				text: filter,
 				sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
-				...(itemsPerPage && { count: itemsPerPage }),
-				...(current && { offset: current }),
 			}),
-			[filter, itemsPerPage, current, sortBy, sortDirection],
+			[filter, sortBy, sortDirection],
 		),
 		500,
 	);
 
+	const queryKey = ['livechat-units', query];
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({ resetKey: queryKey });
+
 	const getUnits = useEndpoint('GET', '/v1/livechat/units');
-	const { isSuccess, isLoading, data } = useQuery({
-		queryKey: ['livechat-units', query],
-		queryFn: async () => getUnits(query),
+	const { isSuccess, isLoading, data } = usePaginatedQuery({
+		query: {
+			queryKey,
+			queryFn: (page) => getUnits({ ...query, ...page }),
+		},
+		itemsKey: 'units',
+		offset: current,
+		count: itemsPerPage,
 	});
 
-	const [defaultQuery] = useState(hashKey([query]));
-	const queryHasChanged = defaultQuery !== hashKey([query]);
+	const [defaultQuery] = useState(hashKey([query, current, itemsPerPage]));
+	const queryHasChanged = defaultQuery !== hashKey([query, current, itemsPerPage]);
 
 	const handleAddNew = useStableCallback(() => router.navigate('/omnichannel/units/new'));
+
+	const columns: TableColumnWidth[] = ['auto', 'auto', 'x60'];
 
 	const headers = (
 		<>
@@ -65,7 +79,7 @@ const UnitsTable = () => {
 			>
 				{t('Visibility')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key='remove' width='x60' />
+			<GenericTableHeaderCell key='remove' />
 		</>
 	);
 
@@ -75,7 +89,7 @@ const UnitsTable = () => {
 				<FilterByText value={filter} onChange={(event) => setFilter(event.target.value)} />
 			)}
 			{isLoading && (
-				<GenericTable aria-busy>
+				<GenericTable columns={columns} aria-busy>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
 						<GenericTableLoadingRow cols={3} />
@@ -96,7 +110,7 @@ const UnitsTable = () => {
 			)}
 			{isSuccess && data?.units.length > 0 && (
 				<>
-					<GenericTable aria-label={t('Units')} aria-busy={isLoading}>
+					<GenericTable columns={columns} aria-label={t('Units')} aria-busy={isLoading}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.units.map(({ _id, name, visibility }) => (

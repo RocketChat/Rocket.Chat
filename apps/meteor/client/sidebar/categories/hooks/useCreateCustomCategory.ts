@@ -1,7 +1,6 @@
 import type { ISidebarCategory } from '@rocket.chat/core-typings';
-import { SIDEBAR_SYSTEM_GROUP_KEYS } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
-import { useToastMessageDispatch, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
@@ -9,12 +8,13 @@ import { usePersistCategoriesMutation } from './usePersistCategoriesMutation';
 import { useSetCategory } from './useSetCategory';
 import { useUserSidebarCategories, type MovableRoom } from './useUserSidebarCategories';
 import { withDynamicFirst } from '../../hooks/useCategoryList';
+import { useSidebarSectionsOrder } from '../../hooks/useSidebarSectionsOrder';
 
 export const useCreateCustomCategory = ({ settleCallback }: { settleCallback?: () => void } = {}) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { rawCategories } = useUserSidebarCategories();
-	const sidebarSectionsOrder: readonly string[] = useUserPreference<string[]>('sidebarSectionsOrder') ?? SIDEBAR_SYSTEM_GROUP_KEYS;
+	const sidebarSectionsOrder = useSidebarSectionsOrder();
 
 	const setCategory = useSetCategory();
 	const { mutateAsync: persistCategories } = usePersistCategoriesMutation();

@@ -1,6 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { MouseEvent, ReactNode, RefObject } from 'react';
-import { useCallback, useEffect, useRef } from 'react';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import type { ReactNode } from 'react';
+import { useCallback, useEffect } from 'react';
 
 const useEscapeKey = (onDismiss: (() => void) | undefined): void => {
 	useEffect(() => {
@@ -21,50 +22,54 @@ const useEscapeKey = (onDismiss: (() => void) | undefined): void => {
 	}, [onDismiss]);
 };
 
-const isAtBackdropChildren = (e: MouseEvent, ref: RefObject<HTMLElement | null>): boolean => {
-	const backdrop = ref.current;
+const isAtBackdropChildren = (e: MouseEvent, backdrop: HTMLElement): boolean => {
 	const { parentElement } = e.target as HTMLElement;
 
-	return (Boolean(parentElement) && backdrop?.contains(parentElement)) ?? false;
+	return Boolean(parentElement) && backdrop.contains(parentElement);
 };
 
-const useOutsideClick = (ref: RefObject<HTMLElement | null>, onDismiss: (() => void) | undefined) => {
-	const hasClicked = useRef<boolean>(false);
+// Dismissal requires both halves of the click to land on the backdrop itself, so that a drag started inside the modal and released over the backdrop keeps the modal open.
+const useOutsideClick = (onDismiss: (() => void) | undefined) => {
+	const handleDismiss = useStableCallback(() => onDismiss?.());
 
-	const onMouseDown = useCallback(
-		(e: MouseEvent) => {
-			if (isAtBackdropChildren(e, ref)) {
-				hasClicked.current = false;
-				return;
-			}
+	return useCallback(
+		(node: HTMLElement) => {
+			let hasClicked = false;
 
-			hasClicked.current = true;
+			const onMouseDown = (e: MouseEvent): void => {
+				if (isAtBackdropChildren(e, node)) {
+					hasClicked = false;
+					return;
+				}
+
+				hasClicked = true;
+			};
+
+			const onMouseUp = (e: MouseEvent): void => {
+				if (isAtBackdropChildren(e, node)) {
+					hasClicked = false;
+					return;
+				}
+
+				if (!hasClicked) {
+					return;
+				}
+
+				hasClicked = false;
+				e.stopPropagation();
+				handleDismiss();
+			};
+
+			node.addEventListener('mousedown', onMouseDown);
+			node.addEventListener('mouseup', onMouseUp);
+
+			return () => {
+				node.removeEventListener('mousedown', onMouseDown);
+				node.removeEventListener('mouseup', onMouseUp);
+			};
 		},
-		[ref],
+		[handleDismiss],
 	);
-
-	const onMouseUp = useCallback(
-		(e: MouseEvent) => {
-			if (isAtBackdropChildren(e, ref)) {
-				hasClicked.current = false;
-				return;
-			}
-
-			if (!hasClicked.current) {
-				return;
-			}
-
-			hasClicked.current = false;
-			e.stopPropagation();
-			onDismiss?.();
-		},
-		[onDismiss, ref],
-	);
-
-	return {
-		onMouseDown,
-		onMouseUp,
-	};
 };
 
 export type ModalBackdropProps = {
@@ -73,23 +78,11 @@ export type ModalBackdropProps = {
 };
 
 const ModalBackdrop = ({ children, onDismiss }: ModalBackdropProps) => {
-	const ref = useRef<HTMLDivElement>(null);
-
 	useEscapeKey(onDismiss);
-	const { onMouseDown, onMouseUp } = useOutsideClick(ref, onDismiss);
+	const ref = useOutsideClick(onDismiss);
 
 	return (
-		<Box
-			ref={ref}
-			className='rcx-modal__backdrop'
-			position='fixed'
-			zIndex={9999}
-			inset={0}
-			display='flex'
-			flexDirection='column'
-			onMouseDown={onMouseDown}
-			onMouseUp={onMouseUp}
-		>
+		<Box ref={ref} className='rcx-modal__backdrop' position='fixed' zIndex={9999} inset={0} display='flex' flexDirection='column'>
 			{children}
 		</Box>
 	);

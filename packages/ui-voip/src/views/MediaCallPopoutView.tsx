@@ -1,12 +1,14 @@
 import { Box, ButtonGroup } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
+import { ActionButton, ToggleButton } from '@rocket.chat/ui-media';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ToggleButton, Timer, DevicePicker, ActionButton, useShouldWrapCards, ActionStrip } from '../components';
+import { Timer, DevicePicker, useShouldWrapCards, ActionStrip } from '../components';
 import MediaCallCardList from './MediaCallCardList';
 import { useFullscreenToggle } from './useFullscreenToggle';
 import { useMediaCallView } from '../context/MediaCallViewContext';
+import { isInternalPeer } from '../utils/isInternalPeer';
 
 export type MediaCallPopoutViewProps = {
 	user: {
@@ -23,6 +25,7 @@ const MediaCallPopoutView = ({ user, onClickClosePopout }: MediaCallPopoutViewPr
 
 	const {
 		sessionState,
+		allowedFeatures,
 		onMute,
 		onHold,
 		onForward,
@@ -31,7 +34,7 @@ const MediaCallPopoutView = ({ user, onClickClosePopout }: MediaCallPopoutViewPr
 		streams: { localScreen },
 	} = useMediaCallView();
 
-	const { muted, held, peerInfo, connectionState, startedAt, supportedFeatures } = sessionState;
+	const { muted, held, peerInfo, connectionState, startedAt } = sessionState;
 
 	const { ref, borderBoxSize } = useResizeObserver<HTMLDivElement>();
 
@@ -40,7 +43,7 @@ const MediaCallPopoutView = ({ user, onClickClosePopout }: MediaCallPopoutViewPr
 	const connecting = connectionState === 'CONNECTING';
 	const reconnecting = connectionState === 'RECONNECTING';
 
-	if (!peerInfo || 'number' in peerInfo) {
+	if (!peerInfo || !isInternalPeer(peerInfo)) {
 		return null;
 	}
 
@@ -82,7 +85,7 @@ const MediaCallPopoutView = ({ user, onClickClosePopout }: MediaCallPopoutViewPr
 				}
 			>
 				<ToggleButton label={t('Mute')} icons={['mic', 'mic-off']} titles={[t('Mute'), t('Unmute')]} pressed={muted} onToggle={onMute} />
-				{supportedFeatures.includes('hold') && (
+				{allowedFeatures.includes('hold') && (
 					<ToggleButton
 						label={t('Hold')}
 						icons={['pause-shape-unfilled', 'pause-shape-unfilled']}
@@ -91,7 +94,7 @@ const MediaCallPopoutView = ({ user, onClickClosePopout }: MediaCallPopoutViewPr
 						onToggle={onHold}
 					/>
 				)}
-				{supportedFeatures.includes('screen-share') && (
+				{allowedFeatures.includes('screen-share') && (
 					<ToggleButton
 						label={t('Share_screen')}
 						icons={['desktop-arrow-up', 'desktop-cross']}
@@ -100,7 +103,7 @@ const MediaCallPopoutView = ({ user, onClickClosePopout }: MediaCallPopoutViewPr
 						onToggle={onToggleScreenSharing}
 					/>
 				)}
-				{supportedFeatures.includes('transfer') && (
+				{allowedFeatures.includes('transfer') && (
 					<ActionButton disabled={connecting || reconnecting} label={t('Forward')} icon='arrow-forward' onClick={onForward} />
 				)}
 				<ActionButton label={t('Voice_call__user__hangup', { user: peerInfo.displayName })} icon='phone-off' danger onClick={onEndCall} />

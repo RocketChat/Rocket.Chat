@@ -1,5 +1,278 @@
 # @rocket.chat/core-typings
 
+## 9.0.0
+
+### Major Changes
+
+- ([#40697](https://github.com/RocketChat/Rocket.Chat/pull/40697) by [@aleksandernsilva](https://github.com/aleksandernsilva)) Adds support for registering multiple phone numbers with labels per user. **Breaking:** the `phone` user field is replaced by the `phones` array (`{ number, label? }[]`); existing numbers are migrated automatically on upgrade.
+
+- ([#41948](https://github.com/RocketChat/Rocket.Chat/pull/41948)) Removes the deprecated `query` and `fields` REST API parameters, along with the `ALLOW_UNSAFE_QUERY_AND_FIELDS_API_PARAMS` environment variable that re-enabled them. Deprecated in 6.3.0 and disabled by default since 7.0.0, they let callers run raw MongoDB queries and projections against the database.
+
+  Endpoints that validate their query string now reject both with `400 error-invalid-params` instead of ignoring them; the few without validation keep accepting and ignoring them. `users.create` likewise rejects a `fields` property in its body. `channels.online` and `groups.online` now require `_id`. On `users.list`, fields outside the default projection — `customFields`, `utcOffset`, `nickname`, `bio`, `statusText`, `federated` and `freeSwitchExtension` — are no longer reachable in bulk; use `users.info` instead. Callers should move to the dedicated filter parameters each endpoint exposes, such as `name`, `type`, `_id` and `text`.
+
+- ([#41940](https://github.com/RocketChat/Rocket.Chat/pull/41940)) Removes dead code left behind by the old Matrix bridge federation: the `Federation`/`FederationEE` service proxies and `IFederationService`/`IFederationServiceEE` interfaces (no service implemented them anymore), the never-implemented `/v1/federation/*` REST endpoint typings (`searchPublicRooms`, `joinExternalPublicRoom`, `listServersByUser`, `addServerByUser`, `removeServerByUser`), the listener-less `federation.userRoleChanged` event, unused federation v1 statistics fields and types, the old two-server federation E2E test suite, and orphaned translation keys.
+
+- ([#42369](https://github.com/RocketChat/Rocket.Chat/pull/42369)) Removes the legacy Meteor OAuth login flow and the `Accounts_OAuth_Use_Modern_Flow` setting. OAuth logins (Apple, GitHub, GitLab, Google, Nextcloud and custom OAuth) now always use the server-side Passport flow, with PKCE/state validation.
+
+  Also removes `Accounts_OAuth_Proxy_host` and `Accounts_OAuth_Proxy_services` settings and support for OAuth login through proxies.
+
+- ([#41992](https://github.com/RocketChat/Rocket.Chat/pull/41992)) Removes the built-in Drupal, Facebook, GitHub Enterprise, LinkedIn, Meteor, Twitter, WordPress and Dolphin OAuth login providers. Apple, GitHub, GitLab, Google, Nextcloud, custom OAuth, SAML, CAS and LDAP remain available. Workspaces relying on a removed provider can recreate it as a custom OAuth service where the provider supports standard OAuth2. Users who signed up through a removed provider keep their accounts and can regain access through another authentication method.
+
+- ([#42496](https://github.com/RocketChat/Rocket.Chat/pull/42496)) Removes the stale `Drafts` sidebar group left on workspaces upgraded from 8.5–8.7: a migration drops it from the `Accounts_Default_User_Preferences_sidebarSectionsOrder` setting and from every user's `sidebarCategories` preference, replacing the client-side read-time filter. Removes the `isStaleSidebarCategory`, `isSidebarSystemGroupKey` and `SidebarSystemGroupKey` exports from `@rocket.chat/core-typings`.
+
+- ([#42568](https://github.com/RocketChat/Rocket.Chat/pull/42568)) Renames the user `freeSwitchExtension` attribute to `sipExtension`, since the VoIP extension is no longer tied to FreeSWITCH and works with any SIP router. Existing users are migrated automatically on upgrade. REST API integrations must switch to the new name: the `users.create` and `users.update` parameters, the `users.info` query parameter, and the `sipExtension` field returned on user objects.
+
+### Minor Changes
+
+- ([#42677](https://github.com/RocketChat/Rocket.Chat/pull/42677)) Stops exposing the ABAC classification banner configuration publicly; `rooms.info` now returns, as `classificationBanner`, only the banner that applies to the requested ABAC room
+
+- ([#42850](https://github.com/RocketChat/Rocket.Chat/pull/42850)) Adds the **Edit room ABAC attributes** permission, scoped to a room and held by administrators and room owners by default. In private channels and teams that carry attributes or are locked by enforcement, its holders and ABAC administrators get an **Attribute-based access control** panel to view and change the room's attributes, and a locked room offers them **Manage attributes** in place of the composer. Before anything is saved, this panel and editing a room in **Administration > ABAC > Rooms** preview which members lose or keep access.
+
+  With the local Policy Decision Point and **Restrict room creators and editors to attributes they hold** on, the default, holders can only add values they hold. While enforcement is on and attributes are required, they cannot remove a required attribute or every attribute. ABAC administrators are not restricted by either rule. `POST /v1/abac/rooms/:rid/attributes` accepts an empty set to clear a room, and `attributes.listAssignable` and `rooms.evaluateMembership` accept a room id. With Virtru, an attribute change by a user also removes members whose access cannot be decided.
+
+- ([#42850](https://github.com/RocketChat/Rocket.Chat/pull/42850)) Allows private rooms and teams to be created with ABAC attributes. **Create channel** and **Create team** get an **ABAC managed** option that walks the user through choosing attributes and previewing which members will be added, and `groups.create` and `teams.create` accept an `abacAttributes` map. This requires the new **Create ABAC-managed rooms** permission, granted to users by default, and every such room is recorded in the ABAC audit log.
+
+  Users can only assign values they hold, or, with Virtru, values Virtru entitles them to. Members who do not qualify are not added and are listed in `skippedMembers`. While enforcement is on, new private channels and teams must be ABAC-managed and carry the workspace's required attributes.
+
+  Adds `GET /v1/abac/attributes.listAssignable` and `POST /v1/abac/rooms.evaluateMembership`. Apps with room write access and the new `abac.write` permission can create attributed private rooms under the same rules, and the audit log names the app.
+
+- ([#42050](https://github.com/RocketChat/Rocket.Chat/pull/42050)) Adds admin control over user status (Enterprise only): from **Administration > Status and presence**, or while editing a user, an admin can turn someone's status off or hide it from chosen people, and a **Show status** setting turns status off for the whole workspace. A user whose status is turned off always appears offline and can no longer change it; a user who is only hidden from chosen people keeps control of their own status. The feature is off by default, behind the new **Manage user status** setting.
+
+- ([#42439](https://github.com/RocketChat/Rocket.Chat/pull/42439)) Adds LiveKit as a built-in video conference provider (alpha, off by default), configurable under Video Conference settings with a server URL, API key and secret. It is offered only while the conference window is enabled, since its calls run there, and only with the new `video-conference-native` license add-on.
+
+- ([#42366](https://github.com/RocketChat/Rocket.Chat/pull/42366)) Adds a `multiLookup` setting type, the multi-value counterpart of `lookup`, for settings whose options are workspace data rather than a list fixed at registration time. A value already stored on the setting stays selectable and removable after its option disappears from the source, so a setting can never be left holding a value the admin area cannot clear.
+
+- ([#42501](https://github.com/RocketChat/Rocket.Chat/pull/42501)) Adds a native XMPP server (Enterprise, federation module) that federates directly with other XMPP servers over server-to-server connections. Rocket.Chat users can message any XMPP address, exchange presence with remote contacts, and join rooms on remote servers; remote XMPP users can join dedicated XMPP rooms hosted by Rocket.Chat. It runs as the `xmpp-server-service` microservice and is configured under **Administration → Settings → Federation → XMPP Server (Native)**.
+
+- ([#43149](https://github.com/RocketChat/Rocket.Chat/pull/43149)) Adds PKCE (RFC 7636, `S256`) to the OAuth2 server: an authorization code keeps the client's code challenge, and the token request must carry the matching code verifier. The token endpoint keeps requiring the client secret with PKCE.
+
+- ([#42735](https://github.com/RocketChat/Rocket.Chat/pull/42735)) Limits two-factor authentication email codes to one for each user each minute. A password login that needs an email code now returns a `challengeId`, which clients can use to resend the code through `twoFactorChallenges.sendEmailCode`.
+
+### Patch Changes
+
+- ([#41382](https://github.com/RocketChat/Rocket.Chat/pull/41382)) Indexes the push token string by storing each token as a flat `tokenValue`/`tokenType` pair, with VoIP tokens now kept in their own document instead of as an extra field on the device token. Changes the `POST /v1/push.token` response to return flat `tokenValue` and `tokenType` fields instead of the nested `token` object.
+
+- ([#41638](https://github.com/RocketChat/Rocket.Chat/pull/41638)) Serves the OpenAPI document as 3.1, the version whose schemas are the JSON Schema dialect the endpoints already validate against
+
+- <details><summary>Updated dependencies [80dceecf12fd1216dc3fdb9a4f42e51afbf23a75, 80dceecf12fd1216dc3fdb9a4f42e51afbf23a75, 5f3c7c2426a29a0f8237a1ec0d72192b2ef1f0a4, 7fbb5676fe0d2c034f4c52586ab858b3796e5dc6, 5c7b25f68d677d8bdbde3ed4c56ad0bba60ce71d, 5c7b25f68d677d8bdbde3ed4c56ad0bba60ce71d, 4c379a0d016fcf010bab86ddd94a22ff2401606e, ad08045f56e3921e88ed021aa2945c9ba670e5f5, cea4d4428a0d86c6fc868542d4fb00a36ffaa27d, 7fbb5676fe0d2c034f4c52586ab858b3796e5dc6, 4c379a0d016fcf010bab86ddd94a22ff2401606e, 25fd477c2c38f71e9a16b7e2896d39efd43bfc61, 05e9b38a001919252360351f0bc3e46cc990a6ac, 25fd477c2c38f71e9a16b7e2896d39efd43bfc61, 2184b09b0bdacdb0bced60dc054a818a92c98131, e1b509fbca35eba10e21e4aa3bc15c56f44a2845, 0285f08c086dae6beb0f1365a85f522fb4818435, 6b86dffd3a05f65fff000bb697fbb40350664629, 5e6b6bd25ea82b9c884d49871870f71dc532a061, c9aa43916295df79a799e53b8e09c58011991a97, 80dceecf12fd1216dc3fdb9a4f42e51afbf23a75, e1b509fbca35eba10e21e4aa3bc15c56f44a2845, 2d3331be63dde3449245963c33444dcb15fa8869, c9aa43916295df79a799e53b8e09c58011991a97, 80dceecf12fd1216dc3fdb9a4f42e51afbf23a75, 80dceecf12fd1216dc3fdb9a4f42e51afbf23a75, 80dceecf12fd1216dc3fdb9a4f42e51afbf23a75, 80dceecf12fd1216dc3fdb9a4f42e51afbf23a75, 80dceecf12fd1216dc3fdb9a4f42e51afbf23a75, 80dceecf12fd1216dc3fdb9a4f42e51afbf23a75, 80dceecf12fd1216dc3fdb9a4f42e51afbf23a75, 9e401e55fbd71b95dc7c4b273024219ce2564856, a838cc5af0652f59d0ab30aa1a488abded0622b1, 87667dcb84de0ce97f4ace88c900801254fa6535, 87667dcb84de0ce97f4ace88c900801254fa6535, 87667dcb84de0ce97f4ace88c900801254fa6535, 87667dcb84de0ce97f4ace88c900801254fa6535, 87667dcb84de0ce97f4ace88c900801254fa6535, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, 9dfedc72439d12f5d2985b9dd54daccd97e11e74, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, 9dfedc72439d12f5d2985b9dd54daccd97e11e74, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, bb586dc723b3dccdf725d28f530b28cfa857020a, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, 23698f9d08d34d3c145f116b5303b542e8342f9e, 9dfedc72439d12f5d2985b9dd54daccd97e11e74, e1070288debfecc5e49e118c3dc535f95936281f, 9dfedc72439d12f5d2985b9dd54daccd97e11e74]:</summary>
+  - @rocket.chat/fuselage@1.0.0
+  - @rocket.chat/icons@0.52.0
+  - @rocket.chat/message-parser@0.33.0
+  - @rocket.chat/ui-kit@2.0.0
+
+  </details>
+
+## 9.0.0-rc.8
+
+## 9.0.0-rc.7
+
+## 9.0.0-rc.6
+
+## 9.0.0-rc.5
+
+## 9.0.0-rc.4
+
+## 9.0.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [5f3c7c2426a29a0f8237a1ec0d72192b2ef1f0a4]:</summary>
+  - @rocket.chat/fuselage@1.0.0-rc.1
+
+  </details>
+
+## 9.0.0-rc.2
+
+## 9.0.0-rc.1
+
+## 9.0.0-rc.0
+
+### Major Changes
+
+- ([#40697](https://github.com/RocketChat/Rocket.Chat/pull/40697) by [@aleksandernsilva](https://github.com/aleksandernsilva)) Adds support for registering multiple phone numbers with labels per user. **Breaking:** the `phone` user field is replaced by the `phones` array (`{ number, label? }[]`); existing numbers are migrated automatically on upgrade.
+
+- ([#41948](https://github.com/RocketChat/Rocket.Chat/pull/41948)) Removes the deprecated `query` and `fields` REST API parameters, along with the `ALLOW_UNSAFE_QUERY_AND_FIELDS_API_PARAMS` environment variable that re-enabled them. Deprecated in 6.3.0 and disabled by default since 7.0.0, they let callers run raw MongoDB queries and projections against the database.
+
+  Endpoints that validate their query string now reject both with `400 error-invalid-params` instead of ignoring them; the few without validation keep accepting and ignoring them. `users.create` likewise rejects a `fields` property in its body. `channels.online` and `groups.online` now require `_id`. On `users.list`, fields outside the default projection — `customFields`, `utcOffset`, `nickname`, `bio`, `statusText`, `federated` and `freeSwitchExtension` — are no longer reachable in bulk; use `users.info` instead. Callers should move to the dedicated filter parameters each endpoint exposes, such as `name`, `type`, `_id` and `text`.
+
+- ([#41940](https://github.com/RocketChat/Rocket.Chat/pull/41940)) Removes dead code left behind by the old Matrix bridge federation: the `Federation`/`FederationEE` service proxies and `IFederationService`/`IFederationServiceEE` interfaces (no service implemented them anymore), the never-implemented `/v1/federation/*` REST endpoint typings (`searchPublicRooms`, `joinExternalPublicRoom`, `listServersByUser`, `addServerByUser`, `removeServerByUser`), the listener-less `federation.userRoleChanged` event, unused federation v1 statistics fields and types, the old two-server federation E2E test suite, and orphaned translation keys.
+
+- ([#42369](https://github.com/RocketChat/Rocket.Chat/pull/42369)) Removes the legacy Meteor OAuth login flow and the `Accounts_OAuth_Use_Modern_Flow` setting. OAuth logins (Apple, GitHub, GitLab, Google, Nextcloud and custom OAuth) now always use the server-side Passport flow, with PKCE/state validation.
+
+  Also removes `Accounts_OAuth_Proxy_host` and `Accounts_OAuth_Proxy_services` settings and support for OAuth login through proxies.
+
+- ([#41992](https://github.com/RocketChat/Rocket.Chat/pull/41992)) Removes the built-in Drupal, Facebook, GitHub Enterprise, LinkedIn, Meteor, Twitter, WordPress and Dolphin OAuth login providers. Apple, GitHub, GitLab, Google, Nextcloud, custom OAuth, SAML, CAS and LDAP remain available. Workspaces relying on a removed provider can recreate it as a custom OAuth service where the provider supports standard OAuth2. Users who signed up through a removed provider keep their accounts and can regain access through another authentication method.
+
+- ([#42496](https://github.com/RocketChat/Rocket.Chat/pull/42496)) Removes the stale `Drafts` sidebar group left on workspaces upgraded from 8.5–8.7: a migration drops it from the `Accounts_Default_User_Preferences_sidebarSectionsOrder` setting and from every user's `sidebarCategories` preference, replacing the client-side read-time filter. Removes the `isStaleSidebarCategory`, `isSidebarSystemGroupKey` and `SidebarSystemGroupKey` exports from `@rocket.chat/core-typings`.
+
+- ([#42568](https://github.com/RocketChat/Rocket.Chat/pull/42568)) Renames the user `freeSwitchExtension` attribute to `sipExtension`, since the VoIP extension is no longer tied to FreeSWITCH and works with any SIP router. Existing users are migrated automatically on upgrade. REST API integrations must switch to the new name: the `users.create` and `users.update` parameters, the `users.info` query parameter, and the `sipExtension` field returned on user objects.
+
+### Minor Changes
+
+- ([#42677](https://github.com/RocketChat/Rocket.Chat/pull/42677)) Stops exposing the ABAC classification banner configuration publicly; `rooms.info` now returns, as `classificationBanner`, only the banner that applies to the requested ABAC room
+
+- ([#42850](https://github.com/RocketChat/Rocket.Chat/pull/42850)) Adds the **Edit room ABAC attributes** permission, scoped to a room and held by administrators and room owners by default. In private channels and teams that carry attributes or are locked by enforcement, its holders and ABAC administrators get an **Attribute-based access control** panel to view and change the room's attributes, and a locked room offers them **Manage attributes** in place of the composer. Before anything is saved, this panel and editing a room in **Administration > ABAC > Rooms** preview which members lose or keep access.
+
+  With the local Policy Decision Point and **Restrict room creators and editors to attributes they hold** on, the default, holders can only add values they hold. While enforcement is on and attributes are required, they cannot remove a required attribute or every attribute. ABAC administrators are not restricted by either rule. `POST /v1/abac/rooms/:rid/attributes` accepts an empty set to clear a room, and `attributes.listAssignable` and `rooms.evaluateMembership` accept a room id. With Virtru, an attribute change by a user also removes members whose access cannot be decided.
+
+- ([#42850](https://github.com/RocketChat/Rocket.Chat/pull/42850)) Allows private rooms and teams to be created with ABAC attributes. **Create channel** and **Create team** get an **ABAC managed** option that walks the user through choosing attributes and previewing which members will be added, and `groups.create` and `teams.create` accept an `abacAttributes` map. This requires the new **Create ABAC-managed rooms** permission, granted to users by default, and every such room is recorded in the ABAC audit log.
+
+  Users can only assign values they hold, or, with Virtru, values Virtru entitles them to. Members who do not qualify are not added and are listed in `skippedMembers`. While enforcement is on, new private channels and teams must be ABAC-managed and carry the workspace's required attributes.
+
+  Adds `GET /v1/abac/attributes.listAssignable` and `POST /v1/abac/rooms.evaluateMembership`. Apps with room write access and the new `abac.write` permission can create attributed private rooms under the same rules, and the audit log names the app.
+
+- ([#42050](https://github.com/RocketChat/Rocket.Chat/pull/42050)) Adds admin control over user status (Enterprise only): from **Administration > Status and presence**, or while editing a user, an admin can turn someone's status off or hide it from chosen people, and a **Show status** setting turns status off for the whole workspace. A user whose status is turned off always appears offline and can no longer change it; a user who is only hidden from chosen people keeps control of their own status. The feature is off by default, behind the new **Manage user status** setting.
+
+- ([#42439](https://github.com/RocketChat/Rocket.Chat/pull/42439)) Adds LiveKit as a built-in video conference provider (alpha, off by default), configurable under Video Conference settings with a server URL, API key and secret. It is offered only while the conference window is enabled, since its calls run there, and only with the new `video-conference-native` license add-on.
+
+- ([#42366](https://github.com/RocketChat/Rocket.Chat/pull/42366)) Adds a `multiLookup` setting type, the multi-value counterpart of `lookup`, for settings whose options are workspace data rather than a list fixed at registration time. A value already stored on the setting stays selectable and removable after its option disappears from the source, so a setting can never be left holding a value the admin area cannot clear.
+
+- ([#42501](https://github.com/RocketChat/Rocket.Chat/pull/42501)) Adds a native XMPP server (Enterprise, federation module) that federates directly with other XMPP servers over server-to-server connections. Rocket.Chat users can message any XMPP address, exchange presence with remote contacts, and join rooms on remote servers; remote XMPP users can join dedicated XMPP rooms hosted by Rocket.Chat. It runs as the `xmpp-server-service` microservice and is configured under **Administration → Settings → Federation → XMPP Server (Native)**.
+
+- ([#43149](https://github.com/RocketChat/Rocket.Chat/pull/43149)) Adds PKCE (RFC 7636, `S256`) to the OAuth2 server: an authorization code keeps the client's code challenge, and the token request must carry the matching code verifier. The token endpoint keeps requiring the client secret with PKCE.
+
+- ([#42735](https://github.com/RocketChat/Rocket.Chat/pull/42735)) Limits two-factor authentication email codes to one for each user each minute. A password login that needs an email code now returns a `challengeId`, which clients can use to resend the code through `twoFactorChallenges.sendEmailCode`.
+
+### Patch Changes
+
+- ([#41382](https://github.com/RocketChat/Rocket.Chat/pull/41382)) Indexes the push token string by storing each token as a flat `tokenValue`/`tokenType` pair, with VoIP tokens now kept in their own document instead of as an extra field on the device token. Changes the `POST /v1/push.token` response to return flat `tokenValue` and `tokenType` fields instead of the nested `token` object.
+
+- ([#41638](https://github.com/RocketChat/Rocket.Chat/pull/41638)) Serves the OpenAPI document as 3.1, the version whose schemas are the JSON Schema dialect the endpoints already validate against
+
+- <details><summary>Updated dependencies [80dceecf12fd1216dc3fdb9a4f42e51afbf23a75, 80dceecf12fd1216dc3fdb9a4f42e51afbf23a75, 7fbb5676fe0d2c034f4c52586ab858b3796e5dc6, 5c7b25f68d677d8bdbde3ed4c56ad0bba60ce71d, 5c7b25f68d677d8bdbde3ed4c56ad0bba60ce71d, 4c379a0d016fcf010bab86ddd94a22ff2401606e, ad08045f56e3921e88ed021aa2945c9ba670e5f5, cea4d4428a0d86c6fc868542d4fb00a36ffaa27d, 7fbb5676fe0d2c034f4c52586ab858b3796e5dc6, 4c379a0d016fcf010bab86ddd94a22ff2401606e, 25fd477c2c38f71e9a16b7e2896d39efd43bfc61, 05e9b38a001919252360351f0bc3e46cc990a6ac, 25fd477c2c38f71e9a16b7e2896d39efd43bfc61, 2184b09b0bdacdb0bced60dc054a818a92c98131, e1b509fbca35eba10e21e4aa3bc15c56f44a2845, 0285f08c086dae6beb0f1365a85f522fb4818435, 6b86dffd3a05f65fff000bb697fbb40350664629, 5e6b6bd25ea82b9c884d49871870f71dc532a061, c9aa43916295df79a799e53b8e09c58011991a97, 80dceecf12fd1216dc3fdb9a4f42e51afbf23a75, e1b509fbca35eba10e21e4aa3bc15c56f44a2845, 2d3331be63dde3449245963c33444dcb15fa8869, c9aa43916295df79a799e53b8e09c58011991a97, 80dceecf12fd1216dc3fdb9a4f42e51afbf23a75, 80dceecf12fd1216dc3fdb9a4f42e51afbf23a75, 80dceecf12fd1216dc3fdb9a4f42e51afbf23a75, 80dceecf12fd1216dc3fdb9a4f42e51afbf23a75, 80dceecf12fd1216dc3fdb9a4f42e51afbf23a75, 80dceecf12fd1216dc3fdb9a4f42e51afbf23a75, 80dceecf12fd1216dc3fdb9a4f42e51afbf23a75, 9e401e55fbd71b95dc7c4b273024219ce2564856, a838cc5af0652f59d0ab30aa1a488abded0622b1, 87667dcb84de0ce97f4ace88c900801254fa6535, 87667dcb84de0ce97f4ace88c900801254fa6535, 87667dcb84de0ce97f4ace88c900801254fa6535, 87667dcb84de0ce97f4ace88c900801254fa6535, 87667dcb84de0ce97f4ace88c900801254fa6535, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, 9dfedc72439d12f5d2985b9dd54daccd97e11e74, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, 9dfedc72439d12f5d2985b9dd54daccd97e11e74, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, bb586dc723b3dccdf725d28f530b28cfa857020a, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, 23698f9d08d34d3c145f116b5303b542e8342f9e, 9dfedc72439d12f5d2985b9dd54daccd97e11e74, e1070288debfecc5e49e118c3dc535f95936281f, 9dfedc72439d12f5d2985b9dd54daccd97e11e74]:</summary>
+  - @rocket.chat/fuselage@1.0.0-rc.0
+  - @rocket.chat/icons@0.52.0-rc.0
+  - @rocket.chat/message-parser@0.33.0-rc.0
+  - @rocket.chat/ui-kit@2.0.0-rc.0
+
+  </details>
+
+## 8.9.1
+
+## 8.9.0
+
+### Minor Changes
+
+- ([#40484](https://github.com/RocketChat/Rocket.Chat/pull/40484) by [@aleksandernsilva](https://github.com/aleksandernsilva)) Adds name and avatar resolution for external voice calls
+
+- ([#41681](https://github.com/RocketChat/Rocket.Chat/pull/41681)) Adds media call lifecycle events to the Apps-Engine: an app implementing the new `IMediaCallHandler` interface can now observe calls starting, being answered and ending, and can block a call or change the features it was requested with before it is created
+
+- ([#41539](https://github.com/RocketChat/Rocket.Chat/pull/41539)) Introduces custom, user-defined categories to the sidebar (Enterprise only). Users can create, rename, delete and reorder categories (menu-driven), and move rooms into them via the room context menu or the room header.
+
+- ([#40500](https://github.com/RocketChat/Rocket.Chat/pull/40500)) Started storing SIP Call Id on the media calls model
+  Added an endpoint to retrieve media calls data
+- ([#41657](https://github.com/RocketChat/Rocket.Chat/pull/41657)) Gives a video conference a chat that outlives it, and a window of its own to hold both — behind a new Premium setting, **`VideoConf_Conference_Window_Enabled`**, which is **off by default**.
+
+  Nothing below happens until an administrator turns that setting on. With it off, calls behave exactly as they did before: the provider's own page opens in a tab, an incoming call is a popup over the screen, a direct call rings from the room and waits there, and no new request is made of the server. The setting is also independent of `VideoConf_Enable_Persistent_Chat`, which keeps meaning only what it always meant — a discussion or thread per call — so a workspace already running persistent chat sees no change either until the new setting is turned on.
+
+  With it on:
+
+  Joining a conference opens a dedicated call window at `/conference/:id` — the provider's call beside the conference's chat, with the people on the call in a panel of their own — instead of handing the user off to the provider's page. A preflight screen opens first: it is where the camera and microphone are chosen, where whoever started a group call can name it, and where confirming is what actually creates the call, so a call nobody confirmed leaves no message, no ring and no history behind. Closing the window reports leaving, and a call nobody is left in ends by itself.
+
+  Where a call's chat lives becomes a choice. `VideoConf_Persistent_Chat_Mode`, editable only with both the call window and persistent chat on, either puts the chat in a thread off the call's message — listed under the call's name — or leaves it in the room, with the discussion per call that persistent chat has always created. The thread is Rocket.Chat's own chat panel rather than anything the provider supplies, so it applies whoever runs the media, an iframed provider included. Turning the window off puts the answer back to the discussion whatever the mode was left at, so a workspace already running persistent chat is left exactly where it was.
+
+  Adding someone to a conference makes them a member of the **conference** rather than putting them in a room. Membership authorizes joining the call alongside room access, so a person from outside the conference's room can join without being handed the room's history — and whether they can read the chat becomes a separate question, surfaced once it matters with a choice of how to resolve it: bring them into the room, or move the chat to a discussion. `video-conference.info` reports the members who can't read it and `POST /v1/video-conference.share-chat` applies the remedy; `video-conference.add-participants` takes the call and the usernames to add, and returns the ids it added.
+
+  An incoming call is no longer a popup demanding an answer. It is the first item of a list of the calls running now — behind a navigation-bar button — where it can be accepted, turned down, or silenced and left ringing while the user finishes what they were doing. That list is also how a call is reached when its ring was missed entirely, which a one-shot ring in a room of more than ten people always is (`GET /v1/video-conference.joinable`).
+
+  Conferences appear in the personal Call History from the moment they start, as `ongoing`, settling per member into `ended` or `not-answered` when the call stops — so a call that was declined or never answered is still in the log, and still joinable from it. The room's own call list stops counting members who were added but never joined.
+
+  New endpoints: `video-conference.decline` (recorded against the caller's own membership, never ending the call for anyone else), `.leave`, `.ring` (to try someone again — a ring is one-shot, so there was previously no second attempt), `.rename` and `.share-chat`. A single `video-conference.updated` stream event tells an open call window that the conference it is showing has changed.
+
+### Patch Changes
+
+- ([#42090](https://github.com/RocketChat/Rocket.Chat/pull/42090)) Fixes the removed `Drafts` sidebar group reappearing as an empty category on workspaces upgraded from a build that shipped it
+
+- <details><summary>Updated dependencies [37faaa89ad1b4b721d6054e40a91327bd8140525]:</summary>
+  - @rocket.chat/ui-kit@1.2.0
+
+  </details>
+
+## 8.9.0-rc.5
+
+## 8.9.0-rc.4
+
+## 8.9.0-rc.3
+
+## 8.9.0-rc.2
+
+## 8.9.0-rc.1
+
+## 8.9.0-rc.0
+
+### Minor Changes
+
+- ([#40484](https://github.com/RocketChat/Rocket.Chat/pull/40484) by [@aleksandernsilva](https://github.com/aleksandernsilva)) Adds name and avatar resolution for external voice calls
+
+- ([#41681](https://github.com/RocketChat/Rocket.Chat/pull/41681)) Adds media call lifecycle events to the Apps-Engine: an app implementing the new `IMediaCallHandler` interface can now observe calls starting, being answered and ending, and can block a call or change the features it was requested with before it is created
+
+- ([#41539](https://github.com/RocketChat/Rocket.Chat/pull/41539)) Introduces custom, user-defined categories to the sidebar (Enterprise only). Users can create, rename, delete and reorder categories (menu-driven), and move rooms into them via the room context menu or the room header.
+
+- ([#40500](https://github.com/RocketChat/Rocket.Chat/pull/40500)) Started storing SIP Call Id on the media calls model
+  Added an endpoint to retrieve media calls data
+- ([#41657](https://github.com/RocketChat/Rocket.Chat/pull/41657)) Gives a video conference a chat that outlives it, and a window of its own to hold both — behind a new Premium setting, **`VideoConf_Conference_Window_Enabled`**, which is **off by default**.
+
+  Nothing below happens until an administrator turns that setting on. With it off, calls behave exactly as they did before: the provider's own page opens in a tab, an incoming call is a popup over the screen, a direct call rings from the room and waits there, and no new request is made of the server. The setting is also independent of `VideoConf_Enable_Persistent_Chat`, which keeps meaning only what it always meant — a discussion or thread per call — so a workspace already running persistent chat sees no change either until the new setting is turned on.
+
+  With it on:
+
+  Joining a conference opens a dedicated call window at `/conference/:id` — the provider's call beside the conference's chat, with the people on the call in a panel of their own — instead of handing the user off to the provider's page. A preflight screen opens first: it is where the camera and microphone are chosen, where whoever started a group call can name it, and where confirming is what actually creates the call, so a call nobody confirmed leaves no message, no ring and no history behind. Closing the window reports leaving, and a call nobody is left in ends by itself.
+
+  Where a call's chat lives becomes a choice. `VideoConf_Persistent_Chat_Mode`, editable only with both the call window and persistent chat on, either puts the chat in a thread off the call's message — listed under the call's name — or leaves it in the room, with the discussion per call that persistent chat has always created. The thread is Rocket.Chat's own chat panel rather than anything the provider supplies, so it applies whoever runs the media, an iframed provider included. Turning the window off puts the answer back to the discussion whatever the mode was left at, so a workspace already running persistent chat is left exactly where it was.
+
+  Adding someone to a conference makes them a member of the **conference** rather than putting them in a room. Membership authorizes joining the call alongside room access, so a person from outside the conference's room can join without being handed the room's history — and whether they can read the chat becomes a separate question, surfaced once it matters with a choice of how to resolve it: bring them into the room, or move the chat to a discussion. `video-conference.info` reports the members who can't read it and `POST /v1/video-conference.share-chat` applies the remedy; `video-conference.add-participants` takes the call and the usernames to add, and returns the ids it added.
+
+  An incoming call is no longer a popup demanding an answer. It is the first item of a list of the calls running now — behind a navigation-bar button — where it can be accepted, turned down, or silenced and left ringing while the user finishes what they were doing. That list is also how a call is reached when its ring was missed entirely, which a one-shot ring in a room of more than ten people always is (`GET /v1/video-conference.joinable`).
+
+  Conferences appear in the personal Call History from the moment they start, as `ongoing`, settling per member into `ended` or `not-answered` when the call stops — so a call that was declined or never answered is still in the log, and still joinable from it. The room's own call list stops counting members who were added but never joined.
+
+  New endpoints: `video-conference.decline` (recorded against the caller's own membership, never ending the call for anyone else), `.leave`, `.ring` (to try someone again — a ring is one-shot, so there was previously no second attempt), `.rename` and `.share-chat`. A single `video-conference.updated` stream event tells an open call window that the conference it is showing has changed.
+
+### Patch Changes
+
+- ([#42090](https://github.com/RocketChat/Rocket.Chat/pull/42090)) Fixes the removed `Drafts` sidebar group reappearing as an empty category on workspaces upgraded from a build that shipped it
+
+- <details><summary>Updated dependencies [37faaa89ad1b4b721d6054e40a91327bd8140525]:</summary>
+  - @rocket.chat/ui-kit@1.2.0-rc.0
+
+  </details>
+
+## 8.8.1
+
+## 8.8.0
+
+### Minor Changes
+
+- ([#41355](https://github.com/RocketChat/Rocket.Chat/pull/41355)) Replaces the "Drafts in sidebar" feature preview with an always-on draft indicator. Thread-composer drafts are also persisted per thread and indicated in the thread list
+
+- ([#40560](https://github.com/RocketChat/Rocket.Chat/pull/40560) by [@aleksandernsilva](https://github.com/aleksandernsilva)) Adds support for call diversion handling in voice calls
+
+- ([#41747](https://github.com/RocketChat/Rocket.Chat/pull/41747)) Adds status visibility, letting users hide their presence and status message from specific people they choose. Blocked people see that user as offline, indistinguishable from genuinely offline, and the block can be lifted at any time — changes apply live, without a reload.
+
+## 8.8.0-rc.2
+
+## 8.8.0-rc.1
+
+## 8.8.0-rc.0
+
+### Minor Changes
+
+- ([#41355](https://github.com/RocketChat/Rocket.Chat/pull/41355)) Replaces the "Drafts in sidebar" feature preview with an always-on draft indicator. Thread-composer drafts are also persisted per thread and indicated in the thread list
+
+- ([#40560](https://github.com/RocketChat/Rocket.Chat/pull/40560) by [@aleksandernsilva](https://github.com/aleksandernsilva)) Adds support for call diversion handling in voice calls
+
+- ([#41747](https://github.com/RocketChat/Rocket.Chat/pull/41747)) Adds status visibility, letting users hide their presence and status message from specific people they choose. Blocked people see that user as offline, indistinguishable from genuinely offline, and the block can be lifted at any time — changes apply live, without a reload.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/message-parser@0.32.0
+  - @rocket.chat/ui-kit@1.1.0
+
+  </details>
+
+## 8.7.1
+
 ## 8.7.0
 
 ### Minor Changes
@@ -11,7 +284,6 @@
   Introduces a more secure and reliable server-side OAuth authentication flow.
 
   ### What’s New
-
   - **Improved OAuth login security**
     OAuth authentication now happens fully on the server, reducing the risk of token theft, phishing attacks, and client-side credential interception.
   - **Built-in CSRF, state validation, and PKCE protection**
@@ -38,8 +310,8 @@
 - ([#41112](https://github.com/RocketChat/Rocket.Chat/pull/41112)) Returns `custom fields` on admin rooms detail view
 
 - <details><summary>Updated dependencies [eec6083bb88f0caa1bd0de28b93b926a11c17507, adc15707128bc3fbe1ccd1cd57e9d30a702fa6ca, 4117a1d3fb07905e8c9488a96f368747b48d528e, e5da5d016948c9bb5cfd784a65396e08e61264c4, 70c0ff0967cc50144dba4971fc7c3f3e996264a3]:</summary>
-
   - @rocket.chat/message-parser@0.32.0
+
   </details>
 
 ## 8.7.0-rc.6
@@ -65,7 +337,6 @@
   Introduces a more secure and reliable server-side OAuth authentication flow.
 
   ### What’s New
-
   - **Improved OAuth login security**
     OAuth authentication now happens fully on the server, reducing the risk of token theft, phishing attacks, and client-side credential interception.
   - **Built-in CSRF, state validation, and PKCE protection**
@@ -92,8 +363,8 @@
 - ([#41112](https://github.com/RocketChat/Rocket.Chat/pull/41112)) Returns `custom fields` on admin rooms detail view
 
 - <details><summary>Updated dependencies [eec6083bb88f0caa1bd0de28b93b926a11c17507, adc15707128bc3fbe1ccd1cd57e9d30a702fa6ca, 4117a1d3fb07905e8c9488a96f368747b48d528e, e5da5d016948c9bb5cfd784a65396e08e61264c4, 70c0ff0967cc50144dba4971fc7c3f3e996264a3]:</summary>
-
   - @rocket.chat/message-parser@0.32.0-rc.0
+
   </details>
 
 ## 8.6.1
@@ -147,8 +418,8 @@
 - ([#40405](https://github.com/RocketChat/Rocket.Chat/pull/40405)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
 
 - <details><summary>Updated dependencies [90f15e32ae843ed146ccf711ee3201408d1e8731, 90f15e32ae843ed146ccf711ee3201408d1e8731]:</summary>
-
   - @rocket.chat/ui-kit@1.1.0
+
   </details>
 
 ## 8.5.0-rc.6
@@ -172,7 +443,6 @@
   Introduces a more secure and reliable server-side OAuth authentication flow.
 
   ### What’s New
-
   - **Improved OAuth login security**
     OAuth authentication now happens fully on the server, reducing the risk of token theft, phishing attacks, and client-side credential interception.
   - **Built-in CSRF, state validation, and PKCE protection**
@@ -187,8 +457,8 @@
 - ([#40405](https://github.com/RocketChat/Rocket.Chat/pull/40405)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
 
 - <details><summary>Updated dependencies [90f15e32ae843ed146ccf711ee3201408d1e8731, 90f15e32ae843ed146ccf711ee3201408d1e8731]:</summary>
-
   - @rocket.chat/ui-kit@1.1.0-rc.0
+
   </details>
 
 ## 8.4.3
@@ -214,8 +484,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [53e32c7df1bf40598d65d170fd50c55f752f2951, 53e32c7df1bf40598d65d170fd50c55f752f2951, 53e32c7df1bf40598d65d170fd50c55f752f2951, 53e32c7df1bf40598d65d170fd50c55f752f2951]:</summary>
-
   - @rocket.chat/message-parser@0.31.36
+
   </details>
 
 ## 8.4.0-rc.2
@@ -239,8 +509,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [53e32c7df1bf40598d65d170fd50c55f752f2951, 53e32c7df1bf40598d65d170fd50c55f752f2951, 53e32c7df1bf40598d65d170fd50c55f752f2951, 53e32c7df1bf40598d65d170fd50c55f752f2951]:</summary>
-
   - @rocket.chat/message-parser@0.31.36-rc.0
+
   </details>
 
 ## 8.3.0
@@ -260,9 +530,9 @@
 - ([#36953](https://github.com/RocketChat/Rocket.Chat/pull/36953) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat commands.get API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
 
 - <details><summary>Updated dependencies [d1bf2cc675e80403659d388a1fbbdc6f73889dad, 02b1e6e6a184850d21e335077ca30382a1c7a66b, 9a70095296dbf516b0113a9a65e09f25137b2eaf, 87f9262af4a543d52642a54e1ef546d509a79e23, 539659af22bc19880eda047dfc0b152472ccb65c, b1b1d6ccd81c90d231a7e594f834965c6e5f4fae]:</summary>
-
   - @rocket.chat/message-parser@0.31.35
   - @rocket.chat/ui-kit@1.0.0
+
   </details>
 
 ## 8.3.0-rc.4
@@ -290,9 +560,9 @@
 - ([#36953](https://github.com/RocketChat/Rocket.Chat/pull/36953) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat commands.get API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
 
 - <details><summary>Updated dependencies [d1bf2cc675e80403659d388a1fbbdc6f73889dad, 02b1e6e6a184850d21e335077ca30382a1c7a66b, 9a70095296dbf516b0113a9a65e09f25137b2eaf, 87f9262af4a543d52642a54e1ef546d509a79e23, 539659af22bc19880eda047dfc0b152472ccb65c, b1b1d6ccd81c90d231a7e594f834965c6e5f4fae]:</summary>
-
   - @rocket.chat/message-parser@0.31.35-rc.0
   - @rocket.chat/ui-kit@1.0.0-rc.0
+
   </details>
 
 ## 8.2.1
@@ -310,8 +580,8 @@
 - ([#38379](https://github.com/RocketChat/Rocket.Chat/pull/38379)) Fixes association of encrypted messages and encrypted files, so that if one of them is removed, the other gets removed as well.
 
 - <details><summary>Updated dependencies [098f0a7467332f10a7bea5d435ae2ca3b5431fc9, 562d5ce6ad8afc67bef61e91939f8c21c4501610]:</summary>
-
   - @rocket.chat/message-parser@0.31.34
+
   </details>
 
 ## 8.2.0-rc.2
@@ -331,8 +601,8 @@
 - ([#38379](https://github.com/RocketChat/Rocket.Chat/pull/38379)) Fixes association of encrypted messages and encrypted files, so that if one of them is removed, the other gets removed as well.
 
 - <details><summary>Updated dependencies [098f0a7467332f10a7bea5d435ae2ca3b5431fc9, 562d5ce6ad8afc67bef61e91939f8c21c4501610]:</summary>
-
   - @rocket.chat/message-parser@0.31.34-rc.0
+
   </details>
 
 ## 8.1.1
@@ -344,8 +614,8 @@
 - ([#37950](https://github.com/RocketChat/Rocket.Chat/pull/37950)) Fixes premium capability popup showing despite active enterprise license.
 
 - <details><summary>Updated dependencies [bed615ef323d4018f779cda013255ac9147e4cde]:</summary>
-
   - @rocket.chat/message-parser@0.31.33
+
   </details>
 
 ## 8.1.0-rc.2
@@ -353,8 +623,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [bed615ef323d4018f779cda013255ac9147e4cde]:</summary>
-
   - @rocket.chat/message-parser@0.31.33-rc.0
+
   </details>
 
 ## 8.1.0-rc.1
@@ -386,8 +656,8 @@
 - ([#37612](https://github.com/RocketChat/Rocket.Chat/pull/37612)) Adds invitation request support to rooms
 
 - <details><summary>Updated dependencies [d3538e7045c41f91b8c561d44e5485ff93b93745]:</summary>
-
   - @rocket.chat/ui-kit@0.39.0
+
   </details>
 
 ## 8.0.0-rc.5
@@ -419,8 +689,8 @@
 - ([#37612](https://github.com/RocketChat/Rocket.Chat/pull/37612)) Adds invitation request support to rooms
 
 - <details><summary>Updated dependencies [d3538e7045c41f91b8c561d44e5485ff93b93745]:</summary>
-
   - @rocket.chat/ui-kit@0.39.0-rc.0
+
   </details>
 
 ## 7.13.2
@@ -440,8 +710,8 @@
 - ([#37270](https://github.com/RocketChat/Rocket.Chat/pull/37270)) Fixes editing of encrypted message attachment description.
 
 - <details><summary>Updated dependencies [44ca3b111f13ac1816a82ab0e4720e9886769c34]:</summary>
-
   - @rocket.chat/ui-kit@0.38.0
+
   </details>
 
 ## 7.13.0-rc.2
@@ -461,8 +731,8 @@
 - ([#37270](https://github.com/RocketChat/Rocket.Chat/pull/37270)) Fixes editing of encrypted message attachment description.
 
 - <details><summary>Updated dependencies [44ca3b111f13ac1816a82ab0e4720e9886769c34]:</summary>
-
   - @rocket.chat/ui-kit@0.38.0-rc.0
+
   </details>
 
 ## 7.12.2
@@ -716,8 +986,8 @@
 - ([#35369](https://github.com/RocketChat/Rocket.Chat/pull/35369)) Fixes an issue where recursively quoting messages multiple times (up to the configured chained quote limit) caused the inner attachment to appear empty.
 
 - <details><summary>Updated dependencies [335f19f5d08b7348263b574e4133ecf93145a79c]:</summary>
-
   - @rocket.chat/message-parser@0.31.32
+
   </details>
 
 ## 7.5.0-rc.5
@@ -741,8 +1011,8 @@
 - ([#35369](https://github.com/RocketChat/Rocket.Chat/pull/35369)) Fixes an issue where recursively quoting messages multiple times (up to the configured chained quote limit) caused the inner attachment to appear empty.
 
 - <details><summary>Updated dependencies [335f19f5d08b7348263b574e4133ecf93145a79c]:</summary>
-
   - @rocket.chat/message-parser@0.31.32-rc.0
+
   </details>
 
 ## 7.4.1
@@ -950,8 +1220,8 @@
 - ([#33328](https://github.com/RocketChat/Rocket.Chat/pull/33328)) Allows authorized users to reset the encryption key for end-to-end encrypted rooms. This aims to prevent situations where all users of a room have lost the encryption key, and as such, the access to the room.
 
 - <details><summary>Updated dependencies [687f1efd5f, debd3ffa22]:</summary>
-
   - @rocket.chat/ui-kit@0.37.0
+
   </details>
 
 ## 7.0.0-rc.6
@@ -991,8 +1261,8 @@
 - ([#33328](https://github.com/RocketChat/Rocket.Chat/pull/33328)) Allows authorized users to reset the encryption key for end-to-end encrypted rooms. This aims to prevent situations where all users of a room have lost the encryption key, and as such, the access to the room.
 
 - <details><summary>Updated dependencies [687f1efd5f, debd3ffa22]:</summary>
-
   - @rocket.chat/ui-kit@0.37.0-rc.0
+
   </details>
 
 ## 6.13.0
@@ -1008,8 +1278,8 @@
 - ([#32510](https://github.com/RocketChat/Rocket.Chat/pull/32510)) Added a new setting to enable mentions in end to end encrypted channels
 
 - <details><summary>Updated dependencies [79c16d315a]:</summary>
-
   - @rocket.chat/message-parser@0.31.31
+
   </details>
 
 ## 6.13.0-rc.6
@@ -1037,8 +1307,8 @@
 - ([#32510](https://github.com/RocketChat/Rocket.Chat/pull/32510)) Added a new setting to enable mentions in end to end encrypted channels
 
 - <details><summary>Updated dependencies [79c16d315a]:</summary>
-
   - @rocket.chat/message-parser@0.31.30-rc.0
+
   </details>
 
 ## 6.12.1
@@ -1046,8 +1316,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [3cbb9f6252]:</summary>
-
   - @rocket.chat/message-parser@0.31.30
+
   </details>
 
 ## 6.12.0
@@ -1073,8 +1343,8 @@
 - ([#32846](https://github.com/RocketChat/Rocket.Chat/pull/32846)) Fixed issue with system messages being counted as agents' first responses in livechat rooms (which caused the "best first response time" and "average first response time" metrics to be unreliable for all agents)
 
 - <details><summary>Updated dependencies [c11f3722df]:</summary>
-
   - @rocket.chat/ui-kit@0.36.1
+
   </details>
 
 ## 6.12.0-rc.6
@@ -1112,8 +1382,8 @@
 - ([#32846](https://github.com/RocketChat/Rocket.Chat/pull/32846)) Fixed issue with system messages being counted as agents' first responses in livechat rooms (which caused the "best first response time" and "average first response time" metrics to be unreliable for all agents)
 
 - <details><summary>Updated dependencies [c11f3722df]:</summary>
-
   - @rocket.chat/ui-kit@0.36.1-rc.0
+
   </details>
 
 ## 6.11.2
@@ -1134,8 +1404,8 @@
 - ([#32719](https://github.com/RocketChat/Rocket.Chat/pull/32719)) Added the `user` param to apps-engine update method call, allowing apps' new `onUpdate` hook to know who triggered the update.
 
 - <details><summary>Updated dependencies [2d89a0c448]:</summary>
-
   - @rocket.chat/ui-kit@0.36.0
+
   </details>
 
 ## 6.11.0-rc.6
@@ -1164,8 +1434,8 @@
 - ([#32719](https://github.com/RocketChat/Rocket.Chat/pull/32719)) Added the `user` param to apps-engine update method call, allowing apps' new `onUpdate` hook to know who triggered the update.
 
 - <details><summary>Updated dependencies [2d89a0c448]:</summary>
-
   - @rocket.chat/ui-kit@0.36.0-rc.0
+
   </details>
 
 ## 6.10.2
@@ -1200,8 +1470,8 @@
   Additionally, added a "Pending Action" column to aid administrators in identifying necessary actions for each user. Incorporated a "Reason for Joining" field
   into the user info contextual bar, along with a callout for exceeding the seats cap in the users page header. Finally, introduced a new logic to disable user creation buttons upon surpassing the seats cap.
 - <details><summary>Updated dependencies [a565999ae0, 4f72d62aa7]:</summary>
-
   - @rocket.chat/ui-kit@0.35.0
+
   </details>
 
 ## 6.10.0-rc.7
@@ -1236,8 +1506,8 @@
   Additionally, added a "Pending Action" column to aid administrators in identifying necessary actions for each user. Incorporated a "Reason for Joining" field
   into the user info contextual bar, along with a callout for exceeding the seats cap in the users page header. Finally, introduced a new logic to disable user creation buttons upon surpassing the seats cap.
 - <details><summary>Updated dependencies [a565999ae0, 4f72d62aa7]:</summary>
-
   - @rocket.chat/ui-kit@0.35.0-rc.0
+
   </details>
 
 ## 6.9.3
@@ -1257,8 +1527,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [ee5cdfc367]:</summary>
-
   - @rocket.chat/ui-kit@0.34.0
+
   </details>
 
 ## 6.9.0-rc.2
@@ -1276,8 +1546,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [ee5cdfc367]:</summary>
-
   - @rocket.chat/ui-kit@0.34.0-rc.0
+
   </details>
 
 ## 6.8.0
@@ -1296,9 +1566,9 @@
   This returned an empty response to the UI, which ignored the response and continued to show the view.
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/message-parser@0.31.29
   - @rocket.chat/ui-kit@0.33.0
+
   </details>
 
 ## 6.8.0-rc.2
@@ -1323,9 +1593,9 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/message-parser@0.31.29
   - @rocket.chat/ui-kit@0.33.0
+
   </details>
 
 ## 6.7.2
@@ -1350,9 +1620,9 @@
 - ([#31663](https://github.com/RocketChat/Rocket.Chat/pull/31663)) Fixes issue causing the setDepartment Livechat API overriding some triggers conditions
 
 - <details><summary>Updated dependencies [5ad65ff3da]:</summary>
-
   - @rocket.chat/message-parser@0.31.29
   - @rocket.chat/ui-kit@0.33.0
+
   </details>
 
 ## 6.7.0-rc.4
@@ -1381,9 +1651,9 @@
 - ([#31663](https://github.com/RocketChat/Rocket.Chat/pull/31663)) Fixes issue causing the setDepartment Livechat API overriding some triggers conditions
 
 - <details><summary>Updated dependencies [5ad65ff3da]:</summary>
-
   - @rocket.chat/message-parser@0.31.29-rc.0
   - @rocket.chat/ui-kit@0.33.0
+
   </details>
 
 ## 6.6.6
@@ -1411,8 +1681,8 @@
 - ([#31328](https://github.com/RocketChat/Rocket.Chat/pull/31328)) Fixed an issue caused by the `Fallback Forward Department` feature. Feature could be configured by admins in a way that mimis a loop, causing a chat to be forwarded "infinitely" between those departments. System will now prevent Self & 1-level deep circular references from being saved, and a new setting is added to control the maximum number of hops that the system will do between fallback departments before considering a transfer failure.
 
 - <details><summary>Updated dependencies [b223cbde14]:</summary>
-
   - @rocket.chat/ui-kit@0.33.0
+
   </details>
 
 ## 6.6.0-rc.7

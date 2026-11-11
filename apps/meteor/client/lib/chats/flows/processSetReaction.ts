@@ -1,7 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 
-import { sdk } from '../../../../app/utils/client/lib/SDKClient';
 import { Rooms, Subscriptions, Messages } from '../../../stores';
+import { sdk } from '../../SDKClient';
 import { emoji } from '../../emoji';
 import { roomCoordinator } from '../../rooms/roomCoordinator';
 import { dispatchToastMessage } from '../../toast';

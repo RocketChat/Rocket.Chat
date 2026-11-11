@@ -13,6 +13,7 @@ import type {
 import { traceInstanceMethods } from '@rocket.chat/tracing';
 import { ObjectId } from 'mongodb';
 import type {
+	AnyBulkWriteOperation,
 	BulkWriteOptions,
 	ChangeStream,
 	Collection,
@@ -48,7 +49,7 @@ const warnFields =
 		? (...rest: any): void => {
 				console.warn(...rest, new Error().stack);
 			}
-		: new Function();
+		: (): void => undefined;
 
 type ModelOptions = {
 	preventSetUpdatedAt?: boolean;
@@ -60,8 +61,7 @@ export abstract class BaseRaw<
 	T extends { _id: string },
 	C extends DefaultFields<T> = undefined,
 	TDeleted extends RocketChatRecordDeleted<T> = RocketChatRecordDeleted<T>,
-> implements IBaseModel<T, C, TDeleted>
-{
+> implements IBaseModel<T, C, TDeleted> {
 	protected defaultFields: C | undefined;
 
 	public readonly col: Collection<T>;
@@ -134,7 +134,7 @@ export abstract class BaseRaw<
 		const updateFilter = updater.getUpdateFilter();
 		return this.updateOne(query, updateFilter, options).catch((e) => {
 			console.warn(e, updateFilter);
-			return Promise.reject(e);
+			throw e;
 		});
 	}
 
@@ -391,14 +391,17 @@ export abstract class BaseRaw<
 			throw e;
 		}
 
-		return doc as WithId<T>;
+		return doc;
 	}
 
 	findOneAndDeleteById(_id: T['_id'], options?: FindOneAndDeleteOptions): Promise<WithId<T> | null> {
 		return this.findOneAndDelete({ _id } as Filter<T>, options);
 	}
 
-	async deleteMany(filter: Filter<T>, options?: DeleteOptions & { onTrash?: (record: ResultFields<T, C>) => void }): Promise<DeleteResult> {
+	async deleteMany(
+		filter: Filter<T>,
+		options?: DeleteOptions & { onTrash?: (record: ResultFields<T, C>) => void; bulkTrash?: boolean },
+	): Promise<DeleteResult> {
 		if (!this.trash) {
 			if (options) {
 				return this.col.deleteMany(filter, options);
@@ -409,6 +412,8 @@ export abstract class BaseRaw<
 		const cursor = this.find<ResultFields<T, C>>(filter, { session: options?.session });
 
 		const ids: T['_id'][] = [];
+		const trashOperations: AnyBulkWriteOperation<TDeleted>[] = [];
+		let deletedCount = 0;
 		for await (const doc of cursor) {
 			const { _id, ...record } = doc as T;
 
@@ -421,20 +426,37 @@ export abstract class BaseRaw<
 			ids.push(_id);
 
 			// since the operation is not atomic, we need to make sure that the record is not already deleted/inserted
-			await this.trash?.updateOne(
-				{ _id } as Filter<TDeleted>,
-				{ $set: trash },
-				{
-					upsert: true,
-					session: options?.session,
-				},
-			);
+			if (options?.bulkTrash) {
+				trashOperations.push({ updateOne: { filter: { _id } as Filter<TDeleted>, update: { $set: trash }, upsert: true } });
+				if (trashOperations.length === 1000) {
+					await this.trash?.bulkWrite(trashOperations.splice(0), { session: options.session });
+					deletedCount += (await this.col.deleteMany({ _id: { $in: ids.splice(0) } } as unknown as Filter<T>, options)).deletedCount;
+				}
+			} else {
+				await this.trash?.updateOne(
+					{ _id } as Filter<TDeleted>,
+					{ $set: trash },
+					{
+						upsert: true,
+						session: options?.session,
+					},
+				);
+			}
 
 			void options?.onTrash?.(doc);
 		}
 
+		if (trashOperations.length) {
+			await this.trash?.bulkWrite(trashOperations, { session: options?.session });
+		}
+
+		if (!ids.length) {
+			return { acknowledged: true, deletedCount };
+		}
+
 		if (options) {
-			return this.col.deleteMany({ _id: { $in: ids } } as unknown as Filter<T>, options);
+			const result = await this.col.deleteMany({ _id: { $in: ids } } as unknown as Filter<T>, options);
+			return { ...result, deletedCount: result.deletedCount + deletedCount };
 		}
 		return this.col.deleteMany({ _id: { $in: ids } } as unknown as Filter<T>);
 	}

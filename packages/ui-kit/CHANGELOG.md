@@ -1,5 +1,151 @@
 # Change Log
 
+## 2.0.0
+
+### Minor Changes
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds `accessibility_label` to UiKit buttons: screen readers announce it instead of the button text, for buttons whose visible text is ambiguous on its own.
+
+- ([#42854](https://github.com/RocketChat/Rocket.Chat/pull/42854)) Adds the UiKit `context_actions` block: a compact row of icon buttons attached to the end of a message, for actions about it.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds `filter.include` and `default_to_current_conversation` to the UiKit conversations selects: apps can list only public channels, private groups or direct messages, and start with the room the view was opened from already selected.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds rendering for the UiKit `conversations_select` and `multi_conversations_select` elements. They list the conversations the user belongs to (channels, private groups and direct messages), and their value is the room id or the list of room ids. Both elements now also accept a `placeholder`.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds the UiKit `datetimepicker` element, which picks a date and a time together in `actions` and `input` blocks. Its `initial_date_time` and value are Unix timestamps in seconds, shown in the user's time zone.
+
+- ([#42854](https://github.com/RocketChat/Rocket.Chat/pull/42854)) Adds the UiKit `feedback_buttons` element to `context_actions`: a thumbs up and a thumbs down button that send the chosen value to the app, to rate a message such as an answer.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds `focus_on_load` to the UiKit users, channels and conversations selects (single and multi), checkboxes and radio buttons.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds `focus_on_load` to UiKit text, number, email, URL, date, time and date-time inputs, so an app can choose which field has focus when a modal or contextual bar opens.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds the UiKit `number_input`, `email_text_input` and `url_text_input` elements for `input` blocks. `number_input` supports `is_decimal_allowed`, `min_value` and `max_value`; all three accept `placeholder` and `initial_value`, and submit their value as a string.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds the UiKit `header` block: a large plain-text title that separates sections of messages, modals and contextual bars.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds the UiKit `markdown` block: a longer piece of Markdown, rendered like a chat message, in messages, modals and contextual bars.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds `max_selected_items` to the UiKit multi users, channels and conversations selects; once that many entries are selected, no others can be picked.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Lets UiKit `section` blocks take checkboxes, radio buttons, a time picker and the users, channels and conversations selects (single and multi) as their accessory.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds initial selections to the UiKit users, channels and conversations selects: `initial_user`/`initial_users` (usernames), `initial_channel`/`initial_channels` and `initial_conversation`/`initial_conversations` (room ids). Selected entries now keep their chips even when the current search does not return them.
+
+- ([#42564](https://github.com/RocketChat/Rocket.Chat/pull/42564)) Fixes UiKit `callout` blocks not rendering in banners and in messages. Each UiKit surface now has a single list of accepted layout blocks, exported by `@rocket.chat/ui-kit` (`messageSurfaceLayoutBlockTypes`, `modalSurfaceLayoutBlockTypes`, `bannerSurfaceLayoutBlockTypes`, `contextualBarSurfaceLayoutBlockTypes`, `attachmentSurfaceLayoutBlockTypes`) and shared by the surface types, the `UiKitParser*` classes and the Fuselage renderers. The surface types now also include every block the web client already rendered: `input` and `info_card` in messages, `preview` in modals, `preview` and `info_card` in banners, and `callout`, `preview` and `tab_navigation` in the contextual bar.
+
+- ([#42854](https://github.com/RocketChat/Rocket.Chat/pull/42854)) Adds the UiKit `table` block: rows of plain or formatted cells, with a header row and per-column alignment and wrapping, in messages, modals and contextual bars.
+
+- ([#42560](https://github.com/RocketChat/Rocket.Chat/pull/42560)) Fixes UiKit buttons, icon buttons and overflow options opening `javascript:`, `data:` and `vbscript:` URLs sent by apps. Those URLs are now ignored; every other URL, including app deep links and relative URLs, still opens. Overflow options in the web client, which never opened their URL, now open it in a new tab without access to the opener. `@rocket.chat/ui-kit` exports the check as `isSafeUrl`.
+
+- ([#42854](https://github.com/RocketChat/Rocket.Chat/pull/42854)) Adds the UiKit `video` block: a video shown as its thumbnail with a title, description and provider, which plays in place from an `https` embeddable page once clicked, in messages, modals and contextual bars.
+
+### Patch Changes
+
+- ([#43036](https://github.com/RocketChat/Rocket.Chat/pull/43036)) Fixes UI Kit buttons in messages sending the clicker's credentials to an endpoint other than the app's interaction endpoint when their `appId` is not a valid app ID
+
+- ([#42558](https://github.com/RocketChat/Rocket.Chat/pull/42558)) Fixes apps not being able to close a UiKit modal with a `modal.close` response; the client now closes the modal named by the response's `view.id` or `viewId`.
+
+- <details><summary>Updated dependencies [0285f08c086dae6beb0f1365a85f522fb4818435, a838cc5af0652f59d0ab30aa1a488abded0622b1]:</summary>
+  - @rocket.chat/icons@0.52.0
+
+  </details>
+
+## 2.0.0-rc.0
+
+### Minor Changes
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds `accessibility_label` to UiKit buttons: screen readers announce it instead of the button text, for buttons whose visible text is ambiguous on its own.
+
+- ([#42854](https://github.com/RocketChat/Rocket.Chat/pull/42854)) Adds the UiKit `context_actions` block: a compact row of icon buttons attached to the end of a message, for actions about it.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds `filter.include` and `default_to_current_conversation` to the UiKit conversations selects: apps can list only public channels, private groups or direct messages, and start with the room the view was opened from already selected.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds rendering for the UiKit `conversations_select` and `multi_conversations_select` elements. They list the conversations the user belongs to (channels, private groups and direct messages), and their value is the room id or the list of room ids. Both elements now also accept a `placeholder`.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds the UiKit `datetimepicker` element, which picks a date and a time together in `actions` and `input` blocks. Its `initial_date_time` and value are Unix timestamps in seconds, shown in the user's time zone.
+
+- ([#42854](https://github.com/RocketChat/Rocket.Chat/pull/42854)) Adds the UiKit `feedback_buttons` element to `context_actions`: a thumbs up and a thumbs down button that send the chosen value to the app, to rate a message such as an answer.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds `focus_on_load` to the UiKit users, channels and conversations selects (single and multi), checkboxes and radio buttons.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds `focus_on_load` to UiKit text, number, email, URL, date, time and date-time inputs, so an app can choose which field has focus when a modal or contextual bar opens.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds the UiKit `number_input`, `email_text_input` and `url_text_input` elements for `input` blocks. `number_input` supports `is_decimal_allowed`, `min_value` and `max_value`; all three accept `placeholder` and `initial_value`, and submit their value as a string.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds the UiKit `header` block: a large plain-text title that separates sections of messages, modals and contextual bars.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds the UiKit `markdown` block: a longer piece of Markdown, rendered like a chat message, in messages, modals and contextual bars.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds `max_selected_items` to the UiKit multi users, channels and conversations selects; once that many entries are selected, no others can be picked.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Lets UiKit `section` blocks take checkboxes, radio buttons, a time picker and the users, channels and conversations selects (single and multi) as their accessory.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds initial selections to the UiKit users, channels and conversations selects: `initial_user`/`initial_users` (usernames), `initial_channel`/`initial_channels` and `initial_conversation`/`initial_conversations` (room ids). Selected entries now keep their chips even when the current search does not return them.
+
+- ([#42564](https://github.com/RocketChat/Rocket.Chat/pull/42564)) Fixes UiKit `callout` blocks not rendering in banners and in messages. Each UiKit surface now has a single list of accepted layout blocks, exported by `@rocket.chat/ui-kit` (`messageSurfaceLayoutBlockTypes`, `modalSurfaceLayoutBlockTypes`, `bannerSurfaceLayoutBlockTypes`, `contextualBarSurfaceLayoutBlockTypes`, `attachmentSurfaceLayoutBlockTypes`) and shared by the surface types, the `UiKitParser*` classes and the Fuselage renderers. The surface types now also include every block the web client already rendered: `input` and `info_card` in messages, `preview` in modals, `preview` and `info_card` in banners, and `callout`, `preview` and `tab_navigation` in the contextual bar.
+
+- ([#42854](https://github.com/RocketChat/Rocket.Chat/pull/42854)) Adds the UiKit `table` block: rows of plain or formatted cells, with a header row and per-column alignment and wrapping, in messages, modals and contextual bars.
+
+- ([#42560](https://github.com/RocketChat/Rocket.Chat/pull/42560)) Fixes UiKit buttons, icon buttons and overflow options opening `javascript:`, `data:` and `vbscript:` URLs sent by apps. Those URLs are now ignored; every other URL, including app deep links and relative URLs, still opens. Overflow options in the web client, which never opened their URL, now open it in a new tab without access to the opener. `@rocket.chat/ui-kit` exports the check as `isSafeUrl`.
+
+- ([#42854](https://github.com/RocketChat/Rocket.Chat/pull/42854)) Adds the UiKit `video` block: a video shown as its thumbnail with a title, description and provider, which plays in place from an `https` embeddable page once clicked, in messages, modals and contextual bars.
+
+### Patch Changes
+
+- ([#43036](https://github.com/RocketChat/Rocket.Chat/pull/43036)) Fixes UI Kit buttons in messages sending the clicker's credentials to an endpoint other than the app's interaction endpoint when their `appId` is not a valid app ID
+
+- ([#42558](https://github.com/RocketChat/Rocket.Chat/pull/42558)) Fixes apps not being able to close a UiKit modal with a `modal.close` response; the client now closes the modal named by the response's `view.id` or `viewId`.
+
+- <details><summary>Updated dependencies [0285f08c086dae6beb0f1365a85f522fb4818435, a838cc5af0652f59d0ab30aa1a488abded0622b1]:</summary>
+  - @rocket.chat/icons@0.52.0-rc.0
+
+  </details>
+
+## 1.2.0
+
+### Minor Changes
+
+- ([#41657](https://github.com/RocketChat/Rocket.Chat/pull/41657)) Gives a video conference a chat that outlives it, and a window of its own to hold both — behind a new Premium setting, **`VideoConf_Conference_Window_Enabled`**, which is **off by default**.
+
+  Nothing below happens until an administrator turns that setting on. With it off, calls behave exactly as they did before: the provider's own page opens in a tab, an incoming call is a popup over the screen, a direct call rings from the room and waits there, and no new request is made of the server. The setting is also independent of `VideoConf_Enable_Persistent_Chat`, which keeps meaning only what it always meant — a discussion or thread per call — so a workspace already running persistent chat sees no change either until the new setting is turned on.
+
+  With it on:
+
+  Joining a conference opens a dedicated call window at `/conference/:id` — the provider's call beside the conference's chat, with the people on the call in a panel of their own — instead of handing the user off to the provider's page. A preflight screen opens first: it is where the camera and microphone are chosen, where whoever started a group call can name it, and where confirming is what actually creates the call, so a call nobody confirmed leaves no message, no ring and no history behind. Closing the window reports leaving, and a call nobody is left in ends by itself.
+
+  Where a call's chat lives becomes a choice. `VideoConf_Persistent_Chat_Mode`, editable only with both the call window and persistent chat on, either puts the chat in a thread off the call's message — listed under the call's name — or leaves it in the room, with the discussion per call that persistent chat has always created. The thread is Rocket.Chat's own chat panel rather than anything the provider supplies, so it applies whoever runs the media, an iframed provider included. Turning the window off puts the answer back to the discussion whatever the mode was left at, so a workspace already running persistent chat is left exactly where it was.
+
+  Adding someone to a conference makes them a member of the **conference** rather than putting them in a room. Membership authorizes joining the call alongside room access, so a person from outside the conference's room can join without being handed the room's history — and whether they can read the chat becomes a separate question, surfaced once it matters with a choice of how to resolve it: bring them into the room, or move the chat to a discussion. `video-conference.info` reports the members who can't read it and `POST /v1/video-conference.share-chat` applies the remedy; `video-conference.add-participants` takes the call and the usernames to add, and returns the ids it added.
+
+  An incoming call is no longer a popup demanding an answer. It is the first item of a list of the calls running now — behind a navigation-bar button — where it can be accepted, turned down, or silenced and left ringing while the user finishes what they were doing. That list is also how a call is reached when its ring was missed entirely, which a one-shot ring in a room of more than ten people always is (`GET /v1/video-conference.joinable`).
+
+  Conferences appear in the personal Call History from the moment they start, as `ongoing`, settling per member into `ended` or `not-answered` when the call stops — so a call that was declined or never answered is still in the log, and still joinable from it. The room's own call list stops counting members who were added but never joined.
+
+  New endpoints: `video-conference.decline` (recorded against the caller's own membership, never ending the call for anyone else), `.leave`, `.ring` (to try someone again — a ring is one-shot, so there was previously no second attempt), `.rename` and `.share-chat`. A single `video-conference.updated` stream event tells an open call window that the conference it is showing has changed.
+
+## 1.2.0-rc.0
+
+### Minor Changes
+
+- ([#41657](https://github.com/RocketChat/Rocket.Chat/pull/41657)) Gives a video conference a chat that outlives it, and a window of its own to hold both — behind a new Premium setting, **`VideoConf_Conference_Window_Enabled`**, which is **off by default**.
+
+  Nothing below happens until an administrator turns that setting on. With it off, calls behave exactly as they did before: the provider's own page opens in a tab, an incoming call is a popup over the screen, a direct call rings from the room and waits there, and no new request is made of the server. The setting is also independent of `VideoConf_Enable_Persistent_Chat`, which keeps meaning only what it always meant — a discussion or thread per call — so a workspace already running persistent chat sees no change either until the new setting is turned on.
+
+  With it on:
+
+  Joining a conference opens a dedicated call window at `/conference/:id` — the provider's call beside the conference's chat, with the people on the call in a panel of their own — instead of handing the user off to the provider's page. A preflight screen opens first: it is where the camera and microphone are chosen, where whoever started a group call can name it, and where confirming is what actually creates the call, so a call nobody confirmed leaves no message, no ring and no history behind. Closing the window reports leaving, and a call nobody is left in ends by itself.
+
+  Where a call's chat lives becomes a choice. `VideoConf_Persistent_Chat_Mode`, editable only with both the call window and persistent chat on, either puts the chat in a thread off the call's message — listed under the call's name — or leaves it in the room, with the discussion per call that persistent chat has always created. The thread is Rocket.Chat's own chat panel rather than anything the provider supplies, so it applies whoever runs the media, an iframed provider included. Turning the window off puts the answer back to the discussion whatever the mode was left at, so a workspace already running persistent chat is left exactly where it was.
+
+  Adding someone to a conference makes them a member of the **conference** rather than putting them in a room. Membership authorizes joining the call alongside room access, so a person from outside the conference's room can join without being handed the room's history — and whether they can read the chat becomes a separate question, surfaced once it matters with a choice of how to resolve it: bring them into the room, or move the chat to a discussion. `video-conference.info` reports the members who can't read it and `POST /v1/video-conference.share-chat` applies the remedy; `video-conference.add-participants` takes the call and the usernames to add, and returns the ids it added.
+
+  An incoming call is no longer a popup demanding an answer. It is the first item of a list of the calls running now — behind a navigation-bar button — where it can be accepted, turned down, or silenced and left ringing while the user finishes what they were doing. That list is also how a call is reached when its ring was missed entirely, which a one-shot ring in a room of more than ten people always is (`GET /v1/video-conference.joinable`).
+
+  Conferences appear in the personal Call History from the moment they start, as `ongoing`, settling per member into `ended` or `not-answered` when the call stops — so a call that was declined or never answered is still in the log, and still joinable from it. The room's own call list stops counting members who were added but never joined.
+
+  New endpoints: `video-conference.decline` (recorded against the caller's own membership, never ending the call for anyone else), `.leave`, `.ring` (to try someone again — a ring is one-shot, so there was previously no second attempt), `.rename` and `.share-chat`. A single `video-conference.updated` stream event tells an open call window that the conference it is showing has changed.
+
 ## 1.1.0
 
 ### Minor Changes

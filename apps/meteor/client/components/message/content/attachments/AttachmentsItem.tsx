@@ -10,19 +10,20 @@ import type { AudioAttachmentSource } from './file/AudioAttachment';
 export type AttachmentsItemProps = {
 	attachment: MessageAttachmentBase;
 	id: string | undefined;
+	path: string;
 	source?: AudioAttachmentSource;
 };
 
-const AttachmentsItem = ({ attachment, id, source }: AttachmentsItemProps) => {
+const AttachmentsItem = ({ attachment, id, path, source }: AttachmentsItemProps) => {
 	if (isFileAttachment(attachment)) {
 		return <FileAttachment id={id} source={source} {...attachment} />;
 	}
 
 	if (isQuoteAttachment(attachment)) {
-		return <QuoteAttachment attachment={attachment} source={source} />;
+		return <QuoteAttachment attachment={attachment} source={source} path={path} />;
 	}
 
-	return <DefaultAttachment {...(attachment as any)} />;
+	return <DefaultAttachment {...attachment} collapseKey={source?.mid ? `${source.mid}-${path}` : undefined} />;
 };
 
 export default memo(AttachmentsItem);

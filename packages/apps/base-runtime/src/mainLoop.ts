@@ -1,18 +1,16 @@
 import process from 'node:process';
 
-import { JsonRpcError, type SuccessObject } from 'jsonrpc-lite';
-
 import apiHandler from './handlers/api-handler';
 import handleApp from './handlers/app/handler';
 import outboundMessageHandler from './handlers/outboundcomms-handler';
 import handleScheduler from './handlers/scheduler-handler';
 import slashcommandHandler from './handlers/slashcommand-handler';
 import videoConferenceHandler from './handlers/videoconference-handler';
-import { decoder } from './lib/codec';
+import { JsonRpcError, isNotificationObject, type SuccessObject } from './lib/jsonrpc';
 import { Logger } from './lib/logger';
 import * as Messenger from './lib/messenger';
-import { sendMetrics } from './lib/metricsCollector';
 import type { RequestContext } from './lib/requestContext';
+import { applySecureFieldsDeep } from './lib/secureFields';
 
 type Handlers = {
 	app: typeof handleApp;
@@ -26,7 +24,7 @@ type Handlers = {
 
 const COMMAND_PING = '_zPING';
 
-async function requestRouter({ type, payload }: Messenger.JsonRpcRequest): Promise<void> {
+async function requestRouter(message: Messenger.JsonRpcRequest): Promise<void> {
 	const methodHandlers: Handlers = {
 		app: handleApp,
 		api: apiHandler,
@@ -38,15 +36,15 @@ async function requestRouter({ type, payload }: Messenger.JsonRpcRequest): Promi
 	};
 
 	// We're not handling notifications at the moment
-	if (type === 'notification') {
+	if (isNotificationObject(message)) {
 		return Messenger.sendInvalidRequestError();
 	}
 
-	const { id, method } = payload;
+	const { id, method } = message;
 
 	const logger = new Logger(method);
 
-	const context: RequestContext = Object.assign(payload, {
+	const context: RequestContext = Object.assign(message, {
 		context: { logger },
 	});
 
@@ -77,51 +75,61 @@ async function requestRouter({ type, payload }: Messenger.JsonRpcRequest): Promi
 function handleResponse(response: Messenger.JsonRpcResponse): void {
 	let payload: { error: Error } | { detail: SuccessObject };
 
-	if (Messenger.isErrorResponse(response.payload)) {
-		payload = { error: new Error(response.payload.error.message) };
+	if (Messenger.isErrorResponse(response)) {
+		payload = { error: new Error(response.error.message) };
 	} else {
-		payload = { detail: response.payload };
+		payload = { detail: response };
 	}
 
-	Messenger.RPCResponseObserver.emit(`response:${response.payload.id}`, payload);
+	Messenger.RPCResponseObserver.emit(`response:${response.id}`, payload);
+}
+
+async function handleIncomingMessage(message: unknown): Promise<void> {
+	try {
+		// Process PING command first as it is not JSON RPC
+		if (message === COMMAND_PING) {
+			Messenger.pongResponse();
+			return;
+		}
+
+		const JSONRPCMessage = Messenger.parseMessage(applySecureFieldsDeep(message));
+
+		if (Messenger.isRequest(JSONRPCMessage)) {
+			void requestRouter(JSONRPCMessage);
+			return;
+		}
+
+		if (Messenger.isResponse(JSONRPCMessage)) {
+			handleResponse(JSONRPCMessage);
+		}
+	} catch (error) {
+		if (Messenger.isErrorResponse(error)) {
+			await Messenger.errorResponse(error);
+		} else {
+			await Messenger.sendParseError();
+		}
+	}
 }
 
 /**
  * The platform-agnostic message loop shared by every runtime.
  *
- * Adapters are expected to wire up their platform seams — transport, sandbox
+ * Adapters are expected to wire up their platform seams — sandbox
  * `require`/globals, error listeners — during bootstrap and only then invoke
- * this loop. It reads messages from `process.stdin` (a `node:` API available on
- * every supported platform) and dispatches them to the shared handlers.
+ * this loop. It receives messages from the host over the IPC channel and
+ * dispatches them to the shared handlers.
  */
-export async function startMainLoop(): Promise<void> {
-	Messenger.sendNotification({ method: 'ready', params: [] });
+export function startMainLoop(): void {
+	process.on('message', (message) => void handleIncomingMessage(message));
 
-	for await (const message of decoder.decodeStream(process.stdin)) {
-		try {
-			// Process PING command first as it is not JSON RPC
-			if (message === COMMAND_PING) {
-				void Messenger.pongResponse();
-				void sendMetrics();
-				continue;
-			}
+	// Without a connected IPC channel this process has no host to serve; exit
+	// instead of lingering as an orphan when the host dies or disconnects
+	process.on('disconnect', () => process.exit(0));
 
-			const JSONRPCMessage = Messenger.parseMessage(message as Record<string, unknown>);
-
-			if (Messenger.isRequest(JSONRPCMessage)) {
-				void requestRouter(JSONRPCMessage);
-				continue;
-			}
-
-			if (Messenger.isResponse(JSONRPCMessage)) {
-				handleResponse(JSONRPCMessage);
-			}
-		} catch (error) {
-			if (Messenger.isErrorResponse(error)) {
-				await Messenger.errorResponse(error);
-			} else {
-				await Messenger.sendParseError();
-			}
-		}
+	if (!process.connected) {
+		process.exit(0);
 	}
+
+	// The host waits for this notification before sending any message
+	Messenger.sendNotification({ method: 'ready', params: [] });
 }

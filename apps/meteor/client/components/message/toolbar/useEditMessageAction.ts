@@ -1,7 +1,7 @@
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { IRoom, IMessage, ISubscription } from '@rocket.chat/core-typings';
 import { usePermission, useSetting, useUser } from '@rocket.chat/ui-contexts';
-import { differenceInMinutes } from 'date-fns';
+import { differenceInMinutes } from 'date-fns/differenceInMinutes';
 
 import type { MessageActionConfig } from '../../../lib/MessageAction';
 import { useChat } from '../../../views/room/contexts/ChatContext';

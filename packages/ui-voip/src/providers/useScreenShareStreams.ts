@@ -1,7 +1,7 @@
 import type { IMediaStreamWrapper, MediaSignalingSession } from '@rocket.chat/media-signaling';
-import { useEffect, useState } from 'react';
 
 import type { MediaCallStreams } from '../context/MediaCallViewContext';
+import { useInstanceSnapshot } from '../context/useInstanceSnapshot';
 
 const getStreamWrappers = (instance?: MediaSignalingSession) => {
 	try {
@@ -40,43 +40,11 @@ const areStreamsEqual = (a?: IMediaStreamWrapper, b?: IMediaStreamWrapper) => {
 	return a.stream.id === b.stream.id;
 };
 
-export const useScreenShareStreams = (instance?: MediaSignalingSession) => {
-	const [streams, setStreams] = useState<MediaCallStreams>({
-		remoteScreen: undefined,
-		localScreen: undefined,
-	});
+const noStreams: MediaCallStreams = { remoteScreen: undefined, localScreen: undefined };
 
-	useEffect(() => {
-		if (!instance) {
-			setStreams({
-				remoteScreen: undefined,
-				localScreen: undefined,
-			});
-			return;
-		}
-
-		const syncRemoteStream = () => {
-			const next = getStreamWrappers(instance);
-			setStreams((oldStreams) => {
-				if (!next) {
-					return {
-						remoteScreen: undefined,
-						localScreen: undefined,
-					};
-				}
-				if (areStreamsEqual(oldStreams.localScreen, next.localScreen) && areStreamsEqual(oldStreams.remoteScreen, next.remoteScreen)) {
-					return oldStreams;
-				}
-				return next;
-			});
-		};
-
-		syncRemoteStream();
-
-		return instance.on('sessionStateChange', () => {
-			syncRemoteStream();
-		});
-	}, [instance]);
-
-	return streams;
-};
+export const useScreenShareStreams = (instance?: MediaSignalingSession): MediaCallStreams =>
+	useInstanceSnapshot(
+		instance,
+		(instance) => getStreamWrappers(instance) ?? noStreams,
+		(a, b) => areStreamsEqual(a.localScreen, b.localScreen) && areStreamsEqual(a.remoteScreen, b.remoteScreen),
+	);

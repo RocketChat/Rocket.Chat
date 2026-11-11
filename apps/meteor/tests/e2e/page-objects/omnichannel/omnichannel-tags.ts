@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { OmnichannelAdmin } from './omnichannel-admin';
+import { OmnichannelAdmin, OmnichannelSectionsHref } from './omnichannel-admin';
 import { FlexTab } from '../fragments/flextabs/flextab';
 import { Listbox } from '../fragments/listbox';
 
@@ -13,7 +13,7 @@ class OmnichannelEditTagFlexTab extends FlexTab {
 	}
 
 	get inputDepartments(): Locator {
-		return this.root.getByLabel('Departments').getByRole('textbox');
+		return this.root.getByLabel('Departments');
 	}
 
 	async selectDepartment(name: string) {
@@ -23,12 +23,15 @@ class OmnichannelEditTagFlexTab extends FlexTab {
 	}
 
 	findSelectedDepartment(name: string) {
-		return this.root.getByLabel('Departments').getByRole('option', { name });
+		return this.root
+			.getByRole('listbox')
+			.filter({ has: this.root.page().getByLabel('Departments') })
+			.getByRole('option', { name });
 	}
 }
 
 export class OmnichannelTags extends OmnichannelAdmin {
-	protected readonly route = 'tags';
+	protected readonly route = OmnichannelSectionsHref.tags;
 
 	protected readonly title = 'Tags';
 

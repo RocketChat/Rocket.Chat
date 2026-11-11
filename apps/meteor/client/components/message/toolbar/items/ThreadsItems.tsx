@@ -9,12 +9,13 @@ export type ThreadsItemsProps = {
 	message: IMessage;
 	room: IRoom;
 	subscription: ISubscription | undefined;
+	onChangeMenuVisibility?: (visible: boolean) => void;
 };
 
-const ThreadsItems = ({ message, room, subscription }: ThreadsItemsProps) => {
+const ThreadsItems = ({ message, room, subscription, onChangeMenuVisibility }: ThreadsItemsProps) => {
 	return (
 		<>
-			<ReactionMessageAction message={message} room={room} subscription={subscription} />
+			<ReactionMessageAction message={message} room={room} subscription={subscription} onChangeMenuVisibility={onChangeMenuVisibility} />
 			<QuoteMessageAction message={message} subscription={subscription} />
 			<ForwardMessageAction message={message} room={room} />
 			<JumpToMessageAction id='jump-to-message' message={message} />

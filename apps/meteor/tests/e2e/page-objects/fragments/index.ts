@@ -1,6 +1,7 @@
 export * from './home-content';
 export * from './home-omnichannel-content';
 export * from './navbar';
+export * from './ongoing-calls';
 export * from './sidebar';
 export * from './sidepanel';
 export * from './modals';
@@ -9,4 +10,5 @@ export * from './menu';
 export * from './table';
 export * from './toolbar';
 export * from './composer';
+export * from './phone-number-field-list';
 export * from './flextabs';

@@ -1,4 +1,4 @@
-import { Box, Icon } from '@rocket.chat/fuselage';
+import { Box, Icon, Text } from '@rocket.chat/fuselage';
 import type { Keys } from '@rocket.chat/icons';
 import type { ReactNode } from 'react';
 import { useId } from 'react';
@@ -17,15 +17,15 @@ const PreviewItem = ({ icon, label, children }: PreviewItemProps) => {
 	return (
 		<Box display='flex'>
 			<Icon size={18} name={icon} />
-			<Box marginInlineStart={6}>
-				<Box is='span' id={id} fontScale='p2m'>
+			<Box marginInlineStart='x4'>
+				<Text is='span' id={id} fontScale='p2m'>
 					{label}
-				</Box>
+				</Text>
 				<div aria-labelledby={id}>
 					{children ?? (
-						<Box fontScale='p2' color='disabled'>
+						<Text fontScale='p2' color='disabled'>
 							{t('None')}
-						</Box>
+						</Text>
 					)}
 				</div>
 			</Box>

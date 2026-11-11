@@ -12,6 +12,7 @@ import {
 	Box,
 } from '@rocket.chat/fuselage';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
+import { useTimeAgo } from '@rocket.chat/ui-client';
 import type { ComponentProps, ReactNode } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -20,7 +21,6 @@ import ThreadListMetrics from './ThreadListMetrics';
 import Emoji from '../../../../../components/Emoji';
 import ThreadMetricsFollow from '../../../../../components/message/content/ThreadMetricsFollow';
 import ThreadMetricsUnreadBadge from '../../../../../components/message/content/ThreadMetricsUnreadBadge';
-import { useTimeAgo } from '../../../../../hooks/useTimeAgo';
 
 export type ThreadListMessageProps = {
 	_id: IMessage['_id'];
@@ -72,7 +72,7 @@ const ThreadListMessage = ({
 					<MessageHeader>
 						<MessageName title={username}>{name}</MessageName>
 						<MessageTimestamp>{formatDate(ts)}</MessageTimestamp>
-						{hasDraft && <MessageStatusIndicatorItem name='pencil' title={t('Unfinished_thread_message')} />}
+						{hasDraft && <MessageStatusIndicatorItem name='pencil' title={t('Thread_draft')} />}
 					</MessageHeader>
 					<MessageBody clamp={2}>{msg}</MessageBody>
 					<ThreadListMetrics lm={tlm} participants={participants || []} counter={replies} />

@@ -10,7 +10,7 @@ test.describe.serial('channel-direct-message', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 
-		await page.goto('/home');
+		await poHomeChannel.goto();
 	});
 
 	test('expect create a direct room', async ({ page }) => {

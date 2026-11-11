@@ -3,7 +3,8 @@ import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
 import type { ComposerAPI } from '../../../../../lib/chats/ChatAPI';
-import { isPromptButton, type FormattingButton } from '../../../../../lib/messageBoxFormatting';
+import { isLinePrefixButton, isPromptButton, type FormattingButton } from '../../../../../lib/messageBoxFormatting';
+import { toggleLinePrefix } from '../../../../../lib/toggleLinePrefix';
 
 export type FormattingToolbarDropdownProps = {
 	composer: ComposerAPI;
@@ -16,12 +17,15 @@ const FormattingToolbarDropdown = ({ composer, items, disabled }: FormattingTool
 
 	const formattingItems: GenericMenuItemProps[] = items.map((formatter) => {
 		const handleFormattingAction = () => {
+			if (isPromptButton(formatter)) {
+				return formatter.prompt(composer);
+			}
+			if (isLinePrefixButton(formatter)) {
+				return toggleLinePrefix(composer, formatter.linePrefix);
+			}
 			if ('link' in formatter) {
 				window.open(formatter.link, '_blank', 'rel=noreferrer noopener');
 				return;
-			}
-			if (isPromptButton(formatter)) {
-				return formatter.prompt(composer);
 			}
 			composer.wrapSelection(formatter.pattern);
 		};

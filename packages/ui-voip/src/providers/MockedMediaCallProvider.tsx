@@ -21,6 +21,8 @@ export type MockedMediaCallProviderProps = {
 	onClickDirectMessage?: () => void;
 	instanceProps?: Partial<MockedInstanceProviderProps>;
 	supportedFeatures?: readonly CallFeature[];
+	confirmed?: boolean;
+	allowedFeatures?: readonly CallFeature[];
 };
 
 const MockedMediaCallProvider = ({
@@ -35,8 +37,11 @@ const MockedMediaCallProvider = ({
 	held = false,
 	instanceProps,
 	supportedFeatures = callFeatureList,
+	confirmed = true,
+	allowedFeatures = supportedFeatures,
 }: MockedMediaCallProviderProps) => {
 	const [peerInfo, setPeerInfo] = useState<PeerInfo | undefined>({
+		type: 'user',
 		displayName: 'John Doe',
 		userId: '1234567890',
 		avatarUrl,
@@ -82,6 +87,7 @@ const MockedMediaCallProvider = ({
 		}
 
 		return Promise.resolve({
+			type: 'user' as const,
 			displayName: peer.label,
 			userId: peer.value,
 			avatarUrl: peer.avatarUrl,
@@ -127,10 +133,12 @@ const MockedMediaCallProvider = ({
 		remoteHeld,
 		callId: undefined,
 		supportedFeatures,
+		confirmed,
 	} as SessionState;
 
 	const contextValue = {
 		sessionState,
+		allowedFeatures,
 		targetPeer: peerInfo,
 		onClickDirectMessage,
 		onMute,

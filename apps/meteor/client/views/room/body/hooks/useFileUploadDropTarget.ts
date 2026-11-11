@@ -32,7 +32,7 @@ export const useFileUploadDropTarget = (): readonly [
 	const postReadOnly = usePermission('post-readonly', room._id);
 	const fileUploadAllowedForUser = useMemo(
 		() => !roomCoordinator.readOnly(room, { username: user?.username }),
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// oxlint-disable-next-line react-hooks/exhaustive-deps
 		[room, user?.username, postReadOnly],
 	);
 
@@ -45,7 +45,7 @@ export const useFileUploadDropTarget = (): readonly [
 	);
 
 	const onFileDrop = useStableCallback(async (files: File[]) => {
-		const { getMimeType } = await import('../../../../../app/utils/lib/mimeTypes');
+		const { getMimeType } = await import('../../../../../lib/mimeTypes');
 		const getUniqueFiles = () => {
 			const uniqueFiles: File[] = [];
 			const st: Set<string> = new Set();

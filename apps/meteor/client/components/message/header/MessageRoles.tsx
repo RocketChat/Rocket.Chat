@@ -2,18 +2,28 @@ import { MessageRole, MessageRoles as FuselageMessageRoles } from '@rocket.chat/
 import { useTranslation } from 'react-i18next';
 
 export type MessageRolesProps = {
-	roles: Array<string>;
+	workspaceRoles: string[];
+	roomRoles: string[];
 	isBot?: boolean;
 };
 
-const MessageRoles = ({ roles, isBot }: MessageRolesProps) => {
+const MessageRoles = ({ workspaceRoles, roomRoles, isBot }: MessageRolesProps) => {
 	const { t } = useTranslation();
+
+	const categoryTag = (label: string, roles: string[]) => {
+		if (roles.length === 0) {
+			return null;
+		}
+
+		const extra = roles.length > 1 ? ` +${roles.length - 1}` : '';
+
+		return <MessageRole title={`${label}: ${roles.join(', ')}`}>{`${roles[0]}${extra}`}</MessageRole>;
+	};
 
 	return (
 		<FuselageMessageRoles>
-			{roles.map((role, index) => (
-				<MessageRole key={index}>{role}</MessageRole>
-			))}
+			{categoryTag(t('Workspace_roles'), workspaceRoles)}
+			{categoryTag(t('Room_roles'), roomRoles)}
 			{isBot && <MessageRole>{t('Bot')}</MessageRole>}
 		</FuselageMessageRoles>
 	);

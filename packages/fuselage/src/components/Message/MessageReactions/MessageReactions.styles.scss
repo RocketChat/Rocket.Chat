@@ -1,0 +1,71 @@
+@use '../../../styles/colors.scss';
+@use '../../../styles/functions.scss' as *;
+@use '../../../styles/lengths.scss';
+@use '../../../styles/mixins/size.scss';
+@use '../../../styles/mixins/templates.scss';
+@use '../../../styles/typography.scss' as *;
+@use '../mixins.scss';
+
+$message-reaction-border-radius: theme('message-reaction-border-radius', lengths.border-radius(medium));
+$message-reaction-hover-border-color: theme('message-reaction-hover-border-color', colors.stroke(dark));
+$message-reaction-hover-background-color: theme('message-reaction-hover-background-color', colors.surface(hover));
+$message-reaction-color: theme('message-reaction-color', colors.font(default));
+$message-reaction-border-color: theme('message-reaction-border-color', colors.stroke(dark));
+$message-reaction-background-color: theme('message-reaction-background-color', colors.surface(selected));
+
+.rcx-message-reactions {
+	&__container {
+		display: flex;
+		flex-flow: row wrap;
+
+		gap: lengths.margin(4);
+	}
+
+	&__reaction {
+		--emoji-size: 0.875rem;
+		@include use-font-scale(c1);
+		display: inline-flex;
+		align-items: center;
+
+		padding: lengths.padding(2);
+
+		cursor: pointer;
+
+		color: colors.font(hint);
+		border-radius: $message-reaction-border-radius;
+		background-color: $message-reaction-hover-background-color;
+
+		&:hover {
+			border-color: $message-reaction-hover-border-color;
+			background-color: $message-reaction-hover-background-color;
+		}
+
+		// After the hover, so a reaction focused by keyboard keeps its focus border under the pointer.
+		@include templates.focus-state {
+			border-color: colors.stroke(light);
+		}
+
+		&--action {
+			@include mixins.message-focus-visible;
+		}
+
+		&--mine {
+			color: $message-reaction-color;
+			border-color: $message-reaction-border-color;
+			background-color: $message-reaction-background-color;
+		}
+	}
+
+	&__emoji {
+		display: block;
+
+		font-size: var(--emoji-size);
+		line-height: var(--emoji-size);
+
+		@include size.square(var(--emoji-size));
+	}
+
+	&__counter {
+		margin-inline: lengths.margin(2);
+	}
+}

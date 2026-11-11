@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Box, Icon, TextInput, Select, Throbber, ButtonGroup, Button } from '@rocket.chat/fuselage';
+import { Box, Select, Throbber, ButtonGroup, Button, Text } from '@rocket.chat/fuselage';
 import { useStableCallback, useAutoFocus, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	VirtualizedScrollbars,
@@ -20,7 +20,9 @@ import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
 import TeamsChannelItem from './TeamsChannelItem';
+import { FilterBar, FilterBarFilters, FilterBarSearch } from '../../../../components/FilterBar';
 import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
+import ListViewport from '../../../../components/ListViewport';
 
 export type TeamsChannelsProps = {
 	loading: boolean;
@@ -88,18 +90,14 @@ const TeamsChannels = ({
 				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
 			</ContextualbarHeader>
 			<ContextualbarSection>
-				<TextInput
-					placeholder={t('Search')}
-					value={text}
-					ref={inputRef}
-					onChange={setText}
-					endAddon={<Icon name='magnifier' size='x20' />}
-				/>
-				<Box width='x144' marginInlineStart={8}>
-					<Select onChange={(val) => setType(val as 'all' | 'autoJoin')} value={type} options={options} />
-				</Box>
+				<FilterBar compact>
+					<FilterBarSearch placeholder={t('Search')} value={text} ref={inputRef} onChange={setText} />
+					<FilterBarFilters>
+						<Select aria-label={t('Filter')} onChange={(val) => setType(val)} value={type} options={options} />
+					</FilterBarFilters>
+				</FilterBar>
 			</ContextualbarSection>
-			<ContextualbarContent padding={12}>
+			<ContextualbarContent flush spaced>
 				{loading && (
 					<Box paddingInline={24} paddingBlock={12}>
 						<Throbber size='x12' />
@@ -108,44 +106,31 @@ const TeamsChannels = ({
 				{!loading && channels.length === 0 && <ContextualbarEmptyContent title={t('No_channels_in_team')} />}
 				{!loading && channels.length > 0 && (
 					<>
-						<Box paddingInline={18} paddingBlock={12}>
-							<Box is='span' color='hint' fontScale='p2'>
-								{t('Showing')}: {channels.length}
-							</Box>
-
-							<Box is='span' color='hint' fontScale='p2' marginInlineStart={8}>
-								{t('Total')}: {total}
-							</Box>
+						<Box paddingInline={24} paddingBlockStart={4} paddingBlockEnd={8}>
+							<Text is='span' color='hint' fontScale='p2'>
+								{t('Showing_current_of_total', { current: channels.length, total })}
+							</Text>
 						</Box>
-						<Box width='full' height='full' role='list' overflow='hidden' flexShrink={1}>
+						<ListViewport role='list'>
 							<VirtualizedScrollbars>
 								<Virtuoso
 									totalCount={total}
 									data={channels}
-									// eslint-disable-next-line react/no-multi-comp
 									components={{ Footer: () => <InfiniteListAnchor loadMore={loadMoreChannels} /> }}
 									itemContent={(index, data) => (
 										<TeamsChannelItem onClickView={onClickView} room={data} mainRoom={mainRoom} reload={reload} key={index} />
 									)}
 								/>
 							</VirtualizedScrollbars>
-						</Box>
+						</ListViewport>
 					</>
 				)}
 			</ContextualbarContent>
 			{(onClickAddExisting || onClickCreateNew) && (
 				<ContextualbarFooter>
-					<ButtonGroup stretch>
-						{onClickAddExisting && (
-							<Button onClick={onClickAddExisting} width='50%'>
-								{t('Team_Add_existing')}
-							</Button>
-						)}
-						{onClickCreateNew && (
-							<Button onClick={onClickCreateNew} width='50%'>
-								{t('Create_new')}
-							</Button>
-						)}
+					<ButtonGroup stretch='equal'>
+						{onClickAddExisting && <Button onClick={onClickAddExisting}>{t('Team_Add_existing')}</Button>}
+						{onClickCreateNew && <Button onClick={onClickCreateNew}>{t('Create_new')}</Button>}
 					</ButtonGroup>
 				</ContextualbarFooter>
 			)}

@@ -1,5 +1,0 @@
-{
-	"extends": "../../../tsconfig.json",
-	"include": ["./**/*", "../../../../../ee/apps/account-service/src/lib"],
-	"exclude": ["./dist", "./ecosystem.config.js", "../../../definition/methods"]
-}

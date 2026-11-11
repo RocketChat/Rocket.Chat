@@ -1,51 +1,21 @@
-import { Box } from '@rocket.chat/fuselage';
-import { useEffect, useState } from 'react';
+import { CallTimer, type CallTimerProps } from '@rocket.chat/ui-client';
+import { useState } from 'react';
 
-export type VoipTimerProps = { startAt?: Date };
+export type VoipTimerProps = CallTimerProps;
 
+/**
+ * `CallTimer`, counting from mount when nothing says when the call began.
+ *
+ * The shared timer holds at zero without a `startAt`, which is what a conference wants: the call is read a render
+ * after the window opens, and a timer that guessed would be wrong for that render and then jump. A VoIP session
+ * has no such later answer — `OngoingCall` renders this with no `startAt` at all, and `startedAt` is optional on
+ * the session besides — so here the mount is the best start there is, and holding at zero would freeze the clock
+ * for the whole call.
+ */
 const VoipTimer = ({ startAt }: VoipTimerProps) => {
-	const [start] = useState(() => {
-		if (!startAt) {
-			return Date.now();
-		}
-		return startAt.getTime();
-	});
+	const [mountedAt] = useState(() => new Date());
 
-	const [ellapsedTime, setEllapsedTime] = useState(() => {
-		if (!start) {
-			return 0;
-		}
-		return Date.now() - start;
-	});
-
-	useEffect(() => {
-		const interval = setInterval(() => {
-			setEllapsedTime(() => {
-				const now = Date.now();
-
-				return now - start;
-			});
-		}, 1000);
-
-		return () => clearInterval(interval);
-	}, [start]);
-
-	const totalSeconds = Math.floor(ellapsedTime / 1000);
-
-	const hours = Math.floor(totalSeconds / 3600);
-	const minutes = Math.floor((totalSeconds % 3600) / 60);
-	const seconds = Math.floor(totalSeconds % 60);
-
-	const hoursStr = hours.toString().padStart(2, '0');
-	const minutesStr = minutes.toString().padStart(2, '0');
-	const secondsStr = seconds.toString().padStart(2, '0');
-
-	return (
-		<Box is='time' dateTime={`PT${hours}H${minutes}M${seconds}S`} fontScale='p1b'>
-			{hoursStr !== '00' ? `${hours}:` : ''}
-			{minutesStr}:{secondsStr}
-		</Box>
-	);
+	return <CallTimer startAt={startAt ?? mountedAt} />;
 };
 
 export default VoipTimer;

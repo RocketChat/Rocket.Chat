@@ -20,6 +20,8 @@ import { useCallback, useId, useMemo } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm, Controller } from 'react-hook-form';
 
+import ContentColumn from '../../../components/ContentColumn';
+
 type EditOAuthAddAppPayload = {
 	name: string;
 	active: boolean;
@@ -106,78 +108,80 @@ const EditOauthApp = ({ onChange, data, ...props }: EditOauthAppProps) => {
 
 	return (
 		<ContextualbarScrollableContent width='full' {...props}>
-			<FieldGroup maxWidth='x600' alignSelf='center' width='full'>
-				<Field>
-					<FieldRow>
-						<FieldLabel>{t('Active')}</FieldLabel>
-						<Controller
-							name='active'
-							control={control}
-							defaultValue={data.active}
-							render={({ field }) => <ToggleSwitch onChange={field.onChange} checked={field.value} />}
-						/>
-					</FieldRow>
-				</Field>
-				<Field>
-					<FieldLabel htmlFor={nameField}>{t('Application_Name')}</FieldLabel>
-					<FieldRow>
-						<TextInput id={nameField} {...register('name', { required: true })} />
-					</FieldRow>
-					<FieldHint>{t('Give_the_application_a_name_This_will_be_seen_by_your_users')}</FieldHint>
-					{errors?.name && <FieldError>{t('Required_field', { field: t('Name') })}</FieldError>}
-				</Field>
-				<Field>
-					<FieldLabel htmlFor={redirectUriField}>{t('Redirect_URI')}</FieldLabel>
-					<FieldRow>
-						<TextAreaInput id={redirectUriField} rows={5} {...register('redirectUri', { required: true })} />
-					</FieldRow>
-					<FieldHint>{t('After_OAuth2_authentication_users_will_be_redirected_to_this_URL')}</FieldHint>
-					{errors?.redirectUri && <FieldError>{t('Required_field', { field: t('Redirect_URI') })}</FieldError>}
-				</Field>
-				<Field>
-					<FieldLabel htmlFor={clientIdField}>{t('Client_ID')}</FieldLabel>
-					<FieldRow>
-						<TextInput id={clientIdField} value={data.clientId} />
-					</FieldRow>
-				</Field>
-				<Field>
-					<FieldLabel htmlFor={clientSecretField}>{t('Client_Secret')}</FieldLabel>
-					<FieldRow>
-						<PasswordInput id={clientSecretField} value={data.clientSecret} />
-					</FieldRow>
-				</Field>
-				<Field>
-					<FieldLabel htmlFor={authUrlField}>{t('Authorization_URL')}</FieldLabel>
-					<FieldRow>
-						<TextInput id={authUrlField} value={authUrl} />
-					</FieldRow>
-				</Field>
-				<Field>
-					<FieldLabel htmlFor={tokenUrlField}>{t('Access_Token_URL')}</FieldLabel>
-					<FieldRow>
-						<TextInput id={tokenUrlField} value={tokenUrl} />
-					</FieldRow>
-				</Field>
-				<Field>
-					<FieldRow>
-						<ButtonGroup stretch>
-							<Button onClick={close}>{t('Cancel')}</Button>
-							<Button primary onClick={handleSubmit(onSubmit)}>
-								{t('Save')}
-							</Button>
-						</ButtonGroup>
-					</FieldRow>
-				</Field>
-				<Field>
-					<FieldRow>
-						<ButtonGroup stretch>
-							<Button icon='trash' danger onClick={openConfirmDelete}>
-								{t('Delete')}
-							</Button>
-						</ButtonGroup>
-					</FieldRow>
-				</Field>
-			</FieldGroup>
+			<ContentColumn>
+				<FieldGroup>
+					<Field>
+						<FieldRow>
+							<FieldLabel>{t('Active')}</FieldLabel>
+							<Controller
+								name='active'
+								control={control}
+								defaultValue={data.active}
+								render={({ field }) => <ToggleSwitch onChange={field.onChange} checked={field.value} />}
+							/>
+						</FieldRow>
+					</Field>
+					<Field>
+						<FieldLabel htmlFor={nameField}>{t('Application_Name')}</FieldLabel>
+						<FieldRow>
+							<TextInput id={nameField} {...register('name', { required: true })} />
+						</FieldRow>
+						<FieldHint>{t('Give_the_application_a_name_This_will_be_seen_by_your_users')}</FieldHint>
+						{errors?.name && <FieldError>{t('Required_field', { field: t('Name') })}</FieldError>}
+					</Field>
+					<Field>
+						<FieldLabel htmlFor={redirectUriField}>{t('Redirect_URI')}</FieldLabel>
+						<FieldRow>
+							<TextAreaInput id={redirectUriField} rows={5} {...register('redirectUri', { required: true })} />
+						</FieldRow>
+						<FieldHint>{t('After_OAuth2_authentication_users_will_be_redirected_to_this_URL')}</FieldHint>
+						{errors?.redirectUri && <FieldError>{t('Required_field', { field: t('Redirect_URI') })}</FieldError>}
+					</Field>
+					<Field>
+						<FieldLabel htmlFor={clientIdField}>{t('Client_ID')}</FieldLabel>
+						<FieldRow>
+							<TextInput id={clientIdField} value={data.clientId} />
+						</FieldRow>
+					</Field>
+					<Field>
+						<FieldLabel htmlFor={clientSecretField}>{t('Client_Secret')}</FieldLabel>
+						<FieldRow>
+							<PasswordInput id={clientSecretField} value={data.clientSecret} />
+						</FieldRow>
+					</Field>
+					<Field>
+						<FieldLabel htmlFor={authUrlField}>{t('Authorization_URL')}</FieldLabel>
+						<FieldRow>
+							<TextInput id={authUrlField} value={authUrl} />
+						</FieldRow>
+					</Field>
+					<Field>
+						<FieldLabel htmlFor={tokenUrlField}>{t('Access_Token_URL')}</FieldLabel>
+						<FieldRow>
+							<TextInput id={tokenUrlField} value={tokenUrl} />
+						</FieldRow>
+					</Field>
+					<Field>
+						<FieldRow>
+							<ButtonGroup stretch>
+								<Button onClick={close}>{t('Cancel')}</Button>
+								<Button variant='primary' onClick={handleSubmit(onSubmit)}>
+									{t('Save')}
+								</Button>
+							</ButtonGroup>
+						</FieldRow>
+					</Field>
+					<Field>
+						<FieldRow>
+							<ButtonGroup stretch>
+								<Button icon='trash' variant='danger' onClick={openConfirmDelete}>
+									{t('Delete')}
+								</Button>
+							</ButtonGroup>
+						</FieldRow>
+					</Field>
+				</FieldGroup>
+			</ContentColumn>
 		</ContextualbarScrollableContent>
 	);
 };

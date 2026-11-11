@@ -1,10 +1,11 @@
-import type { ISidebarCategory } from '@rocket.chat/core-typings';
-import { SIDEBAR_SYSTEM_GROUP_KEYS } from '@rocket.chat/core-typings';
+import { useIsEnterprise } from '@rocket.chat/ui-client';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
-import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
+import { useSidebarSectionsOrder } from './useSidebarSectionsOrder';
+import { useUserSidebarCategories } from '../categories/hooks/useUserSidebarCategories';
+import { isUnreadRoom } from '../lib/unreadRooms';
 
 type FilterSystemCategoriesOptions = {
 	showOmnichannel: boolean;
@@ -73,7 +74,7 @@ export const withDynamicFirst = (ids: string[], sectionsOrder: readonly string[]
 
 export const filterGroupVisibility = <T>(
 	groups: Map<string, Set<SubscriptionWithRoom>>,
-	hasLicenseModule: boolean,
+	isEnterprise: boolean,
 	makeGroup: (key: string, set: Set<SubscriptionWithRoom>) => T,
 ): T[] => {
 	const filteredGroups: T[] = [];
@@ -87,7 +88,7 @@ export const filterGroupVisibility = <T>(
 			return;
 		}
 
-		if (!hasLicenseModule || SIDEBAR_DYNAMIC_GROUP_KEYS.includes(key)) {
+		if (!isEnterprise || SIDEBAR_DYNAMIC_GROUP_KEYS.includes(key)) {
 			if (group.size > 0) {
 				filteredGroups.push(makeGroup(key, group));
 			}
@@ -100,9 +101,6 @@ export const filterGroupVisibility = <T>(
 
 	return filteredGroups;
 };
-
-const isUnreadRoom = (room: SubscriptionWithRoom): boolean =>
-	!room.hideUnreadStatus && Boolean(room.alert || room.unread || room.tunread?.length);
 
 export const getRoomCategory = (
 	room: SubscriptionWithRoom,
@@ -168,16 +166,16 @@ export const getRoomCategory = (
 };
 
 export const useCategoryList = (showOmnichannel: boolean, inquiriesEnabled: boolean) => {
-	const { data: hasLicenseModule = false } = useHasLicenseModule('experimental-enterprise-features');
-	const sidebarCategories = useUserPreference<ISidebarCategory[]>('sidebarCategories', []) ?? [];
-	const sidebarSectionsOrder: readonly string[] = useUserPreference<string[]>('sidebarSectionsOrder') ?? SIDEBAR_SYSTEM_GROUP_KEYS;
+	const { data: { isEnterprise = false } = {} } = useIsEnterprise();
+	const { rawCategories: sidebarCategories } = useUserSidebarCategories();
+	const sidebarSectionsOrder = useSidebarSectionsOrder();
 	const sidebarGroupByType = useUserPreference<boolean>('sidebarGroupByType') ?? false;
 	const favoritesEnabled = useUserPreference<boolean>('sidebarShowFavorites', true) ?? true;
 	const isDiscussionEnabled = useSetting('Discussion_enabled', true) ?? true;
 	const sidebarShowUnread = useUserPreference<boolean>('sidebarShowUnread', false) ?? false;
 
 	const categoryList = useMemo(() => {
-		if (hasLicenseModule) {
+		if (isEnterprise) {
 			return filterSystemCategories(
 				mergeWithSectionsOrder(
 					sidebarCategories.map(({ _id }) => _id),
@@ -205,7 +203,7 @@ export const useCategoryList = (showOmnichannel: boolean, inquiriesEnabled: bool
 	}, [
 		sidebarCategories,
 		sidebarSectionsOrder,
-		hasLicenseModule,
+		isEnterprise,
 		showOmnichannel,
 		inquiriesEnabled,
 		sidebarGroupByType,

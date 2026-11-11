@@ -22,6 +22,8 @@ type CloseModalServerInteraction = {
 	type: 'modal.close';
 	triggerId: string;
 	appId: string;
+	viewId?: ModalView['id'];
+	view?: ModalView;
 };
 
 type OpenBannerServerInteraction = {
@@ -69,7 +71,7 @@ type ReportErrorsServerInteraction = {
 	type: 'errors';
 	triggerId: string;
 	appId: string;
-	// eslint-disable-next-line @typescript-eslint/no-duplicate-type-constituents
+	// oxlint-disable-next-line @typescript-eslint/no-duplicate-type-constituents
 	viewId: ModalView['id'] | BannerView['viewId'] | ContextualBarView['id'];
 	errors: { [field: string]: string }[];
 };

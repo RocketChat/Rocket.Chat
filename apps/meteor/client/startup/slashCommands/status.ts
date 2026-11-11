@@ -1,7 +1,7 @@
 import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 
-import { sdk } from '../../../app/utils/client/lib/SDKClient';
-import { slashCommands } from '../../../app/utils/client/slashCommand';
+import { sdk } from '../../lib/SDKClient';
+import { slashCommands } from '../../lib/slashCommand';
 import { dispatchToastMessage } from '../../lib/toast';
 
 slashCommands.add({

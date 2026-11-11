@@ -2,7 +2,7 @@ import { ResponsiveBar } from '@nivo/bar';
 import { Box, Button, Chevron, Skeleton, Tooltip } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import colors from '@rocket.chat/fuselage-tokens/dist/colors.json';
-import { format } from 'date-fns';
+import { format } from 'date-fns/format';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -45,13 +45,13 @@ const ContentForHours = ({ displacement, onPreviousDateClick, onNextDateClick, t
 	return (
 		<>
 			<Box display='flex' alignItems='center' justifyContent='center'>
-				<Button square small onClick={onPreviousDateClick}>
+				<Button square size='small' onClick={onPreviousDateClick}>
 					<Chevron left size='x20' style={{ verticalAlign: 'middle' }} />
 				</Button>
 				<Box marginInline={8} flexBasis='25%' is='span' style={{ textAlign: 'center' }}>
 					{data ? format(new Date(data.day), displacement < 7 ? 'EEEE' : 'P') : null}
 				</Box>
-				<Button square small disabled={displacement === 0} onClick={onNextDateClick}>
+				<Button square size='small' disabled={displacement === 0} onClick={onNextDateClick}>
 					<Chevron right size='x20' style={{ verticalAlign: 'middle' }} />
 				</Button>
 			</Box>

@@ -148,7 +148,7 @@ export const getMessageData = (
 			});
 			break;
 		case 'wm':
-			messageObject.msg = i18n.t('Welcome', { user: username });
+			messageObject.msg = i18n.t('Welcome', { interpolation: { escapeValue: false }, user: username });
 			break;
 		case 'livechat-close':
 			messageObject.msg = i18n.t('Conversation_finished');
@@ -158,6 +158,9 @@ export const getMessageData = (
 			break;
 		case 'abac-removed-user-from-room':
 			messageObject.msg = i18n.t('abac_removed_user_from_the_room');
+			break;
+		case 'abac-removed-users-from-room':
+			messageObject.msg = i18n.t('abac_removed_users_from_the_room', { count: Number(msg.msg) });
 			break;
 	}
 
