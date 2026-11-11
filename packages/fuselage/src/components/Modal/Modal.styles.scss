@@ -98,6 +98,10 @@ $modal-border-radius: theme('modal-border-radius', lengths.border-radius(large))
 		flex-direction: column;
 
 		background-color: colors.surface(overlay);
+
+		&--contained {
+			position: absolute;
+		}
 	}
 
 	&__content-wrapper {
