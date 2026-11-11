@@ -5,8 +5,13 @@
 // a change inside the spread is noise. For a floor between builds, pass the same build twice (two captures of `develop`).
 // Measured floor, one build against itself at 20 runs and 4x throttle: IQR 3.0% to 8.1%, change between -0.5% and +1.1%.
 // BENCH_CPU_THROTTLE sets the slowdown factor (default 4).
-import { readFileSync } from 'node:fs';
+// A zero-runtime build is benched with its `tamagui-zero.css` deduped on a temporary copy, as the web client serves it: Storybook
+// keeps every module's copy of each atomic rule, and style recalculation then costs more per extra frame module than the app
+// pays. BENCH_DEDUPE=0 benches the build as it is.
+import { execFileSync } from 'node:child_process';
+import { cpSync, existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { createRequire } from 'node:module';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 import { serve } from './serve.mjs';
@@ -14,13 +19,22 @@ import { serve } from './serve.mjs';
 const require = createRequire(join(import.meta.dirname, '../..', 'package.json'));
 const { chromium } = require('playwright-core');
 
-const [dirA, dirB, runsArg = '20'] = process.argv.slice(2);
+const [argA, argB, runsArg = '20'] = process.argv.slice(2);
 const runs = Number(runsArg);
 const throttle = Number(process.env.BENCH_CPU_THROTTLE ?? 4);
-if (!dirA || !dirB || !(runs >= 1)) {
+if (!argA || !argB || !(runs >= 1)) {
 	console.error('Usage: node scripts/verify/perf-bench.mjs <storybook-static A> <storybook-static B> [runs=20]');
 	process.exit(2);
 }
+
+const asServed = (dir) => {
+	if (process.env.BENCH_DEDUPE === '0' || !existsSync(join(dir, 'tamagui-zero.css'))) return dir;
+	const copy = mkdtempSync(join(tmpdir(), 'perf-bench-'));
+	cpSync(dir, copy, { recursive: true });
+	execFileSync('node', [join(import.meta.dirname, 'dedupe-zero-css.mjs'), copy], { stdio: 'ignore' });
+	return copy;
+};
+const [dirA, dirB] = [asServed(argA), asServed(argB)];
 
 const benchStories = (dir) => {
 	const { entries } = JSON.parse(readFileSync(join(dir, 'index.json'), 'utf8'));
@@ -104,3 +118,8 @@ console.table(results);
 await browser.close();
 servers.A.close();
 servers.B.close();
+for (const [arg, dir] of [
+	[argA, dirA],
+	[argB, dirB],
+])
+	if (arg !== dir) rmSync(dir, { recursive: true, force: true });
