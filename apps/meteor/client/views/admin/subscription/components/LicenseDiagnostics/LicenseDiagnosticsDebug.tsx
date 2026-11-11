@@ -12,9 +12,10 @@ const CURRENT = 'current';
 
 type LicenseDiagnosticsDebugProps = {
 	diagnostics?: LicenseDiagnosticsResult;
+	activeModules?: string[];
 };
 
-const LicenseDiagnosticsDebug = ({ diagnostics }: LicenseDiagnosticsDebugProps) => {
+const LicenseDiagnosticsDebug = ({ diagnostics, activeModules }: LicenseDiagnosticsDebugProps) => {
 	const { t } = useTranslation();
 	const id = useId();
 	const [selected, setSelected] = useState<DiagnosticsStateName | typeof CURRENT>(CURRENT);
@@ -34,7 +35,9 @@ const LicenseDiagnosticsDebug = ({ diagnostics }: LicenseDiagnosticsDebugProps) 
 					<Select id={id} value={selected} options={options} onChange={setSelected} />
 				</FieldRow>
 			</Field>
-			{shown && <LicenseDiagnosticsCard key={selected} diagnostics={shown} />}
+			{shown && (
+				<LicenseDiagnosticsCard key={selected} diagnostics={shown} activeModules={selected === CURRENT ? activeModules : undefined} />
+			)}
 		</>
 	);
 };

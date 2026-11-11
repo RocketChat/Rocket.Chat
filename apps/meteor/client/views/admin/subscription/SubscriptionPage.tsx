@@ -121,7 +121,7 @@ const SubscriptionPage = () => {
 						<Box marginBlock='none' marginInline='auto' width='full' color='default'>
 							<Box padding={8}>
 								<Stack gap={16}>
-									<LicenseDiagnosticsDebug diagnostics={licenseDiagnostics} />
+									<LicenseDiagnosticsDebug diagnostics={licenseDiagnostics} activeModules={activeModules} />
 									<CardGrid minRowHeight={260}>
 										<CardGridItem lg={4} xs={4}>
 											<PlanCard license={license} licenseLimits={{ activeUsers: seatsLimit }} />
