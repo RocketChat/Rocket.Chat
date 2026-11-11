@@ -18,9 +18,10 @@ const getCandidateStatus = (candidate: LicenseDiagnosticsCandidate): Translation
 
 type LicenseDiagnosticsDetailsProps = {
 	diagnostics: LicenseDiagnosticsResult;
+	activeModules?: string[];
 };
 
-const LicenseDiagnosticsDetails = ({ diagnostics }: LicenseDiagnosticsDetailsProps) => {
+const LicenseDiagnosticsDetails = ({ diagnostics, activeModules = [] }: LicenseDiagnosticsDetailsProps) => {
 	const { t } = useTranslation();
 	const formatDate = useFormatDate();
 	const { workspace, candidates, cloud } = diagnostics;
@@ -87,6 +88,11 @@ const LicenseDiagnosticsDetails = ({ diagnostics }: LicenseDiagnosticsDetailsPro
 							t(lead.offline ? 'License_diagnostics_type_offline' : 'License_diagnostics_type_online'),
 						].join(' · ')}
 					</Text>
+				</DiagnosticsField>
+			)}
+			{activeModules.length > 0 && (
+				<DiagnosticsField label={t('License_diagnostics_enabled_modules')}>
+					<Text>{activeModules.join(', ')}</Text>
 				</DiagnosticsField>
 			)}
 			{lead?.decoded && lead.behaviors.length > 0 && (

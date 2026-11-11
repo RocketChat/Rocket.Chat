@@ -5,7 +5,7 @@ import { axe } from 'jest-axe';
 
 import * as stories from './LicenseDiagnosticsCard.stories';
 
-const { NotReady } = composeStories(stories);
+const { NotReady, ModulesDisabled } = composeStories(stories);
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 
@@ -21,4 +21,10 @@ it('should not show the license status tag before the workspace URL is known', (
 
 	expect(screen.getByText('License_diagnostics_not_ready')).toBeInTheDocument();
 	expect(screen.queryByText('Valid_license')).not.toBeInTheDocument();
+});
+
+it('should list the enabled modules', () => {
+	render(<ModulesDisabled />, { wrapper: mockAppRoot().build() });
+
+	expect(screen.getByText('auditing, custom-roles')).toBeInTheDocument();
 });

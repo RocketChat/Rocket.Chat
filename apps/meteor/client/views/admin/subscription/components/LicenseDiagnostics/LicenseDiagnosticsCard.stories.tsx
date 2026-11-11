@@ -23,6 +23,8 @@ export const OverLimits: Story = { args: { diagnostics: licenseDiagnosticsByStat
 export const Invalid: Story = { args: { diagnostics: licenseDiagnosticsByState.invalid } };
 export const EnvLicenseWon: Story = { args: { diagnostics: licenseDiagnosticsByState.envLicenseWon } };
 export const OverwriteVariable: Story = { args: { diagnostics: licenseDiagnosticsByState.overwriteVariable } };
-export const ModulesDisabled: Story = { args: { diagnostics: licenseDiagnosticsByState.modulesDisabled } };
+export const ModulesDisabled: Story = {
+	args: { diagnostics: licenseDiagnosticsByState.modulesDisabled, activeModules: ['auditing', 'custom-roles'] },
+};
 export const Offline: Story = { args: { diagnostics: licenseDiagnosticsByState.offline } };
 export const Valid: Story = { args: { diagnostics: licenseDiagnosticsByState.valid } };

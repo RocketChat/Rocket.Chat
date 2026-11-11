@@ -3975,6 +3975,7 @@
   "License_diagnostics_bound_to": "License bound to",
   "License_diagnostics_bound_to_address": "bound to {{address}}",
   "License_diagnostics_does_not_match": "Doesn't match",
+  "License_diagnostics_enabled_modules": "Enabled modules",
   "License_diagnostics_env_license_won": "The license from the ROCKETCHAT_LICENSE environment variable is active",
   "License_diagnostics_env_license_won_fix": "On restart, the server applies the newer of this variable and the license saved here. To change the license, update or remove the environment variable.",
   "License_diagnostics_from_site_url": "From Site URL {{siteUrl}}",

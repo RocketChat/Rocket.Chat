@@ -11,9 +11,10 @@ import { useFormatDate } from '../../../../../hooks/useFormatDate';
 
 type LicenseDiagnosticsCardProps = {
 	diagnostics: LicenseDiagnosticsResult;
+	activeModules?: string[];
 };
 
-const LicenseDiagnosticsCard = ({ diagnostics }: LicenseDiagnosticsCardProps) => {
+const LicenseDiagnosticsCard = ({ diagnostics, activeModules }: LicenseDiagnosticsCardProps) => {
 	const { t } = useTranslation();
 	const formatDate = useFormatDate();
 	const { tone, headline, fix } = getDiagnosticsState(diagnostics);
@@ -44,7 +45,7 @@ const LicenseDiagnosticsCard = ({ diagnostics }: LicenseDiagnosticsCardProps) =>
 					<Callout type={tone} title={t(headline)}>
 						{fix && t(fix)}
 					</Callout>
-					<LicenseDiagnosticsDetails diagnostics={diagnostics} />
+					<LicenseDiagnosticsDetails diagnostics={diagnostics} activeModules={activeModules} />
 					<Divider flush />
 					<LicenseDiagnosticsText summaryText={diagnostics.summaryText} defaultExpanded={tone === 'danger'} />
 				</Stack>
