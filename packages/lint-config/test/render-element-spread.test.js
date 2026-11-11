@@ -5,7 +5,7 @@ import { Linter } from 'eslint';
 
 import rule from '../rules/render-element-spread.js';
 
-const safeCalls = ['ariaAndDataAttributes', 'pickWebPressHandlers'];
+const safeCalls = ['ariaAndDataAttributes', 'customProperties', 'pickPositionStyle', 'pickWebAnimationHandlers', 'pickWebPressHandlers'];
 
 const messagesFor = (code) =>
 	new Linter()
@@ -24,6 +24,9 @@ const FRAME = 'const Frame = styled(View, {});\n';
 test('allows safe calls spread on the render element', () => {
 	const code = `${FRAME}const A = (props) => (
 		<Frame render={<button {...ariaAndDataAttributes(props)} {...pickWebPressHandlers(props)} type='button' />} />
+	);
+	const B = (props) => (
+		<Frame render={<div {...customProperties({ '--rcx-x': props.x })} {...pickPositionStyle(props)} {...pickWebAnimationHandlers(props)} />} />
 	);`;
 
 	assert.deepEqual(messagesFor(code), []);

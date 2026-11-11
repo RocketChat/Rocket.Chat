@@ -1,16 +1,8 @@
 import { join } from 'node:path';
 
-import {
-	buttonChrome,
-	disabledStyle,
-	font,
-	paintStyle,
-	segmentRaise,
-	segmentVariants,
-	squareLayout,
-	squaredSize,
-} from './lib/buttonFrames.mts';
+import { buttonChrome, disabledStyle, paintStyle, segmentRaise, segmentVariants, squareLayout, squaredSize } from './lib/buttonFrames.mts';
 import { kindColors, kinds } from './lib/buttonPalettes.mts';
+import { font } from './lib/frameTokens.mts';
 import { literal, type Value } from './lib/literal.mts';
 import type { Target } from './lib/target.mts';
 import { offScale } from './lib/tokens.mts';
