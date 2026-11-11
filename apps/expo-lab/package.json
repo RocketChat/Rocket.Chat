@@ -1,0 +1,42 @@
+{
+	"name": "@rocket.chat/expo-lab",
+	"version": "0.0.0",
+	"private": true,
+	"description": "Sandbox Expo app to try Tamagui and the Rocket.Chat SDK packages in React Native",
+	"main": "index.ts",
+	"scripts": {
+		"start": "expo start --dev-client",
+		"ios": "expo run:ios",
+		"android": "expo run:android",
+		"typecheck": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@rocket.chat/api-client": "workspace:^",
+		"@rocket.chat/ddp-client": "workspace:^",
+		"@rocket.chat/emitter": "workspace:^",
+		"@tamagui/config": "3.0.18",
+		"expo": "~58.0.23",
+		"expo-dev-client": "~58.0.18",
+		"expo-status-bar": "~58.0.4",
+		"react": "19.3.0",
+		"react-dom": "19.3.0",
+		"react-native": "0.88.1",
+		"react-native-reanimated": "4.7.1",
+		"react-native-safe-area-context": "~5.11.1",
+		"react-native-svg": "15.16.0",
+		"react-native-worklets": "0.13.0",
+		"tamagui": "3.0.18"
+	},
+	"expo": {
+		"install": {
+			"exclude": [
+				"typescript"
+			]
+		}
+	},
+	"devDependencies": {
+		"@babel/core": "^7.26.0",
+		"@types/react": "^19.1.1",
+		"typescript": "~5.9.3"
+	}
+}
