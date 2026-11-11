@@ -7,20 +7,6 @@
 		"apps/meteor/client/hooks/useItemListNavigation.ts: rowSelector = '.rcx-item, .rcx-item-group-header',",
 		"apps/meteor/client/sidebar/hooks/useShortcutOpenMenu.ts: event.target.closest('.rcx-item')?.querySelector<HTMLButtonElement>('.rcx-item__actions--reveal-hover button')?.click();",
 		"apps/meteor/client/views/navigation/sidebar/hooks/useShortcutOpenMenu.ts: event.target.closest('.rcx-item')?.querySelector<HTMLButtonElement>('.rcx-item__actions--reveal-hover button')?.click();",
-		"packages/fuselage/src/components/Option/Option.styles.scss: &--align-top.rcx-item {",
-		"packages/fuselage/src/components/Option/Option.styles.scss: &:focus-within &__menu-wrapper:not(.rcx-item__actions) {",
-		"packages/fuselage/src/components/Option/Option.styles.scss: &:hover &__menu-wrapper:not(.rcx-item__actions),",
-		"packages/fuselage/src/components/Option/Option.styles.scss: &:not(.rcx-item) {",
-		"packages/fuselage/src/components/Option/Option.styles.scss: &__avatar:not(.rcx-item__media) {",
-		"packages/fuselage/src/components/Option/Option.styles.scss: &__column.rcx-item__media,",
-		"packages/fuselage/src/components/Option/Option.styles.scss: &__column:not(.rcx-item__icon, .rcx-item__media) {",
-		"packages/fuselage/src/components/Option/Option.styles.scss: &__content:not(.rcx-item__content) {",
-		"packages/fuselage/src/components/Option/Option.styles.scss: &__description:not(.rcx-item__description) {",
-		"packages/fuselage/src/components/Option/Option.styles.scss: &__input.rcx-item__actions {",
-		"packages/fuselage/src/components/Option/Option.styles.scss: &__input.rcx-item__actions {",
-		"packages/fuselage/src/components/Option/Option.styles.scss: &__input:not(.rcx-item__actions) {",
-		"packages/fuselage/src/components/Option/Option.styles.scss: &__menu-wrapper:not(.rcx-item__actions) {",
-		"packages/fuselage/src/components/Options/Options.styles.scss: .rcx-item--focused:not(.rcx-item--selected):not(:hover) {",
 		"packages/fuselage/src/components/Sidebar/Sidebar.styles.scss: &__bar:focus-within &__menu-wrapper:not(.rcx-item__actions),",
 		"packages/fuselage/src/components/Sidebar/Sidebar.styles.scss: &__bar:has(&__menu-wrapper [aria-expanded='true']) &__menu-wrapper:not(.rcx-item__actions) {",
 		"packages/fuselage/src/components/Sidebar/Sidebar.styles.scss: &__bar:hover &__menu-wrapper:not(.rcx-item__actions),",
@@ -106,9 +92,6 @@
 	],
 	"rcx-check-box": [
 		"packages/fuselage/src/components/Message/Messages.styles.scss: > li > .rcx-check-box > .rcx-check-box__input:focus + .rcx-check-box__fake {"
-	],
-	"rcx-option": [
-		"packages/fuselage/src/components/Options/Options.styles.scss: .rcx-option--focus:not(.rcx-option--selected):not(:hover),"
 	],
 	"rcx-input-box": [
 		"packages/fuselage/src/components/Select/Select.styles.scss: @extend .rcx-input-box__addon;",

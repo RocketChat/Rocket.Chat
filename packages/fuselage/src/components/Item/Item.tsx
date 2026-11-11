@@ -170,7 +170,11 @@ const itemPaints = {
 		backgroundColor: 'var(--rcx-item-color-surface-selected, var(--rcx-color-surface-selected, #d7dbe0))',
 	},
 	focused: {
-		backgroundColor: 'var(--rcx-item-color-surface-hover, var(--rcx-color-surface-hover, #f2f3f5))',
+		backgroundColor: {
+			'default': 'var(--rcx-item-color-surface-hover, var(--rcx-color-surface-hover, #f2f3f5))',
+			'group-hover/options': 'transparent',
+			'hover': 'var(--rcx-item-color-surface-hover, var(--rcx-color-surface-hover, #f2f3f5))',
+		},
 	},
 	hover: {
 		backgroundColor: {

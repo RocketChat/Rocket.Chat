@@ -435,7 +435,8 @@
 							"pickWebDropHandlers",
 							"pickWebPressHandlers",
 							"pickWebRowHandlers",
-							"pickWebTextInputHandlers"
+							"pickWebTextInputHandlers",
+							"positionedCustomProperties"
 						]
 					}
 				]

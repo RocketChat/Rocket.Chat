@@ -117,7 +117,7 @@ Decided once, so no component reopens them.
 
 - **A frame takes no spread.** Any `{...x}` on an element whose name is bound in the same module to `styled(...)` is reported.
 - **A render element takes a spread only of a `safeCalls` call.** `render={<button {...ariaAndDataAttributes(props)} />}` passes; a spread of a variable, an object or any other call fails, even one that cannot carry a `className`.
-- The `safeCalls` (in `.oxlintrc.json`, and the rule's test) are `ariaAndDataAttributes`, `customProperties` (returns only `{ style }` of `--rcx-*` keys), `pickPositionStyle` (only the `PositionStyle` keys), `pickVirtualizerStyle` (only the `VirtualizerStyle` keys) and the `pick…Handlers` helpers (`pickWebPressHandlers`, `pickWebRowHandlers`, `pickWebTextInputHandlers`, `pickWebDropHandlers`, `pickWebCaptureHandlers`, `pickWebAnimationHandlers`). A new one is a function that returns a closed list of attributes without `className`.
+- The `safeCalls` (in `.oxlintrc.json`, and the rule's test) are `ariaAndDataAttributes`, `customProperties` (returns only `{ style }` of `--rcx-*` keys), `pickPositionStyle` (only the `PositionStyle` keys), `pickVirtualizerStyle` (only the `VirtualizerStyle` keys), `positionedCustomProperties` (both of those in one `style`, for a part that `Position` places and that also carries open values) and the `pick…Handlers` helpers (`pickWebPressHandlers`, `pickWebRowHandlers`, `pickWebTextInputHandlers`, `pickWebDropHandlers`, `pickWebCaptureHandlers`, `pickWebAnimationHandlers`). A new one is a function that returns a closed list of attributes without `className`.
 - `style` is left alone: the compiler refuses a frame whose render element sets its own `style`, so nothing overwrites it.
 
 ## Releases

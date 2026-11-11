@@ -74,7 +74,10 @@ const generateItem = () => {
 		dropDisabled: { backgroundColor: 'transparent' },
 		disabled: { backgroundColor: 'transparent' },
 		selected: { backgroundColor: palettes.surface.selected },
-		focused: { backgroundColor: palettes.surface.hover },
+		// A list of options that the pointer is over hides the cursor's row, unless the pointer is on that row
+		focused: {
+			backgroundColor: { 'default': palettes.surface.hover, 'group-hover/options': 'transparent', 'hover': palettes.surface.hover },
+		},
 		hover: { backgroundColor: { hover: palettes.surface.hover } },
 	};
 

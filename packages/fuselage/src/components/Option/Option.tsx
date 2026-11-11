@@ -69,7 +69,8 @@ function Option<TLabel = ReactNode>({
 			focusVisible={focusVisible}
 			selected={selected}
 			disabled={disabled}
-			variant={variant === 'danger' ? 'danger' : undefined}
+			variant={variant}
+			align={description ? 'start' : 'center'}
 			aria-selected={!!selected}
 			aria-disabled={!!disabled}
 			onClickCapture={disabled ? prevent : undefined}

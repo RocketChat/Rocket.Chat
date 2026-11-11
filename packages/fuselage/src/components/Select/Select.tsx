@@ -331,7 +331,7 @@ function Select<V extends Key = Key>({
 					style={isOpen ? undefined : { pointerEvents: 'none' }}
 					onPointerDown={(event: PointerEvent) => event.preventDefault()}
 				>
-					<OptionContainer style={{ width: borderBoxSize?.inlineSize }}>
+					<OptionContainer width={borderBoxSize?.inlineSize}>
 						<Listbox
 							id={listboxId}
 							aria-labelledby={props['aria-labelledby']}

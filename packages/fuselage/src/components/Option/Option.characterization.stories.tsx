@@ -284,7 +284,7 @@ const EXPECTED_CLASSES = [
 	'root > ul > li[8]: rcx-item rcx-item--clickable rcx-item--inset-md rcx-option rcx-option--primary',
 	'root > ul > li[8] > div: rcx-item__content rcx-option__content',
 	'root > ul > li[8] > div > div: rcx-item__title',
-	'root > ul > li[9]: rcx-item rcx-item--clickable rcx-item--inset-md rcx-option rcx-option--align-top',
+	'root > ul > li[9]: rcx-item rcx-item--align-start rcx-item--clickable rcx-item--inset-md rcx-option rcx-option--align-top',
 	'root > ul > li[9] > div: rcx-item__content rcx-option__content',
 	'root > ul > li[9] > div > div: rcx-item__title',
 	'root > ul > li[10]: rcx-item rcx-item--clickable rcx-item--inset-md rcx-option',

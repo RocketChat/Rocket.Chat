@@ -27,13 +27,12 @@
 @use './InputBox/InputBox.styles.scss';
 @use './Item/Item.styles.css';
 @use './Label/Label.styles.scss';
-@use './Listbox/Listbox.styles.scss';
 @use './Menu/Menu.styles.scss';
 @use './Message/Messages.styles.scss';
 @use './Modal/Modal.styles.scss';
 @use './NavBar/NavBar.styles.scss';
-@use './Option/Option.styles.scss';
-@use './Options/Options.styles.scss';
+@use './Option/Option.styles.css';
+@use './Options/Options.styles.css';
 @use './Pagination/Pagination.styles.scss';
 @use './PopoverSurface/PopoverSurface.styles.scss';
 @use './ProgressBar/ProgressBar.styles.css';
