@@ -21,7 +21,7 @@ export class Crypto {
 			throw new Error('Invalid license provided');
 		}
 
-		if (typeof license !== 'object' || license === null) {
+		if (typeof license !== 'object' || license === null || Array.isArray(license)) {
 			throw new Error('Invalid license provided');
 		}
 
