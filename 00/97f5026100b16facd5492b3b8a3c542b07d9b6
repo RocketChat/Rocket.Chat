@@ -1,0 +1,9 @@
+docs/features/message-scheduling.md
+  ai_agent 9-76
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "0097f5026100b16facd5492b3b8a3c542b07d9b6",
+  "prompts": {}
+}

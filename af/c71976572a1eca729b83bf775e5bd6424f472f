@@ -1,0 +1,23 @@
+packages/icons/src/clock-send.dir.svg
+  s_478a7742cf0448::t_38609157113633 1-5
+.changeset/icons-clock-send.md
+  s_478a7742cf0448::t_ddefdaf424fe2a 1-5
+packages/icons/glyphsMapping.json
+  s_478a7742cf0448::t_620dd2960e20dd 1165-1168
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "afc71976572a1eca729b83bf775e5bd6424f472f",
+  "prompts": {},
+  "sessions": {
+    "s_478a7742cf0448": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "78511215-04eb-4d9d-beb9-8d0ec0460bb1",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}

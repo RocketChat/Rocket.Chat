@@ -1,0 +1,12 @@
+apps/meteor/client/lib/chats/uploads.ts
+  s_478a7742cf0448::t_b4509182574199 50-53
+apps/meteor/client/lib/chats/ChatAPI.ts
+  09dc60106fb85480 26-30
+  s_478a7742cf0448::t_b4509182574199 121
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "6349e5da9ad2b814cd15204473573caff1c924c2",
+  "prompts": {}
+}
