@@ -4,14 +4,13 @@ import type { PduForType } from '@rocket.chat/federation-sdk';
 // as per the spec, we must support several types but we only support invite and public for now.
 // in the future, we must start looking into 'knock', 'knock_restricted', 'restricted' and 'private'.
 export function getJoinRuleType(strippedState: PduForType[] | undefined): 'p' | 'c' | 'd' {
-	const joinRulesState = strippedState?.find((state) => state.type === 'm.room.join_rules');
+	const joinRule = strippedState?.find((state) => state.type === 'm.room.join_rules')?.content?.join_rule;
 
 	// as per the spec, users need to be invited to join a room, unless the room’s join rules state otherwise.
-	if (!joinRulesState) {
+	if (joinRule === undefined) {
 		return 'p';
 	}
 
-	const joinRule = joinRulesState?.content?.join_rule;
 	switch (joinRule) {
 		case 'invite':
 			return 'p';
