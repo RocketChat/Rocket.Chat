@@ -46,6 +46,7 @@ export const UserCodec = z.codec(z.custom<IUser>(), z.custom<IAppsUser>(), {
 			isFederated: user.federated,
 			federation: user.federation,
 			sipExtension: user.sipExtension,
+			mediaCallDevice: user.mediaCallDevice,
 			settings: {
 				preferences: {
 					...(user?.settings?.preferences?.language && { language: user.settings.preferences.language }),

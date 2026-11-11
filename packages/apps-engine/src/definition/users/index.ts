@@ -9,6 +9,7 @@ import type { IUserContext } from './IUserContext';
 import type { IUserCreationOptions } from './IUserCreationOptions';
 import type { IUserEmail } from './IUserEmail';
 import type { IUserLookup } from './IUserLookup';
+import type { IUserMediaCallDevice } from './IUserMediaCallDevice';
 import type { IUserStatusContext } from './IUserStatusContext';
 import type { IUserUpdateContext } from './IUserUpdateContex';
 import { UserStatusConnection } from './UserStatusConnection';
@@ -18,6 +19,7 @@ export type {
 	IUser,
 	IUserEmail,
 	IUserLookup,
+	IUserMediaCallDevice,
 	IUserCreationOptions,
 	IPostUserCreated,
 	IPostUserUpdated,
