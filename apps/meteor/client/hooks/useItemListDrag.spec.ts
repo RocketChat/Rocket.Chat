@@ -135,6 +135,27 @@ describe('useItemListDrag', () => {
 		expect(onMove).not.toHaveBeenCalled();
 	});
 
+	it('lifts a copy of the row without its actions', () => {
+		const { list, rows } = createList();
+		const actions = document.createElement('div');
+		actions.className = 'rcx-item__actions';
+		list.querySelector('[data-drag-key="Projects"]')!.appendChild(actions);
+
+		const { result } = renderHook(() => useItemListDrag({ resolveTarget: () => undefined, onDrop: jest.fn() }));
+		attachDrag(result.current.ref, list);
+
+		jest.spyOn(document, 'elementsFromPoint').mockReturnValue([]);
+		rows[0].dispatchEvent(new MouseEvent('pointerdown', { bubbles: true, button: 0, clientX: 0, clientY: 0 }));
+		act(() => {
+			window.dispatchEvent(new MouseEvent('pointermove', { clientX: 0, clientY: 20 }));
+		});
+
+		const preview = document.querySelector('.rcx-item-drag-preview') as HTMLElement;
+		expect(preview).toBeInTheDocument();
+		expect(preview.querySelector('.rcx-item__actions')).toBeNull();
+		expect(list.querySelector('.rcx-item__actions')).not.toBeNull();
+	});
+
 	it('ends a drag in progress when the list is detached', () => {
 		const { list, rows } = createList();
 

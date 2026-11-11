@@ -93,7 +93,7 @@ export type WebPressHandlers<TElement extends Element> = Pick<DOMAttributes<TEle
  * capture-phase click a listbox option and react-aria's `useMenuItem` hand it. The key list builds both the type and
  * `pickWebRowHandlers`.
  */
-export const webRowHandlerKeys = [...webPressHandlerKeys, 'onPointerMove', 'onClickCapture'] as const;
+export const webRowHandlerKeys = [...webPressHandlerKeys, 'onPointerMove', 'onClickCapture', 'onDragStartCapture'] as const;
 
 export type WebRowHandlers<TElement extends Element> = Pick<DOMAttributes<TElement>, (typeof webRowHandlerKeys)[number]>;
 
@@ -190,6 +190,11 @@ export type LabelRef = Ref<HTMLLabelElement>;
 export type InputRef = Ref<HTMLInputElement>;
 export type TextAreaRef = Ref<HTMLTextAreaElement>;
 
+/** The `ref` of a part rendered as a list or a heading, for casting a ref typed for several tags. */
+export type UlRef = Ref<HTMLUListElement>;
+export type OlRef = Ref<HTMLOListElement>;
+export type HeadingRef = Ref<HTMLHeadingElement>;
+
 /** What a part that only shows something forwards. */
 export type PartAttributes<TElement extends Element> = CommonAttributes & WebAttributes<TElement>;
 
@@ -274,6 +279,18 @@ export type TextControlAttributes = Pick<
 	| 'inert'
 > &
 	Pick<TextareaHTMLAttributes<HTMLTextAreaElement>, 'rows'>;
+
+/** What a row of a list, an option or a menu item rendered as any element listens to. */
+export type ElementRowHandlers = WebRowHandlers<HTMLElement>;
+
+/** What a part that is always an `a` forwards when it acts. */
+export type AnchorActionAttributes = ActionAttributes<HTMLAnchorElement>;
+
+/** What a part rendered as an `a` forwards besides its action attributes: where it points. */
+export type AnchorLinkAttributes = Pick<AnchorHTMLAttributes<HTMLAnchorElement>, 'href' | 'target' | 'rel' | 'download'>;
+
+/** What a part rendered as a `button` forwards to it besides its action attributes: the form it submits. */
+export type ButtonFormAttributes = Pick<ButtonHTMLAttributes<HTMLButtonElement>, 'type' | 'form'>;
 
 /** What a part rendered as a `label` forwards: the control it names. */
 export type LabelAttributes = Pick<LabelHTMLAttributes<HTMLLabelElement>, 'htmlFor'>;

@@ -1,14 +1,15 @@
-import type { ReactNode, MouseEvent, AllHTMLAttributes, ElementType, RefAttributes } from 'react';
+import type { ReactNode, MouseEvent, RefAttributes } from 'react';
 import { memo } from 'react';
 
 import { cx, cxx } from '../../helpers/composeClassNames';
 import { prevent } from '../../helpers/prevent';
 import { useArrayLikeClassNameProp } from '../../hooks/useArrayLikeClassNameProp';
 import { Icon, type IconProps } from '../Icon';
-import { Item, ItemContent, ItemIcon, ItemMedia, ItemTitle } from '../Item';
+import { Item, ItemContent, ItemIcon, ItemMedia, ItemTitle, type ItemAttributes } from '../Item';
+import { wrapText } from '../Item/wrapText';
 
 export type OptionProps<TLabel = ReactNode> = RefAttributes<HTMLElement> & {
-	is?: ElementType;
+	is?: 'li' | 'div';
 	id?: string;
 	children?: ReactNode;
 	label?: TLabel;
@@ -28,26 +29,7 @@ export type OptionProps<TLabel = ReactNode> = RefAttributes<HTMLElement> & {
 	variant?: 'danger' | 'success' | 'warning' | 'primary';
 	onClick?: (event: MouseEvent<HTMLElement>) => void;
 	description?: ReactNode;
-} & Omit<
-		AllHTMLAttributes<HTMLElement>,
-		| 'is'
-		| 'id'
-		| 'children'
-		| 'label'
-		| 'focusVisible'
-		| 'selected'
-		| 'className'
-		| 'ref'
-		| 'icon'
-		| 'gap'
-		| 'avatar'
-		| 'title'
-		| 'disabled'
-		| 'value'
-		| 'variant'
-		| 'onClick'
-		| 'description'
-	>;
+} & Omit<ItemAttributes, 'id' | 'children' | 'title' | 'value' | 'className' | 'ref' | 'onClick'>;
 
 /**
  * The generic `Option` item of options. Can be freely used or inside the `Options` as well.
@@ -105,7 +87,7 @@ function Option<TLabel = ReactNode>({
 				normalizedClassName,
 			)}
 		>
-			{avatar && <ItemMedia className='rcx-option__avatar'>{avatar}</ItemMedia>}
+			{avatar && <ItemMedia className='rcx-option__avatar'>{wrapText(avatar)}</ItemMedia>}
 			{icon && (
 				<ItemIcon className='rcx-option__column' label={iconLabel}>
 					<Icon name={icon} size='x20' className='rcx-option__icon' />
@@ -117,7 +99,7 @@ function Option<TLabel = ReactNode>({
 					<ItemTitle>{label as ReactNode}</ItemTitle>
 				</ItemContent>
 			)}
-			{label !== children && children}
+			{label !== children && wrapText(children)}
 		</Item>
 	);
 }

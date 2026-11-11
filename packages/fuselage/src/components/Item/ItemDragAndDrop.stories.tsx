@@ -39,8 +39,16 @@ export default {
 
 type Story = StoryObj<typeof Item>;
 
+// The story's own CSS: Item takes no `style`, so a pinned preview, a flash held mid-way and a column width are classes
+const storyStyles = `
+.story-pinned-preview { position: relative; transform: none; z-index: 0; }
+.story-frozen-flash { animation-delay: -0.1s; animation-play-state: paused; }
+.story-width-280 { width: 280px; }
+`;
+
 const Section = ({ title, description, children }: { title: string; description: string; children: ReactNode }) => (
 	<Box display='flex' flexDirection='column' maxWidth='x720' marginBlockEnd='x32'>
+		<style>{storyStyles}</style>
 		<Box is='h3' fontScale='h4' color='titles-labels' margin={0}>
 			{title}
 		</Box>
@@ -78,7 +86,7 @@ const Surface = ({ children, label }: { children: ReactNode; label: string }) =>
 );
 
 const Row = ({ title, handle, handleDisabled, ...props }: { title: string; handle?: boolean; handleDisabled?: boolean } & ItemProps) => (
-	<Item is='li' inset='md' {...props}>
+	<Item interactive is='li' inset='md' {...props}>
 		<ItemMedia variant='icon'>
 			<Icon name='hash' size='x20' />
 		</ItemMedia>
@@ -97,12 +105,6 @@ const Header = ({ title }: { title: string }) => (
 	</ItemGroupHeader>
 );
 
-// The lifted copy is `position: fixed` in a real drag; the stories pin it in place to show it.
-const pinned = { position: 'relative', transform: 'none', zIndex: 0 } as const;
-
-// The landing flash lasts 0.6s; the stories hold it near its start so it can be seen.
-const frozenFlash = { animationDelay: '-0.1s', animationPlayState: 'paused' } as const;
-
 export const Anatomy: Story = {
 	render: () => (
 		<Section
@@ -116,7 +118,7 @@ export const Anatomy: Story = {
 			</State>
 			<State name='dragHandle="trailing"' prop='<ItemDragHandle /> as the last slot'>
 				<Surface label='Row with a handle'>
-					<Item is='li' inset='md'>
+					<Item interactive is='li' inset='md'>
 						<ItemMedia variant='icon'>
 							<Icon name='hash' size='x20' />
 						</ItemMedia>
@@ -156,7 +158,7 @@ export const Source: Story = {
 			</State>
 			<State name='Lifted copy' prop='.rcx-item-drag-preview'>
 				<Box width='x240'>
-					<Item is='div' inset='md' className='rcx-item-drag-preview' style={pinned}>
+					<Item is='div' inset='md' className='rcx-item-drag-preview story-pinned-preview'>
 						<ItemMedia variant='icon'>
 							<Icon name='hash' size='x20' />
 						</ItemMedia>
@@ -168,7 +170,7 @@ export const Source: Story = {
 			</State>
 			<State name='Landed' prop='dropped'>
 				<Surface label='Landed'>
-					<Row title='general' dropped style={frozenFlash} />
+					<Row title='general' dropped className='story-frozen-flash' />
 				</Surface>
 			</State>
 		</Section>
@@ -220,7 +222,7 @@ export const OrderedDrop: Story = {
 				</Surface>
 			</State>
 			<State name='Between groups' prop='ItemGroup dropIndicator'>
-				<Box display='flex' flexDirection='column' width='x280'>
+				<Box display='flex' flexDirection='column' rowGap='x8' width='x280'>
 					<ItemGroup is='ul' aria-label='Favorites'>
 						<Header title='Favorites' />
 						<Row title='general' />
@@ -253,13 +255,13 @@ export const BlockDrop: Story = {
 				</Surface>
 			</State>
 			<State name='Group, available' prop='ItemGroup dropTarget="available"'>
-				<ItemGroup is='ul' aria-label='Available group' dropTarget='available' style={{ width: 280 }}>
+				<ItemGroup is='ul' aria-label='Available group' dropTarget='available' className='story-width-280'>
 					<Header title='Clients' />
 					<Row title='acme-support' />
 				</ItemGroup>
 			</State>
 			<State name='Group, active' prop='ItemGroup dropTarget="active"'>
-				<ItemGroup is='ul' aria-label='Active group' dropTarget='active' style={{ width: 280 }}>
+				<ItemGroup is='ul' aria-label='Active group' dropTarget='active' className='story-width-280'>
 					<Header title='Clients' />
 					<Row title='acme-support' />
 				</ItemGroup>
@@ -280,7 +282,7 @@ export const Forbidden: Story = {
 				</Surface>
 			</State>
 			<State name='Group' prop='ItemGroup dropDisabled'>
-				<ItemGroup is='ul' aria-label='Forbidden group' dropDisabled style={{ width: 280 }}>
+				<ItemGroup is='ul' aria-label='Forbidden group' dropDisabled className='story-width-280'>
 					<Header title='Unread' />
 					<Row title='general' />
 				</ItemGroup>
@@ -330,7 +332,7 @@ export const ListModes: Story = {
 			description='The same moment in both modes: "design" leaves Projects for Clients. What changes is what the drop target is.'
 		>
 			<State name='Auto-sorted' prop='ItemGroup dropTarget'>
-				<Box display='flex' flexDirection='column' width='x280'>
+				<Box display='flex' flexDirection='column' rowGap='x8' width='x280'>
 					<ItemGroup is='ul' aria-label='Projects, auto-sorted'>
 						<Header title='Projects' />
 						<Row title='roadmap' />
@@ -344,7 +346,7 @@ export const ListModes: Story = {
 				</Box>
 			</State>
 			<State name='User-ordered' prop='Item dropIndicator'>
-				<Box display='flex' flexDirection='column' width='x280'>
+				<Box display='flex' flexDirection='column' rowGap='x8' width='x280'>
 					<ItemGroup is='ul' aria-label='Projects, user-ordered'>
 						<Header title='Projects' />
 						<Row title='roadmap' />
@@ -369,7 +371,7 @@ export const MovingAGroup: Story = {
 			description='Groups in user order, such as sidebar categories. While a group is dragged its rows are not targets; each group splits at its middle.'
 		>
 			<State name='1 · Press' prop='—'>
-				<Box display='flex' flexDirection='column' width='x280'>
+				<Box display='flex' flexDirection='column' rowGap='x8' width='x280'>
 					<ItemGroup is='ul' aria-label='Favorites, press'>
 						<Header title='Favorites' />
 					</ItemGroup>
@@ -383,7 +385,7 @@ export const MovingAGroup: Story = {
 				</Box>
 			</State>
 			<State name='2 · Over Clients, bottom half' prop='dragging · dropIndicator="after"'>
-				<Box display='flex' flexDirection='column' width='x280'>
+				<Box display='flex' flexDirection='column' rowGap='x8' width='x280'>
 					<ItemGroup is='ul' aria-label='Favorites, over'>
 						<Header title='Favorites' />
 					</ItemGroup>
@@ -397,14 +399,14 @@ export const MovingAGroup: Story = {
 				</Box>
 			</State>
 			<State name='3 · Landed' prop='dropped'>
-				<Box display='flex' flexDirection='column' width='x280'>
+				<Box display='flex' flexDirection='column' rowGap='x8' width='x280'>
 					<ItemGroup is='ul' aria-label='Favorites, landed'>
 						<Header title='Favorites' />
 					</ItemGroup>
 					<ItemGroup is='ul' aria-label='Clients, landed'>
 						<Header title='Clients' />
 					</ItemGroup>
-					<ItemGroup is='ul' aria-label='Projects, landed' dropped style={frozenFlash}>
+					<ItemGroup is='ul' aria-label='Projects, landed' dropped className='story-frozen-flash'>
 						<Header title='Projects' />
 						<Row title='design' />
 					</ItemGroup>
@@ -431,7 +433,7 @@ export const Keyboard: Story = {
 				<Surface label='Moved row'>
 					<Row title='general' />
 					<Row title='engineering' />
-					<Row title='design' focusVisible dropped style={frozenFlash} />
+					<Row title='design' focusVisible dropped className='story-frozen-flash' />
 				</Surface>
 			</State>
 			<State name='3 · Announced' prop='.rcx-item-drag-announcer'>

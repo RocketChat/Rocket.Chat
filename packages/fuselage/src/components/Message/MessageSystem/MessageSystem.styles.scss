@@ -2,9 +2,12 @@
 @use '../../../styles/lengths.scss';
 @use '../../../styles/typography.scss' as *;
 
-.rcx-message-system {
+// Interim `[class]` bump: the row is an `Item` whose frame sets the padding
+.rcx-message-system[class] {
 	padding-block: lengths.padding(8);
+}
 
+.rcx-message-system {
 	// The row keeps the avatar at the top when an attachment makes it tall; a single line still centres on it.
 	&__container {
 		align-self: center;

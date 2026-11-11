@@ -40,7 +40,7 @@ const FileItem = ({ rid, fileData, onClickDelete }: FileItemProps) => {
 	const displayName = name || t('Unnamed');
 
 	return (
-		<Item inset='lg'>
+		<Item inset='lg' interactive>
 			{shouldDisplayPreview ? (
 				<ImageItem id={_id} url={path} name={displayName} username={normalizedUsername} timestamp={format(uploadedAt)} alt={description} />
 			) : (

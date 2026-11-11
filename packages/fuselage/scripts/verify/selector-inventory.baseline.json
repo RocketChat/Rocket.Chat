@@ -3,6 +3,7 @@
 		"apps/meteor/client/hooks/useItemListDrag.ts: : (row.querySelector<HTMLElement>('.rcx-item, .rcx-item-group-header') ?? row);",
 		"apps/meteor/client/hooks/useItemListDrag.ts: const surface = row.matches('.rcx-item, .rcx-item-group-header')",
 		"apps/meteor/client/hooks/useItemListDrag.ts: if (dragHandle === 'trailing' && !start.closest('.rcx-item__drag-handle')) {",
+		"apps/meteor/client/hooks/useItemListDrag.ts: preview.querySelectorAll('.rcx-item__actions').forEach((actions) => actions.remove());",
 		"apps/meteor/client/hooks/useItemListNavigation.ts: rowSelector = '.rcx-item, .rcx-item-group-header',",
 		"apps/meteor/client/sidebar/hooks/useShortcutOpenMenu.ts: event.target.closest('.rcx-item')?.querySelector<HTMLButtonElement>('.rcx-item__actions--reveal-hover button')?.click();",
 		"apps/meteor/client/views/navigation/sidebar/hooks/useShortcutOpenMenu.ts: event.target.closest('.rcx-item')?.querySelector<HTMLButtonElement>('.rcx-item__actions--reveal-hover button')?.click();",

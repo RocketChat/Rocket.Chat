@@ -256,7 +256,7 @@ const RoomRow = ({ room, viewMode = 'condensed', inset, selected }: RoomRowProps
 	const extended = viewMode === 'extended';
 
 	return (
-		<Item is='li' inset={inset} selected={selected} highlighted={!!room.unread}>
+		<Item interactive is='li' inset={inset} selected={selected} highlighted={!!room.unread}>
 			<ItemMedia>
 				<Avatar size={viewModeAvatarSize[viewMode]} url={leterAvatarUrls[room.avatar]} alt='' />
 			</ItemMedia>
@@ -310,7 +310,7 @@ export const Default: Story = {
 	render: (args) => (
 		<SidebarSurface>
 			<ItemGroup is='ul' aria-label='Rooms'>
-				<Item is='li' {...args}>
+				<Item interactive is='li' {...args}>
 					<ItemMedia>
 						<Avatar size='x36' url={leterAvatarUrls[2]} alt='' />
 					</ItemMedia>
@@ -389,7 +389,7 @@ export const Insets: Story = {
 					<Caption>inset {inset}</Caption>
 					<Box borderWidth='default' borderColor='extra-light'>
 						<ItemGroup is='ul' aria-label={`Inset ${inset}`}>
-							<Item is='li' inset={inset}>
+							<Item interactive is='li' inset={inset}>
 								<ItemMedia>
 									<Avatar size='x28' url={leterAvatarUrls[1]} alt='' />
 								</ItemMedia>
@@ -458,7 +458,7 @@ export const Actions: Story = {
 			<Caption>reveal=&quot;always&quot;</Caption>
 			<SidebarSurface>
 				<ItemGroup is='ul' aria-label='Always visible actions'>
-					<Item is='li'>
+					<Item interactive is='li'>
 						<ItemMedia>
 							<Avatar size='x20' url={leterAvatarUrls[3]} alt='' />
 						</ItemMedia>
@@ -476,7 +476,7 @@ export const Actions: Story = {
 			</SidebarSurface>
 			<Caption>reveal=&quot;always&quot;, inside an ItemRow</Caption>
 			<ItemGroup is='ul' aria-label='Always visible actions on the second line'>
-				<Item is='li' inset='md'>
+				<Item interactive is='li' inset='md'>
 					<ItemContent>
 						<ItemRow>
 							<Icon name='video' size='x16' />
@@ -741,7 +741,7 @@ const members: {
 ];
 
 const MemberRow = ({ member }: { member: (typeof members)[number] }) => (
-	<Item is='li' inset='lg'>
+	<Item interactive is='li' inset='lg'>
 		<ItemMedia>
 			<Avatar size='x28' url={leterAvatarUrls[member.avatar]} alt='' />
 		</ItemMedia>
@@ -846,7 +846,7 @@ export const SearchResults: Story = {
 
 export const RoomMembers: Story = {
 	render: () => (
-		<Box width='x400' borderWidth='default' borderColor='extra-light'>
+		<Box width='x400' display='flex' flexDirection='column' rowGap='x8' borderWidth='default' borderColor='extra-light'>
 			<MembersGroup title='Owners' list={members.slice(0, 1)} />
 			<MembersGroup title='Moderators' list={members.slice(1, 2)} />
 			<MembersGroup title='Members' list={members.slice(2)} />
@@ -889,7 +889,7 @@ export const RoomFiles: Story = {
 		<Box width='x400' borderWidth='default' borderColor='extra-light'>
 			<ItemGroup is='ul' aria-label='Files'>
 				{files.map((file) => (
-					<Item key={file.name} is='li' inset='lg'>
+					<Item interactive key={file.name} is='li' inset='lg'>
 						<ItemMedia>
 							<Icon name={file.icon} size='x36' />
 						</ItemMedia>

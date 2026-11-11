@@ -177,7 +177,13 @@ export const PartsForwarding: Story = {
 				<ItemContent {...attributes('content')} ref={partRefs.content} {...partHandlers}>
 					<ItemRow {...attributes('row')} ref={partRefs.row} {...partHandlers}>
 						<ItemTitle {...attributes('title')} ref={partRefs.title} {...partHandlers}>
-							<ItemLink href='#link' {...attributes('link')} ref={partRefs.link as RefObject<HTMLAnchorElement>} {...partHandlers} onClick={fn((e: MouseEvent) => e.preventDefault())}>
+							<ItemLink
+								href='#link'
+								{...attributes('link')}
+								ref={partRefs.link as RefObject<HTMLAnchorElement>}
+								{...partHandlers}
+								onClick={fn((e: MouseEvent) => e.preventDefault())}
+							>
 								Name
 							</ItemLink>
 						</ItemTitle>
@@ -412,7 +418,9 @@ export const Keyboard: Story = {
 		await expectKeyboardActivation(canvasElement.querySelector('#collapse') as HTMLElement, onTitle);
 		await expectKeyboardActivation(canvasElement.querySelector('#first-action') as HTMLElement, onAction);
 		await expectTabOrder(
-			['#collapse', '#room-link', '#first-action', '#second-action'].map((selector) => canvasElement.querySelector(selector) as HTMLElement),
+			['#collapse', '#room-link', '#first-action', '#second-action'].map(
+				(selector) => canvasElement.querySelector(selector) as HTMLElement,
+			),
 		);
 		await userEvent.keyboard('{Enter}');
 	},

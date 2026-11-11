@@ -30,7 +30,7 @@ const Item = ({ data, allowUse, onClickItem, onClickUse }: ItemProps) => {
 	const scope = useScopeDict(data.scope, data.departmentName);
 
 	return (
-		<FuselageItem inset='lg'>
+		<FuselageItem inset='lg' interactive>
 			<ItemContent>
 				<ItemTitle>
 					<ItemLink is='button' onClick={onClickItem}>

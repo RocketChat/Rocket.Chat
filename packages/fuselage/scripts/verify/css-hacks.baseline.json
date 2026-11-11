@@ -224,12 +224,12 @@
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
-	"Item/Item.styles.scss": {
-		"rules": 88,
-		"nested": 60,
-		"combinators": 10,
+	"Item/Item.styles.css": {
+		"rules": 38,
+		"nested": 0,
+		"combinators": 0,
 		"important": 0,
-		"specificityBumps": 6,
+		"specificityBumps": 0,
 		"negativeMargins": 2,
 		"displayContents": 0
 	},
@@ -306,11 +306,11 @@
 		"displayContents": 0
 	},
 	"Message/MessageSystem/MessageSystem.styles.scss": {
-		"rules": 4,
+		"rules": 5,
 		"nested": 3,
 		"combinators": 0,
 		"important": 0,
-		"specificityBumps": 0,
+		"specificityBumps": 1,
 		"negativeMargins": 1,
 		"displayContents": 0
 	},
@@ -328,16 +328,16 @@
 		"nested": 39,
 		"combinators": 12,
 		"important": 0,
-		"specificityBumps": 1,
+		"specificityBumps": 4,
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
 	"Message/ThreadMessage/ThreadMessage.styles.scss": {
-		"rules": 9,
+		"rules": 10,
 		"nested": 8,
 		"combinators": 0,
 		"important": 0,
-		"specificityBumps": 0,
+		"specificityBumps": 1,
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
@@ -445,7 +445,7 @@
 		"nested": 45,
 		"combinators": 2,
 		"important": 0,
-		"specificityBumps": 0,
+		"specificityBumps": 5,
 		"negativeMargins": 1,
 		"displayContents": 0
 	},
@@ -463,7 +463,7 @@
 		"nested": 21,
 		"combinators": 2,
 		"important": 0,
-		"specificityBumps": 1,
+		"specificityBumps": 2,
 		"negativeMargins": 1,
 		"displayContents": 0
 	},
@@ -490,7 +490,7 @@
 		"nested": 6,
 		"combinators": 0,
 		"important": 0,
-		"specificityBumps": 0,
+		"specificityBumps": 2,
 		"negativeMargins": 1,
 		"displayContents": 0
 	},
