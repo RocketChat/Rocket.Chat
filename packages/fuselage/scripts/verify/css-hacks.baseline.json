@@ -404,6 +404,15 @@
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
+	"PopoverSurface/PopoverSurface.styles.scss": {
+		"rules": 3,
+		"nested": 2,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
 	"ProgressBar/ProgressBar.styles.scss": {
 		"rules": 6,
 		"nested": 1,

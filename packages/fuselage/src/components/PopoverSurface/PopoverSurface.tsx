@@ -20,6 +20,8 @@ const maxHeights = { 'half-screen': '50vh', 'most-of-screen': '80vh' } as const;
 function PopoverSurface({ maxHeight, flush, elevation = '2', ...props }: PopoverSurfaceProps) {
 	return (
 		<Box
+			rcx-popover-surface
+			rcx-popover-surface--elevation={elevation}
 			rcx-tile
 			rcx-tile--elevation={elevation}
 			rcx-tile--flush
