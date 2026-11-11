@@ -217,9 +217,6 @@ export type SvgAttributes = PartAttributes<SVGSVGElement>;
 /** What `AnimatedVisibility` patches onto a part rendered as a `div`. */
 export type DivAnimationHandlers = WebAnimationHandlers<HTMLDivElement>;
 
-/** The press, focus and hover handlers a part rendered as a `div` forwards. */
-export type DivPressHandlers = WebPressHandlers<HTMLDivElement>;
-
 /** What a part rendered as a `pre` that only shows something forwards. */
 export type PreAttributes = PartAttributes<HTMLPreElement>;
 
