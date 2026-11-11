@@ -50,7 +50,11 @@ const g0 = () => {
 	const jest = exec('yarn', ['jest', 'src/testing/stories.spec.tsx', '-t', `${component}.characterization`]);
 	const jestTests = jest.output.match(/Tests:.*$/m)?.[0] ?? jest.output.split('\n').at(-1);
 	if (!after) return { ok: jest.ok, detail: `jest: ${jestTests}` };
-	const zero = exec('node', [join(import.meta.dirname, '../test-stories.mjs'), after, `${component}.characterization`]);
+	const zero = exec('node', [
+		join(import.meta.dirname, '../test-stories.mjs'),
+		after,
+		`characterization-${component.toLowerCase()}\\.test\\.js$`,
+	]);
 	const zeroTests = zero.output.match(/Tests:.*$/m)?.[0] ?? zero.output.split('\n').at(-1);
 	return { ok: jest.ok && zero.ok, detail: `jest: ${jestTests}; zero storybook: ${zeroTests}` };
 };
