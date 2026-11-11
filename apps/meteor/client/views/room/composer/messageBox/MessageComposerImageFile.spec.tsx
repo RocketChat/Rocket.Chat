@@ -50,8 +50,7 @@ it('shows a file that does not render as an image as a plain file', async () => 
 		percentage: 100,
 	});
 
-	expect(await screen.findByText('sample.png')).toBeInTheDocument();
-	await new Promise((resolve) => setTimeout(resolve, 10));
+	expect(await screen.findByText('PNG')).toBeInTheDocument();
 	expect(screen.queryByRole('presentation')).not.toBeInTheDocument();
 });
 

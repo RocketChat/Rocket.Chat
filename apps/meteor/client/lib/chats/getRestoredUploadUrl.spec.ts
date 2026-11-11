@@ -2,7 +2,7 @@ import type { Upload } from './Upload';
 import { getRestoredUploadUrl } from './getRestoredUploadUrl';
 
 jest.mock('../getURL', () => ({
-	getURL: (path: string) => `https://host/chat${path}`,
+	getURL: (path: string, { full = false }: { full?: boolean } = {}) => `${full ? 'https://host' : ''}/chat${path}`,
 }));
 
 const file = new File([], 'photo.png', { type: 'image/png' });
