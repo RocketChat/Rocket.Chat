@@ -3120,6 +3120,16 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.updateOne({ _id }, update);
 	}
 
+	setPasswordHash(_id: IUser['_id'], passwordHash: string) {
+		return this.col.updateOne(
+			{ _id },
+			{
+				$set: { 'services.password.bcrypt': passwordHash },
+				$unset: { 'services.password.reset': 1 },
+			},
+		);
+	}
+
 	resetPasswordAndSetRequirePasswordChange(_id: IUser['_id'], requirePasswordChange: boolean, requirePasswordChangeReason: string) {
 		const update = {
 			$unset: {
