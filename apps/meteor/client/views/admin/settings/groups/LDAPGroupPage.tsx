@@ -67,16 +67,10 @@ function LDAPGroupPage({ _id, i18nLabel, onClickBack, ...group }: LDAPGroupPageP
 
 			setModal(
 				<GenericModal
-					wrapperFunction={(props) => (
-						<Box
-							is='form'
-							onSubmit={(e) => {
-								e.preventDefault();
-								confirmSearch();
-							}}
-							{...props}
-						/>
-					)}
+					onSubmit={(e) => {
+						e.preventDefault();
+						confirmSearch();
+					}}
 					variant='info'
 					confirmText={t('Search')}
 					cancelText={t('Cancel')}

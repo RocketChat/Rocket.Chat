@@ -1,6 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import {
-	Box,
 	Modal,
 	Button,
 	ModalHeader,
@@ -57,10 +56,7 @@ const CreateDirectMessage = ({ onClose, onSuccess }: CreateDirectMessageProps) =
 	};
 
 	return (
-		<Modal
-			aria-labelledby={`${createDMFormId}-title`}
-			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleCreate)} {...props} />}
-		>
+		<Modal aria-labelledby={`${createDMFormId}-title`} onSubmit={handleSubmit(handleCreate)}>
 			<ModalHeader>
 				<ModalTitle id={`${createDMFormId}-title`}>{t('Create_direct_message')}</ModalTitle>
 				<ModalClose tabIndex={-1} onClick={onClose} />

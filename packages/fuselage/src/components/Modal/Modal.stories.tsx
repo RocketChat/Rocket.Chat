@@ -17,7 +17,7 @@ import {
 	ModalThumb,
 	ModalTitle,
 } from '.';
-import { Box, type BoxProps } from '../Box';
+import { Box } from '../Box';
 import { Button } from '../Button';
 import { Field, FieldLabel, FieldRow } from '../Field';
 import { FieldGroup } from '../FieldGroup';
@@ -61,15 +61,15 @@ export default {
 			description: 'Modal sections (header, content, footer) rendered inside the dialog wrapper.',
 			table: { category: 'Content' },
 		},
-		wrapper: {
+		onSubmit: {
 			control: false,
 			description:
-				'Component type used to wrap `children` inside the dialog; defaults to `Box`. Receives `elevation`, `className` and `children`.',
+				'Renders the dialog surface as a form that calls this handler on submit, so a `type="submit"` button inside it confirms the modal.',
 			table: { category: 'Composition' },
 		},
-		wrapperFunction: {
+		formId: {
 			control: false,
-			description: 'Function alternative to `wrapper` for rendering the inner wrapper; takes precedence over `wrapper` when provided.',
+			description: 'The `id` of the form rendered when `onSubmit` is given.',
 			table: { category: 'Composition' },
 		},
 	},
@@ -323,20 +323,14 @@ export const _WithHeroImage: Story = {
 	),
 };
 
-const FormContainer = (props: BoxProps) => (
-	<Box
-		{...props}
-		is='form'
-		onSubmit={(e) => {
-			e.preventDefault();
-			action('form submitted')(e);
-		}}
-	/>
-);
-
 export const _WithForm: Story = {
 	render: () => (
-		<Modal wrapper={FormContainer}>
+		<Modal
+			onSubmit={(e) => {
+				e.preventDefault();
+				action('form submitted')(e);
+			}}
+		>
 			<ModalHeader>
 				<ModalHeaderText>
 					<ModalTitle>Modal Header</ModalTitle>

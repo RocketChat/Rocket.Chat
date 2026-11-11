@@ -48,7 +48,7 @@ const CreateCategoryModal = ({ room, onClose }: CreateCategoryModalProps) => {
 			confirmLoading={createCategoryMutation.isPending}
 			onCancel={onClose}
 			annotation={room ? undefined : t('You_can_add_rooms_later')}
-			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleConfirm)} {...props} />}
+			onSubmit={handleSubmit(handleConfirm)}
 		>
 			<Box marginBlockEnd={16}>
 				{room ? t('Move__roomName__to', { roomName: room.name }) : t('Categories_are_private_custom_groupings_of_rooms')}

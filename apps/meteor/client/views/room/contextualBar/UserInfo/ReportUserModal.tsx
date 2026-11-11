@@ -1,7 +1,7 @@
 import { Box, FieldGroup, Field, FieldLabel, FieldRow, FieldError, TextAreaInput, FieldDescription } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { GenericModal } from '@rocket.chat/ui-client';
-import { useId, type ComponentProps } from 'react';
+import { useId } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -33,9 +33,7 @@ const ReportUserModal = ({ username, displayName, onConfirm, onClose }: ReportUs
 
 	return (
 		<GenericModal
-			wrapperFunction={(props: ComponentProps<typeof Box>) => (
-				<Box is='form' onSubmit={handleSubmit(({ reasonForReport }) => onConfirm(reasonForReport))} {...props} />
-			)}
+			onSubmit={handleSubmit(({ reasonForReport }) => onConfirm(reasonForReport))}
 			variant='danger'
 			title={t('Report_User')}
 			onClose={onClose}
