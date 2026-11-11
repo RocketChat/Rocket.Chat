@@ -1,5 +1,3 @@
-/* eslint-disable dot-notation -- we avoid the dot notation here when testing private methods */
-
 import * as assert from 'node:assert';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';

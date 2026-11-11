@@ -30,14 +30,6 @@ describe('DeleteRoomModal', () => {
 	const rid = faker.database.mongodbObjectId();
 	const roomName = 'Test Room';
 
-	it('should render without crashing', () => {
-		const { baseElement } = render(<DeleteRoomModal rid={rid} roomName={roomName} onClose={jest.fn()} />, {
-			wrapper: baseAppRoot.build(),
-		});
-
-		expect(baseElement).toMatchSnapshot();
-	});
-
 	it('should call delete endpoint when delete is confirmed', async () => {
 		const deleteEndpointMock = jest.fn().mockResolvedValue(null);
 

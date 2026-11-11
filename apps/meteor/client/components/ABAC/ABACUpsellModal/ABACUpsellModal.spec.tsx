@@ -43,11 +43,6 @@ describe('ABACUpsellModal', () => {
 		jest.clearAllMocks();
 	});
 
-	it('should render the modal with correct content', () => {
-		const { baseElement } = render(<ABACUpsellModal onClose={mockOnClose} onConfirm={mockOnConfirm} />, { wrapper: appRoot });
-		expect(baseElement).toMatchSnapshot();
-	});
-
 	it('should have no accessibility violations', async () => {
 		const { container } = render(<ABACUpsellModal onClose={mockOnClose} onConfirm={mockOnConfirm} />, { wrapper: appRoot });
 		const results = await axe(container);

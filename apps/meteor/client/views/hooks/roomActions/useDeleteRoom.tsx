@@ -14,7 +14,7 @@ export const useDeleteRoom = (room: IRoom | Pick<IRoom, RoomAdminFieldsType>, { 
 	const router = useRouter();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
-	// eslint-disable-next-line no-nested-ternary
+	// oxlint-disable-next-line no-nested-ternary
 	const roomType = 'prid' in room ? 'discussion' : room.teamId && room.teamMain ? 'team' : 'channel';
 	const isAdminRoute = router.getRouteName() === 'admin-rooms';
 

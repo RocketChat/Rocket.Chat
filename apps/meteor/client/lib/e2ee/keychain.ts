@@ -34,7 +34,6 @@ interface IStoredKeyV2 {
 
 type StoredKey = IStoredKeyV1 | IStoredKeyV2;
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
 const StoredKey: ICodec<string, StoredKey> = {
 	decode: (data) => {
 		const json: unknown = JSON.parse(data);

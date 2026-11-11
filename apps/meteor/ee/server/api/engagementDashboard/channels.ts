@@ -1,19 +1,19 @@
 import type { IDirectMessageRoom, IRoom } from '@rocket.chat/core-typings';
 import {
 	ajv,
+	ajvQuery,
+	paginatedResponseProperties,
 	validateBadRequestErrorResponse,
-	validateUnauthorizedErrorResponse,
 	validateForbiddenErrorResponse,
+	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
-import { check, Match } from 'meteor/check';
 
 import { API } from '../../../../server/api';
 import { getPaginationItems } from '../../../../server/api/lib/getPaginationItems';
 import { findChannelsWithNumberOfMessages } from '../../lib/engagementDashboard/channels';
-import { isDateISOString, mapDateForAPI } from '../../lib/engagementDashboard/date';
+import { isoDateStringSchema, mapDateForAPI } from '../../lib/engagementDashboard/date';
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Endpoints {
 		'/v1/engagement-dashboard/channels/list': {
 			GET: (params: { start: string; end: string; offset?: number; count?: number }) => {
@@ -37,6 +37,18 @@ declare module '@rocket.chat/rest-typings' {
 		};
 	}
 }
+
+const isChannelsListParams = ajvQuery.compile<{ start: string; end: string; offset?: string; count?: string }>({
+	type: 'object',
+	properties: {
+		start: isoDateStringSchema,
+		end: isoDateStringSchema,
+		offset: { type: 'string' },
+		count: { type: 'string' },
+	},
+	required: ['start', 'end'],
+	additionalProperties: false,
+});
 
 const channelsListResponseSchema = ajv.compile<{
 	channels: {
@@ -84,9 +96,7 @@ const channelsListResponseSchema = ajv.compile<{
 				additionalProperties: false,
 			},
 		},
-		count: { type: 'number' },
-		offset: { type: 'number' },
-		total: { type: 'number' },
+		...paginatedResponseProperties,
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['channels', 'count', 'offset', 'total', 'success'],
@@ -99,6 +109,7 @@ API.v1.get(
 		authRequired: true,
 		permissionsRequired: ['view-engagement-dashboard'],
 		license: ['engagement-dashboard'],
+		query: isChannelsListParams,
 		response: {
 			200: channelsListResponseSchema,
 			400: validateBadRequestErrorResponse,
@@ -107,16 +118,6 @@ API.v1.get(
 		},
 	},
 	async function action() {
-		check(
-			this.queryParams,
-			Match.ObjectIncluding({
-				start: Match.Where(isDateISOString),
-				end: Match.Where(isDateISOString),
-				offset: Match.Maybe(String),
-				count: Match.Maybe(String),
-			}),
-		);
-
 		const { start, end } = this.queryParams;
 		const { offset, count } = await getPaginationItems(this.queryParams);
 

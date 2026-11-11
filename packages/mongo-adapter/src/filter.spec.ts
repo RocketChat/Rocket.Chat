@@ -1,4 +1,4 @@
-import { createPredicateFromFilter } from './filter';
+import { createPredicateFromFilter } from './filter.js';
 
 describe('createPredicateFromFilter', () => {
 	it('matches simple equality', () => {
@@ -127,10 +127,8 @@ describe('createPredicateFromFilter', () => {
 		expect(fn({ foo: 2 })).toBe(false);
 	});
 
-	it('matches $where (string)', () => {
-		const fn = createPredicateFromFilter({ $where: 'this.foo === 1' });
-		expect(fn({ foo: 1 })).toBe(true);
-		expect(fn({ foo: 2 })).toBe(false);
+	it('rejects $where (string)', () => {
+		expect(() => createPredicateFromFilter({ $where: 'this.foo === 1' })).toThrow('$where only supports functions');
 	});
 
 	it('handles undefined and null', () => {

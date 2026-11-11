@@ -1,5 +1,5 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import type { ServerContextValue } from '@rocket.chat/ui-contexts';
+import type { ConnectionStatusContextValue } from '@rocket.chat/ui-contexts';
 import type { Meta, StoryFn } from '@storybook/react';
 import { action } from 'storybook/actions';
 
@@ -12,9 +12,9 @@ export default {
 	},
 } satisfies Meta<typeof ConnectionStatusBar>;
 
-const stateDecorator = (value: Partial<ServerContextValue>) =>
+const stateDecorator = (value: Partial<ConnectionStatusContextValue>) =>
 	mockAppRoot()
-		.withServerContext({
+		.withConnectionStatus({
 			...value,
 			reconnect: action('reconnect'),
 			disconnect: action('disconnect'),

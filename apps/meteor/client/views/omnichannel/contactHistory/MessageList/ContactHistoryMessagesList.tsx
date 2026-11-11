@@ -3,7 +3,6 @@ import {
 	Button,
 	ButtonGroup,
 	Icon,
-	Margins,
 	States,
 	StatesIcon,
 	StatesSubtitle,
@@ -31,6 +30,7 @@ import { Virtuoso } from 'react-virtuoso';
 
 import ContactHistoryMessage from './ContactHistoryMessage';
 import { useHistoryMessageList } from './useHistoryMessageList';
+import ListViewport from '../../../../components/ListViewport';
 import { isMessageNewDay } from '../../../room/MessageList/lib/isMessageNewDay';
 import { isMessageSequential } from '../../../room/MessageList/lib/isMessageSequential';
 
@@ -79,7 +79,7 @@ const ContactHistoryMessagesList = ({ chatId, onClose, onOpenRoom }: ContactHist
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
 
-			<ContextualbarContent paddingInline={0}>
+			<ContextualbarContent flush>
 				<Box
 					display='flex'
 					flexDirection='row'
@@ -89,15 +89,13 @@ const ContactHistoryMessagesList = ({ chatId, onClose, onOpenRoom }: ContactHist
 					borderBlockEndColor='extra-light'
 					flexShrink={0}
 				>
-					<Box display='flex' flexDirection='row' flexGrow={1} marginInline='neg-x4'>
-						<Margins inline={4}>
-							<TextInput
-								placeholder={t('Search')}
-								value={text}
-								onChange={handleSearchChange}
-								endAddon={<Icon name='magnifier' size='x20' />}
-							/>
-						</Margins>
+					<Box display='flex' flexDirection='row' flexGrow={1}>
+						<TextInput
+							placeholder={t('Search')}
+							value={text}
+							onChange={handleSearchChange}
+							endAddon={<Icon name='magnifier' size='x20' />}
+						/>
 					</Box>
 				</Box>
 				{isPending && (
@@ -113,7 +111,7 @@ const ContactHistoryMessagesList = ({ chatId, onClose, onOpenRoom }: ContactHist
 					</States>
 				)}
 				{isSuccess && totalItemCount === 0 && <ContextualbarEmptyContent title={t('No_results_found')} />}
-				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex' ref={ref}>
+				<ListViewport ref={ref}>
 					{!error && totalItemCount > 0 && messages.length > 0 && (
 						<VirtualizedScrollbars>
 							<Virtuoso
@@ -138,7 +136,7 @@ const ContactHistoryMessagesList = ({ chatId, onClose, onOpenRoom }: ContactHist
 							/>
 						</VirtualizedScrollbars>
 					)}
-				</Box>
+				</ListViewport>
 			</ContextualbarContent>
 			{onOpenRoom && (
 				<ContextualbarFooter>

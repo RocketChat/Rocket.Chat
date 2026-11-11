@@ -575,7 +575,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	}
 
 	removeByRoomId(roomId: string): Promise<DeleteResult> {
-		return this.deleteMany({ rid: roomId });
+		return this.deleteMany({ rid: roomId }, { bulkTrash: true });
 	}
 
 	setReactions(messageId: string, reactions: IMessage['reactions']): Promise<UpdateResult> {
@@ -1402,7 +1402,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	// REMOVE
 
 	removeByRoomIds(rids: string[]): Promise<DeleteResult> {
-		return this.deleteMany({ rid: { $in: rids } });
+		return this.deleteMany({ rid: { $in: rids } }, { bulkTrash: true });
 	}
 
 	findThreadsByRoomIdPinnedTimestampAndUsers<
@@ -1484,7 +1484,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		users: string[] = [],
 		ignoreThreads = true,
 		selectedMessageIds: string[] = [],
-	): Promise<number> {
+	): Promise<{ count: number; deletedIds: string[] }> {
 		const query: Filter<IMessage> = {
 			rid,
 			ts,
@@ -1504,30 +1504,35 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			query.tcount = { $exists: false };
 		}
 
-		const notCountedMessages = await this.countDocuments(
-			{
-				...query,
-				$or: [{ _hidden: true }, { editedAt: { $exists: true }, editedBy: { $exists: true }, t: 'rm' }],
-			},
-			{ ...(limit ? { limit } : {}) },
-		);
+		const notCountedMessages = await this.countDocuments({
+			...query,
+			...(limit && { _id: { $in: selectedMessageIds } }),
+			$or: [{ _hidden: true }, { editedAt: { $exists: true }, editedBy: { $exists: true }, t: 'rm' }],
+		});
+
+		const deletedIds: string[] = [];
+		const onTrash = ({ _id }: IMessage) => deletedIds.push(_id);
 
 		if (!limit) {
-			const count = (await this.deleteMany(query)).deletedCount - notCountedMessages;
+			const count = (await this.deleteMany(query, { onTrash })).deletedCount - notCountedMessages;
 
-			return count;
+			return { count, deletedIds };
 		}
 
 		const count =
 			(
-				await this.deleteMany({
-					_id: {
-						$in: selectedMessageIds,
+				await this.deleteMany(
+					{
+						...query,
+						_id: {
+							$in: selectedMessageIds,
+						},
 					},
-				})
+					{ bulkTrash: true, onTrash },
+				)
 			).deletedCount - notCountedMessages;
 
-		return count;
+		return { count, deletedIds };
 	}
 
 	removeByUserId(userId: string): Promise<DeleteResult> {

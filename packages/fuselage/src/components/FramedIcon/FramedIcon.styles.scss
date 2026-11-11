@@ -1,0 +1,29 @@
+@use '../../styles/colors.scss';
+@use '../../styles/typography.scss' as *;
+@use '../../styles/lengths.scss';
+
+.rcx-framed-icon {
+	@include use-font-scale(p2m);
+
+	padding: lengths.padding(4);
+
+	color: colors.font(secondary-info);
+	border-radius: lengths.border-radius(medium);
+	background-color: colors.surface(tint);
+
+	&--info {
+		color: colors.status-font(on-info);
+	}
+
+	&--success {
+		color: colors.status-font(on-success);
+	}
+
+	&--warning {
+		color: colors.status-font(on-warning);
+	}
+
+	&--danger {
+		color: colors.status-font(on-danger);
+	}
+}

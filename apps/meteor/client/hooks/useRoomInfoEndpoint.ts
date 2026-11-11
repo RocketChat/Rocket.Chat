@@ -5,17 +5,18 @@ import { useQuery } from '@tanstack/react-query';
 import { minutesToMilliseconds } from 'date-fns/minutesToMilliseconds';
 
 import { roomsQueryKeys } from '../lib/queryKeys';
+import { isForbiddenError } from '../lib/utils/isForbiddenError';
 
 type UseRoomInfoEndpointOptions<
 	TData = Serialized<{
-		room: IRoom | undefined;
+		room: IRoom | null;
 		parent?: Pick<IRoom, '_id' | 'name' | 'fname' | 't' | 'prid' | 'u'>;
 		team?: Pick<ITeam, 'name' | 'roomId' | 'type' | '_id'>;
 	}>,
 > = Omit<
 	UseQueryOptions<
 		Serialized<{
-			room: IRoom | undefined;
+			room: IRoom | null;
 			parent?: Pick<IRoom, '_id' | 'name' | 'fname' | 't' | 'prid' | 'u'>;
 			team?: Pick<ITeam, 'name' | 'roomId' | 'type' | '_id'>;
 		}>,
@@ -28,7 +29,7 @@ type UseRoomInfoEndpointOptions<
 
 export const useRoomInfoEndpoint = <
 	TData = Serialized<{
-		room: IRoom | undefined;
+		room: IRoom | null;
 		parent?: Pick<IRoom, '_id' | 'name' | 'fname' | 't' | 'prid' | 'u'>;
 		team?: Pick<ITeam, 'name' | 'roomId' | 'type' | '_id'>;
 	}>,
@@ -42,7 +43,7 @@ export const useRoomInfoEndpoint = <
 		queryKey: roomsQueryKeys.info(rid),
 		queryFn: () => getRoomInfo({ roomId: rid }),
 		gcTime: minutesToMilliseconds(15),
-		retry: (count, error: { success: boolean; error: string }) => count <= 2 && error.error !== 'not-allowed',
+		retry: (count, error) => count <= 2 && !isForbiddenError(error),
 		enabled: !!uid,
 		...options,
 	});

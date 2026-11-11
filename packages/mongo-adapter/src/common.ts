@@ -1,9 +1,9 @@
-import { getBSONType } from './bson';
-import { BSONType } from './types';
+import { getBSONType } from './bson.js';
+import { BSONType } from './types.js';
 
 export function assertHasValidFieldNames(doc: unknown) {
 	if (doc && typeof doc === 'object') {
-		JSON.stringify(doc, (key, value) => {
+		JSON.stringify(doc, (key, value: unknown) => {
 			assertIsValidFieldName(key);
 			return value;
 		});
@@ -34,7 +34,10 @@ export const isBinary = (x: unknown): x is Uint8Array => typeof x === 'object' &
 
 const isArguments = (x: unknown): x is IArguments => Object.prototype.toString.call(x) === '[object Arguments]';
 
-export const clone: <T>(v: T) => T = (v: unknown) => {
+const hasCloneMethod = (x: object): x is { clone(): unknown } => 'clone' in x && typeof x.clone === 'function';
+
+export function clone<T>(v: T): T;
+export function clone(v: unknown): unknown {
 	if (typeof v !== 'object') {
 		return v;
 	}
@@ -60,19 +63,19 @@ export const clone: <T>(v: T) => T = (v: unknown) => {
 	}
 
 	if (Array.isArray(v)) {
-		return v.map(clone);
+		return v.map((item: unknown) => clone(item));
 	}
 
 	if (isArguments(v)) {
-		return Array.from(v, clone);
+		return Array.from(v, (item: unknown) => clone(item));
 	}
 
-	if ('clone' in v && typeof v.clone === 'function') {
+	if (hasCloneMethod(v)) {
 		return v.clone();
 	}
 
 	return Object.fromEntries(Object.entries(v).map(([key, value]) => [key, clone(value)]));
-};
+}
 
 export const isNumericKey = (s: string) => /^\d+$/.test(s);
 

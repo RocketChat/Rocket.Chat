@@ -23,7 +23,7 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 	) {
 		super();
 
-		// eslint-disable-next-line new-cap
+		// oxlint-disable-next-line new-cap
 		this.logger = new loggerClass('QueueWorker');
 		this.queue = new MessageQueue();
 		this.queue.pollingInterval = Number(process.env.POLLING_INTERVAL) || 5000;

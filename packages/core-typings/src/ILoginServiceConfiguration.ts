@@ -41,20 +41,6 @@ export type OAuthConfiguration = {
 	pkce?: boolean;
 };
 
-export type FacebookOAuthConfiguration = Omit<Partial<OAuthConfiguration>, 'clientId'> & {
-	appId: OAuthConfiguration['clientId'];
-};
-
-export type TwitterOAuthConfiguration = Omit<Partial<OAuthConfiguration>, 'clientId'> & {
-	consumerKey: OAuthConfiguration['clientId'];
-};
-
-export type LinkedinOAuthConfiguration = Partial<OAuthConfiguration> & {
-	clientConfig: {
-		requestPermissions?: string[];
-	};
-};
-
 export type CASConfiguration = {
 	enabled: boolean;
 	base_url: string;
@@ -113,11 +99,4 @@ export type SAMLConfiguration = {
 };
 
 export type LoginServiceConfiguration = ILoginServiceConfiguration &
-	(
-		| Partial<OAuthConfiguration>
-		| Partial<FacebookOAuthConfiguration>
-		| Partial<TwitterOAuthConfiguration>
-		| Partial<LinkedinOAuthConfiguration>
-		| Partial<CASConfiguration>
-		| Partial<SAMLConfiguration>
-	);
+	(Partial<OAuthConfiguration> | Partial<CASConfiguration> | Partial<SAMLConfiguration>);

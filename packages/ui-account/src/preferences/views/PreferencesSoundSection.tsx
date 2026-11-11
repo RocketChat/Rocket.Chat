@@ -1,5 +1,5 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { AccordionItem } from '@rocket.chat/fuselage';
+import { AccordionItem, Box } from '@rocket.chat/fuselage';
 import { Field, FieldGroup, FieldHint, FieldLabel, FieldRow, Select, ToggleSwitch, Slider } from '@rocket.chat/fuselage-forms';
 import { useCustomSound } from '@rocket.chat/ui-contexts';
 import { Controller, useFormContext } from 'react-hook-form';
@@ -29,14 +29,18 @@ const PreferencesSoundSection = ({ sounds }: PreferencesSoundSectionProps) => {
 			<FieldGroup>
 				<Field>
 					<FieldLabel>{t('Master_volume')}</FieldLabel>
-					<FieldHint marginBlockEnd={4}>{t('Master_volume_hint')}</FieldHint>
+					<Box paddingBlockEnd={4}>
+						<FieldHint>{t('Master_volume_hint')}</FieldHint>
+					</Box>
 					<FieldRow>
 						<Controller name='masterVolume' control={control} render={({ field }) => <Slider {...field} minValue={0} maxValue={100} />} />
 					</FieldRow>
 				</Field>
 				<Field>
 					<FieldLabel>{t('Notification_volume')}</FieldLabel>
-					<FieldHint marginBlockEnd={4}>{t('Notification_volume_hint')}</FieldHint>
+					<Box paddingBlockEnd={4}>
+						<FieldHint>{t('Notification_volume_hint')}</FieldHint>
+					</Box>
 					<FieldRow>
 						<Controller
 							name='notificationsSoundVolume'
@@ -58,7 +62,9 @@ const PreferencesSoundSection = ({ sounds }: PreferencesSoundSectionProps) => {
 				</Field>
 				<Field>
 					<FieldLabel>{t('Call_ringer_volume')}</FieldLabel>
-					<FieldHint marginBlockEnd={4}>{t('Call_ringer_volume_hint')}</FieldHint>
+					<Box paddingBlockEnd={4}>
+						<FieldHint>{t('Call_ringer_volume_hint')}</FieldHint>
+					</Box>
 					<FieldRow>
 						<Controller
 							name='voipRingerVolume'

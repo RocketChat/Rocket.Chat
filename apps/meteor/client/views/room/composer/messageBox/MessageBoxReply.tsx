@@ -48,7 +48,7 @@ const MessageBoxReply = ({ reply }: MessageBoxReplyProps) => {
 						chat?.composer?.dismissQuotedMessage(reply._id);
 					}}
 				>
-					<IconButton mini icon='cross' aria-label={t('Dismiss_quoted_message')} />
+					<IconButton size='mini' icon='cross' aria-label={t('Dismiss_quoted_message')} />
 				</Box>
 			</Box>
 		</Margins>

@@ -92,6 +92,7 @@ const MessageTypes = [
 	'leader-removed',
 	'discussion-created',
 	'abac-removed-user-from-room',
+	'abac-removed-users-from-room',
 	...TeamMessageTypesValues,
 	...LivechatMessageTypesValues,
 ] as const;

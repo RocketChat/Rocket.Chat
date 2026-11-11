@@ -72,7 +72,7 @@ const ThreadListMessage = ({
 					<MessageHeader>
 						<MessageName title={username}>{name}</MessageName>
 						<MessageTimestamp>{formatDate(ts)}</MessageTimestamp>
-						{hasDraft && <MessageStatusIndicatorItem name='pencil' title={t('Unfinished_thread_message')} />}
+						{hasDraft && <MessageStatusIndicatorItem name='pencil' title={t('Thread_draft')} />}
 					</MessageHeader>
 					<MessageBody clamp={2}>{msg}</MessageBody>
 					<ThreadListMetrics lm={tlm} participants={participants || []} counter={replies} />

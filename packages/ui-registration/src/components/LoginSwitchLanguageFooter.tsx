@@ -1,0 +1,87 @@
+import { Box, Button } from '@rocket.chat/fuselage';
+import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import { HorizontalWizardLayoutCaption } from '@rocket.chat/layout';
+import { normalizeLanguage } from '@rocket.chat/tools';
+import { type TranslationLanguage, useSetting, useLoadLanguage, useLanguage, useLanguages } from '@rocket.chat/ui-contexts';
+import { useMemo, useEffect } from 'react';
+import type { UIEvent } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
+
+const useSuggestedLanguages = ({
+	browserLanguage = normalizeLanguage(window.navigator.language ?? 'en'),
+}: {
+	browserLanguage?: string;
+}) => {
+	const availableLanguages = useLanguages();
+	const currentLanguage = useLanguage();
+	const serverLanguage = normalizeLanguage(useSetting('Language', 'en'));
+
+	const suggestions = useMemo(() => {
+		const potentialLanguages = new Set([serverLanguage, browserLanguage, 'en'].map(normalizeLanguage));
+		const potentialSuggestions = Array.from(potentialLanguages).map((potentialLanguageKey) =>
+			availableLanguages.find((language) => language.key === potentialLanguageKey),
+		);
+		return potentialSuggestions.filter((language): language is TranslationLanguage => {
+			return !!language && language.key !== currentLanguage;
+		});
+	}, [serverLanguage, browserLanguage, availableLanguages, currentLanguage]);
+
+	const { i18n } = useTranslation();
+
+	useEffect(() => {
+		void i18n.loadLanguages(suggestions.map((suggestion) => suggestion.key));
+	}, [i18n, suggestions]);
+
+	return { suggestions };
+};
+
+export type LoginSwitchLanguageFooterProps = {
+	browserLanguage?: string;
+};
+
+const LoginSwitchLanguageFooter = ({
+	browserLanguage = normalizeLanguage(window.navigator.language ?? 'en'),
+}: LoginSwitchLanguageFooterProps) => {
+	const loadLanguage = useLoadLanguage();
+	const { suggestions } = useSuggestedLanguages({ browserLanguage });
+
+	const [, setPreferedLanguage] = useLocalStorage('preferedLanguage', '');
+	const handleSwitchLanguageClick =
+		(language: TranslationLanguage) =>
+		async (event: UIEvent): Promise<void> => {
+			event.preventDefault();
+			await loadLanguage(language.key);
+			setPreferedLanguage(language.key);
+		};
+
+	if (!suggestions.length) {
+		return null;
+	}
+
+	return (
+		<HorizontalWizardLayoutCaption>
+			<Box display='flex' flexWrap='wrap' justifyContent='center' columnGap={8}>
+				{suggestions.map((suggestion) => {
+					// If suggestion is "Default", skip it
+					if (!suggestion.key) {
+						return;
+					}
+
+					return (
+						<Button variant='secondary' size='small' key={suggestion.key} onClick={handleSwitchLanguageClick(suggestion)}>
+							<Trans
+								i18nKey='registration.component.switchLanguage'
+								tOptions={{ lng: suggestion.key }}
+								values={{ name: suggestion.ogName }}
+							>
+								Change to <strong>{suggestion.ogName}</strong>
+							</Trans>
+						</Button>
+					);
+				})}
+			</Box>
+		</HorizontalWizardLayoutCaption>
+	);
+};
+
+export default LoginSwitchLanguageFooter;

@@ -2,9 +2,9 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { act, render, waitFor } from '@testing-library/react';
 
 import TranslationProvider from './TranslationProvider';
-import { i18n } from '../../app/utils/lib/i18n';
+import { i18n } from '../../lib/i18n';
 
-jest.mock('../apps/orchestrator', () => ({
+jest.mock('../lib/apps/orchestrator', () => ({
 	AppClientOrchestratorInstance: {
 		getAppClientManager: () => ({ initialize: jest.fn() }),
 		load: jest.fn(),

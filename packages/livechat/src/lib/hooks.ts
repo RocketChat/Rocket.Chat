@@ -70,7 +70,7 @@ export const createOrUpdateGuest = async (guest: StoreState['guest']) => {
 		return;
 	}
 
-	store.setState({ user: newUser } as Omit<StoreState['user'], 'ts'>);
+	store.setState({ user: newUser });
 	Triggers.callbacks?.emit('chat-visitor-registered');
 };
 
@@ -193,7 +193,9 @@ const api = {
 
 	clearBusinessUnit: async () => {
 		const { businessUnit } = store.state;
-		return businessUnit && updateBusinessUnit();
+		if (businessUnit) {
+			return updateBusinessUnit();
+		}
 	},
 
 	clearDepartment: () => {
@@ -342,7 +344,7 @@ function onNewMessageHandler(event: MessageEvent<LivechatMessageEventData<HooksW
 
 	const { fn, args } = event.data;
 
-	if (!api.hasOwnProperty(fn)) {
+	if (!Object.hasOwn(api, fn)) {
 		return;
 	}
 
@@ -355,10 +357,6 @@ class Hooks {
 	private _started: boolean;
 
 	constructor() {
-		if (instance) {
-			throw new Error('Hooks already has an instance.');
-		}
-
 		this._started = false;
 	}
 

@@ -4,27 +4,10 @@ import type { EventHandlerOf } from '@rocket.chat/emitter';
 import { Emitter } from '@rocket.chat/emitter';
 
 import { sdk } from './SDKClient';
-import { getDdpSdk } from './sdk/ddpSdk';
-import { isSdkTransportEnabled } from './sdk/sdkTransportEnabled';
 import { subscribeRaw } from '../meteor/connection';
 
-const sdkTransportEnabled = isSdkTransportEnabled();
-
+// A command-style subscription with no lifecycle: the server registers the added and removed uids and moves on.
 const subscribeUserPresence = (payload: { added?: string[]; removed?: string[] }): void => {
-	if (!sdkTransportEnabled) {
-		// Flag off: route directly through Meteor.subscribe — bit-for-bit develop
-		// behaviour, no DDPSDK socket created, no proxy in the call path.
-		subscribeRaw('stream-user-presence', '', payload);
-		return;
-	}
-	const ddp = getDdpSdk();
-	if (ddp.connection.status === 'connected' && ddp.account.uid) {
-		// Fire the command-style subscription over our SDK; it has no lifecycle
-		// (the server registers the added/removed uids and moves on), matching
-		// Meteor.subscribe's behaviour here.
-		ddp.client.subscribe('stream-user-presence', '', payload);
-		return;
-	}
 	subscribeRaw('stream-user-presence', '', payload);
 };
 

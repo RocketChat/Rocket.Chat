@@ -23,7 +23,7 @@ const createContact = (generateToken = false) => ({
 	id: null,
 	name: `${faker.person.firstName()} ${faker.person.lastName()}`,
 	email: faker.internet.email().toLowerCase(),
-	phone: faker.phone.number('+############'),
+	phone: faker.helpers.replaceSymbols('+############'),
 	token: generateToken ? createToken() : null,
 	customFields: {},
 });
@@ -34,14 +34,14 @@ const EXISTING_CONTACT = {
 	id: undefined,
 	name: `${faker.person.firstName()} ${faker.person.lastName()}`,
 	emails: [faker.internet.email().toLowerCase()],
-	phones: [faker.phone.number('+############')],
+	phones: [faker.helpers.replaceSymbols('+############')],
 	token: undefined,
 };
 const DELETE_CONTACT = {
 	id: undefined,
 	name: `${faker.person.firstName()} ${faker.person.lastName()}`,
 	emails: [faker.internet.email().toLowerCase()],
-	phones: [faker.phone.number('+############')],
+	phones: [faker.helpers.replaceSymbols('+############')],
 };
 
 const URL = {

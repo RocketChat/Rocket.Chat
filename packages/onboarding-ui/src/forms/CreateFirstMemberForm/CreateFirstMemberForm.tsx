@@ -10,6 +10,7 @@ import {
 	FieldLabel,
 	FieldRow,
 	FieldError,
+	Stack,
 } from '@rocket.chat/fuselage';
 import { Form, FormFooter, FormSteps, FormSubtitle, FormTitle } from '@rocket.chat/layout';
 import type { FieldPathValue, SubmitHandler, Validate } from 'react-hook-form';
@@ -52,44 +53,47 @@ export const CreateFirstMemberForm = ({
 
 	return (
 		<Form onSubmit={handleSubmit(onSubmit)}>
-			<FormSteps currentStep={currentStep} stepCount={stepCount} />
-			<FormTitle>{t('form.createFirstMemberForm.title')}</FormTitle>
-			<FormSubtitle>{t('form.createFirstMemberForm.subtitle', { organizationName })}</FormSubtitle>
+			<Stack gap={16}>
+				<Box>
+					<FormSteps currentStep={currentStep} stepCount={stepCount} />
+					<FormTitle>{t('form.createFirstMemberForm.title')}</FormTitle>
+					<FormSubtitle>{t('form.createFirstMemberForm.subtitle', { organizationName })}</FormSubtitle>
+				</Box>
+				<FieldGroup>
+					<Field>
+						<FieldLabel>
+							<Box display='inline' marginInlineEnd={8}>
+								{t('form.createFirstMemberForm.fields.username.label')}
+							</Box>
+						</FieldLabel>
+						<FieldRow>
+							<TextInput
+								{...register('username', {
+									validate: validateUsername,
+									required: true,
+								})}
+								defaultValue={defaultValues?.username}
+								error={errors?.username?.type || undefined}
+							/>
+						</FieldRow>
+						{errors?.username && <FieldError>{errors.username.message}</FieldError>}
+					</Field>
 
-			<FieldGroup marginBlockStart={16}>
-				<Field>
-					<FieldLabel>
-						<Box display='inline' marginInlineEnd={8}>
-							{t('form.createFirstMemberForm.fields.username.label')}
-						</Box>
-					</FieldLabel>
-					<FieldRow>
-						<TextInput
-							{...register('username', {
-								validate: validateUsername,
-								required: true,
-							})}
-							defaultValue={defaultValues?.username}
-							error={errors?.username?.type || undefined}
-						/>
-					</FieldRow>
-					{errors?.username && <FieldError>{errors.username.message}</FieldError>}
-				</Field>
-
-				<Field>
-					<FieldLabel>{t('form.createFirstMemberForm.fields.password.label')}</FieldLabel>
-					<FieldRow>
-						<PasswordInput
-							{...register('password', {
-								validate: validatePassword,
-								required: true,
-							})}
-							defaultValue={defaultValues?.password}
-						/>
-					</FieldRow>
-					{errors.password && <FieldError>{errors.password.message}</FieldError>}
-				</Field>
-			</FieldGroup>
+					<Field>
+						<FieldLabel>{t('form.createFirstMemberForm.fields.password.label')}</FieldLabel>
+						<FieldRow>
+							<PasswordInput
+								{...register('password', {
+									validate: validatePassword,
+									required: true,
+								})}
+								defaultValue={defaultValues?.password}
+							/>
+						</FieldRow>
+						{errors.password && <FieldError>{errors.password.message}</FieldError>}
+					</Field>
+				</FieldGroup>
+			</Stack>
 
 			<FormFooter>
 				<ButtonGroup>
@@ -97,7 +101,7 @@ export const CreateFirstMemberForm = ({
 						{t('component.form.action.back')}
 					</Button>
 
-					<Button type='submit' primary disabled={!isValid} loading={isSubmitting || isValidating} minHeight='x40'>
+					<Button type='submit' variant='primary' disabled={!isValid} loading={isSubmitting || isValidating}>
 						{isSubmitting ? <Throbber inheritColor /> : t('form.createFirstMemberForm.button.submit')}
 					</Button>
 				</ButtonGroup>

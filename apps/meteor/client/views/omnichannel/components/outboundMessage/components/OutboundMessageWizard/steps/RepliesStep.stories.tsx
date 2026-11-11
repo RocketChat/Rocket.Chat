@@ -4,6 +4,7 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { WizardContext, StepsLinkedList } from '@rocket.chat/ui-client';
 import type { Meta, StoryObj } from '@storybook/react';
 import { action } from 'storybook/actions';
+import { userEvent } from 'storybook/test';
 
 import RepliesStep from './RepliesStep';
 import { createFakeAgent, createFakeDepartment } from '../../../../../../../../tests/mocks/data';
@@ -79,5 +80,12 @@ export const WithDefaultValues: Story = {
 			departmentId: mockDepartment._id,
 			agentId: mockAgent._id,
 		},
+	},
+};
+
+export const WithFocusedField: Story = {
+	...WithDefaultValues,
+	play: async () => {
+		await userEvent.tab();
 	},
 };

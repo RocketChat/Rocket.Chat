@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, ButtonGroup, Palette, RadioButton, SplitButton, borderRadius } from '@rocket.chat/fuselage';
+import { Box, ButtonGroup, Palette, RadioButton, SplitButton, borderRadius, backgroundColor, fontColor } from '@rocket.chat/fuselage';
 import type { Keys } from '@rocket.chat/icons';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
@@ -93,12 +93,16 @@ const speakingWhileMutedTooltip = css`
 
 	padding: 0.5rem 0.75rem;
 	border-radius: ${borderRadius('medium')};
-	background: ${Palette.badge['badge-background-level-4'].toString()};
-	color: ${Palette.text['font-pure-white'].toString()};
+	background: ${backgroundColor('neutral')};
+	color: ${fontColor('hint')};
 	white-space: nowrap;
 	pointer-events: auto;
 	cursor: pointer;
 	animation: swm-fade-in 200ms ease-out;
+
+	&:hover {
+		background: ${backgroundColor('hover')};
+	}
 `;
 
 /**
@@ -190,7 +194,7 @@ const CallControls = ({ layout, onLayoutChange, onOpenDiagnostics }: CallControl
 					pressed={self.muted}
 					aria-pressed={self.muted}
 					dangerWhenPressed
-					large
+					size='large'
 					onToggle={toggleMic}
 				/>
 			</SplitButton>
@@ -204,7 +208,7 @@ const CallControls = ({ layout, onLayoutChange, onOpenDiagnostics }: CallControl
 					// Pressed as its label reads: "Camera" is pressed while the camera is on, whichever way it is drawn.
 					aria-pressed={self.cameraOn}
 					dangerWhenPressed
-					large
+					size='large'
 					onToggle={toggleCamera}
 				/>
 			</SplitButton>
@@ -214,16 +218,18 @@ const CallControls = ({ layout, onLayoutChange, onOpenDiagnostics }: CallControl
 				titles={[t('Share_screen'), t('Stop_sharing_screen')]}
 				pressed={self.screenSharing}
 				aria-pressed={self.screenSharing}
-				large
+				info
+				size='large'
 				onToggle={toggleScreenShare}
 			/>
 			<ToggleButton
 				label={t('Raise_hand')}
-				icons={['hand-pointer', 'hand-pointer']}
+				icons={['hand', 'hand']}
 				titles={[t('Raise_hand'), t('Lower_hand')]}
 				pressed={self.handRaised}
 				aria-pressed={self.handRaised}
-				large
+				info
+				size='large'
 				onToggle={toggleHand}
 			/>
 			<Box className={reactionPickerWrapStyles} ref={reactionPickerRef}>
@@ -233,7 +239,8 @@ const CallControls = ({ layout, onLayoutChange, onOpenDiagnostics }: CallControl
 					titles={[t('Send_reaction'), t('Send_reaction')]}
 					pressed={reactionPickerOpen}
 					aria-expanded={reactionPickerOpen}
-					large
+					info
+					size='large'
 					onToggle={() => setReactionPickerOpen((p) => !p)}
 				/>
 			</Box>
@@ -242,13 +249,13 @@ const CallControls = ({ layout, onLayoutChange, onOpenDiagnostics }: CallControl
 				sections={[{ items: layoutItems }, { items: moreItems }]}
 				placement='top-end'
 				selectionMode='multiple'
-				button={<ActionButton secondary label={t('More')} icon='kebab' large />}
+				button={<ActionButton secondary label={t('More')} icon='kebab' size='large' />}
 			/>
-			<ActionButton label={hangupLabel} icon='phone-off' danger large onClick={leave} />
+			<ActionButton label={hangupLabel} icon='phone-off' danger size='large' onClick={leave} />
 			{(self.speakingWhileMuted || reactionPickerOpen) && (
 				<Box className={controlNoticesStyles}>
 					{self.speakingWhileMuted && (
-						<Box className={speakingWhileMutedTooltip} fontScale='c1' onClick={toggleMic}>
+						<Box className={speakingWhileMutedTooltip} fontScale='c2' onClick={toggleMic}>
 							{t('You_are_muted')}
 						</Box>
 					)}

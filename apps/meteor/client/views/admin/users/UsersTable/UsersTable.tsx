@@ -1,5 +1,5 @@
 import type { IRole, IUser, Serialized } from '@rocket.chat/core-typings';
-import { Pagination } from '@rocket.chat/fuselage';
+import { Pagination, type TableColumnWidth } from '@rocket.chat/fuselage';
 import { useStableCallback, useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import type { DefaultUserInfo } from '@rocket.chat/rest-typings';
 import type { usePagination, useSort } from '@rocket.chat/ui-client';
@@ -23,7 +23,7 @@ import { useShowVoipExtension } from '../useShowVoipExtension';
 
 export type UsersTableProps = {
 	tab: AdminUsersTab;
-	roleData: { roles: Serialized<IRole>[] } | undefined;
+	roleData: { roles: Serialized<Omit<IRole, '_updatedAt'>>[] } | undefined;
 	users: Serialized<DefaultUserInfo>[];
 	total: number;
 	isLoading: boolean;
@@ -89,6 +89,16 @@ const UsersTable = ({
 		});
 	});
 
+	const columns: TableColumnWidth[] = [
+		'auto',
+		'auto',
+		...(!isLaptop ? (['auto', 'auto'] as const) : []),
+		...(tab === 'all' && !isMobile ? (['auto'] as const) : []),
+		...(tab === 'pending' && !isMobile ? (['auto'] as const) : []),
+		...(tab === 'all' && showVoipExtension ? (['x180'] as const) : []),
+		tab === 'pending' ? 'x204' : 'x50',
+	];
+
 	const headers = useMemo(
 		() => [
 			<GenericTableHeaderCell
@@ -145,19 +155,16 @@ const UsersTable = ({
 			),
 			tab === 'all' && showVoipExtension && (
 				<GenericTableHeaderCell
-					width='x180'
-					key='freeSwitchExtension'
+					key='sipExtension'
 					direction={sortData?.sortDirection}
-					active={sortData?.sortBy === 'freeSwitchExtension'}
+					active={sortData?.sortBy === 'sipExtension'}
 					onClick={sortData?.setSort}
-					sort='freeSwitchExtension'
+					sort='sipExtension'
 				>
 					{t('Voice_call_extension')}
 				</GenericTableHeaderCell>
 			),
-			<GenericTableHeaderCell key='actions' width={tab === 'pending' ? 'x204' : 'x50'}>
-				{t('Actions')}
-			</GenericTableHeaderCell>,
+			<GenericTableHeaderCell key='actions'>{t('Actions')}</GenericTableHeaderCell>,
 		],
 		[sortData, t, isLaptop, tab, isMobile, showVoipExtension],
 	);
@@ -170,7 +177,7 @@ const UsersTable = ({
 				showStatusManagementFilter={canFilterByUserStatus}
 			/>
 			{isLoading && (
-				<GenericTable>
+				<GenericTable columns={columns}>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
 						<GenericTableLoadingTable headerCells={5} />
@@ -191,7 +198,7 @@ const UsersTable = ({
 
 			{isSuccess && users.length > 0 && (
 				<>
-					<GenericTable>
+					<GenericTable columns={columns}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{users.map((user) => (

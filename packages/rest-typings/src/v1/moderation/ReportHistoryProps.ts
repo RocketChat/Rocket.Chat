@@ -1,5 +1,6 @@
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 import { ajvQuery } from '../Ajv';
+import { paginationQueryProperties } from '../pagination';
 
 type ReportHistoryProps = {
 	latest?: string;
@@ -26,14 +27,7 @@ const reportHistoryPropsSchema = {
 			type: 'string',
 			nullable: true,
 		},
-		count: {
-			type: 'integer',
-			nullable: true,
-		},
-		offset: {
-			type: 'integer',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 			nullable: true,

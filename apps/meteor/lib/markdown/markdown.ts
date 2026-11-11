@@ -3,7 +3,6 @@
  * @param {Object} message - The message object
  */
 import { escapeHTML } from '@rocket.chat/tools';
-import { Meteor } from 'meteor/meteor';
 
 import { filtered } from './parser/filtered/filtered';
 import { code } from './parser/original/code';
@@ -30,11 +29,8 @@ class MarkdownClass {
 	}
 
 	parseMessageNotEscaped(message: any) {
-		const options = {
-			rootUrl: Meteor.absoluteUrl(),
-		};
-
-		return parsers.original(message, options);
+		// links stay unparsed: unlike omitting the options, an empty object enables no link schemes
+		return parsers.original(message, {});
 	}
 
 	mountTokensBackRecursively(message: any, tokenList: any[], useHtml = true) {

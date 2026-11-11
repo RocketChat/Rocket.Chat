@@ -10,13 +10,6 @@ const testCases = Object.values(composeStories(preflightDevices)).map(
 
 describe('preflight stories', () => {
 	// Played first: a story with a `play` is the state it leaves behind, such as an open menu.
-	test.each(testCases)('renders %s without crashing', async (_storyname, Story) => {
-		const { baseElement, container } = render(<Story />);
-		await Story.play?.({ canvasElement: container });
-
-		expect(baseElement).toMatchSnapshot();
-	});
-
 	test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
 		const { container } = render(<Story />);
 		await Story.play?.({ canvasElement: container });

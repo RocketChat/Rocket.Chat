@@ -1,7 +1,6 @@
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { updateThreadUsersSubscriptions, getMentions } from './notifyUsersOnMessage';
 import { sendMessageNotifications } from './sendNotificationsOnMessage';
@@ -77,19 +76,17 @@ export async function processThreads(message: IMessage, room: IRoom, options?: S
 	return message;
 }
 
-Meteor.startup(() => {
-	settings.watch<boolean>('Threads_enabled', (value) => {
-		if (!value) {
-			callbacks.remove('afterSaveMessage', 'threads-after-save-message');
-			return;
-		}
-		callbacks.add(
-			'afterSaveMessage',
-			async (message, { room, options }) => {
-				return processThreads(message, room, options);
-			},
-			callbacks.priority.LOW,
-			'threads-after-save-message',
-		);
-	});
+settings.watch<boolean>('Threads_enabled', (value) => {
+	if (!value) {
+		callbacks.remove('afterSaveMessage', 'threads-after-save-message');
+		return;
+	}
+	callbacks.add(
+		'afterSaveMessage',
+		async (message, { room, options }) => {
+			return processThreads(message, room, options);
+		},
+		callbacks.priority.LOW,
+		'threads-after-save-message',
+	);
 });

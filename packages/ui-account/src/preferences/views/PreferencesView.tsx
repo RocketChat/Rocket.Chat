@@ -67,7 +67,7 @@ const PreferencesView = ({ vm }: PreferencesViewProps) => {
 			<PageFooter isDirty={isDirty}>
 				<ButtonGroup>
 					<Button onClick={() => reset(vm.values)}>{t('Cancel')}</Button>
-					<Button form={preferencesFormId} primary type='submit'>
+					<Button form={preferencesFormId} variant='primary' type='submit'>
 						{t('Save_changes')}
 					</Button>
 				</ButtonGroup>

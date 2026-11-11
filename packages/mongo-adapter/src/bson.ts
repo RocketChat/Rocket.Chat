@@ -1,4 +1,4 @@
-import { BSONType } from './types';
+import { BSONType } from './types.js';
 
 export const getBSONType = <T>(v: T): BSONType => {
 	if (typeof v === 'number') {
@@ -143,6 +143,7 @@ export const compareBSONValues = (a: unknown, b: unknown): number => {
 			}
 		}
 
+		// oxlint-disable-next-line no-fallthrough -- the array loop above only exits by returning
 		case BSONType.BinData: {
 			if ((a as Uint8Array).length !== (b as Uint8Array).length) {
 				return (a as Uint8Array).length - (b as Uint8Array).length;

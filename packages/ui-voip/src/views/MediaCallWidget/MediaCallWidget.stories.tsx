@@ -1,4 +1,4 @@
-import { Button } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { Meta, StoryObj } from '@storybook/react';
 
@@ -52,12 +52,14 @@ export const MediaCallWidgetManualTesting: Story = {
 		const { state } = sessionState;
 		return (
 			<>
-				<Button onClick={() => toggleWidget()} disabled={state !== 'none'} marginInlineEnd={8}>
-					Toggle widget
-				</Button>
-				<Button onClick={() => onCall()} disabled={targetWidgetVisibility !== 'closed'}>
-					Receive call
-				</Button>
+				<ButtonGroup>
+					<Button onClick={() => toggleWidget()} disabled={state !== 'none'}>
+						Toggle widget
+					</Button>
+					<Button onClick={() => onCall()} disabled={targetWidgetVisibility !== 'closed'}>
+						Receive call
+					</Button>
+				</ButtonGroup>
 				<MediaCallWidget />
 			</>
 		);
@@ -150,5 +152,13 @@ export const OngoingCallDisabledAllButScreenshare: Story = {
 	args: {
 		state: 'ongoing',
 		supportedFeatures: ['screen-share'],
+	},
+};
+
+export const OngoingCallNoScreenSharingPermission: Story = {
+	args: {
+		state: 'ongoing',
+		supportedFeatures: ['screen-share', 'audio', 'hold', 'transfer'],
+		allowedFeatures: ['audio', 'hold', 'transfer'],
 	},
 };

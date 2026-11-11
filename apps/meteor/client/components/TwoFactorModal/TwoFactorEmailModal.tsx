@@ -1,4 +1,4 @@
-import { Box, Button } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Stack } from '@rocket.chat/fuselage';
 import { FieldGroup, TextInput, Field, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage-forms';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
@@ -62,11 +62,13 @@ const TwoFactorEmailModal = ({ onConfirm, onClose, invalidAttempt, emailOrUserna
 			} else if (challengeId) {
 				await sendEmailCodeByChallengeId({ challengeId });
 			}
-			dispatchToastMessage({ type: 'success', message: t('Email_sent') });
+			dispatchToastMessage({ type: 'success', message: t('Two-factor_email_code_requested') });
 		} catch (error) {
+			const { errorType } = error as { errorType?: string };
+			const expired = errorType === 'error-challenge-expired' || errorType === 'error-challenge-not-found';
 			dispatchToastMessage({
 				type: 'error',
-				message: t('error-email-send-failed', { message: error }),
+				message: expired ? t('Two-factor_authentication_expired') : t('error-email-send-failed', { message: error }),
 			});
 		}
 	};
@@ -95,36 +97,40 @@ const TwoFactorEmailModal = ({ onConfirm, onClose, invalidAttempt, emailOrUserna
 			tagline={t('Email_two-factor_authentication')}
 			icon={null}
 		>
-			<FieldGroup>
-				<Field>
-					<FieldLabel alignSelf='stretch'>{t('Enter_the_code_we_just_emailed_you')}</FieldLabel>
-					<FieldRow>
-						<Controller
-							name='code'
-							control={control}
-							rules={{ required: t('Required_field', { field: t('Code') }) }}
-							render={({ field: { onChange, ...fieldProps } }) => (
-								<TextInput
-									{...fieldProps}
-									onChange={(e) => {
-										clearErrors('code');
-										onChange(e);
-									}}
-									placeholder={t('Enter_code_here')}
-									autoComplete='one-time-code'
-									inputMode='numeric'
-									disabled={isSubmitting}
-									error={errors.code?.message}
-								/>
-							)}
-						/>
-					</FieldRow>
-					{errors.code && <FieldError>{errors.code.message}</FieldError>}
-				</Field>
-			</FieldGroup>
-			<Button display='flex' justifyContent='end' onClick={onClickResendCode} small marginBlockStart={24}>
-				{t('Cloud_resend_email')}
-			</Button>
+			<Stack gap={24}>
+				<FieldGroup>
+					<Field>
+						<FieldLabel>{t('Enter_the_code_we_just_emailed_you')}</FieldLabel>
+						<FieldRow>
+							<Controller
+								name='code'
+								control={control}
+								rules={{ required: t('Required_field', { field: t('Code') }) }}
+								render={({ field: { onChange, ...fieldProps } }) => (
+									<TextInput
+										{...fieldProps}
+										onChange={(e) => {
+											clearErrors('code');
+											onChange(e);
+										}}
+										placeholder={t('Enter_code_here')}
+										autoComplete='one-time-code'
+										inputMode='numeric'
+										disabled={isSubmitting}
+										error={errors.code?.message}
+									/>
+								)}
+							/>
+						</FieldRow>
+						{errors.code && <FieldError>{errors.code.message}</FieldError>}
+					</Field>
+				</FieldGroup>
+				<ButtonGroup>
+					<Button onClick={onClickResendCode} size='small'>
+						{t('Cloud_resend_email')}
+					</Button>
+				</ButtonGroup>
+			</Stack>
 		</GenericModal>
 	);
 };

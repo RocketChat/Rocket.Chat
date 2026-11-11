@@ -22,10 +22,12 @@ jest.mock('@rocket.chat/ui-video-conf', () => ({
 	useVideoConfIsRinging: () => false,
 }));
 
-const fakeRoom = createFakeRoom({ t: 'c' });
+let fakeRoom = createFakeRoom({ t: 'c' });
+let subscribed = true;
 
 jest.mock('../../views/room/contexts/RoomContext', () => ({
 	useRoom: () => fakeRoom,
+	useUserIsSubscribed: () => subscribed,
 }));
 
 const renderAction = (conferenceWindowEnabled: boolean) =>
@@ -38,6 +40,8 @@ const renderAction = (conferenceWindowEnabled: boolean) =>
 	});
 
 beforeEach(() => {
+	fakeRoom = createFakeRoom({ t: 'c' });
+	subscribed = true;
 	startCall.mockClear();
 	dispatchOutgoing.mockClear();
 	dispatchWarning.mockClear();
@@ -87,4 +91,43 @@ it.each([true, false])('says so and opens nothing when the provider is unavailab
 	expect(dispatchWarning).toHaveBeenCalledWith('error-videoconf-provider-not-configured');
 	expect(startCall).not.toHaveBeenCalled();
 	expect(dispatchOutgoing).not.toHaveBeenCalled();
+});
+
+// A channel open as a preview, before joining it, can't hold a call this user starts: the button says to join first
+// rather than opening a call that fails.
+it('asks the user to join first in a room they have not joined', () => {
+	subscribed = false;
+
+	const { result } = renderAction(true);
+
+	expect(result.current?.disabled).toBe(true);
+	expect(result.current?.tooltip).toBe('Join_the_room_to_start_a_call');
+});
+
+it('offers the call in a room the user has joined', () => {
+	const { result } = renderAction(true);
+
+	expect(result.current?.disabled).toBeFalsy();
+	expect(result.current?.tooltip).toBeUndefined();
+});
+
+// Joining would not help in a room that can't hold a call at all, so that is what it says.
+it('says the room cannot hold a call, rather than to join, when joining would not help', () => {
+	subscribed = false;
+	fakeRoom = createFakeRoom({ t: 'c', archived: true });
+
+	const { result } = renderAction(true);
+
+	expect(result.current?.disabled).toBe(true);
+	expect(result.current?.tooltip).not.toBe('Join_the_room_to_start_a_call');
+});
+
+// Agents serve an omnichannel room without having joined it.
+it('does not ask an agent to join an omnichannel room', () => {
+	subscribed = false;
+	fakeRoom = createFakeRoom({ t: 'l' });
+
+	const { result } = renderAction(true);
+
+	expect(result.current?.tooltip).not.toBe('Join_the_room_to_start_a_call');
 });

@@ -1,8 +1,31 @@
 import { ajv } from '../Ajv';
 
-export type ChannelsInviteProps =
-	| { roomId: string; userId?: string; username?: string; user?: string }
-	| { roomName: string; userId?: string; username?: string; user?: string };
+type ChannelsInviteUsers = { userId?: string; userIds?: string[] } | { username?: string; user?: string; usernames?: string[] };
+
+export type ChannelsInviteProps = ({ roomId: string } | { roomName: string }) & ChannelsInviteUsers;
+
+const userProperties = {
+	userId: {
+		type: 'string',
+		nullable: true,
+	},
+	username: {
+		type: 'string',
+		nullable: true,
+	},
+	user: {
+		type: 'string',
+		nullable: true,
+	},
+	userIds: {
+		type: 'array',
+		items: { type: 'string' },
+	},
+	usernames: {
+		type: 'array',
+		items: { type: 'string' },
+	},
+};
 
 const channelsInvitePropsSchema = {
 	oneOf: [
@@ -12,18 +35,7 @@ const channelsInvitePropsSchema = {
 				roomId: {
 					type: 'string',
 				},
-				userId: {
-					type: 'string',
-					nullable: true,
-				},
-				username: {
-					type: 'string',
-					nullable: true,
-				},
-				user: {
-					type: 'string',
-					nullable: true,
-				},
+				...userProperties,
 			},
 			required: ['roomId'],
 			additionalProperties: false,
@@ -34,23 +46,18 @@ const channelsInvitePropsSchema = {
 				roomName: {
 					type: 'string',
 				},
-				userId: {
-					type: 'string',
-					nullable: true,
-				},
-				username: {
-					type: 'string',
-					nullable: true,
-				},
-				user: {
-					type: 'string',
-					nullable: true,
-				},
+				...userProperties,
 			},
 			required: ['roomName'],
 			additionalProperties: false,
 		},
 	],
+	not: {
+		allOf: [
+			{ anyOf: [{ required: ['userId'] }, { required: ['userIds'] }] },
+			{ anyOf: [{ required: ['username'] }, { required: ['user'] }, { required: ['usernames'] }] },
+		],
+	},
 };
 
 export const isChannelsInviteProps = ajv.compile<ChannelsInviteProps>(channelsInvitePropsSchema);

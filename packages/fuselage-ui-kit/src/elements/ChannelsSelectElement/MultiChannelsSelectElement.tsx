@@ -1,22 +1,36 @@
 import { AutoComplete, Option, Chip, Box } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { RoomAvatar } from '@rocket.chat/ui-avatar';
+import { ITEM_MEDIA_SIZE, RoomAvatar } from '@rocket.chat/ui-avatar';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { memo, useCallback, useState } from 'react';
 
 import { useChannelsData } from './hooks/useChannelsData';
+import { useConversationsData } from './hooks/useConversationsData';
+import { useCurrentConversationDefault } from './hooks/useCurrentConversationDefault';
+import { useAutoCompleteKey } from '../../hooks/useAutoCompleteKey';
 import { useUiKitState } from '../../hooks/useUiKitState';
 import type { BlockProps } from '../../utils/BlockProps';
+import { limitOptions } from '../../utils/limitOptions';
 
-type MultiChannelsSelectProps = BlockProps<UiKit.MultiChannelsSelectElement>;
+type MultiChannelsSelectProps = BlockProps<UiKit.MultiChannelsSelectElement | UiKit.MultiConversationsSelectElement>;
 
 const MultiChannelsSelectElement = ({ block, context }: MultiChannelsSelectProps) => {
-	const [{ value, loading }, action] = useUiKitState(block, context);
+	const element = useCurrentConversationDefault(block);
+	const [{ value, loading }, action] = useUiKitState(element, context);
 
 	const [filter, setFilter] = useState('');
 	const filterDebounced = useDebouncedValue(filter, 300);
 
-	const options = useChannelsData({ filter: filterDebounced });
+	const isConversations = block.type === 'multi_conversations_select';
+	const channels = useChannelsData({ filter: filterDebounced, enabled: !isConversations, selected: value ?? [] });
+	const conversations = useConversationsData({
+		filter: filterDebounced,
+		enabled: isConversations,
+		selected: value ?? [],
+		include: block.type === 'multi_conversations_select' ? block.filter?.include : undefined,
+	});
+	const options = isConversations ? conversations : channels;
+	const autoCompleteKey = useAutoCompleteKey(value, options);
 
 	const handleChange = useCallback(
 		(value: string | string[]) => {
@@ -27,9 +41,12 @@ const MultiChannelsSelectElement = ({ block, context }: MultiChannelsSelectProps
 
 	return (
 		<AutoComplete
+			key={autoCompleteKey}
+			autoFocus={block.focus_on_load}
 			value={value || []}
 			disabled={loading}
 			onChange={handleChange}
+			placeholder={block.placeholder?.text}
 			filter={filter}
 			setFilter={setFilter}
 			multiple
@@ -46,10 +63,10 @@ const MultiChannelsSelectElement = ({ block, context }: MultiChannelsSelectProps
 					key={value}
 					{...props}
 					label={label.name}
-					avatar={<RoomAvatar size='x20' room={{ _id: value, ...label, type: label?.type || 'c' }} />}
+					avatar={<RoomAvatar size={ITEM_MEDIA_SIZE.condensed} room={{ _id: value, ...label, type: label?.type || 'c' }} />}
 				/>
 			)}
-			options={options}
+			options={limitOptions(options, value, block.max_selected_items)}
 		/>
 	);
 };

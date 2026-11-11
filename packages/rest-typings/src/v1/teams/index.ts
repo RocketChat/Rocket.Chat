@@ -2,7 +2,9 @@ import type { IRole, IRoom, ITeam, IUser } from '@rocket.chat/core-typings';
 
 import type { TeamsAddMembersProps } from './TeamsAddMembersProps';
 import type { TeamsConvertToChannelProps } from './TeamsConvertToChannelProps';
+import type { TeamsCreateProps } from './TeamsCreateProps';
 import type { TeamsDeleteProps } from './TeamsDeleteProps';
+import type { TeamsInfoProps } from './TeamsInfoProps';
 import type { TeamsLeaveProps } from './TeamsLeaveProps';
 import type { TeamsListChildrenProps } from './TeamsListChildren';
 import type { TeamsRemoveMemberProps } from './TeamsRemoveMemberProps';
@@ -60,48 +62,21 @@ export const isTeamPropsWithTeamName = <T extends TeamProps>(props: T): props is
 
 export const isTeamPropsWithTeamId = <T extends TeamProps>(props: T): props is T & { teamId: string } => 'teamId' in props;
 
+// Public mirror of the implementation routes (apps/meteor/server/api/v1/teams.ts).
+// teams.list/listAll/create are chained into `teamsEndpoints`, so they are part of the impl's
+// `ExtractRoutesFromAPI<...>` and MUST stay byte-identical to the impl generics, or the two
+// `interface Endpoints extends TeamsEndpoints` declarations collide (TS2320). The remaining routes
+// are registered as standalone `API.v1` calls, are not in the impl-derived type, and so carry the
+// rich SDK types their consumers expect (kept in sync with the impl's response schema generics).
 export type TeamsEndpoints = {
 	'/v1/teams.list': {
-		GET: () => PaginatedResult & { teams: ITeam[] };
+		GET: (params?: never) => { teams: ITeam[]; total: number; count: number; offset: number };
 	};
 	'/v1/teams.listAll': {
-		GET: () => { teams: ITeam[] } & PaginatedResult;
+		GET: (params?: never) => { teams: ITeam[]; total: number; count: number; offset: number };
 	};
 	'/v1/teams.create': {
-		POST: (params: {
-			name: ITeam['name'];
-			type: ITeam['type'];
-			members?: IUser['_id'][];
-			room: {
-				id?: string;
-				name?: IRoom['name'];
-				members?: IUser['_id'][];
-				readOnly?: boolean;
-				extraData?: {
-					teamId?: string;
-					teamMain?: boolean;
-				} & { [key: string]: string | boolean };
-				options?: {
-					creator: string;
-					subscriptionExtra?: {
-						open: boolean;
-						ls: Date;
-						prid: IRoom['_id'];
-					};
-				} & {
-					[key: string]:
-						| string
-						| {
-								open: boolean;
-								ls: Date;
-								prid: IRoom['_id'];
-						  };
-				};
-			};
-			owner?: IUser['_id'];
-		}) => {
-			team: ITeam;
-		};
+		POST: (params: TeamsCreateProps) => { team: ITeam; skippedMembers?: string[] };
 	};
 
 	'/v1/teams.convertToChannel': {
@@ -143,8 +118,8 @@ export type TeamsEndpoints = {
 	};
 
 	'/v1/teams.info': {
-		GET: (params: ({ teamId: string } | { teamName: string }) & Record<string, string | number | boolean | object>) => {
-			teamInfo: Partial<ITeam>;
+		GET: (params: TeamsInfoProps) => {
+			teamInfo: ITeam;
 		};
 	};
 

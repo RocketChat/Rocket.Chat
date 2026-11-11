@@ -1,5 +1,5 @@
 import type { IUser, IRoom } from '@rocket.chat/core-typings';
-import { Callout } from '@rocket.chat/fuselage';
+import { Box, Callout } from '@rocket.chat/fuselage';
 import {
 	ContextualbarBack,
 	ContextualbarClose,
@@ -8,19 +8,21 @@ import {
 	ContextualbarHeader,
 	ContextualbarIcon,
 	ContextualbarTitle,
+	FormSkeleton,
 	UserCardRole,
 	UserInfo,
 } from '@rocket.chat/ui-client';
-import { useEndpoint, useRolesDescription } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import UserInfoActions from './UserInfoActions';
 import { getUserEmailAddress } from '../../../../../lib/getUserEmailAddress';
-import { FormSkeleton } from '../../../../components/Skeleton';
+import UserInfoPhoneNumberList from '../../../../components/UserInfoPhoneNumberList';
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
 import { ReactiveUserStatusText } from '../../../../components/UserStatusText';
+import { useUserRolesByScope } from '../../../../hooks/useUserRolesByScope';
 import { usersQueryKeys } from '../../../../lib/queryKeys';
 import { getUserEmailVerified } from '../../../../lib/utils/getUserEmailVerified';
 
@@ -35,7 +37,6 @@ export type UserInfoWithDataProps = {
 
 const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClickBack }: UserInfoWithDataProps) => {
 	const { t } = useTranslation();
-	const getRoles = useRolesDescription();
 
 	const getUserInfo = useEndpoint('GET', '/v1/users.info');
 	const { isPending, isError, data } = useQuery({
@@ -47,6 +48,8 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 		},
 	});
 
+	const { workspaceRoles, roomRoles } = useUserRolesByScope(data?.user?._id, rid, { userRoleIds: data?.user?.roles });
+
 	const user = useMemo(() => {
 		if (!data?.user) {
 			return;
@@ -56,16 +59,15 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			_id,
 			name,
 			username,
-			roles = [],
 			bio,
 			utcOffset,
 			lastLogin,
 			customFields,
-			phone,
+			phones,
 			nickname,
 			createdAt,
 			canViewAllInfo,
-			freeSwitchExtension,
+			sipExtension,
 			federated,
 		} = data.user;
 
@@ -77,10 +79,11 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			/**
 			 * TODO: We shouldn't use UserCard components outside UserCard
 			 */
-			roles: roles && getRoles(roles).map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
+			roles: workspaceRoles.map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
+			roomRoles: roomRoles.map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
 			bio,
 			canViewAllInfo,
-			phone,
+			phoneNumbers: phones?.length ? <UserInfoPhoneNumberList phones={phones} /> : undefined,
 			customFields,
 			verified: getUserEmailVerified(data.user),
 			email: getUserEmailAddress(data.user),
@@ -89,10 +92,10 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			status: <ReactiveUserStatus uid={_id} />,
 			customStatus: <ReactiveUserStatusText uid={_id} />,
 			nickname,
-			freeSwitchExtension,
+			sipExtension,
 			federated,
 		};
-	}, [data, getRoles]);
+	}, [data, workspaceRoles, roomRoles]);
 
 	return (
 		<ContextualbarDialog>
@@ -109,8 +112,10 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			)}
 
 			{isError && !user && (
-				<ContextualbarContent paddingBlock={16}>
-					<Callout type='danger'>{t('User_not_found')}</Callout>
+				<ContextualbarContent>
+					<Box paddingBlock={16}>
+						<Callout type='danger'>{t('User_not_found')}</Callout>
+					</Box>
 				</ContextualbarContent>
 			)}
 

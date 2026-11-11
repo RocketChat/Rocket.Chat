@@ -12,16 +12,20 @@ export class OmnichannelSettings extends AdminSettingsSection {
 		return this.page.locator('//label[@title="Assets_livechat_widget_logo"]');
 	}
 
+	private get livechatLogo(): Locator {
+		return this.page.getByRole('group', { name: 'Livechat widget logo (svg, png, jpg)', exact: true });
+	}
+
 	get imgLivechatLogoPreview(): Locator {
-		return this.page.locator('//label[@title="Assets_livechat_widget_logo"]/following-sibling::span >> role=img[name="Asset preview"]');
+		return this.livechatLogo.getByRole('img', { name: 'Asset preview' });
 	}
 
 	get inputLivechatLogo(): Locator {
-		return this.page.locator('//label[@title="Assets_livechat_widget_logo"]/following-sibling::span >> input[type="file"]');
+		return this.livechatLogo.locator('input[type="file"]');
 	}
 
 	get btnDeleteLivechatLogo(): Locator {
-		return this.page.locator('//label[@title="Assets_livechat_widget_logo"]/following-sibling::span >> role=button[name="Delete"]');
+		return this.livechatLogo.getByRole('button', { name: 'Delete' });
 	}
 
 	group(sectionName: string): Locator {

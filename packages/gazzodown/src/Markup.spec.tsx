@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import { Suspense } from 'react';
 
 import { MarkupInteractionContext } from '.';
@@ -152,6 +152,35 @@ it('renders an ordered list', () => {
 	expect(items[2]).toHaveTextContent('你好');
 });
 
+it('renders a nested list inside its parent item', () => {
+	render(
+		<Markup
+			tokens={[
+				{
+					type: 'UNORDERED_LIST',
+					value: [
+						{
+							type: 'LIST_ITEM',
+							value: [{ type: 'PLAIN_TEXT', value: 'Parent' }],
+							nested: [
+								{ type: 'ORDERED_LIST', value: [{ type: 'LIST_ITEM', value: [{ type: 'PLAIN_TEXT', value: 'Child' }], number: 1 }] },
+							],
+						},
+						{ type: 'LIST_ITEM', value: [{ type: 'PLAIN_TEXT', value: 'Sibling' }] },
+					],
+				},
+			]}
+		/>,
+	);
+
+	const [outer, inner] = screen.getAllByRole('list');
+	expect(outer.tagName).toBe('UL');
+	expect(inner.tagName).toBe('OL');
+	expect(screen.getAllByRole('listitem')[0]).toContainElement(inner);
+	expect(inner).toHaveTextContent('Child');
+	expect(screen.getAllByRole('listitem')).toHaveLength(3);
+});
+
 it('renders a task list', () => {
 	render(
 		<Markup
@@ -253,11 +282,11 @@ it('renders a code block with language', async () => {
 	expect(await screen.findByRole('region')).toBeInTheDocument();
 
 	expect(screen.getByRole('region')).toHaveTextContent('```const foo = bar;```');
-	expect(screen.getByRole('region').querySelector('.language-javascript')).toBeInTheDocument();
+	expect(within(screen.getByRole('region')).getByRole('code')).toHaveClass('language-javascript');
 });
 
 it('renders a Katex block', async () => {
-	const { container } = render(
+	render(
 		<Suspense fallback={null}>
 			<Markup
 				tokens={[
@@ -270,11 +299,7 @@ it('renders a Katex block', async () => {
 		</Suspense>,
 	);
 
-	// workaround for jest-dom's inability to handle MathML
-	await waitFor(() => expect(container.querySelector('math')).toBeTruthy());
-	container.querySelector('math')?.remove();
-
-	expect(screen.getByRole('math', { name: 'x^2 + y^2 = z^2' })).toBeInTheDocument();
+	expect(await screen.findByLabelText('x^2 + y^2 = z^2')).toHaveAttribute('role', 'math');
 });
 
 it('renders a line break', () => {

@@ -1,5 +1,5 @@
 import { useConnectionStatus, useSession, useUser, useSetting } from '@rocket.chat/ui-contexts';
-import RegistrationRoute from '@rocket.chat/web-ui-registration';
+import RegistrationRoute from '@rocket.chat/ui-registration';
 import type { ReactNode } from 'react';
 import { useEffect, useRef, useState } from 'react';
 
@@ -12,11 +12,11 @@ import { STORAGE_KEYS } from '../../../lib/sdk/storage';
 /*
  * Anonymous and guest are similar in some way
  *
- * Anonymous is an old feature that allows the user to navigate as an anonymus user
- * by default the user dont need to do anything its hadled by the system but by behind the scenes a new    * user is registered
+ * Anonymous (Accounts_AllowAnonymousRead) lets an unauthenticated visitor read public rooms;
+ * no user is created and the composer only offers signing in
  *
  * Guest is only for certain locations, it shows a form asking if the user wants to stay as guest and if so
- * renders the page, without creating an user (not even an anonymous user)
+ * renders the page, without creating an user
  */
 export type AuthenticationCheckProps = {
 	children: ReactNode;

@@ -20,6 +20,7 @@ import { useTranslation } from 'react-i18next';
 import DiscussionsListRow from './DiscussionsListRow';
 import { PaginatedVirtualList } from '../../../../components/PaginatedVirtualList';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
+import { useMessageRowListNavigation } from '../../../../hooks/useMessageRowListNavigation';
 import { useGoToRoom } from '../../hooks/useGoToRoom';
 
 export type DiscussionsListProps = {
@@ -47,6 +48,7 @@ function DiscussionsList({
 }: DiscussionsListProps) {
 	const { t } = useTranslation();
 	const discussionListId = useId();
+	const discussionListRef = useMessageRowListNavigation();
 
 	const showRealNames = useSetting('UI_Use_Real_Name', false);
 	const inputRef = useAutoFocus(true);
@@ -79,7 +81,7 @@ function DiscussionsList({
 					endAddon={<Icon name='magnifier' size='x20' />}
 				/>
 			</ContextualbarSection>
-			<ContextualbarContent paddingInline={0}>
+			<ContextualbarContent flush>
 				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={itemCount} />
 				{isPending && (
 					<Box paddingInline={24} paddingBlock={12}>
@@ -87,12 +89,12 @@ function DiscussionsList({
 					</Box>
 				)}
 				{error instanceof Error && (
-					<Callout marginInline={24} type='danger'>
-						{error.toString()}
-					</Callout>
+					<Box paddingInline={24}>
+						<Callout type='danger'>{error.toString()}</Callout>
+					</Box>
 				)}
 				{isSuccess && (
-					<Box id={discussionListId} width='full' height='full' overflow='hidden' flexShrink={1}>
+					<Box id={discussionListId} ref={discussionListRef} width='full' height='full' overflow='hidden' flexShrink={1}>
 						{discussions.length === 0 && <ContextualbarEmptyContent title={t('No_Discussions_found')} />}
 						{discussions.length > 0 && (
 							<Box height='full' width='full' style={{ minHeight: 0 }}>

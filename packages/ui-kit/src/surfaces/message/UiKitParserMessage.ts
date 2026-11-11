@@ -6,12 +6,17 @@ export const messageSurfaceLayoutBlockTypes = [
 	'actions',
 	'callout',
 	'context',
+	'context_actions',
 	'divider',
+	'header',
 	'image',
 	'info_card',
 	'input',
+	'markdown',
 	'preview',
 	'section',
+	'table',
+	'video',
 	'video_conf',
 ] as const satisfies readonly RenderableLayoutBlock['type'][];
 

@@ -6,6 +6,11 @@ updates:
     schedule:
       interval: daily
     open-pull-requests-limit: 10
+    # Matches npmMinimalAgeGate in .yarnrc.yml, so Yarn can install the versions that version updates propose.
+    # Security updates ignore the cooldown: a fix published less than 3 days ago must be added to
+    # npmPreapprovedPackages in .yarnrc.yml before it can be installed.
+    cooldown:
+      default-days: 3
     labels:
       - 'automerge'
 

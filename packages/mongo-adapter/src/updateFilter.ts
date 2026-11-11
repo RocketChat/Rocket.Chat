@@ -1,10 +1,10 @@
 import type { Document, Filter, FilterOperators, Sort, UpdateFilter } from 'mongodb';
 
-import { getBSONType } from './bson';
-import { assertHasValidFieldNames, assertIsValidFieldName, clone, isIndexable, isNumericKey, isPlainObject, equals } from './common';
-import { createPredicateFromFilter } from './filter';
-import { createComparatorFromSort } from './sort';
-import { BSONType, type ArrayIndices } from './types';
+import { getBSONType } from './bson.js';
+import { assertHasValidFieldNames, assertIsValidFieldName, clone, isIndexable, isNumericKey, isPlainObject, equals } from './common.js';
+import { createPredicateFromFilter } from './filter.js';
+import { createComparatorFromSort } from './sort.js';
+import { BSONType, type ArrayIndices } from './types.js';
 
 const isUpdateModifiers = <T>(mod: UpdateFilter<T>): boolean => {
 	let isModify = false;
@@ -413,7 +413,7 @@ const findModTarget = (
 				return undefined;
 			}
 
-			throw new Error(`Cannot use the part '${keypart}' to traverse ${doc}`);
+			throw new Error(`Cannot use the part '${keypart}' to traverse ${String(doc)}`);
 		}
 
 		if (Array.isArray(doc)) {
@@ -524,7 +524,7 @@ export const createTransformFromUpdateFilter = <T extends { _id: string }>(modif
 				throw new Error(`Invalid modifier specified ${operator}`);
 			}
 
-			for (const [keypath, arg] of Object.entries(operand as any)) {
+			for (const [keypath, arg] of Object.entries(operand)) {
 				if (keypath === '') {
 					throw new Error('An empty update path is not valid.');
 				}
@@ -538,7 +538,7 @@ export const createTransformFromUpdateFilter = <T extends { _id: string }>(modif
 				const target = findModTarget(newDoc, keyparts, {
 					arrayIndices,
 					forbidArray: operator === '$rename',
-					noCreate: ['$pop', '$pull', '$pullAll', '$rename', '$unset'].includes(operator as keyof typeof modifiers),
+					noCreate: ['$pop', '$pull', '$pullAll', '$rename', '$unset'].includes(operator),
 				});
 
 				const key = keyparts.pop();
@@ -573,7 +573,7 @@ export const createUpsertDocument = <T extends { _id: string }>(selector: Filter
 		delete selectorDocument._id;
 	}
 
-	newDoc = createTransformFromUpdateFilter({ $set: selectorDocument })(newDoc as T) as T;
+	newDoc = createTransformFromUpdateFilter({ $set: selectorDocument })(newDoc as T);
 	newDoc = createTransformFromUpdateFilter(modifier)(newDoc as T, { isInsert: true });
 
 	if (isUpdateModifiers(modifier)) {
@@ -588,7 +588,7 @@ export const createUpsertDocument = <T extends { _id: string }>(selector: Filter
 	return replacement as T;
 };
 
-const insertIntoDocument = (document: Document, key: any, value: any) => {
+const insertIntoDocument = (document: Document, key: string, value: unknown) => {
 	Object.keys(document).forEach((existingKey) => {
 		if (
 			(existingKey.length > key.length && existingKey.indexOf(`${key}.`) === 0) ||

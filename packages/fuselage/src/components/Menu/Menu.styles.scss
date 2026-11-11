@@ -1,0 +1,19 @@
+@use '../../styles/colors.scss';
+@use '../../styles/lengths.scss';
+@use '../../styles/typography.scss' as *;
+
+.rcx-menu-item {
+	&--with-description {
+		flex-wrap: wrap;
+	}
+
+	&__description {
+		flex-basis: 100%;
+
+		white-space: normal;
+		word-break: break-word;
+
+		color: colors.font(secondary-info);
+		@include use-font-scale(p2);
+	}
+}

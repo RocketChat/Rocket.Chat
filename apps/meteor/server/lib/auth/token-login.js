@@ -1,13 +1,15 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
-import { check } from 'meteor/check';
 
 Accounts.registerLoginHandler('login-token', async (result) => {
 	if (!result.loginToken) {
 		return;
 	}
 
-	check(result.loginToken, String);
+	if (typeof result.loginToken !== 'string') {
+		throw new ClientSafeError('error-invalid-arguments', 'Invalid arguments');
+	}
 
 	const user = await Users.findOne({
 		'services.loginToken.token': result.loginToken,

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useCategoryFlatList } from './useCategoryFlatList';
 import { useCategoryToggle } from './useCategoryToggle';
-import { AppClientOrchestratorInstance } from '../../../apps/orchestrator';
+import { AppClientOrchestratorInstance } from '../../../lib/apps/orchestrator';
 import type {
 	CategoryDropDownGroups,
 	CategoryDropdownItem,

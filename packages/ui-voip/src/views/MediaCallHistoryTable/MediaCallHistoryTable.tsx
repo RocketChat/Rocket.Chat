@@ -1,3 +1,4 @@
+import type { TableColumnWidth } from '@rocket.chat/fuselage';
 import { GenericTable, GenericTableHeaderCell, GenericTableHeader, GenericTableBody, GenericTableCell } from '@rocket.chat/ui-client';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -19,8 +20,10 @@ const MediaCallHistoryTable = ({ sort, children }: MediaCallHistoryTableProps) =
 	const { t } = useTranslation();
 	const { sortBy, sortDirection, setSort: onClickSort } = sort;
 
+	const columns: TableColumnWidth[] = ['auto', 'auto', 'auto', 'auto', 44];
+
 	return (
-		<GenericTable>
+		<GenericTable columns={columns}>
 			<GenericTableHeader>
 				<GenericTableHeaderCell key='contact' sort='contact' onClick={onClickSort} active={sortBy === 'contact'} direction={sortDirection}>
 					{t('Contact')}
@@ -41,7 +44,7 @@ const MediaCallHistoryTable = ({ sort, children }: MediaCallHistoryTableProps) =
 					{t('Time_slash_Date')}
 				</GenericTableHeaderCell>
 				{/* This cell has to be `td` because of a11y guidelines (Table header cells cannot be empty) */}
-				<GenericTableCell key='menu' width={44} aria-label={t('Options')} is='td' />
+				<GenericTableCell key='menu' aria-label={t('Options')} is='td' />
 			</GenericTableHeader>
 			<GenericTableBody>{children}</GenericTableBody>
 		</GenericTable>

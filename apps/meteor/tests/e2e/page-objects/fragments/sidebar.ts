@@ -68,12 +68,21 @@ export class RoomSidebar extends Sidebar {
 		return this.root.getByTestId('virtuoso-item-list');
 	}
 
+	/** The whole row, so tests reach the badges, avatar, preview and menu that sit beside the room link. */
 	getSidebarItemByName(name: string) {
-		return this.channelsList.getByRole('link', { name }).filter({ has: this.page.getByText(name, { exact: true }) });
+		return this.channelsList.getByRole('listitem').filter({ has: this.getRoomLink(name) });
+	}
+
+	getSidebarItemLinkByName(name: string) {
+		return this.channelsList.locator(this.getRoomLink(name));
+	}
+
+	private getRoomLink(name: string) {
+		return this.page.getByRole('link', { name }).filter({ has: this.page.getByText(name, { exact: true }) });
 	}
 
 	getFilterItemByName(name: string): Locator {
-		return this.root.getByRole('button', { name }).filter({ has: this.page.getByText(name, { exact: true }) });
+		return this.root.getByRole('link', { name }).filter({ has: this.page.getByText(name, { exact: true }) });
 	}
 
 	getSidebarListItem(name: string): Locator {
@@ -102,13 +111,14 @@ export class RoomSidebar extends Sidebar {
 
 	async markItemAsUnread(item: Locator): Promise<void> {
 		await item.hover();
-		await item.focus();
+		await item.getByRole('link').focus();
 		await item.getByRole('button', { name: 'Options', exact: true }).click();
 		await this.page.getByRole('menuitem', { name: 'Mark unread' }).click();
 	}
 
 	getCollapseGroupByName(name: string): Locator {
-		return this.root.getByRole('button').filter({ has: this.page.getByRole('heading', { name, exact: true }) });
+		const escapedName = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+		return this.root.getByRole('listitem', { name: new RegExp(`^(Collapse|Expand) ${escapedName}$`) });
 	}
 
 	getItemUnreadBadge(item: Locator): Locator {
@@ -122,13 +132,13 @@ export class RoomSidebar extends Sidebar {
 	async selectPriority(name: string, priority: string) {
 		const sidebarItem = this.getSidebarItemByName(name);
 		await sidebarItem.hover();
-		await sidebarItem.focus();
+		await sidebarItem.getByRole('link').focus();
 		await sidebarItem.getByRole('button', { name: 'Options', exact: true }).click();
 		await this.page.getByRole('menuitem', { name: priority }).click();
 	}
 
 	getSidebarListItemByName(name: string): Locator {
-		return this.channelsList.getByRole('listitem').filter({ has: this.getSidebarItemByName(name) });
+		return this.getSidebarItemByName(name);
 	}
 
 	getCategoryCollapser(name: string): Locator {
@@ -163,7 +173,7 @@ export class RoomSidebar extends Sidebar {
 	async openRoomMenu(name: string): Promise<void> {
 		const item = this.getSidebarItemByName(name);
 		await item.hover();
-		await item.focus();
+		await item.getByRole('link').focus();
 		await item.getByRole('button', { name: 'Options', exact: true }).click();
 		await this.menuOptions.waitForDisplay();
 	}
@@ -207,6 +217,36 @@ export class RoomSidebar extends Sidebar {
 		await this.openRoomMenu(roomName);
 		await this.menuOptions.selectMenuItem('Move to', true);
 		await this.menuMoveTo.waitForDisplay();
+	}
+
+	/** The names of the groups, in the order the sidebar lists them. */
+	async getCategoryOrder(): Promise<string[]> {
+		const labels = await this.root
+			.getByRole('listitem', { name: /^(Collapse|Expand) / })
+			.evaluateAll((elements) => elements.map((element) => element.getAttribute('aria-label') ?? ''));
+		return labels.map((label) => label.replace(/^(Collapse|Expand) /, ''));
+	}
+
+	async dragRoomToCategory(roomName: string, categoryName: string): Promise<void> {
+		await this.dragWithPointer(this.getSidebarItemLinkByName(roomName), this.getCategoryCollapser(categoryName), 'middle');
+	}
+
+	async dragCategoryAbove(categoryName: string, targetName: string): Promise<void> {
+		await this.dragWithPointer(this.getCategoryCollapser(categoryName), this.getCategoryCollapser(targetName), 'top');
+	}
+
+	/** Presses, moves in steps and releases, so the list sees a drag rather than a click. */
+	private async dragWithPointer(source: Locator, target: Locator, edge: 'top' | 'middle'): Promise<void> {
+		const from = await source.boundingBox();
+		const to = await target.boundingBox();
+		if (!from || !to) {
+			throw new Error('Drag source or target is not visible');
+		}
+
+		await this.page.mouse.move(from.x + from.width / 2, from.y + from.height / 2);
+		await this.page.mouse.down();
+		await this.page.mouse.move(to.x + to.width / 2, to.y + to.height * (edge === 'top' ? 0.25 : 0.5), { steps: 10 });
+		await this.page.mouse.up();
 	}
 }
 

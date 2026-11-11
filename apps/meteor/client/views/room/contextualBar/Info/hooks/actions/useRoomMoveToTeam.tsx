@@ -32,7 +32,9 @@ export const useRoomMoveToTeam = (room: IRoom) => {
 			}
 		};
 
-		setModal(<ChannelToTeamModal onCancel={() => setModal(null)} onConfirm={onConfirm} />);
+		setModal(
+			<ChannelToTeamModal onCancel={() => setModal(null)} onConfirm={onConfirm} removesAbacAttributes={!!room.abacAttributes?.length} />,
+		);
 	});
 
 	return canMoveToTeam ? handleMoveToTeam : null;

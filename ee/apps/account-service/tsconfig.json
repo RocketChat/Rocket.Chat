@@ -1,6 +1,7 @@
 {
 	"extends": "@rocket.chat/tsconfig/server.json",
 	"compilerOptions": {
+		"rootDir": "./src",
 		"incremental": true,
 
 		/* Strict Type-Checking Options */
@@ -10,6 +11,7 @@
 		/* Additional Checks */
 		"noFallthroughCasesInSwitch": false,
 
+		"rootDir": "./src",
 		"outDir": "./dist/ee/apps/account-service/src",
 	},
 	"include": 

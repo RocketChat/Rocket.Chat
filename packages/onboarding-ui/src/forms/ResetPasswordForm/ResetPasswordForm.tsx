@@ -60,7 +60,7 @@ const ResetPasswordForm = ({ onSubmit, validateEmail, initialValues }: ResetPass
 			</FormContainer>
 			<FormFooter>
 				<ButtonGroup>
-					<Button type='submit' primary loading={isValidating || isSubmitting} disabled={!isValid}>
+					<Button type='submit' variant='primary' loading={isValidating || isSubmitting} disabled={!isValid}>
 						{t('form.resetPasswordForm.action.submit')}
 					</Button>
 				</ButtonGroup>

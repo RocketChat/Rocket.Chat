@@ -20,10 +20,6 @@ declare module '@rocket.chat/ui-contexts' {
 			pathname: '/account/security';
 			pattern: '/account/security';
 		};
-		'integrations': {
-			pathname: '/account/integrations';
-			pattern: '/account/integrations';
-		};
 		'tokens': {
 			pathname: '/account/tokens';
 			pattern: '/account/tokens';
@@ -62,11 +58,6 @@ registerAccountRoute('/profile', {
 registerAccountRoute('/security', {
 	name: 'security',
 	component: lazy(() => import('./security/AccountSecurityRoute')),
-});
-
-registerAccountRoute('/integrations', {
-	name: 'integrations',
-	component: lazy(() => import('./integrations/AccountIntegrationsRoute')),
 });
 
 registerAccountRoute('/tokens', {

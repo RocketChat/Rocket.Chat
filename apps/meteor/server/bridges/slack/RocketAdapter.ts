@@ -1,14 +1,12 @@
 // This is a JS File that was renamed to TS so it won't lose its git history when converted to TS
 // TODO: Remove the following lint/ts instructions when the file gets properly converted
-/* eslint-disable @typescript-eslint/naming-convention */
-/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
+/* oxlint-disable-next-line @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
 import util from 'node:util';
 
 import { Messages, Rooms, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { Accounts } from 'meteor/accounts-base';
-import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { rocketLogger } from './logger';
@@ -17,6 +15,7 @@ import { callbacks } from '../../lib/callbacks';
 import { sendMessage } from '../../lib/messages/sendMessage';
 import { createRoom } from '../../lib/rooms/createRoom';
 import { setUserAvatar } from '../../lib/users/setUserAvatar';
+import { getWorkspaceURL } from '../../lib/utils/getURL';
 import { settings } from '../../settings';
 
 export default class RocketAdapter {
@@ -207,7 +206,7 @@ export default class RocketAdapter {
 
 			const attachment = this.getMessageAttachment(rocketMessage);
 			if (attachment) {
-				fileName = Meteor.absoluteUrl(attachment.title_link);
+				fileName = getWorkspaceURL(attachment.title_link);
 				if (!text) {
 					text = attachment.description;
 				}
