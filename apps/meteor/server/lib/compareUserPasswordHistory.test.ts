@@ -1,6 +1,6 @@
-import crypto from 'node:crypto';
 import { describe, it } from 'node:test';
 
+import { SHA256 } from '@rocket.chat/sha256';
 import bcrypt from 'bcrypt';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
@@ -14,7 +14,7 @@ const { compareUserPasswordHistory } = proxyquire.noCallThru().load('./compareUs
 	'../settings': { settings: { get: (id: string) => settingsValues[id] } },
 });
 
-const hash = (password: string) => bcrypt.hashSync(crypto.createHash('sha256').update(password).digest('hex'), 4);
+const hash = (password: string) => bcrypt.hashSync(SHA256(password), 4);
 
 const user = {
 	services: {

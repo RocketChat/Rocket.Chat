@@ -23,6 +23,7 @@
 	},
 	"dependencies": {
 		"@rocket.chat/random": "workspace:^",
+		"@rocket.chat/sha256": "workspace:^",
 		"bcrypt": "^6.0.0"
 	},
 	"devDependencies": {

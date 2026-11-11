@@ -1,6 +1,7 @@
 import crypto from 'node:crypto';
 
 import { Random } from '@rocket.chat/random';
+import { SHA256 } from '@rocket.chat/sha256';
 import bcrypt from 'bcrypt';
 
 export type StampedLoginToken = {
@@ -37,10 +38,10 @@ export function hashStampedToken({ token, when }: StampedLoginToken): HashedStam
 	};
 }
 
-// The web client sends the SHA-256 digest of the password, so plaintext passwords are digested the same way before bcrypt.
+// Uses the web client's SHA256, which encodes characters outside the BMP differently from node:crypto
 function getPasswordDigest(password: Password): string {
 	if (typeof password === 'string') {
-		return crypto.createHash('sha256').update(password).digest('hex');
+		return SHA256(password);
 	}
 	return password.digest;
 }

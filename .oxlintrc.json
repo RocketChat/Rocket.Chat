@@ -303,7 +303,7 @@
 			}
 		},
 		{
-			"files": ["packages/{sha256,models}/**/*"],
+			"files": ["packages/{account-utils,sha256,models}/**/*"],
 			"rules": {
 				"new-cap": [
 					"error",
