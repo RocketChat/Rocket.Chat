@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 const components = join(import.meta.dirname, '../../src/components');
@@ -9,7 +9,7 @@ const components = join(import.meta.dirname, '../../src/components');
  */
 export const rootClass = (component, directory = components) => {
 	const flat = `rcx-${component.toLowerCase()}`;
-	const sources = readdirSync(join(directory, component), { recursive: true }).filter(
+	const sources = (existsSync(join(directory, component)) ? readdirSync(join(directory, component), { recursive: true }) : []).filter(
 		(f) => /\.(?:tsx?|s?css)$/.test(f) && !/\.(?:spec|stories)\./.test(f),
 	);
 	for (const file of sources) {
