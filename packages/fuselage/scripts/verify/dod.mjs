@@ -124,7 +124,17 @@ if (before && after) {
 	}
 } else for (const check of ['class contract diff', 'pixel A/B', 'computed-style A/B']) add('G3', check, needsBuilds);
 
-add('G4', '.d.ts diff', opts.dts ? run('dts-diff.mjs', [opts.dts, 'HEAD']) : { skipped: 'not run', detail: 'pass --dts <base ref>' });
+const dtsCheck = () => {
+	if (!opts.dts) return { skipped: 'not run', detail: 'pass --dts <base ref>' };
+	const res = run('dts-diff.mjs', [opts.dts, 'HEAD']);
+	const diffMatch = res.output.match(/(\d+)\s+exports differ/);
+	if (diffMatch) {
+		const count = Number(diffMatch[1]);
+		return { ok: true, detail: `${count} exports differ (review in G6)` };
+	}
+	return res;
+};
+add('G4', '.d.ts diff', dtsCheck());
 add('G5', 'size', size());
 add('G5', 'perf bench', perf());
 

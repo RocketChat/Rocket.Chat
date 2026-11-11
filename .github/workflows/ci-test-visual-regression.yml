@@ -132,7 +132,7 @@ jobs:
 
       - name: Run visual regression tests
         id: visual
-        continue-on-error: ${{ contains(github.event.pull_request.labels.*.name, 'visual-change-approved') }}
+        continue-on-error: ${{ contains(github.event.pull_request.labels.*.name, 'visual-change-approved') && matrix.zero-runtime != '1' }}
         run: yarn workspace @rocket.chat/fuselage run visual-regression
 
       - uses: ./.github/actions/setup-playwright
