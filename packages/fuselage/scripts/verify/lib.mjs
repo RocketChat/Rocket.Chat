@@ -89,7 +89,8 @@ export const runPool = async (ids, { jobs, width }, fn) => {
 		let session;
 		try {
 			session = await open(Number(width));
-		} catch {
+		} catch (error) {
+			console.error(`could not start a browser: ${error.message.split('\n')[0]}`);
 			return;
 		}
 		while (next < ids.length) {
@@ -101,7 +102,8 @@ export const runPool = async (ids, { jobs, width }, fn) => {
 				await session.browser.close().catch(() => undefined);
 				try {
 					session = await open(Number(width));
-				} catch {
+				} catch (error) {
+					console.error(`could not relaunch a browser: ${error.message.split('\n')[0]}`);
 					return;
 				}
 			}
