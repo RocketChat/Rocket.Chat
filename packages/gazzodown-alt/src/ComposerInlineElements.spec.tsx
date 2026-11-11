@@ -61,14 +61,20 @@ describe('mentions', () => {
 		const input = mountInline([{ type: 'MENTION_USER', value: plain(mention) }]);
 
 		expect(input.textContent).toBe(`@${mention}`);
-		expect(input.querySelector('span')?.className).toBe(`rcx-message__highlight rcx-message__highlight--${variant}`);
+		expect(input.querySelector('span')?.className).toBe(`rcx-composer-mention rcx-composer-mention--${variant}`);
 	});
 
 	it('highlights a channel mention as a link', () => {
 		const input = mountInline([{ type: 'MENTION_CHANNEL', value: plain('general') }]);
 
 		expect(input.textContent).toBe('#general');
-		expect(input.querySelector('span')?.className).toBe('rcx-message__highlight rcx-message__highlight--link');
+		expect(input.querySelector('span')?.className).toBe('rcx-composer-mention rcx-composer-mention--link');
+	});
+
+	it('reads the shared message highlight theme keys', () => {
+		const input = mountInline([{ type: 'MENTION_USER', value: plain('all') }]);
+
+		expect(input.querySelector('span')?.style.color).toContain('--rcx-message-highlight-colors-relevant-color');
 	});
 
 	it('renders a mention as the typed text while resolution is unimplemented', () => {
