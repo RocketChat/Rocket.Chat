@@ -15,6 +15,7 @@ const MessageStatusIndicatorItem = ({ name, className, title, ...props }: Messag
 	<Icon
 		name={name}
 		size='x16'
+		color='secondary-info'
 		title={title}
 		{...(title && { 'role': 'img', 'aria-label': title, 'aria-hidden': undefined })}
 		{...props}
