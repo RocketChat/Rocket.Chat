@@ -143,18 +143,9 @@
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
-	"Chevron/Chevron.styles.scss": {
-		"rules": 7,
-		"nested": 6,
-		"combinators": 0,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 0,
-		"displayContents": 0
-	},
 	"Chip/Chip.styles.scss": {
-		"rules": 5,
-		"nested": 4,
+		"rules": 1,
+		"nested": 0,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
@@ -378,12 +369,12 @@
 		"displayContents": 0
 	},
 	"Modal/Modal.styles.scss": {
-		"rules": 23,
-		"nested": 22,
-		"combinators": 1,
+		"rules": 22,
+		"nested": 21,
+		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
-		"negativeMargins": 2,
+		"negativeMargins": 1,
 		"displayContents": 0
 	},
 	"NavBar/NavBar.styles.scss": {
@@ -522,9 +513,9 @@
 		"displayContents": 0
 	},
 	"SplitButton/SplitButton.styles.scss": {
-		"rules": 9,
-		"nested": 7,
-		"combinators": 2,
+		"rules": 5,
+		"nested": 4,
+		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
 		"negativeMargins": 0,
@@ -573,15 +564,6 @@
 		"important": 0,
 		"specificityBumps": 0,
 		"negativeMargins": 2,
-		"displayContents": 0
-	},
-	"Tag/Tag.styles.scss": {
-		"rules": 17,
-		"nested": 15,
-		"combinators": 0,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 0,
 		"displayContents": 0
 	},
 	"Text/Text.styles.scss": {
