@@ -45,6 +45,6 @@ describe('StatesIcon size', () => {
 			</>,
 		);
 
-		expect(screen.getByTestId('custom').className).not.toEqual(screen.getByTestId('default').className);
+		expect(screen.getByTestId('custom').getAttribute('style')).not.toEqual(screen.getByTestId('default').getAttribute('style'));
 	});
 });

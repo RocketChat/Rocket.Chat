@@ -201,6 +201,9 @@ export type PartAttributes<TElement extends Element> = CommonAttributes & WebAtt
 /** What a part that only shows something and renders a `span` forwards. */
 export type SpanAttributes = PartAttributes<HTMLSpanElement>;
 
+/** What a glyph that only shows something, renders an `i` and may act as a hover or press target forwards. */
+export type GlyphAttributes = PartAttributes<HTMLElement> & WebPressHandlers<HTMLElement>;
+
 /** What a part that acts when pressed (a button, a link, a dismissable chip) forwards. */
 export type ActionAttributes<TElement extends Element> = CommonAttributes &
 	ActionAccessibilityAttributes &
