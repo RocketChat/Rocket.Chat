@@ -162,8 +162,8 @@
 		"displayContents": 0
 	},
 	"Field/Field.styles.scss": {
-		"rules": 8,
-		"nested": 7,
+		"rules": 7,
+		"nested": 6,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
@@ -207,7 +207,7 @@
 		"displayContents": 0
 	},
 	"InputBox/InputBox.styles.scss": {
-		"rules": 35,
+		"rules": 36,
 		"nested": 26,
 		"combinators": 7,
 		"important": 0,
@@ -231,15 +231,6 @@
 		"important": 0,
 		"specificityBumps": 0,
 		"negativeMargins": 2,
-		"displayContents": 0
-	},
-	"Label/Label.styles.scss": {
-		"rules": 4,
-		"nested": 3,
-		"combinators": 0,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 0,
 		"displayContents": 0
 	},
 	"Menu/Menu.styles.css": {

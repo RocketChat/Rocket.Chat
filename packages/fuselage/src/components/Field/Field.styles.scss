@@ -11,16 +11,6 @@
 
 	width: 100%;
 
-	&__label {
-		@include use-font-scale(p2m);
-		align-self: flex-start;
-
-		margin-block: lengths.margin(2);
-		margin-inline-end: lengths.margin(8);
-
-		color: colors.font(default);
-	}
-
 	&__description {
 		@include use-font-scale(p2);
 		margin-block: lengths.margin(2);

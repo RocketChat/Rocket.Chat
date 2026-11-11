@@ -1,3 +1,4 @@
+@use '../../styles/colors.scss';
 @use '../../styles/lengths.scss';
 @use '../../styles/typography.scss' as *;
 @use '../../styles/variables/input-colors.scss' as *;
@@ -44,6 +45,15 @@ $input-border-radius: theme('input-border-radius', lengths.border-radius(medium)
 		cursor: not-allowed;
 		pointer-events: none;
 	}
+}
+
+.rcx-input-box__wrapper {
+	@include use-font-scale(p2m);
+	display: flex;
+
+	cursor: default;
+
+	color: colors.font(default);
 }
 
 .rcx-input-box__wrapper:has(> .rcx-input-box:disabled) {

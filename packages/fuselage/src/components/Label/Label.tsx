@@ -1,37 +1,12 @@
-import type { ElementType, LabelHTMLAttributes } from 'react';
-import { createContext, useContext } from 'react';
+import LabelBase, { type LabelBaseProps } from './LabelBase';
 
-import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
-
-const LabelContext = createContext(false);
-
-export type LabelProps = ElementProps<HTMLElement, LabelHTMLAttributes<HTMLElement>> & {
-	/** Renders another element, such as a `legend` or a `span`. */
-	is?: ElementType;
-	disabled?: boolean;
-	required?: boolean;
-};
+export type LabelProps = Omit<LabelBaseProps, 'field'>;
 
 /**
  * A caption for an input component.
  */
-function Label({ disabled, is, required, children, ...props }: LabelProps) {
-	const isInsideLabel = useContext(LabelContext);
-	const component = is || (isInsideLabel && 'span') || 'label';
-
-	return (
-		<LabelContext.Provider value={true}>
-			<Box is={component} rcx-label rcx-label--disabled={disabled} {...props}>
-				{children}
-				{required && (
-					<Box is='span' rcx-label__required aria-hidden='true'>
-						*
-					</Box>
-				)}
-			</Box>
-		</LabelContext.Provider>
-	);
+function Label(props: LabelProps) {
+	return <LabelBase {...props} />;
 }
 
 export default Label;

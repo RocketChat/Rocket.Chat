@@ -305,6 +305,23 @@ export type FieldsetAttributes = Pick<FieldsetHTMLAttributes<HTMLFieldSetElement
 export type SpanOrAnchorAttributes = ActionAttributes<HTMLElement> &
 	Pick<AnchorHTMLAttributes<HTMLAnchorElement>, 'href' | 'target' | 'rel'>;
 
+/** The element of a part rendered as an `input`, and of one rendered as an `input` or a `textarea`. */
+export type InputElement = HTMLInputElement;
+export type TextControlElement = HTMLInputElement | HTMLTextAreaElement;
+
+/** The press handlers of a part rendered as a `span`. */
+export type SpanPressHandlers = WebPressHandlers<HTMLSpanElement>;
+
+/** What a part rendered as a `label` that only holds a control forwards. */
+export type LabelPartAttributes = PartAttributes<HTMLLabelElement>;
+
+/** What a part rendered as a `fieldset` forwards besides its `FieldsetAttributes`. */
+export type FieldsetPartAttributes = PartAttributes<HTMLFieldSetElement> & WebPressHandlers<HTMLFieldSetElement>;
+
+/** What a part rendered as an `a` forwards: its action attributes and the link's address. */
+export type AnchorAttributes = ActionAttributes<HTMLAnchorElement> &
+	Pick<AnchorHTMLAttributes<HTMLAnchorElement>, 'href' | 'target' | 'rel' | 'download'>;
+
 /** What a part rendered as a `div` that only shows something forwards. */
 export type DivAttributes = PartAttributes<HTMLDivElement>;
 
