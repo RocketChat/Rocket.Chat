@@ -62,6 +62,30 @@ describe('useItemListDrag', () => {
 		expect(document.activeElement).toBe(rows[0]);
 	});
 
+	it('gives the focus back to the same control of the remounted row, ignoring the frame classes that come first', async () => {
+		const { list } = createList();
+		const original = list.querySelector<HTMLElement>('[data-drag-key="Projects"] button')!;
+		original.className = 'is_Text rcx-item-group-title _dsp-flex';
+		const onMove = jest.fn(async () => {
+			const row = list.querySelector('[data-drag-key="Projects"]')!;
+			const remounted = document.createElement('button');
+			remounted.className = 'is_Text rcx-item-group-title _dsp-flex';
+			const sibling = document.createElement('span');
+			sibling.className = 'is_Text';
+			row.replaceChildren(sibling, remounted);
+			return undefined;
+		});
+
+		const { result } = renderHook(() => useItemListDrag({ resolveTarget: () => undefined, onDrop: jest.fn(), onMove }));
+		attachDrag(result.current.ref, list);
+
+		original.focus();
+		fireEvent.keyDown(original, { key: 'ArrowDown', metaKey: true, shiftKey: true });
+
+		await waitFor(() => expect(document.activeElement).toBe(list.querySelector('[data-drag-key="Projects"] button')));
+		expect(original.isConnected).toBe(false);
+	});
+
 	it('advertises the shortcut only on the rows the keyboard can move', () => {
 		const { list, rows } = createList();
 		const onMove = jest.fn();
