@@ -2,4 +2,4 @@
 '@rocket.chat/ui-avatar': patch
 ---
 
-Narrows the avatar props `BaseAvatar` and `MessageAvatar` pass on to match the `Avatar` they render.
+Narrows `MessageAvatarProps` to the props of the `Avatar` it renders, and stops `BaseAvatar` from forwarding attributes its element does not take.
