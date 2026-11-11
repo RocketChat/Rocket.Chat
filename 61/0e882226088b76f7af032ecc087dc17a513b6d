@@ -1,0 +1,22 @@
+apps/meteor/tests/e2e/page-objects/fragments/table.ts
+  s_3b2230ae45534a::t_64949a0fe9bffc 21-22,30
+  s_3b2230ae45534a::t_4981974b8b4772 23-29
+apps/meteor/tests/e2e/page-objects/omnichannel/omnichannel-departments.ts
+  s_3b2230ae45534a::t_64949a0fe9bffc 4,34-36
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "610e882226088b76f7af032ecc087dc17a513b6d",
+  "prompts": {},
+  "sessions": {
+    "s_3b2230ae45534a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a9faad3d-7fb7-4fc7-9886-6d2caeb426d4",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
