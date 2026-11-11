@@ -18,8 +18,12 @@ export const FormScrollShadow = ({
 
 	const callback: IntersectionObserverCallback = (entries) => {
 		entries.forEach((entry) => {
-			entry.target.id === 'top' && setAtTop(entry.isIntersecting);
-			entry.target.id === 'bottom' && setAtBottom(entry.isIntersecting);
+			if (entry.target.id === 'top') {
+				setAtTop(entry.isIntersecting);
+			}
+			if (entry.target.id === 'bottom') {
+				setAtBottom(entry.isIntersecting);
+			}
 		});
 	};
 

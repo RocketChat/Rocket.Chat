@@ -1,36 +1,15 @@
-import { css } from '@rocket.chat/css-in-js';
-import { Box, Palette } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type { ReactNode } from 'react';
 import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useEmbeddedLayout } from '../../hooks/useEmbeddedLayout';
-import {
-	HoverCard,
-	HoverCardActions,
-	HoverCardBand,
-	HoverCardHeader,
-	HoverCardInfoItem,
-	HoverCardInfoList,
-	HoverCardSection,
-} from '../HoverCard';
+import { HoverCard, HoverCardActions, HoverCardBand, HoverCardInfoItem, HoverCardInfoList, HoverCardSection } from '../HoverCard';
 import { MarkdownTextContext } from '../MarkdownTextContext';
 import * as Status from '../UserStatus';
+import UserCardHeader from './UserCardHeader';
 import UserCardRoles from './UserCardRoles';
-import UserCardUsername from './UserCardUsername';
-
-const linkButtonStyle = css`
-	padding: 0;
-	border: none;
-	background: none;
-	cursor: pointer;
-
-	&:focus-visible {
-		outline: 0.125rem solid ${Palette.stroke['stroke-highlight']};
-		outline-offset: 0.125rem;
-	}
-`;
 
 export type UserCardProps = {
 	user?: {
@@ -57,37 +36,28 @@ const UserCard = ({
 	const isLayoutEmbedded = useEmbeddedLayout();
 	const MarkdownText = useContext(MarkdownTextContext);
 	const showUsername = !!username && name !== username;
+	const showProfileLink = !!onOpenUserInfo && !isLayoutEmbedded;
 
 	return (
 		<HoverCard aria-label={t('User_card')}>
 			{workspaceRoles && <HoverCardBand label={t('Workspace_roles')}>{workspaceRoles}</HoverCardBand>}
 			<HoverCardSection>
-				<HoverCardHeader
+				<UserCardHeader
 					avatar={username && <UserAvatar username={username} etag={etag} size='x36' />}
-					title={
-						<Box display='flex' alignItems='center' withTruncatedText>
-							<UserCardUsername is='h2' flexGrow={0} flexBasis='auto' status={status} name={name} />
-							{nickname && (
-								<Box flexShrink={1} title={nickname} color='hint' marginInlineStart='x4' fontScale='p1' withTruncatedText>
-									({nickname})
-								</Box>
-							)}
-						</Box>
-					}
+					name={name}
+					status={status}
+					nickname={nickname}
 					subtitle={
-						customStatus && (
-							<Box fontScale='p2' color='default' paddingInlineStart='x4' withTruncatedText>
-								{typeof customStatus === 'string' ? (
-									<MarkdownText withTruncatedText variant='inlineWithoutBreaks' content={customStatus} parseEmoji={true} />
-								) : (
-									customStatus
-								)}
-							</Box>
-						)
+						customStatus &&
+						(typeof customStatus === 'string' ? (
+							<MarkdownText withTruncatedText variant='inlineWithoutBreaks' content={customStatus} parseEmoji={true} />
+						) : (
+							customStatus
+						))
 					}
 				/>
-				<Box display='flex' flexDirection='column' marginBlockStart='x16'>
-					{(showUsername || roles || localTime) && (
+				{(showUsername || roles || localTime || showProfileLink) && (
+					<Box marginBlockStart='x16'>
 						<HoverCardInfoList>
 							{showUsername && (
 								<HoverCardInfoItem icon='at' label={t('Username')}>
@@ -104,24 +74,16 @@ const UserCard = ({
 									{localTime}
 								</HoverCardInfoItem>
 							)}
+							{showProfileLink && (
+								<HoverCardInfoItem icon='link' onClick={onOpenUserInfo}>
+									<Box is='span' color='info' textDecorationLine='underline'>
+										{t('Full_profile')}
+									</Box>
+								</HoverCardInfoItem>
+							)}
 						</HoverCardInfoList>
-					)}
-					{onOpenUserInfo && !isLayoutEmbedded && (
-						<HoverCardInfoItem icon='link'>
-							<Box
-								is='button'
-								type='button'
-								className={linkButtonStyle}
-								fontScale='p2'
-								color='info'
-								textDecorationLine='underline'
-								onClick={onOpenUserInfo}
-							>
-								{t('Full_profile')}
-							</Box>
-						</HoverCardInfoItem>
-					)}
-				</Box>
+					</Box>
+				)}
 				{actions && (
 					<Box display='flex' flexDirection='column' marginBlockStart='x24'>
 						<HoverCardActions aria-label={t('User_card_actions')} stretch='equal'>

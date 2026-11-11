@@ -1208,7 +1208,7 @@ describe('SAML', () => {
 				'@rocket.chat/core-services': { ClientSafeError },
 				'@rocket.chat/random': { Random: { id: () => '__credentialToken__' } },
 				'@rocket.chat/tools': { escapeRegExp: (s: string) => s, escapeHTML: (s: string) => s },
-				'meteor/accounts-base': { Accounts: { _generateStampedLoginToken: () => ({ token: 't' }) } },
+				'meteor/accounts-base': { Accounts: {} },
 				...getURLStubs,
 				'./ServiceProvider': {
 					SAMLServiceProvider: class {

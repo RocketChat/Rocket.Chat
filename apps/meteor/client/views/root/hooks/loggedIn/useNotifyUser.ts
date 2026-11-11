@@ -7,6 +7,7 @@ import { useEffect } from 'react';
 import { useDesktopNotification } from './useDesktopNotification';
 import { useNewMessageNotification } from './useNewMessageNotification';
 import { RoomManager } from '../../../../lib/RoomManager';
+import { openNotifications } from '../../../../lib/openNotifications';
 import { fireGlobalEvent } from '../../../../lib/utils/fireGlobalEvent';
 
 export const useNotifyUser = (user: IUser) => {
@@ -59,6 +60,18 @@ export const useNotifyUser = (user: IUser) => {
 		const unsubNotification = notifyUserStream(`${user._id}/notification`, notifyNewMessageAudioAndDesktop);
 
 		const unsubSubs = notifyUserStream(`${user._id}/subscriptions-changed`, (action, sub) => {
+			if (action === 'updated') {
+				openNotifications.closeReadNotifications(sub);
+				return;
+			}
+
+			if (action === 'removed') {
+				if (sub.rid) {
+					openNotifications.closeRoomNotifications(sub.rid);
+				}
+				return;
+			}
+
 			if (action !== 'inserted') {
 				return;
 			}
@@ -71,6 +84,8 @@ export const useNotifyUser = (user: IUser) => {
 			unsubSubs();
 		};
 	}, [notifyNewMessageAudioAndDesktop, notifyNewRoom, notifyUserStream, router, user._id]);
+
+	useEffect(() => () => openNotifications.closeAll(), [user._id]);
 
 	useEffect(() => () => notificationSounds.stopNewRoom(), [notificationSounds]);
 };

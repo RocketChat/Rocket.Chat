@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/layout",
-	"version": "1.0.0-rc.1",
+	"version": "1.0.0",
 	"description": "Shared Application Layout Components",
 	"homepage": "https://github.com/RocketChat/Rocket.Chat#readme",
 	"bugs": {
@@ -56,7 +56,7 @@
 		"typescript": "~7.0.2"
 	},
 	"peerDependencies": {
-		"@rocket.chat/fuselage": "1.0.0-rc.1",
+		"@rocket.chat/fuselage": "1.0.0",
 		"react": ">=19",
 		"react-dom": ">=19",
 		"react-i18next": "*"

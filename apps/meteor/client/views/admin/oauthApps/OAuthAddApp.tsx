@@ -1,5 +1,4 @@
 import {
-	Box,
 	Button,
 	ButtonGroup,
 	TextInput,
@@ -18,6 +17,8 @@ import { useCallback, useId } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+
+import ContentColumn from '../../../components/ContentColumn';
 
 type OAuthAddAppPayload = {
 	name: string;
@@ -57,7 +58,7 @@ const OAuthAddApp = () => {
 
 	return (
 		<ContextualbarScrollableContent width='full'>
-			<Box maxWidth='x600' width='full' alignSelf='center'>
+			<ContentColumn>
 				<FieldGroup>
 					<Field>
 						<FieldRow>
@@ -97,7 +98,7 @@ const OAuthAddApp = () => {
 						</FieldRow>
 					</Field>
 				</FieldGroup>
-			</Box>
+			</ContentColumn>
 		</ContextualbarScrollableContent>
 	);
 };

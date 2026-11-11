@@ -1,7 +1,9 @@
-import { Box, Icon, StatusBullet } from '@rocket.chat/fuselage';
+import { Icon, Stack, StatusBullet } from '@rocket.chat/fuselage';
 import type { Keys } from '@rocket.chat/icons';
 import { TextSeparator } from '@rocket.chat/ui-client';
 import type { ComponentProps, ReactNode } from 'react';
+
+import StatusBulletSlot from '../layout/StatusBulletSlot';
 
 export type WorkspaceCardTextSeparatorProps = {
 	label: ReactNode;
@@ -12,15 +14,15 @@ export type WorkspaceCardTextSeparatorProps = {
 const WorkspaceCardTextSeparator = ({ icon, label, value, status }: WorkspaceCardTextSeparatorProps) => (
 	<TextSeparator
 		label={
-			<Box display='flex' alignItems='center' columnGap={icon ? 4 : undefined}>
+			<Stack direction='row' align='center' gap={icon ? 'x4' : undefined}>
 				{icon && <Icon name={icon} size='x16' />}
 				{status && (
-					<Box minWidth='x16' display='inline-flex' flexDirection='row' alignItems='flex-end' justifyContent='center'>
+					<StatusBulletSlot>
 						<StatusBullet status={status} />
-					</Box>
+					</StatusBulletSlot>
 				)}
 				{label && label}
-			</Box>
+			</Stack>
 		}
 		value={value}
 	/>

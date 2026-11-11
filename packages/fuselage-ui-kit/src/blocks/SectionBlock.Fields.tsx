@@ -1,28 +1,21 @@
-import { Grid, GridItem } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 import * as UiKit from '@rocket.chat/ui-kit';
 import type { ReactElement } from 'react';
-
-const breakpoints = {
-	xs: 4,
-	sm: 4,
-	md: 4,
-	lg: 6,
-	xl: 6,
-} as const;
 
 export type FieldsProps = {
 	fields: readonly UiKit.TextObject[];
 	surfaceRenderer: UiKit.SurfaceRenderer<ReactElement<any>>;
 };
 
+// Two columns sized by the message, not the window, so fields read the same in a thread panel and in the room.
 const Fields = ({ fields, surfaceRenderer }: FieldsProps) => (
-	<Grid>
+	<Box display='grid' rowGap='x8' columnGap='x16' style={{ gridTemplateColumns: 'repeat(2, minmax(0, 1fr))' }}>
 		{fields.map((field, i) => (
-			<GridItem key={i} {...breakpoints}>
+			<div key={i} style={{ overflowWrap: 'anywhere' }}>
 				{surfaceRenderer.renderTextObject(field, 0, UiKit.BlockContext.NONE)}
-			</GridItem>
+			</div>
 		))}
-	</Grid>
+	</Box>
 );
 
 export default Fields;

@@ -83,7 +83,7 @@ export const MultiSelectCustom = ({
 		(selectedOption: OptionProp, e?: ChangeEvent<HTMLElement>): void => {
 			e?.stopPropagation();
 
-			if (selectedOption.hasOwnProperty('checked')) {
+			if (Object.hasOwn(selectedOption, 'checked')) {
 				selectedOption.checked = !selectedOption.checked;
 
 				if (selectedOption.checked) {
@@ -98,7 +98,7 @@ export const MultiSelectCustom = ({
 		[selectedOptions, setSelectedOptions],
 	);
 
-	const selectedOptionsCount = dropdownOptions.filter((option) => option.hasOwnProperty('checked') && option.checked).length;
+	const selectedOptionsCount = dropdownOptions.filter((option) => Object.hasOwn(option, 'checked') && option.checked).length;
 	const buttonProps = useButtonPattern(() => toggleCollapsed(!collapsed));
 
 	return (

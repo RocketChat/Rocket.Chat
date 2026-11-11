@@ -1,11 +1,12 @@
 import type { HTMLAttributes } from 'react';
 
 import { cx } from '../../helpers/composeClassNames';
+import ItemMedia from '../Item/ItemMedia';
 
-export type MessageContainerFixedProps = HTMLAttributes<HTMLDivElement>;
+export type MessageContainerFixedProps = Omit<HTMLAttributes<HTMLDivElement>, 'is'>;
 
 const MessageContainerFixed = ({ className, ...props }: MessageContainerFixedProps) => (
-	<div {...props} className={cx('rcx-box rcx-box--full rcx-message-container rcx-message-container--fixed', className)} />
+	<ItemMedia {...props} className={cx('rcx-message-container--fixed', className)} />
 );
 
 export default MessageContainerFixed;
