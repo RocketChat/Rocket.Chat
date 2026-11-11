@@ -108,7 +108,7 @@ export const MessageList = function MessageList({
 
 	const keepMountedMessages = useKeepMountedMessages(messages, canPreview);
 
-	useTryToJumpToMessage({ rid, virtualizerRef, setIsJumpingToMessage, messages });
+	useTryToJumpToMessage({ rid, virtualizerRef, setIsJumpingToMessage, messages, listIndexOffset: canPreview ? 1 : 0 });
 
 	const handlePrepend = useCallback(
 		(offset: number) => {

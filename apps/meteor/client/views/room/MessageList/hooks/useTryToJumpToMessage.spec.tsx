@@ -1,7 +1,7 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { renderHook, waitFor } from '@testing-library/react';
 import type { MutableRefObject } from 'react';
-import type { WindowVirtualizerHandle } from 'virtua';
+import type { VirtualizerHandle } from 'virtua';
 
 import useTryToJumpToMessage from './useTryToJumpToMessage';
 import { RoomHistoryManager } from '../../../../lib/RoomHistoryManager';
@@ -45,7 +45,7 @@ const renderJumpHook = (rid: string, message: unknown) =>
 		() =>
 			useTryToJumpToMessage({
 				rid,
-				virtualizerRef: { current: { scrollToIndex: jest.fn() } } as unknown as MutableRefObject<WindowVirtualizerHandle | null>,
+				virtualizerRef: { current: { scrollToIndex: jest.fn() } } as unknown as MutableRefObject<VirtualizerHandle | null>,
 				setIsJumpingToMessage: mockedSetIsJumpingToMessage,
 				messages: [{ _id: 'another-msg' }],
 			}),
@@ -137,4 +137,38 @@ it('should stop jumping when the surrounding messages request fails', async () =
 	rerender();
 
 	expect(mockedRoomHistoryManager.getSurroundingChannelMessages).toHaveBeenCalledTimes(1);
+});
+
+it('should apply listIndexOffset when scrolling to message index', async () => {
+	const mockedScrollToIndex = jest.fn();
+	renderHook(
+		() =>
+			useTryToJumpToMessage({
+				rid: 'room-1',
+				virtualizerRef: { current: { scrollToIndex: mockedScrollToIndex } } as unknown as MutableRefObject<VirtualizerHandle | null>,
+				setIsJumpingToMessage: mockedSetIsJumpingToMessage,
+				messages: [{ _id: 'msg-1' }],
+				listIndexOffset: 1,
+			}),
+		{
+			wrapper: mockAppRoot()
+				.withRouter({ getSearchParameters: () => ({ msg: 'msg-1' }) })
+				.withEndpoint('GET', '/v1/chat.getMessage', (() => ({ message: { ...message, _id: 'msg-1', rid: 'room-1' } })) as any)
+				.wrap((children) => (
+					<RoomContext.Provider
+						value={
+							{
+								rid: 'room-1',
+								room: { _id: 'room-1', t: 'c', name: 'general' },
+							} as any
+						}
+					>
+						{children}
+					</RoomContext.Provider>
+				))
+				.build(),
+		},
+	);
+
+	await waitFor(() => expect(mockedScrollToIndex).toHaveBeenCalledWith(1, { align: 'center' }));
 });
