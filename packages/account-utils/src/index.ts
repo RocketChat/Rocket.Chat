@@ -43,7 +43,7 @@ function getPasswordDigest(password: Password): string {
 	if (typeof password === 'string') {
 		return SHA256(password);
 	}
-	return password.digest;
+	return password.digest.toLowerCase();
 }
 
 export function hashPassword(password: Password): Promise<string> {

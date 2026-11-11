@@ -20,7 +20,7 @@ export async function compareUserPasswordHistory(user: IUser, pass: IPassword): 
 	const passwordHistory = user.services.passwordHistory.slice(-Number(settings.get('Accounts_Password_History_Amount')));
 
 	const historyPassword = pass.plain || {
-		digest: pass.sha256 ? pass.sha256.toLowerCase() : '',
+		digest: pass.sha256 || '',
 		algorithm: 'sha-256' as const,
 	};
 

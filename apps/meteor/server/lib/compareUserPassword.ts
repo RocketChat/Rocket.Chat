@@ -17,7 +17,7 @@ export async function compareUserPassword(user: Pick<IUser, 'services'>, pass: I
 	}
 
 	const password = pass.plain || {
-		digest: pass.sha256?.toLowerCase() || '',
+		digest: pass.sha256 || '',
 		algorithm: 'sha-256' as const,
 	};
 
