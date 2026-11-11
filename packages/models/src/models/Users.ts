@@ -3121,7 +3121,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 	}
 
 	setPasswordHash(_id: IUser['_id'], passwordHash: string) {
-		return this.col.updateOne(
+		return this.updateOne(
 			{ _id },
 			{
 				$set: { 'services.password.bcrypt': passwordHash },
