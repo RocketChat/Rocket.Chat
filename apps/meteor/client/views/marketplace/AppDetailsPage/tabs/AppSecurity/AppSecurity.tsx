@@ -26,7 +26,7 @@ const AppSecurity = ({ privacyPolicySummary, appPermissions, tosLink, privacyLin
 				<Stack gap='x32'>
 					<AppInfoSection title={<AppSecurityLabel>{t('Privacy_summary')}</AppSecurityLabel>}>
 						<Text is='p' fontScale='p2'>
-							{privacyPolicySummary?.length && privacyPolicySummary}
+							{privacyPolicySummary}
 						</Text>
 					</AppInfoSection>
 
