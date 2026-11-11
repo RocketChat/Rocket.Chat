@@ -18,6 +18,16 @@ export class Table {
 			has: this.root.page().getByText(name, { exact: true }),
 		});
 	}
+
+	findRowsNotNamed(name: string): Locator {
+		return this.root
+			.getByRole('rowgroup')
+			.last()
+			.getByRole('row')
+			.filter({
+				hasNot: this.root.page().getByText(name, { exact: true }),
+			});
+	}
 }
 
 export class DevicesTable extends Table {

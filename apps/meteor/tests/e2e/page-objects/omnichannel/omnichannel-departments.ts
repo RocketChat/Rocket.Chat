@@ -1,6 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { OmnichannelAdmin, OmnichannelSectionsHref } from './omnichannel-admin';
+import { expect } from '../../utils/test';
 import { MenuOptions } from '../fragments';
 import { Listbox } from '../fragments/listbox';
 import { OmnichannelUpsellDepartmentsModal, ConfirmDeleteDepartmentModal } from '../fragments/modals';
@@ -28,6 +29,11 @@ export class OmnichannelDepartments extends OmnichannelAdmin {
 		this.listbox = new Listbox(page);
 		this.menOptions = new MenuOptions(page);
 		this.deleteModal = new ConfirmDeleteDepartmentModal(page);
+	}
+
+	override async search(text: string) {
+		await super.search(text);
+		await expect(this.table.findRowsNotNamed(text)).toHaveCount(0);
 	}
 
 	async createNew() {
