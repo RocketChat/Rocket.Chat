@@ -36,7 +36,6 @@ const AvatarStack = (props: AvatarStackProps) => {
 		<AvatarStackFrame
 			className={prependClassName(className, 'rcx-avatar-stack')}
 			render={
-				// oxlint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- the consumer's to set, with the role it gives
 				<div
 					{...ariaAndDataAttributes(props)}
 					{...pickWebPressHandlers(props)}

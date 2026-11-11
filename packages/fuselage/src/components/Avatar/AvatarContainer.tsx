@@ -115,7 +115,6 @@ const AvatarContainer = (props: AvatarContainerProps) => {
 			interactive={!!props.onClick}
 			className={prependClassName(className, `rcx-box rcx-box--full rcx-avatar rcx-avatar--${size}`)}
 			render={
-				// oxlint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- the consumer's to set, with the role it gives
 				<figure
 					{...ariaAndDataAttributes(props)}
 					{...pickWebPressHandlers(props)}

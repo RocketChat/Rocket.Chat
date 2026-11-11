@@ -140,7 +140,6 @@ const Avatar = (props: AvatarProps) => {
 				interactive={!!props.onClick}
 				className={innerClass}
 				render={
-					// oxlint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- the consumer's to set, with the role it gives
 					<img
 						{...ariaAndDataAttributes(props)}
 						{...pickWebPressHandlers(props)}
