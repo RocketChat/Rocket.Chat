@@ -120,12 +120,18 @@ describe('NTLM under FIPS', () => {
 });
 
 describe('throttling', () => {
-	it('reports a 503 as rate-limited', async () => {
-		const transport = transportFor();
-		jest
+	afterEach(() => {
+		jest.restoreAllMocks();
+	});
+
+	it.each(['basic', 'ntlm'] as const)('reports a 503 on the first request over %s as rate-limited', async (authMethod) => {
+		jest.spyOn(crypto, 'getFips').mockReturnValue(0);
+		const transport = transportFor({ authMethod });
+		const send = jest
 			.spyOn(transport as unknown as { send: () => Promise<unknown> }, 'send')
 			.mockResolvedValue({ status: 503, headers: {}, body: '<html>Service Unavailable</html>' });
 
 		await expect(transport.post('<soap/>')).rejects.toMatchObject({ code: 'rate-limited' });
+		expect(send).toHaveBeenCalledTimes(1);
 	});
 });
