@@ -1,5 +1,6 @@
 import type { kindColors } from './buttonPalettes.mts';
 import type { Value } from './literal.mts';
+import { zIndex } from './tokens.mts';
 import { toCSSValue } from '../../../src/helpers/toCSSValue.ts';
 import { borderRadius, borderWidth, fontScale, size, type FontScaleName } from '../../../src/styleTokens.ts';
 
@@ -66,4 +67,36 @@ export const buttonChrome = {
 	borderWidth: toCSSValue('--rcx-button-border-width', '1px'),
 	borderStyle: 'solid',
 	borderRadius: toCSSValue('--rcx-button-border-radius', toCSSValue('--rcx-border-radius-medium', borderRadius('medium'))),
+} satisfies Record<string, Value>;
+
+const rounded = buttonChrome.borderRadius;
+
+/** The corners a segment of a `SplitButton` rounds: the group's outer ones, mirrored under right-to-left by the logical names. */
+export const segmentVariants = (() => {
+	const corners = (startStart: boolean, endStart: boolean, startEnd: boolean, endEnd: boolean) => ({
+		borderStartStartRadius: startStart ? rounded : 0,
+		borderEndStartRadius: endStart ? rounded : 0,
+		borderStartEndRadius: startEnd ? rounded : 0,
+		borderEndEndRadius: endEnd ? rounded : 0,
+	});
+
+	return {
+		only: corners(true, true, true, true),
+		first: corners(true, true, false, false),
+		middle: corners(false, false, false, false),
+		last: corners(false, false, true, true),
+	} satisfies Record<string, Value>;
+})();
+
+/** A segment with the focus ring rises over its neighbour, which would cover the half of the ring that overlaps it. */
+export const segmentRaise = {
+	position: { 'focus-visible': 'relative' },
+	zIndex: { 'focus-visible': zIndex.raised },
+} satisfies Record<string, Value>;
+
+/** The same over a badge, which pins its own position and so needs the frame positioned at rest. */
+export const segmentRaiseBadged = {
+	overflow: 'visible',
+	position: 'relative',
+	zIndex: { 'focus-visible': zIndex.raised },
 } satisfies Record<string, Value>;

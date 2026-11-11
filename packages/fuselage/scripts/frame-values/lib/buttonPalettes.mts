@@ -128,3 +128,30 @@ export const iconPalettes = () => {
 		danger: statusPalette('danger', kindColors('danger', kinds.danger)),
 	};
 };
+
+/**
+ * The colours of the trigger segment of a `SplitButton`, per tone of the group: a ghost that shows the group's translucent
+ * background, and feeds back with the tone's own tokens at the same translucency.
+ */
+export const ghostPalettes = () => {
+	const translucent = (kind: string, state: string) => `color-mix(in srgb, ${buttonBackground(kind, state)} 70%, transparent)`;
+
+	const tone = (name: string, kind: string) => {
+		const themed = (property: string, value: string) => toCSSValue(`--rcx-button-ghost${name && `-${name}`}-${property}`, value);
+
+		return {
+			color: name ? toCSSValue(`--rcx-split-button-${name}-color`, buttonFont(kind)) : buttonFont(kind),
+			hoverBackground: themed('hover-background-color', translucent(kind, 'hover')),
+			activeBackground: themed('active-background-color', translucent(kind, 'press')),
+			focusBackground: themed('focus-background-color', translucent(kind, 'focus')),
+		};
+	};
+
+	return {
+		default: tone('', 'secondary'),
+		danger: tone('danger', 'danger'),
+		warning: tone('warning', 'warning'),
+		success: tone('success', 'success'),
+		primary: tone('primary', 'primary'),
+	};
+};

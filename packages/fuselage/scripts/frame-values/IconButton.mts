@@ -1,7 +1,18 @@
 import { join } from 'node:path';
 
-import { buttonChrome, disabledStyle, font, paintStyle, squaredSize } from './lib/buttonFrames.mts';
-import { iconPalettes, kindColors, kinds } from './lib/buttonPalettes.mts';
+import {
+	buttonBoxShadow,
+	buttonChrome,
+	disabledStyle,
+	font,
+	paintStyle,
+	segmentRaise,
+	segmentRaiseBadged,
+	segmentVariants,
+	squaredSize,
+	statesOf,
+} from './lib/buttonFrames.mts';
+import { ghostPalettes, iconPalettes, kindColors, kinds } from './lib/buttonPalettes.mts';
 import { literal, type Value } from './lib/literal.mts';
 import type { Target } from './lib/target.mts';
 import { fontColor } from '../../src/styleTokens.ts';
@@ -49,6 +60,24 @@ const generateIconButton = () => {
 		const colors = kindColors(kind, kinds[kind]);
 		addPaint(name, paintStyle(colors), paintStyle(colors), disabledStyle(colors));
 	}
+
+	// The trigger of a `SplitButton` shows the group's background through it, whatever its variant, pressed or not
+	const ring = buttonBoxShadow(iconPalettes().icon.colors);
+	for (const [name, g] of Object.entries(ghostPalettes())) {
+		const ghost = {
+			color: g.color,
+			borderColor: statesOf(Array(4).fill('transparent') as string[]),
+			backgroundColor: statesOf(['transparent', g.focusBackground, g.hoverBackground, g.activeBackground]),
+			boxShadow: ring,
+		};
+		const paint = name === 'default' ? 'ghost' : `ghost-${name}`;
+		constant(camelName(paint), ghost);
+		constant(`${camelName(paint)}Disabled`, { cursor: 'not-allowed', ...ghost });
+	}
+
+	constant('segment', segmentVariants);
+	constant('segmentRaise', segmentRaise);
+	constant('segmentRaiseBadged', segmentRaiseBadged);
 
 	const sides = { mini: 20, tiny: 24, small: 28, medium: 32, large: 40 };
 	for (const [name, side] of Object.entries(sides)) {

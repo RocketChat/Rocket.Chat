@@ -1,6 +1,15 @@
 import { join } from 'node:path';
 
-import { buttonChrome, disabledStyle, font, paintStyle, squareLayout, squaredSize } from './lib/buttonFrames.mts';
+import {
+	buttonChrome,
+	disabledStyle,
+	font,
+	paintStyle,
+	segmentRaise,
+	segmentVariants,
+	squareLayout,
+	squaredSize,
+} from './lib/buttonFrames.mts';
 import { kindColors, kinds } from './lib/buttonPalettes.mts';
 import { literal, type Value } from './lib/literal.mts';
 import type { Target } from './lib/target.mts';
@@ -50,6 +59,8 @@ const generateButton = () => {
 	}
 
 	constant('squareLayout', squareLayout);
+	constant('segment', segmentVariants);
+	constant('segmentRaise', segmentRaise);
 
 	constant('frame', {
 		render: 'button',

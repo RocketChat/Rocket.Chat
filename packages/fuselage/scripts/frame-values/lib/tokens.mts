@@ -5,6 +5,7 @@ import { spacingScale } from '../../../src/styleTokens.ts';
 const require = createRequire(import.meta.url);
 
 export const buttonTokens: { light: Record<string, string> } = require('@rocket.chat/fuselage-tokens/dist/button.json');
+export const zIndex: Record<'raised' | 'overlap' | 'sticky' | 'overlay', number> = require('@rocket.chat/fuselage-tokens/dist/zIndex.json');
 export const colors: Record<string, string> = require('@rocket.chat/fuselage-tokens/dist/colors.json');
 
 /** A spacing value off the scale, for the lengths it has no step for. A length on the scale must use `spacing()`. */
