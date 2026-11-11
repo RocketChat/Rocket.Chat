@@ -23,7 +23,7 @@ type Story = StoryObj<typeof Tooltip>;
 const onMouseEnter = fn();
 const onMouseLeave = fn();
 const onAnimationEnd = fn();
-const forwardedRef = createRef<HTMLElement>();
+const forwardedRef = createRef<HTMLDivElement>();
 
 export const Forwarding: Story = {
 	render: () => (
