@@ -68,6 +68,13 @@ describe('AppUploadBridge.createUpload', () => {
 		expectNoUpload();
 	});
 
+	it('sends a visitor upload as a livechat message without userId', async () => {
+		await bridge.createUpload({ ...baseDetails, visitorToken: 'vtok' }, buffer, 'app-id');
+		expect(insert.firstCall.args[0]).to.not.have.property('userId');
+		expect(sendFileLivechatMessage.firstCall.args[0]).to.deep.equal({ roomId: 'room-id', visitorToken: 'vtok', file: { _id: 'file-id' } });
+		expect(sendFileMessage.called).to.be.false;
+	});
+
 	it('throws when a visitor upload sets threadId', async () => {
 		const { userId, ...visitorDetails } = baseDetails;
 		await expect(bridge.createUpload({ ...visitorDetails, visitorToken: 'vtok', threadId: 'tm1' }, buffer, 'app-id')).to.be.rejectedWith(
