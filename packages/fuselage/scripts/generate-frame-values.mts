@@ -16,7 +16,7 @@ import { pathToFileURL } from 'node:url';
 
 import prettier from 'prettier';
 
-import { moduleProblems, spacingProperties, stylesheetProblems } from './frame-values/lib/check.mts';
+import { moduleProblems, spacingProperties, stylesheetProblems, transformProblems } from './frame-values/lib/check.mts';
 import { markers } from './frame-values/lib/markers.mts';
 import type { Target } from './frame-values/lib/target.mts';
 
@@ -69,6 +69,13 @@ for (const { file, generate, css, section } of targets) {
 
 	const config = (await prettier.resolveConfig(file)) ?? {};
 	const body = await prettier.format(generate(), { ...config, parser: css ? 'css' : 'typescript' });
+	if (check) {
+		for (const problem of transformProblems(file, body)) {
+			console.error(problem);
+			stale = true;
+		}
+	}
+
 	const next = `${source.slice(0, start)}${START}\n\n${body}\n${source.slice(end)}`;
 
 	if (next !== source) {

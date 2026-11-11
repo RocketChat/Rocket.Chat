@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { moduleProblems, spacingProperties, stylesheetProblems } from './check.mts';
+import { moduleProblems, spacingProperties, stylesheetProblems, transformProblems } from './check.mts';
 import { literal } from './literal.mts';
 import { markers } from './markers.mts';
 import { textFrameDefaults } from './textFrameDefaults.mts';
@@ -73,4 +73,11 @@ test('a custom property that feeds a spacing property counts as one', () => {
 	assert.equal(properties.has('--rcx-thing-gap'), true);
 	assert.equal(stylesheetProblems('a.css', '.a {\n\t--rcx-thing-gap: 6px;\n}', properties).length, 1);
 	assert.equal(stylesheetProblems('a.css', '.a {\n\t--rcx-other: 6px;\n}', properties).length, 0);
+});
+
+test('a transform that starts with none and goes on is a problem', () => {
+	assert.equal(transformProblems('f.tsx', '{ transform: { "default": "none", "press": "translateY(1px)" } }').length, 0);
+	assert.equal(transformProblems('f.tsx', '{ transform: "translate(1px) translateY(1px)" }').length, 0);
+	assert.equal(transformProblems('f.tsx', '{ transform: { "press": "none translateY(1px)" } }').length, 1);
+	assert.equal(transformProblems('f.tsx', '{ transform: "none translateY(1px)" }').length, 1);
 });

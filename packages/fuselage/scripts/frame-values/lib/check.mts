@@ -79,3 +79,14 @@ export const stylesheetProblems = (name: string, text: string, properties: Set<s
 
 	return problems;
 };
+
+/** A `transform` that starts with `none` and goes on: it is not a valid value, and the browser drops the whole declaration. */
+export const transformProblems = (name: string, body: string) => {
+	const problems: string[] = [];
+
+	for (const match of body.matchAll(/\btransform['"]?\s*:\s*\{?[^;}]*?(['"`])\s*none\s+[^'"`]*\1/g)) {
+		problems.push(`${name}:${lineOf(body, match.index)}: a transform that starts with \`none\` is dropped, state the others alone`);
+	}
+
+	return problems;
+};
