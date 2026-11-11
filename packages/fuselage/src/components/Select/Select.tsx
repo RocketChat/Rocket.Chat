@@ -303,7 +303,7 @@ function Select<V extends Key = Key>({
 				animated
 				rcx-select
 				rcx-select--trigger
-				rcx-input-box--small={small}
+				rcx-select--small={small}
 				rcx-select--invalid={!!error}
 				rcx-select--disabled={disabled}
 				className={props.className}

@@ -99,7 +99,6 @@ export const PaginatedSelect = ({
 				)}
 				<Anchor
 					disabled={disabled}
-					rcx-input-box--undecorated
 					filter={filter}
 					ref={ref}
 					aria-haspopup='listbox'

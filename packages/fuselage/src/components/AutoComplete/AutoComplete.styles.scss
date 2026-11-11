@@ -1,11 +1,9 @@
 @use '../../styles/colors.scss';
 @use '../../styles/lengths.scss';
-@use '../Select/Select.styles.scss' as *;
+@use '../Select/select-box.scss' as *;
 
 .rcx-autocomplete {
-	@extend .rcx-select;
-
-	flex-grow: 1;
+	@include select-box($invalid-class: rcx-autocomplete--invalid, $disabled-class: rcx-autocomplete--disabled);
 
 	&__group {
 		display: flex;

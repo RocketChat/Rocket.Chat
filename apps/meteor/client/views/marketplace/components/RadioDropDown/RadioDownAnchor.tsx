@@ -4,13 +4,17 @@ import type { ComponentProps, MouseEvent } from 'react';
 import { forwardRef } from 'react';
 
 import type { RadioDropDownGroup } from '../../definitions/RadioDropDownDefinitions';
+import '../DropDownAnchor.css';
 
 type RadioDropdownAnchorProps = {
 	onClick: (event: MouseEvent<HTMLElement>) => void;
 	group: RadioDropDownGroup;
 } & Omit<ComponentProps<typeof Button>, 'onClick'>;
 
-const RadioDownAnchor = forwardRef<HTMLElement, RadioDropdownAnchorProps>(function SortDropDownAnchor({ onClick, group, ...props }, ref) {
+const RadioDownAnchor = forwardRef<HTMLElement, RadioDropdownAnchorProps>(function SortDropDownAnchor(
+	{ onClick, group, className, ...props },
+	ref,
+) {
 	const selected = group?.items.find((item) => item.checked)?.label;
 
 	return (
@@ -33,8 +37,8 @@ const RadioDownAnchor = forwardRef<HTMLElement, RadioDropdownAnchorProps>(functi
 			minWidth='x144'
 			paddingInlineEnd='x8'
 			paddingInlineStart='x12'
-			rcx-input-box
 			{...props}
+			className={['marketplace-dropdown-anchor', className]}
 		>
 			{selected}
 			<Icon name='chevron-down' size='x20' />

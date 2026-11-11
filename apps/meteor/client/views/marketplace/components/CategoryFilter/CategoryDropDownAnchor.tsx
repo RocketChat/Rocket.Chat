@@ -5,12 +5,14 @@ import type { ComponentProps, MouseEventHandler } from 'react';
 import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import '../DropDownAnchor.css';
+
 export type CategoryDropDownAnchorProps = { selectedCategoriesCount: number; onClick?: MouseEventHandler<HTMLElement> } & ComponentProps<
 	typeof Button
 >;
 
 const CategoryDropDownAnchor = forwardRef<HTMLElement, CategoryDropDownAnchorProps>(function CategoryDropDownAnchor(
-	{ onClick, selectedCategoriesCount, ...props },
+	{ onClick, selectedCategoriesCount, className, ...props },
 	ref,
 ) {
 	const { t } = useTranslation();
@@ -34,8 +36,8 @@ const CategoryDropDownAnchor = forwardRef<HTMLElement, CategoryDropDownAnchorPro
 			paddingInlineEnd='x8'
 			paddingInlineStart='x12'
 			lineHeight='unset'
-			rcx-input-box
 			{...props}
+			className={['marketplace-dropdown-anchor', className]}
 		>
 			{selectedCategoriesCount > 0 && (
 				<Box

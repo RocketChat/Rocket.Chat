@@ -1,0 +1,33 @@
+.marketplace-dropdown-anchor {
+	position: relative;
+	overflow: hidden;
+	width: 0;
+	min-height: 2.5rem;
+	padding-block: 8px;
+	vertical-align: baseline;
+	word-break: break-all;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	outline: 0;
+	box-shadow: none;
+	user-select: auto;
+	color: var(--rcx-input-colors-color, var(--rcx-color-font-titles-labels, #1f2329));
+	letter-spacing: 0;
+	font-size: 0.875rem;
+	font-weight: 500;
+	line-height: 1.25rem;
+}
+
+.marketplace-dropdown-anchor:focus,
+.marketplace-dropdown-anchor:focus-within {
+	box-shadow: 0 0 0 2px var(--rcx-input-colors-focus-shadow-color, var(--rcx-color-shadow-highlight, #d1ebfe));
+}
+
+.marketplace-dropdown-anchor:active {
+	box-shadow: none;
+}
+
+.marketplace-dropdown-anchor:disabled {
+	cursor: not-allowed;
+	color: var(--rcx-input-colors-disabled-color, var(--rcx-color-font-disabled, #cbced1));
+}

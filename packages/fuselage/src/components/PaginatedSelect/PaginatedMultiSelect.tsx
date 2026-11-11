@@ -157,7 +157,6 @@ const PaginatedMultiSelect = ({
 						onClick={show}
 						onBlur={hide}
 						className='rcx-select__anchor--last'
-						rcx-input-box--undecorated
 					>
 						{placeholder ?? null}
 					</Anchor>
