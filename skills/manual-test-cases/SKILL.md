@@ -8,11 +8,6 @@ description: Guides creation of manual test cases for the Rocket.Chat applicatio
 ## When to Use
 Use when writing, designing, or reviewing manual test cases, QA test plans, or when the user asks about test case structure, test type classification (API/E2E/Unit), preconditions, or test case templates.
 
-## Required context
-
-Before creating test cases, load this reference file:
-- [test-cases.json](../../.cursor/files/test-cases.json) — reference format and existing test case structures
-
 ## Test case format
 
 ```markdown

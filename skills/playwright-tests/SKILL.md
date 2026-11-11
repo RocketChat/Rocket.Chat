@@ -6,72 +6,29 @@ description: Guides writing Playwright end-to-end tests for the Rocket.Chat appl
 # Playwright Test Development
 
 ## When to use
-Use this skill **only** when writing, editing, or reviewing **end-to-end (e2e) tests** that use the [Playwright](https://playwright.dev/) framework.  
-It does **not** apply to unit, integration, or manual tests, nor to test frameworks other than Playwright.
 
-**Typical scenarios:**
-- Creating new Playwright test specs (`.spec.ts`) in `apps/meteor/tests/e2e/`
-- Maintaining or improving existing e2e Playwright tests or page objects
-- Reviewing e2e test code for Playwright best practices, locator usage, or code organization
+Use this skill only for **end-to-end tests written with [Playwright](https://playwright.dev/)** under `apps/meteor/tests/e2e/`. It does not cover unit or API tests (Jest, Mocha) or manual test cases.
 
-If you are working with other test types or frameworks (e.g., Jest, Mocha, manual QA), refer to the appropriate skill or documentation.
+## Read the guide first
 
-## File structure
+[`apps/meteor/tests/e2e/README.md`](../../apps/meteor/tests/e2e/README.md) is the source of truth for e2e tests in this repository. Read it before writing or reviewing a spec. It covers:
 
-- **Test files**: `apps/meteor/tests/e2e/` — use `.spec.ts` extension (e.g. `login.spec.ts`)
-- **Page objects**: `apps/meteor/tests/e2e/page-objects/` — reuse existing ones before creating new
-- **Config**: `playwright.config.ts` for global settings
+- running the suite and its environment variables
+- locators: which to prefer (`getByRole`, `getByText`, `getByLabel`, `locator(…, { has })`) and which to avoid (test ids, class names, position)
+- page objects, and why `goto()` owns navigation and its wait
+- web-first assertions and waiting on observable conditions, never fixed delays
+- cleanup after tests
+- performance patterns: seeding state through the API helpers in `utils/`, sharing a browser context in `.serial` suites, opening a room by URL
+- a template for an optimized suite, and the anti-patterns to flag in review
 
-## Code quality
+## Where things live
 
-- Write concise TypeScript with accurate typing
-- Use descriptive test names that communicate expected behavior
-- Extract reusable logic into helper functions (DRY)
-- No code comments in implementation
+- Specs: `apps/meteor/tests/e2e/**/*.spec.ts`
+- Page objects: `apps/meteor/tests/e2e/page-objects/` (reuse one before adding a new one)
+- API helpers for seeding state: `apps/meteor/tests/e2e/utils/`
+- Config: `apps/meteor/playwright.config.ts`
 
-## Locator strategy
+## Before finishing
 
-Prefer semantic locators — **never** use `page.locator()` directly:
-
-| Locator | Use for |
-|---------|---------|
-| `page.getByRole()` | Interactive elements (buttons, links, inputs) |
-| `page.getByLabel()` | Form fields |
-| `page.getByText()` | Text content |
-| `page.getByTitle()` | Titled elements |
-
-Store commonly used locators in variables/constants for reuse.
-
-## Test structure
-
-- `test.beforeAll()` / `test.afterAll()` for setup and teardown
-- `test.step()` for complex scenarios to aid readability
-- Group related tests in the same file
-- Use Playwright fixtures (`test`, `page`, `expect`)
-
-## Assertions & waiting
-
-- **Prefer web-first assertions**: `toBeVisible`, `toHaveText`, `toHaveValue`, etc.
-- Use `expect` matchers (`toEqual`, `toContain`, `toBeTruthy`, `toHaveLength`) — never `assert`
-- `page.waitFor()` with specific conditions — never hardcoded timeouts
-- Implement proper wait strategies for dynamic content
-
-## Architecture
-
-- Follow Page Object Model consistently
-- Maintain test isolation — clean state for each test
-- Tests must run reliably in parallel without shared state conflicts
-- Reuse existing test files when appropriate; create new ones when needed
-
-## Output format
-
-Provide:
-1. Complete, runnable TypeScript test files
-2. Proper import statements
-3. Well-structured `describe`/`test` blocks
-4. Implementation that follows all above guidelines
-
-## Reference
-
-- [Playwright Testing Guide](https://playwright.dev/docs/writing-tests)
-- [Rocket.Chat Documentation](https://docs.rocket.chat/docs/rocketchat)
+- Lint the spec: `yarn run -T oxlint <file>` from `apps/meteor`. The e2e folder has its own lint overrides, such as `no-floating-promises`.
+- Check the change against the README's "Anti-patterns to flag in review" list.
