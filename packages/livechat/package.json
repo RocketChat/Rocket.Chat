@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/livechat",
-	"version": "3.0.0-rc.0",
+	"version": "3.0.0",
 	"homepage": "https://rocket.chat",
 	"repository": {
 		"type": "git",
@@ -65,6 +65,8 @@
 		"@storybook/addon-docs": "~10.6.5",
 		"@storybook/preact": "~10.6.5",
 		"@storybook/preact-vite": "~10.6.5",
+		"@tamagui/static": "3.0.18",
+		"@tamagui/vite-plugin": "3.0.18",
 		"@types/crypto-js": "~4.2.2",
 		"@types/emoji-mart": "~3.0.14",
 		"@types/react": "~19.2.18",
@@ -94,8 +96,8 @@
 		"webpack": "~5.104.1"
 	},
 	"peerDependencies": {
-		"@rocket.chat/fuselage-tokens": "0.36.0-rc.0",
-		"@rocket.chat/logo": "0.33.3-rc.0"
+		"@rocket.chat/fuselage-tokens": "0.36.0",
+		"@rocket.chat/logo": "0.33.3"
 	},
 	"volta": {
 		"extends": "../../package.json"

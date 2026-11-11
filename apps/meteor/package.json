@@ -353,6 +353,8 @@
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@storybook/react": "~10.6.5",
 		"@storybook/react-webpack5": "~10.6.5",
+		"@tamagui/static": "3.0.18",
+		"@tamagui/vite-plugin": "3.0.18",
 		"@testing-library/dom": "~10.4.2",
 		"@testing-library/react": "~16.3.3",
 		"@testing-library/user-event": "~14.6.7",

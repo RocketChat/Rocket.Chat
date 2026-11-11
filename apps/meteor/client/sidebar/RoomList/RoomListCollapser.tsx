@@ -21,6 +21,7 @@ type RoomListCollapserProps = {
 	/** The user chose a window from the group's Filter submenu; `undefined` means "All". */
 	onActivityFilterChange: (activityFilterHours: number | undefined) => void;
 	onClick: () => void;
+	dragging?: boolean;
 } & Omit<HTMLAttributes<HTMLDivElement>, 'onClick' | 'onKeyDown'>;
 
 const RoomListCollapser = ({

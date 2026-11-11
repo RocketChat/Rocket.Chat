@@ -192,6 +192,7 @@ export class ClientStreamImpl extends Emitter implements ClientStream {
 					options,
 					callback: (error, result) => {
 						if (error) {
+							// oxlint-disable-next-line typescript/prefer-promise-reject-errors -- consumers read the DDP error payload's fields
 							reject(error);
 						} else {
 							resolve(result);
@@ -248,6 +249,7 @@ export class ClientStreamImpl extends Emitter implements ClientStream {
 				}
 
 				if (!self.subscriptions.has(id)) {
+					// oxlint-disable-next-line typescript/only-throw-error -- consumers read the DDP error payload's fields
 					throw result.error ?? new Error(`Subscription ${name} was stopped`);
 				}
 
@@ -261,6 +263,7 @@ export class ClientStreamImpl extends Emitter implements ClientStream {
 							resolve();
 							return;
 						}
+						// oxlint-disable-next-line typescript/prefer-promise-reject-errors -- consumers read the DDP error payload's fields
 						reject(result.error);
 					});
 				});
@@ -298,6 +301,7 @@ export class ClientStreamImpl extends Emitter implements ClientStream {
 			this.ddp.unsubscribe(id);
 			this.ddp.onNoSub(id, (payload) => {
 				if ('error' in payload) {
+					// oxlint-disable-next-line typescript/prefer-promise-reject-errors -- consumers read the DDP error payload's fields
 					reject(payload.error);
 				} else {
 					resolve(payload);
@@ -310,6 +314,7 @@ export class ClientStreamImpl extends Emitter implements ClientStream {
 		this.ddp.connect();
 		return new Promise((resolve, reject) => {
 			this.ddp.onConnection((data) => {
+				// oxlint-disable-next-line typescript/prefer-promise-reject-errors -- published API: rejects with the DDP `failed` frame
 				if (data.msg === 'failed') reject(data);
 				else resolve(data);
 			});

@@ -3,6 +3,7 @@ import type { useFormatTime, useFormatDateAndTime } from '@rocket.chat/ui-client
 import type { KeyboardEvent, MouseEvent } from 'react';
 import { createContext, useContext } from 'react';
 
+import { normalizeUsername } from '../../../../lib/utils/normalizeUsername';
 import type { useFormatDate } from '../../../hooks/useFormatDate';
 
 export type MessageListContextValue = {
@@ -24,7 +25,7 @@ export type MessageListContextValue = {
 		get: (uid: string) => { workspaceRoles: string[]; roomRoles: string[] };
 	};
 	showRealName: boolean;
-	showUsername: boolean;
+	getAuthorUsername: (author: Pick<IMessage['u'], 'name' | 'username'>) => { normalizedUsername: string; showUsername: boolean };
 	highlights?: {
 		highlight: string;
 		regex: RegExp;
@@ -64,7 +65,7 @@ export const messageListContextDefaultValue: MessageListContextValue = {
 	useOpenEmojiPicker: () => (): void => undefined,
 	showRoles: false,
 	showRealName: false,
-	showUsername: false,
+	getAuthorUsername: ({ username }) => ({ normalizedUsername: normalizeUsername(username), showUsername: false }),
 	showColors: false,
 	username: undefined,
 	apiEmbedEnabled: false,
@@ -94,7 +95,8 @@ export const useMessageListUserRoles = (uid: string, rid: string) => {
 	return userRoles?.rid === rid ? userRoles.get(uid) : undefined;
 };
 export const useMessageListShowRealName = (): MessageListContextValue['showRealName'] => useContext(MessageListContext).showRealName;
-export const useMessageListShowUsername = (): MessageListContextValue['showUsername'] => useContext(MessageListContext).showUsername;
+export const useMessageListAuthorUsername: MessageListContextValue['getAuthorUsername'] = (author) =>
+	useContext(MessageListContext).getAuthorUsername(author);
 export const useMessageListHighlights = (): MessageListContextValue['highlights'] => useContext(MessageListContext).highlights;
 export const useMessageListJumpToMessageParam = (): MessageListContextValue['jumpToMessageParam'] =>
 	useContext(MessageListContext).jumpToMessageParam;

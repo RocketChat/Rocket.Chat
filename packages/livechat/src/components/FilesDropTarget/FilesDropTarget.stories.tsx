@@ -77,7 +77,7 @@ export const AcceptingMultipleFiles: Story = {
 	},
 };
 
-const inputRef = createRef();
+const inputRef = createRef<HTMLInputElement>();
 export const TriggeringBrowseAction: Story = {
 	name: 'triggering browse action',
 	args: {
@@ -92,7 +92,7 @@ export const TriggeringBrowseAction: Story = {
 					flexDirection: 'column',
 				}}
 			>
-				<Button onClick={() => inputRef.current.browse()}>Browse</Button>
+				<Button onClick={() => inputRef.current?.click()}>Browse</Button>
 			</div>
 		),
 		inputRef,
