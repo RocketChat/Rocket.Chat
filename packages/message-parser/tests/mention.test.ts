@@ -1,4 +1,4 @@
-import { paragraph, plain, mentionUser, mentionChannel } from './helpers.js';
+import { paragraph, plain, mentionUser, mentionChannel, bold } from './helpers.js';
 import { parse } from '../src/index.js';
 
 test.each([
