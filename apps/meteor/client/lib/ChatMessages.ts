@@ -1,5 +1,6 @@
 import type { DeepWritable, IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { isVideoConfMessage } from '@rocket.chat/core-typings';
+import { Emitter } from '@rocket.chat/emitter';
 import type { IActionManager } from '@rocket.chat/ui-contexts';
 
 import { CurrentEditingMessage } from './CurrentEditingMessage';
@@ -25,10 +26,15 @@ export class ChatMessages implements ChatAPI {
 
 	public composer: ComposerAPI | undefined;
 
+	private composerEvents = new Emitter<{ change: void }>();
+
 	public setComposerAPI = (composer?: ComposerAPI): void => {
 		this.composer?.release();
 		this.composer = composer;
+		this.composerEvents.emit('change');
 	};
+
+	public subscribeToComposer = (callback: () => void): (() => void) => this.composerEvents.on('change', callback);
 
 	public data: DataAPI;
 

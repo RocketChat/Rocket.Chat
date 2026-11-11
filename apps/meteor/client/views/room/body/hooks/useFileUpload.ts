@@ -15,7 +15,9 @@ export const useFileUpload = () => {
 		throw new Error('No ChatContext provided');
 	}
 
-	const store = chat.composer?.uploads;
+	// Follows the composer as it comes and goes, so its uploads are attached as soon as it exists.
+	const getComposer = useCallback(() => chat.composer, [chat]);
+	const store = useSyncExternalStore(chat.subscribeToComposer, getComposer)?.uploads;
 
 	const uploads = useSyncExternalStore(store?.subscribe ?? emptySubscribe, store?.get ?? getEmptyUploads);
 	const isProcessingUploads = useSyncExternalStore(store?.subscribe ?? emptySubscribe, store?.getProcessingUploads ?? getEmptyBool);

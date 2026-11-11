@@ -132,6 +132,7 @@ export type ChatAPI = {
 	readonly uid: string | undefined;
 	readonly composer?: ComposerAPI;
 	readonly setComposerAPI: (composer?: ComposerAPI) => void;
+	readonly subscribeToComposer: (callback: () => void) => () => void;
 	readonly data: DataAPI;
 	readonly readStateManager: ReadStateManager;
 	readonly messageEditing: {
