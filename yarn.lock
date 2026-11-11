@@ -10959,6 +10959,7 @@ __metadata:
     "@rocket.chat/ui-avatar": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
     "@tanstack/react-query": "*"
+    i18next: "*"
     overlayscrollbars: "*"
     overlayscrollbars-react: "*"
     re-resizable: "*"
