@@ -1,0 +1,35 @@
+apps/meteor/server/lib/auth/issueLoginToken.ts
+  s_abb9231db54e44::t_d26ec60f98ac3e 1-11
+apps/meteor/server/meteor-methods/auth/createToken.ts
+  s_abb9231db54e44::t_d26ec60f98ac3e 4,23
+  s_abb9231db54e44::t_59c344122d071c 3
+apps/meteor/server/meteor-methods/auth/createToken.test.ts
+  s_abb9231db54e44::t_c4c2ee498684ee 9,32,38,57,63,68
+apps/meteor/server/api/v1/twoFactorChallenges.ts
+  s_abb9231db54e44::t_4d2125be384cbd 8
+  s_abb9231db54e44::t_d26ec60f98ac3e 94
+apps/meteor/server/lib/auth/issueLoginToken.test.ts
+  s_abb9231db54e44::t_c4c2ee498684ee 1-25
+apps/meteor/server/lib/oauth/passportOAuthCallback.ts
+  s_abb9231db54e44::t_d26ec60f98ac3e 42
+  s_abb9231db54e44::t_4d2125be384cbd 9
+apps/meteor/server/api/v1/loginCode.ts
+  s_abb9231db54e44::t_d26ec60f98ac3e 56
+  s_abb9231db54e44::t_f12addabed8ffe 5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "deb7f47d76b8fdfcf12c92f6b0456beee0a855d6",
+  "prompts": {},
+  "sessions": {
+    "s_abb9231db54e44": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "68a1b4f3-731a-4a41-9f8c-a68e8902e169",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
