@@ -330,6 +330,7 @@ describe('ExchangeEwsProvider', () => {
 		beforeEach(() => {
 			sleep.mockReset();
 			jest.useFakeTimers();
+			sleep.mockImplementation((ms: number) => jest.setSystemTime(Date.now() + ms));
 		});
 
 		afterEach(() => {

@@ -15,16 +15,14 @@ export async function fetchEwsWithRetry<T>(send: () => Promise<T>, throttle: { u
 	const deadline = Date.now() + RETRY_BUDGET_MS;
 
 	for (let attempt = 0; ; attempt++) {
-		if (throttle.until > deadline) {
-			throw new ExchangeError('rate-limited', 'Exchange is throttling the service account', {
-				detail: `the back-off Exchange asked for does not fit the ${RETRY_BUDGET_MS / 1000}s retry budget`,
-			});
-		}
+		while (throttle.until > Date.now()) {
+			if (throttle.until > deadline) {
+				throw new ExchangeError('rate-limited', 'Exchange is throttling the service account', {
+					detail: `the back-off Exchange asked for does not fit the ${RETRY_BUDGET_MS / 1000}s retry budget`,
+				});
+			}
 
-		const waitMs = throttle.until - Date.now();
-
-		if (waitMs > 0) {
-			await sleep(waitMs);
+			await sleep(throttle.until - Date.now());
 		}
 
 		try {
