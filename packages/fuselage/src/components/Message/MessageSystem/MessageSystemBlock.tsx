@@ -1,13 +1,14 @@
 import type { HTMLAttributes, ReactNode } from 'react';
 
 import { cx } from '../../../helpers/composeClassNames';
+import ItemRow from '../../Item/ItemRow';
 
 export type MessageSystemBlockProps = {
 	children?: ReactNode;
-} & HTMLAttributes<HTMLDivElement>;
+} & Omit<HTMLAttributes<HTMLDivElement>, 'is'>;
 
 const MessageSystemBlock = ({ className, ...props }: MessageSystemBlockProps) => (
-	<div {...props} className={cx('rcx-message-system__block', className)} />
+	<ItemRow {...props} className={cx('rcx-message-system__block', className)} />
 );
 
 export default MessageSystemBlock;

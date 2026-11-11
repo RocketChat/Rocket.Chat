@@ -373,7 +373,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		if (!finalAttributes.length) {
 			if (Array.isArray(user.abacAttributes) && user.abacAttributes.length) {
 				const finalUser = await Users.unsetAbacAttributesById(user._id);
-				await this.onSubjectAttributesChanged(finalUser!, []);
+				await this.onSubjectAttributesChanged(finalUser, []);
 				void Audit.subjectAttributeChanged([], { _id: user._id, username: user.username });
 			}
 			return;
@@ -382,7 +382,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		const finalUser = await Users.setAbacAttributesById(user._id, finalAttributes);
 
 		if (diffAttributeSets(user?.abacAttributes || [], finalAttributes).removed) {
-			await this.onSubjectAttributesChanged(finalUser!, finalAttributes);
+			await this.onSubjectAttributesChanged(finalUser, finalAttributes);
 		}
 
 		const diff = diffAttributes(user?.abacAttributes, finalAttributes);
@@ -1394,7 +1394,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 	}
 
-	protected async onSubjectAttributesChanged(user: IUser, _next: IAbacAttributeDefinition[]): Promise<void> {
+	protected async onSubjectAttributesChanged(user: IUser | null, _next: IAbacAttributeDefinition[]): Promise<void> {
 		if (!user?._id || !Array.isArray(user.__rooms) || !user.__rooms.length || !this.pdp) {
 			return;
 		}

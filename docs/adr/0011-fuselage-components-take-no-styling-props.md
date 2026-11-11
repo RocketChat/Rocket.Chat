@@ -18,7 +18,7 @@ the variations it declares itself. Nothing else: no `Box` styling prop (`margin*
   semantic tokens, `FieldRow` `justify`, `Skeleton` `width`/`height`/`inverted`, and so on. The full list is the
   changeset of #42974.
 - **`is` is a closed set where the component needs one:** `Button`/`IconButton` render as `'button' | 'a'`,
-  `TableCell` as `'td' | 'th'`.
+  `TableCell` as `'td' | 'th'`, `Stack` as `'div' | 'section' | 'ul' | 'li' | 'form' | 'fieldset' | 'span'`.
 - **`Stack` and `PopoverSurface`** are the components that replace the most common `Box`-props compositions: a
   flex row or column spaced by `gap`, and the raised scrolling surface of a dropdown.
 - **`Box` keeps its styling props.** It stays the styling primitive and the escape hatch for layout in the app.
