@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { createRef } from 'react';
-import { expect, fn, waitFor } from 'storybook/test';
+import { expect, waitFor } from 'storybook/test';
 
 import Callout from './Callout';
 import { ariaSnapshot, classContract, expectForwards } from '../../testing/g0';
@@ -17,7 +17,6 @@ export default {
 
 type Story = StoryObj<typeof Callout>;
 
-const onClick = fn();
 const forwardedRef = createRef<HTMLElement>();
 
 export const Forwarding: Story = {
@@ -33,7 +32,6 @@ export const Forwarding: Story = {
 			aria-live='polite'
 			role='alert'
 			type='warning'
-			onClick={onClick}
 		>
 			Body
 		</Callout>
@@ -47,7 +45,6 @@ export const Forwarding: Story = {
 			'data-anything': 'anything',
 			'aria-label': 'callout label',
 			'ref': forwardedRef,
-			'handlers': { onClick },
 		});
 		await expect(callout).toHaveAttribute('aria-live', 'polite');
 		await expect(callout).toHaveAttribute('role', 'alert');
@@ -168,13 +165,13 @@ export const ClassContract: Story = {
 				'root > div > section[0] > div > div: rcx-box rcx-box--full rcx-callout__wrapper-content',
 				'root > div > section[0] > div > div > div: rcx-box rcx-box--full rcx-callout__content',
 				'root > div > section[1]: rcx-box rcx-box--full rcx-callout rcx-callout--info',
-				'root > div > section[1] > i: rcx-box rcx-box--full rcx-callout__icon rcx-icon rcx-icon--name-info-circled',
+				'root > div > section[1] > i: rcx-box rcx-box--full rcx-callout__icon rcx-callout__icon--info rcx-icon rcx-icon--name-info-circled',
 				'root > div > section[1] > div: rcx-box rcx-box--full rcx-callout__wrapper',
 				'root > div > section[1] > div > div: rcx-box rcx-box--full rcx-callout__wrapper-content',
 				'root > div > section[1] > div > div > div[0]: rcx-box rcx-box--full rcx-callout__title',
 				'root > div > section[1] > div > div > div[1]: rcx-box rcx-box--full rcx-callout__content',
 				'root > div > section[2]: rcx-box rcx-box--full rcx-callout rcx-callout--success',
-				'root > div > section[2] > i: rcx-box rcx-box--full rcx-callout__icon rcx-icon rcx-icon--name-checkmark-circled',
+				'root > div > section[2] > i: rcx-box rcx-box--full rcx-callout__icon rcx-callout__icon--success rcx-icon rcx-icon--name-checkmark-circled',
 				'root > div > section[2] > div: rcx-box rcx-box--full rcx-callout__wrapper',
 				'root > div > section[2] > div > div[0]: rcx-box rcx-box--full rcx-callout__wrapper-content',
 				'root > div > section[2] > div > div[0] > div[0]: rcx-box rcx-box--full rcx-callout__title',
@@ -183,12 +180,12 @@ export const ClassContract: Story = {
 				'root > div > section[2] > div > div[1] > button: rcx-box rcx-box--full rcx-button rcx-button--small',
 				'root > div > section[2] > div > div[1] > button > span: rcx-button--content',
 				'root > div > section[3]: rcx-box rcx-box--full rcx-callout rcx-callout--warning',
-				'root > div > section[3] > i: rcx-box rcx-box--full rcx-callout__icon rcx-icon rcx-icon--name-hash',
+				'root > div > section[3] > i: rcx-box rcx-box--full rcx-callout__icon rcx-callout__icon--warning rcx-icon rcx-icon--name-hash',
 				'root > div > section[3] > div: rcx-box rcx-box--full rcx-callout__wrapper',
 				'root > div > section[3] > div > div: rcx-box rcx-box--full rcx-callout__wrapper-content',
 				'root > div > section[3] > div > div > div: rcx-box rcx-box--full rcx-callout__title',
 				'root > div > section[4]: rcx-box rcx-box--full rcx-callout rcx-callout--danger',
-				'root > div > section[4] > i: rcx-box rcx-box--full rcx-callout__icon rcx-icon rcx-icon--name-ban',
+				'root > div > section[4] > i: rcx-box rcx-box--full rcx-callout__icon rcx-callout__icon--danger rcx-icon rcx-icon--name-ban',
 				'root > div > section[4] > div: rcx-box rcx-box--full rcx-callout__wrapper',
 				'root > div > section[4] > div > div: rcx-box rcx-box--full rcx-callout__wrapper-content',
 				'root > div > section[4] > div > div > div: rcx-box rcx-box--full rcx-callout__content',

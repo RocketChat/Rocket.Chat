@@ -46,6 +46,11 @@ export default {
 			description: 'Content (e.g. a ButtonGroup) rendered in the actions area.',
 			table: { category: 'Content' },
 		},
+		centered: {
+			control: 'boolean',
+			description: 'Centres the icon and the content against each other, instead of aligning them to the top.',
+			table: { category: 'Layout' },
+		},
 	},
 } satisfies Meta<typeof Callout>;
 
@@ -116,6 +121,20 @@ export const WithActions: Story = {
 		actions: (
 			<ButtonGroup>
 				<Button size='small'>Button</Button>
+				<Button size='small'>Button</Button>
+			</ButtonGroup>
+		),
+	},
+};
+
+export const Centered: Story = {
+	args: {
+		title: 'This is a generic title',
+		children: 'This is a generic description.',
+		icon: 'members',
+		centered: true,
+		actions: (
+			<ButtonGroup>
 				<Button size='small'>Button</Button>
 			</ButtonGroup>
 		),

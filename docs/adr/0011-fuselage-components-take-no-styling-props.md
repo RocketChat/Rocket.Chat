@@ -24,11 +24,11 @@ the variations it declares itself. Nothing else: no `Box` styling prop (`margin*
 - **`Box` keeps its styling props.** It stays the styling primitive and the escape hatch for layout in the app.
 - **CI holds the line.** `scripts/scan-style-props.mjs` counts JSX use-sites: each use of a component that passes it
   a styling, `is` or `rcx-*` prop it doesn't declare, and each element laid out by `Margins`/`Scrollable`, is one
-  finding however many props it passes. The lint job fails when the count exceeds `--max 1`. The one
-  finding left, the ContactInfo conflicts `Callout`, stays until `Callout` has an API to centre its icon. The check
-  is on the total, so a change that removes that finding and adds another one still passes.
+  finding however many props it passes. The lint job fails when the count exceeds `--max 0`. The last
+  finding, the ContactInfo conflicts `Callout`, went when `Callout` gained `centered` to centre its icon. The check
+  is on the total, so a change that removes a finding and adds another one still passes.
 
-The migration landed in #42974 (scanner count 914 → 1); the scanner and the CI step in #43056. The data behind
+The migration landed in #42974 (scanner count 914 → 1, then 0 with `Callout`'s `centered`); the scanner and the CI step in #43056. The data behind
 the decision, per component and per prop category, is in
 [docs/proposals/fuselage-component-style-props.md](../proposals/fuselage-component-style-props.md).
 

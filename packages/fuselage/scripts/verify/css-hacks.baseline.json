@@ -89,10 +89,10 @@
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
-	"Callout/Callout.styles.scss": {
-		"rules": 17,
-		"nested": 16,
-		"combinators": 3,
+	"Callout/Callout.styles.css": {
+		"rules": 4,
+		"nested": 0,
+		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
 		"negativeMargins": 0,

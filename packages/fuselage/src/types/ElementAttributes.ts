@@ -191,6 +191,12 @@ export type SpanOrAnchorAttributes = ActionAttributes<HTMLElement> &
 /** What a part rendered as a `div` that only shows something forwards. */
 export type DivAttributes = PartAttributes<HTMLDivElement>;
 
+/** What a part rendered as a `section` that only shows something forwards. */
+export type SectionAttributes = PartAttributes<HTMLElement>;
+
+/** The element of a `section` part, for a ref the part measures its own size through. */
+export type SectionElement = HTMLElement;
+
 /** What a toolbar rendered as a `div` listens to. */
 export type DivCaptureHandlers = WebCaptureHandlers<HTMLDivElement>;
 
