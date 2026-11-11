@@ -44,7 +44,7 @@ const run = (script, args) => exec('node', [here(script), ...args]);
 const characterization = (dir) =>
 	readdirSync(dir, { withFileTypes: true, recursive: true }).filter((entry) => entry.name === `${component}.characterization.stories.tsx`);
 
-/** Runs the G0 zero-runtime verification and Jest characterization checks. */
+/** Runs the G0 Jest characterization checks, plus the zero-runtime Storybook check when an --after build is given. */
 const g0 = () => {
 	if (!characterization(join(import.meta.dirname, '../../src')).length)
 		return { skipped: 'not run', detail: 'no characterization stories' };
@@ -58,7 +58,8 @@ const g0 = () => {
 		`characterization-${component.toLowerCase()}\\.test\\.js$`,
 	]);
 	const zeroTests = zero.output.match(/Tests:.*$/m)?.[0] ?? zero.output.split('\n').at(-1);
-	return { ok: jest.ok && zero.ok && jestPassed > 0, detail: `jest: ${jestTests}; zero storybook: ${zeroTests}` };
+	const zeroPassed = Number(zeroTests.match(/(\d+)\s+passed/)?.[1] ?? 0);
+	return { ok: jest.ok && zero.ok && jestPassed > 0 && zeroPassed > 0, detail: `jest: ${jestTests}; zero storybook: ${zeroTests}` };
 };
 
 const size = () => {
