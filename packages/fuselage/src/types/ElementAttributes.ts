@@ -219,3 +219,15 @@ export type DivAnimationHandlers = WebAnimationHandlers<HTMLDivElement>;
 
 /** The press, focus and hover handlers a part rendered as a `div` forwards. */
 export type DivPressHandlers = WebPressHandlers<HTMLDivElement>;
+
+/** What a part rendered as a `pre` that only shows something forwards. */
+export type PreAttributes = PartAttributes<HTMLPreElement>;
+
+/** What a part rendered as a `div` that acts when pressed forwards. */
+export type DivActionAttributes = ActionAttributes<HTMLDivElement>;
+
+/** What a part rendered as a `figure`, or another plain element, that acts when pressed forwards. */
+export type ElementActionAttributes = ActionAttributes<HTMLElement>;
+
+/** What a part that renders an `img` forwards, with its image attributes. */
+export type ImageActionAttributes = ActionAttributes<HTMLImageElement> & ImageAttributes;

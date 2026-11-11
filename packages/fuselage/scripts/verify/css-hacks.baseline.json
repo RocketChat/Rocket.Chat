@@ -143,15 +143,6 @@
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
-	"CodeSnippet/CodeSnippet.styles.scss": {
-		"rules": 2,
-		"nested": 1,
-		"combinators": 0,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 0,
-		"displayContents": 0
-	},
 	"Contextualbar/Contextualbar.styles.scss": {
 		"rules": 16,
 		"nested": 15,
