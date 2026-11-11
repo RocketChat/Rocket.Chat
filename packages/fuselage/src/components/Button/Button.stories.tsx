@@ -141,21 +141,21 @@ export const Truncated: Story = {
 
 export const Variants: Story = {
 	render: () => (
-		<Box padding={16}>
-			<Stack gap={24}>
-				<Stack direction='row' gap={24}>
+		<Box padding='x16'>
+			<Stack gap='x24'>
+				<Stack direction='row' gap='x24'>
 					<Button variant='primary'>Primary</Button>
 					<Button variant='secondary'>Secondary</Button>
 				</Stack>
-				<Stack direction='row' gap={24}>
+				<Stack direction='row' gap='x24'>
 					<Button variant='danger'>Danger</Button>
 					<Button variant='secondary-danger'>Secondary Danger</Button>
 				</Stack>
-				<Stack direction='row' gap={24}>
+				<Stack direction='row' gap='x24'>
 					<Button variant='warning'>Warning</Button>
 					<Button variant='secondary-warning'>Secondary Warning</Button>
 				</Stack>
-				<Stack direction='row' gap={24}>
+				<Stack direction='row' gap='x24'>
 					<Button variant='success'>Success</Button>
 					<Button variant='secondary-success'>Secondary Success</Button>
 				</Stack>
