@@ -1,6 +1,7 @@
 import type { PexipLayout, PexipSettings } from '@rocket.chat/pexip';
 
 import { settingsRegistry, settings } from '.';
+import { OUTLOOK_ADDIN_PAGE_FILES } from '../lib/outlookAddInFiles';
 import { OUTLOOK_ADDIN_MANIFEST_STRINGS, OUTLOOK_ADDIN_PANE_STRINGS } from '../lib/outlookAddInStrings';
 
 export function createPexipSettings(): Promise<void> {
@@ -182,6 +183,16 @@ export function createPexipSettings(): Promise<void> {
 
 			for (const { settingId, defaultValue } of Object.values(OUTLOOK_ADDIN_PANE_STRINGS)) {
 				await this.add(settingId, defaultValue, { type: 'string', public: false });
+			}
+
+			for (const { settingId, defaultAsset, code } of Object.values(OUTLOOK_ADDIN_PAGE_FILES)) {
+				await this.add(settingId, (await Assets.getTextAsync(defaultAsset)) ?? '', {
+					type: 'code',
+					code,
+					multiline: true,
+					public: false,
+					i18nDescription: `${settingId}_Description`,
+				});
 			}
 		});
 

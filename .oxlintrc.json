@@ -237,7 +237,7 @@
 			}
 		},
 		{
-			"files": ["apps/meteor/private/outlook-addin/*.js"],
+			"files": ["apps/meteor/private/outlook-addin/**/*.js"],
 			"globals": {
 				"Office": "readonly",
 				"STRINGS": "readonly"

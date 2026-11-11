@@ -12,20 +12,22 @@ const toScriptLiteral = (value: unknown): string =>
 		.replace(/\u2029/g, '\\u2029');
 
 /**
- * The task pane's script, with the workspace's wording of every text it shows declared ahead of its code.
+ * The add-in's library, handed the workspace's wording of every text it shows.
  *
- * Strict from here rather than from the file: a directive only counts as the very first statement.
+ * Wrapped in a function so that nothing it declares reaches the page but what it publishes on purpose: the
+ * behavior script is the workspace's to write, and must be free to use any name. Strict from inside the function,
+ * where the directive is the first statement.
  */
 export const buildOutlookAddInScript = (source: string, strings: Record<string, string>): string =>
-	`'use strict';\nconst STRINGS = ${toScriptLiteral(strings)};\n${source}`;
+	`(function (STRINGS) {\n'use strict';\n${source}\n})(${toScriptLiteral(strings)});\n`;
 
 /**
- * Answers with the script, or with a bare `304` when the browser already holds this exact version.
+ * Answers with one of the add-in's files, or with a bare `304` when the browser already holds this exact version.
  *
- * The texts are settings, so every load has to ask; the tag is what keeps asking from costing a download.
+ * They are all settings, so every load has to ask; the tag is what keeps asking from costing a download.
  */
-export const sendOutlookAddInScript = (req: IncomingMessage, res: ServerResponse, script: string): void => {
-	const etag = `"${crypto.createHash('sha1').update(script).digest('base64url')}"`;
+export const sendOutlookAddInFile = (req: IncomingMessage, res: ServerResponse, content: string, contentType: string): void => {
+	const etag = `"${crypto.createHash('sha1').update(content).digest('base64url')}"`;
 
 	res.setHeader('Cache-Control', 'no-cache');
 	res.setHeader('ETag', etag);
@@ -36,7 +38,7 @@ export const sendOutlookAddInScript = (req: IncomingMessage, res: ServerResponse
 		return;
 	}
 
-	res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+	res.setHeader('Content-Type', `${contentType}; charset=utf-8`);
 	res.writeHead(200);
-	res.end(script);
+	res.end(content);
 };

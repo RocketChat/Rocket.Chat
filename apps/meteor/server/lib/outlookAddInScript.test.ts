@@ -2,29 +2,39 @@ import { describe, it } from 'node:test';
 
 import { expect } from 'chai';
 
-import { buildOutlookAddInScript, sendOutlookAddInScript } from './outlookAddInScript';
-
-const evaluate = (script: string): Record<string, string> => new Function(`${script}\nreturn STRINGS;`)() as Record<string, string>;
+import { buildOutlookAddInScript, sendOutlookAddInFile } from './outlookAddInScript';
 
 describe('buildOutlookAddInScript', () => {
-	it('should declare the strings ahead of the code, leaving the code untouched', () => {
-		const script = buildOutlookAddInScript('console.log(STRINGS.confirm);', { confirm: 'Add meeting' });
+	const run = (script: string): unknown => new Function(`return ${script}`)();
 
-		expect(script).to.equal('\'use strict\';\nconst STRINGS = {"confirm":"Add meeting"};\nconsole.log(STRINGS.confirm);');
+	it('should hand the strings to the library and run it strictly', () => {
+		const script = buildOutlookAddInScript('return { confirm: STRINGS.confirm, strict: this === undefined };', { confirm: 'Add meeting' });
+
+		expect(run(script)).to.deep.equal({ confirm: 'Add meeting', strict: true });
+	});
+
+	// The behavior script is the workspace's to write; the library must not take any name it might want.
+	it('should leak nothing it declares into the page', () => {
+		const script = buildOutlookAddInScript('const API = 1; var helper = 2;', {});
+
+		new Function(script)();
+
+		expect(globalThis).to.not.have.property('helper');
+		expect(globalThis).to.not.have.property('STRINGS');
 	});
 
 	// The values are whatever an admin typed; none of it may end up running as code.
 	it('should keep any text an admin types a plain string', () => {
 		const strings = { intro: '"; alert(1); "', error: '</script><script>alert(1)</script>', added: 'line\u2028break' };
 
-		const script = buildOutlookAddInScript('', strings);
+		const script = buildOutlookAddInScript('return STRINGS;', strings);
 
 		expect(script).to.not.include('</script>');
-		expect(evaluate(script)).to.deep.equal(strings);
+		expect(run(script)).to.deep.equal(strings);
 	});
 });
 
-describe('sendOutlookAddInScript', () => {
+describe('sendOutlookAddInFile', () => {
 	const respond = (script: string, ifNoneMatch?: string) => {
 		const headers: Record<string, string> = {};
 		const res = {
@@ -42,7 +52,7 @@ describe('sendOutlookAddInScript', () => {
 		};
 		const req = { headers: ifNoneMatch ? { 'if-none-match': ifNoneMatch } : {} };
 
-		sendOutlookAddInScript(req as any, res as any, script);
+		sendOutlookAddInFile(req as any, res as any, script, 'application/javascript');
 
 		return { ...res, headers };
 	};
@@ -53,6 +63,7 @@ describe('sendOutlookAddInScript', () => {
 		expect(status).to.equal(200);
 		expect(body).to.equal('script');
 		expect(headers['Cache-Control']).to.equal('no-cache');
+		expect(headers['Content-Type']).to.equal('application/javascript; charset=utf-8');
 		expect(headers.ETag).to.match(/^".+"$/);
 	});
 

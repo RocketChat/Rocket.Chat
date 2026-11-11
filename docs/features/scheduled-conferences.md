@@ -47,7 +47,14 @@ The add-in ships with the workspace: a task pane under `/outlook-addin/` and a m
 
 In a meeting the organizer is editing, a button opens the task pane. It asks the workspace what the organizer may book, offers a dial-in number only when they may have one, and on confirmation books the meeting with the event's attendees and subject. It then appends the workspace's invitation text to the end of the event body.
 
-Every text the add-in shows is a setting under *Pexip → Outlook Add-in*, so a workspace words it in whatever language it uses. The pane's script is served by the workspace with those texts written into it, uncached, so a change reaches the next pane that opens — including the messages shown before the workspace has answered anything. The manifest's texts — the add-in's name and its toolbar button — are copied into Outlook when the add-in is installed, so changing them takes installing it again.
+Every text the add-in shows is a setting under *Pexip → Outlook Add-in*, so a workspace words it in whatever language it uses.
+
+The page itself is settings too: its HTML, its stylesheet and its behavior script, each defaulting to what ships in `private/outlook-addin/defaults/`. The page is split in two layers:
+
+- **The library** (`taskpane.js`) is fixed. It publishes `window.RocketChatAddIn` — the texts, reading the organizer, attendees and subject, the two scheduling requests, and appending to the event body — and runs nothing by itself. It never touches the page, so a rewritten HTML is not bound to any element.
+- **The behavior script** (`behavior.js`) is the workspace's. It does everything that happens on the page, built on the library; the default is the flow described above.
+
+All of them are served uncached but tagged, so an edit reaches the next pane that opens without costing a download when nothing changed. The behavior script runs on the workspace's own address, with the same reach as the custom scripts under Layout. Clearing any of these settings restores its default. The manifest's texts — the add-in's name and its toolbar button — are copied into Outlook when the add-in is installed, so changing them takes installing it again.
 
 ## Showing the add-in inside Outlook on the web
 

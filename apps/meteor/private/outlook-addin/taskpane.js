@@ -1,8 +1,9 @@
+// The building blocks of the add-in, and nothing that runs on its own: the behavior script decides what happens and
+// when. Nothing here touches the page, so a workspace that rewrites the HTML is not bound to any element of ours.
+// `STRINGS` is handed in by the workspace as it serves this file, worded by its settings.
+
 // Relative, so the page keeps working when the workspace is served under a path.
 const API = '../api/v1';
-
-// Declared ahead of this code by the workspace as it serves the file, worded by its settings.
-const strings = STRINGS;
 
 const fetchJson = async (url, options) => {
 	const response = await fetch(url, options);
@@ -17,26 +18,6 @@ const fetchJson = async (url, options) => {
 	return body;
 };
 
-const elements = {
-	status: () => document.getElementById('status'),
-	form: () => document.getElementById('form'),
-	sipAliasOption: () => document.getElementById('sip-alias-option'),
-	sipAlias: () => document.getElementById('sip-alias'),
-	confirm: () => document.getElementById('confirm'),
-};
-
-const setStatus = (text, tone) => {
-	const status = elements.status();
-	status.textContent = text || '';
-	status.dataset.tone = tone || '';
-};
-
-const applyStrings = () => {
-	for (const element of document.querySelectorAll('[data-string]')) {
-		element.textContent = strings[element.dataset.string] || '';
-	}
-};
-
 /** Office.js reports through callbacks; this turns one into a promise that rejects on failure. */
 const officeAsync = (call) =>
 	new Promise((resolve, reject) => {
@@ -44,15 +25,6 @@ const officeAsync = (call) =>
 	});
 
 const item = () => Office.context.mailbox.item;
-
-const getInviteeEmails = async () => {
-	const [required, optional] = await Promise.all([
-		officeAsync((done) => item().requiredAttendees.getAsync(done)),
-		officeAsync((done) => item().optionalAttendees.getAsync(done)),
-	]);
-
-	return [...required, ...optional].map(({ emailAddress }) => emailAddress).filter(Boolean);
-};
 
 const escapeHtml = (value) =>
 	value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
@@ -64,80 +36,59 @@ const toHtml = (text, url) => {
 	return escapeHtml(text).split(link).join(`<a href="${link}">${link}</a>`).replace(/\r?\n/g, '<br>');
 };
 
-/** Adds the text after whatever the organizer has written, so it never splits their own words. */
-const appendToBody = async (text, url) => {
-	const { body } = item();
-	const type = await officeAsync((done) => body.getTypeAsync(done));
+window.RocketChatAddIn = Object.freeze({
+	/** The workspace's wording of every text the add-in shows, by name. */
+	strings: Object.freeze({ ...STRINGS }),
 
-	if (type === Office.CoercionType.Html) {
-		const html = await officeAsync((done) => body.getAsync(Office.CoercionType.Html, done));
-		const block = `<p>${toHtml(text, url)}</p>`;
-		const updated = /<\/body>/i.test(html) ? html.replace(/<\/body>/i, `${block}</body>`) : `${html}${block}`;
+	/** Resolves once Office.js can be used; nothing below works before. */
+	ready: () => new Promise((resolve) => Office.onReady(() => resolve())),
 
-		return officeAsync((done) => body.setAsync(updated, { coercionType: Office.CoercionType.Html }, done));
-	}
+	getOrganizerEmail: () => Office.context.mailbox.userProfile.emailAddress,
 
-	const plain = await officeAsync((done) => body.getAsync(Office.CoercionType.Text, done));
-	const updated = plain.trim() ? `${plain}\n\n${text}` : text;
+	/** Everyone invited, required and optional alike. */
+	getInviteeEmails: async () => {
+		const [required, optional] = await Promise.all([
+			officeAsync((done) => item().requiredAttendees.getAsync(done)),
+			officeAsync((done) => item().optionalAttendees.getAsync(done)),
+		]);
 
-	return officeAsync((done) => body.setAsync(updated, { coercionType: Office.CoercionType.Text }, done));
-};
+		return [...required, ...optional].map(({ emailAddress }) => emailAddress).filter(Boolean);
+	},
 
-const schedule = async (event) => {
-	event.preventDefault();
+	getSubject: () => officeAsync((done) => item().subject.getAsync(done)),
 
-	const confirm = elements.confirm();
-	confirm.disabled = true;
-	setStatus(strings.adding);
+	/** `{ canSchedule, canUseSipAlias }` for whoever owns the address. */
+	getSchedulingOptions: (email) => fetchJson(`${API}/video-conference.scheduling-options?email=${encodeURIComponent(email)}`),
 
-	try {
-		const [invitees, title] = await Promise.all([getInviteeEmails(), officeAsync((done) => item().subject.getAsync(done))]);
-
-		const { url, text } = await fetchJson(`${API}/video-conference.schedule`, {
+	/**
+	 * Books the meeting, answering `{ url, sipAlias?, text }`. A failure rejects with an error whose `status` is the
+	 * HTTP status — 403 when the organizer may not book what was asked for.
+	 */
+	schedule: ({ email, invitees, sipAlias, title }) =>
+		fetchJson(`${API}/video-conference.schedule`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({
-				email: Office.context.mailbox.userProfile.emailAddress,
-				invitees,
-				sipAlias: !elements.sipAliasOption().hidden && elements.sipAlias().checked,
-				...(title ? { title } : {}),
-			}),
-		});
+			body: JSON.stringify({ email, invitees, sipAlias, ...(title ? { title } : {}) }),
+		}),
 
-		await appendToBody(text, url);
+	/** Adds the text after whatever the organizer has written, so it never splits their own words. */
+	appendToBody: async (text, url) => {
+		const { body } = item();
+		const type = await officeAsync((done) => body.getTypeAsync(done));
 
-		elements.form().hidden = true;
-		setStatus(strings.added, 'success');
-	} catch (error) {
-		console.error(error);
-		setStatus(error.status === 403 ? strings.notAvailable : strings.error, 'error');
-		confirm.disabled = false;
-	}
-};
+		if (type === Office.CoercionType.Html) {
+			const html = await officeAsync((done) => body.getAsync(Office.CoercionType.Html, done));
+			const block = `<p>${toHtml(text, url)}</p>`;
+			const updated = /<\/body>/i.test(html) ? html.replace(/<\/body>/i, `${block}</body>`) : `${html}${block}`;
 
-const start = async () => {
-	applyStrings();
-	setStatus(strings.loading);
-
-	try {
-		const email = Office.context.mailbox.userProfile.emailAddress;
-		const options = await fetchJson(`${API}/video-conference.scheduling-options?email=${encodeURIComponent(email)}`);
-
-		if (!options.canSchedule) {
-			setStatus(strings.notAvailable, 'error');
-			return;
+			return officeAsync((done) => body.setAsync(updated, { coercionType: Office.CoercionType.Html }, done));
 		}
 
-		elements.sipAliasOption().hidden = !options.canUseSipAlias;
-		elements.form().addEventListener('submit', schedule);
-		elements.form().hidden = false;
-		setStatus('');
-	} catch (error) {
-		console.error(error);
-		setStatus(strings.unreachable, 'error');
-	}
-};
+		const plain = await officeAsync((done) => body.getAsync(Office.CoercionType.Text, done));
+		const updated = plain.trim() ? `${plain}\n\n${text}` : text;
 
-Office.onReady(() => {
-	void start();
+		return officeAsync((done) => body.setAsync(updated, { coercionType: Office.CoercionType.Text }, done));
+	},
+
+	toHtml,
 });

@@ -7,9 +7,10 @@ import { WebApp } from 'meteor/webapp';
 import { SystemLogger } from '../lib/logger/system';
 import { notifyOnSettingChangedById } from '../lib/notifyListener';
 import { getOutlookAddInManifestStrings, getOutlookAddInPaneStrings } from '../lib/outlookAddIn';
+import { OUTLOOK_ADDIN_PAGE_FILES } from '../lib/outlookAddInFiles';
 import { buildOutlookAddInManifest } from '../lib/outlookAddInManifest';
 import { OUTLOOK_ADDIN_PATH } from '../lib/outlookAddInPaths';
-import { buildOutlookAddInScript, sendOutlookAddInScript } from '../lib/outlookAddInScript';
+import { buildOutlookAddInScript, sendOutlookAddInFile } from '../lib/outlookAddInScript';
 import { settings } from '../settings';
 
 const ID_SETTING = 'Pexip_Integration_Outlook_AddIn_Id';
@@ -54,7 +55,7 @@ const scriptHandler = async (req: IncomingMessage, res: ServerResponse) => {
 			throw new Error('The Outlook add-in script is missing from the build');
 		}
 
-		sendOutlookAddInScript(req, res, buildOutlookAddInScript(scriptSource, getOutlookAddInPaneStrings()));
+		sendOutlookAddInFile(req, res, buildOutlookAddInScript(scriptSource, getOutlookAddInPaneStrings()), 'application/javascript');
 	} catch (err) {
 		SystemLogger.error({ msg: 'Failed to build the Outlook add-in script', err });
 		res.writeHead(500);
@@ -64,3 +65,12 @@ const scriptHandler = async (req: IncomingMessage, res: ServerResponse) => {
 
 WebApp.connectHandlers.use(`${OUTLOOK_ADDIN_PATH}manifest.xml`, manifestHandler);
 WebApp.connectHandlers.use(`${OUTLOOK_ADDIN_PATH}taskpane.js`, scriptHandler);
+
+for (const [fileName, { settingId, defaultAsset, contentType }] of Object.entries(OUTLOOK_ADDIN_PAGE_FILES)) {
+	const defaultContent = (await Assets.getTextAsync(defaultAsset)) ?? '';
+
+	WebApp.connectHandlers.use(`${OUTLOOK_ADDIN_PATH}${fileName}`, (req: IncomingMessage, res: ServerResponse) => {
+		// Emptied by an admin is a request for the default back, not for a blank page.
+		sendOutlookAddInFile(req, res, settings.get<string>(settingId) || defaultContent, contentType);
+	});
+}
