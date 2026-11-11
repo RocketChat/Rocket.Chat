@@ -1,9 +1,9 @@
 export const forEachWithConcurrency = async <T>(
-	source: AsyncIterable<T>,
+	source: AsyncIterable<T> | Iterable<T>,
 	limit: number,
 	worker: (item: T) => Promise<void>,
 ): Promise<void> => {
-	const iterator = source[Symbol.asyncIterator]();
+	const iterator = Symbol.asyncIterator in source ? source[Symbol.asyncIterator]() : source[Symbol.iterator]();
 
 	// A limit of 0 would spawn no workers at all and resolve instantly, syncing nothing in silence.
 	const workers = Math.max(1, Math.trunc(limit) || 1);
@@ -29,7 +29,7 @@ export const forEachWithConcurrency = async <T>(
 		),
 	);
 
-	await iterator.return?.().catch(() => undefined);
+	await Promise.resolve(iterator.return?.()).catch(() => undefined);
 
 	if (failure) {
 		throw failure.err;

@@ -12,3 +12,6 @@ export const MAX_CONTACT_PHOTO_BYTES = 500 * 1024;
  * otherwise run them in single file.
  */
 export const AVATAR_DELETE_CONCURRENCY = 5;
+
+/** Busy presence refreshes at once after a calendar run. They never reach Exchange, so its throttling does not bound them. */
+export const PRESENCE_REFRESH_CONCURRENCY = 10;
