@@ -101,6 +101,7 @@
 		"postcss-scss": "~4.0.9",
 		"react": "~19.2.8",
 		"react-dom": "~19.2.8",
+		"react-hook-form": "~7.54.2",
 		"react-virtuoso": "~4.18.16",
 		"sass": "~1.102.0",
 		"storybook": "~10.6.5",
