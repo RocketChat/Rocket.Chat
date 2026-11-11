@@ -1,8 +1,6 @@
-import { Box } from '@rocket.chat/fuselage';
 import { Field, FieldGroup, FieldHint, FieldLabel, FieldRow } from '@rocket.chat/fuselage-forms';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useEndpoint, useToastMessageDispatch, useUser } from '@rocket.chat/ui-contexts';
-import type { ComponentProps } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -50,7 +48,7 @@ export const EditStatusVisibilityModal = ({ onClose }: EditStatusVisibilityModal
 			onCancel={onClose}
 			confirmText={t('Save')}
 			confirmDisabled={!isDirty || isSubmitting}
-			wrapperFunction={(props: ComponentProps<typeof Box>) => <Box is='form' onSubmit={handleSubmit(handleSave)} {...props} />}
+			onSubmit={handleSubmit(handleSave)}
 		>
 			<FieldGroup>
 				<Field>

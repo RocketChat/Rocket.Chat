@@ -343,12 +343,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess,
 
 	return (
 		<FormProvider {...methods}>
-			<Modal
-				aria-labelledby={`${createChannelFormId}-title`}
-				wrapperFunction={(props: ComponentProps<typeof Box>) => (
-					<Box is='form' id={createChannelFormId} onSubmit={handleStepSubmit} {...props} />
-				)}
-			>
+			<Modal aria-labelledby={`${createChannelFormId}-title`} onSubmit={handleStepSubmit} formId={createChannelFormId}>
 				<ModalHeader>
 					<ModalTitle id={`${createChannelFormId}-title`}>{t('Create_channel')}</ModalTitle>
 					<ModalClose tabIndex={-1} title={t('Close')} onClick={onClose} />

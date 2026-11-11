@@ -70,7 +70,7 @@ const EnterE2EPasswordModal = ({ onConfirm, onClose, onCancel }: EnterE2EPasswor
 
 	return (
 		<GenericModal
-			wrapperFunction={(props) => <Box is='form' onSubmit={handleValidatePassword} {...props} />}
+			onSubmit={handleValidatePassword}
 			variant='warning'
 			title={t('Enter_E2E_password')}
 			icon='warning'

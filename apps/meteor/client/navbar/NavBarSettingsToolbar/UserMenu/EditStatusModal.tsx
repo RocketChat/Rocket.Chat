@@ -5,7 +5,7 @@ import { Field, FieldGroup, FieldLabel, FieldRow, FieldError, FieldHint, TextInp
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useSetting, useEndpoint, useUser, useTranslation } from '@rocket.chat/ui-contexts';
-import type { ChangeEvent, ComponentProps } from 'react';
+import type { ChangeEvent } from 'react';
 import { useEffect, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
@@ -92,7 +92,7 @@ const EditStatusModal = ({ onClose }: EditStatusModalProps) => {
 			onCancel={onClose}
 			confirmText={t('Save')}
 			confirmDisabled={!isDirty}
-			wrapperFunction={(props: ComponentProps<typeof Box>) => <Box is='form' onSubmit={handleSubmit(handleSaveStatus)} {...props} />}
+			onSubmit={handleSubmit(handleSaveStatus)}
 		>
 			<FieldGroup>
 				<Field>
