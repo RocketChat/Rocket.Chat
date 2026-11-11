@@ -1,0 +1,21 @@
+apps/meteor/server/lib/authorization/canDeleteMessage.test.ts
+  s_f15b4a6b3cffae::t_0339287f56c0aa 1-56,58-72,81-112
+  s_f15b4a6b3cffae::t_beb7fa99ff972c 57
+  s_f15b4a6b3cffae::t_4045c1ca0e496e 73-80
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "feebec8f0b1e8bec446100e73eddc0d0419b41c1",
+  "prompts": {},
+  "sessions": {
+    "s_f15b4a6b3cffae": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3fc8d543-a858-49f1-bf51-ceccf6d6ad1a",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": null
+    }
+  }
+}
