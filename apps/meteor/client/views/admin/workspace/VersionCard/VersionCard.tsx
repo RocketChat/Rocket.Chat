@@ -1,5 +1,6 @@
 import type { IWorkspaceInfo } from '@rocket.chat/core-typings';
-import { Card, CardBody, CardCol, CardControls, CardHeader, CardTitle, Icon, Text } from '@rocket.chat/fuselage';
+import { css } from '@rocket.chat/css-in-js';
+import { Card, CardBody, CardCol, CardControls, CardHeader, CardTitle, Icon, Text, useStyle } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import type { SupportedVersions } from '@rocket.chat/server-cloud-communication';
 import { ExternalLink, links, useLicense, useLicenseName } from '@rocket.chat/ui-client';
@@ -32,12 +33,12 @@ const VersionCard = ({ serverInfo }: VersionCardProps) => {
 	const isExtraLargeOrBigger = breakpoints.includes('xl');
 
 	const getUrl = useMediaUrl();
-	const cardBackground = {
-		backgroundImage: `url(${getUrl('images/globe.png')})`,
-		backgroundRepeat: 'no-repeat',
-		backgroundPosition: isExtraLargeOrBigger ? 'right 20px center' : 'left 450px center',
-		backgroundSize: 'auto',
-	};
+	const cardBackgroundClassName = useStyle(css`
+		background-image: url(${getUrl('images/globe.png')});
+		background-repeat: no-repeat;
+		background-position: ${isExtraLargeOrBigger ? 'right 20px center' : 'left 450px center'};
+		background-size: auto;
+	`);
 
 	const setModal = useSetModal();
 
@@ -180,14 +181,14 @@ const VersionCard = ({ serverInfo }: VersionCardProps) => {
 
 	if (isPending && !licenseData) {
 		return (
-			<Card style={{ ...cardBackground }}>
+			<Card className={cardBackgroundClassName}>
 				<VersionCardSkeleton />
 			</Card>
 		);
 	}
 
 	return (
-		<Card style={{ ...cardBackground }}>
+		<Card className={cardBackgroundClassName}>
 			<CardCol>
 				<CardHeader>
 					<CardTitle variant='h3'>{t('Version_version', { version: serverVersion })}</CardTitle>
