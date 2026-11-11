@@ -78,6 +78,7 @@ const MessageComposerFile = ({
 			borderColor={error ? 'error' : 'extra-light'}
 			alignItems='center'
 			position='relative'
+			fontScale='p2m'
 			height='x58'
 			width='x234'
 			marginInlineEnd={8}

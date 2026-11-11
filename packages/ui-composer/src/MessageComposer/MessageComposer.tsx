@@ -12,6 +12,12 @@ const MessageComposer = forwardRef<HTMLElement, MessageComposerProps>(function M
 	return (
 		<Box
 			rcx-input-box__wrapper
+			position='relative'
+			flexGrow={1}
+			minWidth='x144'
+			borderWidth='default'
+			borderRadius='medium'
+			fontScale='p2m'
 			marginBlockStart={2}
 			backgroundColor={variant === 'editing' ? 'status-background-warning-2' : undefined}
 			ref={ref}

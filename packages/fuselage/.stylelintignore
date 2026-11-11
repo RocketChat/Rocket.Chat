@@ -1,3 +1,4 @@
 /dist
 /src/styles/colorPalette.scss
 /storybook-static
+/src/components/InputBox/InputBox.styles.css

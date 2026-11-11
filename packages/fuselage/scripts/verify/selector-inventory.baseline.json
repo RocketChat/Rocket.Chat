@@ -87,14 +87,28 @@
 		"packages/fuselage/src/components/CardGrid/CardGrid.styles.css: .rcx-grid.rcx-card-grid {",
 		"packages/fuselage/src/components/CardGrid/CardGrid.styles.css: .rcx-grid__item.rcx-card-grid__item {"
 	],
+	"rcx-select": [
+		"packages/fuselage/src/components/InputBox/InputBox.styles.css: .rcx-input-box + .rcx-select__addon,",
+		"packages/fuselage/src/components/InputBox/InputBox.styles.css: .rcx-input-box:disabled + .rcx-select__addon {",
+		"packages/fuselage/src/components/InputBox/InputBox.styles.css: .rcx-input-box:disabled + .rcx-select__addon,",
+		"packages/fuselage/src/components/InputBox/InputBox.styles.css: .rcx-input-box:focus + .rcx-select__addon,",
+		"packages/fuselage/src/components/InputBox/InputBox.styles.css: .rcx-input-box:invalid + .rcx-select__addon,",
+		"packages/fuselage/src/components/InputBox/InputBox.styles.css: .rcx-input-box:invalid:disabled + .rcx-select__addon,",
+		"packages/fuselage/src/components/InputBox/InputBox.styles.css: .rcx-input-box:invalid:focus + .rcx-select__addon,",
+		"packages/fuselage/src/components/InputBox/InputBox.styles.css: .rcx-select__addon:has(+ .rcx-input-box) {",
+		"packages/fuselage/src/components/InputBox/InputBox.styles.css: .rcx-select__addon:has(+ .rcx-input-box:disabled) {",
+		"packages/fuselage/src/components/InputBox/InputBox.styles.css: .rcx-select__addon:has(+ .rcx-input-box:focus) {",
+		"packages/fuselage/src/components/InputBox/InputBox.styles.css: .rcx-select__addon:has(+ .rcx-input-box:invalid) {",
+		"packages/fuselage/src/components/InputBox/InputBox.styles.css: .rcx-select__addon:has(+ .rcx-input-box:invalid:disabled) {",
+		"packages/fuselage/src/components/InputBox/InputBox.styles.css: .rcx-select__addon:has(+ .rcx-input-box:invalid:focus) {"
+	],
 	"rcx-skeleton": [
-		"packages/fuselage/src/components/InputBox/InputBox.styles.scss: .rcx-skeleton__input {"
+		"packages/fuselage/src/components/InputBox/InputBox.styles.css: .rcx-skeleton__input {"
 	],
 	"rcx-check-box": [
 		"packages/fuselage/src/components/Message/Messages.styles.scss: > li > .rcx-check-box > .rcx-check-box__input:focus + .rcx-check-box__fake {"
 	],
 	"rcx-input-box": [
-		"packages/fuselage/src/components/Select/Select.styles.scss: @extend .rcx-input-box__addon;",
 		"packages/fuselage/src/components/Select/select-box.scss: &:has(> .rcx-input-box:invalid),"
 	],
 	"rcx-tag": [

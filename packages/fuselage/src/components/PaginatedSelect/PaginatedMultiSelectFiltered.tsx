@@ -1,5 +1,5 @@
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import type { InputEvent } from 'react';
+import type { InputEvent, ReactNode } from 'react';
 
 import { Input, type InputProps } from '../InputBox';
 import type { PaginatedMultiSelectProps } from './PaginatedMultiSelect';
@@ -11,7 +11,7 @@ export type PaginatedMultiSelectFilteredProps = {
 
 const PaginatedMultiSelectFiltered = ({ filter, setFilter, options, placeholder, ...props }: PaginatedMultiSelectFilteredProps) => {
 	const anchor = useStableCallback(
-		({ children: _children, filter, className, ...props }: InputProps<HTMLInputElement> & { filter?: string }) => (
+		({ children: _children, filter, className, ...props }: InputProps<HTMLInputElement> & { filter?: string; children?: ReactNode }) => (
 			<Input
 				placeholder={placeholder}
 				value={filter}

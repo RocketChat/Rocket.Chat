@@ -61,11 +61,6 @@ export default {
 			description: 'Reduces the end padding so a button in `endAddon` sits flush with the input edge.',
 			table: { category: 'Content' },
 		},
-		input: {
-			control: false,
-			description: 'Overrides the rendered input element entirely.',
-			table: { category: 'Content' },
-		},
 		multiple: {
 			control: 'boolean',
 			description: 'Allows multiple values to be entered/selected.',

@@ -46,7 +46,7 @@ const isSelectedValid =
 /**
  * @deprecated Use `SelectFilteredProps` or `MultiSelectFilteredProps` instead.
  */
-export type AutoCompleteProps<TLabel = ReactNode> = Omit<AllHTMLAttributes<HTMLInputElement>, 'value' | 'onChange' | 'is'> & {
+export type AutoCompleteProps<TLabel = ReactNode> = Omit<AllHTMLAttributes<HTMLInputElement>, 'value' | 'onChange' | 'is' | 'type'> & {
 	filter: string;
 	setFilter?: (filter: string) => void;
 	options?: AutoCompleteOption<TLabel>[];

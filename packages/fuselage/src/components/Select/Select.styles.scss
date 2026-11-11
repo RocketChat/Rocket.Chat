@@ -7,7 +7,6 @@
 @use '../../styles/mixins/shadows.scss' as *;
 @use '../../styles/primitives/input.scss';
 @use '../InputBox/mixins.scss' as *;
-@use '../InputBox/InputBox.styles.scss' as *;
 @use './select-box.scss' as *;
 
 .rcx-select {
@@ -103,8 +102,14 @@
 	}
 
 	&__addon {
-		@extend .rcx-input-box__addon;
 		@include clickable;
+		display: flex;
+
+		flex-flow: row nowrap;
+
+		align-items: flex-start;
+		flex: 0 0 auto;
+
 		padding: initial;
 	}
 
@@ -184,4 +189,15 @@
 // beats the spacing .rcx-input-box__addon gets next to an input
 .rcx-select .rcx-select__addon {
 	margin-inline: lengths.margin(4);
+}
+
+// the filter input is an input frame, whose own classes beat the focus rules above: interim, until the Select family has its own parts
+.rcx-input-box.rcx-select__focus[class][class] {
+	display: inline-block;
+
+	min-width: auto;
+
+	user-select: none;
+
+	vertical-align: middle;
 }

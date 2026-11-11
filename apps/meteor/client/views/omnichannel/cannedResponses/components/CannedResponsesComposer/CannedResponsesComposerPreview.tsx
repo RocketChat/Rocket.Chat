@@ -11,6 +11,12 @@ const CannedResponsesComposerPreview = ({ text }: CannedResponsesComposerPreview
 	return (
 		<Box
 			style={{ wordBreak: 'normal' }}
+			position='relative'
+			flexGrow={1}
+			minWidth='x144'
+			borderWidth='default'
+			borderRadius='medium'
+			fontScale='p2m'
 			display='flex'
 			flexDirection='column'
 			paddingBlock={0}

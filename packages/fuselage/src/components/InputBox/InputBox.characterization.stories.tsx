@@ -144,7 +144,7 @@ export const ForwardingTextArea: Story = {
 		await expect(area).toHaveAttribute('rows', '4');
 		await expect(area).toHaveAttribute('cols', '1');
 		await expect(area).not.toHaveAttribute('type');
-		await expect(area).toHaveAttribute('size', '1');
+		await expect(area).not.toHaveAttribute('size');
 	},
 };
 
