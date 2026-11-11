@@ -4,6 +4,7 @@ import { userEvent, within } from 'storybook/test';
 
 import {
 	Modal,
+	ModalBackdrop,
 	ModalClose,
 	ModalContent,
 	ModalFooter,
@@ -364,4 +365,22 @@ export const _WithFocusedField: Story = {
 	play: async ({ canvasElement }) => {
 		await userEvent.click(within(canvasElement.ownerDocument.body).getByPlaceholderText('Placeholder'));
 	},
+};
+
+export const _ContainedBackdrop: Story = {
+	render: () => (
+		<Box position='relative' height={320} width={480}>
+			<ModalBackdrop contained>
+				<Modal>
+					<ModalHeader>
+						<ModalHeaderText>
+							<ModalTitle>Modal Header</ModalTitle>
+						</ModalHeaderText>
+						<ModalClose />
+					</ModalHeader>
+					<ModalContent>Modal Body</ModalContent>
+				</Modal>
+			</ModalBackdrop>
+		</Box>
+	),
 };
