@@ -1,10 +1,11 @@
 import type { IRoom, IUpload } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Text } from '@rocket.chat/fuselage';
+import { Random } from '@rocket.chat/random';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import { useTranslation, useUserId } from '@rocket.chat/ui-contexts';
-import { memo, useEffect, useId } from 'react';
+import { memo } from 'react';
 
 import { download, downloadAs } from '../../../../../lib/download';
 import { getURL } from '../../../../../lib/getURL';
@@ -36,16 +37,6 @@ const FileItemMenu = ({ rid, fileData, onClickDelete }: FileItemMenuProps) => {
 
 	const { controller } = navigator?.serviceWorker || {};
 
-	const uid = useId();
-
-	useEffect(
-		() =>
-			ee.once(uid, ({ result }) => {
-				downloadAs({ data: [new Blob([result])] }, fileData.name ?? t('Download'));
-			}),
-		[fileData, t, uid],
-	);
-
 	const menuOptions = [
 		{
 			id: 'download',
@@ -57,10 +48,20 @@ const FileItemMenu = ({ rid, fileData, onClickDelete }: FileItemMenuProps) => {
 						return;
 					}
 
+					const transactionId = Random.id();
+					let timeoutId: ReturnType<typeof setTimeout>;
+					const unsubscribe = ee.once(transactionId, ({ result }) => {
+						clearTimeout(timeoutId);
+						downloadAs({ data: [new Blob([result])] }, fileData.name ?? t('Download'));
+					});
+					timeoutId = setTimeout(() => {
+						unsubscribe();
+					}, 30000);
+
 					controller?.postMessage({
 						type: 'attachment-download',
 						url: fileData.path,
-						id: uid,
+						id: transactionId,
 					});
 					return;
 				}
