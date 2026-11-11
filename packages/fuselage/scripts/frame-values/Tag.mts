@@ -91,9 +91,9 @@ const generateTag = () => {
 	const mediumRadius = themed('border-radius-medium', borderRadius('medium'));
 	const focusRing = `0 0 0 ${borderWidth('medium')} ${strokeColors['stroke-extra-light-highlight'].toString()}`;
 
-	// `display` is left to the `flow` variant
 	const frame = {
 		render: 'span',
+		display: 'flex',
 		flexDirection: 'row',
 		flexShrink: 1,
 		justifyContent: 'center',
@@ -125,7 +125,6 @@ const generateTag = () => {
 		pill: { borderRadius: { 'default': themed('border-radius-full', borderRadius('full')), 'focus-visible': mediumRadius } },
 	};
 
-	const flow = { block: { display: 'flex' }, inline: { display: 'inline' } };
 	const action = { clickable: { cursor: 'pointer' }, muted: { cursor: 'not-allowed' } };
 	const scale = { default: font('micro'), medium: font('c2'), large: font('p2b') };
 
@@ -148,7 +147,6 @@ const generateTag = () => {
 		`const tagTone = ${literal(tone)} as const;`,
 		`const tagFill = ${literal(fill)} as const;`,
 		`const tagShape = ${literal(shape)} as const;`,
-		`const tagFlow = ${literal(flow)} as const;`,
 		`const tagAction = ${literal(action)} as const;`,
 		`const tagScale = ${literal(scale)} as const;`,
 		`const tagLabelFrame = ${literal({ ...textFrameDefaults(label), ...label })} as const;`,

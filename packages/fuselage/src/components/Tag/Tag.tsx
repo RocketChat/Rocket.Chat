@@ -15,10 +15,6 @@ export type TagProps = {
 	pill?: boolean;
 	variant?: 'primary' | 'secondary' | 'danger' | 'warning' | 'secondary-danger' | 'secondary-warning' | 'secondary-info' | 'featured';
 	disabled?: boolean;
-	/**
-	 * Flows with the surrounding text instead of being a block of its own
-	 */
-	inline?: boolean;
 	icon?: ReactNode;
 	children?: ReactNode;
 } & SpanOrAnchorAttributes;
@@ -27,6 +23,7 @@ export type TagProps = {
 
 const tagFrame = {
 	render: 'span',
+	display: 'flex',
 	flexDirection: 'row',
 	flexShrink: 1,
 	justifyContent: 'center',
@@ -314,15 +311,6 @@ const tagShape = {
 	},
 } as const;
 
-const tagFlow = {
-	block: {
-		display: 'flex',
-	},
-	inline: {
-		display: 'inline',
-	},
-} as const;
-
 const tagAction = {
 	clickable: {
 		cursor: 'pointer',
@@ -376,7 +364,6 @@ const TagFrame = styled(View, {
 		tone: tagTone,
 		fill: tagFill,
 		shape: tagShape,
-		flow: tagFlow,
 		action: tagAction,
 		scale: tagScale,
 	},
@@ -388,7 +375,7 @@ const TagLabel = styled(Text, tagLabelFrame);
  * Used for mentions
  */
 const Tag = (props: TagProps) => {
-	const { large, medium, pill, inline, className, disabled, onClick, variant, children, icon, href } = props;
+	const { large, medium, pill, className, disabled, onClick, variant, children, icon, href } = props;
 	const modifiers = [
 		variant,
 		medium && 'medium',
@@ -428,7 +415,6 @@ const Tag = (props: TagProps) => {
 				tone={tone}
 				fill={fill}
 				shape={pill ? 'pill' : 'regular'}
-				flow={inline ? 'inline' : 'block'}
 				action={action}
 				scale={scale}
 				className={classes}
@@ -457,7 +443,6 @@ const Tag = (props: TagProps) => {
 			tone={tone}
 			fill={fill}
 			shape={pill ? 'pill' : 'regular'}
-			flow={inline ? 'inline' : 'block'}
 			action={action}
 			scale={scale}
 			className={classes}

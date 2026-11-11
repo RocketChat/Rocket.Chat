@@ -1,5 +1,5 @@
 import type { IOmnichannelRoom, IVisitor } from '@rocket.chat/core-typings';
-import { Box, Tag, Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { Stack, Tag, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	ContextualbarScrollableContent,
@@ -106,15 +106,13 @@ function ChatInfo({ id, route }: ChatInfoProps) {
 					<InfoPanelField>
 						<InfoPanelLabel id={`${roomId}-tags`}>{t('Tags')}</InfoPanelLabel>
 						<InfoPanelText>
-							<ul aria-labelledby={`${roomId}-tags`}>
+							<Stack is='ul' direction='row' wrap gap={4} aria-labelledby={`${roomId}-tags`}>
 								{tags.map((tag) => (
-									<Box is='li' key={tag} marginInlineEnd={4} display='inline'>
-										<Tag inline disabled>
-											{tag}
-										</Tag>
-									</Box>
+									<li key={tag}>
+										<Tag disabled>{tag}</Tag>
+									</li>
 								))}
-							</ul>
+							</Stack>
 						</InfoPanelText>
 					</InfoPanelField>
 				)}
