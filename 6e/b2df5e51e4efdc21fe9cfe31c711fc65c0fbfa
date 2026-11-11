@@ -1,0 +1,25 @@
+apps/meteor/server/lib/auth/expireLoginTokens.ts
+  s_abb9231db54e44::t_29ae3f2e2faa22 1-15,17-29
+  s_abb9231db54e44::t_1a61421611f8d5 16
+apps/meteor/server/lib/auth/expireLoginTokens.test.ts
+  s_abb9231db54e44::t_1a61421611f8d5 2-34,39-77
+  s_abb9231db54e44::t_f5e8f8a0c86a65 1,35-38
+apps/meteor/server/services/meteor/userReactivity.ts
+  s_abb9231db54e44::t_cef45df8ea857a 4,6-7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "6eb2df5e51e4efdc21fe9cfe31c711fc65c0fbfa",
+  "prompts": {},
+  "sessions": {
+    "s_abb9231db54e44": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "68a1b4f3-731a-4a41-9f8c-a68e8902e169",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

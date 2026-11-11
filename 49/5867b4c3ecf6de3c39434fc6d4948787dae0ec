@@ -1,0 +1,29 @@
+.oxlintrc.json
+  s_abb9231db54e44::t_ebed9722d93109 336-343
+apps/meteor/server/lib/oauth/passportOAuthCallback.test.ts
+  s_379b0f8388a3c8::t_1954b98a0f6117 12,17,47,58,67,85,93,121
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "495867b4c3ecf6de3c39434fc6d4948787dae0ec",
+  "prompts": {},
+  "sessions": {
+    "s_379b0f8388a3c8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6b8137c0-22df-4763-a3f7-860f2aa817a1",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    },
+    "s_abb9231db54e44": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "68a1b4f3-731a-4a41-9f8c-a68e8902e169",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
