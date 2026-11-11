@@ -9,6 +9,7 @@ import { isEncryptedUpload, type Upload } from './Upload';
 import { i18n } from '../../../lib/i18n';
 import { sdk } from '../SDKClient';
 import { USER_ACTIVITIES, UserAction } from '../UserAction';
+import { getDdpSdk } from '../sdk/ddpSdk';
 import { settings } from '../settings';
 import { fileUploadIsValidContentType } from '../utils/restrictions';
 
@@ -42,6 +43,16 @@ type PersistedUploadsChange = { removed: readonly PersistedUpload['id'][] };
 // already been left.
 const persistedUploadsEvents = new Emitter<Record<string, PersistedUploadsChange>>();
 
+const isLivePersistedUpload = (entry: PersistedUpload, now: number): boolean =>
+	typeof entry?.id === 'string' &&
+	typeof entry.fileName === 'string' &&
+	typeof entry.fileType === 'string' &&
+	Number.isFinite(entry.fileSize) &&
+	entry.fileSize >= 0 &&
+	typeof entry.url === 'string' &&
+	typeof entry.expiresAt === 'number' &&
+	entry.expiresAt > now;
+
 const readPersistedUploads = (storageKey: string): PersistedUpload[] => {
 	let persisted: PersistedUpload[];
 	try {
@@ -56,7 +67,7 @@ const readPersistedUploads = (storageKey: string): PersistedUpload[] => {
 	}
 
 	const now = Date.now();
-	const live = persisted.filter((entry) => typeof entry?.expiresAt === 'number' && entry.expiresAt > now);
+	const live = persisted.filter((entry) => isLivePersistedUpload(entry, now));
 	if (live.length !== persisted.length) {
 		writePersistedUploads(
 			storageKey,
@@ -394,6 +405,9 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 
 		this.set([...this.uploads, pending]);
 		const untrackUploadInFlight = trackUploadInFlight();
+		// An upload belongs to the session that started it, so logging out drops it instead of keeping it for whoever
+		// logs in next.
+		const stopCancellingOnLogout = getDdpSdk().account.onLogout(() => this.cancel(id));
 
 		try {
 			await new Promise((resolve, reject) => {
@@ -473,6 +487,7 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 		} catch (error: unknown) {
 			this.updateUpload(id, { percentage: 0, error: new Error(getErrorMessage(error)) });
 		} finally {
+			stopCancellingOnLogout();
 			untrackUploadInFlight();
 		}
 	}

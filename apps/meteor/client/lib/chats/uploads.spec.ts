@@ -12,6 +12,21 @@ jest.mock('../UserAction', () => ({
 	UserAction: { stop: jest.fn() },
 }));
 
+const mockLogoutListeners = new Set<() => void>();
+
+const logOut = () => mockLogoutListeners.forEach((listener) => listener());
+
+jest.mock('../sdk/ddpSdk', () => ({
+	getDdpSdk: () => ({
+		account: {
+			onLogout: (listener: () => void) => {
+				mockLogoutListeners.add(listener);
+				return () => mockLogoutListeners.delete(listener);
+			},
+		},
+	}),
+}));
+
 jest.mock('../settings', () => ({
 	settings: { peek: jest.fn(() => -1) },
 }));
@@ -330,6 +345,35 @@ describe('UploadsStore persistence', () => {
 			metadataForEncryption: { name: 'photo.png', type: 'image/png' },
 			imageDimensions: { height: 480, width: 640 },
 		});
+	});
+
+	it('drops an upload in flight on logout, so the next account does not get it', async () => {
+		const store = createUploadsAPI({ rid: 'room' });
+		attach(store);
+		const sending = store.send(createFile());
+
+		logOut();
+		await sending;
+
+		expect(xhrs[0].abort).toHaveBeenCalled();
+		expect(store.get()).toHaveLength(0);
+		expect(localStorage.getItem(STORAGE_KEY)).toBeNull();
+	});
+
+	it('ignores and removes malformed stored uploads', async () => {
+		const first = createUploadsAPI({ rid: 'room' });
+		attach(first);
+		await uploadFile(first, 'file-1');
+		first.detach();
+
+		const [kept] = readStorage();
+		localStorage.setItem(STORAGE_KEY, JSON.stringify([kept, { ...kept, id: 'file-2', fileSize: 'big' }, null]));
+
+		const second = createUploadsAPI({ rid: 'room' });
+		attach(second);
+
+		expect(second.get().map(({ id }) => id)).toEqual(['file-1']);
+		expect(readStorage().map(({ id }: { id: string }) => id)).toEqual(['file-1']);
 	});
 
 	it('ignores and removes unreadable stored data', () => {
