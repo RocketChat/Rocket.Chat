@@ -1,9 +1,13 @@
 import { faker } from '@faker-js/faker';
 
 import { DEFAULT_USER_CREDENTIALS } from './config/constants';
+import { createAuxContext } from './fixtures/createAuxContext';
 import { Users } from './fixtures/userStates';
 import { AccountProfile, HomeChannel, Login } from './page-objects';
+import { expectPollUserStatus } from './utils/expectPollUserStatus';
 import { test, expect } from './utils/test';
+import type { ITestUser } from './utils/user-helpers';
+import { createTestUser, loginTestUser } from './utils/user-helpers';
 
 test.describe.serial('Presence', () => {
 	let poLogin: Login;
@@ -22,6 +26,27 @@ test.describe.serial('Presence', () => {
 			await poLogin.login('user1', DEFAULT_USER_CREDENTIALS.password);
 
 			await expect(poHomeChannel.navbar.btnUserMenu).toBeVisible();
+		});
+	});
+
+	test.describe('Disconnection', () => {
+		let user: ITestUser;
+
+		test.beforeAll(async ({ api }) => {
+			user = await createTestUser(api);
+		});
+
+		test.afterAll(async () => {
+			await user.delete();
+		});
+
+		test('should user be offline right after closing their only tab', async ({ api, browser }) => {
+			const { page } = await createAuxContext(browser, await loginTestUser(api, user));
+			await expectPollUserStatus(api, user.data.username, 'online');
+
+			await page.close();
+
+			await expectPollUserStatus(api, user.data.username, 'offline');
 		});
 	});
 

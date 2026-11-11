@@ -30,6 +30,7 @@ import { Virtuoso } from 'react-virtuoso';
 
 import ContactHistoryMessage from './ContactHistoryMessage';
 import { useHistoryMessageList } from './useHistoryMessageList';
+import ListViewport from '../../../../components/ListViewport';
 import { isMessageNewDay } from '../../../room/MessageList/lib/isMessageNewDay';
 import { isMessageSequential } from '../../../room/MessageList/lib/isMessageSequential';
 
@@ -110,7 +111,7 @@ const ContactHistoryMessagesList = ({ chatId, onClose, onOpenRoom }: ContactHist
 					</States>
 				)}
 				{isSuccess && totalItemCount === 0 && <ContextualbarEmptyContent title={t('No_results_found')} />}
-				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex' ref={ref}>
+				<ListViewport ref={ref}>
 					{!error && totalItemCount > 0 && messages.length > 0 && (
 						<VirtualizedScrollbars>
 							<Virtuoso
@@ -135,7 +136,7 @@ const ContactHistoryMessagesList = ({ chatId, onClose, onOpenRoom }: ContactHist
 							/>
 						</VirtualizedScrollbars>
 					)}
-				</Box>
+				</ListViewport>
 			</ContextualbarContent>
 			{onOpenRoom && (
 				<ContextualbarFooter>

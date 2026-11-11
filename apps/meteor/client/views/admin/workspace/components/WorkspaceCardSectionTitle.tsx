@@ -1,4 +1,4 @@
-import { Box } from '@rocket.chat/fuselage';
+import { Text } from '@rocket.chat/fuselage';
 
 export type WorkspaceCardSectionTitleProps = {
 	variant?: 'p2b' | 'h4';
@@ -6,9 +6,9 @@ export type WorkspaceCardSectionTitleProps = {
 };
 
 const WorkspaceCardSectionTitle = ({ variant = 'p2b', title }: WorkspaceCardSectionTitleProps) => (
-	<Box fontScale={variant} marginBlockEnd={variant === 'h4' ? 20 : 0}>
+	<Text is={variant === 'h4' ? 'h3' : 'div'} fontScale={variant}>
 		{title}
-	</Box>
+	</Text>
 );
 
 export default WorkspaceCardSectionTitle;

@@ -19,7 +19,7 @@ import { addSettings } from '../settings/video-conference';
  */
 const refreshLiveKitProviderRegistration = (): void => {
 	if (isLiveKitLicensed() && isLiveKitFullyConfigured() && settings.get<boolean>('VideoConf_Conference_Window_Enabled')) {
-		videoConfProviders.registerProvider('livekit', LIVEKIT_CAPABILITIES, CORE_PROVIDER_APP_ID);
+		videoConfProviders.registerProvider('livekit', LIVEKIT_CAPABILITIES, CORE_PROVIDER_APP_ID, 'Rocket.Chat Native (LiveKit)');
 	} else {
 		videoConfProviders.unRegisterProvider('livekit');
 	}

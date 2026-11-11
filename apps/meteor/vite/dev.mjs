@@ -58,7 +58,8 @@ const children = [
 			// Links the server builds (emails, OAuth callbacks, Site_Url) point at the Vite origin.
 			ROOT_URL: process.env.ROOT_URL || `http://localhost:${port}`,
 		}),
-	run(process.execPath, [viteBin, '--config', join(appRoot, 'vite/vite.config.mts')], {
+	// Tamagui's dev server answers its zero-runtime stylesheet only at an absolute base.
+	run(process.execPath, [viteBin, '--config', join(appRoot, 'vite/vite.config.mts'), '--base', '/'], {
 		PORT: port,
 		RC_SERVER_URL: serverUrl,
 		RC_DEV_SERVER_PAGE: remoteServerUrl ? '' : '1',

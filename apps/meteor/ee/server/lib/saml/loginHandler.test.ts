@@ -5,7 +5,7 @@ import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const retrieveCredential = sinon.stub().resolves(undefined);
-const insertOrUpdateSAMLUser = sinon.stub().resolves({ userId: 'user-id', token: 'login-token' });
+const insertOrUpdateSAMLUser = sinon.stub().resolves({ userId: 'user-id' });
 const getUserForCheck = sinon.stub().resolves({ _id: 'user-id', services: {} });
 const doesUserRequire2FA = sinon.stub().returns(false);
 const removeById = sinon.stub().resolves();
@@ -51,7 +51,7 @@ describe('SAML loginHandler', () => {
 		retrieveCredential.reset();
 		retrieveCredential.resolves({ profile: { email: 'user@example.com' } });
 		insertOrUpdateSAMLUser.reset();
-		insertOrUpdateSAMLUser.resolves({ userId: 'user-id', token: 'login-token' });
+		insertOrUpdateSAMLUser.resolves({ userId: 'user-id' });
 		removeById.reset();
 		removeById.resolves();
 		getUserForCheck.reset();
@@ -91,7 +91,7 @@ describe('SAML loginHandler', () => {
 	it('should discard the credential when no second factor is required', async () => {
 		const result = await handler({ saml: true, credentialToken: 'token' });
 
-		expect(result).to.deep.equal({ userId: 'user-id', token: 'login-token' });
+		expect(result).to.deep.equal({ userId: 'user-id' });
 		expect(removeById.calledOnceWith('token')).to.be.true;
 	});
 
@@ -100,7 +100,7 @@ describe('SAML loginHandler', () => {
 
 		const result = await handler({ saml: true, credentialToken: 'token' });
 
-		expect(result).to.deep.equal({ userId: 'user-id', token: 'login-token' });
+		expect(result).to.deep.equal({ userId: 'user-id' });
 		expect(removeById.called).to.be.false;
 	});
 

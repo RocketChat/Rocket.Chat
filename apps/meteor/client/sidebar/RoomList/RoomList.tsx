@@ -11,6 +11,7 @@ import RoomListCollapser from './RoomListCollapser';
 import RoomListRow from './RoomListRow';
 import RoomListRowWrapper from './RoomListRowWrapper';
 import RoomListWrapper from './RoomListWrapper';
+import { useSidebarListDrag } from './useSidebarListDrag';
 import { useMoveCategoryPosition } from '../categories/hooks/useMoveCategoryPosition';
 import SidebarVirtualList from '../components/SidebarVirtualList';
 import { useActivityFilterAnnouncement } from '../hooks/useActivityFilterAnnouncement';
@@ -93,7 +94,10 @@ const RoomList = () => {
 
 	const preventDefaultRef = usePreventDefault();
 	const shortcutOpenMenuRef = useShortcutOpenMenu();
-	const ref = useMergedRefsV2(preventDefaultRef, shortcutOpenMenuRef);
+	const { ref: dragRef, source: dragSource } = useSidebarListDrag(groups);
+	const ref = useMergedRefsV2(preventDefaultRef, shortcutOpenMenuRef, dragRef);
+
+	const isGroupDragged = (groupKey: string) => dragSource?.kind === 'group' && dragSource.key === groupKey;
 
 	return (
 		<Box position='relative' overflow='hidden' height='full' ref={ref}>
@@ -106,6 +110,10 @@ const RoomList = () => {
 				getItemKey={(item) => item._id}
 				renderGroup={(group, index) => (
 					<RoomListCollapser
+						data-drag-key={group.key}
+						data-drag-kind='group'
+						data-drag-group={group.key}
+						dragging={isGroupDragged(group.key)}
 						group={group}
 						canMoveUp={canMoveGroup(groups, index, 'up')}
 						canMoveDown={canMoveGroup(groups, index, 'down')}
@@ -116,9 +124,14 @@ const RoomList = () => {
 						onClick={() => handleClick(group.key)}
 					/>
 				)}
-				renderItem={(item, _itemIndex, _group, _groupIndex, rowIndex) => (
-					<RoomListRowWrapper data-index={rowIndex}>
-						<RoomListRow data={itemData} item={item} videoConfActions={ringingCalls.get(item.rid)} />
+				renderItem={(item, _itemIndex, group, _groupIndex, rowIndex) => (
+					<RoomListRowWrapper data-index={rowIndex} data-drag-key={item.rid} data-drag-kind='item' data-drag-group={group.key}>
+						<RoomListRow
+							data={itemData}
+							item={item}
+							videoConfActions={ringingCalls.get(item.rid)}
+							dragging={isGroupDragged(group.key) || (dragSource?.kind === 'item' && dragSource.key === item.rid)}
+						/>
 					</RoomListRowWrapper>
 				)}
 			/>

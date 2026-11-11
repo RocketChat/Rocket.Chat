@@ -94,6 +94,12 @@ describe('Item', () => {
 		expect(screen.getByTestId('item')).toHaveClass('rcx-item--clickable');
 	});
 
+	it('aligns slots to the start and shows the hover surface on request', () => {
+		render(<Item align='start' hoverable data-testid='item' />);
+
+		expect(screen.getByTestId('item')).toHaveClass('rcx-item--align-start', 'rcx-item--hoverable');
+	});
+
 	it('ignores clicks while disabled', async () => {
 		const onClick = jest.fn();
 		render(
@@ -392,6 +398,38 @@ describe('ItemDescription', () => {
 
 		expect(screen.getByText('@kenji').tagName).toBe('SPAN');
 		expect(screen.getByText('@kenji')).toHaveClass('rcx-item__description--inline');
+	});
+});
+
+describe('ItemTitle and ItemDescription text', () => {
+	it('truncate by default and wrap when `truncate` is false', () => {
+		render(
+			<Item>
+				<ItemContent>
+					<ItemTitle>Name</ItemTitle>
+					<ItemDescription>Status</ItemDescription>
+					<ItemTitle truncate={false}>Long name</ItemTitle>
+					<ItemDescription truncate={false}>Long status</ItemDescription>
+				</ItemContent>
+			</Item>,
+		);
+
+		expect(screen.getByText('Name')).not.toHaveClass('rcx-item__title--wrap');
+		expect(screen.getByText('Status')).not.toHaveClass('rcx-item__description--wrap');
+		expect(screen.getByText('Long name')).toHaveClass('rcx-item__title--wrap');
+		expect(screen.getByText('Long status')).toHaveClass('rcx-item__description--wrap');
+	});
+
+	it('uses the title text size for a `large` description', () => {
+		render(
+			<>
+				<ItemDescription>Away</ItemDescription>
+				<ItemDescription size='large'>Busy</ItemDescription>
+			</>,
+		);
+
+		expect(screen.getByText('Away')).not.toHaveClass('rcx-item__description--large');
+		expect(screen.getByText('Busy')).toHaveClass('rcx-item__description--large');
 	});
 });
 
