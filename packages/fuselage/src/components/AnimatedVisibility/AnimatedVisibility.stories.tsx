@@ -30,9 +30,11 @@ export const Example: Story = {
 	},
 	render: (args) => (
 		<AnimatedVisibility visibility={args.visibility}>
-			<Tile flush>
-				<Box padding={40}>Visible</Box>
-			</Tile>
+			<Box>
+				<Tile flush>
+					<Box padding={40}>Visible</Box>
+				</Tile>
+			</Box>
 		</AnimatedVisibility>
 	),
 };
