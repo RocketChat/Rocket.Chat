@@ -45,17 +45,18 @@ const rowOf = (element: Element | null, list: HTMLElement, rowSelector: string) 
  */
 export const expectCompositeList = async (list: HTMLElement, firstTarget: HTMLElement, rowSelector = DEFAULT_ROW) => {
 	const user = userEvent.setup();
+	const row = rowOf(firstTarget, list, rowSelector);
+	await expect(row).not.toBeNull();
 	await focus(firstTarget);
 
 	await user.keyboard('{ArrowDown}');
 	const second = document.activeElement as HTMLElement;
 	await expect(list).toContainElement(second);
-	await expect(rowOf(second, list, rowSelector)).not.toBe(rowOf(firstTarget, list, rowSelector));
+	await expect(rowOf(second, list, rowSelector)).not.toBe(row);
 
 	await user.keyboard('{ArrowUp}');
 	await expect(firstTarget).toHaveFocus();
 
-	const row = rowOf(firstTarget, list, rowSelector);
 	for (let presses = 0; presses < 20 && list.contains(document.activeElement); presses++) {
 		await user.tab();
 		if (list.contains(document.activeElement)) await expect(rowOf(document.activeElement, list, rowSelector)).toBe(row);
