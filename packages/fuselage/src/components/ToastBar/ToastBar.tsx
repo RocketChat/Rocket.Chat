@@ -25,6 +25,8 @@ const toastBarFrame = {
 	render: 'div',
 	position: 'relative',
 	display: 'block',
+	alignItems: 'normal',
+	flexDirection: 'row',
 	flexShrink: 1,
 	minWidth: '14.5rem',
 	maxWidth: '26rem',
@@ -43,7 +45,9 @@ const toastBarFrame = {
 const toastBarInner = {
 	render: 'div',
 	display: 'flex',
+	alignItems: 'normal',
 	flexDirection: 'row',
+	flexShrink: 1,
 	padding: '16px',
 } as const;
 
@@ -67,6 +71,8 @@ const toastBarProgress = {
 	render: 'div',
 	position: 'absolute',
 	display: 'block',
+	alignItems: 'normal',
+	flexDirection: 'row',
 	bottom: 0,
 	overflow: 'hidden',
 	width: '100%',

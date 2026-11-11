@@ -20,6 +20,9 @@ const generateToastBar = () => {
 		render: 'div',
 		position: 'relative',
 		display: 'block',
+		// Stated because the zero build's View defaults (stretch, column, no shrink) would otherwise differ from the runtime build
+		alignItems: 'normal',
+		flexDirection: 'row',
 		flexShrink: 1,
 		minWidth: size('x232')!,
 		maxWidth: size('x416')!,
@@ -34,7 +37,9 @@ const generateToastBar = () => {
 	const inner = {
 		render: 'div',
 		display: 'flex',
+		alignItems: 'normal',
 		flexDirection: 'row',
+		flexShrink: 1,
 		padding: spacing('x16')!,
 	};
 
@@ -52,6 +57,8 @@ const generateToastBar = () => {
 		render: 'div',
 		position: 'absolute',
 		display: 'block',
+		alignItems: 'normal',
+		flexDirection: 'row',
 		bottom: 0,
 		overflow: 'hidden',
 		width: '100%',
