@@ -9,7 +9,6 @@ import { computeChannelBindingHash, createType1Message, createType3Message, deco
 
 import type { IEwsTransport } from './IEwsTransport';
 import { ExchangeError } from '../errors';
-import { parseRetryAfterSeconds } from '../http/parseRetryAfterSeconds';
 import { logger } from '../logger';
 import { scrubForLog } from '../scrub';
 
@@ -34,19 +33,10 @@ export type EwsTransportConfig = {
 
 const REQUEST_TIMEOUT_MS = 60000;
 
-type EwsResponse = { status: number; headers: Record<string, string | string[] | undefined>; body: string };
-
-const assertNotBusy = (response: EwsResponse): void => {
-	if (response.status !== 503) {
-		return;
+const assertNotBusy = (status: number): void => {
+	if (status === 503) {
+		throw new ExchangeError('rate-limited', 'Exchange is too busy to take the request');
 	}
-
-	const header = response.headers['retry-after'];
-	const retryAfter = parseRetryAfterSeconds(Array.isArray(header) ? header[0] : header);
-
-	throw new ExchangeError('rate-limited', 'Exchange is too busy to take the request', {
-		retryAfterMs: retryAfter === undefined ? undefined : retryAfter * 1000,
-	});
 };
 
 /** For IPv6 literals */
@@ -192,7 +182,7 @@ export class EwsTransport implements IEwsTransport {
 
 		const negotiate = await this.send('', { Authorization: createType1Message(workstation, domain) }, 'GET');
 
-		assertNotBusy(negotiate);
+		assertNotBusy(negotiate.status);
 
 		if (negotiate.status !== 401) {
 			throw new ExchangeError('authentication-failed', 'Exchange did not issue an NTLM challenge', {
@@ -243,7 +233,11 @@ export class EwsTransport implements IEwsTransport {
 		return this.readBody(response);
 	}
 
-	private async send(body: string, headers: Record<string, string>, method: 'GET' | 'POST' = 'POST'): Promise<EwsResponse> {
+	private async send(
+		body: string,
+		headers: Record<string, string>,
+		method: 'GET' | 'POST' = 'POST',
+	): Promise<{ status: number; headers: Record<string, string | string[] | undefined>; body: string }> {
 		const { endpoint, agent } = this.assertConfigured();
 
 		return new Promise((resolve, reject) => {
@@ -294,8 +288,8 @@ export class EwsTransport implements IEwsTransport {
 		});
 	}
 
-	private readBody(response: EwsResponse): string {
-		assertNotBusy(response);
+	private readBody(response: { status: number; body: string }): string {
+		assertNotBusy(response.status);
 
 		// SOAP faults arrive with HTTP 500, so other 5xx bodies must reach the parser.
 		if (response.status === 401) {

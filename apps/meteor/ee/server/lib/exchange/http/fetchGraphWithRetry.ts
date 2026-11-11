@@ -1,7 +1,6 @@
 import type { ExtendedFetchOptions, Response } from '@rocket.chat/server-fetch';
 import { serverFetch } from '@rocket.chat/server-fetch';
 
-import { parseRetryAfterSeconds } from './parseRetryAfterSeconds';
 import { sleep } from '../../../../../lib/utils/sleep';
 import { ExchangeError } from '../errors';
 import { logger } from '../logger';
@@ -24,6 +23,16 @@ const DEFAULT_RETRY_AFTER_SECONDS = 60;
 const BACKOFF_BASE_MS = 1000;
 const RETRY_BUDGET_MS = 90000;
 const SSRF_REJECTION = 'error-ssrf-validation-failed';
+
+const parseRetryAfterSeconds = (header: string | null): number | undefined => {
+	if (!header) {
+		return undefined;
+	}
+
+	const seconds = Number.parseInt(header, 10);
+
+	return Number.isFinite(seconds) && seconds >= 0 ? seconds : undefined;
+};
 
 const waitMsFor = (response: Response, attempt: number): number => {
 	const retryAfter = parseRetryAfterSeconds(response.headers.get('retry-after'));

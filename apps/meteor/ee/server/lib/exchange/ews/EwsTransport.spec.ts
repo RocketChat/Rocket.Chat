@@ -120,12 +120,12 @@ describe('NTLM under FIPS', () => {
 });
 
 describe('throttling', () => {
-	it('reports a 503 as rate-limited, carrying the Retry-After it came with', async () => {
+	it('reports a 503 as rate-limited', async () => {
 		const transport = transportFor();
 		jest
 			.spyOn(transport as unknown as { send: () => Promise<unknown> }, 'send')
-			.mockResolvedValue({ status: 503, headers: { 'retry-after': '5' }, body: '<html>Service Unavailable</html>' });
+			.mockResolvedValue({ status: 503, headers: {}, body: '<html>Service Unavailable</html>' });
 
-		await expect(transport.post('<soap/>')).rejects.toMatchObject({ code: 'rate-limited', retryAfterMs: 5000 });
+		await expect(transport.post('<soap/>')).rejects.toMatchObject({ code: 'rate-limited' });
 	});
 });
