@@ -7,18 +7,18 @@ import {
 	GenericTableHeader,
 	GenericTableHeaderCell,
 	GenericTableLoadingTable,
+	usePaginatedQuery,
 	usePagination,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
-import type { MutableRefObject } from 'react';
-import { useRef, useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import RoomRow from './RoomRow';
 import RoomsTableFilters from './RoomsTableFilters';
+import { roomsQueryKeys } from '../../../lib/queryKeys';
 
 type RoomFilters = {
 	searchText: string;
@@ -27,50 +27,43 @@ type RoomFilters = {
 
 const DEFAULT_TYPES = ['d', 'p', 'c', 'l', 'discussions', 'teams'];
 
-const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
+const RoomsTable = () => {
 	const { t } = useTranslation();
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 
 	const [roomFilters, setRoomFilters] = useState<RoomFilters>({ searchText: '', types: [] });
 
-	const prevRoomFilterText = useRef<string>(roomFilters.searchText);
-
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 't' | 'usersCount' | 'msgs' | 'default' | 'featured' | 'ts'>('name');
-	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 	const searchText = useDebouncedValue(roomFilters.searchText, 500);
 
 	const query = useDebouncedValue(
-		useMemo(() => {
-			if (searchText !== prevRoomFilterText.current) {
-				setCurrent(0);
-			}
-			return {
+		useMemo(
+			() => ({
 				filter: searchText || '',
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
-				count: itemsPerPage,
-				offset: searchText === prevRoomFilterText.current ? current : 0,
 				types: (roomFilters.types.length ? [...roomFilters.types.map((roomType) => roomType.id)] : DEFAULT_TYPES) as unknown as (
 					'c' | 'd' | 'p' | 'l' | 'discussions' | 'teams'
 				)[],
-			};
-		}, [searchText, sortBy, sortDirection, itemsPerPage, current, roomFilters.types, setCurrent]),
+			}),
+			[searchText, sortBy, sortDirection, roomFilters.types],
+		),
 		500,
 	);
 
+	const queryKey = roomsQueryKeys.adminList(query);
+	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination({ resetKey: queryKey });
+
 	const getAdminRooms = useEndpoint('GET', '/v1/rooms.adminRooms');
 
-	const { data, refetch, isSuccess, isLoading, isError } = useQuery({
-		queryKey: ['rooms', query, 'admin'],
-		queryFn: async () => getAdminRooms(query),
+	const { data, refetch, isSuccess, isLoading, isError } = usePaginatedQuery({
+		query: {
+			queryKey,
+			queryFn: (page) => getAdminRooms({ ...query, ...page }),
+		},
+		itemsKey: 'rooms',
+		offset: current,
+		count: itemsPerPage,
 	});
-
-	useEffect(() => {
-		reload.current = refetch;
-	}, [reload, refetch]);
-
-	useEffect(() => {
-		prevRoomFilterText.current = searchText;
-	}, [searchText]);
 
 	const columns: TableColumnWidth[] = ['x200', 'x100', 'x80', ...(mediaQuery ? (['x80', 'x80', 'x80', 'x120'] as const) : [])];
 

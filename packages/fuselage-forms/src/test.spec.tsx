@@ -1,5 +1,5 @@
 import { composeStories } from '@storybook/react-webpack5';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 
@@ -46,32 +46,28 @@ test.each(a11yTestCases)('%s should have no a11y violations', async (_storyname,
 });
 
 test("Clicking WithTextArea's label should focus the textarea", async () => {
-	const { getByText, container } = render(<WithTextArea />);
+	render(<WithTextArea />);
 
-	const textarea = container.querySelector('textarea');
-	const label = getByText('Example', { exact: false });
-	await userEvent.click(label);
+	await userEvent.click(screen.getByText('Example', { exact: false }));
 
-	expect(textarea).toHaveFocus();
+	expect(screen.getByRole('textbox')).toHaveFocus();
 });
 
 test.each(onlyInputs)("Clicking %s's label should focus the input", async (_storyname, Story) => {
-	const { getByText, container } = render(<Story />);
+	render(<Story />);
 
-	const input = container.querySelector('input');
-	const label = getByText('Example', { exact: false });
-	await userEvent.click(label);
+	const input = screen.getByLabelText('Example', { exact: false });
+	await userEvent.click(screen.getByText('Example', { exact: false }));
 
 	expect(input).toHaveFocus();
 });
 
 test.each(wrappedInputs)("Clicking %s's label should focus the input and mark it as checked", async (_storyname, Story) => {
-	const { getByText, container } = render(<Story />);
+	render(<Story />);
 
-	const input = container.querySelector('input');
-	const label = getByText('Example', { exact: false, selector: 'span' });
-	await userEvent.click(label);
+	const input = screen.getByLabelText('Example', { exact: false });
+	await userEvent.click(screen.getByText('Example', { exact: false, selector: 'span' }));
 
 	expect(input).toHaveFocus();
-	expect(input?.checked).toBe(true);
+	expect(input).toBeChecked();
 });

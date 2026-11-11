@@ -21,7 +21,11 @@ const MessageGenericPreviewTitle = ({ externalUrl, children, className, ...props
 		);
 	}
 
-	return <span {...props} className={cx('rcx-message-generic-preview__title', className)} />;
+	return (
+		<span {...props} className={cx('rcx-message-generic-preview__title', className)}>
+			{children}
+		</span>
+	);
 };
 
 export default MessageGenericPreviewTitle;

@@ -1,11 +1,12 @@
 import type { HTMLAttributes } from 'react';
 
 import { cx } from '../../helpers/composeClassNames';
+import ItemMeta from '../Item/ItemMeta';
 
-export type MessageTimestampProps = HTMLAttributes<HTMLSpanElement>;
+export type MessageTimestampProps = Omit<HTMLAttributes<HTMLSpanElement>, 'is'>;
 
 const MessageTimestamp = ({ className, ...props }: MessageTimestampProps) => (
-	<span {...props} className={cx('rcx-box rcx-box--full rcx-message-header__time', className)} />
+	<ItemMeta is='span' {...props} className={cx('rcx-message-header__time', className)} />
 );
 
 export default MessageTimestamp;

@@ -27,6 +27,8 @@ npm install @rocket.chat/css-in-js
 
 The package ships a CommonJS bundle (with development and production builds picked by `process.env.NODE_ENV`), TypeScript declarations, and a stylesheet. It is meant to be consumed through a bundler that can import CSS.
 
+The bundle targets the web only. Components that render with Tamagui carry their own copy of the `@tamagui/web` runtime, built with `TAMAGUI_TARGET` fixed to `web`; `NODE_ENV` is the only environment variable it reads. An app that also runs Tamagui itself ends up with two runtimes sharing `globalThis.__tamaguiConfig`, so use one or the other.
+
 ## Usage
 
 ### Load the styles
@@ -183,6 +185,18 @@ Storybook documents every component:
 yarn workspace @rocket.chat/fuselage storybook
 yarn workspace @rocket.chat/fuselage build-storybook
 ```
+
+With `FUSELAGE_ZERO_RUNTIME=1`, Storybook compiles Fuselage with Tamagui's zero runtime, as the web client does; without it,
+components run on the Tamagui runtime, as npm consumers and Jest run them. To check that a component renders the same both
+ways, build both into separate directories and compare them:
+
+```sh
+yarn workspace @rocket.chat/fuselage build-storybook -o storybook-static/runtime
+FUSELAGE_ZERO_RUNTIME=1 yarn workspace @rocket.chat/fuselage build-storybook -o storybook-static/zero
+node packages/fuselage/scripts/verify/story-computed.mjs packages/fuselage/storybook-static/runtime packages/fuselage/storybook-static/zero
+```
+
+The zero build leaves out the MDX documentation pages (`Box.mdx`, `Flex.mdx`), which need the docs addon.
 
 Visual regression tests compare Storybook screenshots:
 

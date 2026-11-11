@@ -7,7 +7,7 @@ export type ThreadMessageContainerProps = {
 } & HTMLAttributes<HTMLDivElement>;
 
 const ThreadMessageContainer = ({ className, ...props }: ThreadMessageContainerProps) => (
-	<div {...props} className={cx('rcx-box rcx-box--full rcx-message-thread__container', className)} />
+	<div {...props} className={cx('rcx-message-thread__container', className)} />
 );
 
 export default ThreadMessageContainer;

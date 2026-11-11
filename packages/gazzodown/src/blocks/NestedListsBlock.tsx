@@ -4,17 +4,13 @@ import type * as MessageParser from '@rocket.chat/message-parser';
 
 import Markup from '../Markup';
 
-// The message body strips list indentation and gives every `ul li` a bullet, so nested lists win both back here.
+// The message body strips list indentation, so nested lists win it back here.
 const nestedListsStyle = css`
 	padding-inline-start: 1.25rem;
 
 	&& > ul,
 	&& > ol {
 		padding-block: 0;
-	}
-
-	&& ol > li::before {
-		content: attr(value) '.';
 	}
 `;
 
