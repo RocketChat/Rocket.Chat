@@ -40,10 +40,6 @@ const cursorFor = (syncState: string, window: DateRange = timeWindow) =>
 
 const MAILBOX = 'user@corp.example';
 
-const sleep = jest.fn();
-
-jest.mock('../../../../../lib/utils/sleep', () => ({ sleep: (...args: unknown[]) => sleep(...args) }));
-
 describe('ExchangeEwsProvider', () => {
 	describe('testConnection', () => {
 		const SERVICE_ACCOUNT = 'svc@corp.example';
@@ -328,9 +324,7 @@ describe('ExchangeEwsProvider', () => {
 			);
 
 		beforeEach(() => {
-			sleep.mockReset();
 			jest.useFakeTimers();
-			sleep.mockImplementation((ms: number) => jest.setSystemTime(Date.now() + ms));
 		});
 
 		afterEach(() => {
@@ -340,9 +334,13 @@ describe('ExchangeEwsProvider', () => {
 		it('waits the back-off Exchange asked for, then sends the same request again', async () => {
 			const transport = new FakeTransport([serverBusy(2000), okResponse('<m:Changes/>')]);
 
-			await new ExchangeEwsProvider(transport).listEvents(MAILBOX, timeWindow, cursorFor('S0'));
+			const sync = new ExchangeEwsProvider(transport).listEvents(MAILBOX, timeWindow, cursorFor('S0'));
 
-			expect(sleep).toHaveBeenCalledWith(2000);
+			await jest.advanceTimersByTimeAsync(1999);
+			expect(transport.sent).toHaveLength(1);
+
+			await jest.advanceTimersByTimeAsync(1);
+			await sync;
 			expect(transport.sent).toEqual([transport.sent[0], transport.sent[0]]);
 		});
 
@@ -354,7 +352,6 @@ describe('ExchangeEwsProvider', () => {
 			await expect(provider.listContacts(MAILBOX, 'contacts')).rejects.toMatchObject({ code: 'rate-limited' });
 
 			expect(transport.sent).toHaveLength(1);
-			expect(sleep).not.toHaveBeenCalled();
 		});
 	});
 
