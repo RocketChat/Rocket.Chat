@@ -1,6 +1,16 @@
 @use '../../styles/colors.scss';
 @use '../../styles/lengths.scss';
+@use '../../styles/functions.scss' as *;
 @use '../../styles/typography.scss' as *;
+
+@property --rcx-menu-max-width {
+	inherits: false;
+	syntax: '*';
+}
+
+.rcx-menu__popover {
+	max-width: var(--rcx-menu-max-width, #{to-rem(250)});
+}
 
 .rcx-menu-item {
 	&--with-description {
