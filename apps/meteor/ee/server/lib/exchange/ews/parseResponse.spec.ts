@@ -70,4 +70,22 @@ describe('parseEwsResponse on a batched response', () => {
 	it('takes the back-off only from the message that failed', () => {
 		expect(errorFrom(batch(serverBusy(), serverBusy(300000)))).toMatchObject({ code: 'rate-limited', retryAfterMs: undefined });
 	});
+
+	const internalError = (innerCode: string, backOffMs?: number) => {
+		const backOff = backOffMs === undefined ? '' : `<t:Value Name="BackOffMilliseconds">${backOffMs}</t:Value>`;
+
+		return (
+			'<m:GetItemResponseMessage ResponseClass="Error"><m:MessageText>An internal server error occurred.</m:MessageText>' +
+			'<m:ResponseCode>ErrorInternalServerError</m:ResponseCode>' +
+			`<m:MessageXml><t:Value Name="InnerErrorResponseCode">${innerCode}</t:Value>${backOff}</m:MessageXml></m:GetItemResponseMessage>`
+		);
+	};
+
+	it('treats an internal error wrapping ErrorServerBusy as throttling', () => {
+		expect(errorFrom(batch(internalError('ErrorServerBusy', 2000)))).toMatchObject({ code: 'rate-limited', retryAfterMs: 2000 });
+	});
+
+	it('leaves an internal error wrapping anything else as unexpected', () => {
+		expect(errorFrom(batch(internalError('ErrorQuotaExceeded')))).toMatchObject({ code: 'unexpected-response' });
+	});
 });

@@ -94,15 +94,21 @@ const responseCodesIn = (scope: Document | Element): Element[] => [
 	...allByTag(scope, ERRORS_NS, 'ResponseCode'),
 ];
 
+const messageXmlValue = (scope: Document | Element, name: string): string | undefined =>
+	textOf(allByTag(scope, TYPES_NS, 'Value').find((node) => node.getAttribute('Name') === name));
+
 const backOffMsIn = (scope: Document | Element): number | undefined => {
-	const value = allByTag(scope, TYPES_NS, 'Value').find((node) => node.getAttribute('Name') === 'BackOffMilliseconds');
-	const ms = Number.parseInt(textOf(value) ?? '', 10);
+	const ms = Number.parseInt(messageXmlValue(scope, 'BackOffMilliseconds') ?? '', 10);
 
 	return Number.isFinite(ms) && ms >= 0 ? ms : undefined;
 };
 
+/** Exchange can also report throttling as an `ErrorInternalServerError` whose inner error is `ErrorServerBusy`. */
+const unwrapServerBusy = (code: string, scope: Document | Element): string =>
+	code === 'ErrorInternalServerError' && messageXmlValue(scope, 'InnerErrorResponseCode') === 'ErrorServerBusy' ? 'ErrorServerBusy' : code;
+
 const toExchangeError = (code: string, detail: string | undefined, scope: Document | Element): ExchangeError => {
-	const mapped = RESPONSE_CODE_TO_ERROR[code];
+	const mapped = RESPONSE_CODE_TO_ERROR[unwrapServerBusy(code, scope)];
 
 	return mapped
 		? new ExchangeError(mapped.code, mapped.message, { detail: detail ?? code, retryAfterMs: backOffMsIn(scope) })
