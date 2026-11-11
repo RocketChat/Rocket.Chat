@@ -420,7 +420,8 @@ export type RoomAdminFieldsType =
 	| 'broadcast'
 	| 'uids'
 	| 'avatarETag'
-	| 'abacAttributes';
+	| 'abacAttributes'
+	| 'encrypted';
 
 export type IRoomAdmin = Pick<IRoom, RoomAdminFieldsType>;
 
