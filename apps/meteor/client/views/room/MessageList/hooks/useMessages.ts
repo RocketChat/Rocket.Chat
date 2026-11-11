@@ -5,6 +5,7 @@ import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useShallow } from 'zustand/shallow';
 
+import { expandSystemMessageOptions } from '../../../../../lib/expandSystemMessageOptions';
 import { Messages } from '../../../../stores';
 import { useRoom } from '../../contexts/RoomContext';
 
@@ -12,13 +13,7 @@ const mergeHideSysMessages = (
 	sysMesArray1: Array<MessageTypesValues>,
 	sysMesArray2: Array<MessageTypesValues>,
 ): Array<MessageTypesValues> => {
-	return Array.from(
-		new Set(
-			[...sysMesArray1, ...sysMesArray2].flatMap((messageType): MessageTypesValues[] =>
-				messageType === 'mute_unmute' ? ['user-muted', 'user-unmuted'] : [messageType],
-			),
-		),
-	);
+	return [...expandSystemMessageOptions([...sysMesArray1, ...sysMesArray2])];
 };
 
 export const useMessages = ({ rid }: { rid: IRoom['_id'] }): IMessage[] => {
