@@ -68,30 +68,35 @@ type CxArg = Falsy | string | { [className: string]: boolean | string | number }
  * @param args a sequence of falsy values, strings and dictionary objects containing the class names
  * @returns a space-separated string of class names
  */
-export const cx = (...args: CxArg[]): string =>
-	args
-		.flatMap((arg) => {
-			if (!arg) {
-				return [];
-			}
+export const cx = (...args: CxArg[]): string => {
+	let result = '';
+	for (const arg of args) {
+		if (!arg) {
+			continue;
+		}
 
-			if (typeof arg === 'string') {
-				return arg;
-			}
+		if (typeof arg === 'string') {
+			result += result ? ` ${arg}` : arg;
+			continue;
+		}
 
-			if (typeof arg === 'object') {
-				return Object.entries(arg).flatMap(([className, value]) => {
-					if (typeof value === 'boolean') {
-						return value ? className : [];
-					}
-
-					return `${className}-${value}`;
-				});
-			}
-
+		if (typeof arg !== 'object') {
 			return exhaustiveCheck(arg);
-		})
-		.join(' ');
+		}
+
+		for (const className in arg) {
+			if (!Object.hasOwn(arg, className)) continue;
+			const value = arg[className];
+			if (typeof value === 'boolean') {
+				if (value) result += result ? ` ${className}` : className;
+				continue;
+			}
+
+			result += result ? ` ${className}-${value}` : `${className}-${value}`;
+		}
+	}
+	return result;
+};
 
 /**
  * Composes class name modifiers under a class name into a single class names' string based on flags.
@@ -110,29 +115,31 @@ export const cx = (...args: CxArg[]): string =>
 export const cxx =
 	(className: string) =>
 	(...args: CxArg[]): string => {
-		const classNames = args.flatMap((arg) => {
+		let result = className;
+		for (const arg of args) {
 			if (!arg) {
-				return [];
+				continue;
 			}
 
 			if (typeof arg === 'string') {
-				return `${className}--${arg}`;
+				result += ` ${className}--${arg}`;
+				continue;
 			}
 
-			if (typeof arg === 'object') {
-				return Object.entries(arg).flatMap(([modifier, value]) => {
-					if (typeof value === 'boolean') {
-						return value ? `${className}--${modifier}` : [];
-					}
-
-					return `${className}--${modifier}-${value}`;
-				});
+			if (typeof arg !== 'object') {
+				return exhaustiveCheck(arg);
 			}
 
-			return exhaustiveCheck(arg);
-		});
+			for (const modifier in arg) {
+				if (!Object.hasOwn(arg, modifier)) continue;
+				const value = arg[modifier];
+				if (typeof value === 'boolean') {
+					if (value) result += ` ${className}--${modifier}`;
+					continue;
+				}
 
-		classNames.unshift(className);
-
-		return classNames.join(' ');
+				result += ` ${className}--${modifier}-${value}`;
+			}
+		}
+		return result;
 	};
