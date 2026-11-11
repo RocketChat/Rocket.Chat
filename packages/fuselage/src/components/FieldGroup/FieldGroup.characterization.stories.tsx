@@ -108,8 +108,9 @@ export const ChildrenPatching: Story = {
 	),
 	play: async ({ canvasElement }) => {
 		const [first, second] = [...canvasElement.querySelectorAll('.rcx-field')];
-		await expect(first).toHaveClass('consumer-field', 'rcx-field-group__item');
-		await expect(second).toHaveClass('rcx-field-group__item');
+		await expect(first).toHaveClass('consumer-field');
+		await expect(first).not.toHaveClass('rcx-field-group__item');
+		await expect(second).not.toHaveClass('rcx-field-group__item');
 	},
 };
 
@@ -146,11 +147,11 @@ export const ClassContract: Story = {
 		await expect(classContract(canvasElement)).toBe(
 			[
 				'root > fieldset: rcx-box rcx-box--full rcx-field-group',
-				'root > fieldset > div[0]: rcx-box rcx-box--full rcx-field rcx-field-group__item',
+				'root > fieldset > div[0]: rcx-box rcx-box--full rcx-field',
 				'root > fieldset > div[0] > label: rcx-box rcx-box--full rcx-field__label rcx-label',
 				'root > fieldset > div[0] > span: rcx-box rcx-box--full rcx-field__row',
 				'root > fieldset > div[0] > span > input: rcx-box rcx-box--animated rcx-box--full rcx-input-box rcx-input-box--type-text',
-				'root > fieldset > div[1]: rcx-box rcx-box--full rcx-field rcx-field-group__item',
+				'root > fieldset > div[1]: rcx-box rcx-box--full rcx-field',
 				'root > fieldset > div[1] > label: rcx-box rcx-box--full rcx-field__label rcx-label',
 				'root > fieldset > div[1] > span: rcx-box rcx-box--full rcx-field__row',
 				'root > fieldset > div[1] > span > input: rcx-box rcx-box--animated rcx-box--full rcx-input-box rcx-input-box--type-text',

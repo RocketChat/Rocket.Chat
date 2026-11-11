@@ -46,6 +46,7 @@ const ManageLicenseModal = ({ enterpriseLicense, onCancel }: ManageLicenseModalP
 	const licenseInputClassName = useStyle(css`
 		margin-block-end: 8px !important;
 		width: 100% !important;
+		font-family: monospace !important;
 		border-style: ${isDragOver ? 'dashed' : 'solid'} !important;
 		border-color: ${strokeColor(isDragOver ? 'highlight' : 'light')} !important;
 		${isDragOver ? `background-color: ${backgroundColor('tint')} !important;` : ''}
@@ -152,7 +153,6 @@ const ManageLicenseModal = ({ enterpriseLicense, onCancel }: ManageLicenseModalP
 				<FieldRow>
 					<TextAreaInput
 						className={licenseInputClassName}
-						style={{ fontFamily: 'monospace' }}
 						rows={4}
 						placeholder={t('Drag_and_drop_license_placeholder')}
 						value={license}
