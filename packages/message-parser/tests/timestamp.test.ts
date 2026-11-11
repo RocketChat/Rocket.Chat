@@ -59,12 +59,15 @@ test.each([
 });
 
 describe('relative hour timestamp parsing', () => {
+	const originalTz = process.env.TZ;
 	beforeAll(() => {
+		process.env.TZ = 'UTC';
 		jest.useFakeTimers();
 		jest.setSystemTime(new Date('2025-07-22T00:00:00.000Z'));
 	});
 
 	afterAll(() => {
+		process.env.TZ = originalTz;
 		jest.useRealTimers();
 	});
 
@@ -73,6 +76,8 @@ describe('relative hour timestamp parsing', () => {
 		['<t:10:00+00:00:R>', '1753178400', 'R' as const],
 		['<t:10:00:05+00:00>', '1753178405', 't' as const],
 		['<t:10:00+00:00>', '1753178400', 't' as const],
+		['<t:10:00:00>', '1753178400', 't' as const],
+		['<t:10:00>', '1753178400', 't' as const],
 	])('parses %p', (input, value, format) => {
 		const node = timestampNode(value, format, [0, input.length]);
 		expect(parse(input)).toEqual([paragraph([node])]);

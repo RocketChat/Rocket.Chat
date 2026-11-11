@@ -399,12 +399,12 @@ export const timestamp = (value: string, type?: 't' | 'T' | 'd' | 'D' | 'f' | 'F
 	};
 };
 
-export const timestampFromHours = (hours: string, minutes = '00', seconds = '00', timezone = '') => {
+export const timestampFromHours = (hours: string, minutes = '00', seconds = '00', timezone: string | null = '') => {
 	const date = new Date();
 
 	const yearMonthDay = date.toISOString().split('T')[0];
 
-	const timestamp = (new Date(`${yearMonthDay}T${hours}:${minutes}:${seconds}${timezone}`).getTime() / 1000) | 0;
+	const timestamp = (new Date(`${yearMonthDay}T${hours}:${minutes}:${seconds}${timezone || ''}`).getTime() / 1000) | 0;
 
 	return timestamp.toString();
 };
