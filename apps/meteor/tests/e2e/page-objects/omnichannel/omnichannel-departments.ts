@@ -75,6 +75,14 @@ export class OmnichannelDepartments extends OmnichannelAdmin {
 		return this.page.getByRole('tab', { name: 'Archived' });
 	}
 
+	async openArchivedTab() {
+		const listResponse = this.page.waitForResponse((response) =>
+			new URL(response.url()).pathname.endsWith('/v1/livechat/departments/archived'),
+		);
+		await this.tabArchivedDepartments.click();
+		await listResponse;
+	}
+
 	getDepartmentMenuByName(name: string) {
 		return this.table.findRowByName(name).getByRole('button', { name: 'Options' });
 	}
