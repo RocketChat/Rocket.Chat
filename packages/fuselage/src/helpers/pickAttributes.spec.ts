@@ -5,6 +5,8 @@ import {
 	pickWebCaptureHandlers,
 	pickWebDropHandlers,
 	pickWebPressHandlers,
+	pickWebRowHandlers,
+	pickWebTextInputHandlers,
 } from './pickAttributes';
 
 describe('pickAttributes', () => {
@@ -56,5 +58,37 @@ describe('pickSvgTitle', () => {
 	it('carries the title only when there is one', () => {
 		expect(pickSvgTitle({ title: 'Online' })).toEqual({ title: 'Online' });
 		expect(pickSvgTitle({})).toEqual({});
+	});
+});
+
+describe('pickWebRowHandlers', () => {
+	it('adds the pointer move and the capture-phase click to the press handlers', () => {
+		const onClick = jest.fn();
+		const onPointerMove = jest.fn();
+		const onClickCapture = jest.fn();
+
+		expect(pickWebRowHandlers({ onClick, onPointerMove, onClickCapture, onChange: jest.fn(), className: 'x' })).toEqual({
+			onClick,
+			onPointerMove,
+			onClickCapture,
+		});
+		expect(pickWebRowHandlers({})).toEqual({});
+	});
+});
+
+describe('pickWebTextInputHandlers', () => {
+	it('passes through the text control handlers and nothing else', () => {
+		const onChange = jest.fn();
+		const onInput = jest.fn();
+		const onPaste = jest.fn();
+		const onDrop = jest.fn();
+
+		expect(pickWebTextInputHandlers({ onChange, onInput, onPaste, onDrop, onMouseDown: jest.fn(), value: 'x' })).toEqual({
+			onChange,
+			onInput,
+			onPaste,
+			onDrop,
+		});
+		expect(pickWebTextInputHandlers({ onChange: undefined })).toEqual({});
 	});
 });

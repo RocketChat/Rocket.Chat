@@ -432,7 +432,9 @@
 							"pickWebAnimationHandlers",
 							"pickWebCaptureHandlers",
 							"pickWebDropHandlers",
-							"pickWebPressHandlers"
+							"pickWebPressHandlers",
+							"pickWebRowHandlers",
+							"pickWebTextInputHandlers"
 						]
 					}
 				]

@@ -5,9 +5,12 @@ import type {
 	ButtonHTMLAttributes,
 	CSSProperties,
 	DOMAttributes,
+	FieldsetHTMLAttributes,
 	ImgHTMLAttributes,
 	InputHTMLAttributes,
+	LabelHTMLAttributes,
 	Ref,
+	TextareaHTMLAttributes,
 } from 'react';
 
 // The groups without `Web` in their name use no DOM type, so a React Native build of a part keeps them and replaces
@@ -85,6 +88,40 @@ export const webPressHandlerKeys = [
 
 export type WebPressHandlers<TElement extends Element> = Pick<DOMAttributes<TElement>, (typeof webPressHandlerKeys)[number]>;
 
+/**
+ * What a row of a list, an option or a menu item listens to: the press handlers plus the pointer move and the
+ * capture-phase click a listbox option and react-aria's `useMenuItem` hand it. The key list builds both the type and
+ * `pickWebRowHandlers`.
+ */
+export const webRowHandlerKeys = [...webPressHandlerKeys, 'onPointerMove', 'onClickCapture'] as const;
+
+export type WebRowHandlers<TElement extends Element> = Pick<DOMAttributes<TElement>, (typeof webRowHandlerKeys)[number]>;
+
+/**
+ * What a text control listens to: the ones forms and consumers pass an `input` or a `textarea`, composition and the
+ * drag events of a textarea that takes dropped files. The key list builds both the type and `pickWebTextInputHandlers`.
+ */
+export const webTextInputHandlerKeys = [
+	'onChange',
+	'onInput',
+	'onBlur',
+	'onFocus',
+	'onKeyDown',
+	'onKeyUp',
+	'onPaste',
+	'onClick',
+	'onSelect',
+	'onCompositionStart',
+	'onCompositionUpdate',
+	'onCompositionEnd',
+	'onDragEnter',
+	'onDragLeave',
+	'onDragOver',
+	'onDrop',
+] as const;
+
+export type WebTextInputHandlers<TElement extends Element> = Pick<DOMAttributes<TElement>, (typeof webTextInputHandlerKeys)[number]>;
+
 /** The drop-target handlers of a part a file can be dragged onto, such as a button. */
 export const webDropHandlerKeys = ['onDragOver', 'onDrop'] as const;
 
@@ -124,6 +161,12 @@ export type ImageAttributes = Pick<ImgHTMLAttributes<HTMLImageElement>, 'alt' | 
 /** The `ref` of a part's `button` branch and of its `a` branch, for casting the flat `ButtonOrAnchorAttributes` ref. */
 export type ButtonRef = Ref<HTMLButtonElement>;
 export type AnchorRef = Ref<HTMLAnchorElement>;
+
+/** The `ref` of a part rendered as an `li`, a `label`, an `input` or a `textarea`, for casting a ref typed for several tags. */
+export type LiRef = Ref<HTMLLIElement>;
+export type LabelRef = Ref<HTMLLabelElement>;
+export type InputRef = Ref<HTMLInputElement>;
+export type TextAreaRef = Ref<HTMLTextAreaElement>;
 
 /** What a part that only shows something forwards. */
 export type PartAttributes<TElement extends Element> = CommonAttributes & WebAttributes<TElement>;
@@ -180,6 +223,41 @@ export type InputAttributes = CommonAttributes &
 		| 'onClick'
 		| 'onKeyDown'
 	>;
+
+/** What a part rendered as an `input` or a `textarea` forwards to the control besides its handlers, `ref` and ARIA attributes. */
+export type TextControlAttributes = Pick<
+	InputHTMLAttributes<HTMLInputElement>,
+	| 'name'
+	| 'value'
+	| 'defaultValue'
+	| 'placeholder'
+	| 'autoComplete'
+	| 'autoFocus'
+	| 'disabled'
+	| 'readOnly'
+	| 'required'
+	| 'min'
+	| 'max'
+	| 'step'
+	| 'minLength'
+	| 'maxLength'
+	| 'pattern'
+	| 'inputMode'
+	| 'spellCheck'
+	| 'multiple'
+	| 'accept'
+	| 'list'
+	| 'form'
+	| 'tabIndex'
+	| 'inert'
+> &
+	Pick<TextareaHTMLAttributes<HTMLTextAreaElement>, 'rows'>;
+
+/** What a part rendered as a `label` forwards: the control it names. */
+export type LabelAttributes = Pick<LabelHTMLAttributes<HTMLLabelElement>, 'htmlFor'>;
+
+/** What a part rendered as a `fieldset` forwards: the form it belongs to and the disabled state it hands its controls. */
+export type FieldsetAttributes = Pick<FieldsetHTMLAttributes<HTMLFieldSetElement>, 'disabled' | 'form' | 'name'>;
 
 /**
  * What a part rendered as a `span`, or as an `a` when it has an `href`, forwards: its action attributes and the link's

@@ -5,6 +5,8 @@ import {
 	webCaptureHandlerKeys,
 	webDropHandlerKeys,
 	webPressHandlerKeys,
+	webRowHandlerKeys,
+	webTextInputHandlerKeys,
 } from '../types/ElementAttributes';
 
 const pick =
@@ -20,6 +22,12 @@ const pick =
 
 /** The `WebPressHandlers` a consumer passed, to spread on the literal render element. */
 export const pickWebPressHandlers = pick(webPressHandlerKeys);
+
+/** The `WebRowHandlers` a consumer passed, to spread on the literal render element. */
+export const pickWebRowHandlers = pick(webRowHandlerKeys);
+
+/** The `WebTextInputHandlers` a consumer passed, to spread on the literal render element. */
+export const pickWebTextInputHandlers = pick(webTextInputHandlerKeys);
 
 /** The `WebDropHandlers` a consumer passed, to spread on the literal render element. */
 export const pickWebDropHandlers = pick(webDropHandlerKeys);
