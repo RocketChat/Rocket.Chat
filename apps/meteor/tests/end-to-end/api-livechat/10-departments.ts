@@ -105,6 +105,7 @@ import { IS_EE } from '../../e2e/config/constants';
 		expect(body).to.have.property('departments');
 		expect(body.departments).to.be.an('array');
 		expect(body.departments).to.have.lengthOf(0);
+		expect(body.total).to.be.equal(0);
 	});
 });
 
@@ -216,57 +217,65 @@ import { IS_EE } from '../../e2e/config/constants';
 		});
 
 		it('should filter departments by enabled=true and enabled=false', async () => {
-			const enabledDept = await createDepartment(undefined, `Enabled Dept ${Date.now()}`);
-			const disabledDept = await createDepartment(undefined, `Disabled Dept ${Date.now()}`);
+			const prefix = `dept-filter-${Date.now()}`;
+			let enabledDept: ILivechatDepartment | undefined;
+			let disabledDept: ILivechatDepartment | undefined;
 
-			await request
-				.put(api(`livechat/department/${disabledDept._id}`))
-				.set(credentials)
-				.send({
-					department: {
-						name: disabledDept.name,
-						enabled: false,
-						email: disabledDept.email,
-						showOnOfflineForm: false,
-						showOnRegistration: false,
-					},
-				})
-				.expect(200);
+			try {
+				enabledDept = await createDepartment(undefined, `${prefix}-enabled`);
+				disabledDept = await createDepartment(undefined, `${prefix}-disabled`);
 
-			// Test enabled=true
-			await request
-				.get(api('livechat/department'))
-				.set(credentials)
-				.query({ enabled: 'true' })
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body.departments).to.be.an('array');
-					const foundEnabled = res.body.departments.find((d: ILivechatDepartment) => d._id === enabledDept._id);
-					const foundDisabled = res.body.departments.find((d: ILivechatDepartment) => d._id === disabledDept._id);
-					expect(foundEnabled).to.not.be.undefined;
-					expect(foundDisabled).to.be.undefined;
-				});
+				await request
+					.put(api(`livechat/department/${disabledDept._id}`))
+					.set(credentials)
+					.send({
+						department: {
+							name: disabledDept.name,
+							enabled: false,
+							email: disabledDept.email,
+							showOnOfflineForm: false,
+							showOnRegistration: false,
+						},
+					})
+					.expect(200);
 
-			// Test enabled=false
-			await request
-				.get(api('livechat/department'))
-				.set(credentials)
-				.query({ enabled: 'false' })
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body.departments).to.be.an('array');
-					const foundEnabled = res.body.departments.find((d: ILivechatDepartment) => d._id === enabledDept._id);
-					const foundDisabled = res.body.departments.find((d: ILivechatDepartment) => d._id === disabledDept._id);
-					expect(foundEnabled).to.be.undefined;
-					expect(foundDisabled).to.not.be.undefined;
-				});
+				// Test enabled=true
+				await request
+					.get(api('livechat/department'))
+					.set(credentials)
+					.query({ enabled: 'true', text: prefix })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('departments').that.is.an('array');
+						expect(res.body.total).to.be.equal(1);
+						expect(res.body.departments).to.have.lengthOf(1);
+						expect(res.body.departments[0]._id).to.be.equal(enabledDept?._id);
+					});
 
-			await deleteDepartment(enabledDept._id);
-			await deleteDepartment(disabledDept._id);
+				// Test enabled=false
+				await request
+					.get(api('livechat/department'))
+					.set(credentials)
+					.query({ enabled: 'false', text: prefix })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('departments').that.is.an('array');
+						expect(res.body.total).to.be.equal(1);
+						expect(res.body.departments).to.have.lengthOf(1);
+						expect(res.body.departments[0]._id).to.be.equal(disabledDept?._id);
+					});
+			} finally {
+				if (enabledDept?._id) {
+					await deleteDepartment(enabledDept._id);
+				}
+				if (disabledDept?._id) {
+					await deleteDepartment(disabledDept._id);
+				}
+			}
 		});
 	});
 
