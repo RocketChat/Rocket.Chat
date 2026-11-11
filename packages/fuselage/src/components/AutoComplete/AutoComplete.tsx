@@ -156,11 +156,12 @@ function AutoComplete<TLabel = ReactNode>({
 			rcx-autocomplete
 			ref={containerRef}
 			onClick={useStableCallback(() => innerRef.current?.focus())}
-			rcx-select--invalid={!!error}
-			rcx-select--disabled={disabled}
+			rcx-autocomplete--invalid={!!error}
+			rcx-autocomplete--disabled={disabled}
 		>
 			<Box rcx-autocomplete__group role='group'>
 				<Input
+					undecorated
 					ref={mergedRefs}
 					onChange={useStableCallback((e: ChangeEvent<HTMLInputElement>) => setFilter?.(e.currentTarget.value))}
 					onBlur={handleOnBlur}
@@ -170,7 +171,7 @@ function AutoComplete<TLabel = ReactNode>({
 					value={filter}
 					disabled={disabled}
 					{...props}
-					className={['rcx-input-box--undecorated', 'rcx-autocomplete__input', props.className].filter(Boolean).join(' ')}
+					className={['rcx-autocomplete__input', props.className].filter(Boolean).join(' ')}
 				/>
 				{selected.map((itemSelected) =>
 					RenderSelected ? (

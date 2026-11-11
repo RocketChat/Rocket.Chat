@@ -11,7 +11,8 @@ function SelectFilteredAnchor({ children: _children, ...props }: SelectFilteredA
 
 	return (
 		<Input
-			className='rcx-select__focus rcx-select__filter rcx-input-box--undecorated'
+			undecorated
+			className='rcx-select__focus rcx-select__filter'
 			placeholder={placeholder}
 			value={filter}
 			onInput={(e: InputEvent<HTMLInputElement>) => setFilter?.(e.currentTarget.value)}
