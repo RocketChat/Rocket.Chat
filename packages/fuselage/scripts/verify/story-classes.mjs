@@ -1,6 +1,6 @@
 // Usage: node scripts/verify/story-classes.mjs <storybook-static> <out.json> [--jobs 4]   index story id -> rcx-* classes rendered
 //        node scripts/verify/story-classes.mjs --diff <before.json> <after.json>        class-contract diff per story
-// Exits 1 when a story could not be captured or none was found. The index feeds `--renders rcx-<component>` in story-ab / story-computed ("every story that renders the component").
+// Exits 1 when a story could not be captured or none was found.
 import { readFileSync, writeFileSync } from 'node:fs';
 
 import { cli, openStory, runPool, storyIds } from './lib.mjs';
