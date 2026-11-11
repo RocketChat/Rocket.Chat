@@ -69,7 +69,7 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 			return;
 		}
 
-		const maxFileSize = Number(settings.get('FileUpload_MaxFileSize'));
+		const maxFileSize = settings.get<number>('FileUpload_MaxFileSize');
 		// -1 means there is no limit
 		if (maxFileSize > -1 && (file.size || 0) > maxFileSize) {
 			throw new Error(`File of ${file.size} bytes exceeds the allowed size of ${maxFileSize}`);
@@ -93,7 +93,7 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 		const fileStore = FileUpload.getStore('Uploads');
 
 		// Recorded before the filter runs so a rejected file is refused by checkPendingFile next time, without another download
-		await Uploads.updateOne({ _id: fileId }, { $set: { size: buffer.length } });
+		await Uploads.updateFileSizeById(fileId, buffer.length);
 		await fileStore.store.getFilter()?.check({ ...file, size: buffer.length }, buffer);
 
 		await fs.promises.writeFile(UploadFS.getTempFilePath(fileId), buffer);

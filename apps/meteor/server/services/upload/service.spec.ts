@@ -26,7 +26,7 @@ jest.mock('@rocket.chat/core-services', () => ({
 	ServiceClassInternal: class {},
 }));
 jest.mock('@rocket.chat/models', () => ({
-	Uploads: { findAllByOriginalFileId: jest.fn(), findOneById: jest.fn(), updateOne: jest.fn() },
+	Uploads: { findAllByOriginalFileId: jest.fn(), findOneById: jest.fn(), updateFileSizeById: jest.fn() },
 	Users: { unsetAvatarData: jest.fn() },
 }));
 jest.mock('@rocket.chat/logger', () => ({ Logger: jest.fn(() => ({ error: jest.fn() })) }));
@@ -434,8 +434,8 @@ describe('UploadService', () => {
 
 			await expect(service.completePendingFile({ fileId: 'f1', buffer: bytes })).rejects.toBe(rejection);
 
-			expect(Uploads.updateOne).toHaveBeenCalledWith({ _id: 'f1' }, { $set: { size: 4096 } });
-			expect(jest.mocked(Uploads.updateOne).mock.invocationCallOrder[0]).toBeLessThan(check.mock.invocationCallOrder[0]);
+			expect(Uploads.updateFileSizeById).toHaveBeenCalledWith('f1', 4096);
+			expect(jest.mocked(Uploads.updateFileSizeById).mock.invocationCallOrder[0]).toBeLessThan(check.mock.invocationCallOrder[0]);
 		});
 
 		describe('completing a downloaded file', () => {
@@ -477,7 +477,7 @@ describe('UploadService', () => {
 
 				await expect(service.completePendingFile({ fileId: 'f1', buffer: Buffer.from('bytes') })).resolves.toBe(complete);
 
-				expect(Uploads.updateOne).not.toHaveBeenCalled();
+				expect(Uploads.updateFileSizeById).not.toHaveBeenCalled();
 				expect(ufsComplete).not.toHaveBeenCalled();
 			});
 

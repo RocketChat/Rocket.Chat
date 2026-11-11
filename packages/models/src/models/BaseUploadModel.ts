@@ -135,6 +135,10 @@ export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUplo
 		return this.updateOne(filter, update);
 	}
 
+	async updateFileSizeById(fileId: string, size: number): Promise<UpdateResult> {
+		return this.updateOne({ _id: fileId }, { $set: { size } });
+	}
+
 	async deleteFile(fileId: string, options?: { session?: ClientSession }): Promise<DeleteResult> {
 		return this.deleteOne({ _id: fileId }, { session: options?.session });
 	}
