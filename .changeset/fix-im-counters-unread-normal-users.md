@@ -12,5 +12,5 @@ The `/api/v1/im.counters` endpoint had two issues affecting standard (non-admin)
 
 **Fix:**
 - Allow standard users to pass `userId` equal to their own ID without admin privileges. Admin permission is now only enforced when querying on behalf of a *different* user.
-- Added an explicit `subscription.u._id === this.userId` ownership check before returning unread metrics, ensuring users can only read their own subscription data.
+- Added an explicit `subscription.u._id === this.userId` ownership check before returning unread metrics, ensuring standard users can only read their own subscription data while admins retain their existing access.
 
