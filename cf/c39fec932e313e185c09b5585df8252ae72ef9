@@ -1,0 +1,23 @@
+apps/meteor/client/views/omnichannel/departments/DepartmentsTable/DepartmentsTable.tsx
+  s_f01248706e666b::t_a2f608df77341a 44-50,52
+  s_f01248706e666b::t_2ef5cd9d1d96a2 140
+apps/meteor/client/views/omnichannel/slaPolicies/SlaTable.tsx
+  s_f01248706e666b::t_b3f61ab9dd30dc 34-39,41
+  s_f01248706e666b::t_bb8130c4da0281 130
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "cfc39fec932e313e185c09b5585df8252ae72ef9",
+  "prompts": {},
+  "sessions": {
+    "s_f01248706e666b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "04dfbff1-503b-4670-975a-a9ac26823c9a",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
