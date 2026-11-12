@@ -24,8 +24,9 @@ export const useFileUploadAction = (disabled: boolean): GenericMenuItemProps => 
 		};
 
 		const handleUploadChange = async () => {
+			const selectedFiles = Array.from(fileInputRef?.current?.files ?? []);
 			const { getMimeType } = await import('../../../../../../../lib/mimeTypes');
-			const filesToUpload = Array.from(fileInputRef?.current?.files ?? []).map((file) => {
+			const filesToUpload = selectedFiles.map((file) => {
 				Object.defineProperty(file, 'type', {
 					value: getMimeType(file.type, file.name),
 				});
