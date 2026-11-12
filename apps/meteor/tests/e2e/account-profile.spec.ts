@@ -14,6 +14,7 @@ import { setUserPhones } from './utils/setUserPhones';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.user3.state });
+test.use({ reusePage: true });
 
 test.describe.serial('settings-account-profile', () => {
 	let poHomeChannel: HomeChannel;

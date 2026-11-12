@@ -7,6 +7,7 @@ import { setUserPreferences } from './utils/setUserPreferences';
 import { expect, test } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
+test.use({ reusePage: true });
 test.describe.serial('message-actions', () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
