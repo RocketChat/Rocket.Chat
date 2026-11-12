@@ -25,7 +25,7 @@ const exports_ = (dist) => {
 		.sort()) {
 		const text = readFileSync(join(dist, file), 'utf8')
 			.replaceAll(/\/\*[\s\S]*?\*\//g, '')
-			.replaceAll(/^\s*\/\/.*$/gm, '');
+			.replaceAll(/^\s*\/\/(?!\/\s*<).*$/gm, '');
 		let chunk;
 		const seen = new Map();
 		const flush = () => {
