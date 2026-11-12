@@ -1,119 +1,133 @@
-<p align="center"> 
-  <img  src="https://github.com/RocketChat/Rocket.Chat.Artwork/raw/master/Logos/2020/png/logo-horizontal-red.png" data-canonical-src="https://github.com/RocketChat/Rocket.Chat.Artwork/raw/master/Logos/2020/png/logo-horizontal-red.png" width="400" />
+<p align="center">
+  <img src="https://github.com/RocketChat/Rocket.Chat.Artwork/raw/master/Logos/2020/png/logo-horizontal-red.png" width="400" alt="Rocket.Chat logo" />
 </p>
 
 <h1 align="center">
-  The ultimate secure open-source solution for team communications
+  Rocket.Chat: interoperable by design, governed by you
 </h1>
 
 <p align="center">
-  <img src="https://img.shields.io/github/v/release/RocketChat/Rocket.Chat?label=version">
-  <img src="https://img.shields.io/github/actions/workflow/status/RocketChat/Rocket.Chat/build_and_test.yml">
-  <img src="https://img.shields.io/badge/license-MIT-green">
-  <img alt="Codecov branch" src="https://img.shields.io/codecov/c/github/RocketChat/Rocket.Chat/develop">
+  <img src="https://img.shields.io/github/v/release/RocketChat/Rocket.Chat?label=version" alt="Latest version">
+  <img src="https://img.shields.io/github/actions/workflow/status/RocketChat/Rocket.Chat/build_and_test.yml" alt="Build status">
+  <img src="https://img.shields.io/badge/license-MIT-green" alt="MIT license">
+  <img src="https://img.shields.io/codecov/c/github/RocketChat/Rocket.Chat/develop" alt="Code coverage">
 </p>
 
+<p align="center">
+  <a href="https://docs.rocket.chat/docs/deploy-rocketchat"><b>Deploy</b></a> ·
+  <a href="https://docs.rocket.chat/docs/rocketchat"><b>Documentation</b></a> ·
+  <a href="https://open.rocket.chat"><b>Community</b></a> ·
+</p>
+
+[Rocket.Chat](https://www.rocket.chat) is an open-source, secure communications platform built in TypeScript. It brings messaging, voice, video, apps, and AI together under one security model, so you can work with agencies, allies, and partners even when they run different systems.
+
+You decide where your data lives and which jurisdiction governs it. Run Rocket.Chat on premises, in a secure or sovereign cloud, or fully air-gapped. Defense, intelligence, public sector, and critical infrastructure organizations, including the US Air Force, the US Army, BAE Systems, and eu-LISA, rely on Rocket.Chat for communications they control end to end.
 
 
-[Rocket.Chat](https://rocket.chat) is an open-source, secure, fully customizable communications platform developed in TypeScript for organizations with high standards of data protection.
+# 🚀 Why Rocket.Chat
 
-We are the ultimate solution for team communications, enabling real-time conversations between colleagues, with other companies, and with your customers or citizens, regardless of how they connect with you. The result is an increase in productivity and user satisfaction rates.
+- **Interoperability:** Native, server-to-server federation with Matrix and XMPP networks, with no bridge in the middle. Partners keep their own systems, and every federated message keeps its real sender. [Learn about federation](https://docs.rocket.chat/docs/rocketchat-native-federation).
+- **Sovereignty:** Self-host, deploy in a sovereign cloud, or run air-gapped. Your data stays where you put it. [Explore deployment options](https://docs.rocket.chat/docs/deploy-rocketchat).
+- **Security:** Zero Trust by design, with role-based and attribute-based access control, end-to-end encryption, identity management, retention policies, and audit logs. [Secure your workspace](https://docs.rocket.chat/docs/secure-rocketchat).
+- **Resilience:** Keep communicating in disconnected, intermittent, or limited-bandwidth (DDIL) conditions and during network outages.
+- **Flexibility:** Build custom apps, workflows, and integrations with REST APIs, SDKs, and the Apps-Engine, without vendor lock-in. [Extend and integrate](https://docs.rocket.chat/docs/extend-and-integrate-rocketchat-capabilities).
 
-Every day, tens of millions of users in over 150 countries and in organizations such as Deutsche Bahn, The US Navy, and Credit Suisse trust Rocket.Chat to keep their communications completely private and secure.
+# 🧭 Platform overview
 
-# 🚀 Platform overview
+Rocket.Chat covers three areas under a single security model:
 
-Rocket.Chat provides endless possibilities. Here’s an overview of the features you benefit from:
+- **Collaborate:** Messaging, threads, voice calls, video calls, screen sharing, and file sharing in channels, teams, and direct messages. [Collaborate using Rocket.Chat](https://docs.rocket.chat/docs/collaborate-using-rocketchat).
+- **Extend:** Install apps from the Rocket.Chat Marketplace, build your own with the [Apps-Engine](https://developer.rocket.chat/docs/rocketchat-apps-engine), and connect external systems through the [REST API](https://developer.rocket.chat/apidocs).
+- **Intelligence:** Rocket.Chat AI runs on your own OpenAI-compatible model, inside your perimeter, scoped to each person's permissions.
 
-- [**Deployment and workspace management**](https://docs.rocket.chat/docs/deploy-rocketchat): Flexible and reliable self-hosted, cloud, and air-gapped deployment options with scalable architecture and performance monitoring.
+### 🤖 Rocket.Chat AI
 
-- [**Security and sovereignty**](https://docs.rocket.chat/docs/secure-rocketchat): Rocket.Chat is secure by design, with features such as identity management, end-to-end encryption, and role and attribute-based access control.
+| Capability | What it does |
+|---|---|
+| **Assist** | Summarizes threads and translates messages, including messages from federated partners. |
+| **Retrieve** | Answers questions from your knowledge base with cited sources, and powers hybrid search that combines keyword and semantic matching. |
+| **Act** | Runs agents built with the Agent Kit through the Rocket.Chat MCP Server. Agents work only within the permissions of the person they act for, need human approval, and are fully audited. |
 
-- [**Team collaboration**](https://docs.rocket.chat/docs/collaborate-using-rocketchat): Unified collaboration experience for asynchronous and real-time communication with seamless messaging options, voice calls, and federation.
+Public AI services are never in the data path. [Learn more about Rocket.Chat AI](https://www.rocket.chat/rocket-chat-ai).
 
-- [**Extend and integrate**](https://docs.rocket.chat/docs/extend-and-integrate-rocketchat-capabilities): Install public apps from the Rocket.Chat Marketplace, build your own apps with Apps-Engine, and integrate with external systems.
-
-<img src="https://global-uploads.webflow.com/611a19b9853b7414a0f6b3f6/6319c72bbd8af5c8c22efab6_heroImage.webp" data-canonical-src="https://global-uploads.webflow.com/611a19b9853b7414a0f6b3f6/6319c72bbd8af5c8c22efab6_heroImage.webp"  />
+> Some capabilities, such as Rocket.Chat AI, video calls, and advanced identity management, are available on paid plans. Compare [plans](https://www.rocket.chat/pricing) for details.
 
 # 💻 Deploy Rocket.Chat
 
-We support different methods of deployment for different needs. Choose your method:
+Choose the deployment method that fits your environment:
 
-- Are you deploying Rocket.Chat on your own servers? You can deploy using one of the recommended methods: Docker, Podman, or Kubernetes. Refer to the [Deployment Guide](https://docs.rocket.chat/docs/deploy-rocketchat) for details. Before you deploy, make sure to check the [system requirements](https://docs.rocket.chat/docs/system-requirements) to deploy a workspace successfully. Alternatively, deploy Rocket.Chat using [Launchpad](https://docs.rocket.chat/docs/deploy-with-launchpad) for a quick and straightforward Kubernetes setup where you don't have to manage each dependency.
+- **Self-hosted:** Deploy on your own servers with Docker, Podman, or Kubernetes. See the [deployment guide](https://docs.rocket.chat/docs/deploy-rocketchat) and check the [system requirements](https://docs.rocket.chat/docs/system-requirements) first. For a quick Kubernetes setup where you don't manage each dependency, use [Launchpad](https://docs.rocket.chat/docs/deploy-with-launchpad).
+- **Air-gapped:** Run Rocket.Chat on an isolated network with no internet access. See [air-gapped deployment](https://docs.rocket.chat/docs/rocketchat-air-gapped-deployment).
+- **Cloud-hosted:** Let us run the infrastructure for you with dedicated, secure [cloud hosting](https://docs.rocket.chat/docs/rocketchat-cloud-hosting-service-level-agreement-sla).
+- **Federated:** Connect your workspace to Matrix and XMPP networks with [native federation](https://docs.rocket.chat/docs/rocketchat-native-federation).
 
-- Do you need to run the workspace on an isolated network? Set up an [air-gapped workspace](https://docs.rocket.chat/docs/rocketchat-air-gapped-deployment) to use Rocket.Chat without internet access, suitable for high-security or regulated environments.
-
-- Looking for a custom cloud-hosted solution without handling infrastructure? Check out our premium, dedicated [cloud hosting options](https://docs.rocket.chat/docs/rocketchat-cloud-hosting-service-level-agreement-sla) that adapt to your needs.
-
-- Interested in decentralized communication? Enable [federation](https://docs.rocket.chat/docs/rocketchat-native-federation) to securely communicate and share resources across a federated network.
+Not sure where to start? Visit [Get started](https://www.rocket.chat/get-started).
 
 # 📱 Desktop and mobile apps
 
-In addition to the web app, you can also download the Rocket.Chat mobile app:
+Use Rocket.Chat in the browser, or download the apps.
+
+**Mobile**
 
 [![Rocket.Chat on Apple App Store](https://user-images.githubusercontent.com/551004/29770691-a2082ff4-8bc6-11e7-89a6-964cd405ea8e.png)](https://itunes.apple.com/us/app/rocket-chat/id1148741252?mt=8) [![Rocket.Chat on Google Play](https://user-images.githubusercontent.com/551004/29770692-a20975c6-8bc6-11e7-8ab0-1cde275496e0.png)](https://play.google.com/store/apps/details?id=chat.rocket.android)
 
-Download the desktop app:
-- [Download on the Mac App Store](https://apps.apple.com/us/app/rocket-chat/id1086818840?mt=12)
-- [Install from the Windows Store](https://apps.microsoft.com/detail/9nblggh52jv6?hl=en-us&gl=NG&ocid=pdpshare)
-- [Get from Snapcraft for Linux](https://snapcraft.io/rocketchat-desktop) or use the command `sudo snap install rocketchat-desktop`
+**Desktop**
 
-Refer to the [Installation guide](https://docs.rocket.chat/docs/desktop-mobile-apps) for further details.
+- [macOS: Mac App Store](https://apps.apple.com/us/app/rocket-chat/id1086818840?mt=12)
+- [Windows: Microsoft Store](https://apps.microsoft.com/detail/9nblggh52jv6)
+- [Linux: Snapcraft](https://snapcraft.io/rocketchat-desktop), or run `sudo snap install rocketchat-desktop`
 
-# 📖 Rocket.Chat documentation
+For more options, see [Desktop and mobile apps](https://docs.rocket.chat/docs/desktop-mobile-apps) or [download the apps](https://www.rocket.chat/download-apps).
 
-- [User documentation](https://docs.rocket.chat/docs/rocketchat)
-- [Administrator's guide](https://docs.rocket.chat/docs/administrators-guide)
-- [Developer documentation](https://developer.rocket.chat/docs/rocketchat-developer)
-- [API documentation](https://developer.rocket.chat/apidocs)
-- [YouTube Rocket.Chat Learning Center](https://www.youtube.com/playlist?list=PLee3gqXJQrFVXnNs5GiuoTMy269ydvcOB)
+# 📖 Documentation
+
+| Audience | Resource |
+|---|---|
+| Users | [User guide](https://docs.rocket.chat/docs/rocketchat) |
+| Administrators | [Administrator's guide](https://docs.rocket.chat/docs/administrators-guide) |
+| Integrators | [API documentation](https://developer.rocket.chat/apidocs) |
+| Everyone | [Release notes](https://docs.rocket.chat/docs/rocketchat-release-notes) and the [YouTube Learning Center](https://www.youtube.com/playlist?list=PLee3gqXJQrFVXnNs5GiuoTMy269ydvcOB) |
 
 # 🛡️ Trust and compliance
 
-The architecture of Rocket.Chat is designed to protect sensitive data, enforce rigorous compliance, and ensure secure, reliable communications for governments, defense, and critical infrastructure organizations operating in high-stakes environments.
+Rocket.Chat is built for organizations that work in high-stakes, regulated environments. It supports Zero Trust architectures, post-quantum encrypted conversations, and deployments up to IL6, and aligns with frameworks such as GDPR, SOC 2, ISO/IEC 27001, and HIPAA.
 
-- **[Trust Center](https://trust.rocket.chat/)**: The Trust Center provides a comprehensive view of how we protect data and maintain transparency. You will find details on our security practices, privacy commitments, compliance certifications, and governance policies.
+- **[Trust Center](https://trust.rocket.chat/):** Our security practices, privacy commitments, certifications, and governance policies.
+- **[Compliance Center](https://docs.rocket.chat/docs/compliance-center):** How Rocket.Chat helps you meet your compliance requirements.
 
-- **[Compliance Center](https://docs.rocket.chat/docs/compliance-center)**: Explore the Compliance Center for additional information on how we commit to providing modern collaboration while protecting sensitive data.
+# 🛠️ Develop with Rocket.Chat
 
-# 🛠️ Additional resources for developers
+Set up a development environment for each part of the platform:
 
-You can set up a Rocket.Chat development environment by following the guides below:
+- **[Server](https://developer.rocket.chat/docs/server):** Set up the server on Linux, Windows, macOS, or Gitpod.
+- **[Desktop](https://developer.rocket.chat/docs/desktop-app):** Build and customize the desktop app. Contribute to [Rocket.Chat.Electron](https://github.com/RocketChat/Rocket.Chat.Electron).
+- **[Mobile](https://developer.rocket.chat/docs/mobile-app):** Build the mobile app and configure push notifications. Contribute to [Rocket.Chat.ReactNative](https://github.com/RocketChat/Rocket.Chat.ReactNative).
+- **[Apps-Engine](https://developer.rocket.chat/docs/rocketchat-apps-engine):** Build apps that extend Rocket.Chat with the open-source Apps-Engine framework, and publish them through the [app publisher portal](https://marketplace.rocket.chat/publisher/apps).
 
-- **[Server](https://developer.rocket.chat/docs/server)**: See how to set up a Rocket.Chat server development environment on Linux distributions, Windows, Mac, and Gitpod.
+# 🤝 Contribute
 
-- **[Desktop](https://developer.rocket.chat/docs/desktop-app)**: Learn how to set up and customize a desktop development environment. You can follow and contribute to the [Rocket.Chat.Electron](https://github.com/RocketChat/Rocket.Chat.Electron) repository.
+Rocket.Chat is open source, and we welcome contributions of all kinds. Read the [contribution guide](https://developer.rocket.chat/docs/contribute-to-rocketchat) to get started.
 
-- **[Mobile](https://developer.rocket.chat/docs/mobile-app)**: Learn about mobile app development and configuring push notifications. You can follow and contribute to the [Rocket.Chat.ReactNative](https://github.com/RocketChat/Rocket.Chat.ReactNative) repository.
+**Feature requests:** Open a request in [Rocket.Chat/feature-requests](https://github.com/RocketChat/feature-requests/issues/new?template=feature_request.md). Requests from before 2018 are archived in the [feature request forum](https://forums.rocket.chat/c/feature-requests/8).
 
-# 🧩 Apps-Engine
+![Repobeats analytics image](https://repobeats.axiom.co/api/embed/1efe0f0a7c366bd58068a1ab1f555ab912ec3895.svg "Repobeats analytics image")
 
-Develop your own apps that can be integrated with Rocket.Chat. We provide an [open-source Apps-Engine framework](https://developer.rocket.chat/docs/rocketchat-apps-engine) which expands the integration possibilities within the Rocket.Chat ecosystem.
+# 💬 Community and support
 
-# 🆕 Feature request
-
-[Rocket.Chat/feature-requests](https://github.com/RocketChat/feature-requests) is used to track Rocket.Chat feature requests and discussions. Click [here](https://github.com/RocketChat/feature-requests/issues/new?template=feature_request.md) to open a new feature request. [Feature Request Forums](https://forums.rocket.chat/c/feature-requests/8) stores the historical archives of old feature requests (up to 2018).
-
-# 🤝 Community
-
-Join thousands of members worldwide in our [community server](https://open.rocket.chat).
-Join [#support](https://open.rocket.chat/channel/support) and [#general](https://open.rocket.chat/channel/general) for help from the community.
-
-![Alt](https://repobeats.axiom.co/api/embed/1efe0f0a7c366bd58068a1ab1f555ab912ec3895.svg "Repobeats analytics image")
-
-# 👥 Contributions
-
-Rocket.Chat is an open-source project, and we are very happy to accept community contributions. Refer to the [Contribution guide](https://developer.rocket.chat/docs/contribute-to-rocketchat) for more details.
-
+- Join our [community server](https://open.rocket.chat) and ask questions in [#support](https://open.rocket.chat/channel/support) or say hello in [#general](https://open.rocket.chat/channel/general).
+- Browse and post in the [Rocket.Chat forums](https://forums.rocket.chat).
+- Customers can reach our team through the [support desk](https://desk.rocket.chat).
+- Looking for a partner to deploy or integrate Rocket.Chat? [Find a partner](https://www.rocket.chat/partners/find-a-partner).
+- Interested in Rocket.Chat for your organization? [Talk to sales](https://www.rocket.chat/sales-contact) or [request a demo](https://www.rocket.chat/demo-request).
 
 # 💼 Become a Rocketeer
 
-We're hiring developers, technical support, and product managers all the time. Check out our [jobs page](https://rocket.chat/jobs).
+We're hiring engineers, technical support specialists, and product managers. See our [open roles](https://www.rocket.chat/jobs).
 
-# 🗞️ Get the Latest News
+# 🗞️ Stay up to date
 
-- [Blog](https://rocket.chat/blog)
-- [Twitter](https://twitter.com/RocketChat)
-- [Facebook](https://www.facebook.com/RocketChatApp)
+- [Blog](https://www.rocket.chat/blog)
+- [X (Twitter)](https://twitter.com/RocketChat)
 - [LinkedIn](https://www.linkedin.com/company/rocket-chat)
 - [YouTube](https://www.youtube.com/channel/UCin9nv7mUjoqrRiwrzS5UVQ)
+- [Facebook](https://www.facebook.com/RocketChatApp)
