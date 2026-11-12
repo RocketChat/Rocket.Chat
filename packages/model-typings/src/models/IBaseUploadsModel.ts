@@ -32,6 +32,8 @@ export interface IBaseUploadsModel<T extends IUpload> extends IBaseModel<T> {
 
 	updateFileNameById(fileId: string, name: string): Promise<Document | UpdateResult>;
 
+	updateFileSizeById(fileId: string, size: number): Promise<UpdateResult>;
+
 	deleteFile(fileId: string, options?: { session?: ClientSession }): Promise<DeleteResult>;
 
 	findOneByIdAndUserIdAndRoomId<T_ extends Document = T, O extends FindOptionsWithProjection<T_> = FindOptionsWithProjection<T_>>(
