@@ -1,4 +1,3 @@
-/* oxlint-disable react/no-multi-comp -- story helper components rendered by several stories */
 import type { UsePositionOptions } from '@rocket.chat/fuselage-hooks';
 import type { Meta, StoryObj } from '@storybook/react';
 import { useLayoutEffect, useRef } from 'react';

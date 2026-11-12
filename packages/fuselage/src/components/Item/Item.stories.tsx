@@ -1,4 +1,3 @@
-/* oxlint-disable react/no-multi-comp -- helpers use state and are rendered in keyed lists */
 import type { Meta, StoryObj } from '@storybook/react';
 import type { ReactNode } from 'react';
 import { useState } from 'react';

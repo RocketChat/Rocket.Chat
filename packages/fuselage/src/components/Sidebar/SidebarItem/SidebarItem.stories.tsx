@@ -1,4 +1,3 @@
-/* oxlint-disable react/no-multi-comp -- story row components rendered by several stories */
 import type { Meta, StoryObj } from '@storybook/react';
 
 import {

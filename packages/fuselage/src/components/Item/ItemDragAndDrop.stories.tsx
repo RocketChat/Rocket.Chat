@@ -1,4 +1,3 @@
-/* oxlint-disable react/no-multi-comp -- small presentational helpers shared across many stories */
 import type { Meta, StoryObj } from '@storybook/react';
 import type { ReactNode } from 'react';
 

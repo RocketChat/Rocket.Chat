@@ -170,7 +170,6 @@ export const Variants: Story = {
 
 export const CallControls: Story = {
 	decorators: [withLightSurface],
-	// oxlint-disable-next-line react/no-multi-comp -- a named render function is needed so the story can use hooks
 	render: function Render() {
 		const [micOn, setMicOn] = useState(true);
 		const [cameraOn, setCameraOn] = useState(true);
