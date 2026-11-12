@@ -485,9 +485,9 @@
 		"negativeMargins": 1,
 		"displayContents": 0
 	},
-	"Tabs/Tabs.styles.scss": {
-		"rules": 18,
-		"nested": 14,
+	"Tabs/Tabs.styles.css": {
+		"rules": 1,
+		"nested": 0,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,

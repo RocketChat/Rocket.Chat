@@ -1,0 +1,4 @@
+/* A pseudo-element on the part's own element, which a frame can't style */
+.rcx-tabs__scroll-box::-webkit-scrollbar {
+	display: none;
+}
