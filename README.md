@@ -16,17 +16,17 @@
 <p align="center">
   <a href="https://docs.rocket.chat/docs/deploy-rocketchat"><b>Deploy</b></a> ·
   <a href="https://docs.rocket.chat/docs/rocketchat"><b>Documentation</b></a> ·
-  <a href="https://open.rocket.chat"><b>Community</b></a> ·
+  <a href="https://open.rocket.chat"><b>Community</b></a>
 </p>
 
 [Rocket.Chat](https://www.rocket.chat) is an open-source, secure communications platform built in TypeScript. It brings messaging, voice, video, apps, and AI together under one security model, so you can work with agencies, allies, and partners even when they run different systems.
 
-You decide where your data lives and which jurisdiction governs it. Run Rocket.Chat on premises, in a secure or sovereign cloud, or fully air-gapped. Defense, intelligence, public sector, and critical infrastructure organizations, including the US Air Force, the US Army, BAE Systems, and eu-LISA, rely on Rocket.Chat for communications they control end to end.
+You decide where your data lives and which jurisdiction governs it. Run Rocket.Chat on premises, in a secure or sovereign cloud, or fully air-gapped. Defense, intelligence, public sector, and critical infrastructure organizations rely on Rocket.Chat for communications they control end to end.
 
 
 # 🚀 Why Rocket.Chat
 
-- **Interoperability:** Native, server-to-server federation with Matrix and XMPP networks, with no bridge in the middle. Partners keep their own systems, and every federated message keeps its real sender. [Learn about federation](https://docs.rocket.chat/docs/rocketchat-native-federation).
+- **Interoperability:** Native, server-to-server federation with Matrix, with XMPP federation available as an alpha feature, and no bridge in the middle. Partners keep their own systems, and every federated message keeps its real sender. [Learn about federation](https://docs.rocket.chat/docs/rocketchat-native-federation).
 - **Sovereignty:** Self-host, deploy in a sovereign cloud, or run air-gapped. Your data stays where you put it. [Explore deployment options](https://docs.rocket.chat/docs/deploy-rocketchat).
 - **Security:** Zero Trust by design, with role-based and attribute-based access control, end-to-end encryption, identity management, retention policies, and audit logs. [Secure your workspace](https://docs.rocket.chat/docs/secure-rocketchat).
 - **Resilience:** Keep communicating in disconnected, intermittent, or limited-bandwidth (DDIL) conditions and during network outages.
@@ -90,7 +90,7 @@ For more options, see [Desktop and mobile apps](https://docs.rocket.chat/docs/de
 
 # 🛡️ Trust and compliance
 
-Rocket.Chat is built for organizations that work in high-stakes, regulated environments. It supports Zero Trust architectures, post-quantum encrypted conversations, and deployments up to IL6, and aligns with frameworks such as GDPR, SOC 2, ISO/IEC 27001, and HIPAA.
+Rocket.Chat is built for organizations that work in high-stakes, regulated environments. It supports Zero Trust architectures and aligns with frameworks such as GDPR, SOC 2, ISO/IEC 27001, and HIPAA. Its Defense plan offers post-quantum encryption options and deployments up to IL6.
 
 - **[Trust Center](https://trust.rocket.chat/):** Our security practices, privacy commitments, certifications, and governance policies.
 - **[Compliance Center](https://docs.rocket.chat/docs/compliance-center):** How Rocket.Chat helps you meet your compliance requirements.
