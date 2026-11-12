@@ -1,13 +1,4 @@
 {
-	"Accordion/Accordion.styles.scss": {
-		"rules": 10,
-		"nested": 5,
-		"combinators": 0,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 0,
-		"displayContents": 0
-	},
 	"AudioPlayer/AudioPlayer.styles.scss": {
 		"rules": 5,
 		"nested": 4,
@@ -30,15 +21,6 @@
 		"rules": 11,
 		"nested": 7,
 		"combinators": 0,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 0,
-		"displayContents": 0
-	},
-	"Bubble/Bubble.styles.scss": {
-		"rules": 15,
-		"nested": 14,
-		"combinators": 4,
 		"important": 0,
 		"specificityBumps": 0,
 		"negativeMargins": 0,
@@ -80,28 +62,10 @@
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
-	"Card/Card.styles.scss": {
-		"rules": 12,
-		"nested": 11,
-		"combinators": 1,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 0,
-		"displayContents": 0
-	},
 	"CardGrid/CardGrid.styles.css": {
 		"rules": 3,
 		"nested": 0,
 		"combinators": 0,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 1,
-		"displayContents": 0
-	},
-	"CardGroup/CardGroup.styles.scss": {
-		"rules": 15,
-		"nested": 13,
-		"combinators": 3,
 		"important": 0,
 		"specificityBumps": 0,
 		"negativeMargins": 1,
@@ -123,15 +87,6 @@
 		"important": 0,
 		"specificityBumps": 0,
 		"negativeMargins": 0,
-		"displayContents": 0
-	},
-	"Contextualbar/Contextualbar.styles.scss": {
-		"rules": 16,
-		"nested": 15,
-		"combinators": 0,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 1,
 		"displayContents": 0
 	},
 	"Divider/Divider.styles.css": {
@@ -296,13 +251,13 @@
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
-	"Modal/Modal.styles.scss": {
-		"rules": 22,
-		"nested": 21,
+	"Modal/Modal.styles.css": {
+		"rules": 4,
+		"nested": 0,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
-		"negativeMargins": 1,
+		"negativeMargins": 0,
 		"displayContents": 0
 	},
 	"NavBar/NavBar.styles.scss": {
@@ -332,9 +287,9 @@
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
-	"Pagination/Pagination.styles.scss": {
-		"rules": 14,
-		"nested": 5,
+	"Pagination/Pagination.styles.css": {
+		"rules": 1,
+		"nested": 0,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
@@ -476,22 +431,22 @@
 		"negativeMargins": 1,
 		"displayContents": 0
 	},
-	"Table/Table.styles.scss": {
-		"rules": 30,
-		"nested": 28,
-		"combinators": 0,
+	"Table/Table.styles.css": {
+		"rules": 2,
+		"nested": 0,
+		"combinators": 1,
 		"important": 0,
-		"specificityBumps": 1,
-		"negativeMargins": 1,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
 		"displayContents": 0
 	},
-	"Tabs/Tabs.styles.scss": {
-		"rules": 18,
-		"nested": 14,
+	"Tabs/Tabs.styles.css": {
+		"rules": 1,
+		"nested": 0,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
-		"negativeMargins": 2,
+		"negativeMargins": 0,
 		"displayContents": 0
 	},
 	"Text/Text.styles.scss": {

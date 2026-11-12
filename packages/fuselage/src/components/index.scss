@@ -2,20 +2,15 @@
 @use '../styles/direction.css';
 @use './Box/Box.styles.scss';
 
-@use './Accordion/Accordion.styles.scss';
 @use './AudioPlayer/AudioPlayer.styles.scss';
 @use './Banner/Banner.styles.css';
-@use './Bubble/Bubble.styles.scss';
 @use './Button/Button.styles.css';
 @use './Button/IconButton.styles.css';
 @use './ButtonGroup/ButtonGroup.styles.css';
 @use './Callout/Callout.styles.css';
-@use './Card/Card.styles.scss';
 @use './CardGrid/CardGrid.styles.css';
-@use './CardGroup/CardGroup.styles.scss';
 @use './CheckBox/CheckBox.styles.css';
 @use './Chip/Chip.styles.scss';
-@use './Contextualbar/Contextualbar.styles.scss';
 @use './Divider/Divider.styles.css';
 @use './Dropdown/Dropdown.styles.css';
 @use './FramedIcon/FramedIcon.styles.scss';
@@ -25,11 +20,11 @@
 @use './Item/Item.styles.css';
 @use './Menu/Menu.styles.css';
 @use './Message/Messages.styles.scss';
-@use './Modal/Modal.styles.scss';
+@use './Modal/Modal.styles.css';
 @use './NavBar/NavBar.styles.scss';
 @use './Option/Option.styles.css';
 @use './Options/Options.styles.css';
-@use './Pagination/Pagination.styles.scss';
+@use './Pagination/Pagination.styles.css';
 @use './PopoverSurface/PopoverSurface.styles.scss';
 @use './ProgressBar/ProgressBar.styles.css';
 @use './RadioButton/RadioButton.styles.css';
@@ -41,8 +36,8 @@
 @use './SplitButton/SplitButton.styles.scss';
 @use './Stack/Stack.styles.scss';
 @use './States/States.styles.scss';
-@use './Table/Table.styles.scss';
-@use './Tabs/Tabs.styles.scss';
+@use './Table/Table.styles.css';
+@use './Tabs/Tabs.styles.css';
 @use './Text/Text.styles.scss';
 @use './Throbber/Throbber.styles.css';
 @use './ToastBar/ToastBar.styles.css';

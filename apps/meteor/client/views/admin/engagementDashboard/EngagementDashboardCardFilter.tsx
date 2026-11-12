@@ -6,7 +6,7 @@ export type EngagementDashboardCardFilterProps = {
 };
 
 const EngagementDashboardCardFilter = ({ children = <InputBoxSkeleton /> }: EngagementDashboardCardFilterProps) => (
-	<Box rcx-card__row display='flex' justifyContent='flex-end' alignItems='center' wrap='no-wrap' paddingBlockEnd='x8'>
+	<Box display='flex' flexGrow={1} flexShrink={1} justifyContent='flex-end' alignItems='center' wrap='no-wrap' paddingBlockEnd='x8'>
 		{children && (
 			<Stack direction='row' align='center' gap='x8'>
 				{children}

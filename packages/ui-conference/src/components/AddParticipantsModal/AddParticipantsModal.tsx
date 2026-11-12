@@ -74,7 +74,7 @@ const AddParticipantsModal = ({ onClose }: AddParticipantsModalProps) => {
 			confirmText={t('Add')}
 			confirmDisabled={!users.length || tooMany}
 			confirmLoading={adding}
-			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleAdd)} {...props} />}
+			onSubmit={handleSubmit(handleAdd)}
 			onCancel={onClose}
 		>
 			<FieldGroup>

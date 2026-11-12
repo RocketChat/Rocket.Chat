@@ -6,11 +6,15 @@ import type {
 	CSSProperties,
 	DOMAttributes,
 	FieldsetHTMLAttributes,
+	FormEventHandler,
 	ImgHTMLAttributes,
 	InputHTMLAttributes,
 	LabelHTMLAttributes,
 	Ref,
+	SubmitEventHandler,
+	TdHTMLAttributes,
 	TextareaHTMLAttributes,
+	ThHTMLAttributes,
 } from 'react';
 
 // The groups without `Web` in their name use no DOM type, so a React Native build of a part keeps them and replaces
@@ -337,6 +341,9 @@ export type DivElement = HTMLDivElement;
 /** The press handlers of a part rendered as a `div`. */
 export type DivPressHandlers = WebPressHandlers<HTMLDivElement>;
 
+/** What a part rendered as a heading forwards. */
+export type HeadingAttributes = PartAttributes<HTMLHeadingElement> & WebPressHandlers<HTMLHeadingElement>;
+
 /** What a part rendered as a `section` that only shows something forwards. */
 export type SectionAttributes = PartAttributes<HTMLElement>;
 
@@ -376,3 +383,46 @@ export type ElementActionAttributes = ActionAttributes<HTMLElement>;
 
 /** What a part that renders an `img` forwards, with its image attributes. */
 export type ImageActionAttributes = ActionAttributes<HTMLImageElement> & ImageAttributes;
+
+/** What a table cell rendered as a `td` or a `th` forwards besides its part attributes: the cells it spans and the headers it answers to. */
+export type TableCellAttributes = Pick<
+	TdHTMLAttributes<HTMLTableCellElement> & ThHTMLAttributes<HTMLTableCellElement>,
+	'scope' | 'colSpan' | 'rowSpan' | 'headers'
+>;
+
+/** What a part rendered as a `table`, a table section, a row or a cell forwards, named so a frame's module needs no DOM type. */
+export type TableElementAttributes = ActionAttributes<HTMLTableElement>;
+export type TableSectionAttributes = ActionAttributes<HTMLTableSectionElement>;
+export type TableRowAttributes = ActionAttributes<HTMLTableRowElement>;
+export type TableCellElementAttributes = ActionAttributes<HTMLTableCellElement> & TableCellAttributes;
+
+/** What a part that renders a hero `img` forwards: its image attributes and where the picture comes from. */
+export type HeroImageAttributes = ImageAttributes & Pick<ImgHTMLAttributes<HTMLImageElement>, 'src' | 'srcSet' | 'loading'>;
+
+/** What a part rendered as a `form`, or as a `div` when it has no `onSubmit`, forwards: the submit handler and the id a button outside the form points to. */
+export type FormSubmitAttributes = {
+	onSubmit?: FormEventHandler<HTMLFormElement>;
+	id?: string;
+};
+
+/** The handler of a part that renders a form around its content, whichever element the submit event comes from. */
+export type ElementSubmitHandler = SubmitEventHandler<HTMLElement>;
+
+/** What a part rendered as a `nav` forwards: its part attributes and the name of the landmark. */
+export type NavAttributes = PartAttributes<HTMLElement> & Pick<AriaAttributes, 'aria-label'>;
+
+/** The press handlers of a part rendered as a `nav`, or another plain element. */
+export type ElementPressHandlers = WebPressHandlers<HTMLElement>;
+
+/** What a part rendered as a `dialog` forwards: its landmark attributes, the press handlers and the end of the animation `AnimatedVisibility` gives it. */
+export type DialogAttributes = PartAttributes<HTMLDialogElement> &
+	Pick<ActionAccessibilityAttributes, 'role' | 'tabIndex' | 'aria-label' | 'aria-labelledby' | 'aria-describedby'> &
+	Pick<AriaAttributes, 'aria-modal'> &
+	WebPressHandlers<HTMLDialogElement> &
+	WebAnimationHandlers<HTMLDialogElement>;
+
+/** What a part rendered as an `img` that only shows something forwards. */
+export type ImagePartAttributes = PartAttributes<HTMLImageElement>;
+
+/** What a consumer passes to the `button` or `span` a part renders for it: the button attributes without the `onClick` and `ref` the part owns. */
+export type ButtonPartAttributes = Omit<ButtonActionAttributes, 'onClick' | 'ref'>;

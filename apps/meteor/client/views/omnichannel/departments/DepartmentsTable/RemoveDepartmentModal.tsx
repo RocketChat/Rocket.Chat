@@ -35,7 +35,7 @@ const RemoveDepartmentModal = ({ _id = '', name, reset, onClose }: RemoveDepartm
 
 	return (
 		<GenericModal
-			wrapperFunction={(props) => <Box is='form' onSubmit={onSubmit} {...props} />}
+			onSubmit={onSubmit}
 			onCancel={onClose}
 			confirmText={t('Delete')}
 			title={t('Delete_Department?')}

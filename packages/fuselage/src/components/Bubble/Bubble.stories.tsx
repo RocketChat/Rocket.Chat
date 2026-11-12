@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { action } from 'storybook/actions';
+import { expect } from 'storybook/test';
 
 import Bubble from './Bubble';
 
@@ -131,5 +132,28 @@ export const Small: Story = {
 		children: '22 Nov 2023',
 		secondary: true,
 		small: true,
+	},
+};
+
+export const GroupInRtl: Story = {
+	render: () => (
+		<div dir='rtl'>
+			<Bubble onClick={action('click')} onDismiss={action('dismiss')}>
+				Group
+			</Bubble>
+		</div>
+	),
+	play: async ({ canvasElement }) => {
+		const radius = (selector: string, corner: string) =>
+			getComputedStyle(canvasElement.querySelector(selector) as Element).getPropertyValue(`border-${corner}-radius`);
+		const [first, last] = ['button:first-of-type', 'button:last-of-type'];
+
+		// The halves meet at the reading-order middle: the label ends on the left and the dismiss button starts there
+		await expect(radius(first, 'top-left')).toBe('0px');
+		await expect(radius(first, 'bottom-left')).toBe('0px');
+		await expect(radius(first, 'top-right')).not.toBe('0px');
+		await expect(radius(last, 'top-right')).toBe('0px');
+		await expect(radius(last, 'bottom-right')).toBe('0px');
+		await expect(radius(last, 'top-left')).not.toBe('0px');
 	},
 };

@@ -77,8 +77,8 @@ describe('GenericUpsellModal', () => {
 		expect(heroImage).toHaveAttribute('src', 'test-image.png');
 		expect(heroImage).toHaveAttribute('alt', 'Alternative text');
 		expect(heroImage).toHaveStyle({
-			width: '300px',
-			height: '200px',
+			'--rcx-modal-hero-image-width': '300px',
+			'--rcx-modal-hero-image-height': '200px',
 		});
 	});
 });

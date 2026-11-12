@@ -29,7 +29,7 @@ export const ReportCard = forwardRef<HTMLElement, ReportCardProps>(function Repo
 	return (
 		<Box height='full' display='grid' ref={ref}>
 			<Card aria-busy={isPending} data-qa={id}>
-				<Box rcx-card__header justifyContent='space-between'>
+				<Box display='flex' alignItems='center' justifyContent='space-between' gap='x8'>
 					<CardCol>
 						<CardTitle>{title}</CardTitle>
 						<Text is='span' color='hint' fontScale='c1' data-qa='report-summary'>
