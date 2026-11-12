@@ -170,13 +170,13 @@
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
-	"Message/MessageDivider/MessageDivider.styles.scss": {
-		"rules": 7,
-		"nested": 6,
-		"combinators": 1,
+	"Message/MessageDivider/MessageDivider.styles.css": {
+		"rules": 2,
+		"nested": 0,
+		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
-		"negativeMargins": 1,
+		"negativeMargins": 0,
 		"displayContents": 0
 	},
 	"Message/MessageGenericPreview/MessageGenericPreview.styles.scss": {
@@ -192,15 +192,6 @@
 		"rules": 4,
 		"nested": 0,
 		"combinators": 2,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 0,
-		"displayContents": 0
-	},
-	"Message/MessageStatusIndicator/MessageStatusIndicator.styles.scss": {
-		"rules": 2,
-		"nested": 1,
-		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
 		"negativeMargins": 0,

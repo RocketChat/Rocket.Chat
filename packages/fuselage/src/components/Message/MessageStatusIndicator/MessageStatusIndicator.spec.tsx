@@ -34,6 +34,16 @@ it('lets a consumer color override the default item color', () => {
 	expect(screen.getByTestId('custom')).toHaveStyle({ color: 'var(--rcx-color-font-info, #095ad2)' });
 });
 
+it('keeps the default item color when the consumer passes an undefined one', () => {
+	render(
+		<MessageStatusIndicator>
+			<MessageStatusIndicatorItem name='edit' color={undefined} data-testid='undefined-color' />
+		</MessageStatusIndicator>,
+	);
+
+	expect(screen.getByTestId('undefined-color')).toHaveStyle({ color: 'var(--rcx-color-font-secondary-info, #6c737a)' });
+});
+
 it('names a titled status for assistive technology and hides an untitled one', () => {
 	render(
 		<MessageStatusIndicator>
