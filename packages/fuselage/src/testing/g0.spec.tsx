@@ -97,6 +97,21 @@ describe('ariaSnapshot and classContract', () => {
 		);
 	});
 
+	it('marks a natively required control', () => {
+		const { container } = render(
+			<div>
+				<input aria-label='Name' required />
+				<select aria-label='Plan' required>
+					<option>a</option>
+				</select>
+				<textarea aria-label='Notes' />
+			</div>,
+		);
+		expect(ariaSnapshot(container)).toBe(
+			['- textbox "Name" [required]', '- combobox "Plan" [required]:', '  - option "a"', '- textbox "Notes"'].join('\n'),
+		);
+	});
+
 	it('marks a control disabled by its fieldset, except in the first legend', () => {
 		const { container } = render(
 			<fieldset disabled>
