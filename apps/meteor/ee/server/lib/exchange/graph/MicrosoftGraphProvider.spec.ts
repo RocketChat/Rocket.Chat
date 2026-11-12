@@ -236,6 +236,20 @@ describe('MicrosoftGraphProvider', () => {
 			await expect(new MicrosoftGraphProvider(config).listEvents(MAILBOX, timeWindow)).rejects.toMatchObject({ code });
 		});
 
+		it('maps 410 to unexpected-response outside a delta query, which has no sync state to reset', async () => {
+			mockTokenThen(graphResponse({ error: {} }, 410));
+
+			await expect(new MicrosoftGraphProvider(config).listContactFolders(MAILBOX)).rejects.toMatchObject({ code: 'unexpected-response' });
+		});
+
+		it('maps 410 on the contacts delta to sync-state-invalid, so the folder cursor is reset', async () => {
+			mockTokenThen(graphResponse({ error: {} }, 410));
+
+			await expect(new MicrosoftGraphProvider(config).listContacts(MAILBOX, 'default')).rejects.toMatchObject({
+				code: 'sync-state-invalid',
+			});
+		});
+
 		it('drops a stale token and retries once on 401, then succeeds', async () => {
 			mockTokenThen(graphResponse({ error: {} }, 401), tokenResponse, graphResponse({ value: [] }));
 

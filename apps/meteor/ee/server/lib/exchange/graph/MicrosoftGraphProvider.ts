@@ -213,7 +213,7 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 	}
 
 	public async listContacts(mailbox: string, folderId: string, cursor?: string): Promise<Page<ExchangeContact>> {
-		const payload = await this.requestJson<GraphDeltaResponse>(cursor ?? this.contactsDeltaUrl(mailbox, folderId));
+		const payload = await this.requestJson<GraphDeltaResponse>(cursor ?? this.contactsDeltaUrl(mailbox, folderId), {}, { delta: true });
 
 		const raw = Array.isArray(payload.value) ? (payload.value as GraphContact[]) : [];
 		const nextLink = asString(payload['@odata.nextLink']);
