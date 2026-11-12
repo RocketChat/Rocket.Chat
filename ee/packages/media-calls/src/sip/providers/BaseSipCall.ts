@@ -396,11 +396,15 @@ export abstract class BaseSipCall extends BaseCallProvider {
 		try {
 			const replacesDialog = await this.getReplacedDialog(call);
 
-			await this.session.sendReferRequest(this.sipDialog, {
+			const referStatus = await this.session.sendReferRequest(this.sipDialog, {
 				transferredTo: call.transferredTo,
 				transferredBy: call.transferredBy,
 				...(replacesDialog && { replacesDialog }),
 			});
+
+			if (referStatus === 603) {
+				throw new Error('sip-refer-declined');
+			}
 		} catch (err) {
 			logger.error({ msg: 'REFER failed', method: 'processTransferredCall', err, callId: call._id, type: this.constructor.name });
 			if (!call.ended) {
