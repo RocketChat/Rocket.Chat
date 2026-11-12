@@ -1,6 +1,6 @@
-import type { LayoutBlockish } from '../LayoutBlockish';
-import type { RichTextBlock } from './RichTextBlock';
-import type { UrlSourceElement } from '../elements/UrlSourceElement';
+import type { LayoutBlockish } from '../LayoutBlockish.js';
+import type { RichTextBlock } from './RichTextBlock.js';
+import type { UrlSourceElement } from '../elements/UrlSourceElement.js';
 
 export type TaskStatus = 'pending' | 'in_progress' | 'complete' | 'error';
 

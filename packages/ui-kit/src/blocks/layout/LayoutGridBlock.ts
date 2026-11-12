@@ -1,21 +1,21 @@
-import type { ActionsBlock } from './ActionsBlock';
-import type { AlertBlock } from './AlertBlock';
-import type { CardBlock } from './CardBlock';
-import type { CarouselBlock } from './CarouselBlock';
-import type { ContainerBlock } from './ContainerBlock';
-import type { ContextBlock } from './ContextBlock';
-import type { DataTableBlock } from './DataTableBlock';
-import type { DataVisualizationBlock } from './DataVisualizationBlock';
-import type { DividerBlock } from './DividerBlock';
-import type { FileBlock } from './FileBlock';
-import type { HeaderBlock } from './HeaderBlock';
-import type { ImageBlock } from './ImageBlock';
-import type { InputBlock } from './InputBlock';
-import type { RichTextBlock } from './RichTextBlock';
-import type { SectionBlock } from './SectionBlock';
-import type { TableBlock } from './TableBlock';
-import type { VideoBlock } from './VideoBlock';
-import type { LayoutBlockish } from '../LayoutBlockish';
+import type { ActionsBlock } from './ActionsBlock.js';
+import type { AlertBlock } from './AlertBlock.js';
+import type { CardBlock } from './CardBlock.js';
+import type { CarouselBlock } from './CarouselBlock.js';
+import type { ContainerBlock } from './ContainerBlock.js';
+import type { ContextBlock } from './ContextBlock.js';
+import type { DataTableBlock } from './DataTableBlock.js';
+import type { DataVisualizationBlock } from './DataVisualizationBlock.js';
+import type { DividerBlock } from './DividerBlock.js';
+import type { FileBlock } from './FileBlock.js';
+import type { HeaderBlock } from './HeaderBlock.js';
+import type { ImageBlock } from './ImageBlock.js';
+import type { InputBlock } from './InputBlock.js';
+import type { RichTextBlock } from './RichTextBlock.js';
+import type { SectionBlock } from './SectionBlock.js';
+import type { TableBlock } from './TableBlock.js';
+import type { VideoBlock } from './VideoBlock.js';
+import type { LayoutBlockish } from '../LayoutBlockish.js';
 
 /** The block types a layout accepts in its items. */
 export const layoutItemBlockTypes = [

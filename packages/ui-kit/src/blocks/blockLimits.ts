@@ -1,5 +1,5 @@
-import { nestedBlocks } from './nestedBlocks';
-import type { LayoutBlockError } from './validateLayoutBlocks';
+import { nestedBlocks } from './nestedBlocks.js';
+import type { LayoutBlockError } from './validateLayoutBlocks.js';
 
 export const maxBlocksPerMessage = 50;
 export const maxBlocksPerView = 100;

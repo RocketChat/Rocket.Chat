@@ -1,4 +1,4 @@
-import { conditionsMatch } from '../rendering/resolveConditionalBlocks';
+import { conditionsMatch } from '../rendering/resolveConditionalBlocks.js';
 
 type Node = Record<string, unknown>;
 

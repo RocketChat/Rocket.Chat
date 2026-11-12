@@ -1,6 +1,6 @@
-import type { Actionable } from '../Actionable';
-import type { Option } from '../Option';
-import type { PlainText } from '../text/PlainText';
+import type { Actionable } from '../Actionable.js';
+import type { Option } from '../Option.js';
+import type { PlainText } from '../text/PlainText.js';
 
 export type ExternalSelectElement = Actionable<{
 	type: 'external_select';

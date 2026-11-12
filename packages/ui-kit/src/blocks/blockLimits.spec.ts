@@ -1,4 +1,4 @@
-import { checkBlockLimits } from './blockLimits';
+import { checkBlockLimits } from './blockLimits.js';
 
 const text = (length: number) => ({ type: 'plain_text', text: 'a'.repeat(length) });
 const paths = (blocks: unknown, maxBlocks = 50, options: { maxCharts?: number } = { maxCharts: 2 }) =>

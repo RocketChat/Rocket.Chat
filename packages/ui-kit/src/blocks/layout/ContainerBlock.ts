@@ -1,19 +1,19 @@
-import type { ActionsBlock } from './ActionsBlock';
-import type { CardImage } from './CardBlock';
-import type { ContextBlock } from './ContextBlock';
-import type { DividerBlock } from './DividerBlock';
-import type { FileBlock } from './FileBlock';
-import type { HeaderBlock } from './HeaderBlock';
-import type { ImageBlock } from './ImageBlock';
-import type { InputBlock } from './InputBlock';
-import type { LayoutGridBlock } from './LayoutGridBlock';
-import type { RichTextBlock } from './RichTextBlock';
-import type { SectionBlock } from './SectionBlock';
-import type { TableBlock } from './TableBlock';
-import type { VideoBlock } from './VideoBlock';
-import type { LayoutBlockish } from '../LayoutBlockish';
-import type { TextObject } from '../TextObject';
-import type { PlainText } from '../text/PlainText';
+import type { ActionsBlock } from './ActionsBlock.js';
+import type { CardImage } from './CardBlock.js';
+import type { ContextBlock } from './ContextBlock.js';
+import type { DividerBlock } from './DividerBlock.js';
+import type { FileBlock } from './FileBlock.js';
+import type { HeaderBlock } from './HeaderBlock.js';
+import type { ImageBlock } from './ImageBlock.js';
+import type { InputBlock } from './InputBlock.js';
+import type { LayoutGridBlock } from './LayoutGridBlock.js';
+import type { RichTextBlock } from './RichTextBlock.js';
+import type { SectionBlock } from './SectionBlock.js';
+import type { TableBlock } from './TableBlock.js';
+import type { VideoBlock } from './VideoBlock.js';
+import type { LayoutBlockish } from '../LayoutBlockish.js';
+import type { TextObject } from '../TextObject.js';
+import type { PlainText } from '../text/PlainText.js';
 
 /** The block types a container accepts as children. */
 export const containerChildBlockTypes = [

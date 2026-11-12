@@ -1,9 +1,9 @@
 import typia from 'typia';
 
-import type { LayoutBlock } from './LayoutBlock';
-import type { BlockLimitOptions } from './blockLimits';
-import { checkBlockLimits, maxBlocksPerMessage } from './blockLimits';
-import { withElementIds } from './withElementIds';
+import type { LayoutBlock } from './LayoutBlock.js';
+import type { BlockLimitOptions } from './blockLimits.js';
+import { checkBlockLimits, maxBlocksPerMessage } from './blockLimits.js';
+import { withElementIds } from './withElementIds.js';
 
 export type LayoutBlockError = {
 	/** Where the mismatch is, as `$input[0].elements[1].text`. */
@@ -29,4 +29,4 @@ export const validateLayoutBlocks = (
 	return [...typeErrors, ...checkBlockLimits(blocks, maxBlocks, options)];
 };
 
-export { maxBlocksPerMessage, maxBlocksPerView, maxChartsPerMessage } from './blockLimits';
+export { maxBlocksPerMessage, maxBlocksPerView, maxChartsPerMessage } from './blockLimits.js';

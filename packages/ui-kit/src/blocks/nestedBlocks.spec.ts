@@ -1,4 +1,4 @@
-import { flattenBlocks } from './nestedBlocks';
+import { flattenBlocks } from './nestedBlocks.js';
 
 const ids = (blocks: unknown[]) => flattenBlocks<{ type: string }>(blocks).map(({ block, blockId }) => [block.type, blockId]);
 

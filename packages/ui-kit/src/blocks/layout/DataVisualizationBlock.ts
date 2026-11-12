@@ -1,4 +1,4 @@
-import type { LayoutBlockish } from '../LayoutBlockish';
+import type { LayoutBlockish } from '../LayoutBlockish.js';
 
 /** A labeled slice of a pie; its share is its value over the sum of all values. */
 export type PieSegment = {

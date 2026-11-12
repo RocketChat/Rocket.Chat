@@ -1,6 +1,6 @@
-import type { Actionable } from '../Actionable';
-import type { RichTextBlock } from '../layout/RichTextBlock';
-import type { PlainText } from '../text/PlainText';
+import type { Actionable } from '../Actionable.js';
+import type { RichTextBlock } from '../layout/RichTextBlock.js';
+import type { PlainText } from '../text/PlainText.js';
 
 /** A multi-line field where the user types Markdown; its value is a `rich_text` block. */
 export type RichTextInputElement = Actionable<{

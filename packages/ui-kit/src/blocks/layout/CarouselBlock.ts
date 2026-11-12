@@ -1,5 +1,5 @@
-import type { CardBlock } from './CardBlock';
-import type { LayoutBlockish } from '../LayoutBlockish';
+import type { CardBlock } from './CardBlock.js';
+import type { LayoutBlockish } from '../LayoutBlockish.js';
 
 /** Cards in a row that scrolls sideways; from 1 to 10 cards. */
 export type CarouselBlock = LayoutBlockish<{
