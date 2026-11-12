@@ -295,9 +295,7 @@ export const IconBadge: Story = {
 	render: () => (
 		<div style={{ width: 368 }}>
 			<MessageGenericPreview>
-				<MessageGenericPreviewContent thumb={<MessageGenericPreviewIcon type='a-very-long-file-type' name='attachment-file' />}>
-					Text
-				</MessageGenericPreviewContent>
+				<MessageGenericPreviewContent thumb={<MessageGenericPreviewIcon type='a-very-long-file-type' name='attachment-file' />} />
 			</MessageGenericPreview>
 		</div>
 	),

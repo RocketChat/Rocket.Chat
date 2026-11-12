@@ -179,12 +179,12 @@
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
-	"Message/MessageGenericPreview/MessageGenericPreview.styles.scss": {
-		"rules": 15,
-		"nested": 14,
-		"combinators": 0,
+	"Message/MessageGenericPreview/MessageGenericPreview.styles.css": {
+		"rules": 9,
+		"nested": 0,
+		"combinators": 5,
 		"important": 0,
-		"specificityBumps": 0,
+		"specificityBumps": 4,
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
