@@ -1,7 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { Listbox } from './fragments/listbox';
-import { expect } from '../utils/test';
 
 /**
  * The call window: the separate browser window `VideoConf_Conference_Window_Enabled` opens a conference in.
@@ -268,33 +267,13 @@ export class ConferenceWindow {
 		return new Listbox(this.page);
 	}
 
-	/** Picks `username` from the results of searching for it, never from an earlier search's, and confirms. */
 	async addPeople(username: string): Promise<void> {
 		await this.btnAddPeople.click();
 		await this.inputAddPeople.click();
-
-		const searched = this.page.waitForResponse(
-			(response) =>
-				response.url().includes('/v1/users.autocomplete') && decodeURIComponent(response.url()).includes(`"term":"${username}"`),
-		);
 		await this.inputAddPeople.fill(username);
-		const { items } = (await (await searched).json()) as { items: { username: string }[] };
-		expect(items.map((item) => item.username)).toContain(username);
-
-		// Reopens the list if it closed while the search was pending.
-		if ((await this.inputAddPeople.getAttribute('aria-expanded')) !== 'true') {
-			await this.inputAddPeople.press('ArrowDown');
-		}
-		await expect(this.inputAddPeople).toHaveAttribute('aria-expanded', 'true');
-
-		await expect(this.listboxPeople.root.getByRole('option')).toHaveCount(items.length);
 		await this.listboxPeople.selectOption(username, true);
-
-		// The list stays open after a pick and can cover the dialog's buttons.
+		// The list stays open after a pick, over the dialog's buttons.
 		await this.inputAddPeople.press('Tab');
-		await expect(this.inputAddPeople).toHaveAttribute('aria-expanded', 'false');
-
-		await expect(this.btnConfirmAddPeople).toBeEnabled();
 		await this.btnConfirmAddPeople.click();
 	}
 

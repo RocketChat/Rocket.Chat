@@ -744,6 +744,12 @@ test.describe('video conference call window', () => {
 		// Opened before the call, because a ring only reaches a client that is on screen.
 		const user3 = await openSessionAs(browser, Users.user3);
 
+		// CI's test provider answers with a relative URL, which loads a second Rocket.Chat client inside the call
+		// window. That client takes focus when it starts, and closes the people picker wherever the pick has got to.
+		await page
+			.context()
+			.route('**/test/videoconference/**', (route) => route.fulfill({ contentType: 'text/html', body: '<!doctype html>' }));
+
 		const callWindow = await startNamedConference({ page, poHomeChannel }, channel, callName);
 
 		await callWindow.getBtnMembers(1).click();
