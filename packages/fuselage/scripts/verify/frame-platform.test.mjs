@@ -32,6 +32,13 @@ test('HTMLProps and ComponentProps of a tag name are DOM-only types', () => {
 	assert.deepEqual(checkFrame(frame('type Props = ComponentProps<typeof View>;')), []);
 });
 
+test('DOM event types are DOM-only types', () => {
+	assert.deepEqual(checkFrame(frame('type Props = { onPress: (event: MouseEvent) => void };')), ['uses the DOM-only type MouseEvent']);
+	assert.deepEqual(checkFrame(frame('type Props = { onKey: (event: KeyboardEvent<Element>) => void };')), [
+		'uses the DOM-only type KeyboardEvent',
+	]);
+});
+
 test('a frame that reads a browser global fails', () => {
 	assert.deepEqual(checkFrame(frame("const node = document.createElement('div');")), ['reads the browser global document']);
 	assert.deepEqual(checkFrame(frame('const width = globalThis.window.innerWidth;')), ['reads the browser global window']);

@@ -1,6 +1,6 @@
 // Usage: node scripts/verify/frame-platform.mjs [dir (src)]
 // A frame is a module that declares `styled(...)`. It must stay renderable on React Native, so it imports nothing from
-// `react-dom`, names no DOM-only type (`HTMLAttributes`, `HTMLDivElement`, `ComponentProps<'div'>`, ...) and reads no browser
+// `react-dom`, names no DOM-only type (`HTMLAttributes`, `HTMLDivElement`, `ComponentProps<'div'>`, `MouseEvent`, ...) and reads no browser
 // global (`document`, `window`, ...); a web-only wrapper belongs in another module. The check reads one file at a time: a frame that imports a local helper which imports `react-dom`
 // is not caught.
 import { readdirSync, readFileSync } from 'node:fs';
@@ -10,7 +10,7 @@ const FRAME = /\bstyled(?:<[\s\S]*?>)?\(/;
 const DOM_IMPORT = /\b(?:from|import|require)\s*\(?\s*['"]react-dom(?:\/[^'"]*)?['"]/;
 const DOM_GLOBAL = /(?<![\w$.])(?:globalThis\.)?(document|window|navigator|localStorage|sessionStorage)\s*[.[]/;
 const DOM_TYPE =
-	/\b(?:\w*HTMLAttributes|HTMLProps|HTML\w*Element|SVGAttributes|SVG\w*Element|DOMAttributes|JSX\.IntrinsicElements)\b|\bComponentProps(?:WithRef|WithoutRef)?<\s*['"]/;
+	/\b(?:\w*HTMLAttributes|HTMLProps|HTML\w*Element|SVGAttributes|SVG\w*Element|DOMAttributes|JSX\.IntrinsicElements|(?:Mouse|Keyboard|Focus|Pointer|Touch|Wheel|Drag|Clipboard|Composition|Input|Animation|Transition|UI)Event)\b|\bComponentProps(?:WithRef|WithoutRef)?<\s*['"]/;
 
 const withoutComments = (source) => source.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1');
 
