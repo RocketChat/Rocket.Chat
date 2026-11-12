@@ -63,7 +63,7 @@ const statesOf = (element: Element) => {
 		const value = element.getAttribute(`aria-${name}`);
 		return value === 'true' || value === '' ? name : `${name}=${value}`;
 	});
-	if ((element as HTMLButtonElement).disabled && !states.includes('disabled')) states.push('disabled');
+	if (element.matches(':disabled') && !states.includes('disabled')) states.push('disabled');
 	if ((element as HTMLInputElement).checked && !states.includes('checked')) states.push('checked');
 	return states.sort();
 };

@@ -97,6 +97,18 @@ describe('ariaSnapshot and classContract', () => {
 		);
 	});
 
+	it('marks a control disabled by its fieldset, except in the first legend', () => {
+		const { container } = render(
+			<fieldset disabled>
+				<legend>
+					<button>Help</button>
+				</legend>
+				<button>Save</button>
+			</fieldset>,
+		);
+		expect(ariaSnapshot(container)).toBe(['- button "Help"', '- button "Save" [disabled]'].join('\n'));
+	});
+
 	it('gives image inputs and inputs with a suggestions list their implicit roles', () => {
 		const { container } = render(
 			<div>
