@@ -58,7 +58,6 @@ $sidebar-color-stroke-extra-light: theme('sidebar-color-stroke-extra-light', col
 		}
 	}
 
-	&-collapse-group,
 	&-accordion-item {
 		display: flex;
 		flex-flow: column nowrap;
@@ -97,7 +96,7 @@ $sidebar-color-stroke-extra-light: theme('sidebar-color-stroke-extra-light', col
 			white-space: nowrap;
 
 			@include use-text-ellipsis;
-			@include use-font-scale(c1);
+			@include use-font-scale(h5);
 		}
 
 		&__menu-wrapper:not(.rcx-item__actions) {
@@ -142,58 +141,7 @@ $sidebar-color-stroke-extra-light: theme('sidebar-color-stroke-extra-light', col
 				padding-block: lengths.padding(4) lengths.padding(8);
 			}
 		}
-	}
 
-	&-collapse-group {
-		// Interim `[class]` bumps: the header and its title are `Item` parts whose frames set these properties
-		&__bar[class] {
-			color: colors.font(secondary-info);
-		}
-
-		&__bar--empty[class] {
-			color: colors.font(disabled);
-		}
-
-		&__bar--unread[class] {
-			color: $sidebar-item-color-highlighted;
-
-			.rcx-sidebar-collapse-group__title {
-				@include use-font-scale(c2);
-			}
-		}
-
-		&__bar-button[class] {
-			display: flex;
-			align-items: center;
-
-			flex: 1 1 0;
-
-			min-width: 0;
-
-			text-align: start;
-
-			column-gap: lengths.padding(4);
-
-			&[tabindex] {
-				@include clickable;
-				@include focus-state($shadow: false);
-			}
-		}
-
-		&__bar:has(&__bar-button:hover) {
-			background-color: $sidebar-color-surface-hover;
-		}
-
-		&__bar.rcx-item-group-header {
-			padding-block: lengths.padding(8);
-		}
-
-		&__panel--expanded {
-			padding-block: lengths.padding(none);
-		}
-	}
-
-	&-accordion-item {
 		flex: 0 1 0;
 
 		border: 2px solid transparent;
@@ -239,10 +187,6 @@ $sidebar-color-stroke-extra-light: theme('sidebar-color-stroke-extra-light', col
 					visibility: visible;
 				}
 			}
-		}
-
-		&__title {
-			@include use-font-scale(h5);
 		}
 	}
 
