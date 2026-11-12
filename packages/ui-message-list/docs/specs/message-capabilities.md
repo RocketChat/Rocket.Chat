@@ -1,8 +1,8 @@
 ---
 status: planned
 adrs: []
-code: []
-tests: []
+code: [src/Message/contexts]
+tests: [src/Message/contexts/contexts.spec.tsx, src/index.spec.ts]
 ---
 
 # Spec: Message capabilities and non-attachment message content
