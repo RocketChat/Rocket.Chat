@@ -21,8 +21,16 @@ describe('getJoinRuleType', () => {
 		expect(getJoinRuleType(joinRulesState({}))).toBe('p');
 	});
 
+	it('should return private when the join rules state has no content', () => {
+		expect(getJoinRuleType([{ type: 'm.room.join_rules' }] as PduForType<'m.room.join_rules'>[])).toBe('p');
+	});
+
 	it('should throw when the join_rule is empty', () => {
 		expect(() => getJoinRuleType(joinRulesState({ join_rule: '' }))).toThrow('Unknown join rule type: ');
+	});
+
+	it('should throw when the join_rule is null', () => {
+		expect(() => getJoinRuleType(joinRulesState({ join_rule: null }))).toThrow('Unknown join rule type: null');
 	});
 
 	it.each([
