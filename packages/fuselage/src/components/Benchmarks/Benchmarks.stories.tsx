@@ -5,6 +5,7 @@ import { flushSync } from 'react-dom';
 
 import { Avatar } from '../Avatar';
 import { Box } from '../Box';
+import { IconButton } from '../Button';
 import Message from '../Message/Message';
 import MessageBody from '../Message/MessageBody';
 import MessageContainer from '../Message/MessageContainer';
@@ -17,8 +18,18 @@ import MessageTimestamp from '../Message/MessageTimestamp';
 import { MessageToolbar, MessageToolbarItem, MessageToolbarWrapper } from '../Message/MessageToolbar';
 import MessageUsername from '../Message/MessageUsername';
 import { avatarUrl } from '../Message/helpers';
-import { Sidebar } from '../Sidebar';
-import { GenericCondensedItem } from '../Sidebar/helpers';
+import {
+	Sidebar,
+	SidebarItem,
+	SidebarItemAvatarWrapper,
+	SidebarItemBadge,
+	SidebarItemIcon,
+	SidebarItemLink,
+	SidebarItemMenu,
+	SidebarItemTitle,
+	SidebarListItem,
+} from '../Sidebar';
+import { GenericCondensedItem, leterAvatarUrls, names } from '../Sidebar/helpers';
 
 declare global {
 	interface Window {
@@ -103,6 +114,36 @@ export const SidebarItems: StoryObj = {
 		<Box width='x280'>
 			<Sidebar>
 				<List rows={200} row={(index, active) => <GenericCondensedItem key={index} i={index} selected={index === active} />} />
+			</Sidebar>
+		</Box>
+	),
+};
+
+// The shape of the app's room row: a `div` container with a link inside and a kebab that only becomes a menu on demand
+export const SidebarContainerItems: StoryObj = {
+	render: () => (
+		<Box width='x280'>
+			<Sidebar>
+				<List
+					rows={200}
+					row={(index, active) => (
+						<SidebarListItem key={index}>
+							<SidebarItem is='div' interactive selected={index === active} highlighted={index % 2 !== 0}>
+								<SidebarItemAvatarWrapper>
+									<Avatar size='x20' url={leterAvatarUrls[index % 4]} alt='avatar' />
+								</SidebarItemAvatarWrapper>
+								<SidebarItemIcon highlighted={index % 2 !== 0} icon='balloons' />
+								<SidebarItemTitle unread={index % 2 !== 0}>
+									<SidebarItemLink href='#'>{names[index % 10]}</SidebarItemLink>
+								</SidebarItemTitle>
+								{index % 2 !== 0 && <SidebarItemBadge title='unread messages'>{5}</SidebarItemBadge>}
+								<SidebarItemMenu>
+									<IconButton tabIndex={-1} aria-hidden size='mini' icon='kebab' />
+								</SidebarItemMenu>
+							</SidebarItem>
+						</SidebarListItem>
+					)}
+				/>
 			</Sidebar>
 		</Box>
 	),
