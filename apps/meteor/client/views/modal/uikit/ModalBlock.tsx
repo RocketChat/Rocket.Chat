@@ -66,7 +66,7 @@ const KeyboardCode = new Map<string, number>([
 
 const ModalBlock = ({ view, errors, onSubmit, onClose, onCancel }: ModalBlockParams) => {
 	const id = `modal_id_${useId()}`;
-	const ref = useRef<HTMLElement>(null);
+	const ref = useRef<HTMLDialogElement>(null);
 
 	useEffect(() => {
 		if (!ref.current) {

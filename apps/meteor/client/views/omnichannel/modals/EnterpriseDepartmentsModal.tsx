@@ -25,7 +25,7 @@ import { useCheckoutUrl } from '../../admin/subscription/hooks/useCheckoutUrl';
 const EnterpriseDepartmentsModal = ({ closeModal }: { closeModal: () => void }) => {
 	const { t } = useTranslation();
 	const router = useRouter();
-	const ref = useRef<HTMLDivElement>(null);
+	const ref = useRef<HTMLDialogElement>(null);
 
 	const openExternalLink = useExternalLink();
 	const manageSubscriptionUrl = useCheckoutUrl()({ target: 'new-departments-page', action: 'upgrade' });

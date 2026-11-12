@@ -11,6 +11,7 @@ import type {
 	InputHTMLAttributes,
 	LabelHTMLAttributes,
 	Ref,
+	SubmitEventHandler,
 	TdHTMLAttributes,
 	TextareaHTMLAttributes,
 	ThHTMLAttributes,
@@ -404,8 +405,21 @@ export type FormSubmitAttributes = {
 	id?: string;
 };
 
+/** The handler of a part that renders a form around its content, whichever element the submit event comes from. */
+export type ElementSubmitHandler = SubmitEventHandler<HTMLElement>;
+
 /** What a part rendered as a `nav` forwards: its part attributes and the name of the landmark. */
 export type NavAttributes = PartAttributes<HTMLElement> & Pick<AriaAttributes, 'aria-label'>;
 
 /** The press handlers of a part rendered as a `nav`, or another plain element. */
 export type ElementPressHandlers = WebPressHandlers<HTMLElement>;
+
+/** What a part rendered as a `dialog` forwards: its landmark attributes, the press handlers and the end of the animation `AnimatedVisibility` gives it. */
+export type DialogAttributes = PartAttributes<HTMLDialogElement> &
+	Pick<ActionAccessibilityAttributes, 'role' | 'tabIndex' | 'aria-label' | 'aria-labelledby' | 'aria-describedby'> &
+	Pick<AriaAttributes, 'aria-modal'> &
+	WebPressHandlers<HTMLDialogElement> &
+	WebAnimationHandlers<HTMLDialogElement>;
+
+/** What a part rendered as an `img` that only shows something forwards. */
+export type ImagePartAttributes = PartAttributes<HTMLImageElement>;

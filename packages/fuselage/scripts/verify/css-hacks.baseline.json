@@ -269,13 +269,13 @@
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
-	"Modal/Modal.styles.scss": {
-		"rules": 23,
-		"nested": 22,
+	"Modal/Modal.styles.css": {
+		"rules": 4,
+		"nested": 0,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
-		"negativeMargins": 1,
+		"negativeMargins": 0,
 		"displayContents": 0
 	},
 	"NavBar/NavBar.styles.scss": {
