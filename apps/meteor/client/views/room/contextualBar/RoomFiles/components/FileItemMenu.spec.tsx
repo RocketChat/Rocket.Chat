@@ -50,10 +50,6 @@ describe('FileItemMenu', () => {
 		jest.clearAllMocks();
 	});
 
-	afterEach(() => {
-		jest.useRealTimers();
-	});
-
 	const fakeEncryptedFile: IUpload = {
 		_id: 'file-encrypted-123',
 		name: 'encrypted-document.pdf',
@@ -243,37 +239,5 @@ describe('FileItemMenu', () => {
 
 		expect(firstCallBytes).toEqual(new Uint8Array(payload2));
 		expect(secondCallBytes).toEqual(new Uint8Array(payload1));
-	});
-
-	it('should clean up listener after timeout if no response is received', async () => {
-		jest.useFakeTimers();
-		renderMenu();
-
-		await userEvent.click(screen.getByRole('button', { name: /more/i }), {
-			advanceTimers: jest.advanceTimersByTime,
-		});
-		await userEvent.click(await screen.findByText('Download'), {
-			advanceTimers: jest.advanceTimersByTime,
-		});
-
-		expect(postMessageMock).toHaveBeenCalledTimes(1);
-		const { id } = postMessageMock.mock.calls[0][0];
-
-		act(() => {
-			jest.advanceTimersByTime(30000);
-		});
-
-		const buffer = new ArrayBuffer(8);
-		act(() => {
-			messageHandler?.({
-				data: {
-					type: 'attachment-download-result',
-					id,
-					result: buffer,
-				},
-			} as MessageEvent);
-		});
-
-		expect(downloadAs).not.toHaveBeenCalled();
 	});
 });

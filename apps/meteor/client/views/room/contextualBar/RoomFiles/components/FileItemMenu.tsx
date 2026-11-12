@@ -49,14 +49,9 @@ const FileItemMenu = ({ rid, fileData, onClickDelete }: FileItemMenuProps) => {
 					}
 
 					const transactionId = Random.id();
-					let timeoutId: ReturnType<typeof setTimeout>;
-					const unsubscribe = ee.once(transactionId, ({ result }) => {
-						clearTimeout(timeoutId);
+					ee.once(transactionId, ({ result }) => {
 						downloadAs({ data: [new Blob([result])] }, fileData.name ?? t('Download'));
 					});
-					timeoutId = setTimeout(() => {
-						unsubscribe();
-					}, 30000);
 
 					controller?.postMessage({
 						type: 'attachment-download',
