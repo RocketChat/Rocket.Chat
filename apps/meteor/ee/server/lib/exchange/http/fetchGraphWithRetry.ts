@@ -44,7 +44,7 @@ const waitMsFor = (response: Response, attempt: number): number => {
 	return response.status === 429 ? DEFAULT_RETRY_AFTER_SECONDS * 1000 : BACKOFF_BASE_MS * 2 ** attempt;
 };
 
-export async function fetchWithRetry(
+export async function fetchGraphWithRetry(
 	url: string,
 	options: ExtendedFetchOptions,
 	{ maxRetries = MAX_RETRIES, budgetMs = RETRY_BUDGET_MS }: { maxRetries?: number; budgetMs?: number } = {},

@@ -5,7 +5,7 @@ import type { GraphTokenClientConfig } from './GraphTokenClient';
 import type { IExchangeProvider } from '../definition/IExchangeProvider';
 import type { DateRange, ExchangeEvent, ExchangeProviderCapabilities, Page } from '../definition/types';
 import { ExchangeError } from '../errors';
-import { fetchWithRetry } from '../http/fetchWithRetry';
+import { fetchGraphWithRetry } from '../http/fetchGraphWithRetry';
 import { logger } from '../logger';
 
 const GRAPH_API_VERSION = 'v1.0';
@@ -160,7 +160,7 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 	private async authorizedFetch(url: string, init: Omit<ExtendedFetchOptions, 'ignoreSsrfValidation' | 'allowList'>): Promise<Response> {
 		const token = await this.tokenClient.getAccessToken();
 
-		return fetchWithRetry(url, {
+		return fetchGraphWithRetry(url, {
 			...init,
 			headers: { ...(init.headers as Record<string, string> | undefined), Authorization: `Bearer ${token}` },
 			timeout: REQUEST_TIMEOUT_MS,

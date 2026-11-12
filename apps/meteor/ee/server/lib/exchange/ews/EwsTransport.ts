@@ -33,6 +33,12 @@ export type EwsTransportConfig = {
 
 const REQUEST_TIMEOUT_MS = 60000;
 
+const assertNotBusy = (status: number): void => {
+	if (status === 503) {
+		throw new ExchangeError('rate-limited', 'Exchange is too busy to take the request');
+	}
+};
+
 /** For IPv6 literals */
 const normalizeHost = (hostname: string): string => (hostname.startsWith('[') ? hostname.slice(1, -1) : hostname);
 
@@ -200,6 +206,8 @@ export class EwsTransport implements IEwsTransport {
 
 		const negotiate = await this.send('', { Authorization: createType1Message(workstation, domain) }, 'GET');
 
+		assertNotBusy(negotiate.status);
+
 		if (negotiate.status !== 401) {
 			throw new ExchangeError('authentication-failed', 'Exchange did not issue an NTLM challenge', {
 				detail: `expected 401, received ${negotiate.status}. NTLM may not be enabled on the EWS virtual directory.`,
@@ -311,7 +319,9 @@ export class EwsTransport implements IEwsTransport {
 	}
 
 	private readBody(response: { status: number; body: string }): string {
-		// SOAP faults arrive with HTTP 500, so 5xx bodies must reach the parser.
+		assertNotBusy(response.status);
+
+		// SOAP faults arrive with HTTP 500, so other 5xx bodies must reach the parser.
 		if (response.status === 401) {
 			throw new ExchangeError('authentication-failed', 'Exchange rejected the credentials', {
 				detail:
