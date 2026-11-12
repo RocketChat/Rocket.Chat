@@ -334,7 +334,7 @@ describe('ExchangeEwsProvider', () => {
 		it('waits the back-off Exchange asked for, then sends the same request again', async () => {
 			const transport = new FakeTransport([serverBusy(2000), okResponse('<m:Changes/>')]);
 
-			const sync = new ExchangeEwsProvider(transport).listEvents('user@corp.example', timeWindow, cursorFor('S0'));
+			const sync = new ExchangeEwsProvider(transport).listEvents(MAILBOX, timeWindow, cursorFor('S0'));
 
 			await jest.advanceTimersByTimeAsync(1999);
 			expect(transport.sent).toHaveLength(1);
@@ -348,8 +348,8 @@ describe('ExchangeEwsProvider', () => {
 			const transport = new FakeTransport([serverBusy(300000)]);
 			const provider = new ExchangeEwsProvider(transport);
 
-			await expect(provider.listEvents('user@corp.example', timeWindow, cursorFor('S0'))).rejects.toMatchObject({ code: 'rate-limited' });
-			await expect(provider.listEvents('user@corp.example', timeWindow, cursorFor('S1'))).rejects.toMatchObject({ code: 'rate-limited' });
+			await expect(provider.listEvents(MAILBOX, timeWindow, cursorFor('S0'))).rejects.toMatchObject({ code: 'rate-limited' });
+			await expect(provider.listContacts(MAILBOX, 'contacts')).rejects.toMatchObject({ code: 'rate-limited' });
 
 			expect(transport.sent).toHaveLength(1);
 		});

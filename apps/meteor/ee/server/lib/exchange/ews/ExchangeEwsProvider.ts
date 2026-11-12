@@ -261,7 +261,7 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 		let offset = 0;
 
 		for (let page = 0; page < MAX_FOLDER_PAGES; page++) {
-			const doc = parseEwsResponse(await this.transport.post(findContactFoldersRequest(mailbox, offset)));
+			const doc = await this.request(findContactFoldersRequest(mailbox, offset));
 			const root = firstByTag(doc, MESSAGES_NS, 'RootFolder');
 			const found = allByTag(doc, TYPES_NS, 'ContactsFolder');
 
@@ -297,7 +297,7 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 	}
 
 	public async listContacts(mailbox: string, folderId: string, cursor?: string): Promise<Page<ExchangeContact>> {
-		const doc = parseEwsResponse(await this.transport.post(syncContactFolderItemsRequest(mailbox, folderId, cursor)));
+		const doc = await this.request(syncContactFolderItemsRequest(mailbox, folderId, cursor));
 
 		const syncState = textOf(firstByTag(doc, MESSAGES_NS, 'SyncState'));
 		// EWS reports "true" when it handed over everything, which is the inverse of hasMore.
@@ -326,7 +326,7 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 
 	/** The delta only carries ids, so the fields come from a second call. */
 	private async loadContacts(mailbox: string, folderId: string, itemIds: string[]): Promise<ExchangeContact[]> {
-		const doc = parseEwsResponse(await this.transport.post(getContactItemsRequest(mailbox, itemIds)));
+		const doc = await this.request(getContactItemsRequest(mailbox, itemIds));
 
 		return allByTag(doc, TYPES_NS, 'Contact')
 			.map((node) => this.toExchangeContact(node, folderId))
@@ -406,7 +406,7 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 	}
 
 	private async findPhotoAttachments(mailbox: string, externalIds: string[]): Promise<Map<string, string>> {
-		const doc = parseEwsResponse(await this.transport.post(getContactAttachmentIdsRequest(mailbox, externalIds)));
+		const doc = await this.request(getContactAttachmentIdsRequest(mailbox, externalIds));
 
 		const owners = new Map<string, string>();
 
@@ -435,7 +435,7 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 	}
 
 	private async readPhotos(mailbox: string, attachmentIds: string[], owners: Map<string, string>): Promise<ExchangeContactPhoto[]> {
-		const doc = parseEwsResponse(await this.transport.post(getAttachmentsRequest(mailbox, attachmentIds)));
+		const doc = await this.request(getAttachmentsRequest(mailbox, attachmentIds));
 		const photos: ExchangeContactPhoto[] = [];
 
 		for (const attachment of allByTag(doc, TYPES_NS, 'FileAttachment')) {
