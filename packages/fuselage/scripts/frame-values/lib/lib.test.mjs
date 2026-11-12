@@ -21,6 +21,7 @@ import {
 import { itemCustomProperties, itemPalettes } from './itemPalettes.mts';
 import { literal } from './literal.mts';
 import { markers } from './markers.mts';
+import { sidebarPalettes } from './sidebarPalettes.mts';
 import { statusPalettes } from './statusPalettes.mts';
 import { textFrameDefaults } from './textFrameDefaults.mts';
 import { offScale, zIndex, zIndexAbove } from './tokens.mts';
@@ -202,4 +203,13 @@ test('the item palette and custom properties name the --rcx-item inputs', () => 
 		css,
 		/@container rcx-item-group \(width < 320px\) \{\n\t\.rcx-item--inset-lg,\n\t\.rcx-item-group-header--inset-lg \{\n\t\t--rcx-item-inset-inline: 12px;/,
 	);
+});
+
+test('the sidebar palette gives each banner tone its own background and text hooks', () => {
+	const { banner, surface } = sidebarPalettes();
+
+	assert.match(surface.hover, /^var\(--rcx-sidebar-color-surface-hover, /);
+	assert.match(banner.info.background, /^var\(--rcx-sidebar-banner-background-info, /);
+	assert.match(banner.info.color, /^var\(--rcx-sidebar-banner-color-info, /);
+	assert.match(banner.default.color, /^var\(--rcx-sidebar-banner-color-default, /);
 });
