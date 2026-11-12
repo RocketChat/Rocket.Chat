@@ -2,4 +2,4 @@
 '@rocket.chat/meteor': minor
 ---
 
-Adds the `MOLECULER_ENCRYPTION_SECRET` environment variable to encrypt the traffic between instances of a multi-instance workspace, so that only instances sharing the secret can exchange events.
+Adds the `MOLECULER_ENCRYPTION_SECRET` environment variable to encrypt Moleculer traffic between monolith instances using the TCP or NATS instance transporter. It is ignored in microservices mode.
