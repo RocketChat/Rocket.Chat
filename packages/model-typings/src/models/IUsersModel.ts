@@ -586,6 +586,8 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		options?: O,
 	): FindCursor<DocumentWithProjection<T, O>>;
 	unsetRequirePasswordChange(userId: string): Promise<UpdateResult>;
+	setPasswordHash(_id: IUser['_id'], passwordHash: string): Promise<UpdateResult>;
+
 	resetPasswordAndSetRequirePasswordChange(
 		userId: string,
 		requirePasswordChange: boolean,
