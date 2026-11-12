@@ -81,9 +81,11 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 	}
 
 	public async listEvents(mailbox: string, timeWindow: DateRange, cursor?: string): Promise<EventPage> {
-		const payload = await this.requestJson<GraphDeltaResponse>(cursor ?? this.calendarViewDeltaUrl(mailbox, timeWindow), {
-			headers: { Prefer: PREFER_UTC },
-		});
+		const payload = await this.requestJson<GraphDeltaResponse>(
+			cursor ?? this.calendarViewDeltaUrl(mailbox, timeWindow),
+			{ headers: { Prefer: PREFER_UTC } },
+			{ delta: true },
+		);
 
 		const raw = Array.isArray(payload.value) ? (payload.value as GraphEvent[]) : [];
 		const nextLink = asString(payload['@odata.nextLink']);
@@ -241,7 +243,11 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 		};
 	}
 
-	private async requestJson<T>(url: string, init: Omit<ExtendedFetchOptions, 'ignoreSsrfValidation' | 'allowList'> = {}): Promise<T> {
+	private async requestJson<T>(
+		url: string,
+		init: Omit<ExtendedFetchOptions, 'ignoreSsrfValidation' | 'allowList'> = {},
+		{ delta = false }: { delta?: boolean } = {},
+	): Promise<T> {
 		let response = await this.authorizedFetch(url, init);
 
 		if (response.status === 401) {
@@ -250,7 +256,7 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 		}
 
 		if (!response.ok) {
-			throw await this.toError(response, url);
+			throw await this.toError(response, url, delta);
 		}
 
 		const payload = (await response.json().catch(() => undefined)) as T | undefined;
@@ -274,10 +280,15 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 		});
 	}
 
-	private async toError(response: Response, url: string): Promise<ExchangeError> {
+	private async toError(response: Response, url: string, delta: boolean): Promise<ExchangeError> {
 		const detail = (await response.text().catch(() => undefined))?.slice(0, 500);
 
 		logger.warn({ msg: 'Microsoft Graph request failed', status: response.status, url });
+
+		// Only a delta query has a sync state that Graph can expire
+		if (delta && response.status === 410) {
+			return new ExchangeError('sync-state-invalid', 'The stored delta link is no longer valid and must be reset', { detail });
+		}
 
 		switch (response.status) {
 			case 401:
