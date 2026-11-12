@@ -10956,6 +10956,7 @@ __metadata:
     "@rocket.chat/fuselage": 1.0.0
     "@rocket.chat/fuselage-hooks": 0.44.0
     "@rocket.chat/icons": 0.52.0
+    "@rocket.chat/rest-typings": "workspace:^"
     "@rocket.chat/ui-avatar": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
     "@tanstack/react-query": "*"
@@ -11220,6 +11221,7 @@ __metadata:
     "@rocket.chat/icons": "workspace:~"
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/mock-providers": "workspace:^"
+    "@rocket.chat/rest-typings": "workspace:~"
     "@rocket.chat/storybook-config": "workspace:~"
     "@rocket.chat/tsconfig": "workspace:*"
     "@rocket.chat/ui-client": "workspace:^"
