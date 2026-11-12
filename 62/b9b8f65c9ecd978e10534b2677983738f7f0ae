@@ -1,0 +1,23 @@
+apps/meteor/server/lib/cas/updateCasService.test.ts
+  s_ec948e2ff49577::t_98b7306d62e217 6,8-10,14,21
+apps/meteor/server/lib/refreshLoginServices.test.ts
+  s_ec948e2ff49577::t_98b7306d62e217 6-10
+apps/meteor/server/lib/oauth/removeOAuthService.test.ts
+  s_ec948e2ff49577::t_98b7306d62e217 6-8,17
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "62b9b8f65c9ecd978e10534b2677983738f7f0ae",
+  "prompts": {},
+  "sessions": {
+    "s_ec948e2ff49577": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3418267e-a5ee-4ea0-b686-dc413667320c",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

@@ -1,0 +1,31 @@
+apps/meteor/server/lib/compareUserPasswordHistory.test.ts
+  s_abb9231db54e44::t_bb57960a14e346 1-39
+apps/meteor/server/lib/compareUserPasswordHistory.ts
+  s_abb9231db54e44::t_ecb20f82e196be 1,22-26,28
+  s_abb9231db54e44::t_21608703a0003a 27
+  s_abb9231db54e44::t_50a05de671eac7 32
+apps/meteor/server/lib/compareUserPassword.ts
+  s_abb9231db54e44::t_ecb20f82e196be 1,9-11,24
+apps/meteor/server/lib/compareUserPassword.test.ts
+  s_abb9231db54e44::t_bb57960a14e346 1-38
+apps/meteor/server/lib/2fa/code/PasswordCheckFallback.ts
+  s_abb9231db54e44::t_ecb20f82e196be 3,25
+apps/meteor/server/meteor-methods/users/deleteUserOwnAccount.ts
+  s_abb9231db54e44::t_ecb20f82e196be 7,32
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "bb28d505929900397a311a9b3a44b3deeccebf70",
+  "prompts": {},
+  "sessions": {
+    "s_abb9231db54e44": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "68a1b4f3-731a-4a41-9f8c-a68e8902e169",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
