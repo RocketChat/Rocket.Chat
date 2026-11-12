@@ -9889,6 +9889,7 @@ __metadata:
     "@rocket.chat/ui-kit": "workspace:~"
     "@rocket.chat/ui-livekit": "workspace:^"
     "@rocket.chat/ui-media": "workspace:^"
+    "@rocket.chat/ui-message-list": "workspace:^"
     "@rocket.chat/ui-registration": "workspace:^"
     "@rocket.chat/ui-setup-wizard": "workspace:^"
     "@rocket.chat/ui-video-conf": "workspace:^"
@@ -11250,7 +11251,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/ui-message-list@workspace:packages/ui-message-list":
+"@rocket.chat/ui-message-list@workspace:^, @rocket.chat/ui-message-list@workspace:packages/ui-message-list":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/ui-message-list@workspace:packages/ui-message-list"
   dependencies:

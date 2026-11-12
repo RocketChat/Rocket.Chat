@@ -12,7 +12,7 @@ import { useAutoTranslate } from '../../../../hooks/useAutoTranslate';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { useKatex } from '../../../../hooks/useKatex';
 import { getRegexHighlight, getRegexHighlightUrl } from '../../../../lib/highlightWords';
-import AttachmentProvider from '../../../../providers/AttachmentProvider';
+import { MessagesProvider } from '../../../../providers/MessagesProvider';
 import { useChat } from '../../contexts/ChatContext';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import { useRolesByUser } from '../hooks/useRolesByUser';
@@ -161,9 +161,9 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 	);
 
 	return (
-		<AttachmentProvider width={attachmentDimension?.width} height={attachmentDimension?.height}>
+		<MessagesProvider room={room} subscription={subscription} attachmentDimension={attachmentDimension}>
 			<MessageListContext.Provider value={context}>{children}</MessageListContext.Provider>
-		</AttachmentProvider>
+		</MessagesProvider>
 	);
 };
 

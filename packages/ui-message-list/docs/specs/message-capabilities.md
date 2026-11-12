@@ -10,6 +10,8 @@ code:
     src/Message/IgnoredContent.tsx,
     src/Message/MessageCollapsible.tsx,
     src/Message/index.ts,
+    apps/meteor/client/providers/MessagesProvider,
+    apps/meteor/client/views/room/MessageList/providers/MessageListProvider.tsx,
   ]
 tests:
   [
@@ -24,6 +26,9 @@ tests:
     src/Message/content/Metrics.spec.tsx,
     src/Message/content/actions/MessageAction.spec.tsx,
     src/Message/hooks/useCollapse.spec.tsx,
+    apps/meteor/client/providers/MessagesProvider/MessagesProvider.spec.tsx,
+    apps/meteor/client/views/room/MessageList/providers/MessageListProvider.spec.tsx,
+    apps/meteor/client/providers/MessagesProvider/actions/useToggleReactionMutation.spec.ts,
   ]
 ---
 
@@ -141,7 +146,8 @@ render any conversation.
   `allowsInteraction` from its prop, true by default.
 - **R27** `MessagesProvider` MUST turn a message into what is displayed with the viewer's
   parsing options and the conversation's translations, parsing a given message object once
-  per options.
+  per options, and MUST describe an emoji as the app renders it, naming no sprite for an emoji
+  the app cannot render.
 - **R28** `MessagesProvider` MUST carry out the interactions through the app: reacting through
   `chat.react` only for a logged-in viewer, and opening the reaction picker only for one;
   quoting, replying, sending, editing, requesting deletion and replying to a broadcast through
