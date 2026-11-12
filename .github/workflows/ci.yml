@@ -668,6 +668,17 @@ jobs:
     with:
       node-version: ${{ needs.release-versions.outputs.node-version }}
 
+  size-report:
+    name: 📏 Size Report
+    needs: [packages-build, release-versions, test-guard]
+    if: github.event_name == 'pull_request' && needs.test-guard.outputs.skip-tests != 'true'
+
+    uses: ./.github/workflows/ci-size-report.yml
+    with:
+      node-version: ${{ needs.release-versions.outputs.node-version }}
+    secrets:
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
   test-unit:
     name: 🔨 Test Unit
     needs: [packages-build, release-versions, test-guard]

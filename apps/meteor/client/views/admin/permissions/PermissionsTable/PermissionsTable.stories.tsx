@@ -1,5 +1,4 @@
 import type { IPermission, IRole } from '@rocket.chat/core-typings';
-import { Margins } from '@rocket.chat/fuselage';
 import { PageContent } from '@rocket.chat/ui-client';
 import type { Meta } from '@storybook/react';
 
@@ -8,13 +7,7 @@ import { createMockedPagination } from '../../../../../tests/mocks/data';
 
 export default {
 	component: PermissionsTable,
-	decorators: [
-		(fn) => (
-			<PageContent marginBlock='neg-x8'>
-				<Margins block={8}>{fn()}</Margins>
-			</PageContent>
-		),
-	],
+	decorators: [(fn) => <PageContent gap='x16'>{fn()}</PageContent>],
 } satisfies Meta<typeof PermissionsTable>;
 
 const roles: IRole[] = [

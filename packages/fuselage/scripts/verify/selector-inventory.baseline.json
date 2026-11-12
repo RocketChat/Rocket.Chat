@@ -1,0 +1,126 @@
+{
+	"rcx-item": [
+		"apps/meteor/client/hooks/useItemListDrag.ts: : (row.querySelector<HTMLElement>('.rcx-item, .rcx-item-group-header') ?? row);",
+		"apps/meteor/client/hooks/useItemListDrag.ts: const surface = row.matches('.rcx-item, .rcx-item-group-header')",
+		"apps/meteor/client/hooks/useItemListDrag.ts: if (dragHandle === 'trailing' && !start.closest('.rcx-item__drag-handle')) {",
+		"apps/meteor/client/hooks/useItemListNavigation.ts: rowSelector = '.rcx-item, .rcx-item-group-header',",
+		"apps/meteor/client/sidebar/hooks/useShortcutOpenMenu.ts: event.target.closest('.rcx-item')?.querySelector<HTMLButtonElement>('.rcx-item__actions--reveal-hover button')?.click();",
+		"apps/meteor/client/views/navigation/sidebar/hooks/useShortcutOpenMenu.ts: event.target.closest('.rcx-item')?.querySelector<HTMLButtonElement>('.rcx-item__actions--reveal-hover button')?.click();",
+		"packages/fuselage/src/components/Option/Option.styles.scss: &--align-top.rcx-item {",
+		"packages/fuselage/src/components/Option/Option.styles.scss: &:focus-within &__menu-wrapper:not(.rcx-item__actions) {",
+		"packages/fuselage/src/components/Option/Option.styles.scss: &:hover &__menu-wrapper:not(.rcx-item__actions),",
+		"packages/fuselage/src/components/Option/Option.styles.scss: &:not(.rcx-item) {",
+		"packages/fuselage/src/components/Option/Option.styles.scss: &__avatar:not(.rcx-item__media) {",
+		"packages/fuselage/src/components/Option/Option.styles.scss: &__column.rcx-item__media,",
+		"packages/fuselage/src/components/Option/Option.styles.scss: &__column:not(.rcx-item__icon, .rcx-item__media) {",
+		"packages/fuselage/src/components/Option/Option.styles.scss: &__content:not(.rcx-item__content) {",
+		"packages/fuselage/src/components/Option/Option.styles.scss: &__description:not(.rcx-item__description) {",
+		"packages/fuselage/src/components/Option/Option.styles.scss: &__input.rcx-item__actions {",
+		"packages/fuselage/src/components/Option/Option.styles.scss: &__input.rcx-item__actions {",
+		"packages/fuselage/src/components/Option/Option.styles.scss: &__input:not(.rcx-item__actions) {",
+		"packages/fuselage/src/components/Option/Option.styles.scss: &__menu-wrapper:not(.rcx-item__actions) {",
+		"packages/fuselage/src/components/Options/Options.styles.scss: .rcx-item--focused:not(.rcx-item--selected):not(:hover) {",
+		"packages/fuselage/src/components/Sidebar/Sidebar.styles.scss: &__bar:focus-within &__menu-wrapper:not(.rcx-item__actions),",
+		"packages/fuselage/src/components/Sidebar/Sidebar.styles.scss: &__bar:has(&__menu-wrapper [aria-expanded='true']) &__menu-wrapper:not(.rcx-item__actions) {",
+		"packages/fuselage/src/components/Sidebar/Sidebar.styles.scss: &__bar:hover &__menu-wrapper:not(.rcx-item__actions),",
+		"packages/fuselage/src/components/Sidebar/Sidebar.styles.scss: &__menu-wrapper:not(.rcx-item__actions) {",
+		"packages/fuselage/src/components/Sidebar/SidebarItem/SidebarItem.styles.scss: &--level-2:not(.rcx-item) {",
+		"packages/fuselage/src/components/Sidebar/SidebarItem/SidebarItem.styles.scss: &.rcx-item.rcx-sidebar-item--level-2 {",
+		"packages/fuselage/src/components/Sidebar/SidebarItem/SidebarItem.styles.scss: &:focus-within &__menu-wrapper:not(.rcx-item__actions),",
+		"packages/fuselage/src/components/Sidebar/SidebarItem/SidebarItem.styles.scss: &:has([aria-expanded='true']) &__menu-wrapper:not(.rcx-item__actions) {",
+		"packages/fuselage/src/components/Sidebar/SidebarItem/SidebarItem.styles.scss: &:hover &__menu-wrapper:not(.rcx-item__actions),",
+		"packages/fuselage/src/components/Sidebar/SidebarItem/SidebarItem.styles.scss: &:not(.rcx-item) {",
+		"packages/fuselage/src/components/Sidebar/SidebarItem/SidebarItem.styles.scss: &__avatar:not(.rcx-item__media) {",
+		"packages/fuselage/src/components/Sidebar/SidebarItem/SidebarItem.styles.scss: &__col:not(.rcx-item__content) {",
+		"packages/fuselage/src/components/Sidebar/SidebarItem/SidebarItem.styles.scss: &__menu-wrapper:not(.rcx-item__actions) {",
+		"packages/fuselage/src/components/Sidebar/SidebarItem/SidebarItem.styles.scss: &__row:not(.rcx-item__row) {",
+		"packages/fuselage/src/components/Sidebar/SidebarItem/SidebarItem.styles.scss: &__status-bullet:not(.rcx-item__icon) {",
+		"packages/fuselage/src/components/Sidebar/SidebarItem/SidebarItem.styles.scss: &__subtitle:not(.rcx-item__description) {",
+		"packages/fuselage/src/components/Sidebar/SidebarItem/SidebarItem.styles.scss: &__timestamp:not(.rcx-item__meta) {",
+		"packages/fuselage/src/components/Sidebar/SidebarItem/SidebarItem.styles.scss: &__title:not(.rcx-item__title) {",
+		"packages/fuselage/src/components/Sidebar/SidebarItem/SidebarItem.styles.scss: .rcx-item__row > &__subtitle.rcx-item__description {",
+		"packages/fuselage/src/styles/normalize.scss: a:where(:not(.rcx-button, .rcx-item, .rcx-item__link)) {"
+	],
+	"rcx-message": [
+		"apps/meteor/client/hooks/useMessageRowListNavigation.ts: export const messageRowSelector = '.rcx-message[tabindex=\"0\"], .rcx-message-system[tabindex=\"0\"], .rcx-message-thread[tabindex=\"0\"]';",
+		"apps/uikit-playground/src/Components/PrototypeRender/PrototypeRender.scss: .rcx-message{",
+		"packages/ui-conference/src/lib/panelStyles.ts: & .rcx-message,"
+	],
+	"rcx-sidebar": [
+		"apps/meteor/client/sidebar/SidebarRegion.tsx: &:not(:has(.rcx-sidebar__fixed-width)) {",
+		"apps/meteor/client/styles/imports/general/variables.css: .rcx-sidebar {",
+		"apps/meteor/client/views/root/MainLayout/MainLayoutStyleTags.tsx: <PaletteStyleTag theme='dark' selector='.rcx-sidebar--main, .rcx-sidebar-rail, .rcx-sidepanel, .rcx-navbar' tagId='sidebar-palette' />"
+	],
+	"rcx-button": [
+		"apps/meteor/client/styles/imports/components/emoji.css: .rcx-button {",
+		"apps/meteor/server/routes/avatar/middlewares/browserVersion.ts: .rcx-button {",
+		"apps/meteor/server/routes/avatar/middlewares/browserVersion.ts: .rcx-button--primary {",
+		"packages/fuselage/src/components/ButtonGroup/ButtonGroup.styles.scss: > .rcx-button--square {",
+		"packages/fuselage/src/components/SplitButton/SplitButton.styles.scss: > .rcx-button {",
+		"packages/fuselage/src/components/SplitButton/SplitButton.styles.scss: > .rcx-button.rcx-split-button__trigger {",
+		"packages/fuselage/src/styles/mixins/button.scss: .rcx-button--content {",
+		"packages/fuselage/src/styles/normalize.scss: a:where(:not(.rcx-button, .rcx-item, .rcx-item__link)) {",
+		"packages/ui-conference/src/preflight/PreflightDeviceMenuButton.tsx: & > .rcx-button--content {",
+		"packages/ui-voip/src/components/Keypad/Key.tsx: > .rcx-button--content {"
+	],
+	"rcx-box": [
+		"apps/meteor/client/styles/imports/general/base.css: &--full.rcx-box {",
+		"apps/meteor/client/styles/imports/general/base.css: .rcx-box {",
+		"apps/meteor/client/views/root/lib/codeBlockStyles.ts: div.rcx-box span.hljs-name,",
+		"apps/meteor/client/views/root/lib/codeBlockStyles.ts: div.rcx-box span.hljs-title {",
+		"apps/meteor/client/views/root/lib/codeBlockStyles.ts: div.rcx-box span.hljs-title.function_,",
+		"apps/meteor/server/routes/avatar/middlewares/browserVersion.ts: .rcx-box, .rcx-box::before, .rcx-box::after {",
+		"apps/meteor/server/routes/avatar/middlewares/browserVersion.ts: .rcx-box--text-color-alternative {",
+		"apps/meteor/server/routes/avatar/middlewares/browserVersion.ts: .rcx-box--text-color-primary {",
+		"apps/meteor/server/routes/avatar/middlewares/browserVersion.ts: .rcx-box--text-style-headline {",
+		"apps/meteor/server/routes/avatar/middlewares/browserVersion.ts: .rcx-box.rcx-\\@s6mi60{margin:0.75rem !important;}.rcx-box.rcx-\\@19aubzx{margin:2rem !important;}.rcx-box.rcx-\\@1kgm1vs{-webkit-align-items:c",
+		"packages/fuselage/src/components/Margins/Margins.tsx: &:not(.rcx-box--full) {",
+		"packages/fuselage/src/components/Skeleton/Skeleton.styles.scss: @extend .rcx-box;"
+	],
+	"rcx-modal": [
+		"apps/meteor/client/views/modal/uikit/ModalBlock.tsx: const container = element.querySelector('.rcx-modal__content') as HTMLElement;",
+		"apps/uikit-playground/src/_global.css: .rcx-modal:has(.uiKitWrapper){",
+		"apps/uikit-playground/src/_global.css: .rcx-modal__content:has(.uiKitWrapper){"
+	],
+	"rcx-bubble": [
+		"apps/meteor/client/views/room/body/UploadProgress/UploadProgressIndicator.tsx: & .rcx-bubble__item {"
+	],
+	"rcx-tile": [
+		"apps/meteor/client/views/root/MainLayout/MainLayoutStyleTags.tsx: <PaletteStyleTag theme={theme} selector='.rcx-content--main, .rcx-tile' tagId={`main-palette-${theme}`} />"
+	],
+	"rcx-navbar": [
+		"apps/meteor/client/views/root/MainLayout/MainLayoutStyleTags.tsx: <PaletteStyleTag theme='dark' selector='.rcx-sidebar--main, .rcx-sidebar-rail, .rcx-sidepanel, .rcx-navbar' tagId='sidebar-palette' />"
+	],
+	"rcx-sidepanel": [
+		"apps/meteor/client/views/root/MainLayout/MainLayoutStyleTags.tsx: <PaletteStyleTag theme='dark' selector='.rcx-sidebar--main, .rcx-sidebar-rail, .rcx-sidepanel, .rcx-navbar' tagId='sidebar-palette' />"
+	],
+	"rcx-select": [
+		"packages/fuselage/src/components/AutoComplete/AutoComplete.styles.scss: @extend .rcx-select;"
+	],
+	"rcx-icon": [
+		"packages/fuselage/src/components/Bubble/Bubble.styles.scss: &:not(.rcx-bubble__group) &__button:has(> .rcx-icon),",
+		"packages/fuselage/src/components/Bubble/Bubble.styles.scss: &:not(.rcx-bubble__group) &__item:has(> .rcx-icon) {",
+		"packages/fuselage/src/components/Bubble/Bubble.styles.scss: > .rcx-icon {",
+		"packages/fuselage/src/components/Button/Button.styles.scss: .rcx-icon--name-loading {",
+		"packages/fuselage/src/components/Select/Select.styles.scss: .rcx-select > .rcx-icon {"
+	],
+	"rcx-grid": [
+		"packages/fuselage/src/components/CardGrid/CardGrid.styles.css: .rcx-grid.rcx-card-grid {",
+		"packages/fuselage/src/components/CardGrid/CardGrid.styles.css: .rcx-grid__item.rcx-card-grid__item {"
+	],
+	"rcx-skeleton": [
+		"packages/fuselage/src/components/InputBox/InputBox.styles.scss: .rcx-skeleton__input {"
+	],
+	"rcx-check-box": [
+		"packages/fuselage/src/components/Message/Messages.styles.scss: > li > .rcx-check-box > .rcx-check-box__input:focus + .rcx-check-box__fake {"
+	],
+	"rcx-option": [
+		"packages/fuselage/src/components/Options/Options.styles.scss: .rcx-option--focus:not(.rcx-option--selected):not(:hover),"
+	],
+	"rcx-input-box": [
+		"packages/fuselage/src/components/Select/Select.styles.scss: @extend .rcx-input-box__addon;"
+	],
+	"rcx-divider": [
+		"packages/fuselage/src/components/Sidepanel/Sidepanel.styles.scss: &.rcx-divider {"
+	]
+}

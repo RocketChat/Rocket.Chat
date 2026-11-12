@@ -9294,6 +9294,7 @@ __metadata:
     "@storybook/addon-docs": "npm:~10.6.5"
     "@storybook/react": "npm:~10.6.5"
     "@storybook/react-vite": "npm:~10.6.5"
+    "@storybook/test-runner": "npm:~0.26.0"
     "@tamagui/vite-plugin": "npm:3.0.18"
     "@tamagui/web": "npm:3.0.18"
     "@testing-library/dom": "npm:~10.4.2"
@@ -9307,11 +9308,13 @@ __metadata:
     autoprefixer: "npm:~10.5.6"
     caniuse-lite: "npm:~1.0.30001810"
     cssnano: "npm:~9.0.4"
+    dom-accessibility-api: "npm:~0.6.3"
     invariant: "npm:^2.2.4"
     jest: "npm:~30.5.2"
     jest-axe: "npm:~11.0.0"
     magic-string: "npm:~0.30.21"
     normalize.css: "npm:^8.0.1"
+    playwright-core: "npm:~1.52.0"
     postcss: "npm:8.5.26"
     postcss-scss: "npm:~4.0.9"
     react: "npm:~19.2.8"
@@ -21131,7 +21134,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dom-accessibility-api@npm:^0.6.3":
+"dom-accessibility-api@npm:^0.6.3, dom-accessibility-api@npm:~0.6.3":
   version: 0.6.3
   resolution: "dom-accessibility-api@npm:0.6.3"
   checksum: 10/83d3371f8226487fbad36e160d44f1d9017fb26d46faba6a06fcad15f34633fc827b8c3e99d49f71d5f3253d866e2131826866fd0a3c86626f8eccfc361881ff

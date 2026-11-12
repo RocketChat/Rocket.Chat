@@ -1,4 +1,3 @@
-import { Margins } from '@rocket.chat/fuselage';
 import { PageContent } from '@rocket.chat/ui-client';
 import type { Meta, StoryFn } from '@storybook/react';
 import { useRef } from 'react';
@@ -8,13 +7,7 @@ import CustomSoundsTable from './CustomSoundsTable';
 
 export default {
 	component: CustomSoundsTable,
-	decorators: [
-		(fn) => (
-			<PageContent marginBlock='neg-x8'>
-				<Margins block={8}>{fn()}</Margins>
-			</PageContent>
-		),
-	],
+	decorators: [(fn) => <PageContent gap='x16'>{fn()}</PageContent>],
 } satisfies Meta<typeof CustomSoundsTable>;
 
 const Template: StoryFn<typeof CustomSoundsTable> = (args) => {

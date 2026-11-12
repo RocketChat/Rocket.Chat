@@ -22,7 +22,7 @@ const ContactManagerInfo = ({ userId }: ContactManagerInfoProps) => {
 	}
 
 	return (
-		<Box>
+		<Box marginBlockEnd='x16'>
 			<Box marginBlockEnd={4}>{t('Contact_Manager')}</Box>
 			{isLoading && <Skeleton />}
 			{isSuccess && (

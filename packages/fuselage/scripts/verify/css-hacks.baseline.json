@@ -1,0 +1,641 @@
+{
+	"Accordion/Accordion.styles.scss": {
+		"rules": 10,
+		"nested": 5,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"AudioPlayer/AudioPlayer.styles.scss": {
+		"rules": 5,
+		"nested": 4,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"AutoComplete/AutoComplete.styles.scss": {
+		"rules": 2,
+		"nested": 1,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"Avatar/Avatar.styles.scss": {
+		"rules": 10,
+		"nested": 6,
+		"combinators": 2,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 1,
+		"displayContents": 0
+	},
+	"Badge/Badge.styles.scss": {
+		"rules": 6,
+		"nested": 5,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"Banner/Banner.styles.scss": {
+		"rules": 21,
+		"nested": 20,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 2,
+		"displayContents": 0
+	},
+	"Box/Box.styles.scss": {
+		"rules": 11,
+		"nested": 7,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"Bubble/Bubble.styles.scss": {
+		"rules": 15,
+		"nested": 14,
+		"combinators": 4,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"Button/Button.styles.scss": {
+		"rules": 41,
+		"nested": 37,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"ButtonGroup/ButtonGroup.styles.scss": {
+		"rules": 12,
+		"nested": 11,
+		"combinators": 3,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"Callout/Callout.styles.scss": {
+		"rules": 17,
+		"nested": 16,
+		"combinators": 3,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"Card/Card.styles.scss": {
+		"rules": 12,
+		"nested": 11,
+		"combinators": 1,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"CardGrid/CardGrid.styles.css": {
+		"rules": 3,
+		"nested": 0,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 1,
+		"displayContents": 0
+	},
+	"CardGroup/CardGroup.styles.scss": {
+		"rules": 15,
+		"nested": 13,
+		"combinators": 3,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 1,
+		"displayContents": 0
+	},
+	"CheckBox/CheckBox.styles.scss": {
+		"rules": 9,
+		"nested": 8,
+		"combinators": 2,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"Chevron/Chevron.styles.scss": {
+		"rules": 7,
+		"nested": 6,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"Chip/Chip.styles.scss": {
+		"rules": 5,
+		"nested": 4,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"CodeSnippet/CodeSnippet.styles.scss": {
+		"rules": 2,
+		"nested": 1,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"Contextualbar/Contextualbar.styles.scss": {
+		"rules": 16,
+		"nested": 15,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 1,
+		"displayContents": 0
+	},
+	"Divider/Divider.styles.scss": {
+		"rules": 11,
+		"nested": 9,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"Dropdown/Dropdown.styles.css": {
+		"rules": 6,
+		"nested": 0,
+		"combinators": 0,
+		"important": 1,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"Field/Field.styles.scss": {
+		"rules": 8,
+		"nested": 7,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"FieldGroup/FieldGroup.styles.scss": {
+		"rules": 4,
+		"nested": 2,
+		"combinators": 2,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"FramedIcon/FramedIcon.styles.scss": {
+		"rules": 5,
+		"nested": 4,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"Grid/Grid.styles.scss": {
+		"rules": 5,
+		"nested": 1,
+		"combinators": 1,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 2,
+		"displayContents": 0
+	},
+	"Icon/Icon.styles.css": {
+		"rules": 1,
+		"nested": 0,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"InputBox/InputBox.styles.scss": {
+		"rules": 35,
+		"nested": 26,
+		"combinators": 7,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"InputBox/mixins.scss": {
+		"rules": 9,
+		"nested": 1,
+		"combinators": 4,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"Item/Item.styles.scss": {
+		"rules": 88,
+		"nested": 60,
+		"combinators": 10,
+		"important": 0,
+		"specificityBumps": 6,
+		"negativeMargins": 2,
+		"displayContents": 0
+	},
+	"Label/Label.styles.scss": {
+		"rules": 4,
+		"nested": 3,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"Menu/Menu.styles.scss": {
+		"rules": 3,
+		"nested": 2,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"Message/MessageDivider/MessageDivider.styles.scss": {
+		"rules": 7,
+		"nested": 6,
+		"combinators": 1,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 1,
+		"displayContents": 0
+	},
+	"Message/MessageGenericPreview/MessageGenericPreview.styles.scss": {
+		"rules": 15,
+		"nested": 14,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"Message/MessageMetrics/MessageMetrics.styles.scss": {
+		"rules": 5,
+		"nested": 4,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 1,
+		"displayContents": 0
+	},
+	"Message/MessageReactions/MessageReactions.styles.scss": {
+		"rules": 8,
+		"nested": 7,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"Message/MessageStatusIndicator/MessageStatusIndicator.styles.scss": {
+		"rules": 3,
+		"nested": 2,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"Message/MessageSystem/MessageSystem.styles.scss": {
+		"rules": 4,
+		"nested": 3,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 1,
+		"displayContents": 0
+	},
+	"Message/MessageToolbar/MessageToolbar.styles.scss": {
+		"rules": 6,
+		"nested": 5,
+		"combinators": 2,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"Message/Messages.styles.scss": {
+		"rules": 41,
+		"nested": 39,
+		"combinators": 12,
+		"important": 0,
+		"specificityBumps": 1,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"Message/ThreadMessage/ThreadMessage.styles.scss": {
+		"rules": 9,
+		"nested": 8,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"Message/mixins.scss": {
+		"rules": 2,
+		"nested": 0,
+		"combinators": 2,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"Modal/Modal.styles.scss": {
+		"rules": 22,
+		"nested": 21,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 2,
+		"displayContents": 0
+	},
+	"NavBar/NavBar.styles.scss": {
+		"rules": 3,
+		"nested": 2,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"Option/Option.styles.scss": {
+		"rules": 25,
+		"nested": 23,
+		"combinators": 1,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 1,
+		"displayContents": 0
+	},
+	"Options/Options.styles.scss": {
+		"rules": 5,
+		"nested": 3,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"Pagination/Pagination.styles.scss": {
+		"rules": 14,
+		"nested": 5,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"ProgressBar/ProgressBar.styles.scss": {
+		"rules": 6,
+		"nested": 1,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"RadioButton/RadioButton.styles.scss": {
+		"rules": 4,
+		"nested": 3,
+		"combinators": 1,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"Select/Select.styles.scss": {
+		"rules": 26,
+		"nested": 21,
+		"combinators": 4,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 2,
+		"displayContents": 0
+	},
+	"Sidebar/Sidebar.styles.scss": {
+		"rules": 46,
+		"nested": 45,
+		"combinators": 2,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 1,
+		"displayContents": 0
+	},
+	"Sidebar/SidebarFooter/SidebarFooter.styles.scss": {
+		"rules": 2,
+		"nested": 1,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"Sidebar/SidebarItem/SidebarItem.styles.scss": {
+		"rules": 26,
+		"nested": 21,
+		"combinators": 2,
+		"important": 0,
+		"specificityBumps": 1,
+		"negativeMargins": 1,
+		"displayContents": 0
+	},
+	"Sidebar/SidebarMedia/SidebarMedia.styles.scss": {
+		"rules": 4,
+		"nested": 3,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"Sidebar/variables.scss": {
+		"rules": 0,
+		"nested": 0,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"Sidepanel/Sidepanel.styles.scss": {
+		"rules": 9,
+		"nested": 7,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 1,
+		"displayContents": 0
+	},
+	"Skeleton/Skeleton.styles.scss": {
+		"rules": 7,
+		"nested": 4,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"Slider/Slider.styles.scss": {
+		"rules": 19,
+		"nested": 16,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"SplitButton/SplitButton.styles.scss": {
+		"rules": 9,
+		"nested": 7,
+		"combinators": 2,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"Stack/Stack.styles.scss": {
+		"rules": 2,
+		"nested": 0,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"States/States.styles.scss": {
+		"rules": 16,
+		"nested": 15,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 1,
+		"displayContents": 0
+	},
+	"StatusBullet/StatusBullet.styles.scss": {
+		"rules": 8,
+		"nested": 7,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"Table/Table.styles.scss": {
+		"rules": 30,
+		"nested": 28,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 1,
+		"displayContents": 0
+	},
+	"Tabs/Tabs.styles.scss": {
+		"rules": 18,
+		"nested": 14,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 2,
+		"displayContents": 0
+	},
+	"Tag/Tag.styles.scss": {
+		"rules": 17,
+		"nested": 15,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"Text/Text.styles.scss": {
+		"rules": 5,
+		"nested": 1,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"Throbber/Throbber.styles.scss": {
+		"rules": 6,
+		"nested": 3,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 1,
+		"displayContents": 0
+	},
+	"Tile/Tile.styles.scss": {
+		"rules": 5,
+		"nested": 4,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"ToastBar/ToastBar.styles.scss": {
+		"rules": 18,
+		"nested": 13,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"ToggleSwitch/ToggleSwitch.styles.scss": {
+		"rules": 6,
+		"nested": 5,
+		"combinators": 3,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"Tooltip/Tooltip.styles.scss": {
+		"rules": 20,
+		"nested": 19,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 3,
+		"displayContents": 0
+	},
+	"index.scss": {
+		"rules": 0,
+		"nested": 0,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	}
+}
