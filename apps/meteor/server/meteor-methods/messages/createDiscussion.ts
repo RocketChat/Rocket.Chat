@@ -1,5 +1,5 @@
 import { AbacContractError } from '@rocket.chat/abac';
-import { ClientSafeError, Message } from '@rocket.chat/core-services';
+import { Authorization, ClientSafeError, Message } from '@rocket.chat/core-services';
 import type { IMessage, IRoom, IUser, MessageAttachmentDefault } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
@@ -136,7 +136,10 @@ const create = async ({
 			pmid,
 		});
 		if (discussionAlreadyExists) {
-			// do not allow multiple discussions to the same message'\
+			if (!(await Authorization.canAccessRoom(discussionAlreadyExists, user))) {
+				throw new ClientSafeError('error-not-allowed', 'Not allowed', { method: 'DiscussionCreation' });
+			}
+			// Reuse the discussion only after checking access to it, not just its parent.
 			await addUserToRoom(discussionAlreadyExists._id, user);
 			return { ...discussionAlreadyExists, rid: discussionAlreadyExists._id };
 		}

@@ -46,6 +46,8 @@ export interface IPublication {
 
 export type Rule<K extends string = string> = (this: IPublication, eventName: K, ...args: any) => Promise<boolean | object>;
 
+export type EmitRuleFactory = (eventName: string, ...args: any[]) => Promise<Rule>;
+
 export interface IRules {
 	[k: string]: Rule;
 }
@@ -72,6 +74,9 @@ export interface IStreamer<N extends StreamNames> {
 
 	allowEmit<K extends StreamKeys<N>>(eventName: K, fn?: Rule | 'all' | 'none' | 'logged'): void;
 	allowEmit(rule: Rule<StreamKeys<N>> | 'all' | 'none' | 'logged'): void;
+
+	/** Prepare a default recipient rule once per event delivery. Named emit rules take precedence. */
+	allowEmitWithPreparation(prepare: EmitRuleFactory): void;
 
 	allowWrite<K extends StreamKeys<N>>(eventName: K | boolean, fn: Rule | 'all' | 'none' | 'logged'): void;
 	allowWrite(rule: Rule<StreamKeys<N>> | 'all' | 'none' | 'logged'): void;
