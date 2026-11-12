@@ -161,6 +161,15 @@
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
+	"Message/Message.styles.css": {
+		"rules": 14,
+		"nested": 0,
+		"combinators": 10,
+		"important": 0,
+		"specificityBumps": 1,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
 	"Message/MessageDivider/MessageDivider.styles.scss": {
 		"rules": 7,
 		"nested": 6,
@@ -189,8 +198,8 @@
 		"displayContents": 0
 	},
 	"Message/MessageReactions/MessageReactions.styles.scss": {
-		"rules": 8,
-		"nested": 7,
+		"rules": 7,
+		"nested": 6,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
@@ -225,17 +234,17 @@
 		"displayContents": 0
 	},
 	"Message/Messages.styles.scss": {
-		"rules": 39,
-		"nested": 37,
-		"combinators": 10,
+		"rules": 0,
+		"nested": 0,
+		"combinators": 0,
 		"important": 0,
-		"specificityBumps": 4,
+		"specificityBumps": 0,
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
 	"Message/ThreadMessage/ThreadMessage.styles.scss": {
-		"rules": 10,
-		"nested": 8,
+		"rules": 9,
+		"nested": 7,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 1,

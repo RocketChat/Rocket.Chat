@@ -49,6 +49,10 @@ export type ItemProps = {
 	hoverable?: boolean;
 	selected?: boolean;
 	/**
+	 * Paints the row as the one being edited, over its selected and hover surfaces.
+	 */
+	editing?: boolean;
+	/**
 	 * Emphasizes the title, icon, description and meta, as for unread rooms.
 	 */
 	highlighted?: boolean;
@@ -162,6 +166,9 @@ const itemTones = {
 	disabled: {
 		color: 'var(--rcx-item-color-font-disabled, var(--rcx-color-font-disabled, #cbced1))',
 	},
+	editing: {
+		color: 'var(--rcx-message-color-editing, var(--rcx-color-status-font-on-warning-2, #2f343d))',
+	},
 	link: {
 		color: {
 			'default': 'var(--rcx-link-color, var(--rcx-sidebar-link-color, var(--rcx-color-font-titles-labels, #1f2329)))',
@@ -180,6 +187,9 @@ const itemPaints = {
 	},
 	disabled: {
 		backgroundColor: 'transparent',
+	},
+	editing: {
+		backgroundColor: 'var(--rcx-message-background-color-editing, var(--rcx-color-status-background-warning-2, #fff8e0))',
 	},
 	selected: {
 		backgroundColor: 'var(--rcx-item-color-surface-selected, var(--rcx-color-surface-selected, #d7dbe0))',
@@ -294,17 +304,27 @@ const paintOf = ({
 	dropTarget,
 	dropDisabled,
 	disabled,
+	editing,
 	selected,
 	focused,
 	hoverable,
 	interactive,
-}: Pick<ItemProps, 'dropTarget' | 'dropDisabled' | 'disabled' | 'selected' | 'focused' | 'hoverable'> & { interactive: boolean }) => {
+}: Pick<ItemProps, 'dropTarget' | 'dropDisabled' | 'disabled' | 'editing' | 'selected' | 'focused' | 'hoverable'> & {
+	interactive: boolean;
+}) => {
 	if (dropTarget === 'active') return 'dropActive';
 	if (dropDisabled) return 'dropDisabled';
 	if (disabled) return 'disabled';
+	if (editing) return 'editing';
 	if (selected) return 'selected';
 	if (focused) return 'focused';
 	return hoverable || interactive ? 'hover' : undefined;
+};
+
+const toneOf = ({ disabled, editing, variant, tone }: Pick<ItemProps, 'disabled' | 'editing' | 'variant' | 'tone'>) => {
+	if (disabled) return 'disabled';
+	if (editing) return 'editing';
+	return variant ?? tone ?? 'default';
 };
 
 const cursorOf = ({
@@ -335,6 +355,7 @@ const Item = (props: ItemProps) => {
 		align = 'center',
 		hoverable,
 		selected,
+		editing,
 		highlighted,
 		focused,
 		focusVisible,
@@ -415,9 +436,9 @@ const Item = (props: ItemProps) => {
 		className,
 	);
 
-	const tone = disabled ? 'disabled' : (variant ?? toneProp ?? 'default');
+	const tone = toneOf({ disabled, editing, variant, tone: toneProp });
 	const density = padding === 'large' ? 'large' : undefined;
-	const paint = paintOf({ dropTarget, dropDisabled, disabled, selected, focused, hoverable, interactive });
+	const paint = paintOf({ dropTarget, dropDisabled, disabled, editing, selected, focused, hoverable, interactive });
 	const cursor = cursorOf({ disabled, dropDisabled, grabbable, interactive });
 	const ring = ringOf({ dropTarget, focusVisible });
 

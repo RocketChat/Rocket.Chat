@@ -1,7 +1,6 @@
 @use '../../../styles/colors.scss';
 @use '../../../styles/functions.scss' as *;
 @use '../../../styles/lengths.scss';
-@use '../../../styles/mixins/size.scss';
 @use '../../../styles/mixins/templates.scss';
 @use '../../../styles/typography.scss' as *;
 @use '../mixins.scss';
@@ -54,21 +53,6 @@ $message-reaction-background-color: theme('message-reaction-background-color', c
 			border-color: $message-reaction-border-color;
 			background-color: $message-reaction-background-color;
 		}
-	}
-
-	&__emoji {
-		display: inline-flex;
-		overflow: visible;
-		justify-content: center;
-
-		margin-inline: lengths.margin(2);
-
-		vertical-align: top;
-
-		font-size: var(--emoji-size, 1.25rem);
-		line-height: var(--emoji-size, 1.25rem);
-
-		@include size.square(var(--emoji-size, 1.25rem));
 	}
 
 	&__counter {

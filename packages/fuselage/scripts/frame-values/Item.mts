@@ -5,6 +5,7 @@ import { font, statusFont, themed } from './lib/frameTokens.mts';
 import { highlighted, inheritedFont, itemContentBase, itemMediaBase, itemMetaBase, itemRowBase, textFrame } from './lib/itemFrames.mts';
 import { itemCustomProperties, itemPalettes } from './lib/itemPalettes.mts';
 import { literal, type Value } from './lib/literal.mts';
+import { messagePalettes } from './lib/messagePalettes.mts';
 import type { Target } from './lib/target.mts';
 import { offScale, zIndex, zIndexAbove } from './lib/tokens.mts';
 import { webDefaults } from './lib/webDefaults.mts';
@@ -13,6 +14,7 @@ import { borderRadius, borderWidth, fontColor, fontFamily, size, spacing, stroke
 const component = (file: string) => join(import.meta.dirname, '../../src/components/Item', file);
 
 const palettes = itemPalettes();
+const message = messagePalettes();
 
 const constant = (name: string, value: Value) => `const ${name} = ${literal(value)} as const;`;
 
@@ -68,6 +70,7 @@ const generateItem = () => {
 		// There is no such status color: the variable stays undefined, as on develop, and the row keeps the color it inherits
 		primary: { color: 'var(--rcx-option-color-variant-primary, var(--rcx-color-status-font-on-primary))' },
 		disabled: { color: palettes.font.disabled },
+		editing: { color: message.editing.color },
 		// The color of a link row: a theme hook, then the sidebar's; no `:visited` key exists, so a visited link keeps it
 		link: {
 			color: {
@@ -83,6 +86,7 @@ const generateItem = () => {
 		dropActive: { backgroundColor: palettes.surface.dropTarget },
 		dropDisabled: { backgroundColor: 'transparent' },
 		disabled: { backgroundColor: 'transparent' },
+		editing: { backgroundColor: message.editing.background },
 		selected: { backgroundColor: palettes.surface.selected },
 		// A list of options that the pointer is over hides the cursor's row, unless the pointer is on that row
 		focused: {
