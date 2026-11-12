@@ -38,7 +38,7 @@ export type ItemGroupProps = {
  * A list of `Item` rows. An `ItemGroupTitle` inside it labels the group, and its width drives the narrow layout.
  */
 const ItemGroup = ({
-	is: Tag = 'div',
+	is: Component = 'div',
 	dragging,
 	dropTarget,
 	dropIndicator,
@@ -57,7 +57,7 @@ const ItemGroup = ({
 
 	return (
 		<ItemGroupContext.Provider value={contextValue}>
-			<Tag
+			<Component
 				aria-labelledby={ariaLabelledBy}
 				{...props}
 				className={cx(
@@ -72,7 +72,7 @@ const ItemGroup = ({
 				)}
 			>
 				{children}
-			</Tag>
+			</Component>
 		</ItemGroupContext.Provider>
 	);
 };

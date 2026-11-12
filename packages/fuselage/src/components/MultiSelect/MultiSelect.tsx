@@ -55,15 +55,15 @@ function MultiSelect({
 	options = [],
 	error,
 	disabled,
-	anchor: Anchor = MultiSelectAnchor,
-	onChange = () => {},
+	anchor: AnchorComponent = MultiSelectAnchor,
+	onChange = () => undefined,
 	getLabel = ([, label] = ['', '']) => label,
 	getValue = ([value]) => value,
 	placeholder,
-	renderOptions: _Options = Options,
+	renderOptions: OptionsComponent = Options,
 	renderItem,
 	customEmpty,
-	renderSelected: RenderSelected,
+	renderSelected: SelectedComponent,
 	addonIcon,
 	...props
 }: MultiSelectProps) {
@@ -105,7 +105,7 @@ function MultiSelect({
 
 	const [cursor, handleKeyDown, handleKeyUp, reset, [visible, hide, show]] = useCursor(index, filteredOptions, internalChanged);
 
-	useEffect(reset, [filter]);
+	useEffect(reset, [filter, reset]);
 
 	const innerRef = useRef<HTMLElement>(null);
 	const anchorRef = useMergedRefs(ref, innerRef);
@@ -147,7 +147,7 @@ function MultiSelect({
 		>
 			<Box is='div' rcx-select__field>
 				<Box is='div' rcx-select__values>
-					<Anchor
+					<AnchorComponent
 						ref={anchorRef}
 						disabled={disabled ?? false}
 						onClick={show}
@@ -167,11 +167,11 @@ function MultiSelect({
 						aria-required={ariaRequired}
 					>
 						{internalValue.length === 0 ? placeholder : null}
-					</Anchor>
+					</AnchorComponent>
 					{internalValue.map((value: SelectOption[0]) => {
 						const currentOption = options.find(([val]) => val === value) as SelectOption;
-						return RenderSelected ? (
-							<RenderSelected
+						return SelectedComponent ? (
+							<SelectedComponent
 								value={value}
 								key={value}
 								label={getLabel(currentOption)}
@@ -182,7 +182,7 @@ function MultiSelect({
 								}}
 							>
 								{getLabel(currentOption)}
-							</RenderSelected>
+							</SelectedComponent>
 						) : (
 							<SelectedOptions
 								tabIndex={-1}
@@ -203,7 +203,7 @@ function MultiSelect({
 				<Icon name={visible === AnimatedVisibility.VISIBLE ? 'chevron-up' : addonIcon || 'chevron-down'} size='x20' />
 			</SelectAddon>
 			<PositionAnimated visible={visible} anchor={containerRef}>
-				<_Options
+				<OptionsComponent
 					width={borderBoxSize.inlineSize}
 					onMouseDown={prevent}
 					multiple

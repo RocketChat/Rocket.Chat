@@ -31,17 +31,20 @@ export type OptionsPaginatedProps = Omit<ElementProps<HTMLDivElement>, 'ref' | '
 		endReached?: (start?: number, end?: number) => void;
 	};
 
-export const Empty = memo(() => <Option label='Empty' />);
+export const Empty = memo(function Empty() {
+	return <Option label='Empty' />;
+});
 
 export { CheckOption };
 
 /**
  * An input for selection of options.
  */
+// oxlint-disable-next-line react/no-multi-comp
 export function OptionsPaginated({
 	ref,
 	withTitle,
-	multiple,
+	multiple: _multiple,
 	renderEmpty: EmptyComponent = Empty,
 	options,
 	cursor,

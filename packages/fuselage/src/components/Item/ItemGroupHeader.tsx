@@ -24,8 +24,8 @@ export type ItemGroupHeaderProps = {
 /**
  * The label row of a group, such as Favorites, Recent or Moderators. It holds an `ItemGroupTitle` and optional trailing content.
  */
-const ItemGroupHeader = ({ is: Tag = 'div', inset = 'none', sticky, className, ...props }: ItemGroupHeaderProps) => (
-	<Tag
+const ItemGroupHeader = ({ is: Component = 'div', inset = 'none', sticky, className, ...props }: ItemGroupHeaderProps) => (
+	<Component
 		{...props}
 		className={cx(
 			cxx('rcx-item-group-header')({
