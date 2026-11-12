@@ -11,6 +11,7 @@ import MarkdownText from '../../../../components/MarkdownText';
 import MessageContentBody from '../../../../components/message/MessageContentBody';
 import { getMarkdownParserLimit } from '../../../../lib/getMarkdownParserLimit';
 import { toPlainTextRoot } from '../../../../lib/toPlainTextRoot';
+import { MessagesProvider } from '../../../../providers/MessagesProvider';
 
 type ReportMessageModalsFields = {
 	description: string;
@@ -64,7 +65,13 @@ const ReportMessageModal = ({ message, onClose }: ReportMessageModalProps) => {
 			confirmText={t('Report')}
 		>
 			<Box marginBlockEnd={24} className={wordBreak}>
-				{md ? <MessageContentBody md={md} /> : <MarkdownText variant='inline' parseEmoji content={message.msg} />}
+				{md ? (
+					<MessagesProvider allowsInteraction={false}>
+						<MessageContentBody md={md} />
+					</MessagesProvider>
+				) : (
+					<MarkdownText variant='inline' parseEmoji content={message.msg} />
+				)}
 			</Box>
 			<FieldGroup>
 				<Field>

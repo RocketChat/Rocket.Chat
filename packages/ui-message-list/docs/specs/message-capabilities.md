@@ -29,6 +29,12 @@ tests:
     apps/meteor/client/providers/MessagesProvider/MessagesProvider.spec.tsx,
     apps/meteor/client/views/room/MessageList/providers/MessageListProvider.spec.tsx,
     apps/meteor/client/providers/MessagesProvider/actions/useToggleReactionMutation.spec.ts,
+    apps/meteor/client/views/room/modals/PinMessageModal/PinMessageModal.spec.tsx,
+    apps/meteor/client/views/room/composer/messageBox/MessageBoxReply.spec.tsx,
+    apps/meteor/client/views/audit/components/AuditMessageList.spec.tsx,
+    apps/meteor/client/views/audit/components/AuditMessageList.display.spec.tsx,
+    apps/meteor/client/views/room/modals/PinMessageModal/PinMessageModal.display.spec.tsx,
+    apps/meteor/client/views/room/contextualBar/Threads/ThreadList.display.spec.tsx,
   ]
 ---
 

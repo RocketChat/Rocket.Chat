@@ -25,6 +25,7 @@ import { useTranslation } from 'react-i18next';
 import UserAndRoomAutoCompleteMultiple from '../../../../components/UserAndRoomAutoCompleteMultiple';
 import { QuoteAttachment } from '../../../../components/message/content/attachments/QuoteAttachment';
 import { prependReplies } from '../../../../lib/utils/prependReplies';
+import { MessagesProvider } from '../../../../providers/MessagesProvider';
 
 type ForwardMessageProps = {
 	onClose: () => void;
@@ -121,7 +122,9 @@ const ForwardMessageModal = ({ onClose, permalink, message }: ForwardMessageProp
 						)}
 					</Field>
 					<Field>
-						<QuoteAttachment attachment={attachment} />
+						<MessagesProvider allowsInteraction={false}>
+							<QuoteAttachment attachment={attachment} />
+						</MessagesProvider>
 					</Field>
 				</FieldGroup>
 			</ModalContent>
