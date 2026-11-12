@@ -1,18 +1,14 @@
-import type { HTMLAttributes } from 'react';
-
+import MessageReaction from './MessageReaction';
+import { cx } from '../../../helpers/composeClassNames';
+import type { DivActionAttributes } from '../../../types/ElementAttributes';
 import { Icon } from '../../Icon';
 
-export type MessageReactionActionProps = HTMLAttributes<HTMLDivElement>;
+export type MessageReactionActionProps = DivActionAttributes;
 
 const MessageReactionAction = ({ className, ...props }: MessageReactionActionProps) => (
-	<div
-		role='button'
-		tabIndex={0}
-		className={['rcx-message-reactions__reaction rcx-message-reactions__reaction--action', className].filter(Boolean).join(' ')}
-		{...props}
-	>
+	<MessageReaction {...props} className={cx('rcx-message-reactions__reaction--action', className)}>
 		<Icon name='emoji-plus' size='x16' />
-	</div>
+	</MessageReaction>
 );
 
 export default MessageReactionAction;

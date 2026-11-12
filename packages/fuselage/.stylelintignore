@@ -5,3 +5,4 @@
 /src/components/Select/Select.styles.css
 /src/components/Message/Message.styles.css
 /src/components/Message/MessageToolbar/MessageToolbar.styles.css
+/src/components/Message/MessageReactions/MessageReactions.styles.css

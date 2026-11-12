@@ -188,19 +188,10 @@
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
-	"Message/MessageMetrics/MessageMetrics.styles.scss": {
-		"rules": 5,
-		"nested": 4,
-		"combinators": 0,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 1,
-		"displayContents": 0
-	},
-	"Message/MessageReactions/MessageReactions.styles.scss": {
-		"rules": 7,
-		"nested": 6,
-		"combinators": 0,
+	"Message/MessageReactions/MessageReactions.styles.css": {
+		"rules": 4,
+		"nested": 0,
+		"combinators": 2,
 		"important": 0,
 		"specificityBumps": 0,
 		"negativeMargins": 0,
@@ -248,15 +239,6 @@
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 1,
-		"negativeMargins": 0,
-		"displayContents": 0
-	},
-	"Message/mixins.scss": {
-		"rules": 2,
-		"nested": 0,
-		"combinators": 2,
-		"important": 0,
-		"specificityBumps": 0,
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
