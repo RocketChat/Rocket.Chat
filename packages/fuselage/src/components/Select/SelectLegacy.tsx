@@ -1,5 +1,5 @@
 import { useMergedRefs, useStableCallback, useResizeObserver } from '@rocket.chat/fuselage-hooks';
-import type { DependencyList, ElementType, MouseEvent, RefAttributes } from 'react';
+import type { ElementType, MouseEvent, RefAttributes } from 'react';
 import { useState, useRef, useEffect, useMemo } from 'react';
 
 import type { ElementProps } from '../../types/ElementProps';
@@ -13,19 +13,6 @@ import SelectAddon from './SelectAddon';
 import SelectFocus from './SelectFocus';
 
 export type SelectOption = readonly [value: string, label: string, selected?: boolean];
-
-const useDidUpdate = (func: () => void, deps: DependencyList | undefined) => {
-	const didMount = useRef(false);
-	const fn = useStableCallback(func);
-
-	useEffect(() => {
-		if (didMount.current) {
-			fn();
-		}
-		didMount.current = true;
-		// oxlint-disable-next-line react-hooks/exhaustive-deps -- deps are forwarded from the caller
-	}, deps || []);
-};
 
 export type SelectProps = Omit<ElementProps<HTMLDivElement>, 'ref' | 'onChange'> &
 	RefAttributes<HTMLInputElement> & {
@@ -112,7 +99,13 @@ function SelectLegacy({
 
 	const { ref: containerRef, borderBoxSize } = useResizeObserver();
 
-	useDidUpdate(reset, [filter, internalValue]);
+	const didMount = useRef(false);
+	useEffect(() => {
+		if (didMount.current) {
+			reset();
+		}
+		didMount.current = true;
+	}, [filter, internalValue, reset]);
 
 	const valueLabel = getLabel(option);
 
