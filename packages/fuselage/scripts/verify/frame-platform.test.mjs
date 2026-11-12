@@ -32,6 +32,18 @@ test('HTMLProps and ComponentProps of a tag name are DOM-only types', () => {
 	assert.deepEqual(checkFrame(frame('type Props = ComponentProps<typeof View>;')), []);
 });
 
+test('a frame that reads a browser global fails', () => {
+	assert.deepEqual(checkFrame(frame("const node = document.createElement('div');")), ['reads the browser global document']);
+	assert.deepEqual(checkFrame(frame('const width = globalThis.window.innerWidth;')), ['reads the browser global window']);
+});
+
+test('a property or key named like a browser global does not count', () => {
+	assert.deepEqual(
+		checkFrame(frame('const { document } = props.owner;\nconst value = props.window;\nconst options = { document: 1 };')),
+		[],
+	);
+});
+
 test('a comment that mentions a DOM type does not count', () => {
 	assert.deepEqual(checkFrame(frame('// not an HTMLDivElement')), []);
 });
