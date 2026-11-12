@@ -135,6 +135,7 @@ test.describe('OAuth', () => {
 			});
 
 			await test.step('expect authorize flow to be redirected through the proxy', async () => {
+				await page.route('https://oauth-proxy.rocket.chat/**', (route) => route.fulfill({ status: 200, body: '' }));
 				await poRegistration.btnLoginWithCustomOAuth.click();
 				await expect(page).toHaveURL(/^https:\/\/oauth-proxy\.rocket\.chat\/redirect\//);
 			});
