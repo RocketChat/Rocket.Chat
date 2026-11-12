@@ -6,11 +6,14 @@ import type {
 	CSSProperties,
 	DOMAttributes,
 	FieldsetHTMLAttributes,
+	FormEventHandler,
 	ImgHTMLAttributes,
 	InputHTMLAttributes,
 	LabelHTMLAttributes,
 	Ref,
+	TdHTMLAttributes,
 	TextareaHTMLAttributes,
+	ThHTMLAttributes,
 } from 'react';
 
 // The groups without `Web` in their name use no DOM type, so a React Native build of a part keeps them and replaces
@@ -376,3 +379,21 @@ export type ElementActionAttributes = ActionAttributes<HTMLElement>;
 
 /** What a part that renders an `img` forwards, with its image attributes. */
 export type ImageActionAttributes = ActionAttributes<HTMLImageElement> & ImageAttributes;
+
+/** What a table cell rendered as a `td` or a `th` forwards besides its part attributes: the cells it spans and the headers it answers to. */
+export type TableCellAttributes = Pick<
+	TdHTMLAttributes<HTMLTableCellElement> & ThHTMLAttributes<HTMLTableCellElement>,
+	'scope' | 'colSpan' | 'rowSpan' | 'headers'
+>;
+
+/** What a part that renders a hero `img` forwards: its image attributes and where the picture comes from. */
+export type HeroImageAttributes = ImageAttributes & Pick<ImgHTMLAttributes<HTMLImageElement>, 'src' | 'srcSet' | 'loading'>;
+
+/** What a part rendered as a `form`, or as a `div` when it has no `onSubmit`, forwards: the submit handler and the id a button outside the form points to. */
+export type FormSubmitAttributes = {
+	onSubmit?: FormEventHandler<HTMLFormElement>;
+	id?: string;
+};
+
+/** What a part rendered as a `nav` forwards: its part attributes and the name of the landmark. */
+export type NavAttributes = PartAttributes<HTMLElement> & Pick<AriaAttributes, 'aria-label'>;
