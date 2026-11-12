@@ -17,7 +17,7 @@ import type {
 	Page,
 } from '../definition/types';
 import { ExchangeError } from '../errors';
-import { fetchWithRetry } from '../http/fetchWithRetry';
+import { fetchGraphWithRetry } from '../http/fetchGraphWithRetry';
 import { logger } from '../logger';
 import { MAX_CONTACT_PHOTO_BYTES } from '../sync/limits';
 
@@ -29,6 +29,9 @@ const MASTER_FETCH_BATCH_SIZE = 5;
 
 /** Without this, Graph answers in the mailbox's own timezone with the zone in a sibling field. */
 const PREFER_UTC = 'outlook.timezone="UTC"';
+
+/** Graph's default delta page is small and undocumented, and the page caps downstream count pages, not items. */
+const PREFER_PAGE_SIZE = 'odata.maxpagesize=100';
 
 /** Pinned rather than left to Graph, so the page cap below is worth a number we know. Matches EWS. */
 const CONTACT_FOLDER_PAGE_SIZE = 100;
@@ -151,9 +154,11 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 	}
 
 	public async listEvents(mailbox: string, timeWindow: DateRange, cursor?: string): Promise<EventPage> {
-		const payload = await this.requestJson<GraphDeltaResponse>(cursor ?? this.calendarViewDeltaUrl(mailbox, timeWindow), {
-			headers: { Prefer: PREFER_UTC },
-		});
+		const payload = await this.requestJson<GraphDeltaResponse>(
+			cursor ?? this.calendarViewDeltaUrl(mailbox, timeWindow),
+			{ headers: { Prefer: `${PREFER_UTC}, ${PREFER_PAGE_SIZE}` } },
+			{ delta: true },
+		);
 
 		const raw = Array.isArray(payload.value) ? (payload.value as GraphEvent[]) : [];
 		const nextLink = asString(payload['@odata.nextLink']);
@@ -498,7 +503,11 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 		};
 	}
 
-	private async requestJson<T>(url: string, init: Omit<ExtendedFetchOptions, 'ignoreSsrfValidation' | 'allowList'> = {}): Promise<T> {
+	private async requestJson<T>(
+		url: string,
+		init: Omit<ExtendedFetchOptions, 'ignoreSsrfValidation' | 'allowList'> = {},
+		{ delta = false }: { delta?: boolean } = {},
+	): Promise<T> {
 		let response = await this.authorizedFetch(url, init);
 
 		if (response.status === 401) {
@@ -507,7 +516,7 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 		}
 
 		if (!response.ok) {
-			throw await this.toError(response, url);
+			throw await this.toError(response, url, delta);
 		}
 
 		const payload = (await response.json().catch(() => undefined)) as T | undefined;
@@ -521,7 +530,7 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 	private async authorizedFetch(url: string, init: Omit<ExtendedFetchOptions, 'ignoreSsrfValidation' | 'allowList'>): Promise<Response> {
 		const token = await this.tokenClient.getAccessToken();
 
-		return fetchWithRetry(url, {
+		return fetchGraphWithRetry(url, {
 			...init,
 			headers: { ...(init.headers as Record<string, string> | undefined), Authorization: `Bearer ${token}` },
 			timeout: REQUEST_TIMEOUT_MS,
@@ -531,10 +540,15 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 		});
 	}
 
-	private async toError(response: Response, url: string): Promise<ExchangeError> {
+	private async toError(response: Response, url: string, delta: boolean): Promise<ExchangeError> {
 		const detail = (await response.text().catch(() => undefined))?.slice(0, 500);
 
 		logger.warn({ msg: 'Microsoft Graph request failed', status: response.status, url });
+
+		// Only a delta query has a sync state that Graph can expire
+		if (delta && response.status === 410) {
+			return new ExchangeError('sync-state-invalid', 'The stored delta link is no longer valid and must be reset', { detail });
+		}
 
 		switch (response.status) {
 			case 401:

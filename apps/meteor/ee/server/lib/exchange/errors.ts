@@ -21,6 +21,8 @@ export type ExchangeErrorCode =
 	| 'endpoint-not-recognized'
 	/** Rate limited and out of retries. */
 	| 'rate-limited'
+	/** Another sync of the same mailbox is running, on this instance or another. Exchange was never asked. */
+	| 'sync-in-progress'
 	/** The server answered, but not in a shape we understand. */
 	| 'unexpected-response'
 	/** The persisted delta cursor is no longer valid. Discard it and resync from scratch. */
@@ -31,11 +33,14 @@ export class ExchangeError extends Error {
 
 	public readonly detail?: string;
 
-	constructor(code: ExchangeErrorCode, message: string, options?: { detail?: string }) {
+	public readonly retryAfterMs?: number;
+
+	constructor(code: ExchangeErrorCode, message: string, options?: { detail?: string; retryAfterMs?: number }) {
 		super(message);
 		this.name = 'ExchangeError';
 		this.code = code;
 		this.detail = options?.detail === undefined ? undefined : scrubText(options.detail);
+		this.retryAfterMs = options?.retryAfterMs;
 	}
 }
 

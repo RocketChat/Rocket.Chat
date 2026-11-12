@@ -38,6 +38,7 @@ import type {
 	Page,
 } from '../definition/types';
 import { ExchangeError } from '../errors';
+import { fetchEwsWithRetry } from '../http/fetchEwsWithRetry';
 import { logger } from '../logger';
 import { MAX_CONTACT_PHOTO_BYTES } from '../sync/limits';
 
@@ -78,11 +79,11 @@ const decodeCursor = (cursor?: string): { window?: string; syncState?: string } 
 /** At 1000 occurrences a page, past any window a person can fill. An emergency guard, not a working limit. */
 const MAX_CALENDAR_VIEW_PAGES = 50;
 
-/** At 100 changes a page, enough to carry a first sync of a long-lived calendar in one run. */
+/** At 512 changes a page, enough to carry a first sync of a long-lived calendar in one run. */
 const MAX_SYNC_BATCHES = 50;
 
-/** How many items one `GetItem` is asked for, matching the delta's own page size. */
-const EVENT_BATCH_SIZE = 100;
+/** How many items one `GetItem` reads, below a delta page's 512 so a full page does not become one heavy response. */
+const GET_ITEM_BATCH_SIZE = 100;
 
 const isBusyStatus = (status: string | undefined): boolean => status === 'Busy';
 
@@ -98,6 +99,9 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 
 	private readonly serviceAccountAddress: string;
 
+	/** Exchange throttles the service account, not a request, so a back-off one request is told holds every other one too. */
+	private readonly throttle = { until: 0 };
+
 	constructor(transport: IEwsTransport, serviceAccountAddress = '') {
 		this.transport = transport;
 		this.serviceAccountAddress = serviceAccountAddress;
@@ -108,7 +112,7 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 	 * TLS and the credentials, so "not found" counts as success.	 */
 	public async testConnection(): Promise<void> {
 		try {
-			parseEwsResponse(await this.transport.post(resolveNamesRequest(this.serviceAccountAddress)));
+			await this.request(resolveNamesRequest(this.serviceAccountAddress));
 		} catch (err) {
 			if (err instanceof ExchangeError && err.code === 'mailbox-not-found') {
 				return;
@@ -124,7 +128,7 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 		let changed = false;
 
 		for (let batch = 0; batch < MAX_SYNC_BATCHES; batch++) {
-			const doc = parseEwsResponse(await this.transport.post(syncFolderItemsRequest(mailbox, syncState)));
+			const doc = await this.request(syncFolderItemsRequest(mailbox, syncState));
 
 			syncState = textOf(firstByTag(doc, MESSAGES_NS, 'SyncState')) || syncState;
 			changed = changed || ['Create', 'Update', 'Delete'].some((tag) => allByTag(doc, TYPES_NS, tag).length > 0);
@@ -171,7 +175,7 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 		let complete = false;
 
 		for (let page = 0; page < MAX_CALENDAR_VIEW_PAGES; page++) {
-			const doc = parseEwsResponse(await this.transport.post(findItemCalendarViewRequest(mailbox, start, timeWindow.end)));
+			const doc = await this.request(findItemCalendarViewRequest(mailbox, start, timeWindow.end));
 			const root = firstByTag(doc, MESSAGES_NS, 'RootFolder');
 			const nodes = allByTag(doc, TYPES_NS, 'CalendarItem');
 
@@ -208,8 +212,8 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 	private async loadEvents(mailbox: string, itemIds: string[]): Promise<ExchangeEvent[]> {
 		const events: ExchangeEvent[] = [];
 
-		for (let i = 0; i < itemIds.length; i += EVENT_BATCH_SIZE) {
-			const doc = parseEwsResponse(await this.transport.post(getItemRequest(mailbox, itemIds.slice(i, i + EVENT_BATCH_SIZE))));
+		for (let i = 0; i < itemIds.length; i += GET_ITEM_BATCH_SIZE) {
+			const doc = await this.request(getItemRequest(mailbox, itemIds.slice(i, i + GET_ITEM_BATCH_SIZE)));
 
 			events.push(
 				...allByTag(doc, TYPES_NS, 'CalendarItem')
@@ -476,5 +480,9 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 		}
 
 		return photos;
+	}
+
+	private request(soapEnvelope: string): Promise<Document> {
+		return fetchEwsWithRetry(async () => parseEwsResponse(await this.transport.post(soapEnvelope)), this.throttle);
 	}
 }

@@ -85,7 +85,7 @@ describe('MicrosoftGraphProvider', () => {
 		const NEXT_LINK = 'https://graph.microsoft.com/page2';
 		const DELTA_LINK = 'https://graph.microsoft.com/delta';
 
-		it('requests calendarView/delta scoped to the window, in UTC', async () => {
+		it('requests calendarView/delta scoped to the window, in UTC and in pages of 100', async () => {
 			mockTokenThen(graphResponse({ value: [] }));
 
 			await new MicrosoftGraphProvider(config).listEvents(MAILBOX, timeWindow);
@@ -94,7 +94,7 @@ describe('MicrosoftGraphProvider', () => {
 			expect(url).toContain(`/v1.0/users/${encodeURIComponent(MAILBOX)}/calendarView/delta`);
 			expect(url).toContain(`startDateTime=${encodeURIComponent(timeWindow.start.toISOString())}`);
 			expect(url).toContain(`endDateTime=${encodeURIComponent(timeWindow.end.toISOString())}`);
-			expect(options.headers.Prefer).toBe('outlook.timezone="UTC"');
+			expect(options.headers.Prefer).toBe('outlook.timezone="UTC", odata.maxpagesize=100');
 			expect(options.headers.Authorization).toBe(`Bearer ${ACCESS_TOKEN}`);
 		});
 
@@ -228,6 +228,7 @@ describe('MicrosoftGraphProvider', () => {
 		it.each([
 			[403, 'authorization-failed'],
 			[404, 'mailbox-not-found'],
+			[410, 'sync-state-invalid'],
 			[400, 'unexpected-response'],
 		])('maps %i to %s', async (status, code) => {
 			mockTokenThen(graphResponse({ error: {} }, status));

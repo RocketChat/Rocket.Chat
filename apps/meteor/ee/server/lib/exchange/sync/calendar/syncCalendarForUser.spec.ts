@@ -71,7 +71,7 @@ describe('syncCalendarForUser', () => {
 	it('refuses while another sync holds the lease', async () => {
 		leases.set('uid', 'held-elsewhere');
 
-		await expect(syncCalendarForUser('uid')).rejects.toMatchObject({ code: 'rate-limited' });
+		await expect(syncCalendarForUser('uid')).rejects.toMatchObject({ code: 'sync-in-progress' });
 		expect(syncCalendarWindow).not.toHaveBeenCalled();
 		expect(leases.get('uid')).toBe('held-elsewhere');
 	});
@@ -139,7 +139,7 @@ describe('syncCalendarForUser', () => {
 
 		const first = syncCalendarForUser('uid');
 
-		await expect(syncCalendarForUser('uid')).rejects.toMatchObject({ code: 'rate-limited' });
+		await expect(syncCalendarForUser('uid')).rejects.toMatchObject({ code: 'sync-in-progress' });
 
 		release();
 		await first;
