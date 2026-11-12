@@ -24,6 +24,14 @@ export default {
 		layout: 'padded',
 		controls: { hideNoControlsWarning: true },
 	},
+	decorators: [
+		(Story) => (
+			<>
+				<style>{'.story-card-x260 { width: 16.25rem; } .story-card-full { width: 100%; }'}</style>
+				<Story />
+			</>
+		),
+	],
 	argTypes: {
 		align: {
 			control: 'select',
@@ -96,7 +104,7 @@ export const Default: Story = {
 	render: (args) => (
 		<CardGroup {...args}>
 			{Array.from(new Array(9)).map((_, index) => (
-				<CardItem key={index} width='x260' />
+				<CardItem key={index} className='story-card-x260' />
 			))}
 		</CardGroup>
 	),
@@ -129,7 +137,7 @@ export const VerticalWithHorizontalCard: Story = {
 	render: (args) => (
 		<CardGroup vertical stretch {...args}>
 			{Array.from(new Array(9)).map((_, index) => (
-				<CardHorizontal clickable key={index} width='full' />
+				<CardHorizontal clickable key={index} className='story-card-full' />
 			))}
 		</CardGroup>
 	),

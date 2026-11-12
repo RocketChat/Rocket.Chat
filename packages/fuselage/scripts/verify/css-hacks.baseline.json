@@ -71,28 +71,10 @@
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
-	"Card/Card.styles.scss": {
-		"rules": 12,
-		"nested": 11,
-		"combinators": 1,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 0,
-		"displayContents": 0
-	},
 	"CardGrid/CardGrid.styles.css": {
 		"rules": 3,
 		"nested": 0,
 		"combinators": 0,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 1,
-		"displayContents": 0
-	},
-	"CardGroup/CardGroup.styles.scss": {
-		"rules": 15,
-		"nested": 13,
-		"combinators": 3,
 		"important": 0,
 		"specificityBumps": 0,
 		"negativeMargins": 1,
@@ -472,8 +454,8 @@
 		"nested": 0,
 		"combinators": 1,
 		"important": 0,
-		"specificityBumps": 1,
-		"negativeMargins": 1,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
 		"displayContents": 0
 	},
 	"Tabs/Tabs.styles.css": {
@@ -482,7 +464,7 @@
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
-		"negativeMargins": 2,
+		"negativeMargins": 0,
 		"displayContents": 0
 	},
 	"Text/Text.styles.scss": {

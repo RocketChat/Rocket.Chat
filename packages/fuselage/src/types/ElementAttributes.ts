@@ -340,6 +340,9 @@ export type DivElement = HTMLDivElement;
 /** The press handlers of a part rendered as a `div`. */
 export type DivPressHandlers = WebPressHandlers<HTMLDivElement>;
 
+/** What a part rendered as a heading forwards. */
+export type HeadingAttributes = PartAttributes<HTMLHeadingElement> & WebPressHandlers<HTMLHeadingElement>;
+
 /** What a part rendered as a `section` that only shows something forwards. */
 export type SectionAttributes = PartAttributes<HTMLElement>;
 
