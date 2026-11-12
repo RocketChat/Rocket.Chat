@@ -12,6 +12,7 @@ export type SidebarBannerProps = {
 	onClick?: () => void;
 	variant?: SidebarBannerVariant;
 	onClose?: () => void;
+	closeLabel?: string;
 	children?: ReactNode;
 	addon?: ReactNode;
 	className?: string;
@@ -24,6 +25,7 @@ export const SidebarBanner = ({
 	variant = 'default',
 	addon,
 	onClose,
+	closeLabel = 'Close',
 	children,
 	className,
 	...props
@@ -40,7 +42,7 @@ export const SidebarBanner = ({
 		</div>
 		<div className='rcx-box rcx-box--full rcx-sidebar-banner__addon'>
 			{addon}
-			{onClose && <IconButton onClick={onClose} size='tiny' icon='cross' />}
+			{onClose && <IconButton aria-label={closeLabel} onClick={onClose} size='tiny' icon='cross' />}
 		</div>
 	</div>
 );
