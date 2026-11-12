@@ -25,6 +25,10 @@ export const sidebarPalettes = () => {
 			highlighted: themed('sidebar-item-color-highlighted', fontColor('titles-labels')),
 		},
 		accordionBorder: themed('sidebar-accordion-border-color', strokeColor('light')),
+		media: {
+			color: themed('sidebar-media-color', fontColor('titles-labels')),
+			border: themed('sidebar-media-border-color', strokeColor('light')),
+		},
 		banner: {
 			default: {
 				background: themed('sidebar-banner-background-default', backgroundColor('sidebar')),

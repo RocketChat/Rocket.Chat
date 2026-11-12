@@ -5,41 +5,17 @@
 @use '../../styles/mixins/templates.scss' as *;
 @use '../../styles/functions.scss' as *;
 @use '../../styles/mixins/link.scss' as *;
-@use '../../styles/primitives/link.scss';
 @use './variables.scss' as *;
-@use './SidebarFooter/SidebarFooter.styles.scss';
-@use './SidebarMedia/SidebarMedia.styles.scss';
 
 $sidebar-color-stroke-extra-light: theme('sidebar-color-stroke-extra-light', colors.stroke(light));
 
 .rcx-sidebar {
-	position: relative;
-
-	display: flex;
-	flex-direction: column;
-
-	height: lengths.size(full);
-
-	color: $sidebar-color-font-default;
-	background-color: $sidebar-color-surface-default;
-
 	&--divider {
 		border-color: $sidebar-color-stroke-extra-light;
 
 		&.rcx-item-divider::before {
 			border-color: $sidebar-color-stroke-extra-light;
 		}
-	}
-
-	&-section {
-		display: flex;
-		align-items: center;
-
-		height: lengths.size(44);
-
-		padding-inline: lengths.padding(16);
-
-		gap: lengths.padding(8);
 	}
 
 	&-accordion {
@@ -186,86 +162,6 @@ $sidebar-color-stroke-extra-light: theme('sidebar-color-stroke-extra-light', col
 				.rcx-sidebar-accordion-item__chevron {
 					visibility: visible;
 				}
-			}
-		}
-	}
-
-	&-banner {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-
-		padding: lengths.padding(16);
-
-		color: $sidebar-banner-color-default;
-		border-bottom: lengths.border-width(default) solid $sidebar-accordion-border-color;
-		background-color: $sidebar-banner-background-default;
-		gap: lengths.padding(12);
-
-		&__addon {
-			display: flex;
-			align-items: center;
-		}
-
-		&__title {
-			margin: 0;
-			padding: 0;
-
-			@include use-font-scale(h5);
-		}
-
-		&__link {
-			@include use-font-scale(p2m);
-			@include clickable;
-
-			display: inline-block;
-
-			text-decoration: underline;
-
-			&:where(button) {
-				@include use-link-colors($color: colors.font(info));
-
-				background-color: transparent;
-			}
-		}
-
-		&--info {
-			color: $sidebar-banner-color-info;
-			background-color: $sidebar-banner-background-info;
-		}
-
-		&--success {
-			color: $sidebar-banner-color-success;
-			background-color: $sidebar-banner-background-success;
-		}
-
-		&--warning {
-			color: $sidebar-banner-color-warning;
-			background-color: $sidebar-banner-background-warning;
-		}
-
-		&--danger {
-			color: $sidebar-banner-color-danger;
-			background-color: $sidebar-banner-background-danger;
-		}
-	}
-
-	&--collapsed {
-		overflow: hidden;
-
-		width: lengths.size(48);
-
-		&:not(:hover) {
-			.rcx-sidebar-item.rcx-sidebar-link > .rcx-sidebar-item__title,
-			.rcx-sidebar-banner__content {
-				display: none;
-			}
-
-			.rcx-sidebar-media__title,
-			.rcx-sidebar-footer {
-				visibility: hidden;
-
-				white-space: nowrap;
 			}
 		}
 	}

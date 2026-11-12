@@ -324,21 +324,12 @@
 		"displayContents": 0
 	},
 	"Sidebar/Sidebar.styles.scss": {
-		"rules": 46,
-		"nested": 45,
-		"combinators": 2,
+		"rules": 33,
+		"nested": 32,
+		"combinators": 1,
 		"important": 0,
 		"specificityBumps": 5,
 		"negativeMargins": 1,
-		"displayContents": 0
-	},
-	"Sidebar/SidebarFooter/SidebarFooter.styles.scss": {
-		"rules": 2,
-		"nested": 1,
-		"combinators": 0,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 0,
 		"displayContents": 0
 	},
 	"Sidebar/SidebarItem/SidebarItem.styles.scss": {
@@ -348,15 +339,6 @@
 		"important": 0,
 		"specificityBumps": 2,
 		"negativeMargins": 1,
-		"displayContents": 0
-	},
-	"Sidebar/SidebarMedia/SidebarMedia.styles.scss": {
-		"rules": 4,
-		"nested": 3,
-		"combinators": 0,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 0,
 		"displayContents": 0
 	},
 	"Sidebar/variables.scss": {

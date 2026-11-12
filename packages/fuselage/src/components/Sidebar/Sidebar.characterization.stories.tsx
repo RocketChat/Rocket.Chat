@@ -257,22 +257,24 @@ export const AccessibilityTree: Story = {
 
 export const ComputedLayout: Story = {
 	render: () => (
-		<Sidebar id='root' style={{ height: 400 }}>
-			<SidebarSection id='section'>
-				<span>section</span>
-			</SidebarSection>
-			<SidebarBanner data-testid='banner-default' title='Default' />
-			<SidebarBanner data-testid='banner-info' title='Info' variant='info' />
-			<SidebarBanner data-testid='banner-success' title='Success' variant='success' />
-			<SidebarBanner data-testid='banner-warning' title='Warning' variant='warning' />
-			<SidebarBanner data-testid='banner-danger' title='Danger' variant='danger' />
-			<SidebarMedia id='media'>
-				<SidebarMediaTitle>Title</SidebarMediaTitle>
-			</SidebarMedia>
-			<SidebarFooter id='footer'>
-				<SidebarFooterContent>Footer</SidebarFooterContent>
-			</SidebarFooter>
-		</Sidebar>
+		<div style={{ height: 400 }}>
+			<Sidebar id='root'>
+				<SidebarSection id='section'>
+					<span>section</span>
+				</SidebarSection>
+				<SidebarBanner data-testid='banner-default' title='Default' />
+				<SidebarBanner data-testid='banner-info' title='Info' variant='info' />
+				<SidebarBanner data-testid='banner-success' title='Success' variant='success' />
+				<SidebarBanner data-testid='banner-warning' title='Warning' variant='warning' />
+				<SidebarBanner data-testid='banner-danger' title='Danger' variant='danger' />
+				<SidebarMedia id='media'>
+					<SidebarMediaTitle>Title</SidebarMediaTitle>
+				</SidebarMedia>
+				<SidebarFooter id='footer'>
+					<SidebarFooterContent>Footer</SidebarFooterContent>
+				</SidebarFooter>
+			</Sidebar>
+		</div>
 	),
 	play: async ({ canvasElement }) => {
 		// jsdom loads no stylesheet
