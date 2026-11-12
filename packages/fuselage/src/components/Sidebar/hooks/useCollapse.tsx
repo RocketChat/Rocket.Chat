@@ -3,6 +3,16 @@ import { useId, type KeyboardEventHandler, type MouseEvent } from 'react';
 
 const hasPropExpanded = (expanded: boolean | undefined) => expanded !== undefined;
 
+type CollapseBarProps = {
+	'aria-controls'?: string;
+	'aria-expanded': 'true' | 'false';
+	'aria-disabled'?: 'true';
+	'aria-labelledby'?: string;
+	'tabIndex'?: number;
+	'onClick'?: (event: MouseEvent<HTMLElement>) => void;
+	'onKeyDown'?: KeyboardEventHandler;
+};
+
 export const useCollapse = ({
 	expanded: propExpanded,
 	defaultExpanded,
@@ -62,7 +72,7 @@ export const useCollapse = ({
 		'aria-labelledby': titleId,
 	} as const;
 
-	const barProps = noncollapsible ? nonCollapsibleProps : collapsibleProps;
+	const barProps: CollapseBarProps = noncollapsible ? nonCollapsibleProps : collapsibleProps;
 
 	return { barProps, titleId, panelId, panelExpanded, expanded };
 };
