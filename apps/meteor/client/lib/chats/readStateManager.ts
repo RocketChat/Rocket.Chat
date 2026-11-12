@@ -38,6 +38,11 @@ export class ReadStateManager extends Emitter {
 			if (msg.u?._id === getUserId()) {
 				return;
 			}
+
+			if (document.hasFocus() && this.firstUnreadRecordId) {
+				return;
+			}
+
 			this.updateFirstUnreadRecordId();
 		});
 

@@ -52,6 +52,8 @@ const createManager = () => {
 	return manager;
 };
 
+const initialFindFirst = Messages.state.findFirst;
+
 let cleanups: (() => void)[] = [];
 
 const registerCleanup = (cleanup: () => void): (() => void) => {
@@ -88,6 +90,7 @@ afterEach(() => {
 	});
 	cleanups = [];
 	Messages.state.replaceAll([]);
+	Messages.use.setState({ findFirst: initialFindFirst });
 	jest.restoreAllMocks();
 });
 
@@ -165,6 +168,7 @@ describe('ReadStateManager.subscribeToMessages', () => {
 
 	it('updates firstUnreadRecordId when a real-time message arrives after subscription unread arrived first (race condition)', () => {
 		let roomMessageCallback: ((msg: IMessage) => void) | undefined;
+
 		(RoomHistoryManager.subscribeToRoomMessages as jest.Mock).mockImplementation((rid: string, cb: (msg: IMessage) => void) => {
 			if (rid === 'room-id') {
 				roomMessageCallback = cb;
@@ -172,13 +176,11 @@ describe('ReadStateManager.subscribeToMessages', () => {
 			return jest.fn();
 		});
 
-		// 1. Ensure the store is initially empty for the target room
 		Messages.state.replaceAll([]);
 
 		const manager = new ReadStateManager('room-id');
 		const unsubscribe = registerCleanup(manager.subscribeToMessages());
 
-		// 2. Subscription arrives first indicating unread messages, but message is not in Messages.state yet
 		manager.updateSubscription({
 			rid: 'room-id',
 			unread: 1,
@@ -188,7 +190,6 @@ describe('ReadStateManager.subscribeToMessages', () => {
 
 		expect(manager.getFirstUnreadRecordId()).toBeUndefined();
 
-		// 3. A realistic valid IMessage fixture is inserted using the actual Messages.state.store() API
 		const realtimeMessage: IMessage = {
 			_id: 'realtime-msg-id',
 			rid: 'room-id',
@@ -200,13 +201,12 @@ describe('ReadStateManager.subscribeToMessages', () => {
 			},
 			_updatedAt: new Date('2026-01-02T00:00:00.000Z'),
 		};
+
 		Messages.state.store(realtimeMessage);
 
-		// 4. Room-specific callback is invoked
 		expect(roomMessageCallback).toBeDefined();
 		roomMessageCallback?.(realtimeMessage);
 
-		// 5. ReadStateManager recalculates and locates the real stored message via findFirst
 		expect(manager.getFirstUnreadRecordId()).toBe('realtime-msg-id');
 
 		unsubscribe();
@@ -214,35 +214,111 @@ describe('ReadStateManager.subscribeToMessages', () => {
 
 	it('ignores own messages in real-time message callback without recalculating', () => {
 		let roomMessageCallback: ((msg: IMessage) => void) | undefined;
+
 		(RoomHistoryManager.subscribeToRoomMessages as jest.Mock).mockImplementation((_rid: string, cb: (msg: IMessage) => void) => {
 			roomMessageCallback = cb;
 			return jest.fn();
 		});
 
 		const findFirstSpy = jest.spyOn(Messages.state, 'findFirst');
-		const restoreSpy = registerCleanup(() => findFirstSpy.mockRestore());
-		findFirstSpy.mockClear();
+		const restoreSpy = registerCleanup(() => {
+			findFirstSpy.mockRestore();
+			Messages.use.setState({ findFirst: initialFindFirst });
+		});
 
 		const manager = new ReadStateManager('room-id');
+
+		manager.updateSubscription({
+			rid: 'room-id',
+			unread: 1,
+			alert: true,
+			ls: new Date('2026-01-01T00:00:00.000Z'),
+		} as ISubscription);
+
+		findFirstSpy.mockClear();
+
 		const unsubscribe = registerCleanup(manager.subscribeToMessages());
 
-		// Own message arrives
+		expect(roomMessageCallback).toBeDefined();
 		roomMessageCallback?.({
 			_id: 'own-msg-id',
 			rid: 'room-id',
 			ts: new Date('2026-01-02T00:00:00.000Z'),
 			msg: 'Own message',
-			u: { _id: 'user-id', username: 'user' }, // matches getUserId() mock
+			u: { _id: 'user-id', username: 'user' },
 			_updatedAt: new Date('2026-01-02T00:00:00.000Z'),
 		});
 
 		expect(findFirstSpy).not.toHaveBeenCalled();
+
 		unsubscribe();
 		restoreSpy();
 	});
 
-	it('recalculates firstUnreadRecordId when loaded-messages emits (historical pagination)', () => {
+	it('preserves the existing first unread marker when a real-time message arrives while the window is focused', () => {
+		let roomMessageCallback: ((msg: IMessage) => void) | undefined;
+
+		(RoomHistoryManager.subscribeToRoomMessages as jest.Mock).mockImplementation((_rid: string, cb: (msg: IMessage) => void) => {
+			roomMessageCallback = cb;
+			return jest.fn();
+		});
+
+		const firstUnreadMessage: IMessage = {
+			_id: 'first-unread',
+			rid: 'room-id',
+			ts: new Date('2026-01-02T00:00:00.000Z'),
+			msg: 'First unread message',
+			u: { _id: 'other-user', username: 'other.user' },
+			_updatedAt: new Date('2026-01-02T00:00:00.000Z'),
+		};
+
+		Messages.state.replaceAll([firstUnreadMessage]);
+
+		const manager = new ReadStateManager('room-id');
+
+		manager.updateSubscription({
+			rid: 'room-id',
+			unread: 1,
+			alert: true,
+			ls: new Date('2026-01-01T00:00:00.000Z'),
+		} as ISubscription);
+
+		expect(manager.getFirstUnreadRecordId()).toBe('first-unread');
+
+		const findFirstSpy = jest.spyOn(Messages.state, 'findFirst');
+		const restoreSpy = registerCleanup(() => {
+			findFirstSpy.mockRestore();
+			Messages.use.setState({ findFirst: initialFindFirst });
+		});
+		findFirstSpy.mockClear();
+
+		const unsubscribe = registerCleanup(manager.subscribeToMessages());
+
+		const realtimeMessage: IMessage = {
+			_id: 'realtime-msg-id',
+			rid: 'room-id',
+			ts: new Date('2026-01-03T00:00:00.000Z'),
+			msg: 'Another incoming message',
+			u: { _id: 'other-user', username: 'other.user' },
+			_updatedAt: new Date('2026-01-03T00:00:00.000Z'),
+		};
+
+		Messages.state.store(realtimeMessage);
+		findFirstSpy.mockClear();
+
+		expect(roomMessageCallback).toBeDefined();
+		roomMessageCallback?.(realtimeMessage);
+
+		expect(manager.getFirstUnreadRecordId()).toBe('first-unread');
+		expect(findFirstSpy).not.toHaveBeenCalled();
+
+		unsubscribe();
+		restoreSpy();
+	});
+
+	it('updates the first unread marker after historical messages are loaded', () => {
 		let loadedMessagesCallback: (() => void) | undefined;
+
 		(RoomHistoryManager.on as jest.Mock).mockImplementation((event: string, cb: () => void) => {
 			if (event === 'loaded-messages') {
 				loadedMessagesCallback = cb;
@@ -264,7 +340,6 @@ describe('ReadStateManager.subscribeToMessages', () => {
 
 		expect(manager.getFirstUnreadRecordId()).toBeUndefined();
 
-		// Historical pagination completes and stores message in Messages.state
 		const historyMessage: IMessage = {
 			_id: 'history-msg-id',
 			rid: 'room-id',
@@ -273,6 +348,7 @@ describe('ReadStateManager.subscribeToMessages', () => {
 			u: { _id: 'other-user', username: 'other.user' },
 			_updatedAt: new Date('2026-01-02T00:00:00.000Z'),
 		};
+
 		Messages.state.store(historyMessage);
 		loadedMessagesCallback?.();
 
@@ -281,7 +357,7 @@ describe('ReadStateManager.subscribeToMessages', () => {
 		unsubscribe();
 	});
 
-	it('does not emit unread-state-change when the firstUnreadRecordId has not changed', () => {
+	it('does not emit unread-state-change when the first unread record ID remains stable', () => {
 		(document.hasFocus as jest.Mock).mockReturnValue(false);
 
 		const stableMessage: IMessage = {
@@ -292,13 +368,13 @@ describe('ReadStateManager.subscribeToMessages', () => {
 			u: { _id: 'other-user', username: 'other.user' },
 			_updatedAt: new Date('2026-01-02T00:00:00.000Z'),
 		};
+
 		Messages.state.replaceAll([stableMessage]);
 
 		const manager = new ReadStateManager('room-id');
 		const listener = jest.fn();
 		const unsubListener = registerCleanup(manager.onUnreadStateChange(listener));
 
-		// First update sets firstUnreadRecordId to 'stable-id' -> emits once
 		manager.updateSubscription({
 			rid: 'room-id',
 			unread: 1,
@@ -309,9 +385,9 @@ describe('ReadStateManager.subscribeToMessages', () => {
 		expect(manager.getFirstUnreadRecordId()).toBe('stable-id');
 		expect(listener).toHaveBeenCalledTimes(1);
 		expect(listener).toHaveBeenCalledWith('stable-id');
+
 		listener.mockClear();
 
-		// Second update results in the same 'stable-id' -> should not emit again
 		manager.updateSubscription({
 			rid: 'room-id',
 			unread: 2,
