@@ -22,6 +22,17 @@ const REACT_EVENTS: Record<string, string> = { focus: 'focusIn', blur: 'focusOut
 
 const callCount = (handler: Spy) => (handler as any).mock.calls.length as number;
 
+// React reports a change only when the value or the checked state actually changed
+const change = (element: HTMLElement) => {
+	if (element instanceof HTMLInputElement && ['checkbox', 'radio'].includes(element.type)) {
+		fireEvent.click(element);
+	} else if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) {
+		fireEvent.change(element, { target: { value: `${element.value}x` } });
+	} else {
+		fireEvent.change(element);
+	}
+};
+
 /**
  * Asserts that what the story passed to a component reaches the DOM element of `part` (a selector inside `canvas`, or the
  * element): the attributes, the `className` after the component's own `rcx-*` classes, the ref and the handlers.
@@ -53,7 +64,7 @@ export const expectForwards = async (canvas: HTMLElement, part: string | HTMLEle
 
 	for (const [name, handler] of Object.entries(expected.handlers ?? {})) {
 		const domEvent = name.replace(/^on/, '').replace(/^./, (letter) => letter.toLowerCase());
-		const fire = fireEvent[(REACT_EVENTS[domEvent] ?? domEvent) as keyof typeof fireEvent];
+		const fire = domEvent === 'change' ? change : fireEvent[(REACT_EVENTS[domEvent] ?? domEvent) as keyof typeof fireEvent];
 		if (typeof fire !== 'function') throw new Error(`Cannot fire ${name}`);
 		const before = callCount(handler);
 		fire(element);

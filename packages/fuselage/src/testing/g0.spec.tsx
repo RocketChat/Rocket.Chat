@@ -42,6 +42,20 @@ describe('expectForwards', () => {
 		await expectForwards(container, 'button', { handlers: { onFocus, onBlur, onMouseEnter, onMouseLeave } });
 	});
 
+	it('changes the value or the checked state so React reports a change', async () => {
+		const [onText, onArea, onCheck] = [fn(), fn(), fn()];
+		const { container } = render(
+			<div>
+				<input aria-label='text' defaultValue='a' onChange={onText} />
+				<textarea aria-label='area' onChange={onArea} />
+				<input type='checkbox' aria-label='check' onChange={onCheck} />
+			</div>,
+		);
+		await expectForwards(container, 'input:not([type])', { handlers: { onChange: onText } });
+		await expectForwards(container, 'textarea', { handlers: { onChange: onArea } });
+		await expectForwards(container, '[type="checkbox"]', { handlers: { onChange: onCheck } });
+	});
+
 	it('fails when the class comes before an rcx class', async () => {
 		const { container } = setup('mine rcx-box');
 		await expect(expectForwards(container, 'button', { className: 'mine' })).rejects.toThrow();
