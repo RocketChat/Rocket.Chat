@@ -7,7 +7,7 @@
 // With `--watch`, entries follow the CommonJS build as `tsc --watch` adds modules.
 import { existsSync, mkdirSync, readFileSync, readdirSync, watch, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
-import { dirname, join, relative } from 'node:path';
+import { dirname, join, relative, sep } from 'node:path';
 
 const require = createRequire(import.meta.url);
 
@@ -38,14 +38,23 @@ const walk = (dir) =>
 // Names are listed one by one because bundlers that prebundle for ES modules (Vite's dev server) cannot see through
 // `export *` from a CommonJS module and would expose only `default`.
 const entry = (cjsPath, target) => {
-	delete require.cache[cjsPath];
 	// oxlint-disable-next-line import/no-dynamic-require -- every module of the build is read
 	const names = Object.keys(require(cjsPath)).filter((name) => name !== '__esModule' && name !== 'default');
 	const named = names.length ? `export { ${names.join(', ')} } from '${target}';\n` : '';
 	return `${named}export { default } from '${target}';\n`;
 };
 
+// Each pass reads the build as it is now, barrels included.
+const forgetBuild = () => {
+	for (const key of Object.keys(require.cache)) {
+		if (key.startsWith(`${cjsRoot}${sep}`)) {
+			delete require.cache[key];
+		}
+	}
+};
+
 const emit = () => {
+	forgetBuild();
 	const paths = walk(cjsRoot);
 
 	for (const path of paths) {
