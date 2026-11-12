@@ -1,0 +1,30 @@
+apps/meteor/tests/e2e/page-objects/omnichannel/omnichannel-departments.ts
+  s_3b2230ae45534a::t_64949a0fe9bffc 4,34
+  s_f15b4a6b3cffae::t_0b3f3ec2e5df04 76-78,82,84-85
+apps/meteor/tests/e2e/omnichannel/omnichannel-departaments.spec.ts
+  s_f15b4a6b3cffae::t_049fc32503934f 167
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "dd8b03fc439f61ecfc9a202cdd3bb741e72acd87",
+  "prompts": {},
+  "sessions": {
+    "s_3b2230ae45534a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a9faad3d-7fb7-4fc7-9886-6d2caeb426d4",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    },
+    "s_f15b4a6b3cffae": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3fc8d543-a858-49f1-bf51-ceccf6d6ad1a",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}

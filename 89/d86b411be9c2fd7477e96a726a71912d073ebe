@@ -1,0 +1,32 @@
+apps/meteor/tests/e2e/page-objects/omnichannel/omnichannel-departments.ts
+  s_3b2230ae45534a::t_64949a0fe9bffc 4,34
+  s_f15b4a6b3cffae::t_0b3f3ec2e5df04 69-72,75-76
+apps/meteor/tests/e2e/page-objects/fragments/table.ts
+  s_3b2230ae45534a::t_64949a0fe9bffc 21,29
+apps/meteor/tests/e2e/page-objects/omnichannel/omnichannel-sla-policies.ts
+  s_3b2230ae45534a::t_e812ba012f11c3 32-33,35-36
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "89d86b411be9c2fd7477e96a726a71912d073ebe",
+  "prompts": {},
+  "sessions": {
+    "s_3b2230ae45534a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a9faad3d-7fb7-4fc7-9886-6d2caeb426d4",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    },
+    "s_f15b4a6b3cffae": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3fc8d543-a858-49f1-bf51-ceccf6d6ad1a",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
