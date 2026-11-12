@@ -52,7 +52,9 @@ export const expectCompositeList = async (list: HTMLElement, firstTarget: HTMLEl
 	await user.keyboard('{ArrowDown}');
 	const second = document.activeElement as HTMLElement;
 	await expect(list).toContainElement(second);
-	await expect(rowOf(second, list, rowSelector)).not.toBe(row);
+	const secondRow = rowOf(second, list, rowSelector);
+	await expect(secondRow).not.toBeNull();
+	await expect(secondRow).not.toBe(row);
 
 	await user.keyboard('{ArrowUp}');
 	await expect(firstTarget).toHaveFocus();
