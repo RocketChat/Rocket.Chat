@@ -10,16 +10,22 @@ import {
 	webTextInputHandlerKeys,
 } from '../types/ElementAttributes';
 
-const pick =
-	<const TKeys extends readonly string[]>(keys: TKeys) =>
-	<TProps extends object>(props: TProps): Pick<TProps, Extract<TKeys[number], keyof TProps>> => {
-		const picked: Record<string, unknown> = {};
-		for (const key of keys) {
-			const value = (props as Record<string, unknown>)[key];
-			if (value !== undefined) picked[key] = value;
+const noAttributes = Object.freeze({});
+
+const pick = <const TKeys extends readonly string[]>(keys: TKeys) => {
+	const wanted = new Set<string>(keys);
+
+	return <TProps extends object>(props: TProps): Pick<TProps, Extract<TKeys[number], keyof TProps>> => {
+		let picked: Record<string, unknown> | undefined;
+		for (const key in props) {
+			if (wanted.has(key)) {
+				const value = (props as Record<string, unknown>)[key];
+				if (value !== undefined) (picked ??= {})[key] = value;
+			}
 		}
-		return picked as Pick<TProps, Extract<TKeys[number], keyof TProps>>;
+		return (picked ?? noAttributes) as Pick<TProps, Extract<TKeys[number], keyof TProps>>;
 	};
+};
 
 /** The `WebPressHandlers` a consumer passed, to spread on the literal render element. */
 export const pickWebPressHandlers = pick(webPressHandlerKeys);
