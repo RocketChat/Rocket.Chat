@@ -1865,9 +1865,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			roomIdsBySubscriptionCount.set(count, roomIds);
 		}
 
-		await Promise.all(
-			[...roomIdsBySubscriptionCount].map(([count, roomIds]) => Rooms.incUsersCountByIds(roomIds, -count)),
-		);
+		await Promise.all([...roomIdsBySubscriptionCount].map(([count, roomIds]) => Rooms.incUsersCountByIds(roomIds, -count)));
 
 		await Users.removeRoomByRoomIds(rids);
 
