@@ -48,13 +48,42 @@ const grepRows = () => {
 };
 
 const COMMENT_LINE = /^\s*(\/\/|\/\*|\*)/;
-const DOM_LOOKUP = /\b(?:querySelector(?:All)?|closest|matches|getElementsByClassName)\s*\(/;
+const DOM_LOOKUP = /\b(?:querySelector(?:All)?|closest|matches|getElementsByClassName)\s*(?:<[^>]+>)?\s*\(/;
+const DOM_LOOKUP_ARG = /\b(?:querySelector(?:All)?|closest|matches|getElementsByClassName)\s*(?:<[^>]+>)?\s*\(\s*(['"`])[\s\S]*?\1/g;
+
+const fileLinesCache = new Map();
+const isPrecededByDomLookup = (file, lineNum) => {
+	let lines = fileLinesCache.get(file);
+	if (!lines) {
+		try {
+			lines = readFileSync(resolve(root, file), 'utf8').split('\n');
+			fileLinesCache.set(file, lines);
+		} catch {
+			return false;
+		}
+	}
+	for (let i = lineNum - 2; i >= 0 && i >= lineNum - 5; i--) {
+		const prev = lines[i]?.trim();
+		if (!prev) continue;
+		return DOM_LOOKUP.test(prev) && prev.endsWith('(');
+	}
+	return false;
+};
 
 const hits = [];
 for (const row of grepRows().split('\n').filter(Boolean)) {
 	const [, file, line, text] = /^([^:]+):(\d+):(.*)$/.exec(row);
-	if (NOT_OVERRIDES.test(file) || COMMENT_LINE.test(text) || (/\.tsx?$/.test(file) && DOM_LOOKUP.test(text))) continue;
-	for (const target of classes.filter((c) => new RegExp(`\\.${c}(--|__|[^A-Za-z0-9_-]|$)`).test(text))) {
+	if (NOT_OVERRIDES.test(file) || COMMENT_LINE.test(text)) continue;
+
+	let scannable = text;
+	if (/\.tsx?$/.test(file)) {
+		scannable = scannable.replaceAll(DOM_LOOKUP_ARG, '');
+		if (isPrecededByDomLookup(file, Number(line))) {
+			scannable = scannable.replace(/^\s*(['"`])[\s\S]*?\1/, '');
+		}
+	}
+
+	for (const target of classes.filter((c) => new RegExp(`\\.${c}(--|__|[^A-Za-z0-9_-]|$)`).test(scannable))) {
 		const own = folderOf.get(target);
 		if (own && file.startsWith(`packages/fuselage/src/components/${own}/`)) continue;
 		hits.push({ target, file, line: Number(line), selector: text.trim().slice(0, 140), unprefixed: !text.includes('[class]') });

@@ -130,7 +130,10 @@ const dtsCheck = () => {
 	const diffMatch = res.output.match(/(\d+)\s+exports differ/);
 	if (diffMatch) {
 		const count = Number(diffMatch[1]);
-		return { ok: true, detail: `${count} exports differ (review in G6)` };
+		return {
+			skipped: 'awaiting review',
+			detail: `${count} exports differ (review in G4/G6; run: node scripts/verify/dts-diff.mjs ${opts.dts} HEAD)`,
+		};
 	}
 	return res;
 };
