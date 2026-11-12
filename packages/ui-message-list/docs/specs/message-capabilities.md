@@ -12,6 +12,7 @@ code:
     src/Message/index.ts,
     apps/meteor/client/providers/MessagesProvider,
     apps/meteor/client/views/room/MessageList/providers/MessageListProvider.tsx,
+    apps/meteor/client/components/message/variants,
   ]
 tests:
   [
@@ -35,6 +36,7 @@ tests:
     apps/meteor/client/views/audit/components/AuditMessageList.display.spec.tsx,
     apps/meteor/client/views/room/modals/PinMessageModal/PinMessageModal.display.spec.tsx,
     apps/meteor/client/views/room/contextualBar/Threads/ThreadList.display.spec.tsx,
+    apps/meteor/client/components/message/variants/RoomMessage.contexts.spec.tsx,
   ]
 ---
 

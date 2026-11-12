@@ -3,12 +3,12 @@ import { css } from '@rocket.chat/css-in-js';
 import { TextAreaInput, FieldGroup, Field, FieldRow, FieldError, FieldLabel, FieldDescription, Box } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
+import { MessageContentBody } from '@rocket.chat/ui-message-list';
 import { useId } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import MarkdownText from '../../../../components/MarkdownText';
-import MessageContentBody from '../../../../components/message/MessageContentBody';
 import { getMarkdownParserLimit } from '../../../../lib/getMarkdownParserLimit';
 import { toPlainTextRoot } from '../../../../lib/toPlainTextRoot';
 import { MessagesProvider } from '../../../../providers/MessagesProvider';

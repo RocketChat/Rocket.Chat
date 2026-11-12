@@ -3,20 +3,22 @@ import { isE2EEMessage, isQuoteAttachment } from '@rocket.chat/core-typings';
 import { MessageBody } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useUserId, useUserPresence } from '@rocket.chat/ui-contexts';
+import {
+	MessageActionLinks,
+	MessageBroadcastMetrics,
+	MessageContentBody,
+	MessageLocation,
+	MessageReactionList,
+	MessageUrlPreviews,
+	useMessageContent,
+} from '@rocket.chat/ui-message-list';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import UiKitMessageBlock from '../../../../providers/MessagesProvider/renderers/UiKitMessageBlock';
-import MessageContentBody from '../../MessageContentBody';
 import ReadReceiptIndicator from '../../ReadReceiptIndicator';
 import Attachments from '../../content/Attachments';
-import BroadcastMetrics from '../../content/BroadcastMetrics';
-import Location from '../../content/Location';
-import MessageActions from '../../content/MessageActions';
-import Reactions from '../../content/Reactions';
-import UrlPreviews from '../../content/UrlPreviews';
 import { useMessageBroadcast } from '../../hooks/useMessageBroadcast';
-import { useNormalizedMessage } from '../../hooks/useNormalizedMessage';
 import { useOembedLayout } from '../../hooks/useOembedLayout';
 import { useMessageListReadReceipts } from '../../list/MessageListContext';
 
@@ -34,7 +36,7 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps) => {
 
 	const { t } = useTranslation();
 
-	const normalizedMessage = useNormalizedMessage(message);
+	const normalizedMessage = useMessageContent().useNormalizedMessage(message);
 
 	const isMessageEncrypted = encrypted && normalizedMessage?.e2e === 'pending';
 
@@ -82,10 +84,10 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps) => {
 				/>
 			)}
 
-			{oembedEnabled && !!normalizedMessage.urls?.length && <UrlPreviews urls={normalizedMessage.urls} />}
+			{oembedEnabled && !!normalizedMessage.urls?.length && <MessageUrlPreviews urls={normalizedMessage.urls} />}
 
 			{normalizedMessage.actionLinks?.length && (
-				<MessageActions
+				<MessageActionLinks
 					message={normalizedMessage}
 					actions={normalizedMessage.actionLinks.map(({ method_id: methodId, i18nLabel, ...action }) => ({
 						methodId,
@@ -95,12 +97,14 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps) => {
 				/>
 			)}
 
-			{normalizedMessage.reactions && Object.keys(normalizedMessage.reactions).length && <Reactions message={normalizedMessage} />}
+			{normalizedMessage.reactions && Object.keys(normalizedMessage.reactions).length && (
+				<MessageReactionList message={normalizedMessage} />
+			)}
 
-			{normalizedMessage.location && <Location location={normalizedMessage.location} />}
+			{normalizedMessage.location && <MessageLocation location={normalizedMessage.location} />}
 
 			{broadcast && !!messageUser.username && normalizedMessage.u._id !== uid && (
-				<BroadcastMetrics username={messageUser.username} message={normalizedMessage} />
+				<MessageBroadcastMetrics username={messageUser.username} message={normalizedMessage} />
 			)}
 
 			{readReceiptEnabled && <ReadReceiptIndicator mid={normalizedMessage._id} unread={normalizedMessage.unread} />}

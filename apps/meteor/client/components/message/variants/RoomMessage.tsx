@@ -3,6 +3,7 @@ import { Message, MessageLeftContainer, MessageContainer, CheckBox } from '@rock
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
 import { useUserId, useUserCard } from '@rocket.chat/ui-contexts';
+import { IgnoredContent, MessageContentFallback } from '@rocket.chat/ui-message-list';
 import type { ComponentProps, KeyboardEvent } from 'react';
 import { memo } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
@@ -17,8 +18,6 @@ import {
 	useCountSelected,
 } from '../../../views/room/providers/SelectedMessagesContext';
 import Emoji from '../../Emoji';
-import IgnoredContent from '../IgnoredContent';
-import MessageContentFallback from '../MessageContentFallback';
 import MessageHeader from '../MessageHeader';
 import MessageToolbarHolder from '../MessageToolbarHolder';
 import StatusIndicators from '../StatusIndicators';
