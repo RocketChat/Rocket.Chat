@@ -1842,8 +1842,32 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.findOneAndDelete(query);
 	}
 
+	/**
+	 * Removes room subscriptions while updating each affected room's user count and user room index.
+	 */
 	async removeByRoomIds(rids: string[], options?: { onTrash: (doc: ISubscription) => void }): Promise<DeleteResult> {
-		const result = await this.deleteMany({ rid: { $in: rids } }, options);
+		const subscriptionCountByRoomId = new Map<string, number>();
+		const result = await this.deleteMany(
+			{ rid: { $in: rids } },
+			{
+				...options,
+				onTrash(doc) {
+					subscriptionCountByRoomId.set(doc.rid, (subscriptionCountByRoomId.get(doc.rid) ?? 0) + 1);
+					void options?.onTrash(doc);
+				},
+			},
+		);
+
+		const roomIdsBySubscriptionCount = new Map<number, string[]>();
+		for (const [roomId, count] of subscriptionCountByRoomId) {
+			const roomIds = roomIdsBySubscriptionCount.get(count) ?? [];
+			roomIds.push(roomId);
+			roomIdsBySubscriptionCount.set(count, roomIds);
+		}
+
+		await Promise.all(
+			[...roomIdsBySubscriptionCount].map(([count, roomIds]) => Rooms.incUsersCountByIds(roomIds, -count)),
+		);
 
 		await Users.removeRoomByRoomIds(rids);
 
