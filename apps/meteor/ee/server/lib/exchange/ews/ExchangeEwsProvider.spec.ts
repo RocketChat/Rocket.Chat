@@ -463,6 +463,20 @@ describe('ExchangeEwsProvider', () => {
 			]);
 		});
 
+		it('loads a page of more than 100 changes 100 at a time, keeping every contact', async () => {
+			const ids = Array.from({ length: 250 }, (_, i) => `c${i}`);
+			const chunks = [ids.slice(0, 100), ids.slice(100, 200), ids.slice(200)];
+
+			const { page, transport } = await listContactsAnswering([
+				changes(created(...ids)),
+				...chunks.map((chunk) => contactItems(...chunk.map((id) => contact(id)))),
+			]);
+
+			const requested = transport.sent.slice(1).map((body) => [...body.matchAll(/<t:ItemId Id="([^"]+)"/g)].map(([, id]) => id));
+			expect(requested).toEqual(chunks);
+			expect(page.items.map(({ externalId }) => externalId)).toEqual(ids);
+		});
+
 		it('avoids the second call when nothing changed', async () => {
 			const { page, transport } = await listContactsAnswering([changes('')]);
 

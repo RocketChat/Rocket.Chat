@@ -288,6 +288,14 @@ describe('MicrosoftGraphProvider', () => {
 			expect(graphCall()[0]).toContain('/users/user%40contoso.com/contacts/delta');
 		});
 
+		it('reads the delta in pages of 100', async () => {
+			mockTokenThen(graphResponse({ value: [] }));
+
+			await provider().listContacts(MAILBOX, DEFAULT_CONTACTS_FOLDER_ID);
+
+			expect(graphCall()[1].headers.Prefer).toBe('odata.maxpagesize=100');
+		});
+
 		it('scopes any other folder to its own id', async () => {
 			mockTokenThen(graphResponse({ value: [] }));
 

@@ -140,7 +140,12 @@ export const findContactFoldersRequest = (mailbox: string, offset = 0, maxEntrie
 		mailbox,
 	);
 
-export const syncContactFolderItemsRequest = (mailbox: string, folderId: string, syncState?: string, maxChanges = 100): string =>
+export const syncContactFolderItemsRequest = (
+	mailbox: string,
+	folderId: string,
+	syncState?: string,
+	maxChanges = MAX_CHANGES_RETURNED,
+): string =>
 	envelope(
 		[
 			'<m:SyncFolderItems>',

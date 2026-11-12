@@ -326,11 +326,19 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 
 	/** The delta only carries ids, so the fields come from a second call. */
 	private async loadContacts(mailbox: string, folderId: string, itemIds: string[]): Promise<ExchangeContact[]> {
-		const doc = await this.request(getContactItemsRequest(mailbox, itemIds));
+		const contacts: ExchangeContactUpsert[] = [];
 
-		return allByTag(doc, TYPES_NS, 'Contact')
-			.map((node) => this.toExchangeContact(node, folderId))
-			.filter((contact): contact is ExchangeContactUpsert => contact !== undefined);
+		for (let i = 0; i < itemIds.length; i += GET_ITEM_BATCH_SIZE) {
+			const doc = await this.request(getContactItemsRequest(mailbox, itemIds.slice(i, i + GET_ITEM_BATCH_SIZE)));
+
+			contacts.push(
+				...allByTag(doc, TYPES_NS, 'Contact')
+					.map((node) => this.toExchangeContact(node, folderId))
+					.filter((contact): contact is ExchangeContactUpsert => contact !== undefined),
+			);
+		}
+
+		return contacts;
 	}
 
 	private toExchangeContact(node: Element, folderId: string): ExchangeContactUpsert | undefined {
