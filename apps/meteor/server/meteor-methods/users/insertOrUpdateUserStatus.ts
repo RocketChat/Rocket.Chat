@@ -9,7 +9,7 @@ import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 type InsertOrUpdateUserStatus = {
 	_id?: string;
 	name: string;
-	statusType: string;
+	statusType?: string;
 	status?: string;
 	emoji?: string;
 	message?: string;
@@ -53,8 +53,7 @@ export const insertOrUpdateUserStatus = async (userId: string, userStatusData: I
 	}
 
 	const validStatusTypes = ['online', 'away', 'busy', 'offline'];
-	const isStatusTypeChanged = !userStatusData._id || userStatusData.statusType !== userStatusData.previousStatusType;
-	if (isStatusTypeChanged && userStatusData.statusType && validStatusTypes.indexOf(userStatusData.statusType) < 0) {
+	if (userStatusData.statusType && validStatusTypes.indexOf(userStatusData.statusType) < 0) {
 		throw new ClientSafeError('error-input-is-not-a-valid-field', `${userStatusData.statusType} is not a valid status type`, {
 			method: 'insertOrUpdateUserStatus',
 			input: userStatusData.statusType,
@@ -66,7 +65,7 @@ export const insertOrUpdateUserStatus = async (userId: string, userStatusData: I
 		// insert user status
 		const createUserStatus: InsertionModel<ICustomUserStatus> = {
 			name: userStatusData.name,
-			statusType: userStatusData.statusType,
+			statusType: userStatusData.statusType || '',
 		};
 
 		const _id = (await CustomUserStatus.create(createUserStatus)).insertedId;
@@ -81,12 +80,14 @@ export const insertOrUpdateUserStatus = async (userId: string, userStatusData: I
 		await CustomUserStatus.setName(userStatusData._id, userStatusData.name);
 	}
 
-	if (userStatusData.statusType !== userStatusData.previousStatusType) {
+	if (userStatusData.statusType !== undefined) {
 		await CustomUserStatus.setStatusType(userStatusData._id, userStatusData.statusType);
 	}
 
-	const { previousName: _prevName, previousStatusType: _prevStatusType, ...broadcastData } = userStatusData;
-	void api.broadcast('user.updateCustomStatus', { ...broadcastData, _id: userStatusData._id });
+	const updatedStatus = await CustomUserStatus.findOneById(userStatusData._id);
+	if (updatedStatus) {
+		void api.broadcast('user.updateCustomStatus', updatedStatus);
+	}
 
 	return true;
 };
