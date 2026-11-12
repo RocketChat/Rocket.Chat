@@ -116,9 +116,10 @@ let mockGroups = groups;
 
 jest.mock('../hooks/useRoomList', () => ({
 	...jest.requireActual('../hooks/useRoomList'),
-	useRoomList: () => ({
+	useRoomList: ({ filterText = '' }: { filterText?: string }) => ({
 		groups: mockGroups,
 		groupKeys: mockGroups.map((group) => group.key),
+		filtering: Boolean(filterText.trim()),
 		groupsCount: mockGroups.map((group) => group.rooms.length),
 		totalCount: mockGroups.reduce((acc, group) => acc + group.rooms.length, 0),
 	}),

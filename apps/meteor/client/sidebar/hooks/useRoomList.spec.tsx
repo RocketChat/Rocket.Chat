@@ -460,6 +460,7 @@ it('should list only the rooms whose name matches the filter, expanding collapse
 	const { result } = renderHook(() => useRoomList({ collapsedGroups: ['Channels'], filterText: ' SUP ' }), { wrapper });
 
 	await waitFor(() => expect(result.current.groupKeys).toContain('Discussions'));
+	expect(result.current.filtering).toBe(true);
 	expect(groupsListOf(result.current.groups)).toEqual(['Channels', 'Direct_Messages']);
 	expect(result.current.groups.map((group) => group.collapsed)).toEqual([false, false]);
 	expect(roomListOf(result.current.groups)).toEqual([supportChannel, supportDirect, supportByUsername]);
