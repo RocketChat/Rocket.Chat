@@ -1,16 +1,23 @@
-import { describe, it } from 'node:test';
+import { before, describe, it, mock } from 'node:test';
 
 import { expect, spy } from 'chai';
 
 import type { AppServerOrchestrator } from './orchestrator';
-import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
-const { _disableAppsWithAddonsCallback } = loadWithMocks('./disableAppsWithAddonsCallback', {
-	'./orchestrator': {},
-	'../../../../server/lib/sendMessagesToAdmins': { sendMessagesToAdmins: () => undefined },
-	'../../../../server/lib/i18n': {
-		i18n: { t: () => undefined },
-	},
+let _disableAppsWithAddonsCallback: typeof import('./disableAppsWithAddonsCallback')._disableAppsWithAddonsCallback;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('./orchestrator', { exports: {} }),
+		mock.module('../../../../server/lib/sendMessagesToAdmins', { exports: { sendMessagesToAdmins: () => undefined } }),
+		mock.module('../../../../server/lib/i18n', {
+			exports: {
+				i18n: { t: () => undefined },
+			},
+		}),
+	];
+	({ _disableAppsWithAddonsCallback } = await import('./disableAppsWithAddonsCallback'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 /**

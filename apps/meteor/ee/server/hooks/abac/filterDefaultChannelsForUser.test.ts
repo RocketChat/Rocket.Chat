@@ -1,10 +1,8 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const settingsMock = { get: sinon.stub() };
 const licenseMock = { hasModule: sinon.stub() };
@@ -22,18 +20,26 @@ type Patched = (
 
 let filterDefaultChannels: Patched;
 
-loadWithMocks('./filterDefaultChannelsForUser.ts', {
-	'@rocket.chat/core-services': { Abac: abacMock },
-	'@rocket.chat/license': { License: licenseMock },
-	'../../../../server/lib/authorization/getRoomAbacLockContext': { getRoomAbacLockContext: getRoomAbacLockContextMock },
-	'../../../../server/lib/rooms/filterDefaultChannelsForUser': {
-		filterDefaultChannelsForUser: {
-			patch: (fn: Patched) => {
-				filterDefaultChannels = fn;
+before(async () => {
+	const moduleMocks = [
+		mock.module('@rocket.chat/core-services', { exports: { Abac: abacMock } }),
+		mock.module('@rocket.chat/license', { exports: { License: licenseMock } }),
+		mock.module('../../../../server/lib/authorization/getRoomAbacLockContext', {
+			exports: { getRoomAbacLockContext: getRoomAbacLockContextMock },
+		}),
+		mock.module('../../../../server/lib/rooms/filterDefaultChannelsForUser', {
+			exports: {
+				filterDefaultChannelsForUser: {
+					patch: (fn: Patched) => {
+						filterDefaultChannels = fn;
+					},
+				},
 			},
-		},
-	},
-	'../../../../server/settings': { settings: settingsMock },
+		}),
+		mock.module('../../../../server/settings', { exports: { settings: settingsMock } }),
+	];
+	await import('./filterDefaultChannelsForUser');
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const publicRoom = { _id: 'c1', t: 'c' } as IRoom;

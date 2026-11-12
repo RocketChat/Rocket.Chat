@@ -1,4 +1,4 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
@@ -6,7 +6,6 @@ import moment from 'moment';
 import Sinon from 'sinon';
 
 import { createFakeMessage, createFakeUser } from '../../../tests/mocks/data';
-import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const models = {
 	LivechatContacts: { isContactActiveOnPeriod: Sinon.stub(), markContactActiveForPeriod: Sinon.stub() },
@@ -24,11 +23,17 @@ const settingsGetMock = {
 
 const isMessageFromBotMock = { isMessageFromBot: Sinon.stub() };
 
-const { markRoomResponded } = loadWithMocks('./markRoomResponded.ts', {
-	'../../lib/callbacks': { callbacks: { add: Sinon.stub(), priority: { HIGH: 'high' } } },
-	'../../lib/notifyListener': { notifyOnLivechatInquiryChanged: Sinon.stub() },
-	'../../settings': { settings: settingsGetMock },
-	'../../lib/omnichannel/isMessageFromBot': isMessageFromBotMock,
+let markRoomResponded: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('../../lib/callbacks', { exports: { callbacks: { add: Sinon.stub(), priority: { HIGH: 'high' } } } }),
+		mock.module('../../lib/notifyListener', { exports: { notifyOnLivechatInquiryChanged: Sinon.stub() } }),
+		mock.module('../../settings', { exports: { settings: settingsGetMock } }),
+		mock.module('../../lib/omnichannel/isMessageFromBot', { exports: { default: isMessageFromBotMock } }),
+	];
+	({ markRoomResponded } = await import('./markRoomResponded'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('markRoomResponded', () => {

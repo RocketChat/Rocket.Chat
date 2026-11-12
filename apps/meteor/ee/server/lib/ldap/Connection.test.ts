@@ -1,23 +1,29 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
 import sinon from 'sinon';
 
-import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
-
 const loggerStub = { debug: sinon.stub(), error: sinon.stub(), info: sinon.stub(), warn: sinon.stub() };
 
-const { LDAPConnection } = loadWithMocks('./Connection', {
-	'../../../../server/settings': { settings: { get: sinon.stub() } },
-	'./getLDAPConditionalSetting': { getLDAPConditionalSetting: sinon.stub().returns('') },
-	'./Logger': {
-		logger: loggerStub,
-		connLogger: loggerStub,
-		bindLogger: loggerStub,
-		searchLogger: loggerStub,
-		authLogger: loggerStub,
-		mapLogger: loggerStub,
-	},
+let LDAPConnection: typeof import('./Connection').LDAPConnection;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('../../../../server/settings', { exports: { settings: { get: sinon.stub() } } }),
+		mock.module('./getLDAPConditionalSetting', { exports: { getLDAPConditionalSetting: sinon.stub().returns('') } }),
+		mock.module('./Logger', {
+			exports: {
+				logger: loggerStub,
+				connLogger: loggerStub,
+				bindLogger: loggerStub,
+				searchLogger: loggerStub,
+				authLogger: loggerStub,
+				mapLogger: loggerStub,
+			},
+		}),
+	];
+	({ LDAPConnection } = await import('./Connection'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('LDAPConnection', () => {

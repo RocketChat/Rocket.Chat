@@ -1,10 +1,8 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const sandbox = sinon.createSandbox();
 
@@ -14,13 +12,21 @@ const pushTokenModelStub = {
 };
 const registerPushTokenStub = sandbox.stub();
 
-const { PushService } = loadWithMocks('./service', {
-	'./tokenManagement/registerPushToken': { registerPushToken: registerPushTokenStub },
-	'@rocket.chat/core-services': {
-		ServiceClassInternal: class {
-			onEvent = (): void => undefined;
-		},
-	},
+let PushService: typeof import('./service').PushService;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('./tokenManagement/registerPushToken', { exports: { registerPushToken: registerPushTokenStub } }),
+		mock.module('@rocket.chat/core-services', {
+			exports: {
+				ServiceClassInternal: class {
+					onEvent = (): void => undefined;
+				},
+			},
+		}),
+	];
+	({ PushService } = await import('./service'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('PushService.registerPushToken()', () => {

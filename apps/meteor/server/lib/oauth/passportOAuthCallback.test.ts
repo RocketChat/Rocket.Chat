@@ -1,10 +1,8 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const sandbox = sinon.createSandbox();
 
@@ -13,9 +11,15 @@ const issueLoginToken = sandbox.stub();
 const doesUserRequire2FA = sandbox.stub();
 const sendTwoFactorChallenge = sandbox.stub();
 
-const { passportOAuthCallback } = loadWithMocks('./passportOAuthCallback.ts', {
-	'../auth/issueLoginToken': { issueLoginToken },
-	'./twoFactorAuth': { doesUserRequire2FA },
+let passportOAuthCallback: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('../auth/issueLoginToken', { exports: { issueLoginToken } }),
+		mock.module('./twoFactorAuth', { exports: { doesUserRequire2FA } }),
+	];
+	({ passportOAuthCallback } = await import('./passportOAuthCallback'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const siteUrl = 'https://chat.example.com';

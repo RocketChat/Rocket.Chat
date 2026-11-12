@@ -1,11 +1,9 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const models = {
 	LivechatVisitors: { findOneGuestByEmailAddress: sinon.stub(), removeDepartmentById: sinon.stub() },
@@ -19,17 +17,25 @@ const sendMessage = sinon.stub();
 const notifyOnMessageChange = sinon.stub();
 const fileStore = { insert: sinon.stub() };
 
-const { onEmailReceived } = loadWithMocks('./EmailInbox_Incoming', {
-	'@rocket.chat/omni-core': { registerGuest },
-	'./logger': { logger: { info: sinon.stub(), debug: sinon.stub(), error: sinon.stub() } },
-	'../../lib/media/file-upload': {
-		FileUpload: { getStore: () => fileStore, getPath: (path: string) => `/file-upload/${path}` },
-	},
-	'../../lib/notifyListener': { notifyOnMessageChange },
-	'../../lib/omnichannel/QueueManager': { QueueManager: { unarchiveRoom } },
-	'../../lib/omnichannel/departmentsLib': { setDepartmentForGuest },
-	'../../lib/omnichannel/messages': { sendMessage },
-	'../../settings': { settings: { get: sinon.stub() } },
+let onEmailReceived: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('@rocket.chat/omni-core', { exports: { registerGuest } }),
+		mock.module('./logger', { exports: { logger: { info: sinon.stub(), debug: sinon.stub(), error: sinon.stub() } } }),
+		mock.module('../../lib/media/file-upload', {
+			exports: {
+				FileUpload: { getStore: () => fileStore, getPath: (path: string) => `/file-upload/${path}` },
+			},
+		}),
+		mock.module('../../lib/notifyListener', { exports: { notifyOnMessageChange } }),
+		mock.module('../../lib/omnichannel/QueueManager', { exports: { QueueManager: { unarchiveRoom } } }),
+		mock.module('../../lib/omnichannel/departmentsLib', { exports: { setDepartmentForGuest } }),
+		mock.module('../../lib/omnichannel/messages', { exports: { sendMessage } }),
+		mock.module('../../settings', { exports: { settings: { get: sinon.stub() } } }),
+	];
+	({ onEmailReceived } = await import('./EmailInbox_Incoming'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const guest = { _id: 'visitor1', token: 'visitor-token', department: 'sales' };

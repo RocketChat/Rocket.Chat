@@ -1,10 +1,8 @@
-import { afterEach, before, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const modelsMock = {
 	LivechatContacts: {
@@ -16,10 +14,18 @@ const settingsMock = {
 	get: sinon.stub(),
 };
 
-const { runIsAgentAvailableToTakeContactInquiry } = loadWithMocks('./isAgentAvailableToTakeContactInquiry', {
-	'../../../server/settings': {
-		settings: settingsMock,
-	},
+let runIsAgentAvailableToTakeContactInquiry: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('../../../server/settings', {
+			exports: {
+				settings: settingsMock,
+			},
+		}),
+	];
+	({ runIsAgentAvailableToTakeContactInquiry } = await import('./isAgentAvailableToTakeContactInquiry'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('isAgentAvailableToTakeContactInquiry', () => {

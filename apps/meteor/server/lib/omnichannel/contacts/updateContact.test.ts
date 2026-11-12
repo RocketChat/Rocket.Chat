@@ -1,10 +1,8 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const modelsMock = {
 	LivechatContacts: {
@@ -16,22 +14,36 @@ const modelsMock = {
 	},
 };
 
-const { updateContact } = loadWithMocks('./updateContact', {
-	'./getAllowedCustomFields': {
-		getAllowedCustomFields: sinon.stub().resolves([]),
-	},
-	'./validateContactManager': {
-		validateContactManager: sinon.stub(),
-	},
-	'./validateCustomFields': {
-		validateCustomFields: sinon.stub(),
-	},
-	'../../notifyListener': {
-		notifyOnSubscriptionChangedByVisitorIds: sinon.stub(),
-		notifyOnRoomChangedByContactId: sinon.stub(),
-		notifyOnLivechatInquiryChangedByVisitorIds: sinon.stub(),
-		notifyOnSettingChanged: sinon.stub(),
-	},
+let updateContact: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('./getAllowedCustomFields', {
+			exports: {
+				getAllowedCustomFields: sinon.stub().resolves([]),
+			},
+		}),
+		mock.module('./validateContactManager', {
+			exports: {
+				validateContactManager: sinon.stub(),
+			},
+		}),
+		mock.module('./validateCustomFields', {
+			exports: {
+				validateCustomFields: sinon.stub(),
+			},
+		}),
+		mock.module('../../notifyListener', {
+			exports: {
+				notifyOnSubscriptionChangedByVisitorIds: sinon.stub(),
+				notifyOnRoomChangedByContactId: sinon.stub(),
+				notifyOnLivechatInquiryChangedByVisitorIds: sinon.stub(),
+				notifyOnSettingChanged: sinon.stub(),
+			},
+		}),
+	];
+	({ updateContact } = await import('./updateContact'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('updateContact', () => {

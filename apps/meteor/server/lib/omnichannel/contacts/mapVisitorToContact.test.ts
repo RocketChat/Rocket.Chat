@@ -1,20 +1,27 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { OmnichannelSourceType, type ILivechatVisitor, type IOmnichannelSource } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
 import type { CreateContactParams } from './createContact';
-import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const getContactManagerIdByUsername = sinon.stub();
 const getAllowedCustomFields = sinon.stub();
 
-const { mapVisitorToContact } = loadWithMocks('./mapVisitorToContact', {
-	'./getContactManagerIdByUsername': {
-		getContactManagerIdByUsername,
-	},
-	'./getAllowedCustomFields': { getAllowedCustomFields },
+let mapVisitorToContact: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('./getContactManagerIdByUsername', {
+			exports: {
+				getContactManagerIdByUsername,
+			},
+		}),
+		mock.module('./getAllowedCustomFields', { exports: { getAllowedCustomFields } }),
+	];
+	({ mapVisitorToContact } = await import('./mapVisitorToContact'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const testDate = new Date();

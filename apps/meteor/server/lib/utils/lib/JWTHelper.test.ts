@@ -1,9 +1,7 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const jsrsasignStub = {
 	KJUR: {
@@ -20,8 +18,13 @@ const jsrsasignStub = {
 	},
 };
 
-const { generateJWT, validateAndDecodeJWT } = loadWithMocks('./JWTHelper', {
-	jsrsasign: jsrsasignStub,
+let generateJWT: typeof import('./JWTHelper').generateJWT;
+let validateAndDecodeJWT: typeof import('./JWTHelper').validateAndDecodeJWT;
+
+before(async () => {
+	const moduleMocks = [mock.module('jsrsasign', { exports: { default: jsrsasignStub } })];
+	({ generateJWT, validateAndDecodeJWT } = await import('./JWTHelper'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('JWTHelper', () => {

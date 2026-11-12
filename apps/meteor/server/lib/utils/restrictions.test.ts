@@ -1,13 +1,17 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
 
-import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
-
 const settingValues = new Map<string, string>();
 
-const { fileUploadIsValidContentType } = loadWithMocks('./restrictions', {
-	'../../settings': { settings: { get: (settingId: string) => settingValues.get(settingId) } },
+let fileUploadIsValidContentType: typeof import('./restrictions').fileUploadIsValidContentType;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('../../settings', { exports: { settings: { get: (settingId: string) => settingValues.get(settingId) } } }),
+	];
+	({ fileUploadIsValidContentType } = await import('./restrictions'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('fileUploadIsValidContentType', () => {

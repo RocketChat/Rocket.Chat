@@ -1,22 +1,28 @@
-import { after, beforeEach, describe, it } from 'node:test';
+import { after, before, beforeEach, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
 import sinon from 'sinon';
 
-import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
-
 const workOnPdfStub = sinon.stub();
 const queueWorkStub = sinon.stub();
 
-const { requestPdfTranscript } = loadWithMocks('./requestPdfTranscript.ts', {
-	'@rocket.chat/core-services': {
-		OmnichannelTranscript: {
-			workOnPdf: workOnPdfStub,
-		},
-		QueueWorker: {
-			queueWork: queueWorkStub,
-		},
-	},
+let requestPdfTranscript: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('@rocket.chat/core-services', {
+			exports: {
+				OmnichannelTranscript: {
+					workOnPdf: workOnPdfStub,
+				},
+				QueueWorker: {
+					queueWork: queueWorkStub,
+				},
+			},
+		}),
+	];
+	({ requestPdfTranscript } = await import('./requestPdfTranscript'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('requestPdfTranscript', () => {

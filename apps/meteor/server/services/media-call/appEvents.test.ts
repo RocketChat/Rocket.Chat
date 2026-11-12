@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it, mock } from 'node:test';
 
 import type { MediaCallEvent } from '@rocket.chat/apps';
 import {
@@ -20,8 +20,6 @@ import { callHangupReasonList } from '@rocket.chat/media-signaling';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
-import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
-
 const triggerEvent = sinon.stub();
 const AppsMock: { self: { triggerEvent: sinon.SinonStub } | undefined } = { self: { triggerEvent } };
 const loggerMock = { warn: sinon.stub(), info: sinon.stub() };
@@ -39,13 +37,22 @@ const i18nMock = {
 	},
 };
 
-const { notifyAppsOfMediaCallStarted, notifyAppsOfMediaCallParticipantJoined, notifyAppsOfMediaCallEnded, runPreMediaCallCreatedAppHook } =
-	loadWithMocks('./appEvents', {
-		'@rocket.chat/apps': { Apps: AppsMock, AppEvents: AppInterface },
-		'./logger': { logger: loggerMock },
-		'../../lib/i18n': { i18n: i18nMock },
-		'../../settings': { settings: settingsMock },
-	});
+let notifyAppsOfMediaCallStarted: any;
+let notifyAppsOfMediaCallParticipantJoined: any;
+let notifyAppsOfMediaCallEnded: any;
+let runPreMediaCallCreatedAppHook: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('@rocket.chat/apps', { exports: { Apps: AppsMock, AppEvents: AppInterface } }),
+		mock.module('./logger', { exports: { logger: loggerMock } }),
+		mock.module('../../lib/i18n', { exports: { i18n: i18nMock } }),
+		mock.module('../../settings', { exports: { settings: settingsMock } }),
+	];
+	({ notifyAppsOfMediaCallStarted, notifyAppsOfMediaCallParticipantJoined, notifyAppsOfMediaCallEnded, runPreMediaCallCreatedAppHook } =
+		await import('./appEvents'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
+});
 
 /**
  * Contacts as they are stored: every one of them carries a `contractId`, which is

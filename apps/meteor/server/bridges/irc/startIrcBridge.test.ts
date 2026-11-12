@@ -1,9 +1,7 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const sandbox = sinon.createSandbox();
 
@@ -13,9 +11,15 @@ const BridgeMock = sandbox.stub().callsFake(function (this: { init: typeof initM
 	this.init = initMock;
 });
 
-const { startIrcBridge } = loadWithMocks('./startIrcBridge', {
-	'./irc-bridge': { __esModule: true, default: BridgeMock },
-	'../../settings/cached': { settings: { get: settingsGetMock } },
+let startIrcBridge: typeof import('./startIrcBridge').startIrcBridge;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('./irc-bridge', { exports: { default: { __esModule: true, default: BridgeMock } } }),
+		mock.module('../../settings/cached', { exports: { settings: { get: settingsGetMock } } }),
+	];
+	({ startIrcBridge } = await import('./startIrcBridge'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const settingValues: Record<string, unknown> = {

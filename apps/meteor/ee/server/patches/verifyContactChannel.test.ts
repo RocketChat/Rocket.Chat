@@ -1,10 +1,8 @@
-import { afterEach, before, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const modelsMock = {
 	LivechatContacts: {
@@ -40,12 +38,20 @@ const queueManager = {
 	verifyInquiry: sinon.stub(),
 };
 
-const { runVerifyContactChannel } = loadWithMocks('./verifyContactChannel', {
-	'../../../server/lib/omnichannel/contacts/mergeContacts': { mergeContacts: mergeContactsStub },
-	'../../../server/lib/omnichannel/contacts/verifyContactChannel': { verifyContactChannel: { patch: sinon.stub() } },
-	'../../../server/lib/omnichannel/QueueManager': { QueueManager: queueManager },
-	'../../../server/database/utils': { client: clientMock },
-	'../lib/omnichannel/logger': { contactLogger: { info: sinon.stub(), debug: sinon.stub() } },
+let runVerifyContactChannel: typeof import('./verifyContactChannel').runVerifyContactChannel;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('../../../server/lib/omnichannel/contacts/mergeContacts', { exports: { mergeContacts: mergeContactsStub } }),
+		mock.module('../../../server/lib/omnichannel/contacts/verifyContactChannel', {
+			exports: { verifyContactChannel: { patch: sinon.stub() } },
+		}),
+		mock.module('../../../server/lib/omnichannel/QueueManager', { exports: { QueueManager: queueManager } }),
+		mock.module('../../../server/database/utils', { exports: { client: clientMock } }),
+		mock.module('../lib/omnichannel/logger', { exports: { contactLogger: { info: sinon.stub(), debug: sinon.stub() } } }),
+	];
+	({ runVerifyContactChannel } = await import('./verifyContactChannel'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('verifyContactChannel', () => {

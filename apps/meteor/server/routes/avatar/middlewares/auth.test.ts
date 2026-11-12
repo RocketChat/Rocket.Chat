@@ -1,9 +1,7 @@
-import { afterEach, describe, it } from 'node:test';
+import { afterEach, before, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const mocks = {
 	utils: {
@@ -12,8 +10,13 @@ const mocks = {
 	},
 };
 
-const { protectAvatarsWithFallback, protectAvatars } = loadWithMocks('./auth.ts', {
-	'../utils': mocks.utils,
+let protectAvatarsWithFallback: any;
+let protectAvatars: any;
+
+before(async () => {
+	const moduleMocks = [mock.module('../utils', { exports: { default: mocks.utils } })];
+	({ protectAvatarsWithFallback, protectAvatars } = await import('./auth'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('#protectAvatarsWithFallback()', () => {

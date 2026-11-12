@@ -1,20 +1,24 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../../../tests/mocks/utils/loadWithMocks';
 
 const hasOfflineLicenseStub = sinon.stub();
 const serverFetchStub = sinon.stub();
 
 class CloudOfflineLicenseError extends Error {}
 
-const { MarketplaceAPIClient } = loadWithMocks('./MarketplaceAPIClient.ts', {
-	'@rocket.chat/license': { License: { hasOfflineLicense: hasOfflineLicenseStub } },
-	'@rocket.chat/server-fetch': { serverFetch: serverFetchStub, Response: class {} },
-	'./isTesting': { isTesting: () => false },
-	'../../../../../lib/errors/CloudOfflineLicenseError': { CloudOfflineLicenseError },
+let MarketplaceAPIClient: typeof import('./MarketplaceAPIClient').MarketplaceAPIClient;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('@rocket.chat/license', { exports: { License: { hasOfflineLicense: hasOfflineLicenseStub } } }),
+		mock.module('@rocket.chat/server-fetch', { exports: { serverFetch: serverFetchStub, Response: class {} } }),
+		mock.module('./isTesting', { exports: { isTesting: () => false } }),
+		mock.module('../../../../../lib/errors/CloudOfflineLicenseError', { exports: { CloudOfflineLicenseError } }),
+	];
+	({ MarketplaceAPIClient } = await import('./MarketplaceAPIClient'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('MarketplaceAPIClient', () => {

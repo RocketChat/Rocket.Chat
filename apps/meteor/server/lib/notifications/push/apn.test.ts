@@ -1,9 +1,7 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const sandbox = sinon.createSandbox();
 
@@ -22,12 +20,23 @@ const apnMock = {
 	'@noCallThru': true,
 };
 
-const { initAPN, shutdownAPN } = loadWithMocks('./apn', {
-	'@parse/node-apn': {
-		default: apnMock,
-		...apnMock,
-	},
-	'./logger': { logger: mocks.logger },
+let initAPN: any;
+let shutdownAPN: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('@parse/node-apn', {
+			exports: {
+				default: {
+					default: apnMock,
+					...apnMock,
+				},
+			},
+		}),
+		mock.module('./logger', { exports: { logger: mocks.logger } }),
+	];
+	({ initAPN, shutdownAPN } = await import('./apn'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const baseOptions = {

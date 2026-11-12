@@ -1,11 +1,9 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { ClientSafeError } from '@rocket.chat/core-services';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../tests/mocks/utils/loadWithMocks';
 
 const sandbox = sinon.createSandbox();
 
@@ -20,13 +18,19 @@ const notifyOnSubscriptionChangedByUserId = sandbox.stub();
 const settingsGet = sandbox.stub();
 const getFixedT = sandbox.stub();
 
-const { resetUserE2EEncriptionKey } = loadWithMocks('./resetUserE2EKey', {
-	'@rocket.chat/core-services': { api: { broadcast }, ClientSafeError },
-	'./i18n': { i18n: { getFixedT } },
-	'./isUserIdFederated': { isUserIdFederated },
-	'./notifications/email/api': { send: sendEmail },
-	'./notifyListener': { notifyOnUserChange, notifyOnSubscriptionChangedByUserId },
-	'../settings': { settings: { get: settingsGet } },
+let resetUserE2EEncriptionKey: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('@rocket.chat/core-services', { exports: { api: { broadcast }, ClientSafeError } }),
+		mock.module('./i18n', { exports: { i18n: { getFixedT } } }),
+		mock.module('./isUserIdFederated', { exports: { isUserIdFederated } }),
+		mock.module('./notifications/email/api', { exports: { send: sendEmail } }),
+		mock.module('./notifyListener', { exports: { notifyOnUserChange, notifyOnSubscriptionChangedByUserId } }),
+		mock.module('../settings', { exports: { settings: { get: settingsGet } } }),
+	];
+	({ resetUserE2EEncriptionKey } = await import('./resetUserE2EKey'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const UID = 'user-id';

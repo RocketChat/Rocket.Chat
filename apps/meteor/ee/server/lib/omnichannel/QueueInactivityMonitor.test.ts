@@ -1,10 +1,8 @@
-import { afterEach, before, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const AgendaJobStub = {
 	schedule: sinon.stub(),
@@ -31,14 +29,22 @@ const databaseUtilsMock = {
 const livechatMock = { closeRoom: sinon.stub() };
 const settingsMock = { settings: { get: sinon.stub() } };
 
-const { OmnichannelQueueInactivityMonitorClass } = loadWithMocks('./QueueInactivityMonitor', {
-	'@rocket.chat/agenda': {
-		Agenda: sinon.stub().returns(AgendaStub),
-	},
-	'../../../../server/database/utils': databaseUtilsMock,
-	'../../../../server/lib/omnichannel/closeRoom': livechatMock,
-	'../../../../server/settings': settingsMock,
-	'../../../../server/lib/i18n': { i18n: { t: sinon.stub().returns('Closed automatically') } },
+let OmnichannelQueueInactivityMonitorClass: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('@rocket.chat/agenda', {
+			exports: {
+				Agenda: sinon.stub().returns(AgendaStub),
+			},
+		}),
+		mock.module('../../../../server/database/utils', { exports: { default: databaseUtilsMock } }),
+		mock.module('../../../../server/lib/omnichannel/closeRoom', { exports: { default: livechatMock } }),
+		mock.module('../../../../server/settings', { exports: { default: settingsMock } }),
+		mock.module('../../../../server/lib/i18n', { exports: { i18n: { t: sinon.stub().returns('Closed automatically') } } }),
+	];
+	({ OmnichannelQueueInactivityMonitorClass } = await import('./QueueInactivityMonitor'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('OmnichannelQueueInactivityMonitorClass', () => {

@@ -1,11 +1,9 @@
-import { afterEach, before, describe, it } from 'node:test';
+import { afterEach, before, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import { Headers } from 'node-fetch';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const mocks = {
 	settingsGet: sinon.stub(),
@@ -22,16 +20,27 @@ const mocks = {
 	avatarFindOneByUserId: sinon.stub(),
 };
 
-const { userAvatarById, userAvatarByUsername } = loadWithMocks('./user', {
-	'../../settings': {
-		settings: {
-			get: mocks.settingsGet,
-		},
-	},
-	'./utils': mocks.utils,
-	'@rocket.chat/server-fetch': {
-		serverFetch: mocks.serverFetch,
-	},
+let userAvatarById: any;
+let userAvatarByUsername: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('../../settings', {
+			exports: {
+				settings: {
+					get: mocks.settingsGet,
+				},
+			},
+		}),
+		mock.module('./utils', { exports: { default: mocks.utils } }),
+		mock.module('@rocket.chat/server-fetch', {
+			exports: {
+				serverFetch: mocks.serverFetch,
+			},
+		}),
+	];
+	({ userAvatarById, userAvatarByUsername } = await import('./user'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const registerModels = () => {

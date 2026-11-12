@@ -1,10 +1,8 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const modelsMock = {
 	Messages: {
@@ -29,14 +27,22 @@ const modelsMock = {
 const broadcastMock = sinon.stub();
 const notifyOnSubscriptionChangedByIdMock = sinon.stub();
 
-const { cleanRoomHistory } = loadWithMocks('./cleanRoomHistory.ts', {
-	'@rocket.chat/core-services': { api: { broadcast: broadcastMock } },
-	'./deleteRoom': { deleteRoom: sinon.stub() },
-	'../media/file-upload': { FileUpload: { getStore: sinon.stub() } },
-	'../notifyListener': {
-		notifyOnRoomChangedById: sinon.stub(),
-		notifyOnSubscriptionChangedById: notifyOnSubscriptionChangedByIdMock,
-	},
+let cleanRoomHistory: typeof import('./cleanRoomHistory').cleanRoomHistory;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('@rocket.chat/core-services', { exports: { api: { broadcast: broadcastMock } } }),
+		mock.module('./deleteRoom', { exports: { deleteRoom: sinon.stub() } }),
+		mock.module('../media/file-upload', { exports: { FileUpload: { getStore: sinon.stub() } } }),
+		mock.module('../notifyListener', {
+			exports: {
+				notifyOnRoomChangedById: sinon.stub(),
+				notifyOnSubscriptionChangedById: notifyOnSubscriptionChangedByIdMock,
+			},
+		}),
+	];
+	({ cleanRoomHistory } = await import('./cleanRoomHistory'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const ids = (prefix: string, count: number) => Array.from({ length: count }, (_, i) => `${prefix}${i}`);

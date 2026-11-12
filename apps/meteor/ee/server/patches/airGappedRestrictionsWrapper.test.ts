@@ -1,10 +1,9 @@
-import { describe, it } from 'node:test';
+import { before, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
 import sinon from 'sinon';
 
 import { applyAirGappedRestrictionsValidation } from '../../../server/lib/cloud/license/airGappedRestrictionsWrapper';
-import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 let restrictionFlag = true;
 
@@ -14,13 +13,21 @@ const airgappedModule = {
 	},
 };
 
-loadWithMocks('./airGappedRestrictionsWrapper.ts', {
-	'@rocket.chat/license': {
-		AirGappedRestriction: airgappedModule,
-	},
-	'../../../server/lib/cloud/license/airGappedRestrictionsWrapper': {
-		applyAirGappedRestrictionsValidation,
-	},
+before(async () => {
+	const moduleMocks = [
+		mock.module('@rocket.chat/license', {
+			exports: {
+				AirGappedRestriction: airgappedModule,
+			},
+		}),
+		mock.module('../../../server/lib/cloud/license/airGappedRestrictionsWrapper', {
+			exports: {
+				applyAirGappedRestrictionsValidation,
+			},
+		}),
+	];
+	await import('./airGappedRestrictionsWrapper');
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('#airGappedRestrictionsWrapper()', () => {

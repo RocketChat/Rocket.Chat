@@ -1,10 +1,9 @@
-import { afterEach, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it, mock } from 'node:test';
 
 import type { VideoConferenceCapabilities } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
 import { LIVEKIT_CAPABILITIES } from './capabilities';
-import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 /**
  * What the LiveKit provider declares, read back through the registry. A capability left out turns its feature off
@@ -12,8 +11,13 @@ import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
  *
  * The registry reads `server/settings`, whose top-level await this runner cannot load, hence the stub.
  */
-const { videoConfProviders, CORE_PROVIDER_APP_ID } = loadWithMocks('../../../../server/lib/videoConfProviders', {
-	'../settings': { settings: { get: () => undefined } },
+let videoConfProviders: typeof import('../../../../server/lib/videoConfProviders').videoConfProviders;
+let CORE_PROVIDER_APP_ID: typeof import('../../../../server/lib/videoConfProviders').CORE_PROVIDER_APP_ID;
+
+before(async () => {
+	const moduleMocks = [mock.module('../../../../server/settings', { exports: { settings: { get: () => undefined } } })];
+	({ videoConfProviders, CORE_PROVIDER_APP_ID } = await import('../../../../server/lib/videoConfProviders'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const registered = (): VideoConferenceCapabilities | undefined => videoConfProviders.getProviderCapabilities('livekit');

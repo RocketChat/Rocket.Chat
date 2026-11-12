@@ -1,10 +1,8 @@
-import { before, describe, it } from 'node:test';
+import { before, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 // Create stubs for dependencies
 const stubs = {
@@ -16,23 +14,37 @@ const stubs = {
 	createReadStream: sinon.stub(),
 };
 
-const { uploadZipFile } = loadWithMocks('./uploadZipFile.ts', {
-	'@rocket.chat/random': {
-		Random: {
-			id: stubs.randomId,
-		},
-	},
-	'node:fs/promises': {
-		stat: stubs.stat,
-	},
-	'node:fs': {
-		createReadStream: stubs.createReadStream,
-	},
-	'../media/file-upload': {
-		FileUpload: {
-			getStore: stubs.getStore,
-		},
-	},
+let uploadZipFile: typeof import('./uploadZipFile').uploadZipFile;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('@rocket.chat/random', {
+			exports: {
+				Random: {
+					id: stubs.randomId,
+				},
+			},
+		}),
+		mock.module('node:fs/promises', {
+			exports: {
+				stat: stubs.stat,
+			},
+		}),
+		mock.module('node:fs', {
+			exports: {
+				createReadStream: stubs.createReadStream,
+			},
+		}),
+		mock.module('../media/file-upload', {
+			exports: {
+				FileUpload: {
+					getStore: stubs.getStore,
+				},
+			},
+		}),
+	];
+	({ uploadZipFile } = await import('./uploadZipFile'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('Export - uploadZipFile', () => {

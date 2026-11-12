@@ -1,11 +1,17 @@
-import { describe, it } from 'node:test';
+import { before, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
 
-import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
+let splitSendMessageFields: typeof import('./splitSendMessageFields').splitSendMessageFields;
 
-const { splitSendMessageFields } = loadWithMocks('./splitSendMessageFields', {
-	'@rocket.chat/rest-typings': { chatSendMessageFieldNames: ['rid', 'msg', 'tmid', 'location', 'parseUrls', 't', 'content'] },
+before(async () => {
+	const moduleMocks = [
+		mock.module('@rocket.chat/rest-typings', {
+			exports: { chatSendMessageFieldNames: ['rid', 'msg', 'tmid', 'location', 'parseUrls', 't', 'content'] },
+		}),
+	];
+	({ splitSendMessageFields } = await import('./splitSendMessageFields'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('splitSendMessageFields', () => {
