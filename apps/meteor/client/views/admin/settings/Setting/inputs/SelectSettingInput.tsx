@@ -15,8 +15,6 @@ function SelectSettingInput({
 	value,
 	hint,
 	placeholder,
-	readonly,
-	autocomplete,
 	disabled,
 	required,
 	values = [],
@@ -44,8 +42,6 @@ function SelectSettingInput({
 					value={value}
 					placeholder={placeholder}
 					disabled={disabled}
-					readOnly={readonly}
-					autoComplete={autocomplete === false ? 'off' : undefined}
 					onChange={(value) => handleChange(String(value))}
 					options={values.map(({ key, i18nLabel }) => [key, t(i18nLabel)])}
 				/>

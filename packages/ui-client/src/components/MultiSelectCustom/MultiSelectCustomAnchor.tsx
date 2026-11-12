@@ -19,6 +19,13 @@ const MultiSelectCustomAnchor = forwardRef<HTMLElement, MultiSelectCustomAnchorP
 ) {
 	const { t } = useTranslation();
 	const customStyle = css`
+		position: relative;
+		min-width: 9rem;
+		padding-block: 8px;
+		padding-inline: 15px;
+		border-width: 1px;
+		border-radius: var(--rcx-input-border-radius, var(--rcx-border-radius-medium, 0.25rem));
+
 		&:hover {
 			cursor: pointer;
 		}
@@ -35,6 +42,7 @@ const MultiSelectCustomAnchor = forwardRef<HTMLElement, MultiSelectCustomAnchorP
 			justifyContent='space-between'
 			alignItems='center'
 			height='x40'
+			fontScale='p2m'
 			className={['rcx-input-box__wrapper', customStyle, ...(Array.isArray(className) ? className : [className])].filter(Boolean)}
 			{...props}
 		>

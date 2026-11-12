@@ -125,7 +125,7 @@ const AccessibilityView = ({ vm: { values: preferencesValues, displayRolesEnable
 												/>
 											</FieldRow>
 											<Box paddingBlockStart={12}>
-												<FieldHint style={{ whiteSpace: 'break-spaces' }}>{t(description)}</FieldHint>
+												<FieldHint className={breakSpacesClassName}>{t(description)}</FieldHint>
 											</Box>
 										</Field>
 									</Box>

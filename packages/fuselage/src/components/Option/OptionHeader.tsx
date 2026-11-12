@@ -1,11 +1,12 @@
-import type { HTMLAttributes, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 import { cx } from '../../helpers/composeClassNames';
 import { ItemGroupHeader, ItemGroupTitle } from '../Item';
+import type { ItemPartAttributes } from '../Item/types';
 
 export type OptionHeaderProps = {
 	children: ReactNode;
-} & Omit<HTMLAttributes<HTMLLIElement>, 'is' | 'role'>;
+} & Omit<ItemPartAttributes, 'role' | 'children'>;
 
 /**
  * A group label inside an `Options` listbox. It is presentational, so the listbox only reports its options.

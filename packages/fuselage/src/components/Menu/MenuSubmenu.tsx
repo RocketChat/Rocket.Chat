@@ -6,7 +6,7 @@ import type { RootMenuTriggerState, TreeState } from 'react-stately';
 import { useSubmenuTriggerState } from 'react-stately';
 
 import { Icon } from '../Icon';
-import { Item, ItemIcon } from '../Item';
+import { Item, ItemContent, ItemIcon, ItemTitle } from '../Item';
 import MenuDropDown from './MenuDropdown';
 import type { OptionProps } from '../Option';
 import MenuPopover from './MenuPopover';
@@ -97,7 +97,13 @@ function MenuSubmenu({ item, state, rootMenuTriggerState, parentMenuRef, onActio
 				disabled={isDisabled}
 				variant={item.value?.variant === 'danger' ? 'danger' : undefined}
 			>
-				{item.rendered}
+				{typeof item.rendered === 'string' ? (
+					<ItemContent>
+						<ItemTitle>{item.rendered}</ItemTitle>
+					</ItemContent>
+				) : (
+					item.rendered
+				)}
 				<ItemIcon>
 					<Icon name='chevron-right' size='x16' />
 				</ItemIcon>

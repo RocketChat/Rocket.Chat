@@ -102,6 +102,7 @@ const add = (gate, check, outcome) => {
 const needsBuilds = { skipped: 'not run', detail: 'needs --before and --after' };
 
 add('G0', 'characterization specs', g0());
+if (after) add('G1', 'no [object Object] in the stylesheets', run('zero-css.mjs', [after]));
 add('G2', 'no Box styling', run('box-usage.mjs', ['--component', component]));
 add('G2', 'CSS-hack ratchet', run('css-hacks.mjs', ['--check', here('css-hacks.baseline.json')]));
 add('G3', `selector inventory (${cls})`, run('selector-inventory.mjs', [cls, '--check', here('selector-inventory.baseline.json')]));

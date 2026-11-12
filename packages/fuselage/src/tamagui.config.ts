@@ -4,6 +4,8 @@ import { createTamagui, createTokens } from '@tamagui/web';
 export const tamaguiConfig = createTamagui({
 	tokens: createTokens({ color: {}, space: {}, size: {}, radius: {}, zIndex: {} }),
 	themes: { light: {} },
+	// A frame value names one as a key, as `{ default: 4, pointerCoarse: 12 }`, and zero compiles it to an `@media` rule.
+	media: { pointerCoarse: { pointer: 'coarse' }, hoverNone: { hover: 'none' }, reducedMotion: { prefersReducedMotion: 'reduce' } },
 	settings: { addThemeClassName: false },
 });
 

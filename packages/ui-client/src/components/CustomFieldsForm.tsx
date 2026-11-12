@@ -77,7 +77,7 @@ const CustomField = <T extends FieldValues>({
 			defaultValue={defaultValue ?? ''}
 			rules={{ minLength: props.minLength, maxLength: props.maxLength, validate: { required: validateRequired } }}
 			render={({ field }) => (
-				<Field className='rcx-field-group__item'>
+				<Field>
 					<FieldLabel id={fieldId} required={required}>
 						{label || t(name as TranslationKey)}
 					</FieldLabel>

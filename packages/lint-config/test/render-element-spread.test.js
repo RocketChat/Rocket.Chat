@@ -5,7 +5,16 @@ import { Linter } from 'eslint';
 
 import rule from '../rules/render-element-spread.js';
 
-const safeCalls = ['ariaAndDataAttributes', 'customProperties', 'pickPositionStyle', 'pickWebAnimationHandlers', 'pickWebPressHandlers'];
+const safeCalls = [
+	'ariaAndDataAttributes',
+	'customProperties',
+	'pickPositionStyle',
+	'pickVirtualizerStyle',
+	'pickWebAnimationHandlers',
+	'pickWebPressHandlers',
+	'pickWebRowHandlers',
+	'pickWebTextInputHandlers',
+];
 
 const messagesFor = (code) =>
 	new Linter()
@@ -27,6 +36,17 @@ test('allows safe calls spread on the render element', () => {
 	);
 	const B = (props) => (
 		<Frame render={<div {...customProperties({ '--rcx-x': props.x })} {...pickPositionStyle(props)} {...pickWebAnimationHandlers(props)} />} />
+	);`;
+
+	assert.deepEqual(messagesFor(code), []);
+});
+
+test('allows the row and text input handler picks on the render element', () => {
+	const code = `${FRAME}const A = (props) => (
+		<Frame render={<li {...pickWebRowHandlers(props)} />} />
+	);
+	const B = (props) => (
+		<Frame render={<input {...pickWebTextInputHandlers(props)} />} />
 	);`;
 
 	assert.deepEqual(messagesFor(code), []);

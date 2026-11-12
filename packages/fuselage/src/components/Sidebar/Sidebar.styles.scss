@@ -145,23 +145,24 @@ $sidebar-color-stroke-extra-light: theme('sidebar-color-stroke-extra-light', col
 	}
 
 	&-collapse-group {
-		&__bar {
+		// Interim `[class]` bumps: the header and its title are `Item` parts whose frames set these properties
+		&__bar[class] {
 			color: colors.font(secondary-info);
+		}
 
-			&--empty {
-				color: colors.font(disabled);
-			}
+		&__bar--empty[class] {
+			color: colors.font(disabled);
+		}
 
-			&--unread {
-				color: $sidebar-item-color-highlighted;
+		&__bar--unread[class] {
+			color: $sidebar-item-color-highlighted;
 
-				.rcx-sidebar-collapse-group__title {
-					@include use-font-scale(c2);
-				}
+			.rcx-sidebar-collapse-group__title {
+				@include use-font-scale(c2);
 			}
 		}
 
-		&__bar-button {
+		&__bar-button[class] {
 			display: flex;
 			align-items: center;
 
@@ -245,7 +246,8 @@ $sidebar-color-stroke-extra-light: theme('sidebar-color-stroke-extra-light', col
 		}
 	}
 
-	&-link {
+	// Interim `[class]` bump: the link is an `Item` whose frame sets the color
+	&-link[class] {
 		@include use-link-colors($color: $sidebar-link-color);
 	}
 

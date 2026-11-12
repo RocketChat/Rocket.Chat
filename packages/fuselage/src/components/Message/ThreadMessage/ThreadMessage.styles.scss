@@ -3,11 +3,14 @@
 @use '../../../styles/typography.scss' as *;
 @use '../../../styles/mixins/size.scss';
 
-.rcx-message-thread {
+// Interim `[class]` bump: the row is an `Item` whose frame sets the font and the color
+.rcx-message-thread[class] {
 	@include use-font-scale(c1);
 	@include use-with-truncated-text();
 	color: colors.font(info);
+}
 
+.rcx-message-thread {
 	&__content {
 		gap: lengths.margin(8);
 	}

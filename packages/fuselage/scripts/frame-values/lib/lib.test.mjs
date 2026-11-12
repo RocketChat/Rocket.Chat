@@ -1,13 +1,29 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
+import { join } from 'node:path';
 import { test } from 'node:test';
+import { pathToFileURL } from 'node:url';
+
+import * as sass from 'sass';
 
 import { moduleProblems, spacingProperties, stylesheetProblems, transformProblems } from './check.mts';
 import { elevation } from './elevation.mts';
+import {
+	inputAddonStates,
+	inputBoxStates,
+	inputPalettes,
+	inputTextFillStates,
+	inputTextStates,
+	nativeConditions,
+	selectorsFor,
+} from './inputPalettes.mts';
+import { itemCustomProperties, itemPalettes } from './itemPalettes.mts';
 import { literal } from './literal.mts';
 import { markers } from './markers.mts';
 import { statusPalettes } from './statusPalettes.mts';
 import { textFrameDefaults } from './textFrameDefaults.mts';
-import { offScale } from './tokens.mts';
+import { offScale, zIndex, zIndexAbove } from './tokens.mts';
 
 test('markers name the section when there are several', () => {
 	assert.deepEqual(
@@ -99,4 +115,91 @@ test('an elevation level has a border unless it is no-border', () => {
 	assert.equal(Object.hasOwn(levels['1'], 'borderColor'), true);
 	assert.equal(Object.hasOwn(levels['2nb'], 'borderColor'), false);
 	assert.equal(levels['1nb'].boxShadow, levels['1'].boxShadow);
+});
+
+test('the drag layer sits above every overlay and its stacking offsets add to it', () => {
+	assert.equal(zIndex.drag, 9996);
+	assert.equal(zIndex.drag > zIndex.overlay, true);
+	assert.equal(zIndexAbove('drag', 0), 9996);
+	assert.equal(zIndexAbove('drag', 3), 9999);
+});
+
+const require = createRequire(import.meta.url);
+const srcDir = join(import.meta.dirname, '../../../src');
+const tilde = { findFileUrl: (url) => (url.startsWith('~') ? pathToFileURL(require.resolve(url.slice(1))) : null) };
+
+const compiled = (module, variables) => {
+	const declarations = variables.map((name) => `\t--${name}: #{$${name}};`).join('\n');
+
+	return sass.compileString(`@use '${module}' as *;\n.x {\n${declarations}\n}`, { importers: [tilde], loadPaths: [srcDir] }).css;
+};
+
+const toNamed = (css) => Object.fromEntries([...css.matchAll(/--([\w-]+): ([^;]+);/g)].map(([, name, value]) => [name, value]));
+
+test('the input palette holds the value of every variable of input-colors.scss', () => {
+	const source = join(srcDir, 'styles/variables/input-colors.scss');
+	const names = [...readFileSync(source, 'utf8').matchAll(/^\$(input-colors-[\w-]+):/gm)].map(([, name]) => name);
+	const scss = toNamed(compiled(source, names));
+	const generated = Object.values(inputPalettes()).flatMap((palette) => Object.values(palette));
+	const normalize = (value) => value.replaceAll(/\s+/g, '');
+
+	assert.equal(names.length, generated.length);
+	for (const name of names) {
+		assert.equal(
+			generated.some((value) => normalize(value) === normalize(scss[name])),
+			true,
+			`${name}: ${scss[name]}`,
+		);
+	}
+});
+
+test('selectorsFor crosses the alternatives of each state and keeps an ancestor in front', () => {
+	assert.deepEqual(selectorsFor('.a', nativeConditions.invalid, nativeConditions.disabled), [
+		'*:disabled .a:invalid',
+		'.a:invalid:disabled',
+	]);
+});
+
+test('the box states follow native state, then the invalid state, with the wrapper and the part classes as alternatives', () => {
+	const css = inputBoxStates({
+		element: '.rcx-select',
+		conditions: {
+			invalid: [{ suffix: ':has(> input:invalid)' }, { suffix: '.rcx-select--invalid' }],
+			disabled: [{ ancestor: '*:disabled ' }, { suffix: ':has(> input:disabled)' }],
+		},
+	});
+
+	assert.match(css, /\.rcx-select\.rcx-select--invalid:hover \{\n\tborder-color: var\(--rcx-input-colors-invalid-hover-border-color/);
+	assert.match(css, /\*:disabled \.rcx-select:has\(> input:invalid\),\n\.rcx-select:has\(> input:invalid\):has\(> input:disabled\)/);
+	assert.ok(css.indexOf('.rcx-select:hover') < css.indexOf('.rcx-select:has(> input:invalid)'));
+	assert.match(css, /\.rcx-select:focus,\n\.rcx-select:focus-within \{/);
+});
+
+test('the text states paint the placeholder, caret and disabled colours, and the addon follows the input', () => {
+	const text = inputTextStates({ element: '.rcx-input-box', placeholderVisible: '.rcx-input-box--placeholder-visible' });
+	const addon = inputAddonStates({ element: '.rcx-input-box', addon: '.rcx-input-box__addon' });
+
+	assert.match(text, /\.rcx-input-box::placeholder \{\n\tcolor: var\(--rcx-input-colors-placeholder-color/);
+	assert.match(text, /\.rcx-input-box:invalid:focus \{\n\tcaret-color: var\(--rcx-input-colors-invalid-focus-caret-color/);
+	assert.match(text, /\*:disabled \.rcx-input-box::placeholder,\n\.rcx-input-box:disabled::placeholder/);
+	assert.match(addon, /\.rcx-input-box:focus \+ \.rcx-input-box__addon,\n\.rcx-input-box__addon:has\(\+ \.rcx-input-box:focus\)/);
+	assert.doesNotMatch(addon, /has\(\+ \*:disabled/);
+	assert.match(
+		inputTextFillStates({ element: '.rcx-input-box--type-date' }),
+		/-webkit-text-fill-color: var\(--rcx-input-colors-disabled-color/,
+	);
+});
+
+test('the item palette and custom properties name the --rcx-item inputs', () => {
+	assert.match(itemPalettes().surface.hover, /^var\(--rcx-item-color-surface-hover, /);
+	assert.match(itemPalettes().font.danger, /^var\(--rcx-item-color-font-danger, /);
+
+	const css = itemCustomProperties({ blocks: ['item', 'item-group-header'], container: { name: 'rcx-item-group', narrowWidth: 320 } });
+
+	assert.match(css, /\.rcx-item--inset-lg \{\n\t--rcx-item-inset-inline: 20px;/);
+	assert.match(css, /\.rcx-item:has\(> \.rcx-item__content > :nth-child\(2\)\) \{\n\t--rcx-item-gap: 8px;/);
+	assert.match(
+		css,
+		/@container rcx-item-group \(width < 320px\) \{\n\t\.rcx-item--inset-lg,\n\t\.rcx-item-group-header--inset-lg \{\n\t\t--rcx-item-inset-inline: 12px;/,
+	);
 });

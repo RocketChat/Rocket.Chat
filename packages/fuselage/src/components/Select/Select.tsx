@@ -1,40 +1,42 @@
 import { useActiveDescendant, useMergedRefs, useResizeObserver, useStableCallback } from '@rocket.chat/fuselage-hooks';
-import type { AllHTMLAttributes, FocusEvent, KeyboardEvent, Key, MouseEvent, PointerEvent, RefAttributes } from 'react';
+import type { AriaAttributes, FocusEvent, KeyboardEvent, Key, MouseEvent, PointerEvent, RefAttributes } from 'react';
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { useOverlayTriggerState } from 'react-stately';
 
+import { ariaAndDataAttributes } from '../../helpers/ariaAndDataAttributes';
+import type { ElementActionAttributes, TestAttributes } from '../../types/ElementAttributes';
 import { AnimatedVisibility } from '../AnimatedVisibility';
-import { Box } from '../Box';
 import { Icon } from '../Icon';
 import { Listbox, ListboxOption } from '../Listbox';
 import { OptionContainer } from '../Options';
 import { PositionAnimated } from '../PositionAnimated';
+import SelectBox from './SelectBox';
+import { SelectValue } from './SelectLayout';
 import type { SelectOption } from './SelectLegacy';
+import SelectPopup from './SelectPopup';
 import { useTypeahead } from './useTypeahead';
 
-export type SelectProps<V extends Key = Key> = RefAttributes<HTMLElement> & {
-	/** The selectable options, as `[value, label]` tuples. */
-	options: SelectOption[];
-	/** The key of the selected option, which makes the select controlled. `null` selects nothing. */
-	value?: V | null;
-	/** The key of the option selected at first, when the select is not controlled. */
-	defaultSelectedKey?: V;
-	onChange?: ((key: V) => any) | undefined;
-	placeholder?: string;
-	error?: string;
-	small?: boolean;
-	disabled?: boolean;
-	/** Submits the selected key under this name with the surrounding form. */
-	name?: string;
-} & Omit<AllHTMLAttributes<HTMLElement>, 'value' | 'onChange' | 'defaultValue' | 'name' | 'disabled' | 'placeholder'>;
+export type SelectProps<V extends Key = Key> = RefAttributes<HTMLElement> &
+	TestAttributes &
+	AriaAttributes &
+	Pick<ElementActionAttributes, 'id' | 'className' | 'title' | 'tabIndex' | 'onFocus' | 'onBlur' | 'onKeyDown'> & {
+		/** The selectable options, as `[value, label]` tuples. */
+		options: SelectOption[];
+		/** The key of the selected option, which makes the select controlled. `null` selects nothing. */
+		value?: V | null;
+		/** The key of the option selected at first, when the select is not controlled. */
+		defaultSelectedKey?: V;
+		onChange?: ((key: V) => any) | undefined;
+		placeholder?: string;
+		error?: string;
+		small?: boolean;
+		disabled?: boolean;
+		/** Submits the selected key under this name with the surrounding form. */
+		name?: string;
+		autoFocus?: boolean;
+	};
 
 const PAGE_SIZE = 10;
-
-const isTriggerProp = (name: string) =>
-	name.startsWith('aria-') || name.startsWith('data-') || ['className', 'title', 'autoFocus', 'tabIndex'].includes(name);
-
-const pickTriggerProps = (props: Record<string, unknown>) =>
-	Object.fromEntries(Object.entries(props).filter(([name]) => isTriggerProp(name)));
 
 const isPrintableCharacter = (event: KeyboardEvent) => event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey;
 
@@ -60,7 +62,6 @@ function Select<V extends Key = Key>({
 	disabled,
 	name,
 	id: idProp,
-	style,
 	onFocus,
 	onBlur,
 	onKeyDown,
@@ -287,38 +288,36 @@ function Select<V extends Key = Key>({
 					value={selectedKey === null || selectedKey === undefined ? '' : String(selectedKey)}
 				/>
 			)}
-			<Box
-				{...pickTriggerProps(props)}
+			<SelectBox
+				{...ariaAndDataAttributes(props)}
 				is='button'
-				type='button'
+				layout='trigger'
+				small={small}
+				invalid={!!error}
+				disabled={disabled}
 				ref={mergedRef}
 				id={id}
 				role='combobox'
+				title={props.title}
+				tabIndex={props.tabIndex}
+				autoFocus={props.autoFocus}
+				className={props.className}
 				aria-haspopup='listbox'
 				aria-expanded={isOpen}
 				aria-controls={isOpen ? listboxId : undefined}
 				aria-activedescendant={isOpen && active !== undefined ? getOptionId(active) : undefined}
 				aria-invalid={props['aria-invalid'] ?? (error ? true : undefined)}
-				disabled={disabled}
-				animated
-				rcx-select
-				rcx-select--trigger
-				rcx-input-box--small={small}
-				rcx-select--invalid={!!error}
-				rcx-select--disabled={disabled}
-				className={props.className}
-				style={style}
 				onMouseDown={handleMouseDown}
 				onClick={handleClick}
 				onKeyDown={handleKeyDown}
 				onFocus={onFocus}
 				onBlur={handleBlur}
 			>
-				<Box is='span' rcx-select__value rcx-select__value--placeholder={!selectedOption} rcx-select__value--small={small}>
+				<SelectValue placeholder={!selectedOption} small={small}>
 					{selectedOption ? (selectedOption[1] ?? selectedOption[0]) : placeholder}
-				</Box>
-				<Icon name={isOpen ? 'chevron-up' : 'chevron-down'} size='x20' />
-			</Box>
+				</SelectValue>
+				<Icon name={isOpen ? 'chevron-up' : 'chevron-down'} size='x20' color='titles-labels' />
+			</SelectBox>
 			<PositionAnimated
 				visible={isOpen ? AnimatedVisibility.VISIBLE : AnimatedVisibility.HIDDEN}
 				anchor={triggerRef}
@@ -326,12 +325,8 @@ function Select<V extends Key = Key>({
 				margin={4}
 				preventScroll={isOpen}
 			>
-				<Box
-					aria-hidden={!isOpen || undefined}
-					style={isOpen ? undefined : { pointerEvents: 'none' }}
-					onPointerDown={(event: PointerEvent) => event.preventDefault()}
-				>
-					<OptionContainer style={{ width: borderBoxSize?.inlineSize }}>
+				<SelectPopup aria-hidden={!isOpen || undefined} closed={!isOpen} onPointerDown={(event: PointerEvent) => event.preventDefault()}>
+					<OptionContainer width={borderBoxSize?.inlineSize}>
 						<Listbox
 							id={listboxId}
 							aria-labelledby={props['aria-labelledby']}
@@ -352,7 +347,7 @@ function Select<V extends Key = Key>({
 							))}
 						</Listbox>
 					</OptionContainer>
-				</Box>
+				</SelectPopup>
 			</PositionAnimated>
 		</>
 	);

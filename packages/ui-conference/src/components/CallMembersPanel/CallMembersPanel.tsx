@@ -140,7 +140,16 @@ const CallMembersPanel = ({ inCall, onClose }: CallMembersPanelProps) => {
 			{/* A list per group rather than one list around everything, so each group is named by its own heading and
 			    the box around them is a `group` so the panel still has one handle. The heading is hidden from the
 			    list's contents: it already names the list, and a `list` should report only its rows. */}
-			<Box role='group' aria-label={t('Members')} flexGrow={1} overflowY='auto' paddingBlock={12}>
+			<Box
+				role='group'
+				aria-label={t('Members')}
+				display='flex'
+				flexDirection='column'
+				rowGap='x8'
+				flexGrow={1}
+				overflowY='auto'
+				paddingBlock={12}
+			>
 				{groups.map(({ title, entries }) => (
 					<ItemGroup key={title} role='list' aria-label={t(title)}>
 						<Box aria-hidden>

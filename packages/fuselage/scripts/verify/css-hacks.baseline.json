@@ -17,15 +17,6 @@
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
-	"AutoComplete/AutoComplete.styles.scss": {
-		"rules": 2,
-		"nested": 1,
-		"combinators": 0,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 0,
-		"displayContents": 0
-	},
 	"Banner/Banner.styles.css": {
 		"rules": 1,
 		"nested": 0,
@@ -161,24 +152,6 @@
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
-	"Field/Field.styles.scss": {
-		"rules": 8,
-		"nested": 7,
-		"combinators": 0,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 0,
-		"displayContents": 0
-	},
-	"FieldGroup/FieldGroup.styles.scss": {
-		"rules": 4,
-		"nested": 2,
-		"combinators": 2,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 0,
-		"displayContents": 0
-	},
 	"FramedIcon/FramedIcon.styles.scss": {
 		"rules": 5,
 		"nested": 4,
@@ -206,45 +179,27 @@
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
-	"InputBox/InputBox.styles.scss": {
-		"rules": 35,
-		"nested": 26,
-		"combinators": 7,
+	"InputBox/InputBox.styles.css": {
+		"rules": 56,
+		"nested": 0,
+		"combinators": 19,
 		"important": 0,
 		"specificityBumps": 0,
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
-	"InputBox/mixins.scss": {
-		"rules": 9,
-		"nested": 1,
-		"combinators": 4,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 0,
-		"displayContents": 0
-	},
-	"Item/Item.styles.scss": {
-		"rules": 88,
-		"nested": 60,
-		"combinators": 10,
-		"important": 0,
-		"specificityBumps": 6,
-		"negativeMargins": 2,
-		"displayContents": 0
-	},
-	"Label/Label.styles.scss": {
-		"rules": 4,
-		"nested": 3,
+	"Item/Item.styles.css": {
+		"rules": 38,
+		"nested": 0,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
-		"negativeMargins": 0,
+		"negativeMargins": 2,
 		"displayContents": 0
 	},
-	"Menu/Menu.styles.scss": {
-		"rules": 3,
-		"nested": 2,
+	"Menu/Menu.styles.css": {
+		"rules": 0,
+		"nested": 0,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
@@ -297,11 +252,11 @@
 		"displayContents": 0
 	},
 	"Message/MessageSystem/MessageSystem.styles.scss": {
-		"rules": 4,
+		"rules": 5,
 		"nested": 3,
 		"combinators": 0,
 		"important": 0,
-		"specificityBumps": 0,
+		"specificityBumps": 1,
 		"negativeMargins": 1,
 		"displayContents": 0
 	},
@@ -319,16 +274,16 @@
 		"nested": 39,
 		"combinators": 12,
 		"important": 0,
-		"specificityBumps": 1,
+		"specificityBumps": 4,
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
 	"Message/ThreadMessage/ThreadMessage.styles.scss": {
-		"rules": 9,
+		"rules": 10,
 		"nested": 8,
 		"combinators": 0,
 		"important": 0,
-		"specificityBumps": 0,
+		"specificityBumps": 1,
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
@@ -359,18 +314,18 @@
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
-	"Option/Option.styles.scss": {
-		"rules": 25,
-		"nested": 23,
-		"combinators": 1,
+	"Option/Option.styles.css": {
+		"rules": 1,
+		"nested": 0,
+		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
-		"negativeMargins": 1,
+		"negativeMargins": 0,
 		"displayContents": 0
 	},
-	"Options/Options.styles.scss": {
-		"rules": 5,
-		"nested": 3,
+	"Options/Options.styles.css": {
+		"rules": 4,
+		"nested": 0,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
@@ -413,13 +368,13 @@
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
-	"Select/Select.styles.scss": {
-		"rules": 26,
-		"nested": 21,
-		"combinators": 4,
+	"Select/Select.styles.css": {
+		"rules": 45,
+		"nested": 0,
+		"combinators": 16,
 		"important": 0,
 		"specificityBumps": 0,
-		"negativeMargins": 2,
+		"negativeMargins": 0,
 		"displayContents": 0
 	},
 	"Sidebar/Sidebar.styles.scss": {
@@ -427,7 +382,7 @@
 		"nested": 45,
 		"combinators": 2,
 		"important": 0,
-		"specificityBumps": 0,
+		"specificityBumps": 5,
 		"negativeMargins": 1,
 		"displayContents": 0
 	},
@@ -445,7 +400,7 @@
 		"nested": 21,
 		"combinators": 2,
 		"important": 0,
-		"specificityBumps": 1,
+		"specificityBumps": 2,
 		"negativeMargins": 1,
 		"displayContents": 0
 	},
@@ -472,7 +427,7 @@
 		"nested": 6,
 		"combinators": 0,
 		"important": 0,
-		"specificityBumps": 0,
+		"specificityBumps": 2,
 		"negativeMargins": 1,
 		"displayContents": 0
 	},

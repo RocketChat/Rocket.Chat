@@ -202,11 +202,10 @@ describe('[Select Component]', () => {
 		expect(results).toHaveNoViolations();
 	});
 
-	it('should forward className and style to the trigger', () => {
-		render(<Select aria-label='Time unit' options={units} className='custom' style={{ marginTop: 3 }} />);
+	it('should forward className to the trigger', () => {
+		render(<Select aria-label='Time unit' options={units} className='custom' />);
 
 		const combobox = screen.getByRole('combobox');
 		expect(combobox).toHaveClass('custom', 'rcx-select');
-		expect(combobox).toHaveStyle({ marginTop: '3px' });
 	});
 });

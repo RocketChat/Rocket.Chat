@@ -429,10 +429,14 @@
 							"customProperties",
 							"pickPositionStyle",
 							"pickSvgTitle",
+							"pickVirtualizerStyle",
 							"pickWebAnimationHandlers",
 							"pickWebCaptureHandlers",
 							"pickWebDropHandlers",
-							"pickWebPressHandlers"
+							"pickWebPressHandlers",
+							"pickWebRowHandlers",
+							"pickWebTextInputHandlers",
+							"positionedCustomProperties"
 						]
 					}
 				]

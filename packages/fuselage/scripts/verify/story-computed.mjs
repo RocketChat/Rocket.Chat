@@ -13,11 +13,12 @@ const ids = storyIds(dirA, { match: (e) => e.id.includes(filter), renders: opts.
 
 const [serverA, serverB] = await Promise.all([serve(dirA), serve(dirB)]);
 
-// Path = first rcx class (and nth among same-class siblings) of each rcx ancestor, then the element itself.
+// Path = first rcx class in alphabetical order, so a part that orders its classes differently still pairs (and nth among same-class siblings) of each rcx ancestor, then the element itself.
 const snapshot = async (page, base, id) => {
 	await openStory(page, base, id, opts.globals);
 	return page.evaluate(() => {
-		const rcxOf = (el) => [...el.classList].find((c) => c.startsWith('rcx-') && !c.startsWith('rcx-css-'));
+		const rcxClasses = (el) => [...el.classList].filter((c) => c.startsWith('rcx-') && !c.startsWith('rcx-css-')).sort();
+		const rcxOf = (el) => rcxClasses(el)[0];
 		const label = (el) => {
 			const own = rcxOf(el);
 			const same = [...el.parentElement.children].filter((s) => (own ? rcxOf(s) === own : !rcxOf(s) && s.tagName === el.tagName));
@@ -36,7 +37,7 @@ const snapshot = async (page, base, id) => {
 			if (count) key += `#${count}`;
 			out[key] = {
 				tag: el.tagName,
-				rcx: [...el.classList].filter((c) => c.startsWith('rcx-') && !c.startsWith('rcx-css-')).join(' '),
+				rcx: rcxClasses(el).join(' '),
 				style: read(globalThis.getComputedStyle(el)),
 			};
 			for (const pseudo of ['::before', '::after']) {

@@ -3,23 +3,10 @@
 		"apps/meteor/client/hooks/useItemListDrag.ts: : (row.querySelector<HTMLElement>('.rcx-item, .rcx-item-group-header') ?? row);",
 		"apps/meteor/client/hooks/useItemListDrag.ts: const surface = row.matches('.rcx-item, .rcx-item-group-header')",
 		"apps/meteor/client/hooks/useItemListDrag.ts: if (dragHandle === 'trailing' && !start.closest('.rcx-item__drag-handle')) {",
+		"apps/meteor/client/hooks/useItemListDrag.ts: preview.querySelectorAll('.rcx-item__actions').forEach((actions) => actions.remove());",
 		"apps/meteor/client/hooks/useItemListNavigation.ts: rowSelector = '.rcx-item, .rcx-item-group-header',",
 		"apps/meteor/client/sidebar/hooks/useShortcutOpenMenu.ts: event.target.closest('.rcx-item')?.querySelector<HTMLButtonElement>('.rcx-item__actions--reveal-hover button')?.click();",
 		"apps/meteor/client/views/navigation/sidebar/hooks/useShortcutOpenMenu.ts: event.target.closest('.rcx-item')?.querySelector<HTMLButtonElement>('.rcx-item__actions--reveal-hover button')?.click();",
-		"packages/fuselage/src/components/Option/Option.styles.scss: &--align-top.rcx-item {",
-		"packages/fuselage/src/components/Option/Option.styles.scss: &:focus-within &__menu-wrapper:not(.rcx-item__actions) {",
-		"packages/fuselage/src/components/Option/Option.styles.scss: &:hover &__menu-wrapper:not(.rcx-item__actions),",
-		"packages/fuselage/src/components/Option/Option.styles.scss: &:not(.rcx-item) {",
-		"packages/fuselage/src/components/Option/Option.styles.scss: &__avatar:not(.rcx-item__media) {",
-		"packages/fuselage/src/components/Option/Option.styles.scss: &__column.rcx-item__media,",
-		"packages/fuselage/src/components/Option/Option.styles.scss: &__column:not(.rcx-item__icon, .rcx-item__media) {",
-		"packages/fuselage/src/components/Option/Option.styles.scss: &__content:not(.rcx-item__content) {",
-		"packages/fuselage/src/components/Option/Option.styles.scss: &__description:not(.rcx-item__description) {",
-		"packages/fuselage/src/components/Option/Option.styles.scss: &__input.rcx-item__actions {",
-		"packages/fuselage/src/components/Option/Option.styles.scss: &__input.rcx-item__actions {",
-		"packages/fuselage/src/components/Option/Option.styles.scss: &__input:not(.rcx-item__actions) {",
-		"packages/fuselage/src/components/Option/Option.styles.scss: &__menu-wrapper:not(.rcx-item__actions) {",
-		"packages/fuselage/src/components/Options/Options.styles.scss: .rcx-item--focused:not(.rcx-item--selected):not(:hover) {",
 		"packages/fuselage/src/components/Sidebar/Sidebar.styles.scss: &__bar:focus-within &__menu-wrapper:not(.rcx-item__actions),",
 		"packages/fuselage/src/components/Sidebar/Sidebar.styles.scss: &__bar:has(&__menu-wrapper [aria-expanded='true']) &__menu-wrapper:not(.rcx-item__actions) {",
 		"packages/fuselage/src/components/Sidebar/Sidebar.styles.scss: &__bar:hover &__menu-wrapper:not(.rcx-item__actions),",
@@ -90,30 +77,59 @@
 	"rcx-sidepanel": [
 		"apps/meteor/client/views/root/MainLayout/MainLayoutStyleTags.tsx: <PaletteStyleTag theme='dark' selector='.rcx-sidebar--main, .rcx-sidebar-rail, .rcx-sidepanel, .rcx-navbar' tagId='sidebar-palette' />"
 	],
-	"rcx-select": [
-		"packages/fuselage/src/components/AutoComplete/AutoComplete.styles.scss: @extend .rcx-select;"
-	],
 	"rcx-icon": [
 		"packages/fuselage/src/components/Bubble/Bubble.styles.scss: &:not(.rcx-bubble__group) &__button:has(> .rcx-icon),",
 		"packages/fuselage/src/components/Bubble/Bubble.styles.scss: &:not(.rcx-bubble__group) &__item:has(> .rcx-icon) {",
-		"packages/fuselage/src/components/Bubble/Bubble.styles.scss: > .rcx-icon {",
-		"packages/fuselage/src/components/Select/Select.styles.scss: .rcx-select > .rcx-icon {"
+		"packages/fuselage/src/components/Bubble/Bubble.styles.scss: > .rcx-icon {"
 	],
 	"rcx-grid": [
 		"packages/fuselage/src/components/CardGrid/CardGrid.styles.css: .rcx-grid.rcx-card-grid {",
 		"packages/fuselage/src/components/CardGrid/CardGrid.styles.css: .rcx-grid__item.rcx-card-grid__item {"
 	],
 	"rcx-skeleton": [
-		"packages/fuselage/src/components/InputBox/InputBox.styles.scss: .rcx-skeleton__input {"
+		"packages/fuselage/src/components/InputBox/InputBox.styles.css: .rcx-skeleton__input {"
 	],
 	"rcx-check-box": [
 		"packages/fuselage/src/components/Message/Messages.styles.scss: > li > .rcx-check-box > .rcx-check-box__input:focus + .rcx-check-box__fake {"
 	],
-	"rcx-option": [
-		"packages/fuselage/src/components/Options/Options.styles.scss: .rcx-option--focus:not(.rcx-option--selected):not(:hover),"
+	"rcx-autocomplete": [
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-autocomplete {",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-autocomplete.rcx-autocomplete--disabled {",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-autocomplete.rcx-autocomplete--disabled {",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-autocomplete.rcx-autocomplete--invalid {",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-autocomplete.rcx-autocomplete--invalid {",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-autocomplete.rcx-autocomplete--invalid.rcx-autocomplete--disabled {",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-autocomplete.rcx-autocomplete--invalid.rcx-autocomplete--disabled {",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-autocomplete.rcx-autocomplete--invalid:active {",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-autocomplete.rcx-autocomplete--invalid:active {",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-autocomplete.rcx-autocomplete--invalid:disabled,",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-autocomplete.rcx-autocomplete--invalid:disabled,",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-autocomplete.rcx-autocomplete--invalid:focus {",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-autocomplete.rcx-autocomplete--invalid:focus,",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-autocomplete.rcx-autocomplete--invalid:focus-within {",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-autocomplete.rcx-autocomplete--invalid:hover {",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-autocomplete:active {",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-autocomplete:disabled {",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-autocomplete:disabled,",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-autocomplete:focus,",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-autocomplete:focus-within {",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-autocomplete:hover {"
 	],
 	"rcx-input-box": [
-		"packages/fuselage/src/components/Select/Select.styles.scss: @extend .rcx-input-box__addon;"
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-input-box + .rcx-select__addon,",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-input-box.rcx-select__focus:not(:disabled) {",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-input-box:disabled + .rcx-select__addon {",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-input-box:disabled + .rcx-select__addon,",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-input-box:focus + .rcx-select__addon,",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-input-box:invalid + .rcx-select__addon,",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-input-box:invalid:disabled + .rcx-select__addon,",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-input-box:invalid:focus + .rcx-select__addon,",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-select__addon:has(+ .rcx-input-box) {",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-select__addon:has(+ .rcx-input-box:disabled) {",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-select__addon:has(+ .rcx-input-box:focus) {",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-select__addon:has(+ .rcx-input-box:invalid) {",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-select__addon:has(+ .rcx-input-box:invalid:disabled) {",
+		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-select__addon:has(+ .rcx-input-box:invalid:focus) {"
 	],
 	"rcx-tag": [
 		"packages/fuselage/src/styles/normalize.scss: a:where(:not(.rcx-button, .rcx-item, .rcx-item__link, .rcx-tag)) {"

@@ -1,6 +1,6 @@
 import type { UsePositionOptions } from '@rocket.chat/fuselage-hooks';
 import type { ElementType, ReactElement } from 'react';
-import { cloneElement, useRef } from 'react';
+import { cloneElement, useEffect, useRef } from 'react';
 import type { AriaMenuProps } from 'react-aria';
 import { useButton, useMenuTrigger } from 'react-aria';
 import { createPortal } from 'react-dom';
@@ -12,6 +12,7 @@ import { IconButton } from '../Button';
 import MenuDropDown from './MenuDropdown';
 import MenuPopover from './MenuPopover';
 import type { IconButtonProps } from '../Button/IconButton';
+import { useReportOpen } from '../Item/ItemContext';
 import { getPlacement } from './helpers/helpers';
 
 export type MenuProps<T> = AriaMenuProps<T> &
@@ -28,6 +29,7 @@ export type MenuProps<T> = AriaMenuProps<T> &
 		is?: ElementType;
 		className?: string;
 		pressed?: boolean;
+		/** Any CSS length; the popup is at most 250px wide when unset. */
 		maxWidth?: string;
 		button?: ReactElement<any>;
 	};
@@ -39,7 +41,7 @@ const Menu = <T extends object>({
 	is: MenuButton = IconButton,
 	className,
 	pressed,
-	maxWidth = 'x250',
+	maxWidth,
 	button,
 	detached,
 	size = 'small',
@@ -58,6 +60,13 @@ const Menu = <T extends object>({
 		},
 		ref,
 	);
+
+	// A menu opened from hidden row actions keeps them shown, as the focus moves to the popup out of the row
+	const reportOpen = useReportOpen();
+	useEffect(() => {
+		reportOpen?.(state.isOpen);
+		return () => reportOpen?.(false);
+	}, [reportOpen, state.isOpen]);
 
 	const { document: ownerDocument } = useOwnerDocument();
 

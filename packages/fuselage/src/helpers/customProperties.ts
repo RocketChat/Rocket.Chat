@@ -1,5 +1,8 @@
 import type { CSSProperties } from 'react';
 
+import { pickPositionStyle } from './pickAttributes';
+import type { PositionStyle } from '../types/ElementAttributes';
+
 type CustomProperties = { [name: `--rcx-${string}`]: string | number | undefined };
 
 /**
@@ -13,3 +16,14 @@ export const customProperties = (properties: CustomProperties): { style: CSSProp
 	}
 	return { style };
 };
+
+/**
+ * The inline `style` of a part that `Position` places and that also carries open values: what `Position` handed it, narrowed
+ * to `PositionStyle`, and its `--rcx-*` custom properties. To spread on the literal render element.
+ */
+export const positionedCustomProperties = (
+	{ style }: { style?: object },
+	properties: CustomProperties,
+): { style: CSSProperties & PositionStyle } => ({
+	style: { ...pickPositionStyle({ style }).style, ...customProperties(properties).style },
+});

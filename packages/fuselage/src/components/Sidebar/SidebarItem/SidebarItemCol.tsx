@@ -1,8 +1,7 @@
-import type { HTMLAttributes } from 'react';
-
 import { cx } from '../../../helpers/composeClassNames';
 import { ItemContent } from '../../Item';
+import type { ItemPartAttributes } from '../../Item/types';
 
-export const SidebarItemCol = ({ className, ...props }: Omit<HTMLAttributes<HTMLDivElement>, 'is'>) => (
+export const SidebarItemCol = ({ className, ...props }: ItemPartAttributes) => (
 	<ItemContent {...props} className={cx('rcx-sidebar-item__col', className)} />
 );

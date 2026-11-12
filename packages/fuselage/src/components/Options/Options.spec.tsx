@@ -1,4 +1,5 @@
 import { composeStories } from '@storybook/react';
+import { fireEvent } from '@testing-library/react';
 import { axe } from 'jest-axe';
 
 import { render } from '../../testing';
@@ -67,6 +68,25 @@ describe('[Options]', () => {
 		);
 
 		expect(getByRole('listbox')).not.toHaveAttribute('aria-activedescendant');
+	});
+
+	it('should size the list through custom properties', () => {
+		const { getByRole, container } = render(
+			<Options options={[['a', 'A']]} cursor={0} onSelect={() => undefined} width={320} maxHeight='12rem' style={{ opacity: 0.5 }} />,
+		);
+
+		expect(getByRole('listbox').style.getPropertyValue('--rcx-options-max-height')).toBe('12rem');
+		expect((container.firstElementChild as HTMLElement).style.getPropertyValue('--rcx-options-width')).toBe('320px');
+		expect((container.firstElementChild as HTMLElement).style.opacity).toBe('0.5');
+	});
+
+	it('should tell `AnimatedVisibility` when its animation ends, which is what unmounts a hidden popup', () => {
+		const onAnimationEnd = jest.fn();
+		const { container } = render(<Options options={[['a', 'A']]} cursor={0} onSelect={() => undefined} onAnimationEnd={onAnimationEnd} />);
+
+		fireEvent.animationEnd(container.firstElementChild as HTMLElement);
+
+		expect(onAnimationEnd).toHaveBeenCalledTimes(1);
 	});
 
 	it('should scroll to the row focused by the cursor when it renders as `Item`', () => {

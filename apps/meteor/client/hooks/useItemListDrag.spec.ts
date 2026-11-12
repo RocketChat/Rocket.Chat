@@ -62,6 +62,30 @@ describe('useItemListDrag', () => {
 		expect(document.activeElement).toBe(rows[0]);
 	});
 
+	it('gives the focus back to the same control of the remounted row, ignoring the frame classes that come first', async () => {
+		const { list } = createList();
+		const original = list.querySelector<HTMLElement>('[data-drag-key="Projects"] button')!;
+		original.className = 'is_Text rcx-item-group-title _dsp-flex';
+		const onMove = jest.fn(async () => {
+			const row = list.querySelector('[data-drag-key="Projects"]')!;
+			const remounted = document.createElement('button');
+			remounted.className = 'is_Text rcx-item-group-title _dsp-flex';
+			const sibling = document.createElement('span');
+			sibling.className = 'is_Text';
+			row.replaceChildren(sibling, remounted);
+			return undefined;
+		});
+
+		const { result } = renderHook(() => useItemListDrag({ resolveTarget: () => undefined, onDrop: jest.fn(), onMove }));
+		attachDrag(result.current.ref, list);
+
+		original.focus();
+		fireEvent.keyDown(original, { key: 'ArrowDown', metaKey: true, shiftKey: true });
+
+		await waitFor(() => expect(document.activeElement).toBe(list.querySelector('[data-drag-key="Projects"] button')));
+		expect(original.isConnected).toBe(false);
+	});
+
 	it('advertises the shortcut only on the rows the keyboard can move', () => {
 		const { list, rows } = createList();
 		const onMove = jest.fn();
@@ -133,6 +157,27 @@ describe('useItemListDrag', () => {
 		fireEvent.keyDown(input, { key: 'ArrowDown', metaKey: true, shiftKey: true });
 
 		expect(onMove).not.toHaveBeenCalled();
+	});
+
+	it('lifts a copy of the row without its actions', () => {
+		const { list, rows } = createList();
+		const actions = document.createElement('div');
+		actions.className = 'rcx-item__actions';
+		list.querySelector('[data-drag-key="Projects"]')!.appendChild(actions);
+
+		const { result } = renderHook(() => useItemListDrag({ resolveTarget: () => undefined, onDrop: jest.fn() }));
+		attachDrag(result.current.ref, list);
+
+		jest.spyOn(document, 'elementsFromPoint').mockReturnValue([]);
+		rows[0].dispatchEvent(new MouseEvent('pointerdown', { bubbles: true, button: 0, clientX: 0, clientY: 0 }));
+		act(() => {
+			window.dispatchEvent(new MouseEvent('pointermove', { clientX: 0, clientY: 20 }));
+		});
+
+		const preview = document.querySelector('.rcx-item-drag-preview') as HTMLElement;
+		expect(preview).toBeInTheDocument();
+		expect(preview.querySelector('.rcx-item__actions')).toBeNull();
+		expect(list.querySelector('.rcx-item__actions')).not.toBeNull();
 	});
 
 	it('ends a drag in progress when the list is detached', () => {

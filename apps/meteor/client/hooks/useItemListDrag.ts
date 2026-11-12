@@ -305,6 +305,7 @@ export const useItemListDrag = ({
 					preview.removeAttribute('id');
 					preview.setAttribute('aria-hidden', 'true');
 					preview.classList.add('rcx-item-drag-preview');
+					preview.querySelectorAll('.rcx-item__actions').forEach((actions) => actions.remove());
 					preview.style.width = `${Math.min(sourceElement.getBoundingClientRect().width, PREVIEW_MAX_WIDTH)}px`;
 					document.body.append(preview);
 
@@ -491,7 +492,7 @@ export const useItemListDrag = ({
 				}
 
 				// Reordering detaches or remounts the row, which drops its focus; give it back to the same control once it lands.
-				const focusedClass = focused.classList[0];
+				const focusedClass = Array.from(focused.classList).find((name) => name.startsWith('rcx-'));
 				const findFocused = () => {
 					if (focused.isConnected) {
 						return focused;
