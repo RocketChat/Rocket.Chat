@@ -1,5 +1,6 @@
 import { composeStories } from '@storybook/react';
 import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 
 import * as stories from './RadioButton.stories';
@@ -19,20 +20,19 @@ describe('[RadioButton Rendering]', () => {
 });
 
 describe('[RadioButton Interacting]', () => {
-	it('changes style of element as radio button is checked', () => {
+	it('changes style of element as radio button is checked', async () => {
+		const user = userEvent.setup();
 		render(<Default />);
-		const radioButton = screen.getByRole<HTMLInputElement>('radio');
-		radioButton.click();
-		expect(radioButton.checked).toEqual(true);
+		const radioButton = screen.getByRole('radio');
+		await user.click(radioButton);
+		expect(radioButton).toBeChecked();
 	});
 	it('displays radio button with defaultChecked value correctly', () => {
 		render(<Checked />);
-		const radioButton = screen.getByRole<HTMLInputElement>('radio');
-		expect(radioButton.defaultChecked).toEqual(true);
+		expect(screen.getByRole('radio')).toBeChecked();
 	});
 	it('displays radio button disabled correctly', () => {
 		render(<Disabled />);
-		const radioButton = screen.getByRole<HTMLInputElement>('radio');
-		expect(radioButton.disabled).toEqual(true);
+		expect(screen.getByRole('radio')).toBeDisabled();
 	});
 });

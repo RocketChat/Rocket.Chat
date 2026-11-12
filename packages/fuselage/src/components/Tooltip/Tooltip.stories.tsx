@@ -1,3 +1,4 @@
+/* oxlint-disable react/no-multi-comp -- story helper components rendered by several stories */
 import type { UsePositionOptions } from '@rocket.chat/fuselage-hooks';
 import type { Meta, StoryObj } from '@storybook/react';
 import { useLayoutEffect, useRef } from 'react';
@@ -106,7 +107,7 @@ const AnchoredTooltip = ({ placement }: AnchoredTooltipProps) => {
 	);
 };
 
-const renderArrowGrid: Story['render'] = () => (
+const ArrowGrid = () => (
 	<>
 		<Box>
 			<AnchoredTooltip placement='bottom-start' />
@@ -126,12 +127,12 @@ const renderArrowGrid: Story['render'] = () => (
 );
 
 export const ArrowPositioning: Story = {
-	render: renderArrowGrid,
+	render: () => <ArrowGrid />,
 };
 
 export const ArrowPositioningRTL: Story = {
 	name: 'Arrow Positioning (RTL)',
-	render: renderArrowGrid,
+	render: () => <ArrowGrid />,
 	decorators: [
 		(Story) => {
 			// Set on the document root so the portalled tooltips inherit it too.

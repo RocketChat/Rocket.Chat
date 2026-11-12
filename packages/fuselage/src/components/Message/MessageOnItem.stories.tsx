@@ -1,3 +1,4 @@
+/* oxlint-disable react/no-multi-comp -- story row components rendered by several stories */
 import type { Meta, StoryObj } from '@storybook/react';
 import type { ReactNode } from 'react';
 
@@ -84,8 +85,8 @@ const Row = ({
 	</Message>
 );
 
-const sequentialRow = (body: ReactNode = shortText) => (
-	<Message sequential>
+const SequentialRow = ({ body = shortText, ...props }: MessageProps & { body?: ReactNode }) => (
+	<Message sequential {...props}>
 		<MessageLeftContainer />
 		<MessageContainer>
 			<MessageBody>{body}</MessageBody>
@@ -105,8 +106,8 @@ export const Sequential: Story = {
 		withPadding(
 			<>
 				<Row />
-				{sequentialRow()}
-				{sequentialRow('A second follow-up from the same author')}
+				<SequentialRow />
+				<SequentialRow body='A second follow-up from the same author' />
 			</>,
 		),
 };
@@ -135,7 +136,7 @@ export const LongBody: Story = {
 	render: () => (
 		<div style={{ maxWidth: 480 }}>
 			{withPadding(<Row body={longText} />)}
-			{sequentialRow(longText)}
+			<SequentialRow body={longText} />
 		</div>
 	),
 };
@@ -199,7 +200,7 @@ export const RTL: Story = {
 	render: () => (
 		<div dir='rtl'>
 			{withPadding(<Row />)}
-			{sequentialRow()}
+			<SequentialRow />
 		</div>
 	),
 };

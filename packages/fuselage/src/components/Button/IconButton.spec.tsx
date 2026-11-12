@@ -78,19 +78,23 @@ describe('[IconButton Component]', () => {
 	});
 
 	it('should not render a badge when there is none', () => {
-		render(<IconButton icon='balloon' aria-label='balloon' />);
+		const { container } = render(<IconButton icon='balloon' aria-label='balloon' />);
+		// oxlint-disable-next-line testing-library/no-container, testing-library/no-node-access -- an absent badge has no role, label or text to query by
+		expect(container.querySelector('.rcx-button__badge')).not.toBeInTheDocument();
 		expect(screen.getByRole('button')).not.toHaveClass('rcx-button--with-badge');
 	});
 
 	it('should hide the badge from assistive technology', () => {
-		render(<IconButton icon='balloon' aria-label='balloon, 2 unread messages' badge='2' />);
+		render(<IconButton icon='balloon' aria-label='balloon, 2 unread messages' badge={<Badge>2</Badge>} />);
 		expect(screen.getByRole('button', { name: 'balloon, 2 unread messages' })).toBeInTheDocument();
-		expect(screen.getByText('2')).toHaveAttribute('aria-hidden', 'true');
+		// oxlint-disable-next-line testing-library/no-node-access -- the badge wrapper has no role, label or text of its own
+		expect(screen.getByText('2').closest('.rcx-button__badge')).toHaveAttribute('aria-hidden', 'true');
 	});
 
 	it('should pin the badge to the bottom end corner', () => {
-		render(<IconButton icon='balloon' aria-label='balloon' badgePosition='bottom-end' badge='2' />);
-		expect(screen.getByText('2')).toHaveClass('rcx-button__badge', 'rcx-button__badge--bottom-end');
+		render(<IconButton icon='balloon' aria-label='balloon' badgePosition='bottom-end' badge={<Badge>2</Badge>} />);
+		// oxlint-disable-next-line testing-library/no-node-access -- the badge wrapper has no role, label or text of its own
+		expect(screen.getByText('2').closest('.rcx-button__badge')).toHaveClass('rcx-button__badge--bottom-end');
 	});
 
 	it('should not open an internal link in a new tab', () => {

@@ -1,3 +1,4 @@
+/* oxlint-disable react/no-multi-comp -- story row components rendered by several stories */
 import type { Meta, StoryObj } from '@storybook/react';
 
 import {
@@ -95,7 +96,7 @@ const avatarSizes = {
 	extended: 'x36',
 } as const;
 
-const roomRow = ({ name, avatar, viewMode, selected, unread, ringing }: RoomRowProps) => {
+const RoomRow = ({ name, avatar, viewMode, selected, unread, ringing }: RoomRowProps) => {
 	const icon = <SidebarItemIcon icon='hashtag-lock' label='Private channel' />;
 	const title = (
 		<SidebarItemTitle unread={!!unread}>
@@ -151,26 +152,26 @@ const roomRow = ({ name, avatar, viewMode, selected, unread, ringing }: RoomRowP
 	);
 };
 
-const roomRows = (viewMode: RoomRowProps['viewMode']) => (
+const RoomRows = ({ viewMode }: Pick<RoomRowProps, 'viewMode'>) => (
 	<>
-		{roomRow({ name: 'design-team', avatar: leterAvatarUrls[0], viewMode })}
-		{roomRow({ name: 'product', avatar: leterAvatarUrls[1], viewMode, unread: 3 })}
-		{roomRow({ name: 'marketing', avatar: leterAvatarUrls[2], viewMode, selected: true })}
-		{roomRow({ name: 'support', avatar: leterAvatarUrls[3], viewMode, ringing: true })}
+		<RoomRow name='design-team' avatar={leterAvatarUrls[0]} viewMode={viewMode} />
+		<RoomRow name='product' avatar={leterAvatarUrls[1]} viewMode={viewMode} unread={3} />
+		<RoomRow name='marketing' avatar={leterAvatarUrls[2]} viewMode={viewMode} selected />
+		<RoomRow name='support' avatar={leterAvatarUrls[3]} viewMode={viewMode} ringing />
 	</>
 );
 
 export const RoomRowCondensed: Story = {
 	name: 'Room row: condensed',
-	render: () => roomRows('condensed'),
+	render: () => <RoomRows viewMode='condensed' />,
 };
 
 export const RoomRowMedium: Story = {
 	name: 'Room row: medium',
-	render: () => roomRows('medium'),
+	render: () => <RoomRows viewMode='medium' />,
 };
 
 export const RoomRowExtended: Story = {
 	name: 'Room row: extended',
-	render: () => roomRows('extended'),
+	render: () => <RoomRows viewMode='extended' />,
 };

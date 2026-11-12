@@ -58,17 +58,19 @@ describe('Option', () => {
 	it('should keep the `rcx-option__content` class on the label', () => {
 		render(<Option label='Empty' />);
 
-		expect(screen.getByText('Empty', { selector: 'div.rcx-option__content > *' })).toBeInTheDocument();
+		// oxlint-disable-next-line testing-library/no-node-access -- the content wrapper has no role, label or text of its own
+		expect(screen.getByText('Empty').closest('div.rcx-option__content')).not.toBe(null);
 	});
 
 	it('should name the icon with `iconLabel` and hide it otherwise', () => {
-		const { rerender } = render(<Option label='rocket.cat' icon='globe' iconLabel='Federated' />);
+		const { rerender, container } = render(<Option label='rocket.cat' icon='globe' iconLabel='Federated' />);
 
 		expect(screen.getByRole('img', { name: 'Federated' })).toBeInTheDocument();
 
 		rerender(<Option label='rocket.cat' icon='globe' />);
 
-		expect(screen.queryByRole('img')).not.toBeInTheDocument();
+		// oxlint-disable-next-line testing-library/no-container, testing-library/no-node-access -- a hidden icon has no role, label or text to query by
+		expect(container.querySelector('.rcx-option__column')).toHaveAttribute('aria-hidden', 'true');
 	});
 
 	it('should call onClick when click', async () => {

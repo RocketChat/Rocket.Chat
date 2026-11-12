@@ -24,6 +24,7 @@ describe('[Contextualbar Rendering]', () => {
 		const titleElement = screen.getByRole('heading');
 
 		expect(titleElement).toHaveClass('rcx-vertical-bar__title');
-		expect(screen.getByText(/Contextualbar Long Title/, { selector: '.rcx-vertical-bar__header-inner > *' })).toBe(titleElement);
+		// oxlint-disable-next-line testing-library/no-node-access -- the header wrapper has no role, label or text of its own
+		expect(titleElement.parentElement).toHaveClass('rcx-vertical-bar__header-inner');
 	});
 });

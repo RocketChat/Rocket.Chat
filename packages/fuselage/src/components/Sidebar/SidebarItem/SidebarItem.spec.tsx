@@ -37,7 +37,7 @@ describe('[SidebarItem Component]', () => {
 	});
 
 	it('should name the icon by its label, and hide it without one', () => {
-		render(
+		const { container } = render(
 			<SidebarItem href='#general'>
 				<SidebarItemIcon icon='lock' label='Private channel' />
 				<SidebarItemIcon icon='star' />
@@ -46,7 +46,8 @@ describe('[SidebarItem Component]', () => {
 		);
 
 		expect(screen.getByRole('img', { name: 'Private channel' })).toHaveClass('rcx-item__icon', 'rcx-sidebar-item__icon');
-		expect(screen.getAllByRole('img')).toHaveLength(1);
+		// oxlint-disable-next-line testing-library/no-container, testing-library/no-node-access -- a hidden icon has no role, label or text to query by
+		expect(container.querySelectorAll('.rcx-item__icon[aria-hidden="true"]')).toHaveLength(1);
 	});
 
 	it('should reveal the menu on hover and keep the `__menu` wrapper', () => {
@@ -64,7 +65,8 @@ describe('[SidebarItem Component]', () => {
 			'rcx-item__actions',
 			'rcx-item__actions--reveal-hover',
 		);
-		expect(screen.getByText('Options', { selector: '.rcx-sidebar-item__menu > button' })).toBeInTheDocument();
+		// oxlint-disable-next-line testing-library/no-node-access -- the menu wrapper has no role, label or text of its own
+		expect(screen.getByRole('button', { name: 'Options' }).parentElement).toHaveClass('rcx-sidebar-item__menu');
 	});
 
 	it('should keep the `SidebarLink` title a direct child of the link', () => {
@@ -74,8 +76,10 @@ describe('[SidebarItem Component]', () => {
 			</SidebarLink>,
 		);
 
-		expect(screen.getByRole('link', { name: 'Home' })).toHaveClass('rcx-item', 'rcx-sidebar-link');
-		expect(screen.getByText('Home', { selector: 'a.rcx-sidebar-link > .rcx-sidebar-item__title' })).toBeInTheDocument();
+		const link = screen.getByRole('link', { name: 'Home' });
+		expect(link).toHaveClass('rcx-item', 'rcx-sidebar-link');
+		// oxlint-disable-next-line testing-library/no-node-access -- asserts the title is a direct child of the link, which no query expresses
+		expect(link.querySelector(':scope > .rcx-sidebar-item__title')).not.toBe(null);
 	});
 });
 

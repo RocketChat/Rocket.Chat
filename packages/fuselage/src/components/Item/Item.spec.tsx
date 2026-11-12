@@ -168,7 +168,7 @@ describe('Item', () => {
 	});
 
 	it('references only ids that exist, and keeps ids unique, with two labelled icons', () => {
-		render(
+		const { container } = render(
 			<Item role='menuitem'>
 				<ItemIcon label='Away' />
 				<ItemIcon label='Raised hand' />
@@ -181,13 +181,18 @@ describe('Item', () => {
 			</Item>,
 		);
 
-		const [away, raisedHand] = screen.getAllByRole('img');
-		expect(away.id).not.toBe(raisedHand.id);
+		// oxlint-disable-next-line testing-library/no-container, testing-library/no-node-access -- the invariant covers every id in the tree, which no query can enumerate
+		const ids = Array.from(container.querySelectorAll('[id]')).map((element) => element.id);
+		expect(new Set(ids).size).toBe(ids.length);
 
-		const menuItem = screen.getByRole('menuitem');
-		expect(menuItem).toHaveAccessibleName('Title Kenji');
-		expect(menuItem).toHaveAttribute('aria-describedby', `${away.id} ${raisedHand.id}`);
-		expect(screen.getByRole('link', { name: 'Kenji' })).toHaveAttribute('aria-describedby', `${away.id} ${raisedHand.id}`);
+		// oxlint-disable-next-line testing-library/no-container, testing-library/no-node-access -- the invariant covers every id reference in the tree, which no query can enumerate
+		container.querySelectorAll('[aria-describedby], [aria-labelledby]').forEach((element) => {
+			const refs = `${element.getAttribute('aria-describedby') ?? ''} ${element.getAttribute('aria-labelledby') ?? ''}`
+				.split(' ')
+				.filter(Boolean);
+			// oxlint-disable-next-line testing-library/no-container, testing-library/no-node-access -- resolves a raw id reference, which no query can look up
+			refs.forEach((id) => expect(container.querySelector(`[id="${CSS.escape(id)}"]`)).not.toBeNull());
+		});
 	});
 
 	it('describes a menu item by an icon that has its own id', () => {
@@ -365,8 +370,10 @@ describe('ItemActions', () => {
 			</ItemActions>,
 		);
 
-		expect(screen.getByTestId('actions')).toHaveClass('rcx-item__actions--reveal-hover');
-		expect(screen.getByText('Options', { selector: '[data-testid="actions"] > .rcx-item__actions-inner > button' })).toBeInTheDocument();
+		const actions = screen.getByTestId('actions');
+		expect(actions).toHaveClass('rcx-item__actions--reveal-hover');
+		// oxlint-disable-next-line testing-library/no-node-access -- the inner wrapper has no role, label or text of its own
+		expect(actions.firstElementChild).toHaveClass('rcx-item__actions-inner');
 	});
 
 	it('keeps hidden actions reachable with the keyboard', async () => {

@@ -41,7 +41,9 @@ it('should mark the input invalid when error changes asynchronously', async () =
 it('should put className on the wrapper only when there is an addon', () => {
 	render(<WithAddon className='custom' aria-label='with-addon' />);
 
-	const input = screen.getByLabelText('with-addon', { selector: '.custom > input' });
+	const input = screen.getByRole('textbox', { name: 'with-addon' });
+	// oxlint-disable-next-line testing-library/no-node-access -- the addon wrapper has no role, label or text of its own
+	expect(input.parentElement).toHaveClass('custom');
 	expect(input).not.toHaveClass('custom');
 });
 
@@ -59,8 +61,8 @@ it('should flush the end addon only when requested', () => {
 		</>,
 	);
 
-	expect(
-		screen.getByLabelText('regular', { selector: '.rcx-input-box__wrapper:not(.rcx-input-box__wrapper--end-addon-flush) > input' }),
-	).toBeInTheDocument();
-	expect(screen.getByLabelText('flush', { selector: '.rcx-input-box__wrapper--end-addon-flush > input' })).toBeInTheDocument();
+	// oxlint-disable-next-line testing-library/no-node-access -- the addon wrapper has no role, label or text of its own
+	expect(screen.getByRole('textbox', { name: 'regular' }).parentElement).not.toHaveClass('rcx-input-box__wrapper--end-addon-flush');
+	// oxlint-disable-next-line testing-library/no-node-access -- the addon wrapper has no role, label or text of its own
+	expect(screen.getByRole('textbox', { name: 'flush' }).parentElement).toHaveClass('rcx-input-box__wrapper--end-addon-flush');
 });
