@@ -1,7 +1,7 @@
-import type { LayoutBlockish } from '../LayoutBlockish';
-import type { RichTextBlock } from './RichTextBlock';
-import type { RawTextTableCell } from './TableBlock';
-import type { ButtonElement } from '../elements/ButtonElement';
+import type { LayoutBlockish } from '../LayoutBlockish.js';
+import type { RichTextBlock } from './RichTextBlock.js';
+import type { RawTextTableCell } from './TableBlock.js';
+import type { ButtonElement } from '../elements/ButtonElement.js';
 
 /** A number the table sorts numerically; `text` is shown in its place when given. */
 export type RawNumberTableCell = {

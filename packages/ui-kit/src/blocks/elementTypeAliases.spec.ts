@@ -1,11 +1,11 @@
-import type { BlockElement } from './BlockElement';
-import { toCanonicalElement, toCanonicalElementType } from './elementTypeAliases';
-import { isActionsBlockElement } from './isActionsBlockElement';
-import { isSectionBlockAccessoryElement } from './isSectionBlockAccessoryElement';
-import type { ActionOf } from '../rendering/ActionOf';
-import type { CheckboxElement } from './elements/CheckboxElement';
-import type { RadioButtonElement } from './elements/RadioButtonElement';
-import type { TimePickerElement } from './elements/TimePickerElement';
+import type { BlockElement } from './BlockElement.js';
+import { toCanonicalElement, toCanonicalElementType } from './elementTypeAliases.js';
+import { isActionsBlockElement } from './isActionsBlockElement.js';
+import { isSectionBlockAccessoryElement } from './isSectionBlockAccessoryElement.js';
+import type { ActionOf } from '../rendering/ActionOf.js';
+import type { CheckboxElement } from './elements/CheckboxElement.js';
+import type { RadioButtonElement } from './elements/RadioButtonElement.js';
+import type { TimePickerElement } from './elements/TimePickerElement.js';
 
 const option = { text: { type: 'plain_text', text: 'A' }, value: 'a' } as const;
 const ids = { appId: 'a', blockId: 'b', actionId: 'c' };

@@ -1,4 +1,4 @@
-import { withElementIds } from './withElementIds';
+import { withElementIds } from './withElementIds.js';
 
 it('gives elements the ids of their block, or empty ones, without overriding the ones they have', () => {
 	expect(

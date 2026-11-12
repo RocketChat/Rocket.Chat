@@ -1,4 +1,4 @@
-import type { LayoutBlockish } from '../LayoutBlockish';
+import type { LayoutBlockish } from '../LayoutBlockish.js';
 
 /** An uploaded file shown as a card with a link to download it. */
 export type FileBlock = LayoutBlockish<{

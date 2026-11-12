@@ -1,6 +1,6 @@
-import type { LayoutBlockish } from '../LayoutBlockish';
-import type { TextObject } from '../TextObject';
-import type { ButtonElement } from '../elements/ButtonElement';
+import type { LayoutBlockish } from '../LayoutBlockish.js';
+import type { TextObject } from '../TextObject.js';
+import type { ButtonElement } from '../elements/ButtonElement.js';
 
 /** An image given by its URL; the URL has at most 3000 characters and `alt_text` at most 2000. */
 export type CardImage = {

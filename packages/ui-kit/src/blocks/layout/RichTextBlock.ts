@@ -1,4 +1,4 @@
-import type { LayoutBlockish } from '../LayoutBlockish';
+import type { LayoutBlockish } from '../LayoutBlockish.js';
 
 export type RichTextStyle = {
 	bold?: boolean;

@@ -1,4 +1,4 @@
-import type { Actionable } from '../Actionable';
+import type { Actionable } from '../Actionable.js';
 
 /** Lets the user attach files; the value is the list of the uploaded file IDs. */
 export type FileInputElement = Actionable<{

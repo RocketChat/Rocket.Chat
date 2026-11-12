@@ -1,5 +1,5 @@
-import type { LayoutBlockish } from '../LayoutBlockish';
-import type { TextObject } from '../TextObject';
+import type { LayoutBlockish } from '../LayoutBlockish.js';
+import type { TextObject } from '../TextObject.js';
 
 /** A short notice about something the reader should know, styled by its level. */
 export type AlertBlock = LayoutBlockish<{
