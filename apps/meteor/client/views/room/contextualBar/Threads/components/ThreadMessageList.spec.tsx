@@ -18,6 +18,8 @@ const mockVirtualizerHandle = {
 	scrollSize: 1000,
 	viewportSize: 300,
 };
+const mockRenderedVList = { keepMounted: undefined as number[] | undefined };
+const mockHandleDateScroll = jest.fn();
 
 jest.mock('virtua', () => {
 	const { Children, forwardRef, useImperativeHandle } = jest.requireActual<typeof import('react')>('react');
@@ -31,7 +33,7 @@ jest.mock('virtua', () => {
 					children,
 					onScroll,
 					shift: _shift,
-					keepMounted: _keepMounted,
+					keepMounted,
 					...props
 				}: {
 					children: ReactNode;
@@ -42,6 +44,7 @@ jest.mock('virtua', () => {
 				ref: any,
 			) => {
 				useImperativeHandle(ref, () => mockVirtualizerHandle);
+				mockRenderedVList.keepMounted = keepMounted;
 				return (
 					<div data-testid='thread-message-list' onScroll={() => onScroll?.(mockVirtualizerHandle.scrollOffset)} {...props}>
 						{Children.map(children, (child) => (child ? <div>{child}</div> : child))}
@@ -84,7 +87,7 @@ jest.mock('../hooks/useThreadMessagesQuery', () => ({
 jest.mock('../../../hooks/useDateScroll', () => ({
 	useDateScroll: () => ({
 		bubbleRef: { current: null },
-		handleDateScroll: jest.fn(),
+		handleDateScroll: mockHandleDateScroll,
 	}),
 }));
 
@@ -239,5 +242,51 @@ describe('ThreadMessageList accessibility', () => {
 		const { container } = renderThreadMessageList();
 
 		expect(await axe(container)).toHaveNoViolations();
+	});
+});
+
+describe('ThreadMessageList rows', () => {
+	const mainMessage = createFakeMessage<IThreadMainMessage>({
+		_id: 'thread-id',
+		rid: room._id,
+		msg: 'main message',
+		tcount: 2,
+		u: { _id: 'user-id', username: 'user', name: 'User' },
+	});
+
+	const withFile = { ...createThreadMessage(1), files: [{ _id: 'file-id', name: 'file.png', type: 'image/png', size: 1 }] };
+
+	beforeEach(() => {
+		(useThreadMessagesQuery as jest.Mock).mockReturnValue({
+			data: { messages: [withFile, createThreadMessage(2)] },
+			isLoading: false,
+			fetchNextPage: jest.fn(),
+			hasNextPage: false,
+			isFetchingNextPage: false,
+			fetchPreviousPage: jest.fn(),
+			hasPreviousPage: true,
+			isFetchingPreviousPage: false,
+			loadMessageAround: jest.fn(),
+		});
+	});
+
+	const renderThreadMessageList = () =>
+		render(<ThreadMessageList mainMessage={mainMessage} shouldJumpToBottom={false} setShouldJumpToBottom={jest.fn()} />, {
+			wrapper: mockAppRoot().withJohnDoe().withSetting('Message_GroupingPeriod', 300).withUserPreference('displayAvatars', true).build(),
+		});
+
+	it('keeps mounted the row of a message with a file while the older loader is the first row', () => {
+		renderThreadMessageList();
+
+		expect(mockRenderedVList.keepMounted).toEqual([1]);
+	});
+
+	it('reports the message of the topmost row, not the one below it, while the older loader is the first row', () => {
+		mockVirtualizerHandle.findItemIndex.mockReturnValueOnce(1);
+
+		renderThreadMessageList();
+		fireEvent.scroll(screen.getByTestId('thread-message-list'));
+
+		expect(mockHandleDateScroll).toHaveBeenCalledWith(withFile, mockVirtualizerHandle.scrollOffset);
 	});
 });
