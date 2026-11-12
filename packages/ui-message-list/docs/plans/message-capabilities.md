@@ -1,6 +1,6 @@
 # Plan: Message capabilities and non-attachment message content (from specs/message-capabilities.md, 2026-11-12)
 
-Status: approved.
+Status: done.
 
 The package half is copied from the frozen reference (`message-list-ref`): contexts and test
 helper from `a7d7c91b0e0`, content parts from `e9f081a1aca`, provider from `78155034d47`, each at

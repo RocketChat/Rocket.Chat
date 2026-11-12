@@ -1,5 +1,5 @@
 ---
-status: planned
+status: implemented
 adrs: []
 code:
   [
@@ -222,7 +222,35 @@ empty or off, or mounted no provider)
 
 ## Design
 
-Decided in the plan.
+The package owns the ten contexts (`src/Message/contexts`). Each is a value type, a default, a
+provider-less hook and a `use*` accessor, so a component asks for an intent and the default keeps it
+working in stories and jsdom. Content parts read only those contexts, the packages the package may
+depend on (`ui-client`, `ui-contexts`, `core-typings`, `message-parser`) and their own props.
+
+The app owns `MessagesProvider` (`apps/meteor/client/providers/MessagesProvider`). One `use*Value`
+hook per context builds its value from the app: settings and preferences for display, the router for
+navigation, the chat, modals, mutations and the REST API for interactions, stores and queries for
+related data, the parser and the translations for content, and gazzodown, UiKit and emoji for the
+renderers. A message fetched by id takes a revision of what the caller reads from it, and a copy fetched for another
+revision is not reused, so what the app caches never outlives what is shown. The toolbar, media and editing
+values are not built yet and keep their defaults.
+
+The old list provider mounts `MessagesProvider` with the room and subscription it already has, so the
+display context and the old list context come from the same settings wherever a list shows messages;
+the places outside the lists mount their own, read-only ones with `allowsInteraction={false}`. The
+app's variants and attachments read the package's content parts. The app's copies are gone, with
+these exceptions: `MessageCollapsible`, `CollapsibleContent`, `Action`, `useCollapse`,
+`useIsCollapsibleToggled` and the five download and size files stay because the app's attachments
+still import them, until attachments move; `location/*` stays because the share-location modal
+imports `MapView`, not because of attachments.
+
+Notes for later branches:
+
+- `display.showUsername` is only "the viewer does not hide usernames". It lacks the old
+  `getAuthorUsername` conditions (real names on, and the name differing from the username), and
+  nothing reads it yet. The variants branch must not treat the two as equal.
+- The exported `MessageCollapsible` with `hasDownload` on an encrypted link does nothing until the
+  attachments branch provides the media context (`downloadEncrypted`).
 
 ## Out of scope
 
@@ -237,7 +265,7 @@ Decided in the plan.
 
 ## Known defects
 
-None; not implemented.
+None.
 
 ## Open questions
 
