@@ -31,6 +31,12 @@ export async function reply({ tmid }: { tmid?: string }, message: IMessage, pare
 	]);
 
 	const threadFollowersUids = threadFollowers?.filter((userId) => userId !== u._id && !mentionIds.includes(userId)) || [];
+	let groupMentionUserIds: string[] = [];
+	if (toAll || toHere) {
+		groupMentionUserIds = (await Subscriptions.find({ rid }, { projection: { 'u._id': 1 } }).toArray())
+			.map(({ u: { _id: userId } }) => userId)
+			.filter((userId) => userId !== u._id);
+	}
 
 	// Notify everyone involved in the thread
 	const notifyOptions = toAll || toHere ? { groupMention: true } : {};
@@ -38,7 +44,9 @@ export async function reply({ tmid }: { tmid?: string }, message: IMessage, pare
 	// Notify message mentioned users and highlights
 	const mentionedUsers = [...new Set([...mentionIds, ...highlightsUids])];
 
-	const promises = [Subscriptions.addUnreadThreadByRoomIdAndUserIds(rid, threadFollowersUids, tmid, notifyOptions)];
+	const promises = [
+		Subscriptions.addUnreadThreadByRoomIdAndUserIds(rid, [...new Set([...threadFollowersUids, ...groupMentionUserIds])], tmid, notifyOptions),
+	];
 
 	if (mentionedUsers.length) {
 		promises.push(Subscriptions.addUnreadThreadByRoomIdAndUserIds(rid, mentionedUsers, tmid, { userMention: true }));
@@ -53,7 +61,7 @@ export async function reply({ tmid }: { tmid?: string }, message: IMessage, pare
 
 	await Promise.allSettled(promises);
 
-	void notifyOnSubscriptionChangedByRoomIdAndUserIds(rid, [...threadFollowersUids, ...mentionedUsers, ...highlightsUids]);
+	void notifyOnSubscriptionChangedByRoomIdAndUserIds(rid, [...threadFollowersUids, ...groupMentionUserIds, ...mentionedUsers, ...highlightsUids]);
 }
 
 export async function follow({ tmid, uid }: { tmid: string; uid: string }) {

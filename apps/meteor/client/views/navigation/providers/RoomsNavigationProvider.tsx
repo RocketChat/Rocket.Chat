@@ -46,6 +46,7 @@ const updateGroupUnreadInfo = (room: SubscriptionWithRoom, current: GroupedUnrea
 		groupMentions: current.groupMentions + (room.groupMentions || 0),
 		tunread: [...current.tunread, ...(room.tunread || [])],
 		tunreadUser: [...current.tunreadUser, ...(room.tunreadUser || [])],
+		tunreadGroup: [...current.tunreadGroup, ...(room.tunreadGroup || [])],
 		unread: current.unread + (room.unread || (!room.unread && !room.tunread?.length && room.alert ? 1 : 0)),
 	};
 };
