@@ -22,12 +22,12 @@ const models = {
 		findOneByEmailAddress: sinon.stub(),
 		setAvatarData: sinon.stub(),
 		removeById: sinon.stub(),
+		setPasswordHash: sinon.stub(),
 	},
 	Roles: {
 		countUsersInRole: sinon.stub(),
 	},
 };
-const setPasswordAsync = sinon.stub();
 const settingsGet = sinon.stub();
 const avatarStore = {
 	deleteByName: sinon.stub(),
@@ -35,10 +35,8 @@ const avatarStore = {
 };
 
 const { insertAdminUserFromEnv, insertInitialData } = proxyquire.noCallThru().load('./initialData', {
-	'meteor/accounts-base': {
-		Accounts: {
-			setPasswordAsync,
-		},
+	'@rocket.chat/account-utils': {
+		hashPassword: async (password: string) => `hashed=${password}`,
 	},
 	'meteor/meteor': {
 		Meteor: {},
@@ -72,7 +70,7 @@ describe('insertAdminUserFromEnv', () => {
 		addUserRolesAsync.reset();
 		models.Users.create.reset();
 		models.Users.findOneByEmailAddress.reset();
-		setPasswordAsync.reset();
+		models.Users.setPasswordHash.reset();
 		settingsGet.reset();
 		process.env.ADMIN_PASS = 'pass';
 		models.Roles.countUsersInRole.reset();
@@ -102,7 +100,7 @@ describe('insertAdminUserFromEnv', () => {
 		expect(validateEmail.called).to.be.true;
 		expect(validateEmail.calledWith('email')).to.be.true;
 		expect(models.Users.create.called).to.be.true;
-		expect(setPasswordAsync.called).to.be.true;
+		sinon.assert.calledOnceWithExactly(models.Users.setPasswordHash, 'newuserid', 'hashed=pass');
 		expect(result).to.be.undefined;
 	});
 	it('should override the admins name when process.env.ADMIN_NAME is set', async () => {
@@ -218,7 +216,7 @@ describe('insertAdminUserFromEnv', () => {
 		await insertAdminUserFromEnv();
 
 		expect(addUserRolesAsync.called).to.be.true;
-		expect(setPasswordAsync.called).to.be.true;
+		expect(models.Users.setPasswordHash.called).to.be.true;
 		expect(models.Users.create.calledWith(sinon.match({ name: 'name', username: '1234', emails: [{ address: 'email', verified: true }] })))
 			.to.be.true;
 	});

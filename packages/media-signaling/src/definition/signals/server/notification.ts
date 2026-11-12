@@ -1,4 +1,4 @@
-import type { CallFeature, CallHangupReason, CallNotification } from '../../call';
+import type { CallFeature, CallHangupReason, CallNotification } from '../../call/index.js';
 
 /** Server is sending a notification about the call state */
 export type ServerMediaSignalNotification = {

@@ -1,5 +1,5 @@
-import type { LayoutBlockish } from '../LayoutBlockish';
-import type { PlainText } from '../text/PlainText';
+import type { LayoutBlockish } from '../LayoutBlockish.js';
+import type { PlainText } from '../text/PlainText.js';
 
 export type ImageBlock = LayoutBlockish<{
 	type: 'image';

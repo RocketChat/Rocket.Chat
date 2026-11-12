@@ -1,9 +1,9 @@
+import { hashPassword } from '@rocket.chat/account-utils';
 import { ClientSafeError } from '@rocket.chat/core-services';
 import { UserStatus, type IUser } from '@rocket.chat/core-typings';
 import { Settings, Rooms, Users, Roles } from '@rocket.chat/models';
 import { validateEmail } from '@rocket.chat/tools';
 import colors from 'colors/safe';
-import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
 import { addCallHistoryTestData } from './callHistoryTestData';
@@ -76,7 +76,7 @@ export async function insertAdminUserFromEnv() {
 
 			const { insertedId: userId } = await Users.create(adminUser);
 
-			await Accounts.setPasswordAsync(userId, process.env.ADMIN_PASS);
+			await Users.setPasswordHash(userId, await hashPassword(process.env.ADMIN_PASS));
 
 			await addUserRolesAsync(userId, ['admin']);
 		} else {
@@ -240,7 +240,7 @@ export const insertInitialData = async (): Promise<void> => {
 
 		await Users.create(adminUser);
 
-		await Accounts.setPasswordAsync(adminUser._id, adminUser._id);
+		await Users.setPasswordHash(adminUser._id, await hashPassword(adminUser._id));
 
 		await addUserRolesAsync(adminUser._id, ['admin']);
 

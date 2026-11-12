@@ -1,5 +1,5 @@
-import type { ConfirmationDialog } from './ConfirmationDialog';
-import type { InputElementDispatchAction } from './InputElementDispatchAction';
+import type { ConfirmationDialog } from './ConfirmationDialog.js';
+import type { InputElementDispatchAction } from './InputElementDispatchAction.js';
 
 export type Actionable<Block> = Block & {
 	appId: string;

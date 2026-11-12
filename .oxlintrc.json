@@ -285,8 +285,8 @@
 				"packages/fuselage-ui-kit/**/*.{ts,tsx}",
 				"packages/ui-account/**/*.{ts,tsx}",
 				"packages/ui-client/**/*.{ts,tsx}",
-				"packages/ui-voip/**/*.{ts,tsx}",
-				"packages/web-ui-registration/**/*.{ts,tsx}"
+				"packages/ui-registration/**/*.{ts,tsx}",
+				"packages/ui-voip/**/*.{ts,tsx}"
 			],
 			"rules": {
 				"no-unused-vars": [
@@ -311,7 +311,7 @@
 			}
 		},
 		{
-			"files": ["packages/{sha256,models}/**/*"],
+			"files": ["packages/{account-utils,sha256,models}/**/*"],
 			"rules": {
 				"new-cap": [
 					"error",
@@ -341,6 +341,22 @@
 					{
 						"selector": "MemberExpression[object.name='Meteor'][property.name='startup']",
 						"message": "Register at module level, or export a function and call it from runStartupTasks() in server/startup/startupTasks.ts."
+					},
+					{
+						"selector": "MemberExpression[object.name='Accounts'][property.name=/^_(generateStampedLoginToken|insertLoginToken|insertHashedLoginToken|hashStampedToken|hashLoginToken)$/]",
+						"message": "Use issueLoginToken from 'server/lib/auth/issueLoginToken', or the helpers in '@rocket.chat/account-utils', instead."
+					},
+					{
+						"selector": "MemberExpression[object.name='Accounts'][property.name='_clearAllLoginTokens']",
+						"message": "Use Users.unsetLoginTokens(userId) instead."
+					},
+					{
+						"selector": "MemberExpression[object.name='Accounts'][property.name=/^(_checkPassword|_checkPasswordAsync|_bcryptRounds)$/]",
+						"message": "Use compareUserPassword from 'server/lib/compareUserPassword', or verifyPassword and BCRYPT_ROUNDS from '@rocket.chat/account-utils', instead."
+					},
+					{
+						"selector": "MemberExpression[object.name='Accounts'][property.name=/^setPassword(Async)?$/]",
+						"message": "Use Users.setPasswordHash(userId, await hashPassword(password)) with hashPassword from '@rocket.chat/account-utils' instead."
 					}
 				]
 			}
@@ -386,7 +402,7 @@
 				"packages/storybook-config/src/logo.svg.d.ts",
 				"{ee/packages,packages}/*/jest.config.ts",
 				"ee/packages/pdf-worker/.storybook/*.{ts,tsx}",
-				"packages/{gazzodown,ui-account,ui-client,ui-composer,ui-voip,web-ui-registration}/.storybook/*.{ts,tsx}"
+				"packages/{gazzodown,ui-account,ui-client,ui-composer,ui-registration,ui-voip}/.storybook/*.{ts,tsx}"
 			],
 			"rules": {
 				"typescript/prefer-optional-chain": "off",

@@ -1,6 +1,6 @@
 import { memoize } from '@rocket.chat/memo';
 
-import { createAnimationName, escapeName } from './names';
+import { createAnimationName, escapeName } from './names.js';
 
 /**
  * A shared state created by the upmost Evaluable in the call stack

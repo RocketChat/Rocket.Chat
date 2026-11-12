@@ -97,10 +97,10 @@
     "@rocket.chat/ui-livekit": "0.0.1",
     "@rocket.chat/ui-media": "0.0.1",
     "@rocket.chat/ui-preview": "0.0.0",
+    "@rocket.chat/ui-registration": "35.0.0",
     "@rocket.chat/ui-video-conf": "35.0.0",
     "@rocket.chat/ui-voip": "25.0.0",
-    "@rocket.chat/visual-regression": "0.0.1",
-    "@rocket.chat/web-ui-registration": "35.0.0"
+    "@rocket.chat/visual-regression": "0.0.1"
   },
   "changesets": [
     "abac-audit-logging-gaps",
