@@ -58,10 +58,19 @@ const hits = [];
 for (const row of grepRows().split('\n').filter(Boolean)) {
 	const [, file, line, text] = /^([^:]+):(\d+):(.*)$/.exec(row);
 	if (NOT_OVERRIDES.test(file) || COMMENT_LINE.test(text) || DOM_LOOKUP.test(text)) continue;
-	for (const target of classes.filter((c) => new RegExp(`\\.${c}(--|__|[^A-Za-z0-9_-]|$)`).test(text))) {
+	for (const target of classes) {
+		const targets = new RegExp(`\\.${target}(--|__|[^A-Za-z0-9_-]|$)`);
+		const selectors = text.split(/[,{]/).filter((selector) => targets.test(selector));
+		if (!selectors.length) continue;
 		const own = folderOf.get(target);
 		if (own && file.startsWith(`packages/fuselage/src/components/${own}/`)) continue;
-		hits.push({ target, file, line: Number(line), selector: text.trim().slice(0, 140), unprefixed: !text.includes('[class]') });
+		hits.push({
+			target,
+			file,
+			line: Number(line),
+			selector: text.trim().slice(0, 140),
+			unprefixed: selectors.some((selector) => !selector.includes('[class]')),
+		});
 	}
 }
 
