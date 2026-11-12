@@ -15,6 +15,9 @@ const MASTER_FETCH_BATCH_SIZE = 5;
 /** Without this, Graph answers in the mailbox's own timezone with the zone in a sibling field. */
 const PREFER_UTC = 'outlook.timezone="UTC"';
 
+/** Graph's default delta page is small and undocumented, and the page caps downstream count pages, not items. */
+const PREFER_PAGE_SIZE = 'odata.maxpagesize=100';
+
 type GraphDateTimeTimeZone = {
 	dateTime?: unknown;
 	timeZone?: unknown;
@@ -82,7 +85,7 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 	public async listEvents(mailbox: string, timeWindow: DateRange, cursor?: string): Promise<EventPage> {
 		const payload = await this.requestJson<GraphDeltaResponse>(
 			cursor ?? this.calendarViewDeltaUrl(mailbox, timeWindow),
-			{ headers: { Prefer: PREFER_UTC } },
+			{ headers: { Prefer: `${PREFER_UTC}, ${PREFER_PAGE_SIZE}` } },
 			{ delta: true },
 		);
 
