@@ -40,7 +40,8 @@ export default (instance: MessageTypes) => {
 				return t('New_chat_transfer', { transfer: '' });
 			}
 
-			const { comment } = message.transferData;
+			// Comment is now in the message body (msg field) for proper text wrapping
+			const comment = message.msg;
 			const commentLabel = comment && comment !== '' ? '_with_a_comment' : '';
 			const from =
 				message.transferData.transferredBy && (message.transferData.transferredBy.name || message.transferData.transferredBy.username);
