@@ -16,7 +16,7 @@ export class TrashRaw extends BaseRaw<RocketChatRecordDeleted<any>> {
 		return [
 			{ key: { __collection__: 1 } },
 			{ key: { _deletedAt: 1 }, expireAfterSeconds: 60 * 60 * 24 * 30 },
-			{ key: { rid: 1, __collection__: 1, _deletedAt: 1 } },
+			{ key: { rid: 1, __collection__: 1, _deletedAt: 1, _id: 1 } },
 		];
 	}
 }
