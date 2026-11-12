@@ -280,6 +280,12 @@ $sidebar-color-stroke-extra-light: theme('sidebar-color-stroke-extra-light', col
 			display: inline-block;
 
 			text-decoration: underline;
+
+			&:where(button) {
+				@include use-link-colors($color: colors.font(info));
+
+				background-color: transparent;
+			}
 		}
 
 		&--info {
