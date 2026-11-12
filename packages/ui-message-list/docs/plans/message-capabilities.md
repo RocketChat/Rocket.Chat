@@ -95,6 +95,7 @@ Each step is one commit and builds and passes on its own.
 ## Departures
 
 - The fixture added to mock-providers is `createFakeMessage` only.
+- The enabling refactor that extracts `normalizeMessage` sits below the package commits.
 
 ## Risks
 
