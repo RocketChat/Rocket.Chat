@@ -25,6 +25,15 @@ describe('getJoinRuleType', () => {
 		expect(() => getJoinRuleType(joinRulesState({ join_rule: '' }))).toThrow('Unknown join rule type: ');
 	});
 
+	it.each([
+		['knock', 'Knock join rule is not supported'],
+		['knock_restricted', 'Knock restricted join rule is not supported'],
+		['restricted', 'Restricted join rule is not supported'],
+		['private', 'Private join rule is not supported'],
+	])('should throw for the unsupported %s join rule', (joinRule, message) => {
+		expect(() => getJoinRuleType(joinRulesState({ join_rule: joinRule }))).toThrow(message);
+	});
+
 	it('should throw for an unknown join rule', () => {
 		expect(() => getJoinRuleType(joinRulesState({ join_rule: 'foo' }))).toThrow('Unknown join rule type: foo');
 	});
