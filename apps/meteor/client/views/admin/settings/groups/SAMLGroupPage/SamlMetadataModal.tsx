@@ -79,20 +79,14 @@ const SamlMetadataModal = ({ onClose, onFetch, onApply, showIdentifierFormat = f
 			title={t('SAML_Import_metadata')}
 			confirmText={values ? t('Apply') : t('SAML_Metadata_fetch')}
 			cancelText={t('Cancel')}
-			wrapperFunction={(props) => (
-				<Box
-					is='form'
-					onSubmit={(e) => {
-						e.preventDefault();
-						if (values) {
-							handleApply();
-						} else {
-							void handleFetch();
-						}
-					}}
-					{...props}
-				/>
-			)}
+			onSubmit={(e) => {
+				e.preventDefault();
+				if (values) {
+					handleApply();
+				} else {
+					void handleFetch();
+				}
+			}}
 			onCancel={onClose}
 			onClose={onClose}
 			confirmDisabled={fetching || (!values && url.trim() === '')}

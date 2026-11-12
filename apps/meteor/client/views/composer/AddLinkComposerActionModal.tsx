@@ -1,4 +1,4 @@
-import { Field, FieldGroup, TextInput, FieldLabel, FieldRow, Box, FieldError } from '@rocket.chat/fuselage';
+import { Field, FieldGroup, TextInput, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useEffect, useId } from 'react';
 import { useForm, Controller } from 'react-hook-form';
@@ -41,7 +41,7 @@ const AddLinkComposerActionModal = ({ selectedText, onClose, onConfirm }: AddLin
 			icon={null}
 			confirmText={t('Add')}
 			onCancel={onClose}
-			wrapperFunction={(props) => <Box is='form' onSubmit={(e) => void submit(e)} {...props} />}
+			onSubmit={(e) => void submit(e)}
 			confirmDisabled={!formState.isValid}
 			title={t('Add_link')}
 		>

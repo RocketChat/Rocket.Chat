@@ -41,6 +41,10 @@ $check-box-border-radius: theme('check-box-border-radius', lengths.border-radius
 		}
 	}
 
+	&__input:focus + &__fake {
+		z-index: 1;
+	}
+
 	&__input:indeterminate + &__fake::before {
 		visibility: visible;
 

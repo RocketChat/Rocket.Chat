@@ -95,10 +95,7 @@ const AddExistingModal = ({ teamId, onClose, reload }: AddExistingModalProps) =>
 	}
 
 	return (
-		<Modal
-			aria-label={t('Team_Add_existing_channels')}
-			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleSubmitRooms)} {...props} />}
-		>
+		<Modal aria-label={t('Team_Add_existing_channels')} onSubmit={handleSubmit(handleSubmitRooms)}>
 			<ModalHeader>
 				<ModalTitle>{t('Team_Add_existing_channels')}</ModalTitle>
 				<ModalClose onClick={onClose} />

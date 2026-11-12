@@ -230,12 +230,7 @@ const CreateTeamModal = ({ onClose, onSuccess, abac }: CreateTeamModalProps) => 
 
 	return (
 		<FormProvider {...methods}>
-			<Modal
-				aria-labelledby={`${createTeamFormId}-title`}
-				wrapperFunction={(props: ComponentProps<typeof Box>) => (
-					<Box is='form' id={createTeamFormId} onSubmit={handleStepSubmit} {...props} />
-				)}
-			>
+			<Modal aria-labelledby={`${createTeamFormId}-title`} onSubmit={handleStepSubmit} formId={createTeamFormId}>
 				<ModalHeader>
 					<ModalTitle id={`${createTeamFormId}-title`}>{t('Teams_New_Title')}</ModalTitle>
 					<ModalClose title={t('Close')} onClick={onClose} tabIndex={-1} />

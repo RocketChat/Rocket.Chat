@@ -57,7 +57,7 @@ const ReportMessageModal = ({ message, onClose }: ReportMessageModalProps) => {
 
 	return (
 		<GenericModal
-			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleReportMessage)} {...props} />}
+			onSubmit={handleSubmit(handleReportMessage)}
 			variant='danger'
 			title={t('Report_message')}
 			onCancel={onClose}

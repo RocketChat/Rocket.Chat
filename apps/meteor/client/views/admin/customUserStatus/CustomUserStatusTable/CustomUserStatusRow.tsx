@@ -1,11 +1,8 @@
 import type { IUserStatus } from '@rocket.chat/core-typings';
 import { GenericTableRow, GenericTableCell } from '@rocket.chat/ui-client';
-import type { CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import MarkdownText from '../../../../components/MarkdownText';
-
-const style: CSSProperties = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
 
 export type CustomUserStatusRowProps = {
 	status: IUserStatus;
@@ -18,10 +15,10 @@ const CustomUserStatusRow = ({ status, onClick }: CustomUserStatusRowProps) => {
 
 	return (
 		<GenericTableRow key={_id} onKeyDown={() => onClick(_id)} onClick={() => onClick(_id)} tabIndex={0} action>
-			<GenericTableCell color='default' style={style}>
+			<GenericTableCell color='default' truncate>
 				<MarkdownText content={name} parseEmoji={true} variant='inline' />
 			</GenericTableCell>
-			<GenericTableCell color='default' style={style}>
+			<GenericTableCell color='default' truncate>
 				{t(statusType)}
 			</GenericTableCell>
 		</GenericTableRow>

@@ -22,9 +22,9 @@ in the fallback list. */
 
 /* Native and custom emojis share one fixed box per context, sized by --emoji-size, so
 both render the same size and an emoji never grows the line it sits in. The default
-matches the message body's line height. The doubled selectors outrank Fuselage's
-emoji boxes, which load after this file. */
-.emoji.emoji {
+matches the message body's line height. Fuselage's emoji boxes set the same values, so
+this zero-specificity rule only covers emoji Fuselage does not render. */
+:where(.emoji) {
 	font-family: 'Apple Color Emoji', rc-emoji-segoe, rc-emoji-noto, 'Noto Color Emoji', 'Twemoji Mozilla', 'Android Emoji', sans-serif;
 	font-size: var(--emoji-size, 1.25rem);
 
@@ -48,14 +48,6 @@ emoji boxes, which load after this file. */
 	background-position: 50%;
 	background-repeat: no-repeat;
 	background-size: contain;
-}
-
-/* The box is shorter than the preview line, so it is centered rather than pinned to
-the top, where the line's overflow: hidden would cut glyphs that paint above it. */
-.rcx-message-thread__emoji.emoji {
-	--emoji-size: 0.75rem;
-
-	vertical-align: middle;
 }
 
 /* emoji picker */

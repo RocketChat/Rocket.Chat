@@ -64,7 +64,13 @@ const cases: [string, ReactElement, string][] = [
 	['MessageMetrics', <MessageMetrics data-testid='part' className='custom' />, 'rcx-message-metrics__content-wrapper'],
 	['MessageMetricsItemLabel', <MessageMetricsItemLabel data-testid='part' className='custom' />, 'rcx-message-metrics__item-label'],
 	['MessageReactions', <MessageReactions data-testid='part' className='custom' />, 'rcx-message-reactions__container'],
-	['MessageStatusIndicator', <MessageStatusIndicator data-testid='part' className='custom' />, 'rcx-message-status-indicator'],
+	[
+		'MessageStatusIndicator',
+		<MessageStatusIndicator data-testid='part' className='custom'>
+			<MessageStatusIndicatorItem name='star' />
+		</MessageStatusIndicator>,
+		'rcx-message-status-indicator',
+	],
 	[
 		'MessageStatusIndicatorItem',
 		<MessageStatusIndicatorItem data-testid='part' className='custom' name='star' />,

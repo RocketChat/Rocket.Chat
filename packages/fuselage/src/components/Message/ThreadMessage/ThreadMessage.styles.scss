@@ -42,15 +42,22 @@
 	}
 
 	&__emoji {
-		display: inline-block;
+		--emoji-size: #{lengths.size(12)};
+
+		display: inline-flex;
+		overflow: visible;
+		justify-content: center;
 
 		margin-inline: lengths.margin(2);
 
+		// Centered, not top-pinned: the preview line's overflow clips glyphs that paint above a top-aligned box.
+		vertical-align: middle;
+
 		background-size: contain;
 
-		font-size: lengths.size(12);
-		line-height: lengths.size(8);
+		font-size: var(--emoji-size);
+		line-height: var(--emoji-size);
 
-		@include size.square(lengths.size(12));
+		@include size.square(var(--emoji-size));
 	}
 }

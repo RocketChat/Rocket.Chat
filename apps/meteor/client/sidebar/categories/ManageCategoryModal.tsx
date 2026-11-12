@@ -1,5 +1,4 @@
 import type { ISidebarCategory } from '@rocket.chat/core-typings';
-import { Box } from '@rocket.chat/fuselage';
 import { Field, FieldError, FieldGroup, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage-forms';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
@@ -73,7 +72,7 @@ const ManageCategoryModal = ({ category, onClose }: ManageCategoryModalProps) =>
 			confirmText={t('Save')}
 			confirmLoading={isSubmitting}
 			onCancel={onClose}
-			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleConfirm)} {...props} />}
+			onSubmit={handleSubmit(handleConfirm)}
 		>
 			<FieldGroup>
 				<Field>

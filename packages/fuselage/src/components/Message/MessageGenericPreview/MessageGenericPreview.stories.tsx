@@ -86,41 +86,49 @@ const imgUrl =
 
 export const Default: Story = {
 	render: () => (
-		<MessageGenericPreview style={{ maxWidth: 368, width: '100%' }}>
-			<MessageGenericPreviewCoverImage height={192} width={368} url={imgUrl} />
-			<MessageGenericPreviewContent>
-				<MessageGenericPreviewTitle title='Title'>Title</MessageGenericPreviewTitle>
-				<MessageGenericPreviewDescription clamp>
-					From Gmail to YouTube, everything at Google runs in containers. We’ve packaged this experience From Gmail to YouTube, everything
-					at Google runs in containers. We’ve packaged this experience From Gmail to YouTube, everything at Google runs in containers. We’ve
-					packaged this experience From Gmail to YouTube, everything at Google runs in containers. We’ve packaged this experience o...
-				</MessageGenericPreviewDescription>
-			</MessageGenericPreviewContent>
-		</MessageGenericPreview>
+		<MessageBlock fixedWidth>
+			<MessageGenericPreview>
+				<MessageGenericPreviewCoverImage height={192} width={368} url={imgUrl} />
+				<MessageGenericPreviewContent>
+					<MessageGenericPreviewTitle title='Title'>Title</MessageGenericPreviewTitle>
+					<MessageGenericPreviewDescription clamp>
+						From Gmail to YouTube, everything at Google runs in containers. We’ve packaged this experience From Gmail to YouTube, everything
+						at Google runs in containers. We’ve packaged this experience From Gmail to YouTube, everything at Google runs in containers.
+						We’ve packaged this experience From Gmail to YouTube, everything at Google runs in containers. We’ve packaged this experience
+						o...
+					</MessageGenericPreviewDescription>
+				</MessageGenericPreviewContent>
+			</MessageGenericPreview>
+		</MessageBlock>
 	),
 };
 
 export const ImagePreview: Story = {
 	render: () => (
-		<MessageGenericPreview style={{ maxWidth: 368, width: '100%' }}>
-			<MessageGenericPreviewImage url={imgUrl} />
-		</MessageGenericPreview>
+		<MessageBlock fixedWidth>
+			<MessageGenericPreview>
+				<MessageGenericPreviewImage url={imgUrl} />
+			</MessageGenericPreview>
+		</MessageBlock>
 	),
 };
 
 export const LinkPreview: Story = {
 	render: () => (
-		<MessageGenericPreview style={{ maxWidth: 368, width: '100%' }}>
-			<MessageGenericPreviewCoverImage height={192} width={368} url={imgUrl} />
-			<MessageGenericPreviewContent>
-				<MessageGenericPreviewTitle externalUrl='https://rocket.chat'>Title</MessageGenericPreviewTitle>
-				<MessageGenericPreviewDescription>
-					From Gmail to YouTube, everything at Google runs in containers. We’ve packaged this experience From Gmail to YouTube, everything
-					at Google runs in containers. We’ve packaged this experience From Gmail to YouTube, everything at Google runs in containers. We’ve
-					packaged this experience From Gmail to YouTube, everything at Google runs in containers. We’ve packaged this experience o...
-				</MessageGenericPreviewDescription>
-			</MessageGenericPreviewContent>
-		</MessageGenericPreview>
+		<MessageBlock fixedWidth>
+			<MessageGenericPreview>
+				<MessageGenericPreviewCoverImage height={192} width={368} url={imgUrl} />
+				<MessageGenericPreviewContent>
+					<MessageGenericPreviewTitle externalUrl='https://rocket.chat'>Title</MessageGenericPreviewTitle>
+					<MessageGenericPreviewDescription>
+						From Gmail to YouTube, everything at Google runs in containers. We’ve packaged this experience From Gmail to YouTube, everything
+						at Google runs in containers. We’ve packaged this experience From Gmail to YouTube, everything at Google runs in containers.
+						We’ve packaged this experience From Gmail to YouTube, everything at Google runs in containers. We’ve packaged this experience
+						o...
+					</MessageGenericPreviewDescription>
+				</MessageGenericPreviewContent>
+			</MessageGenericPreview>
+		</MessageBlock>
 	),
 };
 
@@ -177,13 +185,15 @@ export const Thumb: Story = {
 
 export const FileAttachment: Story = {
 	render: () => (
-		<MessageGenericPreview style={{ maxWidth: 368, width: '100%' }}>
-			<MessageGenericPreviewContent thumb={<MessageGenericPreviewIcon name='attachment-file' type='PDF' />}>
-				<MessageGenericPreviewTitle externalUrl='https://rocket.chat'>
-					Flexbox In a Nutshell - Cheat Sheet - Lorem ipsum dolor sit amet consectetur
-				</MessageGenericPreviewTitle>
-				<MessageGenericPreviewDescription>9 MB - PDF</MessageGenericPreviewDescription>
-			</MessageGenericPreviewContent>
-		</MessageGenericPreview>
+		<MessageBlock fixedWidth>
+			<MessageGenericPreview>
+				<MessageGenericPreviewContent thumb={<MessageGenericPreviewIcon name='attachment-file' type='PDF' />}>
+					<MessageGenericPreviewTitle externalUrl='https://rocket.chat'>
+						Flexbox In a Nutshell - Cheat Sheet - Lorem ipsum dolor sit amet consectetur
+					</MessageGenericPreviewTitle>
+					<MessageGenericPreviewDescription>9 MB - PDF</MessageGenericPreviewDescription>
+				</MessageGenericPreviewContent>
+			</MessageGenericPreview>
+		</MessageBlock>
 	),
 };

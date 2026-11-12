@@ -2,6 +2,7 @@ import { composeStories } from '@storybook/react';
 import { fireEvent } from '@testing-library/react';
 import { axe } from 'jest-axe';
 
+import Accordion from './Accordion';
 import * as stories from './Accordion.stories';
 import AccordionItem from './AccordionItem';
 import { render } from '../../testing';
@@ -13,6 +14,17 @@ test.each(testCases)('%s should have no a11y violations', async (_storyname, Sto
 
 	const results = await axe(container);
 	expect(results).toHaveNoViolations();
+});
+
+it('forwards aria and data attributes to the root', () => {
+	const { container } = render(
+		<Accordion aria-label='Settings' data-qa='accordion'>
+			<AccordionItem title='Title'>Content</AccordionItem>
+		</Accordion>,
+	);
+
+	expect(container.querySelector('.rcx-accordion')).toHaveAttribute('aria-label', 'Settings');
+	expect(container.querySelector('.rcx-accordion')).toHaveAttribute('data-qa', 'accordion');
 });
 
 describe('[AccordionItem expanded]', () => {

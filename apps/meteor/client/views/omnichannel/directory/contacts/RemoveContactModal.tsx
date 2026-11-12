@@ -52,7 +52,7 @@ const RemoveContactModal = ({ _id, name, channelsCount, onClose }: RemoveContact
 
 	return (
 		<GenericModal
-			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit} {...props} />}
+			onSubmit={handleSubmit}
 			onCancel={onClose}
 			confirmText={t('Delete')}
 			title={t('Delete_Contact')}
