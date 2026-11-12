@@ -72,6 +72,9 @@ export const expectCompositeList = async (list: HTMLElement, firstTarget: HTMLEl
  */
 export const expectCombobox = async (input: HTMLElement, options: HTMLElement[], onPick: Spy) => {
 	const user = userEvent.setup();
+	await expect(options[0].id).not.toBe('');
+	await expect(options[1].id).not.toBe('');
+	await expect(options[1].id).not.toBe(options[0].id);
 	await focus(input);
 
 	await user.keyboard('{ArrowDown}');
