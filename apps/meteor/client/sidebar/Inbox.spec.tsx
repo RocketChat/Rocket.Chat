@@ -11,7 +11,7 @@ jest.mock('./RoomList', () => ({
 
 const appRoot = mockAppRoot().build();
 
-it('filters the room list while the search is open, and clears the filter when Esc closes it', async () => {
+it('filters the room list while the search is open, and clears the filter and returns focus to the search button when Esc closes it', async () => {
 	render(<Inbox />, { wrapper: appRoot });
 
 	await userEvent.click(screen.getByRole('button', { name: 'Search_rooms' }));
@@ -24,4 +24,5 @@ it('filters the room list while the search is open, and clears the filter when E
 	expect(screen.queryByRole('textbox', { name: 'Search_rooms' })).not.toBeInTheDocument();
 	expect(screen.getByTestId('room-list')).toBeEmptyDOMElement();
 	expect(screen.getByRole('button', { name: 'Search_rooms' })).toHaveAttribute('aria-expanded', 'false');
+	expect(screen.getByRole('button', { name: 'Search_rooms' })).toHaveFocus();
 });

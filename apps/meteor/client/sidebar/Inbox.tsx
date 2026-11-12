@@ -1,5 +1,5 @@
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { useId, useState } from 'react';
+import { useId, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import InboxHeader from './InboxHeader';
@@ -9,6 +9,7 @@ import SidebarPanelSearch from './components/SidebarPanelSearch';
 const Inbox = () => {
 	const { t } = useTranslation();
 	const searchId = useId();
+	const searchButtonRef = useRef<HTMLButtonElement>(null);
 	const [searchOpen, setSearchOpen] = useState(false);
 	const [filterText, setFilterText] = useState('');
 	const debouncedFilterText = useDebouncedValue(filterText, 100);
@@ -19,16 +20,21 @@ const Inbox = () => {
 		setFilterText('');
 	};
 
+	const closeSearch = () => {
+		toggleSearch();
+		searchButtonRef.current?.focus();
+	};
+
 	return (
 		<>
-			<InboxHeader searchId={searchId} searchOpen={searchOpen} onToggleSearch={toggleSearch} />
+			<InboxHeader searchId={searchId} searchButtonRef={searchButtonRef} searchOpen={searchOpen} onToggleSearch={toggleSearch} />
 			{searchOpen && (
 				<SidebarPanelSearch
 					id={searchId}
 					value={filterText}
 					placeholder={t('Search_rooms')}
 					onChange={setFilterText}
-					onClose={toggleSearch}
+					onClose={closeSearch}
 				/>
 			)}
 			<SidebarRoomList filterText={appliedFilterText} />
