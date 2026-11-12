@@ -46,6 +46,10 @@
 		"apps/uikit-playground/src/Components/PrototypeRender/PrototypeRender.scss: .rcx-message{",
 		"packages/ui-conference/src/lib/panelStyles.ts: & .rcx-message,"
 	],
+	"rcx-message-system": [
+		"apps/meteor/client/hooks/useMessageRowListNavigation.ts: export const messageRowSelector = '.rcx-message[tabindex=\"0\"], .rcx-message-system[tabindex=\"0\"], .rcx-message-thread[tabindex=\"0\"]';",
+		"packages/ui-conference/src/lib/panelStyles.ts: & .rcx-message-system,"
+	],
 	"rcx-sidebar": [
 		"apps/meteor/client/sidebar/SidebarRegion.tsx: &:not(:has(.rcx-sidebar__fixed-width)) {",
 		"apps/meteor/client/styles/imports/general/variables.css: .rcx-sidebar {",
@@ -108,8 +112,14 @@
 		"packages/fuselage/src/components/CardGrid/CardGrid.styles.css: .rcx-grid.rcx-card-grid {",
 		"packages/fuselage/src/components/CardGrid/CardGrid.styles.css: .rcx-grid__item.rcx-card-grid__item {"
 	],
+	"rcx-message-divider": [
+		"packages/fuselage/src/components/Divider/Divider.styles.scss: .rcx-message-divider.rcx-divider--labelled {"
+	],
 	"rcx-skeleton": [
 		"packages/fuselage/src/components/InputBox/InputBox.styles.scss: .rcx-skeleton__input {"
+	],
+	"rcx-sidebar-item": [
+		"packages/fuselage/src/components/Item/Item.styles.scss: .rcx-sidebar-item .rcx-item__row > .rcx-item__actions {"
 	],
 	"rcx-check-box": [
 		"packages/fuselage/src/components/Message/Messages.styles.scss: > li > .rcx-check-box > .rcx-check-box__input:focus + .rcx-check-box__fake {"

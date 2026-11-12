@@ -15,11 +15,15 @@ const { values: opts, positionals } = parseArgs({
 const root = execFileSync('git', ['rev-parse', '--show-toplevel'], { encoding: 'utf8' }).trim();
 const components = join(root, 'packages/fuselage/src/components');
 const kebab = (name) => name.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+// A component nested in another's folder (Sidebar/SidebarItem) belongs to that top-level folder
+const componentFolders = (dir, family) =>
+	readdirSync(dir, { withFileTypes: true })
+		.filter((d) => d.isDirectory() && /^[A-Z]/.test(d.name))
+		.flatMap((d) => [[d.name, family ?? d.name], ...componentFolders(join(dir, d.name), family ?? d.name)]);
 const folderOf = new Map(
-	readdirSync(components, { withFileTypes: true })
-		.filter((d) => d.isDirectory())
+	componentFolders(components)
 		// The root class is the folder name kebab-cased (rcx-button-group) or just lowercased (rcx-navbar)
-		.flatMap((d) => [`rcx-${kebab(d.name)}`, `rcx-${d.name.toLowerCase()}`].map((cls) => [cls, d.name])),
+		.flatMap(([name, family]) => [`rcx-${kebab(name)}`, `rcx-${name.toLowerCase()}`].map((cls) => [cls, family])),
 );
 const classes = positionals.length ? positionals : [...folderOf.keys()];
 
