@@ -10,6 +10,26 @@ import { resolveThemeMode, subscribeToSystemColorScheme } from './theme';
 import 'normalize.css/normalize.css';
 import '@rocket.chat/icons/dist/rocketchat.css';
 
+// A Docs page mounts several stories at once, so the document's direction is held while any RTL story is mounted
+let rtlStories = 0;
+let dirBeforeRtl: string | null = null;
+
+const holdRtl = () => {
+	const root = document.documentElement;
+	if (rtlStories++ === 0) {
+		dirBeforeRtl = root.getAttribute('dir');
+		root.dir = 'rtl';
+	}
+	return () => {
+		if (--rtlStories > 0) return;
+		if (dirBeforeRtl === null) {
+			root.removeAttribute('dir');
+		} else {
+			root.dir = dirBeforeRtl;
+		}
+	};
+};
+
 export default {
 	parameters: {
 		backgrounds: {
@@ -51,21 +71,7 @@ export default {
 	decorators: [
 		function PaletteDecorator(Story, { globals }) {
 			// Only the rtl global touches `dir`, so a story that sets its own direction keeps it
-			useLayoutEffect(() => {
-				if (globals.direction !== 'rtl') {
-					return;
-				}
-				const root = document.documentElement;
-				const previous = root.getAttribute('dir');
-				root.dir = 'rtl';
-				return () => {
-					if (previous === null) {
-						root.removeAttribute('dir');
-					} else {
-						root.dir = previous;
-					}
-				};
-			}, [globals.direction]);
+			useLayoutEffect(() => (globals.direction === 'rtl' ? holdRtl() : undefined), [globals.direction]);
 
 			const mode = useSyncExternalStore(subscribeToSystemColorScheme, () => resolveThemeMode(globals.theme));
 
