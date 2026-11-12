@@ -42,6 +42,22 @@ export class RoomSidebar extends Sidebar {
 		this.menuMoveTo = new MenuMoveTo(page);
 	}
 
+	get inboxHeading(): Locator {
+		return this.root.getByRole('heading', { name: 'Inbox' });
+	}
+
+	get btnSearchRooms(): Locator {
+		return this.root.getByRole('button', { name: 'Search rooms' });
+	}
+
+	get inputSearchRooms(): Locator {
+		return this.root.getByRole('textbox', { name: 'Search rooms' });
+	}
+
+	get searchNoResults(): Locator {
+		return this.root.getByRole('status').filter({ hasText: 'No results found' });
+	}
+
 	get teamCollabFilters(): Locator {
 		return this.root.getByRole('tablist', { name: 'Team collaboration filters' });
 	}
