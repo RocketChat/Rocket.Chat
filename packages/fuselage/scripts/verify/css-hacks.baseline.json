@@ -98,15 +98,6 @@
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
-	"Contextualbar/Contextualbar.styles.scss": {
-		"rules": 16,
-		"nested": 15,
-		"combinators": 0,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 1,
-		"displayContents": 0
-	},
 	"Divider/Divider.styles.css": {
 		"rules": 1,
 		"nested": 0,
