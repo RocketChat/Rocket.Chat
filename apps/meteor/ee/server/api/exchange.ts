@@ -25,6 +25,7 @@ const ERROR_MESSAGES: Record<ExchangeErrorCode, string> = {
 	'ntlm-unavailable': 'Exchange_Test_Connection_ntlm_unavailable',
 	'endpoint-not-recognized': 'Exchange_Test_Connection_endpoint_not_recognized',
 	'rate-limited': 'Exchange_Test_Connection_rate_limited',
+	'sync-in-progress': 'Exchange_Sync_in_progress',
 	'unexpected-response': 'Exchange_Test_Connection_unexpected_response',
 	'sync-state-invalid': 'Exchange_Test_Connection_sync_state_invalid',
 };
@@ -82,7 +83,12 @@ API.v1.post(
 	},
 );
 
-const USER_FIXABLE_SYNC_ERRORS: ReadonlySet<ExchangeErrorCode> = new Set(['email-not-verified', 'mailbox-not-found', 'rate-limited']);
+const USER_FIXABLE_SYNC_ERRORS: ReadonlySet<ExchangeErrorCode> = new Set([
+	'email-not-verified',
+	'mailbox-not-found',
+	'rate-limited',
+	'sync-in-progress',
+]);
 
 API.v1.post(
 	'exchange.syncMyCalendar',
