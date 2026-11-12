@@ -4,9 +4,12 @@ import type { Keys as IconName } from '@rocket.chat/icons';
 import type { ComponentProps } from 'react';
 import { forwardRef } from 'react';
 
+// The first rule overrides the button frame's own sizing, so it needs the extra specificity
 const triggerStyles = css`
-	width: 100%;
-	min-width: 0;
+	&[class] {
+		width: 100%;
+		min-width: 0;
+	}
 
 	& > .rcx-button--content {
 		display: flex;

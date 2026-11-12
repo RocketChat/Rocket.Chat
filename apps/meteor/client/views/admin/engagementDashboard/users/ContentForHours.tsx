@@ -1,5 +1,6 @@
 import { ResponsiveBar } from '@nivo/bar';
-import { Box, Button, Chevron, Skeleton, Tooltip } from '@rocket.chat/fuselage';
+import { css } from '@rocket.chat/css-in-js';
+import { Box, Button, Chevron, Skeleton, Tooltip, useStyle } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import colors from '@rocket.chat/fuselage-tokens/dist/colors.json';
 import { format } from 'date-fns/format';
@@ -15,7 +16,12 @@ export type ContentForHoursProps = {
 	timezone: 'utc' | 'local';
 };
 
+const verticalMiddle = css`
+	vertical-align: middle;
+`;
+
 const ContentForHours = ({ displacement, onPreviousDateClick, onNextDateClick, timezone }: ContentForHoursProps) => {
+	const verticalMiddleClassName = useStyle(verticalMiddle);
 	const utc = timezone === 'utc';
 	const { data } = useHourlyChatActivity({ displacement, utc });
 
@@ -46,13 +52,13 @@ const ContentForHours = ({ displacement, onPreviousDateClick, onNextDateClick, t
 		<>
 			<Box display='flex' alignItems='center' justifyContent='center'>
 				<Button square size='small' onClick={onPreviousDateClick}>
-					<Chevron left size='x20' style={{ verticalAlign: 'middle' }} />
+					<Chevron left size='x20' className={verticalMiddleClassName} />
 				</Button>
 				<Box marginInline={8} flexBasis='25%' is='span' style={{ textAlign: 'center' }}>
 					{data ? format(new Date(data.day), displacement < 7 ? 'EEEE' : 'P') : null}
 				</Box>
 				<Button square size='small' disabled={displacement === 0} onClick={onNextDateClick}>
-					<Chevron right size='x20' style={{ verticalAlign: 'middle' }} />
+					<Chevron right size='x20' className={verticalMiddleClassName} />
 				</Button>
 			</Box>
 			{data ? (

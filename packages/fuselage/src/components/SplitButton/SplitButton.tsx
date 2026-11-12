@@ -1,4 +1,6 @@
-import type { HTMLAttributes, RefAttributes } from 'react';
+import { Children, isValidElement, type HTMLAttributes, type RefAttributes } from 'react';
+
+import { SegmentContext, segmentValue, type SegmentPosition, type SegmentTone } from '../Button/SegmentContext';
 
 export type SplitButtonProps = RefAttributes<HTMLDivElement> &
 	HTMLAttributes<HTMLDivElement> & {
@@ -8,12 +10,22 @@ export type SplitButtonProps = RefAttributes<HTMLDivElement> &
 		primary?: boolean;
 	} & ({ 'aria-label': string } | { 'aria-labelledby': string });
 
+const positionOf = (index: number, count: number): SegmentPosition => {
+	if (count === 1) return 'only';
+	if (index === 0) return 'first';
+	return index === count - 1 ? 'last' : 'middle';
+};
+
 /**
  * Fuses a menu trigger and its primary action into a single control, e.g. an
  * audio device menu next to a microphone toggle. The menu trigger is a
  * `SplitButtonTrigger`, rendered as a ghost segment wherever it sits.
  */
-function SplitButton({ className, danger, warning, success, primary, ...props }: SplitButtonProps) {
+function SplitButton({ className, danger, warning, success, primary, children, ...props }: SplitButtonProps) {
+	// The last tone set wins, as the last rule did
+	const tone: SegmentTone = (primary && 'primary') || (success && 'success') || (warning && 'warning') || (danger && 'danger') || 'default';
+	const items = Children.toArray(children);
+
 	return (
 		<div
 			role='group'
@@ -28,7 +40,16 @@ function SplitButton({ className, danger, warning, success, primary, ...props }:
 				.filter(Boolean)
 				.join(' ')}
 			{...props}
-		/>
+		>
+			{items.map((item, index) => (
+				<SegmentContext.Provider
+					key={isValidElement(item) ? item.key : index}
+					value={segmentValue(positionOf(index, items.length), tone, false)}
+				>
+					{item}
+				</SegmentContext.Provider>
+			))}
+		</div>
 	);
 }
 

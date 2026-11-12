@@ -13,12 +13,15 @@ export type KeyProps = {
 	large?: boolean;
 };
 
+// The first rule overrides the button frame's own sizing, so it needs the extra specificity
 const dialPadButtonClass = css`
-	min-width: 3.25rem;
-	width: 3.25rem;
-	height: 2.5rem;
-	padding: 0;
-	border-radius: 0.5rem;
+	&[class][class] {
+		min-width: 3.25rem;
+		width: 3.25rem;
+		height: 2.5rem;
+		padding: 0;
+		border-radius: 0.5rem;
+	}
 
 	> .rcx-button--content {
 		display: flex;

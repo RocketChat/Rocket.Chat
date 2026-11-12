@@ -51,7 +51,7 @@ describe('[IconButton Component]', () => {
 		const { container } = render(<Icon name='balloon' size={glyph} />);
 
 		expect(screen.getByRole('button')).toHaveClass(`rcx-button--${size}-square`);
-		expect(screen.getByRole('button').firstElementChild?.className).toBe(container.firstElementChild?.className);
+		expect(screen.getByRole('button').firstElementChild?.firstElementChild?.className).toBe(container.firstElementChild?.className);
 	});
 
 	it('should be large by default', () => {
@@ -108,5 +108,19 @@ describe('[IconButton Component]', () => {
 		const link = screen.getByRole('link', { name: 'balloon' });
 		expect(link).toHaveAttribute('target', '_blank');
 		expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+	});
+
+	it('should show a spinner and take no click while loading', () => {
+		const onClick = jest.fn();
+		const { container } = render(<IconButton icon='balloon' aria-label='balloon' loading onClick={onClick} />);
+
+		const button = screen.getByRole('button', { name: 'balloon' });
+		expect(button).toBeDisabled();
+		expect(button).toHaveClass('rcx-button--loading');
+		expect(container.querySelector('.rcx-icon--name-balloon')).not.toBeInTheDocument();
+		expect(container.querySelector('.rcx-icon--name-loading')).toHaveClass('rcx-button__icon--loading');
+
+		button.click();
+		expect(onClick).not.toHaveBeenCalled();
 	});
 });

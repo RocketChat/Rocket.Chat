@@ -1,0 +1,4 @@
+/* A custom property the badge frame reads for the side it sits on, which a variant of the frame cannot set */
+.rcx-button__badge--bottom-end {
+	--rcx-badge-y: -1;
+}

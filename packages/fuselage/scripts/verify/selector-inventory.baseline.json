@@ -39,7 +39,7 @@
 		"packages/fuselage/src/components/Sidebar/SidebarItem/SidebarItem.styles.scss: &__timestamp:not(.rcx-item__meta) {",
 		"packages/fuselage/src/components/Sidebar/SidebarItem/SidebarItem.styles.scss: &__title:not(.rcx-item__title) {",
 		"packages/fuselage/src/components/Sidebar/SidebarItem/SidebarItem.styles.scss: .rcx-item__row > &__subtitle.rcx-item__description {",
-		"packages/fuselage/src/styles/normalize.scss: a:where(:not(.rcx-button, .rcx-item, .rcx-item__link)) {"
+		"packages/fuselage/src/styles/normalize.scss: a:where(:not(.rcx-button, .rcx-item, .rcx-item__link, .rcx-tag)) {"
 	],
 	"rcx-message": [
 		"apps/meteor/client/hooks/useMessageRowListNavigation.ts: export const messageRowSelector = '.rcx-message[tabindex=\"0\"], .rcx-message-system[tabindex=\"0\"], .rcx-message-thread[tabindex=\"0\"]';",
@@ -55,11 +55,8 @@
 		"apps/meteor/client/styles/imports/components/emoji.css: .rcx-button {",
 		"apps/meteor/server/routes/avatar/middlewares/browserVersion.ts: .rcx-button {",
 		"apps/meteor/server/routes/avatar/middlewares/browserVersion.ts: .rcx-button--primary {",
-		"packages/fuselage/src/components/ButtonGroup/ButtonGroup.styles.scss: > .rcx-button--square {",
-		"packages/fuselage/src/components/SplitButton/SplitButton.styles.scss: > .rcx-button {",
-		"packages/fuselage/src/components/SplitButton/SplitButton.styles.scss: > .rcx-button.rcx-split-button__trigger {",
 		"packages/fuselage/src/styles/mixins/button.scss: .rcx-button--content {",
-		"packages/fuselage/src/styles/normalize.scss: a:where(:not(.rcx-button, .rcx-item, .rcx-item__link)) {",
+		"packages/fuselage/src/styles/normalize.scss: a:where(:not(.rcx-button, .rcx-item, .rcx-item__link, .rcx-tag)) {",
 		"packages/ui-conference/src/preflight/PreflightDeviceMenuButton.tsx: & > .rcx-button--content {",
 		"packages/ui-voip/src/components/Keypad/Key.tsx: > .rcx-button--content {"
 	],
@@ -101,7 +98,6 @@
 		"packages/fuselage/src/components/Bubble/Bubble.styles.scss: &:not(.rcx-bubble__group) &__button:has(> .rcx-icon),",
 		"packages/fuselage/src/components/Bubble/Bubble.styles.scss: &:not(.rcx-bubble__group) &__item:has(> .rcx-icon) {",
 		"packages/fuselage/src/components/Bubble/Bubble.styles.scss: > .rcx-icon {",
-		"packages/fuselage/src/components/Button/Button.styles.scss: .rcx-icon--name-loading {",
 		"packages/fuselage/src/components/Select/Select.styles.scss: .rcx-select > .rcx-icon {"
 	],
 	"rcx-grid": [
@@ -122,5 +118,8 @@
 	],
 	"rcx-divider": [
 		"packages/fuselage/src/components/Sidepanel/Sidepanel.styles.scss: &.rcx-divider {"
+	],
+	"rcx-tag": [
+		"packages/fuselage/src/styles/normalize.scss: a:where(:not(.rcx-button, .rcx-item, .rcx-item__link, .rcx-tag)) {"
 	]
 }

@@ -54,8 +54,7 @@ $modal-border-radius: theme('modal-border-radius', lengths.border-radius(large))
 	&__header-inner {
 		display: flex;
 		flex-wrap: nowrap;
-
-		margin: -4px;
+		gap: 8px;
 	}
 
 	&__title {

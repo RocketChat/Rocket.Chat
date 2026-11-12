@@ -1,0 +1,14 @@
+/* 1 in left-to-right text and -1 in right-to-left, for a frame value that mirrors: `calc(30% * var(--rcx-dir))` */
+@layer fuselage {
+	:where(:root) {
+		--rcx-dir: 1;
+	}
+
+	:where([dir='ltr']) {
+		--rcx-dir: 1;
+	}
+
+	:where([dir='rtl']) {
+		--rcx-dir: -1;
+	}
+}

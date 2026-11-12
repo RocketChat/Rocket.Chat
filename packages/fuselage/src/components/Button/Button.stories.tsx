@@ -5,7 +5,7 @@ import { action } from 'storybook/actions';
 import { PropsVariationSection, variationPseudoStatesWithFocusVisible } from '../../../.storybook/helpers';
 import { Box } from '../Box';
 import { ButtonGroup } from '../ButtonGroup';
-import { Margins } from '../Margins';
+import { Stack } from '../Stack';
 import Button from './Button';
 
 export default {
@@ -141,24 +141,26 @@ export const Truncated: Story = {
 
 export const Variants: Story = {
 	render: () => (
-		<Margins all='x8'>
-			<ButtonGroup>
-				<Button variant='primary'>Primary</Button>
-				<Button variant='secondary'>Secondary</Button>
-			</ButtonGroup>
-			<ButtonGroup>
-				<Button variant='danger'>Danger</Button>
-				<Button variant='secondary-danger'>Secondary Danger</Button>
-			</ButtonGroup>
-			<ButtonGroup>
-				<Button variant='warning'>Warning</Button>
-				<Button variant='secondary-warning'>Secondary Warning</Button>
-			</ButtonGroup>
-			<ButtonGroup>
-				<Button variant='success'>Success</Button>
-				<Button variant='secondary-success'>Secondary Success</Button>
-			</ButtonGroup>
-		</Margins>
+		<Box padding='x16'>
+			<Stack gap='x24'>
+				<Stack direction='row' gap='x24'>
+					<Button variant='primary'>Primary</Button>
+					<Button variant='secondary'>Secondary</Button>
+				</Stack>
+				<Stack direction='row' gap='x24'>
+					<Button variant='danger'>Danger</Button>
+					<Button variant='secondary-danger'>Secondary Danger</Button>
+				</Stack>
+				<Stack direction='row' gap='x24'>
+					<Button variant='warning'>Warning</Button>
+					<Button variant='secondary-warning'>Secondary Warning</Button>
+				</Stack>
+				<Stack direction='row' gap='x24'>
+					<Button variant='success'>Success</Button>
+					<Button variant='secondary-success'>Secondary Success</Button>
+				</Stack>
+			</Stack>
+		</Box>
 	),
 };
 

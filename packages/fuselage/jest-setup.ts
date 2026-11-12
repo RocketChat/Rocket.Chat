@@ -1,3 +1,6 @@
+// The Tamagui runtime needs its config, as it does for a consumer of the package
+import './src/tamagui.config';
+
 const cssInJsClassRegex = /^rcx-css-[a-z0-9]+$/;
 
 declare global {

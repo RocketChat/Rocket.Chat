@@ -179,7 +179,7 @@ export const ClassContract: Story = {
 				'root > div > button[6] > span: rcx-button--content',
 				'root > div > button[7]: rcx-box rcx-box--full rcx-button rcx-button--loading',
 				'root > div > button[7] > span: rcx-button--content',
-				'root > div > button[7] > span > i: rcx-box rcx-box--full rcx-button__icon rcx-icon rcx-icon--name-loading',
+				'root > div > button[7] > span > i: rcx-box rcx-box--full rcx-button__icon rcx-button__icon--loading rcx-icon rcx-icon--name-loading',
 				'root > div > a: rcx-box rcx-box--full rcx-button',
 				'root > div > a > span: rcx-button--content',
 			].join('\n'),

@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { action } from 'storybook/actions';
 
+import { PropsVariationSection, variationPseudoStatesWithFocusVisible } from '../../../.storybook/helpers';
 import { Box } from '../Box';
 import { ButtonGroup } from '../ButtonGroup';
 import { Icon } from '../Icon';
@@ -238,6 +239,34 @@ export const Variants: Story = {
 				),
 			)}
 		</Box>
+	),
+};
+
+const stateVariants = Object.fromEntries(variants.map((variant) => [variant ?? 'default', { variant }]));
+
+export const States: Story = {
+	parameters: { pseudo: variationPseudoStatesWithFocusVisible },
+	render: () => (
+		<>
+			<PropsVariationSection
+				component={Tag}
+				common={{ children: 'john.doe', onClick: action('click') }}
+				xAxis={{ default: {}, hover: {}, active: {}, focus: {}, disabled: { disabled: true } }}
+				yAxis={stateVariants}
+			/>
+			<PropsVariationSection
+				component={Tag}
+				common={{ children: 'john.doe', href: '#' }}
+				xAxis={{ default: {}, hover: {}, active: {}, focus: {}, disabled: { disabled: true } }}
+				yAxis={stateVariants}
+			/>
+			<PropsVariationSection
+				component={Tag}
+				common={{ children: 'john.doe' }}
+				xAxis={{ default: {}, disabled: { disabled: true } }}
+				yAxis={stateVariants}
+			/>
+		</>
 	),
 };
 

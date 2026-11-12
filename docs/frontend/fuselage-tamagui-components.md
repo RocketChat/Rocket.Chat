@@ -35,8 +35,8 @@ The answer is either a design note decision or a row in [Deviations](#deviations
 | --- | --- |
 | No frame bails to the runtime; no `@tamagui/*` reachable from the client | zero `enforce` mode in `build:vite`, and the zero graph receipt |
 | Compiled output looks like the runtime output | visual regression, runtime and zero legs against the same baselines |
-| `className` never in a render-element spread; no `{...props}` on a frame | lint rule `rocket.chat/render-element-spread` (arrives with L1, not yet available) |
-| Values come from `fuselage-tokens`; generated sections are in sync | `generate:frame-values --check` (arrives with L1, not yet available) |
+| No spread on a frame; a render-element spread only of a safe call, so `className` never reaches it | lint rule `rocket.chat/render-element-spread` ([semantics](#the-render-element-spread-rule)) |
+| Values come from `fuselage-tokens`; generated sections are in sync; no raw px or rem in a generator module or a migrated stylesheet | `generate:frame-values --check`, run by `yarn lint` ([the generator](#the-frame-values-generator)) |
 | No text node directly in a `View` | jest dev-mode check ([`textNodes.spec.tsx`](../../packages/fuselage/src/testing/textNodes.spec.tsx)) |
 | Raw layout and style props don't grow | `scripts/scan-raw-layout.mjs`, `scripts/scan-style-props.mjs` ratchets |
 | No new override of a migrated part without `[class]`; CSS hacks don't grow | selector inventory and CSS-hack ratchets ([`selector-inventory.mjs`](../../packages/fuselage/scripts/verify/selector-inventory.mjs), [`css-hacks.mjs`](../../packages/fuselage/scripts/verify/css-hacks.mjs)), run by `yarn lint` |
@@ -46,7 +46,7 @@ The answer is either a design note decision or a row in [Deviations](#deviations
 ### Enforced by review
 
 - **A frame gets only variants, a named `className` (after the `rcx-*` classes) and `children`.** It is declared in the module that renders it. A fixed tag is `render: '<tag>'`; a closed set of tags is one branch per tag, each with a literal element.
-- **Consumer attributes go on the literal render element:** `{...ariaAndDataAttributes(props)}` first, then each attribute **by name**, then any overriding default. The props type lists exactly what the component supports, built from the `ElementAttributes` groups with `Omit` in the type. Handlers are forwarded only where callers need them.
+- **Consumer attributes go on the literal render element:** `{...ariaAndDataAttributes(props)}` first, then each attribute **by name or through a typed pick helper** (`pickWebPressHandlers`, `pickWebDropHandlers`, `pickWebCaptureHandlers`), then any overriding default. A pick helper is the one way to forward a group of handlers without naming each: the group's key list is one `as const` array in `ElementAttributes.ts` that builds both the type and the helper, so the list stays closed and typed. The props type lists exactly what the component supports, built from the `ElementAttributes` groups with `Omit` in the type. Handlers are forwarded only where callers need them.
 - **No consumer `style`.** The one exception is Tooltip under `Position`. An internal open value is a registered `@property` custom property on the component's own element.
 - **Text frames are `Text`-based.** No `Box`, `StylingBox` or `useStylingProps` inside a migrated component.
 - **Parent state is `group`.** `:has()` and sibling rules become variants. Plain CSS is allowed only in the categories below, commented.
@@ -74,17 +74,37 @@ Every component, with the evidence table in the pull request.
 Decided once, so no component reopens them.
 
 1. **z-index is a layer token.** Use `zIndex` from `@rocket.chat/fuselage-tokens` (`raised` 1, `overlap` 2, `sticky` 10, `overlay` 100). A literal z-index is forbidden. A component adopts the tokens in its own migration commit.
-2. **Plain CSS only in allowed categories, and only on properties the frame doesn't set.** The categories are what a frame can't express: `:invalid`, a disabled `fieldset`, `::placeholder` and the like. If the frame sets the property, it becomes a variant instead, because Tamagui's atomic rules are unlayered and win. Each rule carries a comment naming its category, and never uses `[class]`.
+2. **Plain CSS only in allowed categories, and only on properties the frame doesn't set.** The categories are what a frame can't express: `:invalid`, a disabled `fieldset`, `::placeholder`, the state of a hidden native input (below) and the like. If the frame sets the property, it becomes a variant instead. Component CSS is unlayered today (`components/index.scss` loads it outside any `@layer`; only `styles/box-sizing.css` and `styles/direction.css` are layered), so specificity decides between it and a frame's atomic rules, and the load order differs between `dev:next` and the production build: a rule that touches a property the frame sets would win in one and lose in the other. Each rule carries a comment naming its category, and never uses `[class]`.
+   - **State of a hidden native input: `input:<pseudo> + fake`.** CheckBox, RadioButton and ToggleSwitch keep a visually hidden native `input` and draw a fake element after it, which can follow the input's `:checked`, `:focus`, `:disabled` and the like only through a sibling selector. That selector is the allowed category. The fake's frame then sets **layout only**; every colour, the resting state included, comes from the generated CSS, so no property is set both by the frame and by the sibling rule. Tracking `checked` in React instead would break uncontrolled use and react-hook-form's `register`.
 3. **Existing hacks go when their component migrates:** sibling `+` rules, `:has()`, `[class]` bumps, negative margins, `display: contents` compensation. One stays only with a [Deviations](#deviations) row.
-4. **A container that holds text is `Text`-based** (`Tile`, `TableCell`, `TabsItem`, `CardBody`). A pure layout container is a `View`, and callers wrap their text. A frame that extends another frame (`FramedIcon` extends `IconFrame`) follows the same G1 accounting as the base.
+4. **Right-to-left mirroring uses `--rcx-dir`.** `styles/direction.css` sets `--rcx-dir` to `1` on `:root` and under `[dir='ltr']`, and to `-1` under `[dir='rtl']`, in `@layer fuselage` with zero specificity. A frame value that mirrors uses it in `calc(...)`, for example `rotate(calc(90deg * var(--rcx-dir)))`. `:dir(rtl)` rules and specificity bumps are out: they touch a property the frame sets.
+5. **A container that holds text is `Text`-based** (`Tile`, `TableCell`, `TabsItem`, `CardBody`). A pure layout container is a `View`, and callers wrap their text. A frame that extends another frame (`FramedIcon` extends `IconFrame`) follows the same G1 accounting as the base.
 
 ## Program rules
 
 - **Tamagui is version-frozen.** An upgrade is its own pull request and re-runs the full A/B over every migrated component.
 - **Cold CI runs zero builds.** Never restore `.cache/tamagui`: the compiler cache is keyed on source only, so a stale one hides a compiler change.
 - **Land batches early in a release cycle** so release candidates and QA catch problems.
+- **Each batch has a byte budget inside the program's +25 kB gzip JS.** L1 (actions) has 6 kB. In the pilot the variant tables alone cost about 2 kB for Button, IconButton and Tag.
 - **Fix forward.** Once a later batch builds on an earlier one there is no rollback.
 - **Design notes are reviewed once per batch.** The gate re-fires only on a surprise during implementation.
+
+## The frame-values generator
+
+`yarn workspace @rocket.chat/fuselage generate:frame-values` writes the style values of a component's frames between markers in the module that declares them. With `--check` (run by `yarn lint`) it fails when a section is stale, and it rejects a raw px or rem length (a spacing or font value that isn't `spacing()`, `fontScale()` or `offScale()`) in a generator module and in a stylesheet that has a generated section. The compiler reads a `styled()` from its module's source, so the values can't be computed or imported there.
+
+- **One module per component** in `packages/fuselage/scripts/frame-values/`, default-exporting `Target[]` (`{ file, generate, css?, section? }`). The runner globs the directory, with no index. Shared code lives in `scripts/frame-values/lib/`: markers, `literal`, `offScale` and the token readers, the button palettes, the selection palettes and `textFrameDefaults`.
+- **The generated section holds value constants only.** The `styled()` call is written by hand below it and uses the constants; a `styled(Text, …)` frame restates the View defaults it needs through `textFrameDefaults`.
+- A generated CSS section is for rules a frame can't express (the categories of policy 2).
+
+## The render-element spread rule
+
+`rocket.chat/render-element-spread` (`packages/lint-config/rules/render-element-spread.js`) is an error in `packages/fuselage/src/**/*.tsx`.
+
+- **A frame takes no spread.** Any `{...x}` on an element whose name is bound in the same module to `styled(...)` is reported.
+- **A render element takes a spread only of a `safeCalls` call.** `render={<button {...ariaAndDataAttributes(props)} />}` passes; a spread of a variable, an object or any other call fails, even one that cannot carry a `className`.
+- The `safeCalls` are `ariaAndDataAttributes` and the `pick…Handlers` helpers. A new one is a function that returns a closed list of attributes without `className`.
+- `style` is left alone: the compiler refuses a frame whose render element sets its own `style`, so nothing overwrites it.
 
 ## Releases
 
@@ -110,4 +130,7 @@ Departures from the documented Tamagui way. Empty is the goal; every row is a de
 Results that recur and were decided once, so a G6 row can cite them.
 
 - **`group-hover` is inside `@media (hover: hover)`.** A child revealed by a parent's hover is no longer revealed by a touch tap, as the plain `:hover` rule it replaces was. Applies to every `group` variant on hover.
+- **L1 frames keep the `rcx-box rcx-box--full` classes.** The characterization specs assert them and nothing in the cascade changes. They are removed program-wide in one later unit, so the class contract doesn't change piecemeal.
+- **`disabled` stays on the element, never on a frame.** A frame's `disabled` state compiles to `[aria-disabled="true"]`, and the zero build also writes `disabled=""` on a link, which the runtime does not: the two builds differ. A frame follows a disabled control through its own variant keys (`kind` and `kind-disabled`), the element carries `disabled` (a button) or `aria-disabled` (a link), and a frame's `disabled` prop is never set.
+- **`group-press` compiles.** `group: 'button'` on the parent frame and `transform: { default: 'none', 'group-press/button': 'translateY(1px)' }` on a child frame give `:where(.t_group_button:active *)`, the same in the runtime and zero builds, with nothing bailed. It replaces the `:active > *` parent-state rule; hover inside it follows the `@media (hover: hover)` precedent above.
 - **Fuselage owns `box-sizing: border-box` in `@layer fuselage`.** Frames don't force `content-box`, and the app's reset is not assumed to be loaded (the Storybook doesn't load it), so a stylesheet gives every `rcx-*` part and its pseudo-elements `border-box` (pilot commit `c739532c640`).

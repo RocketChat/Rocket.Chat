@@ -1,21 +1,21 @@
 @use '../styles/box-sizing.css';
+@use '../styles/direction.css';
 @use './Box/Box.styles.scss';
 
 @use './Accordion/Accordion.styles.scss';
 @use './AudioPlayer/AudioPlayer.styles.scss';
 @use './AutoComplete/AutoComplete.styles.scss';
 @use './Avatar/Avatar.styles.scss';
-@use './Badge/Badge.styles.scss';
 @use './Banner/Banner.styles.scss';
 @use './Bubble/Bubble.styles.scss';
-@use './Button/Button.styles.scss';
-@use './ButtonGroup/ButtonGroup.styles.scss';
+@use './Button/Button.styles.css';
+@use './Button/IconButton.styles.css';
+@use './ButtonGroup/ButtonGroup.styles.css';
 @use './Callout/Callout.styles.scss';
 @use './Card/Card.styles.scss';
 @use './CardGrid/CardGrid.styles.css';
 @use './CardGroup/CardGroup.styles.scss';
-@use './CheckBox/CheckBox.styles.scss';
-@use './Chevron/Chevron.styles.scss';
+@use './CheckBox/CheckBox.styles.css';
 @use './Chip/Chip.styles.scss';
 @use './CodeSnippet/CodeSnippet.styles.scss';
 @use './Contextualbar/Contextualbar.styles.scss';
@@ -37,7 +37,7 @@
 @use './Options/Options.styles.scss';
 @use './Pagination/Pagination.styles.scss';
 @use './ProgressBar/ProgressBar.styles.scss';
-@use './RadioButton/RadioButton.styles.scss';
+@use './RadioButton/RadioButton.styles.css';
 @use './Select/Select.styles.scss';
 @use './Sidebar/Sidebar.styles.scss';
 @use './Sidepanel/Sidepanel.styles.scss';
@@ -49,10 +49,9 @@
 @use './StatusBullet/StatusBullet.styles.scss';
 @use './Table/Table.styles.scss';
 @use './Tabs/Tabs.styles.scss';
-@use './Tag/Tag.styles.scss';
 @use './Text/Text.styles.scss';
 @use './Throbber/Throbber.styles.scss';
 @use './Tile/Tile.styles.scss';
 @use './ToastBar/ToastBar.styles.scss';
-@use './ToggleSwitch/ToggleSwitch.styles.scss';
+@use './ToggleSwitch/ToggleSwitch.styles.css';
 @use './Tooltip/Tooltip.styles.scss';
