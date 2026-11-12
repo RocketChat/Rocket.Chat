@@ -19,6 +19,7 @@ export default {
 type Story = StoryObj<typeof Button>;
 
 const onClick = fn();
+const onFocus = fn();
 const forwardedRef = createRef<HTMLButtonElement>();
 const callbackRef = fn();
 const onLinkClick = fn((event: MouseEvent<HTMLElement>) => event.preventDefault());
@@ -35,7 +36,7 @@ export const Forwarding: Story = {
 				data-anything='anything'
 				aria-label='button label'
 				onClick={onClick}
-				onFocus={fn()}
+				onFocus={onFocus}
 			>
 				Save
 			</Button>
@@ -64,7 +65,7 @@ export const Forwarding: Story = {
 			'data-anything': 'anything',
 			'aria-label': 'button label',
 			'ref': forwardedRef,
-			'handlers': { onClick },
+			'handlers': { onClick, onFocus },
 		});
 		await expectForwards(canvasElement, 'a', {
 			'className': 'consumer-link',
