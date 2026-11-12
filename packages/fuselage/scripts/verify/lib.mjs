@@ -34,10 +34,11 @@ export const storyIds = (dir, { match = () => true, renders, classIndex } = {}) 
 
 const FREEZE = '*,*::before,*::after{transition:none!important;animation:none!important}';
 
-const open = async (width) => {
+const open = async (width, freeze) => {
 	const browser = await chromium.launch();
 	const page = await browser.newPage({ viewport: { width, height: 768 } });
 	page.setDefaultTimeout(20000);
+	if (!freeze) return { browser, page };
 	await page.addInitScript((css) => {
 		globalThis.document.addEventListener('DOMContentLoaded', () => {
 			const style = globalThis.document.createElement('style');
@@ -82,13 +83,14 @@ export const openStory = async (page, base, id, globals) => {
 
 // Runs fn(page, id) over the ids on `jobs` pages. A failure only costs that story: the browser is relaunched and the run goes on.
 // If a browser cannot be relaunched its worker stops, and ids nobody picked up are reported as errors.
-export const runPool = async (ids, { jobs, width }, fn) => {
+// Pages freeze transitions and animations unless `freeze` is false.
+export const runPool = async (ids, { jobs, width, freeze = true }, fn) => {
 	const results = new Map();
 	let next = 0;
 	const worker = async () => {
 		let session;
 		try {
-			session = await open(Number(width));
+			session = await open(Number(width), freeze);
 		} catch (error) {
 			console.error(`could not start a browser: ${error.message.split('\n')[0]}`);
 			return;
@@ -101,7 +103,7 @@ export const runPool = async (ids, { jobs, width }, fn) => {
 				results.set(id, { error: error.message.split('\n')[0] });
 				await session.browser.close().catch(() => undefined);
 				try {
-					session = await open(Number(width));
+					session = await open(Number(width), freeze);
 				} catch (error) {
 					console.error(`could not relaunch a browser: ${error.message.split('\n')[0]}`);
 					return;

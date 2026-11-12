@@ -17,6 +17,13 @@ const [serverA, serverB] = await Promise.all([serve(dirA), serve(dirB)]);
 const snapshot = async (page, base, id) => {
 	await openStory(page, base, id, opts.globals);
 	return page.evaluate(() => {
+		// Styles are read at the end of every finite animation; the transition and animation properties stay as declared
+		for (const animation of globalThis.document.getAnimations()) {
+			if (animation.effect?.getComputedTiming().endTime === Number.POSITIVE_INFINITY) {
+				animation.pause();
+				animation.currentTime = 0;
+			} else animation.finish();
+		}
 		const rcxOf = (el) => [...el.classList].find((c) => c.startsWith('rcx-') && !c.startsWith('rcx-css-'));
 		const label = (el) => {
 			const own = rcxOf(el);
@@ -48,7 +55,7 @@ const snapshot = async (page, base, id) => {
 	});
 };
 
-const results = await runPool(ids, { jobs: opts.jobs, width: opts.width }, async (page, id) => [
+const results = await runPool(ids, { jobs: opts.jobs, width: opts.width, freeze: false }, async (page, id) => [
 	await snapshot(page, serverA.url, id),
 	await snapshot(page, serverB.url, id),
 ]);
