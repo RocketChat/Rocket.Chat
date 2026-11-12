@@ -423,3 +423,6 @@ export type DialogAttributes = PartAttributes<HTMLDialogElement> &
 
 /** What a part rendered as an `img` that only shows something forwards. */
 export type ImagePartAttributes = PartAttributes<HTMLImageElement>;
+
+/** What a consumer passes to the `button` or `span` a part renders for it: the button attributes without the `onClick` and `ref` the part owns. */
+export type ButtonPartAttributes = Omit<ButtonActionAttributes, 'onClick' | 'ref'>;

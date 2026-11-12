@@ -26,15 +26,6 @@
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
-	"Bubble/Bubble.styles.scss": {
-		"rules": 15,
-		"nested": 14,
-		"combinators": 4,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 0,
-		"displayContents": 0
-	},
 	"Button/Button.styles.css": {
 		"rules": 4,
 		"nested": 0,

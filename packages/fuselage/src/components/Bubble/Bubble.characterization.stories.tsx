@@ -218,18 +218,24 @@ export const ClassContract: Story = {
 				'root > div[1] > span > i: rcx-box rcx-box--full rcx-icon rcx-icon--name-arrow-down',
 				'root > div[2]: rcx-box rcx-box--full rcx-bubble rcx-bubble--small',
 				'root > div[2] > button: rcx-box rcx-box--full rcx-bubble__button rcx-bubble__button--primary',
+				'root > div[2] > button > span: rcx-bubble__content',
 				'root > div[3]: rcx-box rcx-box--full rcx-bubble',
 				'root > div[3] > button: rcx-box rcx-box--full rcx-bubble__button rcx-bubble__button--primary',
-				'root > div[3] > button > i: rcx-box rcx-box--full rcx-icon rcx-icon--name-arrow-down',
+				'root > div[3] > button > span: rcx-bubble__content',
+				'root > div[3] > button > span > i: rcx-box rcx-box--full rcx-icon rcx-icon--name-arrow-down',
 				'root > div[4]: rcx-box rcx-box--full rcx-bubble rcx-bubble__group',
 				'root > div[4] > button[0]: rcx-box rcx-box--full rcx-bubble__button rcx-bubble__button--secondary',
+				'root > div[4] > button[0] > span: rcx-bubble__content',
 				'root > div[4] > button[1]: rcx-box rcx-box--full rcx-bubble__button rcx-bubble__button--secondary',
-				'root > div[4] > button[1] > i: rcx-box rcx-box--full rcx-icon rcx-icon--name-cross-small',
+				'root > div[4] > button[1] > span: rcx-bubble__content',
+				'root > div[4] > button[1] > span > i: rcx-box rcx-box--full rcx-icon rcx-icon--name-cross-small',
 				'root > div[5]: rcx-box rcx-box--full rcx-bubble rcx-bubble--small rcx-bubble__group',
 				'root > div[5] > button[0]: rcx-box rcx-box--full rcx-bubble__button rcx-bubble__button--primary',
-				'root > div[5] > button[0] > i: rcx-box rcx-box--full rcx-icon rcx-icon--name-arrow-down',
+				'root > div[5] > button[0] > span: rcx-bubble__content',
+				'root > div[5] > button[0] > span > i: rcx-box rcx-box--full rcx-icon rcx-icon--name-arrow-down',
 				'root > div[5] > button[1]: rcx-box rcx-box--full rcx-bubble__button rcx-bubble__button--primary',
-				'root > div[5] > button[1] > i: rcx-box rcx-box--full rcx-icon rcx-icon--name-cross-small',
+				'root > div[5] > button[1] > span: rcx-bubble__content',
+				'root > div[5] > button[1] > span > i: rcx-box rcx-box--full rcx-icon rcx-icon--name-cross-small',
 			].join('\n'),
 		);
 	},
@@ -289,7 +295,7 @@ export const IconPadding: Story = {
 		await expect(end('#icon button')).toBe('12px');
 		await expect(end('#icon-item .rcx-bubble__item')).toBe('12px');
 		await expect(end('#group button')).toBe('8px');
-		await expect(computed(el(canvasElement, '#icon button'), 'column-gap')).toBe('4px');
+		await expect(computed(el(canvasElement, '#icon button .rcx-bubble__content'), 'column-gap')).toBe('4px');
 	},
 };
 
@@ -360,13 +366,14 @@ export const PressAnimation: Story = {
 	play: async ({ canvasElement }) => {
 		if (isJsdom()) return;
 		const button = el(canvasElement, 'button');
-		const [icon, label] = [el(button, '.rcx-icon'), el(button, 'span:not(.rcx-icon)')];
-		await expect(computed(label, 'transform')).toBe('none');
+		const [icon, content] = [el(button, '.rcx-icon'), el(button, '.rcx-bubble__content')];
+		await expect(computed(content, 'transform')).toBe('none');
+		const restingTop = icon.getBoundingClientRect().top;
 
-		// Pressed, the button's content sits 1px lower
+		// Pressed, the button's content, icon and label, sits 1px lower
 		forcePseudo(button, 'active');
-		await waitFor(() => expect(computed(label, 'transform')).toBe('matrix(1, 0, 0, 1, 0, 1)'));
-		await expect(computed(icon, 'transform')).toBe('matrix(1, 0, 0, 1, 0, 1)');
+		await waitFor(() => expect(computed(content, 'transform')).toBe('matrix(1, 0, 0, 1, 0, 1)'));
+		await expect(icon.getBoundingClientRect().top).toBe(restingTop + 1);
 	},
 };
 
@@ -380,7 +387,7 @@ export const LabelTruncation: Story = {
 	),
 	play: async ({ canvasElement }) => {
 		if (isJsdom()) return;
-		const label = el(canvasElement, '#long button > span');
+		const label = el(canvasElement, '#long button > span > span');
 		await expect(computed(label, 'text-overflow')).toBe('ellipsis');
 		await expect(label.scrollWidth).toBeGreaterThan(label.clientWidth);
 	},
