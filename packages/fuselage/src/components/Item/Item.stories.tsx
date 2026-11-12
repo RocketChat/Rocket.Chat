@@ -11,6 +11,7 @@ import { Icon, type IconProps } from '../Icon';
 import { Menu, MenuItem } from '../Menu';
 import { leterAvatarUrls } from '../Sidebar/helpers';
 import { StatusBullet, type StatusBulletProps } from '../StatusBullet';
+import { Tag } from '../Tag';
 import Item from './Item';
 import ItemActions from './ItemActions';
 import ItemContent from './ItemContent';
@@ -701,6 +702,39 @@ export const Dividers: Story = {
 				<ItemDivider is='li' aria-hidden inset='md' />
 				<RoomRow room={rooms[3]} inset='md' />
 			</ItemGroup>
+		</Box>
+	),
+};
+
+export const Variations: Story = {
+	render: () => (
+		<Box display='flex' flexDirection='column' width='x280'>
+			<Caption>Large padding on a row, a group header and a list; link tone; light divider</Caption>
+			<ItemGroup is='ul' aria-label='Variations' padding='large'>
+				<ItemGroupHeader is='li' aria-hidden padding='large'>
+					<ItemGroupTitle>Large header</ItemGroupTitle>
+				</ItemGroupHeader>
+				<Item is='li' padding='large'>
+					<ItemContent>
+						<ItemTitle>Large padding</ItemTitle>
+					</ItemContent>
+				</Item>
+				<ItemDivider is='li' aria-hidden variation='light' />
+				<Item is='li' tone='link'>
+					<ItemContent>
+						<ItemTitle>Link tone</ItemTitle>
+					</ItemContent>
+				</Item>
+			</ItemGroup>
+			<Caption>Description that fills the room a sibling leaves</Caption>
+			<Item>
+				<ItemContent>
+					<ItemRow>
+						<ItemDescription fill>A description that is long enough to be cut by the tag beside it</ItemDescription>
+						<Tag>Parent room</Tag>
+					</ItemRow>
+				</ItemContent>
+			</Item>
 		</Box>
 	),
 };

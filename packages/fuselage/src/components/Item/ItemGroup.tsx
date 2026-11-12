@@ -39,6 +39,10 @@ export type ItemGroupProps = {
 	 * Hides the group, as a collapsed panel does.
 	 */
 	hidden?: boolean;
+	/**
+	 * `large` adds 8px of block padding, for a list that sits between a header and a divider.
+	 */
+	padding?: 'default' | 'large';
 } & ItemPartAttributes &
 	VirtualizedListAttributes;
 
@@ -87,6 +91,12 @@ const itemGroupHidden = {
 	display: 'none',
 } as const;
 
+const itemGroupDensities = {
+	large: {
+		paddingBlock: '8px',
+	},
+} as const;
+
 // end of generated
 
 // Declared where it renders: zero-runtime only erases a `styled()` whose every use is in its own module
@@ -99,6 +109,7 @@ const ItemGroupFrame = styled(View, {
 		cursor: { 'not-allowed': { cursor: 'not-allowed' } },
 		positioned: { true: itemGroupPositioned },
 		hidden: { true: itemGroupHidden },
+		density: itemGroupDensities,
 	},
 });
 
@@ -116,7 +127,18 @@ const ringOf = (dropTarget: ItemGroupProps['dropTarget']) => {
  * A list of `Item` rows. An `ItemGroupTitle` inside it labels the group, and its width drives the narrow layout.
  */
 const ItemGroup = (props: ItemGroupProps) => {
-	const { is = 'div', dragging, dropTarget, dropIndicator, dropDisabled, dropped, hidden, className, children } = props;
+	const {
+		is = 'div',
+		dragging,
+		dropTarget,
+		dropIndicator,
+		dropDisabled,
+		dropped,
+		hidden,
+		padding = 'default',
+		className,
+		children,
+	} = props;
 	const [titleIds, registerTitle] = useIdRegistry();
 
 	const contextValue = useMemo(() => ({ registerTitle }), [registerTitle]);
@@ -137,6 +159,7 @@ const ItemGroup = (props: ItemGroupProps) => {
 
 	const paint = paintOf(dropTarget, dropDisabled);
 	const ring = ringOf(dropTarget);
+	const density = padding === 'large' ? 'large' : undefined;
 
 	// One frame per tag, each with a literal `render` element: zero-runtime has to know the tag
 	const renderGroup = () => {
@@ -149,6 +172,7 @@ const ItemGroup = (props: ItemGroupProps) => {
 					cursor={dropDisabled ? 'not-allowed' : undefined}
 					positioned={!!dropIndicator}
 					hidden={!!hidden}
+					density={density}
 					className={classes}
 					render={
 						<ul
@@ -179,6 +203,7 @@ const ItemGroup = (props: ItemGroupProps) => {
 					cursor={dropDisabled ? 'not-allowed' : undefined}
 					positioned={!!dropIndicator}
 					hidden={!!hidden}
+					density={density}
 					className={classes}
 					render={
 						<ol
@@ -208,6 +233,7 @@ const ItemGroup = (props: ItemGroupProps) => {
 				cursor={dropDisabled ? 'not-allowed' : undefined}
 				positioned={!!dropIndicator}
 				hidden={!!hidden}
+				density={density}
 				className={classes}
 				render={
 					<div

@@ -67,6 +67,14 @@ export type ItemProps = {
 	disabled?: boolean;
 	variant?: 'danger' | 'success' | 'warning' | 'primary';
 	/**
+	 * `link` colors the row as a link: the theme's link color, then the sidebar's. A `variant` or `disabled` wins over it.
+	 */
+	tone?: 'link';
+	/**
+	 * `large` doubles the block padding, for rows that sit in a denser list's level two.
+	 */
+	padding?: 'default' | 'large';
+	/**
 	 * Declares that the content takes two lines, which widens the gap, without waiting for the browser to match the content.
 	 */
 	multiline?: boolean;
@@ -153,6 +161,13 @@ const itemTones = {
 	},
 	disabled: {
 		color: 'var(--rcx-item-color-font-disabled, var(--rcx-color-font-disabled, #cbced1))',
+	},
+	link: {
+		color: {
+			'default': 'var(--rcx-link-color, var(--rcx-sidebar-link-color, var(--rcx-color-font-titles-labels, #1f2329)))',
+			'focus': 'var(--rcx-link-focus-color, var(--rcx-sidebar-link-color, var(--rcx-color-font-titles-labels, #1f2329)))',
+			'focus-within': 'var(--rcx-link-focus-color, var(--rcx-sidebar-link-color, var(--rcx-color-font-titles-labels, #1f2329)))',
+		},
 	},
 } as const;
 
@@ -251,6 +266,12 @@ const itemMultiline = {
 	flexWrap: 'wrap',
 } as const;
 
+const itemDensities = {
+	large: {
+		paddingBlock: '8px',
+	},
+} as const;
+
 // end of generated
 
 // Declared where it renders: zero-runtime only erases a `styled()` whose every use is in its own module
@@ -260,6 +281,7 @@ const ItemFrame = styled(View, {
 	variants: {
 		align: { center: {}, start: { alignItems: 'flex-start' } },
 		tone: itemTones,
+		density: itemDensities,
 		paint: itemPaints,
 		cursor: itemCursors,
 		ring: itemRings,
@@ -318,6 +340,8 @@ const Item = (props: ItemProps) => {
 		focusVisible,
 		disabled,
 		variant,
+		tone: toneProp,
+		padding = 'default',
 		multiline,
 		grabbable,
 		dragging,
@@ -391,7 +415,8 @@ const Item = (props: ItemProps) => {
 		className,
 	);
 
-	const tone = disabled ? 'disabled' : (variant ?? 'default');
+	const tone = disabled ? 'disabled' : (variant ?? toneProp ?? 'default');
+	const density = padding === 'large' ? 'large' : undefined;
 	const paint = paintOf({ dropTarget, dropDisabled, disabled, selected, focused, hoverable, interactive });
 	const cursor = cursorOf({ disabled, dropDisabled, grabbable, interactive });
 	const ring = ringOf({ dropTarget, focusVisible });
@@ -403,6 +428,7 @@ const Item = (props: ItemProps) => {
 				<ItemFrame
 					align={align}
 					tone={tone}
+					density={density}
 					paint={paint}
 					cursor={cursor}
 					ring={ring}
@@ -435,6 +461,7 @@ const Item = (props: ItemProps) => {
 				<ItemFrame
 					align={align}
 					tone={tone}
+					density={density}
 					paint={paint}
 					cursor={cursor}
 					ring={ring}
@@ -470,6 +497,7 @@ const Item = (props: ItemProps) => {
 				<ItemFrame
 					align={align}
 					tone={tone}
+					density={density}
 					paint={paint}
 					cursor={cursor}
 					ring={ring}
@@ -500,6 +528,7 @@ const Item = (props: ItemProps) => {
 			<ItemFrame
 				align={align}
 				tone={tone}
+				density={density}
 				paint={paint}
 				cursor={cursor}
 				ring={ring}
