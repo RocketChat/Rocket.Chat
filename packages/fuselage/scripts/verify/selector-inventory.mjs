@@ -4,7 +4,7 @@
 // An override of a migrated part must carry `[class]` so it keeps winning; the baseline stops unprefixed ones from growing.
 import { execFileSync } from 'node:child_process';
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
 import { parseArgs } from 'node:util';
 
 const { values: opts, positionals } = parseArgs({
