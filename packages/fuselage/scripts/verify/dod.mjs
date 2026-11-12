@@ -44,19 +44,22 @@ const run = (script, args) => exec('node', [here(script), ...args]);
 const characterization = (dir) =>
 	readdirSync(dir, { withFileTypes: true, recursive: true }).filter((entry) => entry.name === `${component}.characterization.stories.tsx`);
 
+// A filter that matches no test still exits 0, so a run passes only when some test passed
+const passedSome = ({ ok, output }) => ok && Number(/^Tests:.*?(\d+) passed/m.exec(output)?.[1] ?? 0) > 0;
+
 const g0 = () => {
 	if (!characterization(join(import.meta.dirname, '../../src')).length)
 		return { skipped: 'not run', detail: 'no characterization stories' };
 	const jest = exec('yarn', ['jest', 'src/testing/stories.spec.tsx', '-t', `${component}.characterization`]);
 	const jestTests = jest.output.match(/Tests:.*$/m)?.[0] ?? jest.output.split('\n').at(-1);
-	if (!after) return { ok: jest.ok, detail: `jest: ${jestTests}` };
+	if (!after) return { ok: passedSome(jest), detail: `jest: ${jestTests}` };
 	const zero = exec('node', [
 		join(import.meta.dirname, '../test-stories.mjs'),
 		after,
 		`characterization-${component.toLowerCase()}\\.test\\.js$`,
 	]);
 	const zeroTests = zero.output.match(/Tests:.*$/m)?.[0] ?? zero.output.split('\n').at(-1);
-	return { ok: jest.ok && zero.ok, detail: `jest: ${jestTests}; zero storybook: ${zeroTests}` };
+	return { ok: passedSome(jest) && passedSome(zero), detail: `jest: ${jestTests}; zero storybook: ${zeroTests}` };
 };
 
 const size = () => {
