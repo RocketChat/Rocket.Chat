@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 
-import { useToggleSelectAll } from '../../MessageList/contexts/SelectedMessagesContext';
+import { useToggleSelectAll } from '../../providers/SelectedMessagesContext';
 
 export const useSelectAllAndScrollToTop = () => {
 	const ref = useRef<HTMLElement>(null);

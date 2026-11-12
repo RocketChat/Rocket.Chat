@@ -8,8 +8,8 @@ import { useState, useEffect, useCallback, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ThreadMessageList from './ThreadMessageList';
-import MessageListErrorBoundary from '../../../MessageList/MessageListErrorBoundary';
 import DropTargetOverlay from '../../../body/DropTargetOverlay';
+import MessageListErrorBoundary from '../../../body/MessageListErrorBoundary';
 import { useFileUploadDropTarget } from '../../../body/hooks/useFileUploadDropTarget';
 import ComposerContainer from '../../../composer/ComposerContainer';
 import RoomComposer from '../../../composer/RoomComposer/RoomComposer';

@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import SystemMessage from '../../../../../components/message/variants/SystemMessage';
 import ThreadMessage from '../../../../../components/message/variants/ThreadMessage';
 import { useFormatDate } from '../../../../../hooks/useFormatDate';
-import { isMessageNewDay } from '../../../MessageList/lib/isMessageNewDay';
+import { isMessageNewDay } from '../../../../../lib/utils/isMessageNewDay';
 import { useRoomSubscription } from '../../../contexts/RoomContext';
 import { useDateRef } from '../../../providers/DateListProvider';
 

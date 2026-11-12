@@ -2,7 +2,7 @@ import { Emitter } from '@rocket.chat/emitter';
 import type { ReactNode } from 'react';
 import { useMemo } from 'react';
 
-import { SelectedMessageContext } from '../MessageList/contexts/SelectedMessagesContext';
+import { SelectedMessageContext } from './SelectedMessagesContext';
 
 export const selectedMessageStore = new (class SelectMessageStore extends Emitter<
 	{

@@ -48,7 +48,7 @@ jest.mock('../../../hooks/useAirGappedRestriction', () => ({
 	useAirGappedRestriction: () => [false],
 }));
 
-jest.mock('../MessageList/contexts/SelectedMessagesContext', () => ({
+jest.mock('../providers/SelectedMessagesContext', () => ({
 	useIsSelecting: () => false,
 }));
 

@@ -1,6 +1,6 @@
 import type { IMessage, MessageAttachment } from '@rocket.chat/core-typings';
 
-import { hasTranslationLanguageInAttachments, hasTranslationLanguageInMessage } from './autoTranslate';
+import { hasTranslationLanguageInAttachments, hasTranslationLanguageInMessage } from './hasTranslationLanguage';
 
 describe('hasTranslationLanguageInMessage', () => {
 	const testCases = [

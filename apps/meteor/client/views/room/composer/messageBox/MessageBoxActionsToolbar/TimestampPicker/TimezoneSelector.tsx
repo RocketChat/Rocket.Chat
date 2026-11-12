@@ -3,8 +3,8 @@ import type { Key } from 'react';
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { UTCOffsets } from '../../../../../../../lib/utils/timestamp/types';
-import type { TimezoneKey } from '../../../../../../../lib/utils/timestamp/types';
+import { UTCOffsets } from '../../../../../../lib/utils/timestamp/types';
+import type { TimezoneKey } from '../../../../../../lib/utils/timestamp/types';
 
 export type TimezoneSelectorProps = {
 	value: TimezoneKey;

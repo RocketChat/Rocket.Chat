@@ -18,20 +18,20 @@ import type { ComponentProps } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import ThreadMessagePreviewBody from './threadPreview/ThreadMessagePreviewBody';
+import { isParsedMessage } from '../../../lib/utils/isParsedMessage';
+import { useMessageBody } from '../../../views/room/MessageList/hooks/useMessageBody';
+import { useParentMessage } from '../../../views/room/MessageList/hooks/useParentMessage';
+import { useGoToThread } from '../../../views/room/hooks/useGoToThread';
 import {
 	useIsSelecting,
 	useToggleSelect,
 	useIsSelectedMessage,
 	useCountSelected,
-} from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
-import { useMessageBody } from '../../../views/room/MessageList/hooks/useMessageBody';
-import { useParentMessage } from '../../../views/room/MessageList/hooks/useParentMessage';
-import { isParsedMessage } from '../../../views/room/MessageList/lib/isParsedMessage';
-import { useGoToThread } from '../../../views/room/hooks/useGoToThread';
+} from '../../../views/room/providers/SelectedMessagesContext';
 import Emoji from '../../Emoji';
-import { useShowTranslated } from '../list/MessageListContext';
-import ThreadMessagePreviewBody from './threadPreview/ThreadMessagePreviewBody';
 import { getCheckboxLabel } from '../helpers/getCheckboxLabel';
+import { useShowTranslated } from '../list/MessageListContext';
 
 export type ThreadMessagePreviewProps = {
 	message: IThreadMessage;

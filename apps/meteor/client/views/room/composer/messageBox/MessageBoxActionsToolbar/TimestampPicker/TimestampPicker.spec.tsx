@@ -6,10 +6,10 @@ import { axe } from 'jest-axe';
 
 import * as stories from './TimestampPicker.stories';
 import { TimestampPickerModal } from './TimestampPickerModal';
-import { dateToISOString, generateTimestampMarkup } from '../../../../../../../lib/utils/timestamp/conversion';
-import { TIMESTAMP_FORMATS } from '../../../../../../../lib/utils/timestamp/formats';
+import { dateToISOString, generateTimestampMarkup } from '../../../../../../lib/utils/timestamp/conversion';
+import { TIMESTAMP_FORMATS } from '../../../../../../lib/utils/timestamp/formats';
 
-jest.mock('../../../../../../GazzodownText', () => ({
+jest.mock('../../../../../../components/GazzodownText', () => ({
 	__esModule: true,
 	default: () => <div data-testid='mock-gazzodown-text'>Mocked GazzodownText</div>,
 }));

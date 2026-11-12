@@ -7,7 +7,7 @@ import { Fragment, memo } from 'react';
 import RoomMessage from '../../../components/message/variants/RoomMessage';
 import SystemMessage from '../../../components/message/variants/SystemMessage';
 import { useFormatDate } from '../../../hooks/useFormatDate';
-import { isMessageNewDay } from '../../room/MessageList/lib/isMessageNewDay';
+import { isMessageNewDay } from '../../../lib/utils/isMessageNewDay';
 
 export type AuditMessageListProps = {
 	messages: IMessage[];

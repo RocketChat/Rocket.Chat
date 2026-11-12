@@ -23,9 +23,9 @@ import SystemMessage from '../../../components/message/variants/SystemMessage';
 import { useFormatDate } from '../../../hooks/useFormatDate';
 import { useMessageRowListNavigation } from '../../../hooks/useMessageRowListNavigation';
 import type { MessageActionContext } from '../../../lib/MessageAction';
-import MessageListErrorBoundary from '../MessageList/MessageListErrorBoundary';
-import { isMessageNewDay } from '../MessageList/lib/isMessageNewDay';
+import { isMessageNewDay } from '../../../lib/utils/isMessageNewDay';
 import MessageListProvider from '../MessageList/providers/MessageListProvider';
+import MessageListErrorBoundary from '../body/MessageListErrorBoundary';
 import { useRoomSubscription } from '../contexts/RoomContext';
 
 export type MessageListTabProps = {

@@ -2,9 +2,9 @@ import type { IMessage, ISubscription, ITranslatedMessage } from '@rocket.chat/c
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useCallback, useMemo } from 'react';
 
-import { AutoTranslate } from '../../../../lib/autotranslate';
-import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
-import { hasTranslationLanguageInAttachments, hasTranslationLanguageInMessage } from '../lib/autoTranslate';
+import { AutoTranslate } from '../lib/autotranslate';
+import { hasTranslationLanguageInAttachments, hasTranslationLanguageInMessage } from '../lib/autotranslate/hasTranslationLanguage';
+import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 
 export type AutoTranslateOptions = {
 	autoTranslateEnabled: boolean;
