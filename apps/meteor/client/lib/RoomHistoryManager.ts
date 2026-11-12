@@ -62,6 +62,7 @@ export type RoomHistoryState = {
 };
 
 const roomStateEvent = (rid: IRoom['_id']) => `state:${rid}` as const;
+const roomMessageEvent = (rid: IRoom['_id']) => `message:${rid}` as const;
 
 class RoomHistoryManagerClass extends Emitter {
 	private lastRequest?: Date;
@@ -101,6 +102,14 @@ class RoomHistoryManagerClass extends Emitter {
 
 	public subscribeToRoom(rid: IRoom['_id'], cb: (state: RoomHistoryState) => void): () => void {
 		return this.on(roomStateEvent(rid), cb);
+	}
+
+	public emitRoomMessage(msg: IMessage): void {
+		this.emit(roomMessageEvent(msg.rid), msg);
+	}
+
+	public subscribeToRoomMessages(rid: IRoom['_id'], cb: (msg: IMessage) => void): () => void {
+		return this.on(roomMessageEvent(rid), cb);
 	}
 
 	private async queue(): Promise<void> {

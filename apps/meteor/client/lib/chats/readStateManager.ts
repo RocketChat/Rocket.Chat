@@ -33,7 +33,18 @@ export class ReadStateManager extends Emitter {
 	};
 
 	public subscribeToMessages() {
-		return RoomHistoryManager.on('loaded-messages', () => this.updateFirstUnreadRecordId());
+		const offLoadedMessages = RoomHistoryManager.on('loaded-messages', () => this.updateFirstUnreadRecordId());
+		const offRoomMessages = RoomHistoryManager.subscribeToRoomMessages(this.rid, (msg) => {
+			if (msg.u?._id === getUserId()) {
+				return;
+			}
+			this.updateFirstUnreadRecordId();
+		});
+
+		return () => {
+			offLoadedMessages?.();
+			offRoomMessages?.();
+		};
 	}
 
 	public updateSubscription(subscription?: ISubscription) {
@@ -81,6 +92,10 @@ export class ReadStateManager extends Emitter {
 	}
 
 	private setFirstUnreadRecordId(firstUnreadRecordId: string | undefined) {
+		if (this.firstUnreadRecordId === firstUnreadRecordId) {
+			return;
+		}
+
 		this.firstUnreadRecordId = firstUnreadRecordId;
 		this.emit('unread-state-change', this.firstUnreadRecordId);
 	}

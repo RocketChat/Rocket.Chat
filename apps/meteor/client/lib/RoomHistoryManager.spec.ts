@@ -122,4 +122,32 @@ describe('RoomHistoryManager', () => {
 
 		expect(mockedGet).toHaveBeenCalledWith('/v1/rooms.history', { roomId: 'room-a', count: 50, showThreadMessages: false });
 	});
+
+	it('emits and receives room-scoped messages via subscribeToRoomMessages and emitRoomMessage', () => {
+		const roomACallback = jest.fn();
+		const roomBCallback = jest.fn();
+
+		const unsubA = RoomHistoryManager.subscribeToRoomMessages('room-a', roomACallback);
+		const unsubB = RoomHistoryManager.subscribeToRoomMessages('room-b', roomBCallback);
+
+		const msgA = { _id: 'msg-a', rid: 'room-a', msg: 'hello' } as any;
+		RoomHistoryManager.emitRoomMessage(msgA);
+
+		expect(roomACallback).toHaveBeenCalledWith(msgA);
+		expect(roomBCallback).not.toHaveBeenCalled();
+
+		const msgB = { _id: 'msg-b', rid: 'room-b', msg: 'room b message' } as any;
+		RoomHistoryManager.emitRoomMessage(msgB);
+
+		expect(roomBCallback).toHaveBeenCalledWith(msgB);
+		expect(roomACallback).toHaveBeenCalledTimes(1);
+
+		unsubA();
+		RoomHistoryManager.emitRoomMessage({ _id: 'msg-a-2', rid: 'room-a', msg: 'world' } as any);
+		expect(roomACallback).toHaveBeenCalledTimes(1);
+
+		unsubB();
+		RoomHistoryManager.emitRoomMessage({ _id: 'msg-b-2', rid: 'room-b', msg: 'another room b message' } as any);
+		expect(roomBCallback).toHaveBeenCalledTimes(1);
+	});
 });

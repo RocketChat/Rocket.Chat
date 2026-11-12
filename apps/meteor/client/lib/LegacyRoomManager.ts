@@ -190,6 +190,7 @@ const openRoom = (typeName: string, record: OpenedRoom) => {
 
 					await upsertMessage({ msg, subscription });
 					if (isNew) {
+						RoomHistoryManager.emitRoomMessage(msg);
 						await clientCallbacks.run('streamNewMessage', msg);
 					}
 				}
