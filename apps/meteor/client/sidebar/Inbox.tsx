@@ -1,4 +1,3 @@
-import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useId, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -12,18 +11,14 @@ const Inbox = () => {
 	const searchButtonRef = useRef<HTMLButtonElement>(null);
 	const [searchOpen, setSearchOpen] = useState(false);
 	const [filterText, setFilterText] = useState('');
-	const debouncedFilterText = useDebouncedValue(filterText, 100);
-	const appliedFilterText = searchOpen ? debouncedFilterText : '';
-
-	const toggleSearch = () => {
-		setSearchOpen((open) => !open);
-		setFilterText('');
-	};
 
 	const closeSearch = () => {
-		toggleSearch();
+		setSearchOpen(false);
+		setFilterText('');
 		searchButtonRef.current?.focus();
 	};
+
+	const toggleSearch = () => (searchOpen ? closeSearch() : setSearchOpen(true));
 
 	return (
 		<>
@@ -37,7 +32,7 @@ const Inbox = () => {
 					onClose={closeSearch}
 				/>
 			)}
-			<SidebarRoomList filterText={appliedFilterText} />
+			<SidebarRoomList filterText={filterText} />
 		</>
 	);
 };

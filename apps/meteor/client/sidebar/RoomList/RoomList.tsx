@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useMergedRefsV2, useShortTimeAgo } from '@rocket.chat/ui-client';
+import { GenericNoResults, useMergedRefsV2, useShortTimeAgo } from '@rocket.chat/ui-client';
 import { useUserPreference, useUserId } from '@rocket.chat/ui-contexts';
 import { useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -47,7 +47,7 @@ const RoomList = ({ filterText = '' }: RoomListProps) => {
 	const isAnonymous = !userId;
 
 	const { collapsedGroups, handleClick } = useCollapsedGroups();
-	const { groups } = useRoomList({ collapsedGroups, filterText });
+	const { groups, groupKeys } = useRoomList({ collapsedGroups, filterText });
 	const filtering = Boolean(filterText.trim());
 	const moveCategory = useMoveCategoryPosition();
 	const virtualizerRef = useRef<VirtualizerHandle>(null);
@@ -70,8 +70,6 @@ const RoomList = ({ filterText = '' }: RoomListProps) => {
 		[formatTime, isAnonymous, sidebarDisplayAvatar, sidebarViewMode, t, userId],
 	);
 
-	const allGroupKeys = useMemo(() => groups.map((group) => group.key), [groups]);
-
 	const virtualGroups = useMemo(
 		() =>
 			groups.map((group) => ({
@@ -88,17 +86,13 @@ const RoomList = ({ filterText = '' }: RoomListProps) => {
 
 	const preventDefaultRef = usePreventDefault();
 	const shortcutOpenMenuRef = useShortcutOpenMenu();
-	const { ref: dragRef, source: dragSource } = useSidebarListDrag(groups, { canReorder: !filtering });
+	const { ref: dragRef, source: dragSource } = useSidebarListDrag(groups, { groupKeys, canReorder: !filtering });
 	const ref = useMergedRefsV2(preventDefaultRef, shortcutOpenMenuRef, dragRef);
 
 	const isGroupDragged = (groupKey: string) => dragSource?.kind === 'group' && dragSource.key === groupKey;
 
 	if (filtering && groups.length === 0) {
-		return (
-			<Box paddingInline={16} paddingBlock={8} fontScale='p2' color='hint' role='status'>
-				{t('No_results_found')}
-			</Box>
-		);
+		return <GenericNoResults />;
 	}
 
 	return (
@@ -119,8 +113,8 @@ const RoomList = ({ filterText = '' }: RoomListProps) => {
 						group={group}
 						canMoveUp={!filtering && canMoveGroup(groups, index, 'up')}
 						canMoveDown={!filtering && canMoveGroup(groups, index, 'down')}
-						onMoveUp={() => moveCategory(allGroupKeys, group.key, 'up')}
-						onMoveDown={() => moveCategory(allGroupKeys, group.key, 'down')}
+						onMoveUp={() => moveCategory(groupKeys, group.key, 'up')}
+						onMoveDown={() => moveCategory(groupKeys, group.key, 'down')}
 						onClick={() => !filtering && handleClick(group.key)}
 					/>
 				)}

@@ -441,20 +441,26 @@ describe('the Incoming calls group', () => {
 	});
 });
 
-it('should list only the rooms whose name matches the filter, expanding collapsed groups and leaving out groups without a match', () => {
-	const namedRoom = (t: 'c' | 'd', name: string) =>
+it('should list only the rooms whose name matches the filter, expanding collapsed groups and leaving out groups without a match', async () => {
+	const namedRoom = (t: 'c' | 'd', name: string, fname = name) =>
 		({
-			...createFakeSubscription({ t, name, fname: name, ...emptyUnread }),
-			...createFakeRoom({ t, name, fname: name }),
+			...createFakeSubscription({ t, name, fname, ...emptyUnread }),
+			...createFakeRoom({ t, name, fname }),
 		}) as unknown as SubscriptionWithRoom;
 	const supportChannel = namedRoom('c', 'support');
-	const supportDirect = namedRoom('d', 'Support Bot');
+	const supportDirect = namedRoom('d', 'u1', 'Support Bot');
+	const supportByUsername = namedRoom('d', 'sup.agent', 'Agent');
+	const wrapper = getWrapperSettings({
+		sidebarGroupByType: true,
+		isDiscussionEnabled: true,
+		isEnterprise: true,
+		rooms: [supportChannel, namedRoom('c', 'general'), supportDirect, supportByUsername],
+	}).build();
 
-	const { result } = renderHook(() => useRoomList({ collapsedGroups: ['Channels'], filterText: ' SUP ' }), {
-		wrapper: getWrapperSettings({ sidebarGroupByType: true, rooms: [supportChannel, namedRoom('c', 'general'), supportDirect] }).build(),
-	});
+	const { result } = renderHook(() => useRoomList({ collapsedGroups: ['Channels'], filterText: ' SUP ' }), { wrapper });
 
+	await waitFor(() => expect(result.current.groupKeys).toContain('Discussions'));
 	expect(groupsListOf(result.current.groups)).toEqual(['Channels', 'Direct_Messages']);
 	expect(result.current.groups.map((group) => group.collapsed)).toEqual([false, false]);
-	expect(roomListOf(result.current.groups)).toEqual([supportChannel, supportDirect]);
+	expect(roomListOf(result.current.groups)).toEqual([supportChannel, supportDirect, supportByUsername]);
 });
