@@ -22,7 +22,10 @@ const moveKey = (keys: string[], key: string, target: string, position: 'before'
 /**
  * Lets the sidebar categories be reordered by dragging their headers, and a room be dragged into another category.
  */
-export const useSidebarListDrag = (groups: SidebarRoomListGroup[], { canReorder = true }: { canReorder?: boolean } = {}) => {
+export const useSidebarListDrag = (
+	groups: SidebarRoomListGroup[],
+	{ groupKeys, canReorder = true }: { groupKeys: string[]; canReorder?: boolean },
+) => {
 	const { t } = useTranslation();
 	const { data: { isEnterprise = false } = {} } = useIsEnterprise();
 	const { customCategories } = useUserSidebarCategories();
@@ -30,7 +33,6 @@ export const useSidebarListDrag = (groups: SidebarRoomListGroup[], { canReorder 
 	const saveCategoryOrder = useSaveCategoryOrder();
 	const moveRoomCategory = useMoveRoomCategory();
 
-	const groupKeys = groups.map((group) => group.key);
 	const findRoom = (rid: string) => groups.flatMap((group) => group.rooms).find((room) => room.rid === rid);
 
 	const getRoomTarget = (source: ItemListDragSource, group: string) => {

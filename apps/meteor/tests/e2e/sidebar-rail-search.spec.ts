@@ -4,6 +4,7 @@ import { IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import { createTargetChannel, deleteChannel, setSettingValueById, setUserPreferences } from './utils';
+import { preserveSettings } from './utils/preserveSettings';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -17,6 +18,8 @@ test.describe.serial('sidebar rail: Inbox search', () => {
 	let matchingChannel: string;
 	let otherChannel: string;
 
+	preserveSettings(['Accounts_AllowFeaturePreview']);
+
 	test.beforeAll(async ({ api }) => {
 		matchingChannel = `${searchTerm}-${faker.string.uuid().slice(0, 8)}`;
 		await api.post('/channels.create', { name: matchingChannel });
@@ -25,12 +28,7 @@ test.describe.serial('sidebar rail: Inbox search', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		await Promise.all([
-			deleteChannel(api, matchingChannel),
-			deleteChannel(api, otherChannel),
-			setSidebarRail(api, false),
-			setSettingValueById(api, 'Accounts_AllowFeaturePreview', false),
-		]);
+		await Promise.all([deleteChannel(api, matchingChannel), deleteChannel(api, otherChannel), setSidebarRail(api, false)]);
 	});
 
 	test.beforeEach(async ({ page }) => {

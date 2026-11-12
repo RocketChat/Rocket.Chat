@@ -17,7 +17,11 @@ const SidebarPanelSearch = ({ id, value, placeholder, onChange, onClose }: Sideb
 			autoFocus
 			value={value}
 			onChange={(event: ChangeEvent<HTMLInputElement>) => onChange(event.currentTarget.value)}
-			onKeyDown={(event: KeyboardEvent<HTMLInputElement>) => event.key === 'Escape' && onClose()}
+			onKeyDown={(event: KeyboardEvent<HTMLInputElement>) => {
+				if (event.key === 'Escape') {
+					onClose();
+				}
+			}}
 			placeholder={placeholder}
 			aria-label={placeholder}
 			endAddon={<Icon name='magnifier' size='x16' />}

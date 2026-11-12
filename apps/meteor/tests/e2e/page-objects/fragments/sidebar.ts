@@ -55,7 +55,7 @@ export class RoomSidebar extends Sidebar {
 	}
 
 	get searchNoResults(): Locator {
-		return this.root.getByRole('status').filter({ hasText: 'No results found' });
+		return this.root.getByRole('group', { name: 'No results found' });
 	}
 
 	get teamCollabFilters(): Locator {

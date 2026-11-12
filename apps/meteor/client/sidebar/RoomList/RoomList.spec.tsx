@@ -118,6 +118,7 @@ jest.mock('../hooks/useRoomList', () => ({
 	...jest.requireActual('../hooks/useRoomList'),
 	useRoomList: () => ({
 		groups: mockGroups,
+		groupKeys: mockGroups.map((group) => group.key),
 		groupsCount: mockGroups.map((group) => group.rooms.length),
 		totalCount: mockGroups.reduce((acc, group) => acc + group.rooms.length, 0),
 	}),
@@ -161,7 +162,7 @@ describe('RoomList', () => {
 
 		render(<RoomList filterText='nothing' />, { wrapper: appRoot });
 
-		expect(screen.getByRole('status')).toHaveTextContent('No_results_found');
+		expect(screen.getByRole('group', { name: 'No_results_found' })).toBeInTheDocument();
 		expect(mockSidebarVirtualList).not.toHaveBeenCalled();
 	});
 
