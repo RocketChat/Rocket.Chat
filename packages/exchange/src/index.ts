@@ -6,5 +6,6 @@ export { logger } from './logger';
 export { scrubForLog } from './scrub';
 export { EwsTransport } from './ews/EwsTransport';
 export type { EwsTransportConfig } from './ews/EwsTransport';
+export { EwsTransportPool } from './ews/EwsTransportPool';
 export { ExchangeEwsProvider } from './ews/ExchangeEwsProvider';
 export { MicrosoftGraphProvider } from './graph/MicrosoftGraphProvider';

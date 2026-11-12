@@ -1,7 +1,16 @@
-import { ExchangeError, EwsTransport, ExchangeEwsProvider, MicrosoftGraphProvider, logger, scrubForLog } from '@rocket.chat/exchange';
-import type { IExchangeProvider, DateRange } from '@rocket.chat/exchange';
+import {
+	ExchangeError,
+	EwsTransport,
+	EwsTransportPool,
+	ExchangeEwsProvider,
+	MicrosoftGraphProvider,
+	logger,
+	scrubForLog,
+} from '@rocket.chat/exchange';
+import type { IExchangeProvider, DateRange, EwsTransportConfig } from '@rocket.chat/exchange';
 import { startOfDayAt } from '@rocket.chat/tools';
 
+import { MAILBOX_CONCURRENCY } from './sync/limits';
 import { settings } from '../../../../server/settings';
 import { getCalendarSyncWindowDays } from '../../../lib/exchange/calendarSyncSchedule';
 
@@ -41,18 +50,21 @@ const buildExchangeProvider = (): IExchangeProvider | undefined => {
 				graphHost: settings.get<string>('Exchange_Graph_Host') || undefined,
 			});
 
-		case 'ews':
+		case 'ews': {
+			const config: EwsTransportConfig = {
+				url: settings.get<string>('Exchange_EWS_Url'),
+				username: settings.get<string>('Exchange_EWS_Username'),
+				password: settings.get<string>('Exchange_EWS_Password'),
+				authMethod: settings.get<string>('Exchange_EWS_Auth_Method') === 'basic' ? 'basic' : 'ntlm',
+				caCert: settings.get<string>('Exchange_EWS_CA_Cert') || undefined,
+				rejectUnauthorized: settings.get<boolean>('Exchange_EWS_Reject_Unauthorized') !== false,
+			};
+
 			return new ExchangeEwsProvider(
-				new EwsTransport({
-					url: settings.get<string>('Exchange_EWS_Url'),
-					username: settings.get<string>('Exchange_EWS_Username'),
-					password: settings.get<string>('Exchange_EWS_Password'),
-					authMethod: settings.get<string>('Exchange_EWS_Auth_Method') === 'basic' ? 'basic' : 'ntlm',
-					caCert: settings.get<string>('Exchange_EWS_CA_Cert') || undefined,
-					rejectUnauthorized: settings.get<boolean>('Exchange_EWS_Reject_Unauthorized') !== false,
-				}),
+				new EwsTransportPool(MAILBOX_CONCURRENCY, () => new EwsTransport(config)),
 				settings.get<string>('Exchange_EWS_Username'),
 			);
+		}
 
 		default:
 			logger.error({ msg: 'Unknown Exchange provider configured', providerId });
