@@ -97,6 +97,18 @@ describe('ariaSnapshot and classContract', () => {
 		);
 	});
 
+	it('gives image inputs and inputs with a suggestions list their implicit roles', () => {
+		const { container } = render(
+			<div>
+				<input list='fruits' aria-label='Fruit' />
+				<input type='email' list='fruits' aria-label='Email' />
+				<input type='image' alt='Send' />
+				<input type='text' aria-label='Name' />
+			</div>,
+		);
+		expect(ariaSnapshot(container)).toBe(['- combobox "Fruit"', '- combobox "Email"', '- button "Send"', '- textbox "Name"'].join('\n'));
+	});
+
 	it('lists the rcx classes per element path without generated classes', () => {
 		const { container } = render(
 			<ul className='rcx-list rcx-css-abc123'>

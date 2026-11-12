@@ -28,6 +28,7 @@ const TAG_ROLES: Record<string, string> = {
 const INPUT_ROLES: Record<string, string> = {
 	button: 'button',
 	checkbox: 'checkbox',
+	image: 'button',
 	number: 'spinbutton',
 	radio: 'radio',
 	range: 'slider',
@@ -47,7 +48,10 @@ const roleOf = (element: Element) => {
 	}
 	if (tag === 'input') {
 		const { type } = element as HTMLInputElement;
-		return type === 'hidden' ? null : (INPUT_ROLES[type] ?? 'textbox');
+		if (type === 'hidden') return null;
+		// A text-like input with a suggestions list is a combobox
+		if (element.hasAttribute('list') && ['text', 'search', 'tel', 'url', 'email'].includes(type)) return 'combobox';
+		return INPUT_ROLES[type] ?? 'textbox';
 	}
 	return TAG_ROLES[tag] ?? null;
 };
