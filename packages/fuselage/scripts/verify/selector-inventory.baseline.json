@@ -1,11 +1,7 @@
 {
 	"rcx-item": [
 		"apps/meteor/client/hooks/useItemListDrag.ts: : (row.querySelector<HTMLElement>('.rcx-item, .rcx-item-group-header') ?? row);",
-		"apps/meteor/client/hooks/useItemListDrag.ts: const surface = row.matches('.rcx-item, .rcx-item-group-header')",
-		"apps/meteor/client/hooks/useItemListDrag.ts: if (dragHandle === 'trailing' && !start.closest('.rcx-item__drag-handle')) {",
 		"apps/meteor/client/hooks/useItemListNavigation.ts: rowSelector = '.rcx-item, .rcx-item-group-header',",
-		"apps/meteor/client/sidebar/hooks/useShortcutOpenMenu.ts: event.target.closest('.rcx-item')?.querySelector<HTMLButtonElement>('.rcx-item__actions--reveal-hover button')?.click();",
-		"apps/meteor/client/views/navigation/sidebar/hooks/useShortcutOpenMenu.ts: event.target.closest('.rcx-item')?.querySelector<HTMLButtonElement>('.rcx-item__actions--reveal-hover button')?.click();",
 		"packages/fuselage/src/components/Option/Option.styles.scss: &--align-top.rcx-item {",
 		"packages/fuselage/src/components/Option/Option.styles.scss: &:focus-within &__menu-wrapper:not(.rcx-item__actions) {",
 		"packages/fuselage/src/components/Option/Option.styles.scss: &:hover &__menu-wrapper:not(.rcx-item__actions),",
@@ -81,11 +77,6 @@
 		"packages/fuselage/src/components/Margins/Margins.tsx: &:not(.rcx-box--full) {",
 		"packages/fuselage/src/components/Skeleton/Skeleton.styles.scss: @extend .rcx-box;"
 	],
-	"rcx-modal": [
-		"apps/meteor/client/views/modal/uikit/ModalBlock.tsx: const container = element.querySelector('.rcx-modal__content') as HTMLElement;",
-		"apps/uikit-playground/src/_global.css: .rcx-modal:has(.uiKitWrapper){",
-		"apps/uikit-playground/src/_global.css: .rcx-modal__content:has(.uiKitWrapper){"
-	],
 	"rcx-bubble": [
 		"apps/meteor/client/views/room/body/UploadProgress/UploadProgressIndicator.tsx: & .rcx-bubble__item {"
 	],
@@ -97,6 +88,10 @@
 	],
 	"rcx-sidepanel": [
 		"apps/meteor/client/views/root/MainLayout/MainLayoutStyleTags.tsx: <PaletteStyleTag theme='dark' selector='.rcx-sidebar--main, .rcx-sidebar-rail, .rcx-sidepanel, .rcx-navbar' tagId='sidebar-palette' />"
+	],
+	"rcx-modal": [
+		"apps/uikit-playground/src/_global.css: .rcx-modal:has(.uiKitWrapper){",
+		"apps/uikit-playground/src/_global.css: .rcx-modal__content:has(.uiKitWrapper){"
 	],
 	"rcx-select": [
 		"packages/fuselage/src/components/AutoComplete/AutoComplete.styles.scss: @extend .rcx-select;"

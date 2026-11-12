@@ -52,11 +52,12 @@ const grepRows = () => {
 };
 
 const COMMENT_LINE = /^\s*(\/\/|\/\*|\*)/;
+const DOM_LOOKUP = /\b(?:querySelector(?:All)?|closest|matches)\(/;
 
 const hits = [];
 for (const row of grepRows().split('\n').filter(Boolean)) {
 	const [, file, line, text] = /^([^:]+):(\d+):(.*)$/.exec(row);
-	if (NOT_OVERRIDES.test(file) || COMMENT_LINE.test(text)) continue;
+	if (NOT_OVERRIDES.test(file) || COMMENT_LINE.test(text) || DOM_LOOKUP.test(text)) continue;
 	for (const target of classes.filter((c) => new RegExp(`\\.${c}(--|__|[^A-Za-z0-9_-]|$)`).test(text))) {
 		const own = folderOf.get(target);
 		if (own && file.startsWith(`packages/fuselage/src/components/${own}/`)) continue;
