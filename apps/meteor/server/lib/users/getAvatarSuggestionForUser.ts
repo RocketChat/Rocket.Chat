@@ -1,6 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
+import { LoginServiceConfiguration } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
-import { ServiceConfiguration } from 'meteor/service-configuration';
 
 import { settings } from '../../settings';
 
@@ -49,9 +49,9 @@ const avatarProviders = {
 				}
 
 				if (user.services[service as keyof typeof user.services]._OAuthCustom) {
-					const services = await ServiceConfiguration.configurations.find({ service }, { fields: { secret: 0 } }).fetchAsync();
+					const serviceConfiguration = await LoginServiceConfiguration.findOneByService(service, { projection: { _id: 1 } });
 
-					if (services.length > 0) {
+					if (serviceConfiguration) {
 						if (user.services[service as keyof typeof user.services].avatarUrl) {
 							avatars.push({
 								service,
