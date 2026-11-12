@@ -5,6 +5,7 @@ import * as stories from './Sidepanel.stories';
 import SidepanelDivider from './SidepanelDivider';
 import SidepanelHeader from './SidepanelHeader';
 import SidepanelList from './SidepanelList';
+import SidepanelListItem from './SidepanelListItem';
 import { render } from '../../testing';
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
@@ -37,5 +38,21 @@ describe('[Sidepanel bridges]', () => {
 		const { container } = render(<SidepanelHeader>Title</SidepanelHeader>);
 
 		expect(container.querySelector('.rcx-sidepanel--divider')).not.toHaveClass('rcx-item-divider');
+	});
+
+	it("should give the virtualizer its offsets and drop what is not the row's", () => {
+		const { getByRole } = render(
+			<SidepanelList aria-label='Rooms' style={{ paddingTop: 40, paddingBottom: 20 }}>
+				{/* a virtualizer's `item` prop is no DOM attribute */}
+				<SidepanelListItem {...({ item: {} } as object)} data-index={3} style={{ overflowAnchor: 'none' }}>
+					general
+				</SidepanelListItem>
+			</SidepanelList>,
+		);
+
+		expect(getByRole('list', { name: 'Rooms' })).toHaveStyle({ paddingTop: '40px', paddingBottom: '20px' });
+		expect(getByRole('listitem')).toHaveStyle({ overflowAnchor: 'none' });
+		expect(getByRole('listitem')).toHaveAttribute('data-index', '3');
+		expect(getByRole('listitem')).not.toHaveAttribute('item');
 	});
 });
