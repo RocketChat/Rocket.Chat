@@ -1,8 +1,30 @@
 ---
 status: planned
 adrs: []
-code: [src/Message/contexts]
-tests: [src/Message/contexts/contexts.spec.tsx, src/index.spec.ts]
+code:
+  [
+    src/Message/contexts,
+    src/Message/content,
+    src/Message/MessageContentBody.tsx,
+    src/Message/MessageContentFallback.tsx,
+    src/Message/IgnoredContent.tsx,
+    src/Message/MessageCollapsible.tsx,
+    src/Message/index.ts,
+  ]
+tests:
+  [
+    src/Message/contexts/contexts.spec.tsx,
+    src/index.spec.ts,
+    src/Message/MessageContentBody.spec.tsx,
+    src/Message/content/Reactions.spec.tsx,
+    src/Message/content/UrlPreviews.spec.tsx,
+    src/Message/content/Location.spec.tsx,
+    src/Message/content/MessageActions.spec.tsx,
+    src/Message/content/ThreadMetrics.spec.tsx,
+    src/Message/content/Metrics.spec.tsx,
+    src/Message/content/actions/MessageAction.spec.tsx,
+    src/Message/hooks/useCollapse.spec.tsx,
+  ]
 ---
 
 # Spec: Message capabilities and non-attachment message content
@@ -51,7 +73,7 @@ render any conversation.
 **Content: body**
 
 - **R8** `MessageContentBody` MUST render the markdown of a message through the renderers
-  context, inside an element with role `document` named by the translation of `message_body`.
+  context, inside an element with role `document` whose role description is the translation of `message_body`.
 - **R9** `MessageContentFallback` MUST render the translated "message could not be displayed"
   text, with the id it is given.
 - **R10** `IgnoredContent` MUST render a button named by the translation of `Message_Ignored`
@@ -75,8 +97,8 @@ render any conversation.
 
 - **R15** `MessageUrlPreviews` MUST show the page metadata of a URL as a link preview, resolve
   a relative preview image against the page origin, and skip a URL that has neither metadata
-  nor a media content type. A link preview's accessible name MUST be the page's title, or its URL
-  when the page has no title; the app's preview was named by its content before.
+  nor a media content type. The link around a link preview's cover image MUST be named by the page's
+  title, or by its URL when the page has no title; the app's cover link had no name before.
 - **R16** A media URL preview MUST be collapsible by the viewer.
 - **R17** `MessageLocation` MUST link to the shared location, and MUST render nothing when
   the message has no coordinates.
