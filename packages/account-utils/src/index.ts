@@ -38,7 +38,7 @@ export function hashStampedToken({ token, when }: StampedLoginToken): HashedStam
 	};
 }
 
-// Uses the web client's SHA256, which encodes characters outside the BMP differently from node:crypto
+// Must produce the digest the web client sends; node:crypto differs for characters outside the BMP
 function getPasswordDigest(password: Password): string {
 	if (typeof password === 'string') {
 		return SHA256(password);
