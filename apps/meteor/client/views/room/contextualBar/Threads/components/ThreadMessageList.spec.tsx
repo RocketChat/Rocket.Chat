@@ -8,6 +8,7 @@ import { forwardRef } from 'react';
 
 import ThreadMessageList from './ThreadMessageList';
 import { createFakeMessage, createFakeRoom } from '../../../../../../tests/mocks/data';
+import { createBubbleDateStore } from '../../../BubbleDate/bubbleDateStore';
 import { useThreadMessagesQuery } from '../hooks/useThreadMessagesQuery';
 
 const room = createFakeRoom({ _id: 'room-id', t: 'c' });
@@ -20,6 +21,7 @@ const mockVirtualizerHandle = {
 };
 const mockRenderedVList = { keepMounted: undefined as number[] | undefined };
 const mockHandleDateScroll = jest.fn();
+const mockBubbleDateStore = createBubbleDateStore();
 
 jest.mock('virtua', () => {
 	const { Children, forwardRef, useImperativeHandle } = jest.requireActual<typeof import('react')>('react');
@@ -88,6 +90,7 @@ jest.mock('../../../hooks/useDateScroll', () => ({
 	useDateScroll: () => ({
 		bubbleRef: { current: null },
 		handleDateScroll: mockHandleDateScroll,
+		bubbleDateStore: mockBubbleDateStore,
 	}),
 }));
 
@@ -114,7 +117,12 @@ jest.mock('../../../../../lib/utils/setMessageJumpQueryStringParameter', () => (
 }));
 
 jest.mock('./ThreadMessageItem', () => ({
-	ThreadMessageItem: ({ message }: { message: IMessage }) => <div role='listitem'>{message._id}</div>,
+	ThreadMessageItem: ({ message }: { message: IMessage }) => (
+		<>
+			<div role='listitem'>{message._id}</div>
+			<div data-testid='day-divider' data-time='20260102' />
+		</>
+	),
 }));
 
 jest.mock('../../../BubbleDate', () => ({
@@ -289,4 +297,26 @@ describe('ThreadMessageList rows', () => {
 
 		expect(mockHandleDateScroll).toHaveBeenCalledWith(withFile, mockVirtualizerHandle.scrollOffset);
 	});
+});
+
+it('hides the inline day divider the floating date covers', () => {
+	(useThreadMessagesQuery as jest.Mock).mockReturnValue({
+		data: { messages: [createThreadMessage(1)] },
+		isLoading: false,
+		fetchNextPage: jest.fn(),
+		hasNextPage: false,
+		isFetchingNextPage: false,
+		fetchPreviousPage: jest.fn(),
+		hasPreviousPage: false,
+		isFetchingPreviousPage: false,
+		loadMessageAround: jest.fn(),
+	});
+	mockBubbleDateStore.set((current) => ({ ...current, date: '2026-01-02T00:00:00.000Z', show: true, showDivider: false }));
+	const mainMessage = createFakeMessage<IThreadMainMessage>({ _id: 'thread-id', rid: room._id, msg: 'main message', tcount: 1 });
+
+	render(<ThreadMessageList mainMessage={mainMessage} shouldJumpToBottom={false} setShouldJumpToBottom={jest.fn()} />, {
+		wrapper: mockAppRoot().withJohnDoe().withSetting('Message_GroupingPeriod', 300).build(),
+	});
+
+	expect(screen.getAllByTestId('day-divider')[0]).toHaveStyle({ opacity: 0 });
 });
