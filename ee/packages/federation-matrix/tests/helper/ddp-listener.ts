@@ -41,40 +41,36 @@ export class DDPListener {
 	 * Connect to the DDP server and subscribe to ephemeral messages
 	 */
 	async connect(): Promise<void> {
-		try {
-			// Create DDP SDK instance
-			this.sdk = DDPSDK.create(this.serverUrl);
+		// Create DDP SDK instance
+		this.sdk = DDPSDK.create(this.serverUrl);
 
-			// Add timeout for connection
-			const connectionTimeout = setTimeout(() => {
-				throw new Error('DDP connection timeout');
-			}, 10000);
+		// Add timeout for connection
+		const connectionTimeout = setTimeout(() => {
+			throw new Error('DDP connection timeout');
+		}, 10000);
 
-			// Connect to the server
-			await this.sdk.connection.connect();
+		// Connect to the server
+		await this.sdk.connection.connect();
 
-			// Wait a bit for the connection to be fully ready
-			await new Promise((resolve) => setTimeout(resolve, 1000));
+		// Wait a bit for the connection to be fully ready
+		await new Promise((resolve) => setTimeout(resolve, 1000));
 
-			// Authenticate if we have a token
-			if (this.authToken) {
-				await this.sdk.account.loginWithToken(this.authToken);
-			}
-
-			// Subscribe to ephemeral messages using the stream method
-			this.sdk.stream('notify-user', `${this.userId}/message`, (...args) => {
-				// The args should contain the ephemeral message
-				if (args && args.length > 0) {
-					const message = args[0] as IMessage;
-					this.ephemeralMessages.push(message);
-				}
-			});
-
-			// Clear timeout on successful connection
-			clearTimeout(connectionTimeout);
-		} catch (error) {
-			throw error;
+		// Authenticate if we have a token
+		if (this.authToken) {
+			await this.sdk.account.loginWithToken(this.authToken);
 		}
+
+		// Subscribe to ephemeral messages using the stream method
+		this.sdk.stream('notify-user', `${this.userId}/message`, (...args) => {
+			// The args should contain the ephemeral message
+			if (args && args.length > 0) {
+				const message = args[0] as IMessage;
+				this.ephemeralMessages.push(message);
+			}
+		});
+
+		// Clear timeout on successful connection
+		clearTimeout(connectionTimeout);
 	}
 
 	/**

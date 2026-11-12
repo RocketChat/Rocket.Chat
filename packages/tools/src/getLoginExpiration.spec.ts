@@ -1,4 +1,4 @@
-import { getLoginExpirationInDays, getLoginExpirationInMs } from './getLoginExpiration';
+import { getLoginExpirationInDays, getLoginExpirationInMs } from './getLoginExpiration.js';
 
 describe('getLoginExpirationInDays', () => {
 	it('should return 90 by default', () => {

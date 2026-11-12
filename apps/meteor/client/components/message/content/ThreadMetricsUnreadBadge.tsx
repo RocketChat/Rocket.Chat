@@ -1,7 +1,7 @@
 import { Badge } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export const getBadgeVariantAndTitle = (
 	unread: boolean,
@@ -26,7 +26,7 @@ export const getBadgeVariantAndTitle = (
 export type ThreadMetricsUnreadBadgeProps = { unread: boolean; mention: boolean; all: boolean };
 
 const ThreadMetricsUnreadBadge = ({ unread, mention, all }: ThreadMetricsUnreadBadgeProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const result = getBadgeVariantAndTitle(unread, mention, all);
 
 	if (!result) return null;

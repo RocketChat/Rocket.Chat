@@ -10,7 +10,8 @@ import {
 	ContextualbarFooter,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
-import { useSetting, useTranslation, useUser } from '@rocket.chat/ui-contexts';
+import { useSetting, useUser } from '@rocket.chat/ui-contexts';
+import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
 import OutlookEventItem from './OutlookEventItem';
@@ -32,7 +33,7 @@ export type OutlookEventsListProps = {
 };
 
 const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const user = useUser();
 	const { authEnabled, isError, error } = useOutlookAuthentication();
 

@@ -148,7 +148,13 @@ export const addRoomsLifecycleRoutes = (router: ClientRouter) => {
 			isAppServiceAuthenticatedMiddleware(),
 			async (c) => {
 				const senderUsername = c.get('impersonatedUserId') as UserID;
-				const body = await c.req.json();
+				const body = await c.req.json<{
+					name?: string;
+					room_alias_name?: string;
+					invite?: string[];
+					is_direct?: boolean;
+					initial_state?: { type: string; content: Record<string, unknown> }[];
+				}>();
 
 				const serverName = federationSDK.getConfig('serverName');
 
@@ -168,7 +174,7 @@ export const addRoomsLifecycleRoutes = (router: ClientRouter) => {
 
 				// get join room from initial_state (for now since this is what bifrost sends)
 				const joinRule =
-					body.initial_state?.find((e: any) => e.type === 'm.room.join_rules')?.content?.join_rule === 'public' ? 'public' : 'invite';
+					body.initial_state?.find((e) => e.type === 'm.room.join_rules')?.content?.join_rule === 'public' ? 'public' : 'invite';
 
 				try {
 					const result = await federationSDK.createRoomV2({
@@ -206,9 +212,9 @@ export const addRoomsLifecycleRoutes = (router: ClientRouter) => {
 						});
 					}
 
-					for (const invitee of (body.invite ?? []) as string[]) {
+					for (const invitee of body.invite ?? []) {
 						try {
-							await federationSDK.inviteUserToRoom(invitee as UserID, result.room_id, senderUsername, body.is_direct);
+							await federationSDK.inviteUserToRoom(invitee, result.room_id, senderUsername, body.is_direct);
 						} catch (err) {
 							// The room already exists at this point; failing the whole request would make
 							// the caller believe creation failed and retry, duplicating the room.
@@ -293,8 +299,9 @@ export const addRoomsLifecycleRoutes = (router: ClientRouter) => {
 						statusCode: 200,
 						body: {},
 					};
-				} catch (error: any) {
-					if (error?.message?.toLowerCase?.().includes('not found')) {
+				} catch (error) {
+					const message = (error as { message?: unknown } | undefined)?.message;
+					if (typeof message === 'string' && message.toLowerCase().includes('not found')) {
 						return {
 							statusCode: 404,
 							body: {

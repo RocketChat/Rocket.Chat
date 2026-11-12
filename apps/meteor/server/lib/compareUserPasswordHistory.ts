@@ -1,6 +1,5 @@
+import { verifyPassword } from '@rocket.chat/account-utils';
 import type { IUser, IPassword } from '@rocket.chat/core-typings';
-import { Accounts } from 'meteor/accounts-base';
-import type { Meteor } from 'meteor/meteor';
 
 import { settings } from '../settings';
 
@@ -18,29 +17,22 @@ export async function compareUserPasswordHistory(user: IUser, pass: IPassword): 
 		return false;
 	}
 
-	const currentPassword = user.services.password.bcrypt;
 	const passwordHistory = user.services.passwordHistory.slice(-Number(settings.get('Accounts_Password_History_Amount')));
 
-	for await (const password of passwordHistory) {
-		if (!password.trim()) {
-			user.services.password.bcrypt = currentPassword;
+	const historyPassword = pass.plain || {
+		digest: pass.sha256 || '',
+		algorithm: 'sha-256' as const,
+	};
+
+	for (const passwordHash of passwordHistory) {
+		if (!passwordHash.trim()) {
 			return false;
 		}
-		user.services.password.bcrypt = password;
 
-		const historyPassword = pass.plain || {
-			digest: pass.sha256 ? pass.sha256.toLowerCase() : '',
-			algorithm: 'sha-256' as const,
-		};
-
-		const passCheck = await Accounts._checkPasswordAsync(user as Meteor.User, historyPassword);
-
-		if (!passCheck.error) {
-			user.services.password.bcrypt = currentPassword;
+		if (await verifyPassword(historyPassword, passwordHash)) {
 			return false;
 		}
 	}
 
-	user.services.password.bcrypt = currentPassword;
 	return true;
 }

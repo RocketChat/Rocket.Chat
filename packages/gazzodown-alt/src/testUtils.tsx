@@ -2,10 +2,10 @@ import { parse } from '@rocket.chat/message-parser';
 import type { Root } from '@rocket.chat/message-parser';
 import { renderToStaticMarkup } from 'react-dom/server';
 
-import ComposerInlineElements from './ComposerInlineElements';
-import ComposerMarkup from './ComposerMarkup';
-import { ComposerMarkupContext, type ComposerMarkupContextValue } from './ComposerMarkupContext';
-import { renderComposerMarkup } from './renderComposerMarkup';
+import ComposerInlineElements from './ComposerInlineElements.js';
+import ComposerMarkup from './ComposerMarkup.js';
+import { ComposerMarkupContext, type ComposerMarkupContextValue } from './ComposerMarkupContext.js';
+import { renderComposerMarkup } from './renderComposerMarkup.js';
 
 type InlineChildren = Parameters<typeof ComposerInlineElements>[0]['children'];
 

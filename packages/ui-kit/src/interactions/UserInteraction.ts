@@ -1,6 +1,6 @@
 import typia from 'typia';
 
-import type { View } from '../surfaces/View';
+import type { View } from '../surfaces/View.js';
 
 export type MessageBlockActionUserInteraction = {
 	type: 'blockAction';
