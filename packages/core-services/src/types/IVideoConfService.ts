@@ -1,9 +1,12 @@
 import type {
 	AtLeast,
+	ConferenceScheduleRequest,
+	ConferenceSchedulingOptions,
 	ExternalVideoConference,
 	IGroupVideoConference,
 	IRegisterUser,
 	IRoom,
+	IScheduledConference,
 	IStats,
 	IUser,
 	IVoIPVideoConference,
@@ -14,6 +17,7 @@ import type {
 	VideoConferenceChatAccessMode,
 	VideoConferenceCreateData,
 	VideoConferenceInstructions,
+	ScheduledConferenceInvitation,
 } from '@rocket.chat/core-typings';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
@@ -78,6 +82,25 @@ export interface IVideoConfService {
 	makePersistentChatUrlForConference(conferenceId: VideoConference['_id']): Promise<string>;
 	/** The conference a dialled SIP alias stands for, creating it if this is the first person to ask. */
 	initializeOrJoinScheduledConference(sipAlias: string, uid: IUser['_id']): Promise<VideoConference['_id']>;
+	/** What the owner of an email address may book; nothing at all when the address belongs to no active user. */
+	getSchedulingOptions(email: string): Promise<ConferenceSchedulingOptions>;
+	/**
+	 * Books a conference for the owner of an email address, to be started when somebody first reaches it.
+	 *
+	 * Throws `error-invalid-user` when the address belongs to no active user, and `error-not-allowed` when they
+	 * may not book what was asked for.
+	 */
+	scheduleConference(email: string, request: ConferenceScheduleRequest): Promise<ScheduledConferenceInvitation>;
+	/** The conference running for a booking, starting one if none is — again after the previous one ended. */
+	initializeOrJoinScheduledConferenceById(
+		scheduledConferenceId: IScheduledConference['_id'],
+		uid: IUser['_id'],
+	): Promise<VideoConference['_id']>;
+	/**
+	 * The conference running for a booked alias, starting one on the requester's behalf if none is; `null` when
+	 * no booking holds the alias.
+	 */
+	initializeScheduledConferenceBySipAlias(sipAlias: string): Promise<VideoConference['_id'] | null>;
 	joinCall(
 		call: ExternalVideoConference,
 		user: AtLeast<IUser, '_id' | 'username' | 'name' | 'avatarETag'> | undefined,

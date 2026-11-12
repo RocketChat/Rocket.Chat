@@ -63,6 +63,7 @@ export type * from './models/IUserDataFilesModel';
 export type * from './models/IUsersModel';
 export type * from './models/IUsersSessionsModel';
 export type * from './models/IVideoConferenceModel';
+export type * from './models/IScheduledConferencesModel';
 export type * from './models/ICalendarEventModel';
 export type * from './models/IContactsModel';
 export type * from './models/IExchangeCalendarSyncStateModel';

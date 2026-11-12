@@ -1,5 +1,11 @@
 import { Authorization, VideoConf } from '@rocket.chat/core-services';
-import type { VideoConference, VideoConferenceCapabilities, VideoConferenceInstructions } from '@rocket.chat/core-typings';
+import type {
+	ConferenceSchedulingOptions,
+	ScheduledConferenceInvitation,
+	VideoConference,
+	VideoConferenceCapabilities,
+	VideoConferenceInstructions,
+} from '@rocket.chat/core-typings';
 import {
 	ajv,
 	isVideoConfAddParticipantsProps,
@@ -10,6 +16,8 @@ import {
 	isVideoConfListProps,
 	isVideoConfRenameProps,
 	isVideoConfRingProps,
+	isVideoConfScheduleProps,
+	isVideoConfSchedulingOptionsProps,
 	isVideoConfShareChatProps,
 	isVideoConfStartProps,
 	paginatedResponseProperties,
@@ -131,7 +139,30 @@ const shareChatResponseSchema = oneValueResponseSchema<{ rid: string }>('rid', {
 
 const joinScheduledResponseSchema = oneValueResponseSchema<{ callId: string }>('callId', {
 	type: 'string',
-	description: 'The conference the alias stands for.',
+	description: 'The conference the alias or booking stands for.',
+});
+
+const schedulingOptionsResponseSchema = ajv.compile<ConferenceSchedulingOptions>({
+	type: 'object',
+	properties: {
+		canSchedule: { type: 'boolean' },
+		canUseSipAlias: { type: 'boolean' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['canSchedule', 'canUseSipAlias', 'success'],
+	additionalProperties: false,
+});
+
+const scheduleResponseSchema = ajv.compile<ScheduledConferenceInvitation>({
+	type: 'object',
+	properties: {
+		url: { type: 'string', description: 'Opens the conference for whoever follows it, starting one if none is running.' },
+		sipAlias: { type: 'string', description: 'Present only when one was asked for.' },
+		text: { type: 'string', description: 'How to join, from the workspace template for meetings with or without an alias.' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['url', 'text', 'success'],
+	additionalProperties: false,
 });
 
 const infoResponseSchema = ajv.compile<VideoConference & { capabilities: VideoConferenceCapabilities }>({
@@ -546,12 +577,64 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		const { sipAlias } = this.bodyParams;
+		const { bodyParams, userId } = this;
 
 		try {
-			return API.v1.success({ callId: await VideoConf.initializeOrJoinScheduledConference(sipAlias, this.userId) });
+			const callId =
+				'scheduledConferenceId' in bodyParams
+					? await VideoConf.initializeOrJoinScheduledConferenceById(bodyParams.scheduledConferenceId, userId)
+					: await VideoConf.initializeOrJoinScheduledConference(bodyParams.sipAlias, userId);
+
+			return API.v1.success({ callId });
 		} catch {
 			return API.v1.failure('invalid-params');
+		}
+	},
+);
+
+// TODO: authenticate the Outlook add-in before these two leave the test environment
+// Anyone can book conferences on behalf of any address until then; only the rate limit stands in the way.
+API.v1.get(
+	'video-conference.scheduling-options',
+	{
+		authRequired: false,
+		query: isVideoConfSchedulingOptionsProps,
+		rateLimiterOptions: { numRequestsAllowed: 10, intervalTimeInMS: 10000 },
+		response: {
+			200: schedulingOptionsResponseSchema,
+			400: validateBadRequestErrorResponse,
+		},
+	},
+	async function action() {
+		return API.v1.success(await VideoConf.getSchedulingOptions(this.queryParams.email));
+	},
+);
+
+API.v1.post(
+	'video-conference.schedule',
+	{
+		authRequired: false,
+		body: isVideoConfScheduleProps,
+		rateLimiterOptions: { numRequestsAllowed: 5, intervalTimeInMS: 10000 },
+		response: {
+			200: scheduleResponseSchema,
+			400: validateBadRequestErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+	},
+	async function action() {
+		const { email, invitees, sipAlias, title } = this.bodyParams;
+
+		try {
+			return API.v1.success(await VideoConf.scheduleConference(email, { invitees, sipAlias, title }));
+		} catch (err) {
+			const reason = err instanceof Error ? err.message : '';
+
+			if (reason === 'error-not-allowed') {
+				return API.v1.forbidden('User does not have the permissions required for this action');
+			}
+
+			return API.v1.failure(reason === 'error-invalid-user' ? reason : 'error-scheduling-failed');
 		}
 	},
 );

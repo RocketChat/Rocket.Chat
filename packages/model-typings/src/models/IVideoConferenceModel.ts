@@ -32,7 +32,7 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 		providerName,
 		...callDetails
 	}: Required<Pick<IGroupVideoConference, 'rid' | 'title' | 'createdBy' | 'providerName'>> &
-		Pick<IGroupVideoConference, 'mediaCallIds' | 'sipAlias' | 'discussionRid'>): Promise<string>;
+		Pick<IGroupVideoConference, 'mediaCallIds' | 'sipAlias' | 'discussionRid' | 'scheduledConferenceId'>): Promise<string>;
 
 	createLivechat({
 		providerName,
@@ -115,6 +115,9 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 		sipAlias: string,
 		options?: FindOptions<T>,
 	): Promise<T | null>;
+
+	/** The conference started from a booking that is still running, if any; a booking has at most one at a time. */
+	findOneLiveByScheduledConferenceId<T extends VideoConference>(scheduledConferenceId: string, options?: FindOptions<T>): Promise<T | null>;
 
 	addMediaCallIdByConferenceId(conferenceId: string, mediaCallId: string): Promise<UpdateResult>;
 

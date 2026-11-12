@@ -6,12 +6,13 @@ import PageLoading from '../root/PageLoading';
 import { useConferenceScheduled } from './hooks/useConferenceScheduled';
 
 type ConferenceScheduledPageProps = {
-	sipAlias: string;
+	/** The number that was dialled, or the booking the link was handed out for. */
+	id: string;
 };
 
-/** A conference reached by the number that was dialled rather than by its id. */
-const ConferenceScheduledPage = ({ sipAlias }: ConferenceScheduledPageProps) => {
-	const { callId, error } = useConferenceScheduled(sipAlias);
+/** A conference reached by the number that was dialled or the booking, rather than by its id. */
+const ConferenceScheduledPage = ({ id }: ConferenceScheduledPageProps) => {
+	const { callId, error } = useConferenceScheduled(id);
 
 	if (callId) {
 		return (

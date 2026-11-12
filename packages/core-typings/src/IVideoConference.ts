@@ -165,6 +165,8 @@ export interface IGroupVideoConference extends IVideoConference {
 	type: 'videoconference';
 	anonymousUsers: number;
 	title: string;
+	/** The booking this conference was started from; it outlives the conference, which is one of possibly many. */
+	scheduledConferenceId?: string;
 }
 
 export interface ILivechatVideoConference extends IVideoConference {

@@ -1,25 +1,43 @@
-import type { JSONSchemaType } from 'ajv';
-
 import { ajv } from '../Ajv';
 
-export type VideoConfJoinScheduledProps = {
-	/**
-	 * The number that was dialled. It may not stand for a conference yet — an alias can be handed out ahead of
-	 * the call, and whoever asks first brings it into being.
-	 */
-	sipAlias: string;
-};
+export type VideoConfJoinScheduledProps =
+	| {
+			/**
+			 * The number that was dialled. It may not stand for a conference yet — an alias can be handed out ahead of
+			 * the call, and whoever asks first brings it into being.
+			 */
+			sipAlias: string;
+	  }
+	| {
+			/** The booking the link was handed out for; a fresh conference is started from it whenever none is running. */
+			scheduledConferenceId: string;
+	  };
 
-const videoConfJoinScheduledPropsSchema: JSONSchemaType<VideoConfJoinScheduledProps> = {
-	type: 'object',
-	properties: {
-		sipAlias: {
-			type: 'string',
-			nullable: false,
+const videoConfJoinScheduledPropsSchema = {
+	oneOf: [
+		{
+			type: 'object',
+			properties: {
+				sipAlias: {
+					type: 'string',
+					nullable: false,
+				},
+			},
+			required: ['sipAlias'],
+			additionalProperties: false,
 		},
-	},
-	required: ['sipAlias'],
-	additionalProperties: false,
+		{
+			type: 'object',
+			properties: {
+				scheduledConferenceId: {
+					type: 'string',
+					nullable: false,
+				},
+			},
+			required: ['scheduledConferenceId'],
+			additionalProperties: false,
+		},
+	],
 };
 
-export const isVideoConfJoinScheduledProps = ajv.compile(videoConfJoinScheduledPropsSchema);
+export const isVideoConfJoinScheduledProps = ajv.compile<VideoConfJoinScheduledProps>(videoConfJoinScheduledPropsSchema);

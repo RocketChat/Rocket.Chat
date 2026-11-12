@@ -1,5 +1,7 @@
 import type {
+	ConferenceSchedulingOptions,
 	JoinableVideoConference,
+	ScheduledConferenceInvitation,
 	VideoConferenceInstructions,
 	VideoConference,
 	VideoConferenceCapabilities,
@@ -14,6 +16,8 @@ import type { VideoConfJoinScheduledProps } from './VideoConfJoinScheduledProps'
 import type { VideoConfListProps } from './VideoConfListProps';
 import type { VideoConfRenameProps } from './VideoConfRenameProps';
 import type { VideoConfRingProps } from './VideoConfRingProps';
+import type { VideoConfScheduleProps } from './VideoConfScheduleProps';
+import type { VideoConfSchedulingOptionsProps } from './VideoConfSchedulingOptionsProps';
 import type { VideoConfShareChatProps } from './VideoConfShareChatProps';
 import type { VideoConfStartProps } from './VideoConfStartProps';
 import type { PaginatedResult } from '../../helpers/PaginatedResult';
@@ -28,6 +32,8 @@ export * from './VideoConfCallIdProps';
 export * from './VideoConfAddParticipantsProps';
 export * from './VideoConfShareChatProps';
 export * from './VideoConfRenameProps';
+export * from './VideoConfSchedulingOptionsProps';
+export * from './VideoConfScheduleProps';
 
 export type VideoConferenceEndpoints = {
 	'/v1/video-conference.start': {
@@ -41,9 +47,19 @@ export type VideoConferenceEndpoints = {
 		POST: (params: VideoConfJoinProps) => { url: string; providerName: string; callId?: string; rid?: string };
 	};
 
-	/** The conference a dialled SIP alias stands for, creating it if this is the first person to ask. */
+	/** The conference a dialled SIP alias or a booking stands for, creating it if this is the first person to ask. */
 	'/v1/video-conference.join-scheduled': {
 		POST: (params: VideoConfJoinScheduledProps) => { callId: string };
+	};
+
+	/** What the owner of an email address may book. Reached without signing in. */
+	'/v1/video-conference.scheduling-options': {
+		GET: (params: VideoConfSchedulingOptionsProps) => ConferenceSchedulingOptions;
+	};
+
+	/** Books a conference for the owner of an email address, answering with what to put in the invitation. Reached without signing in. */
+	'/v1/video-conference.schedule': {
+		POST: (params: VideoConfScheduleProps) => ScheduledConferenceInvitation;
 	};
 
 	/** Records that the caller left the call, ending the conference when nobody is left in it. */

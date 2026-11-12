@@ -1,4 +1,4 @@
-import { MediaCall } from '@rocket.chat/core-services';
+import { MediaCall, VideoConf } from '@rocket.chat/core-services';
 import type { VideoConference } from '@rocket.chat/core-typings';
 import { MediaCalls, VideoConference as VideoConferenceModel } from '@rocket.chat/models';
 
@@ -27,7 +27,7 @@ export class ServerConfigurationEndpoint extends PexipEndpoint {
 		identification: string,
 		participantSipUri: string | null,
 	): Promise<ServiceConfiguration | null> {
-		const call = await this.getCallByIdentification(identification);
+		const call = (await this.getCallByIdentification(identification)) || (await this.initializeScheduledConference(identification));
 		if (!call) {
 			logger.error({ msg: 'Invalid call identification', identification });
 			return null;
@@ -42,6 +42,21 @@ export class ServerConfigurationEndpoint extends PexipEndpoint {
 		const guestPinToUse = canSkipPin ? null : guestPin;
 
 		return this.makeServiceConfiguration(call._id, title, hostPin, guestPinToUse);
+	}
+
+	/** A booked alias nobody has reached yet: dialling it is what starts its conference. */
+	private async initializeScheduledConference(identification: string): Promise<VideoConference | null> {
+		if (identification.match(/\D/g)) {
+			return null;
+		}
+
+		try {
+			const callId = await VideoConf.initializeScheduledConferenceBySipAlias(identification);
+			return callId ? await VideoConferenceModel.findOneById(callId) : null;
+		} catch (err) {
+			logger.error({ msg: 'Failed to start the scheduled conference for a dialled alias', identification, err });
+			return null;
+		}
 	}
 
 	private makeServiceConfiguration(name: string, title: string, hostPin: string, guestPin: string | null): ServiceConfiguration {
