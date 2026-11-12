@@ -49,7 +49,7 @@ const passedSome = ({ ok, output }) => ok && Number(/^Tests:.*?(\d+) passed/m.ex
 
 const g0 = () => {
 	if (!characterization(join(import.meta.dirname, '../../src')).length)
-		return { skipped: 'not run', detail: 'no characterization stories' };
+		return { ok: false, detail: `no ${component}.characterization.stories.tsx` };
 	const jest = exec('yarn', ['jest', 'src/testing/stories.spec.tsx', '-t', `${component}.characterization`]);
 	const jestTests = jest.output.match(/Tests:.*$/m)?.[0] ?? jest.output.split('\n').at(-1);
 	if (!after) return { ok: passedSome(jest), detail: `jest: ${jestTests}` };
