@@ -1,5 +1,5 @@
 import { composeStories } from '@storybook/react';
-import { screen } from '@testing-library/react';
+import { isInaccessible, screen } from '@testing-library/react';
 
 import { render } from '../../testing';
 import { Badge } from '../Badge';
@@ -87,8 +87,7 @@ describe('[IconButton Component]', () => {
 	it('should hide the badge from assistive technology', () => {
 		render(<IconButton icon='balloon' aria-label='balloon, 2 unread messages' badge={<Badge>2</Badge>} />);
 		expect(screen.getByRole('button', { name: 'balloon, 2 unread messages' })).toBeInTheDocument();
-		// oxlint-disable-next-line testing-library/no-node-access -- the badge wrapper has no role, label or text of its own
-		expect(screen.getByText('2').closest('.rcx-button__badge')).toHaveAttribute('aria-hidden', 'true');
+		expect(isInaccessible(screen.getByText('2'))).toBe(true);
 	});
 
 	it('should pin the badge to the bottom end corner', () => {

@@ -27,10 +27,9 @@ describe('[Options Component]', () => {
 	it('should render headings and dividers with `Item` group parts', () => {
 		render(<Grouped />);
 
-		// oxlint-disable-next-line testing-library/no-node-access -- the `presentation` header has no accessible name to query by
-		const header = screen.getByText('Recent').closest('li');
+		const [header] = screen.getAllByRole('presentation');
 		const divider = within(screen.getByRole('listbox')).getByRole('listitem', { hidden: true });
-		expect(header).toHaveAttribute('role', 'presentation');
+		expect(header).toHaveTextContent('Recent');
 		expect(header).toHaveClass('rcx-item-group-header', 'rcx-option__header');
 		expect(divider).toHaveClass('rcx-item-divider');
 		expect(divider).toHaveAttribute('aria-hidden', 'true');
