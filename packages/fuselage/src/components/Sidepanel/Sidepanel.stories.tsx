@@ -55,18 +55,18 @@ const render: Story['render'] = (args) => (
 				{new Array(20).fill(null).map((_, index) => {
 					return (
 						<SidepanelListItem key={index}>
-							<SidebarItem level={2} href='#'>
+							<SidebarItem level={2} highlighted={index === 0} href='#'>
 								<SidebarItemCol>
 									<SidebarItemRow>
 										<SidebarItemAvatarWrapper>
 											<Avatar size='x20' url={leterAvatarUrls[index % 4]} alt='avatar' />
 										</SidebarItemAvatarWrapper>
-										<SidebarItemIcon highlighted={Boolean(index === 0)} icon='team' />
-										<SidebarItemTitle unread={Boolean(index === 0)}>{names[index % 10]}</SidebarItemTitle>
+										<SidebarItemIcon icon='team' />
+										<SidebarItemTitle>{names[index % 10]}</SidebarItemTitle>
 										<SidebarItemTimestamp>11:22:21 AM</SidebarItemTimestamp>
 									</SidebarItemRow>
 									<SidebarItemRow>
-										<SidebarItemContent unread={Boolean(index === 0)}>Lorem Ipsum Indolor Dolor Ipsum Ipsum</SidebarItemContent>
+										<SidebarItemContent>Lorem Ipsum Indolor Dolor Ipsum Ipsum</SidebarItemContent>
 										<Box display='flex' maxWidth='50%' flexShrink={1} flexGrow={0}>
 											<Tag role='button' icon={<Icon size='x12' name='team' />}>
 												Team title

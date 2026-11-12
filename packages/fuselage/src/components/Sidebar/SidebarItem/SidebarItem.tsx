@@ -53,6 +53,7 @@ export const SidebarItem = ({
 			highlighted={highlighted}
 			focused={focused}
 			focusVisible={focusVisible}
+			padding={level === 2 ? 'large' : 'default'}
 			className={cx(
 				'rcx-sidebar-item',
 				!!selected && 'rcx-sidebar-item--selected',

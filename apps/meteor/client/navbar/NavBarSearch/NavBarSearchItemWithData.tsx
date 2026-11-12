@@ -23,7 +23,7 @@ const NavBarSearchItemWithData = ({ room, AvatarTemplate, ...props }: NavBarSear
 
 	const { unreadTitle, showUnread, highlightUnread: highlighted } = useUnreadDisplay(room);
 
-	const icon = <SidebarItemIcon highlighted={highlighted} icon={<RoomIcon room={room} placement='sidebar' size='x20' />} />;
+	const icon = <SidebarItemIcon icon={<RoomIcon room={room} placement='sidebar' size='x20' />} />;
 
 	return (
 		<NavBarSearchItem

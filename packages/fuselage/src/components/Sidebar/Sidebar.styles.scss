@@ -5,9 +5,9 @@
 @use '../../styles/mixins/templates.scss' as *;
 @use '../../styles/functions.scss' as *;
 @use '../../styles/mixins/link.scss' as *;
+@use '../../styles/primitives/link.scss';
 @use './variables.scss' as *;
 @use './SidebarFooter/SidebarFooter.styles.scss';
-@use './SidebarItem/SidebarItem.styles.scss';
 @use './SidebarMedia/SidebarMedia.styles.scss';
 
 $sidebar-color-stroke-extra-light: theme('sidebar-color-stroke-extra-light', colors.stroke(light));
@@ -244,11 +244,6 @@ $sidebar-color-stroke-extra-light: theme('sidebar-color-stroke-extra-light', col
 		&__title {
 			@include use-font-scale(h5);
 		}
-	}
-
-	// Interim `[class]` bump: the link is an `Item` whose frame sets the color
-	&-link[class] {
-		@include use-link-colors($color: $sidebar-link-color);
 	}
 
 	&-banner {

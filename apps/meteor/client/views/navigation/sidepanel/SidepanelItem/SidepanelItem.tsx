@@ -57,6 +57,7 @@ const SidePanelItem = ({
 			href={href}
 			onClick={() => !selected && sidebar.toggle()}
 			selected={selected}
+			highlighted={unread}
 			onFocus={handleFocus}
 			onPointerEnter={handlePointerEnter}
 			aria-label={title}
@@ -67,11 +68,11 @@ const SidePanelItem = ({
 				<SidebarItemRow>
 					{avatar && <SidebarItemAvatarWrapper>{avatar}</SidebarItemAvatarWrapper>}
 					{icon}
-					<SidebarItemTitle unread={unread}>{title}</SidebarItemTitle>
-					{time && <SidebarItemTimestamp unread={unread}>{formatDate(time)}</SidebarItemTimestamp>}
+					<SidebarItemTitle>{title}</SidebarItemTitle>
+					{time && <SidebarItemTimestamp>{formatDate(time)}</SidebarItemTimestamp>}
 				</SidebarItemRow>
 				<SidebarItemRow>
-					<SidebarItemContent unread={unread}>{subtitle}</SidebarItemContent>
+					<SidebarItemContent>{subtitle}</SidebarItemContent>
 					{parentRoom}
 					{titleIcon}
 					{badges}

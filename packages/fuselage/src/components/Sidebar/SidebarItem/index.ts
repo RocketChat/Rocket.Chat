@@ -1,5 +1,5 @@
 export { SidebarItem, type SidebarItemProps } from './SidebarItem';
-export { SidebarItemAction } from './SidebarItemAction';
+export { SidebarItemAction, type SidebarItemActionProps } from './SidebarItemAction';
 export { SidebarItemActions, type SidebarItemActionsProps } from './SidebarItemActions';
 export { SidebarItemAvatarWrapper } from './SidebarItemAvatarWrapper';
 export { SidebarItemBadge } from './SidebarItemBadge';
@@ -10,6 +10,6 @@ export { SidebarItemTitle } from './SidebarItemTitle';
 export { SidebarItemRow } from './SidebarItemRow';
 export { SidebarItemCol } from './SidebarItemCol';
 export { SidebarItemTimestamp } from './SidebarItemTimestamp';
-export { SidebarListItem } from './SidebarListItem';
+export { SidebarListItem, type SidebarListItemProps } from './SidebarListItem';
 export { SidebarItemContent } from './SidebarItemContent';
 export { SidebarItemStatusBullet } from './SidebarItemStatusBullet';

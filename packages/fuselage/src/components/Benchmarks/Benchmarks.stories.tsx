@@ -132,8 +132,8 @@ export const SidebarContainerItems: StoryObj = {
 								<SidebarItemAvatarWrapper>
 									<Avatar size='x20' url={leterAvatarUrls[index % 4]} alt='avatar' />
 								</SidebarItemAvatarWrapper>
-								<SidebarItemIcon highlighted={index % 2 !== 0} icon='balloons' />
-								<SidebarItemTitle unread={index % 2 !== 0}>
+								<SidebarItemIcon icon='balloons' />
+								<SidebarItemTitle>
 									<SidebarItemLink href='#'>{names[index % 10]}</SidebarItemLink>
 								</SidebarItemTitle>
 								{index % 2 !== 0 && <SidebarItemBadge title='unread messages'>{5}</SidebarItemBadge>}
