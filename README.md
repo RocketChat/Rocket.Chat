@@ -9,7 +9,7 @@
 <p align="center">
   <img src="https://img.shields.io/github/v/release/RocketChat/Rocket.Chat?label=version" alt="Latest version">
   <img src="https://img.shields.io/github/actions/workflow/status/RocketChat/Rocket.Chat/build_and_test.yml" alt="Build status">
-  <img src="https://img.shields.io/badge/license-MIT-green" alt="MIT license">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="MIT license"></a>
   <img src="https://img.shields.io/codecov/c/github/RocketChat/Rocket.Chat/develop" alt="Code coverage">
 </p>
 
@@ -19,7 +19,7 @@
   <a href="https://open.rocket.chat"><b>Community</b></a>
 </p>
 
-[Rocket.Chat](https://www.rocket.chat) is an open-source, secure communications platform built in TypeScript. It brings messaging, voice, video, apps, and AI together under one security model, so you can work with agencies, allies, and partners even when they run different systems.
+[Rocket.Chat](https://www.rocket.chat) is an open-source, secure communications platform built in TypeScript. It brings messaging, voice, video, and apps together under one security model, so you can work with agencies, allies, and partners even when they run different systems.
 
 You decide where your data lives and which jurisdiction governs it. Run Rocket.Chat on premises, in a secure or sovereign cloud, or fully air-gapped. Defense, intelligence, public sector, and critical infrastructure organizations rely on Rocket.Chat for communications they control end to end.
 
@@ -34,23 +34,12 @@ You decide where your data lives and which jurisdiction governs it. Run Rocket.C
 
 # 🧭 Platform overview
 
-Rocket.Chat covers three areas under a single security model:
+Rocket.Chat covers two areas under a single security model:
 
 - **Collaborate:** Messaging, threads, voice calls, video calls, screen sharing, and file sharing in channels, teams, and direct messages. [Collaborate using Rocket.Chat](https://docs.rocket.chat/docs/collaborate-using-rocketchat).
 - **Extend:** Install apps from the Rocket.Chat Marketplace, build your own with the [Apps-Engine](https://developer.rocket.chat/docs/rocketchat-apps-engine), and connect external systems through the [REST API](https://developer.rocket.chat/apidocs).
-- **Intelligence:** Rocket.Chat AI runs on your own OpenAI-compatible model, inside your perimeter, scoped to each person's permissions.
 
-### 🤖 Rocket.Chat AI
-
-| Capability | What it does |
-|---|---|
-| **Assist** | Summarizes threads and translates messages, including messages from federated partners. |
-| **Retrieve** | Answers questions from your knowledge base with cited sources, and powers hybrid search that combines keyword and semantic matching. |
-| **Act** | Runs agents built with the Agent Kit through the Rocket.Chat MCP Server. Agents work only within the permissions of the person they act for, need human approval, and are fully audited. |
-
-Public AI services are never in the data path. [Learn more about Rocket.Chat AI](https://www.rocket.chat/rocket-chat-ai).
-
-> Some capabilities, such as Rocket.Chat AI, video calls, and advanced identity management, are available on paid plans. Compare [plans](https://www.rocket.chat/pricing) for details.
+> Some capabilities, such as video calls and advanced identity management, are available on paid plans. Compare [plans](https://www.rocket.chat/pricing) for details.
 
 # 💻 Deploy Rocket.Chat
 
