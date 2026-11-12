@@ -10,7 +10,7 @@ type SidebarPanelSearchProps = {
 };
 
 const SidebarPanelSearch = ({ id, value, placeholder, onChange, onClose }: SidebarPanelSearchProps) => (
-	<Box paddingInline={16} paddingBlock={8} flexShrink={0}>
+	<Box paddingInline='x16' paddingBlock='x8' flexShrink={0}>
 		<TextInput
 			id={id}
 			small
