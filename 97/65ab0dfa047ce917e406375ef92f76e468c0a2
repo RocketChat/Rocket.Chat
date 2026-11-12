@@ -1,0 +1,19 @@
+apps/meteor/tests/e2e/oauth.spec.ts
+  s_6d3a7d891f0623::t_2117c205d6bcd8 138
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "9765ab0dfa047ce917e406375ef92f76e468c0a2",
+  "prompts": {},
+  "sessions": {
+    "s_6d3a7d891f0623": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eecaa373-d6df-499e-b51e-8fd9f41c8ad2",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
