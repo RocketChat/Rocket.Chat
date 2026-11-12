@@ -1,7 +1,7 @@
 import type { ICalendarEvent } from '@rocket.chat/core-typings';
 import type { JSONSchemaType } from 'ajv';
 
-import { ajv } from '../Ajv';
+import { ajv } from '../Ajv.js';
 
 export type CalendarEventUpdateProps = {
 	eventId: ICalendarEvent['_id'];

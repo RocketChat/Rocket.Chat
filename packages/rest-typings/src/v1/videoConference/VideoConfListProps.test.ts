@@ -1,7 +1,7 @@
 import assert from 'node:assert';
 import { describe, it } from 'node:test';
 
-import { isVideoConfListProps } from './VideoConfListProps';
+import { isVideoConfListProps } from './VideoConfListProps.js';
 
 describe('VideoConfListProps (definition/rest/v1)', () => {
 	describe('isVideoConfListProps', () => {

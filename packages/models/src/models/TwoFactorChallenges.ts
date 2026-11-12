@@ -4,7 +4,7 @@ import type { ITwoFactorChallenge } from '@rocket.chat/core-typings';
 import type { ITwoFactorChallengesModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
 import type { Db, IndexDescription, Document } from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
+import { BaseRaw } from './BaseRaw.js';
 
 export class TwoFactorChallengesRaw extends BaseRaw<ITwoFactorChallenge> implements ITwoFactorChallengesModel {
 	constructor(db: Db) {

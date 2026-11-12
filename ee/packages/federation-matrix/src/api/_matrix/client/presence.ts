@@ -1,8 +1,8 @@
 import { ajv } from '@rocket.chat/rest-typings';
 
-import type { ClientRouter } from './_shared';
-import { isMatrixErrorProps, isUserIdParamsProps, license, tags } from './_shared';
-import { isAppServiceAuthenticatedMiddleware } from '../../middlewares/isAppServiceAuthenticated';
+import type { ClientRouter } from './_shared.js';
+import { isMatrixErrorProps, isUserIdParamsProps, license, tags } from './_shared.js';
+import { isAppServiceAuthenticatedMiddleware } from '../../middlewares/isAppServiceAuthenticated.js';
 
 const PresenceResponseSchema = {
 	type: 'object',

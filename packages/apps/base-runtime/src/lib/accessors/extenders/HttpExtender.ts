@@ -1,4 +1,4 @@
-import type { IHttpExtend, IHttpPreRequestHandler, IHttpPreResponseHandler } from '@rocket.chat/apps-engine/definition/accessors/IHttp';
+import type { IHttpExtend, IHttpPreRequestHandler, IHttpPreResponseHandler } from '@rocket.chat/apps-engine/definition/accessors/IHttp.js';
 
 export class HttpExtend implements IHttpExtend {
 	private headers: Map<string, string>;

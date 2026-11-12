@@ -1,7 +1,7 @@
 import type { StoryFn, Meta } from '@storybook/react-webpack5';
 import { useState } from 'react';
 
-import { Field, FieldDescription, FieldError, FieldHint, FieldLabel, FieldLabelInfo, FieldLink, FieldRow } from '.';
+import { Field, FieldDescription, FieldError, FieldHint, FieldLabel, FieldLabelInfo, FieldLink, FieldRow } from './index.js';
 import {
 	TextInput,
 	EmailInput,
@@ -17,7 +17,7 @@ import {
 	MultiSelect,
 	Slider,
 	AutoComplete,
-} from '../Inputs';
+} from '../Inputs/index.js';
 
 export default {
 	title: 'Inputs/Field',

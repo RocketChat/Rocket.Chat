@@ -1,8 +1,8 @@
 import { DeviceMenu, DeviceMenuButton, useDeviceSelection, useRevealDeviceLabels } from '@rocket.chat/ui-media';
 import { useTranslation } from 'react-i18next';
 
-import { useCallState } from './context';
-import { useVideoQualityChoices } from '../devices/useVideoQualityChoices';
+import { useCallState } from './context.js';
+import { useVideoQualityChoices } from '../devices/useVideoQualityChoices.js';
 
 /** The camera of a call running in this window, with the quality it sends. */
 const CameraPicker = () => {

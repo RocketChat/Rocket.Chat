@@ -1,7 +1,7 @@
 import * as assert from 'node:assert';
 import { describe, it } from 'node:test';
 
-import { Utilities } from '../../../src/server/misc/Utilities';
+import { Utilities } from '../../../src/server/misc/Utilities.js';
 
 describe('Utilities', () => {
 	const expectedInfo = {

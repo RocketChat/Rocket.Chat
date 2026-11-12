@@ -1,1 +1,1 @@
-export type { SupportedVersions, SignedSupportedVersions } from './definitions';
+export type { SupportedVersions, SignedSupportedVersions } from './definitions/index.js';

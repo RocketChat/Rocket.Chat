@@ -4,7 +4,7 @@ import type { ILoginCode } from '@rocket.chat/core-typings';
 import type { ILoginCodesModel } from '@rocket.chat/model-typings';
 import type { Db, IndexDescription } from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
+import { BaseRaw } from './BaseRaw.js';
 
 const CODE_TTL_MS = 60 * 1000;
 

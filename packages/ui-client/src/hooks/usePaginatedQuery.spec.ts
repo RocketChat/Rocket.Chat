@@ -1,7 +1,7 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { renderHook, waitFor } from '@testing-library/react';
 
-import { usePaginatedQuery } from './usePaginatedQuery';
+import { usePaginatedQuery } from './usePaginatedQuery.js';
 
 type Pagination = { offset: number; count: number };
 

@@ -1,4 +1,4 @@
-import { moduleHandlerFactory } from './networking';
+import { moduleHandlerFactory } from './networking.js';
 
 export enum AllowedInternalModules {
 	path = 'path',

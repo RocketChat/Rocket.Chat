@@ -1,6 +1,6 @@
 import { useCallback, useContext, useSyncExternalStore } from 'react';
 
-import { AuthorizationContext } from '../AuthorizationContext';
+import { AuthorizationContext } from '../AuthorizationContext.js';
 
 export const useRolesDescription = () => {
 	const { getRoles, subscribeToRoles } = useContext(AuthorizationContext);

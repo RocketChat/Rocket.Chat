@@ -2,8 +2,9 @@ import { afterEach, before, beforeEach, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const notificationQueueModelStub = {
 	findNextInQueueOrExpired: sinon.stub(),
@@ -14,7 +15,7 @@ const notificationQueueModelStub = {
 };
 const pushNotificationStub = { send: sinon.stub() };
 
-const { Notification } = proxyquire.noCallThru().load('./NotificationQueue', {
+const { Notification } = loadWithMocks('./NotificationQueue', {
 	'@rocket.chat/tracing': { tracerSpan: (_name: string, _options: unknown, fn: () => unknown) => fn() },
 	'../../logger/system': { SystemLogger: { error: sinon.stub() } },
 	'../message/email': { sendEmailFromData: sinon.stub() },

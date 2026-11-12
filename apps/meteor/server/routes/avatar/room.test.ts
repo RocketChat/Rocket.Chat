@@ -2,8 +2,9 @@ import { afterEach, before, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const mocks = {
 	settingsGet: sinon.stub(),
@@ -18,7 +19,7 @@ const mocks = {
 	getRoomName: sinon.stub(),
 };
 
-const { roomAvatar } = proxyquire.noCallThru().load('./room', {
+const { roomAvatar } = loadWithMocks('./room', {
 	'./utils': mocks.utils,
 	'../../lib/rooms/roomCoordinator': {
 		roomCoordinator: {

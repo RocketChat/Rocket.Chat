@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { PropsVariationSection, variationPseudoStates } from '../../../.storybook/helpers';
-import { Icon } from '../Icon';
-import NumberInput from './NumberInput';
+import NumberInput from './NumberInput.js';
+import { PropsVariationSection, variationPseudoStates } from '../../../.storybook/helpers.js';
+import { Icon } from '../Icon/index.js';
 
 export default {
 	title: 'Inputs/NumberInput',

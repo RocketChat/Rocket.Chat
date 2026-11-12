@@ -1,7 +1,7 @@
 import { isInVideoConference } from '@rocket.chat/core-typings';
 
-import type { PluginFeature, PluginParticipant, PluginSelf } from './providerPlugin';
-import type { ConferenceMember } from '../context/definitions';
+import type { PluginFeature, PluginParticipant, PluginSelf } from './providerPlugin.js';
+import type { ConferenceMember } from '../context/definitions.js';
 
 /**
  * A row of the people panel: someone the conference knows about, someone the provider has in the call, or —

@@ -1,6 +1,6 @@
 import { mockModel } from '@rocket.chat/models/testing';
 
-import { isDepartmentCreationAvailable } from './isDepartmentCreationAvailable';
+import { isDepartmentCreationAvailable } from './isDepartmentCreationAvailable.js';
 
 it('should be available if there are no existing departments', async () => {
 	mockModel('LivechatDepartment', { countTotal: async () => 0 });

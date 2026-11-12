@@ -1,12 +1,12 @@
-import type { ITypingOptions } from '@rocket.chat/apps-engine/definition/accessors/INotifier';
-import type { IMessage, Reaction } from '@rocket.chat/apps-engine/definition/messages';
-import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
-import type { IUser } from '@rocket.chat/apps-engine/definition/users';
+import type { ITypingOptions } from '@rocket.chat/apps-engine/definition/accessors/INotifier.js';
+import type { IMessage, Reaction } from '@rocket.chat/apps-engine/definition/messages/index.js';
+import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/index.js';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users/index.js';
 
-import { BaseBridge } from './BaseBridge';
-import { PermissionDeniedError } from '../errors/PermissionDeniedError';
-import { AppPermissionManager } from '../managers/AppPermissionManager';
-import { AppPermissions } from '../permissions/AppPermissions';
+import { BaseBridge } from './BaseBridge.js';
+import { PermissionDeniedError } from '../errors/PermissionDeniedError.js';
+import { AppPermissionManager } from '../managers/AppPermissionManager.js';
+import { AppPermissions } from '../permissions/AppPermissions.js';
 
 export interface ITypingDescriptor extends ITypingOptions {
 	isTyping: boolean;

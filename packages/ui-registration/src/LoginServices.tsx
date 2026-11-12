@@ -3,8 +3,8 @@ import { useLoginServices, useSetting } from '@rocket.chat/ui-contexts';
 import { useMemo, type Dispatch, type SetStateAction } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { LoginErrorState } from './LoginForm';
-import LoginServicesButton from './LoginServicesButton';
+import type { LoginErrorState } from './LoginForm.js';
+import LoginServicesButton from './LoginServicesButton.js';
 
 const servicesToBeShownOnDesktop = ['cas', 'ldap'];
 

@@ -1,22 +1,22 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { Avatar } from '../../Avatar';
-import { Box } from '../../Box';
-import Message from '../Message';
-import MessageBody from '../MessageBody';
-import MessageContainer from '../MessageContainer';
-import { MessageDivider } from '../MessageDivider';
-import MessageHeader from '../MessageHeader';
-import MessageLeftContainer from '../MessageLeftContainer';
-import MessageName from '../MessageName';
-import MessageNameContainer from '../MessageNameContainer';
-import MessageReactions, { MessageReaction, MessageReactionAction, MessageReactionCounter } from '../MessageReactions';
-import MessageRole from '../MessageRole';
-import MessageTimestamp from '../MessageTimestamp';
-import { MessageToolbar, MessageToolbarItem, MessageToolbarWrapper } from '../MessageToolbar';
-import MessageUsername from '../MessageUsername';
-import MessageStatusIndicator from './MessageStatusIndicator';
-import MessageStatusIndicatorItem from './MessageStatusIndicatorItem';
+import { Avatar } from '../../Avatar/index.js';
+import { Box } from '../../Box/index.js';
+import Message from '../Message.js';
+import MessageBody from '../MessageBody.js';
+import MessageContainer from '../MessageContainer.js';
+import { MessageDivider } from '../MessageDivider/index.js';
+import MessageHeader from '../MessageHeader.js';
+import MessageLeftContainer from '../MessageLeftContainer.js';
+import MessageName from '../MessageName.js';
+import MessageNameContainer from '../MessageNameContainer.js';
+import MessageReactions, { MessageReaction, MessageReactionAction, MessageReactionCounter } from '../MessageReactions/index.js';
+import MessageRole from '../MessageRole.js';
+import MessageTimestamp from '../MessageTimestamp.js';
+import { MessageToolbar, MessageToolbarItem, MessageToolbarWrapper } from '../MessageToolbar/index.js';
+import MessageUsername from '../MessageUsername.js';
+import MessageStatusIndicator from './MessageStatusIndicator.js';
+import MessageStatusIndicatorItem from './MessageStatusIndicatorItem.js';
 
 export default {
 	title: 'Message/MessageStatusIndicator',

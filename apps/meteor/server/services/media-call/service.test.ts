@@ -3,8 +3,9 @@ import { before, beforeEach, describe, it } from 'node:test';
 import type { IMediaCall } from '@rocket.chat/core-typings';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 /**
  * Other spec files in this suite call the global `sinon.restore()`, which detaches every stub from the
@@ -36,7 +37,7 @@ class ServiceClassInternalMock {
 	onEvent(): void {}
 }
 
-const { MediaCallService } = proxyquire.noCallThru().load('./service', {
+const { MediaCallService } = loadWithMocks('./service', {
 	'@rocket.chat/core-services': {
 		ServiceClassInternal: ServiceClassInternalMock,
 		api: { broadcast: sandbox.stub() },

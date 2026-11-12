@@ -1,4 +1,4 @@
-import type { IRocketChatRecord } from './IRocketChatRecord';
+import type { IRocketChatRecord } from './IRocketChatRecord.js';
 
 export enum LivechatPriorityWeight {
 	LOWEST = 5,

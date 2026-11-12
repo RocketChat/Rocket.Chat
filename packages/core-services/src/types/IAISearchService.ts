@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 
-import type { IServiceClass } from './ServiceClass';
+import type { IServiceClass } from './ServiceClass.js';
 
 export type AISearchFilters = {
 	rid?: string;

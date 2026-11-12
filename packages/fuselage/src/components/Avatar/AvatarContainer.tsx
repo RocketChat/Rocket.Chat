@@ -1,6 +1,6 @@
 import type { HTMLAttributes } from 'react';
 
-import { prependClassName } from '../../helpers/prependClassName';
+import { prependClassName } from '../../helpers/prependClassName.js';
 
 export type AvatarContainerProps = {
 	size?: 'x16' | 'x18' | 'x20' | 'x24' | 'x28' | 'x32' | 'x36' | 'x40' | 'x48' | 'x124' | 'x200' | 'x332';

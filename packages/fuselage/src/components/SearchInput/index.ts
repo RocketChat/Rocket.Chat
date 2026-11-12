@@ -1,1 +1,1 @@
-export { default as SearchInput, type SearchInputProps } from './SearchInput';
+export { default as SearchInput, type SearchInputProps } from './SearchInput.js';

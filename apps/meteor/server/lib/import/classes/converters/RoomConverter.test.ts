@@ -2,8 +2,9 @@ import { before, beforeEach, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../../tests/mocks/utils/loadWithMocks';
 
 const settingsStub = sinon.stub();
 const modelsMock = {
@@ -18,7 +19,7 @@ const modelsMock = {
 const createDirectMessage = sinon.stub();
 const saveRoomSettings = sinon.stub();
 
-const { RoomConverter } = proxyquire.noCallThru().load('./RoomConverter', {
+const { RoomConverter } = loadWithMocks('./RoomConverter', {
 	'../../../../meteor-methods/messages/createDirectMessage': {
 		createDirectMessage,
 	},

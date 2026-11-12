@@ -1,6 +1,6 @@
 import { Emitter } from '@rocket.chat/emitter';
 
-import type { DDPClient } from './types/DDPClient';
+import type { DDPClient } from './types/DDPClient.js';
 
 // type Subscription = {
 // 	name: string;

@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 
-import FieldLabel from './FieldLabel';
+import FieldLabel from './FieldLabel.js';
 
 describe('[FieldLabel Component]', () => {
 	it('should render required asterisk when required prop is true', () => {

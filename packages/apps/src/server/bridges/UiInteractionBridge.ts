@@ -1,10 +1,10 @@
-import type { IUIKitInteraction } from '@rocket.chat/apps-engine/definition/uikit';
-import type { IUser } from '@rocket.chat/apps-engine/definition/users';
+import type { IUIKitInteraction } from '@rocket.chat/apps-engine/definition/uikit/index.js';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users/index.js';
 
-import { BaseBridge } from './BaseBridge';
-import { PermissionDeniedError } from '../errors/PermissionDeniedError';
-import { AppPermissionManager } from '../managers/AppPermissionManager';
-import { AppPermissions } from '../permissions/AppPermissions';
+import { BaseBridge } from './BaseBridge.js';
+import { PermissionDeniedError } from '../errors/PermissionDeniedError.js';
+import { AppPermissionManager } from '../managers/AppPermissionManager.js';
+import { AppPermissions } from '../permissions/AppPermissions.js';
 
 export abstract class UiInteractionBridge extends BaseBridge {
 	public async doNotifyUser(user: IUser, interaction: IUIKitInteraction, appId: string): Promise<void> {

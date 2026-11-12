@@ -1,6 +1,6 @@
 import type { IncomingMessage } from 'http';
 
-import { getClientAddress } from './clientAddress';
+import { getClientAddress } from './clientAddress.js';
 
 function makeRequest(forwardedFor?: string | string[], remoteAddress = '10.0.0.1'): IncomingMessage {
 	return {

@@ -6628,14 +6628,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@playwright/test@npm:~1.52.0":
-  version: 1.52.0
-  resolution: "@playwright/test@npm:1.52.0"
+"@playwright/test@npm:~1.53.2":
+  version: 1.53.2
+  resolution: "@playwright/test@npm:1.53.2"
   dependencies:
-    playwright: "npm:1.52.0"
+    playwright: "npm:1.53.2"
   bin:
     playwright: cli.js
-  checksum: 10/e18a4eb626c7bc6cba212ff2e197cf9ae2e4da1c91bfdf08a744d62e27222751173e4b220fa27da72286a89a3b4dea7c09daf384d23708f284b64f98e9a63a88
+  checksum: 10/063c4fd82e5022db7f53e85a3b31caa1c302e7d3f874b3acc751ee5fcf8f102068693e393dc5146cdeeb5850f2321366de4ebc5ef12ab81dae52e2c7113a6b49
   languageName: node
   linkType: hard
 
@@ -8775,7 +8775,7 @@ __metadata:
     npm-run-all: "npm:^4.1.5"
     semver: "npm:^7.6.3"
     stack-trace: "npm:0.0.10"
-    ts-node: "npm:^10.9.2"
+    tsx: "npm:~4.22.5"
     typescript: "npm:~5.9.3"
     uuid: "npm:~11.1.1"
   languageName: unknown
@@ -9803,7 +9803,7 @@ __metadata:
     "@opentelemetry/exporter-trace-otlp-grpc": "npm:^0.220.0"
     "@opentelemetry/sdk-node": "npm:^0.220.0"
     "@parse/node-apn": "npm:^8.1.0"
-    "@playwright/test": "npm:~1.52.0"
+    "@playwright/test": "npm:~1.53.2"
     "@react-aria/toolbar": "npm:^3.0.0-nightly.5042"
     "@react-pdf/renderer": "npm:~4.5.1"
     "@rocket.chat/abac": "workspace:^"
@@ -9958,7 +9958,6 @@ __metadata:
     "@types/passport-oauth2": "npm:^1.8.0"
     "@types/prometheus-gc-stats": "npm:^0.6.4"
     "@types/proxy-from-env": "npm:^1.0.4"
-    "@types/proxyquire": "npm:^1.3.31"
     "@types/psl": "npm:^1.1.3"
     "@types/qs": "npm:^6.14.0"
     "@types/react": "npm:~19.2.18"
@@ -10104,7 +10103,7 @@ __metadata:
     path-to-regexp: "npm:^6.3.0"
     pino: "npm:10.3.1"
     pino-pretty: "npm:13.1.3"
-    playwright-core: "npm:~1.52.0"
+    playwright-core: "npm:~1.53.2"
     playwright-qase-reporter: "npm:~2.5.7"
     postcss: "npm:8.5.29"
     postcss-custom-properties: "npm:^14.0.6"
@@ -10117,7 +10116,6 @@ __metadata:
     prom-client: "npm:^14.2.0"
     prometheus-gc-stats: "npm:^1.1.0"
     proxy-from-env: "npm:^1.1.0"
-    proxyquire: "npm:^2.1.3"
     psl: "npm:^1.10.0"
     qs: "npm:^6.15.3"
     query-string: "npm:^7.1.3"
@@ -11398,7 +11396,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/ui-voip@workspace:packages/ui-voip"
   dependencies:
-    "@playwright/test": "npm:~1.52.0"
+    "@playwright/test": "npm:~1.53.2"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/css-in-js": "workspace:~"
     "@rocket.chat/desktop-api": "workspace:^"
@@ -11503,7 +11501,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/visual-regression@workspace:packages/visual-regression"
   dependencies:
-    "@playwright/test": "npm:~1.52.0"
+    "@playwright/test": "npm:~1.53.2"
     "@rocket.chat/tsconfig": "workspace:*"
     "@types/node": "npm:~24.13.6"
     typescript: "npm:~7.0.2"
@@ -15518,13 +15516,6 @@ __metadata:
   dependencies:
     "@types/node": "npm:*"
   checksum: 10/cfa34200e6ddb19c78957c2c661212c8eee1f7dbc1931e918909300b47cc0336023c2a526972c494cb5409010fd35edba37bd795893796cc50e1efabd34e3969
-  languageName: node
-  linkType: hard
-
-"@types/proxyquire@npm:^1.3.31":
-  version: 1.3.31
-  resolution: "@types/proxyquire@npm:1.3.31"
-  checksum: 10/945024495fc991f6152686795ac6f2f2d0f571834e67fa41c1e84877eeb1a321a24ab8ff67fc5152d9227f5b39f6254213dced15deaf80ed7443059c2257e072
   languageName: node
   linkType: hard
 
@@ -23029,16 +23020,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fill-keys@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "fill-keys@npm:1.0.2"
-  dependencies:
-    is-object: "npm:~1.0.1"
-    merge-descriptors: "npm:~1.0.0"
-  checksum: 10/6e78e314dc6852060086a8edc754d6a5b8efea5389ba8ec48367c1d0fa14272f9fad2f5c1ced1dcbd73306ffbfa3aa8cc64add884150ccf729f2a45ebc22d2eb
-  languageName: node
-  linkType: hard
-
 "fill-range@npm:^7.1.1":
   version: 7.1.1
   resolution: "fill-range@npm:7.1.1"
@@ -25094,13 +25075,6 @@ __metadata:
   version: 7.0.0
   resolution: "is-number@npm:7.0.0"
   checksum: 10/6a6c3383f68afa1e05b286af866017c78f1226d43ac8cb064e115ff9ed85eb33f5c4f7216c96a71e4dfea289ef52c5da3aef5bbfade8ffe47a0465d70c0c8e86
-  languageName: node
-  linkType: hard
-
-"is-object@npm:~1.0.1":
-  version: 1.0.2
-  resolution: "is-object@npm:1.0.2"
-  checksum: 10/db53971751c50277f0ed31d065d93038d23cb9785090ab5c8070a903cf5bab16cdb18f05b8855599ad87ec19eb4c85afa05980bcda77dd4a8482120b6348c73c
   languageName: node
   linkType: hard
 
@@ -27713,7 +27687,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"merge-descriptors@npm:1.0.3, merge-descriptors@npm:~1.0.0":
+"merge-descriptors@npm:1.0.3":
   version: 1.0.3
   resolution: "merge-descriptors@npm:1.0.3"
   checksum: 10/52117adbe0313d5defa771c9993fe081e2d2df9b840597e966aadafde04ae8d0e3da46bac7ca4efc37d4d2b839436582659cd49c6a43eacb3fe3050896a105d1
@@ -28050,13 +28024,6 @@ __metadata:
   version: 1.0.4
   resolution: "module-details-from-path@npm:1.0.4"
   checksum: 10/2ebfada5358492f6ab496b70f70a1042f2ee7a4c79d29467f59ed6704f741fb4461d7cecb5082144ed39a05fec4d19e9ff38b731c76228151be97227240a05b2
-  languageName: node
-  linkType: hard
-
-"module-not-found-error@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "module-not-found-error@npm:1.0.1"
-  checksum: 10/ebd65339d4d5980dd55cd32dbf112ec02b8e33f30866312b94caeee4783322259f18cf2270e9d2e600df3bd1876c35612b87f5c2525c21885fb1f83e85a9b9b0
   languageName: node
   linkType: hard
 
@@ -30072,21 +30039,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright-core@npm:1.52.0":
-  version: 1.52.0
-  resolution: "playwright-core@npm:1.52.0"
+"playwright-core@npm:1.53.2":
+  version: 1.53.2
+  resolution: "playwright-core@npm:1.53.2"
   bin:
     playwright-core: cli.js
-  checksum: 10/42e13f5f98dc25ebc95525fb338a215b9097b2ba39d41e99972a190bf75d79979f163f5bc07b1ca06847ee07acb2c9b487d070fab67e9cd55e33310fc05aca3c
+  checksum: 10/575c37b66aa62e1300d8b42d4b021c9304a35266ea47b6f0c36b429c40674082700b7172ee3641de7451cd2a4c736c42e0e39fd5f6a7ba4c81a6eefd8c104efd
   languageName: node
   linkType: hard
 
-"playwright-core@patch:playwright-core@npm%3A1.52.0#~/.yarn/patches/playwright-core-npm-1.52.0-keep-cache.patch":
-  version: 1.52.0
-  resolution: "playwright-core@patch:playwright-core@npm%3A1.52.0#~/.yarn/patches/playwright-core-npm-1.52.0-keep-cache.patch::version=1.52.0&hash=9311c3"
+"playwright-core@patch:playwright-core@npm%3A1.53.2#~/.yarn/patches/playwright-core-npm-1.53.2-keep-cache.patch":
+  version: 1.53.2
+  resolution: "playwright-core@patch:playwright-core@npm%3A1.53.2#~/.yarn/patches/playwright-core-npm-1.53.2-keep-cache.patch::version=1.53.2&hash=9311c3"
   bin:
     playwright-core: cli.js
-  checksum: 10/bc17c2d6dd760cc64f855e756999e7c952cc9dc03602309aefa1e3bc94b2bfab3a779554fea6d6838ec9879cc2c94d639782058973aa745cd34b2a185d196236
+  checksum: 10/8af1f8278a5c8c40200948a0fad3d42ed00a4a7d262f6e6f75fd7df5ed83dc331f57e4737dd6c305d2bcc0fd9959790609cdf725b4cacfa68e03f16379c08bf3
   languageName: node
   linkType: hard
 
@@ -30102,18 +30069,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright@npm:1.52.0, playwright@npm:^1.14.0":
-  version: 1.52.0
-  resolution: "playwright@npm:1.52.0"
+"playwright@npm:1.53.2, playwright@npm:^1.14.0":
+  version: 1.53.2
+  resolution: "playwright@npm:1.53.2"
   dependencies:
     fsevents: "npm:2.3.2"
-    playwright-core: "npm:1.52.0"
+    playwright-core: "npm:1.53.2"
   dependenciesMeta:
     fsevents:
       optional: true
   bin:
     playwright: cli.js
-  checksum: 10/214175446089000c2ac997b925063b95f7d86d129c5d7c74caa5ddcb05bcad598dfd569d2133a10dc82d288bf67e7858877dcd099274b0b928b9c63db7d6ecec
+  checksum: 10/1c860c52a77f32793d7b1b5f5b15da9b809b8a09a82e5c89f79442fe9708ff6314b6ee6d13aa0961a6c9fddc9209f0a109ac524bdf586e0df52b641e96fa759d
   languageName: node
   linkType: hard
 
@@ -31414,17 +31381,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"proxyquire@npm:^2.1.3":
-  version: 2.1.3
-  resolution: "proxyquire@npm:2.1.3"
-  dependencies:
-    fill-keys: "npm:^1.0.2"
-    module-not-found-error: "npm:^1.0.1"
-    resolve: "npm:^1.11.1"
-  checksum: 10/c124bdb6f732d680c59c2d4cf0ff66ebae7b3c76af0c1bb05d5c9b982ba05db22c1df6ad4cb486d1d8a5f6b1fe0534cbea864917e82dacaf947cfa84c4c30463
-  languageName: node
-  linkType: hard
-
 "psl@npm:^1.10.0":
   version: 1.10.0
   resolution: "psl@npm:1.10.0"
@@ -32597,7 +32553,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resolve@npm:^1.1.7, resolve@npm:^1.10.0, resolve@npm:^1.11.1, resolve@npm:^1.20.0, resolve@npm:^1.22.1, resolve@npm:^1.22.11, resolve@npm:^1.22.3, resolve@npm:^1.22.8":
+"resolve@npm:^1.1.7, resolve@npm:^1.10.0, resolve@npm:^1.20.0, resolve@npm:^1.22.1, resolve@npm:^1.22.11, resolve@npm:^1.22.3, resolve@npm:^1.22.8":
   version: 1.22.12
   resolution: "resolve@npm:1.22.12"
   dependencies:
@@ -32627,7 +32583,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resolve@patch:resolve@npm%3A^1.1.7#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.10.0#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.11.1#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.20.0#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.22.1#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.22.11#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.22.3#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.22.8#optional!builtin<compat/resolve>":
+"resolve@patch:resolve@npm%3A^1.1.7#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.10.0#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.20.0#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.22.1#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.22.11#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.22.3#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.22.8#optional!builtin<compat/resolve>":
   version: 1.22.12
   resolution: "resolve@patch:resolve@npm%3A1.22.12#optional!builtin<compat/resolve>::version=1.22.12&hash=9bd1a5"
   dependencies:

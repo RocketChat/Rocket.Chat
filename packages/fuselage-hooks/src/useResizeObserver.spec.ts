@@ -1,6 +1,6 @@
-import { renderHook, act } from './testing';
-import { useResizeObserver } from './useResizeObserver';
-import { withResizeObserverMock } from '../mocks/withResizeObserverMock';
+import { renderHook, act } from './testing.js';
+import { useResizeObserver } from './useResizeObserver.js';
+import { withResizeObserverMock } from '../mocks/withResizeObserverMock.js';
 
 withResizeObserverMock();
 

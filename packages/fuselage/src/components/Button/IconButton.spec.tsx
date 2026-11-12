@@ -1,11 +1,11 @@
 import { composeStories } from '@storybook/react';
 import { screen } from '@testing-library/react';
 
-import { render } from '../../testing';
-import { Badge } from '../Badge';
-import { Icon } from '../Icon';
-import IconButton from './IconButton';
-import * as stories from './IconButton.stories';
+import IconButton from './IconButton.js';
+import * as stories from './IconButton.stories.js';
+import { render } from '../../testing.js';
+import { Badge } from '../Badge/index.js';
+import { Icon } from '../Icon/index.js';
 
 const { _IconButtonWithBadge, _IconButtonAvatarWithBadge, _IconButtonWithDot } = composeStories(stories);
 

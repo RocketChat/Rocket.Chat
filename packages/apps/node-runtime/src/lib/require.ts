@@ -1,3 +1,7 @@
+import { createRequire } from 'node:module';
+
+const require = createRequire(import.meta.url);
+
 const ALLOWED_MODULES = [
 	'path',
 	'url',
@@ -32,6 +36,6 @@ export const sandboxRequire = (module: string) => {
 	}
 
 	// This is THE purpose of this function, we can't escape a dinamyc require call
-	// oxlint-disable-next-line @typescript-eslint/no-unsafe-return, import-x/no-dynamic-require, @typescript-eslint/no-require-imports
+	// oxlint-disable-next-line @typescript-eslint/no-unsafe-return, import-x/no-dynamic-require
 	return require(normalized);
 };

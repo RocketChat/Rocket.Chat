@@ -2,13 +2,13 @@ import { screen } from '@testing-library/react';
 import type { ReactElement } from 'react';
 import { createRef } from 'react';
 
-import NavBar from './NavBar';
-import NavBarGroup from './NavBarGroup';
-import NavBarItem from './NavBarItem';
-import NavBarSection from './NavBarSection';
-import { render } from '../../testing';
-import Pagination from '../Pagination/Pagination';
-import Position from '../PositionAnimated/Position';
+import NavBar from './NavBar.js';
+import NavBarGroup from './NavBarGroup.js';
+import NavBarItem from './NavBarItem.js';
+import NavBarSection from './NavBarSection.js';
+import { render } from '../../testing.js';
+import Pagination from '../Pagination/Pagination.js';
+import Position from '../PositionAnimated/Position.js';
 
 const cases: [string, ReactElement, string][] = [
 	['NavBar', <NavBar data-testid='part' className='custom' />, 'rcx-navbar'],

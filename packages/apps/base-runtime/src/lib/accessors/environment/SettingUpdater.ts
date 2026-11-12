@@ -1,8 +1,8 @@
-import type { ISettingUpdater } from '@rocket.chat/apps-engine/definition/accessors/ISettingUpdater';
-import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
+import type { ISettingUpdater } from '@rocket.chat/apps-engine/definition/accessors/ISettingUpdater.js';
+import type { ISetting } from '@rocket.chat/apps-engine/definition/settings/index.js';
 
-import { bridgeCall } from '../../bridges/bridgeCall';
-import type * as Messenger from '../../messenger';
+import { bridgeCall } from '../../bridges/bridgeCall.js';
+import type * as Messenger from '../../messenger.js';
 
 // The "not found" guard and the AppSettingsManager persistence run host-side in the
 // AppResourceBridge (they depend on the ProxiedApp storage item and the settings manager); the

@@ -1,15 +1,15 @@
 import { Router } from '@rocket.chat/http-router';
 
-import { addAccountRoutes } from './account';
-import { addDirectoryRoutes } from './directory';
-import { addClientMediaRoutes } from './media';
-import { addPresenceRoutes } from './presence';
-import { addProfileRoutes } from './profile';
-import { addRoomsLifecycleRoutes } from './rooms-lifecycle';
-import { addRoomsMessagingRoutes } from './rooms-messaging';
-import { addRoomsStateRoutes } from './rooms-state';
-import { addUserRoutes } from './user';
-import { addVersionsRoutes } from './versions';
+import { addAccountRoutes } from './account.js';
+import { addDirectoryRoutes } from './directory.js';
+import { addClientMediaRoutes } from './media.js';
+import { addPresenceRoutes } from './presence.js';
+import { addProfileRoutes } from './profile.js';
+import { addRoomsLifecycleRoutes } from './rooms-lifecycle.js';
+import { addRoomsMessagingRoutes } from './rooms-messaging.js';
+import { addRoomsStateRoutes } from './rooms-state.js';
+import { addUserRoutes } from './user.js';
+import { addVersionsRoutes } from './versions.js';
 
 export const getClientRoutes = () => {
 	const router = new Router('/client');

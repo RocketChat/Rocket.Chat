@@ -1,5 +1,5 @@
-import { AppConsole } from './AppConsole';
-import type { ILoggerStorageEntry } from './ILoggerStorageEntry';
+import { AppConsole } from './AppConsole.js';
+import type { ILoggerStorageEntry } from './ILoggerStorageEntry.js';
 
 export type { ILoggerStorageEntry };
 

@@ -6,9 +6,9 @@ import { useMenu } from 'react-aria';
 import type { RootMenuTriggerState } from 'react-stately';
 import { useTreeState } from 'react-stately';
 
-import MenuItem from './MenuItem';
-import MenuSection from './MenuSection';
-import MenuSubmenu from './MenuSubmenu';
+import MenuItem from './MenuItem.js';
+import MenuSection from './MenuSection.js';
+import MenuSubmenu from './MenuSubmenu.js';
 
 export type MenuDropDownProps<T extends object> = AriaMenuProps<T> & {
 	/**

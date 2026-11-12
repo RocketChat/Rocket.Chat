@@ -2,8 +2,9 @@ import { before, beforeEach, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const sandbox = sinon.createSandbox();
 
@@ -12,7 +13,7 @@ const issueLoginToken = sandbox.stub();
 const doesUserRequire2FA = sandbox.stub();
 const sendTwoFactorChallenge = sandbox.stub();
 
-const { passportOAuthCallback } = p.noCallThru().load('./passportOAuthCallback.ts', {
+const { passportOAuthCallback } = loadWithMocks('./passportOAuthCallback.ts', {
 	'../auth/issueLoginToken': { issueLoginToken },
 	'./twoFactorAuth': { doesUserRequire2FA },
 });

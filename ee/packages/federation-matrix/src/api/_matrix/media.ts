@@ -3,10 +3,10 @@ import crypto from 'node:crypto';
 import type { IUpload } from '@rocket.chat/core-typings';
 import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
-import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
+import { ajv } from '@rocket.chat/rest-typings';
 
-import { MatrixMediaService } from '../../services/MatrixMediaService';
-import { canAccessResourceMiddleware } from '../middlewares/canAccessResource';
+import { MatrixMediaService } from '../../services/MatrixMediaService.js';
+import { canAccessResourceMiddleware } from '../middlewares/canAccessResource.js';
 
 const MediaDownloadParamsSchema = {
 	type: 'object',

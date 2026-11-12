@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { Divider } from '../Divider';
-import Box from './Box';
+import Box from './Box.js';
+import { Divider } from '../Divider/index.js';
 
 export default {
 	title: 'Layout/Box/Typography',

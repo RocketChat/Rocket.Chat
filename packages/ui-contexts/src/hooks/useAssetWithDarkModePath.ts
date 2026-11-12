@@ -1,8 +1,8 @@
 import type { IRocketChatAssets } from '@rocket.chat/core-typings';
 import { useDarkMode } from '@rocket.chat/fuselage-hooks';
 
-import { useAssetPath } from './useAssetPath';
-import { useUserPreference } from './useUserPreference';
+import { useAssetPath } from './useAssetPath.js';
+import { useUserPreference } from './useUserPreference.js';
 
 export const useAssetWithDarkModePath = <A extends keyof IRocketChatAssets>(
 	assetId: A extends `${infer T}_dark` ? T : never,

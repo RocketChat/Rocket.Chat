@@ -1,4 +1,4 @@
-import { mirroredRoomDisplayName, mirroredRoomName, perRoomOccupantJid } from './remoteRoom';
+import { mirroredRoomDisplayName, mirroredRoomName, perRoomOccupantJid } from './remoteRoom.js';
 
 describe('mirroredRoomName', () => {
 	it('is the room JID with characters a room name may not hold replaced, plus a hash of the JID (remote-muc R1)', () => {

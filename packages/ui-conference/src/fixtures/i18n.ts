@@ -1,4 +1,4 @@
-import en from '@rocket.chat/i18n/dist/resources/en.i18n.json';
+import en from '@rocket.chat/i18n/dist/resources/en.i18n.json' with { type: 'json' };
 import i18next, { type i18n } from 'i18next';
 import { initReactI18next } from 'react-i18next';
 

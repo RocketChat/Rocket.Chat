@@ -1,6 +1,6 @@
-import type { LicenseLimitKind } from './ILicenseV3';
-import type { BehaviorWithContext, LicenseBehavior } from './LicenseBehavior';
-import type { LicenseModule } from './LicenseModule';
+import type { LicenseLimitKind } from './ILicenseV3.js';
+import type { BehaviorWithContext, LicenseBehavior } from './LicenseBehavior.js';
+import type { LicenseModule } from './LicenseModule.js';
 
 type ModuleValidation = Record<`${'invalid' | 'valid'}:${LicenseModule}`, undefined>;
 type BehaviorTriggered = Record<`behavior:${LicenseBehavior}`, { reason: BehaviorWithContext['reason']; limit?: LicenseLimitKind }>;

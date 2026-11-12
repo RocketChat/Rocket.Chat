@@ -1,9 +1,9 @@
 import { Box } from '@rocket.chat/fuselage';
 
-import MainTile from './MainTile';
-import ThumbnailTile from './ThumbnailTile';
-import { mainStreamStyles, spotlightSelfPipStyles } from './stageStyles';
-import type { StageTile } from '../lib/stageTiles';
+import MainTile from './MainTile.js';
+import ThumbnailTile from './ThumbnailTile.js';
+import { mainStreamStyles, spotlightSelfPipStyles } from './stageStyles.js';
+import type { StageTile } from '../lib/stageTiles.js';
 
 export type SpotlightLayoutProps = {
 	featured: StageTile;

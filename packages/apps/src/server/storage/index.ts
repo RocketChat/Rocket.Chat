@@ -1,6 +1,6 @@
-export type { IAppLogStorageFindOptions } from './AppLogStorage';
-export { AppLogStorage } from './AppLogStorage';
-export { AppMetadataStorage } from './AppMetadataStorage';
-export type { IAppStorageItem } from './IAppStorageItem';
-export { AppInstallationSource } from './IAppStorageItem';
-export { AppSourceStorage } from './AppSourceStorage';
+export type { IAppLogStorageFindOptions } from './AppLogStorage.js';
+export { AppLogStorage } from './AppLogStorage.js';
+export { AppMetadataStorage } from './AppMetadataStorage.js';
+export type { IAppStorageItem } from './IAppStorageItem.js';
+export { AppInstallationSource } from './IAppStorageItem.js';
+export { AppSourceStorage } from './AppSourceStorage.js';

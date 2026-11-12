@@ -1,2 +1,2 @@
-export { default as PaletteStyleTag, type PaletteStyleTagProps } from './PaletteStyleTag';
-export type { Themes } from './types/themes';
+export { default as PaletteStyleTag, type PaletteStyleTagProps } from './PaletteStyleTag.js';
+export type { Themes } from './types/themes.js';

@@ -1,5 +1,5 @@
-import type { IMarketplacePricingTier } from './IMarketplacePricingTier';
-import type { MarketplacePricingStrategy } from './MarketplacePricingStrategy';
+import type { IMarketplacePricingTier } from './IMarketplacePricingTier.js';
+import type { MarketplacePricingStrategy } from './MarketplacePricingStrategy.js';
 
 export interface IMarketplacePricingPlan {
 	id: string;

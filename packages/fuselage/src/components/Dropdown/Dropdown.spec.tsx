@@ -1,10 +1,10 @@
 import { composeStories } from '@storybook/react';
 import { screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 
-import Dropdown from './Dropdown';
-import * as stories from './Dropdown.stories';
-import { render } from '../../testing';
+import Dropdown from './Dropdown.js';
+import * as stories from './Dropdown.stories.js';
+import { render } from '../../testing.js';
 
 const { Default } = composeStories(stories);
 

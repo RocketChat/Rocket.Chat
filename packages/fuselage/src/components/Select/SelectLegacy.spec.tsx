@@ -1,10 +1,10 @@
 import { act, render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 import type { ComponentType } from 'react';
 
-import SelectFiltered from './SelectFiltered';
-import SelectLegacy, { type SelectOption } from './SelectLegacy';
-import { withResizeObserverMock } from '../../../mocks/withResizeObserverMock';
+import SelectFiltered from './SelectFiltered.js';
+import SelectLegacy, { type SelectOption } from './SelectLegacy.js';
+import { withResizeObserverMock } from '../../../mocks/withResizeObserverMock.js';
 
 withResizeObserverMock();
 

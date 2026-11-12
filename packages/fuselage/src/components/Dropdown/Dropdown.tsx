@@ -2,8 +2,8 @@ import type { UsePositionOptions } from '@rocket.chat/fuselage-hooks';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import type { HTMLAttributes, ReactNode, RefAttributes, RefObject } from 'react';
 
-import { DropdownDesktopWrapper } from './DropdownDesktopWrapper';
-import { DropdownMobile } from './DropdownMobile';
+import { DropdownDesktopWrapper } from './DropdownDesktopWrapper.js';
+import { DropdownMobile } from './DropdownMobile.js';
 
 export type DropdownProps<T extends HTMLElement> = Omit<HTMLAttributes<HTMLElement>, 'children' | 'style' | 'color' | 'is'> &
 	RefAttributes<HTMLElement> & {

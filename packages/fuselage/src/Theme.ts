@@ -1,12 +1,12 @@
-import badge from '@rocket.chat/fuselage-tokens/dist/badge.json';
-import colors from '@rocket.chat/fuselage-tokens/dist/colors.json';
-import font from '@rocket.chat/fuselage-tokens/dist/font.json';
-import shadow from '@rocket.chat/fuselage-tokens/dist/shadow.json';
-import status from '@rocket.chat/fuselage-tokens/dist/status.json';
-import stroke from '@rocket.chat/fuselage-tokens/dist/stroke.json';
-import surface from '@rocket.chat/fuselage-tokens/dist/surface.json';
+import badge from '@rocket.chat/fuselage-tokens/dist/badge.json' with { type: 'json' };
+import colors from '@rocket.chat/fuselage-tokens/dist/colors.json' with { type: 'json' };
+import font from '@rocket.chat/fuselage-tokens/dist/font.json' with { type: 'json' };
+import shadow from '@rocket.chat/fuselage-tokens/dist/shadow.json' with { type: 'json' };
+import status from '@rocket.chat/fuselage-tokens/dist/status.json' with { type: 'json' };
+import stroke from '@rocket.chat/fuselage-tokens/dist/stroke.json' with { type: 'json' };
+import surface from '@rocket.chat/fuselage-tokens/dist/surface.json' with { type: 'json' };
 
-import { toCSSColorValue } from './helpers/toCSSValue';
+import { toCSSColorValue } from './helpers/toCSSValue.js';
 
 export class Var {
 	private name: string;

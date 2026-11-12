@@ -1,7 +1,7 @@
 import type { IServerInfo } from '@rocket.chat/core-typings';
 import { useContext } from 'react';
 
-import { ServerContext } from '../ServerContext';
+import { ServerContext } from '../ServerContext.js';
 
 export const useServerInformation = (): IServerInfo => {
 	const { info } = useContext(ServerContext);

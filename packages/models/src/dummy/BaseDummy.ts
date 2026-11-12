@@ -28,8 +28,9 @@ import type {
 	WithId,
 } from 'mongodb';
 
-import { getCollectionName, UpdaterImpl } from '../index';
-import type { Updater } from '../updater';
+import { getCollectionName } from '../getCollectionName.js';
+import { UpdaterImpl } from '../updater.js';
+import type { Updater } from '../updater.js';
 
 export class BaseDummy<
 	T extends { _id: string },

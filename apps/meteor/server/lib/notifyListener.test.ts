@@ -3,8 +3,9 @@ import { afterEach, beforeEach, describe, it } from 'node:test';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../tests/mocks/utils/loadWithMocks';
 
 describe('Message Broadcast Tests', () => {
 	let getSettingValueByIdStub: sinon.SinonStub;
@@ -59,10 +60,14 @@ describe('Message Broadcast Tests', () => {
 		mockModel('Users', models.Users);
 		mockModel('Settings', models.Settings);
 
-		const proxyMock = proxyquire.noPreserveCache().load('./notifyListener', {
-			'@rocket.chat/core-services': coreStubs(),
-			'mem': memStub,
-		});
+		const proxyMock = loadWithMocks(
+			'./notifyListener',
+			{
+				'@rocket.chat/core-services': coreStubs(),
+				'mem': memStub,
+			},
+			{ callThru: true },
+		);
 
 		getMessageToBroadcast = proxyMock.getMessageToBroadcast;
 		notifyOnMessageChange = proxyMock.notifyOnMessageChange;
@@ -269,7 +274,7 @@ describe('Message Broadcast Tests', () => {
 
 	describe('notifyOnMessageChange', () => {
 		const setupProxyMock = () => {
-			const proxyMock = proxyquire.noCallThru().load('./notifyListener', {
+			const proxyMock = loadWithMocks('./notifyListener', {
 				'@rocket.chat/core-services': coreStubs(),
 				'mem': memStub,
 			});

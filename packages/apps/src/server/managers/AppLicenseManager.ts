@@ -1,11 +1,11 @@
-import type { AppManager } from '../AppManager';
-import type { UserBridge } from '../bridges';
-import type { IInternalUserBridge } from '../bridges/IInternalUserBridge';
-import { InvalidLicenseError } from '../errors';
-import type { IMarketplaceInfo } from '../marketplace';
-import { MarketplacePurchaseType } from '../marketplace/MarketplacePurchaseType';
-import { Crypto } from '../marketplace/license';
-import type { AppLicenseValidationResult } from '../marketplace/license';
+import type { AppManager } from '../AppManager.js';
+import type { IInternalUserBridge } from '../bridges/IInternalUserBridge.js';
+import type { UserBridge } from '../bridges/index.js';
+import { InvalidLicenseError } from '../errors/index.js';
+import { MarketplacePurchaseType } from '../marketplace/MarketplacePurchaseType.js';
+import type { IMarketplaceInfo } from '../marketplace/index.js';
+import { Crypto } from '../marketplace/license/index.js';
+import type { AppLicenseValidationResult } from '../marketplace/license/index.js';
 
 enum LicenseVersion {
 	v1 = 1,

@@ -5,7 +5,7 @@ import { join } from 'node:path';
 
 import i18next from 'i18next';
 
-import { PdfWorker } from './index';
+import { PdfWorker } from './index.js';
 import {
 	bigConversationData,
 	dataWithASingleMessageButAReallyLongMessage,
@@ -13,7 +13,7 @@ import {
 	dataWithASingleMessageAndAnImage,
 	dataWithASingleSystemMessage,
 	dataWith2ReallyBigMessages,
-} from './worker.fixtures';
+} from './worker.fixtures.js';
 
 beforeAll(() => {
 	i18next.init({

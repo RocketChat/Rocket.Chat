@@ -1,6 +1,6 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 
-import { UpdaterImpl } from './updater';
+import { UpdaterImpl } from './updater.js';
 
 test('updater typings', () => {
 	const updater = new UpdaterImpl<{

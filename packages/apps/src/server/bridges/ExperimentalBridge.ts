@@ -1,4 +1,4 @@
-import { BaseBridge } from './BaseBridge';
+import { BaseBridge } from './BaseBridge.js';
 
 /**
  * @description

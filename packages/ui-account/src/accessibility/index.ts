@@ -1,3 +1,3 @@
-export { default as AccessibilityPage } from './AccessibilityPage';
-export { default as AccessibilityView } from './views/AccessibilityView';
-export * from './logic/useAccessibilityPreferences';
+export { default as AccessibilityPage } from './AccessibilityPage.js';
+export { default as AccessibilityView } from './views/AccessibilityView.js';
+export * from './logic/useAccessibilityPreferences.js';

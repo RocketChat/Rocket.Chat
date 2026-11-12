@@ -3,10 +3,10 @@ import nameToCharacterMapping from '@rocket.chat/icons';
 import type { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
 
-import { Box } from '../Box';
-import { Divider } from '../Divider';
-import { InputBox } from '../InputBox';
-import Icon from './Icon';
+import Icon from './Icon.js';
+import { Box } from '../Box/index.js';
+import { Divider } from '../Divider/index.js';
+import { InputBox } from '../InputBox/index.js';
 
 export default {
 	title: 'Data Display/Icon',

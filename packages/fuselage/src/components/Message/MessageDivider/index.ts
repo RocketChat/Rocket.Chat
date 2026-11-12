@@ -1,1 +1,1 @@
-export { default as MessageDivider, type MessageDividerProps } from './MessageDivider';
+export { default as MessageDivider, type MessageDividerProps } from './MessageDivider.js';

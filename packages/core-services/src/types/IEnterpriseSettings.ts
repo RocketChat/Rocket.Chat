@@ -1,6 +1,6 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 
-import type { IServiceClass } from './ServiceClass';
+import type { IServiceClass } from './ServiceClass.js';
 
 export interface IEnterpriseSettings extends IServiceClass {
 	changeSettingValue(record: ISetting): undefined | ISetting['value'];

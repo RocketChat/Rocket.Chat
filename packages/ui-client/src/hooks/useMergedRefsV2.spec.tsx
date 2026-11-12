@@ -3,7 +3,7 @@ import { render } from '@testing-library/react';
 import type { Ref, RefCallback } from 'react';
 import { createRef, useCallback } from 'react';
 
-import { useMergedRefsV2 } from './useMergedRefsV2';
+import { useMergedRefsV2 } from './useMergedRefsV2.js';
 
 const useTrackedRef = (events: string[], name: string): RefCallback<HTMLElement> =>
 	useCallback(

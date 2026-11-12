@@ -1,7 +1,7 @@
 import { useSettings } from '@rocket.chat/ui-contexts';
 import { renderHook } from '@testing-library/react';
 
-import { mockAppRoot } from '..';
+import { mockAppRoot } from '../index.js';
 
 describe('useSettings', () => {
 	it('should return all settings', () => {

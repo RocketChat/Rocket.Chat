@@ -1,7 +1,7 @@
 import { MockedServerContext } from '@rocket.chat/mock-providers';
 import { render, screen, within } from '@testing-library/react';
 
-import { bannerParser, messageParser } from '../surfaces';
+import { bannerParser, messageParser } from '../surfaces/index.js';
 
 it('renders the first row as the header and the rest as body rows', async () => {
 	render(

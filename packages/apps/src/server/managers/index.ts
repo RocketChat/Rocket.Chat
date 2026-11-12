@@ -1,12 +1,12 @@
-import { AppApiManager } from './AppApiManager';
-import { AppExternalComponentManager } from './AppExternalComponentManager';
-import { AppLicenseManager } from './AppLicenseManager';
-import { AppListenerManager } from './AppListenerManager';
-import { AppOutboundCommunicationProviderManager } from './AppOutboundCommunicationProviderManager';
-import { AppSchedulerManager } from './AppSchedulerManager';
-import { AppSettingsManager } from './AppSettingsManager';
-import { AppSlashCommandManager } from './AppSlashCommandManager';
-import { AppVideoConfProviderManager } from './AppVideoConfProviderManager';
+import { AppApiManager } from './AppApiManager.js';
+import { AppExternalComponentManager } from './AppExternalComponentManager.js';
+import { AppLicenseManager } from './AppLicenseManager.js';
+import { AppListenerManager } from './AppListenerManager.js';
+import { AppOutboundCommunicationProviderManager } from './AppOutboundCommunicationProviderManager.js';
+import { AppSchedulerManager } from './AppSchedulerManager.js';
+import { AppSettingsManager } from './AppSettingsManager.js';
+import { AppSlashCommandManager } from './AppSlashCommandManager.js';
+import { AppVideoConfProviderManager } from './AppVideoConfProviderManager.js';
 
 export {
 	AppLicenseManager,

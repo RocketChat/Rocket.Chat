@@ -1,5 +1,5 @@
-import { renderHook } from './testing';
-import { usePreventScrollOutside } from './usePreventScrollOutside';
+import { renderHook } from './testing.js';
+import { usePreventScrollOutside } from './usePreventScrollOutside.js';
 
 let target: HTMLElement;
 let list: HTMLElement;

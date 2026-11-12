@@ -1,7 +1,7 @@
 import { Fragment, memo, useContext, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { MarkupInteractionContext } from '../MarkupInteractionContext';
+import { MarkupInteractionContext } from '../MarkupInteractionContext.js';
 
 export type PlainSpanProps = {
 	text: string;

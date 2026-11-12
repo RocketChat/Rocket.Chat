@@ -2,8 +2,8 @@ import { Button } from '@rocket.chat/fuselage';
 import type { Meta, StoryFn, StoryObj } from '@storybook/react-webpack5';
 import { useEffect, useState } from 'react';
 
-import type { ToastBarContextValue } from './ToastBarContext';
-import { useToastBarDispatch } from './ToastBarContext';
+import type { ToastBarContextValue } from './ToastBarContext.js';
+import { useToastBarDispatch } from './ToastBarContext.js';
 
 export default {
 	title: 'view/ToastBar',

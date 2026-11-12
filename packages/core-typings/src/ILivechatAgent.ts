@@ -1,4 +1,4 @@
-import type { IUser } from './IUser';
+import type { IUser } from './IUser.js';
 
 export enum ILivechatAgentStatus {
 	AVAILABLE = 'available',

@@ -2,7 +2,7 @@ import type { IInstanceStatus } from '@rocket.chat/core-typings';
 import type { IInstanceStatusModel } from '@rocket.chat/model-typings';
 import type { Db, UpdateResult, DeleteResult, ChangeStream } from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
+import { BaseRaw } from './BaseRaw.js';
 
 export class InstanceStatusRaw extends BaseRaw<IInstanceStatus> implements IInstanceStatusModel {
 	constructor(db: Db) {

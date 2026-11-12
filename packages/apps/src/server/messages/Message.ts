@@ -1,9 +1,9 @@
-import type { IMessage, IMessageAttachment, IMessageFile, IMessageReactions } from '@rocket.chat/apps-engine/definition/messages';
-import type { IUser, IUserLookup } from '@rocket.chat/apps-engine/definition/users';
+import type { IMessage, IMessageAttachment, IMessageFile, IMessageReactions } from '@rocket.chat/apps-engine/definition/messages/index.js';
+import type { IUser, IUserLookup } from '@rocket.chat/apps-engine/definition/users/index.js';
 import type { LayoutBlock } from '@rocket.chat/ui-kit';
 
-import type { AppManager } from '../AppManager';
-import { Room } from '../rooms/Room';
+import type { AppManager } from '../AppManager.js';
+import { Room } from '../rooms/Room.js';
 
 export class Message implements IMessage {
 	public id?: string;

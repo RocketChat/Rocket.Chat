@@ -2,10 +2,10 @@ import { Agent } from 'node:http';
 
 import request from 'supertest';
 
-import { Router } from './Router';
-import { nodeHandler } from './middlewares/nodeHandler';
-import { RESPONSE_ALREADY_SENT, createMiddlewareSlot, createNodeServer, createRootApp, mountRouter } from './server';
-import type { HttpBindings } from './server';
+import { Router } from './Router.js';
+import { nodeHandler } from './middlewares/nodeHandler.js';
+import { RESPONSE_ALREADY_SENT, createMiddlewareSlot, createNodeServer, createRootApp, mountRouter } from './server.js';
+import type { HttpBindings } from './server.js';
 
 describe('createRootApp', () => {
 	it('serves a route added after it has answered a request', async () => {

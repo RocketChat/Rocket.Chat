@@ -1,4 +1,4 @@
-import type { IAppServerOrchestrator } from './IAppServerOrchestrator';
+import type { IAppServerOrchestrator } from './IAppServerOrchestrator.js';
 
 let app: IAppServerOrchestrator | undefined;
 

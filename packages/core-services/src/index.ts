@@ -1,4 +1,4 @@
-import { proxify } from './lib/proxify';
+import { proxify } from './lib/proxify.js';
 import type {
 	IAISearchService,
 	AISearchAnswerMessage,
@@ -8,42 +8,42 @@ import type {
 	AISearchResult,
 	AISearchStatus,
 	AISearchType,
-} from './types/IAISearchService';
-import type { IAbacService } from './types/IAbacService';
-import type { IAccount, ILoginResult } from './types/IAccount';
-import type { IAnalyticsService } from './types/IAnalyticsService';
-import type { IApiService } from './types/IApiService';
-import type { IAppsEngineService } from './types/IAppsEngineService';
-import type { IAuthorization, RoomAccessValidator, UserWithRoles } from './types/IAuthorization';
-import type { IAuthorizationLivechat } from './types/IAuthorizationLivechat';
-import type { IBannerService } from './types/IBannerService';
-import type { ICalendarService } from './types/ICalendarService';
-import type { ICallHistoryService } from './types/ICallHistoryService';
-import type { IDeviceManagementService } from './types/IDeviceManagementService';
-import type { IEnterpriseSettings } from './types/IEnterpriseSettings';
-import type { IFederationMatrixService } from './types/IFederationMatrixService';
-import type { IImportService } from './types/IImportService';
-import type { ILDAPEEService } from './types/ILDAPEEService';
-import type { ILDAPService } from './types/ILDAPService';
-import type { ILicense } from './types/ILicense';
-import type { IMediaCallService } from './types/IMediaCallService';
-import type { IMediaService, ResizeResult } from './types/IMediaService';
-import type { IMessageReadsService } from './types/IMessageReadsService';
-import type { IMessageService } from './types/IMessageService';
-import type { IMeteor, AutoUpdateRecord } from './types/IMeteor';
-import type { INPSService, NPSCreatePayload, NPSVotePayload } from './types/INPSService';
-import type { IOmnichannelAnalyticsService } from './types/IOmnichannelAnalyticsService';
-import type { IOmnichannelEEService } from './types/IOmnichannelEEService';
-import type { IOmnichannelIntegrationService } from './types/IOmnichannelIntegrationService';
-import type { IOmnichannelService } from './types/IOmnichannelService';
-import type { IOmnichannelTranscriptService } from './types/IOmnichannelTranscriptService';
-import type { IPresence } from './types/IPresence';
-import type { IPushService } from './types/IPushService';
-import type { IQueueWorkerService, HealthAggResult } from './types/IQueueWorkerService';
-import type { IRoomService, ICreateRoomParams, ISubscriptionExtraData } from './types/IRoomService';
-import type { ISAUMonitorService } from './types/ISAUMonitorService';
-import type { ISettingsService } from './types/ISettingsService';
-import type { IStatusVisibilityService } from './types/IStatusVisibilityService';
+} from './types/IAISearchService.js';
+import type { IAbacService } from './types/IAbacService.js';
+import type { IAccount, ILoginResult } from './types/IAccount.js';
+import type { IAnalyticsService } from './types/IAnalyticsService.js';
+import type { IApiService } from './types/IApiService.js';
+import type { IAppsEngineService } from './types/IAppsEngineService.js';
+import type { IAuthorization, RoomAccessValidator, UserWithRoles } from './types/IAuthorization.js';
+import type { IAuthorizationLivechat } from './types/IAuthorizationLivechat.js';
+import type { IBannerService } from './types/IBannerService.js';
+import type { ICalendarService } from './types/ICalendarService.js';
+import type { ICallHistoryService } from './types/ICallHistoryService.js';
+import type { IDeviceManagementService } from './types/IDeviceManagementService.js';
+import type { IEnterpriseSettings } from './types/IEnterpriseSettings.js';
+import type { IFederationMatrixService } from './types/IFederationMatrixService.js';
+import type { IImportService } from './types/IImportService.js';
+import type { ILDAPEEService } from './types/ILDAPEEService.js';
+import type { ILDAPService } from './types/ILDAPService.js';
+import type { ILicense } from './types/ILicense.js';
+import type { IMediaCallService } from './types/IMediaCallService.js';
+import type { IMediaService, ResizeResult } from './types/IMediaService.js';
+import type { IMessageReadsService } from './types/IMessageReadsService.js';
+import type { IMessageService } from './types/IMessageService.js';
+import type { IMeteor, AutoUpdateRecord } from './types/IMeteor.js';
+import type { INPSService, NPSCreatePayload, NPSVotePayload } from './types/INPSService.js';
+import type { IOmnichannelAnalyticsService } from './types/IOmnichannelAnalyticsService.js';
+import type { IOmnichannelEEService } from './types/IOmnichannelEEService.js';
+import type { IOmnichannelIntegrationService } from './types/IOmnichannelIntegrationService.js';
+import type { IOmnichannelService } from './types/IOmnichannelService.js';
+import type { IOmnichannelTranscriptService } from './types/IOmnichannelTranscriptService.js';
+import type { IPresence } from './types/IPresence.js';
+import type { IPushService } from './types/IPushService.js';
+import type { IQueueWorkerService, HealthAggResult } from './types/IQueueWorkerService.js';
+import type { IRoomService, ICreateRoomParams, ISubscriptionExtraData } from './types/IRoomService.js';
+import type { ISAUMonitorService } from './types/ISAUMonitorService.js';
+import type { ISettingsService } from './types/ISettingsService.js';
+import type { IStatusVisibilityService } from './types/IStatusVisibilityService.js';
 import type {
 	ITeamService,
 	ITeamUpdateData,
@@ -53,21 +53,21 @@ import type {
 	ITeamCreateParams,
 	ITeamAutocompleteResult,
 	IListRoomsFilter,
-} from './types/ITeamService';
-import type { ITelemetryEvent, TelemetryMap, TelemetryEvents } from './types/ITelemetryEvent';
+} from './types/ITeamService.js';
+import type { ITelemetryEvent, TelemetryMap, TelemetryEvents } from './types/ITelemetryEvent.js';
 import type {
 	UiKitCoreAppBlockActionPayload,
 	UiKitCoreAppViewClosedPayload,
 	UiKitCoreAppViewSubmitPayload,
 	IUiKitCoreApp,
 	IUiKitCoreAppService,
-} from './types/IUiKitCoreApp';
-import type { ISendFileLivechatMessageParams, ISendFileMessageParams, IUploadFileParams, IUploadService } from './types/IUploadService';
-import type { IUserService } from './types/IUserService';
-import type { IVideoConfService, VideoConferenceJoinOptions } from './types/IVideoConfService';
-import type { IXMPPServerService } from './types/IXMPPServerService';
+} from './types/IUiKitCoreApp.js';
+import type { ISendFileLivechatMessageParams, ISendFileMessageParams, IUploadFileParams, IUploadService } from './types/IUploadService.js';
+import type { IUserService } from './types/IUserService.js';
+import type { IVideoConfService, VideoConferenceJoinOptions } from './types/IVideoConfService.js';
+import type { IXMPPServerService } from './types/IXMPPServerService.js';
 
-export type { AppStatusReport } from './types/IAppsEngineService';
+export type { AppStatusReport } from './types/IAppsEngineService.js';
 export type {
 	IAbacService,
 	AbacActor,
@@ -77,22 +77,22 @@ export type {
 	AbacRoomAttributesGrant,
 	AbacRoomMembershipPreviewPage,
 	AbacUsersAllowedInRoomResult,
-} from './types/IAbacService';
-export type { PresenceScope } from './types/IStatusVisibilityService';
-export { asyncLocalStorage } from './lib/asyncLocalStorage';
-export { ClientSafeError, isClientSafeError } from './ClientSafeError';
-export { api } from './api';
-export type { EventSignatures, RelayedStreamEvent } from './events/Events';
-export { LocalBroker } from './LocalBroker';
-export type { ClusterTransport } from './LocalBroker';
+} from './types/IAbacService.js';
+export type { PresenceScope } from './types/IStatusVisibilityService.js';
+export { asyncLocalStorage } from './lib/asyncLocalStorage.js';
+export { ClientSafeError, isClientSafeError } from './ClientSafeError.js';
+export { api } from './api.js';
+export type { EventSignatures, RelayedStreamEvent } from './events/Events.js';
+export { LocalBroker } from './LocalBroker.js';
+export type { ClusterTransport } from './LocalBroker.js';
 
-export type { IBroker, IBrokerNode, BaseMetricOptions, CallingOptions, IServiceMetrics } from './types/IBroker';
+export type { IBroker, IBrokerNode, BaseMetricOptions, CallingOptions, IServiceMetrics } from './types/IBroker.js';
 
-export type { IServiceContext, IServiceClass } from './types/ServiceClass';
-export { ServiceClass, ServiceClassInternal } from './types/ServiceClass';
+export type { IServiceContext, IServiceClass } from './types/ServiceClass.js';
+export { ServiceClass, ServiceClassInternal } from './types/ServiceClass.js';
 
-export type { IFederationMatrixService } from './types/IFederationMatrixService';
-export type { IXMPPServerService } from './types/IXMPPServerService';
+export type { IFederationMatrixService } from './types/IFederationMatrixService.js';
+export type { IXMPPServerService } from './types/IXMPPServerService.js';
 
 export type {
 	ConversationData,
@@ -101,15 +101,15 @@ export type {
 	AnalyticsOverviewDataOptions,
 	ChartDataResult,
 	AnalyticsOverviewDataResult,
-} from './types/IOmnichannelAnalyticsService';
+} from './types/IOmnichannelAnalyticsService.js';
 
-export { getInstanceMethods } from './lib/getInstanceMethods';
-export { LocalServiceRegistry, getCallableMethods } from './lib/LocalServiceRegistry';
-export type { LocalHandler } from './lib/LocalServiceRegistry';
-export { getConnection, getTrashCollection } from './lib/mongo';
-export { ServiceStarter } from './lib/ServiceStarter';
+export { getInstanceMethods } from './lib/getInstanceMethods.js';
+export { LocalServiceRegistry, getCallableMethods } from './lib/LocalServiceRegistry.js';
+export type { LocalHandler } from './lib/LocalServiceRegistry.js';
+export { getConnection, getTrashCollection } from './lib/mongo.js';
+export { ServiceStarter } from './lib/ServiceStarter.js';
 
-export type { ICreateRoomOptions } from './types/IRoomService';
+export type { ICreateRoomOptions } from './types/IRoomService.js';
 
 export type {
 	AutoUpdateRecord,

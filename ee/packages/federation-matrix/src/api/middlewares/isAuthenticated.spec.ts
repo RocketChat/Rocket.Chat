@@ -1,8 +1,8 @@
 import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Hono } from 'hono';
 
-import { isAuthenticatedMiddleware } from './isAuthenticated';
-import { logger } from '../logger';
+import { isAuthenticatedMiddleware } from './isAuthenticated.js';
+import { logger } from '../logger.js';
 
 jest.mock('@rocket.chat/federation-sdk', () => ({
 	federationSDK: { verifyRequestSignature: jest.fn() },

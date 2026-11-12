@@ -1,8 +1,8 @@
 import { composeStories } from '@storybook/react';
 import { axe } from 'jest-axe';
 
-import * as stories from './PasswordInput.stories';
-import { render } from '../../testing';
+import * as stories from './PasswordInput.stories.js';
+import { render } from '../../testing.js';
 
 const { Default } = composeStories(stories);
 

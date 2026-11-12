@@ -1,6 +1,6 @@
 import type { IUpload } from '@rocket.chat/core-typings';
 
-import type { IAppsUpload } from '../AppsEngine';
+import type { IAppsUpload } from '../AppsEngine.js';
 
 export interface IAppUploadsConverter {
 	convertById(uploadId: string): Promise<IAppsUpload | undefined>;

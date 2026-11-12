@@ -1,16 +1,16 @@
 import * as assert from 'node:assert';
 import { describe, it } from 'node:test';
 
-import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
-import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
-import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
+import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus.js';
+import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata/index.js';
+import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata/index.js';
 
-import type { AppManager } from '../../../src/server/AppManager';
-import { ProxiedApp } from '../../../src/server/ProxiedApp';
-import { AppFabricationFulfillment } from '../../../src/server/compiler';
-import { AppPermissions } from '../../../src/server/permissions/AppPermissions';
-import type { IAppStorageItem } from '../../../src/server/storage';
-import { TestData } from '../../test-data/utilities';
+import type { AppManager } from '../../../src/server/AppManager.js';
+import { ProxiedApp } from '../../../src/server/ProxiedApp.js';
+import { AppFabricationFulfillment } from '../../../src/server/compiler/index.js';
+import { AppPermissions } from '../../../src/server/permissions/AppPermissions.js';
+import type { IAppStorageItem } from '../../../src/server/storage/index.js';
+import { TestData } from '../../test-data/utilities.js';
 
 describe('AppFabricationFulfillment', () => {
 	it('appFabricationDefinement', () => {

@@ -1,1 +1,1 @@
-export * from './useSort';
+export * from './useSort.js';

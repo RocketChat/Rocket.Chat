@@ -1,32 +1,36 @@
-import { TestOAuthAppsBridge } from './OAuthAppsBridge';
-import { TestsActivationBridge } from './activationBridge';
-import { TestsApiBridge } from './apiBridge';
-import { TestsAppDetailChangesBridge } from './appDetailChanges';
-import { TestsCallHistoryBridge } from './callHistoryBridge';
-import { TestAppCloudWorkspaceBridge } from './cloudBridge';
-import { TestsCommandBridge } from './commandBridge';
-import { TestContactBridge } from './contactBridge';
-import { TestsEmailBridge } from './emailBridge';
-import { TestsEnvironmentalVariableBridge } from './environmentalVariableBridge';
-import { TestExperimentalBridge } from './experimentalBridge';
-import { TestsHttpBridge } from './httpBridge';
-import { TestsInternalBridge } from './internalBridge';
-import { TestsInternalFederationBridge } from './internalFederationBridge';
-import { TestLivechatBridge } from './livechatBridge';
-import { TestsMessageBridge } from './messageBridge';
-import { TestsModerationBridge } from './moderationBridge';
-import { TestOutboundCommunicationBridge } from './outboundComms';
-import { TestsPersisBridge } from './persisBridge';
-import { TestsRoleBridge } from './roleBridge';
-import { TestsRoomBridge } from './roomBridge';
-import { TestSchedulerBridge } from './schedulerBridge';
-import { TestsServerSettingBridge } from './serverSettingBridge';
-import { TestsThreadBridge } from './threadBridge';
-import { TestsUiIntegrationBridge } from './uiIntegrationBridge';
-import { TestUploadBridge } from './uploadBridge';
-import { TestsUserBridge } from './userBridge';
-import { TestsVideoConferenceBridge } from './videoConferenceBridge';
-import { AppBridges } from '../../../src/server/bridges';
+import { TestOAuthAppsBridge } from './OAuthAppsBridge.js';
+import { TestsActivationBridge } from './activationBridge.js';
+import { TestsApiBridge } from './apiBridge.js';
+import { TestsAppDetailChangesBridge } from './appDetailChanges.js';
+import { TestsCallHistoryBridge } from './callHistoryBridge.js';
+import { TestAppCloudWorkspaceBridge } from './cloudBridge.js';
+import { TestsCommandBridge } from './commandBridge.js';
+import { TestContactBridge } from './contactBridge.js';
+import { TestsEmailBridge } from './emailBridge.js';
+import { TestsEnvironmentalVariableBridge } from './environmentalVariableBridge.js';
+import { TestExperimentalBridge } from './experimentalBridge.js';
+import { TestsHttpBridge } from './httpBridge.js';
+import { TestsInternalBridge } from './internalBridge.js';
+import { TestsInternalFederationBridge } from './internalFederationBridge.js';
+import { TestLivechatBridge } from './livechatBridge.js';
+import { TestsMessageBridge } from './messageBridge.js';
+import { TestsModerationBridge } from './moderationBridge.js';
+import { TestOutboundCommunicationBridge } from './outboundComms.js';
+import { TestsPersisBridge } from './persisBridge.js';
+import { TestsRoleBridge } from './roleBridge.js';
+import { TestsRoomBridge } from './roomBridge.js';
+import { TestSchedulerBridge } from './schedulerBridge.js';
+import { TestsServerSettingBridge } from './serverSettingBridge.js';
+import { TestsThreadBridge } from './threadBridge.js';
+import { TestsUiIntegrationBridge } from './uiIntegrationBridge.js';
+import { TestUploadBridge } from './uploadBridge.js';
+import { TestsUserBridge } from './userBridge.js';
+import { TestsVideoConferenceBridge } from './videoConferenceBridge.js';
+import type { CloudWorkspaceBridge } from '../../../src/server/bridges/CloudWorkspaceBridge.js';
+import type { EmailBridge } from '../../../src/server/bridges/EmailBridge.js';
+import type { IInternalFederationBridge } from '../../../src/server/bridges/IInternalFederationBridge.js';
+import type { OAuthAppsBridge } from '../../../src/server/bridges/OAuthAppsBridge.js';
+import type { ThreadBridge } from '../../../src/server/bridges/ThreadBridge.js';
 import type {
 	AppActivationBridge,
 	AppDetailChangesBridge,
@@ -50,12 +54,8 @@ import type {
 	UploadBridge,
 	UserBridge,
 	VideoConferenceBridge,
-} from '../../../src/server/bridges';
-import type { CloudWorkspaceBridge } from '../../../src/server/bridges/CloudWorkspaceBridge';
-import type { EmailBridge } from '../../../src/server/bridges/EmailBridge';
-import type { IInternalFederationBridge } from '../../../src/server/bridges/IInternalFederationBridge';
-import type { OAuthAppsBridge } from '../../../src/server/bridges/OAuthAppsBridge';
-import type { ThreadBridge } from '../../../src/server/bridges/ThreadBridge';
+} from '../../../src/server/bridges/index.js';
+import { AppBridges } from '../../../src/server/bridges/index.js';
 
 export class TestsAppBridges extends AppBridges {
 	private readonly appDetails: TestsAppDetailChangesBridge;

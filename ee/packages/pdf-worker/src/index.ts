@@ -1,12 +1,12 @@
 import type { i18n } from 'i18next';
 
-import { ChatTranscript } from './strategies/ChatTranscript';
-import type { IStrategy } from './types/IStrategy';
-import type { WorkerData } from './types/WorkerData';
+import { ChatTranscript } from './strategies/ChatTranscript.js';
+import type { IStrategy } from './types/IStrategy.js';
+import type { WorkerData } from './types/WorkerData.js';
 
 export type Templates = 'chat-transcript';
 
-export type { Quote, MessageData, WorkerData } from './types/WorkerData';
+export type { Quote, MessageData, WorkerData } from './types/WorkerData.js';
 
 export class PdfWorker {
 	protected validMimeTypes = ['image/jpeg', 'image/png', 'image/jpg'];

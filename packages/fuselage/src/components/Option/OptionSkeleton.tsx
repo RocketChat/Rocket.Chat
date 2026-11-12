@@ -1,5 +1,5 @@
-import { Skeleton } from '../Skeleton';
-import Option from './Option';
+import Option from './Option.js';
+import { Skeleton } from '../Skeleton/index.js';
 
 const OptionSkeleton = () => (
 	<Option aria-hidden>

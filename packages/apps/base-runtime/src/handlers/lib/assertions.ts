@@ -1,6 +1,6 @@
-import type { App } from '@rocket.chat/apps-engine/definition/App';
+import type { App } from '@rocket.chat/apps-engine/definition/App.js';
 
-import { JsonRpcError } from '../../lib/jsonrpc';
+import { JsonRpcError } from '../../lib/jsonrpc.js';
 
 /**
  * Known failures that can happen in the runtime.

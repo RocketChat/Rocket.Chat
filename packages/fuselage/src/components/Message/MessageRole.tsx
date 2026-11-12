@@ -1,4 +1,4 @@
-import { Tag, type TagProps } from '../Tag';
+import { Tag, type TagProps } from '../Tag/index.js';
 
 export type MessageRoleProps = TagProps;
 

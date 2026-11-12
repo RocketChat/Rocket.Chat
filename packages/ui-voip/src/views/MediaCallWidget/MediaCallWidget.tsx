@@ -1,8 +1,8 @@
-import MediaCallWidgetViewRouter from './MediaCallWidgetViewRouter';
-import WidgetDraggableProvider from '../../components/Widget/WidgetDraggableProvider';
-import { useMediaCallInstance } from '../../context';
-import { useMediaCallView } from '../../context/MediaCallViewContext';
-import useRegisterView from '../../context/useRegisterView';
+import MediaCallWidgetViewRouter from './MediaCallWidgetViewRouter.js';
+import WidgetDraggableProvider from '../../components/Widget/WidgetDraggableProvider.js';
+import { useMediaCallView } from '../../context/MediaCallViewContext.js';
+import { useMediaCallInstance } from '../../context/index.js';
+import useRegisterView from '../../context/useRegisterView.js';
 
 const MediaCallWidget = () => {
 	const { targetWidgetVisibility } = useMediaCallInstance();

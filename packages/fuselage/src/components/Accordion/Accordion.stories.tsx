@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { Box } from '../Box';
-import { Icon } from '../Icon';
-import Accordion from './Accordion';
-import AccordionItem, { type AccordionItemProps } from './AccordionItem';
+import Accordion from './Accordion.js';
+import AccordionItem, { type AccordionItemProps } from './AccordionItem.js';
+import { Box } from '../Box/index.js';
+import { Icon } from '../Icon/index.js';
 
 export default {
 	title: 'Containers/Accordion',

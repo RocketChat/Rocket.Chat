@@ -1,7 +1,7 @@
 import type { AnchorHTMLAttributes, ButtonHTMLAttributes, RefAttributes } from 'react';
 
-import { useItemContext } from './ItemContext';
-import { cx } from '../../helpers/composeClassNames';
+import { useItemContext } from './ItemContext.js';
+import { cx } from '../../helpers/composeClassNames.js';
 
 type ItemLinkAnchorProps = {
 	is?: 'a';

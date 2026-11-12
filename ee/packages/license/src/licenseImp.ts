@@ -1,7 +1,7 @@
 import type { LicenseLimitKind, LimitContext } from '@rocket.chat/core-typings';
 
-import { getAppsConfig, getMaxActiveUsers, getUnmodifiedLicenseAndModules } from './deprecated';
-import { onLicense } from './events/deprecated';
+import { getAppsConfig, getMaxActiveUsers, getUnmodifiedLicenseAndModules } from './deprecated.js';
+import { onLicense } from './events/deprecated.js';
 import {
 	onBehaviorToggled,
 	onBehaviorTriggered,
@@ -16,15 +16,15 @@ import {
 	onInstall,
 	onInvalidate,
 	onRemoveLicense,
-} from './events/listeners';
-import { overwriteClassOnLicense } from './events/overwriteClassOnLicense';
-import { LicenseManager } from './license';
-import { logger } from './logger';
-import { getExternalModules, getModuleDefinition, getModules, hasModule } from './modules';
-import { showLicense } from './showLicense';
-import { getTags } from './tags';
-import { getCurrentValueForLicenseLimit, setLicenseLimitCounter } from './validation/getCurrentValueForLicenseLimit';
-import { validateFormat } from './validation/validateFormat';
+} from './events/listeners.js';
+import { overwriteClassOnLicense } from './events/overwriteClassOnLicense.js';
+import { LicenseManager } from './license.js';
+import { logger } from './logger.js';
+import { getExternalModules, getModuleDefinition, getModules, hasModule } from './modules.js';
+import { showLicense } from './showLicense.js';
+import { getTags } from './tags.js';
+import { getCurrentValueForLicenseLimit, setLicenseLimitCounter } from './validation/getCurrentValueForLicenseLimit.js';
+import { validateFormat } from './validation/validateFormat.js';
 
 export class LicenseImp extends LicenseManager {
 	constructor() {

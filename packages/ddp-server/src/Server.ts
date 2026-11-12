@@ -4,10 +4,10 @@ import { Logger } from '@rocket.chat/logger';
 import { v1 as uuidv1 } from 'uuid';
 import WebSocket from 'ws';
 
-import type { IPacket } from './IPacket';
-import { Publication } from './Publication';
-import type { Session } from './Session';
-import { encodeNosub, encodeResult, encodeUpdated } from './codec';
+import type { IPacket } from './IPacket.js';
+import { Publication } from './Publication.js';
+import type { Session } from './Session.js';
+import { encodeNosub, encodeResult, encodeUpdated } from './codec.js';
 
 const logger = new Logger('DDP-Streamer');
 

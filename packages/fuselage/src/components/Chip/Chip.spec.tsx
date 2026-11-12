@@ -1,9 +1,9 @@
 import { composeStories } from '@storybook/react';
 import { fireEvent } from '@testing-library/react';
 
-import Chip from './Chip';
-import * as stories from './Chip.stories';
-import { render } from '../../testing';
+import Chip from './Chip.js';
+import * as stories from './Chip.stories.js';
+import { render } from '../../testing.js';
 
 const { Default } = composeStories(stories);
 

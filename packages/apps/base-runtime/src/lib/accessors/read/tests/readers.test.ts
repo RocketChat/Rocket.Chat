@@ -1,20 +1,20 @@
 import * as assert from 'node:assert';
 import { describe, it } from 'node:test';
 
-import { createRecordingSender } from '../../tests/helpers/parityHarness';
-import { CallHistoryRead } from '../CallHistoryRead';
-import { CloudWorkspaceRead } from '../CloudWorkspaceRead';
-import { ContactRead } from '../ContactRead';
-import { LivechatRead } from '../LivechatRead';
-import { MessageRead } from '../MessageRead';
-import { OAuthAppsReader } from '../OAuthAppsReader';
-import { PersistenceRead } from '../PersistenceRead';
-import { RoleRead } from '../RoleRead';
-import { RoomRead } from '../RoomRead';
-import { ThreadRead } from '../ThreadRead';
-import { UploadRead } from '../UploadRead';
-import { UserRead } from '../UserRead';
-import { VideoConferenceRead } from '../VideoConferenceRead';
+import { createRecordingSender } from '../../tests/helpers/parityHarness.js';
+import { CallHistoryRead } from '../CallHistoryRead.js';
+import { CloudWorkspaceRead } from '../CloudWorkspaceRead.js';
+import { ContactRead } from '../ContactRead.js';
+import { LivechatRead } from '../LivechatRead.js';
+import { MessageRead } from '../MessageRead.js';
+import { OAuthAppsReader } from '../OAuthAppsReader.js';
+import { PersistenceRead } from '../PersistenceRead.js';
+import { RoleRead } from '../RoleRead.js';
+import { RoomRead } from '../RoomRead.js';
+import { ThreadRead } from '../ThreadRead.js';
+import { UploadRead } from '../UploadRead.js';
+import { UserRead } from '../UserRead.js';
+import { VideoConferenceRead } from '../VideoConferenceRead.js';
 
 const setup = (responses = {}) => {
 	const rec = createRecordingSender(responses);

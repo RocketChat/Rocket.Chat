@@ -1,1 +1,1 @@
-export { default, type OrganizationInfoPayload } from './OrganizationInfoForm';
+export { default, type OrganizationInfoPayload } from './OrganizationInfoForm.js';

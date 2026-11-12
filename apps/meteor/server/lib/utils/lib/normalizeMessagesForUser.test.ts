@@ -2,13 +2,14 @@ import { before, beforeEach, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const settingsGet = sinon.stub();
 const findUsersByUsernames = sinon.stub();
 
-const { normalizeMessagesForUser } = proxyquire.noCallThru().load('./normalizeMessagesForUser', {
+const { normalizeMessagesForUser } = loadWithMocks('./normalizeMessagesForUser', {
 	'../../../settings': { settings: { get: settingsGet } },
 });
 

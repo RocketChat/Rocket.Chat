@@ -1,6 +1,6 @@
-import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
+import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/index.js';
 
-import type { IExternalComponentUserInfo } from './IExternalComponentUserInfo';
+import type { IExternalComponentUserInfo } from './IExternalComponentUserInfo.js';
 
 type ClientRoomInfo = Pick<IRoom, 'id' | 'slugifiedName'>;
 

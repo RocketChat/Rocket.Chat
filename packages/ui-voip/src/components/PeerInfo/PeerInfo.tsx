@@ -1,6 +1,6 @@
-import { ExternalUser, InternalUser } from '.';
-import type { ExternalUserProps } from './ExternalUser';
-import type { InternalUserProps } from './InternalUser';
+import type { ExternalUserProps } from './ExternalUser.js';
+import type { InternalUserProps } from './InternalUser.js';
+import { ExternalUser, InternalUser } from './index.js';
 
 export type PeerInfoProps = InternalUserProps | ExternalUserProps;
 

@@ -1,8 +1,8 @@
 import type { ChildProcess } from 'node:child_process';
-import { EventEmitter } from 'node:stream';
+import { EventEmitter } from 'node:events';
 
-import type { BaseRuntimeSubprocessController } from './BaseRuntimeSubprocessController';
-import type { ProcessMessenger } from './ProcessMessenger';
+import type { BaseRuntimeSubprocessController } from './BaseRuntimeSubprocessController.js';
+import type { ProcessMessenger } from './ProcessMessenger.js';
 
 export const COMMAND_PING = '_zPING';
 

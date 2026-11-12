@@ -2,8 +2,8 @@ import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import * as UiKit from '@rocket.chat/ui-kit';
 import { memo, useMemo } from 'react';
 
-import { useUiKitState } from '../hooks/useUiKitState';
-import type { BlockProps } from '../utils/BlockProps';
+import { useUiKitState } from '../hooks/useUiKitState.js';
+import type { BlockProps } from '../utils/BlockProps.js';
 
 export type LinearScaleElementProps = BlockProps<UiKit.LinearScaleElement>;
 

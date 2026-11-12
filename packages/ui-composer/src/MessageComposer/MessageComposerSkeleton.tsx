@@ -1,6 +1,6 @@
 import { Skeleton, Box } from '@rocket.chat/fuselage';
 
-import { MessageComposer, MessageComposerToolbar } from '.';
+import { MessageComposer, MessageComposerToolbar } from './index.js';
 
 const MessageComposerSkeleton = () => (
 	<MessageComposer>

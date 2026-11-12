@@ -1,17 +1,17 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { Avatar } from '../../Avatar';
-import { Box } from '../../Box';
-import { MessageDivider } from '../MessageDivider';
-import MessageLeftContainer from '../MessageLeftContainer';
-import MessageNameContainer from '../MessageNameContainer';
-import MessageUsername from '../MessageUsername';
-import MessageSystem from './MessageSystem';
-import MessageSystemBlock from './MessageSystemBlock';
-import MessageSystemBody from './MessageSystemBody';
-import MessageSystemContainer from './MessageSystemContainer';
-import MessageSystemName from './MessageSystemName';
-import MessageSystemTimestamp from './MessageSystemTimestamp';
+import { Avatar } from '../../Avatar/index.js';
+import { Box } from '../../Box/index.js';
+import { MessageDivider } from '../MessageDivider/index.js';
+import MessageLeftContainer from '../MessageLeftContainer.js';
+import MessageNameContainer from '../MessageNameContainer.js';
+import MessageUsername from '../MessageUsername.js';
+import MessageSystem from './MessageSystem.js';
+import MessageSystemBlock from './MessageSystemBlock.js';
+import MessageSystemBody from './MessageSystemBody.js';
+import MessageSystemContainer from './MessageSystemContainer.js';
+import MessageSystemName from './MessageSystemName.js';
+import MessageSystemTimestamp from './MessageSystemTimestamp.js';
 
 export default {
 	title: 'Message/MessageSystem',

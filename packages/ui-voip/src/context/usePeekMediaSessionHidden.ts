@@ -1,6 +1,6 @@
 import { useCallback, useSyncExternalStore } from 'react';
 
-import { useMediaCallInstance } from './MediaCallInstanceContext';
+import { useMediaCallInstance } from './MediaCallInstanceContext.js';
 
 export const usePeekMediaSessionHidden = (): boolean => {
 	const { instance } = useMediaCallInstance();

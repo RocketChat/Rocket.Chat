@@ -1,15 +1,15 @@
 import { composeStories } from '@storybook/react';
 import { screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 
-import * as stories from './Sidebar.stories';
-import { SidebarCollapseGroup } from './SidebarCollapseGroup';
-import { SidebarCollapseGroupMenu } from './SidebarCollapseGroupMenu';
-import { SidebarDivider } from './SidebarDivider';
-import { SidebarItem } from './SidebarItem';
-import SidebarLink from './SidebarLink';
-import { render } from '../../testing';
+import * as stories from './Sidebar.stories.js';
+import { SidebarCollapseGroup } from './SidebarCollapseGroup.js';
+import { SidebarCollapseGroupMenu } from './SidebarCollapseGroupMenu.js';
+import { SidebarDivider } from './SidebarDivider.js';
+import { SidebarItem } from './SidebarItem/index.js';
+import SidebarLink from './SidebarLink.js';
+import { render } from '../../testing.js';
 
 const { Default } = composeStories(stories);
 

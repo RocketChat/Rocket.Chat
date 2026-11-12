@@ -1,9 +1,8 @@
 import { Settings } from '@rocket.chat/core-services';
 import type { MiddlewareHandler } from 'hono';
-import { createMiddleware } from 'hono/factory';
 import mem from 'mem';
 
-import { logger } from '../logger';
+import { logger } from '../logger.js';
 
 // cache for 60 seconds
 const getAllowList = mem(
@@ -31,7 +30,7 @@ function parseMatrixAuthorizationHeader(header: string): Record<string, string> 
 	return result;
 }
 
-export const isFederationDomainAllowedMiddleware: MiddlewareHandler = createMiddleware(async (c, next) => {
+export const isFederationDomainAllowedMiddleware: MiddlewareHandler = async (c, next) => {
 	const allowList = await getAllowList();
 	if (!allowList || allowList.length === 0) {
 		// No restriction, allow all
@@ -64,4 +63,4 @@ export const isFederationDomainAllowedMiddleware: MiddlewareHandler = createMidd
 
 	logger.info({ msg: 'Domain not allowed', method: c.req.method, path: c.req.path, origin: domain });
 	return c.json({ errcode: 'M_FORBIDDEN', error: 'Federation from this domain is not allowed.' }, 403);
-});
+};

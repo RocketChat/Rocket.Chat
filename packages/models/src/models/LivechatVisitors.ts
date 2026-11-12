@@ -18,8 +18,8 @@ import type {
 } from 'mongodb';
 import { ObjectId } from 'mongodb';
 
-import { Settings } from '../index';
-import { BaseRaw } from './BaseRaw';
+import { Settings } from '../proxies.js';
+import { BaseRaw } from './BaseRaw.js';
 
 export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements ILivechatVisitorsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatVisitor>>) {

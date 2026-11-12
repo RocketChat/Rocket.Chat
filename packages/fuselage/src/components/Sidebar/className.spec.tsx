@@ -1,21 +1,21 @@
 import { screen } from '@testing-library/react';
 import type { ReactElement } from 'react';
 
-import SidebarAccordionItem from './SidebarAccordionItem';
-import { SidebarBanner } from './SidebarBanner';
-import { SidebarCollapseGroup } from './SidebarCollapseGroup';
-import { SidebarFooter } from './SidebarFooter/SidebarFooter';
-import { SidebarFooterContent } from './SidebarFooter/SidebarFooterContent';
-import { SidebarSection } from './SidebarSection';
-import { render } from '../../testing';
-import OptionAvatar from '../Option/OptionAvatar';
-import OptionColumn from '../Option/OptionColumn';
-import OptionDescription from '../Option/OptionDescription';
-import OptionDescriptionBlock from '../Option/OptionDescriptionBlock';
-import OptionHeader from '../Option/OptionHeader';
-import OptionIcon from '../Option/OptionIcon';
-import OptionInput from '../Option/OptionInput';
-import OptionTitle from '../Option/OptionTitle';
+import SidebarAccordionItem from './SidebarAccordionItem.js';
+import { SidebarBanner } from './SidebarBanner.js';
+import { SidebarCollapseGroup } from './SidebarCollapseGroup.js';
+import { SidebarFooter } from './SidebarFooter/SidebarFooter.js';
+import { SidebarFooterContent } from './SidebarFooter/SidebarFooterContent.js';
+import { SidebarSection } from './SidebarSection.js';
+import { render } from '../../testing.js';
+import OptionAvatar from '../Option/OptionAvatar.js';
+import OptionColumn from '../Option/OptionColumn.js';
+import OptionDescription from '../Option/OptionDescription.js';
+import OptionDescriptionBlock from '../Option/OptionDescriptionBlock.js';
+import OptionHeader from '../Option/OptionHeader.js';
+import OptionIcon from '../Option/OptionIcon.js';
+import OptionInput from '../Option/OptionInput.js';
+import OptionTitle from '../Option/OptionTitle.js';
 
 const cases: [string, ReactElement, string][] = [
 	['SidebarSection', <SidebarSection data-testid='part' className='custom' />, 'rcx-sidebar-section'],

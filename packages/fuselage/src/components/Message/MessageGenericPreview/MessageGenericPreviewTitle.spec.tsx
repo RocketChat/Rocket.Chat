@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react';
 
-import MessageGenericPreviewTitle from './MessageGenericPreviewTitle';
-import { render } from '../../../testing';
+import MessageGenericPreviewTitle from './MessageGenericPreviewTitle.js';
+import { render } from '../../../testing.js';
 
 describe('MessageGenericPreviewTitle', () => {
 	it('shows the title as a link when it has an external url', () => {

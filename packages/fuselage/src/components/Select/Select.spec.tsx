@@ -1,13 +1,13 @@
 import { composeStories } from '@storybook/react';
 import { screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 
-import Select from './Select';
-import * as stories from './Select.stories';
-import type { SelectOption } from './SelectLegacy';
-import { withResizeObserverMock } from '../../../mocks/withResizeObserverMock';
-import { render } from '../../testing';
+import Select from './Select.js';
+import * as stories from './Select.stories.js';
+import type { SelectOption } from './SelectLegacy.js';
+import { withResizeObserverMock } from '../../../mocks/withResizeObserverMock.js';
+import { render } from '../../testing.js';
 
 const { Default, Controlled } = composeStories(stories);
 

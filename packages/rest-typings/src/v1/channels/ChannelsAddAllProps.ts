@@ -1,4 +1,4 @@
-import { ajv } from '../Ajv';
+import { ajv } from '../Ajv.js';
 
 export type ChannelsAddAllProps = ({ roomId: string } | { roomName: string }) & {
 	activeUsersOnly?: 'true' | 'false' | 1 | 0;

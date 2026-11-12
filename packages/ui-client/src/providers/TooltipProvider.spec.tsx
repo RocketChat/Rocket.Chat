@@ -1,7 +1,7 @@
 /* oxlint-disable testing-library/prefer-user-event */
 import { act, fireEvent, render, screen } from '@testing-library/react';
 
-import TooltipProvider from './TooltipProvider';
+import TooltipProvider from './TooltipProvider.js';
 
 beforeEach(() => {
 	jest.useFakeTimers();

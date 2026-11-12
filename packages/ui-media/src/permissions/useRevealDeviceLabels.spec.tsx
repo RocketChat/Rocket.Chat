@@ -1,7 +1,7 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { act, renderHook } from '@testing-library/react';
 
-import { useRevealDeviceLabels } from './useRevealDeviceLabels';
+import { useRevealDeviceLabels } from './useRevealDeviceLabels.js';
 
 const stop = jest.fn();
 const getUserMedia = jest.fn();

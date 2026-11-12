@@ -3,11 +3,11 @@ import { getBaseURI, isExternal } from '@rocket.chat/ui-client';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import BoldSpan from './BoldSpan';
-import ItalicSpan from './ItalicSpan';
-import PlainSpan from './PlainSpan';
-import StrikeSpan from './StrikeSpan';
-import { sanitizeUrl } from './sanitizeUrl';
+import BoldSpan from './BoldSpan.js';
+import ItalicSpan from './ItalicSpan.js';
+import PlainSpan from './PlainSpan.js';
+import StrikeSpan from './StrikeSpan.js';
+import { sanitizeUrl } from './sanitizeUrl.js';
 
 export type LinkSpanProps = {
 	href: string;

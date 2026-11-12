@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-import { useOwnerDocument } from '../../../contexts';
+import { useOwnerDocument } from '../../../contexts/index.js';
 
 export const useCreateStyleContainer = (id: string) => {
 	const { document: ownerDocument } = useOwnerDocument();

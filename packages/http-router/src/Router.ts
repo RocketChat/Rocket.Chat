@@ -4,10 +4,10 @@ import type { Context, HonoRequest, MiddlewareHandler } from 'hono';
 import { Hono } from 'hono';
 import type { StatusCode } from 'hono/utils/http-status';
 
-import type { ResponseSchema, TypedOptions } from './definition';
-import type { Route } from './openapi';
-import { buildOperation, toOpenAPIPath } from './openapi';
-import { parseQueryParams } from './parseQueryParams';
+import type { ResponseSchema, TypedOptions } from './definition.js';
+import type { Route } from './openapi.js';
+import { buildOperation, toOpenAPIPath } from './openapi.js';
+import { parseQueryParams } from './parseQueryParams.js';
 
 const logger = new Logger('HttpRouter');
 

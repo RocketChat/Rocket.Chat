@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { action } from 'storybook/actions';
 
-import ToggleSwitch from './ToggleSwitch';
-import { DECORATOR_LABEL, PropsVariationSection, variationPseudoStates } from '../../../.storybook/helpers';
+import ToggleSwitch from './ToggleSwitch.js';
+import { DECORATOR_LABEL, PropsVariationSection, variationPseudoStates } from '../../../.storybook/helpers.js';
 
 export default {
 	title: 'Inputs/ToggleSwitch',

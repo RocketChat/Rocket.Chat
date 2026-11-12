@@ -2,7 +2,7 @@ import type { IImport } from '@rocket.chat/core-typings';
 import type { IImportsModel } from '@rocket.chat/model-typings';
 import type { Db, Document, UpdateResult, IndexDescription } from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
+import { BaseRaw } from './BaseRaw.js';
 
 export class ImportsModel extends BaseRaw<IImport> implements IImportsModel {
 	constructor(db: Db) {

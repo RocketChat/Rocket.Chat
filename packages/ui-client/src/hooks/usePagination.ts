@@ -3,10 +3,10 @@ import { hashKey } from '@tanstack/react-query';
 import type { SetStateAction } from 'react';
 import { useMemo, useState } from 'react';
 
-import type { useCurrent } from './useCurrent';
-import { useItemsPerPage } from './useItemsPerPage';
-import { useItemsPerPageLabel } from './useItemsPerPageLabel';
-import { useShowingResultsLabel } from './useShowingResultsLabel';
+import type { useCurrent } from './useCurrent.js';
+import { useItemsPerPage } from './useItemsPerPage.js';
+import { useItemsPerPageLabel } from './useItemsPerPageLabel.js';
+import { useShowingResultsLabel } from './useShowingResultsLabel.js';
 
 type UsePaginationOptions = {
 	resetKey?: readonly unknown[];

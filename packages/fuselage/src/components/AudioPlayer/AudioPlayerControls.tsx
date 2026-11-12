@@ -1,7 +1,7 @@
 import type { MouseEvent } from 'react';
 
-import { Box, Button, IconButton } from '../..';
-import { Slider } from '../Slider';
+import { Box, Button, IconButton } from '../../index.js';
+import { Slider } from '../Slider/index.js';
 
 const getMaskTime = (durationTime: number) => new Date(durationTime * 1000).toISOString().slice(durationTime > 60 * 60 ? 11 : 14, 19);
 

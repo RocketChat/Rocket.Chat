@@ -1,6 +1,6 @@
-import type { IWorkspaceToken } from '@rocket.chat/apps-engine/definition/cloud/IWorkspaceToken';
+import type { IWorkspaceToken } from '@rocket.chat/apps-engine/definition/cloud/IWorkspaceToken.js';
 
-import { CloudWorkspaceBridge } from '../../../src/server/bridges/CloudWorkspaceBridge';
+import { CloudWorkspaceBridge } from '../../../src/server/bridges/CloudWorkspaceBridge.js';
 
 export class TestAppCloudWorkspaceBridge extends CloudWorkspaceBridge {
 	constructor() {

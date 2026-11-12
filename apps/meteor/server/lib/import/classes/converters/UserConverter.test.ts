@@ -2,8 +2,9 @@ import { before, beforeEach, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../../tests/mocks/utils/loadWithMocks';
 
 const settingsStub = sinon.stub();
 const modelsMock = {
@@ -22,7 +23,7 @@ const callbacks = {
 const hashPasswordMock = sinon.stub();
 const generateTempPassword = sinon.stub();
 
-const { UserConverter } = proxyquire.noCallThru().load('./UserConverter', {
+const { UserConverter } = loadWithMocks('./UserConverter', {
 	'../../../callbacks': {
 		callbacks,
 	},

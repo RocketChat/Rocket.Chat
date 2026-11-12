@@ -1,5 +1,5 @@
-import { Avatar, type AvatarProps } from '../Avatar';
-import { Box } from '../Box';
+import { Avatar, type AvatarProps } from '../Avatar/index.js';
+import { Box } from '../Box/index.js';
 
 export type ModalThumbProps = AvatarProps;
 

@@ -1,4 +1,4 @@
-import type { IInternalFederationBridge } from '../../../src/server/bridges';
+import type { IInternalFederationBridge } from '../../../src/server/bridges/index.js';
 
 export class TestsInternalFederationBridge implements IInternalFederationBridge {
 	public async getPrivateKey(): Promise<string> {

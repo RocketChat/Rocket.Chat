@@ -1,9 +1,9 @@
 import type { ChangeEvent, RefAttributes } from 'react';
 import { useMemo } from 'react';
 
-import { Input, type InputProps } from '../InputBox';
-import type { PaginatedSelectProps } from './PaginatedSelect';
-import { PaginatedSelect } from './PaginatedSelect';
+import type { PaginatedSelectProps } from './PaginatedSelect.js';
+import { PaginatedSelect } from './PaginatedSelect.js';
+import { Input, type InputProps } from '../InputBox/index.js';
 
 export type PaginatedSelectFilteredProps = Omit<PaginatedSelectProps, 'setFilter'> &
 	RefAttributes<HTMLInputElement> & {

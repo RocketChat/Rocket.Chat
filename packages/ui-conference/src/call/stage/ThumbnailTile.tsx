@@ -1,6 +1,6 @@
-import type { StageTile } from '../lib/stageTiles';
-import ParticipantThumbnail from '../tile/ParticipantThumbnail';
-import SelfThumbnail from '../tile/SelfThumbnail';
+import type { StageTile } from '../lib/stageTiles.js';
+import ParticipantThumbnail from '../tile/ParticipantThumbnail.js';
+import SelfThumbnail from '../tile/SelfThumbnail.js';
 
 export type ThumbnailTileProps = {
 	tile: StageTile;

@@ -1,13 +1,13 @@
 import { composeStories } from '@storybook/react';
 import { screen, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 
-import MultiSelect from './MultiSelect';
-import { Chip } from '../Chip';
-import * as stories from './MultiSelect.stories';
-import { withResizeObserverMock } from '../../../mocks/withResizeObserverMock';
-import { render } from '../../testing';
+import MultiSelect from './MultiSelect.js';
+import * as stories from './MultiSelect.stories.js';
+import { withResizeObserverMock } from '../../../mocks/withResizeObserverMock.js';
+import { render } from '../../testing.js';
+import { Chip } from '../Chip/index.js';
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 

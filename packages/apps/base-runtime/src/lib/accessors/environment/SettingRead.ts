@@ -1,8 +1,8 @@
-import type { ISettingRead } from '@rocket.chat/apps-engine/definition/accessors';
-import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
+import type { ISettingRead } from '@rocket.chat/apps-engine/definition/accessors/index.js';
+import type { ISetting } from '@rocket.chat/apps-engine/definition/settings/index.js';
 
-import { bridgeCall } from '../../bridges/bridgeCall';
-import type * as Messenger from '../../messenger';
+import { bridgeCall } from '../../bridges/bridgeCall.js';
+import type * as Messenger from '../../messenger.js';
 
 // App settings are host-persisted metadata (ProxiedApp storage item), fronted by the internal
 // AppResourceBridge. The value fallback that used to run host-side now runs locally.

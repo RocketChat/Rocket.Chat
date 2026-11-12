@@ -9,7 +9,7 @@ import {
 	normalizeHostForAllowlistMatch,
 	nslookup,
 	parseIpv4WithPort,
-} from './helpers';
+} from './helpers.js';
 
 export const parseSsrfAllowlist = (value: string): string[] => {
 	if (!value.trim()) {

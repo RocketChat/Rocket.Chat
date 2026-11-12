@@ -3,7 +3,7 @@ import type { FindPaginated, ICallHistoryModel, DocumentWithProjection, FindOpti
 import { escapeRegExp } from '@rocket.chat/tools';
 import type { Db, Filter, FindCursor, IndexDescription, Document } from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
+import { BaseRaw } from './BaseRaw.js';
 
 export class CallHistoryRaw extends BaseRaw<CallHistoryItem> implements ICallHistoryModel {
 	constructor(db: Db) {

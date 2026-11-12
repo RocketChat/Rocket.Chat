@@ -12,7 +12,7 @@ import type {
 	ClientSession,
 } from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
+import { BaseRaw } from './BaseRaw.js';
 
 type T = IUpload;
 

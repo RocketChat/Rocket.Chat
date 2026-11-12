@@ -2,8 +2,9 @@ import { afterEach, before, beforeEach, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const sandbox = sinon.createSandbox();
 
@@ -26,7 +27,7 @@ const mocks = {
 	},
 };
 
-const { sendUsageReport } = proxyquire.noCallThru().load('./sendUsageReport', {
+const { sendUsageReport } = loadWithMocks('./sendUsageReport', {
 	'@rocket.chat/server-fetch': { serverFetch: mocks.serverFetch },
 	'../index': { statistics: mocks.statistics },
 	'../../cloud': { getWorkspaceAccessToken: mocks.getWorkspaceAccessToken },

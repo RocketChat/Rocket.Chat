@@ -6,7 +6,7 @@ import i18next from 'i18next';
 import sprintf from 'i18next-sprintf-postprocessor';
 
 const i18n = i18next.use(sprintf);
-const requireResource = createRequire(__filename);
+const requireResource = createRequire(import.meta.url);
 
 void i18n.init({
 	lng: 'en',

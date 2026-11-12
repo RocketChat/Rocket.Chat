@@ -1,4 +1,4 @@
-import type { App } from '@rocket.chat/apps-engine/definition/App';
+import type { App } from '@rocket.chat/apps-engine/definition/App.js';
 
 export const APPS_ENGINE_RUNTIME_DEFAULT_TIMEOUT = 1000;
 

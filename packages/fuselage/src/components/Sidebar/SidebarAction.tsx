@@ -1,7 +1,7 @@
 import type { RefAttributes } from 'react';
 
-import { IconButton } from '../Button';
-import type { IconButtonProps } from '../Button/IconButton';
+import type { IconButtonProps } from '../Button/IconButton.js';
+import { IconButton } from '../Button/index.js';
 
 export type SidebarActionProps = Omit<IconButtonProps, 'ref'> & RefAttributes<HTMLElement>;
 

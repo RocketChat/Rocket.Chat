@@ -1,12 +1,12 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
 
-import PreflightPreview from './PreflightPreview';
-import { PreviewMediaContextProvider } from './PreviewMediaContext';
-import type { PreviewVideo } from '../call/previewVideo';
-import { PreviewVideoContext } from '../call/previewVideo';
-import { embeddedCapabilities } from '../fixtures/storyFixtures';
-import { callPreferencesStorageKey } from '../hooks/useCallDevicesInitialState';
+import PreflightPreview from './PreflightPreview.js';
+import { PreviewMediaContextProvider } from './PreviewMediaContext.js';
+import type { PreviewVideo } from '../call/previewVideo.js';
+import { PreviewVideoContext } from '../call/previewVideo.js';
+import { embeddedCapabilities } from '../fixtures/storyFixtures.js';
+import { callPreferencesStorageKey } from '../hooks/useCallDevicesInitialState.js';
 
 const preferencesKey = callPreferencesStorageKey('john.doe');
 

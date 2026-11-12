@@ -16,8 +16,8 @@ import type { Meta, StoryObj } from '@storybook/react';
 import type { ReactNode } from 'react';
 import { action } from 'storybook/actions';
 
-import { UiKitContext, UiKitModal } from '..';
-import * as payloads from './payloads';
+import { UiKitContext, UiKitModal } from '../index.js';
+import * as payloads from './payloads/index.js';
 
 const DemoModal = ({ children, visible }: { children?: ReactNode; visible: boolean }) => (
 	<AnimatedVisibility visibility={visible ? AnimatedVisibility.VISIBLE : AnimatedVisibility.HIDDEN}>

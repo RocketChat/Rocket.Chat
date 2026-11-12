@@ -1,1 +1,1 @@
-export { default, type OauthAuthorizationPageProps } from './OauthAuthorizationPage';
+export { default, type OauthAuthorizationPageProps } from './OauthAuthorizationPage.js';

@@ -1,8 +1,8 @@
-import type { IRoomBuilder } from '@rocket.chat/apps-engine/definition/accessors/IRoomBuilder';
-import { RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations';
-import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom';
-import type { RoomType } from '@rocket.chat/apps-engine/definition/rooms/RoomType';
-import type { IUser } from '@rocket.chat/apps-engine/definition/users/IUser';
+import type { IRoomBuilder } from '@rocket.chat/apps-engine/definition/accessors/IRoomBuilder.js';
+import { RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations.js';
+import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom.js';
+import type { RoomType } from '@rocket.chat/apps-engine/definition/rooms/RoomType.js';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users/IUser.js';
 
 export class RoomBuilder implements IRoomBuilder {
 	public kind: RocketChatAssociationModel.ROOM | RocketChatAssociationModel.DISCUSSION;

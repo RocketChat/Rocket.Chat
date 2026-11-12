@@ -1,7 +1,7 @@
 import type { CSSProperties, HTMLAttributes, ReactNode, RefAttributes } from 'react';
 
-import { Box } from '../Box';
-import { PopoverSurface, type PopoverSurfaceProps } from '../PopoverSurface';
+import { Box } from '../Box/index.js';
+import { PopoverSurface, type PopoverSurfaceProps } from '../PopoverSurface/index.js';
 
 export type DropdownDesktopProps = Omit<HTMLAttributes<HTMLElement>, 'children' | 'style' | 'color'> &
 	RefAttributes<HTMLElement> & {

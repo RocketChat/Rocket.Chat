@@ -2,7 +2,7 @@ import { FieldLabel as FieldLabelComponent } from '@rocket.chat/fuselage';
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import type { ComponentProps } from 'react';
 
-import { useFieldLabel } from '../FieldContext';
+import { useFieldLabel } from '../FieldContext.js';
 
 export type LabelForProps = ComponentProps<typeof FieldLabelComponent>;
 

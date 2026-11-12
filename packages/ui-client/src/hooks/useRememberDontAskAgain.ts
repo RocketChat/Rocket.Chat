@@ -1,7 +1,7 @@
 import { useEndpoint, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 
-import type { DontAskAgainList } from './useDontAskAgain';
+import type { DontAskAgainList } from './useDontAskAgain.js';
 
 export type DontAskAgainEntry = { action: string; label: string };
 

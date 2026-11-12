@@ -1,7 +1,7 @@
-import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
+import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata/index.js';
 
-import { AppServerCommunicator } from './AppServerCommunicator';
-import { AppsEngineUIHost } from './AppsEngineUIHost';
+import { AppServerCommunicator } from './AppServerCommunicator.js';
+import { AppsEngineUIHost } from './AppsEngineUIHost.js';
 
 export class AppClientManager {
 	private apps: Array<IAppInfo>;

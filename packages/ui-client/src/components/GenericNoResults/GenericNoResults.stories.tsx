@@ -1,7 +1,7 @@
 import { TextInput, Box, Icon } from '@rocket.chat/fuselage';
 import type { Meta, StoryFn } from '@storybook/react';
 
-import GenericNoResults from './GenericNoResults';
+import GenericNoResults from './GenericNoResults.js';
 
 export default {
 	component: GenericNoResults,

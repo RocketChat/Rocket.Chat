@@ -1,6 +1,6 @@
 import type { IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 
-import type { IServiceClass } from './ServiceClass';
+import type { IServiceClass } from './ServiceClass.js';
 
 export interface IOmnichannelEEService extends IServiceClass {
 	placeRoomOnHold(

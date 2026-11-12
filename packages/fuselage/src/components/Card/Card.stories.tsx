@@ -1,18 +1,18 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { Avatar } from '../Avatar';
-import { Badge } from '../Badge';
-import { Box } from '../Box';
-import { Button, IconButton } from '../Button';
-import { FramedIcon } from '../FramedIcon';
-import { Tag } from '../Tag';
-import Card from './Card';
-import CardBody from './CardBody';
-import CardCol from './CardCol';
-import CardControls from './CardControls';
-import CardHeader from './CardHeader';
-import CardRow from './CardRow';
-import CardTitle from './CardTitle';
+import Card from './Card.js';
+import CardBody from './CardBody.js';
+import CardCol from './CardCol.js';
+import CardControls from './CardControls.js';
+import CardHeader from './CardHeader.js';
+import CardRow from './CardRow.js';
+import CardTitle from './CardTitle.js';
+import { Avatar } from '../Avatar/index.js';
+import { Badge } from '../Badge/index.js';
+import { Box } from '../Box/index.js';
+import { Button, IconButton } from '../Button/index.js';
+import { FramedIcon } from '../FramedIcon/index.js';
+import { Tag } from '../Tag/index.js';
 
 export default {
 	title: 'Containers/Card',

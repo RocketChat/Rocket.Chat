@@ -3,7 +3,7 @@ import { useDebouncedCallback, useStableCallback } from '@rocket.chat/fuselage-h
 import type { ComponentProps, RefObject, UIEvent } from 'react';
 import { useEffect, useRef, useState } from 'react';
 
-import { useHoverCardDismissal } from './useHoverCardDismissal';
+import { useHoverCardDismissal } from './useHoverCardDismissal.js';
 
 type PopoverState = ComponentProps<typeof Popover>['state'];
 

@@ -1,7 +1,7 @@
 import type { StreamNames, StreamerEvents, StreamKeys, StreamerCallbackArgs } from '@rocket.chat/ddp-client';
 import { useContext, useMemo } from 'react';
 
-import { ServerContext } from '../ServerContext';
+import { ServerContext } from '../ServerContext.js';
 
 // Define a type for a function that can be used to unsubscribe from a stream
 export type ServerStreamFunction<N extends StreamNames, K extends StreamKeys<N>> = (

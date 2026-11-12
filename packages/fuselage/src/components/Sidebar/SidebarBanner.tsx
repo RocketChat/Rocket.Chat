@@ -1,7 +1,7 @@
 import type { AllHTMLAttributes, ReactNode } from 'react';
 
-import { cx } from '../../helpers/composeClassNames';
-import { IconButton } from '../Button';
+import { cx } from '../../helpers/composeClassNames.js';
+import { IconButton } from '../Button/index.js';
 
 export type SidebarBannerVariant = 'default' | 'info' | 'success' | 'warning' | 'danger';
 

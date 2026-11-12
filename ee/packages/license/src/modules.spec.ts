@@ -1,6 +1,6 @@
 import type { LicenseModule } from '@rocket.chat/core-typings';
 
-import { MockedLicenseBuilder, getReadyLicenseManager } from '../__tests__/MockedLicenseBuilder';
+import { MockedLicenseBuilder, getReadyLicenseManager } from '../__tests__/MockedLicenseBuilder.js';
 
 describe('getModules', () => {
 	it('should return internal and external', async () => {

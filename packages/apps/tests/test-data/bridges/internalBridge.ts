@@ -1,6 +1,6 @@
-import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
+import type { ISetting } from '@rocket.chat/apps-engine/definition/settings/index.js';
 
-import type { IInternalBridge } from '../../../src/server/bridges';
+import type { IInternalBridge } from '../../../src/server/bridges/index.js';
 
 export class TestsInternalBridge implements IInternalBridge {
 	public doGetUsernamesOfRoomByIdSync(roomId: string): Array<string> {

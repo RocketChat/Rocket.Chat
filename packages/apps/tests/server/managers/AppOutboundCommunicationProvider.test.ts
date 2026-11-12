@@ -1,10 +1,10 @@
 import * as assert from 'node:assert';
 import { describe, it } from 'node:test';
 
-import type { IOutboundMessageProviders } from '@rocket.chat/apps-engine/definition/outboundCommunication';
+import type { IOutboundMessageProviders } from '@rocket.chat/apps-engine/definition/outboundCommunication/index.js';
 
-import type { ProxiedApp } from '../../../src/server/ProxiedApp';
-import { OutboundMessageProvider } from '../../../src/server/managers/AppOutboundCommunicationProvider';
+import type { ProxiedApp } from '../../../src/server/ProxiedApp.js';
+import { OutboundMessageProvider } from '../../../src/server/managers/AppOutboundCommunicationProvider.js';
 
 describe('OutboundMessageProvider', () => {
 	it('ensureAppOutboundCommunicationProviderManager', () => {

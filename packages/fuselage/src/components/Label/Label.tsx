@@ -1,8 +1,8 @@
 import type { ElementType, LabelHTMLAttributes } from 'react';
 import { createContext, useContext } from 'react';
 
-import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
+import type { ElementProps } from '../../types/ElementProps.js';
+import { Box } from '../Box/index.js';
 
 const LabelContext = createContext(false);
 

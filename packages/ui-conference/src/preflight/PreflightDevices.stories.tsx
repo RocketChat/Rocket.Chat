@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { userEvent, within } from 'storybook/test';
 
-import PreflightDevices from './PreflightDevices';
-import { withPreviewMedia } from '../fixtures/preflightFixtures';
-import { conferenceAppRoot, embeddedCapabilities, storeCallPreferences, withConferenceWindow } from '../fixtures/storyFixtures';
+import PreflightDevices from './PreflightDevices.js';
+import { withPreviewMedia } from '../fixtures/preflightFixtures.js';
+import { conferenceAppRoot, embeddedCapabilities, storeCallPreferences, withConferenceWindow } from '../fixtures/storyFixtures.js';
 
 /** The devices to arrive on, under the preflight's preview. */
 const meta = {

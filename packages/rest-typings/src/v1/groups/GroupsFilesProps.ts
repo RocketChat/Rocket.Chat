@@ -1,7 +1,7 @@
-import { ajvQuery } from '../Ajv';
-import { paginationQueryProperties } from '../pagination';
-import type { GroupsBaseProps } from './BaseProps';
-import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
+import { ajvQuery } from '../Ajv.js';
+import { paginationQueryProperties } from '../pagination.js';
+import type { GroupsBaseProps } from './BaseProps.js';
+import type { PaginatedRequest } from '../../helpers/PaginatedRequest.js';
 
 export type GroupsFilesProps = PaginatedRequest<GroupsBaseProps> & {
 	name?: string;

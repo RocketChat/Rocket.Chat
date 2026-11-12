@@ -1,6 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 
-import type { IAppsMessage, IAppsMesssageRaw } from '../AppsEngine';
+import type { IAppsMessage, IAppsMesssageRaw } from '../AppsEngine.js';
 
 export interface IAppMessagesConverter {
 	convertById(messageId: IMessage['_id']): Promise<IAppsMessage | undefined>;

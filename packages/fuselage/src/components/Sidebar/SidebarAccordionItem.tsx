@@ -1,8 +1,8 @@
 import type { HTMLAttributes, ReactNode } from 'react';
 
-import { Chevron } from '../Chevron';
-import { useCollapse } from './hooks/useCollapse';
-import { cx } from '../../helpers/composeClassNames';
+import { Chevron } from '../Chevron/index.js';
+import { useCollapse } from './hooks/useCollapse.js';
+import { cx } from '../../helpers/composeClassNames.js';
 
 export type SidebarAccordionItemProps = {
 	children?: ReactNode;

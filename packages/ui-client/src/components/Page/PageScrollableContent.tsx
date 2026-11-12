@@ -2,8 +2,8 @@ import { Box } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
 import { forwardRef } from 'react';
 
-import type { OverlayScrollbars } from '../CustomScrollbars';
-import { CustomScrollbars } from '../CustomScrollbars';
+import type { OverlayScrollbars } from '../CustomScrollbars/index.js';
+import { CustomScrollbars } from '../CustomScrollbars/index.js';
 
 export type PageScrollableContentProps = {
 	onScroll?: (args: OverlayScrollbars) => void;

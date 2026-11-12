@@ -1,7 +1,7 @@
-import type { App } from '@rocket.chat/apps-engine/definition/App';
+import type { App } from '@rocket.chat/apps-engine/definition/App.js';
 
-import type { IAppsEngineRuntimeOptions } from './AppsEngineRuntime';
-import { AppsEngineRuntime } from './AppsEngineRuntime';
+import type { IAppsEngineRuntimeOptions } from './AppsEngineRuntime.js';
+import { AppsEngineRuntime } from './AppsEngineRuntime.js';
 
 export class AppsEngineEmptyRuntime extends AppsEngineRuntime {
 	public static async runCode(_code: string, _sandbox?: Record<string, any>, _options?: IAppsEngineRuntimeOptions): Promise<any> {

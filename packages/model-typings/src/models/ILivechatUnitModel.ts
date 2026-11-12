@@ -1,8 +1,8 @@
 import type { ILivechatDepartment, IOmnichannelBusinessUnit } from '@rocket.chat/core-typings';
 import type { Filter, FindCursor, DeleteResult, UpdateResult, Document } from 'mongodb';
 
-import type { FindPaginated, IBaseModel } from './IBaseModel';
-import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
+import type { FindPaginated, IBaseModel } from './IBaseModel.js';
+import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection.js';
 
 export interface ILivechatUnitModel extends IBaseModel<IOmnichannelBusinessUnit> {
 	//

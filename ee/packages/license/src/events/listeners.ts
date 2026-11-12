@@ -1,7 +1,7 @@
 import type { LicenseLimitKind, LicenseModule, BehaviorWithContext, LicenseBehavior } from '@rocket.chat/core-typings';
 
-import type { LicenseManager } from '../license';
-import { hasModule } from '../modules';
+import type { LicenseManager } from '../license.js';
+import { hasModule } from '../modules.js';
 
 /**
  * Invoked when the license changes some internal state. it's called to sync the license with other instances.

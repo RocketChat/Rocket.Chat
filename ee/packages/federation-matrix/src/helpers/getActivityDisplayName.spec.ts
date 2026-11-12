@@ -1,7 +1,7 @@
 import { LocalBroker, ServiceClass, api } from '@rocket.chat/core-services';
 import type { SettingValue } from '@rocket.chat/core-typings';
 
-import { getActivityDisplayName } from './getActivityDisplayName';
+import { getActivityDisplayName } from './getActivityDisplayName.js';
 
 class SettingsService extends ServiceClass {
 	protected name = 'settings';

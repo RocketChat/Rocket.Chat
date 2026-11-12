@@ -1,11 +1,11 @@
-import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
-import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
-import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
+import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus.js';
+import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata/index.js';
+import type { ISetting } from '@rocket.chat/apps-engine/definition/settings/index.js';
 
-import type { IMarketplaceInfo } from '../../../src/server/marketplace';
-import type { IAppStorageItem } from '../../../src/server/storage';
-import { AppMetadataStorage } from '../../../src/server/storage';
-import { AppInstallationSource } from '../../../src/server/storage/IAppStorageItem';
+import type { IMarketplaceInfo } from '../../../src/server/marketplace/index.js';
+import { AppInstallationSource } from '../../../src/server/storage/IAppStorageItem.js';
+import type { IAppStorageItem } from '../../../src/server/storage/index.js';
+import { AppMetadataStorage } from '../../../src/server/storage/index.js';
 
 export class TestsAppStorage extends AppMetadataStorage {
 	private db = new Map<string, IAppStorageItem>();

@@ -2,22 +2,20 @@ import { beforeEach, describe, it } from 'node:test';
 
 import { expect } from 'chai';
 import type { NextHandleFunction } from 'connect';
-import p from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const rawModHtml = sinon.stub();
 const rawBody = sinon.stub();
 const connectHandlersUse = sinon.stub();
 
 const loadInject = () =>
-	p
-		.noCallThru()
-		.noPreserveCache()
-		.load('./inject.ts', {
-			'meteor/meteorhacks:inject-initial': { Inject: { rawModHtml, rawBody } },
-			'meteor/webapp': { WebApp: { connectHandlers: { use: connectHandlersUse } } },
-			'../utils/getURL': { getURL: (path: string) => `/${path}` },
-		});
+	loadWithMocks('./inject.ts', {
+		'meteor/meteorhacks:inject-initial': { Inject: { rawModHtml, rawBody } },
+		'meteor/webapp': { WebApp: { connectHandlers: { use: connectHandlersUse } } },
+		'../utils/getURL': { getURL: (path: string) => `/${path}` },
+	});
 
 const nextTick = () => new Promise((resolve) => setImmediate(resolve));
 

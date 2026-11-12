@@ -8,7 +8,8 @@
 		// ttsc/TS7 build: pinned here (not only in the shared base) because this
 		// package still carries TS5.9 for typia's toolchain.
 		"target": "es2022",
-		"moduleResolution": "bundler",
+		"module": "nodenext",
+		"moduleResolution": "nodenext",
 		"types": ["node"],
 		"plugins": [{ "transform": "typia/lib/transform" }]
 	},

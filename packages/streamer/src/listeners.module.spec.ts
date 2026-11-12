@@ -1,8 +1,8 @@
 import { api, ServiceClass } from '@rocket.chat/core-services';
 
-import { ListenersModule } from './listeners.module';
-import { NotificationsModule } from './notifications.module';
-import { Streamer } from './streamer.module';
+import { ListenersModule } from './listeners.module.js';
+import { NotificationsModule } from './notifications.module.js';
+import { Streamer } from './streamer.module.js';
 
 jest.mock('@rocket.chat/logger', () => ({
 	Logger: jest.fn().mockReturnValue({

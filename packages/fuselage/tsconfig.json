@@ -2,7 +2,8 @@
 	"extends": "@rocket.chat/tsconfig/client.json",
 	"compilerOptions": {
 		"target": "es2024",
-		"moduleResolution": "bundler",
+		"module": "nodenext",
+		"moduleResolution": "nodenext",
 		"stripInternal": true,
 		"outDir": "./dist"
 	},

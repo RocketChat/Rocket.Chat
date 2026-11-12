@@ -1,7 +1,7 @@
 import type { HTMLAttributes } from 'react';
 
-import { cx } from '../../helpers/composeClassNames';
-import { ItemContent, ItemTitle } from '../Item';
+import { cx } from '../../helpers/composeClassNames.js';
+import { ItemContent, ItemTitle } from '../Item/index.js';
 
 export type OptionContentProps = Omit<HTMLAttributes<HTMLDivElement>, 'is'>;
 

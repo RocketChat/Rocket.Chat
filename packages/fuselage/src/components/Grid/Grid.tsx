@@ -1,6 +1,6 @@
-import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
-import GridItem from './GridItem';
+import GridItem from './GridItem.js';
+import type { ElementProps } from '../../types/ElementProps.js';
+import { Box } from '../Box/index.js';
 
 export type GridProps = ElementProps<HTMLDivElement> & {
 	xs?: boolean;

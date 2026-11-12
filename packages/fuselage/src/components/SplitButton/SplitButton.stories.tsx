@@ -1,12 +1,12 @@
 import type { Decorator, Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
 
-import { Box } from '../Box';
-import { Button, IconButton } from '../Button';
-import { ButtonGroup } from '../ButtonGroup';
-import { Menu, MenuItem } from '../Menu';
-import SplitButton from './SplitButton';
-import SplitButtonTrigger from './SplitButtonTrigger';
+import SplitButton from './SplitButton.js';
+import SplitButtonTrigger from './SplitButtonTrigger.js';
+import { Box } from '../Box/index.js';
+import { Button, IconButton } from '../Button/index.js';
+import { ButtonGroup } from '../ButtonGroup/index.js';
+import { Menu, MenuItem } from '../Menu/index.js';
 
 export default {
 	title: 'Inputs/SplitButton',

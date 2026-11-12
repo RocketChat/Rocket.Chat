@@ -1,6 +1,6 @@
-import { ajv } from '../Ajv';
-import type { AbacCreationAttributes } from '../abacCreationAttributes';
-import { abacCreationAttributesSchema } from '../abacCreationAttributes';
+import { ajv } from '../Ajv.js';
+import type { AbacCreationAttributes } from '../abacCreationAttributes.js';
+import { abacCreationAttributesSchema } from '../abacCreationAttributes.js';
 
 export type TeamsCreateProps = {
 	name: string;

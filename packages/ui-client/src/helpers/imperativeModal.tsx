@@ -2,7 +2,7 @@ import { Emitter } from '@rocket.chat/emitter';
 import { createElement } from 'react';
 import type { ComponentPropsWithoutRef, ComponentType, ReactNode } from 'react';
 
-import { modalStore } from '../providers/ModalProvider/ModalStore';
+import { modalStore } from '../providers/ModalProvider/ModalStore.js';
 
 type ReactModalDescriptor<TComponent extends ComponentType<any> = ComponentType<any>> = {
 	component: TComponent;

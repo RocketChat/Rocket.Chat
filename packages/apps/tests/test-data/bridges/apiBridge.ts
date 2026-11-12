@@ -1,8 +1,8 @@
-import type { IApi } from '@rocket.chat/apps-engine/definition/api';
+import type { IApi } from '@rocket.chat/apps-engine/definition/api/index.js';
 
-import { ApiBridge } from '../../../src/server/bridges';
-import type { AppApi } from '../../../src/server/managers/AppApi';
-import { TestData } from '../utilities';
+import { ApiBridge } from '../../../src/server/bridges/index.js';
+import type { AppApi } from '../../../src/server/managers/AppApi.js';
+import { TestData } from '../utilities.js';
 
 export class TestsApiBridge extends ApiBridge {
 	public apis: Map<string, Map<string, IApi>>;

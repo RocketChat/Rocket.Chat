@@ -1,7 +1,7 @@
 import type { HTMLAttributes, ReactNode } from 'react';
 
-import { cx } from '../../../helpers/composeClassNames';
-import ItemRow from '../../Item/ItemRow';
+import { cx } from '../../../helpers/composeClassNames.js';
+import ItemRow from '../../Item/ItemRow.js';
 
 export type MessageSystemBlockProps = {
 	children?: ReactNode;

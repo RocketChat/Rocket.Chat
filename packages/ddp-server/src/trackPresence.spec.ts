@@ -1,8 +1,8 @@
 import { Presence } from '@rocket.chat/core-services';
 
-import { makeSession } from './__tests__/helpers';
-import { ConnectionLifecycle } from './lifecycle';
-import { trackPresence } from './trackPresence';
+import { makeSession } from './__tests__/helpers.js';
+import { ConnectionLifecycle } from './lifecycle.js';
+import { trackPresence } from './trackPresence.js';
 
 jest.mock('@rocket.chat/core-services', () => ({
 	...jest.requireActual('@rocket.chat/core-services'),

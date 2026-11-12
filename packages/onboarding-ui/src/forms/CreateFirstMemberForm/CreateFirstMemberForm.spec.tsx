@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 
-import CreateFirstMemberForm from './CreateFirstMemberForm';
+import CreateFirstMemberForm from './CreateFirstMemberForm.js';
 
 const onSubmit = jest.fn();
 const onBackButtonClick = jest.fn();

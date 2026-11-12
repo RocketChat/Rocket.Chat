@@ -5,8 +5,8 @@ import type { TFunction } from 'i18next';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import MyDataModal from './MyDataModal';
-import type { DataDownloadDialog } from '../logic/usePreferences';
+import MyDataModal from './MyDataModal.js';
+import type { DataDownloadDialog } from '../logic/usePreferences.js';
 
 export type PreferencesMyDataSectionProps = {
 	dialog: DataDownloadDialog | null;

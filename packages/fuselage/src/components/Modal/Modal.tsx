@@ -1,8 +1,8 @@
 import type { DialogHTMLAttributes, ElementType, ReactNode } from 'react';
 import { createElement } from 'react';
 
-import type { ElementProps } from '../../types/ElementProps';
-import { Box, type BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps.js';
+import { Box, type BoxProps } from '../Box/index.js';
 
 export type ModalProps = ElementProps<Element, DialogHTMLAttributes<HTMLDialogElement>> & {
 	/** A fixed width, for content that needs it instead of the default fluid one. */

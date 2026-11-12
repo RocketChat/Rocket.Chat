@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import MessageDivider from './MessageDivider';
-import { Box } from '../../Box';
+import MessageDivider from './MessageDivider.js';
+import { Box } from '../../Box/index.js';
 
 export default {
 	title: 'Message/MessageDivider',

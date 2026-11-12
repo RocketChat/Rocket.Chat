@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { Box } from '../Box';
-import { Tile } from '../Tile';
-import FlexContainer from './FlexContainer';
-import FlexItem from './FlexItem';
+import FlexContainer from './FlexContainer.js';
+import FlexItem from './FlexItem.js';
+import { Box } from '../Box/index.js';
+import { Tile } from '../Tile/index.js';
 
 export default {
 	title: 'Layout/Flex',

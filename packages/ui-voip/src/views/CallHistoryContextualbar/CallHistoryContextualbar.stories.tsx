@@ -1,8 +1,8 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { Meta, StoryObj } from '@storybook/react';
 
-import CallHistoryContextualbar from './CallHistoryContextualbar';
-import MockedMediaCallProvider from '../../providers/MockedMediaCallProvider';
+import CallHistoryContextualbar from './CallHistoryContextualbar.js';
+import MockedMediaCallProvider from '../../providers/MockedMediaCallProvider.js';
 
 const noop = () => undefined;
 

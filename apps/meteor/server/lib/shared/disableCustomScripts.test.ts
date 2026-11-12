@@ -1,8 +1,9 @@
 import { afterEach, beforeEach, describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 describe('disableCustomScripts', () => {
 	let mockLicense: sinon.SinonStubbedInstance<any>;
@@ -15,9 +16,13 @@ describe('disableCustomScripts', () => {
 			getLicense: sinon.stub(),
 		};
 
-		disableCustomScripts = proxyquire('./disableCustomScripts.ts', {
-			'@rocket.chat/license': { License: mockLicense },
-		}).disableCustomScripts;
+		disableCustomScripts = loadWithMocks(
+			'./disableCustomScripts.ts',
+			{
+				'@rocket.chat/license': { License: mockLicense },
+			},
+			{ callThru: true },
+		).disableCustomScripts;
 	});
 
 	afterEach(() => {

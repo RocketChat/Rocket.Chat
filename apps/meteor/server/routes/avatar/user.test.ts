@@ -3,8 +3,9 @@ import { afterEach, before, describe, it } from 'node:test';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import { Headers } from 'node-fetch';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const mocks = {
 	settingsGet: sinon.stub(),
@@ -21,7 +22,7 @@ const mocks = {
 	avatarFindOneByUserId: sinon.stub(),
 };
 
-const { userAvatarById, userAvatarByUsername } = proxyquire.noCallThru().load('./user', {
+const { userAvatarById, userAvatarByUsername } = loadWithMocks('./user', {
 	'../../settings': {
 		settings: {
 			get: mocks.settingsGet,

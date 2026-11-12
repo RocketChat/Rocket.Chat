@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 
-import RegisterServerPage from './RegisterServerPage';
+import RegisterServerPage from './RegisterServerPage.js';
 
 it('renders without crashing', () => {
 	const { container } = render(

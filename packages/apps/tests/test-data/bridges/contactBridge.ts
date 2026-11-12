@@ -1,6 +1,6 @@
-import type { ILivechatContact } from '@rocket.chat/apps-engine/definition/livechat';
+import type { ILivechatContact } from '@rocket.chat/apps-engine/definition/livechat/index.js';
 
-import { ContactBridge } from '../../../src/server/bridges';
+import { ContactBridge } from '../../../src/server/bridges/index.js';
 
 export class TestContactBridge extends ContactBridge {
 	protected addContactEmail(contactId: ILivechatContact['_id'], email: string, appId: string): Promise<ILivechatContact> {

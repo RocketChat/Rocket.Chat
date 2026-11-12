@@ -1,9 +1,9 @@
 import * as assert from 'node:assert';
 import { describe, it } from 'node:test';
 
-import type { AppImplements } from '../../../../src/server/compiler/AppImplements';
-import type { IParseAppPackageResult } from '../../../../src/server/compiler/IParseAppPackageResult';
-import { bundleLegacyApp } from '../../../../src/server/runtime/base/bundler';
+import type { AppImplements } from '../../../../src/server/compiler/AppImplements.js';
+import type { IParseAppPackageResult } from '../../../../src/server/compiler/IParseAppPackageResult.js';
+import { bundleLegacyApp } from '../../../../src/server/runtime/base/bundler.js';
 
 function makeAppPackage(classFile: string, files: { [key: string]: string }): IParseAppPackageResult {
 	return {

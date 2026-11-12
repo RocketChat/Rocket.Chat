@@ -1,5 +1,5 @@
-import { NS, bare } from './stanza';
-import type { Stanza } from './stanza';
+import { NS, bare } from './stanza.js';
+import type { Stanza } from './stanza.js';
 
 export type Predicate = (stanza: Stanza) => boolean;
 

@@ -1,4 +1,4 @@
-import type { IServiceClass } from './ServiceClass';
+import type { IServiceClass } from './ServiceClass.js';
 
 export interface ILoginResult {
 	uid: string;

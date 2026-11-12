@@ -1,8 +1,8 @@
 import { composeStories } from '@storybook/react';
 import { axe, toHaveNoViolations } from 'jest-axe';
 
-import * as stories from './Contextualbar.stories';
-import { render } from '../../testing';
+import * as stories from './Contextualbar.stories.js';
+import { render } from '../../testing.js';
 
 expect.extend(toHaveNoViolations);
 

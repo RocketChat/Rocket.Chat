@@ -1,7 +1,7 @@
-import type Element from 'ltx/lib/Element';
+import type Element from 'ltx/lib/Element.js';
 
-import { xml } from '../xml/build';
-import { NS_PING } from '../xml/namespaces';
+import { xml } from '../xml/build.js';
+import { NS_PING } from '../xml/namespaces.js';
 
 export function isPing(iq: Element): boolean {
 	return iq.attrs.type === 'get' && iq.getChild('ping', NS_PING) !== undefined;

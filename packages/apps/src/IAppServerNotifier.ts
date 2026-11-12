@@ -1,4 +1,4 @@
-import type { AppStatus, IAppsSetting } from './AppsEngine';
+import type { AppStatus, IAppsSetting } from './AppsEngine.js';
 
 export interface IAppServerNotifier {
 	appAdded(appId: string): Promise<void>;

@@ -1,6 +1,6 @@
-import type { IRole } from '@rocket.chat/apps-engine/definition/roles';
+import type { IRole } from '@rocket.chat/apps-engine/definition/roles/index.js';
 
-import { RoleBridge } from '../../../src/server/bridges';
+import { RoleBridge } from '../../../src/server/bridges/index.js';
 
 export class TestsRoleBridge extends RoleBridge {
 	public getOneByIdOrName(idOrName: IRole['id'] | IRole['name'], appId: string): Promise<IRole | null> {

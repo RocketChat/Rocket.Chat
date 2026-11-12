@@ -1,9 +1,9 @@
 import { composeStories } from '@storybook/react';
 import { axe } from 'jest-axe';
 
-import Bubble from './Bubble';
-import * as stories from './Bubble.stories';
-import { render } from '../../testing';
+import Bubble from './Bubble.js';
+import * as stories from './Bubble.stories.js';
+import { render } from '../../testing.js';
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 

@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { createContext, useContext, useDebugValue } from 'react';
 
-import { UiKitContext } from './UiKitContext';
+import { UiKitContext } from './UiKitContext.js';
 
 const AppIdContext = createContext<string | undefined>(undefined);
 

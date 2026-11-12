@@ -4,7 +4,7 @@ import type { ISamlUsedAssertions, RocketChatRecordDeleted } from '@rocket.chat/
 import type { ISamlUsedAssertionsModel } from '@rocket.chat/model-typings';
 import type { MongoServerError, Collection, Db, IndexDescription } from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
+import { BaseRaw } from './BaseRaw.js';
 
 const DUPLICATE_KEY_ERROR_CODE = 11000;
 

@@ -4,8 +4,8 @@ import { AbacAttributes } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/tools';
 import type { Document } from 'mongodb';
 
-import { ensureAttributeDefinitionsExist } from '../helper';
-import type { AttributeEntitlements, IAttributeStore, ListAttributesOptions, ListAttributesResult } from './types';
+import { ensureAttributeDefinitionsExist } from '../helper.js';
+import type { AttributeEntitlements, IAttributeStore, ListAttributesOptions, ListAttributesResult } from './types.js';
 
 export class LocalAttributeStore implements IAttributeStore {
 	async list(_actor: AbacActor | undefined, opts?: ListAttributesOptions): Promise<ListAttributesResult> {

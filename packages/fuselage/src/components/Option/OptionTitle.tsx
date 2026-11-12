@@ -1,7 +1,7 @@
 import type { HTMLAttributes, ReactNode } from 'react';
 
-import { cx } from '../../helpers/composeClassNames';
-import { ItemGroupHeader, ItemGroupTitle } from '../Item';
+import { cx } from '../../helpers/composeClassNames.js';
+import { ItemGroupHeader, ItemGroupTitle } from '../Item/index.js';
 
 export type OptionTitleProps = {
 	children?: ReactNode;

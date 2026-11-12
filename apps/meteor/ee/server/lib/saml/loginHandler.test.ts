@@ -2,8 +2,9 @@ import { before, beforeEach, describe, it } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const retrieveCredential = sinon.stub().resolves(undefined);
 const insertOrUpdateSAMLUser = sinon.stub().resolves({ userId: 'user-id' });
@@ -20,7 +21,7 @@ const samlUtilsMock = {
 const hasModule = sinon.stub().returns(true);
 
 const handler = sinon.stub();
-proxyquire.noCallThru().load('./loginHandler', {
+loadWithMocks('./loginHandler', {
 	'@rocket.chat/license': {
 		License: { hasModule },
 	},

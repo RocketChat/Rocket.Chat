@@ -15,13 +15,13 @@ import {
 } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
-import type { HistoryActionCallbacks } from './CallHistoryActions';
-import CallHistoryActions from './CallHistoryActions';
-import { useFullStartDate } from './useFullStartDate';
-import CallHistoryUser from '../../components/CallHistoryUser';
-import { usePeekMediaSessionState } from '../../context/usePeekMediaSessionState';
-import { isCallHistoryInternalContact, type CallHistoryContact } from '../../definitions';
-import { getHistoryMessagePayload } from '../../ui-kit/getHistoryMessagePayload';
+import type { HistoryActionCallbacks } from './CallHistoryActions.js';
+import CallHistoryActions from './CallHistoryActions.js';
+import { useFullStartDate } from './useFullStartDate.js';
+import CallHistoryUser from '../../components/CallHistoryUser.js';
+import { usePeekMediaSessionState } from '../../context/usePeekMediaSessionState.js';
+import { isCallHistoryInternalContact, type CallHistoryContact } from '../../definitions/index.js';
+import { getHistoryMessagePayload } from '../../ui-kit/getHistoryMessagePayload.js';
 
 /**
  * The panel captions the card with "Prevented by app: {app name}", except when the card's own

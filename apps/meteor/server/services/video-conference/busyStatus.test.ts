@@ -8,12 +8,12 @@ import sinon from 'sinon';
 
 import { buildGroupCall, buildMember, cloneFixture, commonServiceStubs, providerCapabilities, resetAll } from './testHarness';
 import { PRESENCE_LEASE_MS } from '../../../lib/videoConference/presence';
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 /**
  * The claim this suite is about is made through `Presence`, which the shared harness has no stub for — so this one
  * assembles `@rocket.chat/core-services` itself rather than teaching every other spec about presence.
  */
-const proxyquire = require('proxyquire');
 
 let fixture: VideoConference;
 
@@ -64,7 +64,7 @@ const UsersMock = { findOneById: sinon.stub().resolves({ _id: 'joiner', language
 
 const broadcastStub = sinon.stub().resolves();
 
-const { VideoConfService } = proxyquire.noCallThru().load('./service', {
+const { VideoConfService } = loadWithMocks('./service', {
 	...commonServiceStubs,
 	'@rocket.chat/core-services': {
 		api: { broadcast: broadcastStub },

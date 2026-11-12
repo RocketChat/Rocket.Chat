@@ -1,7 +1,7 @@
 import type { Meta, StoryFn, StoryObj } from '@storybook/react';
 
-import { Button, IconButton } from '../Button';
-import ButtonGroup from './ButtonGroup';
+import ButtonGroup from './ButtonGroup.js';
+import { Button, IconButton } from '../Button/index.js';
 
 export default {
 	title: 'Inputs/ButtonGroup',

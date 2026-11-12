@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { Box } from '../Box';
-import { Margins } from '../Margins';
-import Avatar from './Avatar';
-import AvatarContainer from './AvatarContainer';
-import AvatarStack from './AvatarStack';
+import Avatar from './Avatar.js';
+import AvatarContainer from './AvatarContainer.js';
+import AvatarStack from './AvatarStack.js';
+import { Box } from '../Box/index.js';
+import { Margins } from '../Margins/index.js';
 
 export default {
 	title: 'Data Display/Avatar',

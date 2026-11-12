@@ -1,6 +1,6 @@
-import type { IOAuthApp, IOAuthAppParams } from '@rocket.chat/apps-engine/definition/accessors/IOAuthApp';
+import type { IOAuthApp, IOAuthAppParams } from '@rocket.chat/apps-engine/definition/accessors/IOAuthApp.js';
 
-import { OAuthAppsBridge } from '../../../src/server/bridges/OAuthAppsBridge';
+import { OAuthAppsBridge } from '../../../src/server/bridges/OAuthAppsBridge.js';
 
 export class TestOAuthAppsBridge extends OAuthAppsBridge {
 	protected create(oAuthApp: IOAuthAppParams, appId: string): Promise<string> {

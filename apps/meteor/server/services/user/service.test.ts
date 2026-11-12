@@ -3,14 +3,15 @@ import { afterEach, before, describe, it } from 'node:test';
 import { BaseRaw } from '@rocket.chat/models';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const maxTokens = {
 	getMaxLoginTokens: () => 2,
 };
 
-const { UserService } = proxyquire.noCallThru().load('./service', {
+const { UserService } = loadWithMocks('./service', {
 	'../../lib/getMaxLoginTokens': maxTokens,
 });
 

@@ -1,11 +1,11 @@
-import { AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
-import { HttpStatusCode } from '@rocket.chat/apps-engine/definition/accessors';
-import type { IApi, IApiEndpointMetadata, IApiRequest, IApiResponse } from '@rocket.chat/apps-engine/definition/api';
+import { AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus.js';
+import { HttpStatusCode } from '@rocket.chat/apps-engine/definition/accessors/index.js';
+import type { IApi, IApiEndpointMetadata, IApiRequest, IApiResponse } from '@rocket.chat/apps-engine/definition/api/index.js';
 
-import type { AppManager } from '../AppManager';
-import type { ApiBridge } from '../bridges';
-import { PathAlreadyExistsError } from '../errors';
-import { AppApi } from './AppApi';
+import type { AppManager } from '../AppManager.js';
+import { AppApi } from './AppApi.js';
+import type { ApiBridge } from '../bridges/index.js';
+import { PathAlreadyExistsError } from '../errors/index.js';
 
 /**
  * The api manager for the Apps.

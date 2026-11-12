@@ -1,6 +1,6 @@
 import { Box, Button, ButtonGroup, Skeleton } from '@rocket.chat/fuselage';
 
-import { Page, PageHeader, PageContent } from './Page';
+import { Page, PageHeader, PageContent } from './Page/index.js';
 
 const PageSkeleton = () => (
 	<Page>

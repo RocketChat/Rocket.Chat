@@ -16,7 +16,7 @@ void (async () => {
 	api.setBroker(startBroker());
 
 	// need to import service after models are registered
-	const { Account } = await import('./Account');
+	const { Account } = await import('./Account.js');
 
 	api.registerService(new Account());
 

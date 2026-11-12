@@ -1,8 +1,8 @@
 import type { ComponentPropsWithoutRef } from 'react';
 import { useContext } from 'react';
 
-import PageContext from './PageContext';
-import PageScrollableContent from './PageScrollableContent';
+import PageContext from './PageContext.js';
+import PageScrollableContent from './PageScrollableContent.js';
 
 export type PageScrollableContentWithShadowProps = ComponentPropsWithoutRef<typeof PageScrollableContent>;
 

@@ -1,7 +1,7 @@
 import { useImperativeHandle, useState } from 'react';
 
-import { renderHook, act } from './testing';
-import { useAutoFocus } from './useAutoFocus';
+import { renderHook, act } from './testing.js';
+import { useAutoFocus } from './useAutoFocus.js';
 
 const focus = jest.fn();
 

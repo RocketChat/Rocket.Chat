@@ -1,6 +1,6 @@
-import type { IExperimentalRead } from '@rocket.chat/apps-engine/definition/accessors';
+import type { IExperimentalRead } from '@rocket.chat/apps-engine/definition/accessors/index.js';
 
-import type * as Messenger from '../../messenger';
+import type * as Messenger from '../../messenger.js';
 
 // The host ExperimentalRead is an empty placeholder (no public methods); the runtime
 // mirror keeps the same shape. The senderFn is retained for parity with the other readers'

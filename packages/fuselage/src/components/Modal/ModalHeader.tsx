@@ -1,6 +1,6 @@
-import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
-import { Margins } from '../Margins';
+import type { ElementProps } from '../../types/ElementProps.js';
+import { Box } from '../Box/index.js';
+import { Margins } from '../Margins/index.js';
 
 export type ModalHeaderProps = ElementProps<HTMLElement>;
 

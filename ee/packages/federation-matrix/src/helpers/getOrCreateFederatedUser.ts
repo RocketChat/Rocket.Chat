@@ -3,9 +3,9 @@ import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
 
-import { createOrUpdateFederatedUser } from './createOrUpdateFederatedUser';
-import { getUsernameServername } from './getUsernameServername';
-import { validateFederatedUsername } from './validateFederatedUsername';
+import { createOrUpdateFederatedUser } from './createOrUpdateFederatedUser.js';
+import { getUsernameServername } from './getUsernameServername.js';
+import { validateFederatedUsername } from './validateFederatedUsername.js';
 
 const logger = new Logger('federation-matrix:user');
 

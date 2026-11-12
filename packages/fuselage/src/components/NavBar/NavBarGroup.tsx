@@ -1,6 +1,6 @@
-import { cx } from '../../helpers/composeClassNames';
-import type { ButtonGroupProps } from '../ButtonGroup';
-import { ButtonGroup } from '../ButtonGroup';
+import { cx } from '../../helpers/composeClassNames.js';
+import type { ButtonGroupProps } from '../ButtonGroup/index.js';
+import { ButtonGroup } from '../ButtonGroup/index.js';
 
 export type NavBarGroupProps = ButtonGroupProps;
 

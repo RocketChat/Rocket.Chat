@@ -3,7 +3,7 @@ import { MockedRouterContext, MockedServerContext } from '@rocket.chat/mock-prov
 import type { MockedRouterContextProps } from '@rocket.chat/mock-providers';
 import { renderHook, waitFor } from '@testing-library/react';
 
-import { useGoToRoom } from './useGoToRoom';
+import { useGoToRoom } from './useGoToRoom.js';
 
 const getWrapper =
 	(room: Partial<IRoom> | undefined, router?: MockedRouterContextProps['router']) =>

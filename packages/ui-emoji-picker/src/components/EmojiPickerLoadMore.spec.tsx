@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 
-import EmojiPickerLoadMore from './EmojiPickerLoadMore';
+import EmojiPickerLoadMore from './EmojiPickerLoadMore.js';
 
 describe('EmojiPickerLoadMore', () => {
 	it('should render children inside the button', () => {

@@ -1,4 +1,4 @@
-import { AsyncContextStore } from './ContextStore';
-import type { IServiceContext } from '../types/ServiceClass';
+import { AsyncContextStore } from './ContextStore.js';
+import type { IServiceContext } from '../types/ServiceClass.js';
 
 export const asyncLocalStorage = new AsyncContextStore<IServiceContext>();

@@ -40,9 +40,10 @@ import type {
 	ClientSession,
 } from 'mongodb';
 
-import { getCollectionName, UpdaterImpl } from '..';
-import type { Updater } from '../updater';
-import { setUpdatedAt } from './setUpdatedAt';
+import { getCollectionName } from '../getCollectionName.js';
+import { UpdaterImpl } from '../updater.js';
+import type { Updater } from '../updater.js';
+import { setUpdatedAt } from './setUpdatedAt.js';
 
 const warnFields =
 	process.env.NODE_ENV !== 'production' || process.env.SHOW_WARNINGS === 'true'

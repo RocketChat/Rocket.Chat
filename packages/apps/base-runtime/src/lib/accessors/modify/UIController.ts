@@ -1,25 +1,25 @@
-import type { IUIController } from '@rocket.chat/apps-engine/definition/accessors';
 import type {
 	IUIKitErrorInteractionParam,
 	IUIKitInteractionParam,
 	IUIKitSurfaceViewParam,
-} from '@rocket.chat/apps-engine/definition/accessors/IUIController';
-import { UIKitInteractionType, UIKitSurfaceType } from '@rocket.chat/apps-engine/definition/uikit';
+} from '@rocket.chat/apps-engine/definition/accessors/IUIController.js';
+import type { IUIController } from '@rocket.chat/apps-engine/definition/accessors/index.js';
 import {
 	formatContextualBarInteraction,
 	formatErrorInteraction,
 	formatModalInteraction,
-} from '@rocket.chat/apps-engine/definition/uikit/UIKitInteractionPayloadFormatter';
+} from '@rocket.chat/apps-engine/definition/uikit/UIKitInteractionPayloadFormatter.js';
 import type {
 	IUIKitContextualBarViewParam,
 	IUIKitModalViewParam,
-} from '@rocket.chat/apps-engine/definition/uikit/UIKitInteractionResponder';
-import type { IUser } from '@rocket.chat/apps-engine/definition/users';
+} from '@rocket.chat/apps-engine/definition/uikit/UIKitInteractionResponder.js';
+import { UIKitInteractionType, UIKitSurfaceType } from '@rocket.chat/apps-engine/definition/uikit/index.js';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users/index.js';
 
-import { AppObjectRegistry } from '../../../AppObjectRegistry';
-import { UIHelper } from '../../UIHelper';
-import { bridgeCall } from '../../bridges/bridgeCall';
-import type * as Messenger from '../../messenger';
+import { AppObjectRegistry } from '../../../AppObjectRegistry.js';
+import { UIHelper } from '../../UIHelper.js';
+import { bridgeCall } from '../../bridges/bridgeCall.js';
+import type * as Messenger from '../../messenger.js';
 
 export class UIController implements IUIController {
 	constructor(private readonly senderFn: typeof Messenger.sendRequest) {}

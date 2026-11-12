@@ -1,11 +1,11 @@
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 import type { ComponentType } from 'react';
 
-import PaginatedMultiSelect from './PaginatedMultiSelect';
-import PaginatedMultiSelectFiltered from './PaginatedMultiSelectFiltered';
-import { PaginatedSelect } from './PaginatedSelect';
-import PaginatedSelectFiltered from './PaginatedSelectFiltered';
+import PaginatedMultiSelect from './PaginatedMultiSelect.js';
+import PaginatedMultiSelectFiltered from './PaginatedMultiSelectFiltered.js';
+import { PaginatedSelect } from './PaginatedSelect.js';
+import PaginatedSelectFiltered from './PaginatedSelectFiltered.js';
 
 const options = [{ value: '1', label: 'Apple' }];
 

@@ -1,7 +1,7 @@
 import type { LabelHTMLAttributes, OutputHTMLAttributes } from 'react';
 import type { SliderState } from 'react-stately';
 
-import { Label } from '../Label';
+import { Label } from '../Label/index.js';
 
 type SliderHeadProps = {
 	state: SliderState;

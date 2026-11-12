@@ -6,8 +6,8 @@ import type { ReactElement } from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useDeviceSelection } from './DeviceSelectionContext';
-import { deviceMenuSelection } from './deviceMenuRows';
+import { useDeviceSelection } from './DeviceSelectionContext.js';
+import { deviceMenuSelection } from './deviceMenuRows.js';
 
 type DevicePick = { kind: MediaDeviceKind; deviceId: string; inUse: boolean };
 

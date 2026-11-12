@@ -3,10 +3,10 @@ import { Readable } from 'node:stream';
 import { Upload } from '@rocket.chat/core-services';
 import { ajv, ajvQuery } from '@rocket.chat/rest-typings';
 
-import type { ClientRouter } from './_shared';
-import { internalError, isMatrixErrorProps, license, tags } from './_shared';
-import { MatrixMediaService } from '../../../services/MatrixMediaService';
-import { isAppServiceAuthenticatedMiddleware } from '../../middlewares/isAppServiceAuthenticated';
+import type { ClientRouter } from './_shared.js';
+import { internalError, isMatrixErrorProps, license, tags } from './_shared.js';
+import { MatrixMediaService } from '../../../services/MatrixMediaService.js';
+import { isAppServiceAuthenticatedMiddleware } from '../../middlewares/isAppServiceAuthenticated.js';
 
 const MediaParamsSchema = {
 	type: 'object',

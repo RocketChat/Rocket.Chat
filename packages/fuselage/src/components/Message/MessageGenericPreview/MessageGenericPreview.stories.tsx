@@ -1,27 +1,27 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import type { ReactNode } from 'react';
 
-import { Avatar } from '../../Avatar';
-import { Box } from '../../Box';
-import Message from '../Message';
-import MessageBlock from '../MessageBlock';
-import MessageBody from '../MessageBody';
-import MessageContainer from '../MessageContainer';
-import MessageHeader from '../MessageHeader';
-import MessageLeftContainer from '../MessageLeftContainer';
-import MessageName from '../MessageName';
-import MessageNameContainer from '../MessageNameContainer';
-import MessageRole from '../MessageRole';
-import MessageTimestamp from '../MessageTimestamp';
-import MessageUsername from '../MessageUsername';
-import MessageGenericPreview from './MessageGenericPreview';
-import MessageGenericPreviewContent from './MessageGenericPreviewContent';
-import MessageGenericPreviewCoverImage from './MessageGenericPreviewCoverImage';
-import MessageGenericPreviewDescription from './MessageGenericPreviewDescription';
-import MessageGenericPreviewIcon from './MessageGenericPreviewIcon';
-import MessageGenericPreviewImage from './MessageGenericPreviewImage';
-import MessageGenericPreviewThumb from './MessageGenericPreviewThumb';
-import MessageGenericPreviewTitle from './MessageGenericPreviewTitle';
+import { Avatar } from '../../Avatar/index.js';
+import { Box } from '../../Box/index.js';
+import Message from '../Message.js';
+import MessageBlock from '../MessageBlock.js';
+import MessageBody from '../MessageBody.js';
+import MessageContainer from '../MessageContainer.js';
+import MessageHeader from '../MessageHeader.js';
+import MessageLeftContainer from '../MessageLeftContainer.js';
+import MessageName from '../MessageName.js';
+import MessageNameContainer from '../MessageNameContainer.js';
+import MessageRole from '../MessageRole.js';
+import MessageTimestamp from '../MessageTimestamp.js';
+import MessageUsername from '../MessageUsername.js';
+import MessageGenericPreview from './MessageGenericPreview.js';
+import MessageGenericPreviewContent from './MessageGenericPreviewContent.js';
+import MessageGenericPreviewCoverImage from './MessageGenericPreviewCoverImage.js';
+import MessageGenericPreviewDescription from './MessageGenericPreviewDescription.js';
+import MessageGenericPreviewIcon from './MessageGenericPreviewIcon.js';
+import MessageGenericPreviewImage from './MessageGenericPreviewImage.js';
+import MessageGenericPreviewThumb from './MessageGenericPreviewThumb.js';
+import MessageGenericPreviewTitle from './MessageGenericPreviewTitle.js';
 
 export default {
 	title: 'Message/MessageGenericPreview',

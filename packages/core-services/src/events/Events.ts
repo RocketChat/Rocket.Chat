@@ -1,5 +1,5 @@
-import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
-import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definition/settings';
+import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus.js';
+import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definition/settings/index.js';
 import type {
 	IEmailInbox,
 	IEmoji,
@@ -34,7 +34,7 @@ import type {
 import type { ClientMediaSignalBody, ServerMediaSignal } from '@rocket.chat/media-signaling';
 import type * as UiKit from '@rocket.chat/ui-kit';
 
-import type { AutoUpdateRecord } from '../types/IMeteor';
+import type { AutoUpdateRecord } from '../types/IMeteor.js';
 
 export type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
 

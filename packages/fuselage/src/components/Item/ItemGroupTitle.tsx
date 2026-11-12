@@ -1,8 +1,8 @@
 import type { AllHTMLAttributes, ElementType, RefAttributes } from 'react';
 import { useEffect, useId } from 'react';
 
-import { useItemGroupContext } from './ItemGroupContext';
-import { cx } from '../../helpers/composeClassNames';
+import { useItemGroupContext } from './ItemGroupContext.js';
+import { cx } from '../../helpers/composeClassNames.js';
 
 export type ItemGroupTitleProps = {
 	/**

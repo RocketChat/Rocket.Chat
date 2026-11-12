@@ -11,13 +11,13 @@ import type {
 } from 'react';
 import { useEffect, useRef, useMemo, useState } from 'react';
 
-import { AnimatedVisibility } from '../AnimatedVisibility';
-import { Box } from '../Box';
-import { Chip } from '../Chip';
-import { Icon } from '../Icon';
-import { Input } from '../InputBox';
-import { useCursor, Options, type OptionType } from '../Options';
-import { PositionAnimated } from '../PositionAnimated';
+import { AnimatedVisibility } from '../AnimatedVisibility/index.js';
+import { Box } from '../Box/index.js';
+import { Chip } from '../Chip/index.js';
+import { Icon } from '../Icon/index.js';
+import { Input } from '../InputBox/index.js';
+import { useCursor, Options, type OptionType } from '../Options/index.js';
+import { PositionAnimated } from '../PositionAnimated/index.js';
 
 export type AutoCompleteOption<TLabel> = {
 	value: string;

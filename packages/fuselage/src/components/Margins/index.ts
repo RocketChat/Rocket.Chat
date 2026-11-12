@@ -1,1 +1,1 @@
-export { default as Margins, type MarginsProps } from './Margins';
+export { default as Margins, type MarginsProps } from './Margins.js';

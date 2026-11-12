@@ -1,7 +1,7 @@
-import { cx } from '../../../helpers/composeClassNames';
-import Item from '../../Item/Item';
-import ItemContent from '../../Item/ItemContent';
-import type { MessageProps } from '../Message';
+import { cx } from '../../../helpers/composeClassNames.js';
+import Item from '../../Item/Item.js';
+import ItemContent from '../../Item/ItemContent.js';
+import type { MessageProps } from '../Message.js';
 
 export type ThreadMessageProps = MessageProps;
 

@@ -2,7 +2,7 @@ import { composeStories } from '@storybook/react';
 import { render } from '@testing-library/react';
 import { axe } from 'jest-axe';
 
-import * as preflightDevices from './PreflightDevices.stories';
+import * as preflightDevices from './PreflightDevices.stories.js';
 
 const testCases = Object.values(composeStories(preflightDevices)).map(
 	(Story) => [`PreflightDevices ${Story.storyName || 'Story'}`, Story] as const,

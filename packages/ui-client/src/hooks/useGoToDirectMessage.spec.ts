@@ -2,7 +2,7 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { renderHook } from '@testing-library/react';
 
-import { useGoToDirectMessage } from './useGoToDirectMessage';
+import { useGoToDirectMessage } from './useGoToDirectMessage.js';
 
 it('should return undefined if username is not provided', () => {
 	const { result } = renderHook(() => useGoToDirectMessage({}), {

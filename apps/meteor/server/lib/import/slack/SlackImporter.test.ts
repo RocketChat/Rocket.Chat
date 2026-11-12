@@ -1,13 +1,14 @@
 import { beforeEach, describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const addMessageStub = sinon.stub().resolves();
 const settingsStub = { get: sinon.stub() };
 
-const { SlackImporter } = proxyquire.noCallThru().load('./SlackImporter', {
+const { SlackImporter } = loadWithMocks('./SlackImporter', {
 	'..': {
 		Importer: class MockImporter {
 			logger = { debug: sinon.stub(), error: sinon.stub(), info: sinon.stub(), warn: sinon.stub() };

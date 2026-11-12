@@ -1,8 +1,8 @@
 import { api, MediaCall, Settings, VideoConf } from '@rocket.chat/core-services';
 import { mockModel } from '@rocket.chat/models/testing';
 
-import { NotificationsModule } from './notifications.module';
-import { Streamer } from './streamer.module';
+import { NotificationsModule } from './notifications.module.js';
+import { Streamer } from './streamer.module.js';
 
 jest.mock('@rocket.chat/core-services', () => ({
 	...jest.requireActual('@rocket.chat/core-services'),

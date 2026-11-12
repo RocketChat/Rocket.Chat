@@ -1,6 +1,6 @@
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 
-import type { IAppsDepartment } from '../AppsEngine';
+import type { IAppsDepartment } from '../AppsEngine.js';
 
 export interface IAppDepartmentsConverter {
 	convertById(departmentId: ILivechatDepartment['_id']): Promise<IAppsDepartment | undefined>;

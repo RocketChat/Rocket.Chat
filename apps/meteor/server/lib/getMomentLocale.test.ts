@@ -1,12 +1,13 @@
 import { beforeEach, describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../tests/mocks/utils/loadWithMocks';
 
 const readPrivateAssetText = sinon.stub();
 
-const { getMomentLocale } = proxyquire.noCallThru().load('./getMomentLocale', {
+const { getMomentLocale } = loadWithMocks('./getMomentLocale', {
 	'./privateAssets': { readPrivateAssetText },
 });
 

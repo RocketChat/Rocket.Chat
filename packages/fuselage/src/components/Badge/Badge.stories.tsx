@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { Box } from '../Box';
-import Badge from './Badge';
+import Badge from './Badge.js';
+import { Box } from '../Box/index.js';
 
 export default {
 	title: 'Data Display/Badge',

@@ -1,4 +1,4 @@
-import { UserStatus } from './UserStatus';
+import { UserStatus } from './UserStatus.js';
 
 export type PresenceStatusCode = 0 | 1 | 2 | 3;
 

@@ -1,5 +1,7 @@
-import Ajv from 'ajv/dist/2020';
-import addFormats from 'ajv-formats';
+import { Ajv2020 as Ajv } from 'ajv/dist/2020.js';
+import ajvFormats from 'ajv-formats';
+
+const addFormats = ajvFormats.default;
 
 const ajv = new Ajv({
 	coerceTypes: true,

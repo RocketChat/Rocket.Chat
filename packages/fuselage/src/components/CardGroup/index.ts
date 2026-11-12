@@ -1,1 +1,1 @@
-export { default as CardGroup, type CardGroupProps } from './CardGroup';
+export { default as CardGroup, type CardGroupProps } from './CardGroup.js';

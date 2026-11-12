@@ -2,7 +2,7 @@
 
 import type { Root } from '@rocket.chat/message-parser';
 
-import type { MessageAttachmentBase } from './MessageAttachmentBase';
+import type { MessageAttachmentBase } from './MessageAttachmentBase.js';
 
 type Action = {
 	msgId?: string;

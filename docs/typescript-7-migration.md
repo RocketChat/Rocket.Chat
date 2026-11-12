@@ -16,7 +16,7 @@ supports TS7.
 | `@rocket.chat/lint-config` | the ESLint plugins oxlint loads as JS plugins (jest, storybook, testing-library) import `@typescript-eslint/utils`, which links the JS compiler API. Typed linting itself runs on oxlint's TS7-based tsgolint. `installConfig.hoistingLimits: workspaces` nests the plugins beside the pinned TS. |
 | `@rocket.chat/message-parser`, `@rocket.chat/livechat` | webpack configs load `webpack.config.ts` through ts-node. |
 | `@rocket.chat/emitter`, `@rocket.chat/mp3-encoder`, `@rocket.chat/css-in-js`, `@rocket.chat/fuselage-hooks`, `@rocket.chat/styled` | `@rollup/plugin-typescript` links the JS compiler API. |
-| `@rocket.chat/apps` | `node --test` suites load TS through ts-node (extensionless CJS relative imports rule out native type stripping). |
+| `@rocket.chat/apps` | none left: its `node --test` suites load TS through tsx since the package became ESM, so unpinning is only the version bump. |
 
 ## Constraints to respect when migrating the rest
 

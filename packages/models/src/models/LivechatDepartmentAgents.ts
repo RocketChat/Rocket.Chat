@@ -18,8 +18,8 @@ import type {
 	AggregationCursor,
 } from 'mongodb';
 
-import { Users } from '../index';
-import { BaseRaw } from './BaseRaw';
+import { Users } from '../proxies.js';
+import { BaseRaw } from './BaseRaw.js';
 
 export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgents> implements ILivechatDepartmentAgentsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatDepartmentAgents>>) {

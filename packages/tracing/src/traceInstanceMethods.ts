@@ -1,6 +1,6 @@
 import type { AttributeValue } from '@opentelemetry/api';
 
-import { tracerActiveSpan } from '.';
+import { tracerActiveSpan } from './index.js';
 
 const getArguments = (args: unknown[]): AttributeValue => {
 	return args.map((arg) => {

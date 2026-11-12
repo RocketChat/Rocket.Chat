@@ -1,17 +1,17 @@
 import * as assert from 'node:assert';
 import { after, beforeEach, describe, it } from 'node:test';
 
-import { AppObjectRegistry } from '../../AppObjectRegistry';
-import jsonrpc, { type Defined } from '../../lib/jsonrpc';
-import { Logger } from '../../lib/logger';
-import type { RequestContext } from '../../lib/requestContext';
+import { AppObjectRegistry } from '../../AppObjectRegistry.js';
+import jsonrpc, { type Defined } from '../../lib/jsonrpc.js';
+import { Logger } from '../../lib/logger.js';
+import type { RequestContext } from '../../lib/requestContext.js';
 import handleUIKitInteraction, {
 	UIKitActionButtonInteractionContext,
 	UIKitBlockInteractionContext,
 	UIKitLivechatBlockInteractionContext,
 	UIKitViewCloseInteractionContext,
 	UIKitViewSubmitInteractionContext,
-} from '../uikit/handler';
+} from '../uikit/handler.js';
 
 function makeMockRequest(method: string, payload: { [k: string]: Defined }): RequestContext {
 	return Object.assign(jsonrpc.request(1, method, [payload]), {

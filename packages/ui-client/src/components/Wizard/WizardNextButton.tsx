@@ -2,7 +2,7 @@ import { Button } from '@rocket.chat/fuselage';
 import type { ComponentPropsWithoutRef, MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useWizardContext } from './useWizardContext';
+import { useWizardContext } from './useWizardContext.js';
 
 export type WizardNextButtonProps = Omit<ComponentPropsWithoutRef<typeof Button>, 'primary' | 'onClick'> & {
 	manual?: boolean;

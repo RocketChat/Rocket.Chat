@@ -1,7 +1,7 @@
 import type { MouseEvent, ReactNode } from 'react';
 import { memo } from 'react';
 
-import { Chip } from '../Chip';
+import { Chip } from '../Chip/index.js';
 
 type SelectedOptionsProps = {
 	children: ReactNode;

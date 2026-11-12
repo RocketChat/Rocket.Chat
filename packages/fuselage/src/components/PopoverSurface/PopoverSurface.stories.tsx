@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { Box } from '../Box';
-import { Option } from '../Option';
-import PopoverSurface from './PopoverSurface';
+import PopoverSurface from './PopoverSurface.js';
+import { Box } from '../Box/index.js';
+import { Option } from '../Option/index.js';
 
 const options = Array.from({ length: 30 }, (_, i) => <Option key={i} label={`Option ${i + 1}`} />);
 

@@ -12,9 +12,9 @@ import {
 	StatesActions,
 	StatesAction,
 	StatesLink,
-} from '.';
-import { Box } from '../Box';
-import { Icon } from '../Icon';
+} from './index.js';
+import { Box } from '../Box/index.js';
+import { Icon } from '../Icon/index.js';
 
 export default {
 	title: 'Feedback/States',

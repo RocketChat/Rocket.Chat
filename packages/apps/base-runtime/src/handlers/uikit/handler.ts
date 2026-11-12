@@ -1,25 +1,25 @@
-import type { App } from '@rocket.chat/apps-engine/definition/App';
+import type { App } from '@rocket.chat/apps-engine/definition/App.js';
 import type {
 	IUIKitBlockIncomingInteraction,
 	IUIKitViewSubmitIncomingInteraction,
 	IUIKitViewCloseIncomingInteraction,
 	IUIKitActionButtonIncomingInteraction,
-} from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionTypes';
+} from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionTypes.js';
 import {
 	UIKitBlockInteractionContext,
 	UIKitViewSubmitInteractionContext,
 	UIKitViewCloseInteractionContext,
 	UIKitActionButtonInteractionContext,
-} from '@rocket.chat/apps-engine/definition/uikit/UIKitInteractionContext';
-import type { IUIKitLivechatBlockIncomingInteraction } from '@rocket.chat/apps-engine/definition/uikit/livechat/UIKitLivechatIncomingInteractionType';
-import { UIKitLivechatBlockInteractionContext } from '@rocket.chat/apps-engine/definition/uikit/livechat/UIKitLivechatInteractionContext';
+} from '@rocket.chat/apps-engine/definition/uikit/UIKitInteractionContext.js';
+import type { IUIKitLivechatBlockIncomingInteraction } from '@rocket.chat/apps-engine/definition/uikit/livechat/UIKitLivechatIncomingInteractionType.js';
+import { UIKitLivechatBlockInteractionContext } from '@rocket.chat/apps-engine/definition/uikit/livechat/UIKitLivechatInteractionContext.js';
 
-import { AppObjectRegistry } from '../../AppObjectRegistry';
-import { AppAccessorsInstance } from '../../lib/accessors/mod';
-import { JsonRpcError, type Defined } from '../../lib/jsonrpc';
-import type { RequestContext } from '../../lib/requestContext';
-import { wrapAppForRequest } from '../../lib/wrapAppForRequest';
-import { isOneOf } from '../lib/assertions';
+import { AppObjectRegistry } from '../../AppObjectRegistry.js';
+import { AppAccessorsInstance } from '../../lib/accessors/mod.js';
+import { JsonRpcError, type Defined } from '../../lib/jsonrpc.js';
+import type { RequestContext } from '../../lib/requestContext.js';
+import { wrapAppForRequest } from '../../lib/wrapAppForRequest.js';
+import { isOneOf } from '../lib/assertions.js';
 
 export const uikitInteractions = [
 	'executeBlockActionHandler',

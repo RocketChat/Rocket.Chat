@@ -1,6 +1,6 @@
 import type { Collection, Db, FindOptions } from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
+import { BaseRaw } from './BaseRaw.js';
 
 // `BaseRaw` imports `..`, whose barrel pulls in every model and cycles back here.
 jest.mock('..', () => ({

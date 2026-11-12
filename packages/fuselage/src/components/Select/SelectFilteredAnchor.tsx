@@ -1,13 +1,13 @@
-import { use, type InputEvent } from 'react';
+import { useContext, type InputEvent } from 'react';
 
-import { Input } from '../InputBox';
-import type { SelectAnchorParams } from './SelectAnchorParams';
-import { SelectFilteredContext } from './SelectFilteredContext';
+import type { SelectAnchorParams } from './SelectAnchorParams.js';
+import { SelectFilteredContext } from './SelectFilteredContext.js';
+import { Input } from '../InputBox/index.js';
 
 type SelectFilteredAnchorProps = SelectAnchorParams;
 
 function SelectFilteredAnchor({ children: _children, ...props }: SelectFilteredAnchorProps) {
-	const { placeholder, filter, setFilter } = use(SelectFilteredContext);
+	const { placeholder, filter, setFilter } = useContext(SelectFilteredContext);
 
 	return (
 		<Input

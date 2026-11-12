@@ -1,7 +1,7 @@
 import type tls from 'node:tls';
 import { checkServerIdentity } from 'node:tls';
 
-import { normalizeDomain } from '../jid/normalize';
+import { normalizeDomain } from '../jid/normalize.js';
 
 /**
  * Whether the peer's trusted certificate names `domain`, by dNSName or, without one, by CN.

@@ -1,18 +1,18 @@
-import type { IMessageExtender } from '@rocket.chat/apps-engine/definition/accessors/IMessageExtender';
-import type { IModifyExtender } from '@rocket.chat/apps-engine/definition/accessors/IModifyExtender';
-import type { IRoomExtender } from '@rocket.chat/apps-engine/definition/accessors/IRoomExtender';
-import type { IVideoConferenceExtender } from '@rocket.chat/apps-engine/definition/accessors/IVideoConferenceExtend';
-import type { IMessage } from '@rocket.chat/apps-engine/definition/messages/IMessage';
-import { RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations';
-import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom';
-import type { IUser } from '@rocket.chat/apps-engine/definition/users/IUser';
-import type { VideoConference } from '@rocket.chat/apps-engine/definition/videoConferences/IVideoConference';
+import type { IMessageExtender } from '@rocket.chat/apps-engine/definition/accessors/IMessageExtender.js';
+import type { IModifyExtender } from '@rocket.chat/apps-engine/definition/accessors/IModifyExtender.js';
+import type { IRoomExtender } from '@rocket.chat/apps-engine/definition/accessors/IRoomExtender.js';
+import type { IVideoConferenceExtender } from '@rocket.chat/apps-engine/definition/accessors/IVideoConferenceExtend.js';
+import type { IMessage } from '@rocket.chat/apps-engine/definition/messages/IMessage.js';
+import { RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations.js';
+import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom.js';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users/IUser.js';
+import type { VideoConference } from '@rocket.chat/apps-engine/definition/videoConferences/IVideoConference.js';
 
-import { bridgeCall } from '../../bridges/bridgeCall';
-import type * as Messenger from '../../messenger';
-import { MessageExtender } from '../extenders/MessageExtender';
-import { RoomExtender } from '../extenders/RoomExtender';
-import { VideoConferenceExtender } from '../extenders/VideoConferenceExtend';
+import { bridgeCall } from '../../bridges/bridgeCall.js';
+import type * as Messenger from '../../messenger.js';
+import { MessageExtender } from '../extenders/MessageExtender.js';
+import { RoomExtender } from '../extenders/RoomExtender.js';
+import { VideoConferenceExtender } from '../extenders/VideoConferenceExtend.js';
 
 export class ModifyExtender implements IModifyExtender {
 	private readonly senderFn: typeof Messenger.sendRequest;

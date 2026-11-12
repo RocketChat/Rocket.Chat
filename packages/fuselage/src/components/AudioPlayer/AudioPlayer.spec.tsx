@@ -1,5 +1,5 @@
-import AudioPlayer from './AudioPlayer';
-import { render } from '../../testing';
+import AudioPlayer from './AudioPlayer.js';
+import { render } from '../../testing.js';
 
 describe('[AudioPlayer root props]', () => {
 	it('merges className and forwards HTML props to the root', () => {

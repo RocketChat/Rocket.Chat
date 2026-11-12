@@ -1,7 +1,7 @@
 import { RING_RECIPIENTS_LIMIT } from '@rocket.chat/core-typings';
 import type { JSONSchemaType } from 'ajv';
 
-import { ajv } from '../Ajv';
+import { ajv } from '../Ajv.js';
 
 export type VideoConfAddParticipantsProps = {
 	callId: string;

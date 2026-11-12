@@ -2,9 +2,9 @@ import * as assert from 'node:assert';
 import { describe, it } from 'node:test';
 import * as v8 from 'node:v8';
 
-import { App } from '@rocket.chat/apps-engine/definition/App';
+import { App } from '@rocket.chat/apps-engine/definition/App.js';
 
-import { sanitizeForIpc } from '../../src/lib/IpcSanitizer';
+import { sanitizeForIpc } from '../../src/lib/IpcSanitizer.js';
 
 describe('sanitizeForIpc', () => {
 	it('returns primitives unchanged', () => {

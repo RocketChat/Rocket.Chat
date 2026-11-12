@@ -1,13 +1,17 @@
-import type { IMessage, IMessageRaw } from '@rocket.chat/apps-engine/definition/messages';
-import type { IRoom, IRoomRaw } from '@rocket.chat/apps-engine/definition/rooms';
-import { GetMessagesSortableFields } from '@rocket.chat/apps-engine/definition/rooms/IGetMessagesOptions';
-import type { GetMessagesOptions, GetRoomsFilters, GetRoomsOptions } from '@rocket.chat/apps-engine/definition/rooms/IGetMessagesOptions';
-import type { IUser } from '@rocket.chat/apps-engine/definition/users';
+import type { IMessage, IMessageRaw } from '@rocket.chat/apps-engine/definition/messages/index.js';
+import { GetMessagesSortableFields } from '@rocket.chat/apps-engine/definition/rooms/IGetMessagesOptions.js';
+import type {
+	GetMessagesOptions,
+	GetRoomsFilters,
+	GetRoomsOptions,
+} from '@rocket.chat/apps-engine/definition/rooms/IGetMessagesOptions.js';
+import type { IRoom, IRoomRaw } from '@rocket.chat/apps-engine/definition/rooms/index.js';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users/index.js';
 
-import { BaseBridge } from './BaseBridge';
-import { PermissionDeniedError } from '../errors/PermissionDeniedError';
-import { AppPermissionManager } from '../managers/AppPermissionManager';
-import { AppPermissions } from '../permissions/AppPermissions';
+import { BaseBridge } from './BaseBridge.js';
+import { PermissionDeniedError } from '../errors/PermissionDeniedError.js';
+import { AppPermissionManager } from '../managers/AppPermissionManager.js';
+import { AppPermissions } from '../permissions/AppPermissions.js';
 
 export { GetMessagesSortableFields };
 export type { GetMessagesOptions, GetRoomsFilters, GetRoomsOptions };

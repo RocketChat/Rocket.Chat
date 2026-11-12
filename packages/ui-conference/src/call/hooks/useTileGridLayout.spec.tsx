@@ -1,6 +1,6 @@
 import { act, render, screen } from '@testing-library/react';
 
-import { useTileGridLayout } from './useTileGridLayout';
+import { useTileGridLayout } from './useTileGridLayout.js';
 
 const observe = jest.fn();
 const disconnect = jest.fn();

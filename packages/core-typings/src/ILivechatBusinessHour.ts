@@ -1,5 +1,5 @@
-import type { ILivechatDepartment } from './ILivechatDepartment';
-import type { IRocketChatRecord } from './IRocketChatRecord';
+import type { ILivechatDepartment } from './ILivechatDepartment.js';
+import type { IRocketChatRecord } from './IRocketChatRecord.js';
 
 export enum LivechatBusinessHourTypes {
 	DEFAULT = 'default',

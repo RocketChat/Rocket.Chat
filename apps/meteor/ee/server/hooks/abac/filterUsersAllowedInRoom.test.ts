@@ -2,10 +2,10 @@ import { beforeEach, describe, it } from 'node:test';
 
 import type { IRoom } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
 
 import type { AbacEvaluableUser } from '../../../../server/lib/rooms/filterUsersAllowedInRoom';
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const settingsMock = { get: sinon.stub() };
 const licenseMock = { hasModule: sinon.stub() };
@@ -24,7 +24,7 @@ type Patched = (
 let filterUsers: Patched;
 let filterUsersOrThrow: Patched;
 
-p.noCallThru().load('./filterUsersAllowedInRoom.ts', {
+loadWithMocks('./filterUsersAllowedInRoom.ts', {
 	'@rocket.chat/core-services': { Abac: abacMock },
 	'@rocket.chat/license': { License: licenseMock },
 	'../../../../server/lib/authorization/getRoomAbacLockContext': { getRoomAbacLockContext: getRoomAbacLockContextMock },

@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 
-import DotLeader from './DotLeader';
+import DotLeader from './DotLeader.js';
 
 export type TextSeparatorProps = {
 	label: ReactNode;

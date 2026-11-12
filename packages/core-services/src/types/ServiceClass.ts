@@ -2,10 +2,10 @@ import { EventEmitter } from 'node:events';
 
 import type { ISetting } from '@rocket.chat/core-typings';
 
-import type { IApiService } from './IApiService';
-import type { IBroker, IBrokerNode } from './IBroker';
-import type { ClientAction, EventSignatures } from '../events/Events';
-import { asyncLocalStorage } from '../lib/asyncLocalStorage';
+import type { IApiService } from './IApiService.js';
+import type { IBroker, IBrokerNode } from './IBroker.js';
+import type { ClientAction, EventSignatures } from '../events/Events.js';
+import { asyncLocalStorage } from '../lib/asyncLocalStorage.js';
 
 export interface IServiceContext {
 	id: string; // Context ID

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import AudioPlayer from './AudioPlayer';
+import AudioPlayer from './AudioPlayer.js';
 
 export default {
 	title: 'Media/AudioPlayer',

@@ -1,8 +1,8 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { Meta, StoryObj } from '@storybook/react';
 
-import PersonalAccessTokensView from './PersonalAccessTokensView';
-import type { PersonalAccessTokensViewModel } from '../logic/usePersonalAccessTokens';
+import PersonalAccessTokensView from './PersonalAccessTokensView.js';
+import type { PersonalAccessTokensViewModel } from '../logic/usePersonalAccessTokens.js';
 
 const createViewModel = (overrides: Partial<PersonalAccessTokensViewModel> = {}): PersonalAccessTokensViewModel => ({
 	status: 'ready',

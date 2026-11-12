@@ -1,1 +1,1 @@
-export { default as Chevron, type ChevronProps } from './Chevron';
+export { default as Chevron, type ChevronProps } from './Chevron.js';

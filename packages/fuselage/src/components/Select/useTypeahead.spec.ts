@@ -1,6 +1,6 @@
 import { renderHook } from '@testing-library/react';
 
-import { useTypeahead } from './useTypeahead';
+import { useTypeahead } from './useTypeahead.js';
 
 const labels = ['Apple', 'Apricot', 'Banana', 'Blueberry', 'Cherry'];
 

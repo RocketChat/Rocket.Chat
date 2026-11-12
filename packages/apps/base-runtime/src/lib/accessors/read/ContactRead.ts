@@ -1,8 +1,8 @@
-import type { IContactRead } from '@rocket.chat/apps-engine/definition/accessors/IContactRead';
-import type { ILivechatContact } from '@rocket.chat/apps-engine/definition/livechat';
+import type { IContactRead } from '@rocket.chat/apps-engine/definition/accessors/IContactRead.js';
+import type { ILivechatContact } from '@rocket.chat/apps-engine/definition/livechat/index.js';
 
-import { bridgeCall } from '../../bridges/bridgeCall';
-import type * as Messenger from '../../messenger';
+import { bridgeCall } from '../../bridges/bridgeCall.js';
+import type * as Messenger from '../../messenger.js';
 
 export class ContactRead implements IContactRead {
 	constructor(private readonly senderFn: typeof Messenger.sendRequest) {}

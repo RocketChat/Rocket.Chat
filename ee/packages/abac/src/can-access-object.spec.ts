@@ -1,7 +1,7 @@
 import { AbacAccessOperation, AbacObjectType } from '@rocket.chat/core-typings';
 import { mockModel } from '@rocket.chat/models/testing';
 
-import { AbacService } from './index';
+import { AbacService } from './index.js';
 
 const mockSettingsGetValueById = jest.fn();
 const mockSubscriptionsFindOneByRoomIdAndUserId = jest.fn();

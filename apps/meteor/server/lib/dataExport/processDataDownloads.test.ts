@@ -4,8 +4,9 @@ import { before, beforeEach, describe, it } from 'node:test';
 import type { IExportOperation } from '@rocket.chat/core-typings';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import Sinon from 'sinon';
+
+import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 let exportOperation: IExportOperation | null = null;
 
@@ -107,7 +108,7 @@ const modelsMock = {
 	},
 };
 
-const { exportRoomMessagesToFile } = proxyquire.noCallThru().load('./exportRoomMessagesToFile.ts', {
+const { exportRoomMessagesToFile } = loadWithMocks('./exportRoomMessagesToFile.ts', {
 	'../../settings': {
 		settings: {
 			get: (_key: string) => {
@@ -122,7 +123,7 @@ const { exportRoomMessagesToFile } = proxyquire.noCallThru().load('./exportRoomM
 	},
 });
 
-const { requestDataDownload } = proxyquire.noCallThru().load('../../meteor-methods/platform/requestDataDownload.ts', {
+const { requestDataDownload } = loadWithMocks('../../meteor-methods/platform/requestDataDownload.ts', {
 	'../../settings': {
 		settings: {
 			get: (_key: string) => {
@@ -147,7 +148,7 @@ const { requestDataDownload } = proxyquire.noCallThru().load('../../meteor-metho
 	}>;
 };
 
-const { processDataDownloads } = proxyquire.noCallThru().load('./processDataDownloads.ts', {
+const { processDataDownloads } = loadWithMocks('./processDataDownloads.ts', {
 	'../media/file-upload': {
 		FileUpload: {
 			copy: async (fileId: string, _options: any) => {

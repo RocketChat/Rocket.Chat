@@ -1,13 +1,13 @@
 import * as assert from 'node:assert';
 import { beforeEach, describe, it } from 'node:test';
 
-import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
-import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
-import type { IUser } from '@rocket.chat/apps-engine/definition/users';
+import type { IMessage } from '@rocket.chat/apps-engine/definition/messages/index.js';
+import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/index.js';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users/index.js';
 
-import { createRecordingSender } from './helpers/parityHarness';
-import { AppObjectRegistry } from '../../../AppObjectRegistry';
-import { AppAccessors } from '../mod';
+import { createRecordingSender } from './helpers/parityHarness.js';
+import { AppObjectRegistry } from '../../../AppObjectRegistry.js';
+import { AppAccessors } from '../mod.js';
 
 /**
  * Guards the *wiring* of `AppAccessors`, not the behavior of any single accessor.

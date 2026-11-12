@@ -1,6 +1,6 @@
-import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
+import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata/index.js';
 
-import type { AppImplements } from './AppImplements';
+import type { AppImplements } from './AppImplements.js';
 
 export interface IParseAppPackageResult {
 	info: IAppInfo;

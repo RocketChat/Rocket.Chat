@@ -1,7 +1,7 @@
 import type { IAbacAttributeDefinition } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 
-import UserInfoABACAttribute from './UserInfoABACAttribute';
+import UserInfoABACAttribute from './UserInfoABACAttribute.js';
 
 export type UserInfoABACAttributesProps = {
 	abacAttributes: IAbacAttributeDefinition[];

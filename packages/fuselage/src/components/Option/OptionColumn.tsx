@@ -1,7 +1,7 @@
 import type { HTMLAttributes, ReactNode } from 'react';
 
-import { cx } from '../../helpers/composeClassNames';
-import { ItemMedia } from '../Item';
+import { cx } from '../../helpers/composeClassNames.js';
+import { ItemMedia } from '../Item/index.js';
 
 export type OptionColumnProps = {
 	children?: ReactNode;

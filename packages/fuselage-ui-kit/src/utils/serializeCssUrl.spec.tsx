@@ -1,8 +1,8 @@
 import { render } from '@testing-library/react';
 
-import { serializeCssUrl } from './serializeCssUrl';
-import { Image } from '../blocks/ImageBlock.styles';
-import { Element } from '../elements/ImageElement.styles';
+import { serializeCssUrl } from './serializeCssUrl.js';
+import { Image } from '../blocks/ImageBlock.styles.js';
+import { Element } from '../elements/ImageElement.styles.js';
 
 const payload = `x);}body::after{content:"owned"}.z{x:url(`;
 

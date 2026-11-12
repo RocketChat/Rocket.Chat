@@ -1,7 +1,7 @@
 import { composeStories } from '@storybook/react';
 
-import * as stories from './Tooltip.stories';
-import { render } from '../../testing';
+import * as stories from './Tooltip.stories.js';
+import { render } from '../../testing.js';
 
 const { Default, LightTooltip } = composeStories(stories);
 

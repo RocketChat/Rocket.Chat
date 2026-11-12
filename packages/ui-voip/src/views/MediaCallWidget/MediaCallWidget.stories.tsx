@@ -2,9 +2,9 @@ import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { Meta, StoryObj } from '@storybook/react';
 
-import MediaCallWidget from './MediaCallWidget';
-import { useMediaCallInstance, useMediaCallView, useWidgetExternalControls } from '../../context';
-import MockedMediaCallProvider from '../../providers/MockedMediaCallProvider';
+import MediaCallWidget from './MediaCallWidget.js';
+import { useMediaCallInstance, useMediaCallView, useWidgetExternalControls } from '../../context/index.js';
+import MockedMediaCallProvider from '../../providers/MockedMediaCallProvider.js';
 
 const mockedContexts = mockAppRoot()
 	.withTranslations('en', 'core', {

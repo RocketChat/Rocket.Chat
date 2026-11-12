@@ -1,7 +1,7 @@
 import { createContext } from 'react';
 
-import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
+import type { ElementProps } from '../../types/ElementProps.js';
+import { Box } from '../Box/index.js';
 
 export const FieldContext = createContext(false);
 

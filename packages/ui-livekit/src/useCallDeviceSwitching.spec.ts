@@ -1,7 +1,7 @@
 import { act, renderHook } from '@testing-library/react';
 import type { Room } from 'livekit-client';
 
-import { useCallDeviceSwitching } from './useCallDeviceSwitching';
+import { useCallDeviceSwitching } from './useCallDeviceSwitching.js';
 
 const persist = jest.fn();
 

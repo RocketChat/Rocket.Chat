@@ -1,9 +1,9 @@
 import * as assert from 'node:assert';
 import { after, beforeEach, describe, it, mock } from 'node:test';
 
-import { AppObjectRegistry } from '../../../AppObjectRegistry';
-import jsonrpc from '../../jsonrpc';
-import { ModifyExtender } from '../modify/ModifyExtender';
+import { AppObjectRegistry } from '../../../AppObjectRegistry.js';
+import jsonrpc from '../../jsonrpc.js';
+import { ModifyExtender } from '../modify/ModifyExtender.js';
 
 describe('ModifyExtender', () => {
 	let extender: ModifyExtender;

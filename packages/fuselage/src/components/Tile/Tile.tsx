@@ -1,5 +1,5 @@
-import type { ElementProps } from '../../types/ElementProps';
-import { Box, type BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps.js';
+import { Box, type BoxProps } from '../Box/index.js';
 
 export type TileProps = ElementProps<HTMLElement> & {
 	elevation?: BoxProps['elevation'];

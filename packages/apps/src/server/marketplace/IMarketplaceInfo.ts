@@ -1,9 +1,9 @@
-import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
+import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata/index.js';
 
-import type { IMarketplacePricingPlan } from './IMarketplacePricingPlan';
-import type { IMarketplaceSimpleBundleInfo } from './IMarketplaceSimpleBundleInfo';
-import type { IMarketplaceSubscriptionInfo } from './IMarketplaceSubscriptionInfo';
-import type { MarketplacePurchaseType } from './MarketplacePurchaseType';
+import type { IMarketplacePricingPlan } from './IMarketplacePricingPlan.js';
+import type { IMarketplaceSimpleBundleInfo } from './IMarketplaceSimpleBundleInfo.js';
+import type { IMarketplaceSubscriptionInfo } from './IMarketplaceSubscriptionInfo.js';
+import type { MarketplacePurchaseType } from './MarketplacePurchaseType.js';
 
 export interface IMarketplaceInfo extends IAppInfo {
 	categories: Array<string>;

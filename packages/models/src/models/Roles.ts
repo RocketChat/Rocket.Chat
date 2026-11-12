@@ -2,8 +2,8 @@ import type { IRole, IRoom, IUser, RocketChatRecordDeleted } from '@rocket.chat/
 import type { IRolesModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
 import type { Collection, FindCursor, Db, Filter, FindOptions, Document, CountDocumentsOptions } from 'mongodb';
 
-import { Subscriptions, Users } from '../index';
-import { BaseRaw } from './BaseRaw';
+import { Subscriptions, Users } from '../proxies.js';
+import { BaseRaw } from './BaseRaw.js';
 
 export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IRole>>) {

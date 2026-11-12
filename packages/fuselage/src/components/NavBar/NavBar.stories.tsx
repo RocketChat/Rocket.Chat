@@ -1,15 +1,15 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { Avatar } from '../Avatar';
-import { Box } from '../Box';
-import { Menu, MenuItem, MenuSection } from '../Menu';
-import NavBar from './NavBar';
-import NavBarDivider from './NavBarDivider';
-import NavBarGroup from './NavBarGroup';
-import NavBarItem from './NavBarItem';
-import NavBarSection from './NavBarSection';
-import { MenuDisplayExample } from '../Menu/Menu.stories';
-import { avatarUrl } from '../Message/helpers';
+import NavBar from './NavBar.js';
+import NavBarDivider from './NavBarDivider.js';
+import NavBarGroup from './NavBarGroup.js';
+import NavBarItem from './NavBarItem.js';
+import NavBarSection from './NavBarSection.js';
+import { Avatar } from '../Avatar/index.js';
+import { Box } from '../Box/index.js';
+import { MenuDisplayExample } from '../Menu/Menu.stories.js';
+import { Menu, MenuItem, MenuSection } from '../Menu/index.js';
+import { avatarUrl } from '../Message/helpers.js';
 
 export default {
 	title: 'Navigation/Navbar',

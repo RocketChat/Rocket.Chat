@@ -1,5 +1,5 @@
-import type { MailerProps } from './mailer/MailerParamsPOST';
-import type { MailerUnsubscribeProps } from './mailer/MailerUnsubscribeParamsPOST';
+import type { MailerProps } from './mailer/MailerParamsPOST.js';
+import type { MailerUnsubscribeProps } from './mailer/MailerUnsubscribeParamsPOST.js';
 
 export type MailerEndpoints = {
 	'/v1/mailer': {

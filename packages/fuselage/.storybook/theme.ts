@@ -1,10 +1,10 @@
 // Keep in step with ../../storybook-config/src/theme.ts, which Fuselage can't import: storybook-config depends on Fuselage.
-import border from '@rocket.chat/fuselage-tokens/dist/border.json';
-import button from '@rocket.chat/fuselage-tokens/dist/button.json';
-import font from '@rocket.chat/fuselage-tokens/dist/font.json';
-import stroke from '@rocket.chat/fuselage-tokens/dist/stroke.json';
-import surface from '@rocket.chat/fuselage-tokens/dist/surface.json';
-import typography from '@rocket.chat/fuselage-tokens/dist/typography.json';
+import border from '@rocket.chat/fuselage-tokens/dist/border.json' with { type: 'json' };
+import button from '@rocket.chat/fuselage-tokens/dist/button.json' with { type: 'json' };
+import font from '@rocket.chat/fuselage-tokens/dist/font.json' with { type: 'json' };
+import stroke from '@rocket.chat/fuselage-tokens/dist/stroke.json' with { type: 'json' };
+import surface from '@rocket.chat/fuselage-tokens/dist/surface.json' with { type: 'json' };
+import typography from '@rocket.chat/fuselage-tokens/dist/typography.json' with { type: 'json' };
 import { GLOBALS_UPDATED, SET_GLOBALS } from 'storybook/internal/core-events';
 import type { ThemeVars } from 'storybook/theming';
 import { create } from 'storybook/theming';

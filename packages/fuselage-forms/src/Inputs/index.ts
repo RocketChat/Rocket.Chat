@@ -1,1 +1,1 @@
-export * from './WrappedInputComponents';
+export * from './WrappedInputComponents.js';

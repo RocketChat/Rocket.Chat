@@ -4,6 +4,7 @@ import type { VideoConferenceCapabilities } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
 import { LIVEKIT_CAPABILITIES } from './capabilities';
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 /**
  * What the LiveKit provider declares, read back through the registry. A capability left out turns its feature off
@@ -11,14 +12,9 @@ import { LIVEKIT_CAPABILITIES } from './capabilities';
  *
  * The registry reads `server/settings`, whose top-level await this runner cannot load, hence the stub.
  */
-const proxyquire = require('proxyquire');
-
-const { videoConfProviders, CORE_PROVIDER_APP_ID } = proxyquire
-	.noCallThru()
-	.noPreserveCache()
-	.load('../../../../server/lib/videoConfProviders', {
-		'../settings': { settings: { get: () => undefined } },
-	});
+const { videoConfProviders, CORE_PROVIDER_APP_ID } = loadWithMocks('../../../../server/lib/videoConfProviders', {
+	'../settings': { settings: { get: () => undefined } },
+});
 
 const registered = (): VideoConferenceCapabilities | undefined => videoConfProviders.getProviderCapabilities('livekit');
 

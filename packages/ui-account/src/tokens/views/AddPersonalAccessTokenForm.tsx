@@ -4,8 +4,8 @@ import { useId, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import type { NewPersonalAccessToken } from '../logic/personalAccessTokens';
-import { isValidTokenName } from '../logic/personalAccessTokens';
+import type { NewPersonalAccessToken } from '../logic/personalAccessTokens.js';
+import { isValidTokenName } from '../logic/personalAccessTokens.js';
 
 type AddPersonalAccessTokenFormData = {
 	name: string;

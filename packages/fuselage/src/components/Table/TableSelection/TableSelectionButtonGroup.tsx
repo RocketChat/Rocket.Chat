@@ -1,5 +1,5 @@
-import type { ButtonGroupProps } from '../../ButtonGroup';
-import { ButtonGroup } from '../../ButtonGroup';
+import type { ButtonGroupProps } from '../../ButtonGroup/index.js';
+import { ButtonGroup } from '../../ButtonGroup/index.js';
 
 export type TableSelectionButtonGroupProps = ButtonGroupProps;
 

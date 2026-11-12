@@ -1,5 +1,5 @@
-import { renderHook } from './testing';
-import { usePrefersReducedMotion } from './usePrefersReducedMotion';
+import { renderHook } from './testing.js';
+import { usePrefersReducedMotion } from './usePrefersReducedMotion.js';
 
 it('should return false on the initial call', () => {
 	const { result } = renderHook(() => usePrefersReducedMotion());

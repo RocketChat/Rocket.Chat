@@ -2,7 +2,7 @@ import type { MediaSignalingSession } from '@rocket.chat/media-signaling';
 import { stopTracks, useDevicePermissionPrompt2 } from '@rocket.chat/ui-media';
 import { useMemo } from 'react';
 
-import { getEndCall } from '../utils/instanceControlsGetters';
+import { getEndCall } from '../utils/instanceControlsGetters.js';
 
 export type MediaSessionControls = {
 	toggleMute: () => void;

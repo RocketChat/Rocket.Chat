@@ -1,8 +1,8 @@
 import { parse } from 'ltx';
-import type Element from 'ltx/lib/Element';
+import type Element from 'ltx/lib/Element.js';
 
-import { RemoteMucSession } from './RemoteMucSession';
-import type { RemoteMucSessionDeps } from './RemoteMucSession';
+import { RemoteMucSession } from './RemoteMucSession.js';
+import type { RemoteMucSessionDeps } from './RemoteMucSession.js';
 
 const NS_MUC = 'http://jabber.org/protocol/muc';
 const NS_CORRECT = 'urn:xmpp:message-correct:0';

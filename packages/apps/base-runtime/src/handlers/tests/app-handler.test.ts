@@ -1,10 +1,10 @@
 import * as assert from 'node:assert';
 import { after, beforeEach, describe, it } from 'node:test';
 
-import { AppObjectRegistry } from '../../AppObjectRegistry';
-import { JsonRpcError, METHOD_NOT_FOUND, SERVER_ERROR } from '../../lib/jsonrpc';
-import handleApp from '../app/handler';
-import { createMockApp, createMockRequest } from './helpers/mod';
+import { AppObjectRegistry } from '../../AppObjectRegistry.js';
+import { JsonRpcError, METHOD_NOT_FOUND, SERVER_ERROR } from '../../lib/jsonrpc.js';
+import handleApp from '../app/handler.js';
+import { createMockApp, createMockRequest } from './helpers/mod.js';
 
 /**
  * `JsonRpcError` is not an `Error` subclass, so the catch in `handleApp` has to test for

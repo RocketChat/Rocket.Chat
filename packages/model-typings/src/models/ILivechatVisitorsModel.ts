@@ -11,8 +11,8 @@ import type {
 	WithId,
 } from 'mongodb';
 
-import type { FindPaginated, IBaseModel } from './IBaseModel';
-import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
+import type { FindPaginated, IBaseModel } from './IBaseModel.js';
+import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection.js';
 
 export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 	findById<T extends Document = ILivechatVisitor, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(

@@ -1,7 +1,7 @@
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import type * as UiKit from '@rocket.chat/ui-kit';
 
-import type { IServiceClass } from './ServiceClass';
+import type { IServiceClass } from './ServiceClass.js';
 
 export type UiKitCoreAppBlockActionPayload = Pick<
 	UiKit.ViewBlockActionUserInteraction | UiKit.MessageBlockActionUserInteraction,

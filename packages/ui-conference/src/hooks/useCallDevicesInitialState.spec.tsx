@@ -6,8 +6,8 @@ import {
 	useCallDevicesInitialState,
 	useNoiseSuppressionPreference,
 	useVideoQualityPreference,
-} from './useCallDevicesInitialState';
-import { embeddedCapabilities } from '../fixtures/storyFixtures';
+} from './useCallDevicesInitialState.js';
+import { embeddedCapabilities } from '../fixtures/storyFixtures.js';
 
 const preferencesKey = callPreferencesStorageKey('john.doe');
 

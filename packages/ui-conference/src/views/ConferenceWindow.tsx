@@ -4,25 +4,25 @@ import { useBreakpoints, useLocalStorage, useMediaQuery } from '@rocket.chat/fus
 import { useCustomSound } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import ConferencePanelToggles from './ConferencePanelToggles';
-import ConferenceWindowGate from './ConferenceWindowGate';
-import CallControls from '../call/CallControls';
-import CallHeader from '../call/CallHeader';
-import type { StageLayout } from '../call/CallStage';
-import CallStageArea from '../call/CallStageArea';
-import CallTopBarStatus from '../call/CallTopBarStatus';
-import EmbeddedCallMembersPanel from '../call/EmbeddedCallMembersPanel';
-import CallDiagnosticsPanel from '../call/diagnostics/CallDiagnosticsPanel';
-import CallBar from '../components/CallBar';
-import CallMembersPanel from '../components/CallMembersPanel/CallMembersPanel';
-import CallPanel from '../components/CallPanel';
-import CallTopBar from '../components/CallTopBar';
-import ChatAccessNotice from '../components/ChatAccessNotice/ChatAccessNotice';
-import ConferenceIframe from '../components/ConferenceIframe';
-import { ChatPanelContext } from '../context/ChatPanelContext';
-import type { ConferencePanel } from '../context/ConferenceContext';
-import { useConference } from '../context/ConferenceContext';
-import { useRinging } from '../hooks/useRinging';
+import ConferencePanelToggles from './ConferencePanelToggles.js';
+import ConferenceWindowGate from './ConferenceWindowGate.js';
+import CallControls from '../call/CallControls.js';
+import CallHeader from '../call/CallHeader.js';
+import type { StageLayout } from '../call/CallStage.js';
+import CallStageArea from '../call/CallStageArea.js';
+import CallTopBarStatus from '../call/CallTopBarStatus.js';
+import EmbeddedCallMembersPanel from '../call/EmbeddedCallMembersPanel.js';
+import CallDiagnosticsPanel from '../call/diagnostics/CallDiagnosticsPanel.js';
+import CallBar from '../components/CallBar.js';
+import CallMembersPanel from '../components/CallMembersPanel/CallMembersPanel.js';
+import CallPanel from '../components/CallPanel.js';
+import CallTopBar from '../components/CallTopBar.js';
+import ChatAccessNotice from '../components/ChatAccessNotice/ChatAccessNotice.js';
+import ConferenceIframe from '../components/ConferenceIframe.js';
+import { ChatPanelContext } from '../context/ChatPanelContext.js';
+import type { ConferencePanel } from '../context/ConferenceContext.js';
+import { useConference } from '../context/ConferenceContext.js';
+import { useRinging } from '../hooks/useRinging.js';
 
 /**
  * The conference window: the call, the bar above it, and the panels beside it.

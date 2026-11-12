@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { Button } from '../Button';
-import type { CardProps } from '../Card';
-import { Card, CardBody, CardControls, CardHeader, CardTitle } from '../Card';
-import { Icon } from '../Icon';
-import CardGrid from './CardGrid';
-import CardGridItem from './CardGridItem';
+import CardGrid from './CardGrid.js';
+import CardGridItem from './CardGridItem.js';
+import { Button } from '../Button/index.js';
+import type { CardProps } from '../Card/index.js';
+import { Card, CardBody, CardControls, CardHeader, CardTitle } from '../Card/index.js';
+import { Icon } from '../Icon/index.js';
 
 export default {
 	title: 'Containers/CardGrid',

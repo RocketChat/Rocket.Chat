@@ -12,11 +12,11 @@ import {
 import { useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { PeerAutocomplete, PeerInfo } from '../components';
-import { usePeerAutocomplete, type PeerInfo as PeerInfoType } from '../context';
-import { isExternalPeer } from '../utils/isExternalPeer';
-import { isInternalPeer } from '../utils/isInternalPeer';
-import { isUnknownPeer } from '../utils/isUnknownPeer';
+import { PeerAutocomplete, PeerInfo } from '../components/index.js';
+import { usePeerAutocomplete, type PeerInfo as PeerInfoType } from '../context/index.js';
+import { isExternalPeer } from '../utils/isExternalPeer.js';
+import { isInternalPeer } from '../utils/isInternalPeer.js';
+import { isUnknownPeer } from '../utils/isUnknownPeer.js';
 
 export type TransferModalProps = {
 	onCancel(): void;

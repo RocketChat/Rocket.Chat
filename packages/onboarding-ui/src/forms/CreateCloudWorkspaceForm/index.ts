@@ -3,4 +3,4 @@ export {
 	CreateCloudWorkspaceForm,
 	type CreateCloudWorkspaceFormProps,
 	type CreateCloudWorkspaceFormPayload,
-} from './CreateCloudWorkspaceForm';
+} from './CreateCloudWorkspaceForm.js';

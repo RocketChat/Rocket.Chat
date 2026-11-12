@@ -1,4 +1,4 @@
-import { ItemDivider } from '../Item';
+import { ItemDivider } from '../Item/index.js';
 
 const SidepanelDivider = () => <ItemDivider role='separator' className='rcx-sidepanel--divider' />;
 

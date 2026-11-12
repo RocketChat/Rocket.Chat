@@ -1,1 +1,1 @@
-export { default, type RegisterServerPageProps } from './RegisterServerPage';
+export { default, type RegisterServerPageProps } from './RegisterServerPage.js';

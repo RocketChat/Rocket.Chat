@@ -1,20 +1,20 @@
-import handleConstructApp from './construct';
-import handleGetStatus from './handleGetStatus';
-import handleInitialize from './handleInitialize';
-import handleOnDisable from './handleOnDisable';
-import handleOnEnable from './handleOnEnable';
-import handleOnInstall from './handleOnInstall';
-import handleOnPreSettingUpdate from './handleOnPreSettingUpdate';
-import handleOnSettingUpdated from './handleOnSettingUpdated';
-import handleOnUninstall from './handleOnUninstall';
-import handleOnUpdate from './handleOnUpdate';
-import handleSetStatus from './handleSetStatus';
-import handleUploadEvents, { uploadEvents } from './handleUploadEvents';
-import { JsonRpcError, METHOD_NOT_FOUND, SERVER_ERROR, type Defined } from '../../lib/jsonrpc';
-import type { RequestContext } from '../../lib/requestContext';
-import { isOneOf } from '../lib/assertions';
-import handleListener from '../listener/handler';
-import handleUIKitInteraction, { uikitInteractions } from '../uikit/handler';
+import handleConstructApp from './construct.js';
+import handleGetStatus from './handleGetStatus.js';
+import handleInitialize from './handleInitialize.js';
+import handleOnDisable from './handleOnDisable.js';
+import handleOnEnable from './handleOnEnable.js';
+import handleOnInstall from './handleOnInstall.js';
+import handleOnPreSettingUpdate from './handleOnPreSettingUpdate.js';
+import handleOnSettingUpdated from './handleOnSettingUpdated.js';
+import handleOnUninstall from './handleOnUninstall.js';
+import handleOnUpdate from './handleOnUpdate.js';
+import handleSetStatus from './handleSetStatus.js';
+import handleUploadEvents, { uploadEvents } from './handleUploadEvents.js';
+import { JsonRpcError, METHOD_NOT_FOUND, SERVER_ERROR, type Defined } from '../../lib/jsonrpc.js';
+import type { RequestContext } from '../../lib/requestContext.js';
+import { isOneOf } from '../lib/assertions.js';
+import handleListener from '../listener/handler.js';
+import handleUIKitInteraction, { uikitInteractions } from '../uikit/handler.js';
 
 export default async function handleApp(request: RequestContext): Promise<Defined | JsonRpcError> {
 	const { method } = request;

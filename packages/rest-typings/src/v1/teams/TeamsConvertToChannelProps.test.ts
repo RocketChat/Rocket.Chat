@@ -1,7 +1,7 @@
 import assert from 'node:assert';
 import { describe, it } from 'node:test';
 
-import { isTeamsConvertToChannelProps } from './TeamsConvertToChannelProps';
+import { isTeamsConvertToChannelProps } from './TeamsConvertToChannelProps.js';
 
 describe('TeamsConvertToChannelProps (definition/rest/v1)', () => {
 	describe('isTeamsConvertToChannelProps', () => {

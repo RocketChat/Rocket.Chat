@@ -1,4 +1,4 @@
-import type { IServiceClass } from '../types/ServiceClass';
+import type { IServiceClass } from '../types/ServiceClass.js';
 
 export function getInstanceMethods(instance: IServiceClass) {
 	return (

@@ -7,6 +7,7 @@
 		"rocketchat"
 	],
 	"author": "Rocket.Chat",
+	"type": "module",
 	"main": "./dist/ee/apps/authorization-service/src/service.js",
 	"files": [
 		"/dist"

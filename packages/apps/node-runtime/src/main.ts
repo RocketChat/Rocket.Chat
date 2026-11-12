@@ -1,10 +1,8 @@
-import './lib/loader-hook';
+import { setSandboxGlobals, setSandboxRequire } from '@rocket.chat/apps/base-runtime/dist/handlers/app/construct.js';
+import { startMainLoop } from '@rocket.chat/apps/base-runtime/dist/mainLoop.js';
 
-import { setSandboxGlobals, setSandboxRequire } from '@rocket.chat/apps/base-runtime/dist/handlers/app/construct';
-import { startMainLoop } from '@rocket.chat/apps/base-runtime/dist/mainLoop';
-
-import registerErrorListeners from './error-handlers';
-import { sandboxRequire } from './lib/require';
+import registerErrorListeners from './error-handlers.js';
+import { sandboxRequire } from './lib/require.js';
 
 if (!process.argv.includes('--subprocess') || typeof process.send !== 'function') {
 	console.error(`

@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import Card from './Card';
-import CardSlot from './CardSlot';
-import { PeerCard, PeerCardSlot } from './PeerCard';
+import Card from './Card.js';
+import CardSlot from './CardSlot.js';
+import { PeerCard, PeerCardSlot } from './PeerCard/index.js';
 
 export default {
 	component: Card,

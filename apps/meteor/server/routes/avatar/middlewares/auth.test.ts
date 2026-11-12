@@ -1,8 +1,9 @@
 import { afterEach, describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const mocks = {
 	utils: {
@@ -11,7 +12,7 @@ const mocks = {
 	},
 };
 
-const { protectAvatarsWithFallback, protectAvatars } = proxyquire.noCallThru().load('./auth.ts', {
+const { protectAvatarsWithFallback, protectAvatars } = loadWithMocks('./auth.ts', {
 	'../utils': mocks.utils,
 });
 

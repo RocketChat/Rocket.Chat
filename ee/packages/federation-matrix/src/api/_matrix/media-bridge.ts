@@ -2,8 +2,8 @@ import { Router } from '@rocket.chat/http-router';
 import { Users } from '@rocket.chat/models';
 import { ajv, ajvQuery } from '@rocket.chat/rest-typings';
 
-import { MatrixMediaService } from '../../services/MatrixMediaService';
-import { isAppServiceAuthenticatedMiddleware } from '../middlewares/isAppServiceAuthenticated';
+import { MatrixMediaService } from '../../services/MatrixMediaService.js';
+import { isAppServiceAuthenticatedMiddleware } from '../middlewares/isAppServiceAuthenticated.js';
 
 const MatrixErrorSchema = {
 	type: 'object',

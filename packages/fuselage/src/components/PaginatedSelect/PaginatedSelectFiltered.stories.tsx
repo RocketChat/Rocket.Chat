@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { Option, OptionDescription } from '../Option';
-import PaginatedSelectFiltered from './PaginatedSelectFiltered';
+import PaginatedSelectFiltered from './PaginatedSelectFiltered.js';
+import { Option, OptionDescription } from '../Option/index.js';
 
 export default {
 	title: 'Inputs/PaginatedSelectFiltered',

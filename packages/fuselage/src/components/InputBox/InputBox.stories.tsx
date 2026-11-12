@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { action } from 'storybook/actions';
 
-import { Input, InputBox, InputBoxSkeleton } from '.';
-import { Box } from '../Box';
-import { Button } from '../Button';
-import { Icon } from '../Icon';
+import { Input, InputBox, InputBoxSkeleton } from './index.js';
+import { Box } from '../Box/index.js';
+import { Button } from '../Button/index.js';
+import { Icon } from '../Icon/index.js';
 
 export default {
 	title: 'Inputs/InputBox',

@@ -1,4 +1,4 @@
-import { App } from '@rocket.chat/apps-engine/definition/App';
+import { App } from '@rocket.chat/apps-engine/definition/App.js';
 
 /**
  * Values that V8's structured clone algorithm serializes natively and that

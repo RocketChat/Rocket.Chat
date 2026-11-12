@@ -1,6 +1,6 @@
 import { it, expect } from '@jest/globals';
 
-import { CallbackPriority, Callbacks } from './Callbacks';
+import { CallbackPriority, Callbacks } from './Callbacks.js';
 
 it("if the callback doesn't return any value should return the original", async () => {
 	const test = Callbacks.create<(data: boolean) => boolean>('test');

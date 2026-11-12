@@ -1,14 +1,14 @@
-import VideoConfPopup from './VideoConfPopup';
-import VideoConfPopupBackdrop from './VideoConfPopupBackdrop';
-import VideoConfPopupContent from './VideoConfPopupContent';
-import VideoConfPopupControllers from './VideoConfPopupControllers';
-import VideoConfPopupFooter from './VideoConfPopupFooter';
-import VideoConfPopupFooterButtons from './VideoConfPopupFooterButtons';
-import VideoConfPopupHeader from './VideoConfPopupHeader';
-import VideoConfPopupIcon from './VideoConfPopupIcon';
-import VideoConfPopupInfo from './VideoConfPopupInfo';
-import VideoConfPopupSkeleton from './VideoConfPopupSkeleton';
-import VideoConfPopupTitle from './VideoConfPopupTitle';
+import VideoConfPopup from './VideoConfPopup.js';
+import VideoConfPopupBackdrop from './VideoConfPopupBackdrop.js';
+import VideoConfPopupContent from './VideoConfPopupContent.js';
+import VideoConfPopupControllers from './VideoConfPopupControllers.js';
+import VideoConfPopupFooter from './VideoConfPopupFooter.js';
+import VideoConfPopupFooterButtons from './VideoConfPopupFooterButtons.js';
+import VideoConfPopupHeader from './VideoConfPopupHeader.js';
+import VideoConfPopupIcon from './VideoConfPopupIcon.js';
+import VideoConfPopupInfo from './VideoConfPopupInfo.js';
+import VideoConfPopupSkeleton from './VideoConfPopupSkeleton.js';
+import VideoConfPopupTitle from './VideoConfPopupTitle.js';
 
 export {
 	VideoConfPopup,

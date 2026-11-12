@@ -2,8 +2,8 @@ import { Box, Icon } from '@rocket.chat/fuselage';
 import * as UiKit from '@rocket.chat/ui-kit';
 import { memo, useCallback, useState } from 'react';
 
-import type { BlockProps } from '../utils/BlockProps';
-import { isTextObject } from '../utils/isTextObject';
+import type { BlockProps } from '../utils/BlockProps.js';
+import { isTextObject } from '../utils/isTextObject.js';
 
 export type VideoBlockProps = BlockProps<UiKit.VideoBlock>;
 

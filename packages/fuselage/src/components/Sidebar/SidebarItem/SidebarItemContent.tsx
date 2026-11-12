@@ -1,7 +1,7 @@
 import type { HTMLAttributes } from 'react';
 
-import { cx } from '../../../helpers/composeClassNames';
-import { ItemDescription } from '../../Item';
+import { cx } from '../../../helpers/composeClassNames.js';
+import { ItemDescription } from '../../Item/index.js';
 
 export const SidebarItemContent = ({ className, unread, ...props }: { unread?: boolean } & Omit<HTMLAttributes<HTMLDivElement>, 'is'>) => (
 	<ItemDescription

@@ -1,9 +1,9 @@
 import { MockedServerContext } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 
-import { UiKitContext } from '../contexts/UiKitContext';
-import { messageParser } from '../surfaces';
+import { UiKitContext } from '../contexts/UiKitContext.js';
+import { messageParser } from '../surfaces/index.js';
 
 const renderFeedback = (action = jest.fn(), negativeValue = 'bad') => {
 	render(

@@ -2,8 +2,13 @@ import type { ClassificationBannerPayload, ClassificationBannerSegment, IAbacAtt
 import { isABACManagedRoom, isDiscussion, isOmnichannelRoom, isRoomFederated, isRoomXMPPFederated } from '@rocket.chat/core-typings';
 import { isTruthy } from '@rocket.chat/tools';
 
-import { readableTextColor } from './colors';
-import type { ClassificationBannerAttribute, ClassificationBannersConfig, ClassificationRoomMatch, ClassificationRoomType } from './types';
+import { readableTextColor } from './colors.js';
+import type {
+	ClassificationBannerAttribute,
+	ClassificationBannersConfig,
+	ClassificationRoomMatch,
+	ClassificationRoomType,
+} from './types.js';
 
 export const parseClassificationBannersConfig = (raw: string): ClassificationBannersConfig | null => {
 	try {

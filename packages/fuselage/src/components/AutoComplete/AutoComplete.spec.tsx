@@ -1,12 +1,12 @@
 import { composeStories } from '@storybook/react';
 import { screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 
-import AutoComplete from './AutoComplete';
-import * as stories from './AutoComplete.stories';
-import { withResizeObserverMock } from '../../../mocks/withResizeObserverMock';
-import { render } from '../../testing';
+import AutoComplete from './AutoComplete.js';
+import * as stories from './AutoComplete.stories.js';
+import { withResizeObserverMock } from '../../../mocks/withResizeObserverMock.js';
+import { render } from '../../testing.js';
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 

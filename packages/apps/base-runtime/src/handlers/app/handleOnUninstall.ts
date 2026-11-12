@@ -1,9 +1,9 @@
-import type { App } from '@rocket.chat/apps-engine/definition/App';
+import type { App } from '@rocket.chat/apps-engine/definition/App.js';
 
-import { AppObjectRegistry } from '../../AppObjectRegistry';
-import { AppAccessorsInstance } from '../../lib/accessors/mod';
-import type { RequestContext } from '../../lib/requestContext';
-import { wrapAppForRequest } from '../../lib/wrapAppForRequest';
+import { AppObjectRegistry } from '../../AppObjectRegistry.js';
+import { AppAccessorsInstance } from '../../lib/accessors/mod.js';
+import type { RequestContext } from '../../lib/requestContext.js';
+import { wrapAppForRequest } from '../../lib/wrapAppForRequest.js';
 
 export default async function handleOnUninstall(request: RequestContext): Promise<boolean> {
 	const { params } = request;

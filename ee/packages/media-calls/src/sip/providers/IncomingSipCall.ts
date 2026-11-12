@@ -4,16 +4,16 @@ import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 import type { SipMessage, SrfRequest, SrfResponse } from 'drachtio-srf';
 import type Srf from 'drachtio-srf';
 
-import { BaseSipCall } from './BaseSipCall';
-import { SIP_CALL_FEATURES } from '../../constants';
-import { CallRejectedError } from '../../definition/common';
-import { logger } from '../../logger';
-import { BroadcastActorAgent } from '../../server/BroadcastAgent';
-import { mediaCallDirector } from '../../server/CallDirector';
-import { getMediaCallServer } from '../../server/injection';
-import type { SipServerSession } from '../Session';
-import { SipError, SipErrorCodes } from '../errorCodes';
-import { parseDiversionHeader } from '../utils/parseDiversionHeader';
+import { BaseSipCall } from './BaseSipCall.js';
+import { SIP_CALL_FEATURES } from '../../constants.js';
+import { CallRejectedError } from '../../definition/common.js';
+import { logger } from '../../logger.js';
+import { BroadcastActorAgent } from '../../server/BroadcastAgent.js';
+import { mediaCallDirector } from '../../server/CallDirector.js';
+import { getMediaCallServer } from '../../server/injection.js';
+import type { SipServerSession } from '../Session.js';
+import { SipError, SipErrorCodes } from '../errorCodes.js';
+import { parseDiversionHeader } from '../utils/parseDiversionHeader.js';
 
 export class IncomingSipCall extends BaseSipCall {
 	constructor(

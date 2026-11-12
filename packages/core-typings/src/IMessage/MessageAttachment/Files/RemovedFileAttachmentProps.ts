@@ -1,5 +1,5 @@
-import type { MessageAttachmentBase } from '../MessageAttachmentBase';
-import type { FileProp } from './FileProp';
+import type { MessageAttachmentBase } from '../MessageAttachmentBase.js';
+import type { FileProp } from './FileProp.js';
 
 export type RemovedFileAttachmentProps = MessageAttachmentBase & {
 	type: 'removed-file';

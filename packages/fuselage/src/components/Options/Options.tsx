@@ -1,15 +1,15 @@
 import type { ComponentType, MouseEventHandler, ReactNode } from 'react';
 import { useId, useLayoutEffect, useMemo, useRef } from 'react';
 
-import { prevent } from '../../helpers/prevent';
-import type { ElementProps } from '../../types/ElementProps';
-import { Box, type BoxProps } from '../Box';
-import { ItemDivider } from '../Item';
-import { Option, OptionHeader } from '../Option';
-import { PopoverSurface } from '../PopoverSurface';
-import { Scrollable } from '../Scrollable';
-import type { OptionType } from './OptionType';
-import OptionsEmpty from './OptionsEmpty';
+import type { OptionType } from './OptionType.js';
+import OptionsEmpty from './OptionsEmpty.js';
+import { prevent } from '../../helpers/prevent.js';
+import type { ElementProps } from '../../types/ElementProps.js';
+import { Box, type BoxProps } from '../Box/index.js';
+import { ItemDivider } from '../Item/index.js';
+import { Option, OptionHeader } from '../Option/index.js';
+import { PopoverSurface } from '../PopoverSurface/index.js';
+import { Scrollable } from '../Scrollable/index.js';
 
 export type OptionsProps<TValue extends string | number = string | number, TLabel = ReactNode> = Omit<
 	ElementProps<HTMLElement>,

@@ -1,8 +1,8 @@
-import type { MessageAttachmentBase } from '../MessageAttachmentBase';
-import type { AudioAttachmentProps } from './AudioAttachmentProps';
-import type { FileProp } from './FileProp';
-import type { ImageAttachmentProps } from './ImageAttachmentProps';
-import type { VideoAttachmentProps } from './VideoAttachmentProps';
+import type { MessageAttachmentBase } from '../MessageAttachmentBase.js';
+import type { AudioAttachmentProps } from './AudioAttachmentProps.js';
+import type { FileProp } from './FileProp.js';
+import type { ImageAttachmentProps } from './ImageAttachmentProps.js';
+import type { VideoAttachmentProps } from './VideoAttachmentProps.js';
 
 type CommonFileProps = {
 	type: 'file';

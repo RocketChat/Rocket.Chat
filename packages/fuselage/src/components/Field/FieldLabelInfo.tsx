@@ -1,7 +1,7 @@
-import { FieldContext } from './Field';
-import WithErrorWrapper from '../../helpers/WithErrorWrapper';
-import type { LabelInfoProps } from '../Label/LabelInfo';
-import { LabelInfo } from '../Label/LabelInfo';
+import { FieldContext } from './Field.js';
+import WithErrorWrapper from '../../helpers/WithErrorWrapper.js';
+import type { LabelInfoProps } from '../Label/LabelInfo.js';
+import { LabelInfo } from '../Label/LabelInfo.js';
 
 export type FieldLabelInfoProps = LabelInfoProps;
 

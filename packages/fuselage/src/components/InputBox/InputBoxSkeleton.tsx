@@ -1,6 +1,6 @@
-import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
-import { Skeleton } from '../Skeleton';
+import type { ElementProps } from '../../types/ElementProps.js';
+import { Box } from '../Box/index.js';
+import { Skeleton } from '../Skeleton/index.js';
 
 export type InputBoxSkeletonProps = ElementProps<HTMLDivElement>;
 

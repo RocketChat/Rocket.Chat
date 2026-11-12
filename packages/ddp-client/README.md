@@ -23,7 +23,7 @@ The package also exports `LivechatClientImpl`, the client the Omnichannel Livech
 npm install @rocket.chat/ddp-client @rocket.chat/emitter
 ```
 
-The package is published as CommonJS with TypeScript declarations.
+The package is published as an ES module with TypeScript declarations.
 
 It uses the global `WebSocket` and `fetch`. Browsers and Node.js 22 or later provide both. On older Node.js versions, assign an implementation such as [`ws`](https://www.npmjs.com/package/ws) to `globalThis.WebSocket` before creating the SDK.
 

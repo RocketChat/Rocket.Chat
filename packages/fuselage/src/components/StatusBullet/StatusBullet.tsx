@@ -1,11 +1,11 @@
 import type { AllHTMLAttributes } from 'react';
 
-import Away from './icons/Away';
-import Busy from './icons/Busy';
-import Disabled from './icons/Disabled';
-import Loading from './icons/Loading';
-import Offline from './icons/Offline';
-import Online from './icons/Online';
+import Away from './icons/Away.js';
+import Busy from './icons/Busy.js';
+import Disabled from './icons/Disabled.js';
+import Loading from './icons/Loading.js';
+import Offline from './icons/Offline.js';
+import Online from './icons/Online.js';
 
 export type StatusBulletProps = {
 	status?: 'loading' | 'online' | 'busy' | 'away' | 'offline' | 'disabled';

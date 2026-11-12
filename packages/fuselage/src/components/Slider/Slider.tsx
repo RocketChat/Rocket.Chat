@@ -4,10 +4,10 @@ import type { AriaSliderProps } from 'react-aria';
 import { useNumberFormatter, useSlider } from 'react-aria';
 import { useSliderState } from 'react-stately';
 
-import { SliderHead } from './SliderHead';
-import { SliderThumb } from './SliderThumb';
-import { SliderTrack } from './SliderTrack';
-import { prependClassName } from '../../helpers/prependClassName';
+import { SliderHead } from './SliderHead.js';
+import { SliderThumb } from './SliderThumb.js';
+import { SliderTrack } from './SliderTrack.js';
+import { prependClassName } from '../../helpers/prependClassName.js';
 
 export type SliderProps<T extends number | number[]> = AriaAttributes &
 	RefAttributes<HTMLDivElement> & {

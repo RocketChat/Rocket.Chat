@@ -2,7 +2,7 @@ import type { IReadReceipt } from '@rocket.chat/core-typings';
 import type { IReadReceiptsModel } from '@rocket.chat/model-typings';
 import type { FindCursor, DeleteResult } from 'mongodb';
 
-import { BaseDummy } from './BaseDummy';
+import { BaseDummy } from './BaseDummy.js';
 
 export class ReadReceiptsDummy extends BaseDummy<IReadReceipt> implements IReadReceiptsModel {
 	constructor() {

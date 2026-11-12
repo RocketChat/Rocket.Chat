@@ -1,22 +1,22 @@
 import * as assert from 'node:assert';
 import { describe, it } from 'node:test';
 
-import { EVENT_RESULT_KIND, EventResult } from '@rocket.chat/apps-engine/definition/eventResult';
+import { EVENT_RESULT_KIND, EventResult } from '@rocket.chat/apps-engine/definition/eventResult/index.js';
 import type {
 	IMediaCall,
 	IMediaCallEndedContext,
 	IMediaCallParticipantJoinedContext,
 	IMediaCallStartedContext,
 	IPreMediaCallCreatedContext,
-} from '@rocket.chat/apps-engine/definition/mediaCalls';
-import { AppInterface, AppMethod } from '@rocket.chat/apps-engine/definition/metadata';
+} from '@rocket.chat/apps-engine/definition/mediaCalls/index.js';
+import { AppInterface, AppMethod } from '@rocket.chat/apps-engine/definition/metadata/index.js';
 
-import type { AppManager } from '../../../src/server/AppManager';
-import type { ProxiedApp } from '../../../src/server/ProxiedApp';
-import { AppListenerManager } from '../../../src/server/managers';
-import type { MediaCallEvent, PreMediaCallCreatedOutcome } from '../../../src/server/mediaCalls';
-import { JSONRPC_METHOD_NOT_FOUND } from '../../../src/server/runtime/base/BaseRuntimeSubprocessController';
-import type { IAppStorageItem } from '../../../src/server/storage';
+import type { AppManager } from '../../../src/server/AppManager.js';
+import type { ProxiedApp } from '../../../src/server/ProxiedApp.js';
+import { AppListenerManager } from '../../../src/server/managers/index.js';
+import type { MediaCallEvent, PreMediaCallCreatedOutcome } from '../../../src/server/mediaCalls/index.js';
+import { JSONRPC_METHOD_NOT_FOUND } from '../../../src/server/runtime/base/BaseRuntimeSubprocessController.js';
+import type { IAppStorageItem } from '../../../src/server/storage/index.js';
 
 type AppMethodHandlers = Record<string, (...args: any[]) => unknown>;
 

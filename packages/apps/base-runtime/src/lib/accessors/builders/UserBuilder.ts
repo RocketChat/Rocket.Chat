@@ -1,8 +1,8 @@
-import type { IUserBuilder } from '@rocket.chat/apps-engine/definition/accessors/IUserBuilder';
-import { RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations';
-import type { IUser } from '@rocket.chat/apps-engine/definition/users/IUser';
-import type { IUserEmail } from '@rocket.chat/apps-engine/definition/users/IUserEmail';
-import type { IUserSettings } from '@rocket.chat/apps-engine/definition/users/IUserSettings';
+import type { IUserBuilder } from '@rocket.chat/apps-engine/definition/accessors/IUserBuilder.js';
+import { RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations.js';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users/IUser.js';
+import type { IUserEmail } from '@rocket.chat/apps-engine/definition/users/IUserEmail.js';
+import type { IUserSettings } from '@rocket.chat/apps-engine/definition/users/IUserSettings.js';
 
 export class UserBuilder implements IUserBuilder {
 	public kind: RocketChatAssociationModel.USER;

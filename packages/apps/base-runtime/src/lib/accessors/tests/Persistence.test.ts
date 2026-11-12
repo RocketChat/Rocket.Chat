@@ -1,8 +1,8 @@
 import * as assert from 'node:assert';
 import { describe, it } from 'node:test';
 
-import { Persistence } from '../Persistence';
-import { createRecordingSender } from './helpers/parityHarness';
+import { Persistence } from '../Persistence.js';
+import { createRecordingSender } from './helpers/parityHarness.js';
 
 const setup = () => {
 	const rec = createRecordingSender();

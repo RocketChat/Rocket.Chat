@@ -1,4 +1,4 @@
-import type { IExternalComponentRoomInfo, IExternalComponentUserInfo } from './index';
+import type { IExternalComponentRoomInfo, IExternalComponentUserInfo } from './index.js';
 
 /**
  * The response to the AppClientSDK's API call.

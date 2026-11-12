@@ -2,9 +2,9 @@ import { createHash } from 'node:crypto';
 
 import * as jose from 'jose';
 
-import type { AppManager } from '../AppManager';
-import type { IInternalFederationBridge } from '../bridges';
-import type { IAppStorageItem } from '../storage';
+import type { AppManager } from '../AppManager.js';
+import type { IInternalFederationBridge } from '../bridges/index.js';
+import type { IAppStorageItem } from '../storage/index.js';
 
 export class AppSignatureManager {
 	private readonly federationBridge: IInternalFederationBridge;
