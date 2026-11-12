@@ -4,7 +4,6 @@ import {
 	buttonBoxShadow,
 	buttonChrome,
 	disabledStyle,
-	font,
 	paintStyle,
 	segmentRaise,
 	segmentRaiseBadged,
@@ -13,6 +12,7 @@ import {
 	statesOf,
 } from './lib/buttonFrames.mts';
 import { ghostPalettes, iconPalettes, kindColors, kinds } from './lib/buttonPalettes.mts';
+import { font } from './lib/frameTokens.mts';
 import { literal, type Value } from './lib/literal.mts';
 import type { Target } from './lib/target.mts';
 import { fontColor } from '../../src/styleTokens.ts';
@@ -125,6 +125,8 @@ const generateIconButton = () => {
 	});
 	constant('content', {
 		render: 'span',
+		// Tamagui's `:where(.is_Text)` reset only exists in the zero build
+		boxSizing: 'content-box',
 		display: 'flex',
 		flexDirection: 'row',
 		justifyContent: 'center',

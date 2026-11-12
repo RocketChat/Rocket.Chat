@@ -42,6 +42,22 @@ describe('[ToastBar Roles]', () => {
 	});
 });
 
+describe('[ToastBar time]', () => {
+	it('hands the progress bar its duration', () => {
+		const { container } = render(<ToastBar time={3}>Message</ToastBar>);
+		expect(container.querySelector<HTMLElement>('.rcx-toastbar_progressbar')?.style.getPropertyValue('--rcx-toastbar-time')).toBe('3s');
+	});
+
+	it('pauses the progress bar through its class', () => {
+		const { container } = render(
+			<ToastBar time={3} isPaused>
+				Message
+			</ToastBar>,
+		);
+		expect(container.querySelector('.rcx-toastbar_progressbar')).toHaveClass('rcx-toastbar_progressbar--paused');
+	});
+});
+
 describe('[ToastBar id]', () => {
 	it('renders the id it receives on the root', () => {
 		const { container } = render(<ToastBar id='toast-1'>Message</ToastBar>);

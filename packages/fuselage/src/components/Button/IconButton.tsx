@@ -1140,6 +1140,7 @@ const badge = {
 
 const content = {
 	render: 'span',
+	boxSizing: 'content-box',
 	display: 'flex',
 	flexDirection: 'row',
 	justifyContent: 'center',

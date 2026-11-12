@@ -423,7 +423,18 @@
 			"rules": {
 				"rocket.chat/render-element-spread": [
 					"error",
-					{ "safeCalls": ["ariaAndDataAttributes", "pickWebPressHandlers", "pickWebDropHandlers", "pickWebCaptureHandlers"] }
+					{
+						"safeCalls": [
+							"ariaAndDataAttributes",
+							"customProperties",
+							"pickPositionStyle",
+							"pickSvgTitle",
+							"pickWebAnimationHandlers",
+							"pickWebCaptureHandlers",
+							"pickWebDropHandlers",
+							"pickWebPressHandlers"
+						]
+					}
 				]
 			}
 		},

@@ -2,9 +2,7 @@ import type { kindColors } from './buttonPalettes.mts';
 import type { Value } from './literal.mts';
 import { zIndex } from './tokens.mts';
 import { toCSSValue } from '../../../src/helpers/toCSSValue.ts';
-import { borderRadius, borderWidth, fontScale, size, type FontScaleName } from '../../../src/styleTokens.ts';
-
-export const font = (name: FontScaleName) => fontScale(name) as unknown as Record<string, Value>;
+import { borderRadius, borderWidth, size } from '../../../src/styleTokens.ts';
 
 type Colors = ReturnType<typeof kindColors>;
 

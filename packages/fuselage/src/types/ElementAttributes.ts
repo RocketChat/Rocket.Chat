@@ -1,4 +1,14 @@
-import type { AnchorHTMLAttributes, AriaAttributes, AriaRole, ButtonHTMLAttributes, DOMAttributes, InputHTMLAttributes, Ref } from 'react';
+import type {
+	AnchorHTMLAttributes,
+	AriaAttributes,
+	AriaRole,
+	ButtonHTMLAttributes,
+	CSSProperties,
+	DOMAttributes,
+	ImgHTMLAttributes,
+	InputHTMLAttributes,
+	Ref,
+} from 'react';
 
 // The groups without `Web` in their name use no DOM type, so a React Native build of a part keeps them and replaces
 // only the `Web…` groups: its handlers take its own events and its `ref` points at its own host view.
@@ -88,6 +98,29 @@ export const webCaptureHandlerKeys = ['onClick', 'onKeyDownCapture', 'onFocusCap
 
 export type WebCaptureHandlers<TElement extends Element> = Pick<DOMAttributes<TElement>, (typeof webCaptureHandlerKeys)[number]>;
 
+/** What `AnimatedVisibility` patches onto its child to follow the end of its animation. The key list builds both the type and `pickWebAnimationHandlers`. */
+export const webAnimationHandlerKeys = ['onAnimationEnd'] as const;
+
+export type WebAnimationHandlers<TElement extends Element> = Pick<DOMAttributes<TElement>, (typeof webAnimationHandlerKeys)[number]>;
+
+/** The `style` keys `usePosition` returns: the only inline style a part accepts, from the `Position` that places it. */
+export const positionStyleKeys = ['position', 'top', 'left', 'bottom', 'zIndex', 'opacity', 'visibility', 'overflowY'] as const;
+
+export type PositionStyle = Pick<CSSProperties, (typeof positionStyleKeys)[number]>;
+
+/** Where a placed part sits relative to its anchor, as `usePosition` resolves it. */
+export type Placement =
+	'top-start' | 'top-middle' | 'top-end' | 'bottom-start' | 'bottom-middle' | 'bottom-end' | 'top' | 'left' | 'bottom' | 'right';
+
+/** What `Position` hands the part it places, which is the one exception to a part taking no `style`. */
+export type PositionedAttributes = {
+	style?: PositionStyle;
+	placement?: Placement | null;
+};
+
+/** What a part that renders an `img` forwards to it besides its own `className`. */
+export type ImageAttributes = Pick<ImgHTMLAttributes<HTMLImageElement>, 'alt' | 'onLoad' | 'onError'>;
+
 /** The `ref` of a part's `button` branch and of its `a` branch, for casting the flat `ButtonOrAnchorAttributes` ref. */
 export type ButtonRef = Ref<HTMLButtonElement>;
 export type AnchorRef = Ref<HTMLAnchorElement>;
@@ -158,5 +191,40 @@ export type SpanOrAnchorAttributes = ActionAttributes<HTMLElement> &
 /** What a part rendered as a `div` that only shows something forwards. */
 export type DivAttributes = PartAttributes<HTMLDivElement>;
 
+/** The element of a `div` part, for a ref the part measures its own size through. */
+export type DivElement = HTMLDivElement;
+
+/** The press handlers of a part rendered as a `div`. */
+export type DivPressHandlers = WebPressHandlers<HTMLDivElement>;
+
+/** What a part rendered as a `section` that only shows something forwards. */
+export type SectionAttributes = PartAttributes<HTMLElement>;
+
+/** The element of a `section` part, for a ref the part measures its own size through. */
+export type SectionElement = HTMLElement;
+
 /** What a toolbar rendered as a `div` listens to. */
 export type DivCaptureHandlers = WebCaptureHandlers<HTMLDivElement>;
+
+/** What a part rendered as an `hr`, or as a `div` when it has a label, forwards. The `ref` is typed for both tags; each branch casts it to `HrRef` or `DivRef`. */
+export type SeparatorAttributes = PartAttributes<HTMLElement>;
+export type HrRef = Ref<HTMLHRElement>;
+export type DivRef = Ref<HTMLDivElement>;
+
+/** What a part that only shows something and renders an `svg` forwards. */
+export type SvgAttributes = PartAttributes<SVGSVGElement>;
+
+/** What `AnimatedVisibility` patches onto a part rendered as a `div`. */
+export type DivAnimationHandlers = WebAnimationHandlers<HTMLDivElement>;
+
+/** What a part rendered as a `pre` that only shows something forwards. */
+export type PreAttributes = PartAttributes<HTMLPreElement>;
+
+/** What a part rendered as a `div` that acts when pressed forwards. */
+export type DivActionAttributes = ActionAttributes<HTMLDivElement>;
+
+/** What a part rendered as a `figure`, or another plain element, that acts when pressed forwards. */
+export type ElementActionAttributes = ActionAttributes<HTMLElement>;
+
+/** What a part that renders an `img` forwards, with its image attributes. */
+export type ImageActionAttributes = ActionAttributes<HTMLImageElement> & ImageAttributes;

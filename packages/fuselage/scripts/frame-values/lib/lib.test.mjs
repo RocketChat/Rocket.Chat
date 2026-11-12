@@ -2,8 +2,10 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { moduleProblems, spacingProperties, stylesheetProblems, transformProblems } from './check.mts';
+import { elevation } from './elevation.mts';
 import { literal } from './literal.mts';
 import { markers } from './markers.mts';
+import { statusPalettes } from './statusPalettes.mts';
 import { textFrameDefaults } from './textFrameDefaults.mts';
 import { offScale } from './tokens.mts';
 
@@ -80,4 +82,21 @@ test('a transform that starts with none and goes on is a problem', () => {
 	assert.equal(transformProblems('f.tsx', '{ transform: "translate(1px) translateY(1px)" }').length, 0);
 	assert.equal(transformProblems('f.tsx', '{ transform: { "press": "none translateY(1px)" } }').length, 1);
 	assert.equal(transformProblems('f.tsx', '{ transform: "none translateY(1px)" }').length, 1);
+});
+
+test('the status palettes hold the font and background of each of the four tones', () => {
+	const palettes = statusPalettes();
+
+	assert.deepEqual(Object.keys(palettes), ['info', 'success', 'warning', 'danger']);
+	assert.match(palettes.danger.font, /^var\(--rcx-color-status-font-on-danger, /);
+	assert.match(palettes.info.background, /^var\(--rcx-color-status-background-info, /);
+});
+
+test('an elevation level has a border unless it is no-border', () => {
+	const levels = elevation();
+
+	assert.equal(levels['0'].boxShadow, 'none');
+	assert.equal(Object.hasOwn(levels['1'], 'borderColor'), true);
+	assert.equal(Object.hasOwn(levels['2nb'], 'borderColor'), false);
+	assert.equal(levels['1nb'].boxShadow, levels['1'].boxShadow);
 });

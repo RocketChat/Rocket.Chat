@@ -131,8 +131,8 @@ export const AlignItems: Story = {
 				<Box>
 					{Array.from({ length: 3 }, (_, i) => (
 						<FlexItem key={i}>
-							<Box>
-								<Tile style={{ height: i * 100 }}>#{i + 1}</Tile>
+							<Box display='flex' height={i * 100}>
+								<Tile>#{i + 1}</Tile>
 							</Box>
 						</FlexItem>
 					))}
@@ -144,18 +144,20 @@ export const AlignItems: Story = {
 
 export const AlignContent: Story = {
 	render: () => (
-		<Tile style={{ display: 'flex', minHeight: 400 }}>
-			<FlexContainer wrap='wrap' alignContent='end'>
-				<Box flexGrow={1}>
-					{Array.from({ length: 12 }, (_, i) => (
-						<FlexItem key={i}>
-							<Box>
-								<Tile>#{i + 1}</Tile>
-							</Box>
-						</FlexItem>
-					))}
-				</Box>
-			</FlexContainer>
+		<Tile>
+			<Box display='flex' minHeight={400}>
+				<FlexContainer wrap='wrap' alignContent='end'>
+					<Box flexGrow={1}>
+						{Array.from({ length: 12 }, (_, i) => (
+							<FlexItem key={i}>
+								<Box>
+									<Tile>#{i + 1}</Tile>
+								</Box>
+							</FlexItem>
+						))}
+					</Box>
+				</FlexContainer>
+			</Box>
 		</Tile>
 	),
 };
@@ -266,26 +268,28 @@ export const Basis: Story = {
 
 export const Align: Story = {
 	render: () => (
-		<Tile style={{ display: 'flex', minHeight: 400 }}>
-			<FlexContainer alignItems='center'>
-				<Box flexGrow={1}>
-					<FlexItem>
-						<Box>
-							<Tile>#1</Tile>
-						</Box>
-					</FlexItem>
-					<FlexItem align='end'>
-						<Box>
-							<Tile>#2</Tile>
-						</Box>
-					</FlexItem>
-					<FlexItem>
-						<Box>
-							<Tile>#3</Tile>
-						</Box>
-					</FlexItem>
-				</Box>
-			</FlexContainer>
+		<Tile>
+			<Box display='flex' minHeight={400}>
+				<FlexContainer alignItems='center'>
+					<Box flexGrow={1}>
+						<FlexItem>
+							<Box>
+								<Tile>#1</Tile>
+							</Box>
+						</FlexItem>
+						<FlexItem align='end'>
+							<Box>
+								<Tile>#2</Tile>
+							</Box>
+						</FlexItem>
+						<FlexItem>
+							<Box>
+								<Tile>#3</Tile>
+							</Box>
+						</FlexItem>
+					</Box>
+				</FlexContainer>
+			</Box>
 		</Tile>
 	),
 };

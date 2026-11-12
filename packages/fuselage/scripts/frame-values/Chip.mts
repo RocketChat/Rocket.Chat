@@ -78,6 +78,18 @@ const generate = () => {
 		outlineStyle: 'none',
 	};
 
+	// The default thumb wraps the avatar in a box that lays out like one
+	const thumb: Record<string, Value> = {
+		render: 'div',
+		display: 'inline-flex',
+		flexDirection: 'row',
+		alignItems: 'normal',
+		flexShrink: 1,
+		minWidth: 'auto',
+		minHeight: 'auto',
+		verticalAlign: 'middle',
+	};
+
 	const constant = (name: string, value: Value) => `const ${name} = ${literal(value)} as const;`;
 
 	return [
@@ -87,6 +99,7 @@ const generate = () => {
 		constant('chipRegular', { height: size('x28')!, minHeight: size('x28')! }),
 		constant('chipSmall', { height: size('x20')!, minHeight: size('x20')! }),
 		constant('chipText', text),
+		constant('chipThumb', thumb),
 	].join('\n');
 };
 

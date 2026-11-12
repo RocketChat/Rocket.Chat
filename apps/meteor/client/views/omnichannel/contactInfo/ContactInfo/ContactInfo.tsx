@@ -1,6 +1,5 @@
 import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
-import { css } from '@rocket.chat/css-in-js';
-import { Box, Button, ButtonGroup, Callout, IconButton, Tabs, TabsItem, Text, useStyle } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Callout, IconButton, Tabs, TabsItem, Text } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import {
 	ContextualbarHeader,
@@ -29,10 +28,6 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 	const { t } = useTranslation();
 
 	const setModal = useSetModal();
-	const conflictsCalloutClassName = useStyle(css`
-		margin-block-end: 8px !important;
-		align-items: center !important;
-	`);
 	const handleNavigate = useContactRoute();
 	const context = useRouteParameter('context');
 
@@ -51,7 +46,7 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 				<ContextualbarTitle>{t('Contact')}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
-			<Box display='flex' flexDirection='column' paddingInline={24}>
+			<Box display='flex' flexDirection='column' paddingInline={24} paddingBlockEnd={hasConflicts ? 'x8' : undefined}>
 				{name && (
 					<Box width='100%' paddingBlock={16} display='flex' alignItems='center' justifyContent='space-between'>
 						<Box withTruncatedText display='flex'>
@@ -74,7 +69,7 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 				)}
 				{hasConflicts && (
 					<Callout
-						className={conflictsCalloutClassName}
+						centered
 						icon='members'
 						actions={
 							<ButtonGroup>

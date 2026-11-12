@@ -33,6 +33,7 @@ $sidepanel-color-default: colors.font(default);
 	&-header {
 		@extend %section-base;
 		height: lengths.size(44);
+		margin-block-end: lengths.margin(-2);
 		padding-inline: lengths.padding(16);
 
 		&__title {
@@ -44,10 +45,6 @@ $sidepanel-color-default: colors.font(default);
 
 	&--divider {
 		border-color: colors.stroke(light);
-
-		&.rcx-divider {
-			margin-block: lengths.margin(-2) lengths.margin(none);
-		}
 
 		&.rcx-item-divider::before {
 			border-color: colors.stroke(light);

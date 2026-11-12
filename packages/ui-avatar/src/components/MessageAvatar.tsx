@@ -1,6 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
+import type { AvatarContainerProps } from '@rocket.chat/fuselage';
 import { AvatarContainer, Box } from '@rocket.chat/fuselage';
-import type { ComponentProps, HTMLAttributes, ReactNode } from 'react';
+import type { ComponentProps, ReactNode } from 'react';
 
 import UserAvatar from './UserAvatar';
 
@@ -9,7 +10,7 @@ export type MessageAvatarProps = {
 	avatarUrl?: string;
 	username: string;
 	size?: ComponentProps<typeof UserAvatar>['size'];
-} & Omit<HTMLAttributes<HTMLElement>, 'is'>;
+} & Omit<AvatarContainerProps, 'size' | 'children' | 'ref'>;
 
 const DEFAULT_EMOJI_SIZE = '2.25rem';
 

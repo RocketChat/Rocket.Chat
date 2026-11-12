@@ -1,4 +1,11 @@
-import { webCaptureHandlerKeys, webDropHandlerKeys, webPressHandlerKeys } from '../types/ElementAttributes';
+import type { PositionStyle } from '../types/ElementAttributes';
+import {
+	positionStyleKeys,
+	webAnimationHandlerKeys,
+	webCaptureHandlerKeys,
+	webDropHandlerKeys,
+	webPressHandlerKeys,
+} from '../types/ElementAttributes';
 
 const pick =
 	<const TKeys extends readonly string[]>(keys: TKeys) =>
@@ -19,3 +26,16 @@ export const pickWebDropHandlers = pick(webDropHandlerKeys);
 
 /** The `WebCaptureHandlers` a consumer passed, to spread on the literal render element. */
 export const pickWebCaptureHandlers = pick(webCaptureHandlerKeys);
+
+/** The `WebAnimationHandlers` a consumer passed, to spread on the literal render element. */
+export const pickWebAnimationHandlers = pick(webAnimationHandlerKeys);
+
+/** The `style` a `Position` handed the part, narrowed to `PositionStyle`, to spread on the literal render element. */
+export const pickPositionStyle = ({ style }: { style?: object }): { style?: PositionStyle } => {
+	if (!style) return {};
+	const picked = pick(positionStyleKeys)(style);
+	return Object.keys(picked).length > 0 ? { style: picked } : {};
+};
+
+/** The `title` of a part that renders an `svg`, whose typings leave the attribute out, to spread on the literal render element. */
+export const pickSvgTitle = ({ title }: { title?: string }): { title?: string } => (title === undefined ? {} : { title });

@@ -88,6 +88,16 @@ const chipText = {
 	fontVariantNumeric: 'tabular-nums',
 	outlineStyle: 'none',
 } as const;
+const chipThumb = {
+	render: 'div',
+	display: 'inline-flex',
+	flexDirection: 'row',
+	alignItems: 'normal',
+	flexShrink: 1,
+	minWidth: 'auto',
+	minHeight: 'auto',
+	verticalAlign: 'middle',
+} as const;
 
 // end of generated
 
@@ -117,10 +127,12 @@ const ChipText = styled(Text, {
 	...chipText,
 });
 
+const ChipThumb = styled(View, { ...chipThumb });
+
 const defaultRenderThumb = ({ url }: { url: string }) => (
-	<div className='rcx-box rcx-box--full rcx-avatar'>
+	<ChipThumb className='rcx-box rcx-box--full rcx-avatar'>
 		<Avatar size='x20' url={url} />
-	</div>
+	</ChipThumb>
 );
 const defaultRenderDismissSymbol = () => <Icon name='cross' size='x16' />;
 

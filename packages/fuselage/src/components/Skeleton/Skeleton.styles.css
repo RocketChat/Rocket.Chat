@@ -1,0 +1,33 @@
+/* A keyframe animation and the font smoothing the box reset gave it, neither of which a frame can express */
+.rcx-skeleton {
+	animation: rcx-skeleton__animation 1s linear 0s infinite running;
+
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+@keyframes rcx-skeleton__animation {
+	0% {
+		background-position: 0 0;
+	}
+
+	100% {
+		background-position: 100vw 0;
+	}
+}
+
+/* A pseudo-element the part draws itself: it keeps an empty text placeholder one line tall */
+.rcx-skeleton--text:empty::before {
+	content: '\00a0';
+}
+
+/* The part's open values, which its frame reads through var() */
+@property --rcx-skeleton-width {
+	inherits: false;
+	syntax: '*';
+}
+
+@property --rcx-skeleton-height {
+	inherits: false;
+	syntax: '*';
+}

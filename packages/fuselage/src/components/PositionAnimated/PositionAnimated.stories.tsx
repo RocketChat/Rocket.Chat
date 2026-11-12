@@ -58,7 +58,7 @@ export default {
 		},
 	},
 	render: (args) => {
-		const ref = useRef<HTMLElement>(null);
+		const ref = useRef<HTMLDivElement>(null);
 
 		return (
 			<>
@@ -66,7 +66,9 @@ export default {
 					<Box padding={12}>Anchor element</Box>
 				</Tile>
 				<PositionAnimated {...args} anchor={ref}>
-					<Tile>Positioned element</Tile>
+					<Box>
+						<Tile>Positioned element</Tile>
+					</Box>
 				</PositionAnimated>
 			</>
 		);

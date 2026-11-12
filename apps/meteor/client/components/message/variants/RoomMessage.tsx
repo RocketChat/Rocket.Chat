@@ -135,7 +135,6 @@ const RoomMessage = ({
 							e.stopPropagation();
 							openUserInfo(message.u.username);
 						}}
-						style={{ cursor: 'pointer' }}
 						// Redundant pointer-only shortcut for the accessible name button next to it
 						aria-hidden='true'
 					/>

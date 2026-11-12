@@ -60,7 +60,6 @@ const ThreadMessage = ({ message, sequential, unread, showUserAvatar, ignoredUse
 						size='x36'
 						onMouseEnter={(e) => openUserCard(e, message.u.username)}
 						onClick={() => openUserInfo(message.u.username)}
-						style={{ cursor: 'pointer' }}
 						// Redundant pointer-only shortcut for the accessible name button next to it
 						aria-hidden='true'
 					/>

@@ -4,26 +4,18 @@
 @use '../../styles/functions.scss' as *;
 @use '../../styles/mixins/elevation.scss' as *;
 
-$tile-border-radius: theme('tile-border-radius', lengths.border-radius(medium));
+$popover-surface-border-radius: theme('tile-border-radius', lengths.border-radius(medium));
 
-.rcx-tile {
+.rcx-popover-surface {
 	display: block;
 
-	padding: lengths.padding(16);
+	padding: lengths.padding(none);
 
 	color: colors.font(default);
-	border-radius: $tile-border-radius;
+	border-radius: $popover-surface-border-radius;
 	background-color: colors.surface(light);
 
 	@include use-font-scale(p2);
-
-	&--flush {
-		padding: lengths.padding(none);
-	}
-
-	&--elevation-0 {
-		box-shadow: none;
-	}
 
 	&--elevation-1 {
 		@include elevation-level(1);

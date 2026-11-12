@@ -7,7 +7,7 @@ export type SidepanelHeaderProps = HTMLAttributes<HTMLDivElement>;
 const SidepanelHeader = ({ className, ...props }: SidepanelHeaderProps) => (
 	<div className='rcx-sidepanel-header-wrapper'>
 		<div className={['rcx-sidepanel-header', className].filter(Boolean).join(' ')} {...props} />
-		<Divider className='rcx-sidepanel--divider' />
+		<Divider flush variation='light' className='rcx-sidepanel--divider' />
 	</div>
 );
 

@@ -71,8 +71,7 @@
 		"apps/meteor/server/routes/avatar/middlewares/browserVersion.ts: .rcx-box--text-color-primary {",
 		"apps/meteor/server/routes/avatar/middlewares/browserVersion.ts: .rcx-box--text-style-headline {",
 		"apps/meteor/server/routes/avatar/middlewares/browserVersion.ts: .rcx-box.rcx-\\@s6mi60{margin:0.75rem !important;}.rcx-box.rcx-\\@19aubzx{margin:2rem !important;}.rcx-box.rcx-\\@1kgm1vs{-webkit-align-items:c",
-		"packages/fuselage/src/components/Margins/Margins.tsx: &:not(.rcx-box--full) {",
-		"packages/fuselage/src/components/Skeleton/Skeleton.styles.scss: @extend .rcx-box;"
+		"packages/fuselage/src/components/Margins/Margins.tsx: &:not(.rcx-box--full) {"
 	],
 	"rcx-modal": [
 		"apps/meteor/client/views/modal/uikit/ModalBlock.tsx: const container = element.querySelector('.rcx-modal__content') as HTMLElement;",
@@ -115,9 +114,6 @@
 	],
 	"rcx-input-box": [
 		"packages/fuselage/src/components/Select/Select.styles.scss: @extend .rcx-input-box__addon;"
-	],
-	"rcx-divider": [
-		"packages/fuselage/src/components/Sidepanel/Sidepanel.styles.scss: &.rcx-divider {"
 	],
 	"rcx-tag": [
 		"packages/fuselage/src/styles/normalize.scss: a:where(:not(.rcx-button, .rcx-item, .rcx-item__link, .rcx-tag)) {"
