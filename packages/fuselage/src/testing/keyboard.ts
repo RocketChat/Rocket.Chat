@@ -81,8 +81,10 @@ export const expectCombobox = async (input: HTMLElement, options: HTMLElement[],
 	await expect(input).toHaveFocus();
 	await expect(input).toHaveAttribute('aria-activedescendant', options[0].id);
 	await user.keyboard('{ArrowDown}');
+	await expect(input).toHaveFocus();
 	await expect(input).toHaveAttribute('aria-activedescendant', options[1].id);
 	await user.keyboard('{ArrowUp}');
+	await expect(input).toHaveFocus();
 	await expect(input).toHaveAttribute('aria-activedescendant', options[0].id);
 
 	const before = callCount(onPick);
