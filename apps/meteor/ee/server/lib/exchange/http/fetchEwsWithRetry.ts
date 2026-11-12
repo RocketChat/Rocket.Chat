@@ -32,12 +32,16 @@ export async function fetchEwsWithRetry<T>(send: () => Promise<T>, throttle: { u
 		try {
 			return await send();
 		} catch (err) {
-			if (!isExchangeError(err) || err.code !== 'rate-limited' || attempt >= MAX_RETRIES) {
+			if (!isExchangeError(err) || err.code !== 'rate-limited') {
 				throw err;
 			}
 
 			const backOffMs = err.retryAfterMs ?? BACKOFF_BASE_MS * 2 ** attempt;
 			throttle.until = Math.max(throttle.until, Date.now() + backOffMs);
+
+			if (attempt >= MAX_RETRIES) {
+				throw err;
+			}
 
 			logger.warn({ msg: 'Exchange is throttling, backing off before retrying', backOffMs, attempt: attempt + 1 });
 		}
