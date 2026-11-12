@@ -273,7 +273,7 @@ import { IS_EE } from '../../e2e/config/constants';
 				await request
 					.get(api('livechat/department'))
 					.set(credentials)
-					.query({ text: prefix })
+					.query({ count: 2, text: prefix })
 					.expect('Content-Type', 'application/json')
 					.expect(200)
 					.expect((res: Response) => {
