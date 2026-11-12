@@ -28,10 +28,25 @@
 		"packages/fuselage/src/components/Sidebar/SidebarItem/SidebarItem.styles.scss: .rcx-item__row > &__subtitle.rcx-item__description {",
 		"packages/fuselage/src/styles/normalize.scss: a:where(:not(.rcx-button, .rcx-item, .rcx-item__link, .rcx-tag)) {"
 	],
+	"rcx-item-group-header": [
+		"apps/meteor/client/hooks/useItemListDrag.ts: : (row.querySelector<HTMLElement>('.rcx-item, .rcx-item-group-header') ?? row);",
+		"apps/meteor/client/hooks/useItemListDrag.ts: const surface = row.matches('.rcx-item, .rcx-item-group-header')",
+		"apps/meteor/client/hooks/useItemListNavigation.ts: rowSelector = '.rcx-item, .rcx-item-group-header',",
+		"packages/fuselage/src/components/Sidebar/Sidebar.styles.scss: &__bar.rcx-item-group-header {",
+		"packages/fuselage/src/components/Sidebar/Sidebar.styles.scss: &__bar:not(.rcx-item-group-header) {"
+	],
 	"rcx-message": [
 		"apps/meteor/client/hooks/useMessageRowListNavigation.ts: export const messageRowSelector = '.rcx-message[tabindex=\"0\"], .rcx-message-system[tabindex=\"0\"], .rcx-message-thread[tabindex=\"0\"]';",
 		"apps/uikit-playground/src/Components/PrototypeRender/PrototypeRender.scss: .rcx-message{",
 		"packages/ui-conference/src/lib/panelStyles.ts: & .rcx-message,"
+	],
+	"rcx-message-system": [
+		"apps/meteor/client/hooks/useMessageRowListNavigation.ts: export const messageRowSelector = '.rcx-message[tabindex=\"0\"], .rcx-message-system[tabindex=\"0\"], .rcx-message-thread[tabindex=\"0\"]';",
+		"packages/ui-conference/src/lib/panelStyles.ts: & .rcx-message-system,"
+	],
+	"rcx-message-thread": [
+		"apps/meteor/client/hooks/useMessageRowListNavigation.ts: export const messageRowSelector = '.rcx-message[tabindex=\"0\"], .rcx-message-system[tabindex=\"0\"], .rcx-message-thread[tabindex=\"0\"]';",
+		"packages/ui-conference/src/lib/panelStyles.ts: & .rcx-message-thread {"
 	],
 	"rcx-sidebar": [
 		"apps/meteor/client/sidebar/SidebarRegion.tsx: &:not(:has(.rcx-sidebar__fixed-width)) {",
@@ -84,9 +99,6 @@
 	"rcx-skeleton": [
 		"packages/fuselage/src/components/InputBox/InputBox.styles.css: .rcx-skeleton__input {"
 	],
-	"rcx-check-box": [
-		"packages/fuselage/src/components/Message/Messages.styles.scss: > li > .rcx-check-box > .rcx-check-box__input:focus + .rcx-check-box__fake {"
-	],
 	"rcx-autocomplete": [
 		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-autocomplete {",
 		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-autocomplete.rcx-autocomplete--disabled {",
@@ -125,6 +137,10 @@
 		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-select__addon:has(+ .rcx-input-box:invalid) {",
 		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-select__addon:has(+ .rcx-input-box:invalid:disabled) {",
 		"packages/fuselage/src/components/Select/Select.styles.css: .rcx-select__addon:has(+ .rcx-input-box:invalid:focus) {"
+	],
+	"rcx-item-divider": [
+		"packages/fuselage/src/components/Sidebar/Sidebar.styles.scss: &.rcx-item-divider::before {",
+		"packages/fuselage/src/components/Sidepanel/Sidepanel.styles.scss: &.rcx-item-divider::before {"
 	],
 	"rcx-tag": [
 		"packages/fuselage/src/styles/normalize.scss: a:where(:not(.rcx-button, .rcx-item, .rcx-item__link, .rcx-tag)) {"

@@ -15,12 +15,32 @@ const { values: opts, positionals } = parseArgs({
 const root = execFileSync('git', ['rev-parse', '--show-toplevel'], { encoding: 'utf8' }).trim();
 const components = join(root, 'packages/fuselage/src/components');
 const kebab = (name) => name.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
-const folderOf = new Map(
-	readdirSync(components, { withFileTypes: true })
-		.filter((d) => d.isDirectory())
-		// The root class is the folder name kebab-cased (rcx-button-group) or just lowercased (rcx-navbar)
-		.flatMap((d) => [`rcx-${kebab(d.name)}`, `rcx-${d.name.toLowerCase()}`].map((cls) => [cls, d.name])),
-);
+const folders = readdirSync(components, { withFileTypes: true }).filter((d) => d.isDirectory());
+// The root class is the folder name kebab-cased (rcx-button-group) or just lowercased (rcx-navbar)
+const rootsOf = (name) => [`rcx-${kebab(name)}`, `rcx-${name.toLowerCase()}`];
+const folderOf = new Map(folders.flatMap((d) => rootsOf(d.name).map((cls) => [cls, d.name])));
+
+// A folder also owns the blocks its sources declare under its root (rcx-message-thread) and its sub-folders' classes
+const SOURCE = /\.(s?css|tsx?)$/;
+const TEST = /\.(spec|test|stories)\.[tj]sx?$/;
+const sourcesOf = (dir) =>
+	readdirSync(dir, { withFileTypes: true }).flatMap((e) => {
+		const path = join(dir, e.name);
+		if (e.isDirectory()) return sourcesOf(path);
+		return SOURCE.test(e.name) && !TEST.test(e.name) ? [path] : [];
+	});
+for (const { name } of folders) {
+	const dir = join(components, name);
+	const roots = rootsOf(name);
+	for (const sub of readdirSync(dir, { withFileTypes: true }).filter((e) => e.isDirectory())) {
+		for (const cls of rootsOf(sub.name)) if (!folderOf.has(cls)) folderOf.set(cls, name);
+	}
+	for (const file of sourcesOf(dir)) {
+		for (const [, cls] of readFileSync(file, 'utf8').matchAll(/(?<![\w-])(rcx-[a-z0-9]+(?:-[a-z0-9]+)*)/g)) {
+			if (roots.some((root) => cls.startsWith(`${root}-`)) && !folderOf.has(cls)) folderOf.set(cls, name);
+		}
+	}
+}
 const classes = positionals.length ? positionals : [...folderOf.keys()];
 
 const NOT_OVERRIDES = /\.(spec|test|stories)\.[tj]sx?$|\.d\.ts$|\/(?:tests?|testing)\/|\/e2e\//;
