@@ -84,8 +84,8 @@ const Row = ({
 	</Message>
 );
 
-const SequentialRow = ({ body = shortText, ...props }: MessageProps & { body?: ReactNode }) => (
-	<Message sequential {...props}>
+const sequentialRow = (body: ReactNode = shortText) => (
+	<Message sequential>
 		<MessageLeftContainer />
 		<MessageContainer>
 			<MessageBody>{body}</MessageBody>
@@ -105,8 +105,8 @@ export const Sequential: Story = {
 		withPadding(
 			<>
 				<Row />
-				<SequentialRow />
-				<SequentialRow body='A second follow-up from the same author' />
+				{sequentialRow()}
+				{sequentialRow('A second follow-up from the same author')}
 			</>,
 		),
 };
@@ -135,7 +135,7 @@ export const LongBody: Story = {
 	render: () => (
 		<div style={{ maxWidth: 480 }}>
 			{withPadding(<Row body={longText} />)}
-			<SequentialRow body={longText} />
+			{sequentialRow(longText)}
 		</div>
 	),
 };
@@ -199,7 +199,7 @@ export const RTL: Story = {
 	render: () => (
 		<div dir='rtl'>
 			{withPadding(<Row />)}
-			<SequentialRow />
+			{sequentialRow()}
 		</div>
 	),
 };

@@ -1,4 +1,5 @@
 import { composeStories } from '@storybook/react';
+import { screen } from '@testing-library/react';
 import { axe } from 'jest-axe';
 
 import Bubble from './Bubble';
@@ -18,13 +19,13 @@ describe('[Bubble Rendering]', () => {
 
 describe('[Bubble className]', () => {
 	test('keeps its own classes next to a consumer className', () => {
-		const { container } = render(
-			<Bubble className='custom' contentProps={{ className: 'content' }} onClick={() => undefined}>
+		render(
+			<Bubble className='custom' contentProps={{ className: 'content' }} onClick={() => undefined} data-testid='bubble'>
 				Label
 			</Bubble>,
 		);
 
-		expect(container.querySelector('.rcx-bubble.custom')).toBeInTheDocument();
-		expect(container.querySelector('.rcx-bubble__button.content')).toBeInTheDocument();
+		expect(screen.getByTestId('bubble')).toHaveClass('rcx-bubble', 'custom');
+		expect(screen.getByRole('button', { name: 'Label' })).toHaveClass('rcx-bubble__button', 'content');
 	});
 });

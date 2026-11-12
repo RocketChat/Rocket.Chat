@@ -170,7 +170,7 @@ export const Variants: Story = {
 
 export const CallControls: Story = {
 	decorators: [withLightSurface],
-	render: function Render() {
+	render: () => {
 		const [micOn, setMicOn] = useState(true);
 		const [cameraOn, setCameraOn] = useState(true);
 		const [captionsOn, setCaptionsOn] = useState(false);

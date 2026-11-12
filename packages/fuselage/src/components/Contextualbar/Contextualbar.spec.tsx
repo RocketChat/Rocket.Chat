@@ -1,4 +1,5 @@
 import { composeStories } from '@storybook/react';
+import { screen } from '@testing-library/react';
 import { axe, toHaveNoViolations } from 'jest-axe';
 
 import * as stories from './Contextualbar.stories';
@@ -19,10 +20,10 @@ describe('[Contextualbar Rendering]', () => {
 	});
 
 	test('WithLongTitle should truncate long titles', () => {
-		const { getByRole } = render(<WithLongTitle />);
-		const titleElement = getByRole('heading');
+		render(<WithLongTitle />);
+		const titleElement = screen.getByRole('heading');
 
 		expect(titleElement).toHaveClass('rcx-vertical-bar__title');
-		expect(titleElement.parentElement).toHaveClass('rcx-vertical-bar__header-inner');
+		expect(screen.getByText(/Contextualbar Long Title/, { selector: '.rcx-vertical-bar__header-inner > *' })).toBe(titleElement);
 	});
 });

@@ -11,6 +11,7 @@ const { Default } = composeStories(stories);
 describe('[Button Component]', () => {
 	it('renders Button without crashing', () => {
 		render(<Default />);
+		expect(screen.getByRole('button', { name: 'Button' })).toBeInTheDocument();
 	});
 
 	it('should have no a11y violations', async () => {

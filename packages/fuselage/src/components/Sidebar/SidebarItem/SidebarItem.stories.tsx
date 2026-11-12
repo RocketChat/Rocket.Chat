@@ -95,7 +95,7 @@ const avatarSizes = {
 	extended: 'x36',
 } as const;
 
-const RoomRow = ({ name, avatar, viewMode, selected, unread, ringing }: RoomRowProps) => {
+const roomRow = ({ name, avatar, viewMode, selected, unread, ringing }: RoomRowProps) => {
 	const icon = <SidebarItemIcon icon='hashtag-lock' label='Private channel' />;
 	const title = (
 		<SidebarItemTitle unread={!!unread}>
@@ -151,26 +151,26 @@ const RoomRow = ({ name, avatar, viewMode, selected, unread, ringing }: RoomRowP
 	);
 };
 
-const RoomRows = ({ viewMode }: Pick<RoomRowProps, 'viewMode'>) => (
+const roomRows = (viewMode: RoomRowProps['viewMode']) => (
 	<>
-		<RoomRow name='design-team' avatar={leterAvatarUrls[0]} viewMode={viewMode} />
-		<RoomRow name='product' avatar={leterAvatarUrls[1]} viewMode={viewMode} unread={3} />
-		<RoomRow name='marketing' avatar={leterAvatarUrls[2]} viewMode={viewMode} selected />
-		<RoomRow name='support' avatar={leterAvatarUrls[3]} viewMode={viewMode} ringing />
+		{roomRow({ name: 'design-team', avatar: leterAvatarUrls[0], viewMode })}
+		{roomRow({ name: 'product', avatar: leterAvatarUrls[1], viewMode, unread: 3 })}
+		{roomRow({ name: 'marketing', avatar: leterAvatarUrls[2], viewMode, selected: true })}
+		{roomRow({ name: 'support', avatar: leterAvatarUrls[3], viewMode, ringing: true })}
 	</>
 );
 
 export const RoomRowCondensed: Story = {
 	name: 'Room row: condensed',
-	render: () => <RoomRows viewMode='condensed' />,
+	render: () => roomRows('condensed'),
 };
 
 export const RoomRowMedium: Story = {
 	name: 'Room row: medium',
-	render: () => <RoomRows viewMode='medium' />,
+	render: () => roomRows('medium'),
 };
 
 export const RoomRowExtended: Story = {
 	name: 'Room row: extended',
-	render: () => <RoomRows viewMode='extended' />,
+	render: () => roomRows('extended'),
 };

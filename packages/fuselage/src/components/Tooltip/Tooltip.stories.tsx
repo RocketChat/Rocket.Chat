@@ -106,7 +106,7 @@ const AnchoredTooltip = ({ placement }: AnchoredTooltipProps) => {
 	);
 };
 
-const ArrowGrid = () => (
+const renderArrowGrid: Story['render'] = () => (
 	<>
 		<Box>
 			<AnchoredTooltip placement='bottom-start' />
@@ -126,12 +126,12 @@ const ArrowGrid = () => (
 );
 
 export const ArrowPositioning: Story = {
-	render: () => <ArrowGrid />,
+	render: renderArrowGrid,
 };
 
 export const ArrowPositioningRTL: Story = {
 	name: 'Arrow Positioning (RTL)',
-	render: () => <ArrowGrid />,
+	render: renderArrowGrid,
 	decorators: [
 		(Story) => {
 			// Set on the document root so the portalled tooltips inherit it too.

@@ -5,7 +5,8 @@ import { render } from '../../testing';
 
 describe('[Box Component]', () => {
 	it('renders without crashing', () => {
-		render(<Box />);
+		const { container } = render(<Box />);
+		expect(container.firstElementChild).toHaveClass('rcx-box');
 	});
 
 	describe('className prop', () => {

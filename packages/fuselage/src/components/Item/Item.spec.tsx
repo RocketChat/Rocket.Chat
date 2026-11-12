@@ -168,7 +168,7 @@ describe('Item', () => {
 	});
 
 	it('references only ids that exist, and keeps ids unique, with two labelled icons', () => {
-		const { container } = render(
+		render(
 			<Item role='menuitem'>
 				<ItemIcon label='Away' />
 				<ItemIcon label='Raised hand' />
@@ -181,15 +181,13 @@ describe('Item', () => {
 			</Item>,
 		);
 
-		const ids = Array.from(container.querySelectorAll('[id]')).map((element) => element.id);
-		expect(new Set(ids).size).toBe(ids.length);
+		const [away, raisedHand] = screen.getAllByRole('img');
+		expect(away.id).not.toBe(raisedHand.id);
 
-		container.querySelectorAll('[aria-describedby], [aria-labelledby]').forEach((element) => {
-			const refs = `${element.getAttribute('aria-describedby') ?? ''} ${element.getAttribute('aria-labelledby') ?? ''}`
-				.split(' ')
-				.filter(Boolean);
-			refs.forEach((id) => expect(container.querySelector(`[id="${CSS.escape(id)}"]`)).not.toBeNull());
-		});
+		const menuItem = screen.getByRole('menuitem');
+		expect(menuItem).toHaveAccessibleName('Title Kenji');
+		expect(menuItem).toHaveAttribute('aria-describedby', `${away.id} ${raisedHand.id}`);
+		expect(screen.getByRole('link', { name: 'Kenji' })).toHaveAttribute('aria-describedby', `${away.id} ${raisedHand.id}`);
 	});
 
 	it('describes a menu item by an icon that has its own id', () => {
@@ -367,9 +365,8 @@ describe('ItemActions', () => {
 			</ItemActions>,
 		);
 
-		const actions = screen.getByTestId('actions');
-		expect(actions).toHaveClass('rcx-item__actions--reveal-hover');
-		expect(actions.firstElementChild).toHaveClass('rcx-item__actions-inner');
+		expect(screen.getByTestId('actions')).toHaveClass('rcx-item__actions--reveal-hover');
+		expect(screen.getByText('Options', { selector: '[data-testid="actions"] > .rcx-item__actions-inner > button' })).toBeInTheDocument();
 	});
 
 	it('keeps hidden actions reachable with the keyboard', async () => {
@@ -472,18 +469,23 @@ describe('ItemDivider', () => {
 
 describe('ItemSkeleton', () => {
 	it('adds a description line and stays hidden from assistive technology', () => {
-		const { container } = render(<ItemSkeleton mediaSize='x36' description />);
+		render(
+			<ul>
+				<ItemSkeleton is='li' mediaSize='x36' description />
+			</ul>,
+		);
 
-		const item = container.firstElementChild;
-		expect(item).toHaveClass('rcx-item');
-		expect(item).toHaveAttribute('aria-hidden', 'true');
-		expect(container.querySelectorAll('.rcx-skeleton')).toHaveLength(3);
+		expect(screen.queryByRole('listitem')).not.toBeInTheDocument();
+		expect(screen.getByRole('listitem', { hidden: true })).toHaveClass('rcx-item');
+		// oxlint-disable-next-line testing-library/no-node-access -- the skeleton bars have no role, label or text
+		expect(document.querySelectorAll('.rcx-skeleton')).toHaveLength(3);
 	});
 
 	it('shows one text line by default', () => {
-		const { container } = render(<ItemSkeleton />);
+		render(<ItemSkeleton />);
 
-		expect(container.querySelectorAll('.rcx-skeleton')).toHaveLength(2);
+		// oxlint-disable-next-line testing-library/no-node-access -- the skeleton bars have no role, label or text
+		expect(document.querySelectorAll('.rcx-skeleton')).toHaveLength(2);
 	});
 });
 

@@ -1,3 +1,4 @@
+/* oxlint-disable react/no-multi-comp */
 import type { Decorator } from '@storybook/react';
 
 import {

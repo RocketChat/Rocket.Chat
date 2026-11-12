@@ -10,16 +10,20 @@ import { render } from '../../testing';
 import Pagination from '../Pagination/Pagination';
 import Position from '../PositionAnimated/Position';
 
-const cases: [string, ReactElement, string][] = [
-	['NavBar', <NavBar data-testid='part' className='custom' />, 'rcx-navbar'],
-	['NavBarGroup', <NavBarGroup data-testid='part' className='custom' />, 'rcx-navbar-group'],
-	['NavBarSection', <NavBarSection data-testid='part' className='custom' />, 'rcx-navbar-section'],
-	['NavBarItem with an icon', <NavBarItem data-testid='part' className='custom' icon='bell' />, 'rcx-navbar-item'],
-	['Pagination', <Pagination data-testid='part' className='custom' count={10} />, 'rcx-pagination'],
+const cases: { name: string; element: ReactElement; ownClass: string }[] = [
+	{ name: 'NavBar', element: <NavBar data-testid='part' className='custom' />, ownClass: 'rcx-navbar' },
+	{ name: 'NavBarGroup', element: <NavBarGroup data-testid='part' className='custom' />, ownClass: 'rcx-navbar-group' },
+	{ name: 'NavBarSection', element: <NavBarSection data-testid='part' className='custom' />, ownClass: 'rcx-navbar-section' },
+	{
+		name: 'NavBarItem with an icon',
+		element: <NavBarItem data-testid='part' className='custom' icon='bell' />,
+		ownClass: 'rcx-navbar-item',
+	},
+	{ name: 'Pagination', element: <Pagination data-testid='part' className='custom' count={10} />, ownClass: 'rcx-pagination' },
 ];
 
 describe('consumer className on NavBar and Pagination', () => {
-	it.each(cases)('%s keeps its own class next to the consumer one', (_name, element, ownClass) => {
+	it.each(cases)('$name keeps its own class next to the consumer one', ({ element, ownClass }) => {
 		render(element);
 
 		expect(screen.getByTestId('part')).toHaveClass(ownClass, 'custom');

@@ -13,23 +13,31 @@ import {
 } from '.';
 import { render } from '../../testing';
 
-const cases: [string, ReactElement, string][] = [
-	['States', <States data-testid='part' className='custom' />, 'rcx-states'],
-	['StatesTitle', <StatesTitle data-testid='part' className='custom' />, 'rcx-states__title'],
-	['StatesSubtitle', <StatesSubtitle data-testid='part' className='custom' />, 'rcx-states__subtitle'],
-	['StatesSuggestion', <StatesSuggestion data-testid='part' className='custom' />, 'rcx-states__suggestion'],
-	['StatesSuggestionList', <StatesSuggestionList data-testid='part' className='custom' />, 'rcx-states__list'],
-	['StatesSuggestionListItem', <StatesSuggestionListItem data-testid='part' className='custom' />, 'rcx-states__list-item'],
-	['StatesSuggestionText', <StatesSuggestionText data-testid='part' className='custom' />, 'rcx-states__suggestion-text'],
-	[
-		'StatesIcon',
-		<StatesIcon data-testid='part' className='custom' name='circle-exclamation' variation='danger' />,
-		'rcx-states__icon--danger',
-	],
+const cases: { name: string; element: ReactElement; ownClass: string }[] = [
+	{ name: 'States', element: <States data-testid='part' className='custom' />, ownClass: 'rcx-states' },
+	{ name: 'StatesTitle', element: <StatesTitle data-testid='part' className='custom' />, ownClass: 'rcx-states__title' },
+	{ name: 'StatesSubtitle', element: <StatesSubtitle data-testid='part' className='custom' />, ownClass: 'rcx-states__subtitle' },
+	{ name: 'StatesSuggestion', element: <StatesSuggestion data-testid='part' className='custom' />, ownClass: 'rcx-states__suggestion' },
+	{ name: 'StatesSuggestionList', element: <StatesSuggestionList data-testid='part' className='custom' />, ownClass: 'rcx-states__list' },
+	{
+		name: 'StatesSuggestionListItem',
+		element: <StatesSuggestionListItem data-testid='part' className='custom' />,
+		ownClass: 'rcx-states__list-item',
+	},
+	{
+		name: 'StatesSuggestionText',
+		element: <StatesSuggestionText data-testid='part' className='custom' />,
+		ownClass: 'rcx-states__suggestion-text',
+	},
+	{
+		name: 'StatesIcon',
+		element: <StatesIcon data-testid='part' className='custom' name='circle-exclamation' variation='danger' />,
+		ownClass: 'rcx-states__icon--danger',
+	},
 ];
 
 describe('consumer className on States parts', () => {
-	it.each(cases)('%s keeps its own class next to the consumer one', (_name, element, ownClass) => {
+	it.each(cases)('$name keeps its own class next to the consumer one', ({ element, ownClass }) => {
 		render(element);
 
 		expect(screen.getByTestId('part')).toHaveClass(ownClass, 'custom');

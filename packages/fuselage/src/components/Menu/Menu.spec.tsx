@@ -1,5 +1,6 @@
+import nameToCharacterMapping from '@rocket.chat/icons';
 import { composeStories } from '@storybook/react';
-import { screen, waitFor } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 
@@ -45,7 +46,7 @@ describe('[Menu Component]', () => {
 			expect(menuitem).toBeInTheDocument();
 
 			await waitFor(() => {
-				expect(menuitem.querySelector('i')).toBeInTheDocument();
+				expect(within(menuitem).getByText(nameToCharacterMapping.user, { selector: 'i' })).toBeInTheDocument();
 			});
 		});
 
@@ -128,12 +129,14 @@ describe('[Menu Component]', () => {
 			const notifications = await screen.findByRole('menuitem', {
 				name: 'Notifications',
 			});
+			// oxlint-disable-next-line testing-library/no-node-access -- asserts the order of slot wrappers that have no role, label or text of their own
 			const slots = Array.from(notifications.children).map((child) => child.className);
 			expect(slots).toEqual([
 				expect.stringContaining('rcx-item__icon'),
 				expect.stringContaining('rcx-item__content'),
 				expect.stringContaining('rcx-item__actions'),
 			]);
+			// oxlint-disable-next-line testing-library/no-node-access -- the empty `MenuItemColumn` has no role, label or text
 			expect(screen.getByRole('menuitem', { name: 'Logout' }).firstElementChild).toHaveClass('rcx-item__media', 'rcx-option__column');
 		});
 
@@ -201,7 +204,7 @@ describe('[Menu Component]', () => {
 			expect(triggers).toHaveLength(1);
 			const [trigger] = triggers;
 			expect(trigger).toHaveTextContent('Move to');
-			expect(trigger.querySelector('i')).toBeInTheDocument();
+			expect(within(trigger).getByText(nameToCharacterMapping.folder, { selector: 'i' })).toBeInTheDocument();
 
 			// ...while the remaining children are NOT rendered as items of the parent menu
 			expect(screen.queryByRole('menuitem', { name: 'Inbox' })).not.toBeInTheDocument();
@@ -212,7 +215,7 @@ describe('[Menu Component]', () => {
 			render(<WithRichSubmenuTrigger {...WithRichSubmenuTrigger.args} />);
 
 			await user.click(screen.getByRole('button'));
-			await screen.findAllByRole('menuitem');
+			expect(await screen.findByRole('menuitem', { name: 'New' })).toBeInTheDocument();
 
 			// open the first level submenu ("Move to") then the nested one ("Teams")
 			await user.keyboard('{ArrowDown}{ArrowDown}{ArrowRight}');
@@ -237,7 +240,7 @@ describe('[Menu Component]', () => {
 			render(<WithRichSubmenuTrigger {...WithRichSubmenuTrigger.args} />);
 
 			await user.click(screen.getByRole('button'));
-			await screen.findAllByRole('menuitem');
+			expect(await screen.findByRole('menuitem', { name: 'New' })).toBeInTheDocument();
 
 			// open the first level submenu ("Move to") then the nested one ("Teams")
 			await user.keyboard('{ArrowDown}{ArrowDown}{ArrowRight}');
@@ -266,11 +269,9 @@ describe('[Menu Component]', () => {
 			render(<WithRichSubmenuTrigger {...WithRichSubmenuTrigger.args} />);
 
 			await user.click(screen.getByRole('button'));
-			await screen.findAllByRole('menuitem');
 
 			// open the submenu by hovering its trigger — focus stays on the trigger
-			const trigger = (await screen.findAllByRole('menuitem')).find((item) => item.getAttribute('aria-haspopup') === 'menu');
-			await user.hover(trigger!);
+			await user.hover(await screen.findByRole('menuitem', { name: 'Move to…' }));
 			expect(await screen.findByText('Inbox')).toBeInTheDocument();
 
 			// Escape closes only the submenu — the root menu stays open
@@ -294,7 +295,7 @@ describe('[Menu Component]', () => {
 			);
 
 			await user.click(screen.getByRole('button'));
-			await screen.findAllByRole('menuitem');
+			expect(await screen.findByRole('menuitem', { name: 'New' })).toBeInTheDocument();
 
 			// open a submenu so it becomes the topmost overlay
 			await user.keyboard('{ArrowDown}{ArrowDown}{ArrowRight}');

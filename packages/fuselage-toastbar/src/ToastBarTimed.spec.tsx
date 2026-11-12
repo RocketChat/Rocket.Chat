@@ -10,6 +10,7 @@ it('pauses the progress bar while the toast is hovered', async () => {
 			<ToastBarTimed id='1' type='success' message='hello' time={5} />
 		</ToastBarContext.Provider>,
 	);
+	// oxlint-disable-next-line testing-library/no-node-access -- the progress bar is decorative and exposes no role, label or text
 	const bar = () => document.querySelector('.rcx-toastbar_progressbar');
 	expect(bar()).not.toHaveClass('rcx-toastbar_progressbar--paused');
 

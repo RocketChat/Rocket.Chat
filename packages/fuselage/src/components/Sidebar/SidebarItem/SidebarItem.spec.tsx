@@ -19,13 +19,13 @@ describe('[SidebarItem Component]', () => {
 	});
 
 	it('should render an `Item` link that keeps the `SidebarItem` classes', () => {
-		const { getByRole } = render(
+		render(
 			<SidebarItem href='#general' selected level={2}>
 				<SidebarItemTitle unread>general</SidebarItemTitle>
 			</SidebarItem>,
 		);
 
-		const link = getByRole('link', { name: 'general' });
+		const link = screen.getByRole('link', { name: 'general' });
 		expect(link).toHaveClass(
 			'rcx-item',
 			'rcx-item--selected',
@@ -33,11 +33,11 @@ describe('[SidebarItem Component]', () => {
 			'rcx-sidebar-item--selected',
 			'rcx-sidebar-item--level-2',
 		);
-		expect(link.firstElementChild).toHaveClass('rcx-item__title', 'rcx-sidebar-item__title', 'rcx-sidebar-item__title--highlighted');
+		expect(screen.getByText('general')).toHaveClass('rcx-item__title', 'rcx-sidebar-item__title', 'rcx-sidebar-item__title--highlighted');
 	});
 
 	it('should name the icon by its label, and hide it without one', () => {
-		const { getByRole, container } = render(
+		render(
 			<SidebarItem href='#general'>
 				<SidebarItemIcon icon='lock' label='Private channel' />
 				<SidebarItemIcon icon='star' />
@@ -45,34 +45,37 @@ describe('[SidebarItem Component]', () => {
 			</SidebarItem>,
 		);
 
-		expect(getByRole('img', { name: 'Private channel' })).toHaveClass('rcx-item__icon', 'rcx-sidebar-item__icon');
-		expect(container.querySelectorAll('.rcx-item__icon[aria-hidden="true"]')).toHaveLength(1);
+		expect(screen.getByRole('img', { name: 'Private channel' })).toHaveClass('rcx-item__icon', 'rcx-sidebar-item__icon');
+		expect(screen.getAllByRole('img')).toHaveLength(1);
 	});
 
 	it('should reveal the menu on hover and keep the `__menu` wrapper', () => {
-		const { container } = render(
+		render(
 			<SidebarItem href='#general'>
 				<SidebarItemTitle>general</SidebarItemTitle>
-				<SidebarItemMenu>
+				<SidebarItemMenu data-testid='menu'>
 					<button type='button'>Options</button>
 				</SidebarItemMenu>
 			</SidebarItem>,
 		);
 
-		expect(container.querySelector('.rcx-sidebar-item__menu-wrapper')).toHaveClass('rcx-item__actions', 'rcx-item__actions--reveal-hover');
-		expect(container.querySelector('button')?.parentElement).toHaveClass('rcx-sidebar-item__menu');
+		expect(screen.getByTestId('menu')).toHaveClass(
+			'rcx-sidebar-item__menu-wrapper',
+			'rcx-item__actions',
+			'rcx-item__actions--reveal-hover',
+		);
+		expect(screen.getByText('Options', { selector: '.rcx-sidebar-item__menu > button' })).toBeInTheDocument();
 	});
 
 	it('should keep the `SidebarLink` title a direct child of the link', () => {
-		const { getByRole } = render(
+		render(
 			<SidebarLink href='#home' icon='home'>
 				Home
 			</SidebarLink>,
 		);
 
-		const link = getByRole('link', { name: 'Home' });
-		expect(link).toHaveClass('rcx-item', 'rcx-sidebar-link');
-		expect(link.querySelector(':scope > .rcx-sidebar-item__title')).not.toBe(null);
+		expect(screen.getByRole('link', { name: 'Home' })).toHaveClass('rcx-item', 'rcx-sidebar-link');
+		expect(screen.getByText('Home', { selector: 'a.rcx-sidebar-link > .rcx-sidebar-item__title' })).toBeInTheDocument();
 	});
 });
 
@@ -121,8 +124,8 @@ describe('[SidebarItem container rows]', () => {
 		const onLinkClick = jest.fn();
 		const onAccept = jest.fn();
 
-		const { container } = render(
-			<SidebarItem is='div' href='#ignored' highlighted>
+		render(
+			<SidebarItem is='div' href='#ignored' highlighted data-testid='row'>
 				<SidebarItemTitle>
 					<SidebarItemLink href='#support' onClick={onLinkClick}>
 						support
@@ -131,7 +134,7 @@ describe('[SidebarItem container rows]', () => {
 				<SidebarItemMenu>
 					<button type='button'>Options</button>
 				</SidebarItemMenu>
-				<SidebarItemActions>
+				<SidebarItemActions data-testid='actions'>
 					<button type='button' onClick={onAccept}>
 						Accept
 					</button>
@@ -139,15 +142,16 @@ describe('[SidebarItem container rows]', () => {
 			</SidebarItem>,
 		);
 
-		const row = container.firstElementChild;
-		expect(row?.tagName).toBe('DIV');
+		const row = screen.getByTestId('row');
+		expect(row.tagName).toBe('DIV');
 		expect(row).toHaveClass('rcx-item', 'rcx-sidebar-item', 'rcx-item--highlighted');
 		expect(row).not.toHaveAttribute('href');
 		expect(row).not.toHaveAttribute('role');
 
 		expect(screen.getByRole('link', { name: 'support' })).toHaveClass('rcx-item__link', 'rcx-sidebar-item__link');
-		expect(screen.getByRole('button', { name: 'Accept' }).closest('.rcx-item__actions')).toHaveClass('rcx-sidebar-item__actions');
-		expect(screen.getByRole('button', { name: 'Accept' }).closest('.rcx-item__actions')).not.toHaveClass('rcx-item__actions--reveal-hover');
+		expect(screen.getByTestId('actions')).toHaveClass('rcx-item__actions', 'rcx-sidebar-item__actions');
+		expect(screen.getByTestId('actions')).not.toHaveClass('rcx-item__actions--reveal-hover');
+		expect(screen.getByTestId('actions')).toContainElement(screen.getByRole('button', { name: 'Accept' }));
 
 		await userEvent.click(screen.getByRole('button', { name: 'Options' }));
 		await userEvent.click(screen.getByRole('button', { name: 'Accept' }));
@@ -159,14 +163,14 @@ describe('[SidebarItem container rows]', () => {
 	});
 
 	it('should keep rendering the default row as an anchor', () => {
-		const { container } = render(
+		render(
 			<SidebarItem href='#general'>
 				<SidebarItemTitle>general</SidebarItemTitle>
 			</SidebarItem>,
 		);
 
-		const row = container.firstElementChild;
-		expect(row?.tagName).toBe('A');
+		const row = screen.getByRole('link', { name: 'general' });
+		expect(row.tagName).toBe('A');
 		expect(row).toHaveClass('rcx-item', 'rcx-sidebar-item');
 		expect(row).toHaveAttribute('href', '#general');
 	});

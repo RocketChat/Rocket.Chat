@@ -11,6 +11,8 @@ const { Default, WithLabel, MultiThumb, WithDefaultValue } = composeStories(stor
 describe('[Slider Component]', () => {
 	it('renders without crashing', () => {
 		render(<Default />);
+
+		expect(screen.getByRole('slider')).toHaveAttribute('max', '500');
 	});
 
 	it('should display the label when passed', () => {
