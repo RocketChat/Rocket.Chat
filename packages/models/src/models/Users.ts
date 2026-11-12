@@ -3125,7 +3125,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			{ _id },
 			{
 				$set: { 'services.password.bcrypt': passwordHash },
-				$unset: { 'services.password.reset': 1 },
+				$unset: { 'services.password.reset': 1, 'services.password.argon2': 1 },
 			},
 		);
 	}
