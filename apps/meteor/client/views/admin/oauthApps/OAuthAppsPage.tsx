@@ -1,13 +1,14 @@
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
-import { useRouteParameter, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
+import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
+import { useTranslation } from 'react-i18next';
 
 import EditOauthAppWithData from './EditOauthAppWithData';
 import OAuthAddApp from './OAuthAddApp';
 import OAuthAppsTable from './OAuthAppsTable';
 
 const OAuthAppsPage = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const router = useRouter();
 
 	const context = useRouteParameter('context');

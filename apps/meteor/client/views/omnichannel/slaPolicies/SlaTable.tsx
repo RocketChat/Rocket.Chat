@@ -14,16 +14,17 @@ import {
 	GenericNoResults,
 	links,
 } from '@rocket.chat/ui-client';
-import { useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { hashKey } from '@tanstack/react-query';
 import type { MutableRefObject } from 'react';
 import { useMemo, useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import RemoveSlaButton from './RemoveSlaButton';
 import FilterByText from '../../../components/FilterByText';
 
 const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const router = useRouter();
 
 	const [filter, setFilter] = useState('');

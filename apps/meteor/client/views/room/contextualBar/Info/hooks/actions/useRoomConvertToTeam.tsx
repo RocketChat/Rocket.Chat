@@ -3,13 +3,14 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { Stack } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
-import { useSetModal, useToastMessageDispatch, useTranslation, useEndpoint, usePermission } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useEndpoint, usePermission } from '@rocket.chat/ui-contexts';
+import { useTranslation } from 'react-i18next';
 
 import AbacAttributesRemovalWarning from '../../../../../../components/ABAC/AbacAttributesRemovalWarning';
 import { useCanEditRoom } from '../useCanEditRoom';
 
 export const useRoomConvertToTeam = (room: IRoom) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 

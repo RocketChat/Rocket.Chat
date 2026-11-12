@@ -1,9 +1,10 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, Field, FieldHint, FieldLabel, FieldRow, Icon, Palette } from '@rocket.chat/fuselage';
 import { Random } from '@rocket.chat/random';
-import { useToastMessageDispatch, useEndpoint, useTranslation, useUpload } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useEndpoint, useUpload } from '@rocket.chat/ui-contexts';
 import type { DragEvent } from 'react';
 import { useId, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type { SettingInputProps } from './types';
 
@@ -13,7 +14,7 @@ export type AssetSettingInputProps = Omit<SettingInputProps<{ url: string }>, 'o
 };
 
 function AssetSettingInput({ _id, label, value, hint, asset, required, disabled, fileConstraints }: AssetSettingInputProps) {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const labelId = useId();
 	const buttonId = useId();
 	const fileInputRef = useRef<HTMLInputElement>(null);

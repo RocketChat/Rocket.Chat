@@ -11,9 +11,10 @@ import {
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
-import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import type { MutableRefObject } from 'react';
 import { useState, useMemo, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import CustomSoundRow from './CustomSoundRow';
 import FilterByText from '../../../../components/FilterByText';
@@ -24,7 +25,7 @@ export type CustomSoundsTableProps = {
 };
 
 const CustomSoundsTable = ({ reload, onClick }: CustomSoundsTableProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const { sortBy, sortDirection, setSort } = useSort<'name'>('name');
 	const [text, setText] = useState('');
 

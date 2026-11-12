@@ -1,7 +1,8 @@
 import { ButtonGroup, Button, Accordion, Stack } from '@rocket.chat/fuselage';
 import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@rocket.chat/ui-client';
-import { useToastMessageDispatch, useTranslation, useEndpoint, useUserPreference, useSetting } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useEndpoint, useUserPreference, useSetting } from '@rocket.chat/ui-contexts';
 import { useForm, FormProvider } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import PreferencesConversationTranscript from './PreferencesConversationTranscript';
 import { PreferencesGeneral } from './PreferencesGeneral';
@@ -13,7 +14,7 @@ type FormData = {
 };
 
 const OmnichannelPreferencesPage = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const alwaysSendEmailTranscript = useSetting('Livechat_transcript_send_always', false);
