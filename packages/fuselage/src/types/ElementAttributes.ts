@@ -397,3 +397,6 @@ export type FormSubmitAttributes = {
 
 /** What a part rendered as a `nav` forwards: its part attributes and the name of the landmark. */
 export type NavAttributes = PartAttributes<HTMLElement> & Pick<AriaAttributes, 'aria-label'>;
+
+/** The press handlers of a part rendered as a `nav`, or another plain element. */
+export type ElementPressHandlers = WebPressHandlers<HTMLElement>;

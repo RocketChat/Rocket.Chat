@@ -323,9 +323,9 @@
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
-	"Pagination/Pagination.styles.scss": {
-		"rules": 14,
-		"nested": 5,
+	"Pagination/Pagination.styles.css": {
+		"rules": 1,
+		"nested": 0,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
