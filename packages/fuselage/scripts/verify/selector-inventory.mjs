@@ -49,7 +49,8 @@ const grepRows = () => {
 
 const COMMENT_LINE = /^\s*(\/\/|\/\*|\*)/;
 const DOM_LOOKUP = /\b(?:querySelector(?:All)?|closest|matches|getElementsByClassName)\s*(?:<[^>]+>)?\s*\(/;
-const DOM_LOOKUP_ARG = /\b(?:querySelector(?:All)?|closest|matches|getElementsByClassName)\s*(?:<[^>]+>)?\s*\(\s*(['"`])[\s\S]*?\1/g;
+const DOM_LOOKUP_ARG =
+	/\b(?:querySelector(?:All)?|closest|matches|getElementsByClassName)\s*(?:<[^>]+>)?\s*\(\s*(['"`])(?:\\.|(?!\1)[^\\])*\1/g;
 
 const fileLinesCache = new Map();
 const isPrecededByDomLookup = (file, lineNum) => {
@@ -79,7 +80,7 @@ for (const row of grepRows().split('\n').filter(Boolean)) {
 	if (/\.tsx?$/.test(file)) {
 		scannable = scannable.replaceAll(DOM_LOOKUP_ARG, '');
 		if (isPrecededByDomLookup(file, Number(line))) {
-			scannable = scannable.replace(/^\s*(['"`])[\s\S]*?\1/, '');
+			scannable = scannable.replace(/^\s*(['"`])(?:\\.|(?!\1)[^\\])*\1/, '');
 		}
 	}
 

@@ -128,7 +128,7 @@ const dtsCheck = () => {
 	if (!opts.dts) return { skipped: 'not run', detail: 'pass --dts <base ref>' };
 	const res = run('dts-diff.mjs', [opts.dts, 'HEAD']);
 	const diffMatch = res.output.match(/(\d+)\s+exports differ/);
-	if (diffMatch) {
+	if (diffMatch && Number(diffMatch[1]) > 0) {
 		const count = Number(diffMatch[1]);
 		return {
 			skipped: 'awaiting review',
