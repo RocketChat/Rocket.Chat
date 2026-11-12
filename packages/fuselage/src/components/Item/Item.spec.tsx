@@ -468,6 +468,12 @@ describe('ItemDivider', () => {
 		expect(screen.getByTestId('plain')).not.toHaveAttribute('role');
 		expect(screen.getByRole('separator')).toHaveClass('rcx-item-divider--inset-md');
 	});
+
+	it('marks the light variation', () => {
+		render(<ItemDivider role='separator' variation='light' />);
+
+		expect(screen.getByRole('separator')).toHaveClass('rcx-item-divider--light');
+	});
 });
 
 describe('ItemSkeleton', () => {

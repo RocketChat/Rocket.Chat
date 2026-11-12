@@ -61,10 +61,7 @@ const InquireSidePanelItem = ({ room, openedRoom, ...props }: InquireSidePanelIt
 			avatar={<RoomAvatar size='x20' room={{ ...room, _id: room.rid || room._id, type: room.t }} />}
 			icon={
 				room.source && (
-					<SidebarItemIcon
-						highlighted={highlighted}
-						icon={<OmnichannelRoomIcon placement='sidebar' source={room.source} status={room.v.status} size='x20' />}
-					/>
+					<SidebarItemIcon icon={<OmnichannelRoomIcon placement='sidebar' source={room.source} status={room.v.status} size='x20' />} />
 				)
 			}
 			unread={highlighted}

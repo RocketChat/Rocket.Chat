@@ -14,7 +14,8 @@ const StatusDisabledSection = ({ onDismiss }: StatusDisabledSectionProps) => {
 			title={t('User_status_temporarily_disabled')}
 			linkText={t('Learn_more')}
 			onClose={onDismiss}
-			linkProps={{ onClick: handleStatusDisabledModal, tabIndex: 0 }}
+			closeLabel={t('Close')}
+			linkProps={{ onClick: handleStatusDisabledModal }}
 		/>
 	);
 };

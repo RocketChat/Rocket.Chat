@@ -8,7 +8,7 @@ import type { Target } from './lib/target.mts';
 import { textFrameDefaults } from './lib/textFrameDefaults.mts';
 import { offScale, zIndex, zIndexAbove } from './lib/tokens.mts';
 import { webDefaults } from './lib/webDefaults.mts';
-import { borderRadius, borderWidth, fontFamily, size, spacing } from '../../src/styleTokens.ts';
+import { borderRadius, borderWidth, fontColor, fontFamily, size, spacing, strokeColor } from '../../src/styleTokens.ts';
 
 const component = (file: string) => join(import.meta.dirname, '../../src/components/Item', file);
 
@@ -39,6 +39,8 @@ const dropRing = {
 	},
 };
 
+const linkColor = themed('sidebar-link-color', fontColor('titles-labels'));
+
 const generateItem = () => {
 	const frame = webDefaults({
 		render: 'div',
@@ -66,6 +68,14 @@ const generateItem = () => {
 		// There is no such status color: the variable stays undefined, as on develop, and the row keeps the color it inherits
 		primary: { color: 'var(--rcx-option-color-variant-primary, var(--rcx-color-status-font-on-primary))' },
 		disabled: { color: palettes.font.disabled },
+		// The color of a link row: a theme hook, then the sidebar's; no `:visited` key exists, so a visited link keeps it
+		link: {
+			color: {
+				'default': themed('link-color', linkColor),
+				'focus': themed('link-focus-color', linkColor),
+				'focus-within': themed('link-focus-color', linkColor),
+			},
+		},
 	};
 
 	// One owner of the background: the first state that applies wins, as the stylesheet's order made it
@@ -110,6 +120,7 @@ const generateItem = () => {
 		constant('itemCursors', cursors),
 		constant('itemRings', ring),
 		constant('itemMultiline', { flexWrap: 'wrap' }),
+		constant('itemDensities', { large: { paddingBlock: spacing('x8')! } }),
 	].join('\n\n');
 };
 
@@ -132,6 +143,7 @@ const generateItemGroup = () => {
 		constant('itemGroupRings', dropRing),
 		constant('itemGroupPositioned', { position: 'relative' }),
 		constant('itemGroupHidden', { display: 'none' }),
+		constant('itemGroupDensities', { large: { paddingBlock: spacing('x8')! } }),
 	].join('\n\n');
 };
 
@@ -161,7 +173,11 @@ const generateItemGroupHeader = () => {
 		'sticky-interactive': { ...sticky, backgroundColor: { default: palettes.surface.groupHeader, hover: palettes.surface.hover } },
 	};
 
-	return [constant('itemGroupHeaderFrame', frame), constant('itemGroupHeaderSurfaces', surfaces)].join('\n\n');
+	return [
+		constant('itemGroupHeaderFrame', frame),
+		constant('itemGroupHeaderSurfaces', surfaces),
+		constant('itemGroupHeaderDensities', { large: { paddingBlock: spacing('x8')! } }),
+	].join('\n\n');
 };
 
 const generateItemContent = () =>
@@ -277,6 +293,8 @@ const generateItemDescription = () => {
 			wrap: { true: wrapping },
 			// One owner of the size and the weight: the highlighted weight wins over the large size's
 			scale: { 'large': font('p2'), highlighted, 'large-highlighted': { ...font('p2'), ...highlighted } },
+			// Takes the room the row leaves, so the description never pushes a sibling that must keep its width
+			fill: { true: { flexBasis: 0 } },
 			// The narrow rule of the stylesheet sets these two inputs back to a block with no margin
 			layout: {
 				span: { display: 'inline' },
@@ -512,7 +530,22 @@ const generateItemGroupTitle = () => {
 		gap: spacing('x4')!,
 	};
 
-	return [constant('itemGroupTitleFrame', frame), constant('itemGroupTitleButton', button)].join('\n\n');
+	// A title that is not a native button but acts as one: the focus ring is a border that turns highlight, not the `::after` of the button
+	const { gap: _gap, ...buttonLayout } = button;
+	const border = {
+		...buttonLayout,
+		columnGap: spacing('x4')!,
+		flexBasis: 0,
+		borderWidth: thin,
+		borderStyle: 'solid',
+		borderColor: {
+			'default': 'transparent',
+			'focus-visible': palettes.stroke.focus,
+		},
+		borderRadius: { 'focus-visible': borderRadius('medium') },
+	};
+
+	return [constant('itemGroupTitleFrame', frame), constant('itemGroupTitleLooks', { button, border })].join('\n\n');
 };
 
 const drag = (offset: number) => zIndexAbove('drag', offset);
@@ -523,6 +556,7 @@ const generateStyles = () => {
 	const gap = spacing('x4')!;
 	const flat = { ...palettes.stroke };
 	const dividerLine = `${thin} solid ${flat.divider}`;
+	const lightLine = themed('sidebar-color-stroke-extra-light', strokeColor('light'));
 	const lineHeight = medium;
 	const revealDuration = '0.18s';
 	const stretched = `position: absolute;\n\tinset: 0;\n\n\tcontent: '';\n\n\tborder-radius: inherit;\n\n\tfont-variant-numeric: inherit;`;
@@ -598,6 +632,11 @@ ${ring('.rcx-item__link:focus-visible::after,\nbutton.rcx-item-group-title:focus
 	content: '';
 
 	border-top: ${dividerLine};
+}
+
+/* The line of a divider on the sidebar's surface, under the custom property a theme overrides for it */
+.rcx-item-divider--light::before {
+	border-top-color: ${lightLine};
 }
 
 /* Keyframe animation: a row or a group that has just landed */

@@ -59,12 +59,12 @@ export const MenuTemplate = () => (
 
 export const GenericCondensedItem = ({ i = 0, selected = i === 2 }: { i: number; selected?: boolean }) => (
 	<SidebarListItem>
-		<SidebarItem selected={selected} href='#'>
+		<SidebarItem selected={selected} highlighted={i % 2 !== 0} href='#'>
 			<SidebarItemAvatarWrapper>
 				<Avatar size='x20' url={leterAvatarUrls[i % 4]} alt='avatar' />
 			</SidebarItemAvatarWrapper>
-			<SidebarItemIcon highlighted={i % 2 !== 0} icon='balloons' />
-			<SidebarItemTitle unread={i % 2 !== 0}>{names[i % 10]}</SidebarItemTitle>
+			<SidebarItemIcon icon='balloons' />
+			<SidebarItemTitle>{names[i % 10]}</SidebarItemTitle>
 			{i % 2 !== 0 && <SidebarItemBadge title='unread messages'>{5}</SidebarItemBadge>}
 			{i === 0 && (
 				<SidebarActions>

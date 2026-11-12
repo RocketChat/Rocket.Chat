@@ -67,7 +67,7 @@ const RoomSidePanelItem = ({ room, openedRoom, isRoomFilter, ...props }: RoomSid
 			title={title}
 			titleIcon={titleIcon}
 			avatar={<RoomAvatar size='x20' room={{ ...room, _id: room.rid || room._id, type: room.t }} />}
-			icon={<SidebarItemIcon highlighted={highlighted} icon={<RoomIcon room={room} placement='sidebar' size='x20' />} />}
+			icon={<SidebarItemIcon icon={<RoomIcon room={room} placement='sidebar' size='x20' />} />}
 			unread={highlighted}
 			time={time}
 			subtitle={message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }} /> : null}

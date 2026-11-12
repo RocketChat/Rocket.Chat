@@ -1,9 +1,7 @@
 import type { Keys as Icons } from '@rocket.chat/icons';
 import type { AnchorHTMLAttributes, ReactNode } from 'react';
 
-import { appendClassName } from '../../helpers/appendClassName';
 import { cx } from '../../helpers/composeClassNames';
-import { patchChildren } from '../../helpers/patchChildren';
 import { Icon } from '../Icon';
 import { Item, ItemActions, ItemIcon, ItemTitle } from '../Item';
 
@@ -21,6 +19,7 @@ const SidebarLink = ({ selected, icon, badge, menu, className, children, ...prop
 		role='link'
 		tabIndex={0}
 		selected={selected}
+		tone='link'
 		className={cx('rcx-sidebar-link', 'rcx-sidebar-item', !!selected && 'rcx-sidebar-item--selected', className)}
 		onClick={(e) => e.stopPropagation()}
 		onKeyDown={(e) => e.code === 'Enter' && e.stopPropagation()}
@@ -37,12 +36,7 @@ const SidebarLink = ({ selected, icon, badge, menu, className, children, ...prop
 		{badge}
 		{menu && (
 			<ItemActions reveal='hover' className='rcx-sidebar-item__menu-wrapper'>
-				{patchChildren(
-					<span className='rcx-box rcx-box--full rcx-sidebar-item__menu'>{menu}</span>,
-					(childProps: { className: string | string[] }) => ({
-						className: appendClassName(childProps.className, 'rcx-sidebar-item__menu'),
-					}),
-				)}
+				<span className='rcx-box rcx-box--full rcx-sidebar-item__menu'>{menu}</span>
 			</ItemActions>
 		)}
 	</Item>

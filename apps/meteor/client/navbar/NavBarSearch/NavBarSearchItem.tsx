@@ -19,10 +19,10 @@ const NavBarSearchItem = ({ icon, title, avatar, actions, unread, badges, ...pro
 	const optionProps = useSearchOptionProps(props.id);
 
 	return (
-		<SidebarItem role='option' {...props} {...optionProps}>
+		<SidebarItem role='option' highlighted={unread} {...props} {...optionProps}>
 			{avatar && <SidebarItemAvatarWrapper>{avatar}</SidebarItemAvatarWrapper>}
 			{icon && icon}
-			<SidebarItemTitle unread={unread}>{title}</SidebarItemTitle>
+			<SidebarItemTitle>{title}</SidebarItemTitle>
 			{badges && badges}
 			{actions && actions}
 		</SidebarItem>

@@ -69,6 +69,8 @@
 }
 
 .rcx-check-box__input:focus + .rcx-check-box__fake {
+	z-index: 1;
+
 	border-color: var(--rcx-button-empty-focus-border-color, var(--rcx-color-stroke-extra-dark, #2f343d));
 	background-color: var(--rcx-button-empty-focus-background-color, var(--rcx-color-surface-light, #ffffff));
 	box-shadow: 0 0 0 2px var(--rcx-input-colors-focus-shadow-color, var(--rcx-color-shadow-highlight, #d1ebfe));

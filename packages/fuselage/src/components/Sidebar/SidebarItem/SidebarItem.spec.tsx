@@ -21,7 +21,7 @@ describe('[SidebarItem Component]', () => {
 	it('should render an `Item` link that keeps the `SidebarItem` classes', () => {
 		const { getByRole } = render(
 			<SidebarItem href='#general' selected level={2}>
-				<SidebarItemTitle unread>general</SidebarItemTitle>
+				<SidebarItemTitle>general</SidebarItemTitle>
 			</SidebarItem>,
 		);
 
@@ -33,7 +33,7 @@ describe('[SidebarItem Component]', () => {
 			'rcx-sidebar-item--selected',
 			'rcx-sidebar-item--level-2',
 		);
-		expect(link.firstElementChild).toHaveClass('rcx-item__title', 'rcx-sidebar-item__title', 'rcx-sidebar-item__title--highlighted');
+		expect(link.firstElementChild).toHaveClass('rcx-item__title', 'rcx-sidebar-item__title');
 	});
 
 	it('should name the icon by its label, and hide it without one', () => {

@@ -12,7 +12,7 @@ const SidebarRailHeader = () => {
 	const showOngoingCalls = useVideoConfWindowEnabled();
 
 	return (
-		<NavBarComponent aria-label={t('Sidebar_rail_header')} style={{ paddingInline: '0.5rem' }}>
+		<NavBarComponent aria-label={t('Sidebar_rail_header')} compact>
 			<NavBarSection>
 				<Box is='img' src='/images/logo/icon.svg' alt='Rocket.Chat' size='x28' />
 			</NavBarSection>

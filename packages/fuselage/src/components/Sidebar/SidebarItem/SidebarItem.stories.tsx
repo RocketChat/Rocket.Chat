@@ -35,10 +35,6 @@ export default {
 		},
 	},
 	argTypes: {
-		selected: {
-			control: 'boolean',
-			description: 'Marks the list item as the currently selected entry.',
-		},
 		children: {
 			control: false,
 			description: 'Content of the list item.',
@@ -98,7 +94,7 @@ const avatarSizes = {
 const RoomRow = ({ name, avatar, viewMode, selected, unread, ringing }: RoomRowProps) => {
 	const icon = <SidebarItemIcon icon='hashtag-lock' label='Private channel' />;
 	const title = (
-		<SidebarItemTitle unread={!!unread}>
+		<SidebarItemTitle>
 			<SidebarItemLink href={`#${name}`} aria-current={selected ? 'page' : undefined}>
 				{name}
 			</SidebarItemLink>
@@ -128,10 +124,10 @@ const RoomRow = ({ name, avatar, viewMode, selected, unread, ringing }: RoomRowP
 						<SidebarItemRow>
 							{icon}
 							{title}
-							<SidebarItemTimestamp unread={!!unread}>12:45</SidebarItemTimestamp>
+							<SidebarItemTimestamp>12:45</SidebarItemTimestamp>
 						</SidebarItemRow>
 						<SidebarItemRow>
-							<SidebarItemContent unread={!!unread}>{ringing ? 'Calling…' : 'Mockups are ready for review'}</SidebarItemContent>
+							<SidebarItemContent>{ringing ? 'Calling…' : 'Mockups are ready for review'}</SidebarItemContent>
 							{badge}
 							{ringing && callActions}
 							{menu}

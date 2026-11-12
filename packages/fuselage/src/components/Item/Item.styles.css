@@ -132,6 +132,11 @@ button.rcx-item-group-title:focus-visible::after {
 	border-top: 1px solid var(--rcx-item-color-stroke-divider, var(--rcx-color-stroke-extra-light, #ebecef));
 }
 
+/* The line of a divider on the sidebar's surface, under the custom property a theme overrides for it */
+.rcx-item-divider--light::before {
+	border-top-color: var(--rcx-sidebar-color-stroke-extra-light, var(--rcx-color-stroke-light, #cbced1));
+}
+
 /* Keyframe animation: a row or a group that has just landed */
 @keyframes rcx-item-dropped {
 	from {
