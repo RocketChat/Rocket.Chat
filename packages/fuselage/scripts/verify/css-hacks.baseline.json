@@ -224,10 +224,10 @@
 		"negativeMargins": 1,
 		"displayContents": 0
 	},
-	"Message/MessageToolbar/MessageToolbar.styles.scss": {
+	"Message/MessageToolbar/MessageToolbar.styles.css": {
 		"rules": 6,
-		"nested": 5,
-		"combinators": 2,
+		"nested": 0,
+		"combinators": 4,
 		"important": 0,
 		"specificityBumps": 0,
 		"negativeMargins": 0,
