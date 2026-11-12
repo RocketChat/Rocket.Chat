@@ -1,5 +1,6 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -24,7 +25,6 @@ const mocks = {
 
 const { sendMail } = proxyquire.noCallThru().load('./sendMail', {
 	'@rocket.chat/core-services': { ClientSafeError: Error },
-	'@rocket.chat/models': { Users: mocks.Users },
 	'../../../logger/system': { SystemLogger: { debug: sinon.stub() } },
 	'../../../utils/getURL': { getWorkspaceURL: (path: string) => `https://open.rocket.chat/${path}` },
 	'../../../utils/placeholders': {
@@ -36,6 +36,10 @@ const { sendMail } = proxyquire.noCallThru().load('./sendMail', {
 const unsubscribeUrl = `https://open.rocket.chat/mailer/unsubscribe/user1/${user.createdAt.getTime()}`;
 
 describe('sendMail', () => {
+	before(() => {
+		mockModel('Users', mocks.Users);
+	});
+
 	beforeEach(() => {
 		mocks.Mailer.send.resetHistory();
 		mocks.Users.findOneByEmailAddress.resolves(user);

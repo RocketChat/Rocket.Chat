@@ -1,5 +1,6 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -42,7 +43,6 @@ const { UserConverter } = proxyquire.noCallThru().load('./UserConverter', {
 	},
 	'./generateTempPassword': {
 		generateTempPassword,
-		'@global': true,
 	},
 	'@rocket.chat/account-utils': {
 		hashPassword: hashPasswordMock,
@@ -53,10 +53,13 @@ const { UserConverter } = proxyquire.noCallThru().load('./UserConverter', {
 			insertUserDoc,
 		},
 	},
-	'@rocket.chat/models': { ...modelsMock, '@global': true },
 });
 
 describe('User Converter', () => {
+	before(() => {
+		mockModel('Users', modelsMock.Users);
+	});
+
 	beforeEach(() => {
 		modelsMock.Users.findOneByEmailAddress.reset();
 		modelsMock.Users.findOneByUsernameIgnoringCase.reset();

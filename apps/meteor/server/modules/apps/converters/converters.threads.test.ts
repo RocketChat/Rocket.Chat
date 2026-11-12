@@ -1,19 +1,17 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
 import type { IAppServerOrchestrator } from '@rocket.chat/apps';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { AppThreadsConverter } from './threads';
 
 const sandbox = sinon.createSandbox();
 
 const findMessage = sandbox.stub();
 const findMessages = sandbox.stub();
-
-const { AppThreadsConverter } = proxyquire.noCallThru().load('./threads', {
-	'@rocket.chat/models': { Messages: { findOneById: findMessage, find: findMessages } },
-});
 
 const converters = {
 	rooms: { convertById: sandbox.stub() },
@@ -33,6 +31,10 @@ const convertToApp = ((user: any) => ({ __convertedToApp: 'users', id: user?._id
 const ts = new Date('2024-01-01T00:00:00.000Z');
 
 describe('AppThreadsConverter.convertById', () => {
+	before(() => {
+		mockModel('Messages', { findOneById: findMessage, find: findMessages });
+	});
+
 	beforeEach(() => {
 		sandbox.reset();
 		findMessages.returns({ toArray: async () => [] });

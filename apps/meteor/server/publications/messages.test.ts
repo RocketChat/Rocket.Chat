@@ -1,7 +1,8 @@
-import { afterEach, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it } from 'node:test';
 
 import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IMessage } from '@rocket.chat/core-typings';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -31,16 +32,7 @@ const {
 	'../meteor-methods/messages/getChannelHistory': {
 		getChannelHistory: getChannelHistoryStub,
 	},
-	'meteor/meteor': {
-		'Meteor': {
-			methods: sinon.stub(),
-		},
-		'@global': true,
-	},
 	'@rocket.chat/core-services': { ClientSafeError },
-	'@rocket.chat/models': {
-		Messages: messagesMock,
-	},
 });
 
 describe('extractTimestampFromCursor', () => {
@@ -186,6 +178,10 @@ describe('mountPreviousCursor', () => {
 });
 
 describe('handleWithoutPagination', () => {
+	before(() => {
+		mockModel('Messages', messagesMock);
+	});
+
 	afterEach(() => {
 		messagesMock.findForUpdates.reset();
 		messagesMock.trashFindDeletedAfter.reset();
@@ -253,6 +249,10 @@ describe('handleWithoutPagination', () => {
 });
 
 describe('handleCursorPagination', () => {
+	before(() => {
+		mockModel('Messages', messagesMock);
+	});
+
 	it('should return updated messages and cursor when type is UPDATED', async () => {
 		const rid = 'roomId';
 		const count = 10;
@@ -296,6 +296,10 @@ describe('handleCursorPagination', () => {
 describe('getMessageHistory', () => {
 	const rid = 'roomId';
 	const fromId = 'userId';
+
+	before(() => {
+		mockModel('Messages', messagesMock);
+	});
 
 	const catchError = async (promise: Promise<unknown>): Promise<any> => {
 		try {

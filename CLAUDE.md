@@ -66,6 +66,7 @@ Read the doc that matches the task instead of scanning `docs/` wholesale.
 
 ### Testing
 
+- [Unit tests](docs/backend-folder-structure.md#tests) — where a spec goes, which runner, model mocks with `mockModel` in a `describe` hook
 - [Playwright E2E testing guide](apps/meteor/tests/e2e/README.md) — setup, locators, page objects, cleanup, performance patterns, and testing conventions
 
 ### Other

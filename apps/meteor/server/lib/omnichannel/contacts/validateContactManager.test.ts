@@ -1,8 +1,10 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { validateContactManager } from './validateContactManager';
 
 const modelsMock = {
 	Users: {
@@ -10,11 +12,11 @@ const modelsMock = {
 	},
 };
 
-const { validateContactManager } = proxyquire.noCallThru().load('./validateContactManager', {
-	'@rocket.chat/models': modelsMock,
-});
-
 describe('validateContactManager', () => {
+	before(() => {
+		mockModel('Users', modelsMock.Users);
+	});
+
 	beforeEach(() => {
 		modelsMock.Users.findOneAgentById.reset();
 	});

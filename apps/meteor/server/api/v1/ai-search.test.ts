@@ -3,8 +3,7 @@ import { after, before, beforeEach, describe, it } from 'node:test';
 import { AI_SEARCH_PAGE_SIZE, MAX_INTELLIGENT_SEARCH_RESULTS, MAX_SEARCH_FILTER_VALUES } from '@rocket.chat/ai-search';
 import { ClientSafeError, LocalBroker, ServiceClass, api } from '@rocket.chat/core-services';
 import type { IAISearchService, IAuthorization } from '@rocket.chat/core-services';
-import type { IMessagesModel, IRoomsModel, ISubscriptionsModel } from '@rocket.chat/model-typings';
-import { registerModel } from '@rocket.chat/models';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -137,9 +136,9 @@ describe('AI search endpoints', () => {
 	before(() => {
 		api.setBroker(new LocalBroker());
 		services.forEach((service) => api.registerService(service));
-		registerModel('IMessagesModel', { findVisibleByIds } as unknown as IMessagesModel);
-		registerModel('IRoomsModel', { findByIds: findRoomsByIds } as unknown as IRoomsModel);
-		registerModel('ISubscriptionsModel', { findByUserIdAndRoomIds } as unknown as ISubscriptionsModel);
+		mockModel('Messages', { findVisibleByIds });
+		mockModel('Rooms', { findByIds: findRoomsByIds });
+		mockModel('Subscriptions', { findByUserIdAndRoomIds });
 	});
 
 	after(async () => {

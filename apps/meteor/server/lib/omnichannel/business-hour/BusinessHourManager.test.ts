@@ -1,6 +1,7 @@
 /* oxlint-disable @typescript-eslint/no-empty-function */
-import { afterEach, describe, it } from 'node:test';
+import { afterEach, before, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -31,9 +32,6 @@ const { BusinessHourManager } = proxyquire.noCallThru().load('./BusinessHourMana
 	'../../callbacks': {},
 	'./AbstractBusinessHour': {},
 	'moment-timezone': momentStub,
-	'@rocket.chat/models': {
-		LivechatBusinessHours: LivechatBusinessHoursStub,
-	},
 	'../logger': {
 		businessHourLogger: {
 			error: loggerStub,
@@ -45,6 +43,10 @@ const cronAddStub = sinon.stub();
 const cronRemoveStub = sinon.stub();
 
 describe('[OC] BusinessHourManager', () => {
+	before(() => {
+		mockModel('LivechatBusinessHours', LivechatBusinessHoursStub);
+	});
+
 	afterEach(() => sinon.restore());
 	describe('hasDaylightSavingTimeChanged()', () => {
 		const manager = new BusinessHourManager({} as any);
