@@ -30,12 +30,8 @@ export class OmnichannelSlaPolicies extends OmnichannelAdmin {
 	}
 
 	override async search(text: string) {
-		const listRequest = this.page.waitForRequest((request) => {
-			const url = new URL(request.url());
-			return url.pathname.endsWith('/v1/livechat/sla') && url.searchParams.get('text') === text;
-		});
 		await super.search(text);
-		await listRequest;
+		await this.table.waitForSettled(this.emptyState);
 	}
 
 	btnRemove(name: string) {

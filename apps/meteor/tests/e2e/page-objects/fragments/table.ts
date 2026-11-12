@@ -19,14 +19,13 @@ export class Table {
 		});
 	}
 
-	findRowsWithoutText(text: string): Locator {
-		return this.root
-			.getByRole('rowgroup')
-			.last()
-			.getByRole('row')
-			.filter({
-				hasNot: this.root.page().getByText(text),
-			});
+	/**
+	 * Waits until the rows on screen are current, for tables that set `aria-busy` while loading.
+	 * @param fallback as in {@link waitForDisplay}.
+	 */
+	waitForSettled(fallback?: Locator) {
+		const settled = this.root.and(this.root.page().locator('[aria-busy="false"]'));
+		return expect(fallback ? settled.or(fallback) : settled).toBeVisible();
 	}
 }
 

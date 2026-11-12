@@ -32,15 +32,8 @@ export class OmnichannelDepartments extends OmnichannelAdmin {
 	}
 
 	override async search(text: string) {
-		if ((await this.inputSearch.inputValue()) !== text) {
-			const listResponse = this.page.waitForResponse((response) => {
-				const url = new URL(response.url());
-				return /\/v1\/livechat\/(department|departments\/archived)$/.test(url.pathname) && url.searchParams.get('text') === text;
-			});
-			await super.search(text);
-			await listResponse;
-		}
-		await expect(this.table.findRowsWithoutText(text)).toHaveCount(0);
+		await super.search(text);
+		await this.table.waitForSettled(this.emptyState);
 	}
 
 	async createNew() {
@@ -76,11 +69,9 @@ export class OmnichannelDepartments extends OmnichannelAdmin {
 	}
 
 	async openArchivedTab() {
-		const listResponse = this.page.waitForResponse((response) =>
-			new URL(response.url()).pathname.endsWith('/v1/livechat/departments/archived'),
-		);
 		await this.tabArchivedDepartments.click();
-		await listResponse;
+		await expect(this.tabArchivedDepartments).toHaveAttribute('aria-selected', 'true');
+		await this.table.waitForSettled(this.emptyState);
 	}
 
 	getDepartmentMenuByName(name: string) {
