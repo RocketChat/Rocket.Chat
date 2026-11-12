@@ -21,7 +21,13 @@ type UseTryToJumpToMessageProps = {
 	listIndexOffset?: number;
 };
 
-const useTryToJumpToMessage = ({ rid, virtualizerRef, setIsJumpingToMessage, messages, listIndexOffset = 0 }: UseTryToJumpToMessageProps) => {
+const useTryToJumpToMessage = ({
+	rid,
+	virtualizerRef,
+	setIsJumpingToMessage,
+	messages,
+	listIndexOffset = 0,
+}: UseTryToJumpToMessageProps) => {
 	const messageJumpParam = useSearchParameter('msg');
 
 	const { isLoadingMoreMessages } = useRoomMessages();
@@ -107,7 +113,19 @@ const useTryToJumpToMessage = ({ rid, virtualizerRef, setIsJumpingToMessage, mes
 				setMessageJumpQueryStringParameter(null);
 			}
 		}, 500);
-	}, [messageJumpParam, virtualizerRef, setIsJumpingToMessage, rid, messages, message, isError, isLoadingMoreMessages, targetId, goToRoom, listIndexOffset]);
+	}, [
+		messageJumpParam,
+		virtualizerRef,
+		setIsJumpingToMessage,
+		rid,
+		messages,
+		message,
+		isError,
+		isLoadingMoreMessages,
+		targetId,
+		goToRoom,
+		listIndexOffset,
+	]);
 };
 
 export default useTryToJumpToMessage;
