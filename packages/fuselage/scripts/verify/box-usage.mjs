@@ -14,11 +14,15 @@ const NOT_SOURCE = /\.(spec|stories)\.tsx?$|\.d\.ts$/;
 
 // One pass, so a quote inside a comment or `//` inside a string does not confuse the other
 const COMMENTS_AND_STRINGS = /\/\*[\s\S]*?\*\/|\/\/.*$|'(?:\\.|[^'\\\n])*'|"(?:\\.|[^"\\\n])*"/gm;
+// A default or namespace import binds a module under any local name (`import LegacyBox from '../Box'`)
+const MODULE_IMPORT = /^\s*import\s+(?!type\s)(?:\*\s*as\s+\w+|\w+)\s*(?:,\s*\{[^}]*\})?\s*from\s*['"]([^'"]+)['"]/gm;
 
 const usage = (folder) => {
 	const found = new Set();
 	for (const file of readdirSync(join(root, folder), { recursive: true }).filter((f) => SOURCE.test(f) && !NOT_SOURCE.test(f))) {
-		const text = readFileSync(join(root, folder, file), 'utf8').replace(COMMENTS_AND_STRINGS, '');
+		const source = readFileSync(join(root, folder, file), 'utf8');
+		for (const [, from] of source.matchAll(MODULE_IMPORT)) if (NAMES.includes(from.split('/').at(-1))) found.add(from.split('/').at(-1));
+		const text = source.replace(COMMENTS_AND_STRINGS, '');
 		for (const name of NAMES) if (new RegExp(`(?<![\\w.])${name}(?![\\w])`).test(text)) found.add(name);
 	}
 	return [...found];
