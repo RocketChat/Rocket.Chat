@@ -173,6 +173,16 @@ const generateStyles = () => {
 	--emoji-size: ${size('x12')};
 }
 
+/* The same gap as the message row, so the preview text starts on the message text column */
+.rcx-message-thread__row {
+	--rcx-item-gap: ${spacing('x8')};
+}
+
+/* Pseudo-elements on the part's own element: a system origin starts with a capital */
+.rcx-message-thread__origin--system::first-letter {
+	text-transform: uppercase;
+}
+
 /* Consumer rich text: the elements the Markdown renderer puts in the body, which the body does not render itself */
 ${(['h1', 'h2', 'h3', 'h4'] as const).map(heading).join('\n\n')}
 

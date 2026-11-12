@@ -6,7 +6,15 @@ export type MessageSystemProps = {
 } & ItemAttributes;
 
 const MessageSystem = ({ isSelected, className, ...props }: MessageSystemProps) => (
-	<Item {...props} align='start' inset='lg' multiline selected={isSelected} className={cx('rcx-message-system', className)} />
+	<Item
+		{...props}
+		align='start'
+		inset='lg'
+		padding='large'
+		multiline
+		selected={isSelected}
+		className={cx('rcx-message-system', className)}
+	/>
 );
 
 export default MessageSystem;

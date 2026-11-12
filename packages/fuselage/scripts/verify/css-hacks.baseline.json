@@ -162,7 +162,7 @@
 		"displayContents": 0
 	},
 	"Message/Message.styles.css": {
-		"rules": 14,
+		"rules": 16,
 		"nested": 0,
 		"combinators": 10,
 		"important": 0,
@@ -206,15 +206,6 @@
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
-	"Message/MessageSystem/MessageSystem.styles.scss": {
-		"rules": 5,
-		"nested": 3,
-		"combinators": 0,
-		"important": 0,
-		"specificityBumps": 1,
-		"negativeMargins": 1,
-		"displayContents": 0
-	},
 	"Message/MessageToolbar/MessageToolbar.styles.css": {
 		"rules": 6,
 		"nested": 0,
@@ -230,15 +221,6 @@
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
-		"negativeMargins": 0,
-		"displayContents": 0
-	},
-	"Message/ThreadMessage/ThreadMessage.styles.scss": {
-		"rules": 9,
-		"nested": 7,
-		"combinators": 0,
-		"important": 0,
-		"specificityBumps": 1,
 		"negativeMargins": 0,
 		"displayContents": 0
 	},

@@ -187,7 +187,7 @@ export const PreviewType: Story = {
 		const rect = (id: string) => el(canvasElement, id).getBoundingClientRect();
 
 		// The preview is small text, in the info color, and every line is a single truncated one
-		await expect(computed(el(canvasElement, 'root'), 'font-size')).toBe('12px');
+		await expect(computed(canvasElement.querySelector('.rcx-message-thread__content') as HTMLElement, 'font-size')).toBe('12px');
 		await expect(computed(el(canvasElement, 'origin'), 'font-size')).toBe('12px');
 		await expect(computed(el(canvasElement, 'body'), 'color')).not.toBe(computed(el(canvasElement, 'origin'), 'color'));
 		for (const id of ['origin', 'body']) {
