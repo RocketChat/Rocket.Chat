@@ -8,20 +8,23 @@ const warn = sinon.stub();
 
 const stub = (name: string) => ({ [name]: true });
 
-const { registerEEBroker } = proxyquire.noPreserveCache().noCallThru().load('./index', {
-	'../hooks/auth/callback': stub('hooks'),
-	'./audit': stub('audit'),
-	'./deviceManagement': stub('deviceManagement'),
-	'./engagementDashboard': stub('engagementDashboard'),
-	'./maxRoomsPerGuest': stub('maxRoomsPerGuest'),
-	'./services': stub('services'),
-	'./readReceiptsArchive': stub('readReceiptsArchive'),
-	'./mcp': stub('mcp'),
-	'./presence': stub('presence'),
-	'@rocket.chat/core-services': { api: { setBroker: sinon.stub(), start: sinon.stub().resolves() } },
-	'@rocket.chat/network-broker': { startBroker: sinon.stub() },
-	'../../../server/lib/logger/system': { SystemLogger: { warn } },
-}) as { registerEEBroker: () => Promise<void> };
+const { registerEEBroker } = proxyquire
+	.noPreserveCache()
+	.noCallThru()
+	.load('./index', {
+		'../hooks/auth/callback': stub('hooks'),
+		'./audit': stub('audit'),
+		'./deviceManagement': stub('deviceManagement'),
+		'./engagementDashboard': stub('engagementDashboard'),
+		'./maxRoomsPerGuest': stub('maxRoomsPerGuest'),
+		'./services': stub('services'),
+		'./readReceiptsArchive': stub('readReceiptsArchive'),
+		'./mcp': stub('mcp'),
+		'./presence': stub('presence'),
+		'@rocket.chat/core-services': { api: { setBroker: sinon.stub(), start: sinon.stub().resolves() } },
+		'@rocket.chat/network-broker': { startBroker: sinon.stub() },
+		'../../../server/lib/logger/system': { SystemLogger: { warn } },
+	}) as { registerEEBroker: () => Promise<void> };
 
 describe('registerEEBroker encryption warning', () => {
 	const env = { ...process.env };

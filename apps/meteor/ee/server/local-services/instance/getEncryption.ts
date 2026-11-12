@@ -2,6 +2,8 @@ import { createHash } from 'node:crypto';
 
 import { Middlewares } from 'moleculer';
 
+const createEncryptionMiddleware = Middlewares.Transmit.Encryption;
+
 const SECRET_VARIABLE = 'MOLECULER_ENCRYPTION_SECRET';
 
 export type ClusterTransportKind = 'tcp' | 'nats' | 'microservices';
@@ -15,7 +17,7 @@ export function getEncryption({ [SECRET_VARIABLE]: secret }: Record<string, unkn
 	const iv = createHash('sha256').update(`iv:${secret}`).digest().subarray(0, 16);
 
 	return {
-		middlewares: [Middlewares.Transmit.Encryption(key, 'aes-256-cbc', iv)],
+		middlewares: [createEncryptionMiddleware(key, 'aes-256-cbc', iv)],
 	};
 }
 
