@@ -395,7 +395,9 @@ const dmCountersAction = <Path extends string>(_path: Path): TypedAction<typeof 
 		let lm = null;
 
 		if (ruserId) {
-			if (!access) {
+			// Allow a user to query their own counters without admin privileges.
+			// Admin permission is required only when querying on behalf of another user.
+			if (ruserId !== this.userId && !access) {
 				return API.v1.forbidden();
 			}
 			user = ruserId;
@@ -411,11 +413,15 @@ const dmCountersAction = <Path extends string>(_path: Path): TypedAction<typeof 
 		lm = room?.lm ? new Date(room.lm).toISOString() : new Date(room._updatedAt).toISOString();
 
 		if (subscription) {
-			unreads = subscription.unread ?? null;
-			if (subscription.ls && room.msgs) {
-				unreadsFrom = new Date(subscription.ls).toISOString();
+			// Expose unread counters only when the requester owns this subscription
+			// (i.e. they are querying their own DM) or when they have admin access.
+			if (access || subscription.u._id === this.userId) {
+				unreads = subscription.unread ?? null;
+				if (subscription.ls && room.msgs) {
+					unreadsFrom = new Date(subscription.ls).toISOString();
+				}
+				userMentions = subscription.userMentions ?? null;
 			}
-			userMentions = subscription.userMentions;
 			joined = true;
 		}
 
