@@ -1,13 +1,14 @@
 // Usage: node scripts/verify/frame-platform.mjs [dir (src)]
 // A frame is a module that declares `styled(...)`. It must stay renderable on React Native, so it imports nothing from
-// `react-dom` and names no DOM-only type (`HTMLAttributes`, `HTMLDivElement`, `ComponentProps<'div'>`, ...); a web-only wrapper
-// belongs in another module. The check reads one file at a time: a frame that imports a local helper which imports `react-dom`
+// `react-dom`, names no DOM-only type (`HTMLAttributes`, `HTMLDivElement`, `ComponentProps<'div'>`, ...) and reads no browser
+// global (`document`, `window`, ...); a web-only wrapper belongs in another module. The check reads one file at a time: a frame that imports a local helper which imports `react-dom`
 // is not caught.
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 const FRAME = /\bstyled(?:<[\s\S]*?>)?\(/;
 const DOM_IMPORT = /\b(?:from|import|require)\s*\(?\s*['"]react-dom(?:\/[^'"]*)?['"]/;
+const DOM_GLOBAL = /(?<![\w$.])(?:globalThis\.)?(document|window|navigator|localStorage|sessionStorage)\s*[.[]/;
 const DOM_TYPE =
 	/\b(?:\w*HTMLAttributes|HTMLProps|HTML\w*Element|SVGAttributes|SVG\w*Element|DOMAttributes|JSX\.IntrinsicElements)\b|\bComponentProps(?:WithRef|WithoutRef)?<\s*['"]/;
 
@@ -18,9 +19,11 @@ export const checkFrame = (source) => {
 	const code = withoutComments(source);
 	if (!FRAME.test(code)) return [];
 
-	return [DOM_IMPORT.test(code) && 'imports react-dom', DOM_TYPE.test(code) && `uses the DOM-only type ${DOM_TYPE.exec(code)[0]}`].filter(
-		Boolean,
-	);
+	return [
+		DOM_IMPORT.test(code) && 'imports react-dom',
+		DOM_TYPE.test(code) && `uses the DOM-only type ${DOM_TYPE.exec(code)[0]}`,
+		DOM_GLOBAL.test(code) && `reads the browser global ${DOM_GLOBAL.exec(code)[1]}`,
+	].filter(Boolean);
 };
 
 const sourceFiles = (directory) =>
