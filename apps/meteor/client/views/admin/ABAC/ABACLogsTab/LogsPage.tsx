@@ -14,7 +14,8 @@ import {
 	useFormatDateAndTime,
 } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useMemo, useState } from 'react';
+import type { UseQueryResult } from '@tanstack/react-query';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { FilterBar, FilterBarFilters } from '../../../../components/FilterBar';
@@ -31,6 +32,32 @@ const LogsPage = () => {
 	const formatDate = useFormatDateAndTime();
 
 	const getLogs = useEndpoint('GET', '/v1/abac/audit');
+
+	type LogsData = Awaited<ReturnType<typeof getLogs>>;
+
+	type MappedLogEvent = {
+		id: string;
+		user: string;
+		userId?: string;
+		timestamp: Date;
+		element: string;
+		action: string;
+		room: string | undefined;
+		name?: string;
+	} | null;
+
+	type CombinedLogs = {
+		data:
+			| {
+					events: MappedLogEvent[];
+					count: number;
+					offset: number;
+					total: number;
+			  }
+			| undefined;
+		isLoading: boolean;
+	};
+
 	const query = useMemo(
 		() => ({
 			...(startDate && { start: new Date(`${startDate}T00:00:00.000`).toISOString() }),
@@ -42,122 +69,199 @@ const LogsPage = () => {
 	const queryKey = ABACQueryKeys.logs.list(query);
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination({ resetKey: queryKey });
 
-	const getActionLabel = (action?: AbacAttributeDefinitionChangeType | AbacActionPerformed | null) => {
-		switch (action) {
-			case 'created':
-				return t('Created');
-			case 'updated':
-				return t('Updated');
-			case 'deleted':
-				return t('Deleted');
-			case 'all-deleted':
-				return t('ABAC_All_Attributes_deleted');
-			case 'key-removed':
-				return t('ABAC_Key_removed');
-			case 'key-renamed':
-				return t('ABAC_Key_renamed');
-			case 'value-removed':
-				return t('ABAC_Value_removed');
-			case 'key-added':
-				return t('ABAC_Key_added');
-			case 'key-updated':
-				return t('ABAC_Key_updated');
-			case 'revoked-object-access':
-				return t('ABAC_Revoked_Object_Access');
-			case 'granted-object-access':
-				return t('ABAC_Granted_Object_Access');
-			default:
-				return '';
-		}
-	};
-
-	const { data: logs, isLoading } = usePaginatedQuery({
-		query: {
-			queryKey,
-			queryFn: (page) => getLogs({ ...query, ...page }),
+	const getActionLabel = useCallback(
+		(action?: AbacAttributeDefinitionChangeType | AbacActionPerformed | null) => {
+			switch (action) {
+				case 'created':
+					return t('Created');
+				case 'updated':
+					return t('Updated');
+				case 'deleted':
+					return t('Deleted');
+				case 'all-deleted':
+					return t('ABAC_All_Attributes_deleted');
+				case 'key-removed':
+					return t('ABAC_Key_removed');
+				case 'key-renamed':
+					return t('ABAC_Key_renamed');
+				case 'value-removed':
+					return t('ABAC_Value_removed');
+				case 'key-added':
+					return t('ABAC_Key_added');
+				case 'key-updated':
+					return t('ABAC_Key_updated');
+				case 'revoked-object-access':
+					return t('ABAC_Revoked_Object_Access');
+				case 'granted-object-access':
+					return t('ABAC_Granted_Object_Access');
+				default:
+					return '';
+			}
 		},
-		itemsKey: 'events',
-		offset: current,
-		count: itemsPerPage,
-	});
+		[t],
+	);
 
-	// TODO: Move this mapping from useQuery's old `select` into a usePaginatedQuery `combine`
-	const data = logs && {
-		events: logs.events.map((event) => {
-			const eventInfo = {
+	const combineLogs = useCallback(
+		(results: UseQueryResult<LogsData>[]): CombinedLogs => {
+			type LogEvent = LogsData['events'][number];
+			type EventInfo = Omit<NonNullable<MappedLogEvent>, 'name'>;
+
+			const getEventInfo = (event: LogEvent): EventInfo => ({
 				id: event._id,
 				user: event.actor?.type === 'user' ? event.actor.username : t('System'),
-				...(event.actor?.type === 'user' && { userAvatar: <UserAvatar size='x28' userId={event.actor._id} /> }),
+				...(event.actor?.type === 'user' && { userId: event.actor._id }),
 				timestamp: new Date(event.ts),
 				element: t('ABAC_Room'),
 				action: getActionLabel(event.data?.find((item) => item.key === 'change')?.value),
 				room: undefined,
+			});
+
+			const mapAttributeChanged = (event: LogEvent, info: EventInfo): MappedLogEvent => {
+				if (event.t !== 'abac.attribute.changed') return null;
+
+				return {
+					...info,
+					element: t('ABAC_Room_Attribute'),
+					name: event.data?.find((item) => item.key === 'attributeKey')?.value ?? '',
+				};
 			};
-			switch (event.t) {
-				case 'abac.attribute.changed':
-					return {
-						...eventInfo,
-						element: t('ABAC_Room_Attribute'),
-						name: event.data?.find((item) => item.key === 'attributeKey')?.value ?? '',
-					};
-				case 'abac.action.performed':
-					return {
-						...eventInfo,
-						name: event.data?.find((item) => item.key === 'subject')?.value?.username ?? '',
-						action: getActionLabel(event.data?.find((item) => item.key === 'action')?.value),
-						room: event.data?.find((item) => item.key === 'object')?.value?.name ?? '',
-						element: t('ABAC_room_membership'),
-					};
-				case 'abac.object.attribute.changed': {
-					const app = event.data?.find((item) => item.key === 'app')?.value;
-					return {
-						...eventInfo,
-						...(app && { user: t('ABAC_User_via_App', { username: eventInfo.user, appName: app.name ?? app._id }) }),
-						name:
-							event.data
-								?.find((item) => item.key === 'current')
-								?.value?.map((item) => item.key)
-								.join(', ') ?? t('Empty'),
-						room: event.data?.find((item) => item.key === 'room')?.value?.name ?? '',
-					};
+
+			const mapActionPerformed = (event: LogEvent, info: EventInfo): MappedLogEvent => {
+				if (event.t !== 'abac.action.performed') return null;
+
+				return {
+					...info,
+					name: event.data?.find((item) => item.key === 'subject')?.value?.username ?? '',
+					action: getActionLabel(event.data?.find((item) => item.key === 'action')?.value),
+					room: event.data?.find((item) => item.key === 'object')?.value?.name ?? '',
+					element: t('ABAC_room_membership'),
+				};
+			};
+
+			const mapObjectAttributeChanged = (event: LogEvent, info: EventInfo): MappedLogEvent => {
+				if (event.t !== 'abac.object.attribute.changed') return null;
+
+				const app = event.data?.find((item) => item.key === 'app')?.value;
+
+				return {
+					...info,
+					...(app && {
+						user: t('ABAC_User_via_App', {
+							username: info.user,
+							appName: app.name ?? app._id,
+						}),
+					}),
+					name:
+						event.data
+							?.find((item) => item.key === 'current')
+							?.value?.map((item) => item.key)
+							.join(', ') ?? t('Empty'),
+					room: event.data?.find((item) => item.key === 'room')?.value?.name ?? '',
+				};
+			};
+
+			const mapObjectAttributesRemoved = (event: LogEvent, info: EventInfo): MappedLogEvent => {
+				if (event.t !== 'abac.object.attributes.removed') return null;
+
+				return {
+					...info,
+					name:
+						event.data
+							?.find((item) => item.key === 'current')
+							?.value?.map((item) => item.key)
+							.join(', ') ?? t('Empty'),
+					room: event.data?.find((item) => item.key === 'room')?.value?.name ?? '',
+				};
+			};
+
+			const mapAttributeStoreSwitched = (event: LogEvent, info: EventInfo): MappedLogEvent => {
+				if (event.t !== 'abac.attribute.store.switched') return null;
+
+				return {
+					...info,
+					element: t('ABAC_Attribute_Store'),
+					action: t('ABAC_Attribute_Store_Switched'),
+					name: `${event.data?.find((item) => item.key === 'from')?.value} -> ${event.data?.find((item) => item.key === 'to')?.value}`,
+					room: t('ABAC_Rooms_Affected', {
+						count: Number(event.data?.find((item) => item.key === 'roomsAffected')?.value ?? 0),
+					}),
+				};
+			};
+
+			const mapMembershipEvaluated = (event: LogEvent, info: EventInfo): MappedLogEvent => {
+				if (event.t !== 'abac.membership.evaluated') return null;
+
+				return {
+					...info,
+					element: t('ABAC_room_membership'),
+					action: t('ABAC_Membership_Evaluated'),
+					name:
+						event.data
+							?.find((item) => item.key === 'subjects')
+							?.value?.map((item) => item.username)
+							.join(', ') ?? '',
+				};
+			};
+
+			const mapLogEvent = (event: LogEvent): MappedLogEvent => {
+				const info = getEventInfo(event);
+
+				switch (event.t) {
+					case 'abac.attribute.changed':
+						return mapAttributeChanged(event, info);
+					case 'abac.action.performed':
+						return mapActionPerformed(event, info);
+					case 'abac.object.attribute.changed':
+						return mapObjectAttributeChanged(event, info);
+					case 'abac.object.attributes.removed':
+						return mapObjectAttributesRemoved(event, info);
+					case 'abac.attribute.store.switched':
+						return mapAttributeStoreSwitched(event, info);
+					case 'abac.membership.evaluated':
+						return mapMembershipEvaluated(event, info);
+					default:
+						return null;
 				}
-				case 'abac.object.attributes.removed':
-					return {
-						...eventInfo,
-						name:
-							event.data
-								?.find((item) => item.key === 'current')
-								?.value?.map((item) => item.key)
-								.join(', ') ?? t('Empty'),
-						room: event.data?.find((item) => item.key === 'room')?.value?.name ?? '',
-					};
-				case 'abac.attribute.store.switched':
-					return {
-						...eventInfo,
-						element: t('ABAC_Attribute_Store'),
-						action: t('ABAC_Attribute_Store_Switched'),
-						name: `${event.data?.find((item) => item.key === 'from')?.value} -> ${event.data?.find((item) => item.key === 'to')?.value}`,
-						room: t('ABAC_Rooms_Affected', { count: Number(event.data?.find((item) => item.key === 'roomsAffected')?.value ?? 0) }),
-					};
-				case 'abac.membership.evaluated':
-					return {
-						...eventInfo,
-						element: t('ABAC_room_membership'),
-						action: t('ABAC_Membership_Evaluated'),
-						name:
-							event.data
-								?.find((item) => item.key === 'subjects')
-								?.value?.map((item) => item.username)
-								.join(', ') ?? '',
-					};
-				default:
-					return null;
-			}
-		}),
-		count: logs.count,
-		offset: logs.offset,
-		total: logs.total,
-	};
+			};
+
+			const pages = results.flatMap((result) => (result.data ? [result.data] : []));
+
+			const logs =
+				pages.length === results.length
+					? pages.slice(1).reduce(
+							(acc, page) => ({
+								...acc,
+								events: [...acc.events, ...page.events],
+								count: acc.events.length + page.events.length,
+							}),
+							pages[0],
+						)
+					: undefined;
+
+			const data = logs && {
+				events: logs.events.map(mapLogEvent),
+				count: logs.count,
+				offset: logs.offset,
+				total: logs.total,
+			};
+
+			return {
+				data,
+				isLoading: results.some((result) => result.isLoading),
+			};
+		},
+		[getActionLabel, t],
+	);
+
+	const { data, isLoading } = usePaginatedQuery({
+		query: {
+			queryKey,
+			queryFn: (page) => getLogs({ ...query, ...page }),
+		},
+		combine: combineLogs,
+		offset: current,
+		count: itemsPerPage,
+	});
 
 	return (
 		<>
@@ -215,9 +319,9 @@ const LogsPage = () => {
 								return (
 									<GenericTableRow key={eventInfo.id}>
 										<GenericTableCell truncate title={eventInfo.user}>
-											{eventInfo.userAvatar && (
+											{eventInfo.userId && (
 												<Box is='span' marginInlineEnd={4}>
-													{eventInfo.userAvatar}
+													<UserAvatar size='x28' userId={eventInfo.userId} />
 												</Box>
 											)}
 											{eventInfo.user}
