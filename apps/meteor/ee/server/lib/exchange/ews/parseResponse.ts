@@ -24,6 +24,7 @@ const RESPONSE_CODE_TO_ERROR: Record<string, { code: ExchangeErrorCode; message:
 	ErrorNonExistentMailbox: { code: 'mailbox-not-found', message: 'The mailbox does not exist on this Exchange server' },
 	ErrorNameResolutionNoResults: { code: 'mailbox-not-found', message: 'Exchange could not resolve the mailbox address' },
 	ErrorInvalidSyncStateData: { code: 'unexpected-response', message: 'The stored sync state is no longer valid and must be reset' },
+	ErrorServerBusy: { code: 'rate-limited', message: 'Exchange is throttling the service account' },
 };
 
 const parseXml = (xml: string): Document => {
@@ -75,11 +76,41 @@ const responseCodesIn = (scope: Document | Element): Element[] => [
 	...allByTag(scope, ERRORS_NS, 'ResponseCode'),
 ];
 
-const toExchangeError = (code: string, detail: string | undefined): ExchangeError => {
-	const mapped = RESPONSE_CODE_TO_ERROR[code];
+const messageXmlValue = (scope: Document | Element, name: string): string | undefined =>
+	textOf(allByTag(scope, TYPES_NS, 'Value').find((node) => node.getAttribute('Name') === name));
+
+const backOffMsIn = (scope: Document | Element): number | undefined => {
+	const ms = Number.parseInt(messageXmlValue(scope, 'BackOffMilliseconds') ?? '', 10);
+
+	return Number.isFinite(ms) && ms >= 0 ? ms : undefined;
+};
+
+/** Exchange can also report throttling as an `ErrorInternalServerError` whose inner error is `ErrorServerBusy`. */
+const unwrapServerBusy = (code: string, scope: Document | Element): string =>
+	code === 'ErrorInternalServerError' && messageXmlValue(scope, 'InnerErrorResponseCode') === 'ErrorServerBusy' ? 'ErrorServerBusy' : code;
+
+/** A batch is resent whole, so it waits out the longest back-off among its throttled messages. */
+const longestBackOffIn = (doc: Document): number | undefined => {
+	const backOffs = responseCodesIn(doc).flatMap((node) => {
+		const message = node.parentNode as Element;
+		const backOffMs = unwrapServerBusy(textOf(node) ?? '', message) === 'ErrorServerBusy' ? backOffMsIn(message) : undefined;
+
+		return backOffMs === undefined ? [] : [backOffMs];
+	});
+
+	return backOffs.length ? Math.max(...backOffs) : undefined;
+};
+
+const toExchangeError = (
+	code: string,
+	detail: string | undefined,
+	scope: Document | Element,
+	retryAfterMs = backOffMsIn(scope),
+): ExchangeError => {
+	const mapped = RESPONSE_CODE_TO_ERROR[unwrapServerBusy(code, scope)];
 
 	return mapped
-		? new ExchangeError(mapped.code, mapped.message, { detail: detail ?? code })
+		? new ExchangeError(mapped.code, mapped.message, { detail: detail ?? code, retryAfterMs })
 		: new ExchangeError('unexpected-response', `Exchange returned ${code}`, { detail });
 };
 
@@ -98,7 +129,7 @@ const assertNoSoapFault = (doc: Document): void => {
 	const code = textOf(responseCodesIn(fault)[0]);
 
 	if (code) {
-		throw toExchangeError(code, reason?.slice(0, 300));
+		throw toExchangeError(code, reason?.slice(0, 300), fault);
 	}
 
 	throw new ExchangeError('unexpected-response', 'Exchange rejected the request', {
@@ -113,7 +144,8 @@ const assertNoResponseCodeErrors = (doc: Document): void => {
 			continue;
 		}
 
-		throw toExchangeError(code, textOf(firstByTag(doc, MESSAGES_NS, 'MessageText')));
+		const message = node.parentNode as Element;
+		throw toExchangeError(code, textOf(firstByTag(message, MESSAGES_NS, 'MessageText')), message, longestBackOffIn(doc));
 	}
 };
 
