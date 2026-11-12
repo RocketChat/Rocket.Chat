@@ -14,7 +14,7 @@ jest.mock('@rocket.chat/ui-contexts', () => ({
 		return () => undefined;
 	},
 }));
-jest.mock('./useDesktopNotification', () => ({ useDesktopNotification: () => jest.fn() }));
+jest.mock('../../../../hooks/notification/useDesktopNotification', () => ({ useDesktopNotification: () => jest.fn() }));
 
 it('closes the notifications of a room when the server reports it read', () => {
 	const user = createFakeUser();
