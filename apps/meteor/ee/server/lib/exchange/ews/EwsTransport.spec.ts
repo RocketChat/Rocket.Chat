@@ -6,6 +6,13 @@ import type { TLSSocket } from 'tls';
 import type { EwsTransportConfig } from './EwsTransport';
 import { AllowlistedAgent, captureCertificate, EwsTransport } from './EwsTransport';
 
+jest.mock('@rocket.chat/ntlm', () => ({
+	createType1Message: () => 'negotiate',
+	decodeType2Message: () => ({}),
+	createType3Message: () => 'authenticate',
+	computeChannelBindingHash: () => Buffer.from('binding'),
+}));
+
 const SOCKET_REACHED = new Error('socket reached');
 
 const transportFor = (over?: Partial<EwsTransportConfig>) =>
@@ -116,5 +123,45 @@ describe('NTLM under FIPS', () => {
 		refuseSocket();
 
 		await expect(transportFor({ authMethod: 'ntlm' }).post('<soap/>')).rejects.toBe(SOCKET_REACHED);
+	});
+});
+
+describe('NTLM once per connection', () => {
+	type Send = (
+		body: string,
+		headers: Record<string, string>,
+	) => Promise<{ status: number; headers: object; body: string; socket: TLSSocket }>;
+
+	it('authenticates the first request and sends the next one over the same connection without a handshake', async () => {
+		const transport = transportFor({ authMethod: 'ntlm' });
+		const socket = {} as TLSSocket;
+		const send = jest.spyOn(transport as unknown as { send: Send }, 'send').mockImplementation(async (_body, headers) => ({
+			status: headers.Authorization === 'negotiate' ? 401 : 200,
+			headers: { 'www-authenticate': 'NTLM challenge' },
+			body: '',
+			socket,
+		}));
+
+		await transport.post('a');
+		await transport.post('b');
+
+		expect(send.mock.calls.map(([, headers]) => headers.Authorization)).toEqual(['negotiate', 'authenticate', undefined]);
+	});
+});
+
+describe('throttling', () => {
+	afterEach(() => {
+		jest.restoreAllMocks();
+	});
+
+	it.each(['basic', 'ntlm'] as const)('reports a 503 on the first request over %s as rate-limited', async (authMethod) => {
+		jest.spyOn(crypto, 'getFips').mockReturnValue(0);
+		const transport = transportFor({ authMethod });
+		const send = jest
+			.spyOn(transport as unknown as { send: () => Promise<unknown> }, 'send')
+			.mockResolvedValue({ status: 503, headers: {}, body: '<html>Service Unavailable</html>' });
+
+		await expect(transport.post('<soap/>')).rejects.toMatchObject({ code: 'rate-limited' });
+		expect(send).toHaveBeenCalledTimes(1);
 	});
 });

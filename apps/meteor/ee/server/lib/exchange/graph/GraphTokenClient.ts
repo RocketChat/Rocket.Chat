@@ -1,5 +1,5 @@
 import { ExchangeError } from '../errors';
-import { fetchWithRetry } from '../http/fetchWithRetry';
+import { fetchGraphWithRetry } from '../http/fetchGraphWithRetry';
 import { logger } from '../logger';
 
 export type GraphTokenClientConfig = {
@@ -162,7 +162,7 @@ export class GraphTokenClient {
 		body.append('client_secret', this.config.clientSecret);
 		body.append('scope', this.scope);
 
-		const response = await fetchWithRetry(this.tokenEndpoint, {
+		const response = await fetchGraphWithRetry(this.tokenEndpoint, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 			body,
