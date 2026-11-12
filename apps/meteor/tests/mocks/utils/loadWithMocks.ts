@@ -78,9 +78,6 @@ const placeholderFor = (specifier: string): string => {
 	return path;
 };
 
-// Node 24 takes a mock's exports as `exports`; the `@types/node` in use still only knows the deprecated options.
-type ModuleMockOptions = Parameters<typeof mock.module>[1] & { exports: { default: unknown } };
-
 const isStubObject = (stub: unknown): stub is Stubs => typeof stub === 'object' && stub !== null;
 
 // Modules loaded with a `'@global'` stub load fresh, so a dependency loaded earlier in the run sees the stub too.
@@ -151,8 +148,7 @@ export const loadWithMocks = <T = any>(path: string, stubs: Stubs, { callThru = 
 					continue;
 				}
 
-				const options: ModuleMockOptions = { exports: { default: stub } };
-				mocks.push(mock.module(toModuleUrl(resolved), options));
+				mocks.push(mock.module(toModuleUrl(resolved), { exports: { default: stub } }));
 			}
 
 			delete requireFromCaller.cache[subject];

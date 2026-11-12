@@ -1,4 +1,4 @@
-import { before, describe, it } from 'node:test';
+import { before, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
@@ -12,17 +12,26 @@ import { MessagesMock } from '../../../../tests/mocks/server/modules/apps/models
 import { RoomsMock } from '../../../../tests/mocks/server/modules/apps/models/Rooms.mock';
 import { UsersMock } from '../../../../tests/mocks/server/modules/apps/models/Users.mock';
 import { AppServerOrchestratorMock } from '../../../../tests/mocks/server/modules/apps/orchestrator.mock';
-import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
-const { AppMessagesConverter } = loadWithMocks('./messages', {
-	'@rocket.chat/random': {
-		Random: {
-			id: () => 1,
-		},
-	},
-	'@rocket.chat/core-typings': {
-		isMessageFromVisitor: (message) => 'token' in message,
-	},
+let AppMessagesConverter;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('@rocket.chat/random', {
+			exports: {
+				Random: {
+					id: () => 1,
+				},
+			},
+		}),
+		mock.module('@rocket.chat/core-typings', {
+			exports: {
+				isMessageFromVisitor: (message) => 'token' in message,
+			},
+		}),
+	];
+	({ AppMessagesConverter } = await import('./messages'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('The AppMessagesConverter instance', () => {

@@ -1,11 +1,9 @@
-import { afterEach, before, describe, it } from 'node:test';
+import { afterEach, before, describe, it, mock } from 'node:test';
 
 import { Emitter } from '@rocket.chat/emitter';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 let promises: Array<Promise<any>> = [];
 
@@ -45,22 +43,34 @@ const licenseMock = {
 	},
 };
 
-loadWithMocks('./airGappedRestrictions.ts', {
-	'@rocket.chat/license': {
-		AirGappedRestriction: airgappedRestrictionObj,
-		License: licenseMock,
-	},
-	'../../../../server/lib/notifyListener': {
-		notifyOnSettingChangedById: mocks.notifySetting,
-	},
-	'../../../../server/lib/i18n': {
-		i18n: {
-			t: mocks.i18n,
-		},
-	},
-	'../../../../server/lib/sendMessagesToAdmins': {
-		sendMessagesToAdmins: mocks.sendMessagesToAdmins,
-	},
+before(async () => {
+	const moduleMocks = [
+		mock.module('@rocket.chat/license', {
+			exports: {
+				AirGappedRestriction: airgappedRestrictionObj,
+				License: licenseMock,
+			},
+		}),
+		mock.module('../../../../server/lib/notifyListener', {
+			exports: {
+				notifyOnSettingChangedById: mocks.notifySetting,
+			},
+		}),
+		mock.module('../../../../server/lib/i18n', {
+			exports: {
+				i18n: {
+					t: mocks.i18n,
+				},
+			},
+		}),
+		mock.module('../../../../server/lib/sendMessagesToAdmins', {
+			exports: {
+				sendMessagesToAdmins: mocks.sendMessagesToAdmins,
+			},
+		}),
+	];
+	await import('./airGappedRestrictions');
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('airgappedRestrictions', () => {

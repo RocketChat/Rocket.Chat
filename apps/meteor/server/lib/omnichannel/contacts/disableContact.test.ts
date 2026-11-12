@@ -1,10 +1,8 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const modelsMock = {
 	LivechatContacts: {
@@ -22,9 +20,15 @@ const settingsMock = {
 
 const removeGuestMock = { removeGuest: sinon.stub() };
 
-const { disableContactById } = loadWithMocks('./disableContact.ts', {
-	'../guests': removeGuestMock,
-	'../../../settings': { settings: settingsMock },
+let disableContactById: typeof import('./disableContact').disableContactById;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('../guests', { exports: { default: removeGuestMock } }),
+		mock.module('../../../settings', { exports: { settings: settingsMock } }),
+	];
+	({ disableContactById } = await import('./disableContact'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('disableContact', () => {

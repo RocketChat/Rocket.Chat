@@ -1,10 +1,8 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 const modelsMock = {
 	Users: {
@@ -19,8 +17,12 @@ const settingsGetMock = {
 	get: sinon.stub(),
 };
 
-const { parseTranscriptRequest } = loadWithMocks('./parseTranscriptRequest', {
-	'../../settings': { settings: settingsGetMock },
+let parseTranscriptRequest: any;
+
+before(async () => {
+	const moduleMocks = [mock.module('../../settings', { exports: { settings: settingsGetMock } })];
+	({ parseTranscriptRequest } = await import('./parseTranscriptRequest'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('parseTranscriptRequest', () => {

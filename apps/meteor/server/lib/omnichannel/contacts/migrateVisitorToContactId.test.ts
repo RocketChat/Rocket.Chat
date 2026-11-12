@@ -1,10 +1,8 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const modelsMock = {
 	LivechatContacts: {
@@ -19,20 +17,32 @@ const modelsMock = {
 const createContactFromVisitor = sinon.stub();
 const mergeVisitorIntoContact = sinon.stub();
 
-const { migrateVisitorToContactId } = loadWithMocks('./migrateVisitorToContactId', {
-	'./createContactFromVisitor': {
-		createContactFromVisitor,
-	},
-	'./ContactMerger': {
-		ContactMerger: {
-			mergeVisitorIntoContact,
-		},
-	},
-	'../logger': {
-		livechatContactsLogger: {
-			debug: sinon.stub(),
-		},
-	},
+let migrateVisitorToContactId: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('./createContactFromVisitor', {
+			exports: {
+				createContactFromVisitor,
+			},
+		}),
+		mock.module('./ContactMerger', {
+			exports: {
+				ContactMerger: {
+					mergeVisitorIntoContact,
+				},
+			},
+		}),
+		mock.module('../logger', {
+			exports: {
+				livechatContactsLogger: {
+					debug: sinon.stub(),
+				},
+			},
+		}),
+	];
+	({ migrateVisitorToContactId } = await import('./migrateVisitorToContactId'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('migrateVisitorToContactId', () => {

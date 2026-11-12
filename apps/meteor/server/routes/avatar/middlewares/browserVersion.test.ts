@@ -1,14 +1,21 @@
-import { describe, it } from 'node:test';
+import { before, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
 import sinon from 'sinon';
 
-import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
+let handleBrowserVersionCheck: any;
+let isIEOlderThan11: any;
 
-const { handleBrowserVersionCheck, isIEOlderThan11 } = loadWithMocks('./browserVersion', {
-	'../../../lib/utils/getURL': {
-		getURL: () => '',
-	},
+before(async () => {
+	const moduleMocks = [
+		mock.module('../../../lib/utils/getURL', {
+			exports: {
+				getURL: () => '',
+			},
+		}),
+	];
+	({ handleBrowserVersionCheck, isIEOlderThan11 } = await import('./browserVersion'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('#isIEOlderThan11()', () => {

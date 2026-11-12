@@ -1,11 +1,9 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import type { ILivechatContact } from '@rocket.chat/core-typings';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const modelsMock = {
 	LivechatContacts: {
@@ -19,13 +17,23 @@ const modelsMock = {
 
 const validateContactManagerMock = sinon.stub();
 
-const { resolveContactConflicts } = loadWithMocks('./resolveContactConflicts', {
-	'./validateContactManager': {
-		validateContactManager: validateContactManagerMock,
-	},
-	'../../notifyListener': {
-		notifyOnSettingChanged: sinon.stub(),
-	},
+let resolveContactConflicts: typeof import('./resolveContactConflicts').resolveContactConflicts;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('./validateContactManager', {
+			exports: {
+				validateContactManager: validateContactManagerMock,
+			},
+		}),
+		mock.module('../../notifyListener', {
+			exports: {
+				notifyOnSettingChanged: sinon.stub(),
+			},
+		}),
+	];
+	({ resolveContactConflicts } = await import('./resolveContactConflicts'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('resolveContactConflicts', () => {

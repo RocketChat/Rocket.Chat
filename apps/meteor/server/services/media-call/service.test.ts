@@ -1,11 +1,9 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import type { IMediaCall } from '@rocket.chat/core-typings';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
 
 /**
  * Other spec files in this suite call the global `sinon.restore()`, which detaches every stub from the
@@ -37,28 +35,40 @@ class ServiceClassInternalMock {
 	onEvent(): void {}
 }
 
-const { MediaCallService } = loadWithMocks('./service', {
-	'@rocket.chat/core-services': {
-		ServiceClassInternal: ServiceClassInternalMock,
-		api: { broadcast: sandbox.stub() },
-		Presence: {},
-		Authorization: {},
-	},
-	'@rocket.chat/media-calls': { callServer: callServerMock, getSignalsForExistingCall: sandbox.stub() },
-	'@rocket.chat/media-signaling': { isClientMediaSignal: sandbox.stub() },
-	'@rocket.chat/ui-voip/dist/ui-kit/getHistoryMessagePayload': { callStateToTranslationKey, getHistoryMessagePayload },
-	'./appEvents': {
-		notifyAppsOfMediaCallEnded: sandbox.stub(),
-		notifyAppsOfMediaCallParticipantJoined: sandbox.stub(),
-		notifyAppsOfMediaCallStarted: sandbox.stub(),
-		runPreMediaCallCreatedAppHook: sandbox.stub(),
-	},
-	'./logger': { logger: loggerMock },
-	'./push/sendVoipPushNotification': { sendVoipPushNotification: sandbox.stub() },
-	'../../lib/i18n': { i18n: { t: sandbox.stub().returns('text') } },
-	'../../lib/messages/sendMessage': { sendMessage },
-	'../../meteor-methods/messages/createDirectMessage': { createDirectMessage: sandbox.stub() },
-	'../../settings': { settings: { get: sandbox.stub().returns(undefined) } },
+let MediaCallService: typeof import('./service').MediaCallService;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('@rocket.chat/core-services', {
+			exports: {
+				ServiceClassInternal: ServiceClassInternalMock,
+				api: { broadcast: sandbox.stub() },
+				Presence: {},
+				Authorization: {},
+			},
+		}),
+		mock.module('@rocket.chat/media-calls', { exports: { callServer: callServerMock, getSignalsForExistingCall: sandbox.stub() } }),
+		mock.module('@rocket.chat/media-signaling', { exports: { isClientMediaSignal: sandbox.stub() } }),
+		mock.module('@rocket.chat/ui-voip/dist/ui-kit/getHistoryMessagePayload', {
+			exports: { callStateToTranslationKey, getHistoryMessagePayload },
+		}),
+		mock.module('./appEvents', {
+			exports: {
+				notifyAppsOfMediaCallEnded: sandbox.stub(),
+				notifyAppsOfMediaCallParticipantJoined: sandbox.stub(),
+				notifyAppsOfMediaCallStarted: sandbox.stub(),
+				runPreMediaCallCreatedAppHook: sandbox.stub(),
+			},
+		}),
+		mock.module('./logger', { exports: { logger: loggerMock } }),
+		mock.module('./push/sendVoipPushNotification', { exports: { sendVoipPushNotification: sandbox.stub() } }),
+		mock.module('../../lib/i18n', { exports: { i18n: { t: sandbox.stub().returns('text') } } }),
+		mock.module('../../lib/messages/sendMessage', { exports: { sendMessage } }),
+		mock.module('../../meteor-methods/messages/createDirectMessage', { exports: { createDirectMessage: sandbox.stub() } }),
+		mock.module('../../settings', { exports: { settings: { get: sandbox.stub().returns(undefined) } } }),
+	];
+	({ MediaCallService } = await import('./service'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const preventedBy = { appId: 'call-policy', appName: 'Call Policy', text: 'the callee is on a DND list' };
