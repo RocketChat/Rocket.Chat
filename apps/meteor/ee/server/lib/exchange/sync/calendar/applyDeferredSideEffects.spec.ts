@@ -1,3 +1,4 @@
+import { PRESENCE_REFRESH_CONCURRENCY } from '../limits';
 import { applyDeferredSideEffects } from './applyDeferredSideEffects';
 
 const refreshBusyPresence = jest.fn();
@@ -48,5 +49,22 @@ describe('applyDeferredSideEffects', () => {
 
 		expect(refreshBusyPresence).toHaveBeenCalledTimes(2);
 		expect(setupNextNotification).toHaveBeenCalled();
+	});
+
+	it('refreshes users in parallel, up to the configured limit', async () => {
+		let release!: () => void;
+		const gate = new Promise<void>((resolve) => {
+			release = resolve;
+		});
+		refreshBusyPresence.mockImplementation(() => gate);
+
+		const run = applyDeferredSideEffects(new Set(Array.from({ length: PRESENCE_REFRESH_CONCURRENCY + 1 }, (_, i) => `u${i}`)));
+		await new Promise((resolve) => setTimeout(resolve, 0));
+
+		expect(refreshBusyPresence).toHaveBeenCalledTimes(PRESENCE_REFRESH_CONCURRENCY);
+
+		release();
+		await run;
+		expect(refreshBusyPresence).toHaveBeenCalledTimes(PRESENCE_REFRESH_CONCURRENCY + 1);
 	});
 });
