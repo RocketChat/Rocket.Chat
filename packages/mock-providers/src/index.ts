@@ -10,3 +10,4 @@ export * from './MockedSettingsContext';
 export * from './MockedUserContext';
 export * from './MockedDeviceContext';
 export * from './MockedAppRootBuilder';
+export * from './fixtures';

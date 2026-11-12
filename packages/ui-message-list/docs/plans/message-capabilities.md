@@ -92,6 +92,10 @@ Each step is one commit and builds and passes on its own.
    is not observable from outside the package.
 8. Docs: spec Design, `code`, `tests`, status; plan `done`.
 
+## Departures
+
+- The fixture added to mock-providers is `createFakeMessage` only.
+
 ## Risks
 
 - The two lists of display settings (old list context, new display value) could drift: R33 and its
