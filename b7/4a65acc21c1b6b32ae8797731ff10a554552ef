@@ -1,0 +1,19 @@
+apps/meteor/tests/e2e/README.md
+  s_f01248706e666b::t_e22cd2056be2c4 53-58
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "b74a65acc21c1b6b32ae8797731ff10a554552ef",
+  "prompts": {},
+  "sessions": {
+    "s_f01248706e666b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "04dfbff1-503b-4670-975a-a9ac26823c9a",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
