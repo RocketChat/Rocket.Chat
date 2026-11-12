@@ -476,23 +476,21 @@ describe('ItemDivider', () => {
 
 describe('ItemSkeleton', () => {
 	it('adds a description line and stays hidden from assistive technology', () => {
-		render(
-			<ul>
-				<ItemSkeleton is='li' mediaSize='x36' description />
-			</ul>,
-		);
+		const { container } = render(<ItemSkeleton mediaSize='x36' description />);
 
-		expect(screen.queryByRole('listitem')).not.toBeInTheDocument();
-		expect(screen.getByRole('listitem', { hidden: true })).toHaveClass('rcx-item');
-		// oxlint-disable-next-line testing-library/no-node-access -- the skeleton bars have no role, label or text
-		expect(document.querySelectorAll('.rcx-skeleton')).toHaveLength(3);
+		// oxlint-disable-next-line testing-library/no-node-access -- the skeleton root is a plain div with no role, label or text
+		const item = container.firstElementChild;
+		expect(item).toHaveClass('rcx-item');
+		expect(item).toHaveAttribute('aria-hidden', 'true');
+		// oxlint-disable-next-line testing-library/no-container, testing-library/no-node-access -- the skeleton bars have no role, label or text
+		expect(container.querySelectorAll('.rcx-skeleton')).toHaveLength(3);
 	});
 
 	it('shows one text line by default', () => {
-		render(<ItemSkeleton />);
+		const { container } = render(<ItemSkeleton />);
 
-		// oxlint-disable-next-line testing-library/no-node-access -- the skeleton bars have no role, label or text
-		expect(document.querySelectorAll('.rcx-skeleton')).toHaveLength(2);
+		// oxlint-disable-next-line testing-library/no-container, testing-library/no-node-access -- the skeleton bars have no role, label or text
+		expect(container.querySelectorAll('.rcx-skeleton')).toHaveLength(2);
 	});
 });
 
