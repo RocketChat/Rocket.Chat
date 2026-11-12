@@ -11249,6 +11249,30 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@rocket.chat/ui-message-list@workspace:packages/ui-message-list":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/ui-message-list@workspace:packages/ui-message-list"
+  dependencies:
+    "@rocket.chat/jest-presets": "workspace:~"
+    "@rocket.chat/storybook-config": "workspace:~"
+    "@rocket.chat/tsconfig": "workspace:*"
+    "@storybook/react": "npm:~10.6.5"
+    "@storybook/test-runner": "npm:~0.26.0"
+    "@types/react": "npm:~19.2.18"
+    "@types/react-dom": "npm:~19.2.7"
+    i18next: "npm:~26.4.2"
+    jest: "npm:~30.5.2"
+    react: "npm:~19.2.8"
+    react-dom: "npm:~19.2.8"
+    react-i18next: "npm:~17.0.16"
+    storybook: "npm:~10.6.5"
+    typescript: "npm:~7.0.2"
+  peerDependencies:
+    react: "*"
+    react-i18next: "*"
+  languageName: unknown
+  linkType: soft
+
 "@rocket.chat/ui-preview@workspace:packages/ui-preview":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/ui-preview@workspace:packages/ui-preview"
