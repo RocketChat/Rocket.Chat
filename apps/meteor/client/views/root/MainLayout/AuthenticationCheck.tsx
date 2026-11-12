@@ -1,5 +1,5 @@
 import { useConnectionStatus, useSession, useUser, useSetting } from '@rocket.chat/ui-contexts';
-import RegistrationRoute from '@rocket.chat/web-ui-registration';
+import RegistrationRoute from '@rocket.chat/ui-registration';
 import type { ReactNode } from 'react';
 import { useEffect, useRef, useState } from 'react';
 

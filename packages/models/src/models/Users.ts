@@ -690,6 +690,21 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.find<T, O>(query, options);
 	}
 
+	findActiveLDAPUsersByIds<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userIds: IUser['_id'][],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
+		const query = {
+			ldap: true,
+			active: true,
+			_id: {
+				$in: userIds,
+			},
+		};
+
+		return this.find<T, O>(query, options);
+	}
+
 	findConnectedLDAPUsers<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		options?: O,
 	): FindCursor<DocumentWithProjection<T, O>> {
@@ -1553,6 +1568,44 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		};
 
 		return this.col.updateOne({ _id }, update);
+	}
+
+	addLoginToken(userId: IUser['_id'], loginToken: IMeteorLoginToken) {
+		return this.col.updateOne(
+			{ _id: userId },
+			{
+				$addToSet: {
+					'services.resume.loginTokens': loginToken,
+				},
+			},
+		);
+	}
+
+	findWithLoginTokensOlderThan<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		date: Date,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
+		// login tokens created by old Meteor versions stamp `when` as a number
+		const query = {
+			$or: [{ 'services.resume.loginTokens.when': { $lt: date } }, { 'services.resume.loginTokens.when': { $lt: +date } }],
+		};
+
+		return this.find<T, O>(query, options);
+	}
+
+	removeLoginTokensOlderThan(date: Date) {
+		return this.col.updateMany(
+			{
+				$or: [{ 'services.resume.loginTokens.when': { $lt: date } }, { 'services.resume.loginTokens.when': { $lt: +date } }],
+			},
+			{
+				$pull: {
+					'services.resume.loginTokens': {
+						$or: [{ when: { $lt: date } }, { when: { $lt: +date } }],
+					},
+				},
+			},
+		);
 	}
 
 	unsetLoginTokens(userId: IUser['_id']) {

@@ -1,7 +1,6 @@
 import type { ILivechatAgent } from '@rocket.chat/core-typings';
-import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { GenericModal } from '@rocket.chat/ui-client';
-import { useSetModal, useToastMessageDispatch, useRouter, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useConfirmAction } from '@rocket.chat/ui-client';
+import { useRouter, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
@@ -10,29 +9,16 @@ import { omnichannelQueryKeys } from '../../../../lib/queryKeys';
 export const useRemoveAgent = (uid: ILivechatAgent['_id']) => {
 	const { t } = useTranslation();
 	const router = useRouter();
-	const setModal = useSetModal();
 	const queryClient = useQueryClient();
-	const dispatchToastMessage = useToastMessageDispatch();
-
 	const deleteAction = useEndpoint('DELETE', '/v1/livechat/users/agent/:_id', { _id: uid });
 
-	const handleDelete = useStableCallback(() => {
-		const onDeleteAgent = async () => {
-			try {
-				await deleteAction();
-				dispatchToastMessage({ type: 'success', message: t('Agent_removed') });
-				router.navigate('/omnichannel/agents');
-				queryClient.invalidateQueries({ queryKey: omnichannelQueryKeys.agents() });
-				queryClient.invalidateQueries({ queryKey: omnichannelQueryKeys.agentDepartments(uid) });
-			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
-			} finally {
-				setModal();
-			}
-		};
-
-		setModal(<GenericModal variant='danger' onConfirm={onDeleteAgent} onCancel={() => setModal()} confirmText={t('Delete')} />);
-	});
-
-	return handleDelete;
+	return useConfirmAction(
+		async () => {
+			await deleteAction();
+			router.navigate('/omnichannel/agents');
+			queryClient.invalidateQueries({ queryKey: omnichannelQueryKeys.agents() });
+			queryClient.invalidateQueries({ queryKey: omnichannelQueryKeys.agentDepartments(uid) });
+		},
+		{ successMessage: t('Agent_removed') },
+	);
 };

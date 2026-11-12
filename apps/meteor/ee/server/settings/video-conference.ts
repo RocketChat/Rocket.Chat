@@ -59,7 +59,7 @@ export function addSettings(): Promise<void> {
 							type: 'boolean',
 							public: true,
 							invalidValue: false,
-							alert: 'VideoConf_LiveKit_Alpha_Alert',
+							alert: 'VideoConf_LiveKit_Beta_Alert',
 							i18nDescription: 'VideoConf_LiveKit_Enabled_Description',
 						});
 

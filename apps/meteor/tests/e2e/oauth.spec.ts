@@ -66,7 +66,7 @@ test.describe('OAuth', () => {
 
 			await test.step('expect redirect to the configured URL.', async () => {
 				await poRegistration.btnLoginWithCustomOAuth.click();
-				await expect(page).toHaveURL(/https:\/\/(www)?\.rocket\.chat/);
+				await expect(page).toHaveURL(customOAuthAuthorizeUrlPattern);
 			});
 
 			await test.step('expect OAuth button to not be visible', async () => {

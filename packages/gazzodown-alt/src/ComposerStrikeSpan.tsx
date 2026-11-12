@@ -1,7 +1,7 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
 import type { ReactElement } from 'react';
 
-import ComposerInlineElements from './ComposerInlineElements';
+import ComposerInlineElements from './ComposerInlineElements.js';
 
 type ComposerStrikeSpanProps = {
 	children: MessageParser.Strike['value'];

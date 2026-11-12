@@ -153,6 +153,11 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		options?: O,
 	): FindCursor<DocumentWithProjection<T, O>>;
 
+	findActiveLDAPUsersByIds<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userIds: IUser['_id'][],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+
 	findConnectedLDAPUsers<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		options?: O,
 	): FindCursor<DocumentWithProjection<T, O>>;
@@ -296,6 +301,15 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	removeBusinessHoursFromAllUsers(): any;
 
 	resetTOTPById(userId: any): any;
+
+	addLoginToken(userId: IUser['_id'], loginToken: IMeteorLoginToken): Promise<UpdateResult>;
+
+	findWithLoginTokensOlderThan<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		date: Date,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+
+	removeLoginTokensOlderThan(date: Date): Promise<UpdateResult>;
 
 	unsetLoginTokens(userId: any): any;
 

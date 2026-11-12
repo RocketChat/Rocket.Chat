@@ -255,6 +255,72 @@ describe('Tab', () => {
 		expect(document.activeElement).toBe(rows[0].link);
 	});
 
+	describe('on a video player', () => {
+		const addVideo = (row: HTMLElement) => {
+			const video = document.createElement('video');
+			video.controls = true;
+			video.tabIndex = 0;
+			row.appendChild(video);
+			return video;
+		};
+
+		const mockFocusVisible = (element: HTMLElement) => {
+			const { matches } = element;
+			jest.spyOn(element, 'matches').mockImplementation((selector) => selector === ':focus-visible' || matches.call(element, selector));
+		};
+
+		it('leaves Tab to the browser, which walks the native controls', () => {
+			const { rows } = setup();
+			const video = addVideo(rows[0].row);
+			video.focus();
+
+			const event = pressKey(video, 'Tab');
+
+			expect(event.defaultPrevented).toBe(false);
+		});
+
+		it('leaves the list once the browser moves past the controls into another row', () => {
+			const { after, rows } = setup();
+			const video = addVideo(rows[0].row);
+			video.focus();
+
+			pressKey(video, 'Tab');
+			mockFocusVisible(rows[1].link);
+			rows[1].link.focus();
+
+			expect(document.activeElement).toBe(after);
+		});
+
+		it('keeps the focus where the browser moves it inside the row', () => {
+			const { rows } = setup();
+			const video = addVideo(rows[0].row);
+			video.focus();
+
+			pressKey(video, 'Tab', { shiftKey: true });
+			mockFocusVisible(rows[0].link);
+			rows[0].link.focus();
+
+			expect(document.activeElement).toBe(rows[0].link);
+		});
+
+		it('keeps the focus where a click moves it after tabbing into the controls', () => {
+			const { rows } = setup();
+			const video = addVideo(rows[0].row);
+			const reaction = document.createElement('button');
+			rows[0].row.appendChild(reaction);
+			const composer = document.createElement('textarea');
+			document.body.appendChild(composer);
+			video.focus();
+
+			pressKey(video, 'Tab');
+			fireEvent.pointerDown(composer);
+			mockFocusVisible(composer);
+			composer.focus();
+
+			expect(document.activeElement).toBe(composer);
+		});
+	});
+
 	it('reaches the actions of a group header', () => {
 		const list = document.createElement('div');
 		const header = document.createElement('div');

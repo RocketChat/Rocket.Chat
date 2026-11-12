@@ -1,5 +1,5 @@
-import type { Actionable } from '../Actionable';
-import type { PlainText } from '../text/PlainText';
+import type { Actionable } from '../Actionable.js';
+import type { PlainText } from '../text/PlainText.js';
 
 export type LinearScaleElement = Actionable<{
 	type: 'linear_scale';
