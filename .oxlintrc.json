@@ -134,6 +134,10 @@
 							{
 								"name": "meteor/check",
 								"message": "Validate with an ajv schema (endpoint `body`/`query` from @rocket.chat/rest-typings) or a type guard instead."
+							},
+							{
+								"name": "meteor/service-configuration",
+								"message": "Use the LoginServiceConfiguration model, then notifyOnLoginServiceConfigurationChanged or notifyOnLoginServiceConfigurationChangedByService so connected clients see the change."
 							}
 						]
 					}
