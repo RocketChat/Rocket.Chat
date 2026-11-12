@@ -17,14 +17,14 @@ import {
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTimeAgo, useUserDisplayName } from '@rocket.chat/ui-client';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import { useVideoConfJoinCall } from '@rocket.chat/ui-video-conf';
+import { useTranslation } from 'react-i18next';
 
 import { VIDEOCONF_STACK_MAX_USERS } from '../../../../../lib/constants';
 import { useGoToRoom } from '../../../hooks/useGoToRoom';
 
 const VideoConfListItem = ({ videoConfData, reload }: { videoConfData: VideoConference; reload: () => void }) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const formatDate = useTimeAgo();
 	const joinCall = useVideoConfJoinCall();
 

@@ -1,15 +1,15 @@
 import { Ajv, type JSONSchemaType } from 'ajv';
 
-import { clientMediaSignalAnswerSchema, type ClientMediaSignalAnswer } from './answer';
-import { clientMediaSignalDTMFSchema, type ClientMediaSignalDTMF } from './dtmf';
-import { clientMediaSignalErrorSchema, type ClientMediaSignalError } from './error';
-import { clientMediaSignalHangupSchema, type ClientMediaSignalHangup } from './hangup';
-import { clientMediaSignalLocalSDPSchema, type ClientMediaSignalLocalSDP } from './local-sdp';
-import { clientMediaSignalLocalStateSchema, type ClientMediaSignalLocalState } from './local-state';
-import { clientMediaSignalNegotiationNeededSchema, type ClientMediaSignalNegotiationNeeded } from './negotiation-needed';
-import { clientMediaSignalRegisterSchema, type ClientMediaSignalRegister } from './register';
-import { clientMediaSignalRequestCallSchema, type ClientMediaSignalRequestCall } from './request-call';
-import { clientMediaSignalTransferSchema, type ClientMediaSignalTransfer } from './transfer';
+import { clientMediaSignalAnswerSchema, type ClientMediaSignalAnswer } from './answer.js';
+import { clientMediaSignalDTMFSchema, type ClientMediaSignalDTMF } from './dtmf.js';
+import { clientMediaSignalErrorSchema, type ClientMediaSignalError } from './error.js';
+import { clientMediaSignalHangupSchema, type ClientMediaSignalHangup } from './hangup.js';
+import { clientMediaSignalLocalSDPSchema, type ClientMediaSignalLocalSDP } from './local-sdp.js';
+import { clientMediaSignalLocalStateSchema, type ClientMediaSignalLocalState } from './local-state.js';
+import { clientMediaSignalNegotiationNeededSchema, type ClientMediaSignalNegotiationNeeded } from './negotiation-needed.js';
+import { clientMediaSignalRegisterSchema, type ClientMediaSignalRegister } from './register.js';
+import { clientMediaSignalRequestCallSchema, type ClientMediaSignalRequestCall } from './request-call.js';
+import { clientMediaSignalTransferSchema, type ClientMediaSignalTransfer } from './transfer.js';
 
 const ajv = new Ajv({ discriminator: true });
 

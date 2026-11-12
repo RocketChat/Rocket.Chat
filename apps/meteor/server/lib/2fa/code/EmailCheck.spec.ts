@@ -10,7 +10,6 @@ import { settings } from '../../../settings';
 import { i18n } from '../../i18n';
 import * as Mailer from '../../notifications/email/api';
 
-jest.mock('meteor/accounts-base', () => ({ Accounts: { _bcryptRounds: () => 4 } }), { virtual: true });
 jest.mock('../../../settings', () => ({ settings: { get: jest.fn() } }));
 jest.mock('../../notifications/email/api', () => ({ send: jest.fn() }));
 

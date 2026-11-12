@@ -1,12 +1,13 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
-import { useTranslation, useSetting, usePermission, useSetModal, useUserSubscription } from '@rocket.chat/ui-contexts';
+import { useSetting, usePermission, useSetModal, useUserSubscription } from '@rocket.chat/ui-contexts';
+import { useTranslation } from 'react-i18next';
 
 import CreateDiscussion from '../../../../../../components/CreateDiscussion';
 
 export const useCreateDiscussionAction = (disabled: boolean, room?: IRoom): GenericMenuItemProps => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const setModal = useSetModal();
 
 	if (!room) {

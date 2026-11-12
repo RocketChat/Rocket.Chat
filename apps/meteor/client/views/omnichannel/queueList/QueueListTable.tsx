@@ -15,13 +15,14 @@ import {
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
-import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { QueueListFilter } from './QueueListFilter';
 
 const QueueListTable = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const { sortBy, sortDirection, setSort } = useSort<'servedBy' | 'department' | 'total' | 'status'>('servedBy');
 
 	const [filters, setFilters] = useState<{

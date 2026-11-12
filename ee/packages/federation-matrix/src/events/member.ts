@@ -124,15 +124,15 @@ async function getOrCreateFederatedRoom({
 		});
 	} catch (err) {
 		logger.error({ msg: 'Error getting or creating federated room', err, roomName });
-		throw new Error(`Error getting or creating federated room ${roomName}`);
+		throw new Error(`Error getting or creating federated room ${roomName}`, { cause: err });
 	}
 }
 
 // get the join rule type from the stripped state stored in the unsigned section of the event
 // as per the spec, we must support several types but we only support invite and public for now.
 // in the future, we must start looking into 'knock', 'knock_restricted', 'restricted' and 'private'.
-function getJoinRuleType(strippedState: PduForType<'m.room.join_rules'>[]): 'p' | 'c' | 'd' {
-	const joinRulesState = strippedState?.find((state: PduForType<'m.room.join_rules'>) => state.type === 'm.room.join_rules');
+function getJoinRuleType(strippedState: PduForType[] | undefined): 'p' | 'c' | 'd' {
+	const joinRulesState = strippedState?.find((state) => state.type === 'm.room.join_rules');
 
 	// as per the spec, users need to be invited to join a room, unless the room’s join rules state otherwise.
 	if (!joinRulesState) {
@@ -154,7 +154,7 @@ function getJoinRuleType(strippedState: PduForType<'m.room.join_rules'>[]): 'p' 
 		case 'private':
 			throw new Error(`Private join rule is not supported`);
 		default:
-			throw new Error(`Unknown join rule type: ${joinRule}`);
+			throw new Error(`Unknown join rule type: ${String(joinRule)}`);
 	}
 }
 
@@ -168,7 +168,7 @@ async function handleInvite({
 	const inviterUser = await getOrCreateFederatedUser(senderId);
 	const inviteeUser = await getOrCreateFederatedUser(userId);
 
-	const strippedState = unsigned.invite_room_state;
+	const strippedState: PduForType[] | undefined = unsigned.invite_room_state;
 
 	const joinRuleType = getJoinRuleType(strippedState);
 
@@ -177,7 +177,7 @@ async function handleInvite({
 		throw new Error(`Room origin domain not found: ${roomId}`);
 	}
 
-	const roomNameState = strippedState?.find((state: PduForType<'m.room.name'>) => state.type === 'm.room.name');
+	const roomNameState = strippedState?.find((state) => state.type === 'm.room.name');
 	const matrixRoomName = roomNameState?.content?.name;
 
 	// DMs do not have a join rule type (they are treated as invite only rooms),

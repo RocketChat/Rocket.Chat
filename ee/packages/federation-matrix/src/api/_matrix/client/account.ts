@@ -65,7 +65,7 @@ export const addAccountRoutes = (router: ClientRouter) => {
 			},
 			isAppServiceAuthenticatedMiddleware(),
 			async (c) => {
-				const body = await c.req.json();
+				const body = await c.req.json<{ type: string; username: string }>();
 				if (body.type !== 'm.login.application_service') {
 					return {
 						statusCode: 400,

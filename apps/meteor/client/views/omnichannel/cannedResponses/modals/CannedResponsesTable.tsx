@@ -16,9 +16,10 @@ import {
 	useFormatDateAndTime,
 	links,
 } from '@rocket.chat/ui-client';
-import { useTranslation, usePermission, useToastMessageDispatch, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
+import { usePermission, useToastMessageDispatch, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { hashKey } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import CannedResponseFilter from './CannedResponseFilter';
 import RemoveCannedResponseButton from '../RemoveCannedResponseButton';
@@ -26,7 +27,7 @@ import RemoveCannedResponseButton from '../RemoveCannedResponseButton';
 type Scope = 'global' | 'department' | 'user';
 
 const CannedResponsesTable = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const router = useRouter();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const getTime = useFormatDateAndTime();

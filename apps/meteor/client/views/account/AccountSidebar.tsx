@@ -1,12 +1,13 @@
-import { useCurrentRoutePath, useTranslation, useLayout } from '@rocket.chat/ui-contexts';
+import { useCurrentRoutePath, useLayout } from '@rocket.chat/ui-contexts';
 import { memo, useSyncExternalStore } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { getAccountSidebarItems, subscribeToAccountSidebarItems } from './sidebarItems';
 import Sidebar from '../../components/Sidebar';
 import SettingsProvider from '../../providers/SettingsProvider';
 
 const AccountSidebar = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const items = useSyncExternalStore(subscribeToAccountSidebarItems, getAccountSidebarItems);
 

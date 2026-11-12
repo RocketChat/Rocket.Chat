@@ -9,17 +9,12 @@ import sinon from 'sinon';
 const sandbox = sinon.createSandbox();
 
 const LoginCodes = { createCode: sandbox.stub() };
-const insertLoginToken = sandbox.stub();
+const issueLoginToken = sandbox.stub();
 const doesUserRequire2FA = sandbox.stub();
 const sendTwoFactorChallenge = sandbox.stub();
 
 const { passportOAuthCallback } = p.noCallThru().load('./passportOAuthCallback.ts', {
-	'meteor/accounts-base': {
-		Accounts: {
-			_generateStampedLoginToken: () => ({ token: 'resume-token', when: new Date() }),
-			_insertLoginToken: insertLoginToken,
-		},
-	},
+	'../auth/issueLoginToken': { issueLoginToken },
 	'./twoFactorAuth': { doesUserRequire2FA },
 });
 
@@ -49,6 +44,7 @@ describe('passportOAuthCallback', () => {
 
 	beforeEach(() => {
 		sandbox.resetHistory();
+		issueLoginToken.resolves({ token: 'resume-token', when: new Date() });
 		LoginCodes.createCode.resolves('login-code');
 		doesUserRequire2FA.returns(false);
 		sendTwoFactorChallenge.resolves('challenge-id');
@@ -59,7 +55,7 @@ describe('passportOAuthCallback', () => {
 
 		expect(res.redirect.calledOnceWith('/login')).to.be.true;
 		expect(LoginCodes.createCode.called).to.be.false;
-		expect(insertLoginToken.called).to.be.false;
+		expect(issueLoginToken.called).to.be.false;
 	});
 
 	describe('redirect login style', () => {
@@ -68,7 +64,7 @@ describe('passportOAuthCallback', () => {
 
 			expect(res.redirect.calledOnceWith('https://chat.example.com/home?loginCode=login-code')).to.be.true;
 			expect(LoginCodes.createCode.calledOnceWith('user-id')).to.be.true;
-			expect(insertLoginToken.called).to.be.false;
+			expect(issueLoginToken.called).to.be.false;
 			expect(destroy.calledOnce).to.be.true;
 		});
 
@@ -86,7 +82,7 @@ describe('passportOAuthCallback', () => {
 			expect(sendTwoFactorChallenge.calledOnceWith(user)).to.be.true;
 			expect(res.redirect.calledOnceWith('https://chat.example.com/2fa/totp/challenge-id?loginClient=desktop')).to.be.true;
 			expect(LoginCodes.createCode.called).to.be.false;
-			expect(insertLoginToken.called).to.be.false;
+			expect(issueLoginToken.called).to.be.false;
 		});
 	});
 
@@ -94,7 +90,7 @@ describe('passportOAuthCallback', () => {
 		it('should hand the session token only to a window of the same origin, under a script nonce', async () => {
 			const { res } = await callback('popup');
 
-			expect(insertLoginToken.calledOnceWith('user-id')).to.be.true;
+			expect(issueLoginToken.calledOnceWith('user-id')).to.be.true;
 			expect(popupPayload(res)).to.deep.equal({ oauthPopupCommand: 'oauth-login-with-token', token: 'resume-token' });
 
 			const html: string = res.send.firstCall.args[0];
@@ -122,7 +118,7 @@ describe('passportOAuthCallback', () => {
 			const { res } = await callback('popup');
 
 			expect(popupPayload(res)).to.deep.equal({ oauthPopupCommand: 'redirect', path: '/2fa/email/challenge-id' });
-			expect(insertLoginToken.called).to.be.false;
+			expect(issueLoginToken.called).to.be.false;
 		});
 	});
 });

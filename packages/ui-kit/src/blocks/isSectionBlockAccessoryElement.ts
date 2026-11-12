@@ -1,6 +1,6 @@
-import type { BlockElement } from './BlockElement';
-import { BlockElementType } from './BlockElementType';
-import type { SectionBlock } from './layout/SectionBlock';
+import type { BlockElement } from './BlockElement.js';
+import { BlockElementType } from './BlockElementType.js';
+import type { SectionBlock } from './layout/SectionBlock.js';
 
 export const isSectionBlockAccessoryElement = (block: BlockElement): block is Exclude<SectionBlock['accessory'], undefined> => {
 	switch (block.type) {
