@@ -630,7 +630,7 @@ describe('[Direct Messages]', () => {
 			});
 
 			it('should return the correct unread count for a standard user (regression #23977)', async () => {
-				// A standard user (no admin perms) must receive unreads > 0, not 0.
+				// A standard user (no admin perms) must receive exact unreads = 1, not 0.
 				await request
 					.get(api('im.counters'))
 					.set(normalUserCreds)
@@ -640,9 +640,9 @@ describe('[Direct Messages]', () => {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('joined', true);
-						expect(res.body).to.have.property('unreads').and.to.be.a('number').and.to.be.greaterThan(0);
+						expect(res.body).to.have.property('unreads').and.to.be.a('number').and.to.be.eq(1);
 						expect(res.body).to.have.property('userMentions').and.to.be.a('number');
-						expect(res.body).to.have.property('msgs').and.to.be.a('number').and.to.be.greaterThan(0);
+						expect(res.body).to.have.property('msgs').and.to.be.a('number').and.to.be.eq(1);
 					});
 			});
 
@@ -656,35 +656,44 @@ describe('[Direct Messages]', () => {
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('unreads').and.to.be.a('number').and.to.be.greaterThan(0);
+						expect(res.body).to.have.property('unreads').and.to.be.a('number').and.to.be.eq(1);
 					});
 			});
 
 			it('should block a standard user from reading counters of a DM they are not a member of (security #23977)', async () => {
 				// Create a separate DM between admin and a third user that normalUser has no access to.
-				let thirdUser: TestUser<IUser>;
-				let outsideDM: IRoom & { rid: IRoom['_id'] };
+				let thirdUser: TestUser<IUser> | undefined;
+				let outsideDM: (IRoom & { rid: IRoom['_id'] }) | undefined;
 
-				thirdUser = await createUser();
-				await request
-					.post(api('im.create'))
-					.set(credentials)
-					.send({ username: thirdUser.username })
-					.expect(200)
-					.expect((res) => {
-						outsideDM = res.body.room;
-					});
+				try {
+					thirdUser = await createUser();
+					await request
+						.post(api('im.create'))
+						.set(credentials)
+						.send({ username: thirdUser.username })
+						.expect(200)
+						.expect((res) => {
+							outsideDM = res.body.room;
+						});
 
-				await request
-					.get(api('im.counters'))
-					.set(normalUserCreds)
-					.query({ roomId: outsideDM._id })
-					.expect('Content-Type', 'application/json')
-					.expect(403);
+					if (!outsideDM?._id) {
+						throw new Error('Expected outsideDM room to be created');
+					}
 
-				// Cleanup
-				await request.post(api('im.delete')).set(credentials).send({ roomId: outsideDM._id });
-				await deleteUser(thirdUser);
+					await request
+						.get(api('im.counters'))
+						.set(normalUserCreds)
+						.query({ roomId: outsideDM._id })
+						.expect('Content-Type', 'application/json')
+						.expect(403);
+				} finally {
+					if (outsideDM?._id) {
+						await request.post(api('im.delete')).set(credentials).send({ roomId: outsideDM._id }).expect(200);
+					}
+					if (thirdUser) {
+						await deleteUser(thirdUser);
+					}
+				}
 			});
 		});
 	});
