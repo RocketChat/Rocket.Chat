@@ -1,11 +1,11 @@
+import { isE2EEMessage } from '@rocket.chat/core-typings';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Message, MessageLeftContainer, MessageContainer, CheckBox } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
 import { useUserId, useUserCard } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, KeyboardEvent } from 'react';
-import { memo } from 'react';
-import { ErrorBoundary } from 'react-error-boundary';
+import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { MessageActionContext } from '../../../lib/MessageAction';
@@ -16,9 +16,9 @@ import {
 	useIsSelectedMessage,
 	useCountSelected,
 } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
+import { useRoom } from '../../../views/room/contexts/RoomContext';
 import Emoji from '../../Emoji';
 import IgnoredContent from '../IgnoredContent';
-import MessageContentFallback from '../MessageContentFallback';
 import MessageHeader from '../MessageHeader';
 import MessageToolbarHolder from '../MessageToolbarHolder';
 import StatusIndicators from '../StatusIndicators';
@@ -81,17 +81,21 @@ const RoomMessage = ({
 	const ignored = (ignoredUser || message.ignored) && !displayIgnoredMessage;
 	const { openUserCard, openUserInfo } = useUserCard();
 
+	const room = useRoom();
+	const isE2E = isE2EEMessage(message);
+	const isABAC = Boolean(room?.abacAttributes);
+	const isRestricted = isE2E || isABAC;
 	const selecting = useIsSelecting();
 
 	const toggleSelected = useToggleSelect(message._id);
-	const selected = useIsSelectedMessage(message._id);
+	const selected = useIsSelectedMessage(message._id, isRestricted);
 
 	const { enabled: readReceiptEnabled } = useMessageListReadReceipts();
 
 	useCountSelected();
 
 	const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-		if (!selecting) return;
+		if (!selecting || isRestricted) return;
 
 		if (!(e.code === 'Space' || e.code === 'Enter')) return;
 
@@ -101,6 +105,16 @@ const RoomMessage = ({
 
 	const checkboxLabel = getCheckboxLabel(message, t);
 
+	const restrictionTitle = useMemo(() => {
+		if (isE2E) {
+			return t('Action_not_available_encrypted_content', { action: t('Forward_message') });
+		}
+		if (isABAC) {
+			return t('Not_available_for_ABAC_enabled_rooms');
+		}
+		return undefined;
+	}, [isE2E, isABAC, t]);
+
 	return (
 		<Message
 			id={message._id}
@@ -108,7 +122,7 @@ const RoomMessage = ({
 			tabIndex={0}
 			aria-roledescription={t('message')}
 			aria-labelledby={getAriaLabelledBy({ readReceiptEnabled, messageId: message._id, sequential })}
-			onClick={selecting ? toggleSelected : undefined}
+			onClick={selecting && !isRestricted ? toggleSelected : undefined}
 			onKeyDown={handleKeyDown}
 			isSelected={selected}
 			isEditing={editing}
@@ -131,16 +145,21 @@ const RoomMessage = ({
 						title=''
 						size='x36'
 						onMouseEnter={(e) => openUserCard(e, message.u.username)}
-						onClick={(e) => {
-							e.stopPropagation();
-							openUserInfo(message.u.username);
-						}}
+						onClick={() => openUserInfo(message.u.username)}
 						style={{ cursor: 'pointer' }}
 						// Redundant pointer-only shortcut for the accessible name button next to it
 						aria-hidden='true'
 					/>
 				)}
-				{selecting && <CheckBox checked={selected} onChange={toggleSelected} aria-label={checkboxLabel} />}
+				{selecting && (
+					<CheckBox
+						checked={selected}
+						onChange={isRestricted ? undefined : toggleSelected}
+						disabled={isRestricted}
+						title={restrictionTitle}
+						aria-label={checkboxLabel}
+					/>
+				)}
 				{sequential && <StatusIndicators message={message} />}
 			</MessageLeftContainer>
 			<MessageContainer>
@@ -148,9 +167,7 @@ const RoomMessage = ({
 				{ignored ? (
 					<IgnoredContent messageId={message._id} onShowMessageIgnored={toggleDisplayIgnoredMessage} />
 				) : (
-					<ErrorBoundary fallback={<MessageContentFallback id={`${message._id}-content`} />} resetKeys={[message]}>
-						<RoomMessageContent message={message} unread={unread} mention={mention} all={all} searchText={searchText} />
-					</ErrorBoundary>
+					<RoomMessageContent message={message} unread={unread} mention={mention} all={all} searchText={searchText} />
 				)}
 			</MessageContainer>
 			{!message.private && message?.e2e !== 'pending' && !selecting && <MessageToolbarHolder message={message} context={context} />}

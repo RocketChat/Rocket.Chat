@@ -43,7 +43,7 @@ export class HomeContent {
 	}
 
 	get messagePopupUsers(): Locator {
-		return this.page.getByRole('listbox', { name: 'People' });
+		return this.page.locator('role=menu[name="People"]');
 	}
 
 	get mainMessageList(): Locator {
@@ -186,11 +186,16 @@ export class HomeContent {
 		await this.messageListItems.last().hover();
 		await this.page.locator('role=button[name="Forward message"]').click();
 
+		const footerForward = this.page.locator('footer').getByRole('button', { name: 'Forward', exact: true });
+		await footerForward.waitFor({ state: 'visible' });
+		await footerForward.click();
+
 		await this.page.getByRole('textbox', { name: 'Person or channel', exact: true }).click();
 		await this.page.keyboard.type(chatName);
 		await this.page.locator('#position-container').getByText(chatName).waitFor();
 		await this.page.locator('#position-container').getByText(chatName).click();
-		await this.page.locator('role=button[name="Forward"]').click();
+		await this.page.locator('#modal-root').getByRole('button', { name: 'Forward', exact: true }).click();
+		await expect(this.page.locator('#modal-root').getByRole('dialog')).not.toBeVisible({ timeout: 15000 });
 	}
 
 	// TODO: use modal fragments -----------------------------------------
@@ -538,6 +543,10 @@ export class HomeContent {
 		return this.page.locator('footer >> role=button[name="Sign in to start talking"]');
 	}
 
+	get btnAnonymousTalk(): Locator {
+		return this.page.locator('role=button[name="Or talk as anonymous"]');
+	}
+
 	get nextSlideButton(): Locator {
 		return this.page.getByLabel('Next slide');
 	}
@@ -638,7 +647,7 @@ export class HomeContent {
 		await this.openLastMessageMenu();
 		await this.btnOptionDeleteMessage.click();
 		await this.btnModalConfirmDelete.click();
-		await expect(this.btnModalConfirmDelete).toBeHidden();
+		await expect(this.btnModalConfirmDelete).toBeDisabled();
 	}
 
 	get btnClearSelection() {

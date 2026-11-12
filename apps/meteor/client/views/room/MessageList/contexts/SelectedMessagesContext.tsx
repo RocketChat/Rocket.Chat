@@ -1,7 +1,7 @@
 import type { SyntheticEvent } from 'react';
 import { createContext, useCallback, useContext, useEffect, useSyncExternalStore } from 'react';
 
-import { selectedMessageStore } from '../../providers/SelectedMessagesProvider';
+import { selectedMessageStore } from '../../providers/selectedMessageStore';
 
 type SelectMessageContextValue = {
 	selectedMessageStore: typeof selectedMessageStore;
@@ -72,6 +72,13 @@ export const useClearSelection = (): (() => void) => {
 	const { selectedMessageStore } = useContext(SelectedMessageContext);
 	return useCallback(() => {
 		selectedMessageStore.clearStore();
+	}, [selectedMessageStore]);
+};
+
+export const useResetSelection = (): (() => void) => {
+	const { selectedMessageStore } = useContext(SelectedMessageContext);
+	return useCallback(() => {
+		selectedMessageStore.reset();
 	}, [selectedMessageStore]);
 };
 
