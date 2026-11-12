@@ -198,6 +198,8 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 		return showMainMessage ? [mainMessage, ...messages] : messages;
 	}, [loading, showMainMessage, mainMessage, messages]);
 
+	const leadingRows = !loading && hasPreviousPage ? 1 : 0;
+
 	const prevItemsCountRef = useRef(0);
 	useLayoutEffect(() => {
 		if (isPrependRef.current && items.length !== prevItemsCountRef.current) {
@@ -374,7 +376,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 		};
 	}, [room._id, uid, mainMessage._id, setShouldJumpToBottom, hasNextPage, jumpToRecent]);
 
-	const keepMountedMessages = useKeepMountedMessages(items);
+	const keepMountedMessages = useKeepMountedMessages(items, leadingRows);
 
 	return (
 		<div className={['thread-list js-scroll-thread', hideUsernames && 'hide-usernames'].filter(isTruthy).join(' ')}>
@@ -408,7 +410,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 								loadMoreMessages();
 							}
 
-							const topMessage = items[handle.findItemIndex(handle.scrollOffset)];
+							const topMessage = items[handle.findItemIndex(handle.scrollOffset) - leadingRows];
 							handleDateScroll(topMessage, offset);
 						}}
 					>
