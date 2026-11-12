@@ -57,7 +57,7 @@ describe('NotificationQueue worker', () => {
 	});
 
 	it('starts the next batch right away when the batch limit was reached, and waits when the queue is empty', async () => {
-		const clock = sinon.useFakeTimers();
+		const clock = sinon.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'Date'] });
 		const executeWorkerLaterSpy = sinon.spy(Notification, 'executeWorkerLater');
 		try {
 			notificationQueueModelStub.findNextInQueueOrExpired.resolves(null);
