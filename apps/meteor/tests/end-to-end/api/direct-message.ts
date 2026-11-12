@@ -593,6 +593,100 @@ describe('[Direct Messages]', () => {
 				expect(res.body.members).to.equal(1);
 			});
 		});
+
+		// Regression tests for issue #23977:
+		// "Private message unread count returns 0 for normal users"
+		describe('issue #23977 - standard user unread count', () => {
+			let issueDM: IRoom & { rid: IRoom['_id'] };
+			let normalUser: TestUser<IUser>;
+			let normalUserCreds: Credentials;
+
+			before(async () => {
+				normalUser = await createUser();
+				normalUserCreds = await login(normalUser.username, password);
+
+				// Admin creates a DM with the normal user and sends a message,
+				// so normalUser has 1 unread message in a DM they have never opened.
+				await request
+					.post(api('im.create'))
+					.set(credentials)
+					.send({ username: normalUser.username })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						issueDM = res.body.room;
+					});
+
+				await request
+					.post(api('chat.sendMessage'))
+					.set(credentials)
+					.send({ message: { text: 'Unread message for normal user', rid: issueDM._id } })
+					.expect(200);
+			});
+
+			after(async () => {
+				await request.post(api('im.delete')).set(credentials).send({ roomId: issueDM._id }).expect(200);
+				await deleteUser(normalUser);
+			});
+
+			it('should return the correct unread count for a standard user (regression #23977)', async () => {
+				// A standard user (no admin perms) must receive unreads > 0, not 0.
+				await request
+					.get(api('im.counters'))
+					.set(normalUserCreds)
+					.query({ roomId: issueDM._id })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('joined', true);
+						expect(res.body).to.have.property('unreads').and.to.be.a('number').and.to.be.greaterThan(0);
+						expect(res.body).to.have.property('userMentions').and.to.be.a('number');
+						expect(res.body).to.have.property('msgs').and.to.be.a('number').and.to.be.greaterThan(0);
+					});
+			});
+
+			it('should allow a standard user to query counters using their own userId param (regression #23977)', async () => {
+				// Passing userId = own id must not be blocked; before the fix this returned 403.
+				await request
+					.get(api('im.counters'))
+					.set(normalUserCreds)
+					.query({ roomId: issueDM._id, userId: normalUser._id })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('unreads').and.to.be.a('number').and.to.be.greaterThan(0);
+					});
+			});
+
+			it('should block a standard user from reading counters of a DM they are not a member of (security #23977)', async () => {
+				// Create a separate DM between admin and a third user that normalUser has no access to.
+				let thirdUser: TestUser<IUser>;
+				let outsideDM: IRoom & { rid: IRoom['_id'] };
+
+				thirdUser = await createUser();
+				await request
+					.post(api('im.create'))
+					.set(credentials)
+					.send({ username: thirdUser.username })
+					.expect(200)
+					.expect((res) => {
+						outsideDM = res.body.room;
+					});
+
+				await request
+					.get(api('im.counters'))
+					.set(normalUserCreds)
+					.query({ roomId: outsideDM._id })
+					.expect('Content-Type', 'application/json')
+					.expect(403);
+
+				// Cleanup
+				await request.post(api('im.delete')).set(credentials).send({ roomId: outsideDM._id });
+				await deleteUser(thirdUser);
+			});
+		});
 	});
 
 	describe('[/im.files]', async () => {
