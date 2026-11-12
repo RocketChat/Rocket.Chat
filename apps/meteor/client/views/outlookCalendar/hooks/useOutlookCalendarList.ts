@@ -1,24 +1,24 @@
-import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { useOutlookAuthenticationMutation } from './useOutlookAuthentication';
+import { useCalendarList, useCalendarListForToday } from '../../calendar/hooks/useCalendarList';
 import { syncOutlookEvents } from '../lib/syncOutlookEvents';
 
+/**
+ * @deprecated Use {@link useCalendarListForToday} from `views/calendar/hooks/useCalendarList` directly.
+ * Kept for backward compatibility with existing Outlook calendar views.
+ */
 export const useOutlookCalendarListForToday = () => {
-	return useOutlookCalendarList(new Date());
+	return useCalendarListForToday();
 };
 
+/**
+ * @deprecated Use {@link useCalendarList} from `views/calendar/hooks/useCalendarList` directly.
+ * Kept for backward compatibility with existing Outlook calendar views.
+ */
 export const useOutlookCalendarList = (date: Date) => {
-	const calendarData = useEndpoint('GET', '/v1/calendar-events.list');
-
-	return useQuery({
-		queryKey: ['outlook', 'calendar', 'list'],
-
-		queryFn: async () => {
-			const { data } = await calendarData({ date: date.toISOString() });
-			return data;
-		},
-	});
+	return useCalendarList(date);
 };
 
 export const useMutationOutlookCalendarSync = () => {
@@ -34,7 +34,7 @@ export const useMutationOutlookCalendarSync = () => {
 			await syncOutlookEvents();
 
 			await queryClient.invalidateQueries({
-				queryKey: ['outlook', 'calendar', 'list'],
+				queryKey: ['calendar', 'list'],
 			});
 
 			await checkOutlookCredentials.mutateAsync();
