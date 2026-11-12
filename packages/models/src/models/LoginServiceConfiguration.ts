@@ -1,6 +1,6 @@
 import type { LoginServiceConfiguration, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ILoginServiceConfigurationModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
-import type { Collection, Db, Document } from 'mongodb';
+import type { Collection, Db, Document, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -12,6 +12,10 @@ export class LoginServiceConfigurationRaw extends BaseRaw<LoginServiceConfigurat
 				return name;
 			},
 		});
+	}
+
+	protected override modelIndexes(): IndexDescription[] {
+		return [{ key: { service: 1 }, unique: true }];
 	}
 
 	async createOrUpdateService(
