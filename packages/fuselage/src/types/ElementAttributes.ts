@@ -386,6 +386,12 @@ export type TableCellAttributes = Pick<
 	'scope' | 'colSpan' | 'rowSpan' | 'headers'
 >;
 
+/** What a part rendered as a `table`, a table section, a row or a cell forwards, named so a frame's module needs no DOM type. */
+export type TableElementAttributes = ActionAttributes<HTMLTableElement>;
+export type TableSectionAttributes = ActionAttributes<HTMLTableSectionElement>;
+export type TableRowAttributes = ActionAttributes<HTMLTableRowElement>;
+export type TableCellElementAttributes = ActionAttributes<HTMLTableCellElement> & TableCellAttributes;
+
 /** What a part that renders a hero `img` forwards: its image attributes and where the picture comes from. */
 export type HeroImageAttributes = ImageAttributes & Pick<ImgHTMLAttributes<HTMLImageElement>, 'src' | 'srcSet' | 'loading'>;
 

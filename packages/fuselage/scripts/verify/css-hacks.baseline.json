@@ -467,10 +467,10 @@
 		"negativeMargins": 1,
 		"displayContents": 0
 	},
-	"Table/Table.styles.scss": {
-		"rules": 30,
-		"nested": 28,
-		"combinators": 0,
+	"Table/Table.styles.css": {
+		"rules": 2,
+		"nested": 0,
+		"combinators": 1,
 		"important": 0,
 		"specificityBumps": 1,
 		"negativeMargins": 1,
