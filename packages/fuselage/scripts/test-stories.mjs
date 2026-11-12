@@ -21,7 +21,7 @@ const args = [
 	'--url',
 	server.url,
 	'--index-json',
-	...(options.some((o) => o.startsWith('--includeTags')) ? [] : ['--includeTags', 'g0']),
+	...(options.some((o) => o.startsWith('--includeTags')) ? [] : ['--includeTags=g0']),
 	...options,
 ];
 
