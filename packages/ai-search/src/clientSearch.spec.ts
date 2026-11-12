@@ -345,7 +345,7 @@ describe('AI Search client helpers', () => {
 					{ _id: 'sub-b', rid: 'discussion-b', prid: 'parent-id', name: 'rAnd0mIdB', fname: 'Standup' },
 				],
 				t,
-			).map(({ filterKey, value, meta }) => createAppliedFilter(filterKey, value, meta)!);
+			).flatMap(({ filterKey, value, meta }) => createAppliedFilter(filterKey, value, meta) ?? []);
 
 			expect(mergeAppliedFilters([first], [second])).toEqual([first, second]);
 			expect(toAISearchParams({ text: '', filters: [first, second] })).toEqual({ query: '', rids: 'discussion-a,discussion-b' });

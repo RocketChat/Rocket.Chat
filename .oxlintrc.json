@@ -182,6 +182,14 @@
 			"plugins": ["jest"]
 		},
 		{
+			"files": ["ee/packages/federation-matrix/tests/end-to-end/**/*.spec.ts"],
+			"rules": {
+				"jest-js/no-standalone-expect": "off",
+				"jest/expect-expect": ["warn", { "assertFunctionNames": ["expect", "expectRemotePresence", "expectRemoteTyping", "expectLocalTypingIndicator", "assert"] }]
+			},
+			"plugins": ["jest"]
+		},
+		{
 			"files": ["apps/meteor/tests/{end-to-end,unit}/**/*.ts", "apps/meteor/**/*.{test,spec}.ts"],
 			"rules": {
 				"no-unused-expressions": "off"
