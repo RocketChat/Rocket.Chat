@@ -18,6 +18,11 @@ export type VideoConfAddParticipantsProps = {
 	 * `videoconf-ring-users` permission, without which it is skipped silently.
 	 */
 	ring?: boolean;
+	/**
+	 * Whether the caller can dial numbers into the call. When it can, members added who take calls on an external
+	 * device are not rung: their numbers come back in `dial` for the caller to call instead.
+	 */
+	dialOut?: boolean;
 };
 
 const videoConfAddParticipantsPropsSchema: JSONSchemaType<VideoConfAddParticipantsProps> = {
@@ -40,6 +45,11 @@ const videoConfAddParticipantsPropsSchema: JSONSchemaType<VideoConfAddParticipan
 		ring: {
 			type: 'boolean',
 			description: 'Whether to ring the people being added. Defaults to false.',
+			nullable: true,
+		},
+		dialOut: {
+			type: 'boolean',
+			description: 'Whether the caller can dial numbers into the call. Defaults to false.',
 			nullable: true,
 		},
 	},

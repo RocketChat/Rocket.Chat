@@ -21,9 +21,11 @@ import { isUnknownPeer } from '../utils/isUnknownPeer';
 export type TransferModalProps = {
 	onCancel(): void;
 	onConfirm(kind: 'user' | 'sip', peer: { displayName: string; id: string }): void;
+	/** Omitted when the call can't be put on hold, which hides the consultation button */
+	onConsult?(kind: 'user' | 'sip', peer: { displayName: string; id: string }): void;
 };
 
-const TransferModal = ({ onCancel, onConfirm }: TransferModalProps) => {
+const TransferModal = ({ onCancel, onConfirm, onConsult }: TransferModalProps) => {
 	const { t } = useTranslation();
 
 	const modalId = useId();
@@ -40,7 +42,7 @@ const TransferModal = ({ onCancel, onConfirm }: TransferModalProps) => {
 		autocomplete.onChangeValue(value);
 	};
 
-	const confirm = () => {
+	const submitWith = (callback: TransferModalProps['onConfirm']) => () => {
 		if (!peer) {
 			setError(t('Field_required'));
 			return;
@@ -49,12 +51,12 @@ const TransferModal = ({ onCancel, onConfirm }: TransferModalProps) => {
 		setError(undefined);
 
 		if (isInternalPeer(peer)) {
-			onConfirm('user', { id: peer.userId, displayName: peer.displayName });
+			callback('user', { id: peer.userId, displayName: peer.displayName });
 			return;
 		}
 
 		if (isExternalPeer(peer)) {
-			onConfirm('sip', { id: peer.number, displayName: peer.number });
+			callback('sip', { id: peer.number, displayName: peer.number });
 			return;
 		}
 
@@ -77,12 +79,14 @@ const TransferModal = ({ onCancel, onConfirm }: TransferModalProps) => {
 			</ModalContent>
 			<ModalFooter>
 				<ModalFooterControllers>
-					<Button variant='secondary' onClick={onCancel}>
-						{t('Cancel')}
+					<Button variant='secondary-danger' onClick={submitWith(onConfirm)} icon='phone-off'>
+						{t('Transfer_and_hang_up')}
 					</Button>
-					<Button variant='danger' onClick={confirm} icon='phone-off'>
-						{t('Hang_up_and_transfer_call')}
-					</Button>
+					{onConsult && (
+						<Button variant='success' onClick={submitWith(onConsult)} icon='pause-shape-unfilled'>
+							{t('Call_first')}
+						</Button>
+					)}
 				</ModalFooterControllers>
 			</ModalFooter>
 		</Modal>

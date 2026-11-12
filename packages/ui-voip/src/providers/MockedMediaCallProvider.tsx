@@ -97,7 +97,7 @@ const MockedMediaCallProvider = ({
 	};
 
 	const onCall = async (id?: string) => {
-		if (id) {
+		if (typeof id === 'string') {
 			setPeerInfo(await getPeerInfo(id));
 		}
 
@@ -133,6 +133,7 @@ const MockedMediaCallProvider = ({
 		remoteHeld,
 		callId: undefined,
 		supportedFeatures,
+		escalated: false,
 		confirmed,
 	} as SessionState;
 
@@ -145,6 +146,8 @@ const MockedMediaCallProvider = ({
 		onHold,
 		onDeviceChange,
 		onForward,
+		onSwapCalls: () => console.log('swap calls'),
+		onCompleteTransfer: () => console.log('complete transfer'),
 		onTone,
 		onEndCall,
 		onCall,
@@ -154,6 +157,8 @@ const MockedMediaCallProvider = ({
 		onToggleScreenSharing: () => undefined,
 		onOpenPopout: () => undefined,
 		onClosePopout: () => undefined,
+		isRequestingVideoCall: false,
+		onRequestVideoCall: () => undefined,
 	};
 
 	return (

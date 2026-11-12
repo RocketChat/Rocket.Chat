@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import NavBarControlsWithData from './NavBarControlsWithData';
 import { useOmnichannelEnabled } from '../../views/omnichannel/hooks/useOmnichannelEnabled';
 import NavBarOmnichannelGroup from '../NavBarOmnichannelGroup';
-import { NavBarItemLoginPage, NavBarItemAdministrationMenu, UserMenu } from '../NavBarSettingsToolbar';
+import { NavBarItemLoginPage, NavBarItemAdministrationMenu, NavBarItemMediaCallDevice, UserMenu } from '../NavBarSettingsToolbar';
 import NavBarVoipGroup from '../NavBarVoipGroup';
 
 const NavBarControls = () => {
@@ -28,6 +28,7 @@ const NavBarControls = () => {
 				{hasOngoingCalls && <OngoingCallsDropdown />}
 				{(showOmnichannel || callAction) && <NavBarControlsWithData />}
 				<NavBarGroup aria-label={t('Workspace_and_user_preferences')}>
+					{user && <NavBarItemMediaCallDevice />}
 					<NavBarItemAdministrationMenu />
 					{user ? <UserMenu user={user} /> : <NavBarItemLoginPage />}
 				</NavBarGroup>
@@ -41,6 +42,7 @@ const NavBarControls = () => {
 			{callAction && <NavBarVoipGroup />}
 			{showOmnichannel && <NavBarOmnichannelGroup />}
 			<NavBarGroup aria-label={t('Workspace_and_user_preferences')}>
+				{user && <NavBarItemMediaCallDevice />}
 				<NavBarItemAdministrationMenu />
 				{user ? <UserMenu user={user} /> : <NavBarItemLoginPage />}
 			</NavBarGroup>

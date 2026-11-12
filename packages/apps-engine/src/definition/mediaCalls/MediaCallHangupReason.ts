@@ -44,6 +44,8 @@ export const mediaCallHangupReasonList = [
 	'another-client',
 	/** A SIP REFER failed while the call was transferred. Only in stored history from before PR #41964. */
 	'sip-refer-failed',
+	/** The user has escalated this call into a video conference */
+	'conference-escalation',
 ] as const;
 
 /**

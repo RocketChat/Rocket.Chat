@@ -217,16 +217,16 @@ describe('VideoConfService.addMembers', () => {
 		const newUsers = [buildUser('newUser1'), buildUser('newUser2')];
 		UsersMock.find.returns({ toArray: sinon.stub().resolves(newUsers) });
 
-		const result = await service.addMembers('caller', 'call1', ['newUser1.user', 'newUser2.user']);
+		const { added } = await service.addMembers('caller', 'call1', ['newUser1.user', 'newUser2.user']);
 
-		expect(result.sort()).to.deep.equal(['newUser1', 'newUser2']);
+		expect(added.sort()).to.deep.equal(['newUser1', 'newUser2']);
 		expect(VideoConferenceModelMock.addMemberById.callCount).to.equal(2);
 		VideoConferenceModelMock.addMemberById.args.forEach(([callId]) => expect(callId).to.equal('call1'));
 		expect(VideoConferenceModelMock.addMemberById.args.map(([, member]) => member._id).sort()).to.deep.equal(['newUser1', 'newUser2']);
 
-		const added = fixture.users.filter(({ _id }) => ['newUser1', 'newUser2'].includes(_id));
-		expect(added).to.have.length(2);
-		added.forEach((member) => expect(isInVideoConference(member)).to.be.false);
+		const members = fixture.users.filter(({ _id }) => ['newUser1', 'newUser2'].includes(_id));
+		expect(members).to.have.length(2);
+		members.forEach((member) => expect(isInVideoConference(member)).to.be.false);
 	});
 
 	// Overwriting an existing entry would wipe out whatever `joinedAt`/`declined` state the member already
@@ -239,9 +239,9 @@ describe('VideoConfService.addMembers', () => {
 		]);
 		UsersMock.find.returns({ toArray: sinon.stub().resolves([buildUser('already')]) });
 
-		const result = await service.addMembers('caller', 'call1', ['already.user']);
+		const { added } = await service.addMembers('caller', 'call1', ['already.user']);
 
-		expect(result).to.deep.equal([]);
+		expect(added).to.deep.equal([]);
 		expect(VideoConferenceModelMock.addMemberById.called).to.be.false;
 
 		const existing = fixture.users.filter((user) => user._id === 'already');
@@ -255,9 +255,9 @@ describe('VideoConfService.addMembers', () => {
 		const newUsers = [buildUser('newUser1'), buildUser('newUser2')];
 		UsersMock.find.returns({ toArray: sinon.stub().resolves(newUsers) });
 
-		const result = await service.addMembers('caller', 'call1', ['newUser1.user', 'newUser2.user']);
+		const { added } = await service.addMembers('caller', 'call1', ['newUser1.user', 'newUser2.user']);
 
-		expect(result.sort()).to.deep.equal(['newUser1', 'newUser2']);
+		expect(added.sort()).to.deep.equal(['newUser1', 'newUser2']);
 		expect(ringedUserIds(broadcastStub).sort()).to.deep.equal(['newUser1', 'newUser2']);
 	});
 
@@ -268,7 +268,7 @@ describe('VideoConfService.addMembers', () => {
 
 		const result = await service.addMembers('caller', 'call1', ['newUser1.user']);
 
-		expect(result).to.deep.equal([]);
+		expect(result).to.deep.equal({ added: [], dial: [] });
 		expect(VideoConferenceModelMock.addMemberById.called).to.be.false;
 		expect(ringedUserIds(broadcastStub)).to.deep.equal([]);
 	});
@@ -280,7 +280,59 @@ describe('VideoConfService.addMembers', () => {
 
 		const result = await service.addMembers('caller', 'call1', ['already.user']);
 
-		expect(result).to.deep.equal([]);
+		expect(result).to.deep.equal({ added: [], dial: [] });
+		expect(ringedUserIds(broadcastStub)).to.deep.equal([]);
+	});
+
+	// Someone on a desk phone is not watching Rocket.Chat: the device is called instead, and they are still a member.
+	it('hands back the extension of a user who takes calls on a device instead of ringing them, when the adder can dial out', async () => {
+		fixture = buildGroupCall([buildMember({ _id: 'caller' })]);
+		const deskUser = { ...buildUser('deskUser'), sipExtension: '1001', mediaCallDevice: { id: 'phone-1', appId: 'cti-app' } };
+		UsersMock.find.returns({ toArray: sinon.stub().resolves([deskUser, buildUser('newUser1')]) });
+
+		const result = await service.addMembers('caller', 'call1', ['deskUser.user', 'newUser1.user'], { dialOut: true });
+
+		expect(result.added.sort()).to.deep.equal(['deskUser', 'newUser1']);
+		expect(result.dial).to.deep.equal(['1001']);
+		expect(ringedUserIds(broadcastStub)).to.deep.equal(['newUser1']);
+		VideoConferenceModelMock.addMemberById.args.forEach(([, member]) => {
+			expect(member).to.not.have.property('sipExtension');
+			expect(member).to.not.have.property('mediaCallDevice');
+		});
+	});
+
+	// An adder who cannot dial would otherwise leave them with no ring and no call.
+	it('rings a user who takes calls on a device when the adder cannot dial out', async () => {
+		fixture = buildGroupCall([buildMember({ _id: 'caller' })]);
+		const deskUser = { ...buildUser('deskUser'), sipExtension: '1001', mediaCallDevice: { id: 'phone-1', appId: 'cti-app' } };
+		UsersMock.find.returns({ toArray: sinon.stub().resolves([deskUser]) });
+
+		const result = await service.addMembers('caller', 'call1', ['deskUser.user']);
+
+		expect(result).to.deep.equal({ added: ['deskUser'], dial: [] });
+		expect(ringedUserIds(broadcastStub)).to.deep.equal(['deskUser']);
+	});
+
+	it('rings a user who takes calls on a device but has no extension to dial', async () => {
+		fixture = buildGroupCall([buildMember({ _id: 'caller' })]);
+		const deskUser = { ...buildUser('deskUser'), mediaCallDevice: { id: 'phone-1', appId: 'cti-app' } };
+		UsersMock.find.returns({ toArray: sinon.stub().resolves([deskUser]) });
+
+		const result = await service.addMembers('caller', 'call1', ['deskUser.user'], { dialOut: true });
+
+		expect(result).to.deep.equal({ added: ['deskUser'], dial: [] });
+		expect(ringedUserIds(broadcastStub)).to.deep.equal(['deskUser']);
+	});
+
+	// Ringing is about the Rocket.Chat client; whether to call the device does not wait on it.
+	it('hands back the extension of a user on a device even when nobody is to be rung', async () => {
+		fixture = buildGroupCall([buildMember({ _id: 'caller' })]);
+		const deskUser = { ...buildUser('deskUser'), sipExtension: '1001', mediaCallDevice: { id: 'phone-1', appId: 'cti-app' } };
+		UsersMock.find.returns({ toArray: sinon.stub().resolves([deskUser]) });
+
+		const result = await service.addMembers('caller', 'call1', ['deskUser.user'], { ring: false, dialOut: true });
+
+		expect(result).to.deep.equal({ added: ['deskUser'], dial: ['1001'] });
 		expect(ringedUserIds(broadcastStub)).to.deep.equal([]);
 	});
 

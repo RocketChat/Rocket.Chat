@@ -4,10 +4,12 @@ import { createPortal } from 'react-dom';
 
 import { useAudioStream } from './useAudioStream';
 import useAvailableViewTracker from './useAvailableViewTracker';
+import { useDesktopTelephonyListener } from './useDesktopTelephonyListener';
 import { useGetAutocompleteOptions } from './useGetAutocompleteOptions';
 import { useInstanceState } from './useInstanceState';
 import { useMediaSessionInstance } from './useMediaSessionInstance';
 import { MediaCallInstanceContext } from '../context/MediaCallInstanceContext';
+import { AppActionOverridesProvider } from '../experimental/AppActionButtons';
 
 export type MediaCallInstanceProviderProps = {
 	children: ReactNode;
@@ -25,6 +27,8 @@ const MediaCallInstanceProvider = ({ children, enabled = true }: MediaCallInstan
 	const [remoteStreamRefCallback, audioElement] = useAudioStream(instance);
 
 	const getAutocompleteOptions = useGetAutocompleteOptions(instance);
+
+	useDesktopTelephonyListener(openWidget);
 
 	const value = useMemo(
 		() => ({
@@ -61,13 +65,15 @@ const MediaCallInstanceProvider = ({ children, enabled = true }: MediaCallInstan
 
 	return (
 		<MediaCallInstanceContext.Provider value={value}>
-			{createPortal(
-				<audio ref={remoteStreamRefCallback}>
-					<track kind='captions' />
-				</audio>,
-				document.body,
-			)}
-			{children}
+			<AppActionOverridesProvider>
+				{createPortal(
+					<audio ref={remoteStreamRefCallback}>
+						<track kind='captions' />
+					</audio>,
+					document.body,
+				)}
+				{children}
+			</AppActionOverridesProvider>
 		</MediaCallInstanceContext.Provider>
 	);
 };

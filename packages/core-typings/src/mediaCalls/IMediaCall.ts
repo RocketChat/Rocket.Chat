@@ -20,6 +20,7 @@ export type ServerActor = {
 };
 
 export type MediaCallContactInformation = {
+	uid?: string;
 	displayName?: string;
 	username?: string;
 	sipExtension?: string;
@@ -52,7 +53,12 @@ export type CallPreventionRecord = {
 };
 
 export interface IMediaCall extends IRocketChatRecord {
-	service: 'webrtc';
+	/**
+	 * How the call's media/control is handled:
+	 * - `webrtc`: handled by the Rocket.Chat client through a WebRTC connection (relayed to SIP when needed).
+	 * - `cti`: handled entirely by an external device/gateway through a Rocket.Chat app; the client is only a remote control.
+	 */
+	service: 'webrtc' | 'cti';
 	kind: 'direct';
 
 	state: MediaCallState;
@@ -77,11 +83,17 @@ export interface IMediaCall extends IRocketChatRecord {
 
 	callerRequestedId?: string;
 	parentCallId?: string;
+	/** Set on a call placed to consult someone before an attended transfer: its parent call stays alive instead of being replaced */
+	attended?: boolean;
+	/** Set on a call that takes over for other calls the same users were in: they end once this one is active */
+	replacedCallIds?: string[];
 
 	/** transferred* fields are filled as soon as the transfer is requested, but the old call will only end when the new one is created */
 	transferredBy?: MediaCallSignedContact;
 	transferredTo?: MediaCallContact;
 	transferredAt?: Date;
+	/** For an attended transfer: the call the transfer target is to replace, rather than being called anew */
+	transferReplacesCallId?: string;
 
 	/** The party whose line was diverted at the SIP level (from the Diversion header) */
 	divertedBy?: MediaCallContact;
@@ -91,8 +103,16 @@ export interface IMediaCall extends IRocketChatRecord {
 
 	uids: IUser['_id'][];
 
+	escalatedAt?: Date;
+	escalatedByPeerAt?: Date;
+
 	/** The list of features that may be used in this call. Values are final once the call is accepted. */
 	features: string[];
 
 	sipCallId?: string;
+	/** The identity of the SIP dialog of a call with a SIP actor, as needed to refer someone to replace it */
+	sipDialog?: { callId: string; localTag: string; remoteTag: string };
+
+	/** For `cti` calls: identifies which of the user's external endpoints/devices handles the call (opaque to Rocket.Chat, resolved by the app). */
+	device?: string;
 }

@@ -15,6 +15,7 @@ import { AppInternalBridge } from './internal';
 import { AppInternalFederationBridge } from './internalFederation';
 import { AppListenerBridge } from './listeners';
 import { AppLivechatBridge } from './livechat';
+import { AppMediaCallBridge } from './mediaCalls';
 import { AppMessageBridge } from './messages';
 import { AppModerationBridge } from './moderation';
 import { AppOAuthAppsBridge } from './oauthApps';
@@ -63,6 +64,7 @@ export class RealAppBridges extends AppBridges {
 		this._outboundMessageBridge = new OutboundCommunicationBridge(orch);
 		this._experimentalBridge = new AppExperimentalBridge(orch);
 		this._callHistoryBridge = new AppCallHistoryBridge(orch);
+		this._mediaCallBridge = new AppMediaCallBridge(orch);
 	}
 
 	getCommandBridge() {
@@ -179,5 +181,9 @@ export class RealAppBridges extends AppBridges {
 
 	getCallHistoryBridge() {
 		return this._callHistoryBridge;
+	}
+
+	getMediaCallBridge() {
+		return this._mediaCallBridge;
 	}
 }

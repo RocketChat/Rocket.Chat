@@ -174,6 +174,10 @@ export interface StreamerEvents {
 			args: [{ action: string; params: { callId: VideoConference['_id']; uid: IUser['_id']; rid: IRoom['_id'] } }];
 		},
 		{ key: `${string}/media-signal`; args: [ServerMediaSignal] },
+		/** The user's call history has new entries; the list has to be fetched again. */
+		{ key: `${string}/call-history`; args: [Record<string, never>] },
+		/** The devices the user can take calls on changed; the list has to be fetched again. */
+		{ key: `${string}/media-call-devices`; args: [Record<string, never>] },
 		{ key: `${string}/userData`; args: [IUserDataEvent] },
 		{ key: `${string}/updateInvites`; args: [unknown] },
 		{ key: `${string}/departmentAgentData`; args: [unknown] },

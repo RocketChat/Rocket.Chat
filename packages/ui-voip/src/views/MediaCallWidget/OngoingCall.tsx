@@ -1,4 +1,4 @@
-import { ButtonGroup } from '@rocket.chat/fuselage';
+import { ButtonGroup, Divider } from '@rocket.chat/fuselage';
 import { ActionButton, ToggleButton } from '@rocket.chat/ui-media';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -17,15 +17,42 @@ import {
 	useInfoSlots,
 	useDraggableWidget,
 	getPeerDisplayName,
+	VideoCallWidgetAction,
 } from '../../components';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
+import AppActions from '../../experimental/AppActionButtons/components/AppActions';
+import { useVisibleAppActions } from '../../experimental/AppActionButtons/hooks/useVisibleAppActions';
 import { isUnknownPeer } from '../../utils/isUnknownPeer';
 
 const OngoingCall = () => {
 	const { t } = useTranslation();
 
-	const { sessionState, allowedFeatures, onMute, onHold, onForward, onEndCall, onClickDirectMessage } = useMediaCallView();
-	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, startedAt } = sessionState;
+	const {
+		sessionState,
+		allowedFeatures,
+		isRequestingVideoCall,
+		onRequestVideoCall,
+		onMute,
+		onHold,
+		onForward,
+		onCompleteTransfer,
+		onEndCall,
+		onClickDirectMessage,
+		onSwapCalls,
+	} = useMediaCallView();
+	const {
+		muted,
+		held,
+		remoteMuted,
+		remoteHeld,
+		peerInfo,
+		connectionState,
+		supportedFeatures,
+		startedAt,
+		escalated,
+		hasAlternateCall,
+		canCompleteTransfer,
+	} = sessionState;
 	const isInline = !useDraggableWidget();
 
 	// The floating widget keeps a collapsible DTMF dialpad in the footer.
@@ -41,27 +68,35 @@ const OngoingCall = () => {
 
 	const holdAvailable = allowedFeatures.includes('hold');
 	const transferAvailable = allowedFeatures.includes('transfer');
+	const videoConfAvailable = supportedFeatures.includes('conference-escalation');
+	const muteAvailable = supportedFeatures.includes('mute');
+	const dialpadAvailable = supportedFeatures.includes('dialpad');
+	const directMessageAvailable = supportedFeatures.includes('direct-message');
+	const devicePickerAvailable = supportedFeatures.includes('device-picker');
 
-	const isSip = peerInfo?.type === 'sip';
+	const appActions = useVisibleAppActions();
 
 	return (
 		<Widget>
 			<WidgetHandle />
 			<WidgetHeader title={connecting ? t('meteor_status_connecting') : <Timer startAt={startedAt} />}>
-				{onClickDirectMessage && (
+				{directMessageAvailable && onClickDirectMessage && (
 					<ActionButton size='tiny' secondary={false} label={t('Direct_Message')} icon='balloon' onClick={onClickDirectMessage} />
 				)}
-				<DevicePicker />
+				{devicePickerAvailable && <DevicePicker />}
 			</WidgetHeader>
 			<WidgetContent>
 				{peerInfo && !isUnknownPeer(peerInfo) && <PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />}
-				{isInline && isSip && <Dialpad autoFocus={false} />}
+				{dialpadAvailable && isInline && <Dialpad autoFocus={false} />}
+				{videoConfAvailable && <VideoCallWidgetAction escalated={escalated} loading={isRequestingVideoCall} onClick={onRequestVideoCall} />}
 			</WidgetContent>
 			<WidgetInfo slots={slots} />
 			<WidgetFooter>
-				{!isInline && dialpadOpen && <Dialpad />}
+				{dialpadAvailable && !isInline && dialpadOpen && <Dialpad />}
+				<AppActions actions={appActions} vertical />
+				{appActions.length > 0 && <Divider />}
 				<ButtonGroup large>
-					{!isInline && (
+					{dialpadAvailable && !isInline && (
 						<ActionButton
 							disabled={connecting || reconnecting}
 							icon='dialpad'
@@ -70,7 +105,15 @@ const OngoingCall = () => {
 							onClick={() => setDialpadOpen((open) => !open)}
 						/>
 					)}
-					<ToggleButton label={t('Mute')} icons={['mic', 'mic-off']} titles={[t('Mute'), t('Unmute')]} pressed={muted} onToggle={onMute} />
+					{muteAvailable && (
+						<ToggleButton
+							label={t('Mute')}
+							icons={['mic', 'mic-off']}
+							titles={[t('Mute'), t('Unmute')]}
+							pressed={muted}
+							onToggle={onMute}
+						/>
+					)}
 					{holdAvailable && (
 						<ToggleButton
 							label={t('Hold')}
@@ -80,6 +123,12 @@ const OngoingCall = () => {
 							onToggle={onHold}
 							disabled={connecting || reconnecting}
 						/>
+					)}
+					{hasAlternateCall && (
+						<ActionButton disabled={connecting || reconnecting} label={t('Switch_call')} icon='arrow-loop' onClick={onSwapCalls} />
+					)}
+					{canCompleteTransfer && (
+						<ActionButton disabled={connecting || reconnecting} label={t('Complete_transfer')} icon='check' onClick={onCompleteTransfer} />
 					)}
 					{transferAvailable && (
 						<ActionButton disabled={connecting || reconnecting} label={t('Forward')} icon='arrow-forward' onClick={onForward} />

@@ -8,6 +8,18 @@ const CLOSE_GRACE = 500;
 /** The id that stands for a call that does not exist yet — the window opens before the conference is created. */
 export const NEW_CONFERENCE_ID = 'new';
 
+/** The internal Pexip integration, whose page is the frame inside our own rather than somewhere to send people. */
+export const PEXIP_PROVIDER_NAME = 'core.pexip';
+
+/**
+ * Whether a call opens in the conference window rather than at the provider's own address.
+ *
+ * `VideoConf_Conference_Window_Enabled` turns it on for every provider. Pexip is there whatever that says: its
+ * chat lives beside the call in our page, so handing someone the provider's url hands them a call with no chat.
+ */
+export const usesConferenceWindow = (settingEnabled: boolean, providerName?: string): boolean =>
+	settingEnabled || providerName === PEXIP_PROVIDER_NAME;
+
 /**
  * The desktop app's bridge for its video call window, where it has one: under `RocketChatDesktop` since desktop
  * 4.18, and a global of its own before that.

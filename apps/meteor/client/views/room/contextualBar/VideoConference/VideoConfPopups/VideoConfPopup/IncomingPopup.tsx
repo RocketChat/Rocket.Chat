@@ -25,7 +25,10 @@ import { useVideoConfRoomName } from '../../hooks/useVideoConfRoomName';
 
 export type IncomingPopupProps = {
 	id: string;
-	/** Absent when the call reaches a conference member who has no access to the room it belongs to. */
+	/**
+	 * Absent when the call reaches a conference member who has no access to the room it belongs to. The server has
+	 * already checked their access to the conference before announcing the call, so that is not a reason to hide it.
+	 */
 	room?: IRoom;
 	position: number;
 	onClose: (id: string) => void;

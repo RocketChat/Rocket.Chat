@@ -79,9 +79,9 @@ it('asks about them when there is no call window to ask', async () => {
 	expect(screen.getByTitle('Cam_on')).toBeInTheDocument();
 });
 
-// With the call window, an incoming call can reach someone who cannot see the room it belongs to — membership
-// grants no room access — so whoever started it is the identity they do have. Without it, such a call was never
-// announced at all and the popup rendered nothing, which is what the flag-off case below pins.
+// An incoming call can reach someone who cannot see the room it belongs to: the server checks access to the
+// conference before announcing it, and membership grants no room access. Whoever started it is the identity they
+// do have.
 it('describes an incoming call in an inaccessible room by its caller', async () => {
 	render(<TimedVideoConfPopup id={call.callId} rid={call.rid} isReceiving position={0} />, {
 		wrapper: mockAppRoot()
@@ -94,12 +94,21 @@ it('describes an incoming call in an inaccessible room by its caller', async () 
 	expect(await screen.findByText(conference.createdBy.username)).toBeInTheDocument();
 });
 
-it('renders nothing for an incoming call in an inaccessible room without the call window', async () => {
-	const { container } = render(<TimedVideoConfPopup id={call.callId} rid={call.rid} isReceiving position={0} />, {
+it('describes an incoming call in an inaccessible room by its caller without the call window', async () => {
+	render(<TimedVideoConfPopup id={call.callId} rid={call.rid} isReceiving position={0} />, {
 		wrapper: mockAppRoot()
 			.withSetting('VideoConf_Conference_Window_Enabled', false)
 			.withEndpoint('GET', '/v1/video-conference.info', () => conference as any)
 			.build(),
+	});
+
+	expect(await screen.findByRole('dialog')).toBeInTheDocument();
+	expect(await screen.findByText(conference.createdBy.username)).toBeInTheDocument();
+});
+
+it('renders nothing for an outgoing call in an inaccessible room', async () => {
+	const { container } = render(<TimedVideoConfPopup id={call.callId} rid={call.rid} position={0} />, {
+		wrapper: mockAppRoot().withSetting('VideoConf_Conference_Window_Enabled', false).build(),
 	});
 
 	await waitFor(() => expect(container).toBeEmptyDOMElement());

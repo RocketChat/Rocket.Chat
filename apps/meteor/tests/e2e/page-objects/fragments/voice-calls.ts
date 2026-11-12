@@ -89,7 +89,7 @@ export class TransferModal {
 	}
 
 	get hangUpAndTransfer(): Locator {
-		return this.root.getByRole('button', { name: 'Hang up and transfer call', exact: true });
+		return this.root.getByRole('button', { name: 'Transfer and hang up', exact: true });
 	}
 
 	async transferCall(username: string): Promise<void> {

@@ -2,7 +2,7 @@ import type { UserStatus } from '@rocket.chat/core-typings';
 import type { CallFeature } from '@rocket.chat/media-signaling';
 
 export type InternalPeerInfo = {
-	type: 'user';
+	type: 'sip' | 'user';
 	displayName: string;
 	userId: string;
 	username?: string;
@@ -40,9 +40,14 @@ interface IBaseSession {
 	remoteHeld: boolean;
 	startedAt?: Date;
 	hidden: boolean;
+	escalated?: boolean;
 	ringing?: boolean;
 	supportedFeatures: readonly CallFeature[];
 	confirmed: boolean;
+	/** There is another call in progress, so this one can be swapped with it */
+	hasAlternateCall: boolean;
+	/** An attended transfer is waiting to be completed */
+	canCompleteTransfer: boolean;
 }
 
 interface IEmptySession extends IBaseSession {

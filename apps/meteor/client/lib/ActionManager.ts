@@ -92,7 +92,11 @@ export class ActionManager implements IActionManager {
 						triggerId,
 					})) as UiKit.ServerInteraction;
 
-					this.handleServerInteraction(interaction);
+					const response = this.handleServerInteraction(interaction);
+
+					if (typeof response !== 'string' && response?.type === 'action_button.update') {
+						return response;
+					}
 				} finally {
 					switch (userInteraction.type) {
 						case 'viewSubmit':
@@ -140,7 +144,7 @@ export class ActionManager implements IActionManager {
 		}
 	}
 
-	public handleServerInteraction(interaction: UiKit.ServerInteraction): UiKit.ServerInteraction['type'] | undefined {
+	public handleServerInteraction(interaction: UiKit.ServerInteraction) {
 		const { triggerId } = interaction;
 
 		const appId = this.invalidateTriggerId(triggerId);
@@ -222,6 +226,22 @@ export class ActionManager implements IActionManager {
 				const { view } = interaction;
 				this.disposeView(view.id);
 				break;
+			}
+
+			case 'action_button.update': {
+				const { appId, actionId, update } = interaction;
+
+				return {
+					type: interaction.type,
+					appId,
+					actionId,
+					update: {
+						...(update.actionId && { actionId: update.actionId }),
+						...(update.labelI18n && { labelI18n: update.labelI18n }),
+						...(update.variant && { variant: update.variant }),
+						...(update.disabled !== undefined && { disabled: update.disabled }),
+					},
+				};
 			}
 
 			default:

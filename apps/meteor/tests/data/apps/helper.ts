@@ -1,8 +1,39 @@
 import type { IPermission } from '@rocket.chat/apps-engine/definition/permissions/IPermission';
-import type { App } from '@rocket.chat/core-typings';
+import type { App, AppPermission } from '@rocket.chat/core-typings';
+import AdmZip from 'adm-zip';
 
 import { request, credentials } from '../api-data';
 import { apps, APP_URL, installedApps } from './apps-data';
+
+/**
+ * Gets the permissions declared in the app manifest file of a test app package.
+ *
+ * @param pathToApp Path to test app package
+ * @returns A promise that resolves to the list of permission objects, or undefined if not available. Rejects if not able to read the manifest file.
+ */
+async function getPermissionsFromAppManifest(pathToApp: string): Promise<AppPermission[] | undefined> {
+	try {
+		const zip = new AdmZip(pathToApp);
+
+		const { promise, resolve, reject } = Promise.withResolvers<string>();
+
+		zip.readAsTextAsync('app.json', (data, err) => {
+			if (err) {
+				return reject(err);
+			}
+
+			resolve(data);
+		});
+
+		const appJsonContent = await promise;
+
+		const appJson = JSON.parse(appJsonContent);
+
+		return appJson.permissions;
+	} catch (e) {
+		throw new Error(`Failed to read app manifest from "${pathToApp}"`, { cause: e });
+	}
+}
 
 const getApps = () =>
 	new Promise<App[]>((resolve) => {
@@ -51,3 +82,8 @@ export const installLocalTestPackage = (path: string, permissions?: IPermission[
 			return resolve(res.body.app);
 		});
 	});
+
+export const installLocalTestPackageWithPermissionsFromAppManifest = async (path: string) => {
+	const permissions = await getPermissionsFromAppManifest(path);
+	return installLocalTestPackage(path, permissions);
+};

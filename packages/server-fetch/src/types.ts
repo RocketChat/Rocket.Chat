@@ -11,6 +11,11 @@ type BaseExtendedOptions = FetchOptionsWithoutBody & {
 	timeout?: number;
 	params?: Record<string, any>;
 	body?: BodyInit | Record<string, any>;
+	auth?: {
+		type: 'digest';
+		username: string;
+		password: string;
+	};
 };
 
 type SsrfValidationIgnored = {

@@ -1,4 +1,5 @@
 import type { Keys as IconNames } from '@rocket.chat/icons';
+import { useUser } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -16,6 +17,8 @@ export const useMediaCallAction = (
 	const { toggleWidget, endCall } = useWidgetExternalControls();
 	const state = usePeekMediaSessionState();
 	const peerInfo = usePeekMediaSessionPeerInfo();
+	// PoC: only users with an assigned extension may start calls
+	const hasSipExtension = Boolean(useUser()?.sipExtension);
 
 	return useMemo(() => {
 		if (state === 'unavailable') {
@@ -46,6 +49,10 @@ export const useMediaCallAction = (
 			};
 		}
 
+		if (!hasSipExtension) {
+			return undefined;
+		}
+
 		if (callee) {
 			return {
 				title: t('Voice_call__user_', { user: getPeerDisplayName(t, callee) }),
@@ -59,5 +66,5 @@ export const useMediaCallAction = (
 			icon: 'dialpad' as const,
 			action: () => toggleWidget(undefined),
 		};
-	}, [state, t, peerInfo, callee, toggleWidget, endCall]);
+	}, [state, t, peerInfo, hasSipExtension, callee, toggleWidget, endCall]);
 };

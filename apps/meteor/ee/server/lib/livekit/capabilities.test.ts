@@ -18,6 +18,7 @@ const { videoConfProviders, CORE_PROVIDER_APP_ID } = proxyquire
 	.noPreserveCache()
 	.load('../../../../server/lib/videoConfProviders', {
 		'../settings': { settings: { get: () => undefined } },
+		'../settings/pexip': { getPexipSettings: () => undefined },
 	});
 
 const registered = (): VideoConferenceCapabilities | undefined => videoConfProviders.getProviderCapabilities('livekit');

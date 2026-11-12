@@ -165,12 +165,12 @@ export const cloneFixture = (call: VideoConference): VideoConference => ({
 });
 
 /**
- * Who actually got rung: the `ring` notifications `notifyUser` sends via
+ * Who actually got rung: the `ring-member` notifications `notifyUser` sends via
  * `api.broadcast('user.video-conference', { userId, action, params })`, which is the only observable trace.
  */
 export const ringedUserIds = (broadcast: sinon.SinonStub): string[] =>
 	broadcast.args
-		.filter(([channel, payload]) => channel === 'user.video-conference' && (payload as { action: string }).action === 'ring')
+		.filter(([channel, payload]) => channel === 'user.video-conference' && (payload as { action: string }).action === 'ring-member')
 		.map(([, payload]) => (payload as { userId: string }).userId);
 
 export const createdBy = { _id: 'creator', username: 'creator.user', name: 'Creator User' };
