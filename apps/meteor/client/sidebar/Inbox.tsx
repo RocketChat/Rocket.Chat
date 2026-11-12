@@ -1,8 +1,9 @@
+import { IconButton } from '@rocket.chat/fuselage';
 import { useId, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import InboxHeader from './InboxHeader';
 import SidebarRoomList from './RoomList';
+import SidebarPanelHeader from './components/SidebarPanelHeader';
 import SidebarPanelSearch from './components/SidebarPanelSearch';
 
 const Inbox = () => {
@@ -18,11 +19,21 @@ const Inbox = () => {
 		searchButtonRef.current?.focus();
 	};
 
-	const toggleSearch = () => (searchOpen ? closeSearch() : setSearchOpen(true));
-
 	return (
 		<>
-			<InboxHeader searchId={searchId} searchButtonRef={searchButtonRef} searchOpen={searchOpen} onToggleSearch={toggleSearch} />
+			<SidebarPanelHeader title={t('Inbox')}>
+				<IconButton
+					ref={searchButtonRef}
+					icon='magnifier'
+					size='small'
+					title={t('Search')}
+					aria-label={t('Search_rooms')}
+					aria-expanded={searchOpen}
+					aria-controls={searchId}
+					pressed={searchOpen}
+					onClick={() => (searchOpen ? closeSearch() : setSearchOpen(true))}
+				/>
+			</SidebarPanelHeader>
 			{searchOpen && (
 				<SidebarPanelSearch
 					id={searchId}

@@ -47,8 +47,7 @@ const RoomList = ({ filterText = '' }: RoomListProps) => {
 	const isAnonymous = !userId;
 
 	const { collapsedGroups, handleClick } = useCollapsedGroups();
-	const { groups, groupKeys } = useRoomList({ collapsedGroups, filterText });
-	const filtering = Boolean(filterText.trim());
+	const { groups, groupKeys, filtering } = useRoomList({ collapsedGroups, filterText });
 	const moveCategory = useMoveCategoryPosition();
 	const virtualizerRef = useRef<VirtualizerHandle>(null);
 	const { previousUnread, nextUnread, handleRangeChange } = useOffscreenUnreads({ groups });

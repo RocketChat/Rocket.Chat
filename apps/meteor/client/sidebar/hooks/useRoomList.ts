@@ -37,6 +37,7 @@ export type SidebarRoomListGroup = {
 type useRoomListReturnType = {
 	groups: SidebarRoomListGroup[];
 	groupKeys: string[];
+	filtering: boolean;
 	groupsCount: number[];
 	totalCount: number;
 };
@@ -77,10 +78,11 @@ export const useRoomList = ({
 
 	const queue = inquiries.enabled ? inquiries.queue : emptyQueue;
 
-	const { groups, groupKeys } = useDebouncedValue(
+	const { groups, groupKeys, filtering } = useDebouncedValue(
 		useMemo(() => {
 			const text = filterText.trim().toLocaleLowerCase();
-			const isCollapsed = (key: string) => !text && (collapsedGroups?.includes(key) ?? false);
+			const activeCollapsedGroups = text ? undefined : collapsedGroups;
+			const isCollapsed = (key: string) => activeCollapsedGroups?.includes(key) ?? false;
 
 			const unfilteredGroups = new Map<string, Set<SubscriptionWithRoom>>();
 			categoryList.forEach((category) => {
@@ -161,6 +163,7 @@ export const useRoomList = ({
 			return {
 				groups: text ? groups.filter((group) => group.rooms.length > 0) : groups,
 				groupKeys: groups.map((group) => group.key),
+				filtering: Boolean(text),
 			};
 		}, [
 			categoryList,
@@ -186,6 +189,7 @@ export const useRoomList = ({
 	return {
 		groups,
 		groupKeys,
+		filtering,
 		groupsCount,
 		totalCount: useMemo(() => groupsCount.reduce((acc, count) => acc + count, 0), [groupsCount]),
 	};
