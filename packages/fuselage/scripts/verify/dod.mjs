@@ -117,7 +117,7 @@ if (before && after) {
 	if (failedIndex) add('G3', 'story class index', failedIndex);
 	else {
 		const filter = ['--renders', cls, '--class-index', indexBefore];
-		add('G3', 'class contract diff', run('story-classes.mjs', ['--diff', indexBefore, indexAfter]));
+		add('G3', 'class contract diff', run('story-classes.mjs', ['--diff', indexBefore, indexAfter, '--renders', cls]));
 		add('G3', 'pixel A/B (stories rendering the component)', run('story-ab.mjs', [before, after, '', ...filter]));
 		add('G3', 'computed-style A/B, dark', run('story-computed.mjs', [before, after, '', ...filter, '--globals', 'theme:dark']));
 		add('G3', 'computed-style A/B, RTL', run('story-computed.mjs', [before, after, '', ...filter, '--globals', 'direction:rtl']));

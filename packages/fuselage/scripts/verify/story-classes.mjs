@@ -1,5 +1,6 @@
 // Usage: node scripts/verify/story-classes.mjs <storybook-static> <out.json> [--jobs 4]   index story id -> rcx-* classes rendered
-//        node scripts/verify/story-classes.mjs --diff <before.json> <after.json>        class-contract diff per story
+//        node scripts/verify/story-classes.mjs --diff <before.json> <after.json> [--renders rcx-button]
+//                                                                                      class-contract diff per story (rendering the class in either build)
 // Exits 1 when a story could not be captured or none was found.
 import { readFileSync, writeFileSync } from 'node:fs';
 
@@ -11,7 +12,8 @@ const { values: opts, positionals } = cli({ diff: { type: 'boolean', default: fa
 if (opts.diff) {
 	const [before, after] = positionals.map((f) => JSON.parse(readFileSync(f, 'utf8')));
 	let changed = 0;
-	for (const id of [...new Set([...Object.keys(before), ...Object.keys(after)])].sort()) {
+	const inScope = (id) => !opts.renders || [before[id], after[id]].some((classes) => classes?.includes(opts.renders));
+	for (const id of [...new Set([...Object.keys(before), ...Object.keys(after)])].filter(inScope).sort()) {
 		const [x, y] = [before[id], after[id]];
 		if (!x || !y) {
 			console.log(`${id}: story ${x ? 'removed' : 'added'}`);
