@@ -65,6 +65,7 @@ const statesOf = (element: Element) => {
 	});
 	if (element.matches(':disabled') && !states.includes('disabled')) states.push('disabled');
 	if ((element as HTMLInputElement).checked && !states.includes('checked')) states.push('checked');
+	if ((element as HTMLInputElement).required && !states.includes('required')) states.push('required');
 	return states.sort();
 };
 
