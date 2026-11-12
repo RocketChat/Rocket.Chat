@@ -19,8 +19,10 @@ import {
 	selectorsFor,
 } from './inputPalettes.mts';
 import { itemCustomProperties, itemPalettes } from './itemPalettes.mts';
+import { linkStates } from './linkStates.mts';
 import { literal } from './literal.mts';
 import { markers } from './markers.mts';
+import { messagePalettes } from './messagePalettes.mts';
 import { sidebarPalettes } from './sidebarPalettes.mts';
 import { statusPalettes } from './statusPalettes.mts';
 import { textFrameDefaults } from './textFrameDefaults.mts';
@@ -212,4 +214,16 @@ test('the sidebar palette gives each banner tone its own background and text hoo
 	assert.match(banner.info.background, /^var\(--rcx-sidebar-banner-background-info, /);
 	assert.match(banner.info.color, /^var\(--rcx-sidebar-banner-color-info, /);
 	assert.match(banner.default.color, /^var\(--rcx-sidebar-banner-color-default, /);
+});
+
+test('the message palette keeps its theme keys and the link states cover every state', () => {
+	const { divider, genericPreview, editing } = messagePalettes();
+
+	assert.match(editing.background, /^var\(--rcx-message-background-color-editing, /);
+	assert.match(divider.sizeNeg, /^var\(--rcx-message-divider-size-neg, -1px\)$/);
+	assert.match(genericPreview.iconBackground, /^var\(--rcx-message-generic-preview-icon-background-color, /);
+
+	const css = linkStates('.rcx-x', 'red');
+	assert.match(css, /\.rcx-x:where\(:visited\) \{\n\tcolor: var\(--rcx-link-visited-color, red\);/);
+	assert.match(css, /\.rcx-x:where\(:active\) \{\n\tcolor: var\(--rcx-link-active-color, red\);/);
 });
