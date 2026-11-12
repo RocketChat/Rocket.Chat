@@ -17,7 +17,7 @@ This package holds the building blocks behind Fuselage's styling and [`@rocket.c
 npm install @rocket.chat/css-in-js
 ```
 
-There are no peer dependencies. The package ships CommonJS (`dist/index.js`), an ES module build (`dist/index.module.js`) and TypeScript types.
+There are no peer dependencies. The package ships an ES module (`dist/index.js`) and TypeScript types.
 
 `attachRules` needs a DOM. Without `window` it does nothing and returns a no-op detach callback.
 

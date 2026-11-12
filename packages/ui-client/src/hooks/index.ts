@@ -1,4 +1,5 @@
 export * from './useClipboardWithToast';
+export * from './useConfirmAction';
 export * from './useCopyErrorReport';
 export * from './useCreateFontStyleElement';
 export * from './useCurrent';

@@ -16,7 +16,7 @@ It powers the `transpile` function of [`@rocket.chat/css-in-js`](https://www.npm
 npm install @rocket.chat/stylis-logical-props-middleware stylis@~4.4.0
 ```
 
-`stylis` `~4.4.0` is a peer dependency. The package ships CommonJS (`dist/cjs`), ES modules (`dist/esm`) and TypeScript types.
+`stylis` `~4.4.0` is a peer dependency. The package ships an ES module (`dist/index.js`) and TypeScript types.
 
 ## Usage
 

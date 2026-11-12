@@ -13,16 +13,17 @@ import {
 	GenericNoResults,
 	links,
 } from '@rocket.chat/ui-client';
-import { useTranslation, useRouter } from '@rocket.chat/ui-contexts';
+import { useRouter } from '@rocket.chat/ui-contexts';
 import { hashKey } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useRemoveCustomField } from './useRemoveCustomField';
 import FilterByText from '../../../components/FilterByText';
 import { useCustomFieldsQuery } from '../hooks/useCustomFieldsQuery';
 
 const CustomFieldsTable = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const router = useRouter();
 	const [text, setText] = useState('');
 

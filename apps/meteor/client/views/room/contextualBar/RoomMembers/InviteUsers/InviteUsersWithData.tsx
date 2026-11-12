@@ -1,9 +1,10 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useFormatDateAndTime } from '@rocket.chat/ui-client';
-import { useEndpoint, useTranslation, useToastMessageDispatch, useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useToastMessageDispatch, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import InviteUsers from './InviteUsers';
 import InviteUsersEdit from './InviteUsersEdit';
@@ -16,7 +17,7 @@ export type InviteUsersWithDataProps = {
 };
 
 const InviteUsersWithData = ({ rid, onClickBack }: InviteUsersWithDataProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const [
 		{

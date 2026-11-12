@@ -8682,6 +8682,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/account-utils@workspace:packages/account-utils"
   dependencies:
+    "@rocket.chat/random": "workspace:^"
+    "@rocket.chat/sha256": "workspace:^"
+    "@types/bcrypt": "npm:^6.0.0"
+    bcrypt: "npm:^6.0.0"
     typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft

@@ -10,8 +10,9 @@ import {
 	useFormatDateAndTime,
 } from '@rocket.chat/ui-client';
 import type { IRouterPaths } from '@rocket.chat/ui-contexts';
-import { useToastMessageDispatch, useRoute, useUserSubscription, useTranslation, usePermission, useUserId } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useRoute, useUserSubscription, usePermission, useUserId } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import DepartmentField from './DepartmentField';
 import VisitorClientInfo from './VisitorClientInfo';
@@ -31,7 +32,7 @@ export type ChatInfoProps = {
 };
 
 function ChatInfo({ id, route }: ChatInfoProps) {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const formatDateAndTime = useFormatDateAndTime();

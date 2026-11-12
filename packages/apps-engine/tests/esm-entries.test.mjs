@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readdirSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { join, relative } from 'node:path';
 import { describe, it } from 'node:test';
@@ -40,6 +40,13 @@ describe('the ES module entries of `@rocket.chat/apps-engine`', () => {
 			}
 		});
 	}
+
+	it('lists every name explicitly, since prebundlers cannot see through `export *` from CommonJS', () => {
+		const esmDir = join(import.meta.dirname, '..', 'esm', 'definition');
+		const stars = walk(esmDir).filter((path) => path.endsWith('.js') && /^export \*/m.test(readFileSync(path, 'utf8')));
+
+		assert.deepEqual(stars, []);
+	});
 
 	it('resolves a directory to its index in both formats', async () => {
 		const cjs = require('@rocket.chat/apps-engine/definition/accessors');

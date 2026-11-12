@@ -1,5 +1,5 @@
-import type { IMediaStreamWrapper } from '../media';
-import type { CallActorType, CallContact, CallRole } from './common';
+import type { CallActorType, CallContact, CallRole } from './common.js';
+import type { IMediaStreamWrapper } from '../media/index.js';
 
 export interface IClientMediaCallParticipant {
 	readonly local: boolean;

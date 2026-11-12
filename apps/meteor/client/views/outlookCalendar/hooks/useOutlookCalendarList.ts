@@ -1,5 +1,6 @@
-import { useToastMessageDispatch, useTranslation, useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 
 import { useOutlookAuthenticationMutation } from './useOutlookAuthentication';
 import { getErrorMessage } from '../../../lib/errorHandling';
@@ -23,7 +24,7 @@ export const useOutlookCalendarList = (date: Date) => {
 };
 
 export const useMutationOutlookCalendarSync = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 
 	const isServerManaged = useSetting('Exchange_Mode', 'legacy') === 'server';
