@@ -1,4 +1,4 @@
-import type { HTMLAttributes, RefAttributes } from 'react';
+import type { RefAttributes } from 'react';
 
 import { appendClassName } from '../../helpers/appendClassName';
 import { cx } from '../../helpers/composeClassNames';
@@ -6,7 +6,7 @@ import { patchChildren } from '../../helpers/patchChildren';
 import { IconButton } from '../Button';
 import type { IconButtonProps } from '../Button/IconButton';
 
-export type NavbarItemProps = HTMLAttributes<HTMLElement> & Partial<Omit<IconButtonProps, 'ref'>> & RefAttributes<HTMLElement>;
+export type NavbarItemProps = Partial<Omit<IconButtonProps, 'ref'>> & RefAttributes<HTMLElement>;
 
 function NavBarItem({ children, icon, className, ...props }: NavbarItemProps) {
 	return (
