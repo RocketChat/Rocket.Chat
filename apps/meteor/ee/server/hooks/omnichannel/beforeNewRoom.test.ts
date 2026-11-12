@@ -1,17 +1,23 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
-import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
-
 const findStub = sinon.stub();
 
-const { beforeNewRoomPatched } = loadWithMocks('./beforeNewRoom.ts', {
-	'../../../../server/lib/omnichannel/hooks': {
-		beforeNewRoom: { patch: sinon.stub() },
-	},
+let beforeNewRoomPatched: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('../../../../server/lib/omnichannel/hooks', {
+			exports: {
+				beforeNewRoom: { patch: sinon.stub() },
+			},
+		}),
+	];
+	({ beforeNewRoomPatched } = await import('./beforeNewRoom'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('beforeRoom', () => {

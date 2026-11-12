@@ -1,11 +1,17 @@
-import { describe, it } from 'node:test';
+import { before, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
 
-import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
+let removeAttachmentMarkdown: typeof import('./removeAttachmentMarkdown').removeAttachmentMarkdown;
 
-const { removeAttachmentMarkdown } = loadWithMocks('./removeAttachmentMarkdown', {
-	'@rocket.chat/tools': { isRecord: (value: unknown) => typeof value === 'object' && value !== null && !Array.isArray(value) },
+before(async () => {
+	const moduleMocks = [
+		mock.module('@rocket.chat/tools', {
+			exports: { isRecord: (value: unknown) => typeof value === 'object' && value !== null && !Array.isArray(value) },
+		}),
+	];
+	({ removeAttachmentMarkdown } = await import('./removeAttachmentMarkdown'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('removeAttachmentMarkdown', () => {

@@ -1,16 +1,22 @@
-import { before, describe, it } from 'node:test';
+import { before, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
-import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
-
 const findBefore = sinon.stub();
 
-const { loadRoomHistory } = loadWithMocks('./loadRoomHistory', {
-	'../../settings/cached': { settings: { get: () => [] } },
-	'../utils/lib/normalizeMessagesForUser': { normalizeMessagesForUser: async (messages: unknown[]) => messages },
+let loadRoomHistory: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('../../settings/cached', { exports: { settings: { get: () => [] } } }),
+		mock.module('../utils/lib/normalizeMessagesForUser', {
+			exports: { normalizeMessagesForUser: async (messages: unknown[]) => messages },
+		}),
+	];
+	({ loadRoomHistory } = await import('./loadRoomHistory'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 const pageOf = (...timestamps: number[]) => ({

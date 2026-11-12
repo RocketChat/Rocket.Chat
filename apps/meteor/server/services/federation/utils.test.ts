@@ -1,14 +1,16 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
 import sinon from 'sinon';
 
-import { loadWithMocks } from '../../../tests/mocks/utils/loadWithMocks';
-
 const settingsGet = sinon.stub();
 
-const { isXMPPServerEnabled } = loadWithMocks('./utils', {
-	'../../settings': { settings: { get: settingsGet } },
+let isXMPPServerEnabled: typeof import('./utils').isXMPPServerEnabled;
+
+before(async () => {
+	const moduleMocks = [mock.module('../../settings', { exports: { settings: { get: settingsGet } } })];
+	({ isXMPPServerEnabled } = await import('./utils'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('isXMPPServerEnabled', () => {

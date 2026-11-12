@@ -1,10 +1,8 @@
-import { afterEach, before, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 const sandbox = sinon.createSandbox();
 
@@ -27,12 +25,18 @@ const mocks = {
 	},
 };
 
-const { sendUsageReport } = loadWithMocks('./sendUsageReport', {
-	'@rocket.chat/server-fetch': { serverFetch: mocks.serverFetch },
-	'../index': { statistics: mocks.statistics },
-	'../../cloud': { getWorkspaceAccessToken: mocks.getWorkspaceAccessToken },
-	'../../utils/getURL': { getWorkspaceURL: mocks.getWorkspaceURL },
-	'../../../../rocketchat.info': { Info: mocks.Info },
+let sendUsageReport: any;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('@rocket.chat/server-fetch', { exports: { serverFetch: mocks.serverFetch } }),
+		mock.module('../index', { exports: { statistics: mocks.statistics } }),
+		mock.module('../../cloud', { exports: { getWorkspaceAccessToken: mocks.getWorkspaceAccessToken } }),
+		mock.module('../../utils/getURL', { exports: { getWorkspaceURL: mocks.getWorkspaceURL } }),
+		mock.module('../../../../rocketchat.info', { exports: { Info: mocks.Info } }),
+	];
+	({ sendUsageReport } = await import('./sendUsageReport'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('sendUsageReport', () => {

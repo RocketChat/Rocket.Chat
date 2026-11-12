@@ -1,10 +1,8 @@
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { loadWithMocks } from '../../tests/mocks/utils/loadWithMocks';
 
 const hasPermissionAsyncMock = sinon.stub();
 const hasRoleAsyncMock = sinon.stub();
@@ -35,16 +33,24 @@ const RoomMemberActions = {
 	BAN: 'ban',
 };
 
-const { banUserFromRoomMethod } = loadWithMocks('./banUserFromRoom.ts', {
-	'@rocket.chat/core-typings': {
-		isBannedSubscription: (sub: { status?: string } | null) => sub?.status === 'BANNED',
-	},
-	'./authorization': { canAccessRoomAsync: canAccessRoomAsyncMock },
-	'./authorization/hasPermission': { hasPermissionAsync: hasPermissionAsyncMock },
-	'./authorization/hasRole': { hasRoleAsync: hasRoleAsyncMock },
-	'./rooms/banUserFromRoom': { banUserFromRoom: banUserFromRoomMock },
-	'../../definition/IRoomTypeConfig': { RoomMemberActions },
-	'./rooms/roomCoordinator': { roomCoordinator: roomCoordinatorMock },
+let banUserFromRoomMethod: typeof import('./banUserFromRoom').banUserFromRoomMethod;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('@rocket.chat/core-typings', {
+			exports: {
+				isBannedSubscription: (sub: { status?: string } | null) => sub?.status === 'BANNED',
+			},
+		}),
+		mock.module('./authorization', { exports: { canAccessRoomAsync: canAccessRoomAsyncMock } }),
+		mock.module('./authorization/hasPermission', { exports: { hasPermissionAsync: hasPermissionAsyncMock } }),
+		mock.module('./authorization/hasRole', { exports: { hasRoleAsync: hasRoleAsyncMock } }),
+		mock.module('./rooms/banUserFromRoom', { exports: { banUserFromRoom: banUserFromRoomMock } }),
+		mock.module('../../definition/IRoomTypeConfig', { exports: { RoomMemberActions } }),
+		mock.module('./rooms/roomCoordinator', { exports: { roomCoordinator: roomCoordinatorMock } }),
+	];
+	({ banUserFromRoomMethod } = await import('./banUserFromRoom'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('banUserFromRoomMethod', () => {

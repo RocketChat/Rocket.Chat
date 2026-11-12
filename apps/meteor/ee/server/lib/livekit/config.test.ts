@@ -1,15 +1,21 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
-
-import { loadWithMocks } from '../../../../tests/mocks/utils/loadWithMocks';
 
 let values: Record<string, unknown> = {};
 let modules: string[] = [];
 
-const { getLiveKitConfig, isLiveKitFullyConfigured, isLiveKitLicensed } = loadWithMocks('./config', {
-	'@rocket.chat/license': { License: { hasModule: (module: string) => modules.includes(module) } },
-	'../../../../server/settings': { settings: { get: (key: string) => values[key] } },
+let getLiveKitConfig: typeof import('./config').getLiveKitConfig;
+let isLiveKitFullyConfigured: typeof import('./config').isLiveKitFullyConfigured;
+let isLiveKitLicensed: typeof import('./config').isLiveKitLicensed;
+
+before(async () => {
+	const moduleMocks = [
+		mock.module('@rocket.chat/license', { exports: { License: { hasModule: (module: string) => modules.includes(module) } } }),
+		mock.module('../../../../server/settings', { exports: { settings: { get: (key: string) => values[key] } } }),
+	];
+	({ getLiveKitConfig, isLiveKitFullyConfigured, isLiveKitLicensed } = await import('./config'));
+	moduleMocks.forEach((moduleMock) => moduleMock.restore());
 });
 
 describe('LiveKit configuration', () => {
