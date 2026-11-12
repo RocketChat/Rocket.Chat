@@ -13,6 +13,26 @@ jest.mock('../../views/admin/customUserStatus/hooks/useStatusDisabledModal', () 
 beforeEach(() => openModal.mockClear());
 
 describe('StatusDisabledBanner', () => {
+	it.each([
+		['Enter', '{Enter}'],
+		['Space', ' '],
+	])('opens the modal from the keyboard with %s', async (_, key) => {
+		render(<StatusDisabledBanner onDismiss={jest.fn()} />, { wrapper: mockAppRoot().build() });
+
+		await userEvent.tab();
+		expect(screen.getByRole('button', { name: 'Learn_more' })).toHaveFocus();
+
+		await userEvent.keyboard(key);
+		expect(openModal).toHaveBeenCalledTimes(1);
+	});
+
+	it('opens the modal on click', async () => {
+		render(<StatusDisabledBanner onDismiss={jest.fn()} />, { wrapper: mockAppRoot().build() });
+
+		await userEvent.click(screen.getByRole('button', { name: 'Learn_more' }));
+		expect(openModal).toHaveBeenCalledTimes(1);
+	});
+
 	it('names the dismiss button', async () => {
 		const onDismiss = jest.fn();
 		render(<StatusDisabledBanner onDismiss={onDismiss} />, { wrapper: mockAppRoot().build() });
