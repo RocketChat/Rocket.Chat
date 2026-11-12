@@ -440,3 +440,21 @@ describe('the Incoming calls group', () => {
 		expect(roomListOf(renderWithRingingCall(true).result.current.groups)).toHaveLength(1);
 	});
 });
+
+it('should list only the rooms whose name matches the filter, expanding collapsed groups and leaving out groups without a match', () => {
+	const namedRoom = (t: 'c' | 'd', name: string) =>
+		({
+			...createFakeSubscription({ t, name, fname: name, ...emptyUnread }),
+			...createFakeRoom({ t, name, fname: name }),
+		}) as unknown as SubscriptionWithRoom;
+	const supportChannel = namedRoom('c', 'support');
+	const supportDirect = namedRoom('d', 'Support Bot');
+
+	const { result } = renderHook(() => useRoomList({ collapsedGroups: ['Channels'], filterText: ' SUP ' }), {
+		wrapper: getWrapperSettings({ sidebarGroupByType: true, rooms: [supportChannel, namedRoom('c', 'general'), supportDirect] }).build(),
+	});
+
+	expect(groupsListOf(result.current.groups)).toEqual(['Channels', 'Direct_Messages']);
+	expect(result.current.groups.map((group) => group.collapsed)).toEqual([false, false]);
+	expect(roomListOf(result.current.groups)).toEqual([supportChannel, supportDirect]);
+});

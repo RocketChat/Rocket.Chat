@@ -37,13 +37,18 @@ const sidebarRowHeight: Record<SidebarViewMode, number> = {
 
 const SIDEBAR_VIRTUAL_BUFFER_ROWS = 5;
 
-const RoomList = () => {
+type RoomListProps = {
+	filterText?: string;
+};
+
+const RoomList = ({ filterText = '' }: RoomListProps) => {
 	const { t } = useTranslation();
 	const userId = useUserId();
 	const isAnonymous = !userId;
 
 	const { collapsedGroups, handleClick } = useCollapsedGroups();
-	const { groups } = useRoomList({ collapsedGroups });
+	const { groups } = useRoomList({ collapsedGroups, filterText });
+	const filtering = Boolean(filterText.trim());
 	const moveCategory = useMoveCategoryPosition();
 	const virtualizerRef = useRef<VirtualizerHandle>(null);
 	const { previousUnread, nextUnread, handleRangeChange } = useOffscreenUnreads({ groups });
@@ -83,10 +88,18 @@ const RoomList = () => {
 
 	const preventDefaultRef = usePreventDefault();
 	const shortcutOpenMenuRef = useShortcutOpenMenu();
-	const { ref: dragRef, source: dragSource } = useSidebarListDrag(groups);
+	const { ref: dragRef, source: dragSource } = useSidebarListDrag(groups, { canReorder: !filtering });
 	const ref = useMergedRefsV2(preventDefaultRef, shortcutOpenMenuRef, dragRef);
 
 	const isGroupDragged = (groupKey: string) => dragSource?.kind === 'group' && dragSource.key === groupKey;
+
+	if (filtering && groups.length === 0) {
+		return (
+			<Box paddingInline={16} paddingBlock={8} fontScale='p2' color='hint' role='status'>
+				{t('No_results_found')}
+			</Box>
+		);
+	}
 
 	return (
 		<Box position='relative' overflow='hidden' height='full' ref={ref}>
@@ -104,11 +117,11 @@ const RoomList = () => {
 						data-drag-group={group.key}
 						dragging={isGroupDragged(group.key)}
 						group={group}
-						canMoveUp={canMoveGroup(groups, index, 'up')}
-						canMoveDown={canMoveGroup(groups, index, 'down')}
+						canMoveUp={!filtering && canMoveGroup(groups, index, 'up')}
+						canMoveDown={!filtering && canMoveGroup(groups, index, 'down')}
 						onMoveUp={() => moveCategory(allGroupKeys, group.key, 'up')}
 						onMoveDown={() => moveCategory(allGroupKeys, group.key, 'down')}
-						onClick={() => handleClick(group.key)}
+						onClick={() => !filtering && handleClick(group.key)}
 					/>
 				)}
 				renderItem={(item, _itemIndex, group, _groupIndex, rowIndex) => (
