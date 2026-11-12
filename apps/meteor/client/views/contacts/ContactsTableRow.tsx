@@ -9,6 +9,7 @@ import type { KeyboardEvent } from 'react';
 import ContactFavoriteToggle from './ContactFavoriteToggle';
 import ContactMenu from './ContactMenu';
 import type { ContactsColumns } from './hooks/useContactsColumns';
+import ContactsTableName from './layout/ContactsTableName';
 import ContactsTableTags from './layout/ContactsTableTags';
 import { getAvatarURL } from '../../lib/getAvatarURL';
 
@@ -42,12 +43,11 @@ const ContactsTableRow = ({ contact, columns, onClick, onEdit, onDeleted }: Cont
 			</GenericTableCell>
 			{columns.isVisible('displayName') && (
 				<GenericTableCell truncate>
-					<Stack direction='row' align='center' gap='x8'>
-						<BaseAvatar size='x28' url={getAvatarURL({ contactId: _id, cache: _updatedAt }) ?? ''} />
+					<ContactsTableName avatar={<BaseAvatar size='x28' url={getAvatarURL({ contactId: _id, cache: _updatedAt }) ?? ''} />}>
 						<Text fontScale='p2' truncate>
 							{displayName}
 						</Text>
-					</Stack>
+					</ContactsTableName>
 				</GenericTableCell>
 			)}
 			{columns.isVisible('emails.address') && <GenericTableCell truncate>{emails[0]?.address}</GenericTableCell>}
