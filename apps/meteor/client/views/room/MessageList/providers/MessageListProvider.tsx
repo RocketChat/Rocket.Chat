@@ -42,7 +42,6 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 
 	const federationReadReceipts = useSetting('Federation_Service_EDU_Process_Receipt', false);
 
-	const autoLinkDomains = useSetting('Message_CustomDomain_AutoLink', '');
 	const readReceiptsEnabled = useSetting('Message_Read_Receipt_Enabled', false) && (!isRoomFederated(room) || federationReadReceipts);
 	const readReceiptsStoreUsers = useSetting('Message_Read_Receipt_Store_Users', false);
 	const apiEmbedEnabled = useSetting('API_Embed', false);
@@ -113,7 +112,6 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 				(date: Date): string =>
 					date.toLocaleString(),
 			apiEmbedEnabled,
-			autoLinkDomains,
 			showRoles,
 			userRoles,
 			showRealName,
@@ -156,7 +154,6 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 			chat?.emojiPicker,
 			readReceipts,
 			apiEmbedEnabled,
-			autoLinkDomains,
 			formatDateAndTime,
 			formatTime,
 			formatDate,
