@@ -8,6 +8,7 @@ import ContactsTab from './ContactsTab';
 jest.mock('../../lib/getURL', () => ({ getURL: (path: string) => path }));
 
 jest.mock('@rocket.chat/ui-voip', () => ({
+	normalizePhoneNumber: jest.requireActual('@rocket.chat/ui-voip').normalizePhoneNumber,
 	usePeekMediaSessionState: () => 'available',
 	useWidgetExternalControls: () => ({ toggleWidget: jest.fn() }),
 }));

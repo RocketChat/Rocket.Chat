@@ -6,6 +6,7 @@ const usePeekMediaSessionStateMock = jest.fn();
 const toggleWidgetMock = jest.fn();
 
 jest.mock('@rocket.chat/ui-voip', () => ({
+	normalizePhoneNumber: jest.requireActual('@rocket.chat/ui-voip').normalizePhoneNumber,
 	usePeekMediaSessionState: () => usePeekMediaSessionStateMock(),
 	useWidgetExternalControls: () => ({ toggleWidget: (...args: unknown[]) => toggleWidgetMock(...args) }),
 }));
@@ -39,12 +40,39 @@ describe('useContactCall', () => {
 		expect(result.current).toMatchObject({ canCall: false, isCallInProgress: false });
 	});
 
-	it('opens the call widget dialing the given number', () => {
+	it('opens the call widget dialing the E.164 form of the phone', () => {
 		usePeekMediaSessionStateMock.mockReturnValue('available');
 
 		const { result } = renderHook(() => useContactCall());
-		result.current.call('+49 30 1234567');
+		result.current.call({ raw: '+49 (30) 1234567', e164: '+49301234567' });
 
-		expect(toggleWidgetMock).toHaveBeenCalledWith({ number: '+49 30 1234567' });
+		expect(toggleWidgetMock).toHaveBeenCalledWith({ number: '+49301234567' });
+	});
+
+	it('opens the call widget dialing the raw number without its formatting when there is no E.164 form', () => {
+		usePeekMediaSessionStateMock.mockReturnValue('available');
+
+		const { result } = renderHook(() => useContactCall());
+		result.current.call({ raw: '+49 30 1234567' });
+
+		expect(toggleWidgetMock).toHaveBeenCalledWith({ number: '+49301234567' });
+	});
+
+	it('does not open the call widget for a phone that has no dialable number', () => {
+		usePeekMediaSessionStateMock.mockReturnValue('available');
+
+		const { result } = renderHook(() => useContactCall());
+		result.current.call({ raw: 'n/a' });
+
+		expect(toggleWidgetMock).not.toHaveBeenCalled();
+	});
+
+	it('tells whether a phone can be dialed', () => {
+		usePeekMediaSessionStateMock.mockReturnValue('available');
+
+		const { result } = renderHook(() => useContactCall());
+
+		expect(result.current.isDialable({ raw: '+49 30 1234567' })).toBe(true);
+		expect(result.current.isDialable({ raw: 'n/a' })).toBe(false);
 	});
 });

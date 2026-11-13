@@ -32,7 +32,7 @@ export type ContactInfoProps = {
 const ContactInfo = ({ contact, onEdit, onClose }: ContactInfoProps) => {
 	const { t } = useTranslation();
 	const labelOf = useContactLabel();
-	const { canCall, isCallInProgress, call } = useContactCall();
+	const { canCall, isCallInProgress, isDialable, call } = useContactCall();
 	const { _id, source, displayName, emails, phones, categories, companyName, officeLocation, _updatedAt } = contact;
 
 	// A labelled address says something an unlabelled one does not, so it gets its own field to say it in.
@@ -87,7 +87,7 @@ const ContactInfo = ({ contact, onEdit, onClose }: ContactInfoProps) => {
 
 						{!!phones.length && <Divider />}
 
-						{phones.map(({ raw, label }, index) => {
+						{phones.map(({ raw, e164, label }, index) => {
 							const resolved = labelOf(label);
 
 							return (
@@ -97,7 +97,7 @@ const ContactInfo = ({ contact, onEdit, onClose }: ContactInfoProps) => {
 										text={raw}
 										actionIcon='phone'
 										actionLabel={isCallInProgress ? t('Call_in_progress') : t('Call')}
-										onAction={canCall ? () => call(raw) : undefined}
+										onAction={canCall && isDialable({ raw, e164 }) ? () => call({ raw, e164 }) : undefined}
 									/>
 								</InfoPanelField>
 							);
