@@ -56,4 +56,22 @@ describe('useContactCall', () => {
 
 		expect(toggleWidgetMock).toHaveBeenCalledWith({ number: '+49301234567' });
 	});
+
+	it('does not open the call widget for a phone that has no dialable number', () => {
+		usePeekMediaSessionStateMock.mockReturnValue('available');
+
+		const { result } = renderHook(() => useContactCall());
+		result.current.call({ raw: 'n/a' });
+
+		expect(toggleWidgetMock).not.toHaveBeenCalled();
+	});
+
+	it('tells whether a phone can be dialed', () => {
+		usePeekMediaSessionStateMock.mockReturnValue('available');
+
+		const { result } = renderHook(() => useContactCall());
+
+		expect(result.current.isDialable({ raw: '+49 30 1234567' })).toBe(true);
+		expect(result.current.isDialable({ raw: '040 123456 ext. 12' })).toBe(false);
+	});
 });
