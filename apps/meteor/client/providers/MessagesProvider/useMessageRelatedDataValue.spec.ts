@@ -14,7 +14,7 @@ const closeOpenedRoom = () => {
 };
 
 const renderCollapsed = (key: string, initiallyCollapsed: boolean) =>
-	renderHook(() => useMessageRelatedDataValue().useCollapsedState(key, initiallyCollapsed), { wrapper: mockAppRoot().build() });
+	renderHook(() => useMessageRelatedDataValue({}).useCollapsedState(key, initiallyCollapsed), { wrapper: mockAppRoot().build() });
 
 afterEach(closeOpenedRoom);
 

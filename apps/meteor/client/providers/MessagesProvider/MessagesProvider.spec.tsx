@@ -27,7 +27,7 @@ import { messageSelectionFromStore } from './messageSelectionFromStore';
 import { createFakeMessage, createFakeRoom, createFakeSubscription } from '../../../tests/mocks/data';
 import { actionLinks } from '../../lib/actionLinks';
 import type { ChatAPI } from '../../lib/chats/ChatAPI';
-import { Messages, Roles, Subscriptions } from '../../stores';
+import { Messages, Roles, Rooms, Subscriptions } from '../../stores';
 import { clearHighlightMessage, setHighlightMessage } from '../../views/room/MessageList/providers/messageHighlightSubscription';
 import { ChatContext } from '../../views/room/contexts/ChatContext';
 import { SelectedMessageStore } from '../../views/room/providers/SelectedMessageStore';
@@ -1276,5 +1276,50 @@ describe('the message with the editing look (message-variants R47)', () => {
 		act(() => setHighlightMessage('message-id'));
 
 		expect(result.current).toBe(false);
+	});
+});
+
+describe('the conversation of a message (message-variants R49)', () => {
+	afterEach(() => {
+		Rooms.state.replaceAll([]);
+		Subscriptions.state.replaceAll([]);
+	});
+
+	const message = createFakeMessage({ rid: 'room-a' });
+
+	const renderConversation = (provider: { room?: ReturnType<typeof createFakeRoom>; subscription?: ISubscription }, enabled = true) =>
+		renderHook(() => useMessageRelatedData().useConversation(message, { enabled }), {
+			wrapper: appRoot()
+				.wrap((children: ReactNode) => <MessagesProvider {...provider}>{children}</MessagesProvider>)
+				.build(),
+		});
+
+	it("answers the place's room and subscription for a message of the place's room, with no request (message-variants R49)", () => {
+		const room = createFakeRoom({ _id: 'room-a' });
+		const subscription = createFakeSubscription({ rid: 'room-a' });
+		Subscriptions.state.store(createFakeSubscription({ rid: 'room-a', name: 'stored' }));
+
+		const { result } = renderConversation({ room, subscription });
+
+		expect(result.current).toEqual({ data: { room, subscription }, isLoading: false, isError: false });
+	});
+
+	it("answers the stores' room and subscription for a message of another room (message-variants R49)", () => {
+		const room = createFakeRoom({ _id: 'room-a' });
+		const subscription = createFakeSubscription({ rid: 'room-a' });
+		Rooms.state.store(room);
+		Subscriptions.state.store(subscription);
+
+		const { result } = renderConversation({});
+
+		expect(result.current.data).toEqual({ room, subscription });
+	});
+
+	it('answers nothing while it is not asked for (message-variants R49)', () => {
+		Rooms.state.store(createFakeRoom({ _id: 'room-a' }));
+
+		const { result } = renderConversation({}, false);
+
+		expect(result.current.data).toBeUndefined();
 	});
 });

@@ -241,7 +241,7 @@ composer's quote draw message parts, not rows (`message-capabilities` R32 to R40
 - **R48** `MessagesProvider` MUST provide the selection context only when it is given a selection. The room's list, the tabs and search MUST give the room's
   selection (`messageSelectionFromStore` over the room's selected messages store, with the same identity across renders); a thread
   and the audit MUST give none.
-- **R49** `MessagesProvider` MUST answer the data the variants read about other things: the conversation of a message (its room and subscription, from the open chat or else the stores,
+- **R49** `MessagesProvider` MUST answer the data the variants read about other things: the conversation of a message (its room and subscription, from the place's own when the message is of its room, else the stores, with no request,
   R38), the labels of an author's roles in a room (R13), and the message a thread started with (from the store, else
   fetched with the others asked for in the same half second), each with `data`, `isLoading` and `isError`. The roles of a place's own room MUST be resolved once for the
   place, in `MessagesProvider`, not once per header (#43471; Q1, answered).

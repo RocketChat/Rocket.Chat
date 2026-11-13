@@ -89,6 +89,10 @@ Each step is one commit and builds and passes on its own. Steps 1 to 4 are fixes
    the roles of its room once and `useUserRoles` answers from it, falling back to the author's roles in the message's own
    room for another room's message; a failed request leaves no roles and no error. Nothing reads it yet. Spec in
    `MessagesProvider.spec.tsx`.
+   6a. Enabling, the conversation of a message without a query (R49, R38): `useConversation` answers from the place's room and
+   subscription, else from the stores, synchronously. The reference (and branch 03) fetched it with one query per message,
+   which the base removed in #43471 (`useMessageBroadcast` read the room context or the store); the broadcast reply of every
+   row would have brought it back. Spec in `MessagesProvider.spec.tsx`; the toolbar spec's message takes the room's id.
 7. Enabling, editing context (R47, Q4): `MessagesProvider` provides `MessageEditingContext` from the highlight store
    (`useSyncExternalStore`), and none where interaction is off. Nothing reads it yet. Spec in `MessagesProvider.spec.tsx`.
    The defect "jump replaces the editing look" is recorded (`D1`) with a skipped test here.

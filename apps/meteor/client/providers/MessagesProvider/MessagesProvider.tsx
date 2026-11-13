@@ -13,6 +13,7 @@ import {
 	MessageToolbarContext,
 } from '@rocket.chat/ui-message-list';
 import type { ReactNode } from 'react';
+import { useMemo } from 'react';
 
 import MessageMarkup from './renderers/MessageMarkup';
 import MessagePreviewMarkup from './renderers/MessagePreviewMarkup';
@@ -65,7 +66,8 @@ const MessagesProvider = ({
 	const navigation = useMessageNavigationValue();
 	const interactions = useMessageInteractionsValue(chat, subscription);
 	const placeUserRoles = useRolesByUser(room?._id ?? '', !!room && display.showRoles);
-	const relatedData = useMessageRelatedDataValue(placeUserRoles);
+	const place = useMemo(() => ({ room, subscription }), [room, subscription]);
+	const relatedData = useMessageRelatedDataValue(place, placeUserRoles);
 	const content = useMessageContentValue(display, subscription);
 	const media = useMessageMediaValue();
 	const toolbar = useMessageToolbarValue(display, chat);
