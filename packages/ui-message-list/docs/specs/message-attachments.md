@@ -32,15 +32,21 @@ desktop viewer and signed URLs.
   thumbnail, actions), and MUST render nothing for none.
 - **R2** An image attachment MUST show its image at once when the viewer's attachment
   preferences load embedded media automatically, and otherwise MUST show a control that names
-  loading the image and loads it when activated.
+  loading the image and loads it when activated. The image MUST be what the app's image gallery
+  opens from: it carries the class `gallery-item`, the id of the file as `data-id` and the URL of
+  the full image as `data-src`.
 - **R3** An attachment with a collapsible body MUST start collapsed or expanded as the attachment
   or the viewer's preference asks, MUST toggle from its button, and, when the message is known, MUST
   keep that state across mounts (scrolling it out of view and back), with a quote's nested
   attachments keyed apart from the quote's own.
 - **R4** A file attachment's description MUST be shown as markdown when it carries parsed
-  markdown, and as the source text otherwise.
+  markdown, and as the source text otherwise. The markdown renderer MUST be given the parsed
+  markdown alone, never the source text of a description or a quote: a block it does not know shows
+  nothing, and an auto-translated description or quote is drawn from its translation, not cut from
+  the original text.
 - **R5** A generic file MUST show its title as a link, its size formatted by the media
-  context's `formatFileSize`, and its extension as the icon.
+  context's `formatFileSize`, and its extension as the icon. An image, a video and an audio file
+  MUST show their size, formatted the same way, in parentheses beside their title.
 - **R6** A quoted message MUST show the author's name (as a link when it has one), the avatar
   only when the viewer displays avatars, the time, a link to the message, its nested
   attachments and its text.
@@ -94,8 +100,9 @@ desktop viewer and signed URLs.
   again MUST replace its blob. Only the blobs of the five most recently opened files MUST be kept;
   opening a sixth releases the one opened longest ago.
 - **R19** `formatFileSize` MUST format as the app does elsewhere (`kB`, `MB`).
-- **R20** A change of the shared player (playing, position) MUST reach every attachment under the
-  provider.
+- **R20** A change of the shared player (playing, position) MUST reach every audio attachment
+  under the provider, and MUST NOT render any other attachment again: the media context's value
+  does not change with the player's progress.
 
 **Places**
 
@@ -134,8 +141,9 @@ None; not implemented.
 - **Q2** Whether a second download of the same encrypted file is a change to announce. Assumed: yes
   (R24).
 - **Q3** Whether the quoted message keeps the app's current hover styling. Assumed: yes.
-- **Q4** Whether every audio tick re-rendering the attachments that read the media context is
-  acceptable (R20). Assumed: yes; they are small.
+- ~~**Q4** Whether every audio tick re-rendering the attachments that read the media context is
+  acceptable (R20). Assumed: yes; they are small.~~ Answered: no. R20 requires that only the audio
+  attachments render again with the player's progress.
 
 ## References
 

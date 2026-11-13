@@ -16,6 +16,23 @@ Regressions in the reference that the plan does not copy:
 - It registers the service worker download once per click; the base once per mounted button. The
   per-click behaviour is the right one, so it lands first as a fix (R24) on the base's hook.
 
+Departures:
+
+- The attachment tests that the plan placed in `AudioAttachment.spec.tsx` and
+  `AttachmentDownload.spec.tsx` are in `Attachments.spec.tsx`, which renders them through the real
+  parts as the reference does.
+- The context's `player` is a store the audio attachment subscribes to (`useMessageMediaPlayer`,
+  `createMediaPlayerStore`), not the player's value, so that its progress renders audio attachments only.
+  The reference rendered every reader of the media context on every tick.
+- `DocumentViewer.open` takes an optional title, so the desktop viewer still receives the title of an
+  encrypted PDF, which the reference dropped.
+- Descriptions and quotes are not given their source text to draw: the reference passed it, which
+  shows raw source for blocks the renderer does not know and cuts translated text from the original. The
+  package's stand-in markdown shows the text of the parsed markdown when it has no source.
+- `Field` takes the reference's version, which does not hand `short` to the DOM element.
+- `toPlainTextRoot` and `userAgentMIMETypeFallback` exist in the package and in the app: the app's
+  other callers keep theirs.
+
 ## Files that change
 
 Package `packages/ui-message-list`:
@@ -23,8 +40,7 @@ Package `packages/ui-message-list`:
 - `package.json`, `yarn.lock`: `@rocket.chat/css-in-js`, added in the commit whose code imports it.
 - `src/Message/content/Attachments.tsx`, `Attachments.stories.tsx`, `Attachments.spec.tsx`: new.
 - `src/Message/content/attachments/**`: new, except the five download and size files that exist;
-  `file/GenericFileAttachment.spec.tsx`, `file/AudioAttachment.spec.tsx`,
-  `file/hooks/useReloadOnError.spec.ts`, `structure/AttachmentDownload.spec.tsx`,
+  `file/GenericFileAttachment.spec.tsx`, `file/hooks/useReloadOnError.spec.ts`,
   `structure/AttachmentRow.stories.tsx` and its spec arrive with them.
 - `src/Message/lib/{getFileExtension,userAgentMIMETypeFallback,toPlainTextRoot}.ts` (+ spec): new.
 - `src/Message/index.ts`, `src/index.spec.ts`: exports (R12).
@@ -75,39 +91,38 @@ Each step is one commit and builds and passes on its own.
 
 ## Risks
 
-- Every tick of the shared player changes the media value, which re-renders the attachments that read
-  it (R20); they are small. If it shows in a profile, the player moves to its own context.
-- A blob of an opened encrypted PDF now lives until the provider unmounts, not until its message does.
+- The player's progress changes the store the audio attachments subscribe to, not the media context's value. If the app's store lags the shared player by a frame, the control shows it a frame late.
+- A blob of an opened encrypted PDF lives until five other files were opened after it or the provider unmounts, not until its message unmounts.
 - Places that mount no `MessagesProvider` would show the default media (no player, no downloads): R22
   and R23 list them, and the previous branch mounted the provider at each.
 - Look and behaviour of attachments in a room cannot be proven in jsdom: manual check.
 
 ## Proof
 
-| Requirement | Proven by                                                                                                                                                                                     |
-| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| R1          | `src/Message/content/Attachments.spec.tsx`, "renders each kind of attachment (R1)"                                                                                                            |
-| R2          | `src/Message/content/Attachments.spec.tsx`, "loads an image at once or on demand by preference (R2)"                                                                                          |
-| R3          | `src/Message/content/Attachments.spec.tsx`, "collapses, expands and remembers the state (R3)"                                                                                                 |
-| R4          | `src/Message/content/Attachments.spec.tsx`, "shows a description as markdown or as text (R4)"                                                                                                 |
-| R5          | `src/Message/content/attachments/file/GenericFileAttachment.spec.tsx`, "shows the title, size and extension (R5)"                                                                             |
-| R6          | `src/Message/content/Attachments.spec.tsx`, "renders a quoted message with its author and nested attachments (R6)"                                                                            |
-| R7          | `src/Message/content/Attachments.spec.tsx`, the action button tests (R7)                                                                                                                      |
-| R8          | `src/Message/content/attachments/file/AudioAttachment.spec.tsx`, the player tests (R8)                                                                                                        |
-| R9          | `src/Message/content/attachments/file/hooks/useReloadOnError.spec.ts`, every test (R9)                                                                                                        |
-| R10         | `GenericFileAttachment.spec.tsx`, "downloads an encrypted file through the media context (R10)"; `structure/AttachmentDownload.spec.tsx`, the encrypted download tests (R10)                  |
-| R11         | `GenericFileAttachment.spec.tsx`, the viewer tests (R11), and the "without the desktop viewer" tests                                                                                          |
-| R12         | `src/index.spec.ts`, "exports the attachments (R12)"                                                                                                                                          |
-| R13         | the `stories` axe tests of the attachments specs (R13)                                                                                                                                        |
-| R14         | `apps/meteor/client/providers/MessagesProvider/MessagesProvider.spec.tsx`, "media: the shared player (R14)"                                                                                   |
-| R15         | same file, "media: downloads an encrypted file through the service worker every time (R15)"                                                                                                   |
-| R16         | same file, "media: allows encrypted downloads only under a service worker (R16)"                                                                                                              |
-| R17         | same file, "media: the desktop viewer (R17)"                                                                                                                                                  |
-| R18         | `apps/meteor/client/providers/MessagesProvider/useOpenEncryptedPdf.spec.ts`, the "(message-attachments R18)" tests: own id per download, per-file blobs, the bound of five, finished requests |
-| R19         | `apps/meteor/client/providers/MessagesProvider/MessagesProvider.spec.tsx`, "media: formats file sizes like the app (R19)"                                                                     |
-| R20         | `apps/meteor/client/providers/MessagesProvider/MessagesProvider.spec.tsx`, "media: the player's changes reach the attachments (R20)"                                                          |
-| R21         | `apps/meteor/client/components/message/variants/RoomMessage.contexts.spec.tsx`, "shows attachments with the package parts (R21)"                                                              |
-| R22         | `AuditMessageList.display.spec.tsx`, `PinMessageModal.display.spec.tsx`, `MessageBoxReply.spec.tsx`, each "(R22)"                                                                             |
-| R23         | `apps/meteor/client/views/room/ShareLocation/ShareLocationModal.spec.tsx`, "previews the location with the map (R23)"                                                                         |
-| R24         | `apps/meteor/client/hooks/useDownloadFromServiceWorker.spec.tsx`, "downloads again on a second activation (message-attachments R24)"                                                          |
-| R25         | `apps/meteor/client/providers/MediaPlayerProvider/MediaPlayerProvider.spec.tsx`, "recovers an expired URL on the shared element (R25)"                                                        |
+| Requirement | Proven by                                                                                                                                                                                                                                                                                                                       |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| R1          | `src/Message/content/Attachments.spec.tsx`, "should render each kind of attachment and nothing for none (R1)"                                                                                                                                                                                                                   |
+| R2          | `src/Message/content/Attachments.spec.tsx`, "should show an image at once or on demand by the viewer preference (R2)" and "should show an image as what the image gallery opens from (R2)"                                                                                                                                      |
+| R3          | `src/Message/content/Attachments.spec.tsx`, the collapse tests (R3), "should start collapsed when the viewer collapses media by default (R3)" and "should key the collapse state of a quote's nested attachments apart from the quote's own (R3)"                                                                               |
+| R4          | `src/Message/content/Attachments.spec.tsx`, "should show a description as markdown when it has parsed markdown and as text otherwise (R4)", and the two tests of "the markdown of quotes and descriptions" (R4)                                                                                                                 |
+| R5          | `src/Message/content/attachments/file/GenericFileAttachment.spec.tsx`, "should show the title, the size formatted by the media context and the extension (R5)"; `src/Message/content/Attachments.spec.tsx`, "should show the size of an image, a video and an audio file beside its title as the media context formats it (R5)" |
+| R6          | `src/Message/content/Attachments.spec.tsx`, "should show a quote with its author link, avatar by preference, time, message link, nested attachments and text (R6)"                                                                                                                                                              |
+| R7          | `src/Message/content/Attachments.spec.tsx`, the action button tests (R7)                                                                                                                                                                                                                                                        |
+| R8          | `src/Message/content/Attachments.spec.tsx`, "should play the track in the shared player (R8)"                                                                                                                                                                                                                                   |
+| R9          | `src/Message/content/attachments/file/hooks/useReloadOnError.spec.ts`, every test (R9); `src/Message/content/Attachments.spec.tsx`, "should recover the url of a video whose signed url expired (R9)"                                                                                                                           |
+| R10         | `Attachments.spec.tsx`, the two encrypted download tests (R10); `GenericFileAttachment.spec.tsx`, the encrypted file tests (R10)                                                                                                                                                                                                |
+| R11         | `GenericFileAttachment.spec.tsx`, the viewer tests (R11), and the "without the desktop viewer" tests                                                                                                                                                                                                                            |
+| R12         | `src/index.spec.ts`, "exports the attachments (message-attachments R12)"                                                                                                                                                                                                                                                        |
+| R13         | the `stories` axe tests of the attachments specs (R13)                                                                                                                                                                                                                                                                          |
+| R14         | `apps/meteor/client/providers/MessagesProvider/MessagesProvider.spec.tsx`, "media: the shared player (R14)"                                                                                                                                                                                                                     |
+| R15         | same file, "media: downloads an encrypted file through the service worker every time (R15)"                                                                                                                                                                                                                                     |
+| R16         | same file, "media: allows encrypted downloads only under a service worker (R16)"                                                                                                                                                                                                                                                |
+| R17         | same file, "media: the desktop viewer (R17)"                                                                                                                                                                                                                                                                                    |
+| R18         | `apps/meteor/client/providers/MessagesProvider/useOpenEncryptedPdf.spec.ts`, the "(message-attachments R18)" tests: own id per download, per-file blobs, the bound of five, finished requests                                                                                                                                   |
+| R19         | `apps/meteor/client/providers/MessagesProvider/MessagesProvider.spec.tsx`, "media: formats file sizes like the app (R19)"                                                                                                                                                                                                       |
+| R20         | `src/Message/content/Attachments.spec.tsx`, "should reach the audio attachment when the player changes and no other attachment (R20)"                                                                                                                                                                                           |
+| R21         | `apps/meteor/client/components/message/variants/RoomMessage.contexts.spec.tsx`, "shows attachments with the package parts (R21)"                                                                                                                                                                                                |
+| R22         | `AuditMessageList.display.spec.tsx`, `PinMessageModal.display.spec.tsx`, `MessageBoxReply.spec.tsx`, each "(R22)"                                                                                                                                                                                                               |
+| R23         | `apps/meteor/client/views/room/ShareLocation/ShareLocationModal.spec.tsx`, "previews the location with the map (R23)"                                                                                                                                                                                                           |
+| R24         | `apps/meteor/client/hooks/useDownloadFromServiceWorker.spec.tsx`, "downloads again on a second activation (message-attachments R24)"                                                                                                                                                                                            |
+| R25         | `apps/meteor/client/providers/MediaPlayerProvider/MediaPlayerProvider.spec.tsx`, "recovers an expired URL on the shared element (R25)"                                                                                                                                                                                          |

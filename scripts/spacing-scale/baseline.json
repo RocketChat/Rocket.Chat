@@ -549,6 +549,8 @@
 	"packages/ui-conference/src/views/ConferencePreflight.tsx": 11,
 	"packages/ui-conference/src/views/OngoingCallsDropdown.stories.tsx": 1,
 	"packages/ui-conference/src/views/OngoingCallsDropdown.tsx": 1,
+	"packages/ui-message-list/src/Message/content/attachments/DefaultAttachment.tsx": 1,
+	"packages/ui-message-list/src/Message/content/attachments/structure/AttachmentRow.tsx": 1,
 	"packages/ui-registration/src/CMSPage.tsx": 1,
 	"packages/ui-registration/src/components/LoginSwitchLanguageFooter.tsx": 1,
 	"packages/ui-registration/src/LoginServices.tsx": 1,
