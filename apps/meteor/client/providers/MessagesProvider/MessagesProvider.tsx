@@ -9,6 +9,7 @@ import {
 	MessageRelatedDataContext,
 	MessageRenderersContext,
 	MessageSelectionContext,
+	MessageToolbarContext,
 } from '@rocket.chat/ui-message-list';
 import type { ReactNode } from 'react';
 
@@ -21,6 +22,7 @@ import { useMessageInteractionsValue } from './useMessageInteractionsValue';
 import { useMessageMediaValue } from './useMessageMediaValue';
 import { useMessageNavigationValue } from './useMessageNavigationValue';
 import { useMessageRelatedDataValue } from './useMessageRelatedDataValue';
+import { useMessageToolbarValue } from './useMessageToolbarValue';
 import Emoji from '../../components/Emoji';
 import { useChat } from '../../views/room/contexts/ChatContext';
 import AttachmentProvider from '../AttachmentProvider';
@@ -62,6 +64,7 @@ const MessagesProvider = ({
 	const relatedData = useMessageRelatedDataValue(chat);
 	const content = useMessageContentValue(display, subscription);
 	const media = useMessageMediaValue();
+	const toolbar = useMessageToolbarValue(display, chat);
 
 	return (
 		<AttachmentProvider width={attachmentDimension?.width} height={attachmentDimension?.height}>
@@ -72,7 +75,9 @@ const MessagesProvider = ({
 							<MessageRelatedDataContext.Provider value={relatedData}>
 								<MessageContentContext.Provider value={content}>
 									<MessageMediaContext.Provider value={media}>
-										<MessageSelectionContext.Provider value={selection}>{children}</MessageSelectionContext.Provider>
+										<MessageToolbarContext.Provider value={toolbar}>
+											<MessageSelectionContext.Provider value={selection}>{children}</MessageSelectionContext.Provider>
+										</MessageToolbarContext.Provider>
 									</MessageMediaContext.Provider>
 								</MessageContentContext.Provider>
 							</MessageRelatedDataContext.Provider>

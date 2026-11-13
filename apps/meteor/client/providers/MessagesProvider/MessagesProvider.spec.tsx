@@ -26,6 +26,7 @@ import { messageSelectionFromStore } from './messageSelectionFromStore';
 import { createFakeMessage, createFakeRoom, createFakeSubscription } from '../../../tests/mocks/data';
 import { actionLinks } from '../../lib/actionLinks';
 import type { ChatAPI } from '../../lib/chats/ChatAPI';
+import { Messages, Subscriptions } from '../../stores';
 import { ChatContext } from '../../views/room/contexts/ChatContext';
 import { SelectedMessageStore } from '../../views/room/providers/SelectedMessageStore';
 import type { MediaPlayerContextValue } from '../MediaPlayerProvider';
@@ -273,6 +274,117 @@ describe('interactions of the app', () => {
 		await result.current.openForward(message);
 
 		await waitFor(() => expect(setModal).toHaveBeenCalledTimes(5));
+	});
+});
+
+describe('the reaction picker', () => {
+	const event = { nativeEvent: { stopImmediatePropagation: jest.fn() }, currentTarget: document.body } as never;
+
+	const interactionsOf = (chat: Partial<ChatAPI> | undefined, root = appRoot()) =>
+		renderHook(() => useMessageInteractions(), {
+			wrapper: root
+				.wrap((children: ReactNode) => (
+					<ChatContext.Provider value={chat as ChatAPI | undefined}>
+						<MessagesProvider>{children}</MessagesProvider>
+					</ChatContext.Provider>
+				))
+				.build(),
+		}).result.current;
+
+	it('opens in the open chat, tells when it closes and reacts with the emoji picked (message-toolbar R23)', async () => {
+		const react = jest.fn().mockResolvedValue({ success: true });
+		const open = jest.fn();
+		const onClose = jest.fn();
+		const { openReactionPicker } = interactionsOf(
+			{ emojiPicker: { open } } as unknown as ChatAPI,
+			appRoot().withEndpoint('POST', '/v1/chat.react', react),
+		);
+
+		openReactionPicker(event, createFakeMessage({ _id: 'mid' }), { onClose });
+
+		expect(open).toHaveBeenCalledWith(document.body, expect.any(Function), onClose);
+		expect(onClose).not.toHaveBeenCalled();
+
+		open.mock.calls[0][1]('tada');
+
+		await waitFor(() => expect(react).toHaveBeenCalledWith({ messageId: 'mid', reaction: ':tada:' }));
+	});
+
+	it('tells it closed when it could not open, for a viewer who is not logged in and without a chat (message-toolbar R23)', () => {
+		const open = jest.fn();
+		const noUser = interactionsOf({ emojiPicker: { open } } as unknown as ChatAPI, mockAppRoot());
+		const noChat = interactionsOf(undefined);
+		const onClose = jest.fn();
+
+		noUser.openReactionPicker(event, createFakeMessage(), { onClose });
+		noChat.openReactionPicker(event, createFakeMessage(), { onClose });
+
+		expect(onClose).toHaveBeenCalledTimes(2);
+		expect(open).not.toHaveBeenCalled();
+	});
+});
+
+describe('interactions of the toolbar menu', () => {
+	const interactionsOf = (root: ReturnType<typeof appRoot>) =>
+		renderHook(() => useMessageInteractions(), {
+			wrapper: root.wrap((children: ReactNode) => <MessagesProvider>{children}</MessagesProvider>).build(),
+		}).result.current;
+
+	beforeEach(() => {
+		Messages.state.store(createFakeMessage({ _id: 'mid', rid: 'rid' }));
+	});
+
+	afterEach(() => {
+		Messages.state.replaceAll([]);
+	});
+
+	it('pins, unpins, stars and unstars through the REST API (R28)', async () => {
+		const calls = { pin: jest.fn(), unpin: jest.fn(), star: jest.fn(), unstar: jest.fn() };
+		const interactions = interactionsOf(
+			appRoot()
+				.withEndpoint('POST', '/v1/chat.pinMessage', calls.pin.mockResolvedValue({ success: true }))
+				.withEndpoint('POST', '/v1/chat.unPinMessage', calls.unpin.mockResolvedValue({ success: true }))
+				.withEndpoint('POST', '/v1/chat.starMessage', calls.star.mockResolvedValue({ success: true }))
+				.withEndpoint('POST', '/v1/chat.unStarMessage', calls.unstar.mockResolvedValue({ success: true })),
+		);
+		const message = createFakeMessage({ _id: 'mid', rid: 'rid' });
+
+		interactions.pin(message);
+		interactions.unpin(message);
+		interactions.star(message);
+		interactions.unstar(message);
+
+		await waitFor(() => {
+			for (const call of Object.values(calls)) {
+				expect(call).toHaveBeenCalledWith({ messageId: 'mid' });
+			}
+		});
+	});
+
+	it('marks a message unread for the subscription of its room (R28)', async () => {
+		const unread = jest.fn().mockResolvedValue({ success: true });
+		Subscriptions.state.store(createFakeSubscription({ rid: 'rid' }));
+		const interactions = interactionsOf(appRoot().withEndpoint('POST', '/v1/subscriptions.unread', unread));
+
+		interactions.markUnread(createFakeMessage({ _id: 'mid', rid: 'rid' }));
+
+		await waitFor(() => expect(unread).toHaveBeenCalledWith({ firstUnreadMessage: { _id: 'mid' } }));
+		Subscriptions.state.replaceAll([]);
+	});
+
+	it('translates a message and goes back to its original (R28)', async () => {
+		const translate = jest.fn().mockResolvedValue({ success: true });
+		const interactions = interactionsOf(appRoot().withEndpoint('POST', '/v1/autotranslate.translateMessage', translate));
+		const message = createFakeMessage({ _id: 'mid', rid: 'rid' });
+
+		interactions.translate(message);
+
+		await waitFor(() => expect(translate).toHaveBeenCalledWith({ messageId: 'mid', targetLanguage: 'pt' }));
+		expect(Messages.state.get('mid')).toMatchObject({ autoTranslateFetching: true, autoTranslateShowInverse: true });
+
+		interactions.showOriginal(message);
+
+		expect(Messages.state.get('mid')).not.toHaveProperty('autoTranslateShowInverse');
 	});
 });
 

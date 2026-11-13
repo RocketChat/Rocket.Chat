@@ -9,6 +9,11 @@ code:
     src/Message/contexts/MessageNavigationContext.ts,
     src/Message/index.ts,
     apps/meteor/client/providers/MessagesProvider/useMessageNavigationValue.ts,
+    apps/meteor/client/providers/MessagesProvider/useMessageToolbarValue.ts,
+    apps/meteor/client/providers/MessagesProvider/useMessageInteractionsValue.tsx,
+    apps/meteor/client/providers/MessagesProvider/MessagesProvider.tsx,
+    apps/meteor/client/providers/EmojiPickerProvider/EmojiPickerProvider.tsx,
+    packages/ui-emoji-picker/src/contexts/EmojiPickerContext.ts,
   ]
 tests:
   [
@@ -18,6 +23,8 @@ tests:
     src/Message/toolbar/items/actions/ForwardMessageAction.spec.tsx,
     src/index.spec.ts,
     apps/meteor/client/providers/MessagesProvider/MessagesProvider.spec.tsx,
+    apps/meteor/client/providers/MessagesProvider/useMessageToolbarValue.spec.tsx,
+    apps/meteor/client/providers/EmojiPickerProvider/EmojiPickerProvider.spec.tsx,
   ]
 ---
 
