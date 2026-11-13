@@ -78,46 +78,51 @@ Each step is one commit and builds and passes on its own. Steps 1 to 4 are fixes
    reactions. Specs in the content's spec. Changeset.
 3. Fix, no broadcast reply where interaction is off (R38): `allowsInteraction &&` in both contents. Specs. Changeset.
 4. Fix, the edited indicator in the viewer's date-and-time format (R15, intent Q2): `StatusIndicators` reads
-   `useMessageDisplay().formatDateAndTime`; the old context's `useMessageDateFormatter` is left for step 18. Spec.
+   `useMessageDisplay().formatDateAndTime`; the old context's `useMessageDateFormatter` is left for step 16. Spec.
    Changeset.
-5. Enabling, roles once per place (R49, R52): `useRolesByUser` moves under `MessagesProvider`; `MessagesProvider` resolves
+5. Enabling, package: the related-data context gets `usePlaceUserRoles(uid, rid)`, the labels a place already resolved for its
+   whole list, or `undefined` (default), so the header can take the place's resolution or look the roles up itself as two
+   components, as `develop`'s `MessageHeaderRoles` and `MessageHeaderRolesByScope` do; a conditional hook is not allowed
+   (R49). Departure found in implementation: `useUserRoles` alone cannot do both without calling a hook conditionally.
+   Spec: `contexts.spec.tsx`.
+6. Enabling, roles once per place (R49, R52): `useRolesByUser` moves under `MessagesProvider`; `MessagesProvider` resolves
    the roles of its room once and `useUserRoles` answers from it, falling back to the author's roles in the message's own
    room for another room's message; a failed request leaves no roles and no error. Nothing reads it yet. Spec in
    `MessagesProvider.spec.tsx`.
-6. Enabling, editing context (R47, Q4): `MessagesProvider` provides `MessageEditingContext` from the highlight store
+7. Enabling, editing context (R47, Q4): `MessagesProvider` provides `MessageEditingContext` from the highlight store
    (`useSyncExternalStore`), and none where interaction is off. Nothing reads it yet. Spec in `MessagesProvider.spec.tsx`.
    The defect "jump replaces the editing look" is recorded (`D1`) with a skipped test here.
-7. Package, parts (R9 to R16, R19 to R21, R23, R51 in part): `MessageHeader`, `MessageAuthorAvatar`, `MessageRoles`,
+8. Package, parts (R9 to R16, R19 to R21, R23, R51 in part): `MessageHeader`, `MessageAuthorAvatar`, `MessageRoles`,
    `StatusIndicators`, `ReadReceiptIndicator`, `useSelectableMessage`, `useIsMessageEmphasized`, `getCheckboxLabel`, with
    `develop`'s username rule (R12, a `getAuthorUsername`-equivalent in the header, not in `display.showUsername`), no role
    click, `stopPropagation` on the avatar and on the selection click. Stories, specs, exports. Spec `code` and `tests` grow.
-8. Package, `RoomMessage` and its content (R1, R2, R6 to R9, R17 to R21, R23, R25 in part, R27, R30, R31, R33, R37 to R39):
+9. Package, `RoomMessage` and its content (R1, R2, R6 to R9, R17 to R21, R23, R25 in part, R27, R30, R31, R33, R37 to R39):
    `useCanReplyToBroadcast`, `splitQuoteAttachments`, `toMessageActionOptions`, the story and spec. Known defects `D2`
    (the checkbox input), `D3` (the reveal ends when the row unmounts) get skipped tests.
-9. Package, `SystemMessage`, `ThreadMessage`, `ThreadMessagePreview` (R3 to R5, R10, R22, R24, R28, R29, R32, R34 to R37,
-   R39): the three variants and their parts, stories, specs, the stacked story (R8), the exports (R51). Known defects `D4` to
-   `D8` get skipped tests (no per-message fallback in the preview, Space without `preventDefault`, a pending encrypted
-   message keeps the thread toolbar, no accessible name for thread and system rows, the system parent's text).
-10. App, the read-only places (R44, R45, R52, intent Q1): the audit draws `RoomMessage` and `SystemMessage` of the package;
+10. Package, `SystemMessage`, `ThreadMessage`, `ThreadMessagePreview` (R3 to R5, R10, R22, R24, R28, R29, R32, R34 to R37,
+    R39): the three variants and their parts, stories, specs, the stacked story (R8), the exports (R51). Known defects `D4` to
+    `D8` get skipped tests (no per-message fallback in the preview, Space without `preventDefault`, a pending encrypted
+    message keeps the thread toolbar, no accessible name for thread and system rows, the system parent's text).
+11. App, the read-only places (R44, R45, R52, intent Q1): the audit draws `RoomMessage` and `SystemMessage` of the package;
     contact history draws `StatusIndicators` of the package; the audit's roles request can fail without an error. A
     changeset (`@rocket.chat/meteor`, `minor`): the audit shows time, roles, usernames, read receipts and URL previews.
-11. App, the room's list (R25, R26, R40, R46, R48, R50 in part): `MessageListItem` draws the package's variants,
+12. App, the room's list (R25, R26, R40, R46, R48, R50 in part): `MessageListItem` draws the package's variants,
     `MessageListProvider` gives `MessagesProvider` the room's selection (`messageSelectionFromStore(selectedMessageStore)`,
     one instance), each rendered row registers itself in the room's store (R26), the day divider reads the display
     context's date format. Spec in `MessageListItem.spec.tsx`, `MessageList.spec.tsx`.
-12. App, the tabs and search (R25, R42, R43, R46, R48): `MessageListTab` and `MessageSearchTab` draw the package's
+13. App, the tabs and search (R25, R42, R43, R46, R48): `MessageListTab` and `MessageSearchTab` draw the package's
     variants with the room's selection. Specs.
-13. App, the thread's list (R24, R25, R28, R32, R41, R46): `ThreadMessageItem` draws `ThreadMessage` and the package's
+14. App, the thread's list (R24, R25, R28, R32, R41, R46): `ThreadMessageItem` draws `ThreadMessage` and the package's
     `SystemMessage`; no selection is given, and the thread's own selection store is gone. The branch 02 spec ("keeps the
     thread's messages out of the room's selection") keeps passing through the new path.
-14. App, drop the highlight context (R47): `MessageHighlightContext` and `MessageHighlightProvider` and its mount in
+15. App, drop the highlight context (R47): `MessageHighlightContext` and `MessageHighlightProvider` and its mount in
     `Room.tsx` go; the store stays. Nothing visible.
-15. App, delete the old message tree (R50): `components/message/**`, `MessageListProvider` (the four mount sites mount
+16. App, delete the old message tree (R50): `components/message/**`, `MessageListProvider` (the four mount sites mount
     `MessagesProvider` with the room, the subscription and, for the room's list, tabs and search, the room's selection),
     `MessageListContext`, `useMessageBody`, `useRolesByUser`'s old spec and what only they used; update the specs of
     branches 03 to 05 (`code`, `tests`, R32, R34, their notes). Done when no file imports a deleted file.
-16. App, `lib/MessageAction.ts` re-exports the package's types (R51). Nothing visible.
-17. Docs: the spec's Design, `code`, `tests`, defects and status; this plan `done`.
+17. App, `lib/MessageAction.ts` re-exports the package's types (R51). Nothing visible.
+18. Docs: the spec's Design, `code`, `tests`, defects and status; this plan `done`.
 
 ## Risks
 
@@ -128,12 +133,13 @@ Each step is one commit and builds and passes on its own. Steps 1 to 4 are fixes
 - The checkbox: a click on the visible box toggles three times through the row and the checkbox and ends toggled once; a
   click on the input toggles twice and ends unchanged (measured on `develop`'s structure with Fuselage's `CheckBox`).
   R23 holds for the box and the input's behaviour is `D2`; changing the wiring changes R23.
-- Roles: the by-scope fallback is a hook that is called for a message of another room; it is stable for a mounted row
-  (a row's message does not change room). If lint objects, the fallback becomes its own small component.
-- Between steps 5 and 15 the old lists and the provider's new values coexist; the roles are resolved twice (same query
-  keys, no extra request). Stopping after step 9 leaves the package complete and unused.
+- Roles: a hook cannot be called conditionally, so the header takes the place's resolution (`usePlaceUserRoles`) in one
+  component and, when there is none for the message's room (a global search result of another room), renders a second
+  component that looks the roles up by scope, as `develop` does.
+- Between steps 6 and 16 the old lists and the provider's new values coexist; the roles are resolved twice (same query
+  keys, no extra request). Stopping after step 10 leaves the package complete and unused.
 - The audit's roles can be forbidden: R52 is proven with a failing endpoint.
-- `message-toolbar` R25 and `message-capabilities` R32 and R34 say things this branch changes: they move in step 15.
+- `message-toolbar` R25 and `message-capabilities` R32 and R34 say things this branch changes: they move in step 16.
 - Hover, focus, the layout, and the scroll position cannot be proven in jsdom: manual check (the scope's list).
 - `oxlint --fix` rewrites `SelectedMessagesContext.tsx` and `lib/autotranslate/autotranslate.ts` unrelated lines: kept out.
 
@@ -190,6 +196,6 @@ Each step is one commit and builds and passes on its own. Steps 1 to 4 are fixes
 | R47         | `apps/meteor/client/providers/MessagesProvider/MessagesProvider.spec.tsx`, "the editing context follows the highlight store where interaction is allowed (R47)"                                                                                                                                                            |
 | R48         | `MessagesProvider.spec.tsx`, "provides the selection only when given one (R48)"; `MessageListItem.spec.tsx`, "mounts the room's selection once (R48)"                                                                                                                                                                      |
 | R49         | `apps/meteor/client/providers/MessagesProvider/useMessageRelatedDataValue.spec.ts`, "answers the roles of the place's room from one resolution and another room's by scope (R49)", "answers the conversation and the parent message (R49)"                                                                                 |
-| R50         | `apps/meteor/client/views/room/MessageList/MessageList.spec.tsx`, "mounts the messages provider with the room and the subscription (R50)"; a file-listing check of the deleted tree in step 15 (not a test)                                                                                                                |
+| R50         | `apps/meteor/client/views/room/MessageList/MessageList.spec.tsx`, "mounts the messages provider with the room and the subscription (R50)"; a file-listing check of the deleted tree in step 16 (not a test)                                                                                                                |
 | R51         | `src/index.spec.ts`, "exports the variants and their parts (message-variants R51)"; `tsc` for the re-exported types                                                                                                                                                                                                        |
 | R52         | `MessagesProvider.spec.tsx`, "renders the roles empty and raises no error when the roles cannot be fetched (R52)"; `AuditMessageList.display.spec.tsx`, "still renders the row when the roles endpoint fails (R52)"                                                                                                        |

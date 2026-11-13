@@ -16,6 +16,11 @@ export type MessageByIdOptions = {
  * provider decides how it is fetched and cached.
  */
 export type MessageRelatedDataContextValue = {
+	/**
+	 * The labels of an author's roles when the place already resolved them for the whole list, so a header does not look
+	 * them up itself; `undefined` when it did not, and `useUserRoles` answers instead.
+	 */
+	usePlaceUserRoles: (uid: IUser['_id'], rid: IRoom['_id']) => { workspaceRoles: string[]; roomRoles: string[] } | undefined;
 	useUserRoles: (uid: IUser['_id'], rid: IRoom['_id'], options: { enabled: boolean }) => { workspaceRoles: string[]; roomRoles: string[] };
 	useParentMessage: (tmid: IMessage['_id']) => MessageQueryResult<IMessage>;
 	useMessageById: (messageId: IMessage['_id'], options?: MessageByIdOptions) => MessageQueryResult<IMessage>;
@@ -33,6 +38,7 @@ const useLocalCollapsedState = (_key: string, initiallyCollapsed: boolean): [boo
 };
 
 export const messageRelatedDataDefaultValue: MessageRelatedDataContextValue = {
+	usePlaceUserRoles: () => undefined,
 	useUserRoles: () => noRoles,
 	useParentMessage: () => nothing,
 	useMessageById: () => nothing,

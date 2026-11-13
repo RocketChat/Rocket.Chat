@@ -40,6 +40,7 @@ const useCollapsedState = (key: string, initiallyCollapsed: boolean): [boolean, 
 export const useMessageRelatedDataValue = (): MessageRelatedDataContextValue =>
 	useMemo(
 		() => ({
+			usePlaceUserRoles: () => undefined,
 			useUserRoles: (uid, rid, { enabled }) => useUserRolesByScope(uid, rid, { enabled }),
 			useParentMessage: (tmid) => {
 				const { data, isLoading, isError } = useParentMessage(tmid);

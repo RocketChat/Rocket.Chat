@@ -1,8 +1,8 @@
 ---
 status: planned
 adrs: []
-code: []
-tests: []
+code: [src/Message/contexts/MessageRelatedDataContext.ts]
+tests: [src/Message/contexts/contexts.spec.tsx]
 ---
 
 # Spec: Message variants
