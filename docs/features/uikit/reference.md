@@ -13,7 +13,6 @@ Source: [`packages/ui-kit/src/blocks/layout/ActionsBlock.ts`](../../../packages/
 | Field | Type | Required | Notes |
 | --- | --- | --- | --- |
 | `type` | `'actions'` | yes |  |
-| `elements` | `readonly ( \| ButtonElement \| ChannelsSelectElement \| ConversationsSelectElement \| DatePickerElement \| DateTimePickerElement \| LinearScaleElement \| MultiChannelsSelectElement \| MultiConversationsSelectElement \| MultiStaticSelectElement \| MultiUsersSelectElement \| OverflowElement \| StaticSelectElement \| UsersSelectElement \| ToggleSwitchElement \| CheckboxElement \| RadioButtonElement \| RichTextInputElement \| TimePickerElement )[]` | yes |  |
 | `elements` | `readonly ( \| ButtonElement \| ChannelsSelectElement \| ConversationsSelectElement \| DatePickerElement \| DateTimePickerElement \| ExternalSelectElement \| LinearScaleElement \| MultiChannelsSelectElement \| MultiConversationsSelectElement \| MultiExternalSelectElement \| MultiStaticSelectElement \| MultiUsersSelectElement \| OverflowElement \| StaticSelectElement \| UsersSelectElement \| ToggleSwitchElement \| CheckboxElement \| RadioButtonElement \| TimePickerElement )[]` | yes |  |
 | `appId` | `string` | no |  |
 | `blockId` | `string` | no |  |
@@ -259,7 +258,7 @@ Source: [`packages/ui-kit/src/blocks/layout/InputBlock.ts`](../../../packages/ui
 | --- | --- | --- | --- |
 | `type` | `'input'` | yes |  |
 | `label` | `PlainText` | yes |  |
-| `element` | `\| ChannelsSelectElement \| ConversationsSelectElement \| DatePickerElement \| DateTimePickerElement \| ExternalSelectElement \| LinearScaleElement \| MultiChannelsSelectElement \| MultiConversationsSelectElement \| MultiExternalSelectElement \| MultiStaticSelectElement \| MultiUsersSelectElement \| PlainTextInputElement \| NumberInputElement \| EmailTextInputElement \| UrlTextInputElement \| StaticSelectElement \| UsersSelectElement \| CheckboxElement \| RadioButtonElement \| TimePickerElement \| ToggleSwitchElement` | yes |  |
+| `element` | `\| ChannelsSelectElement \| ConversationsSelectElement \| DatePickerElement \| DateTimePickerElement \| ExternalSelectElement \| FileInputElement \| LinearScaleElement \| MultiChannelsSelectElement \| MultiConversationsSelectElement \| MultiExternalSelectElement \| MultiStaticSelectElement \| MultiUsersSelectElement \| PlainTextInputElement \| NumberInputElement \| EmailTextInputElement \| UrlTextInputElement \| StaticSelectElement \| UsersSelectElement \| CheckboxElement \| RadioButtonElement \| RichTextInputElement \| TimePickerElement \| ToggleSwitchElement` | yes |  |
 | `hint` | `PlainText` | no |  |
 | `optional` | `boolean` | no |  |
 | `appId` | `string` | no |  |
