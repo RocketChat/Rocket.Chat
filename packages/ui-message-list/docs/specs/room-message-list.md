@@ -1,8 +1,13 @@
 ---
 status: planned
 adrs: [0001]
-code: []
-tests: []
+code:
+  [
+    apps/meteor/client/providers/MessagesProvider/useMessageRelatedDataValue.ts,
+    apps/meteor/client/providers/MessagesProvider/placeConversationStore.ts,
+  ]
+tests:
+  [apps/meteor/client/providers/MessagesProvider/MessagesProvider.stability.spec.tsx, apps/meteor/tests/mocks/client/RelatedDataReader.tsx]
 ---
 
 # Spec: The room's message list
