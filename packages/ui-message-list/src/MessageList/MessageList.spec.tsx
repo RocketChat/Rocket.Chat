@@ -524,6 +524,24 @@ describe('restoring', () => {
 		expect(host()).toHaveAttribute('data-anchor', 'message');
 	});
 
+	it('applies the position given when the first messages are listed, not the one given at mount (R61, R62)', () => {
+		const saved = {
+			isAtBottom: false,
+			anchorMessageId: 'b',
+			offsetWithinAnchor: 10,
+			cacheKeys: { first: 'a', last: 'c', length: 3 },
+			width: 0,
+		};
+		const dropped = render(<List aria-label='Dropped' messages={[]} isLoadingInitialMessages restoredPosition={saved} />, { wrapper });
+		dropped.rerender(<List aria-label='Dropped' isLoadingInitialMessages />);
+		expect(screen.getByRole('list', { name: 'Dropped' }).parentElement).toHaveAttribute('data-anchor', 'bottom');
+		dropped.unmount();
+
+		const given = render(<List aria-label='Given' messages={[]} isLoadingInitialMessages />, { wrapper });
+		given.rerender(<List aria-label='Given' isLoadingInitialMessages restoredPosition={saved} />);
+		expect(screen.getByRole('list', { name: 'Given' }).parentElement).toHaveAttribute('data-anchor', 'message');
+	});
+
 	it('opens at the bottom when the saved message is not among the first messages listed (R60)', () => {
 		const saved = {
 			isAtBottom: false,

@@ -256,7 +256,9 @@ true, the last loaded message is not the latest. "Within 1px" is the tolerance o
   was at the top at the same offset, within 1px, when that message is listed; else at the bottom. A jump target (R45) wins
   over it, and `firstUnreadMessageId` never does (B14; R9).
 - **R61** The position MUST be applied when the first messages are listed, however late they arrive after mounting; a list
-  that mounted empty and whose messages arrive later MUST still open at the saved position (B14; Q1).
+  that mounted empty and whose messages arrive later MUST still open at the saved position (B14; Q1). The position applied MUST be
+  the one the list is given when those messages are listed, not the one it was given at mount: a consumer that finds unread messages
+  among them stops passing it, and a position given only then is applied too.
 - **R62** The list MUST open at the bottom when it gets no `restoredPosition`. Whether unread messages override a saved position is the
   consumer's: it omits the position (B14; intent Q2, where the reference's "unreads override the restore" becomes the consumer's
   decision, as `develop` makes it from the listed messages).

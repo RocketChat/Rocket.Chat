@@ -93,8 +93,8 @@ export const useMessageListScroller = <TMessage extends IMessage>({
 
 	const initialCacheRef = useRef<{ value: CacheSnapshot | undefined }>(undefined);
 
-	// A position is applied once there are messages to apply it to, however late they arrive after the list mounts
-	const restoreWaitsForMessagesRef = useRef(!!restoredPosition && !rows.rows.some((row) => row.kind === 'message'));
+	// The position current when the first messages are listed is applied, however late they arrive after the list mounts
+	const restoreWaitsForMessagesRef = useRef(!rows.rows.some((row) => row.kind === 'message'));
 
 	const stateRef = useRef<MessageListScrollState>(undefined);
 	stateRef.current ??= createInitialScrollState({
