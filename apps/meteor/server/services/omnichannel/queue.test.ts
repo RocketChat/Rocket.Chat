@@ -24,6 +24,7 @@ const mockedInquiry = {
 	rid: 'rid',
 	department: 'department1',
 	ts: new Date(),
+	lockedAt: new Date(),
 };
 
 const models = {
@@ -168,6 +169,7 @@ describe('Omnichannel Queue processor', () => {
 
 			expect(models.LivechatInquiry.findNextAndLock.calledOnce).to.be.true;
 			expect(queue.processWaitingQueue.calledOnce).to.be.true;
+			expect(models.LivechatInquiry.unlock.notCalled).to.be.true;
 		});
 		it('should call unlock when the inquiry could not be processed', async () => {
 			models.LivechatInquiry.findNextAndLock.returns(mockedInquiry);
@@ -178,7 +180,7 @@ describe('Omnichannel Queue processor', () => {
 			await queue.checkQueue();
 
 			expect(queue.processWaitingQueue.calledOnce).to.be.true;
-			expect(models.LivechatInquiry.unlock.calledOnce).to.be.true;
+			expect(models.LivechatInquiry.unlock.calledOnceWithExactly(mockedInquiry._id, mockedInquiry.lockedAt)).to.be.true;
 		});
 		it('should unlock the inquiry when it was processed succesfully', async () => {
 			models.LivechatInquiry.findNextAndLock.returns(mockedInquiry);
@@ -189,7 +191,7 @@ describe('Omnichannel Queue processor', () => {
 			await queue.checkQueue();
 
 			expect(queue.processWaitingQueue.calledOnce).to.be.true;
-			expect(models.LivechatInquiry.unlock.calledOnce).to.be.true;
+			expect(models.LivechatInquiry.unlock.calledOnceWithExactly(mockedInquiry._id, mockedInquiry.lockedAt)).to.be.true;
 		});
 		it('should print a log when there was an error processing inquiry', async () => {
 			models.LivechatInquiry.findNextAndLock.throws('error');
