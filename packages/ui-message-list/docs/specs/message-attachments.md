@@ -88,8 +88,11 @@ desktop viewer and signed URLs.
   format.
 - **R18** `openEncryptedPdf` MUST open a PDF within the desktop app's preview size limit (10 MB
   without one) in the viewer from a blob of the decrypted file, titled by the attachment, and MUST
-  download a larger one or one of unknown size instead. Opening a second file MUST NOT revoke the
-  first file's blob; opening the same file again MUST replace its blob.
+  download a larger one or one of unknown size instead. Each download MUST be asked for and saved
+  under its own id, so two downloads that are pending together are each saved once, under their
+  own titles. Opening a second file MUST NOT revoke the first file's blob; opening the same file
+  again MUST replace its blob. Only the blobs of the five most recently opened files MUST be kept;
+  opening a sixth releases the one opened longest ago.
 - **R19** `formatFileSize` MUST format as the app does elsewhere (`kB`, `MB`).
 - **R20** A change of the shared player (playing, position) MUST reach every attachment under the
   provider.
