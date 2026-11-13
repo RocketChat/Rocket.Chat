@@ -18,11 +18,12 @@ $message-toolbar-border-radius: theme('message-toolbar-border-radius', lengths.b
 
 		user-select: none;
 
-		// Out of the row's flow, so it takes no room and no gap.
+		// Keep the toolbar available across the full message row.
 		.rcx-message > & {
 			position: absolute;
-			top: 0;
-			inset-inline-end: 0;
+			inset: 0;
+
+			pointer-events: none;
 		}
 
 		.rcx-message:hover &,
