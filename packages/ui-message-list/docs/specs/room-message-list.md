@@ -196,8 +196,9 @@ of the end of the latest messages (message-list R17, R80).
   "Select all" while it is mounted and not selected, and MUST unregister when it unmounts or is selected (message-variants R26).
 - **R47** The messages of a thread MUST NOT register with the room's selection, from whichever place they render, whatever the state
   of the room's selection (branch 02, fix 5; message-variants R24, R25).
-- **R48** The composer's "Select N messages" button MUST show the number of the messages selected, follow scrolling, selecting and
-  unselecting, and be disabled at 0 (message-variants R26).
+- **R48** The composer's "Select N messages" button MUST show as N the number of rendered messages that are not selected, follow
+  scrolling, selecting and unselecting, and be disabled at 0; its "N messages selected" text MUST show the number selected
+  (message-variants R26).
 
 **What the providers hand the rows**
 
