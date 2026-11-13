@@ -3,7 +3,7 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { renderHook, waitFor } from '@testing-library/react';
 
 import { useRolesByUser } from './useRolesByUser';
-import { Roles } from '../../../../stores';
+import { Roles } from '../../stores';
 
 const rid = 'room-1';
 

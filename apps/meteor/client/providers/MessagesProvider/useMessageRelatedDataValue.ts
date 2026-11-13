@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useCallback, useMemo, useSyncExternalStore } from 'react';
 
 import { useParentMessage } from './useParentMessage';
+import type { PlaceUserRoles } from './useRolesByUser';
 import { useUserRolesByScope } from '../../hooks/useUserRolesByScope';
 import { RoomManager, getCollapsibleEventKey, useOpenedRoom } from '../../lib/RoomManager';
 import { messagesQueryKeys } from '../../lib/queryKeys';
@@ -37,10 +38,10 @@ const useCollapsedState = (key: string, initiallyCollapsed: boolean): [boolean, 
 };
 
 /** Data messages show about other things, read from the client's stores first and fetched when missing. */
-export const useMessageRelatedDataValue = (): MessageRelatedDataContextValue =>
+export const useMessageRelatedDataValue = (placeUserRoles?: PlaceUserRoles): MessageRelatedDataContextValue =>
 	useMemo(
 		() => ({
-			usePlaceUserRoles: () => undefined,
+			usePlaceUserRoles: (uid, rid) => (placeUserRoles?.rid === rid ? placeUserRoles.get(uid) : undefined),
 			useUserRoles: (uid, rid, { enabled }) => useUserRolesByScope(uid, rid, { enabled }),
 			useParentMessage: (tmid) => {
 				const { data, isLoading, isError } = useParentMessage(tmid);
@@ -69,5 +70,5 @@ export const useMessageRelatedDataValue = (): MessageRelatedDataContextValue =>
 			},
 			useCollapsedState,
 		}),
-		[],
+		[placeUserRoles],
 	);

@@ -20,7 +20,7 @@ jest.mock('../../contexts/RoomContext', () => ({
 	useRoom: () => room,
 	useRoomSubscription: () => undefined,
 }));
-jest.mock('../hooks/useRolesByUser', () => ({ useRolesByUser: () => undefined }));
+jest.mock('../../../../providers/MessagesProvider/useRolesByUser', () => ({ useRolesByUser: () => undefined }));
 
 it('agrees with the display context on what the viewer sees (R33)', () => {
 	const { result } = renderHook(

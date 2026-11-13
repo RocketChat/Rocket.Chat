@@ -2,17 +2,19 @@ import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { useMemo } from 'react';
 import { useShallow } from 'zustand/shallow';
 
-import type { MessageListContextValue } from '../../../../components/message/list/MessageListContext';
-import { useRoomRolesQuery } from '../../../../hooks/useRoomRolesQuery';
-import { useUserRolesQuery } from '../../../../hooks/useUserRolesQuery';
-import { Roles } from '../../../../stores';
+import { useRoomRolesQuery } from '../../hooks/useRoomRolesQuery';
+import { useUserRolesQuery } from '../../hooks/useUserRolesQuery';
+import { Roles } from '../../stores';
 
 type UserRolesLabels = { workspaceRoles: string[]; roomRoles: string[] };
+
+/** The roles of the authors of a room's messages, resolved once for the place that lists them. */
+export type PlaceUserRoles = { rid: IRoom['_id']; get: (uid: IUser['_id']) => UserRolesLabels };
 
 const noRoles: UserRolesLabels = { workspaceRoles: [], roomRoles: [] };
 
 /** The roles every message author holds, resolved once for the whole list instead of once per message header. */
-export const useRolesByUser = (rid: IRoom['_id'], enabled: boolean): MessageListContextValue['userRoles'] => {
+export const useRolesByUser = (rid: IRoom['_id'], enabled: boolean): PlaceUserRoles | undefined => {
 	const { data: roomRoles } = useRoomRolesQuery(rid, { enabled });
 	const { data: userRoles } = useUserRolesQuery({ enabled });
 	// roles without a description are not shown, matching what the role endpoints return

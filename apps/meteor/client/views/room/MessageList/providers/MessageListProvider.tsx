@@ -12,8 +12,8 @@ import { useAutoTranslate } from '../../../../hooks/useAutoTranslate';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { getRegexHighlight, getRegexHighlightUrl } from '../../../../lib/highlightWords';
 import { MessagesProvider } from '../../../../providers/MessagesProvider';
+import { useRolesByUser } from '../../../../providers/MessagesProvider/useRolesByUser';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
-import { useRolesByUser } from '../hooks/useRolesByUser';
 
 export type MessageListProviderProps = {
 	children: ReactNode;

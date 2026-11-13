@@ -26,7 +26,7 @@ import { messageSelectionFromStore } from './messageSelectionFromStore';
 import { createFakeMessage, createFakeRoom, createFakeSubscription } from '../../../tests/mocks/data';
 import { actionLinks } from '../../lib/actionLinks';
 import type { ChatAPI } from '../../lib/chats/ChatAPI';
-import { Messages, Subscriptions } from '../../stores';
+import { Messages, Roles, Subscriptions } from '../../stores';
 import { ChatContext } from '../../views/room/contexts/ChatContext';
 import { SelectedMessageStore } from '../../views/room/providers/SelectedMessageStore';
 import type { MediaPlayerContextValue } from '../MediaPlayerProvider';
@@ -877,6 +877,26 @@ describe('related data', () => {
 	});
 });
 
+describe('the message a thread started with (message-variants R49)', () => {
+	afterEach(() => Messages.state.replaceAll([]));
+
+	it('answers it from the store without a request (message-variants R49)', async () => {
+		const main = createFakeMessage({ _id: 'thread-main', msg: 'the thread' });
+		Messages.state.store(main);
+		const getMessages = jest.fn();
+
+		const { result } = renderHook(() => useMessageRelatedData().useParentMessage('thread-main'), {
+			wrapper: appRoot()
+				.withEndpoint('POST', '/v1/chat.getMessages', getMessages)
+				.wrap((children: ReactNode) => <MessagesProvider>{children}</MessagesProvider>)
+				.build(),
+		});
+
+		await waitFor(() => expect(result.current.data).toEqual(main));
+		expect(getMessages).not.toHaveBeenCalled();
+	});
+});
+
 describe('renderers', () => {
 	it('gives the message components the markdown, preview, UiKit and emoji components of the app (R30)', () => {
 		const { result } = renderHook(() => useMessageRenderers(), {
@@ -1146,5 +1166,65 @@ describe('media', () => {
 
 			expect(rendered).toHaveBeenCalledTimes(rendersBefore);
 		});
+	});
+});
+
+describe('the roles of the authors of a place (message-variants R49, R52)', () => {
+	const room = createFakeRoom({ _id: 'room-roles' });
+
+	const role = (_id: string, description: string) => ({
+		_id,
+		name: _id,
+		description,
+		scope: 'Users' as const,
+		protected: false,
+		_updatedAt: new Date(),
+	});
+
+	beforeEach(() => {
+		Roles.state.replaceAll([role('admin', 'Administrator'), role('owner', 'Owner')]);
+	});
+
+	const renderRoles = (root: ReturnType<typeof appRoot>, rid: string) =>
+		renderHook(() => useMessageRelatedData().usePlaceUserRoles('author-id', rid), {
+			wrapper: root.wrap((children: ReactNode) => <MessagesProvider room={room}>{children}</MessagesProvider>).build(),
+		});
+
+	it("answers the roles of the place's room from one resolution and leaves another room to the header (message-variants R49)", async () => {
+		const getUserRoles = jest.fn(() => ({ users: [{ _id: 'author-id', username: 'author', roles: ['admin'] }] }));
+		const getRoomRoles = jest.fn(() => ({ roles: [{ rid: room._id, u: { _id: 'author-id', username: 'author' }, roles: ['owner'] }] }));
+		const root = appRoot()
+			.withEndpoint('GET', '/v1/roles.getUsersInPublicRoles', getUserRoles)
+			.withEndpoint('GET', '/v1/rooms.roles', getRoomRoles);
+
+		const { result } = renderRoles(root, room._id);
+
+		await waitFor(() => expect(result.current).toEqual({ workspaceRoles: ['Administrator'], roomRoles: ['Owner'] }));
+		expect(renderRoles(root, 'another-room').result.current).toBeUndefined();
+	});
+
+	it('leaves no roles and raises no error when they cannot be fetched (message-variants R52)', async () => {
+		const forbidden = jest.fn(() => {
+			throw new Error('error-not-allowed');
+		});
+		const root = appRoot()
+			.withEndpoint('GET', '/v1/roles.getUsersInPublicRoles', () => ({ users: [] }))
+			.withEndpoint('GET', '/v1/rooms.roles', forbidden);
+
+		const { result } = renderRoles(root, room._id);
+
+		await waitFor(() => expect(forbidden).toHaveBeenCalled());
+		expect(result.current).toEqual({ workspaceRoles: [], roomRoles: [] });
+	});
+
+	it('requests no roles while roles are hidden (message-variants R49)', async () => {
+		const getRoomRoles = jest.fn(() => ({ roles: [] }));
+		const root = appRoot().withSetting('UI_DisplayRoles', false).withEndpoint('GET', '/v1/rooms.roles', getRoomRoles);
+
+		const { result } = renderRoles(root, room._id);
+
+		await new Promise((resolve) => setTimeout(resolve, 50));
+		expect(result.current).toBeUndefined();
+		expect(getRoomRoles).not.toHaveBeenCalled();
 	});
 });

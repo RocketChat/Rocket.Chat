@@ -1,8 +1,19 @@
 ---
 status: planned
 adrs: []
-code: [src/Message/contexts/MessageRelatedDataContext.ts]
-tests: [src/Message/contexts/contexts.spec.tsx]
+code:
+  [
+    src/Message/contexts/MessageRelatedDataContext.ts,
+    apps/meteor/client/providers/MessagesProvider/MessagesProvider.tsx,
+    apps/meteor/client/providers/MessagesProvider/useMessageRelatedDataValue.ts,
+    apps/meteor/client/providers/MessagesProvider/useRolesByUser.ts,
+  ]
+tests:
+  [
+    src/Message/contexts/contexts.spec.tsx,
+    apps/meteor/client/providers/MessagesProvider/MessagesProvider.spec.tsx,
+    apps/meteor/client/providers/MessagesProvider/useRolesByUser.spec.ts,
+  ]
 ---
 
 # Spec: Message variants

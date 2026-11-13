@@ -23,6 +23,7 @@ import { useMessageMediaValue } from './useMessageMediaValue';
 import { useMessageNavigationValue } from './useMessageNavigationValue';
 import { useMessageRelatedDataValue } from './useMessageRelatedDataValue';
 import { useMessageToolbarValue } from './useMessageToolbarValue';
+import { useRolesByUser } from './useRolesByUser';
 import Emoji from '../../components/Emoji';
 import { useChat } from '../../views/room/contexts/ChatContext';
 import AttachmentProvider from '../AttachmentProvider';
@@ -61,7 +62,8 @@ const MessagesProvider = ({
 	const display = useMessageDisplayValue({ room, subscription, allowsInteraction });
 	const navigation = useMessageNavigationValue();
 	const interactions = useMessageInteractionsValue(chat, subscription);
-	const relatedData = useMessageRelatedDataValue();
+	const placeUserRoles = useRolesByUser(room?._id ?? '', !!room && display.showRoles);
+	const relatedData = useMessageRelatedDataValue(placeUserRoles);
 	const content = useMessageContentValue(display, subscription);
 	const media = useMessageMediaValue();
 	const toolbar = useMessageToolbarValue(display, chat);

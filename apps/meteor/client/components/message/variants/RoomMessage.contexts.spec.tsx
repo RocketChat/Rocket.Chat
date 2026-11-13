@@ -35,7 +35,7 @@ jest.mock('../../../views/room/contexts/RoomContext', () => ({
 	useRoom: () => room,
 	useRoomSubscription: () => undefined,
 }));
-jest.mock('../../../views/room/MessageList/hooks/useRolesByUser', () => ({ useRolesByUser: () => undefined }));
+jest.mock('../../../providers/MessagesProvider/useRolesByUser', () => ({ useRolesByUser: () => undefined }));
 jest.mock('../../../lib/RoomManager', () => ({
 	RoomManager: { getStore: jest.fn() },
 	useOpenedRoom: () => undefined,
