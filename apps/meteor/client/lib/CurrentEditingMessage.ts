@@ -1,5 +1,5 @@
 import type { ChatAPI } from './chats/ChatAPI';
-import { clearHighlightMessage } from '../views/room/MessageList/providers/messageHighlightSubscription';
+import { clearEditingMessage } from './chats/editingMessageSubscription';
 
 export class CurrentEditingMessage {
 	private lock = false;
@@ -50,7 +50,7 @@ export class CurrentEditingMessage {
 
 			this.chat.composer.setEditingMode(false);
 			this.mid = undefined;
-			clearHighlightMessage();
+			clearEditingMessage();
 		});
 	};
 

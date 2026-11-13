@@ -168,7 +168,7 @@ composer's quote draw message parts, not rows (`message-capabilities` R32 to R40
   `RoomMessage` MUST also be `aria-busy`.
 - **R18** A `RoomMessage` or `ThreadMessage` MUST be drawn with the editing look when, and only when, the editing context
   names its message, and with no editing look otherwise. A `SystemMessage` and a `ThreadMessagePreview` have none.
-  (The editing context carries both the message being edited and the one a jump to a message lands on, R47.)
+  (The editing context carries the message being edited and nothing else: the target of a jump is drawn by the list, `message-list` R48, R50.)
 
 **Selection mode**
 
@@ -268,9 +268,10 @@ composer's quote draw message parts, not rows (`message-capabilities` R32 to R40
 
 **What the app provides**
 
-- **R47** `MessagesProvider` MUST provide the editing context from the store that jumps to a message and editing both write to, so the id it carries is the one
-  that store holds and it changes whenever the store does, in every list that shows the message (room, thread, tabs, search), until the
-  store is renamed in branch 09 (the bridge: a jump highlights a message in the thread's list as it does today; the room's list highlights through the engine, `room-message-list` R36). Where the place does not allow interaction it MUST provide none (Q4, answered).
+- **R47** `MessagesProvider` MUST provide the editing context from the store the chat's message editing writes to, so the id it carries
+  is the message being edited and it changes whenever the store does, in every list that shows the message (room, thread, tabs, search).
+  No list writes it for a jump: each draws the target of its own jumps (`message-list` R48 to R50; `thread-message-list` R46, R47).
+  Where the place does not allow interaction it MUST provide none (Q4, answered).
 - **R48** `MessagesProvider` MUST provide the selection context only when it is given a selection. The room's list, the tabs and search MUST give the room's
   selection (`messageSelectionFromStore` over the room's selected messages store, with the same identity across renders); a thread
   and the audit MUST give none.
@@ -302,9 +303,9 @@ are not treated as equal (`message-capabilities` notes). The selection click and
 `develop`, and `useSelectableMessage` is the one place a row learns what a click, Space or Enter does to it.
 
 The app owns the provider's values: `MessagesProvider` resolves the roles of its room once (`useRolesByUser`), answers the conversation of a
-message from its own room and subscription or the stores (applying a reader's `select`), and provides the editing context from the highlight store and the selection it is
-given. Bridges, with their end: (1) the editing context reads the store that jumps and editing write to (R47), until the rename in branch
-09; (2) the room's selection for the room's list, tabs and search, none for a thread or the audit (R48, `roomMessageSelection`); (3) each
+message from its own room and subscription or the stores (applying a reader's `select`), and provides the editing context from the editing store and the selection it is
+given. Bridges, with their end: (1) the editing context reads the store that editing writes to (R47), and no jump writes it since the
+thread's list takes its highlight from the list, as the room's does; (2) the room's selection for the room's list, tabs and search, none for a thread or the audit (R48, `roomMessageSelection`); (3) each
 row the room's list renders registers itself for "Select all" while it is not selected (`useRegisterRenderedMessage`, in `RoomMessageRow`), as the old variants
 did, which `room-message-list` R46 keeps.
 
@@ -319,8 +320,7 @@ code and tests lists of the specs of branches 03 to 05 point at the moved proofs
 - The list engine, scrolling and virtualization (branch 07), and the conversation stories that render it (intent Q5).
 - The room list: its rows, day and unread dividers, the way it decides `sequential` and the markers (branch 08). R40 states
   only what it passes.
-- The thread list and the cleanup (branch 09): the rename of the highlight store, and the unused capabilities of the interactions
-  context (intent Q4).
+- The unused capabilities of the interactions context (intent Q4): `thread-message-list` R53.
 - The content parts (`message-capabilities`, `message-attachments`) and the toolbar (`message-toolbar`): this spec only places them.
 - The moderation, contact history, the modals, the composer's quote and the threads list, which draw parts and not rows, except R45.
 - Naming the thread and system rows for assistive technology (Q3), and any change to the keyboard model of the lists.

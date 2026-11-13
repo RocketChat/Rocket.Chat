@@ -1,10 +1,10 @@
 import { useSyncExternalStore } from 'react';
 
-import { getSnapshot, subscribe } from '../../views/room/MessageList/providers/messageHighlightSubscription';
+import { getSnapshot, subscribe } from '../../lib/chats/editingMessageSubscription';
 
-/** The message to draw with the editing look: the one being edited or the one a jump just landed on, in places a conversation is in. */
+/** The message to draw with the editing look: the one being edited, in places a conversation is in. */
 export const useMessageEditingValue = (allowsInteraction: boolean) => {
-	const highlightedMessageId = useSyncExternalStore(subscribe, getSnapshot);
+	const editingMessageId = useSyncExternalStore(subscribe, getSnapshot);
 
-	return allowsInteraction ? highlightedMessageId : undefined;
+	return allowsInteraction ? editingMessageId : undefined;
 };

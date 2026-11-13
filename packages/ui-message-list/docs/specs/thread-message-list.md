@@ -7,6 +7,10 @@ code:
     src/MessageList/stories/MessageListPlayground.tsx,
     src/MessageList/stories/conversation/ConversationPlayground.tsx,
     apps/meteor/client/providers/MessagesProvider/MessageMarkers.tsx,
+    apps/meteor/client/providers/MessagesProvider/useMessageEditingValue.ts,
+    apps/meteor/client/lib/chats/editingMessageSubscription.ts,
+    apps/meteor/client/lib/ChatMessages.ts,
+    apps/meteor/client/lib/CurrentEditingMessage.ts,
     apps/meteor/client/views/room/contextualBar/Threads/components/ThreadChat.tsx,
     apps/meteor/client/views/room/contextualBar/Threads/components/ThreadMessageList.tsx,
     apps/meteor/client/views/room/contextualBar/Threads/components/ThreadMessageRow.tsx,
@@ -25,6 +29,9 @@ tests:
     apps/meteor/client/views/room/contextualBar/Threads/components/ThreadMessageRow.spec.tsx,
     apps/meteor/client/views/room/contextualBar/Threads/components/useThreadJumpTarget.spec.tsx,
     apps/meteor/client/views/room/contextualBar/Threads/hooks/useThreadMessagesQuery.spec.ts,
+    apps/meteor/client/lib/chats/editingMessageSubscription.spec.ts,
+    apps/meteor/client/providers/MessagesProvider/MessagesProvider.spec.tsx,
+    apps/meteor/client/views/room/body/RoomMessageList/useRoomJumpTarget.spec.tsx,
   ]
 ---
 

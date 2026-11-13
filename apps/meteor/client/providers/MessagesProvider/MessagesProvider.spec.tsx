@@ -27,8 +27,8 @@ import { messageSelectionFromStore, roomMessageSelection } from './messageSelect
 import { createFakeMessage, createFakeRoom, createFakeSubscription } from '../../../tests/mocks/data';
 import { actionLinks } from '../../lib/actionLinks';
 import type { ChatAPI } from '../../lib/chats/ChatAPI';
+import { clearEditingMessage, setEditingMessage } from '../../lib/chats/editingMessageSubscription';
 import { Messages, Roles, Rooms, Subscriptions } from '../../stores';
-import { clearHighlightMessage, setHighlightMessage } from '../../views/room/MessageList/providers/messageHighlightSubscription';
 import { ChatContext } from '../../views/room/contexts/ChatContext';
 import { SelectedMessageStore, selectedMessageStore } from '../../views/room/providers/SelectedMessageStore';
 import type { MediaPlayerContextValue } from '../MediaPlayerProvider';
@@ -1265,8 +1265,8 @@ describe('the roles of the authors of a place (message-variants R49, R52)', () =
 	});
 });
 
-describe('the message with the editing look (message-variants R47)', () => {
-	afterEach(() => clearHighlightMessage());
+describe('the message with the editing look (thread-message-list R46)', () => {
+	afterEach(() => clearEditingMessage());
 
 	const renderEditing = (allowsInteraction: boolean) =>
 		renderHook(() => useIsMessageBeingEdited('message-id'), {
@@ -1275,25 +1275,25 @@ describe('the message with the editing look (message-variants R47)', () => {
 				.build(),
 		});
 
-	it('is the message the store of jumps and editing holds, and follows it where interaction is allowed (message-variants R47)', () => {
+	it('is the message being edited, and follows it where interaction is allowed (thread-message-list R46)', () => {
 		const { result } = renderEditing(true);
 		expect(result.current).toBe(false);
 
-		act(() => setHighlightMessage('message-id'));
+		act(() => setEditingMessage('message-id'));
 		expect(result.current).toBe(true);
 
-		act(() => setHighlightMessage('another-message'));
+		act(() => setEditingMessage('another-message'));
 		expect(result.current).toBe(false);
 
-		act(() => setHighlightMessage('message-id'));
-		act(() => clearHighlightMessage());
+		act(() => setEditingMessage('message-id'));
+		act(() => clearEditingMessage());
 		expect(result.current).toBe(false);
 	});
 
-	it('is no message where interaction is not allowed (message-variants R47)', () => {
+	it('is no message where interaction is not allowed (thread-message-list R46)', () => {
 		const { result } = renderEditing(false);
 
-		act(() => setHighlightMessage('message-id'));
+		act(() => setEditingMessage('message-id'));
 
 		expect(result.current).toBe(false);
 	});

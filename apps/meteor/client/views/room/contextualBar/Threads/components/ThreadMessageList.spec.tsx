@@ -7,7 +7,7 @@ import { axe } from 'jest-axe';
 
 import ThreadMessageList from './ThreadMessageList';
 import { createFakeMessage, createFakeRoom, createFakeSubscription } from '../../../../../../tests/mocks/data';
-import { clearHighlightMessage, getSnapshot, setHighlightMessage } from '../../../MessageList/providers/messageHighlightSubscription';
+import { clearEditingMessage, getSnapshot, setEditingMessage } from '../../../../../lib/chats/editingMessageSubscription';
 import { RoomContext, RoomSubscriptionContext } from '../../../contexts/RoomContext';
 import { selectedMessageStore } from '../../../providers/SelectedMessageStore';
 import { useThreadMessagesQuery } from '../hooks/useThreadMessagesQuery';
@@ -133,7 +133,7 @@ afterEach(() => {
 	jest.clearAllMocks();
 	act(() => {
 		selectedMessageStore.reset();
-		clearHighlightMessage();
+		clearEditingMessage();
 	});
 });
 
@@ -421,7 +421,7 @@ describe('jumps', () => {
 	});
 
 	it('keeps the editing look on the message being edited while a jump highlights another (R47)', () => {
-		act(() => setHighlightMessage('reply-2'));
+		act(() => setEditingMessage('reply-2'));
 		mockSearch = { msg: 'reply-1' };
 
 		renderList();
@@ -472,7 +472,7 @@ describe('the rows', () => {
 	});
 
 	it('draws the message being edited with the editing look (R45)', () => {
-		act(() => setHighlightMessage('reply-1'));
+		act(() => setEditingMessage('reply-1'));
 
 		renderList();
 
