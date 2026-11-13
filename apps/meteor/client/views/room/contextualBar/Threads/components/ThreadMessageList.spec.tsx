@@ -111,27 +111,24 @@ jest.mock('../../../hooks/useMessageListNavigation', () => ({
 	useMessageListNavigation: () => ({ messageListRef: { current: null } }),
 }));
 
-jest.mock('../../../MessageList/providers/MessageListProvider', () => ({ children }: { children: ReactNode }) => <>{children}</>);
+const mockListProvider = jest.fn();
+jest.mock('../../../MessageList/providers/MessageListProvider', () => (props: { children: ReactNode }) => {
+	mockListProvider(props);
+	return <>{props.children}</>;
+});
 
 jest.mock('../../../../../lib/utils/setMessageJumpQueryStringParameter', () => ({
 	setMessageJumpQueryStringParameter: jest.fn(),
 }));
 
-// Each row registers itself as selectable, as a system message does.
-jest.mock('./ThreadMessageItem', () => {
-	const { useIsSelectedMessage } = jest.requireActual('../../../providers/SelectedMessagesContext');
-	return {
-		ThreadMessageItem: ({ message }: { message: IMessage }) => {
-			useIsSelectedMessage(message._id);
-			return (
-				<>
-					<div role='listitem'>{message._id}</div>
-					<div data-testid='day-divider' data-time='20260102' />
-				</>
-			);
-		},
-	};
-});
+jest.mock('./ThreadMessageItem', () => ({
+	ThreadMessageItem: ({ message }: { message: IMessage }) => (
+		<>
+			<div role='listitem'>{message._id}</div>
+			<div data-testid='day-divider' data-time='20260102' />
+		</>
+	),
+}));
 
 jest.mock('../../../BubbleDate', () => ({
 	BubbleDate: forwardRef(function BubbleDate(_, ref) {
@@ -329,7 +326,7 @@ it('hides the inline day divider the floating date covers', () => {
 	expect(screen.getAllByTestId('day-divider')[0]).toHaveStyle({ opacity: 0 });
 });
 
-it("keeps the thread's messages out of the room's selection", () => {
+it("gives the messages of the thread no selection, so they never join the room's (message-variants R24, R25)", () => {
 	(useThreadMessagesQuery as jest.Mock).mockReturnValue({
 		data: { messages: [createThreadMessage(1)] },
 		isLoading: false,
@@ -342,10 +339,13 @@ it("keeps the thread's messages out of the room's selection", () => {
 		loadMessageAround: jest.fn(),
 	});
 	const mainMessage = createFakeMessage<IThreadMainMessage>({ _id: 'thread-id', rid: room._id, msg: 'main message', tcount: 1 });
+	mockListProvider.mockClear();
 
 	render(<ThreadMessageList mainMessage={mainMessage} shouldJumpToBottom={false} setShouldJumpToBottom={jest.fn()} />, {
 		wrapper: mockAppRoot().withJohnDoe().withSetting('Message_GroupingPeriod', 300).build(),
 	});
 
+	expect(mockListProvider).toHaveBeenCalled();
+	expect(mockListProvider).not.toHaveBeenCalledWith(expect.objectContaining({ selection: expect.anything() }));
 	expect(selectedMessageStore.availableMessagesCount()).toBe(0);
 });

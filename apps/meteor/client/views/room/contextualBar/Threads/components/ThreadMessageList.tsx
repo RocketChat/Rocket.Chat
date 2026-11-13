@@ -6,7 +6,7 @@ import { isTruthy } from '@rocket.chat/tools';
 import { clientCallbacks, CustomVirtuaScrollbars, useMergedRefsV2 } from '@rocket.chat/ui-client';
 import { useSearchParameter, useSetting, useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
 import { differenceInSeconds } from 'date-fns/differenceInSeconds';
-import { Fragment, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { VirtualizerHandle } from 'virtua';
 import { VList } from 'virtua';
@@ -26,8 +26,6 @@ import { useRoom } from '../../../contexts/RoomContext';
 import { useDateScroll } from '../../../hooks/useDateScroll';
 import { useFirstUnreadMessageId } from '../../../hooks/useFirstUnreadMessageId';
 import { useMessageListNavigation } from '../../../hooks/useMessageListNavigation';
-import { SelectedMessageStore } from '../../../providers/SelectedMessageStore';
-import { SelectedMessageContext } from '../../../providers/SelectedMessagesContext';
 import { useThreadMessagesQuery } from '../hooks/useThreadMessagesQuery';
 import './threads.css';
 
@@ -117,7 +115,6 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 	const uid = useUserId();
 
 	const hideUsernames = useUserPreference<boolean>('hideUsernames');
-	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
 	const firstUnreadMessageId = useFirstUnreadMessageId();
 	const messageGroupingPeriod = useSetting('Message_GroupingPeriod', 300);
 
@@ -376,9 +373,6 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 
 	const keepMountedMessages = useKeepMountedMessages(items, leadingRows);
 
-	// A thread has no selection of its own; its messages must not join the room's.
-	const [threadSelection] = useState(() => ({ selectedMessageStore: new SelectedMessageStore() }));
-
 	return (
 		<BubbleDateScope
 			store={bubbleDateStore}
@@ -387,80 +381,77 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 			<BubbleDate ref={bubbleRef} store={bubbleDateStore} />
 			<CustomVirtuaScrollbars ref={mergedRefs}>
 				<MessageListProvider>
-					<SelectedMessageContext.Provider value={threadSelection}>
-						<VList
-							ref={virtualizerRef}
-							shift={isPrependRef.current}
-							style={{ height: '100%' }}
-							aria-label={t('Thread_message_list')}
-							aria-busy={loading || isFetchingNextPage || isFetchingPreviousPage}
-							role='list'
-							keepMounted={keepMountedMessages}
-							onScroll={(offset) => {
-								const handle = virtualizerRef.current;
-								if (!handle) return;
+					<VList
+						ref={virtualizerRef}
+						shift={isPrependRef.current}
+						style={{ height: '100%' }}
+						aria-label={t('Thread_message_list')}
+						aria-busy={loading || isFetchingNextPage || isFetchingPreviousPage}
+						role='list'
+						keepMounted={keepMountedMessages}
+						onScroll={(offset) => {
+							const handle = virtualizerRef.current;
+							if (!handle) return;
 
-								if (offset < 200 && hasPreviousPage && !isJumpingToMessageRef.current) {
-									loadPreviousMessages();
+							if (offset < 200 && hasPreviousPage && !isJumpingToMessageRef.current) {
+								loadPreviousMessages();
+							}
+
+							// Copied from messageList, I'm unsure why this is necessary, but it seems to be needed to properly set the isAtBottom state
+							if (hasNextPage) {
+								isAtBottom.current = false;
+							} else {
+								if (handle.scrollSize >= handle.viewportSize) {
+									isAtBottom.current = true;
 								}
+								isAtBottom.current = offset - handle.scrollSize + handle.viewportSize >= -20;
+							}
 
-								// Copied from messageList, I'm unsure why this is necessary, but it seems to be needed to properly set the isAtBottom state
-								if (hasNextPage) {
-									isAtBottom.current = false;
-								} else {
-									if (handle.scrollSize >= handle.viewportSize) {
-										isAtBottom.current = true;
-									}
-									isAtBottom.current = offset - handle.scrollSize + handle.viewportSize >= -20;
-								}
+							if (hasNextPage && !isJumpingToMessageRef.current && offset - handle.scrollSize + handle.viewportSize >= -200) {
+								loadMoreMessages();
+							}
 
-								if (hasNextPage && !isJumpingToMessageRef.current && offset - handle.scrollSize + handle.viewportSize >= -200) {
-									loadMoreMessages();
-								}
+							const topMessage = items[handle.findItemIndex(handle.scrollOffset) - leadingRows];
+							handleDateScroll(topMessage, offset);
+						}}
+					>
+						{loading ? (
+							<div className='load-more' role='presentation'>
+								<LoadingMessagesIndicator />
+							</div>
+						) : null}
+						{!loading && hasPreviousPage ? (
+							<div className='load-more' role='presentation'>
+								{isFetchingPreviousPage ? <LoadingMessagesIndicator /> : null}
+							</div>
+						) : null}
+						{!loading &&
+							items.map((message, index, { [index - 1]: previous }) => {
+								const sequential = isMessageSequential(message, previous, messageGroupingPeriod);
+								const newDay = isMessageNewDay(message, previous);
+								const shouldShowAsSequential = sequential && !newDay;
+								const firstUnread = firstUnreadMessageId === message._id;
+								const system = MessageTypes.isSystemMessage(message);
 
-								const topMessage = items[handle.findItemIndex(handle.scrollOffset) - leadingRows];
-								handleDateScroll(topMessage, offset);
-							}}
-						>
-							{loading ? (
-								<div className='load-more' role='presentation'>
-									<LoadingMessagesIndicator />
-								</div>
-							) : null}
-							{!loading && hasPreviousPage ? (
-								<div className='load-more' role='presentation'>
-									{isFetchingPreviousPage ? <LoadingMessagesIndicator /> : null}
-								</div>
-							) : null}
-							{!loading &&
-								items.map((message, index, { [index - 1]: previous }) => {
-									const sequential = isMessageSequential(message, previous, messageGroupingPeriod);
-									const newDay = isMessageNewDay(message, previous);
-									const shouldShowAsSequential = sequential && !newDay;
-									const firstUnread = firstUnreadMessageId === message._id;
-									const system = MessageTypes.isSystemMessage(message);
-
-									return (
-										<Fragment key={message._id}>
-											<ThreadMessageItem
-												message={message}
-												previous={previous}
-												sequential={sequential}
-												shouldShowAsSequential={shouldShowAsSequential}
-												showUserAvatar={showUserAvatar}
-												firstUnread={firstUnread}
-												system={system}
-											/>
-										</Fragment>
-									);
-								})}
-							{!loading && hasNextPage ? (
-								<div className='load-more' role='presentation'>
-									{isFetchingNextPage ? <LoadingMessagesIndicator /> : <InfiniteListAnchor loadMore={loadMoreMessages} />}
-								</div>
-							) : null}
-						</VList>
-					</SelectedMessageContext.Provider>
+								return (
+									<Fragment key={message._id}>
+										<ThreadMessageItem
+											message={message}
+											previous={previous}
+											sequential={sequential}
+											shouldShowAsSequential={shouldShowAsSequential}
+											firstUnread={firstUnread}
+											system={system}
+										/>
+									</Fragment>
+								);
+							})}
+						{!loading && hasNextPage ? (
+							<div className='load-more' role='presentation'>
+								{isFetchingNextPage ? <LoadingMessagesIndicator /> : <InfiniteListAnchor loadMore={loadMoreMessages} />}
+							</div>
+						) : null}
+					</VList>
 				</MessageListProvider>
 			</CustomVirtuaScrollbars>
 		</BubbleDateScope>
