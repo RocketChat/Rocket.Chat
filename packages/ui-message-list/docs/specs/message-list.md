@@ -270,9 +270,10 @@ true, the last loaded message is not the latest. "Within 1px" is the tolerance o
 
 **Keyboard**
 
-- **R66** The list MUST be one tab stop: ArrowDown and ArrowUp move the focus between messages, including a message the
-  virtualizer has not rendered, which the list scrolls in through its handle, and a move MUST release what the list holds (R25) so
-  the list does not snap back to the bottom. The first keyboard entry MUST land on the latest message (B17).
+- **R66** The list MUST be one tab stop: ArrowDown and ArrowUp move the focus to the message next to the focused one, in the order of
+  the list and not merely to the nearest rendered message (a message kept mounted far from the viewport sits among the rendered ones),
+  including a message the virtualizer has not rendered, which the list scrolls in through its handle; a move MUST release what the
+  list holds (R25) so the list does not snap back to the bottom. The first keyboard entry MUST land on the latest message (B17).
 - **R67** Tab MUST walk the focusable controls of the focused message, a toolbar of the message being one stop, then leave the list
   to the composer; Shift+Tab from the message MUST leave it to the top of the room, or of the contextual bar in a thread, and
   Tab MUST NOT enter the next message (B17; `list-keyboard-navigation.md`).

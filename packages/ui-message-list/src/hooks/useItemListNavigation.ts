@@ -41,6 +41,11 @@ type ItemListNavigationOptions = {
 	 * every row needs none.
 	 */
 	scrollToAdjacentRow?: (item: HTMLElement, direction: 'up' | 'down') => void;
+	/**
+	 * Tells whether a rendered row is the one next to `item` in the given direction. A virtualized list can keep rows mounted far
+	 * from the render window, so the nearest rendered row is not always the next one. Defaults to accepting any row.
+	 */
+	isAdjacentRow?: (item: HTMLElement, candidate: HTMLElement, direction: 'up' | 'down') => boolean;
 	/** Called when the arrows move the focus to another row. */
 	onMoveBetweenRows?: () => void;
 };
@@ -60,6 +65,7 @@ export const useItemListNavigation = ({
 	enterAtLast = false,
 	onLeave,
 	scrollToAdjacentRow,
+	isAdjacentRow,
 	onMoveBetweenRows,
 }: ItemListNavigationOptions = {}): RefCallback<HTMLElement> => {
 	const cleanupRef = useRef<(() => void) | null>(null);
@@ -100,18 +106,20 @@ export const useItemListNavigation = ({
 				e.stopPropagation();
 
 				const isUp = e.key === 'ArrowUp';
+				const direction = isUp ? 'up' : 'down';
+				const accept = (candidate: Element) =>
+					isItem(candidate) && (!isAdjacentRow || isAdjacentRow(item, candidate as HTMLElement, direction));
+				const move = () => (isUp ? focusManager.focusPrevious({ accept }) : focusManager.focusNext({ accept }));
 				onMoveBetweenRows?.();
-				const moved = isUp ? focusManager.focusPrevious({ accept: isItem }) : focusManager.focusNext({ accept: isItem });
 
-				if (moved || !scrollToAdjacentRow) return;
+				if (move() || !scrollToAdjacentRow) return;
 
 				// The adjacent row is outside the render window: bring it in and retry
-				scrollToAdjacentRow(item, isUp ? 'up' : 'down');
+				scrollToAdjacentRow(item, direction);
 				const retry = (framesLeft: number) =>
 					requestAnimationFrame(() => {
 						if (!node.isConnected) return;
-						const reached = isUp ? focusManager.focusPrevious({ accept: isItem }) : focusManager.focusNext({ accept: isItem });
-						if (!reached && framesLeft > 1) retry(framesLeft - 1);
+						if (!move() && framesLeft > 1) retry(framesLeft - 1);
 					});
 				retry(RETRY_FRAMES);
 			};
@@ -272,6 +280,6 @@ export const useItemListNavigation = ({
 				node.removeEventListener('focusin', onFocusIn);
 			};
 		},
-		[isItem, rowSelector, enterAtLast, onLeave, scrollToAdjacentRow, onMoveBetweenRows],
+		[isItem, rowSelector, enterAtLast, onLeave, scrollToAdjacentRow, isAdjacentRow, onMoveBetweenRows],
 	);
 };

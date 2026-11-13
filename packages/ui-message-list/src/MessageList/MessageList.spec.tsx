@@ -598,6 +598,7 @@ describe('stories', () => {
 				'OpensOnATarget',
 				'KeepsLiveEmbedsMounted',
 				'KeyboardIntoUnrenderedRows',
+				'KeyboardFromAKeptMountedRow',
 				'ReportsWhatIsVisible',
 				'ReportsBeingAtTheBottomAfterAJump',
 				'ReportsAfterAResize',

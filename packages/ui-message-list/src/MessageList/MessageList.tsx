@@ -171,18 +171,29 @@ const MessageList = <TMessage extends IMessage>({
 
 	const rowsRef = useRef(rows);
 	rowsRef.current = rows;
+	const rowIndexOf = useCallback((element: HTMLElement) => {
+		const index = Number(element.closest<HTMLElement>('[data-row-index]')?.dataset.rowIndex);
+		return Number.isNaN(index) ? -1 : index;
+	}, []);
 	const scrollToAdjacentRow = useCallback(
 		(item: HTMLElement, direction: 'up' | 'down') => {
-			const index = Number(item.closest<HTMLElement>('[data-row-index]')?.dataset.rowIndex);
-			const adjacent = Number.isNaN(index) ? -1 : rowsRef.current.adjacentIndex(index, direction);
+			const index = rowIndexOf(item);
+			const adjacent = index === -1 ? -1 : rowsRef.current.adjacentIndex(index, direction);
 			if (adjacent !== -1) {
 				handleRef.current?.scrollToIndex(adjacent, { align: 'nearest' });
 			}
 		},
-		[handleRef],
+		[handleRef, rowIndexOf],
+	);
+	const isAdjacentRow = useCallback(
+		(item: HTMLElement, candidate: HTMLElement, direction: 'up' | 'down') => {
+			const index = rowIndexOf(item);
+			return index === -1 || rowIndexOf(candidate) === rowsRef.current.adjacentIndex(index, direction);
+		},
+		[rowIndexOf],
 	);
 	const releaseAnchor = useCallback(() => dispatch({ type: 'keyboardNavigation' }), [dispatch]);
-	const navigationRef = useMessageListNavigation({ scrollToAdjacentRow, onMoveBetweenRows: releaseAnchor });
+	const navigationRef = useMessageListNavigation({ scrollToAdjacentRow, isAdjacentRow, onMoveBetweenRows: releaseAnchor });
 	const scrollbarsRef = useViewportScrollbars();
 	const viewportRef = useMergedRefsV2(scroller.viewportRef, navigationRef, scrollbarsRef);
 

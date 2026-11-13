@@ -189,6 +189,68 @@ describe('when the adjacent row is outside the render window', () => {
 		});
 	});
 
+	it('moves only to the row the list says is next, not to the nearest rendered one (R66)', () => {
+		const isAdjacentRow = jest.fn(
+			(item: HTMLElement, candidate: HTMLElement) => candidate.dataset.position === String(Number(item.dataset.position) + 1),
+		);
+		const { rows } = setup({ rowCount: 3, options: { isAdjacentRow } });
+		rows.forEach(({ link }, index) => {
+			link.dataset.position = String(index === 2 ? 5 : index);
+		});
+		rows[0].link.focus();
+
+		pressKey(rows[0].link, 'ArrowDown');
+
+		expect(isAdjacentRow).toHaveBeenCalledWith(rows[0].link, rows[1].link, 'down');
+		expect(document.activeElement).toBe(rows[1].link);
+
+		pressKey(rows[1].link, 'ArrowDown');
+
+		expect(document.activeElement).toBe(rows[1].link);
+	});
+
+	it('moves up only to the row the list says is before, skipping a rendered one that is not (R66)', () => {
+		const isAdjacentRow = jest.fn(
+			(item: HTMLElement, candidate: HTMLElement) => candidate.dataset.position === String(Number(item.dataset.position) - 1),
+		);
+		const { rows } = setup({ rowCount: 3, options: { isAdjacentRow } });
+		['2', '9', '3'].forEach((position, index) => {
+			rows[index].link.dataset.position = position;
+		});
+		rows[2].link.focus();
+
+		pressKey(rows[2].link, 'ArrowUp');
+
+		expect(document.activeElement).toBe(rows[0].link);
+
+		pressKey(rows[0].link, 'ArrowUp');
+
+		expect(document.activeElement).toBe(rows[0].link);
+	});
+
+	it('brings the next row in when only rows that are not next are rendered (R66)', () => {
+		const scrollToAdjacentRow = jest.fn((item: HTMLElement) => {
+			const next = createRow('next row');
+			next.link.dataset.position = String(Number(item.dataset.position) + 1);
+			item.closest('.rcx-item')?.after(next.row);
+		});
+		const { rows } = setup({
+			rowCount: 2,
+			options: {
+				scrollToAdjacentRow,
+				isAdjacentRow: (item, candidate) => candidate.dataset.position === String(Number(item.dataset.position) + 1),
+			},
+		});
+		rows[0].link.dataset.position = '10';
+		rows[1].link.dataset.position = '50';
+		rows[0].link.focus();
+
+		pressKey(rows[0].link, 'ArrowDown');
+
+		expect(scrollToAdjacentRow).toHaveBeenCalledWith(rows[0].link, 'down');
+		expect(document.activeElement).toHaveTextContent('next row');
+	});
+
 	it('does not ask when the adjacent row is rendered, and reports the move (R66)', () => {
 		const scrollToAdjacentRow = jest.fn();
 		const onMoveBetweenRows = jest.fn();

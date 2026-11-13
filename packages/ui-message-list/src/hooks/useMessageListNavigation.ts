@@ -9,6 +9,7 @@ const isComposerField = (node: Element) => node.tagName === 'TEXTAREA' || (node 
 
 export type MessageListNavigationOptions = {
 	scrollToAdjacentRow?: (item: HTMLElement, direction: 'up' | 'down') => void;
+	isAdjacentRow?: (item: HTMLElement, candidate: HTMLElement, direction: 'up' | 'down') => boolean;
 	onMoveBetweenRows?: () => void;
 };
 
@@ -19,6 +20,7 @@ export type MessageListNavigationOptions = {
  */
 export const useMessageListNavigation = ({
 	scrollToAdjacentRow,
+	isAdjacentRow,
 	onMoveBetweenRows,
 }: MessageListNavigationOptions = {}): RefCallback<HTMLElement> => {
 	const roomFocusManager = useFocusManager();
@@ -42,6 +44,7 @@ export const useMessageListNavigation = ({
 		enterAtLast: true,
 		onLeave,
 		scrollToAdjacentRow,
+		isAdjacentRow,
 		onMoveBetweenRows,
 	});
 };

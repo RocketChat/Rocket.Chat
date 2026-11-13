@@ -630,6 +630,38 @@ export const KeyboardIntoUnrenderedRows: Story = {
 	},
 };
 
+/** R66: from a kept-mounted row far from the viewport, an arrow reaches the row next to it, not the nearest rendered one in either direction. */
+export const KeyboardFromAKeptMountedRow: Story = {
+	args: { history: { size: 200, liveEmbedAt: [100] }, source: { pageSize: 200 } },
+	play: async ({ canvasElement }) => {
+		await waitForListSettled(canvasElement);
+		const focusKept = () => {
+			const kept = messageRow(canvasElement, fakeMessageId(100))?.querySelector<HTMLElement>('.rcx-message');
+			kept?.focus({ preventScroll: true });
+			return kept;
+		};
+		const focusedId = () => document.activeElement?.closest<HTMLElement>('[data-message-id]')?.dataset.messageId;
+		await expect(messageRow(canvasElement, fakeMessageId(101))).toBeNull();
+		await expect(document.activeElement).not.toBe(null);
+		await expect(focusKept()).toBe(document.activeElement);
+
+		await userEvent.keyboard('{ArrowDown}');
+		await waitFor(() => focusedId() === fakeMessageId(101));
+		await waitForListSettled(canvasElement);
+		await expect(focusedId()).toBe(fakeMessageId(101));
+
+		// With the render window above the kept row, the nearest rendered row before it is far away
+		await userScrollTo(canvasElement, 0);
+		await expect(messageRow(canvasElement, fakeMessageId(99))).toBeNull();
+		await expect(focusKept()).toBe(document.activeElement);
+
+		await userEvent.keyboard('{ArrowUp}');
+		await waitFor(() => focusedId() === fakeMessageId(99));
+		await waitForListSettled(canvasElement);
+		await expect(focusedId()).toBe(fakeMessageId(99));
+	},
+};
+
 /** R54, R55: the list reports what is visible as soon as it is placed, and again when the viewer moves. */
 export const ReportsWhatIsVisible: Story = {
 	args: { history: { size: 80 }, source: { pageSize: 80, firstUnreadMessageId: fakeMessageId(30) } },
