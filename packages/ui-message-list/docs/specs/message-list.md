@@ -131,16 +131,18 @@ true, the last loaded message is not the latest. "Within 1px" is the tolerance o
 **Own messages and "New messages"**
 
 - **R19** A message at the end that `isOwnMessage` says is the viewer's, including a copy the consumer marks as optimistic,
-  MUST take the list to the bottom, from wherever the viewer is reading (B3).
+  MUST take the list to the bottom, from wherever the viewer is reading, unless `countsAsArrival` says it is not an arrival (B3; R21).
 - **R20** When the list shows an older window (`hasNewerMessages`) and is taken to the bottom (by the handle's `scrollToBottom()`, which
   the consumer calls for the viewer's own message, or by "Jump to recent messages"), it MUST first call `onJumpToLatest`, and MUST go to
   the bottom once the latest page is among the messages. Until then, and if `onJumpToLatest` is not given, the viewer's position MUST
   NOT change by itself (B3).
 - **R21** `MessageListNewMessagesButton` MUST be visible (`data-visible` true, `aria-hidden` false) when a message that is not the
-  viewer's is appended at the end while the viewer is away from the bottom, `hasNewerMessages` is false and no newer page is
-  loading; and hidden (`data-visible` false, `aria-hidden` true, its button out of the tab order) otherwise (B4).
+  viewer's is appended at the end while the viewer is away from the bottom, `hasNewerMessages` is false, no newer page is
+  loading and `countsAsArrival` (every message by default) says it is an arrival; and hidden (`data-visible` false, `aria-hidden` true,
+  its button out of the tab order) otherwise. A message that is not an arrival is neither the viewer's nor new: it takes the list nowhere
+  and raises nothing (B4; `room-message-list` R43, where a thread reply is not one, as on `develop`).
 - **R22** The button MUST NOT show for a message that arrives while the viewer is at the bottom, for the viewer's own message,
-  for a page of newer messages the list asked for, or for an edit, a deletion or a reaction (B4).
+  for a message that is not an arrival, for a page of newer messages the list asked for, or for an edit, a deletion or a reaction (B4).
 - **R23** The button MUST hide as soon as the list reaches the bottom, by any means. Activating it MUST scroll the list to the
   bottom and then call its `onClick` (B4).
 - **R24** `MessageListJumpToLatestButton` MUST be visible while `hasNewerMessages` is true and hidden otherwise. Activating it

@@ -38,6 +38,7 @@
 - The overlays are children. Leave out the ones a list does not need; a thread shows only the date.
 - `header` shows once no older messages remain. A thread passes its main message as the first message instead, so a jump to it is an ordinary jump.
 - The `ref` handle scrolls to the bottom, the top or a message, and returns the latest visibility for callers that ask instead of listening. Scrolling to the bottom of an older window first asks `onJumpToLatest` for the latest page.
+- `isOwnMessage` and `countsAsArrival` say what the viewer wrote and which appended messages count as arrivals: one that does not (a thread reply, in a room) takes the list nowhere and raises no "New messages".
 - The list decides nothing about what is unread: pass `firstUnreadMessageId` for the divider and the jump, and leave `restoredPosition` out when unread messages must open the list at the bottom.
 
 ## Feeding it
