@@ -134,6 +134,25 @@ describe('MicrosoftGraphProvider', () => {
 			});
 		});
 
+		it('leaves out the lead minutes of an event whose reminder is off', async () => {
+			mockTokenThen(
+				graphResponse({
+					value: [
+						{
+							id: EVENT_ID,
+							start: { dateTime: '2026-08-21T10:00:00.0000000', timeZone: 'UTC' },
+							isReminderOn: false,
+							reminderMinutesBeforeStart: 15,
+						},
+					],
+				}),
+			);
+
+			const page = await new MicrosoftGraphProvider(config).listEvents(MAILBOX, timeWindow);
+
+			expect(page.items[0]).not.toHaveProperty('reminderMinutesBeforeStart');
+		});
+
 		it('maps a removed event to a deletion', async () => {
 			mockTokenThen(graphResponse({ value: [{ 'id': 'AAMkAD', '@removed': { reason: 'deleted' } }] }));
 

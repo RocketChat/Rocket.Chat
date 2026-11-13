@@ -165,8 +165,9 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 		}
 
 		const endTime = parseEwsDateTime(textOf(firstByTag(node, TYPES_NS, 'End')));
+		const reminderIsSet = textOf(firstByTag(node, TYPES_NS, 'ReminderIsSet')) !== 'false';
 		const reminder = textOf(firstByTag(node, TYPES_NS, 'ReminderMinutesBeforeStart'));
-		const reminderMinutes = reminder ? Number.parseInt(reminder, 10) : undefined;
+		const reminderMinutes = reminderIsSet && reminder ? Number.parseInt(reminder, 10) : undefined;
 
 		return {
 			kind: 'upsert',
