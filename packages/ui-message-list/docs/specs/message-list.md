@@ -7,6 +7,7 @@ code:
     packages/ui-client/src/components/CustomScrollbars/useViewportScrollbars.ts,
     packages/mock-providers/src/fixtures,
     src/MessageList/lib,
+    src/MessageList/scroll,
   ]
 tests:
   [
@@ -18,6 +19,8 @@ tests:
     src/MessageList/lib/diffMessageKeys.spec.ts,
     src/MessageList/lib/geometry.spec.ts,
     src/MessageList/lib/position.spec.ts,
+    src/MessageList/scroll/messageListScrollReducer.spec.ts,
+    src/MessageList/scroll/planRowsCommit.spec.ts,
   ]
 ---
 
@@ -340,14 +343,18 @@ list, except where noted:
   the page, instead of staying at the edge (R19, R31).
 - A failed `onJumpToLatest` leaves the list waiting for the latest page: it holds nothing, and goes to the bottom later without
   the viewer asking, once a newer page ends the window (R20).
-- The check for a page that is due is not repeated when a load settles after its page was committed, so a viewport taller than the
-  page stays unfilled until the next scroll or change (R34). Suspected, from the reducer: a reducer row shows it or drops it
-  first, and if it is real it is fixed in its own commit with a test that fails first.
 - Not carried, fixed first (Q1): the position is resolved when the list mounts, so a list that mounts before its messages
   loses its position (R61); `isAtBottom` reports what the list holds, so it is false for up to 3 s after a jump to the last message
   (R56); a resize does not refresh the report (R55).
 - Not carried, required differently (intent Q4): every message row object is rebuilt on every change, so the memo of the row
   never holds (R71, R72).
+
+### D4 A page committed before its load settles is not followed by a check
+
+When a page is committed while its load has not settled yet, the check for a page that is due finds the load in flight and starts
+none, and settling the load does not check again, so a viewport taller than the page stays unfilled until the next scroll or change of
+the messages (R34). A load that settles without new messages must still not be retried (R35). Pinned by the skipped test "checks again
+when a load settles after its page was committed (R34)" in `messageListScrollReducer.spec.ts`; fixed in step 14 of the plan.
 
 ## Open questions
 
