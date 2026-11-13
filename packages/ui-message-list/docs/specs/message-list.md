@@ -1,9 +1,24 @@
 ---
 status: planned
 adrs: []
-code: [packages/ui-client/src/hooks/useFormatDate.ts, packages/ui-client/src/components/CustomScrollbars/useViewportScrollbars.ts]
+code:
+  [
+    packages/ui-client/src/hooks/useFormatDate.ts,
+    packages/ui-client/src/components/CustomScrollbars/useViewportScrollbars.ts,
+    packages/mock-providers/src/fixtures,
+    src/MessageList/lib,
+  ]
 tests:
-  [packages/ui-client/src/hooks/useFormatDate.spec.ts, packages/ui-client/src/components/CustomScrollbars/useViewportScrollbars.spec.tsx]
+  [
+    packages/ui-client/src/hooks/useFormatDate.spec.ts,
+    packages/ui-client/src/components/CustomScrollbars/useViewportScrollbars.spec.tsx,
+    packages/mock-providers/src/tests/fixtures.spec.ts,
+    src/MessageList/lib/buildMessageListRows.spec.ts,
+    src/MessageList/lib/isSequentialMessage.spec.ts,
+    src/MessageList/lib/diffMessageKeys.spec.ts,
+    src/MessageList/lib/geometry.spec.ts,
+    src/MessageList/lib/position.spec.ts,
+  ]
 ---
 
 # Spec: Message list
