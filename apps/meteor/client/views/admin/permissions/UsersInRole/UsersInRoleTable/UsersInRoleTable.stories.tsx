@@ -46,7 +46,7 @@ export const Default = {
 	},
 };
 
-export const withLoading = {
+export const WithLoading = {
 	args: {
 		total: 0,
 		isLoading: true,
@@ -59,7 +59,7 @@ export const withLoading = {
 	},
 };
 
-export const withNoResults = {
+export const WithNoResults = {
 	args: {
 		total: 0,
 		isLoading: false,
@@ -72,7 +72,7 @@ export const withNoResults = {
 	},
 };
 
-export const withError = {
+export const WithError = {
 	args: {
 		total: 0,
 		isLoading: false,

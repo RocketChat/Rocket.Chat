@@ -165,6 +165,13 @@
 			}
 		},
 		{
+			"files": ["apps/meteor/**/*.{test,spec}.{ts,tsx,js,jsx,mjs,cjs}"],
+			"rules": {
+				"jest/expect-expect": ["warn", { "assertFunctionNames": ["expect", "expectListKeyboard"] }]
+			},
+			"plugins": ["jest"]
+		},
+		{
 			"files": ["apps/meteor/tests/{end-to-end,unit}/**/*.spec.ts"],
 			"rules": {
 				"jest/expect-expect": "off",
