@@ -1,6 +1,6 @@
 # Intent: Message variants
 
-Author: message list replacement stack (branch 06). Status: draft.
+Author: message list replacement stack (branch 06). Status: accepted.
 
 ## Problem
 
@@ -60,33 +60,17 @@ list are later capabilities (branches 07, 08 and 09).
 
 ## Open questions
 
-- **Q1** What the audit shows once it renders the package's variants. Today it mounts no list provider, so its rows get the
-  old context's empty defaults: no timestamp text (the formatters default to empty), no roles, no `@username`, no read
-  receipt, no URL previews. Following the display settings, as decided for the read-only places, shows all of them, and
-  asks for the roles of each audited room. Options: (a) follow the display settings everywhere, one rule for every place;
-  (b) keep the audit's bare look through an override of the display value that only it passes, which costs a second look
-  to maintain and contradicts the decision. Recommended: (a), with a changeset.
-- **Q2** The date in the tooltip of the "edited" indicator. Today it is `Date.toLocaleString()`; the package reads the
-  display context's date-and-time format, the one the timestamp's tooltip already uses. Options: (a) take the display format (the
-  tooltips of one row agree; a visible change in every place); (b) add a `toLocaleString` formatter to the display context
-  to keep today's text, which keeps an inconsistency the viewer's date format settings never reach. Recommended: (a).
-- **Q3** Two small corrections that follow from copying the reference, which fixes both: the old variants draw a
-  literal `0` under a message whose `actionLinks` or `reactions` is empty (`length && <Part/>`), and the old broadcast
-  reply button shows where interaction is off (the audit, for an auditor subscribed to the broadcast room), where it does
-  nothing. Options: (a) take both corrections; (b) keep both, which asks the package for a `0` it should never draw.
-  Recommended: (a).
-- **Q4** What to do with the capabilities of the interactions context that nothing in the package reads. There are fourteen,
-  not the seven `message-toolbar` names: `pin`, `unpin`, `star`, `unstar`, `markUnread`, `translate`, `showOriginal`,
-  `edit`, `canDelete`, `requestDeletion`, `openReport`, `openReactionList`, `openReadReceipts` and `startDiscussion`. The menu's
-  entries are built by the app's own action hooks and handed over through the toolbar context. Options: (a) remove the
-  fourteen from the context and from the provider; the context shrinks to what the package reads; (b) move the menu's
-  entries onto the interactions context, so the package builds them: the permission and setting gates, the app's
-  action hooks and the apps' actions would all have to cross into the package as new capabilities, and `message-toolbar`'s
-  design (entries built and gated by the app) would be reversed. Recommended: (a), as its own commit in branch 09 (the
-  cleanup branch), not in this one: it changes the package's public surface and `message-capabilities` R28, a concern apart
-  from the variants, and nothing in the variants reads any of the fourteen.
-- **Q5** Where the conversation stories of the reference (a room and a thread of 120 generated messages) live. They render the
-  list engine (`MessageList`, its date bubble and buttons, the fake message source), which arrives in branch 07, so they cannot
-  render in this branch. Options: (a) move them to branch 07 and give this branch a story for each variant and state, plus one
-  story that stacks every variant in a column without the list engine; (b) pull the list engine forward, which
-  breaks the order of the stack. Recommended: (a).
+All answered by the user at the spec gate (2026-11-13), each with the recommended option.
+
+- **Q1** ~~What the audit shows once it renders the package's variants.~~ Answered: (a) the audit follows the display
+  settings (timestamps, roles, `@username`, read receipts, URL previews), with a changeset. Where the roles of an audited
+  room cannot be fetched (the endpoint can be forbidden for an auditor) the row still renders, without roles and without an
+  error (spec R44, R52).
+- **Q2** ~~The date in the tooltip of the "edited" indicator.~~ Answered: (a) the display date-and-time format; the visible
+  change is named in a changeset (spec R15).
+- **Q3** ~~Two small corrections: the literal `0`, and the broadcast reply where interaction is off.~~ Answered: (a) take
+  both, each in its own commit below the feature where it can be separated, with a changeset (spec R38).
+- **Q4** ~~The capabilities of the interactions context that nothing in the package reads (fourteen).~~ Answered: (a) remove
+  them, as their own commit in branch 09; this branch does not touch them (spec Out of scope; the plan's follow-ups).
+- **Q5** ~~Where the conversation stories live.~~ Answered: (a) branch 07; this branch has a story per variant and state and
+  one story that stacks the four variants (spec R8).
