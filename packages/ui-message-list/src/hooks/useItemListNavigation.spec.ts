@@ -161,6 +161,34 @@ describe('when the adjacent row is outside the render window', () => {
 		expect(document.activeElement).toHaveTextContent('early row');
 	});
 
+	it('keeps trying for a few frames while the virtualizer renders the row (R66)', () => {
+		const frames: FrameRequestCallback[] = [];
+		jest.spyOn(window, 'requestAnimationFrame').mockImplementation((callback) => frames.push(callback));
+		let rowAppearsAfter = 3;
+		const flushFrame = () => {
+			frames.splice(0).forEach((callback) => callback(0));
+			rowAppearsAfter -= 1;
+			if (rowAppearsAfter === 0) {
+				rows[0].row.after(createRow('late row').row);
+			}
+		};
+		const { rows } = setup({ rowCount: 1, options: { scrollToAdjacentRow: jest.fn() } });
+		rows[0].link.focus();
+
+		pressKey(rows[0].link, 'ArrowDown');
+		flushFrame();
+		flushFrame();
+		expect(document.activeElement).toBe(rows[0].link);
+		flushFrame();
+		flushFrame();
+
+		expect(document.activeElement).toHaveTextContent('late row');
+		jest.spyOn(window, 'requestAnimationFrame').mockImplementation((callback) => {
+			callback(0);
+			return 0;
+		});
+	});
+
 	it('does not ask when the adjacent row is rendered, and reports the move (R66)', () => {
 		const scrollToAdjacentRow = jest.fn();
 		const onMoveBetweenRows = jest.fn();

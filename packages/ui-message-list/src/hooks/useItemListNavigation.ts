@@ -2,6 +2,9 @@ import { createFocusManager, getFocusableTreeWalker } from '@react-aria/focus';
 import type { RefCallback } from 'react';
 import { useCallback, useRef } from 'react';
 
+/** How many frames a virtualized list gets to render the row an arrow asked for. */
+const RETRY_FRAMES = 10;
+
 const isItemLink = (node: Element) => node.classList.contains('rcx-item__link');
 
 const isTextField = (element: HTMLElement) =>
@@ -104,14 +107,13 @@ export const useItemListNavigation = ({
 
 				// The adjacent row is outside the render window: bring it in and retry
 				scrollToAdjacentRow(item, isUp ? 'up' : 'down');
-				requestAnimationFrame(() => {
-					if (!node.isConnected) return;
-					if (isUp) {
-						focusManager.focusPrevious({ accept: isItem });
-					} else {
-						focusManager.focusNext({ accept: isItem });
-					}
-				});
+				const retry = (framesLeft: number) =>
+					requestAnimationFrame(() => {
+						if (!node.isConnected) return;
+						const reached = isUp ? focusManager.focusPrevious({ accept: isItem }) : focusManager.focusNext({ accept: isItem });
+						if (!reached && framesLeft > 1) retry(framesLeft - 1);
+					});
+				retry(RETRY_FRAMES);
 			};
 
 			// The button each toolbar focused last, so coming back to a toolbar returns to it, as the toolbar pattern asks

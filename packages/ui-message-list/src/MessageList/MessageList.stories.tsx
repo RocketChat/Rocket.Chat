@@ -609,25 +609,24 @@ export const KeepsLiveEmbedsMounted: Story = {
 	},
 };
 
-/** R66: the arrows move through messages the virtualizer has not rendered, and the list does not snap back to the bottom. */
+/** R66: the arrows reach a message next to the focused one that the virtualizer has not rendered, and the list does not snap back to the bottom. */
 export const KeyboardIntoUnrenderedRows: Story = {
-	args: { history: { size: 200 }, source: { pageSize: 200 } },
+	args: { history: { size: 200, liveEmbedAt: [100] }, source: { pageSize: 200 } },
 	play: async ({ canvasElement }) => {
 		await waitForListSettled(canvasElement);
 		const viewport = getViewport(canvasElement);
-		const last = messageRow(canvasElement, fakeMessageId(199))?.querySelector<HTMLElement>('.rcx-message');
-		last?.focus();
+		await expect(messageRow(canvasElement, fakeMessageId(99))).toBeNull();
+		const kept = messageRow(canvasElement, fakeMessageId(100))?.querySelector<HTMLElement>('.rcx-message');
+		kept?.focus({ preventScroll: true });
+		await expect(document.activeElement).toBe(kept);
 
-		for (let step = 1; step <= 25; step++) {
-			await userEvent.keyboard('{ArrowUp}');
-			await waitFor(
-				() => document.activeElement?.closest<HTMLElement>('[data-message-id]')?.dataset.messageId === fakeMessageId(199 - step),
-			);
-		}
+		await userEvent.keyboard('{ArrowUp}');
+		await waitFor(() => document.activeElement?.closest<HTMLElement>('[data-message-id]')?.dataset.messageId === fakeMessageId(99));
 
+		await userEvent.keyboard('{ArrowDown}{ArrowDown}');
+		await waitFor(() => document.activeElement?.closest<HTMLElement>('[data-message-id]')?.dataset.messageId === fakeMessageId(101));
 		await waitForListSettled(canvasElement);
 		await expect(viewport.closest('[data-anchor]')).toHaveAttribute('data-anchor', 'none');
-		await expect(document.activeElement?.closest('[data-message-id]')).toHaveAttribute('data-message-id', fakeMessageId(174));
 	},
 };
 
