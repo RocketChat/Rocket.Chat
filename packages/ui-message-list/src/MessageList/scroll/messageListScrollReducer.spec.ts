@@ -423,6 +423,19 @@ describe('the user-scrolling window', () => {
 	});
 });
 
+describe('a jump to the latest page that cannot be made', () => {
+	it('is forgotten, so the list does not go to the bottom by itself when a later commit ends the newer pages (R20)', () => {
+		const detached = idleAt(rowsOf('abcde', { hasNewerMessages: true }), MIDDLE);
+		const asked = run(detached, [{ type: 'scrollToBottomRequested' }]);
+		expect(asked.state.isJumpingToLatest).toBe(true);
+
+		const unavailable = run(asked.state, [{ type: 'jumpToLatestUnavailable' }, committed(rowsOf('abcdef'), MIDDLE, 'reorder')]);
+
+		expect(unavailable.state.isJumpingToLatest).toBe(false);
+		expect(unavailable.state.anchor).toEqual({ type: 'none' });
+	});
+});
+
 describe('a position restored late', () => {
 	it('applies the position of the first messages listed, however late they arrive (R61)', () => {
 		const empty = createInitialScrollState({ rows: rowsOf('') });

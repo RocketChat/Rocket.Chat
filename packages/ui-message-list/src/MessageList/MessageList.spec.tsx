@@ -296,11 +296,14 @@ describe('going to the latest', () => {
 		expect(onJumpToLatest).toHaveBeenCalledTimes(1);
 	});
 
-	it('does not move by itself when the latest page cannot be asked for (R20)', () => {
+	it('does not move by itself when the latest page cannot be asked for, now or when the messages next stop having a newer page (R20)', () => {
 		const ref = createRef<MessageListHandle>();
-		render(<List ref={ref} hasNewerMessages />, { wrapper });
+		const { rerender } = render(<List ref={ref} hasNewerMessages />, { wrapper });
 
 		act(() => ref.current?.scrollToBottom());
+		expect(host()).toHaveAttribute('data-anchor', 'none');
+
+		rerender(<List ref={ref} messages={[...messages, other]} />);
 
 		expect(host()).toHaveAttribute('data-anchor', 'none');
 	});

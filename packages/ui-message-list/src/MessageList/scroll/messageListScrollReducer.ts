@@ -62,6 +62,8 @@ export type MessageListScrollEvent =
 	| { type: 'targetChanged'; messageId: string | undefined }
 	| { type: 'restoreResolved'; target: RestoreTarget }
 	| { type: 'loadSettled' }
+	/** The latest page cannot be asked for, so the list stops waiting for it. */
+	| { type: 'jumpToLatestUnavailable' }
 	| { type: 'positioningTimeout' }
 	| { type: 'messageAnchorExpired' }
 	| { type: 'scrollToBottomRequested' }
@@ -322,6 +324,10 @@ export const messageListScrollReducer = (state: MessageListScrollState, event: M
 			}
 
 			return { state: { ...withAnchor(state, NONE), pendingTargetId: event.messageId, isJumpingToLatest: false }, commands: [] };
+		}
+
+		case 'jumpToLatestUnavailable': {
+			return { state: { ...state, isJumpingToLatest: false }, commands: [] };
 		}
 
 		case 'loadSettled': {

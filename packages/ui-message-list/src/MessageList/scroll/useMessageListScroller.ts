@@ -297,7 +297,11 @@ export const useMessageListScroller = <TMessage extends IMessage>({
 				break;
 
 			case 'jumpToLatest':
-				void Promise.resolve(onJumpToLatest?.()).catch(() => undefined);
+				if (!onJumpToLatest) {
+					dispatchRef.current({ type: 'jumpToLatestUnavailable' });
+					break;
+				}
+				void Promise.resolve(onJumpToLatest()).catch(() => undefined);
 				break;
 
 			case 'highlight':
