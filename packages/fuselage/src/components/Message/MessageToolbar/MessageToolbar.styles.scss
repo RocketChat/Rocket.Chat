@@ -18,11 +18,13 @@ $message-toolbar-border-radius: theme('message-toolbar-border-radius', lengths.b
 
 		user-select: none;
 
-		// Out of the row's flow, so it takes no room and no gap.
+		// Out of the row's flow, so it takes no room and no gap, but spanning the
+		// whole row, so it is on screen whenever any part of the row is.
 		.rcx-message > & {
 			position: absolute;
-			top: 0;
-			inset-inline-end: 0;
+			inset: 0;
+
+			pointer-events: none;
 		}
 
 		.rcx-message:hover &,
