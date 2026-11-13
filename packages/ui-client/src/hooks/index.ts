@@ -9,6 +9,7 @@ export * from './useDocumentTitle';
 export * from './useDontAskAgain';
 export * from './useDropdownVisibility';
 export * from './useEmbeddedLayout';
+export * from './useFormatDate';
 export * from './useFormatDateAndTime';
 export * from './useFormatTime';
 export * from './useFeaturePreview';

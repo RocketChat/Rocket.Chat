@@ -1,8 +1,9 @@
 ---
 status: planned
 adrs: []
-code: []
-tests: []
+code: [packages/ui-client/src/hooks/useFormatDate.ts, packages/ui-client/src/components/CustomScrollbars/useViewportScrollbars.ts]
+tests:
+  [packages/ui-client/src/hooks/useFormatDate.spec.ts, packages/ui-client/src/components/CustomScrollbars/useViewportScrollbars.spec.tsx]
 ---
 
 # Spec: Message list
