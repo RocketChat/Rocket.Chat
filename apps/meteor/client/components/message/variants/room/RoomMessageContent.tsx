@@ -96,7 +96,7 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 
 			{oembedEnabled && !!normalizedMessage.urls?.length && <MessageUrlPreviews urls={normalizedMessage.urls} />}
 
-			{normalizedMessage.actionLinks?.length && (
+			{!!normalizedMessage.actionLinks?.length && (
 				<MessageActionLinks
 					message={normalizedMessage}
 					actions={normalizedMessage.actionLinks.map(({ method_id: methodId, i18nLabel, ...action }) => ({
@@ -107,9 +107,7 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 				/>
 			)}
 
-			{normalizedMessage.reactions && Object.keys(normalizedMessage.reactions).length && (
-				<MessageReactionList message={normalizedMessage} />
-			)}
+			{Object.keys(normalizedMessage.reactions ?? {}).length > 0 && <MessageReactionList message={normalizedMessage} />}
 
 			{chat && allowsInteraction && isThreadMainMessage(normalizedMessage) && (
 				<MessageThreadMetrics

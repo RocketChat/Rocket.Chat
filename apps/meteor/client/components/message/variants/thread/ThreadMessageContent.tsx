@@ -86,7 +86,7 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps) => {
 
 			{oembedEnabled && !!normalizedMessage.urls?.length && <MessageUrlPreviews urls={normalizedMessage.urls} />}
 
-			{normalizedMessage.actionLinks?.length && (
+			{!!normalizedMessage.actionLinks?.length && (
 				<MessageActionLinks
 					message={normalizedMessage}
 					actions={normalizedMessage.actionLinks.map(({ method_id: methodId, i18nLabel, ...action }) => ({
@@ -97,9 +97,7 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps) => {
 				/>
 			)}
 
-			{normalizedMessage.reactions && Object.keys(normalizedMessage.reactions).length && (
-				<MessageReactionList message={normalizedMessage} />
-			)}
+			{Object.keys(normalizedMessage.reactions ?? {}).length > 0 && <MessageReactionList message={normalizedMessage} />}
 
 			{normalizedMessage.location && <MessageLocation location={normalizedMessage.location} />}
 

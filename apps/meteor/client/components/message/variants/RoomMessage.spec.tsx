@@ -235,3 +235,21 @@ describe('selecting messages', () => {
 		expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
 	});
 });
+
+it('draws no 0 for empty action links and reactions (message-variants R38)', () => {
+	render(
+		<RoomMessage
+			message={{ ...message, actionLinks: [], reactions: {} }}
+			sequential={false}
+			all={false}
+			mention={false}
+			unread={false}
+			ignoredUser={false}
+			showUserAvatar={true}
+		/>,
+		{ wrapper: mockAppRoot().build() },
+	);
+
+	expect(screen.getByText('message body')).toBeInTheDocument();
+	expect(screen.queryByText('0')).not.toBeInTheDocument();
+});

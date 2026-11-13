@@ -109,3 +109,19 @@ it('opens the user info from the avatar without the click reaching the elements 
 	expect(openUserInfo).toHaveBeenCalledWith('userName');
 	expect(onClickAround).not.toHaveBeenCalled();
 });
+
+it('draws no 0 for empty action links and reactions (message-variants R38)', () => {
+	render(
+		<ThreadMessage
+			message={{ ...message, actionLinks: [], reactions: {} }}
+			sequential={false}
+			unread={false}
+			ignoredUser={false}
+			showUserAvatar={true}
+		/>,
+		{ wrapper: mockAppRoot().build() },
+	);
+
+	expect(screen.getByText('message body')).toBeInTheDocument();
+	expect(screen.queryByText('0')).not.toBeInTheDocument();
+});
