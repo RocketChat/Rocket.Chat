@@ -2,7 +2,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Users, Subscriptions } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/tools';
 import type { Mongo } from 'meteor/mongo';
-import type { Filter, FindOptions, RootFilterOperators } from 'mongodb';
+import type { Filter, FindOptions } from 'mongodb';
 
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { settings } from '../../settings';
@@ -148,24 +148,6 @@ export async function findPaginatedUsersByStatus({
 		actualSort.active = sort.status;
 		delete actualSort.status;
 	}
-	const match: Filter<IUser & RootFilterOperators<IUser>> = {};
-	switch (status) {
-		case 'active':
-			match.active = true;
-			break;
-		case 'deactivated':
-			match.active = false;
-			break;
-	}
-
-	if (hasLoggedIn !== undefined) {
-		match.lastLogin = { $exists: hasLoggedIn };
-	}
-
-	if (type) {
-		match.type = type;
-	}
-
 	const canSeeAllUserInfo = await hasPermissionAsync(uid, 'view-full-other-user-info');
 
 	const projection = {
@@ -183,52 +165,16 @@ export async function findPaginatedUsersByStatus({
 		sipExtension: 1,
 	};
 
-	if (searchTerm?.trim()) {
-		match.$or = [
-			...(canSeeAllUserInfo ? [{ 'emails.address': { $regex: escapeRegExp(searchTerm || ''), $options: 'i' } }] : []),
-			{
-				username: { $regex: escapeRegExp(searchTerm || ''), $options: 'i' },
-			},
-			{
-				name: { $regex: escapeRegExp(searchTerm || ''), $options: 'i' },
-			},
-		];
-	}
-	if (roles?.length && !roles.includes('all')) {
-		match.roles = { $in: roles };
-	}
-
-	if (inactiveReason) {
-		const inactiveReasonCondition = {
-			$or: [
-				{ inactiveReason: { $in: inactiveReason } },
-				// This condition is to make it backward compatible with the old behavior
-				// The deactivated users not having the inactiveReason field should be returned as well
-				...(inactiveReason.includes('deactivated') || inactiveReason.includes('idle_too_long')
-					? [{ inactiveReason: { $exists: false } }]
-					: []),
-			],
-		};
-
-		if (match.$or) {
-			match.$and = [{ $or: match.$or }, inactiveReasonCondition];
-			delete match.$or;
-		} else {
-			Object.assign(match, inactiveReasonCondition);
-		}
-	}
-
-	if (statusManagement) {
-		const managedStatus = {
-			$or: [{ presenceDisabledByAdmin: true }, { statusVisibilityDeniedByAdmin: { $exists: true, $ne: [] } }],
-		};
-
-		match.$and = [...(match.$and ?? []), statusManagement === 'managed' ? managedStatus : { $nor: [managedStatus] }];
-	}
-
-	const { cursor, totalCount } = Users.findPaginated(
+	const { users, total } = await Users.findPaginatedByStatus(
 		{
-			...match,
+			active: status === undefined ? undefined : status === 'active',
+			hasLoggedIn,
+			type,
+			searchTerm,
+			searchEmails: canSeeAllUserInfo,
+			roles: roles && !roles.includes('all') ? roles : undefined,
+			inactiveReasons: inactiveReason,
+			statusManagement,
 		},
 		{
 			sort: actualSort,
@@ -238,7 +184,6 @@ export async function findPaginatedUsersByStatus({
 			allowDiskUse: true,
 		},
 	);
-	const [users, total] = await Promise.all([cursor.toArray(), totalCount]);
 	return {
 		users,
 		count: users.length,
