@@ -7354,6 +7354,64 @@ describe('[Users]', () => {
 		});
 	});
 
+	describe('[/twoFactorChallenges.sendEmailCode]', () => {
+		let user: TestUser<IUser>;
+
+		const insertChallenge = async (challenge: Record<string, unknown>) => {
+			const challengeId = `send-${Date.now()}-${Math.random()}`;
+			await withDatabase((db) =>
+				db.collection('rocketchat_two_factor_challenges').insertOne({
+					_id: challengeId,
+					userId: user._id,
+					method: 'email',
+					createdAt: new Date(),
+					expireAt: new Date(Date.now() + 60_000),
+					...challenge,
+				} as any),
+			);
+			return challengeId;
+		};
+
+		const storedCode = async () => {
+			const stored = await withDatabase((db) =>
+				db.collection<IUser>('users').findOne({ _id: user._id }, { projection: { 'services.emailCode.code': 1 } }),
+			);
+			return stored?.services?.emailCode?.code;
+		};
+
+		before(async () => {
+			user = await createUser({ verified: true });
+		});
+
+		after(() => deleteUser(user));
+
+		it('should not send a code for a challenge that uses another method', async () => {
+			const challengeId = await insertChallenge({ method: 'totp' });
+
+			const res = await request.post(api('twoFactorChallenges.sendEmailCode')).send({ challengeId }).expect(400);
+
+			expect(res.body).to.have.property('errorType', 'error-invalid-challenge-method');
+			expect(await storedCode()).to.be.undefined;
+		});
+
+		it('should not send a code for an expired challenge', async () => {
+			const challengeId = await insertChallenge({ expireAt: new Date(Date.now() - 1_000) });
+
+			const res = await request.post(api('twoFactorChallenges.sendEmailCode')).send({ challengeId }).expect(400);
+
+			expect(res.body).to.have.property('errorType', 'error-challenge-expired');
+			expect(await storedCode()).to.be.undefined;
+		});
+
+		it('should store a new email code for the user of a pending email challenge', async () => {
+			const challengeId = await insertChallenge({});
+
+			await request.post(api('twoFactorChallenges.sendEmailCode')).send({ challengeId }).expect(200);
+
+			expect(await storedCode()).to.be.a('string');
+		});
+	});
+
 	describe('[/twoFactorChallenges.verifyChallenge]', () => {
 		const insertChallenge = (challenge: Record<string, unknown>) =>
 			withDatabase((db) =>
