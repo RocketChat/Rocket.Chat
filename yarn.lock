@@ -9103,9 +9103,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/federation-sdk@npm:0.9.1":
+"@rocket.chat/federation-sdk@file:./ee/packages/federation-matrix/vendor/federation-sdk-pr418.tgz::locator=rocket.chat%40workspace%3A.":
   version: 0.9.1
-  resolution: "@rocket.chat/federation-sdk@npm:0.9.1"
+  resolution: "@rocket.chat/federation-sdk@file:./ee/packages/federation-matrix/vendor/federation-sdk-pr418.tgz#./ee/packages/federation-matrix/vendor/federation-sdk-pr418.tgz::hash=48859d&locator=rocket.chat%40workspace%3A."
   dependencies:
     "@datastructures-js/priority-queue": "npm:^6.3.5"
     "@noble/ed25519": "npm:^3.0.0"
@@ -9119,7 +9119,7 @@ __metadata:
     zod: "npm:~4.3.6"
   peerDependencies:
     typescript: ~5.9.2
-  checksum: 10/3b8a871a07c887e3a19ca8a8cc630c15e413fbf52b56ce7465734f63dfc0e195cddeb119bd82c09f99279d6be33165b7a91e2f1a14c02ca0fb0dff9ddaa668d3
+  checksum: 10/af87d5d0292f2f80c5f90578fb9c7c547b141a96a273ed3a9b0970c84f8f9dd2d7fc8a5b409fb3bf0fbda68a9632503b0301bf77c2152b2ea375389cb9fbffcb
   languageName: node
   linkType: hard
 
