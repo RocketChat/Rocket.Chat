@@ -29,6 +29,7 @@ Regressions in the reference that the plan does not copy:
 
 Departures:
 
+- The package's specs and stories build the room and the subscription inline: the reference's fixtures of `mock-providers` are shared infrastructure that this branch does not add.
 - `useIsVisible` is the one of `@rocket.chat/ui-client`, not a copy in the package.
 - The package slices nothing: the app chooses how many quick reactions to offer (three).
 
@@ -67,7 +68,8 @@ Each step is one commit and builds and passes on its own.
    and re-ranks the quick reactions without touching the recent list; `addRecentEmoji` keeps doing both. Nothing visible:
    nobody calls it yet. Spec: the provider's, failing first.
 3. Package, toolbar (R1 to R13, R15 to R18, R27, R28), with `useCountQuickReaction` in the toolbar context (R9) and a `useQuickReactions` that can offer no reactions at all (R6): copy from the reference with the departures above; `replyInThread`
-   in the navigation context; stories, specs, exports. Spec `code` and `tests` grow.
+   in the navigation context, and its app side in `useMessageNavigationValue` (R23) so that the app still builds; stories,
+   specs, exports. Spec `code` and `tests` grow.
 4. App, toolbar value (R19 to R24): `useMessageToolbarValue`, `replyInThread`, `openReactionPicker` telling its close, no reactions without a chat,
    mounted in `MessagesProvider`; un-narrow `message-capabilities` R28. Spec `code` and `tests` grow.
 5. App, switch (R14, R21, R25, R26): the variants render the package's holder. Two `minor` changesets, one for R14 and
@@ -88,33 +90,33 @@ Each step is one commit and builds and passes on its own.
 
 ## Proof
 
-| Requirement | Proven by                                                                                                                                                                                                |
-| ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| R1          | `src/Message/MessageToolbarHolder.spec.tsx`, "renders nothing where messages do not allow interaction (R1)"                                                                                              |
-| R2          | same file, "renders the toolbar once the room is known and waits for it (R2)"                                                                                                                            |
-| R3          | same file, "keeps the toolbar while a popup is open and lets go when it closes (R3)"                                                                                                                     |
-| R4          | `src/Message/toolbar/MessageToolbar.spec.tsx`, "shows the inline items of the %s place (R4)"                                                                                                             |
-| R5          | same file, "infers the place from the message (R5)"                                                                                                                                                      |
-| R6          | same file, "hides the reactions where the viewer cannot react (R6)" and "are hidden where the toolbar context offers no reactions (R6)"                                                                  |
-| R7          | same file, "hides quote and reply in thread where they do not apply (R7)"                                                                                                                                |
-| R8          | same file, "disables forward for encrypted messages and ABAC rooms (R8)"                                                                                                                                 |
-| R9          | same file, "toggles a quick reaction and opens the picker (R9)"                                                                                                                                          |
-| R10         | same file, "calls quote, reply in thread and jump (R10)"                                                                                                                                                 |
-| R11         | same file, "hides the items the layout hides (R11)"                                                                                                                                                      |
-| R12         | `src/Message/toolbar/MessageToolbarActionMenu.spec.tsx`, "orders the entries and puts apps last (R12)"                                                                                                   |
-| R13         | same file, "keeps the actions of apps when the layout hides ids (R13)"                                                                                                                                   |
-| R14         | same file, "shows the menu when only apps offer an action (R14)"; `apps/meteor/client/components/message/variants/RoomMessage.contexts.spec.tsx`, "shows the actions menu for an app action alone (R14)" |
-| R15         | `MessageToolbarActionMenu.spec.tsx`, "replaces the apps of an encrypted message with Unavailable (R15)"                                                                                                  |
-| R16         | `MessageToolbar.spec.tsx`, "renders the AI actions in their own menu (R16)"                                                                                                                              |
-| R17         | `MessageToolbarActionMenu.spec.tsx`, "tells when it opens and closes (R17)"                                                                                                                              |
-| R18         | `MessageToolbar.spec.tsx`, "runs the menu entry chosen (R18)"                                                                                                                                            |
-| R19         | `apps/meteor/client/providers/MessagesProvider/useMessageToolbarValue.spec.tsx`, the "(R19)" tests                                                                                                       |
-| R20         | same file, "appends the actions of apps and offers the AI ones apart (R20)"                                                                                                                              |
-| R21         | same file, the "(R21)" tests, among them "say that the place offers no reactions where no chat is open (R21)"                                                                                            |
-| R22         | same file, "keeps its identity while ... (R22)"                                                                                                                                                          |
-| R23         | `MessagesProvider.spec.tsx`, "(message-toolbar R23)" tests                                                                                                                                               |
-| R24         | `MessagesProvider.spec.tsx`, "(message-toolbar R24)" tests and `useMessageToolbarValue.spec.tsx`, "carries out ... (R24)"                                                                                |
-| R25         | `RoomMessage.contexts.spec.tsx`, "(message-toolbar R25)" tests, and a thread message test                                                                                                                |
-| R26         | `RoomMessage.contexts.spec.tsx`, "shows no toolbar where interaction is off (message-toolbar R26)"                                                                                                       |
-| R27         | `src/index.spec.ts`, "exports the toolbar (message-toolbar R27)"                                                                                                                                         |
-| R28         | the `stories` axe tests of `MessageToolbar.spec.tsx` (R28)                                                                                                                                               |
+| Requirement | Proven by                                                                                                                                                                                                                                          |
+| ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| R1          | `src/Message/MessageToolbarHolder.spec.tsx`, "renders nothing where messages do not allow interaction (R1)"                                                                                                                                        |
+| R2          | `src/Message/MessageToolbarHolder.spec.tsx`, "renders the toolbar once the room is known and waits for it (R2)" and "renders no toolbar while the message is off screen (R2)"                                                                      |
+| R3          | `src/Message/MessageToolbarHolder.spec.tsx`, "keeps the toolbar while a popup is open and lets go when it closes (R3)"; `src/Message/toolbar/MessageToolbar.spec.tsx`, "holds the toolbar open while the reaction picker is (R3)"                  |
+| R4          | `src/Message/toolbar/MessageToolbar.spec.tsx`, "shows the inline items of the %s place (R4)" and "shows the jump of a direct room only to a viewer who is subscribed (R4)"                                                                         |
+| R5          | `src/Message/toolbar/MessageToolbar.spec.tsx`, "infers the place from the message and the room, and lets a given place win (R5)"                                                                                                                   |
+| R6          | `src/Message/toolbar/MessageToolbar.spec.tsx`, the "reactions" tests (R6), among them "are hidden where the toolbar context offers no reactions (R6)"                                                                                              |
+| R7          | `src/Message/toolbar/MessageToolbar.spec.tsx`, "hides quote and reply in thread where they do not apply (%s, %s) (R7)", "hides reply in thread when threads are disabled (R7)" and "leaves out the conversation items without a subscription (R7)" |
+| R8          | `src/Message/toolbar/items/actions/ForwardMessageAction.spec.tsx`, the (R8) tests                                                                                                                                                                  |
+| R9          | `src/Message/toolbar/MessageToolbar.spec.tsx`, "toggles a quick reaction and counts it, and opens the picker with a way to learn it closed (R9)" and "shows every quick reaction it is offered (R9)"                                               |
+| R10         | `src/Message/toolbar/MessageToolbar.spec.tsx`, "quotes and replies in a thread through the contexts (R10)" and "jumps to the message (R10)"                                                                                                        |
+| R11         | `src/Message/toolbar/MessageToolbar.spec.tsx`, "hides the items the layout hides (R11)"                                                                                                                                                            |
+| R12         | `src/Message/toolbar/MessageToolbarActionMenu.spec.tsx`, "orders the entries by their order and puts the apps last, in a section of their own (R12)" and "leaves out the entries meant for other places (R12)"                                     |
+| R13         | `src/Message/toolbar/MessageToolbarActionMenu.spec.tsx`, "leaves out the entries the layout hides but keeps the actions of apps (R13)"                                                                                                             |
+| R14         | `src/Message/toolbar/MessageToolbarActionMenu.spec.tsx`, "renders nothing without actions (R14)" and "shows the menu when only apps offer an action (R14)"                                                                                         |
+| R15         | `src/Message/toolbar/MessageToolbarActionMenu.spec.tsx`, "replaces the apps of an encrypted message with an unavailable item (R15)" and "replaces the apps of an encrypted message in the AI menu too (R15)"                                       |
+| R16         | `src/Message/toolbar/MessageToolbar.spec.tsx`, "renders the AI actions in their own menu (R16)" and "leaves out the AI menu when no AI action is offered (R16)"                                                                                    |
+| R17         | `src/Message/toolbar/MessageToolbarActionMenu.spec.tsx`, "tells when it opens and closes, and runs the entry chosen (R17)"                                                                                                                         |
+| R18         | `src/Message/toolbar/MessageToolbar.spec.tsx`, "runs the menu entry chosen (R18)"                                                                                                                                                                  |
+| R19         | `apps/meteor/client/providers/MessagesProvider/useMessageToolbarValue.spec.tsx`, the "(R19)" tests                                                                                                                                                 |
+| R20         | same file, "appends the actions of apps and offers the AI ones apart (R20)"                                                                                                                                                                        |
+| R21         | same file, the "(R21)" tests, among them "say that the place offers no reactions where no chat is open (R21)"                                                                                                                                      |
+| R22         | same file, "keeps its identity while ... (R22)"                                                                                                                                                                                                    |
+| R23         | `MessagesProvider.spec.tsx`, "(message-toolbar R23)" tests                                                                                                                                                                                         |
+| R24         | `MessagesProvider.spec.tsx`, "(message-toolbar R24)" tests and `useMessageToolbarValue.spec.tsx`, "carries out ... (R24)"                                                                                                                          |
+| R25         | `RoomMessage.contexts.spec.tsx`, "(message-toolbar R25)" tests, and a thread message test                                                                                                                                                          |
+| R26         | `RoomMessage.contexts.spec.tsx`, "shows no toolbar where interaction is off (message-toolbar R26)"                                                                                                                                                 |
+| R27         | `src/index.spec.ts`, "exports the toolbar holder and the toolbar context (message-toolbar R27)"                                                                                                                                                    |
+| R28         | the `stories` axe tests of `src/Message/toolbar/MessageToolbar.spec.tsx` (R28)                                                                                                                                                                     |

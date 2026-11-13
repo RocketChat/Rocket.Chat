@@ -1,8 +1,24 @@
 ---
 status: planned
 adrs: []
-code: []
-tests: []
+code:
+  [
+    src/Message/MessageToolbarHolder.tsx,
+    src/Message/toolbar,
+    src/Message/contexts/MessageToolbarContext.ts,
+    src/Message/contexts/MessageNavigationContext.ts,
+    src/Message/index.ts,
+    apps/meteor/client/providers/MessagesProvider/useMessageNavigationValue.ts,
+  ]
+tests:
+  [
+    src/Message/MessageToolbarHolder.spec.tsx,
+    src/Message/toolbar/MessageToolbar.spec.tsx,
+    src/Message/toolbar/MessageToolbarActionMenu.spec.tsx,
+    src/Message/toolbar/items/actions/ForwardMessageAction.spec.tsx,
+    src/index.spec.ts,
+    apps/meteor/client/providers/MessagesProvider/MessagesProvider.spec.tsx,
+  ]
 ---
 
 # Spec: Message toolbar

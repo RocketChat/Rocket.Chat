@@ -373,6 +373,46 @@ describe('navigation', () => {
 	});
 });
 
+describe('replying in a thread from a message', () => {
+	const setup = (router: { navigate: jest.Mock; getRouteName: () => 'channel' | undefined }) =>
+		renderHook(() => useMessageNavigation(), {
+			wrapper: appRoot()
+				.withRouter({
+					...router,
+					getRouteParameters: () => ({ rid: 'rid', name: 'general' }),
+					getSearchParameters: () => ({ msg: 'jumped' }),
+				})
+				.wrap((children: ReactNode) => <MessagesProvider>{children}</MessagesProvider>)
+				.build(),
+		}).result.current;
+
+	it('opens the thread of the message in the current route and drops the search parameters (message-toolbar R23)', () => {
+		const navigate = jest.fn();
+		const { replyInThread } = setup({ navigate, getRouteName: () => 'channel' });
+
+		replyInThread(createFakeMessage({ _id: 'mid', rid: 'rid' }));
+		replyInThread(createFakeMessage({ _id: 'reply', rid: 'rid', tmid: 'parent' }));
+
+		expect(navigate).toHaveBeenNthCalledWith(1, {
+			name: 'channel',
+			params: { rid: 'rid', name: 'general', tab: 'thread', context: 'mid' },
+		});
+		expect(navigate).toHaveBeenNthCalledWith(2, {
+			name: 'channel',
+			params: { rid: 'rid', name: 'general', tab: 'thread', context: 'parent' },
+		});
+	});
+
+	it('goes nowhere when the route has no name (message-toolbar R23)', () => {
+		const navigate = jest.fn();
+		const { replyInThread } = setup({ navigate, getRouteName: () => undefined });
+
+		replyInThread(createFakeMessage({ _id: 'mid', rid: 'rid' }));
+
+		expect(navigate).not.toHaveBeenCalled();
+	});
+});
+
 describe('navigation of the app', () => {
 	const setup = (root = appRoot()) =>
 		renderHook(() => useMessageNavigation(), {
