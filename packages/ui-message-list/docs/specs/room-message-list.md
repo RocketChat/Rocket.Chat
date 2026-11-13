@@ -320,13 +320,13 @@ it reports it, and keeps `useUserScrollIntent` on the messages area, whose input
 input; `RoomBody` measures what it draws over the top of the list and gives the list its height.
 The room store keeps the position the list reports; the history manager keeps no scroll. `MessagesProvider` keeps one related-data
 value over a store of the place's room and subscription, which a reader reads through `select`. What the thread still imports of the
-old list stays for branch 09 (Q9). Coarse enough to survive a rename; the reasons are in the intent and the plan.
+old list stayed for `thread-message-list`, which has deleted it (Q9). Coarse enough to survive a rename; the reasons are in the intent and the plan.
 
 ## Out of scope
 
 - The list's behaviour for any source: [message-list](message-list.md). Its defect D1 stays recorded there.
-- The thread's list and the cleanup: branch 09 (`BubbleDate`, `useDateScroll`, the app's copy of the navigation hook, the thread's
-  kept-mounted and keep-at-bottom hooks, the loading indicator and the highlight store's rename).
+- The thread's list and the cleanup: [thread-message-list](thread-message-list.md) (`BubbleDate`, `useDateScroll`, the app's copy of the
+  navigation hook, the thread's kept-mounted and keep-at-bottom hooks, the loading indicator and the highlight store's rename).
 - The read-state manager's rules and the banner's look (R23).
 - The rendering of a message row: [message-variants](message-variants.md).
 - The e2e suites; the manual check of the scope stands in for them (one page-object selector, Q7).

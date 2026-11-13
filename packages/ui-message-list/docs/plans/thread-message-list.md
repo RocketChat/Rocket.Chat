@@ -1,6 +1,6 @@
 # Plan: The thread's message list (from specs/thread-message-list.md, 2026-11-13)
 
-Status: approved.
+Status: done.
 
 The thread switches to the package's list, and what the old lists leave behind goes. The reference's thread (`cae3b5390c6`:
 `ThreadMessageList`, `ThreadMessageRow`, `useThreadJumpTarget`) is copied and then corrected against `develop`'s thread; its deletion
@@ -35,7 +35,7 @@ Package `packages/ui-message-list`:
 - `docs/specs/message-variants.md`: R18's note, R47, the Design bridge, D1 and its Out of scope lines (steps 3 and 6); `docs/specs/message-capabilities.md`
   R28 and `docs/specs/message-toolbar.md`'s notes (step 7); `docs/specs/thread-message-list.md` (Design, `code`, `tests`, status) and this
   plan (status) last.
-- `docs/adr/0001-message-list-virtua-and-scroll-reducer.md`: the consequences (not merged to `develop`, so editable).
+- ADR 0001 is not edited (branch 07 added it): the consequence for the app is written in `message-components.md`.
 
 App `apps/meteor`:
 
@@ -126,7 +126,7 @@ message-variants D1` (the orchestrator's authorisation under the user's delegati
    used), and the specs of `MessagesProvider` that exercised them (the app's action hooks keep their own specs). `message-capabilities` R28 and
    `message-toolbar`'s notes change. Patch changeset for the package.
 8. **`docs: describe how the app provides the message contexts and what the thread feeds`**. `message-components.md` (the editing
-   context carries editing only; the provider table), `docs/frontend/message-list.md`, the ADR's consequences; `room-message-list.md` and
+   context carries editing only; the provider table), `docs/frontend/message-list.md`, and the app's consequence of the stack (no scroll engine of its own); `room-message-list.md` and
    `message-list.md` lose the "branch 09" wording. `thread-message-list.md`: Design, `code`, `tests`, status `implemented`; this plan
    `done`.
 

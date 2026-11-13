@@ -425,7 +425,7 @@ stands in for is hidden by an attribute set on it, so scrolling draws no row. Th
 ## Out of scope
 
 - The room and the thread feeding the list (the `?msg=` parameter and the other room's jump, the read state, "Select all"
-  selecting, the room store's position, the history manager, the thread's queries) and the deletion of their lists: branches 08 and 09. This spec states what the list does for any source, and what it gives them.
+  selecting, the room store's position, the history manager, the thread's queries) and the deletion of their lists: [room-message-list](room-message-list.md) and [thread-message-list](thread-message-list.md). This spec states what the list does for any source, and what it gives them.
 - The part of intent Q1's six behaviours that is not the list's. A thread's system messages out of the room's selection is
   `message-variants` R24 and R25 (branch 02, fix 5), with the "Select all" wiring of 08 and the thread of 09. The composer's
   auto-link domains (branch 02, fix 6) is the composer's hook, which 08 must move out of the directory it deletes, with its spec.

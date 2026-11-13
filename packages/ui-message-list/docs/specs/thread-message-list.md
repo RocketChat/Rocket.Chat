@@ -1,5 +1,5 @@
 ---
-status: planned
+status: implemented
 adrs: [0001]
 code:
   [
@@ -281,15 +281,25 @@ below are what the thread does with it.
 
 ## Design
 
-Decided in the plan.
+`ThreadChat` keeps the thread around the list (the drop target, the composer, the read of the thread on an arrival, the error
+boundary) and mounts `ThreadMessageList` keyed by the main message. `ThreadMessageList` reads the thread's paged query
+(`useThreadMessagesQuery`, whose previous pages are older replies and next pages newer ones), gives the list the replies with the main
+message in front once none is older and nothing while the first page loads, and mounts `MessagesProvider` with the room and its
+subscription and no selection, and the room's per-list store of markers (`MessageMarkers`), from which each row reads whether its
+author is ignored. `useThreadJumpTarget` turns the `msg` parameter into the list's target, asks for the replies around a message
+that is not loaded once per link and clears the parameter when a reply is reached. A module-level function draws each row
+(`ThreadMessageRow`), so the list's own state changes draw no row. The list takes the highlight of a jump from its own state; the
+editing store (`client/lib/chats/editingMessageSubscription`) is written by message editing alone and read by `MessagesProvider`
+as the editing context. The conference panels mount the same `ThreadChat`. The list waits for the viewer's input before it pages.
+Scrolling, paging, jumping, the floating date and the keyboard are the package's list ([message-list](message-list.md)); what is proven where is in the plan.
 
-What changes with the code, for the plan to carry out, and checks of the plan (file listings and searches, not requirements):
+What changed with the code, and checks that were made (file listings and searches, not requirements):
 
 - Specs: `message-variants` (R18's note on what the editing context carries, R47, the bridge in Design, D1 and its pinned test, the
   Out of scope lines for branch 09), `message-capabilities` R28 and `message-toolbar`'s notes (R53), `message-list` and
   `room-message-list` (the "branch 09" wording in Out of scope and Design). Documents: `docs/features/message-list/message-components.md`
-  (the editing context carries editing only; how the app provides the contexts), `docs/frontend/message-list.md` and the ADR's
-  consequences, from reference `0a1da7d63c9` with package paths.
+  (the editing context carries editing only; how the app provides the contexts), and `docs/frontend/message-list.md`, from
+  reference `0a1da7d63c9` with package paths (ADR 0001 is not edited).
 - Gone with the thread's switch, each with no reader left: `ThreadMessageItem` and its spec, `threads.css`, all of
   `views/room/BubbleDate` (`BubbleDate`, `BubbleDateScope`, `bubbleDateStore` and its spec, the index), `hooks/useDateScroll`,
   `providers/DateListProvider` and its mounts in `Room.tsx` and `ThreadChat`, `MessageList/hooks/useKeepAtBottom` and its spec,
@@ -327,7 +337,7 @@ What changes with the code, for the plan to carry out, and checks of the plan (f
 
 ## Known defects
 
-None; not implemented. `message-variants` D1 is fixed with this capability (R46, R47), and `message-list` D3 is fixed in this branch
+None. `message-variants` D1 is fixed with this capability (R46, R47), and `message-list` D3 is fixed in this branch
 (R35).
 
 ## Open questions
