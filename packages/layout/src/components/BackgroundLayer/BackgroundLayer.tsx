@@ -1,12 +1,12 @@
-import colors from '@rocket.chat/fuselage-tokens/dist/colors.json';
+import colors from '@rocket.chat/fuselage-tokens/dist/colors.json' with { type: 'json' };
 import type { ReactNode } from 'react';
 import { useMemo } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 
-import BackgroundImage from './BackgroundImage';
-import { Wrapper } from './BackgroundLayer.styles';
-import { useDarkMode } from '../../DarkModeProvider';
-import { useLayoutContext } from '../../contexts/LayoutContext';
+import BackgroundImage from './BackgroundImage.js';
+import { Wrapper } from './BackgroundLayer.styles.js';
+import { useDarkMode } from '../../DarkModeProvider.js';
+import { useLayoutContext } from '../../contexts/LayoutContext.js';
 
 export type BackgroundLayerProps = {
 	children?: ReactNode;

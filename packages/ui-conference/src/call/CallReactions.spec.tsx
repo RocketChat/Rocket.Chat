@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 
-import CallReactions from './CallReactions';
+import CallReactions from './CallReactions.js';
 
 const burst = Array.from({ length: 8 }, (_, index) => ({ id: String(index), emoji: '👍', name: `Member ${index}` }));
 

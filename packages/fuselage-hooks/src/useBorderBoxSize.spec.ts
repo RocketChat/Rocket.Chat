@@ -1,9 +1,9 @@
 import type { RefObject } from 'react';
 import { useRef } from 'react';
 
-import { renderHook, act } from './testing';
-import { useBorderBoxSize } from './useBorderBoxSize';
-import { withResizeObserverMock } from '../mocks/withResizeObserverMock';
+import { renderHook, act } from './testing.js';
+import { useBorderBoxSize } from './useBorderBoxSize.js';
+import { withResizeObserverMock } from '../mocks/withResizeObserverMock.js';
 
 withResizeObserverMock();
 

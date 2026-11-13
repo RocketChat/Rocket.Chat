@@ -1,5 +1,5 @@
-import { flipOffset } from './tileFlip';
-import { clampCellToAspectBand, gridBox, pickTileGridLayout, tileGridLayout } from './tileGrid';
+import { flipOffset } from './tileFlip.js';
+import { clampCellToAspectBand, gridBox, pickTileGridLayout, tileGridLayout } from './tileGrid.js';
 
 describe('pickTileGridLayout', () => {
 	it('puts a single tile, or an unmeasured container, on one row', () => {

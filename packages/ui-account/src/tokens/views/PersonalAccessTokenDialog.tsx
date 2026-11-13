@@ -2,7 +2,7 @@ import { Box } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { Trans, useTranslation } from 'react-i18next';
 
-import type { PersonalAccessTokensDialog } from '../logic/usePersonalAccessTokens';
+import type { PersonalAccessTokensDialog } from '../logic/usePersonalAccessTokens.js';
 
 type PersonalAccessTokenDialogProps = {
 	dialog: PersonalAccessTokensDialog;

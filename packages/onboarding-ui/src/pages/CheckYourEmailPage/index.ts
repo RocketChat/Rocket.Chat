@@ -1,1 +1,1 @@
-export { default, type CheckYourEmailPageProps } from './CheckYourEmailPage';
+export { default, type CheckYourEmailPageProps } from './CheckYourEmailPage.js';

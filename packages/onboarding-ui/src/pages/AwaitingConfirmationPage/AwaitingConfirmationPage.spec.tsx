@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 
-import AwaitingConfirmationPage from './AwaitingConfirmationPage';
+import AwaitingConfirmationPage from './AwaitingConfirmationPage.js';
 
 it('renders without crashing', () => {
 	const { container } = render(

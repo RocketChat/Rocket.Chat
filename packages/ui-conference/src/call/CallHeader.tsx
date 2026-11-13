@@ -1,5 +1,5 @@
-import CallTitle from './CallTitle';
-import { useCallState } from './context';
+import CallTitle from './CallTitle.js';
+import { useCallState } from './context.js';
 
 export type CallHeaderProps = {
 	name?: string;

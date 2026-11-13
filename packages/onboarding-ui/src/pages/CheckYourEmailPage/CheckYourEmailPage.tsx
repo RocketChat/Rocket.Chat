@@ -2,7 +2,7 @@ import { HeroLayout, HeroLayoutTitle, HeroLayoutSubtitle } from '@rocket.chat/la
 import type { ReactNode } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 
-import EmailCodeFallback from '../../common/EmailCodeFallback';
+import EmailCodeFallback from '../../common/EmailCodeFallback.js';
 
 export type CheckYourEmailPageProps = {
 	title?: string;

@@ -14,11 +14,11 @@ import type { ContextType, ReactNode } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { SetupWizardContext } from '../contexts/SetupWizardContext';
-import { useOrganizationOptions } from '../hooks/useOrganizationOptions';
-import { useParameters } from '../hooks/useParameters';
-import { useSetupWizardValidators } from '../hooks/useSetupWizardValidators';
-import { useStepRouting } from '../hooks/useStepRouting';
+import { SetupWizardContext } from '../contexts/SetupWizardContext.js';
+import { useOrganizationOptions } from '../hooks/useOrganizationOptions.js';
+import { useParameters } from '../hooks/useParameters.js';
+import { useSetupWizardValidators } from '../hooks/useSetupWizardValidators.js';
+import { useStepRouting } from '../hooks/useStepRouting.js';
 
 const initialData: ContextType<typeof SetupWizardContext>['setupWizardData'] = {
 	organizationData: {

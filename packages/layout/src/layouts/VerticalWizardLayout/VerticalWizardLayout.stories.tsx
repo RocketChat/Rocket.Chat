@@ -1,11 +1,11 @@
 import { Field, FieldDescription, FieldError, FieldHint, FieldLabel, FieldRow, InputBoxSkeleton } from '@rocket.chat/fuselage';
 import type { Meta, StoryFn } from '@storybook/react-webpack5';
 
-import VerticalWizardLayout from './VerticalWizardLayout';
-import VerticalWizardLayoutFooter from './VerticalWizardLayoutFooter';
-import VerticalWizardLayoutForm from './VerticalWizardLayoutForm';
-import VerticalWizardLayoutTitle from './VerticalWizardLayoutTitle';
-import { Form, FormContainer, FormFooter, FormHeader, FormSubtitle, FormTitle } from '../../components/FormPageLayout';
+import VerticalWizardLayout from './VerticalWizardLayout.js';
+import VerticalWizardLayoutFooter from './VerticalWizardLayoutFooter.js';
+import VerticalWizardLayoutForm from './VerticalWizardLayoutForm.js';
+import VerticalWizardLayoutTitle from './VerticalWizardLayoutTitle.js';
+import { Form, FormContainer, FormFooter, FormHeader, FormSubtitle, FormTitle } from '../../components/FormPageLayout/index.js';
 
 export default {
 	title: 'layouts/VerticalWizardLayout',

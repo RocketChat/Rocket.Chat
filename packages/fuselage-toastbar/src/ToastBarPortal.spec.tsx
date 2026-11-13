@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import { StrictMode } from 'react';
 import { renderToString } from 'react-dom/server';
 
-import ToastBarPortal from './ToastBarPortal';
+import ToastBarPortal from './ToastBarPortal.js';
 
 // oxlint-disable-next-line testing-library/no-node-access -- the anchor element's lifecycle is what these tests cover
 const queryAnchors = () => document.querySelectorAll('#toastBarRoot');

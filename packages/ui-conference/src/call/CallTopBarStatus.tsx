@@ -1,11 +1,11 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useCallActions, useCallState } from './context';
-import { nameRaisedHands } from './lib/raisedHands';
-import CallPresenting from '../components/CallPresenting';
-import CallRaisedHands from '../components/CallRaisedHands';
-import { useConferenceCall } from '../context/ConferenceContext';
+import { useCallActions, useCallState } from './context.js';
+import { nameRaisedHands } from './lib/raisedHands.js';
+import CallPresenting from '../components/CallPresenting.js';
+import CallRaisedHands from '../components/CallRaisedHands.js';
+import { useConferenceCall } from '../context/ConferenceContext.js';
 
 /** Who is presenting and who is waiting to speak in the call running in this window, for its top bar. */
 const CallTopBarStatus = () => {

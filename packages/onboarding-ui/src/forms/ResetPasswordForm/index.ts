@@ -1,1 +1,1 @@
-export { default, type ResetPasswordFormPayload } from './ResetPasswordForm';
+export { default, type ResetPasswordFormPayload } from './ResetPasswordForm.js';

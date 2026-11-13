@@ -4,7 +4,7 @@ import { useState, forwardRef } from 'react';
 import type { ChangeEvent, ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import MessageComposerInput from './MessageComposerInput';
+import MessageComposerInput from './MessageComposerInput.js';
 
 export type ExpandComposerButtonProps = ComponentProps<typeof Box> & {
 	dimensions: Readonly<{

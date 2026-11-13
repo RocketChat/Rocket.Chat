@@ -2,7 +2,7 @@ import type { AdminInfoPage, OrganizationInfoPage, RegisterServerPage } from '@r
 import type { ComponentProps, Dispatch, SetStateAction } from 'react';
 import { createContext, useContext } from 'react';
 
-import type { OrganizationOptions } from '../hooks/useOrganizationOptions';
+import type { OrganizationOptions } from '../hooks/useOrganizationOptions.js';
 
 type SetupWizardData = {
 	organizationData: Parameters<ComponentProps<typeof OrganizationInfoPage>['onSubmit']>[0];

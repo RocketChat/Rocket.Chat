@@ -1,4 +1,4 @@
-import type { NoiseMethod, VideoQuality } from '../../hooks/useCallDevicesInitialState';
+import type { NoiseMethod, VideoQuality } from '../../hooks/useCallDevicesInitialState.js';
 
 export const VIDEO_QUALITY_LABELS: Record<VideoQuality, string> = {
 	auto: 'Video_quality_auto',

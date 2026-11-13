@@ -13,11 +13,11 @@ import { useSetModal } from '@rocket.chat/ui-contexts';
 import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import AddPersonalAccessTokenForm from './AddPersonalAccessTokenForm';
-import PersonalAccessTokenDialog from './PersonalAccessTokenDialog';
-import PersonalAccessTokenRow from './PersonalAccessTokenRow';
-import { getTokensPage } from '../logic/personalAccessTokens';
-import type { PersonalAccessTokensViewModel } from '../logic/usePersonalAccessTokens';
+import AddPersonalAccessTokenForm from './AddPersonalAccessTokenForm.js';
+import PersonalAccessTokenDialog from './PersonalAccessTokenDialog.js';
+import PersonalAccessTokenRow from './PersonalAccessTokenRow.js';
+import { getTokensPage } from '../logic/personalAccessTokens.js';
+import type { PersonalAccessTokensViewModel } from '../logic/usePersonalAccessTokens.js';
 
 export type PersonalAccessTokensViewProps = {
 	vm: PersonalAccessTokensViewModel;

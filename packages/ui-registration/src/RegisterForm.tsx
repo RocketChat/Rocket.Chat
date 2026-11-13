@@ -19,10 +19,10 @@ import { useEffect, useId, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
-import EmailConfirmationForm from './EmailConfirmationForm';
-import type { DispatchLoginRouter } from './hooks/useLoginRouter';
-import { useRegisterMethod } from './hooks/useRegisterMethod';
-import { EMAIL_PATTERN } from './lib/emailPattern';
+import EmailConfirmationForm from './EmailConfirmationForm.js';
+import type { DispatchLoginRouter } from './hooks/useLoginRouter.js';
+import { useRegisterMethod } from './hooks/useRegisterMethod.js';
+import { EMAIL_PATTERN } from './lib/emailPattern.js';
 
 type LoginRegisterPayload = {
 	name: string;

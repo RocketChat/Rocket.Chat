@@ -1,7 +1,7 @@
 import type { Dispatch, DispatchWithoutAction, Reducer, ReducerState, ReducerWithoutAction } from 'react';
 import { useReducer } from 'react';
 
-import { useDebouncedUpdates } from './useDebouncedUpdates';
+import { useDebouncedUpdates } from './useDebouncedUpdates.js';
 
 /**
  * Hook to create a reduced state with a debounced `dispatch()` function.

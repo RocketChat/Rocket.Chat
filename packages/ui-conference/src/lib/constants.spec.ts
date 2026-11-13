@@ -1,5 +1,5 @@
-import { canDeclineCall } from './constants';
-import { buildJoinableCall } from '../fixtures/testFixtures';
+import { canDeclineCall } from './constants.js';
+import { buildJoinableCall } from '../fixtures/testFixtures.js';
 
 // Nothing to turn down for a call the reader is in: the way out is to leave it. And a call already declined has
 // no decline left either — its row says so instead.

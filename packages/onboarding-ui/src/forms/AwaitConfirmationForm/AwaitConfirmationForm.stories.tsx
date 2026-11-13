@@ -1,6 +1,6 @@
 import type { StoryFn, Meta } from '@storybook/react-webpack5';
 
-import AwaitConfirmationForm from './AwaitConfirmationForm';
+import AwaitConfirmationForm from './AwaitConfirmationForm.js';
 
 export default {
 	title: 'forms/AwaitConfirmationForm',

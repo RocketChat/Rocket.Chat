@@ -1,6 +1,6 @@
 import { createRequiredContext } from '@rocket.chat/ui-media';
 
-import type { NoiseMethod } from '../hooks/useCallDevicesInitialState';
+import type { NoiseMethod } from '../hooks/useCallDevicesInitialState.js';
 
 /**
  * How the microphone is cleaned up, for the microphone menus. The preflight fills it with the stored preference; a

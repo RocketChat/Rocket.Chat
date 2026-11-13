@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 
-import { useToastBarDismiss, useToastBarDispatch } from './ToastBarContext';
-import ToastBarProvider from './ToastBarProvider';
+import { useToastBarDismiss, useToastBarDispatch } from './ToastBarContext.js';
+import ToastBarProvider from './ToastBarProvider.js';
 
 describe('ToastBarProvider', () => {
 	test('does not rerender dispatch and dismiss consumers when toasts change', async () => {

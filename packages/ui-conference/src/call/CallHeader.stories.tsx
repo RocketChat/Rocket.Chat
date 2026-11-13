@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import CallHeader from './CallHeader';
-import { withCall } from '../fixtures/callFixtures';
-import { CallSurface, conferenceAppRoot, withConferenceWindow } from '../fixtures/storyFixtures';
+import CallHeader from './CallHeader.js';
+import { withCall } from '../fixtures/callFixtures.js';
+import { CallSurface, conferenceAppRoot, withConferenceWindow } from '../fixtures/storyFixtures.js';
 
 /** How long the call running in this window has been going, and what it is called. */
 const meta = {

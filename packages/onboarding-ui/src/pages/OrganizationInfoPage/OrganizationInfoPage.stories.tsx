@@ -1,8 +1,8 @@
 import type { StoryFn, Meta } from '@storybook/react-webpack5';
 import { countries } from 'countries-list';
 
-import OrganizationInfoPage from './OrganizationInfoPage';
-import TitleOrganizationInfoPage from './TitleOrganizationInfoPage';
+import OrganizationInfoPage from './OrganizationInfoPage.js';
+import TitleOrganizationInfoPage from './TitleOrganizationInfoPage.js';
 
 export default {
 	title: 'pages/OrganizationInfoPage',

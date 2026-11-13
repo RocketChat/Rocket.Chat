@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 
-import { ToastBarContext } from './ToastBarContext';
-import ToastBarTimed from './ToastBarTimed';
+import { ToastBarContext } from './ToastBarContext.js';
+import ToastBarTimed from './ToastBarTimed.js';
 
 it('pauses the progress bar while the toast is hovered', async () => {
 	render(

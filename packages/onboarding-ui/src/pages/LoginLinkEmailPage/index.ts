@@ -1,1 +1,1 @@
-export { default, type LoginLinkEmailProps } from './LoginLinkEmailPage';
+export { default, type LoginLinkEmailProps } from './LoginLinkEmailPage.js';

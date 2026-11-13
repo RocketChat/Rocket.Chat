@@ -1,10 +1,10 @@
 import { memo } from 'react';
 
-import type { TileFrameProps } from './TileFrame';
-import TileFrame from './TileFrame';
-import TilePicture from './TilePicture';
-import { TILE_RING_WIDTH } from '../lib/speakingRing';
-import type { TileParticipant } from '../lib/stageTiles';
+import type { TileFrameProps } from './TileFrame.js';
+import TileFrame from './TileFrame.js';
+import TilePicture from './TilePicture.js';
+import { TILE_RING_WIDTH } from '../lib/speakingRing.js';
+import type { TileParticipant } from '../lib/stageTiles.js';
 
 export type SelfTileProps = TileParticipant & Pick<TileFrameProps, 'sendHeight'>;
 

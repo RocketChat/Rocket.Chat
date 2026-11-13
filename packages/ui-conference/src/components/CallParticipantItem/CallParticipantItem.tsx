@@ -1,9 +1,9 @@
 import { Item, ItemActions, ItemContent, ItemDescription, ItemMedia, ItemRow, ItemTitle, Icon } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-import type { CallParticipantControlsProps } from '../CallParticipantControls/CallParticipantControls';
-import CallParticipantControls from '../CallParticipantControls/CallParticipantControls';
-import CallParticipantStatus from '../CallParticipantStatus/CallParticipantStatus';
+import type { CallParticipantControlsProps } from '../CallParticipantControls/CallParticipantControls.js';
+import CallParticipantControls from '../CallParticipantControls/CallParticipantControls.js';
+import CallParticipantStatus from '../CallParticipantStatus/CallParticipantStatus.js';
 
 /** The row is named from the participant itself, which is the only name there is for one of these. */
 type CallParticipantItemProps = Omit<CallParticipantControlsProps, 'name'>;

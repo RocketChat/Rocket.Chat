@@ -1,5 +1,5 @@
-import type { ConferenceMember } from '../../context/definitions';
-import type { CallState } from '../context';
+import type { ConferenceMember } from '../../context/definitions.js';
+import type { CallState } from '../context.js';
 
 /** Each raised hand's place in the queue, from 1, by participant id. */
 export const handPositionsOf = (raisedHands: CallState['raisedHands']): Record<string, number> =>

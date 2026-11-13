@@ -8,14 +8,14 @@ import type { ComponentProps } from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import CallParticipants from '../components/CallParticipants';
-import PreflightCameraPlaceholder from '../components/PreflightCameraPlaceholder';
-import type { PreflightMedia } from '../context/definitions';
-import type { CallPreferences } from '../hooks/useCallDevicesInitialState';
-import { useCallDevicesInitialState } from '../hooks/useCallDevicesInitialState';
-import PreflightDevices from '../preflight/PreflightDevices';
-import PreflightPreview from '../preflight/PreflightPreview';
-import PreviewMediaProvider from '../preflight/PreviewMediaProvider';
+import CallParticipants from '../components/CallParticipants.js';
+import PreflightCameraPlaceholder from '../components/PreflightCameraPlaceholder.js';
+import type { PreflightMedia } from '../context/definitions.js';
+import type { CallPreferences } from '../hooks/useCallDevicesInitialState.js';
+import { useCallDevicesInitialState } from '../hooks/useCallDevicesInitialState.js';
+import PreflightDevices from '../preflight/PreflightDevices.js';
+import PreflightPreview from '../preflight/PreflightPreview.js';
+import PreviewMediaProvider from '../preflight/PreviewMediaProvider.js';
 
 /**
  * The camera tile: 16:9, and black, because that is what a camera with nothing to show looks like. Width leads
