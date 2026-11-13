@@ -1,5 +1,6 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -8,11 +9,14 @@ const settingsGet = sinon.stub();
 const findUsersByUsernames = sinon.stub();
 
 const { normalizeMessagesForUser } = proxyquire.noCallThru().load('./normalizeMessagesForUser', {
-	'@rocket.chat/models': { Users: { findUsersByUsernames } },
 	'../../../settings': { settings: { get: settingsGet } },
 });
 
 describe('normalizeMessagesForUser', () => {
+	before(() => {
+		mockModel('Users', { findUsersByUsernames });
+	});
+
 	beforeEach(() => {
 		settingsGet.reset();
 		settingsGet.withArgs('UI_Use_Real_Name').returns(true);

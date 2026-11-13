@@ -1,5 +1,6 @@
-import { afterEach, describe, it } from 'node:test';
+import { afterEach, before, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import { Headers } from 'node-fetch';
 import proxyquire from 'proxyquire';
@@ -21,16 +22,6 @@ const mocks = {
 };
 
 const { userAvatarById, userAvatarByUsername } = proxyquire.noCallThru().load('./user', {
-	'@rocket.chat/models': {
-		Users: {
-			findOneByUsernameIgnoringCase: mocks.findOneByUsernameIgnoringCase,
-			findOneById: mocks.findOneById,
-		},
-		Avatars: {
-			findOneByName: mocks.avatarFindOneByName,
-			findOneByUserId: mocks.avatarFindOneByUserId,
-		},
-	},
 	'../../settings': {
 		settings: {
 			get: mocks.settingsGet,
@@ -42,6 +33,17 @@ const { userAvatarById, userAvatarByUsername } = proxyquire.noCallThru().load('.
 	},
 });
 
+const registerModels = () => {
+	mockModel('Users', {
+		findOneByUsernameIgnoringCase: mocks.findOneByUsernameIgnoringCase,
+		findOneById: mocks.findOneById,
+	});
+	mockModel('Avatars', {
+		findOneByName: mocks.avatarFindOneByName,
+		findOneByUserId: mocks.avatarFindOneByUserId,
+	});
+};
+
 describe('#userAvatarById()', () => {
 	const response = {
 		setHeader: sinon.spy(),
@@ -49,6 +51,8 @@ describe('#userAvatarById()', () => {
 		end: sinon.spy(),
 	};
 	const next = sinon.spy();
+
+	before(registerModels);
 
 	afterEach(() => {
 		mocks.settingsGet.reset();
@@ -183,6 +187,8 @@ describe('#userAvatarByUsername()', () => {
 		end: sinon.spy(),
 	};
 	const next = sinon.spy();
+
+	before(registerModels);
 
 	afterEach(() => {
 		mocks.settingsGet.reset();

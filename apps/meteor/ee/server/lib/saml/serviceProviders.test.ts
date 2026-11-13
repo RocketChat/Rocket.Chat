@@ -1,6 +1,7 @@
 import { EventEmitter } from 'node:events';
 import { describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -67,11 +68,11 @@ const setup = ({ samlModuleActiveAtStartup = false } = {}) => {
 		createOrUpdateService: sinon.stub().resolves(),
 		removeByService: sinon.stub().resolves({ _id: 'saml-service-id' }),
 	};
+	mockModel('LoginServiceConfiguration', LoginServiceConfiguration);
 	const notifyOnLoginServiceConfigurationChanged = sinon.stub();
 
 	const samlSettings = proxyquire.noCallThru().load('./lib/settings', {
 		'@rocket.chat/license': { License },
-		'@rocket.chat/models': { LoginServiceConfiguration },
 		'./Utils': { SAMLUtils },
 		'../../../../../server/lib/utils/getURL': { getWorkspaceURL: () => 'http://localhost:3000/' },
 		'../../../../../server/lib/logger/system': { SystemLogger: { warn: sinon.stub() } },

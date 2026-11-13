@@ -1,7 +1,8 @@
-import { afterEach, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it } from 'node:test';
 
 import type { IPushNotificationConfig } from '@rocket.chat/core-typings/src/IPushNotificationConfig';
 import type { IPushToken } from '@rocket.chat/core-typings/src/IPushToken';
+import { mockModel } from '@rocket.chat/models/testing';
 import { isRecord, pick, truncateString } from '@rocket.chat/tools';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
@@ -14,7 +15,6 @@ const sendFCMStub = sinon.stub();
 const pushTokenModelStub = { findAllTokensByUserId: sinon.stub() };
 
 const { Push } = proxyquire.noCallThru().load('./push', {
-	'@rocket.chat/models': { PushToken: pushTokenModelStub },
 	'@rocket.chat/license': { License: { hasOfflineLicense: () => false } },
 	'./logger': { logger: loggerStub },
 	'../../../settings': { settings: settingsStub },
@@ -25,6 +25,10 @@ const { Push } = proxyquire.noCallThru().load('./push', {
 });
 
 describe('Push Notifications [PushClass]', () => {
+	before(() => {
+		mockModel('PushToken', pushTokenModelStub);
+	});
+
 	afterEach(() => {
 		sinon.restore();
 	});

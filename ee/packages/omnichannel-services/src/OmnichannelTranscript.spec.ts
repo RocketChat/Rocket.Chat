@@ -5,6 +5,7 @@ import { Upload } from '@rocket.chat/core-services';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { defaultTranslationNamespace, availableTranslationNamespaces, extractTranslationNamespaces } from '@rocket.chat/i18n';
 import { Logger } from '@rocket.chat/logger';
+import { mockModel } from '@rocket.chat/models/testing';
 import * as i18next from 'i18next';
 import sprintf from 'i18next-sprintf-postprocessor';
 
@@ -39,27 +40,6 @@ jest.mock('@rocket.chat/core-services', () => ({
 	},
 }));
 
-jest.mock('@rocket.chat/models', () => ({
-	LivechatRooms: {
-		findOneById: jest.fn().mockResolvedValue({}),
-	},
-	Messages: {
-		findLivechatMessagesWithoutTypes: jest.fn().mockReturnValue({
-			toArray: jest.fn().mockResolvedValue([]),
-		}),
-	},
-	Uploads: {
-		findOneById: jest.fn().mockResolvedValue({}),
-	},
-	Users: {
-		findOneById: jest.fn().mockResolvedValue({}),
-		findOneAgentById: jest.fn().mockResolvedValue({}),
-	},
-	LivechatVisitors: {
-		findOneEnabledById: jest.fn().mockResolvedValue({}),
-	},
-}));
-
 jest.mock('@rocket.chat/tools', () => ({
 	guessTimezone: jest.fn().mockReturnValue('UTC'),
 	guessTimezoneFromOffset: jest.fn().mockReturnValue('UTC'),
@@ -67,6 +47,27 @@ jest.mock('@rocket.chat/tools', () => ({
 }));
 
 describe('OmnichannelTranscript', () => {
+	beforeAll(() => {
+		mockModel('LivechatRooms', {
+			findOneById: jest.fn().mockResolvedValue({}),
+		});
+		mockModel('Messages', {
+			findLivechatMessagesWithoutTypes: jest.fn().mockReturnValue({
+				toArray: jest.fn().mockResolvedValue([]),
+			}),
+		});
+		mockModel('Uploads', {
+			findOneById: jest.fn().mockResolvedValue({}),
+		});
+		mockModel('Users', {
+			findOneById: jest.fn().mockResolvedValue({}),
+			findOneAgentById: jest.fn().mockResolvedValue({}),
+		});
+		mockModel('LivechatVisitors', {
+			findOneEnabledById: jest.fn().mockResolvedValue({}),
+		});
+	});
+
 	let omnichannelTranscript: OmnichannelTranscript;
 
 	beforeEach(async () => {

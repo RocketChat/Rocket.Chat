@@ -1,5 +1,6 @@
-import { after, afterEach, beforeEach, describe, it } from 'node:test';
+import { after, afterEach, before, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import p from 'proxyquire';
 import Sinon from 'sinon';
@@ -57,7 +58,6 @@ const { OmnichannelQueue } = p.noCallThru().load('./queue', {
 	'../../lib/notifyListener': { notifyOnLivechatInquiryChangedByRoom: Sinon.stub() },
 	'../../settings': { settings },
 	'./logger': { queueLogger },
-	'@rocket.chat/models': models,
 	'@rocket.chat/license': { License: license },
 	'../../lib/metrics': {
 		metrics: {
@@ -71,6 +71,11 @@ const { OmnichannelQueue } = p.noCallThru().load('./queue', {
 });
 
 describe('Omnichannel Queue processor', () => {
+	before(() => {
+		mockModel('LivechatInquiry', models.LivechatInquiry);
+		mockModel('LivechatRooms', models.LivechatRooms);
+	});
+
 	describe('isRunning', () => {
 		it('should return the running status', () => {
 			const queue = new OmnichannelQueue();

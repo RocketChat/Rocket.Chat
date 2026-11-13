@@ -1,5 +1,6 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -26,13 +27,14 @@ const { manageDepartmentUnit } = proxyquire.noCallThru().load('./manageDepartmen
 	'../../../../server/lib/authorization/hasRole': {
 		hasAnyRoleAsync: hasAnyRoleStub,
 	},
-	'@rocket.chat/models': {
-		LivechatDepartment: livechatDepartmentStub,
-		LivechatUnit: livechatUnitStub,
-	},
 });
 
 describe('hooks/manageDepartmentUnit', () => {
+	before(() => {
+		mockModel('LivechatDepartment', livechatDepartmentStub);
+		mockModel('LivechatUnit', livechatUnitStub);
+	});
+
 	beforeEach(() => {
 		livechatDepartmentStub.findOneById.reset();
 		livechatDepartmentStub.addDepartmentToUnit.reset();

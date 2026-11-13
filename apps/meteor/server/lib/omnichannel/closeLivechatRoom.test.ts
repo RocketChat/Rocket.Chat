@@ -1,5 +1,6 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -27,16 +28,17 @@ const { closeLivechatRoom } = proxyquire.noCallThru().load('./closeLivechatRoom.
 	'../authorization/hasPermission': {
 		hasPermissionAsync: hasPermissionStub,
 	},
-	'@rocket.chat/models': {
-		Subscriptions: subscriptionsStub,
-		LivechatRooms: livechatRoomsStub,
-	},
 });
 
 describe('closeLivechatRoom', () => {
 	const user = createFakeUser();
 	const room = createFakeRoom({ t: 'l', open: true });
 	const subscription = createFakeSubscription({ rid: room._id, u: { username: user.username, _id: user._id } });
+
+	before(() => {
+		mockModel('Subscriptions', subscriptionsStub);
+		mockModel('LivechatRooms', livechatRoomsStub);
+	});
 
 	beforeEach(() => {
 		subscriptionsStub.findOneByRoomIdAndUserId.reset();

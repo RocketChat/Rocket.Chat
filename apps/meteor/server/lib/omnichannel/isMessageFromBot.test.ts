@@ -1,9 +1,10 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
 
+import { isMessageFromBot } from './isMessageFromBot';
 import { createFakeMessage } from '../../../tests/mocks/data';
 
 const modelsMock = {
@@ -12,12 +13,12 @@ const modelsMock = {
 	},
 };
 
-const { isMessageFromBot } = p.noCallThru().load('./isMessageFromBot', {
-	'@rocket.chat/models': modelsMock,
-});
-
 describe('isMessageFromBot', () => {
 	const mockMessage = createFakeMessage();
+
+	before(() => {
+		mockModel('Users', modelsMock.Users);
+	});
 
 	beforeEach(() => {
 		modelsMock.Users.isUserInRole.reset();
