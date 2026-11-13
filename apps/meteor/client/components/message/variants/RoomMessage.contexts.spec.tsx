@@ -8,11 +8,12 @@ import RoomMessage from './RoomMessage';
 import ThreadMessage from './ThreadMessage';
 import { createFakeRoom, createFakeSubscription } from '../../../../tests/mocks/data';
 import { MessagesProvider } from '../../../providers/MessagesProvider';
+import { Rooms, Subscriptions } from '../../../stores';
 import MessageListProvider from '../../../views/room/MessageList/providers/MessageListProvider';
 import { ChatContext } from '../../../views/room/contexts/ChatContext';
 import { selectedMessageStore } from '../../../views/room/providers/SelectedMessageStore';
 
-const room = createFakeRoom({ t: 'c' });
+const room = createFakeRoom({ _id: 'roomId', t: 'c' });
 
 const message: IMessage = {
 	ts: new Date('2021-10-27T00:00:00.000Z'),
@@ -173,6 +174,16 @@ describe('the toolbar', () => {
 	const conversationChat = {
 		data: { findRoom: async () => room, findSubscription: async () => subscription, canDeleteMessage: async () => true },
 	} as never;
+
+	beforeEach(() => {
+		Rooms.state.store(room);
+		Subscriptions.state.store(subscription);
+	});
+
+	afterEach(() => {
+		Rooms.state.replaceAll([]);
+		Subscriptions.state.replaceAll([]);
+	});
 
 	beforeAll(() => {
 		window.DISABLE_ANIMATION = true;

@@ -7,7 +7,6 @@ import { useCallback, useMemo, useSyncExternalStore } from 'react';
 import { useParentMessage } from './useParentMessage';
 import { useUserRolesByScope } from '../../hooks/useUserRolesByScope';
 import { RoomManager, getCollapsibleEventKey, useOpenedRoom } from '../../lib/RoomManager';
-import type { ChatAPI } from '../../lib/chats/ChatAPI';
 import { messagesQueryKeys } from '../../lib/queryKeys';
 import { Rooms, Subscriptions } from '../../stores';
 import { useGetMessageByID } from '../../views/room/contextualBar/Threads/hooks/useGetMessageByID';
@@ -38,7 +37,7 @@ const useCollapsedState = (key: string, initiallyCollapsed: boolean): [boolean, 
 };
 
 /** Data messages show about other things, read from the client's stores first and fetched when missing. */
-export const useMessageRelatedDataValue = (chat: ChatAPI | undefined): MessageRelatedDataContextValue =>
+export const useMessageRelatedDataValue = (): MessageRelatedDataContextValue =>
 	useMemo(
 		() => ({
 			useUserRoles: (uid, rid, { enabled }) => useUserRolesByScope(uid, rid, { enabled }),
@@ -59,20 +58,15 @@ export const useMessageRelatedDataValue = (chat: ChatAPI | undefined): MessageRe
 			useConversation: (message: IMessage, { enabled }) => {
 				const { data, isLoading, isError } = useQuery({
 					queryKey: ['messages', message._id, 'conversation'],
-					queryFn: async () => {
-						if (chat) {
-							return { room: await chat.data.findRoom(), subscription: await chat.data.findSubscription() };
-						}
-						return {
-							room: Rooms.state.get(message.rid),
-							subscription: Subscriptions.state.find((record) => record.rid === message.rid),
-						};
-					},
+					queryFn: async () => ({
+						room: Rooms.state.get(message.rid),
+						subscription: Subscriptions.state.find((record) => record.rid === message.rid),
+					}),
 					enabled,
 				});
 				return { data, isLoading, isError };
 			},
 			useCollapsedState,
 		}),
-		[chat],
+		[],
 	);
