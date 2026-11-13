@@ -9,7 +9,10 @@ type EmojiPickerContextValue = {
 	emojiToPreview: { emoji: string; name: string } | null;
 	handlePreview: (emoji: string, name: string) => void;
 	handleRemovePreview: () => void;
+	/** Counts an emoji as picked: recent, and frequent, which chooses the quick reactions. */
 	addRecentEmoji: (emoji: string) => void;
+	/** Counts an emoji toward the frequent ones only, for a use that is not a pick from the picker. */
+	addFrequentEmoji: (emoji: string) => void;
 	emojiListByCategory: EmojiPickerItem[];
 	recentEmojis: string[];
 	setRecentEmojis: (emoji: string[]) => void;
@@ -51,6 +54,7 @@ export const useEmojiPickerData = () => {
 	const {
 		actualTone,
 		addRecentEmoji,
+		addFrequentEmoji,
 		currentCategory,
 		categoriesIndexes,
 		customItemsLimit,
@@ -65,6 +69,7 @@ export const useEmojiPickerData = () => {
 
 	return {
 		addRecentEmoji,
+		addFrequentEmoji,
 		emojiListByCategory,
 		recentEmojis,
 		setRecentEmojis,
