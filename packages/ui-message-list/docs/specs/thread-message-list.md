@@ -1,5 +1,5 @@
 ---
-status: draft
+status: planned
 adrs: [0001]
 code: []
 tests: []
@@ -12,7 +12,7 @@ tests: []
 The thread draws its replies with the package's `MessageList`, the list the room already uses. The thread feeds it the main message
 and the replies it has, oldest first, the flags and loaders of its paged query (older replies are the query's previous pages, newer
 ones its next pages), the `msg` jump target, the first unread message, the viewer's own-message test and a function that draws each
-message with `SystemMessage` or `ThreadMessage`. It composes only the floating date, passes `bottomThreshold` 20, keeps no position,
+message with `SystemMessage` or `ThreadMessage`. It composes only the floating date, passes `bottomThreshold` 20, waits for the viewer's input before it pages, keeps no position,
 gives its messages no selection and takes its jump highlight from the list. The conference thread panels draw the same list. The
 highlight store that jumps and editing shared becomes the editing store, written only when a message is edited, and the fourteen
 capabilities of the interactions context that nothing reads are removed with what the thread's old list leaves behind.
@@ -32,8 +32,8 @@ where the requirements keep it:
 - **The main message.** It is the first row once no older reply remains (`!hasPreviousPage`); while older replies remain the first
   row is the older loader. While the first page loads there are no rows at all. Kept by R4, R10 to R14.
 - **Paging.** Older replies load 200 px from the top, newer ones 200 px from the end, one page at a time, after the viewer has
-  touched the list and not while a jump settles; the loaders are rows of the list. Kept by R19 to R24; the distance for newer pages
-  and the wait for the viewer's first input differ (intent Q1, R22).
+  touched the list and not while a jump settles; the loaders are rows of the list. Kept by R19 to R24; the distances differ: newer
+  pages at 20 px (intent Q1), older ones at a third of the viewport (R19).
 - **Links to a reply.** `?msg=` names a reply or the main message. A reply that is not loaded gets the replies around it loaded
   (`chat.getThreadMessages` with `aroundId`, which answers the first page for the main message), once per link; the thread scrolls
   to it, highlights it for 2 s, and clears `msg` 500 ms after finding a reply, never when it names the main message, which the room
@@ -74,7 +74,9 @@ below are what the thread does with it.
 - **R6** Switching to another thread MUST show that thread in its own opening position (R15, R25), carrying nothing of the previous
   one: no position, no highlight, no target and no window of replies.
 - **R7** The thread MUST give the list no header, no `restoredPosition` and no `onPositionChange`: closing a thread and opening it
-  again, or opening another, starts at the bottom, or at the target.
+  again, or opening another, starts at the bottom, or at the target. No scroll position of a thread MUST be kept or restored, since
+  nothing would restore it (user decision, review round 1), and the list is seen only where it lands (`message-list` R84). The replies
+  loaded MAY be reused when the thread opens again, as on `develop`: the thread's query keeps them in its cache for its default time.
 - **R8** The thread MUST compose the floating date alone. It MUST NOT show "New messages" or "Jump to recent messages", whatever the
   position of the viewer and the window the list holds (`message-list` R53).
 - **R9** The thread MUST pass `bottomThreshold` 20 (`develop`'s value; `message-list` Q2, answered), the `Message_GroupingPeriod`
@@ -114,9 +116,10 @@ below are what the thread does with it.
   replies, the thread MUST fetch the next page of replies, and MUST NOT fetch it from anywhere else (`message-list` R31; B6; Q1).
 - **R21** One page MUST load at a time, in either direction; none loads while the list opens or holds a jump target; a page that
   fails MUST settle and MUST NOT be asked for again by the thread itself (`message-list` R29, R32, R33, R35).
-- **R22** Paging MUST NOT wait for the viewer's first input, as it does on `develop`: a first page shorter than the viewport MUST keep
-  loading older replies until the viewport is full or none remain (`message-list` R34; a change from `develop`, which stays still
-  until the viewer touches the list).
+- **R22** The thread MUST NOT fetch a previous or a next page of replies before the viewer's first input in the list, a scroll
+  gesture, a scroll key or a pointer press (`message-list` R82): it passes `deferPagingUntilInput`, as `develop`'s thread waits for the
+  viewer to touch the list (review round 1: `develop` wins). A first page shorter than the viewport waits too, and fills on the first
+  input (`message-list` R34).
 - **R23** A page added in either direction MUST leave what the viewer sees where it is, within 1px, and a reply that arrives in the
   same update MUST keep the position of a viewer who reads and the bottom of one who is there (`message-list` R36, R38; B5).
 - **R24** The thread MUST list only messages of its own thread that are not hidden: a reply of another thread, a message of the
@@ -153,7 +156,8 @@ below are what the thread does with it.
   arrived; until then the viewer's position MUST NOT change by itself (`message-list` R20; intent Q2).
 - **R35** The thread's request for its latest replies MUST NOT reject and MUST clear the replies before the page loads, so a latest
   page that fails to load leaves the list at the bottom of a window that holds only the main message, and never waiting for a page
-  that is not coming (`message-list` D3, which the thread cannot reach; intent Q5).
+  that is not coming. A loader that rejects while the window is intact does not leave the list waiting either, for any list
+  (`message-list` R20; fixes its D3, intent Q5).
 - **R36** A reply written by someone else, while the viewer reads away or an older window is shown, MUST move nothing and raise
   nothing (R17).
 - **R37** A message the viewer writes in the room's main channel or in another thread MUST NOT move this thread's list (R24).
@@ -167,9 +171,10 @@ below are what the thread does with it.
 - **R39** The first loaded message, the main message when it is first, and every message whose day differs from the one before MUST
   be preceded by a day divider in the viewer's date format; the first unread message by an unread divider, both in one divider when
   they coincide (`message-list` R7, R8; B9).
-- **R40** The floating date MUST show the day of the message at the top while the viewer scrolls and for 1 s after, MUST NOT show for
-  scrolls the list makes, and MUST NOT double a day that an inline day divider shows at the top (`message-list` R51,
-  R52; B10; intent Q4).
+- **R40** The floating date MUST follow `develop`'s rules, as the room's does (`message-list` R51, R52): it shows the day at the top
+  on every scroll of the list, the viewer's or not, and fades 1 s after the last; it stands in for the day divider at or above the top,
+  which hides meanwhile so a day shows once (branch 02, fix 3), and the next day's divider pushes it up (B10; intent Q4, superseded at
+  review round 1).
 - **R41** The first unread message MUST come from the room's read state, as today, and MUST get `data-unread` and its divider; it MUST
   NOT change where the thread opens or scroll it (R15).
 
@@ -220,7 +225,7 @@ below are what the thread does with it.
 
 - **R52** The conference thread panel and the thread over the conference room MUST draw the list of R1, in a modal or a panel that is
   not the room's body, with the main message first once no older reply remains and every requirement above; a viewport that has no size
-  when the list mounts MUST page once it gets one (`message-list` R81).
+  when the list mounts MUST place itself once it gets one, and page from then on as R22 says (`message-list` R81).
 
 **What the interactions context offers**
 
@@ -257,12 +262,12 @@ What changes with the code, for the plan to carry out, and checks of the plan (f
   deleted symbol (`messageHighlightSubscription`, `setHighlightMessage`, `clearHighlightMessage`, `DateListProvider`, `useDateScroll`,
   `BubbleDate`, `useKeepAtBottom`, `useKeepMountedMessages`, `LoadingMessagesIndicator`, `ThreadMessageItem`); the scope's
   `grep -rn "components/message\|views/room/MessageList" apps/meteor/client` returns nothing (intent Q7).
-- Changesets: `minor` for `@rocket.chat/meteor`, naming the differences of intent Q1 to Q4 that stay; the removal of the fourteen
-  capabilities and, if intent Q5 is (b), the fix of D3 for `@rocket.chat/ui-message-list` (Q3).
+- Changesets: `minor` for `@rocket.chat/meteor`, naming the differences of intent Q1 to Q4 that stay; a `patch` of
+  `@rocket.chat/ui-message-list` for the fix of D3 and another for the removal of the fourteen capabilities (Q3).
 
 ## Out of scope
 
-- The list's behaviour for any source: [message-list](message-list.md). Its D1 stays pinned there; D3 is intent Q5.
+- The list's behaviour for any source: [message-list](message-list.md). Its D1 stays pinned there; its D3 is fixed in this branch (R35).
 - The room's list and the read state: [room-message-list](room-message-list.md). The thread does not use `restoredPosition`,
   `getVisibility()` or `onVisibleMessagesChange`.
 - The rendering of a message row: [message-variants](message-variants.md), [message-capabilities](message-capabilities.md),
@@ -278,24 +283,24 @@ What changes with the code, for the plan to carry out, and checks of the plan (f
 
 ## Known defects
 
-None; not implemented. `message-variants` D1 is fixed with this capability (R46, R47), and `message-list` D3 cannot be reached by the
-thread (R35).
+None; not implemented. `message-variants` D1 is fixed with this capability (R46, R47), and `message-list` D3 is fixed in this branch
+(R35).
 
 ## Open questions
 
 The intent's seven questions (distance for newer pages, when an own reply goes back, a link followed twice, the floating date, D3, the
-stale scope, the final check) are asked there; R20, R22, R29, R34, R35, R40, R53 and the Design carry their recommended answers. These
-are the spec's own.
+stale scope, the final check) are answered there, and R20, R22, R29, R34, R35, R40, R53 and the Design carry the answers. The
+spec's own, answered at the gate by the orchestrator, for the user:
 
-- **Q1** How the thread's rows read whether their author is ignored without a change of the subscription drawing every row again
+- **Q1** ~~How the thread's rows read whether their author is ignored without a change of the subscription drawing every row again
   (R48, R49). `develop` reads `useRoomSubscription()` in each row, and the reference gives each row the subscription in a closure that
   changes on every render, which draws every row for every change of the room's subscription (`room-message-list` R52 forbids it for
   the room). (a) The room's per-list store of markers (`MessageMarkers`, with `useMessageMarkers`) is moved out of the room's folder in
   its own refactor commit below the feature, and the thread's row reads `ignoredUser` from it, under a stable function. (b) The row
   reads the subscription from the room's context under a stable function: rows draw again for each change of the subscription, as
   `develop`'s did. (c) The reference as written. Recommended: (a); it is the room's rule (#43471) with code that exists, a move and a
-  four-line row, and (b) leaves the subscription churn of a busy room in every open thread.
-- **Q2** How `message-variants` D1 is retired. Its pinned test, "keeps the editing look on the message being edited while a jump
+  four-line row, and (b) leaves the subscription churn of a busy room in every open thread.~~ Answered (the orchestrator, for the user): (a). The room's markers store is moved out of the room's folder in a refactor commit below the feature, and the thread's row reads `ignoredUser` from it under a stable function (R48, R49).
+- **Q2** ~~How `message-variants` D1 is retired. Its pinned test, "keeps the editing look on the message being edited while a jump
   highlights another", writes the highlight store twice to stand for editing and a jump; with the rename the store has no jump and
   the test cannot be un-skipped as written, and the checker allows a pinned test to change only by losing its skip unless a person adds
   `Pinned-test-change: message-variants D1` to the commit. (a) The test is replaced, with that trailer added by the orchestrator or
@@ -303,11 +308,11 @@ are the spec's own.
   editing store and the editing look of the message being edited unchanged (R32, R47), the package's spec of `message-list` R50, and
   the `D1` entry deleted. (b) The test is left skipped and D1 kept as obsolete, which the checker accepts and the spec would then
   contradict (R47). (c) The test is un-skipped by changing only its import and names, which fails for the reason that a second
-  `setEditingMessage` replaces the first. Recommended: (a); it is the only one that proves the new behaviour.
-- **Q3** The changeset for the removal of the fourteen capabilities. (a) A `patch` of `@rocket.chat/ui-message-list`, alone or with
+  `setEditingMessage` replaces the first. Recommended: (a); it is the only one that proves the new behaviour.~~ Answered: (a), with the orchestrator's authorisation under the user's delegation of the gate: the commit that replaces the pinned test carries `Pinned-test-change: message-variants D1`, naming it. The proof is a meteor spec that a jump in the thread's list and in the room's leaves the editing store untouched and that editing in one list is not cleared by a jump in the other, with `message-list` R50 (R32, R46, R47). The trailer is used for no other test.
+- **Q3** ~~The changeset for the removal of the fourteen capabilities. (a) A `patch` of `@rocket.chat/ui-message-list`, alone or with
   the fix of D3, since a type the package exports shrinks and nothing in the app changes for a viewer. (b) None, since the package
   has not been released and its own changeset (`ui-message-list-package`) covers its first release. Recommended: (a); a reviewer reading
-  the stack sees the type change named.
+  the stack sees the type change named.~~ Answered: (a). A `patch` of `@rocket.chat/ui-message-list` (R53).
 
 ### Corrections to the scope, for the plan
 
@@ -341,13 +346,18 @@ are the spec's own.
 ### Where the new thread list differs from `develop`'s
 
 Decided in the intent: the distance for newer pages is the thread's 20 px, not 200 (R20; Q1); the moment an own reply goes back to the
-latest is the append, not the server's copy (R34; Q2); a link followed twice jumps twice (R29; Q3); the floating date shows only for
-the viewer's scrolls, hides itself, not the divider, under an inline divider, and is centered at the top (R40; Q4). Not a decision:
-paging does not wait for the viewer's first input (R22); the highlight lasts 2 s from the moment the target is reached, not from the
+latest is the append, not the server's copy (R34; Q2); a link followed twice jumps twice (R29; Q3). Not a decision:
+the highlight lasts 2 s from the moment the target is reached, not from the
 moment its index is found, and `msg` is cleared when it is reached, not 500 ms after the reply is among the replies (R25); the
 container no longer carries the classes `thread-list`, `js-scroll-thread` and `hide-usernames`, which nothing styles or reads (the
 provider's display value carries `hideUsernames`, #43341); the thread no longer writes a jump into the editing store (R32, R46), which
-ends the highlight a closing thread left set.
+ends the highlight a closing thread left set. Found at review round 1 and kept: older replies load when the top of the viewport comes
+within a third of the viewport's height of the first message, where `develop`'s thread loaded them 200 px from the top (R19); a first
+page shorter than the viewport, or one whose top is within that distance while the viewer is at the bottom, loads the older page that
+is due at the viewer's first input, where `develop`'s thread loaded no older page while at the bottom; and once a jump replaces the
+replies, paging waits for the viewer's input again, where `develop`'s thread kept the input it had: this shows when something other
+than the viewer scrolls the list after a jump, such as an image resolving late or find-in-page, which on `develop` asked for a page
+that was due and here waits for the viewer (R22).
 
 ## References
 

@@ -1,6 +1,6 @@
 # Intent: The thread's message list
 
-Author: message list replacement stack (branch 09). Status: draft.
+Author: message list replacement stack (branch 09). Status: accepted.
 
 ## Problem
 
@@ -67,46 +67,49 @@ highlight store and the places that write it (`ChatMessages`, `CurrentEditingMes
 
 ## Open questions
 
-- **Q1** Where the thread's newer pages start loading. `develop` asks for the next page of newer replies 200 px before the end of
+- **Q1** ~~Where the thread's newer pages start loading. `develop` asks for the next page of newer replies 200 px before the end of
   the loaded replies; the list has one distance for "at the bottom" and for loading newer pages (`message-list` R31, R80), and the
   thread's is 20. (a) Accept 20 px: after a jump to an old reply the viewer reaches the end of the loaded window before the next
   page starts, named as a difference in the changeset. (b) Give the list a second distance for newer pages, a new requirement of
   `message-list` and a change to its reducer, for a distance between 20 and 200 px. (c) Pass 200 as `bottomThreshold`, which stops
   following arrivals for a viewer 100 px above the end. Recommended: (a); the cost is a short wait at the end of an older window,
-  and (b) would add engine surface in the last branch for it.
-- **Q2** When a reply sent from older history takes the thread back to its latest replies. `develop` goes when the server's copy of
+  and (b) would add engine surface in the last branch for it.~~ Answered (the orchestrator, for the user): (a). The thread's newer pages start 20 px from the end of the loaded replies, named in the changeset (spec R20).
+- **Q2** ~~When a reply sent from older history takes the thread back to its latest replies. `develop` goes when the server's copy of
   the reply arrives; the list goes when the reply is appended, which for a thread is when the optimistic copy is, so the thread's
   window is reset at once and the reply shows again when the latest page or the server's copy arrives. (a) Accept the list's
   moment. (b) Keep `develop`'s moment, which needs the thread to hide its optimistic copy from the list and to call
   `scrollToBottom()` on the stream, undoing what the engine does for the room. Recommended: (a); the reply is among the latest
-  replies as soon as it exists, and the difference is a blink of the reply, not of the position.
-- **Q3** A link to a reply that is not loaded, followed a second time after the viewer paged away. `develop`'s thread asks for the
+  replies as soon as it exists, and the difference is a blink of the reply, not of the position.~~ Answered: (a). An own reply goes back to the latest replies when it is appended (spec R34).
+- **Q3** ~~A link to a reply that is not loaded, followed a second time after the viewer paged away. `develop`'s thread asks for the
   replies around a reply once per thread and reply, so a second click on the same link does nothing, which `message-list` R46 and
   `room-message-list` R38 do not allow for the room. (a) The thread jumps again, as the room does: a change from `develop`, with a
   changeset line. (b) Keep `develop`'s. Recommended: (a); it is the list's rule for any source, the fix is the thread asking again
-  once its target was reached, and (b) would be a defect written into a spec.
-- **Q4** The floating date differs from `develop`'s in three ways the list's own rules decide (`message-list` R51, R52): it shows
+  once its target was reached, and (b) would be a defect written into a spec.~~ Answered: (a). A link followed twice jumps twice, as the room does (spec R29).
+- **Q4** ~~The floating date differs from `develop`'s in three ways the list's own rules decide (`message-list` R51, R52): it shows
   only while the viewer scrolls, so it no longer flashes when the thread opens or a reply arrives; it hides when a day divider is at
   the top, where `develop` hid the divider and kept the date; and it is centered at the top, not moved down to sit on the divider.
   (a) Accept, named in the changeset. (b) Change the list to the thread's behaviour, which the room, already switched, does not
-  have. Recommended: (a).
-- **Q5** `message-list` D3 (a rejected `onJumpToLatest` leaves the list waiting for the latest page). The thread cannot reach it:
+  have. Recommended: (a).~~ Answered: (a). The list's floating date, named in the changeset (spec R40). Superseded at review
+  round 1, by the user: the list follows `develop`'s rules again (`message-list` R51, R52), so the thread's date shows on every scroll,
+  stands in for the divider under it and is pushed up by the next day, as `develop`'s thread, with branch 02's fix that keeps a day
+  from showing twice (spec R40).
+- **Q5** ~~`message-list` D3 (a rejected `onJumpToLatest` leaves the list waiting for the latest page). The thread cannot reach it:
   its `onJumpToLatest` resets the thread's query, which resolves whether or not the refetch fails, and clears the replies first,
   so the list is never left waiting; the room cannot either (`room-message-list` R42). The fix is known: dispatch
   `jumpToLatestUnavailable` when the promise rejects (`useMessageListScroller.ts`, one line) and un-skip the pinned test.
   (a) Leave D3 pinned: no consumer can hit it, and the stack ends with it recorded. (b) Fix it here, as the lowest commit of the
   branch, with the test un-skipped and a `patch` changeset for the package: it ends with the last consumer that could have needed it
   and a future list with a rejecting loader will not. Recommended: (b); the commit is independent of the thread, one line, proven
-  by a test that exists, and the alternative leaves a defect in an `implemented` spec after the last branch that could fix it.
-- **Q6** The scope is stale against the base in places the cleanup touches. `views/room/BubbleDate` holds `BubbleDateScope`,
+  by a test that exists, and the alternative leaves a defect in an `implemented` spec after the last branch that could fix it.~~ Answered: (b). D3 is fixed in this branch as the lowest code commit: the dispatch on rejection, its test un-skipped after it failed, the `D3` entry removed, a `patch` changeset for the package (spec R35).
+- **Q6** ~~The scope is stale against the base in places the cleanup touches. `views/room/BubbleDate` holds `BubbleDateScope`,
   `bubbleDateStore` and its spec besides the files the scope names, and nothing but the old thread reads them;
   `tests/mocks/utils/FakeResponse.ts` has no importer; `MessageHighlightProvider`, `MessageHighlightContext` and the `.hide-avatar`
   and `.hide-usernames` classes of `RoomBody` are already gone; the composer's `onResize` survives only as two optional prop types;
   `DateListProvider` is still mounted by `Room.tsx` though the room no longer reads it. (a) Follow the base: delete every file that
   the thread's switch leaves with no reader, and skip what is already gone. (b) Delete only what the scope names, leaving the rest
-  as dead code. Recommended: (a); the scope's aim is that nothing of the old list is left, and (b) fails it.
-- **Q7** The scope's final check, `grep -rn "components/message\|views/room/MessageList" apps/meteor/client`, can return nothing,
+  as dead code. Recommended: (a); the scope's aim is that nothing of the old list is left, and (b) fails it.~~ Answered: (a). Everything the thread's switch leaves with no reader is deleted, each proved unread by a search and the typecheck (spec Design).
+- **Q7** ~~The scope's final check, `grep -rn "components/message\|views/room/MessageList" apps/meteor/client`, can return nothing,
   but it only matches the absolute spelling of those paths, and every relative import of the old folders passes it. (a) Keep it and
   add that `views/room/MessageList` and `components/message` do not exist and that no deleted symbol is named anywhere in
   `apps/meteor`. (b) Keep it alone. The scope's second sentence, that no meteor import names a message-list symbol from
-  `@rocket.chat/ui-client`, has nothing left to check at the base. Recommended: (a).
+  `@rocket.chat/ui-client`, has nothing left to check at the base. Recommended: (a).~~ Answered: (a). The stronger check (spec Design).
