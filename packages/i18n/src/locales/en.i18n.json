@@ -6049,6 +6049,7 @@
   "Score": "Score",
   "Screen_Lock": "Screen lock",
   "Screen_Share": "Screen share",
+  "Screen_share_zoomed_hint": "Drag, or use the arrow keys, to move around the zoomed screen",
   "Script": "Script",
   "Script_Enabled": "Script enabled",
   "Script_Engine": "Script sandbox",
