@@ -37,3 +37,4 @@ export { default as MessageHeader, type MessageHeaderProps } from './MessageHead
 export { default as StatusIndicators, type StatusIndicatorsProps } from './StatusIndicators';
 export { default as ReadReceiptIndicator, type ReadReceiptIndicatorProps } from './ReadReceiptIndicator';
 export { default as MessageRoles, type MessageRolesProps } from './header/MessageRoles';
+export { default as RoomMessage, type RoomMessageProps } from './variants/RoomMessage';

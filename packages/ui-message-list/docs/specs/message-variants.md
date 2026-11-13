@@ -3,6 +3,11 @@ status: planned
 adrs: []
 code:
   [
+    src/Message/variants/RoomMessage.tsx,
+    src/Message/variants/room,
+    src/Message/hooks/useCanReplyToBroadcast.ts,
+    src/Message/lib/splitQuoteAttachments.ts,
+    src/Message/lib/toMessageActionOptions.ts,
     src/Message/MessageHeader.tsx,
     src/Message/MessageAuthorAvatar.tsx,
     src/Message/StatusIndicators.tsx,
@@ -20,6 +25,8 @@ code:
   ]
 tests:
   [
+    src/Message/variants/RoomMessage.spec.tsx,
+    src/Message/variants/room/RoomMessageContent.spec.tsx,
     src/Message/MessageHeader.spec.tsx,
     src/Message/MessageAuthorAvatar.spec.tsx,
     src/Message/StatusIndicators.spec.tsx,
@@ -297,8 +304,6 @@ Decided in the plan. What this spec fixes about shape:
 Behaviour on `develop` that the variants carry over. The checker rejects a `D` entry without a skipped test that pins it,
 so each becomes a `D<n>` entry in the commit that adds its test (the plan names the commits); until then it is listed here:
 
-- Activating the checkbox itself (assistive technology, a script) toggles twice, because the row and the checkbox both toggle, and leaves the message as it was (R23 covers the visible box; measured on `develop`'s structure with Fuselage's `CheckBox`: a click on the input toggles twice, a click on its visible box three times).
-- The reveal of an ignored message ends when the row unmounts, so scrolling it away hides it again.
 - The preview of a reply to a system message writes the text of the system type from the reply, not from the message the thread started with.
 - A `ThreadMessagePreview` has no per-message fallback: one that throws takes its list down (R37 covers the others).
 - Space on a focused `ThreadMessagePreview` opens the thread without preventing the browser's default.
@@ -310,6 +315,18 @@ so each becomes a `D<n>` entry in the commit that adds its test (the plan names 
 A jump to a message and editing write the same highlighted id (R47). Jumping to another message while editing one moves the
 editing look to the target, and the message being edited loses it, until the store is renamed in branch 09. Pinned by the skipped
 test "keeps the editing look on the message being edited while a jump highlights another" in `MessagesProvider.spec.tsx`.
+
+### D2 The reveal of an ignored message ends when its row unmounts
+
+An ignored message is revealed by local state of its row (R27), so a row that unmounts, as one scrolled away does, hides it again when
+it mounts. Pinned by the skipped test "keeps the content of a revealed message revealed when the row mounts again" in `RoomMessage.spec.tsx`.
+
+### D3 Activating the checkbox input toggles the message twice
+
+The row and the checkbox both toggle the selection, so activating the input itself (assistive technology, a script) toggles twice and leaves the
+message as it was. A click on the visible box toggles three times and ends toggled once (R23; measured on `develop`'s structure with Fuselage's
+`CheckBox`: a click on the input toggled twice, a click on its visible box three times). Pinned by the skipped test "toggles once when the checkbox
+input itself is activated" in `RoomMessage.spec.tsx`.
 
 ## Open questions
 
