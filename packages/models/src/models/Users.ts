@@ -41,7 +41,7 @@ import { Rooms, Subscriptions } from '../index';
 import { BaseRaw } from './BaseRaw';
 import { queryAvailableAgentsForSelection, queryStatusAgentOnline } from '../helpers';
 
-const usersDefaultFields = { __rooms: 0 } as const;
+const usersDefaultFields = { __rooms: 0, roomRolePriorities: 0 } as const;
 
 export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IUsersModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IUser>>) {
@@ -1333,6 +1333,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			},
 			{
 				returnDocument: 'after',
+				projection: { _id: 1, username: 1, name: 1, status: 1, statusText: 1, statusSource: 1, statusExpiresAt: 1, roles: 1 },
 			},
 		);
 	}
