@@ -1,6 +1,6 @@
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
-import type { MessageRelatedDataContextValue } from '@rocket.chat/ui-message-list';
+import type { MessageConversation, MessageRelatedDataContextValue } from '@rocket.chat/ui-message-list';
 import { useQuery } from '@tanstack/react-query';
 import { useCallback, useMemo, useSyncExternalStore } from 'react';
 
@@ -40,7 +40,11 @@ const useCollapsedState = (key: string, initiallyCollapsed: boolean): [boolean, 
 export type MessagePlace = { room?: IRoom; subscription?: ISubscription };
 
 /** The room and the subscription of a message: the place's own when it is the place's room, else the client's stores', with no request. */
-const useConversation = ({ room, subscription }: MessagePlace, message: IMessage, enabled: boolean) => {
+const useConversation = <TSelected = MessageConversation>(
+	{ room, subscription }: MessagePlace,
+	message: IMessage,
+	{ enabled, select }: { enabled: boolean; select?: (conversation: MessageConversation) => TSelected },
+) => {
 	const inPlace = !!room && room._id === message.rid;
 	const roomOfMessage = Rooms.use((state) => (enabled && !inPlace ? state.get(message.rid) : undefined));
 	const subscriptionOfMessage = Subscriptions.use((state) =>
@@ -52,12 +56,14 @@ const useConversation = ({ room, subscription }: MessagePlace, message: IMessage
 			return { data: undefined, isLoading: false, isError: false };
 		}
 
+		const conversation = inPlace ? { room, subscription } : { room: roomOfMessage, subscription: subscriptionOfMessage };
+
 		return {
-			data: inPlace ? { room, subscription } : { room: roomOfMessage, subscription: subscriptionOfMessage },
+			data: (select ? select(conversation) : conversation) as TSelected,
 			isLoading: false,
 			isError: false,
 		};
-	}, [enabled, inPlace, room, subscription, roomOfMessage, subscriptionOfMessage]);
+	}, [enabled, inPlace, room, subscription, roomOfMessage, subscriptionOfMessage, select]);
 };
 
 /** Data messages show about other things, read from the client's stores first and fetched when missing. */
@@ -80,7 +86,7 @@ export const useMessageRelatedDataValue = (place: MessagePlace, placeUserRoles?:
 				});
 				return { data, isLoading, isError };
 			},
-			useConversation: (message, { enabled }) => useConversation(place, message, enabled),
+			useConversation: (message, options) => useConversation(place, message, options),
 			useCollapsedState,
 		}),
 		[place, placeUserRoles],

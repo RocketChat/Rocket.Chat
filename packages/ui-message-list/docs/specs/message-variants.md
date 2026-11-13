@@ -50,6 +50,7 @@ tests:
     src/Message/header/MessageRoles.spec.tsx,
     src/Message/hooks/useSelectableMessage.spec.tsx,
     src/Message/hooks/useIsMessageEmphasized.spec.tsx,
+    src/Message/hooks/useCanReplyToBroadcast.spec.tsx,
     src/Message/lib/getAuthorUsername.spec.ts,
     src/index.spec.ts,
     src/Message/contexts/contexts.spec.tsx,
@@ -276,7 +277,7 @@ composer's quote draw message parts, not rows (`message-capabilities` R32 to R40
   selection (`messageSelectionFromStore` over the room's selected messages store, with the same identity across renders); a thread
   and the audit MUST give none.
 - **R49** `MessagesProvider` MUST answer the data the variants read about other things: the conversation of a message (its room and subscription, from the place's own when the message is of its room, else the stores, with no request,
-  R38), the labels of an author's roles in a room (R13), and the message a thread started with (from the store, else
+  R38; a reader may pass `select` to take only what it reads, and is then given that, and renders again only when it changes, `room-message-list` R50), the labels of an author's roles in a room (R13), and the message a thread started with (from the store, else
   fetched with the others asked for in the same half second), each with `data`, `isLoading` and `isError`. The roles of a place's own room MUST be resolved once for the
   place, in `MessagesProvider`, not once per header (#43471; Q1, answered).
 - **R50** Wherever the app mounted `MessageListProvider`, it MUST mount `MessagesProvider` with the same room and subscription, and no place may provide
@@ -303,7 +304,7 @@ are not treated as equal (`message-capabilities` notes). The selection click and
 `develop`, and `useSelectableMessage` is the one place a row learns what a click, Space or Enter does to it.
 
 The app owns the provider's values: `MessagesProvider` resolves the roles of its room once (`useRolesByUser`), answers the conversation of a
-message from its own room and subscription or the stores, and provides the editing context from the highlight store and the selection it is
+message from its own room and subscription or the stores (applying a reader's `select`), and provides the editing context from the highlight store and the selection it is
 given. Bridges, with their end: (1) the editing context reads the store that jumps and editing write to (R47), until the rename in branch
 09; (2) the room's selection for the room's list, tabs and search, none for a thread or the audit (R48, `roomMessageSelection`); (3) each
 row the old room list renders registers itself for "Select all" while it is not selected (`useRegisterRenderedMessage`), as the old variants did,
