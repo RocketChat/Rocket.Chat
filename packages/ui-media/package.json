@@ -18,6 +18,7 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"devDependencies": {
+		"@react-aria/visually-hidden": "^3.8.27",
 		"@rocket.chat/css-in-js": "workspace:^",
 		"@rocket.chat/fuselage": "workspace:~",
 		"@rocket.chat/fuselage-hooks": "workspace:^",
@@ -46,6 +47,7 @@
 		"typescript": "~7.0.2"
 	},
 	"peerDependencies": {
+		"@react-aria/visually-hidden": "*",
 		"@rocket.chat/css-in-js": "workspace:^",
 		"@rocket.chat/fuselage": "1.0.0",
 		"@rocket.chat/fuselage-hooks": "0.44.0",

@@ -11210,6 +11210,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/ui-media@workspace:packages/ui-media"
   dependencies:
+    "@react-aria/visually-hidden": "npm:^3.8.27"
     "@rocket.chat/css-in-js": "workspace:^"
     "@rocket.chat/fuselage": "workspace:~"
     "@rocket.chat/fuselage-hooks": "workspace:^"
@@ -11237,6 +11238,7 @@ __metadata:
     storybook: "npm:~10.6.5"
     typescript: "npm:~7.0.2"
   peerDependencies:
+    "@react-aria/visually-hidden": "*"
     "@rocket.chat/css-in-js": "workspace:^"
     "@rocket.chat/fuselage": 1.0.0
     "@rocket.chat/fuselage-hooks": 0.44.0
