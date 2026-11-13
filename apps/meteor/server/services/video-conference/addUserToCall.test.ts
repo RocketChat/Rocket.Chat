@@ -1,6 +1,7 @@
-import { afterEach, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it } from 'node:test';
 
 import type { VideoConference } from '@rocket.chat/core-typings';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
@@ -68,21 +69,17 @@ const { VideoConfService } = proxyquire.noCallThru().load('./service', {
 		Room: { addUserToRoom: sinon.stub().resolves() },
 		Presence: PresenceMock,
 	},
-	'@rocket.chat/models': {
-		Users: UsersMock,
-		VideoConference: VideoConferenceModelMock,
-		Rooms: { findOneById: sinon.stub().resolves(null) },
-		Messages: { setBlocksById: sinon.stub().resolves() },
-		Subscriptions: {
-			findByRoomIdAndNotUserId: sinon.stub().returns({ toArray: sinon.stub().resolves([]), forEach: sinon.stub().resolves() }),
-		},
-	},
 	'../../lib/messaging/threads/functions': { follow: followStub },
 	'../../settings': { settings: { get: (key: string) => settingsValues[key] } },
 });
 
 describe('VideoConfService.addUserToCall provider gating', () => {
 	let service: any;
+
+	before(() => {
+		mockModel('Users', UsersMock);
+		mockModel('VideoConference', VideoConferenceModelMock);
+	});
 
 	beforeEach(() => {
 		service = new VideoConfService();

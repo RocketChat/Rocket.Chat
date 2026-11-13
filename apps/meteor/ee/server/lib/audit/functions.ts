@@ -7,6 +7,7 @@ import type { Filter } from 'mongodb';
 import { hasPermissionAsync } from '../../../../server/lib/authorization/hasPermission';
 import { callbacks } from '../../../../server/lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
+import { keepPublicAuthorFields } from '../../../../server/lib/messages/keepPublicAuthorFields';
 import { updateCounter } from '../../../../server/lib/statistics';
 
 const getValue = (room: IRoom | null) => room && { rids: [room._id], name: room.name };
@@ -145,7 +146,7 @@ export const auditGetMessagesMethod = async (userId: string | null, params: Audi
 
 	updateCounter({ settingsId: 'Message_Auditing_Panel_Load_Count' });
 
-	return messages;
+	return messages.map((message) => keepPublicAuthorFields(message));
 };
 
 type AuditOmnichannelMessagesParams = {
@@ -208,7 +209,7 @@ export const auditGetOmnichannelMessagesMethod = async (
 		{ ignoreUndefined: true },
 	);
 
-	return messages;
+	return messages.map((message) => keepPublicAuthorFields(message));
 };
 
 export const auditGetAuditionsMethod = async (userId: string | null, startDate: Date, endDate: Date): Promise<IAuditLog[]> => {

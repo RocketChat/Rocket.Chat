@@ -9,7 +9,7 @@ export const prependRcxClassNames = <T extends { className: string }>(props: T):
 					return;
 				}
 
-				const newClassName = value === true ? key : `${key}-${value}`;
+				const newClassName = value === true ? key : `${key}-${value as string | number}`;
 				props.className = prependClassName(props.className, newClassName);
 			} finally {
 				delete (props as Record<string, unknown>)[key];

@@ -1,27 +1,13 @@
 import { before, describe, it } from 'node:test';
 
-import type { IAppRoomsConverter, IAppsRoom } from '@rocket.chat/apps';
+import type { IAppRoomsConverter, IAppServerOrchestrator, IAppsRoom } from '@rocket.chat/apps';
 import type { IRoom } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 
-import { MessagesMock } from '../../../../tests/mocks/server/modules/apps/models/Messages.mock';
+import { AppRoomsConverter } from './rooms';
 import { RoomsMock } from '../../../../tests/mocks/server/modules/apps/models/Rooms.mock';
 import { UsersMock } from '../../../../tests/mocks/server/modules/apps/models/Users.mock';
 import { AppServerOrchestratorMock } from '../../../../tests/mocks/server/modules/apps/orchestrator.mock';
-
-const { AppRoomsConverter } = proxyquire.noCallThru().load('./rooms', {
-	'@rocket.chat/random': {
-		Random: {
-			id: () => 1,
-		},
-	},
-	'@rocket.chat/models': {
-		Rooms: new RoomsMock(),
-		Messages: new MessagesMock(),
-		Users: new UsersMock(),
-	},
-});
 
 describe('The AppMessagesConverter instance', () => {
 	let roomConverter: IAppRoomsConverter;
@@ -48,7 +34,7 @@ describe('The AppMessagesConverter instance', () => {
 			return {};
 		};
 
-		roomConverter = new AppRoomsConverter(orchestrator);
+		roomConverter = new AppRoomsConverter(orchestrator as unknown as IAppServerOrchestrator);
 		roomsMock = new RoomsMock();
 	});
 

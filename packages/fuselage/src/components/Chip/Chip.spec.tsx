@@ -1,5 +1,6 @@
 import { composeStories } from '@storybook/react';
-import { fireEvent } from '@testing-library/react';
+import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import Chip from './Chip';
 import * as stories from './Chip.stories';
@@ -10,29 +11,31 @@ const { Default } = composeStories(stories);
 describe('[Chip Component]', () => {
 	it('renders without crashing', () => {
 		render(<Default />);
+		expect(screen.getByRole('button', { name: 'Marie Rowe' })).toBeInTheDocument();
 	});
 
-	it('keeps onMouseDown and onClick on their own events', () => {
+	it('keeps onMouseDown and onClick on their own events', async () => {
+		const user = userEvent.setup();
 		const onClick = jest.fn();
 		const onMouseDown = jest.fn();
-		const { getByRole } = render(
+		render(
 			<Chip onClick={onClick} onMouseDown={onMouseDown}>
 				Label
 			</Chip>,
 		);
 
-		fireEvent.mouseDown(getByRole('button'));
+		await user.pointer({ keys: '[MouseLeft>]', target: screen.getByRole('button') });
 		expect(onMouseDown).toHaveBeenCalledTimes(1);
 		expect(onClick).not.toHaveBeenCalled();
 
-		fireEvent.click(getByRole('button'));
+		await user.pointer({ keys: '[/MouseLeft]', target: screen.getByRole('button') });
 		expect(onClick).toHaveBeenCalledTimes(1);
 		expect(onMouseDown).toHaveBeenCalledTimes(1);
 	});
 
 	it('is enabled when only onMouseDown is given', () => {
-		const { getByRole } = render(<Chip onMouseDown={() => undefined}>Label</Chip>);
+		render(<Chip onMouseDown={() => undefined}>Label</Chip>);
 
-		expect(getByRole('button')).toBeEnabled();
+		expect(screen.getByRole('button')).toBeEnabled();
 	});
 });

@@ -1,6 +1,7 @@
-import { afterEach, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it } from 'node:test';
 
 import { ClientSafeError } from '@rocket.chat/core-services';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import Sinon from 'sinon';
@@ -61,11 +62,6 @@ const {
 }: {
 	getRoomByNameOrIdWithOptionToJoin: GetRoomByNameOrIdWithOptionToJoinFn;
 } = proxyquire.noCallThru().load('./getRoomByNameOrIdWithOptionToJoin.ts', {
-	'@rocket.chat/models': {
-		Rooms: RoomsStub,
-		Subscriptions: SubscriptionsStub,
-		Users: UsersStub,
-	},
 	'@rocket.chat/core-services': {
 		Room: RoomServiceStub,
 		ClientSafeError,
@@ -81,6 +77,12 @@ describe('getRoomByNameOrIdWithOptionToJoin', () => {
 		_id: 'userId',
 		username: 'user',
 	};
+
+	before(() => {
+		mockModel('Rooms', RoomsStub);
+		mockModel('Subscriptions', SubscriptionsStub);
+		mockModel('Users', UsersStub);
+	});
 
 	beforeEach(() => {
 		RoomsStub.findOneByIdOrName.reset();

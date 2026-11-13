@@ -2,14 +2,15 @@ import type { ILivechatTrigger } from '@rocket.chat/core-typings';
 import { IconButton } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericModal, GenericTableCell, GenericTableRow } from '@rocket.chat/ui-client';
-import { useSetModal, useToastMessageDispatch, useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useRoute, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { KeyboardEvent, MouseEvent } from 'react';
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export type TriggersRowProps = Pick<ILivechatTrigger, '_id' | 'name' | 'description' | 'enabled'> & { reload: () => void };
 
 const TriggersRow = ({ _id, name, description, enabled, reload }: TriggersRowProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const triggersRoute = useRoute('omnichannel-triggers');
 	const deleteTrigger = useEndpoint('DELETE', '/v1/livechat/triggers/:_id', { _id });

@@ -1,6 +1,7 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
 import { ClientSafeError } from '@rocket.chat/core-services';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import p from 'proxyquire';
 import sinon from 'sinon';
@@ -32,7 +33,6 @@ const i18nMock = { t: sinon.stub() };
 const callbacksRunMock = sinon.stub();
 
 const { removeUserReaction, executeSetReaction, setReaction } = p.noCallThru().load('./setReaction.ts', {
-	'@rocket.chat/models': modelsMock,
 	'@rocket.chat/core-services': { Message: { beforeReacted: sinon.stub() }, ClientSafeError },
 	'../../callbacks': { callbacks: { run: callbacksRunMock } },
 	'../../i18n': { i18n: i18nMock },
@@ -46,6 +46,13 @@ const { removeUserReaction, executeSetReaction, setReaction } = p.noCallThru().l
 });
 
 describe('Reactions', () => {
+	before(() => {
+		mockModel('EmojiCustom', modelsMock.EmojiCustom);
+		mockModel('Users', modelsMock.Users);
+		mockModel('Messages', modelsMock.Messages);
+		mockModel('Rooms', modelsMock.Rooms);
+	});
+
 	describe('removeUserReaction', () => {
 		it('should return the message unmodified when no reactions exist', () => {
 			const message = {};

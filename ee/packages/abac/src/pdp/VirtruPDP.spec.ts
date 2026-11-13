@@ -1,4 +1,5 @@
 import type { AbacRoomMembershipPreviewPage } from '@rocket.chat/core-services';
+import { mockModel } from '@rocket.chat/models/testing';
 
 import { OnlyCompliantCanBeAddedToRoomError, PdpHealthCheckError } from '../errors';
 import { PREVIEW_SCAN_LIMIT } from '../helper';
@@ -15,18 +16,18 @@ const usersFindActiveByRoomIdAfterUsername = jest.fn();
 const usersCountActiveByRoomIdAfterUsername = jest.fn();
 const roomsFindPrivateRoomsByIdsWithAbacAttributes = jest.fn();
 
-jest.mock('@rocket.chat/models', () => ({
-	Users: {
+const registerModels = () => {
+	mockModel('Users', {
 		findOneById: (...a: unknown[]) => usersFindOneById(...a),
 		findByUsernames: (...a: unknown[]) => usersFindByUsernames(...a),
 		findActiveByRoomIds: (...a: unknown[]) => usersFindActiveByRoomIds(...a),
 		findActiveByRoomIdAfterUsername: (...a: unknown[]) => usersFindActiveByRoomIdAfterUsername(...a),
 		countActiveByRoomIdAfterUsername: (...a: unknown[]) => usersCountActiveByRoomIdAfterUsername(...a),
-	},
-	Rooms: {
+	});
+	mockModel('Rooms', {
 		findPrivateRoomsByIdsWithAbacAttributes: (...a: unknown[]) => roomsFindPrivateRoomsByIdsWithAbacAttributes(...a),
-	},
-}));
+	});
+};
 
 const cfg = {
 	baseUrl: 'http://pdp',
@@ -130,6 +131,8 @@ describe('getDeniedSubjects', () => {
 });
 
 describe('VirtruPDP.canAccessObject', () => {
+	beforeAll(registerModels);
+
 	const room = { _id: 'r1', abacAttributes: [{ key: 'clearance', values: ['secret'] }] };
 
 	it('grants when room has no abac attributes (no DB or API call)', async () => {
@@ -212,6 +215,8 @@ describe('VirtruPDP.canAccessObject', () => {
 });
 
 describe('VirtruPDP.checkUsernamesMatchAttributes', () => {
+	beforeAll(registerModels);
+
 	const room = { _id: 'r1' } as any;
 	const attrs = [{ key: 'clearance', values: ['secret'] }];
 
@@ -292,6 +297,8 @@ describe('VirtruPDP.checkUsernamesMatchAttributes', () => {
 });
 
 describe('VirtruPDP.assertCreatorMayAssign', () => {
+	beforeAll(registerModels);
+
 	const attrs = [{ key: 'clearance', values: ['secret'] }];
 	const actor = { _id: 'u1', username: 'bob' };
 	const decision = (value: Decision) => ({
@@ -418,6 +425,8 @@ describe('VirtruPDP.evaluateSubjectAgainstRooms', () => {
 });
 
 describe('VirtruPDP.onRoomAttributesChanged', () => {
+	beforeAll(registerModels);
+
 	const room = { _id: 'r1', t: 'p', teamMain: false, abacAttributes: [] } as any;
 	const newAttrs = [{ key: 'clearance', values: ['secret'] }];
 
@@ -523,6 +532,8 @@ describe('VirtruPDP.needsEvaluation', () => {
 });
 
 describe('VirtruPDP.previewRoomMembers', () => {
+	beforeAll(registerModels);
+
 	const room = { _id: 'r1', abacAttributes: [] };
 	const attrs = [{ key: 'clearance', values: ['secret'] }];
 	const previewMembers = (pdp: VirtruPDP, page: AbacRoomMembershipPreviewPage) => pdp.previewRoomMembers(room, attrs, page);
@@ -619,6 +630,8 @@ describe('VirtruPDP.previewRoomMembers', () => {
 });
 
 describe('VirtruPDP.onSubjectAttributesChanged', () => {
+	beforeAll(registerModels);
+
 	it('returns [] when user has no __rooms', async () => {
 		const pdp = new VirtruPDP(mkClient());
 		const result = await pdp.onSubjectAttributesChanged(user() as any, []);
@@ -788,6 +801,8 @@ describe('VirtruPDP.evaluateUserRooms', () => {
 });
 
 describe('VirtruPDP — PDP unreachable (decision call rejects)', () => {
+	beforeAll(registerModels);
+
 	const pdpDown = () => jest.fn().mockRejectedValue(new Error('pdp down'));
 	const room = { _id: 'r1', abacAttributes: [{ key: 'clearance', values: ['secret'] }] } as any;
 	const attrs = [{ key: 'clearance', values: ['secret'] }];
@@ -826,6 +841,8 @@ describe('VirtruPDP — PDP unreachable (decision call rejects)', () => {
 });
 
 describe('reevaluateUsers', () => {
+	beforeAll(registerModels);
+
 	const room = { _id: 'r1', abacAttributes: [{ key: 'clearance', values: ['secret'] }] };
 
 	it('returns no pairs when users have no ABAC rooms', async () => {

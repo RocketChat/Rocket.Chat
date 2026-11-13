@@ -205,7 +205,7 @@ const fontSizeProp: PropDefinition = {
 };
 
 const fontWeightProp: PropDefinition = {
-	toCSSValue: (value) => (value ? String(fontScale(value)?.fontWeight || value) : undefined),
+	toCSSValue: (value) => (value ? String(fontScale(value)?.fontWeight || (value as string | number)) : undefined),
 };
 
 const lineHeightProp: PropDefinition = {
@@ -213,7 +213,7 @@ const lineHeightProp: PropDefinition = {
 };
 
 const letterSpacingProp: PropDefinition = {
-	toCSSValue: (value) => (value ? String(fontScale(value)?.letterSpacing || value) : undefined),
+	toCSSValue: (value) => (value ? String(fontScale(value)?.letterSpacing || (value as string | number)) : undefined),
 };
 
 export const propDefs: Record<keyof StylingProps, PropDefinition> = {

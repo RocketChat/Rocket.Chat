@@ -12,9 +12,10 @@ import {
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
-import { usePermission, useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { usePermission, useRoute, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { KeyboardEvent, MouseEvent } from 'react';
 import { useCallback, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import UsersTableRow from './UsersTableRow';
 import FilterByText from '../../../../../components/FilterByText';
@@ -25,7 +26,7 @@ export type UsersTableProps = {
 };
 
 const UsersTable = ({ workspace = 'local' }: UsersTableProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 
 	const directRoute = useRoute('direct');

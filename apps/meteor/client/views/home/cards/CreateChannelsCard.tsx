@@ -1,12 +1,13 @@
 import type { Card } from '@rocket.chat/fuselage';
-import { useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
+import { useSetModal } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { GenericCard, GenericCardButton } from '../../../components/GenericCard';
 import CreateChannelModal from '../../../navbar/NavBarPagesGroup/actions/CreateChannelModalWithData';
 
 const CreateChannelsCard = (props: Omit<ComponentProps<typeof Card>, 'type'>) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const setModal = useSetModal();
 
 	const openCreateChannelModal = (): void => setModal(<CreateChannelModal onClose={(): void => setModal(null)} />);

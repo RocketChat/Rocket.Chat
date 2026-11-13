@@ -16,6 +16,8 @@ const { Default } = composeStories(stories);
 describe('[Sidebar Default story]', () => {
 	it('renders without crashing', () => {
 		render(<Default />);
+
+		expect(screen.getByText('You’ve reached the limit active contacts this month')).toBeInTheDocument();
 	});
 	it('should have no a11y violations', async () => {
 		const { container } = render(<Default />);
@@ -32,7 +34,7 @@ describe('[SidebarCollapseGroup]', () => {
 				title='Favorites'
 				defaultExpanded
 				menu={
-					<SidebarCollapseGroupMenu>
+					<SidebarCollapseGroupMenu data-testid='menu'>
 						<button type='button'>Options</button>
 					</SidebarCollapseGroupMenu>
 				}
@@ -45,11 +47,12 @@ describe('[SidebarCollapseGroup]', () => {
 		const list = screen.getByRole('list', { name: 'Favorites' });
 
 		expect(toggle).toHaveClass('rcx-item-group-title', 'rcx-sidebar-collapse-group__bar-button');
+		// oxlint-disable-next-line testing-library/no-node-access -- the `ItemGroupHeader` has no role, label or text of its own
 		expect(toggle.parentElement).toHaveClass('rcx-item-group-header', 'rcx-sidebar-collapse-group__bar');
 		expect(list).toHaveClass('rcx-item-group', 'rcx-sidebar-collapse-group__panel--expanded');
 		expect(toggle).toHaveAttribute('aria-controls', list.id);
 		expect(toggle).not.toContainElement(screen.getByRole('button', { name: 'Options' }));
-		expect(screen.getByRole('button', { name: 'Options' }).closest('.rcx-item__actions')).toHaveClass('rcx-item__actions--reveal-hover');
+		expect(screen.getByTestId('menu')).toHaveClass('rcx-item__actions', 'rcx-item__actions--reveal-hover');
 
 		await userEvent.click(toggle);
 
@@ -204,6 +207,7 @@ describe('[Sidebar insets]', () => {
 			</>,
 		);
 
+		// oxlint-disable-next-line testing-library/no-node-access -- the `ItemGroupHeader` has no role, label or text of its own
 		expect(screen.getByRole('button', { name: 'Favorites' }).parentElement).toHaveClass('rcx-item-group-header--inset-md');
 		expect(screen.getByRole('link', { name: 'general' })).toHaveClass('rcx-item--inset-md');
 		expect(screen.getByRole('link', { name: 'Directory' })).toHaveClass('rcx-item--inset-md');

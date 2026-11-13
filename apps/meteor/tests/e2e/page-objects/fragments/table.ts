@@ -18,6 +18,15 @@ export class Table {
 			has: this.root.page().getByText(name, { exact: true }),
 		});
 	}
+
+	/**
+	 * Waits until the rows on screen are current, for tables that set `aria-busy` while loading.
+	 * @param fallback as in {@link waitForDisplay}.
+	 */
+	waitForSettled(fallback?: Locator) {
+		const settled = this.root.and(this.root.page().locator('[aria-busy="false"]'));
+		return expect(fallback ? settled.or(fallback) : settled).toBeVisible();
+	}
 }
 
 export class DevicesTable extends Table {

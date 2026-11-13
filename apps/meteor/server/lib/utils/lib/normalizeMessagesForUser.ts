@@ -2,6 +2,7 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
 import { settings } from '../../../settings';
+import { keepPublicAuthorFields } from '../../messages/keepPublicAuthorFields';
 
 type NormalizableMessage = Pick<IMessage, 'u' | 'starred' | 'mentions' | 'reactions'>;
 
@@ -23,16 +24,16 @@ function getNameOfUsername(users: Map<string, string>, username: string): string
 }
 
 export const normalizeMessagesForUser = async <T extends NormalizableMessage = IMessage>(messages: T[], uid?: string): Promise<T[]> => {
+	messages.forEach((message) => filterStarred(keepPublicAuthorFields(message), uid));
+
 	// if not using real names, there is nothing else to do
 	if (!settings.get('UI_Use_Real_Name')) {
-		return messages.map((message) => filterStarred(message, uid));
+		return messages;
 	}
 
 	const usernames: Set<string> = new Set();
 
 	messages.forEach((message) => {
-		message = filterStarred(message, uid);
-
 		if (!message.u?.username) {
 			return;
 		}

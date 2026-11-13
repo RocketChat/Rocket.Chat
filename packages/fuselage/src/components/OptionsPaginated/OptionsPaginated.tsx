@@ -1,6 +1,5 @@
 import { useStableCallback, useDebouncedState } from '@rocket.chat/fuselage-hooks';
 import type { ComponentType, ElementType, MouseEvent, ReactNode, RefAttributes } from 'react';
-import { memo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import { prevent } from '../../helpers/prevent';
@@ -9,6 +8,7 @@ import { AnimatedVisibility } from '../AnimatedVisibility';
 import { Box } from '../Box';
 import { CheckOption, Option } from '../Option';
 import { PopoverSurface } from '../PopoverSurface';
+import { Empty } from './Empty';
 
 export type OptionsPaginatedProps = Omit<ElementProps<HTMLDivElement>, 'ref' | 'onSelect'> &
 	RefAttributes<Element> & {
@@ -31,9 +31,7 @@ export type OptionsPaginatedProps = Omit<ElementProps<HTMLDivElement>, 'ref' | '
 		endReached?: (start?: number, end?: number) => void;
 	};
 
-export const Empty = memo(() => <Option label='Empty' />);
-
-export { CheckOption };
+export { CheckOption, Empty };
 
 /**
  * An input for selection of options.

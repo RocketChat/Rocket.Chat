@@ -1,5 +1,5 @@
-import type { Actionable } from '../Actionable';
-import type { IconElement } from './IconElement';
+import type { Actionable } from '../Actionable.js';
+import type { IconElement } from './IconElement.js';
 
 export type IconButtonElement = Actionable<{
 	type: 'icon_button';

@@ -228,7 +228,6 @@
 	"apps/meteor/client/views/navigation/sidebar/RoomList/TeamCollabFilters.tsx": 2,
 	"apps/meteor/client/views/navigation/sidepanel/SidePanelInternal.tsx": 2,
 	"apps/meteor/client/views/notAuthorized/NotAuthorizedPage.tsx": 1,
-	"apps/meteor/client/views/oauth/components/Layout.tsx": 1,
 	"apps/meteor/client/views/omnichannel/additionalForms/BusinessHoursMultiple.stories.tsx": 1,
 	"apps/meteor/client/views/omnichannel/agents/AgentEditWithData.tsx": 1,
 	"apps/meteor/client/views/omnichannel/agents/AgentInfo.tsx": 2,
@@ -552,6 +551,10 @@
 	"packages/ui-conference/src/views/ConferencePreflight.tsx": 11,
 	"packages/ui-conference/src/views/OngoingCallsDropdown.stories.tsx": 1,
 	"packages/ui-conference/src/views/OngoingCallsDropdown.tsx": 1,
+	"packages/ui-registration/src/CMSPage.tsx": 1,
+	"packages/ui-registration/src/components/LoginSwitchLanguageFooter.tsx": 1,
+	"packages/ui-registration/src/LoginServices.tsx": 1,
+	"packages/ui-registration/src/ResetPasswordForm.tsx": 1,
 	"packages/ui-video-conf/src/VideoConfMessage/VideoConfMessage.tsx": 1,
 	"packages/ui-video-conf/src/VideoConfMessage/VideoConfMessageFooter.tsx": 1,
 	"packages/ui-video-conf/src/VideoConfMessage/VideoConfMessageRow.tsx": 1,
@@ -587,9 +590,5 @@
 	"packages/ui-voip/src/views/MediaCallWidget/NewCall.tsx": 2,
 	"packages/ui-voip/src/views/MediaCallWidget/OngoingCallWithScreen.tsx": 1,
 	"packages/ui-voip/src/views/PopoutDockPrompt.tsx": 3,
-	"packages/ui-voip/src/views/TransferModal.tsx": 1,
-	"packages/web-ui-registration/src/CMSPage.tsx": 1,
-	"packages/web-ui-registration/src/components/LoginSwitchLanguageFooter.tsx": 1,
-	"packages/web-ui-registration/src/LoginServices.tsx": 1,
-	"packages/web-ui-registration/src/ResetPasswordForm.tsx": 1
+	"packages/ui-voip/src/views/TransferModal.tsx": 1
 }

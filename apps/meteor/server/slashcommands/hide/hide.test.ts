@@ -1,5 +1,6 @@
 import { beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
@@ -20,12 +21,10 @@ describe('/hide', () => {
 		findDirect = sinon.stub().resolves({ _id: 'direct' });
 		subscription = sinon.stub().resolves({ _id: 'subscription' });
 		hide = sinon.stub().resolves();
+		mockModel('Users', { findOneById: findUser });
+		mockModel('Rooms', { findOneByName: findRoomByName, findOne: findDirect });
+		mockModel('Subscriptions', { findOneByRoomIdAndUserId: subscription });
 		slashCommand = loadSlashCommand('hide/hide', {
-			'@rocket.chat/models': {
-				Users: { findOneById: findUser },
-				Rooms: { findOneByName: findRoomByName, findOne: findDirect },
-				Subscriptions: { findOneByRoomIdAndUserId: subscription },
-			},
 			'../../meteor-methods/rooms/hideRoom': { hideRoomMethod: hide },
 		});
 	});

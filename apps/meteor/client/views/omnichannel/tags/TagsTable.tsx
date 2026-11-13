@@ -14,15 +14,16 @@ import {
 	GenericNoResults,
 	links,
 } from '@rocket.chat/ui-client';
-import { useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { hashKey } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useRemoveTag } from './useRemoveTag';
 import FilterByText from '../../../components/FilterByText';
 
 const TagsTable = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const [filter, setFilter] = useState('');
 	const router = useRouter();
 

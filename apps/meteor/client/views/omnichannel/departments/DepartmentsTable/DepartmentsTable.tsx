@@ -15,9 +15,10 @@ import {
 	GenericNoResults,
 	links,
 } from '@rocket.chat/ui-client';
-import { useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { hashKey, keepPreviousData } from '@tanstack/react-query';
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import DepartmentItemMenu from './DepartmentItemMenu';
 import FilterByText from '../../../../components/FilterByText';
@@ -30,7 +31,7 @@ const DEPARTMENTS_ENDPOINTS = {
 export type DepartmentsTableProps = { archived: boolean };
 
 const DepartmentsTable = ({ archived }: DepartmentsTableProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const router = useRouter();
 	const [text, setText] = useState('');
 
@@ -40,17 +41,15 @@ const DepartmentsTable = ({ archived }: DepartmentsTableProps) => {
 
 	const handleAddNew = useStableCallback(() => router.navigate('/omnichannel/departments/new'));
 
-	const query = useDebouncedValue(
-		useMemo(
-			() => ({
-				onlyMyDepartments: 'true' as const,
-				text,
-				sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
-			}),
-			[sortBy, sortDirection, text],
-		),
-		500,
+	const params = useMemo(
+		() => ({
+			onlyMyDepartments: 'true' as const,
+			text,
+			sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
+		}),
+		[sortBy, sortDirection, text],
 	);
+	const query = useDebouncedValue(params, 500);
 
 	const queryKey = ['livechat-departments', query, archived];
 	const {
@@ -61,7 +60,7 @@ const DepartmentsTable = ({ archived }: DepartmentsTableProps) => {
 		...paginationProps
 	} = usePagination({ resetKey: queryKey });
 
-	const { data, isSuccess, isLoading } = usePaginatedQuery({
+	const { data, isSuccess, isLoading, isFetching } = usePaginatedQuery({
 		query: {
 			queryKey,
 			queryFn: (page) => getDepartments({ ...query, ...page }),
@@ -123,6 +122,7 @@ const DepartmentsTable = ({ archived }: DepartmentsTableProps) => {
 					</GenericTableBody>
 				</GenericTable>
 			)}
+			{/* TODO: Mark the empty state busy while a new search loads, like the table */}
 			{isSuccess && data?.departments.length === 0 && (queryHasChanged || archived) && <GenericNoResults />}
 			{isSuccess && data?.departments.length === 0 && !queryHasChanged && !archived && (
 				<GenericNoResults
@@ -137,7 +137,7 @@ const DepartmentsTable = ({ archived }: DepartmentsTableProps) => {
 			)}
 			{isSuccess && data?.departments.length > 0 && (
 				<>
-					<GenericTable columns={columns} aria-label={t('Departments')} aria-busy={isLoading} aria-live='polite'>
+					<GenericTable columns={columns} aria-label={t('Departments')} aria-busy={params !== query || isFetching} aria-live='polite'>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.departments.map((department: Omit<ILivechatDepartment, '_updatedAt'>) => (

@@ -1,9 +1,10 @@
 import type { IOmnichannelServiceLevelAgreements, Serialized } from '@rocket.chat/core-typings';
 import { Field, FieldLabel, FieldRow, FieldError, TextInput, Button, NumberInput, ButtonGroup } from '@rocket.chat/fuselage';
 import { ContextualbarFooter, ContextualbarScrollableContent } from '@rocket.chat/ui-client';
-import { useToastMessageDispatch, useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useRoute, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
 import { useController, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import { useFormSubmitWithDirtyCheck } from '../../../hooks/useFormSubmitWithDirtyCheck';
 
@@ -25,7 +26,7 @@ function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps) {
 	const saveSLA = useEndpoint('POST', '/v1/livechat/sla');
 	const updateSLA = useEndpoint('PUT', `/v1/livechat/sla/:slaId`, { slaId: slaId || '' });
 	const dispatchToastMessage = useToastMessageDispatch();
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const {
 		control,

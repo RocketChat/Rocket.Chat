@@ -1,8 +1,8 @@
 import type { JSONSchemaType } from 'ajv';
 
-import { callStateList, type CallState } from '../../call';
-import type { ClientContractState, ClientState } from '../../client';
-import { clientContractStateList, clientStateList } from '../../client';
+import { callStateList, type CallState } from '../../call/index.js';
+import type { ClientContractState, ClientState } from '../../client.js';
+import { clientContractStateList, clientStateList } from '../../client.js';
 
 /** Client is sending their local call state */
 export type ClientMediaSignalLocalState = {

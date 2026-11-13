@@ -689,7 +689,7 @@ export class SynapseClient {
 
 			return downloadedBuffer.equals(originalBuffer);
 		} catch (error) {
-			throw new Error(`Failed to download and compare media from ${mxcUri}: ${error}`);
+			throw new Error(`Failed to download and compare media from ${mxcUri}: ${error}`, { cause: error });
 		}
 	}
 

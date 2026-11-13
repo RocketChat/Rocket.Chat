@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { useCallback } from 'react';
 
 import { BoxTransforms, useComposedBoxTransform } from '../Box/BoxTransforms';
+import type { BoxTransformProps } from '../Box/BoxTransforms';
 
 export type FlexContainerProps = {
 	children?: ReactNode;
@@ -15,32 +16,33 @@ export type FlexContainerProps = {
 
 function FlexContainer({ inline = false, children, direction, wrap, alignItems, alignContent, justifyContent }: FlexContainerProps) {
 	const transformFn = useCallback(
-		(props: any) => {
-			if (inline !== undefined && props.display === undefined) {
-				props.display = inline ? 'inline-flex' : 'flex';
+		(boxProps: BoxTransformProps) => {
+			if (inline !== undefined && boxProps.display === undefined) {
+				boxProps.display = inline ? 'inline-flex' : 'flex';
 			}
 
-			if (direction !== undefined && props.flexDirection === undefined) {
-				props.flexDirection = direction;
+			if (direction !== undefined && boxProps.flexDirection === undefined) {
+				boxProps.flexDirection = direction;
 			}
 
-			if (wrap !== undefined && props.flexWrap === undefined) {
-				props.flexWrap = wrap === 'no-wrap' ? 'nowrap' : wrap;
+			if (wrap !== undefined && boxProps.flexWrap === undefined) {
+				boxProps.flexWrap = wrap === 'no-wrap' ? 'nowrap' : wrap;
 			}
 
-			if (alignItems !== undefined && props.alignItems === undefined) {
-				props.alignItems = (alignItems === 'start' && 'flex-start') || (alignItems === 'end' && 'flex-end') || alignItems;
+			if (alignItems !== undefined && boxProps.alignItems === undefined) {
+				boxProps.alignItems = (alignItems === 'start' && 'flex-start') || (alignItems === 'end' && 'flex-end') || alignItems;
 			}
 
-			if (alignContent !== undefined && props.alignContent === undefined) {
-				props.alignContent = (alignContent === 'start' && 'flex-start') || (alignContent === 'end' && 'flex-end') || alignContent;
+			if (alignContent !== undefined && boxProps.alignContent === undefined) {
+				boxProps.alignContent = (alignContent === 'start' && 'flex-start') || (alignContent === 'end' && 'flex-end') || alignContent;
 			}
 
-			if (justifyContent !== undefined && props.justifyContent === undefined) {
-				props.justifyContent = (justifyContent === 'start' && 'flex-start') || (justifyContent === 'end' && 'flex-end') || justifyContent;
+			if (justifyContent !== undefined && boxProps.justifyContent === undefined) {
+				boxProps.justifyContent =
+					(justifyContent === 'start' && 'flex-start') || (justifyContent === 'end' && 'flex-end') || justifyContent;
 			}
 
-			return props;
+			return boxProps;
 		},
 		[alignContent, alignItems, direction, inline, justifyContent, wrap],
 	);

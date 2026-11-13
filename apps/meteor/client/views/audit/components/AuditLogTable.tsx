@@ -8,9 +8,10 @@ import {
 	GenericTableHeader,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
-import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import AuditLogEntry from './AuditLogEntry';
 import { createEndOfToday, createStartOfToday } from '../utils/dateRange';
@@ -18,7 +19,7 @@ import type { DateRange } from '../utils/dateRange';
 import DateRangePicker from './forms/DateRangePicker';
 
 const AuditLogTable = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const [dateRange, setDateRange] = useState<DateRange>(() => ({
 		start: createStartOfToday(),

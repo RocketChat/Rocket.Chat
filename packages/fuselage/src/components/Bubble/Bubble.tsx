@@ -32,7 +32,8 @@ const Bubble = ({ secondary, children, onClick, icon, onDismiss, small, contentP
 				onClick={onDismiss}
 				secondary={secondary}
 				icon='cross-small'
-				{...{ 'aria-label': `Dismiss ${children}`, ...dismissProps }}
+				// oxlint-disable-next-line typescript/no-base-to-string -- children is a string label in practice; labelling other node types differently is a behavior change
+				{...{ 'aria-label': `Dismiss ${String(children)}`, ...dismissProps }}
 			/>
 		)}
 	</div>

@@ -1,6 +1,7 @@
 import { after, before, beforeEach, describe, it } from 'node:test';
 
 import type { ClientSafeError } from '@rocket.chat/core-services';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -56,13 +57,6 @@ class PasswordCheckFallback {
 }
 
 const { checkCodeForUser, getFingerprintFromConnection } = proxyquire.noCallThru().load('./index', {
-	'@rocket.chat/models': {
-		TwoFactorChallenges: { createTwoFactorChallenge },
-		Users: {
-			findOneById: async () => null,
-			setTwoFactorAuthorizationHashAndUntilForUserIdAndToken: async () => undefined,
-		},
-	},
 	'meteor/accounts-base': {
 		Accounts: {
 			_getLoginToken: () => 'token-hash',
@@ -191,6 +185,8 @@ describe('checkCodeForUser - resend challenge for emailed codes', () => {
 	const user = buildUser(new Date(0));
 
 	before(() => {
+		mockModel('TwoFactorChallenges', { createTwoFactorChallenge });
+
 		originalTestMode = process.env.TEST_MODE;
 		delete process.env.TEST_MODE;
 
