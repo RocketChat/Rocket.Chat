@@ -1,0 +1,298 @@
+---
+status: draft
+adrs: []
+code: []
+tests: []
+---
+
+# Spec: Message variants
+
+## Summary
+
+The package renders the row of every message in a conversation with four variants: `RoomMessage` (a message in the
+room, in the pinned, starred and mentions tabs, in search and in the audit), `SystemMessage` (a message of a system type, such as a join),
+`ThreadMessage` (a message inside a thread) and `ThreadMessagePreview` (the reply of a thread, as the room shows it). It also renders their
+parts: the header with the author's name, username and roles, the avatar, the status indicators, the read receipt, the
+checkbox of selection mode, the placeholder of an ignored message and the per-message fallback. The variants take what they
+need from the app through the message contexts, among them the selection and editing contexts, and work with no provider.
+`apps/meteor` supplies those two contexts from `MessagesProvider` and renders the package's variants in the room, in a
+thread, in the tabs, in search and in the audit.
+
+## Motivation
+
+See [the intent](../intents/message-variants.md). The app's variants read the app directly, so which states a row can be
+in, what shows in each place, and what a click, Space or Enter does to it, could only be checked by running the client.
+
+Unless a requirement says otherwise, each one states what the variant does today on `develop`; the requirements that state
+a change say so, and are marked with the question of the intent or of this spec that decides them.
+
+## Behaviour
+
+The places are: the **room** (the room's own list, until branch 08), a **thread** (the thread's list, until branch 09), the
+**tabs** (pinned, starred and mentions), **search** and the **audit**. The moderation, contact history, the modals and the
+composer's quote draw message parts, not rows (`message-capabilities` R32 to R40), and the threads list draws its own items.
+
+**The rows and what announces them**
+
+- **R1** `RoomMessage` MUST render a `listitem` that can be focused (`tabIndex` 0) whose role description is the translation of
+  `message`, with `id`, `data-id` and `data-mid` set to the message id, `data-unread` and `data-sequential` set to the `unread` and `sequential`
+  props, and `data-own` true when the author is the viewer.
+- **R2** `RoomMessage` MUST name its `listitem` by the elements it points at: for a message that is not sequential, the author's
+  name, the time and the content, in that order; for a sequential one, the content alone; and, when read receipts are on, the read
+  status after them. A message whose content cannot be drawn (R37) is named by the fallback in its place.
+- **R3** `SystemMessage` MUST render a focusable `listitem` whose role description is the translation of `system_message`,
+  with `data-system-message-type` set to the message's type.
+- **R4** `ThreadMessage` MUST render a focusable `listitem` whose role description is the translation of `thread_message`,
+  with the same `id` and `data-*` attributes as R1 (`data-unread` is R32's) and, as on `develop`, without `aria-busy`.
+- **R5** `ThreadMessagePreview` MUST render an element with role `link`, focusable, whose role description is the translation of
+  `thread_message_preview`.
+- **R6** `RoomMessage`, `SystemMessage` and `ThreadMessagePreview` MUST pass the other props they are given (such as `data-mid`,
+  `data-tmid`) to their root element, so the list can mark the rows it draws.
+- **R7** Every variant MUST render with no provider at all, without throwing and without calling anything outside the package.
+- **R8** Every state this spec lists MUST have a story, every story of the variants and their parts MUST pass an axe check with
+  no violations, and a story MUST stack the four variants in a column without the list engine (a package decision; the
+  conversation stories wait for branch 07, intent Q5).
+
+**Grouping**
+
+- **R9** A `RoomMessage` or `ThreadMessage` marked `sequential` MUST show neither the avatar nor the header (name, username,
+  roles, time and the private marker); its status indicators (R15) MUST show in the left column instead. One not marked
+  sequential MUST show the avatar (R14) and the header, with the indicators inside the header.
+- **R10** A `ThreadMessagePreview` marked `sequential` MUST leave out the row that says what the thread started with (R36) and
+  show only the reply's row.
+
+**The header and the author**
+
+- **R11** The author's name in a header MUST be the message's alias when it has one, else the author's display name (the real
+  name when `UI_Use_Real_Name` is on and the author has one, else the username), as a button that opens the author's user
+  info (`openUserInfo` with the username) when activated and the author's user card (`openUserCard`) on hover. The
+  name MUST be the target of neither while messages are being selected, since the row then toggles the selection (R20).
+  The same holds for the name in a `SystemMessage`, which is the author's display name.
+- **R12** A header and a `SystemMessage` MUST show `@<username>` after the name, in the same trigger, when, and only when, all
+  of these hold: the viewer has not hidden usernames and the layout is not the mobile one (`display.showUsername`); `UI_Use_Real_Name` is
+  on (`display.showRealName`); and the name being shown, once a leading `@` is removed, is not empty and differs from the
+  author's username with its leading `@` removed. The name compared is the alias or the display name in a header, and the author's
+  `name` in a `SystemMessage`. The name and the username elements MUST carry the username without its leading `@` in `data-username`.
+  (`develop` `getAuthorUsername`, #43341. `display.showUsername` alone, which the app provides today, is not this rule.)
+- **R13** A header MUST show roles only when `display.showRoles` is on: a tag for the workspace roles and a tag for the room roles
+  of the author in the message's own room, then a tag `Bot` when the message comes from a bot. A tag MUST read the first
+  role's label, followed by ` +N` for the N others, and its `title` MUST be `<Workspace_roles or Room_roles>: <every label, joined by ", ">`;
+  a scope without roles has no tag and an author without roles who is not a bot has no tags at all. The labels MUST be the
+  roles' descriptions, a role without one left out. A tag MUST NOT be a trigger (#43139), and no roles MUST be asked for while
+  `display.showRoles` is off. Roles MUST be those of the message's own room, also in a place that lists messages of several rooms (global search).
+- **R14** The avatar of a row MUST show, when the row is a `RoomMessage` or `ThreadMessage` that is not sequential, the author has a username, the
+  place shows avatars (`display.showAvatars`) and, for a `RoomMessage`, messages are not being selected: the message's own avatar image
+  when it has one, else the author's, or the emoji of `message.emoji`; presentational (hidden from assistive technology, since the
+  name beside it is the control); opening the user card on hover and the user info on click. In a `RoomMessage`, that click MUST NOT reach the elements around
+  the row (#43272: the user info closed right after it opened). In a `ThreadMessage` it MUST behave as Q2 decides. A
+  `SystemMessage` shows a small avatar, when avatars are on and messages are not being selected, with the same hover and click, and a `ThreadMessagePreview`
+  shows a small avatar of the reply's author, with no hover or click, on the same conditions.
+- **R15** The status indicators of a `RoomMessage` or `ThreadMessage` MUST show, each with its icon and title: translated
+  (`Translated`, when the place translates the message: `display.isTranslated`), following (`Following`, when the viewer follows the
+  thread and the message is not its main message: `display.isFollowing`), sent by email (`Message_sent_by_email`), edited, pinned
+  (`Message_has_been_pinned`), encrypted (a key, for an end-to-end encrypted message or a pinned one), and starred
+  (`Message_has_been_starred`, only for a viewer subscribed to the room: `display.isStarred`). The edited indicator's title
+  MUST be `Message_has_been_edited_at` with the date when the viewer made the edit, else `Message_has_been_edited_by_at` with
+  the editor's username (`?` without one) and the date; it MUST be drawn as danger when the editor is not the author. The date MUST be in the
+  viewer's date-and-time format (`display.formatDateAndTime`), where `develop` writes it with `toLocaleString()` (a change, intent Q2).
+- **R16** When read receipts are on (`display.readReceipts.enabled`), a `RoomMessage` and a `ThreadMessage` MUST show a `status` named by the translation of
+  `Message_sent` while the message is unread and `Message_viewed` once read, with a single or a double check respectively,
+  and, in a `RoomMessage`, that status MUST be part of the row's name (R2). With them off, none shows.
+
+**States of a row**
+
+- **R17** A `RoomMessage` or `ThreadMessage` whose message is pending (`temp`) MUST be drawn with the pending look; a
+  `RoomMessage` MUST also be `aria-busy`.
+- **R18** A `RoomMessage` or `ThreadMessage` MUST be drawn with the editing look when, and only when, the editing context
+  names its message, and with no editing look otherwise. A `SystemMessage` and a `ThreadMessagePreview` have none.
+  (The editing context carries both the message being edited and the one a jump to a message lands on, R46.)
+
+**Selection mode**
+
+- **R19** While the selection context says messages are being selected, a `RoomMessage`, a `SystemMessage` and a
+  `ThreadMessagePreview` MUST show a checkbox in the left column in place of the avatar, checked when the message is selected,
+  named by the translation of `Select_message_from_user_with_preview` with the author's name (else username) and the
+  message's text when it has any, else `Select_message_from_user` with the name. The row MUST be drawn selected while its message is selected.
+  Outside selection mode there is no checkbox.
+- **R20** In selection mode, a click on a `RoomMessage` or a `SystemMessage` MUST toggle that message in the selection and MUST
+  NOT reach the elements around it (#36812: a click that reached them closed the Export Messages tab). Outside selection
+  mode, a click does nothing and is not stopped.
+- **R21** In selection mode, Space or Enter on the focused row of a `RoomMessage` or a `SystemMessage` MUST toggle that message and prevent the browser's
+  default; no other key does, and outside selection mode no key does.
+- **R22** In selection mode, a click, Space or Enter on a `ThreadMessagePreview` MUST toggle that message and MUST NOT open the thread.
+- **R23** A click on the visible box of the checkbox MUST leave its message toggled once.
+- **R24** A `ThreadMessage` MUST NOT be selectable: in none of its places does it show a checkbox, take a selection click or key, or register with the room's selection.
+- **R25** The room, the tabs and search MUST give their rows the room's selection, so selection mode, the checkbox state and
+  the toggles are the room's; a thread, and the audit, give their rows none, so a thread's messages never join the
+  room's selection, whatever state the room's selection is in (branch 02's fix, kept).
+- **R26** Until the room list is replaced (branch 08), "Select all" and the composer's "Select N messages" button MUST work as
+  today on the room's selection: the count and the messages selected are those the room list has rendered and are not selected yet, the count
+  follows scrolling, selecting and unselecting, and the button is disabled at 0. The rows of a thread MUST add none to the count.
+
+**Ignored messages**
+
+- **R27** A `RoomMessage` MUST replace its content with the placeholder of `IgnoredContent` (`message-capabilities` R10: a button named by the translation of
+  `Message_Ignored`) when its `ignoredUser` prop is true or its message is marked `ignored`, and the placeholder has not been
+  revealed; the header, avatar and toolbar stay. Activating the placeholder MUST reveal that message's content only. The reveal MUST last as long as the row is mounted. A row that becomes ignored while
+  it is mounted and not revealed MUST hide its content again.
+- **R28** A `ThreadMessage` MUST behave as R27 for its `ignoredUser` prop alone; the thread's list MUST pass it true when the
+  author is ignored in the subscription or the message is marked `ignored`.
+- **R29** A `ThreadMessagePreview` whose message is marked `ignored` MUST show the translation of `Message_Ignored` in place of the reply's text,
+  with no way to reveal it; when the message the thread started with is marked `ignored`, the same text MUST replace what the thread started with (R36).
+
+**Encrypted messages not decrypted yet**
+
+- **R30** A message of an end-to-end encrypted room that is not decrypted (`e2e` is `pending`) MUST show, in a `RoomMessage` and a
+  `ThreadMessage`, a `document` whose role description is the translation of `message_body` and whose text is the translation of
+  `E2E_message_encrypted_placeholder`, and no markdown body, until it is `done`; in a `ThreadMessagePreview` the same text MUST replace the body, and
+  what the thread started with when that message is the pending one. A `RoomMessage` in that state MUST show no toolbar (R39).
+
+**Markers of a thread's unread replies**
+
+- **R31** A `RoomMessage` MUST pass its `unread`, `mention` and `all` props to the thread metrics of a thread's main message, so the badge says
+  unread, "mentions you" or mentions everyone and the reply button is primary while unread (`message-capabilities` R19, R20), and MUST show the thread metrics only where the place allows interaction.
+  The room, the tabs and search MUST pass them from the subscription (the message id is in `tunread`, `tunreadUser`, `tunreadGroup`); the audit passes none.
+- **R32** A `ThreadMessage`'s `unread` prop means that it is the first unread message of the thread: it MUST only set `data-unread`.
+
+**Content of each variant**
+
+- **R33** A `RoomMessage` MUST draw its content, each part only when it applies, in this order: the placeholder of R30;
+  quoted messages; the markdown body, when the message has no UiKit blocks and has markdown, and is not encrypted or is decrypted, with
+  `<message id>-content` as its id and the search text highlighted; the other attachments; the UiKit blocks; URL previews, when the viewer's embeds
+  setting is on; the action links; the reactions, when there is one; the thread metrics, for a thread's main message where the place
+  allows interaction; the discussion metrics, for a discussion; the shared location; the broadcast reply (R38); and the read receipt.
+- **R34** A `ThreadMessage` MUST draw its content in this order, each part only when it applies: the placeholder of R30; quoted messages;
+  the markdown body, on the same conditions as R33; the UiKit blocks; the other attachments; URL previews; the action links; the reactions; the shared location; the
+  broadcast reply; and the read receipt. It MUST NOT draw thread metrics or discussion metrics.
+- **R35** A `SystemMessage` MUST show the author's name (R11, R12), the text of the message's type (a `document` whose role description is
+  the translation of `system_message_body`, and nothing when the type is unknown) and the time, whose `title` is the date and time, then
+  its attachments and its action links. The body and the attachments with the action links MUST each have their own fallback (R37).
+- **R36** Unless sequential, a `ThreadMessagePreview` MUST show what the thread started with, loaded from the message's `tmid` (`useParentMessage`): a skeleton while it loads and
+  nothing when it fails; the text of its type when it is a system message; `Message_Ignored` (R29); else its text as an inline preview of its
+  markdown, with an attachment's description or title when it has no text and `Message_with_attachment` when it has neither, the encrypted
+  placeholder when pending (R30), and without the quote's first line when it starts with a quote. Under it, the reply's row MUST show the reply with the same rules, and
+  a translated indicator after the text when the reply is translated (`display.isTranslated`), in the origin too. Activating the preview outside
+  selection mode with a click, Enter or Space MUST open the thread (`openThread` with the room, the thread id and as target the message the thread started with, once it has loaded, and nothing before),
+  or, when sequential, with the reply itself as target.
+- **R37** The content of a `RoomMessage` or `ThreadMessage` that throws while it renders MUST be replaced by `MessageContentFallback`
+  (the translation of `Message_could_not_be_displayed`, with the id `<message id>-content` in a `RoomMessage`), and nothing else of the row nor of another
+  row may be affected; it MUST draw the content again when the message changes. A `SystemMessage` MUST do the same for its body and its attachments with action links, each apart.
+- **R38** A part that applies to nothing MUST draw nothing, in particular no `0` where `actionLinks` or `reactions` is empty (a change: `develop` draws it, intent Q3). The broadcast reply
+  (`MessageBroadcastMetrics`) MUST show only where the place allows interaction, the viewer is subscribed to a room that is a broadcast, the author has a username and is not the viewer (a change for places that do not allow interaction: `develop` shows it, intent Q3).
+
+**The toolbar**
+
+- **R39** A `RoomMessage` MUST render `MessageToolbarHolder` with the `context` it is given, unless its message is private,
+  an end-to-end encrypted one not decrypted yet, or messages are being selected; a `ThreadMessage` MUST render it for the place
+  `videoconf-threads` when its message is a video conference and `threads` otherwise, unless its message is private (Q6 for an encrypted message not decrypted yet). `SystemMessage` and
+  `ThreadMessagePreview` MUST render none. Where interaction is off the holder renders nothing (`message-toolbar` R1, R25, R26).
+
+**Where the app renders rows**
+
+- **R40** The room's list MUST draw each message with `ThreadMessagePreview` when it is a thread reply, with `SystemMessage` when it
+  has a system type and with `RoomMessage` otherwise, passing `sequential` as the list decides it today (branch 08 owns that rule),
+  the markers from the subscription (R31) and `ignoredUser` from the subscription's ignored users; its day divider MUST write the date in the viewer's date format.
+- **R41** A thread's list MUST draw each message with `SystemMessage` when it has a system type and with `ThreadMessage` otherwise, passing `unread` for the
+  first unread message (R32) and `ignoredUser` as R28 says.
+- **R42** The pinned, starred and mentions tabs MUST draw each message with `SystemMessage` or with `RoomMessage` as the room does, never sequential, with the markers from the
+  subscription and `context` set to `pinned`, `starred` or `mentions`.
+- **R43** Message search MUST draw its results as the tabs do, with `context` `search` and the search text, which MUST be highlighted in the body (R33).
+- **R44** The audit MUST draw each message with `SystemMessage` or with `RoomMessage`, never sequential, with no markers and no ignored state, in a provider that allows no
+  interaction, so it shows no toolbar and no thread metrics, and its rows MUST follow the viewer's display settings: the time, the roles, the
+  username (R12), the read receipt and URL previews (a change, `message-capabilities` R36 to R40 and intent Q1).
+- **R45** Omnichannel contact history MUST draw the status indicators of its messages with the package's `StatusIndicators` (R15).
+- **R46** No place MUST pass the app's `showUserAvatar` any longer: a row MUST read whether avatars show from the display context (Q5).
+
+**What the app provides**
+
+- **R47** `MessagesProvider` MUST provide the editing context from the store that jumps to a message and editing both write to, so the id it carries is the one
+  that store holds and it changes whenever the store does, in every list that shows the message (room, thread, tabs, search), until the
+  store is renamed in branch 09 (the bridge: a jump highlights a message in the old lists as it does today). Where the place does not allow interaction it MUST provide none (Q4).
+- **R48** `MessagesProvider` MUST provide the selection context only when it is given a selection. The room's list, the tabs and search MUST give the room's
+  selection (`messageSelectionFromStore` over the room's selected messages store, with the same identity across renders); a thread
+  and the audit MUST give none.
+- **R49** `MessagesProvider` MUST answer the data the variants read about other things: the conversation of a message (its room and subscription, from the open chat or else the stores,
+  R38), the labels of an author's roles in a room (R13), and the message a thread started with (from the store, else
+  fetched with the others asked for in the same half second), each with `data`, `isLoading` and `isError`. The roles of a place's own room SHOULD be resolved once for the
+  place, not once per header (#43471; Q1).
+- **R50** Wherever the app mounted `MessageListProvider`, it MUST mount `MessagesProvider` with the same room and subscription, and no place may provide
+  the old list context.
+
+**Exports**
+
+- **R51** The package MUST export `RoomMessage`, `SystemMessage`, `ThreadMessage`, `ThreadMessagePreview`, `MessageHeader`, `StatusIndicators`,
+  `ReadReceiptIndicator` and `MessageRoles` with their props types, and the app's `MessageActionContext` and `MessageActionConfig` MUST be the package's types.
+
+## Design
+
+Decided in the plan. What this spec fixes about shape:
+
+- The package owns the four variants and their parts under `src/Message/variants` and `src/Message`, built from the contexts that exist. A row's
+  selection, editing, display, related data and renderers come from contexts, never from the app.
+- `display.showUsername` stays "the viewer has not hidden usernames". The author's real name and the comparison of R12 belong to the
+  parts that show a name, not to the provider (`message-capabilities` notes that the two must not be treated as equal).
+- Bridges, with their end: (1) the editing context reads the store jumps and editing write to (R47), until the rename in branch
+  09; (2) selection for the room, the tabs and search, none for a thread (R48); (3) the old room list registers the messages
+  it renders with the room's selection store, as the rows registered themselves before (R26), until the list engine
+  replaces it in branch 08.
+- The old room list and thread list stay. They draw the package's variants, and mount `MessagesProvider` where they mounted
+  `MessageListProvider`, which, with the old list context, the app's variants and their parts, the highlight context and
+  its provider (the store stays), the hooks only they used, is deleted. `lib/MessageAction.ts` re-exports the package's types.
+  "No `components/message` is left in the app" is a check of the plan (a file listing), not a requirement, as `message-capabilities`
+  R35 was.
+- The specs of branches 03 to 05 list files and say things that this branch changes (`message-capabilities` R32 and R34 and its Out
+  of scope, `message-toolbar` R25); the plan updates them in the commits that delete the files.
+
+## Out of scope
+
+- The list engine, scrolling and virtualization (branch 07), and the conversation stories that render it (intent Q5).
+- The room list: its rows, day and unread dividers, the way it decides `sequential` and the markers (branch 08). R40 states
+  only what it passes.
+- The thread list and the cleanup (branch 09): the rename of the highlight store, and the unused capabilities of the interactions
+  context (intent Q4).
+- The content parts (`message-capabilities`, `message-attachments`) and the toolbar (`message-toolbar`): this spec only places them.
+- The moderation, contact history, the modals, the composer's quote and the threads list, which draw parts and not rows, except R45.
+- Naming the thread and system rows for assistive technology (Q3), and any change to the keyboard model of the lists.
+
+## Known defects
+
+Behaviour on `develop` that the variants carry over. None can be pinned by a skipped test before a plan exists, and the checker
+rejects a `D` entry without one, so each becomes a `D<n>` entry with its test in the plan:
+
+- A jump to a message and editing share one highlighted id (R47), so jumping to another message while editing one moves the editing look away from it; until branch 09.
+- The highlight of a jump in a thread is not cleared when the thread closes before two seconds pass: only its timer is.
+- Activating the checkbox itself (assistive technology, a script) toggles twice, because the row and the checkbox both toggle, and leaves the message as it was (R23 covers the visible box).
+- The reveal of an ignored message ends when the row unmounts, so scrolling it away hides it again.
+- The preview of a reply to a system message writes the text of the system type from the reply, not from the message the thread started with.
+- A `ThreadMessagePreview` has no per-message fallback: one that throws takes its list down (R37 covers the others).
+- Space on a focused `ThreadMessagePreview` opens the thread without preventing the browser's default.
+- A pending end-to-end encrypted message in a thread keeps its toolbar (Q6).
+- `ThreadMessage` and `SystemMessage` have no accessible name beyond their role description (Q3).
+
+## Open questions
+
+The intent's questions 1 to 5 are open and are not repeated; R15 depends on Q2, R38 on Q3, R44 on Q1.
+
+- **Q1** Whether the roles of a place's own room are resolved once for the place (R49), as `develop` does since #43471
+  through the old list provider, or per header, as the reference does. Once costs the provider a resolution it must
+  keep in step with the room; per header costs a render of every header when roles change, which #43471 removed. Recommended: once.
+- **Q2** Whether the avatar click of a `ThreadMessage` must stop reaching the elements around the row, as the room's does since #43272. `develop` does not stop it
+  in a thread, where the same regression may remain. Recommended: stop it in both (a fix: it needs a manual check in a thread; if it is not wanted, keep today's and record it as a defect).
+- **Q3** Whether `ThreadMessage` and `SystemMessage` are named for assistive technology as `RoomMessage` is (R2). `develop` names none, and the scope asks
+  for "role description and name" on every message. Recommended: no, in this branch: it is a visible change to assistive
+  technology that belongs to its own commit; recorded as a defect.
+- **Q4** Whether a place that allows no interaction shows the editing look (R47). The store is global and lives only in a room; the
+  audit and the modals sit outside one. Recommended: none there.
+- **Q5** Whether the `showUserAvatar` prop of the variants goes (R46). Every caller passes the viewer's `displayAvatars` preference,
+  which is what the display context carries as `showAvatars`. Recommended: remove, so one value decides.
+- **Q6** Whether `ThreadMessage` hides its toolbar for an end-to-end encrypted message not decrypted yet, as `RoomMessage` does and `message-toolbar` R25 says of
+  "the thread's message". `develop` does not. Recommended: keep today's here, and record it, so the branch changes nothing a user can see; the fix is a one-line change in its own commit.
+
+## References
+
+- [Intent](../intents/message-variants.md)
+- [message-capabilities](message-capabilities.md) R10, R19 to R20, R32 to R40; [message-attachments](message-attachments.md);
+  [message-toolbar](message-toolbar.md) R1, R25, R26
+- The message states of the reference's `docs/features/message-list/message-components.md`, where `develop` differs, the requirements follow `develop`
+- `develop`: #43139 (row built on `Item`), #43341 (`hideUsernames`), #43471 (roles per list, `useMessageBroadcast`), #43272 (avatar click), #36812 (selection click and the Export Messages tab)
+- WCAG 2.1 AA, for R8 (a package decision for how it is checked: axe over the stories)
