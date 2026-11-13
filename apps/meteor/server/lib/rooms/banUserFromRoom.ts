@@ -48,9 +48,7 @@ export const performUserBan = async function (room: IRoom, user: IUser, byUser: 
 	}
 
 	// Save system message (who banned is always recorded)
-	await Message.saveSystemMessage('user-banned', room._id, user.username, user, {
-		u: byUser,
-	});
+	await Message.saveSystemMessage('user-banned', room._id, user.username, byUser);
 
 	// Send 'removed' so the client drops the room stream/socket subscription.
 	// The record still exists in DB with status BANNED for access-control purposes.

@@ -208,7 +208,8 @@ describe('banUserFromRoom', () => {
 			expect(args[0]).to.equal('user-banned');
 			expect(args[1]).to.equal('room1');
 			expect(args[2]).to.equal('testuser');
-			expect(args[4]).to.deep.include({ u: byUser });
+			expect(args[3]).to.equal(byUser);
+			expect(args[4]).to.be.undefined;
 		});
 
 		it('should notify subscription as removed so client drops the stream', async () => {
