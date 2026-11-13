@@ -217,6 +217,7 @@ export type EventSignatures = {
 						| 'autoTranslateLanguage'
 						| 'disableNotifications'
 						| 'hideUnreadStatus'
+						| 'userArchived'
 						| 'hideMentionStatus'
 						| 'muteGroupMentions'
 						| 'ignored'

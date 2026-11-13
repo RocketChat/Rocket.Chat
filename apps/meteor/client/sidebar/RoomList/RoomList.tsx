@@ -15,7 +15,7 @@ import { useSidebarListDrag } from './useSidebarListDrag';
 import { useMoveCategoryPosition } from '../categories/hooks/useMoveCategoryPosition';
 import SidebarVirtualList from '../components/SidebarVirtualList';
 import { useActivityFilterAnnouncement } from '../hooks/useActivityFilterAnnouncement';
-import { SIDEBAR_DYNAMIC_GROUP_KEYS } from '../hooks/useCategoryList';
+import { SIDEBAR_ARCHIVED_GROUP_KEY, SIDEBAR_DYNAMIC_GROUP_KEYS } from '../hooks/useCategoryList';
 import { useCollapsedGroups } from '../hooks/useCollapsedGroups';
 import { useLiftedActivityFilters } from '../hooks/useLiftedActivityFilters';
 import { useOffscreenUnreads } from '../hooks/useOffscreenUnreads';
@@ -24,9 +24,12 @@ import { useRingingCalls } from '../hooks/useRingingCalls';
 import { useRoomList } from '../hooks/useRoomList';
 import { useShortcutOpenMenu } from '../hooks/useShortcutOpenMenu';
 
+// The dynamic groups stay first and the archived placeholder stays last, so neither moves nor is moved past.
+const isPinnedGroup = (key: string): boolean => SIDEBAR_DYNAMIC_GROUP_KEYS.includes(key) || key === SIDEBAR_ARCHIVED_GROUP_KEY;
+
 const canMoveGroup = (groups: { key: string }[], index: number, direction: 'up' | 'down'): boolean => {
-	if (SIDEBAR_DYNAMIC_GROUP_KEYS.includes(groups[index].key)) return false;
-	if (direction === 'down') return index + 1 < groups.length;
+	if (isPinnedGroup(groups[index].key)) return false;
+	if (direction === 'down') return index + 1 < groups.length && groups[index + 1].key !== SIDEBAR_ARCHIVED_GROUP_KEY;
 	return groups.slice(0, index).some((g) => !SIDEBAR_DYNAMIC_GROUP_KEYS.includes(g.key));
 };
 
@@ -76,7 +79,8 @@ const RoomList = () => {
 		[formatTime, isAnonymous, sidebarDisplayAvatar, sidebarViewMode, t, userId],
 	);
 
-	const allGroupKeys = useMemo(() => groups.map((group) => group.key), [groups]);
+	// The placeholder is not a position to persist.
+	const allGroupKeys = useMemo(() => groups.map((group) => group.key).filter((key) => key !== SIDEBAR_ARCHIVED_GROUP_KEY), [groups]);
 
 	const virtualGroups = useMemo(
 		() =>

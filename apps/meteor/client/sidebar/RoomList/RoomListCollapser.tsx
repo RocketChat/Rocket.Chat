@@ -5,7 +5,9 @@ import { useTranslation } from 'react-i18next';
 
 import RoomListActivityFilterChip from './RoomListActivityFilterChip';
 import { usePreventPropagation } from '../../hooks/usePreventPropagation';
+import ArchivedGroupMenu from '../categories/ArchivedGroupMenu';
 import CategoryMenu from '../categories/CategoryMenu';
+import { SIDEBAR_ARCHIVED_GROUP_KEY } from '../hooks/useCategoryList';
 import type { SidebarRoomListGroup } from '../hooks/useRoomList';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
@@ -40,6 +42,8 @@ const RoomListCollapser = ({
 	const preventPropagation = usePreventPropagation();
 
 	const title = group.translateTitle ? t(group.title) : group.title;
+	// The archived rooms: nothing to move, filter or badge; their menu only mutes or unmutes them.
+	const isArchivedGroup = group.key === SIDEBAR_ARCHIVED_GROUP_KEY;
 
 	const toggleOnEnterOrSpace = (event: KeyboardEvent<HTMLDivElement>) => {
 		if (event.repeat || !['Enter', 'Space'].includes(event.code)) {
@@ -61,6 +65,33 @@ const RoomListCollapser = ({
 			/>
 		) : undefined;
 
+	// Mounted on demand, as the rows' menus are; the archived group has a menu of its own.
+	const groupMenu = (() => {
+		if (!menuVisibility) {
+			return <IconButton tabIndex={-1} aria-hidden size='mini' icon='kebab' onPointerDown={mountNow} />;
+		}
+		if (isArchivedGroup) {
+			return <ArchivedGroupMenu rooms={group.allRooms} />;
+		}
+		return (
+			<CategoryMenu
+				category={group.category}
+				groupKey={group.key}
+				groupTitle={title}
+				rooms={group.allRooms}
+				showUnreads={group.showUnreads}
+				keepUnreadsOnTop={group.keepUnreadsOnTop}
+				activityFilterHours={group.activityFilterHours}
+				activityFilterHidesUnreads={group.activityFilterHidesUnreads}
+				canMoveUp={canMoveUp}
+				canMoveDown={canMoveDown}
+				onMoveUp={onMoveUp}
+				onMoveDown={onMoveDown}
+				onActivityFilterChange={onActivityFilterChange}
+			/>
+		);
+	})();
+
 	return (
 		<SidebarCollapseGroup
 			title={title}
@@ -78,23 +109,7 @@ const RoomListCollapser = ({
 			menu={
 				isEnterprise ? (
 					<SidebarCollapseGroupMenu onClick={preventPropagation} onKeyDown={preventPropagation}>
-						{menuVisibility ? (
-							<CategoryMenu
-								category={group.category}
-								groupKey={group.key}
-								showUnreads={group.showUnreads}
-								keepUnreadsOnTop={group.keepUnreadsOnTop}
-								activityFilterHours={group.activityFilterHours}
-								activityFilterHidesUnreads={group.activityFilterHidesUnreads}
-								canMoveUp={canMoveUp}
-								canMoveDown={canMoveDown}
-								onMoveUp={onMoveUp}
-								onMoveDown={onMoveDown}
-								onActivityFilterChange={onActivityFilterChange}
-							/>
-						) : (
-							<IconButton tabIndex={-1} aria-hidden size='mini' icon='kebab' onPointerDown={mountNow} />
-						)}
+						{groupMenu}
 					</SidebarCollapseGroupMenu>
 				) : undefined
 			}

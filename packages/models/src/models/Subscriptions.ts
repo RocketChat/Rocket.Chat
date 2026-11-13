@@ -1246,6 +1246,17 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateOne(query, update);
 	}
 
+	setUserArchivedByRoomIdsAndUserId(roomIds: string[], userId: string, archived: boolean): Promise<UpdateResult | Document> {
+		const query = {
+			'rid': { $in: roomIds },
+			'u._id': userId,
+		};
+
+		const update: UpdateFilter<ISubscription> = archived ? { $set: { userArchived: true } } : { $unset: { userArchived: 1 } };
+
+		return this.updateMany(query, update);
+	}
+
 	setAsUnreadByRoomIdAndUserId(roomId: string, userId: string, firstMessageUnreadTimestamp: Date): Promise<UpdateResult> {
 		const query = {
 			'rid': roomId,

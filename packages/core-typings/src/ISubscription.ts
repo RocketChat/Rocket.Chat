@@ -61,6 +61,8 @@ export interface ISubscription extends IRocketChatRecord {
 	autoTranslate?: boolean;
 	autoTranslateLanguage?: string;
 	disableNotifications?: boolean;
+	/** Archived out of the sidebar by the user, into the Archived group, until unarchived. */
+	userArchived?: boolean;
 	muteGroupMentions?: boolean;
 	ignored?: IUser['_id'][];
 

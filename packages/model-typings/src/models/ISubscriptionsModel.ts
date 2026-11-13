@@ -284,6 +284,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	setFavoriteByRoomIdAndUserId(roomId: string, userId: string, favorite?: boolean): Promise<UpdateResult>;
 	setCategoryByRoomIdsAndUserId(roomIds: string[], userId: string, category: string | null): Promise<UpdateResult | Document>;
 	hideByRoomIdAndUserId(roomId: string, userId: string): Promise<UpdateResult>;
+	setUserArchivedByRoomIdsAndUserId(roomIds: string[], userId: string, archived: boolean): Promise<UpdateResult | Document>;
 	findByRoomIdWhenUserIdExists<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		rid: string,
 		options?: O,
