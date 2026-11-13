@@ -144,7 +144,7 @@ export class SynapseClient {
 		throw new Error(`No room found with name ${roomName}`);
 	}
 
-	async createRoom(roomName: string, visibility: Visibility = Visibility.Private): Promise<string> {
+	async createRoom(roomName: string, visibility: Visibility = Visibility.Private, roomVersion?: string): Promise<string> {
 		if (!this.matrixClient) {
 			throw new Error('Matrix client is not initialized');
 		}
@@ -152,12 +152,13 @@ export class SynapseClient {
 		const room = await this.matrixClient.createRoom({
 			name: roomName,
 			visibility,
+			...(roomVersion && { room_version: roomVersion }),
 		});
 
 		return room.room_id;
 	}
 
-	async createDM(userIds: string[]) {
+	async createDM(userIds: string[], roomVersion?: string) {
 		if (!this.matrixClient) {
 			throw new Error('Matrix client is not initialized');
 		}
@@ -165,6 +166,7 @@ export class SynapseClient {
 		const dmRoom = await this.matrixClient.createRoom({
 			is_direct: true,
 			invite: userIds,
+			...(roomVersion && { room_version: roomVersion }),
 		});
 
 		return this.matrixClient.getRoom(dmRoom.room_id);
