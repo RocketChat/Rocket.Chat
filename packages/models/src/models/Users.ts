@@ -1333,7 +1333,17 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			},
 			{
 				returnDocument: 'after',
-				projection: { _id: 1, username: 1, name: 1, status: 1, statusText: 1, statusSource: 1, statusExpiresAt: 1, roles: 1 },
+				projection: {
+					_id: 1,
+					username: 1,
+					name: 1,
+					status: 1,
+					statusText: 1,
+					statusSource: 1,
+					statusExpiresAt: 1,
+					roles: 1,
+					xmppFederation: 1,
+				},
 			},
 		);
 	}

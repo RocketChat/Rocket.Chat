@@ -16,7 +16,17 @@ describe('UsersRaw', () => {
 
 		expect(findOneAndUpdate.mock.calls[0][2]).toEqual({
 			returnDocument: 'after',
-			projection: { _id: 1, username: 1, name: 1, status: 1, statusText: 1, statusSource: 1, statusExpiresAt: 1, roles: 1 },
+			projection: {
+				_id: 1,
+				username: 1,
+				name: 1,
+				status: 1,
+				statusText: 1,
+				statusSource: 1,
+				statusExpiresAt: 1,
+				roles: 1,
+				xmppFederation: 1,
+			},
 		});
 	});
 

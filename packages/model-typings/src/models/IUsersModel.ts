@@ -280,7 +280,10 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		values: Record<string, unknown>,
 		clear?: string[],
 		extraFilter?: Filter<IUser>,
-	): Promise<Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'statusText' | 'statusSource' | 'statusExpiresAt' | 'roles'> | null>;
+	): Promise<Pick<
+		IUser,
+		'_id' | 'username' | 'name' | 'status' | 'statusText' | 'statusSource' | 'statusExpiresAt' | 'roles' | 'xmppFederation'
+	> | null>;
 
 	updateStatusByAppId(appId: string, status: UserStatus): Promise<UpdateResult | Document>;
 
