@@ -62,6 +62,9 @@ const UiKitContextualBar = ({ initialView }: UiKitContextualBarProps) => {
 	const handleCancel = useStableCallback((e: UIEvent) => {
 		preventSyntheticEvent(e);
 		closeTab();
+		if (view.clearOnClose) {
+			actionManager.clearModals(view.appId);
+		}
 		if (view.notifyOnClose === false) {
 			actionManager.disposeView(view.id);
 			return;
@@ -83,6 +86,9 @@ const UiKitContextualBar = ({ initialView }: UiKitContextualBarProps) => {
 	const handleClose = useStableCallback((e: UIEvent) => {
 		preventSyntheticEvent(e);
 		closeTab();
+		if (view.clearOnClose) {
+			actionManager.clearModals(view.appId);
+		}
 		if (view.notifyOnClose === false) {
 			actionManager.disposeView(view.id);
 			return;
