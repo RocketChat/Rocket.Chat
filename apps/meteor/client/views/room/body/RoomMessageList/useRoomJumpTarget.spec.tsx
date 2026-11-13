@@ -120,6 +120,16 @@ describe('the messages around the target', () => {
 		await waitFor(() => expect(getSurroundingChannelMessages).toHaveBeenCalledTimes(1));
 	});
 
+	it('survives a failed load around the target (R32)', async () => {
+		getSurroundingChannelMessages.mockRejectedValue(new Error('rooms.history failed'));
+		const { result } = renderJumpTarget({ ...message, rid });
+
+		await waitFor(() => expect(getSurroundingChannelMessages).toHaveBeenCalledTimes(1));
+		await act(async () => undefined);
+
+		expect(result.current.targetMessageId).toBe('msg-1');
+	});
+
 	it('loads nothing for a target that is already listed (R32)', async () => {
 		const { result } = renderJumpTarget({ ...message, rid }, [{ _id: 'msg-1' }]);
 

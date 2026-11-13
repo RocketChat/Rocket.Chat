@@ -114,6 +114,11 @@ Spec, plan, `code` and `tests` lists grow in the commit that adds what they name
 - The meteor specs run the real list through the package's own seam, by path: `jest.mock('@rocket.chat/ui-message-list/dist/MessageList/MessageListVirtualizer', ...)`
   with `MessageListRows`. A `virtua` mock does not reach the package's copy of `virtua`.
 - Step 1 dropped `contexts.spec.tsx`: the option is proven by `useCanReplyToBroadcast.spec.tsx` and the provider's stability spec.
+- Found while replacing the old list: it does not page while hidden behind the contextual bar (`useGetMore` returned for a viewport of no
+  size) and the engine did. `message-list` R81 and a reducer guard were added as a fix commit below the feature (reordered below step 6).
+- The proofs of `message-variants` R25, R26, R40, R46, R48 and R50 that lived in the deleted `MessageList.spec` and `MessageListItem.spec`
+  moved to `RoomMessageRow.spec`, `RoomMessageList.spec` and `ComposerSelectMessages.spec`; the deleted `useGetMore`, `useHasNewMessages`
+  and `useIsAtBottomRef` specs are replaced by the list's (R30, R31, R19 to R22, R60, R81) and the room's (R39, R43).
 - The stability spec's readers are one test-only component, `tests/mocks/client/RelatedDataReader.tsx`, parameterised by what it reads.
 
 ## Proof
