@@ -6,6 +6,7 @@ const usePeekMediaSessionStateMock = jest.fn();
 const toggleWidgetMock = jest.fn();
 
 jest.mock('@rocket.chat/ui-voip', () => ({
+	normalizePhoneNumber: jest.requireActual('@rocket.chat/ui-voip').normalizePhoneNumber,
 	usePeekMediaSessionState: () => usePeekMediaSessionStateMock(),
 	useWidgetExternalControls: () => ({ toggleWidget: (...args: unknown[]) => toggleWidgetMock(...args) }),
 }));

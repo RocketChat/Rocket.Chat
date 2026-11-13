@@ -26,3 +26,4 @@ export * from './views/MediaCallHistoryTable';
 export * from './utils/isExternalPeer';
 export * from './utils/isInternalPeer';
 export * from './utils/isUnknownPeer';
+export * from './utils/normalizePhoneNumber';
