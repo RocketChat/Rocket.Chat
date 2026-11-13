@@ -15,7 +15,7 @@ import {
 	links,
 } from '@rocket.chat/ui-client';
 import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
-import { hashKey } from '@tanstack/react-query';
+import { hashKey, keepPreviousData } from '@tanstack/react-query';
 import type { MutableRefObject } from 'react';
 import { useMemo, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -54,6 +54,7 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 		query: {
 			queryKey,
 			queryFn: (page) => getSlaData({ ...query, ...page }),
+			placeholderData: keepPreviousData,
 		},
 		itemsKey: 'sla',
 		offset: current,
@@ -112,8 +113,9 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 					</GenericTableBody>
 				</GenericTable>
 			)}
-			{/* TODO: Mark the empty state busy while a new search loads, like the table */}
-			{isSuccess && data?.sla.length === 0 && queryHasChanged && <GenericNoResults />}
+			{isSuccess && data?.sla.length === 0 && queryHasChanged && (
+				<GenericNoResults aria-busy={isFetching} />
+			)}
 			{isSuccess && data?.sla.length === 0 && !queryHasChanged && (
 				<GenericNoResults
 					icon='flag'

@@ -122,8 +122,9 @@ const DepartmentsTable = ({ archived }: DepartmentsTableProps) => {
 					</GenericTableBody>
 				</GenericTable>
 			)}
-			{/* TODO: Mark the empty state busy while a new search loads, like the table */}
-			{isSuccess && data?.departments.length === 0 && (queryHasChanged || archived) && <GenericNoResults />}
+			{isSuccess && data?.departments.length === 0 && (queryHasChanged || archived) && (
+				<GenericNoResults aria-busy={isFetching} />
+			)}
 			{isSuccess && data?.departments.length === 0 && !queryHasChanged && !archived && (
 				<GenericNoResults
 					icon='folder'
