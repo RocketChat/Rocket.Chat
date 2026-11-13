@@ -13,6 +13,16 @@ CI=1 npx expo export --platform web
 CI=1 npx expo export --platform ios
 ```
 
+iOS simulator (Xcode and CocoaPods installed; Node 22.22.3):
+
+```sh
+export PATH=$HOME/.volta/tools/image/node/22.22.3/bin:$PATH
+npx expo run:ios --device "iPhone 17 Pro"   # prebuilds ios/ (gitignored), pod install, build, launch
+npx expo start --dev-client                 # later runs: Metro only, with reloads
+```
+
+The first build took about 18 minutes, most of it `pod install` downloading the React Native and Hermes prebuilt tarballs (about 400 MB, debug and release). Later builds reuse them.
+
 ## Fuselage on React Native: findings
 
 `App.tsx` renders static `Message` rows (`Message`, `MessageLeftContainer`, `Avatar`, `MessageContainer`, `MessageHeader`, `MessageName`, `MessageUsername`, `MessageTimestamp`, `MessageBody`).
@@ -24,9 +34,21 @@ CI=1 npx expo export --platform ios
 - Warning (not an error): `Importing local resources in CSS is not supported yet` for the `@font-face` `url(./fonts/InterVariable.woff2)`. The font is not served (404), so text falls back to the system font.
 - The light/dark toggle only changes the screen background. Fuselage colors come from `--rcx-color-*` custom properties with light fallbacks, set by the app's palette provider, which is not part of `fuselage.css`. In dark mode the name and body text stay dark on the dark background.
 
-### iOS: bundles, but would render DOM
+### iOS: bundles, then fails at module load (observed on the iPhone 17 Pro simulator)
 
-`CI=1 npx expo export --platform ios` succeeds (968 modules, Hermes bytecode, no errors). It was not run on a simulator or device, so the runtime behavior below is read from the bundle, not observed.
+`expo run:ios` builds and installs (0 errors), Metro bundles 1065 modules, and the app opens on a red screen:
+
+```
+[runtime not ready]: ReferenceError: Property 'addEventListener' doesn't exist
+```
+
+The stack is only `metroRequire`/`loadModuleImplementation` frames, so the throw is at module evaluation, before `App` renders. Reloading after the first launch can also show `App entry not found: main was not registered`, a consequence of the entry module never finishing.
+
+Cause: Fuselage's `dist` embeds its own copy of `@tamagui/web` built for the web target. In `createComponent` it registers press-cancel listeners behind `typeof window !== 'undefined'` (the `TAMAGUI_TARGET !== 'native'` half of the guard is already folded away at build time). React Native defines `window`, so the guard passes, and it then calls the bare global `addEventListener('mouseup' | 'touchend' | 'touchcancel', ...)`, which Hermes does not have. Source: `@tamagui/web/src/createComponent.tsx` (`addEventListener('mouseup', cancelPresses)`), present in `packages/fuselage/dist/fuselage.development.js` and, minified, in the production build. The other `document.`/`window.addEventListener` calls in the bundle (react-aria and others) are guarded by `typeof document` or run inside effects, so they are not the first failure. Fixing this one will likely only reveal the next blocker; the table below is still unobserved.
+
+A Tamagui-only screen (`YStack`, `Text`, `Button` from `tamagui` with this app's `tamagui.config.ts`) renders natively on the same build: styled text and button, `Switch to dark` button present. So the native toolchain, Metro and the Tamagui runtime work; the failure is specific to Fuselage's web-target dist.
+
+Blockers expected next (read from the bundle, not yet observed):
 
 | Blocker | Evidence | Effect on RN |
 | --- | --- | --- |
