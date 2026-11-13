@@ -1,5 +1,5 @@
 ---
-status: draft
+status: planned
 adrs: []
 code: []
 tests: []
@@ -51,7 +51,7 @@ composer's quote draw message parts, not rows (`message-capabilities` R32 to R40
 - **R7** Every variant MUST render with no provider at all, without throwing and without calling anything outside the package.
 - **R8** Every state this spec lists MUST have a story, every story of the variants and their parts MUST pass an axe check with
   no violations, and a story MUST stack the four variants in a column without the list engine (a package decision; the
-  conversation stories wait for branch 07, intent Q5).
+  conversation stories wait for branch 07, intent Q5, answered).
 
 **Grouping**
 
@@ -84,7 +84,7 @@ composer's quote draw message parts, not rows (`message-capabilities` R32 to R40
   place shows avatars (`display.showAvatars`) and, for a `RoomMessage`, messages are not being selected: the message's own avatar image
   when it has one, else the author's, or the emoji of `message.emoji`; presentational (hidden from assistive technology, since the
   name beside it is the control); opening the user card on hover and the user info on click. In a `RoomMessage`, that click MUST NOT reach the elements around
-  the row (#43272: the user info closed right after it opened). In a `ThreadMessage` it MUST behave as Q2 decides. A
+  the row (#43272: the user info closed right after it opened). A `ThreadMessage` MUST do the same (Q2, answered: a change for the thread, which `develop` does not stop). A
   `SystemMessage` shows a small avatar, when avatars are on and messages are not being selected, with the same hover and click, and a `ThreadMessagePreview`
   shows a small avatar of the reply's author, with no hover or click, on the same conditions.
 - **R15** The status indicators of a `RoomMessage` or `ThreadMessage` MUST show, each with its icon and title: translated
@@ -105,7 +105,7 @@ composer's quote draw message parts, not rows (`message-capabilities` R32 to R40
   `RoomMessage` MUST also be `aria-busy`.
 - **R18** A `RoomMessage` or `ThreadMessage` MUST be drawn with the editing look when, and only when, the editing context
   names its message, and with no editing look otherwise. A `SystemMessage` and a `ThreadMessagePreview` have none.
-  (The editing context carries both the message being edited and the one a jump to a message lands on, R46.)
+  (The editing context carries both the message being edited and the one a jump to a message lands on, R47.)
 
 **Selection mode**
 
@@ -184,7 +184,7 @@ composer's quote draw message parts, not rows (`message-capabilities` R32 to R40
 
 - **R39** A `RoomMessage` MUST render `MessageToolbarHolder` with the `context` it is given, unless its message is private,
   an end-to-end encrypted one not decrypted yet, or messages are being selected; a `ThreadMessage` MUST render it for the place
-  `videoconf-threads` when its message is a video conference and `threads` otherwise, unless its message is private (Q6 for an encrypted message not decrypted yet). `SystemMessage` and
+  `videoconf-threads` when its message is a video conference and `threads` otherwise, unless its message is private; it keeps it for an encrypted message not decrypted yet, as today (Q6, answered; a known defect). `SystemMessage` and
   `ThreadMessagePreview` MUST render none. Where interaction is off the holder renders nothing (`message-toolbar` R1, R25, R26).
 
 **Where the app renders rows**
@@ -201,20 +201,20 @@ composer's quote draw message parts, not rows (`message-capabilities` R32 to R40
   interaction, so it shows no toolbar and no thread metrics, and its rows MUST follow the viewer's display settings: the time, the roles, the
   username (R12), the read receipt and URL previews (a change, `message-capabilities` R36 to R40 and intent Q1).
 - **R45** Omnichannel contact history MUST draw the status indicators of its messages with the package's `StatusIndicators` (R15).
-- **R46** No place MUST pass the app's `showUserAvatar` any longer: a row MUST read whether avatars show from the display context (Q5).
+- **R46** No place MUST pass the app's `showUserAvatar` any longer: a row MUST read whether avatars show from the display context (Q5, answered).
 
 **What the app provides**
 
 - **R47** `MessagesProvider` MUST provide the editing context from the store that jumps to a message and editing both write to, so the id it carries is the one
   that store holds and it changes whenever the store does, in every list that shows the message (room, thread, tabs, search), until the
-  store is renamed in branch 09 (the bridge: a jump highlights a message in the old lists as it does today). Where the place does not allow interaction it MUST provide none (Q4).
+  store is renamed in branch 09 (the bridge: a jump highlights a message in the old lists as it does today). Where the place does not allow interaction it MUST provide none (Q4, answered).
 - **R48** `MessagesProvider` MUST provide the selection context only when it is given a selection. The room's list, the tabs and search MUST give the room's
   selection (`messageSelectionFromStore` over the room's selected messages store, with the same identity across renders); a thread
   and the audit MUST give none.
 - **R49** `MessagesProvider` MUST answer the data the variants read about other things: the conversation of a message (its room and subscription, from the open chat or else the stores,
   R38), the labels of an author's roles in a room (R13), and the message a thread started with (from the store, else
-  fetched with the others asked for in the same half second), each with `data`, `isLoading` and `isError`. The roles of a place's own room SHOULD be resolved once for the
-  place, not once per header (#43471; Q1).
+  fetched with the others asked for in the same half second), each with `data`, `isLoading` and `isError`. The roles of a place's own room MUST be resolved once for the
+  place, in `MessagesProvider`, not once per header (#43471; Q1, answered).
 - **R50** Wherever the app mounted `MessageListProvider`, it MUST mount `MessagesProvider` with the same room and subscription, and no place may provide
   the old list context.
 
@@ -222,6 +222,12 @@ composer's quote draw message parts, not rows (`message-capabilities` R32 to R40
 
 - **R51** The package MUST export `RoomMessage`, `SystemMessage`, `ThreadMessage`, `ThreadMessagePreview`, `MessageHeader`, `StatusIndicators`,
   `ReadReceiptIndicator` and `MessageRoles` with their props types, and the app's `MessageActionContext` and `MessageActionConfig` MUST be the package's types.
+
+**Roles that cannot be fetched**
+
+- **R52** Where the roles of a room cannot be fetched (the endpoint answers an error, as it can for an auditor who is not in the
+  room), a header MUST still render, with its name, time and content and without roles, and the app MUST surface no error for it
+  (intent Q1). Roles that cannot be fetched MUST NOT keep the rest of the row from rendering.
 
 ## Design
 
@@ -245,6 +251,8 @@ Decided in the plan. What this spec fixes about shape:
 
 ## Out of scope
 
+- The thread list's jump highlight, which is left set when the thread closes before two seconds pass (only its timer is cleared): it
+  belongs to the thread list (branch 09).
 - The list engine, scrolling and virtualization (branch 07), and the conversation stories that render it (intent Q5).
 - The room list: its rows, day and unread dividers, the way it decides `sequential` and the markers (branch 08). R40 states
   only what it passes.
@@ -256,37 +264,29 @@ Decided in the plan. What this spec fixes about shape:
 
 ## Known defects
 
-Behaviour on `develop` that the variants carry over. None can be pinned by a skipped test before a plan exists, and the checker
-rejects a `D` entry without one, so each becomes a `D<n>` entry with its test in the plan:
+Behaviour on `develop` that the variants carry over. The checker rejects a `D` entry without a skipped test that pins it,
+so each becomes a `D<n>` entry in the commit that adds its test (the plan names the commits); until then it is listed here:
 
 - A jump to a message and editing share one highlighted id (R47), so jumping to another message while editing one moves the editing look away from it; until branch 09.
-- The highlight of a jump in a thread is not cleared when the thread closes before two seconds pass: only its timer is.
-- Activating the checkbox itself (assistive technology, a script) toggles twice, because the row and the checkbox both toggle, and leaves the message as it was (R23 covers the visible box).
+- Activating the checkbox itself (assistive technology, a script) toggles twice, because the row and the checkbox both toggle, and leaves the message as it was (R23 covers the visible box; measured on `develop`'s structure with Fuselage's `CheckBox`: a click on the input toggles twice, a click on its visible box three times).
 - The reveal of an ignored message ends when the row unmounts, so scrolling it away hides it again.
 - The preview of a reply to a system message writes the text of the system type from the reply, not from the message the thread started with.
 - A `ThreadMessagePreview` has no per-message fallback: one that throws takes its list down (R37 covers the others).
 - Space on a focused `ThreadMessagePreview` opens the thread without preventing the browser's default.
-- A pending end-to-end encrypted message in a thread keeps its toolbar (Q6).
-- `ThreadMessage` and `SystemMessage` have no accessible name beyond their role description (Q3).
+- A pending end-to-end encrypted message in a thread keeps its toolbar (Q6, answered).
+- `ThreadMessage` and `SystemMessage` have no accessible name beyond their role description (Q3, answered).
 
 ## Open questions
 
-The intent's questions 1 to 5 are open and are not repeated; R15 depends on Q2, R38 on Q3, R44 on Q1.
+The intent's questions 1 to 5 were answered at the spec gate (2026-11-13), all with the recommended option. So were these.
 
-- **Q1** Whether the roles of a place's own room are resolved once for the place (R49), as `develop` does since #43471
-  through the old list provider, or per header, as the reference does. Once costs the provider a resolution it must
-  keep in step with the room; per header costs a render of every header when roles change, which #43471 removed. Recommended: once.
-- **Q2** Whether the avatar click of a `ThreadMessage` must stop reaching the elements around the row, as the room's does since #43272. `develop` does not stop it
-  in a thread, where the same regression may remain. Recommended: stop it in both (a fix: it needs a manual check in a thread; if it is not wanted, keep today's and record it as a defect).
-- **Q3** Whether `ThreadMessage` and `SystemMessage` are named for assistive technology as `RoomMessage` is (R2). `develop` names none, and the scope asks
-  for "role description and name" on every message. Recommended: no, in this branch: it is a visible change to assistive
-  technology that belongs to its own commit; recorded as a defect.
-- **Q4** Whether a place that allows no interaction shows the editing look (R47). The store is global and lives only in a room; the
-  audit and the modals sit outside one. Recommended: none there.
-- **Q5** Whether the `showUserAvatar` prop of the variants goes (R46). Every caller passes the viewer's `displayAvatars` preference,
-  which is what the display context carries as `showAvatars`. Recommended: remove, so one value decides.
-- **Q6** Whether `ThreadMessage` hides its toolbar for an end-to-end encrypted message not decrypted yet, as `RoomMessage` does and `message-toolbar` R25 says of
-  "the thread's message". `develop` does not. Recommended: keep today's here, and record it, so the branch changes nothing a user can see; the fix is a one-line change in its own commit.
+- **Q1** ~~Whether the roles of a place's own room are resolved once for the place or per header.~~ Answered: once, in
+  `MessagesProvider`, as `develop` does since #43471 (R49).
+- **Q2** ~~Whether the avatar click of a `ThreadMessage` stops reaching the elements around the row.~~ Answered: it does, like the room's (R14).
+- **Q3** ~~Whether `ThreadMessage` and `SystemMessage` are named for assistive technology.~~ Answered: no, in this branch; recorded as a defect (R2, Known defects).
+- **Q4** ~~Whether a place that allows no interaction shows the editing look.~~ Answered: none (R47).
+- **Q5** ~~Whether the `showUserAvatar` prop goes.~~ Answered: it goes (R46).
+- **Q6** ~~Whether `ThreadMessage` hides its toolbar for a pending encrypted message.~~ Answered: no, as today; recorded as a defect (R39, Known defects).
 
 ## References
 
