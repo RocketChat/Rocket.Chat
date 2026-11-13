@@ -64,7 +64,7 @@ const ContactMenu = ({ contact, onEdit, onDeleted }: ContactMenuProps) => {
 		);
 
 	const reachItems: GenericMenuItemProps[] = [
-		...contact.phones.map(({ raw, label }, index) => {
+		...contact.phones.map(({ raw, e164, label }, index) => {
 			const resolved = labelOf(label);
 			const content = resolved ? `${t('Call')} (${resolved}) ${raw}` : `${t('Call')} ${raw}`;
 
@@ -75,7 +75,7 @@ const ContactMenu = ({ contact, onEdit, onDeleted }: ContactMenuProps) => {
 				textValue: content,
 				disabled: !canCall,
 				tooltip: isCallInProgress ? t('Call_in_progress') : undefined,
-				onClick: () => call(raw),
+				onClick: () => call({ raw, e164 }),
 			};
 		}),
 		...contact.emails.map(({ address, label }, index) => {

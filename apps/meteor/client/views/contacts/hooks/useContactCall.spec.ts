@@ -39,12 +39,21 @@ describe('useContactCall', () => {
 		expect(result.current).toMatchObject({ canCall: false, isCallInProgress: false });
 	});
 
-	it('opens the call widget dialing the given number', () => {
+	it('opens the call widget dialing the E.164 form of the phone', () => {
 		usePeekMediaSessionStateMock.mockReturnValue('available');
 
 		const { result } = renderHook(() => useContactCall());
-		result.current.call('+49 30 1234567');
+		result.current.call({ raw: '+49 (30) 1234567', e164: '+49301234567' });
 
-		expect(toggleWidgetMock).toHaveBeenCalledWith({ number: '+49 30 1234567' });
+		expect(toggleWidgetMock).toHaveBeenCalledWith({ number: '+49301234567' });
+	});
+
+	it('opens the call widget dialing the raw number without its formatting when there is no E.164 form', () => {
+		usePeekMediaSessionStateMock.mockReturnValue('available');
+
+		const { result } = renderHook(() => useContactCall());
+		result.current.call({ raw: '+49 30 1234567' });
+
+		expect(toggleWidgetMock).toHaveBeenCalledWith({ number: '+49301234567' });
 	});
 });
