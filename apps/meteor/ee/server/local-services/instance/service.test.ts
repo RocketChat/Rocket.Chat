@@ -191,3 +191,53 @@ describe('InstanceService', () => {
 		});
 	});
 });
+
+describe('InstanceService encryption warning', () => {
+	const warn = sinon.stub();
+	const originalSecret = process.env.MOLECULER_ENCRYPTION_SECRET;
+
+	const load = (transporter: unknown) =>
+		proxyquire
+			.noPreserveCache()
+			.noCallThru()
+			.load('./service', {
+				...serviceMocks,
+				'./getTransporter': { getTransporter: () => transporter },
+				'../../../../server/lib/logger/system': { SystemLogger: { warn, error: sinon.stub() } },
+			}).InstanceService;
+
+	afterEach(() => {
+		warn.reset();
+		if (originalSecret === undefined) {
+			delete process.env.MOLECULER_ENCRYPTION_SECRET;
+		} else {
+			process.env.MOLECULER_ENCRYPTION_SECRET = originalSecret;
+		}
+	});
+
+	it('should warn on created() when the TCP transporter runs without a secret', async () => {
+		delete process.env.MOLECULER_ENCRYPTION_SECRET;
+		const Service = load({ port: 0 });
+		const service = new Service(LocalBrokerMock);
+		try {
+			await service.created();
+		} catch {
+			// the TCP-only change stream needs a database; the warning is logged before it
+		}
+
+		expect(warn.calledOnce).to.equal(true);
+		expect(warn.firstCall.args[0]).to.include('TCP port accepts unauthenticated packets');
+	});
+
+	it('should not warn on created() when a secret is set', async () => {
+		process.env.MOLECULER_ENCRYPTION_SECRET = 'a-long-random-secret';
+		const Service = load({ port: 0 });
+		try {
+			await new Service(LocalBrokerMock).created();
+		} catch {
+			// see above
+		}
+
+		expect(warn.called).to.equal(false);
+	});
+});

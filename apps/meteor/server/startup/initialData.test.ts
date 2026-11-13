@@ -1,5 +1,6 @@
-import { after, beforeEach, describe, it } from 'node:test';
+import { after, before, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -60,10 +61,14 @@ const { insertAdminUserFromEnv, insertInitialData } = proxyquire.noCallThru().lo
 	'../lib/roles/addUserRoles': {
 		addUserRolesAsync,
 	},
-	'@rocket.chat/models': models,
 });
 
 describe('insertAdminUserFromEnv', () => {
+	before(() => {
+		mockModel('Users', models.Users);
+		mockModel('Roles', models.Roles);
+	});
+
 	beforeEach(() => {
 		checkUsernameAvailability.reset();
 		validateEmail.reset();
@@ -249,6 +254,13 @@ describe('insertAdminUserFromEnv', () => {
 describe('initial data startup', () => {
 	const runStartup = insertInitialData;
 	const { TEST_MODE } = process.env;
+
+	before(() => {
+		mockModel('Settings', models.Settings);
+		mockModel('Rooms', models.Rooms);
+		mockModel('Users', models.Users);
+		mockModel('Roles', models.Roles);
+	});
 
 	beforeEach(() => {
 		delete process.env.TEST_MODE;

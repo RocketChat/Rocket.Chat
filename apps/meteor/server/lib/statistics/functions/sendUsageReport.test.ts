@@ -1,5 +1,6 @@
-import { afterEach, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -26,7 +27,6 @@ const mocks = {
 };
 
 const { sendUsageReport } = proxyquire.noCallThru().load('./sendUsageReport', {
-	'@rocket.chat/models': { Statistics: mocks.Statistics },
 	'@rocket.chat/server-fetch': { serverFetch: mocks.serverFetch },
 	'../index': { statistics: mocks.statistics },
 	'../../cloud': { getWorkspaceAccessToken: mocks.getWorkspaceAccessToken },
@@ -35,6 +35,10 @@ const { sendUsageReport } = proxyquire.noCallThru().load('./sendUsageReport', {
 });
 
 describe('sendUsageReport', () => {
+	before(() => {
+		mockModel('Statistics', mocks.Statistics);
+	});
+
 	beforeEach(() => {
 		sandbox.resetHistory();
 	});

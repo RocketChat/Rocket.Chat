@@ -1,20 +1,17 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
-import type { IAppServerOrchestrator } from '@rocket.chat/apps';
+import type { IAppServerOrchestrator, IAppsMessage } from '@rocket.chat/apps';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import { convertMessageFiles } from './convertMessageFiles';
+import { AppMessagesConverter } from './messages';
 
 const sandbox = sinon.createSandbox();
 
 const findRoom = sandbox.stub();
 const findUser = sandbox.stub();
-
-const { AppMessagesConverter } = proxyquire.noCallThru().load('./messages', {
-	'@rocket.chat/models': { Rooms: { findOneById: findRoom }, Users: { findOneById: findUser } },
-});
 
 const orch = {
 	getConverters: () => ({
@@ -30,6 +27,11 @@ const converter = new AppMessagesConverter(orch);
 const ts = new Date('2024-01-01T00:00:00.000Z');
 
 describe('AppMessagesConverter.convertAppMessage', () => {
+	before(() => {
+		mockModel('Rooms', { findOneById: findRoom });
+		mockModel('Users', { findOneById: findUser });
+	});
+
 	beforeEach(() => {
 		sandbox.reset();
 		findRoom.resolves({ _id: 'room-1' });
@@ -39,13 +41,13 @@ describe('AppMessagesConverter.convertAppMessage', () => {
 	it('throws when the room referenced by the app message no longer exists', async () => {
 		findRoom.resolves(null);
 
-		await expect(converter.convertAppMessage({ id: 'msg-1', room: { id: 'gone' }, text: 'hi' })).to.be.rejectedWith(
+		await expect(converter.convertAppMessage({ id: 'msg-1', room: { id: 'gone' }, text: 'hi' } as IAppsMessage)).to.be.rejectedWith(
 			'Invalid room provided on the message.',
 		);
 	});
 
 	it('leaves rid out of a partial message instead of throwing when the room is missing', async () => {
-		const result = await converter.convertAppMessage({ id: 'msg-1', text: 'hi' }, true);
+		const result = await converter.convertAppMessage({ id: 'msg-1', text: 'hi' } as IAppsMessage, true);
 
 		expect(result).to.deep.equal({ _id: 'msg-1', msg: 'hi' });
 	});
@@ -58,7 +60,7 @@ describe('AppMessagesConverter.convertAppMessage', () => {
 			text: 'hi',
 			createdAt: ts,
 			updatedAt: ts,
-		});
+		} as IAppsMessage);
 
 		expect(result).to.deep.equal({
 			_id: 'msg-1',
@@ -78,7 +80,7 @@ describe('AppMessagesConverter.convertAppMessage', () => {
 			room: { id: 'room-1' },
 			sender: { id: 'user-1', username: 'stale', name: 'Stale Name' },
 			createdAt: ts,
-		});
+		} as IAppsMessage);
 
 		expect(findUser.firstCall.args[0]).to.equal('user-1');
 		expect(result.u).to.deep.equal({ _id: 'user-1', username: 'stored', name: 'Stored Name' });
@@ -90,7 +92,7 @@ describe('AppMessagesConverter.convertAppMessage', () => {
 			room: { id: 'room-1' },
 			sender: { id: 'user-1', username: 'ghost', name: 'Ghost' },
 			createdAt: ts,
-		});
+		} as IAppsMessage);
 
 		expect(result.u).to.deep.equal({ _id: 'user-1', username: 'ghost', name: 'Ghost' });
 	});
@@ -103,13 +105,13 @@ describe('AppMessagesConverter.convertAppMessage', () => {
 			room: { id: 'room-1' },
 			editor: { id: 'editor-1', username: 'stale' },
 			createdAt: ts,
-		});
+		} as IAppsMessage);
 
 		expect(result.editedBy).to.deep.equal({ _id: 'editor-1', username: 'stored' });
 	});
 
 	it('generates an id and a creation timestamp when the app message has neither', async () => {
-		const result: any = await converter.convertAppMessage({ room: { id: 'room-1' }, text: 'hi' });
+		const result: any = await converter.convertAppMessage({ room: { id: 'room-1' }, text: 'hi' } as IAppsMessage);
 
 		expect(result._id).to.be.a('string').that.is.not.empty;
 		expect(result.ts).to.be.a('date');
@@ -121,14 +123,14 @@ describe('AppMessagesConverter.convertAppMessage', () => {
 			room: { id: 'room-1' },
 			createdAt: ts,
 			_unmappedProperties_: { spare: 'keep' },
-		});
+		} as unknown as IAppsMessage);
 
 		expect(result.spare).to.equal('keep');
 	});
 
 	it('does not merge _unmappedProperties_ into a partial message', async () => {
 		const result: any = await converter.convertAppMessage(
-			{ id: 'msg-1', room: { id: 'room-1' }, createdAt: ts, _unmappedProperties_: { spare: 'keep' } },
+			{ id: 'msg-1', room: { id: 'room-1' }, createdAt: ts, _unmappedProperties_: { spare: 'keep' } } as unknown as IAppsMessage,
 			true,
 		);
 
@@ -141,7 +143,7 @@ describe('AppMessagesConverter.convertAppMessage', () => {
 			room: { id: 'room-1' },
 			createdAt: ts,
 			attachments: 'not-an-array',
-		});
+		} as unknown as IAppsMessage);
 
 		expect(result).to.not.have.property('attachments');
 	});
@@ -161,7 +163,7 @@ describe('AppMessagesConverter.convertAppMessage', () => {
 					collapsed: false,
 				},
 			],
-		});
+		} as IAppsMessage);
 
 		expect(result.attachments).to.deep.equal([
 			{

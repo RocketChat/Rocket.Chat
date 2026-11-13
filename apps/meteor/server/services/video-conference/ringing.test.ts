@@ -83,7 +83,7 @@ const buildUser = (id: string) => ({ _id: id, username: `${id}.user`, name: id, 
 
 let service: any;
 
-beforeEach(() => {
+const setUp = () => {
 	service = new VideoConfService();
 	delete settingValues.VideoConf_Conference_Window_Enabled;
 	resetAll(
@@ -102,9 +102,11 @@ beforeEach(() => {
 	UsersMock.findOneById.resolves({ _id: 'caller', username: 'caller.user', name: 'Caller User' });
 	UsersMock.find.returns({ toArray: sinon.stub().resolves([]) });
 	broadcastStub.resolves();
-});
+};
 
 describe('VideoConfService.ringMember', () => {
+	beforeEach(setUp);
+
 	// The base case: a member added to the call but who never answered has no active presence, so a second
 	// ring is the only way to reach them.
 	it('rings a member who was never in the call', async () => {
@@ -210,6 +212,8 @@ describe('VideoConfService.ringMember', () => {
 });
 
 describe('VideoConfService.addMembers', () => {
+	beforeEach(setUp);
+
 	// Added, not arrived: adding somebody to a call is not answering it for them, so nothing here may mark them
 	// as being in it.
 	it('registers each named user as a member without marking them present, and returns the ids added', async () => {
@@ -305,6 +309,8 @@ describe('VideoConfService.addMembers', () => {
 // Creating the call is not asking anyone to answer it: the caller lands on the preflight first, and being rung
 // into a call whose caller is still choosing a camera means answering to an empty room.
 describe('VideoConfService: ringing a direct call when its caller arrives', () => {
+	beforeEach(setUp);
+
 	// `CALLING` because that is what such a call is: created, and waiting for its caller to walk in. Only then
 	// does `updateDirectCall` move it to `STARTED`, which is also what stops a later arrival ringing anyone.
 	const directCall = (callee: Partial<IVideoConferenceUser> = {}): IDirectVideoConference =>

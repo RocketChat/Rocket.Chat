@@ -1,5 +1,6 @@
 import { beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
@@ -61,8 +62,8 @@ cases.forEach(({ command, path, dependency, method, permission, sanitizes }) => 
 			findActor = sinon.stub().resolves({ _id: 'actor', language: 'pt' });
 			action = sinon.stub().resolves();
 			sanitizeUsername = sinon.stub().returns('Bob');
+			mockModel('Users', { findOneByUsernameIgnoringCase: findTarget, findOneById: findActor });
 			slashCommand = loadSlashCommand(path, {
-				'@rocket.chat/models': { Users: { findOneByUsernameIgnoringCase: findTarget, findOneById: findActor } },
 				'../../meteor-methods/rooms/addUsersToRoom': { sanitizeUsername },
 				[dependency]: { [method]: action },
 			});

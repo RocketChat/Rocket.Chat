@@ -1,5 +1,6 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -13,11 +14,6 @@ const getFileExtension = sinon.stub().returns('txt');
 const executeSendMessage = sinon.stub().resolves({});
 
 const { parseFileIntoMessageAttachments, sendFileMessage } = proxyquire.noCallThru().load('./sendFileMessage', {
-	'@rocket.chat/models': {
-		Uploads: { findOneByIdAndUserIdAndRoomId, updateFileMetadata },
-		Rooms: { findOneById: sinon.stub().resolves({ _id: 'room123' }) },
-		Users: { findOneById: sinon.stub().resolves({ _id: 'user123' }) },
-	},
 	'meteor/meteor': {
 		Meteor: {
 			methods: sinon.stub(),
@@ -37,6 +33,12 @@ const { parseFileIntoMessageAttachments, sendFileMessage } = proxyquire.noCallTh
 describe('sendFileMessage - Mass Assignment & Type Pollution Prevention', () => {
 	const mockUser = { _id: 'user123' };
 	const roomId = 'room123';
+
+	before(() => {
+		mockModel('Uploads', { findOneByIdAndUserIdAndRoomId, updateFileMetadata });
+		mockModel('Rooms', { findOneById: sinon.stub().resolves({ _id: 'room123' }) });
+		mockModel('Users', { findOneById: sinon.stub().resolves({ _id: 'user123' }) });
+	});
 
 	beforeEach(() => {
 		findOneByIdAndUserIdAndRoomId.reset();

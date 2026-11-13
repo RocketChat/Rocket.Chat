@@ -1,7 +1,6 @@
 import { before, beforeEach, describe, it } from 'node:test';
 
-import type { IMessagesModel, IReadReceiptsModel, IRoomsModel, ISubscriptionsModel } from '@rocket.chat/model-typings';
-import { registerModel } from '@rocket.chat/models';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import p from 'proxyquire';
 import sinon from 'sinon';
@@ -50,11 +49,11 @@ const cursorOf = (docs: unknown[]) => ({
 
 describe('cleanRoomHistory', () => {
 	before(() => {
-		registerModel('IMessagesModel', modelsMock.Messages as unknown as IMessagesModel);
-		registerModel('IRoomsModel', modelsMock.Rooms as unknown as IRoomsModel);
-		registerModel('ISubscriptionsModel', modelsMock.Subscriptions as unknown as ISubscriptionsModel);
-		registerModel('IReadReceiptsModel', modelsMock.ReadReceipts as unknown as IReadReceiptsModel);
-		registerModel('IReadReceiptsArchiveModel', modelsMock.ReadReceiptsArchive as unknown as IReadReceiptsModel);
+		mockModel('Messages', modelsMock.Messages);
+		mockModel('Rooms', modelsMock.Rooms);
+		mockModel('Subscriptions', modelsMock.Subscriptions);
+		mockModel('ReadReceipts', modelsMock.ReadReceipts);
+		mockModel('ReadReceiptsArchive', modelsMock.ReadReceiptsArchive);
 	});
 
 	beforeEach(() => {

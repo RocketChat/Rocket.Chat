@@ -1,6 +1,7 @@
 import { beforeEach, describe, it } from 'node:test';
 
 import { ClientSafeError } from '@rocket.chat/core-services';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
@@ -15,8 +16,8 @@ describe('/leave and /part', () => {
 	beforeEach(() => {
 		findUser = sinon.stub().resolves(user);
 		leave = sinon.stub().resolves();
+		mockModel('Users', { findOneById: findUser });
 		slashCommand = loadSlashCommand('leave/leave', {
-			'@rocket.chat/models': { Users: { findOneById: findUser } },
 			'../../meteor-methods/rooms/leaveRoom': { leaveRoomMethod: leave },
 		});
 	});

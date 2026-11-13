@@ -81,7 +81,7 @@ export class Logger implements ILogger {
 	}
 
 	private addEntry(severity: LogMessageSeverity, caller: string, ...items: Array<unknown>): void {
-		const i = items.map((args) => {
+		const i = items.map((args): unknown => {
 			if (args instanceof Error) {
 				return JSON.stringify(args, Object.getOwnPropertyNames(args));
 			}
@@ -152,7 +152,7 @@ export class Logger implements ILogger {
 
 	public getLogs(): ILoggerStorageEntry {
 		return {
-			appId: AppObjectRegistry.get('id')!,
+			appId: AppObjectRegistry.get('id'),
 			method: this.method,
 			entries: this.entries,
 			startTime: this.start,

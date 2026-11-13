@@ -56,7 +56,7 @@ export class LivechatMessageBuilder implements ILivechatMessageBuilder {
 	}
 
 	public getText(): string {
-		return this.msg.text!;
+		return this.msg.text;
 	}
 
 	public setEmojiAvatar(emoji: string): ILivechatMessageBuilder {
@@ -65,7 +65,7 @@ export class LivechatMessageBuilder implements ILivechatMessageBuilder {
 	}
 
 	public getEmojiAvatar(): string {
-		return this.msg.emoji!;
+		return this.msg.emoji;
 	}
 
 	public setAvatarUrl(avatarUrl: string): ILivechatMessageBuilder {
@@ -74,7 +74,7 @@ export class LivechatMessageBuilder implements ILivechatMessageBuilder {
 	}
 
 	public getAvatarUrl(): string {
-		return this.msg.avatarUrl!;
+		return this.msg.avatarUrl;
 	}
 
 	public setUsernameAlias(alias: string): ILivechatMessageBuilder {
@@ -83,7 +83,7 @@ export class LivechatMessageBuilder implements ILivechatMessageBuilder {
 	}
 
 	public getUsernameAlias(): string {
-		return this.msg.alias!;
+		return this.msg.alias;
 	}
 
 	public addAttachment(attachment: IMessageAttachment): ILivechatMessageBuilder {
@@ -101,7 +101,7 @@ export class LivechatMessageBuilder implements ILivechatMessageBuilder {
 	}
 
 	public getAttachments(): Array<IMessageAttachment> {
-		return this.msg.attachments!;
+		return this.msg.attachments;
 	}
 
 	public replaceAttachment(position: number, attachment: IMessageAttachment): ILivechatMessageBuilder {
@@ -146,7 +146,7 @@ export class LivechatMessageBuilder implements ILivechatMessageBuilder {
 	}
 
 	public getGroupable(): boolean {
-		return this.msg.groupable!;
+		return this.msg.groupable;
 	}
 
 	public setParseUrls(parseUrls: boolean): ILivechatMessageBuilder {
@@ -155,7 +155,7 @@ export class LivechatMessageBuilder implements ILivechatMessageBuilder {
 	}
 
 	public getParseUrls(): boolean {
-		return this.msg.parseUrls!;
+		return this.msg.parseUrls;
 	}
 
 	public setToken(token: string): ILivechatMessageBuilder {
@@ -164,7 +164,7 @@ export class LivechatMessageBuilder implements ILivechatMessageBuilder {
 	}
 
 	public getToken(): string {
-		return this.msg.token!;
+		return this.msg.token;
 	}
 
 	public setVisitor(visitor: IVisitor): ILivechatMessageBuilder {

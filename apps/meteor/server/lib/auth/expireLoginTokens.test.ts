@@ -1,5 +1,6 @@
-import { afterEach, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -14,14 +15,15 @@ const broadcast = sinon.stub();
 
 const { expireLoginTokens } = proxyquire.noCallThru().load('./expireLoginTokens.ts', {
 	'@rocket.chat/core-services': { api: { broadcast } },
-	'@rocket.chat/models': {
-		Settings: { getValueById },
-		Users: { findWithLoginTokensOlderThan, removeLoginTokensOlderThan },
-	},
 });
 
 describe('expireLoginTokens', () => {
 	let clock: sinon.SinonFakeTimers;
+
+	before(() => {
+		mockModel('Settings', { getValueById });
+		mockModel('Users', { findWithLoginTokensOlderThan, removeLoginTokensOlderThan });
+	});
 
 	beforeEach(() => {
 		clock = sinon.useFakeTimers(new Date('2026-11-06T12:00:00Z'));
