@@ -8,6 +8,8 @@ code:
     packages/mock-providers/src/fixtures,
     src/MessageList/lib,
     src/MessageList/scroll,
+    src/hooks,
+    tests/utils/listContract.ts,
   ]
 tests:
   [
@@ -21,6 +23,8 @@ tests:
     src/MessageList/lib/position.spec.ts,
     src/MessageList/scroll/messageListScrollReducer.spec.ts,
     src/MessageList/scroll/planRowsCommit.spec.ts,
+    src/hooks/useItemListNavigation.spec.ts,
+    src/hooks/useMessageListNavigation.spec.tsx,
   ]
 ---
 
