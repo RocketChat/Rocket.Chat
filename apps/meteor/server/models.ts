@@ -75,6 +75,7 @@ import {
 	AbacAttributesRaw,
 	TwoFactorChallengesRaw,
 	SamlUsedAssertionsRaw,
+	ScheduledMessagesRaw,
 } from '@rocket.chat/models';
 import type { Collection } from 'mongodb';
 
@@ -105,6 +106,7 @@ registerModel('IInstanceStatusModel', new InstanceStatusRaw(db));
 registerModel('IIntegrationHistoryModel', new IntegrationHistoryRaw(db));
 registerModel('IIntegrationsModel', new IntegrationsRaw(db));
 registerModel('IInvitesModel', new InvitesRaw(db));
+registerModel('IScheduledMessagesModel', new ScheduledMessagesRaw(db));
 registerModel('ILivechatAgentActivityModel', new LivechatAgentActivityRaw(db));
 registerModel('ILivechatBusinessHoursModel', new LivechatBusinessHoursRaw(db));
 registerModel('ILivechatContactsModel', new LivechatContactsRaw(db));
