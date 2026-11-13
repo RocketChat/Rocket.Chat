@@ -111,68 +111,64 @@ const AgentEdit = ({ agentData, agentDepartments }: AgentEditProps) => {
 				<ContextualbarTitle>{t('Edit_User')}</ContextualbarTitle>
 				<ContextualbarClose onClick={() => router.navigate('/omnichannel/agents')} />
 			</ContextualbarHeader>
-			<ContextualbarScrollableContent>
+			<ContextualbarScrollableContent is='form' id={formId} onSubmit={handleSubmit(handleSave)}>
 				<FormProvider {...methods}>
-					<form id={formId} onSubmit={handleSubmit(handleSave)}>
-						{username && (
-							<Box display='flex' flexDirection='column' alignItems='center'>
-								<UserInfoAvatar username={username} />
-							</Box>
-						)}
-						<FieldGroup>
-							<Field>
-								<FieldLabel htmlFor={nameField}>{t('Name')}</FieldLabel>
-								<FieldRow>
-									<Controller name='name' control={control} render={({ field }) => <TextInput id={nameField} {...field} readOnly />} />
-								</FieldRow>
-							</Field>
-							<Field>
-								<FieldLabel htmlFor={usernameField}>{t('Username')}</FieldLabel>
-								<FieldRow>
-									<Controller
-										name='username'
-										control={control}
-										render={({ field }) => <TextInput id={usernameField} {...field} readOnly endAddon={<Icon name='at' size='x20' />} />}
-									/>
-								</FieldRow>
-							</Field>
-							<Field>
-								<FieldLabel htmlFor={emailField}>{t('Email')}</FieldLabel>
-								<FieldRow>
-									<Controller
-										name='email'
-										control={control}
-										render={({ field }) => <TextInput id={emailField} {...field} readOnly endAddon={<Icon name='mail' size='x20' />} />}
-									/>
-								</FieldRow>
-							</Field>
-							<Field>
-								<FieldLabel id={departmentsFieldId}>{t('Departments')}</FieldLabel>
-								<FieldRow>
-									<Controller
-										name='departments'
-										control={control}
-										render={({ field }) => (
-											<AutoCompleteDepartmentMultiple aria-labelledby={departmentsFieldId} withCheckbox showArchived {...field} />
-										)}
-									/>
-								</FieldRow>
-							</Field>
-							<Field>
-								<FieldLabel htmlFor={statusField}>{t('Status')}</FieldLabel>
-								<FieldRow>
-									<Controller
-										name='status'
-										control={control}
-										render={({ field }) => (
-											<Select id={statusField} {...field} options={statusOptions} placeholder={t('Select_an_option')} />
-										)}
-									/>
-								</FieldRow>
-							</Field>
-							{MaxChatsPerAgent && <MaxChatsPerAgent />}
-						</FieldGroup>
-					</form>
+					{username && (
+						<Box display='flex' flexDirection='column' alignItems='center'>
+							<UserInfoAvatar username={username} />
+						</Box>
+					)}
+					<FieldGroup>
+						<Field>
+							<FieldLabel htmlFor={nameField}>{t('Name')}</FieldLabel>
+							<FieldRow>
+								<Controller name='name' control={control} render={({ field }) => <TextInput id={nameField} {...field} readOnly />} />
+							</FieldRow>
+						</Field>
+						<Field>
+							<FieldLabel htmlFor={usernameField}>{t('Username')}</FieldLabel>
+							<FieldRow>
+								<Controller
+									name='username'
+									control={control}
+									render={({ field }) => <TextInput id={usernameField} {...field} readOnly endAddon={<Icon name='at' size='x20' />} />}
+								/>
+							</FieldRow>
+						</Field>
+						<Field>
+							<FieldLabel htmlFor={emailField}>{t('Email')}</FieldLabel>
+							<FieldRow>
+								<Controller
+									name='email'
+									control={control}
+									render={({ field }) => <TextInput id={emailField} {...field} readOnly endAddon={<Icon name='mail' size='x20' />} />}
+								/>
+							</FieldRow>
+						</Field>
+						<Field>
+							<FieldLabel id={departmentsFieldId}>{t('Departments')}</FieldLabel>
+							<FieldRow>
+								<Controller
+									name='departments'
+									control={control}
+									render={({ field }) => (
+										<AutoCompleteDepartmentMultiple aria-labelledby={departmentsFieldId} withCheckbox showArchived {...field} />
+									)}
+								/>
+							</FieldRow>
+						</Field>
+						<Field>
+							<FieldLabel htmlFor={statusField}>{t('Status')}</FieldLabel>
+							<FieldRow>
+								<Controller
+									name='status'
+									control={control}
+									render={({ field }) => <Select id={statusField} {...field} options={statusOptions} placeholder={t('Select_an_option')} />}
+								/>
+							</FieldRow>
+						</Field>
+						{MaxChatsPerAgent && <MaxChatsPerAgent />}
+					</FieldGroup>
 				</FormProvider>
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>

@@ -1,3 +1,4 @@
+@use '../styles/box-sizing.css';
 @use './Box/Box.styles.scss';
 
 @use './Accordion/Accordion.styles.scss';
@@ -11,7 +12,7 @@
 @use './ButtonGroup/ButtonGroup.styles.scss';
 @use './Callout/Callout.styles.scss';
 @use './Card/Card.styles.scss';
-@use './CardGrid/CardGrid.styles.scss';
+@use './CardGrid/CardGrid.styles.css';
 @use './CardGroup/CardGroup.styles.scss';
 @use './CheckBox/CheckBox.styles.scss';
 @use './Chevron/Chevron.styles.scss';
@@ -19,12 +20,12 @@
 @use './CodeSnippet/CodeSnippet.styles.scss';
 @use './Contextualbar/Contextualbar.styles.scss';
 @use './Divider/Divider.styles.scss';
-@use './Dropdown/Dropdown.styles.scss';
+@use './Dropdown/Dropdown.styles.css';
 @use './Field/Field.styles.scss';
 @use './FieldGroup/FieldGroup.styles.scss';
 @use './FramedIcon/FramedIcon.styles.scss';
 @use './Grid/Grid.styles.scss';
-@use './Icon/Icon.styles.scss';
+@use './Icon/Icon.styles.css';
 @use './InputBox/InputBox.styles.scss';
 @use './Item/Item.styles.scss';
 @use './Label/Label.styles.scss';

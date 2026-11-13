@@ -25,7 +25,7 @@ const ContactInfoDetails = ({ contact, emails, phones, createdAt, customFieldEnt
 	const formatDate = useFormatDate();
 
 	return (
-		<ContextualbarScrollableContent>
+		<ContextualbarScrollableContent gap={0}>
 			{emails?.length ? (
 				<Field>
 					<Label id={`${contact._id}-emails`}>{t('Email')}</Label>
@@ -58,7 +58,7 @@ const ContactInfoDetails = ({ contact, emails, phones, createdAt, customFieldEnt
 			)}
 
 			{customFieldEntries.map(([key, value]) => (
-				<CustomField key={key} id={key} value={value as string} />
+				<CustomField key={key} id={key} value={value as string} notFoundMarginBlock='x16' />
 			))}
 		</ContextualbarScrollableContent>
 	);

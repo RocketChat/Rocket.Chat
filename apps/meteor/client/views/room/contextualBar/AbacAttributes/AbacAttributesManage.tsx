@@ -123,7 +123,7 @@ const AbacAttributesManage = ({ room, requiredKeys, onBack, onClose, onSaved }: 
 					id={formId}
 					onSubmit={handleSubmit((values) => setPreviewAttributes(toAttributeMap(values.attributes)))}
 				>
-					<Box fontScale='p2' color='hint' marginBlockEnd={16}>
+					<Box fontScale='p2' color='hint'>
 						{t('ABAC_Manage_attributes_description')}
 					</Box>
 					<AbacAttributesStep

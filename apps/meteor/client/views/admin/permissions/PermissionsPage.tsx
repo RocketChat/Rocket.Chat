@@ -1,4 +1,4 @@
-import { Margins, Button } from '@rocket.chat/fuselage';
+import { Button } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { usePagination, Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { useRoute, usePermission, useSetModal } from '@rocket.chat/ui-contexts';
@@ -53,16 +53,14 @@ const PermissionsPage = ({ isEnterprise }: PermissionsPageProps) => {
 					selected={type}
 					onSelect={setType}
 				/>
-				<PageContent marginBlockStart={8} marginBlockEnd='neg-x8'>
-					<Margins block={8}>
-						<PermissionsTable
-							roleList={roleList}
-							permissions={permissions}
-							total={total}
-							setFilter={setFilter}
-							paginationData={paginationData}
-						/>
-					</Margins>
+				<PageContent marginBlockStart='x8' gap='x8'>
+					<PermissionsTable
+						roleList={roleList}
+						permissions={permissions}
+						total={total}
+						setFilter={setFilter}
+						paginationData={paginationData}
+					/>
 				</PageContent>
 			</Page>
 			<PermissionsContextBar />
