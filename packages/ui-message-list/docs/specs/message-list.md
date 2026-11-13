@@ -36,6 +36,8 @@ tests:
     src/Message/hooks/useIsMessageEmphasized.spec.tsx,
     src/index.spec.ts,
     src/MessageList/MessageList.stories.tsx,
+    src/MessageList/MessageListConversation.stories.tsx,
+    src/MessageList/MessageListConversation.spec.tsx,
   ]
 ---
 
