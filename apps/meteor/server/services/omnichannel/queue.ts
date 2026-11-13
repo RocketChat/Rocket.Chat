@@ -98,7 +98,7 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 			// We still go 1 by 1, but we go with every queue every cycle instead of just 1 queue per cycle
 			// And we get tracing :)
 			const queues = await this.getActiveQueues();
-			for await (const queue of queues) {
+			for (const queue of queues) {
 				await tracerSpan(
 					'omnichannel.queue',
 					{ attributes: { workerTime: new Date().toISOString(), queue: queue || 'Public' }, root: true },

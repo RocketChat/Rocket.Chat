@@ -122,5 +122,6 @@ it('follows the keyboard model of a list of rows', async () => {
 	render(<composed.Default />, { wrapper: listWrapper() });
 
 	const list = screen.getByTestId('discussions-virtual-list');
+	// oxlint-disable-next-line testing-library/no-node-access -- the keyboard contract needs the element currently owning the roving tab stop
 	await expectListKeyboard(list, list.querySelector<HTMLElement>('.rcx-message[tabindex="0"]') ?? undefined);
 });

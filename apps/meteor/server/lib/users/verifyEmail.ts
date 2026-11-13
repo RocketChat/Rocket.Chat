@@ -6,7 +6,7 @@ export async function verifyEmail(user: Pick<IUser, '_id' | 'services' | 'emails
 		throw new Error('error-invalid-token');
 	}
 
-	const tokenRecord = await user.services?.email?.verificationTokens?.find((t) => t.token === token);
+	const tokenRecord = user.services?.email?.verificationTokens?.find((t) => t.token === token);
 	if (!tokenRecord) {
 		throw new Error('error-invalid-token');
 	}

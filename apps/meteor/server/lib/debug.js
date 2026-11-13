@@ -2,7 +2,6 @@ import { InstanceStatus } from '@rocket.chat/instance-status';
 import { Logger } from '@rocket.chat/logger';
 import { tracerActiveSpan } from '@rocket.chat/tracing';
 import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
 
 import { getMethodArgs } from './logger/logPayloads';
 import { metrics } from './metrics';
@@ -96,7 +95,7 @@ const wrapMethods = function (name, originalHandler, methodsMap) {
 const originalMeteorMethods = Meteor.methods;
 
 Meteor.methods = function (methodMap) {
-	_.each(methodMap, (handler, name) => {
+	Object.entries(methodMap).forEach(([name, handler]) => {
 		wrapMethods(name, handler, methodMap);
 	});
 	originalMeteorMethods(methodMap);

@@ -50,9 +50,7 @@ SettingsEvents.on('fetch-settings', (settings): void => {
 });
 
 async function updateSettings(): Promise<void> {
-	const enterpriseSettings = await Settings.findEnterpriseSettings();
-
-	void enterpriseSettings.forEach((record: ISetting) => settings.set(record));
+	void Settings.findEnterpriseSettings().forEach((record: ISetting) => settings.set(record));
 }
 
 export const syncSettingsWithLicense = async (): Promise<void> => {

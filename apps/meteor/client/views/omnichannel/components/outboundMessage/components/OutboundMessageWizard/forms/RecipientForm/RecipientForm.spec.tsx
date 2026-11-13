@@ -128,7 +128,9 @@ describe('RecipientForm', () => {
 
 		render(<RecipientForm defaultValues={defaultValues} {...defaultProps} />, { wrapper: appRoot.build() });
 
+		// oxlint-disable-next-line testing-library/no-node-access -- the selected value renders beside the input, inside an unlabelled field row
 		await waitFor(() => expect(screen.getByLabelText('Contact*').parentElement).toHaveTextContent('Contact 1'));
+		// oxlint-disable-next-line testing-library/no-node-access -- the selected value renders beside the input, inside an unlabelled field row
 		await waitFor(() => expect(screen.getByLabelText('Channel*').parentElement).toHaveTextContent('Provider 1'));
 		expect(screen.getByLabelText('To*')).toHaveTextContent(/\+1 212-555-4567/);
 		expect(screen.getByLabelText('From*')).toHaveTextContent(/\+1 212-777-4567/);

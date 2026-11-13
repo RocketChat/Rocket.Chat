@@ -24,7 +24,7 @@ export const addUserRolesAsync = async (userId: IUser['_id'], roles: IRole['_id'
 		process.env.NODE_ENV === 'development' && console.warn('[WARN] RolesRaw.addUserRoles: roles should be an array');
 	}
 
-	for await (const roleId of roles) {
+	for (const roleId of roles) {
 		const role = await Roles.findOneById<Pick<IRole, '_id' | 'scope'>>(roleId, { projection: { scope: 1 } });
 
 		if (!role) {

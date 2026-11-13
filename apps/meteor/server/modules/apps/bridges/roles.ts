@@ -8,7 +8,7 @@ export class AppRoleBridge extends RoleBridge {
 		super();
 	}
 
-	protected async getOneByIdOrName(idOrName: IAppsRole['id'] | IAppsRole['name'], appId: string): Promise<IAppsRole | null> {
+	protected async getOneByIdOrName(idOrName: IAppsRole['id'], appId: string): Promise<IAppsRole | null> {
 		this.orch.debugLog(`The App ${appId} is getting the roleByIdOrName: "${idOrName}"`);
 
 		// #TODO: #AppsEngineTypes - Remove explicit types and typecasts once the apps-engine definition/implementation mismatch is fixed.

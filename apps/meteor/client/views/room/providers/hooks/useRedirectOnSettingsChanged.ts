@@ -38,7 +38,7 @@ export const useRedirectOnSettingsChanged = (subscription?: ISubscription | null
 			const routeRoomType = routeNameToRoomTypeMap[routeName];
 
 			if (routeRoomType) {
-				await LegacyRoomManager.close(routeRoomType + routeName);
+				LegacyRoomManager.close(routeRoomType + routeName);
 			}
 
 			router.navigate({

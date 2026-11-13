@@ -13,7 +13,7 @@ import { UploadFS } from '../../../ufs';
 export const sendEmail = async (data: { files: string[]; subject: string; body: string }) => {
 	const attachments = [];
 
-	for await (const fileId of data.files) {
+	for (const fileId of data.files) {
 		const file = await Uploads.findOneById(fileId);
 		if (file?.store === 'rocketchat_uploads' || file?.store === 'fileSystem') {
 			const rs = await UploadFS.getStore(file.store).getReadStream(fileId, file);

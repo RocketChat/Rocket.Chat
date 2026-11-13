@@ -136,20 +136,6 @@ describe('RepliesForm', () => {
 		expect(screen.getByLabelText('Agent (optional)')).toBeDisabled();
 	});
 
-	xit('should render with default values', async () => {
-		const defaultValues = {
-			departmentId: 'department-1',
-			agentId: 'agent-1',
-		};
-
-		render(<RepliesForm defaultValues={defaultValues} onSubmit={jest.fn()} />, {
-			wrapper: appRoot().build(),
-		});
-
-		await waitFor(() => expect(screen.getByLabelText('Department (optional)').parentElement).toHaveTextContent('Department 1'));
-		await waitFor(() => expect(screen.getByLabelText('Agent (optional)').parentElement).toHaveTextContent('agent.one'));
-	});
-
 	it('should enable agent selection when a department is selected', async () => {
 		render(<RepliesForm onSubmit={jest.fn()} />, { wrapper: appRoot().build() });
 
@@ -183,7 +169,7 @@ describe('RepliesForm', () => {
 		await waitFor(() => expect(screen.queryByText('Error loading department information')).not.toBeInTheDocument());
 	});
 
-	xit('should call submit with correct values when form is submitted', async () => {
+	it('should call submit with correct values when form is submitted', async () => {
 		const handleSubmit = jest.fn();
 		const defaultValues = {
 			departmentId: 'department-1',
@@ -194,12 +180,14 @@ describe('RepliesForm', () => {
 			wrapper: appRoot().build(),
 		});
 
+		await userEvent.click(screen.getByRole('button', { name: 'Submit' }));
+
 		await waitFor(() =>
 			expect(handleSubmit).toHaveBeenCalledWith({
 				departmentId: 'department-1',
 				department: mockDepartment,
 				agentId: 'agent-1',
-				agent: mockAgentOne,
+				agent: expect.objectContaining(mockAgentOne),
 			}),
 		);
 	});

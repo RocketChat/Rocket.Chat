@@ -805,7 +805,7 @@ API.v1.post(
 			return API.v1.forbidden();
 		}
 
-		const subscriptions = await Subscriptions.findByRoomId(room._id, {
+		const subscriptions = Subscriptions.findByRoomId(room._id, {
 			projection: { 'u._id': 1 },
 		});
 
@@ -1192,7 +1192,7 @@ API.v1.get(
 			...(onlyConfirmed && { expiresAt: { $exists: false } }),
 		};
 
-		const { cursor, totalCount } = await Uploads.findPaginatedWithoutThumbs(filter, {
+		const { cursor, totalCount } = Uploads.findPaginatedWithoutThumbs(filter, {
 			sort: sort || { name: 1 },
 			skip: offset,
 			limit: count,
@@ -1305,7 +1305,7 @@ API.v1.get(
 
 		ourQuery = Object.assign({}, ourQuery, await mountIntegrationQueryBasedOnPermissions(this.userId));
 
-		const { cursor, totalCount } = await Integrations.findPaginated(ourQuery, {
+		const { cursor, totalCount } = Integrations.findPaginated(ourQuery, {
 			sort: sort || { _createdAt: 1 },
 			skip: offset,
 			limit: count,
@@ -2115,7 +2115,7 @@ API.v1.get(
 			}
 		}
 
-		const { cursor, totalCount } = await Messages.findPaginated(ourQuery, {
+		const { cursor, totalCount } = Messages.findPaginated(ourQuery, {
 			sort: sort || { ts: -1 },
 			skip: offset,
 			limit: count,

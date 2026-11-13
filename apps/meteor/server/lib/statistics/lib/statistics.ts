@@ -72,7 +72,7 @@ export const statistics = {
 		const statsPms = [];
 
 		// Setup Wizard
-		const [organizationType, industry, size, country, language, serverType, registerServer] = await Promise.all([
+		const [organizationType, industry, size, country, language, serverType, registerServer] = [
 			settings.get<string>('Organization_Type'),
 			settings.get<string>('Industry'),
 			settings.get<string>('Size'),
@@ -80,7 +80,7 @@ export const statistics = {
 			settings.get<string>('Language'),
 			settings.get<string>('Server_Type'),
 			settings.get<boolean>('Register_Server'),
-		]);
+		];
 
 		statistics.wizard = {
 			organizationType,
@@ -190,10 +190,10 @@ export const statistics = {
 		);
 
 		// Number of custom fields
-		statsPms.push((statistics.totalCustomFields = await LivechatCustomField.estimatedDocumentCount()));
+		statistics.totalCustomFields = await LivechatCustomField.estimatedDocumentCount();
 
 		// Number of public custom fields
-		statsPms.push((statistics.totalLivechatPublicCustomFields = await LivechatCustomField.countDocuments({ public: true })));
+		statistics.totalLivechatPublicCustomFields = await LivechatCustomField.countDocuments({ public: true });
 
 		// Livechat Automatic forwarding feature enabled
 		statistics.livechatAutomaticForwardingUnansweredChats = settings.get<number>('Livechat_auto_transfer_chat_timeout') !== 0;

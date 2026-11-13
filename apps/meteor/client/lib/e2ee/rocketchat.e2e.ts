@@ -806,7 +806,7 @@ class E2E extends Emitter {
 		const randomRoomIds = sampleSize(roomIds, ROOM_KEY_EXCHANGE_SIZE);
 
 		const sampleIds: string[] = [];
-		for await (const roomId of randomRoomIds) {
+		for (const roomId of randomRoomIds) {
 			const e2eroom = await this.getInstanceByRoomId(roomId);
 			if (!e2eroom?.hasSessionKey()) {
 				continue;

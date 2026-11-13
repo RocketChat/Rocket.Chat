@@ -206,7 +206,7 @@ const continueExportOperation = async function (exportOperation: IExportOperatio
 		const zipFolder = settings.get<string>('UserData_FileSystemZipPath')?.trim() || '/tmp/zipFiles';
 
 		if (exportOperation.status === 'downloading') {
-			for await (const attachmentData of exportOperation.fileList) {
+			for (const attachmentData of exportOperation.fileList) {
 				await copyFileUpload(attachmentData, exportOperation.assetsPath);
 			}
 

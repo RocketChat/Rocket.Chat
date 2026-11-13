@@ -4,11 +4,7 @@ import { Roles } from '@rocket.chat/models';
 /**
  * @deprecated use `Authorization.hasAnyRole` instead
  */
-export const hasAnyRoleAsync = async (
-	userId: IUser['_id'],
-	roleIds: IRole['_id'][],
-	scope?: IRoom['_id'] | undefined,
-): Promise<boolean> => {
+export const hasAnyRoleAsync = async (userId: IUser['_id'], roleIds: IRole['_id'][], scope?: IRoom['_id']): Promise<boolean> => {
 	if (!Array.isArray(roleIds)) {
 		throw new Error('error-invalid-arguments');
 	}
@@ -20,7 +16,7 @@ export const hasAnyRoleAsync = async (
 	return Roles.isUserInRoles(userId, roleIds, scope);
 };
 
-export const hasRoleAsync = async (userId: IUser['_id'], roleId: IRole['_id'], scope?: IRoom['_id'] | undefined): Promise<boolean> => {
+export const hasRoleAsync = async (userId: IUser['_id'], roleId: IRole['_id'], scope?: IRoom['_id']): Promise<boolean> => {
 	if (Array.isArray(roleId)) {
 		throw new Error('error-invalid-arguments');
 	}

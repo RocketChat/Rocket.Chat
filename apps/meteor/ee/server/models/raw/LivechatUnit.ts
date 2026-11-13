@@ -79,13 +79,13 @@ export class LivechatUnitRaw extends BaseRaw<IOmnichannelBusinessUnit> implement
 		const monitorsToSave = monitors.map(({ monitorId }) => monitorId);
 
 		// remove other monitors
-		for await (const monitorId of savedMonitors) {
+		for (const monitorId of savedMonitors) {
 			if (!monitorsToSave.includes(monitorId)) {
 				await LivechatUnitMonitors.removeByUnitIdAndMonitorId(_id, monitorId);
 			}
 		}
 
-		for await (const monitor of monitors) {
+		for (const monitor of monitors) {
 			await LivechatUnitMonitors.saveMonitor({
 				monitorId: monitor.monitorId,
 				unitId: _id,
@@ -97,13 +97,13 @@ export class LivechatUnitRaw extends BaseRaw<IOmnichannelBusinessUnit> implement
 		const departmentsToSave = departments.map(({ departmentId }) => departmentId);
 
 		// remove other departments
-		for await (const departmentId of savedDepartments) {
+		for (const departmentId of savedDepartments) {
 			if (!departmentsToSave.includes(departmentId)) {
 				await LivechatDepartment.removeDepartmentFromUnit(departmentId);
 			}
 		}
 
-		for await (const departmentId of departmentsToSave) {
+		for (const departmentId of departmentsToSave) {
 			await LivechatDepartment.addDepartmentToUnit(departmentId, _id, ancestors);
 		}
 

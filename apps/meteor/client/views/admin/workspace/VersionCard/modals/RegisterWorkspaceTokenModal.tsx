@@ -25,7 +25,7 @@ import WorkspaceRegistrationModal from './RegisterWorkspaceModal';
 
 export type RegisterWorkspaceTokenModalProps = {
 	onClose: () => void;
-	onStatusChange?: () => void;
+	onStatusChange?: () => void | Promise<unknown>;
 };
 
 const RegisterWorkspaceTokenModal = ({ onClose, onStatusChange, ...props }: RegisterWorkspaceTokenModalProps) => {
@@ -85,7 +85,7 @@ const RegisterWorkspaceTokenModal = ({ onClose, onStatusChange, ...props }: Regi
 						</Text>{' '}
 						and click{' '}
 						<Text is='strong' fontScale='p2b'>
-							"Register self-managed"
+							&quot;Register self-managed&quot;
 						</Text>
 						.
 					</Trans>

@@ -468,7 +468,7 @@ export async function getMessageToBroadcast({ id, data }: { id: IMessage['_id'];
 		}
 
 		if (message.mentions?.length) {
-			for await (const mention of message.mentions) {
+			for (const mention of message.mentions) {
 				const name = await getUserNameCached(mention._id);
 				if (name) {
 					mention.name = name;

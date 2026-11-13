@@ -18,7 +18,7 @@ const template1 = createFakeOutboundTemplate({
 	components: [component.body],
 });
 
-export const template2 = createFakeOutboundTemplate({
+const template2 = createFakeOutboundTemplate({
 	id: 'template-2',
 	name: 'Template Two',
 	components: [component.header, component.body],
@@ -65,6 +65,7 @@ describe('MessageForm', () => {
 		const defaultValues = { templateId: 'template-1' };
 		render(<MessageForm {...defaultProps} defaultValues={defaultValues} />, { wrapper: appRoot.build() });
 
+		// oxlint-disable-next-line testing-library/no-node-access -- the selected value renders beside the input, inside an unlabelled field row
 		expect(screen.getByLabelText('Template*').parentElement).toHaveTextContent('Template One');
 	});
 
@@ -76,6 +77,7 @@ describe('MessageForm', () => {
 		await userEvent.click(screen.getByLabelText('Template*'));
 		await userEvent.click(await screen.findByRole('option', { name: /Template One/ }));
 
+		// oxlint-disable-next-line testing-library/no-node-access -- the selected value renders beside the input, inside an unlabelled field row
 		expect(screen.getByLabelText('Template*').parentElement).toHaveTextContent('Template One');
 
 		expect(await screen.findByText(component.body.text)).toBeInTheDocument();

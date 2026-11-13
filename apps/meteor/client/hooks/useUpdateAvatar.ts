@@ -67,7 +67,7 @@ export const useUpdateAvatar = (avatarObj: AvatarObject, userId: IUser['_id']) =
 			avatarObj.set('userId', userId);
 			await saveAvatarAction(avatarObj);
 		}
-	}, [avatarObj, avatarUrl, resetAvatarAction, saveAvatarAction, saveAvatarUrlAction, successMessage, userId]);
+	}, [avatarObj, avatarUrl, resetAvatarAction, saveAvatarAction, saveAvatarUrlAction, userId]);
 
 	return updateAvatar;
 };

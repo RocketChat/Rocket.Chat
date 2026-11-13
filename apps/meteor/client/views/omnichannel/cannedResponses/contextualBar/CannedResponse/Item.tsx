@@ -38,7 +38,7 @@ const Item = ({ data, allowUse, onClickItem, onClickUse }: ItemProps) => {
 					</ItemLink>
 				</ItemTitle>
 				<ItemDescription>{scope}</ItemDescription>
-				<ItemDescription>"{data.text}"</ItemDescription>
+				<ItemDescription>&quot;{data.text}&quot;</ItemDescription>
 				{data.tags && data.tags.length > 0 && (
 					<Box is={ItemRow} flexWrap='wrap'>
 						{data.tags.map((tag: string, idx: number) => (
