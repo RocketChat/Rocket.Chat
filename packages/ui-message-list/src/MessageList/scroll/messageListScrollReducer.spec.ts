@@ -405,6 +405,15 @@ describe('visibility', () => {
 	});
 });
 
+describe('reporting after a resize', () => {
+	it('asks for a report when the viewport or the content changes size, whether or not the list moves (R55)', () => {
+		const state = detachedAt(rowsOf('abcde'), MIDDLE);
+
+		expect(run(state, [resized(at(1200, CONTENT + 200))]).commands).toContainEqual({ type: 'notifyVisibility' });
+		expect(run(idleAt(rowsOf('abcde'), BOTTOM), [resized(BOTTOM)]).commands).toContainEqual({ type: 'notifyVisibility' });
+	});
+});
+
 describe('the user-scrolling window', () => {
 	it('should be open from the first gesture until scrolling stops (R27)', () => {
 		const state = idleAt(rowsOf('abcde'), BOTTOM);

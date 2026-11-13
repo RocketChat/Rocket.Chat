@@ -268,7 +268,7 @@ export const messageListScrollReducer = (state: MessageListScrollState, event: M
 
 		case 'resize': {
 			const next = { ...state, measurement: { geometry: event.geometry, messagesStart: event.messagesStart } };
-			return { state: next, commands: applyAnchor(next) };
+			return { state: next, commands: [...applyAnchor(next), { type: 'notifyVisibility' }] };
 		}
 
 		case 'dataCommitted': {

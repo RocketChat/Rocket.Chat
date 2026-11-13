@@ -170,7 +170,8 @@ export const useMessageListScroller = <TMessage extends IMessage>({
 			return;
 		}
 
-		const { scrollOffset, viewportSize } = handle;
+		// Read from the scroll container: the virtualizer learns of a resize a moment after the list does
+		const { scrollTop: scrollOffset, clientHeight: viewportSize } = viewport;
 		const start = handle.findItemIndex(scrollOffset);
 		const end = handle.findItemIndex(scrollOffset + viewportSize - 1);
 

@@ -600,6 +600,7 @@ describe('stories', () => {
 				'KeyboardIntoUnrenderedRows',
 				'ReportsWhatIsVisible',
 				'ReportsBeingAtTheBottomAfterAJump',
+				'ReportsAfterAResize',
 				'ReportsNotBeingAtTheBottomOfAnOlderWindow',
 				'RestorePositionOfAListThatMountsEmpty',
 				'FirstPageLoading',

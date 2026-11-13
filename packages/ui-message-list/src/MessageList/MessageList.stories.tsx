@@ -705,3 +705,22 @@ export const ReportsNotBeingAtTheBottomOfAnOlderWindow: Story = {
 		await expect(readVisibility(canvasElement).isAtBottom).toBe(false);
 	},
 };
+
+/** R55: a viewport that changes size changes what is visible, and the list reports it though nothing scrolled. */
+export const ReportsAfterAResize: Story = {
+	args: { history: { size: 80 }, source: { pageSize: 80, firstUnreadMessageId: fakeMessageId(50) } },
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await waitForListSettled(canvasElement);
+		await userEvent.click(canvas.getByRole('button', { name: 'Jump to first unread' }));
+		await waitForListSettled(canvasElement);
+
+		const viewportBottom = getViewport(canvasElement).getBoundingClientRect().bottom;
+		const unreadTop = (messageRow(canvasElement, fakeMessageId(50)) as HTMLElement).getBoundingClientRect().top;
+		await userScrollBy(canvasElement, unreadTop - (viewportBottom - 60));
+		await waitFor(() => readVisibility(canvasElement).isFirstUnreadVisible === true);
+
+		await userEvent.click(canvas.getByRole('button', { name: 'Toggle container height' }));
+		await waitFor(() => readVisibility(canvasElement).isFirstUnreadVisible === false, 1500);
+	},
+};
