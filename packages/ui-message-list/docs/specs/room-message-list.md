@@ -1,5 +1,5 @@
 ---
-status: planned
+status: implemented
 adrs: [0001]
 code:
   [
@@ -308,7 +308,19 @@ of the end of the latest messages (message-list R17, R80).
 
 ## Design
 
-Decided in the plan.
+`RoomBody` keeps the room around the list and the read state. `RoomMessageList` mounts `MessagesProvider` for the room and renders the
+package's `MessageList`, fed by `useRoomMessageListData` (the messages of `useMessages`, the history manager's flags and loaders, the
+first unread id, the saved position, the own-message test) and `useRoomJumpTarget` (the `msg` parameter and the messages around it).
+`RoomMessageRow` draws a message with the variant its type calls for, reading its markers as one number from a store of the room's
+subscription that the list holds, and registering for "Select all" while it is mounted, and the function that draws it does not change.
+The room tells the list that a thread reply is no arrival (`countsAsArrival`). `RoomBody` hands the read-state
+manager two answers read from the list's handle, counts the unread messages from the top message the list reports at a calmer pace than
+it reports it, and keeps `useUserScrollIntent` on the messages area, whose input also asks for a retry of a first page that failed.
+`RoomMessageList` gives the list the room's space at its ends, more below while newer messages remain, and its wait for the viewer's
+input; `RoomBody` measures what it draws over the top of the list and gives the list its height.
+The room store keeps the position the list reports; the history manager keeps no scroll. `MessagesProvider` keeps one related-data
+value over a store of the place's room and subscription, which a reader reads through `select`. What the thread still imports of the
+old list stays for branch 09 (Q9). Coarse enough to survive a rename; the reasons are in the intent and the plan.
 
 ## Out of scope
 
@@ -324,7 +336,7 @@ Decided in the plan.
 
 ## Known defects
 
-None; not implemented.
+None. The differences from `develop`'s room are recorded under Open questions.
 
 ## Open questions
 

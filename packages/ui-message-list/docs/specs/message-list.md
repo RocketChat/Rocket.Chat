@@ -57,7 +57,7 @@ renders each message. The list draws the rows around the messages (the older and
 day and unread dividers), decides how each change of the data and each input of the viewer moves the scroll position, loads pages
 as the viewer approaches an edge, jumps to any message and highlights it, and reports what is visible and where it was left. The
 floating date, "New messages" and "Jump to recent messages" are parts a consumer composes as children. Its keyboard model is the
-composite list of `docs/frontend/list-keyboard-navigation.md`. Nothing in `apps/meteor` uses it in this branch.
+composite list of `docs/frontend/list-keyboard-navigation.md`. The room draws its messages with it (`room-message-list`); the thread's list follows.
 
 ## Motivation
 
@@ -435,8 +435,8 @@ stands in for is hidden by an attribute set on it, so scrolling draws no row. Th
 - The states of a message row (B20) and the row's part of selection (B18): `message-variants`.
 - Message content, attachments and the toolbar: `message-capabilities`, `message-attachments`, `message-toolbar`.
 - ~~Padding at the ends of the list~~: offered since review round 1 (R83). The space `develop`'s room keeps under the list while newer
-  messages remain (`.wrapper.has-more-next`, 24px below the scroll container) is outside the list: the consumer shrinks the viewport,
-  which R16 follows.
+  messages remain (`.wrapper.has-more-next`, 24px below the scroll container) is the room's to give, as more `endSpacing`
+  (`room-message-list` R57); a consumer that shrinks the viewport instead also shrinks the box the overlay parts are drawn in.
 - Anchors other than the bottom, a message or nothing, and any change to the keyboard model.
 - Replacing the app's copy of the item-list keyboard hook: it serves the sidebar and the other lists (Q4).
 

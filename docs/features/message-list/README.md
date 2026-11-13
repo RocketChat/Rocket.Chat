@@ -16,7 +16,7 @@ The message list shows a conversation, a room or a thread, as an infinite list t
 - **Groups consecutive messages** of the same author (see Grouping). (B11)
 - **A header** above the first message once nothing older remains: the room foreword and retention warning in a room. (B12)
 - **Loading indicators** for the first page and for older and newer pages. (B13)
-- **Remembers where it was left** when switching conversations; in a room, unread messages take precedence: the room does not pass the position, so the list opens at the bottom. (B14)
+- **Remembers where it was left** when switching conversations; in a room, unread messages take precedence, decided from the messages listed (a thread reply that does not show in the room does not count): the room does not pass the position, so the list opens at the bottom. (B14)
 - **Keeps live embeds mounted** (players, URL previews, iframes) so they do not reload when scrolled away and back. (B15)
 - **Reports what is visible**: the topmost message, whether the first unread message is on screen, whether the viewer is at the bottom, as soon as the list is placed and after every scroll, change of the messages and resize. (B16)
 - **Keyboard**: a single tab stop; Up and Down move between messages, scrolling unrendered ones into view; Tab walks the controls of the focused message, then leaves the list; the first entry lands on the latest message. (B17)
