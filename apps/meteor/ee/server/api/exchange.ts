@@ -65,7 +65,7 @@ API.v1.post(
 		try {
 			await provider.testConnection();
 		} catch (err) {
-			logger.error({ msg: 'Exchange test connection failed', provider: provider.id, err: scrubForLog(err) });
+			logger.error({ msg: 'Exchange test connection failed', provider: provider.id, err });
 
 			if (!isExchangeError(err)) {
 				return API.v1.internalError('Exchange_Test_Connection_failed');

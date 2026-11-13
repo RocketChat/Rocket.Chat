@@ -4,7 +4,6 @@ import { serverFetch } from '@rocket.chat/server-fetch';
 import { sleep } from '../../../../../lib/utils/sleep';
 import { ExchangeError } from '../errors';
 import { logger } from '../logger';
-import { scrubForLog } from '../scrub';
 
 /**
  * Retry policy for Microsoft Graph
@@ -12,8 +11,8 @@ import { scrubForLog } from '../scrub';
  * - `Retry-After` is honoured wherever it appears, 429 or 5xx alike, which is Microsoft's documented rule:
  *   back off by the header, and fall back to exponential backoff only when there is none.
  * - 4xx other than 429 returns immediately. A bad credential does not improve with waiting.
- * - A transport failure is retried, because that is the transient this policy exists for. A refusal by the
- *   allowlist is the exception: it is the air-gap invariant and must never be looped on.
+ * - A transport failure is retried, because that is the transient this policy exists for. A refusal by SSRF
+ *   validation is the exception: it must never be looped on.
  * - A total budget bounds the call. Waiting less than the server asked only prolongs the throttling, so a
  *   wait that does not fit ends the attempt rather than being shortened.
  */
@@ -62,7 +61,7 @@ export async function fetchGraphWithRetry(
 			lastError = undefined;
 		} catch (err) {
 			if (err instanceof Error && err.message === SSRF_REJECTION) {
-				logger.warn({ msg: 'Exchange request refused by the allowlist', err: scrubForLog(err) });
+				logger.warn({ msg: 'Exchange request refused by the allowlist', err });
 
 				throw new ExchangeError('host-not-allowed', 'The request targeted a host outside the allowlist', { detail: err.message });
 			}
@@ -99,7 +98,7 @@ export async function fetchGraphWithRetry(
 	}
 
 	if (lastError) {
-		logger.warn({ msg: 'Exchange request failed', err: scrubForLog(lastError) });
+		logger.warn({ msg: 'Exchange request failed', err: lastError });
 
 		throw new ExchangeError('connection-failed', 'Could not reach the Exchange endpoint', {
 			detail: lastError instanceof Error ? lastError.message : undefined,

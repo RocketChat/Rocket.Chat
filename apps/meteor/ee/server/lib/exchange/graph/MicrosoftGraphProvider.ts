@@ -275,7 +275,7 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 			...init,
 			headers: { ...(init.headers as Record<string, string> | undefined), Authorization: `Bearer ${token}` },
 			timeout: REQUEST_TIMEOUT_MS,
-			// Air-gap invariant: SSRF validation stays on, and only the token client's hosts are reachable.
+			// SSRF validation stays on: a cursor is a URL that Graph handed back.
 			ignoreSsrfValidation: false,
 			allowList: this.tokenClient.allowList,
 		});

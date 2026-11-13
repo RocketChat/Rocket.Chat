@@ -9,7 +9,6 @@ import { EwsTransportPool } from './ews/EwsTransportPool';
 import { ExchangeEwsProvider } from './ews/ExchangeEwsProvider';
 import { MicrosoftGraphProvider } from './graph/MicrosoftGraphProvider';
 import { logger } from './logger';
-import { scrubForLog } from './scrub';
 import { MAILBOX_CONCURRENCY } from './sync/limits';
 import { settings } from '../../../../server/settings';
 import { getCalendarSyncWindowDays } from '../../../lib/exchange/calendarSyncSchedule';
@@ -106,7 +105,7 @@ export const registerExchangeProviderWatchers = () =>
 			current = buildExchangeProvider();
 		} catch (err) {
 			current = undefined;
-			logger.error({ msg: 'Could not build the Exchange provider from the current settings', err: scrubForLog(err) });
+			logger.error({ msg: 'Could not build the Exchange provider from the current settings', err });
 		}
 
 		logger.debug({ msg: 'Exchange provider rebuilt', provider: current?.id ?? 'none' });

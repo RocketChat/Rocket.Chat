@@ -10,7 +10,6 @@ import { computeChannelBindingHash, createType1Message, createType3Message, deco
 import type { IEwsTransport } from './IEwsTransport';
 import { ExchangeError } from '../errors';
 import { logger } from '../logger';
-import { scrubForLog } from '../scrub';
 
 /**
  * A bespoke agent rather than `@rocket.chat/server-fetch`, for two structural reasons: the NTLM handshake
@@ -309,7 +308,7 @@ export class EwsTransport implements IEwsTransport {
 			});
 
 			req.on('error', (err) => {
-				logger.warn({ msg: 'EWS request failed', err: scrubForLog(err) });
+				logger.warn({ msg: 'EWS request failed', err });
 				// No `cause`: a Node transport error carries request options, and those carry headers.
 				reject(new ExchangeError('connection-failed', 'Could not reach the Exchange endpoint', { detail: err.message }));
 			});

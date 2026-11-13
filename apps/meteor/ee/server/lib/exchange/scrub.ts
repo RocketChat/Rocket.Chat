@@ -6,6 +6,9 @@ const SECRET_KEYS = 'access_token|refresh_token|id_token|client_secret|assertion
 
 const SENSITIVE_KEY = /password|secret|token|authorization|credential|assertion/i;
 
+/** Bare or URL-encoded, since the mailbox also travels in a Graph path */
+const EMAIL_ADDRESS = /[A-Za-z0-9._%+-]{1,64}(?:@|%40)[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*/g;
+
 const PATTERNS: [RegExp, string][] = [
 	// An Authorization header, as a raw line or an object property.
 	[new RegExp(`("?authorization"?\\s*[:=]\\s*"?)((?:${AUTH_SCHEMES})\\s+)?[^"\\s,}]+`, 'gi'), `$1$2${REDACTED}`],
@@ -14,13 +17,15 @@ const PATTERNS: [RegExp, string][] = [
 	// Credential fields, JSON or form encoded.
 	[new RegExp(`("?(?:${SECRET_KEYS})"?\\s*[:=]\\s*"?)[^"&\\s,}]+`, 'gi'), `$1${REDACTED}`],
 	// For passwords inside an URL.
-	[/([a-z][a-z0-9+.-]*:\/\/[^\s:@/]+:)[^\s@/]+@/gi, `$1${REDACTED}@`],
+	[/([a-z][a-z0-9+.-]{0,31}:\/\/[^\s:@/]+:)[^\s@/]+@/gi, `$1${REDACTED}@`],
 	// WS-Security password elements, and any password-ish element in a SOAP envelope.
-	[/(<[^>]*(?:Password|Secret)[^>]*>)[^<]*(<\/)/gi, `$1${REDACTED}$2`],
+	[/(<[^<>]*(?:Password|Secret)[^<>]*>)[^<]*(<\/)/gi, `$1${REDACTED}$2`],
 ];
 
 export const scrubText = (value: string): string =>
 	PATTERNS.reduce((acc, [pattern, replacement]) => acc.replace(pattern, replacement), value);
+
+const scrubLogText = (value: string): string => scrubText(value).replace(EMAIL_ADDRESS, REDACTED);
 
 export const scrubForLog = (value: unknown, depth = 0): unknown => {
 	if (depth > 4) {
@@ -28,15 +33,20 @@ export const scrubForLog = (value: unknown, depth = 0): unknown => {
 	}
 
 	if (typeof value === 'string') {
-		return scrubText(value);
+		return scrubLogText(value);
+	}
+
+	if (value instanceof Date) {
+		return value;
 	}
 
 	if (value instanceof Error) {
 		return {
 			name: value.name,
-			message: scrubText(value.message),
+			message: scrubLogText(value.message),
 			...('code' in value && typeof value.code === 'string' ? { code: value.code } : {}),
-			...('detail' in value && typeof value.detail === 'string' ? { detail: scrubText(value.detail) } : {}),
+			...('detail' in value && typeof value.detail === 'string' ? { detail: scrubLogText(value.detail) } : {}),
+			...(typeof value.stack === 'string' ? { stack: scrubLogText(value.stack) } : {}),
 		};
 	}
 

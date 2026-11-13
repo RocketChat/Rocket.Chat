@@ -93,14 +93,18 @@ describe('scrubText', () => {
 });
 
 describe('scrubForLog', () => {
-	it('reduces an error to name, message, code and detail', () => {
-		const err = Object.assign(new Error('Bearer abc123def456 was rejected'), { code: 'authentication-failed', detail: 'password=hunter2' });
+	it('reduces an error to name, message, code, detail and a scrubbed stack', () => {
+		const err = Object.assign(new Error('Bearer abc123def456 was rejected for user@corp.example'), {
+			code: 'authentication-failed',
+			detail: 'password=hunter2',
+		});
 
 		expect(scrubForLog(err)).toEqual({
 			name: 'Error',
-			message: `Bearer ${REDACTED} was rejected`,
+			message: `Bearer ${REDACTED} was rejected for ${REDACTED}`,
 			code: 'authentication-failed',
 			detail: `password=${REDACTED}`,
+			stack: expect.stringContaining(`Error: Bearer ${REDACTED} was rejected for ${REDACTED}\n    at `),
 		});
 	});
 
@@ -127,6 +131,29 @@ describe('scrubForLog', () => {
 
 	it('redacts a sensitive key even when it also names a location', () => {
 		expect(scrubForLog({ passwordUrl: 'https://svc:hunter2@host/reset' })).toEqual({ passwordUrl: REDACTED });
+	});
+
+	it('redacts a mailbox by its value, so a count under a similar key survives', () => {
+		expect(scrubForLog({ uid: 'abc', mailbox: 'user@corp.example', emails: ['user@corp.example'], mailboxes: 3 })).toEqual({
+			uid: 'abc',
+			mailbox: REDACTED,
+			emails: [REDACTED],
+			mailboxes: 3,
+		});
+	});
+
+	it('scrubs the message of an error at the deepest level it still walks', () => {
+		const result = scrubForLog({ a: { b: { c: { err: new Error('Bearer abc123def456 was rejected') } } } });
+
+		expect(JSON.stringify(result)).toContain(`"message":"Bearer ${REDACTED} was rejected"`);
+	});
+
+	it('redacts an address on a single-label domain, which on-premises Exchange may use', () => {
+		expect(scrubForLog('mailbox svc@exchange not found')).toBe(`mailbox ${REDACTED} not found`);
+	});
+
+	it('leaves the mailbox in `scrubText`, which only strips credentials', () => {
+		expect(scrubText('mailbox user@corp.example not found')).toContain('user@corp.example');
 	});
 
 	it('passes non-string primitives through untouched', () => {
