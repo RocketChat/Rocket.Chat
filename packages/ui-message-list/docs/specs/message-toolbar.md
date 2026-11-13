@@ -9,6 +9,7 @@ code:
     src/Message/contexts/MessageNavigationContext.ts,
     src/Message/index.ts,
     apps/meteor/client/providers/MessagesProvider/useMessageNavigationValue.ts,
+    apps/meteor/client/components/message/variants,
     apps/meteor/client/providers/MessagesProvider/useMessageToolbarValue.ts,
     apps/meteor/client/providers/MessagesProvider/useMessageInteractionsValue.tsx,
     apps/meteor/client/providers/MessagesProvider/MessagesProvider.tsx,
@@ -25,6 +26,8 @@ tests:
     apps/meteor/client/providers/MessagesProvider/MessagesProvider.spec.tsx,
     apps/meteor/client/providers/MessagesProvider/useMessageToolbarValue.spec.tsx,
     apps/meteor/client/providers/EmojiPickerProvider/EmojiPickerProvider.spec.tsx,
+    apps/meteor/client/components/message/variants/RoomMessage.contexts.spec.tsx,
+    apps/meteor/client/views/audit/components/AuditMessageList.display.spec.tsx,
   ]
 ---
 
