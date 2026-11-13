@@ -10,6 +10,13 @@ code:
     apps/meteor/client/views/room/body/RoomMessageList/useRegisterRenderedMessage.ts,
     apps/meteor/client/lib/RoomManager.ts,
     apps/meteor/client/views/room/body/hooks/useElementHeight.ts,
+    apps/meteor/client/views/room/body/RoomMessageList/RoomMessageList.tsx,
+    apps/meteor/client/views/room/body/RoomMessageList/RoomMessageRow.tsx,
+    apps/meteor/client/views/room/body/RoomMessageList/MessageMarkers.tsx,
+    apps/meteor/client/views/room/body/RoomMessageList/useRoomMessageListData.ts,
+    apps/meteor/client/views/room/body/RoomMessageList/useRoomJumpTarget.ts,
+    apps/meteor/client/views/room/body/hooks/useRetryFirstPage.ts,
+    apps/meteor/client/views/room/body/RoomMessageList/useScrollToBottomOnOwnMessage.ts,
   ]
 tests:
   [
@@ -19,6 +26,11 @@ tests:
     apps/meteor/client/views/room/body/RoomMessageList/useMessages.spec.tsx,
     apps/meteor/client/lib/RoomManager.spec.ts,
     apps/meteor/client/views/room/body/hooks/useElementHeight.spec.ts,
+    apps/meteor/client/views/room/body/RoomMessageList/RoomMessageList.spec.tsx,
+    apps/meteor/client/views/room/body/RoomMessageList/RoomMessageRow.spec.tsx,
+    apps/meteor/client/views/room/body/RoomMessageList/useRoomMessageListData.spec.tsx,
+    apps/meteor/client/views/room/body/RoomMessageList/useRoomJumpTarget.spec.tsx,
+    apps/meteor/client/views/room/body/hooks/useRetryFirstPage.spec.ts,
   ]
 ---
 
@@ -200,7 +212,12 @@ of the end of the latest messages (message-list R17, R80).
   at once and a failed load leaves it at the bottom of an empty window, not waiting (message-list D3; Q5).
 - **R43** A message at the end of the list written by the viewer, including one the viewer sends from an older window, MUST take the
   list to the latest messages (B3; message-list R19, R20). The room MUST decide it by comparing the author with the viewer, and a
-  thread reply MUST NOT count as the viewer's own message, as on `develop`, whether or not it shows in the room (Q3, answered).
+  thread reply MUST NOT count as the viewer's own message, as on `develop`, whether or not it shows in the room (Q3, answered). A reply
+  in a thread MUST NOT count as an arrival either, whoever wrote it and whether or not it shows in the room: it takes the list nowhere
+  and raises no "New messages", as on `develop`, where every streamed message that has a `tmid` is ignored (message-list R21, R22).
+  The room MUST call the list handle's `scrollToBottom()` when the room stream delivers a message of the viewer's that is neither an edit
+  nor a reply in a thread, as `develop` does: with newer messages remaining the list cannot tell the message from one inside its rows, and
+  `scrollToBottom()` is what loads the latest window and ends at the bottom (message-list R20), from wherever the viewer reads.
 - **R44** The history manager MUST NOT read or write the DOM, and MUST keep no scroll snapshot: loading a page changes no scroll
   position of its own (B5; message-list R36).
 
@@ -232,7 +249,8 @@ of the end of the latest messages (message-list R17, R80).
 - **R51** A component that reads the related data MUST NOT re-render when the room or the subscription is replaced by an equal copy.
 - **R52** A message arriving, or a change of the subscription that changes none of a message's markers (R3), MUST NOT render that
   message's row again, and the function the room gives the list to draw a message MUST NOT change with the subscription
-  (message-list R71, R72).
+  (message-list R71, R72). A change of a subscription of another room, or of anything else in the client, MUST cost no mounted row
+  anything: rows read the room's subscription from the list, not from the client's stores.
 - **R53** The roles of the room's authors MUST still be resolved once for the room's list, not once per header (message-variants R49;
   #43471).
 
@@ -261,7 +279,8 @@ of the end of the latest messages (message-list R17, R80).
   from the room's old list is deleted (Q9).
 - **R59** While no message is listed, older messages remain and nothing loads, an input in the messages area (R25) MUST ask the
   history manager for the first page again, and a failed first page MUST leave the room able to retry that way, where `develop`
-  retries on the viewer's next input (Q4, answered).
+  retries on the viewer's next input (Q4, answered). A room the viewer cannot preview MUST NOT ask: it has no history to give, and
+  every input would meet a refusal.
 
 **Paging before the viewer's input**
 
@@ -308,9 +327,8 @@ answered at the spec gate by the orchestrator, for the user.
 - **Q2** ~~How the readers of a message's conversation avoid re-rendering.~~ Answered: (b), an optional `select` on `useConversation`
   (R49, R50), with `message-capabilities` and `message-variants` R49 updated in the same commit.
 - **Q3** ~~The viewer's own thread reply.~~ Answered: (b), contrary to the recommendation. A thread reply is not an own message for the
-  list (R43). Not possible without an engine change: the list raises "New messages" for a message that is not the viewer's and
-  appears at the end while the viewer reads above, so the viewer's own thread reply shown in the room (with `tshow` or
-  `showThreadsInMainChannel`) shows the button there, where `develop` shows none. Recorded under the differences below.
+  list (R43). Done without a difference: the list takes a `countsAsArrival` predicate (message-list R19, R21, R22), and the room says that
+  a thread reply is not an arrival, so it also raises no "New messages", own or not, as on `develop`.
 - **Q4** ~~A failed history load in an empty room.~~ Answered: check first. The check is the reducer's: paging is checked on a commit of
   the messages, on a scroll, when positioning ends (also once a viewport that had no size gets one, message-list R81) and when a load
   settled that was waiting for a check, and, since the room waits for the viewer (R60), at the viewer's first input only (message-list
@@ -351,9 +369,7 @@ answered at the spec gate by the orchestrator, for the user.
 ### Where the new list differs from `develop`'s room
 
 Decided above: "Select all" counts the rendered rows as `develop` does, so no difference
-(intent Q1), but scrolls instantly (Q6); an own thread reply that shows in the room does not take the list to the latest, as on
-`develop`, but raises "New messages" when the viewer reads above, which `develop` does not (Q3), as does another viewer's thread reply
-that shows in the room. Not a decision: the saved position
+(intent Q1), but scrolls instantly (Q6). Not a decision: the saved position
 is a message and an offset, not a pixel offset, and is saved at unmount as well; "New messages" is raised for the messages the list
 shows, not for every streamed one, and not while an older window is shown (message-list R21); the composer growing is followed by the
 list's own resize handling, as `onResize` was never called. Found at review round 1 and kept: the first input asks at once for a page

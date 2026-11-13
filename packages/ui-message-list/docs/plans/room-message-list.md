@@ -107,6 +107,15 @@ Spec, plan, `code` and `tests` lists grow in the commit that adds what they name
   after step 9 leaves the history manager's dead DOM code (harmless).
 - `oxlint --fix` rewrites `SelectedMessagesContext.tsx` and `lib/autotranslate/autotranslate.ts`; those edits stay out of every commit.
 
+## Departures found in implementation
+
+- A row reads its four markers from the subscriptions store through one selector (`useMessageMarkers`), instead of receiving them as
+  props: `renderMessage` must stay stable (R52), and a marker read through props would need it to change with the subscription.
+- The meteor specs run the real list through the package's own seam, by path: `jest.mock('@rocket.chat/ui-message-list/dist/MessageList/MessageListVirtualizer', ...)`
+  with `MessageListRows`. A `virtua` mock does not reach the package's copy of `virtua`.
+- Step 1 dropped `contexts.spec.tsx`: the option is proven by `useCanReplyToBroadcast.spec.tsx` and the provider's stability spec.
+- The stability spec's readers are one test-only component, `tests/mocks/client/RelatedDataReader.tsx`, parameterised by what it reads.
+
 ## Proof
 
 Paths: `RoomMessageList/` is `apps/meteor/client/views/room/body/RoomMessageList/`; `body/` is `apps/meteor/client/views/room/body/`. Test names end with the

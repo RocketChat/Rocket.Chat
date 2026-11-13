@@ -13,6 +13,8 @@ const position: MessageListPosition = {
 };
 
 afterEach(() => {
+	RoomManager.back('room-a');
+	RoomManager.back('room-b');
 	RoomManager.close('room-a');
 	RoomManager.close('room-b');
 });
@@ -33,8 +35,11 @@ it('forgets the position of a room that is closed (R16)', () => {
 	RoomManager.open('room-a');
 	RoomManager.getStore('room-a')?.savePosition(position);
 
+	RoomManager.back('room-a');
 	RoomManager.close('room-a');
+	expect(RoomManager.getStore('room-a')).toBeUndefined();
 	RoomManager.open('room-a');
 
+	expect(RoomManager.getStore('room-a')).toBeDefined();
 	expect(RoomManager.getStore('room-a')?.position).toBeUndefined();
 });
