@@ -1,6 +1,6 @@
 # Intent: The room's message list
 
-Author: message list replacement stack (branch 08). Status: draft.
+Author: message list replacement stack (branch 08). Status: accepted.
 
 ## Problem
 
@@ -66,17 +66,8 @@ old list shared with it.
 
 ## Open questions
 
-- **Q1** What "Select all" counts. On `develop` every message the room's list has rendered registers itself while mounted and not
-  selected (thread previews and system messages included), so the count depends on how far the viewer scrolled; the scope and
-  the reference have the list know all of its loaded messages, and exclude thread previews, through a store method that branch 06
-  did not add. (a) Keep `develop`'s: the rows the list has rendered, as today. (b) The reference's: every loaded message but the
-  thread previews, which is a visible change and adds the store method. (c) Rendered rows, but without thread previews.
-  Recommended: (a). Base wins; nothing asks for the change; the count stays testable with rows registering as they mount, as
-  `message-variants` R26 already specifies, and no store method is added. If (b) is wanted it is a later, separate change.
-- **Q2** The padding at the ends of the list: the old list has 21px above the first row and 10px below the last, plus 24px when
-  the room shows an older window. The package's list has none, which the scope lists as a known difference. (a) Accept it and say
-  so in the changeset. (b) Add padding to the list as a capability in `message-list` (a prop, and the geometry the reducer
-  measures with it), which changes an implemented spec and the reducer. (c) Pad the room's wrapper outside the viewport, which
-  shrinks the viewport instead of the content and clips rows 21px below the top edge. Recommended: (a). It changes no reading or
-  scrolling behaviour; (b) is a change to the engine that this branch should not carry, and (c) looks wrong while scrolling.
-  QA looks at the first and last rows against the foreword, the date bubble and the composer.
+- **Q1** ~~What "Select all" counts.~~ Answered (the orchestrator, for the user): (a), `develop`'s rendered rows, thread previews
+  included. The scope's known difference is removed (spec R45 to R48).
+- **Q2** ~~The padding at the ends of the list.~~ Answered at the spec gate: (a), none. Reversed at review round 1, by the user: the
+  reversal is recorded in the spec, R57 and its Open questions. The room keeps `develop`'s space, 21px above the first row and 10px
+  below the last, 34px while newer messages remain.

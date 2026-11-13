@@ -1,5 +1,5 @@
 ---
-status: draft
+status: planned
 adrs: [0001]
 code: []
 tests: []
@@ -46,6 +46,14 @@ What the room does on `develop` today (the base the requirement groups are writt
   `useGetMore` starts loading around `msg` at once when nothing is loaded. Kept by R31 to R38.
 - **Select all.** Each rendered row registers itself while not selected (`useRegisterRenderedMessage`); "Select all" scrolls
   smoothly to the top and selects the registered ones. Kept by R45 to R48 (intent Q1).
+- **Paging.** `useGetMore` loads no page before the viewer's first wheel, pointer press or scroll key in the messages, nor after a jump
+  or the jump to recent rebuilds the window, until the next one; then it checks on each scroll, change of the rows and resize. Kept by
+  R60.
+- **The ends of the list.** The list has 21px above its first row and 10px below its last (`.messages-list`), and the element around
+  it has 24px more below while newer messages remain (`.wrapper.has-more-next`), while "Jump to recent messages" stays 8px above the
+  bottom of the messages area. Kept by R57.
+- **Over the top of the list.** The upload progress and the unread banner are drawn over the top of the messages, and the floating
+  date under them, which measures the day dividers from their bottom (`useDateScroll`). Kept by R61.
 - **Providers.** `MessagesProvider` rebuilds its related-data value whenever the room or the subscription object changes, so every
   mounted row's readers render again for each arrival. Changed by R49 to R53, which the intent assigns to this branch.
 
@@ -100,8 +108,8 @@ of the end of the latest messages (message-list R17, R80).
   message when they hold an unread message, and at the saved position when they hold none (message-list R61).
 - **R15** A `msg` target MUST win over both the saved position and unread messages: the room opens centered on it (message-list R45).
 - **R16** The room store MUST hold, as the only scroll state of a room, the position the list reports through `onPositionChange`
-  (message-list R59, including the report at unmount), kept for the session as the store is. The store MUST NOT hold a pixel
-  offset, a measurement cache, an at-bottom flag or a message count for the list (B14).
+  (message-list R59, including the report at unmount and none before the list has placed itself), kept for the session as the
+  store is. The store MUST NOT hold a pixel offset, a measurement cache, an at-bottom flag or a message count for the list (B14).
 
 **The unread banner**
 
@@ -150,7 +158,7 @@ of the end of the latest messages (message-list R17, R80).
   (`chat.getMessage`, as today).
 - **R32** When the target is not listed, the room MUST load the messages around it once per target, until the list reports it reached
   (message-list R43), and when no history is loaded yet it MUST start loading around the `msg` message without waiting for the
-  fetch of the message, as `useGetMore` does (Q1).
+  fetch of the message, as `useGetMore` does (Q1, answered).
 - **R33** A `msg` naming a thread reply that does not show in the room (not the thread's main message, no `tshow`) MUST make the
   thread's main message the target.
 - **R34** A `msg` naming a message of another room MUST open that room, and one naming a thread message MUST leave the jump to the
@@ -165,7 +173,8 @@ of the end of the latest messages (message-list R17, R80).
 **Paging and the window**
 
 - **R39** The room MUST load an older page with the history manager's `getMore` and a newer page with its `getMoreNext`; each load
-  MUST settle when its page is in the store or failed, and MUST be the one load running (message-list R32).
+  MUST settle when its page is in the store or failed, and MUST be the one load running, also against a page the room asks for in
+  the same moment, as the retry of R59 does (message-list R32).
 - **R40** The room MUST say `hasOlderMessages` from the manager's `hasMore` and `hasNewerMessages` from its `hasMoreNext`.
 - **R41** The room MUST say the list loads newer messages only while a newer page it asked for loads; the first page, the messages
   around a target and the latest page MUST count as the initial load while nothing is loaded and as an older load otherwise, so no
@@ -173,7 +182,8 @@ of the end of the latest messages (message-list R17, R80).
 - **R42** The room's `onJumpToLatest` MUST clear the room's window before it loads the first page, so the list sees the latest messages
   at once and a failed load leaves it at the bottom of an empty window, not waiting (message-list D3; Q5).
 - **R43** A message at the end of the list written by the viewer, including one the viewer sends from an older window, MUST take the
-  list to the latest messages (B3; message-list R19, R20). The room MUST decide it by comparing the author with the viewer.
+  list to the latest messages (B3; message-list R19, R20). The room MUST decide it by comparing the author with the viewer, and a
+  thread reply MUST NOT count as the viewer's own message, as on `develop`, whether or not it shows in the room (Q3, answered).
 - **R44** The history manager MUST NOT read or write the DOM, and MUST keep no scroll snapshot: loading a page changes no scroll
   position of its own (B5; message-list R36).
 
@@ -181,7 +191,7 @@ of the end of the latest messages (message-list R17, R80).
 
 - **R45** Activating "Select all" in the composer MUST scroll the room's list to its first loaded message through the handle
   (message-list R69) and select every message the room's list has rendered that is not selected, and MUST select no message of a
-  thread (intent Q1, recommended (a); B18).
+  thread (intent Q1, answered (a); B18).
 - **R46** Each message row the room's list renders, a room message, a system message or a thread preview, MUST register itself for
   "Select all" while it is mounted and not selected, and MUST unregister when it unmounts or is selected (message-variants R26).
 - **R47** The messages of a thread MUST NOT register with the room's selection, from whichever place they render, whatever the state
@@ -196,9 +206,11 @@ of the end of the latest messages (message-list R17, R80).
   the related data of `MessagesProvider` (the roles of an author, a collapsible part, the parent message of a thread preview, a
   reaction), and MUST NOT re-render one that reads the conversation of its message and only the subscription's `broadcast` (intent;
   #43471).
-- **R50** A reader of the conversation of a message of the room MUST see the current room and subscription whenever it renders, and
-  MUST re-render when a field it reads changes: the reply-to-broadcast check re-renders when `broadcast` changes, and the toolbar
-  shows the conversation as it is when it opens.
+- **R50** `useConversation` MUST take an optional `select`, a function of the conversation whose result the reader gets as `data`
+  and re-renders for only when it changes (message-capabilities, message-variants R49; Q2, answered). A reader of the conversation of
+  a message of the room MUST see the current room and subscription whenever it renders, and MUST re-render when what it selects
+  changes: the reply-to-broadcast check re-renders when `broadcast` changes, and the toolbar shows the conversation as it is when it
+  opens.
 - **R51** A component that reads the related data MUST NOT re-render when the room or the subscription is replaced by an equal copy.
 - **R52** A message arriving, or a change of the subscription that changes none of a message's markers (R3), MUST NOT render that
   message's row again, and the function the room gives the list to draw a message MUST NOT change with the subscription
@@ -219,9 +231,34 @@ of the end of the latest messages (message-list R17, R80).
 - **R56** The keyboard of the room's messages MUST be the list's (message-list R66 to R68), with the composer the next stop after the
   list and the top of the room the one before it. The keys the list handles at the document (an arrow between messages, Tab through a
   message, Escape on a control) do not reach the messages area and so do not count as input (R25), as on `develop`.
-- **R57** The room's list MUST draw no padding above its first row or below its last (intent Q2, recommended (a)).
+- **R57** The room's list MUST keep 21px above its first row, and below its last row 10px, or 34px while newer messages remain, as part
+  of those rows (`startSpacing` and `endSpacing`, message-list R83), so a room at the bottom rests with that space in view. The element
+  around the list MUST NOT be shortened: at the end of the list, the last row then rests where `develop` draws it, 10px under its rows
+  (`.messages-list`) and 24px more while newer messages remain (`.wrapper.has-more-next`), and "Jump to recent messages", which the
+  list draws 8px above its own bottom, sits 8px above the bottom of the messages area, as on `develop`. Away from the end of the list
+  while newer messages remain, rows show in the bottom 24px of the messages area, behind "Jump to recent messages", where `develop`
+  left that band empty (intent Q2, answered (a) at the gate and reversed at review round 1, by the user; second review: the 24px kept
+  outside the list raised the button by as much).
 - **R58** The thread's list, the thread tab and what they use MUST keep working unchanged: nothing the thread's list still imports
   from the room's old list is deleted (Q9).
+- **R59** While no message is listed, older messages remain and nothing loads, an input in the messages area (R25) MUST ask the
+  history manager for the first page again, and a failed first page MUST leave the room able to retry that way, where `develop`
+  retries on the viewer's next input (Q4, answered).
+
+**Paging before the viewer's input**
+
+- **R60** The room MUST NOT ask for an older or a newer page before the viewer's first input in the list, a scroll gesture, a scroll
+  key or a pointer press (message-list R82), from when it opens, and again from when a jump, the jump to the latest messages or the
+  viewer's own message replaces its window: it passes `deferPagingUntilInput`. A room opens with its first page alone, also when that
+  page is shorter than the viewport, and the first input asks for the page that is due (user decision, review round 1; `develop`'s
+  `useGetMore`).
+
+**Over the top of the list**
+
+- **R61** The room MUST give the list, as `overlayTopInset` (message-list R85), the height of what it draws over the top of the list:
+  the upload progress while files upload, then the unread banner while it shows, in `develop`'s order. The height MUST follow either
+  showing, hiding or changing size, so the floating date rests below them and stands in for the day divider under itself, as on
+  `develop` (review round 1, second review: the date was drawn at the top of the list, behind them).
 
 ## Design
 
@@ -235,7 +272,7 @@ Decided in the plan.
 - The read-state manager's rules and the banner's look (R23).
 - The rendering of a message row: [message-variants](message-variants.md).
 - The e2e suites; the manual check of the scope stands in for them (one page-object selector, Q7).
-- A retry control for a failed history load, and a smooth scroll for "Select all" (Q4, Q6).
+- A retry control for a failed history load (R59 retries on input), and a smooth scroll for "Select all" (Q6).
 - Keyboard row moves counting as input for the read state: they do not on `develop` either (R56).
 - Dead props of the composer (`onResize`, which nothing calls) beyond removing what the room passes.
 
@@ -245,58 +282,31 @@ None; not implemented.
 
 ## Open questions
 
-The two questions of the [intent](../intents/room-message-list.md) are open there and decide R45 to R48 (Q1, "Select all") and R57
-(Q2, padding). These are the spec's own. Each carries a recommendation for the orchestrator to take when the user is away.
+The two questions of the [intent](../intents/room-message-list.md) are answered there: ~~Q1, what "Select all" counts~~ is (a), the
+rendered rows as `develop` (R45 to R48), and ~~Q2, padding~~ was (a), reversed at review round 1: `develop`'s space (R57). These are the spec's own,
+answered at the spec gate by the orchestrator, for the user.
 
-- **Q1** When the `?msg=` request starts. On `develop`, opening a link to an unloaded message starts loading around it at once (in
-  `useGetMore`), in parallel with fetching the message; the reference waits for the fetch to learn the target, which is one round
-  trip later, and until then the list shows an empty room with the older loader (the room's own first-page prefetch is skipped for
-  a `msg`). (a) Keep `develop`'s: start loading around the raw id when no history is loaded, then load around the resolved target when
-  it differs (a thread reply's main message), as `develop` does (R32). (b) The reference's: wait for the fetch. Recommended: (a);
-  base wins, it is a few lines in the jump hook, and it keeps a first paint a round trip earlier.
-- **Q2** How the readers of a message's conversation avoid re-rendering (R49, R50). `useConversation` returns the room and the
-  subscription objects, which change on each arrival, and `useCanReplyToBroadcast` mounts for every room message. (a) The provider
-  keeps one value and the conversation's identity changes only when a field a reader reads changes: the provider would have to know
-  which. (b) `useConversation` takes an optional `select`, so a reader subscribes to what it reads (`broadcast`), the toolbar to the
-  whole conversation while it is shown; the context stays one stable value read through the store. (c) Leave the readers, and bound
-  the requirement to the other hooks, which re-renders every room message on each arrival. Recommended: (b): it is additive, keeps
-  R49 to R51 provable with a counting reader, and the cost is one optional argument in the package's context type and its spec
-  (`message-capabilities`, `message-variants` R49).
-- **Q3** The viewer's own thread reply. `develop`'s "own message" path ignores thread replies (`msg.tmid` returns early); the list
-  sees a thread reply as a row when it shows in the room, so one the viewer sends with `tshow`, or with `showThreadsInMainChannel`
-  on, takes the list to the latest like any own message (R43). (a) Accept: a reply that shows in the room is a message at the end.
-  (b) Have `isOwnMessage` say no for a thread reply. Recommended: (a); the viewer's message shows at the end and the list follows it,
-  which is B3, and (b) would keep a quirk that hid it.
-- **Q4** A failed history load in an empty room. After the first page fails, the list has no message to scroll and no scroll to check
-  again (message-list R35), where `develop` retries on the viewer's next input. Opening the room again loads again, and a live message arriving
-  probably does (the list checks after a change of its messages). This is not proven yet; the plan checks it with a play. (a) Accept, record it in the changeset notes and keep the engine
-  as it is. (b) Retry from the room on input while nothing is listed and older messages remain. (c) Change the engine. Recommended: (a),
-  and (b) only if the plan's check shows a dead end: the room already asks the manager on every input (R27), so (b) is one condition.
-- **Q5** Whether the room can meet message-list D3 (a rejected `onJumpToLatest` leaves the list waiting) and so whether to fix it
-  here. It cannot: the room's `onJumpToLatest` clears the window synchronously before it loads (R42), which drops the messages and
-  `hasMoreNext` in the same update, so the list leaves its wait for the latest page before the load can reject; the load that fails
-  is the first page of an empty window (Q4). D3 needs a promise that rejects while newer messages remain, which nothing in the room
-  or the thread produces (the thread has no newer pages). (a) Leave D3 pinned in `message-list`, and prove R42's order in a meteor
-  spec that rejects `getMore`. (b) Fix D3 here as its own commit below the feature. Recommended: (a); a fix changes the engine for a
-  case no consumer can reach, and (b) can still be done on its own if a later consumer can.
-- **Q6** "Select all" scrolls instantly where `develop` scrolls smoothly: the handle's `scrollToTop()` goes through the row model and
-  `scrollToIndex`, and the engine does not offer a smooth scroll. (a) Accept. (b) Add a smooth option to the handle. Recommended: (a);
-  a scroll the viewer did not ask to watch, which `prefers-reduced-motion` would remove anyway, is not worth a change to the engine.
-- **Q7** The e2e page object `home-content.ts` finds the last thread preview with `div.messages-box .messages-list [role=link]`;
-  the new list has no `messages-list` class, and the scope deletes the dead CSS for it. (a) Change that selector to the list's
-  `role=list` in this branch. (b) Give the list a class. (c) Leave it. Recommended: (a); it is one selector, and the e2e suites
-  are not run here (the scope's manual check stands in), so it is not new infrastructure.
-- **Q8** What the room store keeps besides `position`: `lastTime`, `lm`, `update()` and its `changed` event are used by nothing
-  else once the list's old fields go. (a) Delete them with the old fields, as the reference does. (b) Keep them. Recommended: (a);
-  they are dead and R16 says the store holds one scroll state.
-- **Q9** What stays for branch 09. The thread's list still uses, from the room's old list: `useKeepAtBottom`,
-  `useKeepMountedMessages`, `LoadingMessagesIndicator`, `useDateScroll`, `BubbleDate` and `BubbleDateScope`, the app's
-  `useMessageListNavigation`, `messageHighlightSubscription` (also used by editing and the editing context) and
-  `useRoomMessages`' history state. (a) Delete only what the room alone used (the list of the scope's item 5, `useGetMore`,
-  `useHasNewMessages`, `useIsAtBottomRef`, `useStoreScrollPosition`, `useSelectAllAndScrollToTop`, `JumpToRecentMessageButton`,
-  `useTryToJumpToMessage`, `MessageList`, `MessageListItem`, `index.ts`, the dead CSS) and leave the rest, with
-  `useUserScrollIntent` kept for the room; the plan checks each deletion against the thread's imports. (b) Also move the shared
-  pieces now. Recommended: (a); the thread is branch 09's, and a move here would be a second concern in this branch.
+- **Q1** ~~When the `?msg=` request starts.~~ Answered: (a). It starts at once, in parallel with the fetch, as on `develop` (R32).
+- **Q2** ~~How the readers of a message's conversation avoid re-rendering.~~ Answered: (b), an optional `select` on `useConversation`
+  (R49, R50), with `message-capabilities` and `message-variants` R49 updated in the same commit.
+- **Q3** ~~The viewer's own thread reply.~~ Answered: (b), contrary to the recommendation. A thread reply is not an own message for the
+  list (R43). Not possible without an engine change: the list raises "New messages" for a message that is not the viewer's and
+  appears at the end while the viewer reads above, so the viewer's own thread reply shown in the room (with `tshow` or
+  `showThreadsInMainChannel`) shows the button there, where `develop` shows none. Recorded under the differences below.
+- **Q4** ~~A failed history load in an empty room.~~ Answered: check first. The check is the reducer's: paging is checked on a commit of
+  the messages, on a scroll, when positioning ends (also once a viewport that had no size gets one, message-list R81) and when a load
+  settled that was waiting for a check, and, since the room waits for the viewer (R60), at the viewer's first input only (message-list
+  R82); an empty list can neither commit new messages nor scroll. After a failed first page only the first input asks again, so later
+  inputs meet a dead end, and (b) holds: the room retries on every input (R59), and a page the list asks for in that moment is the
+  same load (R39).
+- **Q5** ~~Whether the room can meet message-list D3.~~ Answered: it cannot, as analysed (R42). D3 stays pinned in `message-list`; a
+  meteor spec rejects `getMore` after the clear.
+- **Q6** ~~"Select all" scrolls instantly where `develop` scrolls smoothly.~~ Answered: (a), accepted, listed under the differences.
+- **Q7** ~~The e2e page object's `.messages-list` selector.~~ Answered: (a), changed to the list's `role=list`; every use of
+  `.messages-list` in e2e is checked, and the page objects touched are listed for QA.
+- **Q8** ~~What the room store keeps besides `position`.~~ Answered: the dead fields go if nothing reads them (R16).
+- **Q9** ~~What stays for branch 09.~~ Answered: (a). Only what the room alone used is deleted, and `useUserScrollIntent` stays; each
+  deletion is checked against the thread's imports (R58).
 
 ### Corrections to the scope, for the plan
 
@@ -322,16 +332,22 @@ The two questions of the [intent](../intents/room-message-list.md) are open ther
 
 ### Where the new list differs from `develop`'s room
 
-Decided or recommended above: no padding at the ends (intent Q2); what "Select all" counts (intent Q1) and an instant scroll
-(Q6); the `?msg=` request (Q1); an own thread reply (Q3); an empty room after a failed load (Q4). Not a decision: the saved position
+Decided above: "Select all" counts the rendered rows as `develop` does, so no difference
+(intent Q1), but scrolls instantly (Q6); an own thread reply that shows in the room does not take the list to the latest, as on
+`develop`, but raises "New messages" when the viewer reads above, which `develop` does not (Q3), as does another viewer's thread reply
+that shows in the room. Not a decision: the saved position
 is a message and an offset, not a pixel offset, and is saved at unmount as well; "New messages" is raised for the messages the list
 shows, not for every streamed one, and not while an older window is shown (message-list R21); the composer growing is followed by the
-list's own resize handling, as `onResize` was never called.
+list's own resize handling, as `onResize` was never called. Found at review round 1 and kept: the first input asks at once for a page
+that is due, where `develop` waited for the next scroll, change of the rows or resize (R60); while newer messages remain, the overlay
+scrollbar reaches the bottom of the messages area, where `develop`'s stopped 24px above it, since that space is now part of the
+list's last row, and a viewer away from the end of the list sees rows in that band, behind "Jump to recent messages", where
+`develop` showed none (R57).
 
 ## References
 
 - [Intent](../intents/room-message-list.md); [message-list](message-list.md) R9, R13, R17, R19 to R21, R32, R41 to R49, R54 to R62, R69
-  to R72, R80, D3; [message-variants](message-variants.md) R10, R24 to R26, R40, R47, R49; ADR 0001.
+  to R72, R80 to R83, D3; [message-variants](message-variants.md) R10, R24 to R26, R40, R47, R49; ADR 0001.
 - `develop`: #42756 (`7a6bb7e0842`, `ed58fe604fe`, `b3986884c7d`, `3daeeb52a35`, `0c0763dca80`, `c903f8edb3a`, `323cfe908d8`,
   `c124604a77b`), #43308, #43471, #43627.
 - Reference tag `message-list-ref`, commit `59f6fe6f2a5`: `RoomMessageList`, `RoomMessageRow`, `useRoomMessageListData`,
