@@ -182,6 +182,13 @@ describe('Message Broadcast Tests', () => {
 				expectedResult: undefined,
 			},
 			{
+				description: 'should return only the public identity of the message author',
+				message: { ...sampleMessage, u: { ...sampleMessage.u, statusText: 'busy' } },
+				hideSystemMessages: [],
+				useRealName: false,
+				expectedResult: sampleMessage,
+			},
+			{
 				description: 'should return the message if no system messages are muted',
 				message: sampleMessage,
 				hideSystemMessages: [],
