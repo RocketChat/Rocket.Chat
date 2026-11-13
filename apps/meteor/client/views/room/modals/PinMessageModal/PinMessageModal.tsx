@@ -2,10 +2,10 @@ import type { MessageQuoteAttachment, IMessage } from '@rocket.chat/core-typings
 import { Box, Text } from '@rocket.chat/fuselage';
 import { useUserDisplayName, GenericModal } from '@rocket.chat/ui-client';
 import { useUserAvatarPath } from '@rocket.chat/ui-contexts';
+import { MessageQuoteAttachment as QuoteAttachment } from '@rocket.chat/ui-message-list';
 import type { ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { QuoteAttachment } from '../../../../components/message/content/attachments/QuoteAttachment';
 import { MessagesProvider } from '../../../../providers/MessagesProvider';
 
 export type PinMessageModalProps = { message: IMessage } & ComponentProps<typeof GenericModal>;
