@@ -1,5 +1,5 @@
 ---
-status: planned
+status: implemented
 adrs: []
 code:
   [
@@ -25,6 +25,7 @@ code:
     apps/meteor/client/views/room/MessageList/MessageList.tsx,
     apps/meteor/client/views/room/MessageList/hooks/useRegisterRenderedMessage.ts,
     apps/meteor/client/providers/MessagesProvider/messageSelectionFromStore.ts,
+    apps/meteor/client/lib/MessageAction.ts,
     apps/meteor/client/views/room/contextualBar/MessageListTab.tsx,
     apps/meteor/client/views/room/contextualBar/MessageSearchTab/MessageSearchTab.tsx,
     apps/meteor/client/views/room/contextualBar/Threads/components/ThreadMessageItem.tsx,
@@ -53,6 +54,7 @@ tests:
     src/index.spec.ts,
     src/Message/contexts/contexts.spec.tsx,
     apps/meteor/client/providers/MessagesProvider/MessagesProvider.spec.tsx,
+    apps/meteor/client/providers/MessagesProvider/MessagesProvider.conversation.spec.tsx,
     apps/meteor/client/providers/MessagesProvider/useRolesByUser.spec.ts,
     apps/meteor/client/providers/MessagesProvider/MessageVariants.contexts.spec.tsx,
     apps/meteor/client/views/room/MessageList/MessageListItem.spec.tsx,
@@ -293,23 +295,25 @@ composer's quote draw message parts, not rows (`message-capabilities` R32 to R40
 
 ## Design
 
-Decided in the plan. What this spec fixes about shape:
+The package owns the four variants and their parts (`src/Message/variants`, `src/Message`), built only from the contexts: a row's
+display, navigation, related data, renderers, selection and editing come from them, never from the app. A header takes the roles its place
+resolved (`usePlaceUserRoles`) or looks them up for the message's room, as two components. `display.showUsername` stays "the viewer has not
+hidden usernames"; the real-name and name-difference conditions of R12 belong to the parts that show a name (`getAuthorUsername`), so the two
+are not treated as equal (`message-capabilities` notes). The selection click and the avatar click stop at their element (R14, R20), as in
+`develop`, and `useSelectableMessage` is the one place a row learns what a click, Space or Enter does to it.
 
-- The package owns the four variants and their parts under `src/Message/variants` and `src/Message`, built from the contexts that exist. A row's
-  selection, editing, display, related data and renderers come from contexts, never from the app.
-- `display.showUsername` stays "the viewer has not hidden usernames". The author's real name and the comparison of R12 belong to the
-  parts that show a name, not to the provider (`message-capabilities` notes that the two must not be treated as equal).
-- Bridges, with their end: (1) the editing context reads the store jumps and editing write to (R47), until the rename in branch
-  09; (2) selection for the room, the tabs and search, none for a thread (R48); (3) the old room list registers the messages
-  it renders with the room's selection store, as the rows registered themselves before (R26), until the list engine
-  replaces it in branch 08.
-- The old room list and thread list stay. They draw the package's variants, and mount `MessagesProvider` where they mounted
-  `MessageListProvider`, which, with the old list context, the app's variants and their parts, the highlight context and
-  its provider (the store stays), the hooks only they used, is deleted. `lib/MessageAction.ts` re-exports the package's types.
-  "No `components/message` is left in the app" is a check of the plan (a file listing), not a requirement, as `message-capabilities`
-  R35 was.
-- The specs of branches 03 to 05 list files and say things that this branch changes (`message-capabilities` R32 and R34 and its Out
-  of scope, `message-toolbar` R25); the plan updates them in the commits that delete the files.
+The app owns the provider's values: `MessagesProvider` resolves the roles of its room once (`useRolesByUser`), answers the conversation of a
+message from its own room and subscription or the stores, and provides the editing context from the highlight store and the selection it is
+given. Bridges, with their end: (1) the editing context reads the store that jumps and editing write to (R47), until the rename in branch
+09; (2) the room's selection for the room's list, tabs and search, none for a thread or the audit (R48, `roomMessageSelection`); (3) each
+row the old room list renders registers itself for "Select all" while it is not selected (`useRegisterRenderedMessage`), as the old variants did,
+until the list engine replaces the list in branch 08.
+
+The old room list, thread list and tabs stay and draw the package's variants; they mount `MessagesProvider` directly where the old list
+provider was. The app's variants and their parts, the old list context and its provider, the highlight context and `useMessageBody` are
+deleted, and `lib/MessageAction.ts` re-exports the package's types. "No `components/message` is left in the app" is a check of the plan (a file
+listing), not a requirement, as `message-capabilities` R35 was. `message-capabilities` R33 is retired, R34 and its notes follow, and the
+code and tests lists of the specs of branches 03 to 05 point at the moved proofs.
 
 ## Out of scope
 
