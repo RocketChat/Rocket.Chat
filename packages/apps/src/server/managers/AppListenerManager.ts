@@ -286,6 +286,7 @@ export class AppListenerManager {
 		});
 
 		this.defaultHandlers.set('executeViewClosedHandler', { success: true });
+		this.defaultHandlers.set('executeAppHomeOpenedHandler', { success: true });
 		this.defaultHandlers.set('executeBlockSuggestionHandler', { options: [] });
 	}
 
@@ -1044,6 +1045,12 @@ export class AppListenerManager {
 						user,
 					})
 					.catch(handleError(method));
+			}
+			case 'appHomeOpened': {
+				const method = 'executeAppHomeOpenedHandler';
+				const { view } = data.payload as { view?: IUIKitSurface };
+
+				return app.call<IUIKitResponse>(method, { appId, user, triggerId, view }).catch(handleError(method));
 			}
 			case 'actionButton': {
 				const method = 'executeActionButtonHandler';

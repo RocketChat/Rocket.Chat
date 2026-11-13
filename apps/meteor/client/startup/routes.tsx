@@ -29,6 +29,7 @@ const NotFoundPage = lazy(() => import('../views/notFound/NotFoundPage'));
 const CallHistoryPage = lazy(() => import('../views/mediaCallHistory/CallHistoryPage'));
 const SidebarRailCallPanel = lazy(() => import('../sidebar/SidebarRail/SidebarRailCallPanel'));
 const SearchPage = lazy(() => import('../views/search/SearchPage'));
+const AppHomePage = lazy(() => import('../views/appHome/AppHomePage'));
 
 declare module '@rocket.chat/ui-contexts' {
 	interface IRouterPaths {
@@ -120,6 +121,10 @@ declare module '@rocket.chat/ui-contexts' {
 			pathname: '/search';
 			pattern: '/search';
 		};
+		'app-home': {
+			pathname: `/apps/${string}/home`;
+			pattern: '/apps/:appId/home';
+		};
 	}
 }
 
@@ -151,6 +156,15 @@ router.defineRoutes([
 		element: appLayout.wrap(
 			<MainLayout>
 				<HomePage />
+			</MainLayout>,
+		),
+	},
+	{
+		path: '/apps/:appId/home',
+		id: 'app-home',
+		element: appLayout.wrap(
+			<MainLayout>
+				<AppHomePage />
 			</MainLayout>,
 		),
 	},

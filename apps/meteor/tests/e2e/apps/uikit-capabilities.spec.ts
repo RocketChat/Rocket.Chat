@@ -166,4 +166,15 @@ test.describe.serial('Apps > UIKit capabilities', () => {
 			await expect(page.getByText(/EST|EDT|GMT-[45]/).last()).toBeVisible();
 		});
 	});
+
+	test('should open the app Home and update it in place', async ({ page }) => {
+		await page.goto(`/apps/${appId}/home`);
+
+		await expect(page.getByText('UiKit capabilities', { exact: true })).toBeVisible();
+		await expect(page.getByText('Refreshed 0 times')).toBeVisible();
+
+		await page.getByRole('button', { name: 'Refresh' }).click();
+
+		await expect(page.getByText('Refreshed 1 times')).toBeVisible();
+	});
 });

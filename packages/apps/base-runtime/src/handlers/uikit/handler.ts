@@ -5,6 +5,7 @@ import type {
 	IUIKitViewSubmitIncomingInteraction,
 	IUIKitViewCloseIncomingInteraction,
 	IUIKitActionButtonIncomingInteraction,
+	IUIKitAppHomeOpenedIncomingInteraction,
 } from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionTypes';
 import {
 	UIKitBlockInteractionContext,
@@ -12,6 +13,7 @@ import {
 	UIKitViewSubmitInteractionContext,
 	UIKitViewCloseInteractionContext,
 	UIKitActionButtonInteractionContext,
+	UIKitAppHomeOpenedInteractionContext,
 } from '@rocket.chat/apps-engine/definition/uikit/UIKitInteractionContext';
 import type {
 	IUIKitLivechatBlockIncomingInteraction,
@@ -38,6 +40,7 @@ export const uikitInteractions = [
 	'executeViewClosedHandler',
 	'executeActionButtonHandler',
 	'executeLivechatBlockActionHandler',
+	'executeAppHomeOpenedHandler',
 	'executeLivechatViewSubmitHandler',
 	'executeLivechatViewClosedHandler',
 ] as const;
@@ -48,6 +51,7 @@ export {
 	UIKitViewSubmitInteractionContext,
 	UIKitViewCloseInteractionContext,
 	UIKitActionButtonInteractionContext,
+	UIKitAppHomeOpenedInteractionContext,
 	UIKitLivechatBlockInteractionContext,
 	UIKitLivechatViewSubmitInteractionContext,
 	UIKitLivechatViewCloseInteractionContext,
@@ -98,6 +102,9 @@ export default async function handleUIKitInteraction(request: RequestContext): P
 			break;
 		case 'executeActionButtonHandler':
 			context = new UIKitActionButtonInteractionContext(payload as unknown as IUIKitActionButtonIncomingInteraction);
+			break;
+		case 'executeAppHomeOpenedHandler':
+			context = new UIKitAppHomeOpenedInteractionContext(payload as unknown as IUIKitAppHomeOpenedIncomingInteraction);
 			break;
 		case 'executeLivechatBlockActionHandler':
 			context = new UIKitLivechatBlockInteractionContext(payload as unknown as IUIKitLivechatBlockIncomingInteraction);

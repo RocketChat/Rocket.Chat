@@ -857,6 +857,9 @@
     "one": "The app {{appNames}} has been disabled because of an invalid add-on. A valid add-on subscription is required to re-enable it",
     "other": "The apps {{appNames}} have been disabled because of invalid add-ons. A valid add-on subscription is required to re-enable them"
   },
+  "App_Home_empty_description": "This app has not published a home for you yet.",
+  "App_Home_empty_title": "Nothing to show",
+  "App_Home_error": "The app's home could not be opened",
   "App_id": "App id",
   "App_Info": "App info",
   "App_Information": "App information",

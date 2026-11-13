@@ -1,13 +1,14 @@
 import { MockedServerContext } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
 
-import { bannerParser, messageParser, modalParser } from '../surfaces';
+import { bannerParser, homeParser, messageParser, modalParser } from '../surfaces';
 
 const alert = { type: 'alert', text: { type: 'plain_text', text: 'Maintenance tonight' }, level: 'warning' } as const;
 
 it.each([
 	['message', messageParser],
 	['modal', modalParser],
+	['home', homeParser],
 ] as const)('renders the text of an alert in a %s', (_surface, parser) => {
 	render(<MockedServerContext>{parser.render([alert])}</MockedServerContext>);
 

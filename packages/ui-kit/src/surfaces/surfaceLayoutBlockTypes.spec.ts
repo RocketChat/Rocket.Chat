@@ -1,6 +1,7 @@
 import { UiKitParserAttachment, attachmentSurfaceLayoutBlockTypes } from './attachment/UiKitParserAttachment.js';
 import { UiKitParserBanner, bannerSurfaceLayoutBlockTypes } from './banner/UiKitParserBanner.js';
 import { UiKitParserContextualBar, contextualBarSurfaceLayoutBlockTypes } from './contextualBar/UiKitParserContextualBar.js';
+import { UiKitParserHome, homeSurfaceLayoutBlockTypes } from './home/UiKitParserHome.js';
 import { UiKitParserMessage, messageSurfaceLayoutBlockTypes } from './message/UiKitParserMessage.js';
 import { UiKitParserModal, modalSurfaceLayoutBlockTypes } from './modal/UiKitParserModal.js';
 import type { Block } from '../blocks/Block.js';
@@ -32,6 +33,7 @@ it.each([
 	['modal', UiKitParserModal, modalSurfaceLayoutBlockTypes],
 	['banner', UiKitParserBanner, bannerSurfaceLayoutBlockTypes],
 	['contextual bar', UiKitParserContextualBar, contextualBarSurfaceLayoutBlockTypes],
+	['home', UiKitParserHome, homeSurfaceLayoutBlockTypes],
 	['attachment', UiKitParserAttachment, attachmentSurfaceLayoutBlockTypes],
 ] as const)('the %s parser renders exactly the blocks its surface accepts', (_surface, Parser, allowedTypes) => {
 	expect(renderAllBlockTypes(Parser).sort()).toEqual([...allowedTypes].sort());

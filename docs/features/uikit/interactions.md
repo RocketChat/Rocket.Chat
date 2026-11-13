@@ -71,6 +71,7 @@ The app returns one of these from its handler, usually built with `UIKitInteract
 | `banner.update` / `banner.close`                 | Replaces or disposes the banner (matched by `viewId`).                                                                                                                          |
 | `contextual_bar.open`                            | Stores the view and navigates the room to `tab=app&context=<view.id>`.                                                                                                          |
 | `contextual_bar.update` / `contextual_bar.close` | Replaces or disposes the contextual bar.                                                                                                                                        |
+| `home.update`                                    | Publishes the home for the user: the server stores the view, and the open home page replaces what it shows. Carries no `triggerId`, so the check below does not apply to it.    |
 | `errors`                                         | Marks fields as invalid. `errors` maps `actionId` to a message. **Only modals display them**; the contextual bar and banner contexts do not pass errors down to their elements. |
 
 After a `viewSubmit`, the view is disposed unless the response is `errors`, `modal.update`, `modal.push` or `contextual_bar.update`. After a `viewClosed`, it is disposed unless the response is `errors`.
@@ -99,7 +100,11 @@ Each `emitInteraction` creates a `triggerId` that the client remembers for 5 sec
 
 Apps can also open or update views outside an HTTP response, through `UIController` (`openSurfaceView`, `updateSurfaceView`, `setViewError`). The host broadcasts `notify.uiInteraction`, which reaches the user's clients on the `notify-user` stream as `<uid>/uiInteraction`. [`useAppUiKitInteraction`](../../../apps/meteor/client/hooks/useAppUiKitInteraction.ts) hands the interaction to `handleServerInteraction`.
 
-The same trigger ID check applies. A pushed view is shown only when it carries a `triggerId` the client issued in the last 5 seconds, so in practice apps push views in reaction to a recent interaction and cannot open one unprompted.
+The same trigger ID check applies, except to `home.update`, which is how an app keeps its home current without a recent interaction. A pushed view is shown only when it carries a `triggerId` the client issued in the last 5 seconds, so in practice apps push views in reaction to a recent interaction and cannot open one unprompted.
+
+## The `appHomeOpened` event
+
+When a user opens an app's home, the app receives `executeAppHomeOpenedHandler` on `IUIKitInteractionHandler`, with a `UIKitAppHomeOpenedInteractionContext`. Its `getInteractionData()` has the `user`, a `triggerId` and `view`, the home last published for that user. Apps without the handler get a no-op default. The app publishes in response with `modify.getUiController().updateSurfaceView({ type: UIKitSurfaceType.HOME, ... }, { triggerId }, user)`.
 
 ## Livechat
 

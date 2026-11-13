@@ -49,6 +49,12 @@ export interface IUIKitViewCloseIncomingInteraction extends IUIKitBaseIncomingIn
 	isCleared: boolean;
 }
 
+export interface IUIKitAppHomeOpenedIncomingInteraction extends IUIKitBaseIncomingInteraction {
+	triggerId: string;
+	/** The home the app last published for the user, absent until it publishes one. */
+	view?: IUIKitSurface;
+}
+
 export interface IUIKitActionButtonIncomingInteraction extends IUIKitBaseIncomingInteraction {
 	buttonContext: UIActionButtonContext;
 	actionId: string;
