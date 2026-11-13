@@ -17,6 +17,9 @@ code:
     apps/meteor/client/views/room/body/RoomMessageList/useRoomJumpTarget.ts,
     apps/meteor/client/views/room/body/hooks/useRetryFirstPage.ts,
     apps/meteor/client/views/room/body/RoomMessageList/useScrollToBottomOnOwnMessage.ts,
+    apps/meteor/client/views/room/body/RoomBody.tsx,
+    apps/meteor/client/views/room/body/layout/RoomBodyContent.tsx,
+    apps/meteor/tests/e2e/page-objects/fragments/home-content.ts,
   ]
 tests:
   [
@@ -31,6 +34,8 @@ tests:
     apps/meteor/client/views/room/body/RoomMessageList/useRoomMessageListData.spec.tsx,
     apps/meteor/client/views/room/body/RoomMessageList/useRoomJumpTarget.spec.tsx,
     apps/meteor/client/views/room/body/hooks/useRetryFirstPage.spec.ts,
+    apps/meteor/client/views/room/body/RoomBody.spec.tsx,
+    apps/meteor/client/views/room/composer/ComposerSelectMessages.spec.tsx,
   ]
 ---
 
