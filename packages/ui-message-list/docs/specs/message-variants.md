@@ -3,6 +3,15 @@ status: planned
 adrs: []
 code:
   [
+    src/Message/MessageHeader.tsx,
+    src/Message/MessageAuthorAvatar.tsx,
+    src/Message/StatusIndicators.tsx,
+    src/Message/ReadReceiptIndicator.tsx,
+    src/Message/header,
+    src/Message/hooks/useSelectableMessage.ts,
+    src/Message/hooks/useIsMessageEmphasized.ts,
+    src/Message/lib/getAuthorUsername.ts,
+    src/Message/index.ts,
     src/Message/contexts/MessageRelatedDataContext.ts,
     apps/meteor/client/providers/MessagesProvider/MessagesProvider.tsx,
     apps/meteor/client/providers/MessagesProvider/useMessageRelatedDataValue.ts,
@@ -11,6 +20,15 @@ code:
   ]
 tests:
   [
+    src/Message/MessageHeader.spec.tsx,
+    src/Message/MessageAuthorAvatar.spec.tsx,
+    src/Message/StatusIndicators.spec.tsx,
+    src/Message/ReadReceiptIndicator.spec.tsx,
+    src/Message/header/MessageRoles.spec.tsx,
+    src/Message/hooks/useSelectableMessage.spec.tsx,
+    src/Message/hooks/useIsMessageEmphasized.spec.tsx,
+    src/Message/lib/getAuthorUsername.spec.ts,
+    src/index.spec.ts,
     src/Message/contexts/contexts.spec.tsx,
     apps/meteor/client/providers/MessagesProvider/MessagesProvider.spec.tsx,
     apps/meteor/client/providers/MessagesProvider/useRolesByUser.spec.ts,

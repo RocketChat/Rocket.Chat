@@ -65,3 +65,9 @@ it('exports the toolbar holder and the toolbar context (message-toolbar R27)', (
 		expect(pkg).toHaveProperty(name);
 	}
 });
+
+it('exports the parts of a message row (message-variants R51)', () => {
+	for (const name of ['MessageHeader', 'StatusIndicators', 'ReadReceiptIndicator', 'MessageRoles']) {
+		expect(pkg).toHaveProperty(name);
+	}
+});

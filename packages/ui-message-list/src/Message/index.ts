@@ -33,3 +33,7 @@ export {
 } from './content/attachments/QuoteAttachment';
 export { useReloadOnError as useMediaReloadOnError } from './content/attachments/file/hooks/useReloadOnError';
 export { default as MessageToolbarHolder, type MessageToolbarHolderProps } from './MessageToolbarHolder';
+export { default as MessageHeader, type MessageHeaderProps } from './MessageHeader';
+export { default as StatusIndicators, type StatusIndicatorsProps } from './StatusIndicators';
+export { default as ReadReceiptIndicator, type ReadReceiptIndicatorProps } from './ReadReceiptIndicator';
+export { default as MessageRoles, type MessageRolesProps } from './header/MessageRoles';

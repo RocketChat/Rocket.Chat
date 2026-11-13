@@ -1,0 +1,28 @@
+import type { IMessage } from '@rocket.chat/core-typings';
+import { Box, Icon } from '@rocket.chat/fuselage';
+import { useTranslation } from 'react-i18next';
+
+export type ReadReceiptIndicatorProps = {
+	mid: IMessage['_id'];
+	unread?: boolean;
+};
+
+const ReadReceiptIndicator = ({ mid, unread }: ReadReceiptIndicatorProps) => {
+	const { t } = useTranslation();
+
+	return (
+		<Box
+			role='status'
+			id={`${mid}-read-status`}
+			aria-label={unread ? t('Message_sent') : t('Message_viewed')}
+			position='absolute'
+			insetBlockStart={2}
+			insetInlineEnd={8}
+			color={unread ? 'secondary-info' : 'info'}
+		>
+			<Icon size='x16' name={unread ? 'check-single' : 'check-double'} />
+		</Box>
+	);
+};
+
+export default ReadReceiptIndicator;
