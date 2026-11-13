@@ -18,8 +18,7 @@ $message-toolbar-border-radius: theme('message-toolbar-border-radius', lengths.b
 
 		user-select: none;
 
-		// Out of the row's flow, so it takes no room and no gap, but spanning the
-		// whole row, so it is on screen whenever any part of the row is.
+		// Keep the toolbar available across the full message row.
 		.rcx-message > & {
 			position: absolute;
 			inset: 0;
