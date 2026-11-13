@@ -1,0 +1,19 @@
+packages/models/src/models/Users.spec.ts
+  s_568a07c6e82691::t_2ac817246d7787 1-28
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "878d51f13262df54e87dfca2ee22ae52e3adf681",
+  "prompts": {},
+  "sessions": {
+    "s_568a07c6e82691": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "70769ffc-5eb6-4e17-8cb9-ba6b02ee2e1e",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
