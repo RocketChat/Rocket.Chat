@@ -26,6 +26,7 @@ import type {
 import { createInitialScrollState, messageListScrollReducer } from './messageListScrollReducer';
 import { planRowsCommit } from './planRowsCommit';
 import type { MessageListRow, MessageListRows } from '../lib/buildMessageListRows';
+import { isAtBottom as isScrolledToBottom } from '../lib/geometry';
 import type { MessageListPosition } from '../lib/position';
 import { describeCacheKeys, getReusableCache, resolveRestoreTarget } from '../lib/position';
 
@@ -177,7 +178,10 @@ export const useMessageListScroller = <TMessage extends IMessage>({
 		const topRow = currentRows[topIndex];
 		const topMessage = topRow?.kind === 'message' ? topRow.message : undefined;
 		const { firstUnreadIndex } = rowsRef.current;
-		const isAtBottom = stateRef.current?.anchor.type === 'bottom';
+		// Where the viewer stands, not what the list holds: it holds a message for a while after a jump to the last one
+		const isAtBottom =
+			rowsRef.current.rows.at(-1)?.kind !== 'newerLoader' &&
+			isScrolledToBottom({ scrollTop: viewport.scrollTop, scrollHeight: viewport.scrollHeight, clientHeight: viewport.clientHeight });
 
 		const visibility: MessageListVisibility<TMessage> = {
 			topMessage,

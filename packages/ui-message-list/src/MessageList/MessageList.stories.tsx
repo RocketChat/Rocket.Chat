@@ -675,3 +675,33 @@ export const FloatingDateNeverDoublesADay: Story = {
 		await waitFor(() => bubble().getAttribute('data-visible') === 'true');
 	},
 };
+
+/** R56: being at the bottom is the position, so it is reported right after a jump to the last message, and not on an older window. */
+export const ReportsBeingAtTheBottomAfterAJump: Story = {
+	args: { history: { size: 80 }, source: { pageSize: 80 } },
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await waitForListSettled(canvasElement);
+		await userScrollTo(canvasElement, 0);
+		await waitFor(() => readVisibility(canvasElement).isAtBottom === false);
+
+		await userEvent.click(canvas.getByRole('button', { name: 'Jump to the last message' }));
+		await waitFor(() => readVisibility(canvasElement).isAtBottom === true, 1500);
+	},
+};
+
+export const ReportsNotBeingAtTheBottomOfAnOlderWindow: Story = {
+	args: {
+		history: { size: 300 },
+		source: { pageSize: 30, latency: 100, initialWindow: { around: fakeMessageId(100) } },
+		initialTargetIndex: 100,
+	},
+	play: async ({ canvasElement }) => {
+		await waitForListSettled(canvasElement);
+		const viewport = getViewport(canvasElement);
+		viewport.dispatchEvent(new WheelEvent('wheel', { deltaY: 10_000, bubbles: true }));
+		viewport.scrollTop = viewport.scrollHeight;
+		await waitFor(() => distanceFromBottom(viewport) <= 1);
+		await expect(readVisibility(canvasElement).isAtBottom).toBe(false);
+	},
+};
