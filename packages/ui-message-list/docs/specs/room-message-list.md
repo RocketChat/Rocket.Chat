@@ -8,6 +8,7 @@ code:
     apps/meteor/client/hooks/useAutoLinkDomains.ts,
     apps/meteor/client/views/room/body/RoomMessageList/useMessages.ts,
     apps/meteor/client/views/room/body/RoomMessageList/useRegisterRenderedMessage.ts,
+    apps/meteor/client/lib/RoomManager.ts,
   ]
 tests:
   [
@@ -15,6 +16,7 @@ tests:
     apps/meteor/tests/mocks/client/RelatedDataReader.tsx,
     apps/meteor/client/hooks/useAutoLinkDomains.spec.tsx,
     apps/meteor/client/views/room/body/RoomMessageList/useMessages.spec.tsx,
+    apps/meteor/client/lib/RoomManager.spec.ts,
   ]
 ---
 

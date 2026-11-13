@@ -1,5 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
+import type { MessageListPosition } from '@rocket.chat/ui-message-list';
 import { useMemo, useSyncExternalStore } from 'react';
 import type { CacheSnapshot } from 'virtua';
 
@@ -29,6 +30,9 @@ class RoomStore extends Emitter<{
 	lm?: Date;
 
 	atBottom = true;
+
+	/** Where the message list was left, given back to it when the room opens again. */
+	position?: MessageListPosition;
 
 	private readonly toggledCollapsibles = new Set<string>();
 
@@ -68,6 +72,10 @@ class RoomStore extends Emitter<{
 		if (scroll || lastTime) {
 			this.emit('changed');
 		}
+	}
+
+	savePosition(position: MessageListPosition): void {
+		this.position = position;
 	}
 
 	toggleCollapsible(key: string): void {
