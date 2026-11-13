@@ -60,18 +60,18 @@ On `viewSubmit` the server confirms the files named by the `file_input` values o
 
 The app returns one of these from its handler, usually built with `UIKitInteractionResponder` in apps-engine. The server passes the result through unchanged.
 
-| `type` | Client effect |
-| --- | --- |
-| `modal.open` | Opens a modal, closing the app's other open modals. |
-| `modal.push` | Opens a modal on top of the app's open ones. An app keeps at most 3 stacked; beyond that the top one is replaced. |
-| `modal.clear` | Closes every modal of the app. |
-| `modal.update` | Replaces the open modal's view (matched by `view.id`). |
-| `modal.close` | Closes the modal named by `view.id` (what apps-engine sends) or `viewId` (what core apps send). With neither, nothing happens. |
-| `banner.open` | Opens a banner. The view fields are spread at the top level of the payload instead of under `view`. |
-| `banner.update` / `banner.close` | Replaces or disposes the banner (matched by `viewId`). |
-| `contextual_bar.open` | Stores the view and navigates the room to `tab=app&context=<view.id>`. |
-| `contextual_bar.update` / `contextual_bar.close` | Replaces or disposes the contextual bar. |
-| `errors` | Marks fields as invalid. `errors` maps `actionId` to a message. **Only modals display them**; the contextual bar and banner contexts do not pass errors down to their elements. |
+| `type`                                           | Client effect                                                                                                                                                                   |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `modal.open`                                     | Opens a modal, closing the app's other open modals.                                                                                                                             |
+| `modal.push`                                     | Opens a modal on top of the app's open ones. An app keeps at most 3 stacked; beyond that the top one is replaced.                                                               |
+| `modal.clear`                                    | Closes every modal of the app.                                                                                                                                                  |
+| `modal.update`                                   | Replaces the open modal's view (matched by `view.id`).                                                                                                                          |
+| `modal.close`                                    | Closes the modal named by `view.id` (what apps-engine sends) or `viewId` (what core apps send). With neither, nothing happens.                                                  |
+| `banner.open`                                    | Opens a banner. The view fields are spread at the top level of the payload instead of under `view`.                                                                             |
+| `banner.update` / `banner.close`                 | Replaces or disposes the banner (matched by `viewId`).                                                                                                                          |
+| `contextual_bar.open`                            | Stores the view and navigates the room to `tab=app&context=<view.id>`.                                                                                                          |
+| `contextual_bar.update` / `contextual_bar.close` | Replaces or disposes the contextual bar.                                                                                                                                        |
+| `errors`                                         | Marks fields as invalid. `errors` maps `actionId` to a message. **Only modals display them**; the contextual bar and banner contexts do not pass errors down to their elements. |
 
 After a `viewSubmit`, the view is disposed unless the response is `errors`, `modal.update`, `modal.push` or `contextual_bar.update`. After a `viewClosed`, it is disposed unless the response is `errors`.
 
