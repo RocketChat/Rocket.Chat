@@ -3,8 +3,7 @@ status: planned
 adrs: []
 code:
   [
-    src/Message/variants/RoomMessage.tsx,
-    src/Message/variants/room,
+    src/Message/variants,
     src/Message/hooks/useCanReplyToBroadcast.ts,
     src/Message/lib/splitQuoteAttachments.ts,
     src/Message/lib/toMessageActionOptions.ts,
@@ -27,6 +26,12 @@ tests:
   [
     src/Message/variants/RoomMessage.spec.tsx,
     src/Message/variants/room/RoomMessageContent.spec.tsx,
+    src/Message/variants/SystemMessage.spec.tsx,
+    src/Message/variants/system/SystemMessageContent.spec.tsx,
+    src/Message/variants/ThreadMessage.spec.tsx,
+    src/Message/variants/thread/ThreadMessageContent.spec.tsx,
+    src/Message/variants/ThreadMessagePreview.spec.tsx,
+    src/Message/variants/Variants.spec.tsx,
     src/Message/MessageHeader.spec.tsx,
     src/Message/MessageAuthorAvatar.spec.tsx,
     src/Message/StatusIndicators.spec.tsx,
@@ -302,13 +307,7 @@ Decided in the plan. What this spec fixes about shape:
 ## Known defects
 
 Behaviour on `develop` that the variants carry over. The checker rejects a `D` entry without a skipped test that pins it,
-so each becomes a `D<n>` entry in the commit that adds its test (the plan names the commits); until then it is listed here:
-
-- The preview of a reply to a system message writes the text of the system type from the reply, not from the message the thread started with.
-- A `ThreadMessagePreview` has no per-message fallback: one that throws takes its list down (R37 covers the others).
-- Space on a focused `ThreadMessagePreview` opens the thread without preventing the browser's default.
-- A pending end-to-end encrypted message in a thread keeps its toolbar (Q6, answered).
-- `ThreadMessage` and `SystemMessage` have no accessible name beyond their role description (Q3, answered).
+so each is a `D<n>` entry with its test.
 
 ### D1 A jump replaces the editing look of the message being edited
 
@@ -327,6 +326,32 @@ The row and the checkbox both toggle the selection, so activating the input itse
 message as it was. A click on the visible box toggles three times and ends toggled once (R23; measured on `develop`'s structure with Fuselage's
 `CheckBox`: a click on the input toggled twice, a click on its visible box three times). Pinned by the skipped test "toggles once when the checkbox
 input itself is activated" in `RoomMessage.spec.tsx`.
+
+### D4 A thread preview has no per-message fallback
+
+A `ThreadMessagePreview` whose content throws while it renders takes its list down: the other variants replace only the failing content (R37).
+Pinned by the skipped test "shows a placeholder instead of failing when the content cannot be rendered" in `ThreadMessagePreview.spec.tsx`.
+
+### D5 Space on a thread preview does not prevent the default
+
+Space on a focused `ThreadMessagePreview` opens the thread without preventing the browser's default, which also scrolls. Pinned by the skipped
+test "prevents the default of Space when it opens the thread" in `ThreadMessagePreview.spec.tsx`.
+
+### D6 A pending encrypted message in a thread keeps its toolbar
+
+`RoomMessage` shows no toolbar for an end-to-end encrypted message not decrypted yet (R39), and `message-toolbar` R25 says the same of the thread's message, but
+`ThreadMessage` keeps it (Q6, answered). Pinned by the skipped test "renders no toolbar for an encrypted message that is not decrypted yet" in
+`ThreadMessage.spec.tsx`.
+
+### D7 A system or thread message has no accessible name
+
+`RoomMessage` is named by its name, time and content (R2); `SystemMessage` and `ThreadMessage` have a role description and no name (Q3, answered). Pinned by
+the skipped tests "names the row of a system message" in `SystemMessage.spec.tsx` and "names the row of a thread message" in `ThreadMessage.spec.tsx`.
+
+### D8 The preview of a reply to a system message writes the text from the reply
+
+When the thread started with a system message, `ThreadMessagePreview` writes the text of its type from the reply, not from the message the thread started with (R36).
+Pinned by the skipped test "writes the text of the type from the message the thread started with" in `ThreadMessagePreview.spec.tsx`.
 
 ## Open questions
 

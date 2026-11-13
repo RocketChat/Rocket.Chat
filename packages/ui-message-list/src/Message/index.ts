@@ -38,3 +38,6 @@ export { default as StatusIndicators, type StatusIndicatorsProps } from './Statu
 export { default as ReadReceiptIndicator, type ReadReceiptIndicatorProps } from './ReadReceiptIndicator';
 export { default as MessageRoles, type MessageRolesProps } from './header/MessageRoles';
 export { default as RoomMessage, type RoomMessageProps } from './variants/RoomMessage';
+export { default as SystemMessage, type SystemMessageProps } from './variants/SystemMessage';
+export { default as ThreadMessage, type ThreadMessageProps } from './variants/ThreadMessage';
+export { default as ThreadMessagePreview, type ThreadMessagePreviewProps } from './variants/ThreadMessagePreview';
