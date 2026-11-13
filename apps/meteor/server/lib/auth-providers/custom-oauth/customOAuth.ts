@@ -89,7 +89,7 @@ export class CustomOAuthStrategy extends Strategy {
 
 		this.serverURL = config.serverURL;
 		this.tokenPath = tokenURL;
-		this.identityPath = config.identityPath || '/me';
+		this.identityPath = resolveEndpoint(config.serverURL, config.identityPath || '/me');
 		this.tokenSentVia = config.tokenSentVia;
 		this.identityTokenSentVia = config.identityTokenSentVia;
 		this.keyField = config.keyField;
@@ -104,10 +104,6 @@ export class CustomOAuthStrategy extends Strategy {
 
 		if (this.identityTokenSentVia == null || this.identityTokenSentVia === 'default') {
 			this.identityTokenSentVia = this.tokenSentVia;
-		}
-
-		if (!isAbsoluteURL(this.identityPath)) {
-			this.identityPath = this.serverURL + this.identityPath;
 		}
 
 		if (this.emailPath && !isAbsoluteURL(this.emailPath)) {

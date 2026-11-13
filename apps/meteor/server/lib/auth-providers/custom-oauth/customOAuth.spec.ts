@@ -219,10 +219,11 @@ describe('CustomOAuthStrategy', () => {
 			['https://identity.example.com/', 'token'],
 			['https://identity.example.com', 'token'],
 		])('joins serverURL %s and path %s with a single slash', (serverURL, path) => {
-			const strategy = env.createStrategy({ serverURL, authorizePath: path, tokenPath: path });
+			const strategy = env.createStrategy({ serverURL, authorizePath: path, tokenPath: path, identityPath: path });
 			expect(strategy.options.authorizationURL).toBe('https://identity.example.com/token');
 			expect(strategy.options.tokenURL).toBe('https://identity.example.com/token');
 			expect(strategy.tokenPath).toBe('https://identity.example.com/token');
+			expect(strategy.identityPath).toBe('https://identity.example.com/token');
 		});
 
 		it('keeps the provider path prefix when serverURL has a trailing slash', () => {
