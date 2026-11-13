@@ -90,10 +90,7 @@ export class GraphTokenClient {
 		return this.config.graphHost || DEFAULT_GRAPH_HOST;
 	}
 
-	/**
-	 * The only hosts this provider may ever contact. Passed to server-fetch as an explicit allowlist rather
-	 * than disabling SSRF validation, which is how the air-gap invariant is enforced on the Graph side.
-	 */
+	/** The hosts this provider talks to, passed to server-fetch so SSRF validation stays on rather than being turned off. */
 	public get allowList(): string[] {
 		return [hostnameOf(this.authorityHost), hostnameOf(this.graphHost)];
 	}

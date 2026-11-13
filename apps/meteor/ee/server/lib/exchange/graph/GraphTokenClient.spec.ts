@@ -103,7 +103,7 @@ describe('GraphTokenClient', () => {
 		});
 	});
 
-	describe('air gap', () => {
+	describe('SSRF validation', () => {
 		it('exposes only the authority and graph hosts on the allowlist', () => {
 			const client = new GraphTokenClient(config);
 			expect(client.allowList).toEqual(['login.microsoftonline.com', 'graph.microsoft.com']);
