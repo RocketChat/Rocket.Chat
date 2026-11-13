@@ -90,6 +90,9 @@ export const useMessageListScroller = <TMessage extends IMessage>({
 
 	const initialCacheRef = useRef<{ value: CacheSnapshot | undefined }>(undefined);
 
+	// A position is applied once there are messages to apply it to, however late they arrive after the list mounts
+	const restoreWaitsForMessagesRef = useRef(!!restoredPosition && !rows.rows.some((row) => row.kind === 'message'));
+
 	const stateRef = useRef<MessageListScrollState>(undefined);
 	stateRef.current ??= createInitialScrollState({
 		rows: snapshotOf([], { hasOlder: false, hasNewer: false }),
@@ -348,6 +351,14 @@ export const useMessageListScroller = <TMessage extends IMessage>({
 		if (plan.change === 'none') {
 			renderedKeysRef.current = renderedRows.map((row) => row.key);
 			return;
+		}
+
+		if (restoreWaitsForMessagesRef.current && renderedRows.some((row) => row.kind === 'message')) {
+			restoreWaitsForMessagesRef.current = false;
+			dispatch({
+				type: 'restoreResolved',
+				target: resolveRestoreTarget(restoredPosition, (messageId) => rows.indexOfMessage(messageId) !== -1),
+			});
 		}
 
 		const tail = tailOf(plan.change);

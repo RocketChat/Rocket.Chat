@@ -481,6 +481,38 @@ describe('reports', () => {
 	});
 });
 
+describe('restoring', () => {
+	it('opens at the saved position when its messages arrive after it mounted (R61)', () => {
+		const saved = {
+			isAtBottom: false,
+			anchorMessageId: 'b',
+			offsetWithinAnchor: 10,
+			cacheKeys: { first: 'a', last: 'c', length: 3 },
+			width: 0,
+		};
+		const { rerender } = render(<List messages={[]} isLoadingInitialMessages restoredPosition={saved} />, { wrapper });
+
+		rerender(<List isLoadingInitialMessages restoredPosition={saved} />);
+
+		expect(host()).toHaveAttribute('data-anchor', 'message');
+	});
+
+	it('opens at the bottom when the saved message is not among the first messages listed (R60)', () => {
+		const saved = {
+			isAtBottom: false,
+			anchorMessageId: 'gone',
+			offsetWithinAnchor: 10,
+			cacheKeys: { first: 'a', last: 'c', length: 3 },
+			width: 0,
+		};
+		const { rerender } = render(<List messages={[]} isLoadingInitialMessages restoredPosition={saved} />, { wrapper });
+
+		rerender(<List restoredPosition={saved} />);
+
+		expect(host()).toHaveAttribute('data-anchor', 'bottom');
+	});
+});
+
 describe('selection', () => {
 	it('does not select, register or count messages (R70)', () => {
 		const store = {

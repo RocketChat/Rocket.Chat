@@ -414,6 +414,47 @@ describe('the user-scrolling window', () => {
 	});
 });
 
+describe('a position restored late', () => {
+	it('applies the position of the first messages listed, however late they arrive (R61)', () => {
+		const empty = createInitialScrollState({ rows: rowsOf('') });
+		const rows = rowsOf('abcde');
+		const restore: MessageListScrollEvent = { type: 'restoreResolved', target: { type: 'message', messageId: 'b', offset: 30 } };
+
+		expect(scrolls(empty, [restore, committed(rows, TOP, 'replace')])).toEqual([
+			{ type: 'scrollToIndex', index: 1, align: 'start', offset: 30 },
+		]);
+	});
+
+	it('applies it although the list stopped placing itself while it waited (R61)', () => {
+		const waiting = run(createInitialScrollState({ rows: rowsOf('') }), [{ type: 'positioningTimeout' }]).state;
+		const restore: MessageListScrollEvent = { type: 'restoreResolved', target: { type: 'message', messageId: 'b', offset: 30 } };
+
+		const result = run(waiting, [restore, committed(rowsOf('abcde'), TOP, 'replace')]);
+
+		expect(result.state.phase).toBe('positioning');
+		expect(result.commands).toContainEqual({ type: 'scrollToIndex', index: 1, align: 'start', offset: 30 });
+	});
+
+	it('goes to the bottom when the saved message is not among them (R60)', () => {
+		const empty = createInitialScrollState({ rows: rowsOf('') });
+		const restore: MessageListScrollEvent = { type: 'restoreResolved', target: { type: 'bottom' } };
+
+		expect(scrolls(empty, [restore, committed(rowsOf('abcde'), TOP, 'replace')])).toEqual([
+			{ type: 'scrollToIndex', index: 4, align: 'end' },
+		]);
+	});
+
+	it('does not take the list from where the viewer or a jump put it (R61)', () => {
+		const rows = rowsOf('abcde');
+		const restore: MessageListScrollEvent = { type: 'restoreResolved', target: { type: 'message', messageId: 'b', offset: 30 } };
+
+		expect(run(createInitialScrollState({ rows: rowsOf(''), targetMessageId: 'd' }), [restore]).state.anchor).toMatchObject({
+			messageId: 'd',
+		});
+		expect(run(idleAt(rows, BOTTOM), [...userScroll(MIDDLE), restore]).state.anchor).toEqual({ type: 'none' });
+	});
+});
+
 describe('paging after a page', () => {
 	const rows = rowsOf('abcde', { hasOlderMessages: true });
 

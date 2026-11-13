@@ -56,6 +56,7 @@ export type MessageListScrollEvent =
 			tail: MessageListTailChange | undefined;
 	  } & MessageListMeasurement)
 	| { type: 'targetChanged'; messageId: string | undefined }
+	| { type: 'restoreResolved'; target: RestoreTarget }
 	| { type: 'loadSettled' }
 	| { type: 'positioningTimeout' }
 	| { type: 'messageAnchorExpired' }
@@ -279,6 +280,21 @@ export const messageListScrollReducer = (state: MessageListScrollState, event: M
 			const anchored = anchorAfterCommit(committed, event.change, event.tail);
 			const paged = checkPaging(anchored.state);
 			return { state: paged.state, commands: [...anchored.commands, ...paged.commands, { type: 'notifyVisibility' }] };
+		}
+
+		case 'restoreResolved': {
+			if (state.anchor.type !== 'bottom' || state.pendingTargetId || event.target.type === 'bottom') {
+				return { state, commands: [] };
+			}
+			// The list may have stopped placing itself while it waited for its messages, so it places itself again
+			return {
+				state: {
+					...state,
+					phase: 'positioning',
+					anchor: { type: 'message', messageId: event.target.messageId, align: 'start', offset: event.target.offset },
+				},
+				commands: [],
+			};
 		}
 
 		case 'targetChanged': {

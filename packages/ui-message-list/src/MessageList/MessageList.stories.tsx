@@ -308,6 +308,31 @@ export const RestorePosition: Story = {
 	},
 };
 
+/** R61: a list that mounts before its messages arrive still opens where it was left. */
+export const RestorePositionOfAListThatMountsEmpty: Story = {
+	render: () => <TwoRoomsPlayground loadDelay={400} />,
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(() => canvasElement.querySelector('[data-message-id]') !== null);
+		await waitForListSettled(canvasElement);
+		await userScrollBy(canvasElement, -900);
+		const left = firstVisibleMessage(canvasElement);
+		await new Promise((resolve) => setTimeout(resolve, 300));
+
+		await userEvent.click(canvas.getByRole('button', { name: 'Room B' }));
+		await waitFor(() => canvasElement.querySelector('[data-message-id]') !== null);
+		await waitForListSettled(canvasElement);
+		await expectAtBottom(canvasElement);
+
+		await userEvent.click(canvas.getByRole('button', { name: 'Room A' }));
+		await waitFor(() => canvasElement.querySelector('[data-message-id]') !== null);
+		await waitForListSettled(canvasElement);
+		const restored = firstVisibleMessage(canvasElement);
+		await expect(restored.id).toBe(left.id);
+		await expect(Math.abs(restored.top - left.top)).toBeLessThanOrEqual(1);
+	},
+};
+
 /** B12: the header shows once no older messages remain. */
 export const StartOfConversationHeader: Story = {
 	args: { history: { size: 40 }, source: { pageSize: 20, latency: 100 } },

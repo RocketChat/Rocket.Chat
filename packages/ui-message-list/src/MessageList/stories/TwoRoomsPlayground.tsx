@@ -6,7 +6,12 @@ import { createFakeHistory } from './useFakeMessageSource';
 import type { MessageListPosition } from '../lib/position';
 
 /** Two conversations shown one at a time, each list keyed by conversation and restored where it was left. */
-const TwoRoomsPlayground = () => {
+export type TwoRoomsPlaygroundProps = {
+	/** How long the messages of a room take to arrive after its list mounts. */
+	loadDelay?: number;
+};
+
+const TwoRoomsPlayground = ({ loadDelay }: TwoRoomsPlaygroundProps) => {
 	const [room, setRoom] = useState<'a' | 'b'>('a');
 	const [positions] = useState(() => new Map<string, MessageListPosition>());
 	const histories = useMemo(
@@ -30,6 +35,7 @@ const TwoRoomsPlayground = () => {
 			<Box height={480} marginBlockStart='x8' borderWidth='default' borderColor='light'>
 				<RoomList
 					key={room}
+					loadDelay={loadDelay}
 					history={histories[room]}
 					restoredPosition={positions.get(room)}
 					onPositionChange={(position) => positions.set(room, position)}
