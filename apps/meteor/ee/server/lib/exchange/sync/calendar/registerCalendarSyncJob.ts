@@ -23,7 +23,7 @@ export const isServerSyncOn = (): boolean =>
 	Boolean(settings.get<boolean>('Outlook_Calendar_Enabled')) && settings.get<string>('Exchange_Mode') === 'server';
 
 /** Every await here is a chance for the switch to be undone, so `stillOff` is asked again before each step that cannot be */
-const discardServerSyncedCalendarEvents = async (stillOff: () => boolean): Promise<void> => {
+const discardUpcomingServerSyncedEvents = async (stillOff: () => boolean): Promise<void> => {
 	const uids = await ExchangeCalendarSyncState.findAllUserIds();
 
 	if (!stillOff()) {
@@ -36,9 +36,9 @@ const discardServerSyncedCalendarEvents = async (stillOff: () => boolean): Promi
 		return;
 	}
 
-	const deleted = await Calendar.discardImportedBySource('outlook', uids);
+	const deleted = await Calendar.discardUpcomingImportedBySource('outlook', uids);
 
-	logger.info({ msg: 'Discarded what the server-to-server Exchange calendar sync had imported', deleted });
+	logger.info({ msg: 'Discarded the upcoming events the server-to-server Exchange calendar sync had imported', deleted });
 };
 
 const intervalToCron = (hours: number): string => {
@@ -97,7 +97,7 @@ export const registerCalendarSyncJob = (): (() => void) => {
 				// In case a sync is in process
 				await whenSyncsIdle('calendar', stillOff);
 
-				await discardServerSyncedCalendarEvents(stillOff);
+				await discardUpcomingServerSyncedEvents(stillOff);
 			}
 		} catch (err) {
 			logger.error({ msg: 'Could not configure the Exchange calendar sync job', err });

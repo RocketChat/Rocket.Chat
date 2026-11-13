@@ -305,7 +305,7 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 		});
 	}
 
-	public deleteImportedBySource(source: CalendarEventSource): Promise<DeleteResult> {
-		return this.deleteMany({ source });
+	public deleteImportedBySourceStartingAfter(source: CalendarEventSource, date: Date): Promise<DeleteResult> {
+		return this.deleteMany({ source, startTime: { $gt: date } });
 	}
 }
