@@ -44,7 +44,7 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 	);
 
 	const getSlaData = useEndpoint('GET', '/v1/livechat/sla');
-	const { data, isSuccess, isLoading, refetch } = useQuery({
+	const { data, isSuccess, isLoading, isFetching, refetch } = useQuery({
 		queryKey: ['/v1/livechat/sla', query],
 		queryFn: () => getSlaData(query),
 	});
@@ -101,7 +101,9 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 					</GenericTableBody>
 				</GenericTable>
 			)}
-			{isSuccess && data?.sla.length === 0 && queryHasChanged && <GenericNoResults />}
+			{isSuccess && data?.sla.length === 0 && queryHasChanged && (
+				<GenericNoResults aria-busy={isFetching} />
+			)}
 			{isSuccess && data?.sla.length === 0 && !queryHasChanged && (
 				<GenericNoResults
 					icon='flag'

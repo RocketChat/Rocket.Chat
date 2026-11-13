@@ -54,7 +54,7 @@ const DepartmentsTable = ({ archived }: DepartmentsTableProps) => {
 		500,
 	);
 
-	const { data, isSuccess, isLoading } = useQuery({
+	const { data, isSuccess, isLoading, isFetching } = useQuery({
 		queryKey: ['livechat-departments', query, archived],
 		queryFn: async () => getDepartments(query),
 		placeholderData: keepPreviousData,
@@ -111,7 +111,9 @@ const DepartmentsTable = ({ archived }: DepartmentsTableProps) => {
 					</GenericTableBody>
 				</GenericTable>
 			)}
-			{isSuccess && data?.departments.length === 0 && (queryHasChanged || archived) && <GenericNoResults />}
+			{isSuccess && data?.departments.length === 0 && (queryHasChanged || archived) && (
+				<GenericNoResults aria-busy={isFetching} />
+			)}
 			{isSuccess && data?.departments.length === 0 && !queryHasChanged && !archived && (
 				<GenericNoResults
 					icon='folder'
