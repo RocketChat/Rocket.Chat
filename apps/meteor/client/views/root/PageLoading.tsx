@@ -1,8 +1,10 @@
-import LoadingIndicator from '../../components/LoadingIndicator';
-
 const PageLoading = () => (
 	<div className='page-loading' role='alert' aria-busy='true' aria-live='polite' aria-label='loading'>
-		<LoadingIndicator />
+		<div className='loading__animation'>
+			<div className='loading__animation__bounce' />
+			<div className='loading__animation__bounce' />
+			<div className='loading__animation__bounce' />
+		</div>
 	</div>
 );
 

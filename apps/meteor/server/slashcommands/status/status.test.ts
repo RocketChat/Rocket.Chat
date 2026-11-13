@@ -1,6 +1,7 @@
 import { beforeEach, describe, it } from 'node:test';
 
 import { ClientSafeError } from '@rocket.chat/core-services';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
@@ -14,8 +15,8 @@ describe('/status', () => {
 	beforeEach(() => {
 		findUser = sinon.stub().resolves({ _id: 'actor', language: 'pt' });
 		setStatus = sinon.stub().resolves();
+		mockModel('Users', { findOneById: findUser });
 		slashCommand = loadSlashCommand('status/status', {
-			'@rocket.chat/models': { Users: { findOneById: findUser } },
 			'../../meteor-methods/users/setUserStatus': { setUserStatusMethod: setStatus },
 		});
 	});

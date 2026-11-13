@@ -59,7 +59,7 @@ export class LivechatCustomFieldRaw extends BaseRaw<ILivechatCustomField> implem
 		visibility: ILivechatCustomField['visibility'],
 		extraData: any,
 	) {
-		const record = {
+		const record: ILivechatCustomField = {
 			label,
 			scope,
 			visibility,

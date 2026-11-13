@@ -1,7 +1,7 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { ISubscription } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { Messages, Subscriptions, Users } from '@rocket.chat/models';
-import { Match, check } from 'meteor/check';
 
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
@@ -17,9 +17,11 @@ export const messageSearch = async function (
 	limit?: number,
 	offset?: number,
 ): Promise<IRawSearchResult | false> {
-	check(text, String);
-	check(rid, Match.Maybe(String));
-	check(limit, Match.Optional(Number));
+	if (typeof text !== 'string' || (rid != null && typeof rid !== 'string') || (limit !== undefined && typeof limit !== 'number')) {
+		throw new ClientSafeError('error-invalid-arguments', 'Invalid arguments', {
+			method: 'messageSearch',
+		});
+	}
 
 	// Don't process anything else if the user can't access the room
 	if (rid) {

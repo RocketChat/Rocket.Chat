@@ -7,28 +7,28 @@ import {
 	GenericTableHeaderCell,
 	GenericTableBody,
 	GenericTableLoadingTable,
+	usePaginatedQuery,
 	usePagination,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
-import { useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useRoute, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { KeyboardEvent, MouseEvent } from 'react';
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import ChannelsTableRow from './ChannelsTableRow';
 import FilterByText from '../../../../../components/FilterByText';
 import { useDirectoryQuery } from '../../../hooks/useDirectoryQuery';
 
 const ChannelsTable = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const mediaQuery = useMediaQuery('(min-width: 768px)');
 	const [text, setText] = useState('');
 
 	const channelRoute = useRoute('channel');
 	const groupsRoute = useRoute('group');
 
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'usersCount' | 'lastMessage' | 'createdAt'>('name');
 
 	const columns: TableColumnWidth[] = ['auto', '100px', ...(mediaQuery ? (['150px', '150px', '150px'] as const) : [])];
@@ -76,10 +76,25 @@ const ChannelsTable = () => {
 	);
 
 	const getDirectoryData = useEndpoint('GET', '/v1/directory');
-	const query = useDirectoryQuery({ text, current, itemsPerPage }, [sortBy, sortDirection], 'channels');
-	const { data, isFetched, isLoading, isError, refetch } = useQuery({
-		queryKey: ['getDirectoryData', query],
-		queryFn: () => getDirectoryData(query),
+	const query = useDirectoryQuery({ text }, [sortBy, sortDirection], 'channels');
+	const queryKey = ['getDirectoryData', query];
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({
+		resetKey: queryKey,
+	});
+	const { data, isFetched, isLoading, isError, refetch } = usePaginatedQuery({
+		query: {
+			queryKey,
+			queryFn: (page) => getDirectoryData({ ...query, ...page }),
+		},
+		itemsKey: 'result',
+		offset: current,
+		count: itemsPerPage,
 	});
 
 	const onClick = useMemo(

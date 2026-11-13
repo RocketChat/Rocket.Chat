@@ -6,14 +6,15 @@ import {
 	MessageMetricsItemAvatarRowContent,
 } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useUserPreference } from '@rocket.chat/ui-contexts';
+import { useTranslation } from 'react-i18next';
 
 export type ThreadMetricsParticipantsProps = {
 	participants: Array<string>;
 };
 
 const ThreadMetricsParticipants = ({ participants }: ThreadMetricsParticipantsProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const hideAvatar = !useUserPreference('displayAvatars');
 

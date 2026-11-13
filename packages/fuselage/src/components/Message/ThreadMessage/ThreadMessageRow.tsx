@@ -1,7 +1,12 @@
 import type { HTMLAttributes } from 'react';
 
-export type ThreadMessageRowProps = HTMLAttributes<HTMLDivElement>;
+import { cx } from '../../../helpers/composeClassNames';
+import ItemRow from '../../Item/ItemRow';
 
-const ThreadMessageRow = (props: ThreadMessageRowProps) => <div className='rcx-box rcx-box--full rcx-message-thread__row' {...props} />;
+export type ThreadMessageRowProps = Omit<HTMLAttributes<HTMLDivElement>, 'is'>;
+
+const ThreadMessageRow = ({ className, ...props }: ThreadMessageRowProps) => (
+	<ItemRow {...props} className={cx('rcx-message-thread__row', className)} />
+);
 
 export default ThreadMessageRow;

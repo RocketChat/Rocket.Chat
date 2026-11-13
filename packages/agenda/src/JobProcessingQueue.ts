@@ -1,5 +1,5 @@
-import type { Job } from './Job';
-import type { JobDefinition } from './definition/JobDefinition';
+import type { Job } from './Job.js';
+import type { JobDefinition } from './definition/JobDefinition.js';
 
 export class JobProcessingQueue {
 	private _queue: Job[] = [];

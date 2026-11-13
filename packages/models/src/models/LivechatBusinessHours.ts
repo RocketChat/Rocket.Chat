@@ -82,7 +82,7 @@ export class LivechatBusinessHoursRaw extends BaseRaw<ILivechatBusinessHour> imp
 
 	findHoursToScheduleJobs(): Promise<IWorkHoursCronJobsWrapper[]> {
 		return this.col
-			.aggregate([
+			.aggregate<IWorkHoursCronJobsWrapper>([
 				{
 					$facet: {
 						start: [
@@ -126,7 +126,7 @@ export class LivechatBusinessHoursRaw extends BaseRaw<ILivechatBusinessHour> imp
 					},
 				},
 			])
-			.toArray() as any;
+			.toArray();
 	}
 
 	async findActiveBusinessHoursToOpen(

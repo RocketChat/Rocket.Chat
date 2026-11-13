@@ -1,7 +1,11 @@
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import type { Meta, StoryObj } from '@storybook/react';
 
 import { Box } from '../Box';
 import { Button } from '../Button';
+import { Field, FieldLabel, FieldRow } from '../Field';
+import { Tag } from '../Tag';
+import { Text } from '../Text';
+import { TextInput } from '../TextInput';
 import Stack from './Stack';
 
 const Item = ({ children }: { children: string }) => (
@@ -23,6 +27,13 @@ export default {
 		},
 	},
 	argTypes: {
+		is: {
+			control: 'select',
+			options: ['div', 'section', 'ul', 'li', 'form', 'fieldset', 'span'],
+			description:
+				'The element it renders. `ul` and `fieldset` drop their default markers, indentation, border and spacing, so they lay out like any other stack.',
+			table: { category: 'Semantics', defaultValue: { summary: 'div' } },
+		},
 		direction: {
 			control: 'inline-radio',
 			options: ['row', 'column'],
@@ -81,5 +92,50 @@ export const Header: Story = {
 			<Box fontScale='h4'>Title</Box>
 			<Button size='small'>Action</Button>
 		</Stack>
+	),
+};
+
+export const List: Story = {
+	render: () => (
+		<Stack is='ul' gap='x8' aria-label='Fruits'>
+			<Stack is='li' direction='row' align='center' gap='x8'>
+				<Item>Apple</Item>
+				<Item>red</Item>
+			</Stack>
+			<Stack is='li' direction='row' align='center' gap='x8'>
+				<Item>Banana</Item>
+				<Item>yellow</Item>
+			</Stack>
+		</Stack>
+	),
+};
+
+export const Form: Story = {
+	render: () => (
+		<Stack is='form' gap='x16' aria-label='Profile' onSubmit={(event) => event.preventDefault()}>
+			<Stack is='fieldset' gap='x8'>
+				<Text is='legend' fontScale='p2b'>
+					Account
+				</Text>
+				<Field>
+					<FieldLabel htmlFor='stack-name'>Name</FieldLabel>
+					<FieldRow>
+						<TextInput id='stack-name' />
+					</FieldRow>
+				</Field>
+			</Stack>
+			<Button type='submit'>Save</Button>
+		</Stack>
+	),
+};
+
+export const Inline: Story = {
+	render: () => (
+		<FieldLabel>
+			<Stack is='span' direction='row' align='center' gap='x4'>
+				Send the transcript
+				<Tag>Premium</Tag>
+			</Stack>
+		</FieldLabel>
 	),
 };

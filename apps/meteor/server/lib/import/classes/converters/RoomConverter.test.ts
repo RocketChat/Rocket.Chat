@@ -1,5 +1,6 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -12,9 +13,6 @@ const modelsMock = {
 		findOneById: sinon.stub(),
 		findDirectRoomContainingAllUsernames: sinon.stub(),
 		findOneByNonValidatedName: sinon.stub(),
-	},
-	Subscriptions: {
-		archiveByRoomId: sinon.stub(),
 	},
 };
 const createDirectMessage = sinon.stub();
@@ -36,19 +34,20 @@ const { RoomConverter } = proxyquire.noCallThru().load('./RoomConverter', {
 	'../../../../meteor-methods/rooms/createPrivateGroup': {
 		createPrivateGroupMethod: sinon.stub(),
 	},
-	'meteor/check': sinon.stub(),
 	'meteor/meteor': sinon.stub(),
-	'@rocket.chat/models': { ...modelsMock, '@global': true },
 });
 
 describe('Room Converter', () => {
+	before(() => {
+		mockModel('Rooms', modelsMock.Rooms);
+	});
+
 	beforeEach(() => {
 		modelsMock.Rooms.archiveById.reset();
 		modelsMock.Rooms.updateOne.reset();
 		modelsMock.Rooms.findOneById.reset();
 		modelsMock.Rooms.findDirectRoomContainingAllUsernames.reset();
 		modelsMock.Rooms.findOneByNonValidatedName.reset();
-		modelsMock.Subscriptions.archiveByRoomId.reset();
 		createDirectMessage.reset();
 		saveRoomSettings.reset();
 		settingsStub.reset();

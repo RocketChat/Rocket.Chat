@@ -100,13 +100,11 @@ function AutoComplete<TLabel = ReactNode>({
 	const { ref: containerRef, borderBoxSize } = useResizeObserver();
 
 	const [selected, setSelected] = useState(() => getSelected(value, options) || []);
-
-	useEffect(() => {
-		// Validates if selected items are still valid after value changes
-		setSelected((selected) => {
-			return !selected.every(isSelectedValid(value)) ? selected.filter(isSelectedValid(value)) : selected;
-		});
-	}, [value]);
+	const [syncedValue, setSyncedValue] = useState(value);
+	if (value !== syncedValue) {
+		setSyncedValue(value);
+		setSelected(selected.filter(isSelectedValid(value)));
+	}
 
 	const handleSelect = useStableCallback(([newValue]: OptionType<string, TLabel>) => {
 		if (selected.some((item) => item.value === newValue)) {
@@ -159,7 +157,8 @@ function AutoComplete<TLabel = ReactNode>({
 			ref={containerRef}
 			onClick={useStableCallback(() => innerRef.current?.focus())}
 			flexGrow={1}
-			className={useMemo(() => [error && 'invalid', disabled && 'disabled'], [error, disabled])}
+			rcx-select--invalid={!!error}
+			rcx-select--disabled={disabled}
 		>
 			<Box display='flex' flexGrow={1} alignItems='center' flexWrap='wrap' gap={4} role='group'>
 				<Input

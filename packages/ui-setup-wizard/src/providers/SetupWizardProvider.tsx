@@ -1,5 +1,4 @@
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { validateEmail } from '@rocket.chat/tools';
 import { clientCallbacks, useInvalidateLicense } from '@rocket.chat/ui-client';
 import {
 	useToastMessageDispatch,
@@ -8,6 +7,7 @@ import {
 	useSettingSetValue,
 	useSettingsDispatch,
 	useEndpoint,
+	useRole,
 } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ContextType, ReactNode } from 'react';
@@ -15,7 +15,9 @@ import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { SetupWizardContext } from '../contexts/SetupWizardContext';
+import { useOrganizationOptions } from '../hooks/useOrganizationOptions';
 import { useParameters } from '../hooks/useParameters';
+import { useSetupWizardValidators } from '../hooks/useSetupWizardValidators';
 import { useStepRouting } from '../hooks/useStepRouting';
 
 const initialData: ContextType<typeof SetupWizardContext>['setupWizardData'] = {
@@ -58,16 +60,11 @@ const SetupWizardProvider = ({ children }: SetupWizardProviderProps) => {
 	const goToNextStep = useCallback(() => setCurrentStep((currentStep) => currentStep + 1), [setCurrentStep]);
 	const goToStep = useCallback((step: number) => setCurrentStep(() => step), [setCurrentStep]);
 
-	const _validateEmail = useCallback(
-		(email: string): true | string => {
-			if (!validateEmail(email)) {
-				return t('Invalid_email');
-			}
+	const validators = useSetupWizardValidators();
+	const organizationOptions = useOrganizationOptions(data.settings);
 
-			return true;
-		},
-		[t],
-	);
+	// An admin reaching the wizard is already past the steps before this one, so there is nowhere to go back to.
+	const canGoToPreviousStep = !useRole('admin');
 
 	const registerAdminUser = useCallback(
 		async ({
@@ -200,13 +197,14 @@ const SetupWizardProvider = ({ children }: SetupWizardProviderProps) => {
 			setSetupWizardData,
 			currentStep,
 			loaded: isSuccess,
-			settings: data.settings,
+			organizationOptions,
+			canGoToPreviousStep,
 			skipCloudRegistration: data.serverAlreadyRegistered,
 			goToPreviousStep,
 			goToNextStep,
 			goToStep,
 			registerAdminUser,
-			validateEmail: _validateEmail,
+			...validators,
 			registerServer,
 			saveAgreementData,
 			saveWorkspaceData,
@@ -218,13 +216,14 @@ const SetupWizardProvider = ({ children }: SetupWizardProviderProps) => {
 			setupWizardData,
 			currentStep,
 			isSuccess,
-			data.settings,
+			organizationOptions,
+			canGoToPreviousStep,
 			data.serverAlreadyRegistered,
 			goToPreviousStep,
 			goToNextStep,
 			goToStep,
 			registerAdminUser,
-			_validateEmail,
+			validators,
 			registerServer,
 			saveAgreementData,
 			saveWorkspaceData,

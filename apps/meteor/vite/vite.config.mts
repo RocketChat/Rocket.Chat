@@ -1,16 +1,19 @@
 import { execSync } from 'node:child_process';
-import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { existsSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { dirname, join, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
+import { tamaguiPlugin } from '@tamagui/vite-plugin';
 import react from '@vitejs/plugin-react';
 import autoprefixer from 'autoprefixer';
+import postcss from 'postcss';
 import postcssCustomProperties from 'postcss-custom-properties';
 import postcssEasyImport from 'postcss-easy-import';
 import postcssMediaMinmax from 'postcss-media-minmax';
 import postcssNested from 'postcss-nested';
-import type { Plugin } from 'vite';
+import type { Plugin, ResolvedConfig } from 'vite';
 import { defineConfig } from 'vite';
 
 import { staticBox } from './staticBox/plugin';
@@ -44,7 +47,7 @@ const rocketchatInfo = (): Plugin => {
 				...JSON.parse(readFileSync(join(appRoot, 'rocketchat.info'), 'utf8')),
 				marketplaceApiVersion: require('@rocket.chat/apps-engine/package.json').version.replace(/^[^0-9]/g, ''),
 				build: { date: new Date().toISOString() },
-				commit: { hash: git('rev-parse HEAD'), branch: git('rev-parse --abbrev-ref HEAD') },
+				commit: { hash: git('rev-parse HEAD'), branch: process.env.GITHUB_HEAD_REF || git('rev-parse --abbrev-ref HEAD') },
 			};
 
 			return `export const Info = ${JSON.stringify(info)};`;
@@ -119,6 +122,7 @@ const nativeModules = (): Plugin => {
 	const replacements = new Map(
 		Object.entries({
 			'client/lib/getURL.ts': 'getURL.ts',
+			'client/views/root/hooks/loggedIn/useRootUrlChange.tsx': 'useRootUrlChange.ts',
 		}).map(([original, native]) => [join(appRoot, original), join(here, 'native', native)]),
 	);
 
@@ -133,6 +137,91 @@ const nativeModules = (): Plugin => {
 		},
 	};
 };
+
+// Keeps the last copy of each identical top-level rule or `@media` block, which the zero stylesheet repeats once per
+// frame that uses them: the last copy is the one that wins the cascade, so the stylesheet resolves the same without
+// the others.
+const dedupeTopLevelRules = (css: string) => {
+	const root = postcss.parse(css);
+	const seen = new Set<string>();
+	for (const node of [...(root.nodes ?? [])].reverse()) {
+		const key = node.toString();
+		if (seen.has(key)) {
+			node.remove();
+		} else {
+			seen.add(key);
+		}
+	}
+	return root.toString();
+};
+
+// Vite serves component stylesheets as `<style>` tags appended to `<head>` in dev, after the zero stylesheet's link;
+// the built page lists the zero stylesheet last. Moving the link to the end of `<body>` gives dev the same order.
+const zeroStylesheetLastInDev = (): Plugin => ({
+	name: 'rocketchat-zero-stylesheet-last-in-dev',
+	apply: 'serve',
+	// Runs after Tamagui's own `post` plugin, which injects the link.
+	enforce: 'post',
+	transformIndexHtml: {
+		order: 'post',
+		handler(html) {
+			const link = html.match(/<link\b[^>]*href="[^"]*tamagui-zero\.css"[^>]*>/);
+			if (!link || !html.includes('</body>')) {
+				return html;
+			}
+			return html.replace(link[0], '').replace('</body>', `${link[0]}\n</body>`);
+		},
+	},
+});
+
+// Moves Tamagui's zero-runtime stylesheet into the bundle under a content hash, linked from `index.html` and listed
+// with the entry's stylesheets in the manifest, so `index.html` and the bundle load without anything else.
+const zeroStylesheetInBundle = (): Plugin => {
+	let config: ResolvedConfig;
+
+	return {
+		name: 'rocketchat-zero-stylesheet-in-bundle',
+		apply: 'build',
+		configResolved(resolved) {
+			config = resolved;
+		},
+		// Tamagui writes the stylesheet when the bundle closes.
+		closeBundle: {
+			order: 'post',
+			sequential: true,
+			handler() {
+				const { assetsDir } = config.build;
+				const outDir = resolve(config.root, config.build.outDir);
+				const written = join(outDir, 'tamagui-zero.css');
+				if (!existsSync(written)) {
+					throw new Error(`Tamagui's zero-runtime stylesheet is missing from ${outDir}`);
+				}
+
+				const css = dedupeTopLevelRules(readFileSync(written, 'utf8'));
+				const file = `${assetsDir}/tamagui-zero-${createHash('sha256').update(css).digest('hex').slice(0, 8)}.css`;
+				writeFileSync(join(outDir, file), css);
+				rmSync(written);
+
+				const indexHtml = join(outDir, 'index.html');
+				const html = readFileSync(indexHtml, 'utf8');
+				const href = `href="${config.base}tamagui-zero.css"`;
+				if (!html.includes(href)) {
+					throw new Error(`index.html does not link Tamagui's zero-runtime stylesheet as ${href}`);
+				}
+				writeFileSync(indexHtml, html.replace(href, `href="${config.base}${file}"`));
+
+				const manifestFile = join(outDir, '.vite/manifest.json');
+				const manifest = JSON.parse(readFileSync(manifestFile, 'utf8')) as Record<string, { isEntry?: boolean; css?: string[] }>;
+				for (const chunk of Object.values(manifest)) {
+					if (chunk.isEntry) chunk.css = [...(chunk.css ?? []), file];
+				}
+				writeFileSync(manifestFile, JSON.stringify(manifest, null, 2));
+			},
+		},
+	};
+};
+
+const fuselageRoot = resolve(appRoot, '../../packages/fuselage');
 
 // Routes the running Rocket.Chat server answers; everything else is served by Vite.
 const serverUrl = process.env.RC_SERVER_URL || 'http://localhost:3100';
@@ -289,6 +378,7 @@ const prebundledWorkspaceDeps = [
 	'@rocket.chat/gazzodown',
 	'@rocket.chat/gazzodown-alt',
 	'@rocket.chat/i18n',
+	'@rocket.chat/icons',
 	'@rocket.chat/layout',
 	'@rocket.chat/message-parser',
 	'@rocket.chat/message-types',
@@ -305,9 +395,9 @@ const prebundledWorkspaceDeps = [
 	'@rocket.chat/ui-conference',
 	'@rocket.chat/ui-contexts',
 	'@rocket.chat/ui-kit',
+	'@rocket.chat/ui-registration',
 	'@rocket.chat/ui-video-conf',
 	'@rocket.chat/ui-voip',
-	'@rocket.chat/web-ui-registration',
 ];
 
 export default defineConfig({
@@ -324,6 +414,18 @@ export default defineConfig({
 		...(servedByServer ? [] : [nativeModules()]),
 		...(servedByServer && process.env.BABEL_ENV === 'coverage' ? [coverage()] : []),
 		devPage(),
+		// Fuselage's `styled()` frames compile to static classes and CSS, so no Tamagui code ships to the browser.
+		// `components` stays empty: warming up Fuselage evaluates its stylesheets outside this config and fails.
+		tamaguiPlugin({
+			config: join(fuselageRoot, 'src/tamagui.config.ts'),
+			components: [],
+			// The compiler only transforms the JSX under Vite's root; Fuselage's sources sit outside it.
+			appSourceDirs: [join(fuselageRoot, 'src')],
+			outputCSS: './.tamagui/zero/tamagui-zero.css',
+			experimental: { zeroRuntime: true },
+		}),
+		zeroStylesheetLastInDev(),
+		zeroStylesheetInBundle(),
 	],
 	resolve: {
 		alias: [
@@ -342,6 +444,17 @@ export default defineConfig({
 		'process.env.MESSAGE_MAX_PARSE_LENGTH': JSON.stringify(process.env.MESSAGE_MAX_PARSE_LENGTH),
 	},
 	css: {
+		preprocessorOptions: {
+			scss: {
+				// Fuselage's stylesheets import the tokens as `~@rocket.chat/fuselage-tokens/...`, the webpack form.
+				importers: [
+					{
+						findFileUrl: (url: string) => (url.startsWith('~') ? pathToFileURL(require.resolve(url.slice(1))) : null),
+					},
+				],
+				charset: false,
+			},
+		},
 		postcss: {
 			plugins: [postcssEasyImport(), postcssCustomProperties({ preserve: true }), postcssMediaMinmax(), postcssNested(), autoprefixer()],
 		},

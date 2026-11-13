@@ -1,4 +1,5 @@
 import { createNodeServer } from '@rocket.chat/http-router';
+import { mockModel } from '@rocket.chat/models/testing';
 import request from 'supertest';
 
 import { httpApp } from '../lib/http/httpServer';
@@ -52,15 +53,7 @@ class MockRateLimiter {
 	}
 }
 
-jest.mock(
-	'meteor/meteor',
-	() => ({
-		Meteor: {
-			startup: (callback: () => void) => callback(),
-		},
-	}),
-	{ virtual: true },
-);
+jest.mock('meteor/meteor', () => ({ Meteor: {} }), { virtual: true });
 jest.mock('../lib/http/httpServer', () => ({ httpApp: jest.requireActual('@rocket.chat/http-router').createRootApp() }));
 jest.mock('meteor/rate-limit', () => ({ RateLimiter: MockRateLimiter }), { virtual: true });
 jest.mock('meteor/accounts-base', () => ({ Accounts: { _accountData: {} as Record<string, unknown> } }), { virtual: true });
@@ -80,11 +73,6 @@ jest.mock('../settings', () => ({
 }));
 
 jest.mock('meteor/facts-base', () => ({ Facts: { incrementServerFact: () => undefined } }), { virtual: true });
-
-jest.mock('@rocket.chat/models', () => ({
-	Integrations: mockIntegrations,
-	Users: mockUsers,
-}));
 
 jest.mock('../lib/notifications/email/transport', () => ({ sendMail: jest.fn() }));
 jest.mock('../lib/authorization/hasPermission', () => ({ hasPermissionAsync: mockHasPermissionAsync }));
@@ -127,6 +115,11 @@ afterAll(() => {
 });
 
 describe('Webhooks API', () => {
+	beforeAll(() => {
+		mockModel('Integrations', mockIntegrations);
+		mockModel('Users', mockUsers);
+	});
+
 	beforeEach(() => {
 		jest.clearAllMocks();
 		rateLimiterCounters.clear();

@@ -2,12 +2,13 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import {
 	MessageSystem,
 	MessageSystemContainer,
-	MessageSystemLeftContainer,
+	MessageLeftContainer,
 	MessageSystemName,
 	MessageSystemTimestamp,
 	MessageSystemBlock,
 	CheckBox,
 	MessageNameContainer,
+	MessageUsername,
 } from '@rocket.chat/fuselage';
 import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
@@ -26,7 +27,7 @@ import {
 } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
 import MessageContentFallback from '../MessageContentFallback';
 import { getCheckboxLabel } from '../helpers/getCheckboxLabel';
-import { useMessageListFormatDateAndTime, useMessageListFormatTime } from '../list/MessageListContext';
+import { useMessageListAuthorUsername, useMessageListFormatDateAndTime, useMessageListFormatTime } from '../list/MessageListContext';
 import SystemMessageBody from './system/SystemMessageBody';
 import SystemMessageContent from './system/SystemMessageContent';
 
@@ -42,6 +43,7 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 	const { openUserCard, openUserInfo } = useUserCard();
 
 	const user = { ...message.u, roles: [], ...useUserPresence(message.u._id) };
+	const { normalizedUsername, showUsername } = useMessageListAuthorUsername(user);
 	const displayName = useUserDisplayName(user);
 
 	const isSelecting = useIsSelecting();
@@ -73,7 +75,7 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 			data-system-message-type={message.t}
 			{...props}
 		>
-			<MessageSystemLeftContainer>
+			<MessageLeftContainer>
 				{!isSelecting && showUserAvatar && (
 					<UserAvatar
 						username={message.u.username}
@@ -87,17 +89,22 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 					/>
 				)}
 				{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} aria-label={checkboxLabel} />}
-			</MessageSystemLeftContainer>
+			</MessageLeftContainer>
 			<MessageSystemContainer>
 				<MessageSystemBlock>
 					<MessageNameContainer
 						{...(!isSelecting && {
 							...buttonProps,
-							style: { cursor: 'pointer' },
 							onMouseEnter: openUserCardOnHover,
 						})}
 					>
 						<MessageSystemName>{displayName}</MessageSystemName>
+						{showUsername && (
+							<>
+								{' '}
+								<MessageUsername data-username={normalizedUsername}>@{normalizedUsername}</MessageUsername>
+							</>
+						)}
 					</MessageNameContainer>
 					<ErrorBoundary fallback={<MessageContentFallback />} resetKeys={[message]}>
 						<SystemMessageBody message={message} />

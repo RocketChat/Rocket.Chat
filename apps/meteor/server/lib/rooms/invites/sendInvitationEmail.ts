@@ -1,6 +1,5 @@
 import { ClientSafeError } from '@rocket.chat/core-services';
 import { Settings } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../settings';
 import { hasPermissionAsync } from '../../authorization/hasPermission';
@@ -8,10 +7,8 @@ import * as Mailer from '../../notifications/email/api';
 import { notifyOnSettingChanged } from '../../notifyListener';
 
 let html = '';
-Meteor.startup(() => {
-	Mailer.getTemplate('Invitation_Email', (value) => {
-		html = value;
-	});
+Mailer.getTemplate('Invitation_Email', (value) => {
+	html = value;
 });
 
 export const sendInvitationEmail = async (userId: string, emails: string[]) => {

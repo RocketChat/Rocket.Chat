@@ -4,7 +4,6 @@ import { Statistics } from '@rocket.chat/models';
 import { tracerSpan } from '@rocket.chat/tracing';
 import connect from 'connect';
 import { Facts } from 'meteor/facts-base';
-import { Meteor } from 'meteor/meteor';
 import client from 'prom-client';
 import gcStats from 'prometheus-gc-stats';
 
@@ -207,6 +206,6 @@ const updatePrometheusConfig = async (): Promise<void> => {
 	Object.assign(was, is);
 };
 
-Meteor.startup(async () => {
+export const watchPrometheusSettings = async (): Promise<void> => {
 	settings.watchByRegex(/^Prometheus_.+/, updatePrometheusConfig);
-});
+};

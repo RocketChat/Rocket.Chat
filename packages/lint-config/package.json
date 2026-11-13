@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/lint-config",
-	"version": "0.1.0-rc.0",
+	"version": "0.1.0",
 	"description": "Rocket.Chat's JS/TS oxlint config",
 	"repository": {
 		"type": "git",
@@ -30,12 +30,12 @@
 		"eslint-plugin-jsx-a11y": "~6.10.2",
 		"eslint-plugin-prettier": "~5.5.6",
 		"eslint-plugin-react": "~7.37.5",
-		"eslint-plugin-storybook": "9.1.20",
+		"eslint-plugin-storybook": "~10.6.5",
 		"eslint-plugin-testing-library": "~7.16.2",
 		"prettier": "~3.9.9"
 	},
 	"devDependencies": {
-		"storybook": "~9.1.21",
+		"storybook": "~10.6.5",
 		"typescript": "~5.9.3"
 	},
 	"volta": {

@@ -80,18 +80,6 @@ export const processDirectEmail = async function (email: ParsedMail): Promise<vo
 		msg = `@${prevMessage.u.username} ${msg}`;
 	}
 
-	// reply message link WE HA THREADS KNOW DONT NEED TO QUOTE THE previous message
-	// let prevMessageLink = `[ ](${ Meteor.absoluteUrl().replace(/\/$/, '') }`;
-	// if (roomInfo.t === 'c') {
-	// 	prevMessageLink += `/channel/${ roomInfo.name }?msg=${ mid }) `;
-	// } else if (roomInfo.t === 'd') {
-	// 	prevMessageLink += `/direct/${ prevMessage.u.username }?msg=${ mid }) `;
-	// } else if (roomInfo.t === 'p') {
-	// 	prevMessageLink += `/group/${ roomInfo.name }?msg=${ mid }) `;
-	// }
-	// // add reply message link
-	// msg = prevMessageLink + msg;
-
 	const subscription = await Subscriptions.findOneByRoomIdAndUserId(prevMessage.rid, user._id);
 	if (subscription && (subscription.blocked || subscription.blocker)) {
 		// room is blocked

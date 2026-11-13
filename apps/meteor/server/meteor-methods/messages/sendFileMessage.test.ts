@@ -1,5 +1,6 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -10,20 +11,9 @@ const getPath = sinon.stub().returns('/path/to/file.txt');
 const isImagePreviewSupported = sinon.stub().returns(false);
 const getFileExtension = sinon.stub().returns('txt');
 
-const { parseFileIntoMessageAttachments } = proxyquire.noCallThru().load('./sendFileMessage', {
-	'@rocket.chat/models': {
-		Uploads: { findOneByIdAndUserIdAndRoomId, updateFileMetadata },
-		Rooms: { findOneById: sinon.stub() },
-		Users: { findOneById: sinon.stub() },
-	},
-	'meteor/check': {
-		check: sinon.stub(),
-		Match: {
-			Maybe: sinon.stub(),
-			Optional: sinon.stub(),
-			ObjectIncluding: sinon.stub(),
-		},
-	},
+const executeSendMessage = sinon.stub().resolves({});
+
+const { parseFileIntoMessageAttachments, sendFileMessage } = proxyquire.noCallThru().load('./sendFileMessage', {
 	'meteor/meteor': {
 		Meteor: {
 			methods: sinon.stub(),
@@ -37,12 +27,18 @@ const { parseFileIntoMessageAttachments } = proxyquire.noCallThru().load('./send
 	'../../lib/callbacks': { callbacks: { runAsync: sinon.stub() } },
 	'../../lib/logger/system': { SystemLogger: { error: sinon.stub() } },
 	'../../lib/authorization/canAccessRoom': { canAccessRoomAsync: sinon.stub().resolves(true) },
-	'./sendMessage': { executeSendMessage: sinon.stub().resolves({}) },
+	'./sendMessage': { executeSendMessage },
 });
 
 describe('sendFileMessage - Mass Assignment & Type Pollution Prevention', () => {
 	const mockUser = { _id: 'user123' };
 	const roomId = 'room123';
+
+	before(() => {
+		mockModel('Uploads', { findOneByIdAndUserIdAndRoomId, updateFileMetadata });
+		mockModel('Rooms', { findOneById: sinon.stub().resolves({ _id: 'room123' }) });
+		mockModel('Users', { findOneById: sinon.stub().resolves({ _id: 'user123' }) });
+	});
 
 	beforeEach(() => {
 		findOneByIdAndUserIdAndRoomId.reset();
@@ -108,4 +104,30 @@ describe('sendFileMessage - Mass Assignment & Type Pollution Prevention', () => 
 			},
 		});
 	});
+});
+
+describe('sendFileMessage - msgData validation', () => {
+	const file = { _id: 'file123', name: 'file.txt', type: 'text/plain', size: 10 };
+
+	beforeEach(() => {
+		executeSendMessage.resetHistory();
+		findOneByIdAndUserIdAndRoomId.resolves({ _id: 'file123' });
+	});
+
+	it('should send the message when msgData only has allowed fields', async () => {
+		await sendFileMessage('user123', {
+			roomId: 'room123',
+			file,
+			msgData: { msg: 'hi', groupable: true, content: { algorithm: 'rc.v1.aes-sha2', ciphertext: 'x' } },
+		});
+
+		expect(executeSendMessage.calledOnce).to.equal(true);
+	});
+
+	for (const msgData of [{ u: { _id: 'other' } }, { msg: {} }, { groupable: 'yes' }, { content: { algorithm: 'a' } }, { content: null }]) {
+		it(`should reject msgData ${JSON.stringify(msgData)}`, async () => {
+			await expect(sendFileMessage('user123', { roomId: 'room123', file, msgData })).to.be.rejectedWith('Invalid arguments');
+			expect(executeSendMessage.called).to.equal(false);
+		});
+	}
 });

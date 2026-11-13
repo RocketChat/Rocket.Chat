@@ -11,7 +11,7 @@ import { ContextualbarScrollableContent } from '../Contextualbar';
 import { InfoPanel, InfoPanelActionGroup, InfoPanelField, InfoPanelLabel, InfoPanelSection, InfoPanelText } from '../InfoPanel';
 import { MarkdownTextContext } from '../MarkdownTextContext';
 import UTCClock from '../UTCClock';
-import { UserCardRoles, UserCardUsername } from '../UserCard';
+import { UserCardHeader, UserCardRoles } from '../UserCard';
 import UserInfoABACAttributes from './UserInfoABACAttributes';
 import UserInfoCopyableText from './UserInfoCopyableText';
 import UserInfoZoomableAvatar from './UserInfoZoomableAvatar';
@@ -82,16 +82,13 @@ const UserInfo = ({
 	return (
 		<ContextualbarScrollableContent padding={24} {...props}>
 			<InfoPanel>
-				<InfoPanelSection display='flex' alignItems='center'>
-					{username && <UserInfoZoomableAvatar username={username} etag={avatarETag} />}
-					<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1} marginInlineStart='x8' withTruncatedText>
-						{userDisplayName && <UserCardUsername is='h2' flexGrow={0} flexBasis='auto' status={status} name={userDisplayName} />}
-						{customStatus && (
-							<Box color='hint' fontScale='p2' paddingInlineStart='x4' withTruncatedText>
-								{customStatus}
-							</Box>
-						)}
-					</Box>
+				<InfoPanelSection>
+					<UserCardHeader
+						avatar={username && <UserInfoZoomableAvatar username={username} etag={avatarETag} />}
+						name={userDisplayName}
+						status={status}
+						subtitle={customStatus}
+					/>
 				</InfoPanelSection>
 
 				{actions && <InfoPanelActionGroup>{actions}</InfoPanelActionGroup>}
@@ -109,7 +106,7 @@ const UserInfo = ({
 					{reason && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Reason_for_joining')}</InfoPanelLabel>
-							<UserInfoCopyableText text={reason} label={t('Reason_for_joining')} />
+							<UserInfoCopyableText text={reason} label={t('Reason_for_joining')} withTruncatedText={false} />
 						</InfoPanelField>
 					)}
 

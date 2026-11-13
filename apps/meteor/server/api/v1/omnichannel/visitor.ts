@@ -2,7 +2,7 @@ import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IRoom } from '@rocket.chat/core-typings';
 import { LivechatVisitors as VisitorsRaw, LivechatRooms } from '@rocket.chat/models';
 import { registerGuest } from '@rocket.chat/omni-core';
-import { Match, check } from 'meteor/check';
+import { isLivechatVisitorStatusProps, isPOSTLivechatVisitorProps } from '@rocket.chat/rest-typings';
 
 import { API } from '../..';
 import { findGuest, normalizeHttpHeaderData } from './lib/livechat';
@@ -20,27 +20,10 @@ API.v1.addRoute(
 			numRequestsAllowed: 5,
 			intervalTimeInMS: 60000,
 		},
+		validateParams: isPOSTLivechatVisitorProps,
 	},
 	{
 		async post() {
-			check(this.bodyParams, {
-				visitor: Match.ObjectIncluding({
-					token: String,
-					name: Match.Maybe(String),
-					email: Match.Maybe(String),
-					department: Match.Maybe(String),
-					phone: Match.Maybe(String),
-					username: Match.Maybe(String),
-					customFields: Match.Maybe([
-						Match.ObjectIncluding({
-							key: String,
-							value: String,
-							overwrite: Boolean,
-						}),
-					]),
-				}),
-			});
-
 			const { customFields, id, token, name, email, department, phone, username, connectionData } = this.bodyParams.visitor;
 
 			if (!token?.trim()) {
@@ -177,22 +160,21 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute('livechat/visitor.status', {
-	async post() {
-		check(this.bodyParams, {
-			token: String,
-			status: String,
-		});
+API.v1.addRoute(
+	'livechat/visitor.status',
+	{ validateParams: isLivechatVisitorStatusProps },
+	{
+		async post() {
+			const { token, status } = this.bodyParams;
 
-		const { token, status } = this.bodyParams;
+			const guest = await findGuest(token);
+			if (!guest) {
+				throw new ClientSafeError('invalid-token');
+			}
 
-		const guest = await findGuest(token);
-		if (!guest) {
-			throw new ClientSafeError('invalid-token');
-		}
+			await notifyGuestStatusChanged(token, status);
 
-		await notifyGuestStatusChanged(token, status);
-
-		return API.v1.success({ token, status });
+			return API.v1.success({ token, status });
+		},
 	},
-});
+);

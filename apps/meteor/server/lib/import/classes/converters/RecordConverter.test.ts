@@ -1,6 +1,7 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
 import type { IImportRecord, IImportRecordType } from '@rocket.chat/core-typings';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -17,9 +18,7 @@ const modelsMock = {
 };
 
 const { RecordConverter } = proxyquire.noCallThru().load('./RecordConverter', {
-	'meteor/check': sinon.stub(),
 	'meteor/meteor': sinon.stub(),
-	'@rocket.chat/models': { ...modelsMock, '@global': true },
 });
 
 class TestConverter extends RecordConverter<IImportRecord> {
@@ -33,6 +32,10 @@ class TestConverter extends RecordConverter<IImportRecord> {
 }
 
 describe('Record Converter', () => {
+	before(() => {
+		mockModel('ImportData', modelsMock.ImportData);
+	});
+
 	const userToImport = {
 		name: 'user1',
 		emails: ['user1@domain.com'],

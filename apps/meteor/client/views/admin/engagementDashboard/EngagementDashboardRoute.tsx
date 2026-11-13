@@ -1,4 +1,4 @@
-import { useHasLicenseModule } from '@rocket.chat/ui-client';
+import { PageSkeleton, useHasLicenseModule } from '@rocket.chat/ui-client';
 import {
 	usePermission,
 	useRouter,
@@ -13,7 +13,6 @@ import { useEffect } from 'react';
 import EngagementDashboardPage from './EngagementDashboardPage';
 import GenericUpsellModal from '../../../components/GenericUpsellModal';
 import { useUpsellActions } from '../../../components/GenericUpsellModal/hooks';
-import PageSkeleton from '../../../components/PageSkeleton';
 import { getURL } from '../../../lib/getURL';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 

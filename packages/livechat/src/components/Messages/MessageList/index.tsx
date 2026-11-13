@@ -13,7 +13,7 @@ import store from '../../../store';
 import Message from '../Message';
 import MessageSeparator from '../MessageSeparator';
 import { TypingIndicator } from '../TypingIndicator';
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 
 type ScrollPosition = 'top' | 'bottom' | 'free';
 
@@ -81,7 +81,7 @@ export class MessageList extends MemoizedComponent<MessageListProps, unknown> {
 		if (this.scrollPosition !== scrollPosition) {
 			this.scrollPosition = scrollPosition;
 			const { onScrollTo } = this.props;
-			onScrollTo && onScrollTo(scrollPosition);
+			onScrollTo?.(scrollPosition);
 		}
 
 		const { dispatch } = this.props;
@@ -104,13 +104,13 @@ export class MessageList extends MemoizedComponent<MessageListProps, unknown> {
 		if (base.scrollHeight <= base.clientHeight) {
 			const { onScrollTo } = this.props;
 			this.scrollPosition = MessageList.SCROLL_AT_BOTTOM;
-			onScrollTo && onScrollTo(MessageList.SCROLL_AT_BOTTOM);
+			onScrollTo?.(MessageList.SCROLL_AT_BOTTOM);
 		}
 	};
 
 	handleClick = () => {
 		const { handleEmojiClick } = this.props;
-		handleEmojiClick && handleEmojiClick();
+		handleEmojiClick?.();
 	};
 
 	override componentWillUpdate() {
@@ -155,14 +155,6 @@ export class MessageList extends MemoizedComponent<MessageListProps, unknown> {
 		window.removeEventListener('resize', this.handleResize);
 	}
 
-	isVideoConfMessage(message: any) {
-		return Boolean(
-			message.blocks
-				?.find(({ appId, type }: any) => appId === 'videoconf-core' && type === 'actions')
-				?.elements?.find(({ actionId }: any) => actionId === 'joinLivechat'),
-		);
-	}
-
 	renderItems = ({
 		attachmentResolver = getAttachmentUrl,
 		avatarResolver,
@@ -184,7 +176,7 @@ export class MessageList extends MemoizedComponent<MessageListProps, unknown> {
 				items.push(<MessageSeparator key={`sep-${message.ts}`} use='li' date={message.ts} />);
 			}
 
-			const isMe = uid && message.u && uid === message.u._id;
+			const isMe = uid && uid === message.u?._id;
 			items.push(
 				<Suspense fallback={null}>
 					<Message
@@ -208,7 +200,7 @@ export class MessageList extends MemoizedComponent<MessageListProps, unknown> {
 			}
 		}
 
-		if (typingUsernames && typingUsernames.length) {
+		if (typingUsernames?.length) {
 			const indicatorLabel = `${typingUsernames.join(', ')} ${typingUsernames.length > 1 ? i18next.t('are_typing') : i18next.t('is_typing')}`;
 			items.push(
 				<TypingIndicator

@@ -2,16 +2,18 @@ import { SetupWizardRoute } from '@rocket.chat/ui-setup-wizard';
 import { createElement, lazy, useEffect } from 'react';
 
 import { appLayout } from '../lib/appLayout';
+import { preloadedLazy } from '../lib/preloadedLazy';
 import { router } from '../providers/RouterProvider';
 import OAuthTwoFactorAuthenticationRouter from '../views/OAuthTwoFactorAuthentication/OAuthTwoFactorAuthenticationRouter';
 import MainLayout from '../views/root/MainLayout';
 
 const IndexRoute = lazy(() => import('../views/root/IndexRoute'));
-const HomePage = lazy(() => import('../views/home/HomePage'));
+// the route most sessions land on
+const HomePage = preloadedLazy(() => import('../views/home/HomePage'));
 const DirectoryPage = lazy(() => import('../views/directory'));
 const OmnichannelDirectoryRouter = lazy(() => import('../views/omnichannel/directory/OmnichannelDirectoryRouter'));
 const OmnichannelQueueList = lazy(() => import('../views/omnichannel/queueList'));
-const CMSPage = lazy(() => import('@rocket.chat/web-ui-registration').then(({ CMSPage }) => ({ default: CMSPage })));
+const CMSPage = lazy(() => import('@rocket.chat/ui-registration').then(({ CMSPage }) => ({ default: CMSPage })));
 const SecretURLPage = lazy(() => import('../views/invite/SecretURLPage'));
 const InvitePage = lazy(() => import('../views/invite/InvitePage'));
 const ConferenceRoute = lazy(() => import('../views/conference/ConferenceRoute'));
@@ -19,7 +21,7 @@ const MailerUnsubscriptionPage = lazy(() => import('../views/mailer/MailerUnsubs
 const LoginTokenRoute = lazy(() => import('../views/root/LoginTokenRoute'));
 const SAMLLoginRoute = lazy(() => import('../views/root/SAMLLoginRoute'));
 const ResetPasswordPage = lazy(() =>
-	import('@rocket.chat/web-ui-registration').then(({ ResetPasswordPage }) => ({ default: ResetPasswordPage })),
+	import('@rocket.chat/ui-registration').then(({ ResetPasswordPage }) => ({ default: ResetPasswordPage })),
 );
 const OAuthAuthorizationPage = lazy(() => import('../views/oauth/OAuthAuthorizationPage'));
 const OAuthErrorPage = lazy(() => import('../views/oauth/OAuthErrorPage'));

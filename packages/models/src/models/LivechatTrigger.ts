@@ -1,6 +1,6 @@
 import type { ILivechatTrigger, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ILivechatTriggerModel } from '@rocket.chat/model-typings';
-import type { Collection, FindCursor, Db, IndexDescription, UpdateFilter, UpdateResult } from 'mongodb';
+import type { Collection, FindCursor, Db, IndexDescription, UpdateResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -18,6 +18,6 @@ export class LivechatTriggerRaw extends BaseRaw<ILivechatTrigger> implements ILi
 	}
 
 	updateById(_id: string, data: Omit<ILivechatTrigger, '_id' | '_updatedAt'>): Promise<UpdateResult> {
-		return this.updateOne({ _id }, { $set: data } as UpdateFilter<ILivechatTrigger>); // TODO: remove this cast when TypeScript is updated
+		return this.updateOne({ _id }, { $set: data });
 	}
 }

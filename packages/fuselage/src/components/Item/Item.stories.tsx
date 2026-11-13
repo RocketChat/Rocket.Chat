@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import type { Meta, StoryObj } from '@storybook/react';
 import type { ReactNode } from 'react';
 import { useState } from 'react';
 
@@ -352,6 +352,29 @@ export const Heights: Story = {
 							<RoomRow room={rooms[4]} viewMode={viewMode} />
 						</ItemGroup>
 					</SidebarSurface>
+				</div>
+			))}
+		</Box>
+	),
+};
+
+export const DescriptionSizes: Story = {
+	render: () => (
+		<Box display='flex' flexDirection='column'>
+			{(['default', 'large'] as const).map((size) => (
+				<div key={size}>
+					<Caption>{size}</Caption>
+					<ItemGroup is='ul' aria-label={`${size} description`}>
+						<Item is='li'>
+							<ItemMedia>
+								<Avatar size='x36' url={leterAvatarUrls[1]} alt='' />
+							</ItemMedia>
+							<ItemContent>
+								<ItemTitle>Michael</ItemTitle>
+								<ItemDescription size={size}>Away</ItemDescription>
+							</ItemContent>
+						</Item>
+					</ItemGroup>
 				</div>
 			))}
 		</Box>

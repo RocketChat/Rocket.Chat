@@ -74,7 +74,7 @@ describe('RoomsContextualBar, editing a room', () => {
 		expect(reviewButton()).toBeEnabled();
 	});
 
-	it('should reuse the preview when the same attributes are previewed again after Back', async () => {
+	it('should preview again when the same attributes are reviewed again after Back', async () => {
 		const { preview } = renderBar();
 
 		await userEvent.click(screen.getByRole('button', { name: 'Remove' }));
@@ -88,7 +88,7 @@ describe('RoomsContextualBar, editing a room', () => {
 		await userEvent.click(reviewButton());
 
 		await waitFor(() => expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled());
-		expect(preview).toHaveBeenCalledTimes(requests);
+		expect(preview.mock.calls.length).toBeGreaterThan(requests);
 	});
 
 	it('should preview again once the bar was closed and opened', async () => {

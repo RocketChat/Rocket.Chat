@@ -38,7 +38,7 @@ export class RoomBuilder implements IRoomBuilder {
 	}
 
 	public getDisplayName(): string {
-		return this.room.displayName!;
+		return this.room.displayName;
 	}
 
 	public setSlugifiedName(name: string): IRoomBuilder {
@@ -123,7 +123,7 @@ export class RoomBuilder implements IRoomBuilder {
 	}
 
 	public getIsDefault(): boolean {
-		return this.room.isDefault!;
+		return this.room.isDefault;
 	}
 
 	public setReadOnly(isReadOnly: boolean): IRoomBuilder {
@@ -134,7 +134,7 @@ export class RoomBuilder implements IRoomBuilder {
 	}
 
 	public getIsReadOnly(): boolean {
-		return this.room.isReadOnly!;
+		return this.room.isReadOnly;
 	}
 
 	public setDisplayingOfSystemMessages(displaySystemMessages: boolean): IRoomBuilder {
@@ -145,7 +145,7 @@ export class RoomBuilder implements IRoomBuilder {
 	}
 
 	public getDisplayingOfSystemMessages(): boolean {
-		return this.room.displaySystemMessages!;
+		return this.room.displaySystemMessages;
 	}
 
 	public addCustomField(key: string, value: object): IRoomBuilder {
@@ -168,11 +168,11 @@ export class RoomBuilder implements IRoomBuilder {
 	}
 
 	public getCustomFields(): { [key: string]: object } {
-		return this.room.customFields!;
+		return this.room.customFields;
 	}
 
 	public getUserIds(): Array<string> {
-		return this.room.userIds!;
+		return this.room.userIds;
 	}
 
 	public getRoom(): IRoom {

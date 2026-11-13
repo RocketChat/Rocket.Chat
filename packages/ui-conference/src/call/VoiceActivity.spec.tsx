@@ -18,9 +18,9 @@ it('draws three bars with the middle one leading, so it reads as a voice', () =>
 
 // The whole point of it: a mic that is on but picking nothing up has to look different from one being talked into.
 it('grows with the level', () => {
-	const quiet = render(<VoiceActivity level={0} size={20} />);
+	const { unmount } = render(<VoiceActivity level={0} size={20} />);
 	const quietHeights = barHeights();
-	quiet.unmount();
+	unmount();
 
 	render(<VoiceActivity level={1} size={20} />);
 

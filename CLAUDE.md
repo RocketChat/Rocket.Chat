@@ -66,6 +66,7 @@ Read the doc that matches the task instead of scanning `docs/` wholesale.
 
 ### Testing
 
+- [Unit tests](docs/backend-folder-structure.md#tests) — where a spec goes, which runner, model mocks with `mockModel` in a `describe` hook
 - [Playwright E2E testing guide](apps/meteor/tests/e2e/README.md) — setup, locators, page objects, cleanup, performance patterns, and testing conventions
 
 ### Other
@@ -74,6 +75,7 @@ Read the doc that matches the task instead of scanning `docs/` wholesale.
 - [ee/packages/xmpp-server/docs/](ee/packages/xmpp-server/docs/README.md) — the XMPP server is developed spec-first; its specs, ADRs, plans and compliance matrix live in the package, not here; `/xmpp-intent`, `/xmpp-spec` and `/xmpp-plan` drive its authoring stages from any directory
 - [docs/features/](docs/features/) — per-feature notes
   - [uikit/](docs/features/uikit/README.md) — UiKit blocks, surfaces, rendering, interactions; field reference and per-surface support matrix
+  - [client-boot.md](docs/features/client-boot.md) — the path to the first screen, and why components on it must not suspend
   - [web-client-hosting.md](docs/features/web-client-hosting.md) — how the server serves the Vite-built client (manifest, entry injection, CDN, cache) and how to serve the client from another host
 - [docs/proposals/](docs/proposals/) — design proposals, not yet implemented
   - [serve-client-without-meteor-webapp.md](docs/proposals/serve-client-without-meteor-webapp.md) — serving the client without Meteor's `web.browser` program

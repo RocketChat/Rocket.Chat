@@ -14,7 +14,8 @@ copies:
 `yarn build:ci` runs it before `meteor build`, so both end up in the server bundle.
 
 Meteor still builds a `web.browser` program, but its main module (`client/meteorShell.ts`) is empty: Meteor only
-renders the page. Everything the server already did for that page keeps working:
+renders the page. Meteor bundles every CSS file under `client/` whether or not a module imports it, so
+`.meteorignore` hides them; otherwise the page would load a second copy of the client's styles. Everything the server already did for that page keeps working:
 
 - the head and body injections of `server/lib/ui-master` (title, metas, favicons, theme variables, custom CSS and the
   `Custom_Script_*` scripts);
@@ -76,7 +77,7 @@ CDN. Nothing else changes.
    `ROOT_URL_PATH_PREFIX`. Use an external script if your host sends a Content-Security-Policy.
 
 The standalone build builds full URLs from the page's own origin instead of `Site_Url`, so links keep going through
-your proxy. What the server-rendered page adds is missing: the title and metas, the theme variables, custom CSS, the
+your proxy, and does not offer admins to change `Site_Url` to that origin. What the server-rendered page adds is missing: the title and metas, the theme variables, custom CSS, the
 `Custom_Script_*` scripts and the new-version notice. Add what you need to your `index.html`.
 
 `packages/ui-preview` does exactly this, with `vite preview` and a proxy, and is the reference setup.

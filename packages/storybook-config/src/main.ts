@@ -1,19 +1,22 @@
-import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 import type { StorybookConfig } from '@storybook/react-webpack5';
 
-function getAbsolutePath(value: any): string {
+const require = createRequire(import.meta.url);
+
+function getAbsolutePath(value: string): string {
 	return dirname(require.resolve(join(value, 'package.json')));
 }
 
-const baseConfig = (customConfig?: Partial<StorybookConfig>): StorybookConfig => {
+const baseConfig = ({ staticDirs = [], ...customConfig }: Partial<StorybookConfig> = {}): StorybookConfig => {
 	return {
 		stories: ['../src/**/*.stories.@(js|jsx|ts|tsx)'],
 		addons: [
 			getAbsolutePath('@storybook/addon-a11y'),
 			getAbsolutePath('@storybook/addon-docs'),
-			getAbsolutePath('@rocket.chat/storybook-dark-mode'),
+			fileURLToPath(import.meta.resolve('./preset.js')),
 			getAbsolutePath('@storybook/addon-webpack5-compiler-swc'),
 			getAbsolutePath('@storybook/addon-styling-webpack'),
 		],
@@ -24,10 +27,7 @@ const baseConfig = (customConfig?: Partial<StorybookConfig>): StorybookConfig =>
 		typescript: {
 			reactDocgen: 'react-docgen',
 		},
-		env: (config, { configDir }) => ({
-			...config,
-			STORYBOOK_PACKAGE_NAME: JSON.parse(readFileSync(join(configDir, '..', 'package.json'), 'utf8')).name,
-		}),
+		staticDirs: async (dirs, options) => (typeof staticDirs === 'function' ? staticDirs(dirs, options) : [...(dirs ?? []), ...staticDirs]),
 		...customConfig,
 	};
 };

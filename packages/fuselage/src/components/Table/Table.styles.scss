@@ -1,6 +1,7 @@
 @use '../../styles/colors.scss';
 @use '../../styles/lengths.scss';
 @use '../../styles/typography.scss' as *;
+@use '../../styles/mixins/elevation.scss' as *;
 @use '../../styles/mixins/interactivity.scss' as *;
 @use '../../styles/functions.scss' as *;
 
@@ -20,9 +21,41 @@ $table-selected-border-radius: theme('table-selected-border-radius', lengths.bor
 	}
 
 	&__selection {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+
+		padding-inline: lengths.padding(24);
+
 		color: colors.font(titles-labels);
 		border-radius: $table-selected-border-radius;
 		background-color: colors.surface(neutral);
+		@include elevation-level(2);
+	}
+
+	&__selection-text {
+		flex-shrink: 1;
+
+		margin-block: lengths.margin(16);
+
+		@include use-font-scale(p2b);
+		@include use-with-truncated-text;
+	}
+
+	&__selection-actions {
+		flex-shrink: 0;
+
+		margin-inline: lengths.margin(-8);
+
+		@include use-font-scale(p2m);
+	}
+
+	&__cell-placeholder {
+		display: inline-block;
+
+		width: to-rem(14);
+
+		border-width: lengths.border-width(default);
 	}
 
 	&__selection-button {

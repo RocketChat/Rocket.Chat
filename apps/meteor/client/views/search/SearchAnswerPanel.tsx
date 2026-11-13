@@ -4,7 +4,7 @@ import type { ReactElement } from 'react';
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import SearchAnswerContent from './SearchAnswerContent';
+import MarkdownText from '../../components/MarkdownText';
 import { useCanManageAISettings } from '../../hooks/useCanManageAISettings';
 
 const LLM_PROVIDER_SETTINGS = ['AI_LLM_OpenAI_Base_URL', 'AI_LLM_OpenAI_API_Key', 'AI_LLM_OpenAI_Model'];
@@ -52,7 +52,7 @@ const SearchAnswerPanel = ({
 	let content: ReactElement;
 	if (isLoading) {
 		content = (
-			<Box display='flex' flexDirection='column' gap={12} aria-busy='true' aria-label={t('Loading')}>
+			<Box display='flex' flexDirection='column' gap='x4' aria-busy='true' aria-label={t('Loading')}>
 				<Skeleton width='60%' />
 				<Skeleton width='100%' />
 				<Skeleton width='95%' />
@@ -74,7 +74,7 @@ const SearchAnswerPanel = ({
 			</Box>
 		);
 	} else if (answer) {
-		content = <SearchAnswerContent key={answer} answer={answer} />;
+		content = <MarkdownText content={answer} parseEmoji fontScale='p2' />;
 	} else {
 		content = (
 			<Text color='hint' fontScale='p2'>

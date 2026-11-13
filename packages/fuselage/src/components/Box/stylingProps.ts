@@ -7,16 +7,16 @@ import { Palette } from '../../Theme';
 import { fromCamelToKebab } from '../../helpers/fromCamelToKebab';
 import type { BorderRadius, BorderWidth } from '../../styleTokens';
 import {
-	borderRadius,
-	borderWidth,
-	backgroundColor,
-	fontColor,
-	fontFamily,
-	fontScale,
+	resolveBorderRadius as borderRadius,
+	resolveBorderWidth as borderWidth,
+	resolveBackgroundColor as backgroundColor,
+	resolveFontColor as fontColor,
+	resolveFontFamily as fontFamily,
+	resolveFontScale as fontScale,
 	inset,
 	spacing,
 	size,
-	strokeColor,
+	resolveStrokeColor as strokeColor,
 } from '../../styleTokens';
 
 export type FontScale = 'hero' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'p1' | 'p1m' | 'p1b' | 'p2' | 'p2m' | 'p2b' | 'c1' | 'c2' | 'micro';

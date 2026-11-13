@@ -1,5 +1,40 @@
 # @rocket.chat/presence
 
+## 0.4.0
+
+### Minor Changes
+
+- ([#42050](https://github.com/RocketChat/Rocket.Chat/pull/42050)) Adds admin control over user status (Enterprise only): from **Administration > Status and presence**, or while editing a user, an admin can turn someone's status off or hide it from chosen people, and a **Show status** setting turns status off for the whole workspace. A user whose status is turned off always appears offline and can no longer change it; a user who is only hidden from chosen people keeps control of their own status. The feature is off by default, behind the new **Manage user status** setting.
+
+### Patch Changes
+
+- ([#43271](https://github.com/RocketChat/Rocket.Chat/pull/43271)) Fixes high database load when many users disconnect at once, such as after a network outage or an instance restart
+
+- ([#43279](https://github.com/RocketChat/Rocket.Chat/pull/43279)) Stops the presence service from writing and broadcasting the user's status on every connection heartbeat when the status did not change
+
+- <details><summary>Updated dependencies [4f350b4ffb76024d9bf44c02f3322c8f9071f1cf, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 687d88ff58975ac7d21ec059a0d151dcb75d8bd6, 6bb0d3bca9b5da401050697d51bc99e89871bbb7, 857482ad1e0c6330fb57f96db40d2b08676bbf7e, 575d467b826f8057995e4cabad4c8369cfd45409, 575d467b826f8057995e4cabad4c8369cfd45409, 203d5ff96b613a12f85d9e59c57b4d177a4858c0, 6be3614cd2660ab4024635802fdf9cd7dd7b502f, 3dcddc61941c7896bc750220220cc7d5b72b9b46, 588311c49bfce08e7106e7c0bb32741334fa5321, 10b4e00e08951ace8f9c27d83fc0c48be010bdc7, 5e82e67eaa4c998870d3eb0597f485b30c244f02, a9b2bb76d88e4d2743e0817b15e6447e7c9c46eb, cdd948cb67ecf282f6cc8f411615c3de0db0b9f1, 6b3ec3e667c99015e381a4e8ea43146accb5f7f7, a11ffff8acb74fd016e9ddb972da6eebda0c3e5e, 4c152661022d34bfbe9bf78811eac286a31c47a5, eaf5cedcce9f8e800415b4c49bce242f661462ea, 1df95ff2d31f1e077084596f0024c3e2c53ca1df, f3fa7abd6b9d311f76619d0fe27793ac68f6d208, 40243c4ba0ed19120a571d37883aec203af1b747, daa677895dad92d6aab1e84a09f190efd2755ef9, 642d9e528a8572208e2f0bb51f45ea78400bcea3, bd92e8abc5a8f0161f3de5308979a0f88d09f351, 39a6e6e1397e1e89bc631fe4ab1cc10fa93b59e8, eb808dd70cfbd41a127d8655c62a21c4658fd2c0, bff76c34b21caddbc316d69b62fac858a73d7164, 857482ad1e0c6330fb57f96db40d2b08676bbf7e, a39b03fe5c248079365162e31994e1dece63e7c2]:</summary>
+  - @rocket.chat/core-typings@9.0.0
+  - @rocket.chat/core-services@1.0.0
+  - @rocket.chat/models@3.0.0
+  - @rocket.chat/cron@0.1.62
+  - @rocket.chat/logger@1.0.2
+
+  </details>
+
+## 0.4.0-rc.1
+
+### Patch Changes
+
+- ([#43271](https://github.com/RocketChat/Rocket.Chat/pull/43271)) Fixes high database load when many users disconnect at once, such as after a network outage or an instance restart
+
+- ([#43279](https://github.com/RocketChat/Rocket.Chat/pull/43279)) Stops the presence service from writing and broadcasting the user's status on every connection heartbeat when the status did not change
+
+- <details><summary>Updated dependencies [687d88ff58975ac7d21ec059a0d151dcb75d8bd6, 3dcddc61941c7896bc750220220cc7d5b72b9b46, 4c152661022d34bfbe9bf78811eac286a31c47a5, bff76c34b21caddbc316d69b62fac858a73d7164]:</summary>
+  - @rocket.chat/models@3.0.0-rc.1
+  - @rocket.chat/core-typings@9.0.0-rc.4
+
+  </details>
+
 ## 0.4.0-rc.0
 
 ### Minor Changes
@@ -14,6 +49,20 @@
   - @rocket.chat/models@3.0.0-rc.0
   - @rocket.chat/cron@0.1.62-rc.0
   - @rocket.chat/logger@1.0.2-rc.0
+
+  </details>
+
+## 0.3.4
+
+### Patch Changes
+
+- ([#43271](https://github.com/RocketChat/Rocket.Chat/pull/43271)) Fixes high database load when many users disconnect at once, such as after a network outage or an instance restart
+
+- ([#43279](https://github.com/RocketChat/Rocket.Chat/pull/43279)) Stops the presence service from writing and broadcasting the user's status on every connection heartbeat when the status did not change
+
+- <details><summary>Updated dependencies [cdb0bc05288986f8682d5eb11ac7d9fcf19684b5, 968b1ee6c3779961d49c9a0a440262ab3966029f, 9d1afa454d964374e9cd6e10433b83ae16dc90ef, f871858c7dd52cd6849032425dce3a4670e14285]:</summary>
+  - @rocket.chat/models@2.6.1
+  - @rocket.chat/core-typings@8.9.1
 
   </details>
 

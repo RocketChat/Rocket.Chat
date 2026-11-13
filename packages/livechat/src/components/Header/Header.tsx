@@ -1,7 +1,7 @@
 import type { ComponentChildren, Ref, JSX as JSXInternal } from 'preact';
 import type { MouseEventHandler } from 'preact/compat';
 
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 import type { Theme } from '../../Theme';
 import { createClassName } from '../../helpers/createClassName';
 

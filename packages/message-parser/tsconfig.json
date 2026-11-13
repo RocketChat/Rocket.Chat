@@ -3,6 +3,7 @@
   "compilerOptions": {
     "rootDir": ".",
 		"target": "es2020",
-		"module": "esnext"
+		"module": "nodenext",
+		"moduleResolution": "nodenext"
   }
 }

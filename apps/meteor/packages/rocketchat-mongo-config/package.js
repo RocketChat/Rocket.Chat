@@ -6,7 +6,7 @@ Package.describe({
 });
 
 Package.onUse(function (api) {
-	api.use(['ecmascript', 'mongo', 'http']);
+	api.use(['ecmascript', 'mongo']);
 
 	api.mainModule('server/index.js', 'server');
 });

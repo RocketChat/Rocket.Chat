@@ -1,5 +1,3 @@
-import { Meteor } from 'meteor/meteor';
-
 import type { ViteManifest } from './clientEntryTags';
 import { getClientEntryTags } from './clientEntryTags';
 import { injectIntoHead } from './inject';
@@ -43,13 +41,9 @@ const readManifest = async (): Promise<ViteManifest | undefined> => {
 	}
 };
 
-Meteor.startup(async () => {
-	const manifest = await readManifest();
-	if (!manifest) {
-		return;
-	}
-
+const manifest = await readManifest();
+if (manifest) {
 	settings.watchMultiple(['CDN_PREFIX', 'CDN_PREFIX_ALL', 'CDN_JSCSS_PREFIX'], () => {
 		injectIntoHead('client-entry', getClientEntryTags(manifest, getBundlePrefix()));
 	});
-});
+}

@@ -1,8 +1,9 @@
-import { afterEach, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it } from 'node:test';
 
 import type { IPushNotificationConfig } from '@rocket.chat/core-typings/src/IPushNotificationConfig';
 import type { IPushToken } from '@rocket.chat/core-typings/src/IPushToken';
-import { pick, truncateString } from '@rocket.chat/tools';
+import { mockModel } from '@rocket.chat/models/testing';
+import { isRecord, pick, truncateString } from '@rocket.chat/tools';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -14,30 +15,20 @@ const sendFCMStub = sinon.stub();
 const pushTokenModelStub = { findAllTokensByUserId: sinon.stub() };
 
 const { Push } = proxyquire.noCallThru().load('./push', {
-	'@rocket.chat/models': { PushToken: pushTokenModelStub },
 	'@rocket.chat/license': { License: { hasOfflineLicense: () => false } },
 	'./logger': { logger: loggerStub },
 	'../../../settings': { settings: settingsStub },
 	'./apn': { initAPN: sinon.stub(), sendAPN: sendAPNStub, shutdownAPN: sinon.stub() },
 	'./fcm': { sendFCM: sendFCMStub },
-	'@rocket.chat/tools': { pick, truncateString },
-	'meteor/check': {
-		check: sinon.stub(),
-		Match: {
-			Optional: () => sinon.stub(),
-			Integer: Number,
-			OneOf: () => sinon.stub(),
-			test: sinon.stub().returns(true),
-		},
-	},
-	'meteor/meteor': {
-		Meteor: {
-			absoluteUrl: sinon.stub().returns('http://localhost'),
-		},
-	},
+	'@rocket.chat/tools': { isRecord, pick, truncateString },
+	'../../utils/getURL': { getWorkspaceURL: sinon.stub().returns('http://localhost') },
 });
 
 describe('Push Notifications [PushClass]', () => {
+	before(() => {
+		mockModel('PushToken', pushTokenModelStub);
+	});
+
 	afterEach(() => {
 		sinon.restore();
 	});

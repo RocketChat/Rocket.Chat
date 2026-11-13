@@ -1,6 +1,5 @@
+import { NotFoundState } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
-
-import NotFoundState from '../../components/NotFoundState';
 
 const NotFoundPage = () => {
 	const { t } = useTranslation();

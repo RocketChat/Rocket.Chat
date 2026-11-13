@@ -1,10 +1,10 @@
 import type { ISubscription } from '@rocket.chat/core-typings';
 import type { IActionManager } from '@rocket.chat/ui-contexts';
 import { useUserId } from '@rocket.chat/ui-contexts';
+import { useEmojiPicker } from '@rocket.chat/ui-emoji-picker';
 import { renderHook } from '@testing-library/react';
 
 import { useChatMessagesInstance } from './useChatMessagesInstance';
-import { useEmojiPicker } from '../../../../contexts/EmojiPickerContext';
 import { useUiKitActionManager } from '../../../../hooks/uikit/useUiKitActionManager';
 import { ChatMessages } from '../../../../lib/ChatMessages';
 import type { E2ERoomState } from '../../../../lib/e2ee/E2ERoomState';
@@ -23,7 +23,8 @@ jest.mock('../../../../hooks/uikit/useUiKitActionManager', () => ({
 jest.mock('../../hooks/useE2EERoomState', () => ({
 	useE2EERoomState: jest.fn(),
 }));
-jest.mock('../../../../contexts/EmojiPickerContext', () => ({
+jest.mock('@rocket.chat/ui-emoji-picker', () => ({
+	...jest.requireActual('@rocket.chat/ui-emoji-picker'),
 	useEmojiPicker: jest.fn(),
 }));
 

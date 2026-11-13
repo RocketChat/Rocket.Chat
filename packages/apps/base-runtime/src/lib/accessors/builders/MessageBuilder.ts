@@ -50,7 +50,7 @@ export class MessageBuilder implements IMessageBuilder {
 	}
 
 	public getThreadId(): string {
-		return this.msg.threadId!;
+		return this.msg.threadId;
 	}
 
 	public setRoom(room: IRoom): IMessageBuilder {
@@ -83,7 +83,7 @@ export class MessageBuilder implements IMessageBuilder {
 	}
 
 	public getText(): string {
-		return this.msg.text!;
+		return this.msg.text;
 	}
 
 	public setEmojiAvatar(emoji: string): IMessageBuilder {
@@ -94,7 +94,7 @@ export class MessageBuilder implements IMessageBuilder {
 	}
 
 	public getEmojiAvatar(): string {
-		return this.msg.emoji!;
+		return this.msg.emoji;
 	}
 
 	public setAvatarUrl(avatarUrl: string): IMessageBuilder {
@@ -105,7 +105,7 @@ export class MessageBuilder implements IMessageBuilder {
 	}
 
 	public getAvatarUrl(): string {
-		return this.msg.avatarUrl!;
+		return this.msg.avatarUrl;
 	}
 
 	public setUsernameAlias(alias: string): IMessageBuilder {
@@ -116,7 +116,7 @@ export class MessageBuilder implements IMessageBuilder {
 	}
 
 	public getUsernameAlias(): string {
-		return this.msg.alias!;
+		return this.msg.alias;
 	}
 
 	public addAttachment(attachment: IMessageAttachment): IMessageBuilder {
@@ -138,7 +138,7 @@ export class MessageBuilder implements IMessageBuilder {
 	}
 
 	public getAttachments(): Array<IMessageAttachment> {
-		return this.msg.attachments!;
+		return this.msg.attachments;
 	}
 
 	public replaceAttachment(position: number, attachment: IMessageAttachment): IMessageBuilder {
@@ -182,7 +182,7 @@ export class MessageBuilder implements IMessageBuilder {
 	}
 
 	public getGroupable(): boolean {
-		return this.msg.groupable!;
+		return this.msg.groupable;
 	}
 
 	public setParseUrls(parseUrls: boolean): IMessageBuilder {
@@ -193,7 +193,7 @@ export class MessageBuilder implements IMessageBuilder {
 	}
 
 	public getParseUrls(): boolean {
-		return this.msg.parseUrls!;
+		return this.msg.parseUrls;
 	}
 
 	public getMessage(): IMessage {
@@ -228,7 +228,7 @@ export class MessageBuilder implements IMessageBuilder {
 	}
 
 	public getBlocks() {
-		return this.msg.blocks!;
+		return this.msg.blocks;
 	}
 
 	public addCustomField(key: string, value: unknown): IMessageBuilder {

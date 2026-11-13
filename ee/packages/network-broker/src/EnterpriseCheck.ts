@@ -1,8 +1,8 @@
-import type { ServiceSchema } from 'moleculer';
+import type { Service, ServiceSchema, ServiceSettingSchema } from 'moleculer';
 
 import { startLicenseEnforcement } from './licenseEnforcement';
 
-export const EnterpriseCheck: ServiceSchema = {
+export const EnterpriseCheck: ServiceSchema<ServiceSettingSchema, Service & { stopLicenseEnforcement?: () => void }> = {
 	name: 'EnterpriseCheck',
 	async started(): Promise<void> {
 		// `this` is the host service, so `this.name` is the mixed-in service name

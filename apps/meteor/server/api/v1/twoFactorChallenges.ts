@@ -3,9 +3,9 @@ import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IMethodConnection } from '@rocket.chat/core-typings';
 import { TwoFactorChallenges } from '@rocket.chat/models';
 import { isTwoFactorChallengesSendEmailCodeParamsPOST, isTwoFactorChallengesVerifyChallengeParamsPOST } from '@rocket.chat/rest-typings';
-import { Accounts } from 'meteor/accounts-base';
 
 import { getUserForCheck, rememberAuthorizationByToken } from '../../lib/2fa/code';
+import { issueLoginToken } from '../../lib/auth/issueLoginToken';
 import { emailCheckForOAuth, getTwoFAMethodForOAuth } from '../../lib/oauth/twoFactorAuth';
 import { generateConnection } from '../ApiClass';
 import { API } from '../api';
@@ -91,9 +91,7 @@ API.v1.addRoute(
 				return API.v1.failure('error-invalid-code', 'Invalid code');
 			}
 
-			const stampedToken = Accounts._generateStampedLoginToken();
-
-			await Accounts._insertLoginToken(user._id, stampedToken);
+			const stampedToken = await issueLoginToken(user._id);
 
 			const hashedToken = hashLoginToken(stampedToken.token);
 

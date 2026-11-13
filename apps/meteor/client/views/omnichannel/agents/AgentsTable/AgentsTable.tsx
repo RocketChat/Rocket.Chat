@@ -10,6 +10,7 @@ import {
 	useSort,
 	GenericNoResults,
 	links,
+	GenericError,
 } from '@rocket.chat/ui-client';
 import { hashKey } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
@@ -18,7 +19,6 @@ import { useTranslation } from 'react-i18next';
 import AddAgent from './AddAgent';
 import AgentsTableRow from './AgentsTableRow';
 import FilterByText from '../../../../components/FilterByText';
-import GenericError from '../../../../components/GenericError';
 import { useAgentsQuery } from '../hooks/useAgentsQuery';
 import { useQuery } from '../hooks/useQuery';
 
@@ -32,13 +32,12 @@ const AgentsTable = () => {
 		500,
 	) as ['name' | 'username' | 'emails.address' | 'statusLivechat', 'asc' | 'desc'];
 
-	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
+	const query = useQuery({ text }, debouncedSort);
+	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination({ resetKey: [query] });
+	const { data, isSuccess, isLoading, isError, refetch } = useAgentsQuery(query, { offset: current, count: itemsPerPage });
 
-	const query = useQuery({ text, current, itemsPerPage }, debouncedSort);
-	const { data, isSuccess, isLoading, isError, refetch } = useAgentsQuery(query);
-
-	const [defaultQuery] = useState(hashKey([query]));
-	const queryHasChanged = defaultQuery !== hashKey([query]);
+	const [defaultQuery] = useState(hashKey([query, current, itemsPerPage]));
+	const queryHasChanged = defaultQuery !== hashKey([query, current, itemsPerPage]);
 
 	const onHeaderClick = useStableCallback((id: 'name' | 'username' | 'emails.address' | 'statusLivechat') => {
 		if (sortBy === id) {

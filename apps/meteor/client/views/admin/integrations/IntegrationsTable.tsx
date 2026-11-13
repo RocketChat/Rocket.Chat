@@ -7,13 +7,14 @@ import {
 	GenericTableHeader,
 	GenericTableHeaderCell,
 	GenericTableLoadingTable,
+	usePaginatedQuery,
 	usePagination,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
-import { useEndpoint, useRoute, useTranslation, useLayout } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useEndpoint, useRoute, useLayout } from '@rocket.chat/ui-contexts';
 import { useMemo, useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import IntegrationRow from './IntegrationRow';
 import FilterByText from '../../../components/FilterByText';
@@ -21,13 +22,12 @@ import FilterByText from '../../../components/FilterByText';
 export type IntegrationsTableProps = { type?: string };
 
 const IntegrationsTable = ({ type }: IntegrationsTableProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const { isMobile } = useLayout();
 
 	const [text, setText] = useState('');
 	const router = useRoute('admin-integrations');
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'channel' | '_createdBy' | '_createdAt' | 'username'>('name');
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 
 	const query = useDebouncedValue(
 		useMemo(
@@ -35,18 +35,30 @@ const IntegrationsTable = ({ type }: IntegrationsTableProps) => {
 				name: escapeRegExp(text),
 				type,
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
-				count: itemsPerPage,
-				offset: current,
 			}),
-			[text, itemsPerPage, current, sortBy, sortDirection, type],
+			[text, sortBy, sortDirection, type],
 		),
 		500,
 	);
 
+	const queryKey = ['integrations', query];
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({ resetKey: queryKey });
+
 	const getIntegrations = useEndpoint('GET', '/v1/integrations.list');
-	const { data, isLoading, isSuccess, isError, refetch } = useQuery({
-		queryKey: ['integrations', query],
-		queryFn: async () => getIntegrations(query),
+	const { data, isLoading, isSuccess, isError, refetch } = usePaginatedQuery({
+		query: {
+			queryKey,
+			queryFn: (page) => getIntegrations({ ...query, ...page }),
+		},
+		itemsKey: 'integrations',
+		offset: current,
+		count: itemsPerPage,
 	});
 
 	const onClick = useCallback(

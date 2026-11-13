@@ -1,5 +1,5 @@
 import { License } from '@rocket.chat/license';
-import { OAuthApps } from '@rocket.chat/models';
+import { mockModel } from '@rocket.chat/models/testing';
 
 import { registerOAuthClient } from './registerOAuthClient';
 import { settings } from '../../../settings/cached';
@@ -8,9 +8,7 @@ jest.mock('@rocket.chat/license', () => ({
 	License: { hasModule: jest.fn() },
 }));
 
-jest.mock('@rocket.chat/models', () => ({
-	OAuthApps: { insertOne: jest.fn() },
-}));
+const oAuthAppsModel = { insertOne: jest.fn() };
 
 jest.mock('../../../settings/cached', () => ({
 	settings: { get: jest.fn() },
@@ -25,11 +23,15 @@ const claude = {
 };
 
 describe('registerOAuthClient', () => {
+	beforeAll(() => {
+		mockModel('OAuthApps', oAuthAppsModel);
+	});
+
 	beforeEach(() => {
 		jest.clearAllMocks();
 		jest.mocked(License.hasModule).mockReturnValue(true);
 		jest.mocked(settings.get).mockImplementation((id) => ['MCP_Enabled', 'OAuth2_Allow_Dynamic_Client_Registration'].includes(id));
-		jest.mocked(OAuthApps.insertOne).mockResolvedValue({ acknowledged: true, insertedId: 'app-id' });
+		oAuthAppsModel.insertOne.mockResolvedValue({ acknowledged: true, insertedId: 'app-id' });
 	});
 
 	it.each([
@@ -45,7 +47,7 @@ describe('registerOAuthClient', () => {
 			statusCode: 403,
 			body: { error: 'access_denied', error_description: expect.stringContaining('not enabled') },
 		});
-		expect(OAuthApps.insertOne).not.toHaveBeenCalled();
+		expect(oAuthAppsModel.insertOne).not.toHaveBeenCalled();
 	});
 
 	it('checks the AI license module', async () => {
@@ -71,7 +73,7 @@ describe('registerOAuthClient', () => {
 			response_types: ['code'],
 			token_endpoint_auth_method: 'client_secret_post',
 		});
-		expect(OAuthApps.insertOne).toHaveBeenCalledWith(
+		expect(oAuthAppsModel.insertOne).toHaveBeenCalledWith(
 			expect.objectContaining({
 				name: 'Claude',
 				active: true,
@@ -88,7 +90,7 @@ describe('registerOAuthClient', () => {
 			redirect_uris: ['http://127.0.0.1:33418/callback', 'cursor://anysphere.cursor-mcp/oauth/callback'],
 		});
 
-		expect(OAuthApps.insertOne).toHaveBeenCalledWith(
+		expect(oAuthAppsModel.insertOne).toHaveBeenCalledWith(
 			expect.objectContaining({ redirectUri: 'http://127.0.0.1:33418/callback,cursor://anysphere.cursor-mcp/oauth/callback' }),
 		);
 	});
@@ -149,7 +151,7 @@ describe('registerOAuthClient', () => {
 			statusCode: 400,
 			body: { error: 'invalid_redirect_uri' },
 		});
-		expect(OAuthApps.insertOne).not.toHaveBeenCalled();
+		expect(oAuthAppsModel.insertOne).not.toHaveBeenCalled();
 	});
 
 	it.each([
@@ -162,7 +164,7 @@ describe('registerOAuthClient', () => {
 			statusCode: 400,
 			body: { error: 'invalid_client_metadata' },
 		});
-		expect(OAuthApps.insertOne).not.toHaveBeenCalled();
+		expect(oAuthAppsModel.insertOne).not.toHaveBeenCalled();
 	});
 
 	it('rejects a body that is not a JSON object', async () => {

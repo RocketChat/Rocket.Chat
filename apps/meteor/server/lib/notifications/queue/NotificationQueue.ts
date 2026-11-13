@@ -1,7 +1,6 @@
 import type { INotification, INotificationItemPush, INotificationItemEmail, NotificationItem, IUser } from '@rocket.chat/core-typings';
 import { NotificationQueue, Users } from '@rocket.chat/models';
 import { tracerSpan } from '@rocket.chat/tracing';
-import { Meteor } from 'meteor/meteor';
 
 import { SystemLogger } from '../../logger/system';
 import { sendEmailFromData } from '../message/email';
@@ -175,7 +174,3 @@ class NotificationClass {
 }
 
 export const Notification = new NotificationClass();
-
-Meteor.startup(() => {
-	Notification.initWorker();
-});

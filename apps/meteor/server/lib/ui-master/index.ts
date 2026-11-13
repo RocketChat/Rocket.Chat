@@ -1,7 +1,6 @@
 import type { ISettingColor } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
 import { escapeHTML } from '@rocket.chat/tools';
-import { Meteor } from 'meteor/meteor';
 
 import { injectIntoBody, injectIntoHead } from './inject';
 import { getMessageMaxParseLength } from '../../../lib/getMessageMaxParseLength';
@@ -14,113 +13,111 @@ import './scripts';
 
 export * from './inject';
 
-Meteor.startup(() => {
-	settings.watch<string>('Default_Referrer_Policy', (value) => {
-		if (!value) {
-			return injectIntoHead('noreferrer', '<meta name="referrer" content="same-origin" />');
-		}
-
-		injectIntoHead('noreferrer', `<meta name="referrer" content="${value}" />`);
-	});
-
-	if (process.env.DISABLE_ANIMATION) {
-		injectIntoHead(
-			'disable-animation',
-			`
-		<style>
-			body, body * {
-				animation: none !important;
-			}
-			</style>
-			`,
-		);
+settings.watch<string>('Default_Referrer_Policy', (value) => {
+	if (!value) {
+		return injectIntoHead('noreferrer', '<meta name="referrer" content="same-origin" />');
 	}
 
-	settings.watch<boolean>('Assets_SvgFavicon_Enable', (value) => {
-		const standardFavicons = `
-			<link rel="icon" sizes="16x16" type="image/png" href=${getURL('assets/favicon_16.png')} />
-			<link rel="icon" sizes="32x32" type="image/png" href=${getURL('assets/favicon_32.png')} />`;
-
-		if (value) {
-			injectIntoHead(
-				'Assets_SvgFavicon_Enable',
-				`${standardFavicons}
-				<link rel="icon" sizes="any" type="image/svg+xml" href=${getURL('assets/favicon.svg')} />`,
-			);
-		} else {
-			injectIntoHead('Assets_SvgFavicon_Enable', standardFavicons);
-		}
-	});
-
-	settings.watch<string>('theme-color-sidebar-background', (value) => {
-		const escapedValue = escapeHTML(value);
-		injectIntoHead(
-			'theme-color-sidebar-background',
-			`<meta name="msapplication-TileColor" content="${escapedValue}" /><meta name="theme-color" content="${escapedValue}" />`,
-		);
-	});
-
-	settings.watch<string>('Site_Name', (value = 'Rocket.Chat') => {
-		const escapedValue = escapeHTML(value);
-		injectIntoHead(
-			'Site_Name',
-			`<title>${escapedValue}</title>` +
-				`<meta name="application-name" content="${escapedValue}">` +
-				`<meta name="apple-mobile-web-app-title" content="${escapedValue}">`,
-		);
-	});
-
-	settings.watch<string>('Meta_language', (value = '') => {
-		const escapedValue = escapeHTML(value);
-		injectIntoHead(
-			'Meta_language',
-			`<meta http-equiv="content-language" content="${escapedValue}"><meta name="language" content="${escapedValue}">`,
-		);
-	});
-
-	settings.watch<string>('Meta_robots', (value = '') => {
-		const escapedValue = escapeHTML(value);
-		injectIntoHead('Meta_robots', `<meta name="robots" content="${escapedValue}">`);
-	});
-
-	settings.watch<string>('Meta_msvalidate01', (value = '') => {
-		const escapedValue = escapeHTML(value);
-		injectIntoHead('Meta_msvalidate01', `<meta name="msvalidate.01" content="${escapedValue}">`);
-	});
-
-	settings.watch<string>('Meta_google-site-verification', (value = '') => {
-		const escapedValue = escapeHTML(value);
-		injectIntoHead('Meta_google-site-verification', `<meta name="google-site-verification" content="${escapedValue}">`);
-	});
-
-	settings.watch<string>('Meta_fb_app_id', (value = '') => {
-		const escapedValue = escapeHTML(value);
-		injectIntoHead('Meta_fb_app_id', `<meta property="fb:app_id" content="${escapedValue}">`);
-	});
-
-	settings.watch<string>('Meta_custom', (value = '') => {
-		injectIntoHead('Meta_custom', value);
-	});
-
-	const baseUrl = ((prefix) => {
-		if (!prefix) {
-			return '/';
-		}
-
-		prefix = prefix.trim();
-
-		if (!prefix) {
-			return '/';
-		}
-
-		return /\/$/.test(prefix) ? prefix : `${prefix}/`;
-	})(__meteor_runtime_config__.ROOT_URL_PATH_PREFIX);
-
-	injectIntoHead('base', `<base href="${baseUrl}">`);
-
-	const escapedMessageMaxParseLength = escapeHTML(String(getMessageMaxParseLength()));
-	injectIntoHead('MESSAGE_MAX_PARSE_LENGTH', `<meta name="rc-message-parser-max-length" content="${escapedMessageMaxParseLength}" />`);
+	injectIntoHead('noreferrer', `<meta name="referrer" content="${value}" />`);
 });
+
+if (process.env.DISABLE_ANIMATION) {
+	injectIntoHead(
+		'disable-animation',
+		`
+	<style>
+		body, body * {
+			animation: none !important;
+		}
+		</style>
+		`,
+	);
+}
+
+settings.watch<boolean>('Assets_SvgFavicon_Enable', (value) => {
+	const standardFavicons = `
+		<link rel="icon" sizes="16x16" type="image/png" href=${getURL('assets/favicon_16.png')} />
+		<link rel="icon" sizes="32x32" type="image/png" href=${getURL('assets/favicon_32.png')} />`;
+
+	if (value) {
+		injectIntoHead(
+			'Assets_SvgFavicon_Enable',
+			`${standardFavicons}
+			<link rel="icon" sizes="any" type="image/svg+xml" href=${getURL('assets/favicon.svg')} />`,
+		);
+	} else {
+		injectIntoHead('Assets_SvgFavicon_Enable', standardFavicons);
+	}
+});
+
+settings.watch<string>('theme-color-sidebar-background', (value) => {
+	const escapedValue = escapeHTML(value);
+	injectIntoHead(
+		'theme-color-sidebar-background',
+		`<meta name="msapplication-TileColor" content="${escapedValue}" /><meta name="theme-color" content="${escapedValue}" />`,
+	);
+});
+
+settings.watch<string>('Site_Name', (value = 'Rocket.Chat') => {
+	const escapedValue = escapeHTML(value);
+	injectIntoHead(
+		'Site_Name',
+		`<title>${escapedValue}</title>` +
+			`<meta name="application-name" content="${escapedValue}">` +
+			`<meta name="apple-mobile-web-app-title" content="${escapedValue}">`,
+	);
+});
+
+settings.watch<string>('Meta_language', (value = '') => {
+	const escapedValue = escapeHTML(value);
+	injectIntoHead(
+		'Meta_language',
+		`<meta http-equiv="content-language" content="${escapedValue}"><meta name="language" content="${escapedValue}">`,
+	);
+});
+
+settings.watch<string>('Meta_robots', (value = '') => {
+	const escapedValue = escapeHTML(value);
+	injectIntoHead('Meta_robots', `<meta name="robots" content="${escapedValue}">`);
+});
+
+settings.watch<string>('Meta_msvalidate01', (value = '') => {
+	const escapedValue = escapeHTML(value);
+	injectIntoHead('Meta_msvalidate01', `<meta name="msvalidate.01" content="${escapedValue}">`);
+});
+
+settings.watch<string>('Meta_google-site-verification', (value = '') => {
+	const escapedValue = escapeHTML(value);
+	injectIntoHead('Meta_google-site-verification', `<meta name="google-site-verification" content="${escapedValue}">`);
+});
+
+settings.watch<string>('Meta_fb_app_id', (value = '') => {
+	const escapedValue = escapeHTML(value);
+	injectIntoHead('Meta_fb_app_id', `<meta property="fb:app_id" content="${escapedValue}">`);
+});
+
+settings.watch<string>('Meta_custom', (value = '') => {
+	injectIntoHead('Meta_custom', value);
+});
+
+const baseUrl = ((prefix) => {
+	if (!prefix) {
+		return '/';
+	}
+
+	prefix = prefix.trim();
+
+	if (!prefix) {
+		return '/';
+	}
+
+	return /\/$/.test(prefix) ? prefix : `${prefix}/`;
+})(__meteor_runtime_config__.ROOT_URL_PATH_PREFIX);
+
+injectIntoHead('base', `<base href="${baseUrl}">`);
+
+const escapedMessageMaxParseLength = escapeHTML(String(getMessageMaxParseLength()));
+injectIntoHead('MESSAGE_MAX_PARSE_LENGTH', `<meta name="rc-message-parser-max-length" content="${escapedMessageMaxParseLength}" />`);
 
 const renderDynamicCssList = withDebouncing({ wait: 500 })(async () => {
 	// const variables = RocketChat.models.Settings.findOne({_id:'theme-custom-variables'}, {fields: { value: 1}});

@@ -1,5 +1,6 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -13,7 +14,6 @@ const settingsGetStub = sinon.stub();
 
 const { userLogout } = proxyquire.noCallThru().load('./userLogout.ts', {
 	'@rocket.chat/license': { License: { hasOfflineLicense: hasOfflineLicenseStub } },
-	'@rocket.chat/models': { Users: { findOneById: findOneByIdStub } },
 	'@rocket.chat/server-fetch': { serverFetch: fetchStub },
 	'./retrieveRegistrationStatus': { retrieveRegistrationStatus: retrieveRegistrationStatusStub },
 	'./userLoggedOut': { userLoggedOut: userLoggedOutStub },
@@ -22,6 +22,10 @@ const { userLogout } = proxyquire.noCallThru().load('./userLogout.ts', {
 });
 
 describe('userLogout', () => {
+	before(() => {
+		mockModel('Users', { findOneById: findOneByIdStub });
+	});
+
 	beforeEach(() => {
 		hasOfflineLicenseStub.reset();
 		retrieveRegistrationStatusStub.reset();

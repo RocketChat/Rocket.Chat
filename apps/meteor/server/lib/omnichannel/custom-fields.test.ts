@@ -1,8 +1,10 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import { updateContactsCustomFields } from './custom-fields';
 
 const modelsMock = {
 	LivechatContacts: {
@@ -10,11 +12,11 @@ const modelsMock = {
 	},
 };
 
-const { updateContactsCustomFields } = proxyquire.noCallThru().load('./custom-fields.ts', {
-	'@rocket.chat/models': modelsMock,
-});
-
 describe('[Custom Fields] updateContactsCustomFields', () => {
+	before(() => {
+		mockModel('LivechatContacts', modelsMock.LivechatContacts);
+	});
+
 	beforeEach(() => {
 		modelsMock.LivechatContacts.updateById.reset();
 	});

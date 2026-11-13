@@ -8,12 +8,12 @@ import { useSubmenuTriggerState } from 'react-stately';
 import { Icon } from '../Icon';
 import { Item, ItemIcon } from '../Item';
 import MenuDropDown from './MenuDropdown';
-import type { MenuOptionProps } from './MenuOption';
+import type { OptionProps } from '../Option';
 import MenuPopover from './MenuPopover';
 
 type MenuSubmenuProps = {
 	item: Node<{
-		variant?: MenuOptionProps['variant'];
+		variant?: OptionProps['variant'];
 	}>;
 	state: TreeState<unknown>;
 	rootMenuTriggerState: RootMenuTriggerState;
@@ -99,7 +99,7 @@ function MenuSubmenu({ item, state, rootMenuTriggerState, parentMenuRef, onActio
 			>
 				{item.rendered}
 				<ItemIcon>
-					<Icon name='chevron-left' size='x16' />
+					<Icon name='chevron-right' size='x16' />
 				</ItemIcon>
 			</Item>
 			{submenuTriggerState.isOpen && (
