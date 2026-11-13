@@ -88,8 +88,6 @@ export const createComposerAPICore = ({
 
 	let _quotedMessages: IMessage[] = [];
 
-	const persist = withDebouncing({ wait: 300 })(save);
-
 	const notifyQuotedMessagesUpdate = (): void => {
 		emitter.emit('quotedMessagesUpdate');
 	};
@@ -147,6 +145,14 @@ export const createComposerAPICore = ({
 			},
 		] as const;
 	})();
+
+	const persist = withDebouncing({ wait: 300 })(() => {
+		if (editing.get()) {
+			return;
+		}
+
+		save();
+	});
 
 	const [recording, setRecordingMode] = (() => {
 		let recording = false;
