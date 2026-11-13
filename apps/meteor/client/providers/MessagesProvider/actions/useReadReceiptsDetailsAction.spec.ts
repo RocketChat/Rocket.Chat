@@ -3,9 +3,9 @@ import { renderHook } from '@testing-library/react';
 
 import { useReadReceiptsDetailsAction } from './useReadReceiptsDetailsAction';
 import { createFakeMessage } from '../../../../tests/mocks/data';
-import { useMessageListReadReceipts } from '../list/MessageListContext';
+import { useMessageListReadReceipts } from '../../../components/message/list/MessageListContext';
 
-jest.mock('../list/MessageListContext', () => ({
+jest.mock('../../../components/message/list/MessageListContext', () => ({
 	useMessageListReadReceipts: jest.fn(),
 }));
 

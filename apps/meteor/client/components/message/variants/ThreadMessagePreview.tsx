@@ -20,8 +20,8 @@ import { useTranslation } from 'react-i18next';
 
 import ThreadMessagePreviewBody from './threadPreview/ThreadMessagePreviewBody';
 import { isParsedMessage } from '../../../lib/utils/isParsedMessage';
+import { useParentMessage } from '../../../providers/MessagesProvider/useParentMessage';
 import { useMessageBody } from '../../../views/room/MessageList/hooks/useMessageBody';
-import { useParentMessage } from '../../../views/room/MessageList/hooks/useParentMessage';
 import { useGoToThread } from '../../../views/room/hooks/useGoToThread';
 import {
 	useIsSelecting,

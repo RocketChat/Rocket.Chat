@@ -3,8 +3,8 @@ import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useRouter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 
-import { useMarkAsUnreadMutation } from '../../components/message/hooks/useMarkAsUnreadMutation';
 import { LegacyRoomManager } from '../../lib/LegacyRoomManager';
+import { useMarkAsUnreadMutation } from '../../providers/MessagesProvider/actions/useMarkAsUnreadMutation';
 
 type ToggleReadActionProps = {
 	rid: string;

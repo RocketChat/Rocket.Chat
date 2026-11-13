@@ -4,7 +4,7 @@ A surface is a place in the client where a list of blocks is drawn. Each one has
 
 | Surface | Opened by | Mounted in | Renderer |
 | --- | --- | --- | --- |
-| **Message** | The app sends a message with `blocks` | [`UiKitMessageBlock`](../../../apps/meteor/client/components/message/uikit/UiKitMessageBlock.tsx), used by room, thread, moderation and contact-history messages | `messageParser` (`FuselageMessageSurfaceRenderer`); Livechat uses its own `MessageParser` |
+| **Message** | The app sends a message with `blocks` | [`UiKitMessageBlock`](../../../apps/meteor/client/providers/MessagesProvider/renderers/UiKitMessageBlock.tsx), used by room, thread, moderation and contact-history messages | `messageParser` (`FuselageMessageSurfaceRenderer`); Livechat uses its own `MessageParser` |
 | **Modal** | `modal.open` | [`UiKitModal`](../../../apps/meteor/client/views/modal/uikit/UiKitModal.tsx), which renders `ModalBlock` | `modalParser` (`ModalSurfaceRenderer`) |
 | **Contextual bar** | `contextual_bar.open` | [`UiKitContextualBar`](../../../apps/meteor/client/views/room/contextualBar/uikit/UiKitContextualBar.tsx), shown on the room route `tab=app&context=<viewId>` | `contextualBarParser` (`ContextualBarSurfaceRenderer`) |
 | **Banner** | `banner.open`; also cloud announcements | [`UiKitBanner`](../../../apps/meteor/client/views/banners/UiKitBanner.tsx) inside `BannerRegion` | `bannerParser` (`BannerSurfaceRenderer`), with `mrkdwn` overridden to inline markdown |
