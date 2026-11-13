@@ -1,4 +1,4 @@
-import { mockModel } from '@rocket.chat/models/testing';
+import { fakeCursor, mockModel } from '@rocket.chat/models/testing';
 
 import { archiveOldReadReceipts } from './readReceiptsArchive';
 import { settings } from '../../../server/settings';
@@ -57,7 +57,7 @@ describe('Read Receipts Archive', () => {
 	it('should use default retention days and batch size when settings are not available', async () => {
 		(settings.get as jest.Mock).mockReturnValue(undefined);
 
-		const limitMock = jest.fn().mockReturnValue({ toArray: jest.fn().mockResolvedValue([]) });
+		const limitMock = jest.fn().mockReturnValue(fakeCursor([]));
 		readReceiptsModel.findOlderThan.mockReturnValue({ limit: limitMock });
 
 		await archiveOldReadReceipts();
@@ -76,7 +76,7 @@ describe('Read Receipts Archive', () => {
 			return undefined;
 		});
 
-		const limitMock = jest.fn().mockReturnValue({ toArray: jest.fn().mockResolvedValue([]) });
+		const limitMock = jest.fn().mockReturnValue(fakeCursor([]));
 		readReceiptsModel.findOlderThan.mockReturnValue({ limit: limitMock });
 
 		await archiveOldReadReceipts();
@@ -91,7 +91,7 @@ describe('Read Receipts Archive', () => {
 	it('should not process when no old receipts found', async () => {
 		(settings.get as jest.Mock).mockReturnValue(30);
 
-		const limitMock = jest.fn().mockReturnValue({ toArray: jest.fn().mockResolvedValue([]) });
+		const limitMock = jest.fn().mockReturnValue(fakeCursor([]));
 		readReceiptsModel.findOlderThan.mockReturnValue({ limit: limitMock });
 
 		await archiveOldReadReceipts();
@@ -110,7 +110,7 @@ describe('Read Receipts Archive', () => {
 			{ _id: '3', messageId: 'msg1', userId: 'user3', ts: new Date('2020-01-03') },
 		];
 
-		const limitMock = jest.fn().mockReturnValue({ toArray: jest.fn().mockResolvedValue(oldReceipts) });
+		const limitMock = jest.fn().mockReturnValue(fakeCursor(oldReceipts));
 		readReceiptsModel.findOlderThan.mockReturnValue({ limit: limitMock });
 		readReceiptsArchiveModel.insertMany.mockResolvedValue({ insertedCount: 3 });
 		messagesModel.setReceiptsArchivedById.mockResolvedValue({ modifiedCount: 2 });
@@ -173,7 +173,7 @@ describe('Read Receipts Archive', () => {
 
 		const oldReceipts = [{ _id: '1', messageId: 'msg1', userId: 'user1', ts: new Date('2020-01-01') }];
 
-		const limitMock = jest.fn().mockReturnValue({ toArray: jest.fn().mockResolvedValue(oldReceipts) });
+		const limitMock = jest.fn().mockReturnValue(fakeCursor(oldReceipts));
 		readReceiptsModel.findOlderThan.mockReturnValue({ limit: limitMock });
 
 		// Simulate duplicate key error
@@ -197,7 +197,7 @@ describe('Read Receipts Archive', () => {
 
 		const oldReceipts = [{ _id: '1', messageId: 'msg1', userId: 'user1', ts: new Date('2020-01-01') }];
 
-		const limitMock = jest.fn().mockReturnValue({ toArray: jest.fn().mockResolvedValue(oldReceipts) });
+		const limitMock = jest.fn().mockReturnValue(fakeCursor(oldReceipts));
 		readReceiptsModel.findOlderThan.mockReturnValue({ limit: limitMock });
 
 		// Simulate other error

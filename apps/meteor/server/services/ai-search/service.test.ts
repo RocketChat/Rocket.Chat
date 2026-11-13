@@ -1,6 +1,6 @@
 import { before, beforeEach, describe, it } from 'node:test';
 
-import { mockModel } from '@rocket.chat/models/testing';
+import { fakeCursor, mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -55,16 +55,6 @@ const { AISearchService } = proxyquire.noCallThru().load('./service', {
 	},
 });
 
-type CursorResult<T> = {
-	toArray(): Promise<T[]>;
-	map<U>(callback: (item: T) => U): CursorResult<U>;
-};
-
-const cursor = <T>(items: T[]): CursorResult<T> => ({
-	toArray: async () => items,
-	map: (callback) => cursor(items.map(callback)),
-});
-
 const settings: Record<string, unknown> = {
 	AI_Intelligent_Search_Enabled: true,
 	AI_Intelligent_Search_Semantic_Weight: 100,
@@ -108,7 +98,7 @@ describe('AISearchService', () => {
 		cachedSettings.get.callsFake((key: string) => settings[key]);
 		Users.findOneById.resolves({ roles: ['admin'] });
 		Rooms.findByIds.callsFake((roomIds: string[]) =>
-			cursor(
+			fakeCursor(
 				roomIds.map((roomId) => ({
 					_id: roomId,
 					t: 'c',
@@ -118,11 +108,11 @@ describe('AISearchService', () => {
 			),
 		);
 		Subscriptions.findByUserIdAndRoomIds.callsFake((_userId: string, roomIds: string[]) =>
-			cursor(roomIds.filter((roomId) => roomId === 'allowed' || roomId === 'room-general').map((rid) => ({ rid }))),
+			fakeCursor(roomIds.filter((roomId) => roomId === 'allowed' || roomId === 'room-general').map((rid) => ({ rid }))),
 		);
-		Subscriptions.findByUserId.callsFake(() => cursor([{ rid: 'allowed' }]));
+		Subscriptions.findByUserId.callsFake(() => fakeCursor([{ rid: 'allowed' }]));
 		Messages.findVisibleByIds.callsFake((msgIds: string[]) =>
-			cursor(
+			fakeCursor(
 				msgIds.map((msgId) => ({
 					_id: msgId,
 					rid: msgId === 'blocked-msg' ? 'blocked' : 'allowed',
@@ -172,7 +162,9 @@ describe('AISearchService', () => {
 
 		it('sends subscribed room scope to the pipeline for broad searches', async () => {
 			const subscribedRoomIds = [...Array.from({ length: 1001 }, (_, index) => `room-${index}`), 'allowed'];
-			Subscriptions.findByUserId.returns(cursor([...subscribedRoomIds.map((rid) => ({ rid })), { rid: 'banned-room', status: 'BANNED' }]));
+			Subscriptions.findByUserId.returns(
+				fakeCursor([...subscribedRoomIds.map((rid) => ({ rid })), { rid: 'banned-room', status: 'BANNED' }]),
+			);
 			serverFetch.resolves({
 				ok: true,
 				status: 200,
@@ -224,8 +216,8 @@ describe('AISearchService', () => {
 		});
 
 		it('labels direct message results with the other participant from the user subscription', async () => {
-			Rooms.findByIds.returns(cursor([{ _id: 'allowed', t: 'd' }]));
-			Subscriptions.findByUserIdAndRoomIds.returns(cursor([{ rid: 'allowed', name: 'jane.doe', fname: 'Jane Doe' }]));
+			Rooms.findByIds.returns(fakeCursor([{ _id: 'allowed', t: 'd' }]));
+			Subscriptions.findByUserIdAndRoomIds.returns(fakeCursor([{ rid: 'allowed', name: 'jane.doe', fname: 'Jane Doe' }]));
 			serverFetch.resolves({
 				ok: true,
 				status: 200,
@@ -371,7 +363,7 @@ describe('AISearchService', () => {
 			cachedSettings.get.callsFake((key: string) => (key === 'AI_Intelligent_Search_Semantic_Weight' ? 50 : settings[key]));
 			// only the last two candidates resolve to a visible message
 			Messages.findVisibleByIds.callsFake((msgIds: string[]) =>
-				cursor(
+				fakeCursor(
 					msgIds
 						.filter((msgId) => msgId === 'visible-a' || msgId === 'visible-b')
 						.map((msgId) => ({
@@ -412,7 +404,7 @@ describe('AISearchService', () => {
 				return { ok: true, status: 200, json: async () => ({ results }), text: async () => '' };
 			});
 			Messages.findVisibleByIds.callsFake((msgIds: string[]) =>
-				cursor(msgIds.map((_id) => ({ _id, rid: _id.startsWith('similarity-') ? 'forbidden' : 'allowed', msg: _id }))),
+				fakeCursor(msgIds.map((_id) => ({ _id, rid: _id.startsWith('similarity-') ? 'forbidden' : 'allowed', msg: _id }))),
 			);
 
 			const results = await createService().search({ query: 'fruit', userId: 'user-id', limit: 2 });
@@ -426,7 +418,7 @@ describe('AISearchService', () => {
 				fresh: new Date().toISOString(),
 			};
 			Messages.findVisibleByIds.callsFake((msgIds: string[]) =>
-				cursor(
+				fakeCursor(
 					msgIds.map((msgId) => ({
 						_id: msgId,
 						rid: 'allowed',
@@ -592,7 +584,6 @@ describe('AISearchService', () => {
 
 		it('resolves room-name filters before querying the pipeline', async () => {
 			Rooms.findOneByNameOrFname.resolves({ _id: 'room-general' });
-			Subscriptions.findByUserId.returns(cursor([{ rid: 'room-general' }]));
 			serverFetch.resolves({
 				ok: true,
 				status: 200,
@@ -605,7 +596,7 @@ describe('AISearchService', () => {
 				text: async () => '',
 			});
 			Messages.findVisibleByIds.returns(
-				cursor([
+				fakeCursor([
 					{
 						_id: 'general-msg',
 						rid: 'room-general',
@@ -615,7 +606,7 @@ describe('AISearchService', () => {
 					},
 				]),
 			);
-			Rooms.findByIds.returns(cursor([{ _id: 'room-general', t: 'c', name: 'general', fname: 'General' }]));
+			Rooms.findByIds.returns(fakeCursor([{ _id: 'room-general', t: 'c', name: 'general', fname: 'General' }]));
 
 			const results = await createService().search({
 				query: 'fruit',
@@ -658,7 +649,7 @@ describe('AISearchService', () => {
 		});
 
 		it('drops pipeline hits that do not reference a message', async () => {
-			Subscriptions.findByUserId.returns(cursor([{ rid: 'allowed' }]));
+			Subscriptions.findByUserId.returns(fakeCursor([{ rid: 'allowed' }]));
 			serverFetch.resolves({
 				ok: true,
 				status: 200,
@@ -672,7 +663,7 @@ describe('AISearchService', () => {
 		});
 
 		it('drops pipeline hits when the referenced message is not visible', async () => {
-			Subscriptions.findByUserId.returns(cursor([{ rid: 'allowed' }]));
+			Subscriptions.findByUserId.returns(fakeCursor([{ rid: 'allowed' }]));
 			serverFetch.resolves({
 				ok: true,
 				status: 200,
@@ -681,14 +672,14 @@ describe('AISearchService', () => {
 				}),
 				text: async () => '',
 			});
-			Messages.findVisibleByIds.returns(cursor([]));
+			Messages.findVisibleByIds.returns(fakeCursor([]));
 
 			expect(await createService().search({ query: 'fruit', userId: 'user-id', limit: 5 })).to.deep.equal([]);
 		});
 
 		it('drops pipeline hits from rooms where the user subscription is banned', async () => {
-			Subscriptions.findByUserId.returns(cursor([{ rid: 'allowed' }]));
-			Subscriptions.findByUserIdAndRoomIds.returns(cursor([{ rid: 'allowed', status: 'BANNED' }]));
+			Subscriptions.findByUserId.returns(fakeCursor([{ rid: 'allowed' }]));
+			Subscriptions.findByUserIdAndRoomIds.returns(fakeCursor([{ rid: 'allowed', status: 'BANNED' }]));
 			serverFetch.resolves({
 				ok: true,
 				status: 200,
