@@ -1,4 +1,4 @@
-import { createLogicalPropertiesMiddleware } from './middleware';
+import { createLogicalPropertiesMiddleware } from './middleware.js';
 
-export { createLogicalPropertiesMiddleware } from './middleware';
+export { createLogicalPropertiesMiddleware } from './middleware.js';
 export default createLogicalPropertiesMiddleware();

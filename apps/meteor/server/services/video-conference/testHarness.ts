@@ -6,6 +6,7 @@ import type {
 	VideoConferenceCapabilities,
 } from '@rocket.chat/core-typings';
 import { VideoConferenceStatus } from '@rocket.chat/core-typings';
+import { mockModel, type ModelName } from '@rocket.chat/models/testing';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
@@ -106,7 +107,8 @@ export const commonServiceStubs = {
  * service reaches for one more module.
  *
  * @param broadcast the stub to observe `api.broadcast` through.
- * @param models the `@rocket.chat/models` collections this spec stubs; the rest default to inert.
+ * @param models the `@rocket.chat/models` collections this spec stubs; the rest default to inert. They are registered
+ * each time the service is constructed, because the model registry is shared by every spec file in the run.
  * @param overrides any other module to replace — where a spec is testing something `commonServiceStubs` fakes.
  */
 export const createService = ({
@@ -115,7 +117,7 @@ export const createService = ({
 	overrides = {},
 }: {
 	broadcast?: sinon.SinonStub;
-	models?: Record<string, unknown>;
+	models?: Partial<Record<ModelName, object>>;
 	overrides?: Record<string, unknown>;
 } = {}) => {
 	const { VideoConfService } = proxyquire.noCallThru().load('./service', {
@@ -130,19 +132,23 @@ export const createService = ({
 			Message: { saveSystemMessage: sinon.stub().resolves() },
 			Room: { addUserToRoom: sinon.stub().resolves() },
 		},
-		'@rocket.chat/models': {
-			Users: { findOneById: sinon.stub().resolves(null) },
-			Rooms: { findOneById: sinon.stub().resolves(null) },
-			Messages: { setBlocksById: sinon.stub().resolves() },
-			Subscriptions: {
-				findByRoomIdAndNotUserId: sinon.stub().returns({ toArray: sinon.stub().resolves([]), forEach: sinon.stub().resolves() }),
-			},
-			...models,
-		},
 		...overrides,
 	});
 
-	return VideoConfService as new () => any;
+	const doubles: Partial<Record<ModelName, object>> = {
+		Users: { findOneById: sinon.stub().resolves(null) },
+		Rooms: { findOneById: sinon.stub().resolves(null) },
+		Messages: { setBlocksById: sinon.stub().resolves() },
+		Subscriptions: { findByRoomId: sinon.stub().returns({ toArray: sinon.stub().resolves([]) }) },
+		...models,
+	};
+
+	return class extends VideoConfService {
+		constructor() {
+			(Object.entries(doubles) as [ModelName, object][]).forEach(([name, double]) => mockModel(name, double));
+			super();
+		}
+	} as new () => any;
 };
 
 /**

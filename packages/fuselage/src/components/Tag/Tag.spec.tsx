@@ -18,15 +18,19 @@ describe('[Tag Rendering]', () => {
 	});
 
 	test('applies the pill modifier when pill is set', () => {
-		const { getByText } = render(<Tag pill>john.doe</Tag>);
-		const tag = getByText('john.doe').parentElement;
+		render(
+			<Tag pill data-testid='tag'>
+				john.doe
+			</Tag>,
+		);
+		const tag = screen.getByTestId('tag');
 
 		expect(tag).toHaveClass('rcx-tag', 'rcx-tag--pill');
 	});
 
 	test('does not apply the pill modifier by default', () => {
-		const { getByText } = render(<Tag>john.doe</Tag>);
-		const tag = getByText('john.doe').parentElement;
+		render(<Tag data-testid='tag'>john.doe</Tag>);
+		const tag = screen.getByTestId('tag');
 
 		expect(tag).toHaveClass('rcx-tag');
 		expect(tag).not.toHaveClass('rcx-tag--pill');

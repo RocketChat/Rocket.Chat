@@ -3,7 +3,7 @@ import { LocalBroker, ClientSafeError, ServiceClass, api } from '@rocket.chat/co
 import type { IUser, SettingValue } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import { cronJobs } from '@rocket.chat/cron';
-import { registerModel } from '@rocket.chat/models';
+import { mockModel } from '@rocket.chat/models/testing';
 
 import { Presence } from './Presence';
 
@@ -25,9 +25,6 @@ const sessionsModel = {
 	findByOtherInstanceIds: jest.fn(),
 	removeConnectionsFromOtherInstanceIds: jest.fn(),
 };
-
-registerModel('IUsersModel', usersModel as any);
-registerModel('IUsersSessionsModel', sessionsModel as any);
 
 class SettingsService extends ServiceClass implements Pick<ISettingsService, 'set'> {
 	protected name = 'settings';
@@ -93,6 +90,11 @@ const instanceConnections = (instanceId: string, conns: number) =>
 	emit('watch.instanceStatus', { clientAction: 'updated', id: instanceId, diff: { 'extraInformation.conns': conns } });
 
 describe('Presence', () => {
+	beforeAll(() => {
+		mockModel('Users', usersModel);
+		mockModel('UsersSessions', sessionsModel);
+	});
+
 	let presence: Presence;
 
 	beforeAll(() => {

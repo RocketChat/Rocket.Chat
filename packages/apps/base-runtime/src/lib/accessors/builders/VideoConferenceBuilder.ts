@@ -17,10 +17,10 @@ export class VideoConferenceBuilder implements IVideoConferenceBuilder {
 
 	public setData(data: Partial<AppVideoConference>): IVideoConferenceBuilder {
 		this.call = {
-			rid: data.rid!,
+			rid: data.rid,
 			createdBy: data.createdBy,
-			providerName: data.providerName!,
-			title: data.title!,
+			providerName: data.providerName,
+			title: data.title,
 			discussionRid: data.discussionRid,
 		};
 
@@ -60,7 +60,7 @@ export class VideoConferenceBuilder implements IVideoConferenceBuilder {
 	}
 
 	public getProviderData(): Record<string, unknown> {
-		return this.call.providerData!;
+		return this.call.providerData;
 	}
 
 	public setTitle(userId: string): IVideoConferenceBuilder {

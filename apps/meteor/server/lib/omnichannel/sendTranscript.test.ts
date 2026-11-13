@@ -1,6 +1,7 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
 import { ClientSafeError } from '@rocket.chat/core-services';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import p from 'proxyquire';
 import sinon from 'sinon';
@@ -64,7 +65,6 @@ const { sendTranscript } = p.noCallThru().load('./sendTranscript', {
 		Omnichannel: { isWithinMACLimit: sinon.stub().resolves(true) },
 		ClientSafeError,
 	},
-	'@rocket.chat/models': modelsMock,
 	'@rocket.chat/logger': { Logger: mockLogger },
 	'../callbacks': {
 		callbacks: {
@@ -79,6 +79,13 @@ const { sendTranscript } = p.noCallThru().load('./sendTranscript', {
 });
 
 describe('Send transcript', () => {
+	before(() => {
+		mockModel('LivechatRooms', modelsMock.LivechatRooms);
+		mockModel('Messages', modelsMock.Messages);
+		mockModel('Users', modelsMock.Users);
+		mockModel('Uploads', modelsMock.Uploads);
+	});
+
 	beforeEach(() => {
 		modelsMock.LivechatRooms.findOneById.reset();
 		modelsMock.Messages.findLivechatClosingMessage.reset();

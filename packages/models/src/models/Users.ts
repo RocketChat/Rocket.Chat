@@ -41,7 +41,7 @@ import { Rooms, Subscriptions } from '../index';
 import { BaseRaw } from './BaseRaw';
 import { queryAvailableAgentsForSelection, queryStatusAgentOnline } from '../helpers';
 
-const usersDefaultFields = { __rooms: 0 } as const;
+const usersDefaultFields = { __rooms: 0, roomRolePriorities: 0 } as const;
 
 export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IUsersModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IUser>>) {
@@ -1333,6 +1333,17 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			},
 			{
 				returnDocument: 'after',
+				projection: {
+					_id: 1,
+					username: 1,
+					name: 1,
+					status: 1,
+					statusText: 1,
+					statusSource: 1,
+					statusExpiresAt: 1,
+					roles: 1,
+					xmppFederation: 1,
+				},
 			},
 		);
 	}
@@ -1568,6 +1579,44 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		};
 
 		return this.col.updateOne({ _id }, update);
+	}
+
+	addLoginToken(userId: IUser['_id'], loginToken: IMeteorLoginToken) {
+		return this.col.updateOne(
+			{ _id: userId },
+			{
+				$addToSet: {
+					'services.resume.loginTokens': loginToken,
+				},
+			},
+		);
+	}
+
+	findWithLoginTokensOlderThan<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		date: Date,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
+		// login tokens created by old Meteor versions stamp `when` as a number
+		const query = {
+			$or: [{ 'services.resume.loginTokens.when': { $lt: date } }, { 'services.resume.loginTokens.when': { $lt: +date } }],
+		};
+
+		return this.find<T, O>(query, options);
+	}
+
+	removeLoginTokensOlderThan(date: Date) {
+		return this.col.updateMany(
+			{
+				$or: [{ 'services.resume.loginTokens.when': { $lt: date } }, { 'services.resume.loginTokens.when': { $lt: +date } }],
+			},
+			{
+				$pull: {
+					'services.resume.loginTokens': {
+						$or: [{ when: { $lt: date } }, { when: { $lt: +date } }],
+					},
+				},
+			},
+		);
 	}
 
 	unsetLoginTokens(userId: IUser['_id']) {
@@ -3080,6 +3129,16 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		};
 
 		return this.updateOne({ _id }, update);
+	}
+
+	setPasswordHash(_id: IUser['_id'], passwordHash: string) {
+		return this.updateOne(
+			{ _id },
+			{
+				$set: { 'services.password.bcrypt': passwordHash },
+				$unset: { 'services.password.reset': 1, 'services.password.argon2': 1 },
+			},
+		);
 	}
 
 	resetPasswordAndSetRequirePasswordChange(_id: IUser['_id'], requirePasswordChange: boolean, requirePasswordChangeReason: string) {

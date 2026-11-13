@@ -10,6 +10,8 @@ const { Default, Semantic } = composeStories(stories);
 describe('[Text Component]', () => {
 	it('renders without crashing', () => {
 		render(<Default />);
+
+		expect(screen.getByText('The quick brown fox jumps over the lazy dog')).toBeInTheDocument();
 	});
 
 	it('renders a div by default', () => {

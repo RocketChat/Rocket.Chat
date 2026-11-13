@@ -1,3 +1,5 @@
+import { screen } from '@testing-library/react';
+
 import Tabs from './Tabs';
 import TabsItem from './TabsItem';
 import { render } from '../../testing';
@@ -5,15 +7,17 @@ import { render } from '../../testing';
 describe('[Tabs Component]', () => {
 	it('renders without crashing', () => {
 		render(<Tabs />);
+
+		expect(screen.getByRole('tablist')).toBeInTheDocument();
 	});
 
 	it('renders a disabled tab as a disabled button', () => {
-		const { getByRole } = render(
+		render(
 			<Tabs>
 				<TabsItem disabled>Tab</TabsItem>
 			</Tabs>,
 		);
 
-		expect(getByRole('tab')).toBeDisabled();
+		expect(screen.getByRole('tab')).toBeDisabled();
 	});
 });

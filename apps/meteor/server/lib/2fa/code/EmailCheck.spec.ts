@@ -1,6 +1,5 @@
 import type { SettingValue } from '@rocket.chat/core-typings';
-import type { IUsersModel } from '@rocket.chat/model-typings';
-import { registerModel } from '@rocket.chat/models';
+import { mockModel } from '@rocket.chat/models/testing';
 import bcrypt from 'bcrypt';
 
 import { EmailCheck } from './EmailCheck';
@@ -10,7 +9,6 @@ import { settings } from '../../../settings';
 import { i18n } from '../../i18n';
 import * as Mailer from '../../notifications/email/api';
 
-jest.mock('meteor/accounts-base', () => ({ Accounts: { _bcryptRounds: () => 4 } }), { virtual: true });
 jest.mock('../../../settings', () => ({ settings: { get: jest.fn() } }));
 jest.mock('../../notifications/email/api', () => ({ send: jest.fn() }));
 
@@ -21,7 +19,6 @@ const users = {
 	incrementInvalidEmailCodeAttempt: jest.fn(),
 	maxInvalidEmailCodeAttemptsReached: jest.fn(),
 };
-registerModel('IUsersModel', users as unknown as IUsersModel);
 
 const NOW = new Date('2026-10-15T12:00:00.000Z');
 const FIVE_MINUTES = 5 * 60 * 1000;
@@ -47,6 +44,10 @@ const withStoredCode = async (code: string, expire: Date, attempts = 0): Promise
 const sentEmails = () => jest.mocked(Mailer.send).mock.calls.map(([email]) => email);
 
 describe('EmailCheck', () => {
+	beforeAll(() => {
+		mockModel('Users', users);
+	});
+
 	let emailCheck: EmailCheck;
 
 	beforeEach(() => {

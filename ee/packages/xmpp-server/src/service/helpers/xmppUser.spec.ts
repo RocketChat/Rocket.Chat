@@ -1,12 +1,10 @@
+import { mockModel } from '@rocket.chat/models/testing';
+
 import { domainOfJid, toBareJid } from './jid';
 import { createOrUpdateXMPPUser } from './xmppUser';
 import { InvalidJidError } from '../../errors';
 
 const upsertXMPPUser = jest.fn();
-
-jest.mock('@rocket.chat/models', () => ({
-	Users: { upsertXMPPUser: (...args: unknown[]) => upsertXMPPUser(...args) },
-}));
 
 describe('toBareJid', () => {
 	it('strips the resource', () => {
@@ -29,6 +27,10 @@ describe('domainOfJid', () => {
 });
 
 describe('createOrUpdateXMPPUser (addressing R9, R10)', () => {
+	beforeAll(() => {
+		mockModel('Users', { upsertXMPPUser: (...args: unknown[]) => upsertXMPPUser(...args) });
+	});
+
 	beforeEach(() => {
 		upsertXMPPUser.mockReset().mockResolvedValue({ _id: 'u1' });
 	});

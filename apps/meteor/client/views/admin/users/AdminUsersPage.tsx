@@ -15,10 +15,10 @@ import {
 	PageHeader,
 	PageContent,
 } from '@rocket.chat/ui-client';
-import { useRouteParameter, useTranslation, useRouter, useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
+import { useRouteParameter, useRouter, useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
-import { Trans } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 import AdminInviteUsers from './AdminInviteUsers';
 import AdminUserCreated from './AdminUserCreated';
@@ -48,7 +48,7 @@ export type AdminUsersTab = 'all' | 'active' | 'deactivated' | 'pending';
 export type UsersTableSortingOption = 'name' | 'username' | 'emails.address' | 'status' | 'active' | 'sipExtension';
 
 const AdminUsersPage = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const seatsCap = useSeatsCap();
 

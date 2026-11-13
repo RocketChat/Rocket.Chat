@@ -23,7 +23,7 @@ export default async function outboundMessageHandler(request: RequestContext): P
 	try {
 		logger.debug(`Executing ${methodName} on outbound communication provider...`);
 
-		// oxlint-disable-next-line @typescript-eslint/no-unsafe-function-type
+		// oxlint-disable-next-line @typescript-eslint/no-unsafe-function-type, typescript/no-unsafe-return -- the provider method is app code invoked as a bare Function, so its result is untyped
 		return await (method as Function).apply(wrapComposedApp(provider, request), [
 			...args,
 			AppAccessorsInstance.getReader(),

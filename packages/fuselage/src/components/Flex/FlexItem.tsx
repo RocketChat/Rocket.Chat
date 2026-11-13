@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { useCallback } from 'react';
 
 import { BoxTransforms, useComposedBoxTransform } from '../Box/BoxTransforms';
+import type { BoxTransformProps } from '../Box/BoxTransforms';
 
 export type FlexItemProps = {
 	children?: ReactNode;
@@ -14,28 +15,28 @@ export type FlexItemProps = {
 
 function FlexItem({ children, order, grow, shrink, basis, align }: FlexItemProps) {
 	const transformFn = useCallback(
-		(props: any) => {
-			if (order !== undefined && props.order === undefined) {
-				props.order = order;
+		(boxProps: BoxTransformProps) => {
+			if (order !== undefined && boxProps.order === undefined) {
+				boxProps.order = order;
 			}
 
-			if (grow !== undefined && props.flexGrow === undefined) {
-				props.flexGrow = grow;
+			if (grow !== undefined && boxProps.flexGrow === undefined) {
+				boxProps.flexGrow = grow;
 			}
 
-			if (shrink !== undefined && props.flexShrink === undefined) {
-				props.flexShrink = shrink;
+			if (shrink !== undefined && boxProps.flexShrink === undefined) {
+				boxProps.flexShrink = shrink;
 			}
 
-			if (basis !== undefined && props.flexBasis === undefined) {
-				props.flexBasis = basis;
+			if (basis !== undefined && boxProps.flexBasis === undefined) {
+				boxProps.flexBasis = basis;
 			}
 
-			if (align !== undefined && props.alignSelf === undefined) {
-				props.alignSelf = (align === 'start' && 'flex-start') || (align === 'end' && 'flex-end') || align;
+			if (align !== undefined && boxProps.alignSelf === undefined) {
+				boxProps.alignSelf = (align === 'start' && 'flex-start') || (align === 'end' && 'flex-end') || align;
 			}
 
-			return props;
+			return boxProps;
 		},
 		[align, basis, grow, order, shrink],
 	);

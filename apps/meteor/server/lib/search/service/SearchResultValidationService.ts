@@ -5,6 +5,7 @@ import mem from 'mem';
 import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomAsync } from '../../authorization';
+import { keepPublicAuthorFields } from '../../messages/keepPublicAuthorFields';
 import { SearchLogger } from '../logger/logger';
 import type { IRawSearchResult, ISearchResult } from '../model/ISearchResult';
 
@@ -55,7 +56,7 @@ export class SearchResultValidationService {
 									roomId: msg.rid,
 								});
 								return {
-									...msg,
+									...keepPublicAuthorFields(msg),
 									user: msg.u._id,
 									r: { name: subscription.name, t: subscription.t },
 									username: user?.username,

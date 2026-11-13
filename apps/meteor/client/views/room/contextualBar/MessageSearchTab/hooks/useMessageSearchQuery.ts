@@ -1,5 +1,6 @@
-import { useMethod, useTranslation, useUserId } from '@rocket.chat/ui-contexts';
+import { useMethod, useUserId } from '@rocket.chat/ui-contexts';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 
 import { useRoom } from '../../../contexts/RoomContext';
 
@@ -15,7 +16,7 @@ export const useMessageSearchQuery = ({
 	const uid = useUserId();
 	const room = useRoom();
 
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const searchMessages = useMethod('rocketchatSearch.search');
 	return useQuery({

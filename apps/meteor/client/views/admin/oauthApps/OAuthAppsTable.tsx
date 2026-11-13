@@ -9,12 +9,13 @@ import {
 	GenericNoResults,
 	useFormatDateAndTime,
 } from '@rocket.chat/ui-client';
-import { useEndpoint, useRoute, useTranslation, useUserId } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRoute, useUserId } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const OAuthAppsTable = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
 
 	const uid = { uid: useUserId() || '' };

@@ -60,6 +60,7 @@ const UsersUpdateOwnBasicInfoParamsPostSchema = {
 				newPassword: {
 					type: 'string',
 					nullable: true,
+					maxLength: 256,
 				},
 				phones: phonesSchema,
 			},

@@ -1,7 +1,7 @@
-import { afterEach, describe, it } from 'node:test';
+import { afterEach, before, describe, it } from 'node:test';
 
 import { Emitter } from '@rocket.chat/emitter';
-import { registerModel } from '@rocket.chat/models';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -44,23 +44,10 @@ const licenseMock = {
 	},
 };
 
-registerModel('IServerEventsModel', {
-	insertOne: () => undefined,
-	createAuditServerEvent: () => undefined,
-} as any);
-
 proxyquire.noCallThru().load('./airGappedRestrictions.ts', {
 	'@rocket.chat/license': {
 		AirGappedRestriction: airgappedRestrictionObj,
 		License: licenseMock,
-	},
-	'@rocket.chat/models': {
-		Settings: {
-			updateValueById: mocks.settingsUpdate,
-		},
-		Statistics: {
-			findLastStatsToken: mocks.findLastToken,
-		},
 	},
 	'../../../../server/lib/notifyListener': {
 		notifyOnSettingChangedById: mocks.notifySetting,
@@ -76,6 +63,19 @@ proxyquire.noCallThru().load('./airGappedRestrictions.ts', {
 });
 
 describe('airgappedRestrictions', () => {
+	before(() => {
+		mockModel('ServerEvents', {
+			insertOne: () => undefined,
+			createAuditServerEvent: () => undefined,
+		});
+		mockModel('Settings', {
+			updateValueById: mocks.settingsUpdate,
+		});
+		mockModel('Statistics', {
+			findLastStatsToken: mocks.findLastToken,
+		});
+	});
+
 	afterEach(() => {
 		Object.values(mocks).forEach((mock) => {
 			if ('resetHistory' in mock) {

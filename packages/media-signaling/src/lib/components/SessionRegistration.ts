@@ -1,4 +1,4 @@
-import type { IMediaSignalLogger } from '../../definition';
+import type { IMediaSignalLogger } from '../../definition/index.js';
 
 const REGISTER_CONFIRMATION_TIMEOUT = 1000;
 const MAX_REGISTER_ATTEMPTS = 10;

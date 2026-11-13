@@ -65,7 +65,7 @@ export class AppOutboundCommunicationProviderManager {
 			return;
 		}
 
-		for await (const [, providerInfo] of appProviders) {
+		for (const [, providerInfo] of appProviders) {
 			if (providerInfo.isRegistered) {
 				continue;
 			}
@@ -86,7 +86,7 @@ export class AppOutboundCommunicationProviderManager {
 		}
 
 		const appProviders = this.outboundMessageProviders.get(appId);
-		for await (const [, providerInfo] of appProviders) {
+		for (const [, providerInfo] of appProviders) {
 			await this.unregisterProvider(appId, providerInfo, opts);
 		}
 

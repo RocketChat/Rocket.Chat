@@ -103,7 +103,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 			const value = chat?.composer?.substring(0, chat?.composer?.selection.start);
 			const selector =
 				option.matchSelectorRegex ??
-				(option.triggerAnywhere ? new RegExp(`(?:^| |\n)(${option.trigger})([^\\s]*$)`) : new RegExp(`(?:^)(${option.trigger})([^\\s]*$)`));
+				(option.triggerAnywhere ? new RegExp(`(?:^|\\s)(${option.trigger})([^\\s]*$)`) : new RegExp(`(?:^)(${option.trigger})([^\\s]*$)`));
 
 			const result = value?.match(selector);
 			if (!result || !value) {
@@ -130,7 +130,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 
 		const optionIndex = options.findIndex(({ trigger, matchSelectorRegex, triggerAnywhere, triggerLength }) => {
 			const selector =
-				matchSelectorRegex ?? (triggerAnywhere ? new RegExp(`(?:^| |\n)(${trigger})[^\\s]*$`) : new RegExp(`(?:^)(${trigger})[^\\s]*$`));
+				matchSelectorRegex ?? (triggerAnywhere ? new RegExp(`(?:^|\\s)(${trigger})[^\\s]*$`) : new RegExp(`(?:^)(${trigger})[^\\s]*$`));
 			const result = selector.test(value);
 			if (!triggerLength || !result) {
 				return result;
@@ -148,7 +148,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 		if (option) {
 			const selector =
 				option.matchSelectorRegex ??
-				(option.triggerAnywhere ? new RegExp(`(?:^| |\n)(${option.trigger})([^\\s]*$)`) : new RegExp(`(?:^)(${option.trigger})([^\\s]*$)`));
+				(option.triggerAnywhere ? new RegExp(`(?:^|\\s)(${option.trigger})([^\\s]*$)`) : new RegExp(`(?:^)(${option.trigger})([^\\s]*$)`));
 			const result = value.match(selector);
 			setFilter(commandsRef.current?.getFilter?.() ?? (result ? result[2] : ''));
 		}

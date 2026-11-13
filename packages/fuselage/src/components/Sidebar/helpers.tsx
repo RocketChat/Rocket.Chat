@@ -1,3 +1,4 @@
+/* oxlint-disable react/no-multi-comp -- shared story fixtures; splitting creates an import cycle with the fixture data */
 import type { Decorator } from '@storybook/react';
 
 import {
