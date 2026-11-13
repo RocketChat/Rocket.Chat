@@ -62,7 +62,7 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-/** B1: a conversation opens at its newest message. */
+/** R13, R78: a conversation opens at its newest message. */
 export const Default: Story = {
 	play: async ({ canvasElement }) => {
 		await waitForListSettled(canvasElement);
@@ -72,7 +72,7 @@ export const Default: Story = {
 	},
 };
 
-/** A list shorter than its viewport sits at the bottom, next to the composer. */
+/** R14: A list shorter than its viewport sits at the bottom, next to the composer. */
 export const ShortList: Story = {
 	args: { history: { size: 3 } },
 	play: async ({ canvasElement }) => {
@@ -83,6 +83,7 @@ export const ShortList: Story = {
 	},
 };
 
+/** R5: a list with nothing in it renders no row and raises no error. */
 export const Empty: Story = {
 	args: { history: { size: 0 }, hasHeader: false },
 	play: async ({ canvasElement }) => {
@@ -90,7 +91,7 @@ export const Empty: Story = {
 	},
 };
 
-/** B5, B21: reaching the top loads older messages without moving what is on screen. */
+/** R30, R36: reaching the top loads older messages without moving what is on screen. */
 export const InfiniteOlderHistory: Story = {
 	args: { history: { size: 400, hasMixedHeights: true }, source: { pageSize: 30, latency: 150 } },
 	play: async ({ canvasElement }) => {
@@ -110,7 +111,7 @@ export const InfiniteOlderHistory: Story = {
 	},
 };
 
-/** B2: new messages keep a list at the bottom at the bottom. */
+/** R15, R22: new messages keep a list at the bottom at the bottom. */
 export const LiveIncomingAtBottom: Story = {
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
@@ -124,7 +125,7 @@ export const LiveIncomingAtBottom: Story = {
 	},
 };
 
-/** B4: a message arriving while scrolled up shows "New messages", which takes the viewer down. */
+/** R18, R21, R23: a message arriving while scrolled up shows "New messages", which takes the viewer down. */
 export const LiveIncomingScrolledUp: Story = {
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
@@ -145,7 +146,7 @@ export const LiveIncomingScrolledUp: Story = {
 	},
 };
 
-/** B3: the viewer's own message takes them to it, even from an older window of the conversation. */
+/** R19, R20: the viewer's own message takes them to it, even from an older window of the conversation. */
 export const SendOwnMessageWhileDetached: Story = {
 	args: {
 		history: { size: 300 },
@@ -163,7 +164,7 @@ export const SendOwnMessageWhileDetached: Story = {
 	},
 };
 
-/** B7: jumping to a loaded message centers and highlights it. */
+/** R41, R42, R48: jumping to a loaded message centers and highlights it. */
 export const JumpToLoadedMessage: Story = {
 	args: { history: { size: 60 }, source: { pageSize: 60 } },
 	play: async ({ canvasElement }) => {
@@ -177,7 +178,7 @@ export const JumpToLoadedMessage: Story = {
 	},
 };
 
-/** B7: jumping to a message that is not loaded waits for the messages around it, then jumps. */
+/** R42, R43: jumping to a message that is not loaded waits for the messages around it, then jumps. */
 export const JumpToUnloadedMessage: Story = {
 	args: { history: { size: 400 }, source: { pageSize: 30, latency: 300 } },
 	play: async ({ canvasElement }) => {
@@ -191,7 +192,7 @@ export const JumpToUnloadedMessage: Story = {
 	},
 };
 
-/** B7: the target stays centered while content around it resolves its height late. */
+/** R28, R44: the target stays centered while content around it resolves its height late. */
 export const JumpSurvivesLateMeasurement: Story = {
 	args: { history: { size: 120, hasMixedHeights: true }, source: { pageSize: 120 }, initialTargetIndex: 40 },
 	play: async ({ canvasElement }) => {
@@ -204,7 +205,7 @@ export const JumpSurvivesLateMeasurement: Story = {
 	},
 };
 
-/** B8, B9: the unread divider marks the first unread message, and the list can jump to it. */
+/** R8, R47: the unread divider marks the first unread message, and the list can jump to it. */
 export const JumpToFirstUnread: Story = {
 	args: { history: { size: 80 }, source: { pageSize: 80, firstUnreadMessageId: fakeMessageId(30) } },
 	play: async ({ canvasElement }) => {
@@ -218,7 +219,7 @@ export const JumpToFirstUnread: Story = {
 	},
 };
 
-/** B6: from an older window, reaching the bottom loads newer messages, and "Jump to recent messages" resets to the latest. */
+/** R24, R40: from an older window, reaching the bottom loads newer messages, and "Jump to recent messages" resets to the latest. */
 export const JumpToLatest: Story = {
 	args: {
 		history: { size: 300 },
@@ -238,7 +239,7 @@ export const JumpToLatest: Story = {
 	},
 };
 
-/** B6, B21: newer messages load at the bottom of an older window. */
+/** R31: newer messages load at the bottom of an older window. */
 export const LoadNewerAtBottom: Story = {
 	args: {
 		history: { size: 300 },
@@ -257,7 +258,7 @@ export const LoadNewerAtBottom: Story = {
 	},
 };
 
-/** B2: content that grows after it is shown keeps a list at the bottom at the bottom. */
+/** R15: content that grows after it is shown keeps a list at the bottom at the bottom. */
 export const LateResizingContent: Story = {
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
@@ -270,7 +271,7 @@ export const LateResizingContent: Story = {
 	},
 };
 
-/** B2: a growing composer and a shrinking container keep a list at the bottom at the bottom. */
+/** R16: a growing composer and a shrinking container keep a list at the bottom at the bottom. */
 export const ContainerAndComposerResize: Story = {
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
@@ -286,7 +287,7 @@ export const ContainerAndComposerResize: Story = {
 	},
 };
 
-/** B14: switching conversations brings each one back where it was left. */
+/** R60, R62: switching conversations brings each one back where it was left. */
 export const RestorePosition: Story = {
 	render: () => <TwoRoomsPlayground />,
 	play: async ({ canvasElement }) => {
@@ -333,7 +334,7 @@ export const RestorePositionOfAListThatMountsEmpty: Story = {
 	},
 };
 
-/** B12: the header shows once no older messages remain. */
+/** R2, R37: the header shows once no older messages remain. */
 export const StartOfConversationHeader: Story = {
 	args: { history: { size: 40 }, source: { pageSize: 20, latency: 100 } },
 	play: async ({ canvasElement }) => {
@@ -348,12 +349,12 @@ export const StartOfConversationHeader: Story = {
 	},
 };
 
-/** A thread: replies grouped by author, the main message first, only the floating date over the list. */
+/** R11: A thread: replies grouped by author, the main message first, only the floating date over the list. */
 export const ThreadLayout: Story = {
 	args: { isThread: true, hasHeader: false, history: { size: 25 } },
 };
 
-/** B13: loading the first page, then older pages: the spinner shows only while a page is on its way. */
+/** R1, R3: loading the first page, then older pages: the spinner shows only while a page is on its way. */
 export const LoadingStates: Story = {
 	args: { history: { size: 200 }, source: { pageSize: 20, latency: 'manual', isInitiallyLoading: true } },
 	play: async ({ canvasElement }) => {
@@ -379,7 +380,7 @@ export const FirstPageLoading: Story = {
 	},
 };
 
-/** B7: the target of a jump is highlighted for a while. */
+/** R48: the target of a jump is highlighted for a while. */
 export const HighlightedMessage: Story = {
 	args: { history: { size: 40 }, source: { pageSize: 40 }, initialTargetIndex: 20 },
 	play: async ({ canvasElement }) => {
@@ -387,7 +388,7 @@ export const HighlightedMessage: Story = {
 	},
 };
 
-/** B10: the floating date shows the day of the top message while the viewer scrolls. */
+/** R27, R51: the floating date shows the day of the top message while the viewer scrolls. */
 export const FloatingDate: Story = {
 	args: { history: { size: 120 }, source: { pageSize: 120 } },
 	play: async ({ canvasElement }) => {
