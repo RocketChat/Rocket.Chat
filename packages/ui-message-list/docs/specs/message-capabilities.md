@@ -239,11 +239,9 @@ values are not built yet and keep their defaults; the media value is built, see
 The old list provider mounts `MessagesProvider` with the room and subscription it already has, so the
 display context and the old list context come from the same settings wherever a list shows messages;
 the places outside the lists mount their own, read-only ones with `allowsInteraction={false}`. The
-app's variants and attachments read the package's content parts. The app's copies are gone, with
-these exceptions: `MessageCollapsible`, `CollapsibleContent`, `Action`, `useCollapse`,
-`useIsCollapsibleToggled` and the five download and size files stay because the app's attachments
-still import them, until attachments move; `location/*` stays because the share-location modal
-imports `MapView`, not because of attachments.
+app's variants and attachments read the package's content parts. The app's copies are gone; the
+collapsible parts, the collapse hooks, the download and size files and the location map went with
+the attachments (see [message-attachments](message-attachments.md)).
 
 Notes for later branches:
 

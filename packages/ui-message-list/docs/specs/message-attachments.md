@@ -1,8 +1,50 @@
 ---
-status: planned
+status: implemented
 adrs: []
-code: []
-tests: []
+code:
+  [
+    src/Message/content/Attachments.tsx,
+    src/Message/content/attachments,
+    src/Message/lib/getFileExtension.ts,
+    src/Message/lib/toPlainTextRoot.ts,
+    src/Message/lib/userAgentMIMETypeFallback.ts,
+    src/Message/index.ts,
+    apps/meteor/client/providers/MessagesProvider/useMessageMediaValue.ts,
+    apps/meteor/client/providers/MessagesProvider/useOpenEncryptedPdf.ts,
+    apps/meteor/client/providers/MessagesProvider/MessagesProvider.tsx,
+    apps/meteor/client/providers/MessagesProvider/useMessageRelatedDataValue.ts,
+    apps/meteor/client/providers/MediaPlayerProvider/MediaPlayerProvider.tsx,
+    apps/meteor/client/hooks/useDownloadFromServiceWorker.ts,
+    apps/meteor/client/components/message/variants,
+    apps/meteor/client/views/admin/moderation/helpers/ContextMessage.tsx,
+    apps/meteor/client/views/omnichannel/contactHistory/MessageList/ContactHistoryMessage.tsx,
+    apps/meteor/client/views/room/modals/ForwardMessageModal/ForwardMessageModal.tsx,
+    apps/meteor/client/views/room/modals/PinMessageModal/PinMessageModal.tsx,
+    apps/meteor/client/views/room/composer/messageBox/MessageBoxReply.tsx,
+    apps/meteor/client/views/room/ShareLocation/ShareLocationModal.tsx,
+  ]
+tests:
+  [
+    src/Message/content/Attachments.spec.tsx,
+    src/Message/content/attachments/default/hooks/usePerformActionMutation.spec.tsx,
+    src/Message/content/attachments/file/GenericFileAttachment.spec.tsx,
+    src/Message/content/attachments/file/hooks/useReloadOnError.spec.ts,
+    src/Message/content/attachments/structure/AttachmentRow.spec.tsx,
+    src/index.spec.ts,
+    apps/meteor/client/providers/MessagesProvider/MessagesProvider.spec.tsx,
+    apps/meteor/client/providers/MessagesProvider/useOpenEncryptedPdf.spec.ts,
+    apps/meteor/client/providers/MessagesProvider/useMessageRelatedDataValue.spec.ts,
+    apps/meteor/client/providers/MediaPlayerProvider/MediaPlayerProvider.spec.tsx,
+    apps/meteor/client/hooks/useDownloadFromServiceWorker.spec.tsx,
+    apps/meteor/client/components/message/variants/RoomMessage.contexts.spec.tsx,
+    apps/meteor/client/views/audit/components/AuditMessageList.display.spec.tsx,
+    apps/meteor/client/views/admin/moderation/helpers/ContextMessage.spec.tsx,
+    apps/meteor/client/views/omnichannel/contactHistory/MessageList/ContactHistoryMessage.spec.tsx,
+    apps/meteor/client/views/room/modals/PinMessageModal/PinMessageModal.spec.tsx,
+    apps/meteor/client/views/room/modals/ForwardMessageModal/ForwardMessageModal.spec.tsx,
+    apps/meteor/client/views/room/composer/messageBox/MessageBoxReply.spec.tsx,
+    apps/meteor/client/views/room/ShareLocation/ShareLocationModal.spec.tsx,
+  ]
 ---
 
 # Spec: Message attachments
@@ -125,7 +167,32 @@ desktop viewer and signed URLs.
 
 ## Design
 
-Decided in the plan.
+The package owns the attachment parts (`src/Message/content/attachments`), one component per kind and a
+structure folder of the shared pieces (author, title, size, download, image box). They read the
+viewer's attachment preferences from `ui-contexts`, what the app does from the interactions and
+navigation contexts, and the shared player, downloads and viewers from the media context. The media
+context's default keeps them working in stories and jsdom.
+
+The app owns the media value (`useMessageMediaValue`), built from the shared audio player, the
+service worker download module, the encrypted PDF opener and the desktop bridge, and mounted by
+`MessagesProvider` beside the other contexts. The player reaches the context as a store that only
+audio attachments subscribe to (`useMessageMediaPlayer`), so the value does not change with the
+player's progress and the other attachments do not render again. Each activation of a download asks
+the service worker under its own id; the opener keeps one blob and one request per file, the blobs of
+the five most recently opened files only, and asks for its downloads under their own ids.
+`documentViewer` is the one source for whether the desktop viewer is there: its `open` takes the url,
+the format and the title, and without it an encrypted PDF is downloaded. `canDownloadEncrypted` is
+read when a button renders. The collapse state of a message part is kept in the opened room's store
+by the related-data value (R3).
+
+Known departure for a later branch: the package's `useReloadOnError` calls `fetch` on the media URL
+directly, where AGENTS.md asks for a context capability. The forward and pin modals render under the
+modal region, outside `MediaPlayerProvider`, so audio in their quotes cannot play, as before.
+
+The app's variants, moderation, contact history, the modals and the composer render the package's
+parts, and the app keeps no copy: `MessageCollapsible`, `CollapsibleContent`, `Action`, the collapse
+hooks, the attachment components and the location map are deleted. The shared audio element keeps
+living above the room in `MediaPlayerProvider`, which recovers expired URLs with the package's hook.
 
 ## Out of scope
 
@@ -135,7 +202,7 @@ Decided in the plan.
 
 ## Known defects
 
-None; not implemented.
+None.
 
 ## Open questions
 

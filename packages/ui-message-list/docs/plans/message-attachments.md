@@ -1,6 +1,6 @@
 # Plan: Message attachments (from specs/message-attachments.md, 2026-11-12)
 
-Status: approved.
+Status: done.
 
 The package half is copied from the frozen reference (`message-list-ref`): attachments and their
 libraries from `e9f081a1aca`, exports from `c67e2992265`. The app half follows the reference's
@@ -100,6 +100,8 @@ Each step is one commit and builds and passes on its own.
 - Places that mount no `MessagesProvider` would show the default media (no player, no downloads): R22
   and R23 list them, and the previous branch mounted the provider at each.
 - Look and behaviour of attachments in a room cannot be proven in jsdom: manual check.
+- For QA: the forward and pin modals render under the modal region, outside `MediaPlayerProvider`, so
+  audio in their quotes cannot play, as before.
 
 ## Proof
 
