@@ -42,7 +42,6 @@ export type MessageBoxProps = {
 	tmid?: IMessage['_id'];
 	onSend?: (params: { value: string; tshow?: boolean; previewUrls?: string[]; isSlashCommandAllowed?: boolean }) => Promise<void>;
 	onJoin?: () => Promise<void>;
-	onResize?: () => void;
 	onTyping?: () => void;
 	onEscape?: () => void;
 	onNavigateToPreviousMessage?: () => void;
