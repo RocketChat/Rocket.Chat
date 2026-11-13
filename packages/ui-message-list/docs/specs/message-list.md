@@ -1,5 +1,5 @@
 ---
-status: draft
+status: planned
 adrs: []
 code: []
 tests: []
@@ -78,9 +78,9 @@ true, the last loaded message is not the latest. "Within 1px" is the tolerance o
   embed, a collapsible opening) and a late-resolving content MUST leave the viewport at the bottom, within 1px (B2).
 - **R16** While the viewer is at the bottom, the viewport shrinking or growing (the composer growing, the container or the
   window resizing, a contextual bar opening) MUST leave the viewport at the bottom, within 1px (B2).
-- **R17** The viewer MUST count as at the bottom when the end of the scrollable content is within 1px of the viewport's bottom and
+- **R17** The viewer MUST count as at the bottom when the end of the scrollable content is within `bottomThreshold` (R80) of the viewport's bottom and
   `hasNewerMessages` is false; the end of an older window MUST NOT count, so reaching it does not make the list follow arrivals
-  (B2, B6; Q2).
+  (B2, B6; Q2, answered).
 - **R18** While the viewer is reading away from the bottom, a message arriving at the end and a row at the end growing MUST NOT
   move the viewport: the topmost visible message keeps its offset, within 1px (B2, B4).
 
@@ -123,7 +123,7 @@ true, the last loaded message is not the latest. "Within 1px" is the tolerance o
 
 - **R30** When `hasOlderMessages` is true and the top of the viewport comes within a third of the viewport's height of the first
   message, the list MUST call `onLoadOlderMessages` (B5, B21).
-- **R31** When `hasNewerMessages` is true and the viewport is at the end of the loaded messages, the list MUST call
+- **R31** When `hasNewerMessages` is true and the viewport is within `bottomThreshold` of the end of the loaded messages, the list MUST call
   `onLoadNewerMessages`, and MUST NOT call it from anywhere else (B6, B21).
 - **R32** One page MUST load at a time. While a load has not settled (its promise neither resolved nor rejected), the list MUST
   start no other. It MUST NOT call a loader while its own flag, `isLoadingOlderMessages` or `isLoadingNewerMessages`, is true
@@ -287,6 +287,10 @@ true, the last loaded message is not the latest. "Within 1px" is the tolerance o
   viewport mode of its scrollbars (`useViewportScrollbars` and `viewportScrollbarsHostStyle`); `@rocket.chat/mock-providers` MUST export
   the deterministic fixtures `createFakeUser`, `createFakeRoom`, `createFakeSubscription`, `createFakeMessage`,
   `createFakeMessageWithAttachment` and `createFakeConversation`, which return the same values for the same input (Q5).
+- **R80** The list MUST accept `bottomThreshold`, the distance in pixels from the end of the latest messages within which the viewer counts
+  as at the bottom (R17, R26, R31, R54), 1 by default. Within it the list MUST follow arrivals, and an arrival MUST bring it to the true
+  bottom, within 1px, so a threshold never leaves the list short of the end; beyond it the viewer is reading away (R18). The
+  app passes the room's 60 and the thread's 20, as `develop` does (Q2, answered).
 
 ## Design
 
@@ -310,9 +314,9 @@ Decided in the plan.
 
 ## Known defects
 
-Defects of the reference's list that the package would copy. None can be pinned by a skipped test before a plan exists, and the
-checker rejects a `D` entry without one, so each becomes a `D<n>` entry with its test in the plan unless the question says it is
-fixed first:
+Defects of the reference's list that the package copies. None can be pinned by a skipped test before the code exists, and the
+checker rejects a `D` entry without one, so each becomes a `D<n>` entry with its skipped test in the commit that copies the
+list, except where noted:
 
 - A message at the end is recognised as the viewer's own only when it is the last one appended: an own message followed by
   another in the same update does not take the list to the bottom (R19).
@@ -321,8 +325,8 @@ fixed first:
 - A failed `onJumpToLatest` leaves the list waiting for the latest page: it holds nothing, and goes to the bottom later without
   the viewer asking, once a newer page ends the window (R20).
 - The check for a page that is due is not repeated when a load settles after its page was committed, so a viewport taller than the
-  page stays unfilled until the next scroll or change (R34). Suspected, from the reducer; the plan's first step is a table row
-  that shows it or drops it.
+  page stays unfilled until the next scroll or change (R34). Suspected, from the reducer: a reducer row shows it or drops it
+  first, and if it is real it is fixed in its own commit with a test that fails first.
 - Not carried, fixed first (Q1): the position is resolved when the list mounts, so a list that mounts before its messages
   loses its position (R61); `isAtBottom` reports what the list holds, so it is false for up to 3 s after a jump to the last message
   (R56); a resize does not refresh the report (R55).
@@ -331,35 +335,23 @@ fixed first:
 
 ## Open questions
 
-The intent's questions 1, 2 and 4 are open and are not repeated (they are written "intent Q1", "intent Q2" and "intent Q4", the
-ones below plain "Q"): R42, R49, R52 and R64 follow intent Q1; R9, R62 and the read-state requirements R55 to R57 and R60 follow
-intent Q2; R71 to R73 follow intent Q4; intent Q3 is answered (R76). These are new.
+The intent's questions were answered at the spec gate (written "intent Q1" to "intent Q4", the ones below plain "Q"), and so were
+these: R42, R49, R52 and R64 follow intent Q1; R9, R62 and the read-state requirements R55 to R57 and R60 follow intent Q2; R71 to
+R73 follow intent Q4; R76 is intent Q3.
 
-- **Q1** Whether the reference's defects that branch 08 would meet are fixed in this branch: a position resolved at mount
-  (R61), `isAtBottom` following what the list holds (R56) and no report after a resize (R55). (a) Carry all of them as `D` entries
-  with skipped tests, copying the reference as is. (b) Fix these three, each its own commit on top of the copied list with its
-  test, and carry the rest of Known defects. The first two cost the room its restore on a cold start and a read check
-  that waits up to 3 s after a jump to the last message; the third a stale "first unread is visible" after the contextual bar
-  opens. Recommended: (b).
-- **Q2** How near the bottom counts as the bottom (R17). `develop`'s room says within 60px and its thread within 20px; the
-  reference says within 1px. (a) 1px: a viewer a few pixels up stops following arrivals and sees "New messages". (b) The
-  old tolerances: the list keeps following for a viewer who scrolled a little, at the cost of a sticky bottom. Recommended: (a),
-  and the room's PR lists it as a known difference.
-- **Q3** The row the list holds in view stays mounted while held (R65), which `REVIEW.md` and `AGENTS.md` forbid in the words
-  "keepMounted holds no UI-state rows". The reference needs it: a held message that scrolls out of the viewport while its
-  surroundings are measured must stay measurable by index. (a) Keep it, and reword both files in this branch: only rows that
-  hold a live browser resource, and the row the list itself holds in view. (b) Drop it, and accept a held target that unmounts when
-  late content pushes it away. Recommended: (a).
-- **Q4** Where the item-list keyboard hook lives. The app's `useItemListNavigation` serves the sidebar, the side panels and the
-  tabs, and gained develop's media Tab handling and the move-row shortcut after the reference copied it. (a) The package gets its
-  own copy of `develop`'s current hook with the two options the list needs (`scrollToAdjacentRow`, `onMoveBetweenRows`) and without
-  the fallback that writes `scrollTop`; the app's copy stays until a later branch; the duplication is recorded. (b) Move the hook to
-  `@rocket.chat/ui-client` and have both import it, which edits eight places in the app in a branch whose invariant is that the app
-  does not change. (c) The package imports from the app: not allowed. Recommended: (a), and (b) as a follow-up after branch 09.
-- **Q5** Where the list gets the day's format (R7, R51, R79). (a) A new `useFormatDate` in `@rocket.chat/ui-client`, reading the
-  setting, as the scope says; it duplicates the app's hook, which the display context's `formatDate` already uses. (b) The display
-  context's `formatDate`: no new hook, but a list mounted outside `MessagesProvider` writes the default format. Recommended: (a); the
-  app's hook is replaced by it in the cleanup of branch 09 or later.
+- **Q1** ~~Whether the reference's defects that branch 08 would meet are fixed in this branch: a position resolved at mount
+  (R61), `isAtBottom` following what the list holds (R56) and no report after a resize (R55).~~ Answered: (b). Each of the three is
+  fixed in its own commit on top of the copied list, with a test that fails first (R55, R56, R61). The other defects are
+  carried as `D` entries.
+- **Q2** ~~How near the bottom counts as the bottom (R17).~~ Answered: not 1px alone. The list takes a `bottomThreshold` option,
+  1 by default as in the reference, so branch 08 can pass the room's 60px and branch 09 the thread's 20px, as `develop` does
+  (R17, R31, R80).
+- **Q3** ~~The row the list holds in view stays mounted while held (R65), which `REVIEW.md` and `AGENTS.md` forbid.~~ Answered:
+  (a). It stays mounted, and both files are reworded in this branch.
+- **Q4** ~~Where the item-list keyboard hook lives.~~ Answered: (a). The package gets its own copy of `develop`'s current hook
+  with the two options the list needs and without the `scrollTop` fallback; the app's copy is untouched. Moving the hook to
+  `@rocket.chat/ui-client` for both is a follow-up after branch 09.
+- **Q5** ~~Where the list gets the day's format.~~ Answered: (a). `useFormatDate` in `@rocket.chat/ui-client` (R79).
 
 ### Corrections to the scope, for the plan
 

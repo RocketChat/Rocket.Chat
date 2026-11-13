@@ -1,6 +1,6 @@
 # Intent: Message list
 
-Author: message list replacement stack (branch 07). Status: draft.
+Author: message list replacement stack (branch 07). Status: accepted.
 
 ## Problem
 
@@ -60,27 +60,28 @@ fixtures. Later capabilities depend on it: `room-message-list` (08) and the thre
 
 ## Open questions
 
-- **Q1** Which of the six behaviours branch 02 fixed belong to this spec, given that their app specs are deleted in branches
+- **Q1** ~~Which of the six behaviours branch 02 fixed belong to this spec, given that their app specs are deleted in branches
   08 and 09. (a) The four the engine owns, carried here as requirements: a `?msg=` jump lands on the message with the
   start-of-room row present; kept-mounted rows and the top message stay right while older messages load; a day shows once under
   the floating date; a highlight in one list never clears another's. The other two stay where they are: a thread's system
   messages out of the room's selection is `message-variants` R24 and R25 plus the "Select all" wiring of 08, and the composer's
   auto-link domains is the composer's hook, which 08 must move out of the directory it deletes. (b) All six here, which puts
   selection and a composer hook in a spec about scrolling. (c) None here, which leaves four behaviours of the engine with no
-  proof once the old specs go. Recommended: (a).
-- **Q2** What the list must offer so branch 08 keeps develop's read-state work (#42756): the unread jump is decided from the
+  proof once the old specs go. Recommended: (a).~~ Answered (the orchestrator, for the user): (a). The four are carried (spec R42, R49, R52, R64); selection and
+  the auto-link hook are noted in the spec's Out of scope for 08.
+- **Q2** ~~What the list must offer so branch 08 keeps develop's read-state work (#42756): the unread jump is decided from the
   listed messages, and the saved position is kept when only a thread reply is unread. (a) The list decides nothing about unread:
   it restores a position when it is given one, opens at the bottom when it is not, draws the unread divider for the id it is
   given without moving for it, reports what is visible (the first report without any scroll, `isAtBottom` true when the viewer
   stands at the latest messages) and answers the same question synchronously from its handle. The room decides from its listed
   messages and the subscription, as today. (b) The list takes the subscription's last-seen time and decides, which ties the
   package to the read model. Recommended: (a). Where the reference's B14 says "unreads override the restore", the spec says the
-  consumer decides, as `develop` does.
+  consumer decides, as `develop` does.~~ Answered: (a). The list decides nothing about unread (spec R9, R55 to R57, R60 to R62).
 - **Q3** ~~Where the conversation stories live.~~ Answered by the user (branch 06, intent Q5): in this branch (spec R76).
-- **Q4** Whether the list's requirements bound the re-rendering of mounted rows. The related-data context value of
+- **Q4** ~~Whether the list's requirements bound the re-rendering of mounted rows. The related-data context value of
   `MessagesProvider` changes on every room or subscription update, so every mounted row reads a new value when a message
   arrives (carried from branch 06). (a) The list bounds its own part (a scroll, an anchor change, a date or an arrival
   re-renders only the rows whose row data changed), with a spec that counts renders; the provider's value stability is a
   requirement of 08, where the real provider and the list meet and a meteor spec can count a mounted row's renders. (b) Leave
   both. (c) Both here, which changes a provider that nothing in this branch feeds to the list. Recommended: (a) (spec R71 to
-  R73).
+  R73).~~ Answered: (a). The provider value's stability is a requirement of 08.
