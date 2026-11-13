@@ -1,5 +1,6 @@
 import type { IThreadMessage } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
+import { UserCardContext } from '@rocket.chat/ui-contexts';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
@@ -85,4 +86,26 @@ it('should show a placeholder instead of failing when the message content cannot
 	});
 
 	expect(screen.getByText('Message_could_not_be_displayed')).toBeInTheDocument();
+});
+
+it('opens the user info from the avatar without the click reaching the elements around the row (message-variants R14)', async () => {
+	const openUserInfo = jest.fn();
+	const onClickAround = jest.fn();
+	document.addEventListener('click', onClickAround);
+
+	render(<ThreadMessage message={message} sequential={false} unread={false} ignoredUser={false} showUserAvatar={true} />, {
+		wrapper: mockAppRoot()
+			.wrap((children) => (
+				<UserCardContext.Provider value={{ openUserCard: jest.fn(), openUserInfo, closeUserCard: jest.fn(), triggerProps: {} }}>
+					{children}
+				</UserCardContext.Provider>
+			))
+			.build(),
+	});
+
+	await userEvent.click(screen.getByRole('img', { hidden: true }));
+	document.removeEventListener('click', onClickAround);
+
+	expect(openUserInfo).toHaveBeenCalledWith('userName');
+	expect(onClickAround).not.toHaveBeenCalled();
 });
