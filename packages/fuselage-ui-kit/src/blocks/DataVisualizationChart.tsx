@@ -81,14 +81,15 @@ const DataVisualizationChart = ({ model }: DataVisualizationChartProps) => {
 			<Box height={chartHeight}>
 				{type === 'bar' ? (
 					<ResponsiveBar
+						// Series are keyed by index, so no series name can overwrite the category field.
 						data={categories.map((category, row) => ({
 							category,
-							...Object.fromEntries(series.map(({ name, values }) => [name, values[row] ?? 0])),
+							...Object.fromEntries(series.map(({ values }, index) => [index, values[row] ?? 0])),
 						}))}
-						keys={names}
+						keys={series.map((_, index) => String(index))}
 						indexBy='category'
 						groupMode='grouped'
-						colors={(bar) => colorOf(bar.id)}
+						colors={(bar) => colorAt(Number(bar.id))}
 						valueScale={{ type: 'linear', min: valueMin, max: valueMax }}
 						theme={theme}
 						margin={margin}
@@ -97,7 +98,7 @@ const DataVisualizationChart = ({ model }: DataVisualizationChartProps) => {
 						enableLabel={false}
 						axisBottom={axisBottom}
 						axisLeft={axisLeft}
-						tooltip={({ id, indexValue, value }) => <Tooltip>{`${id} (${indexValue}): ${value}`}</Tooltip>}
+						tooltip={({ id, indexValue, value }) => <Tooltip>{`${names[Number(id)]} (${indexValue}): ${value}`}</Tooltip>}
 					/>
 				) : (
 					<ResponsiveLine
