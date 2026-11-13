@@ -178,7 +178,8 @@ true, the last loaded message is not the latest. "Within 1px" is the tolerance o
   (B5, B21).
 - **R33** The list MUST NOT load a page while positioning (R29) or while it holds a message in view (R28).
 - **R34** After every change of the messages, the list MUST check again whether a page is due, so a viewport taller than a page
-  keeps loading until it is full or nothing remains. A loading flag changing alone MUST NOT start a load (B5, B21).
+  keeps loading until it is full or nothing remains. A loading flag changing alone MUST NOT start a load (B5, B21). With
+  `deferPagingUntilInput` the check waits for the viewer's first input (R82).
 - **R35** A loader that rejects MUST settle like one that resolves, and the list MUST NOT retry by itself; the next scroll or
   change of the messages checks again (B5).
 
@@ -346,6 +347,14 @@ true, the last loaded message is not the latest. "Within 1px" is the tolerance o
   as at the bottom (R17, R26, R31, R54), 1 by default. Within it the list MUST follow arrivals, and an arrival MUST bring it to the true
   bottom, within 1px, so a threshold never leaves the list short of the end; beyond it the viewer is reading away (R18). The
   app passes the room's 60 and the thread's 20, as `develop` does (Q2, answered).
+- **R82** The list MUST accept `deferPagingUntilInput`, off by default and read when it mounts. While it is on, the list MUST NOT
+  call `onLoadOlderMessages` or `onLoadNewerMessages` before the viewer's first input in it: the input of R25 (a wheel or touch
+  gesture, a scroll key, dragging the scrollbar, moving between messages with the keyboard), or a pointer pressed anywhere in the
+  list, which releases nothing; a scroll the list or the browser makes is not input, and a first page shorter than the viewport
+  waits too (R34). The first input MUST check at once whether a page is due; from then on paging follows R30 to R35, until the
+  messages are replaced by another window of the conversation (R40), which waits for input again (user decision, review round 1;
+  `develop`'s room, `useGetMore`: no page before the viewer's first wheel, pointer press or scroll key, and again after a jump
+  rebuilds the window; for the room of `room-message-list`).
 
 ## Design
 

@@ -84,7 +84,7 @@ A message from someone else that arrives while the viewer is away from the botto
 
 ### Paging
 
-Older messages load when the viewport comes within a third of its height from the first message; newer messages load at the bottom (B21). One page loads at a time. The check runs after every scroll and once more after every data change, so a viewport taller than a page keeps loading until it is full, and it never runs while the list is positioning or holding a message in view.
+Older messages load when the viewport comes within a third of its height from the first message; newer messages load at the bottom (B21). One page loads at a time. The check runs after every scroll and once more after every data change, so a viewport taller than a page keeps loading until it is full, and it never runs while the list is positioning or holding a message in view. With `deferPagingUntilInput`, no page loads before the viewer's first input in the list (a scroll gesture, a scroll key, a pointer press), so a first page shorter than the viewport waits for it too, and the same holds again once the window of the conversation is replaced.
 
 ## The data contract
 
@@ -97,6 +97,7 @@ The consumer gives the list:
 - how to tell the viewer's own messages, including their optimistic copies;
 - a saved position to restore, and the list must be keyed by conversation for it to take effect; whether unread messages override it is the consumer's decision, which it makes by not passing the position;
 - optionally, how near the bottom counts as the bottom (`bottomThreshold`);
+- optionally, that no page loads before the viewer's first input in the list (`deferPagingUntilInput`), as in a room;
 - a renderer for each message row and, optionally, a header.
 
 The list reports back when a jump target was reached, where it was left (an opaque position to store and hand back), and what is visible. The latest visibility can also be read at any time from the list's handle, for callers that ask instead of listening, and the handle scrolls to the bottom, the top or a message on demand.

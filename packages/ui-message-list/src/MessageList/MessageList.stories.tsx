@@ -820,3 +820,42 @@ export const BottomThreshold: Story = {
 		await expect(canvas.getByText('New messages').closest('[data-visible]')).toHaveAttribute('data-visible', 'true');
 	},
 };
+
+/** R82: with `deferPagingUntilInput`, a scroll the list does not get from the viewer loads nothing; the viewer reaching the top loads one page. */
+export const PagingWaitsForInput: Story = {
+	args: { history: { size: 200 }, source: { pageSize: 30, latency: 100 }, list: { deferPagingUntilInput: true } },
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const viewport = getViewport(canvasElement);
+		await waitForListSettled(canvasElement);
+
+		// A scroll with no input behind it, which the list then takes back to the bottom it holds
+		viewport.scrollTop = 0;
+		await waitForListSettled(canvasElement);
+		await expect(canvas.getByLabelText('Loads')).toHaveTextContent('0');
+
+		await userScrollTo(canvasElement, 0);
+		await waitFor(() => canvas.getByLabelText('Loads').textContent === '1');
+		await waitFor(() => viewport.getAttribute('aria-busy') === 'false');
+		await waitForListSettled(canvasElement);
+		await expect(canvas.getByLabelText('Loads')).toHaveTextContent('1');
+	},
+};
+
+/** R82, R34: with `deferPagingUntilInput`, a first page shorter than the viewport waits for the viewer, then fills the viewport. */
+export const PagingWaitsForInputOnAShortPage: Story = {
+	args: { history: { size: 300 }, source: { pageSize: 4, latency: 50 }, list: { deferPagingUntilInput: true } },
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const viewport = getViewport(canvasElement);
+		await waitForListSettled(canvasElement);
+		await expect(canvas.getByLabelText('Loads')).toHaveTextContent('0');
+
+		viewport.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+		await waitFor(() => Number(canvas.getByLabelText('Loads').textContent) >= 2);
+		await waitFor(() => viewport.getAttribute('aria-busy') === 'false');
+		await waitForListSettled(canvasElement);
+		const first = viewport.querySelector<HTMLElement>('[data-message-id]') as HTMLElement;
+		await expect(first.getBoundingClientRect().top).toBeLessThanOrEqual(viewport.getBoundingClientRect().top + 1);
+	},
+};

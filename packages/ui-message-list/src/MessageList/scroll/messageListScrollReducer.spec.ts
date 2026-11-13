@@ -601,3 +601,57 @@ describe("the viewer's input", () => {
 		expect(run(idle, [scrolled(MIDDLE), scrolled(TOP)]).state.anchor).toEqual({ type: 'bottom' });
 	});
 });
+
+describe('paging that waits for the viewer', () => {
+	const rows = rowsOf('abcde', { hasOlderMessages: true });
+	const short = at(0, 300);
+	const openedAt = (measurement: MessageListMeasurement, snapshot = rows) =>
+		run(createInitialScrollState({ rows: snapshot, defersPagingUntilInput: true }), [
+			committed(snapshot, measurement, 'replace'),
+			{ type: 'positioningTimeout' },
+		]);
+
+	it('does not page before the first input, not even to fill a first page shorter than the viewport (R82)', () => {
+		const opened = openedAt(short);
+
+		expect(opened.commands.filter((command) => command.type === 'loadOlder')).toEqual([]);
+		expect(
+			loads(opened.state, [scrolled(TOP), resized(short), committed(rowsOf('xabcde', { hasOlderMessages: true }), short, 'prepend')]),
+		).toEqual([]);
+	});
+
+	it('checks at the first input, so a short first page fills once the viewer scrolls (R82, R34)', () => {
+		expect(loads(openedAt(short).state, [{ type: 'userInput' }])).toEqual([{ type: 'loadOlder' }]);
+	});
+
+	it('counts a pointer press and a move between messages as input, and a scroll the list makes as none (R82)', () => {
+		const { state } = openedAt(MIDDLE);
+
+		expect(loads(state, [scrolled(TOP)])).toEqual([]);
+		expect(loads(state, [{ type: 'pointerPressed' }, scrolled(TOP)])).toEqual([{ type: 'loadOlder' }]);
+		expect(loads(state, [{ type: 'keyboardNavigation' }, scrolled(TOP)])).toEqual([{ type: 'loadOlder' }]);
+		expect(run(state, [{ type: 'pointerPressed' }]).state.anchor).toEqual({ type: 'bottom' });
+	});
+
+	it('pages at the newer edge only after input as well (R82)', () => {
+		const older = rowsOf('abcde', { hasNewerMessages: true });
+		const { state } = openedAt(MIDDLE, older);
+
+		expect(loads(state, [scrolled(BOTTOM)])).toEqual([]);
+		expect(loads(state, userScroll(BOTTOM))).toEqual([{ type: 'loadNewer' }]);
+	});
+
+	it('waits for input again once its window of the conversation is replaced (R82)', () => {
+		const { state } = run(openedAt(MIDDLE).state, [{ type: 'userInput' }, { type: 'scrollEnd' }]);
+		const replaced = run(state, [committed(rowsOf('vwxyz', { hasOlderMessages: true }), MIDDLE, 'replace')]).state;
+
+		expect(loads(replaced, [scrolled(TOP)])).toEqual([]);
+		expect(loads(replaced, userScroll(TOP))).toEqual([{ type: 'loadOlder' }]);
+	});
+
+	it('pages without input when it is not asked to wait (R34)', () => {
+		expect(loads(createInitialScrollState({ rows }), [committed(rows, short, 'replace'), { type: 'positioningTimeout' }])).toEqual([
+			{ type: 'loadOlder' },
+		]);
+	});
+});

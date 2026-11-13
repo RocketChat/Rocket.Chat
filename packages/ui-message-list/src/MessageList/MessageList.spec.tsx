@@ -669,6 +669,8 @@ describe('stories', () => {
 				'FirstPageLoading',
 				'OlderPageOfTheSameDay',
 				'FirstPageArrivesLate',
+				'PagingWaitsForInput',
+				'PagingWaitsForInputOnAShortPage',
 			]),
 		);
 	});

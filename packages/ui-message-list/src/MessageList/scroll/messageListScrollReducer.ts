@@ -39,6 +39,10 @@ export type MessageListScrollState = {
 	pendingTargetId: string | undefined;
 	/** The consumer was asked to go back to the latest page; the list goes to the bottom once it has. */
 	isJumpingToLatest: boolean;
+	/** Pages wait for the viewer's first input in the list, as the room's list did. */
+	defersPagingUntilInput: boolean;
+	/** The viewer has used the list since it opened or since its window of the conversation was replaced. */
+	hasViewerInput: boolean;
 };
 
 /**
@@ -50,6 +54,8 @@ export type MessageListTailChange = 'own' | 'live' | 'page';
 export type MessageListScrollEvent =
 	| { type: 'userInput' }
 	| { type: 'keyboardNavigation' }
+	/** A pointer pressed anywhere in the list: input that lets pages load, without releasing what the list holds. */
+	| { type: 'pointerPressed' }
 	| ({ type: 'scroll' } & MessageListMeasurement)
 	| { type: 'scrollEnd' }
 	| ({ type: 'resize' } & MessageListMeasurement)
@@ -94,10 +100,12 @@ export const createInitialScrollState = ({
 	rows,
 	targetMessageId,
 	restoreTarget = { type: 'bottom' },
+	defersPagingUntilInput = false,
 }: {
 	rows: MessageListRowsSnapshot;
 	targetMessageId?: string;
 	restoreTarget?: RestoreTarget;
+	defersPagingUntilInput?: boolean;
 }): MessageListScrollState => {
 	const anchorFromRestore: MessageListAnchor =
 		restoreTarget.type === 'message'
@@ -115,6 +123,8 @@ export const createInitialScrollState = ({
 		hasNewMessages: false,
 		pendingTargetId: targetMessageId,
 		isJumpingToLatest: false,
+		defersPagingUntilInput,
+		hasViewerInput: false,
 	};
 };
 
@@ -154,6 +164,10 @@ const checkPaging = (state: MessageListScrollState): MessageListScrollResult => 
 	const { phase, anchor, loading, measurement, rows } = state;
 
 	if (phase !== 'idle' || anchor.type === 'message' || loading || !measurement) {
+		return { state, commands: [] };
+	}
+
+	if (state.defersPagingUntilInput && !state.hasViewerInput) {
 		return { state, commands: [] };
 	}
 
@@ -215,6 +229,15 @@ const onScroll = (state: MessageListScrollState, measurement: MessageListMeasure
 	return { state: paged.state, commands: [{ type: 'notifyVisibility' }, ...paged.commands] };
 };
 
+/** The viewer's first input lets pages load; a page already due, as for a first page shorter than the viewport, loads then. */
+const withViewerInput = (previous: MessageListScrollState, next: MessageListScrollState): MessageListScrollResult => {
+	if (previous.hasViewerInput) {
+		return { state: next, commands: [] };
+	}
+	const opened = { ...next, hasViewerInput: true };
+	return previous.defersPagingUntilInput ? checkPaging(opened) : { state: opened, commands: [] };
+};
+
 const anchorAfterCommit = (
 	state: MessageListScrollState,
 	change: MessageKeysChange,
@@ -257,19 +280,20 @@ const anchorAfterCommit = (
 export const messageListScrollReducer = (state: MessageListScrollState, event: MessageListScrollEvent): MessageListScrollResult => {
 	switch (event.type) {
 		case 'userInput': {
-			return {
-				state: {
-					...state,
-					userScrolling: true,
-					phase: 'idle',
-					anchor: state.anchor.type === 'message' ? NONE : state.anchor,
-				},
-				commands: [],
-			};
+			return withViewerInput(state, {
+				...state,
+				userScrolling: true,
+				phase: 'idle',
+				anchor: state.anchor.type === 'message' ? NONE : state.anchor,
+			});
 		}
 
 		case 'keyboardNavigation': {
-			return { state: { ...state, phase: 'idle', anchor: NONE }, commands: [] };
+			return withViewerInput(state, { ...state, phase: 'idle', anchor: NONE });
+		}
+
+		case 'pointerPressed': {
+			return withViewerInput(state, state);
 		}
 
 		case 'scroll': {
@@ -292,6 +316,8 @@ export const messageListScrollReducer = (state: MessageListScrollState, event: M
 				...state,
 				rows: event.rows,
 				measurement: measurementOf(event),
+				// Another window of the conversation is another place to read: its pages wait for the viewer again
+				...(event.change === 'replace' && { hasViewerInput: false }),
 			};
 			const anchored = anchorAfterCommit(committed, event.change, event.tail);
 			const paged = checkPaging(anchored.state);

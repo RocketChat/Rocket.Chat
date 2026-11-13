@@ -51,6 +51,11 @@ export type MessageListProps<TMessage extends IMessage> = {
 	'isOwnMessage'?: (message: TMessage) => boolean;
 	/** How near the end of the latest messages, in pixels, still counts as the bottom: within it the list follows what arrives. */
 	'bottomThreshold'?: number;
+	/**
+	 * Loads no page before the viewer's first input in the list (a scroll gesture, a scroll key, a pointer press), nor after
+	 * the window of the conversation is replaced, until the next input. Read when the list mounts.
+	 */
+	'deferPagingUntilInput'?: boolean;
 	'groupingPeriodSeconds'?: number;
 	/** Whether thread replies show as previews of their thread, as in a room. */
 	'groupsThreadReplies'?: boolean;
@@ -109,6 +114,7 @@ const MessageList = <TMessage extends IMessage>({
 	onTargetMessageReached,
 	isOwnMessage = never,
 	bottomThreshold,
+	deferPagingUntilInput,
 	groupingPeriodSeconds = 300,
 	groupsThreadReplies = true,
 	restoredPosition,
@@ -146,6 +152,7 @@ const MessageList = <TMessage extends IMessage>({
 		rows,
 		isLoadingNewerMessages,
 		bottomThreshold,
+		deferPagingUntilInput,
 		isOwnMessage: useStableCallback(isOwnMessage),
 		targetMessageId,
 		restoredPosition,

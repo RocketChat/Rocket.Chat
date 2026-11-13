@@ -46,6 +46,7 @@ export type UseMessageListScrollerOptions<TMessage extends IMessage> = {
 	rows: MessageListRows<TMessage>;
 	isLoadingNewerMessages: boolean;
 	bottomThreshold?: number;
+	deferPagingUntilInput?: boolean;
 	isOwnMessage: (message: TMessage) => boolean;
 	targetMessageId: string | undefined;
 	restoredPosition: MessageListPosition | undefined;
@@ -77,6 +78,7 @@ export const useMessageListScroller = <TMessage extends IMessage>({
 	rows,
 	isLoadingNewerMessages,
 	bottomThreshold = DEFAULT_BOTTOM_THRESHOLD,
+	deferPagingUntilInput = false,
 	isOwnMessage,
 	targetMessageId,
 	restoredPosition,
@@ -101,6 +103,7 @@ export const useMessageListScroller = <TMessage extends IMessage>({
 		rows: snapshotOf([], { hasOlder: false, hasNewer: false }),
 		targetMessageId,
 		restoreTarget: resolveRestoreTarget(restoredPosition, (messageId) => rows.indexOfMessage(messageId) !== -1),
+		defersPagingUntilInput: deferPagingUntilInput,
 	});
 
 	const [view, setView] = useState(() => ({
@@ -495,10 +498,12 @@ export const useMessageListScroller = <TMessage extends IMessage>({
 			};
 			// The overlay scrollbars are drawn next to the viewport, not inside it
 			const scrollbarsHost = viewport.parentElement;
-			const onScrollbarPointerDown = (event: Event) => {
+			const onPointerDown = (event: Event) => {
 				if (event.target instanceof Element && event.target.closest('.os-scrollbar')) {
 					onUserInput();
+					return;
 				}
+				dispatch({ type: 'pointerPressed' });
 			};
 
 			const resizeObserver = new ResizeObserver(() => onResize());
@@ -512,7 +517,7 @@ export const useMessageListScroller = <TMessage extends IMessage>({
 			viewport.addEventListener('touchmove', onUserInput, { passive: true });
 			viewport.addEventListener('keydown', onKeyDown);
 			viewport.addEventListener('scrollend', onScrollEnd);
-			scrollbarsHost?.addEventListener('pointerdown', onScrollbarPointerDown);
+			scrollbarsHost?.addEventListener('pointerdown', onPointerDown);
 
 			return () => {
 				reportPosition();
@@ -522,7 +527,7 @@ export const useMessageListScroller = <TMessage extends IMessage>({
 				viewport.removeEventListener('touchmove', onUserInput);
 				viewport.removeEventListener('keydown', onKeyDown);
 				viewport.removeEventListener('scrollend', onScrollEnd);
-				scrollbarsHost?.removeEventListener('pointerdown', onScrollbarPointerDown);
+				scrollbarsHost?.removeEventListener('pointerdown', onPointerDown);
 				viewportRef.current = null;
 				if (scrollFrame.current !== undefined) {
 					cancelAnimationFrame(scrollFrame.current);
@@ -532,7 +537,7 @@ export const useMessageListScroller = <TMessage extends IMessage>({
 				clearTimeout(highlightTimer.current);
 			};
 		},
-		[onUserInput, onScrollEnd, onResize, reportPosition],
+		[onUserInput, onScrollEnd, onResize, reportPosition, dispatch],
 	);
 
 	const anchoredIndex = view.anchor.type === 'message' ? rows.indexOfMessage(view.anchor.messageId) : -1;
