@@ -1,3 +1,4 @@
+import { ROOM_ID_REGEX } from '@rocket.chat/federation-sdk';
 import type { Router } from '@rocket.chat/http-router';
 import { ajv, ajvQuery } from '@rocket.chat/rest-typings';
 
@@ -47,7 +48,7 @@ export const tags = ['Federation'];
 export const license: ['federation'] = ['federation'];
 
 export const MATRIX_USER_ID_PATTERN = '^@[A-Za-z0-9_=\\/.+-]+:(.+)$';
-export const MATRIX_ROOM_ID_PATTERN = '^![A-Za-z0-9_=\\/.+-]+:(.+)$';
+export const MATRIX_ROOM_ID_PATTERN = ROOM_ID_REGEX.source;
 
 const MatrixErrorSchema = {
 	type: 'object',
