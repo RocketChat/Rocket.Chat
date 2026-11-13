@@ -1,0 +1,34 @@
+packages/streamer/src/StreamPresence.spec.ts
+  s_ef962851677545::t_d97459c8c058e3 93-94
+  s_f15b4a6b3cffae::t_1741d1ccf54e8c 163-175
+  s_f15b4a6b3cffae::t_52e35cb5fb00a0 95,98
+  s_f15b4a6b3cffae::t_745e4e062b36a5 208-209,215,219
+  s_f15b4a6b3cffae::t_9d83a8b9972f63 48
+  s_f15b4a6b3cffae::t_97cc28fcbc10f3 64-67
+  s_f15b4a6b3cffae::t_453c445df64e59 113-114
+  s_f15b4a6b3cffae::t_063c76208da1fc 1-47,49-63,68-92,96-97,99-112,115-162,176-207,210-214,216-218,220-221
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "91f7d00b6b6506366e72db50510d787eb7e0c9bd",
+  "prompts": {},
+  "sessions": {
+    "s_ef962851677545": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "8ffa22ac-7c52-4448-b59c-318f9b82bbaa",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": null
+    },
+    "s_f15b4a6b3cffae": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3fc8d543-a858-49f1-bf51-ceccf6d6ad1a",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
