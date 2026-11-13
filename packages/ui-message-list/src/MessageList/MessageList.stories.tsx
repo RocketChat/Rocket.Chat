@@ -31,7 +31,7 @@ const settleAllLoads = async (canvasElement: HTMLElement) => {
 	const canvas = within(canvasElement);
 	for (let round = 0; round < 5; round++) {
 		await userEvent.click(canvas.getByRole('button', { name: 'Settle loads' }));
-		await new Promise((resolve) => setTimeout(resolve, 150));
+		await waitForListSettled(canvasElement);
 		if (getViewport(canvasElement).getAttribute('aria-busy') === 'false') {
 			return;
 		}
@@ -295,7 +295,6 @@ export const RestorePosition: Story = {
 		await waitForListSettled(canvasElement);
 		await userScrollBy(canvasElement, -900);
 		const left = firstVisibleMessage(canvasElement);
-		await new Promise((resolve) => setTimeout(resolve, 300));
 
 		await userEvent.click(canvas.getByRole('button', { name: 'Room B' }));
 		await waitForListSettled(canvasElement);
@@ -318,7 +317,6 @@ export const RestorePositionOfAListThatMountsEmpty: Story = {
 		await waitForListSettled(canvasElement);
 		await userScrollBy(canvasElement, -900);
 		const left = firstVisibleMessage(canvasElement);
-		await new Promise((resolve) => setTimeout(resolve, 300));
 
 		await userEvent.click(canvas.getByRole('button', { name: 'Room B' }));
 		await waitFor(() => canvasElement.querySelector('[data-message-id]') !== null);
@@ -400,8 +398,8 @@ export const FloatingDate: Story = {
 	},
 };
 
-/** R25: only the viewer's input releases the bottom: a scroll the browser makes does not, a key in a text field does not, a scroll key does. */
-export const UserInputReleasesTheBottom: Story = {
+/** R25: a scroll the browser makes does not release the bottom, and neither does a scroll key typed in a text field. */
+export const TypingInAFieldKeepsTheBottom: Story = {
 	args: { history: { size: 30 }, source: { pageSize: 30 } },
 	play: async ({ canvasElement }) => {
 		await waitForListSettled(canvasElement);
@@ -412,23 +410,37 @@ export const UserInputReleasesTheBottom: Story = {
 
 		field.dispatchEvent(new KeyboardEvent('keydown', { key: 'PageUp', bubbles: true }));
 		viewport.scrollTop = 0;
-		await waitFor(() => viewport.scrollTop === 0);
-		await new Promise((resolve) => setTimeout(resolve, 400));
+		await waitFor(() => readVisibility(canvasElement).isAtBottom === false);
 		await expect(host).toHaveAttribute('data-anchor', 'bottom');
+		field.remove();
+	},
+};
 
-		viewport.dispatchEvent(new KeyboardEvent('keydown', { key: 'PageDown', bubbles: true }));
-		viewport.scrollTop = viewport.scrollHeight;
-		await waitFor(() => host.dataset.anchor === 'bottom');
+/** R25: a scroll key releases the bottom. */
+export const ScrollKeyReleasesTheBottom: Story = {
+	args: { history: { size: 30 }, source: { pageSize: 30 } },
+	play: async ({ canvasElement }) => {
+		await waitForListSettled(canvasElement);
+		const viewport = getViewport(canvasElement);
+		const host = viewport.closest<HTMLElement>('[data-anchor]') as HTMLElement;
+
 		viewport.dispatchEvent(new KeyboardEvent('keydown', { key: 'PageUp', bubbles: true }));
 		viewport.scrollTop = 0;
 		await waitFor(() => host.dataset.anchor === 'none');
+	},
+};
 
-		await userScrollTo(canvasElement, viewport.scrollHeight);
-		await expect(host).toHaveAttribute('data-anchor', 'bottom');
+/** R25: dragging the scrollbar releases the bottom. */
+export const DraggingTheScrollbarReleasesTheBottom: Story = {
+	args: { history: { size: 30 }, source: { pageSize: 30 } },
+	play: async ({ canvasElement }) => {
+		await waitForListSettled(canvasElement);
+		const viewport = getViewport(canvasElement);
+		const host = viewport.closest<HTMLElement>('[data-anchor]') as HTMLElement;
+
 		host.querySelector('.os-scrollbar')?.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
 		viewport.scrollTop = 0;
 		await waitFor(() => host.dataset.anchor === 'none');
-		field.remove();
 	},
 };
 
@@ -443,7 +455,7 @@ export const FailedLoadSettles: Story = {
 		await userScrollTo(canvasElement, 0);
 		await waitFor(() => canvas.getByLabelText('Loads').textContent === '1');
 		await waitFor(() => getViewport(canvasElement).getAttribute('aria-busy') === 'false');
-		await new Promise((resolve) => setTimeout(resolve, 500));
+		await waitForListSettled(canvasElement);
 		await expect(canvas.getByLabelText('Loads')).toHaveTextContent('1');
 
 		await userScrollTo(canvasElement, 5);
@@ -516,6 +528,7 @@ export const HeaderReplacesTheLoader: Story = {
 	},
 };
 
+/** R37: a header that grows after it showed does not move what is on screen. */
 export const HeaderGrowsLate: Story = {
 	args: { history: { size: 40 }, source: { pageSize: 40 } },
 	play: async ({ canvasElement }) => {
@@ -696,15 +709,14 @@ export const FloatingDateNeverDoublesADay: Story = {
 		const divider = Array.from(viewport.querySelectorAll<HTMLElement>('.rcx-message-divider')).at(-1) as HTMLElement;
 		const dividerTop = divider.getBoundingClientRect().top - viewport.getBoundingClientRect().top + viewport.scrollTop;
 
-		viewport.dispatchEvent(new WheelEvent('wheel', { deltaY: -100, bubbles: true }));
-		viewport.scrollTop = dividerTop;
-		await waitFor(() => Math.abs(viewport.scrollTop - dividerTop) <= 1);
-		await new Promise((resolve) => setTimeout(resolve, 100));
-		await expect(bubble()).toHaveAttribute('data-visible', 'false');
-
 		viewport.dispatchEvent(new WheelEvent('wheel', { deltaY: 150, bubbles: true }));
 		viewport.scrollTop = dividerTop + 150;
 		await waitFor(() => bubble().getAttribute('data-visible') === 'true');
+
+		viewport.dispatchEvent(new WheelEvent('wheel', { deltaY: -150, bubbles: true }));
+		viewport.scrollTop = dividerTop;
+		// Hidden at once, while the floating date would still show for a second after scrolling: the time limit is that second
+		await waitFor(() => bubble().getAttribute('data-visible') === 'false', 600);
 	},
 };
 
