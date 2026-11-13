@@ -1,6 +1,6 @@
 import { api } from '@rocket.chat/core-services';
 import type { IMessage } from '@rocket.chat/core-typings';
-import { isDirectMessageRoom, isEditedMessage, isOmnichannelRoom, isRoomFederated, getUserDisplayName } from '@rocket.chat/core-typings';
+import { isDirectMessageRoom, isEditedMessage, isOmnichannelRoom, isRoomFederated } from '@rocket.chat/core-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import { isTruthy } from '@rocket.chat/tools';
 import type { ActionsBlock } from '@rocket.chat/ui-kit';
@@ -9,7 +9,6 @@ import moment from 'moment';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { callbacks } from '../../lib/callbacks';
 import { i18n } from '../../lib/i18n';
-import { settings } from '../../settings';
 
 const APP_ID = 'mention-core';
 const getBlocks = (mentions: IMessage['mentions'], messageId: string, lng: string | undefined) => {
@@ -103,13 +102,8 @@ callbacks.add(
 			? 'You_mentioned___mentions__but_theyre_not_in_this_room'
 			: 'You_mentioned___mentions__but_theyre_not_in_this_room_You_can_ask_a_room_admin_to_add_them';
 
-		const useRealName = settings.get<boolean>('UI_Use_Real_Name');
+		const mentionsText = mentionsUsersNotInChannel.map(({ username }) => `@${username}`).join(', ');
 
-		const usernamesOrNames = mentionsUsersNotInChannel.map(({ username, name }) => `*${getUserDisplayName(name, username, useRealName)}*`);
-
-		const mentionsText = usernamesOrNames.join(', ');
-
-		// TODO: Mentions style
 		void api.broadcast('notify.ephemeralMessage', message.u._id, message.rid, {
 			msg: '',
 			mentions: mentionsUsersNotInChannel,
