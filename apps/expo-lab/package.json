@@ -14,6 +14,9 @@
 		"@rocket.chat/api-client": "workspace:^",
 		"@rocket.chat/ddp-client": "workspace:^",
 		"@rocket.chat/emitter": "workspace:^",
+		"@rocket.chat/fuselage": "workspace:^",
+		"@rocket.chat/fuselage-hooks": "workspace:^",
+		"@rocket.chat/icons": "workspace:~",
 		"@tamagui/config": "3.0.18",
 		"expo": "~58.0.23",
 		"expo-dev-client": "~58.0.18",
@@ -25,6 +28,7 @@
 		"react-native-safe-area-context": "~5.11.1",
 		"react-native-svg": "15.16.0",
 		"react-native-worklets": "0.13.0",
+		"react-virtuoso": "~4.18.16",
 		"tamagui": "3.0.18"
 	},
 	"expo": {
