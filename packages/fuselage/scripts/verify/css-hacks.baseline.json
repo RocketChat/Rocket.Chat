@@ -161,91 +161,55 @@
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
-	"Message/MessageDivider/MessageDivider.styles.scss": {
-		"rules": 7,
-		"nested": 6,
-		"combinators": 1,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 1,
-		"displayContents": 0
-	},
-	"Message/MessageGenericPreview/MessageGenericPreview.styles.scss": {
-		"rules": 15,
-		"nested": 14,
-		"combinators": 0,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 0,
-		"displayContents": 0
-	},
-	"Message/MessageMetrics/MessageMetrics.styles.scss": {
-		"rules": 5,
-		"nested": 4,
-		"combinators": 0,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 1,
-		"displayContents": 0
-	},
-	"Message/MessageReactions/MessageReactions.styles.scss": {
-		"rules": 8,
-		"nested": 7,
-		"combinators": 0,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 0,
-		"displayContents": 0
-	},
-	"Message/MessageStatusIndicator/MessageStatusIndicator.styles.scss": {
-		"rules": 2,
-		"nested": 1,
-		"combinators": 0,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 0,
-		"displayContents": 0
-	},
-	"Message/MessageSystem/MessageSystem.styles.scss": {
-		"rules": 5,
-		"nested": 3,
-		"combinators": 0,
+	"Message/Message.styles.css": {
+		"rules": 16,
+		"nested": 0,
+		"combinators": 10,
 		"important": 0,
 		"specificityBumps": 1,
-		"negativeMargins": 1,
+		"negativeMargins": 0,
 		"displayContents": 0
 	},
-	"Message/MessageToolbar/MessageToolbar.styles.scss": {
-		"rules": 6,
-		"nested": 5,
+	"Message/MessageDivider/MessageDivider.styles.css": {
+		"rules": 2,
+		"nested": 0,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"Message/MessageGenericPreview/MessageGenericPreview.styles.css": {
+		"rules": 9,
+		"nested": 0,
+		"combinators": 5,
+		"important": 0,
+		"specificityBumps": 4,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"Message/MessageReactions/MessageReactions.styles.css": {
+		"rules": 4,
+		"nested": 0,
 		"combinators": 2,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"Message/MessageToolbar/MessageToolbar.styles.css": {
+		"rules": 6,
+		"nested": 0,
+		"combinators": 4,
 		"important": 0,
 		"specificityBumps": 0,
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
 	"Message/Messages.styles.scss": {
-		"rules": 39,
-		"nested": 37,
-		"combinators": 10,
-		"important": 0,
-		"specificityBumps": 4,
-		"negativeMargins": 0,
-		"displayContents": 0
-	},
-	"Message/ThreadMessage/ThreadMessage.styles.scss": {
-		"rules": 10,
-		"nested": 8,
-		"combinators": 0,
-		"important": 0,
-		"specificityBumps": 1,
-		"negativeMargins": 0,
-		"displayContents": 0
-	},
-	"Message/mixins.scss": {
-		"rules": 2,
+		"rules": 0,
 		"nested": 0,
-		"combinators": 2,
+		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
 		"negativeMargins": 0,

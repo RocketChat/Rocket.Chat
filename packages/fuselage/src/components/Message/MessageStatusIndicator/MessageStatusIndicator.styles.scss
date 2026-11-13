@@ -1,9 +1,0 @@
-@use '../../../styles/colors.scss';
-
-.rcx-message-status-indicator {
-	user-select: none;
-
-	&__item {
-		color: colors.font(secondary-info);
-	}
-}

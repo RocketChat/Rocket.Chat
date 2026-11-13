@@ -2,10 +2,11 @@ import { join } from 'node:path';
 
 import { elevation } from './lib/elevation.mts';
 import { font, statusFont, themed } from './lib/frameTokens.mts';
+import { highlighted, inheritedFont, itemContentBase, itemMediaBase, itemMetaBase, itemRowBase, textFrame } from './lib/itemFrames.mts';
 import { itemCustomProperties, itemPalettes } from './lib/itemPalettes.mts';
 import { literal, type Value } from './lib/literal.mts';
+import { messagePalettes } from './lib/messagePalettes.mts';
 import type { Target } from './lib/target.mts';
-import { textFrameDefaults } from './lib/textFrameDefaults.mts';
 import { offScale, zIndex, zIndexAbove } from './lib/tokens.mts';
 import { webDefaults } from './lib/webDefaults.mts';
 import { borderRadius, borderWidth, fontColor, fontFamily, size, spacing, strokeColor } from '../../src/styleTokens.ts';
@@ -13,6 +14,7 @@ import { borderRadius, borderWidth, fontColor, fontFamily, size, spacing, stroke
 const component = (file: string) => join(import.meta.dirname, '../../src/components/Item', file);
 
 const palettes = itemPalettes();
+const message = messagePalettes();
 
 const constant = (name: string, value: Value) => `const ${name} = ${literal(value)} as const;`;
 
@@ -68,6 +70,7 @@ const generateItem = () => {
 		// There is no such status color: the variable stays undefined, as on develop, and the row keeps the color it inherits
 		primary: { color: 'var(--rcx-option-color-variant-primary, var(--rcx-color-status-font-on-primary))' },
 		disabled: { color: palettes.font.disabled },
+		editing: { color: message.editing.color },
 		// The color of a link row: a theme hook, then the sidebar's; no `:visited` key exists, so a visited link keeps it
 		link: {
 			color: {
@@ -83,6 +86,7 @@ const generateItem = () => {
 		dropActive: { backgroundColor: palettes.surface.dropTarget },
 		dropDisabled: { backgroundColor: 'transparent' },
 		disabled: { backgroundColor: 'transparent' },
+		editing: { backgroundColor: message.editing.background },
 		selected: { backgroundColor: palettes.surface.selected },
 		// A list of options that the pointer is over hides the cursor's row, unless the pointer is on that row
 		focused: {
@@ -180,42 +184,13 @@ const generateItemGroupHeader = () => {
 	].join('\n\n');
 };
 
-const generateItemContent = () =>
-	constant(
-		'itemContentFrame',
-		webDefaults({
-			render: 'div',
-			display: 'flex',
-			flexDirection: 'column',
-			alignItems: 'normal',
-			flexGrow: 1,
-			flexShrink: 1,
-			flexBasis: 'auto',
-			minWidth: 0,
-		}),
-	);
+const generateItemContent = () => constant('itemContentFrame', itemContentBase);
 
-const generateItemRow = () =>
-	[
-		constant(
-			'itemRowFrame',
-			webDefaults({ render: 'div', display: 'flex', alignItems: 'center', minWidth: 0, gap: 'var(--rcx-item-gap)' }),
-		),
-	].join('\n\n');
+const generateItemRow = () => [constant('itemRowFrame', itemRowBase)].join('\n\n');
 
 const generateItemMedia = () => {
-	const frame = webDefaults({
-		render: 'div',
-		display: 'flex',
-		justifyContent: 'center',
-		alignItems: 'center',
-		flexGrow: 0,
-		flexShrink: 0,
-		flexBasis: 'auto',
-	});
-
 	return [
-		constant('itemMediaFrame', frame),
+		constant('itemMediaFrame', itemMediaBase),
 		constant('itemMediaVariants', {
 			default: {},
 			icon: { width: size('x20')!, height: size('x20')! },
@@ -242,21 +217,6 @@ const generateItemIcon = () => {
 	);
 };
 
-const textFrame = (style: Record<string, Value>) => {
-	const frame = webDefaults(style);
-	return { ...textFrameDefaults(frame), ...frame };
-};
-
-// What a part that takes no font of its own reads from the row
-const inheritedFont = {
-	fontVariantNumeric: 'inherit',
-	fontFamily: 'inherit',
-	fontSize: 'inherit',
-	fontWeight: 'inherit',
-	lineHeight: 'inherit',
-	letterSpacing: 'inherit',
-};
-
 const truncating = {
 	overflow: 'hidden',
 	flexGrow: 1,
@@ -268,8 +228,6 @@ const truncating = {
 };
 
 const wrapping = { overflow: 'visible', whiteSpace: 'normal', overflowWrap: 'anywhere' };
-
-const highlighted = { color: palettes.font.highlighted, fontWeight: 500 };
 
 const generateItemTitle = () =>
 	[
@@ -308,20 +266,8 @@ const generateItemDescription = () => {
 };
 
 const generateItemMeta = () => {
-	const frame = textFrame({
-		render: 'div',
-		display: 'block',
-		flexGrow: 0,
-		flexShrink: 0,
-		flexBasis: 'auto',
-		whiteSpace: 'nowrap',
-		color: palettes.font.secondary,
-		...inheritedFont,
-		...font('c1'),
-	});
-
 	return [
-		constant('itemMetaFrame', frame),
+		constant('itemMetaFrame', itemMetaBase),
 		constant('itemMetaVariants', {
 			truncate: { true: { overflow: 'hidden', flexShrink: 1, minWidth: 0, textOverflow: 'ellipsis' } },
 			highlighted: { true: highlighted },

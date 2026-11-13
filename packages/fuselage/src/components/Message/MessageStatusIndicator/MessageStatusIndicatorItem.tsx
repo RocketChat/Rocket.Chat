@@ -11,11 +11,11 @@ export type MessageStatusIndicatorItemProps = {
 /**
  * A status icon such as edited, pinned or starred. Its `title` names the status for assistive technology; without one the icon is decorative.
  */
-const MessageStatusIndicatorItem = ({ name, className, title, ...props }: MessageStatusIndicatorItemProps) => (
+const MessageStatusIndicatorItem = ({ name, color = 'secondary-info', className, title, ...props }: MessageStatusIndicatorItemProps) => (
 	<Icon
 		name={name}
 		size='x16'
-		color='secondary-info'
+		color={color}
 		title={title}
 		{...(title && { 'role': 'img', 'aria-label': title, 'aria-hidden': undefined })}
 		{...props}

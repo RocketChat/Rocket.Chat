@@ -208,6 +208,9 @@ export type SpanAttributes = PartAttributes<HTMLSpanElement>;
 /** What a glyph that only shows something, renders an `i` and may act as a hover or press target forwards. */
 export type GlyphAttributes = PartAttributes<HTMLElement> & WebPressHandlers<HTMLElement>;
 
+/** What a part rendered as a `span` that acts when pressed forwards. */
+export type SpanActionAttributes = ActionAttributes<HTMLSpanElement>;
+
 /** What a part that acts when pressed (a button, a link, a dismissable chip) forwards. */
 export type ActionAttributes<TElement extends Element> = CommonAttributes &
 	ActionAccessibilityAttributes &

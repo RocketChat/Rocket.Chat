@@ -31,24 +31,9 @@ export default {
 			description: 'Shows a pointer cursor and hover styling; also implied by passing an `onClick` handler.',
 			table: { category: 'Behavior' },
 		},
-		sequential: {
-			control: 'boolean',
-			description: 'Compact styling for a message that follows another from the same author.',
-			table: { category: 'Behavior' },
-		},
 		isSelected: {
 			control: 'boolean',
 			description: 'Applies the selected visual state.',
-			table: { category: 'State' },
-		},
-		isEditing: {
-			control: 'boolean',
-			description: 'Applies the editing visual state.',
-			table: { category: 'State' },
-		},
-		isPending: {
-			control: 'boolean',
-			description: 'Applies the pending (not yet sent) visual state.',
 			table: { category: 'State' },
 		},
 		onClick: {

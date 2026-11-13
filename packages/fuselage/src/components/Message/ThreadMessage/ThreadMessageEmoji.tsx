@@ -4,7 +4,7 @@ import MessageEmojiBase from '../MessageEmojiBase';
 export type ThreadMessageEmojiProps = MessageEmojiBaseProps;
 
 const ThreadMessageEmoji = ({ className, ...props }: ThreadMessageEmojiProps) => (
-	<MessageEmojiBase className={`rcx-message-thread__emoji ${className || ''}`} {...props} />
+	<MessageEmojiBase {...props} kind='thread' className={`rcx-message-thread__emoji ${className || ''}`} />
 );
 
 export default ThreadMessageEmoji;
