@@ -55,6 +55,7 @@
 		"@types/react": "~19.2.18",
 		"react": "~19.2.8",
 		"ts-node": "^10.9.2",
+		"tsx": "~4.22.5",
 		"typescript": "~7.0.2"
 	},
 	"volta": {
