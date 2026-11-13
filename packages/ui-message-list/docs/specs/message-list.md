@@ -10,6 +10,10 @@ code:
     src/MessageList/scroll,
     src/hooks,
     tests/utils/listContract.ts,
+    src/MessageList,
+    src/Message/contexts/MessageRowStateContext.ts,
+    src/Message/hooks/useIsMessageEmphasized.ts,
+    src/index.ts,
   ]
 tests:
   [
@@ -25,6 +29,11 @@ tests:
     src/MessageList/scroll/planRowsCommit.spec.ts,
     src/hooks/useItemListNavigation.spec.ts,
     src/hooks/useMessageListNavigation.spec.tsx,
+    src/MessageList/MessageList.spec.tsx,
+    src/MessageList/MessageList.keepMounted.spec.tsx,
+    src/MessageList/MessageListDateBubble.spec.tsx,
+    src/Message/hooks/useIsMessageEmphasized.spec.tsx,
+    src/index.spec.ts,
   ]
 ---
 
@@ -111,9 +120,10 @@ true, the last loaded message is not the latest. "Within 1px" is the tolerance o
 
 - **R19** A message at the end that `isOwnMessage` says is the viewer's, including a copy the consumer marks as optimistic,
   MUST take the list to the bottom, from wherever the viewer is reading (B3).
-- **R20** When `hasNewerMessages` is true, such a message MUST first make the list call `onJumpToLatest`, and the list MUST go
-  to the bottom once the latest page is among the messages. Until then, and if `onJumpToLatest` is not given, the viewer's
-  position MUST NOT change by itself (B3).
+- **R20** When the list shows an older window (`hasNewerMessages`) and is taken to the bottom (by the handle's `scrollToBottom()`, which
+  the consumer calls for the viewer's own message, or by "Jump to recent messages"), it MUST first call `onJumpToLatest`, and MUST go to
+  the bottom once the latest page is among the messages. Until then, and if `onJumpToLatest` is not given, the viewer's position MUST
+  NOT change by itself (B3).
 - **R21** `MessageListNewMessagesButton` MUST be visible (`data-visible` true, `aria-hidden` false) when a message that is not the
   viewer's is appended at the end while the viewer is away from the bottom, `hasNewerMessages` is false and no newer page is
   loading; and hidden (`data-visible` false, `aria-hidden` true, its button out of the tab order) otherwise (B4).
@@ -338,20 +348,20 @@ Decided in the plan.
 ## Known defects
 
 Defects of the reference's list that the package copies. None can be pinned by a skipped test before the code exists, and the
-checker rejects a `D` entry without one, so each becomes a `D<n>` entry with its skipped test in the commit that copies the
-list, except where noted:
+checker rejects a `D` entry without one, so each is a `D<n>` entry with its skipped test, written in the commit that copies the
+code that has it:
 
-- A message at the end is recognised as the viewer's own only when it is the last one appended: an own message followed by
-  another in the same update does not take the list to the bottom (R19).
-- A page of newer messages whose last message is the viewer's own is taken for an own message: the list jumps to the bottom, past
-  the page, instead of staying at the edge (R19, R31).
-- A failed `onJumpToLatest` leaves the list waiting for the latest page: it holds nothing, and goes to the bottom later without
-  the viewer asking, once a newer page ends the window (R20).
-- Not carried, fixed first (Q1): the position is resolved when the list mounts, so a list that mounts before its messages
-  loses its position (R61); `isAtBottom` reports what the list holds, so it is false for up to 3 s after a jump to the last message
-  (R56); a resize does not refresh the report (R55).
-- Not carried, required differently (intent Q4): every message row object is rebuilt on every change, so the memo of the row
-  never holds (R71, R72).
+### D1 An own message followed by another in the same update is not recognised
+
+A message at the end is recognised as the viewer's own only when it is the last one appended: an own message followed by someone
+else's in the same update does not take a list that reads away to the bottom, and raises "New messages" instead (R19). Pinned by the
+skipped test "goes to the bottom for an own message followed by another one in the same update (R19)" in `MessageList.spec.tsx`.
+
+### D3 A failed jump to the latest page leaves the list waiting for it
+
+A rejected `onJumpToLatest` leaves the list waiting for the latest page: it holds nothing, and goes to the bottom later without the
+viewer asking, when the messages next stop having a newer page (R20). Pinned by the skipped test "does not go to the bottom by itself
+after a failed jump to the latest page (R20)" in `MessageList.spec.tsx`.
 
 ### D4 A page committed before its load settles is not followed by a check
 
@@ -359,6 +369,18 @@ When a page is committed while its load has not settled yet, the check for a pag
 none, and settling the load does not check again, so a viewport taller than the page stays unfilled until the next scroll or change of
 the messages (R34). A load that settles without new messages must still not be retried (R35). Pinned by the skipped test "checks again
 when a load settles after its page was committed (R34)" in `messageListScrollReducer.spec.ts`; fixed in step 14 of the plan.
+
+D2 was dropped before it was recorded: a page of newer messages ending in the viewer's own message cannot be taken for an own message,
+because a page added before the newer loader is classified as a change inside the rows, not as an append (R31 is proven by a test that
+passes).
+
+Not recorded as defects, because the list is changed instead of carrying them:
+
+- Fixed first (Q1): the position is resolved when the list mounts, so a list that mounts before its messages
+  loses its position (R61); `isAtBottom` reports what the list holds, so it is false for up to 3 s after a jump to the last message
+  (R56); a resize does not refresh the report (R55).
+- Not carried, required differently (intent Q4): every message row object is rebuilt on every change, so the memo of the row
+  never holds (R71, R72).
 
 ## Open questions
 
