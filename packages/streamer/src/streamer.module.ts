@@ -136,6 +136,20 @@ export abstract class Streamer<N extends StreamNames> extends EventEmitter imple
 		return this.isAllowed(this._allowRead)(scope, eventName, args);
 	}
 
+	protected createEmissionPermissionCheck(eventName: string) {
+		const { createEmitRule } = this;
+		let emissionRule: Rule | undefined;
+
+		return async (scope: IPublication, ...args: any[]): Promise<boolean | object> => {
+			if (!createEmitRule) {
+				return this.isEmitAllowed(scope, eventName, ...args);
+			}
+
+			emissionRule ??= createEmitRule(eventName);
+			return emissionRule.call(scope, eventName, ...args);
+		};
+	}
+
 	async isEmitAllowed(scope: IPublication, eventName: string, ...args: any[]): Promise<boolean | object> {
 		if (this.createEmitRule) {
 			return this.createEmitRule(eventName).call(scope, eventName, ...args);
@@ -321,8 +335,7 @@ export abstract class Streamer<N extends StreamNames> extends EventEmitter imple
 		args: any[],
 		getMsg: string | TransformMessage,
 	): Promise<void> {
-		const { createEmitRule } = this;
-		let emissionRule: Rule | undefined;
+		const checkPermission = this.createEmissionPermissionCheck(eventName);
 		await Promise.all(
 			[...subscriptions].map(async (subscription) => {
 				try {
@@ -330,10 +343,7 @@ export abstract class Streamer<N extends StreamNames> extends EventEmitter imple
 						return;
 					}
 
-					const rule = createEmitRule ? (emissionRule ??= createEmitRule(eventName)) : undefined;
-					const allowed = rule
-						? await rule.call(subscription.subscription, eventName, ...args)
-						: await this.isEmitAllowed(subscription.subscription, eventName, ...args);
+					const allowed = await checkPermission(subscription.subscription, ...args);
 					if (allowed) {
 						const msg = typeof getMsg === 'string' ? getMsg : getMsg(this, subscription, eventName, args, allowed);
 						if (msg) {
