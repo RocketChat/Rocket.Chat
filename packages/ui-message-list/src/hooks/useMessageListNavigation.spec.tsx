@@ -205,3 +205,22 @@ it('moves from a system message directly to the composer with Tab (R67)', async 
 	await user.tab();
 	expect(screen.getByRole('textbox', { name: 'Message composer' })).toHaveFocus();
 });
+
+it('leaves the list for the next and the previous focusable element when no focus scope surrounds it (R67, thread-message-list R43)', async () => {
+	const user = userEvent.setup();
+	render(<Room />);
+
+	await user.tab();
+	await user.tab();
+	await user.tab();
+	await user.keyboard('{ArrowUp}');
+	await user.tab();
+	await user.tab();
+	await user.tab();
+	expect(screen.getByRole('button', { name: 'Jump to recent messages' })).toHaveFocus();
+
+	await user.tab({ shift: true });
+	expect(screen.getByRole('listitem', { name: 'msg1' })).toHaveFocus();
+	await user.tab({ shift: true });
+	expect(screen.getByRole('button', { name: 'Star' })).toHaveFocus();
+});

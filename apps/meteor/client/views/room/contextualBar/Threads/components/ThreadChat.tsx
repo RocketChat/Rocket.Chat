@@ -15,7 +15,6 @@ import ComposerContainer from '../../../composer/ComposerContainer';
 import RoomComposer from '../../../composer/RoomComposer/RoomComposer';
 import { useChat } from '../../../contexts/ChatContext';
 import { useRoom, useRoomSubscription } from '../../../contexts/RoomContext';
-import { DateListProvider } from '../../../providers/DateListProvider';
 
 export type ThreadChatProps = {
 	mainMessage: IThreadMainMessage;
@@ -90,61 +89,53 @@ const ThreadChat = ({ mainMessage, onEscape, ...boxProps }: ThreadChatProps) => 
 	const sendToChannelID = useId();
 	const { t } = useTranslation();
 
-	const [shouldJumpToBottom, setShouldJumpToBottom] = useState(true);
-
 	return (
 		// The caller's own props before the drop target's, so no caller can take `onDragEnter` off it by accident.
 		<ContextualbarContent flush {...boxProps} {...fileUploadTriggerProps}>
-			<DateListProvider>
-				<DropTargetOverlay {...fileUploadOverlayProps} />
-				<Box
-					is='section'
-					position='relative'
-					display='flex'
-					flexDirection='column'
-					flexGrow={1}
-					flexShrink={1}
-					flexBasis='auto'
-					height='full'
-				>
-					<MessageListErrorBoundary>
-						<ThreadMessageList
-							mainMessage={mainMessage}
-							shouldJumpToBottom={shouldJumpToBottom}
-							setShouldJumpToBottom={setShouldJumpToBottom}
-						/>
-					</MessageListErrorBoundary>
+			<DropTargetOverlay {...fileUploadOverlayProps} />
+			<Box
+				is='section'
+				position='relative'
+				display='flex'
+				flexDirection='column'
+				flexGrow={1}
+				flexShrink={1}
+				flexBasis='auto'
+				height='full'
+			>
+				<MessageListErrorBoundary>
+					<ThreadMessageList key={mainMessage._id} mainMessage={mainMessage} />
+				</MessageListErrorBoundary>
 
-					<RoomComposer aria-label={t('Thread_composer')}>
-						<ComposerContainer
-							tmid={mainMessage._id}
-							threadExists={isThreadMainMessage(mainMessage)}
-							subscription={subscription}
-							onSend={handleSend}
-							onEscape={handleComposerEscape}
-							onNavigateToPreviousMessage={handleNavigateToPreviousMessage}
-							onNavigateToNextMessage={handleNavigateToNextMessage}
-							tshow={sendToChannel}
-						>
-							<Box paddingBlock={8}>
-								<Field>
-									<FieldRow>
-										<Box display='flex' alignItems='center' minWidth={0} gap={8}>
-											<CheckBox
-												id={sendToChannelID}
-												checked={sendToChannel}
-												onChange={() => setSendToChannel((checked) => !checked)}
-												name='alsoSendThreadToChannel'
-											/>
-											<FieldLabel htmlFor={sendToChannelID}>{t('Also_send_to_channel')}</FieldLabel>
-										</Box>
-									</FieldRow>
-								</Field>
-							</Box>
-						</ComposerContainer>
-					</RoomComposer>
-				</Box>
-			</DateListProvider>
+				<RoomComposer aria-label={t('Thread_composer')}>
+					<ComposerContainer
+						tmid={mainMessage._id}
+						threadExists={isThreadMainMessage(mainMessage)}
+						subscription={subscription}
+						onSend={handleSend}
+						onEscape={handleComposerEscape}
+						onNavigateToPreviousMessage={handleNavigateToPreviousMessage}
+						onNavigateToNextMessage={handleNavigateToNextMessage}
+						tshow={sendToChannel}
+					>
+						<Box paddingBlock={8}>
+							<Field>
+								<FieldRow>
+									<Box display='flex' alignItems='center' minWidth={0} gap={8}>
+										<CheckBox
+											id={sendToChannelID}
+											checked={sendToChannel}
+											onChange={() => setSendToChannel((checked) => !checked)}
+											name='alsoSendThreadToChannel'
+										/>
+										<FieldLabel htmlFor={sendToChannelID}>{t('Also_send_to_channel')}</FieldLabel>
+									</Box>
+								</FieldRow>
+							</Field>
+						</Box>
+					</ComposerContainer>
+				</RoomComposer>
+			</Box>
 		</ContextualbarContent>
 	);
 };

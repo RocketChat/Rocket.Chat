@@ -79,7 +79,7 @@ highlight store and the places that write it (`ChatMessages`, `CurrentEditingMes
   window is reset at once and the reply shows again when the latest page or the server's copy arrives. (a) Accept the list's
   moment. (b) Keep `develop`'s moment, which needs the thread to hide its optimistic copy from the list and to call
   `scrollToBottom()` on the stream, undoing what the engine does for the room. Recommended: (a); the reply is among the latest
-  replies as soon as it exists, and the difference is a blink of the reply, not of the position.~~ Answered: (a). An own reply goes back to the latest replies when it is appended (spec R34).
+  replies as soon as it exists, and the difference is a blink of the reply, not of the position.~~ Answered: (a). An own reply goes back to the latest replies when it is appended (spec R34). Superseded at the first review: develop's moment wins, so the thread goes back when the room stream delivers the viewer's own reply (spec R34).
 - **Q3** ~~A link to a reply that is not loaded, followed a second time after the viewer paged away. `develop`'s thread asks for the
   replies around a reply once per thread and reply, so a second click on the same link does nothing, which `message-list` R46 and
   `room-message-list` R38 do not allow for the room. (a) The thread jumps again, as the room does: a change from `develop`, with a

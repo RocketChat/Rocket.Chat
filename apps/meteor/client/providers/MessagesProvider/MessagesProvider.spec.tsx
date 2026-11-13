@@ -1290,20 +1290,6 @@ describe('the message with the editing look (message-variants R47)', () => {
 		expect(result.current).toBe(false);
 	});
 
-	// Known defect: ../../../../../packages/ui-message-list/docs/specs/message-variants.md#d1-a-jump-replaces-the-editing-look-of-the-message-being-edited
-	it.skip('keeps the editing look on the message being edited while a jump highlights another', () => {
-		const { result } = renderHook(() => ({ edited: useIsMessageBeingEdited('edited'), target: useIsMessageBeingEdited('target') }), {
-			wrapper: appRoot()
-				.wrap((children: ReactNode) => <MessagesProvider>{children}</MessagesProvider>)
-				.build(),
-		});
-
-		act(() => setHighlightMessage('edited'));
-		act(() => setHighlightMessage('target'));
-
-		expect(result.current).toEqual({ edited: true, target: true });
-	});
-
 	it('is no message where interaction is not allowed (message-variants R47)', () => {
 		const { result } = renderEditing(false);
 

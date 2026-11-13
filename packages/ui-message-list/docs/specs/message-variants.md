@@ -91,7 +91,7 @@ a change say so, and are marked with the question of the intent or of this spec 
 
 ## Behaviour
 
-The places are: the **room** (the room's own list, until branch 08), a **thread** (the thread's list, until branch 09), the
+The places are: the **room** (`room-message-list`), a **thread** (`thread-message-list`), the
 **tabs** (pinned, starred and mentions), **search** and the **audit**. The moderation, contact history, the modals and the
 composer's quote draw message parts, not rows (`message-capabilities` R32 to R40), and the threads list draws its own items.
 
@@ -316,8 +316,6 @@ code and tests lists of the specs of branches 03 to 05 point at the moved proofs
 
 ## Out of scope
 
-- The thread list's jump highlight, which is left set when the thread closes before two seconds pass (only its timer is cleared): it
-  belongs to the thread list (branch 09).
 - The list engine, scrolling and virtualization (branch 07), and the conversation stories that render it (intent Q5).
 - The room list: its rows, day and unread dividers, the way it decides `sequential` and the markers (branch 08). R40 states
   only what it passes.
@@ -330,13 +328,9 @@ code and tests lists of the specs of branches 03 to 05 point at the moved proofs
 ## Known defects
 
 Behaviour on `develop` that the variants carry over. The checker rejects a `D` entry without a skipped test that pins it,
-so each is a `D<n>` entry with its test.
-
-### D1 A jump replaces the editing look of the message being edited
-
-A jump to a message and editing write the same highlighted id (R47). Jumping to another message while editing one moves the
-editing look to the target, and the message being edited loses it, until the store is renamed in branch 09. Pinned by the skipped
-test "keeps the editing look on the message being edited while a jump highlights another" in `MessagesProvider.spec.tsx`.
+so each is a `D<n>` entry with its test. `D1` (a jump replacing the editing look of the message being edited, while jumps and editing
+shared a store) was fixed with the thread's list, which takes its highlight from the list as the room's does (`thread-message-list` R32,
+R47); its number is not reused.
 
 ### D2 The reveal of an ignored message ends when its row unmounts
 

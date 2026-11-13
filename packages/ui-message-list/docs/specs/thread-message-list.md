@@ -1,8 +1,31 @@
 ---
 status: planned
 adrs: [0001]
-code: []
-tests: []
+code:
+  [
+    src/MessageList/scroll/useMessageListScroller.ts,
+    src/MessageList/stories/MessageListPlayground.tsx,
+    src/MessageList/stories/conversation/ConversationPlayground.tsx,
+    apps/meteor/client/providers/MessagesProvider/MessageMarkers.tsx,
+    apps/meteor/client/views/room/contextualBar/Threads/components/ThreadChat.tsx,
+    apps/meteor/client/views/room/contextualBar/Threads/components/ThreadMessageList.tsx,
+    apps/meteor/client/views/room/contextualBar/Threads/components/ThreadMessageRow.tsx,
+    apps/meteor/client/views/room/contextualBar/Threads/components/useScrollToBottomOnOwnReply.ts,
+    apps/meteor/client/views/room/contextualBar/Threads/components/useThreadJumpTarget.ts,
+    apps/meteor/client/views/room/contextualBar/Threads/hooks/useThreadMessagesQuery.ts,
+  ]
+tests:
+  [
+    src/MessageList/MessageList.spec.tsx,
+    src/MessageList/MessageList.stories.tsx,
+    src/MessageList/MessageListConversation.stories.tsx,
+    src/hooks/useMessageListNavigation.spec.tsx,
+    apps/meteor/client/views/room/contextualBar/Threads/components/ThreadChat.spec.tsx,
+    apps/meteor/client/views/room/contextualBar/Threads/components/ThreadMessageList.spec.tsx,
+    apps/meteor/client/views/room/contextualBar/Threads/components/ThreadMessageRow.spec.tsx,
+    apps/meteor/client/views/room/contextualBar/Threads/components/useThreadJumpTarget.spec.tsx,
+    apps/meteor/client/views/room/contextualBar/Threads/hooks/useThreadMessagesQuery.spec.ts,
+  ]
 ---
 
 # Spec: The thread's message list
@@ -39,8 +62,9 @@ where the requirements keep it:
   to it, highlights it for 2 s, and clears `msg` 500 ms after finding a reply, never when it names the main message, which the room
   clears. The highlight is written to the store jumps and editing share, and stays set when the thread closes within 2 s, because only
   its timer is cleared. Kept by R25 to R32.
-- **Own replies.** The viewer's reply, optimistic or confirmed, takes the thread to the bottom; from an older window it first
-  resets the thread's replies to the latest page. Kept by R33 to R37 (intent Q2 for when).
+- **Own replies.** The viewer's reply, optimistic or confirmed, takes the thread to the bottom; from an older window, when the room
+  stream delivers the reply, the thread resets its replies to the latest page and goes to the bottom, and nothing else (an edit,
+  another viewer's reply) moves it. Kept by R33 to R37.
 - **Live embeds and the date.** The rows of messages with a player or a preview stay mounted; the floating date hides the day
   divider it covers so a day shows once. Kept by R38 to R41 (intent Q4).
 - **The read state.** The thread is marked as read when its first page loads and when a reply arrives, through the chat of the
@@ -65,8 +89,8 @@ below are what the thread does with it.
 - **R2** The thread MUST draw a message of a system type with `SystemMessage` and every other message, the main message included,
   with `ThreadMessage`, passing `unread` for the first unread message and `ignoredUser` from the subscription's ignored users or the
   message's own mark, each message once (`message-variants` R28, R41).
-- **R3** The list's `aria-busy` MUST be true exactly while the first page, an older page or a newer page of replies loads, and false
-  otherwise (`message-list` R1).
+- **R3** The list's `aria-busy` MUST be true exactly while the first page, an older page or a newer page of replies loads, or while
+  the list places itself with its rows out of sight, and false otherwise (`message-list` R1, R84).
 - **R4** While the first page of replies loads, the thread MUST give the list no message, the main message included, so the list
   shows its spinner alone; once the page is in the rows MUST show (`message-list` R4; the reference shows the main message alone
   here).
@@ -138,8 +162,13 @@ below are what the thread does with it.
   the main message appears as the first row and the list jumps to it (R26), as `develop` does.
 - **R29** The same link followed again, after its `msg` was cleared and the viewer moved to a part of the thread that does not hold
   the reply, MUST load and jump again (`message-list` R46; `room-message-list` R38; a change from `develop`; intent Q3).
-- **R30** A `msg` that cannot be loaded MUST leave the list where it is and the parameter set, and the thread MUST NOT ask for it
-  again until a new link names it, as `develop` does.
+- **R30** A `msg` that cannot be loaded MUST leave the list where it is. The thread MUST drop the parameter when it names a reply, so
+  that following the link again asks again, and MUST NOT drop it when it names the main message, which is the room's to clear
+  (a change from `develop`, which left the parameter set and asked again whenever the replies changed). A failure that arrives after
+  another link was followed, the same link was followed again, the thread changed or the thread's list closed MUST NOT drop the
+  parameter: only the failure of the request the current link made in the open list does. Accepted edge: a reply that fails to load
+  while the room is still loading around the thread's main message clears `msg`, which can cut the room's jump to the main message
+  short.
 - **R31** A jump MUST land on the target itself and not on the message above or below it, with the older loader or the main message
   among the rows, and the rows kept mounted (R38) and the top message the list reports MUST be the right ones (`message-list` R42;
   branch 02, fix 1).
@@ -151,15 +180,18 @@ below are what the thread does with it.
 
 - **R33** A reply the viewer writes, the optimistic copy included, MUST take the list to the bottom from wherever the viewer is
   reading, within 1px, while no newer replies remain (`message-list` R19; B3).
-- **R34** A reply the viewer writes while an older window is shown (newer replies remain) MUST make the thread ask for its latest
-  replies, and the list MUST go to the bottom once the latest page is among the replies, with the reply among them once it has
-  arrived; until then the viewer's position MUST NOT change by itself (`message-list` R20; intent Q2).
+- **R34** When the viewer's own reply to this thread arrives from the room's stream, as `develop`'s thread listened for it, while an
+  older window is shown (newer replies remain), the thread MUST take the list to the bottom through its handle, so the thread asks for
+  its latest replies and the list goes to the bottom once the latest page is among them, with the reply among them; until then the
+  viewer's position MUST NOT change by itself (`message-list` R20). The list cannot tell this arrival from the optimistic copy,
+  which lands in the middle of an older window, where the list sees a change and not an append. An edit, a reply of anyone else, a
+  reply to another thread and a message of another room MUST NOT take the list anywhere.
 - **R35** The thread's request for its latest replies MUST NOT reject and MUST clear the replies before the page loads, so a latest
   page that fails to load leaves the list at the bottom of a window that holds only the main message, and never waiting for a page
   that is not coming. A loader that rejects while the window is intact does not leave the list waiting either, for any list
   (`message-list` R20; fixes its D3, intent Q5).
 - **R36** A reply written by someone else, while the viewer reads away or an older window is shown, MUST move nothing and raise
-  nothing (R17).
+  nothing (R17), and neither MUST an edit of the viewer's reply.
 - **R37** A message the viewer writes in the room's main channel or in another thread MUST NOT move this thread's list (R24).
 
 **Live embeds, dividers and the date**
@@ -188,7 +220,7 @@ below are what the thread does with it.
 - **R43** The keyboard of the thread's messages MUST be the list's (`message-list` R66 to R68): one tab stop, ArrowDown and ArrowUp
   between messages with the first entry on the latest, Tab through the controls of a message and then to the composer, Shift+Tab to
   the top of the contextual bar. Where no focus scope surrounds the thread, as in the conference panels, leaving the list at either
-  edge MUST be left to the browser, as on `develop`.
+  edge MUST move the focus to the next focusable element after the list, or the previous one before it, as on `develop`.
 
 **Selection and editing**
 
@@ -278,6 +310,8 @@ What changes with the code, for the plan to carry out, and checks of the plan (f
 - Moving the app's copy of the item-list keyboard hook to `@rocket.chat/ui-client`: it stays used by the sidebar and other lists.
 - A smaller distance than the thread's own for newer pages, a "Jump to recent messages" or "New messages" in a thread, a position
   saved per thread and padding at the ends of the list: `develop`'s thread has none.
+- A request for the replies around an earlier link that succeeds after another link was followed: it still replaces the replies the
+  thread holds, as on `develop`, so the later link may not be among them.
 - The e2e suites; the manual check of the scope stands in for them. The scrollers of the thread's page object are matched by the list
   they contain, as the room's are; the plan checks them.
 
@@ -345,8 +379,7 @@ spec's own, answered at the gate by the orchestrator, for the user:
 
 ### Where the new thread list differs from `develop`'s
 
-Decided in the intent: the distance for newer pages is the thread's 20 px, not 200 (R20; Q1); the moment an own reply goes back to the
-latest is the append, not the server's copy (R34; Q2); a link followed twice jumps twice (R29; Q3). Not a decision:
+Decided in the intent: the distance for newer pages is the thread's 20 px, not 200 (R20; Q1); a link followed twice jumps twice (R29; Q3). Intent Q2, accepting that an own reply goes back at the append, was superseded at the first review: the thread goes back when the room stream delivers the reply, as `develop` does (R34). Not a decision: a link that cannot be loaded is dropped from the address when it names a reply (R30);
 the highlight lasts 2 s from the moment the target is reached, not from the
 moment its index is found, and `msg` is cleared when it is reached, not 500 ms after the reply is among the replies (R25); the
 container no longer carries the classes `thread-list`, `js-scroll-thread` and `hide-usernames`, which nothing styles or reads (the

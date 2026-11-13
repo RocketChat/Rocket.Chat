@@ -27,6 +27,8 @@ export type ConversationPlaygroundProps = {
 	layout: 'room' | 'thread';
 	size?: number;
 	isSelecting?: boolean;
+	/** Makes the latest message of a thread one unbroken word, longer than the list is wide. */
+	hasLongWord?: boolean;
 	display?: Partial<MessageDisplayContextValue>;
 };
 
@@ -47,15 +49,17 @@ const toolbar: MessageToolbarContextValue = {
 };
 
 /** A room or a thread rendering the real message variants, fed by the simulated server. */
-const ConversationPlayground = ({ layout, size = 120, isSelecting = false, display }: ConversationPlaygroundProps) => {
+const ConversationPlayground = ({ layout, size = 120, isSelecting = false, hasLongWord = false, display }: ConversationPlaygroundProps) => {
 	const history = useMemo(() => {
 		const conversation = createConversationHistory(size);
 		if (layout === 'room') {
 			return conversation;
 		}
 		const [main, ...rest] = conversation.filter((message) => !message.tmid && !message.t);
-		return [main, ...rest.slice(0, 40).map((message) => ({ ...message, tmid: main._id }))];
-	}, [layout, size]);
+		const replies = rest.slice(0, 40).map((message) => ({ ...message, tmid: main._id }));
+		const last = replies.at(-1);
+		return [main, ...(hasLongWord && last ? [...replies.slice(0, -1), { ...last, msg: 'unbroken'.repeat(30) }] : replies)];
+	}, [layout, size, hasLongWord]);
 
 	const source = useFakeMessageSource({ history, pageSize: 40, latency: 200, firstUnreadMessageId: history[history.length - 6]?._id });
 
