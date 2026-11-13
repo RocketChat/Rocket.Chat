@@ -1,0 +1,22 @@
+{
+  "name": "onboarding-bot",
+  "version": "1.0.0",
+  "description": "Rocket.Chat onboarding bot",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node index.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "express": "^4.18.2",
+    "mongoose": "^8.0.0"
+  },
+  "keywords": [
+    "rocketchat",
+    "bot",
+    "onboarding"
+  ],
+  "author": "",
+  "license": "MIT"
+}
