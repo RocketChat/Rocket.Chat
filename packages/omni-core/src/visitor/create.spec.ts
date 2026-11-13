@@ -1,6 +1,5 @@
 import { UserStatus } from '@rocket.chat/core-typings';
-import type { ILivechatContactsModel, ILivechatDepartmentModel, ILivechatVisitorsModel, IUsersModel } from '@rocket.chat/model-typings';
-import { registerModel } from '@rocket.chat/models';
+import { mockModel } from '@rocket.chat/models/testing';
 import { validateEmail } from '@rocket.chat/tools';
 
 import { registerGuest } from './create';
@@ -44,25 +43,25 @@ describe('registerGuest', () => {
 		findOneByIdOrNameSpy = jest.fn().mockResolvedValue(null);
 
 		// Register the models with spy functions
-		registerModel('ILivechatVisitorsModel', {
+		mockModel('LivechatVisitors', {
 			getVisitorByToken: getVisitorByTokenSpy,
 			findOneVisitorByPhone: findOneVisitorByPhoneSpy,
 			findOneGuestByEmailAddress: findOneGuestByEmailAddressSpy,
 			getNextVisitorUsername: getNextVisitorUsernameSpy,
 			updateOneByIdOrToken: updateOneByIdOrTokenSpy,
-		} as unknown as ILivechatVisitorsModel);
+		});
 
-		registerModel('ILivechatContactsModel', {
+		mockModel('LivechatContacts', {
 			findContactByEmailAndContactManager: findContactByEmailAndContactManagerSpy,
-		} as unknown as ILivechatContactsModel);
+		});
 
-		registerModel('IUsersModel', {
+		mockModel('Users', {
 			findOneOnlineAgentById: findOneOnlineAgentByIdSpy,
-		} as unknown as IUsersModel);
+		});
 
-		registerModel('ILivechatDepartmentModel', {
+		mockModel('LivechatDepartment', {
 			findOneByIdOrName: findOneByIdOrNameSpy,
-		} as unknown as ILivechatDepartmentModel);
+		});
 	});
 
 	describe('validation', () => {

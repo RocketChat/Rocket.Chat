@@ -1,14 +1,8 @@
 import { federationSDK } from '@rocket.chat/federation-sdk';
-import { Users } from '@rocket.chat/models';
+import { mockModel } from '@rocket.chat/models/testing';
 
 import { createOrUpdateFederatedUser } from './createOrUpdateFederatedUser';
 import { getOrCreateFederatedUser } from './getOrCreateFederatedUser';
-
-jest.mock('@rocket.chat/models', () => ({
-	Users: {
-		findOneByUsername: jest.fn(),
-	},
-}));
 
 jest.mock('@rocket.chat/federation-sdk', () => ({
 	federationSDK: {
@@ -30,7 +24,7 @@ jest.mock('./createOrUpdateFederatedUser', () => ({
 	createOrUpdateFederatedUser: jest.fn(),
 }));
 
-const mockFindOneByUsername = Users.findOneByUsername as jest.MockedFunction<typeof Users.findOneByUsername>;
+const mockFindOneByUsername = jest.fn();
 const mockGetConfig = federationSDK.getConfig as jest.MockedFunction<typeof federationSDK.getConfig>;
 const mockGetAppServiceForUser = federationSDK.getAppServiceForUser as jest.MockedFunction<typeof federationSDK.getAppServiceForUser>;
 const mockCreateOrUpdateFederatedUser = createOrUpdateFederatedUser as jest.MockedFunction<typeof createOrUpdateFederatedUser>;
@@ -50,6 +44,10 @@ const createdUser = {
 };
 
 describe('getOrCreateFederatedUser', () => {
+	beforeAll(() => {
+		mockModel('Users', { findOneByUsername: mockFindOneByUsername });
+	});
+
 	beforeEach(() => {
 		jest.clearAllMocks();
 		mockGetConfig.mockReturnValue('local.com' as any);

@@ -1,7 +1,8 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { GenericModal } from '@rocket.chat/ui-client';
-import { useEndpoint, useTranslation, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 
 import { getGeolocationPermission } from './getGeolocationPermission';
 import { getGeolocationPosition } from './getGeolocationPosition';
@@ -14,7 +15,7 @@ export type ShareLocationModalProps = {
 };
 
 const ShareLocationModal = ({ rid, tmid, onClose }: ShareLocationModalProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToast = useToastMessageDispatch();
 	const { data: permissionState, isLoading: permissionLoading } = useQuery({
 		queryKey: ['geolocationPermission'],

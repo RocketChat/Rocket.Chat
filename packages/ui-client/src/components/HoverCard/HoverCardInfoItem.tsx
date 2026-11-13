@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Icon } from '@rocket.chat/fuselage';
+import { Box, Icon, Item, ItemContent, ItemLink, ItemMedia, ItemTitle } from '@rocket.chat/fuselage';
 import type { ComponentProps, ReactNode } from 'react';
 
 const srOnly = css`
@@ -16,38 +16,38 @@ const srOnly = css`
 
 export type HoverCardInfoItemProps = {
 	icon?: ComponentProps<typeof Icon>['name'];
-	/** Visually hidden term announced by screen readers; renders the row as a `dt`/`dd` pair inside a `HoverCardInfoList`. */
+	/** Visually hidden term announced by screen readers before the value. */
 	label?: string;
+	/** Makes the whole row a button. */
+	onClick?: () => void;
 	children: ReactNode;
 };
 
-const HoverCardInfoItem = ({ icon, label, children }: HoverCardInfoItemProps) => {
-	const content = (
-		<>
-			{icon ? <Icon name={icon} size='x20' title={label} aria-hidden /> : <Box width='x20' flexShrink={0} aria-hidden />}
-			<Box flexGrow={1} flexShrink={1} width='1px' marginInlineStart='x4'>
-				{children}
-			</Box>
-		</>
+const HoverCardInfoItem = ({ icon, label, onClick, children }: HoverCardInfoItemProps) => {
+	const media = (
+		<ItemMedia variant='icon'>
+			{icon ? <Icon name={icon} size='x20' title={label} aria-hidden /> : <Box width='x20' aria-hidden />}
+		</ItemMedia>
 	);
 
-	if (!label) {
-		return (
-			<Box display='flex' alignItems='flex-start' fontScale='p2' color='default' marginBlock='x4'>
-				{content}
-			</Box>
-		);
-	}
+	const title = (
+		<ItemTitle truncate={false}>
+			{label && <Box is='span' className={srOnly}>{`${label}: `}</Box>}
+			{onClick ? (
+				<ItemLink is='button' onClick={onClick}>
+					{children}
+				</ItemLink>
+			) : (
+				children
+			)}
+		</ItemTitle>
+	);
 
 	return (
-		<>
-			<Box is='dt' className={srOnly}>
-				{label}
-			</Box>
-			<Box is='dd' display='flex' alignItems='flex-start' fontScale='p2' color='default' marginBlock='x4'>
-				{content}
-			</Box>
-		</>
+		<Item is='li'>
+			{media}
+			<ItemContent>{title}</ItemContent>
+		</Item>
 	);
 };
 

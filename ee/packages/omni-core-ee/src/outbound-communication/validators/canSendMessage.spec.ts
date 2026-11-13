@@ -1,5 +1,5 @@
 import { Authorization } from '@rocket.chat/core-services';
-import { LivechatDepartment, LivechatDepartmentAgents, Users } from '@rocket.chat/models';
+import { mockModel } from '@rocket.chat/models/testing';
 
 import { canSendOutboundMessage, validateAgentAssignPermissions } from './canSendMessage';
 
@@ -9,26 +9,14 @@ jest.mock('@rocket.chat/core-services', () => ({
 	},
 }));
 
-jest.mock('@rocket.chat/models', () => ({
-	LivechatDepartment: {
-		findOne: jest.fn(),
-	},
-	LivechatDepartmentAgents: {
-		findOneByAgentIdAndDepartmentId: jest.fn(),
-	},
-	Users: {
-		findOneAgentById: jest.fn(),
-	},
-}));
-
 const hasPermissionMock = Authorization.hasPermission as unknown as jest.Mock<
 	Promise<boolean>,
 	[userId: string, permission: string, scope?: string]
 >;
 
-const findDepartmentMock = LivechatDepartment.findOne as unknown as jest.Mock;
-const findDepartmentAgentMock = LivechatDepartmentAgents.findOneByAgentIdAndDepartmentId as unknown as jest.Mock;
-const findUserAgentMock = Users.findOneAgentById as unknown as jest.Mock;
+const findDepartmentMock = jest.fn();
+const findDepartmentAgentMock = jest.fn();
+const findUserAgentMock = jest.fn();
 
 const setPermissions = (map: Record<string, boolean>) => {
 	hasPermissionMock.mockImplementation(async (_userId: string, permission: string) => {
@@ -37,6 +25,12 @@ const setPermissions = (map: Record<string, boolean>) => {
 };
 
 describe('canSendOutboundMessage', () => {
+	beforeAll(() => {
+		mockModel('LivechatDepartment', { findOne: findDepartmentMock });
+		mockModel('LivechatDepartmentAgents', { findOneByAgentIdAndDepartmentId: findDepartmentAgentMock });
+		mockModel('Users', { findOneAgentById: findUserAgentMock });
+	});
+
 	beforeEach(() => {
 		jest.clearAllMocks();
 		// Default: no permissions granted

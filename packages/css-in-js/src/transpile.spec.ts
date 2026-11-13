@@ -1,4 +1,4 @@
-import { transpile, createTranspileMiddleware } from './transpile';
+import { transpile, createTranspileMiddleware } from './transpile.js';
 
 describe('transpile', () => {
 	it('wraps the declarations in the given selector', () => {

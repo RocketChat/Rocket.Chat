@@ -1,6 +1,7 @@
-import { afterEach, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it } from 'node:test';
 
 import { ClientSafeError } from '@rocket.chat/core-services';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -50,7 +51,6 @@ describe('setUsername', () => {
 	const { setUsernameWithValidation, _setUsername } = proxyquire.noCallThru().load('./setUsername', {
 		'../../database/utils': { onceTransactionCommitedSuccessfully: async (cb: any, _sess: any) => cb() },
 		'@rocket.chat/core-services': { api: stubs.api, ClientSafeError },
-		'@rocket.chat/models': { Users: stubs.Users, Invites: stubs.Invites, Subscriptions: stubs.Subscriptions },
 		'meteor/accounts-base': { Accounts: stubs.Accounts },
 		'underscore': stubs.underscore,
 		'../../settings': { settings: stubs.settings },
@@ -64,6 +64,12 @@ describe('setUsername', () => {
 		'./validateUsername': { validateUsername: stubs.validateUsername },
 		'../callbacks': { callbacks: stubs.callbacks },
 		'../logger/system': { SystemLogger: stubs.SystemLogger },
+	});
+
+	before(() => {
+		mockModel('Users', stubs.Users);
+		mockModel('Invites', stubs.Invites);
+		mockModel('Subscriptions', stubs.Subscriptions);
 	});
 
 	beforeEach(() => {

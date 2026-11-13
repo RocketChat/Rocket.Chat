@@ -1,4 +1,4 @@
-import { Box, Button, Icon, Margins, Pagination, TextInput, Stack, type TableColumnWidth } from '@rocket.chat/fuselage';
+import { Box, Button, Pagination, type TableColumnWidth } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
@@ -7,15 +7,16 @@ import {
 	GenericTableHeader,
 	GenericTableHeaderCell,
 	GenericTableRow,
+	usePaginatedQuery,
 	usePagination,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useEndpoint, useRouter, useSearchParameter } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AttributeMenu from './AttributeMenu';
+import FilterByText from '../../../../components/FilterByText';
 import { ABACQueryKeys } from '../../../../lib/queryKeys';
 import { useIsABACAvailable } from '../hooks/useIsABACAvailable';
 
@@ -26,7 +27,6 @@ const AttributesPage = () => {
 	const [text, setText] = useState(searchTerm ?? '');
 
 	const debouncedText = useDebouncedValue(text, 400);
-	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 	const getAttributes = useEndpoint('GET', '/v1/abac/attributes');
 	const isABACAvailable = useIsABACAvailable();
 
@@ -44,34 +44,32 @@ const AttributesPage = () => {
 	const query = useMemo(
 		() => ({
 			...(debouncedText ? { key: debouncedText, values: debouncedText } : {}),
-			offset: current,
-			count: itemsPerPage,
 		}),
-		[debouncedText, current, itemsPerPage],
+		[debouncedText],
 	);
 
-	const { data, isLoading } = useQuery({
-		queryKey: ABACQueryKeys.roomAttributes.list(query),
-		queryFn: () => getAttributes(query),
+	const queryKey = ABACQueryKeys.roomAttributes.list(query);
+	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination({ resetKey: queryKey });
+
+	const { data, isLoading } = usePaginatedQuery({
+		query: {
+			queryKey,
+			queryFn: (page) => getAttributes({ ...query, ...page }),
+		},
+		itemsKey: 'attributes',
+		offset: current,
+		count: itemsPerPage,
 	});
 
 	const columns: TableColumnWidth[] = ['auto', 'auto', 40];
 
 	return (
 		<>
-			<Margins block={24}>
-				<Stack direction='row' gap={8}>
-					<TextInput
-						endAddon={<Icon name='magnifier' size='x20' />}
-						placeholder={t('ABAC_Search_attributes')}
-						value={text}
-						onChange={(e) => setText((e.target as HTMLInputElement).value)}
-					/>
-					<Button onClick={handleNewAttribute} variant='primary' disabled={!isABACAvailable}>
-						{t('ABAC_New_attribute')}
-					</Button>
-				</Stack>
-			</Margins>
+			<FilterByText placeholder={t('ABAC_Search_attributes')} value={text} onChange={(e) => setText(e.target.value)}>
+				<Button onClick={handleNewAttribute} variant='primary' disabled={!isABACAvailable}>
+					{t('ABAC_New_attribute')}
+				</Button>
+			</FilterByText>
 			{(!data || data.attributes?.length === 0) && !isLoading ? (
 				<Box display='flex' justifyContent='center' height='full'>
 					<GenericNoResults icon='list-alt' title={t('ABAC_No_attributes')} description={t('ABAC_No_attributes_description')} />

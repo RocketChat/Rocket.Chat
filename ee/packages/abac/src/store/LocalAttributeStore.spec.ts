@@ -1,15 +1,11 @@
+import { mockModel } from '@rocket.chat/models/testing';
+
 import { LocalAttributeStore } from './LocalAttributeStore';
 
 const ensureMock = jest.fn();
 jest.mock('../helper', () => ({ ensureAttributeDefinitionsExist: (...a: unknown[]) => ensureMock(...a) }));
 const findPaginated = jest.fn();
 const findAllKeys = jest.fn();
-jest.mock('@rocket.chat/models', () => ({
-	AbacAttributes: {
-		findPaginated: (...a: unknown[]) => findPaginated(...a),
-		findAllKeys: (...a: unknown[]) => findAllKeys(...a),
-	},
-}));
 
 const actor = { _id: 'u', username: 'bob', name: 'Bob' };
 
@@ -20,6 +16,13 @@ beforeEach(() => {
 });
 
 describe('LocalAttributeStore', () => {
+	beforeAll(() => {
+		mockModel('AbacAttributes', {
+			findPaginated: (...a: unknown[]) => findPaginated(...a),
+			findAllKeys: (...a: unknown[]) => findAllKeys(...a),
+		});
+	});
+
 	it('validateAssignable delegates to ensureAttributeDefinitionsExist', async () => {
 		const attrs = [{ key: 'k', values: ['v'] }];
 		await new LocalAttributeStore().validateAssignable(attrs, actor);

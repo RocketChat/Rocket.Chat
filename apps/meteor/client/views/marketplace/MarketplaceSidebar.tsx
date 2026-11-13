@@ -1,5 +1,6 @@
-import { useTranslation, useLayout, useCurrentRoutePath } from '@rocket.chat/ui-contexts';
+import { useLayout, useCurrentRoutePath } from '@rocket.chat/ui-contexts';
 import { memo, useSyncExternalStore } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { getMarketplaceSidebarItems, subscribeToMarketplaceSidebarItems } from './sidebarItems';
 import Sidebar from '../../components/Sidebar';
@@ -8,7 +9,7 @@ import SettingsProvider from '../../providers/SettingsProvider';
 
 const MarketplaceSidebar = () => {
 	const items = useSyncExternalStore(subscribeToMarketplaceSidebarItems, getMarketplaceSidebarItems);
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const { sidebar } = useLayout();
 

@@ -1,10 +1,10 @@
 import { Emitter } from '@rocket.chat/emitter';
 
-import { ClientMediaCall } from './Call';
-import type { IClientMediaCallConfig } from './Call';
-import type { MediaSignalTransportWrapper } from './TransportWrapper';
-import type { IWebRTCProcessor, WebRTCProcessorConfig } from '../definition';
-import type { ServerMediaSignalNewCall, ServerMediaSignalRejectedCallRequest } from '../definition/signals/server';
+import { ClientMediaCall } from './Call.js';
+import type { IClientMediaCallConfig } from './Call.js';
+import type { MediaSignalTransportWrapper } from './TransportWrapper.js';
+import type { IWebRTCProcessor, WebRTCProcessorConfig } from '../definition/index.js';
+import type { ServerMediaSignalNewCall, ServerMediaSignalRejectedCallRequest } from '../definition/signals/server/index.js';
 
 const SESSION_ID = 'session-id';
 

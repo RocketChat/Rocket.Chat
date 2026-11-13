@@ -1,6 +1,6 @@
 import { api, Authorization, MediaCall, Settings, VideoConf } from '@rocket.chat/core-services';
 import { Logger } from '@rocket.chat/logger';
-import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
+import { mockModel } from '@rocket.chat/models/testing';
 
 import { NotificationsModule } from './notifications.module';
 import { invalidate } from './publication-user-cache';
@@ -12,18 +12,6 @@ jest.mock('@rocket.chat/core-services', () => ({
 	VideoConf: { validateAction: jest.fn() },
 	MediaCall: { processSerializedSignal: jest.fn() },
 	Settings: { get: jest.fn() },
-}));
-
-jest.mock('@rocket.chat/models', () => ({
-	...jest.requireActual('@rocket.chat/models'),
-	Rooms: { findOneById: jest.fn() },
-	Subscriptions: {
-		countByRoomIdAndUserId: jest.fn(),
-		findByRoomIdAndNotUserId: jest.fn(),
-	},
-	Users: {
-		findOneById: jest.fn(),
-	},
 }));
 
 jest.mock('@rocket.chat/logger', () => ({
@@ -50,10 +38,29 @@ class TestStreamer extends Streamer<any> {
 
 const validateAction = jest.mocked(VideoConf.validateAction);
 const processSerializedSignal = jest.mocked(MediaCall.processSerializedSignal);
-const countByRoomIdAndUserId = jest.mocked(Subscriptions.countByRoomIdAndUserId);
-const findByRoomIdAndNotUserId = jest.mocked(Subscriptions.findByRoomIdAndNotUserId);
+
+const subscriptionsModel = {
+	countByRoomIdAndUserId: jest.fn(),
+	findByRoomIdAndNotUserId: jest.fn(),
+};
+
+const usersModel = {
+	findOneById: jest.fn(),
+};
+
+const roomsModel = {
+	findOneById: jest.fn(),
+};
+
+const { countByRoomIdAndUserId, findByRoomIdAndNotUserId } = subscriptionsModel;
 
 describe('NotificationsModule', () => {
+	beforeAll(() => {
+		mockModel('Subscriptions', subscriptionsModel);
+		mockModel('Users', usersModel);
+		mockModel('Rooms', roomsModel);
+	});
+
 	let notifications: NotificationsModule;
 
 	beforeEach(() => {
@@ -93,11 +100,11 @@ describe('NotificationsModule', () => {
 			invalidate(userId);
 			invalidate(secondUserId);
 
-			const findUser = jest.mocked(Users.findOneById);
+			const findUser = usersModel.findOneById;
 			findUser.mockReset();
 			findUser.mockImplementation(async (id) => (id === userId ? firstUser : secondUser) as any);
 
-			const findRoom = jest.mocked(Rooms.findOneById);
+			const findRoom = roomsModel.findOneById;
 			findRoom.mockReset();
 			findRoom.mockResolvedValue(publicRoom as any);
 
@@ -166,9 +173,9 @@ describe('NotificationsModule', () => {
 			};
 
 			invalidate(userId);
-			jest.mocked(Users.findOneById).mockResolvedValue(user as any);
+			usersModel.findOneById.mockResolvedValue(user as any);
 
-			const findRoom = jest.mocked(Rooms.findOneById);
+			const findRoom = roomsModel.findOneById;
 			findRoom.mockReset();
 			findRoom.mockResolvedValue(room as any);
 
@@ -213,9 +220,9 @@ describe('NotificationsModule', () => {
 			};
 
 			invalidate(userId);
-			jest.mocked(Users.findOneById).mockResolvedValue(user as any);
+			usersModel.findOneById.mockResolvedValue(user as any);
 
-			const findRoom = jest.mocked(Rooms.findOneById);
+			const findRoom = roomsModel.findOneById;
 			findRoom.mockReset();
 			findRoom.mockResolvedValue(publicRoom as any);
 
@@ -403,7 +410,7 @@ describe('NotificationsModule', () => {
 
 		beforeEach(() => {
 			jest.mocked(Settings.get).mockResolvedValue(false);
-			jest.mocked(Users.findOneById).mockResolvedValue({ username: 'alice' } as any);
+			usersModel.findOneById.mockResolvedValue({ username: 'alice' } as any);
 			emitToOne = jest.spyOn(api, 'emitToOne').mockResolvedValue();
 		});
 

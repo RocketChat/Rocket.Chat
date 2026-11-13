@@ -152,6 +152,7 @@ export class Agenda extends EventEmitter {
 
 	public mongo(mdb: MongoDB, collection: string | undefined) {
 		this._mdb = mdb;
+		// oxlint-disable-next-line typescript/prefer-optional-chain
 		if (mdb.s && mdb.topology && mdb.topology.s) {
 			this._mongoUseUnifiedTopology = Boolean(mdb?.topology?.s?.options?.useUnifiedTopology);
 		}
@@ -484,6 +485,7 @@ export class Agenda extends EventEmitter {
 		debug('job already has _id, calling findOneAndUpdate() using _id as query');
 		try {
 			const result = await this.getCollection().findOneAndUpdate({ _id: id } as any, update, { returnDocument: 'after' });
+			// oxlint-disable-next-line no-unused-expressions
 			result && (await this._processDbResult(job, result));
 		} catch (error) {
 			this.emit('error:database', error);
@@ -642,6 +644,7 @@ export class Agenda extends EventEmitter {
 
 	public stop(): Promise<void> {
 		debug('Agenda.stop called, clearing interval for processJobs()');
+		// oxlint-disable-next-line typescript/no-unnecessary-type-assertion
 		clearInterval(this._processInterval as NodeJS.Timeout);
 		this._processInterval = undefined;
 
@@ -885,6 +888,7 @@ export class Agenda extends EventEmitter {
 			void job
 				.run()
 				.then((jobRan) => [null, jobRan])
+				// oxlint-disable-next-line typescript/no-unsafe-return
 				.catch((error) => [error, job])
 				.then(([error, jobRan]) => this._processJobResult(error, jobRan));
 		} else {

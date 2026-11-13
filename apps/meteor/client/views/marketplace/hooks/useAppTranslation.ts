@@ -1,32 +1,32 @@
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Utilities } from '../../../../ee/lib/misc/Utilities';
 
 type AppTranslationFunction = {
-	(key: string, ...replaces: unknown[]): string;
+	(key: string): string;
 	has: (key: string | undefined) => boolean;
 };
 
 export const useAppTranslation = (appId: string): AppTranslationFunction => {
-	const t = useTranslation();
+	const { t, i18n } = useTranslation();
 
 	const tApp = useCallback(
-		(key: string, ...args: unknown[]) => {
+		(key: string) => {
 			if (!key) {
 				return '';
 			}
 			const appKey = Utilities.getI18nKeyForApp(key, appId);
 
-			if (t.has(appKey)) {
-				return t(appKey, ...args);
+			if (i18n.exists(appKey)) {
+				return t(appKey);
 			}
-			if (t.has(key)) {
-				return t(key, ...args);
+			if (i18n.exists(key)) {
+				return t(key);
 			}
 			return key;
 		},
-		[t, appId],
+		[t, i18n, appId],
 	);
 
 	return Object.assign(tApp, {
@@ -36,9 +36,9 @@ export const useAppTranslation = (appId: string): AppTranslationFunction => {
 					return false;
 				}
 
-				return t.has(Utilities.getI18nKeyForApp(key, appId)) || t.has(key);
+				return i18n.exists(Utilities.getI18nKeyForApp(key, appId)) || i18n.exists(key);
 			},
-			[t, appId],
+			[i18n, appId],
 		),
 	});
 };

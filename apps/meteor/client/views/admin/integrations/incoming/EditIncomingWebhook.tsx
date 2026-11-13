@@ -1,9 +1,10 @@
 import type { IIncomingIntegration, Serialized } from '@rocket.chat/core-typings';
 import { Button, ButtonGroup, Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { GenericModal, Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@rocket.chat/ui-client';
-import { useSetModal, useTranslation, useRouter, useRouteParameter } from '@rocket.chat/ui-contexts';
+import { useSetModal, useRouter, useRouteParameter } from '@rocket.chat/ui-contexts';
 import { useId, useCallback } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import IncomingWebhookForm from './IncomingWebhookForm';
 import { useCreateIntegration } from '../hooks/useCreateIntegration';
@@ -45,7 +46,7 @@ export type EditIncomingWebhookProps = {
 };
 
 const EditIncomingWebhook = ({ webhookData }: EditIncomingWebhookProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const router = useRouter();
 	const setModal = useSetModal();
 	const tab = useRouteParameter('type');

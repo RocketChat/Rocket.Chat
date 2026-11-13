@@ -697,17 +697,13 @@ API.v1.get(
 			return API.v1.forbidden();
 		}
 
-		let initialImage: IUpload | null = null;
-		if (this.queryParams.startingFromId) {
-			initialImage = await Uploads.findOneById(this.queryParams.startingFromId);
-			if (initialImage && initialImage.rid !== room._id) {
-				initialImage = null;
-			}
-		}
+		const initialImage = this.queryParams.startingFromId
+			? await Uploads.findOneConfirmedImageByIdAndRoomId(this.queryParams.startingFromId, room._id)
+			: null;
 
 		const { offset, count } = await getPaginationItems(this.queryParams);
 
-		const { cursor, totalCount } = Uploads.findImagesByRoomId(room._id, initialImage?.uploadedAt, {
+		const { cursor, totalCount } = Uploads.findConfirmedImagesByRoomId(room._id, initialImage?.uploadedAt, {
 			skip: offset,
 			limit: count,
 		});

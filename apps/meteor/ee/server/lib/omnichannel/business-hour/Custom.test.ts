@@ -1,5 +1,6 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -40,18 +41,6 @@ proxyquire.noCallThru().load('./Custom', {
 	'../../../../../server/lib/omnichannel/business-hour': {
 		businessHourManager: { registerBusinessHourType: registerBusinessHourTypeStub },
 	},
-	'@rocket.chat/models': {
-		'@global': true,
-		'LivechatBusinessHours': LivechatBusinessHoursStub,
-		'LivechatDepartment': LivechatDepartmentStub,
-		'LivechatDepartmentAgents': LivechatDepartmentAgentsStub,
-		'Users': UsersStub,
-	},
-	'../../notifyListener': {
-		'@global': true,
-		'notifyOnUserChange': sinon.stub(),
-		'notifyOnUserChangeAsync': sinon.stub(),
-	},
 });
 
 const customBusinessHour = registerBusinessHourTypeStub.firstCall.args[0];
@@ -66,6 +55,13 @@ const baseBusinessHour = {
 };
 
 describe('[OC] CustomBusinessHour', () => {
+	before(() => {
+		mockModel('LivechatBusinessHours', LivechatBusinessHoursStub);
+		mockModel('LivechatDepartment', LivechatDepartmentStub);
+		mockModel('LivechatDepartmentAgents', LivechatDepartmentAgentsStub);
+		mockModel('Users', UsersStub);
+	});
+
 	describe('saveBusinessHour()', () => {
 		beforeEach(() => {
 			LivechatBusinessHoursStub.updateOne.resetHistory();

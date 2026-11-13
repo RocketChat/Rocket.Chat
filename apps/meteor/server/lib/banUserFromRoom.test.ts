@@ -1,5 +1,6 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import p from 'proxyquire';
 import sinon from 'sinon';
@@ -37,7 +38,6 @@ const { banUserFromRoomMethod } = p.noCallThru().load('./banUserFromRoom.ts', {
 	'@rocket.chat/core-typings': {
 		isBannedSubscription: (sub: { status?: string } | null) => sub?.status === 'BANNED',
 	},
-	'@rocket.chat/models': modelsMock,
 	'./authorization': { canAccessRoomAsync: canAccessRoomAsyncMock },
 	'./authorization/hasPermission': { hasPermissionAsync: hasPermissionAsyncMock },
 	'./authorization/hasRole': { hasRoleAsync: hasRoleAsyncMock },
@@ -47,6 +47,13 @@ const { banUserFromRoomMethod } = p.noCallThru().load('./banUserFromRoom.ts', {
 });
 
 describe('banUserFromRoomMethod', () => {
+	before(() => {
+		mockModel('Rooms', modelsMock.Rooms);
+		mockModel('Subscriptions', modelsMock.Subscriptions);
+		mockModel('Users', modelsMock.Users);
+		mockModel('Roles', modelsMock.Roles);
+	});
+
 	beforeEach(() => {
 		hasPermissionAsyncMock.reset();
 		hasRoleAsyncMock.reset();
