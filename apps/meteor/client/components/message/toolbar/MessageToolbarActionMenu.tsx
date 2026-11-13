@@ -25,6 +25,7 @@ import { useUnFollowMessageAction } from '../../../providers/MessagesProvider/ac
 import { useUnpinMessageAction } from '../../../providers/MessagesProvider/actions/useUnpinMessageAction';
 import { useUnstarMessageAction } from '../../../providers/MessagesProvider/actions/useUnstarMessageAction';
 import { useViewOriginalTranslationAction } from '../../../providers/MessagesProvider/actions/useViewOriginalTranslationAction';
+import { useMessageListReadReceipts } from '../list/MessageListContext';
 
 type MessageActionSection = {
 	id: string;
@@ -71,7 +72,7 @@ const MessageToolbarActionMenu = ({ message, context, room, subscription, onChan
 		useDeleteMessageAction(message, { room, subscription }),
 		useReportMessageAction(message, { room, subscription }),
 		useShowMessageReactionsAction(message),
-		useReadReceiptsDetailsAction(message),
+		useReadReceiptsDetailsAction(message, useMessageListReadReceipts()),
 	];
 
 	const hiddenActions = useLayoutHiddenActions().messageToolbox;
