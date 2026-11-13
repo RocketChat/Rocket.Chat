@@ -230,7 +230,7 @@
 		"google-libphonenumber": "^3.2.47",
 		"he": "^1.2.0",
 		"highlight.js": "11.8.0",
-		"hono": "4.13.13",
+		"hono": "4.13.16",
 		"http-proxy-agent": "^7.0.2",
 		"human-interval": "^2.0.1",
 		"i18next-http-backend": "^4.0.2",
