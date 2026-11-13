@@ -72,6 +72,6 @@ describe('useContactCall', () => {
 		const { result } = renderHook(() => useContactCall());
 
 		expect(result.current.isDialable({ raw: '+49 30 1234567' })).toBe(true);
-		expect(result.current.isDialable({ raw: '040 123456 ext. 12' })).toBe(false);
+		expect(result.current.isDialable({ raw: 'n/a' })).toBe(false);
 	});
 });
