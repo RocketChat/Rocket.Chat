@@ -34,6 +34,7 @@ type GraphEvent = {
 	'end'?: GraphDateTimeTimeZone;
 	'isCancelled'?: unknown;
 	'showAs'?: unknown;
+	'isReminderOn'?: unknown;
 	'reminderMinutesBeforeStart'?: unknown;
 	'@removed'?: unknown;
 };
@@ -238,9 +239,10 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 			...(endTime && { endTime }),
 			isCancelled: event.isCancelled === true,
 			busy: event.showAs === 'busy',
-			...(typeof event.reminderMinutesBeforeStart === 'number' && {
-				reminderMinutesBeforeStart: event.reminderMinutesBeforeStart,
-			}),
+			...(event.isReminderOn !== false &&
+				typeof event.reminderMinutesBeforeStart === 'number' && {
+					reminderMinutesBeforeStart: event.reminderMinutesBeforeStart,
+				}),
 		};
 	}
 
