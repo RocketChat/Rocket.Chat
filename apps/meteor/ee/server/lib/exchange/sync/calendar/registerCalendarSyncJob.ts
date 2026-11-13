@@ -7,7 +7,6 @@ import { runCalendarSync } from './runCalendarSync';
 import { settings } from '../../../../../../server/settings';
 import { getCalendarSyncIntervalHours } from '../../../../../lib/exchange/calendarSyncSchedule';
 import { logger } from '../../logger';
-import { scrubForLog } from '../../scrub';
 import { whenSyncsIdle } from '../syncLease';
 
 export const CALENDAR_SYNC_JOB = 'Exchange_Calendar_Sync';
@@ -101,7 +100,7 @@ export const registerCalendarSyncJob = (): (() => void) => {
 				await discardServerSyncedCalendarEvents(stillOff);
 			}
 		} catch (err) {
-			logger.error({ msg: 'Could not configure the Exchange calendar sync job', err: scrubForLog(err) });
+			logger.error({ msg: 'Could not configure the Exchange calendar sync job', err });
 		}
 	});
 
@@ -109,8 +108,6 @@ export const registerCalendarSyncJob = (): (() => void) => {
 		stopped = true;
 		stopWatching();
 
-		void stopCalendarSyncJob().catch((err) =>
-			logger.error({ msg: 'Could not stop the Exchange calendar sync job during cleanup', err: scrubForLog(err) }),
-		);
+		void stopCalendarSyncJob().catch((err) => logger.error({ msg: 'Could not stop the Exchange calendar sync job during cleanup', err }));
 	};
 };

@@ -128,7 +128,7 @@ API.v1.post(
 
 			return API.v1.success({ upserted, modified, deleted });
 		} catch (err) {
-			logger.error({ msg: 'On-demand Exchange calendar sync failed', uid: this.userId, err: scrubForLog(err) });
+			logger.error({ msg: 'On-demand Exchange calendar sync failed', uid: this.userId, err });
 
 			if (!isExchangeError(err)) {
 				return API.v1.internalError('Outlook_Sync_Failed');

@@ -8,7 +8,7 @@ import type { IExchangeProvider } from '../../definition/IExchangeProvider';
 import type { DateRange, ExchangeEventUpsert } from '../../definition/types';
 import { isExchangeError } from '../../errors';
 import { logger } from '../../logger';
-import { scrubForLog, scrubText } from '../../scrub';
+import { scrubText } from '../../scrub';
 
 export const MAX_EVENT_PAGES = 50;
 
@@ -219,7 +219,7 @@ export const syncCalendarWindow = async (
 
 		await ExchangeCalendarSyncState.setLastError(uid, `${code}: ${scrubText(err instanceof Error ? err.message : String(err))}`);
 
-		logger.warn({ msg: 'Exchange calendar sync failed for a mailbox', uid, code, err: scrubForLog(err) });
+		logger.warn({ msg: 'Exchange calendar sync failed for a mailbox', uid, code, err });
 
 		return {
 			...EMPTY,
