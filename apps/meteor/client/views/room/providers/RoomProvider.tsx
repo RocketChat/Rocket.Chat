@@ -99,8 +99,8 @@ const RoomProvider = ({ rid, children, embedded }: RoomProviderProps) => {
 		};
 	}, [rid]);
 
-	// Prefetch first batch of history in parallel with room metadata fetches, instead of waiting
-	// for RoomBody's scroll/resize observer in useGetMore to fire.
+	// Prefetch first batch of history in parallel with room metadata fetches. A jump to a message loads
+	// the messages around it instead.
 	useEffect(() => {
 		if (!room || messageJumpParam || RoomHistoryManager.isLoaded(rid) || RoomHistoryManager.isLoading(rid)) {
 			return;

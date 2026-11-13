@@ -122,4 +122,23 @@ describe('RoomHistoryManager', () => {
 
 		expect(mockedGet).toHaveBeenCalledWith('/v1/rooms.history', { roomId: 'room-a', count: 50, showThreadMessages: false });
 	});
+
+	it('reads and writes no DOM and keeps no scroll snapshot when it loads a page (R44)', async () => {
+		document.body.innerHTML = '<div class="messages-box"><div class="wrapper"><div data-overlayscrollbars-viewport></div></div></div>';
+		const querySelector = jest.spyOn(document, 'querySelector');
+		const viewport = document.querySelector('[data-overlayscrollbars-viewport]') as HTMLElement;
+		const scrollTop = jest.fn();
+		Object.defineProperty(viewport, 'scrollTop', { set: scrollTop, get: () => 0 });
+		querySelector.mockClear();
+
+		await RoomHistoryManager.getMore('room-a');
+
+		expect(querySelector).not.toHaveBeenCalled();
+		expect(scrollTop).not.toHaveBeenCalled();
+		expect(RoomHistoryManager.getRoom('room-a')).not.toHaveProperty('scroll');
+		expect(RoomHistoryManager).not.toHaveProperty('restoreScroll');
+
+		querySelector.mockRestore();
+		document.body.innerHTML = '';
+	});
 });

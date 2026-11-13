@@ -20,6 +20,9 @@ code:
     apps/meteor/client/views/room/body/RoomBody.tsx,
     apps/meteor/client/views/room/body/layout/RoomBodyContent.tsx,
     apps/meteor/tests/e2e/page-objects/fragments/home-content.ts,
+    apps/meteor/client/lib/RoomHistoryManager.ts,
+    apps/meteor/client/views/room/providers/RoomProvider.tsx,
+    apps/meteor/client/styles/imports/general/base_old.css,
   ]
 tests:
   [
@@ -36,6 +39,7 @@ tests:
     apps/meteor/client/views/room/body/hooks/useRetryFirstPage.spec.ts,
     apps/meteor/client/views/room/body/RoomBody.spec.tsx,
     apps/meteor/client/views/room/composer/ComposerSelectMessages.spec.tsx,
+    apps/meteor/client/lib/RoomHistoryManager.spec.ts,
   ]
 ---
 
