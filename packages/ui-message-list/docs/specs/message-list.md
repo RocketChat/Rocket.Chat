@@ -38,6 +38,7 @@ tests:
     src/MessageList/MessageList.stories.tsx,
     src/MessageList/MessageListConversation.stories.tsx,
     src/MessageList/MessageListConversation.spec.tsx,
+    src/MessageList/MessageList.renders.spec.tsx,
   ]
 ---
 
